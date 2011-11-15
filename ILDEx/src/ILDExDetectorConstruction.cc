@@ -227,6 +227,16 @@ G4VPhysicalVolume* ILDExDetectorConstruction::ConstructDetector()
 
   ILDExTPC tpc(logicWorld);
 
+  std::ifstream gdml_file("World.gdml");
+  if (gdml_file.good()) {
+    G4cout << G4endl;
+    G4cout << "#############################################" << G4endl;
+    G4cout << "#     Please remove file World.gdml         #" << G4endl;
+    G4cout << "#############################################" << G4endl;
+    G4cout << G4endl;
+    exit(1);
+  }
+
   G4GDMLParser parser;
   parser.Write("World.gdml", physiWorld) ;                      
   
