@@ -1,0 +1,17 @@
+
+This Geant4 example is based on the N03 Example which comes with Geant4
+
+The Geometry represents a simplfied structure for the ILD central tracking detectors, VXD, SIT and TPC.
+
+This example should function as a test for DD4hep and should be adapted as needed. 
+
+The build setup is performed via CMake, i.e. :
+
+cmake -DGeant4_DIR=[PATH_TO_GEANT4] -GXcode .. 
+
+And has been tested against the beta release of Geant4 geant4.9.5.b01
+
+Currently no sensitive detectors are implemented only the material.
+
+
+
