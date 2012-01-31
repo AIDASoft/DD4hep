@@ -4,23 +4,6 @@
 #include "Internals.h"
 //#include "XML/DocumentHandler.h"
 
-#if 0
-#include "xercesc/framework/LocalFileFormatTarget.hpp"
-#include "xercesc/framework/StdOutFormatTarget.hpp"
-
-#include "xercesc/framework/MemBufInputSource.hpp"
-#include "xercesc/sax/SAXParseException.hpp"
-#include "xercesc/sax/EntityResolver.hpp"
-#include "xercesc/sax/InputSource.hpp"
-#include "xercesc/parsers/XercesDOMParser.hpp"
-#include "xercesc/util/PlatformUtils.hpp"
-#include "xercesc/util/XercesDefs.hpp"
-#include "xercesc/util/XMLUni.hpp"
-#include "xercesc/util/XMLURL.hpp"
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/dom/DOM.hpp"
-#include "xercesc/sax/ErrorHandler.hpp"
-#endif
 
 // C+_+ include files
 #include <cmath>
@@ -32,15 +15,15 @@
 //#include "XML/Evaluator.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
+#include "TPython.h"
 
 using namespace std;
 using namespace DetDesc;
 using namespace DetDesc::Geometry;
-//namespace DetDesc  { XmlTools::Evaluator& evaluator();  }
-//namespace DetDesc  { namespace XML {    void tags_init(); }}
 
 LCDD& LCDD::getInstance() {
   static LCDD* s_lcdd = new LCDDImp();
+
   return *s_lcdd; 
 }
 
@@ -177,10 +160,6 @@ void LCDDImp::addStdMaterials()   {
   convertMaterials("file:../cmt/materials.xml");
 }
 
-void LCDDImp::fromCompact(const string& fname)  {
-  //fromCompact(XML::DocumentHandler().load(fname).root());
-}
-
 Document LCDDImp::create()  {
   Document doc(new TGeoManager());
   m_doc  = doc;
@@ -219,22 +198,15 @@ Document LCDDImp::init()  {
   return doc;
 }
 
-#if 0
-void LCDDImp::fromCompact(XML::Handle_t compact)   {
-  try {
-    Converter<Compact>(*this)(compact);
-  }
-  catch(const exception& e)  {
-    cout << "Exception:" << e.what() << endl;
-  }
-  catch(xercesc::DOMException& e)  {
-    cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
-  } 
-  catch(...)  {
-    cout << "UNKNOWN Exception" << endl;
-  }
+
+void LCDDImp::fromCompact(const std::string& xmlfile) {
+  string cmd;
+  TPython::Exec("import lcdd");
+
+  cmd = "lcdd.fromCompact('" + xmlfile + "')";
+  TPython::Exec(cmd.c_str());  
 }
-#endif
+
 
 void LCDDImp::dump() const  {
   m_doc->CloseGeometry();

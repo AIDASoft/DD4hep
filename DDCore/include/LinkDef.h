@@ -18,6 +18,7 @@
 #pragma link C++ class DetDesc::Geometry::Material;
 #pragma link C++ class DetDesc::Geometry::Volume;
 #pragma link C++ class DetDesc::Geometry::VisAttr;
+#pragma link C++ class DetDesc::Geometry::Limit;
 #pragma link C++ class DetDesc::Geometry::Subdetector;
 #pragma link C++ class DetDesc::Geometry::Box;
 #pragma link C++ class DetDesc::Geometry::Tube;

@@ -101,6 +101,7 @@ namespace DetDesc {
       virtual LCDD& addDetector(const RefElement& detector) = 0;
       //---Factory method-------
       static LCDD& getInstance(void);
+      virtual void fromCompact(const std::string& xmlfile = "") = 0;
       virtual void dump() const = 0;
       
     };

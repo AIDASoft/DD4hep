@@ -13,5 +13,5 @@ list(REMOVE_ITEM detdesc_headers ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.h)
 ROOT_GENERATE_DICTIONARY( G__DetDesc ${detdesc_headers} LINKDEF include/LinkDef.h)
 
 add_library(DetDesc SHARED ${detdesc_sources} G__DetDesc.cxx)
-target_link_libraries(DetDesc ${ROOT_LIBRARIES} Geom)
+target_link_libraries(DetDesc ${ROOT_LIBRARIES} Geom PyROOT)
 

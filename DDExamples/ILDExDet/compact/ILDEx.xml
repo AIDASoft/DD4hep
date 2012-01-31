@@ -1,0 +1,153 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml,v 1.3 2010/12/02 16:34:00 grefe Exp $">
+        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+    </info>
+  
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+  
+    <define>
+        <constant name="world_side"             value="30000"/>
+        <constant name="world_x"                value="world_side"/>
+        <constant name="world_y"                value="world_side"/>
+        <constant name="world_z"                value="world_side"/>        
+        <constant name="CrossingAngle"          value="0.020"/>
+        
+        <constant name="TPC_zhalf"              value="2500*mm"/>
+        <constant name="TPC_outer_radius"       value="1800*mm"/>
+        <constant name="TPC_inner_radius"       value="350*mm"/>
+        <constant name="TPC_inner_thickness"    value="2*mm"/>
+        <constant name="TPC_outer_thickness"    value="3*mm"/>
+        <constant name="TPC_endcap_thickness"   value="3*mm"/>
+
+        <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0"/>
+        <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0"/>
+    </define>
+
+    <materials>
+        <material name="Graphite">
+        	<D value="1.7" unit="g/cm3"/>
+        	<composite n="1" ref="C"/>
+        </material>      
+    </materials>
+  
+    <limits>
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+    </limits>
+
+    <display>
+      <vis name="TPCVis"        alpha="1.0" r="0"   g="1.0" b="0.7"  showDaughters="true"  visible="false"/>
+      <vis name="TPCSupportVis" alpha="1.0" r="0"   g="0"   b="0.7"  showDaughters="false" visible="true"/>
+      <vis name="TPCGasVis"     alpha="1.0" r="0.7" g="0"   b="0"    showDaughters="false" visible="true"/>
+      <vis name="VXDLayerVis"   alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+      <vis name="VXDSupportVis" alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+      <vis name="SITSupportVis" alpha="1.0" r="0.0" g="0.3" b="0.7"  showDaughters="true"  visible="true"/>
+      <vis name="SITLayerVis"   alpha="1.0" r="0.0" g="0.7" b="0.3"  showDaughters="true"  visible="true"/>
+      <vis name="SupportVis"                r="0.5" g="0.1" b="0.99" showDaughters="false" visible="true"/>
+      <vis name="LumiCalVis"                                         showDaughters="false" visible="true"/>
+    </display>
+
+    <detectors>
+        <comment>Trackers</comment>
+      
+        <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1">
+          <layer id="1"  vis="VXDLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
+            <ladder  zhalf="65*mm" radius="16*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="10"/>
+          </layer>
+          <layer id="2"  vis="VXDLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
+            <ladder  zhalf="65*mm" radius="18*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="10"/>
+          </layer>
+          <layer id="3"  vis="VXDLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
+            <ladder  zhalf="125*mm" radius="38*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="11"/>
+          </layer>
+          <layer id="4"  vis="VXDLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
+            <ladder  zhalf="125*mm" radius="40*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="11"/>
+          </layer>
+          <layer id="5"  vis="VXDLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
+            <ladder  zhalf="125*mm" radius="60*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="17"/>
+          </layer>
+        </detector>
+ 
+        <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2">
+          <layer id="1"  vis="SITLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
+            <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
+          </layer>
+          <layer id="2"  vis="SITLayerVis">
+            <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
+            <ladder  thickness="0.1*mm"  zhalf="650*mm" radius="300*mm" material="Silicon" number="19" />
+          </layer>
+        </detector>
+        
+      
+        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3">
+           <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
+           <material name="Air"/>
+
+           <detector name="TPC_InnerWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="0">
+             <material name="Carbon"/>
+             <tubs rmin="TPC_inner_radius" rmax="TPC_inner_radius+TPC_inner_thickness" zhalf="TPC_zhalf"/>
+             <position x="0" y="0" z="0"/>
+             <rotation x="0" y="0" z="0"/>
+           </detector>
+
+           <detector name="TPC_OuterWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="1">
+             <material name="Carbon" />
+             <tubs rmin="TPC_outer_radius - TPC_outer_thickness" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
+             <position x="0" y="0" z="0"/>
+             <rotation x="0" y="0" z="0"/>
+           </detector>
+
+           <detector name="TPC_EndA" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="2">
+             <material name="Carbon" />
+             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_inner_radius+TPC_inner_thickness"/>
+             <position x="0" y="0" z="TPC_zhalf-0.5*TPC_endcap_thickness"/>
+             <rotation x="0" y="0" z="0"/>
+           </detector>
+
+           <detector name="TPC_EndB" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="3">
+             <material name="Carbon" />
+             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_inner_radius+TPC_inner_thickness"/>
+             <position x="0" y="0" z="-(TPC_zhalf-0.5*TPC_endcap_thickness)"/>
+             <rotation x="0" y="0" z="0"/>
+           </detector>
+
+           <detector name="TPC_GasVolume" type="TubeSegment" reflect="true" vis="TPCGasVis" id="5">
+             <material name="Argon"/>
+             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="TPC_zhalf-TPC_endcap_thickness"/>
+             <position x="0" y="0" z="0"/>
+             <rotation x="0" y="0" z="0"/>
+          </detector>
+        </detector>
+
+    </detectors>
+
+    <readouts>
+        <readout name="SiTrackerEndcapHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+    </readouts>
+    <fields>
+        <field type="Solenoid" name="GlobalSolenoid" inner_field="5.0"
+        outer_field="-1.5" zmax="SolenoidCoilOuterZ"
+        outer_radius="SolenoidalFieldRadius" />
+    </fields>
+</lccdd>

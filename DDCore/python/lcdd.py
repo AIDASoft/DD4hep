@@ -8,6 +8,7 @@ LCDD     = DetDesc.Geometry.LCDD
 Constant = DetDesc.Geometry.Constant
 Material = DetDesc.Geometry.Material
 VisAttr  = DetDesc.Geometry.VisAttr
+Limit    = DetDesc.Geometry.Limit
 Subdetector = DetDesc.Geometry.Subdetector
 Box = DetDesc.Geometry.Box
 Tube = DetDesc.Geometry.Tube
@@ -20,6 +21,8 @@ _toDictionary = DetDesc.Geometry._toDictionary
 
 import xml.etree.ElementTree as xml
 unique_mat_id = 0x7FFEFEED
+
+current_xmlfile = None
 
 constants = {}
 constants.update(SystemOfUnits.__dict__)
@@ -41,10 +44,9 @@ xml._ElementInterface.getF = _getFloat
 xml._ElementInterface.getB = _getBool
 
 #---------------------------------------------------------------------------------
-def loadDrivers(*args):
+def load_drivers(*args):
   if not args:
     args = [path.join(path.dirname(__file__),'drivers')]
-  
   for arg in args:
     if path.exists(arg):
       if path.isfile(arg):
@@ -61,7 +63,9 @@ def loadDrivers(*args):
 
 #---------------------------------------------------------------------------------
 def process_xmlfile(lcdd, file):
+  global current_xmlfile
   root = xml.parse(file).getroot()
+  last_xmlfile, current_xmlfile = current_xmlfile, file
   for e in root :
     if e.tag == 'detectors' : 
       lcdd.init() # call init before processing 'detectors' (need world volume)
@@ -71,17 +75,25 @@ def process_xmlfile(lcdd, file):
     if procs : 
       apply(procs,(lcdd, e))
     else : print 'XML tag %s not processed!!! No function found.' % e.tag
+  current_xmlfile = last_xmlfile
 
 #--------------------------------------------------------------------------------
 def fromCompact(xmlfile):
   print 'Converting Compact file: ', xmlfile
   lcdd = LCDD.getInstance()
   lcdd.create()
-  dname = path.dirname(xmlfile)
-  process_xmlfile(lcdd, dname+path.sep+'elements.xml')
-  process_xmlfile(lcdd, dname+path.sep+'materials.xml')
   process_xmlfile(lcdd, xmlfile)
   return lcdd
+
+#---------------------------------------------------------------------------------
+def process_includes(lcdd, elem):
+  for c in elem.findall('gdmlFile'):
+    print 'Adding Gdml file ...', c.get('ref')
+    dname = path.dirname(current_xmlfile)
+    process_xmlfile(lcdd, path.join(dname, c.get('ref')))
+  for c in elem.findall('pyBuilder'):
+    print 'Adding PyBuilder ...', c.get('ref')
+    load_drivers(path.join(dname, c.get('ref')))
 
 #---------------------------------------------------------------------------------
 def process_define(lcdd, elem):
@@ -100,7 +112,7 @@ def process_element(lcdd, elem):
   element = tab.FindElement(ename)
   if not element:
     atom = elem.find('atom')
-    table.AddElement(atom.get('name'), atom.get('formula'), atom.getI('Z'), atom.getI('value'))
+    tab.AddElement(atom.get('name'), atom.get('formula'), atom.getI('Z'), atom.getI('value'))
 
 #---------------------------------------------------------------------------------
 def process_materials(lcdd, elem):
@@ -152,12 +164,22 @@ def process_display(lcdd, elem):
     if 'r' in v.keys() and 'g' in v.keys() and 'b' in v.keys() : visattr.setColor(v.getF('r'),v.getF('g'),v.getF('b'))
     lcdd.addVisAttribute(visattr)
 
+def process_limits(lcdd, elem):
+  # <limit name="step_length_max" particles="*" value="5.0" unit="mm" />    
+  for l in elem.findall('limit'):
+    limit = Limit(lcdd.document(), l.get('name'))
+    limit.setParticles(l.get('particles'))
+    limit.setValue(l.getF('value'))
+    limit.setUnit(l.get('unit'))
+    lcdd.addLimit(limit)
+
 #-----------------------------------------------------------------------------------
 def process_detectors(lcdd, elem):
   for d in elem.findall('detector'):
     procs = drivers.get('detector_%s'% d.get('type'), None)
     if procs : 
       detector = apply(procs,(lcdd, d))
+      print "Adding detector ", detector
       lcdd.addDetector(detector)
     else : 
       print 'Detector type %s not found' % d.get('type')
