@@ -6,5 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 add_subdirectory(DDCore)
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/ILDExDisplay)
+add_subdirectory(DDExamples/ILDExReco)
+
 
 
