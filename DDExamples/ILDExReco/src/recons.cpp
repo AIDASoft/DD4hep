@@ -6,14 +6,14 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "LCDD.h"
+#include "DD4hep/LCDD.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include "GearTPC.h"
 
 using namespace std;
-using namespace DetDesc;
+using namespace DD4hep;
 using namespace Geometry;
 
 

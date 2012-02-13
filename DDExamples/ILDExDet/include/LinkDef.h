@@ -13,7 +13,7 @@
 #pragma link off all functions;
 
 //---Specific detector----------------------------
-#pragma link C++ class DetDesc::ILDExTPC;
-#pragma link C++ class DetDesc::TPCData;
+#pragma link C++ class DD4hep::ILDExTPC;
+#pragma link C++ class DD4hep::TPCData;
 
 #endif

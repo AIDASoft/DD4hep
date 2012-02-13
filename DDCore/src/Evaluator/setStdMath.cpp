@@ -2,7 +2,7 @@
 // $Id: setStdMath.cpp,v 1.1 2005-12-07 15:35:25 jpalac Exp $
 // ----------------------------------------------------------------------
 
-#include "Evaluator.h"
+#include "XML/Evaluator.h"
 
 #include <cmath>	// for sqrt and pow
 

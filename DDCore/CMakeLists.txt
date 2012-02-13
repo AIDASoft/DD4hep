@@ -2,16 +2,28 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-find_package(ROOT)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
+                    ${ROOT_INCLUDE_DIR}
+                    ${XERCESC_INCLUDE_DIR})
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR})
+file(GLOB sources src/*.cpp src/Evaluator/*.cpp)
 
-file(GLOB detdesc_sources src/*.cpp src/Evaluator/*.cpp)
-file(GLOB detdesc_headers include/*.h)
-list(REMOVE_ITEM detdesc_headers ${CMAKE_CURRENT_SOURCE_DIR}/include/LinkDef.h)
+if(DD4HEP_USE_PYROOT)
+  file(GLOB detdesc_headers include/DD4hep/*.h)
+  ROOT_GENERATE_DICTIONARY( G__DD4hep ${detdesc_headers} LINKDEF include/ROOT/LinkDef.h)
+  list(APPEND sources G__DD4hep.cxx)
+  add_definitions(-DDD4HEP_USE_PYROOT)
+  set(libraries PyROOT)
+endif()
 
-ROOT_GENERATE_DICTIONARY( G__DetDesc ${detdesc_headers} LINKDEF include/LinkDef.h)
+if(DD4HEP_USE_XERCESC)
+  file(GLOB xmlsources src/XML/*.cpp src/compact/*.cpp)
+  list(APPEND sources ${xmlsources})
+  add_definitions(-DDD4HEP_USE_XERCESC)
+  set(libraries Reflex)
+endif()
 
-add_library(DetDesc SHARED ${detdesc_sources} G__DetDesc.cxx)
-target_link_libraries(DetDesc ${ROOT_LIBRARIES} Geom PyROOT)
+add_library(DD4hepCore SHARED ${sources})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} Geom ${libraries})
+
 

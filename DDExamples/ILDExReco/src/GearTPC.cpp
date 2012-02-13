@@ -1,41 +1,37 @@
+// $Id:$
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+
 #include "ILDExTPC.h"
 #include "GearTPC.h"
-#include "Volumes.h"
-#include "Shapes.h"
-#include "Internals.h"
+#include "DD4hep/Volumes.h"
+#include "DD4hep/Shapes.h"
 #include "TGeoTube.h"
-#include <typeinfo>
-#include <string>
 
 using namespace std;
 
-namespace DetDesc {
+namespace DD4hep {
   using namespace Geometry;
-
-  GearTPC::GearTPC(const RefElement& e) : Geometry::Subdetector(e) {
-    if ( dynamic_cast<Value<TNamed,Object>* >(e.ptr()) == 0 )  {
-      const type_info& from = typeid(*(e.ptr()));
-      const type_info& to   = typeid(Value<TNamed,Object>);
-      string msg = "Wrong assingment from ";
-      msg += from.name();
-      msg += " to ";
-      msg += to.name();
-      msg += " not possible!!";
-      throw std::runtime_error(msg);
-    }
+  
+  GearTPC::GearTPC(const Ref_t& e) : Geometry::DetElement(e) {
   }
-
+  
   double GearTPC::innerRadius() const {
-    Subdetector gas   = getAttr(gas);
-    TGeoTube&   tube  = (TGeoTube&)gas.volume().solid().shape();
-    return tube.GetRmin();
+    DetElement gas   = data<Object>()->gas;
+    Tube       tube  = gas.volume().solid();
+    return tube->GetRmin();
   }
   double GearTPC::outerRadius() const {
-    Subdetector gas   = getAttr(gas);
-    TGeoTube&   tube  = (TGeoTube&)gas.volume().solid().shape();
-    return tube.GetRmax();
+    DetElement gas   = data<Object>()->gas;
+    Tube       tube  = gas.volume().solid();
+    return tube->GetRmax();
   }
   double GearTPC::pressure() const {
-    return getAttr(pressure);
+    return data<Object>()->pressure;
   }
 }

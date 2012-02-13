@@ -1,34 +1,38 @@
-#include "Readout.h"
-#include "Internals.h"
+// $Id:$
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+
+#include "DD4hep/Readout.h"
 
 using namespace std;
-using namespace DetDesc::Geometry;
-
-/// Constructor to be used when reading the already parsed object
-Readout::Readout(Handle_t e) : RefElement(e) {
-}
+using namespace DD4hep::Geometry;
 
 /// Initializing constructor to create a new object
-Readout::Readout(const Document& doc, const string& nam) : RefElement(doc,"readout",nam) 
+Readout::Readout(const LCDD& /* lcdd */, const string& nam)
 {
+  assign(new Value<TNamed,Object>(),nam,"readout");
 }
 
 /// Access IDDescription structure
-RefElement Readout::idSpec() const   {
-  return second_value<TNamed>(*this)->id;
+Ref_t Readout::idSpec() const   {
+  return _data().id;
 }
 
 /// Access segmentation structure
-Element Readout::segmentation() const  {
-  return second_value<TNamed>(*this)->segmentation;
+Segmentation Readout::segmentation() const  {
+  return _data().segmentation;
 }
 
 /// Assign IDDescription to readout structure
-void Readout::setIDDescriptor(RefElement new_descriptor)  const   {
-  Object* ro = second_value<TNamed>(*this);
-  if ( ro )  {                 // Remember: segmentation is NOT owned by readout structure!
+void Readout::setIDDescriptor(const Ref_t& new_descriptor)  const   {
+  if ( isValid() )  {                    // Remember: segmentation is NOT owned by readout structure!
     if ( new_descriptor.isValid() )  {   // Do NOT delete!
-      ro->id = new_descriptor;
+      _data().id = new_descriptor;
       return;
     }
   }
@@ -36,17 +40,29 @@ void Readout::setIDDescriptor(RefElement new_descriptor)  const   {
 }
 
 /// Assign segmentation structure to readout
-void Readout::setSegmentation(Element seg)   const  {
-  Object* ro = second_value<TNamed>(*this);
-  if ( ro )  {
-    Element_t* e = ro->segmentation.ptr();
+void Readout::setSegmentation(const Segmentation& seg)   const  {
+  if ( isValid() )  {
+    Object& ro = _data();
+    Segmentation::Implementation* e = ro.segmentation.ptr();
     if ( e )  { // Remember: segmentation is owned by readout structure!
       delete e; // Need to delete the segmentation object
     }
     if ( seg.isValid() )  {
-      ro->segmentation = seg;
+      ro.segmentation = seg;
       return;
     }
   }
   throw runtime_error("Readout::setSegmentation: Cannot assign segmentation [Invalid Handle]");
+}
+
+/// Initializing constructor to create a new object
+Alignment::Alignment(const LCDD& /* lcdd */, const string& nam)
+{
+  assign(new Value<TNamed,Object>(),nam,"alignment");
+}
+
+/// Initializing constructor to create a new object
+Conditions::Conditions(const LCDD& /* lcdd */, const string& nam)
+{
+  assign(new Value<TNamed,Object>(),nam,"conditions");
 }

@@ -1,21 +1,33 @@
-#include "SubDetector.h"
+// $Id:$
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
 
-namespace DetDesc {
+#include "DD4hep/Detector.h"
+
+namespace DD4hep {
   
-  struct TPCData : public Geometry::Subdetector::Object {
-    Geometry::RefElement outerWall;
-    Geometry::RefElement innerWall;
-    Geometry::RefElement gas;
+  
+  struct TPCData : public Geometry::DetElement::Object {
+    typedef Geometry::Ref_t Ref_t;
+    Ref_t outerWall;
+    Ref_t innerWall;
+    Ref_t gas;
     double pressure;
   };
-
-  struct ILDExTPC : public Geometry::Subdetector {
+  
+  struct ILDExTPC : public Geometry::DetElement {
     typedef TPCData Object;
-    ILDExTPC(const Geometry::RefElement& e) : Geometry::Subdetector(e) {}
-    ILDExTPC(const Geometry::Document& doc, const std::string& name, const std::string& type, int id);
-    void setInnerWall(Geometry::RefElement obj);
-    void setOuterWall(Geometry::RefElement obj);
-    void setGasVolume(Geometry::RefElement obj);
+    typedef Geometry::Ref_t Ref_t;
+    ILDExTPC(const Ref_t& e) : Geometry::DetElement(e) {}
+    ILDExTPC(const Geometry::LCDD& lcdd, const std::string& name, const std::string& type, int id);
+    void setInnerWall(Ref_t obj);
+    void setOuterWall(Ref_t obj);
+    void setGasVolume(Ref_t obj);
     double getVolume() const;
     double getWeight() const;
   };

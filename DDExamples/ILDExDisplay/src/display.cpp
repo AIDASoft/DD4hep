@@ -6,14 +6,14 @@
 //  Copyright 2012 __MyCompanyName__. All rights reserved.
 //
 
-#include "LCDD.h"
+#include "DD4hep/LCDD.h"
 #include <iostream>
 #include <vector>
 #include <string>
 #include "TRint.h"
 
 using namespace std;
-using namespace DetDesc;
+using namespace DD4hep;
 using namespace Geometry;
 
 //______________________________________________________________________________
@@ -27,17 +27,7 @@ int run_interpreter(int argc, char **argv)   {
   TRint *theApp = new TRint("Rint", &argc, argv, 0, 0, kTRUE);
   
   LCDD& lcdd = LCDD::getInstance();
-  switch (args.size()) {
-    case 1:
-      lcdd.fromCompact();
-      break;
-    case 2:
-      lcdd.fromCompact(args[1]);
-      break;
-    default:
-      break;
-  }
-  
+  lcdd.fromCompact(args[1]);
   lcdd.dump();
     
   // and enter the event loop...

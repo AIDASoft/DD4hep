@@ -91,7 +91,7 @@
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
           </layer>
-          <layer id="2"  vis="SITLayerVis">
+          <layer id="2"  vis="SITL/Users/mato/Development/AIDA/DD4hep/DDExamples/ILDExDet/compact/ILDEx.xmlayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="650*mm" radius="300*mm" material="Silicon" number="19" />
           </layer>

@@ -2,7 +2,7 @@
 // $Id: Evaluator.cpp,v 1.3 2008-10-29 15:09:34 truf Exp $
 // ---------------------------------------------------------------------------
 
-#include "Evaluator.h"
+#include "XML/Evaluator.h"
 
 #include <iostream>
 #include <cmath>	// for pow()
