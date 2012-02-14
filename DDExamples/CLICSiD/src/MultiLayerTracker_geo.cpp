@@ -7,7 +7,7 @@
 //
 //====================================================================
 
-#include "DetFactoryHelper.h"
+#include "DD4hep/DetFactoryHelper.h"
 #include "CompactDetectors.h"
 
 using namespace std;
@@ -24,7 +24,7 @@ namespace DD4hep { namespace Geometry {
     DetElement sdet(lcdd,det_name,det_type,x_det.id());
     Volume     motherVol = lcdd.pickMotherVolume(sdet);
     int n = 0;
-
+    
     for(xml_coll_t i(x_det,_X(layer)); i; ++i, ++n)  {
       xml_comp_t x_layer = i;
       string  l_name = det_name+_toString(n,"_layer%d");
@@ -35,26 +35,26 @@ namespace DD4hep { namespace Geometry {
       double  rmin = x_layer.inner_r();
       double  r    = rmin;
       int m = 0;
-
+      
       for(xml_coll_t j(x_layer,_X(slice)); j; ++j, ++m)  {
-	xml_comp_t x_slice = j;
-	Material mat = lcdd.material(x_slice.materialStr());
-	string s_name= l_name+_toString(m,"_slice%d");
-	Tube   s_tub(lcdd,s_name);
-	Volume s_vol(lcdd,s_name+"_volume", s_tub, mat);
-
-	r += x_slice.thickness();
-	s_tub.setDimensions(r,r,2*z,2*M_PI);
-	if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
-	// Set Attributes
-	s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-	PlacedVolume spv = l_vol.placeVolume(s_vol,IdentityPos());
-	// Slices have no extra id. Take the ID of the layer!
-	spv.addPhysVolID(_X(layer),n);
+        xml_comp_t x_slice = j;
+        Material mat = lcdd.material(x_slice.materialStr());
+        string s_name= l_name+_toString(m,"_slice%d");
+        Tube   s_tub(lcdd,s_name);
+        Volume s_vol(lcdd,s_name+"_volume", s_tub, mat);
+        
+        r += x_slice.thickness();
+        s_tub.setDimensions(r,r,2*z,2*M_PI);
+        if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
+        // Set Attributes
+        s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+        PlacedVolume spv = l_vol.placeVolume(s_vol,IdentityPos());
+        // Slices have no extra id. Take the ID of the layer!
+        spv.addPhysVolID(_X(layer),n);
       }
       l_tub.setDimensions(rmin,r,2*z,2*M_PI);
       l_vol.setVisAttributes(lcdd,x_layer.visStr());
-
+      
       PlacedVolume lpv = motherVol.placeVolume(l_vol,IdentityPos());
       lpv.addPhysVolID(_X(system),sdet.id()).addPhysVolID(_X(barrel),0);
       sdet.add(layer.addPlacement(lpv));

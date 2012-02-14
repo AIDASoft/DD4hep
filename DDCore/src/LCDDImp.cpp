@@ -116,8 +116,8 @@ void LCDDImp::init()  {
   Tube trackingSolid(lcdd,"tracking_cylinder",
 		     0.,
 		     _toDouble("tracking_region_radius"),
-		     _toDouble("2*tracking_region_zmax"),M_PI);
-  Volume tracking(lcdd,"tracking_volume",trackingSolid,air);
+		     _toDouble("2*tracking_region_zmax"),2*M_PI);
+  Volume tracking(lcdd,"tracking_volume",trackingSolid, air);
   world.placeVolume(tracking);
 
   //Ref_t ref_world(lcdd,"world",world.refName());

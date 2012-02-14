@@ -40,10 +40,11 @@ def _getFloat(self,*attrib):
   sval = self.get(attrib[0], None)
   if not sval and len(attrib) > 1: return attrib[1]
   else: return float(eval(sval.replace('(int)',''), constants))
-def _getBool(self,attrib): return bool(self.get(attrib))
+def _getBool(self,attrib): return self.get(attrib).lower() in ('true', 'yes', 'on') 
 xml._ElementInterface.getI = _getInt
 xml._ElementInterface.getF = _getFloat
 xml._ElementInterface.getB = _getBool
+
 
 xml._ElementInterface.name = property(lambda self: self.get('name'))
 xml._ElementInterface.type = property(lambda self: self.get('type'))
@@ -51,12 +52,16 @@ xml._ElementInterface.vis  = property(lambda self: self.get('vis'))
 xml._ElementInterface.material = property(lambda self: self.get('material'))
 xml._ElementInterface.module = property(lambda self: self.get('module'))
 xml._ElementInterface.id   = property(lambda self: self.getI('id'))
+xml._ElementInterface.number = property(lambda self: self.getI('number'))
 xml._ElementInterface.x1   = property(lambda self: self.getF('x1'))
 xml._ElementInterface.x2   = property(lambda self: self.getF('x2'))
 xml._ElementInterface.x    = property(lambda self: self.getF('x'))
 xml._ElementInterface.y    = property(lambda self: self.getF('y'))
 xml._ElementInterface.z    = property(lambda self: self.getF('z'))
 xml._ElementInterface.zstart = property(lambda self: self.getF('zstart'))
+xml._ElementInterface.offset = property(lambda self: self.getF('offset'))
+xml._ElementInterface.radius = property(lambda self: self.getF('radius'))
+xml._ElementInterface.zhalf = property(lambda self: self.getF('zhalf'))
 xml._ElementInterface.phi0 = property(lambda self: self.getF('phi0'))
 xml._ElementInterface.r    = property(lambda self: self.getF('r'))
 xml._ElementInterface.dz   = property(lambda self: self.getF('dz'))
@@ -66,7 +71,17 @@ xml._ElementInterface.width = property(lambda self: self.getF('width'))
 xml._ElementInterface.inner_r = property(lambda self: self.getF('inner_r'))
 xml._ElementInterface.outer_r = property(lambda self: self.getF('outer_r'))
 xml._ElementInterface.z_length = property(lambda self: self.getF('z_length'))
+xml._ElementInterface.rmin = property(lambda self: self.getF('rmin'))
+xml._ElementInterface.rmax = property(lambda self: self.getF('rmax'))
 
+
+def getRotation(rot):
+  return Rotation(rot.getF('x',0.0),rot.getF('y',0.0), rot.getF('z',0.0))
+
+def getPosition(pos):
+  return Position(pos.getF('x',0.0),pos.getF('y',0.0), pos.getF('z',0.0))
+drivers['getRotation'] = getRotation
+drivers['getPosition'] = getPosition
 
 
 #---------------------------------------------------------------------------------
@@ -202,6 +217,7 @@ def process_display(lcdd, elem):
     if 'drawingStyle' in v.keys() :
       ds = v.get('drawingStyle')
       if ds == 'wireframe' : visattr.setDrawingStyle(VisAttr.WIREFRAME)
+    print visattr.toString()
     lcdd.addVisAttribute(visattr)
 
 def process_limits(lcdd, elem):
@@ -219,7 +235,6 @@ def process_detectors(lcdd, elem):
     procs = drivers.get('detector_%s'% d.get('type'), None)
     if procs : 
       detector = apply(procs,(lcdd, d))
-      print "Adding detector ", detector
       lcdd.addDetector(detector)
     else : 
       print 'Detector type %s not found' % d.get('type')

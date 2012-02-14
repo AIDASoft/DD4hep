@@ -50,8 +50,8 @@
 
     <display>
       <vis name="TPCVis"        alpha="1.0" r="0"   g="1.0" b="0.7"  showDaughters="true"  visible="false"/>
-      <vis name="TPCSupportVis" alpha="1.0" r="0"   g="0"   b="0.7"  showDaughters="false" visible="true"/>
-      <vis name="TPCGasVis"     alpha="1.0" r="0.7" g="0"   b="0"    showDaughters="false" visible="true"/>
+      <vis name="TPCSupportVis" alpha="1.0" r="0"   g="0.4" b="0.4"  showDaughters="false" visible="true"/>
+      <vis name="TPCGasVis"     alpha="1.0" r="0.7" g="0"   b="0"    showDaughters="false" visible="false"/>
       <vis name="VXDLayerVis"   alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
       <vis name="VXDSupportVis" alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
       <vis name="SITSupportVis" alpha="1.0" r="0.0" g="0.3" b="0.7"  showDaughters="true"  visible="true"/>
@@ -91,7 +91,7 @@
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
           </layer>
-          <layer id="2"  vis="SITL/Users/mato/Development/AIDA/DD4hep/DDExamples/ILDExDet/compact/ILDEx.xmlayerVis">
+          <layer id="2"  vis="SITLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="650*mm" radius="300*mm" material="Silicon" number="19" />
           </layer>
@@ -118,14 +118,14 @@
 
            <detector name="TPC_EndA" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="2">
              <material name="Carbon" />
-             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_inner_radius+TPC_inner_thickness"/>
+             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_endcap_thickness"/>
              <position x="0" y="0" z="TPC_zhalf-0.5*TPC_endcap_thickness"/>
              <rotation x="0" y="0" z="0"/>
            </detector>
 
            <detector name="TPC_EndB" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="3">
              <material name="Carbon" />
-             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_inner_radius+TPC_inner_thickness"/>
+             <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_endcap_thickness"/>
              <position x="0" y="0" z="-(TPC_zhalf-0.5*TPC_endcap_thickness)"/>
              <rotation x="0" y="0" z="0"/>
            </detector>

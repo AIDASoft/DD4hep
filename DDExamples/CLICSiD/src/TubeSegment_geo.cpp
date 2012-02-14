@@ -7,7 +7,7 @@
 //
 //====================================================================
 
-#include "DetFactoryHelper.h"
+#include "DD4hep/DetFactoryHelper.h"
 #include "CompactDetectors.h"
 using namespace std;
 using namespace DD4hep;
@@ -23,14 +23,14 @@ namespace DD4hep { namespace Geometry {
     string     name   = x_det.nameStr();
     Tube       tub    (lcdd,name+"_tube",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
     Volume     vol    (lcdd,name,tub,lcdd.material(x_det.materialStr()));
-
+    
     vol.setVisAttributes(lcdd, x_det.visStr());
-
+    
     DetElement   sdet(lcdd,name,x_det.typeStr(),x_det.id());
     Volume       mother = lcdd.pickMotherVolume(sdet);
     PlacedVolume phv =  
-      mother.placeVolume(vol,Position(x_pos.x(),x_pos.y(),x_pos.z()),
-			 Rotation(x_rot.x(),x_rot.y(),x_rot.z()));
+    mother.placeVolume(vol,Position(x_pos.x(),x_pos.y(),x_pos.z()),
+                       Rotation(x_rot.x(),x_rot.y(),x_rot.z()));
     phv.addPhysVolID(_A(id),x_det.id());
     sdet.addPlacement(phv);
     return sdet;

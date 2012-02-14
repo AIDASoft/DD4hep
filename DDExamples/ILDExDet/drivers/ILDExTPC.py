@@ -2,38 +2,29 @@ from ROOT import DD4hep
 
 #-------------------------------------------------------------------------------------      
 def detector_ILDExTPC(lcdd, det):
-  name     = det.get('name')
-  mat      = lcdd.material(det.find('material').get('name'))
   tube     = det.find('tubs')
-  tpc      = DD4hep.ILDExTPC(lcdd, det.get('name'), det.get('type'), det.getI('id'))
-  tpc_tube = Tube(lcdd,name+'_envelope', tube.getF('rmin'), tube.getF('rmax'), tube.getF('zhalf')) 
-  tpc_vol  = Volume(lcdd, name+'_envelope_volume', tpc_tube, mat)
-  lcdd.add(tpc_tube).add(tpc_vol);
-  tpc.setEnvelope(tpc_tube).setVolume(tpc_vol)
+  material = det.find('material')
+  tpc_de   = DD4hep.ILDExTPC(lcdd, det.name, det.type, det.id)
+  tpc_tube = Tube(lcdd, det.name+'_tube', tube.rmin, tube.rmax, tube.zhalf) 
+  tpc_vol  = Volume(lcdd, det.name+'_envelope', tpc_tube, lcdd.material(material.name))
   
-  for px_det in det.findall('detector'):
-    px_tube = px_det.find('tubs')
-    px_pos  = px_det.find('position')
-    px_rot  = px_det.find('rotation')
-    part_name = px_det.get('name')
-    part_mat  = lcdd.material(px_det.find('material').get('name'))
-    part_det  = DetElement(lcdd,part_name,px_det.get('type'),px_det.getI('id'))
-    part_tube = Tube(lcdd,part_name+'_tube',px_tube.getF('rmin'),px_tube.getF('rmax'),px_tube.getF('zhalf'))
-    part_pos  = Position(lcdd,part_name+'_position',px_pos.getF('x'),px_pos.getF('y'),px_pos.getF('z'))
-    part_rot  = Rotation(lcdd,part_name+'_rotation',px_pos.getF('x'),px_pos.getF('y'),px_pos.getF('z'))
-    part_vol  = Volume(lcdd,part_name,part_tube,part_mat)
+  for px in det.findall('detector'):
+    px_tube = px.find('tubs')
+    px_pos  = px.find('position')
+    px_rot  = px.find('rotation')
+    px_mat  = px.find('material')
+    part_det  = DetElement(lcdd, px.name, px.type, px.id)
+    part_tube = Tube(lcdd,px.name+'_tube',px_tube.rmin, px_tube.rmax, px_tube.zhalf)
+    part_vol  = Volume(lcdd, px.name, part_tube, lcdd.material(px_mat.name))
+    print 'Vis for %s ' %det.name, px.vis
+    part_vol.setVisAttributes(lcdd.visAttributes(px.vis))
+    tpc_vol.placeVolume(part_vol, getPosition(px_pos), getRotation(px_rot))    
     
-    part_det.setVolume(part_vol).setEnvelope(part_tube)
-    part_det.setVisAttributes(lcdd,px_det.get('vis'), part_vol)
-    lcdd.add(part_tube).add(part_pos).add(part_rot).add(part_vol)
-    
-    tpc_vol.addPhysVol(part_vol,part_pos,part_rot)
-    
-    if   part_det.id() == 0 : tpc.setInnerWall(part_det)
-    elif part_det.id() == 1 : tpc.setOuterWall(part_det)
-    elif part_det.id() == 2 : tpc.setGasVolume(part_det)
-    tpc.add(part_det)
-    
-  tpc.setVisAttributes(lcdd, det.get('vis'), tpc_vol)
-  lcdd.pickMotherVolume(tpc).addPhysVol(tpc_vol,lcdd.identity())
-  return tpc
+    if   px.id == 0 : tpc_de.setInnerWall(part_det)
+    elif px.id == 1 : tpc_de.setOuterWall(part_det)
+    elif px.id == 5 : tpc_de.setGasVolume(part_det)
+    tpc_de.add(part_det)
+  print 'vis = ', det.vis  
+  tpc_vol.setVisAttributes(lcdd.visAttributes(det.vis))
+  lcdd.pickMotherVolume(tpc_de).placeVolume(tpc_vol)
+  return tpc_de

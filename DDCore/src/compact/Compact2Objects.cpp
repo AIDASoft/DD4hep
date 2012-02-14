@@ -7,9 +7,10 @@
 //
 //====================================================================
 
-#include "DetFactoryHelper.h"
+#include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/IDDescriptor.h"
 #include "XML/DocumentHandler.h"
+#include "xercesc/util/XMLURL.hpp"
 
 #include "Conversions.h"
 #include "TGeoManager.h"
@@ -34,24 +35,24 @@ namespace DD4hep { namespace Geometry {
   struct Includes;
   struct GdmlFile;
   typedef DD4hep::IDDescriptor IDDescriptor;
-
+  
   template <typename T> Handle<> toObject(LCDD& lcdd, const XML::Handle_t& xml);
-
+  
   template <> Ref_t toRefObject<Constant>(lcdd_t& lcdd, const xml_h& e)  {
     xml_ref_t    constant(e);
     TNamed*      obj = new TNamed(constant.attr<string>(_A(name)).c_str(),
-				  constant.attr<string>(_A(value)).c_str()); 
+                                  constant.attr<string>(_A(value)).c_str()); 
     Ref_t        cons(obj);
     _toDictionary(obj->GetName(),obj->GetTitle());
     lcdd.addConstant(cons);
     return cons;
   }
-
+  
   template <> Ref_t toRefObject<Atom>(lcdd_t& /* lcdd */, const xml_h& e)  {
     /* <element Z="29" formula="Cu" name="Cu" >
-       <atom type="A" unit="g/mol" value="63.5456" />
-       </element>
-    */
+     <atom type="A" unit="g/mol" value="63.5456" />
+     </element>
+     */
     xml_ref_t    elem(e);
     TGeoManager* mgr      = gGeoManager;
     XML::Tag_t   eltname  = elem.name();
@@ -60,26 +61,26 @@ namespace DD4hep { namespace Geometry {
     if ( !element )  {
       xml_ref_t atom(elem.child(_X(atom)));
       tab->AddElement(elem.attr<string>(_A(name)).c_str(),
-		      elem.attr<string>(_A(formula)).c_str(),
-		      elem.attr<int>(_A(Z)),
-		      atom.attr<int>(_A(value))
-		      );
+                      elem.attr<string>(_A(formula)).c_str(),
+                      elem.attr<int>(_A(Z)),
+                      atom.attr<int>(_A(value))
+                      );
       element = tab->FindElement(eltname.c_str());
     }
     return Ref_t(element);
   }
-
+  
   template <> Ref_t toRefObject<Material>(lcdd_t& /* lcdd */, const xml_h& e)  {
     /*  <material name="Air">
-	<D type="density" unit="g/cm3" value="0.0012"/>
-	<fraction n="0.754" ref="N"/>
-	<fraction n="0.234" ref="O"/>
-	<fraction n="0.012" ref="Ar"/>
-	</material>
-	<element Z="29" formula="Cu" name="Cu" >
-	<atom type="A" unit="g/mol" value="63.5456" />
-	</element>
-    */
+     <D type="density" unit="g/cm3" value="0.0012"/>
+     <fraction n="0.754" ref="N"/>
+     <fraction n="0.234" ref="O"/>
+     <fraction n="0.012" ref="Ar"/>
+     </material>
+     <element Z="29" formula="Cu" name="Cu" >
+     <atom type="A" unit="g/mol" value="63.5456" />
+     </element>
+     */
     xml_ref_t      m(e);
     TGeoManager*   mgr      = gGeoManager;
     XML::Tag_t     mname    = m.name();
@@ -96,20 +97,20 @@ namespace DD4hep { namespace Geometry {
     }
     if ( mix )  {
       for(Int_t i=0, n=mix->GetNelements(); i<n; ++i)
-	elts.insert(mix->GetElement(i)->GetName());
+        elts.insert(mix->GetElement(i)->GetName());
     }
     for(; composites; ++composites)  {
       std::string nam = composites.attr<string>(_X(ref));
       TGeoElement*   element;
       if ( elts.find(nam) == elts.end() )  {
-	double fraction = composites.attr<double>(_X(n));
-	if ( 0 != (element=table->FindElement(nam.c_str())) )
-	  mix->AddElement(element,fraction);
-	else if ( 0 != (mat=mgr->GetMaterial(nam.c_str())) )
-	  mix->AddElement(mat,fraction);
-	else  {
-	  throw runtime_error("Something going very wrong. Undefined material:"+nam);
-	}
+        double fraction = composites.attr<double>(_X(n));
+        if ( 0 != (element=table->FindElement(nam.c_str())) )
+          mix->AddElement(element,fraction);
+        else if ( 0 != (mat=mgr->GetMaterial(nam.c_str())) )
+          mix->AddElement(mat,fraction);
+        else  {
+          throw runtime_error("Something going very wrong. Undefined material:"+nam);
+        }
       }
     }
     TGeoMedium* medium = mgr->GetMedium(matname);
@@ -121,7 +122,7 @@ namespace DD4hep { namespace Geometry {
     }
     return Ref_t(medium);
   }
-
+  
   template <> Ref_t toRefObject<IDDescriptor>(lcdd_t& /* lcdd */, const xml_h& e)  {
     /*     <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>   */
     Value<TNamed,IDDescriptor>* id = new Value<TNamed,IDDescriptor>();
@@ -130,7 +131,7 @@ namespace DD4hep { namespace Geometry {
     id->SetTitle(dsc.c_str());
     return Ref_t(id);
   }
-
+  
   template <> Ref_t toRefObject<Limit>(lcdd_t& lcdd, const xml_h& e)  {
     /*     <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
      */
@@ -140,7 +141,7 @@ namespace DD4hep { namespace Geometry {
     limit.setUnit(e.attr<string>(_A(unit)));
     return limit;
   }
-
+  
   template <> Ref_t toRefObject<LimitSet>(lcdd_t& lcdd, const xml_h& e)  {
     /*      <limitset name="...."> ... </limitset>
      */
@@ -149,7 +150,7 @@ namespace DD4hep { namespace Geometry {
       ls.addLimit(toRefObject<Limit>(lcdd,c));
     return ls;
   }
-
+  
   /// Convert compact visualization attribute to LCDD visualization attribute
   template <> Ref_t toRefObject<VisAttr>(lcdd_t& lcdd, const xml_h& e)  {
     /*    <vis name="SiVertexBarrelModuleVis" alpha="1.0" r="1.0" g="0.75" b="0.76" drawingStyle="wireframe" showDaughters="false" visible="true"/>
@@ -179,7 +180,7 @@ namespace DD4hep { namespace Geometry {
     if ( e.hasAttr(_A(showDaughters)) ) attr.setShowDaughters(e.attr<bool>(_A(showDaughters)));
     return attr;
   }
-
+  
   template <> Elt_t toObject<GridXYZ>(lcdd_t& lcdd, const xml_h& e)  {
     GridXYZ obj(lcdd);
     if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_A(gridSizeX)));
@@ -193,35 +194,35 @@ namespace DD4hep { namespace Geometry {
     if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_A(gridSizeY)));
     return obj;
   }
-
+  
   template <> Elt_t toObject<CartesianGridXY>(lcdd_t& lcdd, const xml_h& e)  {
     CartesianGridXY obj(lcdd);
     if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<double>(_A(gridSizeX)));
     if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<double>(_A(gridSizeY)));
     return obj;
   }
-
+  
   template <> Elt_t toObject<ProjectiveCylinder>(lcdd_t& lcdd, const xml_h& e)  {
     ProjectiveCylinder obj(lcdd);
     if ( e.hasAttr(_A(phiBins))   ) obj.setPhiBins(e.attr<int>(_A(phiBins)));
     if ( e.hasAttr(_A(thetaBins)) ) obj.setThetaBins(e.attr<int>(_A(thetaBins)));
     return obj;
   }
-
+  
   template <> Elt_t toObject<NonProjectiveCylinder>(lcdd_t& lcdd, const xml_h& e)  {
     NonProjectiveCylinder obj(lcdd);
     if ( e.hasAttr(_A(gridSizePhi)) ) obj.setThetaBinSize(e.attr<double>(_A(gridSizePhi)));
     if ( e.hasAttr(_A(gridSizeZ))   ) obj.setPhiBinSize(e.attr<double>(_A(gridSizeZ)));
     return obj;
   }
-
+  
   template <> Elt_t toObject<ProjectiveZPlane>(lcdd_t& lcdd, const xml_h& e)  {
     ProjectiveZPlane obj(lcdd);
     if ( e.hasAttr(_A(phiBins))   ) obj.setThetaBins(e.attr<int>(_A(phiBins)));
     if ( e.hasAttr(_A(thetaBins)) ) obj.setPhiBins(e.attr<int>(_A(thetaBins)));
     return obj;
   }
-
+  
   template <> Elt_t toObject<Segmentation>(lcdd_t& lcdd, const xml_h& e)  {
     string seg_typ = e.attr<string>(_A(type));
     if ( seg_typ == "GridXYZ" )
@@ -244,13 +245,13 @@ namespace DD4hep { namespace Geometry {
       cout << "Request to create UNKNOWN segmentation of type:" << seg_typ << endl;
     return Elt_t(0);
   }
-
+  
   template <> Ref_t toRefObject<Readout>(lcdd_t& lcdd, const xml_h& e)  {
     /* <readout name="HcalBarrelHits">
-       <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-       <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-       </readout>
-    */
+     <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+     <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+     </readout>
+     */
     xml_h   id, seg;
     string  name = e.attr<string>(_A(name));
     Readout ro(lcdd,name);
@@ -266,26 +267,26 @@ namespace DD4hep { namespace Geometry {
     }
     return ro;
   }
-
+  
   namespace  {
     template <typename T> static Ref_t toRefObject(LCDD& lcdd, const xml_h& xml, SensitiveDetector& sens) 
     {  return toRefObject<T>(lcdd,xml,sens); }
   }
-
+  
   template <> Ref_t toRefObject<SensitiveDetector>(lcdd_t& lcdd, const xml_h& e)  {
     string    nam = e.attr<string>(_A(name));
     string    typ = e.attr<string>(_A(type));
-
+    
     if      ( e.hasAttr("calorimeterType") ) typ = "calorimeter";
     else if ( typ.find("Tracker") != string::npos ) typ = "tracker";
     else if ( nam.find("Tracker") != string::npos ) typ = "tracker";
-
+    
     if ( e.hasAttr(_A(readout)) )  {
       Readout            ro = lcdd.readout(e.attr<string>(_A(readout)));
       Segmentation      seg = ro.segmentation();
       SensitiveDetector  sd = SensitiveDetector(lcdd,typ,nam);
       if ( seg.isValid() )  {
-	sd.setSegmentation(seg);
+        sd.setSegmentation(seg);
       }
       sd.setHitsCollection(ro.name());
       sd.setIDSpec(ro.idSpec());
@@ -294,12 +295,12 @@ namespace DD4hep { namespace Geometry {
     }
     return SensitiveDetector();
   }
-
+  
   template <> Ref_t toRefObject<Region>(lcdd_t& /* lcdd */, const xml_h& e)  {
     xml_ref_t compact(e);
     return Ref_t(0);
   }
-
+  
   template <> void Converter<Constant>::operator()(const xml_h& element)  const  {
     lcdd.addConstant(toRefObject<to_type>(lcdd,element));
   }
@@ -338,13 +339,13 @@ namespace DD4hep { namespace Geometry {
     try {
       SensitiveDetector  sd = toRefObject<SensitiveDetector>(lcdd,element);
       DetElement det(Handle<TNamed>(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sd)));
-
+      
       if ( det.isValid() && element.hasAttr(_A(readout)) )  {
-	string rdo = element.attr<string>(_A(readout));
-	det.setReadout(lcdd.readout(rdo));
+        string rdo = element.attr<string>(_A(readout));
+        det.setReadout(lcdd.readout(rdo));
       }
       cout << (det.isValid() ? "Converted" : "FAILED    ")
-	   << " subdetector:" << name << " of type " << type << endl;
+      << " subdetector:" << name << " of type " << type << endl;
       lcdd.addDetector(det);
     }
     catch(const exception& e) {
@@ -361,8 +362,9 @@ namespace DD4hep { namespace Geometry {
   }
   
   template <> void Converter<GdmlFile>::operator()(const xml_h& element)  const  {
-    string fname = element.attr<string>(_A(ref));
-    xml_h materials = XML::DocumentHandler().load(fname).root();
+    xercesc::XMLURL base(element.ptr()->getBaseURI());
+    xercesc::XMLURL ref(base, element.attr_value(_A(ref)));
+    xml_h materials = XML::DocumentHandler().load(_toString(ref.getURLText())).root();
     Converter<Materials>(this->lcdd)(materials);
   }
   
@@ -374,7 +376,7 @@ namespace DD4hep { namespace Geometry {
     xml_coll_t(compact,_X(define)   ).for_each(_X(constant),Converter<Constant>(lcdd));
     xml_coll_t(compact,_X(materials)).for_each(_X(element), Converter<Atom>(lcdd));
     xml_coll_t(compact,_X(materials)).for_each(_X(material),Converter<Material>(lcdd));
-
+    
     lcdd.init();
     xml_coll_t(compact,_X(limits)   ).for_each(_X(limitset),Converter<LimitSet>(lcdd));
     xml_coll_t(compact,_X(display)  ).for_each(_X(vis),     Converter<VisAttr>(lcdd));

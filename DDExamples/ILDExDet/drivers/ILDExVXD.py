@@ -1,52 +1,36 @@
 #-------------------------------------------------------------------------------------      
 def detector_ILDExVXD(lcdd, det):
-  name   = det.get('name')
-  vdx    = DetElement(lcdd, det.get('name'), det.get('type'), det.getI('id'))
-  
-  mother = lcdd.pickMotherVolume(vdx);
+  vdx = DetElement(lcdd, det.name, det.type, det.id)
+  mother = lcdd.trackingVolume()
   for layer in det.findall('layer'):
     support = layer.find('support')
-    ladder = layer.find('ladder')
-    layername = name + '_layer%d' % layer.getI('id')
+    ladder  = layer.find('ladder')
+    layername = det.name + '_layer%d' % layer.id
     nLadders = ladder.getI('number')
     dphi   = 2.*pi/nLadders
-    zhalf  = ladder.getF('zhalf')
-    offset = ladder.getF('offset')
-    sens_radius = ladder.getF('radius')
-    sens_thick  = ladder.getF('thickness')
-    supp_thick  = support.getF('thickness')
-    supp_radius = sens_radius + sens_thick/2. + supp_thick/2.
-    width       = 2.*tan(dphi/2.)*(sens_radius-sens_thick/2.)
-    sens_mat    = lcdd.material(ladder.get('material'))
-    supp_mat    = lcdd.material(support.get('material'))
-    ladderbox = Box(lcdd, layername+'_ladder_solid',  (sens_thick+supp_thick)/2.,width/2.,zhalf)
-    laddervol = Volume(lcdd, layername+'_ladder_volume', ladderbox, sens_mat)
-    sensbox   = Box(lcdd, layername+'_sens_solid', sens_thick/2.,width/2.,zhalf)
-    sensvol   = Volume(lcdd, layername+'_sens_volume', sensbox, sens_mat)
-    senspos   = Position(lcdd,layername+'_sens_position',-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0)
-    suppbox   = Box(lcdd, layername+'_supp_solid', supp_thick/2.,width/2.,zhalf)
-    suppvol   = Volume(lcdd,layername+'_supp_volume', suppbox,supp_mat)
-    supppos   = Position(lcdd,layername+'_supp_position',-(sens_thick+supp_thick)/2.+sens_thick/2.+supp_thick/2.,0,0)
+    sens_thick  = ladder.thickness
+    supp_thick  = support.thickness
+    supp_radius = ladder.radius + sens_thick/2. + supp_thick/2.
+    width       = 2.*tan(dphi/2.)*(ladder.radius-sens_thick/2.)
     
-    lcdd.add(ladderbox).add(sensbox).add(senspos).add(suppbox).add(supppos)
-    lcdd.add(laddervol).add(sensvol).add(suppvol)
+    ladderbox = Box(lcdd, layername+'_ladder_box',  (sens_thick+supp_thick)/2., width/2., ladder.zhalf)
+    laddervol = Volume(lcdd, layername+'_ladder', ladderbox, lcdd.material('Air'))
     
-    laddervol.setVisAttributes(lcdd.visAttributes(layer.get('vis')))
-    suppvol.setVisAttributes(lcdd.visAttributes(layer.get('vis')))
-    sensvol.setVisAttributes(lcdd.visAttributes(support.get('vis')))
+    sensbox   = Box(lcdd, layername+'_sens_box', sens_thick/2., width/2., ladder.zhalf)
+    sensvol   = Volume(lcdd, layername+'_sens', sensbox, lcdd.material(ladder.material))
+    sensvol.setVisAttributes(lcdd.visAttributes(layer.vis))
+    laddervol.placeVolume(sensvol, Position(-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0))
     
-    laddervol.addPhysVol(sensvol,senspos)
-    laddervol.addPhysVol(suppvol,supppos)
+    suppbox   = Box(lcdd, layername+'_supp_box', supp_thick/2.,width/2.,ladder.zhalf)
+    suppvol   = Volume(lcdd,layername+'_supp', suppbox, lcdd.material(support.material))
+    suppvol.setVisAttributes(lcdd.visAttributes(support.vis))
+    laddervol.placeVolume(suppvol, Position(-(sens_thick+supp_thick)/2.+sens_thick/2.+supp_thick/2.,0,0))
     
     for j in range(nLadders):
       laddername = layername + '_ladder%d' % j
-      radius = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.)
-      rot = Rotation(lcdd,laddername+'_rotation',0,0,j*dphi)
-      pos = Position(lcdd,laddername+'_position',
-                     radius*cos(j*dphi) - offset*sin(j*dphi),
-                     radius*sin(j*dphi) - offset*cos(j*dphi),0.)
-      lcdd.add(rot).add(pos)
-      mother.addPhysVol(laddervol,pos,rot)
-  
-  vdx.setVisAttributes(lcdd, det.get('vis'), laddervol);
+      radius = ladder.radius + ((sens_thick+supp_thick)/2. - sens_thick/2.)
+      rot = Rotation(0,0,j*dphi)
+      pos = Position(radius*cos(j*dphi) - ladder.offset*sin(j*dphi),
+                     radius*sin(j*dphi) - ladder.offset*cos(j*dphi),0.)
+      mother.placeVolume(laddervol, pos, rot)
   return vdx 

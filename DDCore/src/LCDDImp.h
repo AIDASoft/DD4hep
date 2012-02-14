@@ -21,28 +21,28 @@ class TGeoManager;
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
-
+  
   /*
    *   XML namespace declaration
    */
   namespace Geometry  {
-
+    
     struct Materials {};
-
+    
     class LCDDImp : public LCDD  {
     public:
       struct InvalidObjectError : public std::runtime_error {
         InvalidObjectError(const std::string& msg) : std::runtime_error(msg) {}
       };
-
+      
       struct ObjectHandleMap : public HandleMap  {
         ObjectHandleMap() {}
         void append_noCheck(const Ref_t& e) { 
           if ( e.isValid() )  {
             std::string n = e.name();
-	    if ( this->find(n) != this->end() ) {
-	      throw InvalidObjectError("Object "+n+" is already present in map!");
-	    }
+            if ( this->find(n) != this->end() ) {
+              throw InvalidObjectError("Object "+n+" is already present in map!");
+            }
             this->insert(std::make_pair(n,e.ptr()));
           }
         }
@@ -63,7 +63,7 @@ namespace DD4hep {
           throw InvalidObjectError("Attempt to add an object, which is of the wrong type.");
         }
       };
-
+      
       ObjectHandleMap     m_readouts;
       ObjectHandleMap     m_header;
       ObjectHandleMap     m_idDict;
@@ -73,44 +73,44 @@ namespace DD4hep {
       ObjectHandleMap     m_sensitive;
       ObjectHandleMap     m_display;
       ObjectHandleMap     m_fields;
-
+      
       // GDML fields
       ObjectHandleMap     m_gdml;
       ObjectHandleMap     m_define;
       ObjectHandleMap     m_structure;
       ObjectHandleMap     m_materials;
       ObjectHandleMap     m_solids;
-
-
+      
+      
       Volume              m_worldVol;
       Volume              m_trackingVol;
-
+      
       Material            m_materialAir;
       Material            m_materialVacuum;
-
+      
       Ref_t          m_setup;
-
+      
       void convertMaterials(const std::string& uri);
       //void convertMaterials(XML::Handle_t doc_element);
-
+      
       LCDDImp();
       //void fromCompact(XML::Handle_t doc_element);
       virtual void fromCompact(const std::string& fname);
-
+      
       virtual void create();
       virtual void init();
       virtual void addStdMaterials();
       virtual void endDocument();
-
+      
       void dump() const;
-
+      
       virtual Handle<TObject>  getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not=true)  const;
       virtual Volume         pickMotherVolume(const DetElement& sd) const;
       virtual Volume         worldVolume() const      { return m_worldVol;          }
       virtual Volume         trackingVolume() const   { return m_trackingVol;       }
       virtual Material       air() const              { return m_materialVacuum;    }
       virtual Material       vacuum() const           { return m_materialAir;       }
-
+      
       virtual LimitSet limitSet(const std::string& name)  const
       {  return getRefChild(m_limits,name);                                         }  
       virtual VisAttr     visAttributes(const std::string& name) const
@@ -131,7 +131,7 @@ namespace DD4hep {
       {  return getRefChild(m_readouts,name);                                       }
       virtual DetElement detector(const std::string& name)  const
       {  return getRefChild(m_detectors,name);                                      }
-
+      
       virtual const HandleMap& header()  const        { return m_header;            }
       virtual const HandleMap& constants() const      { return m_define;            }
       virtual const HandleMap& visAttributes() const  { return m_display;           }
@@ -142,7 +142,7 @@ namespace DD4hep {
       virtual const HandleMap& materials()  const     { return m_materials;         }
       virtual const HandleMap& readouts() const       { return m_readouts;          }
       virtual const HandleMap& detectors()  const     { return m_detectors;         }
-
+      
       virtual LCDD& add(const Constant& x)            { return addConstant(x);      }
       virtual LCDD& add(const Solid& x)               { return addSolid(x);         }
       virtual LCDD& add(const Volume& x)              { return addVolume(x);        }
@@ -152,12 +152,12 @@ namespace DD4hep {
       virtual LCDD& add(const VisAttr& x)             { return addVisAttribute(x);  }
       virtual LCDD& add(const Readout& x)             { return addReadout(x);       }
       virtual LCDD& add(const DetElement& x)          { return addDetector(x);      }
-
+      
 #define __R  return *this
       // These are manager by the TGeoManager
       virtual LCDD& addSolid(const Ref_t& x);       //  { m_solids.append(x);     __R;}
       virtual LCDD& addVolume(const Ref_t& x);      //  { m_structure.append(x);  __R;}
-
+      
       // These not:
       virtual LCDD& addConstant(const Ref_t& x)         { m_define.append(x);     __R;}
       virtual LCDD& addMaterial(const Ref_t& x)         { m_materials.append(x);  __R;}
@@ -169,7 +169,7 @@ namespace DD4hep {
       virtual LCDD& addSensitiveDetector(const Ref_t& x){ m_sensitive.append(x);  __R;}
       virtual LCDD& addDetector(const Ref_t& x)         { m_detectors.append_noCheck(x);  __R;}
 #undef __R
-
+      
     };
   }
 }         /* End namespace DD4hep   */

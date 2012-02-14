@@ -7,7 +7,7 @@
 //
 //====================================================================
 
-#include "DetFactoryHelper.h"
+#include "DD4hep/DetFactoryHelper.h"
 #include "CompactDetectors.h"
 
 using namespace std;

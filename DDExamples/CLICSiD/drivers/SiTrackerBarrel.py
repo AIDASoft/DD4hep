@@ -1,9 +1,3 @@
-def getRotation(rot):
-  return Rotation(rot.getF('x',0.0),rot.getF('y',0.0), rot.getF('z',0.0))
-
-def getPosition(pos):
-  return Position(pos.getF('x',0.0),pos.getF('y',0.0), pos.getF('z',0.0))
-
 def detector_SiTrackerBarrel(lcdd, det):
   sdet    = DetElement(lcdd, det.name, det.type, det.id)
   mother  = lcdd.trackingVolume()
