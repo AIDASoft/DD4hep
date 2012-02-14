@@ -10,7 +10,7 @@
 #ifndef DD4hep_LCDDGEOIMP_H
 #define DD4hep_LCDDGEOIMP_H
 #include "DD4hep/LCDD.h"
-#include "XML/XMLElements.h"
+//#include "XML/XMLElements.h"
 
 class TGeoManager;
 
@@ -91,7 +91,7 @@ namespace DD4hep {
       Ref_t          m_setup;
 
       void convertMaterials(const std::string& uri);
-      void convertMaterials(XML::Handle_t doc_element);
+      //void convertMaterials(XML::Handle_t doc_element);
 
       LCDDImp();
       //void fromCompact(XML::Handle_t doc_element);
