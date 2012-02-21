@@ -18,6 +18,8 @@ namespace DD4hep {
     Ref_t innerWall;
     Ref_t gas;
     double pressure;
+    int nmodules;
+    double driftlength;
   };
   
   struct ILDExTPC : public Geometry::DetElement {
@@ -28,7 +30,11 @@ namespace DD4hep {
     void setInnerWall(Ref_t obj);
     void setOuterWall(Ref_t obj);
     void setGasVolume(Ref_t obj);
+    void setNModules(int);
     double getVolume() const;
     double getWeight() const;
+    int getNModules() const;
+    double getDriftLength() const;
+    void setDriftLength(double);
   };
 }

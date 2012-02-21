@@ -26,6 +26,9 @@ int main(int argc,char** argv)  {
 
   cout << "-----> Gear: Inner:" << tpc.innerRadius() << " Outer:" << tpc.outerRadius() << endl;
   cout << "-----> Gear: Press:" << tpc.pressure() << endl;
+  //cout << "-----> Gear: NModukes:" << tpc.getNModules() << endl;
+  //cout << "-----> Gear: DriftLength:" << tpc.getDriftLength() << endl;
+  
   
   return 0;
 }

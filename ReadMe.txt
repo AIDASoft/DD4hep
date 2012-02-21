@@ -56,16 +56,21 @@ To build and run the simulation examples Geant4 will be required.
 svn co https://svnsrv.desy.de/basic/aidasoft/DD4hep/trunk DD4hep
 
 - Configure (for PyROOT)
-mkdir build
+
+mkdir build; cd build
 cmake ../DD4hep
+make -j4
 
 - Configure (for XercesC)
+
 cmake -DDD4HEP_USE_XERCESC=ON -DDD4HEP_USE_PYROOT=OFF -DXERCESC_ROOT_DIR=<xercesc> ../DD4hep
 
 - Run ILDEx display
+
 DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
 
 - Run CLICSiD display
+
 DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml
 
 

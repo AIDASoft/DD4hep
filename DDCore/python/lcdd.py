@@ -49,6 +49,8 @@ xml._ElementInterface.getB = _getBool
 xml._ElementInterface.name = property(lambda self: self.get('name'))
 xml._ElementInterface.type = property(lambda self: self.get('type'))
 xml._ElementInterface.vis  = property(lambda self: self.get('vis'))
+xml._ElementInterface.ref  = property(lambda self: self.get('ref'))
+xml._ElementInterface.value  = property(lambda self: self.getF('value'))
 xml._ElementInterface.material = property(lambda self: self.get('material'))
 xml._ElementInterface.module = property(lambda self: self.get('module'))
 xml._ElementInterface.id   = property(lambda self: self.getI('id'))
@@ -164,32 +166,52 @@ def process_materials(lcdd, elem):
     process_material(lcdd, m)
 
 #---------------------------------------------------------------------------------
+# <material formula="Ac" name="Actinium" state="solid" >
+#  <RL type="X0" unit="cm" value="0.601558" />
+#  <NIL type="lambda" unit="cm" value="21.2048" />
+#  <D type="density" unit="g/cm3" value="10.07" />
+#  <composite n="1" ref="Ac" />
+#</material>
+#<material name="G10">
+#  <D type="density" value="1.7" unit="g/cm3"/>
+#  <fraction n="0.08" ref="Cl"/>
+#  <fraction n="0.773" ref="Quartz"/>
+#  <fraction n="0.147" ref="Epoxy"/>
+#</material>
+
+
 def process_material(lcdd, m):
-  #print 'Adding material ...', m.get('name')
-  matname = m.get('name')
+  print 'Adding material ...', m.get('name')
   density = m.find('D')
-  composites = m.findall('fraction')
+  radlen  = m.find('RL')
+  intlen  = m.find('NIL')
+  composites = m.findall('fraction') or m.findall('composite')
   table = gGeoManager.GetElementTable()
-  mat = gGeoManager.GetMaterial(matname)
+  mat = gGeoManager.GetMaterial(m.name)
   if not mat:
-    mat = TGeoMixture(matname, len(composites), density.getF('value'))
+    mat = TGeoMixture(m.name, len(composites), eval(density.get('value')+'*'+density.get('unit')+'/(g/cm3)',constants))
     SetOwnership( mat, False )
+  rl = (radlen is not None) and eval(radlen.get('value')+'*'+radlen.get('unit'),constants) or 0.0
+  il = (intlen is not None) and eval(intlen.get('value')+'*'+intlen.get('unit'),constants) or 0.0
+  #mat.SetRadLen(-rl, -il)
+  mat.Print()
   elts = [mat.GetElement(i).GetName() for i in range(mat.GetNelements())]
   for c in composites:
-    nam = c.get('ref')
+    nam = c.ref
     if nam not in elts:
-      fraction = c.getF('n')
+      if c.tag == 'composite' : fraction = c.getI('n')
+      elif c.tag == 'fraction' : fraction = c.getF('n')
       if table.FindElement(nam):
         mat.AddElement(table.FindElement(nam), fraction)
       elif gGeoManager.GetMaterial(nam):
         mat.AddElement(gGeoManager.GetMaterial(nam), fraction)
       else:
         raise 'Something going very wrong. Undefined material:' + nam
-  medium = gGeoManager.GetMedium(matname)
+  medium = gGeoManager.GetMedium(m.name)
   if not medium:
     global unique_mat_id
     unique_mat_id = unique_mat_id - 1
-    medium = TGeoMedium(matname, unique_mat_id, mat)
+    medium = TGeoMedium(m.name, unique_mat_id, mat)
     SetOwnership(medium, False)
     medium.SetTitle('material')
     medium.SetUniqueID(unique_mat_id)

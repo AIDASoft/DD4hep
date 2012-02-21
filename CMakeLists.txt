@@ -21,6 +21,10 @@ add_subdirectory(DDExamples/CLICSiD)
 add_subdirectory(DDExamples/ILDExDisplay)
 add_subdirectory(DDExamples/ILDExReco)
 
+add_subdirectory(VGM/packages)
+add_subdirectory(DDExamples/ILDExSimu)
+
+
 #---Configuration-------------------------------------------------------------------
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
 configure_file(cmake/thisdd4hep.sh thisdd4hep.sh @ONLY)

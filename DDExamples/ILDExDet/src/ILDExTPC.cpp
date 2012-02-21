@@ -33,5 +33,18 @@ namespace DD4hep {
   void ILDExTPC::setGasVolume(Ref_t obj) {
     data<Object>()->gas = obj;
   }
+
+  void ILDExTPC::setNModules(int n) {
+    data<Object>()->nmodules = n;
+  }
+  int ILDExTPC::getNModules() const {
+    return data<Object>()->nmodules;
+  }
+  void ILDExTPC::setDriftLength(double d) {
+    data<Object>()->driftlength = d;
+  }
+  double ILDExTPC::getDriftLength() const {
+    return data<Object>()->driftlength;
+  }
   
 }
