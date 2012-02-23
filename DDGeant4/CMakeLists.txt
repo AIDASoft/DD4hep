@@ -10,7 +10,7 @@ ExternalProject_Add(
 	  INSTALL_DIR ${CMAKE_BINARY_DIR}
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DVGM_WITH_XmlVGM:BOOL=OFF -DGeant4_DIR=${Geant4_DIR})
 
-set(VGM_LIBRARIES -L${CMAKE_BINARY_DIR}/lib -lRootGM -lGeant4GM -lBaseVGM)
+set(VGM_LIBRARIES -L${CMAKE_BINARY_DIR}/lib -lRootGM -lGeant4GM -lBaseVGM -lClhepVGM)
 set(VGM_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
 
 #---Find Geant4-------------------------------------------------------------------

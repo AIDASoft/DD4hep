@@ -230,7 +230,7 @@ Index: packages/BaseVGM/CMakeLists.txt
 +
 +#---Add library---------------------------------------------------------------------
 +file(GLOB sources source/*/*.cxx)
-+add_library(BaseVGM SHARED ${sources})
++add_library(BaseVGM ${sources})
 +
 +#----Installation-----------------------------------------------------------------
 +install(DIRECTORY include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
@@ -244,7 +244,7 @@ Index: packages/ClhepVGM/CMakeLists.txt
 +
 +#---Add Library-------------------------------------------------------------------
 +file(GLOB sources source/*.cxx)
-+add_library(ClhepVGM SHARED ${sources})
++add_library(ClhepVGM ${sources})
 +target_link_libraries(ClhepVGM ${Geant4_LIBRARIES})
 +
 +#----Installation-----------------------------------------------------------------
@@ -259,7 +259,7 @@ Index: packages/Geant4GM/CMakeLists.txt
 +
 +#---Add library-------------------------------------------------------------------
 +file(GLOB sources source/*/*.cxx)
-+add_library(Geant4GM SHARED ${sources})
++add_library(Geant4GM ${sources})
 +target_link_libraries(Geant4GM BaseVGM ClhepVGM)
 +
 +#----Installation-----------------------------------------------------------------
@@ -274,7 +274,7 @@ Index: packages/RootGM/CMakeLists.txt
 +
 +#---Add library-------------------------------------------------------------------
 +file(GLOB sources source/*/*.cxx)
-+add_library(RootGM SHARED ${sources})
++add_library(RootGM ${sources})
 +target_link_libraries(RootGM BaseVGM ${ROOT_LIBRARIES} Geom)
 +
 +#----Installation-----------------------------------------------------------------
@@ -289,7 +289,7 @@ Index: packages/XmlVGM/CMakeLists.txt
 +
 +#---Add library-------------------------------------------------------------------
 +file(GLOB sources source/*.cxx)
-+add_library(XmlVGM SHARED ${sources})
++add_library(XmlVGM ${sources})
 +target_link_libraries(XmlVGM BaseVGM ClhepVGM ${XERCESC_LIBRARIES} )
 +
 +#----Installation-----------------------------------------------------------------
