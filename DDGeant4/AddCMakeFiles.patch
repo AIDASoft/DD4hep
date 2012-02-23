@@ -1,0 +1,327 @@
+Index: cmake/FindROOT.cmake
+===================================================================
+--- cmake/FindROOT.cmake	(revision 0)
++++ cmake/FindROOT.cmake	(revision 0)
+@@ -0,0 +1,101 @@
++# - Finds ROOT instalation
++# This module sets up ROOT information 
++# It defines:
++# ROOT_FOUND          If the ROOT is found
++# ROOT_INCLUDE_DIR    PATH to the include directory
++# ROOT_LIBRARIES      Most common libraries
++# ROOT_LIBRARY_DIR    PATH to the library directory 
++
++
++find_program(ROOT_CONFIG_EXECUTABLE root-config
++  PATHS $ENV{ROOTSYS}/bin)
++
++if(ROOT_CONFIG_EXECUTABLE)
++  execute_process(
++    COMMAND ${ROOT_CONFIG_EXECUTABLE} --prefix 
++    OUTPUT_VARIABLE ROOTSYS 
++    OUTPUT_STRIP_TRAILING_WHITESPACE)
++
++  execute_process(
++    COMMAND ${ROOT_CONFIG_EXECUTABLE} --version 
++    OUTPUT_VARIABLE ROOT_VERSION
++    OUTPUT_STRIP_TRAILING_WHITESPACE)
++
++  execute_process(
++    COMMAND ${ROOT_CONFIG_EXECUTABLE} --incdir
++    OUTPUT_VARIABLE ROOT_INCLUDE_DIR
++    OUTPUT_STRIP_TRAILING_WHITESPACE)
++
++  execute_process(
++    COMMAND ${ROOT_CONFIG_EXECUTABLE} --libs
++    OUTPUT_VARIABLE ROOT_LIBRARIES
++    OUTPUT_STRIP_TRAILING_WHITESPACE)
++
++endif()
++
++#set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lThread -lMinuit -lHtml -lVMC -lEG -lGeom -lTreePlayer -lXMLIO -lProof)
++#set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lProofPlayer -lMLP -lSpectrum -lEve -lRGL -lGed -lXMLParser -lPhysics)
++set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
++set(ROOT_LIBRARIES -L${ROOT_LIBRARY_DIR} Core Cint)
++
++include(FindPackageHandleStandardArgs) 
++find_package_handle_standard_args(ROOT DEFAULT_MSG ROOT_CONFIG_EXECUTABLE)
++
++# Make variables changeble to the advanced user
++mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
++
++if(ROOT_FOUND AND NOT ROOT_FIND_QUIETLY)
++  message(STATUS "Found ROOT ${ROOT_VERSION} in ${ROOTSYS}")
++endif()
++
++
++
++include(CMakeParseArguments)
++find_program(ROOTCINT_EXECUTABLE rootcint PATHS $ENV{ROOTSYS}/bin)
++
++#----------------------------------------------------------------------------
++# function ROOT_GENERATE_DICTIONARY( dictionary   
++#                                    header1 header2 ... 
++#                                    LINKDEF linkdef1 ... 
++#                                    OPTIONS opt1...)
++function(ROOT_GENERATE_DICTIONARY dictionary)
++  CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINKDEF;OPTIONS" "" ${ARGN})
++  #---Get the list of header files-------------------------
++  set(headerfiles)
++  foreach(fp ${ARG_UNPARSED_ARGUMENTS})
++    file(GLOB files ${fp})
++    if(files)
++      foreach(f ${files})
++        if(NOT f MATCHES LinkDef)
++          set(headerfiles ${headerfiles} ${f})
++        endif()
++      endforeach()
++    else()
++      set(headerfiles ${headerfiles} ${fp})
++    endif()
++  endforeach()
++  #---Get the list of include directories------------------
++  get_directory_property(incdirs INCLUDE_DIRECTORIES)
++  set(includedirs) 
++  foreach( d ${incdirs})    
++   set(includedirs ${includedirs} -I${d})
++  endforeach()
++  #---Get LinkDef.h file------------------------------------
++  set(linkdefs)
++  foreach( f ${ARG_LINKDEF})
++    if( IS_ABSOLUTE ${f})
++      set(linkdefs ${linkdefs} ${f})
++    else() 
++      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/inc/${f})
++        set(linkdefs ${linkdefs} ${CMAKE_CURRENT_SOURCE_DIR}/inc/${f})
++      else()
++        set(linkdefs ${linkdefs} ${CMAKE_CURRENT_SOURCE_DIR}/${f})
++      endif()
++    endif()
++  endforeach()
++  #---call rootcint------------------------------------------
++  add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
++                     COMMAND ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx 
++                                          -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
++                     DEPENDS ${headerfiles} ${linkdefs})
++endfunction()
+Index: cmake/FindXercesC.cmake
+===================================================================
+--- cmake/FindXercesC.cmake	(revision 0)
++++ cmake/FindXercesC.cmake	(revision 0)
+@@ -0,0 +1,79 @@
++# - Find Xerces-C
++# This module tries to find the Xerces-C library and headers.
++# Once done this will define
++#
++#   XERCESC_FOUND - system has Xerces-C headers and libraries
++#   XERCESC_INCLUDE_DIRS - the include directories needed for Xerces-C
++#   XERCESC_LIBRARIES - the libraries needed to use Xerces-C
++#
++# Variables used by this module, which can change the default behaviour and
++# need to be set before calling find_package:
++#
++#   XERCESC_ROOT_DIR            Root directory to Xerces-C installation. Will
++#                               be used ahead of CMake default path.
++#
++# The following advanced variables may be used if the module has difficulty
++# locating Xerces-C or you need fine control over what is used.
++#
++#   XERCESC_INCLUDE_DIR
++#
++#   XERCESC_LIBRARY
++#
++# Copyright (c) 2009, Ben Morgan, <Ben.Morgan@warwick.ac.uk>
++#
++# Redistribution and use is allowed according to the terms of the BSD license.
++# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
++
++
++
++# Look for the header - preferentially searching below XERCESC_ROOT_DIR
++find_path(
++    XERCESC_INCLUDE_DIR 
++    NAMES xercesc/util/XercesVersion.hpp
++    PATHS ${XERCESC_ROOT_DIR}
++    PATH_SUFFIXES include
++    NO_DEFAULT_PATH
++)
++
++# If we didn't find it there, fall back to some standard search paths
++find_path(
++    XERCESC_INCLUDE_DIR
++    NAMES xercesc/util/XercesVersion.hpp
++)
++
++# Look for the library, preferentially searching below XERCESC_ROOT_DIR
++find_library(
++    XERCESC_LIBRARY
++    NAMES xerces-c xerces-c_3
++    PATHS ${XERCESC_ROOT_DIR}
++    PATH_SUFFIXES lib64 lib32 lib
++    NO_DEFAULT_PATH
++)
++
++find_library(
++    XERCESC_LIBRARY
++    NAMES xerces-c xerces-c_3
++)
++
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(
++    XercesC
++    DEFAULT_MSG
++    XERCESC_LIBRARY
++    XERCESC_INCLUDE_DIR
++)
++
++if (XERCESC_FOUND)
++    set(XERCESC_LIBRARIES ${XERCESC_LIBRARY})
++    set(XERCESC_INCLUDE_DIRS ${XERCESC_INCLUDE_DIR})
++else (XERCESC_FOUND)
++    set(XERCESC_LIBRARIES)
++    set(XERCESC_INCLUDE_DIRS)
++endif (XERCESC_FOUND)
++
++
++mark_as_advanced(
++    XERCESC_LIBRARY 
++    XERCESC_INCLUDE_DIR
++)
+Index: CMakeLists.txt
+===================================================================
+--- CMakeLists.txt	(revision 0)
++++ CMakeLists.txt	(revision 0)
+@@ -0,0 +1,28 @@
++cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
++
++project(VGM)
++
++#---Options-------------------------------------------------------------------------
++option(VGM_WITH_Geant4GM "Build Geant4GM subpackage" ON)
++option(VGM_WITH_RootGM   "Build RootGM subpackage" ON)
++option(VGM_WITH_XmlVGM   "Build XmlVGM subpackage" ON)
++
++#---CMake Module Path---------------------------------------------------------------
++set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake) 
++
++#---Find required packages----------------------------------------------------------
++if(VGM_WITH_Geant4GM)
++  find_package(Geant4 REQUIRED)
++endif()
++if(VGM_WITH_RootGM)
++  find_package(ROOT REQUIRED)
++endif()
++if(VGM_WITH_XmlVGM)
++  find_package(XercesC REQUIRED)
++endif()
++
++#---Add required packages----------------------------------------------------------
++add_subdirectory(packages)
++
++
++
+Index: packages/BaseVGM/CMakeLists.txt
+===================================================================
+--- packages/BaseVGM/CMakeLists.txt	(revision 0)
++++ packages/BaseVGM/CMakeLists.txt	(revision 0)
+@@ -0,0 +1,9 @@
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
++
++#---Add library---------------------------------------------------------------------
++file(GLOB sources source/*/*.cxx)
++add_library(BaseVGM SHARED ${sources})
++
++#----Installation-----------------------------------------------------------------
++install(DIRECTORY include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
++install(TARGETS BaseVGM DESTINATION lib)
+Index: packages/ClhepVGM/CMakeLists.txt
+===================================================================
+--- packages/ClhepVGM/CMakeLists.txt	(revision 0)
++++ packages/ClhepVGM/CMakeLists.txt	(revision 0)
+@@ -0,0 +1,10 @@
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
++
++#---Add Library-------------------------------------------------------------------
++file(GLOB sources source/*.cxx)
++add_library(ClhepVGM SHARED ${sources})
++target_link_libraries(ClhepVGM ${Geant4_LIBRARIES})
++
++#----Installation-----------------------------------------------------------------
++install(DIRECTORY include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
++install(TARGETS ClhepVGM DESTINATION lib)
+Index: packages/Geant4GM/CMakeLists.txt
+===================================================================
+--- packages/Geant4GM/CMakeLists.txt	(revision 0)
++++ packages/Geant4GM/CMakeLists.txt	(revision 0)
+@@ -0,0 +1,10 @@
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
++
++#---Add library-------------------------------------------------------------------
++file(GLOB sources source/*/*.cxx)
++add_library(Geant4GM SHARED ${sources})
++target_link_libraries(Geant4GM BaseVGM ClhepVGM)
++
++#----Installation-----------------------------------------------------------------
++install(DIRECTORY include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
++install(TARGETS Geant4GM DESTINATION lib)
+Index: packages/RootGM/CMakeLists.txt
+===================================================================
+--- packages/RootGM/CMakeLists.txt	(revision 0)
++++ packages/RootGM/CMakeLists.txt	(revision 0)
+@@ -0,0 +1,10 @@
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
++
++#---Add library-------------------------------------------------------------------
++file(GLOB sources source/*/*.cxx)
++add_library(RootGM SHARED ${sources})
++target_link_libraries(RootGM BaseVGM ${ROOT_LIBRARIES} Geom)
++
++#----Installation-----------------------------------------------------------------
++install(DIRECTORY include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
++install(TARGETS RootGM DESTINATION lib)
+Index: packages/XmlVGM/CMakeLists.txt
+===================================================================
+--- packages/XmlVGM/CMakeLists.txt	(revision 0)
++++ packages/XmlVGM/CMakeLists.txt	(revision 0)
+@@ -0,0 +1,10 @@
++include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
++
++#---Add library-------------------------------------------------------------------
++file(GLOB sources source/*.cxx)
++add_library(XmlVGM SHARED ${sources})
++target_link_libraries(XmlVGM BaseVGM ClhepVGM ${XERCESC_LIBRARIES} )
++
++#----Installation-----------------------------------------------------------------
++install(DIRECTORY include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
++install(TARGETS XmlVGM DESTINATION lib)
+Index: packages/CMakeLists.txt
+===================================================================
+--- packages/CMakeLists.txt	(revision 0)
++++ packages/CMakeLists.txt	(revision 0)
+@@ -0,0 +1,25 @@
++#---Common environment-------------------------------------------------------------
++include_directories( VGM/include 
++                     ClhepVGM/include 
++                     BaseVGM/include 
++                     ${ROOT_INCLUDE_DIR} 
++                     ${Geant4_INCLUDE_DIR}
++                     ${XERCESC_INCLUDE_DIR})
++
++#---Add required packages----------------------------------------------------------
++add_subdirectory(ClhepVGM)
++add_subdirectory(BaseVGM)
++if(VGM_WITH_Geant4GM)
++  add_subdirectory(Geant4GM)
++endif()
++if(VGM_WITH_RootGM)
++  add_subdirectory(RootGM)
++endif()
++if(VGM_WITH_XmlVGM)
++  add_subdirectory(XmlVGM)
++endif()
++
++#----Installation-----------------------------------------------------------------
++install(DIRECTORY VGM/include/ DESTINATION include  PATTERN ".svn" EXCLUDE)
++
++

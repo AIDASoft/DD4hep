@@ -1,7 +1,7 @@
 #-------------------------------------------------------------------------------------      
 def detector_ILDExVXD(lcdd, det):
   vdx = DetElement(lcdd, det.name, det.type, det.id)
-  mother = lcdd.trackingVolume()
+  mother = lcdd.worldVolume()
   for layer in det.findall('layer'):
     support = layer.find('support')
     ladder  = layer.find('ladder')

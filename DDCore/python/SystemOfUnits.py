@@ -48,7 +48,7 @@
 # 
 # Length [L]
 #
-millimeter  = 1.                        
+millimeter  = 0.1                        
 millimeter2 = millimeter*millimeter
 millimeter3 = millimeter*millimeter*millimeter
 

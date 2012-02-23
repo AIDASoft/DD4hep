@@ -109,7 +109,7 @@ void ILDExVXD::build(){
     
     std::stringstream name_base;
     
-    name_base << "SIT";
+    name_base << "VDX";
     
     std::stringstream name_enum;
     name_enum << i;

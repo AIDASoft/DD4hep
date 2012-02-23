@@ -145,7 +145,7 @@ def process_includes(lcdd, elem):
 #---------------------------------------------------------------------------------
 def process_define(lcdd, elem):
   for c in elem.findall('constant'):
-    print 'Adding constant ...', c.get('name')
+    #print 'Adding constant ...', c.get('name')
     lcdd.addConstant(Constant(lcdd, c.get('name'),c.get('value')))
     _toDictionary(c.get('name'),c.get('value')) #-- Make it known to the evaluator
     constants[c.get('name')] = c.getF('value')
@@ -181,7 +181,7 @@ def process_materials(lcdd, elem):
 
 
 def process_material(lcdd, m):
-  print 'Adding material ...', m.get('name')
+  #print 'Adding material ...', m.get('name')
   density = m.find('D')
   radlen  = m.find('RL')
   intlen  = m.find('NIL')
@@ -194,7 +194,6 @@ def process_material(lcdd, m):
   rl = (radlen is not None) and eval(radlen.get('value')+'*'+radlen.get('unit'),constants) or 0.0
   il = (intlen is not None) and eval(intlen.get('value')+'*'+intlen.get('unit'),constants) or 0.0
   #mat.SetRadLen(-rl, -il)
-  mat.Print()
   elts = [mat.GetElement(i).GetName() for i in range(mat.GetNelements())]
   for c in composites:
     nam = c.ref
@@ -221,7 +220,7 @@ def process_material(lcdd, m):
 #----------------------------------------------------------------------------------
 def process_display(lcdd, elem):
   for v in elem.findall('vis'):
-    print 'Adding vis ...', v.name
+    #print 'Adding vis ...', v.name
     visattr = VisAttr(lcdd,v.name)
     r =  'r' in v.keys() and v.getF('r') or 1.0
     g =  'g' in v.keys() and v.getF('g') or 1.0
@@ -239,7 +238,7 @@ def process_display(lcdd, elem):
     if 'drawingStyle' in v.keys() :
       ds = v.get('drawingStyle')
       if ds == 'wireframe' : visattr.setDrawingStyle(VisAttr.WIREFRAME)
-    print visattr.toString()
+    #print visattr.toString()
     lcdd.addVisAttribute(visattr)
 
 def process_limits(lcdd, elem):

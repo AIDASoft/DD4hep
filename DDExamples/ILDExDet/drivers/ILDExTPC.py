@@ -16,16 +16,14 @@ def detector_ILDExTPC(lcdd, det):
     part_det  = DetElement(lcdd, px.name, px.type, px.id)
     part_tube = Tube(lcdd,px.name+'_tube',px_tube.rmin, px_tube.rmax, px_tube.zhalf)
     part_vol  = Volume(lcdd, px.name, part_tube, lcdd.material(px_mat.name))
-    print 'Vis for %s ' %det.name, px.vis
     part_vol.setVisAttributes(lcdd.visAttributes(px.vis))
     part_det.addPlacement(tpc_vol.placeVolume(part_vol, getPosition(px_pos), getRotation(px_rot)))
     if   px.id == 0 : tpc_de.setInnerWall(part_det)
     elif px.id == 1 : tpc_de.setOuterWall(part_det)
     elif px.id == 5 : tpc_de.setGasVolume(part_det)
     tpc_de.add(part_det)
-  print 'vis = ', det.vis  
   tpc_vol.setVisAttributes(lcdd.visAttributes(det.vis))
-  lcdd.pickMotherVolume(tpc_de).placeVolume(tpc_vol)
+  lcdd.worldVolume().placeVolume(tpc_vol)
   #--additonal TPC data-----------------------------
   mod = det.find('module')
   tpc_de.setNModules(mod.getI('number'))

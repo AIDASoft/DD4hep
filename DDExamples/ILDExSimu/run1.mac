@@ -5,7 +5,7 @@
 # can be run in batch, without graphic
 # or interactively: Idle> /control/execute run1.mac
 #
-/control/verbose 2
+/control/verbose 1
 /control/saveHistory
 #
 /run/verbose 2

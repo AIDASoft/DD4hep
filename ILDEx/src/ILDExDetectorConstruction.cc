@@ -237,8 +237,8 @@ G4VPhysicalVolume* ILDExDetectorConstruction::ConstructDetector()
     exit(1);
   }
 
-  G4GDMLParser parser;
-  parser.Write("World.gdml", physiWorld) ;                      
+  //G4GDMLParser parser;
+  //parser.Write("World.gdml", physiWorld) ;                      
   
   //
   //always return the physical World

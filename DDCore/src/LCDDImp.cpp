@@ -110,21 +110,21 @@ void LCDDImp::create()  {
 void LCDDImp::init()  {
   LCDD& lcdd = *this;
   Box worldSolid(lcdd,"world_box","world_x","world_y","world_z");
-  Material air = material("Air");
-  Volume world(lcdd,"world_volume",worldSolid,air);
+  Material vacuum = material("Vacuum");
+  Volume world(lcdd,"world_volume",worldSolid,vacuum);
 
   Tube trackingSolid(lcdd,"tracking_cylinder",
 		     0.,
 		     _toDouble("tracking_region_radius"),
 		     _toDouble("2*tracking_region_zmax"),2*M_PI);
-  Volume tracking(lcdd,"tracking_volume",trackingSolid, air);
-  world.placeVolume(tracking);
+  Volume tracking(lcdd,"tracking_volume",trackingSolid, vacuum);
+  //-->world.placeVolume(tracking);
 
   //Ref_t ref_world(lcdd,"world",world.refName());
   //m_setup.append(ref_world);
   m_worldVol       = world;
   m_trackingVol    = tracking;
-  m_materialAir    = air;
+  m_materialAir    = material("Air");
   m_materialVacuum = material("Vacuum");
   gGeoManager->SetTopVolume(m_worldVol);
 }

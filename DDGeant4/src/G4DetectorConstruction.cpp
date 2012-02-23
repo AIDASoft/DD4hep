@@ -5,6 +5,7 @@
 #include "Geant4GM/volumes/Factory.h"
 #include "RootGM/volumes/Factory.h"
 #include "TGeoManager.h"
+#include "G4Material.hh"
 
 
 using namespace DD4hep;
@@ -21,14 +22,17 @@ G4VPhysicalVolume* G4DetectorConstruction::Construct() {
   
   // Import geometry from Root to VGM
   RootGM::Factory rtFactory;
-  rtFactory.SetDebug(1);
+  rtFactory.SetDebug(0);
   rtFactory.Import(gGeoManager->GetTopNode());
   
   // Export VGM geometry to Geant4
   //
   Geant4GM::Factory g4Factory;
-  g4Factory.SetDebug(1);
+  g4Factory.SetDebug(0);
   rtFactory.Export(&g4Factory);
   G4VPhysicalVolume* world = g4Factory.World();
+  
+  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
+
   return world;
 }

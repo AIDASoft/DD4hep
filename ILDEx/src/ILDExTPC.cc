@@ -156,7 +156,7 @@ void ILDExTPC::build() {
   
   G4Tubs* tpcSensitiveGasSolid = new G4Tubs(name_base.str()+"_SensitiveGasSolid", _rmin+_inner_wall_thickness, _rmax-_outer_wall_thickness, _halfz-_endcap_thickness, 0.0*rad, twopi*rad);
   
-  G4LogicalVolume* tpcSensitiveGasLogical = new G4LogicalVolume(tpcSensitiveGasSolid, _wall_material, name_base.str()+"_SensitiveGasLogical");
+  G4LogicalVolume* tpcSensitiveGasLogical = new G4LogicalVolume(tpcSensitiveGasSolid, _sensitive_gas_material, name_base.str()+"_SensitiveGasLogical");
   
   VisAtt = new G4VisAttributes(sensitive_colour);
 

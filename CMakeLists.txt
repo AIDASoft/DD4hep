@@ -14,14 +14,13 @@ endif()
 
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDCore)
+add_subdirectory(DDGeant4)
 
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/CLICSiD)
 
 add_subdirectory(DDExamples/ILDExDisplay)
 add_subdirectory(DDExamples/ILDExReco)
-
-add_subdirectory(VGM/packages)
 add_subdirectory(DDExamples/ILDExSimu)
 
 
