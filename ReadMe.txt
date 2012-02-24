@@ -20,6 +20,14 @@ on the C++ XercesC parser, and another one based on Python and using the PyROOT 
      DD4HEP_USE_PYROOT:BOOL
      DD4HEP_USE_XERCESC:BOOL
 
+- DDGeant4
+
+  Is the package that contains the conversion of DD4hep geometry into Geant4 geometry to be used for 
+simulation. The conversion is currently based on the Virtual Geometry Modeler (VGM) package that is
+build internally when required.
+  The option DD4HEP_WITH_GEANT4:BOOL controls the building or not of this package that has the dependency
+to Geant4. The Geant4 installation needs to be located using the variable -DGeant4_DIR=<G4 installation>
+
 - DDExamples
 
   Contains different detector examples (CLICSiD, ILDEx) together with example applications to illustrate

@@ -6,6 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 #---Options-------------------------------------------------------------------------
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" ON)
+option(DD3HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" ON)
 
 find_package(ROOT REQUIRED)
 if(DD4HEP_USE_XERCESC)
@@ -14,15 +15,18 @@ endif()
 
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDCore)
-add_subdirectory(DDGeant4)
+if(DD3HEP_WITH_GEANT4)
+  add_subdirectory(DDGeant4)
+endif()
 
+#---Examples------------------------------------------------------------------------
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/CLICSiD)
-
 add_subdirectory(DDExamples/ILDExDisplay)
 add_subdirectory(DDExamples/ILDExReco)
-add_subdirectory(DDExamples/ILDExSimu)
-
+if(DD3HEP_WITH_GEANT4)
+  add_subdirectory(DDExamples/ILDExSimu)
+endif()
 
 #---Configuration-------------------------------------------------------------------
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
