@@ -12,8 +12,8 @@
     </info>
 
     <includes>
-        <gdmlFile  ref="file:/Users/mato/Development/AIDA/DD4hep/DDExamples/CLICSiD/compact/elements.xml"/>
-        <gdmlFile  ref="file:/Users/mato/Development/AIDA/DD4hep/DDExamples/CLICSiD/compact/materials.xml"/>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
         <pyBuilder ref="../drivers"/>
     </includes>
     
