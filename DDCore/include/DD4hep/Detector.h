@@ -112,6 +112,9 @@ namespace DD4hep {
       
       /// Default constructor
       DetElement() : Ref_t()  {}
+      /// Default constructor
+      template<typename Q> DetElement(Q* data, const std::string& name, const std::string& type) : Ref_t(data)  
+      {  this->assign(data, name, type);                   }
       /// Templated constructor for handle conversions
       template<typename Q> DetElement(const Handle<Q>& e) : Ref_t(e)  {}
       /// Constructor for a new subdetector element

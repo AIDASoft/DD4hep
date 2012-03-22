@@ -11,28 +11,15 @@
 
 namespace DD4hep {
   
-  
-  struct TPCData : public Geometry::DetElement::Object {
-    typedef Geometry::Ref_t Ref_t;
-    Ref_t outerWall;
-    Ref_t innerWall;
-    Ref_t gas;
-    double pressure;
-    int nmodules;
-    double driftlength;
-  };
-  
+ 
   struct ILDExTPC : public Geometry::DetElement {
-    typedef TPCData Object;
     typedef Geometry::Ref_t Ref_t;
     ILDExTPC(const Ref_t& e) : Geometry::DetElement(e) {}
     ILDExTPC(const Geometry::LCDD& lcdd, const std::string& name, const std::string& type, int id);
     void setInnerWall(Ref_t obj);
     void setOuterWall(Ref_t obj);
     void setGasVolume(Ref_t obj);
-    void setNModules(int);
-    double getVolume() const;
-    double getWeight() const;
+    void setEndPlate(Ref_t obj);
     int getNModules() const;
     double getDriftLength() const;
     void setDriftLength(double);

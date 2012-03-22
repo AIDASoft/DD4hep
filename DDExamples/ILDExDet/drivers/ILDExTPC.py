@@ -20,6 +20,7 @@ def detector_ILDExTPC(lcdd, det):
     part_det.addPlacement(tpc_vol.placeVolume(part_vol, getPosition(px_pos), getRotation(px_rot)))
     if   px.id == 0 : tpc_de.setInnerWall(part_det)
     elif px.id == 1 : tpc_de.setOuterWall(part_det)
+    elif px.id == 2 : tpc_de.setEndPlate(part_det)
     elif px.id == 5 : tpc_de.setGasVolume(part_det)
     tpc_de.add(part_det)
   tpc_vol.setVisAttributes(lcdd.visAttributes(det.vis))

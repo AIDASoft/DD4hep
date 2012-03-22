@@ -1,4 +1,5 @@
 #include "ILDExTPC.h"
+#include "TPCData.h"
 #include <iostream>
 
 using namespace std;
@@ -9,42 +10,36 @@ namespace DD4hep {
   
   ILDExTPC::ILDExTPC(const LCDD&, const string& name, const string& type, int id)
   {
-    Value<TNamed,Object>* p = new Value<TNamed,Object>();
+    Value<TNamed,TPCData>* p = new Value<TNamed,TPCData>();
     assign(p,name, type);
-    p->pressure = 12345.0;
     p->id = id;
   }
   
-  double ILDExTPC::getVolume() const {
-    return 999.;
-  }
-  double ILDExTPC::getWeight() const {
-    return 888.;
-  }
-  
+
   void ILDExTPC::setInnerWall(Ref_t obj) {
-    data<Object>()->outerWall = obj;
+    data<TPCData>()->outerWall = obj;
   }
   
   void ILDExTPC::setOuterWall(Ref_t obj) {
-    data<Object>()->innerWall = obj;
+    data<TPCData>()->innerWall = obj;
   }
   
   void ILDExTPC::setGasVolume(Ref_t obj) {
-    data<Object>()->gas = obj;
+    data<TPCData>()->gas = obj;
   }
 
-  void ILDExTPC::setNModules(int n) {
-    data<Object>()->nmodules = n;
+  void ILDExTPC::setEndPlate(Ref_t obj) {
+    data<TPCData>()->endplate = obj;
   }
+
   int ILDExTPC::getNModules() const {
-    return data<Object>()->nmodules;
+    return data<TPCData>()->nmodules;
   }
   void ILDExTPC::setDriftLength(double d) {
-    data<Object>()->driftlength = d;
+    data<TPCData>()->driftlength = d;
   }
   double ILDExTPC::getDriftLength() const {
-    return data<Object>()->driftlength;
+    return data<TPCData>()->driftlength;
   }
   
 }

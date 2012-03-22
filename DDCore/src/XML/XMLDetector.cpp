@@ -149,6 +149,21 @@ int Dimension::number() const {
   return m_element.attr<int>(Attr_number);
 }
 
+int Dimension::nModules() const {
+  return m_element.attr<int>(Attr_nModules);
+}
+int Dimension::RowID() const {
+  return m_element.attr<int>(Attr_RowID);
+}
+
+double Dimension::moduleHeight() const {
+  return m_element.attr<int>(Attr_moduleHeight);
+}
+
+string Dimension::padStr()  const  {
+  return m_element.attr<string>(Attr_pads);
+}
+
 double Dimension::phi0() const {
   return m_element.attr<double>(Attr_phi0);
 }

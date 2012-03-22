@@ -377,7 +377,6 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_system;
   extern const Tag_t Attr_barrel;
   extern const Tag_t Attr_InvisibleWithDaughters;
-
   //================================ Segmentation: =============================
   extern const Tag_t Tag_nonprojective_cylinder;
   extern const Tag_t Tag_projective_cylinder;
@@ -422,6 +421,13 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_number;
   extern const Tag_t Attr_offset;
   extern const Tag_t Attr_radius;
+  // -- TPC, modules for endplate
+  extern const Tag_t Tag_modules;
+  extern const Tag_t Tag_row;
+  extern const Tag_t Attr_nModules;
+  extern const Tag_t Attr_moduleHeight;
+  extern const Tag_t Attr_pads;
+  extern const Tag_t Attr_RowID;
 
 }}
 #endif // DD4hep_XML_TAGS_H

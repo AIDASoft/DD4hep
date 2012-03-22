@@ -70,6 +70,11 @@ namespace DD4hep {
       double offset(double default_value) const;
       int    number() const;
 
+      int    nModules() const;
+      int    RowID() const;
+      double moduleHeight() const;
+      std::string   padStr() const;
+
       int numsides() const;
 
       double phi0() const;

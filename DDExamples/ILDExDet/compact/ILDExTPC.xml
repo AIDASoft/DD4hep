@@ -63,41 +63,7 @@
     <detectors>
         <comment>Trackers</comment>
       
-        <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1">
-          <layer id="1"  vis="VXDLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="16*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="10"/>
-          </layer>
-          <layer id="2"  vis="VXDLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="18*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="10"/>
-          </layer>
-          <layer id="3"  vis="VXDLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="38*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="11"/>
-          </layer>
-          <layer id="4"  vis="VXDLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="40*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="11"/>
-          </layer>
-          <layer id="5"  vis="VXDLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="60*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="17"/>
-          </layer>
-        </detector>
- 
-        <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2">
-          <layer id="1"  vis="SITLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
-            <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
-          </layer>
-          <layer id="2"  vis="SITLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
-            <ladder  thickness="0.1*mm"  zhalf="650*mm" radius="300*mm" material="Silicon" number="19" />
-          </layer>
-        </detector>
-        
-      
+       
         <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
            <!-- GEAR Data-->
@@ -126,6 +92,11 @@
              <position x="0" y="0" z="TPC_zhalf-0.5*TPC_endcap_thickness"/>
              <rotation x="0" y="0" z="0"/>
             
+             <modules name="TPC_Module">  
+              <row type ="TubeSegment" moduleHeight="210" pads="PadLayout" nModules="4" RowID="0"/>
+              <row type ="TubeSegment" moduleHeight="210" pads="PadLayout" nModules="6" RowID="1"/>
+              <row type ="TubeSegment" moduleHeight="210" pads="PadLayout" nModules="8" RowID="2"/>
+            </modules>  
            </detector>
 
         
@@ -143,6 +114,9 @@
         <readout name="SiTrackerEndcapHits">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
+        <!--readout name="PadLayout" type="FixedPadSizeLayout"-->
+           <!--pads offset_r="0.5" offset_phi="0.5" padPitch="9.0" rowHeight="10"/--> 
+        <!--/readout-->
     </readouts>
     <fields>
         <field type="Solenoid" name="GlobalSolenoid" inner_field="5.0"

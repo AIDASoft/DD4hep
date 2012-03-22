@@ -312,6 +312,13 @@ namespace DD4hep   { namespace XML  {
   ATTR(dz);
   ATTR(zstart);
 
+  TAG(modules);
+  TAG(row);
+  ATTR(nModules);
+  ATTR(moduleHeight);
+  ATTR(pads);
+  ATTR(RowID);
+
   void tags_init() {static __Init i; }
 
 }}
