@@ -20,18 +20,25 @@ namespace DD4hep {
     double getInnerRadius() const;
     double getOuterRadius() const;
     double getEndPlateThickness() const;
+    void listDetElements() const;
     
-    const DDTPCModule & getModule(int ID) const;
-    
-    /** Returns number of modules in this TPC (endplate).
-     */
-     int getNModules() const;
-  
     /** The maximum drift length in the TPC in mm.
      */
-     double getMaxDriftLength() const;
+    double getMaxDriftLength() const;
+    
+    /** Returns number of modules on endplate (default 0 or 1, see compact xml).
+     */
+    int getNModules(int endplate) const;
+    
+    /** Returns the module with given id from endplate 0 or 1.
+     */
+    const DDTPCModule & getModule(int ID,int endplate) const;
+    
+    /** Returns nearest module to given coordinates (3D) on endplate (default 0 or 1, see compact xml).
+     */
+    const DDTPCModule &	getNearestModule (double c0, double c1,int endplate) const;
   
- 
+  
  
   
   };

@@ -49,15 +49,17 @@
     </limits>
 
     <display>
-      <vis name="TPCVis"        alpha="1.0" r="0"   g="1.0" b="0.7"  showDaughters="true"  visible="false"/>
-      <vis name="TPCSupportVis" alpha="1.0" r="0"   g="0.4" b="0.4"  showDaughters="false" visible="true"/>
-      <vis name="TPCGasVis"     alpha="1.0" r="0.7" g="0"   b="0"    showDaughters="false" visible="false"/>
-      <vis name="VXDLayerVis"   alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
-      <vis name="VXDSupportVis" alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
-      <vis name="SITSupportVis" alpha="1.0" r="0.0" g="0.3" b="0.7"  showDaughters="true"  visible="true"/>
-      <vis name="SITLayerVis"   alpha="1.0" r="0.0" g="0.7" b="0.3"  showDaughters="true"  visible="true"/>
-      <vis name="SupportVis"                r="0.5" g="0.1" b="0.99" showDaughters="false" visible="true"/>
-      <vis name="LumiCalVis"                                         showDaughters="false" visible="true"/>
+      <vis name="TPCVis"         alpha="1.0" r="0"   g="1.0" b="0.0"  showDaughters="true"  visible="false"/>
+      <vis name="TPCEndplateVis" alpha="1.0" r="0"   g="1.0" b="0.0"  showDaughters="false"  visible="true"/>
+      <vis name="TPCModuleVis"   alpha="1.0" r="0"   g="0.0" b="1.0"  showDaughters="false" visible="true"/>
+      <vis name="TPCSupportVis"  alpha="1.0" r="0"   g="0.4" b="0.4"  showDaughters="false" visible="true"/>
+      <vis name="TPCGasVis"      alpha="0.5" r="0.7" g="0"   b="0"    showDaughters="false" visible="false"/>
+      <vis name="VXDLayerVis"    alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+      <vis name="VXDSupportVis"  alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+      <vis name="SITSupportVis"  alpha="1.0" r="0.0" g="0.3" b="0.7"  showDaughters="true"  visible="true"/>
+      <vis name="SITLayerVis"    alpha="1.0" r="0.0" g="0.7" b="0.3"  showDaughters="true"  visible="true"/>
+      <vis name="SupportVis"                 r="0.5" g="0.1" b="0.99" showDaughters="false" visible="true"/>
+      <vis name="LumiCalVis"                                          showDaughters="false" visible="true"/>
     </display>
 
     <detectors>
@@ -69,37 +71,46 @@
           
            <material name="Air"/>
 
-           <detector name="TPC_InnerWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="0">
+           <detector name="TPC_InnerWall" type="TubeSegment" reflect="false" vis="TPCSupportVis" id="2">
              <material name="Carbon"/>
              <tubs rmin="TPC_inner_radius" rmax="TPC_inner_radius+TPC_inner_thickness" zhalf="TPC_zhalf"/>
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
            </detector>
 
-           <detector name="TPC_OuterWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="1">
+           <detector name="TPC_OuterWall" type="TubeSegment" reflect="false" vis="TPCSupportVis" id="3">
              <material name="Carbon" />
              <tubs rmin="TPC_outer_radius - TPC_outer_thickness" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
            </detector>
 
-           <detector name="TPC_EndPlate" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="2">
+           <detector name="TPC_EndPlate" type="TubeSegment" reflect="true" vis="TPCEndPlateVis" id="0">
              <material name="Carbon" />
              <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_endcap_thickness"/>
              <position x="0" y="0" z="TPC_zhalf-0.5*TPC_endcap_thickness"/>
              <rotation x="0" y="0" z="0"/>
             
-             <modules name="TPC_Module">  
-              <row type ="TubeSegment" moduleHeight="210" pads="PadLayout" nModules="4" RowID="0"/>
-              <row type ="TubeSegment" moduleHeight="210" pads="PadLayout" nModules="6" RowID="1"/>
-              <row type ="TubeSegment" moduleHeight="210" pads="PadLayout" nModules="8" RowID="2"/>
+             <modules name="TPC_Module" vis="TPCModuleVis">  
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="4" RowID="0"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="6" RowID="1"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="8" RowID="2"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="16" RowID="3"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="32" RowID="4"/>
             </modules>  
            </detector>
 
         
-           <detector name="TPC_GasVolume" type="TubeSegment" reflect="true" vis="TPCGasVis" id="5">
+           <detector name="TPC_GasVolume" type="TubeSegment" reflect="false" vis="TPCGasVis" id="4">
              <material name="Argon"/>
              <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="TPC_zhalf-TPC_endcap_thickness"/>
+             <position x="0" y="0" z="0"/>
+             <rotation x="0" y="0" z="0"/>
+          </detector>
+         
+          <detector name="TPC_Cathode" type="TubeSegment" reflect="false" vis="TPCSupportVis" id="5">
+             <material name="Argon"/>
+             <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="0.5"/>
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
           </detector>

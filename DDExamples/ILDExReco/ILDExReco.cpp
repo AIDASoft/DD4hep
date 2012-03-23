@@ -24,12 +24,13 @@ int main(int argc,char** argv)  {
 
   GearTPC tpc(lcdd.detector("TPC"));
 
-  cout << "-----> Gear: Inner:" << tpc.getInnerRadius() << " Outer:" << tpc.getOuterRadius() << endl;
-  cout << "-----> Gear: DriftLength:" << tpc.getMaxDriftLength() << endl;
-  cout << "-----> Gear: Endplate:" << tpc.getEndPlateThickness() << endl;
-  cout << "-----> Gear: NModules:" << tpc.getNModules() << endl;
-
-  
+  cout << "-----> GearTPC: Inner: " << tpc.getInnerRadius() << " Outer: " << tpc.getOuterRadius() << endl;
+  cout << "-----> GearTPC: DriftLength: " << tpc.getMaxDriftLength() << endl;
+  cout << "-----> GearTPC: Endplate: " << tpc.getEndPlateThickness() << endl;
+  cout << "-----> GearTPC: NModules: " << tpc.getNModules(0) <<" "<<tpc.getNModules(1)<< endl;
+  // cout << "-----> GearTPC: Module 2: " << tpc.getModule(2,0)._data().id<<" "<< tpc.getModule(2,1)._data().id<<endl;
+//   cout << "-----> Gear: Children::"<< endl;
+//     tpc.listDetElements();
   
   return 0;
 }

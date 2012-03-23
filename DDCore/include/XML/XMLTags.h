@@ -426,6 +426,8 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_row;
   extern const Tag_t Attr_nModules;
   extern const Tag_t Attr_moduleHeight;
+  extern const Tag_t Attr_modulePitch;
+  extern const Tag_t Attr_rowPitch;
   extern const Tag_t Attr_pads;
   extern const Tag_t Attr_RowID;
 

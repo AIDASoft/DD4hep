@@ -3,14 +3,13 @@
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
 //
-//  Author     : M.Frank, A.Muennich
+//  Author     : A.Muennich
 //
 //====================================================================
 
 #include "DD4hep/DetFactoryHelper.h"
 #include "ILDExTPC.h"
-#include "DDTPCEndPlate.h"
-#include "DDTPCModule.h"
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -22,6 +21,11 @@ namespace DD4hep { namespace Geometry {
     xml_comp_t  x_tube (x_det.child(_X(tubs)));
     string      name  = x_det.nameStr();
     Material    mat    (lcdd.material(x_det.materialStr()));
+   
+//     Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
+//     DetElement tpc(tpcData, name, x_det.typeStr());
+//     tpcData->id = x_det.id();
+
     ILDExTPC    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
     Tube        tpc_tub(lcdd,name+"_envelope",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
     Volume      tpc_vol(lcdd,name+"_envelope_volume", tpc_tub, mat);
@@ -39,31 +43,27 @@ namespace DD4hep { namespace Geometry {
       Volume      part_vol(lcdd,part_nam,part_tub,part_mat);
       Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
       Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
+      bool        reflect   = px_det.reflect();
 
       part_vol.setVisAttributes(lcdd,px_det.visStr());
-      std::cout<<"Building "<<part_nam<<" "<<px_tube.rmin()<<" "<<px_tube.rmax()<<" "<<px_tube.zhalf()<<std::endl;
-      switch(part_det.id()) {
-      case 0:	tpc.setInnerWall(part_det);  break;
-      case 1:	tpc.setOuterWall(part_det);  break;
-      case 5:	tpc.setGasVolume(part_det);  break;
-      	//Endplate
-      case 2:
-	tpc.setEndPlate(part_det);
+      //Endplate
+      if(part_det.id()== 0){
 	//modules
+	int mdcount=0;
 	for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
 	  xml_comp_t  modules  (m);
-	  std::cout<<"Module Group: "<<m<<std::endl;
 	  string      m_name  = modules.nameStr();
 	  for(xml_coll_t r(modules,_X(row)); r; ++r)  {
 	    xml_comp_t  row(r);
 	    int nmodules = row.nModules();
 	    int rowID=row.RowID();
-	    std::cout<<"Module Row: "<<rowID<<" with "<<nmodules<<" modules"<<std::endl;
 	    //shape of module
-	    double rmin=px_tube.rmin()+rowID*row.moduleHeight();
+	    double pitch=row.rowPitch();
+	    double rmin=px_tube.rmin()+pitch/2+rowID*row.moduleHeight()+rowID*pitch/2;
 	    double rmax=rmin+row.moduleHeight();
-	    double DeltaPhi=360;
+	    double DeltaPhi=(2*M_PI-nmodules*(row.modulePitch()/(rmin+(rmax-rmin)/2)))/nmodules;
 	    double zhalf=px_tube.zhalf();
+	    
 	    string      mr_nam=m_name+_toString(rowID,"_Row%d");
 	    Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
 	    Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
@@ -71,29 +71,35 @@ namespace DD4hep { namespace Geometry {
 
 	    //placing modules
 	    for(int md=0;md<nmodules;md++){
-	  
 	      string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	      DDTPCModule module (lcdd,m_nam,row.typeStr(),md);
-	      std::cout<<"Module : "<<md<<" "<<m_nam<<std::endl;
+	      DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
+	      mdcount++;
 	      double posx=0,posy=0,posz=0;
-	      double rotx=0,roty=0,rotz=0;
+	      double rotx=0,roty=0,rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
 	      Position    m_pos(posx,posy,posz);
 	      Rotation    m_rot(rotx,roty,rotz);
 	      PlacedVolume m_phv = part_vol.placeVolume(mr_vol,m_pos,m_rot);
-	      m_phv.addPhysVolID(_A(id),px_det.id());
+	      m_phv.addPhysVolID("module",md);
 	      part_det.addPlacement(m_phv);
 	      part_det.add(module);
 	    }//modules
 	  }//rows
 	}//module groups
-	break;
-      }
+      }//endplate
+    
       PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
-      part_phv.addPhysVolID(_A(id),px_det.id());
+      part_phv.addPhysVolID(part_nam,px_det.id());
       part_det.addPlacement(part_phv);
-      
       tpc.add(part_det);
-    }
+      //now reflect it
+      if(reflect){
+	PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
+	part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
+	DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
+	rdet.addPlacement(part_phv2);
+	tpc.add(rdet);
+      }
+    }//subdetectors
     tpc_vol.setVisAttributes(lcdd, x_det.visStr());
     PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
     tpc.addPlacement(phv);

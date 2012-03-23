@@ -12,7 +12,7 @@ namespace DD4hep {
   {
     Value<TNamed,TPCModuleData>* p = new Value<TNamed,TPCModuleData>();
     assign(p,name, type);
-
+    p->id = id;
   }
   
  

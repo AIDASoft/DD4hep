@@ -160,6 +160,13 @@ double Dimension::moduleHeight() const {
   return m_element.attr<int>(Attr_moduleHeight);
 }
 
+double Dimension::modulePitch() const {
+  return m_element.attr<int>(Attr_modulePitch);
+}
+double Dimension::rowPitch() const {
+  return m_element.attr<int>(Attr_rowPitch);
+}
+
 string Dimension::padStr()  const  {
   return m_element.attr<string>(Attr_pads);
 }

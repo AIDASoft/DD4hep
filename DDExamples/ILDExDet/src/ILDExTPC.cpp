@@ -27,9 +27,15 @@ namespace DD4hep {
   void ILDExTPC::setGasVolume(Ref_t obj) {
     data<TPCData>()->gas = obj;
   }
+  void ILDExTPC::setCathode(Ref_t obj) {
+    data<TPCData>()->cathode = obj;
+  }
 
-  void ILDExTPC::setEndPlate(Ref_t obj) {
-    data<TPCData>()->endplate = obj;
+  void ILDExTPC::setEndPlate(Ref_t obj, int i) {
+    if(i==0)
+      data<TPCData>()->endplate = obj;
+    if(i ==1)
+      data<TPCData>()->endplate2 = obj;
   }
 
   int ILDExTPC::getNModules() const {
