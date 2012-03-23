@@ -66,4 +66,9 @@ namespace {
 
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)  using n::x; PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
 
+#define DECLARE_DETELEMENT(name,func) \
+  namespace DD4hep { namespace Geometry { namespace { struct name {}; }  \
+  template <> Ref_t DetElementFactory<name>::create(LCDD& lcdd, const xml_h& e, SensitiveDetector& s) {return func(lcdd,e,s);} }} \
+  DECLARE_NAMED_DETELEMENT_FACTORY(DD4hep::Geometry,name)
+
 #endif // DD4hep_FACTORIES_H

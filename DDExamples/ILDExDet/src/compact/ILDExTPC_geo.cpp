@@ -8,103 +8,102 @@
 //====================================================================
 
 #include "DD4hep/DetFactoryHelper.h"
-#include "ILDExTPC.h"
+#include "DD4hep/Detector.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-namespace DD4hep { namespace Geometry {
-  
-  template <> Ref_t DetElementFactory<ILDExTPC>::create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
-    xml_det_t   x_det = e;
-    xml_comp_t  x_tube (x_det.child(_X(tubs)));
-    string      name  = x_det.nameStr();
-    Material    mat    (lcdd.material(x_det.materialStr()));
-   
-//     Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
-//     DetElement tpc(tpcData, name, x_det.typeStr());
-//     tpcData->id = x_det.id();
+static Ref_t ILDExTPC_create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
+  xml_det_t   x_det = e;
+  xml_comp_t  x_tube (x_det.child(_X(tubs)));
+  string      name  = x_det.nameStr();
+  Material    mat    (lcdd.material(x_det.materialStr()));
+  //if data is needed do this  
+  //    Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
+  //     DetElement tpc(tpcData, name, x_det.typeStr());
+  //     tpcData->id = x_det.id();
+  //else do this
+  DetElement    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
+  //instead of
+  //    ILDExTPC    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
+  Tube        tpc_tub(lcdd,name+"_envelope",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
+  Volume      tpc_vol(lcdd,name+"_envelope_volume", tpc_tub, mat);
 
-    ILDExTPC    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
-    Tube        tpc_tub(lcdd,name+"_envelope",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
-    Volume      tpc_vol(lcdd,name+"_envelope_volume", tpc_tub, mat);
+  for(xml_coll_t c(e,_X(detector)); c; ++c)  {
+    xml_comp_t  px_det  (c);
+    xml_comp_t  px_tube (px_det.child(_X(tubs)));
+    xml_dim_t   px_pos  (px_det.child(_X(position)));
+    xml_dim_t   px_rot  (px_det.child(_X(rotation)));
+    xml_comp_t  px_mat  (px_det.child(_X(material)));
+    string      part_nam(px_det.nameStr());
+    Material    part_mat(lcdd.material(px_mat.nameStr()));
+    DetElement  part_det(lcdd,part_nam,px_det.typeStr(),px_det.id());
+    Tube        part_tub(lcdd,part_nam+"_tube",px_tube.rmin(),px_tube.rmax(),px_tube.zhalf());
+    Volume      part_vol(lcdd,part_nam,part_tub,part_mat);
+    Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
+    Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
+    bool        reflect   = px_det.reflect();
 
-    for(xml_coll_t c(e,_X(detector)); c; ++c)  {
-      xml_comp_t  px_det  (c);
-      xml_comp_t  px_tube (px_det.child(_X(tubs)));
-      xml_dim_t   px_pos  (px_det.child(_X(position)));
-      xml_dim_t   px_rot  (px_det.child(_X(rotation)));
-      xml_comp_t  px_mat  (px_det.child(_X(material)));
-      string      part_nam(px_det.nameStr());
-      Material    part_mat(lcdd.material(px_mat.nameStr()));
-      DetElement  part_det(lcdd,part_nam,px_det.typeStr(),px_det.id());
-      Tube        part_tub(lcdd,part_nam+"_tube",px_tube.rmin(),px_tube.rmax(),px_tube.zhalf());
-      Volume      part_vol(lcdd,part_nam,part_tub,part_mat);
-      Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
-      Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
-      bool        reflect   = px_det.reflect();
-
-      part_vol.setVisAttributes(lcdd,px_det.visStr());
-      //Endplate
-      if(part_det.id()== 0){
-	//modules
-	int mdcount=0;
-	for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
-	  xml_comp_t  modules  (m);
-	  string      m_name  = modules.nameStr();
-	  for(xml_coll_t r(modules,_X(row)); r; ++r)  {
-	    xml_comp_t  row(r);
-	    int nmodules = row.nModules();
-	    int rowID=row.RowID();
-	    //shape of module
-	    double pitch=row.rowPitch();
-	    double rmin=px_tube.rmin()+pitch/2+rowID*row.moduleHeight()+rowID*pitch/2;
-	    double rmax=rmin+row.moduleHeight();
-	    double DeltaPhi=(2*M_PI-nmodules*(row.modulePitch()/(rmin+(rmax-rmin)/2)))/nmodules;
-	    double zhalf=px_tube.zhalf();
+    part_vol.setVisAttributes(lcdd,px_det.visStr());
+    //Endplate
+    if(part_det.id()== 0){
+      //modules
+      int mdcount=0;
+      for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
+	xml_comp_t  modules  (m);
+	string      m_name  = modules.nameStr();
+	for(xml_coll_t r(modules,_X(row)); r; ++r)  {
+	  xml_comp_t  row(r);
+	  int nmodules = row.nModules();
+	  int rowID=row.RowID();
+	  //shape of module
+	  double pitch=row.rowPitch();
+	  double rmin=px_tube.rmin()+pitch/2+rowID*row.moduleHeight()+rowID*pitch/2;
+	  double rmax=rmin+row.moduleHeight();
+	  double DeltaPhi=(2*M_PI-nmodules*(row.modulePitch()/(rmin+(rmax-rmin)/2)))/nmodules;
+	  double zhalf=px_tube.zhalf();
 	    
-	    string      mr_nam=m_name+_toString(rowID,"_Row%d");
-	    Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
-	    Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
-	    Material    mr_mat(lcdd.material(px_mat.nameStr()));
+	  string      mr_nam=m_name+_toString(rowID,"_Row%d");
+	  Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
+	  Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
+	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
 
-	    //placing modules
-	    for(int md=0;md<nmodules;md++){
-	      string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	      DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
-	      mdcount++;
-	      double posx=0,posy=0,posz=0;
-	      double rotx=0,roty=0,rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
-	      Position    m_pos(posx,posy,posz);
-	      Rotation    m_rot(rotx,roty,rotz);
-	      PlacedVolume m_phv = part_vol.placeVolume(mr_vol,m_pos,m_rot);
-	      m_phv.addPhysVolID("module",md);
-	      part_det.addPlacement(m_phv);
-	      part_det.add(module);
-	    }//modules
-	  }//rows
-	}//module groups
-      }//endplate
+	  //placing modules
+	  for(int md=0;md<nmodules;md++){
+	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
+	    DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
+	    mdcount++;
+	    double posx=0,posy=0,posz=0;
+	    double rotx=0,roty=0,rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
+	    Position    m_pos(posx,posy,posz);
+	    Rotation    m_rot(rotx,roty,rotz);
+	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,m_pos,m_rot);
+	    m_phv.addPhysVolID("module",md);
+	    part_det.addPlacement(m_phv);
+	    part_det.add(module);
+	  }//modules
+	}//rows
+      }//module groups
+    }//endplate
     
-      PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
-      part_phv.addPhysVolID(part_nam,px_det.id());
-      part_det.addPlacement(part_phv);
-      tpc.add(part_det);
-      //now reflect it
-      if(reflect){
-	PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
-	part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
-	DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
-	rdet.addPlacement(part_phv2);
-	tpc.add(rdet);
-      }
-    }//subdetectors
-    tpc_vol.setVisAttributes(lcdd, x_det.visStr());
-    PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
-    tpc.addPlacement(phv);
-    return tpc;
-  }
-}}
+    PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
+    part_phv.addPhysVolID(part_nam,px_det.id());
+    part_det.addPlacement(part_phv);
+    tpc.add(part_det);
+    //now reflect it
+    if(reflect){
+      PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
+      part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
+      DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
+      rdet.addPlacement(part_phv2);
+      tpc.add(rdet);
+    }
+  }//subdetectors
+  tpc_vol.setVisAttributes(lcdd, x_det.visStr());
+  PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
+  tpc.addPlacement(phv);
+  return tpc;
+}
 
-DECLARE_NAMED_DETELEMENT_FACTORY(DD4hep,ILDExTPC);
+DECLARE_DETELEMENT(ILDExTPC,ILDExTPC_create)
