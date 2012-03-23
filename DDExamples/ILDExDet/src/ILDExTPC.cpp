@@ -17,11 +17,11 @@ namespace DD4hep {
   
 
   void ILDExTPC::setInnerWall(Ref_t obj) {
-    data<TPCData>()->outerWall = obj;
+    data<TPCData>()->innerWall= obj;
   }
   
   void ILDExTPC::setOuterWall(Ref_t obj) {
-    data<TPCData>()->innerWall = obj;
+    data<TPCData>()->outerWall = obj;
   }
   
   void ILDExTPC::setGasVolume(Ref_t obj) {

@@ -24,20 +24,14 @@ namespace DD4hep {
   }
   
   double GearTPC::getInnerRadius() const {
-    DetElement gas   = data<TPCData>()->gas;
-    Tube       tube  = gas.volume().solid();
+    DetElement innerWall   = data<TPCData>()->innerWall;
+    Tube       tube  = innerWall.volume().solid();
     return tube->GetRmin();
   }
   double GearTPC::getOuterRadius() const {
-    DetElement gas   = data<TPCData>()->gas;
-    Tube       tube  = gas.volume().solid();
+    DetElement outerWall   = data<TPCData>()->outerWall;
+    Tube       tube  = outerWall.volume().solid();
     return tube->GetRmax();
-  }
-
-  double GearTPC::getEndPlateThickness() const {
-    DetElement ep   = data<TPCData>()->endplate;
-    Tube       tube  = ep.volume().solid();
-    return tube->GetDz();
   }
 
   double GearTPC::getMaxDriftLength() const {
@@ -46,10 +40,16 @@ namespace DD4hep {
     return tube->GetDz();
   }
 
+  double GearTPC::getEndPlateThickness() const {
+    DetElement ep   = data<TPCData>()->endplate;
+    Tube       tube  = ep.volume().solid();
+    return tube->GetDz();
+  }
+
+
   int GearTPC::getNModules() const {
-    //how to access child of det element gear tpc here?
-    DDTPCEndPlate ep   = data<TPCData>()->endplate;
-    return ep.getNModules();
+    DDTPCEndPlate dep   = child("TPC_EndPlate");
+    return dep.getNModules();
   }
 
  

@@ -41,10 +41,7 @@ namespace DD4hep { namespace Geometry {
       Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
 
       part_vol.setVisAttributes(lcdd,px_det.visStr());
-      std::cout<<"Building "<<part_nam<<std::endl;
-      PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
-      part_phv.addPhysVolID(_A(id),px_det.id());
-      part_det.addPlacement(part_phv);
+      std::cout<<"Building "<<part_nam<<" "<<px_tube.rmin()<<" "<<px_tube.rmax()<<" "<<px_tube.zhalf()<<std::endl;
       switch(part_det.id()) {
       case 0:	tpc.setInnerWall(part_det);  break;
       case 1:	tpc.setOuterWall(part_det);  break;
@@ -63,9 +60,12 @@ namespace DD4hep { namespace Geometry {
 	    int rowID=row.RowID();
 	    std::cout<<"Module Row: "<<rowID<<" with "<<nmodules<<" modules"<<std::endl;
 	    //shape of module
-	    double rmin=0,rmax=0,zhalf=0;
+	    double rmin=px_tube.rmin()+rowID*row.moduleHeight();
+	    double rmax=rmin+row.moduleHeight();
+	    double DeltaPhi=360;
+	    double zhalf=px_tube.zhalf();
 	    string      mr_nam=m_name+_toString(rowID,"_Row%d");
-	    Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf);
+	    Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
 	    Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
 	    Material    mr_mat(lcdd.material(px_mat.nameStr()));
 
@@ -88,6 +88,10 @@ namespace DD4hep { namespace Geometry {
 	}//module groups
 	break;
       }
+      PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
+      part_phv.addPhysVolID(_A(id),px_det.id());
+      part_det.addPlacement(part_phv);
+      
       tpc.add(part_det);
     }
     tpc_vol.setVisAttributes(lcdd, x_det.visStr());

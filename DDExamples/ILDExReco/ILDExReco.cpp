@@ -22,12 +22,10 @@ int main(int argc,char** argv)  {
   LCDD& lcdd = LCDD::getInstance();
   lcdd.fromCompact(argv[1]);
 
-  GearTPC tpc = lcdd.detector("TPC");
+  GearTPC tpc(lcdd.detector("TPC"));
 
   cout << "-----> Gear: Inner:" << tpc.getInnerRadius() << " Outer:" << tpc.getOuterRadius() << endl;
   cout << "-----> Gear: DriftLength:" << tpc.getMaxDriftLength() << endl;
-
- 
   cout << "-----> Gear: Endplate:" << tpc.getEndPlateThickness() << endl;
   cout << "-----> Gear: NModules:" << tpc.getNModules() << endl;
 

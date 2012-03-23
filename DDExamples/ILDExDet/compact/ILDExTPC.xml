@@ -66,9 +66,6 @@
        
         <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
-           <!-- GEAR Data-->
-           <driftlength value="TPC_zhalf*0.9"/>
-           <!-- End of GEAR Data-->
           
            <material name="Air"/>
 

@@ -17,7 +17,7 @@ namespace DD4hep {
   
 
   int DDTPCEndPlate::getNModules() {
-    return 0;
+    return children().size();
   }
   
 
