@@ -7,11 +7,11 @@
 //
 //====================================================================
 
-#include "ILDExTPC.h"
 #include "GearTPC.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Shapes.h"
 #include "TGeoTube.h"
+#include "TGeoManager.h"
 #include "DDTPCEndPlate.h"
 #include <iostream>
 
@@ -70,20 +70,38 @@ namespace DD4hep {
       }
   }
   
-//   const DDTPCModule & GearTPC::getModule(int ID, int endplate) const {
-//     DetElement ep;
-//     if(int endplatep=0)
-//       ep= child("TPC_EndPlate");
-//     if(int endplatep=1)
-//       ep= child("TPC_EndPlate_negativ");
+  const DDTPCModule & GearTPC::getModule(int ID, int endplate) const {
+    DetElement ep;
+    if(endplate==1)
+      ep= child("TPC_EndPlate_negativ");
+    else
+      ep= child("TPC_EndPlate");
+    
+    string myname;
+    std::map<std::string,DetElement>::const_iterator it;
+    for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
+      {
+	if(it->second._data().id==ID)
+	  {
+	    myname= it->first;
+	    break;
+	  }
+      }
+    return ep.child(myname);
 
-//     std::map<std::string,DetElement>::const_iterator it;
-//     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
-//       {
-// 	if(it->second._data().id==ID)
-// 	  return it->second;
-//       }
-//   }
+  }
   
-  
+  bool GearTPC::isInsideModule(double c0, double c1, int endplate) const{
+    DetElement ep;
+    if(endplate==1)
+      ep= child("TPC_EndPlate_negativ");
+    else
+      ep= child("TPC_EndPlate");
+    Tube       tube  = ep.volume().solid();
+    //want to use something like:  TGeoNode * FindNode(Double_t x, Double_t y, Double_t z) from TGeoManager
+    TGeoVolume *rootVolume=ep.volume().TGeoVolume*();
+    TGeoManager *geoManager->GetGeoManager();
+    TGeoNode *mynode=geoManager->FindNode(c0,c1,tube->GetDz());
+    return false;
+  }
 }

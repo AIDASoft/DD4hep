@@ -15,6 +15,9 @@ namespace DD4hep {
     p->id = id;
   }
   
+  int DDTPCModule::getID() {
+    return id();
+  }
  
 //   int DDTPCModule::getNPads() {
 //     return  data<TPCModuleData>()->padRowLayout.getNPads();

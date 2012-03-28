@@ -9,12 +9,13 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Detector.h"
+#include "TPCModuleData.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t ILDExTPC_create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
+static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t   x_det = e;
   xml_comp_t  x_tube (x_det.child(_X(tubs)));
   string      name  = x_det.nameStr();
@@ -25,8 +26,6 @@ static Ref_t ILDExTPC_create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   //     tpcData->id = x_det.id();
   //else do this
   DetElement    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
-  //instead of
-  //    ILDExTPC    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(lcdd,name+"_envelope",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(lcdd,name+"_envelope_volume", tpc_tub, mat);
 
@@ -63,11 +62,12 @@ static Ref_t ILDExTPC_create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	  double rmax=rmin+row.moduleHeight();
 	  double DeltaPhi=(2*M_PI-nmodules*(row.modulePitch()/(rmin+(rmax-rmin)/2)))/nmodules;
 	  double zhalf=px_tube.zhalf();
-	    
 	  string      mr_nam=m_name+_toString(rowID,"_Row%d");
 	  Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
 	  Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
 	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
+	  //data of module, e.g. Readout
+	  Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
 
 	  //placing modules
 	  for(int md=0;md<nmodules;md++){
@@ -95,6 +95,9 @@ static Ref_t ILDExTPC_create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
     if(reflect){
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
+      //FIX me: det element does not have a pointer to the children of a second placement
+      // true reflection/2nd placaement should be able to share children
+      // also useful: provide a copy method that does create a second set of elements including children (might be necessary for alignment later)
       DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       rdet.addPlacement(part_phv2);
       tpc.add(rdet);
@@ -106,4 +109,5 @@ static Ref_t ILDExTPC_create(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   return tpc;
 }
 
-DECLARE_DETELEMENT(ILDExTPC,ILDExTPC_create)
+//first argument is the type from the xml file
+DECLARE_DETELEMENT(ILDExTPC,create_element)
