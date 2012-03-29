@@ -99,9 +99,9 @@ namespace DD4hep {
       ep= child("TPC_EndPlate");
     Tube       tube  = ep.volume().solid();
     //want to use something like:  TGeoNode * FindNode(Double_t x, Double_t y, Double_t z) from TGeoManager
-    TGeoVolume *rootVolume=ep.volume().TGeoVolume*();
-    TGeoManager *geoManager->GetGeoManager();
-    TGeoNode *mynode=geoManager->FindNode(c0,c1,tube->GetDz());
+ //    TGeoVolume *rootVolume=ep.volume().TGeoVolume*();
+//     TGeoManager *geoManager->GetGeoManager();
+//     TGeoNode *mynode=geoManager->FindNode(c0,c1,tube->GetDz());
     return false;
   }
 }
