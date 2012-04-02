@@ -36,7 +36,7 @@ template<typename T> void Solid_type<T>::_setDimensions(double* param) {
 /// Assign pointrs and register solid to geometry
 template<typename T> 
 void Solid_type<T>::_assign(LCDD& lcdd, T* n, const string& nam, const string& tit, bool cbbox) {
-  assign(n,nam,tit);
+  this->assign(n,nam,tit);
   if ( cbbox ) n->ComputeBBox();
   lcdd.addSolid(Solid(this->ptr()));
 }
