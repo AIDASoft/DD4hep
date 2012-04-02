@@ -20,7 +20,7 @@ find_package(Geant4 REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
                     ${CMAKE_CURRENT_SOURCE_DIR}/include 
                     ${ROOT_INCLUDE_DIR}
-                    ${Geant4_INCLUDE_DIR}
+                    ${Geant4_INCLUDE_DIRS}
                     ${VGM_INCLUDE_DIR})
 
 #---Add Library-------------------------------------------------------------------
