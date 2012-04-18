@@ -20,6 +20,7 @@ if(DD4HEP_WITH_GEANT4)
 endif()
 
 #---Examples------------------------------------------------------------------------
+add_subdirectory(DDExamples/AlignDet)
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/CLICSiD)
 add_subdirectory(DDExamples/ILDExDisplay)

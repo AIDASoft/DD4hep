@@ -91,6 +91,11 @@ namespace DD4hep   { namespace XML  {
   TAG(volumeref);
   TAG(zplane);
 
+  TAG(alignments);
+  TAG(alignment);
+
+  ATTR(overlap);
+  ATTR(check);
   ATTR(InvisibleNoDaughters);
   ATTR(InvisibleWithDaughters);
 
@@ -239,6 +244,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(thetaBins);
 
   TAG(trap);
+  ATTR(psi);
   ATTR(phi);
   ATTR(theta);
   ATTR(aunit);

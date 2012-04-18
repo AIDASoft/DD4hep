@@ -26,6 +26,10 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_mm;
   extern const Tag_t Tag_cm;
 
+
+  extern const Tag_t Attr_overlap;
+  extern const Tag_t Attr_check;
+
   // RefElement parameters
   extern const Tag_t Tag_ref;
 
@@ -70,6 +74,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_name;
   extern const Tag_t Attr_nphi;
   extern const Tag_t Attr_ntheta;
+  
   extern const Tag_t Attr_outer_r;
   extern const Tag_t Attr_outer_z;
   extern const Tag_t Attr_outgoing_r;
@@ -251,7 +256,15 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_label;
   extern const Tag_t Attr_start;
   extern const Tag_t Attr_length;
+  // -- Alignment
+  extern const Tag_t Tag_alignments;
+  extern const Tag_t Tag_alignment;
 
+  //================================ Objects: ================================
+  // -- Rotation
+  extern const Tag_t Attr_theta;
+  extern const Tag_t Attr_phi;
+  extern const Tag_t Attr_psi;
   //================================ Volumes: ================================
   // -- Volume
   extern const Tag_t Tag_volume;
@@ -318,8 +331,6 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_trap;
   extern const Tag_t Attr_aunit;
   extern const Tag_t Attr_lunit;
-  extern const Tag_t Attr_theta;
-  extern const Tag_t Attr_phi;
   extern const Tag_t Attr_x1;
   extern const Tag_t Attr_x2;
   extern const Tag_t Attr_x3;

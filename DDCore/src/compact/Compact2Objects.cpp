@@ -31,9 +31,9 @@ namespace {
 
 namespace DD4hep { namespace Geometry {
   struct Compact;
-  struct Materials;
   struct Includes;
   struct GdmlFile;
+  struct AlignmentFile;
   typedef DD4hep::IDDescriptor IDDescriptor;
   
   template <typename T> Handle<> toObject(LCDD& lcdd, const XML::Handle_t& xml);
@@ -267,6 +267,39 @@ namespace DD4hep { namespace Geometry {
     }
     return ro;
   }
+
+  template <> Ref_t toRefObject<AlignmentEntry>(lcdd_t& lcdd, const xml_h& e)  {
+    /* <alignment name="<path/to/object>"  shortcut="short_cut_name">
+       <position x="x-value" y="y-value" z="z-value"/>
+       <rotation theta="theta-value" phi="phi-value" psi="psi-value"/>
+     </alignment>
+     */
+    xml_comp_t child(e);
+    string  path = e.attr<string>(_A(name));
+    bool check = e.hasAttr(_A(check));
+    bool overlap = e.hasAttr(_A(overlap));
+    AlignmentEntry alignment(lcdd,path);
+    Position pos;
+    Rotation rot;
+    if ( (child=e.child(_X(position),false)) )  { // Position is not mandatory!
+      pos.x = child.x();
+      pos.y = child.y();
+      pos.z = child.z();
+    }
+    if ( (child=e.child(_X(rotation),false)) )  {  // Rotation is not mandatory
+      rot.theta = child.x(); // child.theta();
+      rot.phi   = child.y(); // child.phi();
+      rot.psi   = child.z(); // child.psi();
+    }
+    if ( overlap ) {
+      double ovl = e.attr<double>(_A(overlap));
+      alignment.align(pos,rot,check,ovl);
+    }
+    else {
+      alignment.align(pos,rot,check);
+    }
+    return alignment;
+  }
   
   namespace  {
     template <typename T> static Ref_t toRefObject(LCDD& lcdd, const xml_h& xml, SensitiveDetector& sens) 
@@ -314,6 +347,9 @@ namespace DD4hep { namespace Geometry {
   template <> void Converter<VisAttr>::operator()(const xml_h& element)  const  {
     lcdd.addVisAttribute(toRefObject<to_type>(lcdd,element));
   }
+  template <> void Converter<AlignmentEntry>::operator()(const xml_h& element)  const  {
+    lcdd.addAlignment(toRefObject<to_type>(lcdd,element));
+  }
   template <> void Converter<Region>::operator()(const xml_h& element)  const {
     lcdd.addRegion(toRefObject<to_type>(lcdd,element));
   }
@@ -356,32 +392,39 @@ namespace DD4hep { namespace Geometry {
     }
   }
   
-  template <> void Converter<Materials>::operator()(const xml_h& materials)  const  {
-    xml_coll_t(materials,_X(element) ).for_each(Converter<Atom>(lcdd));
-    xml_coll_t(materials,_X(material)).for_each(Converter<Material>(lcdd));
-  }
-  
+  /// Read material entries from a seperate file in one of the include sections of the geometry
   template <> void Converter<GdmlFile>::operator()(const xml_h& element)  const  {
     xercesc::XMLURL base(element.ptr()->getBaseURI());
     xercesc::XMLURL ref(base, element.attr_value(_A(ref)));
     xml_h materials = XML::DocumentHandler().load(_toString(ref.getURLText())).root();
-    Converter<Materials>(this->lcdd)(materials);
+    xml_coll_t(materials,_X(element) ).for_each(Converter<Atom>(this->lcdd));
+    xml_coll_t(materials,_X(material)).for_each(Converter<Material>(this->lcdd));
+  }
+
+  /// Read alignment entries from a seperate file in one of the include sections of the geometry
+  template <> void Converter<AlignmentFile>::operator()(const xml_h& element)  const  {
+    xercesc::XMLURL base(element.ptr()->getBaseURI());
+    xercesc::XMLURL ref(base, element.attr_value(_A(ref)));
+    xml_h alignments = XML::DocumentHandler().load(_toString(ref.getURLText())).root();
+    xml_coll_t(alignments,_X(alignment)).for_each(Converter<AlignmentEntry>(this->lcdd));
   }
   
   template <> void Converter<Compact>::operator()(const xml_h& element)  const  {
     XML::Element compact(element);
     lcdd.create();
-    xml_coll_t(compact,_X(includes) ).for_each(_X(gdmlFile),Converter<GdmlFile>(lcdd));
+    xml_coll_t(compact,_X(includes)  ).for_each(_X(gdmlFile), Converter<GdmlFile>(lcdd));
     //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
-    xml_coll_t(compact,_X(define)   ).for_each(_X(constant),Converter<Constant>(lcdd));
-    xml_coll_t(compact,_X(materials)).for_each(_X(element), Converter<Atom>(lcdd));
-    xml_coll_t(compact,_X(materials)).for_each(_X(material),Converter<Material>(lcdd));
+    xml_coll_t(compact,_X(define)    ).for_each(_X(constant), Converter<Constant>(lcdd));
+    xml_coll_t(compact,_X(materials) ).for_each(_X(element),  Converter<Atom>(lcdd));
+    xml_coll_t(compact,_X(materials) ).for_each(_X(material), Converter<Material>(lcdd));
     
     lcdd.init();
-    xml_coll_t(compact,_X(limits)   ).for_each(_X(limitset),Converter<LimitSet>(lcdd));
-    xml_coll_t(compact,_X(display)  ).for_each(_X(vis),     Converter<VisAttr>(lcdd));
-    xml_coll_t(compact,_X(readouts) ).for_each(_X(readout), Converter<Readout>(lcdd));
-    xml_coll_t(compact,_X(detectors)).for_each(_X(detector),Converter<DetElement>(lcdd));
+    xml_coll_t(compact,_X(limits)    ).for_each(_X(limitset), Converter<LimitSet>(lcdd));
+    xml_coll_t(compact,_X(display)   ).for_each(_X(vis),      Converter<VisAttr>(lcdd));
+    xml_coll_t(compact,_X(readouts)  ).for_each(_X(readout),  Converter<Readout>(lcdd));
+    xml_coll_t(compact,_X(detectors) ).for_each(_X(detector), Converter<DetElement>(lcdd));
+    xml_coll_t(compact,_X(includes)  ).for_each(_X(alignment),Converter<AlignmentFile>(lcdd));
+    xml_coll_t(compact,_X(alignments)).for_each(_X(alignment),Converter<AlignmentEntry>(lcdd));
     lcdd.endDocument();
   }
 }}
@@ -394,6 +437,6 @@ template Converter<VisAttr>;
 template Converter<Constant>;
 template Converter<LimitSet>;
 template Converter<Material>;
-template Converter<Materials>;
 template Converter<DetElement>;
+template Converter<AlignmentEntry>;
 #endif

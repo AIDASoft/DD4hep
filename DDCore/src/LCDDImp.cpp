@@ -152,6 +152,9 @@ void LCDDImp::fromCompact(const std::string& xmlfile) {
 #endif
 }
 
+void LCDDImp::applyAlignment()   {
+}
+
 void LCDDImp::dump() const  {
   TGeoManager* mgr = gGeoManager;
   mgr->CloseGeometry();

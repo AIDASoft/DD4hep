@@ -189,3 +189,5 @@ INSTANTIATE(TGeoSphere);
 INSTANTIATE(TGeoTorus);
 INSTANTIATE(TGeoShape);
 INSTANTIATE(TGeoCompositeShape);
+#include "TGeoPhysicalNode.h"
+INSTANTIATE(TGeoPhysicalNode);

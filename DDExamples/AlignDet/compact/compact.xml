@@ -1,0 +1,72 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml,v 1.3 2010/12/02 16:34:00 grefe Exp $">
+        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+    </info>
+
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+    </includes>
+    
+    <define>
+        <constant name="world_side" value="30000"/>
+        <constant name="world_x" value="world_side"/>
+        <constant name="world_y" value="world_side"/>
+        <constant name="world_z" value="world_side"/>
+        
+        <constant name="tracking_region_radius" value="10000"/>
+        <constant name="tracking_region_zmax"   value="10000"/>
+    </define>
+
+    <limits>
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+    </limits>
+
+    <display>
+        <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+        <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+        <vis name="B1_vis" alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
+        <vis name="B2_vis" alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
+    </display>
+
+    <detectors>
+        <comment>Boxes</comment>
+        <detector id="1" name="B1" type="BoxSegment" vis="B1_vis">
+            <comment>Horizontal box</comment>
+            <material name="Steel235"/>
+            <box      x="20"   y="0.1" z="5"/>
+            <position x="20"   y="10"  z="10"/>
+            <rotation x="1"    y="0"   z="0"/>
+        </detector>
+        <detector id="2" name="B2" type="BoxSegment" vis="B2_vis">
+            <comment>Vertical box</comment>
+            <material name="Steel235"/>
+            <box      x="0.1" y="20"   z="5"/>
+            <position x="0"   y="30"   z="10"/>
+            <rotation x="0"   y="0"    z="0"/>
+        </detector>
+    </detectors>
+
+
+    <alignments>
+        <alignment name="/world_volume_1/B1_envelope_volume_0" shortcut="Box1">
+<!--
+            <position x="0"   y="0"    z="0"/>
+            <position x="20"   y="10"  z="10"/>
+-->
+            <position x="-20" y="-10"  z="-5"/>
+            <rotation x="0"   y="0"    z="0"/>
+        </alignment>
+    </alignments>
+
+</lccdd>

@@ -171,6 +171,10 @@ string Dimension::padStr()  const  {
   return m_element.attr<string>(Attr_pads);
 }
 
+double Dimension::phi() const {
+  return m_element.attr<double>(Attr_phi);
+}
+
 double Dimension::phi0() const {
   return m_element.attr<double>(Attr_phi0);
 }
@@ -186,6 +190,14 @@ double Dimension::phi_tilt() const {
 
 int Dimension::nphi() const {
   return m_element.attr<int>(Attr_nphi);
+}
+
+double Dimension::theta() const {
+  return m_element.attr<double>(Attr_theta);
+}
+
+double Dimension::psi() const {
+  return m_element.attr<double>(Attr_psi);
 }
 
 double Dimension::rc()  const {

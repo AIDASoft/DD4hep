@@ -36,44 +36,57 @@ namespace DD4hep  { namespace Geometry  {
     }
   };
 
-  template <> struct Value<TGeoVolume,Volume::Object> 
-    : public TGeoVolume, public Volume::Object  
-  {
-    Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) : TGeoVolume(name,s,m) {
-      magic = magic_word();
-    }
-    virtual ~Value() {}
+  template <class T> struct _VolWrap : public T  {
+    _VolWrap(const char* name, TGeoShape* s=0, TGeoMedium* m=0);
+    virtual ~_VolWrap() {}
     virtual void AddNode(const TGeoVolume *vol, Int_t copy_no, TGeoMatrix *mat, Option_t* = "") {
       TGeoMatrix *matrix = mat;
       if (matrix==0) matrix = gGeoIdentity;
       else           matrix->RegisterYourself();
       if (!vol) {
-	Error("AddNode", "Volume is NULL");
+	this->T::Error("AddNode", "Volume is NULL");
 	return;
       }
       if (!vol->IsValid()) {
-	Error("AddNode", "Won't add node with invalid shape");
+	this->T::Error("AddNode", "Won't add node with invalid shape");
 	printf("### invalid volume was : %s\n", vol->GetName());
 	return;
       }   
-      if (!fNodes) fNodes = new TObjArray();   
+      if (!this->T::fNodes) this->T::fNodes = new TObjArray();   
 
-      if (fFinder) {
+      if (this->T::fFinder) {
 	// volume already divided.
-	Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no, GetName());
+	this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no, this->T::GetName());
 	return;
       }
 
       TGeoNodeMatrix *node = new Value<TGeoNodeMatrix,PlacedVolume::Object>(vol, matrix);
       //node = new TGeoNodeMatrix(vol, matrix);
       node->SetMotherVolume(this);
-      fNodes->Add(node);
+      this->T::fNodes->Add(node);
       TString name = TString::Format("%s_%d", vol->GetName(), copy_no);
-      if (fNodes->FindObject(name))
-	Warning("AddNode", "Volume %s : added node %s with same name", GetName(), name.Data());
+      if (this->T::fNodes->FindObject(name))
+	this->T::Warning("AddNode", "Volume %s : added node %s with same name", this->T::GetName(), name.Data());
       node->SetName(name);
       node->SetNumber(copy_no);
     }
+  };
+
+  template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
+    : TGeoVolume(name,s,m) {}
+  template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
+    : TGeoVolumeAssembly(name) {}
+  
+  template <> struct Value<TGeoVolume,Volume::Object>
+    : public _VolWrap<TGeoVolume>, public Volume::Object  {
+    Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) : _VolWrap<TGeoVolume>(name,s,m) {magic = magic_word();}
+    virtual ~Value() {}
+  };
+  
+  template <> struct Value<TGeoVolumeAssembly,Assembly::Object> 
+    : public _VolWrap<TGeoVolumeAssembly>, public Assembly::Object  {
+    Value(const char* name) : _VolWrap<TGeoVolumeAssembly>(name,0,0) {  magic = magic_word(); }
+    virtual ~Value() {}
   };
 }}
 
@@ -106,7 +119,7 @@ void Volume::setSolid(const Solid& solid)  const  {
 }
 
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
-  Value<TGeoVolume,Volume::Object>* parent = (Value<TGeoVolume,Volume::Object>*)par;
+  TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
   Int_t id = a ? a->GetEntries() : 0;
   parent->AddNode(daughter,id,transform);
@@ -214,12 +227,20 @@ void Volume::setAttributes(const LCDD& lcdd,
   setVisAttributes(lcdd,vis);
 }
 
+/// Assign the sensitive detector structure
 void Volume::setSensitiveDetector(const SensitiveDetector& obj) const  {
   data<Object>()->sens_det = obj;
 }
 
+/// Access to Solid (Shape)
 Solid Volume::solid() const   {
   return Solid((*this)->GetShape());
+}
+
+/// Constructor to be used when creating a new geometry tree.
+Assembly::Assembly(LCDD& lcdd, const std::string& name) {
+  m_element = new Value<TGeoVolumeAssembly,Volume::Object>(name.c_str());
+  lcdd.addVolume(*this);
 }
 
 Material Volume::material() const   {

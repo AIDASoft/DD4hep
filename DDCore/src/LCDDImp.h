@@ -70,6 +70,8 @@ namespace DD4hep {
       ObjectHandleMap     m_limits;
       ObjectHandleMap     m_regions;
       ObjectHandleMap     m_detectors;
+      ObjectHandleMap     m_alignments;
+
       ObjectHandleMap     m_sensitive;
       ObjectHandleMap     m_display;
       ObjectHandleMap     m_fields;
@@ -94,8 +96,11 @@ namespace DD4hep {
       //void convertMaterials(XML::Handle_t doc_element);
       
       LCDDImp();
-      //void fromCompact(XML::Handle_t doc_element);
+
+      /// Read compact geometry description or alignment file
       virtual void fromCompact(const std::string& fname);
+      /// Apply & lock realigments
+      virtual void applyAlignment();
       
       virtual void create();
       virtual void init();
@@ -131,6 +136,8 @@ namespace DD4hep {
       {  return getRefChild(m_readouts,name);                                       }
       virtual DetElement detector(const std::string& name)  const
       {  return getRefChild(m_detectors,name);                                      }
+      virtual AlignmentEntry alignment(const std::string& path) const 
+      {  return getRefChild(alignments(),path);                                     }
       
       virtual const HandleMap& header()  const        { return m_header;            }
       virtual const HandleMap& constants() const      { return m_define;            }
@@ -142,6 +149,7 @@ namespace DD4hep {
       virtual const HandleMap& materials()  const     { return m_materials;         }
       virtual const HandleMap& readouts() const       { return m_readouts;          }
       virtual const HandleMap& detectors()  const     { return m_detectors;         }
+      virtual const HandleMap& alignments()  const    { return m_alignments;        }
       
       virtual LCDD& add(const Constant& x)            { return addConstant(x);      }
       virtual LCDD& add(const Solid& x)               { return addSolid(x);         }
@@ -150,6 +158,7 @@ namespace DD4hep {
       virtual LCDD& add(const LimitSet& x)            { return addLimitSet(x);      }
       virtual LCDD& add(const Region& x)              { return addRegion(x);        }
       virtual LCDD& add(const VisAttr& x)             { return addVisAttribute(x);  }
+      virtual LCDD& add(const AlignmentEntry& x)      { return addAlignment(x);     }
       virtual LCDD& add(const Readout& x)             { return addReadout(x);       }
       virtual LCDD& add(const DetElement& x)          { return addDetector(x);      }
       
@@ -168,6 +177,8 @@ namespace DD4hep {
       virtual LCDD& addVisAttribute(const Ref_t& x)     { m_display.append(x);    __R;}
       virtual LCDD& addSensitiveDetector(const Ref_t& x){ m_sensitive.append(x);  __R;}
       virtual LCDD& addDetector(const Ref_t& x)         { m_detectors.append_noCheck(x);  __R;}
+
+      virtual LCDD& addAlignment(const Ref_t& x)        { m_alignments.append(x); __R;}
 #undef __R
       
     };

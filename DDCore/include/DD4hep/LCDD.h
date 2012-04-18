@@ -64,18 +64,20 @@ namespace DD4hep {
       virtual const HandleMap& readouts() const = 0;
       virtual const HandleMap& visAttributes() const = 0;
       virtual const HandleMap& limitsets()  const = 0;
+      virtual const HandleMap& alignments()  const = 0;
 
-      virtual Region      region(const std::string& name)  const = 0;
-      virtual VisAttr     visAttributes(const std::string& name) const = 0;
-      virtual LimitSet    limitSet(const std::string& name)  const = 0;
-      virtual Material    material(const std::string& name)  const = 0;
-      virtual Readout     readout(const std::string& name)  const = 0;
-      virtual Ref_t       idSpec(const std::string& name)  const = 0;
-      virtual Volume      pickMotherVolume(const DetElement& sd) const = 0;
-      virtual Constant    constant(const std::string& name) const = 0;
-      virtual Solid       solid(const std::string& name) const = 0;
-      virtual Volume      volume(const std::string& name) const = 0;
-      virtual DetElement  detector(const std::string& name) const = 0;
+      virtual Region         region(const std::string& name)  const = 0;
+      virtual VisAttr        visAttributes(const std::string& name) const = 0;
+      virtual LimitSet       limitSet(const std::string& name)  const = 0;
+      virtual Material       material(const std::string& name)  const = 0;
+      virtual Readout        readout(const std::string& name)  const = 0;
+      virtual Ref_t          idSpec(const std::string& name)  const = 0;
+      virtual Volume         pickMotherVolume(const DetElement& sd) const = 0;
+      virtual Constant       constant(const std::string& name) const = 0;
+      virtual Solid          solid(const std::string& name) const = 0;
+      virtual Volume         volume(const std::string& name) const = 0;
+      virtual AlignmentEntry alignment(const std::string& path) const = 0;
+      virtual DetElement     detector(const std::string& name) const = 0;
 
       virtual LCDD& add(const Constant& constant) = 0;
       //virtual LCDD& add(const Solid& solid) = 0;
@@ -85,6 +87,7 @@ namespace DD4hep {
       virtual LCDD& add(const VisAttr& attr) = 0;
       virtual LCDD& add(const LimitSet& limset) = 0;
       virtual LCDD& add(const DetElement& detector) = 0;
+      virtual LCDD& add(const AlignmentEntry& x) = 0;
 
       virtual LCDD& addIDSpec(const Ref_t& element) = 0;
       virtual LCDD& addConstant(const Ref_t& element) = 0;
@@ -96,13 +99,21 @@ namespace DD4hep {
       virtual LCDD& addReadout(const Ref_t& readout) = 0;
       virtual LCDD& addDetector(const Ref_t& detector) = 0;
       virtual LCDD& addSolid(const Ref_t& detector) = 0;
+      /// Add identifyable volume
       virtual LCDD& addVolume(const Ref_t& detector) = 0;
+      /// Add alignment entry
+      virtual LCDD& addAlignment(const Ref_t& alignment) = 0;
 
-      //---Factory method-------
-      static LCDD& getInstance(void);
+      /// Read compact geometry description or alignment file
       virtual void fromCompact(const std::string& fname) = 0;
+      /// Apply & lock realigments
+      virtual void applyAlignment() = 0;
+
+      /// Dump geometry description
       virtual void dump() const = 0;
       
+      ///---Factory method-------
+      static LCDD& getInstance(void);
     };
   }       /* End namespace Geometry  */
 }         /* End namespace DD4hep   */

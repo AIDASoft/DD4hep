@@ -84,6 +84,8 @@ namespace DD4hep {
     
     /** @class Volume Volume.h  DD4hep/lcdd/Volume.h
      *  
+     *  Handle describing a Volume
+     *
      *  @author  M.Frank
      *  @version 1.0
      */
@@ -169,6 +171,27 @@ namespace DD4hep {
       operator TGeoVolume*() const     { return m_element; }
     };
     
+    /** @class Assembly Volume.h  DD4hep/lcdd/Volume.h
+     *  
+     *  Handle describing a volume assembly
+     *
+     *  @author  M.Frank
+     *  @version 1.0
+     */
+    struct Assembly : public Volume   {
+      /// Default constructor
+      Assembly() : Volume() {}
+      
+      /// Copy from handle
+      Assembly(const Assembly& v) : Volume(v) {}
+      
+      /// Copy from arbitrary Element
+      template <typename T> Assembly(const Handle<T>& v) : Volume(v) {}
+      
+      /// Constructor to be used when creating a new geometry tree.
+      Assembly(LCDD& lcdd, const std::string& name);
+    };
+
   }       /* End namespace Geometry           */
 }         /* End namespace DD4hep            */
 #endif    /* DD4hep_GEOMETRY_VOLUMES_H       */

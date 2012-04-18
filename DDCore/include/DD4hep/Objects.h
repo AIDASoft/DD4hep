@@ -18,6 +18,8 @@ class TGeoMaterial;
 class TGeoMatrix;
 class TGeoRotation;
 class TGeoTranslation;
+class TGeoPhysicalNode;
+#include "TGeoPhysicalNode.h"
 
 // C/C++ include files
 #define _USE_MATH_DEFINES
@@ -103,6 +105,8 @@ namespace DD4hep {
       Position() : x(0), y(0), z(0) {}
       /// Initializing constructor
       Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {}
+      /// Is it a identity rotation ?
+      bool isNull() const { return x==0 && x==0 && x==0; }
     };
 
     /** @class IdentityPos Objects.h
@@ -126,6 +130,8 @@ namespace DD4hep {
       Rotation() : theta(0), phi(0), psi(0) {}
       /// Initializing constructor
       Rotation(double thetaval, double phival, double psival) : theta(thetaval), phi(phival), psi(psival) {}
+      /// Is it a identity rotation ?
+      bool isNull() const { return theta==0 && phi==0 && psi==0; }
     };
 
     /** @class IdentityRot Objects.h
@@ -224,7 +230,7 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> 
       VisAttr(const Handle<Q>& e) : Ref_t(e) {}
-      /// Constructor to be used when creating a new DOM tree
+      /// Constructor to be used when creating a new registered visualization object
       VisAttr(LCDD& doc, const std::string& name);
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
@@ -244,6 +250,29 @@ namespace DD4hep {
       std::string toString()  const;
     };
 
+    /**@class AligmentEntry
+     * 
+     * Class representing an alignment entry 
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    struct AlignmentEntry : public Handle<TGeoPhysicalNode>  {
+      typedef Handle<TGeoPhysicalNode> Base;
+      /// Constructor to be used when reading the already parsed DOM tree
+      template <typename Q> 
+      AlignmentEntry(const Handle<Q>& h) : Base(h) {}
+      /// Constructor to be used when creating a new aligment entry
+      AlignmentEntry(LCDD& doc, const std::string& path);
+      /// Align the PhysicalNode (translation only)
+      int align(const Position& pos, bool check=false, double overlap=0.001);
+      /// Align the PhysicalNode (rotation only)
+      int align(const Rotation& rot, bool check=false, double overlap=0.001);
+      /// Align the PhysicalNode (translation + rotation)
+      int align(const Position& pos, const Rotation& rot, bool check=false, double overlap=0.001);
+    };
+
+
     /** @class Limit Objects.h
      *  
      *  @author  M.Frank
@@ -252,7 +281,7 @@ namespace DD4hep {
     struct Limit : public Ref_t  {
       typedef std::pair<std::string,double> Object;
 
-      /// Constructor to be used when creating a new DOM tree
+      /// Constructor to be used when creating a new limit object
       Limit(LCDD& doc, const std::string& name);
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }

@@ -157,7 +157,49 @@ string VisAttr::toString()  const {
   return text;
 }
 
-/// Constructor to be used when creating a new DOM tree
+/// Constructor to be used when creating a new aligment entry
+AlignmentEntry::AlignmentEntry(LCDD& /* lcdd */, const string& path)   {
+  TGeoPhysicalNode* obj = new TGeoPhysicalNode(path.c_str());
+  assign(obj,path,"*");
+}
+
+/// Align the PhysicalNode (translation only)
+int AlignmentEntry::align(const Position& pos, bool check, double overlap) {
+  return align(pos,Rotation(),check,overlap);
+}
+
+/// Align the PhysicalNode (rotation only)
+int AlignmentEntry::align(const Rotation& rot, bool check, double overlap) {
+  return align(Position(),rot,check,overlap);
+}
+
+/// Align the PhysicalNode (translation + rotation)
+int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, double overlap) {
+  if ( isValid() ) {
+    if ( pos.isNull() && rot.isNull() )  
+      return 0;
+    TGeoHMatrix* new_matrix = dynamic_cast<TGeoHMatrix*>(m_element->GetOriginalMatrix()->MakeClone());
+    if ( rot.isNull() ) {
+      TGeoTranslation m(pos.x,pos.y,pos.z);
+      new_matrix->Multiply(&m);
+    }
+    else if ( pos.isNull() ) {
+      TGeoRotation m("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
+      new_matrix->Multiply(&m);
+    }
+    else {
+      TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
+      TGeoCombiTrans m(pos.x,pos.y,pos.z,0);
+      m.SetRotation(rotation);
+      new_matrix->Multiply(&m);
+    }
+    m_element->Align(new_matrix,0,check,overlap);
+    return 1;
+  }
+  throw std::runtime_error("Callot align non existing physical node.");
+}
+
+/// Constructor to be used when creating a limit object
 Limit::Limit(LCDD& /* lcdd */, const string& name)   {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
   assign(obj,name,"*");

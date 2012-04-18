@@ -27,10 +27,16 @@ namespace DD4hep {
       Dimension() : Element(Handle_t(0)) {}
       Dimension(Handle_t e) : Element(e) {}
       Dimension(const Element& e) : Element(e) {}
-      // Box:
+      // Rotation:
+      double theta() const;
+      double phi() const;
+      double psi() const;
+
+      // Box/Position:
       double x() const;
       double y() const;
       double z() const;
+
       // Functions return defaults rather than throwing exceptions
       double x(double default_val) const;
       double y(double default_val) const;
