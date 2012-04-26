@@ -12,6 +12,7 @@
 #include "DD4hep/Shapes.h"
 #include "TGeoTube.h"
 #include "TGeoManager.h"
+#include "TGeoMatrix.h"
 #include "DDTPCEndPlate.h"
 #include <iostream>
 
@@ -70,7 +71,7 @@ namespace DD4hep {
       }
   }
   
-  const DDTPCModule & GearTPC::getModule(int ID, int endplate) const {
+  DDTPCModule GearTPC::getModule(int ID, int endplate) const {
     DetElement ep;
     if(endplate==1)
       ep= child("TPC_EndPlate_negativ");
@@ -88,7 +89,6 @@ namespace DD4hep {
 	  }
       }
     return ep.child(myname);
-
   }
   
   bool GearTPC::isInsideModule(double c0, double c1, int endplate) const{
@@ -97,11 +97,64 @@ namespace DD4hep {
       ep= child("TPC_EndPlate_negativ");
     else
       ep= child("TPC_EndPlate");
-    Tube       tube  = ep.volume().solid();
-    //want to use something like:  TGeoNode * FindNode(Double_t x, Double_t y, Double_t z) from TGeoManager
- //    TGeoVolume *rootVolume=ep.volume().TGeoVolume*();
-//     TGeoManager *geoManager->GetGeoManager();
-//     TGeoNode *mynode=geoManager->FindNode(c0,c1,tube->GetDz());
-    return false;
+    
+    //find z position of endplate
+//     std::cout<<ep.placements().size()<<std::endl;
+//     for ( int pv=0;pv<ep.placements().size() ; pv++ )
+//       {
+//     	std::cout<< ep.placements()[pv].volume().solid().name() <<" "
+//     		 <<ep.placements()[pv].motherVol().solid().name() <<std::endl;
+//       }
+    TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
+    const Double_t *trans=nm->GetTranslation();
+    double zpos=trans[2];
+       
+    TGeoManager *geoManager = ep.volume()->GetGeoManager();
+    //magic point, short term fix until root bug solved, seems to effect functionality of TGeoManager
+    TGeoNode *mynode=geoManager->FindNode(c0,c1,500);
+        
+    /////////////////////////////////////////////////////
+    //  METHOD 1: via the navigator                    //
+    /////////////////////////////////////////////////////
+    
+    mynode=geoManager->FindNode(c0,c1,zpos);
+//     if(mynode)
+//       std::cout<<mynode<<" "<<mynode->GetName()<<std::endl;
+//     else
+//       std::cout<<"no node found here"<<std::endl;
+    
+    /////////////////////////////////////////////////////
+    //  METHOD 2: loop all modules and check           //
+    /////////////////////////////////////////////////////
+    Double_t point[3];
+    Double_t point_local[3];
+    point[0]=c0;
+    point[1]=c1;
+    point[2]=zpos;
+    geoManager->SetCurrentPoint(c0,c1,zpos);
+    geoManager->MasterToLocal(point, point_local);
+    std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+    bool onMod=false;
+    std::map<std::string,DetElement>::const_iterator it;
+    for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
+      {
+	onMod=it->second.volume().solid()->Contains(point_local);
+	std::cout<<it->second.volume()->GetName()<<" "<<onMod<<std::endl;
+	if(onMod)
+	  return onMod;
+      }
+   return onMod;
   }
+  
+  
+  DDTPCModule GearTPC::getNearestModule(double c0, double c1, int endplate) const{
+    DetElement ep;
+    if(endplate==1)
+      ep= child("TPC_EndPlate_negativ");
+    else
+      ep= child("TPC_EndPlate");
+    TGeoManager *geoManager = ep.volume()->GetGeoManager();
+   
+  }
+  
 }

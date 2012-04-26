@@ -9,6 +9,8 @@
 #include "DD4hep/LCDD.h"
 #include <iostream>
 #include <vector>
+#include "TFile.h"
+#include "TGeoManager.h"
 #include <string>
 #include "GearTPC.h"
 
@@ -30,11 +32,11 @@ int main(int argc,char** argv)  {
   cout << "-----> GearTPC: Endplate: " << tpc.getEndPlateThickness() << endl;
   cout << "-----> GearTPC: NModules: " << tpc.getNModules(0) <<" "<<tpc.getNModules(1)<< endl;
   cout << "-----> GearTPC: Module 2: " << tpc.getModule(2,0)._data().id<<" "<<tpc.getModule(2,0).id()<<endl;
-  cout << "-----> GearTPC: Module 60: " << tpc.getModule(60,0)._data().id<<endl;
-  DDTPCModule mymod=tpc.getModule(60,0);
-  cout << "-----> GearTPC: Module 60: " << mymod.getID()<<endl;
-//   cout << "-----> Gear: Children::"<< endl;
-//     tpc.listDetElements();
+  DDTPCModule mymod=tpc.getModule(10,0);
+  cout << "-----> GearTPC: Module 10: " <<tpc.getModule(10,0).getID()<<" "<< mymod.getID()<<endl;
+  cout << "-----> GearTPC: Inside Module (400,400): "<<tpc.isInsideModule(400,400,0)<<endl;
+  cout << "-----> GearTPC: Inside Module (600,800): "<<tpc.isInsideModule(600,800,0)<<endl;
+
   
   return 0;
 }

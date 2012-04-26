@@ -80,7 +80,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	    Rotation    m_rot(rotx,roty,rotz);
 	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,m_pos,m_rot);
 	    m_phv.addPhysVolID("module",md);
-	    part_det.addPlacement(m_phv);
+	    module.addPlacement(m_phv);
 	    part_det.add(module);
 	  }//modules
 	}//rows
@@ -96,8 +96,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
       //FIX me: det element does not have a pointer to the children of a second placement
-      // true reflection/2nd placaement should be able to share children
-      // also useful: provide a copy method that does create a second set of elements including children (might be necessary for alignment later)
+      // needs a copy function for DetElement
       DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       rdet.addPlacement(part_phv2);
       tpc.add(rdet);

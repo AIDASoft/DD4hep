@@ -32,11 +32,11 @@ namespace DD4hep {
     
     /** Returns the module with given id from endplate 0 or 1.
      */
-    const DDTPCModule & getModule(int ID,int endplate) const;
+    DDTPCModule getModule(int ID,int endplate) const;
     
     /** Returns nearest module to given coordinates (3D) on endplate (default 0 or 1, see compact xml).
      */
-    const DDTPCModule &	getNearestModule (double c0, double c1,int endplate) const;
+    DDTPCModule getNearestModule (double c0, double c1,int endplate) const;
   
     /** Check if coordinate is on a module on given endplate.
      */

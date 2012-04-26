@@ -16,7 +16,7 @@ namespace DD4hep {
   }
   
   int DDTPCModule::getID() {
-    return id();
+    return _data().id;
   }
  
 //   int DDTPCModule::getNPads() {
