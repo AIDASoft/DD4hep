@@ -10,11 +10,13 @@
 #include "GearTPC.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Shapes.h"
+#include "TFile.h"
 #include "TGeoTube.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
 #include "DDTPCEndPlate.h"
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -99,51 +101,33 @@ namespace DD4hep {
       ep= child("TPC_EndPlate");
     
     //find z position of endplate
-//     std::cout<<ep.placements().size()<<std::endl;
-//     for ( int pv=0;pv<ep.placements().size() ; pv++ )
-//       {
-//     	std::cout<< ep.placements()[pv].volume().solid().name() <<" "
-//     		 <<ep.placements()[pv].motherVol().solid().name() <<std::endl;
-//       }
     TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
     const Double_t *trans=nm->GetTranslation();
     double zpos=trans[2];
        
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
-    //magic point, short term fix until root bug solved, seems to effect functionality of TGeoManager
-    TGeoNode *mynode=geoManager->FindNode(c0,c1,500);
-        
-    /////////////////////////////////////////////////////
-    //  METHOD 1: via the navigator                    //
-    /////////////////////////////////////////////////////
-    
-    mynode=geoManager->FindNode(c0,c1,zpos);
-//     if(mynode)
-//       std::cout<<mynode<<" "<<mynode->GetName()<<std::endl;
-//     else
-//       std::cout<<"no node found here"<<std::endl;
-    
-    /////////////////////////////////////////////////////
-    //  METHOD 2: loop all modules and check           //
-    /////////////////////////////////////////////////////
+    TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
     Double_t point[3];
     Double_t point_local[3];
     point[0]=c0;
     point[1]=c1;
     point[2]=zpos;
-    geoManager->SetCurrentPoint(c0,c1,zpos);
-    geoManager->MasterToLocal(point, point_local);
-    std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+    ep.placements()[0]->MasterToLocal(point, point_local);
+    
     bool onMod=false;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {
-	onMod=it->second.volume().solid()->Contains(point_local);
-	std::cout<<it->second.volume()->GetName()<<" "<<onMod<<std::endl;
+	Double_t point_local_node[3];
+ 	it->second.placements()[0]->MasterToLocal(point_local, point_local_node);
+	onMod=it->second.volume().solid()->Contains(point_local_node);
 	if(onMod)
-	  return onMod;
+	  {
+	    std::cout<<"Point is on "<<it->second.volume()->GetName()<<" id: "<<it->second.id()<<std::endl;
+	    return onMod;
+	  }
       }
-   return onMod;
+    return onMod;
   }
   
   
@@ -153,8 +137,49 @@ namespace DD4hep {
       ep= child("TPC_EndPlate_negativ");
     else
       ep= child("TPC_EndPlate");
-    TGeoManager *geoManager = ep.volume()->GetGeoManager();
    
+    //find z position of endplate
+    TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
+    const Double_t *trans=nm->GetTranslation();
+    double zpos=trans[2];
+    TGeoManager *geoManager = ep.volume()->GetGeoManager();
+    TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
+    Double_t point[3];
+    Double_t point_local[3];
+    point[0]=c0;
+    point[1]=c1;
+    point[2]=zpos;
+    ep.placements()[0]->MasterToLocal(point, point_local);
+    geoManager->SetCurrentPoint(point_local);
+    bool onMod=false;
+    std::map<std::string,DetElement>::const_iterator it;
+    //check if any of the modules contains that point
+    double safe_dist=numeric_limits<double>::max();
+    DDTPCModule neighbour;
+    for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
+      {
+ 	Double_t point_local_node[3];
+ 	it->second.placements()[0]->MasterToLocal(point_local, point_local_node);
+  	onMod=it->second.volume().solid()->Contains(point_local_node);
+
+	if(onMod)
+	  {
+	    std::cout<<"Point is on "<<it->second.volume()->GetName()<<" "<<it->second.volume().solid()->GetName()<<" id: "<<it->second.id()<<std::endl;
+	    return it->second;
+	  }
+	
+	//if not on module, compute distance from point to each shape
+	//FIXME: not sure if this is exact. Sometimes more than one module has the same safety distance.
+	Tube       tube  = it->second.volume().solid();
+	double dist=tube->Safety(point_local_node,0);
+	if(dist<safe_dist)
+	  {
+	    safe_dist=dist;
+	    neighbour=it->second;
+	  }
+      }
+    std::cout<<"MINIMUM: "<<safe_dist<<" for "<<neighbour.placements()[0]->GetName()<<" "<<neighbour.id()<<std::endl;
+    return neighbour;
   }
   
 }

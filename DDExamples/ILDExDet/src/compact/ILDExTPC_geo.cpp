@@ -66,13 +66,15 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	  Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
 	  Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
 	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
-	  //data of module, e.g. Readout
-	  Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
 
 	  //placing modules
 	  for(int md=0;md<nmodules;md++){
 	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	    DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
+	    //data of module, e.g. Readout
+	    Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
+	    tpcModData->id = mdcount;
+	    //DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
+	    DetElement  module (tpcModData,m_nam,row.typeStr());
 	    mdcount++;
 	    double posx=0,posy=0,posz=0;
 	    double rotx=0,roty=0,rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
