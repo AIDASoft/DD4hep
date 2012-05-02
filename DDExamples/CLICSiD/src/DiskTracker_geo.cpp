@@ -29,31 +29,31 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     double  rmin = x_layer.inner_r();
     double  rmax = x_layer.outer_r();
     double  z    = zmin, layerWidth = 0.;
-    Tube    l_tub(lcdd,l_nam,rmin,rmax,2*z,2*M_PI);
-    Volume  l_vol(lcdd,l_nam+"_volume",l_tub,air);
     int     s_num = 0;
       
     for(xml_coll_t j(x_layer,_X(slice)); j; ++j)  {
       double thickness = xml_comp_t(j).thickness();
       layerWidth += thickness;
     }
+    Tube    l_tub(lcdd,l_nam,rmin,rmax,layerWidth,2*M_PI);
+    Volume  l_vol(lcdd,l_nam+"_volume",l_tub,air);
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
     for(xml_coll_t j(x_layer,_X(slice)); j; ++j, ++s_num)  {
       xml_comp_t x_slice = j;
       double thick = x_slice.thickness();
       Material mat = lcdd.material(x_slice.materialStr());
       string s_nam = l_nam+_toString(s_num,"_slice%d");
-      Tube   s_tub(lcdd,s_nam,rmin,rmax,2*M_PI);
+      Tube   s_tub(lcdd,s_nam,rmin,rmax,thick);
       Volume s_vol(lcdd,s_nam+"_volume", s_tub, mat);
         
       if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-        
+
       PlacedVolume spv = l_vol.placeVolume(s_vol,Position(0,0,z-zmin-layerWidth/2+thick/2));
       spv.addPhysVolID(_X(layer),l_num);
       spv.addPhysVolID(_X(slice),s_num);
     }
-      
+
     PlacedVolume lpv = motherVol.placeVolume(l_vol,Position(0,0,zmin+layerWidth/2.));
     lpv.addPhysVolID(_X(system),sdet.id());
     lpv.addPhysVolID(_X(barrel),1);
@@ -63,7 +63,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       PlacedVolume lpvR = motherVol.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
       lpvR.addPhysVolID(_X(system),sdet.id());
       lpvR.addPhysVolID(_X(barrel),2);
-      DetElement layerR(lcdd,l_nam+"_reflect",det_type+"/Layer",l_num);
+      DetElement layerR = layer.clone(l_nam+"_reflect");
       sdet.add(layerR.addPlacement(lpvR));
     }
   }

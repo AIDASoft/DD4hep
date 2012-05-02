@@ -92,6 +92,7 @@ namespace DD4hep {
     struct DetElement : public Ref_t   {
       typedef std::map<std::string,DetElement> Children;
       typedef std::vector<PlacedVolume>        Placements;
+
       struct Object  {
         unsigned int      magic;
         int               id;
@@ -102,9 +103,14 @@ namespace DD4hep {
         Conditions        conditions;
         Placements        placements;
         Children          children;
+	/// Default constructor
         Object();
+	/// Construct new empty object
+	virtual Value<TNamed,Object>* construct(int new_id) const;
+	/// Deep object copy to replicate DetElement trees e.g. for reflection
+	virtual void deepCopy(const Object& source, int new_id);
       };
-      
+
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
       
@@ -119,6 +125,11 @@ namespace DD4hep {
       template<typename Q> DetElement(const Handle<Q>& e) : Ref_t(e)  {}
       /// Constructor for a new subdetector element
       DetElement(const LCDD& lcdd, const std::string& name, const std::string& type, int id);
+
+      /// Clone (Deep copy) the DetElement structure with a new name
+      DetElement clone(const std::string& new_name) const;
+      /// Clone (Deep copy) the DetElement structure with a new name and new identifier
+      DetElement clone(const std::string& new_name, int new_id) const;
       
       DetElement&     setCombineHits(bool value, SensitiveDetector& sens);
       DetElement&     add(const DetElement& sub_element);

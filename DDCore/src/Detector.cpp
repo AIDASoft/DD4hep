@@ -14,10 +14,34 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+/// Default constructor
 DetElement::Object::Object()  
   : magic(magic_word()), id(0), combine_hits(0), readout(), placements()
 {
 }
+
+/// Construct new empty object
+Value<TNamed,DetElement::Object>* DetElement::Object::construct(int new_id) const {
+  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
+  obj->deepCopy(*this,new_id);
+  return obj;
+}
+
+/// Deep object copy to replicate DetElement trees e.g. for reflection
+void DetElement::Object::deepCopy(const Object& source, int new_id)  {
+  id           = new_id;
+  combine_hits = source.combine_hits;
+  readout      = source.readout;
+  alignment    = source.alignment;
+  volume       = source.volume;
+  conditions   = source.conditions;
+  placements   = source.placements;
+  for(DetElement::Children::const_iterator i=source.children.begin(); i != source.children.end(); ++i) {
+    DetElement child = (*i).second.clone((*i).second->GetName());
+    children.insert(make_pair((*i).first,child));
+  }
+}
+
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const LCDD& /* lcdd */, const string& name, const string& type, int id)
@@ -77,9 +101,23 @@ DetElement::Placements DetElement::placements() const    {
   return _data().placements;
 }
 
+DetElement DetElement::clone(const string& new_name)  const  {
+  if ( isValid() ) {
+    return DetElement(_data().construct(_data().id), new_name, ptr()->GetTitle());
+  }
+  throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
+}
+
+DetElement DetElement::clone(const string& new_name, int new_id)  const  {
+  if ( isValid() ) {
+    return DetElement(_data().construct(new_id), new_name, ptr()->GetTitle());
+  }
+  throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
+}
+
 DetElement& DetElement::addPlacement(const PlacedVolume& placement)  {
   if ( isValid() ) {
-    if ( placement.isValid() ) {
+    if ( placement.isValid() )  {
       _data().placements.push_back(placement);
       _data().volume = placement.volume();
       placement.setDetElement(*this);

@@ -48,7 +48,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       // Slices have no extra id. Take the ID of the layer!
       spv.addPhysVolID(_X(layer),n);
     }
-    l_tub.setDimensions(rmin,r,2*z,2*M_PI);
+    l_tub.setDimensions(rmin,r,z,2*M_PI);
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
       
     PlacedVolume lpv = motherVol.placeVolume(l_vol,IdentityPos());

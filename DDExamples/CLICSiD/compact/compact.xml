@@ -1472,7 +1472,7 @@
         			rmax="MuonEndcap_rmin - 1.0*cm"
         			z="-MuonEndcap_zmax"/>
         </detector>
-        
+
         <detector name="ForwardLowZ" type="ForwardDetector" vis="TungstenShieldingVis" reflect="true">
             <dimensions outer_r="BeamCal_rmax" inner_r="0.0*cm" inner_z="ForwardMask_zmin" />
             <beampipe crossing_angle="CrossingAngle" outgoing_r="OutgoingBP_radius + 0.05*cm" incoming_r="IncomingBP_radius + 0.05*cm" />
@@ -1485,22 +1485,24 @@
         <detector name="SolenoidCoilBarrel" type="MultiLayerTracker" insideTrackingVolume="false">
             <layer id="1" inner_r="SolenoidBarrelInnerRadius" outer_z="SolenoidBarrelOuterZ" vis="SolenoidBarrelLayerVis">
                 <slice material="Steel235" thickness="SolenoidBarrelInnerCryostatThickness" />
-                <slice material="Vacuum" thickness="SolenoidBarrelInnerAirgapThickness" />
+                <slice material="Vacuum"   thickness="SolenoidBarrelInnerAirgapThickness" />
             </layer>
             <layer id="2" inner_r="SolenoidBarrelConductorInnerRadius" outer_z="SolenoidCoilOuterZ" vis="SolenoidBarrelLayerVis">
                 <slice material="Aluminum" thickness="SolenoidBarrelAlConductorThickness" />
                 <slice material="Aluminum" thickness="SolenoidBarrelQuenchbackThickness" />
             </layer>
             <layer id="3" inner_r="SolenoidBarrelOuterCryostatInnerRadius" outer_z="SolenoidBarrelOuterZ" vis="SolenoidBarrelLayerVis">
-                <slice material="Vacuum" thickness="SolenoidBarrelOuterAirgapThickness" />
+                <slice material="Vacuum"   thickness="SolenoidBarrelOuterAirgapThickness" />
                 <slice material="Steel235" thickness="SolenoidBarrelOuterCryostatThickness" />
             </layer>
         </detector>
+
         <detector name="SolenoidCoilEnds" type="DiskTracker" reflect="true" insideTrackingVolume="false">
             <layer id="1" inner_r="SolenoidBarrelInnerRadius" inner_z="SolenoidBarrelOuterZ" outer_r="SolenoidBarrelOuterRadius" vis="SolenoidCoilEndsVis">
                 <slice material="Steel235" thickness="SolenoidEndcapCryostatThickness" />
             </layer>
         </detector>
+
     </detectors>
 
     <readouts>
