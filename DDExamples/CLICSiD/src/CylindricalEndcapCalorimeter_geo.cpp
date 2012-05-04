@@ -19,8 +19,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   Material   air       = lcdd.air();
   string     det_name  = x_det.nameStr();
   string     det_type  = x_det.typeStr();
-  Tube       envelope   (lcdd,det_name+"_envelope");
-  Volume     envelopeVol(lcdd,det_name+"_envelope_volume",envelope,air);
+  Tube       envelope   (lcdd,det_name);
+  Volume     envelopeVol(lcdd,det_name,envelope,air);
   bool       reflect   = dim.reflect();
   double     zmin      = dim.inner_z();
   double     rmin      = dim.inner_r();
@@ -38,7 +38,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       double     zlayer = z;
       string     layer_name = det_name + _toString(n,"_layer%d");
       Tube       layer_tub(lcdd,layer_name,rmin,rmax,layerWidth);
-      Volume     layer_vol(lcdd,layer_name+"_volume",layer_tub,air);
+      Volume     layer_vol(lcdd,layer_name,layer_tub,air);
         
       for(xml_coll_t l(x_layer,_X(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
@@ -46,7 +46,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	string     slice_name = layer_name + _toString(m,"slice%d");
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
 	Tube       slice_tube(lcdd,slice_name, rmin,rmax,w);
-	Volume     slice_vol (lcdd,slice_name+"_volume", slice_tube, slice_mat);
+	Volume     slice_vol (lcdd,slice_name, slice_tube, slice_mat);
           
 	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
           
@@ -67,7 +67,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   // Set attributes of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     
-  DetElement sdet(lcdd,det_name,det_type,x_det.id());
+  DetElement sdet(det_name,det_type,x_det.id());
   Volume     motherVol = lcdd.pickMotherVolume(sdet);
   PlacedVolume phv=motherVol.placeVolume(envelopeVol,Position(0,0,zmin+totWidth/2));
   phv.addPhysVolID(_A(system),sdet.id())

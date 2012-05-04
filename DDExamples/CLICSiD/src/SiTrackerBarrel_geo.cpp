@@ -18,7 +18,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   int         det_id    = x_det.id();
   string      det_name  = x_det.nameStr();
   string      det_type  = x_det.typeStr();
-  DetElement  sdet       (lcdd,det_name,det_type,det_id);
+  DetElement  sdet       (det_name,det_type,det_id);
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
     
   for(xml_coll_t mi(x_det,_X(module)); mi; ++mi)  {
@@ -27,16 +27,16 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     string     m_nam  = det_name+"_"+x_mod.nameStr();
     Box        m_box (lcdd,m_nam+"_box",m_env.width(),m_env.length(),m_env.thickness());
     Volume     m_vol (lcdd,m_nam,m_box,air);
-    DetElement m_elt (lcdd,m_nam,det_type+"/Module",det_id);
+    DetElement m_elt (m_nam,det_type+"/Module",det_id);
     int        ncomponents = 0, sensor_number = 0;
     for(xml_coll_t ci(x_mod,_X(module_component)); ci; ++ci, ++ncomponents)  {
       xml_comp_t x_comp = ci;
       xml_comp_t x_pos  = x_comp.child(_X(position),false);
       xml_comp_t x_rot  = x_comp.child(_X(rotation),false);	
       string     c_nam  = m_nam + _toString(ncomponents,"_component%d");
-      Box        c_box (lcdd,c_nam+"_box",x_comp.width(),x_comp.length(),x_comp.thickness());
+      Box        c_box (lcdd,c_nam,x_comp.width(),x_comp.length(),x_comp.thickness());
       Volume     c_vol (lcdd,c_nam,c_box,lcdd.material(x_comp.materialStr()));
-      DetElement c_elt (lcdd,c_nam,det_type+"/Module/Component",det_id);
+      DetElement c_elt (c_nam,det_type+"/Module/Component",det_id);
       PlacedVolume c_phv;
         
       if ( x_pos && x_rot ) {
@@ -57,10 +57,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	c_phv.addPhysVolID(_X(sensor),sensor_number++);
 	c_vol.setSensitiveDetector(sens);
       }
-      c_elt.setAttributes(lcdd,c_vol,
-			  x_comp.attr<string>(_A(region)),
-			  x_comp.attr<string>(_A(limits)),
-			  x_comp.visStr());
+      c_elt.setAttributes(lcdd,c_vol,x_comp.regionStr(),x_comp.limitsStr(),x_comp.visStr());
       m_elt.add(c_elt);
     }
     m_vol.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
@@ -76,7 +73,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     DetElement m_elt    = sdet.child(m_nam);
     Volume     m_env    = lcdd.volume(m_nam);
     string     lay_nam  = det_name+_toString(lay_id,"_layer%d");
-    Tube       lay_tub   (lcdd,lay_nam+"_tube",x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
+    Tube       lay_tub   (lcdd,lay_nam,x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
     Volume     lay_vol   (lcdd,lay_nam,lay_tub,air);  // Create the layer envelope volume.
     double     phi0     = x_layout.phi0();      // Starting phi of first module.
     double     phi_tilt = x_layout.phi_tilt();  // Phi tilt of a module.
@@ -108,13 +105,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       for (int j = 0; j < nz; j++)	  {
 	// Create a unique name for the module in this logical volume, layer, phi, and z.
 	string m_place = lay_nam + _toString(ii,"_phi%d") + _toString(j,"_z%d");
-	double z = module_z;
 	// Module PhysicalVolume.
 	PlacedVolume  m_physvol = 
-          lay_vol.placeVolume(m_env,Position(x,y,z),
+          lay_vol.placeVolume(m_env,Position(x,y,module_z),
                               Rotation(M_PI/2,-((M_PI/2)-phic-phi_tilt),0));
 	m_physvol.addPhysVolID("module", module++);
-          
 	// Adjust the x and y coordinates of the module.
 	x += dx;
 	y += dy;
@@ -124,20 +119,12 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	// Add z increment to get next z placement pos.
 	module_z += z_incr;
       }
-      // Increment the phi placement of module.
-      phic += phi_incr;
-      // Increment the center radius according to dr parameter.
-      rc += rphi_dr;
-      // Flip sign of dr parameter.
-      rphi_dr *= -1;
-      // Reset the Z placement parameter for module.
-      module_z = -z0;
+      phic    += phi_incr;      // Increment the phi placement of module.
+      rc      += rphi_dr;       // Increment the center radius according to dr parameter.
+      rphi_dr *= -1;            // Flip sign of dr parameter.
+      module_z = -z0;           // Reset the Z placement parameter for module.
     }
-    m_elt.setAttributes(lcdd,lay_vol,
-			x_layer.attr<string>(_A(region)),
-			x_layer.attr<string>(_A(limits)),
-			x_layer.visStr());
-      
+    m_elt.setAttributes(lcdd,lay_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
     // Create the PhysicalVolume for the layer.
     PlacedVolume lpv = motherVol.placeVolume(lay_vol); // Place layer in mother
     lpv.addPhysVolID("system", det_id);      // Set the subdetector system ID.

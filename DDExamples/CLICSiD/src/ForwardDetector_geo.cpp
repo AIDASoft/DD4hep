@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   string      det_type   = x_det.typeStr();
   int         id         = x_det.id();
   Material    air        = lcdd.air();
-  DetElement  sdet       (lcdd,det_name,det_type,x_det.id());
+  DetElement  sdet       (det_name,det_type,id);
   Layering    layering(x_det);
 
   Volume      motherVol  = lcdd.pickMotherVolume(sdet);
@@ -41,11 +41,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   double      beamPosX   = std::tan(xangleHalf) * zpos;
 
   // Detector envelope solid. 
-  Tube envelopeTube(lcdd,det_name+"_tube",rmin,rmax,thickness);
+  Tube envelopeTube(lcdd,det_name,rmin,rmax,thickness);
 
   // First envelope bool subtracion of outgoing beampipe.
   // Incoming beampipe solid.
-  Tube beamInTube(lcdd,det_name + "_beampipe_incoming_tube",0,outgoingR,thickness * 2);
+  Tube beamInTube(lcdd,det_name + "_beampipe_incoming",0,outgoingR,thickness * 2);
   // Position of incoming beampipe.
   Position beamInPos(beamPosX,0,0);
   /// Rotation of incoming beampipe.
@@ -53,7 +53,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
   // Second envelope bool subtracion of outgoing beampipe.
   // Outgoing beampipe solid.
-  Tube     beamOutTube(lcdd,det_name + "_beampipe_outgoing_tube",0,incomingR,thickness * 2);
+  Tube     beamOutTube(lcdd,det_name + "_beampipe_outgoing",0,incomingR,thickness * 2);
   // Position of outgoing beampipe.
   Position beamOutPos(-beamPosX,0,0);
   // Rotation of outgoing beampipe.
@@ -66,7 +66,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 					envelopeSubtraction1,beamOutTube,beamOutPos,beamOutRot);
 
   // Final envelope bool volume.
-  Volume envelopeVol(lcdd,det_name + "_envelope_volume", envelopeSubtraction2, air);
+  Volume envelopeVol(lcdd,det_name, envelopeSubtraction2, air);
 
   // Process each layer element.
   double layerPosZ   = -thickness / 2;
@@ -77,7 +77,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
     // Create tube envelope for this layer, which can be reused in bool definition
     // in the repeat loop below.
-    Tube layerTube(lcdd, det_name + "_layer_tube",rmin,rmax,layerThickness);
+    Tube layerTube(lcdd, det_name + "_layer",rmin,rmax,layerThickness);
 
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
       string layer_nam = det_name + _toString(i,"_layer%d");
@@ -86,7 +86,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       layerPosZ   += layerThickness / 2;
 
       // First layer subtraction solid.
-      DetElement  layer(lcdd,layer_nam,"ForwardDetector/Layer",sdet.id());
+      DetElement  layer(layer_nam,"ForwardDetector/Layer",sdet.id());
       double      layerGlobalZ = zinner + layerDisplZ;
       double      layerPosX    = tan(xangleHalf) * layerGlobalZ;
       Position    layerSubtraction1Pos( layerPosX,0,0);
@@ -98,7 +98,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       SubtractionSolid layerSubtraction2(lcdd,layer_nam + "_subtraction2",
 					 layerSubtraction1,beamOutTube,layerSubtraction2Pos,beamOutRot);
       // Layer LV.
-      Volume layerVol(lcdd,layer_nam + "_volume", layerSubtraction2, air);
+      Volume layerVol(lcdd,layer_nam, layerSubtraction2, air);
       
       // Slice loop.
       int sliceCount = 0;
@@ -117,7 +117,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
 	// Slice's basic tube.
 	Tube sliceTube(lcdd, slice_nam + "_tube", rmin,rmax,sliceThickness);
-	DetElement slice(lcdd,slice_nam,"ForwardDetector/Layer/Slice",sdet.id());
+	DetElement slice(slice_nam,"ForwardDetector/Layer/Slice",sdet.id());
 	double sliceGlobalZ = zinner + (layerDisplZ - layerThickness / 2) + sliceDisplZ;
 	double slicePosX    = std::tan(xangleHalf) * sliceGlobalZ;
 
@@ -128,17 +128,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	SubtractionSolid sliceSubtraction2(lcdd,slice_nam + "_subtraction2",
 					   sliceSubtraction1,beamOutTube,Position(-slicePosX,0,0),beamOutRot); 
 	// Slice LV.
-	Volume sliceVol(lcdd,slice_nam + "_volume", sliceSubtraction2, slice_mat);
+	Volume sliceVol(lcdd,slice_nam, sliceSubtraction2, slice_mat);
         
 	if ( x_slice.isSensitive() ) sliceVol.setSensitiveDetector(sens);
 	// Set attributes of slice
-	slice.setAttributes(lcdd, sliceVol, 
-			    x_slice.attr<string>(_A(region)),
-			    x_slice.attr<string>(_A(limits)),
-			    x_slice.visStr());
+	slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 
 	// Place volume in layer
-	layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ));
+	slice.addPlacement(layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ)));
 	layer.add(slice);
 
 	// Start of next slice.
@@ -147,14 +144,12 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	++sliceCount;
       }
       // Set attributes of slice
-      layer.setAttributes(lcdd, layerVol, 
-			  x_layer.attr<string>(_A(region)),
-			  x_layer.attr<string>(_A(limits)),
-			  x_layer.visStr());
+      layer.setAttributes(lcdd, layerVol, x_layer.regionStr(), x_layer.limitsStr(), x_layer.visStr());
 
       // Layer PV.
       PlacedVolume layerPV = envelopeVol.placeVolume(layerVol,Position(0,0,layerPosZ));
       layerPV.addPhysVolID(_X(layer), i);
+      layer.addPlacement(layerPV);
       sdet.add(layer);
 
       // Increment to start of next layer.
@@ -167,12 +162,13 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,zpos));
   env_phv.addPhysVolID(_X(system), id);
   env_phv.addPhysVolID(_X(barrel), 1);
-  
+  sdet.addPlacement(env_phv);
   // Reflect it.
   if ( reflect )  {
     env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,-zpos),ReflectRot());
     env_phv.addPhysVolID(_X(system), id);
     env_phv.addPhysVolID(_X(barrel), 2);
+    sdet.addPlacement(env_phv);
   }
   return sdet;
 }

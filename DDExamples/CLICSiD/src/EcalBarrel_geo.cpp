@@ -32,10 +32,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   double      mod_z     = layering.totalThickness();
   double      outer_r   = inner_r + mod_z;
   double      totThick  = mod_z;
-  DetElement  sdet      (lcdd,det_name,det_type,det_id);
+  DetElement  sdet      (det_name,det_type,det_id);
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
-  PolyhedraRegular hedra(lcdd,det_name+"_polyhedra",nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
-  Volume      envelope  (lcdd,det_name+"_envelope",hedra,air);
+  PolyhedraRegular hedra(lcdd,det_name,nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
+  Volume      envelope  (lcdd,det_name,hedra,air);
   PlacedVolume env_phv  = motherVol.placeVolume(envelope,Rotation(0,0,M_PI/nsides));
 
   env_phv.addPhysVolID("system",det_id);
@@ -85,9 +85,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	l_dim_x -= xcut/2;
 
 	Position   l_pos(0,0,l_pos_z+l_thickness/2);      // Position of the layer.
-	Box        l_box(lcdd,l_name+"_box",l_dim_x*2-tolerance,stave_z*2-tolerance,l_thickness-tolerance);
+	Box        l_box(lcdd,l_name,l_dim_x*2-tolerance,stave_z*2-tolerance,l_thickness-tolerance);
 	Volume     l_vol(lcdd,l_name,l_box,air);
-	DetElement layer(lcdd,l_name,det_type+"/Layer",det_id);
+	DetElement layer(l_name,det_type+"/Layer",det_id);
 
 	sdet.add(layer);
 	// Loop over the sublayers or slices for this layer.
@@ -95,11 +95,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	double s_pos_z = -(l_thickness / 2);
 	for(xml_coll_t si(x_layer,_X(slice)); si; ++si)  {
 	  xml_comp_t x_slice = si;
-	  string     s_name = l_name + _toString(s_num,"_slice%d");
+	  string     s_name  = l_name + _toString(s_num,"_slice%d");
 	  double     s_thick = x_slice.thickness();
-	  Box        s_box(lcdd,s_name+"_box",l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
+	  Box        s_box(lcdd,s_name,l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
 	  Volume     s_vol(lcdd,s_name,s_box,lcdd.material(x_slice.materialStr()));
-	  DetElement slice(lcdd,s_name,det_type+"/Layer/Slice",det_id);
+	  DetElement slice(s_name,det_type+"/Layer/Slice",det_id);
 
 	  layer.add(slice);
 	  if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
@@ -151,6 +151,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     pv.addPhysVolID("module",i);
     pv.addPhysVolID("system",det_id);
     pv.addPhysVolID("barrel",0);
+    sdet.addPlacement(pv);
   }
 
   // Set envelope volume attributes.

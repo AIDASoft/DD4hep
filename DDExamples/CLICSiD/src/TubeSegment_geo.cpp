@@ -18,12 +18,12 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_dim_t  x_pos  (x_det.child(_X(position)));
   xml_dim_t  x_rot  (x_det.child(_X(rotation)));
   string     name   = x_det.nameStr();
-  Tube       tub    (lcdd,name+"_tube",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
+  Tube       tub    (lcdd,name,x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume     vol    (lcdd,name,tub,lcdd.material(x_det.materialStr()));
     
   vol.setVisAttributes(lcdd, x_det.visStr());
     
-  DetElement   sdet(lcdd,name,x_det.typeStr(),x_det.id());
+  DetElement   sdet(name,x_det.typeStr(),x_det.id());
   Volume       mother = lcdd.pickMotherVolume(sdet);
   PlacedVolume phv = 
     mother.placeVolume(vol,Position(x_pos.x(),x_pos.y(),x_pos.z()),

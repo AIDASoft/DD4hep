@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   string      det_name  = x_det.nameStr();
   string      det_type  = x_det.typeStr();
   bool        reflect   = x_det.reflect();
-  DetElement  sdet       (lcdd,det_name,det_type,det_id);
+  DetElement  sdet       (det_name,det_type,det_id);
   Volume      motherVol = lcdd.trackingVolume();
   int         m_id=0, c_id=0, n_sensor=0;
   double      posY;
@@ -52,7 +52,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       double     c_thick = c.thickness();
       Material   c_mat   = lcdd.material(c.materialStr());
       string     c_name  = m_nam + _toString(c_id,"_component%d");
-      Trapezoid trd(lcdd, c_name+"_trd", x1, x2, c_thick/2e0, c_thick/2e0, z);
+      Trapezoid trd(lcdd, c_name, x1, x2, c_thick/2e0, c_thick/2e0, z);
       Volume    vol(lcdd, c_name, trd, c_mat);
         
       vol.setVisAttributes(lcdd.visAttributes(c.visStr()));
@@ -94,7 +94,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 						Rotation(-M_PI/2,-M_PI/2-phi,0));
 	pv.addPhysVolID("system",det_id).addPhysVolID("barrel",1);
 	pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
-	DetElement module (lcdd,m_base,det_type+"/Module",det_id);
+	DetElement module (m_base,det_type+"/Module",det_id);
 	module.addPlacement(pv);
 	sdet.add(module);
           
@@ -104,7 +104,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 				     Rotation(-M_PI/2,-M_PI/2-phi,M_PI));
 	  pv.addPhysVolID("system",det_id).addPhysVolID("barrel",2);
 	  pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
-	  DetElement r_module (lcdd,m_base+"_reflect",det_type+"/Module",det_id);
+	  DetElement r_module (m_base+"_reflect",det_type+"/Module",det_id);
 	  r_module.addPlacement(pv);
 	  sdet.add(r_module);
 	}

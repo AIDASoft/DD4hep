@@ -28,8 +28,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   Layering    layering(x_det);
   double      totalThickness = layering.totalThickness();
     
-  PolyhedraRegular polyhedra(lcdd,det_name+"_polyhedra",numsides,rmin,rmax,totalThickness);
-  Volume           envelopeVol(lcdd,det_name+"_envelope",polyhedra,air);
+  PolyhedraRegular polyhedra(lcdd,det_name,numsides,rmin,rmax,totalThickness);
+  Volume           envelopeVol(lcdd,det_name,polyhedra,air);
     
   int l_num = 0;
   int layerType   = 0;
@@ -40,8 +40,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     double           l_thick  = layering.layer(l_num)->thickness();
     string           l_name   = det_name + _toString(layerType,"_layer%d");
     int              l_repeat = x_layer.repeat();
-    PolyhedraRegular l_solid(lcdd,l_name+"_solid",numsides,rmin,rmax,l_thick);
-    Volume           l_vol  (lcdd,l_name+"_volume", l_solid, air);
+    PolyhedraRegular l_solid(lcdd,l_name,numsides,rmin,rmax,l_thick);
+    Volume           l_vol  (lcdd,l_name, l_solid, air);
       
     int s_num = 0;
     double sliceZ = -l_thick/2;
@@ -50,8 +50,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       string     s_name  = l_name + _toString(s_num,"_slice%d");
       double     s_thick = x_slice.thickness();
       Material   s_mat   = lcdd.material(x_slice.materialStr());
-      PolyhedraRegular s_solid(lcdd,s_name+"_solid",numsides,rmin,rmax,s_thick);
-      Volume           s_vol  (lcdd,s_name+"_volume",s_solid,s_mat);
+      PolyhedraRegular s_solid(lcdd,s_name,numsides,rmin,rmax,s_thick);
+      Volume           s_vol  (lcdd,s_name,s_solid,s_mat);
         
       if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
       s_vol.setVisAttributes(lcdd.visAttributes(x_slice.visStr()));
@@ -74,7 +74,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   }
     
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
-  DetElement sdet    (lcdd,det_name,det_type,x_det.id());
+  DetElement sdet    (det_name,det_type,x_det.id());
   Volume motherVol = lcdd.pickMotherVolume(sdet);
   PlacedVolume  physvol = motherVol.placeVolume(envelopeVol,
 						Position(0,0,zmin+totalThickness/2),
@@ -89,7 +89,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 				    Rotation(M_PI,0,M_PI/numsides));
     physvol.addPhysVolID("system",det_id);
     physvol.addPhysVolID("barrel",2);
-    DetElement rdet(lcdd,det_name+"_reflect",det_type,x_det.id());
+    DetElement rdet(det_name+"_reflect",det_type,x_det.id());
     rdet.addPlacement(physvol);
   }
   return sdet;

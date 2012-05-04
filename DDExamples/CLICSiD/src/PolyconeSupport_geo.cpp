@@ -15,10 +15,10 @@ using namespace DD4hep::Geometry;
 static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t  x_det   = e;
   string     name    = x_det.nameStr();
-  DetElement sdet   (lcdd,name,x_det.typeStr(),x_det.id());
-  Polycone   cone   (lcdd,name+"_envelope_polycone");
+  DetElement sdet   (name,x_det.typeStr(),x_det.id());
+  Polycone   cone   (lcdd,name);
   Material   mat    (lcdd.material(x_det.materialStr()));
-  Volume     volume (lcdd,name+"_envelope_volume", cone, mat);
+  Volume     volume (lcdd,name, cone, mat);
   vector<double> rmin,rmax,z;
   int num = 0;
 

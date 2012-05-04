@@ -155,6 +155,16 @@ void LCDDImp::fromCompact(const std::string& xmlfile) {
 void LCDDImp::applyAlignment()   {
 }
 
+static void dumpChildren(const DetElement& e, int level) {
+#if 0
+  cout << "[" << level << " , " << e.placements().size() << "] ";
+  for(int j=0; j<level; ++j) cout << "...";
+  cout << e.path() << endl;
+#endif
+  for(DetElement::Children::const_iterator i=e.children().begin(); i != e.children().end(); ++i)
+    dumpChildren(DetElement((*i).second),level+1);
+}
+
 void LCDDImp::dump() const  {
   TGeoManager* mgr = gGeoManager;
   mgr->CloseGeometry();
@@ -163,5 +173,10 @@ void LCDDImp::dump() const  {
   m_worldVol->Draw("ogl");
   cout << "Total number of object verifications:" << num_object_validations() << endl;
   //Printer<const LCDD*>(*this,cout)(this);
+  for(HandleMap::const_iterator i=detectors().begin(); i != detectors().end(); ++i) {
+    DetElement e((*i).second);
+    dumpChildren(e,0);
+    //cout << "Detector: " << (*i).first << " : " << e.name() << endl;
+  }
 }
 

@@ -56,7 +56,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   int         numSides    = dim.numsides();
   double      detZ        = dim.z();
   double      rmin        = dim.rmin();
-  DetElement  sdet(lcdd,det_name,det_type,x_det.id());
+  DetElement  sdet(det_name,det_type,x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
 
   cout << det_name << "  Gap:" << gap << endl;
@@ -68,8 +68,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     totalSlices += x_layer.numChildren(_X(slice));
   }
 
-  PolyhedraRegular polyhedra(lcdd,det_name+"_polyhedra",numSides,rmin,rmin+totalThickness,detZ);
-  Volume           envelopeVol(lcdd,det_name+"_envelope",polyhedra,air);
+  PolyhedraRegular polyhedra(lcdd,det_name,numSides,rmin,rmin+totalThickness,detZ);
+  Volume           envelopeVol(lcdd,det_name,polyhedra,air);
 
   // Add the subdetector envelope to the structure.
   double innerAngle     = 2*M_PI/numSides;
@@ -102,15 +102,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     const Layer* lay    = layering.layer(layer_num); // Get the layer from the layering engine.
     // Loop over repeats for this layer.
     for (int j = 0; j < repeat; j++)    {                
-      string layer_name = det_name+_toString(layer_num,"_stave_layer%d");
+      string layer_name      = det_name+_toString(layer_num,"_stave_layer%d");
       double layer_thickness = lay->thickness();
-      DetElement  layer(lcdd,layer_name,det_name+"/Layer",x_det.id());
+      DetElement  layer(layer_name,det_name+"/Layer",x_det.id());
 
       // Layer position in Z within the stave.
       layer_pos_z += layer_thickness / 2;
-      // Layer box.
-      Box layer_box(lcdd,layer_name+"_box", layer_dim_x, detZ/2, layer_thickness);
-      // Layer volume. 
+      // Layer box & volume
+      Box layer_box(lcdd,layer_name, layer_dim_x, detZ/2, layer_thickness);
       Volume layer_vol(lcdd,layer_name,layer_box,air);
 
       // Create the slices (sublayers) within the layer.
@@ -121,11 +120,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	string   slice_name      = layer_name + _toString(slice_number,"_slice%d");
 	double   slice_thickness = x_slice.thickness();
 	Material slice_material  = lcdd.material(x_slice.materialStr());
-	DetElement slice(lcdd,slice_name,det_name+"/Layer/Slice",x_det.id());
+	DetElement slice(slice_name,det_name+"/Layer/Slice",x_det.id());
 
 	slice_pos_z += slice_thickness / 2;
 	// Slice box. 
-	Box slice_box(lcdd,slice_name+"_box",layer_dim_x,detZ/2,slice_thickness);
+	Box slice_box(lcdd,slice_name,layer_dim_x,detZ/2,slice_thickness);
 
 	// Slice volume.
 	Volume slice_vol(lcdd,slice_name,slice_box,slice_material);
@@ -172,6 +171,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0,0,M_PI/numSides));
   env_phv.addPhysVolID(_X(system), sdet.id());
   env_phv.addPhysVolID(_X(barrel), 0);
+  sdet.addPlacement(env_phv);
   return sdet;
 }
 

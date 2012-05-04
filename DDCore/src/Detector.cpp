@@ -16,7 +16,8 @@ using namespace DD4hep::Geometry;
 
 /// Default constructor
 DetElement::Object::Object()  
-  : magic(magic_word()), id(0), combine_hits(0), readout(), placements()
+  : magic(magic_word()), id(0), combine_hits(0), readout(), 
+    alignment(), placements(), parent(), children()
 {
 }
 
@@ -32,10 +33,11 @@ void DetElement::Object::deepCopy(const Object& source, int new_id)  {
   id           = new_id;
   combine_hits = source.combine_hits;
   readout      = source.readout;
-  alignment    = source.alignment;
   volume       = source.volume;
-  conditions   = source.conditions;
-  placements   = source.placements;
+  alignment    = Alignment();
+  conditions   = Conditions();
+  placements   = Placements();
+  parent       = DetElement();
   for(DetElement::Children::const_iterator i=source.children.begin(); i != source.children.end(); ++i) {
     DetElement child = (*i).second.clone((*i).second->GetName());
     children.insert(make_pair((*i).first,child));
@@ -50,8 +52,29 @@ DetElement::DetElement(const LCDD& /* lcdd */, const string& name, const string&
   _data().id = id;
 }
 
+/// Constructor for a new subdetector element
+DetElement::DetElement(const string& name, const string& type, int id)
+{
+  assign(new Value<TNamed,Object>(),name,type);
+  _data().id = id;
+}
+
 string DetElement::type() const   {
   return m_element ? m_element->GetTitle() : "";
+}
+
+string DetElement::path() const   {
+  if ( m_element )  {
+    Object& o = _data();
+    if ( o.path.empty() )   {
+      DetElement par = o.parent;
+      if ( par.isValid() )
+	return (par.path()+"/")+name();
+      return string("/") + name();
+    }
+    return o.path;
+  }
+  return "";
 }
 
 int DetElement::id() const   {
@@ -91,7 +114,10 @@ void DetElement::check(bool condition, const string& msg) const  {
 DetElement& DetElement::add(const DetElement& sdet)  {
   if ( isValid() )  {
     pair<Children::iterator,bool> r = _data().children.insert(make_pair(sdet.name(),sdet));
-    if ( r.second ) return *this;
+    if ( r.second )   {
+      sdet._data().parent = *this;
+      return *this;
+    }
     throw runtime_error("DetElement::add: Element "+string(sdet.name())+" is already present [Double-Insert]");
   }
   throw runtime_error("DetElement::add: Self is not defined [Invalid Handle]");

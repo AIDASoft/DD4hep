@@ -17,16 +17,16 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   string     det_name  = x_det.nameStr();
   string     det_type  = x_det.typeStr();
   Material   air       = lcdd.air();
-  DetElement sdet(lcdd,det_name,det_type,x_det.id());
+  DetElement sdet(det_name,det_type,x_det.id());
   Volume     motherVol = lcdd.pickMotherVolume(sdet);
   int n = 0;
     
   for(xml_coll_t i(x_det,_X(layer)); i; ++i, ++n)  {
     xml_comp_t x_layer = i;
     string  l_name = det_name+_toString(n,"_layer%d");
-    DetElement layer(lcdd,l_name,"MultiLayerTracker/Layer",x_layer.id());
+    DetElement layer(l_name,"MultiLayerTracker/Layer",x_layer.id());
     Tube    l_tub(lcdd,l_name);
-    Volume  l_vol(lcdd,l_name+"_volume",l_tub,air);
+    Volume  l_vol(lcdd,l_name,l_tub,air);
     double  z    = x_layer.outer_z();
     double  rmin = x_layer.inner_r();
     double  r    = rmin;
@@ -37,7 +37,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       Material mat = lcdd.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
       Tube   s_tub(lcdd,s_name);
-      Volume s_vol(lcdd,s_name+"_volume", s_tub, mat);
+      Volume s_vol(lcdd,s_name, s_tub, mat);
         
       r += x_slice.thickness();
       s_tub.setDimensions(r,r,2*z,2*M_PI);

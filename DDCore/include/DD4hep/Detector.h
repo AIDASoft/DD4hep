@@ -90,18 +90,21 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct DetElement : public Ref_t   {
+      typedef Ref_t                            Parent;
       typedef std::map<std::string,DetElement> Children;
       typedef std::vector<PlacedVolume>        Placements;
 
       struct Object  {
         unsigned int      magic;
         int               id;
+	std::string       path;
         int               combine_hits;
+        Volume            volume;
         Readout           readout;
         Alignment         alignment;
-        Volume            volume;
         Conditions        conditions;
         Placements        placements;
+	Parent            parent;
         Children          children;
 	/// Default constructor
         Object();
@@ -118,13 +121,17 @@ namespace DD4hep {
       
       /// Default constructor
       DetElement() : Ref_t()  {}
+
       /// Default constructor
       template<typename Q> DetElement(Q* data, const std::string& name, const std::string& type) : Ref_t(data)  
       {  this->assign(data, name, type);                   }
       /// Templated constructor for handle conversions
       template<typename Q> DetElement(const Handle<Q>& e) : Ref_t(e)  {}
-      /// Constructor for a new subdetector element
+      /// DEPRECATED: Constructor for a new subdetector element. First argument lcdd is unused!
       DetElement(const LCDD& lcdd, const std::string& name, const std::string& type, int id);
+
+      /// Constructor for a new subdetector element
+      DetElement(const std::string& name, const std::string& type, int id);
 
       /// Clone (Deep copy) the DetElement structure with a new name
       DetElement clone(const std::string& new_name) const;
@@ -135,6 +142,7 @@ namespace DD4hep {
       DetElement&     add(const DetElement& sub_element);
       int             id() const;
       std::string     type() const;
+      std::string     path() const;
       bool            isTracker() const;
       bool            isCalorimeter() const;
       //bool            isInsideTrackingVolume() const;
