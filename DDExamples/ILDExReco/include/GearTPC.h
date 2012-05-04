@@ -6,9 +6,12 @@
 //  Author     : M.Frank
 //
 //====================================================================
+#ifndef GEARTPC_H
+#define GEARTPC_H
 
 #include "DD4hep/Detector.h"
 #include "DDTPCModule.h"
+#include <Exceptions.h> 
 
 namespace DD4hep {
   
@@ -19,7 +22,9 @@ namespace DD4hep {
     
     double getInnerRadius() const;
     double getOuterRadius() const;
-    double getEndPlateThickness() const;
+    double getEndPlateThickness(int endplate) const;
+    double getEndPlateZPosition(int endplate) const;
+    DetElement getEndPlate(int endplate) const;
     void listDetElements() const;
     
     /** The maximum drift length in the TPC in mm.
@@ -42,6 +47,11 @@ namespace DD4hep {
      */
     bool isInsideModule(double c0, double c1, int endplate) const;
  
-  
+    /** Returns vector of all modules on given endplate.
+     */
+    std::vector<DDTPCModule> getModules(int endplate) const;
+
+
   };
 }
+#endif

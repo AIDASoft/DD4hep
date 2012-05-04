@@ -85,11 +85,11 @@
              <rotation x="0" y="0" z="0"/>
             
              <modules name="TPC_Module" vis="TPCModuleVis">  
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="2" RowID="0"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="3" RowID="1"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="4" RowID="2"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="5" RowID="3"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout" nModules="6" RowID="4"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout0" nModules="2" RowID="0"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout1" nModules="3" RowID="1"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout1" nModules="4" RowID="2"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout2" nModules="5" RowID="3"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout2" nModules="6" RowID="4"/>
             </modules>  
            </detector>
 
@@ -112,9 +112,18 @@
     </detectors>
 
     <readouts>
-        <!--readout name="PadLayout"-->
-           <!--pads type="FixedPadSizeLayout" offset_r="0.5" offset_phi="0.5" padPitch="9.0" rowHeight="10"/--> 
-        <!--/readout-->
+        <readout name="PadLayout0">
+          <segmentation type="ProjectiveCylinder"  phiBins="4.0" thetaBins="5.0"/> 
+          <id>system:6</id>
+        </readout>
+       <readout name="PadLayout1">
+          <segmentation type="ProjectiveCylinder"  phiBins="9.0" thetaBins="9.0"/> 
+          <id>system:7</id>
+        </readout>
+       <readout name="PadLayout2">
+          <segmentation type="ProjectiveCylinder"  phiBins="10.0" thetaBins="6.0"/> 
+          <id>system:8</id>
+        </readout>
     </readouts>
  
    <fields>

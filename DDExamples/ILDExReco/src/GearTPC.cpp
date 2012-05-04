@@ -14,7 +14,6 @@
 #include "TGeoTube.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
-#include "DDTPCEndPlate.h"
 #include <iostream>
 #include <limits>
 
@@ -28,38 +27,46 @@ namespace DD4hep {
   
   double GearTPC::getInnerRadius() const {
     DetElement innerWall   = child("TPC_InnerWall");
+    if(!innerWall.isValid())
+      throw OutsideGeometryException("Inner TPC wall not found!");
     Tube       tube  = innerWall.volume().solid();
     return tube->GetRmin();
   }
   double GearTPC::getOuterRadius() const {
     DetElement outerWall   = child("TPC_OuterWall");
+    if(!outerWall.isValid())
+      throw OutsideGeometryException("Outer TPC wall not found!");
     Tube       tube  = outerWall.volume().solid();
     return tube->GetRmax();
   }
 
   double GearTPC::getMaxDriftLength() const {
     DetElement gas   = child("TPC_GasVolume");
+    if(!gas.isValid())
+      throw OutsideGeometryException("TPC gas volume not found!");
     Tube       tube  = gas.volume().solid();
     return tube->GetDz();
   }
 
-  double GearTPC::getEndPlateThickness() const {
-    DetElement ep   = child("TPC_EndPlate");
+  double GearTPC::getEndPlateThickness(int endplate) const {
+    DetElement ep=getEndPlate(endplate); 
     Tube       tube  = ep.volume().solid();
     return tube->GetDz();
   }
 
+  double GearTPC::getEndPlateZPosition(int endplate) const {
+    DetElement ep=getEndPlate(endplate);
+ 
+    //find z position of endplate
+    TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
+    const Double_t *trans=nm->GetTranslation();
+    return trans[2];
+  }
+
 
   int GearTPC::getNModules(int endplate) const {
-    string name;
-    if(endplate==1)
-      name="TPC_EndPlate_negativ";
-    else
-      name="TPC_EndPlate";
-    
-    DDTPCEndPlate ep(child(name));
-    
-    return ep.getNModules();
+    DetElement ep=getEndPlate(endplate);
+    return ep.children().size();;
   }
 
   void GearTPC::listDetElements() const {
@@ -74,12 +81,7 @@ namespace DD4hep {
   }
   
   DDTPCModule GearTPC::getModule(int ID, int endplate) const {
-    DetElement ep;
-    if(endplate==1)
-      ep= child("TPC_EndPlate_negativ");
-    else
-      ep= child("TPC_EndPlate");
-    
+    DetElement ep=getEndPlate(endplate);
     string myname;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
@@ -94,16 +96,9 @@ namespace DD4hep {
   }
   
   bool GearTPC::isInsideModule(double c0, double c1, int endplate) const{
-    DetElement ep;
-    if(endplate==1)
-      ep= child("TPC_EndPlate_negativ");
-    else
-      ep= child("TPC_EndPlate");
-    
+    DetElement ep=getEndPlate(endplate);
     //find z position of endplate
-    TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
-    const Double_t *trans=nm->GetTranslation();
-    double zpos=trans[2];
+    double zpos=getEndPlateZPosition(endplate);
        
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
@@ -132,16 +127,9 @@ namespace DD4hep {
   
   
   DDTPCModule GearTPC::getNearestModule(double c0, double c1, int endplate) const{
-    DetElement ep;
-    if(endplate==1)
-      ep= child("TPC_EndPlate_negativ");
-    else
-      ep= child("TPC_EndPlate");
-   
+    DetElement ep=getEndPlate(endplate);
     //find z position of endplate
-    TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
-    const Double_t *trans=nm->GetTranslation();
-    double zpos=trans[2];
+    double zpos=getEndPlateZPosition(endplate);
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
     Double_t point[3];
@@ -178,8 +166,33 @@ namespace DD4hep {
 	    neighbour=it->second;
 	  }
       }
-    std::cout<<"MINIMUM: "<<safe_dist<<" for "<<neighbour.placements()[0]->GetName()<<" "<<neighbour.id()<<std::endl;
+    // std::cout<<"MINIMUM: "<<safe_dist<<" for "<<neighbour.placements()[0]->GetName()<<" "<<neighbour.id()<<std::endl;
     return neighbour;
   }
+
+
+  std::vector<DDTPCModule> GearTPC::getModules(int endplate) const {
+    DetElement ep=getEndPlate(endplate);
+     
+    std::vector<DDTPCModule> allmods;
+    std::map<std::string,DetElement>::const_iterator it;
+    for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
+      {
+	allmods.push_back(it->second);
+      }
+    return allmods;
+  }
   
+ DetElement GearTPC::getEndPlate(int endplate) const {
+    DetElement ep;
+    if(endplate==1)
+      ep= child("TPC_EndPlate_negativ");
+    else
+      ep= child("TPC_EndPlate");
+    if(!ep.isValid())
+      throw OutsideGeometryException("TPC endplate not found!");
+
+    return ep;
+  }
+ 
 }

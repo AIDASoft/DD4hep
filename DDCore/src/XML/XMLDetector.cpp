@@ -167,7 +167,7 @@ double Dimension::rowPitch() const {
   return m_element.attr<int>(Attr_rowPitch);
 }
 
-string Dimension::padStr()  const  {
+string Dimension::padType()  const  {
   return m_element.attr<string>(Attr_pads);
 }
 

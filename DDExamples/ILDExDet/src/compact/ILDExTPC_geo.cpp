@@ -15,7 +15,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
+static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
   xml_det_t   x_det = e;
   xml_comp_t  x_tube (x_det.child(_X(tubs)));
   string      name  = x_det.nameStr();
@@ -66,15 +66,17 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	  Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
 	  Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
 	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
-
-	  //placing modules
+	  Readout xml_pads(lcdd.readout(row.padType()));
+	  		
+	 //placing modules
 	  for(int md=0;md<nmodules;md++){
 	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
+	    DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
 	    //data of module, e.g. Readout
-	    Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
-	    tpcModData->id = mdcount;
-	    //DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
-	    DetElement  module (tpcModData,m_nam,row.typeStr());
+	    // Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
+	    // tpcModData->id = mdcount;
+	    // DetElement  module (tpcModData,m_nam,row.typeStr());
+	    module.setReadout(xml_pads);
 	    mdcount++;
 	    double posx=0,posy=0,posz=0;
 	    double rotx=0,roty=0,rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
@@ -97,9 +99,9 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
     if(reflect){
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
-      //FIX me: det element does not have a pointer to the children of a second placement
       // needs a copy function for DetElement
-      DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
+      // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
+      DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1); 
       rdet.addPlacement(part_phv2);
       tpc.add(rdet);
     }
