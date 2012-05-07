@@ -33,7 +33,7 @@ int main(int argc,char** argv)  {
   //new stuff, only works with file:../DDExamples/ILDExDet/compact/ILDExTPC.xml 
 
   cout << "-----> GearTPC: Endplate: " << tpc.getEndPlateThickness(0) <<" "<< tpc.getEndPlateZPosition(0)<<" "<< tpc.getEndPlateZPosition(1)<< endl;
-
+  tpc.listDetElements();
   cout << "TPC MODULES:"<<endl;
   std::vector<DDTPCModule> mymods=tpc.getModules(0);
   cout << "-----> GearTPC: NModules: " << tpc.getNModules(0) <<" "<<tpc.getNModules(1)<<" "<<mymods.size()<< endl;
@@ -53,7 +53,7 @@ int main(int argc,char** argv)  {
 //   cout << "-----> GearTPC: Nearest Module (0,0): "<<tpc.getNearestModule(0,0,0).getID()<<endl;
 //   cout << "-----> GearTPC: Nearest Module (-100,-200): "<<tpc.getNearestModule(-100,-200,0).getID()<<endl;
 //   cout << "-----> GearTPC: Nearest Module (2000,2000): "<<tpc.getNearestModule(2000,2000,0).getID()<<endl;
-
+/*
     cout << "TPC MODULE PADS:"<<endl;
     int tot=0;
     for(int m=0;m<tpc.getNModules(0);m++)
@@ -70,11 +70,6 @@ int main(int argc,char** argv)  {
 	 <<" "<<tpc.getModule(10,0).getPadIndex(tpc.getModule(10,0).getRowNumber(15),tpc.getModule(10,0).getPadNumber(15))<<endl;
     cout <<"-----> GearTPC: row number pad 58: "<< tpc.getModule(10,0).getRowNumber(58)<<" "<<tpc.getModule(10,0).getPadNumber(58)
 	 <<" "<<tpc.getModule(10,0).getPadIndex(tpc.getModule(10,0).getRowNumber(58),tpc.getModule(10,0).getPadNumber(58))<<endl;
-    std::vector<double> center1=tpc.getModule(0,0).getPadCenter(10);
-    cout <<"-----> GearTPC: Center of mod0/pad10: "<<center1[0]<<" "<<center1[1]<<endl;
-    std::vector<double> center2=tpc.getModule(1,0).getPadCenter(10);
-    cout <<"-----> GearTPC: Center of mod1/pad10: "<<center2[0]<<" "<<center2[1]<<endl;
-   
     std::vector<double> center3=tpc.getModule(5,0).getPadCenter(5);
     cout <<"-----> GearTPC: Center of mod5/pad5: "<<center3[0]<<" "<<center3[1]<<endl;
     std::vector<double> center3a=tpc.getModule(5,0).getPadCenter(20);
@@ -83,13 +78,21 @@ int main(int argc,char** argv)  {
     cout <<"-----> GearTPC: Center of mod5/pad0: "<<center3b[0]<<" "<<center3b[1]<<endl;
     std::vector<double> center4=tpc.getModule(6,0).getPadCenter(0);
     cout <<"-----> GearTPC: Center of mod6/pad0: "<<center4[0]<<" "<<center4[1]<<endl;
- 
+*/
+    cout <<"Enplate POSITIV"<<endl;
+    std::vector<double> center1=tpc.getModule(0,0).getPadCenter(10);
+    cout <<"-----> GearTPC: Center of mod0/pad10: "<<center1[0]<<" "<<center1[1]<<endl;
+    std::vector<double> center2=tpc.getModule(1,0).getPadCenter(10);
+    cout <<"-----> GearTPC: Center of mod1/pad10: "<<center2[0]<<" "<<center2[1]<<endl;
+    cout <<"Enplate NEGATIVE"<<endl;
     std::vector<double> center1a=tpc.getModule(0,1).getPadCenter(10);
     cout <<"-----> GearTPC: Center of mod0/pad10: "<<center1a[0]<<" "<<center1a[1]<<endl;
     std::vector<double> center2a=tpc.getModule(1,1).getPadCenter(10);
     cout <<"-----> GearTPC: Center of mod1/pad10: "<<center2a[0]<<" "<<center2a[1]<<endl;
     //cout <<"-----> GearTPC:Exception test: "<<tpc.getModule(6,0).getRowNumber(100)<<endl;
-    
+
+    /*    
+    cout <<"Neighbours"<<endl;
     cout <<"-----> GearTPC: RightNeighbour of 0: "<<tpc.getModule(0,0).getRightNeighbour(0)<<endl;
       //	 <<" "<<tpc.getModule(0,0).getRightNeighbour(7)<<endl;
     cout <<"-----> GearTPC: LeftNeighbour of 3: "<<tpc.getModule(0,0).getLeftNeighbour(3)<<endl;
@@ -100,6 +103,6 @@ int main(int argc,char** argv)  {
     cout <<"-----> GearTPC: Nearest Pad 5: "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
     cout <<"-----> GearTPC: Nearest Pad 20: "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
     cout <<"-----> GearTPC: Nearest Pad: "<<tpc.getModule(5,0).getNearestPad(591, 760)<<endl;
-
+    */
    return 0;
 }

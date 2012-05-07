@@ -36,7 +36,7 @@ void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
   volume       = source.volume;
   alignment    = Alignment();
   conditions   = Conditions();
-  parent       = ((flag&COPY_PARENT)    == COPY_PARENT) ? source.parent : DetElement();
+  parent       = source.parent;
   placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placement : PlacedVolume();
 
   placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placements : Placements();
@@ -44,8 +44,10 @@ void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
     const DetElement::Object& d = (*i).second._data();
     const TNamed* pc = (*i).second.ptr();
     DetElement child(d.construct(d.id,COPY_PLACEMENT|COPY_PARENT),pc->GetName(),pc->GetTitle());
+    //child._data().parent = DetElement(Ref_t(this));
     children.insert(make_pair((*i).first,child));
   }
+  if ( 0 == (flag&COPY_PARENT) ) parent = DetElement();
 }
 
 

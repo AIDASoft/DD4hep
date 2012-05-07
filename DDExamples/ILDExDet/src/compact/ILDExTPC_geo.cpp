@@ -97,7 +97,10 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     tpc.add(part_det);
     //now reflect it
     if(reflect){
-      PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Position(px_pos.x(),px_pos.y(),-px_pos.z()),Rotation(0,M_PI,0));
+      Position r_pos(px_pos.x(),px_pos.y(),-px_pos.z());
+      Rotation r_rot(0,M_PI,0);
+      // Volume      part_vol_r(lcdd,part_nam+"_negativ",part_tub,part_mat);
+      PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,r_pos,r_rot);
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
       // needs a copy function for DetElement
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);

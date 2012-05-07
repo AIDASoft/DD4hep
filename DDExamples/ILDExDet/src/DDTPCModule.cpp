@@ -113,19 +113,30 @@ namespace DD4hep {
     Double_t point_global_m[3];
     point_local[0]=pad_x;
     point_local[1]=pad_y;
-    point_local[2]=getModuleZPosition();
-    //this will give coordinates in the system of the mother (=endplate) not the world
-    placements()[0]->LocalToMaster(point_local, point_global);
-    //need to loop the whole tree back to world
-    TGeoManager *geom=placements()[0]->GetMotherVolume()->GetGeoManager();
-    geom->LocalToMaster(point_global, point_global_m);
-//     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
-//     std::cout<<"Mother: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
-//     std::cout<<"Mother 2: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
+    point_local[2]=0;//getModuleZPosition();
 
+    TGeoManager *geom=volume()->GetGeoManager();
+    std::cout<<name()<<" "<<placements().size()<<" "<<volume()->GetName()<<" "<<geom->GetTopNode()->GetName()<<" "<<geom->GetTopVolume()->GetName()<<" "<<geom->GetMasterVolume()->GetName()<<std::endl;
+
+    //this will give coordinates in the system of the mother (=endplate) not the world
+    //need to loop the whole tree back to world
+    placements()[0]->LocalToMaster(point_local, point_global);
+    std::cout<<"I am ok"<<std::endl;
+    DetElement parent=_data().parent;
+    std::cout<<"I am ok "<<parent.ptr() << " " << typeid(*parent.ptr()).name() << std::endl;
+    std::cout<<"I am ok "<<parent.ptr()->GetName() << " " << typeid(*parent.ptr()).name() << std::endl;
+    //  parent.placements()[0]->LocalToMaster(point_global, point_global_m);
+    std::cout<<parent.name()<<" "<<parent.placements().size()<<std::endl;
+    std::cout<<"I am ok"<<std::endl;
+    //    geom->TopToMaster(point_global, point_global_m);
+    //    geom->MasterToTop(point_global, point_global_m);
+    
+    std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+    std::cout<<"Master: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
+    std::cout<<"Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
     std::vector<double> center;
-    center.push_back(point_global_m[0]);
-    center.push_back(point_global_m[1]);
+    center.push_back(point_global[0]);
+    center.push_back(point_global[1]);
     return center;
   }
   
@@ -136,6 +147,7 @@ namespace DD4hep {
     point_global[0]=c0;
     point_global[1]=c1;
     point_global[2]=getModuleZPosition();
+    //FIXME: careful: master is mother not global=world, input is in world coordinates
     placements()[0]->MasterToLocal(point_global, point_local);
     //check if it is on that module
     bool onMod=volume().solid()->Contains(point_local);
@@ -152,7 +164,9 @@ namespace DD4hep {
   }
  
   double DDTPCModule::getModuleZPosition() const {
+    std::cout<<"Here: P= "<<placements().size()<<std::endl;
     TGeoMatrix *nm=placements()[0]->GetMatrix();
+    std::cout<<"Still Here"<<std::endl;
     const Double_t *trans=nm->GetTranslation();
     return trans[2];
   }

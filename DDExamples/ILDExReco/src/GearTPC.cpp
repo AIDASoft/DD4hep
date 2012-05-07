@@ -74,14 +74,17 @@ namespace DD4hep {
     std::map<std::string,DetElement>::const_iterator it2;
     for ( it=children().begin() ; it != children().end(); it++ )
       {
-	std::cout << it->first << "  " << it->second._data().id << std::endl;
+	std::cout << it->first << "  " << it->second._data().id <<std::endl;
+	for(int p=0;p<it->second.placements().size();p++)
+	  std::cout<<"Placement "<<p<<" "<<it->second.placements()[p]->GetName()<< std::endl;
 	for ( it2=it->second.children().begin() ; it2 != it->second.children().end(); it2++ )
-	  std::cout <<"   "<< it2->first << "  " << it2->second._data().id << std::endl;
+	  std::cout <<"   "<< it2->first << "  " << it2->second._data().id << " "<<it2->second.placements().size()<<std::endl;
       }
   }
   
   DDTPCModule GearTPC::getModule(int ID, int endplate) const {
     DetElement ep=getEndPlate(endplate);
+    std::cout<<"On Endplate: "<<ep.name()<<" "<<ep.placements().size()<<" "<<ep.children().size()<<std::endl;
     string myname;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
@@ -92,6 +95,7 @@ namespace DD4hep {
 	    break;
 	  }
       }
+    std::cout<<"Child P: "<<ep.child(myname).placements().size()<<std::endl;
     return ep.child(myname);
   }
   
@@ -107,6 +111,7 @@ namespace DD4hep {
     point[0]=c0;
     point[1]=c1;
     point[2]=zpos;
+    //FIXME: careful: master is mother not global=world, input is in world coordinates
     ep.placements()[0]->MasterToLocal(point, point_local);
     
     bool onMod=false;
@@ -137,6 +142,7 @@ namespace DD4hep {
     point[0]=c0;
     point[1]=c1;
     point[2]=zpos;
+   //FIXME: careful: master is mother not global=world, input is in world coordinates
     ep.placements()[0]->MasterToLocal(point, point_local);
     geoManager->SetCurrentPoint(point_local);
     bool onMod=false;
