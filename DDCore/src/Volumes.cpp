@@ -17,6 +17,9 @@
 #include "TGeoMatrix.h"
 #include "TGeoMedium.h"
 
+#include "TGeoVoxelFinder.h"
+#include "TGeoShapeAssembly.h"
+
 // C/C++ include files
 #include <climits>
 #include <iostream>
@@ -81,12 +84,98 @@ namespace DD4hep  { namespace Geometry  {
     : public _VolWrap<TGeoVolume>, public Volume::Object  {
     Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) : _VolWrap<TGeoVolume>(name,s,m) {magic = magic_word();}
     virtual ~Value() {}
+    virtual TGeoVolume* MakeCopyVolume(TGeoShape *newshape) {
+      // make a copy of this volume. build a volume with same name, shape and medium
+      TGeoVolume *vol = new Value<TGeoVolume,Volume::Object>(GetName(), newshape, fMedium);
+      vol->SetVisibility(IsVisible());
+      vol->SetLineColor(GetLineColor());
+      vol->SetLineStyle(GetLineStyle());
+      vol->SetLineWidth(GetLineWidth());
+      vol->SetFillColor(GetFillColor());
+      vol->SetFillStyle(GetFillStyle());
+      vol->SetField(fField);
+      if (fFinder) vol->SetFinder(fFinder);
+      CloneNodesAndConnect(vol);
+      ((TObject*)vol)->SetBit(kVolumeClone);
+      return vol;       
+    }
+    TGeoVolume* CloneVolume() const    {
+      TGeoVolume *vol = new Value<TGeoVolume,Volume::Object>(GetName(), fShape, fMedium);
+      Int_t i;
+      // copy volume attributes
+      vol->SetLineColor(GetLineColor());
+      vol->SetLineStyle(GetLineStyle());
+      vol->SetLineWidth(GetLineWidth());
+      vol->SetFillColor(GetFillColor());
+      vol->SetFillStyle(GetFillStyle());
+      // copy other attributes
+      Int_t nbits = 8*sizeof(UInt_t);
+      for (i=0; i<nbits; i++) 
+	vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
+      for (i=14; i<24; i++)
+	vol->SetBit(1<<i, TestBit(1<<i));   
+   
+      // copy field
+      vol->SetField(fField);
+      // Set bits
+      for (i=0; i<nbits; i++) 
+	vol->SetBit(1<<i, TObject::TestBit(1<<i));
+      vol->SetBit(kVolumeClone);   
+      // copy nodes
+      //   CloneNodesAndConnect(vol);
+      vol->MakeCopyNodes(this);   
+      // if volume is divided, copy finder
+      vol->SetFinder(fFinder);
+      // copy voxels
+      TGeoVoxelFinder *voxels = 0;
+      if (fVoxels) {
+	voxels = new TGeoVoxelFinder(vol);
+	vol->SetVoxelFinder(voxels);
+      }   
+      // copy option, uid
+      vol->SetOption(fOption);
+      vol->SetNumber(fNumber);
+      vol->SetNtotal(fNtotal);
+      return vol;
+    }
   };
   
   template <> struct Value<TGeoVolumeAssembly,Assembly::Object> 
     : public _VolWrap<TGeoVolumeAssembly>, public Assembly::Object  {
     Value(const char* name) : _VolWrap<TGeoVolumeAssembly>(name,0,0) {  magic = magic_word(); }
     virtual ~Value() {}
+
+    TGeoVolume *CloneVolume() const    {
+      TGeoVolume *vol = new Value<TGeoVolumeAssembly,Assembly::Object>(GetName());
+      Int_t i;
+      // copy other attributes
+      Int_t nbits = 8*sizeof(UInt_t);
+      for (i=0; i<nbits; i++) 
+	vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
+      for (i=14; i<24; i++)
+	vol->SetBit(1<<i, TestBit(1<<i));   
+   
+      // copy field
+      vol->SetField(fField);
+      // Set bits
+      for (i=0; i<nbits; i++) 
+	vol->SetBit(1<<i, TObject::TestBit(1<<i));
+      vol->SetBit(kVolumeClone);   
+      // make copy nodes
+      vol->MakeCopyNodes(this);
+      ((TGeoShapeAssembly*)vol->GetShape())->NeedsBBoxRecompute();
+      // copy voxels
+      TGeoVoxelFinder *voxels = 0;
+      if (fVoxels) {
+	voxels = new TGeoVoxelFinder(vol);
+	vol->SetVoxelFinder(voxels);
+      }   
+      // copy option, uid
+      vol->SetOption(fOption);
+      vol->SetNumber(fNumber);
+      vol->SetNtotal(fNtotal);
+      return vol;
+    }
   };
 }}
 

@@ -17,29 +17,33 @@ using namespace DD4hep::Geometry;
 /// Default constructor
 DetElement::Object::Object()  
   : magic(magic_word()), id(0), combine_hits(0), readout(), 
-    alignment(), placements(), parent(), children()
+    alignment(), placement(), placements(), parent(), children()
 {
 }
 
 /// Construct new empty object
-Value<TNamed,DetElement::Object>* DetElement::Object::construct(int new_id) const {
+Value<TNamed,DetElement::Object>* DetElement::Object::construct(int new_id, int flag) const {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
-  obj->deepCopy(*this,new_id);
+  obj->deepCopy(*this,new_id,flag);
   return obj;
 }
 
 /// Deep object copy to replicate DetElement trees e.g. for reflection
-void DetElement::Object::deepCopy(const Object& source, int new_id)  {
+void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
   id           = new_id;
   combine_hits = source.combine_hits;
   readout      = source.readout;
   volume       = source.volume;
   alignment    = Alignment();
   conditions   = Conditions();
-  placements   = Placements();
-  parent       = DetElement();
+  parent       = ((flag&COPY_PARENT)    == COPY_PARENT) ? source.parent : DetElement();
+  placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placement : PlacedVolume();
+
+  placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placements : Placements();
   for(DetElement::Children::const_iterator i=source.children.begin(); i != source.children.end(); ++i) {
-    DetElement child = (*i).second.clone((*i).second->GetName());
+    const DetElement::Object& d = (*i).second._data();
+    const TNamed* pc = (*i).second.ptr();
+    DetElement child(d.construct(d.id,COPY_PLACEMENT|COPY_PARENT),pc->GetName(),pc->GetTitle());
     children.insert(make_pair((*i).first,child));
   }
 }
@@ -129,17 +133,44 @@ DetElement::Placements DetElement::placements() const    {
 
 DetElement DetElement::clone(const string& new_name)  const  {
   if ( isValid() ) {
-    return DetElement(_data().construct(_data().id), new_name, ptr()->GetTitle());
+    return DetElement(_data().construct(_data().id,COPY_NONE), new_name, ptr()->GetTitle());
   }
   throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id)  const  {
   if ( isValid() ) {
-    return DetElement(_data().construct(new_id), new_name, ptr()->GetTitle());
+    return DetElement(_data().construct(new_id, COPY_NONE), new_name, ptr()->GetTitle());
   }
   throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
+
+/// Access to the physical volume of this detector element
+PlacedVolume DetElement::placement() const {
+  if ( isValid() ) {
+    Object& o = _data();
+    if ( o.placement.isValid() )  {
+      return o.placement;
+    }
+  }
+  return PlacedVolume();
+}
+
+/// Set the physical volumes of the detector element
+DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
+  if ( isValid() ) {
+    if ( placement.isValid() )  {
+      Object& o = _data();
+      o.placement = placement;
+      o.volume = placement.volume();
+      placement.setDetElement(*this);
+      return *this;
+    }
+    throw runtime_error("DetElement::addPlacement: Placement is not defined [Invalid Handle]");
+  }
+  throw runtime_error("DetElement::addPlacement: Self is not defined [Invalid Handle]");
+}
+
 
 DetElement& DetElement::addPlacement(const PlacedVolume& placement)  {
   if ( isValid() ) {

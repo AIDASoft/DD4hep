@@ -93,7 +93,14 @@ namespace DD4hep {
       typedef Ref_t                            Parent;
       typedef std::map<std::string,DetElement> Children;
       typedef std::vector<PlacedVolume>        Placements;
-
+      
+      enum {
+	COPY_NONE      = 0,
+	COPY_PLACEMENT = 1<<0,
+	COPY_PARENT    = 1<<1,
+	COPY_ALIGNMENT = 1<<2,
+	LAST            
+      } CopyParameters;
       struct Object  {
         unsigned int      magic;
         int               id;
@@ -103,15 +110,16 @@ namespace DD4hep {
         Readout           readout;
         Alignment         alignment;
         Conditions        conditions;
+	PlacedVolume      placement;
         Placements        placements;
 	Parent            parent;
         Children          children;
 	/// Default constructor
         Object();
 	/// Construct new empty object
-	virtual Value<TNamed,Object>* construct(int new_id) const;
+	virtual Value<TNamed,Object>* construct(int new_id, int flag) const;
 	/// Deep object copy to replicate DetElement trees e.g. for reflection
-	virtual void deepCopy(const Object& source, int new_id);
+	virtual void deepCopy(const Object& source, int new_id, int flag);
       };
 
       /// Additional data accessor
@@ -166,10 +174,16 @@ namespace DD4hep {
       /// Assign readout definition
       DetElement&     setReadout(const Readout& readout);
       
+      /// Access to the physical volume of this detector element
+      PlacedVolume    placement() const;
+      /// Set the physical volumes of the detector element
+      DetElement&     setPlacement(const PlacedVolume& volume);
+
       /// Access the physical volumes of the detector element
       Placements      placements() const;
       /// Set the physical volumes of the detector element
       DetElement&     addPlacement(const PlacedVolume& volume);
+
       /// Access to the logical volume of the placements (all daughters have the same!)
       Volume          volume() const;
       
