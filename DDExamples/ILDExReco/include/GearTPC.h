@@ -3,14 +3,14 @@
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
 //
-//  Author     : M.Frank
+//  Author     : M.Frank, A. Muennich
 //
 //====================================================================
 #ifndef GEARTPC_H
 #define GEARTPC_H
 
 #include "DD4hep/Detector.h"
-#include "DDTPCModule.h"
+#include "TPCModule.h"
 #include <Exceptions.h> 
 
 namespace DD4hep {
@@ -20,11 +20,23 @@ namespace DD4hep {
   struct GearTPC : public Geometry::DetElement {
     GearTPC(const Geometry::Ref_t& e);
     
+    /** Inner Radius of the TPC in mm.
+     */
     double getInnerRadius() const;
+    /** Outer Radius of the TPC in mm.
+     */
     double getOuterRadius() const;
+    /** Thickness of the Endplate of the TPC in mm.
+     */
     double getEndPlateThickness(int endplate) const;
+    /** Positon in z of the Endplate of the TPC in mm.
+     */
     double getEndPlateZPosition(int endplate) const;
+    /** Used as helper function for access to  Endplate of the TPC.
+     */
     DetElement getEndPlate(int endplate) const;
+     /** For debugging: List all elements and their children belonging to the TPC.
+     */
     void listDetElements() const;
     
     /** The maximum drift length in the TPC in mm.
@@ -37,11 +49,11 @@ namespace DD4hep {
     
     /** Returns the module with given id from endplate 0 or 1.
      */
-    DDTPCModule getModule(int ID,int endplate) const;
+    TPCModule getModule(int ID,int endplate) const;
     
     /** Returns nearest module to given coordinates (3D) on endplate (default 0 or 1, see compact xml).
      */
-    DDTPCModule getNearestModule (double c0, double c1,int endplate) const;
+    TPCModule getNearestModule (double c0, double c1,int endplate) const;
   
     /** Check if coordinate is on a module on given endplate.
      */
@@ -49,7 +61,7 @@ namespace DD4hep {
  
     /** Returns vector of all modules on given endplate.
      */
-    std::vector<DDTPCModule> getModules(int endplate) const;
+    std::vector<TPCModule> getModules(int endplate) const;
 
 
   };

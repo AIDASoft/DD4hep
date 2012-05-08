@@ -8,7 +8,6 @@
 //====================================================================
 
 #include "DD4hep/Detector.h"
-//#include "DDTPCPadRowLayout.h"
 
 namespace DD4hep {
   
@@ -22,6 +21,5 @@ namespace DD4hep {
     int nRows ;
     int nPads ;
     
-    //  DDTPCPadRowLayout *padRowLayout;
   };
 }

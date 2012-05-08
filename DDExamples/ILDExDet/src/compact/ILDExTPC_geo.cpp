@@ -75,6 +75,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	    //data of module, e.g. Readout
 	    // Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
 	    // tpcModData->id = mdcount;
+	    //tpcModData->padGap=5;
 	    // DetElement  module (tpcModData,m_nam,row.typeStr());
 	    module.setReadout(xml_pads);
 	    mdcount++;
@@ -98,7 +99,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     //now reflect it
     if(reflect){
       Position r_pos(px_pos.x(),px_pos.y(),-px_pos.z());
-      Rotation r_rot(0,M_PI,0);
+      //Attention: rotation is given in euler angles
+      Rotation r_rot(M_PI,0,M_PI);
       // Volume      part_vol_r(lcdd,part_nam+"_negativ",part_tub,part_mat);
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,r_pos,r_rot);
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);

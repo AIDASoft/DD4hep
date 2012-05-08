@@ -3,8 +3,9 @@
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
 //
-//  Author     : M.Frank
-//
+//  Author     : A. Muennich
+//  
+//  Creating the functionality of GEAR::TPCParameters
 //====================================================================
 
 #include "GearTPC.h"
@@ -26,6 +27,8 @@ namespace DD4hep {
   }
   
   double GearTPC::getInnerRadius() const {
+    // finding child by name not optimal, maybe better
+    // to store the pointer in TPCData for quicker access
     DetElement innerWall   = child("TPC_InnerWall");
     if(!innerWall.isValid())
       throw OutsideGeometryException("Inner TPC wall not found!");
@@ -56,8 +59,7 @@ namespace DD4hep {
 
   double GearTPC::getEndPlateZPosition(int endplate) const {
     DetElement ep=getEndPlate(endplate);
- 
-    //find z position of endplate
+    //find z position of endplate via the matrix of the placement
     TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
     const Double_t *trans=nm->GetTranslation();
     return trans[2];
@@ -65,6 +67,8 @@ namespace DD4hep {
 
 
   int GearTPC::getNModules(int endplate) const {
+    //only works if the endplate has only modules as children
+    //otherwise a name check is required
     DetElement ep=getEndPlate(endplate);
     return ep.children().size();;
   }
@@ -74,17 +78,15 @@ namespace DD4hep {
     std::map<std::string,DetElement>::const_iterator it2;
     for ( it=children().begin() ; it != children().end(); it++ )
       {
-	std::cout << it->first << "  " << it->second._data().id <<std::endl;
-	for(int p=0;p<it->second.placements().size();p++)
-	  std::cout<<"Placement "<<p<<" "<<it->second.placements()[p]->GetName()<< std::endl;
+	std::cout << it->first << "  " << it->second._data().id <<" "<<it->second.placements().size()<<std::endl;
 	for ( it2=it->second.children().begin() ; it2 != it->second.children().end(); it2++ )
 	  std::cout <<"   "<< it2->first << "  " << it2->second._data().id << " "<<it2->second.placements().size()<<std::endl;
       }
   }
   
-  DDTPCModule GearTPC::getModule(int ID, int endplate) const {
+  TPCModule GearTPC::getModule(int ID, int endplate) const {
+    //ID is defined in the compact xml
     DetElement ep=getEndPlate(endplate);
-    std::cout<<"On Endplate: "<<ep.name()<<" "<<ep.placements().size()<<" "<<ep.children().size()<<std::endl;
     string myname;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
@@ -95,15 +97,12 @@ namespace DD4hep {
 	    break;
 	  }
       }
-    std::cout<<"Child P: "<<ep.child(myname).placements().size()<<std::endl;
     return ep.child(myname);
   }
   
   bool GearTPC::isInsideModule(double c0, double c1, int endplate) const{
     DetElement ep=getEndPlate(endplate);
-    //find z position of endplate
     double zpos=getEndPlateZPosition(endplate);
-       
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
     Double_t point[3];
@@ -131,9 +130,8 @@ namespace DD4hep {
   }
   
   
-  DDTPCModule GearTPC::getNearestModule(double c0, double c1, int endplate) const{
+  TPCModule GearTPC::getNearestModule(double c0, double c1, int endplate) const{
     DetElement ep=getEndPlate(endplate);
-    //find z position of endplate
     double zpos=getEndPlateZPosition(endplate);
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
@@ -149,7 +147,7 @@ namespace DD4hep {
     std::map<std::string,DetElement>::const_iterator it;
     //check if any of the modules contains that point
     double safe_dist=numeric_limits<double>::max();
-    DDTPCModule neighbour;
+    TPCModule neighbour;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {
  	Double_t point_local_node[3];
@@ -158,7 +156,7 @@ namespace DD4hep {
 
 	if(onMod)
 	  {
-	    std::cout<<"Point is on "<<it->second.volume()->GetName()<<" "<<it->second.volume().solid()->GetName()<<" id: "<<it->second.id()<<std::endl;
+	    //std::cout<<"Point is on "<<it->second.volume()->GetName()<<" "<<it->second.volume().solid()->GetName()<<" id: "<<it->second.id()<<std::endl;
 	    return it->second;
 	  }
 	
@@ -177,10 +175,10 @@ namespace DD4hep {
   }
 
 
-  std::vector<DDTPCModule> GearTPC::getModules(int endplate) const {
+  std::vector<TPCModule> GearTPC::getModules(int endplate) const {
     DetElement ep=getEndPlate(endplate);
      
-    std::vector<DDTPCModule> allmods;
+    std::vector<TPCModule> allmods;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {

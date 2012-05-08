@@ -6,22 +6,22 @@
 //  Author     : A.Muennich
 //
 //====================================================================
-#ifndef DDTPCMODULE_H
-#define DDTPCMODULE_H
+#ifndef TPCMODULE_H
+#define TPCMODULE_H
 
 #include "DD4hep/Detector.h"
 #include <Exceptions.h> 
-//#include "DDTPCPadRowLayout.h"
 
 namespace DD4hep {
   
-   
-  struct DDTPCModule : public Geometry::DetElement {
+  
+  struct TPCModule : public Geometry::DetElement {
     typedef Geometry::Ref_t Ref_t;
-    DDTPCModule() {}
-    DDTPCModule(const Ref_t& e) : Geometry::DetElement(e) {}
-    DDTPCModule(const Geometry::DetElement& e) : Geometry::DetElement(e) {}
-    DDTPCModule(const Geometry::LCDD& lcdd, const std::string& name, const std::string& type, int id);
+    //various constructors
+    TPCModule() {}
+    TPCModule(const Ref_t& e) : Geometry::DetElement(e) {}
+    TPCModule(const Geometry::DetElement& e) : Geometry::DetElement(e) {}
+    TPCModule(const Geometry::LCDD& lcdd, const std::string& name, const std::string& type, int id);
     /** ID of this module.
      */
     int getID() const;
@@ -39,7 +39,7 @@ namespace DD4hep {
     int  getNPadsInRow(int row)const;
      /** The height of a given row on this module.
      */
-    double getRowHeight (int rowNumber) const;
+    double getRowHeight (int row) const;
     /** The pad pitch (sensitive plus surroundings = effective size) of a given pad on this module.
      */
     double getPadPitch (int padIndex) const;
