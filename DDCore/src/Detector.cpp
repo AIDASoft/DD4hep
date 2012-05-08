@@ -30,24 +30,29 @@ Value<TNamed,DetElement::Object>* DetElement::Object::construct(int new_id, int 
 
 /// Deep object copy to replicate DetElement trees e.g. for reflection
 void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
+  DetElement self(Ref_t(dynamic_cast<Value<TNamed,Object>*>(this)));
   id           = new_id;
   combine_hits = source.combine_hits;
   readout      = source.readout;
   volume       = source.volume;
   alignment    = Alignment();
   conditions   = Conditions();
-  parent       = source.parent;
+  parent       = DetElement();
   placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placement : PlacedVolume();
-
   placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placements : Placements();
+  children.clear();
   for(DetElement::Children::const_iterator i=source.children.begin(); i != source.children.end(); ++i) {
     const DetElement::Object& d = (*i).second._data();
     const TNamed* pc = (*i).second.ptr();
-    DetElement child(d.construct(d.id,COPY_PLACEMENT|COPY_PARENT),pc->GetName(),pc->GetTitle());
-    //child._data().parent = DetElement(Ref_t(this));
-    children.insert(make_pair((*i).first,child));
+    DetElement child(d.construct(d.id,COPY_PLACEMENT),pc->GetName(),pc->GetTitle());
+    pair<Children::iterator,bool> r = children.insert(make_pair(child.name(),child));
+    if ( r.second )   {
+      child._data().parent = self;
+    }
+    else {
+      throw runtime_error("DetElement::add: Element "+string(child.name())+" is already present [Double-Insert]");
+    }
   }
-  if ( 0 == (flag&COPY_PARENT) ) parent = DetElement();
 }
 
 
@@ -173,13 +178,12 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
   throw runtime_error("DetElement::addPlacement: Self is not defined [Invalid Handle]");
 }
 
-
+// OBSOLETE: to be replaced by setPlacement
 DetElement& DetElement::addPlacement(const PlacedVolume& placement)  {
   if ( isValid() ) {
     if ( placement.isValid() )  {
       _data().placements.push_back(placement);
-      _data().volume = placement.volume();
-      placement.setDetElement(*this);
+      setPlacement(placement);
       return *this;
     }
     throw runtime_error("DetElement::addPlacement: Placement is not defined [Invalid Handle]");

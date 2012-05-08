@@ -116,24 +116,37 @@ namespace DD4hep {
     point_local[2]=0;//getModuleZPosition();
 
     TGeoManager *geom=volume()->GetGeoManager();
-    std::cout<<name()<<" "<<placements().size()<<" "<<volume()->GetName()<<" "<<geom->GetTopNode()->GetName()<<" "<<geom->GetTopVolume()->GetName()<<" "<<geom->GetMasterVolume()->GetName()<<std::endl;
+    DetElement parent   = _data().parent;
+    DetElement p_parent = parent._data().parent;
+    std::cout << "Module:\t"   << name() << " "<<placements().size() << " Volume:" << volume()->GetName() << std::endl
+	      << "\tTop:\t"     << geom->GetTopNode()->GetName()  << " TopVol:" << geom->GetTopVolume()->GetName() << std::endl
+	      << "\tMaster:\t"  << geom->GetMasterVolume()->GetName() << std::endl;
+    std::cout << "\tParent:\t" << parent->GetName() << " " << parent.ptr() << " " << typeid(*parent.ptr()).name() 
+              << " Placement:" << parent.placement().ptr() 
+	      << " Volume:"    << p_parent.placement()->GetVolume()->GetName() 
+	      << std::endl;
 
     //this will give coordinates in the system of the mother (=endplate) not the world
     //need to loop the whole tree back to world
-    placements()[0]->LocalToMaster(point_local, point_global);
-    std::cout<<"I am ok"<<std::endl;
-    DetElement parent=_data().parent;
-    std::cout<<"I am ok "<<parent.ptr() << " " << typeid(*parent.ptr()).name() << std::endl;
-    std::cout<<"I am ok "<<parent.ptr()->GetName() << " " << typeid(*parent.ptr()).name() << std::endl;
-    //  parent.placements()[0]->LocalToMaster(point_global, point_global_m);
-    std::cout<<parent.name()<<" "<<parent.placements().size()<<std::endl;
-    std::cout<<"I am ok"<<std::endl;
+    placement()->LocalToMaster(point_local, point_global);
+    std::cout << "\t\tParent:" << p_parent->GetName() << " " << p_parent.ptr() 
+	      << " Placement:" << p_parent.placement().ptr() 
+	      << " Volume:"    << p_parent.placement()->GetVolume()->GetName() 
+	      << std::endl;
+
+    TGeoNode* top = geom->GetTopNode();
+    std::cout << "I am ok " << parent.placement()->GetMotherVolume()->GetName() <<" Top:" <<top<< std::endl;
+    // parent.placements()[0]->LocalToMaster(point_global, point_global_m);
     //    geom->TopToMaster(point_global, point_global_m);
     //    geom->MasterToTop(point_global, point_global_m);
-    
     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
     std::cout<<"Master: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
+    parent.placement()->LocalToMaster(point_global, point_global_m);
     std::cout<<"Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
+
+
+    //->LocalToMaster(point_global, point_global_m);
+    //std::cout<<"Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
     std::vector<double> center;
     center.push_back(point_global[0]);
     center.push_back(point_global[1]);
