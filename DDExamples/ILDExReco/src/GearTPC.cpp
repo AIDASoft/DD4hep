@@ -122,7 +122,7 @@ namespace DD4hep {
 	onMod=it->second.volume().solid()->Contains(point_local_node);
 	if(onMod)
 	  {
-	    std::cout<<"Point is on "<<it->second.volume()->GetName()<<" id: "<<it->second.id()<<std::endl;
+	    //std::cout<<"Point is on "<<it->second.volume()->GetName()<<" id: "<<it->second.id()<<std::endl;
 	    return onMod;
 	  }
       }

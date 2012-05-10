@@ -79,9 +79,9 @@ int main(int argc,char** argv)  {
   cout <<"-----> Nearest Pad 591, 760:\t "<<tpc.getModule(5,0).getNearestPad(591, 760)<<endl;
   
   try{
-    cout <<"-----> Exception test: "<<tpc.getModule(6,0).getRowNumber(100)<<endl;
+    int row=tpc.getModule(6,0).getRowNumber(100);
   }
-  catch(OutsideGeometryException e){};
+  catch(OutsideGeometryException e){cout<<"-----> Exception test: "<<e.what()<<endl;};
 
     
    return 0;
