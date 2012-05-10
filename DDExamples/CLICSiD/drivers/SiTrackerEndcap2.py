@@ -21,7 +21,7 @@ def detector_SiTrackerEndcap2(lcdd, det):
       if mod.vis : vol.setVisAttributes(lcdd.visAttributes(mod.vis))
       phv = m_volume.placeVolume(vol, Position(0e0, posY + c.thickness/2e0, 0e0))
       phv.addPhysVolID('component', c_id)
-      if c.getB('sentivite'):
+      if c.getB('sensitive'):
         if n_sensor > 1 : print 'SiTrackerEndcap2::fromCompact: '+c_name+' Max of 2 modules allowed!'
         phv.addPhysVolID('sensor',c_id)
         #vol.setSensitiveDetector(sens)

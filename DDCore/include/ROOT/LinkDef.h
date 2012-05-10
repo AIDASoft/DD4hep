@@ -21,6 +21,7 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::Volume;
 #pragma link C++ class DD4hep::Geometry::VisAttr;
 #pragma link C++ class DD4hep::Geometry::Limit;
+#pragma link C++ class DD4hep::Geometry::AlignmentEntry;
 #pragma link C++ class DD4hep::Geometry::DetElement;
 #pragma link C++ class DD4hep::Geometry::Box;
 #pragma link C++ class DD4hep::Geometry::Tube;

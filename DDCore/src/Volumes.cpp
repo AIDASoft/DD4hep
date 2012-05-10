@@ -30,15 +30,15 @@ using namespace std;
 using namespace DD4hep::Geometry;
 
 namespace DD4hep  { namespace Geometry  {
-
+  
   template <> struct Value<TGeoNodeMatrix,PlacedVolume::Object> 
-    : public TGeoNodeMatrix, public PlacedVolume::Object  
+  : public TGeoNodeMatrix, public PlacedVolume::Object  
   {
     Value(const TGeoVolume* v, const TGeoMatrix* m) : TGeoNodeMatrix(v,m), PlacedVolume::Object() {
       magic = magic_word();
     }
   };
-
+  
   template <class T> struct _VolWrap : public T  {
     _VolWrap(const char* name, TGeoShape* s=0, TGeoMedium* m=0);
     virtual ~_VolWrap() {}
@@ -47,41 +47,41 @@ namespace DD4hep  { namespace Geometry  {
       if (matrix==0) matrix = gGeoIdentity;
       else           matrix->RegisterYourself();
       if (!vol) {
-	this->T::Error("AddNode", "Volume is NULL");
-	return;
+        this->T::Error("AddNode", "Volume is NULL");
+        return;
       }
       if (!vol->IsValid()) {
-	this->T::Error("AddNode", "Won't add node with invalid shape");
-	printf("### invalid volume was : %s\n", vol->GetName());
-	return;
+        this->T::Error("AddNode", "Won't add node with invalid shape");
+        printf("### invalid volume was : %s\n", vol->GetName());
+        return;
       }   
       if (!this->T::fNodes) this->T::fNodes = new TObjArray();   
-
+      
       if (this->T::fFinder) {
-	// volume already divided.
-	this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no, this->T::GetName());
-	return;
+        // volume already divided.
+        this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no, this->T::GetName());
+        return;
       }
-
+      
       TGeoNodeMatrix *node = new Value<TGeoNodeMatrix,PlacedVolume::Object>(vol, matrix);
       //node = new TGeoNodeMatrix(vol, matrix);
       node->SetMotherVolume(this);
       this->T::fNodes->Add(node);
       TString name = TString::Format("%s_%d", vol->GetName(), copy_no);
       if (this->T::fNodes->FindObject(name))
-	this->T::Warning("AddNode", "Volume %s : added node %s with same name", this->T::GetName(), name.Data());
+        this->T::Warning("AddNode", "Volume %s : added node %s with same name", this->T::GetName(), name.Data());
       node->SetName(name);
       node->SetNumber(copy_no);
     }
   };
-
+  
   template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
-    : TGeoVolume(name,s,m) {}
+  : TGeoVolume(name,s,m) {}
   template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
-    : TGeoVolumeAssembly(name) {}
+  : TGeoVolumeAssembly(name) {}
   
   template <> struct Value<TGeoVolume,Volume::Object>
-    : public _VolWrap<TGeoVolume>, public Volume::Object  {
+  : public _VolWrap<TGeoVolume>, public Volume::Object  {
     Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) : _VolWrap<TGeoVolume>(name,s,m) {magic = magic_word();}
     virtual ~Value() {}
     virtual TGeoVolume* MakeCopyVolume(TGeoShape *newshape) {
@@ -111,15 +111,15 @@ namespace DD4hep  { namespace Geometry  {
       // copy other attributes
       Int_t nbits = 8*sizeof(UInt_t);
       for (i=0; i<nbits; i++) 
-	vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
+        vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
       for (i=14; i<24; i++)
-	vol->SetBit(1<<i, TestBit(1<<i));   
-   
+        vol->SetBit(1<<i, TestBit(1<<i));   
+      
       // copy field
       vol->SetField(fField);
       // Set bits
       for (i=0; i<nbits; i++) 
-	vol->SetBit(1<<i, TObject::TestBit(1<<i));
+        vol->SetBit(1<<i, TObject::TestBit(1<<i));
       vol->SetBit(kVolumeClone);   
       // copy nodes
       //   CloneNodesAndConnect(vol);
@@ -129,8 +129,8 @@ namespace DD4hep  { namespace Geometry  {
       // copy voxels
       TGeoVoxelFinder *voxels = 0;
       if (fVoxels) {
-	voxels = new TGeoVoxelFinder(vol);
-	vol->SetVoxelFinder(voxels);
+        voxels = new TGeoVoxelFinder(vol);
+        vol->SetVoxelFinder(voxels);
       }   
       // copy option, uid
       vol->SetOption(fOption);
@@ -141,25 +141,25 @@ namespace DD4hep  { namespace Geometry  {
   };
   
   template <> struct Value<TGeoVolumeAssembly,Assembly::Object> 
-    : public _VolWrap<TGeoVolumeAssembly>, public Assembly::Object  {
+  : public _VolWrap<TGeoVolumeAssembly>, public Assembly::Object  {
     Value(const char* name) : _VolWrap<TGeoVolumeAssembly>(name,0,0) {  magic = magic_word(); }
     virtual ~Value() {}
-
+    
     TGeoVolume *CloneVolume() const    {
       TGeoVolume *vol = new Value<TGeoVolumeAssembly,Assembly::Object>(GetName());
       Int_t i;
       // copy other attributes
       Int_t nbits = 8*sizeof(UInt_t);
       for (i=0; i<nbits; i++) 
-	vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
+        vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
       for (i=14; i<24; i++)
-	vol->SetBit(1<<i, TestBit(1<<i));   
-   
+        vol->SetBit(1<<i, TestBit(1<<i));   
+      
       // copy field
       vol->SetField(fField);
       // Set bits
       for (i=0; i<nbits; i++) 
-	vol->SetBit(1<<i, TObject::TestBit(1<<i));
+        vol->SetBit(1<<i, TObject::TestBit(1<<i));
       vol->SetBit(kVolumeClone);   
       // make copy nodes
       vol->MakeCopyNodes(this);
@@ -167,8 +167,8 @@ namespace DD4hep  { namespace Geometry  {
       // copy voxels
       TGeoVoxelFinder *voxels = 0;
       if (fVoxels) {
-	voxels = new TGeoVoxelFinder(vol);
-	vol->SetVoxelFinder(voxels);
+        voxels = new TGeoVoxelFinder(vol);
+        vol->SetVoxelFinder(voxels);
       }   
       // copy option, uid
       vol->SetOption(fOption);
@@ -292,24 +292,24 @@ void Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
   }
   else  {
     /*
-    string tag = this->name();
-    if ( ::strstr(tag.c_str(),"_slice") )       // Slices turned off by default
-      setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
-    else if ( ::strstr(tag.c_str(),"_layer") )  // Layers turned off, but daughters possibly visible
-      setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
-    else if ( ::strstr(tag.c_str(),"_module") ) // Tracker modules similar to layers
-      setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
-    else if ( ::strstr(tag.c_str(),"_module_component") ) // Tracker modules similar to layers
-      setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
-    */
+     string tag = this->name();
+     if ( ::strstr(tag.c_str(),"_slice") )       // Slices turned off by default
+     setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
+     else if ( ::strstr(tag.c_str(),"_layer") )  // Layers turned off, but daughters possibly visible
+     setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
+     else if ( ::strstr(tag.c_str(),"_module") ) // Tracker modules similar to layers
+     setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
+     else if ( ::strstr(tag.c_str(),"_module_component") ) // Tracker modules similar to layers
+     setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
+     */
   }
 }
 
 /// Attach attributes to the volume
 void Volume::setAttributes(const LCDD& lcdd,
-			   const string& region, 
-			   const string& limits, 
-			   const string& vis)   const
+                           const string& region, 
+                           const string& limits, 
+                           const string& vis)   const
 {
   if ( !region.empty() ) setRegion(lcdd.region(region));
   if ( !limits.empty() ) setLimitSet(lcdd.limitSet(limits));
@@ -393,7 +393,7 @@ string PlacedVolume::toString() const {
   stringstream s;
   Object* obj = data<Object>();
   s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
-    << "' mat:'" << m_element->GetMatrix()->GetName() << "' volID[" << obj->volIDs.size() << "] ";
+  << "' mat:'" << m_element->GetMatrix()->GetName() << "' volID[" << obj->volIDs.size() << "] ";
   for(VolIDs::const_iterator i=obj->volIDs.begin(); i!=obj->volIDs.end();++i)
     s << (*i).first << "=" << (*i).second << "  ";
   s << ends;

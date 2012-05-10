@@ -9,6 +9,7 @@ LCDD       = DD4hep.Geometry.LCDD
 Constant   = DD4hep.Geometry.Constant
 Material   = DD4hep.Geometry.Material
 VisAttr    = DD4hep.Geometry.VisAttr
+AlignmentEntry = DD4hep.Geometry.AlignmentEntry
 Limit      = DD4hep.Geometry.Limit
 DetElement = DD4hep.Geometry.DetElement
 Box        = DD4hep.Geometry.Box
@@ -40,7 +41,8 @@ def _getFloat(self,*attrib):
   sval = self.get(attrib[0], None)
   if not sval and len(attrib) > 1: return attrib[1]
   else: return float(eval(sval.replace('(int)',''), constants))
-def _getBool(self,attrib): return self.get(attrib).lower() in ('true', 'yes', 'on') 
+def _getBool(self,attrib): 
+  return self.get(attrib, '').lower() in ('true', 'yes', 'on') 
 xml._ElementInterface.getI = _getInt
 xml._ElementInterface.getF = _getFloat
 xml._ElementInterface.getB = _getBool
@@ -78,10 +80,13 @@ xml._ElementInterface.rmax = property(lambda self: self.getF('rmax'))
 
 
 def getRotation(rot):
-  return Rotation(rot.getF('x',0.0),rot.getF('y',0.0), rot.getF('z',0.0))
+  if rot is not None : return Rotation(rot.getF('x',0.0),rot.getF('y',0.0), rot.getF('z',0.0))
+  else   : return Rotation()
 
 def getPosition(pos):
-  return Position(pos.getF('x',0.0),pos.getF('y',0.0), pos.getF('z',0.0))
+  if pos is not None : return Position(pos.getF('x',0.0),pos.getF('y',0.0), pos.getF('z',0.0))
+  else   : return Position()
+
 drivers['getRotation'] = getRotation
 drivers['getPosition'] = getPosition
 
@@ -141,6 +146,15 @@ def process_includes(lcdd, elem):
     fname = c.get('ref')
     if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
     load_drivers(fname)
+  for c in elem.findall('alignment'):
+    print 'Adding Alignment file ...', c.get('ref')
+    fname = c.get('ref').replace('file:','')
+    if not path.isabs(fname): fname = path.join(path.dirname(current_xmlfile),fname)
+    process_xmlfile(lcdd, fname)
+
+#---------------------------------------------------------------------------------
+def process_info(lcdd, elem):
+  pass
 
 #---------------------------------------------------------------------------------
 def process_define(lcdd, elem):
@@ -221,10 +235,11 @@ def process_material(lcdd, m):
 def process_display(lcdd, elem):
   for v in elem.findall('vis'):
     #print 'Adding vis ...', v.name
-    visattr = VisAttr(lcdd,v.name)
-    r =  'r' in v.keys() and v.getF('r') or 1.0
-    g =  'g' in v.keys() and v.getF('g') or 1.0
-    b =  'b' in v.keys() and v.getF('b') or 1.0
+    visattr = VisAttr(lcdd, v.name)
+    r,g,b = 1.,1.,1.
+    if 'r' in v.keys() : r = v.getF('r')    
+    if 'g' in v.keys() : g = v.getF('g')
+    if 'b' in v.keys() : b = v.getF('b')
     visattr.setColor(r,g,b)    
     if 'showDaughters' in v.keys() : visattr.setShowDaughters(v.getB('showDaughters'))
     if 'visible' in v.keys() : visattr.setVisible(v.getB('visible'))
@@ -259,4 +274,20 @@ def process_detectors(lcdd, elem):
       lcdd.addDetector(detector)
     else : 
       print 'Detector type %s not found' % d.get('type')
+
+#-----------------------------------------------------------------------------------
+def process_alignments(lcdd, elem):
+  for a in elem.findall('alignment'):
+    process_alignment(lcdd, a)
+
+#-----------------------------------------------------------------------------------
+def process_alignment(lcdd, elem):
+  alignment = AlignmentEntry(lcdd, elem.name)
+  pos = getPosition(elem.find('position'))
+  rot = getRotation(elem.find('rotation'))
+  print pos.isNull(), rot.isNull()
+  alignment.align(pos,rot)
+  return alignment
+
+
 

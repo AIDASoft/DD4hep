@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
 #---Options-------------------------------------------------------------------------
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" ON)
-option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" ON)
+option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" OFF)
 
 find_package(ROOT REQUIRED)
 if(DD4HEP_USE_XERCESC)

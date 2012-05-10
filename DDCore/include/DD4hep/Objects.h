@@ -106,7 +106,7 @@ namespace DD4hep {
       /// Initializing constructor
       Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {}
       /// Is it a identity rotation ?
-      bool isNull() const { return x==0 && x==0 && x==0; }
+      bool isNull() const { return x==0 && y==0 && z==0; }
     };
 
     /** @class IdentityPos Objects.h
