@@ -113,15 +113,15 @@
 
     <readouts>
         <readout name="PadLayout0">
-          <segmentation type="ProjectiveCylinder"  phiBins="4.0" thetaBins="5.0"/> 
+          <segmentation type="ProjectiveCylinder"  phiBins="240" thetaBins="21"/> 
           <id>system:6</id>
         </readout>
        <readout name="PadLayout1">
-          <segmentation type="ProjectiveCylinder"  phiBins="9.0" thetaBins="9.0"/> 
+          <segmentation type="ProjectiveCylinder"  phiBins="260" thetaBins="21"/> 
           <id>system:7</id>
         </readout>
        <readout name="PadLayout2">
-          <segmentation type="ProjectiveCylinder"  phiBins="10.0" thetaBins="6.0"/> 
+          <segmentation type="ProjectiveCylinder"  phiBins="280" thetaBins="21"/> 
           <id>system:8</id>
         </readout>
     </readouts>

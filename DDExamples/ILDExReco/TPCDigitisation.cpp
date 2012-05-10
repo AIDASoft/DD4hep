@@ -49,79 +49,81 @@ int main(int argc,char** argv)  {
   out_tree->Branch("chargeDeposition",&chargeDeposition);
   
   //read in File with space points of energy deposits
-  //Event Loop
+  TFile *input=new TFile("TPCSimulation_Output.root","READ");
+  int EvID_in;
+  std::vector<double> *xPos=0;
+  std::vector<double> *yPos=0;
+  std::vector<double> *zPos=0;
+  std::vector<double> *charge=0;
+  TTree *sim_data = (TTree*)gDirectory->Get("SimTree");
+  // Set branch addresses.
+  sim_data->SetBranchAddress("EvID",&EvID_in);			 
+  sim_data->SetBranchAddress("xPos",&xPos) ;		 
+  sim_data->SetBranchAddress("yPos",&yPos) ;		 
+  sim_data->SetBranchAddress("zPos",&zPos) ;		 
+  sim_data->SetBranchAddress("charge",&charge) ;		 
   
-  double spacepoint[20][4];
-  //test fill
-  for(int p=0;p<10;p++)
-    {
-      spacepoint[p][0]=0;
-      spacepoint[p][1]=tpc.getInnerRadius()+(tpc.getOuterRadius()-tpc.getInnerRadius())*p/10;
-      spacepoint[p][2]=tpc.getMaxDriftLength()*p/10;
-      spacepoint[p][3]=1;
-    }
-  for(int p=10;p<20;p++)
-    {
-      spacepoint[p][0]=spacepoint[p-10][0];
-      spacepoint[p][1]=spacepoint[p-10][1];
-      spacepoint[p][2]=spacepoint[p-10][2]+10;
-      spacepoint[p][3]=4;
-    }
-
   //container to hold the count of pads hit
   //map<pair<moduleID,padID>,vector<z,Q>
   std::map< std::pair<int,int> , std::pair<double,double>  > padmap;
   map< std::pair<int,int> , std::pair<double,double> >::iterator it;
-  //loop the spacepoints x,y,z,E
-  for(int p=0;p<20;p++)
+
+  //Event Loop
+  for(int i=0;i<sim_data->GetEntries();i++)
     {
-      double x=spacepoint[p][0];
-      double y=spacepoint[p][1];
-      double z=spacepoint[p][2];
-      double E=spacepoint[p][3];
-
-      int endplate=0;
-      if(z<0)
-	endplate=1;
-      //check if point is over module. If not move to next point
-      if(!tpc.isInsideModule(x,y,endplate))
-	continue;
-      TPCModule mymod=tpc.getNearestModule(x,y,endplate);
-      int modID=mymod.getID();
-      int padID= mymod.getNearestPad(x,y);
-      cout<<p<<"\t"<<spacepoint[p][0]<<"\t"<<spacepoint[p][1]<<"\t"<<spacepoint[p][2]<<"\t"<<modID<<"\t"<<padID<<endl;  
-      std::pair<int,int> ID_pair=make_pair(modID,padID);;
-
-      //check if that pad has already been hit
-      it = padmap.find(ID_pair);
-      if(it!=padmap.end())
+      //pad loop
+      sim_data->GetEntry(i);
+      //loop the spacepoints x,y,z,E
+      for(int p=0;p<xPos->size();p++)
 	{
-	  double new_z=(it->second.first*it->second.second+z*E)/(it->second.second+E);
-	  double new_E=it->second.second+E;
-	  padmap[ID_pair]=make_pair(new_z,new_E);
-	}
-      else //create a new entry
+	  double x=(*xPos)[p];
+	  double y=(*yPos)[p];
+	  double z=(*zPos)[p];
+	  double E=(*charge)[p];
+
+	  int endplate=0;
+	  if(z<0)
+	    endplate=1;
+	  //check if point is over module. If not move to next point
+	  bool measured=tpc.isInsideModule(x,y,endplate);
+	  if(!measured)
+	    continue;
+	  TPCModule mymod=tpc.getNearestModule(x,y,endplate);
+	  int modID=mymod.getID();
+	  int padID= mymod.getNearestPad(x,y);
+	  std::pair<int,int> ID_pair=make_pair(modID,padID);
+	  
+	  //check if that pad has already been hit
+	  it = padmap.find(ID_pair);
+	  if(it!=padmap.end())
+	    {
+	      double new_z=(it->second.first*it->second.second+z*E)/(it->second.second+E);
+	      double new_E=it->second.second+E;
+	      padmap[ID_pair]=make_pair(new_z,new_E);
+	    }
+	  else //create a new entry
+	    {
+	      std::pair<double,double>  hit=make_pair(z,E);
+	      padmap[ID_pair]=hit;
+	    }
+	}//point loop
+
+      for ( it=padmap.begin() ; it != padmap.end(); it++ )
 	{
-	  std::pair<double,double>  hit=make_pair(z,E);
-	  padmap[ID_pair]=hit;
+	  moduleIDs.push_back(it->first.first);
+	  padIDs.push_back(it->first.second);
+	  zPositions.push_back(it->second.first);
+	  chargeDeposition.push_back(it->second.second);
 	}
+      EvID=EvID_in;
+      out_tree->Fill();
+      //clean up for next event
+      moduleIDs.clear();
+      padIDs.clear();
+      zPositions.clear();
+      chargeDeposition.clear();
+      padmap.clear();
     }
-
-  for ( it=padmap.begin() ; it != padmap.end(); it++ )
-    {
-      cout << it->first.first << "\t" <<(*it).first.second << "\t" << (*it).second.first <<"\t" << (*it).second.second << endl;
-      moduleIDs.push_back(it->first.first);
-      padIDs.push_back(it->first.second);
-      zPositions.push_back(it->second.first);
-      chargeDeposition.push_back(it->second.second);
-    }
-  out_tree->Fill();
-  //clean up for next event
-  moduleIDs.clear();
-  padIDs.clear();
-  zPositions.clear();
-  chargeDeposition.clear();
-
 
   //event loop ends, write file
   out_file->Write();

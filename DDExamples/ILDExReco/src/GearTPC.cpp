@@ -106,19 +106,22 @@ namespace DD4hep {
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
     Double_t point[3];
+    Double_t point_mother[3];
     Double_t point_local[3];
     point[0]=c0;
     point[1]=c1;
     point[2]=zpos;
     //FIXME: careful: master is mother not global=world, input is in world coordinates
-    ep.placements()[0]->MasterToLocal(point, point_local);
+    //ep.parent.placement()->MasterToLocal(point, point_mother);
+    ep.placement()->MasterToLocal(point, point_local);
+   
     
     bool onMod=false;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {
 	Double_t point_local_node[3];
- 	it->second.placements()[0]->MasterToLocal(point_local, point_local_node);
+ 	it->second.placement()->MasterToLocal(point_local, point_local_node);
 	onMod=it->second.volume().solid()->Contains(point_local_node);
 	if(onMod)
 	  {
@@ -136,13 +139,15 @@ namespace DD4hep {
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
     Double_t point[3];
+    Double_t point_mother[3];
     Double_t point_local[3];
     point[0]=c0;
     point[1]=c1;
     point[2]=zpos;
    //FIXME: careful: master is mother not global=world, input is in world coordinates
-    ep.placements()[0]->MasterToLocal(point, point_local);
-    geoManager->SetCurrentPoint(point_local);
+    //  ep.parent.placement()->MasterToLocal(point, point_mother);
+    ep.placement()->MasterToLocal(point, point_local);
+   
     bool onMod=false;
     std::map<std::string,DetElement>::const_iterator it;
     //check if any of the modules contains that point
