@@ -59,8 +59,8 @@ int main(int argc,char** argv)  {
       double theta=rndm->Uniform(40*M_PI/180,90*M_PI/180);
       //TPC half
       int sign_z=1;
-   //    if(i%2)
-//  	sign_z=-1;
+      if(i%2)
+ 	sign_z=-1;
       //point loop
       for (int p=0;p<NPOINTS;p++)
 	{
@@ -69,7 +69,7 @@ int main(int argc,char** argv)  {
 	  yPos.push_back(radius*sin(phi));
 	  zPos.push_back(sign_z*radius/tan(theta));
 	  charge.push_back(rndm->Uniform(5,10));
-	  //	  cout<<i<<"\t"<<p<<"\t"<<radius<<"\t"<<theta*180/M_PI<<"\t"<<sign_z*radius/tan(theta)<<"\t"<<tan(theta)<<endl;
+	  //cout<<i<<"\t"<<p<<"\t"<<radius<<"\t"<<theta*180/M_PI<<"\t"<<sign_z*radius/tan(theta)<<"\t"<<tan(theta)<<endl;
 	}
       EvID=i;
       out_tree->Fill();

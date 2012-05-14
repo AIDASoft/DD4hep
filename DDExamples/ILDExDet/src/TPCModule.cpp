@@ -131,7 +131,7 @@ namespace DD4hep {
     Double_t point_global_m[3];
     point_local[0]=pad_x;
     point_local[1]=pad_y;
-    point_local[2]=0;//getModuleZPosition();
+    point_local[2]=getModuleZPosition();
 
     TGeoManager *geom=volume()->GetGeoManager();
     DetElement parent   = _data().parent;
@@ -162,11 +162,18 @@ namespace DD4hep {
     //trafo to local coordinates
     Double_t point_local[3];
     Double_t point_global[3];
+    Double_t point_global_m[3];
     point_global[0]=c0;
     point_global[1]=c1;
     point_global[2]=getModuleZPosition();
     //FIXME: careful: master is mother not global=world, input is in world coordinates
-    placements()[0]->MasterToLocal(point_global, point_local);
+    DetElement parent   = _data().parent;
+    parent.placement()->MasterToLocal(point_global, point_global_m);
+    placements()[0]->MasterToLocal(point_global_m, point_local);
+  //   std::cout<<"Global: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
+//     std::cout<<"Mother: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
+//     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+    
     //check if it is on that module
     bool onMod=volume().solid()->Contains(point_local);
     if(!onMod)
@@ -174,7 +181,7 @@ namespace DD4hep {
     Tube tube=volume().solid();
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double radius=sqrt(point_local[0]*point_local[0]+point_local[1]*point_local[1]);
-    int row=(radius-tube->GetRmin())/getRowHeight(row);
+    int row=(radius-tube->GetRmin())/getRowHeight(0);
     //outer edge of last row belongs to last row
     if(row==getNRows())
       row=getNRows()-1;
@@ -185,7 +192,8 @@ namespace DD4hep {
   }
  
   double TPCModule::getModuleZPosition() const {
-    TGeoMatrix *nm=placements()[0]->GetMatrix();
+    DetElement parent   = _data().parent;
+    TGeoMatrix *nm=parent.placements()[0]->GetMatrix();
     const Double_t *trans=nm->GetTranslation();
     return trans[2];
   }

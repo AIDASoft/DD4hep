@@ -30,10 +30,13 @@ int main(int argc,char** argv)  {
   lcdd.fromCompact(argv[1]);
   // get the TPC
   GearTPC tpc(lcdd.detector("TPC"));
- 
-  // for 5x10 pads
+  //modules
+  double active_radius=tpc.getOuterRadius()-tpc.getInnerRadius();
+  int module_rows=6;
+  cout<<"pitch: "<<(active_radius-module_rows*200)/(module_rows+1)<<endl;
+  // for 2x10 pads
   double pad_height=10;
-  double pad_width=5;
+  double pad_width=2;
   std::vector<TPCModule> mymods=tpc.getModules(0);
   for(int m=0;m<mymods.size();m++)
     {

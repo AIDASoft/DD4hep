@@ -85,11 +85,11 @@
              <rotation x="0" y="0" z="0"/>
             
              <modules name="TPC_Module" vis="TPCModuleVis">  
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout0" nModules="2" RowID="0"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout1" nModules="3" RowID="1"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout1" nModules="4" RowID="2"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout2" nModules="5" RowID="3"/>
-              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="50" pads="PadLayout2" nModules="6" RowID="4"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="35" pads="PadLayout0" nModules="5" RowID="0"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="35" pads="PadLayout1" nModules="9" RowID="1"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="35" pads="PadLayout2" nModules="13" RowID="2"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="35" pads="PadLayout3" nModules="16" RowID="3"/>
+              <row type ="TubeSegment" moduleHeight="210" rowPitch="100" modulePitch="35" pads="PadLayout4" nModules="20" RowID="4"/>
             </modules>  
            </detector>
 
@@ -113,15 +113,27 @@
 
     <readouts>
         <readout name="PadLayout0">
-          <segmentation type="ProjectiveCylinder"  phiBins="240" thetaBins="21"/> 
+          <segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/> 
           <id>system:6</id>
         </readout>
        <readout name="PadLayout1">
-          <segmentation type="ProjectiveCylinder"  phiBins="260" thetaBins="21"/> 
+          <segmentation type="ProjectiveCylinder"  phiBins="667" thetaBins="21"/> 
           <id>system:7</id>
         </readout>
        <readout name="PadLayout2">
-          <segmentation type="ProjectiveCylinder"  phiBins="280" thetaBins="21"/> 
+          <segmentation type="ProjectiveCylinder"  phiBins="692" thetaBins="21"/> 
+          <id>system:8</id>
+        </readout>
+       <readout name="PadLayout3">
+          <segmentation type="ProjectiveCylinder"  phiBins="707" thetaBins="21"/> 
+          <id>system:8</id>
+        </readout>
+       <readout name="PadLayout4">
+          <segmentation type="ProjectiveCylinder"  phiBins="717" thetaBins="21"/> 
+          <id>system:8</id>
+        </readout>
+       <readout name="PadLayout5">
+          <segmentation type="ProjectiveCylinder"  phiBins="724" thetaBins="21"/> 
           <id>system:8</id>
         </readout>
     </readouts>

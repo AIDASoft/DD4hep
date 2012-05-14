@@ -112,9 +112,8 @@ namespace DD4hep {
     point[1]=c1;
     point[2]=zpos;
     //FIXME: careful: master is mother not global=world, input is in world coordinates
-    //ep.parent.placement()->MasterToLocal(point, point_mother);
     ep.placement()->MasterToLocal(point, point_local);
-   
+
     
     bool onMod=false;
     std::map<std::string,DetElement>::const_iterator it;
