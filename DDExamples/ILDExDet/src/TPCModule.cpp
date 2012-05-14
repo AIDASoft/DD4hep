@@ -68,7 +68,7 @@ namespace DD4hep {
   int TPCModule::getRowNumber(int pad)const {
     if(pad>getNPads())
       throw OutsideGeometryException("getRowNumber: Requested pad not on module querried!");
-    return pad / (getNPads()/getNRows());
+    return pad/getNPadsInRow(0);
   }
   
   double TPCModule::getPadPitch(int pad)const {
@@ -85,15 +85,15 @@ namespace DD4hep {
   int TPCModule::getPadNumber(int pad)const {
    if(pad>getNPads())
       throw OutsideGeometryException("getPadNumber: Requested pad not on module querried!");
-    return pad % (getNPads()/getNRows());
+    return pad % getNPadsInRow(0);
   }
 
   int TPCModule::getPadIndex(int row,int padNr)const {
-    if(padNr>(getNPads()/getNRows()))
+    if(padNr>=getNPadsInRow(row))
       throw OutsideGeometryException("getPadIndex: Requested pad not on module querried!");
-    if(row>getNRows())
+    if(row>=getNRows())
       throw OutsideGeometryException("getPadIndex: Requested row not on module querried!");
-    return padNr + row*(getNPads()/getNRows());
+    return padNr + row*getNPadsInRow(row);
   }
 
   int TPCModule::getRightNeighbour(int pad)const {
@@ -147,9 +147,9 @@ namespace DD4hep {
     //one further up the tree. framework should provilde local to world
     parent.placement()->LocalToMaster(point_global, point_global_m);
 
-    std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
-    std::cout<<"Master: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
-    std::cout<<"Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
+//     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+//     std::cout<<"Master: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
+//     std::cout<<"Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
 
 
     std::vector<double> center;
@@ -174,7 +174,10 @@ namespace DD4hep {
     Tube tube=volume().solid();
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double radius=sqrt(point_local[0]*point_local[0]+point_local[1]*point_local[1]);
-    int row=(radius-tube->GetRmin())/getRowHeight(0);
+    int row=(radius-tube->GetRmin())/getRowHeight(row);
+    //outer edge of last row belongs to last row
+    if(row==getNRows())
+      row=getNRows()-1;
     double pad_width=module_width/getNPadsInRow(row);    
     double angle=atan2(point_local[1],point_local[0])/M_PI*180;
     int padNr=static_cast<int>(angle/pad_width);

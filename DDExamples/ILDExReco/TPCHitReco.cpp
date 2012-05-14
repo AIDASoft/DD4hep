@@ -93,7 +93,6 @@ int main(int argc,char** argv)  {
       for ( it1=padmap_EP1.begin() ; it1 != padmap_EP1.end(); it1++ )
 	{
 	  TPCModule mymod=tpc.getModule(it1->first.first,0);
-	  cout << it1->first.first << "\t" <<(*it1).first.second <<" "<<mymod.getNPads()<< endl;
 	  std::vector<double> center=mymod.getPadCenter(it1->first.second);
 	   
 	  xPos.push_back(center[0]);

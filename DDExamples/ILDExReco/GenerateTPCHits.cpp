@@ -49,13 +49,14 @@ int main(int argc,char** argv)  {
 
   TRandom *rndm = new TRandom();
   //event loop
-  int NEVENTS=10;
-  int NPOINTS=100;
+  int NEVENTS=1000;
+  int NPOINTS=500;
   for(int i=0;i<NEVENTS;i++)
     {
       //random direction
       double phi=i*2*M_PI/NEVENTS;
-      double theta=40*M_PI/180+i*(50*M_PI/180)/NEVENTS;
+      //double theta=40*M_PI/180+i*(50*M_PI/180)/NEVENTS;
+      double theta=rndm->Uniform(40*M_PI/180,90*M_PI/180);
       //TPC half
       int sign_z=1;
    //    if(i%2)
