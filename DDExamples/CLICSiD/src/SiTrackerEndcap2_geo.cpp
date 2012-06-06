@@ -95,7 +95,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	pv.addPhysVolID("system",det_id).addPhysVolID("barrel",1);
 	pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	DetElement module (m_base,det_type+"/Module",det_id);
-	module.addPlacement(pv);
+	module.setPlacement(pv);
 	sdet.add(module);
           
 	if ( reflect ) {
@@ -105,7 +105,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	  pv.addPhysVolID("system",det_id).addPhysVolID("barrel",2);
 	  pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	  DetElement r_module (m_base+"_reflect",det_type+"/Module",det_id);
-	  r_module.addPlacement(pv);
+	  r_module.setPlacement(pv);
 	  sdet.add(r_module);
 	}
 	dz = -dz;

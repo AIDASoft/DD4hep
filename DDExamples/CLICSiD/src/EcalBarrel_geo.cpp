@@ -16,32 +16,33 @@ using namespace DD4hep::Geometry;
 
 static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
   static double tolerance = 0e0;
-  Layering    layering (e);
-  xml_det_t   x_det     = e;
-  Material    air       = lcdd.air();
-  Material    vacuum    = lcdd.vacuum();
-  int         det_id    = x_det.id();
-  string      det_name  = x_det.nameStr();
-  string      det_type  = x_det.typeStr();
-  xml_comp_t  x_staves  = x_det.child(_X(staves));
-  xml_comp_t  x_dim     = x_det.child(_X(dimensions));
-  int         nsides    = x_dim.numsides();
-  double      inner_r   = x_dim.rmin();
-  double      dphi      = 2*M_PI / nsides;
-  double      hphi      = dphi/2;
-  double      mod_z     = layering.totalThickness();
-  double      outer_r   = inner_r + mod_z;
-  double      totThick  = mod_z;
-  DetElement  sdet      (det_name,det_type,det_id);
-  Volume      motherVol = lcdd.pickMotherVolume(sdet);
+  Layering      layering (e);
+  xml_det_t     x_det     = e;
+  Material      air       = lcdd.air();
+  Material      vacuum    = lcdd.vacuum();
+  int           det_id    = x_det.id();
+  string        det_name  = x_det.nameStr();
+  string        det_type  = x_det.typeStr();
+  xml_comp_t    x_staves  = x_det.child(_X(staves));
+  xml_comp_t    x_dim     = x_det.child(_X(dimensions));
+  int           nsides    = x_dim.numsides();
+  double        inner_r   = x_dim.rmin();
+  double        dphi      = 2*M_PI / nsides;
+  double        hphi      = dphi/2;
+  double        mod_z     = layering.totalThickness();
+  double        outer_r   = inner_r + mod_z;
+  double        totThick  = mod_z;
+  DetElement    sdet      (det_name,det_type,det_id);
+  Volume        motherVol = lcdd.pickMotherVolume(sdet);
   PolyhedraRegular hedra(lcdd,det_name,nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
-  Volume      envelope  (lcdd,det_name,hedra,air);
-  PlacedVolume env_phv  = motherVol.placeVolume(envelope,Rotation(0,0,M_PI/nsides));
+  Volume        envelope  (lcdd,det_name,hedra,air);
+  PlacedVolume  env_phv   = motherVol.placeVolume(envelope,Rotation(0,0,M_PI/nsides));
 
   env_phv.addPhysVolID("system",det_id);
   env_phv.addPhysVolID("barrel",0);
-  sdet.addPlacement(env_phv);
+  sdet.setPlacement(env_phv);
 
+  DetElement    stave_det(det_name+"_stave0",det_type,det_id);
   double dx        = mod_z / std::sin(dphi); // dx per layer
   dx = 0;
     
@@ -89,7 +90,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	Volume     l_vol(lcdd,l_name,l_box,air);
 	DetElement layer(l_name,det_type+"/Layer",det_id);
 
-	sdet.add(layer);
+	stave_det.add(layer);
 	// Loop over the sublayers or slices for this layer.
 	int s_num = 0;
 	double s_pos_z = -(l_thickness / 2);
@@ -110,7 +111,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	  PlacedVolume slice_phv = l_vol.placeVolume(s_vol,Position(0,0,s_pos_z+s_thick/2));					
 	  slice_phv.addPhysVolID("layer", l_num);
 	  slice_phv.addPhysVolID("slice", s_num);
-	  slice.addPlacement(slice_phv);
+	  slice.setPlacement(slice_phv);
 	  // Increment Z position of slice.
 	  s_pos_z += s_thick;
 					
@@ -123,7 +124,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
 	PlacedVolume layer_phv = mod_vol.placeVolume(l_vol,l_pos);
 	layer_phv.addPhysVolID("layer", l_num);
-	layer.addPlacement(layer_phv);
+	layer.setPlacement(layer_phv);
 	// Increment to next layer Z position.
 	l_pos_z += l_thickness;	  
 	++l_num;
@@ -142,6 +143,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
   // Create nsides staves.
   for (int i = 0; i < nsides; i++, phi -= dphi)      { // i is module number
+    DetElement stave_det(det_name+_toString(i,"_stave%d"),det_type,x_det.id());
     // Compute the stave position
     double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
     double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
@@ -151,7 +153,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     pv.addPhysVolID("module",i);
     pv.addPhysVolID("system",det_id);
     pv.addPhysVolID("barrel",0);
-    sdet.addPlacement(pv);
+    sdet.add(i==0 ? stave_det : stave_det.clone(det_name+_toString(i,"_stave%d")));
+    stave_det.setPlacement(pv);
   }
 
   // Set envelope volume attributes.

@@ -60,7 +60,7 @@ namespace DD4hep {
   double GearTPC::getEndPlateZPosition(int endplate) const {
     DetElement ep=getEndPlate(endplate);
     //find z position of endplate via the matrix of the placement
-    TGeoMatrix *nm=ep.placements()[0]->GetMatrix();
+    TGeoMatrix *nm=ep.placement()->GetMatrix();
     const Double_t *trans=nm->GetTranslation();
     return trans[2];
   }
@@ -78,9 +78,9 @@ namespace DD4hep {
     std::map<std::string,DetElement>::const_iterator it2;
     for ( it=children().begin() ; it != children().end(); it++ )
       {
-	std::cout << it->first << "  " << it->second._data().id <<" "<<it->second.placements().size()<<std::endl;
+	std::cout << it->first << "  " << it->second._data().id <<" "<<std::endl;
 	for ( it2=it->second.children().begin() ; it2 != it->second.children().end(); it2++ )
-	  std::cout <<"   "<< it2->first << "  " << it2->second._data().id << " "<<it2->second.placements().size()<<std::endl;
+	  std::cout <<"   "<< it2->first << "  " << it2->second._data().id << " "<<it2->second.placement().isValid()<<std::endl;
       }
   }
   
@@ -155,7 +155,7 @@ namespace DD4hep {
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {
  	Double_t point_local_node[3];
- 	it->second.placements()[0]->MasterToLocal(point_local, point_local_node);
+ 	it->second.placement()->MasterToLocal(point_local, point_local_node);
   	onMod=it->second.volume().solid()->Contains(point_local_node);
 
 	if(onMod)
@@ -174,7 +174,7 @@ namespace DD4hep {
 	    neighbour=it->second;
 	  }
       }
-    // std::cout<<"MINIMUM: "<<safe_dist<<" for "<<neighbour.placements()[0]->GetName()<<" "<<neighbour.id()<<std::endl;
+    // std::cout<<"MINIMUM: "<<safe_dist<<" for "<<neighbour.placement()->GetName()<<" "<<neighbour.id()<<std::endl;
     return neighbour;
   }
 

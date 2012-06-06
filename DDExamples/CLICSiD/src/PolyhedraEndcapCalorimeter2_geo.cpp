@@ -81,7 +81,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 						Rotation(0,0,M_PI/numsides));
   physvol.addPhysVolID("system",det_id);
   physvol.addPhysVolID("barrel",1);        
-  sdet.addPlacement(physvol);
+  sdet.setPlacement(physvol);
     
   if ( reflect ) {
     physvol = motherVol.placeVolume(envelopeVol,
@@ -90,7 +90,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     physvol.addPhysVolID("system",det_id);
     physvol.addPhysVolID("barrel",2);
     DetElement rdet(det_name+"_reflect",det_type,x_det.id());
-    rdet.addPlacement(physvol);
+    rdet.setPlacement(physvol);
   }
   return sdet;
 }

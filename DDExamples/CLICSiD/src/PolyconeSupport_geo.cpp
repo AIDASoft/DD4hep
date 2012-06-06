@@ -33,7 +33,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   }
   cone.addZPlanes(rmin,rmax,z);
   volume.setVisAttributes(lcdd, x_det.visStr());
-  sdet.addPlacement(lcdd.pickMotherVolume(sdet).placeVolume(volume));
+  sdet.setPlacement(lcdd.pickMotherVolume(sdet).placeVolume(volume));
   return sdet;
 }
 

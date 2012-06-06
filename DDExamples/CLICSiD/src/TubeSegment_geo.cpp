@@ -29,7 +29,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
     mother.placeVolume(vol,Position(x_pos.x(),x_pos.y(),x_pos.z()),
                        Rotation(x_rot.x(),x_rot.y(),x_rot.z()));
   phv.addPhysVolID(_A(id),x_det.id());
-  sdet.addPlacement(phv);
+  sdet.setPlacement(phv);
   return sdet;
 }
 

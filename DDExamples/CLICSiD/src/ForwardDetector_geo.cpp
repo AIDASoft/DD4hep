@@ -135,7 +135,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 
 	// Place volume in layer
-	slice.addPlacement(layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ)));
+	slice.setPlacement(layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ)));
 	layer.add(slice);
 
 	// Start of next slice.
@@ -149,7 +149,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       // Layer PV.
       PlacedVolume layerPV = envelopeVol.placeVolume(layerVol,Position(0,0,layerPosZ));
       layerPV.addPhysVolID(_X(layer), i);
-      layer.addPlacement(layerPV);
+      layer.setPlacement(layerPV);
       sdet.add(layer);
 
       // Increment to start of next layer.
@@ -162,13 +162,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,zpos));
   env_phv.addPhysVolID(_X(system), id);
   env_phv.addPhysVolID(_X(barrel), 1);
-  sdet.addPlacement(env_phv);
+  sdet.setPlacement(env_phv);
   // Reflect it.
   if ( reflect )  {
     env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,-zpos),ReflectRot());
     env_phv.addPhysVolID(_X(system), id);
     env_phv.addPhysVolID(_X(barrel), 2);
-    sdet.addPlacement(env_phv);
+    DetElement rdet(det_name+"_reflect",det_type,x_det.id());
+    rdet.setPlacement(env_phv);
   }
   return sdet;
 }

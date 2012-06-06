@@ -63,7 +63,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     
   PlacedVolume physvol = lcdd.pickMotherVolume(sdet).placeVolume(envelopeVol,IdentityPos());
   physvol.addPhysVolID(_A(system),sdet.id()).addPhysVolID(_A(barrel),0);
-  sdet.addPlacement(physvol);
+  sdet.setPlacement(physvol);
   return sdet;
 }
 
