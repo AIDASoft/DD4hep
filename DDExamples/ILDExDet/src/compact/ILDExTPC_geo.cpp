@@ -85,7 +85,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	    Rotation    m_rot(rotx,roty,rotz);
 	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,m_pos,m_rot);
 	    m_phv.addPhysVolID("module",md);
-	    module.addPlacement(m_phv);
+	    module.setPlacement(m_phv);
 	    part_det.add(module);
 	  }//modules
 	}//rows
@@ -94,7 +94,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     
     PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
     part_phv.addPhysVolID(part_nam,px_det.id());
-    part_det.addPlacement(part_phv);
+    part_det.setPlacement(part_phv);
     tpc.add(part_det);
     //now reflect it
     if(reflect){
@@ -107,13 +107,13 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       // needs a copy function for DetElement
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1); 
-      rdet.addPlacement(part_phv2);
+      rdet.setPlacement(part_phv2);
       tpc.add(rdet);
     }
   }//subdetectors
   tpc_vol.setVisAttributes(lcdd, x_det.visStr());
   PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
-  tpc.addPlacement(phv);
+  tpc.setPlacement(phv);
   return tpc;
 }
 
