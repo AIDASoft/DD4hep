@@ -69,7 +69,7 @@ namespace DD4hep { namespace Geometry {
     if ( obj )  {
       char text[256];
       const DetElement& sd = val;
-      PlacedVolume plc = sd.placements()[0];
+      PlacedVolume plc = sd.placement();
       bool rdo = sd.readout().isValid();
       bool vis = plc.isValid();
       bool env = plc.isValid();

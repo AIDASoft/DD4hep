@@ -37,6 +37,29 @@ namespace DD4hep  { namespace Geometry  {
     Value(const TGeoVolume* v, const TGeoMatrix* m) : TGeoNodeMatrix(v,m), PlacedVolume::Object() {
       magic = magic_word();
     }
+    Value(const Value& c) : TGeoNodeMatrix(c.GetVolume(),c.GetMatrix()), PlacedVolume::Object(c) {
+    }
+    virtual TGeoNode *MakeCopyNode() const {
+      TGeoNodeMatrix *node = new Value<TGeoNodeMatrix,PlacedVolume::Object>(*this);
+      node->SetName(GetName());
+      // set the mother
+      node->SetMotherVolume(fMother);
+      // set the copy number
+      node->SetNumber(fNumber);
+      // copy overlaps
+      if (fNovlp>0) {
+	if (fOverlaps) {
+	  Int_t *ovlps = new Int_t[fNovlp];
+	  memcpy(ovlps, fOverlaps, fNovlp*sizeof(Int_t));
+	  node->SetOverlaps(ovlps, fNovlp);
+	} else {
+	  node->SetOverlaps(fOverlaps, fNovlp);
+	}
+      }
+      // copy VC
+      if (IsVirtual()) node->SetVirtual();
+      return node;
+    }
   };
   
   template <class T> struct _VolWrap : public T  {
@@ -44,20 +67,20 @@ namespace DD4hep  { namespace Geometry  {
     virtual ~_VolWrap() {}
     virtual void AddNode(const TGeoVolume *vol, Int_t copy_no, TGeoMatrix *mat, Option_t* = "") {
       TGeoMatrix *matrix = mat;
-      if (matrix==0) matrix = gGeoIdentity;
-      else           matrix->RegisterYourself();
-      if (!vol) {
+      if ( matrix == 0 ) matrix = gGeoIdentity;
+      else               matrix->RegisterYourself();
+      if (!vol)   {
         this->T::Error("AddNode", "Volume is NULL");
         return;
       }
-      if (!vol->IsValid()) {
+      if (!vol->IsValid())   {
         this->T::Error("AddNode", "Won't add node with invalid shape");
         printf("### invalid volume was : %s\n", vol->GetName());
         return;
-      }   
-      if (!this->T::fNodes) this->T::fNodes = new TObjArray();   
+      }
+      if ( !this->T::fNodes ) this->T::fNodes = new TObjArray();   
       
-      if (this->T::fFinder) {
+      if ( this->T::fFinder )    {
         // volume already divided.
         this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no, this->T::GetName());
         return;
@@ -99,7 +122,7 @@ namespace DD4hep  { namespace Geometry  {
       ((TObject*)vol)->SetBit(kVolumeClone);
       return vol;       
     }
-    TGeoVolume* CloneVolume() const    {
+    virtual TGeoVolume* CloneVolume() const    {
       TGeoVolume *vol = new Value<TGeoVolume,Volume::Object>(GetName(), fShape, fMedium);
       Int_t i;
       // copy volume attributes
@@ -177,20 +200,58 @@ namespace DD4hep  { namespace Geometry  {
       return vol;
     }
   };
+
 }}
 
+/// Add identifier
+PlacedVolume& PlacedVolume::addPhysVolID(const std::string& name, int value)   {
+  Object* obj = data<Object>();
+  obj->volIDs[name] = value;
+  return *this;
+}
 
+/// Volume material
+Material PlacedVolume::material() const 
+{  return Material::handle_t(m_element ? m_element->GetMedium()->GetMaterial() : 0);  }
+
+/// Logical volume of this placement
+Volume   PlacedVolume::volume() const 
+{  return Volume::handle_t(m_element ? m_element->GetVolume() : 0);                   }
+
+/// Parent volume (envelope)
+Volume PlacedVolume::motherVol() const 
+{  return Volume::handle_t(m_element ? m_element->GetMotherVolume() : 0);             }
+
+/// Access to the volume IDs
+const PlacedVolume::VolIDs& PlacedVolume::volIDs() const 
+{  return data<Object>()->volIDs;                                                     }
+
+/// String dump
+string PlacedVolume::toString() const {
+  stringstream s;
+  Object* obj = data<Object>();
+  s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
+    << "' mat:'" << m_element->GetMatrix()->GetName() << "' volID[" << obj->volIDs.size() << "] ";
+  for(VolIDs::const_iterator i=obj->volIDs.begin(); i!=obj->volIDs.end();++i)
+    s << (*i).first << "=" << (*i).second << "  ";
+  s << ends;
+  return s.str();
+}
+
+/// Constructor to be used when creating a new geometry tree.
 Volume::Volume(LCDD& lcdd, const string& name)    {
   m_element = new Value<TGeoVolume,Volume::Object>(name.c_str());
   lcdd.addVolume(*this);
 }
 
+/// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
 Volume::Volume(LCDD& lcdd, const string& name, const Solid& s, const Material& m) {
   m_element = new Value<TGeoVolume,Volume::Object>(name.c_str(),s);
   setMaterial(m);
   lcdd.addVolume(*this);
 }
 
+/// Set the volume's material
 void Volume::setMaterial(const Material& m)  const  {
   if ( m.isValid() )   {
     TGeoMedium* medium = m._ptr<TGeoMedium>();
@@ -203,10 +264,6 @@ void Volume::setMaterial(const Material& m)  const  {
   throw runtime_error("Volume: Attempt to assign invalid material.");
 }
 
-void Volume::setSolid(const Solid& solid)  const  {
-  m_element->SetShape(solid);
-}
-
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
@@ -216,6 +273,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   return PlacedVolume(n);
 }
 
+/// Place translated and rotated daughter volume
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, const Rotation& rot)  const  {
   if ( volume.isValid() )   {
     string nam = string(volume.name())+"_placement";
@@ -227,6 +285,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, cons
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
+/// Place un-rotated daughter volume at the given position.
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos)  const  {
   if ( volume.isValid() )   {
     string nam = string(volume.name())+"_placement";
@@ -236,6 +295,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos)  con
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
+/// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot)  const  {
   if ( volume.isValid() )   {
     string nam = string(volume.name())+"_placement";
@@ -245,6 +305,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot)  con
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
+/// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityPos& /* pos */)  const  {
   if ( volume.isValid() )   {
     string nam = string(volume.name())+"_placement";
@@ -253,6 +314,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityPos& /* pos
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
+/// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityRot& /* rot */)  const  {
   if ( volume.isValid() )   {
     string nam = string(volume.name())+"_placement";
@@ -261,14 +323,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityRot& /* rot
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
-void Volume::setRegion(const Region& obj)  const   {
-  data<Object>()->region = obj;
-}
-
-void Volume::setLimitSet(const LimitSet& obj)  const   {
-  data<Object>()->limits = obj;
-}
-
+/// Set Visualization attributes to the volume
 void Volume::setVisAttributes(const VisAttr& attr) const   {
   if ( attr.isValid() )  {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
@@ -284,6 +339,7 @@ void Volume::setVisAttributes(const VisAttr& attr) const   {
   data<Object>()->vis = attr;
 }
 
+/// Set Visualization attributes to the volume
 void Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
   if ( !name.empty() )   {
     VisAttr attr = lcdd.visAttributes(name);
@@ -316,15 +372,45 @@ void Volume::setAttributes(const LCDD& lcdd,
   setVisAttributes(lcdd,vis);
 }
 
+/// Set the volume's solid shape
+void Volume::setSolid(const Solid& solid)  const  
+{  m_element->SetShape(solid);                              }
+
+/// Set the regional attributes to the volume
+void Volume::setRegion(const Region& obj)  const   
+{  data<Object>()->region = obj;                            }
+
+/// Set the limits to the volume
+void Volume::setLimitSet(const LimitSet& obj)  const   
+{  data<Object>()->limits = obj;                            }
+
 /// Assign the sensitive detector structure
-void Volume::setSensitiveDetector(const SensitiveDetector& obj) const  {
-  data<Object>()->sens_det = obj;
-}
+void Volume::setSensitiveDetector(const SensitiveDetector& obj) const  
+{  data<Object>()->sens_det = obj;                          }
 
 /// Access to Solid (Shape)
-Solid Volume::solid() const   {
-  return Solid((*this)->GetShape());
-}
+Solid Volume::solid() const   
+{  return Solid((*this)->GetShape());                       }
+
+/// Access to the Volume material
+Material Volume::material() const   
+{  return Handle<TGeoMaterial>(m_element->GetMaterial());   }
+
+/// Access the visualisation attributes
+VisAttr Volume::visAttributes() const
+{  return data<Object>()->vis;                              }
+
+/// Access to the handle to the sensitive detector
+Ref_t Volume::sensitiveDetector() const
+{  return data<Object>()->sens_det;                         }
+
+/// Access to the handle to the region structure
+Region Volume::region() const   
+{  return data<Object>()->region;                           }
+
+/// Access to the limit set
+LimitSet Volume::limitSet() const   
+{  return data<Object>()->limits;                           }
 
 /// Constructor to be used when creating a new geometry tree.
 Assembly::Assembly(LCDD& lcdd, const std::string& name) {
@@ -332,70 +418,3 @@ Assembly::Assembly(LCDD& lcdd, const std::string& name) {
   lcdd.addVolume(*this);
 }
 
-Material Volume::material() const   {
-  return Handle<TGeoMaterial>(m_element->GetMaterial());
-}
-
-VisAttr Volume::visAttributes() const   {
-  return data<Object>()->vis;
-}
-
-Ref_t Volume::sensitiveDetector() const    {
-  return data<Object>()->sens_det;
-}
-
-Region Volume::region() const   {
-  return data<Object>()->region;
-}
-
-LimitSet Volume::limitSet() const   {
-  return data<Object>()->limits;
-}
-
-PlacedVolume& PlacedVolume::addPhysVolID(const std::string& name, int value) {
-  Object* obj = data<Object>();
-  obj->volIDs[name] = value;
-  return *this;
-}
-
-/// Volume material
-Material PlacedVolume::material() const {
-  return Material::handle_t(m_element ? m_element->GetMedium()->GetMaterial() : 0);
-}
-
-/// Logical volume of this placement
-Volume   PlacedVolume::volume() const {
-  return Volume::handle_t(m_element ? m_element->GetVolume() : 0);
-}
-
-/// Parent volume (envelope)
-Volume PlacedVolume::motherVol() const {
-  return Volume::handle_t(m_element ? m_element->GetMotherVolume() : 0);
-}
-
-/// Access to the volume IDs
-const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
-  return data<Object>()->volIDs;
-}
-
-/// Set the detector handle
-void PlacedVolume::setDetElement(Ref_t detector)   const {
-  data<Object>()->detector = detector;
-}
-
-/// Access to the corresponding detector element (maybe invalid)
-Ref_t PlacedVolume::detElement() const {
-  return data<Object>()->detector;
-}
-
-/// String dump
-string PlacedVolume::toString() const {
-  stringstream s;
-  Object* obj = data<Object>();
-  s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
-  << "' mat:'" << m_element->GetMatrix()->GetName() << "' volID[" << obj->volIDs.size() << "] ";
-  for(VolIDs::const_iterator i=obj->volIDs.begin(); i!=obj->volIDs.end();++i)
-    s << (*i).first << "=" << (*i).second << "  ";
-  s << ends;
-  return s.str();
-}

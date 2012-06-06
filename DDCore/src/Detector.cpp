@@ -10,14 +10,113 @@
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/LCDD.h"
 #include "TGeoVolume.h"
+#include "TGeoMatrix.h"
+#include "TGeoManager.h"
 
 using namespace std;
 using namespace DD4hep::Geometry;
 
+static bool traverse_find(TGeoNode* parent, TGeoNode* child, vector<TGeoMatrix*>& trafos) {
+  TIter next(parent->GetVolume()->GetNodes());
+  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+    if ( daughter == child )   {
+      trafos.push_back(daughter->GetMatrix());
+      return true;
+    }
+  }
+  next.Reset();
+  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+    if ( traverse_find(daughter, child, trafos) ) {
+      trafos.push_back(daughter->GetMatrix());
+      return true;
+    }
+  }
+  return false;
+}
+
+static bool traverse_up(const DetElement& parent, const DetElement& child, vector<TGeoMatrix*>& trafos) {
+  if ( child.ptr() != parent.ptr() ) {
+    for( DetElement par=parent, cld=child; par.isValid(); cld=par, par=par._data().parent ) {
+      PlacedVolume cld_place = cld._data().placement;
+      PlacedVolume par_place = par._data().placement;
+      if ( !traverse_find(par_place.ptr(),cld_place.ptr(),trafos) ) {
+	return false;
+      }
+    }
+  }
+  return true;
+}
+#include <iostream>
+static string find_child(TGeoNode* top, TGeoNode* child, vector<TGeoNode*>& path) {
+  TIter next(top->GetVolume()->GetNodes());
+  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+    if ( daughter == child )   {
+      cout << "Found child:" << child->GetName() << endl;
+      path.push_back(daughter);
+      return child->GetName();
+    }
+  }
+  next.Reset();
+  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+    string res = find_child(daughter, child, path);
+    if ( !res.empty() ) {
+      path.push_back(daughter);
+      return top->GetName() + ("/"+res);
+    }
+  }
+  //cout << "FAILED child:" << (unsigned long)child << endl;
+  return "";
+}
+
+/// Create cached matrix to transform to positions to an upper level DetElement
+static TGeoHMatrix* create_trafo(const Ref_t& parent, const Ref_t& child)   {
+  if ( parent.isValid() && child.isValid() )   {
+    TGeoHMatrix* mat = 0;    // Now collect all transformations
+    vector<TGeoMatrix*> trafos;
+    if ( !traverse_up(parent,child,trafos) )   {
+      trafos.clear();
+      if ( !traverse_up(child,parent,trafos) )   {  // Some error, non-existing path!
+	throw runtime_error("DetElement "+string(parent.name())+" is not connected to child "+string(child.name())+" [Geo-Error]");
+      }
+      else {
+	/// The two detector elements were only found by reversing the hierarchy.
+	/// Hence the transformations must be applied in reverse order.
+	for(vector<TGeoMatrix*>::const_reverse_iterator i=trafos.rbegin(); i!=trafos.rend(); ++i) {
+	  if ( !mat ) mat = new TGeoHMatrix(*(*i));
+	  else mat->MultiplyLeft(*i);
+	}
+      }
+    }
+    else {
+      /// Combine the transformations to a single transformation.
+      for(vector<TGeoMatrix*>::const_iterator i=trafos.begin(); i!=trafos.end(); ++i) {
+	if ( !mat ) mat = new TGeoHMatrix(*(*i));
+	else mat->MultiplyLeft(*i);
+      }
+    }
+#if 0
+    // Test: find arbitrary child by traversing TGeoNode tree
+    vector<TGeoNode*> path;
+    TGeoNode* top  = gGeoManager->GetTopNode();
+    TGeoNode* node = DetElement(child).placement().ptr();
+    string res = find_child(top,node,path);
+    cout << "Path:" << res << endl;
+#endif
+    return mat;
+  }
+  if ( parent.isValid() )
+    throw runtime_error("DetElement cannot connect "+string(parent.name())+" to not-existing child!");
+  else if ( child.isValid() )
+    throw runtime_error("DetElement cannot connect "+string(child.name())+" to not-existing parent!");
+  else
+    throw runtime_error("DetElement cannot connect nonexisting parent to not-existing child!");
+}
+
 /// Default constructor
 DetElement::Object::Object()  
   : magic(magic_word()), id(0), combine_hits(0), readout(), 
-    alignment(), placement(), placements(), parent(), children()
+    alignment(), placement(), placements(), parent(), children(),
+    worldTrafo(0), parentTrafo(0), referenceTrafo(0)
 {
 }
 
@@ -55,6 +154,59 @@ void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
   }
 }
 
+/// Top detector element
+Ref_t DetElement::Object::top()   {
+  // This is an ugly staement. Need to rethink it a bit.....(MSF)
+  if ( !this->parent.isValid() )  return this->asRef();
+  return DetElement(this->parent)._data().top();
+}
+
+/// Conversion to reference object
+Ref_t DetElement::Object::asRef() {
+  return Ref_t(dynamic_cast<Value<TNamed,DetElement::Object>*>(this));
+}
+
+/// Conversion to reference object
+DetElement::Object::operator Ref_t() {
+  return this->asRef();
+}
+
+/// Create cached matrix to transform to world coordinates
+TGeoMatrix* DetElement::Object::worldTransformation() {
+  if ( !worldTrafo ) {
+    DetElement top_det(this->top());
+    vector<TGeoMatrix*> trafos;
+    TGeoHMatrix* mat = create_trafo(top_det,asRef());
+    // Now we got the point in the top-most detector element. We now have
+    // to translate this to the "world volume", which has no transformation matrix anymore
+    TGeoNode* top_node = gGeoManager->GetTopNode();
+    PlacedVolume place = top_det.placement();
+    if ( !traverse_find(top_node, place.ptr(), trafos) ) {
+      // Some error, non-existing path!
+      throw runtime_error("DetElement "+string(parent.name())+" is not connected to top geo node [Geo-Error]");
+    }    
+    for(vector<TGeoMatrix*>::const_iterator i=trafos.begin(); i!=trafos.end(); ++i)
+      mat->MultiplyLeft(*i);
+    worldTrafo = mat;
+  }    
+  return worldTrafo;
+}
+
+/// Create cached matrix to transform to parent coordinates
+TGeoMatrix* DetElement::Object::parentTransformation() {
+  if ( !parentTrafo )   {
+    parentTrafo = create_trafo(this->parent,asRef());
+  }
+  return parentTrafo;
+}
+
+/// Create cached matrix to transform to reference coordinates
+TGeoMatrix* DetElement::Object::referenceTransformation() {
+  if ( !referenceTrafo )   {
+    referenceTrafo = create_trafo(this->reference,asRef());
+  }
+  return referenceTrafo;
+}
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const LCDD& /* lcdd */, const string& name, const string& type, int id)
@@ -79,9 +231,7 @@ string DetElement::path() const   {
     Object& o = _data();
     if ( o.path.empty() )   {
       DetElement par = o.parent;
-      if ( par.isValid() )
-	return (par.path()+"/")+name();
-      return string("/") + name();
+      o.path = par.isValid() ? (par.path()+"/")+name() : string("/") + name();
     }
     return o.path;
   }
@@ -134,10 +284,6 @@ DetElement& DetElement::add(const DetElement& sdet)  {
   throw runtime_error("DetElement::add: Self is not defined [Invalid Handle]");
 }
 
-DetElement::Placements DetElement::placements() const    {
-  return _data().placements;
-}
-
 DetElement DetElement::clone(const string& new_name)  const  {
   if ( isValid() ) {
     return DetElement(_data().construct(_data().id,COPY_NONE), new_name, ptr()->GetTitle());
@@ -167,15 +313,19 @@ PlacedVolume DetElement::placement() const {
 DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
   if ( isValid() ) {
     if ( placement.isValid() )  {
-      Object& o = _data();
+      Object& o   = _data();
       o.placement = placement;
-      o.volume = placement.volume();
-      placement.setDetElement(*this);
+      o.volume    = placement.volume();
+      //placement.setDetElement(*this);
       return *this;
     }
     throw runtime_error("DetElement::addPlacement: Placement is not defined [Invalid Handle]");
   }
   throw runtime_error("DetElement::addPlacement: Self is not defined [Invalid Handle]");
+}
+#if 0
+DetElement::Placements DetElement::placements() const    {
+  return _data().placements;
 }
 
 // OBSOLETE: to be replaced by setPlacement
@@ -190,7 +340,7 @@ DetElement& DetElement::addPlacement(const PlacedVolume& placement)  {
   }
   throw runtime_error("DetElement::addPlacement: Self is not defined [Invalid Handle]");
 }
-
+#endif
 /// Access to the logical volume of the placements (all daughters have the same!)
 Volume DetElement::volume() const {
   if ( isValid() )  {
@@ -263,6 +413,62 @@ bool DetElement::isCalorimeter() const   {
   return false;
 }
 
+/// Set detector element for reference transformations. Will delete existing reference trafo.
+DetElement& DetElement::setReference(DetElement reference) {
+  Object& o = _data();
+  if ( o.referenceTrafo )  {
+    delete o.referenceTrafo;
+    o.referenceTrafo = 0;
+  }
+  _data().reference = reference;
+  return *this;
+}
+
+/// Transformation from local coordinates of the placed volume to the world system
+bool DetElement::localToWorld(const Position& local, Position& global)  const {
+  Double_t master_point[3]={0,0,0}, local_point[3] = {local.x,local.y,local.z};
+  // If the path is unknown an exception will be thrown inside worldTransformation() !
+  _data().worldTransformation()->LocalToMaster(local_point,master_point);
+  global.set(master_point[0],master_point[1],master_point[2]);
+  return true;
+}
+
+/// Transformation from local coordinates of the placed volume to the parent system
+bool DetElement::localToParent(const Position& local, Position& global)  const {
+  // If the path is unknown an exception will be thrown inside parentTransformation() !
+  _data().parentTransformation()->LocalToMaster(&local.x,&global.x);
+  return true;
+}
+
+/// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
+bool DetElement::localToReference(const Position& local, Position& global)  const {
+  // If the path is unknown an exception will be thrown inside referenceTransformation() !
+  _data().referenceTransformation()->LocalToMaster(&local.x,&global.x);
+  return true;
+}
+
+/// Transformation from world coordinates of the local placed volume coordinates
+bool DetElement::worldToLocal(const Position& global, Position& local)  const {
+  // If the path is unknown an exception will be thrown inside worldTransformation() !
+  _data().worldTransformation()->MasterToLocal(&global.x,&local.x);
+  return true;
+}
+
+/// Transformation from parent coordinates of the local placed volume coordinates
+bool DetElement::parentToLocal(const Position& global, Position& local)  const {
+  // If the path is unknown an exception will be thrown inside parentTransformation() !
+  _data().parentTransformation()->MasterToLocal(&global.x,&local.x);
+  return true;
+}
+
+/// Transformation from arbitrary parent system coordinates of the local placed volume coordinates
+bool DetElement::referenceToLocal(const Position& global, Position& local)  const {
+  // If the path is unknown an exception will be thrown inside referenceTransformation() !
+  _data().referenceTransformation()->MasterToLocal(&global.x,&local.x);
+  return true;
+}
+
+/// Constructor
 SensitiveDetector::SensitiveDetector(const LCDD& /* lcdd */, const std::string& type, const std::string& name) 
 {
   /*

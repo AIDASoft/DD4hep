@@ -94,20 +94,59 @@ namespace DD4hep {
       std::string toString()  const;
     };
 
+    // We want the 3 coordinates ass-to-ass, so that they can be interpreted as "double*"
+#ifdef _WIN32
+#pragma pack(push,DD4Hep_Objects_Position,1)
+#define DD4HEP_BYTE_ALIGN(x) x
+#else
+#define DD4HEP_BYTE_ALIGN(x) x __attribute__((__packed__))
+#endif
     /** @class Position Objects.h
      *  
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Position  {
+    DD4HEP_BYTE_ALIGN(struct) Position  {
+      /// 3-dimensional cartesian coordinates
       double x, y, z;
       /// Default constructor
       Position() : x(0), y(0), z(0) {}
       /// Initializing constructor
-      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {}
+      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {     }
       /// Is it a identity rotation ?
-      bool isNull() const { return x==0 && y==0 && z==0; }
+      bool isNull() const                             { return x==0 && y==0 && z==0;    }
+      /// Access to array like coordinates
+      const double* coordinates() const               { return &x;                      }
+      /// Initializer for all member variables
+      Position& set(double xv, double yv, double zv)  { x=xv; y=yv; z=zv; return *this; }
     };
+#ifdef _WIN32
+#pragma pack(pop,DD4Hep_Objects_Position)
+#pragma pack(push,DD4Hep_Objects_Rotation,1)
+#endif
+    /** @class Rotation Objects.h
+     *  
+     *  @author  M.Frank
+     *  @version 1.0
+     */
+    DD4HEP_BYTE_ALIGN(struct) Rotation  {
+      double theta, phi, psi;
+      /// Default constructor
+      Rotation() : theta(0), phi(0), psi(0) {}
+      /// Initializing constructor
+      Rotation(double thetaval, double phival, double psival) : theta(thetaval), phi(phival), psi(psival) {}
+      /// Is it a identity rotation ?
+      bool isNull() const                              { return theta==0 && phi==0 && psi==0;   }
+      /// Access to array like coordinates
+      const double* angles() const                     { return &theta;                         }
+      /// Initializer for all member variables
+      Rotation& set(double th, double ph, double ps)   { theta=th; phi=ph; psi=ps;return *this; }
+    };
+
+#ifdef _WIN32
+#pragma pack(pop,DD4Hep_Objects_Rotation,1)
+#endif
+#undef DD4HEP_BYTE_ALIGN
 
     /** @class IdentityPos Objects.h
      *  
@@ -117,21 +156,6 @@ namespace DD4hep {
     struct IdentityPos {
       /// Default constructor
       IdentityPos() {}
-    };
-
-    /** @class Rotation Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct Rotation  {
-      double theta, phi, psi;
-      /// Default constructor
-      Rotation() : theta(0), phi(0), psi(0) {}
-      /// Initializing constructor
-      Rotation(double thetaval, double phival, double psival) : theta(thetaval), phi(phival), psi(psival) {}
-      /// Is it a identity rotation ?
-      bool isNull() const { return theta==0 && phi==0 && psi==0; }
     };
 
     /** @class IdentityRot Objects.h

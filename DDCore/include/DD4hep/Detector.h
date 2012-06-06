@@ -113,13 +113,29 @@ namespace DD4hep {
 	PlacedVolume      placement;
         Placements        placements;
 	Parent            parent;
+	Parent            reference;
         Children          children;
+	TGeoMatrix*       worldTrafo;
+	TGeoMatrix*       parentTrafo;
+	TGeoMatrix*       referenceTrafo;
 	/// Default constructor
         Object();
 	/// Construct new empty object
 	virtual Value<TNamed,Object>* construct(int new_id, int flag) const;
 	/// Deep object copy to replicate DetElement trees e.g. for reflection
 	virtual void deepCopy(const Object& source, int new_id, int flag);
+	/// Conversion to reference object
+	operator Ref_t();
+	/// Conversion to reference object
+	Ref_t asRef();
+	/// Top detector element
+	Ref_t top();
+	/// Create cached matrix to transform to world coordinates
+	TGeoMatrix* worldTransformation();
+	/// Create cached matrix to transform to parent coordinates
+	TGeoMatrix* parentTransformation();
+	/// Create cached matrix to transform to reference coordinates
+	TGeoMatrix* referenceTransformation();
       };
 
       /// Additional data accessor
@@ -180,9 +196,9 @@ namespace DD4hep {
       DetElement&     setPlacement(const PlacedVolume& volume);
 
       /// Access the physical volumes of the detector element
-      Placements      placements() const;
+      //Placements      placements() const;
       /// Set the physical volumes of the detector element
-      DetElement&     addPlacement(const PlacedVolume& volume);
+      //DetElement&     addPlacement(const PlacedVolume& volume);
 
       /// Access to the logical volume of the placements (all daughters have the same!)
       Volume          volume() const;
@@ -191,6 +207,24 @@ namespace DD4hep {
       const Children& children() const;
       /// Access to individual children by name
       DetElement      child(const std::string& name) const;
+
+      /// Set detector element for reference transformations. Will delete existing reference trafo.
+      DetElement&     setReference(DetElement reference);
+
+      /// Transformation from local coordinates of the placed volume to the world system
+      bool localToWorld(const Position& local, Position& global)  const;
+      /// Transformation from local coordinates of the placed volume to the parent system
+      bool localToParent(const Position& local, Position& parent)  const;
+      /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
+      bool localToReference(const Position& local, Position& reference)  const;
+
+      /// Transformation from world coordinates of the local placed volume coordinates
+      bool worldToLocal(const Position& global, Position& local)  const;
+      /// Transformation from world coordinates of the local placed volume coordinates
+      bool parentToLocal(const Position& parent, Position& local)  const;
+      /// Transformation from world coordinates of the local placed volume coordinates
+      bool referenceToLocal(const Position& reference, Position& local)  const;
+
     };
     
   }       /* End namespace Geometry      */

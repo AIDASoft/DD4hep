@@ -41,12 +41,12 @@ Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not
 }
 
 LCDD& LCDDImp::addVolume(const Ref_t& x)    {
-  m_structure.append<TGeoVolume>(x);
+  m_structure.append<TGeoVolume>(x,false);
   return *this;
 }
 
 LCDD& LCDDImp::addSolid(const Ref_t& x)    {
-  m_structure.append<TGeoShape>(x);
+  m_structure.append<TGeoShape>(x,false);
   return *this;
 }
 
@@ -165,6 +165,135 @@ static void dumpChildren(const DetElement& e, int level) {
     dumpChildren(DetElement((*i).second),level+1);
 }
 
+#if 0
+#include "TGeoNode.h"
+
+static void dumpGeometry(vector<TGeoNode*>& globals, vector<TGeoNode*>& locals, TGeoNode* current) {
+  typedef Value<TGeoNodeMatrix,PlacedVolume::Object> _P;
+  TGeoMatrix* matrix = current->GetMatrix();
+  TGeoVolume* volume = current->GetVolume();
+  TObjArray*  nodes  = volume->GetNodes();
+  int   num_children = nodes ? nodes->GetEntriesFast() : 0;
+  _P*   val = dynamic_cast<_P*>(current);
+  static vector<DetElement> det_cache;
+  vector<TGeoNode*>   loc_cache;
+  vector<TGeoNode*>*  ptrloc_cache = &locals;
+  const char* tag = val ? "Yes" : "No ";
+  bool valid_det = false;
+  bool prt = false;
+  for(size_t i=0; i<globals.size(); ++i) {
+    if(strncmp(globals[i]->GetName(),"Muon",4)==0) { prt = true; break;}
+  }
+
+  if ( val ) {
+    DetElement d = val->detector;
+    if ( d.isValid() )   {
+      valid_det = true;
+      det_cache.push_back(d);
+      ptrloc_cache = &loc_cache;
+    }
+  }
+  if ( prt ) {
+    cout << "[" << int(globals.size()) << " , " << tag << "] \t" << (void*)current << "\t" 
+	 << char(valid_det ? '*' : ' ')
+	 << current->GetName();
+    if ( num_children > 0 )
+      cout << " #Children:" << num_children << ".";
+    else
+      cout << " No Children.";
+    cout << "\t Vol:" << volume->GetName();
+    if ( valid_det ) {
+      DetElement d = val->detector;
+      cout << " DetElement:" << d->GetName();
+      //cout << " Vol:" << d.volume().name();
+      cout << " DetTrafos:" << locals.size();
+    }
+    else  {
+      cout << " Trafos:" << locals.size();
+      for(size_t i=0; i<locals.size(); ++i)
+	cout << " " << (void*)locals[i];
+    }
+    cout << endl;
+  }
+  if ( num_children > 0 )   {
+    globals.push_back(current);
+    for(int i=0; i<num_children; ++i)   {
+      TGeoNode* node = (TGeoNode*)nodes->At(i);
+      ptrloc_cache->push_back(node);
+      dumpGeometry(globals,*ptrloc_cache,node);
+      ptrloc_cache->pop_back();
+    }
+    globals.pop_back();
+  }
+  if ( valid_det ) det_cache.pop_back();
+}
+
+vector<TGeoMatrix*>          Transformations;
+vector<TGeoSolid*>           Volumes;
+map<int, vector<TGeoNode*> > Placements;
+
+
+static void dumpGeo(TGeoNode* current) {
+
+  typedef Value<TGeoNodeMatrix,PlacedVolume::Object> _P;
+  TGeoMatrix* matrix = current->GetMatrix();
+  TGeoVolume* volume = current->GetVolume();
+  TObjArray*  nodes  = volume->GetNodes();
+  int   num_children = nodes ? nodes->GetEntriesFast() : 0;
+  _P*   val = dynamic_cast<_P*>(current);
+  static vector<DetElement> det_cache;
+  vector<TGeoNode*>   loc_cache;
+  vector<TGeoNode*>*  ptrloc_cache = &locals;
+  const char* tag = val ? "Yes" : "No ";
+  bool valid_det = false;
+  bool prt = false;
+  for(size_t i=0; i<globals.size(); ++i) {
+    if(strncmp(globals[i]->GetName(),"Muon",4)==0) { prt = true; break;}
+  }
+
+  if ( val ) {
+    DetElement d = val->detector;
+    if ( d.isValid() )   {
+      valid_det = true;
+      det_cache.push_back(d);
+      ptrloc_cache = &loc_cache;
+    }
+  }
+  if ( prt ) {
+    cout << "[" << int(globals.size()) << " , " << tag << "] \t" << (void*)current << "\t" 
+	 << char(valid_det ? '*' : ' ')
+	 << current->GetName();
+    if ( num_children > 0 )
+      cout << " #Children:" << num_children << ".";
+    else
+      cout << " No Children.";
+    cout << "\t Vol:" << volume->GetName();
+    if ( valid_det ) {
+      DetElement d = val->detector;
+      cout << " DetElement:" << d->GetName();
+      //cout << " Vol:" << d.volume().name();
+      cout << " DetTrafos:" << locals.size();
+    }
+    else  {
+      cout << " Trafos:" << locals.size();
+      for(size_t i=0; i<locals.size(); ++i)
+	cout << " " << (void*)locals[i];
+    }
+    cout << endl;
+  }
+  if ( num_children > 0 )   {
+    globals.push_back(current);
+    for(int i=0; i<num_children; ++i)   {
+      TGeoNode* node = (TGeoNode*)nodes->At(i);
+      ptrloc_cache->push_back(node);
+      dumpGeometry(globals,*ptrloc_cache,node);
+      ptrloc_cache->pop_back();
+    }
+    globals.pop_back();
+  }
+  if ( valid_det ) det_cache.pop_back();
+}
+#endif
 void LCDDImp::dump() const  {
   TGeoManager* mgr = gGeoManager;
   mgr->CloseGeometry();
@@ -178,5 +307,12 @@ void LCDDImp::dump() const  {
     dumpChildren(e,0);
     //cout << "Detector: " << (*i).first << " : " << e.name() << endl;
   }
+#if 0
+  TGeoNode* top = mgr->GetTopNode();
+  vector<TGeoNode*> globals;
+  vector<TGeoNode*> locals;
+  //dumpGeometry(globals,locals,top);
+  //dumpGeo(top);
+#endif
 }
 

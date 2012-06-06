@@ -51,10 +51,14 @@ namespace DD4hep {
     struct PlacedVolume : Handle<TGeoNodeMatrix> {
       typedef std::map<std::string,int> VolIDs;
       struct Object  {
+	/// Magic word
         unsigned long magic;
+	/// ID container
         VolIDs        volIDs;
-        Ref_t         detector;
-        Object() : volIDs(), detector() {}
+	/// Default constructor
+        Object() : volIDs() {}
+	/// Copy constructor
+	Object(const Object& c) : magic(c.magic), volIDs(c.volIDs) {}
       };
       /// Constructor to be used when reading the already parsed DOM tree
       PlacedVolume(const TGeoNode* e) : Handle<TGeoNodeMatrix>(e) {}
@@ -74,10 +78,6 @@ namespace DD4hep {
       Volume motherVol() const;
       /// Access to the volume IDs
       const VolIDs& volIDs() const;
-      /// Set the detector handle
-      void setDetElement(Ref_t detector)  const;
-      /// Access to the corresponding detector element (maybe invalid)
-      Ref_t detElement() const;
       /// String dump
       std::string toString() const;
     };
@@ -144,7 +144,7 @@ namespace DD4hep {
       void setLimitSet(const LimitSet& obj)  const;
       /// Access to the limit set
       LimitSet limitSet() const;
-      
+
       /// Set Visualization attributes to the volume
       void setVisAttributes(const VisAttr& obj) const;
       /// Set Visualization attributes to the volume
