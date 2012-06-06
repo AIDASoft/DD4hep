@@ -146,11 +146,24 @@ namespace DD4hep {
     placement()->LocalToMaster(point_local, point_global);
     //one further up the tree. framework should provilde local to world
     parent.placement()->LocalToMaster(point_global, point_global_m);
+#if 0
+    std::cout<<"Exp-Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+    std::cout<<"Exp-Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
 
-//     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
-//     std::cout<<"Master: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
-//     std::cout<<"Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
-
+    // Now this should be equivalent
+    Position global, global_w, global_r, global_p, local(point_local[0],point_local[1],point_local[2]);
+    this->localToParent(local,global);
+    std::cout<<"Det-Par: " << global.x   << " " << global.y   << " " << global.z   << std::endl;
+    this->localToWorld(local,global_w);
+    std::cout<<"Det-Top: " << global_w.x << " " << global_w.y << " " << global_w.z << std::endl;
+    const_cast<TPCModule*>(this)->setReference(parent);
+    this->localToReference(local,global_r);
+    std::cout<<"Det-Ref: " << global_r.x << " " << global_r.y << " " << global_r.z << std::endl;
+    parent.setReference(*this);
+    parent.localToReference(local,global_p);
+    std::cout<<"Loc-Ref: " << global_p.x << " " << global_p.y << " " << global_p.z << std::endl;
+#endif
+    // Need to check if the results are the same....
 
     std::vector<double> center;
     center.push_back(point_global_m[0]);
@@ -169,7 +182,7 @@ namespace DD4hep {
     //FIXME: careful: master is mother not global=world, input is in world coordinates
     DetElement parent   = _data().parent;
     parent.placement()->MasterToLocal(point_global, point_global_m);
-    placements()[0]->MasterToLocal(point_global_m, point_local);
+    placement()->MasterToLocal(point_global_m, point_local);
   //   std::cout<<"Global: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
 //     std::cout<<"Mother: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
 //     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
@@ -193,7 +206,7 @@ namespace DD4hep {
  
   double TPCModule::getModuleZPosition() const {
     DetElement parent   = _data().parent;
-    TGeoMatrix *nm=parent.placements()[0]->GetMatrix();
+    TGeoMatrix *nm=parent.placement()->GetMatrix();
     const Double_t *trans=nm->GetTranslation();
     return trans[2];
   }
