@@ -8,7 +8,7 @@ namespace DD4hep {
   
   using namespace Geometry;
   
-  ILDExTPC::ILDExTPC(const LCDD&, const string& name, const string& type, int id)
+  ILDExTPC::ILDExTPC(const string& name, const string& type, int id)
   {
     Value<TNamed,TPCData>* p = new Value<TNamed,TPCData>();
     assign(p,name, type);

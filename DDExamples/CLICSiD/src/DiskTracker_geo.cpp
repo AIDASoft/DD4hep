@@ -16,9 +16,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   xml_det_t  x_det     = e;
   Material   air       = lcdd.air();
   string     det_name  = x_det.nameStr();
-  string     det_type  = x_det.typeStr();
   bool       reflect   = x_det.reflect();
-  DetElement sdet(det_name,det_type,x_det.id());
+  DetElement sdet(det_name,x_det.id());
   Volume     motherVol = lcdd.pickMotherVolume(sdet);
   int l_num = 0;
     
@@ -35,16 +34,15 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       double thickness = xml_comp_t(j).thickness();
       layerWidth += thickness;
     }
-    Tube    l_tub(lcdd,l_nam,rmin,rmax,layerWidth,2*M_PI);
-    Volume  l_vol(lcdd,l_nam,l_tub,air);
+    Tube    l_tub(rmin,rmax,layerWidth,2*M_PI);
+    Volume  l_vol(l_nam,l_tub,air);
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
     for(xml_coll_t j(x_layer,_X(slice)); j; ++j, ++s_num)  {
       xml_comp_t x_slice = j;
       double thick = x_slice.thickness();
       Material mat = lcdd.material(x_slice.materialStr());
       string s_nam = l_nam+_toString(s_num,"_slice%d");
-      Tube   s_tub(lcdd,s_nam, rmin,rmax,thick);
-      Volume s_vol(lcdd,s_nam, s_tub, mat);
+      Volume s_vol(s_nam, Tube(rmin,rmax,thick), mat);
         
       if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
@@ -57,8 +55,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     PlacedVolume lpv = motherVol.placeVolume(l_vol,Position(0,0,zmin+layerWidth/2.));
     lpv.addPhysVolID(_X(system),sdet.id());
     lpv.addPhysVolID(_X(barrel),1);
-    DetElement layer(l_nam,det_type+"/Layer",l_num);
-    sdet.add(layer.setPlacement(lpv));
+    DetElement layer(sdet,l_nam,l_num);
+    layer.setPlacement(lpv);
     if ( reflect )  {
       PlacedVolume lpvR = motherVol.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
       lpvR.addPhysVolID(_X(system),sdet.id());

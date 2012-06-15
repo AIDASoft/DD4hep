@@ -171,6 +171,7 @@ INSTANTIATE(TGeoNodeOffset);
 #include "TGeoCone.h"
 #include "TGeoArb8.h"
 #include "TGeoTrd2.h"
+#include "TGeoParaboloid.h"
 #include "TGeoSphere.h"
 #include "TGeoTorus.h"
 #include "TGeoBoolNode.h"
@@ -178,13 +179,14 @@ INSTANTIATE(TGeoNodeOffset);
 #include "TGeoCompositeShape.h"
 INSTANTIATE(TGeoVolume);
 INSTANTIATE(TGeoBBox);
+INSTANTIATE(TGeoCone);
+INSTANTIATE(TGeoParaboloid);
 INSTANTIATE(TGeoPcon);
 INSTANTIATE(TGeoPgon);
 INSTANTIATE(TGeoTube);
 INSTANTIATE(TGeoTubeSeg);
 INSTANTIATE(TGeoTrap);
 INSTANTIATE(TGeoTrd2);
-INSTANTIATE(TGeoCone);
 INSTANTIATE(TGeoSphere);
 INSTANTIATE(TGeoTorus);
 INSTANTIATE(TGeoShape);

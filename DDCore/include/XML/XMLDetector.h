@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4hep_XMLDETECTOR_H
-#define DD4hep_XMLDETECTOR_H
+#ifndef DD4HEP_XMLDETECTOR_H
+#define DD4HEP_XMLDETECTOR_H
 
 // Framework include files
 #include "XML/XMLTags.h"
@@ -138,4 +138,4 @@ namespace DD4hep {
     };
   }
 }         /* End namespace DD4hep       */
-#endif    /* DD4hep_XMLDETECTOR_H    */
+#endif    /* DD4HEP_XMLDETECTOR_H    */

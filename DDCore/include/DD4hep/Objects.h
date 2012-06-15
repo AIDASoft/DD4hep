@@ -236,12 +236,14 @@ namespace DD4hep {
     struct VisAttr : public Ref_t  {
       struct Object  {
 	unsigned long magic;
+	void*         col;
         int           color;
+	float         alpha;
         unsigned char drawingStyle, lineStyle, showDaughters, visible;
-        Object() : magic(magic_word()), color(0), drawingStyle(true), showDaughters(true), visible(true)  {}
+        Object() : magic(magic_word()), col(0), color(0), alpha(0), drawingStyle(true), showDaughters(true), visible(true)  {}
       };
       enum DrawingStyle { 
-        WIREFRAME=0x1,
+        WIREFRAME=0x2,
         LAST_DRAWING_STYLE
       };
       enum LineStyle  {
@@ -251,25 +253,49 @@ namespace DD4hep {
       };
       /// Default constructor
       VisAttr() : Ref_t() {}
-      /// Constructor to be used when reading the already parsed DOM tree
+      /// Constructor to be used for assignment from object handle
       template <typename Q> 
       VisAttr(const Handle<Q>& e) : Ref_t(e) {}
+      /// Copy constructor for handle
+      VisAttr(const VisAttr& e) : Ref_t(e) {}
       /// Constructor to be used when creating a new registered visualization object
       VisAttr(LCDD& doc, const std::string& name);
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
+
+      /// Get Flag to show/hide daughter elements
+      bool showDaughters() const;
       /// Set Flag to show/hide daughter elements
       void setShowDaughters(bool value);
-      /// Set line style
-      void setLineStyle(LineStyle style);
-      /// Set drawing style
-      void setDrawingStyle(DrawingStyle style);
+
+      /// Get visibility flag
+      bool visible() const;
       /// Set visibility flag
       void setVisible(bool value);
+
+      /// Get line style
+      int lineStyle() const;
+      /// Set line style
+      void setLineStyle(LineStyle style);
+
+      /// Get drawing style
+      int drawingStyle()  const;
+      /// Set drawing style
+      void setDrawingStyle(DrawingStyle style);
+
+      /// Get alpha value
+      float alpha() const;
       /// Set alpha value
       void setAlpha(float value);
+
+      /// Get object color
+      int color()   const;
       /// Set object color
       void setColor(float red, float green, float blue);
+
+      /// Get RGB values of the color (if valid)
+      bool rgb(float& red, float& green, float& blue) const;
+
       /// String representation of this object
       std::string toString()  const;
     };

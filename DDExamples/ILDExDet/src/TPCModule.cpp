@@ -25,7 +25,7 @@ namespace DD4hep {
   
   using namespace Geometry;
   
-  TPCModule::TPCModule(const LCDD&, const string& name, const string& type, int id)
+  TPCModule::TPCModule(const string& name, const string& type, int id)
   {
     Value<TNamed,TPCModuleData>* p = new Value<TNamed,TPCModuleData>();
     assign(p,name, type);

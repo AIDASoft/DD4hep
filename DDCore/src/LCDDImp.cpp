@@ -7,14 +7,20 @@
 //
 //====================================================================
 
+#include "DD4hep/GeoHandler.h"
 #include "LCDDImp.h"
 
 // C/C++ include files
 #include <iostream>
 #include <stdexcept>
 
+#include "TGeoCompositeShape.h"
+#include "TGeoBoolNode.h"
 #include "TGeoManager.h"
 #include "TGeoMatrix.h"
+#include "TGeoVolume.h"
+#include "TGeoShape.h"
+#include "TClass.h"
 
 #if DD4HEP_USE_PYROOT
   #include "TPython.h"
@@ -27,36 +33,33 @@ namespace DD4hep  { namespace Geometry { struct Compact; }}
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
+namespace {
+  struct TopDetElement : public DetElement {
+    TopDetElement(const std::string& nam, Volume vol) : DetElement(nam,0) { _data().volume = vol;    }
+  };
+}
 
 LCDD& LCDD::getInstance() {
   static LCDD* s_lcdd = new LCDDImp();
   return *s_lcdd; 
 }
 
-LCDDImp::LCDDImp() : m_worldVol(), m_trackingVol()  {
+LCDDImp::LCDDImp() : m_world(), m_trackers(), m_worldVol(), m_trackingVol()  {
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not existing
   return m_worldVol;
 }
 
-LCDD& LCDDImp::addVolume(const Ref_t& x)    {
-  m_structure.append<TGeoVolume>(x,false);
-  return *this;
-}
-
-LCDD& LCDDImp::addSolid(const Ref_t& x)    {
-  m_structure.append<TGeoShape>(x,false);
+LCDD& LCDDImp::addDetector(const Ref_t& x)    { 
+  m_detectors.append_noCheck(x);
+  m_world.add(DetElement(x));
   return *this;
 }
 
 void LCDDImp::convertMaterials(const string& fname)  {
   //convertMaterials(XML::DocumentHandler().load(fname).root());
 }
-
-//void LCDDImp::convertMaterials(XML::Handle_t materials)  {
-//  Converter<Materials>(*this)(materials);
-//}
 
 void LCDDImp::addStdMaterials()   {
   convertMaterials("file:../cmt/elements.xml");
@@ -74,33 +77,79 @@ Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const std::string& name
   }
   return 0;
 }
+namespace {
+  struct ShapePatcher : public GeoScan {
+    ShapePatcher(DetElement e) : GeoScan(e) {}
+    GeoScan& operator()()  {
+      GeoHandler::Data& data = *m_data;
+      string nam;
+      for(GeoHandler::Data::const_reverse_iterator i=data.rbegin(); i != data.rend(); ++i)   {
+	const GeoHandler::Data::mapped_type& v = (*i).second;
+	for(GeoHandler::Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {
+	  const TGeoNode* n = *j;
+	  TGeoVolume* v = n->GetVolume();
+	  TGeoShape*  s = v->GetShape();
+	  if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+	    nam = v->GetName();
+	    nam += "_shape";
+	    s->SetName(nam.c_str());
+	  }
+	  else {
+	    nam = s->GetName();
+	  }
+	  if ( s->IsA()->Class() == TGeoCompositeShape::Class() ) {
+	    TGeoCompositeShape* c = (TGeoCompositeShape*)s;
+	    const TGeoBoolNode* boolean = c->GetBoolNode();
+	    s = boolean->GetLeftShape();
+	    if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+	      nam = v->GetName();
+	      nam += "_left";
+	      s->SetName(nam.c_str());
+	    }
+	    s = boolean->GetRightShape();
+	    if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+	      nam = v->GetName();
+	      nam += "_right";
+	      s->SetName(nam.c_str());
+	    }
+	  }
+	}
+      }  
+    }
+  };
+}
 
 void LCDDImp::endDocument()  {
   LCDD& lcdd = *this;
-  Volume world  = volume("world_volume");
-  Volume trkVol = volume("tracking_volume");
   Material  air = material("Air");
 
-  world.setMaterial(air);
-  trkVol.setMaterial(air);
+  m_worldVol.setMaterial(air);
+  m_trackingVol.setMaterial(air);
 
   Region trackingRegion(lcdd,"TrackingRegion");
   trackingRegion.setThreshold(1);
   trackingRegion.setStoreSecondaries(true);
   add(trackingRegion);
-  trkVol.setRegion(trackingRegion);
+  m_trackingVol.setRegion(trackingRegion);
     
   // Set the world volume to invisible.
   VisAttr worldVis(lcdd,"WorldVis");
   worldVis.setVisible(false);
-  world.setVisAttributes(worldVis);
+  m_worldVol.setVisAttributes(worldVis);
   add(worldVis);
   
   // Set the tracking volume to invisible.
   VisAttr trackingVis(lcdd,"TrackingVis");
   trackingVis.setVisible(false);               
-  trkVol.setVisAttributes(trackingVis);
+  m_trackingVol.setVisAttributes(trackingVis);
   add(trackingVis); 
+
+  /// Since we allow now for anonymous shapes,
+  /// we will rename them to use the name of the volume they are assigned to
+  TGeoManager* mgr = gGeoManager;
+  mgr->CloseGeometry();
+  m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
+  ShapePatcher(m_world)();
 }
 
 void LCDDImp::create()  {
@@ -109,23 +158,22 @@ void LCDDImp::create()  {
 
 void LCDDImp::init()  {
   LCDD& lcdd = *this;
-  Box worldSolid(lcdd,"world_box","world_x","world_y","world_z");
+  Box worldSolid("world_box","world_x","world_y","world_z");
   Material vacuum = material("Vacuum");
-  Volume world(lcdd,"world_volume",worldSolid,vacuum);
-
-  Tube trackingSolid(lcdd,"tracking_cylinder",
+  Volume world("world_volume",worldSolid,vacuum);
+  Tube trackingSolid("tracking_cylinder",
 		     0.,
 		     _toDouble("tracking_region_radius"),
 		     _toDouble("2*tracking_region_zmax"),2*M_PI);
-  Volume tracking(lcdd,"tracking_volume",trackingSolid, vacuum);
-  //-->world.placeVolume(tracking);
-
-  //Ref_t ref_world(lcdd,"world",world.refName());
-  //m_setup.append(ref_world);
+  Volume tracking("tracking_volume",trackingSolid, vacuum);
+  m_world          = TopDetElement("world",world);
+  m_trackers       = TopDetElement("tracking",tracking);
   m_worldVol       = world;
   m_trackingVol    = tracking;
   m_materialAir    = material("Air");
   m_materialVacuum = material("Vacuum");
+  m_detectors.append_noCheck(m_world);
+  m_world.add(m_trackers);
   gGeoManager->SetTopVolume(m_worldVol);
 }
 
@@ -155,164 +203,18 @@ void LCDDImp::fromCompact(const std::string& xmlfile) {
 void LCDDImp::applyAlignment()   {
 }
 
-static void dumpChildren(const DetElement& e, int level) {
-#if 0
-  cout << "[" << level << " , " << e.placements().size() << "] ";
-  for(int j=0; j<level; ++j) cout << "...";
-  cout << e.path() << endl;
-#endif
-  for(DetElement::Children::const_iterator i=e.children().begin(); i != e.children().end(); ++i)
-    dumpChildren(DetElement((*i).second),level+1);
-}
+#include "SimpleGDMLWriter.h"
+#include "Geant4Converter.h"
+#include "GeometryTreeDump.h"
 
-#if 0
-#include "TGeoNode.h"
-
-static void dumpGeometry(vector<TGeoNode*>& globals, vector<TGeoNode*>& locals, TGeoNode* current) {
-  typedef Value<TGeoNodeMatrix,PlacedVolume::Object> _P;
-  TGeoMatrix* matrix = current->GetMatrix();
-  TGeoVolume* volume = current->GetVolume();
-  TObjArray*  nodes  = volume->GetNodes();
-  int   num_children = nodes ? nodes->GetEntriesFast() : 0;
-  _P*   val = dynamic_cast<_P*>(current);
-  static vector<DetElement> det_cache;
-  vector<TGeoNode*>   loc_cache;
-  vector<TGeoNode*>*  ptrloc_cache = &locals;
-  const char* tag = val ? "Yes" : "No ";
-  bool valid_det = false;
-  bool prt = false;
-  for(size_t i=0; i<globals.size(); ++i) {
-    if(strncmp(globals[i]->GetName(),"Muon",4)==0) { prt = true; break;}
-  }
-
-  if ( val ) {
-    DetElement d = val->detector;
-    if ( d.isValid() )   {
-      valid_det = true;
-      det_cache.push_back(d);
-      ptrloc_cache = &loc_cache;
-    }
-  }
-  if ( prt ) {
-    cout << "[" << int(globals.size()) << " , " << tag << "] \t" << (void*)current << "\t" 
-	 << char(valid_det ? '*' : ' ')
-	 << current->GetName();
-    if ( num_children > 0 )
-      cout << " #Children:" << num_children << ".";
-    else
-      cout << " No Children.";
-    cout << "\t Vol:" << volume->GetName();
-    if ( valid_det ) {
-      DetElement d = val->detector;
-      cout << " DetElement:" << d->GetName();
-      //cout << " Vol:" << d.volume().name();
-      cout << " DetTrafos:" << locals.size();
-    }
-    else  {
-      cout << " Trafos:" << locals.size();
-      for(size_t i=0; i<locals.size(); ++i)
-	cout << " " << (void*)locals[i];
-    }
-    cout << endl;
-  }
-  if ( num_children > 0 )   {
-    globals.push_back(current);
-    for(int i=0; i<num_children; ++i)   {
-      TGeoNode* node = (TGeoNode*)nodes->At(i);
-      ptrloc_cache->push_back(node);
-      dumpGeometry(globals,*ptrloc_cache,node);
-      ptrloc_cache->pop_back();
-    }
-    globals.pop_back();
-  }
-  if ( valid_det ) det_cache.pop_back();
-}
-
-vector<TGeoMatrix*>          Transformations;
-vector<TGeoSolid*>           Volumes;
-map<int, vector<TGeoNode*> > Placements;
-
-
-static void dumpGeo(TGeoNode* current) {
-
-  typedef Value<TGeoNodeMatrix,PlacedVolume::Object> _P;
-  TGeoMatrix* matrix = current->GetMatrix();
-  TGeoVolume* volume = current->GetVolume();
-  TObjArray*  nodes  = volume->GetNodes();
-  int   num_children = nodes ? nodes->GetEntriesFast() : 0;
-  _P*   val = dynamic_cast<_P*>(current);
-  static vector<DetElement> det_cache;
-  vector<TGeoNode*>   loc_cache;
-  vector<TGeoNode*>*  ptrloc_cache = &locals;
-  const char* tag = val ? "Yes" : "No ";
-  bool valid_det = false;
-  bool prt = false;
-  for(size_t i=0; i<globals.size(); ++i) {
-    if(strncmp(globals[i]->GetName(),"Muon",4)==0) { prt = true; break;}
-  }
-
-  if ( val ) {
-    DetElement d = val->detector;
-    if ( d.isValid() )   {
-      valid_det = true;
-      det_cache.push_back(d);
-      ptrloc_cache = &loc_cache;
-    }
-  }
-  if ( prt ) {
-    cout << "[" << int(globals.size()) << " , " << tag << "] \t" << (void*)current << "\t" 
-	 << char(valid_det ? '*' : ' ')
-	 << current->GetName();
-    if ( num_children > 0 )
-      cout << " #Children:" << num_children << ".";
-    else
-      cout << " No Children.";
-    cout << "\t Vol:" << volume->GetName();
-    if ( valid_det ) {
-      DetElement d = val->detector;
-      cout << " DetElement:" << d->GetName();
-      //cout << " Vol:" << d.volume().name();
-      cout << " DetTrafos:" << locals.size();
-    }
-    else  {
-      cout << " Trafos:" << locals.size();
-      for(size_t i=0; i<locals.size(); ++i)
-	cout << " " << (void*)locals[i];
-    }
-    cout << endl;
-  }
-  if ( num_children > 0 )   {
-    globals.push_back(current);
-    for(int i=0; i<num_children; ++i)   {
-      TGeoNode* node = (TGeoNode*)nodes->At(i);
-      ptrloc_cache->push_back(node);
-      dumpGeometry(globals,*ptrloc_cache,node);
-      ptrloc_cache->pop_back();
-    }
-    globals.pop_back();
-  }
-  if ( valid_det ) det_cache.pop_back();
-}
-#endif
 void LCDDImp::dump() const  {
   TGeoManager* mgr = gGeoManager;
-  mgr->CloseGeometry();
   mgr->SetVisLevel(4);
   mgr->SetVisOption(1);
   m_worldVol->Draw("ogl");
-  cout << "Total number of object verifications:" << num_object_validations() << endl;
-  //Printer<const LCDD*>(*this,cout)(this);
-  for(HandleMap::const_iterator i=detectors().begin(); i != detectors().end(); ++i) {
-    DetElement e((*i).second);
-    dumpChildren(e,0);
-    //cout << "Detector: " << (*i).first << " : " << e.name() << endl;
-  }
-#if 0
-  TGeoNode* top = mgr->GetTopNode();
-  vector<TGeoNode*> globals;
-  vector<TGeoNode*> locals;
-  //dumpGeometry(globals,locals,top);
-  //dumpGeo(top);
-#endif
-}
 
+  // SimpleGDMLWriter handler(cout);
+  // Geant4Converter handler;
+  //GeometryTreeDump handler;
+  //handler.create(m_world);
+}

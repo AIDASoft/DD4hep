@@ -30,10 +30,8 @@ static void placeStaves(DetElement&   parent,
   double posX = -sectCenterRadius  * std::sin(rotY);
   double posY =  sectCenterRadius  * std::cos(rotY);
   for (int module = 0; module < numsides; ++module)  {
-    string nam = stave.name();
-    nam = nam.substr(0,nam.length()-1)+_toString(module,"%d");
-    DetElement det = module>0 ? stave.clone(nam) : stave;
-    PlacedVolume pv=envelopeVolume.placeVolume(sectVolume,Position(-posX,-posY,0),Rotation(rotX,rotY,0));
+    DetElement det  = module>0 ? stave.clone(_toString(module,"stave%d")) : stave;
+    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Position(-posX,-posY,0),Rotation(rotX,rotY,0));
     pv.addPhysVolID(_X(stave), 0);
     pv.addPhysVolID(_X(module),module);
     det.setPlacement(pv);
@@ -60,11 +58,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   int         numSides    = dim.numsides();
   double      detZ        = dim.z();
   double      rmin        = dim.rmin();
-  DetElement  sdet(det_name,det_type,x_det.id());
-  DetElement  stave(det_name+"_stave0",det_type,x_det.id());
+  DetElement  sdet(det_name,x_det.id());
+  DetElement  stave("stave0",x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
 
-  cout << det_name << "  Gap:" << gap << endl;
+  //cout << det_name << "  Gap:" << gap << endl;
 
   for(xml_coll_t c(x_det,_X(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
@@ -73,8 +71,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     totalSlices += x_layer.numChildren(_X(slice));
   }
 
-  PolyhedraRegular polyhedra(lcdd,det_name,numSides,rmin,rmin+totalThickness,detZ);
-  Volume           envelopeVol(lcdd,det_name,polyhedra,air);
+  PolyhedraRegular polyhedra(numSides,rmin,rmin+totalThickness,detZ);
+  Volume           envelopeVol(det_name,polyhedra,air);
 
   // Add the subdetector envelope to the structure.
   double innerAngle     = 2*M_PI/numSides;
@@ -84,13 +82,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   double outerFaceLen   = (rmin+totalThickness) * tan_inner;
   double staveThickness = totalThickness;
 
-  Trapezoid staveTrdOuter(lcdd,det_name+"_stave_trapezoid_outer",
-			  innerFaceLen/2,outerFaceLen/2,detZ/2,detZ/2,staveThickness/2);
-  Volume staveOuterVol(lcdd,det_name+"_stave",staveTrdOuter,air);
+  Trapezoid staveTrdOuter(innerFaceLen/2,outerFaceLen/2,detZ/2,detZ/2,staveThickness/2);
+  Volume staveOuterVol(det_name+"_stave",staveTrdOuter,air);
 
-  Trapezoid staveTrdInner(lcdd,det_name+"_stave_trapezoid_inner",
-			  innerFaceLen/2-gap,outerFaceLen/2-gap,detZ/2,detZ/2,staveThickness/2);
-  Volume staveInnerVol(lcdd,det_name+"_inner",staveTrdInner,air);
+  Trapezoid staveTrdInner(innerFaceLen/2-gap,outerFaceLen/2-gap,detZ/2,detZ/2,staveThickness/2);
+  Volume staveInnerVol(det_name+"_inner",staveTrdInner,air);
 
   double layerOuterAngle = (M_PI-innerAngle)/2;
   double layerInnerAngle = (M_PI/2 - layerOuterAngle);
@@ -107,34 +103,30 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     const Layer* lay    = layering.layer(layer_num); // Get the layer from the layering engine.
     // Loop over repeats for this layer.
     for (int j = 0; j < repeat; j++)    {
-      //string layer_name      = det_name+_toString(layer_num,"_stave_layer%d");
-      string layer_name      = _toString(layer_num,"stave_layer%d");
+      string layer_name      = det_name+_toString(layer_num,"_layer%d");
       double layer_thickness = lay->thickness();
-      DetElement  layer(layer_name,det_name+"/Layer",x_det.id());
+      DetElement  layer(stave,_toString(layer_num,"layer%d"),x_det.id());
 
       // Layer position in Z within the stave.
       layer_pos_z += layer_thickness / 2;
       // Layer box & volume
-      Box    layer_box(lcdd,"layer", layer_dim_x, detZ/2, layer_thickness);
-      Volume layer_vol(lcdd,"layer", layer_box, air);
+      Volume layer_vol(layer_name, Box(layer_dim_x,detZ/2,layer_thickness), air);
 
       // Create the slices (sublayers) within the layer.
       double slice_pos_z = -(layer_thickness / 2);
       int slice_number = 0;
       for(xml_coll_t k(x_layer,_X(slice)); k; ++k)  {
 	xml_comp_t x_slice = k;
-	//string   slice_name      = layer_name + _toString(slice_number,"_slice%d");
-	string   slice_name      = _toString(slice_number,"slice%d");
+	string   slice_name      = layer_name + _toString(slice_number,"_slice%d");
 	double   slice_thickness = x_slice.thickness();
 	Material slice_material  = lcdd.material(x_slice.materialStr());
-	DetElement slice(slice_name,det_name+"/Layer/Slice",x_det.id());
+	DetElement slice(layer,_toString(slice_number,"slice%d"),x_det.id());
 
 	slice_pos_z += slice_thickness / 2;
-	// Slice box. 
-	Box slice_box(lcdd,"slice",layer_dim_x,detZ/2,slice_thickness);
 
-	// Slice volume.
-	Volume slice_vol(lcdd,"slice",slice_box,slice_material);
+	// Slice volume & box
+	Volume slice_vol(slice_name,Box(layer_dim_x,detZ/2,slice_thickness),slice_material);
+
 	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
 	// Set region, limitset, and vis.
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
@@ -142,7 +134,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	PlacedVolume slice_phv = layer_vol.placeVolume(slice_vol,Position(0,0,slice_pos_z));
 	slice_phv.addPhysVolID(_X(slice),slice_number);
 
-	layer.add(slice);
+	slice.setPlacement(slice_phv);
 	// Increment Z position for next slice.
 	slice_pos_z += slice_thickness / 2;
 	// Increment slice number.
@@ -154,8 +146,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       // Layer physical volume.
       PlacedVolume layer_phv = staveInnerVol.placeVolume(layer_vol,Position(0,0,layer_pos_z));
       layer_phv.addPhysVolID(_X(layer),layer_num);
-
-      stave.add(layer);
+      layer.setPlacement(layer_phv);
 
       // Increment the layer X dimension.
       layer_dim_x += layer_thickness * std::tan(layerInnerAngle);// * 2;
@@ -168,10 +159,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
   // Add stave inner physical volume to outer stave volume.
   staveOuterVol.placeVolume(staveInnerVol,IdentityPos());
-
   // Set the vis attributes of the outer stave section.
   stave.setVisAttributes(lcdd,staves.visStr(),staveOuterVol);
-
   // Place the staves.
   placeStaves(sdet,stave,rmin,numSides,totalThickness,envelopeVol,innerAngle,staveOuterVol);
 

@@ -359,6 +359,17 @@ namespace DD4hep { namespace Geometry {
   template <> void Converter<LimitSet>::operator()(const xml_h& element)  const {
     lcdd.addLimitSet(toRefObject<to_type>(lcdd,element));
   }
+  void setChildTitles(const pair<string,DetElement>& e) {
+    DetElement parent = e.second.parent();
+    const DetElement::Children& children = e.second.children();
+    if ( strlen(e.second->GetTitle()) == 0 ) {
+      e.second->SetTitle(parent.isValid() ? parent.type().c_str() : e.first.c_str());
+    }
+    else {
+      cout << "Title present: " << e.second->GetTitle() << endl;
+    }
+    for_each(children.begin(),children.end(),setChildTitles);
+  }
   template <> void Converter<DetElement>::operator()(const xml_h& element)  const {
     static const char* req_dets = ::getenv("REQUIRED_DETECTORS");
     static const char* req_typs = ::getenv("REQUIRED_DETECTOR_TYPES");
@@ -376,12 +387,15 @@ namespace DD4hep { namespace Geometry {
       SensitiveDetector  sd = toRefObject<SensitiveDetector>(lcdd,element);
       DetElement det(Handle<TNamed>(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sd)));
       
-      if ( det.isValid() && element.hasAttr(_A(readout)) )  {
-        string rdo = element.attr<string>(_A(readout));
-        det.setReadout(lcdd.readout(rdo));
+      if ( det.isValid() )  {
+	setChildTitles(make_pair(name,det));
+	if ( element.hasAttr(_A(readout)) )  {
+	  string rdo = element.attr<string>(_A(readout));
+	  det.setReadout(lcdd.readout(rdo));
+	}
       }
       cout << (det.isValid() ? "Converted" : "FAILED    ")
-      << " subdetector:" << name << " of type " << type << endl;
+	   << " subdetector:" << name << " of type " << type << endl;
       lcdd.addDetector(det);
     }
     catch(const exception& e) {

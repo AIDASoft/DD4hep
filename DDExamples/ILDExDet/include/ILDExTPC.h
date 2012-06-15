@@ -15,7 +15,7 @@ namespace DD4hep {
   struct ILDExTPC : public Geometry::DetElement {
     typedef Geometry::Ref_t Ref_t;
     ILDExTPC(const Ref_t& e) : Geometry::DetElement(e) {}
-    ILDExTPC(const Geometry::LCDD& lcdd, const std::string& name, const std::string& type, int id);
+    ILDExTPC(const std::string& name, const std::string& type, int id);
     void setInnerWall(Ref_t obj);
     void setOuterWall(Ref_t obj);
     void setGasVolume(Ref_t obj);

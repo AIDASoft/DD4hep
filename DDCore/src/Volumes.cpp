@@ -239,16 +239,14 @@ string PlacedVolume::toString() const {
 }
 
 /// Constructor to be used when creating a new geometry tree.
-Volume::Volume(LCDD& lcdd, const string& name)    {
+Volume::Volume(const string& name)    {
   m_element = new Value<TGeoVolume,Volume::Object>(name.c_str());
-  lcdd.addVolume(*this);
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-Volume::Volume(LCDD& lcdd, const string& name, const Solid& s, const Material& m) {
+Volume::Volume(const string& name, const Solid& s, const Material& m) {
   m_element = new Value<TGeoVolume,Volume::Object>(name.c_str(),s);
   setMaterial(m);
-  lcdd.addVolume(*this);
 }
 
 /// Set the volume's material
@@ -413,8 +411,7 @@ LimitSet Volume::limitSet() const
 {  return data<Object>()->limits;                           }
 
 /// Constructor to be used when creating a new geometry tree.
-Assembly::Assembly(LCDD& lcdd, const std::string& name) {
+Assembly::Assembly(const std::string& name) {
   m_element = new Value<TGeoVolumeAssembly,Volume::Object>(name.c_str());
-  lcdd.addVolume(*this);
 }
 

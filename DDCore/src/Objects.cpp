@@ -114,9 +114,19 @@ VisAttr::VisAttr(LCDD& /* lcdd */, const string& name)    {
   setAlpha(0.1f);
 }
 
+/// Get Flag to show/hide daughter elements
+bool VisAttr::showDaughters() const  {
+  return _data().showDaughters;
+}
+
 /// Set Flag to show/hide daughter elements
 void VisAttr::setShowDaughters(bool value)   {
   _data().showDaughters = value;
+}
+
+/// Get visibility flag
+bool VisAttr::visible() const   {
+  return _data().visible;
 }
 
 /// Set visibility flag
@@ -124,9 +134,19 @@ void VisAttr::setVisible(bool value)   {
   _data().visible = value;
 }
 
+/// Get line style
+int VisAttr::lineStyle()  const {
+  return _data().lineStyle;
+}
+
 /// Set line style
 void VisAttr::setLineStyle(LineStyle value)  {
   _data().lineStyle = value;
+}
+
+/// Get drawing style
+int VisAttr::drawingStyle()  const {
+  return _data().drawingStyle;
 }
 
 /// Set drawing style
@@ -134,15 +154,41 @@ void VisAttr::setDrawingStyle(DrawingStyle value)   {
   _data().drawingStyle = value;
 }
 
+/// Get alpha value
+float VisAttr::alpha() const  {
+  //TNamed* obj = first_value<TNamed>(*this);
+  //obj->SetAlpha(value);
+  return _data().alpha;
+}
+
 /// Set alpha value
-void VisAttr::setAlpha(float /* value */)   {
+void VisAttr::setAlpha(float value)   {
+  _data().alpha = value;
   //TNamed* obj = first_value<TNamed>(*this);
   //obj->SetAlpha(value);
 }
 
+/// Get object color
+int VisAttr::color()   const  {
+  return _data().color;
+}
+
 /// Set object color
 void VisAttr::setColor(float red, float green, float blue)   {
-  _data().color = TColor::GetColor(red,green,blue);
+  Object& o = _data();
+  o.color = TColor::GetColor(red,green,blue);
+  o.col   = gROOT->GetColor(o.color);
+}
+
+/// Get RGB values of the color (if valid)
+bool VisAttr::rgb(float& red, float& green, float& blue) const {
+  Object& o = _data();
+  if ( o.col ) {
+    TColor* c = (TColor*)o.col;
+    c->GetRGB(red,green,blue);
+    return true;
+  }
+  return false;
 }
 
 /// String representation of this object

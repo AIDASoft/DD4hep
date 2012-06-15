@@ -15,10 +15,8 @@ using namespace DD4hep::Geometry;
 static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t  x_det   = e;
   string     name    = x_det.nameStr();
-  DetElement sdet   (name,x_det.typeStr(),x_det.id());
-  Polycone   cone   (lcdd,name);
+  DetElement sdet   (name,x_det.id());
   Material   mat    (lcdd.material(x_det.materialStr()));
-  Volume     volume (lcdd,name, cone, mat);
   vector<double> rmin,rmax,z;
   int num = 0;
 
@@ -31,7 +29,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   if ( num < 2 )  {
     throw runtime_error("PolyCone["+name+"]> Not enough Z planes. minimum is 2!");
   }
-  cone.addZPlanes(rmin,rmax,z);
+  Polycone   cone   (0.,2.*M_PI,rmin,rmax,z);
+  Volume     volume (name, cone, mat);
   volume.setVisAttributes(lcdd, x_det.visStr());
   sdet.setPlacement(lcdd.pickMotherVolume(sdet).placeVolume(volume));
   return sdet;

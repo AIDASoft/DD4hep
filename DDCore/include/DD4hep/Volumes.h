@@ -90,6 +90,11 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Volume : public Handle<TGeoVolume>  {
+      protected:
+      //void inc_ref();
+      //void dec_ref();
+
+      public:
       typedef Handle<TGeoVolume> Base;
       struct Object  {
         unsigned long magic;
@@ -97,7 +102,8 @@ namespace DD4hep {
         LimitSet      limits;
         VisAttr       vis;
         Ref_t         sens_det;
-        Object() : region(), limits(), vis(), sens_det() {}
+	int           referenced;
+        Object() : region(), limits(), vis(), sens_det(), referenced(0)  {}
       };
       /// Default constructor
       Volume() : Base(0) {}
@@ -109,10 +115,10 @@ namespace DD4hep {
       template <typename T> Volume(const Handle<T>& v) : Base(v) {}
       
       /// Constructor to be used when creating a new geometry tree.
-      Volume(LCDD& lcdd, const std::string& name);
+      Volume(const std::string& name);
       
       /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-      Volume(LCDD& lcddument, const std::string& name, const Solid& s, const Material& m);
+      Volume(const std::string& name, const Solid& s, const Material& m);
       
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol)  const  
@@ -189,7 +195,7 @@ namespace DD4hep {
       template <typename T> Assembly(const Handle<T>& v) : Volume(v) {}
       
       /// Constructor to be used when creating a new geometry tree.
-      Assembly(LCDD& lcdd, const std::string& name);
+      Assembly(const std::string& name);
     };
 
   }       /* End namespace Geometry           */

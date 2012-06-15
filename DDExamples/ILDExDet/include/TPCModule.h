@@ -21,7 +21,7 @@ namespace DD4hep {
     TPCModule() {}
     TPCModule(const Ref_t& e) : Geometry::DetElement(e) {}
     TPCModule(const Geometry::DetElement& e) : Geometry::DetElement(e) {}
-    TPCModule(const Geometry::LCDD& lcdd, const std::string& name, const std::string& type, int id);
+    TPCModule(const std::string& name, const std::string& type, int id);
     /** ID of this module.
      */
     int getID() const;

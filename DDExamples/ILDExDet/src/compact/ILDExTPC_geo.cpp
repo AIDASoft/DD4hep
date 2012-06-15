@@ -25,9 +25,9 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   //     DetElement tpc(tpcData, name, x_det.typeStr());
   //     tpcData->id = x_det.id();
   //else do this
-  DetElement    tpc    (lcdd,name,x_det.typeStr(),x_det.id());
-  Tube        tpc_tub(lcdd,name+"_envelope",x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
-  Volume      tpc_vol(lcdd,name+"_envelope_volume", tpc_tub, mat);
+  DetElement    tpc  (name,x_det.typeStr(),x_det.id());
+  Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
+  Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
 
   for(xml_coll_t c(e,_X(detector)); c; ++c)  {
     xml_comp_t  px_det  (c);
@@ -37,9 +37,9 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     xml_comp_t  px_mat  (px_det.child(_X(material)));
     string      part_nam(px_det.nameStr());
     Material    part_mat(lcdd.material(px_mat.nameStr()));
-    DetElement  part_det(lcdd,part_nam,px_det.typeStr(),px_det.id());
-    Tube        part_tub(lcdd,part_nam+"_tube",px_tube.rmin(),px_tube.rmax(),px_tube.zhalf());
-    Volume      part_vol(lcdd,part_nam,part_tub,part_mat);
+    DetElement  part_det(part_nam,px_det.typeStr(),px_det.id());
+    Tube        part_tub(px_tube.rmin(),px_tube.rmax(),px_tube.zhalf());
+    Volume      part_vol(part_nam,part_tub,part_mat);
     Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
     Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
     bool        reflect   = px_det.reflect();
@@ -63,15 +63,14 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	  double DeltaPhi=(2*M_PI-nmodules*(row.modulePitch()/(rmin+(rmax-rmin)/2)))/nmodules;
 	  double zhalf=px_tube.zhalf();
 	  string      mr_nam=m_name+_toString(rowID,"_Row%d");
-	  Tube        mr_tub(lcdd,mr_nam+"_tube",rmin,rmax,zhalf,DeltaPhi);
-	  Volume      mr_vol(lcdd,mr_nam,mr_tub,part_mat);
+	  Volume      mr_vol(mr_nam,Tube(rmin,rmax,zhalf,DeltaPhi),part_mat);
 	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
 	  Readout xml_pads(lcdd.readout(row.padType()));
 	  		
 	 //placing modules
 	  for(int md=0;md<nmodules;md++){
 	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	    DetElement  module (lcdd,m_nam,row.typeStr(),mdcount);
+	    DetElement  module(m_nam,row.typeStr(),mdcount);
 	    //data of module, e.g. Readout
 	    // Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
 	    // tpcModData->id = mdcount;

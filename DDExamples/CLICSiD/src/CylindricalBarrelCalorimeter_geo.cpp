@@ -18,8 +18,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   Material   air       = lcdd.air();
   string     det_name  = x_det.nameStr();
   string     det_type  = x_det.typeStr();
-  Tube       envelope   (lcdd,det_name);
-  Volume     envelopeVol(lcdd,det_name,envelope,air);
+  Tube       envelope;
+  Volume     envelopeVol(det_name,envelope,air);
   DetElement sdet       (det_name,det_type,x_det.id());
   double     z         = dim.outer_z();
   double     rmin      = dim.inner_r();
@@ -30,20 +30,19 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     xml_comp_t x_layer = c;
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
       string layer_name = det_name + _toString(n,"_layer%d");
-      Tube   layer_tub(lcdd,layer_name);
-      Volume layer_vol(lcdd,layer_name,layer_tub,air);
+      Tube   layer_tub;
+      Volume layer_vol(layer_name,layer_tub,air);
       double rlayer = r;
         
       for(xml_coll_t l(x_layer,_X(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
+	double     router = r + x_slice.thickness();
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
 	string     slice_name = layer_name + _toString(m,"slice%d");
-	Tube       slice_tube(lcdd,slice_name);
-	Volume     slice_vol (lcdd,slice_name,slice_tube,slice_mat);
-	double     router = r + x_slice.thickness();
+	Tube       slice_tube(r,router,z * 2);
+	Volume     slice_vol (slice_name,slice_tube,slice_mat);
           
 	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
-	slice_tube.setDimensions(r,router,z * 2);
 	r = router;
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// Instantiate physical volume

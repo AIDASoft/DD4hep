@@ -19,10 +19,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   bool        reflect    = x_det.reflect();
   xml_comp_t  beam       = x_det.child(_X(beampipe));
   string      det_name   = x_det.nameStr();
-  string      det_type   = x_det.typeStr();
   int         id         = x_det.id();
   Material    air        = lcdd.air();
-  DetElement  sdet       (det_name,det_type,id);
+  DetElement  sdet       (det_name,id);
   Layering    layering(x_det);
 
   Volume      motherVol  = lcdd.pickMotherVolume(sdet);
@@ -36,16 +35,15 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   double      xangleHalf = xangle / 2;
   double      thickness  = layering.totalThickness();
   double      zpos       = zinner + (thickness / 2);
-  //double      zouter     = zinner + thickness;
   // Beampipe position in envelope.
   double      beamPosX   = std::tan(xangleHalf) * zpos;
 
   // Detector envelope solid. 
-  Tube envelopeTube(lcdd,det_name,rmin,rmax,thickness);
+  Tube envelopeTube(rmin,rmax,thickness);
 
   // First envelope bool subtracion of outgoing beampipe.
   // Incoming beampipe solid.
-  Tube beamInTube(lcdd,det_name + "_beampipe_incoming",0,outgoingR,thickness * 2);
+  Tube beamInTube(0,outgoingR,thickness * 2);
   // Position of incoming beampipe.
   Position beamInPos(beamPosX,0,0);
   /// Rotation of incoming beampipe.
@@ -53,20 +51,18 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
   // Second envelope bool subtracion of outgoing beampipe.
   // Outgoing beampipe solid.
-  Tube     beamOutTube(lcdd,det_name + "_beampipe_outgoing",0,incomingR,thickness * 2);
+  Tube     beamOutTube(0,incomingR,thickness * 2);
   // Position of outgoing beampipe.
   Position beamOutPos(-beamPosX,0,0);
   // Rotation of outgoing beampipe.
   Rotation beamOutRot(0,-xangleHalf,0);
 
   // First envelope bool subtraction of incoming beampipe.
-  SubtractionSolid envelopeSubtraction1(lcdd,det_name+"_subtraction1_tube",
-					envelopeTube,beamInTube,beamInPos,beamInRot);
-  SubtractionSolid envelopeSubtraction2(lcdd,det_name+"_subtraction2_tube",
-					envelopeSubtraction1,beamOutTube,beamOutPos,beamOutRot);
+  SubtractionSolid envelopeSubtraction1(envelopeTube,beamInTube,beamInPos,beamInRot);
+  SubtractionSolid envelopeSubtraction2(envelopeSubtraction1,beamOutTube,beamOutPos,beamOutRot);
 
   // Final envelope bool volume.
-  Volume envelopeVol(lcdd,det_name, envelopeSubtraction2, air);
+  Volume envelopeVol(det_name, envelopeSubtraction2, air);
 
   // Process each layer element.
   double layerPosZ   = -thickness / 2;
@@ -77,28 +73,26 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
     // Create tube envelope for this layer, which can be reused in bool definition
     // in the repeat loop below.
-    Tube layerTube(lcdd, det_name + "_layer",rmin,rmax,layerThickness);
+    Tube layerTube(rmin,rmax,layerThickness);
 
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
-      string layer_nam = det_name + _toString(i,"_layer%d");
+      string layer_nam = _toString(i,"layer%d");
       // Increment to new layer position.
       layerDisplZ += layerThickness / 2;
       layerPosZ   += layerThickness / 2;
 
       // First layer subtraction solid.
-      DetElement  layer(layer_nam,"ForwardDetector/Layer",sdet.id());
+      DetElement  layer(sdet,layer_nam,sdet.id());
       double      layerGlobalZ = zinner + layerDisplZ;
       double      layerPosX    = tan(xangleHalf) * layerGlobalZ;
       Position    layerSubtraction1Pos( layerPosX,0,0);
       Position    layerSubtraction2Pos(-layerPosX,0,0);
 
-      SubtractionSolid layerSubtraction1(lcdd,layer_nam + "_subtraction1",
-					 layerTube,beamInTube,layerSubtraction1Pos,beamInRot);
+      SubtractionSolid layerSubtraction1(layerTube,beamInTube,layerSubtraction1Pos,beamInRot);
       // Second layer subtraction solid.
-      SubtractionSolid layerSubtraction2(lcdd,layer_nam + "_subtraction2",
-					 layerSubtraction1,beamOutTube,layerSubtraction2Pos,beamOutRot);
+      SubtractionSolid layerSubtraction2(layerSubtraction1,beamOutTube,layerSubtraction2Pos,beamOutRot);
       // Layer LV.
-      Volume layerVol(lcdd,layer_nam, layerSubtraction2, air);
+      Volume layerVol(det_name+"_"+layer_nam,layerSubtraction2,air);
       
       // Slice loop.
       int sliceCount = 0;
@@ -106,7 +100,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       double sliceDisplZ = 0;
       for(xml_coll_t l(x_layer,XML::Tag_slice); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
-	string slice_nam = layer_nam + _toString(sliceCount,"_slice%d");
+	string slice_nam = _toString(sliceCount,"slice%d");
 	/** Get slice parameters. */
 	double sliceThickness = x_slice.thickness();
 	Material slice_mat = lcdd.material(x_slice.materialStr());
@@ -116,27 +110,24 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	slicePosZ   += sliceThickness / 2;
 
 	// Slice's basic tube.
-	Tube sliceTube(lcdd, slice_nam + "_tube", rmin,rmax,sliceThickness);
-	DetElement slice(slice_nam,"ForwardDetector/Layer/Slice",sdet.id());
+	Tube sliceTube(rmin,rmax,sliceThickness);
+	DetElement slice(layer,slice_nam,sdet.id());
 	double sliceGlobalZ = zinner + (layerDisplZ - layerThickness / 2) + sliceDisplZ;
 	double slicePosX    = std::tan(xangleHalf) * sliceGlobalZ;
 
 	// First slice subtraction solid.
-	SubtractionSolid sliceSubtraction1(lcdd,slice_nam + "_subtraction1",
-					   sliceTube,beamInTube,Position(slicePosX,0,0),beamInRot);
+	SubtractionSolid sliceSubtraction1(sliceTube,beamInTube,Position(slicePosX,0,0),beamInRot);
 	// Second slice subtraction solid.
-	SubtractionSolid sliceSubtraction2(lcdd,slice_nam + "_subtraction2",
-					   sliceSubtraction1,beamOutTube,Position(-slicePosX,0,0),beamOutRot); 
+	SubtractionSolid sliceSubtraction2(sliceSubtraction1,beamOutTube,Position(-slicePosX,0,0),beamOutRot); 
 	// Slice LV.
-	Volume sliceVol(lcdd,slice_nam, sliceSubtraction2, slice_mat);
-        
+	Volume sliceVol(det_name+"_"+layer_nam+"_"+slice_nam, sliceSubtraction2, slice_mat);
+
 	if ( x_slice.isSensitive() ) sliceVol.setSensitiveDetector(sens);
 	// Set attributes of slice
 	slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 
 	// Place volume in layer
 	slice.setPlacement(layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ)));
-	layer.add(slice);
 
 	// Start of next slice.
 	sliceDisplZ += sliceThickness / 2;
@@ -150,7 +141,6 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       PlacedVolume layerPV = envelopeVol.placeVolume(layerVol,Position(0,0,layerPosZ));
       layerPV.addPhysVolID(_X(layer), i);
       layer.setPlacement(layerPV);
-      sdet.add(layer);
 
       // Increment to start of next layer.
       layerDisplZ += layerThickness / 2;
@@ -168,7 +158,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,-zpos),ReflectRot());
     env_phv.addPhysVolID(_X(system), id);
     env_phv.addPhysVolID(_X(barrel), 2);
-    DetElement rdet(det_name+"_reflect",det_type,x_det.id());
+    DetElement rdet(det_name+"_reflect",x_det.id());
     rdet.setPlacement(env_phv);
   }
   return sdet;

@@ -118,6 +118,7 @@ namespace DD4hep {
 	TGeoMatrix*       worldTrafo;
 	TGeoMatrix*       parentTrafo;
 	TGeoMatrix*       referenceTrafo;
+	std::string       placementPath;
 	/// Default constructor
         Object();
 	/// Construct new empty object
@@ -129,7 +130,7 @@ namespace DD4hep {
 	/// Conversion to reference object
 	Ref_t asRef();
 	/// Top detector element
-	Ref_t top();
+	//Ref_t top();
 	/// Create cached matrix to transform to world coordinates
 	TGeoMatrix* worldTransformation();
 	/// Create cached matrix to transform to parent coordinates
@@ -149,27 +150,36 @@ namespace DD4hep {
       /// Default constructor
       template<typename Q> DetElement(Q* data, const std::string& name, const std::string& type) : Ref_t(data)  
       {  this->assign(data, name, type);                   }
+
       /// Templated constructor for handle conversions
       template<typename Q> DetElement(const Handle<Q>& e) : Ref_t(e)  {}
-      /// DEPRECATED: Constructor for a new subdetector element. First argument lcdd is unused!
-      DetElement(const LCDD& lcdd, const std::string& name, const std::string& type, int id);
+
+      /// Constructor to copy handle
+      DetElement(const DetElement& e) : Ref_t(e) {}
 
       /// Constructor for a new subdetector element
       DetElement(const std::string& name, const std::string& type, int id);
 
+      /// Constructor for a new subdetector element
+      DetElement(const std::string& name, int id);
+
+      /// Constructor for a new subdetector element
+      DetElement(DetElement parent, const std::string& name, int id);
+
       /// Clone (Deep copy) the DetElement structure with a new name
       DetElement clone(const std::string& new_name) const;
+
       /// Clone (Deep copy) the DetElement structure with a new name and new identifier
       DetElement clone(const std::string& new_name, int new_id) const;
       
       DetElement&     setCombineHits(bool value, SensitiveDetector& sens);
-      DetElement&     add(const DetElement& sub_element);
       int             id() const;
       std::string     type() const;
       std::string     path() const;
+      /// Access to the full path to the placed object
+      std::string     placementPath() const;
       bool            isTracker() const;
       bool            isCalorimeter() const;
-      //bool            isInsideTrackingVolume() const;
       bool            combineHits() const;
       
       /// Set all attributes in one go
@@ -189,24 +199,25 @@ namespace DD4hep {
       Readout         readout() const;
       /// Assign readout definition
       DetElement&     setReadout(const Readout& readout);
-      
+
+      /// Access to the logical volume of the placements (all daughters have the same!)
+      Volume          volume() const;
+      /// Set the logical volume of the placements (all daughters have the same!)
+      //void            setVolume(Volume vol);
+
       /// Access to the physical volume of this detector element
       PlacedVolume    placement() const;
       /// Set the physical volumes of the detector element
       DetElement&     setPlacement(const PlacedVolume& volume);
 
-      /// Access the physical volumes of the detector element
-      //Placements      placements() const;
-      /// Set the physical volumes of the detector element
-      //DetElement&     addPlacement(const PlacedVolume& volume);
-
-      /// Access to the logical volume of the placements (all daughters have the same!)
-      Volume          volume() const;
-      
+      /// Add new child to the detector structure
+      DetElement&     add(DetElement sub_element);
       /// Access to the list of children
       const Children& children() const;
       /// Access to individual children by name
       DetElement      child(const std::string& name) const;
+      /// Access to the detector elements's parent
+      DetElement      parent() const;
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
       DetElement&     setReference(DetElement reference);

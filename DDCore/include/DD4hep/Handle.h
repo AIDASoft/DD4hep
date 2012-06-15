@@ -23,6 +23,17 @@ class TGeoManager;
 #ifndef RAD_2_DEGREE
 #define RAD_2_DEGREE 57.295779513082320876798154814105
 #endif
+#ifndef DEGREE_2_RAD 
+#define DEGREE_2_RAD 0.017453292519943295769236907684886
+#endif
+#ifndef CM_2_MM
+#define CM_2_MM 10.0
+#endif
+#ifndef MM_2_CM
+#define MM_2_CM 0.1
+#endif
+
+
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif

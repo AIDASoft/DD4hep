@@ -47,11 +47,34 @@ static bool traverse_up(const DetElement& parent, const DetElement& child, vecto
   return true;
 }
 #include <iostream>
-static string find_child(TGeoNode* top, TGeoNode* child, vector<TGeoNode*>& path) {
+static string find_path(TGeoNode* top, TGeoNode* child) {
+  if ( top == child ) {
+    return child->GetName();
+  }
   TIter next(top->GetVolume()->GetNodes());
   for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
     if ( daughter == child )   {
-      cout << "Found child:" << child->GetName() << endl;
+      return child->GetName();
+    }
+  }
+  next.Reset();
+  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+    string res = find_path(daughter, child);
+    if ( !res.empty() ) {
+      return top->GetName() + ("/"+res);
+    }
+  }
+  return "";
+}
+
+static string find_child(TGeoNode* top, TGeoNode* child, vector<TGeoNode*>& path) {
+  if ( top == child ) {
+    path.push_back(child);
+    return child->GetName();
+  }
+  TIter next(top->GetVolume()->GetNodes());
+  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+    if ( daughter == child )   {
       path.push_back(daughter);
       return child->GetName();
     }
@@ -112,6 +135,16 @@ static TGeoHMatrix* create_trafo(const Ref_t& parent, const Ref_t& child)   {
     throw runtime_error("DetElement cannot connect nonexisting parent to not-existing child!");
 }
 
+/// Top detector element
+static DetElement _top(DetElement o)   {
+  DetElement par = o, pp = o;
+  while(par.isValid()) {
+    if ( par.placement().isValid() ) pp = par;
+    par = par.parent();
+  }
+  return pp;
+}
+
 /// Default constructor
 DetElement::Object::Object()  
   : magic(magic_word()), id(0), combine_hits(0), readout(), 
@@ -149,16 +182,9 @@ void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
       child._data().parent = self;
     }
     else {
-      throw runtime_error("DetElement::add: Element "+string(child.name())+" is already present [Double-Insert]");
+      throw runtime_error("DetElement::copy: Element "+string(child.name())+" is already present [Double-Insert]");
     }
   }
-}
-
-/// Top detector element
-Ref_t DetElement::Object::top()   {
-  // This is an ugly staement. Need to rethink it a bit.....(MSF)
-  if ( !this->parent.isValid() )  return this->asRef();
-  return DetElement(this->parent)._data().top();
 }
 
 /// Conversion to reference object
@@ -174,7 +200,7 @@ DetElement::Object::operator Ref_t() {
 /// Create cached matrix to transform to world coordinates
 TGeoMatrix* DetElement::Object::worldTransformation() {
   if ( !worldTrafo ) {
-    DetElement top_det(this->top());
+    DetElement top_det = _top(DetElement(asRef()));
     vector<TGeoMatrix*> trafos;
     TGeoHMatrix* mat = create_trafo(top_det,asRef());
     // Now we got the point in the top-most detector element. We now have
@@ -209,17 +235,35 @@ TGeoMatrix* DetElement::Object::referenceTransformation() {
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(const LCDD& /* lcdd */, const string& name, const string& type, int id)
-{
+DetElement::DetElement(const string& name, const string& type, int id)   {
   assign(new Value<TNamed,Object>(),name,type);
   _data().id = id;
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(const string& name, const string& type, int id)
-{
-  assign(new Value<TNamed,Object>(),name,type);
+DetElement::DetElement(const string& name, int id)   {
+  assign(new Value<TNamed,Object>(),name,"");
   _data().id = id;
+}
+
+/// Constructor for a new subdetector element
+DetElement::DetElement(DetElement parent, const string& name, int id)   {
+  assign(new Value<TNamed,Object>(),name,"");
+  _data().id = id;
+  parent.add(*this);
+}
+
+/// Access to the full path to the placed object
+std::string DetElement::placementPath() const {
+  if ( isValid() ) {
+    Object& o = _data();
+    if ( o.placementPath.empty() ) {
+      DetElement top =_top(*this);
+      o.placementPath = find_path(top.placement().ptr(),placement().ptr());
+    }
+    return o.placementPath;
+  }
+  return "";
 }
 
 string DetElement::type() const   {
@@ -261,9 +305,20 @@ const DetElement::Children& DetElement::children() const   {
 
 /// Access to individual children by name
 DetElement DetElement::child(const std::string& name) const {
-  const Children& c = _data().children;
-  Children::const_iterator i = c.find(name);
-  return i == c.end() ? DetElement() : (*i).second;
+  if ( isValid() )  {
+    const Children& c = _data().children;
+    Children::const_iterator i = c.find(name);
+    return i == c.end() ? DetElement() : (*i).second;
+  }
+  return DetElement();
+}
+
+/// Access to the detector elements's parent
+DetElement DetElement::parent() const {
+  if ( isValid() )  {
+    return _data().parent;
+  }
+  return DetElement();
 }
 
 void DetElement::check(bool condition, const string& msg) const  {
@@ -272,7 +327,7 @@ void DetElement::check(bool condition, const string& msg) const  {
   }
 }
 
-DetElement& DetElement::add(const DetElement& sdet)  {
+DetElement& DetElement::add(DetElement sdet)  {
   if ( isValid() )  {
     pair<Children::iterator,bool> r = _data().children.insert(make_pair(sdet.name(),sdet));
     if ( r.second )   {
@@ -316,45 +371,35 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
       Object& o   = _data();
       o.placement = placement;
       o.volume    = placement.volume();
-      //placement.setDetElement(*this);
       return *this;
     }
-    throw runtime_error("DetElement::addPlacement: Placement is not defined [Invalid Handle]");
+    throw runtime_error("DetElement::setPlacement: Placement is not defined [Invalid Handle]");
   }
-  throw runtime_error("DetElement::addPlacement: Self is not defined [Invalid Handle]");
-}
-#if 0
-DetElement::Placements DetElement::placements() const    {
-  return _data().placements;
+  throw runtime_error("DetElement::setPlacement: Self is not defined [Invalid Handle]");
 }
 
-// OBSOLETE: to be replaced by setPlacement
-DetElement& DetElement::addPlacement(const PlacedVolume& placement)  {
-  if ( isValid() ) {
-    if ( placement.isValid() )  {
-      _data().placements.push_back(placement);
-      setPlacement(placement);
-      return *this;
-    }
-    throw runtime_error("DetElement::addPlacement: Placement is not defined [Invalid Handle]");
-  }
-  throw runtime_error("DetElement::addPlacement: Self is not defined [Invalid Handle]");
-}
-#endif
 /// Access to the logical volume of the placements (all daughters have the same!)
-Volume DetElement::volume() const {
+Volume DetElement::volume() const   {
   if ( isValid() )  {
     return _data().volume;
   }
   throw runtime_error("DetElement::volume: Self is not defined [Invalid Handle]");
 }
-
+#if 0
+/// Set the logical volume of the placements (all daughters have the same!)
+void DetElement::setVolume(Volume vol) {
+  if ( isValid() )  {
+    _data().volume = vol;
+  }
+  throw runtime_error("DetElement::setVolume: Self is not defined [Invalid Handle]");
+}
+#endif
 DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& name, const Volume& volume)  {
   if ( isValid() )  {
     volume.setVisAttributes(lcdd,name);
     return *this;
   }
-  throw runtime_error("DetElement::setRegion: Self is not defined [Invalid Handle]");
+  throw runtime_error("DetElement::setVisAttributes: Self is not defined [Invalid Handle]");
 }
 
 DetElement& DetElement::setRegion(const LCDD& lcdd, const string& name, const Volume& volume)  {
