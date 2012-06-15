@@ -277,9 +277,9 @@ static void dumpStructure(PlacedVolume pv, int level) {
   _path += "/";
   _path += current->GetName();
   ::sprintf(fmt, "%%4d %%%ds %%7s %%s\n",level*2+5);
-  ::printf(fmt,level,"","->LV:  ",volume->GetName());
-  ::printf(fmt,level,"","->PV:  ",current->GetName());
-  ::printf(fmt,level,"","->path:",_path.c_str());
+  ::printf(fmt,level,"","  ->LV:  ",volume->GetName());
+  ::printf(fmt,level,"","  ->PV:  ",current->GetName());
+  ::printf(fmt,level,"","  ->path:",_path.c_str());
   if ( num_children > 0 )   {
     for(int i=0; i<num_children; ++i)   {
       TGeoNode* node = (TGeoNode*)nodes->At(i);
