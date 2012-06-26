@@ -192,7 +192,7 @@ Index: CMakeLists.txt
 ===================================================================
 --- CMakeLists.txt	(revision 0)
 +++ CMakeLists.txt	(revision 0)
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,31 @@
 +cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 +
 +project(VGM)
@@ -208,6 +208,11 @@ Index: CMakeLists.txt
 +#---Find required packages----------------------------------------------------------
 +if(VGM_WITH_Geant4GM)
 +  find_package(Geant4 REQUIRED)
++  if(NOT Geant4_clhep_FOUND OR DEFINED CLHEP_ROOT_DIR)
++    find_package(CLHEP REQUIRED)
++    set(Geant4_INCLUDE_DIR ${Geant4_INCLUDE_DIR} ${CLHEP_INCLUDE_DIRS})
++    set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
++  endif()
 +endif()
 +if(VGM_WITH_RootGM)
 +  find_package(ROOT REQUIRED)
@@ -218,8 +223,6 @@ Index: CMakeLists.txt
 +
 +#---Add required packages----------------------------------------------------------
 +add_subdirectory(packages)
-+
-+
 +
 Index: packages/BaseVGM/CMakeLists.txt
 ===================================================================

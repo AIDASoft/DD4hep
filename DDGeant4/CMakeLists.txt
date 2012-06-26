@@ -2,12 +2,17 @@
 include(ExternalProject)
 ExternalProject_Add( 
     VGM
-	  PREFIX VGM
+    PREFIX VGM
     SVN_REPOSITORY https://vgm.svn.sourceforge.net/svnroot/vgm/tags/v3-05/vgm
     UPDATE_COMMAND ""
     PATCH_COMMAND patch -p0 -i ${CMAKE_CURRENT_SOURCE_DIR}/AddCMakeFiles.patch
 	  INSTALL_DIR ${CMAKE_BINARY_DIR}
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> -DVGM_WITH_XmlVGM:BOOL=OFF -DGeant4_DIR=${Geant4_DIR} -DGeant4_ROOT_DIR=${Geant4_ROOT_DIR} -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH} )
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR> 
+               -DVGM_WITH_XmlVGM:BOOL=OFF 
+               -DGeant4_DIR=${Geant4_DIR} 
+               -DGeant4_ROOT_DIR=${Geant4_ROOT_DIR}
+               -DCLHEP_ROOT_DIR=${CLHEP_ROOT_DIR} 
+               -DCMAKE_MODULE_PATH=${CMAKE_MODULE_PATH} )
 
 set(VGM_LIBRARIES -L${CMAKE_BINARY_DIR}/lib -lRootGM -lGeant4GM -lBaseVGM -lClhepVGM)
 set(VGM_INCLUDE_DIR ${CMAKE_BINARY_DIR}/include)
