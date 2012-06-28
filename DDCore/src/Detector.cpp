@@ -12,137 +12,95 @@
 #include "TGeoVolume.h"
 #include "TGeoMatrix.h"
 #include "TGeoManager.h"
+#include <iostream>
 
 using namespace std;
 using namespace DD4hep::Geometry;
 
-static bool traverse_find(TGeoNode* parent, TGeoNode* child, vector<TGeoMatrix*>& trafos) {
-  TIter next(parent->GetVolume()->GetNodes());
-  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
-    if ( daughter == child )   {
-      trafos.push_back(daughter->GetMatrix());
+static bool find_child(TGeoNode* parent, TGeoNode* child, vector<TGeoNode*>& path) {
+  if ( parent && child ) {
+    if ( parent == child ) {
+      path.push_back(child);
       return true;
     }
-  }
-  next.Reset();
-  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
-    if ( traverse_find(daughter, child, trafos) ) {
-      trafos.push_back(daughter->GetMatrix());
-      return true;
+    TIter next(parent->GetVolume()->GetNodes());
+    for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+      if ( daughter == child )   {
+	path.push_back(daughter);
+	return true;
+      }
+    }
+    next.Reset();
+    for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
+      bool res = find_child(daughter, child, path);
+      if ( res ) {
+	path.push_back(daughter);
+	return res;
+      }
     }
   }
   return false;
 }
 
-static bool traverse_up(const DetElement& parent, const DetElement& child, vector<TGeoMatrix*>& trafos) {
-  if ( child.ptr() != parent.ptr() ) {
-    for( DetElement par=parent, cld=child; par.isValid(); cld=par, par=par._data().parent ) {
-      PlacedVolume cld_place = cld._data().placement;
-      PlacedVolume par_place = par._data().placement;
-      if ( !traverse_find(par_place.ptr(),cld_place.ptr(),trafos) ) {
-	return false;
-      }
+static bool collect_detector_nodes(const vector<TGeoNode*>& det_nodes, vector<TGeoNode*>& nodes) {
+  if ( det_nodes.size() < 1 ) {
+    return false;
+  }
+  if ( det_nodes.size() < 2 ) {
+    return true;
+  }
+  for(size_t i=0, n=det_nodes.size(); i<n-1; ++i) {
+    if ( !find_child(det_nodes[i+1],det_nodes[i],nodes) )  {
+      return false;
     }
   }
   return true;
 }
-#include <iostream>
-static string find_path(TGeoNode* top, TGeoNode* child) {
-  if ( top == child ) {
-    return child->GetName();
-  }
-  TIter next(top->GetVolume()->GetNodes());
-  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
-    if ( daughter == child )   {
-      return child->GetName();
-    }
-  }
-  next.Reset();
-  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
-    string res = find_path(daughter, child);
-    if ( !res.empty() ) {
-      return top->GetName() + ("/"+res);
-    }
-  }
-  return "";
-}
-
-static string find_child(TGeoNode* top, TGeoNode* child, vector<TGeoNode*>& path) {
-  if ( top == child ) {
-    path.push_back(child);
-    return child->GetName();
-  }
-  TIter next(top->GetVolume()->GetNodes());
-  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
-    if ( daughter == child )   {
-      path.push_back(daughter);
-      return child->GetName();
-    }
-  }
-  next.Reset();
-  for (TGeoNode *daughter=(TGeoNode*)next(); daughter; daughter=(TGeoNode*)next() ) {
-    string res = find_child(daughter, child, path);
-    if ( !res.empty() ) {
-      path.push_back(daughter);
-      return top->GetName() + ("/"+res);
-    }
-  }
-  //cout << "FAILED child:" << (unsigned long)child << endl;
-  return "";
-}
 
 /// Create cached matrix to transform to positions to an upper level DetElement
-static TGeoHMatrix* create_trafo(const Ref_t& parent, const Ref_t& child)   {
-  if ( parent.isValid() && child.isValid() )   {
-    TGeoHMatrix* mat = 0;    // Now collect all transformations
-    vector<TGeoMatrix*> trafos;
-    if ( !traverse_up(parent,child,trafos) )   {
-      trafos.clear();
-      if ( !traverse_up(child,parent,trafos) )   {  // Some error, non-existing path!
-	throw runtime_error("DetElement "+string(parent.name())+" is not connected to child "+string(child.name())+" [Geo-Error]");
-      }
-      else {
-	/// The two detector elements were only found by reversing the hierarchy.
-	/// Hence the transformations must be applied in reverse order.
-	for(vector<TGeoMatrix*>::const_reverse_iterator i=trafos.rbegin(); i!=trafos.rend(); ++i) {
-	  if ( !mat ) mat = new TGeoHMatrix(*(*i));
-	  else mat->MultiplyLeft(*i);
-	}
-      }
-    }
-    else {
-      /// Combine the transformations to a single transformation.
-      for(vector<TGeoMatrix*>::const_iterator i=trafos.begin(); i!=trafos.end(); ++i) {
-	if ( !mat ) mat = new TGeoHMatrix(*(*i));
-	else mat->MultiplyLeft(*i);
-      }
-    }
-#if 0
-    // Test: find arbitrary child by traversing TGeoNode tree
-    vector<TGeoNode*> path;
-    TGeoNode* top  = gGeoManager->GetTopNode();
-    TGeoNode* node = DetElement(child).placement().ptr();
-    string res = find_child(top,node,path);
-    cout << "Path:" << res << endl;
-#endif
-    return mat;
+static TGeoHMatrix* create_trafo(const vector<TGeoNode*>& det_nodes)   {
+  if ( det_nodes.size() < 2 ) {
+    return new TGeoHMatrix(*gGeoIdentity);
   }
-  if ( parent.isValid() )
-    throw runtime_error("DetElement cannot connect "+string(parent.name())+" to not-existing child!");
-  else if ( child.isValid() )
-    throw runtime_error("DetElement cannot connect "+string(child.name())+" to not-existing parent!");
-  else
-    throw runtime_error("DetElement cannot connect nonexisting parent to not-existing child!");
+  vector<TGeoNode*> nodes;
+  if ( !collect_detector_nodes(det_nodes,nodes) ) {
+    throw runtime_error("DetElement cannot connect "+string(det_nodes[0]->GetName())+
+			" to child "+string(det_nodes[1]->GetName()));
+  }
+  TGeoHMatrix* mat = new TGeoHMatrix(*gGeoIdentity);
+  for(vector<TGeoNode*>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i) {
+    TGeoMatrix* m = (*i)->GetMatrix();
+    mat->MultiplyLeft(m);
+  }
+  return mat;
 }
 
 /// Top detector element
-static DetElement _top(DetElement o)   {
+static DetElement _top(DetElement o, vector<TGeoNode*>& det_nodes)   {
   DetElement par = o, pp = o;
-  while(par.isValid()) {
-    if ( par.placement().isValid() ) pp = par;
+  while( par.isValid() ) {
+    if ( par.placement().isValid() )   {
+      det_nodes.push_back(par.placement().ptr());
+      pp = par;
+    }
     par = par.parent();
   }
   return pp;
+}
+
+/// Top detector element
+static DetElement _par(DetElement o, DetElement top, vector<TGeoNode*>& det_nodes)   {
+  DetElement par = o, pp = o;
+  while( par.isValid() ) {
+    if ( par.placement().isValid() )   {
+      det_nodes.push_back(par.placement().ptr());
+      pp = par;
+    }
+    if ( par.ptr() == top.ptr() ) break;
+    par = par.parent();
+  }
+  if ( pp.ptr() == top.ptr() ) return pp;
+  return DetElement();
 }
 
 /// Default constructor
@@ -200,19 +158,9 @@ DetElement::Object::operator Ref_t() {
 /// Create cached matrix to transform to world coordinates
 TGeoMatrix* DetElement::Object::worldTransformation() {
   if ( !worldTrafo ) {
-    DetElement top_det = _top(DetElement(asRef()));
-    vector<TGeoMatrix*> trafos;
-    TGeoHMatrix* mat = create_trafo(top_det,asRef());
-    // Now we got the point in the top-most detector element. We now have
-    // to translate this to the "world volume", which has no transformation matrix anymore
-    TGeoNode* top_node = gGeoManager->GetTopNode();
-    PlacedVolume place = top_det.placement();
-    if ( !traverse_find(top_node, place.ptr(), trafos) ) {
-      // Some error, non-existing path!
-      throw runtime_error("DetElement "+string(parent.name())+" is not connected to top geo node [Geo-Error]");
-    }    
-    for(vector<TGeoMatrix*>::const_iterator i=trafos.begin(); i!=trafos.end(); ++i)
-      mat->MultiplyLeft(*i);
+    vector<TGeoNode*> det_nodes;
+    _top(DetElement(asRef()),det_nodes);
+    TGeoHMatrix* mat = create_trafo(det_nodes);
     worldTrafo = mat;
   }    
   return worldTrafo;
@@ -221,7 +169,10 @@ TGeoMatrix* DetElement::Object::worldTransformation() {
 /// Create cached matrix to transform to parent coordinates
 TGeoMatrix* DetElement::Object::parentTransformation() {
   if ( !parentTrafo )   {
-    parentTrafo = create_trafo(this->parent,asRef());
+    vector<TGeoNode*> det_nodes;
+    det_nodes.push_back(placement.ptr());
+    det_nodes.push_back(DetElement(parent).placement().ptr());
+    parentTrafo = create_trafo(det_nodes);
   }
   return parentTrafo;
 }
@@ -229,7 +180,24 @@ TGeoMatrix* DetElement::Object::parentTransformation() {
 /// Create cached matrix to transform to reference coordinates
 TGeoMatrix* DetElement::Object::referenceTransformation() {
   if ( !referenceTrafo )   {
-    referenceTrafo = create_trafo(this->reference,asRef());
+    vector<TGeoNode*> nodes;
+    DetElement ref(reference);
+    DetElement self(asRef());
+    DetElement elt = _par(self,ref,nodes);
+    if ( elt.isValid() )   {
+      referenceTrafo = create_trafo(nodes);
+    }
+    else   {
+      nodes.clear();
+      DetElement elt = _par(ref,self,nodes);
+      if ( !elt.isValid() )   {
+	throw runtime_error("referenceTransformation: No path from "+string(self.name())+
+			    " to reference element "+string(ref.name())+" present!");
+      }
+      TGeoMatrix* m = create_trafo(nodes);
+      referenceTrafo = new TGeoHMatrix(m->Inverse());
+      delete m;
+    }
   }
   return referenceTrafo;
 }
@@ -258,8 +226,16 @@ std::string DetElement::placementPath() const {
   if ( isValid() ) {
     Object& o = _data();
     if ( o.placementPath.empty() ) {
-      DetElement top =_top(*this);
-      o.placementPath = find_path(top.placement().ptr(),placement().ptr());
+      string res = "";
+      vector<TGeoNode*> nodes, path;
+      _top(*this,nodes);
+      if ( !collect_detector_nodes(nodes,path) ) {
+	throw runtime_error("DetElement cannot determine placement path of "+string(name()));
+      }
+      path.push_back(gGeoManager->GetTopNode());
+      for(vector<TGeoNode*>::const_reverse_iterator i=path.rbegin(); i!=path.rend(); ++i)
+	res += (string("/")+(*i)->GetName());
+      o.placementPath = res;
     }
     return o.placementPath;
   }

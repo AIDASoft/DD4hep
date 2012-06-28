@@ -73,6 +73,21 @@ namespace DD4hep {
       GeoHandler& collect(DetElement top, GeometryInfo& info);
       /// Access to collected node list
       Data* release();
+#if  0
+      template <typename C, typename F> static void _handle(const O* ptr, const C& c, F pmf)  {
+	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)   {
+	  (ptr->*pmf)((*i).first, (*i).second);
+	}
+      }
+#endif
+      template <typename O, typename C, typename F> static void handle(const O* o, const C& c, F pmf)    {
+	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)
+	  (o->*pmf)((*i).first, (*i).second);
+      }
+      template <typename O, typename C, typename F> static void handle(O* o, const C& c, F pmf)     {
+	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)
+	  (o->*pmf)((*i).first, (*i).second);
+      }
     };
 
     struct GeoScan {

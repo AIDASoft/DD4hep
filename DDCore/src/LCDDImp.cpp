@@ -52,7 +52,7 @@ Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not
 }
 
 LCDD& LCDDImp::addDetector(const Ref_t& x)    { 
-  m_detectors.append_noCheck(x);
+  m_detectors.append(x);
   m_world.add(DetElement(x));
   return *this;
 }
@@ -147,6 +147,7 @@ void LCDDImp::endDocument()  {
   /// Since we allow now for anonymous shapes,
   /// we will rename them to use the name of the volume they are assigned to
   TGeoManager* mgr = gGeoManager;
+  gGeoManager->SetTopVolume(m_worldVol);
   mgr->CloseGeometry();
   m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
   ShapePatcher(m_world)();
@@ -172,9 +173,8 @@ void LCDDImp::init()  {
   m_trackingVol    = tracking;
   m_materialAir    = material("Air");
   m_materialVacuum = material("Vacuum");
-  m_detectors.append_noCheck(m_world);
+  m_detectors.append(m_world);
   m_world.add(m_trackers);
-  gGeoManager->SetTopVolume(m_worldVol);
 }
 
 void LCDDImp::fromCompact(const std::string& xmlfile) {

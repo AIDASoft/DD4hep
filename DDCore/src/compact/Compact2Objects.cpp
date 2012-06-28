@@ -366,7 +366,7 @@ namespace DD4hep { namespace Geometry {
       e.second->SetTitle(parent.isValid() ? parent.type().c_str() : e.first.c_str());
     }
     else {
-      cout << "Title present: " << e.second->GetTitle() << endl;
+      //cout << "Title present: " << e.second->GetTitle() << endl;
     }
     for_each(children.begin(),children.end(),setChildTitles);
   }

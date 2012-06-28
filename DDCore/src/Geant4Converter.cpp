@@ -38,11 +38,10 @@ using namespace std;
 namespace {
   static string indent = "";
   struct MyTransform3D : public G4Transform3D {
-    MyTransform3D() : G4Transform3D() {}
-    // Set transformation matrix
-    void set(double XX, double XY, double XZ, double DX,
+    MyTransform3D(double XX, double XY, double XZ, double DX,
 	     double YX, double YY, double YZ, double DY,
-	     double ZX, double ZY, double ZZ, double DZ) {}
+	     double ZX, double ZY, double ZZ, double DZ) : G4Transform3D() 
+    {}
     //  { G4Transform3D::setTransform(XX,XY,XZ,DX,YX,YY,YZ,DY,ZX,ZY,ZZ,DZ);  }
   };
 }
@@ -166,12 +165,12 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
       const TGeoCompositeShape* s = (const TGeoCompositeShape*)shape;
       const TGeoBoolNode* boolean = s->GetBoolNode();
       TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
-      TGeoMatrix* m   = boolean->GetRightMatrix();
-      G4VSolid* left  = (G4VSolid*)handleSolid(name+"_left", boolean->GetLeftShape());
-      G4VSolid* right = (G4VSolid*)handleSolid(name+"_right",boolean->GetRightShape());
+      TGeoMatrix* m     = boolean->GetRightMatrix();
+      G4VSolid* left    = (G4VSolid*)handleSolid(name+"_left", boolean->GetLeftShape());
+      G4VSolid* right   = (G4VSolid*)handleSolid(name+"_right",boolean->GetRightShape());
       const Double_t *t = m->GetTranslation();
       const Double_t *r = m->GetRotationMatrix();
-
+      
       if ( !left )   {
 	throw runtime_error("G4Converter: No left Geant4 Solid present for composite shape:"+name);
       }
@@ -180,10 +179,9 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
       }
 
       if ( m->IsRotation()    )   {
-	MyTransform3D transform;
-	transform.set(r[0],r[1],r[2],t[0],
-		      r[3],r[4],r[5],t[1],
-		      r[6],r[7],r[8],t[3]);
+	MyTransform3D transform(r[0],r[1],r[2],t[0],
+				r[3],r[4],r[5],t[1],
+				r[6],r[7],r[8],t[3]);
 	if (      oper == TGeoBoolNode::kGeoSubtraction )
 	  solid = new G4SubtractionSolid(name,left,right,transform);
 	else if ( oper == TGeoBoolNode::kGeoUnion )
@@ -247,11 +245,10 @@ void* Geant4Converter::handlePlacement(const std::string& name, const TGeoNode* 
       G4LogicalVolume*   g4vol  = data().g4Volumes[node->GetVolume()];
       G4LogicalVolume*   g4mot  = data().g4Volumes[node->GetMotherVolume()];
 
-      if ( trafo->IsRotation() )  {
-	MyTransform3D transform;
-	transform.set(rot[0],rot[1],rot[2],trans[0],
-		      rot[3],rot[4],rot[5],trans[1],
-		      rot[6],rot[7],rot[8],trans[3]);
+      if ( trafo->IsRotation() )    {
+	MyTransform3D transform(rot[0],rot[1],rot[2],trans[0],
+				rot[3],rot[4],rot[5],trans[1],
+				rot[6],rot[7],rot[8],trans[3]);
 	g4pv = new G4PVPlacement(transform, // no rotation
 				 g4vol,     // its logical volume
 				 name,      // its name
@@ -299,10 +296,13 @@ void Geant4Converter::create(DetElement top) {
   m_data->clear();
   collect(top,geo);
 
+  // We do not have to handle defines etc.
+  // All positions and the like are not really named.
+  // Hence, start creating the G4 objects for materials, solids and log volumes.
   handle(this, geo.materials, &Geant4Converter::handleMaterial);
   handle(this, geo.solids,    &Geant4Converter::handleSolid);
   handle(this, geo.volumes,   &Geant4Converter::handleVolume);
-
+  // Now place all this stuff appropriately
   for(Data::const_reverse_iterator i=m_data->rbegin(); i != m_data->rend(); ++i)   {
     const Data::mapped_type& v = (*i).second;
     for(Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {

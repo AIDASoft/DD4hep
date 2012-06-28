@@ -10,6 +10,7 @@
 //  to inherit the special implementations of different PadLayouts.
 //
 //====================================================================
+#include "DD4hep/LCDD.h"
 
 #include "TPCModule.h"
 #include "TPCModuleData.h"
@@ -113,6 +114,23 @@ namespace DD4hep {
     return pad - 1;
   }
 
+  void printPlace(const PlacedVolume& pl) {
+    TGeoMatrix* m = pl->GetMatrix();
+    if ( m ) {
+      const Double_t* tr = m->GetTranslation();
+      if ( tr ) {
+	//cout << "\t\t Tr:" << tr[0] << " " << tr[1] << " " << tr[2] << endl;
+      }
+    }
+  }
+  void check_points(const char* prefix, const Position& global, const double* point) {
+    cout << prefix << global.x   << " " << global.y   << " " << global.z   << endl;
+    if ( global.x != point[0] || global.y != point[1] || global.z != point[2] ) {
+      cout << "Points are different -- wrong transformation!!!!" << endl;
+      cout << "Points are " << point[0]  << " " << point[1] << " " << point[2] << endl;
+    }
+  }
+
   std::vector<double>  TPCModule::getPadCenter (int pad) const {
     if(pad>getNPads())
       throw OutsideGeometryException("getPadCenter: Requested pad not on module querried!");
@@ -129,9 +147,12 @@ namespace DD4hep {
     Double_t point_local[3];
     Double_t point_global[3];
     Double_t point_global_m[3];
+    Double_t point_global_t[3];
     point_local[0]=pad_x;
     point_local[1]=pad_y;
-    point_local[2]=getModuleZPosition();
+
+    // MF: In local coords this should be 0 no ?
+    point_local[2]=0;//getModuleZPosition();
 
     TGeoManager *geom=volume()->GetGeoManager();
     DetElement parent   = _data().parent;
@@ -146,26 +167,44 @@ namespace DD4hep {
     placement()->LocalToMaster(point_local, point_global);
     //one further up the tree. framework should provilde local to world
     parent.placement()->LocalToMaster(point_global, point_global_m);
-#if 0
-    std::cout<<"Exp-Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
-    std::cout<<"Exp-Top: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
+    parent.parent().placement()->LocalToMaster(point_global_m, point_global_t);
+    //#if 0
+    cout << "Exp-Loc: Name:     "        << placement()->GetName()
+	 << endl << "         Placement:" << placementPath()
+	 << endl << "         Path:     " << path()
+	 << endl << "         " << point_local[0] << " " << point_local[1] << " " << point_local[2] << endl;
+    printPlace(placement());
+    cout << "Exp-Par:" << parent.placement()->GetName()  << " " << parent.placementPath() << endl << "        "
+	 << " " << point_global[0] << " " << point_global[1] << " "<<point_global[2] << endl;
+    printPlace(parent.placement());
+    cout << "Exp-Env:" << parent.parent().placement()->GetName() << " " 
+	 << parent.parent().placementPath() << endl << "        "
+	 << " " << point_global_m[0] << " " << point_global_m[1] << " "<<point_global_m[2] << endl;
+    printPlace(parent.parent().placement());
+    cout << "Exp-Top:" << parent.parent().parent().placement()->GetName() << " "
+	 << parent.parent().parent().placementPath() << endl << "        "
+	 << " " << point_global_t[0] << " " << point_global_t[1] << " "<<point_global_t[2] << endl;
+    printPlace(parent.parent().parent().placement());
 
     // Now this should be equivalent
     Position global, global_w, global_r, global_p, local(point_local[0],point_local[1],point_local[2]);
     this->localToParent(local,global);
-    std::cout<<"Det-Par: " << global.x   << " " << global.y   << " " << global.z   << std::endl;
+    check_points("Det-Par: ", global, point_global);
+
     this->localToWorld(local,global_w);
-    std::cout<<"Det-Top: " << global_w.x << " " << global_w.y << " " << global_w.z << std::endl;
+    check_points("Det-Top: ", global_w, point_global_t);
+
     const_cast<TPCModule*>(this)->setReference(parent);
     this->localToReference(local,global_r);
-    std::cout<<"Det-Ref: " << global_r.x << " " << global_r.y << " " << global_r.z << std::endl;
+    check_points("Det-Ref: ", global_r, point_global);
+
     parent.setReference(*this);
-    parent.localToReference(local,global_p);
-    std::cout<<"Loc-Ref: " << global_p.x << " " << global_p.y << " " << global_p.z << std::endl;
-#endif
+    parent.localToReference(global,global_p);
+    cout << "Loc-Ref: " << global_p.x << " " << global_p.y << " " << global_p.z << endl;
+    //#endif
     // Need to check if the results are the same....
 
-    std::vector<double> center;
+    vector<double> center;
     center.push_back(point_global_m[0]);
     center.push_back(point_global_m[1]);
     return center;
@@ -183,9 +222,9 @@ namespace DD4hep {
     DetElement parent   = _data().parent;
     parent.placement()->MasterToLocal(point_global, point_global_m);
     placement()->MasterToLocal(point_global_m, point_local);
-  //   std::cout<<"Global: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<std::endl;
-//     std::cout<<"Mother: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<std::endl;
-//     std::cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
+    //   cout<<"Global: "<<point_global[0]<<" "<<point_global[1]<<" "<<point_global[2]<<endl;
+    //     cout<<"Mother: "<<point_global_m[0]<<" "<<point_global_m[1]<<" "<<point_global_m[2]<<endl;
+    //     cout<<"Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<endl;
     
     //check if it is on that module
     bool onMod=volume().solid()->Contains(point_local);
