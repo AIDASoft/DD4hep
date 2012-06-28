@@ -46,9 +46,13 @@ int main(int argc,char** argv)  {
   std::vector<TPCModule> mymods=tpc.getModules(0);
   cout << "-----> NModules EP0:\t " << mymods.size()<< endl;
   cout << "-----> NModules EP1:\t " << tpc.getNModules(1) << endl;
+  int npads=0;
+  for(int p=0;p<mymods.size();p++)
+    npads+=tpc.getModule(p,0).getNPads();
+  cout << "-----> NPads EP1:\t " << npads << endl;
   cout << "-----> Module 2 EP 0 ID:\t " << tpc.getModule(2,0).id()<<endl;
   cout << "-----> Inside Module (500,900):\t "<<tpc.isInsideModule(500,900,0)<<endl;
-  cout << "-----> Nearest Module (500,900) ->5:\t "<<tpc.getNearestModule(500,900,0).getID()<<endl;
+  cout << "-----> Nearest Module (500,900) ->16:\t "<<tpc.getNearestModule(500,900,0).getID()<<endl;
   cout << "-----> Nearest Module (800,0):\t "<<tpc.getNearestModule(800,0,0).getID()<<endl;
   cout << "TPC Module functionality:"<<endl;
   TPCModule mymod=tpc.getModule(10,1);
@@ -76,7 +80,6 @@ int main(int argc,char** argv)  {
   cout <<"-----> Nearest Pad 0:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(0)[0],tpc.getModule(5,0).getPadCenter(0)[1])<<endl;
   cout <<"-----> Nearest Pad 5:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
   cout <<"-----> Nearest Pad 20:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
-  cout <<"-----> Nearest Pad 591, 760:\t "<<tpc.getModule(5,0).getNearestPad(591, 760)<<endl;
   
   try{
     int row=tpc.getModule(6,0).getRowNumber(100);

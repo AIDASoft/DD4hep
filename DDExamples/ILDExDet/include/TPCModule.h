@@ -64,7 +64,7 @@ namespace DD4hep {
     /** Closest pad to a given location.
      */
     int getNearestPad (double c0, double c1) const;
-    /**Helper function to get the z position of the module.
+    /**Helper function to get the z position of the module in local coordinates.
      */
     double getModuleZPosition() const;
   };
