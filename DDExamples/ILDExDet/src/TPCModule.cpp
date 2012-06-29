@@ -58,7 +58,7 @@ namespace DD4hep {
   }
   
   double TPCModule::getRowHeight(int row)const {
-    if(row>getNRows())
+    if(row>getNRows() || row<0)
       throw OutsideGeometryException("getRowHeight: Requested row not on module querried!");
     //all rows are the same for FixedAnglePadLayout=ProjectiveCylinder 
     Tube       tube=volume().solid();
@@ -67,13 +67,13 @@ namespace DD4hep {
   }
   
   int TPCModule::getRowNumber(int pad)const {
-    if(pad>getNPads())
+    if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getRowNumber: Requested pad not on module querried!");
     return pad/getNPadsInRow(0);
   }
   
   double TPCModule::getPadPitch(int pad)const {
-    if(pad>getNPads())
+    if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getPadPitch: Requested pad not on module querried!");
     int row=getRowNumber(pad);
     Tube tube=volume().solid();
@@ -84,15 +84,15 @@ namespace DD4hep {
   }
   
   int TPCModule::getPadNumber(int pad)const {
-   if(pad>getNPads())
+   if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getPadNumber: Requested pad not on module querried!");
     return pad % getNPadsInRow(0);
   }
 
   int TPCModule::getPadIndex(int row,int padNr)const {
-    if(padNr>=getNPadsInRow(row))
+    if(padNr>=getNPadsInRow(row) || padNr<0)
       throw OutsideGeometryException("getPadIndex: Requested pad not on module querried!");
-    if(row>=getNRows())
+    if(row>=getNRows() || padNr<0 )
       throw OutsideGeometryException("getPadIndex: Requested row not on module querried!");
     return padNr + row*getNPadsInRow(row);
   }

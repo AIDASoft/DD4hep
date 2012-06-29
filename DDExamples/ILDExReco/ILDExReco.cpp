@@ -19,6 +19,7 @@
 #include <vector>
 #include <string>
 #include "GearTPC.h"
+#include "TPCModuleData.h"
 
 
 using namespace std;
@@ -55,6 +56,7 @@ int main(int argc,char** argv)  {
   cout << "-----> Nearest Module (500,900) ->16:\t "<<tpc.getNearestModule(500,900,0).getID()<<endl;
   cout << "-----> Nearest Module (800,0):\t "<<tpc.getNearestModule(800,0,0).getID()<<endl;
   cout << "TPC Module functionality:"<<endl;
+
   TPCModule mymod=tpc.getModule(10,1);
   cout << "-----> Module 10 EP 1 ID:\t " << mymod.getID()<<endl;
   cout << "-----> Module 10 Pads:\t " << mymod.getPadType()<<endl;
@@ -80,12 +82,22 @@ int main(int argc,char** argv)  {
   cout <<"-----> Nearest Pad 0:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(0)[0],tpc.getModule(5,0).getPadCenter(0)[1])<<endl;
   cout <<"-----> Nearest Pad 5:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
   cout <<"-----> Nearest Pad 20:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
-  
   try{
-    int row=tpc.getModule(6,0).getRowNumber(100);
+    int row=tpc.getModule(6,0).getRowNumber(-10);
   }
   catch(OutsideGeometryException e){cout<<"-----> Exception test: "<<e.what()<<endl;};
 
-    
-   return 0;
+  cout<<"Test Data Block extension:"<<endl;
+  //works for endplate 0, but not for the deep copy of endplate 1
+  TPCModule mymod2=tpc.getModule(10,0);
+  TPCModuleData* tpcModData= (TPCModuleData*)&mymod2._data();
+  cout<<tpcModData->padGap <<endl;
+
+ //  for(int i=0; i<10;++i) {
+//     for (int j=0; j<2;++j) {
+//       TPCModule m=tpc.getModule(i,j);
+//       TPCModuleData* tpcModData= (TPCModuleData*)&m._data();
+//       cout<<tpcModData->padGap <<endl;
+//     }}
+  return 0;
 }
