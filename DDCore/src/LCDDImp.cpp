@@ -204,7 +204,7 @@ void LCDDImp::applyAlignment()   {
 }
 
 #include "SimpleGDMLWriter.h"
-#include "Geant4Converter.h"
+//#include "Geant4Converter.h"
 #include "GeometryTreeDump.h"
 
 void LCDDImp::dump() const  {

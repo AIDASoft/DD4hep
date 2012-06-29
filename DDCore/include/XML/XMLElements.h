@@ -171,7 +171,7 @@ namespace DD4hep {
       xercesc::DOMNodeList* m_children;
 
       Collection_t(xercesc::DOMElement* node, const XMLCh* tag);
-      Collection_t(xercesc::DOMElement* node, const char* tag);
+      Collection_t(xercesc::DOMElement* node, const char*  tag);
       Collection_t(xercesc::DOMElement* node, xercesc::DOMNodeList* children);
       Collection_t& reset();
       size_t size()  const;

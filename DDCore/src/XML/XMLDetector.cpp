@@ -244,7 +244,7 @@ int DetElement::Component::id()  const  {
 
 int DetElement::Component::id(int default_value)  const  {
   const XMLCh* val = m_element.attr_value_nothrow(Attr_id);
-  return val ? _toDouble(val) : default_value;
+  return val ? _toInt(val) : default_value;
 }
 
 string  DetElement::Component::nameStr()  const  {
