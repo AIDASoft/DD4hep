@@ -6,8 +6,8 @@
 //  Author     : A.Muennich
 //
 //====================================================================
-
-#include "DD4hep/Detector.h"
+#ifndef DD4HEP_ILDEXDET_TPCMODULEDATA_H
+#define DD4HEP_ILDEXDET_TPCMODULEDATA_H
 
 namespace DD4hep {
 
@@ -20,3 +20,4 @@ namespace DD4hep {
     int nPads;
   };
 }
+#endif DD4HEP_ILDEXDET_TPCMODULEDATA_H

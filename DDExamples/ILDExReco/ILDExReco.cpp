@@ -71,7 +71,7 @@ int main(int argc,char** argv)  {
   cout << "-----> Module 10 pad number pad 15:\t " << mymod.getPadNumber(15)<<endl;
   cout << "-----> Module 10 pad index (1,5):\t " << mymod.getPadIndex(1,5)<<endl;
   cout << "-----> RightNeighbour of 0:\t "<<tpc.getModule(0,0).getRightNeighbour(0)<<endl;
-  cout << "-----> LeftNeighbour of 3:\t "<<tpc.getModule(0,0).getLeftNeighbour(3)<<endl;Z
+  cout << "-----> LeftNeighbour of 3:\t "<<tpc.getModule(0,0).getLeftNeighbour(3)<<endl;
   std::vector<double> center1=tpc.getModule(0,0).getPadCenter(10);
   cout <<"-----> Center of mod0/pad10 EP0:\t "<<center1[0]<<" "<<center1[1]<<endl;
   std::vector<double> center2=tpc.getModule(1,0).getPadCenter(10);
