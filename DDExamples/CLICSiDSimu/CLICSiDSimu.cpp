@@ -14,38 +14,37 @@
 
 #include "G4VUserDetectorConstruction.hh"
 namespace DD4hep {
-  namespace Geometry {
-    class LCDD;
-  }
-  class G4DetectorConstruction : public G4VUserDetectorConstruction
-  {
+  namespace Geometry {    class LCDD;  }
+
+  class DetectorConstruction : public G4VUserDetectorConstruction  {
   public:
     
-    G4DetectorConstruction(const std::string&);
-    ~G4DetectorConstruction();
+    DetectorConstruction(Geometry::LCDD& lcdd, const std::string&);
+    virtual ~DetectorConstruction() {
+    }
     G4VPhysicalVolume* Construct();
-    Geometry::LCDD& GetLCDD() { return m_lcdd;}
   private:
     Geometry::LCDD& m_lcdd;
-    std::string m_compactfile;
   }; 
 }
+
 #include "DD4hep/LCDD.h"
 #include "TGeoManager.h"
-#include "G4Material.hh"
+#include "Geant4Converter.h"
+
+using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-G4DetectorConstruction::G4DetectorConstruction(const std::string& xmlfile) : m_lcdd(LCDD::getInstance()), m_compactfile(xmlfile) {
+DD4hep::DetectorConstruction::DetectorConstruction(Geometry::LCDD& lcdd, const string& xmlfile) 
+  : m_lcdd(lcdd)
+{
   // We need to construct the geometry at this level already
-  m_lcdd.fromCompact(m_compactfile);
+  m_lcdd.fromCompact(xmlfile);
 }
 
-G4DetectorConstruction::~G4DetectorConstruction() {}
-
-G4VPhysicalVolume* G4DetectorConstruction::Construct() {
-
-#if 0  
+G4VPhysicalVolume* DD4hep::DetectorConstruction::Construct() {
+#if 0
   // Import geometry from Root to VGM
   RootGM::Factory rtFactory;
   rtFactory.SetDebug(0);
@@ -58,23 +57,26 @@ G4VPhysicalVolume* G4DetectorConstruction::Construct() {
   rtFactory.Export(&g4Factory);
   G4VPhysicalVolume* world = g4Factory.World();
 #endif
+  TGeoNode* top = gGeoManager->GetTopNode();
+  Geant4Converter conv;
+  conv.create(m_lcdd.world());
   G4VPhysicalVolume* world = 0;
-  G4cout << *(G4Material::GetMaterialTable()) << G4endl;
   return world;
 }
 
 int main(int argc,char** argv)   {
   // Choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
+  Geometry::LCDD& lcdd = LCDD::getInstance();
   
   // User Verbose output class
   G4VSteppingVerbose::SetInstance(new SteppingVerbose);
   
   // Construct the default run manager
-  G4RunManager * runManager = new G4RunManager;
+  G4RunManager* runManager = new G4RunManager;
 
   // Get the detector constructed
-  DD4hep::G4DetectorConstruction* detector = new DD4hep::G4DetectorConstruction(argv[1]);
+  DD4hep::DetectorConstruction* detector = new DD4hep::DetectorConstruction(lcdd,argv[1]);
   runManager->SetUserInitialization(detector);
   
   //
@@ -82,8 +84,7 @@ int main(int argc,char** argv)   {
   runManager->SetUserInitialization(physics);
   
   // Set user action classes
-  G4VUserPrimaryGeneratorAction* gen_action = 
-    new PrimaryGeneratorAction(detector->GetLCDD());
+  G4VUserPrimaryGeneratorAction* gen_action = new PrimaryGeneratorAction(lcdd);
   runManager->SetUserAction(gen_action);
   //
   RunAction* run_action = new RunAction;  
@@ -92,8 +93,7 @@ int main(int argc,char** argv)   {
   EventAction* event_action = new EventAction(run_action);
   runManager->SetUserAction(event_action);
   //
-  G4UserSteppingAction* stepping_action =
-    new SteppingAction(event_action);
+  G4UserSteppingAction* stepping_action = new SteppingAction(event_action);
   runManager->SetUserAction(stepping_action);
   
   // Initialize G4 kernel

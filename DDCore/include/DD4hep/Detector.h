@@ -19,7 +19,7 @@
 
 // C/C++ include files
 #include <map>
-
+#include <typeinfo>
 
 /*
  *   DD4hep namespace declaration
@@ -90,10 +90,11 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct DetElement : public Ref_t   {
-      typedef Ref_t                            Parent;
-      typedef std::map<std::string,DetElement> Children;
-      typedef std::vector<PlacedVolume>        Placements;
-      
+      typedef Ref_t                                  Parent;
+      typedef std::map<std::string,DetElement>       Children;
+      typedef std::vector<PlacedVolume>              Placements;
+      typedef std::map<const std::type_info*,void*>  Extensions;
+
       enum {
 	COPY_NONE      = 0,
 	COPY_PLACEMENT = 1<<0,
@@ -115,22 +116,19 @@ namespace DD4hep {
 	Parent            parent;
 	Parent            reference;
         Children          children;
+	Extensions        extensions;
 	TGeoMatrix*       worldTrafo;
 	TGeoMatrix*       parentTrafo;
 	TGeoMatrix*       referenceTrafo;
 	std::string       placementPath;
 	/// Default constructor
         Object();
-	/// Construct new empty object
-	virtual Value<TNamed,Object>* construct(int new_id, int flag) const;
 	/// Deep object copy to replicate DetElement trees e.g. for reflection
-	virtual void deepCopy(const Object& source, int new_id, int flag);
+	virtual Value<TNamed,Object>* clone(int new_id, int flag)  const;
 	/// Conversion to reference object
 	operator Ref_t();
 	/// Conversion to reference object
 	Ref_t asRef();
-	/// Top detector element
-	//Ref_t top();
 	/// Create cached matrix to transform to world coordinates
 	TGeoMatrix* worldTransformation();
 	/// Create cached matrix to transform to parent coordinates
@@ -143,12 +141,24 @@ namespace DD4hep {
       Object& _data()   const {  return *data<Object>();  }
       
       void check(bool condition, const std::string& msg) const;
+
+      /// Templated default constructor
+      template <typename T> static void* _construct()           { return new T();         }
+      /// Templated copy constructor
+      template <typename T> static void* _copy(const void* ptr) { return new T(*(T*)ptr); }
+      /// Templated destructor function
+      template <typename T> static void  _delete(void* ptr)     { delete (T*)(ptr);       }
+
+      /// Add an extension object to the detector element
+      void* i_addExtension(const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*));
+      /// Access an existing extension object from the detector element
+      void* i_extension(const std::type_info& info)  const;
       
       /// Default constructor
       DetElement() : Ref_t()  {}
 
       /// Default constructor
-      template<typename Q> DetElement(Q* data, const std::string& name, const std::string& type) : Ref_t(data)  
+      template<typename Q> DetElement(Q* data, const std::string& name, const std::string& type) : Ref_t(data)
       {  this->assign(data, name, type);                   }
 
       /// Templated constructor for handle conversions
@@ -172,6 +182,12 @@ namespace DD4hep {
       /// Clone (Deep copy) the DetElement structure with a new name and new identifier
       DetElement clone(const std::string& new_name, int new_id) const;
       
+      template <class T> T* addExtension()    
+      {  return (T*)i_addExtension(typeid(T),_construct<T>,_copy<T>,_delete<T>);       }
+
+      template <class T> T* extension()  const
+      {  return (T*)i_extension(typeid(T));      }
+
       DetElement&     setCombineHits(bool value, SensitiveDetector& sens);
       int             id() const;
       std::string     type() const;

@@ -66,33 +66,20 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	  Volume      mr_vol(mr_nam,Tube(rmin,rmax,zhalf,DeltaPhi),part_mat);
 	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
 	  Readout     xml_pads(lcdd.readout(row.padType()));
-	  		
+
 	 //placing modules
 	  for(int md=0;md<nmodules;md++){
 	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	    // DetElement  module(m_nam,row.typeStr(),mdcount);
-	    //data of module, e.g. Readout
-	    Value<TNamed,TPCModuleData>* tpcModData = new Value<TNamed,TPCModuleData>();
-	    tpcModData->id = mdcount;
-	    //testing user data
-	    tpcModData->padWidth=mdcount+1;
-	    tpcModData->padHeight=mdcount+1;
-	    tpcModData->nRows=mdcount+1;
-	    tpcModData->padGap=mdcount+1;
-	    tpcModData->rowHeight=mdcount+1;
-	    tpcModData->nPads=mdcount+1;
-	    
-	    DetElement  module (tpcModData,m_nam,row.typeStr());
+	    DetElement  module(part_det,m_nam,mdcount);
+	    TPCModuleData* tpcModData = module.addExtension<TPCModuleData>();
+	    tpcModData->padGap    = 5;
+	    tpcModData->padHeight = mdcount + 1;
 	    module.setReadout(xml_pads);
 	    mdcount++;
-	    double posx=0,posy=0,posz=0;
-	    double rotx=0,roty=0,rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
-	    Position    m_pos(posx,posy,posz);
-	    Rotation    m_rot(rotx,roty,rotz);
-	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,m_pos,m_rot);
+	    double rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
+	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(0,0,0),Rotation(0,0,rotz));
 	    m_phv.addPhysVolID("module",md);
 	    module.setPlacement(m_phv);
-	    part_det.add(module);
 	  }//modules
 	}//rows
       }//module groups

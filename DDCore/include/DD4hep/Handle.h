@@ -110,7 +110,7 @@ namespace DD4hep {
       T& operator*()  const                   {  return *m_element;     }
       
       template <typename Q> Q* data() const  {
-	      return (Value<T,Q>*)m_element;
+	return (Value<T,Q>*)m_element;
       }
       void verifyObject() const {
         increment_object_validations();

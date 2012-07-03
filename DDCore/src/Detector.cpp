@@ -17,6 +17,21 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+namespace {
+  struct ExtensionEntry {
+    void* (*construct)();
+    void* (*copy)(const void*);
+    void  (*destruct)(void*);
+    int     id;
+  };
+  typedef map<const std::type_info*, ExtensionEntry> ExtensionMap;
+  static int s_extensionID = 0;
+  ExtensionMap& s_extensions() {
+    static ExtensionMap s_map;
+    return s_map;
+  }
+};
+
 static bool find_child(TGeoNode* parent, TGeoNode* child, vector<TGeoNode*>& path) {
   if ( parent && child ) {
     if ( parent == child ) {
@@ -111,43 +126,51 @@ DetElement::Object::Object()
 {
 }
 
-/// Construct new empty object
-Value<TNamed,DetElement::Object>* DetElement::Object::construct(int new_id, int flag) const {
-  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
-  obj->deepCopy(*this,new_id,flag);
-  return obj;
-}
-
 /// Deep object copy to replicate DetElement trees e.g. for reflection
-void DetElement::Object::deepCopy(const Object& source, int new_id, int flag)  {
-  DetElement self(Ref_t(dynamic_cast<Value<TNamed,Object>*>(this)));
-  id           = new_id;
-  combine_hits = source.combine_hits;
-  readout      = source.readout;
-  volume       = source.volume;
-  alignment    = Alignment();
-  conditions   = Conditions();
-  parent       = DetElement();
-  placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placement : PlacedVolume();
-  placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? source.placements : Placements();
-  children.clear();
-  for(DetElement::Children::const_iterator i=source.children.begin(); i != source.children.end(); ++i) {
-    const DetElement::Object& d = (*i).second._data();
+Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag)  const  {
+  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
+  const ExtensionMap& m = s_extensions();
+  Ref_t det(obj);
+  obj->id           = new_id;
+  obj->combine_hits = combine_hits;
+  obj->readout      = readout;
+  obj->volume       = volume;
+  obj->alignment    = Alignment();
+  obj->conditions   = Conditions();
+  obj->parent       = DetElement();
+  obj->placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? placement : PlacedVolume();
+  obj->placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? placements : Placements();
+
+  obj->extensions.clear();
+  for(DetElement::Extensions::const_iterator i=extensions.begin(); i != extensions.end(); ++i)  {
+    const std::type_info* info = (*i).first;
+    ExtensionMap::const_iterator j = m.find(info);
+    const ExtensionEntry& e = (*j).second;
+    obj->extensions[info]  = (*(e.copy))((*i).second);
+  }
+
+  obj->children.clear();
+  for(DetElement::Children::const_iterator i=children.begin(); i != children.end(); ++i) {
     const TNamed* pc = (*i).second.ptr();
-    DetElement child(d.construct(d.id,COPY_PLACEMENT),pc->GetName(),pc->GetTitle());
-    pair<Children::iterator,bool> r = children.insert(make_pair(child.name(),child));
+    const DetElement::Object& d = (*i).second._data();
+    DetElement child(d.clone(d.id,COPY_PLACEMENT),pc->GetName(),pc->GetTitle());
+    pair<Children::iterator,bool> r = obj->children.insert(make_pair(child.name(),child));
     if ( r.second )   {
-      child._data().parent = self;
+      child._data().parent = det;
     }
     else {
       throw runtime_error("DetElement::copy: Element "+string(child.name())+" is already present [Double-Insert]");
     }
   }
+  return obj;
 }
 
 /// Conversion to reference object
 Ref_t DetElement::Object::asRef() {
-  return Ref_t(dynamic_cast<Value<TNamed,DetElement::Object>*>(this));
+  TNamed* nam = dynamic_cast<TNamed*>(this);
+  if ( nam ) return Ref_t(nam);
+  return Ref_t(0);
+  //return Ref_t(dynamic_cast<Value<TNamed,DetElement::Object>*>(this));
 }
 
 /// Conversion to reference object
@@ -189,7 +212,8 @@ TGeoMatrix* DetElement::Object::referenceTransformation() {
     }
     else   {
       nodes.clear();
-      DetElement elt = _par(ref,self,nodes);
+      DetElement me(this->asRef());
+      DetElement elt = _par(ref,me,nodes);
       if ( !elt.isValid() )   {
 	throw runtime_error("referenceTransformation: No path from "+string(self.name())+
 			    " to reference element "+string(ref.name())+" present!");
@@ -221,11 +245,45 @@ DetElement::DetElement(DetElement parent, const string& name, int id)   {
   parent.add(*this);
 }
 
+/// Add an extension object to the detector element
+void* DetElement::i_addExtension(const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*)) {
+  Object& o = _data();
+  Extensions::iterator j = o.extensions.find(&info);
+  if ( j == o.extensions.end() )   {
+    ExtensionMap& m = s_extensions();
+    ExtensionMap::iterator i = m.find(&info);
+    if ( i == m.end() ) {
+      ExtensionEntry entry;
+      entry.construct = construct;
+      entry.destruct = destruct;
+      entry.copy = copy;
+      entry.id = ++s_extensionID;
+      m.insert(make_pair(&info,entry));
+      i = m.find(&info);
+    }
+    ExtensionEntry& e = (*i).second;
+    return o.extensions[&info] = (*(e.construct))();
+  }
+  throw runtime_error("addExtension: The object "+string(name())+
+		      " already has an extension of type:"+string(info.name())+".");
+}
+
+/// Access an existing extension object from the detector element
+void* DetElement::i_extension(const std::type_info& info)   const {
+  Object& o = _data();
+  Extensions::const_iterator j = o.extensions.find(&info);
+  if ( j != o.extensions.end() )   {
+    return (*j).second;
+  }
+  throw runtime_error("extension: The object "+string(name())+
+		      " has no extension of type:"+string(info.name())+".");
+}
+ 
 /// Access to the full path to the placed object
 std::string DetElement::placementPath() const {
   if ( isValid() ) {
     Object& o = _data();
-    if ( o.placementPath.empty() ) {
+    if ( o.placementPath.empty() )   {
       string res = "";
       vector<TGeoNode*> nodes, path;
       _top(*this,nodes);
@@ -317,14 +375,14 @@ DetElement& DetElement::add(DetElement sdet)  {
 
 DetElement DetElement::clone(const string& new_name)  const  {
   if ( isValid() ) {
-    return DetElement(_data().construct(_data().id,COPY_NONE), new_name, ptr()->GetTitle());
+    return DetElement(_data().clone(_data().id,COPY_NONE), new_name, ptr()->GetTitle());
   }
   throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id)  const  {
   if ( isValid() ) {
-    return DetElement(_data().construct(new_id, COPY_NONE), new_name, ptr()->GetTitle());
+    return DetElement(_data().clone(new_id, COPY_NONE), new_name, ptr()->GetTitle());
   }
   throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }

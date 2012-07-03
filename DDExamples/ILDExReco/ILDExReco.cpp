@@ -26,6 +26,8 @@ using namespace std;
 using namespace DD4hep;
 using namespace Geometry;
 
+#include "TPCModuleData.h"
+
 
 int main(int argc,char** argv)  {
   
@@ -69,7 +71,7 @@ int main(int argc,char** argv)  {
   cout << "-----> Module 10 pad number pad 15:\t " << mymod.getPadNumber(15)<<endl;
   cout << "-----> Module 10 pad index (1,5):\t " << mymod.getPadIndex(1,5)<<endl;
   cout << "-----> RightNeighbour of 0:\t "<<tpc.getModule(0,0).getRightNeighbour(0)<<endl;
-  cout << "-----> LeftNeighbour of 3:\t "<<tpc.getModule(0,0).getLeftNeighbour(3)<<endl;
+  cout << "-----> LeftNeighbour of 3:\t "<<tpc.getModule(0,0).getLeftNeighbour(3)<<endl;Z
   std::vector<double> center1=tpc.getModule(0,0).getPadCenter(10);
   cout <<"-----> Center of mod0/pad10 EP0:\t "<<center1[0]<<" "<<center1[1]<<endl;
   std::vector<double> center2=tpc.getModule(1,0).getPadCenter(10);
@@ -81,7 +83,22 @@ int main(int argc,char** argv)  {
   cout <<"-----> Nearest Pad 10:\t "<<tpc.getModule(0,0).getNearestPad(tpc.getModule(0,0).getPadCenter(10)[0],tpc.getModule(0,0).getPadCenter(10)[1])<<endl;
   cout <<"-----> Nearest Pad 0:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(0)[0],tpc.getModule(5,0).getPadCenter(0)[1])<<endl;
   cout <<"-----> Nearest Pad 5:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
+#if 0
   cout <<"-----> Nearest Pad 20:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
+  cout <<"-----> Nearest Pad 591, 760:\t "<<tpc.getModule(5,0).getNearestPad(591, 760)<<endl;
+#endif
+  cout << "Ctor:" << (void*)&typeid(TPCModuleData) << endl;
+  for(int i=0; i<10; ++i) {
+    for(int j=0; j<2; ++j) {
+      typedef Value<Value<TNamed,DetElement::Object>,TPCModuleData> Val;
+      DetElement elt = tpc.getModule(i,j);
+      TPCModule mod = elt;//tpc.getModule(i,j);
+      if ( mod.isValid() ) {
+	TPCModuleData* d = mod.m_modData;
+	cout << mod.name() << " parent:" << mod.parent().name() << " padHeight:" << d->padHeight << " " << endl;
+      }
+    }
+  }
   try{
     int row=tpc.getModule(6,0).getRowNumber(-10);
   }

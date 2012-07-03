@@ -16,23 +16,21 @@ endif()
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDCore)
 if(DD4HEP_WITH_GEANT4)
-  add_subdirectory(DDGeant4)
+  add_subdirectory(DDG4)
 endif()
 
 #---Examples------------------------------------------------------------------------
 add_subdirectory(DDExamples/AlignDet)
-add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/CLICSiD)
+add_subdirectory(DDExamples/CLICSiDDisplay)
+add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/ILDExDisplay)
 add_subdirectory(DDExamples/ILDExReco)
 if(DD4HEP_WITH_GEANT4)
-  add_subdirectory(DDExamples/ILDExSimu)
+#add_subdirectory(DDExamples/CLICSiDSimu)
+#  add_subdirectory(DDExamples/ILDExSimu)
 endif()
 
 #---Configuration-------------------------------------------------------------------
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
 configure_file(cmake/thisdd4hep.sh thisdd4hep.sh @ONLY)
-
-
-
-

@@ -25,14 +25,11 @@ using namespace std;
 namespace DD4hep {
   
   using namespace Geometry;
-  
-  TPCModule::TPCModule(const string& name, const string& type, int id)
-  {
-    Value<TNamed,TPCModuleData>* p = new Value<TNamed,TPCModuleData>();
-    assign(p,name, type);
-    p->id = id;
+
+  void TPCModule::getExtension() {
+    m_modData = isValid() ? extension<TPCModuleData>() : 0;
   }
-  
+
   int TPCModule::getID()const {
     return _data().id;
   }
@@ -185,7 +182,7 @@ namespace DD4hep {
     Tube tube=volume().solid();
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double radius=sqrt(point_local[0]*point_local[0]+point_local[1]*point_local[1]);
-    int row=(radius-tube->GetRmin())/getRowHeight(0);
+    int row = int((radius-tube->GetRmin())/getRowHeight(0));
     //outer edge of last row belongs to last row
     if(row==getNRows())
       row=getNRows()-1;

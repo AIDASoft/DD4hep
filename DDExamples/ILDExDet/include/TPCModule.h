@@ -14,14 +14,23 @@
 
 namespace DD4hep {
   
-  
+  struct TPCModuleData;
   struct TPCModule : public Geometry::DetElement {
     typedef Geometry::Ref_t Ref_t;
+
+    TPCModuleData* m_modData;
+    void getExtension();
+
     //various constructors
-    TPCModule() {}
-    TPCModule(const Ref_t& e) : Geometry::DetElement(e) {}
-    TPCModule(const Geometry::DetElement& e) : Geometry::DetElement(e) {}
-    TPCModule(const std::string& name, const std::string& type, int id);
+    TPCModule() : m_modData(0) {}
+    TPCModule(const Ref_t& e) : Geometry::DetElement(e), m_modData(0) {getExtension();}
+    TPCModule(const Geometry::DetElement& e) : Geometry::DetElement(e), m_modData(0) {getExtension();}
+    template<typename T> TPCModule& operator=(const T& h)    {
+      m_element = h.m_element;
+      getExtension();
+      return *this;
+    }  
+
     /** ID of this module.
      */
     int getID() const;
