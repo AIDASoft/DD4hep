@@ -91,10 +91,9 @@ int main(int argc,char** argv)  {
   for(int i=0; i<10; ++i) {
     for(int j=0; j<2; ++j) {
       typedef Value<Value<TNamed,DetElement::Object>,TPCModuleData> Val;
-      DetElement elt = tpc.getModule(i,j);
-      TPCModule mod = elt;//tpc.getModule(i,j);
+      TPCModule mod = tpc.getModule(i,j);
       if ( mod.isValid() ) {
-	TPCModuleData* d = mod.m_modData;
+	TPCModuleData* d = mod.extension<TPCModuleData>();
 	cout << mod.name() << " parent:" << mod.parent().name() << " padHeight:" << d->padHeight << " " << endl;
       }
     }
@@ -114,7 +113,7 @@ int main(int argc,char** argv)  {
 //     for (int j=0; j<2;++j) {
 //       TPCModule m=tpc.getModule(i,j);
 //       TPCModuleData* tpcModData= (TPCModuleData*)&m._data();
-//       cout<<tpcModData->padGap <<endl;
+//       cout<<tpcModData->padGap() <<endl;
 //     }}
   return 0;
 }
