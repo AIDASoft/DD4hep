@@ -150,7 +150,7 @@ namespace DD4hep {
       template <typename T> static void  _delete(void* ptr)     { delete (T*)(ptr);       }
 
       /// Add an extension object to the detector element
-      void* i_addExtension(const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*));
+      void* i_addExtension(void* ptr, const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*));
       /// Access an existing extension object from the detector element
       void* i_extension(const std::type_info& info)  const;
       
@@ -182,8 +182,8 @@ namespace DD4hep {
       /// Clone (Deep copy) the DetElement structure with a new name and new identifier
       DetElement clone(const std::string& new_name, int new_id) const;
       
-      template <class T> T* addExtension()    
-      {  return (T*)i_addExtension(typeid(T),_construct<T>,_copy<T>,_delete<T>);       }
+      template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
+      {  return (IFACE*)i_addExtension(c,typeid(IFACE),_construct<CONCRETE>,_copy<CONCRETE>,_delete<IFACE>);  }
 
       template <class T> T* extension()  const
       {  return (T*)i_extension(typeid(T));      }

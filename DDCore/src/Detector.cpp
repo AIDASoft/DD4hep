@@ -246,7 +246,7 @@ DetElement::DetElement(DetElement parent, const string& name, int id)   {
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*)) {
+void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*)) {
   Object& o = _data();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
@@ -262,7 +262,7 @@ void* DetElement::i_addExtension(const std::type_info& info, void* (*construct)(
       i = m.find(&info);
     }
     ExtensionEntry& e = (*i).second;
-    return o.extensions[&info] = (*(e.construct))();
+    return o.extensions[&info] = ptr;
   }
   throw runtime_error("addExtension: The object "+string(name())+
 		      " already has an extension of type:"+string(info.name())+".");

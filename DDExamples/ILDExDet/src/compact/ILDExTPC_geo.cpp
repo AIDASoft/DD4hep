@@ -73,14 +73,13 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	 //placing modules
 	  for(int md=0;md<nmodules;md++){
 	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	    //without user data
-	    //DetElement  module(m_nam,row.typeStr(),mdcount);
+	    
 	    //templated TPCModule
-	    //TPCModuleTemplated<FixedPadAngleDiskLayout> module(m_nam,row.typeStr(),mdcount);
 	    DetElement  module(part_det,m_nam,mdcount);
 	    //additional data of module
-	    TPCModuleData* tpcModData = module.addExtension<TPCModuleData>();
-	    tpcModData->padGap    = mdcount + 1;
+	    //PadLayout* layout = new FixedPadAngleDiskLayout(module);
+	    //module.addExtension<PadLayout>(layout);
+	    PadLayout* layout = module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module));
 	    module.setReadout(xml_pads);
 	    mdcount++;
 	    double rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;

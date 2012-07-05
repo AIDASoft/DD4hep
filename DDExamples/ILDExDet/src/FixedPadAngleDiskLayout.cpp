@@ -18,7 +18,7 @@
 #include "DD4hep/LCDD.h"
 
 #include "FixedPadAngleDiskLayout.h"
-#include "TPCModuleData.h"
+#include "TPCModule.h"
 #include "TGeoTube.h"
 #include "TGeoMatrix.h"
 #include "TGeoManager.h"
@@ -31,24 +31,25 @@ namespace DD4hep {
   
   using namespace Geometry;
   
- 
+
   std::string FixedPadAngleDiskLayout::getPadType()const {
-    ProjectiveCylinder pads= readout().segmentation();
-    return pads.type();
+    ProjectiveCylinder pads= module.readout().segmentation();
+    string typ = pads.type();
+    return typ.empty() ? "" : typ;
   }
  
   int FixedPadAngleDiskLayout::getNPads()const {
-    ProjectiveCylinder pads= readout().segmentation();
+    ProjectiveCylinder pads= module.readout().segmentation();
     return pads.thetaBins()* pads.phiBins();
   }
   
   int FixedPadAngleDiskLayout::getNRows()const {
-    ProjectiveCylinder pads= readout().segmentation();
+    ProjectiveCylinder pads= module.readout().segmentation();
     return pads.thetaBins();
   }
 
   int FixedPadAngleDiskLayout::getNPadsInRow(int row)const {
-    ProjectiveCylinder pads= readout().segmentation();
+    ProjectiveCylinder pads= module.readout().segmentation();
     return pads.phiBins();
   }
   
@@ -56,7 +57,7 @@ namespace DD4hep {
     if(row>getNRows() || row<0)
       throw OutsideGeometryException("getRowHeight: Requested row not on module querried!");
     //all rows are the same for FixedPadAngleDiskLayout=ProjectiveCylinder 
-    Tube       tube=volume().solid();
+    Tube       tube=module.volume().solid();
     double module_height= tube->GetRmax()-tube->GetRmin();
     return module_height/getNRows();
   }
@@ -71,7 +72,7 @@ namespace DD4hep {
     if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getPadPitch: Requested pad not on module querried!");
     int row=getRowNumber(pad);
-    Tube tube=volume().solid();
+    Tube tube=module.volume().solid();
     double pad_radius=tube->GetRmin()+(row+0.5)*getRowHeight(0);
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double pad_angle=module_width/getNPadsInRow(row);
@@ -114,7 +115,7 @@ namespace DD4hep {
     if(pad>getNPads())
       throw OutsideGeometryException("getPadCenter: Requested pad not on module querried!");
     int row=getRowNumber(pad);
-    Tube tube=volume().solid();
+    Tube tube=module.volume().solid();
     double pad_radius=tube->GetRmin()+(row+0.5)*getRowHeight(0);
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double pad_angle=(getPadNumber(pad)+0.5)*module_width/getNPadsInRow(row);
@@ -127,15 +128,12 @@ namespace DD4hep {
     Double_t point_global[3];
     Double_t point_global_m[3];
     Double_t point_global_t[3];
-    point_local[0]=pad_x;
-    point_local[1]=pad_y;
-    point_local[2]=getModuleZPosition();
-
-
-  
+    point_local[0] = pad_x;
+    point_local[1] = pad_y;
+    point_local[2] = TPCModule(module).getModuleZPosition();  
 
     Position global, global_w, global_r, global_p, local(point_local[0],point_local[1],point_local[2]);
-    this->localToWorld(local,global_w);
+    module.localToWorld(local,global_w);
     //    this->localToParent(local,global);
 //     std::cout<<"Exp-Local: "<<point_local[0]<<" "<<point_local[1]<<" "<<point_local[2]<<std::endl;
 //     std::cout<<"Det-Par: " << global.x   << " " << global.y   << " " << global.z   << std::endl;
@@ -150,18 +148,19 @@ namespace DD4hep {
   
   int FixedPadAngleDiskLayout::getNearestPad(double c0,double c1)const {
     //find z position of module in world coordinates
-    Position fake_local(0,0,getModuleZPosition());
+
+    Position fake_local(0,0,TPCModule(module).getModuleZPosition());
     Position fake_global;
-     this->localToWorld(fake_local,fake_global);
+    module.localToWorld(fake_local,fake_global);
     //trafo to local coordinates
     Position global(c0,c1,fake_global.z), local;
-    this->worldToLocal(global,local);
+    module.worldToLocal(global,local);
     Double_t point_local[3]={local.x,local.y,local.z};
     //check if it is on that module
-    bool onMod=volume().solid()->Contains(point_local);
+    bool onMod=module.volume().solid()->Contains(point_local);
     if(!onMod)
       throw OutsideGeometryException("getNearestPad: Requested point not on module querried!");
-    Tube tube=volume().solid();
+    Tube tube=module.volume().solid();
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double radius=sqrt(point_local[0]*point_local[0]+point_local[1]*point_local[1]);
     int row=(radius-tube->GetRmin())/getRowHeight(0);
@@ -174,10 +173,4 @@ namespace DD4hep {
     return getPadIndex(row,padNr);
   }
  
-  double FixedPadAngleDiskLayout::getModuleZPosition() const {
-    //for internal use only, gives back coordinate in local system
-    TGeoMatrix *nm=placement()->GetMatrix();
-    const Double_t *trans=nm->GetTranslation();
-    return trans[2];
-  }
 }

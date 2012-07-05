@@ -85,18 +85,18 @@ int main(int argc,char** argv)  {
   cout <<"-----> Nearest Pad 5:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
   cout <<"-----> Nearest Pad 20:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
 
-  cout<<"Test Data Block extension:"<<endl;
+ //  cout<<"Test Data Block extension:"<<endl;
 
-  for(int i=0; i<2; ++i) {
-    for(int j=0; j<2; ++j) {
-      typedef Value<Value<TNamed,DetElement::Object>,TPCModuleData> Val;
-      TPCModule mod = tpc.getModule(i,j);
-      if ( mod.isValid() ) {
-	TPCModuleData* d = mod.extension<TPCModuleData>();
-	cout <<"-----> "<< mod.name() << " parent:" << mod.parent().name() << " padGap:" << d->padGap << " " << endl;
-      }
-    }
-  }
+//   for(int i=0; i<2; ++i) {
+//     for(int j=0; j<2; ++j) {
+//       typedef Value<Value<TNamed,DetElement::Object>,TPCModuleData> Val;
+//       TPCModule mod = tpc.getModule(i,j);
+//       if ( mod.isValid() ) {
+// 	TPCModuleData* d = mod.extension<TPCModuleData>();
+// 	cout <<"-----> "<< mod.name() << " parent:" << mod.parent().name() << " padGap:" << d->padGap << " " << endl;
+//       }
+//     }
+//   }
   try{
     int row=tpc.getModule(6,0).getRowNumber(-10);
   }

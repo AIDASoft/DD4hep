@@ -11,6 +11,7 @@
 
 #include "DD4hep/Detector.h"
 #include <Exceptions.h> 
+#include "TPCModuleData.h"
 
 namespace DD4hep {
 
@@ -40,6 +41,8 @@ namespace DD4hep {
     /** ID of this module.
      */
     int getID() const { return _data().id;  }
+
+    //Now all the functionality that depends on specific implementation of padlayout
     /** The type of pad layout (segmentation) on this module.
      */
     std::string getPadType() const { padlayout.getPadType(); } 
