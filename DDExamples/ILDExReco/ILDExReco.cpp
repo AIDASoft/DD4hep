@@ -83,18 +83,17 @@ int main(int argc,char** argv)  {
   cout <<"-----> Nearest Pad 10:\t "<<tpc.getModule(0,0).getNearestPad(tpc.getModule(0,0).getPadCenter(10)[0],tpc.getModule(0,0).getPadCenter(10)[1])<<endl;
   cout <<"-----> Nearest Pad 0:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(0)[0],tpc.getModule(5,0).getPadCenter(0)[1])<<endl;
   cout <<"-----> Nearest Pad 5:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
-#if 0
   cout <<"-----> Nearest Pad 20:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
-  cout <<"-----> Nearest Pad 591, 760:\t "<<tpc.getModule(5,0).getNearestPad(591, 760)<<endl;
-#endif
-  cout << "Ctor:" << (void*)&typeid(TPCModuleData) << endl;
-  for(int i=0; i<10; ++i) {
+
+  cout<<"Test Data Block extension:"<<endl;
+
+  for(int i=0; i<2; ++i) {
     for(int j=0; j<2; ++j) {
       typedef Value<Value<TNamed,DetElement::Object>,TPCModuleData> Val;
       TPCModule mod = tpc.getModule(i,j);
       if ( mod.isValid() ) {
 	TPCModuleData* d = mod.extension<TPCModuleData>();
-	cout << mod.name() << " parent:" << mod.parent().name() << " padHeight:" << d->padHeight << " " << endl;
+	cout <<"-----> "<< mod.name() << " parent:" << mod.parent().name() << " padGap:" << d->padGap << " " << endl;
       }
     }
   }
@@ -103,17 +102,5 @@ int main(int argc,char** argv)  {
   }
   catch(OutsideGeometryException e){cout<<"-----> Exception test: "<<e.what()<<endl;};
 
-  cout<<"Test Data Block extension:"<<endl;
-  //works for endplate 0, but not for the deep copy of endplate 1
-  TPCModule mymod2=tpc.getModule(10,0);
-  TPCModuleData* tpcModData= (TPCModuleData*)&mymod2._data();
-  cout<<tpcModData->padGap <<endl;
-
- //  for(int i=0; i<10;++i) {
-//     for (int j=0; j<2;++j) {
-//       TPCModule m=tpc.getModule(i,j);
-//       TPCModuleData* tpcModData= (TPCModuleData*)&m._data();
-//       cout<<tpcModData->padGap() <<endl;
-//     }}
   return 0;
 }

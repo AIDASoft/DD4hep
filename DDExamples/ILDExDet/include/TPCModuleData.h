@@ -11,13 +11,11 @@
 
 namespace DD4hep {
 
+  //data container used for things not covered by a DetElement
+  // no good example at the moment that is not either conditions data or otherwise
   struct TPCModuleData   {
-    double rowHeight;
-    double padWidth;
-    double padHeight;
     double padGap;
-    int nRows;
-    int nPads;
+    bool myFlag;
   };
 }
-#endif DD4HEP_ILDEXDET_TPCMODULEDATA_H
+#endif //DD4HEP_ILDEXDET_TPCMODULEDATA_H
