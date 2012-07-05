@@ -20,7 +20,7 @@ using namespace DD4hep::Geometry;
 namespace {
   struct ExtensionEntry {
     void* (*construct)();
-    void* (*copy)(const void*);
+    void* (*copy)(const void*,DetElement);
     void  (*destruct)(void*);
     int     id;
   };
@@ -146,7 +146,7 @@ Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag
     const std::type_info* info = (*i).first;
     ExtensionMap::const_iterator j = m.find(info);
     const ExtensionEntry& e = (*j).second;
-    obj->extensions[info]  = (*(e.copy))((*i).second);
+    obj->extensions[info]   = (*(e.copy))((*i).second,det);
   }
 
   obj->children.clear();
@@ -246,7 +246,7 @@ DetElement::DetElement(DetElement parent, const string& name, int id)   {
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*construct)(), void* (*copy)(const void*), void (*destruct)(void*)) {
+void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*copy)(const void*,DetElement), void (*destruct)(void*)) {
   Object& o = _data();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
@@ -254,7 +254,7 @@ void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*
     ExtensionMap::iterator i = m.find(&info);
     if ( i == m.end() ) {
       ExtensionEntry entry;
-      entry.construct = construct;
+      entry.construct = 0;//construct;
       entry.destruct = destruct;
       entry.copy = copy;
       entry.id = ++s_extensionID;
@@ -262,6 +262,7 @@ void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*
       i = m.find(&info);
     }
     ExtensionEntry& e = (*i).second;
+    cout << "Extension["<<name()<<"]:" << ptr << " " << typeid(*(TNamed*)ptr).name() << endl;
     return o.extensions[&info] = ptr;
   }
   throw runtime_error("addExtension: The object "+string(name())+

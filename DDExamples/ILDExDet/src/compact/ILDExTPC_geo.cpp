@@ -76,16 +76,16 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	    
 	    //templated TPCModule
 	    DetElement  module(part_det,m_nam,mdcount);
-	    //additional data of module
-	    //PadLayout* layout = new FixedPadAngleDiskLayout(module);
-	    //module.addExtension<PadLayout>(layout);
-	    PadLayout* layout = module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module));
-	    module.setReadout(xml_pads);
 	    mdcount++;
 	    double rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
 	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(0,0,0),Rotation(0,0,rotz));
 	    m_phv.addPhysVolID("module",md);
 	    module.setPlacement(m_phv);
+
+	    module.setReadout(xml_pads);
+	    // Readout and placement must be present before adding extension,
+	    // since they are aquired internally for optimisation reasons. (MF)
+	    module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module));
 	  }//modules
 	}//rows
       }//module groups

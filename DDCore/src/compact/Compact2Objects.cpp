@@ -181,43 +181,43 @@ namespace DD4hep { namespace Geometry {
     return attr;
   }
   
-  template <> Elt_t toObject<GridXYZ>(lcdd_t& lcdd, const xml_h& e)  {
-    GridXYZ obj(lcdd);
+  template <> Elt_t toObject<GridXYZ>(lcdd_t& /* lcdd */, const xml_h& e)  {
+    GridXYZ obj;
     if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_A(gridSizeX)));
     if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_A(gridSizeY)));
     if ( e.hasAttr(_A(gridSizeZ)) ) obj.setGridSizeZ(e.attr<float>(_A(gridSizeZ)));
     return obj;
   }
-  template <> Elt_t toObject<GlobalGridXY>(lcdd_t& lcdd, const xml_h& e)  {
-    GlobalGridXY obj(lcdd);
+  template <> Elt_t toObject<GlobalGridXY>(lcdd_t& /* lcdd */, const xml_h& e)  {
+    GlobalGridXY obj;
     if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_A(gridSizeX)));
     if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_A(gridSizeY)));
     return obj;
   }
   
-  template <> Elt_t toObject<CartesianGridXY>(lcdd_t& lcdd, const xml_h& e)  {
-    CartesianGridXY obj(lcdd);
+  template <> Elt_t toObject<CartesianGridXY>(lcdd_t& /* lcdd */, const xml_h& e)  {
+    CartesianGridXY obj;
     if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<double>(_A(gridSizeX)));
     if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<double>(_A(gridSizeY)));
     return obj;
   }
   
-  template <> Elt_t toObject<ProjectiveCylinder>(lcdd_t& lcdd, const xml_h& e)  {
-    ProjectiveCylinder obj(lcdd);
+  template <> Elt_t toObject<ProjectiveCylinder>(lcdd_t& /* lcdd */, const xml_h& e)  {
+    ProjectiveCylinder obj;
     if ( e.hasAttr(_A(phiBins))   ) obj.setPhiBins(e.attr<int>(_A(phiBins)));
     if ( e.hasAttr(_A(thetaBins)) ) obj.setThetaBins(e.attr<int>(_A(thetaBins)));
     return obj;
   }
   
-  template <> Elt_t toObject<NonProjectiveCylinder>(lcdd_t& lcdd, const xml_h& e)  {
-    NonProjectiveCylinder obj(lcdd);
+  template <> Elt_t toObject<NonProjectiveCylinder>(lcdd_t& /* lcdd */, const xml_h& e)  {
+    NonProjectiveCylinder obj;
     if ( e.hasAttr(_A(gridSizePhi)) ) obj.setThetaBinSize(e.attr<double>(_A(gridSizePhi)));
     if ( e.hasAttr(_A(gridSizeZ))   ) obj.setPhiBinSize(e.attr<double>(_A(gridSizeZ)));
     return obj;
   }
   
-  template <> Elt_t toObject<ProjectiveZPlane>(lcdd_t& lcdd, const xml_h& e)  {
-    ProjectiveZPlane obj(lcdd);
+  template <> Elt_t toObject<ProjectiveZPlane>(lcdd_t& /* lcdd */, const xml_h& e)  {
+    ProjectiveZPlane obj;
     if ( e.hasAttr(_A(phiBins))   ) obj.setThetaBins(e.attr<int>(_A(phiBins)));
     if ( e.hasAttr(_A(thetaBins)) ) obj.setPhiBins(e.attr<int>(_A(thetaBins)));
     return obj;

@@ -29,17 +29,15 @@ namespace DD4hep {
   void TPCModule::getExtension() {
     padLayout = isValid() ? extension<PadLayout>() : 0;
   }
-
+  
   int TPCModule::getID()const {
     return _data().id;
   }
- 
-
- 
+  
   double TPCModule::getModuleZPosition() const {
     //for internal use only, gives back coordinate in local system
-    TGeoMatrix *nm=placement()->GetMatrix();
-    const Double_t *trans=nm->GetTranslation();
+    TGeoMatrix *nm = placement()->GetMatrix();
+    const Double_t *trans = nm->GetTranslation();
     return trans[2];
   }
 }

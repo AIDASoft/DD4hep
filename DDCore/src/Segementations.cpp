@@ -13,7 +13,7 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-Segmentation::Segmentation(LCDD& /* lcdd */, const string& type)  {
+Segmentation::Segmentation(const string& type)  {
   assign(new Value<TNamed,Segmentation::Object>(),"segmentation",type);
 }
 
@@ -25,8 +25,8 @@ const string Segmentation::type() const   {
   return m_element->GetTitle();
 }
 
-ProjectiveCylinder::ProjectiveCylinder(LCDD& lcdd) 
-: Segmentation(lcdd,"projective_cylinder")   {}
+ProjectiveCylinder::ProjectiveCylinder() 
+: Segmentation("projective_cylinder")   {}
 
 /// Accessors: get number of bins in theta
 int ProjectiveCylinder::thetaBins() const  {
@@ -48,8 +48,8 @@ void ProjectiveCylinder::setPhiBins(int value)  {
   _data().data.cylindrical_binning.nphi = value;
 }
 
-NonProjectiveCylinder::NonProjectiveCylinder(LCDD& lcdd)
-: Segmentation(lcdd, "nonprojective_cylinder")
+NonProjectiveCylinder::NonProjectiveCylinder()
+: Segmentation("nonprojective_cylinder")
 {
 }
 
@@ -72,8 +72,8 @@ void NonProjectiveCylinder::setPhiBinSize(double value)   {
 }
 
 /// Constructor to be used when creating a new DOM tree.
-ProjectiveZPlane::ProjectiveZPlane(LCDD& lcdd) 
-: Segmentation(lcdd,"projective_zplane")
+ProjectiveZPlane::ProjectiveZPlane() 
+: Segmentation("projective_zplane")
 {
 }
 
@@ -98,14 +98,14 @@ void ProjectiveZPlane::setPhiBins(int value)  {
 }
 
 /// Constructor to be used when creating a new object. Data are taken from the input handle
-GridXY::GridXY(LCDD& lcdd, const std::string& tag) 
-: Segmentation(lcdd,tag) 
+GridXY::GridXY(const std::string& tag) 
+: Segmentation(tag) 
 {
 }
 
 /// Constructor to be used when creating a new object.
-GridXY::GridXY(LCDD& lcdd, const std::string& tag, double size_x, double size_y)
-: Segmentation(lcdd,tag)
+GridXY::GridXY(const std::string& tag, double size_x, double size_y)
+: Segmentation(tag)
 {
   _data().data.cartesian_grid.grid_size_x = size_x;
   _data().data.cartesian_grid.grid_size_y = size_y;
@@ -122,14 +122,14 @@ void GridXY::setGridSizeY(double value)  {
 }
 
 /// Constructor to be used when creating a new DOM tree.
-GridXYZ::GridXYZ(LCDD& lcdd)   
-: GridXY(lcdd, "grid_xyz")
+GridXYZ::GridXYZ()   
+: GridXY("grid_xyz")
 {
 }
 
 /// Constructor to be used when creating a new object.
-GridXYZ::GridXYZ(LCDD& lcdd, double size_x, double size_y, double size_z)
-: GridXY(lcdd, "grid_xyz", size_x, size_y)
+GridXYZ::GridXYZ(double size_x, double size_y, double size_z)
+: GridXY("grid_xyz", size_x, size_y)
 {
   _data().data.cartesian_grid.grid_size_z = size_z;
 }
