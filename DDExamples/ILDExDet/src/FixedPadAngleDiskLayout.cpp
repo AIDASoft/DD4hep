@@ -38,7 +38,9 @@ namespace DD4hep {
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& /* c */, const Geometry::DetElement& d) : module(d)  {
+  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& /* c */, const Geometry::DetElement& det)
+    : module(det)
+  {
     pads = module.readout().segmentation();
     tube = module.volume().solid();
   }
