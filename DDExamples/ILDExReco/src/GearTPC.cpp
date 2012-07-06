@@ -101,27 +101,21 @@ namespace DD4hep {
   }
   
   bool GearTPC::isInsideModule(double c0, double c1, int endplate) const{
+    //x and y comes in in world coordinates
     DetElement ep=getEndPlate(endplate);
     double zpos=getEndPlateZPosition(endplate);
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
+    // find the node at this position
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
-    Double_t point[3];
-    Double_t point_mother[3];
-    Double_t point_local[3];
-    point[0]=c0;
-    point[1]=c1;
-    point[2]=zpos;
-    //FIXME: careful: master is mother not global=world, input is in world coordinates
-    ep.placement()->MasterToLocal(point, point_local);
-
     
     bool onMod=false;
     std::map<std::string,DetElement>::const_iterator it;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {
-	Double_t point_local_node[3];
- 	it->second.placement()->MasterToLocal(point_local, point_local_node);
-	onMod=it->second.volume().solid()->Contains(point_local_node);
+	Position global(c0,c1,zpos), local;
+	it->second.worldToLocal(global,local);
+	Double_t point_local[3]={local.x,local.y,local.z};
+    	onMod=it->second.volume().solid()->Contains(point_local);
 	if(onMod)
 	  {
 	    //std::cout<<"Point is on "<<it->second.volume()->GetName()<<" id: "<<it->second.id()<<std::endl;
@@ -137,16 +131,7 @@ namespace DD4hep {
     double zpos=getEndPlateZPosition(endplate);
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
     TGeoNode *mynode=geoManager->FindNode(c0,c1,zpos);
-    Double_t point[3];
-    Double_t point_mother[3];
-    Double_t point_local[3];
-    point[0]=c0;
-    point[1]=c1;
-    point[2]=zpos;
-   //FIXME: careful: master is mother not global=world, input is in world coordinates
-    //  ep.parent.placement()->MasterToLocal(point, point_mother);
-    ep.placement()->MasterToLocal(point, point_local);
-   
+     
     bool onMod=false;
     std::map<std::string,DetElement>::const_iterator it;
     //check if any of the modules contains that point
@@ -154,9 +139,11 @@ namespace DD4hep {
     TPCModule neighbour;
     for ( it=ep.children().begin() ; it != ep.children().end(); it++ )
       {
- 	Double_t point_local_node[3];
- 	it->second.placement()->MasterToLocal(point_local, point_local_node);
-  	onMod=it->second.volume().solid()->Contains(point_local_node);
+	//trafo of input world coordinates to local module system
+	Position global(c0,c1,zpos), local;
+	it->second.worldToLocal(global,local);
+	Double_t point_local[3]={local.x,local.y,local.z};
+    	onMod=it->second.volume().solid()->Contains(point_local);
 
 	if(onMod)
 	  {
@@ -167,7 +154,7 @@ namespace DD4hep {
 	//if not on module, compute distance from point to each shape
 	//FIXME: not sure if this is exact. Sometimes more than one module has the same safety distance.
 	Tube       tube  = it->second.volume().solid();
-	double dist=tube->Safety(point_local_node,0);
+	double dist=tube->Safety(point_local,0);
 	if(dist<safe_dist)
 	  {
 	    safe_dist=dist;
