@@ -97,6 +97,9 @@ void ProjectiveZPlane::setPhiBins(int value)  {
   _data().data.cylindrical_binning.nphi = value;
 }
 
+GridXY::GridXY() 
+: Segmentation("grid_xy")   {}
+
 /// Constructor to be used when creating a new object. Data are taken from the input handle
 GridXY::GridXY(const std::string& tag) 
 : Segmentation(tag) 
@@ -109,6 +112,16 @@ GridXY::GridXY(const std::string& tag, double size_x, double size_y)
 {
   _data().data.cartesian_grid.grid_size_x = size_x;
   _data().data.cartesian_grid.grid_size_y = size_y;
+}
+
+/// Accessors: get grid size in X
+double GridXY::getGridSizeX() const {
+  return _data().data.cartesian_grid.grid_size_x;
+}
+
+/// Accessors: get grid size in Y
+double GridXY::getGridSizeY() const {
+  return _data().data.cartesian_grid.grid_size_y;
 }
 
 /// Accessors: set grid size in X

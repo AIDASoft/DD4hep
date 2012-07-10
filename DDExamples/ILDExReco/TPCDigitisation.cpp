@@ -85,12 +85,17 @@ int main(int argc,char** argv)  {
 	  if(z<0)
 	    endplate=1;
 	  //check if point is over module. If not move to next point
-	  bool measured=tpc.isInsideModule(x,y,endplate);
+	  bool measured=false;
+	  try{
+	    measured=tpc.isInsideModule(x,y,endplate);
+	  }
+	  catch(OutsideGeometryException e){};
 	  if(!measured)
 	    continue;
 	  TPCModule mymod=tpc.getNearestModule(x,y,endplate);
 	  int modID=mymod.getID();
 	  int padID= mymod.getNearestPad(x,y);
+	  
 	  std::pair<int,int> ID_pair=make_pair(modID,padID);
 	  
 	  //check if that pad has already been hit

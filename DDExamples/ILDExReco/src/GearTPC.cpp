@@ -86,6 +86,8 @@ namespace DD4hep {
   
   TPCModule GearTPC::getModule(int ID, int endplate) const {
     //ID is defined in the compact xml
+    if(ID>getNModules(endplate))
+      throw OutsideGeometryException("TPC Module not found!");
     DetElement ep=getEndPlate(endplate);
     string myname;
     std::map<std::string,DetElement>::const_iterator it;
@@ -153,8 +155,7 @@ namespace DD4hep {
 	
 	//if not on module, compute distance from point to each shape
 	//FIXME: not sure if this is exact. Sometimes more than one module has the same safety distance.
-	Tube       tube  = it->second.volume().solid();
-	double dist=tube->Safety(point_local,0);
+	double dist=it->second.volume().solid()->Safety(point_local,0);
 	if(dist<safe_dist)
 	  {
 	    safe_dist=dist;

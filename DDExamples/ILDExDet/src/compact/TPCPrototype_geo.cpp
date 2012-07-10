@@ -11,7 +11,7 @@
 #include "DD4hep/Detector.h"
 #include "TPCModuleData.h"
 #include "TPCModule.h"
-#include "FixedPadAngleDiskLayout.h"
+#include "RectangularPadRowLayout.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -22,15 +22,10 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_comp_t  x_tube (x_det.child(_X(tubs)));
   string      name  = x_det.nameStr();
   Material    mat    (lcdd.material(x_det.materialStr()));
-  //if data is needed do this  
-  //    Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
-  //     DetElement tpc(tpcData, name, x_det.typeStr());
-  //     tpcData->id = x_det.id();
-  //else do this
   DetElement    tpc  (name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
-
+ 
   for(xml_coll_t c(e,_X(detector)); c; ++c)  {
     xml_comp_t  px_det  (c);
     xml_comp_t  px_tube (px_det.child(_X(tubs)));
@@ -45,7 +40,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
     Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
     bool        reflect   = px_det.reflect();
-
+ 
     part_vol.setVisAttributes(lcdd,px_det.visStr());
     //Endplate
     if(part_det.id()== 0){
@@ -59,31 +54,29 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	  int nmodules = row.nModules();
 	  int rowID=row.RowID();
 	  //shape of module
-	  double pitch=row.rowPitch();
-	  double rmin=px_tube.rmin()+pitch/2+rowID*row.moduleHeight()+rowID*pitch/2;
-	  double rmax=rmin+row.moduleHeight();
-	  double DeltaPhi=(2*M_PI-nmodules*(row.modulePitch()/(rmin+(rmax-rmin)/2)))/nmodules;
+	  double pitch=row.modulePitch();
+	  double height=row.moduleHeight();
+	  double width=row.moduleWidth();
 	  double zhalf=px_tube.zhalf();
 	  string      mr_nam=m_name+_toString(rowID,"_Row%d");
-	  Volume      mr_vol(mr_nam,Tube(rmin,rmax,zhalf,DeltaPhi),part_mat);
+	  Volume      mr_vol(mr_nam,Box(width/2,height/2,zhalf),part_mat);
 	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
 	  Readout     xml_pads(lcdd.readout(row.padType()));
 
 	 //placing modules
 	  for(int md=0;md<nmodules;md++){
 	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	   
 	    DetElement  module(part_det,m_nam,mdcount);
 	    mdcount++;
-	    double rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
-	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(0,0,0),Rotation(0,0,rotz));
+	    double posx=row.modulePosX()+md*(width/2+pitch);
+	    double posy=row.modulePosY();
+	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(posx,posy,0),Rotation(0,0,0));
 	    m_phv.addPhysVolID("module",md);
 	    module.setPlacement(m_phv);
-
 	    module.setReadout(xml_pads);
 	    // Readout and placement must be present before adding extension,
 	    // since they are aquired internally for optimisation reasons. (MF)
-	    module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module));
+	    module.addExtension<PadLayout>(new RectangularPadRowLayout(module));
 	  }//modules
 	}//rows
       }//module groups
@@ -115,4 +108,4 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 }
 
 //first argument is the type from the xml file
-DECLARE_DETELEMENT(ILDExTPC,create_element)
+DECLARE_DETELEMENT(TPCPrototype,create_element)

@@ -141,6 +141,8 @@ namespace DD4hep {
     struct GridXY : public Segmentation   {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> GridXY(const Handle<Q>& e) : Segmentation(e) {}
+      /// Constructor to create a new segmentation object
+      GridXY();
       /// Constructor to be used when creating a new object. Data are taken from the input handle
       GridXY(const std::string& tag);
       /// Constructor to be used when creating a new object.
@@ -149,6 +151,10 @@ namespace DD4hep {
       void setGridSizeX(double value);
       /// Accessors: set grid size in Y
       void setGridSizeY(double value);
+      /// Accessors: get grid size in X
+      double getGridSizeX()const;
+      /// Accessors: get grid size in Y
+      double getGridSizeY()const;
     };
 
     /** @class GridXYZ Segmentations.h DD4hep/lcdd/Segmentations.h

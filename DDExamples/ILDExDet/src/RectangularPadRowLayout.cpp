@@ -5,19 +5,17 @@
 //
 //  Author     : A.Muennich
 //
-//  This is a special implementation for a FixedPadAngleDiskLayout!
-//  The number of pads is distrubuted on a tube shaped segment starting 
-//  on the lower left corner. All rows have the same height,
-//  starting at rmin for the lower edge of the first row to rmax for the
-//  upper edge of the last row. The row height is calculated from the number of pads.
+//  This is a special implementation for a RectangularPadRowLayout!
+//  for a rectangular row based layout where all pads in a given row are 
+//  equal and have rectangular shape ditributed on a rectangular shaped module.
 //
 //  Row height and pad height are identical, and pad gap is 0 
 //  (the only thing that matters is the effective pitch).
 //====================================================================
 #include "DD4hep/LCDD.h"
 
-#include "FixedPadAngleDiskLayout.h"
-#include "TGeoTube.h"
+#include "RectangularPadRowLayout.h"
+#include "TGeoBBox.h"
 #include <math.h>
 #include <iostream>
 
@@ -28,66 +26,64 @@ namespace DD4hep {
   using namespace Geometry;
   
   /// Standard constructor with arguments
-  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const Geometry::DetElement& d) : module(d) {
+  RectangularPadRowLayout::RectangularPadRowLayout(const Geometry::DetElement& d) : module(d) {
     pads = module.readout().segmentation();
-    tube = module.volume().solid();
+    box = module.volume().solid();
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& /* c */, const Geometry::DetElement& det)
+  RectangularPadRowLayout::RectangularPadRowLayout(const RectangularPadRowLayout& /* c */, const Geometry::DetElement& det)
     : module(det)
   {
     pads = module.readout().segmentation();
-    tube = module.volume().solid();
+    box = module.volume().solid();
   }
 
-  std::string FixedPadAngleDiskLayout::getPadType()const {
+  std::string RectangularPadRowLayout::getPadType()const {
     return pads.type();
   }
  
-  int FixedPadAngleDiskLayout::getNPads()const {
-    return pads.thetaBins()* pads.phiBins();
+  int RectangularPadRowLayout::getNPads()const {
+     return getNRows()*getNPadsInRow(0);
   }
   
-  int FixedPadAngleDiskLayout::getNRows()const {
-    return pads.thetaBins();
+  int RectangularPadRowLayout::getNRows()const {
+    return box->GetDY()*2/pads.getGridSizeY();
   }
 
-  int FixedPadAngleDiskLayout::getNPadsInRow(int row)const {
-    return pads.phiBins();
+  int RectangularPadRowLayout::getNPadsInRow(int row)const {
+    return box->GetDX()*2/pads.getGridSizeX();
   }
   
-  double FixedPadAngleDiskLayout::getRowHeight(int row)const {
+  double RectangularPadRowLayout::getRowHeight(int row)const {
     if(row>getNRows() || row<0)
       throw OutsideGeometryException("getRowHeight: Requested row not on module querried!");
-    //all rows are the same for FixedPadAngleDiskLayout=ProjectiveCylinder 
-    double module_height= tube->GetRmax()-tube->GetRmin();
+    //all rows are the same for RectangularPadRowLayout=cartesian_grid
+    double module_height= 2*box->GetDY();
     return module_height/getNRows();
   }
   
-  int FixedPadAngleDiskLayout::getRowNumber(int pad)const {
+  int RectangularPadRowLayout::getRowNumber(int pad)const {
     if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getRowNumber: Requested pad not on module querried!");
     return pad/getNPadsInRow(0);
   }
   
-  double FixedPadAngleDiskLayout::getPadPitch(int pad)const {
+  double RectangularPadRowLayout::getPadPitch(int pad)const {
     if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getPadPitch: Requested pad not on module querried!");
     int row=getRowNumber(pad);
-    double pad_radius=tube->GetRmin()+(row+0.5)*getRowHeight(0);
-    double module_width= tube->GetPhi2()-tube->GetPhi1();
-    double pad_angle=module_width/getNPadsInRow(row);
-    return pad_radius*pad_angle*M_PI/180.;
+    double module_width= 2*box->GetDX();
+    return module_width/getNPadsInRow(row);
   }
   
-  int FixedPadAngleDiskLayout::getPadNumber(int pad)const {
+  int RectangularPadRowLayout::getPadNumber(int pad)const {
    if(pad>getNPads() || pad<0)
       throw OutsideGeometryException("getPadNumber: Requested pad not on module querried!");
     return pad % getNPadsInRow(0);
   }
 
-  int FixedPadAngleDiskLayout::getPadIndex(int row,int padNr)const {
+  int RectangularPadRowLayout::getPadIndex(int row,int padNr)const {
     if(padNr>=getNPadsInRow(row) || padNr<0)
       throw OutsideGeometryException("getPadIndex: Requested pad not on module querried!");
     if(row>=getNRows() || padNr<0 )
@@ -95,8 +91,7 @@ namespace DD4hep {
     return padNr + row*getNPadsInRow(row);
   }
 
-  int FixedPadAngleDiskLayout::getRightNeighbour(int pad)const {
-    //what is left and what is right is a matter of definition
+  int RectangularPadRowLayout::getRightNeighbour(int pad)const {
     //if on edge their is no neighbour, should throw an exception
     int row=getRowNumber(pad);
     if(getPadNumber(pad)==getNPadsInRow(row)-1)
@@ -105,7 +100,7 @@ namespace DD4hep {
     return pad + 1;
   }
 
-  int FixedPadAngleDiskLayout::getLeftNeighbour(int pad)const {
+  int RectangularPadRowLayout::getLeftNeighbour(int pad)const {
     //if on edge their is no neighbour, should throw an exception
     if(getPadNumber(pad)==0)
       throw OutsideGeometryException("getLeftNeighbour: Requested pad is on left edge and has no left neighbour!");
@@ -114,19 +109,16 @@ namespace DD4hep {
   }
 
 
-  std::vector<double>  FixedPadAngleDiskLayout::getPadCenter (int pad) const {
+  std::vector<double>  RectangularPadRowLayout::getPadCenter (int pad) const {
     if(pad>getNPads())
       throw OutsideGeometryException("getPadCenter: Requested pad not on module querried!");
     int row=getRowNumber(pad);
-    double pad_radius=tube->GetRmin()+(row+0.5)*getRowHeight(0);
-    double module_width= tube->GetPhi2()-tube->GetPhi1();
-    double pad_angle=(getPadNumber(pad)+0.5)*module_width/getNPadsInRow(row);
-    //local center coordinates in module system
-    double pad_x = pad_radius*cos(pad_angle*M_PI/180.);
-    double pad_y = pad_radius*sin(pad_angle*M_PI/180.);
- 
+    //shift coordinates from pad system where 0,0 is on lower left corner of module into module
+    //system where 0,0 is in the middle of the module box
+    double pad_y=(row+0.5)*getRowHeight(0)-box->GetDY();
+    double pad_x = (getPadNumber(pad)+0.5)*getPadPitch(pad)-box->GetDX();
     //trafo to global coordinates
-    Position global_w, local(pad_x,pad_y,0); 
+    Position global_w, local(pad_x,pad_y,0);
     module.localToWorld(local,global_w);
 
     vector<double> center;
@@ -135,8 +127,7 @@ namespace DD4hep {
     return center;
   }
   
-  int FixedPadAngleDiskLayout::getNearestPad(double c0,double c1)const {
-    //input coordinates are global
+  int RectangularPadRowLayout::getNearestPad(double c0,double c1)const {
     //find z position of module in world coordinates
     Position fake_local(0,0,0);
     Position fake_global;
@@ -146,21 +137,17 @@ namespace DD4hep {
     module.worldToLocal(global,local);
     Double_t point_local[3]={local.x,local.y,local.z};
     //check if it is on that module
-    bool onMod=tube->Contains(point_local);
+    bool onMod=box->Contains(point_local);
     if(!onMod)
       throw OutsideGeometryException("getNearestPad: Requested point not on module querried!");
-    double module_width= tube->GetPhi2()-tube->GetPhi1();
-    double radius=sqrt(point_local[0]*point_local[0]+point_local[1]*point_local[1]);
-    int row=(radius-tube->GetRmin())/getRowHeight(0);
-    //outer edge of last row belongs to last row, same for the pad
+    //shift coordinates into pad system where 0,0 is on lower left corner of module
+    int row=static_cast<int>((point_local[1]+box->GetDY())/getRowHeight(0));
+    //outer edge of last row belongs to last row, same goes for pad
     if(row==getNRows())
       row=getNRows()-1;
-    double pad_width=module_width/getNPadsInRow(row);    
-    double angle=atan2(point_local[1],point_local[0])/M_PI*180;
-    int padNr=static_cast<int>(angle/pad_width);
+    int padNr=static_cast<int>((point_local[0]+box->GetDX())/getPadPitch(0));
     if(padNr==getNPadsInRow(row))
       padNr=padNr-1;
-
     return getPadIndex(row,padNr);
   }
  

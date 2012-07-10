@@ -322,6 +322,9 @@ namespace DD4hep   { namespace XML  {
   TAG(row);
   ATTR(nModules);
   ATTR(moduleHeight);
+  ATTR(moduleWidth);
+  ATTR(modulePosX);
+  ATTR(modulePosY);
   ATTR(modulePitch);
   ATTR(rowPitch);
   ATTR(pads);

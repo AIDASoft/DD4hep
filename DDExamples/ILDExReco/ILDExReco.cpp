@@ -61,9 +61,7 @@ int main(int argc,char** argv)  {
 
   TPCModule mymod=tpc.getModule(10,1);
   cout << "-----> Module 10 EP 1 ID:\t " << mymod.getID()<<endl;
-  string typ = mymod.getPadType();
-  //cout << "-----> Module 10 Pads:\t " << mymod.getPadType()<<endl;
-  cout << "-----> Module 10 Pads:\t " << typ<<endl;
+  cout << "-----> Module 10 Pads:\t " << mymod.getPadType()<<endl;
   cout << "-----> Module 10 NPads:\t " << mymod.getNPads()<<endl;
   cout << "-----> Module 10 pad rows:\t " << mymod.getNRows()<<endl;
   cout << "-----> Module 10 pads in rows:\t " << mymod.getNPadsInRow(0)<<endl;

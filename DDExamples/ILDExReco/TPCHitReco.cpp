@@ -103,6 +103,13 @@ int main(int argc,char** argv)  {
      //negative endplate
       for ( it2=padmap_EP2.begin() ; it2 != padmap_EP2.end(); it2++ )
 	{
+	  bool endplate2=true;
+	  try{
+	    tpc.getModule(it2->first.first,1);
+	  }
+	  catch(OutsideGeometryException e){endplate2=false;};
+	  if(!endplate2)
+	    continue;
 	  std::vector<double> center=tpc.getModule(it2->first.first,1).getPadCenter(it2->first.second);
 	  
 	  xPos.push_back(center[0]);

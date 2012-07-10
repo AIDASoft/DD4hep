@@ -160,6 +160,18 @@ double Dimension::moduleHeight() const {
   return m_element.attr<int>(Attr_moduleHeight);
 }
 
+double Dimension::moduleWidth() const {
+  return m_element.attr<int>(Attr_moduleWidth);
+}
+
+double Dimension::modulePosX() const {
+  return m_element.attr<int>(Attr_modulePosX);
+}
+
+double Dimension::modulePosY() const {
+  return m_element.attr<int>(Attr_modulePosY);
+}
+
 double Dimension::modulePitch() const {
   return m_element.attr<int>(Attr_modulePitch);
 }

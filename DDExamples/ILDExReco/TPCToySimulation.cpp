@@ -64,7 +64,13 @@ int main(int argc,char** argv)  {
       //point loop
       for (int p=0;p<NPOINTS;p++)
 	{
-	  double radius=tpc.getInnerRadius()+(tpc.getOuterRadius()-tpc.getInnerRadius())*p/NPOINTS;
+	  double inner_r=0;
+	  try{
+	    inner_r=tpc.getInnerRadius();
+	  }
+	  catch(OutsideGeometryException e){};
+
+	  double radius=inner_r+(tpc.getOuterRadius()-inner_r)*p/NPOINTS;
 	  xPos.push_back(radius*cos(phi));
 	  yPos.push_back(radius*sin(phi));
 	  zPos.push_back(sign_z*radius/tan(theta));

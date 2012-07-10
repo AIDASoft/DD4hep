@@ -5,6 +5,8 @@
 //
 //  Author     : A.Muennich
 //
+// Interface to PadLayout functions
+//
 //====================================================================
 #ifndef TPCMODULE_H
 #define TPCMODULE_H
@@ -37,9 +39,6 @@ namespace DD4hep {
     /** ID of this module.
      */
     int getID() const;
-     /**Helper function to get the z position of the module in local coordinates.
-     */
-    double getModuleZPosition() const;
 
     //Now all the functionality that depends on specific implementation of padlayout
     /** The type of pad layout (segmentation) on this module.
