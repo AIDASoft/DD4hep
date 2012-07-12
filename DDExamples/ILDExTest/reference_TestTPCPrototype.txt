@@ -1,0 +1,30 @@
+Gear TPC functionality:
+-----> Outer Radius:     500
+-----> DriftLength:      497
+-----> EndplateThickness 0:      1.5
+-----> EndplateZPosition 0:      998.5
+-----> Exception test: OutsideGeometryException: TPC endplate not found!
+-----> NModules EP0:     9
+-----> NPads EP0:        11250
+-----> Inside Module (-150,0):   1
+-----> Nearest Module (-150,0):  3
+-----> Nearest Module (800,0):   2
+TPC Module functionality:
+-----> Module 4 EP 0 ID:         4
+-----> Module 4 Pads:    cartesian_grid_xy
+-----> Module 4 NPads:   1250
+-----> Module 4 pad rows:        25
+-----> Module 4 pads in row:     50
+-----> Module 4 row height:      6
+-----> Module 4 pad pitch:       2
+-----> Module 4 row number pad 15:       0
+-----> Module 4 pad number pad 15:       15
+-----> Module 4 pad index (1,5):         55
+-----> RightNeighbour of 0:      1
+-----> LeftNeighbour of 3:       2
+-----> Center of mod0/pad10 EP0:         -179 128
+-----> Center of mod9/pad10 EP0:         121 -272
+-----> Nearest Pad 10:   10
+-----> Nearest Pad 0:    0
+-----> Nearest Pad 5:    5
+-----> Nearest Pad 120:  120

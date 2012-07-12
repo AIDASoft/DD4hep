@@ -13,6 +13,10 @@ if(DD4HEP_USE_XERCESC)
   find_package(XercesC)
 endif()
 
+INCLUDE(CTest)
+ENABLE_TESTING()
+
+
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDCore)
 if(DD4HEP_WITH_GEANT4)
@@ -26,6 +30,7 @@ add_subdirectory(DDExamples/CLICSiDDisplay)
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/ILDExDisplay)
 add_subdirectory(DDExamples/ILDExReco)
+add_subdirectory(DDExamples/ILDExTest)
 if(DD4HEP_WITH_GEANT4)
 #add_subdirectory(DDExamples/CLICSiDSimu)
 #  add_subdirectory(DDExamples/ILDExSimu)

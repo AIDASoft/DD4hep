@@ -5,6 +5,9 @@
 //
 //  Author     : M.Frank, A. Muennich
 //
+//  Interface to answer all user questions to a TPC.
+//  Reproducing the functionality of TPCParameters in GEAR
+//
 //====================================================================
 #ifndef GEARTPC_H
 #define GEARTPC_H
