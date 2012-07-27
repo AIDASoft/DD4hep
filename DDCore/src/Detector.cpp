@@ -141,6 +141,7 @@ Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag
   obj->placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? placement : PlacedVolume();
   obj->placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? placements : Placements();
 
+  // This implicitly assumes that the children do not access the parent's extensions!
   obj->extensions.clear();
   for(DetElement::Extensions::const_iterator i=extensions.begin(); i != extensions.end(); ++i)  {
     const std::type_info* info = (*i).first;
@@ -549,8 +550,7 @@ bool DetElement::referenceToLocal(const Position& global, Position& local)  cons
 }
 
 /// Constructor
-SensitiveDetector::SensitiveDetector(const LCDD& /* lcdd */, const std::string& type, const std::string& name) 
-{
+SensitiveDetector::SensitiveDetector(const std::string& type, const std::string& name)  {
   /*
     <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
       <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
@@ -569,9 +569,14 @@ string SensitiveDetector::type() const  {
 }
 
 /// Assign the IDDescriptor reference
-SensitiveDetector& SensitiveDetector::setIDSpec(const Ref_t& spec)  {
-  _data().id = spec;
+SensitiveDetector& SensitiveDetector::setReadout(Readout ro)  {
+  _data().readout = ro;
   return *this;
+}
+
+/// Assign the IDDescriptor reference
+Readout SensitiveDetector::readout()  const  {
+  return _data().readout;
 }
 
 /// Assign the name of the hits collection
@@ -585,13 +590,4 @@ SensitiveDetector& SensitiveDetector::setCombineHits(bool value)  {
   int v = value ? 1 : 0;
   _data().combine_hits = v;
   return *this;
-}
-
-/// Assign the readout segmentation reference
-SensitiveDetector& SensitiveDetector::setSegmentation(const Segmentation& segmentation)   {
-  if ( segmentation.isValid() )  {
-    _data().segmentation = segmentation;
-    return *this;
-  }
-  throw runtime_error("Readout::setSegmentation: Cannot assign segmentation [Invalid Handle]");
 }

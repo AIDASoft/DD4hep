@@ -386,6 +386,14 @@ void Volume::setLimitSet(const LimitSet& obj)  const
 void Volume::setSensitiveDetector(const SensitiveDetector& obj) const  
 {  data<Object>()->sens_det = obj;                          }
 
+/// Access to the handle to the sensitive detector
+Ref_t Volume::sensitiveDetector() const
+{  return data<Object>()->sens_det;                         }
+
+/// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
+bool Volume::isSensitive() const
+{  return data<Object>()->sens_det.isValid();               }
+
 /// Access to Solid (Shape)
 Solid Volume::solid() const   
 {  return Solid((*this)->GetShape());                       }
@@ -397,10 +405,6 @@ Material Volume::material() const
 /// Access the visualisation attributes
 VisAttr Volume::visAttributes() const
 {  return data<Object>()->vis;                              }
-
-/// Access to the handle to the sensitive detector
-Ref_t Volume::sensitiveDetector() const
-{  return data<Object>()->sens_det;                         }
 
 /// Access to the handle to the region structure
 Region Volume::region() const   

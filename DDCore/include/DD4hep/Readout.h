@@ -12,8 +12,8 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
-#include "DD4hep/IDDescriptor.h"
 #include "DD4hep/Volumes.h"
+#include "DD4hep/IDDescriptor.h"
 #include "DD4hep/Segmentations.h"
 
 /*
@@ -32,26 +32,32 @@ namespace DD4hep {
       * @version 1.0
       */
     struct Readout : public Ref_t {
+      public:
+
       struct Object {
         Segmentation segmentation;
-        Ref_t  id;
+	Volume       readoutWorld;
+        IDDescriptor id;
       };
+      protected:
+      /// Additional data accessor
+      Object& _data()   const {  return *data<Object>();  }
+
+      public:
       /// Default constructor
       Readout() : Ref_t() {}
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Readout(const Handle<Q>& e) : Ref_t(e) {}
       /// Initializing constructor
       Readout(const LCDD& doc, const std::string& name);
-      /// Additional data accessor
-      Object& _data()   const {  return *data<Object>();  }
-      /// Access IDDescription structure
-      Ref_t idSpec() const;
-      /// Access segmentation structure
-      Segmentation segmentation()  const;
       /// Assign IDDescription to readout structure
       void setIDDescriptor(const Ref_t& spec)   const;
+      /// Access IDDescription structure
+      IDDescriptor idSpec() const;
       /// Assign segmentation structure to readout
       void setSegmentation(const Segmentation& segment) const;
+      /// Access segmentation structure
+      Segmentation segmentation()  const;
     };
 
     /** @class Alignment  Readoutn.h DD4hep/lcdd/Readout.h

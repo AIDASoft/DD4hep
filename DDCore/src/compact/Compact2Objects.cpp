@@ -34,8 +34,7 @@ namespace DD4hep { namespace Geometry {
   struct Includes;
   struct GdmlFile;
   struct AlignmentFile;
-  typedef DD4hep::IDDescriptor IDDescriptor;
-  
+
   template <typename T> Handle<> toObject(LCDD& lcdd, const XML::Handle_t& xml);
   
   template <> Ref_t toRefObject<Constant>(lcdd_t& lcdd, const xml_h& e)  {
@@ -125,10 +124,7 @@ namespace DD4hep { namespace Geometry {
   
   template <> Ref_t toRefObject<IDDescriptor>(lcdd_t& /* lcdd */, const xml_h& e)  {
     /*     <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>   */
-    Value<TNamed,IDDescriptor>* id = new Value<TNamed,IDDescriptor>();
-    string dsc = e.text();
-    id->construct(dsc);
-    id->SetTitle(dsc.c_str());
+    IDDescriptor id(e.text());
     return Ref_t(id);
   }
   
@@ -263,7 +259,7 @@ namespace DD4hep { namespace Geometry {
       Ref_t idSpec = toRefObject<IDDescriptor>(lcdd,id);
       idSpec->SetName(ro.name());
       ro.setIDDescriptor(idSpec);
-      lcdd.addIDSpec(idSpec);
+      lcdd.addIDSpecification(idSpec);
     }
     return ro;
   }
@@ -276,7 +272,7 @@ namespace DD4hep { namespace Geometry {
      */
     xml_comp_t child(e);
     string  path = e.attr<string>(_A(name));
-    bool check = e.hasAttr(_A(check));
+    bool check   = e.hasAttr(_A(check));
     bool overlap = e.hasAttr(_A(overlap));
     AlignmentEntry alignment(lcdd,path);
     Position pos;
@@ -316,13 +312,9 @@ namespace DD4hep { namespace Geometry {
     
     if ( e.hasAttr(_A(readout)) )  {
       Readout            ro = lcdd.readout(e.attr<string>(_A(readout)));
-      Segmentation      seg = ro.segmentation();
-      SensitiveDetector  sd = SensitiveDetector(lcdd,typ,nam);
-      if ( seg.isValid() )  {
-        sd.setSegmentation(seg);
-      }
+      SensitiveDetector  sd = SensitiveDetector(typ,nam);
+      sd.setReadout(ro);
       sd.setHitsCollection(ro.name());
-      sd.setIDSpec(ro.idSpec());
       lcdd.addSensitiveDetector(sd);
       return sd;
     }
@@ -384,9 +376,17 @@ namespace DD4hep { namespace Geometry {
     if ( ign_dets &&  strstr(ign_dets,name_match.c_str()) ) return;
     if ( ign_typs &&  strstr(ign_typs,type_match.c_str()) ) return;
     try {
-      SensitiveDetector  sd = toRefObject<SensitiveDetector>(lcdd,element);
-      DetElement det(Handle<TNamed>(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sd)));
-      
+      SensitiveDetector sd;
+      if ( element.hasAttr(_A(sensitive_detector)) ) {
+	string sensitive_type = element.attr<string>(_A(sensitive_detector));
+	sd = lcdd.sensitiveDetector(sensitive_type);
+	// Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(sensitive_type,&lcdd,&element));
+      }
+      if ( !sd.isValid() )   {
+	sd = toRefObject<SensitiveDetector>(lcdd,element);
+      }
+
+      DetElement det(Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sd)));
       if ( det.isValid() )  {
 	setChildTitles(make_pair(name,det));
 	if ( element.hasAttr(_A(readout)) )  {

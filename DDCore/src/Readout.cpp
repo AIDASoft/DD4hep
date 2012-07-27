@@ -18,16 +18,6 @@ Readout::Readout(const LCDD& /* lcdd */, const string& nam)
   assign(new Value<TNamed,Object>(),nam,"readout");
 }
 
-/// Access IDDescription structure
-Ref_t Readout::idSpec() const   {
-  return _data().id;
-}
-
-/// Access segmentation structure
-Segmentation Readout::segmentation() const  {
-  return _data().segmentation;
-}
-
 /// Assign IDDescription to readout structure
 void Readout::setIDDescriptor(const Ref_t& new_descriptor)  const   {
   if ( isValid() )  {                    // Remember: segmentation is NOT owned by readout structure!
@@ -37,6 +27,11 @@ void Readout::setIDDescriptor(const Ref_t& new_descriptor)  const   {
     }
   }
   throw runtime_error("Readout::setSegmentation: Cannot assign ID descriptor [Invalid Handle]");
+}
+
+/// Access IDDescription structure
+IDDescriptor Readout::idSpec() const   {
+  return _data().id;
 }
 
 /// Assign segmentation structure to readout
@@ -53,6 +48,11 @@ void Readout::setSegmentation(const Segmentation& seg)   const  {
     }
   }
   throw runtime_error("Readout::setSegmentation: Cannot assign segmentation [Invalid Handle]");
+}
+
+/// Access segmentation structure
+Segmentation Readout::segmentation() const  {
+  return _data().segmentation;
 }
 
 /// Initializing constructor to create a new object

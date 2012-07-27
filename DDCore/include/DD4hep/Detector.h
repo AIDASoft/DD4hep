@@ -48,9 +48,8 @@ namespace DD4hep {
         double       ecut;
         std::string  eunit;
         std::string  hits_collection;
-        Segmentation segmentation;
-        Ref_t  id;
-        Object() : magic(magic_word()), verbose(0), segmentation() {}
+	Readout      readout;
+        Object() : magic(magic_word()), verbose(0), readout() {}
       };
       
       /// Default constructor
@@ -59,7 +58,7 @@ namespace DD4hep {
       template <typename Q>
       SensitiveDetector(const Handle<Q>& e) : Ref_t(e) {}
       /// Constructor for a new sensitive detector element
-      SensitiveDetector(const LCDD& lcdd, const std::string& type, const std::string& name);
+      SensitiveDetector(const std::string& type, const std::string& name);
       
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
@@ -70,10 +69,9 @@ namespace DD4hep {
       /// Assign the name of the hits collection
       SensitiveDetector& setHitsCollection(const std::string& spec);
       /// Assign the IDDescriptor reference
-      SensitiveDetector& setIDSpec(const Ref_t& spec);
-      /// Assign the readout segmentation reference
-      SensitiveDetector& setSegmentation(const Segmentation& seg);
-      
+      SensitiveDetector& setReadout(Readout readout);
+      /// Access readout structure of the sensitive detector
+      Readout readout() const;
     };
     
     /** @class SubDetector Detector.h DD4hep/lcdd/Detector.h
