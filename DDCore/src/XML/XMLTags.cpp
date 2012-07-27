@@ -145,6 +145,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(rotation);
   ATTR(segmentation);
   ATTR(sensitive);
+  ATTR(sensitive_detector);
   ATTR(startphi);
   ATTR(system);
   ATTR(thickness);

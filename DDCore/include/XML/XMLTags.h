@@ -87,6 +87,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_rotation;
   extern const Tag_t Attr_segmentation;
   extern const Tag_t Attr_sensitive;
+  extern const Tag_t Attr_sensitive_detector;
   extern const Tag_t Attr_system;
   extern const Tag_t Attr_thickness;
   extern const Tag_t Attr_true;
