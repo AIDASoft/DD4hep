@@ -45,6 +45,9 @@ int run_interpreter(int argc, char **argv)   {
   TRint *theApp = new TRint("Rint", &r_argc, r_argv);
   
   Geometry::LCDD& lcdd = compact2geo((int)args.size(),&args[0]);
+  for(size_t j=1; j<args.size(); ++j)
+    compact2geo((int)(args.size()-j),&args[j]);
+
   //TGDMLWrite wr;
   //wr.WriteGDMLfile(gGeoManager,"ILCEx.gdml","");
 
