@@ -1,7 +1,7 @@
 Gear TPC functionality:
 -----> Inner Radius:     350
 -----> Outer Radius:     1800
------> DriftLength:      2497
+-----> DriftLength:      2496.5
 -----> EndplateThickness 0:      1.5
 -----> EndplateZPosition 0:      2498.5
 -----> EndplateThickness 1:      1.5

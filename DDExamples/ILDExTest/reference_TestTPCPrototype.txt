@@ -1,6 +1,6 @@
 Gear TPC functionality:
 -----> Outer Radius:     500
------> DriftLength:      497
+-----> DriftLength:      996.5
 -----> EndplateThickness 0:      1.5
 -----> EndplateZPosition 0:      998.5
 -----> Exception test: OutsideGeometryException: TPC endplate not found!

@@ -44,11 +44,22 @@ namespace DD4hep {
   }
 
   double GearTPC::getMaxDriftLength() const {
-    DetElement gas   = child("TPC_GasVolume");
-    if(!gas.isValid())
-      throw OutsideGeometryException("TPC gas volume not found!");
-    Tube       tube  = gas.volume().solid();
-    return tube->GetDz();
+    //defined as distance between cathode and endplate surface
+    //for now assume symmetric setups, meaining if there are two endplates
+    //they are symmetric around the cathode
+    DetElement cathode   = child("TPC_Cathode");
+    if(!cathode.isValid())
+      throw OutsideGeometryException("TPC cathode not found!");
+    //positions in z
+    TGeoMatrix *nm=cathode.placement()->GetMatrix();
+    const Double_t *trans=nm->GetTranslation();
+    double z_ep=getEndPlateZPosition(0);
+    double z_cath=trans[2];
+    //thickness in z
+    double th_ep=getEndPlateThickness(0);
+    Tube       tube_cathode=cathode.volume().solid();
+    double th_cath=tube_cathode->GetDz();
+    return fabs(z_ep-z_cath)-(th_ep+th_cath);
   }
 
   double GearTPC::getEndPlateThickness(int endplate) const {

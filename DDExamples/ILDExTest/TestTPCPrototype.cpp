@@ -48,9 +48,9 @@ int main(int argc,char** argv)  {
       myfile<<"FAILED tpc.getOuterRadius(): 500!="<<tpc.getOuterRadius()<<endl;
       failures++;
     }
-  if(fabs(tpc.getMaxDriftLength()-497)>myPrecision)
+  if(fabs(tpc.getMaxDriftLength()-996.5)>myPrecision)
     {
-      myfile<<"FAILED tpc.getMaxDriftLength(): 497!="<<tpc.getMaxDriftLength()<<endl;
+      myfile<<"FAILED tpc.getMaxDriftLength(): 996.5!="<<tpc.getMaxDriftLength()<<endl;
       failures++;
     }
   if(fabs(tpc.getEndPlateThickness(0)-1.5)>myPrecision)
