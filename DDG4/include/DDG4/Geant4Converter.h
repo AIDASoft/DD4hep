@@ -48,6 +48,7 @@ typedef G4AnyThing<G4VSolid> G4Tubs;
 typedef G4AnyThing<G4VSolid> G4Trd;
 typedef G4AnyThing<G4VSolid> G4Paraboloid;
 typedef G4AnyThing<G4VSolid> G4Polycone;
+typedef G4AnyThing<G4VSolid> G4Polyhedra;
 typedef G4AnyThing<G4VSolid> G4Sphere;
 typedef G4AnyThing<G4VSolid> G4Torus;
 typedef G4AnyThing<G4VSolid> G4UnionSolid;
@@ -70,6 +71,7 @@ typedef G4AnyThing<G4VAny>   G4PVPlacement;
 #include "G4Trd.hh"
 #include "G4Paraboloid.hh"
 #include "G4Polycone.hh"
+#include "G4Polyhedra.hh"
 #include "G4Sphere.hh"
 #include "G4Torus.hh"
 #include "G4UnionSolid.hh"
@@ -97,7 +99,7 @@ namespace DD4hep {
 	std::map<const TGeoVolume*, G4LogicalVolume*> g4Volumes;
 	std::map<const TGeoNode*,   G4PVPlacement*>   g4Placements;
       };
-      G4GeometryInfo*   m_dataPtr;
+      G4GeometryInfo* m_dataPtr;
       G4GeometryInfo& data() const { return *m_dataPtr; }
 
       /// Constructor
@@ -122,4 +124,3 @@ namespace DD4hep {
 }      // End namespace DD4hep
 
 #endif // DD4HEP_GEANT4CONVERTER_H
-
