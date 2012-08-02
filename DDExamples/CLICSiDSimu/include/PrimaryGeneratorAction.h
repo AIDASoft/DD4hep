@@ -1,12 +1,14 @@
 #ifndef PrimaryGeneratorAction_h
 #define PrimaryGeneratorAction_h 1
 
+/// Geant and framework include files
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "DD4hep/LCDD.h"
 #include "globals.hh"
 
-class G4ParticleGun;
+/// Forward declarations
 class G4Event;
+class G4ParticleGun;
 class DetectorConstruction;
 class PrimaryGeneratorMessenger;
 
@@ -16,13 +18,13 @@ public:
   virtual ~PrimaryGeneratorAction();
 
   void GeneratePrimaries(G4Event*);
-  void SetRndmFlag(G4String val) { rndmFlag = val;}
+  void SetRndmFlag(G4String val) { m_rndmFlag = val;}
 
 private:
-  G4ParticleGun*                particleGun;	  //pointer a to G4  class
-  const DD4hep::Geometry::LCDD&       Detector;    //pointer to the geometry
-  PrimaryGeneratorMessenger* gunMessenger;   //messenger of this class
-  G4String                      rndmFlag;	  //flag for a rndm impact point
+  G4ParticleGun*                  m_gun;	  // Pointer a to G4  class
+  const DD4hep::Geometry::LCDD&   m_detector;     // Pointer to the geometry
+  PrimaryGeneratorMessenger*      m_gunMessenger; // Messenger of this class
+  G4String                        m_rndmFlag;	  // Flag for a rndm impact point
 };
 #endif
 

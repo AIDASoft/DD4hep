@@ -1,7 +1,18 @@
+#define G4UI_USE
+#define G4VIS_USE
+
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIsession.hh"
 #include "Randomize.hh"
+
+#ifdef G4VIS_USE
+#include "G4VisManager.hh"
+#include "G4VisExecutive.hh"
+#endif
+#ifdef G4UI_USE
+#include "G4UIExecutive.hh"
+#endif
 
 #include "PhysicsList.h"
 #include "PrimaryGeneratorAction.h"
@@ -10,7 +21,6 @@
 #include "SteppingAction.h"
 #include "SteppingVerbose.h"
 
-#include "G4UIExecutive.hh"
 
 #include "G4VUserDetectorConstruction.hh"
 namespace DD4hep {
@@ -30,7 +40,7 @@ namespace DD4hep {
 
 #include "DD4hep/LCDD.h"
 #include "TGeoManager.h"
-#include "Geant4Converter.h"
+#include "DDG4/Geant4Converter.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -59,9 +69,11 @@ G4VPhysicalVolume* DD4hep::DetectorConstruction::Construct() {
 #endif
   TGeoNode* top = gGeoManager->GetTopNode();
   Geant4Converter conv;
-  conv.create(m_lcdd.world());
-  G4VPhysicalVolume* world = 0;
-  return world;
+  DetElement world = m_lcdd.world();
+  conv.create(world);
+  Geant4Converter::G4GeometryInfo& info = conv.data();
+  G4VPhysicalVolume* world_vol = info.g4Placements[top];
+  return world_vol;
 }
 
 int main(int argc,char** argv)   {
@@ -101,21 +113,29 @@ int main(int argc,char** argv)   {
   runManager->Initialize();
   
   // Initialize visualization
-  //
-  //G4VisManager* visManager = new G4VisExecutive;
-  //visManager->Initialize();
-    
+#ifdef G4VIS_USE
+  G4VisManager* visManager = new G4VisExecutive;
+  visManager->Initialize();
+#endif
+
   // Get the pointer to the User Interface manager  
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
-  if (argc!=1) {   // batch mode
+  if (argc > 2 ) {   // batch mode
     G4String command = "/control/execute ";
     G4String fileName = argv[2];
     UImanager->ApplyCommand(command+fileName);    
   }
   else {  // interactive mode : define UI session    
-    //G4UIsession* ui = new G4UIQt(argc, argv);
-    //ui->SessionStart();
-    //delete ui;
+#ifdef G4UI_USE
+    G4UIExecutive* ui = new G4UIExecutive(argc-1, &argv[1]);
+    if (ui->IsGUI())
+      UImanager->ApplyCommand("/control/execute gui.mac");
+#ifdef G4VIS_USE
+      UImanager->ApplyCommand("/control/execute vis.mac"); 
+#endif
+    ui->SessionStart();
+    delete ui;
+#endif
   }
   
   // Job termination
@@ -123,7 +143,9 @@ int main(int argc,char** argv)   {
   //                 owned and deleted by the run manager, so they should not
   //                 be deleted in the main() program !
   
-  //delete visManager;
+#ifdef G4VIS_USE
+  delete visManager;
+#endif
   delete runManager;  
   return 0;
 }
