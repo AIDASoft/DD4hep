@@ -84,15 +84,21 @@ namespace DD4hep { namespace Geometry {
     TGeoManager*   mgr      = gGeoManager;
     XML::Tag_t     mname    = m.name();
     const char*    matname  = mname.c_str();
-    xml_h     density  = m.child(XML::Tag_D);
+    xml_h          density  = m.child(XML::Tag_D);
     TGeoElementTable* table = mgr->GetElementTable();
     TGeoMaterial*     mat   = mgr->GetMaterial(matname);
     TGeoMixture*      mix   = dynamic_cast<TGeoMixture*>(mat);
-    xml_coll_t        composites(m,_X(fraction));
+    xml_coll_t        fractions(m,_X(fraction));
+    xml_coll_t        composites(m,_X(composite));
     set<string> elts;
     if ( 0 == mat )  {
+      xml_h          radlen   = m.child(XML::Tag_RL,false);
+      xml_h          intlen   = m.child(XML::Tag_NIL,false);
+      double radlen_val = radlen.ptr() ? radlen.attr<double>(_A(value)) : 0.0;
+      double intlen_val = intlen.ptr() ? intlen.attr<double>(_A(value)) : 0.0;
       mat = mix = new TGeoMixture(matname,composites.size(),density.attr<double>(_A(value)));
-      //mgr->AddMaterial(mat);
+      mat->SetRadLen(radlen_val,intlen_val);
+      //cout << "Compact2Objects[INFO]: Creating material:" << matname << " composites:" << composites.size()+fractions.size() << endl;
     }
     if ( mix )  {
       for(Int_t i=0, n=mix->GetNelements(); i<n; ++i)
@@ -108,7 +114,25 @@ namespace DD4hep { namespace Geometry {
         else if ( 0 != (mat=mgr->GetMaterial(nam.c_str())) )
           mix->AddElement(mat,fraction);
         else  {
-          throw runtime_error("Something going very wrong. Undefined material:"+nam);
+	  string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
+	  cout << msg << endl;
+	  throw runtime_error(msg);
+        }
+      }
+    }
+    for(; fractions; ++fractions)  {
+      std::string nam = fractions.attr<string>(_X(ref));
+      TGeoElement*   element;
+      if ( elts.find(nam) == elts.end() )  {
+        double fraction = fractions.attr<double>(_X(n));
+        if ( 0 != (element=table->FindElement(nam.c_str())) )
+          mix->AddElement(element,fraction);
+        else if ( 0 != (mat=mgr->GetMaterial(nam.c_str())) )
+          mix->AddElement(mat,fraction);
+        else  {
+	  string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
+	  cout << msg << endl;
+	  throw runtime_error(msg);
         }
       }
     }

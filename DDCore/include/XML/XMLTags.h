@@ -39,7 +39,11 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_Vacuum;
   extern const Tag_t Tag_D;
   extern const Tag_t Tag_n;
+  extern const Tag_t Tag_RL;
+  extern const Tag_t Tag_NIL;
   extern const Tag_t Tag_atom;
+  extern const Tag_t Attr_density;
+  extern const Tag_t Tag_composite;
   extern const Tag_t Tag_fraction;
 
   extern const Tag_t Tag_define;

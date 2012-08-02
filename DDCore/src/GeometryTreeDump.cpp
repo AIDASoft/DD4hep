@@ -209,7 +209,7 @@ void* GeometryTreeDump::handleSolid(const string& name, const TGeoShape* shape) 
 void GeometryTreeDump::handleStructure(const VolumeSet& volset)   const  {
   m_output << "\t<structure>" << endl;
   for(VolumeSet::const_iterator i=volset.begin(); i != volset.end(); ++i)
-    handleVolume((*i).first,(*i).second);
+    handleVolume((*i)->GetName(),*i);
   m_output << "\t</structure>" << endl;
 }
 
@@ -250,7 +250,7 @@ void GeometryTreeDump::handleTransformations(const TransformSet& trafos)   const
 void GeometryTreeDump::handleSolids(const SolidSet& solids)   const {
   m_output << "\t<solids>" << endl;
   for(SolidSet::const_iterator i=solids.begin(); i != solids.end(); ++i)
-    handleSolid((*i).first, (*i).second);
+    handleSolid((*i)->GetName(),*i);
   m_output << "\t</solids>" << endl;
 }
 

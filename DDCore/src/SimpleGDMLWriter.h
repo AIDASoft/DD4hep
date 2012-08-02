@@ -51,9 +51,9 @@ namespace DD4hep {
       virtual void* handleSolid(const std::string& name, const TGeoShape* volume) const;
 
       /// Dump all constants in GDML format to output stream
-      virtual void handleDefines(const LCDD::HandleMap& defs) const;
+      virtual void handleDefines(const DefinitionSet& defs) const;
       /// Dump all visualisation specs in LCDD format to output stream
-      void handleVisualisation(const LCDD::HandleMap& vis)   const;
+      void handleVisualisation(const VisRefs& vis)   const;
       /// Dump all solids in GDML format to output stream
       virtual void handleSolids(const SolidSet& solids) const;
       /// Dump Transformations in GDML format to output stream

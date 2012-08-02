@@ -30,7 +30,7 @@ namespace {
       collectSolid(geo, name+"_left",  name+"_left",  boolean->GetLeftShape(),  boolean->GetLeftMatrix());
       collectSolid(geo, name+"_right", name+"_right", boolean->GetRightShape(), boolean->GetRightMatrix());
     }
-    geo.solids.insert(make_pair(name,shape));
+    geo.solids.insert(shape);
     geo.trafos.push_back(make_pair(node,matrix));
   }
 }
@@ -74,9 +74,9 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
       Volume      vol = Handle<>(v);
       VisAttr     vis = vol.visAttributes();
 
-      info.volumes.insert(make_pair(v->GetName(),v));
-      info.materials[m->GetName()] = m;
-      if ( vis.isValid() ) info.vis[v->GetName()] = vis;
+      info.volumes.insert(v);
+      info.materials.insert(m);
+      if ( vis.isValid() ) info.vis.insert(vis.ptr());
       collectSolid(info,v->GetName(),n->GetName(),v->GetShape(),n->GetMatrix());
     }
   }

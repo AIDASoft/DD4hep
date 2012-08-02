@@ -47,16 +47,22 @@ namespace DD4hep   { namespace XML  {
 
   TAG(Air);
   TAG(Vacuum);
-  TAG(D);
-  TAG(fraction);
 
+  TAG(element);
+  TAG(material);
   TAG(atom);
+  TAG(D);
+  TAG(RL);
+  TAG(NIL);
+  ATTR(desnity);
+  TAG(fraction);
+  TAG(composite);
+
   TAG(box);
   TAG(define);
   TAG(constant);
   TAG(detector);
   TAG(dimensions);
-  TAG(element);
   TAG(first);
   TAG(id);
   TAG(idspecref);
@@ -64,7 +70,6 @@ namespace DD4hep   { namespace XML  {
   TAG(limit);
   TAG(limitset);
   TAG(limitsetref);
-  TAG(material);
   TAG(materialref);
   TAG(module);
   TAG(module_component);

@@ -204,7 +204,7 @@ void* SimpleGDMLWriter::handleSolid(const string& name, const TGeoShape* shape) 
 void SimpleGDMLWriter::handleStructure(const VolumeSet& volset)   const  {
   m_output << "\t<structure>" << endl;
   for(VolumeSet::const_iterator i=volset.begin(); i != volset.end(); ++i)
-    handleVolume((*i).first,(*i).second);
+    handleVolume((*i)->GetName(),(*i));
   m_output << "\t</structure>" << endl;
 }
 
@@ -245,7 +245,7 @@ void SimpleGDMLWriter::handleTransformations(const TransformSet& trafos)   const
 void SimpleGDMLWriter::handleSolids(const SolidSet& solids)   const {
   m_output << "\t<solids>" << endl;
   for(SolidSet::const_iterator i=solids.begin(); i != solids.end(); ++i)
-    handleSolid((*i).first, (*i).second);
+    handleSolid((*i)->GetName(), (*i));
   m_output << "\t</solids>" << endl;
 }
 
@@ -258,10 +258,10 @@ void SimpleGDMLWriter::handleDefines(const LCDD::HandleMap& defs)   const {
 }
 
 /// Dump all visualisation specs in LCDD format to output stream
-void SimpleGDMLWriter::handleVisualisation(const LCDD::HandleMap& vis)   const {
+void SimpleGDMLWriter::handleVisualisation(const set<TNamed*>& vis)   const {
   m_output << "\t<display>" << endl;
-  for(LCDD::HandleMap::const_iterator i=vis.begin(); i != vis.end(); ++i) {
-    VisAttr v = (*i).second;
+  for(set<TNamed*>::const_iterator i=vis.begin(); i != vis.end(); ++i) {
+    VisAttr v = Ref_t(*i);
     if ( v.isValid() ) {
       float r=1., g=1., b=1., alpha=1.;
       TColor *color = gROOT->GetColor(v.color());

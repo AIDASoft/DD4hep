@@ -41,6 +41,10 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct SensitiveDetector : public Ref_t  {
+      public:
+      /// Definition of the extension type
+      typedef std::map<const std::type_info*,void*>  Extensions;
+
       struct Object  {
         unsigned int magic;
         int          verbose;
@@ -49,29 +53,57 @@ namespace DD4hep {
         std::string  eunit;
         std::string  hits_collection;
 	Readout      readout;
-        Object() : magic(magic_word()), verbose(0), readout() {}
+	Extensions   extensions;
+        Object() : magic(magic_word()), verbose(0), readout(), extensions() {}
       };
-      
+      protected:
+
+      /// Templated destructor function
+      template <typename T> static void  _delete(void* ptr) { delete (T*)(ptr);  }
+
+      /// Add an extension object to the detector element
+      void* i_addExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
+
+      /// Access an existing extension object from the detector element
+      void* i_extension(const std::type_info& info)  const;
+
+      public:      
+
       /// Default constructor
       SensitiveDetector() : Ref_t() {}
+
       /// Templated constructor for handle conversions
       template <typename Q>
       SensitiveDetector(const Handle<Q>& e) : Ref_t(e) {}
+
       /// Constructor for a new sensitive detector element
       SensitiveDetector(const std::string& type, const std::string& name);
       
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
+
       /// Access the type of the sensitive detector
       std::string type() const;
+
       /// Set flag to handle hits collection
       SensitiveDetector& setCombineHits(bool value);
+
       /// Assign the name of the hits collection
       SensitiveDetector& setHitsCollection(const std::string& spec);
+
       /// Assign the IDDescriptor reference
       SensitiveDetector& setReadout(Readout readout);
+
       /// Access readout structure of the sensitive detector
       Readout readout() const;
+
+      /// Extend the sensitive detector element with an arbitrary structure accessible by the type
+      template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
+      {  return (IFACE*)i_addExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);  }      
+
+      /// Access extension element by the type
+      template <class T> T* extension()  const
+      {  return (T*)i_extension(typeid(T));      }
     };
     
     /** @class SubDetector Detector.h DD4hep/lcdd/Detector.h
@@ -115,10 +147,15 @@ namespace DD4hep {
 	Parent            reference;
         Children          children;
 	Extensions        extensions;
+	/// Intermediate buffer to store the transformation to the world coordination system
 	TGeoMatrix*       worldTrafo;
+	/// Intermediate buffer to store the transformation to the parent detector element
 	TGeoMatrix*       parentTrafo;
+	/// Intermediate buffer for the transformation to an arbitrary DetElement
 	TGeoMatrix*       referenceTrafo;
+	/// The path to the placement of the detector element (if placed)
 	std::string       placementPath;
+
 	/// Default constructor
         Object();
 	/// Deep object copy to replicate DetElement trees e.g. for reflection
@@ -138,23 +175,24 @@ namespace DD4hep {
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
       
+      /// Internal assert function to check conditions
       void check(bool condition, const std::string& msg) const;
 
-      /// Templated default constructor
-      template <typename T> static void* _construct()
-      { return new T();                                       }
+      protected:
+
+      /// Templated destructor function
+      template <typename T> static void  _delete(void* ptr) { delete (T*)(ptr); }
       /// Templated copy constructor
       template <typename T> static void* _copy(const void* ptr, DetElement elt) 
       { return new T(*(dynamic_cast<const T*>((T*)ptr)),elt); }
-      /// Templated destructor function
-      template <typename T> static void  _delete(void* ptr)
-      { delete (T*)(ptr);                                     }
 
       /// Add an extension object to the detector element
       void* i_addExtension(void* ptr, const std::type_info& info, void* (*copy)(const void*, DetElement), void (*destruct)(void*));
       /// Access an existing extension object from the detector element
       void* i_extension(const std::type_info& info)  const;
-      
+
+      public:
+
       /// Default constructor
       DetElement() : Ref_t()  {}
 
@@ -183,9 +221,11 @@ namespace DD4hep {
       /// Clone (Deep copy) the DetElement structure with a new name and new identifier
       DetElement clone(const std::string& new_name, int new_id) const;
       
+      /// Extend the detector element with an arbitrary structure accessible by the type
       template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
       {  return (IFACE*)i_addExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_copy<CONCRETE>,_delete<IFACE>);  }
 
+      /// Access extension element by the type
       template <class T> T* extension()  const
       {  return (T*)i_extension(typeid(T));      }
 

@@ -38,12 +38,13 @@ namespace DD4hep {
      */
     class GeoHandler {
     public:
-      typedef std::map<std::string, TGeoVolume*>                 VolumeSet;
+      typedef std::set<TGeoVolume*>                              VolumeSet;
       typedef std::vector<std::pair<std::string, TGeoMatrix*> >  TransformSet;
-      typedef std::map<std::string, TGeoShape*>                  SolidSet;
-      typedef std::map<std::string, TGeoMedium*>                 MaterialSet;
+      typedef std::set<TGeoShape*>                               SolidSet;
+      typedef std::set<TGeoMedium*>                              MaterialSet;
       typedef std::map<int, std::set<const TGeoNode*> >          Data;
-      typedef LCDD::HandleMap                                    VisRefs;
+      typedef std::set<TNamed*>                                  VisRefs;
+      typedef LCDD::HandleMap                                    DefinitionSet;
 
       struct GeometryInfo   {
 	SolidSet           solids;
@@ -82,11 +83,11 @@ namespace DD4hep {
 #endif
       template <typename O, typename C, typename F> static void handle(const O* o, const C& c, F pmf)    {
 	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)
-	  (o->*pmf)((*i).first, (*i).second);
+	  (o->*pmf)((*i)->GetName(),*i);
       }
       template <typename O, typename C, typename F> static void handle(O* o, const C& c, F pmf)     {
 	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)
-	  (o->*pmf)((*i).first, (*i).second);
+	  (o->*pmf)((*i)->GetName(),*i);
       }
     };
 

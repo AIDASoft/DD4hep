@@ -19,14 +19,17 @@ using namespace DD4hep::Geometry;
 
 namespace {
   struct ExtensionEntry {
-    void* (*construct)();
     void* (*copy)(const void*,DetElement);
     void  (*destruct)(void*);
     int     id;
   };
   typedef map<const std::type_info*, ExtensionEntry> ExtensionMap;
   static int s_extensionID = 0;
-  ExtensionMap& s_extensions() {
+  ExtensionMap& detelement_extensions() {
+    static ExtensionMap s_map;
+    return s_map;
+  }
+  ExtensionMap& sensitive_detector_extensions() {
     static ExtensionMap s_map;
     return s_map;
   }
@@ -129,7 +132,7 @@ DetElement::Object::Object()
 /// Deep object copy to replicate DetElement trees e.g. for reflection
 Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag)  const  {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
-  const ExtensionMap& m = s_extensions();
+  const ExtensionMap& m = detelement_extensions();
   Ref_t det(obj);
   obj->id           = new_id;
   obj->combine_hits = combine_hits;
@@ -251,11 +254,10 @@ void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*
   Object& o = _data();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
-    ExtensionMap& m = s_extensions();
+    ExtensionMap& m = detelement_extensions();
     ExtensionMap::iterator i = m.find(&info);
     if ( i == m.end() ) {
       ExtensionEntry entry;
-      entry.construct = 0;//construct;
       entry.destruct = destruct;
       entry.copy = copy;
       entry.id = ++s_extensionID;
@@ -591,3 +593,38 @@ SensitiveDetector& SensitiveDetector::setCombineHits(bool value)  {
   _data().combine_hits = v;
   return *this;
 }
+
+/// Add an extension object to the detector element
+void* SensitiveDetector::i_addExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
+  Object& o = _data();
+  Extensions::iterator j = o.extensions.find(&info);
+  if ( j == o.extensions.end() )   {
+    ExtensionMap& m = sensitive_detector_extensions();
+    ExtensionMap::iterator i = m.find(&info);
+    if ( i == m.end() ) {
+      ExtensionEntry entry;
+      entry.destruct = destruct;
+      entry.copy = 0;
+      entry.id = ++s_extensionID;
+      m.insert(make_pair(&info,entry));
+      i = m.find(&info);
+    }
+    ExtensionEntry& e = (*i).second;
+    cout << "Extension["<<name()<<"]:" << ptr << " " << typeid(*(TNamed*)ptr).name() << endl;
+    return o.extensions[&info] = ptr;
+  }
+  throw runtime_error("addExtension: The object "+string(name())+
+		      " already has an extension of type:"+string(info.name())+".");
+}
+
+/// Access an existing extension object from the detector element
+void* SensitiveDetector::i_extension(const std::type_info& info)   const {
+  Object& o = _data();
+  Extensions::const_iterator j = o.extensions.find(&info);
+  if ( j != o.extensions.end() )   {
+    return (*j).second;
+  }
+  throw runtime_error("extension: The object "+string(name())+
+		      " has no extension of type:"+string(info.name())+".");
+}
+ 
