@@ -1,5 +1,9 @@
 #define G4UI_USE
 #define G4VIS_USE
+#define G4INTY_USE_XT 
+#define G4VIS_USE_OPENGL 
+#define G4UI_USE_TCSH 
+#define G4VIS_USE_OPENGLX
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
@@ -29,9 +33,8 @@ namespace DD4hep {
   class DetectorConstruction : public G4VUserDetectorConstruction  {
   public:
     
-    DetectorConstruction(Geometry::LCDD& lcdd, const std::string&);
-    virtual ~DetectorConstruction() {
-    }
+    DetectorConstruction(Geometry::LCDD& lcdd);
+    virtual ~DetectorConstruction() {    }
     G4VPhysicalVolume* Construct();
   private:
     Geometry::LCDD& m_lcdd;
@@ -46,29 +49,15 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-DD4hep::DetectorConstruction::DetectorConstruction(Geometry::LCDD& lcdd, const string& xmlfile) 
-  : m_lcdd(lcdd)
+DD4hep::DetectorConstruction::DetectorConstruction(Geometry::LCDD& lcdd) 
+ : m_lcdd(lcdd)
 {
-  // We need to construct the geometry at this level already
-  m_lcdd.fromCompact(xmlfile);
 }
 
 G4VPhysicalVolume* DD4hep::DetectorConstruction::Construct() {
-#if 0
-  // Import geometry from Root to VGM
-  RootGM::Factory rtFactory;
-  rtFactory.SetDebug(0);
-  rtFactory.Import(gGeoManager->GetTopNode());
-  
-  // Export VGM geometry to Geant4
-  //
-  Geant4GM::Factory g4Factory;
-  g4Factory.SetDebug(0);
-  rtFactory.Export(&g4Factory);
-  G4VPhysicalVolume* world = g4Factory.World();
-#endif
+  typedef Simulation::Geant4Converter Geant4Converter;
   TGeoNode* top = gGeoManager->GetTopNode();
-  Geant4Converter conv;
+  Geant4Converter conv(m_lcdd);
   DetElement world = m_lcdd.world();
   conv.create(world);
   Geant4Converter::G4GeometryInfo& info = conv.data();
@@ -81,6 +70,11 @@ int main(int argc,char** argv)   {
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   Geometry::LCDD& lcdd = LCDD::getInstance();
   
+  for(int i=1; i<argc-1;++i) {
+    // We need to construct the geometry at this level already
+    lcdd.fromCompact(argv[i]);
+  }
+
   // User Verbose output class
   G4VSteppingVerbose::SetInstance(new SteppingVerbose);
   
@@ -88,7 +82,8 @@ int main(int argc,char** argv)   {
   G4RunManager* runManager = new G4RunManager;
 
   // Get the detector constructed
-  DD4hep::DetectorConstruction* detector = new DD4hep::DetectorConstruction(lcdd,argv[1]);
+  DD4hep::DetectorConstruction* detector = new DD4hep::DetectorConstruction(lcdd);
+
   runManager->SetUserInitialization(detector);
   
   //
@@ -122,16 +117,19 @@ int main(int argc,char** argv)   {
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
   if (argc > 2 ) {   // batch mode
     G4String command = "/control/execute ";
-    G4String fileName = argv[2];
+    G4String fileName = argv[argc-1];
     UImanager->ApplyCommand(command+fileName);    
   }
   else {  // interactive mode : define UI session    
 #ifdef G4UI_USE
     G4UIExecutive* ui = new G4UIExecutive(argc-1, &argv[1]);
-    if (ui->IsGUI())
+    if (ui->IsGUI()) {
       UImanager->ApplyCommand("/control/execute gui.mac");
+      cout << "++++++++++++++++++++++++++++ executed gui.mac" << endl;
+    }
 #ifdef G4VIS_USE
       UImanager->ApplyCommand("/control/execute vis.mac"); 
+      cout << "++++++++++++++++++++++++++++ executed vis.mac" << endl;
 #endif
     ui->SessionStart();
     delete ui;
