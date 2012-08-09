@@ -245,37 +245,56 @@ int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, 
   throw std::runtime_error("Callot align non existing physical node.");
 }
 
-/// Constructor to be used when creating a limit object
-Limit::Limit(LCDD& /* lcdd */, const string& name)   {
-  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
-  assign(obj,name,"*");
-  obj->first  = "mm";
-  obj->second = 1.0;
+
+/// Assignment operator
+Limit& Limit::operator=(const Limit& c) 	{ 
+  particles = c.particles;
+  name      = c.name;
+  unit      = c.unit;
+  value     = c.value; 
+  content   = c.content;
+  return *this;
 }
 
-void Limit::setParticles(const string& particleNames)   {
-  m_element->SetTitle(particleNames.c_str());
+/// Equality operator
+bool Limit::operator==(const Limit& c) const {
+  return value==c.value && name==c.name && particles == c.particles;
 }
 
-void Limit::setValue(double value)   {
-  _data().second = value;
+/// operator less
+bool Limit::operator< (const Limit& c) const {
+  if ( value    < c.value      ) return true;
+  if ( name     < c.name       ) return true;
+  if ( particles < c.particles ) return true;
+  return false;
 }
 
-void Limit::setUnit(const string& value)   {
-  _data().first = value;
+/// Conversion to a string representation
+std::string Limit::toString()  const {
+  string res = name + " = " + content;
+  if ( !unit.empty() ) res += unit + " ";
+  res + " (" + particles + ")";
+  return res;
 }
 
 /// Constructor to be used when creating a new DOM tree
-LimitSet::LimitSet(LCDD& /* lcdd */, const string& name)   {
-  assign(new Value<TNamed,TMap>(),name,"limitset");
+LimitSet::LimitSet(const string& name)   {
+  assign(new Value<TNamed,Object>(),name,"limitset");
 }
 
-void LimitSet::addLimit(const Ref_t& limit)   {
-  data<TMap>()->Add(limit.ptr(),limit.ptr());
+/// Add new limit. Returns true if the new limit was added, false if it already existed.
+bool LimitSet::addLimit(const Limit& limit)   {
+  pair<Object::iterator,bool> ret = data<Object>()->insert(limit);
+  return ret.second;
+}
+
+/// Accessor to limits container
+const LimitSet::Object& LimitSet::limits() const {
+  return *(data<Object>());
 }
 
 /// Constructor to be used when creating a new DOM tree
-Region::Region(LCDD& /* lcdd */, const string& name)   {
+Region::Region(const string& name)   {
   Value<TNamed,Object>* p = new Value<TNamed,Object>();
   assign(p, name, "region");
   p->magic = magic_word();
@@ -310,6 +329,27 @@ Region& Region::setEnergyUnit(const string& unit)  {
   _data().eunit = unit;
   return *this;
 }
+
+/// Access references to user limits
+vector<string>& Region::limits() const {
+  return _data().user_limits;
+}
+
+/// Access cut value
+double Region::cut() const {
+  return _data().cut;
+}
+
+/// Access production threshold
+double Region::threshold() const {
+  return _data().threshold;
+}
+
+/// Access secondaries flag
+bool Region::storeSecondaries() const {
+  return _data().store_secondaries;
+}
+
 #undef setAttr
 
 #if 0

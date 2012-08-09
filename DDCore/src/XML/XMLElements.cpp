@@ -323,6 +323,10 @@ const XMLCh* Handle_t::attr_value(const XMLCh* attr)  const   {
   return attr_ptr(attr)->getValue();
 }
 
+const XMLCh* Handle_t::attr_value(const Attribute attr)  const   {
+  return attr->getValue();
+}
+
 const XMLCh* Handle_t::attr_value_nothrow(const XMLCh* attr)  const   {
   Attribute a = attr_nothrow(attr);
   //Attribute a = attr_ptr(attr);

@@ -13,6 +13,21 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+Segmentation::Object::Object() : magic(magic_word()), type(REGULAR), useForHitPosition(0) {
+  ::memset(data.values,0,sizeof(data.values));
+}
+
+Segmentation::Object::~Object() {
+  if ( type == EXTENDED && data.extension.ptr != 0 ) {
+    if ( data.extension.destructor ) {
+      (*data.extension.destructor)(data.extension.ptr);
+      data.extension.destructor = 0;
+      data.extension.info = 0;
+      data.extension.ptr = 0;
+    }
+  }
+}
+
 Segmentation::Segmentation(const string& type)  {
   assign(new Value<TNamed,Segmentation::Object>(),"segmentation",type);
 }
@@ -25,6 +40,33 @@ const string Segmentation::type() const   {
   return m_element->GetTitle();
 }
 
+/// Add an extension object to the detector element
+void* Segmentation::i_setExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
+  Object& o = _data();
+  o.type = EXTENDED;
+  o.data.extension.ptr = ptr;
+  o.data.extension.info = &info;
+  o.data.extension.destructor = destruct;
+  return ptr;
+}
+
+/// Access an existing extension object from the detector element
+void* Segmentation::i_extension(const std::type_info& info)   const {
+  if ( isValid() ) {
+    Object::Data::Extension& o = _data().data.extension;
+    if ( o.ptr )   {
+      if ( &info == o.info ) {
+	return o.ptr;
+      }
+      throw runtime_error("extension: The segmentation object "+string(type())+
+			  " has the wrong type!");
+    }
+    throw runtime_error("extension: The segmentation object "+string(type())+
+			" has no extension defined.");
+  }
+  throw runtime_error("extension: The segmentation object is not valid!");
+}
+ 
 ProjectiveCylinder::ProjectiveCylinder() 
 : Segmentation("projective_cylinder")   {}
 

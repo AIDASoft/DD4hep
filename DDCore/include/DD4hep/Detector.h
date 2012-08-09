@@ -48,13 +48,12 @@ namespace DD4hep {
       struct Object  {
         unsigned int magic;
         int          verbose;
-        int          combine_hits;
+        int          combineHits;
         double       ecut;
-        std::string  eunit;
-        std::string  hits_collection;
+        std::string  hitsCollection;
 	Readout      readout;
 	Extensions   extensions;
-        Object() : magic(magic_word()), verbose(0), readout(), extensions() {}
+        Object() : magic(magic_word()), verbose(0), combineHits(0), ecut(0.0), hitsCollection(), readout(), extensions() {}
       };
       protected:
 
@@ -72,12 +71,15 @@ namespace DD4hep {
       /// Default constructor
       SensitiveDetector() : Ref_t() {}
 
+      /// Copy from handle
+      SensitiveDetector(const SensitiveDetector& sd) : Ref_t(sd) {}
+      
       /// Templated constructor for handle conversions
       template <typename Q>
       SensitiveDetector(const Handle<Q>& e) : Ref_t(e) {}
 
       /// Constructor for a new sensitive detector element
-      SensitiveDetector(const std::string& type, const std::string& name);
+      SensitiveDetector(const std::string& name, const std::string& type);
       
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
@@ -85,17 +87,38 @@ namespace DD4hep {
       /// Access the type of the sensitive detector
       std::string type() const;
 
+      ///  Set detector type (structure, tracker, calorimeter, etc.). 
+      SensitiveDetector& setType(const std::string& typ);
+
+      /// Set flag to handle hits collection
+      SensitiveDetector& setVerbose(bool value);
+
+      /// Access flag to combine hist
+      bool verbose() const;
+
       /// Set flag to handle hits collection
       SensitiveDetector& setCombineHits(bool value);
 
+      /// Access flag to combine hist
+      bool combineHits() const;
+
       /// Assign the name of the hits collection
       SensitiveDetector& setHitsCollection(const std::string& spec);
+
+      /// Access the hits collection name
+      const std::string& hitsCollection() const;
 
       /// Assign the IDDescriptor reference
       SensitiveDetector& setReadout(Readout readout);
 
       /// Access readout structure of the sensitive detector
       Readout readout() const;
+
+      /// Set energy cut off
+      SensitiveDetector& setEnergyCutoff(double value);
+
+      /// Access energy cut off
+      double energyCutoff()  const;
 
       /// Extend the sensitive detector element with an arbitrary structure accessible by the type
       template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
@@ -108,13 +131,9 @@ namespace DD4hep {
     
     /** @class SubDetector Detector.h DD4hep/lcdd/Detector.h
      *
-     *  Please note: 
-     *  Though nowhere enforced, it is obvious that only placements
-     *  of the **SAME** logical volume should be added.
-     *
-     *  We explicitly rely here on the common sense of the user
-     *  of this class. People without a brain can always screw 
-     *  things completely - nothing one can do about!
+     *  The basic object type to access all information of a given
+     *  Subdetector including it's hierarchical structure with
+     *  other dependending DetElement daughters.
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -122,7 +141,6 @@ namespace DD4hep {
     struct DetElement : public Ref_t   {
       typedef Ref_t                                  Parent;
       typedef std::map<std::string,DetElement>       Children;
-      typedef std::vector<PlacedVolume>              Placements;
       typedef std::map<const std::type_info*,void*>  Extensions;
 
       enum {
@@ -135,14 +153,14 @@ namespace DD4hep {
       struct Object  {
         unsigned int      magic;
         int               id;
+	/// Full path to this detector element. May be invalid
 	std::string       path;
-        int               combine_hits;
+        int               combineHits;
         Volume            volume;
         Readout           readout;
         Alignment         alignment;
         Conditions        conditions;
 	PlacedVolume      placement;
-        Placements        placements;
 	Parent            parent;
 	Parent            reference;
         Children          children;
@@ -229,15 +247,24 @@ namespace DD4hep {
       template <class T> T* extension()  const
       {  return (T*)i_extension(typeid(T));      }
 
-      DetElement&     setCombineHits(bool value, SensitiveDetector& sens);
+      /// Set the detector identifier
       int             id() const;
+      /// Setter: Combine hits attribite
+      DetElement&     setCombineHits(bool value, SensitiveDetector& sens);
+      /// Getter: Combine hits attribite
+      bool            combineHits() const;
+
+      /// Access detector type (structure, tracker, calorimeter, etc.). 
+      /** Required for determination of G4 sensitive detector.
+       */
       std::string     type() const;
+      ///  Set detector type (structure, tracker, calorimeter, etc.). 
+      DetElement& setType(const std::string& typ);
+
+      /// Path of the detector element (not necessarily identical to placement path!)
       std::string     path() const;
       /// Access to the full path to the placed object
       std::string     placementPath() const;
-      bool            isTracker() const;
-      bool            isCalorimeter() const;
-      bool            combineHits() const;
       
       /// Set all attributes in one go
       DetElement& setAttributes(const LCDD& lcdd, const Volume& volume,
@@ -257,10 +284,8 @@ namespace DD4hep {
       /// Assign readout definition
       DetElement&     setReadout(const Readout& readout);
 
-      /// Access to the logical volume of the placements (all daughters have the same!)
+      /// Access to the logical volume of the daughter placement
       Volume          volume() const;
-      /// Set the logical volume of the placements (all daughters have the same!)
-      //void            setVolume(Volume vol);
 
       /// Access to the physical volume of this detector element
       PlacedVolume    placement() const;

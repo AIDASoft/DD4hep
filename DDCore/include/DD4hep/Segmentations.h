@@ -7,11 +7,14 @@
 //
 //====================================================================
 
-#ifndef DD4hep_GEOMETRY_SEGMENTATIONS_H
-#define DD4hep_GEOMETRY_SEGMENTATIONS_H
+#ifndef DD4HEP_GEOMETRY_SEGMENTATIONS_H
+#define DD4HEP_GEOMETRY_SEGMENTATIONS_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
+
+// C/C++ include files
+#include <cmath>
 
 /*
  *   DD4hep namespace declaration
@@ -29,38 +32,64 @@ namespace DD4hep {
      * @version 1.0
      */
     struct Segmentation : public Ref_t   {
+      public:
+      enum { REGULAR=0, EXTENDED=1 };
+
       struct Object  {
+	/// Magic word to check object integrity
 	unsigned long magic;
+	/// Segmentation type (REGULAR or EXTENDED)
+	unsigned char type;
+	/// Flag to use segmentation for hit positioning
         unsigned char useForHitPosition;
-        union {
-          double values[10];
-          struct {
+	/// Spares to start 16 byte Byte aligned
+	unsigned char _spare[6];
+
+        union Data {
+	  /// Maximal size and data buffer for specialized user segentations
+          double values[32];
+	  /// Extension buffer for specialized user segentations, where above values are insufficient
+	  struct Extension {
+	    const std::type_info* info;
+	    void (*destructor)(void*);
+	    void* ptr;
+	  } extension;
+	  /// No the regular structures for default segmentations
+          struct Cartesian {
             int nx;
             int ny;
             int nz;
           } cartesian;
-          struct {
+          struct CartesianGrid {
             double grid_size_x;
             double grid_size_y;
             double grid_size_z;
           } cartesian_grid;
-          struct {
+          struct CylindricalBinning  {
             int nphi;
             int ntheta;
             int nz;
           } cylindrical_binning;
-          struct {
+          struct CylindricalGrid   {
             double grid_size_phi;
             double grid_size_theta;
             double grid_size_z;
-          } cylindrical_grid;        
+          } cylindrical_grid;
+	    
         } data;
-        Object() : useForHitPosition(0) {
-          data.cartesian_grid.grid_size_x = 0;
-          data.cartesian_grid.grid_size_y = 0;
-          data.cartesian_grid.grid_size_z = 0;
-        }
+	Object();
+	~Object();
       };
+
+      protected:
+      /// Templated destructor function
+      template <typename T> static void  _delete(void* ptr) { delete (T*)(ptr); }
+      /// Add an extension object to the detector element
+      void* i_setExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
+      /// Access an existing extension object from the detector element
+      void* i_extension(const std::type_info& info)  const;
+
+      public:
       /// Default constructor
       Segmentation() : Handle<Implementation>() {}
       /// Constructor to be used when reading the already parsed object
@@ -69,11 +98,23 @@ namespace DD4hep {
       /// Constructor to create a new segmentation object (to be called by super class only)
       Segmentation(const std::string& type);
       /// Accessor to ata structure
-      Object& _data() const {  return *data<Object>(); }
+      Object& _data() const                            {  return *data<Object>();               }
       /// Access flag for hit positioning
       bool useForHitPosition() const;
       /// Segmentation type
       const std::string type() const;
+      /// Extend the segmentation object with an arbitrary structure accessible by the type
+      template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)    
+      {  return (IFACE*)i_addExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
+      /// Access extension element by the type
+      template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
+      /// Access extension element by the type
+      template <class T> T* extensionUnchecked() const {  return (T*)_data().data.extension.ptr;}
+
+      /// Compute the coordinate in one dimension given a eauidistant bin value.
+      static double binCenter(int bin, double width)   {  return (double(bin) + .5) * width;    }
+      /// Compute the equidistant bin given a coordinate in one dimension.
+      static int bin(double value, double width)       {  return int(floor(value/width));       }
     };
 
     /** @class ProjectiveCylinder Segmentations.h DD4hep/lcdd/Segmentations.h
@@ -200,6 +241,7 @@ namespace DD4hep {
       GlobalGridXY() : GridXY("global_grid_xy") {}
     };
 
-  }       /* End namespace Geometry               */
+
+  }       /* End namespace Geometry              */
 }         /* End namespace DD4hep                */
-#endif    /* DD4hep_GEOMETRY_SEGMENTATIONS_H     */
+#endif    /* DD4HEP_GEOMETRY_SEGMENTATIONS_H     */

@@ -123,8 +123,8 @@ static DetElement _par(DetElement o, DetElement top, vector<TGeoNode*>& det_node
 
 /// Default constructor
 DetElement::Object::Object()  
-  : magic(magic_word()), id(0), combine_hits(0), readout(), 
-    alignment(), placement(), placements(), parent(), children(),
+  : magic(magic_word()), id(0), combineHits(0), readout(), 
+    alignment(), placement(), parent(), children(),
     worldTrafo(0), parentTrafo(0), referenceTrafo(0)
 {
 }
@@ -135,14 +135,13 @@ Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag
   const ExtensionMap& m = detelement_extensions();
   Ref_t det(obj);
   obj->id           = new_id;
-  obj->combine_hits = combine_hits;
+  obj->combineHits  = combineHits;
   obj->readout      = readout;
   obj->volume       = volume;
   obj->alignment    = Alignment();
   obj->conditions   = Conditions();
   obj->parent       = DetElement();
   obj->placement    = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? placement : PlacedVolume();
-  obj->placements   = ((flag&COPY_PLACEMENT) == COPY_PLACEMENT) ? placements : Placements();
 
   // This implicitly assumes that the children do not access the parent's extensions!
   obj->extensions.clear();
@@ -244,7 +243,7 @@ DetElement::DetElement(const string& name, int id)   {
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(DetElement parent, const string& name, int id)   {
-  assign(new Value<TNamed,Object>(),name,"");
+  assign(new Value<TNamed,Object>(),name,parent.type());
   _data().id = id;
   parent.add(*this);
 }
@@ -308,6 +307,15 @@ string DetElement::type() const   {
   return m_element ? m_element->GetTitle() : "";
 }
 
+/// Set the type of the sensitive detector
+DetElement& DetElement::setType(const std::string& typ)   {
+  if ( isValid() )  {
+    m_element->SetTitle(typ.c_str());
+    return *this;
+  }
+  throw runtime_error("DetElement::setType: Self is not defined [Invalid Handle]");
+}
+
 string DetElement::path() const   {
   if ( m_element )  {
     Object& o = _data();
@@ -325,7 +333,13 @@ int DetElement::id() const   {
 }
 
 bool DetElement::combineHits() const   {
-  return _data().combine_hits != 0;
+  return _data().combineHits != 0;
+}
+
+DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens)   {
+  _data().combineHits = value;
+  if ( sens.isValid() ) sens.setCombineHits(value);
+  return *this;
 }
 
 Readout DetElement::readout() const   {
@@ -423,15 +437,7 @@ Volume DetElement::volume() const   {
   }
   throw runtime_error("DetElement::volume: Self is not defined [Invalid Handle]");
 }
-#if 0
-/// Set the logical volume of the placements (all daughters have the same!)
-void DetElement::setVolume(Volume vol) {
-  if ( isValid() )  {
-    _data().volume = vol;
-  }
-  throw runtime_error("DetElement::setVolume: Self is not defined [Invalid Handle]");
-}
-#endif
+
 DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& name, const Volume& volume)  {
   if ( isValid() )  {
     volume.setVisAttributes(lcdd,name);
@@ -466,34 +472,6 @@ DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume,
                                         const std::string& vis)
 {
   return setRegion(lcdd,region,volume).setLimitSet(lcdd,limits,volume).setVisAttributes(lcdd,vis,volume);
-}
-
-DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens)   {
-  if ( isTracker() )  {
-    _data().combine_hits = value;
-    sens.setCombineHits(value);
-  }
-  return *this;
-}
-
-bool DetElement::isTracker() const   {
-  if ( isValid() )  {
-    string typ = type();
-    if ( typ.find("Tracker") != string::npos && _data().readout.isValid() )   {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool DetElement::isCalorimeter() const   {
-  if ( isValid() )  {
-    string typ = type();
-    if ( typ.find("Calorimeter") != string::npos && _data().readout.isValid() ) {
-      return true;
-    }
-  }
-  return false;
 }
 
 /// Set detector element for reference transformations. Will delete existing reference trafo.
@@ -552,7 +530,7 @@ bool DetElement::referenceToLocal(const Position& global, Position& local)  cons
 }
 
 /// Constructor
-SensitiveDetector::SensitiveDetector(const std::string& type, const std::string& name)  {
+SensitiveDetector::SensitiveDetector(const std::string& name, const std::string& type)  {
   /*
     <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
       <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
@@ -561,8 +539,16 @@ SensitiveDetector::SensitiveDetector(const std::string& type, const std::string&
   */
   assign(new Value<TNamed,Object>(),name,type);
   _data().ecut = 0e0;
-  _data().eunit = "MeV";
   _data().verbose = 0;
+}
+
+/// Set the type of the sensitive detector
+SensitiveDetector& SensitiveDetector::setType(const std::string& typ)   {
+  if ( isValid() )  {
+    m_element->SetTitle(typ.c_str());
+    return *this;
+  }
+  throw runtime_error("SensitiveDetector::setType: Self is not defined [Invalid Handle]");
 }
 
 /// Access the type of the sensitive detector
@@ -581,17 +567,50 @@ Readout SensitiveDetector::readout()  const  {
   return _data().readout;
 }
 
+/// Set energy cut off
+SensitiveDetector& SensitiveDetector::setEnergyCutoff(double value)   {
+  _data().ecut = value;
+  return *this;
+}
+
+/// Access energy cut off
+double SensitiveDetector::energyCutoff()  const {
+  return _data().ecut;
+}
+
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setHitsCollection(const string& collection)  {
-  _data().hits_collection = collection;
+  _data().hitsCollection = collection;
   return *this;
+}
+
+/// Access the hits collection name
+const string& SensitiveDetector::hitsCollection() const {
+  return _data().hitsCollection;
+}
+
+/// Assign the name of the hits collection
+SensitiveDetector& SensitiveDetector::setVerbose(bool value)  {
+  int v = value ? 1 : 0;
+  _data().verbose = v;
+  return *this;
+}
+
+/// Access flag to combine hist
+bool SensitiveDetector::verbose() const {
+  return _data().verbose == 1;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setCombineHits(bool value)  {
   int v = value ? 1 : 0;
-  _data().combine_hits = v;
+  _data().combineHits = v;
   return *this;
+}
+
+/// Access flag to combine hist
+bool SensitiveDetector::combineHits() const {
+  return _data().combineHits == 1;
 }
 
 /// Add an extension object to the detector element

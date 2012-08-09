@@ -73,10 +73,17 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
       TGeoMedium* m = v->GetMedium();
       Volume      vol = Handle<>(v);
       VisAttr     vis = vol.visAttributes();
+      //Region      reg = vol.region();
+      //LimitSet    lim = vol.limitSet();
+      //SensitiveDetector det = vol.sensitiveDetector();
 
       info.volumes.insert(v);
       info.materials.insert(m);
       if ( vis.isValid() ) info.vis.insert(vis.ptr());
+      //if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
+      //if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
+      //if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);
+
       collectSolid(info,v->GetName(),n->GetName(),v->GetShape(),n->GetMatrix());
     }
   }

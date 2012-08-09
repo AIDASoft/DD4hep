@@ -63,6 +63,12 @@ namespace DD4hep {
     inline int     _toInt(int value)         {  return value; }
     inline float   _toFloat(float value)     {  return value; }
     inline double  _toDouble(double value)   {  return value; }
+
+    template<class T> T _multiply(const std::string& left, const std::string& right);
+    template <> int    _multiply<int>(const std::string& left, const std::string& right);
+    template <> long   _multiply<long>(const std::string& left, const std::string& right);
+    template <> float  _multiply<float>(const std::string& left, const std::string& right);
+    template <> double _multiply<double>(const std::string& left, const std::string& right);
     
     void _toDictionary(const std::string& name, const std::string& value);
     

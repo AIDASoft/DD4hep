@@ -100,16 +100,23 @@ namespace DD4hep  { namespace Geometry  {
   
   template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
   : TGeoVolume(name,s,m) {}
-  template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
+  template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* /* s */, TGeoMedium* /* m */)
   : TGeoVolumeAssembly(name) {}
   
   template <> struct Value<TGeoVolume,Volume::Object>
   : public _VolWrap<TGeoVolume>, public Volume::Object  {
-    Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) : _VolWrap<TGeoVolume>(name,s,m) {magic = magic_word();}
+    Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) 
+      : _VolWrap<TGeoVolume>(name,s,m) {magic = magic_word();}
     virtual ~Value() {}
+    TGeoVolume *_copyVol(TGeoShape *newshape) const {
+      typedef Value<TGeoVolume,Volume::Object> _Vol;
+      _Vol *vol = new _Vol(GetName(), newshape, fMedium);
+      vol->copy(*this);
+      return vol;
+    }
     virtual TGeoVolume* MakeCopyVolume(TGeoShape *newshape) {
       // make a copy of this volume. build a volume with same name, shape and medium
-      TGeoVolume *vol = new Value<TGeoVolume,Volume::Object>(GetName(), newshape, fMedium);
+      TGeoVolume *vol = _copyVol(newshape);
       vol->SetVisibility(IsVisible());
       vol->SetLineColor(GetLineColor());
       vol->SetLineStyle(GetLineStyle());
@@ -123,7 +130,7 @@ namespace DD4hep  { namespace Geometry  {
       return vol;       
     }
     virtual TGeoVolume* CloneVolume() const    {
-      TGeoVolume *vol = new Value<TGeoVolume,Volume::Object>(GetName(), fShape, fMedium);
+      TGeoVolume *vol = _copyVol(fShape);
       Int_t i;
       // copy volume attributes
       vol->SetLineColor(GetLineColor());
@@ -383,8 +390,10 @@ void Volume::setLimitSet(const LimitSet& obj)  const
 {  data<Object>()->limits = obj;                            }
 
 /// Assign the sensitive detector structure
-void Volume::setSensitiveDetector(const SensitiveDetector& obj) const  
-{  data<Object>()->sens_det = obj;                          }
+void Volume::setSensitiveDetector(const SensitiveDetector& obj) const   {
+  //cout << "Setting sensitive detector '" << obj.name() << "' to volume:" << ptr() << " " << name() << endl;
+  data<Object>()->sens_det = obj;                          
+}
 
 /// Access to the handle to the sensitive detector
 Ref_t Volume::sensitiveDetector() const

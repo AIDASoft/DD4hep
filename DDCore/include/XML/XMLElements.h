@@ -103,6 +103,7 @@ namespace DD4hep {
       Handle_t clone(xercesc::DOMDocument* new_doc, bool deep) const;
       bool hasAttr(const XMLCh* t) const                    { return 0 != m_node->getAttributeNode(t);    }
       bool hasAttr(const char* t) const                     { return 0 != m_node->getAttributeNode(Strng_t(t));}
+      template <class T> T attr(const Attribute a)  const;
       template <class T> T attr(const XMLCh* t)  const;
       template <class T> T attr(const char* t)  const       { return this->attr<T>(Strng_t(t));            }
       void setAttrs(Handle_t e) const;
@@ -130,40 +131,50 @@ namespace DD4hep {
       void removeChildren(const XMLCh* tag)  const;
       void append(xercesc::DOMElement* e) const { m_node->appendChild(e); }
       const XMLCh* attr_value(const XMLCh* attr)  const;
+      const XMLCh* attr_value(const Attribute attr)  const;
+      const XMLCh* attr_value_nothrow(const XMLCh* attr)  const;
+
       Attribute attr_ptr(const XMLCh* attr)  const;
       Attribute attr_nothrow(const XMLCh* tag)  const { return m_node->getAttributeNode(tag);  }
-      const XMLCh* attr_value_nothrow(const XMLCh* attr)  const;
     };
 
 #define INLINE inline
-    template <> INLINE Attribute Handle_t::attr<Attribute>(const XMLCh* tag) const {
-      return attr_ptr(tag);
-    }
+    template <> INLINE Attribute Handle_t::attr<Attribute>(const XMLCh* tag) const 
+      {      return attr_ptr(tag);                       }
 
     typedef const XMLCh* cpXMLCh;
-    template<> INLINE cpXMLCh Handle_t::attr<cpXMLCh>(const XMLCh* tag)  const  {
-      return attr_value(tag);
-    }
+    template<> INLINE cpXMLCh Handle_t::attr<cpXMLCh>(const XMLCh* tag)  const  
+      {      return attr_value(tag);                     }
 
-    template<> INLINE bool Handle_t::attr<bool>(const XMLCh* tag)  const  {
-      return _toBool(attr_value_nothrow(tag));
-    }
+    template<> INLINE bool Handle_t::attr<bool>(const XMLCh* tag)  const  
+      {      return _toBool(attr_value_nothrow(tag));    }
 
-    template<> INLINE int Handle_t::attr<int>(const XMLCh* tag)  const  {
-      return _toInt(attr_value(tag));
-    }
+    template<> INLINE int Handle_t::attr<int>(const XMLCh* tag)  const  
+      {      return _toInt(attr_value(tag));             }
 
-    template<> INLINE float Handle_t::attr<float>(const XMLCh* tag)  const  {
-      return _toFloat(attr_value(tag));
-    }
+    template<> INLINE float Handle_t::attr<float>(const XMLCh* tag)  const
+      {      return _toFloat(attr_value(tag));           }
 
-    template<> INLINE double Handle_t::attr<double>(const XMLCh* tag)  const  {
-      return _toDouble(attr_value(tag));
-    }
+    template<> INLINE double Handle_t::attr<double>(const XMLCh* tag)  const  
+      {      return _toDouble(attr_value(tag));          }
 
-    template<> INLINE std::string Handle_t::attr<std::string>(const XMLCh* tag)  const  {
-      return _toString(attr_nothrow(tag));
-    }
+    template<> INLINE std::string Handle_t::attr<std::string>(const XMLCh* tag)  const  
+      {      return _toString(attr_nothrow(tag));        }
+
+    template<> INLINE bool Handle_t::attr<bool>(const Attribute tag)  const  
+      {      return _toBool(attr_value(tag));            }
+
+    template<> INLINE int Handle_t::attr<int>(const Attribute tag)  const  
+      {      return _toInt(attr_value(tag));             }
+
+    template<> INLINE float Handle_t::attr<float>(const Attribute tag)  const  
+      {      return _toFloat(attr_value(tag));           }
+
+    template<> INLINE double Handle_t::attr<double>(const Attribute tag)  const  
+      {      return _toDouble(attr_value(tag));          }
+
+    template<> INLINE std::string Handle_t::attr<std::string>(const Attribute tag)  const  
+      {      return _toString(attr_value(tag));          }
 
     struct Collection_t : public Handle_t {
       mutable XMLSize_t     m_index;

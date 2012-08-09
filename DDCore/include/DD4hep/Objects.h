@@ -22,6 +22,8 @@ class TGeoPhysicalNode;
 #include "TGeoPhysicalNode.h"
 
 // C/C++ include files
+#include <set>
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 #ifndef M_PI
@@ -112,18 +114,55 @@ namespace DD4hep {
       /// Default constructor
       Position() : x(0), y(0), z(0) {}
       /// Initializing constructor
-      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {     }
+      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {        }
       /// Is it a identity rotation ?
-      bool isNull() const                             { return x==0 && y==0 && z==0;    }
+      bool isNull() const                             { return x==0 && y==0 && z==0;       }
+      /// Ceck 2 positions for equality
+      bool operator==(const Position& c)  const       { return x==c.x && y==c.y && z==c.z; }
+      /// Ceck 2 positions for in-equality
+      bool operator!=(const Position& c)  const       { return x!=c.x || y!=c.y || x!=c.z; }
+      /// Negation of the direction
+      Position operator - () const                    { return Position(-x,-y,-z);         }
+      /// Scalar multiplication
+      Position& operator *=(double a)                 { x *= a;y *= a;z *= a;return *this; }
+      /// Addition operator
+      Position& operator +=(const Position& p)        { x+=p.x;y+=p.y;z+=p.z;return *this; }
+      /// Subtraction operator
+      Position& operator -= (const Position& p)       { x-=p.x;y-=p.y;z-=p.z;return *this; }
+
+      /// Position length
+      double length() const                           { return sqrt(x*x + y*y + z*z);      }
       /// Access to array like coordinates
-      const double* coordinates() const               { return &x;                      }
+      const double* coordinates() const               { return &x;                         }
       /// Initializer for all member variables
-      Position& set(double xv, double yv, double zv)  { x=xv; y=yv; z=zv; return *this; }
+      Position& set(double xv, double yv, double zv)  { x=xv; y=yv; z=zv; return *this;    }
     };
 #ifdef _WIN32
 #pragma pack(pop,DD4Hep_Objects_Position)
 #pragma pack(push,DD4Hep_Objects_Rotation,1)
 #endif
+    /// Addition of 2 positions
+    inline Position operator + (const Position& l, const Position& r)
+    {  return Position(l.x+r.x,l.y+r.y,l.z+r.z);                                           }
+    /// Subtraction of to positions
+    inline Position operator - (const Position& l, const Position& r)
+    {  return Position(l.x-r.x,l.y-r.y,l.z-r.z);                                           }
+    /// Dot product of 3-vectors.
+    inline double operator * (const Position& l, const Position& r)
+    {  return sqrt(l.x*r.x + l.y*r.y + l.z*r.z);                                           }
+    /// Positions scaling from left
+    inline Position operator * (double l, const Position& r) 
+    {  return Position(r.x*l,r.y*l,r.z*l);                                                 }
+    /// Positions scaling from right
+    inline Position operator * (const Position& l, double r)
+    {  return Position(l.x*r,l.y*r,l.z*r);                                                 }
+    /// Positions scaling from right
+    inline Position operator / (const Position& l, double r)
+    {  return Position(l.x/r,l.y/r,l.z/r);                                                 }
+
+    typedef Position Direction;
+    typedef Position Momentum;
+
     /** @class Rotation Objects.h
      *  
      *  @author  M.Frank
@@ -136,11 +175,15 @@ namespace DD4hep {
       /// Initializing constructor
       Rotation(double thetaval, double phival, double psival) : theta(thetaval), phi(phival), psi(psival) {}
       /// Is it a identity rotation ?
-      bool isNull() const                              { return theta==0 && phi==0 && psi==0;   }
+      bool isNull() const                              { return theta==0 && phi==0 && psi==0;              }
+      /// Ceck 2 rotations for equality
+      bool operator==(const Rotation& c)  const        { return theta==c.theta && phi==c.phi && psi==c.psi;}
+      /// Ceck 2 rotations for in-equality 
+      bool operator!=(const Rotation& c)  const        { return theta!=c.theta || phi!=c.phi || psi!=c.psi;}
       /// Access to array like coordinates
-      const double* angles() const                     { return &theta;                         }
+      const double* angles() const                     { return &theta;                                    }
       /// Initializer for all member variables
-      Rotation& set(double th, double ph, double ps)   { theta=th; phi=ph; psi=ps;return *this; }
+      Rotation& set(double th, double ph, double ps)   { theta=th; phi=ph; psi=ps;return *this;            }
     };
 
 #ifdef _WIN32
@@ -324,20 +367,29 @@ namespace DD4hep {
 
 
     /** @class Limit Objects.h
-     *  
+     *  Small object describing a limit structure 
+     * 
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Limit : public Ref_t  {
-      typedef std::pair<std::string,double> Object;
-
-      /// Constructor to be used when creating a new limit object
-      Limit(LCDD& doc, const std::string& name);
-      /// Additional data accessor
-      Object& _data()   const {  return *data<Object>();  }
-      void setParticles(const std::string& particleNames);
-      void setValue(double value);
-      void setUnit(const std::string& unit);
+    struct Limit {
+      std::string particles;
+      std::string name;
+      std::string unit;
+      std::string content;
+      double      value;
+      /// Default constructor
+      Limit() : particles(), name(), unit(), content(), value(0.0) {}
+      /// Copy constructor
+      Limit(const Limit& c) : particles(c.particles), name(c.name), unit(c.unit), content(c.content), value(c.value)  {}
+      /// Assignment operator
+      Limit& operator=(const Limit& c);
+      /// Equality operator
+      bool operator==(const Limit& c) const;
+      /// operator less
+      bool operator< (const Limit& c) const;
+      /// Conversion to a string representation
+      std::string toString()  const;
     };
 
     /** @class LimitSet Objects.h
@@ -346,15 +398,18 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct LimitSet : public Ref_t  {
-      typedef TMap Object;
+      typedef std::set<Limit> Object;  
       /// Constructor to be used when reading the already parsed DOM tree
       LimitSet() : Ref_t() {}
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> 
       LimitSet(const Handle<Q>& e) : Ref_t(e) {}
       /// Constructor to be used when creating a new DOM tree
-      LimitSet(LCDD& doc, const std::string& name);
-      void addLimit(const Ref_t& limit);
+      LimitSet(const std::string& name);
+      /// Add new limit. Returns true if the new limit was added, false if it already existed.
+      bool addLimit(const Limit& limit);
+      /// Accessor to limits container
+      const Object& limits() const;
     };
 
     /** @class Region Objects.h
@@ -369,6 +424,7 @@ namespace DD4hep {
         double        cut;
         bool          store_secondaries;
         std::string   lunit, eunit;
+	std::vector<std::string> user_limits;
       };
       /// Default constructor
       Region() : Ref_t() {}
@@ -376,7 +432,7 @@ namespace DD4hep {
       template <typename Q> 
       Region(const Handle<Q>& e) : Ref_t(e) {}
       /// Constructor to be used when creating a new DOM tree
-      Region(LCDD& doc, const std::string& name);
+      Region(const std::string& name);
 
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
@@ -385,6 +441,15 @@ namespace DD4hep {
       Region& setCut(double value);
       Region& setLengthUnit(const std::string& unit);
       Region& setEnergyUnit(const std::string& unit);
+      /// Access references to user limits
+      std::vector<std::string>& limits() const;
+
+      /// Access cut value
+      double  cut() const;
+      /// Access production threshold
+      double threshold() const;
+      /// Access secondaries flag
+      bool storeSecondaries() const;
     };
 
     /** @class IDSpec Objects.h

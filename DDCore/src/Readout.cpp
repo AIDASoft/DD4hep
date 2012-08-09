@@ -13,7 +13,7 @@ using namespace std;
 using namespace DD4hep::Geometry;
 
 /// Initializing constructor to create a new object
-Readout::Readout(const LCDD& /* lcdd */, const string& nam)
+Readout::Readout(const string& nam)
 {
   assign(new Value<TNamed,Object>(),nam,"readout");
 }

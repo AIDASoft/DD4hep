@@ -61,6 +61,22 @@ double DD4hep::Geometry::_toDouble(const string& value)   {
   return result;
 }
 
+template <> int    _multiply<int>(const std::string& left, const std::string& right) {
+  return (int)_toDouble(left+"*"+right);
+}
+
+template <> long   _multiply<long>(const std::string& left, const std::string& right) {
+  return (long)_toDouble(left+"*"+right);
+}
+
+template <> float  _multiply<float>(const std::string& left, const std::string& right) {
+  return _toFloat(left+"*"+right);
+}
+
+template <> double _multiply<double>(const std::string& left, const std::string& right) {
+  return _toDouble(left+"*"+right);
+}
+
 void DD4hep::Geometry::_toDictionary(const string& name, const string& value)  {
   string n=name, v=value;
   size_t idx = v.find("(int)");

@@ -35,7 +35,7 @@ using namespace DD4hep;
 using namespace std;
 namespace {
   struct TopDetElement : public DetElement {
-    TopDetElement(const std::string& nam, Volume vol) : DetElement(nam,0) { _data().volume = vol;    }
+    TopDetElement(const std::string& nam, Volume vol) : DetElement(nam,/* "structure", */0) { _data().volume = vol;    }
   };
 }
 
@@ -120,64 +120,70 @@ namespace {
 }
 
 void LCDDImp::endDocument()  {
-  LCDD& lcdd = *this;
-  Material  air = material("Air");
-
-  m_worldVol.setMaterial(air);
-  m_trackingVol.setMaterial(air);
-
-  Region trackingRegion(lcdd,"TrackingRegion");
-  trackingRegion.setThreshold(1);
-  trackingRegion.setStoreSecondaries(true);
-  add(trackingRegion);
-  m_trackingVol.setRegion(trackingRegion);
-    
-  // Set the world volume to invisible.
-  VisAttr worldVis(lcdd,"WorldVis");
-  worldVis.setVisible(false);
-  m_worldVol.setVisAttributes(worldVis);
-  add(worldVis);
-  
-  // Set the tracking volume to invisible.
-  VisAttr trackingVis(lcdd,"TrackingVis");
-  trackingVis.setVisible(false);               
-  m_trackingVol.setVisAttributes(trackingVis);
-  add(trackingVis); 
-
-  /// Since we allow now for anonymous shapes,
-  /// we will rename them to use the name of the volume they are assigned to
   TGeoManager* mgr = gGeoManager;
-  gGeoManager->SetTopVolume(m_worldVol);
-  mgr->CloseGeometry();
-  m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
-  ShapePatcher(m_world)();
+  if ( !mgr->IsClosed() ) {
+    LCDD& lcdd = *this;
+    Material  air = material("Air");
+
+    m_worldVol.setMaterial(air);
+    m_trackingVol.setMaterial(air);
+
+    Region trackingRegion("TrackingRegion");
+    trackingRegion.setThreshold(1);
+    trackingRegion.setStoreSecondaries(true);
+    add(trackingRegion);
+    m_trackingVol.setRegion(trackingRegion);
+    
+    // Set the world volume to invisible.
+    VisAttr worldVis(lcdd,"WorldVis");
+    worldVis.setVisible(false);
+    m_worldVol.setVisAttributes(worldVis);
+    add(worldVis);
+  
+    // Set the tracking volume to invisible.
+    VisAttr trackingVis(lcdd,"TrackingVis");
+    trackingVis.setVisible(false);               
+    m_trackingVol.setVisAttributes(trackingVis);
+    add(trackingVis); 
+
+    /// Since we allow now for anonymous shapes,
+    /// we will rename them to use the name of the volume they are assigned to
+    gGeoManager->SetTopVolume(m_worldVol);
+    mgr->CloseGeometry();
+    m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
+    ShapePatcher(m_world)();
+  }
 }
 
 void LCDDImp::create()  {
-  gGeoManager = new TGeoManager();
+  if ( 0 == gGeoManager ) {
+    gGeoManager = new TGeoManager();
+  }
 }
 
 void LCDDImp::init()  {
-  LCDD& lcdd = *this;
-  Box worldSolid("world_box","world_x","world_y","world_z");
-  Material vacuum = material("Vacuum");
-  Volume world("world_volume",worldSolid,vacuum);
-  Tube trackingSolid("tracking_cylinder",
-		     0.,
-		     _toDouble("tracking_region_radius"),
-		     _toDouble("2*tracking_region_zmax"),2*M_PI);
-  Volume tracking("tracking_volume",trackingSolid, vacuum);
-  m_world          = TopDetElement("world",world);
-  m_trackers       = TopDetElement("tracking",tracking);
-  m_worldVol       = world;
-  m_trackingVol    = tracking;
-  m_materialAir    = material("Air");
-  m_materialVacuum = material("Vacuum");
-  m_detectors.append(m_world);
-  m_world.add(m_trackers);
+  if ( !m_world.isValid() ) {
+    Box worldSolid("world_box","world_x","world_y","world_z");
+    Material vacuum = material("Vacuum");
+    Volume world("world_volume",worldSolid,vacuum);
+    Tube trackingSolid("tracking_cylinder",
+		       0.,
+		       _toDouble("tracking_region_radius"),
+		       _toDouble("2*tracking_region_zmax"),2*M_PI);
+    Volume tracking("tracking_volume",trackingSolid, vacuum);
+    m_world          = TopDetElement("world",world);
+    m_trackers       = TopDetElement("tracking",tracking);
+    m_worldVol       = world;
+    m_trackingVol    = tracking;
+    m_materialAir    = material("Air");
+    m_materialVacuum = material("Vacuum");
+    m_detectors.append(m_world);
+    m_world.add(m_trackers);
+  }
 }
 
 void LCDDImp::fromCompact(const std::string& xmlfile) {
+  create();
 #if DD4HEP_USE_PYROOT
   string cmd;
   TPython::Exec("import lcdd");

@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4hep_FACTORIES_H
-#define DD4hep_FACTORIES_H
+#ifndef DD4HEP_FACTORIES_H
+#define DD4HEP_FACTORIES_H
 
 #ifndef __CINT__
 #include "Reflex/PluginService.h"
@@ -132,20 +132,20 @@ namespace {
   PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
 
 #define DECLARE_TRANSLATION(name,func) \
-  namespace DD4hep { namespace Geometry { namespace { struct name {}; }                  \
-  template <> Ref_t TranslationFactory<name>::create(LCDD& lcdd) {return func(lcdd);} }} \
+  namespace DD4hep { namespace Geometry { namespace { struct name {}; }            \
+  template <> Ref_t TranslationFactory<name>::create(LCDD& l) {return func(l);} }} \
   DECLARE_NAMED_TRANSLATION_FACTORY(DD4hep::Geometry,name)
 
 #define DECLARE_XMLELEMENT(name,func) \
-  namespace DD4hep { namespace Geometry { namespace { struct name {}; }                 \
-  template <> Ref_t XMLElementFactory<name>::create(LCDD& lcdd, const XML::Handle_t& e) \
-    {   return func(lcdd,e);} }}						        \
-  DECLARE_NAMED_XMLELEMENT_FACTORY(DD4hep::Geometry,name)
+  namespace DD4hep { namespace Geometry { namespace { struct xml_element_##name {}; }                \
+  using DD4hep::Geometry::xml_element_##name;					                     \
+  template <> Ref_t XMLElementFactory<xml_element_##name>::create(LCDD& l,const XML::Handle_t& e) {return func(l,e);} }}\
+  PLUGINSVC_FACTORY_WITH_ID(xml_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*))
 
 #define DECLARE_DETELEMENT(name,func) \
-  namespace DD4hep { namespace Geometry { namespace { struct name {}; }                                       \
-  template <> Ref_t DetElementFactory<name>::create(LCDD& lcdd, const XML::Handle_t& e, SensitiveDetector& s) \
-    {   return func(lcdd,e,s);} }}						                              \
-  DECLARE_NAMED_DETELEMENT_FACTORY(DD4hep::Geometry,name)
+  namespace DD4hep { namespace Geometry { namespace { struct det_element_##name {}; }                                       \
+  using DD4hep::Geometry::det_element_##name;                                                                               \
+  template <> Ref_t DetElementFactory<det_element_##name>::create(LCDD& l,const XML::Handle_t& e,SensitiveDetector& s){return func(l,e,s);}}}\
+  PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
 
-#endif // DD4hep_FACTORIES_H
+#endif // DD4HEP_FACTORIES_H

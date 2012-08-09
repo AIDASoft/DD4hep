@@ -49,7 +49,7 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Readout(const Handle<Q>& e) : Ref_t(e) {}
       /// Initializing constructor
-      Readout(const LCDD& doc, const std::string& name);
+      Readout(const std::string& name);
       /// Assign IDDescription to readout structure
       void setIDDescriptor(const Ref_t& spec)   const;
       /// Access IDDescription structure

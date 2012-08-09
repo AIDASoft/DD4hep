@@ -42,9 +42,18 @@ namespace DD4hep {
       typedef std::vector<std::pair<std::string, TGeoMatrix*> >  TransformSet;
       typedef std::set<TGeoShape*>                               SolidSet;
       typedef std::set<TGeoMedium*>                              MaterialSet;
+      typedef std::map<TNamed*,std::set<const TGeoVolume*> >     SensitiveVolumes;
+      typedef std::map<TNamed*,std::set<const TGeoVolume*> >     RegionVolumes;
+      typedef std::map<TNamed*,std::set<const TGeoVolume*> >     LimitVolumes;
       typedef std::map<int, std::set<const TGeoNode*> >          Data;
       typedef std::set<TNamed*>                                  VisRefs;
       typedef LCDD::HandleMap                                    DefinitionSet;
+
+      typedef Geometry::LCDD              LCDD;
+      typedef Geometry::Volume            Volume;
+      typedef Geometry::PlacedVolume      PlacedVolume;
+      typedef Geometry::DetElement        DetElement;
+      typedef Geometry::SensitiveDetector SensitiveDetector;
 
       struct GeometryInfo   {
 	SolidSet           solids;
@@ -52,6 +61,9 @@ namespace DD4hep {
 	TransformSet       trafos;
 	VisRefs            vis;
 	MaterialSet        materials;
+	// SensitiveVolumes   sensitives;
+	// RegionVolumes      regions;
+	// LimitVolumes       limits;
 	std::set<TGeoMedium*>   media;
 	std::set<TGeoElement*>  elements;
       };
@@ -74,21 +86,6 @@ namespace DD4hep {
       GeoHandler& collect(DetElement top, GeometryInfo& info);
       /// Access to collected node list
       Data* release();
-#if  0
-      template <typename C, typename F> static void _handle(const O* ptr, const C& c, F pmf)  {
-	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)   {
-	  (ptr->*pmf)((*i).first, (*i).second);
-	}
-      }
-#endif
-      template <typename O, typename C, typename F> static void handle(const O* o, const C& c, F pmf)    {
-	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)
-	  (o->*pmf)((*i)->GetName(),*i);
-      }
-      template <typename O, typename C, typename F> static void handle(O* o, const C& c, F pmf)     {
-	for(typename C::const_iterator i=c.begin(); i != c.end(); ++i)
-	  (o->*pmf)((*i)->GetName(),*i);
-      }
     };
 
     struct GeoScan {

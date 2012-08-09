@@ -284,7 +284,9 @@ double DetElement::Component::thickness() const  {
 }
 
 bool DetElement::Component::isSensitive() const  {
-  return m_element.hasAttr(Attr_sensitive) && m_element.attr<bool>(Attr_sensitive);
+  char val = m_element.hasAttr(Attr_sensitive) ? m_element.attr<string>(Attr_sensitive)[0] : 'f';
+  val = ::toupper(val);
+  return val == 'T' || val == 'Y';
 }
 
 string DetElement::Component::visStr()  const  {

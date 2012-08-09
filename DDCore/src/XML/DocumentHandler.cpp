@@ -118,13 +118,13 @@ XercesDOMParser* DocumentHandler::makeParser(xercesc::ErrorHandler* err_handler)
 }
 
 Document DocumentHandler::load(const string& fname)  const  {
+  cout << "Loading document URI:" << fname << endl;
   XMLURL xerurl = (const XMLCh*)Strng_t(fname);
   string path   = _toString(xerurl.getPath());
   string proto  = _toString(xerurl.getProtocolName());
   auto_ptr<XercesDOMParser> parser(makeParser());
-  cout << "Loading document :" << path  << endl
-       << "         protocol:" << proto << endl
-       << "              URI:" << fname << endl;
+  cout << "            protocol:" << proto << endl
+       << "                path:" << path  << endl;
   try {
     parser->parse(path.c_str());
   }

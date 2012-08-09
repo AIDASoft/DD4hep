@@ -104,6 +104,7 @@ namespace DD4hep {
         Ref_t         sens_det;
 	int           referenced;
         Object() : region(), limits(), vis(), sens_det(), referenced(0)  {}
+        void copy(const Object& c) { region=c.region; limits=c.limits; vis=c.vis; sens_det=c.sens_det; referenced=c.referenced; }
       };
       /// Default constructor
       Volume() : Base(0) {}
