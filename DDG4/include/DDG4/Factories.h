@@ -16,49 +16,26 @@
 
 // Framework include files
 #include "DDG4/Defs.h"
+#include <string>
 
-class G4VSensitiveDetector;
+// Forward declarations
+class Geant4SensitiveDetector;
 
-/*
- *   DD4hep namespace declaration
- */
-namespace DD4hep {
-
-  /*
-   *   Simulation namespace declaration
-   */
-  namespace Simulation   {
-#if 0
-    /** @class XMLElementFactory Factories.h DDCore/Factories.h
-     *  Create an arbitrary object from it's XML representation.
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
-     */
-    template <typename T> class Geant4SensitiveDetectorFactory  {
-    public:
-      static G4VSensitiveDetector* create(const std::string& name,LCDD& lcdd) {  return new T(name,lcdd); }
-    }; 
-#endif
-  }    // End namespace Simulation
-}      // End namespace DD4hep
+namespace DD4hep { 
+  namespace Geometry   {  class LCDD; }
+  namespace Simulation {  class Geant4SensitiveDetector; }
+}
 
 namespace {
-  template < typename P > class Factory<P, G4VSensitiveDetector*(const std::string& name,DD4hep::Geometry::LCDD*)> {
-  public:
-    static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      typedef G4VSensitiveDetector SD;
-      std::string nam = *(std::string*)arg[0];
-      DD4hep::Geometry::LCDD* lcdd = (DD4hep::Geometry::LCDD* )arg[1];
-      *(SD**)retaddr = new P(nam,*lcdd);
-    }
+  template < typename P > class Factory<P, DD4hep::Simulation::Geant4SensitiveDetector*(std::string,DD4hep::Geometry::LCDD*)> {
+  public:  typedef DD4hep::Simulation::Geant4SensitiveDetector SD;
+    static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) 
+      {  *(SD**)retaddr = (SD*)new P(*(std::string*)arg[0], *(DD4hep::Geometry::LCDD*)arg[1]);           }
   };
 }
 
-#define DECLARE_GEANT4SENSITIVEDETECTOR(name) \
-  using DD4hep::Simulation::name;			     \
-  PLUGINSVC_FACTORY(name,G4VSensitiveDetector*(const std::string&,DD4hep::Geometry::LCDD*))
-
+#define DECLARE_GEANT4SENSITIVEDETECTOR(name) namespace DD4hep { namespace Simulation { }}   \
+  using DD4hep::Simulation::name;					                     \
+  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4SensitiveDetector*(std::string,DD4hep::Geometry::LCDD*))
 
 #endif // DDG4_FACTORIES_H

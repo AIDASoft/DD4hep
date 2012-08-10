@@ -10,14 +10,12 @@
 // Framework include files
 #include "DDG4/Geant4SensitiveDetector_inline.h"
 #include "DDG4/Factories.h"
-#include "DD4hep/Objects.h"
 
 /*
  *   DD4hep::Simulation namespace declaration
  */
 namespace DD4hep {  namespace Simulation {
-  //typedef Geant4SensitiveDetector::HitCollection HitCollection;
-  // typedef Geant4Hit::MonteCarloContrib           HitContribution;
+
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4GenericSD<TrackerCombine>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -44,27 +42,28 @@ namespace DD4hep {  namespace Simulation {
 	current = -1;
 	track = 0;
       }
-      Geant4TrackerHit* extractHit()   {
-      if ( !track ) {
-	return 0;
-      }
-      else if ( pre.truth.deposit <= e_cut && !Geant4Hit::isGeantino(track) ) {
+      Geant4TrackerHit* extractHit(Geant4SensitiveDetector::HitCollection* c)   {
+	if ( current == -1 || !track ) {
+	  return 0;
+	}
+	else if ( pre.truth.deposit <= e_cut && !Geant4Hit::isGeantino(track) ) {
+	  clear();
+	  return 0;
+	}
+	Position pos = 0.5 * (pre.position + post.position);
+	Momentum mom = 0.5 * (pre.momentum + post.momentum);
+	double path_len = (post.position - pre.position).length();
+	Geant4TrackerHit* hit = new Geant4TrackerHit(pre.truth.trackID,
+						     pre.truth.pdgID,
+						     pre.truth.deposit,
+						     pre.truth.time);
+	hit->position = pos;
+	hit->momentum = mom;
+	hit->length = path_len;
 	clear();
-	return 0;
+	c->insert(hit);
+	return hit;
       }
-      Position pos = 0.5 * (pre.position + post.position);
-      Momentum mom = 0.5 * (pre.momentum + post.momentum);
-      double path_len = (post.position - pre.position).length();
-      Geant4TrackerHit* hit = new Geant4TrackerHit(pre.truth.trackID,
-						   pre.truth.pdgID,
-						   pre.truth.deposit,
-						   pre.truth.time);
-      hit->position = pos;
-      hit->momentum = mom;
-      hit->length = path_len;
-      clear();
-      return hit;
-    }
     };
 
     /// Method invoked at the begining of each event. 
@@ -81,45 +80,34 @@ namespace DD4hep {  namespace Simulation {
 
     /// Method for generating hit(s) using the information of G4Step object.
     template <> G4bool Geant4GenericSD<TrackerCombine>::ProcessHits(G4Step* step,G4TouchableHistory* ) {
-      G4Track* trk = step->GetTrack();
+      StepHandler h(step);
       bool return_code = false;
 
-      if ( userData.current == -1 ) {
-	userData.start(step,step->GetPreStepPoint());
+      if ( !userData.track || userData.current != h.track->GetTrackID() ) {
+	return_code = userData.extractHit(collection(0)) != 0;
+	userData.start(step, h.pre);
       }
-      else if ( userData.current != trk->GetTrackID() ) {
-	Geant4Hit* hit = userData.extractHit();
-	if ( hit ) collection(0)->insert(hit);
-	return_code = hit != 0;
-	userData.start(step,step->GetPreStepPoint());
-      }
+
       // ....update .....
       userData.update(step);
 
-      G4StepPoint*       pre    = step->GetPreStepPoint();
-      G4StepPoint*       post   = step->GetPostStepPoint();
-      G4VPhysicalVolume* prePV  = pre->GetTouchableHandle()->GetVolume();
-      G4VPhysicalVolume* postPV = post->GetTouchableHandle()->GetVolume();
+      void *prePV = h.volume(h.pre), *postPV = h.volume(h.post);
       if ( prePV != postPV ) {
-	G4VSensitiveDetector* postSD = post->GetPhysicalVolume()->GetLogicalVolume()->GetSensitiveDetector();
-	Geant4Hit* hit = userData.extractHit();
-	if ( hit ) collection(0)->insert(hit);
-	return_code = hit != 0;
+	void* postSD = h.sd(h.post);
+	return_code = userData.extractHit(collection(0)) != 0;
 	if ( 0 != postSD )   {
-	  G4VSensitiveDetector* preSD = pre->GetPhysicalVolume()->GetLogicalVolume()->GetSensitiveDetector();
+	  void* preSD = h.sd(h.pre);
 	  if ( preSD == postSD ) {
-	    userData.start(step,post);
+	    userData.start(step,h.post);
 	  }
 	}
       }
       else if ( userData.track->GetTrackStatus() == fStopAndKill ) {
-	Geant4Hit* hit = userData.extractHit();
-	if ( hit ) collection(0)->insert(hit);
-	return_code = hit != 0;
+	return_code = userData.extractHit(collection(0)) != 0;
       }
       return return_code;
     }
-    typedef Geant4GenericSD<TrackerCombine> Geant4TrackerCombineSD;
+    typedef Geant4GenericSD<TrackerCombine> Geant4TrackerCombine;
 }}    // End namespace DD4hep::Simulation
 
-DECLARE_GEANT4SENSITIVEDETECTOR(Geant4TrackerCombineSD);
+DECLARE_GEANT4SENSITIVEDETECTOR(Geant4TrackerCombine);

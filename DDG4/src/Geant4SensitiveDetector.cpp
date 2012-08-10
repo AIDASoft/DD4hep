@@ -34,16 +34,13 @@ Geant4SensitiveDetector::~Geant4SensitiveDetector() {
 }
 
 /// Initialize the sensitive detector for the usage of a single hit collection
-bool Geant4SensitiveDetector::defineCollections(const std::string& coll_name) {
+bool Geant4SensitiveDetector::defineCollection(const string& coll_name)   {
+  if ( coll_name.empty() ) {
+    throw runtime_error("Geant4SensitiveDetector: No collection defined for "+name()+
+			" of type "+string(m_sensitive.type()));
+  }
   collectionName.insert(coll_name);
 }
-
-/// Initialize the sensitive detector for the usage of a multiple hit collection
-bool Geant4SensitiveDetector::defineCollections(const HitCollectionNames& coll_names) {
-  for(HitCollectionNames::const_iterator i=coll_names.begin(); i!=coll_names.end();++i)
-    collectionName.insert(*i);
-}
-
 
 /// Access HitCollection container names
 const string& Geant4SensitiveDetector::hitCollectionName(int which) const      { 

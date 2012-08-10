@@ -32,6 +32,10 @@ namespace DD4hep {
    */
   namespace Simulation {
 
+    // Forward declarations
+    class Geant4StepHandler;
+    class Geant4SensitiveDetector;
+
     /** @class Geant4SensitiveDetector Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
      *
      * @author  M.Frank
@@ -40,9 +44,9 @@ namespace DD4hep {
     struct Geant4SensitiveDetector : public G4VSensitiveDetector  {
       public:      
 
-      typedef std::vector<std::string>     HitCollectionNames;
       typedef G4THitsCollection<Geant4Hit> HitCollection;
       typedef Geant4Hit::Contribution      HitContribution;
+      typedef Geant4StepHandler            StepHandler;
 
       protected:
 
@@ -67,10 +71,7 @@ namespace DD4hep {
       Geant4SensitiveDetector(const std::string& name, LCDD& lcdd);
 
       /// Initialize the sensitive detector for the usage of a single hit collection
-      virtual bool defineCollections(const std::string& coll_name);
-
-      /// Initialize the sensitive detector for the usage of a multiple hit collection
-      virtual bool defineCollections(const HitCollectionNames& coll_names);
+      virtual bool defineCollection(const std::string& coll_name);
 
       /// Standard destructor
       virtual ~Geant4SensitiveDetector();
@@ -123,10 +124,7 @@ namespace DD4hep {
       Geant4GenericSD(const std::string& name, LCDD& lcdd);
       
       /// Initialize the sensitive detector for the usage of a single hit collection
-      virtual bool defineCollections(const std::string& coll_name);
-
-      /// Initialize the sensitive detector for the usage of a multiple hit collection
-      virtual bool defineCollections(const HitCollectionNames& coll_names);
+      virtual bool defineCollection(const std::string& coll_name);
 
       /// Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* history);

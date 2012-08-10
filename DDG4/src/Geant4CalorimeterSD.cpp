@@ -10,33 +10,89 @@
 // Framework include files
 #include "DDG4/Geant4SensitiveDetector_inline.h"
 #include "DDG4/Factories.h"
-#include "DD4hep/Objects.h"
+
+// Geant4 include files
+#include "G4OpticalPhoton.hh"
+#include "G4VProcess.hh"
 
 /*
  *   DD4hep::Simulation namespace declaration
  */
 namespace DD4hep {  namespace Simulation {
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ///               Geant4GenericSD<Calorimeter>
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    struct Calorimeter {};
-    /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4GenericSD<Calorimeter>::buildHits(G4Step* step,G4TouchableHistory*) {
-      G4StepPoint*    pre     = step->GetPreStepPoint();
-      G4StepPoint*    post    = step->GetPostStepPoint();
-      G4ThreeVector   pos     = 0.5 * (pre->GetPosition() + post->GetPosition());
-      HitContribution contrib = Geant4Hit::extractContribution(step);
-      Position        position(pos.x(),pos.y(),pos.z());
-      Geant4CalorimeterHit* hit=find(collection(0),HitPositionCompare<Geant4CalorimeterHit>(position));
 
-      if ( !hit ) {
-	collection(0)->insert(hit=new Geant4CalorimeterHit(position));
-      }
-      hit->truth.push_back(contrib);
-      hit->energyDeposit += contrib.deposit;
-      return true;
+  /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ///               Geant4GenericSD<Calorimeter>
+  /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  struct Calorimeter {};
+  /// Method for generating hit(s) using the information of G4Step object.
+  template <> bool Geant4GenericSD<Calorimeter>::buildHits(G4Step* step,G4TouchableHistory*) {
+    StepHandler     h(step);
+    Position        pos     = 0.5 * (h.prePos() + h.postPos());
+    HitContribution contrib = Geant4Hit::extractContribution(step);
+    Geant4CalorimeterHit* hit=find(collection(0),HitPositionCompare<Geant4CalorimeterHit>(pos));
+
+    if ( !hit ) {
+      collection(0)->insert(hit=new Geant4CalorimeterHit(pos));
     }
-    typedef Geant4GenericSD<Calorimeter> Geant4CalorimeterSD;
+    hit->truth.push_back(contrib);
+    hit->energyDeposit += contrib.deposit;
+    return true;
+  }
+  typedef Geant4GenericSD<Calorimeter> Geant4Calorimeter;
 }}    // End namespace DD4hep::Simulation
 
-DECLARE_GEANT4SENSITIVEDETECTOR(Geant4CalorimeterSD);
+DECLARE_GEANT4SENSITIVEDETECTOR(Geant4Calorimeter);
+
+/*
+ *   DD4hep::Simulation namespace declaration
+ */
+namespace DD4hep {  namespace Simulation {
+
+  /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  ///               Geant4GenericSD<OpticalCalorimeter>
+  /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  enum { Edep_type=0, Cerenkov_type=1 };
+  struct OpticalCalorimeter {};
+  template <> class Geant4GenericSD<OpticalCalorimeter> : public Geant4GenericSD<Calorimeter>  {
+  public:
+    /// Constructor. The sensitive detector element is identified by the detector name
+    Geant4GenericSD(const std::string& name, LCDD& lcdd)
+      : Geant4GenericSD<Calorimeter>(name,lcdd) {          }
+   
+    /// Initialize the sensitive detector for the usage of a single hit collection
+    bool defineCollection(const std::string& coll_name) {
+      Geant4SensitiveDetector::defineCollection("Edep_" + coll_name);
+      Geant4SensitiveDetector::defineCollection("Ceren_" + coll_name);
+      return true;
+    }
+
+    /// Method for generating hit(s) using the information of G4Step object.
+    virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* history) {
+      G4Track * track =  step->GetTrack();
+      // check that particle is optical photon:
+      if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
+	return this->Geant4GenericSD<Calorimeter>::ProcessHits(step,history);
+      }
+      else if ( track->GetCreatorProcess()->G4VProcess::GetProcessName() != "Cerenkov")  {
+	track->SetTrackStatus(fStopAndKill);
+	return false;
+      }
+      else {
+	StepHandler h(step);
+	HitContribution contrib = Geant4Hit::extractContribution(step);
+	Position        pos     = h.prePos();
+	Geant4CalorimeterHit* hit=find(collection(Cerenkov_type),HitPositionCompare<Geant4CalorimeterHit>(pos));
+	if ( !hit ) {
+	  collection(Cerenkov_type)->insert(hit=new Geant4CalorimeterHit(pos));
+	}
+	hit->energyDeposit += contrib.deposit;
+	hit->truth.push_back(contrib);
+	track->SetTrackStatus(fStopAndKill); // don't step photon any further
+	return true;
+      }
+    }
+  };
+  typedef Geant4GenericSD<OpticalCalorimeter> Geant4OpticalCalorimeter;
+}}    // End namespace DD4hep::Simulation
+
+DECLARE_GEANT4SENSITIVEDETECTOR(Geant4OpticalCalorimeter);

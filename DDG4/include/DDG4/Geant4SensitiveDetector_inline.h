@@ -20,15 +20,10 @@ template<class SD> DD4hep::Simulation::Geant4GenericSD<SD>::Geant4GenericSD(cons
 }
 
 /// Initialize the sensitive detector for the usage of a single hit collection
-template<class SD> bool DD4hep::Simulation::Geant4GenericSD<SD>::defineCollections(const std::string& coll_name) {
-  return Geant4SensitiveDetector::defineCollections(coll_name);
+template<class SD> bool DD4hep::Simulation::Geant4GenericSD<SD>::defineCollection(const std::string& coll_name) {
+  return Geant4SensitiveDetector::defineCollection(coll_name);
 }
 
-/// Initialize the sensitive detector for the usage of a multiple hit collection
-template<class SD> bool DD4hep::Simulation::Geant4GenericSD<SD>::defineCollections(const HitCollectionNames& coll_names) {
-  return Geant4SensitiveDetector::defineCollections(coll_names);
-}
-	
 /** Method invoked at the begining of each event. 
  *  The hits collection(s) created by this sensitive detector must
  *  be set to the G4HCofThisEvent object at one of these two methods.

@@ -29,6 +29,14 @@ namespace DD4hep {
    */
   namespace Simulation   {
 
+    // Forward declarations;
+    template<class HIT> struct HitCompare;
+    template<class HIT> struct HitPositionCompare;
+    class Geant4StepHandler;
+    class Geant4Hit;
+    class Geant4TrackerHit;
+    class Geant4CalorimeterHit;
+
 
     /** @class HitCompare Geant4Hits.h DDG4/Geant4Hits.h
      * 
@@ -55,6 +63,49 @@ namespace DD4hep {
       HitPositionCompare(const Position& p) : pos(p) {      }
       /// Comparison function
       virtual bool operator()(const HIT* h) const { return pos == h->position; }
+    };
+
+    /** @class Geant4StepHandler Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
+     *
+     * Tiny helper/utility class to easily access Geant4 step information.
+     * Born by lazyness: Avoid typing millions of statements!
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class Geant4StepHandler {
+      public:
+      G4Step*      step;
+      G4StepPoint* pre;
+      G4StepPoint* post;
+      G4Track*     track;
+      Geant4StepHandler(G4Step* s) : step(s) {
+	pre = s->GetPreStepPoint();
+	post = s->GetPostStepPoint();
+	track = s->GetTrack();
+      }
+      Position prePos() const {
+	const G4ThreeVector& p = pre->GetPosition();
+	return Position(p.x(),p.y(),p.z());
+      }
+      Position postPos() const {
+	const G4ThreeVector& p = post->GetPosition();
+	return Position(p.x(),p.y(),p.z());
+      }
+      Momentum preMom() const {
+	const G4ThreeVector& p = pre->GetMomentum();
+	return Momentum(p.x(),p.y(),p.z());
+      }
+      Momentum postMom() const {
+	const G4ThreeVector& p = post->GetMomentum();
+	return Momentum(p.x(),p.y(),p.z());
+      }
+      G4VPhysicalVolume* volume(G4StepPoint* p)  const {
+	return p->GetTouchableHandle()->GetVolume();
+      }
+      G4VSensitiveDetector* sd(G4StepPoint* p)  const {
+	return p->GetPhysicalVolume()->GetLogicalVolume()->GetSensitiveDetector();
+      }
     };
 
     /** @class Geant4Hit Geant4Hits.h DDG4/Geant4Hits.h
@@ -100,8 +151,6 @@ namespace DD4hep {
       virtual ~Geant4Hit() {}
       /// Check if the Geant4 track is a Geantino
       static bool isGeantino(G4Track* track);
-      /// Create tracker hit from step information
-      static Geant4Hit* createTrackerHit(G4Step* step);
       /// Extract the MC contribution for a given hit from the step information
       static Contribution extractContribution(G4Step* step);
     };

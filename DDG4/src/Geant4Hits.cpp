@@ -47,32 +47,6 @@ Geant4Hit::Contribution Geant4Hit::extractContribution(G4Step* step) {
   return contrib;
 }
 
-/// Create tracker hit
-Geant4Hit* Geant4Hit::createTrackerHit(G4Step* step)  {
-  G4Track*      trk       = step->GetTrack();
-  G4StepPoint*  pre       = step->GetPreStepPoint();
-  G4StepPoint*  post      = step->GetPostStepPoint();
-  G4ThreeVector prePos    = pre->GetPosition();
-  G4ThreeVector postPos   = post->GetPosition();
-  G4ThreeVector direction = (postPos - prePos);
-  G4ThreeVector position  = 0.5 * (prePos + postPos);
-  double        hit_len   = direction.mag();
-  double avgMom = (pre->GetMomentum().mag() + post->GetMomentum().mag()) / 2;
-  if (hit_len > 0) 
-    direction.setMag(avgMom);
-  else
-    cerr << "prePos - postPos = 0 --> " << prePos << " | " << postPos << endl;
-      
-  Geant4TrackerHit* hit = new Geant4TrackerHit(trk->GetTrackID(),
-					       trk->GetDefinition()->GetPDGEncoding(),
-					       step->GetTotalEnergyDeposit(),
-					       trk->GetGlobalTime());
-  hit->position.set(position.x(),position.y(),position.z());
-  hit->momentum.set(direction.x(),direction.y(),direction.z());
-  hit->length = hit_len;
-  return hit;
-}
-
 static G4Allocator<Geant4TrackerHit> TrackerHitAllocator;
 
 /// Default constructor

@@ -31,6 +31,18 @@ namespace DD4hep {
     typedef Geometry::DetElement           DetElement;
     typedef Geometry::SensitiveDetector    SensitiveDetector;
 
+    template<class HIT> struct HitCompare;
+    template<class HIT> struct HitPositionCompare;
+    class Geant4StepHandler;
+    class Geant4Hit;
+    class Geant4TrackerHit;
+    class Geant4CalorimeterHit;
+
+    class Geant4SensitiveDetector;
+    template <class T> class Geant4GenericSD;
+
+
+
   }    // End namespace Simulation
 }      // End namespace DD4hep
 #endif // DDG4_DEFS_H

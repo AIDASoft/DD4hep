@@ -20,12 +20,27 @@ namespace DD4hep {  namespace Simulation {
   struct Tracker {};
   /// Method for generating hit(s) using the information of G4Step object.
   template <> bool Geant4GenericSD<Tracker>::buildHits(G4Step* step,G4TouchableHistory* ) {
-    /// Add a new hit to the collection
-    Geant4Hit* hit = Geant4Hit::createTrackerHit(step);
+    StepHandler h(step);
+    Position prePos    = h.prePos();
+    Position postPos   = h.postPos();
+    Position direction = (postPos - prePos);
+    Position position  = mean_direction(prePos,postPos);
+    double   hit_len   = direction.length();
+    if (hit_len > 0) {
+      direction.setLength(mean_length(h.preMom(),h.postMom()));
+    }
+    Geant4TrackerHit* hit = 
+      new Geant4TrackerHit(h.track->GetTrackID(),
+			   h.track->GetDefinition()->GetPDGEncoding(),
+			   step->GetTotalEnergyDeposit(),
+			   h.track->GetGlobalTime());
+    hit->position = position;
+    hit->momentum = direction;
+    hit->length   = hit_len;
     if ( hit ) collection(0)->insert(hit);
     return hit != 0;
   }
-  typedef Geant4GenericSD<Tracker> Geant4TrackerSD;
+  typedef Geant4GenericSD<Tracker> Geant4Tracker;
 }}    // End namespace DD4hep::Simulation
 
-DECLARE_GEANT4SENSITIVEDETECTOR(Geant4TrackerSD);
+DECLARE_GEANT4SENSITIVEDETECTOR(Geant4Tracker);
