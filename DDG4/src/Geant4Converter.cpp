@@ -510,18 +510,4 @@ void Geant4Converter::create(DetElement top) {
   // Now place all this stuff appropriately
   for(Data::const_reverse_iterator i=m_data->rbegin(); i != m_data->rend(); ++i)
     handle(this, (*i).second, &Geant4Converter::handlePlacement);
-
 }
-#if 0
-#include "DD4hep/Factories.h"
-static Ref_t create_g4(LCDD& lcdd) {
-  typedef Value<TNamed,Geant4Converter> _G4;
-  _G4* obj = new _G4(lcdd);
-  obj->SetName("Geant4");
-  obj->SetTitle("Geant4");
-  obj->create(lcdd.world());
-  return obj;
-}
-
-DECLARE_TRANSLATION(LCDD2Geant4,create_g4);
-#endif
