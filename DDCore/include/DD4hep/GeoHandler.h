@@ -39,12 +39,13 @@ namespace DD4hep {
     class GeoHandler {
     public:
       typedef std::set<TGeoVolume*>                              VolumeSet;
+      typedef std::set<const TGeoVolume*>                        ConstVolumeSet;
       typedef std::vector<std::pair<std::string, TGeoMatrix*> >  TransformSet;
       typedef std::set<TGeoShape*>                               SolidSet;
       typedef std::set<TGeoMedium*>                              MaterialSet;
-      typedef std::map<TNamed*,std::set<const TGeoVolume*> >     SensitiveVolumes;
-      typedef std::map<TNamed*,std::set<const TGeoVolume*> >     RegionVolumes;
-      typedef std::map<TNamed*,std::set<const TGeoVolume*> >     LimitVolumes;
+      typedef std::map<const TNamed*,ConstVolumeSet>             SensitiveVolumes;
+      typedef std::map<const TNamed*,ConstVolumeSet>             RegionVolumes;
+      typedef std::map<const TNamed*,ConstVolumeSet>             LimitVolumes;
       typedef std::map<int, std::set<const TGeoNode*> >          Data;
       typedef std::set<TNamed*>                                  VisRefs;
       typedef LCDD::HandleMap                                    DefinitionSet;

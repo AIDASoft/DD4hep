@@ -52,8 +52,14 @@ namespace DD4hep {
         double       ecut;
         std::string  hitsCollection;
 	Readout      readout;
+	Region       region;
+	LimitSet     limits;
 	Extensions   extensions;
-        Object() : magic(magic_word()), verbose(0), combineHits(0), ecut(0.0), hitsCollection(), readout(), extensions() {}
+	/// Default constructor
+        Object() : magic(magic_word()), verbose(0), combineHits(0), ecut(0.0), 
+		   hitsCollection(), readout(), region(), limits(), extensions() {}
+	/// Internal object destructor: release extension object(s)
+	~Object();
       };
       protected:
 
@@ -120,6 +126,18 @@ namespace DD4hep {
       /// Access energy cut off
       double energyCutoff()  const;
 
+      /// Set the regional attributes to the sensitive detector 
+      SensitiveDetector& setRegion(Region reg);
+
+      /// Access to the region setting of the sensitive detector (not mandatory)
+      Region region() const;
+
+      /// Set the limits to the sensitive detector 
+      SensitiveDetector& setLimitSet(LimitSet limits);
+
+      /// Access to the limit set of the sensitive detector (not mandatory). 
+      LimitSet limits() const;
+
       /// Extend the sensitive detector element with an arbitrary structure accessible by the type
       template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
       {  return (IFACE*)i_addExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);  }      
@@ -176,6 +194,8 @@ namespace DD4hep {
 
 	/// Default constructor
         Object();
+	/// Internal object destructor: release extension object(s)
+	~Object();
 	/// Deep object copy to replicate DetElement trees e.g. for reflection
 	virtual Value<TNamed,Object>* clone(int new_id, int flag)  const;
 	/// Conversion to reference object

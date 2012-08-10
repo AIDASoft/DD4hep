@@ -23,6 +23,7 @@ class TGeoPhysicalNode;
 
 // C/C++ include files
 #include <set>
+#include <limits>
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -132,6 +133,16 @@ namespace DD4hep {
 
       /// Position length
       double length() const                           { return sqrt(x*x + y*y + z*z);      }
+      Position& setLength(double new_length) { 
+	double len=length();
+	if ( len>std::numeric_limits<double>::epsilon() ) {
+	  len = new_length/len;
+	  x *= len;
+	  y *= len;
+	  z *= len;
+	  return *this;
+	}
+      }
       /// Access to array like coordinates
       const double* coordinates() const               { return &x;                         }
       /// Initializer for all member variables
@@ -159,6 +170,12 @@ namespace DD4hep {
     /// Positions scaling from right
     inline Position operator / (const Position& l, double r)
     {  return Position(l.x/r,l.y/r,l.z/r);                                                 }
+    /// Calculate the mean length of two vectors
+    inline double mean_length(const Position& p1, const Position& p2)
+    {  return 0.5* (p1.length() + p2.length()) / 2.0;                                      }
+    /// Calculate the mean direction of two vectors
+    inline Position mean_direction(const Position& p1, const Position& p2)
+    { return 0.5 * (p1 + p2);                                                              }
 
     typedef Position Direction;
     typedef Position Momentum;

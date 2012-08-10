@@ -129,6 +129,23 @@ DetElement::Object::Object()
 {
 }
 
+/// Internal object destructor: release extension object(s)
+DetElement::Object::~Object() {
+  ExtensionMap& m = detelement_extensions();
+  for(Extensions::iterator i = extensions.begin(); i!=extensions.end(); ++i) {
+    void* ptr = (*i).second;
+    if ( ptr ) {
+      ExtensionMap::iterator j = m.find((*i).first);
+      if ( j != m.end() ) {
+	ExtensionEntry& e = (*j).second;
+	if ( e.destruct ) (*(e.destruct))(ptr);
+      }
+    }
+  }
+  extensions.clear();
+}
+
+
 /// Deep object copy to replicate DetElement trees e.g. for reflection
 Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag)  const  {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
@@ -529,6 +546,22 @@ bool DetElement::referenceToLocal(const Position& global, Position& local)  cons
   return true;
 }
 
+/// Internal object destructor: release extension object(s)
+SensitiveDetector::Object::~Object() {
+  ExtensionMap& m = sensitive_detector_extensions();
+  for(Extensions::iterator i = extensions.begin(); i!=extensions.end(); ++i) {
+    void* ptr = (*i).second;
+    if ( ptr ) {
+      ExtensionMap::iterator j = m.find((*i).first);
+      if ( j != m.end() ) {
+	ExtensionEntry& e = (*j).second;
+	if ( e.destruct ) (*(e.destruct))(ptr);
+      }
+    }
+  }
+  extensions.clear();
+}
+
 /// Constructor
 SensitiveDetector::SensitiveDetector(const std::string& name, const std::string& type)  {
   /*
@@ -611,6 +644,28 @@ SensitiveDetector& SensitiveDetector::setCombineHits(bool value)  {
 /// Access flag to combine hist
 bool SensitiveDetector::combineHits() const {
   return _data().combineHits == 1;
+}
+
+/// Set the regional attributes to the sensitive detector 
+SensitiveDetector& SensitiveDetector::setRegion(Region reg)  {
+  _data().region = reg;
+  return *this;
+}
+
+/// Access to the region setting of the sensitive detector (not mandatory)
+Region SensitiveDetector::region() const {
+  return _data().region;
+}
+
+/// Set the limits to the sensitive detector 
+SensitiveDetector& SensitiveDetector::setLimitSet(LimitSet limits)  {
+  _data().limits = limits;
+  return *this;
+}
+
+/// Access to the limit set of the sensitive detector (not mandatory). 
+LimitSet SensitiveDetector::limits() const {
+  return _data().limits;
 }
 
 /// Add an extension object to the detector element

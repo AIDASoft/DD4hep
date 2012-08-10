@@ -14,12 +14,13 @@
 
 #include "Conversions.h"
 #include "TGeoManager.h"
-#include "TGeoElement.h"
+//#include "TGeoElement.h"
 #include "TGeoMaterial.h"
 #include "Reflex/PluginService.h"
 
 #include <climits>
 #include <iostream>
+#include <iomanip>
 #include <set>
 
 using namespace std;
@@ -90,7 +91,7 @@ namespace DD4hep { namespace Geometry {
   struct GdmlFile;
   struct AlignmentFile;
 
-  template <typename T> Handle<> toObject(LCDD& lcdd, const XML::Handle_t& xml);
+  template <typename T> Handle<> toObject(LCDD& lcdd, const xml_h& xml);
   
   template <> Ref_t toRefObject<Constant>(lcdd_t& lcdd, const xml_h& e)  {
     xml_ref_t    constant(e);
@@ -108,8 +109,8 @@ namespace DD4hep { namespace Geometry {
      </element>
      */
     xml_ref_t    elem(e);
+    xml_tag_t    eltname  = elem.name();
     TGeoManager* mgr      = gGeoManager;
-    XML::Tag_t   eltname  = elem.name();
     TGeoElementTable* tab = mgr->GetElementTable();
     TGeoElement*  element = tab->FindElement(eltname.c_str());
     if ( !element )  {
@@ -135,14 +136,14 @@ namespace DD4hep { namespace Geometry {
      <atom type="A" unit="g/mol" value="63.5456" />
      </element>
      */
-    xml_ref_t      m(e);
-    TGeoManager*   mgr      = gGeoManager;
-    XML::Tag_t     mname    = m.name();
-    const char*    matname  = mname.c_str();
-    xml_h          density  = m.child(XML::Tag_D);
-    TGeoElementTable* table = mgr->GetElementTable();
-    TGeoMaterial*     mat   = mgr->GetMaterial(matname);
-    TGeoMixture*      mix   = dynamic_cast<TGeoMixture*>(mat);
+    xml_ref_t         m(e);
+    TGeoManager*      mgr      = gGeoManager;
+    xml_tag_t         mname    = m.name();
+    const char*       matname  = mname.c_str();
+    xml_h             density  = m.child(XML::Tag_D);
+    TGeoElementTable* table    = mgr->GetElementTable();
+    TGeoMaterial*     mat      = mgr->GetMaterial(matname);
+    TGeoMixture*      mix      = dynamic_cast<TGeoMixture*>(mat);
     xml_coll_t        fractions(m,_X(fraction));
     xml_coll_t        composites(m,_X(composite));
     set<string> elts;
@@ -370,8 +371,21 @@ namespace DD4hep { namespace Geometry {
     for_each(children.begin(),children.end(),setChildTitles);
   }
 
+
+  /** Update sensitive detectors from group tags.
+   *
+   *  Handle xml sections of the type:
+   *  <sd name="MuonBarrel"
+   *      type="Geant4Calorimeter" 
+   *      ecut="100.0*MeV" 
+   *      verbose="true" 
+   *      hit_aggregation="position"
+   *      limits="limit-set-reference"
+   *      region="region-name-reference">
+   *  </sd>
+   *
+   */
   template <> void Converter<SensitiveDetector>::operator()(const xml_h& element)  const {
-    string type = element.attr<string>(_A(type));
     string name = element.attr<string>(_A(name));
     try {
       DetElement        det = lcdd.detector(name);
@@ -381,15 +395,33 @@ namespace DD4hep { namespace Geometry {
       if ( type ) {
 	sd.setType(element.attr<string>(type));
       }
-      xml_attr_t verbose  = element.attr_nothrow(_A(verbose));
+      xml_attr_t verbose = element.attr_nothrow(_A(verbose));
       if ( verbose ) {
 	sd.setVerbose(element.attr<bool>(verbose));
       }
-      xml_attr_t combine  = element.attr_nothrow(_A(combine_hits));
+      xml_attr_t combine = element.attr_nothrow(_A(combine_hits));
       if ( combine ) {
 	sd.setCombineHits(element.attr<bool>(combine));
       }
-      xml_attr_t hits  = element.attr_nothrow(_A(hits_collection));
+      xml_attr_t limits  = element.attr_nothrow(_A(limits));
+      if ( limits ) {
+	string   l  = element.attr<string>(limits);
+	LimitSet ls = lcdd.limitSet(l);
+	if ( !ls.isValid() )  {
+	  throw runtime_error("Converter<SensitiveDetector>: Request for non-existing limitset:"+l);
+	}
+	sd.setLimitSet(ls);
+      }
+      xml_attr_t region  = element.attr_nothrow(_A(region));
+      if ( region ) {
+	string r   = element.attr<string>(region);
+	Region reg = lcdd.region(r);
+	if ( !reg.isValid() )  {
+	  throw runtime_error("Converter<SensitiveDetector>: Request for non-existing region:"+r);
+	}
+	sd.setRegion(reg);
+      }
+      xml_attr_t hits    = element.attr_nothrow(_A(hits_collection));
       if ( hits ) {
 	sd.setHitsCollection(element.attr<string>(hits));
       }
@@ -402,15 +434,19 @@ namespace DD4hep { namespace Geometry {
       else if ( ecut ) { // If no unit is given , we assume the correct Geant4 unit is used!
 	sd.setEnergyCutoff(element.attr<double>(ecut));
       }
-
-      cout << " sensitive detector:" << name << " of type " << type << endl;
-      //lcdd.addDetector(det);
+      if ( sd.verbose() ) {
+	cout << "SensitiveDetector-update:" << setw(18) << left << sd.name() 
+	     << setw(24)  << left << " ["+sd.type()+"] " 
+	     << "Hits:"   << setw(24) << left << sd.hitsCollection()
+	     << "Cutoff:" << sd.energyCutoff()
+	     << endl;
+      }
     }
     catch(const exception& e) {
-      cout << "FAILED    to convert subdetector:" << name << " of type " << type << ": " << e.what() << endl;
+      cout << "FAILED    to convert sensitive detector:" << name << ": " << e.what() << endl;
     }
     catch(...) {
-      cout << "FAILED    to convert subdetector:" << name << " of type " << type << ": UNKNONW Exception" << endl;
+      cout << "FAILED    to convert sensitive detector:" << name << ": UNKNONW Exception" << endl;
     }
   }
 
@@ -428,11 +464,11 @@ namespace DD4hep { namespace Geometry {
     if ( ign_dets &&  strstr(ign_dets,name_match.c_str()) ) return;
     if ( ign_typs &&  strstr(ign_typs,type_match.c_str()) ) return;
     try {
-      bool has_ro = element.hasAttr(_A(readout));
-      Readout  ro = has_ro ? lcdd.readout(element.attr<string>(_A(readout))) : Readout();
+      xml_attr_t attr_ro = element.attr_nothrow(_A(readout));
       SensitiveDetector sd;
-      if ( has_ro )  {
-	sd = SensitiveDetector(name,"structure");
+      if ( attr_ro )  {
+	Readout ro = lcdd.readout(element.attr<string>(attr_ro));
+	sd = SensitiveDetector(name,"sensitive");
 	sd.setHitsCollection(ro.name());
 	sd.setReadout(ro);
 	lcdd.addSensitiveDetector(sd);
@@ -440,13 +476,13 @@ namespace DD4hep { namespace Geometry {
       DetElement det(Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sd)));
       if ( det.isValid() )  {
 	setChildTitles(make_pair(name,det));
-	if ( element.hasAttr(_A(readout)) )  {
-	  det.setReadout(ro);
+	if ( attr_ro )  {
+	  det.setReadout(sd.readout());
 	}
       }
       cout << (det.isValid() ? "Converted" : "FAILED    ")
 	   << " subdetector:" << name << " of type " << type;
-      if ( det.isValid() ) cout << " [" << sd.type() << "]";
+      if ( sd.isValid() ) cout << " [" << sd.type() << "]";
       cout << endl;
       lcdd.addDetector(det);
     }
@@ -476,20 +512,20 @@ namespace DD4hep { namespace Geometry {
   }
   
   template <> void Converter<Compact>::operator()(const xml_h& element)  const  {
-    XML::Element compact(element);
-    xml_coll_t(compact,_X(includes)  ).for_each(_X(gdmlFile), Converter<GdmlFile>(lcdd));
+    xml_elt_t compact(element);
+    xml_coll_t(compact,_X(includes)    ).for_each(_X(gdmlFile), Converter<GdmlFile>(lcdd));
     //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
-    xml_coll_t(compact,_X(define)    ).for_each(_X(constant), Converter<Constant>(lcdd));
-    xml_coll_t(compact,_X(materials) ).for_each(_X(element),  Converter<Atom>(lcdd));
-    xml_coll_t(compact,_X(materials) ).for_each(_X(material), Converter<Material>(lcdd));
+    xml_coll_t(compact,_X(define)      ).for_each(_X(constant), Converter<Constant>(lcdd));
+    xml_coll_t(compact,_X(materials)   ).for_each(_X(element),  Converter<Atom>(lcdd));
+    xml_coll_t(compact,_X(materials)   ).for_each(_X(material), Converter<Material>(lcdd));
     lcdd.init();
-    xml_coll_t(compact,_X(limits)    ).for_each(_X(limitset), Converter<LimitSet>(lcdd));
-    xml_coll_t(compact,_X(display)   ).for_each(_X(vis),      Converter<VisAttr>(lcdd));
-    xml_coll_t(compact,_X(readouts)  ).for_each(_X(readout),  Converter<Readout>(lcdd));
-    xml_coll_t(compact,_X(detectors) ).for_each(_X(detector), Converter<DetElement>(lcdd));
-    xml_coll_t(compact,_X(includes)  ).for_each(_X(alignment),Converter<AlignmentFile>(lcdd));
-    xml_coll_t(compact,_X(alignments)).for_each(_X(alignment),Converter<AlignmentEntry>(lcdd));
-    xml_coll_t(compact,_X(sensitive_detectors)).for_each(_X(detector),Converter<SensitiveDetector>(lcdd));
+    xml_coll_t(compact,_X(limits)      ).for_each(_X(limitset), Converter<LimitSet>(lcdd));
+    xml_coll_t(compact,_X(display)     ).for_each(_X(vis),      Converter<VisAttr>(lcdd));
+    xml_coll_t(compact,_X(readouts)    ).for_each(_X(readout),  Converter<Readout>(lcdd));
+    xml_coll_t(compact,_X(detectors)   ).for_each(_X(detector), Converter<DetElement>(lcdd));
+    xml_coll_t(compact,_X(includes)    ).for_each(_X(alignment),Converter<AlignmentFile>(lcdd));
+    xml_coll_t(compact,_X(alignments)  ).for_each(_X(alignment),Converter<AlignmentEntry>(lcdd));
+    xml_coll_t(compact,_X(sensitive_detectors)).for_each(_X(sd),Converter<SensitiveDetector>(lcdd));
     lcdd.endDocument();
   }
 }}

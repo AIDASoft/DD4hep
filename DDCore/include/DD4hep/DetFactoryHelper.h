@@ -18,9 +18,11 @@
 #define _A(a) DD4hep::XML::Attr_##a
 
 // Shortcuts to elements of the XML namespace
+typedef DD4hep::XML::Tag_t         xml_tag_t;
 typedef DD4hep::XML::Attribute     xml_attr_t;
 typedef DD4hep::XML::Collection_t  xml_coll_t;
 typedef DD4hep::XML::Handle_t      xml_h;
+typedef DD4hep::XML::Element       xml_elt_t;
 typedef DD4hep::XML::RefElement    xml_ref_t;
 typedef DD4hep::XML::DetElement    xml_det_t;
 typedef xml_det_t::Component       xml_comp_t;

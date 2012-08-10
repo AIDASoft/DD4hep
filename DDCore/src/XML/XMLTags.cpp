@@ -57,6 +57,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(desnity);
   TAG(fraction);
   TAG(composite);
+  TAG(sd);
 
   TAG(box);
   TAG(define);

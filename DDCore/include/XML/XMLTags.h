@@ -50,6 +50,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_detector;
   extern const Tag_t Tag_dimensions;
   extern const Tag_t Tag_element;
+  extern const Tag_t Tag_sd;
   extern const Tag_t Tag_id;
   extern const Tag_t Tag_idspecref;
 
