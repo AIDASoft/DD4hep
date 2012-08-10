@@ -5,6 +5,7 @@
 #define G4UI_USE_TCSH 
 #define G4VIS_USE_OPENGLX
 
+#include "G4PVPlacement.hh"
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIsession.hh"
