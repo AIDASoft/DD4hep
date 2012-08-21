@@ -31,6 +31,8 @@ class G4VSolid;
 class G4LogicalVolume;
 class G4PVPlacement;
 class G4Region;
+class G4Field;
+class G4FieldManager;
 class Geant4SensitiveDetector;
 class G4UserLimits;
 
@@ -93,6 +95,8 @@ namespace DD4hep {
       virtual void* handleVolume(const std::string& name, const TGeoVolume* volume) const;
       /// Convert the geometry type volume placement into the corresponding Geant4 object(s).
       virtual void* handlePlacement(const std::string& name, const TGeoNode* node) const;
+      /// Convert the geometry type field into the corresponding Geant4 object(s).
+      ///virtual void* handleField(const std::string& name, Ref_t field) const;
 
       /// Convert the geometry type region into the corresponding Geant4 object(s).
       virtual void* handleRegion(const TNamed* region, const std::set<const TGeoVolume*>& volumes) const;
@@ -100,6 +104,8 @@ namespace DD4hep {
       virtual void* handleLimitSet(const TNamed* limitset, const std::set<const TGeoVolume*>& volumes) const;
       /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
       virtual void* handleSensitive(const TNamed* sens_det, const std::set<const TGeoVolume*>& volumes) const;
+      /// Handle the geant 4 specific properties
+      void handleProperties(LCDD::Properties& prp) const;
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

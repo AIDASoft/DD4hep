@@ -43,7 +43,7 @@ namespace DD4hep {
      */
     struct Geant4SensitiveDetector : public G4VSensitiveDetector  {
       public:      
-
+      typedef Geometry::SensitiveDetector  SensitiveDetector;
       typedef G4THitsCollection<Geant4Hit> HitCollection;
       typedef Geant4Hit::Contribution      HitContribution;
       typedef Geant4StepHandler            StepHandler;

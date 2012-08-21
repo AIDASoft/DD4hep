@@ -51,13 +51,13 @@ const string& Geant4SensitiveDetector::hitCollectionName(int which) const      {
 }
 
 /// Create single hits collection
-Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::createCollection(const std::string& coll_name)  const  {
+Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::createCollection(const string& coll_name)  const  {
   return new G4THitsCollection<Geant4Hit>(GetName(), coll_name);
 }
 namespace DD4hep { namespace Simulation {
 template <> Geant4CalorimeterHit* 
 Geant4SensitiveDetector::find<Geant4CalorimeterHit>(const HitCollection* c,const HitCompare<Geant4CalorimeterHit>& cmp)   {
-  typedef std::vector<Geant4CalorimeterHit*> _V;
+  typedef vector<Geant4CalorimeterHit*> _V;
   const _V* v = (const _V*)c->GetVector();
   for(_V::const_iterator i=v->begin(); i !=v->end(); ++i) 
     if ( cmp(*i) ) return *i;
@@ -111,5 +111,3 @@ Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::collection(int 
 /// Method is invoked if the event abortion is occured.
 void Geant4SensitiveDetector::clear() {
 }
-
-//DECLARE_TRANSLATION(LCDD2Geant4,create_g4);

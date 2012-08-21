@@ -15,6 +15,8 @@
 #include "G4OpticalPhoton.hh"
 #include "G4VProcess.hh"
 
+using namespace std;
+
 /*
  *   DD4hep::Simulation namespace declaration
  */
@@ -56,11 +58,11 @@ namespace DD4hep {  namespace Simulation {
   template <> class Geant4GenericSD<OpticalCalorimeter> : public Geant4GenericSD<Calorimeter>  {
   public:
     /// Constructor. The sensitive detector element is identified by the detector name
-    Geant4GenericSD(const std::string& name, LCDD& lcdd)
+    Geant4GenericSD(const string& name, LCDD& lcdd)
       : Geant4GenericSD<Calorimeter>(name,lcdd) {          }
-   
+
     /// Initialize the sensitive detector for the usage of a single hit collection
-    bool defineCollection(const std::string& coll_name) {
+    bool defineCollection(const string& coll_name) {
       Geant4SensitiveDetector::defineCollection("Edep_" + coll_name);
       Geant4SensitiveDetector::defineCollection("Ceren_" + coll_name);
       return true;

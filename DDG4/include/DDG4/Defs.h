@@ -29,7 +29,7 @@ namespace DD4hep {
     typedef Geometry::LCDD                 LCDD;
     typedef Geometry::Readout              Readout;
     typedef Geometry::DetElement           DetElement;
-    typedef Geometry::SensitiveDetector    SensitiveDetector;
+    //typedef Geometry::SensitiveDetector    SensitiveDetector;
 
     template<class HIT> struct HitCompare;
     template<class HIT> struct HitPositionCompare;

@@ -37,7 +37,7 @@ namespace DD4hep {  namespace Simulation {
     hit->position = position;
     hit->momentum = direction;
     hit->length   = hit_len;
-    if ( hit ) collection(0)->insert(hit);
+    collection(0)->insert(hit);
     return hit != 0;
   }
   typedef Geant4GenericSD<Tracker> Geant4Tracker;

@@ -9,6 +9,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Volumes.h"
+#include "DDG4/Geant4Field.h"
 #include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4SensitiveDetector.h"
 
@@ -63,7 +64,8 @@
 #include "G4Transform3D.hh"
 #include "G4ThreeVector.hh"
 #include "G4PVPlacement.hh"
-
+#include "G4ElectroMagneticField.hh"
+#include "G4FieldManager.hh"
 
 using namespace DD4hep::Simulation;
 using namespace DD4hep::Geometry;
@@ -452,7 +454,7 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
     g4->defineCollection(sd.hitsCollection());
     ConstVolumeSet& volset = info.sensitives[sens_det];
     for(ConstVolumeSet::iterator i=volset.begin(); i!=volset.end();++i)    {
-      std::map<const TGeoVolume*, G4LogicalVolume*>::iterator v = info.g4Volumes.find(*i);
+      map<const TGeoVolume*, G4LogicalVolume*>::iterator v = info.g4Volumes.find(*i);
       if ( v == info.g4Volumes.end() )  {
 	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Missing converted "
 			    "Geant 4 logical volume");
@@ -475,6 +477,46 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
   return g4;
 }
 
+/// Handle the geant 4 specific properties
+void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
+  map<string,string>  processors;
+  static int s_idd = 9999999;
+  string id;
+  for(LCDD::Properties::const_iterator i=prp.begin(); i!=prp.end(); ++i) {
+    const string& nam = (*i).first;
+    const LCDD::PropertyValues& vals = (*i).second;
+    if ( nam.substr(0,6) == "geant4" ) {
+      LCDD::PropertyValues::const_iterator id_it = vals.find("id");
+      if ( id_it != vals.end() )  {
+	id= (*id_it).second;
+      }
+      else {
+	char txt[32];
+	::sprintf(txt,"%d",++s_idd);
+	id = txt;
+      }
+      processors.insert(make_pair(id,nam));
+    }
+  }
+  for(map<string,string>::const_iterator i=processors.begin(); i!=processors.end(); ++i) {
+    const Geant4Converter* ptr = this;
+    string nam = (*i).second;
+    const LCDD::PropertyValues& vals = prp[nam];
+    string type = vals.find("type")->second;
+    string tag  = type + "_Geant4_action";
+    long result = ROOT::Reflex::PluginService::Create<long>(tag,&m_lcdd,ptr,&vals);
+    if ( 0 == result ) {
+      throw runtime_error("Failed to locate plugin to interprete files of type"
+			  " \""+tag+"\" - no factory:"+type);
+    }
+    result = *(long*)result;
+    if ( result != 1 ) {
+      throw runtime_error("Failed to invoke the plugin "+tag+" of type "+type);
+    }
+    cout << "+++++ Executed Successfully Geant4 setup module *" << type << "* ." << endl;
+  }
+}
+
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf)  {
   for(typename C::const_iterator i=c.begin(); i != c.end(); ++i) {
     (o->*pmf)((*i)->GetName(),*i);
@@ -487,6 +529,7 @@ template <typename O, typename C, typename F> void handleMap(const O* o, const C
 }
 
 void Geant4Converter::create(DetElement top) {
+  LCDD& lcdd = m_lcdd;
   G4GeometryInfo& geo = *(m_dataPtr=new G4GeometryInfo);
   m_data->clear();
   collect(top,geo);
@@ -500,6 +543,9 @@ void Geant4Converter::create(DetElement top) {
   cout << "++ Handled " << geo.solids.size() << " solids." << endl;
   handle(this, geo.volumes,   &Geant4Converter::handleVolume);
   cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+  //handleMap(this, lcdd.fields(),   &Geant4Converter::handleField);
+  //cout << "++ Handled " << geo.fields.size() << " field entries." << endl;
+
   handleMap(this, geo.limits, &Geant4Converter::handleLimitSet);
   cout << "++ Handled " << geo.limits.size() << " limit sets." << endl;
   handleMap(this, geo.regions, &Geant4Converter::handleRegion);
@@ -510,4 +556,7 @@ void Geant4Converter::create(DetElement top) {
   // Now place all this stuff appropriately
   for(Data::const_reverse_iterator i=m_data->rbegin(); i != m_data->rend(); ++i)
     handle(this, (*i).second, &Geant4Converter::handlePlacement);
+
+  //==================== Fields
+  handleProperties(m_lcdd.properties());
 }
