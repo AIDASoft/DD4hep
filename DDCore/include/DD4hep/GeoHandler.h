@@ -48,6 +48,7 @@ namespace DD4hep {
       typedef std::map<const TNamed*,ConstVolumeSet>             LimitVolumes;
       typedef std::map<int, std::set<const TGeoNode*> >          Data;
       typedef std::set<TNamed*>                                  VisRefs;
+      typedef std::set<TNamed*>                                  Fields;
       typedef LCDD::HandleMap                                    DefinitionSet;
 
       typedef Geometry::LCDD              LCDD;
@@ -61,6 +62,7 @@ namespace DD4hep {
 	VolumeSet          volumes;
 	TransformSet       trafos;
 	VisRefs            vis;
+	Fields             fields;
 	MaterialSet        materials;
 	// SensitiveVolumes   sensitives;
 	// RegionVolumes      regions;

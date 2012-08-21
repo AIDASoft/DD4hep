@@ -39,6 +39,20 @@ int DD4hep::Geometry::_toInt(const string& value)  {
   return (int)result;
 }
 
+long DD4hep::Geometry::_toLong(const string& value)  {
+  string s(value);
+  size_t idx = s.find("(int)");
+  if ( idx != string::npos ) 
+    s.erase(idx,5);
+  while(s[0]==' ')s.erase(0,1);
+  double result = eval.evaluate(s.c_str());
+  if (eval.status() != XmlTools::Evaluator::OK) {
+    cerr << value << ": ";
+    eval.print_error();
+  }
+  return (long)result;
+}
+
 bool   DD4hep::Geometry::_toBool(const string& value)   {
   return value == "true";
 }
@@ -61,19 +75,19 @@ double DD4hep::Geometry::_toDouble(const string& value)   {
   return result;
 }
 
-template <> int    _multiply<int>(const std::string& left, const std::string& right) {
+template <> int    _multiply<int>(const string& left, const string& right) {
   return (int)_toDouble(left+"*"+right);
 }
 
-template <> long   _multiply<long>(const std::string& left, const std::string& right) {
+template <> long   _multiply<long>(const string& left, const string& right) {
   return (long)_toDouble(left+"*"+right);
 }
 
-template <> float  _multiply<float>(const std::string& left, const std::string& right) {
+template <> float  _multiply<float>(const string& left, const string& right) {
   return _toFloat(left+"*"+right);
 }
 
-template <> double _multiply<double>(const std::string& left, const std::string& right) {
+template <> double _multiply<double>(const string& left, const string& right) {
   return _toDouble(left+"*"+right);
 }
 
@@ -129,7 +143,7 @@ namespace DD4hep { namespace Geometry {
     msg += " to ";
     msg += to.name();
     msg += " not possible!!";
-    throw std::runtime_error(msg);
+    throw runtime_error(msg);
   }
   template <typename T> void Handle<T>::assign(T* n, const string& nam, const string& tit) {
     this->m_element = n;
@@ -149,7 +163,7 @@ namespace DD4hep { namespace Geometry {
     msg += " to ";
     msg += to.name();
     msg += " not possible!!";
-    throw std::runtime_error(msg);
+    throw runtime_error(msg);
   }
 }}
 

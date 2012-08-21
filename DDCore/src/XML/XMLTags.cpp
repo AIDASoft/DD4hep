@@ -58,6 +58,10 @@ namespace DD4hep   { namespace XML  {
   TAG(fraction);
   TAG(composite);
   TAG(sd);
+  TAG(dipole_coeff);
+  ATTR(funit);
+  ATTR(global);
+  ATTR(local);
 
   TAG(box);
   TAG(define);
@@ -93,12 +97,15 @@ namespace DD4hep   { namespace XML  {
   TAG(tube);
   TAG(vis);
   TAG(visref);
+  TAG(strength);
   TAG(volume);
   TAG(volumeref);
   TAG(zplane);
 
   TAG(alignments);
   TAG(alignment);
+  TAG(properties);
+  TAG(attributes);
 
   ATTR(overlap);
   ATTR(check);
@@ -116,6 +123,10 @@ namespace DD4hep   { namespace XML  {
   ATTR(dimensions);
   ATTR(ecut);
   ATTR(false);
+  ATTR(strength);
+  ATTR(field);
+  ATTR(inner_field);
+  ATTR(outer_field);
   ATTR(field_name);
   ATTR(g);
   ATTR(gridSizeX);
@@ -125,6 +136,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(hits_collection);
   TAG(identity_rot);
   TAG(identity_pos);
+  ATTR(inner_radius);
   ATTR(inner_r);
   ATTR(inner_z);
   ATTR(layer);
@@ -134,6 +146,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(name);
   ATTR(nphi);
   ATTR(ntheta);
+  ATTR(outer_radius);
   ATTR(outer_r);
   ATTR(outer_z);
   ATTR(position);
@@ -146,6 +159,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(region);
   ATTR(repeat);
   ATTR(zmin);
+  ATTR(zmax);
   ATTR(rmin);
   ATTR(rmax);
   ATTR(rotation);
@@ -174,6 +188,7 @@ namespace DD4hep   { namespace XML  {
   TAG(color);
   TAG(detectors);
   TAG(display);
+  TAG(field);
   TAG(fields);
   TAG(gdml);
   TAG(grid_xyz);

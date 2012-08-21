@@ -25,6 +25,8 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_radian;
   extern const Tag_t Tag_mm;
   extern const Tag_t Tag_cm;
+  extern const Tag_t Attr_global;
+  extern const Tag_t Attr_local;
 
 
   extern const Tag_t Attr_overlap;
@@ -45,6 +47,9 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_density;
   extern const Tag_t Tag_composite;
   extern const Tag_t Tag_fraction;
+  extern const Tag_t Tag_strength;
+  extern const Tag_t Tag_properties;
+  extern const Tag_t Tag_attributes;
 
   extern const Tag_t Tag_define;
   extern const Tag_t Tag_detector;
@@ -67,9 +72,14 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_dimensions;
   extern const Tag_t Attr_ecut;
   extern const Tag_t Attr_false;
+  extern const Tag_t Attr_strength;
+  extern const Tag_t Attr_field;
+  extern const Tag_t Attr_inner_field;
+  extern const Tag_t Attr_outer_field;
   extern const Tag_t Attr_field_name;
   extern const Tag_t Attr_hits_collection;
   extern const Tag_t Attr_incoming_r;
+  extern const Tag_t Attr_inner_radius;
   extern const Tag_t Attr_inner_r;
   extern const Tag_t Attr_inner_z;
   extern const Tag_t Attr_layer;
@@ -79,7 +89,10 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_name;
   extern const Tag_t Attr_nphi;
   extern const Tag_t Attr_ntheta;
+  extern const Tag_t Attr_funit;
+  extern const Tag_t Tag_dipole_coeff;
   
+  extern const Tag_t Attr_outer_radius;
   extern const Tag_t Attr_outer_r;
   extern const Tag_t Attr_outer_z;
   extern const Tag_t Attr_outgoing_r;
@@ -108,6 +121,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_color;
   extern const Tag_t Tag_detectors;
   extern const Tag_t Tag_display;
+  extern const Tag_t Tag_field;
   extern const Tag_t Tag_fields;
   extern const Tag_t Tag_gdml;
   extern const Tag_t Tag_header;
@@ -296,6 +310,7 @@ namespace DD4hep   { namespace XML  {
   // Solid:
   // No tags
   extern const Tag_t Attr_zmin;
+  extern const Tag_t Attr_zmax;
 
   // -- ZPlane
   extern const Tag_t Tag_zplane;

@@ -53,10 +53,13 @@ namespace DD4hep {
       double zhalf() const;
       double deltaphi() const;
 
-      double outer_z() const;
+      double outer_radius() const;
       double outer_r() const;
-      double inner_z() const;
+      double outer_z() const;
+      double inner_radius() const;
       double inner_r() const;
+      double inner_z() const;
+
       double z_length() const;
       double length() const;
       double width() const;
@@ -70,6 +73,7 @@ namespace DD4hep {
       double crossing_angle() const;
 
       double zmin() const;
+      double zmax() const;
 
       double radius() const;
       double offset() const;
@@ -132,6 +136,8 @@ namespace DD4hep {
       std::string visStr() const;
       std::string regionStr() const;
       std::string limitsStr() const;
+      double inner_field() const;
+      double outer_field() const;
       Dimension dimensions()  const;
       bool isTracker() const;
       bool isCalorimeter() const;

@@ -23,7 +23,7 @@ namespace {
     void  (*destruct)(void*);
     int     id;
   };
-  typedef map<const std::type_info*, ExtensionEntry> ExtensionMap;
+  typedef map<const type_info*, ExtensionEntry> ExtensionMap;
   static int s_extensionID = 0;
   ExtensionMap& detelement_extensions() {
     static ExtensionMap s_map;
@@ -163,7 +163,7 @@ Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag
   // This implicitly assumes that the children do not access the parent's extensions!
   obj->extensions.clear();
   for(DetElement::Extensions::const_iterator i=extensions.begin(); i != extensions.end(); ++i)  {
-    const std::type_info* info = (*i).first;
+    const type_info* info = (*i).first;
     ExtensionMap::const_iterator j = m.find(info);
     const ExtensionEntry& e = (*j).second;
     obj->extensions[info]   = (*(e.copy))((*i).second,det);
@@ -266,7 +266,7 @@ DetElement::DetElement(DetElement parent, const string& name, int id)   {
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*copy)(const void*,DetElement), void (*destruct)(void*)) {
+void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)(const void*,DetElement), void (*destruct)(void*)) {
   Object& o = _data();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
@@ -289,7 +289,7 @@ void* DetElement::i_addExtension(void* ptr, const std::type_info& info, void* (*
 }
 
 /// Access an existing extension object from the detector element
-void* DetElement::i_extension(const std::type_info& info)   const {
+void* DetElement::i_extension(const type_info& info)   const {
   Object& o = _data();
   Extensions::const_iterator j = o.extensions.find(&info);
   if ( j != o.extensions.end() )   {
@@ -300,7 +300,7 @@ void* DetElement::i_extension(const std::type_info& info)   const {
 }
  
 /// Access to the full path to the placed object
-std::string DetElement::placementPath() const {
+string DetElement::placementPath() const {
   if ( isValid() ) {
     Object& o = _data();
     if ( o.placementPath.empty() )   {
@@ -325,7 +325,7 @@ string DetElement::type() const   {
 }
 
 /// Set the type of the sensitive detector
-DetElement& DetElement::setType(const std::string& typ)   {
+DetElement& DetElement::setType(const string& typ)   {
   if ( isValid() )  {
     m_element->SetTitle(typ.c_str());
     return *this;
@@ -373,7 +373,7 @@ const DetElement::Children& DetElement::children() const   {
 }
 
 /// Access to individual children by name
-DetElement DetElement::child(const std::string& name) const {
+DetElement DetElement::child(const string& name) const {
   if ( isValid() )  {
     const Children& c = _data().children;
     Children::const_iterator i = c.find(name);
@@ -484,9 +484,9 @@ DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& name, const 
 }
 
 DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume,
-                                        const std::string& region, 
-                                        const std::string& limits, 
-                                        const std::string& vis)
+                                        const string& region, 
+                                        const string& limits, 
+                                        const string& vis)
 {
   return setRegion(lcdd,region,volume).setLimitSet(lcdd,limits,volume).setVisAttributes(lcdd,vis,volume);
 }
@@ -563,7 +563,7 @@ SensitiveDetector::Object::~Object() {
 }
 
 /// Constructor
-SensitiveDetector::SensitiveDetector(const std::string& name, const std::string& type)  {
+SensitiveDetector::SensitiveDetector(const string& name, const string& type)  {
   /*
     <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
       <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
@@ -576,7 +576,7 @@ SensitiveDetector::SensitiveDetector(const std::string& name, const std::string&
 }
 
 /// Set the type of the sensitive detector
-SensitiveDetector& SensitiveDetector::setType(const std::string& typ)   {
+SensitiveDetector& SensitiveDetector::setType(const string& typ)   {
   if ( isValid() )  {
     m_element->SetTitle(typ.c_str());
     return *this;
@@ -669,7 +669,7 @@ LimitSet SensitiveDetector::limits() const {
 }
 
 /// Add an extension object to the detector element
-void* SensitiveDetector::i_addExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
+void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
   Object& o = _data();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
@@ -692,7 +692,7 @@ void* SensitiveDetector::i_addExtension(void* ptr, const std::type_info& info, v
 }
 
 /// Access an existing extension object from the detector element
-void* SensitiveDetector::i_extension(const std::type_info& info)   const {
+void* SensitiveDetector::i_extension(const type_info& info)   const {
   Object& o = _data();
   Extensions::const_iterator j = o.extensions.find(&info);
   if ( j != o.extensions.end() )   {

@@ -62,6 +62,18 @@ namespace DD4hep {
       static Ref_t create(LCDD& lcdd, const XML::Handle_t& e);
     };
 
+    /** @class XMLDocumentReaderFactory Factories.h DDCore/Factories.h
+     *  Read an arbitrary XML document and analyze it's content
+     *
+     *  @author  M.Frank
+     *  @version 1.0
+     *  @date    2012/07/31
+     */
+    template <typename T> class XMLDocumentReaderFactory  {
+    public:
+      static long create(LCDD& lcdd, const XML::Handle_t& e);
+    };
+
     /** @class DetElementFactory Factories.h DDCore/Factories.h
      *  Standard factory to create Detector elements from the compact
      *  XML representation.
@@ -104,6 +116,19 @@ namespace {
   };
 
 
+  template < typename P > class Factory<P, long(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*)> {
+  public:
+    typedef DD4hep::Geometry::LCDD  LCDD;
+    typedef DD4hep::XML::Handle_t   xml_h;
+    static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
+      LCDD*  lcdd = (LCDD* )arg[0];
+      xml_h* elt  = (xml_h*)arg[1];
+      long ret = DD4hep::Geometry::XMLDocumentReaderFactory<P>::create(*lcdd,*elt);
+      new(retaddr) (long)(ret);
+    }
+  };
+
+
   template < typename P > class Factory<P, TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*)> {
   public:
     typedef DD4hep::Geometry::LCDD  LCDD;
@@ -117,6 +142,8 @@ namespace {
       *(void**)retaddr = handle.ptr();
     }
   };
+
+
 }
 
 #define DECLARE_DETELEMENT_FACTORY(x) \
@@ -141,6 +168,12 @@ namespace {
   using DD4hep::Geometry::xml_element_##name;					                     \
   template <> Ref_t XMLElementFactory<xml_element_##name>::create(LCDD& l,const XML::Handle_t& e) {return func(l,e);} }}\
   PLUGINSVC_FACTORY_WITH_ID(xml_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*))
+
+#define DECLARE_XML_DOC_READER(name,func) \
+  namespace DD4hep { namespace Geometry { namespace { struct xml_document_##name {}; }               \
+  using DD4hep::Geometry::xml_document_##name;					                     \
+  template <> long XMLDocumentReaderFactory<xml_document_##name>::create(LCDD& l,const XML::Handle_t& e) {return func(l,e);} }}\
+  PLUGINSVC_FACTORY_WITH_ID(xml_document_##name,std::string(#name "_XML_reader"),long(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*))
 
 #define DECLARE_DETELEMENT(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct det_element_##name {}; }                                       \

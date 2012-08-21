@@ -211,7 +211,7 @@ namespace DD4hep  { namespace Geometry  {
 }}
 
 /// Add identifier
-PlacedVolume& PlacedVolume::addPhysVolID(const std::string& name, int value)   {
+PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value)   {
   Object* obj = data<Object>();
   obj->volIDs[name] = value;
   return *this;
@@ -424,7 +424,7 @@ LimitSet Volume::limitSet() const
 {  return data<Object>()->limits;                           }
 
 /// Constructor to be used when creating a new geometry tree.
-Assembly::Assembly(const std::string& name) {
+Assembly::Assembly(const string& name) {
   m_element = new Value<TGeoVolumeAssembly,Volume::Object>(name.c_str());
 }
 

@@ -7,7 +7,7 @@
 //
 //====================================================================
 
-#include "Conversions.h"
+#include "XML/Conversions.h"
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/IDDescriptor.h"
@@ -21,8 +21,9 @@
 #include <iomanip>
 
 using namespace std;
+using namespace DD4hep::Geometry;
 
-namespace DD4hep { namespace Geometry {
+namespace DD4hep {
 
   template <> void Printer<Constant>::operator()(const Constant& val)  const  {
     os << "++ Constant:" << val.toString() << endl;
@@ -194,4 +195,4 @@ namespace DD4hep { namespace Geometry {
   void dumpTopVolume() {
     dumpVolume(gGeoManager->GetTopVolume(),0);
   }
-}}
+}

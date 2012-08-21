@@ -56,19 +56,43 @@ namespace DD4hep {
     
     bool           _toBool  (const std::string& value);
     int            _toInt   (const std::string& value);
+    long           _toLong  (const std::string& value);
     float          _toFloat (const std::string& value);
     double         _toDouble(const std::string& value);
     
     inline bool    _toBool(bool value)       {  return value; }
     inline int     _toInt(int value)         {  return value; }
+    inline long    _toLong(long value)       {  return value; }
     inline float   _toFloat(float value)     {  return value; }
     inline double  _toDouble(double value)   {  return value; }
 
+    template<class T> T _multiply(const std::string& left, T right);
+    template<class T> T _multiply(T left, const std::string& right);
     template<class T> T _multiply(const std::string& left, const std::string& right);
-    template <> int    _multiply<int>(const std::string& left, const std::string& right);
-    template <> long   _multiply<long>(const std::string& left, const std::string& right);
-    template <> float  _multiply<float>(const std::string& left, const std::string& right);
-    template <> double _multiply<double>(const std::string& left, const std::string& right);
+
+    template <>        int     _multiply<int>(const std::string& left, const std::string& right);
+    template <> inline int     _multiply<int>(int left, const std::string& right)
+      { return left * _toInt(right);    }
+    template <> inline int     _multiply<int>(const std::string& left, int right)
+      { return _toInt(left) * right;    }
+
+    template <>        long    _multiply<long>(const std::string& left, const std::string& right);
+    template <> inline long    _multiply<long>(long left, const std::string& right)
+      { return left * _toLong(right);   }
+    template <> inline long    _multiply<long>(const std::string& left, long right)
+      { return _toLong(left) * right;   }
+
+    template <>        float   _multiply<float>(const std::string& left, const std::string& right);
+    template <> inline float   _multiply<float>(float left, const std::string& right)
+      { return left * _toFloat(right);  }
+    template <> inline float   _multiply<float>(const std::string& left, float right)
+      { return _toFloat(left) * right;  }
+
+    template <>        double  _multiply<double>(const std::string& left, const std::string& right);
+    template <> inline double  _multiply<double>(const std::string& left, double right)
+      { return _toDouble(left) * right; }
+    template <> inline double  _multiply<double>(double left, const std::string& right)
+      { return left * _toDouble(right); }
     
     void _toDictionary(const std::string& name, const std::string& value);
     
@@ -99,33 +123,30 @@ namespace DD4hep {
       typedef T Implementation;
       typedef Handle<Implementation> handle_t;
       T* m_element;
-      Handle() : m_element(0)                 {                         }
-      Handle(T* e) : m_element(e)             {                         }
-      Handle(const Handle<T>& e) : m_element(e.m_element) {             }
+      Handle() : m_element(0)                 {                                 }
+      Handle(T* e) : m_element(e)             {                                 }
+      Handle(const Handle<T>& e) : m_element(e.m_element) {                     }
       template<typename Q> Handle(Q* e)
-      : m_element((T*)e)                    {  verifyObject();        }
+      : m_element((T*)e)                      {  verifyObject();                }
       template<typename Q> Handle(const Handle<Q>& e) 
-      : m_element((T*)e.m_element)          {  verifyObject();        }
+      : m_element((T*)e.m_element)            {  verifyObject();                }
       
-      T* ptr() const                          {  return m_element;      }
-      template <typename Q> Q* _ptr() const   {  return (Q*)m_element;  }
-      bool isValid() const                    {  return 0 != m_element; }
-      bool operator!() const                  {  return 0 == m_element; }
-      T* operator->() const                   {  return  m_element;     }
-      operator T& ()  const                   {  return *m_element;     }
-      T& operator*()  const                   {  return *m_element;     }
-      
-      template <typename Q> Q* data() const  {
-	return (Value<T,Q>*)m_element;
-      }
+      bool isValid() const                    {  return 0 != m_element;         }
+      bool operator!() const                  {  return 0 == m_element;         }
+      T* operator->() const                   {  return  m_element;             }
+      operator T& ()  const                   {  return *m_element;             }
+      T& operator*()  const                   {  return *m_element;             }
+      T* ptr() const                          {  return m_element;              }
+      template <typename Q> Q* _ptr() const   {  return (Q*)m_element;          }
+      template <typename Q> Q* data() const   {  return (Value<T,Q>*)m_element; }
       void verifyObject() const {
         increment_object_validations();
         if ( m_element && dynamic_cast<T*>(m_element) == 0 )  {
           bad_assignment(typeid(*m_element),typeid(T));
         }
       }
-      static void bad_assignment(const std::type_info& from, const std::type_info& to);
       const char* name() const;
+      static void bad_assignment(const std::type_info& from, const std::type_info& to);
       void  assign(Implementation* n, const std::string& nam, const std::string& title);
     };
     typedef Handle<>       Elt_t;

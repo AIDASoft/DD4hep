@@ -7,11 +7,12 @@
 //
 //====================================================================
 
-#ifndef DD4hep_LCDD_LCDD_H
-#define DD4hep_LCDD_LCDD_H
+#ifndef DD4HEP_LCDD_LCDD_H
+#define DD4HEP_LCDD_LCDD_H
 
 // Framework includes
 #include "DD4hep/Handle.h"
+#include "DD4hep/Fields.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Shapes.h"
 #include "DD4hep/Volumes.h"
@@ -39,14 +40,19 @@ namespace DD4hep {
      */
     struct LCDD {
       typedef std::map<std::string,Handle<> > HandleMap;
+      typedef std::map<std::string,std::string> PropertyValues;
+      typedef std::map<std::string,PropertyValues>  Properties;
 
+      /// Destructor
       virtual ~LCDD() {}
 
-      virtual void create() = 0;
+      /// Initialize geometry
       virtual void init() = 0;
+      /// Finalize the geometry
       virtual void endDocument() = 0;
-      virtual void addStdMaterials() = 0;
 
+      /// Access to properties map
+      virtual Properties& properties() const = 0;
       /// Return handle to material describing air
       virtual Material air() const = 0;
       /// Return handle to material describing vacuum
@@ -60,6 +66,9 @@ namespace DD4hep {
       virtual Volume   worldVolume() const = 0;
       /// Return handle to the world volume containing the volume with the tracking devices
       virtual Volume   trackingVolume() const = 0;
+
+      /// Return handle to the combined electromagentic field description.
+      virtual OverlayedField field() const = 0;
 
       /// Accessor to the map of header entries
       virtual const HandleMap& header()  const = 0;
@@ -79,6 +88,8 @@ namespace DD4hep {
       virtual const HandleMap& limitsets()  const = 0;
       /// Accessor to the map of aligment entries
       virtual const HandleMap& alignments()  const = 0;
+      /// Accessor to the map of field entries, which together form the global field
+      virtual const HandleMap& fields()  const = 0;
 
       virtual Volume            pickMotherVolume(const DetElement& sd)     const = 0;
 
@@ -101,6 +112,8 @@ namespace DD4hep {
       /// Retrieve a sensitive detector by it's name from the detector description
       virtual SensitiveDetector sensitiveDetector(const std::string& name) const = 0;
       /// Retrieve a subdetector element by it's name from the detector description
+      virtual CartesianField    field(const std::string& name)             const = 0;
+      /// Retrieve a field component by it's name from the detector description
       virtual DetElement        detector(const std::string& name)          const = 0;
 
       /// Add a new constant to the detector description
@@ -121,6 +134,8 @@ namespace DD4hep {
       virtual LCDD& add(DetElement detector)  = 0;
       /// Add alignment entry to the detector description
       virtual LCDD& add(AlignmentEntry entry) = 0;
+      /// Add a field component to the detector description
+      virtual LCDD& add(CartesianField entry) = 0;
 
       /// Add a new constant by named reference to the detector description
       virtual LCDD& addConstant(const Ref_t& element) = 0;
@@ -142,18 +157,19 @@ namespace DD4hep {
       virtual LCDD& addDetector(const Ref_t& detector) = 0;
       /// Add alignment entry by named reference to the detector description
       virtual LCDD& addAlignment(const Ref_t& alignment) = 0;
+      /// Add a field component by named reference to the detector description
+      virtual LCDD& addField(const Ref_t& field) = 0;
 
       /// Read compact geometry description or alignment file
       virtual void fromCompact(const std::string& fname) = 0;
-      /// Apply & lock realigments
-      virtual void applyAlignment() = 0;
-
-      /// Dump geometry description
+      /// Read any geometry description or alignment file
+      virtual void fromXML(const std::string& fname) = 0;
+      /// 
       virtual void dump() const = 0;
-      
+
       ///---Factory method-------
       static LCDD& getInstance(void);
     };
   }       /* End namespace Geometry  */
 }         /* End namespace DD4hep   */
-#endif    /* DD4hep_LCDD_LCDD_H     */
+#endif    /* DD4HEP_LCDD_LCDD_H     */

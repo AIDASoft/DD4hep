@@ -37,17 +37,6 @@ namespace DD4hep {
       
       struct ObjectHandleMap : public HandleMap  {
         ObjectHandleMap() {}
-#if 0
-        void append_noCheck(const Ref_t& e) { 
-          if ( e.isValid() )  {
-            std::string n = e.name();
-            if ( this->find(n) != this->end() ) {
-              throw InvalidObjectError("Object "+n+" is already present in map!");
-            }
-            this->insert(std::make_pair(n,e.ptr()));
-          }
-        }
-#endif
         void append(const Ref_t& e, bool throw_on_doubles=true) { 
           if ( e.isValid() )  {
             std::string n = e.name();
@@ -58,6 +47,7 @@ namespace DD4hep {
           }
           throw InvalidObjectError("Attempt to add an invalid object.");
         }
+
         template <typename T> void append(const Ref_t& e, bool throw_on_doubles=true) {
           T* obj = dynamic_cast<T*>(e.ptr());
           if ( obj )  {
@@ -67,7 +57,7 @@ namespace DD4hep {
           throw InvalidObjectError("Attempt to add an object, which is of the wrong type.");
         }
       };
-      
+		      
       ObjectHandleMap     m_readouts;
       ObjectHandleMap     m_header;
       ObjectHandleMap     m_idDict;
@@ -91,28 +81,37 @@ namespace DD4hep {
       
       Material            m_materialAir;
       Material            m_materialVacuum;
-      
+
+      OverlayedField      m_field;
       Ref_t               m_setup;
+      Properties*         m_properties;
       
-      void convertMaterials(const std::string& uri);
+      /// Default constructor
       LCDDImp();
+
+      /// Standard destructor
+      virtual ~LCDDImp();
 
 		      
       /// Read compact geometry description or alignment file
-      virtual void fromCompact(const std::string& fname);
-      /// Apply & lock realigments
-      virtual void applyAlignment();
+      virtual void fromCompact(const std::string& fname) { fromXML(fname);              }
+      /// Read any XML file
+      virtual void fromXML(const std::string& fname);
       
-      virtual void create();
+      virtual void dump() const;
+
+      /// Apply & lock realigments
+      //virtual void applyAlignment();
+      
+      //virtual void create();
       virtual void init();
-      virtual void addStdMaterials();
       virtual void endDocument();
       
-      void dump() const;
-
       virtual Handle<TObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not=true)  const;
       virtual Volume          pickMotherVolume(const DetElement& sd) const;
 
+      /// Access to properties
+      Properties&             properties()  const      { return *m_properties;          }
       /// Return handle to material describing air
       virtual Material        air() const              { return m_materialVacuum;       }
       /// Return handle to material describing vacuum
@@ -125,37 +124,43 @@ namespace DD4hep {
       virtual Volume          worldVolume() const      { return m_worldVol;             }
       /// Return handle to the world volume containing the volume with the tracking devices
       virtual Volume          trackingVolume() const   { return m_trackingVol;          }
+      /// Return handle to the combined electromagentic field description.
+      virtual OverlayedField  field() const            { return m_field;                }
+
       
       /// Retrieve a constant by it's name from the detector description
       virtual Constant     constant(const std::string& name) const 
       {  return getRefChild(m_define,name);                                             }
       /// Retrieve a limitset by it's name from the detector description
-      virtual LimitSet     limitSet(const std::string& name)  const
+      virtual LimitSet          limitSet(const std::string& name)  const
       {  return getRefChild(m_limits,name);                                             }  
       /// Retrieve a visualization attribute by it's name from the detector description
-      virtual VisAttr      visAttributes(const std::string& name) const
+      virtual VisAttr           visAttributes(const std::string& name) const
       {  return getRefChild(m_display,name,false);                                      }  
       /// Retrieve a matrial by it's name from the detector description
-      virtual Material     material(const std::string& name)  const 
+      virtual Material          material(const std::string& name)  const 
       {  return getRefChild(m_materials,name);                                          }
       /// Retrieve a region object by it's name from the detector description
-      virtual Region       region(const std::string& name)  const
+      virtual Region            region(const std::string& name)  const
       {  return getRefChild(m_regions,name);                                            }
       /// Retrieve a id descriptor by it's name from the detector description
-      virtual IDDescriptor idSpecification(const std::string& name)  const
+      virtual IDDescriptor      idSpecification(const std::string& name)  const
       {  return getRefChild(m_idDict,name);                                             }
       /// Retrieve a readout object by it's name from the detector description
-      virtual Readout      readout(const std::string& name)  const
+      virtual Readout           readout(const std::string& name)  const
       {  return getRefChild(m_readouts,name);                                           }
       /// Retrieve an alignment entry by it's name from the detector description
-      virtual AlignmentEntry alignment(const std::string& path) const 
+      virtual AlignmentEntry    alignment(const std::string& path) const 
       {  return getRefChild(alignments(),path);                                         }
       /// Retrieve a subdetector element by it's name from the detector description
-      virtual DetElement   detector(const std::string& name)  const
+      virtual DetElement        detector(const std::string& name)  const
       {  return getRefChild(m_detectors,name);                                          }
       /// Retrieve a sensitive detector by it's name from the detector description
       virtual SensitiveDetector sensitiveDetector(const std::string& name)  const
       {  return getRefChild(m_sensitive,name,false);                                    }
+      /// Retrieve a subdetector element by it's name from the detector description
+      virtual CartesianField    field(const std::string& name)  const 
+      {  return getRefChild(m_fields,name,false);                                       }
       
       /// Accessor to the map of header entries
       virtual const HandleMap& header()  const          { return m_header;              }
@@ -175,7 +180,9 @@ namespace DD4hep {
       virtual const HandleMap& detectors()  const       { return m_detectors;           }
       /// Accessor to the map of aligment entries
       virtual const HandleMap& alignments()  const      { return m_alignments;          }
-      
+      /// Accessor to the map of field entries, which together form the global field
+      virtual const HandleMap& fields()  const          { return m_fields;              }
+
 #define __R  return *this
       /// Add a new constant to the detector description
       virtual LCDD& add(Constant x)                     { return addConstant(x);        }
@@ -195,6 +202,8 @@ namespace DD4hep {
       virtual LCDD& add(Readout x)                      { return addReadout(x);         }
       /// Add a new subdetector to the detector description
       virtual LCDD& add(DetElement x)                   { return addDetector(x);        }
+      /// Add a field component to the detector description
+      virtual LCDD& add(CartesianField x)               { return addField(x);           }
       
       /// Add a new constant by named reference to the detector description
       virtual LCDD& addConstant(const Ref_t& x)         { m_define.append(x,false); __R;}
@@ -216,6 +225,8 @@ namespace DD4hep {
       virtual LCDD& addDetector(const Ref_t& x);
       /// Add a new alignment entry by named reference to the detector description
       virtual LCDD& addAlignment(const Ref_t& x)        { m_alignments.append(x);   __R;}
+      /// Add a field component by named reference to the detector description
+      virtual LCDD& addField(const Ref_t& x);
 #undef __R
       
     };

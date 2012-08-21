@@ -21,21 +21,20 @@
 #include "TGeoVolume.h"
 #include "TGeoShape.h"
 #include "TClass.h"
+#include "Reflex/PluginService.h"
 
 #if DD4HEP_USE_PYROOT
   #include "TPython.h"
 #elif DD4HEP_USE_XERCESC
-  #include "compact/Conversions.h"
   #include "XML/DocumentHandler.h"
 #endif
 
-namespace DD4hep  { namespace Geometry { struct Compact; }}
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 namespace {
   struct TopDetElement : public DetElement {
-    TopDetElement(const std::string& nam, Volume vol) : DetElement(nam,/* "structure", */0) { _data().volume = vol;    }
+    TopDetElement(const string& nam, Volume vol) : DetElement(nam,/* "structure", */0) { _data().volume = vol;    }
   };
 }
 
@@ -44,7 +43,19 @@ LCDD& LCDD::getInstance() {
   return *s_lcdd; 
 }
 
-LCDDImp::LCDDImp() : m_world(), m_trackers(), m_worldVol(), m_trackingVol()  {
+/// Default constructor
+LCDDImp::LCDDImp() : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global")  
+{
+  m_properties = new Properties();
+  if ( 0 == gGeoManager ) {
+    gGeoManager = new TGeoManager();
+  }
+}
+
+/// Standard destructor
+LCDDImp::~LCDDImp() {
+  if ( m_properties ) delete m_properties;
+  m_properties = 0;
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not existing
@@ -57,17 +68,14 @@ LCDD& LCDDImp::addDetector(const Ref_t& x)    {
   return *this;
 }
 
-void LCDDImp::convertMaterials(const string& fname)  {
-  //convertMaterials(XML::DocumentHandler().load(fname).root());
+/// Add a field component by named reference to the detector description
+LCDD& LCDDImp::addField(const Ref_t& x) {
+  m_field.add(x);
+  m_fields.append(x);
+  return *this;
 }
 
-void LCDDImp::addStdMaterials()   {
-  convertMaterials("file:../cmt/elements.xml");
-  convertMaterials("file:../cmt/materials.xml");
-}
-
-
-Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const std::string& name, bool do_throw)  const  {
+Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, bool do_throw)  const  {
   HandleMap::const_iterator i = e.find(name);
   if ( i != e.end() )  {
     return (*i).second;
@@ -135,13 +143,13 @@ void LCDDImp::endDocument()  {
     m_trackingVol.setRegion(trackingRegion);
     
     // Set the world volume to invisible.
-    VisAttr worldVis(lcdd,"WorldVis");
+    VisAttr worldVis("WorldVis");
     worldVis.setVisible(false);
     m_worldVol.setVisAttributes(worldVis);
     add(worldVis);
   
     // Set the tracking volume to invisible.
-    VisAttr trackingVis(lcdd,"TrackingVis");
+    VisAttr trackingVis("TrackingVis");
     trackingVis.setVisible(false);               
     m_trackingVol.setVisAttributes(trackingVis);
     add(trackingVis); 
@@ -152,12 +160,6 @@ void LCDDImp::endDocument()  {
     mgr->CloseGeometry();
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
     ShapePatcher(m_world)();
-  }
-}
-
-void LCDDImp::create()  {
-  if ( 0 == gGeoManager ) {
-    gGeoManager = new TGeoManager();
   }
 }
 
@@ -182,45 +184,46 @@ void LCDDImp::init()  {
   }
 }
 
-void LCDDImp::fromCompact(const std::string& xmlfile) {
-  create();
+void LCDDImp::fromXML(const string& xmlfile) {
 #if DD4HEP_USE_PYROOT
   string cmd;
   TPython::Exec("import lcdd");
-  cmd = "lcdd.fromCompact('" + xmlfile + "')";
+  cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());  
 #elif DD4HEP_USE_XERCESC
-  XML::Handle_t compact = XML::DocumentHandler().load(xmlfile).root();
+  const XML::Handle_t xml_root = XML::DocumentHandler().load(xmlfile).root();
+  string tag = xml_root.tag();
   try {
-    Converter<Compact>(*this)(compact);
+    LCDD* lcdd = this;
+    string type = tag + "_XML_reader";
+    long result = ROOT::Reflex::PluginService::Create<long>(type,lcdd,&xml_root);
+    if ( 0 == result ) {
+      throw runtime_error("Failed to locate plugin to interprete files of type"
+			  " \""+tag+"\" - no factory:"+type);
+    }
+    result = *(long*)result;
+    if ( result != 1 ) {
+      throw runtime_error("Failed to parse the XML file "+xmlfile+" with the plugin "+type);
+    }
   }
   catch(const exception& e)  {
     cout << "Exception:" << e.what() << endl;
+    throw runtime_error("Exception:"+string(e.what())+" while parsing "+xmlfile);
   }
   catch(xercesc::DOMException& e)  {
     cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
+    throw runtime_error("XML-DOM Exception:"+XML::_toString(e.msg)+" while parsing "+xmlfile);
   } 
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;
+    throw runtime_error("UNKNOWN excetion while parsing "+xmlfile);
   }
 #endif
 }
-
-void LCDDImp::applyAlignment()   {
-}
-
-#include "SimpleGDMLWriter.h"
-//#include "Geant4Converter.h"
-#include "GeometryTreeDump.h"
 
 void LCDDImp::dump() const  {
   TGeoManager* mgr = gGeoManager;
   mgr->SetVisLevel(4);
   mgr->SetVisOption(1);
   m_worldVol->Draw("ogl");
-
-  // SimpleGDMLWriter handler(cout);
-  // Geant4Converter handler;
-  //GeometryTreeDump handler;
-  //handler.create(m_world);
 }

@@ -41,7 +41,7 @@ const string Segmentation::type() const   {
 }
 
 /// Add an extension object to the detector element
-void* Segmentation::i_setExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
+void* Segmentation::i_setExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
   Object& o = _data();
   o.type = EXTENDED;
   o.data.extension.ptr = ptr;
@@ -51,7 +51,7 @@ void* Segmentation::i_setExtension(void* ptr, const std::type_info& info, void (
 }
 
 /// Access an existing extension object from the detector element
-void* Segmentation::i_extension(const std::type_info& info)   const {
+void* Segmentation::i_extension(const type_info& info)   const {
   if ( isValid() ) {
     Object::Data::Extension& o = _data().data.extension;
     if ( o.ptr )   {
@@ -143,13 +143,13 @@ GridXY::GridXY()
 : Segmentation("grid_xy")   {}
 
 /// Constructor to be used when creating a new object. Data are taken from the input handle
-GridXY::GridXY(const std::string& tag) 
+GridXY::GridXY(const string& tag) 
 : Segmentation(tag) 
 {
 }
 
 /// Constructor to be used when creating a new object.
-GridXY::GridXY(const std::string& tag, double size_x, double size_y)
+GridXY::GridXY(const string& tag, double size_x, double size_y)
 : Segmentation(tag)
 {
   _data().data.cartesian_grid.grid_size_x = size_x;

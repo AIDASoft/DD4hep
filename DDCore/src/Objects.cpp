@@ -24,7 +24,6 @@
 
 using namespace std;
 using namespace DD4hep::Geometry;
-using DD4hep::IDDescriptor;
 
 #if 0
 Header& Header::fromCompact(Document doc, Handle_t element, const string& fname)   {
@@ -57,16 +56,14 @@ Header::Header(LCDD& /* lcdd */)   {
 }
 
 /// Constructor to be used when creating a new DOM tree
-Constant::Constant(LCDD& lcdd, const string& nam, const string& val)
+Constant::Constant(const string& nam, const string& val)
 {
   m_element = new TNamed(nam.c_str(),val.c_str());
-  lcdd.add(*this);
 }
 
 /// Constructor to be used when creating a new DOM tree
-Constant::Constant(LCDD& lcdd, const string& name)   {
+Constant::Constant(const string& name)   {
   m_element = new TNamed(name.c_str(),"");
-  lcdd.add(*this);
 }
 
 /// String representation of this object
@@ -78,7 +75,7 @@ string Constant::toString()  const {
 }
 
 /// Constructor to be used when creating a new DOM tree
-Atom::Atom(LCDD& /* lcdd */, const string& name, const string& formula, int Z, int N, double density) {
+Atom::Atom(const string& name, const string& formula, int Z, int N, double density) {
   TGeoElementTable* t = TGeoElement::GetElementTable();
   TGeoElement* e = t->FindElement(name.c_str());
   if ( !e ) {
@@ -89,7 +86,7 @@ Atom::Atom(LCDD& /* lcdd */, const string& name, const string& formula, int Z, i
 }
 
 /// Constructor to be used when creating a new DOM tree
-Material::Material(LCDD& /* lcdd */, const string& name)   {
+Material::Material(const string& name)   {
   TGeoMaterial* mat = gGeoManager->GetMaterial(name.c_str());
   m_element = mat;
 }
@@ -104,7 +101,7 @@ string Material::toString()  const {
 }
 
 /// Constructor to be used when creating a new DOM tree
-VisAttr::VisAttr(LCDD& /* lcdd */, const string& name)    {
+VisAttr::VisAttr(const string& name)    {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
   assign(obj, name, "vis");
   obj->color  = 2;
@@ -204,7 +201,7 @@ string VisAttr::toString()  const {
 }
 
 /// Constructor to be used when creating a new aligment entry
-AlignmentEntry::AlignmentEntry(LCDD& /* lcdd */, const string& path)   {
+AlignmentEntry::AlignmentEntry(const string& path)   {
   TGeoPhysicalNode* obj = new TGeoPhysicalNode(path.c_str());
   assign(obj,path,"*");
 }
@@ -242,7 +239,7 @@ int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, 
     m_element->Align(new_matrix,0,check,overlap);
     return 1;
   }
-  throw std::runtime_error("Callot align non existing physical node.");
+  throw runtime_error("Callot align non existing physical node.");
 }
 
 
@@ -270,7 +267,7 @@ bool Limit::operator< (const Limit& c) const {
 }
 
 /// Conversion to a string representation
-std::string Limit::toString()  const {
+string Limit::toString()  const {
   string res = name + " = " + content;
   if ( !unit.empty() ) res += unit + " ";
   res + " (" + particles + ")";

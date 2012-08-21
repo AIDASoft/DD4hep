@@ -39,7 +39,7 @@ namespace {
   string indent = "";
 
   /// Reference to output stream
-  std::ostream& m_output = cout;
+  ostream& m_output = cout;
 
 
   void getAngles(const Double_t* m, Double_t &phi, Double_t &theta, Double_t &psi)  {

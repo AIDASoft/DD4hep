@@ -233,12 +233,26 @@ Tag_t& Tag_t::operator=(const string& s) {
   return *this;
 }
 
+/// Clone the DOMelement - with the option of a deep copy
 Handle_t Handle_t::clone(DOMDocument* new_doc, bool deep) const  {
   return (DOMElement*)new_doc->importNode(m_node, deep);
 }
 
+/// Retrieve a collection of all attributes of this DOM element
+vector<Attribute> Handle_t::attributes() const {
+  vector<Attribute> attrs;
+  if ( m_node ) {
+    xercesc::DOMNamedNodeMap* l = m_node->getAttributes();
+    for(XMLSize_t i=0, n=l->getLength(); i<n; ++i)  {
+      DOMNode* n = l->item(i);
+      attrs.push_back(Attribute(n));
+    }
+  }
+  return attrs;
+}
+
 size_t Handle_t::numChildren(const XMLCh* t, bool throw_exception) const  {
-  DOMNodeList* e = (DOMNodeList*)(m_node ? m_node->getElementsByTagName(t) : 0); 
+  NodeList e = (NodeList)(m_node ? m_node->getElementsByTagName(t) : 0); 
   if ( e || !throw_exception ) return e->getLength();
   string msg = "Handle_t::numChildren: ";
   if ( m_node )
@@ -248,19 +262,9 @@ size_t Handle_t::numChildren(const XMLCh* t, bool throw_exception) const  {
   throw runtime_error(msg);
 }
 
-Handle_t Handle_t::firstChild(const XMLCh* t) const  { 
-  DOMNodeList* e = (DOMNodeList*)(m_node ? m_node->getElementsByTagName(t) : 0); 
-  if ( e && e->getLength()>0 ) return (DOMElement*)e->item(0);
-  string msg = "Handle_t::firstChild: ";
-  if ( m_node )
-    msg += "Element ["+tag()+"] has no children of type '"+_toString(t)+"'";
-  else
-    msg += "Element [INVALID] has no children of type '"+_toString(t)+"'";
-  throw runtime_error(msg);
-}
-
 Handle_t Handle_t::child(const XMLCh* t, bool throw_exception) const   { 
-  DOMElement* e = (DOMElement*)(m_node ? m_node->getElementsByTagName(t)->item(0) : 0); 
+  NodeList    l = (NodeList)(m_node ? m_node->getElementsByTagName(t) : 0); 
+  DOMElement* e = (DOMElement*)(l ? l->item(0) : 0); 
   if ( e || !throw_exception ) return e;
   string msg = "Handle_t::child: ";
   if ( m_node )
@@ -270,29 +274,28 @@ Handle_t Handle_t::child(const XMLCh* t, bool throw_exception) const   {
   throw runtime_error(msg);
 }
 
-Handle_t Handle_t::remove(xercesc::DOMElement* node)  const  {
-  DOMElement* e = (DOMElement*)(m_node && node ? m_node->removeChild(node) : 0); 
+Handle_t Handle_t::remove(Handle_t node)  const  {
+  DOMElement* e = (DOMElement*)(m_node && node.ptr() ? m_node->removeChild(node.ptr()) : 0); 
   if ( e ) return e;
   string msg = "Handle_t::remove: ";
-  Handle_t n(node);
-  if ( m_node && n.ptr() )
-    msg += "Element ["+tag()+"] has no child of type '"+n.tag()+"'";
-  else if ( n )
-    msg += "Element [INVALID]. Cannot remove child of type: '"+n.tag()+"'";
-  else if ( n )
+  if ( m_node && node.ptr() )
+    msg += "Element ["+tag()+"] has no child of type '"+node.tag()+"'";
+  else if ( node )
+    msg += "Element [INVALID]. Cannot remove child of type: '"+node.tag()+"'";
+  else if ( node )
     msg += "Element [INVALID]. Cannot remove [INVALID] child. Big Shit!!!!";
 
   throw runtime_error(msg);
 }
 
 void Handle_t::removeChildren(const XMLCh* tag)  const  {
-  DOMNodeList* l=m_node->getElementsByTagName(tag);
+  NodeList l=m_node->getElementsByTagName(tag);
   for(XMLSize_t i=0, n=l->getLength(); i<n; ++i)
     m_node->removeChild(l->item(i));
 }
 
 bool Handle_t::hasChild(const XMLCh* tag) const   { 
-  DOMNodeList* n = m_node->getElementsByTagName(tag);
+  NodeList n = m_node->getElementsByTagName(tag);
   return n ? n->getLength()>0 : false;
 }
 
@@ -317,6 +320,10 @@ Attribute Handle_t::attr_ptr(const XMLCh* t)  const    {
   else
     msg += "Element [INVALID] has no attribute of type '"+_toString(t)+"'";
   throw runtime_error(msg);
+}
+
+const XMLCh* Handle_t::attr_name(const Attribute attr)  const   {
+  return attr->getName();
 }
 
 const XMLCh* Handle_t::attr_value(const XMLCh* attr)  const   {
@@ -375,7 +382,7 @@ Attribute Handle_t::setAttr(const XMLCh* name, const XMLCh* value) const  {
   return attr;
 }
 
-DOMElement* Document::createElt(const XMLCh* tag)  const {
+Handle_t Document::createElt(const XMLCh* tag)  const {
   return m_doc->createElement(tag);
 }
 
@@ -429,14 +436,14 @@ Handle_t Element::addChild(const XMLCh* tag)  const  {
 }
 
 Handle_t Element::child(const Strng_t& tag, bool throw_exception) const  {
-  DOMNodeList* l=m_element->getElementsByTagName(tag);
+  NodeList l=m_element->getElementsByTagName(tag);
   if ( l && l->getLength() > 0 ) return Handle_t((DOMElement*)l->item(0));
   if ( throw_exception ) throw runtime_error("Cannot find the required child node!");
   return Handle_t(0);
 }
 
 Handle_t Element::setChild(const XMLCh* tag)  const  {
-  DOMNodeList* l=m_element->getElementsByTagName(tag);
+  NodeList l=m_element->getElementsByTagName(tag);
   if ( l && l->getLength() > 0 ) return Handle_t((DOMElement*)l->item(0));
   return addChild(tag);
 }
@@ -472,44 +479,83 @@ void RefElement::setName(const XMLCh* new_name)  {
   setAttr(Attr_name,new_name);
 }
 
-Collection_t::Collection_t(DOMElement* n, const XMLCh* tag) : m_index(-1), m_element(n) {
-  m_children = n->getElementsByTagName(tag);
-  m_node = (DOMElement*)(m_children->getLength() == 0 ? 0 : n);
+Collection_t::Collection_t(Elt_t element, DOMNode::NodeType typ) 
+  : m_type(typ), m_index(-1)
+{
+  m_children = element->getChildNodes();
+  m_node = (DOMElement*)m_children->item(0);
   ++(*this);
 }
 
-Collection_t::Collection_t(DOMElement* n, const char* tag) : m_index(-1), m_element(n) {
-  m_children = n->getElementsByTagName(Tag_t(tag));
-  m_node = (DOMElement*)(m_children->getLength() == 0 ? 0 : n);//m_children->item(m_index));
+Collection_t::Collection_t(Elt_t element, const XMLCh* tag) 
+  : m_type(DOMNode::ELEMENT_NODE), m_index(-1)
+{
+  m_children = element->getElementsByTagName(tag);
+  m_node = (DOMElement*)m_children->item(0);
   ++(*this);
 }
 
-Collection_t::Collection_t(DOMElement* n, DOMNodeList* c) : m_index(-1), m_element(n), m_children(c) {
-  m_node = (DOMElement*)(m_children->getLength() == 0 ? 0 : n);
+Collection_t::Collection_t(Elt_t element, const char* tag)
+  : m_type(DOMNode::ELEMENT_NODE), m_index(-1)
+{
+  m_children = element->getElementsByTagName(Strng_t(tag));
+  m_node = (DOMElement*)m_children->item(0);
+  ++(*this);
+}
+
+Collection_t::Collection_t(NodeList node_list) 
+  : m_type(DOMNode::ELEMENT_NODE), m_index(-1), m_children(node_list)
+{
+  m_node = (DOMElement*)m_children->item(0);
+  ++(*this);
+}
+
+Collection_t::Collection_t(NodeList node_list, DOMNode::NodeType typ)
+  : m_type(typ), m_index(-1), m_children(node_list)
+{
+  m_node = (DOMElement*)m_children->item(0);
   ++(*this);
 }
 
 Collection_t& Collection_t::reset()  {
   m_index = -1;
-  m_node = (DOMElement*)(m_children->getLength() == 0 ? 0 : m_element);
+  m_node = (DOMElement*)(m_children->getLength() == 0 ? 0 : m_children->item(0));
   ++(*this);
   return *this;
 }
 
 size_t Collection_t::size()  const  {
-  return m_children ? m_children->getLength() : 0;
+  return m_children->getLength();
 }
 
 void Collection_t::operator++()  const  {
+  Elt_t e = Elt_t(m_node ? m_node->getParentNode() : 0);
   while(m_node)  {
-    //int t1 = m_node->getNodeType();
-    //int t2 = DOMNode::ELEMENT_NODE;
     m_node = (DOMElement*)m_children->item(++m_index);
-    if ( m_node && m_node->getNodeType() == DOMNode::ELEMENT_NODE ) {
-      if ( m_node->getParentNode() == m_element )
+    if ( m_node && m_node->getNodeType() == m_type ) {
+      if ( m_node->getParentNode() == e )
 	return;
     }
   }
+}
+
+void Collection_t::operator--()  const  {
+  Elt_t e = Elt_t(m_node ? m_node->getParentNode() : 0);
+  while(m_node)  {
+    m_node = (DOMElement*)m_children->item(--m_index);
+    if ( m_node && m_node->getNodeType() == m_type ) {
+      if ( m_node->getParentNode() == e )
+	return;
+    }
+  }
+}
+
+void Collection_t::operator++(int)  const  {
+  ++(*this);
+}
+
+void Collection_t::operator--(int)  const  {
+  --(*this);
 }
 
 Handle_t Document::clone(Handle_t source, bool deep) const  {

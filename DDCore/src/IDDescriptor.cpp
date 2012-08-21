@@ -55,7 +55,7 @@ namespace {
 }
 
 /// Initializing constructor
-IDDescriptor::IDDescriptor(const std::string& description) 
+IDDescriptor::IDDescriptor(const string& description) 
 {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
   assign(obj,description,"iddescriptor");

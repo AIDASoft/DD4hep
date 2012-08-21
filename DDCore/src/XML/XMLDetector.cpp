@@ -55,6 +55,10 @@ double Dimension::zmin() const  {
   return m_element.attr<double>(Attr_zmin);
 }
 
+double Dimension::zmax() const  {
+  return m_element.attr<double>(Attr_zmax);
+}
+
 double Dimension::rmax() const  {
   return m_element.attr<double>(Attr_rmax);
 }
@@ -71,12 +75,20 @@ double Dimension::outer_r() const  {
   return m_element.attr<double>(Attr_outer_r);
 }
 
+double Dimension::outer_radius() const {
+  return m_element.attr<double>(Attr_outer_radius);
+}
+
 double Dimension::inner_z() const  {
   return m_element.attr<double>(Attr_inner_z);
 }
 
 double Dimension::inner_r() const  {
   return m_element.attr<double>(Attr_inner_r);
+}
+
+double Dimension::inner_radius() const {
+  return m_element.attr<double>(Attr_inner_radius);
 }
 
 bool   Dimension::reflect() const  {
@@ -248,6 +260,14 @@ int    Dimension::nz() const {
 
 double Dimension::zstart() const {
   return m_element.attr<double>(Attr_zstart);
+}
+
+double DetElement::inner_field() const {
+  return m_element.attr<double>(Attr_inner_field);
+}
+
+double DetElement::outer_field() const {
+  return m_element.attr<double>(Attr_outer_field);
 }
 
 int DetElement::Component::id()  const  {
