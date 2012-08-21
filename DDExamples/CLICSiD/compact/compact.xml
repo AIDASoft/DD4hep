@@ -1559,8 +1559,11 @@
         </readout>
     </readouts>
     <fields>
-        <field type="Solenoid" name="GlobalSolenoid" inner_field="5.0"
-        outer_field="-1.5" zmax="SolenoidCoilOuterZ"
-        outer_radius="SolenoidalFieldRadius" />
+        <field name="GlobalSolenoid" type="SolenoidMagnet" 
+          inner_field="5.0"
+          outer_field="-1.5" 
+          zmax="SolenoidCoilOuterZ"
+          outer_radius="SolenoidalFieldRadius">
+        </field>
     </fields>
 </lccdd>

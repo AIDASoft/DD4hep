@@ -27,7 +27,7 @@ Geometry::LCDD& compact2geo(int argc, char **argv)  {
   //Geometry::LCDDImp *lcdd = new Geometry::LCDDImp;
   Geometry::LCDD& lcdd = Geometry::LCDD::getInstance();  
   cout << argc << " Input file : " << input << endl;
-  lcdd.fromCompact(input);
+  lcdd.fromXML(input);
   lcdd.dump();
   return lcdd;
 }
