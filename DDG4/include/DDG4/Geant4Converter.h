@@ -33,7 +33,6 @@ class G4PVPlacement;
 class G4Region;
 class G4Field;
 class G4FieldManager;
-class Geant4SensitiveDetector;
 class G4UserLimits;
 
 /*
@@ -57,17 +56,24 @@ namespace DD4hep {
      * @version 1.0
      */
     struct Geant4Converter : public Geometry::GeoHandler  {
-      typedef std::map<const TNamed*,G4UserLimits*> LimitMap;
+      typedef std::map<const TGeoElement*,G4Element*>               ElementMap;
+      typedef std::map<const TGeoMedium*, G4Material*>              MaterialMap;
+      typedef std::map<const TNamed*,     G4UserLimits*>            LimitMap;
+      typedef std::map<const TGeoNode*,   G4PVPlacement*>           PlacementMap;
+      typedef std::map<const TNamed*,     G4Region*>                RegionMap;
+      typedef std::map<const TNamed*,     Geant4SensitiveDetector*> SensDetMap;
+      typedef std::map<const TGeoVolume*, G4LogicalVolume*>         VolumeMap;
+      typedef std::map<const TGeoShape*,  G4VSolid*>                SolidMap;
 
       struct G4GeometryInfo : public GeometryInfo {
-	std::map<const TGeoElement*,G4Element*>                g4Elements;
-	std::map<const TGeoMedium*, G4Material*>               g4Materials;
-	std::map<const TGeoShape*,  G4VSolid*>                 g4Solids;
-	std::map<const TGeoVolume*, G4LogicalVolume*>          g4Volumes;
-	std::map<const TGeoNode*,   G4PVPlacement*>            g4Placements;
-	std::map<const TNamed*,     G4Region*>                 g4Regions;
-	LimitMap                                               g4Limits;
-	std::map<const TNamed*,     Geant4SensitiveDetector*>  g4SensDets;
+	ElementMap              g4Elements;
+	MaterialMap             g4Materials;
+	SolidMap                g4Solids;
+	VolumeMap               g4Volumes;
+	PlacementMap            g4Placements;
+	RegionMap               g4Regions;
+	LimitMap                g4Limits;
+	SensDetMap              g4SensDets;
 
 	SensitiveVolumes   sensitives;
 	RegionVolumes      regions;
@@ -75,14 +81,21 @@ namespace DD4hep {
       };
 
       LCDD&           m_lcdd;
+      bool            m_checkOverlaps;
+
       G4GeometryInfo* m_dataPtr;
       G4GeometryInfo& data() const { return *m_dataPtr; }
       
-      /// Constructor
-      Geant4Converter( LCDD& lcdd ) : m_lcdd(lcdd) {}
+      /// Initializing Constructor
+      Geant4Converter( LCDD& lcdd );
+
       /// Standard destructor
       virtual ~Geant4Converter() {}
-      /// Create geometry dump
+
+      /// Singleton instance
+      static Geant4Converter& instance();
+
+      /// Create geometry conversion
       void create(DetElement top);
 
       /// Convert the geometry type material into the corresponding Geant4 object(s).
@@ -91,10 +104,14 @@ namespace DD4hep {
       virtual void* handleElement(const std::string& name, const TGeoElement* element) const;
       /// Convert the geometry type solid into the corresponding Geant4 object(s).
       virtual void* handleSolid(const std::string& name, const TGeoShape* volume) const;
+
       /// Convert the geometry type logical volume into the corresponding Geant4 object(s).
       virtual void* handleVolume(const std::string& name, const TGeoVolume* volume) const;
+      virtual void* collectVolume(const std::string& name, const TGeoVolume* volume) const;
+
       /// Convert the geometry type volume placement into the corresponding Geant4 object(s).
       virtual void* handlePlacement(const std::string& name, const TGeoNode* node) const;
+
       /// Convert the geometry type field into the corresponding Geant4 object(s).
       ///virtual void* handleField(const std::string& name, Ref_t field) const;
 
@@ -106,6 +123,13 @@ namespace DD4hep {
       virtual void* handleSensitive(const TNamed* sens_det, const std::set<const TGeoVolume*>& volumes) const;
       /// Handle the geant 4 specific properties
       void handleProperties(LCDD::Properties& prp) const;
+
+      /// Print the geometry type SensitiveDetector
+      virtual void* printSensitive(const TNamed* sens_det, const std::set<const TGeoVolume*>& volumes) const;
+      /// Print Geant4 placement
+      virtual void* printPlacement(const std::string& name, const TGeoNode* node) const;
+
+
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

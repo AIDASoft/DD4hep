@@ -9,8 +9,15 @@
 
 // Framework include files
 #include "DDG4/Geant4SensitiveDetector.h"
+#include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4Hits.h"
 #include "DD4hep/LCDD.h"
+
+#include "G4Step.hh"
+#include "G4PVPlacement.hh"
+
+#include "TGeoNode.h"
+
 
 // C/C++ include files
 #include <iostream>
@@ -68,10 +75,10 @@ Geant4SensitiveDetector::find<Geant4CalorimeterHit>(const HitCollection* c,const
 /// Method invoked at the begining of each event. 
 void Geant4SensitiveDetector::Initialize(G4HCofThisEvent* HCE) {
   int count = 0;
-  m_hce = 0;
+  m_hce = HCE;
   for(G4CollectionNameVector::const_iterator i=collectionName.begin(); i!=collectionName.end();++i,++count) {
     G4VHitsCollection* c = createCollection(*i);
-    HCE->AddHitsCollection(GetCollectionID(count),c);
+    m_hce->AddHitsCollection(GetCollectionID(count),c);
   }
 }
 
@@ -83,8 +90,10 @@ void Geant4SensitiveDetector::EndOfEvent(G4HCofThisEvent* HCE) {
 
 /// Method for generating hit(s) using the information of G4Step object.
 G4bool Geant4SensitiveDetector::ProcessHits(G4Step* step,G4TouchableHistory* hist) {
-  if ( step->GetTotalEnergyDeposit() > m_sensitive.energyCutoff() ) {
+  double ene_cut = m_sensitive.energyCutoff();
+  if ( step->GetTotalEnergyDeposit() > ene_cut ) {
     if ( !Geant4Hit::isGeantino(step->GetTrack()) )   {
+      dumpStep(step, hist);
       return buildHits(step,hist);
     }
   }
@@ -100,7 +109,7 @@ Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::collectionByID(
 
 /// Retrieve the hits collection associated with this detector by its serial number
 Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::collection(int which)    {
-  if ( which < collectionName.size() && which < 0 ) {
+  if ( which < collectionName.size() && which >= 0 ) {
     HitCollection* hc = (HitCollection*)m_hce->GetHC(GetCollectionID(which));
     if ( hc ) return hc;
     throw runtime_error("The collection index for subdetector "+name()+" is wrong!");
@@ -110,4 +119,33 @@ Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::collection(int 
 
 /// Method is invoked if the event abortion is occured.
 void Geant4SensitiveDetector::clear() {
+}
+
+/// Dump Step information (careful: very verbose)
+void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* history */) {
+  Geant4StepHandler step(st);
+  Geant4Converter& cnv = Geant4Converter::instance();
+  Geant4Converter::G4GeometryInfo& data = cnv.data();
+
+  Position pos1 = step.prePos();
+  Position pos2 = step.postPos();
+  Momentum mom = step.postMom();
+  ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
+	   long(step.track), pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z, mom.x, mom.y, mom.z);
+  ::printf("                pre-Vol: %s  Status:%s\n",
+	   step.preVolume()->GetName().c_str(), step.preStepStatus());
+  ::printf("                post-Vol:%s  Status:%s\n",
+	   step.postVolume()->GetName().c_str(), step.postStepStatus());
+  const G4VPhysicalVolume* pv = step.volume(step.post);
+
+  typedef Geant4Converter::PlacementMap Places;
+  const Places& places = cnv.data().g4Placements;
+  for(Places::const_iterator i=places.begin(); i!=places.end();++i) {
+    const G4PVPlacement* pl = (*i).second;
+    const G4VPhysicalVolume* qv = pl;
+    if ( qv == pv ) {
+      const TGeoNode* tpv = (*i).first;
+      printf("           Found TGeoNode:%s!\n",tpv->GetName());
+    }
+  }
 }

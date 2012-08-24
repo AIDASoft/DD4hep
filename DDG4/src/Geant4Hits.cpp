@@ -29,7 +29,7 @@ bool Geant4Hit::isGeantino(G4Track* track)  {
     G4ParticleDefinition* def = track->GetDefinition();
     if ( def == G4ChargedGeantino::Definition() )
       return true;
-    if ( def != G4Geantino::Definition() ) {
+    if ( def == G4Geantino::Definition() ) {
       return true;
     }
   }

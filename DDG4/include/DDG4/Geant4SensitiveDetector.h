@@ -65,6 +65,9 @@ namespace DD4hep {
       /// Find hits by position in a collection
       template <typename T> T* find(const HitCollection* c,const HitCompare<T>& cmp);
 
+      /// Dump Step information (careful: very verbose)
+      void dumpStep(G4Step* step,G4TouchableHistory* history);
+
       public:
 
       /// Constructor. The sensitive detector element is identified by the detector name

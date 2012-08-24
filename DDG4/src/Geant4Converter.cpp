@@ -41,15 +41,16 @@
 #include "G4VUserRegionInformation.hh"
 // Geant4 include files
 #include "G4Element.hh"
+#include "G4SDManager.hh"
 #include "G4Box.hh"
-#include "G4Tubs.hh"
 #include "G4Trd.hh"
-#include "G4Paraboloid.hh"
+#include "G4Tubs.hh"
+#include "G4Torus.hh"
+#include "G4Sphere.hh"
 #include "G4Polycone.hh"
 #include "G4Polyhedra.hh"
-#include "G4Sphere.hh"
-#include "G4Torus.hh"
 #include "G4UnionSolid.hh"
+#include "G4Paraboloid.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
 
@@ -76,10 +77,9 @@ namespace {
   static string indent = "";
   struct MyTransform3D : public G4Transform3D {
     MyTransform3D(double XX, double XY, double XZ, double DX,
-	     double YX, double YY, double YZ, double DY,
-	     double ZX, double ZY, double ZZ, double DZ) : G4Transform3D() 
-    {}
-    //  { G4Transform3D::setTransform(XX,XY,XZ,DX,YX,YY,YZ,DY,ZX,ZY,ZZ,DZ);  }
+		  double YX, double YY, double YZ, double DY,
+		  double ZX, double ZY, double ZZ, double DZ) 
+      : G4Transform3D(XX,XY,XZ,DX,YX,YY,YZ,DY,ZX,ZY,ZZ,DZ) {}
   };
 
   void handleName(const TGeoNode* n)   {
@@ -108,6 +108,17 @@ namespace {
 
 }
 
+/// Initializing Constructor
+Geant4Converter::Geant4Converter( LCDD& lcdd ) : m_lcdd(lcdd) {
+  m_checkOverlaps = true;
+}
+#if 0
+/// Dump element in GDML format to output stream
+void* Geant4Converter::printElement(const string& name, const TGeoElement* element) const {
+  G4Element* g4e = G4Element::GetElement(name,false);
+
+}
+#endif
 /// Dump element in GDML format to output stream
 void* Geant4Converter::handleElement(const string& name, const TGeoElement* element) const {
   G4Element* g4e = data().g4Elements[element];
@@ -126,12 +137,9 @@ void* Geant4Converter::handleElement(const string& name, const TGeoElement* elem
 	}
       }
       else {
-	G4double z = element->Z();
-	G4double aeff = element->A()*(g/mole);
-	cout << name << " " << g/mole << " " << element->A() << " " << aeff/(g/mole)
-	     << "  " << (aeff/(g/mole) - z) << endl;
-	g4e = new G4Element(element->GetTitle(),name,z,aeff);
+	g4e = new G4Element(element->GetTitle(),name,element->Z(),element->A()*(g/mole));
       }
+      cout << "Created G4 " << (*g4e) << endl;
     }
     data().g4Elements[element] = g4e;
   }
@@ -144,14 +152,33 @@ void* Geant4Converter::handleMaterial(const string& name, const TGeoMedium* medi
   if ( !mat ) {
     mat = G4Material::GetMaterial(name,false);
     if ( !mat ) {
-      int nElements = 0;
-      const char* opt = "----";
       TGeoMaterial* m = medium->GetMaterial();
+      G4State       state   = kStateUndefined;
+      double        density = m->GetDensity()*(gram/cm3);
+
+      switch(m->GetState()) {
+      case TGeoMaterial::kMatStateSolid:
+	state = kStateSolid;
+	break;
+      case TGeoMaterial::kMatStateLiquid:
+	state = kStateLiquid;
+	break;
+      case TGeoMaterial::kMatStateGas:
+	state = kStateGas;
+	break;
+      default:
+      case TGeoMaterial::kMatStateUndefined:
+	state = kStateUndefined;
+	break;
+      }
       if ( m->IsMixture() ) {
 	double A_total = 0.0;
 	TGeoMixture* mix = (TGeoMixture*)m;
-	nElements = mix->GetNelements();
-	mat = new G4Material(name,mix->GetDensity(),nElements);
+	int nElements = mix->GetNelements();
+	mat = new G4Material(name,density,nElements,
+			     state,
+			     m->GetTemperature(),
+			     m->GetPressure());
 	for(int i=0; i<nElements; ++i)
 	  A_total += (mix->GetAmixt())[i];
 	for(int i=0; i<nElements; ++i) {
@@ -163,13 +190,12 @@ void* Geant4Converter::handleMaterial(const string& name, const TGeoMedium* medi
 	  }
 	  mat->AddElement(g4e,(mix->GetAmixt())[i]/A_total);
 	}
-	opt = "mixture";
       }
       else {
-	mat = new G4Material(name,m->GetZ(),m->GetA(),m->GetDensity());
-	opt = "raw_material";
+	mat = new G4Material(name,m->GetZ(),m->GetA(),density,state,
+			     m->GetTemperature(),m->GetPressure());
       }
-      cout << "Created G4 Material " << m->GetName() << " as " << opt << " " << nElements << endl;
+      cout << "Created G4 " << *mat << endl;
     }
     data().g4Materials[medium] = mat;
   }
@@ -182,11 +208,15 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
   if ( !solid && shape ) {
     if ( shape->IsA() == TGeoBBox::Class() ) {
       const TGeoBBox* s = (const TGeoBBox*)shape;
-      solid = new G4Box(name,s->GetDX()*CM_2_MM,s->GetDY()*CM_2_MM,s->GetDZ()*CM_2_MM);
+      G4Box* box = new G4Box(name,s->GetDX()*CM_2_MM,s->GetDY()*CM_2_MM,s->GetDZ()*CM_2_MM);
+      solid = box;
+      //::printf("ROOT    Box:   %s   x=%f y=%f z=%f\n",name.c_str(),s->GetDX(),s->GetDY(),s->GetDZ());
+      //::printf(" +-->G4 Box:   %s   x=%f y=%f z=%f\n",name.c_str(),box->GetXHalfLength(),box->GetYHalfLength(),box->GetZHalfLength());
     }
     else if ( shape->IsA() == TGeoTube::Class() ) {
       const TGeoTube* s = (const TGeoTube*)shape;
       solid = new G4Tubs(name,s->GetRmin()*CM_2_MM,s->GetRmax()*CM_2_MM,s->GetDz()*CM_2_MM,0,2.*M_PI);
+      //::printf("Convert Tube:  %s   r=%f r=%f z=%f\n",name.c_str(),s->GetRmin()*CM_2_MM,s->GetRmax()*CM_2_MM,s->GetDz()*CM_2_MM,0,2.*M_PI);
     }
     else if ( shape->IsA() == TGeoTubeSeg::Class() ) {
       const TGeoTubeSeg* s = (const TGeoTubeSeg*)shape;
@@ -257,9 +287,9 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
       }
 
       if ( m->IsRotation()    )   {
-	MyTransform3D transform(r[0],r[1],r[2],t[0],
-				r[3],r[4],r[5],t[1],
-				r[6],r[7],r[8],t[3]);
+	MyTransform3D transform(r[0],r[1],r[2],t[0]*CM_2_MM,
+				r[3],r[4],r[5],t[1]*CM_2_MM,
+				r[6],r[7],r[8],t[2]*CM_2_MM);
 	if (      oper == TGeoBoolNode::kGeoSubtraction )
 	  solid = new G4SubtractionSolid(name,left,right,transform);
 	else if ( oper == TGeoBoolNode::kGeoUnion )
@@ -268,7 +298,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
 	  solid = new G4IntersectionSolid(name,left,right,transform);
       }
       else {
-	G4ThreeVector transform(t[0],t[1],t[2]);
+	G4ThreeVector transform(t[0]*CM_2_MM,t[1]*CM_2_MM,t[2]*CM_2_MM);
 	if (      oper == TGeoBoolNode::kGeoSubtraction )
 	  solid = new G4SubtractionSolid(name,left,right,0,transform);
 	else if ( oper == TGeoBoolNode::kGeoUnion )
@@ -290,12 +320,14 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
 
 /// Dump logical volume in GDML format to output stream
 void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume)   const   {
-  G4LogicalVolume* vol = data().g4Volumes[volume];
+  G4GeometryInfo& info = data();
+  G4LogicalVolume* vol = info.g4Volumes[volume];
   if ( !vol ) {
     const TGeoVolume* v = volume;
-    string      n       =  v->GetName();
-    TGeoMedium* m       =  v->GetMedium();
-    TGeoShape*  s       =  v->GetShape();
+    Volume           _v = Ref_t(v);
+    string      n       = v->GetName();
+    TGeoMedium* m       = v->GetMedium();
+    TGeoShape*  s       = v->GetShape();
     G4VSolid*   solid   = (G4VSolid*)handleSolid(s->GetName(),s);
     G4Material* medium  = (G4Material*)handleMaterial(m->GetName(),m);
 
@@ -305,70 +337,103 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     if ( !medium )   {
       throw runtime_error("G4Converter: No Geant4 material present for volume:"+n);
     }
-    vol = new G4LogicalVolume(solid, medium, n);
-    data().g4Volumes[v] = vol;
-
-    // Here we collect all information we need later to handle to volume internals
-    Volume            _v  = Ref_t(v);
-    Region            reg = _v.region();
-    LimitSet          lim = _v.limitSet();
+    //Region          reg = _v.region();
     SensitiveDetector det = _v.sensitiveDetector();
+    Geant4SensitiveDetector* sd = 0;
+    if ( det.isValid() )   {
+      sd = info.g4SensDets[det.ptr()];
+      if ( !sd ) {
+	throw runtime_error("G4Cnv::volume["+name+"]:    + FATAL Failed to "
+			    "access Geant4 sensitive detector.");
+      }
+      sd->Activate(true);
+    }
+    LimitSet      lim = _v.limitSet();
+    G4UserLimits* l   = 0;
+    if ( lim.isValid() )   {
+      l = info.g4Limits[lim.ptr()];
+      if ( !l ) {
+	throw runtime_error("G4Cnv::volume["+name+"]:    + FATAL Failed to "
+			    "access Geant4 user limits.");
+      }
+    }
+    vol = new G4LogicalVolume(solid,medium,n,0,sd,l);
+    info.g4Volumes[v] = vol;
+    if ( sd )   {
+      cout << "G4Cnv::volume:    + " << name << " <> " << vol->GetName() 
+	   << " Solid:" << solid->GetName() << " Mat:" << medium->GetName()
+	   << " SD:" << sd->GetName()
+	   << endl;
 
-    if ( lim.isValid() ) data().limits[lim.ptr()].insert(v);
-    if ( reg.isValid() ) data().regions[reg.ptr()].insert(v);
-    if ( det.isValid() ) data().sensitives[det.ptr()].insert(v);
-    
+    }
     //cout << "Converted logical volume [" << n << "]:" << v.ptr() << " ---> G4 " << vol << endl;
   }
   return vol;
 }
 
+/// Dump logical volume in GDML format to output stream
+void* Geant4Converter::collectVolume(const string& name, const TGeoVolume* volume)   const   {
+  G4GeometryInfo& info = data();
+  const TGeoVolume* v = volume;
+  Volume            _v  = Ref_t(v);
+  Region            reg = _v.region();
+  LimitSet          lim = _v.limitSet();
+  SensitiveDetector det = _v.sensitiveDetector();
+
+  if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
+  if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
+  if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);
+  return (void*)v;
+}
+
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node) const {
-  G4PVPlacement* g4   = data().g4Placements[node];
+  G4GeometryInfo& info = data();  
+  G4PVPlacement* g4    = info.g4Placements[node];
   if ( !g4 )   {
     TGeoMatrix* trafo = node->GetMatrix();
     if ( trafo ) {
       const Double_t*  trans = trafo->GetTranslation();
-      const Double_t*  rot   = trafo->GetRotationMatrix();
       int              copy  = node->GetNumber();
-      G4LogicalVolume* g4vol = data().g4Volumes[node->GetVolume()];
-      G4LogicalVolume* g4mot = data().g4Volumes[node->GetMotherVolume()];
+      G4LogicalVolume* vol   = info.g4Volumes[node->GetVolume()];
+      G4LogicalVolume* mot   = info.g4Volumes[node->GetMotherVolume()];
       const Value<TGeoNodeMatrix,PlacedVolume::Object>* obj = 
 	dynamic_cast<const Value<TGeoNodeMatrix,PlacedVolume::Object>* >(node);
-      if ( 0 == g4vol ) {
+      if ( 0 == vol ) {
 	cout << "FATAL: Unknown G4 volume:" << (void*)obj << " " << obj->GetName() << endl; 
       }
       else if ( trafo->IsRotation() )    {
-	MyTransform3D transform(rot[0],rot[1],rot[2],trans[0],
-				rot[3],rot[4],rot[5],trans[1],
-				rot[6],rot[7],rot[8],trans[3]);
+	const Double_t*  rot   = trafo->GetRotationMatrix();
+	MyTransform3D transform(rot[0],rot[1],rot[2],trans[0]*CM_2_MM,
+				rot[3],rot[4],rot[5],trans[1]*CM_2_MM,
+				rot[6],rot[7],rot[8],trans[2]*CM_2_MM);
 	g4 = new G4PVPlacement(transform, // no rotation
-			       g4vol,     // its logical volume
+			       vol,       // its logical volume
 			       name,      // its name
-			       g4mot,     // its mother (logical) volume
+			       mot,       // its mother (logical) volume
 			       false,     // no boolean operations
-			       copy);     // its copy number
+			       copy,      // its copy number
+			       m_checkOverlaps);
       }
       else {
-	G4ThreeVector pos(trans[0],trans[1],trans[2]);
+	G4ThreeVector pos(trans[0]*CM_2_MM,trans[1]*CM_2_MM,trans[2]*CM_2_MM);
 	g4 = new G4PVPlacement(0,         // no rotation
 			       pos,       // translation position
-			       g4vol,     // its logical volume
+			       vol,       // its logical volume
 			       name,      // its name
-			       g4mot,     // its mother (logical) volume
+			       mot,       // its mother (logical) volume
 			       false,     // no boolean operations
-			       copy);     // its copy number
+			       copy,      // its copy number
+			       m_checkOverlaps);
       }
       data().g4Placements[node] = g4;
-      //  cout << "Created volume placement:" << name << " No:" << copy << endl;
     }
   }
   else {
     cout << "Attempt to DOUBLE-place physical volume:" << name << " No:" << node->GetNumber() << endl;    
   }
   return g4;
-}
+  }
 
 /// Convert the geometry type region into the corresponding Geant4 object(s).
 void* Geant4Converter::handleRegion(const TNamed* region, const set<const TGeoVolume*>& volumes) const  {
@@ -440,46 +505,28 @@ void* Geant4Converter::handleLimitSet(const TNamed* limitset, const set<const TG
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& volumes) const  {
-  Geant4SensitiveDetector* g4 = data().g4SensDets[sens_det];
+  G4GeometryInfo& info = data();
+  Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
   if ( !g4 )   {
-    G4GeometryInfo& info = data();
     SensitiveDetector sd = Ref_t(sens_det);
-    /// LCDD: Sensitive detector type == item tag name
     string type = sd.type(), name = sd.name();
+
     g4 = ROOT::Reflex::PluginService::Create<Geant4SensitiveDetector*>(type,name,&m_lcdd);
     if ( !g4 ) {
       throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
 			  "create Geant4 sensitive detector "+name+" of type "+type+".");
     }
+    g4->Activate(true);
     g4->defineCollection(sd.hitsCollection());
-    ConstVolumeSet& volset = info.sensitives[sens_det];
-    for(ConstVolumeSet::iterator i=volset.begin(); i!=volset.end();++i)    {
-      map<const TGeoVolume*, G4LogicalVolume*>::iterator v = info.g4Volumes.find(*i);
-      if ( v == info.g4Volumes.end() )  {
-	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Missing converted "
-			    "Geant 4 logical volume");
-      }
-      (*v).second->SetSensitiveDetector(g4);
-    }
-    if ( sd.verbose() ) {
-      cout << "Geant4Converter<SensitiveDetector> +" << setw(18) << left << sd.name() 
-	   << setw(20)  << left << " ["+sd.type()+"]" 
-	   << " Hits:"  << setw(16) << left << sd.hitsCollection() << endl;
-      cout << "                                   | "
-	   << "Cutoff:" << setw(6) << left << sd.energyCutoff()
-	   << setw(5) << right << volset.size() << " volumes ";
-      if ( sd.region().isValid() ) cout << " Region:" << setw(12) << left << sd.region().name();
-      if ( sd.limits().isValid() ) cout << " Limits:" << setw(12) << left << sd.limits().name();
-      cout << "." << endl;
-    }
-    data().g4SensDets[sens_det] = g4;
+    G4SDManager::GetSDMpointer()->AddNewDetector(g4);
+    info.g4SensDets[sens_det] = g4;
   }
   return g4;
 }
 
 /// Handle the geant 4 specific properties
 void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
-  map<string,string>  processors;
+  map<string,string> processors;
   static int s_idd = 9999999;
   string id;
   for(LCDD::Properties::const_iterator i=prp.begin(); i!=prp.end(); ++i) {
@@ -517,6 +564,82 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
   }
 }
 
+
+/// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
+void* Geant4Converter::printSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& volumes) const  {
+  G4GeometryInfo& info = data();
+  Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
+  ConstVolumeSet& volset = info.sensitives[sens_det];
+  SensitiveDetector sd = Ref_t(sens_det);
+  bool verbose = sd.verbose();
+
+  if ( verbose )    {
+    cout << "Geant4Converter<SensitiveDetector> +" << setw(18) << left << sd.name() 
+	 << setw(20)  << left << " ["+sd.type()+"]" 
+	 << " Hits:"  << setw(16) << left << sd.hitsCollection() << endl;
+    cout << "                                   | "
+	 << "Cutoff:" << setw(6) << left << sd.energyCutoff()
+	 << setw(5) << right << volset.size() << " volumes ";
+    if ( sd.region().isValid() ) cout << " Region:" << setw(12) << left << sd.region().name();
+    if ( sd.limits().isValid() ) cout << " Limits:" << setw(12) << left << sd.limits().name();
+    cout << "." << endl;
+  }
+  for(ConstVolumeSet::iterator i=volset.begin(); i!=volset.end();++i)    {
+    map<const TGeoVolume*, G4LogicalVolume*>::iterator v = info.g4Volumes.find(*i);
+    G4LogicalVolume* vol = (*v).second;
+    if ( verbose ) {
+      cout << "                                   | "
+	   << "Volume:" << setw(24) << left << vol->GetName() 
+	   << " " << vol->GetNoDaughters() << " daughters."
+	   << endl;
+    }
+  }
+  return g4;
+}
+
+void printSolid(G4VSolid* sol) {
+  if ( typeid(*sol) == typeid(G4Box) ) {
+    const G4Box* b = (G4Box*)sol;
+    cout << " Box: x=" << b->GetXHalfLength() << " y=" << b->GetYHalfLength() << " z=" << b->GetZHalfLength();
+  }
+  if ( typeid(*sol) == typeid(G4Tubs) ) {
+    const G4Tubs* t = (const G4Tubs*)sol;
+    cout << " Tubs: Ri=" << t->GetInnerRadius() << " Ra=" << t->GetOuterRadius() 
+	 << " z/2=" << t->GetZHalfLength() << " Phi=" << t->GetStartPhiAngle() 
+	 << "..." << t->GetDeltaPhiAngle ();
+  }
+}
+
+/// Print G4 placement
+void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) const {
+  G4GeometryInfo&  info = data();  
+  G4PVPlacement*   g4   = info.g4Placements[node];
+  G4LogicalVolume* vol  = info.g4Volumes[node->GetVolume()];
+  G4LogicalVolume* mot  = info.g4Volumes[node->GetMotherVolume()];
+  G4VSolid*        sol  = vol->GetSolid();
+  G4ThreeVector     tr  = g4->GetObjectTranslation();
+  
+  G4VSensitiveDetector* sd = vol->GetSensitiveDetector();
+  if ( !sd ) return g4;
+
+  cout << "G4Cnv::placement: + " << name << " No:" << node->GetNumber()
+       << " Vol:" << vol->GetName() << " Solid:" << sol->GetName()
+       << endl;
+  cout << "                  |" 
+       << " Loc: x=" << tr.x() << " y=" << tr.y() << " z=" << tr.z();
+  printSolid(sol);
+  cout << endl;
+  cout << "                  |" 
+       << " Ndau:" << vol->GetNoDaughters() << " physvols." 
+       << " Mat:" << vol->GetMaterial()->GetName()
+       << " Mother:" << (char*)(mot ? mot->GetName().c_str() : "---")
+       << endl;
+  cout << "                  |" 
+       << " SD:" << (char*)(sd ? sd->GetName().c_str() : "---")
+       << endl;
+  return g4;
+}
+
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf)  {
   for(typename C::const_iterator i=c.begin(); i != c.end(); ++i) {
     (o->*pmf)((*i)->GetName(),*i);
@@ -528,35 +651,60 @@ template <typename O, typename C, typename F> void handleMap(const O* o, const C
     (o->*pmf)((*i).first, (*i).second);
 }
 
+template <typename O, typename C, typename F> void handleRMap(const O* o, const C& c, F pmf)  {
+  for(typename C::const_reverse_iterator i=c.rbegin(); i != c.rend(); ++i)
+    handle(o, (*i).second, pmf);
+}
+
+/// Create geometry conversion
 void Geant4Converter::create(DetElement top) {
   LCDD& lcdd = m_lcdd;
   G4GeometryInfo& geo = *(m_dataPtr=new G4GeometryInfo);
   m_data->clear();
   collect(top,geo);
 
+  m_checkOverlaps = false;
+
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
   handle(this, geo.materials, &Geant4Converter::handleMaterial);
   cout << "++ Handled " << geo.materials.size() << " materials." << endl;
+
+  handle(this, geo.volumes,   &Geant4Converter::collectVolume);
+
   handle(this, geo.solids,    &Geant4Converter::handleSolid);
   cout << "++ Handled " << geo.solids.size() << " solids." << endl;
-  handle(this, geo.volumes,   &Geant4Converter::handleVolume);
-  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
-  //handleMap(this, lcdd.fields(),   &Geant4Converter::handleField);
-  //cout << "++ Handled " << geo.fields.size() << " field entries." << endl;
 
-  handleMap(this, geo.limits, &Geant4Converter::handleLimitSet);
-  cout << "++ Handled " << geo.limits.size() << " limit sets." << endl;
-  handleMap(this, geo.regions, &Geant4Converter::handleRegion);
-  cout << "++ Handled " << geo.regions.size() << " regions." << endl;
   handleMap(this, geo.sensitives, &Geant4Converter::handleSensitive);
   cout << "++ Handled " << geo.sensitives.size() << " sensitive detectors." << endl;
 
+  handleMap(this, geo.limits, &Geant4Converter::handleLimitSet);
+  cout << "++ Handled " << geo.limits.size() << " limit sets." << endl;
+
+  handleMap(this, geo.regions, &Geant4Converter::handleRegion);
+  cout << "++ Handled " << geo.regions.size() << " regions." << endl;
+
+  handle(this, geo.volumes,   &Geant4Converter::handleVolume);
+  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+
   // Now place all this stuff appropriately
-  for(Data::const_reverse_iterator i=m_data->rbegin(); i != m_data->rend(); ++i)
-    handle(this, (*i).second, &Geant4Converter::handlePlacement);
+  handleRMap(this, *m_data, &Geant4Converter::handlePlacement);
 
   //==================== Fields
   handleProperties(m_lcdd.properties());
+
+  //cout << *(G4Material::GetMaterialTable()) << endl;
+  //handleMap(this, geo.sensitives, &Geant4Converter::printSensitive);
+  //handleRMap(this, *m_data, &Geant4Converter::printPlacement);
+}
+
+/// Singleton instance
+Geant4Converter& Geant4Converter::instance() {
+  static Geant4Converter* inst = 0;
+  if ( 0 == inst ) {
+    Geometry::LCDD& lcdd = LCDD::getInstance();
+    inst = new Geant4Converter(lcdd);
+  }
+  return *inst;
 }
