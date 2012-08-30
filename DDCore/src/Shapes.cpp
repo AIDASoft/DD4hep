@@ -60,6 +60,21 @@ Box& Box::setDimensions(double x, double y, double z)   {
   return *this;
 }
 
+/// Access half "length" of the box
+double Box::x() const {
+  return this->ptr()->GetDX();
+}
+
+/// Access half "width" of the box
+double Box::y() const {
+  return this->ptr()->GetDY();
+}
+
+/// Access half "depth" of the box
+double Box::z() const {
+  return this->ptr()->GetDZ();
+}
+
 /// Constructor to be used when creating a new object
 Polycone::Polycone(const string& name)   {
   _assign(new TGeoPcon(0,RAD_2_DEGREE * (2.*M_PI),0),name,"polycone",false);

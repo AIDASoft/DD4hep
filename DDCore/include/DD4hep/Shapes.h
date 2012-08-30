@@ -126,6 +126,15 @@ namespace DD4hep {
 
       /// Set the box dimensions
       Box& setDimensions(double x, double y, double z);
+
+      /// Access half "length" of the box
+      double x() const;
+
+      /// Access half "width" of the box
+      double y() const;
+
+      /// Access half "depth" of the box
+      double z() const;
     };
 
     /**@class Polycone Shapes.h 

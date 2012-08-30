@@ -195,7 +195,7 @@ namespace DD4hep {
 	/// Default constructor
         Object();
 	/// Internal object destructor: release extension object(s)
-	~Object();
+	virtual ~Object();
 	/// Deep object copy to replicate DetElement trees e.g. for reflection
 	virtual Value<TNamed,Object>* clone(int new_id, int flag)  const;
 	/// Conversion to reference object
