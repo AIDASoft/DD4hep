@@ -19,7 +19,8 @@
 #include "G4UIExecutive.hh"
 #endif
 
-#include "PhysicsList.h"
+#include "QGSP_BERT.hh"
+
 #include "PrimaryGeneratorAction.h"
 #include "RunAction.h"
 #include "EventAction.h"
@@ -38,32 +39,38 @@ namespace DD4hep {
     virtual ~DetectorConstruction() {    }
     G4VPhysicalVolume* Construct();
   private:
-    Geometry::LCDD& m_lcdd;
+    Geometry::LCDD&    m_lcdd;
+    G4VPhysicalVolume* m_world;
   }; 
 }
 
 #include "DD4hep/LCDD.h"
 #include "TGeoManager.h"
 #include "DDG4/Geant4Converter.h"
+#include "G4GDMLParser.hh"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 DD4hep::DetectorConstruction::DetectorConstruction(Geometry::LCDD& lcdd) 
- : m_lcdd(lcdd)
+  : m_lcdd(lcdd), m_world(0)
 {
 }
 
 G4VPhysicalVolume* DD4hep::DetectorConstruction::Construct() {
   typedef Simulation::Geant4Converter Geant4Converter;
   TGeoNode* top = gGeoManager->GetTopNode();
-  Geant4Converter conv(m_lcdd);
+  Geant4Converter& conv = Geant4Converter::instance();
   DetElement world = m_lcdd.world();
   conv.create(world);
   Geant4Converter::G4GeometryInfo& info = conv.data();
-  G4VPhysicalVolume* world_vol = info.g4Placements[top];
-  return world_vol;
+  m_world = info.g4Placements[top];
+  if ( ::getenv("DUMP_GDML") ) {
+    G4GDMLParser parser;
+    parser.Write("detector.gdml",m_world);
+  }
+  return m_world;
 }
 
 int main(int argc,char** argv)   {
@@ -88,7 +95,7 @@ int main(int argc,char** argv)   {
   runManager->SetUserInitialization(detector);
   
   //
-  G4VUserPhysicsList* physics = new PhysicsList;
+  G4VUserPhysicsList* physics = new QGSP_BERT(); // physics from N04
   runManager->SetUserInitialization(physics);
   
   // Set user action classes
@@ -100,6 +107,7 @@ int main(int argc,char** argv)   {
   //
   EventAction* event_action = new EventAction(run_action);
   runManager->SetUserAction(event_action);
+
   //
   G4UserSteppingAction* stepping_action = new SteppingAction(event_action);
   runManager->SetUserAction(stepping_action);
@@ -116,7 +124,7 @@ int main(int argc,char** argv)   {
 
   // Get the pointer to the User Interface manager  
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
-  if (argc > 2 ) {   // batch mode
+  if ( argc > 2 ) {   // batch mode
     G4String command = "/control/execute ";
     G4String fileName = argv[argc-1];
     UImanager->ApplyCommand(command+fileName);    

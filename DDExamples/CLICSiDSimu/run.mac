@@ -8,14 +8,15 @@
 # create empty scene
 #/vis/scene/create
 #
-/run/verbose 2
+/run/verbose 1
 /run/initialize
 #
 # Create a scene handler for a specific graphics system
-#/vis/open OGLIX
+#/vis/open DAWNFILE
 # draw scene
 #/vis/viewer/zoom 35
 #/vis/drawVolume
+#/vis/viewer/flush
 #if you want to see trajectories and hits points
 #/vis/scene/add/trajectories
 #/vis/modeling/trajectories/create/drawByCharge
@@ -27,13 +28,14 @@
 #/control/saveHistory
 #
 /event/verbose 0
-/tracking/verbose 1
+/tracking/verbose 0
+##/geometry/test/grid_test true
 # 
 # muon 300 MeV to the direction (1.,0.,0.)
 # 3 events
 #
 /gun/position 0 0 -0.1 mm
+#/gun/particle geantino
 /gun/particle mu+
 /gun/energy 300 GeV
-/run/beamOn 3
-
+/run/beamOn 3000

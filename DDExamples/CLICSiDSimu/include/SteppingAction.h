@@ -15,5 +15,7 @@ public:
 private:
   DetectorConstruction* detector;
   EventAction*          eventaction;  
+  G4Material*           SiMaterial;
+  G4Material*           TPCGasMaterial;
 };
 #endif
