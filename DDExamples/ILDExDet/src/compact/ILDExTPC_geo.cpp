@@ -46,6 +46,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
     bool        reflect   = px_det.reflect();
 
+    part_vol.setSensitiveDetector(sens);
     part_vol.setVisAttributes(lcdd,px_det.visStr());
     //Endplate
     if(part_det.id()== 0){
