@@ -12,7 +12,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
   
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& )  {
+static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
   xml_det_t   x_det = e;
   string      name  = x_det.nameStr();
   DetElement  sit(name,x_det.id());
@@ -38,9 +38,11 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& )  {
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,lcdd.material(x_support.materialStr()));
     Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
-    Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick/2.+supp_thick/2.,0,0);
+    Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick+supp_thick/2.,0,0);
       
     sensvol.setVisAttributes(lcdd.visAttributes(x_layer.visStr()));
+    sensvol.setSensitiveDetector(sens);
+
     laddervol.placeVolume(sensvol,senspos);
     laddervol.placeVolume(suppvol,supppos);
     sit.setVisAttributes(lcdd, x_det.visStr(),laddervol);

@@ -3,19 +3,19 @@
   <sensitive_detectors>
     <sd name="VXD" 
         type="Geant4Tracker" 
-        ecut="10.0*MeV" 
+        ecut="1.0*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
     <sd name="SIT" 
         type="Geant4Tracker" 
-        ecut="10.0*MeV" 
+        ecut="1.0*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
     <sd name="TPC" 
         type="Geant4Tracker" 
-        ecut="10.0*MeV" 
+        ecut="0.5*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>

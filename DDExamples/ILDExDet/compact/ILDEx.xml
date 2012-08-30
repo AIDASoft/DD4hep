@@ -68,19 +68,19 @@
         <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1" readout="VXDHits">
           <layer id="1"  vis="VXDLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="16*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="10"/>
+            <ladder  zhalf="65*mm" radius="16*mm" offset="-3*mm" thickness="0.1*mm" material="Silicon" number="10"/>
           </layer>
           <layer id="2"  vis="VXDLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="18*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="10"/>
+            <ladder  zhalf="65*mm" radius="18*mm" offset="-3*mm" thickness="0.1*mm" material="Silicon" number="10"/>
           </layer>
           <layer id="3"  vis="VXDLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="38*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="11"/>
+            <ladder  zhalf="125*mm" radius="38*mm" offset="-3*mm" thickness="0.1*mm" material="Silicon" number="11"/>
           </layer>
           <layer id="4"  vis="VXDLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="40*mm" offset="-2*mm" thickness="0.1*mm" material="Silicon" number="11"/>
+            <ladder  zhalf="125*mm" radius="40*mm" offset="-3*mm" thickness="0.1*mm" material="Silicon" number="11"/>
           </layer>
           <layer id="5"  vis="VXDLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="VXDSupportVis"/>
@@ -152,8 +152,8 @@
         </readout>
     </readouts>
     <fields>
-        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0"
-               outer_field="-1.5" zmax="SolenoidCoilOuterZ"
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
                outer_radius="SolenoidalFieldRadius" />
     </fields>
 </lccdd>
