@@ -1,3 +1,4 @@
+#if 0
 // $Id:$
 //====================================================================
 //  AIDA Detector description implementation for LCD
@@ -109,3 +110,4 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
 //first argument is the type from the xml file
 DECLARE_DETELEMENT(TPCPrototype,create_element)
+#endif
