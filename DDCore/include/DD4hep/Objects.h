@@ -144,6 +144,13 @@ namespace DD4hep {
 	  return *this;
 	}
       }
+      /// Rotates the position vector around the x-axis.
+      Position& rotateX(double angle_in_rad);
+      /// Rotates the position vector around the y-axis.
+      Position& rotateY(double angle_in_rad);
+      /// Rotates the position vector around the z-axis.
+      Position& rotateZ(double angle_in_rad);
+
       /// Access to array like coordinates
       const double* coordinates() const               { return &x;                         }
       /// Initializer for all member variables
@@ -202,6 +209,12 @@ namespace DD4hep {
       const double* angles() const                     { return &theta;                                    }
       /// Initializer for all member variables
       Rotation& set(double th, double ph, double ps)   { theta=th; phi=ph; psi=ps;return *this;            }
+      /// Rotates the rotation vector around the x-axis.
+      Rotation& rotateX(double angle_in_rad);
+      /// Rotates the rotation vector around the y-axis.
+      Rotation& rotateY(double angle_in_rad);
+      /// Rotates the rotation vector around the z-axis.
+      Rotation& rotateZ(double angle_in_rad);
     };
 
 #ifdef _WIN32

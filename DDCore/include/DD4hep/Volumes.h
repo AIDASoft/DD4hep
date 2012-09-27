@@ -20,6 +20,7 @@
 
 // ROOT include file (includes TGeoVolume + TGeoShape)
 #include "TGeoNode.h"
+#include "TGeoPatternFinder.h"
 
 /*
  *   DD4hep namespace declaration
@@ -201,6 +202,6 @@ namespace DD4hep {
       Assembly(const std::string& name);
     };
 
-  }       /* End namespace Geometry           */
+  }       /* End namespace Geometry          */
 }         /* End namespace DD4hep            */
 #endif    /* DD4hep_GEOMETRY_VOLUMES_H       */

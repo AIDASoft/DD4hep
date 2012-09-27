@@ -22,6 +22,7 @@ class TGeoBBox;
 class TGeoPcon;
 class TGeoPgon;
 class TGeoCone;
+class TGeoConeSeg;
 class TGeoSphere;
 class TGeoTrd2;
 class TGeoTorus;
@@ -139,6 +140,13 @@ namespace DD4hep {
 
     /**@class Polycone Shapes.h 
      *
+     *   Polycone. It has at least 9 parameters :
+     *      - the lower phi limit;
+     *      - the range in phi;
+     *      - the number of z planes (at least two) where the inner/outer
+     *        radii are changing;
+     *      - z coordinate, inner and outer radius for each z plane
+     *
      *   @author  M.Frank
      *   @version 1.0
      */
@@ -163,6 +171,31 @@ namespace DD4hep {
 
       /// Add Z-planes to the Polycone
       void addZPlanes(const std::vector<double>& rmin, const std::vector<double>& rmax, const std::vector<double>& z);
+    };
+
+    /**@class ConeSegment Shapes.h DDCore/Shapes.h
+     *
+     *   A ConeSegment is, in the general case, a Phi segment of a cone, with
+     *   half-length dz, inner and outer radii specified at -dz and +dz.
+     *
+     *   @author  M.Frank
+     *   @version 1.0
+     */
+    struct ConeSegment : public Solid_type<TGeoConeSeg>  {
+      /// Constructor to be used when reading the already parsed ConeSegment object
+      template <typename Q> ConeSegment(const Handle<Q>& e) : Solid_type<Implementation>(e) {}
+
+      /// Constructor to be used when creating a new ConeSegment object
+      ConeSegment(const std::string& name="");
+
+      /// Constructor to be used when initializing a new object
+      ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1=0.0, double phi2=2.0*M_PI);
+
+      /// Constructor to be used when creating a new ConeSegment object
+      ConeSegment(const std::string& name,double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1=0.0, double phi2=2.0*M_PI);
+
+      /// Set the cone segment dimensions
+      ConeSegment& setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1=0.0, double phi2=2.0*M_PI);
     };
 
     /**@class Tube Shapes.h 
@@ -208,7 +241,7 @@ namespace DD4hep {
         make(name,_toDouble(rmin),_toDouble(rmax),_toDouble(z),_toDouble(deltaPhi));
       }
 
-      /// Set the box dimensions
+      /// Set the tube dimensions
       Tube& setDimensions(double rmin, double rmax, double z, double deltaPhi=2*M_PI);
     };
 
