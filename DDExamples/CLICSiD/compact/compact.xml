@@ -1005,7 +1005,7 @@
             <zplane rmin="0.*cm"
             		rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
             		z="LumiCal_zmin - BeamPipe_endThickness" />
-			<zplane rmin="0.*cm"
+	    <zplane rmin="0.*cm"
             		rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
             		z="ForwardMask_zmin - BeamPipe_endThickness" />
         </detector> 
@@ -1047,18 +1047,13 @@
         </detector>
         <detector name="VertexReadout" type="DiskTracker" reflect="true" vis="CableVis">
             <comment>Readout and Cabling</comment>
-            <layer id="1" inner_r = "VertexBarrel_r1" outer_r =
-"VertexBarrel_r1 + 0.02*cm"  inner_z= "VertexBarrel_zmax + 0.1*cm" vis="GreenVis">
+            <layer id="1" inner_r = "VertexBarrel_r1" outer_r="VertexBarrel_r1 + 0.02*cm"  inner_z= "VertexBarrel_zmax + 0.1*cm" vis="GreenVis">
                 <slice material = "G10" thickness ="0.5*cm"/>
             </layer>
-            <layer id="2" inner_r = "VertexBarrel_r2" outer_r =
-                "VertexBarrel_r2 + 0.02*cm"  inner_z=
-                "VertexBarrel_zmax + 0.1*cm" vis = "BlueVis">
+            <layer id="2" inner_r = "VertexBarrel_r2" outer_r="VertexBarrel_r2 + 0.02*cm" inner_z="VertexBarrel_zmax + 0.1*cm" vis = "BlueVis">
                 <slice material = "G10" thickness ="0.5*cm"/>
             </layer>
-            <layer id="3" inner_r = "VertexBarrel_r3" outer_r =
-                "VertexBarrel_r3 + 0.02*cm"  inner_z=
-                "VertexBarrel_zmax + 0.1*cm" vis="RedVis">
+            <layer id="3" inner_r = "VertexBarrel_r3" outer_r="VertexBarrel_r3 + 0.02*cm"  inner_z="VertexBarrel_zmax + 0.1*cm" vis="RedVis">
                 <slice material = "G10" thickness ="0.5*cm"/>
             </layer>
             <layer id="4" inner_r = "VertexBarrel_r4" outer_r = "VertexBarrel_r4 + 0.02*cm"  inner_z= "VertexBarrel_zmax + 0.1*cm">

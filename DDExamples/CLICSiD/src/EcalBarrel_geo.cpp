@@ -99,11 +99,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	  Volume     s_vol(det_name+"_"+l_name+"_"+s_name,s_box,lcdd.material(x_slice.materialStr()));
           DetElement slice(layer,s_name,det_id);
 
-          if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);            
+          if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
           slice.setAttributes(lcdd,s_vol,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
           // Slice placement.
-          PlacedVolume slice_phv = l_vol.placeVolume(s_vol,Position(0,0,s_pos_z+s_thick/2));                                        
+          PlacedVolume slice_phv = l_vol.placeVolume(s_vol,Position(0,0,s_pos_z+s_thick/2));
           slice_phv.addPhysVolID("layer", l_num);
           slice_phv.addPhysVolID("slice", s_num);
           slice.setPlacement(slice_phv);
