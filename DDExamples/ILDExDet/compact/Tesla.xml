@@ -1,0 +1,308 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml,v 1.3 2010/12/02 16:34:00 grefe Exp $">
+        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+    </info>
+  
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+  
+    <define>
+        <constant name="world_side"              value="10*m"/>
+        <constant name="world_x"                 value="world_side/2"/>
+        <constant name="world_y"                 value="world_side/2"/>
+        <constant name="world_z"                 value="world_side/2"/>        
+        <constant name="CrossingAngle"           value="0.020*rad"/>
+        <constant name="ILC_Main_Crossing_Angle" value="CrossingAngle"/>
+        
+        <constant name="TPC_zhalf"              value="2500*mm"/>
+        <constant name="TPC_outer_radius"       value="1808*mm"/>
+        <constant name="TPC_inner_radius"       value="350*mm"/>
+        <constant name="TPC_inner_thickness"    value="2*mm"/>
+        <constant name="TPC_outer_thickness"    value="3*mm"/>
+        <constant name="TPC_endcap_thickness"   value="3*mm"/>
+
+        <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0*m"/>
+        <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0*m"/>
+        <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
+        <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
+
+        <!--                    VXD03 parameters                       -->
+        <constant name="VXD_inner_radius"                      value="31*mm"/>
+        <constant name="VXD_layer_gap"                         value="2*mm"/>
+        <constant name="VXD_width_r1"                          value="11.3*mm"/>
+        <constant name="VXD_width_r3"                          value="11.3*mm"/>
+        <constant name="VXD_width_r5"                          value="11.3*mm"/>
+        <constant name="VXD_radius_r1"                         value="VXD_inner_radius"/>
+        <constant name="VXD_radius_r3"                         value="44*mm"/>
+        <constant name="VXD_radius_r5"                         value="58*mm"/>
+
+        <constant name="VXD_shell_inner_radius"                value="VXD_inner_radius"/>
+        <constant name="VXD_shell_thickess"                    value="0.49392*cm"/>
+        <constant name="VXD_shell_half_z"                      value="134*mm"/>
+        <constant name="VXD_support_ladder_thickness"          value="0.134*mm"/>
+        <constant name="VXD_support_structure_thickness"       value="VXD_support_ladder_thickness/2."/>
+        <constant name="VXD_support_endplate_half_z"           value="VXD_shell_half_z"/>
+        <constant name="VXD_support_endplate_inner_radius"     value="VXD_radius_r5+VXD_layer_gap+5.0*mm"/>
+        <constant name="VXD_support_endplate_inner_radius_L1"  value="VXD_inner_radius-0.3*mm"/>
+        <constant name="VXD_support_endplate_outer_radius_L1"  value="VXD_inner_radius+VXD_layer_gap+2.0*mm"/>
+        <constant name="VXD_side_band_electronics_width"       value="0.5*mm"/>
+        <constant name="VXD_side_band_electronics_thickness"   value="0.05*mm"/>
+        <constant name="VXD_end_ladd_electronics_half_length"  value="1.0*mm"/>
+        <constant name="VXD_active_silicon_thickness"          value="0.05*mm"/>
+
+        <constant name="VXD_beryllium_ladder_block_length"     value="1.0*mm"/>
+        <constant name="VXD_beryllium_ladder_block_thickness"  value="0.25*mm"/>
+
+        <constant name="VXD_strip_final_beampipe_radius"       value="30.3*mm"/>
+        <constant name="VXD_strip_lines_thickness"             value="0.09438*mm"/>
+        <constant name="VXD_strip_lines_final_z"               value="150*mm"/>
+
+        <!--                  LumiCalX parameters                      -->
+        <constant name="Lcal_inner_radius"                     value="100.0*mm"/>
+        <constant name="Lcal_outer_radius"                     value="290*mm"/>
+        <constant name="Lcal_layer_gap"                        value="0.25*mm"/>
+        <constant name="Lcal_z_begin"                          value="2800*mm"/>
+        <constant name="Lcal_n_layers"                         value="40"/>
+        <constant name="Lcal_nstrips_phi"                      value="48"/>
+        <constant name="Lcal_nstrips_theta"                    value="64"/>
+        <constant name="Lcal_support_thickness"                value="0.2*mm"/>
+        <constant name="Lcal_tungsten_thickness"               value="3.5*mm"/>
+        <constant name="Lcal_silicon_thickness"                value="0.32*mm"/>
+
+        <!--                  SEcal03 parameters                      -->
+        <constant name="Ecal_TPC_gap"                          value="35*mm"/>
+        <constant name="Ecal_Lcal_ring_gap"                    value="-48*mm"/>
+
+        <constant name="Ecal_lateral_face_thickness"           value="2*mm"/>
+        <constant name="Ecal_front_face_thickness"             value="3*mm"/>
+        <constant name="Ecal_fiber_thickness"                  value="0.2*mm"/>
+        <constant name="Ecal_guard_ring_size"                  value="1*mm"/>
+        <constant name="Ecal_cell_size"                        value="4.9*mm"/>
+        <constant name="Ecal_Alveolus_Air_Gap"                 value="0.25*mm"/>
+        <constant name="Ecal_support_thickness"                value="9.3*mm"/>
+        <constant name="Ecal_Slab_PCB_thickness"               value="0.8*mm"/>
+        <constant name="Ecal_Slab_copper_thickness"            value="0.2*mm"/>
+        <constant name="Ecal_Slab_shield_thickness"            value="0.15*mm"/>
+        <constant name="Ecal_Slab_ground_thickness"            value="0.05*mm"/>
+        <constant name="Ecal_Slab_glue_gap"                    value="0.1*mm"/>
+        <constant name="Ecal_Si_thickness"                     value="0.5*mm"/>
+
+        <constant name="Ecal_EC_ring_gap"                      value="10*mm"/>
+
+
+        <constant name="Ecal_Barrel_halfZ"                     value="2350*mm"/>
+        <constant name="Ecal_barrel_number_of_towers"          value="5"/>
+        <constant name="Ecal_endcap_extra_size"                value="60.8*mm"/>
+        <constant name="Ecal_endcap_center_box_size"           value="800*mm"/>
+        <constant name="Ecal_H_fiber_thickness"                value="0.30*mm"/>
+        <constant name="Ecal_cells_size"                       value="4.9*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="1825*mm"/>
+        <constant name="Ecal_endcap_zmin"                      value="2329*mm"/>
+        <constant name="Ecal_nlayers1"                         value="20"/>
+        <constant name="Ecal_nlayers2"                         value="10"/>
+        <constant name="Ecal_nlayers3"                         value="0"/>
+        <constant name="Ecal_radiator_layers_set1_thickness"   value="2.1*mm"/>
+        <constant name="Ecal_radiator_layers_set2_thickness"   value="4.2*mm"/>
+        <constant name="Ecal_radiator_layers_set3_thickness"   value="0*mm"/>
+    </define>
+
+    <materials>
+        <material formula="Si" name="silicon_2.33gccm" state="solid" >
+          <RL type="X0" unit="cm" value="9.36607" />
+          <NIL type="lambda" unit="cm" value="45.7531" />
+          <D type="density" unit="g/cm3" value="2.33" />
+          <composite n="1" ref="Si" />
+        </material>
+        <material formula="W" name="tungsten_19.3gccm" state="solid" >
+          <RL type="X0" unit="cm" value="0.350418" />
+          <NIL type="lambda" unit="cm" value="10.3057" />
+          <D type="density" unit="g/cm3" value="19.3" />
+          <composite n="1" ref="W" />
+        </material>
+
+        <material name="Graphite">
+        	<D value="1.7" unit="g/cm3"/>
+        	<composite n="1" ref="C"/>
+        </material>      
+    </materials>
+  
+    <limits>
+
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+
+        <limitset name="EcalLimits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+
+    </limits>
+
+    <display>
+      <vis name="TPCVis"               alpha="1.0" r="0"   g="1.0" b="0.7"      showDaughters="true"  visible="false"/>
+      <vis name="TPCSupportVis"        alpha="1.0" r="0"   g="0.4" b="0.4"      showDaughters="false" visible="true"/>
+      <vis name="TPCGasVis"            alpha="1.0" r="0.7" g="0"   b="0"        showDaughters="false" visible="false"/>
+      <vis name="VXDLayerVis"          alpha="1.0" r="0.0" g="1.0" b="0.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="VXDElectronicsVis"    alpha="1.0" r="0.8" g="0.8" b="1.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="VXDBerilliumVis"      alpha="1.0" r="0.0" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="VXDSupportVis"        alpha="1.0" r="0.6" g="0.6" b="0.6"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="VXDStripsVis"         alpha="1.0" r="0.0" g="1.0" b="0.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="VXDActiveStripsVis"   alpha="1.0" r="1.0" g="0.0" b="0.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <vis name="SITSupportVis" alpha="1.0" r="0.0" g="0.3" b="0.7"      showDaughters="true"  visible="true"/>
+      <vis name="SITLayerVis"   alpha="1.0" r="0.0" g="0.7" b="0.3"      showDaughters="true"  visible="true"/>
+      <vis name="SupportVis"                r="0.5" g="0.1" b="0.99"     showDaughters="false" visible="true"/>
+
+      <vis name="LcalVis"              alpha="1.0" r="0"   g="1"   b="0"        drawingStyle="wireframe" showDaughters="true" visible="false"/>
+      <vis name="LcalSupportVis"       alpha="1.0" r="0.5" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="true" visible="true"/>
+      <vis name="LcalAbsorberVis"      alpha="1.0" r="0"   g="0"   b="1"        drawingStyle="solid"     showDaughters="true" visible="true"/>
+      <vis name="LcalActiveVis"        alpha="1.0" r="1"   g="0"   b="0"        drawingStyle="wireframe"     showDaughters="true" visible="true"/>
+
+      <vis name="EcalEndcapVis"        alpha="1.0" r="0" g="1" b="0"            drawingStyle="wireframe" showDaughters="true"  visible="false"/>
+      <vis name="EcalLayerVis"         alpha="1.0" r="1" g="0" b="0"            drawingStyle="solid"     showDaughters="true"  visible="false"/>
+      <vis name="EcalPCBVis"           alpha="1.0" r="0.5" g="0.5" b="0"        drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalRadiatorVis"      alpha="1.0" r="0" g="1" b="0"            drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalTowerVis"      alpha="1.0" r="0" g="0.1" b="0.9"            drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalRingVis"          alpha="1.0" r="0" g="0" b="1"            drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalWaferVis"         alpha="1.0" r=".7" g=".7" b=".7"         drawingStyle="solid"                           visible="true"/>
+      <vis name="EcalSlabVis"          alpha="1.0" r="1" g="1" b="1"            drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalSlabGroundVis"    alpha="1.0" r="0" g="0" b="1"            drawingStyle="wireframe"                       visible="true"/>
+      <vis name="EcalSlabSensitiveVis" alpha="1.0" r=".5" g=".5" b=".5"         drawingStyle="wireframe"                       visible="false"/>
+
+
+    </display>
+
+    <detectors>
+        <comment>Trackers</comment>
+
+        <!--                    VXD03 parameters                       
+              Note: side_band_electronics and end_ladder_electronics
+                    and cryostat are optional.
+        -->
+<!--
+        <detector name="VXD" type="Tesla_VXD03" vis="VXDVis" id="1" readout="VXDHits">
+          <support     thickness="VXD_support_structure_thickness" material="Beryllium">
+            <central   rmin="VXD_shell_inner_radius"               
+                       rmax="VXD_shell_inner_radius+VXD_shell_thickess" 
+                       zhalf="VXD_shell_half_z" vis="VXDSupportVis"/>
+            <endplate  rmin="VXD_support_endplate_inner_radius"    
+                       rmax="VXD_shell_inner_radius+VXD_shell_thickess" 
+                       zhalf="VXD_shell_thickess/2.0" vis="VXDSupportVis"/>
+            <endplate_L1 rmin="VXD_support_endplate_inner_radius_L1" 
+                         rmax="VXD_support_endplate_outer_radius_L1"
+                         zhalf="VXD_support_endplate_half_z" vis="VXDSupportVis"/>
+          </support>
+
+          <beryllium_ladder_block length="VXD_beryllium_ladder_block_length" thickness="VXD_beryllium_ladder_block_thickness" material="Beryllium"/>
+
+          <side_band_electronics  width="VXD_side_band_electronics_width"    thickness="VXD_side_band_electronics_thickness" sensitive="true"/>
+
+          <end_ladder_electronics zhalf="VXD_end_ladd_electronics_half_length" thickness="VXD_side_band_electronics_thickness" sensitive="true"/>
+
+          <active_silicon thickness="VXD_active_silicon_thickness"/>
+          <strip_lines    radius="VXD_strip_final_beampipe_radius"  z="VXD_strip_lines_final_z" thickness="VXD_strip_lines_thickness" material="Kapton"/>
+
+
+          <layer id="1" z="135*mm" number="12" gap="VXD_layer_gap" vis="VXDLayerVis">
+            <ladder  length="130*mm"  radius="VXD_radius_r1" gap="VXD_layer_gap" width="VXD_width_r1" thickness="0.1*mm" material="Silicon"/>
+          </layer>
+          <layer id="2" z="135*mm" number="12" gap="VXD_layer_gap" vis="VXDLayerVis">
+            <ladder  length="130*mm"  radius="VXD_radius_r1" gap="VXD_layer_gap" width="VXD_width_r1" thickness="0.1*mm" material="Silicon"/>
+          </layer>
+          <layer id="3" z="135*mm" number="12" gap="VXD_layer_gap" vis="VXDLayerVis">
+            <ladder  length="130*mm" radius="VXD_radius_r3" gap="VXD_layer_gap" width="VXD_width_r3" thickness="0.1*mm" material="Silicon"/>
+          </layer>
+          <layer id="4" z="135*mm" number="20" gap="VXD_layer_gap" vis="VXDLayerVis">
+            <ladder  length="130*mm" radius="VXD_radius_r3" gap="VXD_layer_gap" width="VXD_width_r3" thickness="0.1*mm" material="Silicon"/>
+          </layer>
+          <layer id="5" z="135*mm" number="22" gap="VXD_layer_gap" vis="VXDLayerVis">
+            <ladder  length="130*mm" radius="VXD_radius_r5" gap="VXD_layer_gap" width="VXD_width_r5" thickness="0.1*mm" material="Silicon"/>
+          </layer>
+          <layer id="6" z="135*mm" number="22" gap="VXD_layer_gap" vis="VXDLayerVis">
+            <ladder  length="130*mm" radius="VXD_radius_r5" gap="VXD_layer_gap" width="VXD_width_r5" thickness="0.1*mm" material="Silicon"/>
+          </layer>
+        </detector>
+--> 
+
+        <!--                  LumiCalX parameters                      -->
+<!--
+        <detector name="Lcal" type="Tesla_LumiCalX" vis="LcalVis" id="2" readout="LcalHits">
+          <layer inner_r="Lcal_inner_radius" 
+                 outer_r="Lcal_outer_radius" 
+                 inner_z="Lcal_z_begin"
+                 thetaBins="Lcal_nstrips_theta" 
+                 phiBins="Lcal_nstrips_phi"
+                 gap="Lcal_layer_gap"
+                 nmodules="Lcal_n_layers" 
+                 crossing_angle="ILC_Main_Crossing_Angle"
+                 >
+            <slice name="support"  thickness="Lcal_support_thickness"  material="Polystyrene"       vis="LcalSupportVis"/>
+            <slice name="absorber" thickness="Lcal_tungsten_thickness" material="tungsten_19.3gccm" vis="LcalAbsorberVis"/>
+            <slice name="active"   thickness="Lcal_silicon_thickness"  material="silicon_2.33gccm"  vis="LcalActiveVis"/>
+          </layer>
+        </detector>
+-->
+
+        <!--                  SEcal03 parameters                      -->
+        <detector id="3" name="ECAL" type="Tesla_SEcal03"
+          inner_r="TPC_outer_radius+Ecal_TPC_gap"
+          lateral_face_thickness="Ecal_lateral_face_thickness"
+          fiber_thickness="Ecal_fiber_thickness"
+          guard_ring_size="Ecal_guard_ring_size"
+          cell_size="Ecal_cell_size"
+          alveolus_gap="Ecal_Alveolus_Air_Gap"
+        >
+          <support   thickness="Ecal_support_thickness"/>
+          <front     thickness="Ecal_front_face_thickness"/>
+          <pcbshield thickness="Ecal_Slab_PCB_thickness + Ecal_Slab_copper_thickness + Ecal_Slab_shield_thickness" vis="EcalPCBVis" material="G10"/>
+          <barrel    zhalf="Ecal_Barrel_halfZ" towers="Ecal_barrel_number_of_towers"/>
+          <endcap    inner_r="Lcal_outer_radius + Ecal_Lcal_ring_gap"
+                     ring_gap="Ecal_EC_ring_gap"
+                     extra_size="Ecal_endcap_extra_size"
+                     center_box_size="Ecal_endcap_center_box_size"/>
+
+          <layer id="1" repeat="Ecal_nlayers1" thickness="Ecal_radiator_layers_set1_thickness" material="tungsten_19.3gccm"/>
+          <layer id="2" repeat="Ecal_nlayers2" thickness="Ecal_radiator_layers_set2_thickness" material="tungsten_19.3gccm"/>
+          <layer id="3" repeat="Ecal_nlayers3" thickness="Ecal_radiator_layers_set3_thickness" material="tungsten_19.3gccm"/>
+          <slab h_fiber_thickness="Ecal_H_fiber_thickness">
+            <shielding thickness="Ecal_Slab_shield_thickness"/>
+            <copper    thickness="Ecal_Slab_copper_thickness" material="Cu"/>
+            <ground    thickness="Ecal_Slab_ground_thickness" material="Cu"/>
+            <glue      thickness="Ecal_Slab_glue_gap"/>
+            <sensitive thickness="Ecal_Si_thickness" material="silicon_2.33gccm"/>
+          </slab>
+        </detector>
+    </detectors>
+
+    <readouts>
+        <readout name="VXDHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="LcalHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="SITHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="TPCHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+    </readouts>
+
+    <fields>
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+               outer_radius="SolenoidalFieldRadius" />
+    </fields>
+</lccdd>
