@@ -171,6 +171,11 @@ namespace DD4hep { namespace Geometry {
 #include "TColor.h"
 
 #define INSTANTIATE(X)   template struct DD4hep::Geometry::Handle<X>
+#define INSTANTIATE_UNNAMED(X)   namespace DD4hep { namespace Geometry {                         \
+  template <> void Handle<X>::assign(X* n, const string&, const string&) { this->m_element = n;} \
+  template <> const char* Handle<X>::name() const { return ""; }	                         \
+}}									                         \
+template struct DD4hep::Geometry::Handle<X>
 
 INSTANTIATE(TNamed);
 
@@ -194,6 +199,7 @@ INSTANTIATE(TGeoNode);
 INSTANTIATE(TGeoNodeMatrix);
 INSTANTIATE(TGeoNodeOffset);
 
+// Shapes (needed by "Shapes.cpp")
 #include "TGeoBBox.h"
 #include "TGeoPcon.h"
 #include "TGeoPgon.h"
@@ -210,6 +216,7 @@ INSTANTIATE(TGeoNodeOffset);
 INSTANTIATE(TGeoVolume);
 INSTANTIATE(TGeoBBox);
 INSTANTIATE(TGeoCone);
+INSTANTIATE(TGeoConeSeg);
 INSTANTIATE(TGeoParaboloid);
 INSTANTIATE(TGeoPcon);
 INSTANTIATE(TGeoPgon);
@@ -221,5 +228,24 @@ INSTANTIATE(TGeoSphere);
 INSTANTIATE(TGeoTorus);
 INSTANTIATE(TGeoShape);
 INSTANTIATE(TGeoCompositeShape);
+
+// Volume Placements (needed by "Volumes.cpp")
 #include "TGeoPhysicalNode.h"
-INSTANTIATE(TGeoPhysicalNode);
+INSTANTIATE_UNNAMED(TGeoPhysicalNode);
+
+// Replicated Volumes (needed by "Volumes.cpp")
+#include "TGeoPatternFinder.h"
+INSTANTIATE_UNNAMED(TGeoPatternFinder);
+INSTANTIATE_UNNAMED(TGeoPatternX);
+INSTANTIATE_UNNAMED(TGeoPatternY);
+INSTANTIATE_UNNAMED(TGeoPatternZ);
+INSTANTIATE_UNNAMED(TGeoPatternParaX);
+INSTANTIATE_UNNAMED(TGeoPatternParaY);
+INSTANTIATE_UNNAMED(TGeoPatternParaZ);
+INSTANTIATE_UNNAMED(TGeoPatternTrapZ);
+INSTANTIATE_UNNAMED(TGeoPatternCylR);
+INSTANTIATE_UNNAMED(TGeoPatternCylPhi);
+INSTANTIATE_UNNAMED(TGeoPatternSphR);
+INSTANTIATE_UNNAMED(TGeoPatternSphTheta);
+INSTANTIATE_UNNAMED(TGeoPatternSphPhi);
+INSTANTIATE_UNNAMED(TGeoPatternHoneycomb);

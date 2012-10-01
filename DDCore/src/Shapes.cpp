@@ -15,12 +15,12 @@
 
 // ROOT includes
 #include "TGeoShape.h"
-#include "TGeoCone.h"
 #include "TGeoPcon.h"
 #include "TGeoPgon.h"
 #include "TGeoTube.h"
 #include "TGeoTrd2.h"
 #include "TGeoArb8.h"
+#include "TGeoCone.h"
 #include "TGeoParaboloid.h"
 #include "TGeoSphere.h"
 #include "TGeoTorus.h"
@@ -148,6 +148,28 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
     params.push_back(rmax[i]);
   }
   _setDimensions(&params[0]);
+}
+
+/// Constructor to be used when creating a new object
+ConeSegment::ConeSegment(const string& name)   {
+  _assign(new TGeoConeSeg(),name,"cone_segment",false);
+}
+
+/// Constructor to be used when creating a new cone segment object
+ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2)  {
+  _assign(new TGeoConeSeg(dz,rmin1,rmax1,rmin2,rmax2,RAD_2_DEGREE * phi1,RAD_2_DEGREE * phi2),"","cone_segment");
+}
+
+/// Constructor to be used when creating a new cone segment object
+ConeSegment::ConeSegment(const string& name, double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2)  {
+  _assign(new TGeoConeSeg(dz,rmin1,rmax1,rmin2,rmax2,RAD_2_DEGREE * phi1,RAD_2_DEGREE * phi2),name,"cone_segment");
+}
+
+/// Set the cone segment dimensions
+ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
+  double params[] = {dz,rmin1,rmax1,rmin2,rmax2,RAD_2_DEGREE * phi1,RAD_2_DEGREE * phi2};
+  _setDimensions(params);
+  return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
@@ -360,6 +382,25 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double 
 }
 
 /// Constructor to be used when creating a new object
+PolyhedraRegular::PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen)  
+{
+  if ( rmin<0e0 || rmin>rmax )
+    throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
+  else if ( rmax<0e0 )
+    throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
+  _assign(new TGeoPgon(),"","polyhedra",false);
+  double params[] = {
+    phi_start,
+    RAD_2_DEGREE * 2 * M_PI,
+    double(nsides),
+    2e0,
+    zlen/2e0,rmin,rmax,
+    -zlen/2e0,rmin,rmax
+  };
+  _setDimensions(&params[0]);
+}
+
+/// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
@@ -454,6 +495,7 @@ IntersectionSolid::IntersectionSolid(const string& name, const Solid& shape1, co
 INSTANTIATE(TGeoShape);
 INSTANTIATE(TGeoBBox);
 INSTANTIATE(TGeoCone);
+INSTANTIATE(TGeoConeSeg);
 INSTANTIATE(TGeoParaboloid);
 INSTANTIATE(TGeoPcon);
 INSTANTIATE(TGeoPgon);

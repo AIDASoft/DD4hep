@@ -55,9 +55,13 @@ void DipoleField::fieldComponents(const double* pos, double* field) {
   // Check if z coordinate is within dipole z bounds.
   if (z > zmin && z < zmax && r < rmax)    {
     // Apply all coefficients to this z coordinate.
-    for (size_t i=0; i<coefficents.size(); ++i)
-      bx += coefficents[i] * pow(fabs(z),i);
-
+    double pp = 1.0;
+    double abs_z = fabs(z);
+    bx = coefficents[0];
+    for (size_t i=1; i<coefficents.size(); ++i) {
+      pp *= abs_z;
+      bx += coefficents[i] * abs_z;
+    }
     // Flip sign for negative z.
     if (z < 0) bx = -bx;
     // Add Bx to the input field.

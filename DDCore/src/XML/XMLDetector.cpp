@@ -262,6 +262,14 @@ double Dimension::zstart() const {
   return m_element.attr<double>(Attr_zstart);
 }
 
+double Dimension::start()  const {
+  return m_element.attr<double>(Attr_start);
+}
+
+double Dimension::end()    const {
+  return m_element.attr<double>(Attr_end);
+}
+
 double DetElement::inner_field() const {
   return m_element.attr<double>(Attr_inner_field);
 }

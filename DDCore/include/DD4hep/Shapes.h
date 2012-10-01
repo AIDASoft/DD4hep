@@ -429,6 +429,8 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object
       PolyhedraRegular(int nsides, double rmin, double rmax, double zlen);
       /// Constructor to be used when creating a new object
+      PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen);
+      /// Constructor to be used when creating a new object
       PolyhedraRegular(const std::string& name, int nsides, double rmin, double rmax, double zlen);
     };
 

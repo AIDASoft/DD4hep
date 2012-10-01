@@ -435,10 +435,17 @@ Handle_t Element::addChild(const XMLCh* tag)  const  {
   return e;
 }
 
-Handle_t Element::child(const Strng_t& tag, bool throw_exception) const  {
-  NodeList l=m_element->getElementsByTagName(tag);
+Handle_t Element::child(const Strng_t& t, bool throw_exception) const  {
+  NodeList l=m_element->getElementsByTagName(t);
   if ( l && l->getLength() > 0 ) return Handle_t((DOMElement*)l->item(0));
-  if ( throw_exception ) throw runtime_error("Cannot find the required child node!");
+  if ( throw_exception )   {
+    string msg = "Element::child: ";
+    if ( m_element.ptr() )
+      msg += "Element ["+m_element.tag()+"] has no child of type '"+_toString(t)+"'";
+    else
+      msg += "Element [INVALID] has no child of type '"+_toString(t)+"'";
+    throw runtime_error(msg);
+  }
   return Handle_t(0);
 }
 

@@ -148,7 +148,7 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, const xml_h& e)  {
   if ( c.hasAttr(_A(zmax))  ) ptr->zmax  = _multiply<double>(c.attr<string>(_A(zmax)),lunit);
   if ( c.hasAttr(_A(rmax))  ) ptr->rmax  = _multiply<double>(c.attr<string>(_A(rmax)),lunit);
   for( xml_coll_t coll(c,_X(dipole_coeff)); coll; ++coll)   {
-    val = funit/pow(lunit,ptr->coefficents.size());
+    val = funit/pow(lunit,(int)ptr->coefficents.size());
     val = _multiply<double>(coll.value(),val);
     ptr->coefficents.push_back(val);
   }
@@ -198,56 +198,89 @@ template <> void Converter<Material>::operator()(const xml_h& e)  const  {
   TGeoManager*      mgr      = gGeoManager;
   xml_tag_t         mname    = m.name();
   const char*       matname  = mname.c_str();
-  xml_h             density  = m.child(XML::Tag_D);
   TGeoElementTable* table    = mgr->GetElementTable();
   TGeoMaterial*     mat      = mgr->GetMaterial(matname);
   TGeoMixture*      mix      = dynamic_cast<TGeoMixture*>(mat);
   xml_coll_t        fractions(m,_X(fraction));
   xml_coll_t        composites(m,_X(composite));
+  bool has_density = true;
+  bool mat_created = false;
   set<string> elts;
+
   if ( 0 == mat )  {
-    xml_h          radlen   = m.child(XML::Tag_RL,false);
-    xml_h          intlen   = m.child(XML::Tag_NIL,false);
+    xml_h  radlen     = m.child(XML::Tag_RL,false);
+    xml_h  intlen     = m.child(XML::Tag_NIL,false);
+    xml_h  density    = m.child(XML::Tag_D,false);
     double radlen_val = radlen.ptr() ? radlen.attr<double>(_A(value)) : 0.0;
     double intlen_val = intlen.ptr() ? intlen.attr<double>(_A(value)) : 0.0;
-    mat = mix = new TGeoMixture(matname,composites.size(),density.attr<double>(_A(value)));
+    double dens_val   = density.ptr() ? density.attr<double>(_A(value)) : 0.0;
+    if ( 0 == mat && !density.ptr() ) {
+      cout << "Compact2Objects[WARNING]: Material:" << matname << " with NO density." << endl;
+      has_density = false;
+    }
+    if ( mat == 0  ) mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
     mat->SetRadLen(radlen_val,intlen_val);
+    mat_created = true;
     //cout << "Compact2Objects[INFO]: Creating material:" << matname << " composites:" << composites.size()+fractions.size() << endl;
   }
-  if ( mix )  {
-    for(Int_t i=0, n=mix->GetNelements(); i<n; ++i)
-      elts.insert(mix->GetElement(i)->GetName());
-  }
-  for(; composites; ++composites)  {
-    std::string nam = composites.attr<string>(_X(ref));
-    TGeoElement*   element;
-    if ( elts.find(nam) == elts.end() )  {
-      double fraction = composites.attr<double>(_X(n));
-      if ( 0 != (element=table->FindElement(nam.c_str())) )
-	mix->AddElement(element,fraction);
-      else if ( 0 != (mat=mgr->GetMaterial(nam.c_str())) )
-	mix->AddElement(mat,fraction);
-      else  {
-	string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
-	cout << msg << endl;
-	throw runtime_error(msg);
+  if ( mat_created ) {
+    if ( mix )  {
+      for(Int_t i=0, n=mix->GetNelements(); i<n; ++i)
+	elts.insert(mix->GetElement(i)->GetName());
+    }
+    for(; composites; ++composites)  {
+      std::string nam = composites.attr<string>(_X(ref));
+      TGeoMaterial*  comp_mat;
+      TGeoElement*   element;
+      if ( elts.find(nam) == elts.end() )  {
+	double fraction = composites.attr<double>(_X(n));
+	if ( 0 != (comp_mat=mgr->GetMaterial(nam.c_str())) ) {
+	  mix->AddElement(comp_mat,fraction);
+	}
+	else if ( 0 != (element=table->FindElement(nam.c_str())) ) {
+	  mix->AddElement(element,fraction);
+	}
+	else  {
+	  string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
+	  cout << msg << endl;
+	  throw runtime_error(msg);
+	}
       }
     }
-  }
-  for(; fractions; ++fractions)  {
-    std::string nam = fractions.attr<string>(_X(ref));
-    TGeoElement*   element;
-    if ( elts.find(nam) == elts.end() )  {
-      double fraction = fractions.attr<double>(_X(n));
-      if ( 0 != (element=table->FindElement(nam.c_str())) )
-	mix->AddElement(element,fraction);
-      else if ( 0 != (mat=mgr->GetMaterial(nam.c_str())) )
-	mix->AddElement(mat,fraction);
-      else  {
-	string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
-	cout << msg << endl;
-	throw runtime_error(msg);
+    for(; fractions; ++fractions)  {
+      std::string nam = fractions.attr<string>(_X(ref));
+      TGeoMaterial*  comp_mat;
+      TGeoElement*   element;
+      if ( elts.find(nam) == elts.end() )  {
+	double fraction = fractions.attr<double>(_X(n));
+	if ( 0 != (comp_mat=mgr->GetMaterial(nam.c_str())) )
+	  mix->AddElement(comp_mat,fraction);
+	else if ( 0 != (element=table->FindElement(nam.c_str())) )
+	  mix->AddElement(element,fraction);
+	else  {
+	  string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
+	  cout << msg << endl;
+	  throw runtime_error(msg);
+	}
       }
+    }
+    // Update estimated density if not provided.
+    if ( !has_density && mix && 0 == mix->GetDensity() ) {
+      double dens = 0.0;
+      for(composites.reset(); composites; ++composites)  {
+	std::string nam = composites.attr<string>(_X(ref));
+	double fraction = composites.attr<double>(_X(n));
+	TGeoMaterial*  comp_mat = mgr->GetMaterial(nam.c_str());
+	dens += fraction*comp_mat->GetDensity();
+      }
+      for(fractions.reset(); fractions; ++fractions)  {
+	std::string nam = fractions.attr<string>(_X(ref));
+	double fraction = fractions.attr<double>(_X(n));
+	TGeoMaterial*  comp_mat = mgr->GetMaterial(nam.c_str());
+	dens += fraction*comp_mat->GetDensity();
+      }
+      cout << "Compact2Objects[WARNING]: Material" << matname << " Set density:" << dens << " g/cm**3 " << endl;
+      mix->SetDensity(dens);
     }
   }
   TGeoMedium* medium = mgr->GetMedium(matname);
@@ -257,8 +290,26 @@ template <> void Converter<Material>::operator()(const xml_h& e)  const  {
     medium->SetTitle("material");
     medium->SetUniqueID(unique_mat_id);
   }
-    
   lcdd.addMaterial(Ref_t(medium));
+
+  // TGeo has no notion of a material "formula"
+  // Hence, treat the formula the same way as the material itself
+  if ( m.hasAttr(_A(formula)) ) {
+    string form = m.attr<string>(_A(formula));
+    if ( form != matname ) {
+      LCDD::HandleMap::const_iterator im=lcdd.materials().find(form);
+      if ( im == lcdd.materials().end() ) {
+	medium = mgr->GetMedium(form.c_str());
+	if ( 0 == medium ) {
+	  --unique_mat_id;
+	  medium = new TGeoMedium(form.c_str(),unique_mat_id,mat);
+	  medium->SetTitle("material");
+	  medium->SetUniqueID(unique_mat_id);      
+	}
+	lcdd.addMaterial(Ref_t(medium));
+      }
+    }
+  }
 }
 
 /** Convert compact atom objects

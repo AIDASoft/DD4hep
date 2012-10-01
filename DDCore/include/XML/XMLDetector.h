@@ -106,7 +106,10 @@ namespace DD4hep {
       double z0() const;
       double zstart() const;
       int    nz() const;
-      
+
+      double start()  const;
+      double end()    const;
+
     };
 
     struct DetElement : public Dimension  {

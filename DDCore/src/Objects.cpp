@@ -74,6 +74,66 @@ string Constant::toString()  const {
   return os.str();
 }
 
+/// Rotates the position vector around the x-axis.
+Position& Position::rotateX(double angle_in_rad) {
+  double s = std::sin(angle_in_rad);
+  double c = std::cos(angle_in_rad);
+  double t = y * c - z * s;
+  z = z * c + y * s;
+  y = t;
+  return *this;
+}
+
+/// Rotates the position vector around the y-axis.
+Position& Position::rotateY(double angle_in_rad) {
+  double s = std::sin(angle_in_rad);
+  double c = std::cos(angle_in_rad);
+  double t = z * c - x * s;
+  x = x * c + z * s;
+  z = t;
+  return *this;
+}
+
+/// Rotates the position vector around the z-axis.
+Position& Position::rotateZ(double angle_in_rad) {
+  double s = std::sin(angle_in_rad);
+  double c = std::cos(angle_in_rad);
+  double t = x * c - y * s;
+  y = t * c + x * s;
+  x = t;
+  return *this;
+}
+
+/// Rotates the rotation vector around the x-axis.
+Rotation& Rotation::rotateX(double angle_in_rad) {
+  double s = std::sin(angle_in_rad);
+  double c = std::cos(angle_in_rad);
+  double t = psi * c - phi * s;
+  phi = phi * c + psi * s;
+  psi = t;
+  return *this;
+}
+
+/// Rotates the rotation vector around the y-axis.
+Rotation& Rotation::rotateY(double angle_in_rad) {
+  double s = std::sin(angle_in_rad);
+  double c = std::cos(angle_in_rad);
+  double t = phi * c - theta * s;
+  theta = theta * c + phi * s;
+  phi = t;
+  return *this;
+}
+
+/// Rotates the rotation vector around the z-axis.
+Rotation& Rotation::rotateZ(double angle_in_rad) {
+  double s = std::sin(angle_in_rad);
+  double c = std::cos(angle_in_rad);
+  double t = theta * c - psi * s;
+  psi = t * c + theta * s;
+  theta = t;
+  return *this;
+}
+
 /// Constructor to be used when creating a new DOM tree
 Atom::Atom(const string& name, const string& formula, int Z, int N, double density) {
   TGeoElementTable* t = TGeoElement::GetElementTable();
@@ -87,7 +147,8 @@ Atom::Atom(const string& name, const string& formula, int Z, int N, double densi
 
 /// Constructor to be used when creating a new DOM tree
 Material::Material(const string& name)   {
-  TGeoMaterial* mat = gGeoManager->GetMaterial(name.c_str());
+  //TGeoMaterial* mat = gGeoManager->GetMaterial(name.c_str());
+  TGeoMedium* mat = gGeoManager->GetMedium(name.c_str());
   m_element = mat;
 }
 

@@ -116,6 +116,7 @@ namespace DD4hep   { namespace XML  {
 
   // LCDD
   extern const Tag_t Tag_barrel;
+  extern const Tag_t Tag_endcap;
   extern const Tag_t Tag_cartesian_grid_xy;
   extern const Tag_t Tag_global_grid_xy;
   extern const Tag_t Tag_color;
@@ -156,6 +157,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_signed;
   extern const Tag_t Attr_label;
   extern const Tag_t Attr_start;
+  extern const Tag_t Attr_end;
   extern const Tag_t Attr_width;
   extern const Tag_t Attr_length;
   extern const Tag_t Attr_z_length;

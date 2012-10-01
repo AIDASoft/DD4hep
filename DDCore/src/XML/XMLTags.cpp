@@ -167,6 +167,9 @@ namespace DD4hep   { namespace XML  {
   ATTR(sensitive);
   ATTR(sensitive_detector);
   ATTR(startphi);
+  ATTR(endphi);
+  ATTR(start_z);
+  ATTR(end_z);
   ATTR(system);
   ATTR(thickness);
   ATTR(true);
@@ -183,6 +186,7 @@ namespace DD4hep   { namespace XML  {
 
   // LCDD
   TAG(barrel);
+  TAG(endcap);
   TAG(cartesian_grid_xy);
   TAG(global_grid_xy);
   TAG(color);
@@ -224,6 +228,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(signed);
   ATTR(label);
   ATTR(start);
+  ATTR(end);
   ATTR(width);
   ATTR(length);
   ATTR(z_length);
