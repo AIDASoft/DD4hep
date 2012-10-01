@@ -67,7 +67,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     layer.Thickness    = supp_thick;
     layer.Length       = suppbox.x();
     layer.Width        = suppbox.y();
-    layer.RadLength    = suppmat->GetRadLen();
+    layer.RadLength    = suppmat->GetMaterial()->GetRadLen();
     vxd_data->_lVec.push_back(layer);
 
     // Now add sensitive ladder layer
@@ -78,7 +78,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     layer.Thickness    = sens_thick;
     layer.Length       = sensbox.x();
     layer.Width        = sensbox.y();
-    layer.RadLength    = sensmat->GetRadLen();
+    layer.RadLength    = sensmat->GetMaterial()->GetRadLen();
     vxd_data->_sVec.push_back(layer);
 
     for(int j=0; j<nLadders; ++j) {

@@ -243,7 +243,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       pv = layer_vol.placeVolume(active_layer_vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(PIby2,phi,0.));
       pv.addPhysVolID("layer",layer.id);
     }
-    detector_vol.placeVolume(layer_vol,Position(0,0,0));
+    detector_vol.placeVolume(layer_vol);
   }
 
   //****************************************
@@ -254,7 +254,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   Tube         support_tube(shell_rmin,shell_rmin+shell_thickess,shell_zhalf);
   Volume       support_vol (name+"_support",support_tube,support_mat);
   support_vol.setVisAttributes(lcdd, x_supp.visStr());
-  detector_vol.placeVolume(support_vol,Position());
+  detector_vol.placeVolume(support_vol);
 
   // ************support endplates************
   Tube         endplate_tube(x_endpl.rmin(),x_endpl.rmax(),x_endpl.zhalf());
@@ -323,7 +323,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
   return true;
 #endif
-  PlacedVolume lpv = motherVol.placeVolume(detector_vol,Position(0,0,0));
+  PlacedVolume lpv = motherVol.placeVolume(detector_vol);
 
   return vxd;
 }

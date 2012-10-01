@@ -1,0 +1,251 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml,v 1.3 2010/12/02 16:34:00 grefe Exp $">
+        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+    </info>
+  
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+  
+    <define>
+        <constant name="world_side"              value="10*m"/>
+        <constant name="world_x"                 value="world_side/2"/>
+        <constant name="world_y"                 value="world_side/2"/>
+        <constant name="world_z"                 value="world_side/2"/>        
+        <constant name="CrossingAngle"           value="0.020*rad"/>
+        <constant name="ILC_Main_Crossing_Angle" value="CrossingAngle"/>
+        
+        <constant name="TPC_zhalf"              value="2500*mm"/>
+        <constant name="TPC_outer_radius"       value="1808*mm"/>
+        <constant name="TPC_inner_radius"       value="350*mm"/>
+        <constant name="TPC_inner_thickness"    value="2*mm"/>
+        <constant name="TPC_outer_thickness"    value="3*mm"/>
+        <constant name="TPC_endcap_thickness"   value="3*mm"/>
+
+        <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0*m"/>
+        <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0*m"/>
+        <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
+        <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
+
+        <!--                  Shared parameters                      -->
+        <constant name="TPC_Ecal_Hcal_barrel_halfZ"            value="2730*mm"/>
+        <constant name="TPC_Ecal_gap"                          value="10*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="2500*mm"/>
+        <constant name="Ecal_outer_radius"                     value="1910*mm"/>
+
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Hcal_R_max"                            value="2900*mm"/>
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
+
+        <!--                   FTD parameters                        -->
+        <constant name="Ftd_total_cylinder_thickness"          value="1*mm"/>
+        <constant name="Ftd_cables_thickness"                  value="0.08*mm"/>
+        <constant name="Ftd_Si_thickness1"                     value="0.3*mm"/>
+        <constant name="Ftd_Si_thickness2"                     value="0.3*mm"/>
+        <constant name="Ftd_inner_support_thickness"           value="2*mm"/>
+        <constant name="Ftd_inner_support_length"              value="4*mm"/>
+        <constant name="Ftd_outer_support_thickness"           value="10*mm"/>
+        <constant name="Ftd_outer_support_length"              value="4*mm"/>
+
+        <!--                   TPC02 parameters                      -->
+        <constant name="TPC_inner_radius"                      value="320*mm"/>
+        <constant name="TPC_outer_radius"                      value="1690*mm"/>
+        <constant name="TPC_zhalf"                             value="TPC_Ecal_Hcal_barrel_halfZ"/>
+        <constant name="TPC_electronics_backend_thickness"     value="230*mm"/>
+        <constant name="TPC_inner_wall_thickness"              value="1.16*mm"/>
+        <constant name="TPC_outer_wall_thickness"              value="1.51*mm"/>
+        <constant name="TPC_sensitive_inner_gap"               value="66*mm"/>
+        <constant name="TPC_sensitive_outer_gap"               value="64*mm"/>
+        <constant name="TPC_fch_thickness"                     value="0.3*mm"/>
+
+        <!--                   COIL00 parameters                     -->
+        <constant name="Coil_thickness"                        value="850*mm"/>
+        <constant name="Coil_extra_size"                       value="2520*mm"/>
+        <constant name="Coil_inner_radius"                     value="Hcal_R_max"/>
+        <constant name="Coil_outer_radius"                     value="Hcal_R_max+Coil_thickness"/>
+        <constant name="Coil_half_z"                           value="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size"/>
+
+        <!--                   Yoke02 parameters                     -->
+        <constant name="Yoke_Z_start_endcaps"                  value="6625*mm"/>
+        <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
+        <constant name="Yoke_thickness"                        value="2000*mm"/>
+        <constant name="Yoke_endcap_inner_radius"              value="240.50*mm"/>
+        <constant name="Yoke_symmetry"                         value="8"/>
+        <constant name="Yoke_Barrel_Half_Z"                    value="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size+Yoke_thickness+20*mm"/>
+    </define>
+
+    <materials>
+        <material formula="Si" name="silicon_2.33gccm" state="solid" >
+          <RL type="X0" unit="cm" value="9.36607" />
+          <NIL type="lambda" unit="cm" value="45.7531" />
+          <D type="density" unit="g/cm3" value="2.33" />
+          <composite n="1" ref="Si" />
+        </material>
+
+        <material name="silicon_8.72gccm" state="solid" >
+          <RL type="X0" unit="cm" value="9.36607" />
+          <NIL type="lambda" unit="cm" value="45.7531" />
+          <D type="density" unit="g/cm3" value="8.72" />
+          <composite n="1" ref="Si" />
+        </material>
+
+        <material formula="W" name="tungsten_19.3gccm" state="solid" >
+          <RL type="X0" unit="cm" value="0.350418" />
+          <NIL type="lambda" unit="cm" value="10.3057" />
+          <D type="density" unit="g/cm3" value="19.3" />
+          <composite n="1" ref="W" />
+        </material>
+
+        <material name="TPCEndcapMaterial" state="solid">
+          <!-- density calculated internally  -->
+          <!-- D type="density" unit="g/cm3" value="19.3" -->
+          <composite n="0.1244" ref="Kapton"/>
+          <composite n="0.0156" ref="Copper"/>
+          <composite n="0.86"   ref="Air"/>
+        </material>
+
+        <material name="Graphite">
+        	<D value="1.7" unit="g/cm3"/>
+        	<composite n="1" ref="C"/>
+        </material>      
+    </materials>
+  
+    <limits>
+
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+
+        <limitset name="EcalLimits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+
+    </limits>
+
+    <display>
+
+      <vis name="FtdCylinderVis"       alpha="1.0" r="0.5" g="0.5"  b="0.5"     drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="FtdCablesVis"         alpha="1.0" r="0.75" g="0"   b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="FtdDiskVis"           alpha="1.0" r="0.0"  g="0"    b="0.75"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <vis name="MaskVis"              alpha="1.0" r="0.20" g="0"    b="0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskYokeVis"          alpha="1.0" r="0.2"  g="0.2"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskCoilVis"          alpha="1.0" r="0.0"  g="0"    b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <vis name="TPCVis"               alpha="1.0" r="0.0"  g="0"    b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCInnerWallVis"      alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCOuterWallVis"      alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCEndcapVis"         alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCChamberVis"        alpha="1.0" r="1.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCGasVis"            alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="wireframe" showDaughters="false" visible="true"/>
+      <vis name="TPCFchVis"            alpha="1.0" r="0.2"  g="0.0"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="false"/>
+      <vis name="TPCLayerVis"          alpha="1.0" r="0.2"  g="0.0"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="false"/>
+
+      <vis name="CoilVis"              alpha="1.0" r="0.0"  g="0.0"  b="0.7"    drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="YokeVis"              alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+
+    </display>
+
+    <detectors>
+        <comment>Trackers</comment>
+
+        <!--                  Mask04 description                      -->
+<!--
+        <detector id="6" name="Mask" type="Tesla_mask04" vis="MaskVis">
+          <masks>
+            <mask id="1" zmin="3260*mm" zmax="3340*mm" rmin="75*mm"  rmax="160*mm" vis="MaskVis" material="Tungsten"/>
+            <mask id="2" zmin="3340*mm" zmax="3510*mm" rmin="210*mm" rmax="240*mm" vis="MaskVis" material="Tungsten"/>
+            <mask id="3" zmin="3510*mm" zmax="3580*mm" rmin="75*mm"  rmax="240*mm" vis="MaskVis" material="Tungsten"/>
+            <mask id="4" zmin="3580*mm" zmax="7000*mm" rmin="170*mm" rmax="240*mm" vis="MaskVis" material="Tungsten"/>
+          </masks>
+          <quadrupole id="0" end="7000*mm">
+            <yoke z="3960*mm" rmin="23*mm" rmax="170*mm-1.0*mm" material="Iron"   vis="MaskYokeVis"/>
+            <coil z="4050*mm" rmin="14*mm" rmax="120*mm"        material="Copper" vis="MaskCoilVis"/>
+          </quadrupole>
+        </detector>
+-->
+
+        <!--                  TPC02  description                      -->
+        <detector id="7" name="TPC" type="Tesla_tpc02" vis="TPCVis">
+          <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ"/>
+          <endplate   thickness="TPC_electronics_backend_thickness"
+                      material="TPCEndcapMaterial"
+                      vis="TPCEndcapVis"/>
+          <inner_wall thickness="TPC_inner_wall_thickness" material="Aluminum" vis="TPCInnerWallVis"/>
+          <outer_wall thickness="TPC_outer_wall_thickness" material="Aluminum" vis="TPCOuterWallVis"/>
+          <sensitive  inner_r="TPC_inner_radius+TPC_sensitive_inner_gap"
+                      outer_r="TPC_outer_radius-TPC_sensitive_outer_gap" 
+                      number="(int)((TPC_outer_radius-TPC_sensitive_outer_gap - TPC_inner_radius+TPC_sensitive_inner_gap + 1*mm) / 6.2*mm)"
+                      material="Argon"
+                      vis="TPCChamberVis"/>
+          <fch        inner_r="TPC_inner_radius"
+                      outer_r="TPC_outer_radius-90*mm" 
+                      thickness="TPC_fch_thickness"
+                      material="silicon_2.33gccm"
+                      vis="TPCFchVis"/>
+        </detector>
+<!--
+-->
+
+        <!--                  coil00 description                      -->
+        <detector id="9" name="Coil" type="Tesla_coil00" vis="CoilVis">
+          <coil inner_r="Coil_inner_radius"
+                outer_r="Coil_outer_radius" 
+                zhalf="Coil_half_z"
+                material="Aluminum"/>
+        </detector>
+<!--
+-->
+
+        <!--                  yoke02 description                      -->
+        <detector id="9" name="Yoke" type="Tesla_yoke02" vis="YokeVis">
+          <symmetry value="8"/>
+          <barrel inner_r="Yoke_barrel_inner_radius"
+                  outer_r="Yoke_barrel_inner_radius+Yoke_thickness"
+                  zhalf="Yoke_Barrel_Half_Z"
+                  material="Iron"/>
+          <endcap inner_r="Yoke_endcap_inner_radius"
+                  outer_r="Yoke_barrel_inner_radius"
+                  z="(Yoke_Barrel_Half_Z + Yoke_Z_start_endcaps)/2.0"
+                  thickness="Yoke_Barrel_Half_Z-Yoke_Z_start_endcaps"
+                  material="Iron"/>
+        </detector>
+<!--
+-->
+
+
+    </detectors>
+
+
+    <readouts>
+        <readout name="VXDHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="LcalHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="SITHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="TPCHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+    </readouts>
+
+    <fields>
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+               outer_radius="SolenoidalFieldRadius" />
+    </fields>
+</lccdd>
