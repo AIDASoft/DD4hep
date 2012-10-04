@@ -12,6 +12,7 @@
 #include "TGeoTube.h"
 #include <math.h>
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ namespace DD4hep {
   VersatileDiskRowLayout::VersatileDiskRowLayout(const Geometry::DetElement& d) : module(d) {
     pads = module.readout().segmentation();
     tube = module.volume().solid();
+    padData = pads.extension<VersatileDiskRowLayoutData>();
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
@@ -31,22 +33,24 @@ namespace DD4hep {
   {
     pads = module.readout().segmentation();
     tube = module.volume().solid();
+    padData = pads.extension<VersatileDiskRowLayoutData>();
   }
+
 
   std::string VersatileDiskRowLayout::getPadType()const {
     return pads.type();
   }
  
   int VersatileDiskRowLayout::getNPads()const {
-    return pads._nPads;
+    return padData->_nPads;
   }
   
   int VersatileDiskRowLayout::getNRows()const {
-    return pads._rows.size();
+    return padData->_rows.size();
   }
 
   int VersatileDiskRowLayout::getNPadsInRow(int row)const {
-    return pads._rows[row]._nPads;
+    return padData->_rows[row]._nPads;
   }
   
   double VersatileDiskRowLayout::getRowHeight(int row)const {

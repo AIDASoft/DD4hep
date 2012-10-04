@@ -21,9 +21,8 @@ namespace DD4hep {
    
     Geometry::DetElement                module;
     Geometry::VersatileDiskRowLayoutSeg pads;
+    Geometry::VersatileDiskRowLayoutData *padData;
     Geometry::Tube                      tube;
-    
-    void getExtension();
     
     /// Default empty constructor
     VersatileDiskRowLayout() : module(), pads(), tube() {}
@@ -34,6 +33,7 @@ namespace DD4hep {
     /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
     VersatileDiskRowLayout(const VersatileDiskRowLayout& c,const Geometry::DetElement& det);
 
+       
     /// Default destructor
     virtual ~VersatileDiskRowLayout() {}
 

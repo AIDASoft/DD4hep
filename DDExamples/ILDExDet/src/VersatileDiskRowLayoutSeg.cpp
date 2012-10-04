@@ -20,7 +20,7 @@ using namespace DD4hep::Geometry;
 VersatileDiskRowLayoutSeg::VersatileDiskRowLayoutSeg() 
   : Segmentation("VersatileDiskRowLayoutSeg")   {}
 
-void VersatileDiskRowLayoutSeg::addRow(int nPads, double padPitch, double rowHeight, double offset)
+void VersatileDiskRowLayoutData::addRow(int nPads, double padPitch, double rowHeight, double offset)
 {
   Row new_row;
   new_row._nPads=nPads;
@@ -28,11 +28,11 @@ void VersatileDiskRowLayoutSeg::addRow(int nPads, double padPitch, double rowHei
   new_row._rowHeight=rowHeight;
   new_row._offset=offset;
   _rows.push_back(new_row);
-  std::cout<<"Added row: "<<nPads<<" "<<padPitch<<std::endl;
+  std::cout<<"Added row: "<<nPads<<" "<<new_row._nPads<<std::endl;
   _nPads+=nPads;
 }
     
-int  VersatileDiskRowLayoutSeg::setRMin(int rmin)
+int  VersatileDiskRowLayoutData::setRMin(int rmin)
 {
   _rMin=rmin;
 }
@@ -40,11 +40,13 @@ int  VersatileDiskRowLayoutSeg::setRMin(int rmin)
 //factory to fill object from compact xml
 static Ref_t create_VersatileDiskRowLayoutSeg(lcdd_t& /* lcdd */, const xml_h& e)  {
   VersatileDiskRowLayoutSeg obj;
-  if ( e.hasAttr(_A(rmin))   ) obj.setRMin(e.attr<int>(_A(rmin)));
+  VersatileDiskRowLayoutData *dataExt=new VersatileDiskRowLayoutData();
+  if ( e.hasAttr(_A(rmin))   ) dataExt->setRMin(e.attr<int>(_A(rmin)));
   //loop rows to fill VersatileDiskRowLayoutSeg
   for(xml_coll_t r(e,_X(row)); r; ++r)  {
-    obj.addRow(r.attr<int>(_A(nPads)),r.attr<double>(_A(padPitch)),r.attr<double>(_A(rowHeight)),r.attr<double>(_A(offset)));
+    dataExt->addRow(r.attr<int>(_A(nPads)),r.attr<double>(_A(padPitch)),r.attr<double>(_A(rowHeight)),r.attr<double>(_A(offset)));
    }
+  obj.setExtension<VersatileDiskRowLayoutData>(dataExt);
   return obj;
 }
 DECLARE_XMLELEMENT(VersatileDiskRowLayoutSeg,create_VersatileDiskRowLayoutSeg);
