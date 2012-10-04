@@ -26,7 +26,7 @@
         <constant name="TPC_zhalf"              value="300*mm"/>
         <constant name="TPC_outer_radius"       value="363.35*mm"/>
         <constant name="TPC_inner_radius"       value="0*mm"/>
-        <constant name="TPC_outer_thickness"    value="0*mm"/>
+        <constant name="TPC_outer_thickness"    value="2*mm"/>
         <constant name="TPC_endcap_thickness"   value="45*mm"/>
         <constant name="TPC_center_x"           value="1503.615*mm"/>
 
@@ -130,14 +130,42 @@
 
     <readouts>
        <readout name="PadLayout0">
-          <segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/> 
-          <id>system:6</id>
+        <segmentation type="VersatileDiskRowLayoutSeg" rmin="1439.96">
+         <row nPads="176" padPitch="1.18511" rowHeight="5.36"  offset="0" RowID="0"> </row>
+         <row nPads="176" padPitch="1.18951" rowHeight="5.36"  offset="0.594754" RowID="1"></row>
+	 <row nPads="176" padPitch="1.19391" rowHeight="5.36"  offset="0" RowID="2"></row>
+	 <row nPads="176" padPitch="1.19832" rowHeight="5.36"  offset="0.599158" RowID="3"></row>
+	 <row nPads="176" padPitch="1.20272" rowHeight="5.36"  offset="0" RowID="4"></row>
+	 <row nPads="176" padPitch="1.20712" rowHeight="5.36"  offset="0.603561" RowID="5"></row>
+	 <row nPads="176" padPitch="1.21152" rowHeight="5.36"  offset="0" RowID="6"></row>
+	 <row nPads="176" padPitch="1.21593" rowHeight="5.36"  offset="0.607964" RowID="7"></row>
+	 <row nPads="176" padPitch="1.22033" rowHeight="5.36"  offset="0" RowID="8"></row>
+	 <row nPads="176" padPitch="1.22473" rowHeight="5.36"  offset="0.612367" RowID="9"></row>
+	 <row nPads="176" padPitch="1.22914" rowHeight="5.36"  offset="0" RowID="10"></row>
+	 <row nPads="176" padPitch="1.23354" rowHeight="5.36"  offset="0.61677" RowID="11"></row>
+	 <row nPads="176" padPitch="1.23794" rowHeight="5.36"  offset="0" RowID="12"></row>
+	 <row nPads="176" padPitch="1.24235" rowHeight="5.36"  offset="0.621173" RowID="13"></row>
+	 <row nPads="192" padPitch="1.14285" rowHeight="5.36"  offset="0" RowID="14"></row>
+	 <row nPads="192" padPitch="1.14689" rowHeight="5.36"  offset="0.573445" RowID="15"></row>
+	 <row nPads="192" padPitch="1.15093" rowHeight="5.36"  offset="0" RowID="16"></row>
+	 <row nPads="192" padPitch="1.15496" rowHeight="5.36"  offset="0.577481" RowID="17"></row>
+	 <row nPads="192" padPitch="1.159"   rowHeight="5.36"  offset="0" RowID="18"></row>
+	 <row nPads="192" padPitch="1.16304" rowHeight="5.36"  offset="0.581518" RowID="19"></row>
+	 <row nPads="192" padPitch="1.16707" rowHeight="5.36"  offset="0" RowID="20"></row>
+	 <row nPads="192" padPitch="1.17111" rowHeight="5.36"  offset="0.585554" RowID="21"></row>
+	 <row nPads="192" padPitch="1.17514" rowHeight="5.36"  offset="0" RowID="22"></row>
+	 <row nPads="192" padPitch="1.17918" rowHeight="5.36"  offset="0.58959" RowID="23"></row>
+	 <row nPads="192" padPitch="1.18322" rowHeight="5.36"  offset="0" RowID="24"></row>
+	 <row nPads="192" padPitch="1.18725" rowHeight="5.36"  offset="0.593626" RowID="25"></row>
+	 <row nPads="192" padPitch="1.19129" rowHeight="5.36"  offset="0" RowID="26"></row>
+	 <row nPads="192" padPitch="1.19532" rowHeight="5.36"  offset="0.597662" RowID="27"></row>
+        </segmentation>      
+         <id>system:6</id>
         </readout>
     </readouts>
- 
-   <fields>
-        <field type="Solenoid" name="GlobalSolenoid" inner_field="5.0"
-               outer_field="-1.5" zmax="SolenoidCoilOuterZ"
+ <fields>
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
                outer_radius="SolenoidalFieldRadius" />
-    </fields>
+    </fields> 
 </lccdd>

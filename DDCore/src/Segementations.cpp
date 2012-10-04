@@ -113,6 +113,7 @@ void NonProjectiveCylinder::setPhiBinSize(double value)   {
   _data().data.cylindrical_grid.grid_size_z = value;
 }
 
+
 /// Constructor to be used when creating a new DOM tree.
 ProjectiveZPlane::ProjectiveZPlane() 
 : Segmentation("projective_zplane")

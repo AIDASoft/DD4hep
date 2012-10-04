@@ -11,7 +11,7 @@
 #include "DD4hep/Detector.h"
 #include "TPCModuleData.h"
 #include "TPCModule.h"
-#include "FixedPadAngleDiskLayout.h"
+#include "VersatileDiskRowLayout.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -54,8 +54,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
 	xml_comp_t  modules  (m);
 	string      m_name  = modules.nameStr();
-	for(xml_coll_t r(modules,_X(module)); r; ++r)  {
-	  xml_comp_t  mod(r);
+	for(xml_coll_t mr(modules,_X(module)); mr; ++mr)  {
+	  xml_comp_t  mod(mr);
 	  int modID=mod.id();
 	  //shape of module
 	  double rmin=mod.rmin();
@@ -75,11 +75,11 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	  PlacedVolume m_phv = part_vol.placeVolume(mr_vol,mod_pos,mod_rot);
 	  m_phv.addPhysVolID("module",modID);
 	  module.setPlacement(m_phv);
-	  
+	  //data for VersatileDiskRowLayout is added as user segmentataion	  
 	  module.setReadout(xml_pads);
 	  // Readout and placement must be present before adding extension,
 	  // since they are aquired internally for optimisation reasons. (MF)
-	  module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module));
+	  module.addExtension<PadLayout>(new VersatileDiskRowLayout(module));
 	}//modules
       }//module groups
     }//endplate

@@ -356,7 +356,10 @@ namespace DD4hep   { namespace XML  {
   ATTR(rowPitch);
   ATTR(pads);
   ATTR(RowID);
-
+  ATTR(nPads);
+  ATTR(padPitch);
+  ATTR(rowHeight);  
+ 
   void tags_init() {static __Init i; }
 
 }}

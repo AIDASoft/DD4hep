@@ -50,7 +50,7 @@ int main(int argc,char** argv)  {
   for(int m=0;m<mymods.size();m++)
     {
       TPCModule mod=mymods[m];
-      cout<<mod.id()<<" "<<mod.getNPads()<<endl;
+      cout<<mod.id()<<" "<<mod.getPadType()<<" "<<mod.getNPads()<<" "<<mod.getNRows()<<endl;
     }
 
   return 0;

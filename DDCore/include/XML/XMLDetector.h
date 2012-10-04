@@ -82,12 +82,15 @@ namespace DD4hep {
 
       int    nModules() const;
       int    RowID() const;
+      int    nPads() const;
       double moduleHeight() const;
       double moduleWidth() const;
       double modulePitch() const;
       double modulePosX() const;
       double modulePosY() const;
       double rowPitch() const;
+      double padPitch() const;
+      double rowHeight() const;
       std::string   padType() const;
 
       int numsides() const;

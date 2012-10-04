@@ -17,6 +17,7 @@
 #include "TGeoMaterial.h"
 #include "Reflex/PluginService.h"
 
+
 #include <climits>
 #include <iostream>
 #include <iomanip>
@@ -110,6 +111,8 @@ static Ref_t create_ProjectiveZPlane(lcdd_t& /* lcdd */, const xml_h& e)  {
 }
 DECLARE_XMLELEMENT(ProjectiveZPlane,create_ProjectiveZPlane);
 
+
+
 static Ref_t create_ConstantField(lcdd_t& /* lcdd */, const xml_h& e)  {
   CartesianField obj;
   xml_comp_t field(e), strength(e.child(_X(strength)));
@@ -121,6 +124,7 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, const xml_h& e)  {
   return obj;
 }
 DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
+
 
 static Ref_t create_SolenoidField(lcdd_t& /* lcdd */, const xml_h& e)  {
   xml_comp_t c(e);

@@ -1,0 +1,50 @@
+// $Id:$
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : A. Muennich
+//
+//====================================================================
+
+#include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/IDDescriptor.h"
+#include "DD4hep/FieldTypes.h"
+#include "XML/DocumentHandler.h"
+#include "XML/Conversions.h"
+#include "xercesc/util/XMLURL.hpp"
+#include "VersatileDiskRowLayoutSeg.h"
+
+using namespace DD4hep::Geometry;    
+
+VersatileDiskRowLayoutSeg::VersatileDiskRowLayoutSeg() 
+  : Segmentation("VersatileDiskRowLayoutSeg")   {}
+
+void VersatileDiskRowLayoutSeg::addRow(int nPads, double padPitch, double rowHeight, double offset)
+{
+  Row new_row;
+  new_row._nPads=nPads;
+  new_row._padPitch=padPitch;
+  new_row._rowHeight=rowHeight;
+  new_row._offset=offset;
+  _rows.push_back(new_row);
+  std::cout<<"Added row: "<<nPads<<" "<<padPitch<<std::endl;
+  _nPads+=nPads;
+}
+    
+int  VersatileDiskRowLayoutSeg::setRMin(int rmin)
+{
+  _rMin=rmin;
+}
+
+//factory to fill object from compact xml
+static Ref_t create_VersatileDiskRowLayoutSeg(lcdd_t& /* lcdd */, const xml_h& e)  {
+  VersatileDiskRowLayoutSeg obj;
+  if ( e.hasAttr(_A(rmin))   ) obj.setRMin(e.attr<int>(_A(rmin)));
+  //loop rows to fill VersatileDiskRowLayoutSeg
+  for(xml_coll_t r(e,_X(row)); r; ++r)  {
+    obj.addRow(r.attr<int>(_A(nPads)),r.attr<double>(_A(padPitch)),r.attr<double>(_A(rowHeight)),r.attr<double>(_A(offset)));
+   }
+  return obj;
+}
+DECLARE_XMLELEMENT(VersatileDiskRowLayoutSeg,create_VersatileDiskRowLayoutSeg);

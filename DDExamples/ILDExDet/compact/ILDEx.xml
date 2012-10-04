@@ -151,9 +151,9 @@
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
     </readouts>
-    <fields>
-        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
-               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+ <fields>
+        <field type="Solenoid" name="GlobalSolenoid" inner_field="5.0"
+               outer_field="-1.5" zmax="SolenoidCoilOuterZ"
                outer_radius="SolenoidalFieldRadius" />
-    </fields>
+    </fields> 
 </lccdd>

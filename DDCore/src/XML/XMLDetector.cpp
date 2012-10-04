@@ -167,6 +167,9 @@ int Dimension::nModules() const {
 int Dimension::RowID() const {
   return m_element.attr<int>(Attr_RowID);
 }
+int Dimension::nPads() const {
+  return m_element.attr<int>(Attr_nPads);
+}
 
 double Dimension::moduleHeight() const {
   return m_element.attr<int>(Attr_moduleHeight);
@@ -193,6 +196,13 @@ double Dimension::rowPitch() const {
 
 string Dimension::padType()  const  {
   return m_element.attr<string>(Attr_pads);
+}
+
+double Dimension::padPitch() const {
+  return m_element.attr<int>(Attr_padPitch);
+}
+double Dimension::rowHeight() const {
+  return m_element.attr<int>(Attr_rowHeight);
 }
 
 double Dimension::phi() const {
