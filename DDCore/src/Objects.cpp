@@ -99,38 +99,26 @@ Position& Position::rotateZ(double angle_in_rad) {
   double s = std::sin(angle_in_rad);
   double c = std::cos(angle_in_rad);
   double t = x * c - y * s;
-  y = t * c + x * s;
+  y = y * c + x * s;
   x = t;
   return *this;
 }
 
 /// Rotates the rotation vector around the x-axis.
 Rotation& Rotation::rotateX(double angle_in_rad) {
-  double s = std::sin(angle_in_rad);
-  double c = std::cos(angle_in_rad);
-  double t = psi * c - phi * s;
-  phi = phi * c + psi * s;
-  psi = t;
+  theta += angle_in_rad;
   return *this;
 }
 
 /// Rotates the rotation vector around the y-axis.
 Rotation& Rotation::rotateY(double angle_in_rad) {
-  double s = std::sin(angle_in_rad);
-  double c = std::cos(angle_in_rad);
-  double t = phi * c - theta * s;
-  theta = theta * c + phi * s;
-  phi = t;
+  psi += angle_in_rad;
   return *this;
 }
 
 /// Rotates the rotation vector around the z-axis.
 Rotation& Rotation::rotateZ(double angle_in_rad) {
-  double s = std::sin(angle_in_rad);
-  double c = std::cos(angle_in_rad);
-  double t = theta * c - psi * s;
-  psi = t * c + theta * s;
-  theta = t;
+  phi += angle_in_rad;
   return *this;
 }
 
@@ -198,7 +186,7 @@ int VisAttr::lineStyle()  const {
 }
 
 /// Set line style
-void VisAttr::setLineStyle(LineStyle value)  {
+void VisAttr::setLineStyle(int value)  {
   _data().lineStyle = value;
 }
 
@@ -208,7 +196,7 @@ int VisAttr::drawingStyle()  const {
 }
 
 /// Set drawing style
-void VisAttr::setDrawingStyle(DrawingStyle value)   {
+void VisAttr::setDrawingStyle(int value)   {
   _data().drawingStyle = value;
 }
 

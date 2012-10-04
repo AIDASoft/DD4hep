@@ -105,7 +105,7 @@ namespace DD4hep {
       const std::string type() const;
       /// Extend the segmentation object with an arbitrary structure accessible by the type
       template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)    
-      {  return (IFACE*)i_addExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
+      {  return (IFACE*)i_setExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
       /// Access extension element by the type
       template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
       /// Access extension element by the type

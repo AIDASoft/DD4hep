@@ -334,9 +334,24 @@ void Volume::setVisAttributes(const VisAttr& attr) const   {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
     Color_t bright = TColor::GetColorBright(vis->color);
     Color_t dark   = TColor::GetColorDark(vis->color);
-    m_element->SetFillColor(bright);
+    int draw_style = vis->drawingStyle;
+    int line_style = vis->lineStyle;
     m_element->SetLineColor(dark);
-    m_element->SetLineStyle(vis->lineStyle);
+    if ( draw_style == VisAttr::SOLID )  {
+      m_element->SetFillColor(bright);
+      m_element->SetFillStyle(1001); // Root: solid
+    }
+    else {
+      m_element->SetFillColor(0);
+      m_element->SetFillStyle(0);    // Root: hollow
+    }
+    if ( line_style == VisAttr::SOLID )
+      m_element->SetFillStyle(1);
+    else if ( line_style == VisAttr::DASHED )
+      m_element->SetFillStyle(2);
+    else
+      m_element->SetFillStyle(line_style);
+
     m_element->SetLineWidth(10);
     m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);

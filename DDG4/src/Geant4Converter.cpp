@@ -45,6 +45,7 @@
 #include "G4Box.hh"
 #include "G4Trd.hh"
 #include "G4Tubs.hh"
+#include "G4Cons.hh"
 #include "G4Torus.hh"
 #include "G4Sphere.hh"
 #include "G4Polycone.hh"
@@ -253,6 +254,17 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
 	z.push_back(s->GetZ(i)*CM_2_MM);
       }
       solid = new G4Polycone(name,phi_start,phi_total,s->GetNz(),&z[0],&rmin[0],&rmax[0]);
+    }
+    else if ( shape->IsA() == TGeoConeSeg::Class() ) {
+      const TGeoConeSeg* s = (const TGeoConeSeg*)shape;
+      solid = new G4Cons(name, 
+			 s->GetRmin1()*CM_2_MM,
+			 s->GetRmax1()*CM_2_MM,
+			 s->GetRmin2()*CM_2_MM,
+			 s->GetRmax2()*CM_2_MM,
+			 s->GetDz()*CM_2_MM,
+			 s->GetPhi1()*DEGREE_2_RAD, 
+			 s->GetPhi2()*DEGREE_2_RAD);
     }
     else if ( shape->IsA() == TGeoParaboloid::Class() ) {
       const TGeoParaboloid* s = (const TGeoParaboloid*)shape;

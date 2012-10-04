@@ -37,14 +37,31 @@
         <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
         <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
 
+
         <!--                  Shared parameters                      -->
+        <constant name="Ecal_TPC_gap"                          value="35*mm"/>
+        <constant name="Ecal_Lcal_ring_gap"                    value="-48*mm"/>
+
         <constant name="TPC_Ecal_Hcal_barrel_halfZ"            value="2730*mm"/>
         <constant name="TPC_Ecal_gap"                          value="10*mm"/>
         <constant name="Ecal_endcap_zmax"                      value="2500*mm"/>
         <constant name="Ecal_outer_radius"                     value="1910*mm"/>
 
         <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
-        <constant name="Hcal_R_max"                            value="2900*mm"/>
+        <constant name="Hcal_R_max"                            value="3000*mm"/>
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
+
+
+        <!--                  Shared parameters                      -->
+        <constant name="Lcal_outer_radius"                     value="290*mm"/>
+        <constant name="TPC_Ecal_Hcal_barrel_halfZ"            value="2730*mm"/>
+        <constant name="TPC_Ecal_gap"                          value="10*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="2500*mm"/>
+        <constant name="Ecal_outer_radius"                     value="1910*mm"/>
+
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Hcal_R_max"                            value="3000*mm"/>
         <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
         <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
 
@@ -69,6 +86,7 @@
         <constant name="TPC_sensitive_outer_gap"               value="64*mm"/>
         <constant name="TPC_fch_thickness"                     value="0.3*mm"/>
 
+
         <!--                   COIL00 parameters                     -->
         <constant name="Coil_thickness"                        value="850*mm"/>
         <constant name="Coil_extra_size"                       value="2520*mm"/>
@@ -83,6 +101,37 @@
         <constant name="Yoke_endcap_inner_radius"              value="240.50*mm"/>
         <constant name="Yoke_symmetry"                         value="8"/>
         <constant name="Yoke_Barrel_Half_Z"                    value="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size+Yoke_thickness+20*mm"/>
+        <!--                  SEcal03 parameters                      -->
+        <constant name="Ecal_lateral_face_thickness"           value="2*mm"/>
+        <constant name="Ecal_front_face_thickness"             value="3*mm"/>
+        <constant name="Ecal_fiber_thickness"                  value="0.2*mm"/>
+        <constant name="Ecal_guard_ring_size"                  value="1*mm"/>
+        <constant name="Ecal_cell_size"                        value="4.9*mm"/>
+        <constant name="Ecal_Alveolus_Air_Gap"                 value="0.25*mm"/>
+        <constant name="Ecal_support_thickness"                value="9.3*mm"/>
+        <constant name="Ecal_Slab_PCB_thickness"               value="0.8*mm"/>
+        <constant name="Ecal_Slab_copper_thickness"            value="0.2*mm"/>
+        <constant name="Ecal_Slab_shield_thickness"            value="0.15*mm"/>
+        <constant name="Ecal_Slab_ground_thickness"            value="0.05*mm"/>
+        <constant name="Ecal_Slab_glue_gap"                    value="0.1*mm"/>
+        <constant name="Ecal_Si_thickness"                     value="0.5*mm"/>
+
+        <constant name="Ecal_EC_ring_gap"                      value="10*mm"/>
+
+        <constant name="Ecal_Barrel_halfZ"                     value="2350*mm"/>
+        <constant name="Ecal_barrel_number_of_towers"          value="5"/>
+        <constant name="Ecal_endcap_extra_size"                value="60.8*mm"/>
+        <constant name="Ecal_endcap_center_box_size"           value="600*mm"/>
+        <constant name="Ecal_H_fiber_thickness"                value="0.30*mm"/>
+        <constant name="Ecal_cells_size"                       value="4.9*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="1825*mm"/>
+        <constant name="Ecal_endcap_zmin"                      value="2329*mm"/>
+        <constant name="Ecal_nlayers1"                         value="20"/>
+        <constant name="Ecal_nlayers2"                         value="10"/>
+        <constant name="Ecal_nlayers3"                         value="0"/>
+        <constant name="Ecal_radiator_layers_set1_thickness"   value="2.1*mm"/>
+        <constant name="Ecal_radiator_layers_set2_thickness"   value="4.2*mm"/>
+        <constant name="Ecal_radiator_layers_set3_thickness"   value="0*mm"/>
     </define>
 
     <materials>
@@ -155,73 +204,143 @@
       <vis name="CoilVis"              alpha="1.0" r="0.0"  g="0.0"  b="0.7"    drawingStyle="wireframe" showDaughters="true"  visible="true"/>
       <vis name="YokeVis"              alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="true"/>
 
+
+
+      <vis name="EcalVis"              alpha="1.0" r="0.5" g="1" b="0.5"        drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalLayerVis"         alpha="1.0" r="1" g="0" b="0"            drawingStyle="solid"     showDaughters="true"  visible="false"/>
+      <vis name="EcalPCBVis"           alpha="1.0" r="0.5" g="0.5" b="0"        drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalRadiatorVis"      alpha="1.0" r="0" g="1" b="0"            drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalTowerVis"         alpha="1.0" r="0" g="0.1" b="0.9"        drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalRingVis"          alpha="1.0" r="0" g="0" b="1"            drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalWaferVis"         alpha="1.0" r=".7" g=".7" b=".7"         drawingStyle="solid"                           visible="true"/>
+      <vis name="EcalSlabVis"          alpha="1.0" r="1" g="1" b="1"            drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalSlabGroundVis"    alpha="1.0" r="0" g="0" b="1"            drawingStyle="wireframe"                       visible="true"/>
+      <vis name="EcalSlabSensitiveVis" alpha="1.0" r=".5" g=".5" b=".5"         drawingStyle="wireframe"                       visible="true"/>
+
+
     </display>
 
     <detectors>
         <comment>Trackers</comment>
 
-        <!--                  Mask04 description                      -->
-<!--
-        <detector id="6" name="Mask" type="Tesla_mask04" vis="MaskVis">
-          <masks>
-            <mask id="1" zmin="3260*mm" zmax="3340*mm" rmin="75*mm"  rmax="160*mm" vis="MaskVis" material="Tungsten"/>
-            <mask id="2" zmin="3340*mm" zmax="3510*mm" rmin="210*mm" rmax="240*mm" vis="MaskVis" material="Tungsten"/>
-            <mask id="3" zmin="3510*mm" zmax="3580*mm" rmin="75*mm"  rmax="240*mm" vis="MaskVis" material="Tungsten"/>
-            <mask id="4" zmin="3580*mm" zmax="7000*mm" rmin="170*mm" rmax="240*mm" vis="MaskVis" material="Tungsten"/>
-          </masks>
-          <quadrupole id="0" end="7000*mm">
-            <yoke z="3960*mm" rmin="23*mm" rmax="170*mm-1.0*mm" material="Iron"   vis="MaskYokeVis"/>
-            <coil z="4050*mm" rmin="14*mm" rmax="120*mm"        material="Copper" vis="MaskCoilVis"/>
-          </quadrupole>
-        </detector>
--->
+        <detector id="10" name="ECAL" type="Tesla_SEcal03"
+          inner_r="TPC_outer_radius+Ecal_TPC_gap"
+          lateral_face_thickness="Ecal_lateral_face_thickness"
+          fiber_thickness="Ecal_fiber_thickness"
+          guard_ring_size="Ecal_guard_ring_size"
+          cell_size="Ecal_cell_size"
+          alveolus_gap="Ecal_Alveolus_Air_Gap"
+        >
+          <support   thickness="Ecal_support_thickness"/>
+          <front     thickness="Ecal_front_face_thickness"/>
+          <pcbshield thickness="Ecal_Slab_PCB_thickness + Ecal_Slab_copper_thickness + Ecal_Slab_shield_thickness" vis="EcalPCBVis" material="G10"/>
+          <barrel    zhalf="Ecal_Barrel_halfZ" 
+                     towers="Ecal_barrel_number_of_towers"
+                     radiatorMaterial="tungsten_19.3gccm"
+                     material="g10"
+                     vis="EcalVis"/>
+          <endcap    inner_r="Lcal_outer_radius + Ecal_Lcal_ring_gap"
+                     ring_gap="Ecal_EC_ring_gap"
+                     extra_size="Ecal_endcap_extra_size"
+                     center_box_size="Ecal_endcap_center_box_size"/>
 
-        <!--                  TPC02  description                      -->
-        <detector id="7" name="TPC" type="Tesla_tpc02" vis="TPCVis">
-          <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ"/>
-          <endplate   thickness="TPC_electronics_backend_thickness"
-                      material="TPCEndcapMaterial"
-                      vis="TPCEndcapVis"/>
-          <inner_wall thickness="TPC_inner_wall_thickness" material="Aluminum" vis="TPCInnerWallVis"/>
-          <outer_wall thickness="TPC_outer_wall_thickness" material="Aluminum" vis="TPCOuterWallVis"/>
-          <sensitive  inner_r="TPC_inner_radius+TPC_sensitive_inner_gap"
-                      outer_r="TPC_outer_radius-TPC_sensitive_outer_gap" 
-                      number="(int)((TPC_outer_radius-TPC_sensitive_outer_gap - TPC_inner_radius+TPC_sensitive_inner_gap + 1*mm) / 6.2*mm)"
-                      material="Argon"
-                      vis="TPCChamberVis"/>
-          <fch        inner_r="TPC_inner_radius"
-                      outer_r="TPC_outer_radius-90*mm" 
-                      thickness="TPC_fch_thickness"
-                      material="silicon_2.33gccm"
-                      vis="TPCFchVis"/>
+          <layer id="1" repeat="Ecal_nlayers1" thickness="Ecal_radiator_layers_set1_thickness" material="tungsten_19.3gccm"/>
+          <layer id="2" repeat="Ecal_nlayers2" thickness="Ecal_radiator_layers_set2_thickness" material="tungsten_19.3gccm"/>
+          <layer id="3" repeat="Ecal_nlayers3" thickness="Ecal_radiator_layers_set3_thickness" material="tungsten_19.3gccm"/>
+          <slab h_fiber_thickness="Ecal_H_fiber_thickness">
+            <shielding thickness="Ecal_Slab_shield_thickness"/>
+            <copper    thickness="Ecal_Slab_copper_thickness" material="Cu"/>
+            <ground    thickness="Ecal_Slab_ground_thickness" material="Cu"/>
+            <glue      thickness="Ecal_Slab_glue_gap"/>
+            <sensitive thickness="Ecal_Si_thickness" material="silicon_2.33gccm"/>
+          </slab>
         </detector>
-<!--
--->
 
-        <!--                  coil00 description                      -->
-        <detector id="9" name="Coil" type="Tesla_coil00" vis="CoilVis">
-          <coil inner_r="Coil_inner_radius"
-                outer_r="Coil_outer_radius" 
-                zhalf="Coil_half_z"
-                material="Aluminum"/>
-        </detector>
+        <!--                  Hcal04 description
+        -->
 <!--
--->
+        <constant name="Yoke_symmetry"                         value="8"/>
+        <constant name="Hcal_radiator_thickness"               value="20*mm"/>
+        <constant name="Hcal_stave_gaps"                       value="3*mm"/>
+        <constant name="Hcal_back_plate_thickness"             value="30*mm"/>
+        <constant name="Hcal_barrel_end_module_type"           value="2"/>
+        <constant name="Hcal_endcap_cables_gap"                value="214*mm"/>
+        <constant name="Hcal_endcap_center_box_size"           value="600*mm"/>
+        <constant name="Hcal_lateral_structure_thickness"      value="10*mm"/>
+        <constant name="Hcal_nlayers"                          value="8"/>
+        <constant name="Hcal_outer_radius"                     value="3000*mm"/>
+        <constant name="Hcal_modules_gap"                      value="2*mm"/>
+        <constant name="Hcal_fiber_gap"                        value="1.5*mm"/>
+        <constant name="Hcal_cells_size"                       value="*mm"/>
+        <constant name="Hcal_fe_dim_y"                         value="Hcal_radiator_thickness"/>
 
-        <!--                  yoke02 description                      -->
-        <detector id="9" name="Yoke" type="Tesla_yoke02" vis="YokeVis">
-          <symmetry value="8"/>
-          <barrel inner_r="Yoke_barrel_inner_radius"
-                  outer_r="Yoke_barrel_inner_radius+Yoke_thickness"
-                  zhalf="Yoke_Barrel_Half_Z"
-                  material="Iron"/>
-          <endcap inner_r="Yoke_endcap_inner_radius"
-                  outer_r="Yoke_barrel_inner_radius"
-                  z="(Yoke_Barrel_Half_Z + Yoke_Z_start_endcaps)/2.0"
-                  thickness="Yoke_Barrel_Half_Z-Yoke_Z_start_endcaps"
-                  material="Iron"/>
-        </detector>
-<!--
+        <constant name="Hcal_chamber_thickness"                value="6.5*mm"/>
+        <constant name="Hcal_total_z_size"                     value="140*mm + 2*TPC_Ecal_Hcal_barrel_halfZ"/>
+        <constant name="Hcal_normal_dim_z"                     value="Hcal_total_z_size/5*1080/1120"/>
+        <constant name="Hcal_top_end_dim_z"                    value="(Hcal_total_z_size-3*Hcal_normal_dim_z)/2"/>
+        <constant name="Hcal_start_z"                          value="1.5*Hcal_normal_dim_z + Hcal_top_end_dim_z + 2*Hcal_modules_gap + Hcal_cables_gap"/>
+        <constant name="Hcal_total_dim_y"                      value="Hcal_nlayers*(Hcal_fe_dim_y+Hcal_chamber_tickness) + Hcal_back_plate_thickness"/>
+        <constant name="Hcal_inner_radius"                     value="Ecal_outer_radius + Hcal_Ecal_gap"/>
+        <constant name="Hcal_module_radius"                    value="Hcal_inner_radius+Hcal_total_dim_y"/>
+
+        <constant name="Hcal_y_dim2_for_x"                     value="Hcal_module_radius*(1-cos(3.141/8) - Hcal_stave_gaps"/>
+        <constant name="Hcal_y_dim1_for_x"                     value="Hcal_total_dim_y - Hcal_y_dim2_for_x"/>
+        <constant name="Hcal_bottom_dim_x"                     value="2*Hcal_y_dim1_for_x*tan(3.141/8) - Hcal_stave_gaps"/>
+        <constant name="Hcal_middle_dim_x"                     value="Hcal_bottom_dim_x+2*Hcal_y_dim1_for_x*tan(3.141/8)"/>
+        <constant name="Hcal_top_dim_x"                        value="Hcal_middle_dim_x-2*Hcal_y_dim2_for_x/tan(3.141/8)"/>
+
+        <constant name="Hcal_y_dim1_for_z"                     value="134.8"/>
+        <constant name="Hcal_y_dim2_for_z"                     value="(Hcal_top_end_dim_z-Hcal_normal_dim_z)*tan(39.28/2/3.141)"/>
+        <constant name="Hcal_y_dim3_for_z"                     value="Hcal_total_dim_y-Hcal_y_dim1_for_z-Hcal_y_dim2_for_z"/>
+        <constant name="Hcal_regular_chamber_dim_z"            value="Hcal_normal_dim_z - 2*(Hcal_lateral_plate_thickness)"/>
+        <constant name="Hcal_cell_dim_z"                       value="Hcal_regular_chamber_dim_z / FLOOR(Hcal_regular_chamber_dim_z/Hcal_cell_dim_x)"/>
+
+      <vis name="HcalMdoduleVis"       alpha="1.0" r="0.8"  g="0.8"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="Hcal"        alpha="1.0" r="1.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+        <detector id="9" name="Hcal" type="Tesla_hcal04" vis="HcalVis">
+           <params
+                   fe_dim_y="Hcal_fe_dim_y"
+                   RadiatorMaterial="Iron"
+                   SensitiveModel="scintillator"
+                   back_plate_thickness="Hcal_back_plate_thickness"
+                   staves_gap="Hcal_stave_gaps"
+                   modules_gap="Hcal_modules_gap"
+                   nlayers="Hcal_nlayers"
+                   barrel_end_module_type="Hcal_barrel_end_module_type"
+                   fiber_gap="Hcal_fiber_gap"
+                   chamber_tickness="6.5*mm"
+                   inner_radius="Hcal_inner_radius"
+                   cables_gap="Hcal_endcap_cables_gap"
+                   normal_dim_z="Hcal_normal_dim_z"
+                   top_end_dim_z="Hcal_top_end_dim_z"
+                   start_z="Hcal_start_z"
+                   lateral_plate_thickness="Hcal_lateral_plate_thickness"
+                   cell_dim_x="Hcal_cell_dim_x"
+                   endcap_center_box_size="Hcal_endcap_center_box_size"
+                   total_dim_y="Hcal_total_dim_y"
+                   module_radius="Hcal_module_radius"
+                   y_dim2_for_x="Hcal_y_dim2_for_x"
+
+
+           />
+           <radiator  thickness="Hcal_radiator_thickness" material="Iron"/>
+           <sensitive model="scintillator"/>
+           <barrel    end_module_type="Hcal_barrel_end_module_type"
+                      cell_dim_x="Hcal_cells_size" 
+                      center_box_size="Hcal_endcap_center_box_size"/>
+           <stave     gap="Hcal_stave_gaps"/>
+           <modules   gap="Hcal_modules_gap"/>
+           <fibers    gap="Hcal_fiber_gap"/>
+           <backplate thickness="Hcal_back_plate_thickness"/>
+           <lateral_structure thickness="Hcal_lateral_structure_thickness"/>
+           <rpc chamber_thickness="6.5*mm" 
+                inner_r="Ecal_outer_radius+Hcal_Ecal_gap"
+                cables_gap="Hcal_endcap_cables_gap"
+                />
+           </rpc>
+           <cell x="Hcal_cells_size">
+           
+      </detector>
 -->
 
 

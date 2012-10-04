@@ -47,7 +47,7 @@
         <constant name="Ecal_outer_radius"                     value="1910*mm"/>
 
         <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
-        <constant name="Hcal_R_max"                            value="2900*mm"/>
+        <constant name="Hcal_R_max"                            value="3000*mm"/>
         <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
         <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
 

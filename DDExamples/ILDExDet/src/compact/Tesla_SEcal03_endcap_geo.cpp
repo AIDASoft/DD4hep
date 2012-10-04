@@ -15,16 +15,18 @@ using namespace DD4hep::Geometry;
 
 namespace {
   struct ECAL : public DetElement {
-    LCDD&     lcdd;
+    typedef Position Dimension;
+    enum { ECALBARREL };
+    LCDD&              lcdd;
     SensitiveDetector& sens_det;
 
     xml_det_t  x_det;
-    xml_comp_t m_barrel;
-    xml_comp_t m_endcap;
-    xml_comp_t m_support;
-    xml_comp_t m_front;
+    xml_comp_t x_barrel;
+    xml_comp_t x_endcap;
+    xml_comp_t x_support;
+    xml_comp_t x_front;
 
-    xml_comp_t m_shield;
+    xml_comp_t x_shield;
     struct XMLSlab : public xml_comp_t {
       xml_comp_t shield;
       xml_comp_t copper;
@@ -59,34 +61,44 @@ namespace {
       Material rad_mat;
     } m_layers[5];
 
-    Volume   m_center_tube;
-    Position m_alveolus;
+    Volume    m_center_tube;
+    Position  m_alveolus;
+    struct Barrel_t : public Dimension   {
+      int numTowers;
+      double bottom, top;
+      Material radiatorMaterial;
+    } m_barrel;
 
-    double   m_module_thickness;
-    double   m_lateral_face_thickness;
-    double   m_fiber_thickness;
-    double   m_guard_ring_size;
-    double   m_cell_size;
+    int       m_numLayer;
+    double    m_module_thickness;
+    double    m_lateral_face_thickness;
+    double    m_fiber_thickness;
+    double    m_guard_ring_size;
+    double    m_cell_size;
 
-    double   m_endcap_center_box_size;
+    double    m_endcap_center_box_size;
 
     vector<Volume>    EC_TowerSlabs;
     vector<Volume>    EC_Towers[3];
     vector<Position>  EC_TowerXYCenters;
 
-    typedef Position Dimension;
-
     /// Standard constructor
     ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s);
 
+    /// Simple access to the radiator thickness depending on the layer
+    double radiatorThickness(int layer_id)   const;
+
     /// Build Endcap Standard Module 
-    Volume buildModule(bool Zminus, double rmax, const Solid& siSolid, const Volume& siVol, const Rotation& rot);
+    Volume buildEndcap(bool Zminus, double rmax, const Solid& siSolid, const Volume& siVol, const Rotation& rot);
+
+    /// Build barrel volume
+    Volume buildBarrel(const Barrel_t& barrel);
 
     /// Build slab 
     Volume buildSlab(const Dimension dim);
 
     // Build radiator solid
-    Volume buildRadiator(const Dimension& dim, const Material& mat);
+    Volume buildRadiator(const string& name, const Dimension& dim, const Material& mat);
   };
 }
 
@@ -94,7 +106,7 @@ namespace {
 #define N_FIBERS_W_STRUCTURE 2
 
 ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
-  : DetElement(e.nameStr(), e.id()), lcdd(l), x_det(e), m_barrel(0), m_endcap(0), m_support(0), m_front(0), m_shield(0), sens_det(s)
+  : DetElement(e.nameStr(), e.id()), lcdd(l), x_det(e), x_barrel(0), x_endcap(0), x_support(0), x_front(0), x_shield(0), sens_det(s)
 {
 
   // EC_Initialize() builds the Slabs and the 
@@ -129,11 +141,11 @@ ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
     <endcap extra_size="Ecal_endcap_extra_size" center_box_size="Ecal_endcap_center_box_size"/>
     </detector>
   */
-  m_support      = x_det.child(Unicode("support"));
-  m_barrel       = x_det.child(_X(barrel));
-  m_endcap       = x_det.child(_X(endcap));
-  m_front        = x_det.child(Unicode("front"));
-  m_shield       = x_det.child(Unicode("pcbshield"));
+  x_support      = x_det.child(Unicode("support"));
+  x_barrel       = x_det.child(_X(barrel));
+  x_endcap       = x_det.child(_X(endcap));
+  x_front        = x_det.child(Unicode("front"));
+  x_shield       = x_det.child(Unicode("pcbshield"));
 
   m_xml_slab           = x_det.child(Unicode("slab"));
   m_xml_slab.shield    = m_xml_slab.child(Unicode("shielding"));
@@ -142,10 +154,11 @@ ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
   m_xml_slab.ground    = m_xml_slab.child(Unicode("ground"));
   m_xml_slab.glue      = m_xml_slab.child(Unicode("glue"));
 
-  double ec_inner_r              = m_endcap.inner_r();
-  double barrel_module_dim_z     = 2 * m_barrel.zhalf() / 5.;
-  double endcap_extra_size       = m_endcap.attr<double>(Unicode("extra_size"));
-  double barrel_number_of_towers = m_barrel.attr<int>(Unicode("towers"));
+  double ec_inner_r              = x_endcap.inner_r();
+  double endcap_extra_size       = x_endcap.attr<double>(Unicode("extra_size"));
+  m_barrel.numTowers = x_barrel.attr<int>(Unicode("towers"));
+  m_barrel.z                     = 2 * x_barrel.zhalf() / 5.;
+  m_barrel.radiatorMaterial      = lcdd.material(x_barrel.attr<string>(Unicode("radiatorMaterial")));
 
   m_lateral_face_thickness       = x_det.attr<double>(Unicode("lateral_face_thickness"));
   m_fiber_thickness              = x_det.attr<double>(Unicode("fiber_thickness"));
@@ -173,32 +186,30 @@ ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
     m_layers[i].thickness = layer.thickness();
     m_layers[i].rad_mat   = lcdd.material(layer.materialStr());
   }
-  m_slab.total_thickness =    m_slab.shield_thickness  + m_slab.copper_thickness + 
-    m_shield.thickness()    + m_slab.sensitive_thickness + m_slab.glue_thickness +
+  m_numLayer = m_layers[0].nLayer + m_layers[1].nLayer + m_layers[2].nLayer;
+  m_slab.total_thickness  =   m_slab.shield_thickness +    m_slab.copper_thickness + 
+    x_shield.thickness()    + m_slab.sensitive_thickness + m_slab.glue_thickness +
     m_slab.ground_thickness + x_det.attr<double>(Unicode("alveolus_gap")) / 2;
-
-  int n_total_layers = m_layers[0].nLayer + m_layers[1].nLayer + m_layers[2].nLayer;
   m_module_thickness = 
     m_layers[0].nLayer * m_layers[0].thickness +
     m_layers[1].nLayer * m_layers[1].thickness +
     m_layers[2].nLayer * m_layers[2].thickness +
-    int(n_total_layers/2) * (N_FIBERS_W_STRUCTURE * 2 *  m_fiber_thickness) + // fiber around W struct layers
-    (n_total_layers + 1) * (m_slab.total_thickness + (N_FIBERS_ALVOULUS + 1 ) * m_fiber_thickness) + // slabs plus fiber around and inside
-    m_support.thickness() + m_front.thickness();
+    int(m_numLayer/2) * (N_FIBERS_W_STRUCTURE * 2 *  m_fiber_thickness) + // fiber around W struct layers
+    (m_numLayer + 1) * (m_slab.total_thickness + (N_FIBERS_ALVOULUS + 1 ) * m_fiber_thickness) + // slabs plus fiber around and inside
+    x_support.thickness() + x_front.thickness();
   
   m_alveolus.z =
-    (barrel_module_dim_z - 2. * m_lateral_face_thickness) /
-    barrel_number_of_towers - 
+    (m_barrel.z - 2. * m_lateral_face_thickness) /
+    m_barrel.numTowers - 
     2 * N_FIBERS_ALVOULUS  * m_fiber_thickness  - 
     2 * m_slab.h_fiber_thickness -
     2 * m_slab.shield_thickness;
 
-  double siPlateSize = m_endcap.attr<double>(Unicode("center_box_size")) -
+  double siPlateSize = x_endcap.attr<double>(Unicode("center_box_size")) -
     2.0 * m_lateral_face_thickness -
-    2.0 * m_endcap.attr<double>(Unicode("ring_gap"));
+    2.0 * x_endcap.attr<double>(Unicode("ring_gap"));
   m_center_tube = Tube(ec_inner_r,ec_inner_r,0.);
   Box  ec_ringSiBox(siPlateSize/2,siPlateSize/2,m_slab.sensitive_thickness/2);
-  //SubtractionSolid ec_ringSiSolid(m_center_tube,ec_ringSiBox,Position(),Rotation());
   SubtractionSolid ec_ringSiSolid(ec_ringSiBox,m_center_tube,Position(),Rotation());
   Volume ec_ringSiVol(det_nam+"_ec_ring_vol",ec_ringSiSolid,m_slab.sensitive_mat);
 
@@ -234,13 +245,14 @@ ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
     m_alveolus.x = x_right - x_left - ((y_curr <= y_mid) ? 0 : (y_curr - y_mid) * inc_x);
     // While the towers have the same shape use the same logical volumes and parameters.
     if(last_dim_x != m_alveolus.x)      {
+      printf("Build slab x=%f y=%f\n",m_alveolus.x,m_alveolus.y);
       EC_TowerSlabs.push_back(buildSlab(Dimension(m_alveolus.y,m_slab.total_thickness,m_alveolus.x)));
       if( m_layers[0].nLayer > 0 )
-	EC_Towers[0].push_back(buildRadiator(Dimension(m_alveolus.y,m_layers[0].thickness,m_alveolus.x),m_layers[0].rad_mat));
+	EC_Towers[0].push_back(buildRadiator(det_nam+"_T1",Dimension(m_alveolus.y,m_layers[0].thickness,m_alveolus.x),m_layers[0].rad_mat));
       if( m_layers[1].nLayer > 0 )
-	EC_Towers[1].push_back(buildRadiator(Dimension(m_alveolus.y,m_layers[1].thickness,m_alveolus.x),m_layers[1].rad_mat));
+	EC_Towers[1].push_back(buildRadiator(det_nam+"_T2",Dimension(m_alveolus.y,m_layers[1].thickness,m_alveolus.x),m_layers[1].rad_mat));
       if( m_layers[2].nLayer > 0 )
-	EC_Towers[2].push_back(buildRadiator(Dimension(m_alveolus.y,m_layers[2].thickness,m_alveolus.x),m_layers[2].rad_mat));
+	EC_Towers[2].push_back(buildRadiator(det_nam+"_T3",Dimension(m_alveolus.y,m_layers[2].thickness,m_alveolus.x),m_layers[2].rad_mat));
       last_dim_x = m_alveolus.x;
     }
     else   {
@@ -249,19 +261,52 @@ ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
       if( m_layers[1].nLayer > 0 ) EC_Towers[1].push_back(EC_Towers[1].back());
       if( m_layers[2].nLayer > 0 ) EC_Towers[2].push_back(EC_Towers[2].back());
     }
-    EC_TowerXYCenters.push_back(Position(-(y_curr - m_alveolus.y/2),-(-m_alveolus.x/2 + x_right),0));
+    EC_TowerXYCenters.push_back(Position(-(y_curr + m_alveolus.y/2),-(-m_alveolus.x/2 + x_right),0));
   }
+#if 0
+  Volume endcap;
+  endcap = buildEndcap(false,endcap_rmax,ec_ringSiSolid,ec_ringSiVol,Rotation());
+  motherVol.placeVolume(endcap);
+  endcap = buildEndcap(true,endcap_rmax,ec_ringSiSolid,ec_ringSiVol,Rotation());
+  motherVol.placeVolume(endcap,Position(),Rotation(M_PI,0,0));
+  //Volume ECAL::buildEndcap(bool Zminus, double endcap_rmax, const Solid& siBox, const Volume& siVol, const Rotation& rot);
+#endif
+  m_barrel.bottom = 2 * std::tan(M_PI/8.) * ec_inner_r + m_module_thickness/std::sin(M_PI/4.);
+  m_barrel.top = m_barrel.bottom -  2 * m_module_thickness;
+  Volume barrel = buildBarrel(m_barrel);
   
-  Volume ec1 = buildModule(false,endcap_rmax, ec_ringSiSolid, ec_ringSiVol,Rotation());
-  motherVol.placeVolume(ec1,Position());
-  //Volume ECAL::buildModule(bool Zminus, double endcap_rmax, const Solid& siBox, const Volume& siVol, const Rotation& rot);
+  // BarrelStandardModule placements
+  double X = m_module_thickness * std::sin(M_PI/4.);
+  double Y = x_det.inner_r() + m_module_thickness / 2.;
+  // theBarrelSD->SetStandardXOffset(X);
+  for (int stave_id = 1; stave_id < 9 ; stave_id++) {
+    for (int module_id = 1; module_id < 6; module_id++)      {
+      double phirot = (stave_id-1) * M_PI/4;
+      double module_z_offset =  (2 * module_id-6)*m_barrel.z/2.;
+      Rotation rot(M_PI/2,0,phirot);
+      Position pos(X*cos(phirot)-Y*sin(phirot),X*sin(phirot)+Y*cos(phirot),module_z_offset);
+      PlacedVolume pv = motherVol.placeVolume(barrel,pos,rot);
+      pv.addPhysVolID("barrel",ECALBARREL*100+stave_id*10+module_id);
+      //theBarrelSD->SetStaveRotationMatrix(stave_id,phirot);
+      //theBarrelSD->SetModuleZOffset(module_id,module_z_offset);
+    }
+  }
+}
+
+/// Simple access to the radiator thickness depending on the layer
+double ECAL::radiatorThickness(int layer_id)   const  {
+  if(layer_id <= m_layers[0].nLayer)
+    return m_layers[0].thickness;
+  else if(layer_id <= m_layers[0].nLayer + m_layers[1].nLayer)
+    return m_layers[1].thickness;
+  return m_layers[2].thickness;
 }
 
 // Build radiator solid
-Volume ECAL::buildRadiator(const Dimension& dim, const Material& mat)   {
+Volume ECAL::buildRadiator(const string& name, const Dimension& dim, const Material& mat)   {
   Box    box(dim.x/2,dim.z/2,dim.y/2);
-  ::printf("Radiator: %f %f %f\n",dim.x/2,dim.z/2,dim.y/2);
-  Volume vol("_radiator",box,mat);
+  ::printf("Radiator: %.2f %.2f %.2f\n",dim.x/2,dim.z/2,dim.y/2);
+  Volume vol(name+"_radiator",box,mat);
   vol.setVisAttributes(lcdd.visAttributes("EcalTowerVis"));
   return vol;
 }
@@ -278,11 +323,10 @@ Volume ECAL::buildSlab(Dimension dim) {
   double y_slab_floor  = -dim.y/2;
 
   // Ground plate
-  Box    groundBox(dim.x/2, dim.z/2, ground_thickness/2);
+  Box    groundBox(dim.x/2,dim.z/2,ground_thickness/2);
   Volume groundVol(nam+"_ground",groundBox,m_slab.ground_mat);
   groundVol.setVisAttributes(m_slab.ground_vis);
   slabVol.placeVolume(groundVol,Position(0,0,y_slab_floor+ground_thickness/2));
-  
   y_slab_floor += ground_thickness;
 
   // Si layer
@@ -290,9 +334,7 @@ Volume ECAL::buildSlab(Dimension dim) {
   Box     siBox(dim.x/2,dim.z/2,m_slab.sensitive_thickness/2);
   Volume  siVol(nam+"_sensitive",siBox,m_slab.sensitive_mat);
   siVol.setVisAttributes(m_slab.sensitive_vis);
-
-  double y_slab_si_offset = -dim.y/2 + ground_thickness + m_slab.sensitive_thickness/2;
-  slabVol.placeVolume(siVol,Position(0,0,y_slab_si_offset));
+  slabVol.placeVolume(siVol,Position(0,0,y_slab_floor + m_slab.sensitive_thickness/2));
 
   // Then we place the Si wafers inside the big Si plane
   //
@@ -341,17 +383,16 @@ Volume ECAL::buildSlab(Dimension dim) {
     // to complete the slab. in reality we think that
     // we'll have just a few models of special wafers
     // for that.
-    double resting_dim_x = dim.x - (wafer_dim_x + 2 * m_guard_ring_size) * num_wafer;
-      
+    double resting_dim_x = dim.x - (wafer_dim_x + 2 * m_guard_ring_size) * num_wafer;      
     if(resting_dim_x > (cell_dim_x + 2 * m_guard_ring_size))	{
       int N_cells_x_remaining =	int(floor((resting_dim_x - 2 * m_guard_ring_size)/cell_dim_x));
       wafer_dim_x = N_cells_x_remaining * cell_dim_x;
       Box    waf_box(wafer_dim_x/2, wafer_dim_z/2, m_slab.sensitive_thickness/2);
-      Volume waf_vol(nam+"_wafer",waf_box,m_slab.sensitive_mat);
+      Volume waf_vol(nam+"_wafer_rest",waf_box,m_slab.sensitive_mat);
       //waf_vol.setLimits(pULimits);
       waf_vol.setVisAttributes(m_slab.wafer_vis);
       //waf_vol->SetSensitiveDetector(theSD);
-	  
+
       real_wafer_size_x  =  wafer_dim_x + 2 * m_guard_ring_size;
       wafer_pos_x        = -dim.x/2 + num_wafer * real_wafer_size_x + real_wafer_size_x/2;
       double wafer_pos_z = -dim.z/2 + m_guard_ring_size + wafer_dim_z /2;
@@ -361,69 +402,66 @@ Volume ECAL::buildSlab(Dimension dim) {
       }
     }
   }
-  else    {
-    ::printf("...Building slab for end-cap....\n");
-    // End caps
-    double real_wafer_size_x = wafer_dim_z + 2 * m_guard_ring_size;
+  else    {    // End caps
+    double real_wafer_size_x =  wafer_dim_z + 2 * m_guard_ring_size;
     double wafer_pos_x       = -dim.z/2 + m_guard_ring_size +	wafer_dim_z /2;
-    int num_wafer            = int(floor(dim.z / real_wafer_size_x));      
-    for (int iwaf=1; iwaf < num_wafer + 1; ++iwaf)	{
-      double wafer_pos_z =  -dim.x/2 + m_guard_ring_size + wafer_dim_x /2;
-      for (int n_wafer_z = 1; n_wafer_z < 3; ++n_wafer_z)    {
-	PlacedVolume pv = siVol.placeVolume(siVol,Position(wafer_pos_z,wafer_pos_x,0));
-	pv.addPhysVolID("wafer",iwaf*1000 + n_wafer_z);
-	wafer_pos_x += wafer_dim_z + 2 * m_guard_ring_size;
+    int    num_wafer_x       =  int(floor(dim.z/real_wafer_size_x));      
+    ::printf("...Building slab for end-cap with %d wafers size:%.2f start x:%.2f\n",
+	     num_wafer_x,real_wafer_size_x,wafer_pos_x);
+    for (int iwaf_x=1; iwaf_x < num_wafer_x + 1; iwaf_x++)	{
+      double wafer_pos_z = -dim.x/2 + m_guard_ring_size + wafer_dim_x /2;
+      for (int iwaf_z = 1; iwaf_z < 3; ++iwaf_z)    {
+	PlacedVolume pv = siVol.placeVolume(waferVol,Position(wafer_pos_z,wafer_pos_x,0));
+	pv.addPhysVolID("wafer",iwaf_x*1000 + iwaf_z);
+	wafer_pos_z += wafer_dim_x + 2 * m_guard_ring_size;
       }
-      
-      // Magic wafers to complete the slab...
-      // (wafers with variable number of cells just to complete the slab. in reality we think that
-      // we'll have just a few models of special wafers for that.
-      double resting_dim_x = dim.z - (wafer_dim_z + 2 * m_guard_ring_size) * num_wafer;
-      
-      if(resting_dim_x > (cell_dim_z + 2 * m_guard_ring_size))   {
-	int N_cells_x_remaining = int(floor((resting_dim_x - 2 * m_guard_ring_size)/cell_dim_z));
-	wafer_dim_x = N_cells_x_remaining * cell_dim_z;
-	Box    waf_box(wafer_dim_z/2, wafer_dim_x/2, m_slab.sensitive_thickness/2);
-	Volume waf_vol(nam+"_wafer", waf_box, m_slab.sensitive_mat);
-	//waf_vol.setLimits(pULimits);
-	waf_vol.setVisAttributes(m_slab.sensitive_vis);
-	//waf_vol->SetSensitiveDetector(theSD);
-	wafer_pos_x        =  -dim.z/2 + num_wafer * real_wafer_size_x + (wafer_dim_x + 2 * m_guard_ring_size)/2;
-	real_wafer_size_x  = wafer_dim_x + 2 * m_guard_ring_size;
-	double wafer_pos_z = -dim.x/2 + m_guard_ring_size + wafer_dim_z /2;
-	for (int n_wafer_z = 1; n_wafer_z < 3; n_wafer_z++)    {
-	  PlacedVolume pv = siVol.placeVolume(siVol,Position(wafer_pos_z,wafer_pos_x,0));
-	  pv.addPhysVolID("wafer",iwaf*1000 + n_wafer_z);
-	  wafer_pos_z += wafer_dim_z + 2 * m_guard_ring_size;
-	}
+      wafer_pos_x += wafer_dim_z + 2 * m_guard_ring_size;
+    }
+    // Magic wafers to complete the slab...
+    // (wafers with variable number of cells just to complete the slab. in reality we think that
+    // we'll have just a few models of special wafers for that.
+    double resting_dim_x = dim.z - (wafer_dim_z + 2 * m_guard_ring_size) * num_wafer_x;
+    if(resting_dim_x > (cell_dim_z + 2 * m_guard_ring_size))   {
+      int N_cells_x_remaining = int(std::floor((resting_dim_x - 2 * m_guard_ring_size)/cell_dim_z));
+      wafer_dim_x = N_cells_x_remaining * cell_dim_z;
+      Box    waf_box(wafer_dim_z/2, wafer_dim_x/2, m_slab.sensitive_thickness/2);
+      Volume waf_vol(nam+"_wafer", waf_box, m_slab.sensitive_mat);
+      waf_vol.setVisAttributes(m_slab.sensitive_vis);
+      //waf_vol.setLimits(pULimits);
+      //waf_vol->SetSensitiveDetector(theSD);
+      wafer_pos_x        = -dim.z/2 + num_wafer_x * real_wafer_size_x + (wafer_dim_x + 2 * m_guard_ring_size)/2;
+      real_wafer_size_x  =  wafer_dim_x + 2 * m_guard_ring_size;
+      double wafer_pos_z = -dim.x/2 + m_guard_ring_size + wafer_dim_z /2;
+      for (int iwaf_z = 1; iwaf_z < 3; iwaf_z++)    {
+	PlacedVolume pv = siVol.placeVolume(waf_vol,Position(wafer_pos_z,wafer_pos_x,0));
+	pv.addPhysVolID("wafer",num_wafer_x*1000 + iwaf_z);
+	wafer_pos_z += wafer_dim_z + 2 * m_guard_ring_size;
       }
     }
   }
 
   // Glue space as just a air gap, we don't care about a few points of glue...
   y_slab_floor += (m_slab.sensitive_thickness+m_slab.glue_thickness);
-
   // The PCB layer, the copper and the shielding are
   // placed as a big G10 layer, as the copper and the
   // shielding ones are very tiny.
-  Box    pcbShieldBox(dim.x/2,dim.z/2,m_shield.thickness()/2);
-  Volume pcbShieldVol(nam+"_pcbShield",pcbShieldBox,lcdd.material(m_shield.materialStr()));
-  pcbShieldVol.setVisAttributes(lcdd.visAttributes(m_shield.visStr()));
-  slabVol.placeVolume(pcbShieldVol,Position(0,0,y_slab_floor+m_shield.thickness()/2));
+  Box    pcbShieldBox(dim.x/2,dim.z/2,x_shield.thickness()/2);
+  Volume pcbShieldVol(nam+"_shield",pcbShieldBox,lcdd.material(x_shield.materialStr()));
+  pcbShieldVol.setVisAttributes(lcdd.visAttributes(x_shield.visStr()));
+  slabVol.placeVolume(pcbShieldVol,Position(0,0,y_slab_floor+x_shield.thickness()/2));
   return slabVol;
 }
 
 /// Build Endcap Standard Module 
-Volume ECAL::buildModule(bool Zminus, double endcap_rmax, const Solid& siSolid, const Volume& siVol, const Rotation& rot)   {
+Volume ECAL::buildEndcap(bool Zminus, double endcap_rmax, const Solid& siSolid, const Volume& siVol, const Rotation& rot)   {
   // While waiting for more geometric details,
   // build a simple Endcap using a fiber polyhedra
   // and substract the center box
   string  nam = name();
   PolyhedraRegular hedra(8, 0, endcap_rmax, m_module_thickness);
   SubtractionSolid solid(hedra, m_center_tube, Position(), rot);
-  Volume           endcap_vol(nam+"_endcap", solid,lcdd.material(m_shield.materialStr()));
-  VisAttr          vis = lcdd.visAttributes("EcalEndcapVis");
-  endcap_vol.setVisAttributes(vis);
+  Volume           endcap_vol(nam+"_endcap", solid,lcdd.material(x_shield.materialStr()));
+  endcap_vol.setVisAttributes(lcdd.visAttributes(x_endcap.visStr()));
 
   //----------------------------------------------------
   // Radiator plates in the EndCap structure also as polyhedra, 
@@ -441,34 +479,34 @@ Volume ECAL::buildModule(bool Zminus, double endcap_rmax, const Solid& siSolid, 
   if(m_layers[0].nLayer > 0 )    {
     PolyhedraRegular hedra_rad(8, r_inner, r_outer, m_layers[0].thickness);
     SubtractionSolid sol_rad(hedra_rad, m_center_tube, Position(), rot);
-    vol_radL1 = Volume(nam+"_L1_radiator",sol_rad, m_layers[0].rad_mat);
+    vol_radL1 = Volume(nam+"_ECL1_radiator",sol_rad, m_layers[0].rad_mat);
     vol_radL1.setVisAttributes(radiator_vis);
     // plate for slab in ring
     Box              box_ring(box_dim,box_dim, m_layers[0].thickness/2);
     SubtractionSolid sol_ring(box_ring,m_center_tube,Position(), rot);
-    vol_ringL1 = Volume(nam+"_L1_ring",sol_ring,m_layers[0].rad_mat);
+    vol_ringL1 = Volume(nam+"_ECL1_ring",sol_ring,m_layers[0].rad_mat);
     vol_ringL1.setVisAttributes(ring_vis);
   }
   if(m_layers[1].nLayer > 0 )    {
     PolyhedraRegular hedra_rad(8, r_inner, r_outer, m_layers[1].thickness);
     SubtractionSolid sol_rad(hedra_rad, m_center_tube, Position(), rot);
-    vol_radL2 = Volume(nam+"_L2_radiator",sol_rad, m_layers[0].rad_mat);
+    vol_radL2 = Volume(nam+"_ECL2_radiator",sol_rad, m_layers[0].rad_mat);
     vol_radL2.setVisAttributes(radiator_vis);
     // plate for slab in ring
     Box              box_ring(box_dim,box_dim, m_layers[1].thickness/2);
     SubtractionSolid sol_ring(box_ring,m_center_tube,Position(), rot);
-    vol_ringL2 = Volume(nam+"_L2_ring",sol_ring,m_layers[0].rad_mat);
+    vol_ringL2 = Volume(nam+"_ECL2_ring",sol_ring,m_layers[0].rad_mat);
     vol_ringL2.setVisAttributes(ring_vis);
   }
   if(m_layers[2].nLayer > 0 )    {
     PolyhedraRegular hedra_rad(8, r_inner, r_outer, m_layers[2].thickness);
     SubtractionSolid sol_rad(hedra_rad, m_center_tube, Position(), rot);
-    vol_radL1 = Volume(nam+"_L1_radiator",sol_rad, m_layers[0].rad_mat);
-    vol_radL1.setVisAttributes(radiator_vis);
+    vol_radL3 = Volume(nam+"_ECL3_radiator",sol_rad, m_layers[0].rad_mat);
+    vol_radL3.setVisAttributes(radiator_vis);
     // plate for slab in ring
     Box box_ring(box_dim,box_dim, m_layers[2].thickness/2);
     SubtractionSolid sol_ring(box_ring,m_center_tube,Position(), rot);
-    vol_ringL3 = Volume(nam+"_L3_ring",sol_ring,m_layers[2].rad_mat);
+    vol_ringL3 = Volume(nam+"_ECL3_ring",sol_ring,m_layers[2].rad_mat);
     vol_ringL3.setVisAttributes(ring_vis);
   }
 
@@ -478,129 +516,221 @@ Volume ECAL::buildModule(bool Zminus, double endcap_rmax, const Solid& siSolid, 
 
   // We count the layers starting from IP and from 1, so odd layers should be 
   // inside slabs and even ones on the structure.
-  double z_floor = -m_module_thickness/2 + m_front.thickness() + N_FIBERS_ALVOULUS * m_fiber_thickness;
+  double z_floor = -m_module_thickness/2 + x_front.thickness() + N_FIBERS_ALVOULUS * m_fiber_thickness;
   //
   // ATTENTION, TWO LAYERS PER LOOP AS THERE IS ONE INSIDE THE ALVEOLUS.
   //
   double y_slab_si_offset = /*-slab_dim_y/2*/ -m_slab.total_thickness/2 + m_slab.ground_thickness + m_slab.sensitive_thickness/2;
   int num_layers = m_layers[0].nLayer + m_layers[1].nLayer + m_layers[2].nLayer;
-  Rotation rotOdd(M_PI,0,M_PI);
-  Rotation rotEven(0,0,M_PI);
+  Rotation rotOdd(M_PI,M_PI,0);
+  Rotation rotEven(0,M_PI,0);
   Volume vol_rad, vol_ring;
   vector<Volume>* tower_vols = 0;
-
+  PlacedVolume pv;
+  //num_layers = 2;
   for(int layer_id = 1; layer_id <= num_layers; layer_id+=2)   {
     // place the tower layer for the four modules
     double rad_thickness = m_layers[0].thickness;
     ::printf("%s> installing layer %d....\n",name(),layer_id);
+    rad_thickness = radiatorThickness(layer_id);
     if(layer_id <= m_layers[0].nLayer) {
-      rad_thickness = m_layers[0].thickness;
       vol_ring      = vol_ringL1;
       vol_rad       = vol_radL1;
       tower_vols    = &EC_Towers[0];
     }
     else if(layer_id <= m_layers[0].nLayer + m_layers[1].nLayer) {
-      rad_thickness = m_layers[1].thickness;
       vol_ring      = vol_ringL2;
       vol_rad       = vol_radL2;
       tower_vols    = &EC_Towers[1];
     }
     else if(layer_id <= m_layers[0].nLayer + m_layers[1].nLayer + m_layers[2].nLayer) {
-      rad_thickness = m_layers[2].thickness;
       vol_ring      = vol_ringL3;
       vol_rad       = vol_radL3;
       tower_vols    = &EC_Towers[2];
     }
+#if 0
+    const Rotation& _r=rot_e;
+    ::printf("Stave:%d  Tower:%d  Pos: %f %f %f Rot:%f %f %f, Slab:%f %f %f     Tower:%f %f %f\n",	       
+	     istave,itow, pos.x, pos.y, pos.z,
+	     _r.theta,_r.phi,_r.psi,
+	     slab_sol.x(),slab_sol.y(),slab_sol.z(),
+	     tower_sol.x(),tower_sol.y(),tower_sol.z());
+#endif
 
-    int num_staves = 4;
     double AlveolusThickness = 2 * m_slab.total_thickness + rad_thickness + 2 * m_fiber_thickness;
-    for (int istave = 1; istave <= num_staves; ++istave)  {
+    for(size_t istave=1, num_staves=4; istave <= num_staves; ++istave)  {
       double angle_module = M_PI/2 * ( istave - 1 );
-      //if(layer_id==1)
-      //	theEndCapSD->SetStaveRotationMatrix(istave,angle_module);
+      Rotation rotodd_s1(rotOdd), rot_e(rotEven);
+      rotodd_s1.rotateZ(angle_module);
+      rot_e.rotateZ(angle_module);
 
-      Rotation rot_o(rotOdd), rot_e(rotEven.theta,rotEven.psi,rotEven.phi+angle_module);
-      rot_o.rotateZ(angle_module);
-      //rot_e.rotateZ(angle_module);
-      size_t ntower = 1;//EC_TowerSlabs.size();
-      for (unsigned int itow=0; itow < ntower; itow++)	{
-	// first slab
+      //if(layer_id==1)
+      // theEndCapSD->SetStaveRotationMatrix(istave,angle_module);
+
+      for(size_t itow=0, ntower=EC_TowerSlabs.size(); itow < ntower; itow++)	{
 	Volume   tower_slab= EC_TowerSlabs[itow];
 	Volume   tower_vol = (*tower_vols)[itow];
 	Position tower_pos = EC_TowerXYCenters[itow];
 	Box      tower_sol = tower_vol.solid();
 	Box      slab_sol  = tower_slab.solid();
 	Position pos(tower_pos);
-	Rotation rot_o2(rotOdd);
-#if 0
-	::printf("Tower:%d  Pos: %f %f %f bbox:%f %f %f     solid:%f %f %f\n",	       
-		 itow, tower_pos.x,tower_pos.y,tower_pos.z,
-		 slab_sol.x(),slab_sol.y(),slab_sol.z(),
-		 tower_sol.x(),tower_sol.y(),tower_sol.z());
-#endif
+
+	// Place the first slab
 	pos.z = z_floor + m_slab.total_thickness/2.0;
 	pos.rotateZ(angle_module);
-#if 0
-	PlacedVolume pv_slab = endcap_vol.placeVolume(tower_slab,pos,rot_o);
-	pv_slab.addPhysVolID("Layer",istave*100000 + (itow+1) * 1000 + layer_id);
+	pv = endcap_vol.placeVolume(tower_slab,pos,rotodd_s1);
+	pv.addPhysVolID("Layer",istave*100000 + (itow+1) * 1000 + layer_id);
 	if (istave == 1 && itow == 0 && !Zminus) {
 	  //  theEndCapSD->AddLayer(layer_id,-pos.x-tower_sol.x(),pos.z-Si_Slab_Y_offset,pos.y-tower_sol.y());
 	}
-#endif
 
-	// reinitialise pos as it's now rotated for the slab.
-	pos   = tower_pos;
-	pos.z = z_floor + m_slab.total_thickness /2;
+	// reinitialise pos as it's now rotated for the slab and place radiator inside alveolus
+	pos    = tower_pos;
+	pos.z  = z_floor + m_slab.total_thickness /2;
 	// update pos to take in account slab + fiber dim
 	pos.z += m_slab.total_thickness / 2 + m_fiber_thickness + rad_thickness/2;
 	pos.rotateZ(angle_module);
+	pv = endcap_vol.placeVolume(tower_vol,pos,rot_e);
 
-	// radiator inside alveolus
-	endcap_vol.placeVolume(tower_vol,pos,rot_e);
-	// second slab
-	pos.z +=  rad_thickness/2 + m_fiber_thickness + m_slab.total_thickness /2;
-
-	Rotation rot(rotOdd);
-	rot.rotateZ(angle_module);
-	if(istave % 2 == 1 ) rot.rotateX(M_PI);
-	//PlacedVolume pv_tower = endcap_vol.placeVolume(tower_vol,pos,rot);
-	//pv_tower.addPhysVolID("Layer",istave*100000 + (itow+1) * 1000 + layer_id+1);
-
+	// Place the second slab
+	pos.z += rad_thickness/2 + m_fiber_thickness + m_slab.total_thickness /2;
+	Rotation rotodd_s2 = rotodd_s1;
+	rotodd_s2.rotateX(M_PI);
+	pv = endcap_vol.placeVolume(tower_slab,pos,rotodd_s2);
+	pv.addPhysVolID("Layer",istave*100000 + (itow+1) * 1000 + layer_id+1);
 	if (istave == 1 && itow == 0 && !Zminus) {
 	  //theEndCapSD->AddLayer(layer_id+1,-pos.x-tower_sol.x(),pos.z-Si_Slab_Y_offset,pos.y-tower_sol.y());
 	}
       }
     }
 
-    // ====> BuildECRingAlveolus 
-    // Place Si 1 (in z_floor + m_slab.total_thickness / 2)
-    //    PlacedVolume pv = endcap_vol.placeVolume(siVol,Position(0,0,z_floor+m_slab.total_thickness/2));
-    //    pv.addPhysVolID("Layer",layer_id);
-    // set layer in SD
-    if(!Zminus) {
-      //theEndCapRingSD->AddLayer(layer_id,-siBox.x(),-siBox.y(),z_floor+m_slab.total_thickness/2);
-    }
-    z_floor += m_slab.total_thickness + m_fiber_thickness;  
-    // Place Radiator ring
-    //endcap_vol.placeVolume(vol_rad,Position(0,0,z_floor+rad_thickness/2));
-    z_floor += rad_thickness + m_fiber_thickness;
+    {  // ====> BuildECRingAlveolus 
+      double z_ring = z_floor;
+      // Place Si 1 (in z_ring + m_slab.total_thickness / 2)
+      pv = endcap_vol.placeVolume(siVol,Position(0,0,z_ring+m_slab.total_thickness/2));
+      pv.addPhysVolID("Layer",layer_id);
+      if(!Zminus) {    // set layer in SD
+	//theEndCapRingSD->AddLayer(layer_id,-siBox.x(),-siBox.y(),z_ring+m_slab.total_thickness/2);
+      }
+      z_ring += m_slab.total_thickness + m_fiber_thickness;  
+      // Place Radiator ring
+      endcap_vol.placeVolume(vol_rad,Position(0,0,z_ring+rad_thickness/2));
+      z_ring += rad_thickness + m_fiber_thickness;
   
-    // Place Si 2
-    //    pv = endcap_vol.placeVolume(siVol,Position(0,0,z_floor+m_slab.total_thickness/2));
-    //    pv.addPhysVolID("Layer",layer_id + 1);
-    if(!Zminus) {
-      //theEndCapRingSD->AddLayer(layer_id+1,-siBox.x(),-siBox.y(),z_floor + m_slab.total_thickness/2);
+      // Place Si 2
+      pv = endcap_vol.placeVolume(siVol,Position(0,0,z_ring+m_slab.total_thickness/2));
+      pv.addPhysVolID("Layer",layer_id + 1);
+      if(!Zminus) {
+	//theEndCapRingSD->AddLayer(layer_id+1,-siBox.x(),-siBox.y(),z_ring + m_slab.total_thickness/2);
+      }
+      z_ring += AlveolusThickness + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
+      // Place a radiator layer if the number of layers is not complete
+      if( layer_id == num_layers) break;
+      endcap_vol.placeVolume(vol_rad,Position(0,0,z_ring+rad_thickness/2));
     }
-
-    z_floor += AlveolusThickness + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
-    // Place a radiator layer if the number of layers is not complete
-    if( layer_id == num_layers) break;
-    //    endcap_vol.placeVolume(vol_rad,Position(0,0,z_floor+rad_thickness/ 2.));
     // update the z_floor
     z_floor += rad_thickness + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
   }
-
   return endcap_vol;
+}
+
+///  Barrel Standard Module
+Volume ECAL::buildBarrel(const Barrel_t& barrel) {
+  string nam = name();
+  Trapezoid barrelTrd(barrel.bottom/2, barrel.top/2, barrel.z/2, barrel.z/2, m_module_thickness/2);
+  Volume    barrelVol(nam+"_barrel",barrelTrd,lcdd.material(x_barrel.materialStr()));
+  barrelVol.setVisAttributes(lcdd.visAttributes(x_barrel.visStr()));
+
+  // We count the layers starting from IP and from 1, so odd layers should be inside slabs and
+  // even ones on the structure.
+  // The structure W layers are here big plans, as the gap between each W plate is too small 
+  // to create problems. The even W layers are part of H structure placed inside the alveolus.
+  double y_floor = x_front.thickness() + N_FIBERS_ALVOULUS * m_fiber_thickness;
+  double z_pos;
+  PlacedVolume pv;
+  for(int layer_id = 1; layer_id < m_numLayer+1; layer_id+=2) {// ATTENTION, TWO LAYERS PER LOOP
+    // build and place the several Alveolus with 
+    // the slabs and the radiator layer inside.
+    double rad_thick = radiatorThickness(layer_id);
+    double alveolus_dim_y = 2 * m_slab.total_thickness + rad_thick + 2 * m_fiber_thickness;
+    //------ BuildBarrelAlveolus ------
+    double module_y_floor = y_floor;
+    double alveolus_dim_x = barrel.bottom - 2 * (module_y_floor+alveolus_dim_y);
+  
+    // To simplify we place each slab and the radiator layer directly into the fiber module.
+    //
+    // Build a slab:
+    Volume slabVol = buildSlab(Dimension(alveolus_dim_x,m_slab.total_thickness,m_alveolus.z));
+
+    // Place the Slab and radiator inside the H, here directly into the module fiber as the
+    // H structure is also built in fiber.
+    double z_tower_center = -barrel.z /2 + m_lateral_face_thickness 
+      + m_fiber_thickness * N_FIBERS_ALVOULUS + m_slab.shield_thickness
+      + m_slab.h_fiber_thickness + m_alveolus.z /2;  
+
+    for (int itow = m_barrel.numTowers; itow > 0; --itow )    {
+      double y_fl = module_y_floor;
+      double x_off = 0; // to be calculed
+      double y_off = -m_module_thickness/2 + y_fl + m_slab.total_thickness/2;
+
+      // First Slab
+      Rotation rot(M_PI,0,0);
+      pv = slabVol.placeVolume(barrelVol,Position(x_off,z_tower_center,y_off),rot);
+      pv.addPhysVolID("tower",itow * 1000 + layer_id);
+#if 0
+      if (itow == Ecal_barrel_number_of_towers)  {
+	theBarrelSD->AddLayer(layer_id,
+			      x_off - ((G4Box *)SlabLog->GetSolid())->GetXHalfLength(),
+			      Ecal_inner_radius + m_module_thickness/2 + y_off - Si_Slab_Y_offset,
+			      z_tower_center - ((G4Box *)SlabLog->GetSolid())->GetYHalfLength());
+      }
+#endif
+      y_fl += m_slab.total_thickness + m_fiber_thickness;
+      
+      // Radiator layer "inside" alveolus
+      Dimension radDim(alveolus_dim_x,rad_thick,m_alveolus.z);
+      Volume radVol = buildRadiator(nam+"_barrel_radiator1",radDim,barrel.radiatorMaterial);
+      z_pos = -m_module_thickness/2 + y_fl + rad_thick/2.;
+      pv = barrelVol.placeVolume(radVol,Position(0,z_tower_center,z_pos));
+      pv.addPhysVolID("tower",itow * 1000 + layer_id);
+      y_fl += rad_thick + m_fiber_thickness;
+      y_off = -m_module_thickness/2 + y_fl + m_slab.total_thickness/ 2;
+
+      // Second Slab: starts from bottom to up
+      pv = barrelVol.placeVolume(radVol,Position(0,z_tower_center,y_off));
+      pv.addPhysVolID("tower",itow * 1000 + layer_id + 1);
+#if 0
+      if (itow == Ecal_barrel_number_of_towers)  	{
+	theBarrelSD->AddLayer(layer_id + 1,
+			      x_off - ((G4Box *)SlabLog->GetSolid())->GetXHalfLength(),
+			      Ecal_inner_radius + m_module_thickness/2 + y_off + Si_Slab_Y_offset,
+			      z_tower_center - ((G4Box *)SlabLog->GetSolid())->GetYHalfLength());
+      }
+#endif
+      z_tower_center += m_alveolus.z + 
+	2 * m_fiber_thickness * N_FIBERS_ALVOULUS +
+	2 * m_slab.h_fiber_thickness + 
+	2 * m_slab.shield_thickness;
+    }
+    //---------------------------------
+    // update the y_floor
+    y_floor += alveolus_dim_y + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
+    int even_layer = layer_id + 1;
+    if ( even_layer > m_numLayer )
+      continue;
+
+    // Build and place the structure radiator layer into the module
+    double radiator_dim_x = barrel.bottom - 2*(y_floor+rad_thick);
+    double radiator_dim_z = barrel.z - 2*m_lateral_face_thickness - 2*N_FIBERS_W_STRUCTURE * m_fiber_thickness;
+    
+    Dimension radDim(radiator_dim_x,rad_thick,radiator_dim_z);
+    Volume radVol = buildRadiator(nam+"barrel_radiator2",radDim,barrel.radiatorMaterial);
+    pv = barrelVol.placeVolume(radVol,Position(0,0,-m_module_thickness/2+y_floor+rad_thick/2));
+
+    // update the y_floor
+    y_floor += rad_thick + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
+  }
+  return barrelVol;
 }
 
 

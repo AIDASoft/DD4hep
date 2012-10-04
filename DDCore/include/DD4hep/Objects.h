@@ -309,22 +309,19 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct VisAttr : public Ref_t  {
+      enum Style { 
+        SOLID=0x1,
+        WIREFRAME=0x2,
+        DASHED=0x2,
+        LAST_STYLE
+      };
       struct Object  {
 	unsigned long magic;
 	void*         col;
         int           color;
 	float         alpha;
         unsigned char drawingStyle, lineStyle, showDaughters, visible;
-        Object() : magic(magic_word()), col(0), color(0), alpha(0), drawingStyle(true), showDaughters(true), visible(true)  {}
-      };
-      enum DrawingStyle { 
-        WIREFRAME=0x2,
-        LAST_DRAWING_STYLE
-      };
-      enum LineStyle  {
-        SOLID=0x1,
-        DASHED=0x2,
-        LAST_LINE_STYLE
+        Object() : magic(magic_word()), col(0), color(0), alpha(0), drawingStyle(SOLID), lineStyle(SOLID), showDaughters(true), visible(true)  {}
       };
       /// Default constructor
       VisAttr() : Ref_t() {}
@@ -351,12 +348,12 @@ namespace DD4hep {
       /// Get line style
       int lineStyle() const;
       /// Set line style
-      void setLineStyle(LineStyle style);
+      void setLineStyle(int style);
 
       /// Get drawing style
       int drawingStyle()  const;
       /// Set drawing style
-      void setDrawingStyle(DrawingStyle style);
+      void setDrawingStyle(int style);
 
       /// Get alpha value
       float alpha() const;

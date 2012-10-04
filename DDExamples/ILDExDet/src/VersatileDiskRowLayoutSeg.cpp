@@ -44,7 +44,10 @@ static Ref_t create_VersatileDiskRowLayoutSeg(lcdd_t& /* lcdd */, const xml_h& e
   if ( e.hasAttr(_A(rmin))   ) dataExt->setRMin(e.attr<int>(_A(rmin)));
   //loop rows to fill VersatileDiskRowLayoutSeg
   for(xml_coll_t r(e,_X(row)); r; ++r)  {
-    dataExt->addRow(r.attr<int>(_A(nPads)),r.attr<double>(_A(padPitch)),r.attr<double>(_A(rowHeight)),r.attr<double>(_A(offset)));
+    dataExt->addRow(r.attr<int>(Unicode("nPads")),
+		    r.attr<double>(Unicode("padPitch")),
+		    r.attr<double>(Unicode("rowHeight")),
+		    r.attr<double>(_A(offset)));
    }
   obj.setExtension<VersatileDiskRowLayoutData>(dataExt);
   return obj;
