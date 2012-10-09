@@ -53,5 +53,22 @@ int main(int argc,char** argv)  {
       cout<<mod.id()<<" "<<mod.getPadType()<<" "<<mod.getNPads()<<" "<<mod.getNRows()<<endl;
     }
 
+  TPCModule mod=mymods[0];
+  cout<<"getNPadsInRow: "<< mod.getNPadsInRow(0)<<" "<< mod.getNPadsInRow(mod.getNRows()-1)<<endl;
+  cout<<"getRowHeight: "<< mod.getRowHeight(0)<<" "<< mod.getRowHeight(mod.getNRows()-1)<<endl;
+  int padindex_min=mod.getPadIndex(0,0);
+  int padindex_max=mod.getPadIndex(mod.getNRows()-1,mod.getNPadsInRow(mod.getNRows()-1)-1);
+  cout<<"pad index :"<<padindex_min<<" =(0,0)"<<padindex_max<<" =("<<mod.getNRows()-1<<","<<mod.getNPadsInRow(mod.getNRows()-1)-1<<")"<<endl;
+  cout<<"Row nr: "<<  mod.getRowNumber(padindex_min)<<" "<< mod.getRowNumber(padindex_max)<<endl;
+  cout<<"Pad nr: "<<  mod.getPadNumber(padindex_min)<<" "<< mod.getPadNumber(padindex_max)<<endl;
+  cout<<"Pad pitch: "<<  mod.getPadPitch(padindex_min)<<" "<< mod.getPadPitch(padindex_max)<<endl;
+  cout<<"Pad center: "<<mod.getPadCenter(padindex_min)[0]<<","<<mod.getPadCenter(padindex_min)[1]<<"  "<<mod.getPadCenter(padindex_max)[0]<<","<<mod.getPadCenter(padindex_max)[1]<<endl;
+  int nearest_index1=mod.getNearestPad(mod.getPadCenter(padindex_min)[0],mod.getPadCenter(padindex_min)[1]);
+  cout<<"Nearest Pad ("<<padindex_min<<"): "<< nearest_index1<<" "<<mod.getRowNumber(nearest_index1)<<" "<<mod.getPadNumber(nearest_index1)<<endl;
+  int nearest_index2=mod.getNearestPad(mod.getPadCenter(padindex_max)[0],mod.getPadCenter(padindex_max)[1]);
+  cout<<"Nearest Pad: ("<<padindex_max<<"): "<< nearest_index2<<" "<<mod.getRowNumber(nearest_index2)<<" "<<mod.getPadNumber(nearest_index2)<<endl;
+ 
+ 
+ 
   return 0;
 }

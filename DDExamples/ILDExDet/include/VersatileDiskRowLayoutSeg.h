@@ -22,14 +22,15 @@ namespace DD4hep {
       double _padPitch;
       double _rowHeight;
       double _offset;
+      double _rCentre;
     };
     
     struct VersatileDiskRowLayoutData{
-      VersatileDiskRowLayoutData(){};
+      VersatileDiskRowLayoutData();
       void addRow(int nPads, double padPitch, double rowHeight, double offset);
       int setRMin(int rmin);
       std::vector<Row> _rows ;
-      int _rMin;
+      double _rMin;
       int _nPads;
     };
     

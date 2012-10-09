@@ -65,26 +65,26 @@ namespace DD4hep {
     return module_height/getNRows();
   }
   
-  int FixedPadAngleDiskLayout::getRowNumber(int pad)const {
-    if(pad>getNPads() || pad<0)
+  int FixedPadAngleDiskLayout::getRowNumber(int padIndex)const {
+    if(padIndex>getNPads() || padIndex<0)
       throw OutsideGeometryException("getRowNumber: Requested pad not on module querried!");
-    return pad/getNPadsInRow(0);
+    return padIndex/getNPadsInRow(0);
   }
   
-  double FixedPadAngleDiskLayout::getPadPitch(int pad)const {
-    if(pad>getNPads() || pad<0)
+  double FixedPadAngleDiskLayout::getPadPitch(int padIndex)const {
+    if(padIndex>getNPads() || padIndex<0)
       throw OutsideGeometryException("getPadPitch: Requested pad not on module querried!");
-    int row=getRowNumber(pad);
+    int row=getRowNumber(padIndex);
     double pad_radius=tube->GetRmin()+(row+0.5)*getRowHeight(0);
     double module_width= tube->GetPhi2()-tube->GetPhi1();
     double pad_angle=module_width/getNPadsInRow(row);
     return pad_radius*pad_angle*M_PI/180.;
   }
   
-  int FixedPadAngleDiskLayout::getPadNumber(int pad)const {
-   if(pad>getNPads() || pad<0)
+  int FixedPadAngleDiskLayout::getPadNumber(int padIndex)const {
+   if(padIndex>getNPads() || padIndex<0)
       throw OutsideGeometryException("getPadNumber: Requested pad not on module querried!");
-    return pad % getNPadsInRow(0);
+    return padIndex % getNPadsInRow(0);
   }
 
   int FixedPadAngleDiskLayout::getPadIndex(int row,int padNr)const {
@@ -95,32 +95,32 @@ namespace DD4hep {
     return padNr + row*getNPadsInRow(row);
   }
 
-  int FixedPadAngleDiskLayout::getRightNeighbour(int pad)const {
+  int FixedPadAngleDiskLayout::getRightNeighbour(int padIndex)const {
     //what is left and what is right is a matter of definition
     //if on edge their is no neighbour, should throw an exception
-    int row=getRowNumber(pad);
-    if(getPadNumber(pad)==getNPadsInRow(row)-1)
+    int row=getRowNumber(padIndex);
+    if(getPadNumber(padIndex)==getNPadsInRow(row)-1)
       throw OutsideGeometryException("getRightNeighbour: Requested pad is on right edge and has no right neighbour!");
     // if not on edge
-    return pad + 1;
+    return padIndex + 1;
   }
 
-  int FixedPadAngleDiskLayout::getLeftNeighbour(int pad)const {
+  int FixedPadAngleDiskLayout::getLeftNeighbour(int padIndex)const {
     //if on edge their is no neighbour, should throw an exception
-    if(getPadNumber(pad)==0)
+    if(getPadNumber(padIndex)==0)
       throw OutsideGeometryException("getLeftNeighbour: Requested pad is on left edge and has no left neighbour!");
     // if not on edge
-    return pad - 1;
+    return padIndex - 1;
   }
 
 
-  std::vector<double>  FixedPadAngleDiskLayout::getPadCenter (int pad) const {
-    if(pad>getNPads())
+  std::vector<double>  FixedPadAngleDiskLayout::getPadCenter (int padIndex) const {
+    if(padIndex>getNPads())
       throw OutsideGeometryException("getPadCenter: Requested pad not on module querried!");
-    int row=getRowNumber(pad);
+    int row=getRowNumber(padIndex);
     double pad_radius=tube->GetRmin()+(row+0.5)*getRowHeight(0);
     double module_width= tube->GetPhi2()-tube->GetPhi1();
-    double pad_angle=(getPadNumber(pad)+0.5)*module_width/getNPadsInRow(row);
+    double pad_angle=(getPadNumber(padIndex)+0.5)*module_width/getNPadsInRow(row);
     //local center coordinates in module system
     double pad_x = pad_radius*cos(pad_angle*M_PI/180.);
     double pad_y = pad_radius*sin(pad_angle*M_PI/180.);

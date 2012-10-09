@@ -147,6 +147,7 @@ int main(int argc,char** argv)  {
       myfile << "FAILED mymod.getPadPitch(1): 0.652499!="<<mymod.getPadPitch(1)<<endl;
       failures++;
     }
+  //padindex should be obtained by using getPadIndex(row,pad) not assumed by hand like here in this example
   if(fabs(mymod.getRowNumber(15)-0)> myPrecision)
     {
       myfile << "FAILED mymod.getRowNumber(15): 0!="<<mymod.getRowNumber(15)<<endl;

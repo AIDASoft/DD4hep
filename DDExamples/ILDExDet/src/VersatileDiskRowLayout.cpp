@@ -12,6 +12,7 @@
 #include "TGeoTube.h"
 #include <math.h>
 #include <iostream>
+#include <sstream>
 #include <cmath>
 
 using namespace std;
@@ -50,39 +51,61 @@ namespace DD4hep {
   }
 
   int VersatileDiskRowLayout::getNPadsInRow(int row)const {
+    if( (unsigned) row >  padData->_rows.size() - 1 ) {
+      
+      throw OutsideGeometryException(" VersatileDiskRowLayout::row number too large !");
+    }
     return padData->_rows[row]._nPads;
   }
   
   double VersatileDiskRowLayout::getRowHeight(int row)const {
     if(row>getNRows() || row<0)
       throw OutsideGeometryException("getRowHeight: Requested row not on module querried!");
-    return 0;
+    return padData->_rows[row]._rowHeight;
   }
   
-  int VersatileDiskRowLayout::getRowNumber(int pad)const {
-    if(pad>getNPads() || pad<0)
-      throw OutsideGeometryException("getRowNumber: Requested pad not on module querried!");
-    return 0;
+  int VersatileDiskRowLayout::getRowNumber(int padIndex)const {
+    int rn = ( 0xffff0000 & padIndex ) >> 16 ;
+    
+    if( rn < 0 ||  rn > int( padData->_rows.size() - 1) ){
+      
+      std::stringstream sstr ;
+      
+      sstr << "VersatileDiskRowLayout::getRowNumber: illegal rownumber: "
+           << rn << " for padIndex  0x" << std::hex << padIndex << " nRows: " << padData->_rows.size() << std::dec ;
+      
+      throw  OutsideGeometryException( sstr.str() ) ;
+    }
+    
+    return rn ;
   }
   
-  double VersatileDiskRowLayout::getPadPitch(int pad)const {
-    if(pad>getNPads() || pad<0)
-      throw OutsideGeometryException("getPadPitch: Requested pad not on module querried!");
-    return 0;
+  double VersatileDiskRowLayout::getPadPitch(int padIndex)const {
+    int row =  getRowNumber( padIndex ) ;
+    return padData->_rows[row]._padPitch;
   }
   
-  int VersatileDiskRowLayout::getPadNumber(int pad)const {
-   if(pad>getNPads() || pad<0)
-      throw OutsideGeometryException("getPadNumber: Requested pad not on module querried!");
-   return 0;
+  int VersatileDiskRowLayout::getPadNumber(int padIndex)const {
+    return ( 0x0000ffff & padIndex ) ;
   }
 
-  int VersatileDiskRowLayout::getPadIndex(int row,int padNr)const {
-    if(padNr>=getNPadsInRow(row) || padNr<0)
-      throw OutsideGeometryException("getPadIndex: Requested pad not on module querried!");
-    if(row>=getNRows() || padNr<0 )
-      throw OutsideGeometryException("getPadIndex: Requested row not on module querried!");
-    return 0;
+  int VersatileDiskRowLayout::getPadIndex(int rowNr,int padNr)const {
+   if( (unsigned) rowNr >  padData->_rows.size() - 1 ) {
+     
+      throw OutsideGeometryException(" VersatileDiskRowLayout::getPadIndex row number too large !");
+    }
+   
+    if( padNr > getNPadsInRow(rowNr) - 1 ) {
+     
+      std::stringstream sstr ;
+     
+      sstr << "VersatileDiskRowLayout::getPadIndex: pad number too large: "
+           << padNr << " only " <<   getNPadsInRow(rowNr) << " pads in row " << rowNr ;
+
+      throw OutsideGeometryException( sstr.str() );
+    }
+   
+    return  (rowNr << 16 ) | ( 0x0000ffff & padNr ) ;
   }
 
   int VersatileDiskRowLayout::getRightNeighbour(int pad)const {
@@ -104,12 +127,28 @@ namespace DD4hep {
   }
 
 
-  std::vector<double>  VersatileDiskRowLayout::getPadCenter (int pad) const {
-    if(pad>getNPads())
-      throw OutsideGeometryException("getPadCenter: Requested pad not on module querried!");
+  std::vector<double>  VersatileDiskRowLayout::getPadCenter (int padIndex) const {
+    int rowNum =  getRowNumber( padIndex ) ;
+    int padNum =  getPadNumber( padIndex ) ;
+    
+    const Row& row =  padData->_rows[ rowNum ] ;
+    //pad pitch and offset come in in mm, need to be converted to angles in rad
+    double r = row._rCentre;
+    double phi_mm = row._offset + (static_cast<double>(padNum) + 0.5) * row._padPitch;
+    double phi=phi_mm/r;
+    
+    //local center coordinates in module system
+    double pad_x = r*cos(phi);//*M_PI/180.);
+    double pad_y = r*sin(phi);//*M_PI/180.);
+    
+    //trafo to global coordinates
+    Position global_w, local(pad_x,pad_y,0); 
+    module.localToWorld(local,global_w);
+   
     vector<double> center;
-    //center.push_back(global_w.x);
-    //center.push_back(global_w.y);
+    center.push_back(global_w.x);
+    center.push_back(global_w.y);
+
     return center;
   }
   
@@ -127,15 +166,29 @@ namespace DD4hep {
     bool onMod=tube->Contains(point_local);
     if(!onMod)
       throw OutsideGeometryException("getNearestPad: Requested point not on module querried!");
-    double module_width= tube->GetPhi2()-tube->GetPhi1();
     double radius=sqrt(point_local[0]*point_local[0]+point_local[1]*point_local[1]);
-    int row=(radius-tube->GetRmin())/getRowHeight(0);
+    double row_radius=radius-padData->_rMin;
+    //determine row
+    double row_step=0;
+    int row=0;
+    for (int r=0;r<getNRows();r++)
+      {
+	row_step+=getRowHeight(r);
+	if(row_radius<row_step)
+	  {
+	    row=r;
+	    break;
+	  }
+      }
     //outer edge of last row belongs to last row, same for the pad
     if(row==getNRows())
       row=getNRows()-1;
-    double pad_width=module_width/getNPadsInRow(row);    
-    double angle=atan2(point_local[1],point_local[0])/M_PI*180;
-    int padNr=static_cast<int>(angle/pad_width);
+    
+    double r= padData->_rows[row]._rCentre;
+    double pad_width=padData->_rows[row]._padPitch;
+    double angle=atan2(point_local[1],point_local[0]);
+
+    int padNr=static_cast<int>((angle*r-padData->_rows[row]._offset)/pad_width-0.5);
     if(padNr==getNPadsInRow(row))
       padNr=padNr-1;
 

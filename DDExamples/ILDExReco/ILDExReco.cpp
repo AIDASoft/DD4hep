@@ -67,6 +67,7 @@ int main(int argc,char** argv)  {
   cout << "-----> Module 10 pads in rows:\t " << mymod.getNPadsInRow(0)<<endl;
   cout << "-----> Module 10 row height:\t " << mymod.getRowHeight(0)<<endl;
   cout << "-----> Module 10 pad pitch:\t " << mymod.getPadPitch(1)<<endl;
+  //padindex should be obtained by using getPadIndex(row,pad) not assumed by hand like here in this example
   cout << "-----> Module 10 row number pad 15:\t " << mymod.getRowNumber(15)<<endl;
   cout << "-----> Module 10 pad number pad 15:\t " << mymod.getPadNumber(15)<<endl;
   cout << "-----> Module 10 pad index (1,5):\t " << mymod.getPadIndex(1,5)<<endl;
@@ -80,23 +81,12 @@ int main(int argc,char** argv)  {
   cout <<"-----> Center of mod0/pad10 EP1:\t "<<center1a[0]<<" "<<center1a[1]<<endl;
   std::vector<double> center2a=tpc.getModule(1,1).getPadCenter(10);
   cout <<"-----> Center of mod1/pad10 EP1:\t "<<center2a[0]<<" "<<center2a[1]<<endl;
+  //padindex should be obtained by using getPadIndex(row,pad) not assumed by hand like here in this example
   cout <<"-----> Nearest Pad 10:\t "<<tpc.getModule(0,0).getNearestPad(tpc.getModule(0,0).getPadCenter(10)[0],tpc.getModule(0,0).getPadCenter(10)[1])<<endl;
   cout <<"-----> Nearest Pad 0:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(0)[0],tpc.getModule(5,0).getPadCenter(0)[1])<<endl;
   cout <<"-----> Nearest Pad 5:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(5)[0],tpc.getModule(5,0).getPadCenter(5)[1])<<endl;
   cout <<"-----> Nearest Pad 20:\t "<<tpc.getModule(5,0).getNearestPad(tpc.getModule(5,0).getPadCenter(20)[0],tpc.getModule(5,0).getPadCenter(20)[1])<<endl;
 
- //  cout<<"Test Data Block extension:"<<endl;
-
-//   for(int i=0; i<2; ++i) {
-//     for(int j=0; j<2; ++j) {
-//       typedef Value<Value<TNamed,DetElement::Object>,TPCModuleData> Val;
-//       TPCModule mod = tpc.getModule(i,j);
-//       if ( mod.isValid() ) {
-// 	TPCModuleData* d = mod.extension<TPCModuleData>();
-// 	cout <<"-----> "<< mod.name() << " parent:" << mod.parent().name() << " padGap:" << d->padGap << " " << endl;
-//       }
-//     }
-//   }
   try{
     int row=tpc.getModule(6,0).getRowNumber(-10);
   }
