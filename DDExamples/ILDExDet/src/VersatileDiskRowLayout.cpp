@@ -26,6 +26,7 @@ namespace DD4hep {
     pads = module.readout().segmentation();
     tube = module.volume().solid();
     padData = pads.extension<VersatileDiskRowLayoutData>();
+    //needs some check if segmentation actually fits on module
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
@@ -189,8 +190,9 @@ namespace DD4hep {
     double angle=atan2(point_local[1],point_local[0]);
 
     int padNr=static_cast<int>((angle*r-padData->_rows[row]._offset)/pad_width-0.5);
-    if(padNr==getNPadsInRow(row))
-      padNr=padNr-1;
+    //outside active area of the module
+    if(padNr>=getNPadsInRow(row))
+      padNr=getNPadsInRow(row)-1;
 
     return getPadIndex(row,padNr);
   }

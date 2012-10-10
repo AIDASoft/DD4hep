@@ -55,15 +55,10 @@ int main(int argc,char** argv)  {
 
   for(int i=0;i<NEVENTS;i++)
     {
-      //random direction
-      double phi=i*2*M_PI/NEVENTS;
-      //double theta=40*M_PI/180+i*(50*M_PI/180)/NEVENTS;
-      double theta=rndm->Uniform(40*M_PI/180,90*M_PI/180);
-      //TPC half
-      int sign_z=1;
-      if(i%2)
- 	sign_z=-1;
-      //point loop
+      //shoot along x different z positions
+      double y=rndm->Uniform(-tpc.getOuterRadius(),tpc.getOuterRadius());
+      double z=rndm->Uniform(tpcPos[2]-10,tpcPos[2]+10);
+			     //point loop
       for (int p=0;p<NPOINTS;p++)
 	{
 	  double inner_r=0;
@@ -72,10 +67,10 @@ int main(int argc,char** argv)  {
 	  }
 	  catch(OutsideGeometryException e){};
 
-	  double radius=inner_r+(tpc.getOuterRadius()-inner_r)*p/NPOINTS;
-	  xPos.push_back(tpcPos[0]+radius*cos(phi));
-	  yPos.push_back(tpcPos[1]+radius*sin(phi));
-	  zPos.push_back(tpcPos[2]+sign_z*radius/tan(theta));
+	  double radius=2*tpc.getOuterRadius()*p/NPOINTS;
+	  xPos.push_back(tpcPos[0]-tpc.getOuterRadius()+radius);
+	  yPos.push_back(y);
+	  zPos.push_back(z);
 	  charge.push_back(rndm->Uniform(5,10));
 	  //cout<<i<<"\t"<<p<<"\t"<<radius<<"\t"<<theta*180/M_PI<<"\t"<<sign_z*radius/tan(theta)<<"\t"<<tan(theta)<<endl;
 	}

@@ -66,7 +66,9 @@ namespace DD4hep {
      */
     std::vector<TPCModule> getModules(int endplate) const;
 
-
+    /** Returns position of gas volume placement.
+     */
+    std::vector<double> getPosition() const;
   };
 }
 #endif

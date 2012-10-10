@@ -202,4 +202,16 @@ namespace DD4hep {
     return ep;
   }
  
+  //access to postion of tpc gas volume
+  std::vector<double> GearTPC::getPosition() const{
+    DetElement gas  = child("TPC_GasVolume");
+    TGeoMatrix *nm=gas.placement()->GetMatrix();
+    const Double_t *trans=nm->GetTranslation();
+    vector<double> pos;
+    pos.push_back(trans[0]);
+    pos.push_back(trans[1]);
+    pos.push_back(trans[2]);
+    return pos;
+  }
+
 }
