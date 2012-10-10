@@ -12,144 +12,245 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+#if 0
+namespace DD4hep {
+  namespace Geometry {
+    struct Hcal04Data : public DetElement::Object {
+      typedef Position Dimension;
+      Material radiatorMat;
+      string model;
+      struct Barrel {
+	Dimension    bottom, middle, top;
+	Dimension    module;
+	Dimension    cells;
+	double       y1_for_x;
+	double       y2_for_x;
+	int          numLayer;
+      } barrel;
+      struct Layer : public Dimension {
+	int       id;
+        Dimension offset;
+      };
+      std::vector<Layer> barrel_layers, end_layers, endcap_layers;
+      struct Staves {
+	int id;
+	double phi_start;
+	double inner_r, z_offset;
+      } stave;
+      struct Chambers {
+	double x, thickness, z;
+      } chamber;
+      struct RPC {
+	double g10_thickness;
+	double glass_thickness;
+	double gas_thickness;
+	double spacer_thickness;
+	double spacer_gap;
+      } rpc;
+      double fiberGap;
+      SensitiveDetector barrelSensitiveDetector;
+    };
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
-  struct param_t { double inner, outer, zhalf; };
-  xml_det_t   x_det  = e;
-  string      name   = x_det.nameStr();
-  DetElement  sdet(name,x_det.id());
-  Assembly    assembly(name+"_assembly");
+    struct Hcal04 : public Hcal04Data  {
+      Hcal04(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens) : Hcal04Data() {}
+      void construct();
+      /// Build and place Barrel Regular Modules
+      void buildBarrelRegularModules(Volume assembly);
+      void buildBarrelEndModules(Volume assembly);
+  
+      // EndCap Modules
+      void buildEndcaps(Volume assembly);
+
+      /// Build Box with RPC1 chamber
+      Volume buildRPC1Box(Box box, int layer_id);
+    };
+  }
+}
+
+Hcal04::construct(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
+  /*
+    <constant name="Hcal_spacer_thickness" value="8*mm"/>
+    <constant name="Hcal_nlayers" value="38"/>
+    <constant name="Hcal_endcap_nlayers" value="38"/>
+
+    <endcap nlayers="Hcal_endcap_nlayers" fiber_gap="Hcal_fiber_gap">
+    <barrel sensitive_model="scintillator" nlayers="Hcal_nlayers">
+    <top    x=""/>
+    <middle x=""/>
+    <bottom x=""/>
+    <module x=""/>
+    <rpc g10_thickness="" glass_thickness="" gas_thickness="" spacer_thickness="Hcal_spacer_thickness" spacer_gap=""/>
+    </barrel>
+  */
+  xml_det_t   x_det = e;
+  string      nam   = x_det.nameStr();
+  Assembly    assembly(nam+"_assembly");
   xml_comp_t  x_barrel = x_det.child(Unicode("barrel"));
   xml_comp_t  x_endcap = x_det.child(Unicode("endcap"));
-  param_t barrel = { x_barrel.inner_r(), x_barrel.outer_r(), x_barrel.zhalf()};
-  param_t endcap = { x_endcap.inner_r(), x_endcap.outer_r(), x_endcap.thickness()/2.0};
-  int symmetry   = x_det.child(Unicode("symmetry")).attr<int>(_A(value));
-  double tilt    = M_PI/symmetry - M_PI/2.0;
+  xml_comp_t  x_bottom = x_det.child(Unicode("bottom"));
+  xml_comp_t  x_middle = x_det.child(Unicode("middle"));
+  xml_comp_t  x_top    = x_det.child(Unicode("top"));
+  xml_comp_t  x_cells  = x_det.child(Unicode("cells"));
+  xml_comp_t  x_module = x_det.child(Unicode("module"));
+  xml_comp_t  x_rpc    = x_det.child(Unicode("rpc"));
 
+
+  Volume motherVol = lcdd.pickMotherVolume(*this);
   // Visualisation attributes
   VisAttr vis = lcdd.visAttributes(x_det.visStr());
-#if 0
+
   //--------- BarrelHcal Sensitive detector -----
+  model = x_det.attr<string>(Unicode("model"));
+  fiberGap = x_det.attr<double>(Unicode("fiber_gap"));
+  radiatorMat = lcdd.material(x_radiator.materialStr());
 
-  // sensitive Model
-  db->exec("select Model from `sensitive`;");
-  db->getTuple();
-  SensitiveModel = db->fetchString("Model");
-
-  G4String SensitiveLog= "The sensitive model in Hcal chambers is " + SensitiveModel;
-  Control::Log(SensitiveLog.data());
+  barrel.numLayer = x_barrel.attr<int>(Unicode("num_layer"));
+  barrel.bottom.x = x_bottom.x();
+  barrel.middle.x = x_middle.x();
+  barrel.top.x    = x_top.x();
+  barrel.module.x = x_module.x();
+  barrel.y1_for_x = x_module.attr<double>(Unicode("y1_for_x"));
+  barrel.y2_for_x = x_module.attr<double>(Unicode("y2_for_x"));
+  //double chamber_tickness = x_params.attr<double>(Unicode("chamber_tickness"));
+  barrel.cells.x = x_cells.x();
+  barrel.cells.z = x_cells.z();
 
   
   // if RPC1 read the RPC parameters
-  if (SensitiveModel == "RPC1")
-    {
-      db->exec("select * from rpc1;");
-      db->getTuple();
-      g10_thickness=db->fetchDouble("g10_thickness");
-      glass_thickness=db->fetchDouble("glass_thickness");
-      gas_thickness=db->fetchDouble("gas_thickness");
-      spacer_thickness=db->fetchDouble("spacer_thickness");
-      spacer_gap=db->fetchDouble("spacer_gap");
-    }
-
-  db->exec("select cell_dim_x, cell_dim_z, chamber_tickness from barrel_module,hcal;");
-  db->getTuple();
-
-  double chamber_tickness = x_params.attr<double>(Unicode("chamber_tickness"));
-  double cell_dim_x = x_params.attr<double>(Unicode("cell_dim_x"));
-  double cell_dim_z = x_params.attr<double>(Unicode("cell_dim_z"));
-
+  if ( model == "RPC1" )   {
+    rpc.g10_thickness    =x_rpc.attr<double>(Unicode("g10_thickness"));
+    rpc.glass_thickness  =x_rpc.attr<double>(Unicode("glass_thickness"));
+    rpc.gas_thickness    =x_rpc.attr<double>(Unicode("gas_thickness"));
+    rpc.spacer_thickness =x_rpc.attr<double>(Unicode("spacer_thickness"));
+    rpc.spacer_gap       =x_rpc.attr<double>(Unicode("spacer_gap"));
+  }
+#if 0
   // The cell boundaries does not really exist as G4 volumes. So,
   // to avoid long steps over running  several cells, the 
   // theMaxStepAllowed inside the sensitive material is the
   // pad smaller x or z dimension.
-  theMaxStepAllowed= std::min(cell_dim_x,cell_dim_z);
-#if 0  
+  theMaxStepAllowed= std::min(barrel.cells.x,barrel.cells.z);
+
   //  Hcal  barrel regular modules
-  theBarrilRegSD =     new SD(cell_dim_x,cell_dim_z,chamber_tickness,HCALBARREL,"HcalBarrelReg");
+  theBarrilRegSD =     new SD(barrel.cells.x,barrel.cells.z,chamber_tickness,HCALBARREL,"HcalBarrelReg");
   RegisterSensitiveDetector(theBarrilRegSD);
   
   // Hcal  barrel end modules
-  theBarrilEndSD = new SD(cell_dim_x,cell_dim_z,chamber_tickness,HCALBARREL,"HcalBarrelEnd");
+  theBarrilEndSD = new SD(barrel.cells.x,barrel.cells.z,chamber_tickness,HCALBARREL,"HcalBarrelEnd");
   RegisterSensitiveDetector(theBarrilEndSD);
 
   // Hcal  endcap modules
-  theENDCAPEndSD = new HECSD(cell_dim_x,cell_dim_z,chamber_tickness,HCALENDCAPMINUS,"HcalEndCaps");
+  theENDCAPEndSD = new HECSD(barrel.cells.x,barrel.cells.z,chamber_tickness,HCALENDCAPMINUS,"HcalEndCaps");
   RegisterSensitiveDetector(theENDCAPEndSD);
 #endif
-  // Set up the Radiator Material to be used
-  Material radiatorMat = lcdd.material(x_radiator.materialStr());
-  db->exec("select material from radiator;");
-  db->getTuple();
-  
-  string RadiatorMaterialName = db->fetchString("material");
 
-  //----------------------------------------------------
   // Barrel
-  //----------------------------------------------------
-  BarrelRegularModules(WorldLog);
-  BarrelEndModules(WorldLog);
+  buildBarrelRegularModules(assembly);
+  buildBarrelEndModules(assembly);
   
-  //----------------------------------------------------
   // EndCap Modules
-  //----------------------------------------------------
-  Endcaps(WorldLog);
+  buildEndcaps(assembly);
+
+  motherVol.placeVolume(assembly);
 }
 
-
-
-//~              Barrel Regular Modules               ~
-void Hcal04::BarrelRegularModules(G4LogicalVolume* MotherLog)
-{
-  // Regular modules
-
-  db->exec("select bottom_dim_x/2 AS BHX,midle_dim_x/2. AS MHX, top_dim_x/2 AS THX, y_dim1_for_x/2. AS YX1H,y_dim2_for_x/2. AS YX2H,module_dim_z/2. AS DHZ from barrel_module,barrel_regular_module;");
-  db->getTuple();
-  double BottomDimY = db->fetchDouble("YX1H");
-  double chambers_y_off_correction = db->fetchDouble("YX2H");
-  
+/// Build and place Barrel Regular Modules
+void Hcal04::buildBarrelRegularModules(Volume parent)   {
   // Attention: on bâtit le module dans la verticale
   // à cause du G4Trd et on le tourne avant de le positioner
-  Trd   trdBottom(bottom_dim_x/2, midle_dim_x/2, module_dim_z/2, module_dim_z/2, y_dim1_for_x/2);
-  Trd   trdTop   (midle_dim_x/2,  top_dim_x/2,   module_dim_z/2, module_dim_z/2, y_dim2_for_x/2);
+  Trd trdBottom(barrel.bottom.x/2, barrel.middle.x/2,barrel.module.z/2, barrel.module.z/2, barrel.y1_for_x/2);
+  Trd trdTop   (barrel.middle.x/2, barrel.top.x/2,   barrel.module.z/2, barrel.module.z/2, barrel.y2_for_x/2);
 
-  UnionSolid modSolid (trdBottom, trdTop, Position(0,0,(y_dim1_for_x+y_dim2_for_x)/2.));
+  UnionSolid modSolid (trdBottom, trdTop, Position(0,0,(barrel.y1_for_x+barrel.y2_for_x)/2.));
   Volume     modVolume(name+"_module",modSolid,radiatorMat);
-  modVolume.setVosAttributes(moduleVis);
 
-  // Chambers in the Hcal Barrel 
-  BarrelRegularChambers(EnvLogHcalModuleBarrel,chambers_y_off_correction);
+  modVolume.setVisAttributes(moduleVis);
+  double chambers_y_off_correction = barrel.y2_for_x/2;
+  double bottomDimY = barrel.y1_for_x/2;
 
-  //   // BarrelStandardModule placements
-  db->exec("select stave_id,module_id,module_type,stave_phi_offset,inner_radius,module_z_offset from barrel,barrel_stave, barrel_module, barrel_modules where module_type = 1;"); //  un module: AND stave_id=1 AND module_id = 2
-  db->getTuple();
-  double Y;
-  Y = db->fetchDouble("inner_radius")+BottomDimY;
+  VisAttr chamberVis = lcdd.visAttributes("HcalChamberVis");
+  G4VisAttributes *VisAtt = new G4VisAttributes(G4Colour(.2,.8,.2));
+  VisAtt->SetForceWireframe(true);
 
-  do {
-    double phirot = db->fetchDouble("stave_phi_offset")*pi/180;
-    G4RotationMatrix *rot=new G4RotationMatrix();
-    rot->rotateX(pi*0.5); // on couche le module.
-    rot->rotateY(phirot);
-    new MyPlacement(rot,
-		    G4ThreeVector(-Y*sin(phirot),
-				  Y*cos(phirot),
-				  db->fetchDouble("module_z_offset")),
-		    EnvLogHcalModuleBarrel,
-		    "BarrelHcalModule",
-		    MotherLog,
-		    false,
-		    HCALBARREL*100+db->fetchInt("stave_id")*10+
-		    db->fetchInt("module_id"));
-    theBarrilRegSD->SetStaveRotationMatrix(db->fetchInt("stave_id"),phirot);
-    theBarrilRegSD->
-      SetModuleZOffset(db->fetchInt("module_id"),
-		       db->fetchDouble("module_z_offset"));
-  } while(db->getTuple()!=NULL);
+  G4UserLimits* pULimits=    new G4UserLimits(theMaxStepAllowed);
+
+  Material scint_mat = lcdd.material("polystyrene");
+  Volume chambers[2000];
+
+  double Xoff = 0;
+  double Yoff = x_module.offset();
+  for(Layers::const_iterator i=barrel_layers.begin(); i != barrel_layers.end(); ++i)  {
+    const Layer& layer = *i;
+    double thickness = layer.y/2;
+    Box  chamberBox(layer.x/2,tiickness.y/2,layer.z/2);
+    PlacedVolume pv;
+    Volume chamberVol;
+    if ( model == "scintillator")      {	
+      //fg: introduce (empty) fiber gap - should be filled with fibres and cables
+      Box    scintBox(layer.x/2,layer.z/2,(thickness - fiber_gap)/2);
+      Volume scintVol(nam+_toString(i,"_scint%d"),scintBox,scint_mat);
+      scintVol.setSensitiveDetector(barrelSensitiveDetector);
+      //scintVol.setAttributes(lcdd,"",x_slice.limitsStr(),x_slice.visStr());
+
+      //scintVol.setLimits(pULimits);
+      //scintVol->SetSensitiveDetector(theBarrilRegSD);
+
+      chamberVol = Volume(nam+_toString(i,"_chamber%d"),chamberBox,lcdd.air());
+      pv = chamberVol.placeVolume(scintVol,Position(0,0,-fiber_gap/2));
+    }
+    else if (model == "RPC1")	{
+      chamberVol = BuildRPC1Box(chamberBox,i);
+    }
+    else    {
+      throw runtime_error("Unknown sensitive model:"+model+" for detector hcal04");
+    }
+    chamberVol.setVisAttributes(chamberVis);
+    const Position& pos = layer.offset;
+    pv = parent.placeVolume(chamberVol,Position(pos.x,pos.z,pos.y+chambers_y_off_correction));
+    pv.addPhysVolID("layer",layer.id);
+  }   
 }
 
-void Hcal04::BarrelRegularChambers(G4LogicalVolume* MotherLog,double chambers_y_off_correction)
-{
+#if 0
+
+db->exec("select bottom_dim_x/2 AS BHX,midle_dim_x/2. AS MHX, top_dim_x/2 AS THX, y_dim1_for_x/2. AS YX1H,y_dim2_for_x/2. AS YX2H,module_dim_z/2. AS DHZ from barrel_module,barrel_regular_module;");
+db->getTuple();
+double BottomDimY = db->fetchDouble("YX1H");
+double chambers_y_off_correction = db->fetchDouble("YX2H");
+  
+
+// Chambers in the Hcal Barrel 
+BarrelRegularChambers(EnvLogHcalModuleBarrel,chambers_y_off_correction);
+
+//   // BarrelStandardModule placements
+db->exec("select stave_id,module_id,module_type,stave_phi_offset,inner_radius,module_z_offset from barrel,barrel_stave, barrel_module, barrel_modules where module_type = 1;"); //  un module: AND stave_id=1 AND module_id = 2
+db->getTuple();
+double Y;
+Y = db->fetchDouble("inner_radius")+barrel.y1_for_x/2;
+
+do {
+  double phirot = db->fetchDouble("stave_phi_offset")*pi/180;
+  G4RotationMatrix *rot=new G4RotationMatrix();
+  rot->rotateX(pi*0.5); // on couche le module.
+  rot->rotateY(phirot);
+  new MyPlacement(rot,
+		  G4ThreeVector(-Y*sin(phirot),
+				Y*cos(phirot),
+				db->fetchDouble("module_z_offset")),
+		  EnvLogHcalModuleBarrel,
+		  "BarrelHcalModule",
+		  MotherLog,
+		  false,
+		  HCALBARREL*100+db->fetchInt("stave_id")*10+
+		  db->fetchInt("module_id"));
+  theBarrilRegSD->SetStaveRotationMatrix(db->fetchInt("stave_id"),phirot);
+  theBarrilRegSD->
+    SetModuleZOffset(db->fetchInt("module_id"),
+		     db->fetchDouble("module_z_offset"));
+ } while(db->getTuple()!=NULL);
+}
+
+void Hcal04::BarrelRegularChambers(G4LogicalVolume* MotherLog,double chambers_y_off_correction)  {
   
   G4LogicalVolume * ChamberLog[200];
   G4Box * ChamberSolid;
@@ -234,8 +335,6 @@ void Hcal04::BarrelRegularChambers(G4LogicalVolume* MotherLog,double chambers_y_
 	       ((G4Box *)ChamberLog[layer_id]->GetSolid())->GetYHalfLength());    
   }
   helpBarrel.layerPos.push_back( db->fetchDouble("chamber_y_offset") + solidOfLog->GetZHalfLength() );
-#endif
-
 }
 }
 
@@ -515,11 +614,8 @@ void Hcal04::BarrelEndChambers(G4LogicalVolume* MotherLog,
 }
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //~              Endcaps                 ~
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-void Hcal04::Endcaps(G4LogicalVolume* MotherLog)
-{
+void Hcal04::Endcaps(G4LogicalVolume* MotherLog)   {
   db->exec("select module_radius AS pRMax, module_dim_z/2. AS pDz, center_box_size/2. AS pRMin from endcap_standard_module;");
   db->getTuple();
 
@@ -588,8 +684,7 @@ void Hcal04::Endcaps(G4LogicalVolume* MotherLog)
 		     fabs(Z1));
 }
 
-void Hcal04::EndcapChambers(G4LogicalVolume* MotherLog)
-{
+void Hcal04::EndcapChambers(G4LogicalVolume* MotherLog)    {
   // Chambers in the Hcal04::Endcaps
   // standard endcap chamber solid:
   db->exec("select chamber_radius AS pRMax, chamber_tickness/2. AS pDz, fiber_gap, center_box_size/2. AS pRMin from endcap_standard_module,hcal;");
@@ -609,80 +704,69 @@ void Hcal04::EndcapChambers(G4LogicalVolume* MotherLog)
   rInner[0]=rInner[1]=db->fetchDouble("pRMin");
   rOuter[0]=rOuter[1]=db->fetchDouble("pRMax");
 
-  G4Polyhedra *EndCapChamberSolid=
-    new G4Polyhedra("EndCapChamberSolid",
-		    phiStart,
-		    phiTotal,
-		    numSide,
-		    numZPlanes,
-		    zPlane,
-		    rInner,
-		    rOuter);
+  PolyHedraRegular hedra(2,endcap.rmin,endcap.rmax,endcap.z);
 		    
-  G4UserLimits* pULimits=
-    new G4UserLimits(theMaxStepAllowed);
-  
+  // G4UserLimits* pULimits=new G4UserLimits(theMaxStepAllowed);
   // standard endcap chamber logical
+
+
   G4LogicalVolume* EndCapChamberLogical=0;
 
-  if(SensitiveModel == "scintillator")
-    {
-      //fg: introduce (empty) fiber gap - should be filled with fibres and cables
-      // - so far we fill it  with air ...
-      EndCapChamberLogical =
-	new G4LogicalVolume(EndCapChamberSolid,
-			    CGAGeometryManager::GetMaterial("air"), 
-			    "EndCapChamberLogical", 
-			    0, 0, 0);
+  if(SensitiveModel == "scintillator")    {
+    //fg: introduce (empty) fiber gap - should be filled with fibres and cables
+    // - so far we fill it  with air ...
+    EndCapChamberLogical =
+      new G4LogicalVolume(EndCapChamberSolid,
+			  CGAGeometryManager::GetMaterial("air"), 
+			  "EndCapChamberLogical", 
+			  0, 0, 0);
 	   
-      double fiber_gap = db->fetchDouble("fiber_gap")  ;
-      double scintHalfWidth =  db->fetchDouble("pDz") - fiber_gap  / 2. ;
+    double fiber_gap = db->fetchDouble("fiber_gap")  ;
+    double scintHalfWidth =  db->fetchDouble("pDz") - fiber_gap  / 2. ;
 
-      // fiber gap can't be larger than total chamber
-      assert( scintHalfWidth > 0. ) ;
+    // fiber gap can't be larger than total chamber
+    assert( scintHalfWidth > 0. ) ;
 
 	   
-      double zPlaneScint[2];
-      zPlaneScint[0]=-scintHalfWidth ;
-      zPlaneScint[1]=-zPlaneScint[0];
+    double zPlaneScint[2];
+    zPlaneScint[0]=-scintHalfWidth ;
+    zPlaneScint[1]=-zPlaneScint[0];
 
-      G4Polyhedra *EndCapScintSolid=
-	new G4Polyhedra("EndCapScintSolid",
-			phiStart,
-			phiTotal,
-			numSide,
-			numZPlanes,
-			zPlaneScint,
-			rInner,
-			rOuter);
+    G4Polyhedra *EndCapScintSolid=
+      new G4Polyhedra("EndCapScintSolid",
+		      phiStart,
+		      phiTotal,
+		      numSide,
+		      numZPlanes,
+		      zPlaneScint,
+		      rInner,
+		      rOuter);
 
-      G4LogicalVolume* ScintLog =
-	new G4LogicalVolume(EndCapScintSolid,
-			    CGAGeometryManager::GetMaterial("polystyrene"),
-			    "EndCapScintLogical", 
-			    0, 0, pULimits);  
+    G4LogicalVolume* ScintLog =
+      new G4LogicalVolume(EndCapScintSolid,
+			  CGAGeometryManager::GetMaterial("polystyrene"),
+			  "EndCapScintLogical", 
+			  0, 0, pULimits);  
 	   
-      // only scinitllator is sensitive
-      ScintLog->SetSensitiveDetector(theENDCAPEndSD);
-      new MyPlacement(0, G4ThreeVector( 0,0,  - fiber_gap / 2.  ), ScintLog,
-		      "EndCapScintillator", EndCapChamberLogical, false, 0 );   
-    }
-  else 
-    if (SensitiveModel == "RPC1")
-      {
-	EndCapChamberLogical =
-	  BuildRPC1Polyhedra(EndCapChamberSolid,
-			     theENDCAPEndSD,
-			     phiStart,
-			     phiTotal,
-			     numSide,
-			     numZPlanes,
-			     zPlane,
-			     rInner,
-			     rOuter,
-			     pULimits);
-      }
-    else Control::Abort("Invalid sensitive model in the dababase!",MOKKA_ERROR_BAD_DATABASE_PARAMETERS);
+    // only scinitllator is sensitive
+    ScintLog->SetSensitiveDetector(theENDCAPEndSD);
+    new MyPlacement(0, G4ThreeVector( 0,0,  - fiber_gap / 2.  ), ScintLog,
+		    "EndCapScintillator", EndCapChamberLogical, false, 0 );   
+  }
+  else     if (SensitiveModel == "RPC1")      {
+    EndCapChamberLogical =
+      BuildRPC1Polyhedra(EndCapChamberSolid,
+			 theENDCAPEndSD,
+			 phiStart,
+			 phiTotal,
+			 numSide,
+			 numZPlanes,
+			 zPlane,
+			 rInner,
+			 rOuter,
+			 pULimits);
+  }
+  else Control::Abort("Invalid sensitive model in the dababase!",MOKKA_ERROR_BAD_DATABASE_PARAMETERS);
   
   G4VisAttributes *VisAtt = new G4VisAttributes(G4Colour(1.,1.,1.));
   EndCapChamberLogical->SetVisAttributes(VisAtt);
@@ -709,61 +793,73 @@ void Hcal04::EndcapChambers(G4LogicalVolume* MotherLog)
   }  
 }
 
+
 G4LogicalVolume * 
-Hcal04::BuildRPC1Box(Box box, 
-		     SD* theSD, 
-		     G4int layer_id,
-		     G4UserLimits* pULimits)
+Hcal04::BuildRPC1Polyhedra(G4Polyhedra* ChamberSolid, 
+			   SD* theSD,
+			   double phiStart,
+			   double phiTotal,
+			   G4int numSide,
+			   G4int numZPlanes,
+			   const double zPlane[],
+			   const double rInner[],
+			   const double rOuter[],
+			   G4UserLimits* pULimits)
 {
   // fill the Chamber Envelope with G10
-  Volume vol(name+"_rpc",box,lcdd.material("G10"));
-	     
-  // build the RPC glass !!attention!! y<->z
-  Box    glassBox(box.x(),box.y(),glass_thickness/2.0);
-  Volume glassVol(name+"_rpcGlass",glassBox,lcdd.material("pyrex"));
+  G4LogicalVolume *ChamberLog =
+    new G4LogicalVolume(ChamberSolid,
+			CGAGeometryManager::GetMaterial("g10"),
+			"RPC1", 
+			0, 0, 0);
+  //
+  // build the RPC glass 
+      
+  double NewZPlane[2];
+  NewZPlane[0] = glass_thickness/2.;
+  NewZPlane[1] = -NewZPlane[0];
 
+  G4Polyhedra * GlassSolid =
+    new G4Polyhedra("RPC1Glass", 
+		    phiStart,
+		    phiTotal,
+		    numSide,
+		    numZPlanes,
+		    NewZPlane,
+		    rInner,
+		    rOuter);	
+      
+  G4LogicalVolume *GlassLogical =
+    new G4LogicalVolume(GlassSolid,
+			CGAGeometryManager::GetMaterial("pyrex"),
+			"RPC1glass", 
+			0, 0, 0);
       
   G4VisAttributes * VisAtt = new G4VisAttributes(G4Colour(.8,0,.2));
   VisAtt->SetForceWireframe(true);
   //VisAtt->SetForceSolid(true);
   GlassLogical->SetVisAttributes(VisAtt);
-      
-  //
-  // build the standard spacer
-  //!!attention!! y<->z
-  G4Box * SpacerSolid =
-    new G4Box("RPC1Spacer", 
-	      ChamberSolid->GetXHalfLength(),
-	      spacer_thickness/2.,
-	      gas_thickness/2.);
-      
-  G4LogicalVolume *SpacerLogical =
-    new G4LogicalVolume(SpacerSolid,
-			CGAGeometryManager::GetMaterial("g10"),
-			"RPC1Spacer", 
-			0, 0, 0);
-
-  VisAtt = new G4VisAttributes(G4Colour(1,1.1));
-  VisAtt->SetForceWireframe(true);
-  //VisAtt->SetForceSolid(true);
-  SpacerLogical->SetVisAttributes(VisAtt);
 
   //
   // build the gas gap
   //
-  G4Box * GasSolid =
-    new G4Box("RPC1Gas", 
-	      ChamberSolid->GetXHalfLength(),
-	      ChamberSolid->GetYHalfLength(),
-	      gas_thickness/2.);
+  NewZPlane[0] = gas_thickness/2.;
+  NewZPlane[1] = -NewZPlane[0];
+  G4Polyhedra * GasSolid =
+    new G4Polyhedra("RPC1Gas", 
+		    phiStart,
+		    phiTotal,
+		    numSide,
+		    numZPlanes,
+		    NewZPlane,
+		    rInner,
+		    rOuter);
       
   G4LogicalVolume *GasLogical =
     new G4LogicalVolume(GasSolid,
 			CGAGeometryManager::GetMaterial("RPCGAS1"),
 			"RPC1gas", 
-			0, 
-			0, 
-			pULimits);
+			0, 0, pULimits);
       
   VisAtt = new G4VisAttributes(G4Colour(.1,0,.8));
   VisAtt->SetForceWireframe(true);
@@ -772,31 +868,12 @@ Hcal04::BuildRPC1Box(Box box,
 
   // PLugs the sensitive detector HERE!
   GasLogical->SetSensitiveDetector(theSD);
-      
-  // placing the spacers inside the gas gap
-  double NextY = 
-    - ChamberSolid->GetYHalfLength() + spacer_thickness/2.;
-  while ( NextY < ChamberSolid->GetYHalfLength()-spacer_thickness/2.)
-    {
-      new MyPlacement(0,
-		      G4ThreeVector(0,
-				    NextY,
-				    0),
-		      SpacerLogical,
-		      "RPCSpacer",
-		      GasLogical,
-		      false,
-		      0);
-      NextY += spacer_gap;
-    }
-
   // placing the all. 
   // ZOffset starts pointing to the chamber border.
-  double ZOffset = - ChamberSolid->GetZHalfLength();
-
-  // first glass border after the g10_thickness
+  double ZOffset = zPlane[0];
+      
+  // first glass after the g10_thickness
   ZOffset += g10_thickness + glass_thickness/2.;
-
   new MyPlacement(0,
 		  G4ThreeVector(0,
 				0,
@@ -812,7 +889,6 @@ Hcal04::BuildRPC1Box(Box box,
       
   // gas gap placing 
   ZOffset += gas_thickness/2.; // center !
-
   new MyPlacement(0,
 		  G4ThreeVector(0,
 				0,
@@ -821,14 +897,14 @@ Hcal04::BuildRPC1Box(Box box,
 		  "RPCGas",
 		  ChamberLog,
 		  false,
-		  layer_id);   // layer_id is set up here!
-      
+		  0);
+
   // set ZOffset to the next gas gap border
   ZOffset += gas_thickness/2.;
       
-  // second glass.
+  // second glass, after the g10_thickness, the first glass
+  // and the gas gap.
   ZOffset += glass_thickness/2.; // center !
-
   new MyPlacement(0,
 		  G4ThreeVector(0,
 				0,
@@ -838,150 +914,72 @@ Hcal04::BuildRPC1Box(Box box,
 		  ChamberLog,
 		  false,
 		  0);
-  return ChamberLog;
+  return ChamberLog;      
 }
 
-Control::Abort("Hcal04::BuildRPC1Box: invalid ChamberSolidEnvelope",MOKKA_OTHER_ERRORS);
-return NULL;
-}
+#endif
 
-G4LogicalVolume * 
-Hcal04::BuildRPC1Polyhedra(G4Polyhedra* ChamberSolid, 
-			   SD* theSD,
-			   double phiStart,
-			   double phiTotal,
-			   G4int numSide,
-			   G4int numZPlanes,
-			   const double zPlane[],
-			   const double rInner[],
-			   const double rOuter[],
-			   G4UserLimits* pULimits)
+/// Build Box with RPC1 chamber
+Volume Hcal04::buildRPC1Box(Box box, int layer_id) {
+  //		     SD* theSD, 
+  //		     G4UserLimits* pULimits)
 {
-  if(ChamberSolid->GetEntityType()=="G4Polyhedra")
-    {
-      // fill the Chamber Envelope with G10
-      G4LogicalVolume *ChamberLog =
-	new G4LogicalVolume(ChamberSolid,
-			    CGAGeometryManager::GetMaterial("g10"),
-			    "RPC1", 
-			    0, 0, 0);
-      //
-      // build the RPC glass 
-      
-      double NewZPlane[2];
-      NewZPlane[0] = glass_thickness/2.;
-      NewZPlane[1] = -NewZPlane[0];
+  double glass_thickness = x_glass.thickness();
+  double spacer_thickness = ;
+  double gas_thickness = ;
+  string nam = x_det.name();
+  Material g10_mat = lcdd.material("G10");
 
-      G4Polyhedra * GlassSolid =
-	new G4Polyhedra("RPC1Glass", 
-			phiStart,
-			phiTotal,
-			numSide,
-			numZPlanes,
-			NewZPlane,
-			rInner,
-			rOuter);	
-      
-      G4LogicalVolume *GlassLogical =
-	new G4LogicalVolume(GlassSolid,
-			    CGAGeometryManager::GetMaterial("pyrex"),
-			    "RPC1glass", 
-			    0, 0, 0);
-      
-      G4VisAttributes * VisAtt = new G4VisAttributes(G4Colour(.8,0,.2));
-      VisAtt->SetForceWireframe(true);
-      //VisAtt->SetForceSolid(true);
-      GlassLogical->SetVisAttributes(VisAtt);
+  // fill the Chamber Envelope with G10
+  Volume chamberVol(name+"_rpc",box,g10_mat);
+	     
+  // build the RPC glass !!attention!! y<->z
+  Box    glassBox(box.x(),box.y(),glass_thickness/2.0);
+  Volume glassVol(nam+"_RPC_glass",glassBox,lcdd.material("pyrex"));
+  glassVol.setVisAttributes(lcdd.visAttributes("HcalRpcGlassVis"));
 
-      //
-      // build the gas gap
-      //
-      NewZPlane[0] = gas_thickness/2.;
-      NewZPlane[1] = -NewZPlane[0];
-      G4Polyhedra * GasSolid =
-	new G4Polyhedra("RPC1Gas", 
-			phiStart,
-			phiTotal,
-			numSide,
-			numZPlanes,
-			NewZPlane,
-			rInner,
-			rOuter);
-      
-      G4LogicalVolume *GasLogical =
-	new G4LogicalVolume(GasSolid,
-			    CGAGeometryManager::GetMaterial("RPCGAS1"),
-			    "RPC1gas", 
-			    0, 0, pULimits);
-      
-      VisAtt = new G4VisAttributes(G4Colour(.1,0,.8));
-      VisAtt->SetForceWireframe(true);
-      //VisAtt->SetForceSolid(true);
-      GasLogical->SetVisAttributes(VisAtt);
+  // build the standard spacer !!attention!! y<->z
+  Box    spacerBox(box.x(),spacer_thickness/2,gas_thickness/2);
+  Volume spacerVol(nam+"_spacer",spacerBox,g10_mat);
+  spacerVol.setVisAttributes(lcdd.visAttributes("HcalRpcSpacerVis"));
 
-      // PLugs the sensitive detector HERE!
-      GasLogical->SetSensitiveDetector(theSD);
+  Box    gasBox(box.x(),box.y(),gas_thickness/2.0);
+  Volume gasVol(nam+"_RPC_glass",glassBox,lcdd.material("RPCGAS1"));
+  gasVol.setVisAttributes(lcdd.visAttributes("HcalRpcGasVis"));
 
-      //
-#ifdef MOKKA_GEAR
-      // get heighth of sensible part of layer for each layer
-      helpEndcap.sensThickness.push_back( gas_thickness ) ;
-      helpEndcap.gapThickness.push_back( spacer_thickness ) ;
-#endif
+  // PLugs the sensitive detector HERE!
+  // gasVol->SetSensitiveDetector(theSD);
       
-      // placing the all. 
-      // ZOffset starts pointing to the chamber border.
-      double ZOffset = zPlane[0];
-      
-      // first glass after the g10_thickness
-      ZOffset += g10_thickness + glass_thickness/2.;
-      new MyPlacement(0,
-		      G4ThreeVector(0,
-				    0,
-				    ZOffset),
-		      GlassLogical,
-		      "RPCGlass",
-		      ChamberLog,
-		      false,
-		      0);
-      
-      // set ZOffset to the next first glass border
-      ZOffset += glass_thickness/2.;
-      
-      // gas gap placing 
-      ZOffset += gas_thickness/2.; // center !
-      new MyPlacement(0,
-		      G4ThreeVector(0,
-				    0,
-				    ZOffset),
-		      GasLogical,
-		      "RPCGas",
-		      ChamberLog,
-		      false,
-		      0);
+  // placing the spacers inside the gas gap
+  double MaxY  =  box.y()-spacer_thickness/2;
+  for(double ypos=-box.y() + spacer_thickness/2; yypos < MaxY; ypos += spacer_gap)
+    gasVol.placeVolume(spacerVol,Position(0,NextY,0));
 
-      // set ZOffset to the next gas gap border
-      ZOffset += gas_thickness/2.;
-      
-      // second glass, after the g10_thickness, the first glass
-      // and the gas gap.
-      ZOffset += glass_thickness/2.; // center !
-      new MyPlacement(0,
-		      G4ThreeVector(0,
-				    0,
-				    ZOffset),
-		      GlassLogical,
-		      "RPCGlass",
-		      ChamberLog,
-		      false,
-		      0);
-      return ChamberLog;      
-    }
-  Control::Abort("Hcal04::BuildRPC1Polyhedra: invalid ChamberSolidEnvelope",MOKKA_OTHER_ERRORS);
-  return NULL;  
-#endif
-  lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  // placing the all. ZOffset starts pointing to the chamber border.
+  double zpos = -box.z();
+
+  // first glass border after the g10_thickness
+  zpos += g10_thickness + glass_thickness/2.;
+  chamberVol.placeVolume(glassVol,Position(0,0,zpos));
+
+  // set zpos to the next first glass border + gas gap placing 
+  zpos += glass_thickness/2. + gas_thickness/2.;
+  PlacedVolume pv  = chamberVol.placeVolume(gasVol,Position(0,0,zpos));
+  pv.addPhysVolID("layer",layer_id);
+
+  // set zpos to the next gas gap border + second glass
+  zpos += gas_thickness/2. + glass_thickness/2.;
+  pv  = chamberVol.placeVolume(glassVol,Position(0,0,zpos));
+  return chamberVol;
+}
+
+static Ref_t create(LCDD& lcdd, const xml_h& elt, SensitiveDetector& sens)  {
+  xml_det_t   x_det = e;
+  DetElement  sdet;
+  Value<TNamed,Hcal04>* ptr = new Value<TNamed,Hcal04>();
+  sdet.assign(ptr,x_det.nameStr(),x_det.typeStr());
+  ptr->construct(lcdd,e,sens);
   return sdet;
 }
-
-DECLARE_DETELEMENT(Tesla_hcal04,create_element);
+DECLARE_DETELEMENT(Tesla_hcal04,create);
+#endif
