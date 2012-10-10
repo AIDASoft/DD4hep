@@ -1,4 +1,3 @@
-#if 0
 // $Id:$
 //====================================================================
 //  AIDA Detector description implementation for LCD
@@ -23,7 +22,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_comp_t  x_tube (x_det.child(_X(tubs)));
   string      name  = x_det.nameStr();
   Material    mat    (lcdd.material(x_det.materialStr()));
-  DetElement    tpc  (name,x_det.typeStr(),x_det.id());
+  DetElement  tpc    (name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
  
@@ -110,4 +109,3 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
 //first argument is the type from the xml file
 DECLARE_DETELEMENT(TPCPrototype,create_element)
-#endif

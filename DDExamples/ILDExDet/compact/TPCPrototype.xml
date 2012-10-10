@@ -31,6 +31,8 @@
 
         <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0"/>
         <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0"/>
+        <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
+        <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
     </define>
 
     <materials>
