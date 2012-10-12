@@ -137,14 +137,13 @@ namespace {
 #define N_FIBERS_W_STRUCTURE 2
 
 ECAL::ECAL(LCDD& l, const xml_det_t& e, SensitiveDetector& s)
-  : DetElement(e.nameStr(), e.id()), lcdd(l), x_det(e), x_barrel(0), x_endcap(0), x_support(0), x_front(0), x_shield(0), sens_det(s)
+  : DetElement(e.nameStr(), e.id()), lcdd(l), x_det(e), x_barrel(0), 
+    x_endcap(0), x_support(0), x_front(0), x_shield(0), sens_det(s)
 {
-
-  // EC_Initialize() builds the Slabs and the 
-  // radiator plates for the several towers 
+  // EC_Initialize() builds the Slabs and the radiator plates for the several towers 
   // to be placed latter into each module
-  Volume motherVol = lcdd.pickMotherVolume(*this);
   string det_nam = name();
+  Volume motherVol = lcdd.pickMotherVolume(*this);
   /*
     <detector id="<id>" name="<name>" type="<type>"
       inner_r="TPC_outer_radius+Ecal_Tpc_gap"
@@ -782,10 +781,8 @@ Volume ECAL::buildBarrelStave(const Barrel_t& barrel) {
   return barrelVol;
 }
 
-
-static Ref_t 
-create_element(LCDD& lcdd, const xml_h& elt, SensitiveDetector& sens)  {
+static Ref_t create(LCDD& lcdd, const xml_h& elt, SensitiveDetector& sens)  {
   ECAL ecal(lcdd,elt,sens);
   return ecal;
 }
-DECLARE_DETELEMENT(Tesla_SEcal03,create_element);
+DECLARE_DETELEMENT(Tesla_SEcal03,create);

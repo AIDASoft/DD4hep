@@ -215,6 +215,8 @@
       <vis name="EcalSlabGroundVis"    alpha="1.0" r="0"    g="0"   b="1"       drawingStyle="wireframe"                       visible="true"/>
       <vis name="EcalSlabSensitiveVis" alpha="1.0" r=".5"   g=".5"  b=".5"      drawingStyle="solid"                           visible="true"/>
 
+      <vis name="HcalVis"              alpha="1.0" r="0.8"  g="0.8" b="0.2"     drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalChamberVis"       alpha="1.0" r="0.2"  g="0.8" b="0.2"     drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="HcalRpcGasVis"        alpha="1.0" r="0.1"  g="0"   b="0.8"     drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="HcalRpcGlassVis"      alpha="1.0" r="0.8"  g="0"   b="0"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="HcalRpcSpacerVis"     alpha="1.0" r="1"    g="1"   b="1"       drawingStyle="solid"     showDaughters="true"  visible="true"/>

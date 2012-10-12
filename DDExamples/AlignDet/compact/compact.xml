@@ -40,43 +40,14 @@
     <vis name="B2_vis" alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
   </display>
   
-  <detectors>
-    <comment>Boxes</comment>
-
-    <!--detector id="1" name="B1" type="BoxSegment" vis="B1_vis">
-      <comment>Horizontal box</comment>
-      <material name="Steel235"/>
-      <box      x="20"   y="0.1" z="5"/>
-      <position x="20"   y="10"  z="10"/>
-      <rotation x="1"    y="0"   z="0"/>
-    </detector>
-    <detector id="2" name="B2" type="BoxSegment" vis="B2_vis">
-      <comment>Vertical box</comment>
-      <material name="Steel235"/>
-      <box      x="0.1" y="20"   z="5"/>
-      <position x="0"   y="30"   z="10"/>
-      <rotation x="0"   y="0"    z="0"/>
-    </detector-->
-    
+  <!-- detectors>
     <comment>Library</comment>
     <detector id="1" name="S1" type="Shelf" >
       <material name="Steel235"/>
       <planes number="2"  x="11*cm" y="2*cm" dy="50*cm" z="40*cm" vis="B1_vis" />
       <books number="10"  x="10*cm" y="15*cm" z="3*cm" dz="0.2*cm" vis="B2_vis"/>
     </detector>
-
-    <limits>
-        <limitset name="cal_limits">
-            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
-        </limitset>
-    </limits>
-
-    <display>
-        <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
-        <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
-        <vis name="B1_vis" alpha="1.0" r="1" g="0" b="0" showDaughters="true" visible="true"/>
-        <vis name="B2_vis" alpha="1.0" r="0" g="1" b="0" showDaughters="true" visible="true"/>
-    </display>
+  </detectors -->
 
     <detectors>
         <comment>Boxes</comment>
@@ -99,12 +70,13 @@
 
     <alignments>
         <alignment name="/world_volume_1/B1_vol_0" shortcut="Box1">
-<!--
             <position x="0"   y="0"    z="0"/>
-            <position x="20"   y="10"  z="10"/>
--->
+            <rotation x="0.5"   y="0"  z="0"/>
+
+<!--
             <position x="-20" y="-10"  z="-5"/>
             <rotation x="0"   y="0"    z="0"/>
+-->
         </alignment>
     </alignments>
 
