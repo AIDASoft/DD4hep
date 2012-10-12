@@ -75,19 +75,19 @@ double DD4hep::Geometry::_toDouble(const string& value)   {
   return result;
 }
 
-template <> int    _multiply<int>(const string& left, const string& right) {
+template <> int    DD4hep::Geometry::_multiply<int>(const string& left, const string& right) {
   return (int)_toDouble(left+"*"+right);
 }
 
-template <> long   _multiply<long>(const string& left, const string& right) {
+template <> long   DD4hep::Geometry::_multiply<long>(const string& left, const string& right) {
   return (long)_toDouble(left+"*"+right);
 }
 
-template <> float  _multiply<float>(const string& left, const string& right) {
+template <> float  DD4hep::Geometry::_multiply<float>(const string& left, const string& right) {
   return _toFloat(left+"*"+right);
 }
 
-template <> double _multiply<double>(const string& left, const string& right) {
+template <> double DD4hep::Geometry::_multiply<double>(const string& left, const string& right) {
   return _toDouble(left+"*"+right);
 }
 

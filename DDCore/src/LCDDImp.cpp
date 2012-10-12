@@ -49,6 +49,9 @@ LCDDImp::LCDDImp() : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_f
   m_properties = new Properties();
   if ( 0 == gGeoManager ) {
     gGeoManager = new TGeoManager();
+    gGeoManager->AddNavigator();
+    gGeoManager->SetCurrentNavigator(0);
+    cout << "Navigator:" << (void*)gGeoManager->GetCurrentNavigator() << endl;
   }
 }
 
@@ -156,7 +159,7 @@ void LCDDImp::endDocument()  {
 
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
-    gGeoManager->SetTopVolume(m_worldVol);
+    //gGeoManager->SetTopVolume(m_worldVol);
     mgr->CloseGeometry();
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
     ShapePatcher(m_world)();
@@ -181,6 +184,7 @@ void LCDDImp::init()  {
     m_materialVacuum = material("Vacuum");
     m_detectors.append(m_world);
     m_world.add(m_trackers);
+    gGeoManager->SetTopVolume(m_worldVol);
   }
 }
 
