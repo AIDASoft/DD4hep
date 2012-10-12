@@ -142,8 +142,8 @@ namespace DD4hep {
 	  x *= len;
 	  y *= len;
 	  z *= len;
-	  return *this;
 	}
+	return *this;
       }
       /// Rotates the position vector around the x-axis.
       Position& rotateX(double angle_in_rad);

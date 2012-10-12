@@ -400,6 +400,16 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double phi_start, double rmin, do
   _setDimensions(&params[0]);
 }
 
+/// Constructor to be used when creating a new object. Rotation is the identity rotation
+SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)
+{
+  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
+  TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,0,second);
+  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
+  comp->ComputeBBox();
+  _assign( comp, "", "subtraction");
+}
+
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
@@ -431,6 +441,16 @@ SubtractionSolid::SubtractionSolid(const string& name, const Solid& shape1, cons
 }
 
 /// Constructor to be used when creating a new object
+UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)
+{
+  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
+  TGeoUnion* sub = new TGeoUnion(shape1,shape2,0,second);
+  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
+  comp->ComputeBBox();
+  _assign( comp, "", "union");
+}
+
+/// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
@@ -458,6 +478,16 @@ UnionSolid::UnionSolid(const string& name, const Solid& shape1, const Solid& sha
   TGeoCompositeShape* comp = new TGeoCompositeShape(name.c_str(),sub);
   comp->ComputeBBox();
   _assign( comp, "", "union");
+}
+
+/// Constructor to be used when creating a new object
+IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)    {
+  //TGeoCombiTrans*   second = pos.x*pos.x+pos.y*pos.y+pos.z*pos.z > 0 ? new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0) : 0;
+  TGeoCombiTrans*   second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
+  TGeoIntersection*    sub = new TGeoIntersection(shape1,shape2,0,second);
+  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
+  comp->ComputeBBox();
+  _assign( comp, "", "intersection");
 }
 
 /// Constructor to be used when creating a new object

@@ -458,6 +458,8 @@ namespace DD4hep {
     struct SubtractionSolid : public BooleanSolid  {
       /// Constructor to be used when reading the already parsed object
       template<typename Q> SubtractionSolid(const Handle<Q>& e) : BooleanSolid(e) {}
+       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
+      SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
       SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
        /// Constructor to be used when creating a new object
@@ -472,6 +474,8 @@ namespace DD4hep {
     struct UnionSolid : public BooleanSolid  {
       /// Constructor to be used when reading the already parsed object
       template<typename Q> UnionSolid(const Handle<Q>& e) : BooleanSolid(e) {}
+      /// Constructor to be used when creating a new object. Rotation is identity-rotation!
+      UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
       UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
       /// Constructor to be used when creating a new object
@@ -486,6 +490,8 @@ namespace DD4hep {
     struct IntersectionSolid : public BooleanSolid  {
       /// Constructor to be used when reading the already parsed object
       template<typename Q> IntersectionSolid(const Handle<Q>& e) : BooleanSolid(e) {}
+      /// Constructor to be used when creating a new object. Rotation is identity-rotation!
+      IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
       IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
       /// Constructor to be used when creating a new object
