@@ -86,3 +86,20 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
 ------------
 
   Users may extend the models by changing the compact description or adding new drivers
+
+
+4) Running the examples
+-----------------------
+
+- ILDExDet example with the example detectors
+  DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
+
+- ILDExDet example with Astrid's prototype TPC
+  DDExamples/ILDExDisplay/ILDExDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/TPCPrototype.xml
+
+- ILDExDet example with the LDC00_01Sc detector (under construction)
+  DDExamples/ILDExDisplay/ILDExDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/Tesla.xml
+
+- CLICSid example with all SiD sub-detectors
+  DDExamples/CLICSiDDisplay/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml 
+
