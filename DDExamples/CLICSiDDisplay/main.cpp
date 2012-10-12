@@ -28,7 +28,6 @@ Geometry::LCDD& compact2geo(int argc, char **argv)  {
   Geometry::LCDD& lcdd = Geometry::LCDD::getInstance();  
   cout << argc << " Input file : " << input << endl;
   lcdd.fromCompact(input);
-  lcdd.dump();
   return lcdd;
 }
 
@@ -45,9 +44,10 @@ int run_interpreter(int argc, char **argv)   {
   TRint *theApp = new TRint("Rint", &r_argc, r_argv);
   
   Geometry::LCDD& lcdd = compact2geo((int)args.size(),&args[0]);
-  for(size_t j=1; j<args.size(); ++j)
+  for(size_t j=1; j<args.size()-1; ++j)
     compact2geo((int)(args.size()-j),&args[j]);
 
+  lcdd.dump();
   //TGDMLWrite wr;
   //wr.WriteGDMLfile(gGeoManager,"ILCEx.gdml","");
 
@@ -58,7 +58,5 @@ int run_interpreter(int argc, char **argv)   {
 }
 
 int main(int argc,char** argv)  {
-  //return read_compact();
-  //return compact2lcdd();
   return run_interpreter(argc,argv);
 }
