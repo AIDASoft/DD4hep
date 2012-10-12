@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include 
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
                      ${CMAKE_SOURCE_DIR}/DDCore/include 
                      ${ROOT_INCLUDE_DIR})
 
@@ -16,6 +16,8 @@ endif()
 if(DD4HEP_USE_PYROOT)
   ROOT_GENERATE_DICTIONARY(G__ILDEx ${headers} LINKDEF include/ROOT/LinkDef.h)
   list(APPEND sources G__ILDEx.cxx)
+  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/VersatileDiskRowLayoutSeg.cpp)
+  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/VersatileDiskRowLayout.cpp)
 endif()
 
 add_library(ILDEx SHARED ${sources})

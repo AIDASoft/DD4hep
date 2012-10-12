@@ -204,6 +204,11 @@ Cone& Cone::setDimensions(double z,double rmin1,double rmax1,double rmin2,double
 }
 
 /// Constructor to be used when creating a new object
+Trapezoid::Trapezoid()  {
+  _assign(new TGeoTrd2(0,0,0,0,0),"","trd2");
+}
+
+/// Constructor to be used when creating a new object
 Trapezoid::Trapezoid(const string& name)  {
   _assign(new TGeoTrd2(0,0,0,0,0),name,"trd2");
 }
