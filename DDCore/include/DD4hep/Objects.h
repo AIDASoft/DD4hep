@@ -103,6 +103,8 @@ namespace DD4hep {
 #ifdef _WIN32
 #pragma pack(push,DD4Hep_Objects_Position,1)
 #define DD4HEP_BYTE_ALIGN(x) x
+#elif defined(__CINT__)
+#define DD4HEP_BYTE_ALIGN(x) x
 #else
 #define DD4HEP_BYTE_ALIGN(x) x __attribute__((__packed__))
 #endif
@@ -135,15 +137,20 @@ namespace DD4hep {
 
       /// Position length
       double length() const                           { return sqrt(x*x + y*y + z*z);      }
-      Position& setLength(double new_length) { 
-	double len=length();
-	if ( len>std::numeric_limits<double>::epsilon() ) {
-	  len = new_length/len;
-	  x *= len;
-	  y *= len;
-	  z *= len;
-	}
-	return *this;
+      Position& setLength(double new_length) {
+	      double len=length();
+	      if ( len>std::numeric_limits<double>::epsilon() ) {
+	        len = new_length/len;
+          x *= len;
+          y *= len;
+          z *= len;
+        }
+        else {
+          x = 0;
+          y = 0;
+          z = 0;
+        }
+        return *this;
       }
       /// Rotates the position vector around the x-axis.
       Position& rotateX(double angle_in_rad);

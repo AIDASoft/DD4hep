@@ -95,37 +95,38 @@ namespace {
       GeoHandler::Data& data = *m_data;
       string nam;
       for(GeoHandler::Data::const_reverse_iterator i=data.rbegin(); i != data.rend(); ++i)   {
-	const GeoHandler::Data::mapped_type& v = (*i).second;
-	for(GeoHandler::Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {
-	  const TGeoNode* n = *j;
-	  TGeoVolume* v = n->GetVolume();
-	  TGeoShape*  s = v->GetShape();
-	  if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
-	    nam = v->GetName();
-	    nam += "_shape";
-	    s->SetName(nam.c_str());
-	  }
-	  else {
-	    nam = s->GetName();
-	  }
-	  if ( s->IsA()->Class() == TGeoCompositeShape::Class() ) {
-	    TGeoCompositeShape* c = (TGeoCompositeShape*)s;
-	    const TGeoBoolNode* boolean = c->GetBoolNode();
-	    s = boolean->GetLeftShape();
-	    if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
-	      nam = v->GetName();
-	      nam += "_left";
-	      s->SetName(nam.c_str());
-	    }
-	    s = boolean->GetRightShape();
-	    if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
-	      nam = v->GetName();
-	      nam += "_right";
-	      s->SetName(nam.c_str());
-	    }
-	  }
-	}
-      }  
+        const GeoHandler::Data::mapped_type& v = (*i).second;
+        for(GeoHandler::Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {
+          const TGeoNode* n = *j;
+          TGeoVolume* v = n->GetVolume();
+          TGeoShape*  s = v->GetShape();
+          if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+            nam = v->GetName();
+            nam += "_shape";
+            s->SetName(nam.c_str());
+          }
+          else {
+            nam = s->GetName();
+          }
+          if ( s->IsA()->Class() == TGeoCompositeShape::Class() ) {
+            TGeoCompositeShape* c = (TGeoCompositeShape*)s;
+            const TGeoBoolNode* boolean = c->GetBoolNode();
+            s = boolean->GetLeftShape();
+            if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+              nam = v->GetName();
+              nam += "_left";
+              s->SetName(nam.c_str());
+            }
+            s = boolean->GetRightShape();
+            if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+              nam = v->GetName();
+              nam += "_right";
+              s->SetName(nam.c_str());
+            }
+          }
+        }
+      }
+      return *this;
     }
   };
 }
