@@ -91,6 +91,13 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
 4) Running the examples
 -----------------------
 
+Here are a few command lines for running examples
+Do not forget to set for Geant4:  
+G4SYS = Geant4_ROOT_DIR
+export G4LEDATA=${G4SYS}/share/Geant4-9.5.1/data/G4EMLOW6.23
+export G4LEVELGAMMADATA=${G4SYS}/share/Geant4-9.5.1/data/PhotonEvaporation2.2
+
+
 - ILDExDet example with the example detectors
   DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
 
