@@ -103,3 +103,5 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
 - CLICSid example with all SiD sub-detectors
   DDExamples/CLICSiDDisplay/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml 
 
+- Geant4 example with SiD (careful, need to set Geant4 variables in addition)
+./DDExamples/CLICSiDSimu/CLICSiDSimu file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml file:../DD4hep/DDExamples/CLICSiD/compact/sensitive_detectors.xml 

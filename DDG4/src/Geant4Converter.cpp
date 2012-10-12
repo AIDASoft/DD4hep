@@ -75,6 +75,7 @@ using namespace DD4hep;
 using namespace std;
 
 namespace {
+  static TGeoNode* s_topPtr;
   static string indent = "";
   struct MyTransform3D : public G4Transform3D {
     MyTransform3D(double XX, double XY, double XZ, double DX,
@@ -403,12 +404,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
   G4GeometryInfo& info = data();  
   G4PVPlacement* g4    = info.g4Placements[node];
   if ( !g4 )   {
-    TGeoMatrix* trafo = node->GetMatrix();
+    TGeoMatrix*      trafo = node->GetMatrix();
+    int              copy  = node->GetNumber();
+    G4LogicalVolume* vol   = info.g4Volumes[node->GetVolume()];
+    G4LogicalVolume* mot   = info.g4Volumes[node->GetMotherVolume()];
     if ( trafo ) {
       const Double_t*  trans = trafo->GetTranslation();
-      int              copy  = node->GetNumber();
-      G4LogicalVolume* vol   = info.g4Volumes[node->GetVolume()];
-      G4LogicalVolume* mot   = info.g4Volumes[node->GetMotherVolume()];
       const Value<TGeoNodeMatrix,PlacedVolume::Object>* obj = 
 	dynamic_cast<const Value<TGeoNodeMatrix,PlacedVolume::Object>* >(node);
       if ( 0 == vol ) {
@@ -439,6 +440,19 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 			       m_checkOverlaps);
       }
       data().g4Placements[node] = g4;
+    }
+    else if ( node == s_topPtr )  {
+      G4ThreeVector pos(0,0,0);
+      g4 = new G4PVPlacement(0,         // no rotation
+			     pos,       // translation position
+			     vol,       // its logical volume
+			     name,      // its name
+			     mot,       // its mother (logical) volume
+			     false,     // no boolean operations
+			     copy,      // its copy number
+			     m_checkOverlaps);
+      data().g4Placements[node] = g4;
+      cout << "Attempt to convert TOP Detector node failed." << endl;
     }
   }
   else {
@@ -674,8 +688,13 @@ void Geant4Converter::create(DetElement top) {
   G4GeometryInfo& geo = *(m_dataPtr=new G4GeometryInfo);
   m_data->clear();
   collect(top,geo);
-
+  s_topPtr = top.placement().ptr();
   m_checkOverlaps = false;
+
+  // Ensure that all required materials are present in the Geant4 material table
+  const LCDD::HandleMap& mat = lcdd.materials();
+  for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
+    geo.materials.insert((TGeoMedium*)(*i).second.ptr());
 
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
