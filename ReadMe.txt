@@ -94,6 +94,12 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
 - ILDExDet example with the example detectors
   DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
 
+- Run Geant4 with ILDExDet detector
+  DDExamples/CLICSiDSimu/CLICSiDSimu   \
+     file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml  \
+     file:../DD4hep/DDExamples/ILDExDet/compact/geant4.xml \
+     ../DD4hep/DDExamples/ILDExSimu/run1.mac 
+
 - ILDExDet example with Astrid's prototype TPC
   DDExamples/ILDExDisplay/ILDExDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/TPCPrototype.xml
 
@@ -104,4 +110,7 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
   DDExamples/CLICSiDDisplay/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml 
 
 - Geant4 example with SiD (careful, need to set Geant4 variables in addition)
-./DDExamples/CLICSiDSimu/CLICSiDSimu file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml file:../DD4hep/DDExamples/CLICSiD/compact/sensitive_detectors.xml 
+  DDExamples/CLICSiDSimu/CLICSiDSimu   \
+     file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml             \
+     file:../DD4hep/DDExamples/CLICSiD/compact/sensitive_detectors.xml \
+     ../DD4hep/DDExamples/CLICSiDSimu/run.mac 
