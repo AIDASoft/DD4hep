@@ -1,6 +1,6 @@
 #-------------------------------------------------------------------------------------      
 def detector_ILDExVXD(lcdd, det):
-  vdx = DetElement(lcdd, det.name, det.type, det.id)
+  vdx = DetElement(det.name, det.type, det.id)
   mother = lcdd.worldVolume()
   for layer in det.findall('layer'):
     support = layer.find('support')
@@ -13,16 +13,16 @@ def detector_ILDExVXD(lcdd, det):
     supp_radius = ladder.radius + sens_thick/2. + supp_thick/2.
     width       = 2.*tan(dphi/2.)*(ladder.radius-sens_thick/2.)
     
-    ladderbox = Box(lcdd, layername+'_ladder_box',  (sens_thick+supp_thick)/2., width/2., ladder.zhalf)
-    laddervol = Volume(lcdd, layername+'_ladder', ladderbox, lcdd.material('Air'))
+    ladderbox = Box(layername+'_ladder_box',  (sens_thick+supp_thick)/2., width/2., ladder.zhalf)
+    laddervol = Volume(layername+'_ladder', ladderbox, lcdd.material('Air'))
     
-    sensbox   = Box(lcdd, layername+'_sens_box', sens_thick/2., width/2., ladder.zhalf)
-    sensvol   = Volume(lcdd, layername+'_sens', sensbox, lcdd.material(ladder.material))
+    sensbox   = Box(layername+'_sens_box', sens_thick/2., width/2., ladder.zhalf)
+    sensvol   = Volume(layername+'_sens', sensbox, lcdd.material(ladder.material))
     sensvol.setVisAttributes(lcdd.visAttributes(layer.vis))
     laddervol.placeVolume(sensvol, Position(-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0))
     
-    suppbox   = Box(lcdd, layername+'_supp_box', supp_thick/2.,width/2.,ladder.zhalf)
-    suppvol   = Volume(lcdd,layername+'_supp', suppbox, lcdd.material(support.material))
+    suppbox   = Box(layername+'_supp_box', supp_thick/2.,width/2.,ladder.zhalf)
+    suppvol   = Volume(layername+'_supp', suppbox, lcdd.material(support.material))
     suppvol.setVisAttributes(lcdd.visAttributes(support.vis))
     laddervol.placeVolume(suppvol, Position(-(sens_thick+supp_thick)/2.+sens_thick/2.+supp_thick/2.,0,0))
     

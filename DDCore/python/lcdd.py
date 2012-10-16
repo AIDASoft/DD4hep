@@ -127,10 +127,10 @@ def process_xmlfile(lcdd, file):
   current_xmlfile = last_xmlfile
 
 #--------------------------------------------------------------------------------
-def fromCompact(xmlfile):
+def fromXML(xmlfile):
   print 'Converting Compact file: ', xmlfile
   lcdd = LCDD.getInstance()
-  lcdd.create()
+  #lcdd.create()
   process_xmlfile(lcdd, xmlfile)
   return lcdd
 
@@ -160,7 +160,7 @@ def process_info(lcdd, elem):
 def process_define(lcdd, elem):
   for c in elem.findall('constant'):
     #print 'Adding constant ...', c.get('name')
-    lcdd.addConstant(Constant(lcdd, c.get('name'),c.get('value')))
+    lcdd.addConstant(Constant(c.get('name'),c.get('value')))
     _toDictionary(c.get('name'),c.get('value')) #-- Make it known to the evaluator
     constants[c.get('name')] = c.getF('value')
 
@@ -235,7 +235,7 @@ def process_material(lcdd, m):
 def process_display(lcdd, elem):
   for v in elem.findall('vis'):
     #print 'Adding vis ...', v.name
-    visattr = VisAttr(lcdd, v.name)
+    visattr = VisAttr(v.name)
     r,g,b = 1.,1.,1.
     if 'r' in v.keys() : r = v.getF('r')    
     if 'g' in v.keys() : g = v.getF('g')
