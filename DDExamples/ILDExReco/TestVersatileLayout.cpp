@@ -54,33 +54,27 @@ int main(int argc,char** argv)  {
     }
 
   TPCModule mod=mymods[0];
-  //rows
-  for(int r=0;r<mod.getNRows();r++)
+ //rows
+//   for(int r=0;r<mod.getNRows();r++)
+//     {
+//       //pads
+//       for(int p=0;p<mod.getNPadsInRow(r);p++)
+// 	{
+// 	  std::vector<double> center=mod.getPadCenter(mod.getPadIndex(r,p));
+// 	  double x=center[0];
+// 	  double y=center[1];
+// 	  // cout<<r<<" "<<p<<" "<<x<<","<<y <<" "<<mod.getPadIndex(r,p)<<" "<<mod.getNearestPad(x,y)<<endl;
+// 	  if(mod.getPadIndex(r,p)!=mod.getNearestPad(x,y))
+// 	    cout<<"FAILED: "<<mod.getPadIndex(r,p)<<" "<<mod.getNearestPad(x,y)<<endl;
+// 	}
+//     }
+  for(int p=0;p<10;p++)
     {
-      //pads
-      for(int p=0;p<mod.getNPadsInRow(r);p++)
-	{
-	  double x=mod.getPadCenter(mod.getPadIndex(r,p))[0];
-	  double y=mod.getPadCenter(mod.getPadIndex(r,p))[1];
-	  cout<<r<<" "<<p<<" "<<x<<","<<y <<" "<<mod.getPadIndex(r,p)<<" "<<mod.getNearestPad(x,y)<<" "<<mod.getPadIndex(r,p)-mod.getNearestPad(x,y)<<endl;
-	}
+      double x=0;
+      double y=220+10*p;
+      int index=  mod.getNearestPad(x,y);
+      std::vector<double> center= mod.getPadCenter(index);
+      cout<<x-center[0]<<" "<<y-center[1]<<endl;
     }
-
-//   cout<<"getNPadsInRow: "<< mod.getNPadsInRow(0)<<" "<< mod.getNPadsInRow(mod.getNRows()-1)<<endl;
-//   cout<<"getRowHeight: "<< mod.getRowHeight(0)<<" "<< mod.getRowHeight(mod.getNRows()-1)<<endl;
-//   int padindex_min=mod.getPadIndex(0,0);
-//   int padindex_max=mod.getPadIndex(mod.getNRows()-1,mod.getNPadsInRow(mod.getNRows()-1)-1);
-//   cout<<"pad index :"<<padindex_min<<" =(0,0)"<<padindex_max<<" =("<<mod.getNRows()-1<<","<<mod.getNPadsInRow(mod.getNRows()-1)-1<<")"<<endl;
-//   cout<<"Row nr: "<<  mod.getRowNumber(padindex_min)<<" "<< mod.getRowNumber(padindex_max)<<endl;
-//   cout<<"Pad nr: "<<  mod.getPadNumber(padindex_min)<<" "<< mod.getPadNumber(padindex_max)<<endl;
-//   cout<<"Pad pitch: "<<  mod.getPadPitch(padindex_min)<<" "<< mod.getPadPitch(padindex_max)<<endl;
-//   cout<<"Pad center: "<<mod.getPadCenter(padindex_min)[0]<<","<<mod.getPadCenter(padindex_min)[1]<<"  "<<mod.getPadCenter(padindex_max)[0]<<","<<mod.getPadCenter(padindex_max)[1]<<endl;
-//   int nearest_index1=mod.getNearestPad(mod.getPadCenter(padindex_min)[0],mod.getPadCenter(padindex_min)[1]);
-//   cout<<"Nearest Pad ("<<padindex_min<<"): "<< nearest_index1<<" "<<mod.getRowNumber(nearest_index1)<<" "<<mod.getPadNumber(nearest_index1)<<endl;
-//   int nearest_index2=mod.getNearestPad(mod.getPadCenter(padindex_max)[0],mod.getPadCenter(padindex_max)[1]);
-//   cout<<"Nearest Pad: ("<<padindex_max<<"): "<< nearest_index2<<" "<<mod.getRowNumber(nearest_index2)<<" "<<mod.getPadNumber(nearest_index2)<<endl;
- 
- 
- 
   return 0;
 }

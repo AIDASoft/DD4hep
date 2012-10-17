@@ -106,11 +106,11 @@
     <readouts>
        <readout name="PadLayout0">
         <segmentation type="VersatileDiskRowLayoutSeg" rmin="202">
-         <row nPads="20" padPitch="30" rowHeight="20"  offset="0" RowID="0"> </row>
-         <row nPads="20" padPitch="30" rowHeight="20"  offset="2" RowID="1"></row>
-	 <row nPads="20" padPitch="30" rowHeight="20"  offset="0" RowID="2"></row>
-	 <row nPads="20" padPitch="30" rowHeight="20"  offset="5" RowID="3"></row>
-	 <row nPads="20" padPitch="30" rowHeight="20"  offset="0" RowID="4"></row>
+         <row nPads="2000" padPitch="3" rowHeight="20"  offset="0" RowID="0"> </row>
+         <row nPads="2000" padPitch="3" rowHeight="20"  offset="2" RowID="1"></row>
+	 <row nPads="2000" padPitch="3" rowHeight="20"  offset="0" RowID="2"></row>
+	 <row nPads="2000" padPitch="3" rowHeight="20"  offset="5" RowID="3"></row>
+	 <row nPads="2000" padPitch="3" rowHeight="20"  offset="0" RowID="4"></row>
    </segmentation>      
          <id>system:6</id>
         </readout>

@@ -137,7 +137,7 @@ namespace DD4hep {
     double r = row._rCentre;
     double phi_mm = row._offset + (static_cast<double>(padNum) + 0.5) * row._padPitch;
     double phi=phi_mm/r;
-    
+   
     //local center coordinates in module system
     double pad_x = r*cos(phi);//*M_PI/180.);
     double pad_y = r*sin(phi);//*M_PI/180.);
@@ -145,7 +145,7 @@ namespace DD4hep {
     //trafo to global coordinates
     Position global_w, local(pad_x,pad_y,0); 
     module.localToWorld(local,global_w);
-   
+    //cout<<"getPadCenter: "<<r<<" "<<phi_mm<<" "<<phi<<" local: "<<pad_x<<"  "<<pad_y<<"  global: "<<global_w.x<<","<<global_w.y<<endl;
     vector<double> center;
     center.push_back(global_w.x);
     center.push_back(global_w.y);
@@ -188,8 +188,8 @@ namespace DD4hep {
     double r= padData->_rows[row]._rCentre;
     double pad_width=padData->_rows[row]._padPitch;
     double angle=atan2(point_local[1],point_local[0]);
-
-    int padNr=static_cast<int>((angle*r-padData->_rows[row]._offset)/pad_width-0.5);
+    //cout<<"getNearestPad: "<<r<<" "<<angle*r-padData->_rows[row]._offset<<" "<<angle<<" local: "<<local.x<<"  "<<local.y<<"  global: "<<global.x<<","<<global.y<<endl;
+    int padNr=static_cast<int>((angle*r-padData->_rows[row]._offset)/pad_width);
     //outside active area of the module
     if(padNr>=getNPadsInRow(row))
       padNr=getNPadsInRow(row)-1;
