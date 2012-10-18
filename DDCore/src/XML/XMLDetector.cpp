@@ -1,5 +1,4 @@
 #include "XML/XMLDetector.h"
-#include "xercesc/dom/DOM.hpp"
 
 using namespace std;
 using namespace DD4hep::XML;
@@ -17,17 +16,17 @@ double Dimension::z() const  {
 }
 
 double Dimension::x(double default_val) const  {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_x);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_x);
   return val ? _toDouble(val) : default_val;
 }
 
 double Dimension::y(double default_val) const  {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_y);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_y);
   return val ? _toDouble(val) : default_val;
 }
 
 double Dimension::z(double default_val) const  {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_z);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_z);
   return val ? _toDouble(val) : default_val;
 }
 
@@ -96,7 +95,7 @@ bool   Dimension::reflect() const  {
 }
 
 bool Dimension::reflect(bool default_value) const {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_reflect);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_reflect);
   return val ? _toBool(val) : default_value;
 }
 
@@ -118,6 +117,14 @@ double Dimension::length() const  {
 
 double Dimension::width() const  {
   return m_element.attr<double>(Attr_width);
+}
+
+double Dimension::height() const  {
+  return m_element.attr<double>(Attr_height);
+}
+
+double Dimension::depth() const  {
+  return m_element.attr<double>(Attr_depth);
 }
 
 int Dimension::numsides() const  {
@@ -149,7 +156,7 @@ double Dimension::radius() const {
 }
 
 double Dimension::offset(double default_value) const {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_offset);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_offset);
   return val ? _toDouble(val) : default_value;
 }
 
@@ -214,7 +221,7 @@ double Dimension::phi0() const {
 }
 
 double Dimension::phi0(double default_value) const {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_phi0);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_phi0);
   return val ? _toDouble(val) : default_value;
 }
 
@@ -247,7 +254,7 @@ double Dimension::dz()  const {
 }
 
 double Dimension::dz(double default_value) const {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_dz);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_dz);
   return val ? _toDouble(val) : default_value;
 }
 
@@ -256,7 +263,7 @@ double Dimension::r()  const {
 }
 
 double Dimension::r(double default_value) const {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_r);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_r);
   return val ? _toDouble(val) : default_value;
 }
 
@@ -293,7 +300,7 @@ int DetElement::Component::id()  const  {
 }
 
 int DetElement::Component::id(int default_value)  const  {
-  const XMLCh* val = m_element.attr_value_nothrow(Attr_id);
+  const XmlChar* val = m_element.attr_value_nothrow(Attr_id);
   return val ? _toInt(val) : default_value;
 }
 
@@ -344,8 +351,7 @@ Dimension DetElement::Component::dimensions()  const  {
 }
 
 int DetElement::id() const   {
-  Attribute a = m_element.attr_nothrow(Attr_id);
-  return a ? m_element.attr<int>(Attr_id) : -1;
+  return m_element.hasAttr(Attr_id) ? m_element.attr<int>(Attr_id) : -1;
 }
 
 string DetElement::nameStr() const   {
@@ -365,7 +371,7 @@ Dimension DetElement::dimensions()  const  {
 }
 
 string DetElement::materialStr() const  {
-  Handle_t   h = m_element.child(Tag_material);
+  Handle_t h = m_element.child(Tag_material);
   if ( h && h.hasAttr(Attr_name) )  {
     return h.attr<string>(Attr_name);
   }

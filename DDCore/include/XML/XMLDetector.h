@@ -11,7 +11,6 @@
 
 // Framework include files
 #include "XML/XMLTags.h"
-#include "XML/XMLElements.h"
 
 /*
  *   DD4hep namespace declaration
@@ -23,46 +22,97 @@ namespace DD4hep {
   */
   namespace XML  {
 
+
+    /** @class Dimension XMLDetector.h XML/XMLDetector.h
+     * 
+     *  Helper class to access any field in a xml tag in a 
+     *  very easy way.
+     *  - You may assign any xml handle to a dimension object
+     *  - Any attribute of this xml element may then be accessed
+     *    by it's natural way. All possible attribute names are
+     *    reflected by the Dimmension object's member functions.
+     *  - If an attribute is requested and not present, a exception
+     *    is thrown.
+     *  - Functions, which accept a default value do NOT throw 
+     *    an exception if the attribute is not present. These
+     *    rather return the default value.
+     *  - If a often used function is not present - the 
+     *    implementation thereof is simple.
+     *  
+     *  @author  M.Frank
+     *  @version 1.0
+     */
     struct Dimension : public Element  {
+      /// Default constructor
       Dimension() : Element(Handle_t(0)) {}
+      /// Constructor from Handle
       Dimension(Handle_t e) : Element(e) {}
+      /// Constructor from Element
       Dimension(const Element& e) : Element(e) {}
-      // Rotation:
+
+      /// Access rotation constants: theta
       double theta() const;
+      /// Access rotation constants: phi
       double phi() const;
+      /// Access rotation constants: psi
       double psi() const;
 
-      // Box/Position:
+      /// Access Box/Position parameters: x
       double x() const;
+      /// Access Box/Position parameters: y
       double y() const;
+      /// Access Box/Position parameters: z
       double z() const;
 
-      // Functions return defaults rather than throwing exceptions
+      /// Access Box/Position parameters: x, if not present returns default
       double x(double default_val) const;
+      /// Access Box/Position parameters: y, if not present returns default
       double y(double default_val) const;
+      /// Access Box/Position parameters: z, if not present returns default
       double z(double default_val) const;
 
-      // Trapezoid:
+      /// Access Trapezoid parameters: x1
       double x1() const;
+      /// Access Trapezoid parameters: x2
       double x2() const;
+      /// Access Trapezoid parameters: y1
       double y1() const;
+      /// Access Trapezoid parameters: y2
       double y2() const;
-      // Tube
+
+      /// Access Tube parameters: rmin
       double rmin() const;
+      /// Access Tube parameters: rmax
       double rmax() const;
+      /// Access Tube parameters: zhalf
       double zhalf() const;
+      /// Access Tube parameters: deltaphi
       double deltaphi() const;
 
+      /// Access attribute values: outer_radius
       double outer_radius() const;
+      /// Access attribute values: outer_r
       double outer_r() const;
+      /// Access attribute values: outer_z
       double outer_z() const;
+      /// Access attribute values: inner_radius
       double inner_radius() const;
+      /// Access attribute values: inner_r
       double inner_r() const;
+      /// Access attribute values: inner_z
       double inner_z() const;
 
+      /// Access attribute values: z_length
       double z_length() const;
+      /// Access attribute values: length
       double length() const;
+      /// Access attribute values: width
       double width() const;
+      /// Access attribute values: height
+      double height() const;
+      /// Access attribute values: depth
+      double depth() const;
+
       double gap() const;
       double r_size() const;
       double phi_size_max() const;
@@ -149,7 +199,7 @@ namespace DD4hep {
       bool isCalorimeter() const;
       bool isInsideTrackingVolume() const;
       void check(bool condition, const std::string& msg) const;
-      template <typename T> T attr(const XMLCh* tag) const { return m_element.attr<T>(tag); }
+      template <typename T> T attr(const XmlChar* tag) const { return m_element.attr<T>(tag); }
     };
   }
 }         /* End namespace DD4hep       */

@@ -160,6 +160,8 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_end;
   extern const Tag_t Attr_width;
   extern const Tag_t Attr_length;
+  extern const Tag_t Attr_height;
+  extern const Tag_t Attr_depth;
   extern const Tag_t Attr_z_length;
   extern const Tag_t Attr_line_style;
   extern const Tag_t Attr_drawing_style;

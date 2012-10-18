@@ -215,7 +215,7 @@ void LCDDImp::fromXML(const string& xmlfile) {
     cout << "Exception:" << e.what() << endl;
     throw runtime_error("Exception:"+string(e.what())+" while parsing "+xmlfile);
   }
-  catch(xercesc::DOMException& e)  {
+  catch(const XML::XmlException& e)  {
     cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
     throw runtime_error("XML-DOM Exception:"+XML::_toString(e.msg)+" while parsing "+xmlfile);
   } 

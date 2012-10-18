@@ -6,13 +6,15 @@
 //  Author     : M.Frank
 //
 //====================================================================
+
+// Framework includes
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/FieldTypes.h"
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
-#include "xercesc/util/XMLURL.hpp"
 
+// Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
 #include "Reflex/PluginService.h"
@@ -27,7 +29,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-namespace DD4hep { 
+namespace DD4hep {
   namespace Geometry {
     struct Compact;
     struct Includes;
@@ -670,21 +672,17 @@ template <> void Converter<DetElement>::operator()(const xml_h& element)  const 
   
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<GdmlFile>::operator()(const xml_h& element)  const  {
-  xercesc::XMLURL base(element.ptr()->getBaseURI());
-  xercesc::XMLURL ref(base, element.attr_value(_A(ref)));
-  xml_h materials = XML::DocumentHandler().load(_toString(ref.getURLText())).root();
+  xml_h materials = XML::DocumentHandler().load(element,element.attr_value(_A(ref))).root();
   xml_coll_t(materials,_X(element) ).for_each(Converter<Atom>(this->lcdd));
   xml_coll_t(materials,_X(material)).for_each(Converter<Material>(this->lcdd));
 }
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<AlignmentFile>::operator()(const xml_h& element)  const  {
-  xercesc::XMLURL base(element.ptr()->getBaseURI());
-  xercesc::XMLURL ref(base, element.attr_value(_A(ref)));
-  xml_h alignments = XML::DocumentHandler().load(_toString(ref.getURLText())).root();
+  xml_h alignments = XML::DocumentHandler().load(element,element.attr_value(_A(ref))).root();
   xml_coll_t(alignments,_X(alignment)).for_each(Converter<AlignmentEntry>(this->lcdd));
 }
-  
+
 template <> void Converter<Compact>::operator()(const xml_h& element)  const  {
   xml_elt_t compact(element);
   xml_coll_t(compact,_X(includes)    ).for_each(_X(gdmlFile), Converter<GdmlFile>(lcdd));
@@ -716,4 +714,6 @@ template Converter<LimitSet>;
 template Converter<Material>;
 template Converter<DetElement>;
 template Converter<AlignmentEntry>;
+template Converter<SensitiveDetector>;
+template Converter<CartesianField>;
 #endif

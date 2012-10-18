@@ -1,37 +1,81 @@
+// $Id:$
+//====================================================================
+//  AIDA Detector description implementation
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+
+// Framework include files
 #include "XML/XMLElements.h"
 #include "XML/Evaluator.h"
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/dom/DOM.hpp"
 
+// C/C++ include files
 #include <iostream>
 #include <stdexcept>
 
 using namespace std;
 using namespace DD4hep::XML;
-using xercesc::DOMNode;
-using xercesc::DOMNodeList;
-using xercesc::DOMElement;
-using xercesc::DOMDocument;
-using xercesc::XMLString;
-using xercesc::DOMNamedNodeMap;
 
+// Forward declarations
 namespace DD4hep  {
   XmlTools::Evaluator& evaluator();
 }
 
+// Static storage
 namespace {
   XmlTools::Evaluator& eval(DD4hep::evaluator());
 }
+#define INVALID_NODE ~0x0
 
-string DD4hep::XML::_toString(const XMLCh *toTranscode)  {
-  char *buff = XMLString::transcode(toTranscode);
+#ifdef __TIXML__
+#define ELEMENT_NODE_TYPE XmlNode::ELEMENT
+namespace {
+  Attribute    attribute_node(XmlElement* n, const XmlChar* t)       {  return n->AttributeNode(t);               }
+  const XmlChar* attribute_value(Attribute a)                        {  return a->Value();                        }
+  int          node_type(XmlNode* n)                                 {  return n->Type();                         }
+  XmlElement*  node_first(XmlElement* e, const XmlChar* t)           {  return e ? e->FirstChildElement(t) : 0;   }
+  size_t       node_count(XmlElement* e, const XmlChar* t) {
+    size_t cnt = 0;
+    for(e=e->FirstChildElement(t);e; e=e->NextSiblingElement(t)) ++cnt;
+    return cnt;
+  }
+}
+XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c)         {  return c ? ::strdup(c) : 0;               }
+XmlChar* DD4hep::XML::XmlString::transcode(const char* c)            {  return c ? ::strdup(c) : 0;               }
+void     DD4hep::XML::XmlString::release(XmlChar** p)                {  if(p && *p) { ::free(*p); *p=0;}          }
+
+#else
+
+#define ELEMENT_NODE_TYPE XmlNode::ELEMENT_NODE
+#include "xercesc/dom/DOM.hpp"
+namespace {
+  Attribute    attribute_node(XmlElement* n, const XmlChar* t)      {  return n->getAttributeNode(t);             }
+  const XmlChar* attribute_value(Attribute a)                       {  return a->getValue();                      }
+  int          node_type(XmlNode* n)                                {  return n->getNodeType();                   }
+  size_t       node_count(XmlElement* e, const XmlChar* t) {
+    XmlNodeList* l = e ? e->getElementsByTagName(t) : 0;
+    return l ? l->getLength() : INVALID_NODE; 
+  }
+  XmlElement*  node_first(XmlElement* e, const XmlChar* t) {
+    XmlNodeList* l = e ? e->getElementsByTagName(t) : 0;
+    return (XmlElement*)(l ? l->item(0) : 0);
+  }
+}
+#endif
+
+#ifndef __TIXML__
+string DD4hep::XML::_toString(const XmlChar *toTranscode)  {
+  char *buff = XmlString::transcode(toTranscode);
   string tmp(buff==0 ? "" : buff);
-  XMLString::release(&buff);
+  XmlString::release(&buff);
   return tmp;
 }
+#endif
 
 string DD4hep::XML::_toString(Attribute attr)  {
-  if ( attr ) return _toString(attr->getValue());
+  if ( attr ) return _toString(attribute_value(attr));
   return "";
 }
 
@@ -41,13 +85,28 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
   return text;
 }
 
-string DD4hep::XML::_toString(int v,          const char* fmt)  { return __to_string(v,fmt); }
+/// Do-nothing version. Present for completeness and argument interchangeability
+std::string DD4hep::XML::_toString(const char* s)               { return string(s ? s : ""); }
+
+/// Do-nothing version. Present for completeness and argument interchangeability
+std::string DD4hep::XML::_toString(const std::string& s)        { return s;                  }
+
+/// Format unsigned long integer to string with atrbitrary format
 string DD4hep::XML::_toString(unsigned long v,const char* fmt)  { return __to_string(v,fmt); }
+
+/// Format unsigned integer (32 bits) to string with atrbitrary format
 string DD4hep::XML::_toString(unsigned int v, const char* fmt)  { return __to_string(v,fmt); }
+
+/// Format signed integer (32 bits) to string with atrbitrary format
+string DD4hep::XML::_toString(int v,          const char* fmt)  { return __to_string(v,fmt); }
+
+/// Format single procision float number (32 bits) to string with atrbitrary format
 string DD4hep::XML::_toString(float  v,       const char* fmt)  { return __to_string(v,fmt); }
+
+/// Format double procision float number (64 bits) to string with atrbitrary format
 string DD4hep::XML::_toString(double v,       const char* fmt)  { return __to_string(v,fmt); }
 
-int DD4hep::XML::_toInt(const XMLCh* value)  {
+int DD4hep::XML::_toInt(const XmlChar* value)  {
   if ( value )  {
     string s = _toString(value);
     /*
@@ -73,7 +132,7 @@ int DD4hep::XML::_toInt(const XMLCh* value)  {
   return -1;
 }
 
-bool   DD4hep::XML::_toBool(const XMLCh* value)   {
+bool   DD4hep::XML::_toBool(const XmlChar* value)   {
   if ( value )  {
     string s = _toString(value);
     return s == "true";
@@ -81,7 +140,7 @@ bool   DD4hep::XML::_toBool(const XMLCh* value)   {
   return false;
 }
 
-float DD4hep::XML::_toFloat(const XMLCh* value)   {
+float DD4hep::XML::_toFloat(const XmlChar* value)   {
   if ( value )  {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
@@ -95,7 +154,7 @@ float DD4hep::XML::_toFloat(const XMLCh* value)   {
   return 0.0;
 }
 
-double DD4hep::XML::_toDouble(const XMLCh* value)   {
+double DD4hep::XML::_toDouble(const XmlChar* value)   {
   if ( value )  {
     string s = _toString(value);
     double result = eval.evaluate(s.c_str());
@@ -108,16 +167,7 @@ double DD4hep::XML::_toDouble(const XMLCh* value)   {
   return 0.0;
 }
 
-namespace DD4hep { namespace XML {
-  Strng_t operator+(const XMLCh* a,       const Strng_t& b);
-  Strng_t operator+(const Strng_t& a,     const XMLCh* b);
-  Strng_t operator+(const Strng_t& a,     const string& b);
-  Strng_t operator+(const Strng_t& a,     const Strng_t& b);
-  Strng_t operator+(const Strng_t& a,     const string& b);
-  Strng_t operator+(const string& a, const Strng_t& b);
-}}
-
-void DD4hep::XML::_toDictionary(const XMLCh* name, const XMLCh* value)  {
+void DD4hep::XML::_toDictionary(const XmlChar* name, const XmlChar* value)  {
   string n=_toString(name).c_str(), v=_toString(value);
   size_t idx = v.find("(int)");
   if ( idx != string::npos ) 
@@ -137,18 +187,6 @@ static inline string i_add(const string& a, B b)  {
   r += b;
   return r;
 }
-
-Strng_t DD4hep::XML::operator+(const Strng_t& a,     const XMLCh* b)
-{  return _toString(a.ptr()) + _toString(b);                      }
-
-Strng_t DD4hep::XML::operator+(const XMLCh* a,       const Strng_t& b)
-{  return _toString(a) + _toString(b.ptr());                      }
-
-Strng_t DD4hep::XML::operator+(const XMLCh* a,       const string& b)
-{  return _toString(a) + b;                                       }
-
-Strng_t DD4hep::XML::operator+(const string& a, const XMLCh* b)
-{  return a + _toString(b);                                       }
 
 Strng_t DD4hep::XML::operator+(const Strng_t& a,     const string& b)  
 {  return _toString(a.ptr()) + b;                                  }
@@ -171,45 +209,64 @@ Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const char* b)
 Tag_t   DD4hep::XML::operator+(const char* a,        const Tag_t& b)
 {  return a + b.str();                                              }
 
-Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const XMLCh* b) 
-{  return a.str() + _toString(b);                                   }
-
 Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const Strng_t& b)
 {  return a.str() + _toString(b);                                   }
 
 Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const string& b)  
 {  return a.str() + b;                                              }
 
+#ifndef __TIXML__
+Strng_t DD4hep::XML::operator+(const Strng_t& a,     const XmlChar* b)
+{  return _toString(a.ptr()) + _toString(b);                      }
+
+Strng_t DD4hep::XML::operator+(const XmlChar* a,       const Strng_t& b)
+{  return _toString(a) + _toString(b.ptr());                      }
+
+Strng_t DD4hep::XML::operator+(const XmlChar* a,       const string& b)
+{  return _toString(a) + b;                                       }
+
+Strng_t DD4hep::XML::operator+(const string& a, const XmlChar* b)
+{  return a + _toString(b);                                       }
+
+Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const XmlChar* b) 
+{  return a.str() + _toString(b);                                   }
+
+Strng_t& Strng_t::operator=(const XmlChar* s)   {
+  if (m_xml) XmlString::release(&m_xml);
+  m_xml = s ? XmlString::replicate(s) : 0;
+  return *this;
+}
+#endif
 
 Strng_t& Strng_t::operator=(const char* s)   {
-  if (m_xml) xercesc::XMLString::release(&m_xml);
-  m_xml = s ? xercesc::XMLString::transcode(s) : 0;
+  if (m_xml) XmlString::release(&m_xml);
+  m_xml = s ? XmlString::transcode(s) : 0;
   return *this;
 }
 
 Strng_t& Strng_t::operator=(const Strng_t& s)   {
-  if (m_xml) xercesc::XMLString::release(&m_xml);
-  m_xml = xercesc::XMLString::replicate(s.m_xml);
+  if (m_xml) XmlString::release(&m_xml);
+  m_xml = XmlString::replicate(s.m_xml);
   return *this;
 }
 
 Strng_t& Strng_t::operator=(const string& s)   {
-  if (m_xml) xercesc::XMLString::release(&m_xml);
-  m_xml = xercesc::XMLString::transcode(s.c_str());
+  if (m_xml) XmlString::release(&m_xml);
+  m_xml = XmlString::transcode(s.c_str());
   return *this;
 }
 
 Tag_t& Tag_t::operator=(const Tag_t& s)  {
   m_str = s.m_str;
-  if (m_xml) xercesc::XMLString::release(&m_xml);
-  m_xml = xercesc::XMLString::transcode(m_str.c_str());
+  if (m_xml) XmlString::release(&m_xml);
+  m_xml = XmlString::transcode(m_str.c_str());
   return *this;
 }
 
 Tag_t& Tag_t::operator=(const char* s) {
-  if (m_xml) xercesc::XMLString::release(&m_xml);
+  if (m_xml) XmlString::release(&m_xml);
   if ( s )  {
-    m_xml=xercesc::XMLString::transcode(s);
+    m_xml=XmlString::transcode(s);
     m_str = s;
   }
   else {
@@ -220,40 +277,144 @@ Tag_t& Tag_t::operator=(const char* s) {
 }
 
 Tag_t& Tag_t::operator=(const Strng_t& s)  {
-  if (m_xml) xercesc::XMLString::release(&m_xml);
-  m_str = s.m_xml ? xercesc::XMLString::transcode(s.m_xml) : "";
-  m_xml = xercesc::XMLString::transcode(m_str.c_str());
+  if (m_xml) XmlString::release(&m_xml);
+  m_str = s.m_xml ? XmlString::transcode(s.m_xml) : "";
+  m_xml = XmlString::transcode(m_str.c_str());
   return *this;
 }
 
 Tag_t& Tag_t::operator=(const string& s) {
-  if (m_xml) xercesc::XMLString::release(&m_xml);
-  m_xml = xercesc::XMLString::transcode(s.c_str());
+  if (m_xml) XmlString::release(&m_xml);
+  m_xml = XmlString::transcode(s.c_str());
   m_str = s;
   return *this;
 }
 
+/// Copy constructor
+NodeList::NodeList(const NodeList& l)
+  : m_node(l.m_node), m_ptr(0)
+#ifndef __TIXML__
+, m_index(0)
+#endif
+{
+  m_tag  = XmlString::replicate(l.m_tag);
+  reset();
+}
+
+/// Initializing constructor
+NodeList::NodeList(XmlElement* node, const XmlChar* tag)
+  : m_node(node), m_ptr(0)
+#ifndef __TIXML__
+, m_index(0)
+#endif
+{
+  m_tag = XmlString::replicate(tag);
+  reset();
+}
+
+/// Default destructor
+NodeList::~NodeList()    {
+  if ( m_tag ) XmlString::release(&m_tag);
+}
+
+/// Reset the nodelist
+XmlElement* NodeList::reset() {
+#ifdef __TIXML__
+  return m_ptr=node_first(m_node,m_tag);
+#else
+  m_ptr = m_node->getElementsByTagName(m_tag);
+  return (XmlElement*)m_ptr->item(m_index=0);
+#endif
+}
+
+/// Advance to next element
+XmlElement* NodeList::next()  const {
+#ifdef __TIXML__
+  return m_ptr=(m_ptr ? m_ptr->NextSiblingElement(m_tag) : 0);
+#else
+  return (XmlElement*)m_ptr->item(++m_index);
+#endif
+}
+
+/// Go back to previous element
+XmlElement* NodeList::previous()  const {
+#ifdef __TIXML__
+  return m_ptr=(m_ptr ? m_ptr->PreviousSiblingElement(m_tag) : 0);
+#else
+  return (XmlElement*)(m_index>0 ? m_ptr->item(--m_index) : 0);
+#endif
+}
+
+/// Assignment operator
+NodeList& NodeList::operator=(const NodeList& l) {
+  if ( m_tag ) XmlString::release(&m_tag);
+  m_tag = XmlString::replicate(l.m_tag);
+  m_node = l.m_node;
+  reset();
+  return *this;
+}
+
 /// Clone the DOMelement - with the option of a deep copy
-Handle_t Handle_t::clone(DOMDocument* new_doc, bool deep) const  {
-  return (DOMElement*)new_doc->importNode(m_node, deep);
+Handle_t Handle_t::clone(XmlDocument* new_doc) const  {
+  if ( m_node ) {
+#ifdef __TIXML__
+    if ( m_node->Type() == ELEMENT_NODE_TYPE ) {
+      XmlElement* e = m_node->Clone()->ToElement();
+      if ( e ) return e;
+    }
+    throw runtime_error("TiXml: Handle_t::clone: Invalid source handle type [No element type].");
+#else
+    return (Elt_t)new_doc->importNode(m_node,true);
+#endif
+  }
+  throw runtime_error("Xml: Handle_t::clone: Invalid source handle.");
+}
+
+/// Access the element's parent element
+Handle_t Handle_t::parent() const     {
+#ifdef __TIXML__
+  return m_node ? m_node->Parent()->ToElement() : 0;
+#else
+  return Elt_t(m_node ? m_node->getParentNode() : 0);
+#endif
+}
+
+/// Access attribute pointer by the attribute's unicode name (no exception thrown if not present)
+Attribute Handle_t::attr_nothrow(const XmlChar* tag)  const  { 
+  return attribute_node(m_node,tag);
+}
+
+/// Check for the existence of a named attribute
+bool Handle_t::hasAttr(const XmlChar* tag) const    { 
+#ifdef __TIXML__
+  return m_node && 0 != m_node->Attribute(tag);
+#else
+  return m_node && 0 != m_node->getAttributeNode(tag);
+#endif
 }
 
 /// Retrieve a collection of all attributes of this DOM element
 vector<Attribute> Handle_t::attributes() const {
   vector<Attribute> attrs;
   if ( m_node ) {
+#ifdef __TIXML__
+    for(TiXmlAttribute* a=m_node->FirstAttribute(); a; a=a->Next())
+      attrs.push_back(a);
+#else
     xercesc::DOMNamedNodeMap* l = m_node->getAttributes();
-    for(XMLSize_t i=0, n=l->getLength(); i<n; ++i)  {
-      DOMNode* node = l->item(i);
-      attrs.push_back(Attribute(node));
+    for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)  {
+      XmlNode* n = l->item(i);
+      attrs.push_back(Attribute(n));
     }
+#endif
   }
   return attrs;
 }
 
-size_t Handle_t::numChildren(const XMLCh* t, bool throw_exception) const  {
-  NodeList e = (NodeList)(m_node ? m_node->getElementsByTagName(t) : 0); 
-  if ( e || !throw_exception ) return e->getLength();
+size_t Handle_t::numChildren(const XmlChar* t, bool throw_exception) const  {
+  size_t n = node_count(m_node,t);
+  if      ( n  == INVALID_NODE && !throw_exception ) return 0;
+  else if ( n  != INVALID_NODE ) return n;
   string msg = "Handle_t::numChildren: ";
   if ( m_node )
     msg += "Element ["+tag()+"] has no children of type '"+_toString(t)+"'";
@@ -262,21 +423,39 @@ size_t Handle_t::numChildren(const XMLCh* t, bool throw_exception) const  {
   throw runtime_error(msg);
 }
 
-Handle_t Handle_t::child(const XMLCh* t, bool throw_exception) const   { 
-  NodeList    l = (NodeList)(m_node ? m_node->getElementsByTagName(t) : 0); 
-  DOMElement* e = (DOMElement*)(l ? l->item(0) : 0); 
+/// Remove a single child node identified by it's handle from the tree of the element
+Handle_t Handle_t::child(const XmlChar* t, bool throw_exception)  const  {
+  Elt_t e = node_first(m_node,t);
   if ( e || !throw_exception ) return e;
   string msg = "Handle_t::child: ";
   if ( m_node )
     msg += "Element ["+tag()+"] has no child of type '"+_toString(t)+"'";
   else
-    msg += "Element [INVALID] has no child of type '"+_toString(t)+"'";
+    msg += "Element [INVALID]. Cannot remove child of type: '"+_toString(t)+"'";
   throw runtime_error(msg);
 }
 
+NodeList Handle_t::children(const XmlChar* tag) const {
+  return NodeList(m_node,tag);
+}
+
+/// Append a DOM element to the current node
+void Handle_t::append(Handle_t e) const { 
+#ifdef __TIXML__
+  m_node->LinkEndChild(e.ptr());
+#else
+  m_node->appendChild(e.ptr());
+#endif
+}
+
+/// Remove a single child node identified by it's handle from the tree of the element
 Handle_t Handle_t::remove(Handle_t node)  const  {
-  DOMElement* e = (DOMElement*)(m_node && node.ptr() ? m_node->removeChild(node.ptr()) : 0); 
-  if ( e ) return e;
+#ifdef __TIXML__
+  bool e = (m_node && node.ptr() ? m_node->RemoveChild(node.ptr()) : false); 
+#else
+  Elt_t e = (Elt_t)(m_node && node.ptr() ? m_node->removeChild(node.ptr()) : 0); 
+#endif
+  if ( e ) return node.ptr();
   string msg = "Handle_t::remove: ";
   if ( m_node && node.ptr() )
     msg += "Element ["+tag()+"] has no child of type '"+node.tag()+"'";
@@ -288,31 +467,55 @@ Handle_t Handle_t::remove(Handle_t node)  const  {
   throw runtime_error(msg);
 }
 
-void Handle_t::removeChildren(const XMLCh* tag)  const  {
-  NodeList l=m_node->getElementsByTagName(tag);
-  for(XMLSize_t i=0, n=l->getLength(); i<n; ++i)
+/// Remove children with a given tag name from the DOM node
+void Handle_t::removeChildren(const XmlChar* tag)  const  {
+#ifdef __TIXML__
+  for(TiXmlNode* node = m_node->FirstChildElement(tag);node;m_node->FirstChildElement(tag))
+    m_node->RemoveChild(node);
+#else
+  XmlNodeList* l=m_node->getElementsByTagName(tag);
+  for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)
     m_node->removeChild(l->item(i));
+#endif
 }
 
-bool Handle_t::hasChild(const XMLCh* tag) const   { 
-  NodeList n = m_node->getElementsByTagName(tag);
-  return n ? n->getLength()>0 : false;
+bool Handle_t::hasChild(const XmlChar* tag) const   { 
+  return node_first(m_node,tag) != 0;
+}
+
+void Handle_t::removeAttrs() const   {
+#ifdef __TIXML__
+  m_node->ClearAttributes();
+#else
+  xercesc::DOMNamedNodeMap* l = m_node->getAttributes();
+  XmlSize_t i, n=l->getLength();
+  for(i=0; i<n; ++i)  {
+    XmlAttr* a = (XmlAttr*)l->item(i);
+    m_node->removeAttributeNode(a);
+  }
+#endif
 }
 
 void Handle_t::setAttrs(Handle_t e) const   {
-  DOMNamedNodeMap* l = e->getAttributes();
-  XMLSize_t i, n=l->getLength();
+  removeAttrs();
+#ifdef __TIXML__
+  for(TiXmlAttribute* a=e->FirstAttribute(); a; a=a->Next())
+    m_node->SetAttribute(a->Name(),a->Value());
+#else
+  xercesc::DOMNamedNodeMap* l = e->getAttributes();
+  XmlSize_t i, n=l->getLength();
   for(i=0; i<n; ++i)  {
-    DOMNode* node = l->item(i);
-    if ( node->getNodeType() == DOMNode::ATTRIBUTE_NODE ) {
+    XmlNode* node = l->item(i);
+    if ( node->getNodeType() == XmlNode::ATTRIBUTE_NODE ) {
       Attribute attr = (Attribute)node;
       m_node->setAttribute(attr->getName(),attr->getValue());
     }
   }
+#endif
 }
 
-Attribute Handle_t::attr_ptr(const XMLCh* t)  const    {
-  Attribute a = m_node->getAttributeNode(t);
+Attribute Handle_t::attr_ptr(const XmlChar* t)  const    {
+  Attribute a = attribute_node(m_node,t);
   if ( 0 != a ) return a;
   string msg = "Handle_t::attr_ptr: ";
   if ( m_node )
@@ -322,140 +525,159 @@ Attribute Handle_t::attr_ptr(const XMLCh* t)  const    {
   throw runtime_error(msg);
 }
 
-const XMLCh* Handle_t::attr_name(const Attribute attr)  const   {
-  return attr->getName();
+const XmlChar* Handle_t::attr_name(const Attribute attr)  const   {
+  if ( attr ) {
+#ifdef __TIXML__
+    return attr->Name();
+#else
+    return attr->getName();
+#endif
+  }
+  throw runtime_error("Attempt to access invalid XML attribute object!");
 }
 
-const XMLCh* Handle_t::attr_value(const XMLCh* attr)  const   {
-  return attr_ptr(attr)->getValue();
+const XmlChar* Handle_t::attr_value(const XmlChar* attr)  const   {
+  return attribute_value(attr_ptr(attr));
 }
 
-const XMLCh* Handle_t::attr_value(const Attribute attr)  const   {
-  return attr->getValue();
+const XmlChar* Handle_t::attr_value(const Attribute attr)  const   {
+  return attribute_value(attr);
 }
 
-const XMLCh* Handle_t::attr_value_nothrow(const XMLCh* attr)  const   {
+const XmlChar* Handle_t::attr_value_nothrow(const XmlChar* attr)  const   {
   Attribute a = attr_nothrow(attr);
-  //Attribute a = attr_ptr(attr);
-  return a ? a->getValue() : 0;
+  return a ? attribute_value(a) : 0;
 }
 
-Attribute Handle_t::setAttr(const XMLCh* name, int val)  const    {
+Attribute Handle_t::setAttr(const XmlChar* name, int val)  const    {
   char txt[32];
   ::sprintf(txt,"%d",val);
   return setAttr(name, Strng_t(txt));
 }
 
-Attribute Handle_t::setAttr(const XMLCh* name, bool val)  const   {
+Attribute Handle_t::setAttr(const XmlChar* name, bool val)  const   {
   char txt[32];
   ::sprintf(txt,"%s",val ? "true" : "false");
   return setAttr(name, Strng_t(txt));
 }
 
-Attribute Handle_t::setAttr(const XMLCh* name, float val)  const   {
+Attribute Handle_t::setAttr(const XmlChar* name, float val)  const   {
   char txt[32];
   ::sprintf(txt,"%f",val);
   return setAttr(name, Strng_t(txt));
 }
 
-Attribute Handle_t::setAttr(const XMLCh* name, double val)  const   {
+Attribute Handle_t::setAttr(const XmlChar* name, double val)  const   {
   char txt[32];
   ::sprintf(txt,"%f",val);
   return setAttr(name, Strng_t(txt));
 }
 
-Attribute Handle_t::setAttr(const XMLCh* name, const char* v) const    {
+#ifndef __TIXML__
+Attribute Handle_t::setAttr(const XmlChar* name, const char* v) const    {
   return setAttr(name,Strng_t(v));
 }
+#endif
 
-Attribute Handle_t::setAttr(const XMLCh* name, const Attribute v) const    {
-  return v ? setAttr(name,v->getValue()) : 0;
+Attribute Handle_t::setAttr(const XmlChar* name, const Attribute v) const    {
+  return v ? setAttr(name,attribute_value(v)) : 0;
 }
 
-Attribute Handle_t::setAttr(const XMLCh* name, const XMLCh* value) const  { 
-  Attribute attr = m_node->getAttributeNode(name);
+Attribute Handle_t::setAttr(const XmlChar* name, const XmlChar* value) const  { 
+#ifdef __TIXML__
+  m_node->SetAttribute(name,value);
+  return m_node->AttributeNode(name);
+#else
+  XmlAttr* attr = m_node->getAttributeNode(name);
   if ( !attr ) {
     attr = m_node->getOwnerDocument()->createAttribute(name);
     m_node->setAttributeNode(attr);
   }
   attr->setValue(value);
   return attr;
+#endif
 }
 
-Handle_t Document::createElt(const XMLCh* tag)  const {
+/// Create DOM element
+Handle_t Document::createElt(const XmlChar* tag)  const {
+#ifdef __TIXML__
+  return new TiXmlElement(tag);
+#else
   return m_doc->createElement(tag);
+#endif
 }
 
-Attribute Document::createAttr(const XMLCh* name, const XMLCh* value) const  {
-  Attribute attr = m_doc->createAttribute(name);
-  attr->setValue(value);
-  return attr;
-}
-
+/// Access the ROOT eleemnt of the DOM document
 Handle_t Document::root() const  {
+#ifdef __TIXML__
+  if ( m_doc )  return m_doc->RootElement();
+#else
   if ( m_doc )  return m_doc->getDocumentElement();
+#endif
   throw runtime_error("Document::root: Invalid handle!");
 }
 
+/// Standard destructor - releases the document
 DocumentHolder::~DocumentHolder()  {
+#ifdef __TIXML__
+  if (m_doc) delete m_doc;
+#else
   if (m_doc) m_doc->release();
+#endif
   m_doc = 0;
 }
 
-Element::Element(const Document& document, const XMLCh* type) 
+/// Constructor from DOM document entity
+Element::Element(const Document& document, const XmlChar* type) 
 : m_element(document.createElt(type))  
 { }
 
+/// Access the hosting document handle of this DOM element
 Document Element::document() const   {
+#ifdef __TIXML__
+  return Document(m_element ? m_element->GetDocument() : 0);
+#else
   return Document(m_element ? m_element->getOwnerDocument() : 0);
+#endif
 }
 
-Handle_t Element::clone(Handle_t h, bool /* deep */) const  {
+/// Clone the DOM element tree
+Handle_t Element::clone(Handle_t h) const  {
   if ( m_element && h )  {    
-    return h.clone(m_element->getOwnerDocument(),true);
+    Document d = document();
+    return h.clone(Document::DOC(document()));
   }
   throw runtime_error("Element::clone: Invalid element pointer -- unable to clone node!");
 }
 
-Attribute Element::getAttr(const XMLCh* name)   const  {
-  return m_element ? m_element->getAttributeNode(name) : 0;
+Attribute Element::getAttr(const XmlChar* name)   const  {
+  return m_element ? attribute_node(m_element,name) : 0;
 }
 
-Attribute Element::setRef(const XMLCh* tag, const XMLCh* refname)  const  {
+/// Set the reference attribute to the node (adds attribute ref="ref-name")
+Attribute Element::setRef(const XmlChar* tag, const XmlChar* refname)  const  {
   return setChild(tag).setAttr(Attr_ref,refname);
 }
 
-const XMLCh* Element::getRef(const XMLCh* tag)  const   {
-  return child(tag).attr<cpXMLCh>(Attr_ref);
+/// Access the value of the reference attribute of the node (attribute ref="ref-name")
+const XmlChar* Element::getRef(const XmlChar* tag)  const   {
+  return child(tag).attr<cpXmlChar>(Attr_ref);
 }
 
-Handle_t Element::addChild(const XMLCh* tag)  const  {
-  Handle_t e = m_element->getOwnerDocument()->createElement(tag);
+/// Add a new child to the DOM node
+Handle_t Element::addChild(const XmlChar* tag)  const  {
+  Handle_t e = document().createElt(tag);
   m_element.append(e);
   return e;
 }
 
-Handle_t Element::child(const Strng_t& t, bool throw_exception) const  {
-  NodeList l=m_element->getElementsByTagName(t);
-  if ( l && l->getLength() > 0 ) return Handle_t((DOMElement*)l->item(0));
-  if ( throw_exception )   {
-    string msg = "Element::child: ";
-    if ( m_element.ptr() )
-      msg += "Element ["+m_element.tag()+"] has no child of type '"+_toString(t)+"'";
-    else
-      msg += "Element [INVALID] has no child of type '"+_toString(t)+"'";
-    throw runtime_error(msg);
-  }
-  return Handle_t(0);
+/// Check if a child with the required tag exists - if not create it and add it to the current node
+Handle_t Element::setChild(const XmlChar* t)  const  {
+  Elt_t e = m_element.child(t);
+  return e ? Handle_t(e) : addChild(t);
 }
 
-Handle_t Element::setChild(const XMLCh* tag)  const  {
-  NodeList l=m_element->getElementsByTagName(tag);
-  if ( l && l->getLength() > 0 ) return Handle_t((DOMElement*)l->item(0));
-  return addChild(tag);
-}
-
-RefElement::RefElement(const Document& document, const XMLCh* type, const XMLCh* name)  
+RefElement::RefElement(const Document& document, const XmlChar* type, const XmlChar* name)  
 : Element(document, type) 
 {
   m_name = name ? setAttr(Attr_name,name) : 0;
@@ -472,86 +694,66 @@ RefElement::RefElement(const RefElement& e)
 {
 }
 
-const XMLCh* RefElement::name() const  {
+const XmlChar* RefElement::name() const  {
   if ( 0 == m_name ) cout << "Error:tag=" << m_element.tag() << endl;
-  return m_name->getValue();
+  return attribute_value(m_name);
 }
 
-const XMLCh* RefElement::refName() const  {
+const XmlChar* RefElement::refName() const  {
   if ( 0 == m_name ) cout << "Error:tag=" << m_element.tag() << endl;
-  return m_name->getValue();
+  return attribute_value(m_name);
 }
 
-void RefElement::setName(const XMLCh* new_name)  {
+void RefElement::setName(const XmlChar* new_name)  {
   setAttr(Attr_name,new_name);
 }
 
-Collection_t::Collection_t(Elt_t element, DOMNode::NodeType typ) 
-  : m_type(typ), m_index(-1)
+#ifndef __TIXML__
+Collection_t::Collection_t(Elt_t element, const XmlChar* tag) 
+  : m_children(element,tag)
 {
-  m_children = element->getChildNodes();
-  m_node = (DOMElement*)m_children->item(0);
-  ++(*this);
+  m_node = m_children.reset();
 }
-
-Collection_t::Collection_t(Elt_t element, const XMLCh* tag) 
-  : m_type(DOMNode::ELEMENT_NODE), m_index(-1)
-{
-  m_children = element->getElementsByTagName(tag);
-  m_node = (DOMElement*)m_children->item(0);
-  ++(*this);
-}
+#endif
 
 Collection_t::Collection_t(Elt_t element, const char* tag)
-  : m_type(DOMNode::ELEMENT_NODE), m_index(-1)
+  : m_children(element,Strng_t(tag))
 {
-  m_children = element->getElementsByTagName(Strng_t(tag));
-  m_node = (DOMElement*)m_children->item(0);
-  ++(*this);
+  m_node = m_children.reset();
 }
 
 Collection_t::Collection_t(NodeList node_list) 
-  : m_type(DOMNode::ELEMENT_NODE), m_index(-1), m_children(node_list)
+  : m_children(node_list)
 {
-  m_node = (DOMElement*)m_children->item(0);
-  ++(*this);
-}
-
-Collection_t::Collection_t(NodeList node_list, DOMNode::NodeType typ)
-  : m_type(typ), m_index(-1), m_children(node_list)
-{
-  m_node = (DOMElement*)m_children->item(0);
-  ++(*this);
+  m_node = m_children.reset();
 }
 
 Collection_t& Collection_t::reset()  {
-  m_index = -1;
-  m_node = (DOMElement*)(m_children->getLength() == 0 ? 0 : m_children->item(0));
-  ++(*this);
+  m_node = m_children.reset();
   return *this;
 }
 
 size_t Collection_t::size()  const  {
-  return m_children->getLength();
+  return Handle_t(m_children.m_node).numChildren(m_children.m_tag,false);
 }
 
 void Collection_t::operator++()  const  {
-  Elt_t e = Elt_t(m_node ? m_node->getParentNode() : 0);
+  Elt_t e = this->parent();
   while(m_node)  {
-    m_node = (DOMElement*)m_children->item(++m_index);
-    if ( m_node && m_node->getNodeType() == m_type ) {
-      if ( m_node->getParentNode() == e )
+    m_node = m_children.next();
+    if ( m_node && node_type(m_node) == ELEMENT_NODE_TYPE ) {
+      if ( this->parent() == e )
 	return;
     }
   }
 }
 
 void Collection_t::operator--()  const  {
-  Elt_t e = Elt_t(m_node ? m_node->getParentNode() : 0);
+  Elt_t e = this->parent();
   while(m_node)  {
-    m_node = (DOMElement*)m_children->item(--m_index);
-    if ( m_node && m_node->getNodeType() == m_type ) {
-      if ( m_node->getParentNode() == e )
+    m_node = m_children.previous();
+    if ( m_node && node_type(m_node) == ELEMENT_NODE_TYPE ) {
+      if ( this->parent() == e )
 	return;
     }
   }
@@ -565,6 +767,16 @@ void Collection_t::operator--(int)  const  {
   --(*this);
 }
 
-Handle_t Document::clone(Handle_t source, bool deep) const  {
-  return (DOMElement*)(m_doc->importNode(source,deep));
+Handle_t Document::clone(Handle_t source) const  {
+#ifdef __TIXML__
+  return (XmlElement*)source.clone(0);
+#else
+  return (XmlElement*)(m_doc->importNode(source));
+#endif
 }
+
+#ifdef __TIXML__
+#include "tinyxml_inl.h"
+#include "tinyxmlerror_inl.h"
+#include "tinyxmlparser_inl.h"
+#endif

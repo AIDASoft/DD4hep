@@ -1,10 +1,8 @@
 #include <iostream>
 #include "XML/XMLElements.h"
+#ifndef __TIXML__
 #include "xercesc/util/XMLString.hpp"
 #include "xercesc/util/PlatformUtils.hpp"
-
-#define TAG(x)  extern const Tag_t Tag_##x  (#x)
-#define ATTR(x) extern const Tag_t Attr_##x (#x)
 
 namespace {
   struct __Init  {
@@ -22,6 +20,17 @@ namespace {
   };
   __Init __In__;
 }
+#else
+namespace {
+  struct __Init  {
+    __Init() {
+    }
+  };
+  __Init __In__;
+}
+#endif
+#define TAG(x)  extern const Tag_t Tag_##x  (#x)
+#define ATTR(x) extern const Tag_t Attr_##x (#x)
 
 namespace DD4hep   { namespace XML  {
 
@@ -229,8 +238,12 @@ namespace DD4hep   { namespace XML  {
   ATTR(label);
   ATTR(start);
   ATTR(end);
+
   ATTR(width);
   ATTR(length);
+  ATTR(height);
+  ATTR(depth);
+
   ATTR(z_length);
   ATTR(grid_size_x);
   ATTR(grid_size_y);

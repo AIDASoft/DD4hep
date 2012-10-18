@@ -9,12 +9,8 @@
 #ifndef DD4hep_XML_DOCUMENTHANDLER_H
 #define DD4hep_XML_DOCUMENTHANDLER_H
 
-#include "xercesc/dom/DOM.hpp"
-#include "xercesc/sax/ErrorHandler.hpp"
-#include "xercesc/parsers/XercesDOMParser.hpp"
 #include "XML/XMLElements.h"
 #include <memory>
-
 /*
  *   DD4hep namespace declaration
  */
@@ -25,15 +21,18 @@ namespace DD4hep {
   */
   namespace XML  {
 
+    // Forward declarations
+    struct DocumentErrorHandler;
+
     class DocumentHandler {
+    protected:
+      std::auto_ptr<DocumentErrorHandler> m_errHdlr;
     public:
-      std::auto_ptr<xercesc::ErrorHandler> m_errHdlr;
       DocumentHandler();
       virtual ~DocumentHandler();
-      virtual xercesc::XercesDOMParser* makeParser(xercesc::ErrorHandler* err_handler=0) const;
-      virtual Document parse(const void* bytes, size_t length) const;
+      virtual Document load(Handle_t base, const XmlChar* fname) const;
       virtual Document load(const std::string& fname) const;
     };
   }
-}         /* End namespace DD4hep   */
+}         /* End namespace DD4hep            */
 #endif    /* DD4hep_XML_DOCUMENTHANDLER_H    */
