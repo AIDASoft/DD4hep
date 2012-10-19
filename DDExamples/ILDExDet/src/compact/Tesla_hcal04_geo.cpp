@@ -36,10 +36,10 @@ namespace DD4hep {
       struct Layer : public Dimension {
 	int       id;
 	union {
-	  struct { double y_offset, dim_x } layer;
-	  struct { double z_offset, dim_z } end_layer;
-	  struct { double z_offset, dim_z } endcap_layer;
-	} v;
+	  struct { double y_offset, dim_x; } layer;
+	  struct { double z_offset, dim_z; } end_layer;
+	  struct { double z_offset, dim_z; } endcap_layer;
+	} values;
         Dimension offset;
       };
       struct Layers : public std::vector<Layer>  {
@@ -90,13 +90,14 @@ namespace DD4hep {
       xml_comp_t  x_rpc;
       xml_comp_t  x_rad;
       xml_comp_t  x_glass;
+      xml_comp_t  x_param;
       
       VisAttr m_chamberVis, m_moduleVis;
       Material m_scintillatorMat;
 
       Hcal04() 
 	: Hcal04Data(), x_det(0), x_barrel(0), x_endcap(0), x_bottom(0), x_middle(0), x_top(0),
-	  x_cells(0), x_module(0), x_rpc(0), x_rad(0), x_glass(0)  {}
+	  x_cells(0), x_module(0), x_rpc(0), x_rad(0), x_glass(0), x_param(0)  {}
 
       void construct(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens);
       /// Build and place Barrel Regular Modules
@@ -179,8 +180,8 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
   { // Read the barrel layers
     Layer layer;
     barrel_layers.clear();
-    for(xml_coll_t c(x_barrel.child(_U(layers)),_X(layer)); c; ++c, ++i) {    
-      Component l(c);
+    for(xml_coll_t c(x_barrel.child(_U(layers)),_X(layer)); c; ++c) {
+      xml_comp_t l(c);
       layer.id = l.id();
       layer.values.layer.dim_x    = l.dim_x();
       layer.values.layer.y_offset = l.y_offset();
@@ -191,8 +192,8 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
   { // Read the barrel end-layers
     Layer layer;
     end_layers.clear();
-    for(xml_coll_t c(x_barrel.child(_U(end_layers)),_U(end_layer)); c; ++c, ++i) {    
-      Component l(c);
+    for(xml_coll_t c(x_barrel.child(_U(end_layers)),_U(end_layer)); c; ++c) {
+      xml_comp_t l(c);
       layer.id = l.id();
       layer.values.end_layer.dim_z    = l.dim_z();
       layer.values.end_layer.z_offset = l.z_offset();
@@ -203,8 +204,8 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
   { // Read the endcap layers
     Layer layer;
     barrel_layers.clear();
-    for(xml_coll_t c(x_endcap.child(_X(layers)),_X(layer)); c; ++c, ++i) {    
-      Component l(c);
+    for(xml_coll_t c(x_endcap.child(_X(layers)),_X(layer)); c; ++c) {
+      xml_comp_t l(c);
       layer.id = l.id();
       layer.values.end_layer.z_offset = l.z_offset();
       endcap_layers.push_back(layer);

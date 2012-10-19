@@ -130,6 +130,8 @@ namespace DD4hep {
       double xmax() const;
       /// Access min/max parameters: x_offset
       double x_offset() const;
+      /// Access min/max parameters: dim_x
+      double dim_x() const;
 
       /// Access parameters: y
       double y() const;
@@ -153,6 +155,8 @@ namespace DD4hep {
       double ymax() const;
       /// Access min/max parameters: y_offset
       double y_offset() const;
+      /// Access min/max parameters: dim_y
+      double dim_y() const;
 
       /// Access parameters: z
       double z() const;
@@ -180,6 +184,8 @@ namespace DD4hep {
       double inner_z() const;
       /// Access min/max parameters: z_offset
       double z_offset() const;
+      /// Access min/max parameters: dim_z
+      double dim_z() const;
 
       /// Access attribute values: length
       double length() const;
