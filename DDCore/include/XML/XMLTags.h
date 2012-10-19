@@ -79,9 +79,6 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_field_name;
   extern const Tag_t Attr_hits_collection;
   extern const Tag_t Attr_incoming_r;
-  extern const Tag_t Attr_inner_radius;
-  extern const Tag_t Attr_inner_r;
-  extern const Tag_t Attr_inner_z;
   extern const Tag_t Attr_layer;
   extern const Tag_t Attr_limits;
   extern const Tag_t Attr_material;
@@ -92,10 +89,6 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_funit;
   extern const Tag_t Tag_dipole_coeff;
   
-  extern const Tag_t Attr_outer_radius;
-  extern const Tag_t Attr_outer_r;
-  extern const Tag_t Attr_outer_z;
-  extern const Tag_t Attr_outgoing_r;
   extern const Tag_t Attr_position;
   extern const Tag_t Attr_rbg;
   extern const Tag_t Attr_readout;
@@ -233,6 +226,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_element;
   // -- Material
   extern const Tag_t Tag_material;
+
   // -- VisAttr (compact)
   extern const Tag_t Tag_vis;
   extern const Tag_t Attr_showDaughters;
@@ -242,6 +236,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_r;
   extern const Tag_t Attr_b;
   extern const Tag_t Attr_g;
+
   // -- VisAttr (LCDD)
   extern const Tag_t Tag_vis;
   extern const Tag_t Tag_color;
@@ -285,10 +280,7 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_alignment;
 
   //================================ Objects: ================================
-  // -- Rotation
-  extern const Tag_t Attr_theta;
-  extern const Tag_t Attr_phi;
-  extern const Tag_t Attr_psi;
+
   //================================ Volumes: ================================
   // -- Volume
   extern const Tag_t Tag_volume;
@@ -310,22 +302,82 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_field_name;
   extern const Tag_t Attr_value;
 
+  // -- Rotation/angles
+  extern const Tag_t Attr_angle;
+  extern const Tag_t Attr_alpha;
+  extern const Tag_t Attr_alpha1;
+  extern const Tag_t Attr_alpha2;
+  extern const Tag_t Attr_beta;
+  extern const Tag_t Attr_gamma;
+  extern const Tag_t Attr_theta;
+  extern const Tag_t Attr_phi;
+  extern const Tag_t Attr_phi0;
+  extern const Tag_t Attr_psi;
+
+  // -- Cartesian type values
+  extern const Tag_t Attr_r;
+  extern const Tag_t Attr_dr;
+  extern const Tag_t Attr_rmin;
+  extern const Tag_t Attr_rmax;
+  extern const Tag_t Attr_rmin1;
+  extern const Tag_t Attr_rmin2;
+  extern const Tag_t Attr_rmax1;
+  extern const Tag_t Attr_rmax2;
+  extern const Tag_t Attr_inner_radius;
+  extern const Tag_t Attr_inner_r;
+  extern const Tag_t Attr_outer_radius;
+  extern const Tag_t Attr_outer_r;
+  extern const Tag_t Attr_outgoing_r;
+
+  extern const Tag_t Attr_x;
+  extern const Tag_t Attr_X;
+  extern const Tag_t Attr_dx;
+  extern const Tag_t Attr_X1;
+  extern const Tag_t Attr_X2;
+  extern const Tag_t Attr_x0;
+  extern const Tag_t Attr_x1;
+  extern const Tag_t Attr_x2;
+  extern const Tag_t Attr_x3;
+  extern const Tag_t Attr_x4;
+  extern const Tag_t Attr_xmin;
+  extern const Tag_t Attr_xmax;
+  extern const Tag_t Attr_start_x;
+  extern const Tag_t Attr_end_x;
+
+  extern const Tag_t Attr_y;
+  extern const Tag_t Attr_Y;
+  extern const Tag_t Attr_dy;
+  extern const Tag_t Attr_Y1;
+  extern const Tag_t Attr_Y2;
+  extern const Tag_t Attr_y0;
+  extern const Tag_t Attr_y1;
+  extern const Tag_t Attr_y2;
+  extern const Tag_t Attr_ymin;
+  extern const Tag_t Attr_ymax;
+  extern const Tag_t Attr_start_y;
+  extern const Tag_t Attr_end_y;
+
+  extern const Tag_t Attr_z;
+  extern const Tag_t Attr_Z;
+  extern const Tag_t Attr_z0;
+  extern const Tag_t Attr_z1;
+  extern const Tag_t Attr_z2;
+  extern const Tag_t Attr_dz;
+  extern const Tag_t Attr_zmin;
+  extern const Tag_t Attr_zmax;
+  extern const Tag_t Attr_start_z;
+  extern const Tag_t Attr_end_z;
+  extern const Tag_t Attr_inner_z;
+  extern const Tag_t Attr_outer_z;
+
+
   //================================ Shapes:  ================================
   // Solid:
   // No tags
-  extern const Tag_t Attr_zmin;
-  extern const Tag_t Attr_zmax;
-
   // -- ZPlane
   extern const Tag_t Tag_zplane;
-  extern const Tag_t Attr_rmin;
-  extern const Tag_t Attr_rmax;
-  extern const Tag_t Attr_z;
   // -- Box
   extern const Tag_t Tag_box;
-  extern const Tag_t Attr_x;
-  extern const Tag_t Attr_y;
-  extern const Tag_t Attr_z;
   // -- Polycone
   extern const Tag_t Tag_polycone;
   extern const Tag_t Attr_startphi;
@@ -333,38 +385,18 @@ namespace DD4hep   { namespace XML  {
   // -- Tube
   extern const Tag_t Tag_tube;
   extern const Tag_t Attr_deltaphi;
-  extern const Tag_t Attr_rmin;
-  extern const Tag_t Attr_rmax;
   extern const Tag_t Attr_zhalf;
   // -- Cone
   extern const Tag_t Tag_cone;
   extern const Tag_t Attr_startphi;
   extern const Tag_t Attr_deltaphi;
-  extern const Tag_t Attr_rmin1;
-  extern const Tag_t Attr_rmin2;
-  extern const Tag_t Attr_rmax1;
-  extern const Tag_t Attr_rmax2;
-  extern const Tag_t Attr_z;
+
   // -- Trapezoid
   extern const Tag_t Tag_trd;
-  extern const Tag_t Attr_X1;
-  extern const Tag_t Attr_X2;
-  extern const Tag_t Attr_Y1;
-  extern const Tag_t Attr_Y2;
-  extern const Tag_t Attr_Z;
   // Trap
   extern const Tag_t Tag_trap;
   extern const Tag_t Attr_aunit;
   extern const Tag_t Attr_lunit;
-  extern const Tag_t Attr_x1;
-  extern const Tag_t Attr_x2;
-  extern const Tag_t Attr_x3;
-  extern const Tag_t Attr_x4;
-  extern const Tag_t Attr_y1;
-  extern const Tag_t Attr_y2;
-  extern const Tag_t Attr_z;
-  extern const Tag_t Attr_alpha1;
-  extern const Tag_t Attr_alpha2;
   // -- PolyhedraRegular
   extern const Tag_t Tag_polyhedra;
   extern const Tag_t Attr_startphi;
@@ -440,13 +472,9 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_module_envelope;
   extern const Tag_t Tag_rphi_layout;
   extern const Tag_t Tag_z_layout;
-  extern const Tag_t Attr_phi0;
   extern const Tag_t Attr_phi_tilt;
   extern const Tag_t Attr_rc;
-  extern const Tag_t Attr_dr;
-  extern const Tag_t Attr_z0;
   extern const Tag_t Attr_nz;
-  extern const Tag_t Attr_dz;
   extern const Tag_t Attr_nmodules;
   extern const Tag_t Attr_zstart;
   extern const Tag_t Tag_ring;

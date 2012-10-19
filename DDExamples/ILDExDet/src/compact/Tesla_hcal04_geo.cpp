@@ -143,7 +143,7 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
   m_scintillatorMat = lcdd->material("polystyrene");
 
   //--------- BarrelHcal Sensitive detector -----
-  model = x_det.attr<string>(Unicode("model"));
+  model    = x_det.attr<string>(Unicode("model"));
   fiberGap = x_det.attr<double>(Unicode("fiber_gap"));
   radiatorMat = lcdd->material(x_rad.materialStr());
 
@@ -215,7 +215,6 @@ void Hcal04::buildBarrelRegularModules(Volume parent)   {
   //G4UserLimits* pULimits=    new G4UserLimits(theMaxStepAllowed);
 
   PlacedVolume pv;
-  double fiber_gap = 0;
   double Xoff = 0;
   double Yoff = x_module.offset();
   for(Layers::const_iterator i=barrel_layers.begin(); i != barrel_layers.end(); ++i)  {
@@ -225,7 +224,7 @@ void Hcal04::buildBarrelRegularModules(Volume parent)   {
     Volume chamberVol;
     if ( model == "scintillator")      {	
       //fg: introduce (empty) fiber gap - should be filled with fibres and cables
-      Box    scintBox(layer.x/2,layer.z/2,(thickness - fiber_gap)/2);
+      Box    scintBox(layer.x/2,layer.z/2,(thickness - fiberGap)/2);
       Volume scintVol(nam+_toString(layer.id,"_scint%d"),scintBox,m_scintillatorMat);
       scintVol.setSensitiveDetector(barrelSensitiveDetector);
       scintVol.setVisAttributes(m_chamberVis);
@@ -233,7 +232,7 @@ void Hcal04::buildBarrelRegularModules(Volume parent)   {
       //scintVol.setLimits(pULimits);
       //scintVol->SetSensitiveDetector(theBarrilRegSD);
       chamberVol = Volume(nam+_toString(layer.id,"_chamber%d"),chamberBox,lcdd->air());
-      pv = chamberVol.placeVolume(scintVol,Position(0,0,-fiber_gap/2));
+      pv = chamberVol.placeVolume(scintVol,Position(0,0,-fiberGap/2));
     }
     else if (model == "RPC1")	{
       string nam = x_det.nameStr()+_toString(layer.id,"_barrel_layer_%d");
@@ -263,6 +262,7 @@ void Hcal04::buildBarrelRegularModules(Volume parent)   {
 
 ///  Barrel End Modules
 void Hcal04::buildBarrelEndModules(Volume assembly)    {
+
 #if 0
   // End modules
   db->exec("select y1_for_z/2. AS YZ1H,2_for_z/2. AS YZ2H, y3_for_z/2. AS YZ3H, top_end_dim_z/2.  AS TZ from barrel_end_module;");
@@ -311,19 +311,22 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
   
   G4VisAttributes *dBarrelVolVisAtt = new G4VisAttributes(G4Colour(.2,.8,.2));
   VisAtt->SetForceWireframe(true);
+
+
   db->exec("select barrel_regular_layer.layer_id,chamber_dim_x/2. AS xdh,chamber_tickness/2. AS ydh,chamber_dim_z/2. AS zdh, fiber_gap from hcal,barrel_regular_layer,barrel_end_layer where barrel_regular_layer.layer_id = barrel_end_layer.layer_id ;");
   G4UserLimits* pULimits = new G4UserLimits(theMaxStepAllowed);
 
   for(size_t i=barrel_layers.begin(); i != barrel_layers.end(); ++i)  {
+
     const Layer& blay = barrel_layers[i];
     const Layer& elay = end_layers[i];
     Box chamberBox(layer.x/2,elay.z/2,chamber.thickness);
     if( model == "scintillator" )	{
       //fg: introduce (empty) fiber gap - should be filled with fibres and cables
       chamberVol = Volume(nam+_toString(i,"_chamber%d"),chamberBox,lcdd->air());
-	   
-      double fiber_gap = db->fetchDouble("fiber_gap")  ;
-      double scintHalfWidth =  db->fetchDouble("ydh") - fiber_gap  / 2. ;
+
+      double fiberGap = db->fetchDouble("fiber_gap")  ;
+      double scintHalfWidth =  db->fetchDouble("ydh") - fiberGap  / 2. ;
 
       // fiber gap can't be larger than total chamber
       assert( scintHalfWidth > 0. ) ;
@@ -341,7 +344,7 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
       // only scinitllator is sensitive
       ScintLog->SetSensitiveDetector(theBarrilEndSD);
       int layer_id = db->fetchInt("layer_id") ;
-      new MyPlacement(0, G4ThreeVector( 0,0,  - fiber_gap / 2. ), ScintLog,
+      new MyPlacement(0, G4ThreeVector( 0,0,  - fiberGap / 2. ), ScintLog,
 		      "Scintillator", ChamberLogical, false, layer_id);   
       ChamberLog [ layer_id ] = ChamberLogical ;
     }
@@ -426,6 +429,8 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
 
 /// Build EndCap Modules
 void Hcal04::buildEndcaps(Volume assembly) {
+
+
 #if 0
   db->exec("select module_radius AS pRMax, module_dim_z/2. AS pDz, center_box_size/2. AS pRMin from endcap_standard_module;");
   db->getTuple();

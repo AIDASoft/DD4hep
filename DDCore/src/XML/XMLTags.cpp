@@ -122,7 +122,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(InvisibleWithDaughters);
 
   ATTR(1);
-  ATTR(alpha);
   ATTR(b);
   ATTR(barrel);
   ATTR(beampipe);
@@ -159,7 +158,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(outer_r);
   ATTR(outer_z);
   ATTR(position);
-  ATTR(r);
   ATTR(rbg);
   ATTR(readout);
   ATTR(ref);
@@ -167,18 +165,89 @@ namespace DD4hep   { namespace XML  {
   ATTR(reflect_rot);
   ATTR(region);
   ATTR(repeat);
+
+  // -- Boxes
+  ATTR(width);
+  ATTR(length);
+  ATTR(height);
+  ATTR(depth);
+
+  // -- angles
+  ATTR(angle);
+  ATTR(alpha);
+  ATTR(alpha1);
+  ATTR(alpha2);
+  ATTR(alpha3);
+  ATTR(alpha4);
+  ATTR(beta);
+  ATTR(gamma);
+  ATTR(psi);
+  ATTR(phi);
+  ATTR(startphi);
+  ATTR(endphi);
+  ATTR(theta);
+
+  // -- Cartesian stuff
+  ATTR(x);
+  ATTR(X);
+  ATTR(dx);
+  ATTR(x0);
+  ATTR(x1);
+  ATTR(x2);
+  ATTR(x3);
+  ATTR(x4);
+  ATTR(X1);
+  ATTR(X2);
+  ATTR(xmin);
+  ATTR(xmax);
+  ATTR(start_x);
+  ATTR(end_x);
+
+  ATTR(y);
+  ATTR(Y);
+  ATTR(dy);
+  ATTR(y0);
+  ATTR(y1);
+  ATTR(y2);
+  ATTR(y3);
+  ATTR(y4);
+  ATTR(Y1);
+  ATTR(Y2);
+  ATTR(ymin);
+  ATTR(ymax);
+  ATTR(start_y);
+  ATTR(end_y);
+
+  ATTR(z);
+  ATTR(Z);
+  ATTR(dz);
+  ATTR(z0);
+  ATTR(z1);
+  ATTR(z2);
+  ATTR(z3);
+  ATTR(z4);
   ATTR(zmin);
   ATTR(zmax);
+  ATTR(start_z);
+  ATTR(end_z);
+
+  // -- Radial stuff
+  ATTR(r);
+  ATTR(R);
+  ATTR(dr);
+  ATTR(r0);
   ATTR(rmin);
+  ATTR(rmin1);
+  ATTR(rmin2);
   ATTR(rmax);
+  ATTR(rmax1);
+  ATTR(rmax2);
+  ATTR(radius);
+
   ATTR(rotation);
   ATTR(segmentation);
   ATTR(sensitive);
   ATTR(sensitive_detector);
-  ATTR(startphi);
-  ATTR(endphi);
-  ATTR(start_z);
-  ATTR(end_z);
   ATTR(system);
   ATTR(thickness);
   ATTR(true);
@@ -188,9 +257,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(verbose);
   ATTR(version);
   ATTR(vis);
-  ATTR(x);
-  ATTR(y);
-  ATTR(z);
   ATTR(zhalf);
 
   // LCDD
@@ -239,11 +305,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(start);
   ATTR(end);
 
-  ATTR(width);
-  ATTR(length);
-  ATTR(height);
-  ATTR(depth);
-
   ATTR(z_length);
   ATTR(grid_size_x);
   ATTR(grid_size_y);
@@ -254,17 +315,11 @@ namespace DD4hep   { namespace XML  {
   ATTR(module);
   ATTR(particles);
   ATTR(show_daughters);
-  ATTR(R);
   ATTR(B);
   ATTR(G);
   ATTR(visible);
   ATTR(combine_hits);
   TAG(trd);
-  ATTR(X1);
-  ATTR(X2);
-  ATTR(Y1);
-  ATTR(Y2);
-  ATTR(Z);
 
   TAG(polyhedra);
   ATTR(numsides);
@@ -284,30 +339,8 @@ namespace DD4hep   { namespace XML  {
   ATTR(thetaBins);
 
   TAG(trap);
-  ATTR(psi);
-  ATTR(phi);
-  ATTR(theta);
   ATTR(aunit);
 
-  ATTR(x1);
-  ATTR(x2);
-  ATTR(x3);
-  ATTR(x4);
-
-  ATTR(y1);
-  ATTR(y2);
-  ATTR(y3);
-  ATTR(y4);
-
-  ATTR(z1);
-  ATTR(z2);
-  ATTR(z3);
-  ATTR(z4);
-
-  ATTR(alpha1);
-  ATTR(alpha2);
-  ATTR(alpha3);
-  ATTR(alpha4);
 
   ATTR(cut);
   ATTR(store_secondaries);
@@ -332,16 +365,11 @@ namespace DD4hep   { namespace XML  {
   TAG(subtraction);
 
   TAG(cone);
-  ATTR(rmin1);
-  ATTR(rmin2);
-  ATTR(rmax1);
-  ATTR(rmax2);
 
   TAG(ladder);
   TAG(support);
   ATTR(number);
   ATTR(offset);
-  ATTR(radius);
 
   TAG(module_envelope);
   TAG(barrel_envelope);
@@ -352,10 +380,7 @@ namespace DD4hep   { namespace XML  {
   ATTR(phi0);
   ATTR(phi_tilt);
   ATTR(rc);
-  ATTR(dr);
-  ATTR(z0);
   ATTR(nz);
-  ATTR(dz);
   ATTR(zstart);
 
   TAG(modules);

@@ -50,60 +50,132 @@ namespace DD4hep {
       /// Constructor from Element
       Dimension(const Element& e) : Element(e) {}
 
+      /// Access parameters: id
+      int    id() const;
+      /// Access parameters: id, if not present returns default
+      int    id(int default_value) const;
+
+      /// Access rotation constants: angle
+      double angle() const;
       /// Access rotation constants: theta
       double theta() const;
       /// Access rotation constants: phi
       double phi() const;
+      /// Access rotation constants: phi0
+      double phi0() const;
+      /// Access parameters: phi0, if not present returns default
+      double phi0(double default_value) const;
       /// Access rotation constants: psi
       double psi() const;
 
-      /// Access Box/Position parameters: x
-      double x() const;
-      /// Access Box/Position parameters: y
-      double y() const;
-      /// Access Box/Position parameters: z
-      double z() const;
-
-      /// Access Box/Position parameters: x, if not present returns default
-      double x(double default_val) const;
-      /// Access Box/Position parameters: y, if not present returns default
-      double y(double default_val) const;
-      /// Access Box/Position parameters: z, if not present returns default
-      double z(double default_val) const;
-
-      /// Access Trapezoid parameters: x1
-      double x1() const;
-      /// Access Trapezoid parameters: x2
-      double x2() const;
-      /// Access Trapezoid parameters: y1
-      double y1() const;
-      /// Access Trapezoid parameters: y2
-      double y2() const;
-
-      /// Access Tube parameters: rmin
-      double rmin() const;
-      /// Access Tube parameters: rmax
-      double rmax() const;
       /// Access Tube parameters: zhalf
       double zhalf() const;
       /// Access Tube parameters: deltaphi
       double deltaphi() const;
 
+      /// Access parameters: r
+      double r()  const;
+      /// Access parameters: r, if not present returns default
+      double r(double default_value)  const;
+      /// Access parameters: R
+      double R()  const;
+      /// Access parameters: dr
+      double dr()  const;
+      /// Access parameters: r0
+      double r0()  const;
+      /// Access parameters: dr, if not present returns default
+      double dr(double default_value)  const;
+      /// Access min/max parameters: rmin
+      double rmin() const;
+      /// Access min/max parameters: rmax
+      double rmax() const;
+      /// Access min/max parameters: rmin1
+      double rmin1() const;
+      /// Access min/max parameters: rmax1
+      double rmax1() const;
+      /// Access min/max parameters: rmin2
+      double rmin2() const;
+      /// Access min/max parameters: rmax2
+      double rmax2() const;
+      /// Access parameters: radius
+      double radius() const;
       /// Access attribute values: outer_radius
       double outer_radius() const;
       /// Access attribute values: outer_r
       double outer_r() const;
-      /// Access attribute values: outer_z
-      double outer_z() const;
       /// Access attribute values: inner_radius
       double inner_radius() const;
       /// Access attribute values: inner_r
       double inner_r() const;
+
+      /// Access parameters: x
+      double x() const;
+      /// Access parameters: x, if not present returns default
+      double x(double default_val) const;
+      /// Access parameters: X
+      double X() const;
+      /// Access parameters: x0
+      double x0() const;
+      /// Access parameters: x1
+      double x1() const;
+      /// Access parameters: x2
+      double x2() const;
+      /// Access parameters: dx
+      double dx() const;
+      /// Access parameters: dx, if not present returns default
+      double dx(double default_value)  const;
+      /// Access min/max parameters: xmax
+      double xmin() const;
+      /// Access min/max parameters: xmax
+      double xmax() const;
+
+      /// Access parameters: y
+      double y() const;
+      /// Access parameters: y, if not present returns default
+      double y(double default_val) const;
+      /// Access parameters: Y
+      double Y() const;
+      /// Access parameters: y0
+      double y0() const;
+      /// Access parameters: y1
+      double y1() const;
+      /// Access parameters: y2
+      double y2() const;
+      /// Access parameters: dy
+      double dy() const;
+      /// Access parameters: dz, if not present returns default
+      double dy(double default_value)  const;
+      /// Access min/max parameters: ymax
+      double ymin() const;
+      /// Access min/max parameters: ymax
+      double ymax() const;
+
+      /// Access parameters: z
+      double z() const;
+      /// Access parameters: z, if not present returns default
+      double z(double default_val) const;
+      /// Access parameters: Z
+      double Z() const;
+      /// Access parameters: z0
+      double z0() const;
+      /// Access parameters: z1
+      double z1() const;
+      /// Access parameters: z2
+      double z2() const;
+      /// Access parameters: dz
+      double dz() const;
+      /// Access parameters: dz, if not present returns default
+      double dz(double default_value)  const;
+      /// Access min/max parameters: zmax
+      double zmin() const;
+      /// Access min/max parameters: zmax
+      double zmax() const;
+      /// Access attribute values: outer_z
+      double outer_z() const;
       /// Access attribute values: inner_z
       double inner_z() const;
 
-      /// Access attribute values: z_length
-      double z_length() const;
+
       /// Access attribute values: length
       double length() const;
       /// Access attribute values: width
@@ -112,93 +184,160 @@ namespace DD4hep {
       double height() const;
       /// Access attribute values: depth
       double depth() const;
+      /// Access attribute values: thickness
+      double thickness() const;
 
+      /// Access attribute values: z_length
+      double z_length() const;
+      /// Access attribute values: gap
       double gap() const;
+      /// Access attribute values: r_size
       double r_size() const;
+      /// Access attribute values: phi_size_max
       double phi_size_max() const;
+      /// Access attribute values: reflect
       bool   reflect() const;
+      /// Access attribute values: reflect
       bool   reflect(bool default_value) const;
-      double outgoing_r() const;
-      double incoming_r() const;
+      /// Access attribute values: crossing_angle
       double crossing_angle() const;
+      /// Access attribute values: repeat
+      int    repeat()  const;
 
-      double zmin() const;
-      double zmax() const;
-
-      double radius() const;
+      /// Access attribute values: outgoing_r
+      double outgoing_r() const;
+      /// Access attribute values: incoming_r
+      double incoming_r() const;
+      /// Access attribute values: offset
       double offset() const;
+      /// Access attribute values: offset
       double offset(double default_value) const;
+      /// Access attribute values: number
       int    number() const;
 
+      /// Access attribute values: nModules
       int    nModules() const;
+      /// Access attribute values: RowID
       int    RowID() const;
-      int    nPads() const;
+      /// Access attribute values: moduleHeight
       double moduleHeight() const;
+      /// Access attribute values: moduleWidth
       double moduleWidth() const;
+      /// Access attribute values: modulePitch
       double modulePitch() const;
+      /// Access attribute values: modulePosX
       double modulePosX() const;
+      /// Access attribute values: modulePosY
       double modulePosY() const;
+
+      /// Access attribute values: nPads
+      int    nPads() const;
+      /// Access attribute values: rowPitch
       double rowPitch() const;
+      /// Access attribute values: padPitch
       double padPitch() const;
+      /// Access attribute values: rowHeight
       double rowHeight() const;
-      std::string   padType() const;
+      /// Access attribute values: padType
+      std::string padType() const;
 
-      int numsides() const;
+      /// Access attribute values: numsides
+      int    numsides() const;
 
-      double phi0() const;
-      double phi0(double default_value) const;
+      /// Access attribute values: phi_tilt
       double phi_tilt() const;
+      /// Access attribute values: nphi
       int    nphi() const;
+      /// Access attribute values: rc
       double rc()  const;
-      double dr()  const;
-      double dz()  const;
-      double dz(double default_value)  const;
-      double r()  const;
-      double r(double default_value)  const;
       
-      double z0() const;
+      /// Access attribute values: zstart
       double zstart() const;
+      /// Access attribute values: nz
       int    nz() const;
 
+      /// Access attribute values: start
       double start()  const;
+      /// Access attribute values: end
       double end()    const;
+      /// Access attribute values: inner_field
+      double inner_field() const;
+      /// Access attribute values: outer_field
+      double outer_field() const;
 
     };
 
+    /** @class DetElement XMLDetector.h XML/XMLDetector.h
+     * 
+     *  Helper class to access any field in a xml tag.
+     *  Specialized for some of the attributes of a detector element.
+     *  
+     *  @author  M.Frank
+     *  @version 1.0
+     */
     struct DetElement : public Dimension  {
+      /** @class DetElement::Component XMLDetector.h XML/XMLDetector.h
+       * 
+       *  Helper class to access any field in a xml tag.
+       *  Specialized for attributes of a detector sub-element.
+       *  
+       *  @author  M.Frank
+       *  @version 1.0
+       */
       struct Component : public Dimension {
+        /// Constructor from Handle
         Component(Handle_t e) : Dimension(e) {}
+	/// Constructor from Element
         Component(const Element& e) : Dimension(e) {}
-        int    id() const;
-        int    id(int default_value) const;
-        int    repeat()  const;
-        double thickness() const;
+	/// Check if component is sensitive
         bool   isSensitive() const;
+	/// Access name attribute as STL string
         std::string   nameStr() const;
+	/// Access type attribute as STL string
 	std::string   typeStr() const;
+	/// Access module attribute as STL string
         std::string   moduleStr() const;
+	/// Access material attribute as STL string
         std::string   materialStr() const;
+	/// Access vis attribute as STL string. If not present empty return empty string
         std::string   visStr() const;
+	/// Access region attribute as STL string. If not present empty return empty string
         std::string   regionStr() const;
+	/// Access limits attribute as STL string. If not present empty return empty string
         std::string   limitsStr() const;
+	/// Access child element with tag "dimensions" as Dimension object
 	Dimension     dimensions()  const;
       };
+      /// Constructor from Handle
       DetElement(Handle_t e) : Dimension(e)  {}
+      /// Access undrlying XML handle object
       Handle_t handle()  const { return m_element; }
+      
+      /// Access parameters: id
       int  id() const;
+      /// Access name attribute as STL string
       std::string nameStr() const;
+      /// Access type attribute as STL string
       std::string typeStr() const;
+      /// Access material attribute as STL string. If not present empty return empty string
       std::string materialStr() const;
+      /// Access vis attribute as STL string.
       std::string visStr() const;
+      /// Access region attribute as STL string. If not present empty return empty string
       std::string regionStr() const;
+      /// Access limits attribute as STL string. If not present empty return empty string
       std::string limitsStr() const;
-      double inner_field() const;
-      double outer_field() const;
+      /// Access child element with tag "dimensions" as Dimension object
       Dimension dimensions()  const;
+      /// Check if element describes a tracking detector
       bool isTracker() const;
+      /// Check if element describes a calorimetric detector
       bool isCalorimeter() const;
+      /// Check if element is inside the tracking volume
       bool isInsideTrackingVolume() const;
+      /// Helper to check a condition (for debugging)
       void check(bool condition, const std::string& msg) const;
+      /// Access attribute by type
       template <typename T> T attr(const XmlChar* tag) const { return m_element.attr<T>(tag); }
     };
   }

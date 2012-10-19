@@ -3,305 +3,131 @@
 using namespace std;
 using namespace DD4hep::XML;
 
-double Dimension::x() const  {
-  return m_element.attr<double>(Attr_x);
-}
+#define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Attr_##name); }
+#define XML_ATTR_ACCESSOR_DOUBLE(name)	 \
+  double Dimension::name(double default_val) const {		       	\
+    const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
+    return val ? _toDouble(val) : default_val; }
+#define XML_ATTR_ACCESSOR_INT(name)	 \
+  int Dimension::name(int default_val) const {				\
+    const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
+    return val ? _toInt(val) : default_val; }
+#define XML_ATTR_ACCESSOR_BOOL(name)	 \
+  bool Dimension::name(bool default_val) const {				\
+    const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
+    return val ? _toBool(val) : default_val; }
 
-double Dimension::y() const  {
-  return m_element.attr<double>(Attr_y);
-}
+XML_ATTR_ACCESSOR(int,id)
+  XML_ATTR_ACCESSOR_INT(id)
 
-double Dimension::z() const  {
-  return m_element.attr<double>(Attr_z);
-}
+  XML_ATTR_ACCESSOR(double,x)
+  XML_ATTR_ACCESSOR_DOUBLE(x)
+  XML_ATTR_ACCESSOR(double,X)
+  XML_ATTR_ACCESSOR(double,dx)
+  XML_ATTR_ACCESSOR_DOUBLE(dx)
+  XML_ATTR_ACCESSOR(double,x0)
+  XML_ATTR_ACCESSOR(double,x1)
+  XML_ATTR_ACCESSOR(double,x2)
+  XML_ATTR_ACCESSOR(double,xmin)
+  XML_ATTR_ACCESSOR(double,xmax)
+  
+  XML_ATTR_ACCESSOR(double,y)
+  XML_ATTR_ACCESSOR_DOUBLE(y)
+  XML_ATTR_ACCESSOR(double,Y)
+  XML_ATTR_ACCESSOR(double,dy)
+  XML_ATTR_ACCESSOR_DOUBLE(dy)
+  XML_ATTR_ACCESSOR(double,y0)
+  XML_ATTR_ACCESSOR(double,y1)
+  XML_ATTR_ACCESSOR(double,y2)
+  XML_ATTR_ACCESSOR(double,ymin)
+  XML_ATTR_ACCESSOR(double,ymax)
 
-double Dimension::x(double default_val) const  {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_x);
-  return val ? _toDouble(val) : default_val;
-}
+  XML_ATTR_ACCESSOR(double,z)
+  XML_ATTR_ACCESSOR_DOUBLE(z)
+  XML_ATTR_ACCESSOR(double,Z)
+  XML_ATTR_ACCESSOR(double,dz)
+  XML_ATTR_ACCESSOR_DOUBLE(dz)
+  XML_ATTR_ACCESSOR(double,z0)
+  XML_ATTR_ACCESSOR(double,z1)
+  XML_ATTR_ACCESSOR(double,z2)
+  XML_ATTR_ACCESSOR(double,zmin)
+  XML_ATTR_ACCESSOR(double,zmax)
+  XML_ATTR_ACCESSOR(double,outer_z)
+  XML_ATTR_ACCESSOR(double,inner_z)
 
-double Dimension::y(double default_val) const  {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_y);
-  return val ? _toDouble(val) : default_val;
-}
+  XML_ATTR_ACCESSOR(double,r)
+  XML_ATTR_ACCESSOR_DOUBLE(r)
+  XML_ATTR_ACCESSOR(double,R)
+  XML_ATTR_ACCESSOR(double,dr)
+  XML_ATTR_ACCESSOR(double,rmin)
+  XML_ATTR_ACCESSOR(double,rmax)
+  XML_ATTR_ACCESSOR(double,radius)
+  XML_ATTR_ACCESSOR(double,outer_r)
+  XML_ATTR_ACCESSOR(double,outer_radius)
+  XML_ATTR_ACCESSOR(double,inner_r)
+  XML_ATTR_ACCESSOR(double,inner_radius)
 
-double Dimension::z(double default_val) const  {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_z);
-  return val ? _toDouble(val) : default_val;
-}
+  XML_ATTR_ACCESSOR(double,angle)
+  XML_ATTR_ACCESSOR(double,theta)
+  XML_ATTR_ACCESSOR(double,psi)
+  XML_ATTR_ACCESSOR(double,phi)
+  XML_ATTR_ACCESSOR(double,phi0)
+  XML_ATTR_ACCESSOR_DOUBLE(phi0)
+  XML_ATTR_ACCESSOR(double,deltaphi)
 
-double Dimension::x1() const  {
-  return m_element.attr<double>(Attr_x1);
-}
 
-double Dimension::x2() const  {
-  return m_element.attr<double>(Attr_x2);
-}
+  XML_ATTR_ACCESSOR(double,length)
+  XML_ATTR_ACCESSOR(double,width)
+  XML_ATTR_ACCESSOR(double,height)
+  XML_ATTR_ACCESSOR(double,depth)
+  XML_ATTR_ACCESSOR(double,offset)
+  XML_ATTR_ACCESSOR_DOUBLE(offset)
+  XML_ATTR_ACCESSOR(double,crossing_angle)
+  XML_ATTR_ACCESSOR(double,incoming_r)
+  XML_ATTR_ACCESSOR(double,outgoing_r)
+  XML_ATTR_ACCESSOR(double,phi_size_max)
+  XML_ATTR_ACCESSOR(double,r_size)
+  
+  XML_ATTR_ACCESSOR(double,gap)
+  XML_ATTR_ACCESSOR(double,z_length)
+  XML_ATTR_ACCESSOR(double,zhalf)
+  XML_ATTR_ACCESSOR(double,phi_tilt)
+  XML_ATTR_ACCESSOR(int,nphi)
+  XML_ATTR_ACCESSOR(double,rc)
+  XML_ATTR_ACCESSOR(int,nz)
+  XML_ATTR_ACCESSOR(double,zstart)
+  XML_ATTR_ACCESSOR(double,start)
+  XML_ATTR_ACCESSOR(double,end)
+  XML_ATTR_ACCESSOR(double,thickness)
+  XML_ATTR_ACCESSOR(int,numsides)
+  XML_ATTR_ACCESSOR(int,number)
+  XML_ATTR_ACCESSOR(int,repeat)
+  XML_ATTR_ACCESSOR(bool,reflect)
+  XML_ATTR_ACCESSOR_BOOL(reflect)
 
-double Dimension::y1() const  {
-  return m_element.attr<double>(Attr_y1);
-}
-
-double Dimension::y2() const  {
-  return m_element.attr<double>(Attr_y2);
-}
-
-double Dimension::rmin() const  {
-  return m_element.attr<double>(Attr_rmin);
-}
-
-double Dimension::zmin() const  {
-  return m_element.attr<double>(Attr_zmin);
-}
-
-double Dimension::zmax() const  {
-  return m_element.attr<double>(Attr_zmax);
-}
-
-double Dimension::rmax() const  {
-  return m_element.attr<double>(Attr_rmax);
-}
-
-double Dimension::deltaphi() const  {
-  return m_element.attr<double>(Attr_deltaphi);
-}
-
-double Dimension::outer_z() const  {
-  return m_element.attr<double>(Attr_outer_z);
-}
-
-double Dimension::outer_r() const  {
-  return m_element.attr<double>(Attr_outer_r);
-}
-
-double Dimension::outer_radius() const {
-  return m_element.attr<double>(Attr_outer_radius);
-}
-
-double Dimension::inner_z() const  {
-  return m_element.attr<double>(Attr_inner_z);
-}
-
-double Dimension::inner_r() const  {
-  return m_element.attr<double>(Attr_inner_r);
-}
-
-double Dimension::inner_radius() const {
-  return m_element.attr<double>(Attr_inner_radius);
-}
-
-bool   Dimension::reflect() const  {
-  return m_element.attr<bool>(Attr_reflect);
-}
-
-bool Dimension::reflect(bool default_value) const {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_reflect);
-  return val ? _toBool(val) : default_value;
-}
-
-double Dimension::gap() const  {
-  return m_element.attr<double>(Attr_gap);
-}
-
-double Dimension::z_length() const  {
-  return m_element.attr<double>(Attr_z_length);
-}
-
-double Dimension::zhalf() const  {
-  return m_element.attr<double>(Attr_zhalf);
-}
-
-double Dimension::length() const  {
-  return m_element.attr<double>(Attr_length);
-}
-
-double Dimension::width() const  {
-  return m_element.attr<double>(Attr_width);
-}
-
-double Dimension::height() const  {
-  return m_element.attr<double>(Attr_height);
-}
-
-double Dimension::depth() const  {
-  return m_element.attr<double>(Attr_depth);
-}
-
-int Dimension::numsides() const  {
-  return m_element.attr<int>(Attr_numsides);
-}
-
-double Dimension::r_size() const  {
-  return m_element.attr<int>(Attr_r_size);
-}
-
-double Dimension::phi_size_max() const  {
-  return m_element.attr<int>(Attr_phi_size_max);
-}
-
-double Dimension::outgoing_r() const  {
-  return m_element.attr<double>(Attr_outgoing_r);
-}
-
-double Dimension::incoming_r() const  {
-  return m_element.attr<double>(Attr_incoming_r);
-}
-
-double Dimension::crossing_angle() const  {
-  return m_element.attr<double>(Attr_crossing_angle);
-}
-
-double Dimension::radius() const {
-  return m_element.attr<double>(Attr_radius);
-}
-
-double Dimension::offset(double default_value) const {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_offset);
-  return val ? _toDouble(val) : default_value;
-}
-
-double Dimension::offset() const {
-  return m_element.attr<double>(Attr_offset);
-}
-
-int Dimension::number() const {
-  return m_element.attr<int>(Attr_number);
-}
-
-int Dimension::nModules() const {
-  return m_element.attr<int>(Attr_nModules);
-}
-int Dimension::RowID() const {
-  return m_element.attr<int>(Attr_RowID);
-}
-int Dimension::nPads() const {
-  return m_element.attr<int>(Attr_nPads);
-}
-
-double Dimension::moduleHeight() const {
-  return m_element.attr<int>(Attr_moduleHeight);
-}
-
-double Dimension::moduleWidth() const {
-  return m_element.attr<int>(Attr_moduleWidth);
-}
-
-double Dimension::modulePosX() const {
-  return m_element.attr<int>(Attr_modulePosX);
-}
-
-double Dimension::modulePosY() const {
-  return m_element.attr<int>(Attr_modulePosY);
-}
-
-double Dimension::modulePitch() const {
-  return m_element.attr<int>(Attr_modulePitch);
-}
-double Dimension::rowPitch() const {
-  return m_element.attr<int>(Attr_rowPitch);
-}
+  XML_ATTR_ACCESSOR(int,nModules)
+  XML_ATTR_ACCESSOR(int,RowID)
+  XML_ATTR_ACCESSOR(int,nPads)
+  XML_ATTR_ACCESSOR(double,moduleHeight)
+  XML_ATTR_ACCESSOR(double,moduleWidth)
+  XML_ATTR_ACCESSOR(double,modulePosX)
+  XML_ATTR_ACCESSOR(double,modulePosY)
+  XML_ATTR_ACCESSOR(double,modulePitch)
+  XML_ATTR_ACCESSOR(double,rowPitch)
+  XML_ATTR_ACCESSOR(double,padPitch)
+  XML_ATTR_ACCESSOR(double,rowHeight)
+  XML_ATTR_ACCESSOR(double,inner_field)
+  XML_ATTR_ACCESSOR(double,outer_field)
+#if 0
+  XML_ATTR_ACCESSOR(double,)
+  XML_ATTR_ACCESSOR(double,)
+  XML_ATTR_ACCESSOR(double,)
+  XML_ATTR_ACCESSOR(double,)
+  XML_ATTR_ACCESSOR(double,)
+#endif
 
 string Dimension::padType()  const  {
   return m_element.attr<string>(Attr_pads);
-}
-
-double Dimension::padPitch() const {
-  return m_element.attr<int>(Attr_padPitch);
-}
-double Dimension::rowHeight() const {
-  return m_element.attr<int>(Attr_rowHeight);
-}
-
-double Dimension::phi() const {
-  return m_element.attr<double>(Attr_phi);
-}
-
-double Dimension::phi0() const {
-  return m_element.attr<double>(Attr_phi0);
-}
-
-double Dimension::phi0(double default_value) const {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_phi0);
-  return val ? _toDouble(val) : default_value;
-}
-
-double Dimension::phi_tilt() const {
-  return m_element.attr<double>(Attr_phi_tilt);
-}
-
-int Dimension::nphi() const {
-  return m_element.attr<int>(Attr_nphi);
-}
-
-double Dimension::theta() const {
-  return m_element.attr<double>(Attr_theta);
-}
-
-double Dimension::psi() const {
-  return m_element.attr<double>(Attr_psi);
-}
-
-double Dimension::rc()  const {
-  return m_element.attr<double>(Attr_rc);
-}
-
-double Dimension::dr()  const {
-  return m_element.attr<double>(Attr_dr);
-}
-
-double Dimension::dz()  const {
-  return m_element.attr<double>(Attr_dz);
-}
-
-double Dimension::dz(double default_value) const {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_dz);
-  return val ? _toDouble(val) : default_value;
-}
-
-double Dimension::r()  const {
-  return m_element.attr<double>(Attr_r);
-}
-
-double Dimension::r(double default_value) const {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_r);
-  return val ? _toDouble(val) : default_value;
-}
-
-double Dimension::z0() const {
-  return m_element.attr<double>(Attr_z0);
-}
-
-int    Dimension::nz() const {
-  return m_element.attr<int>(Attr_nz);
-}
-
-double Dimension::zstart() const {
-  return m_element.attr<double>(Attr_zstart);
-}
-
-double Dimension::start()  const {
-  return m_element.attr<double>(Attr_start);
-}
-
-double Dimension::end()    const {
-  return m_element.attr<double>(Attr_end);
-}
-
-double DetElement::inner_field() const {
-  return m_element.attr<double>(Attr_inner_field);
-}
-
-double DetElement::outer_field() const {
-  return m_element.attr<double>(Attr_outer_field);
-}
-
-int DetElement::Component::id()  const  {
-  return m_element.attr<int>(Attr_id);
-}
-
-int DetElement::Component::id(int default_value)  const  {
-  const XmlChar* val = m_element.attr_value_nothrow(Attr_id);
-  return val ? _toInt(val) : default_value;
 }
 
 string  DetElement::Component::nameStr()  const  {
@@ -318,14 +144,6 @@ string  DetElement::Component::moduleStr()  const  {
 
 string  DetElement::Component::typeStr()  const  {
   return m_element.attr<string>(Attr_type);
-}
-
-int DetElement::Component::repeat()  const  {
-  return m_element.attr<int>(Attr_repeat);
-}
-
-double DetElement::Component::thickness() const  {
-  return m_element.attr<double>(Attr_thickness);
 }
 
 bool DetElement::Component::isSensitive() const  {

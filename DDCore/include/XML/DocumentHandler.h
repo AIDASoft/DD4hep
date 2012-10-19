@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4hep_XML_DOCUMENTHANDLER_H
-#define DD4hep_XML_DOCUMENTHANDLER_H
+#ifndef DD4HEP_XML_DOCUMENTHANDLER_H
+#define DD4HEP_XML_DOCUMENTHANDLER_H
 
 #include "XML/XMLElements.h"
 #include <memory>
@@ -24,15 +24,28 @@ namespace DD4hep {
     // Forward declarations
     struct DocumentErrorHandler;
 
+    /** @class DocumentHandler XMLDetector.h XML/XMLDetector.h
+     * 
+     *  Wrapper object around the document parser.
+     *  Supports both, XercesC and TiXml.
+     *  
+     *  @author  M.Frank
+     *  @version 1.0
+     */
     class DocumentHandler {
     protected:
+      /// Reference to the error handler object
       std::auto_ptr<DocumentErrorHandler> m_errHdlr;
     public:
+      /// Default constructor
       DocumentHandler();
+      /// Default destructor
       virtual ~DocumentHandler();
-      virtual Document load(Handle_t base, const XmlChar* fname) const;
+      /// Load XML file and parse it.
       virtual Document load(const std::string& fname) const;
+      /// Load secondary XML file with relative addressing with respect to handle
+      virtual Document load(Handle_t base, const XmlChar* fname) const;
     };
   }
 }         /* End namespace DD4hep            */
-#endif    /* DD4hep_XML_DOCUMENTHANDLER_H    */
+#endif    /* DD4HEP_XML_DOCUMENTHANDLER_H    */
