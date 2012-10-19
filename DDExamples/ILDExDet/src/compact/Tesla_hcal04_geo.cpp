@@ -13,6 +13,8 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
+#define _U(text)  Unicode(#text)
+
 namespace DD4hep {
   namespace Geometry {
     struct Hcal04Data : public DetElement::Object {
@@ -33,6 +35,11 @@ namespace DD4hep {
 
       struct Layer : public Dimension {
 	int       id;
+	union {
+	  struct { double y_offset, dim_x } layer;
+	  struct { double z_offset, dim_z } end_layer;
+	  struct { double z_offset, dim_z } endcap_layer;
+	} v;
         Dimension offset;
       };
       struct Layers : public std::vector<Layer>  {
@@ -122,8 +129,10 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
   */
   lcdd     =  &l;
   x_det    =  e;
-  x_barrel = x_det.child(Unicode("barrel"));
-  x_endcap = x_det.child(Unicode("endcap"));
+  x_barrel = x_det.child(_U(barrel));
+  x_endcap = x_det.child(_U(endcap));
+  x_param  = x_det.child(_U(param));
+
   x_bottom = x_det.child(Unicode("bottom"));
   x_middle = x_det.child(Unicode("middle"));
   x_top    = x_det.child(Unicode("top"));
@@ -137,8 +146,8 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
 
   Volume motherVol = lcdd->pickMotherVolume(Ref_t(this));
   // Visualisation attributes
-  VisAttr vis = lcdd->visAttributes(x_det.visStr());
-  m_moduleVis = lcdd->visAttributes("HcalVis");
+  VisAttr vis  = lcdd->visAttributes(x_det.visStr());
+  m_moduleVis  = lcdd->visAttributes("HcalVis");
   m_chamberVis = lcdd->visAttributes("HcalChamberVis");
   m_scintillatorMat = lcdd->material("polystyrene");
 
@@ -167,6 +176,43 @@ void Hcal04::construct(LCDD& l, const xml_h& e, SensitiveDetector& sens)  {
     rpc.spacer_thickness =x_rpc.attr<double>(Unicode("spacer_thickness"));
     rpc.spacer_gap       =x_rpc.attr<double>(Unicode("spacer_gap"));
   }
+  { // Read the barrel layers
+    Layer layer;
+    barrel_layers.clear();
+    for(xml_coll_t c(x_barrel.child(_U(layers)),_X(layer)); c; ++c, ++i) {    
+      Component l(c);
+      layer.id = l.id();
+      layer.values.layer.dim_x    = l.dim_x();
+      layer.values.layer.y_offset = l.y_offset();
+      barrel_layers.push_back(layer);
+    }
+    assert(barrel.numLayer != barrel_layers.size());
+  }
+  { // Read the barrel end-layers
+    Layer layer;
+    end_layers.clear();
+    for(xml_coll_t c(x_barrel.child(_U(end_layers)),_U(end_layer)); c; ++c, ++i) {    
+      Component l(c);
+      layer.id = l.id();
+      layer.values.end_layer.dim_z    = l.dim_z();
+      layer.values.end_layer.z_offset = l.z_offset();
+      end_layers.push_back(layer);
+    }
+    assert(barrel.numLayer != end_layers.size());
+  }
+  { // Read the endcap layers
+    Layer layer;
+    barrel_layers.clear();
+    for(xml_coll_t c(x_endcap.child(_X(layers)),_X(layer)); c; ++c, ++i) {    
+      Component l(c);
+      layer.id = l.id();
+      layer.values.end_layer.z_offset = l.z_offset();
+      endcap_layers.push_back(layer);
+    }
+    assert(barrel.numLayer != end_layers.size());
+  }
+ 
+
 #if 0
   // The cell boundaries does not really exist as G4 volumes. So,
   // to avoid long steps over running  several cells, the 
@@ -504,12 +550,11 @@ void Hcal04::buildEndcaps(Volume assembly) {
 void Hcal04::EndcapChambers(G4LogicalVolume* MotherLog)    {
   // Chambers in the Hcal04::Endcaps
   // standard endcap chamber solid:
+
   db->exec("select chamber_radius AS pRMax, chamber_tickness/2. AS pDz, fiber_gap, center_box_size/2. AS pRMin from endcap_standard_module,hcal;");
   db->getTuple();
   
   // G4Polyhedra Envelope parameters
-  double phiStart = 0.;
-  double phiTotal = 360.;
   G4int numSide = 32;
   G4int numZPlanes = 2;
 
@@ -531,7 +576,7 @@ void Hcal04::EndcapChambers(G4LogicalVolume* MotherLog)    {
 
   if(SensitiveModel == "scintillator")    {
     //fg: introduce (empty) fiber gap - should be filled with fibres and cables
-    // - so far we fill it  with air ...
+    Volume vol(
     EndCapChamberLogical =
       new G4LogicalVolume(EndCapChamberSolid,
 			  CGAGeometryManager::GetMaterial("air"), 

@@ -343,6 +343,8 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_xmax;
   extern const Tag_t Attr_start_x;
   extern const Tag_t Attr_end_x;
+  extern const Tag_t Attr_dim_x;
+  extern const Tag_t Attr_x_offset;
 
   extern const Tag_t Attr_y;
   extern const Tag_t Attr_Y;
@@ -356,6 +358,8 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_ymax;
   extern const Tag_t Attr_start_y;
   extern const Tag_t Attr_end_y;
+  extern const Tag_t Attr_dim_y;
+  extern const Tag_t Attr_y_offset;
 
   extern const Tag_t Attr_z;
   extern const Tag_t Attr_Z;
@@ -369,6 +373,8 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_end_z;
   extern const Tag_t Attr_inner_z;
   extern const Tag_t Attr_outer_z;
+  extern const Tag_t Attr_dim_z;
+  extern const Tag_t Attr_z_offset;
 
 
   //================================ Shapes:  ================================
@@ -414,6 +420,7 @@ namespace DD4hep   { namespace XML  {
   // -- Calorimeter
   extern const Tag_t Tag_Air;
   extern const Tag_t Tag_layer;
+  extern const Tag_t Tag_layers;
   extern const Tag_t Tag_slice;
   extern const Tag_t Tag_slices;
   extern const Tag_t Tag_reflect;

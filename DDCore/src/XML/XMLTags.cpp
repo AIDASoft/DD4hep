@@ -80,12 +80,10 @@ namespace DD4hep   { namespace XML  {
   TAG(first);
   TAG(id);
   TAG(idspecref);
-  TAG(layer);
   TAG(limit);
   TAG(limitset);
   TAG(limitsetref);
   TAG(materialref);
-  TAG(module);
   TAG(module_component);
   TAG(physvol);
   TAG(physvolid);
@@ -101,7 +99,6 @@ namespace DD4hep   { namespace XML  {
   TAG(rotationref);
   TAG(sdref);
   TAG(second);
-  TAG(slice);
   TAG(solidref);
   TAG(tube);
   TAG(vis);
@@ -111,8 +108,8 @@ namespace DD4hep   { namespace XML  {
   TAG(volumeref);
   TAG(zplane);
 
-  TAG(alignments);
   TAG(alignment);
+  TAG(alignments);
   TAG(properties);
   TAG(attributes);
 
@@ -144,9 +141,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(hits_collection);
   TAG(identity_rot);
   TAG(identity_pos);
-  ATTR(inner_radius);
-  ATTR(inner_r);
-  ATTR(inner_z);
   ATTR(layer);
   ATTR(limits);
   ATTR(material);
@@ -154,9 +148,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(name);
   ATTR(nphi);
   ATTR(ntheta);
-  ATTR(outer_radius);
-  ATTR(outer_r);
-  ATTR(outer_z);
   ATTR(position);
   ATTR(rbg);
   ATTR(readout);
@@ -202,6 +193,8 @@ namespace DD4hep   { namespace XML  {
   ATTR(xmax);
   ATTR(start_x);
   ATTR(end_x);
+  ATTR(dim_x);
+  ATTR(x_offset);
 
   ATTR(y);
   ATTR(Y);
@@ -217,6 +210,8 @@ namespace DD4hep   { namespace XML  {
   ATTR(ymax);
   ATTR(start_y);
   ATTR(end_y);
+  ATTR(dim_y);
+  ATTR(y_offset);
 
   ATTR(z);
   ATTR(Z);
@@ -230,6 +225,10 @@ namespace DD4hep   { namespace XML  {
   ATTR(zmax);
   ATTR(start_z);
   ATTR(end_z);
+  ATTR(dim_z);
+  ATTR(z_offset);
+  ATTR(inner_z);
+  ATTR(outer_z);
 
   // -- Radial stuff
   ATTR(r);
@@ -243,6 +242,10 @@ namespace DD4hep   { namespace XML  {
   ATTR(rmax1);
   ATTR(rmax2);
   ATTR(radius);
+  ATTR(inner_radius);
+  ATTR(inner_r);
+  ATTR(outer_radius);
+  ATTR(outer_r);
 
   ATTR(rotation);
   ATTR(segmentation);
@@ -324,11 +327,17 @@ namespace DD4hep   { namespace XML  {
   TAG(polyhedra);
   ATTR(numsides);
 
+  // -- Detector building and composition
+  TAG(slice);
+  TAG(slices);
+  TAG(layer);
+  TAG(layers);
+  TAG(stave);
+  TAG(staves);
+  TAG(module);
+  TAG(modules);
 
   /// Compact XML
-  TAG(slices);
-  TAG(staves);
-  TAG(stave);
   TAG(sensor);
   TAG(wedge);
   ATTR(gap);
@@ -383,7 +392,6 @@ namespace DD4hep   { namespace XML  {
   ATTR(nz);
   ATTR(zstart);
 
-  TAG(modules);
   TAG(row);
   ATTR(nModules);
   ATTR(moduleHeight);
