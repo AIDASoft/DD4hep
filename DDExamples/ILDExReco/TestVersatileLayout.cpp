@@ -14,7 +14,9 @@
 #include <string>
 #include "GearTPC.h"
 #include "TPCModuleData.h"
-
+#include "DD4hep/Shapes.h"
+#include "TGeoTube.h"
+#include "TGeoMatrix.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -40,7 +42,7 @@ int main(int argc,char** argv)  {
 //   for(int p=0;p<mymods.size();p++)
 //     npads+=tpc.getModule(p,0).getNPads();
 //  cout << "-----> NPads EP0:\t " << npads << endl;
-  cout << "-----> Inside Module (0,0):\t "<<tpc.isInsideModule(0,0,0)<<endl;
+//  cout << "-----> Inside Module (0,0):\t "<<tpc.isInsideModule(0,0,0)<<endl;
   cout << "-----> Nearest Module (0,0):\t "<<tpc.getNearestModule(0,0,0).getID()<<endl;
   cout << "TPC Module functionality:"<<endl;
 
@@ -50,7 +52,9 @@ int main(int argc,char** argv)  {
   for(int m=0;m<mymods.size();m++)
     {
       TPCModule mod=mymods[m];
-      cout<<mod.id()<<" "<<mod.getPadType()<<" "<<mod.getNPads()<<" "<<mod.getNRows()<<endl;
+      Tube tube=mod.volume().solid();
+      double x  = mod.placement()->GetMatrix()->GetTranslation()[0];
+      cout<<mod.id()<<" "<<mod.getPadType()<<" "<<mod.getNPads()<<" "<<mod.getNRows()<<" "<<x<<" "<<tube->GetRmin()<<endl;
     }
 
   TPCModule mod=mymods[0];
@@ -68,13 +72,16 @@ int main(int argc,char** argv)  {
 // 	    cout<<"FAILED: "<<mod.getPadIndex(r,p)<<" "<<mod.getNearestPad(x,y)<<endl;
 // 	}
 //     }
+  double xstart  = mod.placement()->GetMatrix()->GetTranslation()[0];
+  Tube tube=mod.volume().solid();
   for(int p=0;p<10;p++)
     {
-      double x=0;
-      double y=220+10*p;
+      double y=0;
+      double x=tube->GetRmin()+2+10*p;
+      TPCModule mod=tpc.getNearestModule(x,y,0);
       int index=  mod.getNearestPad(x,y);
       std::vector<double> center= mod.getPadCenter(index);
-      cout<<x-center[0]<<" "<<y-center[1]<<endl;
+      cout<<mod.id()<<" "<<x-center[0]<<" "<<y-center[1]<<endl;
     }
   return 0;
 }

@@ -21,8 +21,5 @@ namespace DD4hep {
     void setGasVolume(Ref_t obj);
     void setCathode(Ref_t obj);
     void setEndPlate(Ref_t obj, int i);
-    int getNModules() const;
-    double getDriftLength() const;
-    void setDriftLength(double);
   };
 }

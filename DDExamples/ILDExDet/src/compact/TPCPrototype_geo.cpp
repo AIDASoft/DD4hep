@@ -9,6 +9,7 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Detector.h"
+#include "TPCData.h"
 #include "TPCModuleData.h"
 #include "TPCModule.h"
 #include "RectangularPadRowLayout.h"
@@ -22,7 +23,12 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_comp_t  x_tube (x_det.child(_X(tubs)));
   string      name  = x_det.nameStr();
   Material    mat    (lcdd.material(x_det.materialStr()));
-  DetElement  tpc    (name,x_det.typeStr(),x_det.id());
+  //if data is needed do this  
+  Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
+  DetElement tpc(tpcData, name, x_det.typeStr());
+  tpcData->id = x_det.id();
+  //else do this
+  // DetElement  tpc    (name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
  
@@ -42,9 +48,22 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     bool        reflect   = px_det.reflect();
  
     part_vol.setVisAttributes(lcdd,px_det.visStr());
-    //Endplate
+    //cache the important volumes in TPCData for later use without having to know their name
+    switch(part_det.id())
+      {
+      case 2:
+	tpcData->innerWall=part_det;
+      case 3:
+	tpcData->outerWall=part_det;
+      case 4:
+	tpcData->gasVolume=part_det;
+      case 5:
+	tpcData->cathode=part_det;
+      }
+  //Endplate
     if(part_det.id()== 0){
-      //modules
+       tpcData->endplate=part_det;
+       //modules
       int mdcount=0;
       for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
 	xml_comp_t  modules  (m);
@@ -98,6 +117,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1); 
       rdet.setPlacement(part_phv2);
+      tpcData->endplate2=rdet;
       tpc.add(rdet);
     }
   }//subdetectors

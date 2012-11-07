@@ -17,11 +17,11 @@ namespace DD4hep {
     typedef Geometry::Ref_t Ref_t;
     Ref_t outerWall;
     Ref_t innerWall;
-    Ref_t gas;
+    Ref_t gasVolume;
     Ref_t cathode;
+    //positive endplate
     Ref_t endplate;
+    //negative endplate
     Ref_t endplate2;
-    int nmodules;
-    double driftlength;
   };
 }

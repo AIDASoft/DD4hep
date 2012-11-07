@@ -9,6 +9,7 @@
 //====================================================================
 
 #include "GearTPC.h"
+#include "TPCData.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Shapes.h"
 #include "TFile.h"
@@ -29,14 +30,16 @@ namespace DD4hep {
   double GearTPC::getInnerRadius() const {
     // finding child by name not optimal, maybe better
     // to store the pointer in TPCData for quicker access
-    DetElement innerWall   = child("TPC_InnerWall");
+    DetElement innerWall=data<TPCData>()->innerWall;
+     // DetElement innerWall   = child("TPC_InnerWall");
     if(!innerWall.isValid())
       throw OutsideGeometryException("Inner TPC wall not found!");
     Tube       tube  = innerWall.volume().solid();
     return tube->GetRmin();
   }
   double GearTPC::getOuterRadius() const {
-    DetElement outerWall   = child("TPC_OuterWall");
+    //DetElement outerWall   = child("TPC_OuterWall");
+    DetElement outerWall   = data<TPCData>()->outerWall;
     if(!outerWall.isValid())
       throw OutsideGeometryException("Outer TPC wall not found!");
     Tube       tube  = outerWall.volume().solid();
@@ -47,7 +50,8 @@ namespace DD4hep {
     //defined as distance between cathode and endplate surface
     //for now assume symmetric setups, meaining if there are two endplates
     //they are symmetric around the cathode
-    DetElement cathode   = child("TPC_Cathode");
+    // DetElement cathode   = child("TPC_Cathode");
+    DetElement cathode   = data<TPCData>()->cathode;
     if(!cathode.isValid())
       throw OutsideGeometryException("TPC cathode not found!");
     //positions in z
@@ -139,7 +143,7 @@ namespace DD4hep {
   }
   
   
-  TPCModule GearTPC::getNearestModule(double c0, double c1, int endplate) const{
+  TPCModule GearTPC::getNearestModule(double c0, double c1, int endplate=0) const{
     DetElement ep=getEndPlate(endplate);
     double zpos=getEndPlateZPosition(endplate);
     TGeoManager *geoManager = ep.volume()->GetGeoManager();
@@ -193,9 +197,11 @@ namespace DD4hep {
  DetElement GearTPC::getEndPlate(int endplate) const {
     DetElement ep;
     if(endplate==1)
-      ep= child("TPC_EndPlate_negativ");
+      //ep= child("TPC_EndPlate_negativ");
+      ep=data<TPCData>()->endplate2 ;
     else
-      ep= child("TPC_EndPlate");
+      //ep= child("TPC_EndPlate");
+       ep=data<TPCData>()->endplate ;
     if(!ep.isValid())
       throw OutsideGeometryException("TPC endplate not found!");
 
@@ -204,7 +210,8 @@ namespace DD4hep {
  
   //access to postion of tpc gas volume
   std::vector<double> GearTPC::getPosition() const{
-    DetElement gas  = child("TPC_GasVolume");
+    // DetElement gas  = child("TPC_GasVolume");
+    DetElement gas  =  data<TPCData>()->gasVolume;
     TGeoMatrix *nm=gas.placement()->GetMatrix();
     const Double_t *trans=nm->GetTranslation();
     vector<double> pos;
