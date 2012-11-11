@@ -119,24 +119,24 @@ namespace DD4hep {
       /// Default constructor
       Position() : x(0), y(0), z(0) {}
       /// Initializing constructor
-      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {        }
+      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {         }
       /// Is it a identity rotation ?
-      bool isNull() const                             { return x==0 && y==0 && z==0;       }
+      bool isNull() const                             { return x==0 && y==0 && z==0;        }
       /// Ceck 2 positions for equality
-      bool operator==(const Position& c)  const       { return x==c.x && y==c.y && z==c.z; }
-      /// Ceck 2 positions for in-equality
-      bool operator!=(const Position& c)  const       { return x!=c.x || y!=c.y || x!=c.z; }
+      bool operator==(const Position& c)  const       { return x==c.x && y==c.y && z==c.z;  }
+      /// Ceck 2 positions for in-equality  
+      bool operator!=(const Position& c)  const       { return x!=c.x || y!=c.y || x!=c.z;  }
       /// Negation of the direction
-      Position operator - () const                    { return Position(-x,-y,-z);         }
+      Position operator - () const                    { return Position(-x,-y,-z);          }
       /// Scalar multiplication
-      Position& operator *=(double a)                 { x *= a;y *= a;z *= a;return *this; }
+      Position& operator *=(double a)                 { x *= a;y *= a;z *= a;return *this;  }
       /// Addition operator
-      Position& operator +=(const Position& p)        { x+=p.x;y+=p.y;z+=p.z;return *this; }
+      Position& operator +=(const Position& p)        { x+=p.x;y+=p.y;z+=p.z;return *this;  }
       /// Subtraction operator
-      Position& operator -= (const Position& p)       { x-=p.x;y-=p.y;z-=p.z;return *this; }
+      Position& operator -= (const Position& p)       { x-=p.x;y-=p.y;z-=p.z;return *this;  }
 
       /// Position length
-      double length() const                           { return sqrt(x*x + y*y + z*z);      }
+      double length() const                           { return sqrt(x*x + y*y + z*z);       }
       Position& setLength(double new_length) {
 	      double len=length();
 	      if ( len>std::numeric_limits<double>::epsilon() ) {
@@ -152,6 +152,17 @@ namespace DD4hep {
         }
         return *this;
       }
+      /// Rho - radius in cylindrical coordinates
+      double rho() const                              { return std::sqrt(x*x+y*y);          }
+      /// Phi - rotation angle around z in cylindrical coordinates
+      double phi() const
+      { return x == 0.0 && y == 0.0 ? 0.0 : std::atan2(x,y);                                }
+      /// Theta - rotation angle around x in cylindrical coordinates
+      double theta() const
+      { return x == 0.0 && y == 0.0 && z == 0.0 ? 0.0 : std::atan2(std::sqrt(x*x+y*y),y);   }
+      /// cos(Theta angle): optimisation for std::cos(pos.theta())
+      double cosTheta() const
+      { return x == 0.0 && y == 0.0 && z == 0.0 ? 1.0 : z/std::sqrt(x*x+y*y*z*z);           }
       /// Rotates the position vector around the x-axis.
       Position& rotateX(double angle_in_rad);
       /// Rotates the position vector around the y-axis.
@@ -160,9 +171,9 @@ namespace DD4hep {
       Position& rotateZ(double angle_in_rad);
 
       /// Access to array like coordinates
-      const double* coordinates() const               { return &x;                         }
+      const double* coordinates() const               { return &x;                          }
       /// Initializer for all member variables
-      Position& set(double xv, double yv, double zv)  { x=xv; y=yv; z=zv; return *this;    }
+      Position& set(double xv, double yv, double zv)  { x=xv; y=yv; z=zv; return *this;     }
     };
 #ifdef _WIN32
 #pragma pack(pop,DD4Hep_Objects_Position)
@@ -308,6 +319,8 @@ namespace DD4hep {
       Material(const std::string& name);
       /// String representation of this object
       std::string toString()  const;
+      /// Access the radiation length of the undrelying material
+      double radLength() const;
     };
 
     /** @class VisAttr Objects.h

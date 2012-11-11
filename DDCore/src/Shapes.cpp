@@ -31,6 +31,10 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+namespace {
+  static TGeoIdentity s_identity;
+}
+
 template<typename T> void Solid_type<T>::_setDimensions(double* param) {
   this->ptr()->SetDimensions(param);
   this->ptr()->ComputeBBox();
@@ -173,15 +177,15 @@ ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, d
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void Tube::make(const string& name, double rmin, double rmax, double z, double deltaPhi)
+void Tube::make(const string& name, double rmin, double rmax, double startPhi, double z, double deltaPhi)
 {
-  _assign(new TGeoTubeSeg(rmin,rmax,z,0.,RAD_2_DEGREE*deltaPhi),name,"tube");
+  _assign(new TGeoTubeSeg(rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube");
 }
 
 /// Set the tube dimensions
-Tube& Tube::setDimensions(double rmin, double rmax, double z, double deltaPhi)
+Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
-  double params[] = {rmin,rmax,z,0.,RAD_2_DEGREE * deltaPhi};
+  double params[] = {rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE * deltaPhi};
   _setDimensions(params);
   return *this;
 }
@@ -339,6 +343,18 @@ Trap::Trap( double z,
   _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1,x1,x2,alpha1,y2,x3,x4,alpha2),"","trap");
 }
 
+/// Constructor to be used when creating a new anonymous object with attribute initialization
+Trap::Trap( double pz, double py, double px, double pLTX) {
+  double z      = pz/2e0;
+  double theta  = 0e0;
+  double phi    = 0e0;
+  double y1     = py/2e0;
+  double x1     = px/2e0;
+  double x2     = pLTX/2e0;
+  double alpha1 = (pLTX-px)/py;
+  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1,x1,x2,alpha1,y1,x1,x2,alpha1),"","trap");
+}
+
 /// Set the trap dimensions
 Trap& Trap::setDimensions(double z,double theta,double phi,
                          double y1,double x1,double x2,double alpha1,
@@ -387,7 +403,7 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double 
 }
 
 /// Constructor to be used when creating a new object
-PolyhedraRegular::PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen)  
+PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, double rmax, double zlen)  
 {
   if ( rmin<0e0 || rmin>rmax )
     throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
@@ -395,7 +411,7 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double phi_start, double rmin, do
     throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
   _assign(new TGeoPgon(),"","polyhedra",false);
   double params[] = {
-    phi_start,
+    phistart,
     RAD_2_DEGREE * 2 * M_PI,
     double(nsides),
     2e0,
@@ -405,124 +421,126 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double phi_start, double rmin, do
   _setDimensions(&params[0]);
 }
 
+/// Constructor to be used when creating a new object
+PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2])  
+{
+  if ( rmin<0e0 || rmin>rmax )
+    throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
+  else if ( rmax<0e0 )
+    throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
+  _assign(new TGeoPgon(),"","polyhedra",false);
+  double params[] = {
+    RAD_2_DEGREE * 2 * M_PI,
+    RAD_2_DEGREE * 2 * M_PI,
+    double(nsides),
+    2e0,
+    zplanes[0],rmin,rmax,
+    zplanes[1],rmin,rmax
+  };
+  _setDimensions(&params[0]);
+}
+
+/// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
+SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2)
+{
+  TGeoSubtraction* sub  = new TGeoSubtraction(shape1,shape2,&s_identity,&s_identity);
+  _assign(new TGeoCompositeShape("",sub), "", "subtraction");
+}
+
 /// Constructor to be used when creating a new object. Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)
 {
-  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
-  TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,0,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "subtraction");
+  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  TGeoSubtraction* sub  = new TGeoSubtraction(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape("",sub), "", "subtraction");
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
-  static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
   TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-  TGeoCombiTrans* first  = new TGeoCombiTrans("_first",0,0,0,&inverse_identity_rot);
-  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
-  second->SetRotation(rotation.Inverse());
-
-  TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,first,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "subtraction");
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  trans->SetRotation(rotation.Inverse());
+  TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape("",sub), "", "subtraction");
 }
 
 /// Constructor to be used when creating a new object
 SubtractionSolid::SubtractionSolid(const string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
-  static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
   TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-  TGeoCombiTrans* first  = new TGeoCombiTrans((name+"_first").c_str(),0,0,0,&inverse_identity_rot);
-  TGeoCombiTrans* second = new TGeoCombiTrans((name+"_secnd").c_str(),pos.x,pos.y,pos.z,0);
-  second->SetRotation(rotation.Inverse());
-
-  TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,first,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape(name.c_str(),sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "subtraction");
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  trans->SetRotation(rotation.Inverse());
+  TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape(name.c_str(),sub), name, "subtraction");
 }
 
-/// Constructor to be used when creating a new object
+/// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
+UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2)
+{
+  TGeoUnion*        uni = new TGeoUnion(shape1,shape2,&s_identity,&s_identity);
+  _assign(new TGeoCompositeShape("",uni), "", "union");
+}
+
+/// Constructor to be used when creating a new object. Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)
 {
-  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
-  TGeoUnion* sub = new TGeoUnion(shape1,shape2,0,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "union");
+  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  TGeoUnion*        uni = new TGeoUnion(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape("",uni), "", "union");
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
-  static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
   TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-  TGeoCombiTrans* first  = new TGeoCombiTrans("_first",0,0,0,&inverse_identity_rot);
-  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
-  second->SetRotation(rotation.Inverse());
-
-  TGeoUnion* sub = new TGeoUnion(shape1,shape2,first,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "union");
+  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  trans->SetRotation(rotation.Inverse());
+  TGeoUnion*        uni = new TGeoUnion(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape("",uni), "", "union");
 }
 
 /// Constructor to be used when creating a new object
 UnionSolid::UnionSolid(const string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
-  static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
   TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-  TGeoCombiTrans* first  = new TGeoCombiTrans((name+"_first").c_str(),0,0,0,&inverse_identity_rot);
-  TGeoCombiTrans* second = new TGeoCombiTrans((name+"_secnd").c_str(),pos.x,pos.y,pos.z,0);
-  second->SetRotation(rotation.Inverse());
-
-  TGeoUnion* sub = new TGeoUnion(shape1,shape2,first,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape(name.c_str(),sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "union");
+  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  trans->SetRotation(rotation.Inverse());
+  TGeoUnion* uni = new TGeoUnion(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape(name.c_str(),uni), name, "union");
 }
 
-/// Constructor to be used when creating a new object
+/// Constructor to be used when creating a new object. Position is identity.
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)    {
-  //TGeoCombiTrans*   second = pos.x*pos.x+pos.y*pos.y+pos.z*pos.z > 0 ? new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0) : 0;
-  TGeoCombiTrans*   second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
-  TGeoIntersection*    sub = new TGeoIntersection(shape1,shape2,0,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "intersection");
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape("",inter), "", "intersection");
+}
+
+/// Constructor to be used when creating a new object. Position is identity, Rotation is identity rotation
+IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2)    {
+  TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,&s_identity,&s_identity);
+  _assign(new TGeoCompositeShape("",inter), "", "intersection");
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
-  static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
   TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-  TGeoCombiTrans* first  = new TGeoCombiTrans("_first",0,0,0,&inverse_identity_rot);
-  TGeoCombiTrans* second = new TGeoCombiTrans("_secnd",pos.x,pos.y,pos.z,0);
-  second->SetRotation(rotation.Inverse());
-
-  TGeoIntersection*    sub = new TGeoIntersection(shape1,shape2,first,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape("",sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "intersection");
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  trans->SetRotation(rotation.Inverse());
+  TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape("",inter), "", "intersection");
 }
 
 /// Constructor to be used when creating a new object
 IntersectionSolid::IntersectionSolid(const string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
-  static TGeoRotation inverse_identity_rot(TGeoRotation("",0,0,0).Inverse());
   TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-  TGeoCombiTrans* first  = new TGeoCombiTrans((name+"_first").c_str(),0,0,0,&inverse_identity_rot);
-  TGeoCombiTrans* second = new TGeoCombiTrans((name+"_secnd").c_str(),pos.x,pos.y,pos.z,0);
-  second->SetRotation(rotation.Inverse());
-
-  TGeoIntersection*    sub = new TGeoIntersection(shape1,shape2,first,second);
-  TGeoCompositeShape* comp = new TGeoCompositeShape(name.c_str(),sub);
-  comp->ComputeBBox();
-  _assign( comp, "", "intersection");
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.x,pos.y,pos.z,0);
+  trans->SetRotation(rotation.Inverse());
+  TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,&s_identity,trans);
+  _assign(new TGeoCompositeShape(name.c_str(),inter),name,"intersection");
 }
 
 #define INSTANTIATE(X) template class DD4hep::Geometry::Solid_type<X>
