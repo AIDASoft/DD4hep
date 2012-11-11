@@ -354,6 +354,7 @@ void Volume::setVisAttributes(const VisAttr& attr) const   {
 
     m_element->SetLineWidth(10);
     m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
+    m_element->SetAttBit(TGeoAtt::kVisContainers,kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
   }
   data<Object>()->vis = attr;
