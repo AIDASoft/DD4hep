@@ -37,6 +37,7 @@
 #include <iostream>
 #include <iomanip>
 
+#include "G4VisAttributes.hh"
 #include "G4ProductionCuts.hh"
 #include "G4VUserRegionInformation.hh"
 // Geant4 include files
@@ -338,12 +339,12 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
   if ( !vol ) {
     const TGeoVolume* v = volume;
     Volume           _v = Ref_t(v);
-    string      n       = v->GetName();
-    TGeoMedium* m       = v->GetMedium();
-    TGeoShape*  s       = v->GetShape();
-    G4VSolid*   solid   = (G4VSolid*)handleSolid(s->GetName(),s);
-    G4Material* medium  = (G4Material*)handleMaterial(m->GetName(),m);
-
+    VisAttr          vis    = _v.visAttributes();
+    string           n      = v->GetName();
+    TGeoMedium*      m      = v->GetMedium();
+    TGeoShape*       s      = v->GetShape();
+    G4VSolid*        solid  = (G4VSolid*)handleSolid(s->GetName(),s);
+    G4Material*      medium = (G4Material*)handleMaterial(m->GetName(),m);
     if ( !solid )   {
       throw runtime_error("G4Converter: No Geant4 Solid present for volume:"+n);
     }
@@ -371,6 +372,10 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       }
     }
     vol = new G4LogicalVolume(solid,medium,n,0,sd,l);
+    if ( vis.isValid() ) {
+      G4VisAttributes* attr   = (G4VisAttributes*)handleVis(vis.name(),vis.ptr());
+      if ( attr ) vol->SetVisAttributes(attr);
+    }
     info.g4Volumes[v] = vol;
     if ( sd )   {
       cout << "G4Cnv::volume:    + " << name << " <> " << vol->GetName() 
@@ -550,6 +555,33 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
   return g4;
 }
 
+/// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
+void* Geant4Converter::handleVis(const string& name, const TNamed* vis) const  {
+  G4GeometryInfo& info = data();
+  G4VisAttributes* g4 = info.g4Vis[vis];
+  if ( !g4 )   {
+    float   r=0, g=0, b=0;
+    VisAttr attr  = Ref_t(vis);
+    int     style = attr.lineStyle();
+    attr.rgb(r,g,b);
+    g4 = new G4VisAttributes(attr.visible(),G4Colour(r,g,b,attr.alpha()));
+    //g4->SetLineWidth(attr->GetLineWidth());
+    g4->SetDaughtersInvisible(attr.showDaughters());
+    if ( style == VisAttr::SOLID ) {
+      g4->SetLineStyle(G4VisAttributes::unbroken);
+      g4->SetForceWireframe(false);
+      g4->SetForceSolid(true);
+    }
+    else if ( style == VisAttr::WIREFRAME || style == VisAttr::DASHED ) {
+      g4->SetLineStyle(G4VisAttributes::dashed);
+      g4->SetForceSolid(false);
+      g4->SetForceWireframe(true);
+    }
+    info.g4Vis[vis] = g4;
+  }
+  return g4;
+}
+
 /// Handle the geant 4 specific properties
 void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
   map<string,string> processors;
@@ -706,6 +738,9 @@ void Geant4Converter::create(DetElement top) {
 
   handle(this, geo.solids,    &Geant4Converter::handleSolid);
   cout << "++ Handled " << geo.solids.size() << " solids." << endl;
+
+  handle(this, geo.vis,       &Geant4Converter::handleVis);
+  cout << "++ Handled " << geo.solids.size() << " visualization attributes." << endl;
 
   handleMap(this, geo.sensitives, &Geant4Converter::handleSensitive);
   cout << "++ Handled " << geo.sensitives.size() << " sensitive detectors." << endl;
