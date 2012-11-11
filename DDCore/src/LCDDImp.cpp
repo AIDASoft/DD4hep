@@ -53,6 +53,15 @@ LCDDImp::LCDDImp() : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_f
     gGeoManager->SetCurrentNavigator(0);
     cout << "Navigator:" << (void*)gGeoManager->GetCurrentNavigator() << endl;
   }
+  VisAttr attr("invisible");
+  attr.setColor(0.5,0.5,0.5);
+  attr.setAlpha(1);
+  attr.setLineStyle(VisAttr::SOLID);
+  attr.setDrawingStyle(VisAttr::SOLID);
+  attr.setVisible(false);
+  attr.setShowDaughters(true);
+  addVisAttribute(attr);
+  m_invisibleVis = attr;
 }
 
 /// Standard destructor
@@ -69,6 +78,23 @@ LCDD& LCDDImp::addDetector(const Ref_t& x)    {
   m_detectors.append(x);
   m_world.add(DetElement(x));
   return *this;
+}
+
+/// Typed access to constants: access string values
+string LCDDImp::constantAsString(const string& name) const {
+  Ref_t c = constant(name);
+  if ( c.isValid() ) return c->GetTitle();
+  throw runtime_error("LCDD: The constant "+name+" is not known to the system.");
+}
+
+/// Typed access to constants: long values
+long LCDDImp::constantAsLong(const string& name) const {
+  return _toLong(constantAsString(name));
+}
+
+/// Typed access to constants: double values
+double LCDDImp::constantAsDouble(const string& name) const {
+  return _toDouble(constantAsString(name));
 }
 
 /// Add a field component by named reference to the detector description

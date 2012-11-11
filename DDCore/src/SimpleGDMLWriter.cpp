@@ -258,9 +258,9 @@ void SimpleGDMLWriter::handleDefines(const LCDD::HandleMap& defs)   const {
 }
 
 /// Dump all visualisation specs in LCDD format to output stream
-void SimpleGDMLWriter::handleVisualisation(const set<TNamed*>& vis)   const {
+void SimpleGDMLWriter::handleVisualisation(const VisRefs& vis)   const {
   m_output << "\t<display>" << endl;
-  for(set<TNamed*>::const_iterator i=vis.begin(); i != vis.end(); ++i) {
+  for(VisRefs::const_iterator i=vis.begin(); i != vis.end(); ++i) {
     VisAttr v = Ref_t(*i);
     if ( v.isValid() ) {
       float r=1., g=1., b=1., alpha=1.;

@@ -39,6 +39,7 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct LCDD {
+
       typedef std::map<std::string,Handle<> > HandleMap;
       typedef std::map<std::string,std::string> PropertyValues;
       typedef std::map<std::string,PropertyValues>  Properties;
@@ -57,6 +58,9 @@ namespace DD4hep {
       virtual Material air() const = 0;
       /// Return handle to material describing vacuum
       virtual Material vacuum() const = 0;
+      /// Return handle to "invisible" visualization attributes
+      virtual VisAttr  invisible() const = 0;
+
       /// Return reference to the top-most (world) detector element
       virtual DetElement world() const = 0;
       /// Return reference to detector element with all tracker devices.
@@ -93,8 +97,18 @@ namespace DD4hep {
 
       virtual Volume            pickMotherVolume(const DetElement& sd)     const = 0;
 
+      /// Typed access to constants: access string values
+      virtual std::string       constantAsString(const std::string& name) const = 0;
+      /// Typed access to constants: long values
+      virtual long              constantAsLong(const std::string& name) const = 0;
+      /// Typed access to constants: double values
+      virtual double            constantAsDouble(const std::string& name) const = 0;
+
       /// Retrieve a constant by it's name from the detector description
       virtual Constant          constant(const std::string& name)          const = 0;
+      /// Typed access to constants: access any type values
+      template<class T> T       constant(const std::string& name) const;
+
       /// Retrieve a matrial by it's name from the detector description
       virtual Material          material(const std::string& name)          const = 0;
       /// Retrieve a id descriptor by it's name from the detector description
@@ -170,6 +184,50 @@ namespace DD4hep {
       ///---Factory method-------
       static LCDD& getInstance(void);
     };
+
+
+    /*
+     *   The following are convenience implementations to access constants by type.
+     *   I do not think this violates the interface approach, but it is so much 
+     *   more intuitiv to say constant<int>(name) than constantAsInt(name).
+     */
+
+    /// Typed access to constants: short values
+    template <> inline short LCDD::constant<short>(const std::string& name)  const
+    {  return (short)constantAsLong(name);                  }
+
+    /// Typed access to constants: unsigned short values
+    template <> inline unsigned short LCDD::constant<unsigned short>(const std::string& name)  const
+    {  return (unsigned short)constantAsLong(name);         }
+
+    /// Typed access to constants: integer values
+    template <> inline int LCDD::constant<int>(const std::string& name)  const
+    {  return (int)constantAsLong(name);                    }
+
+    /// Typed access to constants: unsigned integer values
+    template <> inline unsigned int LCDD::constant<unsigned int>(const std::string& name)  const
+    {  return (unsigned int)constantAsLong(name);           }
+
+    /// Typed access to constants: long values
+    template <> inline long LCDD::constant<long>(const std::string& name)  const
+    {  return constantAsLong(name);                         }
+
+    /// Typed access to constants: unsigned long values
+    template <> inline unsigned long LCDD::constant<unsigned long>(const std::string& name)  const
+      {  return (unsigned long)constantAsLong(name);        }
+
+    /// Typed access to constants: float values
+    template <> inline float LCDD::constant<float>(const std::string& name)  const
+    {  return (float)constantAsDouble(name);                }
+
+    /// Typed access to constants: double values
+    template <> inline double LCDD::constant<double>(const std::string& name)  const
+    {  return constantAsDouble(name);                       }
+
+    /// Typed access to constants: string values
+    template <> inline std::string LCDD::constant<std::string>(const std::string& name) const 
+    {  return constantAsString(name);                       }
+
   }       /* End namespace Geometry  */
 }         /* End namespace DD4hep   */
 #endif    /* DD4HEP_LCDD_LCDD_H     */

@@ -181,4 +181,10 @@ namespace {
   template <> Ref_t DetElementFactory<det_element_##name>::create(LCDD& l,const XML::Handle_t& e,SensitiveDetector& s){return func(l,e,s);}}}\
   PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
 
+#define DECLARE_SUBDETECTOR(name,func) \
+  namespace DD4hep { namespace Geometry { namespace { struct det_element_##name {}; }                                       \
+  using DD4hep::Geometry::det_element_##name;                                                                               \
+  template <> Ref_t DetElementFactory<det_element_##name>::create(LCDD& l,const XML::Handle_t& e,SensitiveDetector&){return func(l,e);}}}\
+  PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
+
 #endif // DD4HEP_FACTORIES_H
