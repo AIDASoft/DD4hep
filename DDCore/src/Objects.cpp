@@ -140,6 +140,17 @@ Material::Material(const string& name)   {
   m_element = mat;
 }
 
+/// Access the radiation length of the undrelying material
+double Material::radLength() const {
+  Handle<TGeoMedium>  val(*this);
+  if ( val.isValid() ) {
+    TGeoMaterial* m = val->GetMaterial();
+    if ( m ) return m->GetRadLen();
+    throw runtime_error("The medium "+string(val->GetName())+" has an invalid material reference!");
+  }
+  throw runtime_error("Attempt to access radiation length from invalid material handle!");
+}
+
 /// String representation of this object
 string Material::toString()  const {
   Handle<TGeoMedium>  val(*this);
