@@ -162,6 +162,10 @@ string DetElement::Component::visStr()  const  {
   return m_element.hasAttr(Attr_vis) ? m_element.attr<string>(Attr_vis) : string();
 }
 
+string DetElement::Component::readoutStr()  const  {
+  return m_element.hasAttr(Attr_readout) ? m_element.attr<string>(Attr_readout) : string();
+}
+
 string DetElement::Component::regionStr() const {
   return m_element.hasAttr(Attr_region) ? m_element.attr<string>(Attr_region) : string();
 }

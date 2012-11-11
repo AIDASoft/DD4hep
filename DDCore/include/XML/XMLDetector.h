@@ -308,6 +308,8 @@ namespace DD4hep {
 	std::string   typeStr() const;
 	/// Access module attribute as STL string
         std::string   moduleStr() const;
+	/// Access readout attribute as STL string
+        std::string   readoutStr() const;
 	/// Access material attribute as STL string
         std::string   materialStr() const;
 	/// Access vis attribute as STL string. If not present empty return empty string
