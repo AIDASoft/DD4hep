@@ -13,12 +13,12 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
+static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
   Rotation    reflect_rot(M_PI,0,0);
   DetElement  sdet(name,x_det.id());
-  Assembly    maskVol(name+"_assembly");
+  Assembly    maskVol(name);
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
   xml_comp_t  x_masks = x_det.child(Unicode("masks"));
   xml_comp_t  x_quad  = x_det.child(Unicode("quadrupole"));
@@ -34,7 +34,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     z0 = (z1+z2)/2.0;
 
     Tube   tub(rmin,rmax,dz);
-    Volume vol(name+_toString(id,"_mask%d"),tub,lcdd.material(x_m.materialStr()));
+    Volume vol(_toString(id,"_mask%d"),tub,lcdd.material(x_m.materialStr()));
     vol.setVisAttributes(lcdd.visAttributes(x_m.visStr()));
     pv = maskVol.placeVolume(vol,Position(0,0,z0));
     pv.addPhysVolID("mask",id);
@@ -52,19 +52,20 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     Tube  iron(x_yoke.rmin(),x_yoke.rmax(),yoke_dz);
     Tube  cave(x_coil.rmin(),x_coil.rmax(),coil_dz+10.0);
     SubtractionSolid yoke(iron,cave,Position(0,0,coil_pos - yoke_pos + 10.),Rotation());
-    Volume vol(name+"_yoke",yoke,lcdd.material(x_yoke.materialStr()));
+    Volume vol("yoke",yoke,lcdd.material(x_yoke.materialStr()));
     vol.setVisAttributes(lcdd.visAttributes(x_yoke.visStr()));
     maskVol.placeVolume(vol,Position(0,0, yoke_pos));
     maskVol.placeVolume(vol,Position(0,0,-yoke_pos),reflect_rot);
   }
   {  // Place coil
     Tube   tub(x_coil.rmin(),x_coil.rmax(),coil_dz);
-    Volume vol(name+"_coil",tub,lcdd.material(x_coil.materialStr()));
+    Volume vol("coil",tub,lcdd.material(x_coil.materialStr()));
     vol.setVisAttributes(lcdd.visAttributes(x_coil.visStr()));
     maskVol.placeVolume(vol,Position(0,0, coil_pos));
     maskVol.placeVolume(vol,Position(0,0,-coil_pos),reflect_rot);
   }
-  motherVol.placeVolume(maskVol);
+  pv = motherVol.placeVolume(maskVol);
+  sdet.setPlacement(pv);
   return sdet;
 }
 

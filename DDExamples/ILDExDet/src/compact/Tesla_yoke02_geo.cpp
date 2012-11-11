@@ -18,7 +18,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
   DetElement  sdet(name,x_det.id());
-  Assembly    assembly(name+"_assembly");
+  Assembly    assembly(name);
   xml_comp_t  x_barrel = x_det.child(Unicode("barrel"));
   xml_comp_t  x_endcap = x_det.child(Unicode("endcap"));
   param_t barrel = { x_barrel.inner_r(), x_barrel.outer_r(), x_barrel.zhalf()};
@@ -43,7 +43,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     assembly.placeVolume(volume,Position(0,0,-x_endcap.z()));
   }
 
-  lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  sdet.setPlacement(pv);
   return sdet;
 }
 

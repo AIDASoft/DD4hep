@@ -60,7 +60,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       ++n;
     }
   }
-  envelope.setDimensions(rmin,rmax,totWidth,2.*M_PI);
+  envelope.setDimensions(rmin,rmax,totWidth,0,2*M_PI);
   // Set attributes of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 

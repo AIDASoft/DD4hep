@@ -13,7 +13,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_det)  {
+static Ref_t create_element(LCDD& lcdd, const xml_h& e)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
   DetElement  sdet(name,x_det.id());
@@ -25,12 +25,20 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_
   xml_comp_t  x_sens      = x_det.child(Unicode("sensitive"));
   xml_comp_t  x_fch       = x_det.child(Unicode("fch"));
   Material    gasMat      = lcdd.material(x_sens.materialStr());
+  PlacedVolume pv;
 
   struct cylinder_t { double inner, outer, zhalf; };
   cylinder_t env  = { x_envelope.inner_r(),  x_envelope.outer_r(),  x_envelope.zhalf() };
   cylinder_t wall = { x_inner.thickness(),   x_outer.thickness(),   x_endcap.thickness() };
   cylinder_t fch  = { x_fch.inner_r(),       x_fch.outer_r(),       x_fch.thickness()/2.0 };
   cylinder_t sens = { x_sens.inner_r(),      x_sens.outer_r(), 0.0 };
+
+  // TPC sensitive detector
+  SensitiveDetector sens_det("TPC");
+  Readout ro = lcdd.readout(x_sens.readoutStr());
+  sens_det.setHitsCollection(ro.name());
+  sens_det.setReadout(ro);
+  lcdd.addSensitiveDetector(sens_det);
 
   // the TPC mother volume
   Tube    envTub(env.inner,env.outer,env.zhalf);
@@ -61,8 +69,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_
     double lay_thick = (sens.outer-sens.inner)/num_layer;
     Tube   layerTub(sens.inner+i*lay_thick,sens.inner+(i+1)*lay_thick,env.zhalf);
     Volume layerVol(name+_toString(i,"_layer%d"),layerTub,gasMat);      
+    layerVol.setSensitiveDetector(sens_det);
     layerVol.setVisAttributes(layerVis);
-    //TPCChamberLogical->SetSensitiveDetector(theTPCSD);
     envVol.placeVolume(layerVol);
   }
 
@@ -82,18 +90,22 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_
 
   // FCH = two sensitive twin Si plates, just to register the particle step inside it.
   // Threshold is 20% of a MIP. For Si we have 0.34 KeV/micron as MIP.
+  SensitiveDetector fchSD("TPCfch");
+  ro = lcdd.readout(x_fch.readoutStr());
+  fchSD.setHitsCollection(ro.name());
+  fchSD.setReadout(ro);
+  lcdd.addSensitiveDetector(fchSD);
+
   Tube   fchTub(fch.inner,fch.outer,fch.zhalf);
-  Volume fchVol(name+"_fch",fchTub,lcdd.material(x_fch.materialStr()));
+  Volume fchVol("fch",fchTub,lcdd.material(x_fch.materialStr()));
   fchVol.setVisAttributes(lcdd.visAttributes(x_fch.visStr()));
+  fchVol.setSensitiveDetector(fchSD);
   envVol.placeVolume(fchVol,Position(0,0,  env.zhalf+wall.zhalf+fch.zhalf));
   envVol.placeVolume(fchVol,Position(0,0,-(env.zhalf+wall.zhalf+fch.zhalf)));
 
-  // FCH Sensitive detector
-  //theFCHSD = new TRKSD00("FCH", fch_thickness * mm * 340 * keV * 0.2);
-  //FCHLogical->SetSensitiveDetector(theFCHSD);
-
-  motherVol.placeVolume(envVol);
+  pv = motherVol.placeVolume(envVol);
+  sdet.setPlacement(pv);
   return sdet;
 }
 
-DECLARE_DETELEMENT(Tesla_tpc02,create_element);
+DECLARE_SUBDETECTOR(Tesla_tpc02,create_element);

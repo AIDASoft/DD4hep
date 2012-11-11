@@ -18,8 +18,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_comp_t  x_layer= e.child(_X(layer));
   string      name   = x_det.nameStr();
   Material    air    = lcdd.air();
-  DetElement  lcal(name,x_det.id());
-  Volume      mother = lcdd.pickMotherVolume(lcal);
+  DetElement  side("pos",x_det.id());
 
   // LumiCal dimensions
   int         n_layers        = x_layer.attr<int>(_A(nmodules));
@@ -83,7 +82,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   Tube        cell_tube(cal_innerradius,(cal_innerradius+thetastrip_dr), cell_thick);//, phistrip_dphi);
   Volume      cell_vol (name+"_cell",cell_tube,cell_mat);
   cell_vol.setVisAttributes(cell_vis);
- 
+  cell_vol.setSensitiveDetector(sens);
+
   //  here PHI silicon sector
   Tube        sector_tube(cal_innerradius,cal_outerradius,cell_thick);//,phistrip_dphi);
   Volume      sector_vol(name+"_sector",sector_tube,cell_mat);
@@ -97,6 +97,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   // Replicate strips within a theta and phi plane padded version
   Volume sens_theta_vol = Ref_t(sector_tube->Divide(sector_vol, (name+"_sector_theta").c_str(), 1, ncell_theta, 0., thetastrip_dr));
   sens_theta_vol.setVisAttributes(cell_vis);
+  
   Volume sens_phi_vol = Ref_t(sensor_tube->Divide(sensor_vol, (name+"_sensor_phi").c_str(), 2, ncell_phi, 0., phistrip_dphi*RAD_2_DEGREE));
   sens_phi_vol.setVisAttributes(cell_vis);
 
@@ -116,17 +117,35 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
   // position of first layer
   double lay_z = -cal_hz + layer_hz;
+
   // Put the layers into the LumiCal sub-module
+  PlacedVolume pv;
   for (int nLay = 1; nLay < n_layers+1; nLay++)  {
-    env_vol.placeVolume(lay_vol,Position(0,0,lay_z));
+    DetElement layer_det(side,_toString(nLay,"layer%d"),nLay);
+    pv = env_vol.placeVolume(lay_vol,Position(0,0,lay_z));
+    layer_det.setPlacement(pv);
     lay_z += (layer_hz*2.0+layer_gap);
   }
   // Place two LumiCal sub-modules into the world
   double z_center = z_begin+cal_hz;
-  //Debug: one side centered only: mother.placeVolume(env_vol,Position(0,0,0),Rotation(0,bx_angle,0));
-  mother.placeVolume(env_vol,Position(0,0,z_center).rotateY(bx_angle),Rotation(0,bx_angle,0));
-  mother.placeVolume(env_vol,Position(0,0,z_center).rotateY(M_PI-bx_angle),Rotation(0,M_PI-bx_angle,0));
 
+  //Debug: one side centered only: mother.placeVolume(env_vol,Position(0,0,0),Rotation(0,bx_angle,0));
+  DetElement  lcal(name,x_det.id());
+  Volume      mother = lcdd.pickMotherVolume(lcal);
+  Assembly    assembly(name);
+
+  pv = assembly.placeVolume(env_vol,Position(0,0,z_center).rotateY(bx_angle),Rotation(0,bx_angle,0));
+  side.setPlacement(pv);
+  lcal.add(side);
+
+  DetElement other_side = side.clone("neg",-x_det.id());
+  pv = assembly.placeVolume(env_vol,Position(0,0,z_center).rotateY(M_PI-bx_angle),Rotation(0,M_PI-bx_angle,0));
+  other_side.setPlacement(pv);
+  lcal.add(other_side);
+
+  assembly.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
+  pv = mother.placeVolume(assembly);
+  lcal.setPlacement(pv);
   return lcal;
 }
 

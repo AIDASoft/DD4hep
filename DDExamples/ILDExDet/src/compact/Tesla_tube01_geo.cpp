@@ -12,8 +12,9 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+#define _U(text)  Unicode(#text)
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
+static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   struct Tube_Desc {  double zhalf, thickness, radius;  };
   struct Cone_Desc {  double z, rmin, rmax; };
 
@@ -21,12 +22,12 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   string      name   = x_det.nameStr();
   Rotation    reflect_rot(M_PI,0,0);
   DetElement  beampipe(name,x_det.id());
-  Assembly    beampipeVol(name+"_assembly");
+  Assembly    beampipeVol("assembly");
   Volume      motherVol   = lcdd.pickMotherVolume(beampipe);
-  xml_comp_t  x_central   = x_det.child(Unicode("central_tube"));
-  xml_comp_t  x_lateral   = x_det.child(Unicode("lateral_tubes"));
-  xml_comp_t  x_ends      = x_det.child(Unicode("ends"));
-  xml_comp_t  x_vacuum    = x_det.child(Unicode("vacuum"));
+  xml_comp_t  x_central   = x_det.child(_U(central_tube));
+  xml_comp_t  x_lateral   = x_det.child(_U(lateral_tubes));
+  xml_comp_t  x_ends      = x_det.child(_U(ends));
+  xml_comp_t  x_vacuum    = x_det.child(_U(vacuum));
   Material    beampipeMat = lcdd.material(xml_comp_t(x_det).materialStr());
   Material    ironMat     = lcdd.material("Iron");
   Material    vacuumMat   = lcdd.vacuum();
@@ -34,8 +35,9 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   VisAttr     beampipeVis = lcdd.visAttributes(x_det.visStr());
   VisAttr     vacuumVis   = lcdd.visAttributes(x_vacuum.visStr());
   VisAttr     endVis      = lcdd.visAttributes(x_ends.visStr());
-  Tube_Desc   central     = {x_central.zhalf(), x_central.thickness(), x_central.inner_r()};
-  Tube_Desc   lateral     = {x_lateral.zmin(),x_lateral.thickness(),x_lateral.inner_r()};
+  Tube_Desc   central     = {x_central.zhalf(),x_central.thickness(),x_central.inner_r()};
+  Tube_Desc   lateral     = {x_lateral.zmin(), x_lateral.thickness(),x_lateral.inner_r()};
+  PlacedVolume pv;
 
   { // beam vacuum inside the tube  
     Tube   tube(0,central.radius,central.zhalf);
@@ -45,7 +47,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   }
   { // Be tube
     Tube   tube(central.radius,central.radius+central.thickness,central.zhalf);
-    Volume vol (name+"_BeTube",tube,beampipeMat);
+    Volume vol (name+"_Be_tube",tube,beampipeMat);
     vol.setVisAttributes(beampipeVis);
     beampipeVol.placeVolume(vol);
   }
@@ -83,7 +85,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   double z_tube = (end_zmin + inner_zmin)/2.0;
   { // inner beam vacuum lateral tubes
     Tube   tube(0,lateral.radius,inner_zhalf);
-    Volume vol (name+"_lat_vacuum",tube,vacuumMat);
+    Volume vol (name+"_lateral_vacuum",tube,vacuumMat);
     vol.setVisAttributes(vacuumVis);
     beampipeVol.placeVolume(vol,Position(0,0, z_tube));
     beampipeVol.placeVolume(vol,Position(0,0,-z_tube));
@@ -91,17 +93,17 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
   { // inner Be lateral tubes
     Tube   tube(lateral.radius,lateral.radius+lateral.thickness,inner_zhalf);
-    Volume vol (name+"_lat_BeTube",tube, beampipeMat);
+    Volume vol (name+"_lateral_BeTube",tube, beampipeMat);
     vol.setVisAttributes(beampipeVis);
     beampipeVol.placeVolume(vol,Position(0,0, z_tube));
     beampipeVol.placeVolume(vol,Position(0,0,-z_tube));
   }
 
   { // VXD strip lines on lateral tubes
-    xml_comp_t s = x_det.child(Unicode("strips"));
+    xml_comp_t s = x_det.child(_U(strips));
     Tube  tube(lateral.radius+lateral.thickness+s.gap(),
                lateral.radius+lateral.thickness+s.gap()+s.thickness(),inner_zhalf);
-    Volume vol(name+"_lat_Strips",tube,lcdd.material(s.materialStr()));
+    Volume vol(name+"_lateral_Strips",tube,lcdd.material(s.materialStr()));
     vol.setVisAttributes(lcdd.visAttributes(s.visStr()));
     beampipeVol.placeVolume(vol,Position(0,0, z_tube));
     beampipeVol.placeVolume(vol,Position(0,0,-z_tube));
@@ -110,11 +112,11 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   // ends lateral cones and tubes
   size_t cnt = 0;
   Cone_Desc cones[5];
-  for(xml_coll_t c(x_det,Unicode("cone")); c; ++c, ++cnt)  {
+  for(xml_coll_t c(x_lateral,_U(cone)); c; ++c, ++cnt)  {
     xml_comp_t x_con = c;
-    cones[cnt].z = x_con.z();
-    cones[cnt].rmin = x_con.rmin();
-    cones[cnt].rmax = x_con.rmax();
+    cones[cnt].z     = x_con.z();
+    cones[cnt].rmin  = x_con.rmin();
+    cones[cnt].rmax  = x_con.rmax();
   }
   { // vacuum lateral cone
     double dz = (x_lateral.dz() - end_thickness)/2.0;
@@ -126,7 +128,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
     Cone   fe_end_cone (dz,lateral.radius,lateral.radius+end_thickness,
 			cones[0].rmin,cones[0].rmin+end_thickness);
-    Volume fe_end_vol( name+"_lat_fe",fe_end_cone,ironMat);
+    Volume fe_end_vol(name+"_lateral_fe",fe_end_cone,ironMat);
     fe_end_vol.setVisAttributes(endVis);
 
     // put vacuum and iron cones into world
@@ -140,7 +142,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     neg.z = -(pos.z = z_cone+dz);
     for(int i=0; i<5; ++i )  {
       Tube   vac_tub(0, cones[i].rmin, cones[i].z);
-      Volume vac_vol(name+_toString(i,"_vac_%d"),vac_tub,vacuumMat);
+      Volume vac_vol(_toString(i,"vac_%d"),vac_tub,vacuumMat);
       vac_vol.setVisAttributes(vacuumVis);
       // Update Z-placement
       neg.z = -(pos.z += cones[i].z);
@@ -148,7 +150,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       beampipeVol.placeVolume(vac_vol,neg);
 
       Tube   fe_tub (cones[i].rmin, cones[i].rmax, cones[i].z);
-      Volume fe_vol (name+_toString(i,"_fe_%d"),fe_tub,ironMat);
+      Volume fe_vol (name+_toString(i,"_feTube%d"),fe_tub,ironMat);
       fe_vol.setVisAttributes(endVis);
       beampipeVol.placeVolume(fe_vol,pos);
       beampipeVol.placeVolume(fe_vol,neg);
@@ -156,7 +158,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       neg.z = -(pos.z += cones[i].z);
     }
   }     
-  motherVol.placeVolume(beampipeVol);
+  pv = motherVol.placeVolume(beampipeVol);
+  beampipe.setPlacement(pv);
   return beampipe;
 }
 

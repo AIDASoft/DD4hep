@@ -38,7 +38,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	double     router = r + x_slice.thickness();
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
 	string     slice_name = layer_name + _toString(m,"slice%d");
-	Tube       slice_tube(r,router,z * 2);
+	Tube       slice_tube(r,router,z*2);
 	Volume     slice_vol (slice_name,slice_tube,slice_mat);
           
 	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
@@ -48,14 +48,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	layer_vol.placeVolume(slice_vol,IdentityPos());
       }
       layer_vol.setVisAttributes(lcdd,x_layer.visStr());
-      layer_tub.setDimensions(rlayer,r,z * 2);
+      layer_tub.setDimensions(rlayer,r,z*2,0,2*M_PI);
         
       PlacedVolume layer_physvol = envelopeVol.placeVolume(layer_vol,IdentityPos());
       layer_physvol.addPhysVolID(_A(layer),n);
       ++n;
     }
   }
-  envelope.setDimensions(rmin,r,2.*z);
+  envelope.setDimensions(rmin,r,2*z,0,2*M_PI);
   // Set region of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     

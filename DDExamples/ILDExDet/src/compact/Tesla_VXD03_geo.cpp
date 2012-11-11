@@ -85,7 +85,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
 
-  Assembly    detector_vol(name+"_vol");
+  Assembly    assembly(name+"_vol");
   Volume motherVol = lcdd.pickMotherVolume(vxd);    
 
   
@@ -181,7 +181,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	double r   = layer.radius + (layer.isEven() ? thickness+layer.gap : -thickness);
 	double z   = ldd_len + end_electronics_zhalf + ldd_gap/2.;
 
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,z), Rotation(PIby2,phi,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi, z), Rotation(PIby2,phi,0.));
 	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(PIby2,phi,0.));
       }
     }
@@ -243,7 +243,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       pv = layer_vol.placeVolume(active_layer_vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(PIby2,phi,0.));
       pv.addPhysVolID("layer",layer.id);
     }
-    detector_vol.placeVolume(layer_vol);
+    assembly.placeVolume(layer_vol);
   }
 
   //****************************************
@@ -254,14 +254,14 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   Tube         support_tube(shell_rmin,shell_rmin+shell_thickess,shell_zhalf);
   Volume       support_vol (name+"_support",support_tube,support_mat);
   support_vol.setVisAttributes(lcdd, x_supp.visStr());
-  detector_vol.placeVolume(support_vol);
+  assembly.placeVolume(support_vol);
 
   // ************support endplates************
   Tube         endplate_tube(x_endpl.rmin(),x_endpl.rmax(),x_endpl.zhalf());
   Volume       endplate_vol (name+"_endcap",endplate_tube,support_mat);
   endplate_vol.setVisAttributes(lcdd, x_endpl.visStr());
-  detector_vol.placeVolume(endplate_vol,Position(0,0, (shell_zhalf + x_endpl.zhalf())));
-  detector_vol.placeVolume(endplate_vol,Position(0,0,-(shell_zhalf + x_endpl.zhalf())));
+  assembly.placeVolume(endplate_vol,Position(0,0, (shell_zhalf + x_endpl.zhalf())));
+  assembly.placeVolume(endplate_vol,Position(0,0,-(shell_zhalf + x_endpl.zhalf())));
 
   // ************support endplates for the layer 1************
   Tube         endplate_support_tube(x_endp1.rmin(),x_endp1.rmax(),x_endp1.zhalf());
@@ -269,8 +269,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   const LayerParams::Ladders& l1 = vxd_data->layers[0].ladders;
   double z = l1.len + 2.0*end_electronics_zhalf + shell_thickess/2. + (be_ladder_block_length*2) ;
   endplate_support_vol.setVisAttributes(lcdd, x_endp1.visStr());
-  detector_vol.placeVolume(endplate_support_vol,Position(0,0, z));
-  detector_vol.placeVolume(endplate_support_vol,Position(0,0,-z));
+  assembly.placeVolume(endplate_support_vol,Position(0,0, z));
+  assembly.placeVolume(endplate_support_vol,Position(0,0,-z));
 
 #if 0
   //*** Cryostat ***************************************************************
@@ -323,7 +323,9 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
   return true;
 #endif
-  PlacedVolume lpv = motherVol.placeVolume(detector_vol);
+
+  assembly.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
+  PlacedVolume lpv = motherVol.placeVolume(assembly);
 
   return vxd;
 }
