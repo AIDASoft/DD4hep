@@ -281,7 +281,7 @@ void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)
       i = m.find(&info);
     }
     ExtensionEntry& e = (*i).second;
-    cout << "Extension["<<name()<<"]:" << ptr << " " << typeid(*(TNamed*)ptr).name() << endl;
+    //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
     return o.extensions[&info] = ptr;
   }
   throw runtime_error("addExtension: The object "+string(name())+
