@@ -41,14 +41,12 @@ namespace {
   } ECrossType;
 }
 
-
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
-  Rotation    reflect_rot(M_PI,0,0);
   DetElement  sdet(name,x_det.id());
   Assembly    assembly(name);
-  double      crossingAngle = x_det.attr<double>(_U(crossing_angle));
+  double      crossingAngle = x_det.crossing_angle();
   Material    coreMat   = lcdd.vacuum();
   VisAttr     vacuumVis = lcdd.visAttributes("TubeVacuumVis");
 
@@ -78,7 +76,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       case kUpstreamSlicedFront:
       case kUpstreamSlicedRear:
       case kUpstreamSlicedBoth:
-        angle = -crossingAngle; break;
+        angle = -crossingAngle;
+	break;
       case kDnstream:
       case kPunchedDnstream:
       case kDnstreamClippedFront:
@@ -87,12 +86,14 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       case kDnstreamSlicedFront:
       case kDnstreamSlicedRear:
       case kDnstreamSlicedBoth:
-        angle = +crossingAngle; break;
+        angle = +crossingAngle;
+	break;
       default:
-        angle = 0; break;
+        angle = 0;
+	break;
     }
 
-    cout << name << "> Building " << nam << " " << crossType << " " << vis.name() << endl;
+    cout << name << "> Building " << nam << " type:" << crossType << " Angle:" << angle << " z:" << zPos << " vis:" << vis.name() << endl;
     double reflect_angle = M_PI - angle;
     Volume vol, wall;
     SubtractionSolid solid;
@@ -106,13 +107,13 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	vol.setVisAttributes(vacuumVis);
         // if inner and outer radii are equal, then omit the tube wall
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) { // the wall solid: a tubular cone
-	  ConeSegment wall(zHalf, start.inner_r, start.outer_r, start.inner_r, end.outer_r);
+	  ConeSegment wall(zHalf, start.inner_r, start.outer_r, start.inner_r, start.outer_r);
 	  Volume      vol_wall(name+"_"+nam+"_wall",cone,mat);
 	  vol.setVisAttributes(vis);
 	  vol.placeVolume(vol_wall);
 	}
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,angle));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
         break;
       }
       case kPunchedCenter: {
@@ -123,8 +124,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	ConeSegment cone(zHalf, 0, start.outer_r, 0, end.outer_r);
 	vol = Volume(name+"_"+nam+"_vakuum",cone,lcdd.vacuum());
 	vol.setVisAttributes(vacuumVis);
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,angle));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
 
         // the wall solid and placeholders for possible G4SubtractionSolids
         ConeSegment wallCone(zHalf,0,start.outer_r,0,end.outer_r);
@@ -134,21 +135,21 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
         // rotation around the y-axis will not only exchange +z and -z, but also +x and -x
         if ( start.inner_r ) { // do we need a hole on the upstream branch?
 	  Tube punch(0,start.inner_r,5*zHalf);
-	  solid1 = SubtractionSolid(wallCone,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,-crossingAngle,0));
-	  solid2 = SubtractionSolid(wallCone,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,+crossingAngle,0));
+	  solid1 = SubtractionSolid(wallCone,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
+	  solid2 = SubtractionSolid(wallCone,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,0,+crossingAngle));
 	}
         if ( end.inner_r ) { // do we need a hole on the downstream branch?
 	  Tube punch(0,start.inner_r,5*zHalf);
-	  solid1 = SubtractionSolid(solid1,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,+crossingAngle,0));
-	  solid2 = SubtractionSolid(solid2,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,-crossingAngle,0));
+	  solid1 = SubtractionSolid(solid1,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,0,+crossingAngle));
+	  solid2 = SubtractionSolid(solid2,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
 	}
         // the wall consists of the material given in the database
 	wall = Volume(name+"_"+nam+"_pos",solid1,mat);
 	wall.setVisAttributes(vis);
-	assembly.placeVolume(wall,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
+	assembly.placeVolumeEx(wall,Position(0,0,zPos),Rotation(0,0,angle));
 	wall = Volume(name+"_"+nam+"_neg",solid2,mat);
 	wall.setVisAttributes(vis);
-	assembly.placeVolume(wall,Position(0,0,zPos).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(wall,Position(0,0,zPos),Rotation(0,0,reflect_angle));
         break;
       }
       case kPunchedUpstream:
@@ -161,8 +162,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	vol = Volume(name+"_"+nam+"_vakuum",cone,lcdd.vacuum());
 	vol.setVisAttributes(vacuumVis);
 
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(0,reflect_angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,0,angle));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(0,0,reflect_angle));
 
         // the wall solid and the piece (only a tube, for the moment) which will be punched out
 	ConeSegment whole(zHalf,rCenterPunch,start.outer_r,rCenterPunch,end.outer_r);
@@ -170,15 +171,15 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
         // the punched subtraction solids can be asymmetric and therefore have to be created twice:
         // one time in the "right" way, another time in the "reverse" way, because the "mirroring"
         // rotation around the y-axis will not only exchange +z and -z, but also +x and -x
-        solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,-crossingAngle,0));
+        solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
 	wall  = Volume(name+"_"+nam+"_wall_pos",solid,mat);
 	wall.setVisAttributes(vis);
-	assembly.placeVolume(wall,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
+	assembly.placeVolumeEx(wall,Position(0,0,zPos).rotateY(angle),Rotation(0,0,angle));
 
-	solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(crossingAngle),0,0),Rotation(0,crossingAngle,0));
+	solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(crossingAngle),0,0),Rotation(0,0,crossingAngle));
 	wall  = Volume(name+"_"+nam+"_wall_neg",solid,mat);
 	wall.setVisAttributes(vis);
-	assembly.placeVolume(wall,Position(0,0,zPos).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(wall,Position(0,0,zPos),Rotation(0,0,reflect_angle));
 	break;
       }
       case kUpstreamClippedFront:
@@ -200,27 +201,27 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	clip_pos_neg.rotateY(+clipAngle);
 
 	ConeSegment wallCone, whole(zHalf+clipSize/2, 0, start.outer_r, 0, end.outer_r);
-	solid = SubtractionSolid(whole, clip, clip_pos_pos,Rotation(0,-clipAngle,0));
+	solid = SubtractionSolid(whole, clip, clip_pos_pos,Rotation(0,0,-clipAngle));
 	wall = Volume(name+"_"+nam+"_pos",solid,lcdd.vacuum());
 	wall.setVisAttributes(vacuumVis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  wallCone = ConeSegment(zHalf+clipSize/2,start.inner_r,start.outer_r,end.inner_r,end.outer_r);
-	  SubtractionSolid wallSolid(wallCone,clip,clip_pos_pos,Rotation(0,-clipAngle,0));
-	  Volume           wall (name+"_"+nam+"_wall_solid",wallSolid,mat);
-	  wall.setVisAttributes(vis);
-	  wall.placeVolume(wall);
+	  SubtractionSolid sol(wallCone,clip,clip_pos_pos,Rotation(0,0,-clipAngle));
+	  Volume           vol (name+"_"+nam+"_wall_solid",sol,mat);
+	  vol.setVisAttributes(vis);
+	  wall.placeVolume(vol);
 	}
-	assembly.placeVolume(wall,Position(0,0,zPos-clipSize/2).rotateY(angle),Rotation(0,angle,0));
+	assembly.placeVolumeEx(wall,Position(0,0,zPos-clipSize/2).rotateY(angle),Rotation(0,0,angle));
 	
-	solid = SubtractionSolid(whole, clip, clip_pos_neg,Rotation(0,clipAngle,0));
+	solid = SubtractionSolid(whole, clip, clip_pos_neg,Rotation(0,0,clipAngle));
 	wall  = Volume(name+"_"+nam+"_wall_neg",solid,lcdd.vacuum());
 	wall.setVisAttributes(vis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
-	  SubtractionSolid wallSolid(wallCone,clip, clip_pos_neg, Rotation(0,+clipAngle,0));
-	  Volume           wall (name+"_"+nam+"_wall_solid",wallSolid,mat);
-	  wall.placeVolume(wall);
+	  SubtractionSolid sol(wallCone,clip, clip_pos_neg, Rotation(0,0,clipAngle));
+	  Volume           vol(name+"_"+nam+"_wall_solid",sol,mat);
+	  wall.placeVolume(vol);
 	}
-	assembly.placeVolume(wall,Position(0,0,zPos - clipSize / 2).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(wall,Position(0,0,zPos-clipSize/2),Rotation(0,0,reflect_angle));
 	break;
       }
       case kUpstreamClippedRear:
@@ -242,28 +243,28 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	clip_pos_neg.rotateY(+clipAngle);
 
 	ConeSegment wallCone, whole(zHalf+clipSize/2,0, start.outer_r, 0, end.outer_r);
-	solid = SubtractionSolid(whole, clip, clip_pos_pos,Rotation(0,-clipAngle,0));
+	solid = SubtractionSolid(whole, clip, clip_pos_pos,Rotation(0,0,-clipAngle));
 	vol = Volume(name+"_"+nam+"_pos",solid,lcdd.vacuum());
 	vol.setVisAttributes(vacuumVis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  wallCone = ConeSegment(zHalf + clipSize/2,start.inner_r,start.outer_r,end.inner_r,end.outer_r);
-	  solid = SubtractionSolid(wallCone,clip,clip_pos_pos,Rotation(0,-clipAngle,0));
+	  solid = SubtractionSolid(wallCone,clip,clip_pos_pos,Rotation(0,0,-clipAngle));
 	  Volume  wall (name+"_"+nam+"_wall_solid",solid,mat);
 	  wall.setVisAttributes(vis);
 	  vol.placeVolume(wall);
 	}
-	assembly.placeVolume(vol,Position(0,0,zPos+clipSize/2).rotateY(angle),Rotation(0,angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos+clipSize/2),Rotation(0,0,angle));
 	
-	solid = SubtractionSolid(whole, clip, clip_pos_neg,Rotation(0,clipAngle,0));
+	solid = SubtractionSolid(whole, clip, clip_pos_neg,Rotation(0,0,clipAngle));
 	vol  = Volume(name+"_"+nam+"_wall_neg",solid,lcdd.vacuum());
 	vol.setVisAttributes(vis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
-	  solid = SubtractionSolid(wallCone, clip, clip_pos_neg, Rotation(0,+clipAngle,0));
+	  solid = SubtractionSolid(wallCone, clip, clip_pos_neg, Rotation(0,0,+clipAngle));
 	  Volume  wall (name+"_"+nam+"_wall_solid",solid,mat);
 	  wall.setVisAttributes(vis);
 	  vol.placeVolume(wall);
 	}
-	assembly.placeVolume(vol,Position(0,0,zPos+clipSize/2).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos+clipSize/2),Rotation(0,0,reflect_angle));
 	break;
       }
       case kUpstreamClippedBoth:
@@ -285,34 +286,34 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	ConeSegment wallCone, whole(zHalf + clipSize, 0, start.outer_r, 0, end.outer_r);
 
 	// Primary side:
-	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftFrnt),Rotation(0,-clipAngle,0));
-	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftRear),Rotation(0,-clipAngle,0));
+	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftFrnt),Rotation(0,0,-clipAngle));
+	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftRear),Rotation(0,0,-clipAngle));
 	vol = Volume(name+"_"+nam+"_pos",solid,lcdd.vacuum());
 	vol.setVisAttributes(vacuumVis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  wallCone = ConeSegment(zHalf + clipSize,start.inner_r,start.outer_r,end.inner_r,end.outer_r);
           // clip away the protruding ends
-	  solid = SubtractionSolid(wallCone,clip,Position(0,0,clipShiftFrnt),Rotation(0,-clipAngle,0));
-	  solid = SubtractionSolid(solid,   clip,Position(0,0,clipShiftRear),Rotation(0,-clipAngle,0));
+	  solid = SubtractionSolid(wallCone,clip,Position(0,0,clipShiftFrnt),Rotation(0,0,-clipAngle));
+	  solid = SubtractionSolid(solid,   clip,Position(0,0,clipShiftRear),Rotation(0,0,-clipAngle));
 	  wall  = Volume(name+"_"+nam+"_pos_wall",solid,mat);
 	  wall.setVisAttributes(vis);
 	  vol.placeVolume(wall);
 	}
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
 
 	// Mirror side:
-	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftFrnt),Rotation(0,+clipAngle,0));
-	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftRear),Rotation(0,+clipAngle,0));
+	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftFrnt),Rotation(0,0,+clipAngle));
+	solid = SubtractionSolid(whole, clip, Position(0,0,clipShiftRear),Rotation(0,0,+clipAngle));
 	vol  = Volume(name+"_"+nam+"_wall_neg",solid,lcdd.vacuum());
 	vol.setVisAttributes(vis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
-	  solid = SubtractionSolid(wallCone,clip,Position(0,0,clipShiftFrnt),Rotation(0,+clipAngle,0));
-	  solid = SubtractionSolid(solid,   clip,Position(0,0,clipShiftRear),Rotation(0,+clipAngle,0));
+	  solid = SubtractionSolid(wallCone,clip,Position(0,0,clipShiftFrnt),Rotation(0,0,+clipAngle));
+	  solid = SubtractionSolid(solid,   clip,Position(0,0,clipShiftRear),Rotation(0,0,+clipAngle));
 	  Volume  wall (name+"_"+nam+"_neg_wall",solid,mat);
 	  wall.setVisAttributes(vis);
 	  vol.placeVolume(wall);
 	}
-	assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(M_PI,reflect_angle,0));
+	assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
         break;
       }
     default: {

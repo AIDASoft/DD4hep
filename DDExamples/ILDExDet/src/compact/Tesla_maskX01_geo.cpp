@@ -27,10 +27,9 @@ namespace {
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
-  Rotation    reflect_rot(M_PI,0,0);
   DetElement  sdet(name,x_det.id());
   Assembly    assembly(name);
-  double      crossingAngle = x_det.attr<double>(_U(crossing_angle));
+  double      crossingAngle = x_det.crossing_angle();
 
   PlacedVolume pv;
   struct dim_t { double inner_r, outer_r, z; };
@@ -69,8 +68,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       ConeSegment cone(zHalf, start.inner_r, start.outer_r, end.inner_r, end.outer_r);
       Volume      vol (name+"_"+nam,cone,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
-      assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(0,reflect_angle,0));
+      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,angle));
+      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
       break;
     }
     case kPunchedCenter: {  // a cone with one or two inner holes (two tubes are punched out)        
@@ -82,21 +81,21 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       // rotation around the y-axis will not only exchange +z and -z, but also +x and -x
       if ( start.inner_r ) { // do we need a hole on the upstream branch?
 	Tube punch(0,start.inner_r,2*zHalf);
-	solid1 = SubtractionSolid(cone,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,-crossingAngle,0));
-	solid2 = SubtractionSolid(cone,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,+crossingAngle,0));
+	solid1 = SubtractionSolid(cone,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
+	solid2 = SubtractionSolid(cone,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,0,+crossingAngle));
       }
           
       if ( end.inner_r ) { // do we need a hole on the downstream branch?
 	Tube punch(0,end.inner_r,2*zHalf);
-	solid1 = SubtractionSolid(solid1,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,+crossingAngle,0));
-	solid2 = SubtractionSolid(solid2,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,-crossingAngle,0));
+	solid1 = SubtractionSolid(solid1,punch,Position(zPos*std::tan(+crossingAngle),0,0),Rotation(0,0,+crossingAngle));
+	solid2 = SubtractionSolid(solid2,punch,Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
       }
       Volume vol(name+"_"+nam+"_pos",solid1,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
+      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,angle));
       vol = Volume(name+"_"+nam+"_neg",solid2,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(0,reflect_angle,0));
+      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
       break;
     }
     case kPunchedUpstream:
@@ -111,15 +110,15 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       // the punched subtraction solids can be asymmetric and therefore have to be created twice:
       // one time in the "right" way, another time in the "reverse" way, because the "mirroring"
       // rotation around the y-axis will not only exchange +z and -z, but also +x and -x
-      SubtractionSolid solid(whole, punch, Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,-crossingAngle,0));
+      SubtractionSolid solid(whole, punch, Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
       Volume vol(name+"_"+nam+"_pos",solid,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolume(vol,Position(0,0,zPos).rotateY(angle),Rotation(0,angle,0));
+      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,angle,0));
 
-      solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(crossingAngle),0,0),Rotation(0,crossingAngle,0));
+      solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(crossingAngle),0,0),Rotation(0,0,crossingAngle));
       vol = Volume(name+"_"+nam+"_neg",solid,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolume(vol,Position(0,0,zPos).rotateY(reflect_angle),Rotation(0,reflect_angle,0));
+      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
       break;
     }
     default: {

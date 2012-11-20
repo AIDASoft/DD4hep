@@ -18,23 +18,21 @@
     </includes>
   
     <define>
-        <constant name="world_side"              value="10*m"/>
+        <constant name="world_side"              value="7500*mm"/>
         <constant name="world_x"                 value="world_side/2"/>
         <constant name="world_y"                 value="world_side/2"/>
-        <constant name="world_z"                 value="world_side/2"/>        
-        <constant name="CrossingAngle"           value="20*mrad"/>
-        <constant name="ILC_Main_Crossing_Angle" value="CrossingAngle"/>
+        <constant name="world_z"                 value="world_side"/>        
+        <constant name="ILC_Main_Crossing_Angle" value="20*mrad"/>
         
-        <constant name="TPC_zhalf"              value="2500*mm"/>
         <constant name="TPC_outer_radius"       value="1808*mm"/>
-        <constant name="TPC_inner_radius"       value="350*mm"/>
+        <constant name="TPC_inner_radius"       value="329*mm"/>
+
+<!--
+        <constant name="TPC_zhalf"              value="2500*mm"/>
         <constant name="TPC_inner_thickness"    value="2*mm"/>
         <constant name="TPC_outer_thickness"    value="3*mm"/>
         <constant name="TPC_endcap_thickness"   value="3*mm"/>
-
-        <constant name="SolenoidCoilOuterZ"      value="TPC_zhalf + 0.3*m"/>
-        <constant name="SolenoidalFieldRadius"   value="TPC_outer_radius+0.2*m"/>
-
+-->
 
         <!--                  Shared parameters                      -->
         <constant name="Ecal_Tpc_gap"                           value="35*mm"/>
@@ -210,7 +208,6 @@
 
 
         <!--                  TubeX01 parameters                      -->
-        <constant name="TUBE_crossing_angle"                   value="0.0"/>
         <constant name="TUBE_opening_angle"                    value="0.07876"/>
         <constant name="TUBE_IPOuterTube_start_radius"         value="30.696*mm"/>
         <constant name="TUBE_IPOuterTube_end_radius"           value="30.696*mm"/>
@@ -228,8 +225,6 @@
         <constant name="Ftd_inner_support_length"              value="4*mm"/>
         <constant name="Ftd_outer_support_thickness"           value="10*mm"/>
         <constant name="Ftd_outer_support_length"              value="4*mm"/>
-
-        <!--                  Mask04 parameters                      -->
 
         <!--                  TPC06  parameters
         -->
@@ -268,11 +263,15 @@
         <constant name="BCal_rOuter"                           value="150*mm"/>
         <constant name="BCal_rSegmentation"                    value="8"/>
 
+        <!--                   Misc.      parameters                 -->
         <constant name="tracking_region_radius"                value="TPC_outer_radius + 1.0*m"/>
         <constant name="tracking_region_zmax"                  value="TPC_zhalf + 1.0*m"/>
 
         <constant name="calorimeter_region_rmax"               value="Hcal_R_max"/>
         <constant name="calorimeter_region_zmax"               value="Hcal_start_z + Hcal_endcap_total_z"/>
+
+        <constant name="SolenoidCoilOuterZ"                    value="TPC_zhalf + 0.3*m"/>
+        <constant name="SolenoidalFieldRadius"                 value="TPC_outer_radius+0.2*m"/>
 
     </define>
 
@@ -380,7 +379,16 @@
 
     <display>
 
-      <vis name="VXDVis"               alpha="1.0" r="0.5" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
+      <!--                  TubeX01 visualization parameters 
+      -->
+      <vis name="TubeVis"              alpha="1.0" r="0.9"  g="0.9"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="TubeVacuumVis"        alpha="1.0" r="0.0"  g="0.0"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TubeWallVis"          alpha="1.0" r="0.7"  g="0.7"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TubeBerylliumVis"     alpha="1.0" r="1.0"  g="0.9"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <!--                  VXD visualization parameters 
+      -->
+      <vis name="VXDVis"               alpha="1.0" r="0.5" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
       <vis name="VXDLayerVis"          alpha="1.0" r="0.0" g="1.0" b="0.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="VXDElectronicsVis"    alpha="1.0" r="0.8" g="0.8" b="1.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="VXDBerilliumVis"      alpha="1.0" r="0.0" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
@@ -388,16 +396,74 @@
       <vis name="VXDStripsVis"         alpha="1.0" r="0.0" g="1.0" b="0.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="VXDActiveStripsVis"   alpha="1.0" r="1.0" g="0.0" b="0.0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
 
-      <vis name="SITVis"               alpha="1.0" r="0.3" g="0.3" b="0.3"      drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
+      <!--                  SIT visualization parameters 
+      -->
+      <vis name="SitVis"               alpha="1.0" r="0.3" g="0.3" b="0.3"      drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
       <vis name="SITSupportVis"        alpha="1.0" r="0.0" g="0.0" b="0.75"     drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="SITSensitiveVis"      alpha="1.0" r="0.5" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
 
-      <vis name="LcalVis"              alpha="1.0" r="0"   g="1"   b="0"        drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
+      <!--                  Lcal    visualization parameters 
+      -->
+      <vis name="LcalVis"              alpha="1.0" r="0"   g="1"   b="0"        drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
       <vis name="LcalSupportVis"       alpha="1.0" r="0.5" g="0.5" b="0.5"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="LcalAbsorberVis"      alpha="1.0" r="0"   g="0"   b="1"        drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="LcalActiveVis"        alpha="1.0" r="1"   g="0"   b="0"        drawingStyle="wireframe" yshowDaughters="true" visible="true"/>
 
-      <vis name="EcalVis"              alpha="1.0" r="1"    g="1"    b="0.2"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
+      <!--                  Ftd visualization parameters 
+      -->
+      <vis name="FtdVis"               alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="FtdDiskVis"           alpha="1.0" r="1"    g="1"    b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="FtdSupportVis"        alpha="1.0" r="1.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="FtdCylinderVis"       alpha="1.0" r="0.45" g="0.2"  b="0.9"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="FtdCablesVis"         alpha="1.0" r="0"    g="0.9"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <!--                  Set visualization parameters 
+      -->
+      <vis name="SetVis"               alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="SetSupportVis"        alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="SetSensitiveVis"      alpha="1.0" r="0.0"  g="0.0"  b="0.75"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <!--                  Etd  visualization parameters 
+      -->
+      <vis name="EtdVis"               alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="EtdSupportVis"        alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EtdSensitiveVis"      alpha="1.0" r="0.0"  g="0.0"  b="0.75"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <!--                  BeamCal visualization parameters 
+      -->
+      <vis name="BeamCalVis"           alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="BeamCalCaloVis"       alpha="1.0" r="0.1"  g="0.6"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="BeamCalSensorVis"     alpha="1.0" r="1.0"  g="0.0"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="BeamCalAbsorberVis"   alpha="1.0" r="1.0"  g="0.0"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="BeamCalElectrodeVis"  alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="BeamCalPcbVis"        alpha="1.0" r="1.0"  g="0.6"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="BeamCalGraphiteVis"   alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <!--                  MaskX01 visualization parameters 
+      -->
+      <vis name="MaskVis"              alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="MaskMagnetsVis"    alpha="1.0" r="1"    g="0.5"  b="0.2"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskPumpsVis"      alpha="1.0" r="0.8"  g="0.8"  b="0.8"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskAntiSolenoidVis" alpha="1" r="1"    g="0.5"  b="0"         drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskSupportVis"    alpha="1.0" r="0.2"  g="0.6"  b="0.2"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskKickerVis"     alpha="1.0" r="0.1"  g="0.8"  b="0.8"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskBpmVis"        alpha="1.0" r="0.5"  g="0.8"  b="1"         drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <!--                  TPC06   visualization parameters
+      -->
+      <vis name="TPCVis"               alpha="1.0" r="0.0"  g="0"    b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
+      <vis name="TPCWallVis"           alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCEndcapVis"         alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCTDR_gasVis"        alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+      <vis name="TPCCathodeVis"        alpha="1.0" r="0.9"  g="0.3"  b="0.1"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+      <vis name="TPCCopperVis"         alpha="1.0" r="0.9"  g="0.3"  b="0.1"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+      <vis name="TPCKaptonVis"         alpha="1.0" r="0.3"  g="0.4"  b="0.4"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+      <vis name="TPCEpoxyVis"          alpha="1.0" r="0.1"  g="0.5"  b="0.2"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+      <vis name="TPCAluminumVis"       alpha="1.0" r="0.7"  g="0.7"  b="0.7"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+
+      <!--                  SEcal     visualization parameters
+      -->
+      <vis name="EcalVis"              alpha="1.0" r="1"    g="1"    b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
       <vis name="EcalPCBVis"           alpha="1.0" r="0.5"  g="0.5"  b="0"      drawingStyle="wireframe" showDaughters="true"  visible="true"/>
       <vis name="EcalRadiatorVis"      alpha="1.0" r="0.3"  g="0.3"  b="0.3"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="EcalTowerVis"         alpha="1.0" r="0"    g="0.1"  b="0.9"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
@@ -409,7 +475,7 @@
 
       <!--                  SHcalSc02 visualization parameters
       -->
-      <vis name="HcalVis"              alpha="1.0" r="0.8"  g="0.8"  b="0.2"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
+      <vis name="HcalVis"              alpha="1.0" r="0.8"  g="0.8"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
       <vis name="HcalModuleVis"        alpha="1.0" r="0"    g="0.6"  b="0.6"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="HcalChamberVis"       alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="false"/>
       <vis name="HcalChamberGapVis"    alpha="1.0" r="0.4"  g="0.4"  b="0.4"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
@@ -417,47 +483,12 @@
       <vis name="HcalSupportTrapVis"   alpha="1.0" r="0.0"  g="0.7"  b="0.7"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="HcalBarrelGapVis"     alpha="1.0" r="0.1"  g="0.1"  b="0.1"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
 
-
-      <!--                  TubeX01 visualization parameters 
+      <!--                  Coil      visualization parameters
       -->
-      <vis name="TubeVis"              alpha="1.0" r="0.9"  g="0.9"  b="0.0"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-      <vis name="TubeVacuumVis"        alpha="1.0" r="0.0"  g="0.0"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="TubeWallVis"          alpha="1.0" r="0.7"  g="0.7"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="TubeBerylliumVis"     alpha="1.0" r="1.0"  g="0.9"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="CoilVis"              alpha="1.0" r="0.0"  g="0.0"  b="0.7"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
 
-      <!--                  SFtd05 visualization parameters 
+      <!--                  Yoke      visualization parameters
       -->
-      <vis name="FtdVis"               alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-      <vis name="FtdDiskVis"           alpha="1.0" r="1"    g="1"    b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="FtdSupportVis"        alpha="1.0" r="1.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="FtdCylinderVis"       alpha="1.0" r="0.45" g="0.2"  b="0.9"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="FtdCablesVis"         alpha="1.0" r="0"    g="0.9"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-
-      <!--                  MaskX01 visualization parameters 
-      -->
-      <vis name="MaskVis"              alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-      <vis name="MaskMagnetsVis"    alpha="1.0" r="1"    g="0.5"  b="0.2"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="MaskPumpsVis"      alpha="1.0" r="0.8"  g="0.8"  b="0.8"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="MaskAntiSolenoidVis" alpha="1" r="1"    g="0.5"  b="0"         drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="MaskSupportVis"    alpha="1.0" r="0.2"  g="0.6"  b="0.2"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="MaskKickerVis"     alpha="1.0" r="0.1"  g="0.8"  b="0.8"       drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="MaskBpmVis"        alpha="1.0" r="0.5"  g="0.8"  b="1"         drawingStyle="solid"     showDaughters="true"  visible="true"/>
-
-      <!--                  TPC06   visualization parameters
-      -->
-      <vis name="TPCVis"               alpha="1.0" r="0.0"  g="0"    b="0.5"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-      <vis name="TPCWallVis"           alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="TPCEndcapVis"         alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="TPCGasVis"            alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="solid"     showDaughters="false" visible="true"/>
-      <vis name="TPCCathodeVis"        alpha="1.0" r="0.9"  g="0.3"  b="0.1"    drawingStyle="solid"     showDaughters="false" visible="true"/>
-      <vis name="TPCCopperVis"         alpha="1.0" r="0.9"  g="0.3"  b="0.1"    drawingStyle="solid"     showDaughters="false" visible="true"/>
-      <vis name="TPCKaptonVis"         alpha="1.0" r="0.3"  g="0.4"  b="0.4"    drawingStyle="solid"     showDaughters="false" visible="true"/>
-      <vis name="TPCEpoxyVis"          alpha="1.0" r="0.1"  g="0.5"  b="0.2"    drawingStyle="solid"     showDaughters="false" visible="true"/>
-      <vis name="TPCAluminumVis"       alpha="1.0" r="0.7"  g="0.7"  b="0.7"    drawingStyle="solid"     showDaughters="false" visible="true"/>
-
-      <vis name="CoilVis"              alpha="1.0" r="0.0"  g="0.0"  b="0.7"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-
-      <vis name="ClicYoke01Vis"        alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
       <vis name="YokeVis"              alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
       <vis name="YokeBarrelVis"        alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="YokeEndcapVis"        alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
@@ -465,22 +496,6 @@
       <vis name="YokeBodyVis"          alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="YokeRPCGasVis"        alpha="1.0" r="0.0"  g="1.0"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
       <vis name="YokePlugVis"          alpha="1.0" r="1.0"  g="0.0"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-
-      <vis name="SSet02Vis"            alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-      <vis name="SetSupportVis"        alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="SetSensitiveVis"      alpha="1.0" r="0.0"  g="0.0"  b="0.75"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
-
-      <vis name="SEtd02Vis"            alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="false"  visible="false" top="true"/>
-      <vis name="EtdSupportVis"        alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="EtdSensitiveVis"      alpha="1.0" r="0.0"  g="0.0"  b="0.75"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
-
-      <vis name="BeamCal08Vis"         alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true" top="true"/>
-      <vis name="BeamCalCaloVis"       alpha="1.0" r="0.1"  g="0.6"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="BeamCalSensorVis"     alpha="1.0" r="1.0"  g="0.0"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="BeamCalAbsorberVis"   alpha="1.0" r="1.0"  g="0.0"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="BeamCalElectrodeVis"  alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="BeamCalPcbVis"        alpha="1.0" r="1.0"  g="0.6"  b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
-      <vis name="BeamCalGraphiteVis"   alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
 
     </display>
 
@@ -491,7 +506,7 @@
         -->
         <detector id="1" name="Beampipe" type="Tesla_tubeX01"
                   material="Beryllium" vis="TubeVis"
-                  crossing_angle="ILC_Main_Crossing_Angle/2*mrad">
+                  crossing_angle="ILC_Main_Crossing_Angle/2">
           <tubes>
            <tube name="IPInnerTube" crossType="0" material="Beryllium" vis="TubeBerylliumVis">
               <start inner_r="29.4*mm" outer_r="30*mm" z="0*mm"/>
@@ -525,19 +540,19 @@
               <start inner_r="2.7*mm" outer_r="99*mm" z="3170*mm"/>
               <end   inner_r="31*mm"  outer_r="99*mm" z="3171*mm"/>
             </tube>
-            <tube name="BeamCalInnerDnstream1" crossType="2" material="Iron" vis="TubeWallVis">
+            <tube name="BeamCalInnerDwnstream1" crossType="2" material="Iron" vis="TubeWallVis">
               <start inner_r="31*mm" outer_r="32*mm" z="3171*mm"/>
               <end   inner_r="31*mm" outer_r="32*mm" z="3500*mm"/>
             </tube>
-            <tube name="BehindBeamCalDnstream2" crossType="2" material="Iron" vis="TubeWallVis">
+            <tube name="BehindBeamCalDnwstream2" crossType="2" material="Iron" vis="TubeWallVis">
               <start inner_r="31*mm" outer_r="32*mm" z="3500*mm"/>
               <end   inner_r="39*mm" outer_r="40*mm" z="4000*mm"/>
             </tube>
-            <tube name="BehindBeamCalDnstream3" crossType="2" material="Iron" vis="TubeWallVis">
+            <tube name="BehindBeamCalDwnstream3" crossType="2" material="Iron" vis="TubeWallVis">
               <start inner_r="39*mm" outer_r="40*mm" z="4000*mm"/>
               <end   inner_r="69*mm" outer_r="70*mm" z="7000*mm"/>
             </tube>
-            <tube name="BeamCalInnerDnstream4" crossType="2" material="Iron" vis="TubeWallVis">
+            <tube name="BeamCalInnerDwnstream4" crossType="2" material="Iron" vis="TubeWallVis">
               <start inner_r="69*mm"  outer_r="70*mm"  z="7000*mm"/>
               <end   inner_r="124*mm" outer_r="125*mm" z="12500*mm"/>
             </tube>
@@ -622,44 +637,38 @@
           </layer>
         </detector>
 
-        <!--                  SSit03 parameters        
-         --> 
-        <detector id="1205" name="SSit03" type="Tesla_SSit03" vis="SITVis" readout="SitHits">
-          <params sit2_tpc_gap="20.0*mm" sit1_sit2_relative_gap="0.421687*mm" sensitive_thickness="0.275*mm" support_thickness="1.0*mm"/>
-          <layers>
-            <layer id="1" half_z="0.158004*mm"/>
-            <layer id="2" half_z="0.274428*mm"/>
-          </layers>
-        </detector>
 
-
-        <!--                  SFtd05 parameters  
-         --> 
-        <detector id="1198" name="ClicSFtd01" type="Tesla_SFtd05" vis="FtdVis" readout="FtdHits">
-          <params cable_shield_thickness="0.1"
-                  ftd1_sit1_radial_diff="-63.0" 
-                  ftd3_sit2_radial_diff="-134.0"
-                  ftd1_vtx3_distance_z="95.0" 
-                  ftd4to7_tpc_radial_gap="9.0"
-                  ftd7_ecal_distance_z="582.0" 
-                  beamtube_clearance="2.0" 
-                  ftd2_sit1_radial_diff="-63.0"
-                  outer_cylinder_total_thickness="1.0" 
-                  cables_thickness="0.08"
-                 />
-          <disks>
-            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.06808"/>
-            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.06894"/>
-            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.08809"/>
-            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.08893"/>
-            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.10851"/>
-            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.10936"/>
-            <disk id="3" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.1626"/>
-            <disk id="4" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.283"/>
-            <disk id="4" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.4536"/>
-            <disk id="4" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.6243"/>
-            <disk id="7" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.0"/>
-          </disks>
+        <!--                  maskX01 description 
+        -->
+        <detector id="1209" name="clicmaskX01" type="Tesla_maskX01" crossing_angle="ILC_Main_Crossing_Angle/2" vis="MaskVis">
+          <component name="QD0" crossType="1" material="Iron" vis="MaskMagnetsVis">
+             <start inner_r="3.83*mm" outer_r="35*mm" z="4256*mm"/>
+             <end   inner_r="3.83*mm" outer_r="35*mm" z="6965*mm"/>
+          </component>
+          <component name="Antisolenoid" crossType="0" material="Iron" vis="MaskAntiSolenoidVis">
+             <start inner_r="401*mm" outer_r="685*mm" z="4256*mm"/>
+             <end   inner_r="401*mm" outer_r="685*mm" z="7235*mm"/>
+          </component>
+          <component name="SupportLhcalEnd" crossType="3" material="Tungsten" vis="MaskSupportVis">
+            <start inner_r="0*mm"                       outer_r="400*mm" z="LHcal_zend-2600*mm+2835*mm"/>
+            <end   inner_r="100*mm+LHcal_inner_radius"  outer_r="400*mm" z="2875*mm"/>
+          </component>
+          <component name="SupportMain" crossType="0" material="Iron" vis="MaskSupportVis">
+            <start inner_r="300*mm"  outer_r="400*mm" z="2600*mm"/>
+            <end   inner_r="300*mm"  outer_r="400*mm" z="7500*mm"/>
+          </component>
+          <component name="SupportBeamCal" crossType="3" material="Iron" vis="MaskSupportVis">
+            <start inner_r="0*mm"    outer_r="299.99*mm" z="LHcal_zend-2600*mm+3181*mm"/>
+            <end   inner_r="165*mm"  outer_r="299.99*mm" z="LHcal_zend-2600*mm+3461*mm"/>
+          </component>
+          <component name="Kicker" crossType="1" material="Iron" vis="MaskKickerVis">
+            <start inner_r="4*mm"  outer_r="25*mm" z="LHcal_zend-2600*mm+3580*mm"/>
+            <end   inner_r="4*mm"  outer_r="25*mm" z="LHcal_zend-2600*mm+3880*mm"/>
+          </component>
+          <component name="BPM" crossType="2" material="Iron" vis="MaskBpmVis">
+            <start inner_r="35*mm"  outer_r="54*mm" z="LHcal_zend-2600*mm+3480*mm"/>
+            <end   inner_r="35*mm"  outer_r="54*mm" z="LHcal_zend-2600*mm+3570*mm"/>
+          </component>
         </detector>
 
         <!--                  LumiCalX parameters
@@ -674,87 +683,13 @@
                  phioffset="Lcal_phi_offset"
                  gap="Lcal_layer_gap"
                  nmodules="Lcal_n_layers" 
-                 crossing_angle="ILC_Main_Crossing_Angle"
+                 crossing_angle="ILC_Main_Crossing_Angle/2"
                  >
             <slice name="support"  thickness="Lcal_support_thickness"  material="Polystyrene"       vis="LcalSupportVis"/>
             <slice name="absorber" thickness="Lcal_tungsten_thickness" material="tungsten_19.3gccm" vis="LcalAbsorberVis"/>
             <slice name="active"   thickness="Lcal_silicon_thickness"  material="silicon_2.33gccm"  vis="LcalActiveVis"/>
           </layer>
         </detector>
-
-        <!--                  maskX01 description 
-        -->
-        <detector id="1209" name="clicmaskX01" type="Tesla_maskX01" crossing_angle="ILC_Main_Crossing_Angle/2*mrad" vis="MaskVis">
-          <component name="QD0" crossType="0" material="Iron" vis="MaskMagnetsVis">
-             <start inner_r="3.83*mm" outer_r="35*mm" z="4256*mm"/>
-             <end   inner_r="3.83*mm" outer_r="35*mm" z="6965*mm"/>
-          </component>
-          <component name="Antisolenoid"  crossType="0" material="Iron" vis="MaskAntiSolenoidVis">
-             <start inner_r="401*mm" outer_r="685*mm" z="4256*mm"/>
-             <end   inner_r="401*mm" outer_r="685*mm" z="7235*mm"/>
-          </component>
-          <component name="SupportLhcalEnd" crossType="3" material="Tungsten" vis="MaskSupportVis">
-            <start inner_r="0*mm" outer_r="400*mm" z="2835*mm"/>
-            <end   inner_r="100*mm+LHcal_inner_radius"  outer_r="400*mm" z="2875*mm"/>
-          </component>
-          <component name="SupportMain" crossType="0" material="Iron" vis="MaskSupportVis">
-            <start inner_r="300*mm"  outer_r="400*mm" z="2875*mm"/>
-            <end   inner_r="300*mm"  outer_r="400*mm" z="7500*mm"/>
-          </component>
-          <component name="SupportBeamCal" crossType="3" material="Iron" vis="MaskSupportVis">
-            <start inner_r="0*mm"    outer_r="299.99*mm" z="LHcal_zend+3181*mm"/>
-            <end   inner_r="165*mm"  outer_r="299.99*mm" z="LHcal_zend+3461*mm"/>
-          </component>
-          <component name="Kicker" crossType="1" material="Iron" vis="MaskKickerVis">
-            <start inner_r="4*mm"  outer_r="25*mm" z="LHcal_zend+3580*mm"/>
-            <end   inner_r="4*mm"  outer_r="25*mm" z="LHcal_zend+3880*mm"/>
-          </component>
-          <component name="BPM" crossType="2" material="Iron" vis="MaskBpmVis">
-            <start inner_r="35*mm"  outer_r="54*mm" z="LHcal_zend+3480*mm"/>
-            <end   inner_r="35*mm"  outer_r="54*mm" z="LHcal_zend+3570*mm"/>
-          </component>
-        </detector>
-
-        <!--                  TPC06  description
-         -->
-        <detector id="1197" name="clictpc01" type="Tesla_tpc06" limits="TPCLimits" vis="TPCVis">
-          <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ"/>
-          <inner_wall thickness="TPC_inner_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
-          <outer_wall thickness="TPC_outer_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
-          <pads  height="TPC_pad_height" width="TPC_pad_width"/>
-          <endplates material="TPC_endplates_mix"
-                     electronics_backend_thickness="TPC_electronics_backend_thickness"
-                     vis="TPCWallVis">
-            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
-            <endplate material="Kapton" dz="0.03*mm"  vis="TPCKaptonVis"/>
-            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
-            <endplate material="TPC_TDR_gas" dz="1.964*mm"/>
-            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
-            <endplate material="Kapton" dz="0.03*mm"  vis="TPCKaptonVis"/>
-            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
-            <endplate material="TPC_TDR_gas" dz="1.964*mm"/>
-            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
-            <endplate material="Kapton" dz="0.03*mm"  vis="TPCKaptonVis"/>
-            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
-            <endplate material="TPC_TDR_gas" dz="3.964*mm"/>
-            <endplate material="Copper" dz="0.05*mm"  vis="TPCCopperVis"/>
-            <endplate material="G10"    dz="2.0*mm"/>
-            <endplate material="silicon_2.33gccm" dz="0.5*mm"/>
-            <endplate material="Epoxy"  dz="2.0*mm"   vis="TPCEpoxyVis"/>
-            <endplate material="Kapton" dz="1.0*mm"   vis="TPCKaptonVis"/>
-            <endplate material="Copper" dz="2.0*mm"   vis="TPCCopperVis"/>
-            <endplate material="Kapton" dz="1.0*mm"   vis="TPCKaptonVis"/>
-            <endplate material="Aluminum" dz="3.0*mm" vis="TPCAluminumVis"/>
-         </endplates>
-
-         <barrel cathode_mylar="0.05*mm" 
-                 drInnerInsensitive="66.0*mm" 
-                 cathode_cupper="0.01*mm" 
-                 chamberGas="TPC_TDR_gas" 
-                 drOuterInsensitive="64.0*mm"
-                 dzCathode="0.12*mm"/>
-         <cathode material="Copper" vis="TPCCathodeVis"/>
-         </detector>
 
         <!--                  SEcal03 parameters
         -->
@@ -764,7 +699,7 @@
                  guard_ring_size="Ecal_guard_ring_size"
                  cell_size="Ecal_cell_size"
                  alveolus_gap="Ecal_Alveolus_Air_Gap"
-                 crossing_angle="ILC_Main_Crossing_Angle"
+                 crossing_angle="ILC_Main_Crossing_Angle/2"
                  cables_gap="Ecal_cables_gap"
                  front_face_thickness="Ecal_front_face_thickness"
                  support_thickness="Ecal_support_thickness"
@@ -816,9 +751,91 @@
            </endcap>
         </detector>
 
+        <!--                  TPC06  description
+         -->
+        <detector id="1197" name="clictpc01" type="Tesla_tpc06" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
+          <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ" vis="TPCTDR_gasVis"/>
+          <inner_wall thickness="TPC_inner_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
+          <outer_wall thickness="TPC_outer_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
+          <pads  height="TPC_pad_height" width="TPC_pad_width"/>
+          <endplate_param material="TPC_endplates_mix"
+                     electronics_backend_thickness="TPC_electronics_backend_thickness"
+                     vis="TPCWallVis"/>
+          <endplates>
+            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
+            <endplate material="Kapton" dz="0.03*mm"  vis="TPCKaptonVis"/>
+            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
+            <endplate material="TPC_TDR_gas" dz="1.964*mm" vis="TPCTDR_gasVis"/>
+            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
+            <endplate material="Kapton" dz="0.03*mm"  vis="TPCKaptonVis"/>
+            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
+            <endplate material="TPC_TDR_gas" dz="1.964*mm" vis="TPCTDR_gasVis"/>
+            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
+            <endplate material="Kapton" dz="0.03*mm"  vis="TPCKaptonVis"/>
+            <endplate material="Copper" dz="0.003*mm" vis="TPCCopperVis"/>
+            <endplate material="TPC_TDR_gas" dz="3.964*mm" vis="TPCTDR_gasVis"/>
+            <endplate material="Copper" dz="0.05*mm"  vis="TPCCopperVis"/>
+            <endplate material="G10"    dz="2.0*mm"/>
+            <endplate material="silicon_2.33gccm" dz="0.5*mm"/>
+            <endplate material="Epoxy"  dz="2.0*mm"   vis="TPCEpoxyVis"/>
+            <endplate material="Kapton" dz="1.0*mm"   vis="TPCKaptonVis"/>
+            <endplate material="Copper" dz="2.0*mm"   vis="TPCCopperVis"/>
+            <endplate material="Kapton" dz="1.0*mm"   vis="TPCKaptonVis"/>
+            <endplate material="Aluminum" dz="3.0*mm" vis="TPCAluminumVis"/>
+         </endplates>
+
+         <barrel cathode_mylar="0.05*mm" 
+                 drInnerInsensitive="66.0*mm" 
+                 cathode_cupper="0.01*mm" 
+                 chamberGas="TPC_TDR_gas" 
+                 drOuterInsensitive="64.0*mm"
+                 dzCathode="0.12*mm"/>
+         <cathode material="Copper" vis="TPCCathodeVis"/>
+       </detector>
+
+        <!--                  SFtd05 parameters  
+         --> 
+        <detector id="1198" name="ClicSFtd01" type="Tesla_SFtd05" vis="FtdVis" readout="FtdHits">
+          <params cable_shield_thickness="0.1"
+                  ftd1_sit1_radial_diff="-63.0" 
+                  ftd3_sit2_radial_diff="-134.0"
+                  ftd1_vtx3_distance_z="95.0" 
+                  ftd4to7_tpc_radial_gap="9.0"
+                  ftd7_ecal_distance_z="582.0" 
+                  beamtube_clearance="2.0" 
+                  ftd2_sit1_radial_diff="-63.0"
+                  outer_cylinder_total_thickness="1.0" 
+                  cables_thickness="0.08"
+                 />
+          <disks>
+            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.06808"/>
+            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.06894"/>
+            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.08809"/>
+            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.08893"/>
+            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.10851"/>
+            <disk id="2" si_thickness="0.05"  support_thickness="0.076" z_ReltoTPCLength="0.10936"/>
+            <disk id="3" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.1626"/>
+            <disk id="4" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.283"/>
+            <disk id="4" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.4536"/>
+            <disk id="4" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.6243"/>
+            <disk id="7" si_thickness="0.275" support_thickness="1.136" z_ReltoTPCLength="0.0"/>
+          </disks>
+        </detector>
+
+        <!--                  SSit03 parameters        
+         --> 
+        <detector id="1205" name="SSit03" type="Tesla_SSit03" vis="SitVis" readout="SitHits">
+          <params sit2_tpc_gap="20.0*mm" sit1_sit2_relative_gap="0.421687*mm" sensitive_thickness="0.275*mm" support_thickness="1.0*mm"/>
+          <layers>
+            <layer id="1" half_z="0.158004*mm"/>
+            <layer id="2" half_z="0.274428*mm"/>
+          </layers>
+        </detector>
+
+
         <!--                  SSet02 description
         -->
-        <detector id="1208" name="SSet02" type="Tesla_SSet02" readout="SetHits" vis="SSet02Vis">
+        <detector id="1208" name="SSet02" type="Tesla_SSet02" readout="SetHits" vis="SetVis">
           <param distance_set2_ecal_barrel="8.0*mm" 
                  set_layer_radial_diff="2.0*mm" 
                  sensitive_thickness="0.275*mm" 
@@ -827,7 +844,7 @@
 
         <!--                  SEtd02 description
         -->
-        <detector id="1196" name="SEtd02" type="Tesla_SEtd02" readout="EtdHits" vis="SEtd02Vis">
+        <detector id="1196" name="SEtd02" type="Tesla_SEtd02" readout="EtdHits" vis="EtdVis">
           <param etd3_ecalendcap_distance_z="20.0" 
                  sensitive_thickness="0.275" 
                  etd_ecalplug_radial_clearance="5.0"
@@ -838,7 +855,7 @@
 
         <!--                  BeamCal01 description
         -->
-        <detector id="1210" name="BeamCal08" type="Tesla_BeamCal01" readout="BeamCalHits" vis="BeamCal01Vis">
+        <detector id="1210" name="BeamCal08" type="Tesla_BeamCal01" readout="BeamCalHits" vis="BeamCalVis">
           <params>
             <param value="0.3004" name="dSensor"/>
             <param value="0.05"   name="dAirgap"/>
@@ -858,7 +875,7 @@
 
         <!--                  ClicYoke01 description             
         -->
-        <detector id="1203" name="clicyoke01" type="Tesla_ClicYoke01" limits="YokeLimits" vis="ClicYoke01Vis">
+        <detector id="1203" name="clicyoke01" type="Tesla_ClicYoke01" limits="YokeLimits" vis="YokeVis">
           <yoke symmetry="12" vis="YokeVis" material="Iron"/>
           <muon cell_size="30.0" 
                 layer_thickness="40.0" 

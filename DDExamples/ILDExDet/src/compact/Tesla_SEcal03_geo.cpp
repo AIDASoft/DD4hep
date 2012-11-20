@@ -154,7 +154,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   xml_comp_t m_xml_slab_glue     = m_xml_slab.child(_U(glue));
 
   double endcap_extra_size       = x_endcap.attr<double>(_U(extra_size));
-  double crossing_angle          = x_param.attr<double>(_U(crossing_angle));
+  double crossing_angle          = x_param.crossing_angle();
   Assembly  assembly(name+"_assembly");
   // Hosting volume
   Volume motherVol               = lcdd->pickMotherVolume(self);
@@ -235,7 +235,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
     2.0 * m_lateral_face_thickness -
     2.0 * x_endcap.attr<double>(_U(ring_gap));
 
-  m_centerTubDisplacement = m_endcap.dim_z * std::tan(crossing_angle/2000);
+  m_centerTubDisplacement = m_endcap.dim_z * std::tan(crossing_angle);
   m_center_tube   = Tube(0,m_endcap.rmin,total_thickness);
   Box              ec_ringSiBox   (siPlateSize/2,siPlateSize/2,m_slab.sensitive_thickness/2);
   SubtractionSolid ec_ringSiSolid1(ec_ringSiBox,m_center_tube,Position(m_centerTubDisplacement,0,0),Rotation());
@@ -326,13 +326,13 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   m_endcap = DetElement(self,"endcaps",0);
   det = DetElement(m_endcap,"plus",ECALENDCAPPLUS);
   vol = buildEndcap(det,false,m_endcap,ec_ringSiSolid1,ec_ringSiVol1,Rotation());
-  pv  = assembly.placeVolume(vol,Position(0,0,module_z_offset));
+  pv  = assembly.placeVolume(vol,Position(0,0,module_z_offset),Rotation(0,0,M_PI/8));
   det.setPlacement(pv);
   m_endcap.side[SIDE_PLUS] = det;
 
   det = DetElement(m_endcap,"minus",ECALENDCAPMINUS);
   vol = buildEndcap(det,true,m_endcap,ec_ringSiSolid2,ec_ringSiVol2,Rotation());
-  pv  = assembly.placeVolume(vol,Position(0,0,-module_z_offset),Rotation(M_PI,0,0));
+  pv  = assembly.placeVolume(vol,Position(0,0,-module_z_offset),Rotation(M_PI,0,M_PI/8));
   det.setPlacement(pv);
   m_endcap.side[SIDE_MINUS] = det;
 
@@ -377,6 +377,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
     pv = assembly.placeVolume(staveVol);
     stave_det.setPlacement(pv);
   }
+
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));
   pv = motherVol.placeVolume(assembly);
   m_barrel.setPlacement(pv);
@@ -552,8 +553,10 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
 {
   // While waiting for more geometric details, build a simple Endcap using 
   // a fiber polyhedra and substract the center box
+  double disp = Zminus ? -m_centerTubDisplacement : m_centerTubDisplacement;
+  Position displacement(disp,0,0);
   PolyhedraRegular hedra(8, 0, endcap.rmax, m_endcap.thickness);
-  SubtractionSolid solid(hedra, m_center_tube, Position(), rot);
+  SubtractionSolid solid(hedra, m_center_tube, displacement);
   Volume           endcap_vol("endcap", solid,m_shield.material);
   endcap_vol.setVisAttributes(m_endcap.vis);
 
@@ -571,34 +574,34 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
 
   if(m_layers[0].nLayer > 0 )    {
     PolyhedraRegular hedra_rad(8, r_inner, r_outer, m_layers[0].thickness);
-    SubtractionSolid sol_rad(hedra_rad, m_center_tube, Position(), rot);
+    SubtractionSolid sol_rad(hedra_rad, m_center_tube, displacement);
     vol_radL1 = Volume("ECL1_radiator",sol_rad, m_layers[0].rad_mat);
     vol_radL1.setVisAttributes(m_radiatorVis);
     // plate for slab in ring
     Box              box_ring(box_dim,box_dim, m_layers[0].thickness/2);
-    SubtractionSolid sol_ring(box_ring,m_center_tube,Position(), rot);
+    SubtractionSolid sol_ring(box_ring,m_center_tube,displacement,rot);
     vol_ringL1 = Volume(name+"_ECL1_ring",sol_ring,m_layers[0].rad_mat);
     vol_ringL1.setVisAttributes(ring_vis);
   }
   if(m_layers[1].nLayer > 0 )    {
     PolyhedraRegular hedra_rad(8, r_inner, r_outer, m_layers[1].thickness);
-    SubtractionSolid sol_rad(hedra_rad, m_center_tube, Position(), rot);
+    SubtractionSolid sol_rad(hedra_rad, m_center_tube, displacement, rot);
     vol_radL2 = Volume("ECL2_radiator",sol_rad, m_layers[0].rad_mat);
     vol_radL2.setVisAttributes(m_radiatorVis);
     // plate for slab in ring
     Box              box_ring(box_dim,box_dim, m_layers[1].thickness/2);
-    SubtractionSolid sol_ring(box_ring,m_center_tube,Position(), rot);
+    SubtractionSolid sol_ring(box_ring,m_center_tube,displacement, rot);
     vol_ringL2 = Volume(name+"_ECL2_ring",sol_ring,m_layers[0].rad_mat);
     vol_ringL2.setVisAttributes(ring_vis);
   }
   if(m_layers[2].nLayer > 0 )    {
     PolyhedraRegular hedra_rad(8, r_inner, r_outer, m_layers[2].thickness);
-    SubtractionSolid sol_rad(hedra_rad, m_center_tube, Position(), rot);
+    SubtractionSolid sol_rad(hedra_rad, m_center_tube, displacement, rot);
     vol_radL3 = Volume("ECL3_radiator",sol_rad, m_layers[0].rad_mat);
     vol_radL3.setVisAttributes(m_radiatorVis);
     // plate for slab in ring
     Box box_ring(box_dim,box_dim, m_layers[2].thickness/2);
-    SubtractionSolid sol_ring(box_ring,m_center_tube,Position(), rot);
+    SubtractionSolid sol_ring(box_ring,m_center_tube,displacement, rot);
     vol_ringL3 = Volume(name+"_ECL3_ring",sol_ring,m_layers[2].rad_mat);
     vol_ringL3.setVisAttributes(ring_vis);
   }
@@ -653,7 +656,7 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
     // Build EC Alveolus
     double AlveolusThickness = 2 * m_slab.total_thickness + rad_thickness + 2 * m_fiber_thickness;
     for(size_t istave=1, num_staves=4; istave <= num_staves; ++istave)  {
-      double angle_module = M_PI/2 * ( istave - 1 );
+      double angle_module = M_PI/2 * (istave - 1) + M_PI/8;
       Rotation rotodd_s1(rotOdd), rot_e(rotEven);
       rotodd_s1.rotateZ(angle_module);
       rot_e.rotateZ(angle_module);
@@ -721,7 +724,7 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
     z_floor += AlveolusThickness + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
     // Place a radiator layer if the number of layers is not complete
     if( layer_id == num_layers) break;
-    endcap_vol.placeVolume(vol_rad,Position(0,0,z_floor+rad_thickness/2),Rotation(0,0,M_PI/8));
+    endcap_vol.placeVolume(vol_rad,Position(0,0,z_floor+rad_thickness/2));
     // update the z_floor
     z_floor += rad_thickness + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness;
   }
