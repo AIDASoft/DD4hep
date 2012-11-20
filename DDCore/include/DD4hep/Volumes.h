@@ -129,8 +129,10 @@ namespace DD4hep {
       PlacedVolume placeVolume(const Volume& vol, const Position& pos)  const;
       /// Place rotated daughter volume. The position is automatically the identity position
       PlacedVolume placeVolume(const Volume& vol, const Rotation& rot)  const;
-      /// Place translated and rotated daughter volume
+      /// Place rotated and then translated daughter volume
       PlacedVolume placeVolume(const Volume& vol, const Position& pos, const Rotation& rot)  const;
+      /// Place daughter volume in rotated and then translated mother coordinate system
+      PlacedVolume placeVolumeEx(const Volume& vol, const Position& pos, const Rotation& rot)  const;
       
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol, const IdentityPos& pos)  const;

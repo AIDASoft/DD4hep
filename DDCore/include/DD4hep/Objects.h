@@ -20,6 +20,7 @@ class TGeoMatrix;
 class TGeoRotation;
 class TGeoTranslation;
 class TGeoPhysicalNode;
+class TGeoIdentity;
 #include "TGeoPhysicalNode.h"
 
 // C/C++ include files
@@ -47,6 +48,9 @@ namespace DD4hep {
     struct LCDD;
     class IDDescriptor;
 
+
+    /** Access to identity transformation  */
+    TGeoIdentity* identityTransform();
 
     /** @class Author Objects.h
      *  

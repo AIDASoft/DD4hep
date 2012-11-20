@@ -273,18 +273,39 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
   Int_t id = a ? a->GetEntries() : 0;
+  if ( transform && transform != identityTransform() ) {
+    string nam = string(daughter->GetName())+"_placement";
+    transform->SetName(nam.c_str());
+  }
   parent->AddNode(daughter,id,transform);
   TGeoNodeMatrix* n = dynamic_cast<TGeoNodeMatrix*>(parent->GetNode(id));
   return PlacedVolume(n);
 }
 
+static TGeoTranslation* _translation(const Position& pos) {
+  return new TGeoTranslation("",pos.x,pos.y,pos.z);
+}
+
+static TGeoRotation* _rotation(const Rotation& rot) {
+  return new TGeoRotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
+}
+
 /// Place translated and rotated daughter volume
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, const Rotation& rot)  const  {
   if ( volume.isValid() )   {
-    string nam = string(volume.name())+"_placement";
-    TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-    TGeoCombiTrans* transform = new TGeoCombiTrans(nam.c_str(),pos.x,pos.y,pos.z,0);
-    transform->SetRotation(rotation);
+    TGeoCombiTrans* transform = new TGeoCombiTrans("",pos.x,pos.y,pos.z,_rotation(rot));
+    return _addNode(m_element,volume,transform);
+  }
+  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+}
+
+/// Place translated and rotated daughter volume
+PlacedVolume Volume::placeVolumeEx(const Volume& volume, const Position& pos, const Rotation& rot)  const  {
+  if ( volume.isValid() )   {
+    TGeoHMatrix *transform = new TGeoHMatrix(TGeoTranslation(pos.x,pos.y,pos.z));
+    transform->RotateZ(rot.phi*RAD_2_DEGREE);
+    transform->RotateX(rot.theta*RAD_2_DEGREE);
+    transform->RotateY(rot.psi*RAD_2_DEGREE);
     return _addNode(m_element,volume,transform);
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
@@ -293,9 +314,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, cons
 /// Place un-rotated daughter volume at the given position.
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos)  const  {
   if ( volume.isValid() )   {
-    string nam = string(volume.name())+"_placement";
-    TGeoTranslation* transform = new TGeoTranslation(nam.c_str(),pos.x,pos.y,pos.z);
-    return _addNode(m_element,volume,transform);
+    return _addNode(m_element,volume,_translation(pos));
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
@@ -303,9 +322,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos)  con
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot)  const  {
   if ( volume.isValid() )   {
-    string nam = string(volume.name())+"_placement";
-    TGeoRotation* transform = new TGeoRotation(nam.c_str(),rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-    return _addNode(m_element,volume,transform);
+    return _addNode(m_element,volume,_rotation(rot));
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
@@ -313,8 +330,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot)  con
 /// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityPos& /* pos */)  const  {
   if ( volume.isValid() )   {
-    string nam = string(volume.name())+"_placement";
-    return _addNode(m_element,volume,new TGeoIdentity(nam.c_str()));
+    return _addNode(m_element,volume,identityTransform());
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
@@ -322,8 +338,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityPos& /* pos
 /// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityRot& /* rot */)  const  {
   if ( volume.isValid() )   {
-    string nam = string(volume.name())+"_placement";
-    return _addNode(m_element,volume,new TGeoIdentity(nam.c_str()));
+    return _addNode(m_element,volume,identityTransform());
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }

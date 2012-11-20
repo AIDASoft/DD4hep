@@ -71,22 +71,22 @@ ProjectiveCylinder::ProjectiveCylinder()
 : Segmentation("projective_cylinder")   {}
 
 /// Accessors: get number of bins in theta
-int ProjectiveCylinder::thetaBins() const  {
+int ProjectiveCylinder::thetaBins() const    {
   return _data().data.cylindrical_binning.ntheta;
 }
 
 /// Accessors: get number of bins in phi
-int ProjectiveCylinder::phiBins() const  {
+int ProjectiveCylinder::phiBins() const    {
   return _data().data.cylindrical_binning.nphi;
 }
 
 /// Accessors: set number of bins in theta
-void ProjectiveCylinder::setThetaBins(int value)  {
+void ProjectiveCylinder::setThetaBins(int value)    {
   _data().data.cylindrical_binning.ntheta = value;
 }
 
 /// Accessors: set grid size in Y
-void ProjectiveCylinder::setPhiBins(int value)  {
+void ProjectiveCylinder::setPhiBins(int value)   {
   _data().data.cylindrical_binning.nphi = value;
 }
 
@@ -95,11 +95,11 @@ NonProjectiveCylinder::NonProjectiveCylinder()
 {
 }
 
-double NonProjectiveCylinder::gridSizeZ() const  {
+double NonProjectiveCylinder::gridSizeZ()  const   {
   return _data().data.cylindrical_grid.grid_size_z;
 }
 
-double NonProjectiveCylinder::gridSizePhi() const  {
+double NonProjectiveCylinder::gridSizePhi()  const   {
   return _data().data.cylindrical_grid.grid_size_phi;
 }
 
