@@ -185,13 +185,12 @@ namespace DD4hep {
       static LCDD& getInstance(void);
     };
 
-
     /*
      *   The following are convenience implementations to access constants by type.
      *   I do not think this violates the interface approach, but it is so much 
      *   more intuitiv to say constant<int>(name) than constantAsInt(name).
      */
-
+#ifndef __CINT__
     /// Typed access to constants: short values
     template <> inline short LCDD::constant<short>(const std::string& name)  const
     {  return (short)constantAsLong(name);                  }
@@ -227,7 +226,7 @@ namespace DD4hep {
     /// Typed access to constants: string values
     template <> inline std::string LCDD::constant<std::string>(const std::string& name) const 
     {  return constantAsString(name);                       }
-
+#endif
   }       /* End namespace Geometry  */
 }         /* End namespace DD4hep   */
 #endif    /* DD4HEP_LCDD_LCDD_H     */

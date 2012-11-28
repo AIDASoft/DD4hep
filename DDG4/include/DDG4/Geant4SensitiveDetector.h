@@ -80,7 +80,7 @@ namespace DD4hep {
       virtual ~Geant4SensitiveDetector();
 
       /// Standard access to the name
-      const std::string& name() const {  return GetName(); }
+      std::string name() const {  return GetName(); }
 
       /// Create single hits collection
       virtual HitCollection* createCollection(const std::string& coll_name)  const;

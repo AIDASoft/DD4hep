@@ -12,7 +12,7 @@ if(DD4HEP_USE_PYROOT)
   file(GLOB headers include/DD4hep/*.h)
   list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
                            ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h)
-  ROOT_GENERATE_DICTIONARY( G__DD4hep ${headers} LINKDEF include/ROOT/LinkDef.h)
+  root_generate_dictionary( G__DD4hep ${headers} LINKDEF include/ROOT/LinkDef.h)
   list(APPEND sources G__DD4hep.cxx)
   add_definitions(-DDD4HEP_USE_PYROOT)
   set(libraries  ${libraries} PyROOT)

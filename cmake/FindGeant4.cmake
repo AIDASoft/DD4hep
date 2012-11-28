@@ -71,7 +71,7 @@ endif()
 # If we're on UNIX, see if we can find clhep-config and use its --prefix
 # as an extra hint.
 #
-set(_Geant4_root_hints ${Geant4_ROOT_DIR})
+set(_Geant4_root_hints ${Geant4_ROOT_DIR} ${Geant4_ROOT_DIR}/.. )
 
 #----------------------------------------------------------------------------
 # Find the Geant4 headers

@@ -23,7 +23,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_comp_t  x_tube (x_det.child(_X(tubs)));
   string      name  = x_det.nameStr();
   Material    mat    (lcdd.material(x_det.materialStr()));
-  //if data is needed do this  
+  //if data is needed do this
   Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
   DetElement tpc(tpcData, name, x_det.typeStr());
   tpcData->id = x_det.id();
@@ -31,7 +31,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   // DetElement  tpc    (name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
- 
+  
   for(xml_coll_t c(e,_X(detector)); c; ++c)  {
     xml_comp_t  px_det  (c);
     xml_comp_t  px_tube (px_det.child(_X(tubs)));
@@ -46,58 +46,58 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
     Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
     bool        reflect   = px_det.reflect();
- 
+    
     part_vol.setVisAttributes(lcdd,px_det.visStr());
     //cache the important volumes in TPCData for later use without having to know their name
     switch(part_det.id())
-      {
+    {
       case 2:
-	tpcData->innerWall=part_det;
+        tpcData->innerWall=part_det;
       case 3:
-	tpcData->outerWall=part_det;
+        tpcData->outerWall=part_det;
       case 4:
-	tpcData->gasVolume=part_det;
+        tpcData->gasVolume=part_det;
       case 5:
-	tpcData->cathode=part_det;
-      }
-  //Endplate
+        tpcData->cathode=part_det;
+    }
+    //Endplate
     if(part_det.id()== 0){
-       tpcData->endplate=part_det;
-       //modules
+      tpcData->endplate=part_det;
+      //modules
       int mdcount=0;
       for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
-	xml_comp_t  modules  (m);
-	string      m_name  = modules.nameStr();
-	for(xml_coll_t r(modules,_X(row)); r; ++r)  {
-	  xml_comp_t  row(r);
-	  int nmodules = row.nModules();
-	  int rowID=row.RowID();
-	  //shape of module
-	  double pitch=row.modulePitch();
-	  double height=row.moduleHeight();
-	  double width=row.moduleWidth();
-	  double zhalf=px_tube.zhalf();
-	  string      mr_nam=m_name+_toString(rowID,"_Row%d");
-	  Volume      mr_vol(mr_nam,Box(width/2,height/2,zhalf),part_mat);
-	  Material    mr_mat(lcdd.material(px_mat.nameStr()));
-	  Readout     xml_pads(lcdd.readout(row.padType()));
-
-	 //placing modules
-	  for(int md=0;md<nmodules;md++){
-	    string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
-	    DetElement  module(part_det,m_nam,mdcount);
-	    mdcount++;
-	    double posx=row.modulePosX()+md*(width/2+pitch);
-	    double posy=row.modulePosY();
-	    PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(posx,posy,0),Rotation(0,0,0));
-	    m_phv.addPhysVolID("module",md);
-	    module.setPlacement(m_phv);
-	    module.setReadout(xml_pads);
-	    // Readout and placement must be present before adding extension,
-	    // since they are aquired internally for optimisation reasons. (MF)
-	    module.addExtension<PadLayout>(new RectangularPadRowLayout(module));
-	  }//modules
-	}//rows
+        xml_comp_t  modules  (m);
+        string      m_name  = modules.nameStr();
+        for(xml_coll_t r(modules,_X(row)); r; ++r)  {
+          xml_comp_t  row(r);
+          int nmodules = row.nModules();
+          int rowID=row.RowID();
+          //shape of module
+          double pitch=row.modulePitch();
+          double height=row.moduleHeight();
+          double width=row.moduleWidth();
+          double zhalf=px_tube.zhalf();
+          string      mr_nam=m_name+_toString(rowID,"_Row%d");
+          Volume      mr_vol(mr_nam,Box(width/2,height/2,zhalf),part_mat);
+          Material    mr_mat(lcdd.material(px_mat.nameStr()));
+          Readout     xml_pads(lcdd.readout(row.padType()));
+          
+          //placing modules
+          for(int md=0;md<nmodules;md++){
+            string      m_nam=m_name+_toString(rowID,"_Row%d")+_toString(md,"_M%d");
+            DetElement  module(part_det,m_nam,mdcount);
+            mdcount++;
+            double posx=row.modulePosX()+md*(width/2+pitch);
+            double posy=row.modulePosY();
+            PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(posx,posy,0),Rotation(0,0,0));
+            m_phv.addPhysVolID("module",md);
+            module.setPlacement(m_phv);
+            module.setReadout(xml_pads);
+            // Readout and placement must be present before adding extension,
+            // since they are aquired internally for optimisation reasons. (MF)
+            module.addExtension<PadLayout>(new RectangularPadRowLayout(module));
+          }//modules
+        }//rows
       }//module groups
     }//endplate
     
@@ -115,7 +115,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
       // needs a copy function for DetElement
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
-      DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1); 
+      DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1);
       rdet.setPlacement(part_phv2);
       tpcData->endplate2=rdet;
       tpc.add(rdet);

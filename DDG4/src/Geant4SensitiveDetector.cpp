@@ -47,6 +47,7 @@ bool Geant4SensitiveDetector::defineCollection(const string& coll_name)   {
 			" of type "+string(m_sensitive.type()));
   }
   collectionName.insert(coll_name);
+  return true;
 }
 
 /// Access HitCollection container names

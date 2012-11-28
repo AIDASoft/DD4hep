@@ -20,6 +20,10 @@ PlacedVolume = DD4hep.Geometry.PlacedVolume
 Position   = DD4hep.Geometry.Position
 Rotation   = DD4hep.Geometry.Rotation
 Handle     = DD4hep.Geometry.Handle
+Readout    = DD4hep.Geometry.Readout
+ProjectiveCylinder = DD4hep.Geometry.ProjectiveCylinder
+IDDescriptor = DD4hep.Geometry.IDDescriptor
+
 _toDictionary = DD4hep.Geometry._toDictionary
 
 import xml.etree.ElementTree as xml
@@ -115,16 +119,26 @@ def process_xmlfile(lcdd, file):
   file = file.replace('file:','')
   root = xml.parse(file).getroot()
   last_xmlfile, current_xmlfile = current_xmlfile, file
-  for e in root :
-    if e.tag == 'detectors' : 
-      lcdd.init() # call init before processing 'detectors' (need world volume)
-    procs = globals().get('process_%s'% e.tag, None)
-    if not procs : 
-      procs = drivers.get('process_%s'% e.tag, None)
-    if procs : 
-      apply(procs,(lcdd, e))
-    else : print 'XML tag %s not processed!!! No function found.' % e.tag
+  tags = ('includes', 'define', 'materials', 'properties', 'limits', 'display',
+          'readouts', 'detectors', 'alignments', 'fields', 'sensitive_detectors')
+  if root.tag in tags :
+    process_tag(lcdd, root)
+  else :
+    for tag in tags:
+      for e in root.findall(tag):
+        process_tag(lcdd, e)
   current_xmlfile = last_xmlfile
+
+def process_tag(lcdd, elem):
+  if elem.tag == 'detectors' :
+    lcdd.init() # call init before processing 'detectors' (need world volume)
+  procs = globals().get('process_%s'% elem.tag, None)
+  if not procs :
+    procs = drivers.get('process_%s'% elem.tag, None)
+  if procs :
+    apply(procs,(lcdd, elem))
+  else : print 'XML tag %s not processed!!! No function found.' % elem.tag
+
 
 #--------------------------------------------------------------------------------
 def fromXML(xmlfile):
@@ -289,5 +303,36 @@ def process_alignment(lcdd, elem):
   alignment.align(pos,rot)
   return alignment
 
+#-----------------------------------------------------------------------------------
+def process_readouts(lcdd, elem):
+  for a in elem.findall('readout'):
+    process_readout(lcdd, a)
 
+#-----------------------------------------------------------------------------------
+def process_readout(lcdd, elem):
+  readout = Readout(elem.name)
+  seg = elem.find('segmentation')
+  if seg is not None:
+    procs = globals().get('create_%s'% seg.get('type'), None)
+    if not procs :
+      procs = drivers.get('create_%s'% seg.get('type'), None)
+    if procs :
+      segment = apply(procs,(lcdd, seg))
+      readout.setSegmentation(segment)
+    else :
+      print 'Segmentation type %s not found' % seg.get('type')
+  id = elem.find('id')
+  if id is not None:
+    idSpec = IDDescriptor(id.text)
+    idSpec.SetName(elem.name)
+    readout.setIDDescriptor(idSpec)
+    lcdd.addIDSpecification(idSpec)
+  lcdd.addReadout(readout)
+
+#---Segmentations--------------------------------------------------------------------
+def create_ProjectiveCylinder(lcdd, elem) :
+  obj = ProjectiveCylinder()
+  obj.setPhiBins(elem.getI('phiBins'))
+  obj.setThetaBins(elem.getI('thetaBins'))
+  return obj
 

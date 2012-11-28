@@ -8,7 +8,6 @@ endif()
 
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)
-  set(libraries ${libraries} Reflex)
 endif()
 
 #---Includedirs-------------------------------------------------------------------
@@ -20,6 +19,9 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 
 #---Add Library-------------------------------------------------------------------
 file(GLOB sources src/*.cpp)
+if(NOT DD4HEP_USE_XERCESC)
+  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/Geant4XML.cpp)
+endif()
 add_library(DD4hepG4 SHARED ${sources})
-target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 #target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} ${Geant4_LIBRARIES})

@@ -73,6 +73,13 @@ make -j4
 
 cmake -DDD4HEP_USE_XERCESC=ON -DDD4HEP_USE_PYROOT=OFF -DXERCESC_ROOT_DIR=<xercesc> ../DD4hep
 
+
+- Setup the running environment
+
+. thisdd4hep.sh
+     or
+source thisdd4hep.csh
+
 - Run ILDEx display
 
 DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml

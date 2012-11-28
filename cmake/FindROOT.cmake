@@ -10,11 +10,7 @@
 find_program(ROOT_CONFIG_EXECUTABLE root-config
   PATHS $ENV{ROOTSYS}/bin)
 
-if(NOT ROOT_CONFIG_EXECUTABLE)
-  set(ROOT_FOUND FALSE)
-else()    
-  set(ROOT_FOUND TRUE)
-
+if(ROOT_CONFIG_EXECUTABLE)
   execute_process(
     COMMAND ${ROOT_CONFIG_EXECUTABLE} --prefix 
     OUTPUT_VARIABLE ROOTSYS 
@@ -35,29 +31,28 @@ else()
     OUTPUT_VARIABLE ROOT_LIBRARIES
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-  #set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lThread -lMinuit -lHtml -lVMC -lEG -lGeom -lTreePlayer -lXMLIO -lProof)
-  #set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lProofPlayer -lMLP -lSpectrum -lEve -lRGL -lGed -lXMLParser -lPhysics)
   set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
-  #set(ROOT_LIBRARIES -L${ROOT_LIBRARY_DIR} Core Cint)
 
   # Make variables changeble to the advanced user
   mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
 
-  if(NOT ROOT_FIND_QUIETLY)
-    message(STATUS "Found ROOT ${ROOT_VERSION} in ${ROOTSYS}")
-  endif()
 endif()
 
+# handle the QUIETLY and REQUIRED arguments and set ROOT_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ROOTSYS ROOT_INCLUDE_DIR)
+mark_as_advanced(ROOT_FOUND ROOT_INCLUDE_DIR)
 
 include(CMakeParseArguments)
 find_program(ROOTCINT_EXECUTABLE rootcint PATHS $ENV{ROOTSYS}/bin)
 
 #----------------------------------------------------------------------------
-# function ROOT_GENERATE_DICTIONARY( dictionary   
+# function root_generate_dictionary( dictionary   
 #                                    header1 header2 ... 
 #                                    LINKDEF linkdef1 ... 
 #                                    OPTIONS opt1...)
-function(ROOT_GENERATE_DICTIONARY dictionary)
+function(root_generate_dictionary dictionary)
   CMAKE_PARSE_ARGUMENTS(ARG "" "" "LINKDEF;OPTIONS" "" ${ARGN})
   #---Get the list of header files-------------------------
   set(headerfiles)
