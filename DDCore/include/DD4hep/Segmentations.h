@@ -25,36 +25,36 @@ namespace DD4hep {
    *   XML namespace declaration
    */
   namespace Geometry  {
-
+    
     /** @class Segmentation Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
      */
     struct Segmentation : public Ref_t   {
-      public:
+    public:
       enum { REGULAR=0, EXTENDED=1 };
-
+      
       struct Object  {
-	/// Magic word to check object integrity
-	unsigned long magic;
-	/// Segmentation type (REGULAR or EXTENDED)
-	unsigned char type;
-	/// Flag to use segmentation for hit positioning
+        /// Magic word to check object integrity
+        unsigned long magic;
+        /// Segmentation type (REGULAR or EXTENDED)
+        unsigned char type;
+        /// Flag to use segmentation for hit positioning
         unsigned char useForHitPosition;
-	/// Spares to start 16 byte Byte aligned
-	unsigned char _spare[6];
-
+        /// Spares to start 16 byte Byte aligned
+        unsigned char _spare[6];
+        
         union Data {
-	  /// Maximal size and data buffer for specialized user segentations
+          /// Maximal size and data buffer for specialized user segentations
           double values[32];
-	  /// Extension buffer for specialized user segentations, where above values are insufficient
-	  struct Extension {
-	    const std::type_info* info;
-	    void (*destructor)(void*);
-	    void* ptr;
-	  } extension;
-	  /// No the regular structures for default segmentations
+          /// Extension buffer for specialized user segentations, where above values are insufficient
+          struct Extension {
+            const std::type_info* info;
+            void (*destructor)(void*);
+            void* ptr;
+          } extension;
+          /// No the regular structures for default segmentations
           struct Cartesian {
             int nx;
             int ny;
@@ -75,26 +75,26 @@ namespace DD4hep {
             double grid_size_theta;
             double grid_size_z;
           } cylindrical_grid;
-	    
+          
         } data;
-	Object();
-	~Object();
+        Object();
+        ~Object();
       };
-
-      protected:
+      
+    protected:
       /// Templated destructor function
       template <typename T> static void  _delete(void* ptr) { delete (T*)(ptr); }
       /// Add an extension object to the detector element
       void* i_setExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
       /// Access an existing extension object from the detector element
       void* i_extension(const std::type_info& info)  const;
-
-      public:
+      
+    public:
       /// Default constructor
       Segmentation() : Handle<Implementation>() {}
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Segmentation(const Handle<Q>& e) 
-	: Handle<Implementation>(e){}
+      template <typename Q> Segmentation(const Handle<Q>& e)
+      : Handle<Implementation>(e){}
       /// Constructor to create a new segmentation object (to be called by super class only)
       Segmentation(const std::string& type);
       /// Accessor to ata structure
@@ -104,19 +104,19 @@ namespace DD4hep {
       /// Segmentation type
       const std::string type() const;
       /// Extend the segmentation object with an arbitrary structure accessible by the type
-      template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)    
+      template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)
       {  return (IFACE*)i_setExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
       /// Access extension element by the type
       template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
       /// Access extension element by the type
       template <class T> T* extensionUnchecked() const {  return (T*)_data().data.extension.ptr;}
-
+      
       /// Compute the coordinate in one dimension given a eauidistant bin value.
       static double binCenter(int bin, double width)   {  return (double(bin) + .5) * width;    }
       /// Compute the equidistant bin given a coordinate in one dimension.
       static int bin(double value, double width)       {  return int(floor(value/width));       }
     };
-
+    
     /** @class ProjectiveCylinder Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -136,7 +136,7 @@ namespace DD4hep {
       /// Accessors: set grid size in Y
       void setPhiBins(int value);
     };
-
+    
     /** @class NonProjectiveCylinder Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -156,7 +156,7 @@ namespace DD4hep {
       /// Accessors: set grid size in Y
       void setPhiBinSize(double value);
     };
-
+    
     /** @class ProjectiveZPlane Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -176,7 +176,7 @@ namespace DD4hep {
       /// Accessors: set grid size in Y
       void setPhiBins(int value);
     };
-
+    
     /** @class GridXY Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -200,7 +200,7 @@ namespace DD4hep {
       /// Accessors: get grid size in Y
       double getGridSizeY()const;
     };
-
+    
     /** @class GridXYZ Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -216,7 +216,7 @@ namespace DD4hep {
       /// Accessors: set grid size in Z
       void setGridSizeZ(double value);
     };
-
+    
     /** @class CartesianGridXY Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -228,7 +228,7 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Data are taken from the input handle
       CartesianGridXY() : GridXY("cartesian_grid_xy") {}
     };
-
+    
     /** @class GlobalGridXY Segmentations.h DD4hep/lcdd/Segmentations.h
      *
      * @author  M.Frank
@@ -240,8 +240,8 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Data are taken from the input handle
       GlobalGridXY() : GridXY("global_grid_xy") {}
     };
-
-
+    
+    
   }       /* End namespace Geometry              */
 }         /* End namespace DD4hep                */
 #endif    /* DD4HEP_GEOMETRY_SEGMENTATIONS_H     */

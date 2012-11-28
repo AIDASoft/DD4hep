@@ -21,7 +21,12 @@ Position   = DD4hep.Geometry.Position
 Rotation   = DD4hep.Geometry.Rotation
 Handle     = DD4hep.Geometry.Handle
 Readout    = DD4hep.Geometry.Readout
+GridXYZ = DD4hep.Geometry.GridXYZ
+GlobalGridXY = DD4hep.Geometry.GlobalGridXY
+CartesianGridXY = DD4hep.Geometry.CartesianGridXY
 ProjectiveCylinder = DD4hep.Geometry.ProjectiveCylinder
+NonProjectiveCylinder = DD4hep.Geometry.NonProjectiveCylinder
+ProjectiveZPlane = DD4hep.Geometry.ProjectiveZPlane
 IDDescriptor = DD4hep.Geometry.IDDescriptor
 
 _toDictionary = DD4hep.Geometry._toDictionary
@@ -330,9 +335,41 @@ def process_readout(lcdd, elem):
   lcdd.addReadout(readout)
 
 #---Segmentations--------------------------------------------------------------------
+def create_GridXYZ(lcdd, elem) :
+  obj = GridXYZ()
+  if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
+  if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
+  if 'gridSizeZ' in elem.keys() : obj.setGridSizeZ(elem.getF('gridSizeZ'))
+  return obj
+
+def create_GlobalGridXY(lcdd, elem) :
+  obj = GlobalGridXY()
+  if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
+  if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
+  return obj
+
+def create_CartesianGridXY(lcdd, elem) :
+  obj = CartesianGridXY()
+  if 'gridSizeX' in elem.keys() : obj.setGridSizeX(elem.getF('gridSizeX'))
+  if 'gridSizeY' in elem.keys() : obj.setGridSizeY(elem.getF('gridSizeY'))
+  return obj
+
 def create_ProjectiveCylinder(lcdd, elem) :
   obj = ProjectiveCylinder()
-  obj.setPhiBins(elem.getI('phiBins'))
-  obj.setThetaBins(elem.getI('thetaBins'))
+  if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
+  if 'thetaBins' in elem.keys() : obj.setThetaBins(elem.getI('thetaBins'))
   return obj
+
+def create_NonProjectiveCylinder(lcdd, elem) :
+  obj = NonProjectiveCylinder()
+  if 'gridSizePhi' in elem.keys() : obj.setThetaBinSize(elem.getF('gridSizePhi'))
+  if 'gridSizeZ' in elem.keys() : obj.setPhiBinSize(elem.getI('gridSizeZ'))
+  return obj
+
+def create_ProjectiveZPlane(lcdd, elem) :
+  obj = ProjectiveZPlaner()
+  if 'phiBins' in elem.keys() : obj.setPhiBins(elem.getI('phiBins'))
+  if 'thetaBins' in elem.keys() : obj.setThetaBins(elem.getI('thetaBins'))
+  return obj
+
 
