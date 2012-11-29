@@ -13,9 +13,12 @@ if(DD4HEP_USE_XERCESC)
   find_package(XercesC)
 endif()
 
-INCLUDE(CTest)
-ENABLE_TESTING()
+#---Testing-------------------------------------------------------------------------
+include(CTest)
+enable_testing()
 
+#---Documentation-------------------------------------------------------------------
+include(DD4hepDoxygen)
 
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDCore)
