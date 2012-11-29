@@ -135,11 +135,10 @@ using namespace DD4hep::Geometry;
 #define N_FIBERS_W_STRUCTURE 2
 #define _U(text)  Unicode(#text)
 
-
 /// Detector construction function
 DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
-  lcdd     = &l;
-  name     = x_det.nameStr();
+  lcdd = &l;
+  name = x_det.nameStr();
   self.assign(dynamic_cast<Value<TNamed,SEcal03>*>(this),name,x_det.typeStr());
   self._data().id = x_det.id();
   xml_comp_t x_param             = x_det.child(_U(param));
@@ -828,7 +827,8 @@ pair<DetElement,Volume> SEcal03::buildBarrelStave(const Barrel& barrel) {
   return make_pair(staveDet,staveVol);
 }
 
-static Ref_t create_detector(LCDD& lcdd, const xml_h& element)  {
-  return (new Value<TNamed,SEcal03>())->construct(lcdd,element);
+static Ref_t create_detector(LCDD& lcdd, const xml_det_t& x_det)  {
+  DetElement e = DetElement::create<SEcal03>(x_det.nameStr(),x_det.typeStr(),x_det.id());
+  return DetElement::createObject<SEcal03>(x_det.nameStr(),x_det.typeStr(),x_det.id())->construct(lcdd,x_det);
 }
 DECLARE_SUBDETECTOR(Tesla_SEcal03,create_detector);
