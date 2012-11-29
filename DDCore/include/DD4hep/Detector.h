@@ -242,6 +242,27 @@ namespace DD4hep {
       {   assign(new Value<TNamed,Q>(),name,type);
            _data().id = id; }
       
+      /// Construction function for a new subdetector element
+      template<typename Q> 
+      static Q* createObject(const std::string& name, const std::string& type, int id)   {
+	DetElement det;
+	Value<TNamed,Q> *p = new Value<TNamed,Q>();
+        Object* o = p;
+	if ( o ) {                  // This should cause a compilation error if Q is 
+	  det.assign(p,name,type);  // not a subclass of Object, which is mandatoryyyy
+	}
+	det._data().id = id;
+        return p;
+      }
+
+      /// Construction function for a new subdetector element
+      template<typename Q> 
+      static DetElement create(const std::string& name, const std::string& type, int id, Q** ptr=0)   {
+        Q* p = createObject<Q>(name,type,id);
+	if ( ptr ) *ptr = p;
+	return DetElement(Ref_t(dynamic_cast<Value<TNamed,Q>*>(p)));
+      }
+
       /// Templated constructor for handle conversions
       template<typename Q> DetElement(const Handle<Q>& e) : Ref_t(e)  {}
       
