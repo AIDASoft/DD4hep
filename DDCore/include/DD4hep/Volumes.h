@@ -91,9 +91,6 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Volume : public Handle<TGeoVolume>  {
-      protected:
-      //void inc_ref();
-      //void dec_ref();
 
       public:
       typedef Handle<TGeoVolume> Base;
@@ -107,6 +104,8 @@ namespace DD4hep {
         Object() : region(), limits(), vis(), sens_det(), referenced(0)  {}
         void copy(const Object& c) { region=c.region; limits=c.limits; vis=c.vis; sens_det=c.sens_det; referenced=c.referenced; }
       };
+
+      public:
       /// Default constructor
       Volume() : Base(0) {}
       

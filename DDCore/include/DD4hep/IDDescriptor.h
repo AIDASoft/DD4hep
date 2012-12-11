@@ -23,13 +23,22 @@
  */
 namespace DD4hep {
 
+  /*
+   *   Geometry sub-namespace declaration
+   */
   namespace Geometry {
 
+    /** @class IDDescriptor IDDescriptor.h DDCore/IDDescriptor.h
+     *  
+     *  @author  M.Frank
+     *  @version 1.0
+     *  @date    2012/07/31
+     */
     struct IDDescriptor : public Ref_t  {
       public:
       typedef std::pair<int,int>          Field;
-      typedef std::map<std::string,Field> FieldMap;
-      typedef std::map<int,std::string>   FieldIDs;
+      typedef std::vector<std::pair<std::string,Field> > FieldMap;
+      typedef std::vector<std::pair<int,std::string> >   FieldIDs;
       struct Object {
 	FieldMap    fieldMap;
 	FieldIDs    fieldIDs;

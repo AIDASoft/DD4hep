@@ -104,10 +104,11 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Attr_true;
   extern const Tag_t Attr_tubs;
   extern const Tag_t Attr_verbose;
-  extern const Tag_t Attr_version;
   extern const Tag_t Attr_vis;
 
   // LCDD
+  extern const Tag_t Tag_lcdd;
+  extern const Tag_t Tag_lccdd;
   extern const Tag_t Tag_barrel;
   extern const Tag_t Tag_endcap;
   extern const Tag_t Tag_cartesian_grid_xy;
@@ -120,7 +121,6 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_gdml;
   extern const Tag_t Tag_header;
   extern const Tag_t Tag_iddict;
-  extern const Tag_t Tag_lcdd;
   extern const Tag_t Tag_limits;
   extern const Tag_t Tag_materials;
   extern const Tag_t Tag_materials;
@@ -201,12 +201,18 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_empty;
   // -- Header
   extern const Tag_t Tag_header;
-  extern const Tag_t Tag_author;
+  extern const Tag_t Attr_author;
   extern const Tag_t Tag_detector;
   extern const Tag_t Tag_comment;
+  extern const Tag_t Tag_name;
+  extern const Tag_t Tag_status;
+  extern const Tag_t Tag_title;
   extern const Tag_t Tag_generator;
+  extern const Tag_t Attr_status;
+  extern const Tag_t Attr_title;
   extern const Tag_t Attr_name;
   extern const Tag_t Attr_file;
+  extern const Tag_t Attr_url;
   extern const Tag_t Attr_version;
   extern const Tag_t Attr_checksum;
   extern const Tag_t Tag_info;

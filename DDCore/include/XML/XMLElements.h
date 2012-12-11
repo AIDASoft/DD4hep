@@ -315,6 +315,14 @@ namespace DD4hep {
       std::string text() const                                { return _toString(rawText());                }
       /// Text access to the element's value
       std::string value() const                               { return _toString(rawValue());               }
+      /// Set the element's value
+      void setValue(const XmlChar* text) const;
+      /// Set the element's value
+      void setValue(const std::string& text) const;
+      /// Set the element's text
+      void setText(const XmlChar* text) const;
+      /// Set the element's text
+      void setText(const std::string& text) const;
 
       /*** DOM Attribute handling 
        */
@@ -356,6 +364,8 @@ namespace DD4hep {
       Attribute setAttr(const XmlChar* t, float val)  const;
       /// Generic attribute setter with double precision floating point value
       Attribute setAttr(const XmlChar* t, double val)  const;
+      /// Generic attribute setter with string value
+      Attribute setAttr(const XmlChar* t, const std::string& val)  const;
 #ifndef __TIXML__
       /// Check for the existence of a named attribute
       bool hasAttr(const char* t) const                     { return hasAttr(Strng_t(t));                 }
@@ -364,6 +374,10 @@ namespace DD4hep {
       /// Generic attribute setter with text value
       Attribute setAttr(const XmlChar* t, const char* v) const;
 #endif
+
+      /// Add reference child as a new child node. The obj must have the "name" attribute!
+      Handle_t setRef(const XmlChar* tag, const XmlChar* ref);
+
       /*** DOM Element child handling 
        */
       /// Check the existence of a child with a given tag name
@@ -382,6 +396,8 @@ namespace DD4hep {
       void append(Handle_t e) const;
       /// Access the element's parent element
       Handle_t parent() const;
+      /// Checksum (sub-)tree of a xml document/tree. Default will pick up the adler32 checksum.
+      unsigned int checksum(unsigned int param,unsigned int (fcn)(unsigned int param,const XmlChar*, size_t)=0) const;
     };
 
 #define INLINE inline
@@ -585,6 +601,8 @@ namespace DD4hep {
       Handle_t child(const Strng_t& tag, bool except=true) const{  return m_element.child(tag,except);    }
       /// Remove a child node identified by its handle
       Handle_t remove(Handle_t node)  const                     {  return m_element.remove(node);         }
+      /// Check the existence of a child with a given tag name
+      bool hasChild(const XmlChar* tag) const                   {  return m_element.hasChild(tag);        }
       /// Set the reference attribute to the node (adds attribute ref="ref-name")
       Attribute setRef(const XmlChar* tag, const XmlChar* refname)  const;
       /// Access the value of the reference attribute of the node (attribute ref="ref-name")

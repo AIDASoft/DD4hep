@@ -45,6 +45,8 @@ namespace DD4hep {
       virtual Document load(const std::string& fname) const;
       /// Load secondary XML file with relative addressing with respect to handle
       virtual Document load(Handle_t base, const XmlChar* fname) const;
+      /// Parse a standalong XML string into a document.
+      virtual Document parse(const char* doc_string, size_t length) const;
     };
   }
 }         /* End namespace DD4hep            */

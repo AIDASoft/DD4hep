@@ -55,6 +55,7 @@ namespace DD4hep {
         Region       region;
         LimitSet     limits;
         Extensions   extensions;
+
         /// Default constructor
         Object() : magic(magic_word()), verbose(0), combineHits(0), ecut(0.0),
         hitsCollection(), readout(), region(), limits(), extensions() {}

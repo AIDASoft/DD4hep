@@ -75,13 +75,47 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Header : public Ref_t  {
+      struct Object {
+	std::string url;
+	std::string author;
+	std::string status;
+	std::string version;
+	std::string comment;
+      };
       /// Default constructor
       Header() : Ref_t() {}
       /// Constructor to be used when reading the already parsed DOM tree
-      template <typename Q> 
-      Header(const Handle<Q>& e) : Ref_t(e)  {}
+      template <typename Q> Header(const Handle<Q>& e) : Ref_t(e)  {}
       /// Constructor to be used when creating a new DOM tree
-      Header(LCDD& doc);
+      Header(const std::string& author, const std::string& url);
+      /// Accessor to object name
+      const std::string name()  const;
+      /// Accessor: set object name
+      void setName(const std::string& new_name);
+      /// Accessor to object title
+      const std::string title()  const;
+      /// Accessor: set object title
+      void setTitle(const std::string& new_title);
+      /// Accessor to object author
+      const std::string& author()  const;
+      /// Accessor: set object author
+      void setAuthor(const std::string& new_author);
+      /// Accessor to object url
+      const std::string& url()  const;
+      /// Accessor: set object url
+      void setUrl(const std::string& new_url);
+      /// Accessor to object status
+      const std::string& status()  const;
+      /// Accessor: set object status
+      void setStatus(const std::string& new_status);
+      /// Accessor to object version
+      const std::string& version()  const;
+      /// Accessor: set object version
+      void setVersion(const std::string& new_version);
+      /// Accessor to object comment
+      const std::string& comment()  const;
+      /// Accessor: set object comment
+      void setComment(const std::string& new_comment);
     };
 
     /** @class Constant Objects.h
@@ -503,6 +537,10 @@ namespace DD4hep {
       double threshold() const;
       /// Access secondaries flag
       bool storeSecondaries() const;
+      /// Access the length unit
+      const std::string& lengthUnit() const;
+      /// Access the energy unit
+      const std::string& energyUnit() const;
     };
 
     /** @class IDSpec Objects.h
