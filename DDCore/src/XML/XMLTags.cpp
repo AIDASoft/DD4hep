@@ -263,6 +263,8 @@ namespace DD4hep   { namespace XML  {
   ATTR(zhalf);
 
   // LCDD
+  TAG(lcdd);
+  TAG(lccdd);
   TAG(barrel);
   TAG(endcap);
   TAG(cartesian_grid_xy);
@@ -274,11 +276,9 @@ namespace DD4hep   { namespace XML  {
   TAG(fields);
   TAG(gdml);
   TAG(grid_xyz);
-  TAG(header);
   TAG(iddict);
   TAG(idfield);
   TAG(idspec);
-  TAG(lcdd);
   TAG(limits);
   TAG(materials);
   TAG(gdmlFile);
@@ -363,6 +363,13 @@ namespace DD4hep   { namespace XML  {
   TAG(generator);
   TAG(comment);
   TAG(author);
+  ATTR(status);
+  ATTR(author);
+  TAG(title);
+  ATTR(title);
+  TAG(name);
+  ATTR(url);
+  TAG(header);
   TAG(info);
   ATTR(file);
   ATTR(checksum);
