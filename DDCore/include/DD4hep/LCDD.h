@@ -71,11 +71,14 @@ namespace DD4hep {
       /// Return handle to the world volume containing the volume with the tracking devices
       virtual Volume   trackingVolume() const = 0;
 
+      /// Accessor to the map of header entries
+      virtual Header header()  const = 0;
+      /// Accessor to the header entry
+      virtual void setHeader(Header h) = 0;
+
       /// Return handle to the combined electromagentic field description.
       virtual OverlayedField field() const = 0;
 
-      /// Accessor to the map of header entries
-      virtual const HandleMap& header()  const = 0;
       /// Accessor to the map of constants
       virtual const HandleMap& constants()  const = 0;
       /// Accessor to the map of region settings
@@ -180,10 +183,13 @@ namespace DD4hep {
       virtual void fromXML(const std::string& fname) = 0;
       /// 
       virtual void dump() const = 0;
+      /// Manipulate geometry using facroy converter
+      virtual void apply(const char* factory, int argc, char** argv) = 0;
 
       ///---Factory method-------
       static LCDD& getInstance(void);
     };
+
 
     /*
      *   The following are convenience implementations to access constants by type.
