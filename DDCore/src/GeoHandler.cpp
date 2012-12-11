@@ -14,6 +14,7 @@
 #include "TGeoManager.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoBoolNode.h"
+#include "TClass.h"
 
 // C/C++ include files
 #include <iostream>
@@ -24,6 +25,9 @@ using namespace std;
 
 namespace {
   void collectSolid(GeoHandler::GeometryInfo& geo, const string& name, const string& node, TGeoShape* shape, TGeoMatrix* matrix)     {
+    if ( 0 == ::strncmp(shape->GetName(),"TGeo",4) ) {
+      shape->SetName(name.c_str());
+    }
     if ( shape->IsA() == TGeoCompositeShape::Class() ) {
       const TGeoCompositeShape* s = (const TGeoCompositeShape*)shape;
       const TGeoBoolNode* boolean = s->GetBoolNode();
@@ -71,15 +75,18 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
       const TGeoNode* n = *j;
       TGeoVolume* v = n->GetVolume();
       TGeoMedium* m = v->GetMedium();
-      Volume      vol = Handle<>(v);
+      Volume      vol = Ref_t(v);
       VisAttr     vis = vol.visAttributes();
       //Region      reg = vol.region();
       //LimitSet    lim = vol.limitSet();
       //SensitiveDetector det = vol.sensitiveDetector();
 
-      info.volumes.insert(v);
-      info.materials.insert(m);
-      if ( vis.isValid() ) info.vis.insert(vis.ptr());
+      // Note : assemblies and the world do not have a real volume nor a material
+      if ( v ) info.volumes.insert(v);
+      if ( m ) info.materials.insert(m);
+      if ( dynamic_cast<Volume::Object*>(v) ) {
+	if ( vis.isValid() ) info.vis.insert(vis.ptr());
+      }
       //if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
       //if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
       //if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);

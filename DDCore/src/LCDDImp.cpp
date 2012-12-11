@@ -258,3 +258,28 @@ void LCDDImp::dump() const  {
   mgr->SetVisOption(1);
   m_worldVol->Draw("ogl");
 }
+
+/// Manipulate geometry using facroy converter
+void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
+  string fac = factory_type;
+  try {
+    LCDD* lcdd = this;
+    char* fname = 0;
+    long result = ROOT::Reflex::PluginService::Create<long>(fac,lcdd,argc,argv);
+    if ( 0 == result ) {
+      throw runtime_error("Failed to locate plugin to apply "+fac);
+    }
+    result = *(long*)result;
+    if ( result != 1 ) {
+      throw runtime_error("Failed to execute plugin to apply "+fac);
+    }
+  }
+  catch(const exception& e)  {
+    cout << "Exception:" << e.what() << endl;
+    throw runtime_error("Exception:"+string(e.what())+" while applying plugin:"+fac);
+  }
+  catch(...)  {
+    cout << "UNKNOWN Exception" << endl;
+    throw runtime_error("UNKNOWN excetion while applying plugin:"+fac);
+  }
+}

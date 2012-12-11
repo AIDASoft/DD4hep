@@ -51,6 +51,7 @@ namespace DD4hep {
   template <> void Converter<DetElement>::operator()(const xml_h& element)  const;
   template <> void Converter<GdmlFile>::operator()(const xml_h& element)  const;
   template <> void Converter<AlignmentFile>::operator()(const xml_h& element)  const;
+  template <> void Converter<Header>::operator()(const xml_h& element)  const;
   template <> void Converter<Compact>::operator()(const xml_h& element)  const;
 }
 
@@ -183,6 +184,21 @@ template <> void Converter<Constant>::operator()(const xml_h& e)  const  {
   lcdd.addConstant(cons);
 }
 
+/** Convert compact constant objects (defines)
+ *
+ *
+ */
+template <> void Converter<Header>::operator()(const xml_h& e)  const  {
+  xml_comp_t c(e);
+  Header h(e.attr<string>(_A(name)),e.attr<string>(_A(title)));
+  h.setUrl(e.attr<string>(_A(url)));
+  h.setAuthor(e.attr<string>(_A(author)));
+  h.setStatus(e.attr<string>(_A(status)));
+  h.setVersion(e.attr<string>(_A(version)));
+  h.setComment(e.child(_X(comment)).text());
+  lcdd.setHeader(h);
+}
+
 /** Convert compact material/element description objects
  *
  *  Materials:
@@ -214,9 +230,9 @@ template <> void Converter<Material>::operator()(const xml_h& e)  const  {
   set<string> elts;
 
   if ( 0 == mat )  {
-    xml_h  radlen     = m.child(XML::Tag_RL,false);
-    xml_h  intlen     = m.child(XML::Tag_NIL,false);
-    xml_h  density    = m.child(XML::Tag_D,false);
+    xml_h  radlen     = m.child(_X(RL),false);
+    xml_h  intlen     = m.child(_X(NIL),false);
+    xml_h  density    = m.child(_X(D),false);
     double radlen_val = radlen.ptr() ? radlen.attr<double>(_A(value)) : 0.0;
     double intlen_val = intlen.ptr() ? intlen.attr<double>(_A(value)) : 0.0;
     double dens_val   = density.ptr() ? density.attr<double>(_A(value)) : 0.0;
@@ -626,6 +642,7 @@ void setChildTitles(const pair<string,DetElement>& e) {
   }
   for_each(children.begin(),children.end(),setChildTitles);
 }
+
 template <> void Converter<DetElement>::operator()(const xml_h& element)  const {
   static const char* req_dets = ::getenv("REQUIRED_DETECTORS");
   static const char* req_typs = ::getenv("REQUIRED_DETECTOR_TYPES");
@@ -684,9 +701,11 @@ template <> void Converter<AlignmentFile>::operator()(const xml_h& element)  con
 }
 
 template <> void Converter<Compact>::operator()(const xml_h& element)  const  {
+  char text[32];
   xml_elt_t compact(element);
   xml_coll_t(compact,_X(includes)    ).for_each(_X(gdmlFile), Converter<GdmlFile>(lcdd));
-  //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
+  if ( element.hasChild(_X(info)) )
+    (Converter<Header>(lcdd))(xml_h(compact.child(_X(info))));
   xml_coll_t(compact,_X(define)      ).for_each(_X(constant),  Converter<Constant>(lcdd));
   xml_coll_t(compact,_X(materials)   ).for_each(_X(element),   Converter<Atom>(lcdd));
   xml_coll_t(compact,_X(materials)   ).for_each(_X(material),  Converter<Material>(lcdd));
@@ -700,6 +719,8 @@ template <> void Converter<Compact>::operator()(const xml_h& element)  const  {
   xml_coll_t(compact,_X(alignments)  ).for_each(_X(alignment),Converter<AlignmentEntry>(lcdd));
   xml_coll_t(compact,_X(fields)      ).for_each(_X(field),    Converter<CartesianField>(lcdd));
   xml_coll_t(compact,_X(sensitive_detectors)).for_each(_X(sd),Converter<SensitiveDetector>(lcdd));
+  ::sprintf(text,"%u",xml_h(element).checksum(0));
+  lcdd.addConstant(Constant("compact_checksum",text));
   lcdd.endDocument();
 }
 

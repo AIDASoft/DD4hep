@@ -49,6 +49,7 @@ namespace DD4hep {
       typedef std::map<int, std::set<const TGeoNode*> >          Data;
       typedef std::set<const TNamed*>                            VisRefs;
       typedef std::set<TNamed*>                                  Fields;
+      typedef std::set<TNamed*>                                  ObjectSet;
       typedef LCDD::HandleMap                                    DefinitionSet;
 
       typedef Geometry::LCDD              LCDD;
