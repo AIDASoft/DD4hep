@@ -936,16 +936,16 @@
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="EcalBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="EcalEndcapHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="EcalEndcapRingHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="HcalRegularHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="HcalEndModuleHits">
             <id>system:6,barrel:3,layer:4,module:16</id>

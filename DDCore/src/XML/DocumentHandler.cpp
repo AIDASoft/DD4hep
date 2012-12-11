@@ -166,6 +166,19 @@ Document DocumentHandler::load(const string& fname)  const  {
   return parser->adoptDocument();
 }
 
+/// Parse a standalong XML string into a document.
+Document DocumentHandler::parse(const char* bytes, size_t length)  const {
+  auto_ptr<XercesDOMParser> parser(makeParser());
+  MemBufInputSource src((const XMLByte*)bytes,length,"memory");
+  parser->setValidationSchemaFullChecking(true);
+  parser->parse(src);
+  DOMDocument* doc  = parser->adoptDocument();
+  doc->setXmlStandalone(true);
+  doc->setStrictErrorChecking(true);
+  return doc;
+}
+
+
 #else
 #ifdef _WIN32
 #include <cstdlib>
@@ -242,6 +255,29 @@ Document DocumentHandler::load(const string& fname)  const  {
   if ( result ) {
     cout << "Document " << fname << " succesfully parsed....." << endl;
     return doc;
+  }
+  delete doc;
+  return 0;
+}
+
+/// Parse a standalong XML string into a document.
+Document DocumentHandler::parse(const char* doc_string, size_t length) const {
+  TiXmlDocument* doc = new TiXmlDocument();
+  try  {
+    if ( 0 == doc->Parse(doc_string) ) {
+      return doc;
+    }
+    if ( doc->Error() ) {
+      cout << "Unknown error whaile parsing XML document with TiXml:" << endl;
+      cout << "Document:" << doc->Value() << endl;
+      cout << "Location: Line:" << doc->ErrorRow() 
+	   << " Column:" << doc->ErrorCol() << endl;
+      throw runtime_error(doc->ErrorDesc());
+    }
+    throw runtime_error("Unknown error whaile parsing XML document with TiXml.");
+  }
+  catch(std::exception& e) {
+    cout << "parse(xml-string):" << e.what() << endl;
   }
   delete doc;
   return 0;

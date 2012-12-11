@@ -138,9 +138,9 @@ void ClicYoke01::collectRPClayers(xml_comp_t x_rpcs)   {
 /// Build the endcap logical volume ready for placement
 Volume ClicYoke01::buildEndcap()   {
   PolyhedraRegular solid(symmetry,endcap.inner_r,endcap.outer_r,yokeThickness);
-  Volume           envelope(name+"_endcap",solid,yokeMat);
+  Volume           envelope(name+"_endcap_envelope",solid,yokeMat);
   PolyhedraRegular chamberSolid(symmetry,endcap.inner_r,barrel.outer_r,layer_thickness);
-  Volume           chamberVol(name+"_layer",chamberSolid,lcdd->air());
+  Volume           chamberVol(name+"_endcap",chamberSolid,lcdd->air());
   Volume           gasVol;
   PlacedVolume     pv;
 
@@ -153,7 +153,7 @@ Volume ClicYoke01::buildEndcap()   {
     Material m = rpc_layers[i].first;
     double   t = rpc_layers[i].second.second;
     PolyhedraRegular h(symmetry,endcap.inner_r,barrel.outer_r,t);
-    Volume   v((name+"_endcap_")+m.name(),h,m);
+    Volume   v(name+_toString(i,"_endcap_layer%d"),h,m);
     if ( m.ptr() == rpcGasMat.ptr() )   {
       v.setLimitSet(limitSet);
       v.setVisAttributes(rpcGasVis);
@@ -198,7 +198,6 @@ Volume ClicYoke01::buildPlug() {
 #endif
   Volume           gasVol;
   PlacedVolume     pv;
-
   /*	
     fg: the plug should have same outer radius as the hcal endcap 
     note: HCAL_R_max is outer edge radius of  the barrel with 16-fold symmentry -> cos(pi/16)
@@ -215,7 +214,7 @@ Volume ClicYoke01::buildPlug() {
   PolyhedraRegular plugSolid(symmetry,endcap.inner_r,HCAL_R_max,HCAL_plug_thickness);
   Volume           plugVol  (name+"_plug",plugSolid,yokeMat);
   PolyhedraRegular chamberSolid(symmetry,endcap.inner_r,HCAL_R_max,layer_thickness);
-  Volume           chamberVol  (name+"_plug_layer",chamberSolid,lcdd->air());
+  Volume           chamberVol  (name+"_plug_layers",chamberSolid,lcdd->air());
 
   plugVol.setVisAttributes(plugVis);
   chamberVol.setVisAttributes(chamberVis);
@@ -229,7 +228,7 @@ Volume ClicYoke01::buildPlug() {
     Material m = rpc_layers[i].first;
     double   t = rpc_layers[i].second.second;
     PolyhedraRegular h(symmetry,endcap.inner_r,HCAL_R_max,t);
-    Volume   v((name+"_endcap_")+m.name(),h,m);
+    Volume   v(name+_toString(i,"_plug_layers_layer%d"),h,m);
     if ( m.ptr() == rpcGasMat.ptr() )   {
       v.setLimitSet(limitSet);
       v.setVisAttributes(rpcGasVis);
@@ -292,8 +291,9 @@ Volume ClicYoke01::buildBarrel() {
 #if 0
     m_barrel.sensDet->AddLayer(i+1, dx, radius_sensitive, 0.0); 
 #endif
+    string chamber_name = name+_toString(i,"_barrel_stave_layer%d");
     Box    chamberBox(dx,layer_thickness/2.0, dy);
-    Volume chamberVol(name+"_stave",chamberBox,lcdd->air());
+    Volume chamberVol(chamber_name,chamberBox,lcdd->air());
     chamberVol.setVisAttributes(chamberVis);
     if ( rpc_last_layer.first+rpc_last_layer.second > chamberBox.y() ) {
       throw runtime_error("Overfull RPC layer in yoke barrel!");
@@ -301,7 +301,7 @@ Volume ClicYoke01::buildBarrel() {
     for(size_t j=0; j<rpc_layers.size(); ++j)   {
       Material m = rpc_layers[j].first;
       double   t = rpc_layers[j].second.second;
-      Volume   v((name+"_barrel_")+m.name(),Box(dx,t/2,dy),m);
+      Volume   v(chamber_name+_toString(j,"_layer%d"),Box(dx,t/2,dy),m);
       if ( m.ptr() == rpcGasMat.ptr() )   {
 	v.setLimitSet(limitSet);
 	v.setVisAttributes(rpcGasVis);
@@ -433,7 +433,7 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   //  -------------------------------------------------
   if( m_hasPlug )      {
     Volume plugVol = buildPlug();
-    pv = assembly.placeVolume(plugVol,Position(0,0, HCAL_plug_zpos),Rotation(0,tiltAngle,0));//,Rotation(0,0,M_PI));
+    pv = assembly.placeVolume(plugVol,Position(0,0, HCAL_plug_zpos),Rotation(0,tiltAngle,0));
     m_plugPlus.setPlacement(pv);
     pv = assembly.placeVolume(plugVol,Position(0,0,-HCAL_plug_zpos),Rotation(0,tiltAngle+M_PI,0));
     m_plugMinus = m_plugPlus.clone(name+"_plug_minus",x_det.id());

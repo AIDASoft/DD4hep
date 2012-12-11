@@ -245,6 +245,11 @@ string PlacedVolume::toString() const {
   return s.str();
 }
 
+Volume::Object* _data(const Volume& v) {
+  if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
+  return dynamic_cast<Volume::Object*>(v.ptr());
+}
+
 /// Constructor to be used when creating a new geometry tree.
 Volume::Volume(const string& name)    {
   m_element = new Value<TGeoVolume,Volume::Object>(name.c_str());
@@ -372,14 +377,14 @@ void Volume::setVisAttributes(const VisAttr& attr) const   {
     m_element->SetAttBit(TGeoAtt::kVisContainers,kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
   }
-  data<Object>()->vis = attr;
+  _data(*this)->vis = attr;
 }
 
 /// Set Visualization attributes to the volume
 void Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
   if ( !name.empty() )   {
     VisAttr attr = lcdd.visAttributes(name);
-    data<Object>()->vis = attr;
+    _data(*this)->vis = attr;
     setVisAttributes(attr);
   }
   else  {
@@ -414,25 +419,25 @@ void Volume::setSolid(const Solid& solid)  const
 
 /// Set the regional attributes to the volume
 void Volume::setRegion(const Region& obj)  const   
-{  data<Object>()->region = obj;                            }
+{  _data(*this)->region = obj;                            }
 
 /// Set the limits to the volume
 void Volume::setLimitSet(const LimitSet& obj)  const   
-{  data<Object>()->limits = obj;                            }
+{  _data(*this)->limits = obj;                            }
 
 /// Assign the sensitive detector structure
 void Volume::setSensitiveDetector(const SensitiveDetector& obj) const   {
   //cout << "Setting sensitive detector '" << obj.name() << "' to volume:" << ptr() << " " << name() << endl;
-  data<Object>()->sens_det = obj;                          
+  _data(*this)->sens_det = obj;                          
 }
 
 /// Access to the handle to the sensitive detector
 Ref_t Volume::sensitiveDetector() const
-{  return data<Object>()->sens_det;                         }
+{  return _data(*this)->sens_det;                         }
 
 /// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
 bool Volume::isSensitive() const
-{  return data<Object>()->sens_det.isValid();               }
+{  return _data(*this)->sens_det.isValid();               }
 
 /// Access to Solid (Shape)
 Solid Volume::solid() const   
@@ -444,15 +449,15 @@ Material Volume::material() const
 
 /// Access the visualisation attributes
 VisAttr Volume::visAttributes() const
-{  return data<Object>()->vis;                              }
+{  return _data(*this)->vis;                              }
 
 /// Access to the handle to the region structure
 Region Volume::region() const   
-{  return data<Object>()->region;                           }
+{  return _data(*this)->region;                           }
 
 /// Access to the limit set
 LimitSet Volume::limitSet() const   
-{  return data<Object>()->limits;                           }
+{  return _data(*this)->limits;                           }
 
 /// Constructor to be used when creating a new geometry tree.
 Assembly::Assembly(const string& name) {

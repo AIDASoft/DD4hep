@@ -61,12 +61,12 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_
   assembly.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
   
   Tube   innerTube(env.inner_r, gas.inner_r, env.z);
-  Volume innerVol(name+"_assembly",innerTube,lcdd.material(x_inner.materialStr()));
+  Volume innerVol(name+"_inner",innerTube,lcdd.material(x_inner.materialStr()));
   innerVol.setVisAttributes(lcdd.visAttributes(x_inner.visStr()));
   assembly.placeVolume(innerVol);
 
   Tube   outerTube(gas.outer_r, env.outer_r, env.z);
-  Volume outerVol(name+"_assembly",outerTube,lcdd.material(x_outer.materialStr()));
+  Volume outerVol(name+"_outer",outerTube,lcdd.material(x_outer.materialStr()));
   outerVol.setVisAttributes(lcdd.visAttributes(x_outer.visStr()));
   assembly.placeVolume(outerVol);
 

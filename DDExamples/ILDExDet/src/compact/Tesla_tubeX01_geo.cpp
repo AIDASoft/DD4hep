@@ -207,7 +207,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  wallCone = ConeSegment(zHalf+clipSize/2,start.inner_r,start.outer_r,end.inner_r,end.outer_r);
 	  SubtractionSolid sol(wallCone,clip,clip_pos_pos,Rotation(0,0,-clipAngle));
-	  Volume           vol (name+"_"+nam+"_wall_solid",sol,mat);
+	  Volume           vol (name+"_"+nam+"_wall_solid_front",sol,mat);
 	  vol.setVisAttributes(vis);
 	  wall.placeVolume(vol);
 	}
@@ -218,7 +218,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	wall.setVisAttributes(vis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  SubtractionSolid sol(wallCone,clip, clip_pos_neg, Rotation(0,0,clipAngle));
-	  Volume           vol(name+"_"+nam+"_wall_solid",sol,mat);
+	  Volume           vol(name+"_"+nam+"_wall_solid_back",sol,mat);
 	  wall.placeVolume(vol);
 	}
 	assembly.placeVolumeEx(wall,Position(0,0,zPos-clipSize/2),Rotation(0,0,reflect_angle));
@@ -249,7 +249,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  wallCone = ConeSegment(zHalf + clipSize/2,start.inner_r,start.outer_r,end.inner_r,end.outer_r);
 	  solid = SubtractionSolid(wallCone,clip,clip_pos_pos,Rotation(0,0,-clipAngle));
-	  Volume  wall (name+"_"+nam+"_wall_solid",solid,mat);
+	  Volume  wall (name+"_"+nam+"_wall_pos_solid",solid,mat);
 	  wall.setVisAttributes(vis);
 	  vol.placeVolume(wall);
 	}
@@ -260,7 +260,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 	vol.setVisAttributes(vis);
         if (start.inner_r != start.outer_r || end.inner_r != end.outer_r) {
 	  solid = SubtractionSolid(wallCone, clip, clip_pos_neg, Rotation(0,0,+clipAngle));
-	  Volume  wall (name+"_"+nam+"_wall_solid",solid,mat);
+	  Volume  wall (name+"_"+nam+"_wall_neg_solid",solid,mat);
 	  wall.setVisAttributes(vis);
 	  vol.placeVolume(wall);
 	}

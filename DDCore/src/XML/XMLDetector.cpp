@@ -4,16 +4,16 @@ using namespace std;
 using namespace DD4hep::XML;
 
 #define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Attr_##name); }
-#define XML_ATTR_ACCESSOR_DOUBLE(name)	 \
+#define XML_ATTR_ACCESSOR_DOUBLE(name)	                                \
   double Dimension::name(double default_val) const {		       	\
     const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
     return val ? _toDouble(val) : default_val; }
-#define XML_ATTR_ACCESSOR_INT(name)	 \
+#define XML_ATTR_ACCESSOR_INT(name)	                                \
   int Dimension::name(int default_val) const {				\
     const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
     return val ? _toInt(val) : default_val; }
-#define XML_ATTR_ACCESSOR_BOOL(name)	 \
-  bool Dimension::name(bool default_val) const {				\
+#define XML_ATTR_ACCESSOR_BOOL(name)	                                \
+  bool Dimension::name(bool default_val) const {		       	\
     const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
     return val ? _toBool(val) : default_val; }
 

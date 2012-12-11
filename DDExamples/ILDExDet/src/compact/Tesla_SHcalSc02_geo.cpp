@@ -441,16 +441,16 @@ void SHcalSc02::constructBarrelChambers(Volume modVol,double chambers_y_off_corr
   Trap supportTrap1(2*z_width_supp,2*y_height,
 		    Hcal_layer_support_length + 2*y_height*tan8,
 		    Hcal_layer_support_length);
-  Volume supportTrapVol1(name+"_trap",supportTrap1,m_aluminum);
+  Volume supportTrapVol1(name+"_support1",supportTrap1,m_aluminum);
   supportTrapVol1.setVisAttributes(m_supportTrapVis);
 
   Trap supportTrap2(2*z_width_supp,2*y_height,
 		    Hcal_layer_support_length + 2*y_height/tan8,
 		    Hcal_layer_support_length);
-  Volume supportTrapVol2(name+"_trap",supportTrap1,m_aluminum);
+  Volume supportTrapVol2(name+"_support2",supportTrap1,m_aluminum);
   supportTrapVol2.setVisAttributes(m_supportTrapVis);
 
-  Box    supportBox(Hcal_layer_support_length/2, z_width_supp, y_height);
+  Box    supportBox(Hcal_layer_support_length/2,z_width_supp,y_height);
   Volume supportBoxVol(name+"_support",supportBox,m_aluminum);
   supportBoxVol.setVisAttributes(m_supportTrapVis);
 

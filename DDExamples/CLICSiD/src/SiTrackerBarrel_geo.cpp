@@ -34,9 +34,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       xml_comp_t x_comp = ci;
       xml_comp_t x_pos  = x_comp.child(_X(position),false);
       xml_comp_t x_rot  = x_comp.child(_X(rotation),false);	
-      string     c_nam  = _toString(ncomponents,"component%d");
-      Box        c_box (x_comp.width(),x_comp.length(),x_comp.thickness());
-      Volume     c_vol (c_nam,c_box,lcdd.material(x_comp.materialStr()));
+      string     c_nam  = det_name+"_"+m_nam+_toString(ncomponents,"_component%d");
+      Box        c_box(x_comp.width(),x_comp.length(),x_comp.thickness());
+      Volume     c_vol(c_nam,c_box,lcdd.material(x_comp.materialStr()));
       PlacedVolume c_phv;
 
       if ( x_pos && x_rot ) {
@@ -51,7 +51,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	c_phv = m_vol.placeVolume(c_vol,Position(x_pos.x(0),x_pos.y(0),x_pos.z(0)));
       }
       else {
-	c_phv = m_vol.placeVolume(c_vol,IdentityPos());
+	c_phv = m_vol.placeVolume(c_vol);
       }
       if ( x_comp.isSensitive() ) {
 	c_phv.addPhysVolID(_X(sensor),sensor_number++);
@@ -72,7 +72,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     string     m_nam    = x_layer.moduleStr();
     DetElement m_elt    = sdet.child(m_nam);
     Volume     m_env    = volumes[m_nam];
-    string     lay_nam  = det_name+_toString(lay_id,"_layer%d");
+    string     lay_nam  = det_name+"_"+m_nam+_toString(lay_id,"_layer%d");
     Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
     Volume     lay_vol   (lay_nam,lay_tub,air);       // Create the layer envelope volume.
     double     phi0     = x_layout.phi0();            // Starting phi of first module.
@@ -117,10 +117,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	// Add z increment to get next z placement pos.
 	module_z += z_incr;
       }
-      phic    += phi_incr;      // Increment the phi placement of module.
-      rc      += rphi_dr;       // Increment the center radius according to dr parameter.
-      rphi_dr *= -1;            // Flip sign of dr parameter.
-      module_z = -z0;           // Reset the Z placement parameter for module.
+      phic     += phi_incr;      // Increment the phi placement of module.
+      rc       += rphi_dr;       // Increment the center radius according to dr parameter.
+      rphi_dr  *= -1;            // Flip sign of dr parameter.
+      module_z  = -z0;           // Reset the Z placement parameter for module.
     }
     // Create the PhysicalVolume for the layer.
     PlacedVolume lpv = motherVol.placeVolume(lay_vol); // Place layer in mother

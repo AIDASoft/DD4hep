@@ -48,8 +48,8 @@ namespace {
       field.second = f.size() == 3 ? ::atoi(f[2].c_str()) : ::atoi(f[1].c_str());
       pos = field.first + ::abs(field.second);
       if ( pos>o->maxBit ) o->maxBit = pos;
-      o->fieldIDs.insert(make_pair(o->fieldMap.size(),f[0]));
-      o->fieldMap.insert(make_pair(f[0],field));
+      o->fieldIDs.push_back(make_pair(o->fieldMap.size(),f[0]));
+      o->fieldMap.push_back(make_pair(f[0],field));
     }
   }
 }

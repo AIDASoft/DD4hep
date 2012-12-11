@@ -25,34 +25,85 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-#if 0
-Header& Header::fromCompact(Document doc, Handle_t element, const string& fname)   {
-  Element    info = element;
-  Author     aut(doc);
-  RefElement det(doc,Tag_detector,info.attr<cpXMLCh>(Attr_name));
-  RefElement gen(doc,Tag_generator, Strng_t("GeomCnv++"));
-
-  gen.setAttr(Attr_file,fname);  
-  gen.setAttr(Attr_version,"1.0");
-  gen.setAttr(Attr_checksum,"None");
-
-  aut.setAttr(Attr_name,info.attr<cpXMLCh>(Tag_author));
-
-  append(gen);
-  append(aut);
-  append(doc.clone(info.child(Tag_comment),true));
-  return *this;
-}
-#endif
-
 /// Constructor to be used when creating a new DOM tree
 Author::Author(LCDD& /* lcdd */)  {
   m_element = new TNamed("","author");
 }
 
 /// Constructor to be used when creating a new DOM tree
-Header::Header(LCDD& /* lcdd */)   {
-  m_element = new TNamed("","header");
+Header::Header(const string& author, const string& url)   {
+  Value<TNamed,Object>* ptr = new Value<TNamed,Object>();
+  assign(ptr,author, url);
+}
+
+/// Accessor to object name
+const std::string Header::name()  const {
+  return m_element->GetName();
+}
+
+/// Accessor: set object name
+void Header::setName(const std::string& new_name) {
+  m_element->SetName(new_name.c_str());
+}
+
+/// Accessor to object title
+const std::string Header::title()  const {
+  return m_element->GetTitle();
+}
+
+/// Accessor: set object title
+void Header::setTitle(const std::string& new_title) {
+  m_element->SetTitle(new_title.c_str());
+}
+
+/// Accessor to object url
+const std::string& Header::url()  const {
+  return data<Object>()->url;
+}
+
+/// Accessor: set object url
+void Header::setUrl(const std::string& new_url) {
+  data<Object>()->url = new_url;
+}
+
+/// Accessor to object author
+const std::string& Header::author()  const {
+  return data<Object>()->author;
+}
+
+/// Accessor: set object author
+void Header::setAuthor(const std::string& new_author) {
+  data<Object>()->author = new_author;
+}
+
+/// Accessor to object status
+const std::string& Header::status()  const {
+  return data<Object>()->status;
+}
+
+/// Accessor: set object status
+void Header::setStatus(const std::string& new_status) {
+  data<Object>()->status = new_status;
+}
+
+/// Accessor to object version
+const std::string& Header::version()  const {
+  return data<Object>()->version;
+}
+
+/// Accessor: set object version
+void Header::setVersion(const std::string& new_version) {
+  data<Object>()->version = new_version;
+}
+
+/// Accessor to object comment
+const std::string& Header::comment()  const {
+  return data<Object>()->comment;
+}
+
+/// Accessor: set object comment
+void Header::setComment(const std::string& new_comment) {
+  data<Object>()->comment = new_comment;
 }
 
 /// Constructor to be used when creating a new DOM tree
@@ -405,6 +456,16 @@ double Region::threshold() const {
 /// Access secondaries flag
 bool Region::storeSecondaries() const {
   return _data().store_secondaries;
+}
+
+/// Access the length unit
+const std::string& Region::lengthUnit() const   {
+  return _data().lunit;
+}
+
+/// Access the energy unit
+const std::string& Region::energyUnit() const   {
+  return _data().eunit;
 }
 
 #undef setAttr

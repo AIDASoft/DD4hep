@@ -14,6 +14,7 @@
 // C/C++ include files
 #include <iostream>
 #include <stdexcept>
+#include <map>
 
 using namespace std;
 using namespace DD4hep::XML;
@@ -483,6 +484,43 @@ bool Handle_t::hasChild(const XmlChar* tag) const   {
   return node_first(m_node,tag) != 0;
 }
 
+/// Set the element's value
+void Handle_t::setValue(const XmlChar* text) const   {
+#ifdef __TIXML__
+  m_node->SetValue(text);
+#else
+  m_node->setNodeValue(text);
+#endif
+}
+
+/// Set the element's value
+void Handle_t::setValue(const string& text) const   {
+#ifdef __TIXML__
+  m_node->SetValue(text.c_str());
+#else
+  m_node->setNodeValue(Strng(text));
+#endif
+}
+
+/// Set the element's text
+void Handle_t::setText(const XmlChar* text) const   {
+#ifdef __TIXML__
+  m_node->LinkEndChild(new TiXmlText(text));
+#else
+  m_node->setNodeText(text);
+#endif
+}
+
+/// Set the element's text
+void Handle_t::setText(const string& text) const   {
+#ifdef __TIXML__
+  m_node->LinkEndChild(new TiXmlText(text.c_str()));
+#else
+  m_node->setNodeText(Strng(text));
+#endif
+}
+
+/// Remove all attributes of this element
 void Handle_t::removeAttrs() const   {
 #ifdef __TIXML__
   m_node->ClearAttributes();
@@ -496,6 +534,7 @@ void Handle_t::removeAttrs() const   {
 #endif
 }
 
+/// Set attributes as in argument handle
 void Handle_t::setAttrs(Handle_t e) const   {
   removeAttrs();
 #ifdef __TIXML__
@@ -514,6 +553,7 @@ void Handle_t::setAttrs(Handle_t e) const   {
 #endif
 }
 
+/// Access attribute pointer by the attribute's unicode name (throws exception if not present)
 Attribute Handle_t::attr_ptr(const XmlChar* t)  const    {
   Attribute a = attribute_node(m_node,t);
   if ( 0 != a ) return a;
@@ -525,6 +565,7 @@ Attribute Handle_t::attr_ptr(const XmlChar* t)  const    {
   throw runtime_error(msg);
 }
 
+/// Access attribute name (throws exception if not present)
 const XmlChar* Handle_t::attr_name(const Attribute attr)  const   {
   if ( attr ) {
 #ifdef __TIXML__
@@ -536,53 +577,67 @@ const XmlChar* Handle_t::attr_name(const Attribute attr)  const   {
   throw runtime_error("Attempt to access invalid XML attribute object!");
 }
 
+/// Access attribute value by the attribute's unicode name (throws exception if not present)
 const XmlChar* Handle_t::attr_value(const XmlChar* attr)  const   {
   return attribute_value(attr_ptr(attr));
 }
 
+/// Access attribute value by the attribute  (throws exception if not present)
 const XmlChar* Handle_t::attr_value(const Attribute attr)  const   {
   return attribute_value(attr);
 }
 
+/// Access attribute value by the attribute's unicode name (no exception thrown if not present)
 const XmlChar* Handle_t::attr_value_nothrow(const XmlChar* attr)  const   {
   Attribute a = attr_nothrow(attr);
   return a ? attribute_value(a) : 0;
 }
 
+/// Generic attribute setter with integer value
 Attribute Handle_t::setAttr(const XmlChar* name, int val)  const    {
   char txt[32];
   ::sprintf(txt,"%d",val);
   return setAttr(name, Strng_t(txt));
 }
 
+/// Generic attribute setter with boolen value
 Attribute Handle_t::setAttr(const XmlChar* name, bool val)  const   {
   char txt[32];
   ::sprintf(txt,"%s",val ? "true" : "false");
   return setAttr(name, Strng_t(txt));
 }
 
+/// Generic attribute setter with floating point value
 Attribute Handle_t::setAttr(const XmlChar* name, float val)  const   {
   char txt[32];
   ::sprintf(txt,"%f",val);
   return setAttr(name, Strng_t(txt));
 }
 
+/// Generic attribute setter with double precision floating point value
 Attribute Handle_t::setAttr(const XmlChar* name, double val)  const   {
   char txt[32];
   ::sprintf(txt,"%f",val);
   return setAttr(name, Strng_t(txt));
 }
 
+/// Generic attribute setter with string value
+Attribute Handle_t::setAttr(const XmlChar* name, const string& val)  const {
+  return setAttr(name, Strng_t(val.c_str()));
+}
+
 #ifndef __TIXML__
 Attribute Handle_t::setAttr(const XmlChar* name, const char* v) const    {
-  return setAttr(name,Strng_t(v));
+  return setAttr(name, Strng_t(v));
 }
 #endif
 
+/// Generic attribute setter with XmlAttr value
 Attribute Handle_t::setAttr(const XmlChar* name, const Attribute v) const    {
   return v ? setAttr(name,attribute_value(v)) : 0;
 }
 
+/// Generic attribute setter with unicode value
 Attribute Handle_t::setAttr(const XmlChar* name, const XmlChar* value) const  { 
 #ifdef __TIXML__
   m_node->SetAttribute(name,value);
@@ -596,6 +651,90 @@ Attribute Handle_t::setAttr(const XmlChar* name, const XmlChar* value) const  {
   attr->setValue(value);
   return attr;
 #endif
+}
+
+/// Add reference child as a new child node. The obj must have the "name" attribute!
+Handle_t Handle_t::setRef(const XmlChar* tag, const XmlChar* ref_name) {
+  Element me(*this);
+  Element ref(me.document(),tag);
+  ref.setAttr(Attr_ref,ref_name);
+  me.append(ref);
+  return ref;
+}
+
+/// Checksum (sub-)tree of a xml document/tree
+static unsigned int adler32(unsigned int adler,const char* buf,size_t len)    {
+#define DO1(buf,i)  {s1 +=(unsigned char)buf[i]; s2 += s1;}
+#define DO2(buf,i)  DO1(buf,i); DO1(buf,i+1);
+#define DO4(buf,i)  DO2(buf,i); DO2(buf,i+2);
+#define DO8(buf,i)  DO4(buf,i); DO4(buf,i+4);
+#define DO16(buf)   DO8(buf,0); DO8(buf,8);
+
+  static const unsigned int BASE = 65521;    /* largest prime smaller than 65536 */
+  /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
+  static const unsigned int NMAX = 5550;
+  unsigned int s1 = adler & 0xffff;
+  unsigned int s2 = (adler >> 16) & 0xffff;
+  int k;
+
+  if (buf == NULL) return 1;
+
+  while (len > 0) {
+    k = len < NMAX ? (int)len : NMAX;
+    len -= k;
+    while (k >= 16) {
+      DO16(buf);
+      buf += 16;
+      k -= 16;
+    }
+    if (k != 0) do {
+      s1 += (unsigned char)*buf++;
+      s2 += s1;
+    } while (--k);
+    s1 %= BASE;
+    s2 %= BASE;
+  }
+  unsigned int result = (s2 << 16) | s1;
+  return result;
+}
+
+/// Checksum (sub-)tree of a xml document/tree
+unsigned int Handle_t::checksum(unsigned int param,unsigned int (fcn)(unsigned int,const XmlChar*,size_t)) const  {
+  typedef std::map<std::string,std::string> StringMap;
+#ifdef __TIXML__
+  TiXmlNode* n = m_node;
+  if ( n )   {
+    if ( 0 == fcn ) fcn = adler32;
+    switch (n->Type())  {
+    case TiXmlNode::ELEMENT: {
+      map<string,string> m;
+      TiXmlElement* e = n->ToElement();
+      TiXmlAttribute* p=e->FirstAttribute();
+      for(; p; p=p->Next()) m.insert(make_pair(p->Name(),p->Value()));
+      param = (*fcn)(param,e->Value(),::strlen(e->Value()));
+      for(StringMap::const_iterator i=m.begin();i!=m.end();++i) {
+	param = (*fcn)(param,(*i).first.c_str(),(*i).first.length());
+	param = (*fcn)(param,(*i).second.c_str(),(*i).second.length());
+      }
+      break;
+    }
+    case TiXmlNode::TEXT:
+      param = (*fcn)(param,n->ToText()->Value(),::strlen(n->ToText()->Value()));
+      break;
+    case TiXmlNode::UNKNOWN:
+    case TiXmlNode::COMMENT:
+    case TiXmlNode::DOCUMENT:
+    case TiXmlNode::DECLARATION:
+    default:
+      break;
+    }
+    for(TiXmlNode* c=n->FirstChild(); c; c=c->NextSibling())
+      param = Handle_t(c->ToElement()).checksum(param,fcn);
+  }
+#else
+
+#endif
+  return param;
 }
 
 /// Create DOM element

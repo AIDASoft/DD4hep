@@ -94,12 +94,14 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   Volume      sensor_vol (name+"_sensor",sensor_tube, cell_mat);
   sensor_vol.setVisAttributes(cell_vis);
 
+
+  // Note: Problem with divisions still - hence no special attributes
   // Replicate strips within a theta and phi plane padded version
   Volume sens_theta_vol = Ref_t(sector_tube->Divide(sector_vol,(name+"_sector_theta").c_str(),1,ncell_theta,0,thetastrip_dr));
-  sens_theta_vol.setVisAttributes(cell_vis);
+  //sens_theta_vol.setVisAttributes(cell_vis);
   
   Volume sens_phi_vol = Ref_t(sensor_tube->Divide(sensor_vol,(name+"_sensor_phi").c_str(),2,ncell_phi,0,phistrip_dphi*RAD_2_DEGREE));
-  sens_phi_vol.setVisAttributes(cell_vis);
+  //sens_phi_vol.setVisAttributes(cell_vis);
 
   //Declare the silcon strip  to be sensitive 
   //CellLogical->SetSensitiveDetector(theLumiCalSD); 

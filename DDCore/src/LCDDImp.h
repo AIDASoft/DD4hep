@@ -59,7 +59,6 @@ namespace DD4hep {
       };
 		      
       ObjectHandleMap     m_readouts;
-      ObjectHandleMap     m_header;
       ObjectHandleMap     m_idDict;
       ObjectHandleMap     m_limits;
       ObjectHandleMap     m_regions;
@@ -83,7 +82,7 @@ namespace DD4hep {
       Material            m_materialVacuum;
       VisAttr             m_invisibleVis;
       OverlayedField      m_field;
-      Ref_t               m_setup;
+      Ref_t               m_header;
       Properties*         m_properties;
       
       /// Default constructor
@@ -99,6 +98,9 @@ namespace DD4hep {
       virtual void fromXML(const std::string& fname);
       
       virtual void dump() const;
+
+      /// Manipulate geometry using facroy converter
+      virtual void apply(const char* factory, int argc, char** argv);
 
       /// Apply & lock realigments
       //virtual void applyAlignment();
@@ -128,6 +130,10 @@ namespace DD4hep {
       virtual Volume          trackingVolume() const   { return m_trackingVol;          }
       /// Return handle to the combined electromagentic field description.
       virtual OverlayedField  field() const            { return m_field;                }
+      /// Accessor to the header entry
+      virtual Header          header()  const          { return m_header;               }
+      /// Accessor to the header entry
+      virtual void setHeader(Header h)                 { m_header = h;                  }
 
       /// Typed access to constants: access string values
       virtual std::string       constantAsString(const std::string& name) const;
@@ -170,8 +176,6 @@ namespace DD4hep {
       virtual CartesianField    field(const std::string& name)  const 
       {  return getRefChild(m_fields,name,false);                                       }
       
-      /// Accessor to the map of header entries
-      virtual const HandleMap& header()  const          { return m_header;              }
       /// Accessor to the map of constants
       virtual const HandleMap& constants() const        { return m_define;              }
       /// Accessor to the map of visualisation attributes

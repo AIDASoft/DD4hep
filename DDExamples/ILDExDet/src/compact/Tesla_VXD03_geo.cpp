@@ -102,13 +102,13 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     layer.ladders.gap   = x_ladders.gap();
     vxd_data->layers.push_back(layer);
 
-    string          layer_name = name+_toString(layer.id,"_layer_%d");
-    DetElement      layer_elt(vxd, layer_name, layer.id);
+    string     layer_name = name+_toString(layer.id,"_layer%d");
+    DetElement layer_elt(vxd, layer_name, layer.id);
     double ldd_len   = layer.ladders.len;
     double ldd_width = layer.ladders.width;
     double ldd_gap   = layer.ladders.gap;
 
-    Assembly layer_vol(name);
+    Assembly layer_vol(layer_name);
     Box      ladder_supp_box(ldd_width+side_band_electronics_width,
 			     ldd_len+(2.0*end_electronics_zhalf)+ be_ladder_block_length*2.,
 			     support_thickness/2.);
@@ -158,7 +158,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 
       // **********************   Berylium annulus block *****************************************
       Box     box(ldd_width,len,be_ladder_block_thickness);
-      Volume  vol(layer_name+"_Be", box, be_ladder_block_mat); 
+      Volume  vol(layer_name+_toString(i,"_ladder%d_Be"), box, be_ladder_block_mat); 
       vol.setVisAttributes(lcdd.visAttributes("VXDBerilliumVis"));
       for( int i=0;i<layer.num_ladder;i++ ) {
 	double phi =  i*delta_phi;

@@ -54,10 +54,10 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   Assembly    ftdVol(name);
   Volume      motherVol   = lcdd.pickMotherVolume(sdet);
 
-  xml_comp_t  x_disks = x_det.child(_U(disks));
-  xml_comp_t  x_cables = x_det.child(_U(cables));
+  xml_comp_t  x_disks    = x_det.child(_U(disks));
+  xml_comp_t  x_cables   = x_det.child(_U(cables));
   xml_comp_t  x_cylinder = x_det.child(_U(cylinder));
-  xml_comp_t  x_support = x_det.child(_U(support));
+  xml_comp_t  x_support  = x_det.child(_U(support));
   xml_comp_t  x_inner_support = x_support.child(_U(inner));
   xml_comp_t  x_outer_support = x_support.child(_U(outer));
 
@@ -90,7 +90,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     _Ext *ext_neg=disk_neg.addExtension<_Ext>(new _Ext());
     { //... Si sensitive
       Tube   tub(inner_r,outer_r,si_thickness/2.0);
-      Volume vol(_toString(id,"_disk%d_Si"),tub,diskMat);
+      Volume vol(name+_toString(id,"_disk%d_Si"),tub,diskMat);
       vol.setVisAttributes(lcdd.visAttributes(x_disk.visStr()));
       // This is the sensitive element: add senssitive detector
       vol.setSensitiveDetector(sens);
@@ -105,7 +105,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     }
     { //... Support
       Tube   tub(inner_r,outer_r,inner_support_thickness);
-      Volume vol(_toString(id,"_disk%d_support"),tub,supportMat);
+      Volume vol(name+_toString(id,"_disk%d_support"),tub,supportMat);
       double z = z_pos + si_thickness + inner_support_thickness;
       vol.setVisAttributes(supportVis);
       pv = ftdVol.placeVolume(vol,Position(0,0, z));
@@ -117,7 +117,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     }
     /* { //... Outer support rings
       Tube   tub(outer_r,outer_r+outer_support.thickness,outer_support_length);
-      Volume vol(_toString(id,"disk%d_outer_support"),tub,supportMat);
+      Volume vol(name+_toString(id,"disk%d_outer_support"),tub,supportMat);
       vol.setVisAttributes(supportVis);
       pv = ftdVol.placeVolume(vol,Position(0,0, z_pos));
       pv.addPhysVolID("disk",id);
