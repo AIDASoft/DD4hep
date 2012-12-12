@@ -922,8 +922,7 @@ LCDDConverter::GeometryInfo::GeometryInfo()
 {
 }
 
-static long create_translator(const Geometry::LCDD& lcdd, int argc, char** argv)   {
-  Geometry::LCDD& lcdd = LCDD::getInstance();
+static long create_translator(Geometry::LCDD& lcdd, int argc, char** argv)   {
   LCDDConverter wr(lcdd);
   char* fname = argc>0 ? argv[0] : 0;
   wr.create(lcdd.world());
