@@ -1,9 +1,9 @@
-#define G4UI_USE
-#define G4VIS_USE
-#define G4INTY_USE_XT 
-#define G4VIS_USE_OPENGL 
-#define G4UI_USE_TCSH 
-#define G4VIS_USE_OPENGLX
+//#define G4UI_USE
+//#define G4VIS_USE
+//#define G4INTY_USE_XT
+//#define G4VIS_USE_OPENGL
+//#define G4UI_USE_TCSH
+//#define G4VIS_USE_OPENGLX
 
 #include "G4PVPlacement.hh"
 #include "G4RunManager.hh"
@@ -28,55 +28,19 @@
 #include "SteppingVerbose.h"
 
 
-#include "G4VUserDetectorConstruction.hh"
-namespace DD4hep {
-  namespace Geometry {    class LCDD;  }
-
-  class DetectorConstruction : public G4VUserDetectorConstruction  {
-  public:
-    
-    DetectorConstruction(Geometry::LCDD& lcdd);
-    virtual ~DetectorConstruction() {    }
-    G4VPhysicalVolume* Construct();
-  private:
-    Geometry::LCDD&    m_lcdd;
-    G4VPhysicalVolume* m_world;
-  }; 
-}
-
 #include "DD4hep/LCDD.h"
-#include "TGeoManager.h"
-#include "DDG4/Geant4Converter.h"
-#include "G4GDMLParser.hh"
+#include "DDG4/Geant4DetectorConstruction.h"
+
 
 using namespace std;
-using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using namespace DD4hep::Simulation;
 
-DD4hep::DetectorConstruction::DetectorConstruction(Geometry::LCDD& lcdd) 
-  : m_lcdd(lcdd), m_world(0)
-{
-}
-
-G4VPhysicalVolume* DD4hep::DetectorConstruction::Construct() {
-  typedef Simulation::Geant4Converter Geant4Converter;
-  TGeoNode* top = gGeoManager->GetTopNode();
-  Geant4Converter& conv = Geant4Converter::instance();
-  DetElement world = m_lcdd.world();
-  conv.create(world);
-  Geant4Converter::G4GeometryInfo& info = conv.data();
-  m_world = info.g4Placements[top];
-  if ( ::getenv("DUMP_GDML") ) {
-    G4GDMLParser parser;
-    parser.Write("detector.gdml",m_world);
-  }
-  return m_world;
-}
 
 int main(int argc,char** argv)   {
   // Choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
-  Geometry::LCDD& lcdd = LCDD::getInstance();
+  LCDD& lcdd = LCDD::getInstance();
   
   for(int i=1; i<argc-1;++i) {
     // We need to construct the geometry at this level already
@@ -90,7 +54,7 @@ int main(int argc,char** argv)   {
   G4RunManager* runManager = new G4RunManager;
 
   // Get the detector constructed
-  DD4hep::DetectorConstruction* detector = new DD4hep::DetectorConstruction(lcdd);
+  Geant4DetectorConstruction* detector = new Geant4DetectorConstruction(lcdd);
 
   runManager->SetUserInitialization(detector);
   

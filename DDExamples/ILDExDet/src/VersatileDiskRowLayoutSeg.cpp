@@ -40,7 +40,7 @@ void VersatileDiskRowLayoutData::addRow(int nPads, double padPitch, double rowHe
   _nPads+=nPads;
 }
     
-int  VersatileDiskRowLayoutData::setRMin(int rmin)
+void VersatileDiskRowLayoutData::setRMin(int rmin)
 {
   _rMin=rmin;
 }

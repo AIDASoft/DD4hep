@@ -16,10 +16,13 @@
 #include "ILDExEventAction.h"
 #include "ILDExSteppingAction.h"
 #include "ILDExSteppingVerbose.h"
-//#include "G4VisExecutive.h"
-#include "G4DetectorConstruction.h"
 #include "G4UIExecutive.hh"
 
+#include "DDG4/Geant4DetectorConstruction.h"
+#include "DD4hep/LCDD.h"
+
+using namespace DD4hep::Geometry;
+using namespace DD4hep::Simulation;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -30,6 +33,12 @@ int main(int argc,char** argv)
   //
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   
+  LCDD& lcdd = LCDD::getInstance();
+  for(int i=1; i<argc-1;++i) {
+    // We need to construct the geometry at this level already
+    lcdd.fromCompact(argv[i]);
+  }
+
   // User Verbose output class
   //
   G4VSteppingVerbose::SetInstance(new ILDExSteppingVerbose);
@@ -38,10 +47,9 @@ int main(int argc,char** argv)
   //
   G4RunManager * runManager = new G4RunManager;
   
-  
   // Get the detector constructed
   //
-  DD4hep::G4DetectorConstruction* detector = new DD4hep::G4DetectorConstruction(argv[1]);
+  Geant4DetectorConstruction* detector = new Geant4DetectorConstruction(lcdd);
   runManager->SetUserInitialization(detector);
   
   //
@@ -51,7 +59,7 @@ int main(int argc,char** argv)
   // Set user action classes
   //
   G4VUserPrimaryGeneratorAction* gen_action = 
-  new ILDExPrimaryGeneratorAction(detector->GetLCDD());
+  new ILDExPrimaryGeneratorAction(lcdd);
   runManager->SetUserAction(gen_action);
   //
   ILDExRunAction* run_action = new ILDExRunAction;  

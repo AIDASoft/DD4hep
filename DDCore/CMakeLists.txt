@@ -22,10 +22,9 @@ if(DD4HEP_USE_XERCESC)
   file(GLOB xmlsources src/XML/*.cpp src/compact/*.cpp)
   list(APPEND sources ${xmlsources})
   add_definitions(-DDD4HEP_USE_XERCESC)
-  set(libraries ${libraries} Reflex)
 endif()
 
 add_library(DD4hepCore SHARED ${sources})
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} Geom ${libraries})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} Geom Reflex ${libraries})
 
 

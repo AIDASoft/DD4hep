@@ -9,6 +9,6 @@ if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)
   file(GLOB sources src/*.cpp)
   add_library(CLICSiD SHARED ${sources})
-  target_link_libraries(CLICSiD DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} ${libraries})
+  target_link_libraries(CLICSiD DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES})
 endif()
 
