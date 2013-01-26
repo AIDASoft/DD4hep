@@ -17,6 +17,7 @@
 #include <vector>
 
 // Forward declarations
+#include "TGeoCone.h"
 class TGeoShape;
 class TGeoBBox;
 class TGeoPcon;
@@ -27,6 +28,7 @@ class TGeoSphere;
 class TGeoTrd2;
 class TGeoTorus;
 class TGeoTrap;
+class TGeoTube;
 class TGeoTubeSeg;
 class TGeoParaboloid;
 class TGeoCompositeShape;
@@ -203,7 +205,14 @@ namespace DD4hep {
      *   @author  M.Frank
      *   @version 1.0
      */
-    struct Tube : public Solid_type<TGeoTubeSeg>  {
+    struct MyConeSeg : public TGeoConeSeg  {
+    public:
+    MyConeSeg() : TGeoConeSeg() {}
+      virtual ~MyConeSeg() {}
+      double GetRmin() const { return GetRmin1(); }
+      double GetRmax() const { return GetRmax1(); }
+    };
+    struct Tube : public Solid_type</*TGeoTubeSeg */ MyConeSeg>  {
       protected:
       void make(const std::string& name,double rmin,double rmax,double z,double startPhi,double deltaPhi);
 
