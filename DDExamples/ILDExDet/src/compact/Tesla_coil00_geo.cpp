@@ -21,7 +21,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   xml_comp_t  x_coil = x_det.child(Unicode("coil"));
 
   Tube   coilTub(x_coil.inner_r(),x_coil.outer_r(),x_coil.zhalf());
-  Volume coilVol("coil",coilTub,lcdd.material(x_coil.materialStr()));
+  Volume coilVol(name+"_coil",coilTub,lcdd.material(x_coil.materialStr()));
   coilVol.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
   assembly.placeVolume(coilVol);
 
