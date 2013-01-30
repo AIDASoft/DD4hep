@@ -87,7 +87,7 @@ int main(int argc,char** argv)
   
   if (argc!=1) {   // batch mode
     G4String command = "/control/execute ";
-    G4String fileName = argv[2];
+    G4String fileName = argv[argc-1];
     UImanager->ApplyCommand(command+fileName);    
   }
   else {  // interactive mode : define UI session
