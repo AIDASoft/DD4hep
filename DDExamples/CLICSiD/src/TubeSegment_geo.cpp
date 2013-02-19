@@ -14,10 +14,10 @@ using namespace DD4hep::Geometry;
 
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   xml_det_t  x_det  (e);
-  xml_comp_t x_tube (x_det.child(_X(tubs)));
-  xml_dim_t  pos    (x_det.child(_X(position)));
-  xml_dim_t  rot    (x_det.child(_X(rotation)));
-  string     name  = x_det.nameStr();
+  xml_comp_t x_tube = x_det.tubs();
+  xml_dim_t  pos    = x_det.position();
+  xml_dim_t  rot    = x_det.rotation();
+  string     name   = x_det.nameStr();
   Tube       tub    (x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume     vol    (name,tub,lcdd.material(x_det.materialStr()));
 
@@ -27,7 +27,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   Volume       mother = lcdd.pickMotherVolume(sdet);
   PlacedVolume phv = 
     mother.placeVolume(vol,Position(pos.x(),pos.y(),pos.z()),
-                       Rotation(rot.x(),rot.y(),rot.z()));
+                       Rotation(rot.z(),rot.y(),rot.x()));
   phv.addPhysVolID(_A(id),x_det.id());
   sdet.setPlacement(phv);
   return sdet;

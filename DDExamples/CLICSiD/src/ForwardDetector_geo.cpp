@@ -17,7 +17,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   xml_det_t   x_det      = e;
   xml_dim_t   dim        = x_det.dimensions();
   bool        reflect    = x_det.reflect();
-  xml_comp_t  beam       = x_det.child(_X(beampipe));
+  xml_comp_t  beam       = x_det.beampipe();
   string      det_name   = x_det.nameStr();
   int         id         = x_det.id();
   Material    air        = lcdd.air();
@@ -32,9 +32,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   double      outgoingR  = beam.outgoing_r();
   double      incomingR  = beam.incoming_r();
   double      xangle     = beam.crossing_angle();
-  double      xangleHalf = xangle / 2;
+  double      xangleHalf = xangle/2;
   double      thickness  = layering.totalThickness();
-  double      zpos       = zinner + (thickness / 2);
+  double      zpos       = zinner + thickness/2;
   // Beampipe position in envelope.
   double      beamPosX   = std::tan(xangleHalf) * zpos;
 
@@ -43,19 +43,19 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
   // First envelope bool subtracion of outgoing beampipe.
   // Incoming beampipe solid.
-  Tube beamInTube(0,outgoingR,thickness * 2);
+  Tube beamInTube(0,outgoingR,thickness*2);
   // Position of incoming beampipe.
   Position beamInPos(beamPosX,0,0);
   /// Rotation of incoming beampipe.
-  Rotation beamInRot(0,xangleHalf,0);
+  Rotation beamInRot(0,0,xangleHalf);
 
   // Second envelope bool subtracion of outgoing beampipe.
   // Outgoing beampipe solid.
-  Tube     beamOutTube(0,incomingR,thickness * 2);
+  Tube     beamOutTube(0,incomingR,thickness*2);
   // Position of outgoing beampipe.
   Position beamOutPos(-beamPosX,0,0);
   // Rotation of outgoing beampipe.
-  Rotation beamOutRot(0,-xangleHalf,0);
+  Rotation beamOutRot(0,0,-xangleHalf);
 
   // First envelope bool subtraction of incoming beampipe.
   SubtractionSolid envelopeSubtraction1(envelopeTube,beamInTube,beamInPos,beamInRot);

@@ -32,8 +32,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     volumes[m_nam] = m_vol;
     for(xml_coll_t ci(x_mod,_X(module_component)); ci; ++ci, ++ncomponents)  {
       xml_comp_t x_comp = ci;
-      xml_comp_t x_pos  = x_comp.child(_X(position),false);
-      xml_comp_t x_rot  = x_comp.child(_X(rotation),false);	
+      xml_comp_t x_pos  = x_comp.position(false);
+      xml_comp_t x_rot  = x_comp.rotation(false);	
       string     c_nam  = det_name+"_"+m_nam+_toString(ncomponents,"_component%d");
       Box        c_box(x_comp.width(),x_comp.length(),x_comp.thickness());
       Volume     c_vol(c_nam,c_box,lcdd.material(x_comp.materialStr()));
@@ -41,11 +41,11 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
       if ( x_pos && x_rot ) {
 	Position   c_pos(x_pos.x(0),x_pos.y(0),x_pos.z(0));
-	Rotation   c_rot(x_rot.x(0),x_rot.y(0),x_rot.z(0));
+	Rotation   c_rot(x_rot.z(0),x_rot.y(0),x_rot.x(0));
 	c_phv = m_vol.placeVolume(c_vol, c_pos, c_rot);
       }
       else if ( x_rot ) {
-	c_phv = m_vol.placeVolume(c_vol,Rotation(x_rot.x(0),x_rot.y(0),x_rot.z(0)));
+	c_phv = m_vol.placeVolume(c_vol,Rotation(x_rot.z(0),x_rot.y(0),x_rot.x(0)));
       }
       else if ( x_pos ) {
 	c_phv = m_vol.placeVolume(c_vol,Position(x_pos.x(0),x_pos.y(0),x_pos.z(0)));
@@ -106,7 +106,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	// Module PhysicalVolume.
 	PlacedVolume  m_physvol = 
           lay_vol.placeVolume(m_env,Position(x,y,module_z),
-                              Rotation(M_PI/2,-((M_PI/2)-phic-phi_tilt),0));
+                              Rotation(-((M_PI/2)-phic-phi_tilt),M_PI/2,0));
 	m_physvol.addPhysVolID("module", module++);
 	// Adjust the x and y coordinates of the module.
 	x += dx;

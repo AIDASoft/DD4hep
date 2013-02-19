@@ -22,8 +22,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   Material      vacuum    = lcdd.vacuum();
   int           det_id    = x_det.id();
   string        det_name  = x_det.nameStr();
-  xml_comp_t    x_staves  = x_det.child(_X(staves));
-  xml_comp_t    x_dim     = x_det.child(_X(dimensions));
+  xml_comp_t    x_staves  = x_det.staves();
+  xml_comp_t    x_dim     = x_det.dimensions();
   int           nsides    = x_dim.numsides();
   double        inner_r   = x_dim.rmin();
   double        dphi      = 2*M_PI / nsides;
@@ -141,9 +141,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     // Compute the stave position
     double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
     double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
+
     PlacedVolume pv = envelope.placeVolume(mod_vol,
-                                           Position(-m_pos_x,-m_pos_y,0),
-                                           Rotation(M_PI*0.5,phi,0));
+					   Position(-m_pos_x,-m_pos_y,0),
+					   Rotation(phi,M_PI*0.5,0));
     pv.addPhysVolID("module",i);
     pv.addPhysVolID("system",det_id);
     pv.addPhysVolID("barrel",0);

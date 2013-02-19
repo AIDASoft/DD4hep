@@ -81,7 +81,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   if ( reflect ) {
     physvol = motherVol.placeVolume(envelopeVol,
 				    Position(0,0,-(zmin+totalThickness/2)),
-				    Rotation(M_PI,0,M_PI/numsides));
+				    Rotation(0,M_PI,M_PI/numsides));
     physvol.addPhysVolID("system",det_id);
     physvol.addPhysVolID("barrel",2);
     DetElement rdet(det_name+"_reflect",x_det.id());

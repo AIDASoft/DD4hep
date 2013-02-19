@@ -680,6 +680,7 @@
                 <slice material = "Air"     thickness = "0.033*cm" />
             </layer>
         </detector>
+<!--
         <detector id="7" name="HcalBarrel" type="PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
             <comment>Hadron Calorimeter Barrel</comment>
             <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="EcalBarrel_zmax*2"/>
@@ -690,6 +691,7 @@
                 <slice material = "Air" thickness = "0.15*cm" />
             </layer>
         </detector>
+-->
         <detector id="8" name="HcalEndcap" type="PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
             <comment>Hadron Calorimeter Endcaps</comment>
             <dimensions numsides="(int) CaloSides" zmin="HcalEndcap_zmin" rmin="HcalEndcap_rmin" rmax="HcalEndcap_rmax" />

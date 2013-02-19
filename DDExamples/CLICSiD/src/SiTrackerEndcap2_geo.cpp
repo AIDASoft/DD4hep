@@ -30,7 +30,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   for(xml_coll_t mi(x_det,_X(module)); mi; ++mi, ++m_id)  {
     xml_comp_t x_mod   = mi;
     string     m_nam   = x_mod.nameStr();
-    xml_comp_t trd     = x_mod.child(_X(trd));
+    xml_comp_t trd     = x_mod.trd();
     double     x1      = trd.x1();
     double     x2      = trd.x2();
     double     z       = trd.z();
@@ -86,14 +86,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	DetElement module(sdet,m_base,det_id);
 	PlacedVolume pv = motherVol.placeVolume(m_vol,
 						Position(x,y,zstart+dz),
-						Rotation(-M_PI/2,-M_PI/2-phi,0));
+						Rotation(-M_PI/2-phi,-M_PI/2,0));
 	pv.addPhysVolID("system",det_id).addPhysVolID("barrel",1);
 	pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	module.setPlacement(pv);
 	if ( reflect ) {
 	  pv = motherVol.placeVolume(m_vol,
 				     Position(x,y,-zstart-dz),
-				     Rotation(-M_PI/2,-M_PI/2-phi,M_PI));
+				     Rotation(-M_PI/2-phi,-M_PI/2,M_PI));
 	  pv.addPhysVolID("system",det_id).addPhysVolID("barrel",2);
 	  pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	  DetElement r_module(sdet,m_base+"_reflect",det_id);

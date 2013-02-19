@@ -25,32 +25,31 @@ static void placeStaves(DetElement&   parent,
   double innerRotation    = innerAngle;
   double offsetRotation   = -innerRotation / 2;
   double sectCenterRadius = rmin + total_thickness / 2;
-  double rotX =  M_PI / 2;
-  double rotY = -offsetRotation;
-  double posX = -sectCenterRadius  * std::sin(rotY);
-  double posY =  sectCenterRadius  * std::cos(rotY);
+  double rotY =  M_PI / 2;
+  double rotZ = -offsetRotation;
+  double posX =  sectCenterRadius  * std::sin(rotZ);
+  double posY =  sectCenterRadius  * std::cos(rotZ);
   for (int module = 0; module < numsides; ++module)  {
     DetElement det  = module>0 ? stave.clone(_toString(module,"stave%d")) : stave;
-    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Position(-posX,-posY,0),Rotation(rotX,rotY,0));
+    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Position(posX,-posY,0),Rotation(rotZ,rotY,0));
     pv.addPhysVolID(_X(stave), 0);
     pv.addPhysVolID(_X(module),module);
     det.setPlacement(pv);
     parent.add(det);
-    rotY -=  innerRotation;
-    posX  = -sectCenterRadius * std::sin(rotY);
-    posY  =  sectCenterRadius * std::cos(rotY);
+    rotZ -= innerRotation;
+    posX  = sectCenterRadius * std::sin(rotZ);
+    posY  = sectCenterRadius * std::cos(rotZ);
   }
 }
 
 static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
   xml_det_t   x_det     = e;
-  xml_comp_t  staves    = x_det.child(_X(staves));
-  xml_dim_t   dim       = x_det.dimensions();
-
-  string      det_name  = x_det.nameStr();
-  string      det_type  = x_det.typeStr();
-  Material    air       = lcdd.air();
   Layering    layering(x_det);
+  xml_comp_t  staves      = x_det.staves();
+  xml_dim_t   dim         = x_det.dimensions();
+  string      det_name    = x_det.nameStr();
+  string      det_type    = x_det.typeStr();
+  Material    air         = lcdd.air();
   double      totalThickness = layering.totalThickness();
   int         totalRepeat = 0;
   int         totalSlices = 0;
@@ -61,8 +60,6 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   DetElement  sdet(det_name,x_det.id());
   DetElement  stave("stave0",x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
-
-  //cout << det_name << "  Gap:" << gap << endl;
 
   for(xml_coll_t c(x_det,_X(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
