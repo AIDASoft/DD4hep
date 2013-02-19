@@ -100,7 +100,6 @@ namespace {
 
 #define DECLARE_GEANT4_SETUP(name,func) \
   namespace DD4hep { namespace Simulation { namespace { struct xml_g4_setup_##name {}; }               \
-  using DD4hep::Simulation::xml_g4_setup_##name;					                     \
-  template <> long Geant4SetupAction<xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Simulation::Geant4Converter& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
+  template <> long Geant4SetupAction<DD4hep::Simulation::xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Simulation::Geant4Converter& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
   PLUGINSVC_FACTORY_WITH_ID(xml_g4_setup_##name,std::string(#name "_Geant4_action"),long(DD4hep::Geometry::LCDD*,const DD4hep::Simulation::Geant4Converter*,const std::map<std::string,std::string>*))
 #endif // DDG4_FACTORIES_H

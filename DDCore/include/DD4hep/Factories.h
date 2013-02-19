@@ -195,26 +195,22 @@ namespace {
 
 #define DECLARE_XMLELEMENT(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct xml_element_##name {}; }   \
-  using DD4hep::Geometry::xml_element_##name;					        \
-  template <> DD4hep::Geometry::Ref_t XMLElementFactory<xml_element_##name>::create(DD4hep::Geometry::LCDD& l,const XML::Handle_t& e) {return func(l,e);} }}\
+  template <> DD4hep::Geometry::Ref_t XMLElementFactory<DD4hep::Geometry::xml_element_##name>::create(DD4hep::Geometry::LCDD& l,const DD4hep::XML::Handle_t& e) {return func(l,e);} }}\
   PLUGINSVC_FACTORY_WITH_ID(xml_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*))
 
 #define DECLARE_XML_DOC_READER(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct xml_document_##name {}; }  \
-  using DD4hep::Geometry::xml_document_##name;					        \
-  template <> long XMLDocumentReaderFactory<xml_document_##name>::create(DD4hep::Geometry::LCDD& l,const XML::Handle_t& e) {return func(l,e);} }}\
+  template <> long XMLDocumentReaderFactory<DD4hep::Geometry::xml_document_##name>::create(DD4hep::Geometry::LCDD& l,const DD4hep::XML::Handle_t& e) {return func(l,e);} }}\
   PLUGINSVC_FACTORY_WITH_ID(xml_document_##name,std::string(#name "_XML_reader"),long(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*))
 
 #define DECLARE_DETELEMENT(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct det_element_##name {}; }   \
-  using DD4hep::Geometry::det_element_##name;                                           \
-  template <> DD4hep::Geometry::Ref_t DetElementFactory<det_element_##name>::create(LCDD& l,const XML::Handle_t& e,SensitiveDetector& s){return func(l,e,s);}}}\
+  template <> DD4hep::Geometry::Ref_t DetElementFactory<DD4hep::Geometry::det_element_##name>::create(LCDD& l,const DD4hep::XML::Handle_t& e,SensitiveDetector& s){return func(l,e,s);}}}\
   PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
 
 #define DECLARE_SUBDETECTOR(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct det_element_##name {}; }   \
-  using DD4hep::Geometry::det_element_##name;                                           \
-  template <> DD4hep::Geometry::Ref_t DetElementFactory<det_element_##name>::create(DD4hep::Geometry::LCDD& l,const XML::Handle_t& e,SensitiveDetector&){return func(l,e);}}}\
+  template <> DD4hep::Geometry::Ref_t DetElementFactory<DD4hep::Geometry::det_element_##name>::create(DD4hep::Geometry::LCDD& l,const DD4hep::XML::Handle_t& e,SensitiveDetector&){return func(l,e);}}}\
   PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,const DD4hep::XML::Handle_t*,DD4hep::Geometry::SensitiveDetector*))
 
 #endif // DD4HEP_FACTORIES_H
