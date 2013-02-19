@@ -17,6 +17,10 @@ using namespace DD4hep::XML;
     const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
     return val ? _toBool(val) : default_val; }
 
+#define XML_CHILD_ACCESSOR_XML_DIM(name)	                        \
+  Dimension Dimension::name(bool throw_if_not_present) const {          \
+  return m_element.child(Tag_##name,throw_if_not_present); }
+
 XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR_INT(id)
 
@@ -132,70 +136,59 @@ XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR(double,)
 #endif
 
+  XML_CHILD_ACCESSOR_XML_DIM(dimensions)
+  XML_CHILD_ACCESSOR_XML_DIM(position)
+  XML_CHILD_ACCESSOR_XML_DIM(rotation)
+  XML_CHILD_ACCESSOR_XML_DIM(trd)
+  XML_CHILD_ACCESSOR_XML_DIM(tubs)
+  XML_CHILD_ACCESSOR_XML_DIM(staves)
+  XML_CHILD_ACCESSOR_XML_DIM(beampipe)
+
+
 string Dimension::padType()  const  {
   return m_element.attr<string>(Attr_pads);
 }
 
-string  DetElement::Component::nameStr()  const  {
+string Dimension::nameStr()  const  {
   return m_element.attr<string>(Attr_name);
 }
 
-string DetElement::Component::materialStr() const   {
-  return m_element.attr<string>(Attr_material);
-}
-
-string  DetElement::Component::moduleStr()  const  {
-  return m_element.hasAttr(Attr_module) ? m_element.attr<string>(Attr_module) : string();
-}
-
-string  DetElement::Component::typeStr()  const  {
+string Dimension::typeStr()  const  {
   return m_element.attr<string>(Attr_type);
 }
 
-bool DetElement::Component::isSensitive() const  {
+string Dimension::regionStr() const {
+  return m_element.hasAttr(Attr_region) ? m_element.attr<string>(Attr_region) : string();
+}
+
+string Dimension::limitsStr() const {
+  return m_element.hasAttr(Attr_limits) ? m_element.attr<string>(Attr_limits) : string();
+}
+
+string Dimension::visStr()  const  {
+  return m_element.hasAttr(Attr_vis) ? m_element.attr<string>(Attr_vis) : string();
+}
+
+string Dimension::readoutStr()  const  {
+  return m_element.hasAttr(Attr_readout) ? m_element.attr<string>(Attr_readout) : string();
+}
+
+string Dimension::moduleStr()  const  {
+  return m_element.hasAttr(Attr_module) ? m_element.attr<string>(Attr_module) : string();
+}
+
+string Component::materialStr() const   {
+  return m_element.attr<string>(Attr_material);
+}
+
+bool Component::isSensitive() const  {
   char val = m_element.hasAttr(Attr_sensitive) ? m_element.attr<string>(Attr_sensitive)[0] : 'f';
   val = ::toupper(val);
   return val == 'T' || val == 'Y';
 }
 
-string DetElement::Component::visStr()  const  {
-  return m_element.hasAttr(Attr_vis) ? m_element.attr<string>(Attr_vis) : string();
-}
-
-string DetElement::Component::readoutStr()  const  {
-  return m_element.hasAttr(Attr_readout) ? m_element.attr<string>(Attr_readout) : string();
-}
-
-string DetElement::Component::regionStr() const {
-  return m_element.hasAttr(Attr_region) ? m_element.attr<string>(Attr_region) : string();
-}
-
-string DetElement::Component::limitsStr() const {
-  return m_element.hasAttr(Attr_limits) ? m_element.attr<string>(Attr_limits) : string();
-}
-
-Dimension DetElement::Component::dimensions()  const  {
-  return Dimension(m_element.child(Tag_dimensions));
-}
-
 int DetElement::id() const   {
   return m_element.hasAttr(Attr_id) ? m_element.attr<int>(Attr_id) : -1;
-}
-
-string DetElement::nameStr() const   {
-  return m_element.attr<string>(Attr_name);
-}
-
-string  DetElement::typeStr()  const  {
-  return m_element.attr<string>(Attr_type);
-}
-
-string  DetElement::visStr()  const  {
-  return m_element.attr<string>(Attr_vis);
-}
-
-Dimension DetElement::dimensions()  const  {
-  return Dimension(m_element.child(Tag_dimensions));
 }
 
 string DetElement::materialStr() const  {
@@ -204,14 +197,6 @@ string DetElement::materialStr() const  {
     return h.attr<string>(Attr_name);
   }
   return "";
-}
-
-string DetElement::regionStr() const {
-  return m_element.hasAttr(Attr_region) ? m_element.attr<string>(Attr_region) : string();
-}
-
-string DetElement::limitsStr() const {
-  return m_element.hasAttr(Attr_limits) ? m_element.attr<string>(Attr_limits) : string();
 }
 
 void DetElement::check(bool condition, const string& msg) const  {

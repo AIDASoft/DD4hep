@@ -84,18 +84,23 @@ namespace DD4hep {
       OverlayedField      m_field;
       Ref_t               m_header;
       Properties*         m_properties;
-      
+      LCDDBuildType       m_buildType;
+
       /// Default constructor
       LCDDImp();
 
       /// Standard destructor
       virtual ~LCDDImp();
 
+      /// Access flag to steer the detail of building of the geometry/detector description
+      virtual LCDDBuildType buildType() const { return m_buildType; }
 		      
       /// Read compact geometry description or alignment file
-      virtual void fromCompact(const std::string& fname) { fromXML(fname);              }
+      virtual void fromCompact(const std::string& fname, LCDDBuildType type=BUILD_DEFAULT) 
+      { fromXML(fname,type);              }
+
       /// Read any XML file
-      virtual void fromXML(const std::string& fname);
+      virtual void fromXML(const std::string& fname,LCDDBuildType type=BUILD_DEFAULT);
       
       virtual void dump() const;
 

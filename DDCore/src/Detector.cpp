@@ -504,45 +504,55 @@ DetElement& DetElement::setReference(DetElement reference) {
 
 /// Transformation from local coordinates of the placed volume to the world system
 bool DetElement::localToWorld(const Position& local, Position& global)  const {
-  Double_t master_point[3]={0,0,0}, local_point[3] = {local.x,local.y,local.z};
+  Double_t master_point[3]={0,0,0}, local_point[3] = {local.X(),local.Y(),local.Z()};
   // If the path is unknown an exception will be thrown inside worldTransformation() !
   _data().worldTransformation()->LocalToMaster(local_point,master_point);
-  global.set(master_point[0],master_point[1],master_point[2]);
+  global.SetCoordinates(master_point);
   return true;
 }
 
 /// Transformation from local coordinates of the placed volume to the parent system
 bool DetElement::localToParent(const Position& local, Position& global)  const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
-  _data().parentTransformation()->LocalToMaster(&local.x,&global.x);
+  Double_t master_point[3]={0,0,0}, local_point[3] = {local.X(),local.Y(),local.Z()};
+  _data().parentTransformation()->LocalToMaster(local_point,master_point);
+  global.SetCoordinates(master_point);
   return true;
 }
 
 /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
 bool DetElement::localToReference(const Position& local, Position& global)  const {
   // If the path is unknown an exception will be thrown inside referenceTransformation() !
-  _data().referenceTransformation()->LocalToMaster(&local.x,&global.x);
+  Double_t master_point[3]={0,0,0}, local_point[3] = {local.X(),local.Y(),local.Z()};
+  _data().referenceTransformation()->LocalToMaster(local_point,master_point);
+  global.SetCoordinates(master_point);
   return true;
 }
 
 /// Transformation from world coordinates of the local placed volume coordinates
 bool DetElement::worldToLocal(const Position& global, Position& local)  const {
   // If the path is unknown an exception will be thrown inside worldTransformation() !
-  _data().worldTransformation()->MasterToLocal(&global.x,&local.x);
+  Double_t master_point[3]={global.X(),global.Y(),global.Z()}, local_point[3] = {0,0,0};
+  _data().worldTransformation()->MasterToLocal(master_point,local_point);
+  local.SetCoordinates(local_point);
   return true;
 }
 
 /// Transformation from parent coordinates of the local placed volume coordinates
 bool DetElement::parentToLocal(const Position& global, Position& local)  const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
-  _data().parentTransformation()->MasterToLocal(&global.x,&local.x);
+  Double_t master_point[3]={global.X(),global.Y(),global.Z()}, local_point[3] = {0,0,0};
+  _data().parentTransformation()->MasterToLocal(master_point,local_point);
+  local.SetCoordinates(local_point);
   return true;
 }
 
 /// Transformation from arbitrary parent system coordinates of the local placed volume coordinates
 bool DetElement::referenceToLocal(const Position& global, Position& local)  const {
   // If the path is unknown an exception will be thrown inside referenceTransformation() !
-  _data().referenceTransformation()->MasterToLocal(&global.x,&local.x);
+  Double_t master_point[3]={global.X(),global.Y(),global.Z()}, local_point[3] = {0,0,0};
+  _data().referenceTransformation()->MasterToLocal(master_point,local_point);
+  local.SetCoordinates(local_point);
   return true;
 }
 

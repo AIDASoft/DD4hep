@@ -36,6 +36,11 @@ namespace {
   struct TopDetElement : public DetElement {
     TopDetElement(const string& nam, Volume vol) : DetElement(nam,/* "structure", */0) { _data().volume = vol;    }
   };
+  struct TypePreserve {
+    LCDDBuildType& m_t;
+    TypePreserve(LCDDBuildType& t) : m_t(t) { }
+    ~TypePreserve() { m_t = BUILD_NONE; }
+  };
 }
 
 LCDD& LCDD::getInstance() {
@@ -44,14 +49,21 @@ LCDD& LCDD::getInstance() {
 }
 
 /// Default constructor
-LCDDImp::LCDDImp() : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global")  
+LCDDImp::LCDDImp() 
+  : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"),
+    m_buildType(BUILD_NONE)
 {
   m_properties = new Properties();
-  if ( 0 == gGeoManager ) {
+  //if ( 0 == gGeoManager )
+  {
     gGeoManager = new TGeoManager();
     gGeoManager->AddNavigator();
     gGeoManager->SetCurrentNavigator(0);
     cout << "Navigator:" << (void*)gGeoManager->GetCurrentNavigator() << endl;
+  }
+  //if ( 0 == gGeoIdentity ) 
+  {
+    gGeoIdentity = new TGeoIdentity();
   }
   VisAttr attr("invisible");
   attr.setColor(0.5,0.5,0.5);
@@ -215,7 +227,8 @@ void LCDDImp::init()  {
   }
 }
 
-void LCDDImp::fromXML(const string& xmlfile) {
+void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
+  TypePreserve build_type_preserve(m_buildType=build_type);
 #if DD4HEP_USE_PYROOT
   string cmd;
   TPython::Exec("import lcdd");

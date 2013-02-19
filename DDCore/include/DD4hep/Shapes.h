@@ -12,6 +12,7 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
+#include "DD4hep/Objects.h"
 
 // C/C++ include files
 #include <vector>
@@ -44,8 +45,6 @@ namespace DD4hep {
   namespace Geometry  {
 
     // Forward declarations
-    struct Position;
-    struct Rotation;
 
     /**@class Solid_type Shapes.h 
      *
@@ -58,6 +57,8 @@ namespace DD4hep {
       protected:
       typedef T Implementation;
       void _setDimensions(double* param);
+      /// Assign pointrs and register solid to geometry
+      void _assign(Implementation* n, const std::string& tit, bool cbbox=true);
       /// Assign pointrs and register solid to geometry
       void _assign(Implementation* n, const std::string& nam, const std::string& tit, bool cbbox=true);
 
@@ -490,6 +491,8 @@ namespace DD4hep {
       template<typename Q> SubtractionSolid(const Handle<Q>& e) : BooleanSolid(e) {}
       /// Constructor to be used when creating a new object. Position is identity, Rotation is identity-rotation!
       SubtractionSolid(const Solid& shape1, const Solid& shape2);
+      /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
+      SubtractionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
@@ -510,6 +513,8 @@ namespace DD4hep {
       template<typename Q> UnionSolid(const Handle<Q>& e) : BooleanSolid(e) {}
       /// Constructor to be used when creating a new object. Position is identity, Rotation is identity-rotation!
       UnionSolid(const Solid& shape1, const Solid& shape2);
+      /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
+      UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
@@ -530,6 +535,8 @@ namespace DD4hep {
       template<typename Q> IntersectionSolid(const Handle<Q>& e) : BooleanSolid(e) {}
       /// Constructor to be used when creating a new object. Position is identity, Rotation is identity-rotation!
       IntersectionSolid(const Solid& shape1, const Solid& shape2);
+      /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
+      IntersectionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object

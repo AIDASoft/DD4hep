@@ -276,6 +276,54 @@ namespace DD4hep {
       /// Access attribute values: outer_field
       double outer_field() const;
 
+      /// Access child element with tag "dimensions" as Dimension object
+      Dimension dimensions(bool throw_if_not_present=true)  const;
+      /// Child access: position
+      Dimension position(bool throw_if_not_present=true) const;
+      /// Child access: rotation
+      Dimension rotation(bool throw_if_not_present=true) const;
+      /// Child access: trd
+      Dimension trd(bool throw_if_not_present=true) const;
+      /// Child access: tubs
+      Dimension tubs(bool throw_if_not_present=true) const;
+      /// Child access: staves
+      Dimension staves(bool throw_if_not_present=true) const;
+      /// Child access: beampipe
+      Dimension beampipe(bool throw_if_not_present=true) const;
+
+      /// Access name attribute as STL string
+      std::string   nameStr() const;
+      /// Access type attribute as STL string
+      std::string   typeStr() const;
+      /// Access module attribute as STL string
+      std::string   moduleStr() const;
+      /// Access readout attribute as STL string
+      std::string   readoutStr() const;
+      /// Access vis attribute as STL string. If not present empty return empty string
+      std::string   visStr() const;
+      /// Access region attribute as STL string. If not present empty return empty string
+      std::string   regionStr() const;
+      /// Access limits attribute as STL string. If not present empty return empty string
+      std::string   limitsStr() const;
+    };
+
+    /** @class DetElement::Component XMLDetector.h XML/XMLDetector.h
+     * 
+     *  Helper class to access any field in a xml tag.
+     *  Specialized for attributes of a detector sub-element.
+     *  
+     *  @author  M.Frank
+     *  @version 1.0
+     */
+    struct Component : public Dimension {
+      /// Constructor from Handle
+      Component(Handle_t e) : Dimension(e) {}
+      /// Constructor from Element
+      Component(const Element& e) : Dimension(e) {}
+      /// Check if component is sensitive
+      bool   isSensitive() const;
+      /// Access material attribute as STL string
+      std::string   materialStr() const;
     };
 
     /** @class DetElement XMLDetector.h XML/XMLDetector.h
@@ -287,40 +335,6 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct DetElement : public Dimension  {
-      /** @class DetElement::Component XMLDetector.h XML/XMLDetector.h
-       * 
-       *  Helper class to access any field in a xml tag.
-       *  Specialized for attributes of a detector sub-element.
-       *  
-       *  @author  M.Frank
-       *  @version 1.0
-       */
-      struct Component : public Dimension {
-        /// Constructor from Handle
-        Component(Handle_t e) : Dimension(e) {}
-	/// Constructor from Element
-        Component(const Element& e) : Dimension(e) {}
-	/// Check if component is sensitive
-        bool   isSensitive() const;
-	/// Access name attribute as STL string
-        std::string   nameStr() const;
-	/// Access type attribute as STL string
-	std::string   typeStr() const;
-	/// Access module attribute as STL string
-        std::string   moduleStr() const;
-	/// Access readout attribute as STL string
-        std::string   readoutStr() const;
-	/// Access material attribute as STL string
-        std::string   materialStr() const;
-	/// Access vis attribute as STL string. If not present empty return empty string
-        std::string   visStr() const;
-	/// Access region attribute as STL string. If not present empty return empty string
-        std::string   regionStr() const;
-	/// Access limits attribute as STL string. If not present empty return empty string
-        std::string   limitsStr() const;
-	/// Access child element with tag "dimensions" as Dimension object
-	Dimension     dimensions()  const;
-      };
       /// Constructor from Handle
       DetElement(Handle_t e) : Dimension(e)  {}
       /// Access undrlying XML handle object
@@ -328,20 +342,8 @@ namespace DD4hep {
       
       /// Access parameters: id
       int  id() const;
-      /// Access name attribute as STL string
-      std::string nameStr() const;
-      /// Access type attribute as STL string
-      std::string typeStr() const;
       /// Access material attribute as STL string. If not present empty return empty string
       std::string materialStr() const;
-      /// Access vis attribute as STL string.
-      std::string visStr() const;
-      /// Access region attribute as STL string. If not present empty return empty string
-      std::string regionStr() const;
-      /// Access limits attribute as STL string. If not present empty return empty string
-      std::string limitsStr() const;
-      /// Access child element with tag "dimensions" as Dimension object
-      Dimension dimensions()  const;
       /// Check if element describes a tracking detector
       bool isTracker() const;
       /// Check if element describes a calorimetric detector

@@ -81,11 +81,11 @@ void LayeringCnv::fromCompact(Layering& layering)   const  {
   for_each(layers.begin(),layers.end(),deletePtr<Layer>);
   for(Collection_t c(m_element,Tag_layer); c; ++c)  {
     Layer lay;
-    DetElement::Component layer = c;
+    Component layer = c;
     int repeat = layer.hasAttr(Attr_repeat) ? layer.repeat() : 1;
     ++count;
     for(Collection_t s(c,Tag_slice); s; ++s)  {
-      DetElement::Component slice = s;
+      Component slice = s;
       string mat = slice.materialStr();
       LayerSlice lslice(slice.isSensitive(), slice.thickness(), mat);
       lay.add(lslice);
@@ -101,12 +101,11 @@ void LayeringCnv::fromCompact(Layering& layering)   const  {
 }
 
 double Layering::singleLayerThickness(XML::Element e)  const  {
-  DetElement::Component layer = e;
+  Component layer = e;
   double thickness = 0e0;
   for(Collection_t s(layer,Tag_slice); s; ++s)  {
-    DetElement::Component slice = s;
+    Component slice = s;
     thickness += slice.thickness();
   }  
   return thickness;
 }
-

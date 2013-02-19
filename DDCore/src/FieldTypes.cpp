@@ -19,9 +19,9 @@ using namespace DD4hep::Geometry;
 
 /// Call to access the field components at a given location
 void ConstantField::fieldComponents(const double* /* pos */, double* field) {
-  field[0] += direction.x;
-  field[1] += direction.y;
-  field[2] += direction.z;
+  field[0] += direction.X();
+  field[1] += direction.Y();
+  field[2] += direction.Z();
 }
 
 /// Initializing constructor

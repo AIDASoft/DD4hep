@@ -125,54 +125,6 @@ string Constant::toString()  const {
   return os.str();
 }
 
-/// Rotates the position vector around the x-axis.
-Position& Position::rotateX(double angle_in_rad) {
-  double s = std::sin(angle_in_rad);
-  double c = std::cos(angle_in_rad);
-  double t = y * c - z * s;
-  z = z * c + y * s;
-  y = t;
-  return *this;
-}
-
-/// Rotates the position vector around the y-axis.
-Position& Position::rotateY(double angle_in_rad) {
-  double s = std::sin(angle_in_rad);
-  double c = std::cos(angle_in_rad);
-  double t = z * c - x * s;
-  x = x * c + z * s;
-  z = t;
-  return *this;
-}
-
-/// Rotates the position vector around the z-axis.
-Position& Position::rotateZ(double angle_in_rad) {
-  double s = std::sin(angle_in_rad);
-  double c = std::cos(angle_in_rad);
-  double t = x * c - y * s;
-  y = y * c + x * s;
-  x = t;
-  return *this;
-}
-
-/// Rotates the rotation vector around the x-axis.
-Rotation& Rotation::rotateX(double angle_in_rad) {
-  theta += angle_in_rad;
-  return *this;
-}
-
-/// Rotates the rotation vector around the y-axis.
-Rotation& Rotation::rotateY(double angle_in_rad) {
-  psi += angle_in_rad;
-  return *this;
-}
-
-/// Rotates the rotation vector around the z-axis.
-Rotation& Rotation::rotateZ(double angle_in_rad) {
-  phi += angle_in_rad;
-  return *this;
-}
-
 /// Constructor to be used when creating a new DOM tree
 Atom::Atom(const string& name, const string& formula, int Z, int N, double density) {
   TGeoElementTable* t = TGeoElement::GetElementTable();
@@ -329,24 +281,13 @@ int AlignmentEntry::align(const Rotation& rot, bool check, double overlap) {
 
 /// Align the PhysicalNode (translation + rotation)
 int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, double overlap) {
+
   if ( isValid() ) {
-    if ( pos.isNull() && rot.isNull() )  
-      return 0;
     TGeoHMatrix* new_matrix = dynamic_cast<TGeoHMatrix*>(m_element->GetOriginalMatrix()->MakeClone());
-    if ( rot.isNull() ) {
-      TGeoTranslation m(pos.x,pos.y,pos.z);
-      new_matrix->Multiply(&m);
-    }
-    else if ( pos.isNull() ) {
-      TGeoRotation m("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-      new_matrix->Multiply(&m);
-    }
-    else {
-      TGeoRotation rotation("",rot.phi*RAD_2_DEGREE,rot.theta*RAD_2_DEGREE,rot.psi*RAD_2_DEGREE);
-      TGeoCombiTrans m(pos.x,pos.y,pos.z,0);
-      m.SetRotation(rotation);
-      new_matrix->Multiply(&m);
-    }
+    TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
+    TGeoCombiTrans m(pos.X(),pos.Y(),pos.Z(),0);
+    m.SetRotation(rotation);
+    new_matrix->Multiply(&m);
     m_element->Align(new_matrix,0,check,overlap);
     return 1;
   }
@@ -371,8 +312,8 @@ bool Limit::operator==(const Limit& c) const {
 
 /// operator less
 bool Limit::operator< (const Limit& c) const {
-  if ( value    < c.value      ) return true;
-  if ( name     < c.name       ) return true;
+  if ( value     < c.value      ) return true;
+  if ( name      < c.name       ) return true;
   if ( particles < c.particles ) return true;
   return false;
 }

@@ -16,6 +16,7 @@
 // Helpers to access tags and attributes quickly without specifying explicitly namespaces
 #define _X(a) DD4hep::XML::Tag_##a
 #define _A(a) DD4hep::XML::Attr_##a
+#define _U(a) DD4hep::XML::Strng_t(#a)
 
 // Shortcuts to elements of the XML namespace
 typedef DD4hep::XML::Tag_t         xml_tag_t;
@@ -25,7 +26,7 @@ typedef DD4hep::XML::Handle_t      xml_h;
 typedef DD4hep::XML::Element       xml_elt_t;
 typedef DD4hep::XML::RefElement    xml_ref_t;
 typedef DD4hep::XML::DetElement    xml_det_t;
-typedef xml_det_t::Component       xml_comp_t;
+typedef DD4hep::XML::Component     xml_comp_t;
 typedef DD4hep::XML::Dimension     xml_dim_t;
 typedef DD4hep::Geometry::LCDD     lcdd_t;
 typedef DD4hep::XML::Strng_t       Unicode;

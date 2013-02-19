@@ -37,11 +37,9 @@ namespace DD4hep {
     struct Region;
     struct LimitSet;
     struct Material;
+    struct VisAttr;
     struct Volume;
     struct PlacedVolume;
-    struct Position;
-    struct Rotation;
-    struct VisAttr;
     struct SensitiveDetector;
     
     /** @class PlacedVolume Volume.h  DD4hep/lcdd/Volume.h
@@ -124,6 +122,8 @@ namespace DD4hep {
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol)  const  
       { return placeVolume(vol,IdentityPos());                        }
+      /// Place daughter volume according to generic Transform3D
+      PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr)  const;
       /// Place un-rotated daughter volume at the given position.
       PlacedVolume placeVolume(const Volume& vol, const Position& pos)  const;
       /// Place rotated daughter volume. The position is automatically the identity position
@@ -131,7 +131,7 @@ namespace DD4hep {
       /// Place rotated and then translated daughter volume
       PlacedVolume placeVolume(const Volume& vol, const Position& pos, const Rotation& rot)  const;
       /// Place daughter volume in rotated and then translated mother coordinate system
-      PlacedVolume placeVolumeEx(const Volume& vol, const Position& pos, const Rotation& rot)  const;
+      PlacedVolume placeVolume(const Volume& vol, const Rotation& rot, const Position& pos)  const;
       
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol, const IdentityPos& pos)  const;

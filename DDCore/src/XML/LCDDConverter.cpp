@@ -56,8 +56,6 @@ typedef Geometry::LimitSet     LimitSet;
 typedef Geometry::IDDescriptor IDDescriptor;
 typedef Geometry::PlacedVolume PlacedVolume;
 
-#define _U(x) Unicode(#x)
-
 #define TAG(x)  extern const Tag_t Tag_##x  (#x)
 #define ATTR(x) extern const Tag_t Attr_##x (#x)
 
@@ -407,11 +405,11 @@ Handle_t LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) 
 	obj.setAttr(_A(y),tr[1]*CM_2_MM);
 	obj.setAttr(_A(z),tr[2]*CM_2_MM);
       }
-      if ((rot.x != 0.0) || (rot.y != 0.0) || (rot.z != 0.0)) {
+      if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
 	first.append(obj=Element(geo.doc,_X(firstrotation)));
-	obj.setAttr(_A(x),rot.x);
-	obj.setAttr(_A(y),rot.y);
-	obj.setAttr(_A(z),rot.z);
+	obj.setAttr(_A(x),rot.X());
+	obj.setAttr(_A(y),rot.Y());
+	obj.setAttr(_A(z),rot.Z());
       }
 
       rot = getXYZangles(boolean->GetRightMatrix()->Inverse().GetRotationMatrix());
@@ -424,11 +422,11 @@ Handle_t LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) 
 	obj.setAttr(_A(y),tr[1]*CM_2_MM);
 	obj.setAttr(_A(z),tr[2]*CM_2_MM);
       }
-      if ((rot.x != 0.0) || (rot.y != 0.0) || (rot.z != 0.0)) {
+      if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
 	first.append(obj=Element(geo.doc,_X(rotation)));
-	obj.setAttr(_A(x),rot.x);
-	obj.setAttr(_A(y),rot.y);
-	obj.setAttr(_A(z),rot.z);
+	obj.setAttr(_A(x),rot.X());
+	obj.setAttr(_A(y),rot.Y());
+	obj.setAttr(_A(z),rot.Z());
       }
     }
     if ( !solid ) {
@@ -478,12 +476,12 @@ Handle_t LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix
   if ( !rot ) {
     static Handle_t identity;
     XYZRotation r = getXYZangles(trafo->Inverse().GetRotationMatrix());
-    if ( r.x != 0 || r.y != 0 || r.z != 0 )   {
+    if ( r.X() != 0 || r.Y() != 0 || r.Z() != 0 )   {
       geo.doc_define.append(rot=Element(geo.doc,_X(rotation)));
       rot.setAttr(_A(name),name);
-      rot.setAttr(_A(x),r.x);
-      rot.setAttr(_A(y),r.y);
-      rot.setAttr(_A(z),r.z);
+      rot.setAttr(_A(x),r.X());
+      rot.setAttr(_A(y),r.Y());
+      rot.setAttr(_A(z),r.Z());
     }
     else if ( identity )  {
       rot = identity;

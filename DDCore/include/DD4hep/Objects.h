@@ -22,6 +22,13 @@ class TGeoTranslation;
 class TGeoPhysicalNode;
 class TGeoIdentity;
 #include "TGeoPhysicalNode.h"
+#include "Math/Vector3D.h"
+#include "Math/Transform3D.h"
+#include "Math/RotationX.h"
+#include "Math/RotationY.h"
+#include "Math/RotationZ.h"
+#include "Math/RotationZYX.h"
+#include "Math/VectorUtil.h"
 
 // C/C++ include files
 #include <set>
@@ -137,147 +144,16 @@ namespace DD4hep {
       std::string toString()  const;
     };
 
-    // We want the 3 coordinates ass-to-ass, so that they can be interpreted as "double*"
-#ifdef _WIN32
-#pragma pack(push,DD4Hep_Objects_Position,1)
-#define DD4HEP_BYTE_ALIGN(x) x
-#elif defined(__CINT__)
-#define DD4HEP_BYTE_ALIGN(x) x
-#else
-#define DD4HEP_BYTE_ALIGN(x) x __attribute__((__packed__))
-#endif
-    /** @class Position Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    DD4HEP_BYTE_ALIGN(struct) Position  {
-      /// 3-dimensional cartesian coordinates
-      double x, y, z;
-      /// Default constructor
-      Position() : x(0), y(0), z(0) {}
-      /// Initializing constructor
-      Position(double xval, double yval, double zval) : x(xval), y(yval), z(zval) {         }
-      /// Is it a identity rotation ?
-      bool isNull() const                             { return x==0 && y==0 && z==0;        }
-      /// Ceck 2 positions for equality
-      bool operator==(const Position& c)  const       { return x==c.x && y==c.y && z==c.z;  }
-      /// Ceck 2 positions for in-equality  
-      bool operator!=(const Position& c)  const       { return x!=c.x || y!=c.y || x!=c.z;  }
-      /// Negation of the direction
-      Position operator - () const                    { return Position(-x,-y,-z);          }
-      /// Scalar multiplication
-      Position& operator *=(double a)                 { x *= a;y *= a;z *= a;return *this;  }
-      /// Addition operator
-      Position& operator +=(const Position& p)        { x+=p.x;y+=p.y;z+=p.z;return *this;  }
-      /// Subtraction operator
-      Position& operator -= (const Position& p)       { x-=p.x;y-=p.y;z-=p.z;return *this;  }
-
-      /// Position length
-      double length() const                           { return sqrt(x*x + y*y + z*z);       }
-      Position& setLength(double new_length) {
-	      double len=length();
-	      if ( len>std::numeric_limits<double>::epsilon() ) {
-	        len = new_length/len;
-          x *= len;
-          y *= len;
-          z *= len;
-        }
-        else {
-          x = 0;
-          y = 0;
-          z = 0;
-        }
-        return *this;
-      }
-      /// Rho - radius in cylindrical coordinates
-      double rho() const                              { return std::sqrt(x*x+y*y);          }
-      /// Phi - rotation angle around z in cylindrical coordinates
-      double phi() const
-      { return x == 0.0 && y == 0.0 ? 0.0 : std::atan2(x,y);                                }
-      /// Theta - rotation angle around x in cylindrical coordinates
-      double theta() const
-      { return x == 0.0 && y == 0.0 && z == 0.0 ? 0.0 : std::atan2(std::sqrt(x*x+y*y),y);   }
-      /// cos(Theta angle): optimisation for std::cos(pos.theta())
-      double cosTheta() const
-      { return x == 0.0 && y == 0.0 && z == 0.0 ? 1.0 : z/std::sqrt(x*x+y*y*z*z);           }
-      /// Rotates the position vector around the x-axis.
-      Position& rotateX(double angle_in_rad);
-      /// Rotates the position vector around the y-axis.
-      Position& rotateY(double angle_in_rad);
-      /// Rotates the position vector around the z-axis.
-      Position& rotateZ(double angle_in_rad);
-
-      /// Access to array like coordinates
-      const double* coordinates() const               { return &x;                          }
-      /// Initializer for all member variables
-      Position& set(double xv, double yv, double zv)  { x=xv; y=yv; z=zv; return *this;     }
-    };
-#ifdef _WIN32
-#pragma pack(pop,DD4Hep_Objects_Position)
-#pragma pack(push,DD4Hep_Objects_Rotation,1)
-#endif
-    /// Addition of 2 positions
-    inline Position operator + (const Position& l, const Position& r)
-    {  return Position(l.x+r.x,l.y+r.y,l.z+r.z);                                           }
-    /// Subtraction of to positions
-    inline Position operator - (const Position& l, const Position& r)
-    {  return Position(l.x-r.x,l.y-r.y,l.z-r.z);                                           }
-    /// Dot product of 3-vectors.
-    inline double operator * (const Position& l, const Position& r)
-    {  return sqrt(l.x*r.x + l.y*r.y + l.z*r.z);                                           }
-    /// Positions scaling from left
-    inline Position operator * (double l, const Position& r) 
-    {  return Position(r.x*l,r.y*l,r.z*l);                                                 }
-    /// Positions scaling from right
-    inline Position operator * (const Position& l, double r)
-    {  return Position(l.x*r,l.y*r,l.z*r);                                                 }
-    /// Positions scaling from right
-    inline Position operator / (const Position& l, double r)
-    {  return Position(l.x/r,l.y/r,l.z/r);                                                 }
-    /// Calculate the mean length of two vectors
-    inline double mean_length(const Position& p1, const Position& p2)
-    {  return 0.5* (p1.length() + p2.length()) / 2.0;                                      }
-    /// Calculate the mean direction of two vectors
-    inline Position mean_direction(const Position& p1, const Position& p2)
-    { return 0.5 * (p1 + p2);                                                              }
-
-    typedef Position Direction;
-    typedef Position Momentum;
-
-    /** @class Rotation Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    DD4HEP_BYTE_ALIGN(struct) Rotation  {
-      double theta, phi, psi;
-      /// Default constructor
-      Rotation() : theta(0), phi(0), psi(0) {}
-      /// Initializing constructor
-      Rotation(double thetaval, double phival, double psival) : theta(thetaval), phi(phival), psi(psival) {}
-      /// Is it a identity rotation ?
-      bool isNull() const                              { return theta==0 && phi==0 && psi==0;              }
-      /// Ceck 2 rotations for equality
-      bool operator==(const Rotation& c)  const        { return theta==c.theta && phi==c.phi && psi==c.psi;}
-      /// Ceck 2 rotations for in-equality 
-      bool operator!=(const Rotation& c)  const        { return theta!=c.theta || phi!=c.phi || psi!=c.psi;}
-      /// Access to array like coordinates
-      const double* angles() const                     { return &theta;                                    }
-      /// Initializer for all member variables
-      Rotation& set(double th, double ph, double ps)   { theta=th; phi=ph; psi=ps;return *this;            }
-      /// Rotates the rotation vector around the x-axis.
-      Rotation& rotateX(double angle_in_rad);
-      /// Rotates the rotation vector around the y-axis.
-      Rotation& rotateY(double angle_in_rad);
-      /// Rotates the rotation vector around the z-axis.
-      Rotation& rotateZ(double angle_in_rad);
-    };
-
-#ifdef _WIN32
-#pragma pack(pop,DD4Hep_Objects_Rotation,1)
-#endif
-#undef DD4HEP_BYTE_ALIGN
+    typedef ROOT::Math::XYZVector Position;
+    template <class V> V RotateX(const V& v, double a) { return ROOT::Math::VectorUtil::RotateX(v,a); }
+    template <class V> V RotateY(const V& v, double a) { return ROOT::Math::VectorUtil::RotateY(v,a); }
+    template <class V> V RotateZ(const V& v, double a) { return ROOT::Math::VectorUtil::RotateZ(v,a); }
+  
+    typedef ROOT::Math::RotationZYX  Rotation;
+    typedef ROOT::Math::RotationZ    RotationZ;
+    typedef ROOT::Math::RotationY    RotationY;
+    typedef ROOT::Math::RotationX    RotationX;
+    typedef ROOT::Math::Transform3D  Transform3D;
 
     /** @class IdentityPos Objects.h
      *  
@@ -559,4 +435,36 @@ namespace DD4hep {
 
   }       /* End namespace Geometry           */
 }         /* End namespace DD4hep             */
+
+
+namespace ROOT { namespace Math {
+    typedef DD4hep::Geometry::Position Position;
+
+    /// Addition of 2 positions
+    inline Position operator + (const Position& l, const Position& r)
+    {  return Position(l.X()+r.X(),l.Y()+r.Y(),l.Z()+r.Z());                               }
+    /// Subtraction of to positions
+    inline Position operator - (const Position& l, const Position& r)
+    {  return Position(l.X()-r.X(),l.Y()-r.Y(),l.Z()-r.Z());                               }
+    /// Dot product of 3-vectors.
+    inline double operator * (const Position& l, const Position& r)
+    {  return sqrt(l.X()*r.X() + l.Y()*r.Y() + l.Z()*r.Z());                               }
+    /// Positions scaling from left
+    inline Position operator * (double l, const Position& r) 
+    {  return Position(r.X()*l,r.Y()*l,r.Z()*l);                                           }
+    /// Positions scaling from right
+    inline Position operator * (const Position& l, double r)
+    {  return Position(l.X()*r,l.Y()*r,l.Z()*r);                                           }
+    /// Positions scaling from right
+    inline Position operator / (const Position& l, double r)
+    {  return Position(l.X()/r,l.Y()/r,l.Z()/r);                                           }
+    /// Calculate the mean length of two vectors
+    inline double mean_length(const Position& p1, const Position& p2)
+    {  return 0.5* (p1.R() + p2.R()) / 2.0;                                                }
+    /// Calculate the mean direction of two vectors
+    inline Position mean_direction(const Position& p1, const Position& p2)
+    { return 0.5 * (p1 + p2);                                                              }
+
+}}
+
 #endif    /* DD4HEP_GEOMETRY_OBJECTS_H        */

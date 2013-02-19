@@ -33,7 +33,21 @@ namespace DD4hep {
    */
   namespace Geometry  {
 
-    /** @class LCDD LCDD.h
+    /** @enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
+     * Detector description build types.
+     * The corresponding flag is ONLY valid while parsing the 
+     * compact description. If no eometry, ie. at all other times
+     * the accessor to the flag returns BUILD_NONE.
+     */
+    enum LCDDBuildType {
+      BUILD_NONE = 0,
+      BUILD_DEFAULT = 1,
+      BUILD_SIMU = BUILD_DEFAULT,
+      BUILD_RECO,
+      BUILD_DISPLAY
+    };
+
+    /** @class LCDD LCDD.h  DD4hep/LCDD.h
      *  
      *  @author  M.Frank
      *  @version 1.0
@@ -47,6 +61,8 @@ namespace DD4hep {
       /// Destructor
       virtual ~LCDD() {}
 
+      /// Access flag to steer the detail of building of the geometry/detector description
+      virtual LCDDBuildType buildType() const = 0;
       /// Initialize geometry
       virtual void init() = 0;
       /// Finalize the geometry
@@ -178,9 +194,9 @@ namespace DD4hep {
       virtual LCDD& addField(const Ref_t& field) = 0;
 
       /// Read compact geometry description or alignment file
-      virtual void fromCompact(const std::string& fname) = 0;
+      virtual void fromCompact(const std::string& fname, LCDDBuildType type=BUILD_DEFAULT) = 0;
       /// Read any geometry description or alignment file
-      virtual void fromXML(const std::string& fname) = 0;
+      virtual void fromXML(const std::string& fname, LCDDBuildType type=BUILD_DEFAULT) = 0;
       /// 
       virtual void dump() const = 0;
       /// Manipulate geometry using facroy converter

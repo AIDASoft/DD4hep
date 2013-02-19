@@ -122,7 +122,9 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, const xml_h& e)  {
   string t = e.attr<string>(_A(field));
   Value<TNamed,ConstantField>* ptr = new Value<TNamed,ConstantField>();
   ptr->type = ::toupper(t[0])=='E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
-  ptr->direction.set(strength.x(),strength.y(),strength.z());
+  ptr->direction.SetX(strength.x());
+  ptr->direction.SetY(strength.y());
+  ptr->direction.SetZ(strength.z());
   obj.assign(ptr,field.nameStr(),field.typeStr());
   return obj;
 }
@@ -406,14 +408,10 @@ template <> void Converter<AlignmentEntry>::operator()(const xml_h& e)  const  {
   Position pos;
   Rotation rot;
   if ( (child=e.child(_X(position),false)) )  { // Position is not mandatory!
-    pos.x = child.x();
-    pos.y = child.y();
-    pos.z = child.z();
+    pos.SetXYZ(child.x(),child.y(),child.z());
   }
   if ( (child=e.child(_X(rotation),false)) )  {  // Rotation is not mandatory
-    rot.theta = child.x(); // child.theta();
-    rot.phi   = child.y(); // child.phi();
-    rot.psi   = child.z(); // child.psi();
+    rot.SetComponents(child.z(),child.y(),child.x());
   }
   if ( overlap ) {
     double ovl = e.attr<double>(_A(overlap));
