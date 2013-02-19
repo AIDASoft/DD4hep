@@ -122,20 +122,20 @@ namespace DD4hep {
     module.localToWorld(local,global_w);
 
     vector<double> center;
-    center.push_back(global_w.x);
-    center.push_back(global_w.y);
+    center.push_back(global_w.X());
+    center.push_back(global_w.Y());
     return center;
   }
   
   int RectangularPadRowLayout::getNearestPad(double c0,double c1)const {
     //find z position of module in world coordinates
     Position fake_local(0,0,0);
-    Position fake_global;
+    Position fake_global(0,0,0);
     module.localToWorld(fake_local,fake_global);
     // trafo to local coordinates
-    Position global(c0,c1,fake_global.z), local;
+    Position global(c0,c1,fake_global.Z()), local;
     module.worldToLocal(global,local);
-    Double_t point_local[3]={local.x,local.y,local.z};
+    Double_t point_local[3]={local.X(),local.Y(),local.Z()};
     //check if it is on that module
     bool onMod=box->Contains(point_local);
     if(!onMod)

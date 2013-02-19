@@ -395,8 +395,7 @@
                           rmax="TUBE_lateral_r3+TUBE_ends_thickness"/>
           </lateral_tubes>
         </detector>
-<!--
--->
+
         <!--                    VXD03 parameters                       
               Note: side_band_electronics and end_ladder_electronics
                     and cryostat are optional.
@@ -443,8 +442,6 @@
             <ladder  length="130*mm" radius="VXD_radius_r5" gap="VXD_layer_gap" width="VXD_width_r5" thickness="0.1*mm" material="Silicon"/>
           </layer>
         </detector>
-<!--
---> 
 
         <!--                  sit00 parameters        -->
         <detector id="3" name="SIT" type="Tesla_sit00" readout="FTDHits" vis="SitVis">
@@ -459,8 +456,6 @@
                         material="silicon_8.72gccm"
                         vis="SitLayerVis"/>  
         </detector>
-<!--
---> 
 
         <!--                  ftd01 parameters        -->
         <detector id="4" name="FTD" type="Tesla_ftd01" readout="FTDHits">
@@ -487,10 +482,9 @@
              <disk id="7" inner_r="132*mm" outer_r="290*mm" z="1300*mm" vis="FtdDiskVis"/>
            </disks>
         </detector>
-<!--
---> 
 
-        <!--                  LumiCalX parameters                      -->
+        <!--                  LumiCalX parameters
+        -->
         <detector id="5" name="Lcal" type="Tesla_LumiCalX" vis="LcalVis" readout="LcalHits">
           <layer inner_r="Lcal_inner_radius" 
                  outer_r="Lcal_outer_radius" 
@@ -506,10 +500,9 @@
             <slice name="active"   thickness="Lcal_silicon_thickness"  material="silicon_2.33gccm"  vis="LcalActiveVis"/>
           </layer>
         </detector>
-<!--
--->
 
-        <!--                  Mask04 description                     -->
+        <!--                  Mask04 description
+        -->
         <detector id="6" name="Mask" type="Tesla_mask04" vis="MaskVis">
           <masks>
             <mask id="1" zmin="3260*mm" zmax="3340*mm" rmin="75*mm"  rmax="160*mm" vis="MaskVis" material="Tungsten"/>
@@ -522,11 +515,9 @@
             <coil z="4050*mm" rmin="14*mm" rmax="120*mm"        material="Copper" vis="MaskCoilVis"/>
           </quadrupole>
         </detector>
-<!--
--->
 
-
-        <!--                  TPC02  description                      -->
+        <!--                  TPC02  description
+        -->
         <detector id="7" name="TPC" type="Tesla_tpc02" vis="TPCVis">
           <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ"/>
           <endplate   thickness="TPC_electronics_backend_thickness"
@@ -549,17 +540,17 @@
         </detector>
 
 
-        <!--                  coil00 description                      -->
+        <!--                  coil00 description
+         -->
         <detector id="9" name="Coil" type="Tesla_coil00" vis="CoilVis">
           <coil inner_r="Coil_inner_radius"
                 outer_r="Coil_outer_radius" 
                 zhalf="Coil_half_z"
                 material="Aluminum"/>
         </detector>
-<!--
--->
 
-        <!--                  yoke02 description                      -->
+        <!--                  yoke02 description
+        -->
         <detector id="9" name="Yoke" type="Tesla_yoke02" vis="YokeVis">
           <symmetry value="8"/>
           <barrel inner_r="Yoke_barrel_inner_radius"
@@ -572,8 +563,6 @@
                   thickness="Yoke_Barrel_Half_Z-Yoke_Z_start_endcaps"
                   material="Iron"/>
         </detector>
-<!--
--->
 
         <!--                  SEcal03 parameters
         -->
@@ -620,7 +609,6 @@
 
         <!--                  Hcal04 description
         -->
-
         <detector id="9" name="Hcal" type="Tesla_hcal04" limits="HcalLimits" vis="HcalVis">
            <param  radiator_thickness="Hcal_radiator_thickness"
                    radiator_material="Iron"

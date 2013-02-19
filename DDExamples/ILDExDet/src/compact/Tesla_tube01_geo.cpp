@@ -12,7 +12,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
   struct Tube_Desc {  double zhalf, thickness, radius;  };
@@ -20,7 +19,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
-  Rotation    reflect_rot(M_PI,0,0);
+  Rotation    reflect_rot(0,M_PI,0);
   DetElement  beampipe(name,x_det.id());
   Assembly    beampipeVol("assembly");
   Volume      motherVol   = lcdd.pickMotherVolume(beampipe);
@@ -132,20 +131,23 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
     fe_end_vol.setVisAttributes(endVis);
 
     // put vacuum and iron cones into world
-    neg.z = -(pos.z = inner_zhalf*2.0 + dz);
+    pos.SetZ(inner_zhalf*2 + dz);
+    neg.SetZ(-pos.Z());
     beampipeVol.placeVolume(fe_end_vol,pos);
     beampipeVol.placeVolume(fe_end_vol,neg,reflect_rot);
     beampipeVol.placeVolume(vac_end_vol,pos);
     beampipeVol.placeVolume(vac_end_vol,neg,reflect_rot);
 
     // lateral tubes Fe and vacuum
-    neg.z = -(pos.z = z_cone+dz);
+    pos.SetZ(z_cone+dz);
+    neg.SetZ(-pos.Z());
     for(int i=0; i<5; ++i )  {
       Tube   vac_tub(0, cones[i].rmin, cones[i].z);
       Volume vac_vol(_toString(i,"vac_%d"),vac_tub,vacuumMat);
       vac_vol.setVisAttributes(vacuumVis);
       // Update Z-placement
-      neg.z = -(pos.z += cones[i].z);
+      pos.SetZ(pos.Z() + cones[i].z);
+      neg.SetZ(-pos.Z());
       beampipeVol.placeVolume(vac_vol,pos);
       beampipeVol.placeVolume(vac_vol,neg);
 
@@ -155,7 +157,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       beampipeVol.placeVolume(fe_vol,pos);
       beampipeVol.placeVolume(fe_vol,neg);
       // Update Z-placement
-      neg.z = -(pos.z += cones[i].z);
+      pos.SetZ(pos.Z() + cones[i].z);
+      neg.SetZ(-pos.Z());
     }
   }     
   pv = motherVol.placeVolume(beampipeVol);

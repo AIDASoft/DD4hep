@@ -12,7 +12,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_det)  {
   struct cylinder_t { double inner_r, outer_r, z; };
@@ -52,7 +51,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_
   double      zEndplate = env.z - dzEndPlate / 2.0;
   // Simple calculations and some named constants
   int         numberPadRows = int((sens.outer_r-sens.inner_r)/padHeight);
-  Rotation reflect_rot(M_PI,0,M_PI);
+  Rotation reflect_rot(0,M_PI,M_PI);
 
   DetElement  sdet(name,x_det.id());
 

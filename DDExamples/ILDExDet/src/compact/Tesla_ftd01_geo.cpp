@@ -17,7 +17,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 /*
  *   Tesla namespace declaration
@@ -49,7 +48,7 @@ namespace Tesla {
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
-  Rotation    reflect_rot(M_PI,0,0);
+  Rotation    reflect_rot(0,M_PI,0);
   DetElement  sdet(name,x_det.id());
   Assembly    ftdVol(name);
   Volume      motherVol   = lcdd.pickMotherVolume(sdet);

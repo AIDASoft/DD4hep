@@ -12,7 +12,7 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
+
 namespace {
   typedef enum {          // These constants are also used in the MySQL database:
     kCenter          = 0, // centered on the z-axis
@@ -46,6 +46,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
     dim_t  start = { x_start.inner_r(), x_start.outer_r(), x_start.z()};
     double zHalf = std::fabs(start.z - end.z) / 2; // half z length of the cone
     double zPos  = std::fabs(start.z + end.z) / 2; // middle z position
+    Position pos(0,0,zPos);
 
     switch (crossType) {
     case kUpstream:
@@ -68,8 +69,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       ConeSegment cone(zHalf, start.inner_r, start.outer_r, end.inner_r, end.outer_r);
       Volume      vol (name+"_"+nam,cone,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,angle));
-      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
+      assembly.placeVolume(vol,Rotation(0,angle,0),RotateY(pos,angle));
+      assembly.placeVolume(vol,Rotation(0,reflect_angle,0),RotateY(pos,reflect_angle));
       break;
     }
     case kPunchedCenter: {  // a cone with one or two inner holes (two tubes are punched out)        
@@ -92,10 +93,10 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       }
       Volume vol(name+"_"+nam+"_pos",solid1,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,angle));
+      assembly.placeVolume(vol,Rotation(0,angle,0),RotateY(pos,angle));
       vol = Volume(name+"_"+nam+"_neg",solid2,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
+      assembly.placeVolume(vol,Rotation(0,reflect_angle,0),RotateY(pos,reflect_angle));
       break;
     }
     case kPunchedUpstream:
@@ -110,15 +111,15 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
       // the punched subtraction solids can be asymmetric and therefore have to be created twice:
       // one time in the "right" way, another time in the "reverse" way, because the "mirroring"
       // rotation around the y-axis will not only exchange +z and -z, but also +x and -x
-      SubtractionSolid solid(whole, punch, Position(zPos*std::tan(-crossingAngle),0,0),Rotation(0,0,-crossingAngle));
+      SubtractionSolid solid(whole, punch,Position(zPos*std::tan(-2*crossingAngle),0,0),Rotation(0,-2*crossingAngle,0));
       Volume vol(name+"_"+nam+"_pos",solid,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,angle,0));
+      assembly.placeVolume(vol,Rotation(0,angle,0),RotateY(pos,angle));
 
-      solid = SubtractionSolid(whole, punch, Position(zPos*std::tan(crossingAngle),0,0),Rotation(0,0,crossingAngle));
+      solid = SubtractionSolid(whole, punch,Position(zPos*std::tan(2*crossingAngle),0,0),Rotation(0,2*crossingAngle,0));
       vol = Volume(name+"_"+nam+"_neg",solid,mat);
       vol.setVisAttributes(vis);
-      assembly.placeVolumeEx(vol,Position(0,0,zPos),Rotation(0,0,reflect_angle));
+      assembly.placeVolume(vol,Rotation(0,reflect_angle,0),RotateY(pos,reflect_angle));
       break;
     }
     default: {

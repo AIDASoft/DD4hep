@@ -112,7 +112,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     if(reflect){
       Position r_pos(px_pos.x(),px_pos.y(),-px_pos.z());
       //Attention: rotation is given in euler angles
-      Rotation r_rot(M_PI,0,M_PI);
+      Rotation r_rot(0,M_PI,M_PI);
       // Volume      part_vol_r(lcdd,part_nam+"_negativ",part_tub,part_mat);
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,r_pos,r_rot);
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);

@@ -12,7 +12,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 namespace DD4hep { namespace Geometry {
   struct BeamCal01Data : public DetElement::Object  {
@@ -73,7 +72,6 @@ inline double split_segm(double totLength, double initSegm)
 inline int split_n(double totLength, double initSegm)   
 {  return int(ceil(totLength/initSegm));                      }
 
-
 /// Detector construction function
 DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sens_det)  {
   lcdd     = &l;
@@ -123,11 +121,11 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   double BCLength         = length;
   double GlobalStart      = start_z - (PMLength +6);
   double BCStart          = start_z; //This is were BeamCal starts!
-  double envVolumeCenterZ = GlobalStart + envVolumeLength/2.0;
-  double PMVolumeCenterZ  = GlobalStart + PMLength/2.0;
+  double envVolumeCenterZ = GlobalStart + envVolumeLength/2;
+  double PMVolumeCenterZ  = GlobalStart + PMLength/2;
   //
   // Dead Area Calculations
-  double BPMaxRCalc = Position(-r_tube,r_tube,BCStart+BCLength).rotateY(-x_angle).rho()+0.1;
+  double BPMaxRCalc = RotateY(Position(-r_tube,r_tube,BCStart+BCLength),-x_angle).Rho()+0.1;
 
   // inline functions from BeamCalSD01.hh
   double dR  = split_segm((outer_r-inner_r),segmentation_r); //distance between 2 rings
@@ -186,15 +184,15 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   Tube CutOutGr2(0, r_tube+0.3, envVolumeLength);
 
   // The PairMonitor will be placed in its own volume together with the graphite 6 mm before BeamCal
-  Tube monitorTube(inner_r, outer_r, PMLength/2, sPhi, TwoPI);
+  Tube monitorTube(inner_r, outer_r, PMLength/2, sPhi, TwoPI+sPhi);
   // Must use full crossing angle, because we are centering beamcal on outgoing beamline
-  SubtractionSolid monitorSolid(monitorTube,CutOutGr,Position((GlobalStart+PMLength/2)*crossing_pos.x,0,0),crossing_rot);
+  SubtractionSolid monitorSolid(monitorTube,CutOutGr,Position((GlobalStart+PMLength/2)*crossing_pos.X(),0,0),crossing_rot);
   Volume           monitorVol(name+"_pair_monitor",monitorSolid,materialAir);
   monitorVol.setVisAttributes(caloVisAttributes);
 
   if ( pairmonitorOnOff == 1 )   {
-    pos = Position((dSensor+PMLength/2)*crossing_pos.x,0,0);
-    solid = SubtractionSolid(Tube(inner_r,outer_r,dSensor/2,sPhi,TwoPI),CutOutGr2,pos,crossing_rot);
+    pos = Position((dSensor+PMLength/2)*crossing_pos.X(),0,0);
+    solid = SubtractionSolid(Tube(inner_r,outer_r,dSensor/2,sPhi,TwoPI+sPhi),CutOutGr2,pos,crossing_rot);
     vol = Volume(name+"_pair_monitor2",solid, materialSilicon);
     vol.setVisAttributes(sensVisAttributes);
     vol.setSensitiveDetector(sens_det);
@@ -203,18 +201,18 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   }
   // the graphite layer in the forward region
   if( dGraphite > 0 )   {
-    pos = Position((GlobalStart+PMLength-dGraphite/2)*crossing_pos.x,0,0);
-    solid = SubtractionSolid(Tube(inner_r,outer_r,dGraphite/2,sPhi,TwoPI),CutOutGr2,pos,crossing_rot);
+    pos = Position((GlobalStart+PMLength-dGraphite/2)*crossing_pos.X(),0,0);
+    solid = SubtractionSolid(Tube(inner_r,outer_r,dGraphite/2,sPhi,TwoPI+sPhi),CutOutGr2,pos,crossing_rot);
     vol = Volume(name+"_pair_monitor2",solid, materialGraphite);
     vol.setVisAttributes(grVisAttributes);
     monitorVol.placeVolume(vol,Position(0,0,(-PMLength+dGraphite)/2));
   }
   if(dGraphite > 0 || pairmonitorOnOff == 1) {
     pos = Position(0,0,PMVolumeCenterZ);
-    pv = assembly.placeVolume(monitorVol,pos.rotateY(tiltForw),Rotation(0,0,tiltForw));
+    pv = assembly.placeVolume(monitorVol,Rotation(0,0,tiltForw),RotateY(pos,tiltForw));
     pv.addPhysVolID("side",1);
     pos = Position(0,0,PMVolumeCenterZ);
-    pv = assembly.placeVolume(monitorVol,pos.rotateY(tiltBack),Rotation(0,M_PI,tiltBack));
+    pv = assembly.placeVolume(monitorVol,Rotation(M_PI,0,tiltBack),RotateY(pos,tiltBack));
     pv.addPhysVolID("side",2);
   }
 
@@ -223,7 +221,7 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   //-------------------------------------------
 
   //Check that the spanning angle is not too large and overlaps with the cutout for the incoming beampipe
-  double bpminrcalc = (-1*Position(0,0,BCStart).rotateY(-x_angle)).x;
+  double bpminrcalc = (-1*RotateY(Position(0,0,BCStart),-x_angle)).X();
   double cutoutangle = std::atan(r_tube/bpminrcalc);
 
   if( 2*M_PI-2*cutoutangle < dPhi) {
@@ -231,31 +229,30 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
     throw runtime_error("Spanning Angle is too large!");
   }
 
-  //G4Transform3D  BCtransform(G4RotationMatrix().rotateY(-x_angle), G4ThreeVector(G4ThreeVector(0, 0, BCStart+BCLength/2.).rotateY(-x_angle)[0],0,0));
+  //G4Transform3D  BCtransform(G4RotationMatrix().RotateY(-x_angle), G4ThreeVector(G4ThreeVector(0, 0, BCStart+BCLength/2.).RotateY(-x_angle)[0],0,0));
 
   //Don't need the space for the airgap in BeamCalLayer, because we don't place anything there! Taking Tungsten out of beamCalLayer
-  double dLayerBC = (dLayer-dAirgap-dAbsorber)/2.;
-
-  Tube layerTube(inner_r-1, DArinner, dLayerBC,TwoPI-sPhi,TwoPI-dPhi);
-  solid = SubtractionSolid(Tube(inner_r,outer_r,dLayerBC,sPhi,TwoPI),layerTube);
+  double dLayerBC = (dLayer-dAirgap-dAbsorber)/2;
+  Tube   layerTube(inner_r-1, DArinner, dLayerBC,TwoPI-sPhi,TwoPI-dPhi);
+  solid = SubtractionSolid(Tube(inner_r,outer_r,dLayerBC,sPhi,TwoPI+sPhi),layerTube);
   Volume layerVol(name+"_layer",solid,lcdd->air());
   layerVol.setVisAttributes(lcdd->invisible());
   
   // Sensor-->nLayers layers of diamond + the Pairs Monitor in front of the graphite block
-  solid = SubtractionSolid(Tube(inner_r,outer_r,dSensor/2,sPhi,TwoPI),layerTube);
+  solid = SubtractionSolid(Tube(inner_r,outer_r,dSensor/2,sPhi,TwoPI+sPhi),layerTube);
   vol = Volume(name+"_sensor",solid,materialDiamond);
   vol.setVisAttributes(sensVisAttributes);
   vol.setSensitiveDetector(sens_det);
   layerVol.placeVolume(vol,Position(0,0,-dLayerBC+dSensor/2));
   
   // Electrode metalisation of gold
-  solid = SubtractionSolid(Tube(inner_r,outer_r,dElectrMet/2,sPhi,TwoPI),layerTube);
+  solid = SubtractionSolid(Tube(inner_r,outer_r,dElectrMet/2,sPhi,TwoPI+sPhi),layerTube);
   vol = Volume(name+"_electrode",solid,materialGold);
   vol.setVisAttributes(electrodeVisAttributes);
   layerVol.placeVolume(vol,Position(0,0,-dLayerBC+dSensor+dElectrMet/2));
   
   // KaptonBoard
-  solid = SubtractionSolid(Tube(inner_r,outer_r,dElboard/2,sPhi,TwoPI),layerTube);
+  solid = SubtractionSolid(Tube(inner_r,outer_r,dElboard/2,sPhi,TwoPI+sPhi),layerTube);
   vol = Volume(name+"_pcb",solid,materialKapton);
   vol.setVisAttributes(pcbVisAttributes);
   layerVol.placeVolume(vol,Position(0,0,-dLayerBC+dSensor+dElectrMet+dElboard/2));
@@ -264,8 +261,8 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   Tube absorberTube(inner_r,outer_r,dAbsorber/2,sPhi,TwoPI);
 
   // Calorimeter volume - a tube filled with air that contains all the layers
-  pos = Position((BCStart+BCLength/2)*crossing_pos.x,0,0);
-  solid = SubtractionSolid(Tube(inner_r,outer_r,BCLength/2,sPhi,TwoPI),CutOutGr,pos,crossing_rot);
+  pos = Position((BCStart+BCLength/2)*crossing_pos.X(),0,0);
+  solid = SubtractionSolid(Tube(inner_r,outer_r,BCLength/2,sPhi,TwoPI+sPhi),CutOutGr,pos,crossing_rot);
   Volume caloVol(name+"_calo", solid, materialAir);
   caloVol.setVisAttributes(caloVisAttributes);
 
@@ -273,7 +270,7 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   for(int i = 1; i <= nLayers; i++) {
     char index[5]; sprintf(index,"%i",i);
     // Position of the hole depends on layer position!
-    Position abs_pos((BCStart + dAbsorber/2. + dLayer*double(i-1))*crossing_pos.x,0,0);
+    Position abs_pos((BCStart + dAbsorber/2. + dLayer*double(i-1))*crossing_pos.X(),0,0);
     solid = SubtractionSolid(absorberTube,CutOutGr2,abs_pos,crossing_rot);
     vol = Volume(name+_toString(i,"_absober%d"),solid,materialTungsten);
     vol.setVisAttributes(absVisAttributes);  
@@ -282,15 +279,15 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
     pos = Position(0,0,-BCLength/2+dAbsorber/2+dLayer*double(i-1));
     caloVol.placeVolume(vol,pos).addPhysVolID("absorber_layer",i);
     pos = Position(0,0,-BCLength/2+dAbsorber+dLayerBC+dLayer*double(i-1));
-    caloVol.placeVolume(layerVol,pos).addPhysVolID("layer",i);    
+    caloVol.placeVolume(layerVol,pos).addPhysVolID("layer",i);
   }
-
+  
   // Place the Forward calorimeter
   // use copy number to decide which side we are on in SD 1 for forward, 2 for backward
-  pos = Position(0,0,BCStart+BCLength/2).rotateY(tiltForw);
+  pos = RotateY(Position(0,0,BCStart+BCLength/2),tiltForw);
   assembly.placeVolume(caloVol,pos,Rotation(0,0,tiltForw)).addPhysVolID("side",1);
-  pos = Position(0,0,BCStart+BCLength/2).rotateY(tiltBack);
-  assembly.placeVolume(caloVol,pos,Rotation(0,M_PI,tiltBack)).addPhysVolID("side",2);
+  pos = RotateY(Position(0,0,BCStart+BCLength/2),tiltBack);
+  assembly.placeVolume(caloVol,pos,Rotation(M_PI,0,tiltBack)).addPhysVolID("side",2);
 
   // now place the full assembly
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));

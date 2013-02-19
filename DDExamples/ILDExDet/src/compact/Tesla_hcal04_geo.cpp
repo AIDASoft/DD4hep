@@ -117,8 +117,6 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-#define _U(text)  Unicode(#text)
-
 static double s_geo_tolerance = 1e-10;
 
 /// Detector construction function
@@ -358,7 +356,7 @@ void Hcal04::buildBarrelRegularModules(Volume assembly)   {
   double Y = m_barrel.inner_r+m_barrel.y1_for_x/2;
   for(Staves::const_iterator i=m_barrel.staves.begin(); i!=m_barrel.staves.end(); ++i) {
     const Stave& s = *i;
-    Rotation rot(-M_PI/2,s.phi,0);
+    Rotation rot(s.phi,-M_PI/2,0);
     DetElement stave_det(m_barrel,_toString(s.id,"reg_stave%d"),s.id*10);
     for(Modules::const_iterator j=m_barrel.modules.begin(); j!=m_barrel.modules.end(); ++j) {
       const Module& m = *j;
@@ -372,7 +370,7 @@ void Hcal04::buildBarrelRegularModules(Volume assembly)   {
 	else {
 	  det_mod = module.clone(_toString(m.id,"module%d"),m.id);
 	}
-	pv = assembly.placeVolume(modVolume,pos.rotateZ(s.phi),rot);
+	pv = assembly.placeVolume(modVolume,RotateZ(pos,s.phi),rot);
 	pv.addPhysVolID("module",HCALBARREL*100+s.id*10+m.id);
 	stave_det.add(det_mod);
 	det_mod.setPlacement(pv);
@@ -383,7 +381,7 @@ void Hcal04::buildBarrelRegularModules(Volume assembly)   {
 
 ///  Barrel End Modules
 void Hcal04::buildBarrelEndModules(Volume assembly)    {
-  DetElement module("module",0);
+  DetElement module(name+"_module",0);
   double YZ1H = m_barrel.y1_for_z/2;
   double YZ2H = m_barrel.y2_for_z/2;
   double YZ3H = m_barrel.y3_for_z/2;
@@ -409,7 +407,7 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
   double pTheta = M_PI/2 - std::atan(2*pDz/pDX);
   Trap trap(pDz,-pTheta,0,MHXZ1,s_geo_tolerance,s_geo_tolerance,0,MHXZ,pDX,pDX,0);
   UnionSolid ensemble(trd, trap,Position(0,DHZ+pDX-pDz*std::tan(pTheta),YZ1H+YZ2H-pDz),Rotation(0,0,M_PI/2));
-  Volume endBarrelVol("endModule",ensemble,m_radiatorMat);
+  Volume endBarrelVol(name+"_endModule",ensemble,m_radiatorMat);
   endBarrelVol.setVisAttributes(m_endModuleVis);
 
   // Chambers in the Hcal Barrel 
@@ -432,15 +430,15 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
       // fiber gap can't be larger than total chamber
       assert( (ydh - m_fiberGap/2) > 0.);
       Box scintBox(xdh,zdh,ydh - m_fiberGap  / 2);
-      Volume scintVol(_toString(layer_id,"scint%d"),scintBox,m_scintMaterial);
+      Volume scintVol(name+_toString(layer_id,"_scint%d"),scintBox,m_scintMaterial);
       scintVol.setSensitiveDetector(m_barrel.sensEndModule);
       scintVol.setVisAttributes(m_scintVis);
       scintVol.setLimitSet(m_limits);
-      chamberVol = Volume(_toString(layer_id,"chamber%d"),chamberBox,lcdd->air());
+      chamberVol = Volume(name+_toString(layer_id,"_chamber%d"),chamberBox,lcdd->air());
       pv = chamberVol.placeVolume(scintVol,Position(0,0,-m_fiberGap/2));
     }
     else if (m_model == "RPC1")	{
-      string nam = _toString(layer_id,"layer_%d");
+      string nam = name+_toString(layer_id,"_layer_%d");
       chamberVol = buildRPC1Box(nam,chamberBox,m_barrel.end_layers[i],m_barrel.sensEndModule);
     }
     else    {
@@ -463,7 +461,7 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
       const Module& m = *j;
       if ( m.type == 2 )   {
 	int stave_id = m.z_offset>0 ? s.id : stave_inv[s.id-1];
-	Rotation rot(-M_PI/2,s.phi,(m.z_offset>0 ? M_PI : 0));
+	Rotation rot(s.phi,-M_PI/2,(m.z_offset>0 ? M_PI : 0));
 	Position pos(0,Y,m.z_offset);
 	DetElement det_mod = first ? module : module.clone(_toString(m.id,"module%d"),m.id);
 	if (first) {
@@ -471,7 +469,7 @@ void Hcal04::buildBarrelEndModules(Volume assembly)    {
 	  module._data().id = m.id;
 	  module->SetName(_toString(m.id,"module%d").c_str());
 	}
-	pv = assembly.placeVolume(endBarrelVol,pos.rotateZ(/*m.z_offset>0?s.phi:- */s.phi),rot);
+	pv = assembly.placeVolume(endBarrelVol,pos=RotateZ(pos,s.phi),rot);
 	pv.addPhysVolID("module",HCALBARREL*100+stave_id*10+m.id);
 	stave_det.add(det_mod);
 	det_mod.setPlacement(pv);
@@ -554,13 +552,13 @@ void Hcal04::buildEndcaps(Volume assembly) {
   }
 
   // Now place the endcaps
-  pv = assembly.placeVolume(modVolume,m_endcap.side[SIDE_PLUS].position,Rotation(0,M_PI/8,0));
+  pv = assembly.placeVolume(modVolume,m_endcap.side[SIDE_PLUS].position,Rotation(M_PI/8,0,0));
   pv.addPhysVolID("module",HCALENDCAPPLUS*100+16);
   sdet.setPlacement(pv);
   self.add(sdet);
   m_endcap.side[SIDE_PLUS] = sdet;
 
-  pv = assembly.placeVolume(modVolume,m_endcap.side[SIDE_MINUS].position,Rotation(M_PI,M_PI/8,M_PI));
+  pv = assembly.placeVolume(modVolume,m_endcap.side[SIDE_MINUS].position,Rotation(M_PI/8,M_PI,M_PI));
   pv.addPhysVolID("module",HCALENDCAPMINUS*100+16);
   sdet = sdet.clone("endcap_minus",HCALENDCAPMINUS);
   self.add(sdet);

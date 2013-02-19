@@ -18,12 +18,11 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_det) {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
-  Rotation    reflect_rot(M_PI,0,0);
+  Rotation    reflect_rot(0,M_PI,0);
   DetElement  sdet(name,x_det.id());
   Assembly    assembly(name);
 
@@ -294,7 +293,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_
   cylinderVol.placeVolume(shieldVol);
 
   assembly.placeVolume(cylinderVol,Position(0,0,inner.position()));
-  assembly.placeVolume(cylinderVol,Position(0,0,-inner.position()),Rotation(M_PI,0,0));
+  assembly.placeVolume(cylinderVol,reflect_rot,Position(0,0,-inner.position()));
   assembly.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
 
   PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);

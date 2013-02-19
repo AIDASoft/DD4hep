@@ -128,7 +128,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       double phi = i*delta_phi, len = 0.0, r = 0.0, z = 0.0;
       ZylinderPos pos(layer.radius+ladder_offset,offset_phi,phi,0.0);
 
-      layer_vol.placeVolume(ladder_supp_vol,pos,Rotation(PIby2,phi,0.));
+      layer_vol.placeVolume(ladder_supp_vol,pos,Rotation(phi,PIby2,0.));
       switch(layer.id) {
       case 1:
 	len = be_ladder_block_length;
@@ -162,8 +162,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       vol.setVisAttributes(lcdd.visAttributes("VXDBerilliumVis"));
       for( int i=0;i<layer.num_ladder;i++ ) {
 	double phi =  i*delta_phi;
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi,phi,z), Rotation(PIby2,phi,0.));
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi,phi,-z),Rotation(PIby2,phi,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi,phi,z), Rotation(phi,PIby2,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi,phi,-z),Rotation(phi,PIby2,0.));
       }
     }
 
@@ -181,8 +181,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	double r   = layer.radius + (layer.isEven() ? thickness+layer.gap : -thickness);
 	double z   = ldd_len + end_electronics_zhalf + ldd_gap/2.;
 
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi, z), Rotation(PIby2,phi,0.));
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(PIby2,phi,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi, z),Rotation(phi,PIby2,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(phi,PIby2,0.));
       }
     }
 
@@ -198,8 +198,8 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
 	double r   = layer.radius + (layer.isEven() ? thickness+layer.gap : -thickness);
 	double z   = ldd_len/2. + ldd_gap/2.;
 
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi-ldd_width,phi,z), Rotation(PIby2,phi,0.));
-	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi-ldd_width,phi,-z),Rotation(PIby2,phi,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi-ldd_width,phi,z), Rotation(phi,PIby2,0.));
+	layer_vol.placeVolume(vol,ZylinderPos(r,offset_phi-ldd_width,phi,-z),Rotation(phi,PIby2,0.));
       }      
     }
 
@@ -226,7 +226,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
     double z = strip_line_start_z + strip_line_zhalf;
     strips_vol.setVisAttributes(lcdd.visAttributes("VXDStripsVis"));
     layer_vol.placeVolume(strips_vol,Position(0,0, z));
-    layer_vol.placeVolume(strips_vol,Position(0,0,-z),Rotation(M_PI,0,0));
+    layer_vol.placeVolume(strips_vol,Position(0,0,-z),Rotation(0,M_PI,0));
 
     // *******************************  Si Active layer  *************************************
     Box    active_layer_box(ldd_width, ldd_len/2., active_silicon_thickness/2.);
@@ -238,9 +238,9 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
       double r   =  layer.radius + (layer.isEven() ? (active_silicon_thickness/2.)+layer.gap : -active_silicon_thickness/2.);
       double z   =  ldd_len/2.+ ldd_gap;
 
-      pv = layer_vol.placeVolume(active_layer_vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi, z),Rotation(PIby2,phi,0.));
+      pv = layer_vol.placeVolume(active_layer_vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi, z),Rotation(phi,PIby2,0));
       pv.addPhysVolID("layer",layer.id);
-      pv = layer_vol.placeVolume(active_layer_vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(PIby2,phi,0.));
+      pv = layer_vol.placeVolume(active_layer_vol,ZylinderPos(r,offset_phi+side_band_electronics_width,phi,-z),Rotation(phi,PIby2,0));
       pv.addPhysVolID("layer",layer.id);
     }
     assembly.placeVolume(layer_vol);

@@ -12,7 +12,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 namespace DD4hep { namespace Geometry {
   struct ClicYoke01Data : public DetElement::Object  {
@@ -262,7 +261,7 @@ Volume ClicYoke01::buildBarrel() {
   /// notice that the barrel is "short" and endcap has full radius !!! 
   PolyhedraRegular barrelSolid(symmetry,barrel.inner_r,barrel.outer_r,2*(zStartEndcap-yokeBarrelEndcapGap));
   Volume barrelVol(name+"_barrel",barrelSolid,yokeMat);
-  double Angle  = 2*M_PI / symmetry;
+  double angle  = 2*M_PI / symmetry;
   Volume       gasVol;
   PlacedVolume pv;
 
@@ -286,13 +285,13 @@ Volume ClicYoke01::buildBarrel() {
       radius_mid       = radius_low + 0.5 * layer_thickness;  
       radius_sensitive = radius_low + rpc_chamber_position;
     }
-    dx = radius_low * tan(Angle/2) - 0.05;               // safety margines of 0.1 mm
+    dx = radius_low * std::tan(angle/2) - 0.05;               // safety margines of 0.1 mm
     dy = (zStartEndcap - yokeBarrelEndcapGap)/2. - 0.05; // safety margines 
 #if 0
     m_barrel.sensDet->AddLayer(i+1, dx, radius_sensitive, 0.0); 
 #endif
     string chamber_name = name+_toString(i,"_barrel_stave_layer%d");
-    Box    chamberBox(dx,layer_thickness/2.0, dy);
+    Box    chamberBox(dx,layer_thickness/2.0,dy);
     Volume chamberVol(chamber_name,chamberBox,lcdd->air());
     chamberVol.setVisAttributes(chamberVis);
     if ( rpc_last_layer.first+rpc_last_layer.second > chamberBox.y() ) {
@@ -315,22 +314,25 @@ Volume ClicYoke01::buildBarrel() {
 	pv.addPhysVolID("layer",i);
       }
     }
-    Position pos;
+
     Rotation rot;
+    Position pos_pos(radius_mid,0, (zStartEndcap-yokeBarrelEndcapGap)/2);
+    Position pos_neg(radius_mid,0,-(zStartEndcap-yokeBarrelEndcapGap)/2);
     for(int j = 0; j < symmetry; j++)	  {
-      rot.phi = Angle*(j+1)+tiltAngle;
+      double phi = angle*(j+1)+tiltAngle;
+      rot.SetPhi(-phi);
 #if 0
       int id1 = 1 + i + 1000*(j+1) + 100000*2;
       int id2 = 1 + i + 1000*(j+1) + 100000*3;
       m_barrel.sensDet->SetStaveRotationMatrix(j+1, phi);
 #endif
       // The VolIDs are wrong, but what is in the original code is plain brainless!
-      pos = Position(radius_mid,0,(zStartEndcap-yokeBarrelEndcapGap)/2);
-      pv  = barrelVol.placeVolume(chamberVol,pos.rotateZ(rot.phi+M_PI/2),rot);
+      Transform3D tr(rot,RotateZ(pos_pos,phi+M_PI/2));
+      pv = barrelVol.placeVolume(chamberVol,tr);
       pv.addPhysVolID("barrel",i+100*j);
 
-      pos = Position(radius_mid,0,-(zStartEndcap-yokeBarrelEndcapGap)/2);
-      pv  = barrelVol.placeVolume(chamberVol,pos.rotateZ(rot.phi+M_PI/2),rot);
+      // Equivalent construct without a Transform3D for the negative side:
+      pv = barrelVol.placeVolume(chamberVol,RotateZ(pos_neg,phi+M_PI/2),rot);
       pv.addPhysVolID("barrel",i+100*j);
     }
   }  // end loop over i (layers)
@@ -343,10 +345,10 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   name     = x_det.nameStr();
   self.assign(dynamic_cast<Value<TNamed,ClicYoke01>*>(this),name,x_det.typeStr());
   self._data().id = x_det.id();
-  Assembly     assembly(name);
+  Assembly    assembly(name);
   xml_comp_t  x_yoke       = x_det.child(_U(yoke));
   xml_comp_t  x_muon       = x_det.child(_U(muon));
-  symmetry     = x_yoke.attr<double>(_U(symmetry));
+  symmetry  = x_yoke.attr<double>(_U(symmetry));
 
   PlacedVolume pv;
 
@@ -414,7 +416,7 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   //-------------------------------------------------
   {
     Volume barrelVol = buildBarrel();
-    pv = assembly.placeVolume(barrelVol,Position(),Rotation(0,tiltAngle,0));
+    pv = assembly.placeVolume(barrelVol,Position(),Rotation(tiltAngle,0,0));
     m_barrel.setPlacement(pv);
   }
   // -------------------------------------------------
@@ -422,9 +424,9 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   // -------------------------------------------------
   {
     Volume ecVolume = buildEndcap();
-    pv = assembly.placeVolume(ecVolume,Position(0,0, zEndcap),Rotation(0,tiltAngle,0));
+    pv = assembly.placeVolume(ecVolume,Position(0,0, zEndcap),Rotation(tiltAngle,0,0));
     m_endcapPlus.setPlacement(pv);
-    pv = assembly.placeVolume(ecVolume,Position(0,0,-zEndcap),Rotation(0,tiltAngle+M_PI,0));
+    pv = assembly.placeVolume(ecVolume,Position(0,0,-zEndcap),Rotation(tiltAngle+M_PI,0,0));
     m_endcapMinus = m_endcapPlus.clone(name+"_endcap_minus",x_det.id());
     m_endcapMinus.setPlacement(pv);
   }
@@ -433,13 +435,12 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   //  -------------------------------------------------
   if( m_hasPlug )      {
     Volume plugVol = buildPlug();
-    pv = assembly.placeVolume(plugVol,Position(0,0, HCAL_plug_zpos),Rotation(0,tiltAngle,0));
+    pv = assembly.placeVolume(plugVol,Position(0,0, HCAL_plug_zpos),Rotation(tiltAngle,0,0));
     m_plugPlus.setPlacement(pv);
-    pv = assembly.placeVolume(plugVol,Position(0,0,-HCAL_plug_zpos),Rotation(0,tiltAngle+M_PI,0));
+    pv = assembly.placeVolume(plugVol,Position(0,0,-HCAL_plug_zpos),Rotation(tiltAngle+M_PI,0,0));
     m_plugMinus = m_plugPlus.clone(name+"_plug_minus",x_det.id());
     m_plugMinus.setPlacement(pv);
   }
-
   // now place the full assembly
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));
   pv = lcdd->pickMotherVolume(self).placeVolume(assembly);

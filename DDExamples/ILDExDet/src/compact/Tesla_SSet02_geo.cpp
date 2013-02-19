@@ -12,18 +12,17 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_det)  {
-  xml_det_t   x_det  = e;
-  string      name   = x_det.nameStr();
-  DetElement  sdet(name,x_det.id());
-  Assembly    assembly(name);
-  xml_comp_t  x_param      = x_det.child(_U(param));
-  Material    sensitiveMat = lcdd.material("silicon_2.33gccm");
-  Material    supportMat   = lcdd.material("Graphite");
-  VisAttr     sensitiveVis = lcdd.visAttributes("SetSensitiveVis");
-  VisAttr     supportVis   = lcdd.visAttributes("SetSupportVis");
+  xml_det_t  x_det  = e;
+  string     name   = x_det.nameStr();
+  DetElement sdet(name,x_det.id());
+  Assembly   assembly(name);
+  xml_comp_t x_param      = x_det.child(_U(param));
+  Material   sensitiveMat = lcdd.material("silicon_2.33gccm");
+  Material   supportMat   = lcdd.material("Graphite");
+  VisAttr    sensitiveVis = lcdd.visAttributes("SetSensitiveVis");
+  VisAttr    supportVis   = lcdd.visAttributes("SetSupportVis");
 
   double TPC_outer_radius           = lcdd.constant<double>("TPC_outer_radius");
   double TPC_Ecal_Hcal_barrel_halfZ = lcdd.constant<double>("TPC_Ecal_Hcal_barrel_halfZ");

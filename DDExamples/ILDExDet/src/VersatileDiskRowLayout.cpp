@@ -147,8 +147,8 @@ namespace DD4hep {
     module.localToWorld(local,global_w);
     //cout<<"getPadCenter: "<<r<<" "<<phi_mm<<" "<<phi<<" local: "<<pad_x<<"  "<<pad_y<<"  global: "<<global_w.x<<","<<global_w.y<<endl;
     vector<double> center;
-    center.push_back(global_w.x);
-    center.push_back(global_w.y);
+    center.push_back(global_w.X());
+    center.push_back(global_w.Y());
 
     return center;
   }
@@ -160,9 +160,9 @@ namespace DD4hep {
     Position fake_global;
     module.localToWorld(fake_local,fake_global);
     // trafo to local coordinates
-    Position global(c0,c1,fake_global.z), local;
+    Position global(c0,c1,fake_global.Z()), local;
     module.worldToLocal(global,local);
-    Double_t point_local[3]={local.x,local.y,local.z};
+    Double_t point_local[3]={local.X(),local.Y(),local.Z()};
     //check if it is on that module
     bool onMod=tube->Contains(point_local);
     if(!onMod)

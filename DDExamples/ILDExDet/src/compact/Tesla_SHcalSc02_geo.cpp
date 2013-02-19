@@ -127,7 +127,6 @@ namespace DD4hep { namespace Geometry {
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-#define _U(text)  Unicode(#text)
 
 /// Detector construction function
 DetElement SHcalSc02::construct(LCDD& l, xml_det_t x_det)  {
@@ -398,8 +397,8 @@ void SHcalSc02::constructBarrel(Assembly assembly) {
     for (int module_id = 1; module_id <=2; module_id++) {
       double phi = (stave_id-1) * M_PI/4;
       Position pos(0,-Y,module_z_offset);
-      Rotation rot(M_PI/2,phi,0);
-      PlacedVolume pv = assembly.placeVolume(modVolume,pos.rotateZ(phi),rot);
+      Rotation rot(phi,M_PI/2,0);
+      PlacedVolume pv = assembly.placeVolume(modVolume,RotateZ(pos,phi),rot);
       pv.addPhysVolID("stave",HCALBARREL*100 + stave_id*10 + module_id);
       //for (int j = 1; j >= 0; j--) m_barrel.sensDet->SetStaveRotationMatrix(2*stave_id - j, phi);
       //m_barrel.sensDet->SetModuleZOffset(module_id,module_z_offset);
@@ -494,21 +493,21 @@ void SHcalSc02::constructBarrelChambers(Volume modVol,double chambers_y_off_corr
       
     // --- Place Chamber
     Position pos(xShift,0,0);
-    pos.z = -Hcal_total_dim_y/2. 
-      + (logical_id-1) * (Hcal_chamber_thickness + Hcal_radiator_thickness)
-      + Hcal_radiator_thickness + Hcal_chamber_thickness/2
-      + chambers_y_off_correction;
+    pos.SetZ( -Hcal_total_dim_y/2. 
+	      + (logical_id-1) * (Hcal_chamber_thickness + Hcal_radiator_thickness)
+	      + Hcal_radiator_thickness + Hcal_chamber_thickness/2
+	      + chambers_y_off_correction);
 
     modVol.placeVolume(chamberVol,pos).addPhysVolID("layer",id);
 
     // ---   Place gap
-    double gap_leftEdge  = (Hcal_middle_stave_gaps/2. + Hcal_layer_support_length + Hcal_layer_air_gap/2.);
-    double gap_rightEdge = (gap_leftEdge + 2.*x_length + Hcal_layer_air_gap);
+    double gap_leftEdge  = (Hcal_middle_stave_gaps/2 + Hcal_layer_support_length + Hcal_layer_air_gap/2);
+    double gap_rightEdge = (gap_leftEdge + 2*x_length + Hcal_layer_air_gap);
     // right side, right edge
-    pos.x = multiply*gap_rightEdge;
+    pos.SetX(multiply*gap_rightEdge);
     modVol.placeVolume(gapVol,pos).addPhysVolID("layer",id);    
     // right side, left edge
-    pos.x = multiply*gap_leftEdge;
+    pos.SetX(multiply*gap_leftEdge);
     modVol.placeVolume(gapVol,pos).addPhysVolID("layer",id);
 
     // --- Place layer supports
@@ -519,17 +518,17 @@ void SHcalSc02::constructBarrelChambers(Volume modVol,double chambers_y_off_corr
     if (logical_id *(Hcal_radiator_thickness + Hcal_chamber_thickness) < Hcal_y_dim1_for_x ){
       supportTrapVol = supportTrapVol1;
       // bottom barrel, right side (id > Hcal_nlayers) and bottom barrel, left side
-      rotation = Rotation(M_PI/2, 0, ((id > Hcal_nlayers) ? 3*M_PI/2 : M_PI/2));
-      pos.x = multiply * (temp + y_height*tan8/2);
+      rotation = Rotation(0,M_PI/2, ((id > Hcal_nlayers) ? 1.5*M_PI : M_PI/2));
+      pos.SetX(multiply * (temp + y_height*tan8/2));
     }
     else {//------- top barrel --------------------------------------------------
       double xAbsOutsideCorner = (temp + Hcal_layer_support_length/2 + 2*y_height/tan8);
       supportTrapVol = supportTrapVol2;
-      pos.x = multiply * (temp + y_height/tan8/2);
+      pos.SetX(multiply * (temp + y_height/tan8/2));
       // check if the corner of the right angular wedge is outside the volume
       isOutsideCorner = (xAbsOutsideCorner > Hcal_midle_dim_x/2);
       // top barrel, right side (id > Hcal_nlayers) vs. top barrel, left side
-      rotation = Rotation(M_PI/2, 0, ((id > Hcal_nlayers) ? 3*M_PI/2 : M_PI/2));
+      rotation = Rotation(0,M_PI/2,((id > Hcal_nlayers) ? 3*M_PI/2 : M_PI/2));
     }
     if ( !isOutsideCorner )   {
       modVol.placeVolume(supportTrapVol,pos,rotation).addPhysVolID("layer",id);
@@ -538,11 +537,11 @@ void SHcalSc02::constructBarrelChambers(Volume modVol,double chambers_y_off_corr
       // ---  draw a support box instead of the right angular wedge, if the
       //      corner of the wedge is outside the mother volume.
       cout << "Placing support box...." << endl;
-      pos.x = multiply * temp;
+      pos.SetX(multiply * temp);
       modVol.placeVolume(supportBoxVol,pos).addPhysVolID("layer",id);
     }
     //--- draw support boxes in the middle -------------------------------------------
-    pos.x = multiply * (Hcal_middle_stave_gaps/2 + Hcal_layer_support_length/2);
+    pos.SetX(multiply * (Hcal_middle_stave_gaps/2 + Hcal_layer_support_length/2));
     modVol.placeVolume(supportBoxVol,pos).addPhysVolID("layer",id);
 
     //break; // Debug: only one layer...
@@ -555,16 +554,16 @@ void SHcalSc02::constructEndcaps(Assembly assembly) {
   double tan4 = std::tan(M_PI/4.);
   // First: dimensions of the trapezoid half length of a hexagon side
   double half_length  = Hcal_endcap_rmax * tan8;
-  double trap_small_x = half_length + Hcal_endcap_center_box_size/2. - Hcal_lateral_plate_thickness * tan8;
-  double trap_x       = Hcal_endcap_rmax + Hcal_endcap_center_box_size/2 - Hcal_lateral_plate_thickness;
-  double trap_y       = Hcal_endcap_total_z;
+  double trap_small_x = (half_length + Hcal_endcap_center_box_size/2. - Hcal_lateral_plate_thickness * tan8);
+  double trap_x       = (Hcal_endcap_rmax + Hcal_endcap_center_box_size/2 - Hcal_lateral_plate_thickness);
+  double trap_y       = (Hcal_endcap_total_z);
   double trap_z       = (Hcal_endcap_rmax + Hcal_endcap_center_box_size/2 - trap_small_x - Hcal_lateral_plate_thickness)/tan4;
   Trap   ecTop(trap_y,trap_z,trap_x,trap_small_x);
 
   // Second: dimensions of the box (box expects half side length as an input)
-  double box_half_x = trap_x/2.;
+  double box_half_x = trap_x/2;
   double box_half_y = trap_y/2;
-  double box_half_z = (Hcal_endcap_rmax - trap_z - Hcal_endcap_center_box_size/2 - Hcal_stave_gaps - Hcal_lateral_plate_thickness)/2.;
+  double box_half_z = (Hcal_endcap_rmax - trap_z - Hcal_endcap_center_box_size/2 - Hcal_stave_gaps - Hcal_lateral_plate_thickness)/2;
   Box    ecBottom(box_half_x,box_half_z,box_half_y);
 
   // --- x-dimension of the trapezoid center of gravity
@@ -573,11 +572,11 @@ void SHcalSc02::constructEndcaps(Assembly assembly) {
   //shift the top trapezoidal part with respect to the bottom part to get the union
   double shift_x = -std::abs(box_half_x - trap_center_of_grav_half_x);
   double shift_y = box_half_z + trap_z/2.;
-  UnionSolid ecStave(ecBottom,ecTop,Position(shift_x,shift_y,0));
+  UnionSolid stave(ecBottom,ecTop,Position(shift_x,shift_y,0));
 
   //Create the endcap logical volume
-  Volume ecStaveVol(name+"_endcap_stave",ecStave,m_endcap.radiatorMat);
-  ecStaveVol.setVisAttributes(m_moduleVis);
+  Volume staveVol(name+"_endcap_stave",stave,m_endcap.radiatorMat);
+  staveVol.setVisAttributes(m_moduleVis);
 #if 0
   // --- Build the chambers 
   // --- Build first the scintillators (polystyrene)
@@ -610,7 +609,7 @@ void SHcalSc02::constructEndcaps(Assembly assembly) {
       + (id-1) *(Hcal_chamber_thickness + Hcal_endcap_radiator_thickness)
       + Hcal_endcap_radiator_thickness
       + Hcal_scintillator_thickness/2.;
-    //ecStaveVol.placeVolume(scintVol,pos).addPhysVolID("layer",id);
+    //staveVol.placeVolume(scintVol,pos).addPhysVolID("layer",id);
 #if 0
     //center of coordinate in the middle of the box
     offset.x = - box_half_x;
@@ -626,7 +625,7 @@ void SHcalSc02::constructEndcaps(Assembly assembly) {
     pos.z = - Hcal_endcap_total_z/2
       + id * (Hcal_endcap_radiator_thickness + Hcal_scintillator_thickness)
       + (id-1) * Hcal_fiber_gap + Hcal_fiber_gap/2.;
-    //ecStaveVol.placeVolume(gapVol,pos).addPhysVolID("layer",id);
+    //staveVol.placeVolume(gapVol,pos).addPhysVolID("layer",id);
   }
 #endif
   //==================================================
@@ -659,25 +658,30 @@ void SHcalSc02::constructEndcaps(Assembly assembly) {
   //            y_shift = y_shift
   //
   //--------- loop over endcap id -----------------------
+  double theta = 0;
   for(int ec_id=1; ec_id <= 2; ++ec_id)    {
     //--------- loop over endcap stave id ---------------
-    for(int stave_id=2; stave_id < 4; ++stave_id)    {
+    for(int stave_id=2; stave_id < 3; ++stave_id)    {
+      // %%@$@!! Here is a problem!
+      double phi = (stave_id-1)*M_PI/2;
       Position pos(0,0,endcap_z_offset);
-      Rotation rot(0,0,0);//,0);
+      Rotation rot;
       int mod_id = (ec_id==1 ? HCALENDCAPPLUS : HCALENDCAPMINUS)*10 + stave_id;
-      rot.rotateZ((stave_id-1)*M_PI/2);//,(ec_id-1)*M_PI);
 
-      a = (stave_id+2)%2 * std::pow(-1.,((stave_id+2)%4)%3 );
-      b = (stave_id+1)%2 * std::pow(-1.,((stave_id+1)%4)%3 );
-      c = std::pow(-1.,(stave_id%3)%2);
-      pos.x = a * box_half_x + b * box_half_z + c * Hcal_endcap_center_box_size/2. + b * Hcal_stave_gaps;
-      if (ec_id == 2) pos.x = -pos.x;
+      a = (stave_id+2)%2 * std::pow(-1,((stave_id+2)%4)%3 );
+      b = (stave_id+1)%2 * std::pow(-1,((stave_id+1)%4)%3 );
+      c = std::pow(-1,(stave_id%3)%2);
+      pos.SetX(a * box_half_x + b * box_half_z + c * Hcal_endcap_center_box_size/2. + b * Hcal_stave_gaps);
+      if (ec_id == 2) pos.SetX(-pos.X());
 
-      d = (stave_id+3)%2 * std::pow(-1., ((stave_id+3)%4)%3 );
-      e = std::pow(-1.,int((stave_id-1)/2.) );
-      pos.y = d * box_half_x + a * box_half_z + e * Hcal_endcap_center_box_size/2 + a * Hcal_stave_gaps; 
-      assembly.placeVolume(ecStaveVol,pos,rot).addPhysVolID("endcap",mod_id);
+      d = (stave_id+3)%2 * std::pow(-1, ((stave_id+3)%4)%3 );
+      e = std::pow(-1,int((stave_id-1)/2) );
+      pos.SetY(d * box_half_x + a * box_half_z + e * Hcal_endcap_center_box_size/2 + a * Hcal_stave_gaps); 
+      rot = rot*RotationY(theta);
+      rot = rot*RotationZ(phi);
+      assembly.placeVolume(staveVol,rot,pos).addPhysVolID("endcap",mod_id);
     }
+    theta += M_PI;
     //--------- end loop over endcap stave id -----------
     endcap_z_offset = - endcap_z_offset;
 #if 0

@@ -111,10 +111,10 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   Position pos(0,0, -(supp_thick+cell_thick));
   lay_vol.placeVolume(abs_vol,pos);
   // 2) Support
-  pos.z += abs_thick + supp_thick; 
+  pos.SetZ(pos.Z()+abs_thick + supp_thick); 
   lay_vol.placeVolume(supp_vol,pos);
   // 3) silicon detector
-  pos.z += supp_thick + cell_thick; 
+  pos.SetZ(pos.Z()+supp_thick + cell_thick); 
   lay_vol.placeVolume(sensor_vol,pos);
 
   // position of first layer
@@ -131,17 +131,17 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)
   // Place two LumiCal sub-modules into the world
   double z_center = z_begin+cal_hz;
 
-  //Debug: one side centered only: mother.placeVolume(env_vol,Position(0,0,0),Rotation(0,bx_angle,0));
+  //Debug: one side centered only: mother.placeVolume(env_vol,Position(0,0,0),Rotation(bx_angle,0,0));
   DetElement  lcal(name,x_det.id());
   Volume      mother = lcdd.pickMotherVolume(lcal);
   Assembly    assembly(name);
 
-  pv = assembly.placeVolumeEx(env_vol,Position(0,0,z_center),Rotation(0,0,bx_angle));
+  pv = assembly.placeVolume(env_vol,Rotation(0,0,bx_angle),RotateY(Position(0,0,z_center),bx_angle));
   side.setPlacement(pv);
   lcal.add(side);
 
   DetElement other_side = side.clone("neg",-x_det.id());
-  pv = assembly.placeVolumeEx(env_vol,Position(0,0,z_center),Rotation(0,0,M_PI-bx_angle));
+  pv = assembly.placeVolume(env_vol,Rotation(0,0,M_PI-bx_angle),RotateY(Position(0,0,z_center),M_PI-bx_angle));
   other_side.setPlacement(pv);
   lcal.add(other_side);
 
