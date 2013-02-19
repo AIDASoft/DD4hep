@@ -61,7 +61,7 @@ To build and run the simulation examples Geant4 will be required.
 -----------------------
 
 - Checkout code
-svn co https://svnsrv.desy.de/basic/aidasoft/DD4hep/trunk DD4hep
+svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk DD4hep
 
 - Configure (for PyROOT)
 
