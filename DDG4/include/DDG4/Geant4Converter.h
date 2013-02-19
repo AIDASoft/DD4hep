@@ -57,6 +57,8 @@ namespace DD4hep {
      * @version 1.0
      */
     struct Geant4Converter : public Geometry::GeoHandler  {
+      typedef Geometry::LCDD       LCDD;
+      typedef Geometry::DetElement DetElement;
       typedef std::map<const TGeoElement*,G4Element*>               ElementMap;
       typedef std::map<const TGeoMedium*, G4Material*>              MaterialMap;
       typedef std::map<const TNamed*,     G4UserLimits*>            LimitMap;

@@ -55,6 +55,7 @@ typedef Geometry::Readout      Readout;
 typedef Geometry::LimitSet     LimitSet;
 typedef Geometry::IDDescriptor IDDescriptor;
 typedef Geometry::PlacedVolume PlacedVolume;
+typedef Geometry::SensitiveDetector SensitiveDetector;
 
 #define TAG(x)  extern const Tag_t Tag_##x  (#x)
 #define ATTR(x) extern const Tag_t Attr_##x (#x)
