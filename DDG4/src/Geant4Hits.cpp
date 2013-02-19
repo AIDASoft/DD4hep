@@ -71,8 +71,8 @@ Geant4TrackerHit& Geant4TrackerHit::operator=(const Geant4TrackerHit& c)   {
 
 /// Clear hit content
 Geant4TrackerHit& Geant4TrackerHit::clear()  {
-  position.set(0,0,0);
-  momentum.set(0,0,0);
+  position.SetXYZ(0,0,0);
+  momentum.SetXYZ(0,0,0);
   length = 0.0;
   truth.clear();
   return *this;
@@ -88,8 +88,8 @@ Geant4TrackerHit& Geant4TrackerHit::storePoint(G4Step* step, G4StepPoint* pnt)  
   truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
   truth.deposit = step->GetTotalEnergyDeposit();
   truth.time    = trk->GetGlobalTime();
-  position.set(pos.x(),pos.y(),pos.z());
-  momentum.set(mom.x(),mom.y(),mom.z());
+  position.SetXYZ(pos.x(),pos.y(),pos.z());
+  momentum.SetXYZ(mom.x(),mom.y(),mom.z());
   length = 0;
   return *this;
 }

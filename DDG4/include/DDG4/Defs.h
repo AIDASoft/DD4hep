@@ -24,8 +24,8 @@ namespace DD4hep {
 
     // Forward declarations;
     typedef Geometry::Position             Position;
-    typedef Geometry::Direction            Direction;
-    typedef Geometry::Momentum             Momentum;
+    typedef Geometry::Position             Direction;
+    typedef Geometry::Position             Momentum;
     typedef Geometry::LCDD                 LCDD;
     typedef Geometry::Readout              Readout;
     typedef Geometry::DetElement           DetElement;

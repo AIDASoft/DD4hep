@@ -14,6 +14,7 @@
  *   DD4hep::Simulation namespace declaration
  */
 namespace DD4hep {  namespace Simulation {
+
   /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ///               Geant4GenericSD<Tracker>
   /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -23,11 +24,12 @@ namespace DD4hep {  namespace Simulation {
     StepHandler h(step);
     Position prePos    = h.prePos();
     Position postPos   = h.postPos();
-    Position direction = (postPos - prePos);
+    Position direction = postPos - prePos;
     Position position  = mean_direction(prePos,postPos);
-    double   hit_len   = direction.length();
+    double   hit_len   = direction.R();
     if (hit_len > 0) {
-      direction.setLength(mean_length(h.preMom(),h.postMom()));
+      double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
+      direction *= new_len/hit_len;
     }
     Geant4TrackerHit* hit = 
       new Geant4TrackerHit(h.track->GetTrackID(),

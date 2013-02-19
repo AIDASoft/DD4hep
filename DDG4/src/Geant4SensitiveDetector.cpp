@@ -132,7 +132,7 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   Position pos2 = step.postPos();
   Momentum mom = step.postMom();
   ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
-	   long(step.track), pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z, mom.x, mom.y, mom.z);
+	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
   ::printf("                pre-Vol: %s  Status:%s\n",
 	   step.preVolume()->GetName().c_str(), step.preStepStatus());
   ::printf("                post-Vol:%s  Status:%s\n",

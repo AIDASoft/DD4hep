@@ -16,6 +16,7 @@
 #include "G4VProcess.hh"
 
 using namespace std;
+using namespace DD4hep::Geometry;
 
 /*
  *   DD4hep::Simulation namespace declaration

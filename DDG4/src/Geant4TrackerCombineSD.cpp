@@ -52,7 +52,7 @@ namespace DD4hep {  namespace Simulation {
 	}
 	Position pos = 0.5 * (pre.position + post.position);
 	Momentum mom = 0.5 * (pre.momentum + post.momentum);
-	double path_len = (post.position - pre.position).length();
+	double path_len = (post.position - pre.position).R();
 	Geant4TrackerHit* hit = new Geant4TrackerHit(pre.truth.trackID,
 						     pre.truth.pdgID,
 						     pre.truth.deposit,
