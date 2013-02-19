@@ -51,7 +51,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       layer_tub.setDimensions(rlayer,r,z*2,0,2*M_PI);
         
       PlacedVolume layer_physvol = envelopeVol.placeVolume(layer_vol,IdentityPos());
-      layer_physvol.addPhysVolID(_A(layer),n);
+      layer_physvol.addPhysVolID("layer",n);
       ++n;
     }
   }
@@ -60,7 +60,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     
   PlacedVolume physvol = lcdd.pickMotherVolume(sdet).placeVolume(envelopeVol,IdentityPos());
-  physvol.addPhysVolID(_A(system),sdet.id()).addPhysVolID(_A(barrel),0);
+  physvol.addPhysVolID("system",sdet.id()).addPhysVolID(_A(barrel),0);
   sdet.setPlacement(physvol);
   return sdet;
 }

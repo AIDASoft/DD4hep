@@ -64,16 +64,16 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   // Set attributes of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
-  DetElement sdet(det_name,x_det.id());
-  Volume     motherVol = lcdd.pickMotherVolume(sdet);
+  DetElement   sdet(det_name,x_det.id());
+  Volume       motherVol = lcdd.pickMotherVolume(sdet);
   PlacedVolume phv = motherVol.placeVolume(envelopeVol,Position(0,0,zmin+totWidth/2));
-  phv.addPhysVolID(_A(system),sdet.id())
-    .addPhysVolID(_A(barrel),1);
+  phv.addPhysVolID("system",sdet.id())
+    .addPhysVolID("barrel",1);
   sdet.setPlacement(phv);
   if ( reflect )   {
     phv=motherVol.placeVolume(envelopeVol,Position(0,0,-zmin-totWidth/2),ReflectRot());
-    phv.addPhysVolID(_A(system),sdet.id())
-      .addPhysVolID(_A(barrel),2);
+    phv.addPhysVolID("system",sdet.id())
+      .addPhysVolID("barrel",2);
   }
   return sdet;
 }

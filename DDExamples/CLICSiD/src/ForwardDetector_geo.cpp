@@ -139,7 +139,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
       // Layer PV.
       PlacedVolume layerPV = envelopeVol.placeVolume(layerVol,Position(0,0,layerPosZ));
-      layerPV.addPhysVolID(_X(layer), i);
+      layerPV.addPhysVolID("layer", i);
       layer.setPlacement(layerPV);
 
       // Increment to start of next layer.
@@ -150,14 +150,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   sdet.setVisAttributes(lcdd, x_det.visStr(), envelopeVol);
   
   PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,zpos));
-  env_phv.addPhysVolID(_X(system), id);
-  env_phv.addPhysVolID(_X(barrel), 1);
+  env_phv.addPhysVolID("system", id);
+  env_phv.addPhysVolID("barrel", 1);
   sdet.setPlacement(env_phv);
   // Reflect it.
   if ( reflect )  {
     env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,-zpos),ReflectRot());
-    env_phv.addPhysVolID(_X(system), id);
-    env_phv.addPhysVolID(_X(barrel), 2);
+    env_phv.addPhysVolID("system", id);
+    env_phv.addPhysVolID("barrel", 2);
     DetElement rdet(det_name+"_reflect",x_det.id());
     rdet.setPlacement(env_phv);
   }

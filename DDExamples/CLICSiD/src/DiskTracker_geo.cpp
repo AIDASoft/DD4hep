@@ -48,19 +48,19 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
       PlacedVolume spv = l_vol.placeVolume(s_vol,Position(0,0,z-zmin-layerWidth/2+thick/2));
-      spv.addPhysVolID(_X(layer),l_num);
-      spv.addPhysVolID(_X(slice),s_num);
+      spv.addPhysVolID("layer",l_num);
+      spv.addPhysVolID("slice",s_num);
     }
 
     PlacedVolume lpv = motherVol.placeVolume(l_vol,Position(0,0,zmin+layerWidth/2.));
-    lpv.addPhysVolID(_X(system),sdet.id());
-    lpv.addPhysVolID(_X(barrel),1);
+    lpv.addPhysVolID("system",sdet.id());
+    lpv.addPhysVolID("barrel",1);
     DetElement layer(sdet,l_nam,l_num);
     layer.setPlacement(lpv);
     if ( reflect )  {
       PlacedVolume lpvR = motherVol.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
-      lpvR.addPhysVolID(_X(system),sdet.id());
-      lpvR.addPhysVolID(_X(barrel),2);
+      lpvR.addPhysVolID("system",sdet.id());
+      lpvR.addPhysVolID("barrel",2);
       DetElement layerR = layer.clone(l_nam+"_reflect");
       sdet.add(layerR.setPlacement(lpvR));
     }

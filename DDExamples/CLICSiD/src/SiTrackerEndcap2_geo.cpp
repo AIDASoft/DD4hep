@@ -55,7 +55,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       phv.addPhysVolID(_X(component),c_id);
       if ( c.isSensitive() ) {
 	sdet.check(n_sensor > 1,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");
-	phv.addPhysVolID(_X(sensor),c_id);
+	phv.addPhysVolID("sensor",c_id);
 	vol.setSensitiveDetector(sens);
 	++n_sensor;
       }

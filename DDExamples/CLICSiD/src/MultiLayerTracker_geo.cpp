@@ -46,14 +46,14 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
       PlacedVolume spv = l_vol.placeVolume(s_vol,IdentityPos());
       // Slices have no extra id. Take the ID of the layer!
-      spv.addPhysVolID(_X(layer),n);
+      spv.addPhysVolID("layer",n);
     }
     l_tub.setDimensions(rmin,r,z,0,2*M_PI);
     cout << l_name << " " << rmin << " " << r << " " << z << endl;
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
       
     PlacedVolume lpv = motherVol.placeVolume(l_vol,IdentityPos());
-    lpv.addPhysVolID(_X(system),sdet.id()).addPhysVolID(_X(barrel),0);
+    lpv.addPhysVolID("system",sdet.id()).addPhysVolID(_X(barrel),0);
     layer.setPlacement(lpv);
   }
   sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);

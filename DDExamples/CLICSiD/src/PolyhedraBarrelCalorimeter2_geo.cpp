@@ -32,8 +32,8 @@ static void placeStaves(DetElement&   parent,
   for (int module = 0; module < numsides; ++module)  {
     DetElement det  = module>0 ? stave.clone(_toString(module,"stave%d")) : stave;
     PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Position(posX,-posY,0),Rotation(rotZ,rotY,0));
-    pv.addPhysVolID(_X(stave), 0);
-    pv.addPhysVolID(_X(module),module);
+    pv.addPhysVolID("stave", 0);
+    pv.addPhysVolID("module",module);
     det.setPlacement(pv);
     parent.add(det);
     rotZ -= innerRotation;
@@ -129,7 +129,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// slice PlacedVolume
 	PlacedVolume slice_phv = layer_vol.placeVolume(slice_vol,Position(0,0,slice_pos_z));
-	slice_phv.addPhysVolID(_X(slice),slice_number);
+	slice_phv.addPhysVolID("slice",slice_number);
 
 	slice.setPlacement(slice_phv);
 	// Increment Z position for next slice.
@@ -142,7 +142,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 
       // Layer physical volume.
       PlacedVolume layer_phv = staveInnerVol.placeVolume(layer_vol,Position(0,0,layer_pos_z));
-      layer_phv.addPhysVolID(_X(layer),layer_num);
+      layer_phv.addPhysVolID("layer",layer_num);
       layer.setPlacement(layer_phv);
 
       // Increment the layer X dimension.
@@ -162,8 +162,8 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   placeStaves(sdet,stave,rmin,numSides,totalThickness,envelopeVol,innerAngle,staveOuterVol);
 
   PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0,0,M_PI/numSides));
-  env_phv.addPhysVolID(_X(system), sdet.id());
-  env_phv.addPhysVolID(_X(barrel), 0);
+  env_phv.addPhysVolID("system", sdet.id());
+  env_phv.addPhysVolID("barrel", 0);
   sdet.setPlacement(env_phv);
   return sdet;
 }
