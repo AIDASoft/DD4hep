@@ -25,7 +25,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
 
   det_vol.setVisAttributes(lcdd, x_det.visStr());
   PlacedVolume phv = mother.placeVolume(det_vol,Position(pos.x(),pos.y(),pos.z()),
-					Rotation(rot.x(),rot.y(),rot.z()));
+					Rotation(rot.z(),rot.y(),rot.x()));
   phv.addPhysVolID("id",x_det.id());
   det.setPlacement(phv);
   return det;

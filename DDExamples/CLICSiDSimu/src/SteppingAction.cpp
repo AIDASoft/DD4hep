@@ -49,17 +49,17 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
 
   Position pos1 = step.prePos();
   Position pos2 = step.postPos();
-  Momentum mom = step.postMom();
+  Momentum mom  = step.postMom();
   
   if ( step.sd(step.pre) ) {
-    double len = (pos2-pos1).length();
+    double len = (pos2-pos1).R();
     ::printf("  Track:%08ld pos:%.0f Len:%.1f  SD:%s [%s] Deposit:%.0f keV\n",
-	     long(step.track),pos2.length()/cm,len/cm,step.sdName(step.pre,"----"), step.preStepStatus(),
+	     long(step.track),pos2.R()/cm,len/cm,step.sdName(step.pre,"----"), step.preStepStatus(),
 	     edep/keV);
   }
 #if 0
   ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
-	   long(step.track), pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z, mom.x, mom.y, mom.z);
+	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
   ::printf("                pre-Vol: %s  Status:%s  SD:%s\n",
 	   step.volName(step.pre,"----"), step.preStepStatus(), step.sdName(step.pre,"----"));
   ::printf("                post-Vol:%s  Status:%s  SD:%s\n",

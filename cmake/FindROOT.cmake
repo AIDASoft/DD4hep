@@ -38,6 +38,8 @@ if(ROOT_CONFIG_EXECUTABLE)
 
 endif()
 
+set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lGenVector)     
+
 # handle the QUIETLY and REQUIRED arguments and set ROOT_FOUND to TRUE if
 # all listed variables are TRUE
 INCLUDE(FindPackageHandleStandardArgs)

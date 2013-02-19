@@ -131,7 +131,7 @@ namespace DD4hep {
       {
 	Position global(c0,c1,zpos), local;
 	it->second.worldToLocal(global,local);
-	Double_t point_local[3]={local.x,local.y,local.z};
+	Double_t point_local[3]={local.X(),local.Y(),local.Z()};
     	onMod=it->second.volume().solid()->Contains(point_local);
 	if(onMod)
 	  {
@@ -159,7 +159,7 @@ namespace DD4hep {
 	//trafo of input world coordinates to local module system
 	Position global(c0,c1,zpos), local;
 	it->second.worldToLocal(global,local);
-	Double_t point_local[3]={local.x,local.y,local.z};
+	Double_t point_local[3]={local.X(),local.Y(),local.Z()};
     	onMod=it->second.volume().solid()->Contains(point_local);
 
 	if(onMod)
