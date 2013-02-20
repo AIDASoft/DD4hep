@@ -5,11 +5,12 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
                      ${ROOT_INCLUDE_DIR}
                      ${XERCESC_INCLUDE_DIR})
 
+file(GLOB sources src/*.cpp)
+
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)
-  file(GLOB sources src/*.cpp)
-  add_library(CLICSiD SHARED ${sources})
-  target_link_libraries(CLICSiD DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES})
 endif()
-add_subdirectory(DDExamples/ILDExDisplay)
 
+add_library(CLICSiD SHARED ${sources})
+target_link_libraries(CLICSiD DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES})
+dd4hep_generate_rootmap(CLICSiD)

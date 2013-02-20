@@ -26,7 +26,7 @@ using namespace DD4hep::Geometry;
 //______________________________________________________________________________
 namespace {
   void usage() {
-    cout << "<exe> -opt [-opt]                                                       \n"
+    cout << "displayGeo -opt [-opt]                                                  \n"
       "        -compact       <file>       Specify the compact geometry file         \n"
       "                                    At least one compact geo file is required!\n"
       "        -load_only                  Dry-run to only load geometry without     \n"

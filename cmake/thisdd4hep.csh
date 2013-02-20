@@ -10,16 +10,16 @@ set THIS="`dirname ${ARGS[2]}`"
 
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if ($?LD_LIBRARY_PATH) then
-   setenv LD_LIBRARY_PATH @XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH      # Linux, ELF HP-UX
+   setenv LD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH      # Linux, ELF HP-UX
 else
-   setenv LD_LIBRARY_PATH @XERCESC_ROOT_DIR@/lib
+   setenv LD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib
 endif
 
 #----DYLD_LIBRARY_PATH---------------------------------------------------------------
 if ($?DYLD_LIBRARY_PATH) then
-   setenv DYLD_LIBRARY_PATH @XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH  # Mac OS X
+   setenv DYLD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH  # Mac OS X
 else
-   setenv DYLD_LIBRARY_PATH @XERCESC_ROOT_DIR@/lib
+   setenv DYLD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib
 endif
 
 #----PYTHONPATH---------------------------------------------------------------

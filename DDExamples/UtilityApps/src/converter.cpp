@@ -25,11 +25,14 @@ using namespace DD4hep::Geometry;
 //______________________________________________________________________________
 namespace {
   void usage() {
-    cout << "<exe> -opt [-opt]                                                       \n"
-      "        -compact       <file>       Specify the compact geometry file         \n"
-      "                                    At least one compact geo file is required!\n"
-      "        -load_only                  Dry-run to only load geometry without     \n"
-      "                                    starting the dispay.                      \n"
+    cout << "geoConverter -opt [-opt]                                                \n"
+      "        Action flags:               Usage is exclusive!                       \n"
+      "        -compact2lcdd               Convert compact xml geometry to lcdd.     \n"
+      "        -compact2gdml               Convert compact xml geometry to gdml.   \n\n"
+      "        -input <file>   [REQUIRED]  Specify input file.                       \n"
+      "        -output <file>  [OPTIONAL]  Specify output file.                      \n"
+      "                                    if no output file is specified, the output\n"
+      "                                    device is stdout.                         \n"
 	 << endl;
     exit(EINVAL);
   }
@@ -37,19 +40,25 @@ namespace {
 
 //______________________________________________________________________________
 int main(int argc,char** argv)  {
-  bool dry_run = false;
+  bool compact2lcdd = false;
+  bool compact2gdml = false;
+  int output = 0;
   vector<char*> geo_files;
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
-      if ( strncmp(argv[i],"-compact",2)==0 )
+      if ( strncmp(argv[i],"-compact2lcdd",2)==0 )
+	compact2lcdd = true;
+      if ( strncmp(argv[i],"-compact2gdml",2)==0 )
+	compact2gdml = true;
+      else if ( strncmp(argv[i],"-input",2)==0 )
 	geo_files.push_back(argv[++i]);
-      else if ( strncmp(argv[i],"-load_only",2)==0 )
-        dry_run = true;
+      else if ( strncmp(argv[i],"-output",2)==0 )
+        output = ++i;
       else
 	usage();
     }
-    else {  // This is the default
-      geo_files.push_back(argv[i]);
+    else {
+      usage();
     }
   }
   if ( geo_files.empty() )
@@ -60,8 +69,12 @@ int main(int argc,char** argv)  {
     LCDD& lcdd = LCDD::getInstance();  
     // Load all compact files
     lcdd.apply("DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
-    // Create an interactive ROOT application
-    lcdd.apply("DD4hepGeometryConverter",args.first,args.second);
+    if ( compact2lcdd ) {
+      lcdd.apply("DD4hepGeometry2LCDD",output,&argv[output]);
+    }
+    else if ( compact2gdml ) {
+      lcdd.apply("DD4hepGeometry2GDML",output,&argv[output]);
+    }    
     return 0;
   }
   catch(const exception& e)  {

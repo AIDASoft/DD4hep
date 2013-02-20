@@ -276,9 +276,7 @@ void LCDDImp::dump() const  {
 void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
   string fac = factory_type;
   try {
-    LCDD* lcdd = this;
-    char* fname = 0;
-    long result = ROOT::Reflex::PluginService::Create<long>(fac,lcdd,argc,argv);
+    long result = ROOT::Reflex::PluginService::Create<long>(fac,(LCDD*)this,argc,argv);
     if ( 0 == result ) {
       throw runtime_error("Failed to locate plugin to apply "+fac);
     }

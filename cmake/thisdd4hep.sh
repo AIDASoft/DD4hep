@@ -18,16 +18,16 @@ fi
 
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if [ -z "${LD_LIBRARY_PATH}" ]; then
-  LD_LIBRARY_PATH=@XERCESC_ROOT_DIR@/lib; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
+  LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
 else
-  LD_LIBRARY_PATH=@XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+  LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
 fi
 
 #----DYLD_LIBRARY_PATH---------------------------------------------------------------
 if [ -z "${DYLD_LIBRARY_PATH}" ]; then
-  DYLD_LIBRARY_PATH=@XERCESC_ROOT_DIR@/lib; export DYLD_LIBRARY_PATH   # Mac OS X
+  DYLD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib; export DYLD_LIBRARY_PATH   # Mac OS X
 else
-  DYLD_LIBRARY_PATH=@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
+  DYLD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
 fi
 
 #----PYTHONPATH---------------------------------------------------------------

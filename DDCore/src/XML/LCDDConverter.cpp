@@ -83,13 +83,13 @@ namespace  DD4hep { namespace XML {
 }}
 
 namespace {
-  XYZRotation getXYZangles(const Double_t * r)   {
+  XYZRotation getXYZangles(const Double_t* r)   {
     static Double_t rad = DEGREE_2_RAD;
-    Double_t cosb = sqrt(r[0] * r[0] + r[1] * r[1]);
+    Double_t cosb = sqrt(r[0]*r[0] + r[1]*r[1]);
     if (cosb > 0.00001) {
-      return XYZRotation(atan2(r[5], r[8]) * rad, atan2(-r[2], cosb) * rad, atan2(r[1], r[0]) * rad);
+      return XYZRotation(atan2(r[5], r[8])*rad, atan2(-r[2], cosb)*rad, atan2(r[1], r[0])*rad);
     }
-    return XYZRotation(atan2(-r[7], r[4]) * rad,atan2(-r[2], cosb) * rad,0);
+    return XYZRotation(atan2(-r[7], r[4])*rad,atan2(-r[2], cosb)*rad,0);
   }
 }
 
@@ -923,19 +923,16 @@ LCDDConverter::GeometryInfo::GeometryInfo()
 
 static long create_translator(Geometry::LCDD& lcdd, int argc, char** argv)   {
   LCDDConverter wr(lcdd);
-  char* fname = argc>0 ? argv[0] : 0;
+  FILE* file = argc>0 ? ::fopen(argv[0],"w") : stdout;
   wr.create(lcdd.world());
-  if ( fname ) {
-    FILE* file = ::fopen(fname,"w");
-    LCDDConverter::GeometryInfo& geo = wr.data();
-    if ( !file ) {
-      cout << "Failed to open output file:" << fname << endl;
-      return 0;
-    }
-    geo.doc->Print(file);
-    ::fclose(file);
+  LCDDConverter::GeometryInfo& geo = wr.data();
+  if ( !file ) {
+    cout << "Failed to open output file:" << argv[0] << endl;
+    return 0;
   }
+  geo.doc->Print(file);
+  if ( argc>0 ) ::fclose(file);
   return 1;
 }
 
-DECLARE_APPLY(lcdd_converter,create_translator);
+DECLARE_APPLY(DD4hepGeometry2LCDD,create_translator);
