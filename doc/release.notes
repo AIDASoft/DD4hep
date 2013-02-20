@@ -3,6 +3,7 @@ DD4hep  ----  Release Notes
 
 
 2013/20/02    Markus Frank
+--------------------------
   Install rootmap mechanism for the usage of plugins.
   It is no longer necessary to have separate programs
   for the various detector models (ILD/SiD).
@@ -10,7 +11,17 @@ DD4hep  ----  Release Notes
   ==> Creation of package DDExamples/UtilityApps
   example: $> bin/displayGeo -compact <compact-xml-file>
 
+  This move has another consequence:
+  All libraries are build into a common install area:
+  the <build directory>/lib.
+  All executable binaries are build into a common install area:
+  the <build directory>/bin.
+
+  The LD_LIBRARY_PATH and PATH variables as defined in 
+  'thisdd4hep.(c)sh' do include these directories
+
 2013/20/02    Markus Frank
+--------------------------
   DD4hep release notes. Better start them late than never.
   If you perform significant changes to the DD4hep core,
   plase leave a small notice here.
