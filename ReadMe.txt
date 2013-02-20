@@ -95,7 +95,13 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
   Users may extend the models by changing the compact description or adding new drivers
 
 
-4) Running the examples
+4) Release notes
+----------------
+  If things do not work please also consult the release notes. It may happen that it was 
+  forgotten to update the information here.
+
+
+5) Running the examples
 -----------------------
 
 Here are a few command lines for running examples
@@ -106,25 +112,25 @@ export G4LEVELGAMMADATA=${G4SYS}/share/Geant4-9.5.1/data/PhotonEvaporation2.2
 
 
 - ILDExDet example with the example detectors
-  DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
+  bin/geoDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
 
 - Run Geant4 with ILDExDet detector
-  DDExamples/CLICSiDSimu/CLICSiDSimu   \
+  bin/CLICSiDSimu   \
      file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml  \
      file:../DD4hep/DDExamples/ILDExDet/compact/geant4.xml \
      ../DD4hep/DDExamples/ILDExSimu/run1.mac 
 
 - ILDExDet example with Astrid's prototype TPC
-  DDExamples/ILDExDisplay/ILDExDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/TPCPrototype.xml
+  bin/geoDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/TPCPrototype.xml
 
 - ILDExDet example with the LDC00_01Sc detector (under construction)
-  DDExamples/ILDExDisplay/ILDExDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/Tesla.xml
+  bin/geoDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/Tesla.xml
 
 - CLICSid example with all SiD sub-detectors
-  DDExamples/CLICSiDDisplay/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml 
+  bin/geoDisplay file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml 
 
 - Geant4 example with SiD (careful, need to set Geant4 variables in addition)
-  DDExamples/CLICSiDSimu/CLICSiDSimu   \
+  bin/CLICSiDSimu   \
      file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml             \
      file:../DD4hep/DDExamples/CLICSiD/compact/sensitive_detectors.xml \
      ../DD4hep/DDExamples/CLICSiDSimu/run.mac 
