@@ -22,4 +22,5 @@ endif()
 
 add_library(ILDEx SHARED ${sources})
 target_link_libraries(ILDEx DD4hepCore)
+dd4hep_generate_rootmap(ILDEx)
 
