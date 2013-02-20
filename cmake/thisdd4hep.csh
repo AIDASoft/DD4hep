@@ -8,6 +8,13 @@ set ARGS=($_)
 set THIS="`dirname ${ARGS[2]}`"
 
 
+#----PATH----------------------------------------------------------------------------
+if ($?PATH) then
+   setenv PATH @EXECUTABLE_OUTPUT_PATH@:$PATH      # Linux, ELF HP-UX
+else
+   setenv PATH @EXECUTABLE_OUTPUT_PATH@
+endif
+
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if ($?LD_LIBRARY_PATH) then
    setenv LD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH      # Linux, ELF HP-UX

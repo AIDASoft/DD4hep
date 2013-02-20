@@ -16,6 +16,13 @@ else
     THIS=$(dirname ${BASH_ARGV[0]})
 fi
 
+#----PATH-----------------------------------------------------------------
+if [ -z "${PATH}" ]; then
+  PATH=@EXECUTABLE_OUTPUT_PATH@; export PATH       # Linux, ELF HP-UX
+else
+  PATH=@EXECUTABLE_OUTPUT_PATH@:$PATH; export PATH
+fi
+
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if [ -z "${LD_LIBRARY_PATH}" ]; then
   LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib; export LD_LIBRARY_PATH       # Linux, ELF HP-UX

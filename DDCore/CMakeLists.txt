@@ -26,5 +26,7 @@ endif()
 
 add_library(DD4hepCore SHARED ${sources})
 target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} Geom Reflex ${libraries})
+#---Rootmap generation--------------------------------------------------------------
+dd4hep_generate_rootmap(DD4hepCore)
 
 
