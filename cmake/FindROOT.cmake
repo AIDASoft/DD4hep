@@ -95,3 +95,4 @@ function(root_generate_dictionary dictionary)
                                           -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
                      DEPENDS ${headerfiles} ${linkdefs})
 endfunction()
+
