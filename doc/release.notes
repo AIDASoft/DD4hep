@@ -1,0 +1,16 @@
+DD4hep  ----  Release Notes
+=================================
+
+
+2013/20/02    Markus Frank
+  Install rootmap mechanism for the usage of plugins.
+  It is no longer necessary to have separate programs
+  for the various detector models (ILD/SiD).
+  One generic display program servest them all.
+  ==> Creation of package DDExamples/UtilityApps
+  example: $> bin/displayGeo -compact <compact-xml-file>
+
+2013/20/02    Markus Frank
+  DD4hep release notes. Better start them late than never.
+  If you perform significant changes to the DD4hep core,
+  plase leave a small notice here.
