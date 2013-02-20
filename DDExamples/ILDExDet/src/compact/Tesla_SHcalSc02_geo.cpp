@@ -668,14 +668,14 @@ void SHcalSc02::constructEndcaps(Assembly assembly) {
       Rotation rot;
       int mod_id = (ec_id==1 ? HCALENDCAPPLUS : HCALENDCAPMINUS)*10 + stave_id;
 
-      a = (stave_id+2)%2 * std::pow(-1,((stave_id+2)%4)%3 );
-      b = (stave_id+1)%2 * std::pow(-1,((stave_id+1)%4)%3 );
-      c = std::pow(-1,(stave_id%3)%2);
+      a = (stave_id+2)%2 * std::pow(double(-1),((stave_id+2)%4)%3 );
+      b = (stave_id+1)%2 * std::pow(double(-1),((stave_id+1)%4)%3 );
+      c = std::pow(double(-1),(stave_id%3)%2);
       pos.SetX(a * box_half_x + b * box_half_z + c * Hcal_endcap_center_box_size/2. + b * Hcal_stave_gaps);
       if (ec_id == 2) pos.SetX(-pos.X());
 
-      d = (stave_id+3)%2 * std::pow(-1, ((stave_id+3)%4)%3 );
-      e = std::pow(-1,int((stave_id-1)/2) );
+      d = (stave_id+3)%2 * std::pow(double(-1), ((stave_id+3)%4)%3 );
+      e = std::pow(double(-1),int((stave_id-1)/2) );
       pos.SetY(d * box_half_x + a * box_half_z + e * Hcal_endcap_center_box_size/2 + a * Hcal_stave_gaps); 
       rot = rot*RotationY(theta);
       rot = rot*RotationZ(phi);
