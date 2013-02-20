@@ -20,7 +20,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   string     det_name  = x_det.nameStr();
   Tube       envelope;
   Volume     envelopeVol(det_name,envelope,air);
-  bool       reflect   = dim.reflect();
+  bool       reflect   = x_det.reflect();
   double     zmin      = dim.inner_z();
   double     rmin      = dim.inner_r();
   double     rmax      = dim.outer_r();
