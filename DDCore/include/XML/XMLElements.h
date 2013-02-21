@@ -410,7 +410,7 @@ namespace DD4hep {
       {      return attr_value(tag);                     }
 
     template<> INLINE bool Handle_t::attr<bool>(const XmlChar* tag)  const  
-      {      return _toBool(attr_value_nothrow(tag));    }
+      {      return _toBool(attr_value(tag));            }
 
     template<> INLINE int Handle_t::attr<int>(const XmlChar* tag)  const  
       {      return _toInt(attr_value(tag));             }
@@ -422,7 +422,7 @@ namespace DD4hep {
       {      return _toDouble(attr_value(tag));          }
 
     template<> INLINE std::string Handle_t::attr<std::string>(const XmlChar* tag)  const  
-      {      return _toString(attr_nothrow(tag));        }
+      {      return _toString(attr_value(tag));         }
 #if 0
     template<> INLINE bool Handle_t::attr<bool>(const Attribute tag)  const  
       {      return _toBool(attr_value(tag));            }

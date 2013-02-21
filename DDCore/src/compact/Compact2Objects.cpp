@@ -131,15 +131,18 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, const xml_h& e)  {
 DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
 
 
-static Ref_t create_SolenoidField(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_SolenoidField(lcdd_t& lcdd, const xml_h& e)  {
   xml_comp_t c(e);
   CartesianField obj;
   Value<TNamed,SolenoidField>* ptr = new Value<TNamed,SolenoidField>();
   if ( c.hasAttr(_A(inner_radius)) ) ptr->innerRadius = c.attr<double>(_A(inner_radius));
+  else ptr->innerRadius = 0.0;
   if ( c.hasAttr(_A(outer_radius)) ) ptr->outerRadius = c.attr<double>(_A(outer_radius));
+  else ptr->outerRadius = lcdd.constant<double>("world_side");
   if ( c.hasAttr(_A(inner_field))  ) ptr->innerField  = c.attr<double>(_A(inner_field));
   if ( c.hasAttr(_A(outer_field))  ) ptr->outerField  = c.attr<double>(_A(outer_field));
   if ( c.hasAttr(_A(zmax))         ) ptr->maxZ        = c.attr<double>(_A(zmax));
+  else ptr->maxZ = lcdd.constant<double>("world_side");
   if ( c.hasAttr(_A(zmin))         ) ptr->minZ        = c.attr<double>(_A(zmin));
   else                               ptr->minZ        = - ptr->maxZ;
   obj.assign(ptr,c.nameStr(),c.typeStr());

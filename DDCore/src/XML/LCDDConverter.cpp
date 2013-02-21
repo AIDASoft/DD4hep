@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/Volumes.h"
+#include "DD4hep/FieldTypes.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/DocumentHandler.h"
 #include "XML/LCDDConverter.h"
@@ -93,6 +94,17 @@ namespace {
   }
 }
 
+
+void LCDDConverter::GeometryInfo::check(const string& name, const TNamed* n,map<string,const TNamed*>& m) const {
+  map<string,const TNamed*>::const_iterator i=m.find(name);
+  if ( i != m.end() ) {
+    const char* isa = n ? n->IsA()->GetName() : (*i).second ? (*i).second->IsA()->GetName() : "Unknown";
+    cout << isa << "(position):  duplicate entry with name:" << name 
+	 << " " << (void*)n << " " << (void*)(*i).second << endl;
+  }
+  m.insert(make_pair(name,n));
+}
+
 /// Initializing Constructor
 LCDDConverter::LCDDConverter( LCDD& lcdd ) : m_lcdd(lcdd) {
   m_checkOverlaps = true;
@@ -131,6 +143,8 @@ Handle_t LCDDConverter::handleMaterial(const string& name, const TGeoMedium* med
     obj.setAttr(_A(value),m->GetDensity()  /*  *(g/cm3)  */);
     obj.setAttr(_A(unit),"g/cm3");
     obj.setAttr(_A(type),"density");
+
+    geo.checkMaterial(name,medium);
 
     if ( m->IsMixture() ) {
       TGeoMixture* mix=(TGeoMixture*)m;
@@ -171,6 +185,7 @@ Handle_t LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) 
   Handle_t solid(geo.xmlSolids[shape]);
   if ( !solid && shape ) {
     Handle_t zplane(0);
+    geo.checkShape(name,shape);
     if ( shape->IsA() == TGeoBBox::Class() ) {
       const TGeoBBox* s = (const TGeoBBox*)shape;
       geo.doc_solids.append(solid = Element(geo.doc,_X(box)));
@@ -448,6 +463,7 @@ Handle_t LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix
     static Handle_t identity;
     const double* tr = trafo->GetTranslation();
     if ( tr[0] != 0 || tr[1] != 0 || tr[2] != 0 )   {
+      geo.checkPosition(name,trafo);
       geo.doc_define.append(pos=Element(geo.doc,_X(position)));
       pos.setAttr(_A(name),name);
       pos.setAttr(_A(x),tr[0]);
@@ -464,6 +480,7 @@ Handle_t LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix
       identity.setAttr(_A(y),0);
       identity.setAttr(_A(z),0);
       pos = identity;
+      geo.checkPosition("identity_pos",0);
     }
     geo.xmlPositions[trafo] = pos;
   }
@@ -478,6 +495,7 @@ Handle_t LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix
     static Handle_t identity;
     XYZRotation r = getXYZangles(trafo->Inverse().GetRotationMatrix());
     if ( r.X() != 0 || r.Y() != 0 || r.Z() != 0 )   {
+      geo.checkRotation(name,trafo);
       geo.doc_define.append(rot=Element(geo.doc,_X(rotation)));
       rot.setAttr(_A(name),name);
       rot.setAttr(_A(x),r.X());
@@ -494,6 +512,7 @@ Handle_t LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix
       identity.setAttr(_A(y),0);
       identity.setAttr(_A(z),0);
       rot = identity;
+      geo.checkRotation("identity_rot",0);
     }
     geo.xmlRotations[trafo] = rot;
   }
@@ -517,6 +536,7 @@ Handle_t LCDDConverter::handleVolume(const string& name, const TGeoVolume* volum
     else if ( !m && v->IsA() != TGeoVolumeAssembly::Class() )
       throw runtime_error("G4Converter: No Geant4 material present for volume:"+n);
 
+    geo.checkVolume(name,volume);
     geo.doc_structure.append(vol=Element(geo.doc,_X(volume)));
     vol.setAttr(_A(name),n);
     vol.setRef(_X(solidref),sol.name());
@@ -577,13 +597,13 @@ void LCDDConverter::checkVolumes(const string& name, const TGeoVolume* volume) c
       SensitiveDetector s = v.sensitiveDetector();
       VisAttr vis = v.visAttributes();
       if ( s.isValid() ) {
-	cout << "of " << s.name();
+	cout << "of " << s.name() << " ";
       }
       else if ( vis.isValid() ) {
-	cout << "with VisAttrs " << vis.name();
+	cout << "with VisAttrs " << vis.name() << " ";
       }
     }
-    cout << " has duplicate entries." << endl;
+    cout << "has duplicate entries." << endl;
     return;
   }
   m_checkNames.insert(name);
@@ -591,7 +611,7 @@ void LCDDConverter::checkVolumes(const string& name, const TGeoVolume* volume) c
 
 /// Dump volume placement in GDML format to output stream
 Handle_t LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) const {
-  GeometryInfo& geo = data();  
+  GeometryInfo& geo = data();
   Handle_t place    = geo.xmlPlacements[node];
   if ( !place )   {
     TGeoMatrix*  t = node->GetMatrix();
@@ -604,9 +624,12 @@ Handle_t LCDDConverter::handlePlacement(const string& name, const TGeoNode* node
       mot.append(place);
     }
     place.setRef(_X(volumeref),vol.name());
-    if ( t ) {
-      RefElement pos = handlePosition(name+"_pos",t);
-      RefElement rot = handleRotation(name+"_rot",t);
+    if ( t )  {
+      char text[32];
+      ::sprintf(text,"_%p_pos",node);
+      RefElement pos = handlePosition(name+text,t);
+      ::sprintf(text,"_%p_rot",node);
+      RefElement rot = handleRotation(name+text,t);
       place.setRef(_X(positionref),pos.name());
       place.setRef(_X(rotationref),rot.name());
     }
@@ -749,6 +772,32 @@ Handle_t LCDDConverter::handleVis(const string& name, const TNamed* v) const  {
   return vis;
 }
 
+/// Convert the electric or magnetic fields into the corresponding Xml object(s).
+Handle_t LCDDConverter::handleField(const std::string& name, const TNamed* f)   const {
+  GeometryInfo& geo = data();
+  Handle_t field = geo.xmlFields[f];
+  if ( !field ) {
+    string typ = f->GetTitle();
+    geo.doc_fields.append(field=Element(geo.doc,_X(field)));
+    field.setAttr(_A(name),f->GetName());
+    field.setAttr(_A(type),typ);
+    if ( typ == "SolenoidMagnet" ) {
+      double tesla = 0.001;
+      Geometry::SolenoidField* s = Ref_t(f).data<Geometry::SolenoidField>();
+      field.setAttr(_A(lunit),"mm");
+      field.setAttr(_A(funit),"tesla");
+      field.setAttr(_A(x),m_lcdd.constant<string>("world_side"));
+      field.setAttr(_A(outer_radius),s->outerRadius);
+      field.setAttr(_A(inner_radius),s->innerRadius);
+      field.setAttr(_A(inner_field),s->innerField/tesla);
+      field.setAttr(_A(outer_field),s->outerField/tesla);
+      field.setAttr(_A(zmin),s->minZ);
+      field.setAttr(_A(zmax),s->maxZ);
+    }
+  }
+  return field;
+}
+
 /// Handle the geant 4 specific properties
 void LCDDConverter::handleProperties(LCDD::Properties& prp)   const {
   map<string,string> processors;
@@ -809,7 +858,8 @@ void LCDDConverter::handleHeader()   const   {
 
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf)  {
   for(typename C::const_iterator i=c.begin(); i != c.end(); ++i) {
-    (o->*pmf)((*i)->GetName(),*i);
+    string n = (*i)->GetName();
+    (o->*pmf)(n,*i);
   }
 }
 
@@ -849,6 +899,7 @@ void LCDDConverter::create(Geometry::DetElement top) {
     "</lcdd>\0\0";
 
   DocumentHandler docH;
+  Element elt(0);
   geo.doc = docH.parse(empty_lcdd,sizeof(empty_lcdd));
   //doc->setXmlStandalone(true);
   //doc->setStrictErrorChecking(true);
@@ -863,17 +914,26 @@ void LCDDConverter::create(Geometry::DetElement top) {
   geo.doc_root.append(geo.doc_display   = Element(geo.doc,_X(display)));
   geo.doc_root.append(geo.doc_gdml      = Element(geo.doc,_X(gdml)));
   geo.doc_root.append(geo.doc_fields    = Element(geo.doc,_X(fields)));
-  
+  //elt = Element();
+
   geo.doc_gdml.append(geo.doc_define    = Element(geo.doc,_X(define)));
   geo.doc_gdml.append(geo.doc_materials = Element(geo.doc,_X(materials)));
   geo.doc_gdml.append(geo.doc_solids    = Element(geo.doc,_X(solids)));
   geo.doc_gdml.append(geo.doc_structure = Element(geo.doc,_X(structure)));
   geo.doc_gdml.append(geo.doc_setup     = Element(geo.doc,_X(setup)));
+  elt = Element(geo.doc,_X(world));
+  elt.setAttr(_A(ref),lcdd.worldVolume().name());
+  geo.doc_setup.append(elt);
+
 
   // Ensure that all required materials are present in the Geant4 material table
   const LCDD::HandleMap& mat = lcdd.materials();
   for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
     geo.materials.insert(dynamic_cast<TGeoMedium*>((*i).second.ptr()));
+
+  const LCDD::HandleMap& fld = lcdd.fields();
+  for(LCDD::HandleMap::const_iterator i=fld.begin(); i!=fld.end(); ++i)
+    geo.fields.insert((*i).second.ptr());
 
   handleHeader();
   // Start creating the objects for materials, solids and log volumes.
@@ -901,12 +961,14 @@ void LCDDConverter::create(Geometry::DetElement top) {
   handle(this, geo.volumes,   &LCDDConverter::handleVolume);
   cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
 
+  handle(this, geo.fields,   &LCDDConverter::handleField);
+  cout << "++ Handled " << geo.fields.size() << " fields." << endl;
+
   // Now place all this stuff appropriately
   handleRMap(this, *m_data, &LCDDConverter::handlePlacement);
 
   m_checkNames.clear();
   handle(this, geo.volumes,   &LCDDConverter::checkVolumes);
-
 
 #if 0
   //==================== Fields
