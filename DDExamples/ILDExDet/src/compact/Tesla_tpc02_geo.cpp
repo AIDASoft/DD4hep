@@ -13,7 +13,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
   DetElement  sdet(name,x_det.id());
@@ -34,7 +34,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e)  {
   cylinder_t sens = { x_sens.inner_r(),      x_sens.outer_r(), 0.0 };
 
   // TPC sensitive detector
-  SensitiveDetector sens_det("TPC");
+  SensitiveDetector sens_det("TPC","tracker");
   Readout ro = lcdd.readout(x_sens.readoutStr());
   sens_det.setHitsCollection(ro.name());
   sens_det.setReadout(ro);
@@ -90,7 +90,7 @@ static Ref_t create_element(LCDD& lcdd, const xml_h& e)  {
 
   // FCH = two sensitive twin Si plates, just to register the particle step inside it.
   // Threshold is 20% of a MIP. For Si we have 0.34 KeV/micron as MIP.
-  SensitiveDetector fchSD("TPCfch");
+  SensitiveDetector fchSD("TPCfch","tracker");
   ro = lcdd.readout(x_fch.readoutStr());
   fchSD.setHitsCollection(ro.name());
   fchSD.setReadout(ro);

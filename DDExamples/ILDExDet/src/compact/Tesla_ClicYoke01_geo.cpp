@@ -91,20 +91,20 @@ void ClicYoke01::collectSensitiveDetectors(xml_det_t e)   {
   xml_comp_t c = e.child(_U(barrel));
 
   // Setup the sensitive detectors for barrel, endcap+ and endcap-
-  m_barrel.sensDet = SensitiveDetector("YokeBarrel");
+  m_barrel.sensDet = SensitiveDetector("YokeBarrel","yoke");
   Readout ro = lcdd->readout(c.readoutStr());
   m_barrel.sensDet.setHitsCollection(ro.name());
   m_barrel = DetElement(self,name+"_barrel",e.id());
 
   c = e.child(_U(endcap));
-  m_endcapMinus.sensDet = m_endcapPlus.sensDet = SensitiveDetector("YokeEndcap");
+  m_endcapMinus.sensDet = m_endcapPlus.sensDet = SensitiveDetector("YokeEndcap","yoke");
   ro = lcdd->readout(c.readoutStr());
   m_endcapPlus.sensDet.setHitsCollection(ro.name());
   m_endcapPlus = DetElement(self,name+"_endcap_plus",e.id());
 
   if ( m_hasPlug ) {
     c = e.child(_U(endcap));
-    m_plugMinus.sensDet = m_plugPlus.sensDet = SensitiveDetector("YokePlug");
+    m_plugMinus.sensDet = m_plugPlus.sensDet = SensitiveDetector("YokePlug","yoke");
     ro = lcdd->readout("YokePlugHits");
     m_plugPlus.sensDet.setHitsCollection(ro.name());
     m_plugPlus = DetElement(self,name+"_plug_plus",e.id());
@@ -448,7 +448,7 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   return self;
 }
 
-static Ref_t create_detector(LCDD& lcdd, const xml_h& element)  {
+static Ref_t create_detector(LCDD& lcdd, xml_h element, Ref_t)  {
   return (new Value<TNamed,ClicYoke01>())->construct(lcdd,element);
 }
 DECLARE_SUBDETECTOR(Tesla_ClicYoke01,create_detector);

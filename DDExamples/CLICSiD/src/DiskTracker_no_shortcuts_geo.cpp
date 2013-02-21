@@ -12,7 +12,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_detector(LCDD& lcdd, const XML::Element& x_det, SensitiveDetector& sens)  {
+static Ref_t create_detector(LCDD& lcdd, XML::Element x_det, SensitiveDetector sens)  {
   Material   air       = lcdd.air();
   string     det_name  = x_det.attr<string>("name");
   int        det_id    = x_det.attr<int>("id");

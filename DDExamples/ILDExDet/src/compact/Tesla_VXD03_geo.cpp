@@ -41,7 +41,7 @@ namespace {
   };
 }
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement  vxd;
   xml_det_t   x_det   = e;
   string      name    = x_det.nameStr();

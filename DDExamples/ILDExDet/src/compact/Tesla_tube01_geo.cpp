@@ -13,7 +13,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector)  {
   struct Tube_Desc {  double zhalf, thickness, radius;  };
   struct Cone_Desc {  double z, rmin, rmax; };
 

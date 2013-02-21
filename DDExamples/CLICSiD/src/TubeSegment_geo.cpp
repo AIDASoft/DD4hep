@@ -12,7 +12,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector&)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   xml_det_t  x_det  (e);
   xml_comp_t x_tube = x_det.tubs();
   xml_dim_t  pos    = x_det.position();

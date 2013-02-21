@@ -13,7 +13,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det  = e;
   xml_comp_t  x_layer= e.child(_X(layer));
   string      name   = x_det.nameStr();

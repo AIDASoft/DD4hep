@@ -42,7 +42,7 @@ static void placeStaves(DetElement&   parent,
   }
 }
 
-static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens)  {
+static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det     = e;
   Layering    layering(x_det);
   xml_comp_t  staves      = x_det.staves();

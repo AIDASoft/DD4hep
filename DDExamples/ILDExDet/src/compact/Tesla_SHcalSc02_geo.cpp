@@ -975,7 +975,7 @@ bool SHcalSc02::PostConstructAction(CGAGeometryEnvironment& )   {
 #endif
 
 
-static Ref_t create_detector(LCDD& lcdd, const xml_h& element)  {
+static Ref_t create_detector(LCDD& lcdd, xml_h element, Ref_t)  {
   return (new Value<TNamed,SHcalSc02>())->construct(lcdd,element);
 }
 

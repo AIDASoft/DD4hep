@@ -272,19 +272,19 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
   m_barrel = DetElement(self,"barrel",HCALBARREL);
 
   // Setup the sensitive detectors for barrel, endcap+ and endcap-
-  SensitiveDetector& sd = m_barrel.sensRegular = SensitiveDetector("HcalBarrelRegular");
+  SensitiveDetector& sd = m_barrel.sensRegular = SensitiveDetector("HcalBarrelRegular","calorimeter");
   Readout ro = lcdd->readout(x_module.readoutStr());
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
   lcdd->addSensitiveDetector(sd);
 
-  sd = m_barrel.sensEndModule = SensitiveDetector("HcalBarrelEndModule");
+  sd = m_barrel.sensEndModule = SensitiveDetector("HcalBarrelEndModule","calorimeter");
   ro = lcdd->readout(x_end_module.readoutStr());
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
   lcdd->addSensitiveDetector(sd);
   
-  sd = m_endcap.sensDet = SensitiveDetector("HcalEndcap");
+  sd = m_endcap.sensDet = SensitiveDetector("HcalEndcap","calorimeter");
   ro = lcdd->readout(x_endcap_module.readoutStr());
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
@@ -617,7 +617,7 @@ Volume Hcal04::buildRPC1Box(const string& nam, Box box, const Layer& layer, Sens
   return chamberVol;
 }
 
-static Ref_t create_detector(LCDD& lcdd, const xml_h& element)  {
+static Ref_t create_detector(LCDD& lcdd, xml_h element, Ref_t)  {
   return (new Value<TNamed,Hcal04>())->construct(lcdd,element);
 }
 DECLARE_SUBDETECTOR(Tesla_hcal04,create_detector);

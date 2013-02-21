@@ -58,7 +58,7 @@ namespace DD4hep { namespace Geometry {
     /// Standard constructor
     BeamCal01() : BeamCal01Data() {}
     /// Detector construction function
-    DetElement construct(LCDD& lcdd, xml_det_t e, SensitiveDetector& sens_det);
+    DetElement construct(LCDD& lcdd, xml_det_t e, SensitiveDetector sens_det);
   };
 }}
 
@@ -73,7 +73,7 @@ inline int split_n(double totLength, double initSegm)
 {  return int(ceil(totLength/initSegm));                      }
 
 /// Detector construction function
-DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sens_det)  {
+DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens_det)  {
   lcdd     = &l;
   name     = x_det.nameStr();
   self.assign(dynamic_cast<Value<TNamed,BeamCal01>*>(this),name,x_det.typeStr());
@@ -296,7 +296,7 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector& sen
   return self;
 }
 
-static Ref_t create_detector(LCDD& lcdd, const xml_h& element, SensitiveDetector& sens)  {
+static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens)  {
   return (new Value<TNamed,BeamCal01>())->construct(lcdd,element,sens);
 }
 DECLARE_DETELEMENT(Tesla_BeamCal01,create_detector);

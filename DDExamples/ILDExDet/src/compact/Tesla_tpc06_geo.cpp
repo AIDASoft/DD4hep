@@ -13,7 +13,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens_det)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   struct cylinder_t { double inner_r, outer_r, z; };
   PlacedVolume pv;
   xml_det_t   x_det  = e;

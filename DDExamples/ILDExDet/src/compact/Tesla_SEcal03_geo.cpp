@@ -301,19 +301,19 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   }
 
   // Setup the sensitive detectors for barrel, endcap+ and endcap-
-  SensitiveDetector sd = m_barrel.sensDet = SensitiveDetector("EcalBarrel");
+  SensitiveDetector sd = m_barrel.sensDet = SensitiveDetector("EcalBarrel","calorimeter");
   Readout ro = lcdd->readout(x_barrel.readoutStr());
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
   lcdd->addSensitiveDetector(sd);
 
-  sd = m_endcap.sensDet = SensitiveDetector("EcalEndcapRings");
+  sd = m_endcap.sensDet = SensitiveDetector("EcalEndcapRings","calorimeter");
   ro = lcdd->readout(x_endcap.attr<string>(_U(ring_readout)));
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
   lcdd->addSensitiveDetector(sd);
 
-  sd = m_endcap.ringSD = SensitiveDetector("EcalEndcap");
+  sd = m_endcap.ringSD = SensitiveDetector("EcalEndcap","calorimeter");
   ro = lcdd->readout(x_endcap.readoutStr());
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
@@ -828,7 +828,7 @@ pair<DetElement,Volume> SEcal03::buildBarrelStave(const Barrel& barrel) {
   return make_pair(staveDet,staveVol);
 }
 
-static Ref_t create_detector(LCDD& lcdd, const xml_det_t& x_det)  {
+static Ref_t create_detector(LCDD& lcdd, xml_det_t x_det, Ref_t)  {
   DetElement e = DetElement::create<SEcal03>(x_det.nameStr(),x_det.typeStr(),x_det.id());
   return DetElement::createObject<SEcal03>(x_det.nameStr(),x_det.typeStr(),x_det.id())->construct(lcdd,x_det);
 }
