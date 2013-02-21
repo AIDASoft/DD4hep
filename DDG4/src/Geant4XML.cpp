@@ -21,13 +21,13 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 namespace DD4hep {
-  template <> void Converter<Geant4>::operator()(const xml_h& e)  const;
-  template <> void Converter<Geometry::GdmlFile>::operator()(const xml_h& e)  const;
-  template <> void Converter<Geometry::Property>::operator()(const xml_h& e)  const;
-  template <> void Converter<Geometry::SensitiveDetector>::operator()(const xml_h& e)  const;
+  template <> void Converter<Geant4>::operator()(xml_h e)  const;
+  template <> void Converter<Geometry::GdmlFile>::operator()(xml_h e)  const;
+  template <> void Converter<Geometry::Property>::operator()(xml_h e)  const;
+  template <> void Converter<Geometry::SensitiveDetector>::operator()(xml_h e)  const;
 }
 
-template <> void Converter<Geant4>::operator()(const xml_h& element)  const  {
+template <> void Converter<Geant4>::operator()(xml_h element)  const  {
   xml_elt_t compact(element);
   //xml_coll_t(compact,_X(includes) ).for_each(_X(gdmlFile), Converter<Geometry::GdmlFile>(lcdd,param));
   xml_coll_t(compact,_X(properties) ).for_each(_X(attributes),Converter<Geometry::Property>(lcdd,param));
