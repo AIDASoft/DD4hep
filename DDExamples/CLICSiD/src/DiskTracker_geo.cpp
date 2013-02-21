@@ -44,7 +44,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       string s_nam = l_nam+_toString(s_num,"_slice%d");
       Volume s_vol(s_nam, Tube(rmin,rmax,thick), mat);
         
-      if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
+      if ( x_slice.isSensitive() ) {
+	sens.setType("tracker");
+	s_vol.setSensitiveDetector(sens);
+      }
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
       PlacedVolume spv = l_vol.placeVolume(s_vol,Position(0,0,z-zmin-layerWidth/2+thick/2));
@@ -65,7 +68,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       sdet.add(layerR.setPlacement(lpvR));
     }
   }
-  sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);
+  if ( x_det.hasAttr(_A(combineHits)) ) {
+    sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);
+  }
   return sdet;
 }
 

@@ -48,7 +48,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       Material   s_mat   = lcdd.material(x_slice.materialStr());
       Volume     s_vol(s_name,PolyhedraRegular(numsides,rmin,rmax,s_thick),s_mat);
         
-      if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
+      if ( x_slice.isSensitive() )  {
+	sens.setType("calorimeter");
+	s_vol.setSensitiveDetector(sens);
+      }
       s_vol.setVisAttributes(lcdd.visAttributes(x_slice.visStr()));
       sliceZ += s_thick/2;
       PlacedVolume s_phv = l_vol.placeVolume(s_vol,Position(0,0,sliceZ));

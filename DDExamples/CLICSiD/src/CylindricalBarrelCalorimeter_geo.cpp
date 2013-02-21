@@ -41,7 +41,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	Tube       slice_tube(r,router,z*2);
 	Volume     slice_vol (slice_name,slice_tube,slice_mat);
           
-	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
+	if ( x_slice.isSensitive() ) {
+	  sens.setType("calorimeter");
+	  slice_vol.setSensitiveDetector(sens);
+	}
 	r = router;
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// Instantiate physical volume

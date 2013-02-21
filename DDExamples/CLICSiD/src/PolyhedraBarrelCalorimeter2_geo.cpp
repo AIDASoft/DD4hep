@@ -124,7 +124,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	// Slice volume & box
 	Volume slice_vol(slice_name,Box(layer_dim_x,detZ/2,slice_thickness),slice_material);
 
-	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
+	if ( x_slice.isSensitive() ) {
+	  sens.setType("calorimeter");
+	  slice_vol.setSensitiveDetector(sens);
+	}
 	// Set region, limitset, and vis.
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// slice PlacedVolume

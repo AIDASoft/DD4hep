@@ -20,7 +20,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   Material    vacuum    = lcdd.vacuum();
   int         det_id    = x_det.id();
   string      det_name  = x_det.nameStr();
-  bool        reflect   = x_det.reflect();
+  bool        reflect   = x_det.reflect(false);
   DetElement  sdet       (det_name,det_id);
   Volume      motherVol = lcdd.trackingVolume();
   int         m_id=0, c_id=0, n_sensor=0;
@@ -54,6 +54,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       PlacedVolume phv = m_volume.placeVolume(vol,Position(0,posY+c_thick/2,0));
       phv.addPhysVolID(_X(component),c_id);
       if ( c.isSensitive() ) {
+	sens.setType("tracker");
 	sdet.check(n_sensor > 1,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");
 	phv.addPhysVolID("sensor",c_id);
 	vol.setSensitiveDetector(sens);

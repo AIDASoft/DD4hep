@@ -41,7 +41,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
       Volume s_vol(s_name, s_tub, mat);
 
       r += thickness;
-      if ( x_slice.isSensitive() ) s_vol.setSensitiveDetector(sens);
+      if ( x_slice.isSensitive() ) {
+	sens.setType("tracker");
+	s_vol.setSensitiveDetector(sens);
+      }
       // Set Attributes
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
       PlacedVolume spv = l_vol.placeVolume(s_vol,IdentityPos());
@@ -56,7 +59,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     lpv.addPhysVolID("system",sdet.id()).addPhysVolID(_X(barrel),0);
     layer.setPlacement(lpv);
   }
-  sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);
+  if ( x_det.hasAttr(_A(combineHits)) ) {
+    sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);
+  }
   return sdet;
 }
 

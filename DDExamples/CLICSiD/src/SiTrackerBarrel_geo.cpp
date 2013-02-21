@@ -25,7 +25,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
     xml_comp_t x_mod  = mi;
     xml_comp_t m_env  = x_mod.child(_X(module_envelope));
     string     m_nam  = x_mod.nameStr();
-    Volume     m_vol(m_nam,Box(m_env.width(),m_env.length(),m_env.thickness()),air);
+    Volume     m_vol(det_name+"_"+m_nam,Box(m_env.width(),m_env.length(),m_env.thickness()),air);
     DetElement m_elt(sdet, m_nam, det_id);
     int        ncomponents = 0, sensor_number = 0;
 
@@ -54,6 +54,7 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	c_phv = m_vol.placeVolume(c_vol);
       }
       if ( x_comp.isSensitive() ) {
+	sens.setType("tracker");
 	c_phv.addPhysVolID(_X(sensor),sensor_number++);
 	c_vol.setSensitiveDetector(sens);
       }

@@ -122,7 +122,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	// Slice LV.
 	Volume sliceVol(det_name+"_"+layer_nam+"_"+slice_nam, sliceSubtraction2, slice_mat);
 
-	if ( x_slice.isSensitive() ) sliceVol.setSensitiveDetector(sens);
+	if ( x_slice.isSensitive() ) {
+	  sens.setType("tracker");
+	  sliceVol.setSensitiveDetector(sens);
+	}
 	// Set attributes of slice
 	slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 

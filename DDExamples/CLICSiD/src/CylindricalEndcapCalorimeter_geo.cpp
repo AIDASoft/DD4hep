@@ -18,9 +18,9 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
   xml_dim_t  dim       = x_det.dimensions();
   Material   air       = lcdd.air();
   string     det_name  = x_det.nameStr();
+  bool       reflect   = x_det.reflect();
   Tube       envelope;
   Volume     envelopeVol(det_name,envelope,air);
-  bool       reflect   = x_det.reflect();
   double     zmin      = dim.inner_z();
   double     rmin      = dim.inner_r();
   double     rmax      = dim.outer_r();
@@ -45,8 +45,10 @@ static Ref_t create_detector(LCDD& lcdd, const xml_h& e, SensitiveDetector& sens
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
 	Volume     slice_vol (slice_name,Tube(rmin,rmax,w),slice_mat);
           
-	if ( x_slice.isSensitive() ) slice_vol.setSensitiveDetector(sens);
-          
+	if ( x_slice.isSensitive() )  {
+	  sens.setType("calorimeter");
+	  slice_vol.setSensitiveDetector(sens);
+	}
 	// Set attributes of slice
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	layer_vol.placeVolume(slice_vol,Position(0,0,z-zlayer-layerWidth/2+w/2));
