@@ -503,6 +503,7 @@
         <comment>Trackers</comment>
 
         <!--                  tubeX01 parameters
+        -->
         <detector id="1" name="Beampipe" type="Tesla_tubeX01"
                   material="Beryllium" vis="TubeVis"
                   crossing_angle="ILC_Main_Crossing_Angle/2">
@@ -581,7 +582,6 @@
             </tube>
           </tubes>
         </detector>
-        -->
 
         <!--                    VXD03 parameters                       
               Note: side_band_electronics and end_ladder_electronics
@@ -638,6 +638,7 @@
 
 
         <!--                  maskX01 description 
+        -->
         <detector id="1209" name="clicmaskX01" type="Tesla_maskX01" crossing_angle="ILC_Main_Crossing_Angle/2" vis="MaskVis">
           <component name="QD0" crossType="1" material="Iron" vis="MaskMagnetsVis">
              <start inner_r="3.83*mm" outer_r="35*mm" z="4256*mm"/>
@@ -668,7 +669,6 @@
             <end   inner_r="35*mm"  outer_r="54*mm" z="LHcal_zend-2600*mm+3570*mm"/>
           </component>
         </detector>
-        -->
 
         <!--                  LumiCalX parameters
         -->
@@ -691,6 +691,7 @@
         </detector>
 
         <!--                  SEcal03 parameters
+        -->
         <detector id="10" name="ECAL" type="Tesla_SEcal03" limits="EcalLimits" vis="EcalVis">
           <param lateral_face_thickness="Ecal_lateral_face_thickness"
                  fiber_thickness="Ecal_fiber_thickness"
@@ -729,7 +730,6 @@
             <sensitive thickness="Ecal_Si_thickness" material="silicon_2.33gccm"/>
           </slab>
         </detector>
-        -->
 
         <!--                  SHcalSc02 description
         -->
@@ -751,6 +751,7 @@
         </detector>
 
         <!--                  TPC06  description
+        -->
         <detector id="1197" name="clictpc01" type="Tesla_tpc06" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
           <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ" vis="TPCTDR_gasVis"/>
           <inner_wall thickness="TPC_inner_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
@@ -790,7 +791,6 @@
                  dzCathode="0.12*mm"/>
          <cathode material="Copper" vis="TPCCathodeVis"/>
        </detector>
-        -->
 
         <!--                  SFtd05 parameters  
          -->
@@ -832,15 +832,16 @@
         </detector>
 
         <!--                  SSet02 description
+        -->
         <detector id="1208" name="SSet02" type="Tesla_SSet02" readout="SetHits" vis="SetVis">
           <param distance_set2_ecal_barrel="8.0*mm" 
                  set_layer_radial_diff="2.0*mm" 
                  sensitive_thickness="0.275*mm" 
                  support_thickness="1.0*mm"/>
         </detector>
-        -->
 
         <!--                  SEtd02 description
+        -->
         <detector id="1196" name="SEtd02" type="Tesla_SEtd02" readout="EtdHits" vis="EtdVis">
           <param etd3_ecalendcap_distance_z="20.0" 
                  sensitive_thickness="0.275" 
@@ -849,7 +850,6 @@
                  etd_tpcOuterR_radial_diff="14.7"
                  support_thickness="1.0"/>
         </detector>
-        -->
 
         <!--                  BeamCal01 description
         -->
@@ -863,15 +863,16 @@
         </detector>
 
         <!--                  SCoil02 description, driver:  coil00
+        -->
         <detector id="9" name="Coil" type="Tesla_coil00" vis="CoilVis">
           <coil inner_r="Hcal_R_max+Hcal_Coil_additional_gap"
                 outer_r="Hcal_R_max+Hcal_Coil_additional_gap+Coil_thickness" 
                 zhalf="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size"
                 material="Aluminum"/>
         </detector>
-        -->
 
         <!--                  ClicYoke01 description             
+        -->
         <detector id="1203" name="clicyoke01" type="Tesla_ClicYoke01" limits="YokeLimits" vis="YokeVis">
           <yoke symmetry="12" vis="YokeVis" material="Iron"/>
           <muon cell_size="30.0" 
@@ -900,7 +901,6 @@
           <barrel vis="YokeBarrelVis" readout="YokeBarrelHits"/>
           <endcap vis="YokeEndcapVis" readout="YokeEndcapHits"/>
         </detector>
-        -->
 
     </detectors>
 
