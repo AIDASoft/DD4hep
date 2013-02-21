@@ -491,7 +491,7 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
     string            n   = v->GetName();
     TGeoMedium*       m   = v->GetMedium();
     TGeoShape*        s   = v->GetShape();
-    xml_ref_t        sol = handleSolid(s->GetName(),s);
+    xml_ref_t         sol = handleSolid(s->GetName(),s);
 
     if ( !sol )
       throw runtime_error("G4Converter: No Geant4 Solid present for volume:"+n);
@@ -506,7 +506,7 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
       xml_ref_t med = handleMaterial(m->GetName(),m);
       vol.setRef(_X(materialref),med.name());
     }
-    if ( dynamic_cast<const Volume::Object*>(volume) ) {
+    if ( geo.doc_header && dynamic_cast<const Volume::Object*>(volume) ) {
       Region            reg = _v.region();
       LimitSet          lim = _v.limitSet();
       VisAttr           vis = _v.visAttributes();
@@ -832,7 +832,70 @@ template <typename O, typename C, typename F> void handleRMap(const O* o, const 
 }
 
 /// Create geometry conversion
-void LCDDConverter::create(DetElement top) {
+xml_doc_t LCDDConverter::createGDML(DetElement top) {
+  LCDD& lcdd = m_lcdd;
+  GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
+  m_data->clear();
+  collect(top,geo);
+  m_checkOverlaps = false;
+
+  const char empty_lcdd[] =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
+    "<!--                                                               \n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   Linear collider detector description GDML in C++  ++++\n"
+    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "-->\n"
+    "<gdml "
+    "xmlns:xs=\"http://www/w3.org/2001/XMLSchema-instance\"\n"
+    "xsi:noNamespaceSchemaLocation=\"http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd\">\n"
+    "</gdml>\0\0";
+
+  XML::DocumentHandler docH;
+  xml_elt_t elt(0);
+  geo.doc = docH.parse(empty_lcdd,sizeof(empty_lcdd));
+  geo.doc_root = geo.doc.root();
+  geo.doc_root.append(geo.doc_define    = xml_elt_t(geo.doc,_X(define)));
+  geo.doc_root.append(geo.doc_materials = xml_elt_t(geo.doc,_X(materials)));
+  geo.doc_root.append(geo.doc_solids    = xml_elt_t(geo.doc,_X(solids)));
+  geo.doc_root.append(geo.doc_structure = xml_elt_t(geo.doc,_X(structure)));
+  geo.doc_root.append(geo.doc_setup     = xml_elt_t(geo.doc,_X(setup)));
+  elt = xml_elt_t(geo.doc,_X(world));
+  elt.setAttr(_A(ref),lcdd.worldVolume().name());
+  geo.doc_setup.append(elt);
+
+
+  // Ensure that all required materials are present in the Geant4 material table
+  const LCDD::HandleMap& mat = lcdd.materials();
+  for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
+    geo.materials.insert(dynamic_cast<TGeoMedium*>((*i).second.ptr()));
+
+  // Start creating the objects for materials, solids and log volumes.
+  handle(this, geo.materials, &LCDDConverter::handleMaterial);
+  cout << "++ Handled " << geo.materials.size() << " materials." << endl;
+
+  handle(this, geo.volumes,   &LCDDConverter::collectVolume);
+  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+
+  handle(this, geo.solids,    &LCDDConverter::handleSolid);
+  cout << "++ Handled " << geo.solids.size() << " solids." << endl;
+
+  handle(this, geo.volumes,   &LCDDConverter::handleVolume);
+  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+
+  // Now place all this stuff appropriately
+  handleRMap(this, *m_data,   &LCDDConverter::handlePlacement);
+
+  m_checkNames.clear();
+  handle(this, geo.volumes,   &LCDDConverter::checkVolumes);
+  return geo.doc;
+}
+
+/// Create geometry conversion
+xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   LCDD& lcdd = m_lcdd;
   GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
   m_data->clear();
@@ -911,28 +974,29 @@ void LCDDConverter::create(DetElement top) {
   handle(this, geo.sensitives, &LCDDConverter::handleSensitive);
   cout << "++ Handled " << geo.sensitives.size() << " sensitive detectors." << endl;
 
-  handle(this, geo.limits, &LCDDConverter::handleLimitSet);
+  handle(this, geo.limits,     &LCDDConverter::handleLimitSet);
   cout << "++ Handled " << geo.limits.size() << " limit sets." << endl;
 
-  handle(this, geo.regions, &LCDDConverter::handleRegion);
+  handle(this, geo.regions,    &LCDDConverter::handleRegion);
   cout << "++ Handled " << geo.regions.size() << " regions." << endl;
 
-  handle(this, geo.volumes,   &LCDDConverter::handleVolume);
+  handle(this, geo.volumes,    &LCDDConverter::handleVolume);
   cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
 
-  handle(this, geo.fields,   &LCDDConverter::handleField);
+  handle(this, geo.fields,     &LCDDConverter::handleField);
   cout << "++ Handled " << geo.fields.size() << " fields." << endl;
 
   // Now place all this stuff appropriately
-  handleRMap(this, *m_data, &LCDDConverter::handlePlacement);
+  handleRMap(this, *m_data,    &LCDDConverter::handlePlacement);
 
   m_checkNames.clear();
-  handle(this, geo.volumes,   &LCDDConverter::checkVolumes);
+  handle(this, geo.volumes,    &LCDDConverter::checkVolumes);
 
 #if 0
   //==================== Fields
   handleProperties(m_lcdd.properties());
 #endif
+  return geo.doc;
 }
 
 LCDDConverter::GeometryInfo::GeometryInfo()
@@ -942,18 +1006,26 @@ LCDDConverter::GeometryInfo::GeometryInfo()
 {
 }
 
-static long create_translator(LCDD& lcdd, int argc, char** argv)   {
-  LCDDConverter wr(lcdd);
+static long dump_output(xml_doc_t doc, int argc, char** argv)   {
   FILE* file = argc>0 ? ::fopen(argv[0],"w") : stdout;
-  wr.create(lcdd.world());
-  LCDDConverter::GeometryInfo& geo = wr.data();
   if ( !file ) {
     cout << "Failed to open output file:" << argv[0] << endl;
     return 0;
   }
-  geo.doc->Print(file);
+  doc->Print(file);
   if ( argc>0 ) ::fclose(file);
   return 1;
 }
 
-DECLARE_APPLY(DD4hepGeometry2LCDD,create_translator);
+static long create_gdml(LCDD& lcdd, int argc, char** argv)   {
+  LCDDConverter wr(lcdd);
+  return dump_output(wr.createGDML(lcdd.world()),argc,argv);
+}
+
+static long create_lcdd(LCDD& lcdd, int argc, char** argv)   {
+  LCDDConverter wr(lcdd);
+  return dump_output(wr.createLCDD(lcdd.world()),argc,argv);
+}
+
+DECLARE_APPLY(DD4hepGeometry2GDML,create_gdml);
+DECLARE_APPLY(DD4hepGeometry2LCDD,create_lcdd);

@@ -46,9 +46,9 @@ int main(int argc,char** argv)  {
   vector<char*> geo_files;
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
-      if ( strncmp(argv[i],"-compact2lcdd",2)==0 )
+      if ( strncmp(argv[i],"-compact2lcdd",12)==0 )
 	compact2lcdd = true;
-      if ( strncmp(argv[i],"-compact2gdml",2)==0 )
+      if ( strncmp(argv[i],"-compact2gdml",12)==0 )
 	compact2gdml = true;
       else if ( strncmp(argv[i],"-input",2)==0 )
 	geo_files.push_back(argv[++i]);
@@ -61,7 +61,7 @@ int main(int argc,char** argv)  {
       usage();
     }
   }
-  if ( geo_files.empty() )
+  if ( geo_files.empty() || (!compact2lcdd && !compact2gdml))
     usage();
 
   try {

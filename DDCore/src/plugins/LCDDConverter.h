@@ -113,8 +113,11 @@ namespace DD4hep {
       /// Standard destructor
       virtual ~LCDDConverter() {}
 
-      /// Create geometry conversion
-      void create(DetElement top);
+      /// Create geometry conversion in GDML format
+      xml_doc_t createGDML(DetElement top);
+
+      /// Create geometry conversion in LCDD format
+      xml_doc_t createLCDD(DetElement top);
 
       /// Add header information in LCDD format
       virtual void handleHeader() const;
