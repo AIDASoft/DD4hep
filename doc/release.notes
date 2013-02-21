@@ -2,6 +2,13 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2013/21/02    Markus Frank
+--------------------------
+  Require strict checks for the existence of xml attributes.
+  e.g. default=false for Element::attr<bool>() is no longer an option.
+  if the attribute is not present in the element, an exception
+  is thrown.
+
 2013/20/02    Markus Frank
 --------------------------
   Install rootmap mechanism for the usage of plugins.
