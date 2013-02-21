@@ -9,6 +9,10 @@ DD4hep  ----  Release Notes
   if the attribute is not present in the element, an exception
   is thrown.
 
+  Slightly change the factory method for creating detector elements.
+  Use a more generic pattern do support also more generic XML 
+  processing.
+
 2013/20/02    Markus Frank
 --------------------------
   Install rootmap mechanism for the usage of plugins.
