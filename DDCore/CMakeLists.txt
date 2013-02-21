@@ -19,7 +19,7 @@ if(DD4HEP_USE_PYROOT)
 endif()
 
 if(DD4HEP_USE_XERCESC)
-  file(GLOB xmlsources src/XML/*.cpp src/compact/*.cpp)
+  file(GLOB xmlsources src/XML/*.cpp src/compact/*.cpp src/lcdd/*.cpp)
   list(APPEND sources ${xmlsources})
   add_definitions(-DDD4HEP_USE_XERCESC)
 endif()

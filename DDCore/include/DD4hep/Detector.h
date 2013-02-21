@@ -81,6 +81,9 @@ namespace DD4hep {
       /// Copy from handle
       SensitiveDetector(const SensitiveDetector& sd) : Ref_t(sd) {}
       
+      /// Copy from named handle
+      SensitiveDetector(const Ref_t& sd) : Ref_t(sd) {}
+      
       /// Templated constructor for handle conversions
       template <typename Q>
       SensitiveDetector(const Handle<Q>& e) : Ref_t(e) {}

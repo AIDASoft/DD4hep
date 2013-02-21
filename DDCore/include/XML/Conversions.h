@@ -42,7 +42,7 @@ namespace DD4hep {
       /// Initializing constructor of the functor with initialization of the user parameter
       Converter(Geometry::LCDD& l, user_param p) : lcdd(l), param(p) {}
       /// Callback operator to be specialized depending on the element type
-      void operator()(const XML::Handle_t& xml) const;
+      void operator()(XML::Handle_t xml) const;
     };
 
     /** @class PrintMap Conversions.h  DD4hep/compact/Conversions.h

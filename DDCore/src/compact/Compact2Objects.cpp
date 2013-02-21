@@ -37,29 +37,29 @@ namespace DD4hep {
     struct Property;
     struct AlignmentFile;
   }
-  template <> void Converter<Constant>::operator()(const xml_h& e)  const;
-  template <> void Converter<Material>::operator()(const xml_h& e)  const;
-  template <> void Converter<Atom>::operator()(const xml_h& e)  const;
-  template <> void Converter<VisAttr>::operator()(const xml_h& e)  const;
-  template <> void Converter<AlignmentEntry>::operator()(const xml_h& e)  const;
-  template <> void Converter<Region>::operator()(const xml_h& e)  const;
-  template <> void Converter<Readout>::operator()(const xml_h& e)  const;
-  template <> void Converter<LimitSet>::operator()(const xml_h& e)  const;
-  template <> void Converter<Property>::operator()(const xml_h& e)  const;
-  template <> void Converter<CartesianField>::operator()(const xml_h& e)  const;
-  template <> void Converter<SensitiveDetector>::operator()(const xml_h& element)  const;
-  template <> void Converter<DetElement>::operator()(const xml_h& element)  const;
-  template <> void Converter<GdmlFile>::operator()(const xml_h& element)  const;
-  template <> void Converter<AlignmentFile>::operator()(const xml_h& element)  const;
-  template <> void Converter<Header>::operator()(const xml_h& element)  const;
-  template <> void Converter<Compact>::operator()(const xml_h& element)  const;
+  template <> void Converter<Constant>::operator()(xml_h e)  const;
+  template <> void Converter<Material>::operator()(xml_h e)  const;
+  template <> void Converter<Atom>::operator()(xml_h e)  const;
+  template <> void Converter<VisAttr>::operator()(xml_h e)  const;
+  template <> void Converter<AlignmentEntry>::operator()(xml_h e)  const;
+  template <> void Converter<Region>::operator()(xml_h e)  const;
+  template <> void Converter<Readout>::operator()(xml_h e)  const;
+  template <> void Converter<LimitSet>::operator()(xml_h e)  const;
+  template <> void Converter<Property>::operator()(xml_h e)  const;
+  template <> void Converter<CartesianField>::operator()(xml_h e)  const;
+  template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const;
+  template <> void Converter<DetElement>::operator()(xml_h element)  const;
+  template <> void Converter<GdmlFile>::operator()(xml_h element)  const;
+  template <> void Converter<AlignmentFile>::operator()(xml_h element)  const;
+  template <> void Converter<Header>::operator()(xml_h element)  const;
+  template <> void Converter<Compact>::operator()(xml_h element)  const;
 }
 
 namespace {
   static UInt_t unique_mat_id = 0xAFFEFEED;
 }
 
-static Ref_t create_GridXYZ(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_GridXYZ(lcdd_t& /* lcdd */, xml_h e)  {
   GridXYZ obj;
   if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_A(gridSizeX)));
   if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_A(gridSizeY)));
@@ -71,7 +71,7 @@ DECLARE_XMLELEMENT(GridXYZ,create_GridXYZ);
 namespace DD4hep { namespace Geometry { typedef GridXYZ RegularNgonCartesianGridXY; }}
 DECLARE_XMLELEMENT(RegularNgonCartesianGridXY,create_GridXYZ);
 
-static Ref_t create_GlobalGridXY(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_GlobalGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   GlobalGridXY obj;
   if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_A(gridSizeX)));
   if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_A(gridSizeY)));
@@ -79,7 +79,7 @@ static Ref_t create_GlobalGridXY(lcdd_t& /* lcdd */, const xml_h& e)  {
 }
 DECLARE_XMLELEMENT(GlobalGridXY,create_GlobalGridXY);
   
-static Ref_t create_CartesianGridXY(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_CartesianGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   CartesianGridXY obj;
   if ( e.hasAttr(_A(gridSizeX)) ) obj.setGridSizeX(e.attr<double>(_A(gridSizeX)));
   if ( e.hasAttr(_A(gridSizeY)) ) obj.setGridSizeY(e.attr<double>(_A(gridSizeY)));
@@ -90,7 +90,7 @@ DECLARE_XMLELEMENT(CartesianGridXY,create_CartesianGridXY);
 namespace DD4hep { namespace Geometry { typedef CartesianGridXY EcalBarrelCartesianGridXY; }}
 DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_CartesianGridXY);
   
-static Ref_t create_ProjectiveCylinder(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_ProjectiveCylinder(lcdd_t& /* lcdd */, xml_h e)  {
   ProjectiveCylinder obj;
   if ( e.hasAttr(_A(phiBins))   ) obj.setPhiBins(e.attr<int>(_A(phiBins)));
   if ( e.hasAttr(_A(thetaBins)) ) obj.setThetaBins(e.attr<int>(_A(thetaBins)));
@@ -98,7 +98,7 @@ static Ref_t create_ProjectiveCylinder(lcdd_t& /* lcdd */, const xml_h& e)  {
 }
 DECLARE_XMLELEMENT(ProjectiveCylinder,create_ProjectiveCylinder);
   
-static Ref_t create_NonProjectiveCylinder(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_NonProjectiveCylinder(lcdd_t& /* lcdd */, xml_h e)  {
   NonProjectiveCylinder obj;
   if ( e.hasAttr(_A(gridSizePhi)) ) obj.setThetaBinSize(e.attr<double>(_A(gridSizePhi)));
   if ( e.hasAttr(_A(gridSizeZ))   ) obj.setPhiBinSize(e.attr<double>(_A(gridSizeZ)));
@@ -106,7 +106,7 @@ static Ref_t create_NonProjectiveCylinder(lcdd_t& /* lcdd */, const xml_h& e)  {
 }
 DECLARE_XMLELEMENT(NonProjectiveCylinder,create_NonProjectiveCylinder);
   
-static Ref_t create_ProjectiveZPlane(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_ProjectiveZPlane(lcdd_t& /* lcdd */, xml_h e)  {
   ProjectiveZPlane obj;
   if ( e.hasAttr(_A(phiBins))   ) obj.setThetaBins(e.attr<int>(_A(phiBins)));
   if ( e.hasAttr(_A(thetaBins)) ) obj.setPhiBins(e.attr<int>(_A(thetaBins)));
@@ -116,7 +116,7 @@ DECLARE_XMLELEMENT(ProjectiveZPlane,create_ProjectiveZPlane);
 
 
 
-static Ref_t create_ConstantField(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e)  {
   CartesianField obj;
   xml_comp_t field(e), strength(e.child(_X(strength)));
   string t = e.attr<string>(_A(field));
@@ -131,7 +131,7 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, const xml_h& e)  {
 DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
 
 
-static Ref_t create_SolenoidField(lcdd_t& lcdd, const xml_h& e)  {
+static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e)  {
   xml_comp_t c(e);
   CartesianField obj;
   Value<TNamed,SolenoidField>* ptr = new Value<TNamed,SolenoidField>();
@@ -150,7 +150,7 @@ static Ref_t create_SolenoidField(lcdd_t& lcdd, const xml_h& e)  {
 }
 DECLARE_XMLELEMENT(SolenoidMagnet,create_SolenoidField);
 
-static Ref_t create_DipoleField(lcdd_t& /* lcdd */, const xml_h& e)  {
+static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e)  {
   xml_comp_t c(e);
   CartesianField obj;
   Value<TNamed,DipoleField>* ptr = new Value<TNamed,DipoleField>();
@@ -169,7 +169,7 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, const xml_h& e)  {
 } 
 DECLARE_XMLELEMENT(DipoleMagnet,create_DipoleField);
 
-static long create_Compact(lcdd_t& lcdd, const xml_h& element) {
+static long create_Compact(lcdd_t& lcdd, xml_h element) {
   Converter<Compact> converter(lcdd);
   converter(element);
   return 1;
@@ -180,7 +180,7 @@ DECLARE_XML_DOC_READER(lccdd,create_Compact);
  *
  *
  */
-template <> void Converter<Constant>::operator()(const xml_h& e)  const  {
+template <> void Converter<Constant>::operator()(xml_h e)  const  {
   xml_ref_t    constant(e);
   TNamed*      obj = new TNamed(constant.attr<string>(_A(name)).c_str(),
 				constant.attr<string>(_A(value)).c_str()); 
@@ -193,7 +193,7 @@ template <> void Converter<Constant>::operator()(const xml_h& e)  const  {
  *
  *
  */
-template <> void Converter<Header>::operator()(const xml_h& e)  const  {
+template <> void Converter<Header>::operator()(xml_h e)  const  {
   xml_comp_t c(e);
   Header h(e.attr<string>(_A(name)),e.attr<string>(_A(title)));
   h.setUrl(e.attr<string>(_A(url)));
@@ -220,7 +220,7 @@ template <> void Converter<Header>::operator()(const xml_h& e)  const  {
  *  </element>
  *
  */
-template <> void Converter<Material>::operator()(const xml_h& e)  const  {
+template <> void Converter<Material>::operator()(xml_h e)  const  {
   xml_ref_t         m(e);
   TGeoManager*      mgr      = gGeoManager;
   xml_tag_t         mname    = m.name();
@@ -343,7 +343,7 @@ template <> void Converter<Material>::operator()(const xml_h& e)  const  {
  *
  *   <element Z="29" formula="Cu" name="Cu" >
  */
-template <> void Converter<Atom>::operator()(const xml_h& e)  const  {
+template <> void Converter<Atom>::operator()(xml_h e)  const  {
   xml_ref_t    elem(e);
   xml_tag_t    eltname  = elem.name();
   TGeoManager* mgr      = gGeoManager;
@@ -368,7 +368,7 @@ template <> void Converter<Atom>::operator()(const xml_h& e)  const  {
  *       showDaughters="false" 
  *       visible="true"/>
  */
-template <> void Converter<VisAttr>::operator()(const xml_h& e)  const  {
+template <> void Converter<VisAttr>::operator()(xml_h e)  const  {
   VisAttr attr(e.attr<string>(_A(name)));
   float r = e.hasAttr(_A(r)) ? e.attr<float>(_A(r)) : 1.0f;
   float g = e.hasAttr(_A(g)) ? e.attr<float>(_A(g)) : 1.0f;
@@ -402,7 +402,7 @@ template <> void Converter<VisAttr>::operator()(const xml_h& e)  const  {
  *    <rotation theta="theta-value" phi="phi-value" psi="psi-value"/>
  *  </alignment>
  */
-template <> void Converter<AlignmentEntry>::operator()(const xml_h& e)  const  {
+template <> void Converter<AlignmentEntry>::operator()(xml_h e)  const  {
   xml_comp_t child(e);
   string  path = e.attr<string>(_A(name));
   bool check   = e.hasAttr(_A(check));
@@ -429,7 +429,7 @@ template <> void Converter<AlignmentEntry>::operator()(const xml_h& e)  const  {
 /** Specialized converter for compact region objects.
  *
  */
-template <> void Converter<Region>::operator()(const xml_h& e)  const {
+template <> void Converter<Region>::operator()(xml_h e)  const {
   Region region(e.attr<string>(_A(name)));
   vector<string>& limits = region.limits();
   string ene = e.attr<string>(_A(eunit)), len = e.attr<string>(_A(lunit));    
@@ -451,9 +451,9 @@ template <> void Converter<Region>::operator()(const xml_h& e)  const {
  *  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
  *  </readout>
  */
-template <> void Converter<Readout>::operator()(const xml_h& e)  const {
-  const xml_h  id = e.child(_X(id));
-  const xml_h seg = e.child(_X(segmentation),false);
+template <> void Converter<Readout>::operator()(xml_h e)  const {
+  xml_h    id  = e.child(_X(id));
+  xml_h   seg  = e.child(_X(segmentation),false);
   string  name = e.attr<string>(_A(name));
   Readout ro(name);
 
@@ -479,7 +479,7 @@ template <> void Converter<Readout>::operator()(const xml_h& e)  const {
  *        <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
  *  ... </limitset>
  */
-template <> void Converter<LimitSet>::operator()(const xml_h& e)  const {
+template <> void Converter<LimitSet>::operator()(xml_h e)  const {
   LimitSet ls(e.attr<string>(_A(name)));
   for (xml_coll_t c(e,XML::Tag_limit); c; ++c) {
     Limit limit;
@@ -499,7 +499,7 @@ template <> void Converter<LimitSet>::operator()(const xml_h& e)  const {
  *        <attributes name="key" type="" .... />
  *  ... </properties>
  */
-template <> void Converter<Property>::operator()(const xml_h& e)  const {
+template <> void Converter<Property>::operator()(xml_h e)  const {
   string name = e.attr<string>(_A(name));
   LCDD::Properties& prp = lcdd.properties();
   if ( name.empty() ) {
@@ -523,7 +523,7 @@ template <> void Converter<Property>::operator()(const xml_h& e)  const {
  *       <strength x="0" y="0" z="5"/>
  *     </field>
  */
-template <> void Converter<CartesianField>::operator()(const xml_h& e)  const  {
+template <> void Converter<CartesianField>::operator()(xml_h e)  const  {
   string msg = "updated";
   string name = e.attr<string>(_A(name));
   string type = e.attr<string>(_A(type));
@@ -570,7 +570,7 @@ template <> void Converter<CartesianField>::operator()(const xml_h& e)  const  {
  *  </sd>
  *
  */
-template <> void Converter<SensitiveDetector>::operator()(const xml_h& element)  const {
+template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const {
   string name = element.attr<string>(_A(name));
   try {
     DetElement        det = lcdd.detector(name);
@@ -644,7 +644,7 @@ void setChildTitles(const pair<string,DetElement>& e) {
   for_each(children.begin(),children.end(),setChildTitles);
 }
 
-template <> void Converter<DetElement>::operator()(const xml_h& element)  const {
+template <> void Converter<DetElement>::operator()(xml_h element)  const {
   static const char* req_dets = ::getenv("REQUIRED_DETECTORS");
   static const char* req_typs = ::getenv("REQUIRED_DETECTOR_TYPES");
   static const char* ign_dets = ::getenv("IGNORED_DETECTORS");
@@ -667,7 +667,8 @@ template <> void Converter<DetElement>::operator()(const xml_h& element)  const 
       sd.setReadout(ro);
       lcdd.addSensitiveDetector(sd);
     }
-    DetElement det(Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sd)));
+    Ref_t sens = sd;
+    DetElement det(Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sens)));
     if ( det.isValid() )  {
       setChildTitles(make_pair(name,det));
       if ( attr_ro )  {
@@ -689,19 +690,19 @@ template <> void Converter<DetElement>::operator()(const xml_h& element)  const 
 }
   
 /// Read material entries from a seperate file in one of the include sections of the geometry
-template <> void Converter<GdmlFile>::operator()(const xml_h& element)  const  {
+template <> void Converter<GdmlFile>::operator()(xml_h element)  const  {
   xml_h materials = XML::DocumentHandler().load(element,element.attr_value(_A(ref))).root();
   xml_coll_t(materials,_X(element) ).for_each(Converter<Atom>(this->lcdd));
   xml_coll_t(materials,_X(material)).for_each(Converter<Material>(this->lcdd));
 }
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
-template <> void Converter<AlignmentFile>::operator()(const xml_h& element)  const  {
+template <> void Converter<AlignmentFile>::operator()(xml_h element)  const  {
   xml_h alignments = XML::DocumentHandler().load(element,element.attr_value(_A(ref))).root();
   xml_coll_t(alignments,_X(alignment)).for_each(Converter<AlignmentEntry>(this->lcdd));
 }
 
-template <> void Converter<Compact>::operator()(const xml_h& element)  const  {
+template <> void Converter<Compact>::operator()(xml_h element)  const  {
   char text[32];
   xml_elt_t compact(element);
   xml_coll_t(compact,_X(includes)    ).for_each(_X(gdmlFile), Converter<GdmlFile>(lcdd));

@@ -6,13 +6,13 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_XML_LCDDCONVERTER_H
-#define DD4HEP_XML_LCDDCONVERTER_H
+#ifndef DD4HEP_GEOMETRY_LCDDCONVERTER_H
+#define DD4HEP_GEOMETRY_LCDDCONVERTER_H
 
 // Framework include files
-#include "DD4hep/GeoHandler.h"
 #include "DD4hep/LCDD.h"
-#include "XML/XMLElements.h"
+#include "DD4hep/GeoHandler.h"
+#include "DD4hep/DetFactoryHelper.h"
 
 // C/C++ include files
 #include <set>
@@ -27,7 +27,6 @@ class TGeoMedium;
 class TGeoNode;
 class TGeoMatrix;
 
-
 /*
  *   DD4hep namespace declaration
  */
@@ -36,8 +35,7 @@ namespace DD4hep {
   /*
    *   XML namespace declaration
    */
-  namespace XML   {
-
+  namespace Geometry   {
 
     /** @class LCDDConverter LCDDConverter.h XML/LCDDConverter.h
      * 
@@ -46,9 +44,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct LCDDConverter : public Geometry::GeoHandler  {
-      typedef Geometry::LCDD       LCDD;
-      typedef Geometry::DetElement DetElement;
+    struct LCDDConverter : public GeoHandler  {
+      typedef XML::XmlElement XmlElement;
       typedef std::map<const TGeoElement*,XmlElement*> ElementMap;
       typedef std::map<const TGeoMedium*, XmlElement*> MaterialMap;
       typedef std::map<const TNamed*,     XmlElement*> LimitMap;
@@ -61,7 +58,7 @@ namespace DD4hep {
       typedef std::map<const TNamed*,     XmlElement*> FieldMap;
       typedef std::map<const TNamed*,     XmlElement*> IdSpecMap;
       typedef std::map<const TGeoMatrix*, XmlElement*> TrafoMap;
-      struct GeometryInfo : public Geometry::GeoHandler::GeometryInfo {
+      struct GeometryInfo : public GeoHandler::GeometryInfo {
 	ElementMap         xmlElements;
 	MaterialMap        xmlMaterials;
 	SolidMap           xmlSolids;
@@ -91,8 +88,8 @@ namespace DD4hep {
 	void checkShape   (const std::string& name,const TNamed* n) const { check(name,n,checks.solids);    }
 	void checkMaterial(const std::string& name,const TNamed* n) const { check(name,n,checks.materials); }
 
-	Document           doc;
-	Element            doc_root, doc_header, doc_idDict, doc_detectors, doc_limits, doc_regions,
+	xml_doc_t           doc;
+	xml_elt_t           doc_root, doc_header, doc_idDict, doc_detectors, doc_limits, doc_regions,
 	  doc_display, doc_gdml, doc_fields, doc_define, doc_materials, doc_solids, doc_structure, doc_setup;
 	GeometryInfo();
       };
@@ -123,47 +120,47 @@ namespace DD4hep {
       virtual void handleHeader() const;
 
       /// Convert the geometry type material into the corresponding Xml object(s).
-      virtual Handle_t handleMaterial(const std::string& name, const TGeoMedium* medium) const;
+      virtual xml_h handleMaterial(const std::string& name, const TGeoMedium* medium) const;
 
       /// Convert the geometry type element into the corresponding Xml object(s).
-      virtual Handle_t handleElement(const std::string& name, const TGeoElement* element) const;
+      virtual xml_h handleElement(const std::string& name, const TGeoElement* element) const;
 
       /// Convert the geometry type solid into the corresponding Xml object(s).
-      virtual Handle_t handleSolid(const std::string& name, const TGeoShape* volume) const;
+      virtual xml_h handleSolid(const std::string& name, const TGeoShape* volume) const;
 
       /// Convert the geometry type logical volume into the corresponding Xml object(s).
-      virtual Handle_t handleVolume(const std::string& name, const TGeoVolume* volume) const;
+      virtual xml_h handleVolume(const std::string& name, const TGeoVolume* volume) const;
       virtual void     collectVolume(const std::string& name, const TGeoVolume* volume) const;
 
       /// Convert the geometry type volume placement into the corresponding Xml object(s).
-      virtual Handle_t handlePlacement(const std::string& name, const TGeoNode* node) const;
+      virtual xml_h handlePlacement(const std::string& name, const TGeoNode* node) const;
 
       /// Convert the geometry type field into the corresponding Xml object(s).
-      ///virtual Handle_t handleField(const std::string& name, Ref_t field) const;
+      ///virtual xml_h handleField(const std::string& name, Ref_t field) const;
 
       /// Convert the geometry type region into the corresponding Xml object(s).
-      virtual Handle_t handleRegion(const std::string& name, const TNamed* region)  const;
+      virtual xml_h handleRegion(const std::string& name, const TNamed* region)  const;
 
       /// Convert the geometry visualisation attributes to the corresponding Xml object(s).
-      virtual Handle_t handleVis(const std::string& name, const TNamed* vis) const;
+      virtual xml_h handleVis(const std::string& name, const TNamed* vis) const;
 
       /// Convert the geometry id dictionary entry to the corresponding Xml object(s).
-      virtual Handle_t handleIdSpec(const std::string& name, const TNamed* vis) const;
+      virtual xml_h handleIdSpec(const std::string& name, const TNamed* vis) const;
 
       /// Convert the geometry type LimitSet into the corresponding Xml object(s).
-      virtual Handle_t handleLimitSet(const std::string& name, const TNamed* limitset)  const;
+      virtual xml_h handleLimitSet(const std::string& name, const TNamed* limitset)  const;
 
       /// Convert the geometry type SensitiveDetector into the corresponding Xml object(s).
-      virtual Handle_t handleSensitive(const std::string& name, const TNamed* sens_det)  const;
+      virtual xml_h handleSensitive(const std::string& name, const TNamed* sens_det)  const;
 
       /// Convert the Position into the corresponding Xml object(s).
-      virtual Handle_t handlePosition(const std::string& name, const TGeoMatrix* trafo)   const;
+      virtual xml_h handlePosition(const std::string& name, const TGeoMatrix* trafo)   const;
 
       /// Convert the Rotation into the corresponding Xml object(s).
-      virtual Handle_t handleRotation(const std::string& name, const TGeoMatrix* trafo)   const;
+      virtual xml_h handleRotation(const std::string& name, const TGeoMatrix* trafo)   const;
 
       /// Convert the electric or magnetic fields into the corresponding Xml object(s).
-      virtual Handle_t handleField(const std::string& name, const TNamed* field)   const;
+      virtual xml_h handleField(const std::string& name, const TNamed* field)   const;
 
       /// Handle the geant 4 specific properties
       void handleProperties(LCDD::Properties& prp) const;
@@ -171,4 +168,4 @@ namespace DD4hep {
   }    // End namespace XML
 }      // End namespace DD4hep
 
-#endif // DD4HEP_XML_LCDDCONVERTER_H
+#endif // DD4HEP_GEOMETRY_LCDDCONVERTER_H

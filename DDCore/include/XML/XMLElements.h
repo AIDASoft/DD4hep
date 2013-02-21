@@ -591,6 +591,8 @@ namespace DD4hep {
       /// Set single attribute
       template <class T> 
       Attribute setAttr(const XmlChar* nam,const T& val) const  {  return m_element.setAttr(nam,val);     }
+      /// Set element value
+      template <class T> void setValue(const T& val) const      {  m_element.setValue(val);               }
       /// Clone the DOM element tree
       Handle_t clone(Handle_t h) const;
       /// Add a new child to the DOM node

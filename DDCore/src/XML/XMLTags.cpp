@@ -50,6 +50,8 @@ namespace DD4hep   { namespace XML  {
   TAG(n);
   TAG(ref);
 
+  //
+
   // RefElement parameters
 
   // Polycone parameters
@@ -263,6 +265,26 @@ namespace DD4hep   { namespace XML  {
   ATTR(zhalf);
 
   // LCDD
+  TAG(firstrotation);
+  TAG(firstposition);
+  TAG(union);
+  TAG(intersection);
+  TAG(paraboloid);
+  TAG(assembly);
+  TAG(sphere);
+  TAG(para);
+  TAG(eltube);
+  TAG(torus);
+  ATTR(idspecref);
+  ATTR(rlo);
+  ATTR(rhi);
+  ATTR(rtor);
+  ATTR(starttheta);
+  ATTR(deltatheta);
+  ATTR(first);
+  ATTR(second);
+
+
   TAG(lcdd);
   TAG(lccdd);
   TAG(barrel);

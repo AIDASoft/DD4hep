@@ -28,8 +28,9 @@ typedef DD4hep::XML::RefElement    xml_ref_t;
 typedef DD4hep::XML::DetElement    xml_det_t;
 typedef DD4hep::XML::Component     xml_comp_t;
 typedef DD4hep::XML::Dimension     xml_dim_t;
-typedef DD4hep::Geometry::LCDD     lcdd_t;
+typedef DD4hep::XML::Document      xml_doc_t;
 typedef DD4hep::XML::Strng_t       Unicode;
+typedef DD4hep::Geometry::LCDD     lcdd_t;
 
 /*
  *   DD4hep namespace declaration

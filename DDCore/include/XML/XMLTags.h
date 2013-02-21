@@ -164,6 +164,25 @@ namespace DD4hep   { namespace XML  {
   extern const Tag_t Tag_polyhedra;
   extern const Tag_t Attr_numsides;
 
+  /// LCDD XML
+  extern const Tag_t Tag_firstrotation;
+  extern const Tag_t Tag_firstposition;
+  extern const Tag_t Tag_union;
+  extern const Tag_t Tag_intersection;
+  extern const Tag_t Tag_paraboloid;
+  extern const Tag_t Tag_assembly;
+  extern const Tag_t Tag_sphere;
+  extern const Tag_t Tag_para;
+  extern const Tag_t Tag_eltube;
+  extern const Tag_t Tag_torus;
+  extern const Tag_t Attr_idspecref;
+  extern const Tag_t Attr_rlo;
+  extern const Tag_t Attr_rhi;
+  extern const Tag_t Attr_rtor;
+  extern const Tag_t Attr_starttheta;
+  extern const Tag_t Attr_deltatheta;
+  extern const Tag_t Attr_first;
+  extern const Tag_t Attr_second;
 
   /// Compact XML
   extern const Tag_t Attr_gap;

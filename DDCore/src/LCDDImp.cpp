@@ -235,7 +235,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());  
 #elif DD4HEP_USE_XERCESC
-  const XML::Handle_t xml_root = XML::DocumentHandler().load(xmlfile).root();
+  XML::Handle_t xml_root = XML::DocumentHandler().load(xmlfile).root();
   string tag = xml_root.tag();
   try {
     LCDD* lcdd = this;

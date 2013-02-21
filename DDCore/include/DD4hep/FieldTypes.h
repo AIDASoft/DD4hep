@@ -74,10 +74,11 @@ namespace DD4hep {
      */
     class DipoleField  : public CartesianField::Object  {
     public:
-      double              zmax;
-      double              zmin;
-      double              rmax;
-      std::vector<double> coefficents;
+      typedef std::vector<double> Coefficents;
+      double      zmax;
+      double      zmin;
+      double      rmax;
+      Coefficents coefficents;
     public:
       /// Initializing constructor
       DipoleField();
