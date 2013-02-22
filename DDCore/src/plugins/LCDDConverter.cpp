@@ -82,15 +82,15 @@ xml_h LCDDConverter::handleElement(const string& name, const TGeoElement* elemen
   GeometryInfo& geo = data();
   xml_h e = geo.xmlElements[element];
   if ( !e ) {
-    xml_elt_t atom(geo.doc,_X(atom));
-    geo.doc_materials.append(e=xml_elt_t(geo.doc,_X(element)));
+    xml_elt_t atom(geo.doc,_U(atom));
+    geo.doc_materials.append(e=xml_elt_t(geo.doc,_U(element)));
     e.append(atom);
-    e.setAttr(_A(name),element->GetName());
-    e.setAttr(_A(formula),element->GetName());
-    e.setAttr(_A(Z),element->Z());
-    atom.setAttr(_A(type),"A");
-    atom.setAttr(_A(unit),"g/mol");
-    atom.setAttr(_A(value),element->A() /* *(g/mole) */);
+    e.setAttr(_U(name),element->GetName());
+    e.setAttr(_U(formula),element->GetName());
+    e.setAttr(_U(Z),element->Z());
+    atom.setAttr(_U(type),"A");
+    atom.setAttr(_U(unit),"g/mol");
+    atom.setAttr(_U(value),element->A() /* *(g/mole) */);
     geo.xmlElements[element] = e;
   }
   return e;
@@ -104,12 +104,12 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
     xml_h obj;
     TGeoMaterial* m = medium->GetMaterial();
     double        d = m->GetDensity(); //*(gram/cm3);
-    mat = xml_elt_t(geo.doc,_X(material));
-    mat.setAttr(_A(name),medium->GetName());
-    mat.append(obj=xml_elt_t(geo.doc,_X(D)));
-    obj.setAttr(_A(value),m->GetDensity()  /*  *(g/cm3)  */);
-    obj.setAttr(_A(unit),"g/cm3");
-    obj.setAttr(_A(type),"density");
+    mat = xml_elt_t(geo.doc,_U(material));
+    mat.setAttr(_U(name),medium->GetName());
+    mat.append(obj=xml_elt_t(geo.doc,_U(D)));
+    obj.setAttr(_U(value),m->GetDensity()  /*  *(g/cm3)  */);
+    obj.setAttr(_U(unit),"g/cm3");
+    obj.setAttr(_U(type),"density");
 
     geo.checkMaterial(name,medium);
 
@@ -125,20 +125,20 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
       for (int i=0, n=mix->GetNelements(); i < n; i++) {
 	TGeoElement *elt = mix->GetElement(i);
 	string formula = elt->GetTitle()+string("_elm");
-	mat.append(obj=xml_elt_t(geo.doc,_X(fraction)));
-	obj.setAttr(_A(n),wmix[i]/sum);
-	obj.setAttr(_A(ref),elt->GetName());
+	mat.append(obj=xml_elt_t(geo.doc,_U(fraction)));
+	obj.setAttr(_U(n),wmix[i]/sum);
+	obj.setAttr(_U(ref),elt->GetName());
       }
     }
     else {
       TGeoElement *elt = m->GetElement(0);
-      xml_elt_t atom(geo.doc,_X(atom));
+      xml_elt_t atom(geo.doc,_U(atom));
       handleElement(elt->GetName(),elt);
       mat.append(atom);
-      mat.setAttr(_A(Z),m->GetZ());
-      atom.setAttr(_A(type),"A");
-      atom.setAttr(_A(unit),"g/mol");
-      atom.setAttr(_A(value),m->GetA()  /*  *(g/mole)  */);
+      mat.setAttr(_U(Z),m->GetZ());
+      atom.setAttr(_U(type),"A");
+      atom.setAttr(_U(unit),"g/mol");
+      atom.setAttr(_U(value),m->GetA()  /*  *(g/mole)  */);
     }
     geo.doc_materials.append(mat);
     geo.xmlMaterials[medium] = mat;
@@ -155,203 +155,203 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
     geo.checkShape(name,shape);
     if ( shape->IsA() == TGeoBBox::Class() ) {
       const TGeoBBox* s = (const TGeoBBox*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(box)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(x),s->GetDX()*CM_2_MM);
-      solid.setAttr(_A(y),s->GetDY()*CM_2_MM);
-      solid.setAttr(_A(z),s->GetDZ()*CM_2_MM);
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(box)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(x),s->GetDX()*CM_2_MM);
+      solid.setAttr(_U(y),s->GetDY()*CM_2_MM);
+      solid.setAttr(_U(z),s->GetDZ()*CM_2_MM);
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoTube::Class() ) {
       const TGeoTube* s = (const TGeoTube*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(tube)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(rmin),s->GetRmin()*CM_2_MM);
-      solid.setAttr(_A(rmax),s->GetRmax()*CM_2_MM);
-      solid.setAttr(_A(z),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(startphi),0e0);
-      solid.setAttr(_A(deltaphi),2*M_PI);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(tube)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(rmin),s->GetRmin()*CM_2_MM);
+      solid.setAttr(_U(rmax),s->GetRmax()*CM_2_MM);
+      solid.setAttr(_U(z),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(startphi),0e0);
+      solid.setAttr(_U(deltaphi),2*M_PI);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoEltu::Class() ) {
       const TGeoEltu* s = (const TGeoEltu*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(eltube)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(dx),s->GetA()*CM_2_MM);
-      solid.setAttr(_A(dy),s->GetB()*CM_2_MM);
-      solid.setAttr(_A(dz),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(eltube)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(dx),s->GetA()*CM_2_MM);
+      solid.setAttr(_U(dy),s->GetB()*CM_2_MM);
+      solid.setAttr(_U(dz),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoTubeSeg::Class() ) {
       const TGeoTubeSeg* s = (const TGeoTubeSeg*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(tube)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(rmin),s->GetRmin()*CM_2_MM);
-      solid.setAttr(_A(rmax),s->GetRmax()*CM_2_MM);
-      solid.setAttr(_A(z),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(startphi),s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltaphi),s->GetPhi2()*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(tube)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(rmin),s->GetRmin()*CM_2_MM);
+      solid.setAttr(_U(rmax),s->GetRmax()*CM_2_MM);
+      solid.setAttr(_U(z),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(startphi),s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),s->GetPhi2()*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoTrd1::Class() ) {
       const TGeoTrd1* s = (const TGeoTrd1*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(trd)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(x1),s->GetDx1()*CM_2_MM);
-      solid.setAttr(_A(x2),s->GetDx2()*CM_2_MM);
-      solid.setAttr(_A(y1),s->GetDy()*CM_2_MM);
-      solid.setAttr(_A(y2),s->GetDy()*CM_2_MM);
-      solid.setAttr(_A(z), s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(trd)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(x1),s->GetDx1()*CM_2_MM);
+      solid.setAttr(_U(x2),s->GetDx2()*CM_2_MM);
+      solid.setAttr(_U(y1),s->GetDy()*CM_2_MM);
+      solid.setAttr(_U(y2),s->GetDy()*CM_2_MM);
+      solid.setAttr(_U(z), s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoTrd2::Class() ) {
       const TGeoTrd2* s = (const TGeoTrd2*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(trd)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(x1),s->GetDx1()*CM_2_MM);
-      solid.setAttr(_A(x2),s->GetDx2()*CM_2_MM);
-      solid.setAttr(_A(y1),s->GetDy1()*CM_2_MM);
-      solid.setAttr(_A(y2),s->GetDy2()*CM_2_MM);
-      solid.setAttr(_A(z), s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(trd)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(x1),s->GetDx1()*CM_2_MM);
+      solid.setAttr(_U(x2),s->GetDx2()*CM_2_MM);
+      solid.setAttr(_U(y1),s->GetDy1()*CM_2_MM);
+      solid.setAttr(_U(y2),s->GetDy2()*CM_2_MM);
+      solid.setAttr(_U(z), s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoTrap::Class() ) {
       const TGeoTrap* s = (const TGeoTrap*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(trap)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(x1),s->GetBl1()*CM_2_MM);
-      solid.setAttr(_A(x2),s->GetTl1()*CM_2_MM);
-      solid.setAttr(_A(x3),s->GetBl2()*CM_2_MM);
-      solid.setAttr(_A(x4),s->GetTl2()*CM_2_MM);
-      solid.setAttr(_A(y1),s->GetH1()*CM_2_MM);
-      solid.setAttr(_A(y2),s->GetH2()*CM_2_MM);
-      solid.setAttr(_A(z),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(alpha1),s->GetAlpha1()*DEGREE_2_RAD);
-      solid.setAttr(_A(alpha2),s->GetAlpha2()*DEGREE_2_RAD);
-      solid.setAttr(_A(theta),s->GetTheta()*DEGREE_2_RAD);
-      solid.setAttr(_A(phi),s->GetPhi()*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(trap)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(x1),s->GetBl1()*CM_2_MM);
+      solid.setAttr(_U(x2),s->GetTl1()*CM_2_MM);
+      solid.setAttr(_U(x3),s->GetBl2()*CM_2_MM);
+      solid.setAttr(_U(x4),s->GetTl2()*CM_2_MM);
+      solid.setAttr(_U(y1),s->GetH1()*CM_2_MM);
+      solid.setAttr(_U(y2),s->GetH2()*CM_2_MM);
+      solid.setAttr(_U(z),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(alpha1),s->GetAlpha1()*DEGREE_2_RAD);
+      solid.setAttr(_U(alpha2),s->GetAlpha2()*DEGREE_2_RAD);
+      solid.setAttr(_U(theta),s->GetTheta()*DEGREE_2_RAD);
+      solid.setAttr(_U(phi),s->GetPhi()*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoPara::Class() ) {
       const TGeoPara* s = (const TGeoPara*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(para)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(x),s->GetX()*CM_2_MM);
-      solid.setAttr(_A(y),s->GetY()*CM_2_MM);
-      solid.setAttr(_A(z),s->GetZ()*CM_2_MM);
-      solid.setAttr(_A(alpha),s->GetAlpha()*DEGREE_2_RAD);
-      solid.setAttr(_A(theta),s->GetTheta()*DEGREE_2_RAD);
-      solid.setAttr(_A(phi),s->GetPhi()*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(para)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(x),s->GetX()*CM_2_MM);
+      solid.setAttr(_U(y),s->GetY()*CM_2_MM);
+      solid.setAttr(_U(z),s->GetZ()*CM_2_MM);
+      solid.setAttr(_U(alpha),s->GetAlpha()*DEGREE_2_RAD);
+      solid.setAttr(_U(theta),s->GetTheta()*DEGREE_2_RAD);
+      solid.setAttr(_U(phi),s->GetPhi()*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoPgon::Class() ) {
       const TGeoPgon* s = (const TGeoPgon*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(polyhedra)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(startphi),s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltaphi),s->GetDphi()*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(polyhedra)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(startphi),s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),s->GetDphi()*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
       for( size_t i=0; i<s->GetNz(); ++i )  {
-	zplane = xml_elt_t(geo.doc,_X(zplane));
-	zplane.setAttr(_A(rmin),s->GetRmin(i)*CM_2_MM);
-	zplane.setAttr(_A(rmax),s->GetRmax(i)*CM_2_MM);
-	zplane.setAttr(_A(z),s->GetZ(i)*CM_2_MM);
+	zplane = xml_elt_t(geo.doc,_U(zplane));
+	zplane.setAttr(_U(rmin),s->GetRmin(i)*CM_2_MM);
+	zplane.setAttr(_U(rmax),s->GetRmax(i)*CM_2_MM);
+	zplane.setAttr(_U(z),s->GetZ(i)*CM_2_MM);
 	solid.append(zplane);
       }
     }
     else if ( shape->IsA() == TGeoPcon::Class() ) {
       const TGeoPcon* s = (const TGeoPcon*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(polycone)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(startphi),s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltaphi),s->GetDphi()*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(polycone)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(startphi),s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),s->GetDphi()*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
       for( size_t i=0; i<s->GetNz(); ++i )  {
-	zplane = xml_elt_t(geo.doc,_X(zplane));
-	zplane.setAttr(_A(rmin),s->GetRmin(i)*CM_2_MM);
-	zplane.setAttr(_A(rmax),s->GetRmax(i)*CM_2_MM);
-	zplane.setAttr(_A(z),s->GetZ(i)*CM_2_MM);
+	zplane = xml_elt_t(geo.doc,_U(zplane));
+	zplane.setAttr(_U(rmin),s->GetRmin(i)*CM_2_MM);
+	zplane.setAttr(_U(rmax),s->GetRmax(i)*CM_2_MM);
+	zplane.setAttr(_U(z),s->GetZ(i)*CM_2_MM);
 	solid.append(zplane);
       }
     }
     else if ( shape->IsA() == TGeoCone::Class() ) {
       const TGeoCone* s = (const TGeoCone*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(cone)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(z),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(rmin1),s->GetRmin1()*CM_2_MM);
-      solid.setAttr(_A(rmax1),s->GetRmax1()*CM_2_MM);
-      solid.setAttr(_A(rmin2),s->GetRmin2()*CM_2_MM);
-      solid.setAttr(_A(rmax2),s->GetRmax2()*CM_2_MM);
-      solid.setAttr(_A(z),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(startphi),0e0);
-      solid.setAttr(_A(deltaphi),2*M_PI);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(cone)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(z),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(rmin1),s->GetRmin1()*CM_2_MM);
+      solid.setAttr(_U(rmax1),s->GetRmax1()*CM_2_MM);
+      solid.setAttr(_U(rmin2),s->GetRmin2()*CM_2_MM);
+      solid.setAttr(_U(rmax2),s->GetRmax2()*CM_2_MM);
+      solid.setAttr(_U(z),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(startphi),0e0);
+      solid.setAttr(_U(deltaphi),2*M_PI);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoConeSeg::Class() ) {
       const TGeoConeSeg* s = (const TGeoConeSeg*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(cone)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(startphi),s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltaphi),(s->GetPhi2()-s->GetPhi1())*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
-      zplane = xml_elt_t(geo.doc,_X(zplane));
-      zplane.setAttr(_A(rmin),s->GetRmin1()*CM_2_MM);
-      zplane.setAttr(_A(rmax),s->GetRmax1()*CM_2_MM);
-      zplane.setAttr(_A(z),s->GetDz()*CM_2_MM);
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(cone)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(startphi),s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),(s->GetPhi2()-s->GetPhi1())*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
+      zplane = xml_elt_t(geo.doc,_U(zplane));
+      zplane.setAttr(_U(rmin),s->GetRmin1()*CM_2_MM);
+      zplane.setAttr(_U(rmax),s->GetRmax1()*CM_2_MM);
+      zplane.setAttr(_U(z),s->GetDz()*CM_2_MM);
       solid.append(zplane);
-      zplane = xml_elt_t(geo.doc,_X(zplane));
-      zplane.setAttr(_A(rmin),s->GetRmin2()*CM_2_MM);
-      zplane.setAttr(_A(rmax),s->GetRmax2()*CM_2_MM);
-      zplane.setAttr(_A(z),s->GetDz()*CM_2_MM);
+      zplane = xml_elt_t(geo.doc,_U(zplane));
+      zplane.setAttr(_U(rmin),s->GetRmin2()*CM_2_MM);
+      zplane.setAttr(_U(rmax),s->GetRmax2()*CM_2_MM);
+      zplane.setAttr(_U(z),s->GetDz()*CM_2_MM);
       solid.append(zplane);
     }
     else if ( shape->IsA() == TGeoParaboloid::Class() ) {
       const TGeoParaboloid* s = (const TGeoParaboloid*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(paraboloid)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(rlo),s->GetRlo()*CM_2_MM);
-      solid.setAttr(_A(rhi),s->GetRhi()*CM_2_MM);
-      solid.setAttr(_A(dz),s->GetDz()*CM_2_MM);
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(paraboloid)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(rlo),s->GetRlo()*CM_2_MM);
+      solid.setAttr(_U(rhi),s->GetRhi()*CM_2_MM);
+      solid.setAttr(_U(dz),s->GetDz()*CM_2_MM);
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoSphere::Class() ) {
       const TGeoSphere* s = (const TGeoSphere*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(sphere)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(rmin),s->GetRmin()*CM_2_MM);
-      solid.setAttr(_A(rmax),s->GetRmax()*CM_2_MM);
-      solid.setAttr(_A(startphi),s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltaphi),(s->GetPhi2()-s->GetPhi1())*DEGREE_2_RAD);
-      solid.setAttr(_A(starttheta),s->GetTheta1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltatheta),(s->GetTheta2()-s->GetTheta1())*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(sphere)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(rmin),s->GetRmin()*CM_2_MM);
+      solid.setAttr(_U(rmax),s->GetRmax()*CM_2_MM);
+      solid.setAttr(_U(startphi),s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),(s->GetPhi2()-s->GetPhi1())*DEGREE_2_RAD);
+      solid.setAttr(_U(starttheta),s->GetTheta1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltatheta),(s->GetTheta2()-s->GetTheta1())*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoTorus::Class() ) {
       const TGeoTorus* s = (const TGeoTorus*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(torus)));
-      solid.setAttr(_A(name),Unicode(name));
-      solid.setAttr(_A(rtor),s->GetR());
-      solid.setAttr(_A(rmin),s->GetRmin());
-      solid.setAttr(_A(rmax),s->GetRmax());
-      solid.setAttr(_A(startphi),s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_A(deltaphi),s->GetDphi()*DEGREE_2_RAD);
-      solid.setAttr(_A(aunit),"rad");
-      solid.setAttr(_A(lunit),"mm");
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(torus)));
+      solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(rtor),s->GetR());
+      solid.setAttr(_U(rmin),s->GetRmin());
+      solid.setAttr(_U(rmax),s->GetRmax());
+      solid.setAttr(_U(startphi),s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),s->GetDphi()*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
       TGeoShapeAssembly* s = (TGeoShapeAssembly*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_X(assembly)));
-      solid.setAttr(_A(name),Unicode(name));
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(assembly)));
+      solid.setAttr(_U(name),Unicode(name));
     }
     else if ( shape->IsA() == TGeoCompositeShape::Class() ) {
       const TGeoCompositeShape* s = (const TGeoCompositeShape*)shape;
@@ -369,47 +369,47 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       }
 
       if (      oper == TGeoBoolNode::kGeoSubtraction )
-	solid = xml_elt_t(geo.doc,_X(subtraction));
+	solid = xml_elt_t(geo.doc,_U(subtraction));
       else if ( oper == TGeoBoolNode::kGeoUnion )
-	solid = xml_elt_t(geo.doc,_X(union));
+	solid = xml_elt_t(geo.doc,_U(union));
       else if ( oper == TGeoBoolNode::kGeoIntersection )
-	solid = xml_elt_t(geo.doc,_X(intersection));
+	solid = xml_elt_t(geo.doc,_U(intersection));
 
       xml_h obj;
-      solid.append(first=xml_elt_t(geo.doc,_X(first)));
-      solid.setAttr(_A(name),Unicode(name));
-      first.setAttr(_A(ref),name+"_left");
+      solid.append(first=xml_elt_t(geo.doc,_U(first)));
+      solid.setAttr(_U(name),Unicode(name));
+      first.setAttr(_U(ref),name+"_left");
       XYZRotation    rot = getXYZangles(boolean->GetLeftMatrix()->Inverse().GetRotationMatrix());
       const double  *tr  = boolean->GetLeftMatrix()->GetTranslation();
 
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
-	first.append(obj=xml_elt_t(geo.doc,_X(firstposition)));
-	obj.setAttr(_A(x),tr[0]*CM_2_MM);
-	obj.setAttr(_A(y),tr[1]*CM_2_MM);
-	obj.setAttr(_A(z),tr[2]*CM_2_MM);
+	first.append(obj=xml_elt_t(geo.doc,_U(firstposition)));
+	obj.setAttr(_U(x),tr[0]*CM_2_MM);
+	obj.setAttr(_U(y),tr[1]*CM_2_MM);
+	obj.setAttr(_U(z),tr[2]*CM_2_MM);
       }
       if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
-	first.append(obj=xml_elt_t(geo.doc,_X(firstrotation)));
-	obj.setAttr(_A(x),rot.X());
-	obj.setAttr(_A(y),rot.Y());
-	obj.setAttr(_A(z),rot.Z());
+	first.append(obj=xml_elt_t(geo.doc,_U(firstrotation)));
+	obj.setAttr(_U(x),rot.X());
+	obj.setAttr(_U(y),rot.Y());
+	obj.setAttr(_U(z),rot.Z());
       }
 
       rot = getXYZangles(boolean->GetRightMatrix()->Inverse().GetRotationMatrix());
       tr  = boolean->GetRightMatrix()->GetTranslation();
-      solid.append(second=xml_elt_t(geo.doc,_X(second)));
-      second.setAttr(_A(ref),name+"_right");
+      solid.append(second=xml_elt_t(geo.doc,_U(second)));
+      second.setAttr(_U(ref),name+"_right");
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
-	first.append(obj=xml_elt_t(geo.doc,_X(position)));
-	obj.setAttr(_A(x),tr[0]*CM_2_MM);
-	obj.setAttr(_A(y),tr[1]*CM_2_MM);
-	obj.setAttr(_A(z),tr[2]*CM_2_MM);
+	first.append(obj=xml_elt_t(geo.doc,_U(position)));
+	obj.setAttr(_U(x),tr[0]*CM_2_MM);
+	obj.setAttr(_U(y),tr[1]*CM_2_MM);
+	obj.setAttr(_U(z),tr[2]*CM_2_MM);
       }
       if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
-	first.append(obj=xml_elt_t(geo.doc,_X(rotation)));
-	obj.setAttr(_A(x),rot.X());
-	obj.setAttr(_A(y),rot.Y());
-	obj.setAttr(_A(z),rot.Z());
+	first.append(obj=xml_elt_t(geo.doc,_U(rotation)));
+	obj.setAttr(_U(x),rot.X());
+	obj.setAttr(_U(y),rot.Y());
+	obj.setAttr(_U(z),rot.Z());
       }
     }
     if ( !solid ) {
@@ -431,21 +431,21 @@ xml_h LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix* t
     const double* tr = trafo->GetTranslation();
     if ( tr[0] != 0 || tr[1] != 0 || tr[2] != 0 )   {
       geo.checkPosition(name,trafo);
-      geo.doc_define.append(pos=xml_elt_t(geo.doc,_X(position)));
-      pos.setAttr(_A(name),name);
-      pos.setAttr(_A(x),tr[0]);
-      pos.setAttr(_A(y),tr[1]);
-      pos.setAttr(_A(z),tr[2]);
+      geo.doc_define.append(pos=xml_elt_t(geo.doc,_U(position)));
+      pos.setAttr(_U(name),name);
+      pos.setAttr(_U(x),tr[0]);
+      pos.setAttr(_U(y),tr[1]);
+      pos.setAttr(_U(z),tr[2]);
     }
     else if ( identity )  {
       pos = identity;
     }
     else {
-      geo.doc_define.append(identity=xml_elt_t(geo.doc,_X(position)));
-      identity.setAttr(_A(name),"identity_pos");
-      identity.setAttr(_A(x),0);
-      identity.setAttr(_A(y),0);
-      identity.setAttr(_A(z),0);
+      geo.doc_define.append(identity=xml_elt_t(geo.doc,_U(position)));
+      identity.setAttr(_U(name),"identity_pos");
+      identity.setAttr(_U(x),0);
+      identity.setAttr(_U(y),0);
+      identity.setAttr(_U(z),0);
       pos = identity;
       geo.checkPosition("identity_pos",0);
     }
@@ -463,21 +463,21 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
     XYZRotation r = getXYZangles(trafo->Inverse().GetRotationMatrix());
     if ( r.X() != 0 || r.Y() != 0 || r.Z() != 0 )   {
       geo.checkRotation(name,trafo);
-      geo.doc_define.append(rot=xml_elt_t(geo.doc,_X(rotation)));
-      rot.setAttr(_A(name),name);
-      rot.setAttr(_A(x),r.X());
-      rot.setAttr(_A(y),r.Y());
-      rot.setAttr(_A(z),r.Z());
+      geo.doc_define.append(rot=xml_elt_t(geo.doc,_U(rotation)));
+      rot.setAttr(_U(name),name);
+      rot.setAttr(_U(x),r.X());
+      rot.setAttr(_U(y),r.Y());
+      rot.setAttr(_U(z),r.Z());
     }
     else if ( identity )  {
       rot = identity;
     }
     else {
-      geo.doc_define.append(identity=xml_elt_t(geo.doc,_X(rotation)));
-      identity.setAttr(_A(name),"identity_rot");
-      identity.setAttr(_A(x),0);
-      identity.setAttr(_A(y),0);
-      identity.setAttr(_A(z),0);
+      geo.doc_define.append(identity=xml_elt_t(geo.doc,_U(rotation)));
+      identity.setAttr(_U(name),"identity_rot");
+      identity.setAttr(_U(x),0);
+      identity.setAttr(_U(y),0);
+      identity.setAttr(_U(z),0);
       rot = identity;
       geo.checkRotation("identity_rot",0);
     }
@@ -504,12 +504,12 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
       throw runtime_error("G4Converter: No Geant4 material present for volume:"+n);
 
     geo.checkVolume(name,volume);
-    geo.doc_structure.append(vol=xml_elt_t(geo.doc,_X(volume)));
-    vol.setAttr(_A(name),n);
-    vol.setRef(_X(solidref),sol.name());
+    geo.doc_structure.append(vol=xml_elt_t(geo.doc,_U(volume)));
+    vol.setAttr(_U(name),n);
+    vol.setRef(_U(solidref),sol.name());
     if ( m )   {
       xml_ref_t med = handleMaterial(m->GetName(),m);
-      vol.setRef(_X(materialref),med.name());
+      vol.setRef(_U(materialref),med.name());
     }
     if ( geo.doc_header && dynamic_cast<const Volume::Object*>(volume) ) {
       Region            reg = _v.region();
@@ -518,19 +518,19 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
       SensitiveDetector det = _v.sensitiveDetector();
       if ( vis.isValid() )   {
 	xml_ref_t data = handleVis(vis.name(),vis.ptr());
-	vol.setRef(_X(visref),data.name());
+	vol.setRef(_U(visref),data.name());
       }
       if ( lim.isValid() )   {
 	xml_ref_t data = handleLimitSet(lim.name(),lim.ptr());
-	vol.setRef(_X(limitsetref),data.name());
+	vol.setRef(_U(limitsetref),data.name());
       }
       if ( reg.isValid() )   {
 	xml_ref_t data = handleRegion(reg.name(),reg.ptr());
-	vol.setRef(_X(regionref),data.name());
+	vol.setRef(_U(regionref),data.name());
       }
       if ( det.isValid() )   {
 	xml_ref_t data = handleSensitive(det.name(),det.ptr());
-	vol.setRef(_X(sdref),data.name());
+	vol.setRef(_U(sdref),data.name());
       }
     }
     geo.xmlVolumes[v] = vol;
@@ -586,27 +586,27 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
     xml_ref_t vol = xml_h(geo.xmlVolumes[v]);
     xml_h   mot = geo.xmlVolumes[node->GetMotherVolume()];
 
-    place = xml_elt_t(geo.doc,_X(physvol));
+    place = xml_elt_t(geo.doc,_U(physvol));
     if ( mot ) { // Beware of top level volume!
       mot.append(place);
     }
-    place.setRef(_X(volumeref),vol.name());
+    place.setRef(_U(volumeref),vol.name());
     if ( t )  {
       char text[32];
       ::sprintf(text,"_%p_pos",node);
       xml_ref_t pos = handlePosition(name+text,t);
       ::sprintf(text,"_%p_rot",node);
       xml_ref_t rot = handleRotation(name+text,t);
-      place.setRef(_X(positionref),pos.name());
-      place.setRef(_X(rotationref),rot.name());
+      place.setRef(_U(positionref),pos.name());
+      place.setRef(_U(rotationref),rot.name());
     }
     if ( dynamic_cast<const PlacedVolume::Object*>(node) ) {
       PlacedVolume p = Ref_t(node);
       const PlacedVolume::VolIDs& ids = p.volIDs();
       for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
 	xml_h pvid = xml_elt_t(geo.doc,"physvolid");
-	pvid.setAttr(_A(field_name),(*i).first);
-	pvid.setAttr(_A(value),(*i).second);
+	pvid.setAttr(_U(field_name),(*i).first);
+	pvid.setAttr(_U(value),(*i).second);
 	place.append(pvid);
       }
     }
@@ -624,12 +624,12 @@ xml_h LCDDConverter::handleRegion(const std::string& name, const TNamed* region)
   xml_h reg = geo.xmlRegions[region];
   if ( !reg )   {
     Region r = Ref_t(region);
-    geo.doc_regions.append(reg=xml_elt_t(geo.doc,_X(region)));
-    reg.setAttr(_A(name),  r.name());
-    reg.setAttr(_A(cut),   r.cut());
-    reg.setAttr(_A(eunit), r.energyUnit());
-    reg.setAttr(_A(lunit), r.lengthUnit());
-    reg.setAttr(_A(store_secondaries),r.storeSecondaries());
+    geo.doc_regions.append(reg=xml_elt_t(geo.doc,_U(region)));
+    reg.setAttr(_U(name),  r.name());
+    reg.setAttr(_U(cut),   r.cut());
+    reg.setAttr(_U(eunit), r.energyUnit());
+    reg.setAttr(_U(lunit), r.lengthUnit());
+    reg.setAttr(_U(store_secondaries),r.storeSecondaries());
     geo.xmlRegions[region] = reg;
   }
   return reg;
@@ -641,17 +641,17 @@ xml_h LCDDConverter::handleLimitSet(const std::string& name, const TNamed* limit
   xml_h xml = geo.xmlLimits[limitset];
   if ( !xml )   {
     LimitSet lim = Ref_t(limitset);
-    geo.doc_limits.append(xml=xml_elt_t(geo.doc,_X(limitset)));
-    xml.setAttr(_A(name),lim.name());
+    geo.doc_limits.append(xml=xml_elt_t(geo.doc,_U(limitset)));
+    xml.setAttr(_U(name),lim.name());
     const LimitSet::Object& obj = lim.limits();
     for(LimitSet::Object::const_iterator i=obj.begin(); i!=obj.end(); ++i) {
-      xml_h x = xml_elt_t(geo.doc,_X(limit));
+      xml_h x = xml_elt_t(geo.doc,_U(limit));
       const Limit& l = *i;
       xml.append(x);
-      x.setAttr(_A(name),l.name);
-      x.setAttr(_A(unit),l.unit);
-      x.setAttr(_A(value),l.value);
-      x.setAttr(_A(particles),l.particles);
+      x.setAttr(_U(name),l.name);
+      x.setAttr(_U(unit),l.unit);
+      x.setAttr(_U(value),l.value);
+      x.setAttr(_U(particles),l.particles);
     }
     geo.xmlLimits[limitset] = xml;
   }
@@ -666,16 +666,16 @@ xml_h LCDDConverter::handleSensitive(const string& name, const TNamed* sens_det)
     SensitiveDetector sd = Ref_t(sens_det);
     string type = sd.type(), name = sd.name();
     geo.doc_detectors.append(sensdet = xml_elt_t(geo.doc,Unicode(type)));
-    sensdet.setAttr(_A(name),sd.name());
-    sensdet.setAttr(_A(ecut),sd.energyCutoff());
-    sensdet.setAttr(_A(eunit),"MeV");
-    sensdet.setAttr(_A(verbose),sd.verbose());
-    sensdet.setAttr(_A(hits_collection),sd.hitsCollection());
-    if ( sd.combineHits() ) sensdet.setAttr(_A(combine_hits),sd.combineHits());
+    sensdet.setAttr(_U(name),sd.name());
+    sensdet.setAttr(_U(ecut),sd.energyCutoff());
+    sensdet.setAttr(_U(eunit),"MeV");
+    sensdet.setAttr(_U(verbose),sd.verbose());
+    sensdet.setAttr(_U(hits_collection),sd.hitsCollection());
+    if ( sd.combineHits() ) sensdet.setAttr(_U(combine_hits),sd.combineHits());
     Readout ro = sd.readout();
     if ( ro.isValid() ) {
       xml_ref_t ref = handleIdSpec(ro.idSpec().name(),ro.idSpec().ptr());
-      sensdet.setRef(_A(idspecref),ref.name());
+      sensdet.setRef(_U(idspecref),ref.name());
     }
     geo.xmlSensDets[sens_det] = sensdet;
   }
@@ -688,16 +688,16 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
   xml_h id = geo.xmlIdSpecs[id_spec];
   if ( !id )   {
     IDDescriptor desc = Ref_t(id_spec);
-    geo.doc_idDict.append(id=xml_elt_t(geo.doc,_X(idspec)));
-    id.setAttr(_A(name),name);
+    geo.doc_idDict.append(id=xml_elt_t(geo.doc,_U(idspec)));
+    id.setAttr(_U(name),name);
     const IDDescriptor::FieldMap& m = desc.fields();
     for(IDDescriptor::FieldMap::const_iterator i=m.begin(); i!=m.end(); ++i) {
       xml_h idfield = xml_elt_t(geo.doc,"idfield");
       const IDDescriptor::Field& f = (*i).second;
-      idfield.setAttr(_A(signed),f.second<0 ? true : false);
-      idfield.setAttr(_A(label),(*i).first);
-      idfield.setAttr(_A(length),f.second<0 ? -f.second : f.second);
-      idfield.setAttr(_A(start),f.first);
+      idfield.setAttr(_U(signed),f.second<0 ? true : false);
+      idfield.setAttr(_U(label),(*i).first);
+      idfield.setAttr(_U(length),f.second<0 ? -f.second : f.second);
+      idfield.setAttr(_U(start),f.first);
       id.append(idfield);
     }
     geo.xmlIdSpecs[id_spec] = id;
@@ -715,24 +715,24 @@ xml_h LCDDConverter::handleVis(const string& name, const TNamed* v) const  {
     int     style = attr.lineStyle();
     int     draw  = attr.drawingStyle();
 
-    geo.doc_display.append(vis=xml_elt_t(geo.doc,_X(vis)));
-    vis.setAttr(_A(name),attr.name());
-    vis.setAttr(_A(visible),attr.visible());
-    vis.setAttr(_A(show_daughters),attr.showDaughters());
+    geo.doc_display.append(vis=xml_elt_t(geo.doc,_U(vis)));
+    vis.setAttr(_U(name),attr.name());
+    vis.setAttr(_U(visible),attr.visible());
+    vis.setAttr(_U(show_daughters),attr.showDaughters());
     if ( style == VisAttr::SOLID )
-      vis.setAttr(_A(line_style),"unbroken");
+      vis.setAttr(_U(line_style),"unbroken");
     else if ( style == VisAttr::DASHED )
-      vis.setAttr(_A(line_style),"broken");
+      vis.setAttr(_U(line_style),"broken");
     if ( draw == VisAttr::SOLID )
-      vis.setAttr(_A(line_style),"solid");
+      vis.setAttr(_U(line_style),"solid");
     else if ( draw == VisAttr::WIREFRAME )
-      vis.setAttr(_A(line_style),"wireframe");
+      vis.setAttr(_U(line_style),"wireframe");
 
-    xml_h col = xml_elt_t(geo.doc,_X(color));
-    col.setAttr(_A(alpha),attr.alpha());
-    col.setAttr(_A(R),r);
-    col.setAttr(_A(G),g);
-    col.setAttr(_A(B),b);
+    xml_h col = xml_elt_t(geo.doc,_U(color));
+    col.setAttr(_U(alpha),attr.alpha());
+    col.setAttr(_U(R),r);
+    col.setAttr(_U(G),g);
+    col.setAttr(_U(B),b);
     vis.append(col);
     geo.xmlVis[v] = vis;
   }
@@ -746,9 +746,9 @@ xml_h LCDDConverter::handleField(const std::string& name, const TNamed* f)   con
   if ( !field ) {
     Ref_t  fld(f);
     string type = f->GetTitle();
-    field=xml_elt_t(geo.doc,_X(field));
-    field.setAttr(_A(name),f->GetName());
-    field.setAttr(_A(type),type);
+    field=xml_elt_t(geo.doc,_U(field));
+    field.setAttr(_U(name),f->GetName());
+    field.setAttr(_U(type),type);
     fld = ROOT::Reflex::PluginService::Create<TNamed*>(type+"_Convert2LCDD",&m_lcdd,&field,&fld);
     cout << (fld.isValid() ? "Converted" : "FAILED    to convert ")
 	 << " electromagnetic field:" << f->GetName() << " of type " << f->GetTitle() << endl;
@@ -807,14 +807,14 @@ void LCDDConverter::handleHeader()   const   {
   Header hdr = m_lcdd.header();
   xml_h obj;
   geo.doc_header.append(obj=xml_elt_t(geo.doc,"detector"));
-  obj.setAttr(_A(name),hdr.name());
+  obj.setAttr(_U(name),hdr.name());
   geo.doc_header.append(obj=xml_elt_t(geo.doc,"generator"));
-  obj.setAttr(_A(name),"LCDDConverter");
-  obj.setAttr(_A(version),hdr.version());
-  obj.setAttr(_A(file),hdr.url());
-  obj.setAttr(_A(checksum),m_lcdd.constantAsString("compact_checksum"));
+  obj.setAttr(_U(name),"LCDDConverter");
+  obj.setAttr(_U(version),hdr.version());
+  obj.setAttr(_U(file),hdr.url());
+  obj.setAttr(_U(checksum),m_lcdd.constantAsString("compact_checksum"));
   geo.doc_header.append(obj=xml_elt_t(geo.doc,"author"));
-  obj.setAttr(_A(name),hdr.author());
+  obj.setAttr(_U(name),hdr.author());
   geo.doc_header.append(obj=xml_elt_t(geo.doc,"comment"));
   obj.setText(hdr.comment());
 }
@@ -863,13 +863,13 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   xml_elt_t elt(0);
   geo.doc = docH.parse(empty_gdml,sizeof(empty_gdml));
   geo.doc_root = geo.doc.root();
-  geo.doc_root.append(geo.doc_define    = xml_elt_t(geo.doc,_X(define)));
-  geo.doc_root.append(geo.doc_materials = xml_elt_t(geo.doc,_X(materials)));
-  geo.doc_root.append(geo.doc_solids    = xml_elt_t(geo.doc,_X(solids)));
-  geo.doc_root.append(geo.doc_structure = xml_elt_t(geo.doc,_X(structure)));
-  geo.doc_root.append(geo.doc_setup     = xml_elt_t(geo.doc,_X(setup)));
-  elt = xml_elt_t(geo.doc,_X(world));
-  elt.setAttr(_A(ref),lcdd.worldVolume().name());
+  geo.doc_root.append(geo.doc_define    = xml_elt_t(geo.doc,_U(define)));
+  geo.doc_root.append(geo.doc_materials = xml_elt_t(geo.doc,_U(materials)));
+  geo.doc_root.append(geo.doc_solids    = xml_elt_t(geo.doc,_U(solids)));
+  geo.doc_root.append(geo.doc_structure = xml_elt_t(geo.doc,_U(structure)));
+  geo.doc_root.append(geo.doc_setup     = xml_elt_t(geo.doc,_U(setup)));
+  elt = xml_elt_t(geo.doc,_U(world));
+  elt.setAttr(_U(ref),lcdd.worldVolume().name());
   geo.doc_setup.append(elt);
 
 
@@ -932,24 +932,24 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   //doc->setStrictErrorChecking(true);
   geo.doc_root = geo.doc.root();
 
-  //Box worldSolid(doc,_X(world_box));
-  geo.doc_root.append(geo.doc_header    = xml_elt_t(geo.doc,_X(header)));
-  geo.doc_root.append(geo.doc_idDict    = xml_elt_t(geo.doc,_X(iddict)));
-  geo.doc_root.append(geo.doc_detectors = xml_elt_t(geo.doc,_X(sensitive_detectors)));
-  geo.doc_root.append(geo.doc_limits    = xml_elt_t(geo.doc,_X(limits)));
-  geo.doc_root.append(geo.doc_regions   = xml_elt_t(geo.doc,_X(regions)));
-  geo.doc_root.append(geo.doc_display   = xml_elt_t(geo.doc,_X(display)));
-  geo.doc_root.append(geo.doc_gdml      = xml_elt_t(geo.doc,_X(gdml)));
-  geo.doc_root.append(geo.doc_fields    = xml_elt_t(geo.doc,_X(fields)));
+  //Box worldSolid(doc,_U(world_box));
+  geo.doc_root.append(geo.doc_header    = xml_elt_t(geo.doc,_U(header)));
+  geo.doc_root.append(geo.doc_idDict    = xml_elt_t(geo.doc,_U(iddict)));
+  geo.doc_root.append(geo.doc_detectors = xml_elt_t(geo.doc,_U(sensitive_detectors)));
+  geo.doc_root.append(geo.doc_limits    = xml_elt_t(geo.doc,_U(limits)));
+  geo.doc_root.append(geo.doc_regions   = xml_elt_t(geo.doc,_U(regions)));
+  geo.doc_root.append(geo.doc_display   = xml_elt_t(geo.doc,_U(display)));
+  geo.doc_root.append(geo.doc_gdml      = xml_elt_t(geo.doc,_U(gdml)));
+  geo.doc_root.append(geo.doc_fields    = xml_elt_t(geo.doc,_U(fields)));
   //elt = xml_elt_t();
 
-  geo.doc_gdml.append(geo.doc_define    = xml_elt_t(geo.doc,_X(define)));
-  geo.doc_gdml.append(geo.doc_materials = xml_elt_t(geo.doc,_X(materials)));
-  geo.doc_gdml.append(geo.doc_solids    = xml_elt_t(geo.doc,_X(solids)));
-  geo.doc_gdml.append(geo.doc_structure = xml_elt_t(geo.doc,_X(structure)));
-  geo.doc_gdml.append(geo.doc_setup     = xml_elt_t(geo.doc,_X(setup)));
-  elt = xml_elt_t(geo.doc,_X(world));
-  elt.setAttr(_A(ref),lcdd.worldVolume().name());
+  geo.doc_gdml.append(geo.doc_define    = xml_elt_t(geo.doc,_U(define)));
+  geo.doc_gdml.append(geo.doc_materials = xml_elt_t(geo.doc,_U(materials)));
+  geo.doc_gdml.append(geo.doc_solids    = xml_elt_t(geo.doc,_U(solids)));
+  geo.doc_gdml.append(geo.doc_structure = xml_elt_t(geo.doc,_U(structure)));
+  geo.doc_gdml.append(geo.doc_setup     = xml_elt_t(geo.doc,_U(setup)));
+  elt = xml_elt_t(geo.doc,_U(world));
+  elt.setAttr(_U(ref),lcdd.worldVolume().name());
   geo.doc_setup.append(elt);
 
 

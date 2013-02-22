@@ -278,19 +278,19 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
   try {
     long result = ROOT::Reflex::PluginService::Create<long>(fac,(LCDD*)this,argc,argv);
     if ( 0 == result ) {
-      throw runtime_error("Failed to locate plugin to apply "+fac);
+      throw runtime_error("apply-plugin: Failed to locate plugin "+fac);
     }
     result = *(long*)result;
     if ( result != 1 ) {
-      throw runtime_error("Failed to execute plugin to apply "+fac);
+      throw runtime_error("apply-plugin: Failed to execute plugin "+fac);
     }
   }
   catch(const exception& e)  {
     cout << "Exception:" << e.what() << endl;
-    throw runtime_error("Exception:\""+string(e.what())+"\" while applying plugin:"+fac);
+    throw runtime_error("Exception:\""+string(e.what())+"\" with plugin:"+fac);
   }
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;
-    throw runtime_error("UNKNOWN excetion while applying plugin:"+fac);
+    throw runtime_error("UNKNOWN excetion from plugin:"+fac);
   }
 }

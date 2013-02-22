@@ -3,26 +3,27 @@
 using namespace std;
 using namespace DD4hep::XML;
 
-#define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Attr_##name); }
+#define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Unicode_##name); }
 #define XML_ATTR_ACCESSOR_DOUBLE(name)	                                \
   double Dimension::name(double default_val) const {		       	\
-    const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
+    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);	\
     return val ? _toDouble(val) : default_val; }
 #define XML_ATTR_ACCESSOR_INT(name)	                                \
   int Dimension::name(int default_val) const {				\
-    const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
+    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);	\
     return val ? _toInt(val) : default_val; }
 #define XML_ATTR_ACCESSOR_BOOL(name)	                                \
   bool Dimension::name(bool default_val) const {		       	\
-    const XmlChar* val = m_element.attr_value_nothrow(Attr_##name);	\
+    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);	\
     return val ? _toBool(val) : default_val; }
 
 #define XML_CHILD_ACCESSOR_XML_DIM(name)	                        \
   Dimension Dimension::name(bool throw_if_not_present) const {          \
-  return m_element.child(Tag_##name,throw_if_not_present); }
+    return m_element.child(Unicode_##name,throw_if_not_present); }
 
 XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR_INT(id)
+  XML_ATTR_ACCESSOR(bool,combineHits)
 
   XML_ATTR_ACCESSOR(double,x)
   XML_ATTR_ACCESSOR_DOUBLE(x)
@@ -79,8 +80,10 @@ XML_ATTR_ACCESSOR(int,id)
 
   XML_ATTR_ACCESSOR(double,angle)
   XML_ATTR_ACCESSOR(double,theta)
+  XML_ATTR_ACCESSOR(int,thetaBins)
   XML_ATTR_ACCESSOR(double,psi)
   XML_ATTR_ACCESSOR(double,phi)
+  XML_ATTR_ACCESSOR(int,phiBins)
   XML_ATTR_ACCESSOR(double,phi0)
   XML_ATTR_ACCESSOR_DOUBLE(phi0)
   XML_ATTR_ACCESSOR(double,deltaphi)
@@ -115,6 +118,7 @@ XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR(bool,reflect)
   XML_ATTR_ACCESSOR_BOOL(reflect)
 
+  XML_ATTR_ACCESSOR(int,nmodules)
   XML_ATTR_ACCESSOR(int,nModules)
   XML_ATTR_ACCESSOR(int,RowID)
   XML_ATTR_ACCESSOR(int,nPads)
@@ -128,8 +132,8 @@ XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR(double,rowHeight)
   XML_ATTR_ACCESSOR(double,inner_field)
   XML_ATTR_ACCESSOR(double,outer_field)
+  XML_ATTR_ACCESSOR(int,type)
 #if 0
-  XML_ATTR_ACCESSOR(double,)
   XML_ATTR_ACCESSOR(double,)
   XML_ATTR_ACCESSOR(double,)
   XML_ATTR_ACCESSOR(double,)
@@ -145,56 +149,56 @@ XML_ATTR_ACCESSOR(int,id)
   XML_CHILD_ACCESSOR_XML_DIM(beampipe)
 
 
-string Dimension::padType()  const  {
-  return m_element.attr<string>(Attr_pads);
+  string Dimension::padType()  const  {
+  return m_element.attr<string>(_U(pads));
 }
 
 string Dimension::nameStr()  const  {
-  return m_element.attr<string>(Attr_name);
+  return m_element.attr<string>(_U(name));
 }
 
 string Dimension::typeStr()  const  {
-  return m_element.attr<string>(Attr_type);
+  return m_element.attr<string>(_U(type));
 }
 
 string Dimension::regionStr() const {
-  return m_element.hasAttr(Attr_region) ? m_element.attr<string>(Attr_region) : string();
+  return m_element.hasAttr(_U(region)) ? m_element.attr<string>(_U(region)) : string();
 }
 
 string Dimension::limitsStr() const {
-  return m_element.hasAttr(Attr_limits) ? m_element.attr<string>(Attr_limits) : string();
+  return m_element.hasAttr(_U(limits)) ? m_element.attr<string>(_U(limits)) : string();
 }
 
 string Dimension::visStr()  const  {
-  return m_element.hasAttr(Attr_vis) ? m_element.attr<string>(Attr_vis) : string();
+  return m_element.hasAttr(_U(vis)) ? m_element.attr<string>(_U(vis)) : string();
 }
 
 string Dimension::readoutStr()  const  {
-  return m_element.hasAttr(Attr_readout) ? m_element.attr<string>(Attr_readout) : string();
+  return m_element.hasAttr(_U(readout)) ? m_element.attr<string>(_U(readout)) : string();
 }
 
 string Dimension::moduleStr()  const  {
-  return m_element.hasAttr(Attr_module) ? m_element.attr<string>(Attr_module) : string();
+  return m_element.hasAttr(_U(module)) ? m_element.attr<string>(_U(module)) : string();
 }
 
 string Component::materialStr() const   {
-  return m_element.attr<string>(Attr_material);
+  return m_element.attr<string>(_U(material));
 }
 
 bool Component::isSensitive() const  {
-  char val = m_element.hasAttr(Attr_sensitive) ? m_element.attr<string>(Attr_sensitive)[0] : 'f';
+  char val = m_element.hasAttr(_U(sensitive)) ? m_element.attr<string>(_U(sensitive))[0] : 'f';
   val = ::toupper(val);
   return val == 'T' || val == 'Y';
 }
 
 int DetElement::id() const   {
-  return m_element.hasAttr(Attr_id) ? m_element.attr<int>(Attr_id) : -1;
+  return m_element.hasAttr(_U(id)) ? m_element.attr<int>(_U(id)) : -1;
 }
 
 string DetElement::materialStr() const  {
-  Handle_t h = m_element.child(Tag_material);
-  if ( h && h.hasAttr(Attr_name) )  {
-    return h.attr<string>(Attr_name);
+  Handle_t h = m_element.child(_U(material));
+  if ( h && h.hasAttr(_U(name)) )  {
+    return h.attr<string>(_U(name));
   }
   return "";
 }
@@ -207,8 +211,8 @@ void DetElement::check(bool condition, const string& msg) const  {
 
 bool DetElement::isTracker() const   {
   if ( m_element )  {
-    string type = attr<string>(Attr_type);
-    if ( type.find("Tracker") != string::npos && hasAttr(Attr_readout) ) {
+    string type = attr<string>(_U(type));
+    if ( type.find("Tracker") != string::npos && hasAttr(_U(readout)) ) {
       return true;
     }
   }
@@ -217,17 +221,17 @@ bool DetElement::isTracker() const   {
 
 bool DetElement::isCalorimeter() const   {
   if ( m_element )  {
-    string type = attr<string>(Attr_type);
-    if ( type.find("Calorimeter") != string::npos && hasAttr(Attr_readout) ) {
-        return true;
+    string type = attr<string>(_U(type));
+    if ( type.find("Calorimeter") != string::npos && hasAttr(_U(readout)) ) {
+      return true;
     }
   }
   return false;
 }
 
 bool DetElement::isInsideTrackingVolume() const  {
-  if ( m_element && hasAttr(Attr_insideTrackingVolume) )
-    return attr<bool>(Attr_insideTrackingVolume);
+  if ( m_element && hasAttr(_U(insideTrackingVolume)) )
+    return attr<bool>(_U(insideTrackingVolume));
   else if ( isTracker() )
     return true;
   return false;

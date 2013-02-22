@@ -639,12 +639,6 @@ namespace DD4hep {
       void setName(const XmlChar* new_name);
     };
 
-     extern const Tag_t Attr_id;
-     extern const Tag_t Attr_type;
-     extern const Tag_t Attr_name;
-     extern const Tag_t Attr_value;
-     extern const Tag_t Attr_ref;
-     extern const Tag_t Attr_NULL;
 #undef INLINE
   }
 }         /* End namespace DD4hep   */

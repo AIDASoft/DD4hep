@@ -55,12 +55,22 @@ namespace DD4hep {
       /// Access parameters: id, if not present returns default
       int    id(int default_value) const;
 
+      /// Access parameters: type
+      int    type() const;
+      /// Access rotation constants: combineHits
+      bool combineHits() const;
+
       /// Access rotation constants: angle
       double angle() const;
       /// Access rotation constants: theta
       double theta() const;
+      /// Access rotation constants: thetaBins
+      int thetaBins() const;
+
       /// Access rotation constants: phi
       double phi() const;
+      /// Access rotation constants: phiBins
+      int phiBins() const;
       /// Access rotation constants: phi0
       double phi0() const;
       /// Access parameters: phi0, if not present returns default
@@ -226,6 +236,8 @@ namespace DD4hep {
       /// Access attribute values: number
       int    number() const;
 
+      /// Access attribute values: nmodules
+      int    nmodules() const;
       /// Access attribute values: nModules
       int    nModules() const;
       /// Access attribute values: RowID

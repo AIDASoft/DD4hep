@@ -9,6 +9,7 @@
 
 #include "XML/XMLDetector.h"
 #include "XML/Layering.h"
+#include "XML/XMLTags.h"
 #include <algorithm>
 #include <stdexcept>
 #include <cfloat>
@@ -18,17 +19,8 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::XML;
 
-namespace DD4hep {  namespace XML  {
-  extern const Tag_t Tag_Air;
-  extern const Tag_t Tag_layer;
-  extern const Tag_t Tag_slice;
-  extern const Tag_t Attr_repeat;
-}}
-
 Layer::Layer(const Layer& c) 
-: _thickness(c._thickness), 
-  _preOffset(c._preOffset),
-  _slices(c._slices)
+: _thickness(c._thickness), _preOffset(c._preOffset), _slices(c._slices)
 {
 }
 
@@ -79,12 +71,12 @@ void LayeringCnv::fromCompact(Layering& layering)   const  {
   vector<Layer*>& layers = layering.layers();
   int count = 0;
   for_each(layers.begin(),layers.end(),deletePtr<Layer>);
-  for(Collection_t c(m_element,Tag_layer); c; ++c)  {
+  for(Collection_t c(m_element,_U(layer)); c; ++c)  {
     Layer lay;
     Component layer = c;
-    int repeat = layer.hasAttr(Attr_repeat) ? layer.repeat() : 1;
+    int repeat = layer.hasAttr(_U(repeat)) ? layer.repeat() : 1;
     ++count;
-    for(Collection_t s(c,Tag_slice); s; ++s)  {
+    for(Collection_t s(c,_U(slice)); s; ++s)  {
       Component slice = s;
       string mat = slice.materialStr();
       LayerSlice lslice(slice.isSensitive(), slice.thickness(), mat);
@@ -103,7 +95,7 @@ void LayeringCnv::fromCompact(Layering& layering)   const  {
 double Layering::singleLayerThickness(XML::Element e)  const  {
   Component layer = e;
   double thickness = 0e0;
-  for(Collection_t s(layer,Tag_slice); s; ++s)  {
+  for(Collection_t s(layer,_U(slice)); s; ++s)  {
     Component slice = s;
     thickness += slice.thickness();
   }  

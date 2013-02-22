@@ -122,14 +122,14 @@ xml_doc_t PandoraConverter::create(DetElement top) {
   Header hdr = m_lcdd.header();
   geo.doc = docH.parse(empty_xml,sizeof(empty_xml));
   geo.doc_root = geo.doc.root();
-  geo.doc_root.append(geo.doc_calorimeters = xml_elt_t(geo.doc,_U(calorimeters)));
-  geo.doc_root.append(geo.doc_detector     = xml_elt_t(geo.doc,_U(detector)));
-  geo.doc_root.append(geo.doc_coil         = xml_elt_t(geo.doc,_U(coil)));
-  geo.doc_root.append(geo.doc_tracking     = xml_elt_t(geo.doc,_U(tracking)));
-  geo.doc_detector.setAttr(_U(name),hdr.name());
-  geo.doc_tracking.setAttr(_U(innerR),"");
-  geo.doc_tracking.setAttr(_U(outerR),"");
-  geo.doc_tracking.setAttr(_U(z),"");
+  geo.doc_root.append(geo.doc_calorimeters = xml_elt_t(geo.doc,_Unicode(calorimeters)));
+  geo.doc_root.append(geo.doc_detector     = xml_elt_t(geo.doc,_Unicode(detector)));
+  geo.doc_root.append(geo.doc_coil         = xml_elt_t(geo.doc,_Unicode(coil)));
+  geo.doc_root.append(geo.doc_tracking     = xml_elt_t(geo.doc,_Unicode(tracking)));
+  geo.doc_detector.setAttr(_Unicode(name),hdr.name());
+  geo.doc_tracking.setAttr(_Unicode(innerR),"");
+  geo.doc_tracking.setAttr(_Unicode(outerR),"");
+  geo.doc_tracking.setAttr(_Unicode(z),"");
   
   return geo.doc;
 }

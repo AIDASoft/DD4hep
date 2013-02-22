@@ -10,6 +10,7 @@
 // Framework include files
 #include "XML/XMLElements.h"
 #include "XML/Evaluator.h"
+#include "XML/XMLTags.h"
 
 // C/C++ include files
 #include <iostream>
@@ -657,7 +658,7 @@ Attribute Handle_t::setAttr(const XmlChar* name, const XmlChar* value) const  {
 Handle_t Handle_t::setRef(const XmlChar* tag, const XmlChar* ref_name) {
   Element me(*this);
   Element ref(me.document(),tag);
-  ref.setAttr(Attr_ref,ref_name);
+  ref.setAttr(Unicode_ref,ref_name);
   me.append(ref);
   return ref;
 }
@@ -795,12 +796,12 @@ Attribute Element::getAttr(const XmlChar* name)   const  {
 
 /// Set the reference attribute to the node (adds attribute ref="ref-name")
 Attribute Element::setRef(const XmlChar* tag, const XmlChar* refname)  const  {
-  return setChild(tag).setAttr(Attr_ref,refname);
+  return setChild(tag).setAttr(Unicode_ref,refname);
 }
 
 /// Access the value of the reference attribute of the node (attribute ref="ref-name")
 const XmlChar* Element::getRef(const XmlChar* tag)  const   {
-  return child(tag).attr<cpXmlChar>(Attr_ref);
+  return child(tag).attr<cpXmlChar>(Unicode_ref);
 }
 
 /// Add a new child to the DOM node
@@ -819,13 +820,13 @@ Handle_t Element::setChild(const XmlChar* t)  const  {
 RefElement::RefElement(const Document& document, const XmlChar* type, const XmlChar* name)  
 : Element(document, type) 
 {
-  m_name = name ? setAttr(Attr_name,name) : 0;
+  m_name = name ? setAttr(_U(name),name) : 0;
 }
 
 RefElement::RefElement(const Handle_t& e)  
 : Element(e) 
 {
-  m_name = m_element ? getAttr(Attr_name) : 0;
+  m_name = m_element ? getAttr(_U(name)) : 0;
 }
 
 RefElement::RefElement(const RefElement& e)  
@@ -844,7 +845,7 @@ const XmlChar* RefElement::refName() const  {
 }
 
 void RefElement::setName(const XmlChar* new_name)  {
-  setAttr(Attr_name,new_name);
+  setAttr(_U(name),new_name);
 }
 
 #ifndef __TIXML__

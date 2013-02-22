@@ -13,11 +13,6 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Factories.h"
 
-// Helpers to access tags and attributes quickly without specifying explicitly namespaces
-#define _X(a) DD4hep::XML::Tag_##a
-#define _A(a) DD4hep::XML::Attr_##a
-#define _U(a) DD4hep::XML::Strng_t(#a)
-
 // Shortcuts to elements of the XML namespace
 typedef DD4hep::XML::Tag_t         xml_tag_t;
 typedef DD4hep::XML::Attribute     xml_attr_t;
