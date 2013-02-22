@@ -21,7 +21,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume     motherVol = lcdd.pickMotherVolume(sdet);
   int n = 0;
     
-  for(xml_coll_t i(x_det,_X(layer)); i; ++i, ++n)  {
+  for(xml_coll_t i(x_det,_U(layer)); i; ++i, ++n)  {
     xml_comp_t x_layer = i;
     string  l_name = det_name+_toString(n,"_layer%d");
     DetElement layer(sdet,_toString(n,"layer%d"),x_layer.id());
@@ -32,7 +32,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double  r    = rmin;
     int m = 0;
 
-    for(xml_coll_t j(x_layer,_X(slice)); j; ++j, ++m)  {
+    for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++m)  {
       xml_comp_t x_slice = j;
       Material mat = lcdd.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
@@ -56,11 +56,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
       
     PlacedVolume lpv = motherVol.placeVolume(l_vol,IdentityPos());
-    lpv.addPhysVolID("system",sdet.id()).addPhysVolID(_X(barrel),0);
+    lpv.addPhysVolID("system",sdet.id()).addPhysVolID("barrel",0);
     layer.setPlacement(lpv);
   }
-  if ( x_det.hasAttr(_A(combineHits)) ) {
-    sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);
+  if ( x_det.hasAttr(_U(combineHits)) ) {
+    sdet.setCombineHits(x_det.combineHits(),sens);
   }
   return sdet;
 }

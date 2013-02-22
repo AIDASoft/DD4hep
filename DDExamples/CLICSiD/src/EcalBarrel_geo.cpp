@@ -73,7 +73,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     // Loop over the sets of layer elements in the detector.
     int l_num = 0;
-    for(xml_coll_t li(x_det,_X(layer)); li; ++li)  {
+    for(xml_coll_t li(x_det,_U(layer)); li; ++li)  {
       xml_comp_t x_layer = li;
       int repeat = x_layer.repeat();
       // Loop over number of repeats for this layer.
@@ -91,7 +91,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	// Loop over the sublayers or slices for this layer.
 	int s_num = 0;
 	double s_pos_z = -(l_thickness / 2);
-	for(xml_coll_t si(x_layer,_X(slice)); si; ++si)  {
+	for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
 	  xml_comp_t x_slice = si;
 	  string     s_name  =  _toString(s_num,"slice%d");
 	  double     s_thick = x_slice.thickness();

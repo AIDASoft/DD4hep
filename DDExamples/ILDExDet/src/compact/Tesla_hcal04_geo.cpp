@@ -142,35 +142,35 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
   m_moduleVis       = lcdd->visAttributes(x_module.visStr());
   m_endModuleVis    = lcdd->visAttributes(x_end_module.visStr());
   m_endcapModuleVis = lcdd->visAttributes(x_endcap_module.visStr());
-  m_chamberVis      = lcdd->visAttributes(x_param.attr<string>(_U(chamber_vis)));
+  m_chamberVis      = lcdd->visAttributes(x_param.attr<string>(_Unicode(chamber_vis)));
   m_scintVis        = lcdd->visAttributes(x_scintillator.visStr());
   m_scintMaterial   = lcdd->material(x_scintillator.materialStr());
 
   //--------- BarrelHcal Sensitive detector -----
-  m_model           = x_param.attr<string>(_U(sensitive_model));
-  m_fiberGap        = x_param.attr<double>(_U(fiber_gap));
-  m_radiatorMat     = lcdd->material(x_param.attr<string>(_U(radiator_material)));
+  m_model           = x_param.attr<string>(_Unicode(sensitive_model));
+  m_fiberGap        = x_param.attr<double>(_Unicode(fiber_gap));
+  m_radiatorMat     = lcdd->material(x_param.attr<string>(_Unicode(radiator_material)));
 
-  m_barrel.chamber_thickness = x_barrel.attr<double>(_U(chamber_thickness));
-  m_barrel.numLayer   = x_barrel.attr<int>(_U(num_layer));
+  m_barrel.chamber_thickness = x_barrel.attr<double>(_Unicode(chamber_thickness));
+  m_barrel.numLayer   = x_barrel.attr<int>(_Unicode(num_layer));
   m_barrel.inner_r    = x_barrel.inner_r();
 
   // Paremeters for regular barrel modules
-  m_barrel.chamber_dim_z = x_module.attr<double>(_U(chamber_dim_z));
-  m_barrel.module_dim_z  = x_module.attr<double>(_U(dim_z));
-  m_barrel.bottom_dim_x  = x_module.attr<double>(_U(bottom_dim_x));
-  m_barrel.middle_dim_x  = x_module.attr<double>(_U(middle_dim_x));
-  m_barrel.top_dim_x     = x_module.attr<double>(_U(top_dim_x));
-  m_barrel.y1_for_x      = x_module.attr<double>(_U(y_dim1_for_x));
-  m_barrel.y2_for_x      = x_module.attr<double>(_U(y_dim2_for_x));
-  m_barrel.cell_dim_x    = x_module.attr<double>(_U(cell_dim_x));
-  m_barrel.cell_dim_z    = x_module.attr<double>(_U(cell_dim_z));
+  m_barrel.chamber_dim_z = x_module.attr<double>(_Unicode(chamber_dim_z));
+  m_barrel.module_dim_z  = x_module.attr<double>(_Unicode(dim_z));
+  m_barrel.bottom_dim_x  = x_module.attr<double>(_Unicode(bottom_dim_x));
+  m_barrel.middle_dim_x  = x_module.attr<double>(_Unicode(middle_dim_x));
+  m_barrel.top_dim_x     = x_module.attr<double>(_Unicode(top_dim_x));
+  m_barrel.y1_for_x      = x_module.attr<double>(_Unicode(y_dim1_for_x));
+  m_barrel.y2_for_x      = x_module.attr<double>(_Unicode(y_dim2_for_x));
+  m_barrel.cell_dim_x    = x_module.attr<double>(_Unicode(cell_dim_x));
+  m_barrel.cell_dim_z    = x_module.attr<double>(_Unicode(cell_dim_z));
 
   // Parameters for barrel end-module
-  m_barrel.y1_for_z      = x_end_module.attr<double>(_U(y_dim1_for_z));
-  m_barrel.y2_for_z      = x_end_module.attr<double>(_U(y_dim2_for_z));
-  m_barrel.y3_for_z      = x_end_module.attr<double>(_U(y_dim3_for_z));
-  m_barrel.top_end_dim_z = x_end_module.attr<double>(_U(top_end_dim_z));
+  m_barrel.y1_for_z      = x_end_module.attr<double>(_Unicode(y_dim1_for_z));
+  m_barrel.y2_for_z      = x_end_module.attr<double>(_Unicode(y_dim2_for_z));
+  m_barrel.y3_for_z      = x_end_module.attr<double>(_Unicode(y_dim3_for_z));
+  m_barrel.top_end_dim_z = x_end_module.attr<double>(_Unicode(top_end_dim_z));
 
   // if RPC1 read the RPC parameters
   if ( m_model == "RPC1" )   {
@@ -194,7 +194,7 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
     Layer layer;
     Module module;
     m_barrel.layers.clear();
-    for(xml_coll_t c(x_barrel.child(_U(layers)),_X(layer)); c; ++c) {
+    for(xml_coll_t c(x_barrel.child(_U(layers)),_U(layer)); c; ++c) {
       xml_comp_t l(c);
       layer.id = l.id();
       layer.values.layer.dim_x    = l.dim_x();
@@ -204,7 +204,7 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
     assert(m_barrel.numLayer != m_barrel.layers.size());
     // Read the barrel end-layers
     m_barrel.end_layers.clear();
-    for(xml_coll_t c(x_barrel.child(_U(end_layers)),_U(end_layer)); c; ++c) {
+    for(xml_coll_t c(x_barrel.child(_Unicode(end_layers)),_Unicode(end_layer)); c; ++c) {
       xml_comp_t l(c);
       layer.id = l.id();
       layer.values.end_layer.dim_z    = l.dim_z();
@@ -213,7 +213,7 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
     }
     assert(m_barrel.numLayer != m_barrel.end_layers.size());
     m_barrel.staves.clear();
-    for(xml_coll_t c(x_barrel.child(_X(staves)),_X(stave)); c; ++c) {
+    for(xml_coll_t c(x_barrel.child(_U(staves)),_U(stave)); c; ++c) {
       xml_comp_t s(c);
       stave.id = s.id();
       stave.phi = s.phi();
@@ -222,10 +222,10 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
       m_barrel.staves.push_back(stave);
     }
     m_barrel.modules.clear();
-    for(xml_coll_t c(x_barrel.child(_X(modules)),_X(module)); c; ++c) {
+    for(xml_coll_t c(x_barrel.child(_U(modules)),_U(module)); c; ++c) {
       xml_comp_t m(c);
       module.id = m.id();
-      module.type = m.attr<int>(_A(type));
+      module.type = m.attr<int>(_U(type));
       module.z_offset = m.z_offset();
       m_barrel.modules.push_back(module);
     }
@@ -233,7 +233,7 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
   { // Read the endcap structure
     int cnt=0;
     Layer layer;
-    for(xml_coll_t c(x_endcap.child(_U(positions)),_X(position)); c; ++c, ++cnt) {
+    for(xml_coll_t c(x_endcap.child(_Unicode(positions)),_U(position)); c; ++c, ++cnt) {
       xml_comp_t ec(c);
       m_endcap.side[cnt].id = ec.id();
       m_endcap.side[cnt].position = Position(ec.x(),ec.y(),ec.z());
@@ -246,7 +246,7 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
     cout << name << ": End cap: rmin=" << m_endcap.rmin << " rmax=" << m_endcap.rmax << " dz=" << m_endcap.dz << endl;
     // Read the endcap layers
     m_endcap.layers.clear();
-    for(xml_coll_t c(x_endcap.child(_X(layers)),_X(layer)); c; ++c) {
+    for(xml_coll_t c(x_endcap.child(_U(layers)),_U(layer)); c; ++c) {
       xml_comp_t l(c);
       layer.id = l.id();
       layer.values.endcap_layer.dummy = 0;

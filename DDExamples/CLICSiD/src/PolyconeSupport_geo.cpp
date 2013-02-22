@@ -20,7 +20,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
   vector<double> rmin,rmax,z;
   int num = 0;
 
-  for(xml_coll_t c(e,_X(zplane)); c; ++c, ++num)  {
+  for(xml_coll_t c(e,_U(zplane)); c; ++c, ++num)  {
     xml_comp_t dim(c);
     rmin.push_back(dim.rmin());
     rmax.push_back(dim.rmax());

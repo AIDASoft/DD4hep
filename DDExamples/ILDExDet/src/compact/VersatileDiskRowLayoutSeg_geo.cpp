@@ -12,13 +12,13 @@ using namespace DD4hep::Geometry;
 static Ref_t create_VersatileDiskRowLayoutSeg(lcdd_t& /* lcdd */, const xml_h& e)  {
   VersatileDiskRowLayoutSeg obj;
   VersatileDiskRowLayoutData *dataExt=new VersatileDiskRowLayoutData();
-  if ( e.hasAttr(_A(rmin))   ) dataExt->setRMin(e.attr<int>(_A(rmin)));
+  if ( e.hasAttr(_U(rmin))   ) dataExt->setRMin(e.attr<int>(_U(rmin)));
   //loop rows to fill VersatileDiskRowLayoutSeg
-  for(xml_coll_t r(e,_X(row)); r; ++r)  {
+  for(xml_coll_t r(e,_U(row)); r; ++r)  {
     dataExt->addRow(r.attr<int>(Unicode("nPads")),
 		    r.attr<double>(Unicode("padPitch")),
 		    r.attr<double>(Unicode("rowHeight")),
-		    r.attr<double>(_A(offset)));
+		    r.attr<double>(_U(offset)));
    }
   obj.setExtension<VersatileDiskRowLayoutData>(dataExt);
   return obj;

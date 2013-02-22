@@ -27,7 +27,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      posY;
   map<string,Volume> modules;
     
-  for(xml_coll_t mi(x_det,_X(module)); mi; ++mi, ++m_id)  {
+  for(xml_coll_t mi(x_det,_U(module)); mi; ++mi, ++m_id)  {
     xml_comp_t x_mod   = mi;
     string     m_nam   = x_mod.nameStr();
     xml_comp_t trd     = x_mod.trd();
@@ -35,7 +35,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double     x2      = trd.x2();
     double     z       = trd.z();
     double     y1, y2, total_thickness=0.;
-    xml_coll_t ci(x_mod,_X(module_component));
+    xml_coll_t ci(x_mod,_U(module_component));
     for(ci.reset(), total_thickness=0.0; ci; ++ci)
       total_thickness += xml_comp_t(ci).thickness();
       
@@ -52,7 +52,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       vol.setVisAttributes(lcdd.visAttributes(c.visStr()));
       PlacedVolume phv = m_volume.placeVolume(vol,Position(0,posY+c_thick/2,0));
-      phv.addPhysVolID(_X(component),c_id);
+      phv.addPhysVolID(_U(component),c_id);
       if ( c.isSensitive() ) {
 	sens.setType("tracker");
 	sdet.check(n_sensor > 1,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");
@@ -64,17 +64,17 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     modules[m_nam] = m_volume;
   }
-  for(xml_coll_t li(x_det,_X(layer)); li; ++li)  {
+  for(xml_coll_t li(x_det,_U(layer)); li; ++li)  {
     xml_comp_t  x_layer(li);
     int l_id    = x_layer.id();
     int mod_num = 0;
-    for(xml_coll_t ri(x_layer,_X(ring)); ri; ++ri)  {
+    for(xml_coll_t ri(x_layer,_U(ring)); ri; ++ri)  {
       xml_comp_t x_ring = ri;
       double r        = x_ring.r();
       double phi0     = x_ring.phi0(0);
       double zstart   = x_ring.zstart();
       double dz       = x_ring.dz(0);
-      int    nmodules = x_ring.attr<int>(_A(nmodules));
+      int    nmodules = x_ring.nmodules();
       string m_nam    = x_ring.moduleStr();
       Volume m_vol    = modules[m_nam];
       double iphi     = 2*M_PI/nmodules;

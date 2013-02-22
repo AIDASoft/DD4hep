@@ -67,7 +67,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // Process each layer element.
   double layerPosZ   = -thickness / 2;
   double layerDisplZ = 0;
-  for(xml_coll_t c(x_det,XML::Tag_layer); c; ++c)  {
+  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     double layerThickness = layering.singleLayerThickness(x_layer);
 
@@ -98,7 +98,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       int sliceCount = 0;
       double slicePosZ = -layerThickness / 2;
       double sliceDisplZ = 0;
-      for(xml_coll_t l(x_layer,XML::Tag_slice); l; ++l, ++m)  {
+      for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
 	string slice_nam = _toString(sliceCount,"slice%d");
 	/** Get slice parameters. */

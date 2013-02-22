@@ -23,12 +23,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double   TPC_Ecal_Hcal_barrel_halfZ = lcdd.constant<double>("TPC_Ecal_Hcal_barrel_halfZ");
   double   VXD_outer_radius           = lcdd.constant<double>("VXD_outer_radius");
   double   TPC_inner_radius           = lcdd.constant<double>("TPC_inner_radius");
-  double   sit1_sit2_relative_gap     = x_par.attr<double>(_U(sit1_sit2_relative_gap));
-  double   sit2_tpc_gap               = x_par.attr<double>(_U(sit2_tpc_gap));
-  Layer    sensitive = { x_par.attr<double>(_U(sensitive_thickness)),0,
+  double   sit1_sit2_relative_gap     = x_par.attr<double>(_Unicode(sit1_sit2_relative_gap));
+  double   sit2_tpc_gap               = x_par.attr<double>(_Unicode(sit2_tpc_gap));
+  Layer    sensitive = { x_par.attr<double>(_Unicode(sensitive_thickness)),0,
 			 lcdd.material("silicon_2.33gccm"),
 			 lcdd.visAttributes("SITSensitiveVis")  };
-  Layer    support   = { x_par.attr<double>(_U(support_thickness)),0,
+  Layer    support   = { x_par.attr<double>(_Unicode(support_thickness)),0,
 			 lcdd.material("Graphite"),
 			 lcdd.visAttributes("SITSupportVis")  };
 
@@ -38,7 +38,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   theSITSD = new TRKSD00("SIT", sensitive.thickness * mm * 340 * keV* 0.2);
   RegisterSensitiveDetector(theSITSD);
 #endif
-  for(xml_coll_t c(x_det.child("layers"),_U(layer)); c; ++c)  {
+  for(xml_coll_t c(x_det.child(_U(layers)),_U(layer)); c; ++c)  {
     xml_comp_t x_layer(c);
     int    id = x_layer.id();
     string layer_nam = name+_toString(id,"_layer%d");

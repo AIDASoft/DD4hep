@@ -8,19 +8,7 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
-// Framework include files
-#include "DD4hep/LCDD.h"
-
-// C/C++ include files
-#include <iostream>
-#include <cstdlib>
-#include <vector>
-#include <cerrno>
-#include <string>
-
-using namespace std;
-using namespace DD4hep::Geometry;
+#include "run_plugin.h"
 
 //______________________________________________________________________________
 namespace {
@@ -68,23 +56,14 @@ int main(int argc,char** argv)  {
   if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand))
     usage();
 
-  try {
-    LCDD& lcdd = LCDD::getInstance();  
-    // Load compact files
-    lcdd.apply("DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
-    if ( compact2lcdd )
-      lcdd.apply("DD4hepGeometry2LCDD",output,&argv[output]);
-    else if ( compact2gdml )
-      lcdd.apply("DD4hepGeometry2GDML",output,&argv[output]);
-    else if ( compact2pand )
-      lcdd.apply("DD4hepGeometry2PANDORA",output,&argv[output]);
-    return 0;
-  }
-  catch(const exception& e)  {
-    cout << e.what() << endl;
-  }
-  catch(...)  {
-    cout << "UNKNOWN Exception" << endl;
-  }
-  return EINVAL;
+  LCDD& lcdd = LCDD::getInstance();  
+  // Load compact files
+  run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
+  if ( compact2lcdd )
+    run_plugin(lcdd,"DD4hepGeometry2LCDD",output,&argv[output]);
+  else if ( compact2gdml )
+    run_plugin(lcdd,"DD4hepGeometry2GDML",output,&argv[output]);
+  else if ( compact2pand )
+    run_plugin(lcdd,"DD4hepGeometry2PANDORA",output,&argv[output]);
+  return 0;
 }

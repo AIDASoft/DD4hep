@@ -21,7 +21,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume     motherVol = lcdd.pickMotherVolume(sdet);
   int l_num = 0;
     
-  for(xml_coll_t i(x_det,_X(layer)); i; ++i, ++l_num)  {
+  for(xml_coll_t i(x_det,_U(layer)); i; ++i, ++l_num)  {
     xml_comp_t x_layer = i;
     string l_nam = det_name+_toString(l_num,"_layer%d");
     double  zmin = x_layer.inner_z();
@@ -30,14 +30,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double  z    = zmin, layerWidth = 0.;
     int     s_num = 0;
       
-    for(xml_coll_t j(x_layer,_X(slice)); j; ++j)  {
+    for(xml_coll_t j(x_layer,_U(slice)); j; ++j)  {
       double thickness = xml_comp_t(j).thickness();
       layerWidth += thickness;
     }
     Tube    l_tub(rmin,rmax,layerWidth,2*M_PI);
     Volume  l_vol(l_nam,l_tub,air);
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
-    for(xml_coll_t j(x_layer,_X(slice)); j; ++j, ++s_num)  {
+    for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++s_num)  {
       xml_comp_t x_slice = j;
       double thick = x_slice.thickness();
       Material mat = lcdd.material(x_slice.materialStr());
@@ -68,8 +68,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       sdet.add(layerR.setPlacement(lpvR));
     }
   }
-  if ( x_det.hasAttr(_A(combineHits)) ) {
-    sdet.setCombineHits(x_det.attr<bool>(_A(combineHits)),sens);
+  if ( x_det.hasAttr(_U(combineHits)) ) {
+    sdet.setCombineHits(x_det.attr<bool>(_U(combineHits)),sens);
   }
   return sdet;
 }

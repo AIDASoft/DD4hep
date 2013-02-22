@@ -21,16 +21,16 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
   map<string, Volume> volumes;
 
-  for(xml_coll_t mi(x_det,_X(module)); mi; ++mi)  {
+  for(xml_coll_t mi(x_det,_U(module)); mi; ++mi)  {
     xml_comp_t x_mod  = mi;
-    xml_comp_t m_env  = x_mod.child(_X(module_envelope));
+    xml_comp_t m_env  = x_mod.child(_U(module_envelope));
     string     m_nam  = x_mod.nameStr();
     Volume     m_vol(det_name+"_"+m_nam,Box(m_env.width(),m_env.length(),m_env.thickness()),air);
     DetElement m_elt(sdet, m_nam, det_id);
     int        ncomponents = 0, sensor_number = 0;
 
     volumes[m_nam] = m_vol;
-    for(xml_coll_t ci(x_mod,_X(module_component)); ci; ++ci, ++ncomponents)  {
+    for(xml_coll_t ci(x_mod,_U(module_component)); ci; ++ci, ++ncomponents)  {
       xml_comp_t x_comp = ci;
       xml_comp_t x_pos  = x_comp.position(false);
       xml_comp_t x_rot  = x_comp.rotation(false);	
@@ -55,7 +55,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       }
       if ( x_comp.isSensitive() ) {
 	sens.setType("tracker");
-	c_phv.addPhysVolID(_X(sensor),sensor_number++);
+	c_phv.addPhysVolID(_U(sensor),sensor_number++);
 	c_vol.setSensitiveDetector(sens);
       }
       DetElement c_elt(m_elt,c_nam,det_id);
@@ -64,11 +64,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     m_vol.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
   }
-  for(xml_coll_t li(x_det,_X(layer)); li; ++li)  {
+  for(xml_coll_t li(x_det,_U(layer)); li; ++li)  {
     xml_comp_t x_layer  = li;
-    xml_comp_t x_barrel = x_layer.child(_X(barrel_envelope));
-    xml_comp_t x_layout = x_layer.child(_X(rphi_layout));
-    xml_comp_t z_layout = x_layer.child(_X(z_layout));      // Get the <z_layout> element.
+    xml_comp_t x_barrel = x_layer.child(_U(barrel_envelope));
+    xml_comp_t x_layout = x_layer.child(_U(rphi_layout));
+    xml_comp_t z_layout = x_layer.child(_U(z_layout));      // Get the <z_layout> element.
     int        lay_id   = x_layer.id();
     string     m_nam    = x_layer.moduleStr();
     DetElement m_elt    = sdet.child(m_nam);

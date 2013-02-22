@@ -35,11 +35,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector)  {
   struct dim_t { double inner_r, outer_r, z; };
   for(xml_coll_t c(x_det,_U(component)); c; ++c)  {
     xml_comp_t x_c = c;
-    xml_comp_t x_end = c.child(_A(end));
-    xml_comp_t x_start = c.child(_A(start));
+    xml_comp_t x_end = c.child(_U(end));
+    xml_comp_t x_start = c.child(_U(start));
     double angle = 0;
     string nam = x_c.nameStr();
-    int crossType = x_c.attr<int>(_U(crossType));
+    int crossType = x_c.attr<int>(_Unicode(crossType));
     Material mat = lcdd.material(x_c.materialStr());
     VisAttr  vis = lcdd.visAttributes(x_c.visStr());
     dim_t  end   = { x_end.inner_r(), x_end.outer_r(), x_end.z()};

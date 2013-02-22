@@ -15,9 +15,9 @@ using namespace DD4hep::Geometry;
 static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   xml_det_t   x_det = e;
   string      name  = x_det.nameStr();
-  xml_comp_t  box    (x_det.child(_X(box)));
-  xml_dim_t   pos    (x_det.child(_X(position)));
-  xml_dim_t   rot    (x_det.child(_X(rotation)));
+  xml_comp_t  box    (x_det.child(_U(box)));
+  xml_dim_t   pos    (x_det.child(_U(position)));
+  xml_dim_t   rot    (x_det.child(_U(rotation)));
   Material    mat    (lcdd.material(x_det.materialStr()));
   DetElement  det    (name,x_det.id());
   Volume      det_vol(name+"_vol",Box(box.x(),box.y(),box.z()), mat);

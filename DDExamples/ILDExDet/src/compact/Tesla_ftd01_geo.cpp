@@ -53,10 +53,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Assembly    ftdVol(name);
   Volume      motherVol   = lcdd.pickMotherVolume(sdet);
 
-  xml_comp_t  x_disks    = x_det.child(_U(disks));
-  xml_comp_t  x_cables   = x_det.child(_U(cables));
-  xml_comp_t  x_cylinder = x_det.child(_U(cylinder));
-  xml_comp_t  x_support  = x_det.child(_U(support));
+  xml_comp_t  x_disks    = x_det.child(_Unicode(disks));
+  xml_comp_t  x_cables   = x_det.child(_Unicode(cables));
+  xml_comp_t  x_cylinder = x_det.child(_Unicode(cylinder));
+  xml_comp_t  x_support  = x_det.child(_Unicode(support));
   xml_comp_t  x_inner_support = x_support.child(_U(inner));
   xml_comp_t  x_outer_support = x_support.child(_U(outer));
 
@@ -67,8 +67,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Material supportMat  = lcdd.material(x_support.materialStr());
   Material diskMat     = lcdd.material(x_disks.materialStr());
 
-  double si_thickness  = x_disks.attr<double>(_U(si_thickness1));
-  double si_thickness2 = x_disks.attr<double>(_U(si_thickness2));
+  double si_thickness  = x_disks.attr<double>(_Unicode(si_thickness1));
+  double si_thickness2 = x_disks.attr<double>(_Unicode(si_thickness2));
   double inner_support_thickness = x_inner_support.thickness();
   double inner_support_length    = x_inner_support.length();
   double outer_support_thickness = x_outer_support.thickness();

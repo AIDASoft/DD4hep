@@ -89,7 +89,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume motherVol = lcdd.pickMotherVolume(vxd);    
 
   
-  for(xml_coll_t c(e,_X(layer)); c; ++c)  {
+  for(xml_coll_t c(e,_U(layer)); c; ++c)  {
     xml_comp_t            x_layer(c);
     xml_comp_t            x_ladders(c.child(Unicode("ladder")));
     LayerParams           layer;

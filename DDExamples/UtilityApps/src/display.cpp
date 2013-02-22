@@ -8,20 +8,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
-// Framework include files
-#include "DD4hep/LCDD.h"
+#include "run_plugin.h"
 #include "TRint.h"
-
-// C/C++ include files
-#include <iostream>
-#include <cstdlib>
-#include <vector>
-#include <cerrno>
-#include <string>
-
-using namespace std;
-using namespace DD4hep::Geometry;
 
 //______________________________________________________________________________
 namespace {
@@ -56,27 +44,18 @@ int main(int argc,char** argv)  {
   if ( geo_files.empty() )
     usage();
 
-  try {
+  LCDD& lcdd = LCDD::getInstance();  
+  // Load all compact files
+  run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
+  // Create an interactive ROOT application
+  if ( !dry_run ) {
     pair<int, char**> args(0,0);
-    LCDD& lcdd = LCDD::getInstance();  
-    // Load all compact files
-    lcdd.apply("DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
-    // Create an interactive ROOT application
-    if ( !dry_run ) {
-      TRint app("DD4hepGeometryDisplay", &args.first, args.second);
-      lcdd.apply("DD4hepGeometryDisplay",args.first,args.second);
-      app.Run();
-    }
-    else {
-      cout << "The geometry was loaded. Application now exiting." << endl;
-    }
-    return 0;
+    TRint app("DD4hepGeometryDisplay", &args.first, args.second);
+    run_plugin(lcdd,"DD4hepGeometryDisplay",args.first,args.second);
+    app.Run();
   }
-  catch(const exception& e)  {
-    cout << "Exception:" << e.what() << endl;
+  else {
+    cout << "The geometry was loaded. Application now exiting." << endl;
   }
-  catch(...)  {
-    cout << "UNKNOWN Exception" << endl;
-  }
-  return EINVAL;
+  return 0;
 }

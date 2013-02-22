@@ -61,11 +61,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement  stave("stave0",x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
 
-  for(xml_coll_t c(x_det,_X(layer)); c; ++c)  {
+  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     int repeat   = x_layer.repeat();
     totalRepeat += repeat;
-    totalSlices += x_layer.numChildren(_X(slice));
+    totalSlices += x_layer.numChildren(_U(slice));
   }
 
   PolyhedraRegular polyhedra(numSides,rmin,rmin+totalThickness,detZ);
@@ -94,7 +94,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // Set envelope volume attributes.
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
-  for(xml_coll_t c(x_det,_X(layer)); c; ++c)  {
+  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t   x_layer = c;
     int          repeat = x_layer.repeat();          // Get number of times to repeat this layer.
     const Layer* lay    = layering.layer(layer_num); // Get the layer from the layering engine.
@@ -112,7 +112,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // Create the slices (sublayers) within the layer.
       double slice_pos_z = -(layer_thickness / 2);
       int slice_number = 0;
-      for(xml_coll_t k(x_layer,_X(slice)); k; ++k)  {
+      for(xml_coll_t k(x_layer,_U(slice)); k; ++k)  {
 	xml_comp_t x_slice = k;
 	string   slice_name      = layer_name + _toString(slice_number,"_slice%d");
 	double   slice_thickness = x_slice.thickness();

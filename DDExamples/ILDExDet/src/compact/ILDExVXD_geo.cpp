@@ -24,12 +24,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   Volume      mother = lcdd.pickMotherVolume(vxd);    
 
-  for(xml_coll_t c(e,_X(layer)); c; ++c)  {
+  for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
     xml_comp_t  x_layer  (c);
 
-    xml_comp_t  x_support (x_layer.child(_X(support)));
-    xml_comp_t  x_ladder  (x_layer.child(_X(ladder)));
+    xml_comp_t  x_support (x_layer.child(_U(support)));
+    xml_comp_t  x_ladder  (x_layer.child(_U(ladder)));
 
     int         layer_id   = x_layer.id();
     int         nLadders   = x_ladder.number();

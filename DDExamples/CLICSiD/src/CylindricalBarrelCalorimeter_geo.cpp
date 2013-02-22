@@ -25,7 +25,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   double     r         = rmin;
   int        n         = 0;
     
-  for(xml_coll_t c(x_det,_X(layer)); c; ++c)  {
+  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
       string layer_name = det_name + _toString(n,"_layer%d");
@@ -33,7 +33,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
       Volume layer_vol(layer_name,layer_tub,air);
       double rlayer = r;
         
-      for(xml_coll_t l(x_layer,_X(slice)); l; ++l, ++m)  {
+      for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
 	double     router = r + x_slice.thickness();
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
@@ -63,7 +63,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     
   PlacedVolume physvol = lcdd.pickMotherVolume(sdet).placeVolume(envelopeVol,IdentityPos());
-  physvol.addPhysVolID("system",sdet.id()).addPhysVolID(_A(barrel),0);
+  physvol.addPhysVolID("system",sdet.id()).addPhysVolID(_U(barrel),0);
   sdet.setPlacement(physvol);
   return sdet;
 }

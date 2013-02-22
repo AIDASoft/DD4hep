@@ -18,30 +18,30 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   PlacedVolume pv;
   xml_det_t   x_det  = e;
   string      name   = x_det.nameStr();
-  xml_comp_t  x_envelope     = x_det.child(_U(envelope));
-  xml_comp_t  x_endplates    = x_det.child(_U(endplates));
-  xml_comp_t  x_endplPars    = x_det.child(_U(endplate_param));
-  xml_comp_t  x_barrel       = x_det.child(_U(barrel));
-  xml_comp_t  x_inner        = x_det.child(_U(inner_wall));
-  xml_comp_t  x_outer        = x_det.child(_U(outer_wall));
-  xml_comp_t  x_pads         = x_det.child(_U(pads));
-  xml_comp_t  x_cathode      = x_det.child(_U(cathode));
+  xml_comp_t  x_envelope     = x_det.child(_Unicode(envelope));
+  xml_comp_t  x_endplates    = x_det.child(_Unicode(endplates));
+  xml_comp_t  x_endplPars    = x_det.child(_Unicode(endplate_param));
+  xml_comp_t  x_barrel       = x_det.child(_Unicode(barrel));
+  xml_comp_t  x_inner        = x_det.child(_Unicode(inner_wall));
+  xml_comp_t  x_outer        = x_det.child(_Unicode(outer_wall));
+  xml_comp_t  x_pads         = x_det.child(_Unicode(pads));
+  xml_comp_t  x_cathode      = x_det.child(_Unicode(cathode));
 
   Material    mixMat         = lcdd.material(x_endplPars.materialStr());
-  Material    gasMat         = lcdd.material(x_barrel.attr<string>(_U(chamberGas)));
+  Material    gasMat         = lcdd.material(x_barrel.attr<string>(_Unicode(chamberGas)));
   Material    cathodeMat     = lcdd.material(x_cathode.materialStr());
   Material    mylarMat       = lcdd.material("Mylar");
 
-  double      dzEndPlate     = x_endplPars.attr<double>(_U(electronics_backend_thickness));
-  double      dzCathode      = x_barrel.attr<double>(_U(dzCathode));
-  double      cathode_mylar  = x_barrel.attr<double>(_U(cathode_mylar));
-  double      cathode_copper = x_barrel.attr<double>(_U(cathode_cupper));
+  double      dzEndPlate     = x_endplPars.attr<double>(_Unicode(electronics_backend_thickness));
+  double      dzCathode      = x_barrel.attr<double>(_Unicode(dzCathode));
+  double      cathode_mylar  = x_barrel.attr<double>(_Unicode(cathode_mylar));
+  double      cathode_copper = x_barrel.attr<double>(_Unicode(cathode_cupper));
 
   cylinder_t  env  = { x_envelope.inner_r(),  x_envelope.outer_r(),  x_envelope.zhalf() };
   cylinder_t  wall = { x_inner.thickness(),   x_outer.thickness(),   0.0};
   cylinder_t  gas  = { env.inner_r + wall.inner_r, env.outer_r - wall.outer_r, env.z};
-  cylinder_t  delta= { x_barrel.attr<double>(_U(drInnerInsensitive)),
-		       x_barrel.attr<double>(_U(drOuterInsensitive)),
+  cylinder_t  delta= { x_barrel.attr<double>(_Unicode(drInnerInsensitive)),
+		       x_barrel.attr<double>(_Unicode(drOuterInsensitive)),
 		       env.z - dzEndPlate - dzCathode/2};
   cylinder_t  sens = { env.inner_r + delta.inner_r,
 		       env.outer_r - delta.outer_r,
@@ -127,7 +127,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   double fracRadLength = 0;
   double zCursor = -dzEndPlate / 2;
   int np = 0;
-  for(xml_coll_t c(x_endplates,_U(endplate)); c; ++c, ++np) {
+  for(xml_coll_t c(x_endplates,_Unicode(endplate)); c; ++c, ++np) {
     xml_comp_t p(c);
     double dz = p.dz();
     string vis = p.visStr();

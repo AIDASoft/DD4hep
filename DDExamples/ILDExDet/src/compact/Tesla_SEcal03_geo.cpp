@@ -141,18 +141,18 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   name = x_det.nameStr();
   self.assign(dynamic_cast<Value<TNamed,SEcal03>*>(this),name,x_det.typeStr());
   self._data().id = x_det.id();
-  xml_comp_t x_param             = x_det.child(_U(param));
-  xml_comp_t x_barrel            = x_det.child(_X(barrel));
-  xml_comp_t x_endcap            = x_det.child(_X(endcap));
-  xml_comp_t x_shield            = x_det.child(_U(pcbshield));
-  xml_comp_t m_xml_slab          = x_det.child(_U(slab));
-  xml_comp_t m_xml_slab_shield   = m_xml_slab.child(_U(shielding));
-  xml_comp_t m_xml_slab_copper   = m_xml_slab.child(_U(copper));
-  xml_comp_t m_xml_slab_sensitive= m_xml_slab.child(_U(sensitive));
-  xml_comp_t m_xml_slab_ground   = m_xml_slab.child(_U(ground));
-  xml_comp_t m_xml_slab_glue     = m_xml_slab.child(_U(glue));
+  xml_comp_t x_param             = x_det.child(_Unicode(param));
+  xml_comp_t x_barrel            = x_det.child(_U(barrel));
+  xml_comp_t x_endcap            = x_det.child(_U(endcap));
+  xml_comp_t x_shield            = x_det.child(_Unicode(pcbshield));
+  xml_comp_t m_xml_slab          = x_det.child(_Unicode(slab));
+  xml_comp_t m_xml_slab_shield   = m_xml_slab.child(_Unicode(shielding));
+  xml_comp_t m_xml_slab_copper   = m_xml_slab.child(_Unicode(copper));
+  xml_comp_t m_xml_slab_sensitive= m_xml_slab.child(_Unicode(sensitive));
+  xml_comp_t m_xml_slab_ground   = m_xml_slab.child(_Unicode(ground));
+  xml_comp_t m_xml_slab_glue     = m_xml_slab.child(_Unicode(glue));
 
-  double endcap_extra_size       = x_endcap.attr<double>(_U(extra_size));
+  double endcap_extra_size       = x_endcap.attr<double>(_Unicode(extra_size));
   double crossing_angle          = x_param.crossing_angle();
   Assembly  assembly(name+"_assembly");
   // Hosting volume
@@ -160,20 +160,20 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   // User limits for this sub detector
   m_limits                       = lcdd->limitSet(x_det.limitsStr());
 
-  m_cables_gap                   = x_param.attr<double>(_U(cables_gap));
-  m_lateral_face_thickness       = x_param.attr<double>(_U(lateral_face_thickness));
-  m_fiber_thickness              = x_param.attr<double>(_U(fiber_thickness));
-  m_cell_size                    = x_param.attr<double>(_U(cell_size));
-  m_guard_ring_size              = x_param.attr<double>(_U(guard_ring_size));
-  m_front_thickness              = x_param.attr<double>(_U(front_face_thickness));
-  m_support_thickness            = x_param.attr<double>(_U(support_thickness));
+  m_cables_gap                   = x_param.attr<double>(_Unicode(cables_gap));
+  m_lateral_face_thickness       = x_param.attr<double>(_Unicode(lateral_face_thickness));
+  m_fiber_thickness              = x_param.attr<double>(_Unicode(fiber_thickness));
+  m_cell_size                    = x_param.attr<double>(_Unicode(cell_size));
+  m_guard_ring_size              = x_param.attr<double>(_Unicode(guard_ring_size));
+  m_front_thickness              = x_param.attr<double>(_Unicode(front_face_thickness));
+  m_support_thickness            = x_param.attr<double>(_Unicode(support_thickness));
 
   m_shield.vis                   = lcdd->visAttributes(x_shield.visStr());
   m_shield.material              = lcdd->material(x_shield.materialStr());
   m_shield.thickness             = x_shield.thickness();
 
   m_slab.vis                     = lcdd->visAttributes("EcalSlabVis");
-  m_slab.h_fiber_thickness       = m_xml_slab.attr<double>(_U(h_fiber_thickness));
+  m_slab.h_fiber_thickness       = m_xml_slab.attr<double>(_Unicode(h_fiber_thickness));
   m_slab.shield_thickness        = m_xml_slab_shield.thickness();
   m_slab.ground_thickness        = m_xml_slab_ground.thickness();
   m_slab.ground_mat              = lcdd->material(m_xml_slab_ground.materialStr());
@@ -188,7 +188,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   m_radiatorVis                  = lcdd->visAttributes("EcalRadiatorVis");
 
   size_t i=0;
-  for(xml_coll_t c(x_det,_X(layer)); c; ++c, ++i) {
+  for(xml_coll_t c(x_det,_U(layer)); c; ++c, ++i) {
     xml_comp_t layer(c);
     m_layers[i].nLayer    = layer.repeat();
     m_layers[i].thickness = layer.thickness();
@@ -199,7 +199,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   m_numLayer = m_layers[0].nLayer + m_layers[1].nLayer + m_layers[2].nLayer;
   m_slab.total_thickness  =   m_slab.shield_thickness +    m_slab.copper_thickness + 
     m_shield.thickness      + m_slab.sensitive_thickness + m_slab.glue_thickness +
-    m_slab.ground_thickness + x_param.attr<double>(_U(alveolus_gap)) / 2;
+    m_slab.ground_thickness + x_param.attr<double>(_Unicode(alveolus_gap)) / 2;
   double total_thickness =
     m_layers[0].nLayer * m_layers[0].thickness +
     m_layers[1].nLayer * m_layers[1].thickness +
@@ -208,7 +208,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
     (m_numLayer + 1) * (m_slab.total_thickness + (N_FIBERS_ALVOULUS + 1 ) * m_fiber_thickness) + // slabs plus fiber around and inside
     m_support_thickness + m_front_thickness;
 
-  m_barrel.numTowers        = x_barrel.attr<int>(_U(towers));
+  m_barrel.numTowers        = x_barrel.attr<int>(_Unicode(towers));
   m_barrel.thickness        = total_thickness;
   m_barrel.inner_r          = x_barrel.inner_r();
   m_barrel.dim_z            = 2 * x_barrel.zhalf() / 5;
@@ -216,7 +216,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   m_barrel.top              = 2 * std::tan(M_PI/8) * m_barrel.inner_r; //m_barrel.bottom -  2* m_barrel.thickness;
   m_barrel.vis              = lcdd->visAttributes(x_barrel.visStr());
   m_barrel.material         = lcdd->material(x_barrel.materialStr());
-  m_barrel.radiatorMaterial = lcdd->material(x_barrel.attr<string>(_U(radiatorMaterial)));
+  m_barrel.radiatorMaterial = lcdd->material(x_barrel.attr<string>(_Unicode(radiatorMaterial)));
 
   double module_z_offset    = m_barrel.dim_z*2.5 + m_cables_gap + m_barrel.thickness/2.;
   m_endcap.vis              = lcdd->visAttributes(x_endcap.visStr());
@@ -230,8 +230,8 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
 		   2 * m_slab.h_fiber_thickness -
 		   2 * m_slab.shield_thickness);
 
-  double siPlateSize = x_endcap.attr<double>(_U(center_box_size)) -
-    2 * m_lateral_face_thickness - 2 * x_endcap.attr<double>(_U(ring_gap));
+  double siPlateSize = x_endcap.attr<double>(_Unicode(center_box_size)) -
+    2 * m_lateral_face_thickness - 2 * x_endcap.attr<double>(_Unicode(ring_gap));
   
   m_centerTubDisplacement = m_endcap.dim_z * std::tan(crossing_angle);
   m_center_tube   = Tube(0,m_endcap.rmin,total_thickness);
@@ -308,7 +308,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   lcdd->addSensitiveDetector(sd);
 
   sd = m_endcap.sensDet = SensitiveDetector("EcalEndcapRings","calorimeter");
-  ro = lcdd->readout(x_endcap.attr<string>(_U(ring_readout)));
+  ro = lcdd->readout(x_endcap.attr<string>(_Unicode(ring_readout)));
   sd.setHitsCollection(ro.name());
   sd.setReadout(ro);
   lcdd->addSensitiveDetector(sd);

@@ -54,17 +54,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
     (TUBE_IPOuterBulge_end_z-TUBE_IPOuterTube_end_z);
 
   // Now get the variables global to the FTD cables_thickness, ftd1_vtx3_distance_z, etc
-  double beamTubeClearance            = x_par.attr<double>(_U(beamtube_clearance));
-  double outer_cyl_thickness          = x_par.attr<double>(_U(outer_cylinder_total_thickness));
+  double beamTubeClearance            = x_par.attr<double>(_Unicode(beamtube_clearance));
+  double outer_cyl_thickness          = x_par.attr<double>(_Unicode(outer_cylinder_total_thickness));
   double inner_cyl_thickness          = outer_cyl_thickness;
-  double cable_shield_thickness       = x_par.attr<double>(_U(cable_shield_thickness));
-  double cables_thickness             = x_par.attr<double>(_U(cables_thickness));
-  double ftd1_vtx3_distance_z         = x_par.attr<double>(_U(ftd1_vtx3_distance_z)); 
-  double ftd7_ecal_distance_z         = x_par.attr<double>(_U(ftd7_ecal_distance_z)); 
-  double ftd1_sit1_radial_diff        = x_par.attr<double>(_U(ftd1_sit1_radial_diff)); 
-  double ftd2_sit1_radial_diff        = x_par.attr<double>(_U(ftd2_sit1_radial_diff)); 
-  double ftd3_sit2_radial_diff        = x_par.attr<double>(_U(ftd3_sit2_radial_diff)); 
-  double ftd4to7_tpc_radial_gap       = x_par.attr<double>(_U(ftd4to7_tpc_radial_gap)); 
+  double cable_shield_thickness       = x_par.attr<double>(_Unicode(cable_shield_thickness));
+  double cables_thickness             = x_par.attr<double>(_Unicode(cables_thickness));
+  double ftd1_vtx3_distance_z         = x_par.attr<double>(_Unicode(ftd1_vtx3_distance_z)); 
+  double ftd7_ecal_distance_z         = x_par.attr<double>(_Unicode(ftd7_ecal_distance_z)); 
+  double ftd1_sit1_radial_diff        = x_par.attr<double>(_Unicode(ftd1_sit1_radial_diff)); 
+  double ftd2_sit1_radial_diff        = x_par.attr<double>(_Unicode(ftd2_sit1_radial_diff)); 
+  double ftd3_sit2_radial_diff        = x_par.attr<double>(_Unicode(ftd3_sit2_radial_diff)); 
+  double ftd4to7_tpc_radial_gap       = x_par.attr<double>(_Unicode(ftd4to7_tpc_radial_gap)); 
 
   // Helper class for parameter transformations
   struct cone_t { double rmin1, rmax1, rmin2, rmax2, zhalf;
@@ -95,7 +95,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
 #if 0
   double minDiskThickness = numeric_limits<double>::max();
   for(xml_coll_t c(x_disks,_U(disk)); c; ++c) {
-    double val = c.attr<double>(_U(si_thickness));
+    double val = c.attr<double>(_Unicode(si_thickness));
     if ( minDiskThickness > val ) minDiskThickness = val;
   }
   //... The sensitive layer: Threshold is 20% of a MIP. For Si we have 340 KeV/mm as MIP.
@@ -118,9 +118,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
     double z_pos = 0;
     double z_end = 0;
 
-    double si_thickness      = x_disk.attr<double>(_U(si_thickness));
-    double support_thickness = x_disk.attr<double>(_U(support_thickness));
-    double z_rel             = x_disk.attr<double>(_U(z_ReltoTPCLength));
+    double si_thickness      = x_disk.attr<double>(_Unicode(si_thickness));
+    double support_thickness = x_disk.attr<double>(_Unicode(support_thickness));
+    double z_rel             = x_disk.attr<double>(_Unicode(z_ReltoTPCLength));
 
     switch (id) {
     case 1:

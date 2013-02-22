@@ -23,10 +23,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector)  {
   DetElement  beampipe(name,x_det.id());
   Assembly    beampipeVol("assembly");
   Volume      motherVol   = lcdd.pickMotherVolume(beampipe);
-  xml_comp_t  x_central   = x_det.child(_U(central_tube));
-  xml_comp_t  x_lateral   = x_det.child(_U(lateral_tubes));
-  xml_comp_t  x_ends      = x_det.child(_U(ends));
-  xml_comp_t  x_vacuum    = x_det.child(_U(vacuum));
+  xml_comp_t  x_central   = x_det.child(_Unicode(central_tube));
+  xml_comp_t  x_lateral   = x_det.child(_Unicode(lateral_tubes));
+  xml_comp_t  x_ends      = x_det.child(_Unicode(ends));
+  xml_comp_t  x_vacuum    = x_det.child(_Unicode(vacuum));
   Material    beampipeMat = lcdd.material(xml_comp_t(x_det).materialStr());
   Material    ironMat     = lcdd.material("Iron");
   Material    vacuumMat   = lcdd.vacuum();
@@ -99,7 +99,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector)  {
   }
 
   { // VXD strip lines on lateral tubes
-    xml_comp_t s = x_det.child(_U(strips));
+    xml_comp_t s = x_det.child(_Unicode(strips));
     Tube  tube(lateral.radius+lateral.thickness+s.gap(),
                lateral.radius+lateral.thickness+s.gap()+s.thickness(),inner_zhalf);
     Volume vol(name+"_lateral_Strips",tube,lcdd.material(s.materialStr()));

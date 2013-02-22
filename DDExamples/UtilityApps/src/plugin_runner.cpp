@@ -8,19 +8,7 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
-// Framework include files
-#include "DD4hep/LCDD.h"
-
-// C/C++ include files
-#include <iostream>
-#include <cstdlib>
-#include <vector>
-#include <cerrno>
-#include <string>
-
-using namespace std;
-using namespace DD4hep::Geometry;
+#include "run_plugin.h"
 
 //______________________________________________________________________________
 namespace {
@@ -53,19 +41,10 @@ int main(int argc,char** argv)  {
   if ( geo_files.empty() || plugin.empty() )
     usage();
 
-  try {
-    LCDD& lcdd = LCDD::getInstance();  
-    // Load compact files
-    lcdd.apply("DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
-    // Execute plugin
-    lcdd.apply(plugin.c_str(),0,0);
-    return 0;
-  }
-  catch(const exception& e)  {
-    cout << "Exception:" << e.what() << endl;
-  }
-  catch(...)  {
-    cout << "UNKNOWN Exception" << endl;
-  }
-  return EINVAL;
+  LCDD& lcdd = LCDD::getInstance();  
+  // Load compact files
+  run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
+  // Execute plugin
+  run_plugin(lcdd,plugin.c_str(),0,0);
+  return 0;
 }

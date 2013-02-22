@@ -106,11 +106,11 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens
   }
 
   for(xml_coll_t c(x_det.child(_U(params)),_U(param)); c; ++c)  {
-    string nam = c.attr<string>(_A(name));
-    if ( nam == "dSensor"    ) dSensor    = c.attr<double>(_A(value)); // Diamond thickness
-    if ( nam == "dAirgap"    ) dAirgap    = c.attr<double>(_A(value)); // Layer gap (air)
-    if ( nam == "dElboard"   ) dElboard   = c.attr<double>(_A(value)); // PCB (Kapton)
-    if ( nam == "dElectrMet" ) dElectrMet = c.attr<double>(_A(value)); // Sensor Electrode Metalisation (gold)
+    string nam = c.attr<string>(_U(name));
+    if ( nam == "dSensor"    ) dSensor    = c.attr<double>(_U(value)); // Diamond thickness
+    if ( nam == "dAirgap"    ) dAirgap    = c.attr<double>(_U(value)); // Layer gap (air)
+    if ( nam == "dElboard"   ) dElboard   = c.attr<double>(_U(value)); // PCB (Kapton)
+    if ( nam == "dElectrMet" ) dElectrMet = c.attr<double>(_U(value)); // Sensor Electrode Metalisation (gold)
   }
   dLayer = dAbsorber+dSensor+dElectrMet+dElboard+dAirgap; //layer thickness
   double length = dLayer*nLayers; //total length of the calorimeter

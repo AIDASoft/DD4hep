@@ -32,7 +32,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   int layerType   = 0;
   double layerZ   = -totalThickness/2;
     
-  for(xml_coll_t c(x_det,_X(layer)); c; ++c)  {
+  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t       x_layer  = c;
     double           l_thick  = layering.layer(l_num)->thickness();
     string           l_name   = det_name + _toString(layerType,"_layer%d");
@@ -41,7 +41,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       
     int s_num = 0;
     double sliceZ = -l_thick/2;
-    for(xml_coll_t s(x_layer,_X(slice)); s; ++s)  {
+    for(xml_coll_t s(x_layer,_U(slice)); s; ++s)  {
       xml_comp_t x_slice = s;
       string     s_name  = l_name + _toString(s_num,"_slice%d");
       double     s_thick = x_slice.thickness();

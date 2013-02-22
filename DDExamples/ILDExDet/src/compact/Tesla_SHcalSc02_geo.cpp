@@ -135,8 +135,8 @@ DetElement SHcalSc02::construct(LCDD& l, xml_det_t x_det)  {
   self.assign(dynamic_cast<Value<TNamed,SHcalSc02>*>(this),name,x_det.typeStr());
   self._data().id = x_det.id();
 
-  xml_comp_t x_barrel             = x_det.child(_X(barrel));
-  xml_comp_t x_endcap             = x_det.child(_X(endcap));
+  xml_comp_t x_barrel             = x_det.child(_U(barrel));
+  xml_comp_t x_endcap             = x_det.child(_U(endcap));
   xml_comp_t x_barrel_rad         = x_barrel.child(_U(radiator));
   xml_comp_t x_endcap_rad         = x_endcap.child(_U(radiator));
 
@@ -153,9 +153,9 @@ DetElement SHcalSc02::construct(LCDD& l, xml_det_t x_det)  {
   m_moduleVis                     = lcdd->visAttributes(xml_comp_t(x_det.child(_U(module))).visStr());
   m_scintillatorVis               = lcdd->visAttributes(xml_comp_t(x_det.child(_U(scintillator))).visStr());
   m_chamberVis                    = lcdd->visAttributes(xml_comp_t(x_det.child(_U(chamber))).visStr());
-  m_chamberGapVis                 = lcdd->visAttributes(xml_comp_t(x_det.child(_U(chambergap))).visStr());
-  m_barrel.gapVis                 = lcdd->visAttributes(xml_comp_t(x_barrel.child(_U(gap))).visStr());
-  m_supportTrapVis                = lcdd->visAttributes(xml_comp_t(x_det.child(_U(supporttrap))).visStr());
+  m_chamberGapVis                 = lcdd->visAttributes(xml_comp_t(x_det.child(_Unicode(chambergap))).visStr());
+  m_barrel.gapVis                 = lcdd->visAttributes(xml_comp_t(x_barrel.child(_Unicode(gap))).visStr());
+  m_supportTrapVis                = lcdd->visAttributes(xml_comp_t(x_det.child(_Unicode(supporttrap))).visStr());
 
   m_limits                        = lcdd->limitSet(x_det.limitsStr());
 

@@ -346,9 +346,9 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   self.assign(dynamic_cast<Value<TNamed,ClicYoke01>*>(this),name,x_det.typeStr());
   self._data().id = x_det.id();
   Assembly    assembly(name);
-  xml_comp_t  x_yoke       = x_det.child(_U(yoke));
-  xml_comp_t  x_muon       = x_det.child(_U(muon));
-  symmetry  = x_yoke.attr<double>(_U(symmetry));
+  xml_comp_t  x_yoke       = x_det.child(_Unicode(yoke));
+  xml_comp_t  x_muon       = x_det.child(_Unicode(muon));
+  symmetry  = x_yoke.attr<double>(_Unicode(symmetry));
 
   PlacedVolume pv;
 
@@ -366,17 +366,17 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   endcap.outer_r      = barrel.outer_r;
 
   //----------------------------------------- muon -------------------------------
-  iron_thickness      = x_muon.attr<double>(_U(iron_thickness));
-  layer_thickness     = x_muon.attr<double>(_U(layer_thickness));
-  yokeBarrelEndcapGap = x_muon.attr<double>(_U(barrel_endcap_gap));
-  cell_dim_x          = x_muon.attr<double>(_U(cell_size));
-  cell_dim_z          = x_muon.attr<double>(_U(cell_size)); 
-  num_layer           = x_muon.attr<int>(_U(number_of_layers));
+  iron_thickness      = x_muon.attr<double>(_Unicode(iron_thickness));
+  layer_thickness     = x_muon.attr<double>(_Unicode(layer_thickness));
+  yokeBarrelEndcapGap = x_muon.attr<double>(_Unicode(barrel_endcap_gap));
+  cell_dim_x          = x_muon.attr<double>(_Unicode(cell_size));
+  cell_dim_z          = x_muon.attr<double>(_Unicode(cell_size)); 
+  num_layer           = x_muon.attr<int>(_Unicode(number_of_layers));
   m_hasPlug           = lcdd->constant<int>("Yoke_with_plug") == 1;  
 
   HCAL_z              = lcdd->constant<double>("calorimeter_region_zmax");
   HCAL_R_max          = lcdd->constant<double>("Hcal_R_max");
-  HCAL_plug_gap       = x_muon.attr<double>(_U(Hcal_plug_gap));
+  HCAL_plug_gap       = x_muon.attr<double>(_Unicode(Hcal_plug_gap));
   HCAL_plug_thickness = zStartEndcap - HCAL_z - HCAL_plug_gap;
   HCAL_plug_zpos      = zStartEndcap - HCAL_plug_thickness/2;
 
@@ -398,7 +398,7 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   chamberVis = lcdd->visAttributes("YokeChamberVis");
   limitSet   = lcdd->limitSet(x_det.limitsStr());
 
-  collectRPClayers(x_det.child(_U(rpcs)));
+  collectRPClayers(x_det.child(_Unicode(rpcs)));
   collectSensitiveDetectors(x_det);
 
   //--------------------------------------------------

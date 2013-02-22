@@ -15,18 +15,18 @@ using namespace DD4hep::Geometry;
 
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det  = e;
-  xml_comp_t  x_layer= e.child(_X(layer));
+  xml_comp_t  x_layer= e.child(_U(layer));
   string      name   = x_det.nameStr();
   Material    air    = lcdd.air();
   DetElement  side("pos",x_det.id());
 
   // LumiCal dimensions
-  int         n_layers        = x_layer.attr<int>(_A(nmodules));
+  int         n_layers        = x_layer.nmodules();
   double      bx_angle        = x_layer.crossing_angle();
   double      cal_innerradius = x_layer.inner_r();
   double      cal_outerradius = x_layer.outer_r();
-  double      ncell_theta     = x_layer.attr<double>(_A(thetaBins));
-  double      ncell_phi       = x_layer.attr<double>(_A(phiBins));
+  double      ncell_theta     = x_layer.attr<double>(_U(thetaBins));
+  double      ncell_phi       = x_layer.attr<double>(_U(phiBins));
   double      z_begin         = x_layer.inner_z();
   double      layer_gap       = x_layer.gap();
 
@@ -36,7 +36,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double cell_thick  = 0.0;
   Material supp_mat, abs_mat, cell_mat;
   VisAttr  supp_vis, abs_vis, cell_vis;
-  for(xml_coll_t c(x_layer,_X(slice)); c; ++c)  {
+  for(xml_coll_t c(x_layer,_U(slice)); c; ++c)  {
     xml_comp_t slice = c;
     string nam = slice.nameStr();
     if ( nam == "support"  )   {

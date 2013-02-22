@@ -20,7 +20,7 @@ using namespace DD4hep::Geometry;
 
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det = e;
-  xml_comp_t  x_tube (x_det.child(_X(tubs)));
+  xml_comp_t  x_tube (x_det.child(_U(tubs)));
   string      name  = x_det.nameStr();
   Material    mat    (lcdd.material(x_det.materialStr()));
   //if data is needed do this
@@ -32,12 +32,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
   
-  for(xml_coll_t c(e,_X(detector)); c; ++c)  {
+  for(xml_coll_t c(e,_U(detector)); c; ++c)  {
     xml_comp_t  px_det  (c);
-    xml_comp_t  px_tube (px_det.child(_X(tubs)));
-    xml_dim_t   px_pos  (px_det.child(_X(position)));
-    xml_dim_t   px_rot  (px_det.child(_X(rotation)));
-    xml_comp_t  px_mat  (px_det.child(_X(material)));
+    xml_comp_t  px_tube (px_det.child(_U(tubs)));
+    xml_dim_t   px_pos  (px_det.child(_U(position)));
+    xml_dim_t   px_rot  (px_det.child(_U(rotation)));
+    xml_comp_t  px_mat  (px_det.child(_U(material)));
     string      part_nam(px_det.nameStr());
     Material    part_mat(lcdd.material(px_mat.nameStr()));
     DetElement  part_det(part_nam,px_det.typeStr(),px_det.id());
@@ -66,10 +66,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       tpcData->endplate=part_det;
       //modules
       int mdcount=0;
-      for(xml_coll_t m(px_det,_X(modules)); m; ++m)  {
+      for(xml_coll_t m(px_det,_U(modules)); m; ++m)  {
         xml_comp_t  modules  (m);
         string      m_name  = modules.nameStr();
-        for(xml_coll_t r(modules,_X(row)); r; ++r)  {
+        for(xml_coll_t r(modules,_U(row)); r; ++r)  {
           xml_comp_t  row(r);
           int nmodules = row.nModules();
           int rowID=row.RowID();
