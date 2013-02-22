@@ -28,8 +28,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   double TPC_Ecal_Hcal_barrel_halfZ = lcdd.constant<double>("TPC_Ecal_Hcal_barrel_halfZ");
   double Ecal_Tpc_gap               = lcdd.constant<double>("Ecal_Tpc_gap");
   double ECal_min_r                 = TPC_outer_radius + Ecal_Tpc_gap;
-  double sensitive_thickness        = x_param.attr<double>("sensitive_thickness");
-  double support_thickness          = x_param.attr<double>("support_thickness");
+  double sensitive_thickness        = x_param.attr<double>(_Unicode(sensitive_thickness));
+  double support_thickness          = x_param.attr<double>(_Unicode(support_thickness));
 
 #if 0
   //... The SET Sensitive detector: Threshold is 20% of a MIP. For Si we have 340 KeV/mm as MIP.
@@ -38,7 +38,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
 #endif
   // build outer layer first
   // radius defined by distance from Rmin of ECal Barrel
-  double inner_radius2   = ECal_min_r - x_param.attr<double>("distance_set2_ecal_barrel"); 
+  double inner_radius2   = ECal_min_r - x_param.attr<double>(_Unicode(distance_set2_ecal_barrel)); 
   double support_radius2 = inner_radius2 + 0.5*sensitive_thickness + 0.5*support_thickness;
   // half length is the same a the TPC
   double half_z2 = TPC_Ecal_Hcal_barrel_halfZ;
@@ -59,7 +59,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   assembly.placeVolume(suppVol);
 
   // now build inner layer
-  double inner_radius1 = inner_radius2 - x_param.attr<double>("set_layer_radial_diff"); 
+  double inner_radius1 = inner_radius2 - x_param.attr<double>(_Unicode(set_layer_radial_diff)); 
   double support_radius1 = inner_radius1 + 0.5*sensitive_thickness + 0.5*support_thickness;
 
   //... Sensitive Cylinders Si

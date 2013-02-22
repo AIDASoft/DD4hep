@@ -27,15 +27,15 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   double Ecal_endcap_zmin            = lcdd.constant<double>("Ecal_endcap_zmin");
   double ECal_endcap_center_box_size = lcdd.constant<double>("Ecal_endcap_center_box_size");
   double ECal_EndCap_Plug_MaxR       = sqrt(2*ECal_endcap_center_box_size * ECal_endcap_center_box_size)/2;
-  double Etd3_ECalEndCap_distance_z  = x_param.attr<double>("etd3_ecalendcap_distance_z");
-  double layer_separation_z          = x_param.attr<double>("layer_separation_z");
-  double sensitive_thickness         = x_param.attr<double>("sensitive_thickness");
-  double support_thickness           = x_param.attr<double>("support_thickness");
+  double Etd3_ECalEndCap_distance_z  = x_param.attr<double>(_Unicode(etd3_ecalendcap_distance_z));
+  double layer_separation_z          = x_param.attr<double>(_Unicode(layer_separation_z));
+  double sensitive_thickness         = x_param.attr<double>(_Unicode(sensitive_thickness));
+  double support_thickness           = x_param.attr<double>(_Unicode(support_thickness));
 
   // inner radius defined radial clearance between the ETD  and ECal-EndCap Plug
-  double inner_radius = ECal_EndCap_Plug_MaxR - x_param.attr<double>("etd_ecalplug_radial_clearance");
+  double inner_radius = ECal_EndCap_Plug_MaxR - x_param.attr<double>(_Unicode(etd_ecalplug_radial_clearance));
   // outer radius defined by radial difference to the TPC outer radius
-  double outer_radius = TPC_outer_radius +  x_param.attr<double>("etd_tpcOuterR_radial_diff");
+  double outer_radius = TPC_outer_radius +  x_param.attr<double>(_Unicode(etd_tpcOuterR_radial_diff));
 
 #if 0
   //... The ETD Sensitive Detector: Threshold is 20% of a MIP. For Si we have 340 KeV/mm as MIP.

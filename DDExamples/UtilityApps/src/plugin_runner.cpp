@@ -41,7 +41,7 @@ int main(int argc,char** argv)  {
   if ( geo_files.empty() || plugin.empty() )
     usage();
 
-  LCDD& lcdd = LCDD::getInstance();  
+  LCDD& lcdd = dd4hep_instance();
   // Load compact files
   run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
   // Execute plugin

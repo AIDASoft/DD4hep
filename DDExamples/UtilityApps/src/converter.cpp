@@ -56,7 +56,7 @@ int main(int argc,char** argv)  {
   if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand))
     usage();
 
-  LCDD& lcdd = LCDD::getInstance();  
+  LCDD& lcdd = dd4hep_instance();
   // Load compact files
   run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
   if ( compact2lcdd )
