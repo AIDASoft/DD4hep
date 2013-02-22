@@ -604,7 +604,7 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
       PlacedVolume p = Ref_t(node);
       const PlacedVolume::VolIDs& ids = p.volIDs();
       for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
-	xml_h pvid = xml_elt_t(geo.doc,"physvolid");
+	xml_h pvid = xml_elt_t(geo.doc,_U(physvolid));
 	pvid.setAttr(_U(field_name),(*i).first);
 	pvid.setAttr(_U(value),(*i).second);
 	place.append(pvid);
@@ -692,7 +692,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
     id.setAttr(_U(name),name);
     const IDDescriptor::FieldMap& m = desc.fields();
     for(IDDescriptor::FieldMap::const_iterator i=m.begin(); i!=m.end(); ++i) {
-      xml_h idfield = xml_elt_t(geo.doc,"idfield");
+      xml_h idfield = xml_elt_t(geo.doc,_U(idfield));
       const IDDescriptor::Field& f = (*i).second;
       idfield.setAttr(_U(signed),f.second<0 ? true : false);
       idfield.setAttr(_U(label),(*i).first);
@@ -806,16 +806,16 @@ void LCDDConverter::handleHeader()   const   {
   GeometryInfo& geo = data();
   Header hdr = m_lcdd.header();
   xml_h obj;
-  geo.doc_header.append(obj=xml_elt_t(geo.doc,"detector"));
+  geo.doc_header.append(obj=xml_elt_t(geo.doc,_U(detector)));
   obj.setAttr(_U(name),hdr.name());
-  geo.doc_header.append(obj=xml_elt_t(geo.doc,"generator"));
+  geo.doc_header.append(obj=xml_elt_t(geo.doc,_U(generator)));
   obj.setAttr(_U(name),"LCDDConverter");
   obj.setAttr(_U(version),hdr.version());
   obj.setAttr(_U(file),hdr.url());
-  obj.setAttr(_U(checksum),m_lcdd.constantAsString("compact_checksum"));
-  geo.doc_header.append(obj=xml_elt_t(geo.doc,"author"));
+  obj.setAttr(_U(checksum),Unicode(m_lcdd.constantAsString("compact_checksum")));
+  geo.doc_header.append(obj=xml_elt_t(geo.doc,_U(author)));
   obj.setAttr(_U(name),hdr.author());
-  geo.doc_header.append(obj=xml_elt_t(geo.doc,"comment"));
+  geo.doc_header.append(obj=xml_elt_t(geo.doc,_U(comment)));
   obj.setText(hdr.comment());
 }
 
@@ -844,12 +844,13 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   collect(top,geo);
   m_checkOverlaps = false;
 
-  const char empty_gdml[] =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
+  const char empty_gdml[] = XML_HEADER_DECLARATION
     "<!--                                                               \n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description GDML in C++  ++++\n"
     "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:" XML_IMPLEMENTATION_TYPE "                ++++\n"
     "      ++++                                                     ++++\n"
     "      ++++                              M.Frank CERN/LHCb      ++++\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
@@ -909,12 +910,13 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
 
   #define ns_location "http://www.lcsim.org.schemas/lcdd/1.0"
 
-  const char empty_lcdd[] =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
+  const char empty_lcdd[] = XML_HEADER_DECLARATION
     "<!--                                                               \n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description LCDD in C++  ++++\n"
     "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:" XML_IMPLEMENTATION_TYPE "                ++++\n"
     "      ++++                                                     ++++\n"
     "      ++++                              M.Frank CERN/LHCb      ++++\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
@@ -1014,14 +1016,8 @@ LCDDConverter::GeometryInfo::GeometryInfo()
 }
 
 static long dump_output(xml_doc_t doc, int argc, char** argv)   {
-  FILE* file = argc>0 ? ::fopen(argv[0],"w") : stdout;
-  if ( !file ) {
-    cout << "Failed to open output file:" << argv[0] << endl;
-    return 0;
-  }
-  doc->Print(file);
-  if ( argc>0 ) ::fclose(file);
-  return 1;
+  XML::DocumentHandler docH;
+  return docH.output(doc, argc>0 ? argv[0] : "");
 }
 
 static long create_gdml(LCDD& lcdd, int argc, char** argv)   {

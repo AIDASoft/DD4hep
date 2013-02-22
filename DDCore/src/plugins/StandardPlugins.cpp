@@ -19,6 +19,11 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+static void* create_lcdd_instance(const char* /* name */) {
+  return &LCDD::getInstance();
+}
+DECLARE_CONSTRUCTOR(LCDD_constructor,create_lcdd_instance);
+
 static long display(LCDD& /* lcdd */,int argc,char** argv)    {
   TGeoManager* mgr = gGeoManager;
   const char* opt = "ogl";

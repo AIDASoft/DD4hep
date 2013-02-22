@@ -47,6 +47,8 @@ namespace DD4hep {
       virtual Document load(Handle_t base, const XmlChar* fname) const;
       /// Parse a standalong XML string into a document.
       virtual Document parse(const char* doc_string, size_t length) const;
+      /// Write xml document to output file (stdout if file name empty)
+      virtual int output(Document doc, const std::string& fname) const;
     };
   }
 }         /* End namespace DD4hep            */

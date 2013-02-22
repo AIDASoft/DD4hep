@@ -27,11 +27,13 @@ using namespace xercesc;
 
 namespace {
 
-  XercesDOMParser* make_parser(xercesc::ErrorHandler* err_handler)   {
+  XercesDOMParser* make_parser(xercesc::ErrorHandler* err_handler=0)   {
     XercesDOMParser* parser = new XercesDOMParser;
     parser->setValidationScheme(XercesDOMParser::Val_Auto);
     parser->setValidationSchemaFullChecking(true);
-    parser->setErrorHandler(err_handler);
+    if ( err_handler ) {
+      parser->setErrorHandler(err_handler);
+    }
     parser->setDoNamespaces(true);
     parser->setDoSchema(true);
     return parser;
@@ -168,7 +170,7 @@ Document DocumentHandler::load(const string& fname)  const  {
 
 /// Parse a standalong XML string into a document.
 Document DocumentHandler::parse(const char* bytes, size_t length)  const {
-  auto_ptr<XercesDOMParser> parser(makeParser());
+  auto_ptr<XercesDOMParser> parser(make_parser(m_errHdlr.get()));
   MemBufInputSource src((const XMLByte*)bytes,length,"memory");
   parser->setValidationSchemaFullChecking(true);
   parser->parse(src);
@@ -178,11 +180,29 @@ Document DocumentHandler::parse(const char* bytes, size_t length)  const {
   return doc;
 }
 
+/// Write xml document to output file (stdout if file name empty)
+int DocumentHandler::output(Document doc, const std::string& fname) const {
+  XMLFormatTarget   *tar = 0;
+  DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
+  DOMLSOutput       *out = imp->createLSOutput();
+  DOMLSSerializer   *wrt = imp->createLSSerializer();
+
+  if ( fname.empty() ) tar = new StdOutFormatTarget();
+  else tar = new LocalFileFormatTarget(Strng_t(fname));
+
+  out->setByteStream(tar);
+  wrt->getDomConfig()->setParameter(Strng_t("format-pretty-print"), true);
+  wrt->write(doc, out);
+  out->release();
+  wrt->release();
+  delete tar;
+  return 1;
+}
 
 #else
-#ifdef _WIN32
-#include <cstdlib>
-#else
+
+#include "XML/tinyxml.h"
+#ifndef _WIN32
 #include <libgen.h>
 #endif
 #include <sys/stat.h>
@@ -281,6 +301,18 @@ Document DocumentHandler::parse(const char* doc_string, size_t length) const {
   }
   delete doc;
   return 0;
+}
+
+/// Write xml document to output file (stdout if file name empty)
+int DocumentHandler::output(Document doc, const std::string& fname) const {
+  FILE* file = fname.empty() ? stdout : ::fopen(fname.c_str(),"w");
+  if ( !file ) {
+    cout << "Failed to open output file:" << fname << endl;
+    return 0;
+  }
+  doc->Print(file);
+  if ( !fname.empty() ) ::fclose(file);
+  return 1;
 }
 
 #endif

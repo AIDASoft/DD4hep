@@ -260,7 +260,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   } 
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;
-    throw runtime_error("UNKNOWN excetion while parsing "+xmlfile);
+    throw runtime_error("UNKNOWN exception while parsing "+xmlfile);
   }
 #endif
 }
@@ -291,6 +291,6 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
   }
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;
-    throw runtime_error("UNKNOWN excetion from plugin:"+fac);
+    throw runtime_error("UNKNOWN exception from plugin:"+fac);
   }
 }

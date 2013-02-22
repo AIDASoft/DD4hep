@@ -6,15 +6,25 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
 // Framework include files
 #include "XML/XMLElements.h"
+
+#ifdef __TIXML__
+#include "XML/tinyxml.h"
+#else
+#include "xercesc/util/XMLString.hpp"
+#include "xercesc/dom/DOMElement.hpp"
+#include "xercesc/dom/DOMDocument.hpp"
+#include "xercesc/dom/DOMNodeList.hpp"
+#endif
+
 #include "XML/Evaluator.h"
 #include "XML/XMLTags.h"
 
 // C/C++ include files
 #include <iostream>
 #include <stdexcept>
+#include <cstdio>
 #include <map>
 
 using namespace std;
@@ -46,9 +56,15 @@ namespace {
 }
 XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c)         {  return c ? ::strdup(c) : 0;               }
 XmlChar* DD4hep::XML::XmlString::transcode(const char* c)            {  return c ? ::strdup(c) : 0;               }
-void     DD4hep::XML::XmlString::release(XmlChar** p)                {  if(p && *p) { ::free(*p); *p=0;}          }
+void     DD4hep::XML::XmlString::release(char** p)                   {  if(p && *p) { ::free(*p); *p=0;}          }
 
 #else
+
+XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c)         {  return xercesc::XMLString::replicate(c);  }
+char*    DD4hep::XML::XmlString::transcode(const XmlChar* c)         {  return xercesc::XMLString::transcode(c);  }
+XmlChar* DD4hep::XML::XmlString::transcode(const char* c)            {  return xercesc::XMLString::transcode(c);  }
+void     DD4hep::XML::XmlString::release(XmlChar** p)                {  return xercesc::XMLString::release(p);    }
+void     DD4hep::XML::XmlString::release(char** p)                   {  return xercesc::XMLString::release(p);    }
 
 #define ELEMENT_NODE_TYPE XmlNode::ELEMENT_NODE
 #include "xercesc/dom/DOM.hpp"
@@ -356,6 +372,33 @@ NodeList& NodeList::operator=(const NodeList& l) {
   return *this;
 }
 
+/// Unicode text access to the element's tag. Tis must be wrong ....
+const XmlChar* Handle_t::rawTag() const   { 
+#ifdef __TIXML__
+  return m_node->Value();
+#else
+  return m_node->getTagName();
+#endif
+}
+
+/// Unicode text access to the element's text
+const XmlChar* Handle_t::rawText() const   { 
+#ifdef __TIXML__
+  return m_node->GetText();
+#else
+  return m_node->getTextContent();
+#endif
+}
+
+/// Unicode text access to the element's value
+const XmlChar* Handle_t::rawValue() const     {
+#ifdef __TIXML__
+  return m_node->Value(); 
+#else
+  return m_node->getNodeValue();
+#endif
+}
+
 /// Clone the DOMelement - with the option of a deep copy
 Handle_t Handle_t::clone(XmlDocument* new_doc) const  {
   if ( m_node ) {
@@ -499,7 +542,7 @@ void Handle_t::setValue(const string& text) const   {
 #ifdef __TIXML__
   m_node->SetValue(text.c_str());
 #else
-  m_node->setNodeValue(Strng(text));
+  m_node->setNodeValue(Strng_t(text));
 #endif
 }
 
@@ -508,7 +551,7 @@ void Handle_t::setText(const XmlChar* text) const   {
 #ifdef __TIXML__
   m_node->LinkEndChild(new TiXmlText(text));
 #else
-  m_node->setNodeText(text);
+  m_node->setTextContent(text);
 #endif
 }
 
@@ -517,7 +560,7 @@ void Handle_t::setText(const string& text) const   {
 #ifdef __TIXML__
   m_node->LinkEndChild(new TiXmlText(text.c_str()));
 #else
-  m_node->setNodeText(Strng(text));
+  m_node->setTextContent(Strng_t(text));
 #endif
 }
 
@@ -849,14 +892,14 @@ void RefElement::setName(const XmlChar* new_name)  {
 }
 
 #ifndef __TIXML__
-Collection_t::Collection_t(Elt_t element, const XmlChar* tag) 
+Collection_t::Collection_t(Handle_t element, const XmlChar* tag) 
   : m_children(element,tag)
 {
   m_node = m_children.reset();
 }
 #endif
 
-Collection_t::Collection_t(Elt_t element, const char* tag)
+Collection_t::Collection_t(Handle_t element, const char* tag)
   : m_children(element,Strng_t(tag))
 {
   m_node = m_children.reset();
@@ -911,7 +954,8 @@ Handle_t Document::clone(Handle_t source) const  {
 #ifdef __TIXML__
   return (XmlElement*)source.clone(0);
 #else
-  return (XmlElement*)(m_doc->importNode(source));
+  
+  return (XmlElement*)(m_doc->importNode(source.ptr(),true));
 #endif
 }
 
