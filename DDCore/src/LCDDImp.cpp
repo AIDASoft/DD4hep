@@ -252,11 +252,11 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   }
   catch(const exception& e)  {
     cout << "Exception:" << e.what() << endl;
-    throw runtime_error("Exception:"+string(e.what())+" while parsing "+xmlfile);
+    throw runtime_error("Exception:\""+string(e.what())+"\" while parsing "+xmlfile);
   }
   catch(const XML::XmlException& e)  {
     cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
-    throw runtime_error("XML-DOM Exception:"+XML::_toString(e.msg)+" while parsing "+xmlfile);
+    throw runtime_error("XML-DOM Exception:\""+XML::_toString(e.msg)+"\" while parsing "+xmlfile);
   } 
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;
@@ -287,7 +287,7 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
   }
   catch(const exception& e)  {
     cout << "Exception:" << e.what() << endl;
-    throw runtime_error("Exception:"+string(e.what())+" while applying plugin:"+fac);
+    throw runtime_error("Exception:\""+string(e.what())+"\" while applying plugin:"+fac);
   }
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;

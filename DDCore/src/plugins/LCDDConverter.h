@@ -93,8 +93,9 @@ namespace DD4hep {
 	  doc_display, doc_gdml, doc_fields, doc_define, doc_materials, doc_solids, doc_structure, doc_setup;
 	GeometryInfo();
       };
-
+      /// Reference to detector description
       LCDD&           m_lcdd;
+      /// Processing flag
       bool            m_checkOverlaps;
 
       typedef std::set<std::string> NameSet;
@@ -103,7 +104,7 @@ namespace DD4hep {
       GeometryInfo* m_dataPtr;
       GeometryInfo& data() const { return *m_dataPtr; }
 
-
+      /// Data integrity checker
       void checkVolumes(const std::string& name, const TGeoVolume* volume) const;
 
       
@@ -111,7 +112,7 @@ namespace DD4hep {
       LCDDConverter( LCDD& lcdd );
 
       /// Standard destructor
-      virtual ~LCDDConverter() {}
+      virtual ~LCDDConverter();
 
       /// Create geometry conversion in GDML format
       xml_doc_t createGDML(DetElement top);

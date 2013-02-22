@@ -26,10 +26,11 @@ using namespace DD4hep::Geometry;
 namespace {
   void usage() {
     cout << "geoConverter -opt [-opt]                                                \n"
-      "        Action flags:               Usage is exclusive!                       \n"
+      "        Action flags:               Usage is exclusive, 1 required!           \n"
       "        -compact2lcdd               Convert compact xml geometry to lcdd.     \n"
-      "        -compact2gdml               Convert compact xml geometry to gdml.   \n\n"
-      "        -input <file>   [REQUIRED]  Specify input file.                       \n"
+      "        -compact2gdml               Convert compact xml geometry to gdml.     \n"
+      "        -compact2pandora            Convert compact xml to pandora xml      \n\n"
+      "        -input  <file>  [REQUIRED]  Specify input file.                       \n"
       "        -output <file>  [OPTIONAL]  Specify output file.                      \n"
       "                                    if no output file is specified, the output\n"
       "                                    device is stdout.                         \n"
@@ -42,14 +43,17 @@ namespace {
 int main(int argc,char** argv)  {
   bool compact2lcdd = false;
   bool compact2gdml = false;
+  bool compact2pand = false;
   int output = 0;
   vector<char*> geo_files;
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
       if ( strncmp(argv[i],"-compact2lcdd",12)==0 )
 	compact2lcdd = true;
-      if ( strncmp(argv[i],"-compact2gdml",12)==0 )
+      else if ( strncmp(argv[i],"-compact2gdml",12)==0 )
 	compact2gdml = true;
+      else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
+	compact2pand = true;
       else if ( strncmp(argv[i],"-input",2)==0 )
 	geo_files.push_back(argv[++i]);
       else if ( strncmp(argv[i],"-output",2)==0 )
@@ -61,24 +65,23 @@ int main(int argc,char** argv)  {
       usage();
     }
   }
-  if ( geo_files.empty() || (!compact2lcdd && !compact2gdml))
+  if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand))
     usage();
 
   try {
-    pair<int, char**> args(0,0);
     LCDD& lcdd = LCDD::getInstance();  
-    // Load all compact files
+    // Load compact files
     lcdd.apply("DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
-    if ( compact2lcdd ) {
+    if ( compact2lcdd )
       lcdd.apply("DD4hepGeometry2LCDD",output,&argv[output]);
-    }
-    else if ( compact2gdml ) {
+    else if ( compact2gdml )
       lcdd.apply("DD4hepGeometry2GDML",output,&argv[output]);
-    }    
+    else if ( compact2pand )
+      lcdd.apply("DD4hepGeometry2PANDORA",output,&argv[output]);
     return 0;
   }
   catch(const exception& e)  {
-    cout << "Exception:" << e.what() << endl;
+    cout << e.what() << endl;
   }
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;

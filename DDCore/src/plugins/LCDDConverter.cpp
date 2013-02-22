@@ -68,8 +68,13 @@ void LCDDConverter::GeometryInfo::check(const string& name, const TNamed* n,map<
 }
 
 /// Initializing Constructor
-LCDDConverter::LCDDConverter( LCDD& lcdd ) : m_lcdd(lcdd) {
+LCDDConverter::LCDDConverter( LCDD& lcdd ) : m_lcdd(lcdd), m_dataPtr(0) {
   m_checkOverlaps = true;
+}
+
+LCDDConverter::~LCDDConverter()   {
+  if ( m_dataPtr ) delete m_dataPtr;
+  m_dataPtr = 0;
 }
 
 /// Dump element in GDML format to output stream
@@ -839,7 +844,7 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   collect(top,geo);
   m_checkOverlaps = false;
 
-  const char empty_lcdd[] =
+  const char empty_gdml[] =
     "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
     "<!--                                                               \n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
@@ -856,7 +861,7 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
 
   XML::DocumentHandler docH;
   xml_elt_t elt(0);
-  geo.doc = docH.parse(empty_lcdd,sizeof(empty_lcdd));
+  geo.doc = docH.parse(empty_gdml,sizeof(empty_gdml));
   geo.doc_root = geo.doc.root();
   geo.doc_root.append(geo.doc_define    = xml_elt_t(geo.doc,_X(define)));
   geo.doc_root.append(geo.doc_materials = xml_elt_t(geo.doc,_X(materials)));
@@ -999,9 +1004,11 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   return geo.doc;
 }
 
+/// Helper constructor
 LCDDConverter::GeometryInfo::GeometryInfo()
-  : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), doc_limits(0), doc_regions(0),
-    doc_display(0), doc_gdml(0), doc_fields(0), doc_define(0), doc_materials(0),
+  : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), 
+    doc_limits(0), doc_regions(0), doc_display(0), doc_gdml(0), 
+    doc_fields(0), doc_define(0), doc_materials(0),
     doc_solids(0), doc_structure(0),doc_setup(0)
 {
 }

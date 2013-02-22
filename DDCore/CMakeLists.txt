@@ -29,7 +29,7 @@ add_library(DD4hepCore SHARED ${sources})
 target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} Geom Reflex ${libraries})
 
 add_library(DD4hepPlugins SHARED ${plugin_sources})
-target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
+target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
 #---Rootmap generation--------------------------------------------------------------
 dd4hep_generate_rootmap(DD4hepPlugins)
 
