@@ -11,7 +11,8 @@ if test -z "$1";
     then
     echo "You must supply the architecture as first argument:";
     echo "$0 [os-version:slc5,slc6]  [gcc-version:43,46]";
-else    
+else  
+    svn co https://svnsrv.desy.de/basic/aidasoft/DD4hep/trunk DD4hep
     mkdir ${ARCH_OS};
     cd    ${ARCH_OS};
     export ARCH=x86_64-${ARCH_OS};
