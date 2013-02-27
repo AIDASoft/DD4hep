@@ -26,9 +26,9 @@ else
 	fi;
     export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.04/${ARCH}-${GCC_VSN}-dbg/root;
     ls -laF ${ROOTSYS}/bin
-    echo "CMAKE: `which cmake`   --  =${LCG_external_area}/CMake/2.8.6/${ARCH}-${GCC_VSN}-opt/bin"
-
     export PATH=${LCG_external_area}/CMake/2.8.6/${ARCH}-${GCC_VSN}-opt/bin:${ROOTSYS}/bin:$PATH;
+    echo "CMAKE: `which cmake`   --  ${LCG_external_area}/CMake/2.8.6/${ARCH}-${GCC_VSN}-opt/bin"
+    echo $PATH
     cmake -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_WITH_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF ../DD4hep;
     . thisdd4hep.sh;
     make -j 5;
