@@ -13,16 +13,13 @@ if(Geant4_gdml_FOUND)
   add_definitions(-DGEANT4_HAS_GDML)
 endif()
 
-if(DD4HEP_USE_XERCESC)
-  add_definitions(-DDD4HEP_USE_XERCESC)
-  set(libraries CLICSiD ${XERCESC_LIBRARIES})
-endif()
+include(DD4hep_XML_setup)
+set(libraries CLICSiD ${XML_LIBRARIES})
 
 include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
                      ${CMAKE_SOURCE_DIR}/DDG4/include
                      ${CMAKE_CURRENT_SOURCE_DIR}/include
                      ${ROOT_INCLUDE_DIR}
-                     ${XERCESC_INCLUDE_DIR}
                      ${Geant4_INCLUDE_DIRS})
 
 file(GLOB sources src/*.cpp)

@@ -22,11 +22,16 @@
 #include "TGeoShape.h"
 #include "TClass.h"
 #include "Reflex/PluginService.h"
+#include "XML/DocumentHandler.h"
 
 #if DD4HEP_USE_PYROOT
   #include "TPython.h"
-#elif DD4HEP_USE_XERCESC
-  #include "XML/DocumentHandler.h"
+#endif
+#ifndef __TIXML__
+#include "xercesc/dom/DOMException.hpp"
+namespace DD4hep { namespace XML {  
+  typedef xercesc::DOMException  XmlException;
+}}
 #endif
 
 using namespace DD4hep::Geometry;
@@ -234,7 +239,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   TPython::Exec("import lcdd");
   cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());  
-#elif DD4HEP_USE_XERCESC
+#else
   XML::Handle_t xml_root = XML::DocumentHandler().load(xmlfile).root();
   string tag = xml_root.tag();
   try {
@@ -250,14 +255,14 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
       throw runtime_error("Failed to parse the XML file "+xmlfile+" with the plugin "+type);
     }
   }
-  catch(const exception& e)  {
-    cout << "Exception:" << e.what() << endl;
-    throw runtime_error("Exception:\""+string(e.what())+"\" while parsing "+xmlfile);
-  }
   catch(const XML::XmlException& e)  {
     cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
     throw runtime_error("XML-DOM Exception:\""+XML::_toString(e.msg)+"\" while parsing "+xmlfile);
   } 
+  catch(const exception& e)  {
+    cout << "Exception:" << e.what() << endl;
+    throw runtime_error("Exception:\""+string(e.what())+"\" while parsing "+xmlfile);
+  }
   catch(...)  {
     cout << "UNKNOWN Exception" << endl;
     throw runtime_error("UNKNOWN exception while parsing "+xmlfile);
@@ -285,6 +290,10 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
       throw runtime_error("apply-plugin: Failed to execute plugin "+fac);
     }
   }
+  catch(const XML::XmlException& e)  {
+    cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
+    throw runtime_error("XML-DOM Exception:\""+XML::_toString(e.msg)+"\" with plugin:"+fac);
+  } 
   catch(const exception& e)  {
     cout << "Exception:" << e.what() << endl;
     throw runtime_error("Exception:\""+string(e.what())+"\" with plugin:"+fac);

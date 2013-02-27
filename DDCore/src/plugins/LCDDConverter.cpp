@@ -839,8 +839,12 @@ template <typename O, typename C, typename F> void handleRMap(const O* o, const 
 /// Create geometry conversion
 xml_doc_t LCDDConverter::createGDML(DetElement top) {
   LCDD& lcdd = m_lcdd;
+  if ( !top.isValid() ) {
+    throw runtime_error("Attempt to call createGDML with an invalid geometry!");
+  }
   GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
   m_data->clear();
+
   collect(top,geo);
   m_checkOverlaps = false;
 
@@ -900,9 +904,14 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   return geo.doc;
 }
 
+
 /// Create geometry conversion
 xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   LCDD& lcdd = m_lcdd;
+  if ( !top.isValid() ) {
+    throw runtime_error("Attempt to call createLCDD with an invalid geometry!");
+  }
+
   GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
   m_data->clear();
   collect(top,geo);

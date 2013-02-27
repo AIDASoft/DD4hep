@@ -25,37 +25,31 @@ using namespace DD4hep::XML;
 #include "xercesc/sax/ErrorHandler.hpp"
 using namespace xercesc;
 
-namespace {
-
-  XercesDOMParser* make_parser(xercesc::ErrorHandler* err_handler=0)   {
-    XercesDOMParser* parser = new XercesDOMParser;
-    parser->setValidationScheme(XercesDOMParser::Val_Auto);
-    parser->setValidationSchemaFullChecking(true);
-    if ( err_handler ) {
-      parser->setErrorHandler(err_handler);
-    }
-    parser->setDoNamespaces(true);
-    parser->setDoSchema(true);
-    return parser;
-  }
-
-  Document parse_document(const void* bytes, size_t length, xercesc::ErrorHandler* err_handler)   {
-    auto_ptr<XercesDOMParser> parser(make_parser(err_handler));
-    MemBufInputSource src((const XMLByte*)bytes,length,"memory");
-    parser->setValidationSchemaFullChecking(true);
-    parser->parse(src);
-    DOMDocument* doc = parser->adoptDocument();
-    doc->setXmlStandalone(true);
-    doc->setStrictErrorChecking(true);
-    return doc;
-  }
-
-}
-
 namespace DD4hep { namespace XML {
+  namespace {
+    XercesDOMParser* make_parser(xercesc::ErrorHandler* err_handler=0)   {
+      XercesDOMParser* parser = new XercesDOMParser;
+      parser->setValidationScheme(XercesDOMParser::Val_Auto);
+      parser->setValidationSchemaFullChecking(true);
+      if ( err_handler ) {
+	parser->setErrorHandler(err_handler);
+      }
+      parser->setDoNamespaces(true);
+      parser->setDoSchema(true);
+      return parser;
+    }
 
-  typedef const string& CSTR;
-
+    Document parse_document(const void* bytes, size_t length, xercesc::ErrorHandler* err_handler)   {
+      auto_ptr<XercesDOMParser> parser(make_parser(err_handler));
+      MemBufInputSource src((const XMLByte*)bytes,length,"memory");
+      parser->setValidationSchemaFullChecking(true);
+      parser->parse(src);
+      DOMDocument* doc = parser->adoptDocument();
+      doc->setXmlStandalone(true);
+      doc->setStrictErrorChecking(true);
+      return (XmlDocument*)doc;
+    }
+  }
   struct DocumentErrorHandler : public ErrorHandler, public DOMErrorHandler    {
     /// Constructor
     DocumentErrorHandler()  {}
@@ -71,63 +65,62 @@ namespace DD4hep { namespace XML {
   };
   bool DocumentErrorHandler::handleError(const DOMError& domError)  {
     switch(domError.getSeverity()) {
-      case DOMError::DOM_SEVERITY_WARNING:
-        cout << "DOM WARNING: ";
-        break;
-      case DOMError::DOM_SEVERITY_ERROR:
-        cout << "DOM ERROR:   ";
-        break;
-      case DOMError::DOM_SEVERITY_FATAL_ERROR:
-        cout << "DOM FATAL:   ";
-        break;
-      default:
-        cout << "DOM UNKNOWN: ";
-        return false;
+    case DOMError::DOM_SEVERITY_WARNING:
+      cout << "DOM WARNING: ";
+      break;
+    case DOMError::DOM_SEVERITY_ERROR:
+      cout << "DOM ERROR:   ";
+      break;
+    case DOMError::DOM_SEVERITY_FATAL_ERROR:
+      cout << "DOM FATAL:   ";
+      break;
+    default:
+      cout << "DOM UNKNOWN: ";
+      return false;
     }
     cout << _toString(domError.getType()) << ": " << _toString(domError.getMessage()) << endl;
     DOMLocator* loc = domError.getLocation();
     if ( loc )  {
       cout << "Location: Line:" << loc->getLineNumber()
-        << " Column:" << loc->getColumnNumber() << endl;
+	   << " Column:" << loc->getColumnNumber() << endl;
     }
     return false;
   }
   void DocumentErrorHandler::error(const SAXParseException& e)  {
     string m(_toString(e.getMessage()));
     if (m.find("The values for attribute 'name' must be names or name tokens")!=string::npos ||
-      m.find("The values for attribute 'ID' must be names or name tokens")!=string::npos   ||
-      m.find("for attribute 'name' must be Name or Nmtoken")!=string::npos                 ||
-      m.find("for attribute 'ID' must be Name or Nmtoken")!=string::npos                   ||
-      m.find("for attribute 'name' is invalid Name or NMTOKEN value")!=string::npos        ||
-      m.find("for attribute 'ID' is invalid Name or NMTOKEN value")!=string::npos      )
+	m.find("The values for attribute 'ID' must be names or name tokens")!=string::npos   ||
+	m.find("for attribute 'name' must be Name or Nmtoken")!=string::npos                 ||
+	m.find("for attribute 'ID' must be Name or Nmtoken")!=string::npos                   ||
+	m.find("for attribute 'name' is invalid Name or NMTOKEN value")!=string::npos        ||
+	m.find("for attribute 'ID' is invalid Name or NMTOKEN value")!=string::npos      )
       return;
     string sys(_toString(e.getSystemId()));
     cout << "Error at file \""  << sys
-      << "\", line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl
-      << "Message: " << m << endl;
+	 << "\", line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl
+	 << "Message: " << m << endl;
   }
   void DocumentErrorHandler::fatalError(const SAXParseException& e)  {
     string m(_toString(e.getMessage()));
     string sys(_toString(e.getSystemId()));
     cout << "Fatal Error at file \"" << sys
-      << "\", line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl
-      << "Message: " << m << endl;
+	 << "\", line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl
+	 << "Message: " << m << endl;
     //throw runtime_error( "Standard pool exception : Fatal Error on the DOM Parser" );
   }
+
+  void dumpTree(xercesc::DOMDocument* doc)  {
+    DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
+    XMLFormatTarget   *tar = new StdOutFormatTarget();
+    DOMLSOutput       *out = imp->createLSOutput();
+    DOMLSSerializer   *wrt = imp->createLSSerializer();
+    out->setByteStream(tar);
+    wrt->getDomConfig()->setParameter(Strng_t("format-pretty-print"), true);
+    wrt->write(doc, out);
+    out->release();
+    wrt->release();
+  }
 }}
-
-
-void DD4hep::XML::dumpTree(xercesc::DOMDocument* doc)  {
-  DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
-  XMLFormatTarget   *tar = new StdOutFormatTarget();
-  DOMLSOutput       *out = imp->createLSOutput();
-  DOMLSSerializer   *wrt = imp->createLSSerializer();
-  out->setByteStream(tar);
-  wrt->getDomConfig()->setParameter(Strng_t("format-pretty-print"), true);
-  wrt->write(doc, out);
-  out->release();
-  wrt->release();
-}
 
 /// Default constructor of a document handler using XercesC
 DocumentHandler::DocumentHandler() :  m_errHdlr(new DocumentErrorHandler())  {
@@ -137,9 +130,9 @@ DocumentHandler::DocumentHandler() :  m_errHdlr(new DocumentErrorHandler())  {
 DocumentHandler::~DocumentHandler()  {
 }
 
-
 Document DocumentHandler::load(Handle_t base, const XMLCh* fname)  const  {
-  xercesc::XMLURL base_url(base->getBaseURI());
+  xercesc::DOMElement* e = (xercesc::DOMElement*)base.ptr();
+  xercesc::XMLURL base_url(e->getBaseURI());
   xercesc::XMLURL ref_url(base_url,fname);
   return load(_toString(ref_url.getURLText()));
 }
@@ -165,7 +158,7 @@ Document DocumentHandler::load(const string& fname)  const  {
     }
   }
   cout << "Document succesfully parsed....." << endl;
-  return parser->adoptDocument();
+  return (XmlDocument*)parser->adoptDocument();
 }
 
 /// Parse a standalong XML string into a document.
@@ -177,7 +170,7 @@ Document DocumentHandler::parse(const char* bytes, size_t length)  const {
   DOMDocument* doc  = parser->adoptDocument();
   doc->setXmlStandalone(true);
   doc->setStrictErrorChecking(true);
-  return doc;
+  return (XmlDocument*)doc;
 }
 
 /// Write xml document to output file (stdout if file name empty)
@@ -192,7 +185,7 @@ int DocumentHandler::output(Document doc, const std::string& fname) const {
 
   out->setByteStream(tar);
   wrt->getDomConfig()->setParameter(Strng_t("format-pretty-print"), true);
-  wrt->write(doc, out);
+  wrt->write((xercesc::DOMDocument*)doc.ptr(), out);
   out->release();
   wrt->release();
   delete tar;
@@ -207,7 +200,23 @@ int DocumentHandler::output(Document doc, const std::string& fname) const {
 #endif
 #include <sys/stat.h>
 
-namespace DD4hep { namespace XML {  struct DocumentErrorHandler {};   }}
+namespace DD4hep { namespace XML {  
+  struct DocumentErrorHandler {};   
+  union Xml { 
+    Xml(void* ptr) : p(ptr) {}
+    Xml(const void* ptr) : cp(ptr) {}
+    void* p;
+    const void* cp;
+    TiXmlElement* e;
+    XmlElement* xe;
+    TiXmlAttribute* a;
+    Attribute  attr;
+    TiXmlNode* n;
+    TiXmlDocument* d;
+    XmlDocument* xd;
+  };
+
+}}
 
 namespace {
   static string _clean_fname(const string& s) {
@@ -229,7 +238,7 @@ Document DocumentHandler::load(Handle_t base, const XmlChar* fname)  const  {
   Element elt(base);
   // Poor man's URI handling. Xerces is much much better here
   if ( elt ) {
-    string bn = elt.document()->Value();
+    string bn = Xml(elt.document()).d->Value();
 #ifdef _WIN32
     char drive[_MAX_DRIVE], dir[_MAX_DIR], file[_MAX_FNAME], ext[_MAX_EXT];
     ::_splitpath(bn.c_str(),drive,dir,file,ext);
@@ -274,7 +283,7 @@ Document DocumentHandler::load(const string& fname)  const  {
   }
   if ( result ) {
     cout << "Document " << fname << " succesfully parsed....." << endl;
-    return doc;
+    return (XmlDocument*)doc;
   }
   delete doc;
   return 0;
@@ -285,7 +294,7 @@ Document DocumentHandler::parse(const char* doc_string, size_t length) const {
   TiXmlDocument* doc = new TiXmlDocument();
   try  {
     if ( 0 == doc->Parse(doc_string) ) {
-      return doc;
+      return (XmlDocument*)doc;
     }
     if ( doc->Error() ) {
       cout << "Unknown error whaile parsing XML document with TiXml:" << endl;
@@ -310,7 +319,8 @@ int DocumentHandler::output(Document doc, const std::string& fname) const {
     cout << "Failed to open output file:" << fname << endl;
     return 0;
   }
-  doc->Print(file);
+  TiXmlDocument* d = (TiXmlDocument*)doc.ptr();
+  d->Print(file);
   if ( !fname.empty() ) ::fclose(file);
   return 1;
 }

@@ -7,18 +7,8 @@
 //
 //====================================================================
 // Framework include files
-#include "XML/XMLElements.h"
-
-#ifdef __TIXML__
-#include "XML/tinyxml.h"
-#else
-#include "xercesc/util/XMLString.hpp"
-#include "xercesc/dom/DOMElement.hpp"
-#include "xercesc/dom/DOMDocument.hpp"
-#include "xercesc/dom/DOMNodeList.hpp"
-#endif
-
 #include "XML/Evaluator.h"
+#include "XML/XMLElements.h"
 #include "XML/XMLTags.h"
 
 // C/C++ include files
@@ -29,61 +19,98 @@
 
 using namespace std;
 using namespace DD4hep::XML;
+#define INVALID_NODE ~0x0
 
 // Forward declarations
 namespace DD4hep  {
   XmlTools::Evaluator& evaluator();
 }
-
 // Static storage
 namespace {
   XmlTools::Evaluator& eval(DD4hep::evaluator());
 }
-#define INVALID_NODE ~0x0
 
-#ifdef __TIXML__
-#define ELEMENT_NODE_TYPE XmlNode::ELEMENT
+// Shortcuts
+#define _D(x)   Xml(x).d
+#define _E(x)   Xml(x).e
+#define _N(x)   Xml(x).n
+#define _L(x)   Xml(x).l
+#define _XE(x)  Xml(x).xe
+
+#ifdef DD4HEP_USE_TINYXML
+#include "XML/tinyxml.h"
+#define ELEMENT_NODE_TYPE TiXmlNode::ELEMENT
+#define getTagName          Value
+#define getTextContent      GetText
+#define getName             Name
+#define getValue            Value
+#define getNodeValue        Value
+#define getNodeType         Type
+#define setNodeValue        SetValue
+#define getParentNode       Parent()->ToElement
+#define getAttributeNode(x) AttributeNode(x)
+#define appendChild         LinkEndChild 
+#define getOwnerDocument    GetDocument  
+#define getDocumentElement  RootElement
+union Xml { 
+  Xml(const void* ptr) : p(ptr) {}
+  const void*     p;
+  TiXmlNode*      n;
+  TiXmlElement*   e;
+  TiXmlAttribute* a;
+  TiXmlDocument*  d;
+  XmlElement*    xe;
+};
+
 namespace {
-  Attribute    attribute_node(XmlElement* n, const XmlChar* t)       {  return n->AttributeNode(t);               }
-  const XmlChar* attribute_value(Attribute a)                        {  return a->Value();                        }
-  int          node_type(XmlNode* n)                                 {  return n->Type();                         }
-  XmlElement*  node_first(XmlElement* e, const XmlChar* t)           {  return e ? e->FirstChildElement(t) : 0;   }
-  size_t       node_count(XmlElement* e, const XmlChar* t) {
+  XmlElement*  node_first(XmlElement* e, const XmlChar* t) {
+    return e ? (XmlElement*)_E(e)->FirstChildElement(t) : 0;
+  }
+  size_t       node_count(XmlElement* elt, const XmlChar* t) {
     size_t cnt = 0;
+    TiXmlElement* e = Xml(elt).e;
     for(e=e->FirstChildElement(t);e; e=e->NextSiblingElement(t)) ++cnt;
     return cnt;
   }
 }
-XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c)         {  return c ? ::strdup(c) : 0;               }
-XmlChar* DD4hep::XML::XmlString::transcode(const char* c)            {  return c ? ::strdup(c) : 0;               }
-void     DD4hep::XML::XmlString::release(char** p)                   {  if(p && *p) { ::free(*p); *p=0;}          }
+XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c)  {  return c ? ::strdup(c) : 0;        }
+XmlChar* DD4hep::XML::XmlString::transcode(const char* c)     {  return c ? ::strdup(c) : 0;        }
+void     DD4hep::XML::XmlString::release(char** p)            {  if(p && *p) { ::free(*p); *p=0;}   }
 
 #else
-
-XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c)         {  return xercesc::XMLString::replicate(c);  }
-char*    DD4hep::XML::XmlString::transcode(const XmlChar* c)         {  return xercesc::XMLString::transcode(c);  }
-XmlChar* DD4hep::XML::XmlString::transcode(const char* c)            {  return xercesc::XMLString::transcode(c);  }
-void     DD4hep::XML::XmlString::release(XmlChar** p)                {  return xercesc::XMLString::release(p);    }
-void     DD4hep::XML::XmlString::release(char** p)                   {  return xercesc::XMLString::release(p);    }
-
-#define ELEMENT_NODE_TYPE XmlNode::ELEMENT_NODE
+#include "xercesc/util/XMLString.hpp"
+#include "xercesc/dom/DOMElement.hpp"
+#include "xercesc/dom/DOMDocument.hpp"
+#include "xercesc/dom/DOMNodeList.hpp"
 #include "xercesc/dom/DOM.hpp"
+#define ELEMENT_NODE_TYPE xercesc::DOMNode::ELEMENT_NODE
+union Xml { 
+  Xml(const void* ptr) : p(ptr) {}
+  const void*           p;
+  xercesc::DOMNode*     n;
+  xercesc::DOMAttr*     a;
+  xercesc::DOMElement*  e;
+  xercesc::DOMDocument* d;
+  xercesc::DOMNodeList* l;
+  XmlElement*          xe;
+};
+
+XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c) {  return xercesc::XMLString::replicate(c);  }
+char*    DD4hep::XML::XmlString::transcode(const XmlChar* c) {  return xercesc::XMLString::transcode(c);  }
+XmlChar* DD4hep::XML::XmlString::transcode(const char* c)    {  return xercesc::XMLString::transcode(c);  }
+void     DD4hep::XML::XmlString::release(XmlChar** p)        {  return xercesc::XMLString::release(p);    }
+void     DD4hep::XML::XmlString::release(char** p)           {  return xercesc::XMLString::release(p);    }
+
 namespace {
-  Attribute    attribute_node(XmlElement* n, const XmlChar* t)      {  return n->getAttributeNode(t);             }
-  const XmlChar* attribute_value(Attribute a)                       {  return a->getValue();                      }
-  int          node_type(XmlNode* n)                                {  return n->getNodeType();                   }
-  size_t       node_count(XmlElement* e, const XmlChar* t) {
-    XmlNodeList* l = e ? e->getElementsByTagName(t) : 0;
+  size_t       node_count(XmlElement* e, const XmlChar* t)  {
+    xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
     return l ? l->getLength() : INVALID_NODE; 
   }
-  XmlElement*  node_first(XmlElement* e, const XmlChar* t) {
-    XmlNodeList* l = e ? e->getElementsByTagName(t) : 0;
-    return (XmlElement*)(l ? l->item(0) : 0);
+  XmlElement*  node_first(XmlElement* e, const XmlChar* t)  {
+    xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
+    return Xml(l ? l->item(0) : 0).xe;
   }
 }
-#endif
-
-#ifndef __TIXML__
 string DD4hep::XML::_toString(const XmlChar *toTranscode)  {
   char *buff = XmlString::transcode(toTranscode);
   string tmp(buff==0 ? "" : buff);
@@ -91,6 +118,13 @@ string DD4hep::XML::_toString(const XmlChar *toTranscode)  {
   return tmp;
 }
 #endif
+
+namespace {
+  Attribute attribute_node(XmlElement* n, const XmlChar* t) { return Attribute(_E(n)->getAttributeNode(t)); }
+  const XmlChar* attribute_value(Attribute a)               { return Xml(a).a->getValue();           }
+  int          node_type(XmlNode* n)                        { return Xml(n).n->getNodeType();        }
+  int          node_type(Handle_t n)                        { return Xml(n.ptr()).n->getNodeType();  }
+}
 
 string DD4hep::XML::_toString(Attribute attr)  {
   if ( attr ) return _toString(attribute_value(attr));
@@ -127,25 +161,16 @@ string DD4hep::XML::_toString(double v,       const char* fmt)  { return __to_st
 int DD4hep::XML::_toInt(const XmlChar* value)  {
   if ( value )  {
     string s = _toString(value);
-    /*
-    int e;
-    errno = 0;
-    long val = ::strtol(s.c_str(),0,10);
-    e = errno;
-    if((errno == ERANGE && (val==LONG_MAX || val == LONG_MIN)) || (errno != 0 && val == 0) ) {
-    */
-      size_t idx = s.find("(int)");
-      if ( idx != string::npos ) 
-        s.erase(idx,5);
-      while(s[0]==' ')s.erase(0,1);
-      double result = eval.evaluate(s.c_str());
-      if (eval.status() != XmlTools::Evaluator::OK) {
-	cerr << s << ": ";
-	eval.print_error();
-      }
-      return (int)result;
-    //}
-    //return val;
+    size_t idx = s.find("(int)");
+    if ( idx != string::npos ) 
+      s.erase(idx,5);
+    while(s[0]==' ')s.erase(0,1);
+    double result = eval.evaluate(s.c_str());
+    if (eval.status() != XmlTools::Evaluator::OK) {
+      cerr << s << ": ";
+      eval.print_error();
+    }
+    return (int)result;
   }
   return -1;
 }
@@ -233,7 +258,7 @@ Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const Strng_t& b)
 Tag_t   DD4hep::XML::operator+(const Tag_t& a,       const string& b)  
 {  return a.str() + b;                                              }
 
-#ifndef __TIXML__
+#ifndef DD4HEP_USE_TINYXML
 Strng_t DD4hep::XML::operator+(const Strng_t& a,     const XmlChar* b)
 {  return _toString(a.ptr()) + _toString(b);                      }
 
@@ -311,7 +336,7 @@ Tag_t& Tag_t::operator=(const string& s) {
 /// Copy constructor
 NodeList::NodeList(const NodeList& l)
   : m_node(l.m_node), m_ptr(0)
-#ifndef __TIXML__
+#ifndef DD4HEP_USE_TINYXML
 , m_index(0)
 #endif
 {
@@ -322,7 +347,7 @@ NodeList::NodeList(const NodeList& l)
 /// Initializing constructor
 NodeList::NodeList(XmlElement* node, const XmlChar* tag)
   : m_node(node), m_ptr(0)
-#ifndef __TIXML__
+#ifndef DD4HEP_USE_TINYXML
 , m_index(0)
 #endif
 {
@@ -337,29 +362,30 @@ NodeList::~NodeList()    {
 
 /// Reset the nodelist
 XmlElement* NodeList::reset() {
-#ifdef __TIXML__
+#ifdef DD4HEP_USE_TINYXML
   return m_ptr=node_first(m_node,m_tag);
 #else
-  m_ptr = m_node->getElementsByTagName(m_tag);
-  return (XmlElement*)m_ptr->item(m_index=0);
+  xercesc::DOMNodeList* l = Xml(m_node).e->getElementsByTagName(m_tag);
+  m_ptr = (XmlNodeList*)l;
+  return _XE(l->item(m_index=0));
 #endif
 }
 
 /// Advance to next element
 XmlElement* NodeList::next()  const {
-#ifdef __TIXML__
-  return m_ptr=(m_ptr ? m_ptr->NextSiblingElement(m_tag) : 0);
+#ifdef DD4HEP_USE_TINYXML
+  return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag) : 0);
 #else
-  return (XmlElement*)m_ptr->item(++m_index);
+  return _XE(_L(m_ptr)->item(++m_index));
 #endif
 }
 
 /// Go back to previous element
 XmlElement* NodeList::previous()  const {
-#ifdef __TIXML__
-  return m_ptr=(m_ptr ? m_ptr->PreviousSiblingElement(m_tag) : 0);
+#ifdef DD4HEP_USE_TINYXML
+  return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement(m_tag) : 0);
 #else
-  return (XmlElement*)(m_index>0 ? m_ptr->item(--m_index) : 0);
+  return _XE(m_index>0 ? _L(m_ptr)->item(--m_index) : 0);
 #endif
 }
 
@@ -374,42 +400,30 @@ NodeList& NodeList::operator=(const NodeList& l) {
 
 /// Unicode text access to the element's tag. Tis must be wrong ....
 const XmlChar* Handle_t::rawTag() const   { 
-#ifdef __TIXML__
-  return m_node->Value();
-#else
-  return m_node->getTagName();
-#endif
+  return _E(m_node)->getTagName();
 }
 
 /// Unicode text access to the element's text
 const XmlChar* Handle_t::rawText() const   { 
-#ifdef __TIXML__
-  return m_node->GetText();
-#else
-  return m_node->getTextContent();
-#endif
+  return _E(m_node)->getTextContent();
 }
 
 /// Unicode text access to the element's value
 const XmlChar* Handle_t::rawValue() const     {
-#ifdef __TIXML__
-  return m_node->Value(); 
-#else
-  return m_node->getNodeValue();
-#endif
+  return _N(m_node)->getNodeValue();
 }
 
 /// Clone the DOMelement - with the option of a deep copy
 Handle_t Handle_t::clone(XmlDocument* new_doc) const  {
   if ( m_node ) {
-#ifdef __TIXML__
-    if ( m_node->Type() == ELEMENT_NODE_TYPE ) {
-      XmlElement* e = m_node->Clone()->ToElement();
+#ifdef DD4HEP_USE_TINYXML
+    if ( _N(m_node)->Type() == ELEMENT_NODE_TYPE ) {
+      XmlElement* e = _XE(_N(m_node)->Clone()->ToElement());
       if ( e ) return e;
     }
     throw runtime_error("TiXml: Handle_t::clone: Invalid source handle type [No element type].");
 #else
-    return (Elt_t)new_doc->importNode(m_node,true);
+    return Elt_t(_D(new_doc)->importNode(_E(m_node),true));
 #endif
   }
   throw runtime_error("Xml: Handle_t::clone: Invalid source handle.");
@@ -417,11 +431,7 @@ Handle_t Handle_t::clone(XmlDocument* new_doc) const  {
 
 /// Access the element's parent element
 Handle_t Handle_t::parent() const     {
-#ifdef __TIXML__
-  return m_node ? m_node->Parent()->ToElement() : 0;
-#else
-  return Elt_t(m_node ? m_node->getParentNode() : 0);
-#endif
+  return Elt_t(m_node ? _N(m_node)->getParentNode() : 0);
 }
 
 /// Access attribute pointer by the attribute's unicode name (no exception thrown if not present)
@@ -431,24 +441,20 @@ Attribute Handle_t::attr_nothrow(const XmlChar* tag)  const  {
 
 /// Check for the existence of a named attribute
 bool Handle_t::hasAttr(const XmlChar* tag) const    { 
-#ifdef __TIXML__
-  return m_node && 0 != m_node->Attribute(tag);
-#else
-  return m_node && 0 != m_node->getAttributeNode(tag);
-#endif
+  return m_node && 0 != _E(m_node)->getAttributeNode(tag);
 }
 
 /// Retrieve a collection of all attributes of this DOM element
 vector<Attribute> Handle_t::attributes() const {
   vector<Attribute> attrs;
   if ( m_node ) {
-#ifdef __TIXML__
-    for(TiXmlAttribute* a=m_node->FirstAttribute(); a; a=a->Next())
-      attrs.push_back(a);
+#ifdef DD4HEP_USE_TINYXML
+    for(TiXmlAttribute* a=_E(m_node)->FirstAttribute(); a; a=a->Next())
+      attrs.push_back(Attribute(a));
 #else
-    xercesc::DOMNamedNodeMap* l = m_node->getAttributes();
+    xercesc::DOMNamedNodeMap* l = _E(m_node)->getAttributes();
     for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)  {
-      XmlNode* n = l->item(i);
+      xercesc::DOMNode* n = l->item(i);
       attrs.push_back(Attribute(n));
     }
 #endif
@@ -486,19 +492,15 @@ NodeList Handle_t::children(const XmlChar* tag) const {
 
 /// Append a DOM element to the current node
 void Handle_t::append(Handle_t e) const { 
-#ifdef __TIXML__
-  m_node->LinkEndChild(e.ptr());
-#else
-  m_node->appendChild(e.ptr());
-#endif
+  _N(m_node)->appendChild(_N(e.ptr()));
 }
 
 /// Remove a single child node identified by it's handle from the tree of the element
 Handle_t Handle_t::remove(Handle_t node)  const  {
-#ifdef __TIXML__
-  bool e = (m_node && node.ptr() ? m_node->RemoveChild(node.ptr()) : false); 
+#ifdef DD4HEP_USE_TINYXML
+  bool e = (m_node && node.ptr() ? _N(m_node)->RemoveChild(_N(node.ptr())) : false); 
 #else
-  Elt_t e = (Elt_t)(m_node && node.ptr() ? m_node->removeChild(node.ptr()) : 0); 
+  Elt_t e = Elt_t(m_node && node.ptr() ? _N(m_node)->removeChild(_N(node.ptr())) : 0); 
 #endif
   if ( e ) return node.ptr();
   string msg = "Handle_t::remove: ";
@@ -514,13 +516,14 @@ Handle_t Handle_t::remove(Handle_t node)  const  {
 
 /// Remove children with a given tag name from the DOM node
 void Handle_t::removeChildren(const XmlChar* tag)  const  {
-#ifdef __TIXML__
-  for(TiXmlNode* node = m_node->FirstChildElement(tag);node;m_node->FirstChildElement(tag))
-    m_node->RemoveChild(node);
+#ifdef DD4HEP_USE_TINYXML
+  for(TiXmlNode* n=_E(m_node)->FirstChildElement(tag);n;n=_E(m_node)->FirstChildElement(tag))
+    n->RemoveChild(n);
 #else
-  XmlNodeList* l=m_node->getElementsByTagName(tag);
+  xercesc::DOMElement*  e = _E(m_node);
+  xercesc::DOMNodeList* l = e->getElementsByTagName(tag);
   for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)
-    m_node->removeChild(l->item(i));
+    e->removeChild(l->item(i));
 #endif
 }
 
@@ -530,68 +533,65 @@ bool Handle_t::hasChild(const XmlChar* tag) const   {
 
 /// Set the element's value
 void Handle_t::setValue(const XmlChar* text) const   {
-#ifdef __TIXML__
-  m_node->SetValue(text);
-#else
-  m_node->setNodeValue(text);
-#endif
+  _N(m_node)->setNodeValue(text);
 }
 
 /// Set the element's value
 void Handle_t::setValue(const string& text) const   {
-#ifdef __TIXML__
-  m_node->SetValue(text.c_str());
+#ifdef DD4HEP_USE_TINYXML
+  _N(m_node)->setNodeValue(text.c_str());
 #else
-  m_node->setNodeValue(Strng_t(text));
+  _N(m_node)->setNodeValue(Strng_t(text));
 #endif
 }
 
 /// Set the element's text
 void Handle_t::setText(const XmlChar* text) const   {
-#ifdef __TIXML__
-  m_node->LinkEndChild(new TiXmlText(text));
+#ifdef DD4HEP_USE_TINYXML
+  _N(m_node)->LinkEndChild(new TiXmlText(text));
 #else
-  m_node->setTextContent(text);
+  _N(m_node)->setTextContent(text);
 #endif
 }
 
 /// Set the element's text
 void Handle_t::setText(const string& text) const   {
-#ifdef __TIXML__
-  m_node->LinkEndChild(new TiXmlText(text.c_str()));
+#ifdef DD4HEP_USE_TINYXML
+  _N(m_node)->LinkEndChild(new TiXmlText(text.c_str()));
 #else
-  m_node->setTextContent(Strng_t(text));
+  _N(m_node)->setTextContent(Strng_t(text));
 #endif
 }
 
 /// Remove all attributes of this element
 void Handle_t::removeAttrs() const   {
-#ifdef __TIXML__
-  m_node->ClearAttributes();
+#ifdef DD4HEP_USE_TINYXML
+  _E(m_node)->ClearAttributes();
 #else
-  xercesc::DOMNamedNodeMap* l = m_node->getAttributes();
-  XmlSize_t i, n=l->getLength();
-  for(i=0; i<n; ++i)  {
-    XmlAttr* a = (XmlAttr*)l->item(i);
-    m_node->removeAttributeNode(a);
+  xercesc::DOMElement*      e = _E(m_node);
+  xercesc::DOMNamedNodeMap* l = e->getAttributes();
+  for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)  {
+    xercesc::DOMAttr* a = (xercesc::DOMAttr*)l->item(i);
+    e->removeAttributeNode(a);
   }
 #endif
 }
 
 /// Set attributes as in argument handle
-void Handle_t::setAttrs(Handle_t e) const   {
+void Handle_t::setAttrs(Handle_t elt) const   {
   removeAttrs();
-#ifdef __TIXML__
+#ifdef DD4HEP_USE_TINYXML
+  TiXmlElement* e = Xml(elt).e;
   for(TiXmlAttribute* a=e->FirstAttribute(); a; a=a->Next())
-    m_node->SetAttribute(a->Name(),a->Value());
+    e->SetAttribute(a->Name(),a->Value());
 #else
+  xercesc::DOMElement*      e = _E(m_node);
   xercesc::DOMNamedNodeMap* l = e->getAttributes();
-  XmlSize_t i, n=l->getLength();
-  for(i=0; i<n; ++i)  {
-    XmlNode* node = l->item(i);
-    if ( node->getNodeType() == XmlNode::ATTRIBUTE_NODE ) {
-      Attribute attr = (Attribute)node;
-      m_node->setAttribute(attr->getName(),attr->getValue());
+  for(XmlSize_t i=0, len=l->getLength(); i<len; ++i)  {
+    xercesc::DOMNode* n = l->item(i);
+    if ( n->getNodeType() == xercesc::DOMNode::ATTRIBUTE_NODE ) {
+      xercesc::DOMAttr* a = (xercesc::DOMAttr*)n;
+      e->setAttribute(a->getName(),a->getValue());
     }
   }
 #endif
@@ -610,13 +610,9 @@ Attribute Handle_t::attr_ptr(const XmlChar* t)  const    {
 }
 
 /// Access attribute name (throws exception if not present)
-const XmlChar* Handle_t::attr_name(const Attribute attr)  const   {
-  if ( attr ) {
-#ifdef __TIXML__
-    return attr->Name();
-#else
-    return attr->getName();
-#endif
+const XmlChar* Handle_t::attr_name(const Attribute a)  const   {
+  if ( a ) {
+    return Xml(a).a->getName();
   }
   throw runtime_error("Attempt to access invalid XML attribute object!");
 }
@@ -670,7 +666,7 @@ Attribute Handle_t::setAttr(const XmlChar* name, const string& val)  const {
   return setAttr(name, Strng_t(val.c_str()));
 }
 
-#ifndef __TIXML__
+#ifndef DD4HEP_USE_TINYXML
 Attribute Handle_t::setAttr(const XmlChar* name, const char* v) const    {
   return setAttr(name, Strng_t(v));
 }
@@ -683,17 +679,19 @@ Attribute Handle_t::setAttr(const XmlChar* name, const Attribute v) const    {
 
 /// Generic attribute setter with unicode value
 Attribute Handle_t::setAttr(const XmlChar* name, const XmlChar* value) const  { 
-#ifdef __TIXML__
-  m_node->SetAttribute(name,value);
-  return m_node->AttributeNode(name);
+#ifdef DD4HEP_USE_TINYXML
+  TiXmlElement* e = Xml(m_node).e;
+  e->SetAttribute(name,value);
+  return Attribute(e->AttributeNode(name));
 #else
-  XmlAttr* attr = m_node->getAttributeNode(name);
-  if ( !attr ) {
-    attr = m_node->getOwnerDocument()->createAttribute(name);
-    m_node->setAttributeNode(attr);
+  xercesc::DOMElement* e = _E(m_node);
+  xercesc::DOMAttr*    a = e->getAttributeNode(name);
+  if ( !a ) {
+    a = e->getOwnerDocument()->createAttribute(name);
+    e->setAttributeNode(a);
   }
-  attr->setValue(value);
-  return attr;
+  a->setValue(value);
+  return Attribute(a);
 #endif
 }
 
@@ -745,8 +743,8 @@ static unsigned int adler32(unsigned int adler,const char* buf,size_t len)    {
 /// Checksum (sub-)tree of a xml document/tree
 unsigned int Handle_t::checksum(unsigned int param,unsigned int (fcn)(unsigned int,const XmlChar*,size_t)) const  {
   typedef std::map<std::string,std::string> StringMap;
-#ifdef __TIXML__
-  TiXmlNode* n = m_node;
+#ifdef DD4HEP_USE_TINYXML
+  TiXmlNode* n = Xml(m_node).n;
   if ( n )   {
     if ( 0 == fcn ) fcn = adler32;
     switch (n->Type())  {
@@ -773,7 +771,7 @@ unsigned int Handle_t::checksum(unsigned int param,unsigned int (fcn)(unsigned i
       break;
     }
     for(TiXmlNode* c=n->FirstChild(); c; c=c->NextSibling())
-      param = Handle_t(c->ToElement()).checksum(param,fcn);
+      param = Handle_t((XmlElement*)c->ToElement()).checksum(param,fcn);
   }
 #else
 
@@ -783,45 +781,37 @@ unsigned int Handle_t::checksum(unsigned int param,unsigned int (fcn)(unsigned i
 
 /// Create DOM element
 Handle_t Document::createElt(const XmlChar* tag)  const {
-#ifdef __TIXML__
-  return new TiXmlElement(tag);
+#ifdef DD4HEP_USE_TINYXML
+  return _XE(new TiXmlElement(tag));
 #else
-  return m_doc->createElement(tag);
+  return _XE(_D(m_doc)->createElement(tag));
 #endif
 }
 
 /// Access the ROOT eleemnt of the DOM document
 Handle_t Document::root() const  {
-#ifdef __TIXML__
-  if ( m_doc )  return m_doc->RootElement();
-#else
-  if ( m_doc )  return m_doc->getDocumentElement();
-#endif
+  if ( m_doc )  return _XE(_D(m_doc)->getDocumentElement());
   throw runtime_error("Document::root: Invalid handle!");
 }
 
 /// Standard destructor - releases the document
 DocumentHolder::~DocumentHolder()  {
-#ifdef __TIXML__
-  if (m_doc) delete m_doc;
+#ifdef DD4HEP_USE_TINYXML
+  if (m_doc) delete _D(m_doc);
 #else
-  if (m_doc) m_doc->release();
+  if (m_doc) _D(m_doc)->release();
 #endif
   m_doc = 0;
 }
 
 /// Constructor from DOM document entity
 Element::Element(const Document& document, const XmlChar* type) 
-: m_element(document.createElt(type))  
+: m_element(Xml(document.createElt(type)).xe)  
 { }
 
 /// Access the hosting document handle of this DOM element
 Document Element::document() const   {
-#ifdef __TIXML__
-  return Document(m_element ? m_element->GetDocument() : 0);
-#else
-  return Document(m_element ? m_element->getOwnerDocument() : 0);
-#endif
+  return Document((XmlDocument*)(m_element ? _N(m_element)->getOwnerDocument() : 0));
 }
 
 /// Clone the DOM element tree
@@ -891,9 +881,9 @@ void RefElement::setName(const XmlChar* new_name)  {
   setAttr(_U(name),new_name);
 }
 
-#ifndef __TIXML__
+#ifndef DD4HEP_USE_TINYXML
 Collection_t::Collection_t(Handle_t element, const XmlChar* tag) 
-  : m_children(element,tag)
+ : m_children(element,tag)
 {
   m_node = m_children.reset();
 }
@@ -924,7 +914,7 @@ void Collection_t::operator++()  const  {
   Elt_t e = this->parent();
   while(m_node)  {
     m_node = m_children.next();
-    if ( m_node && node_type(m_node) == ELEMENT_NODE_TYPE ) {
+    if ( m_node && _N(m_node)->getNodeType() == ELEMENT_NODE_TYPE ) {
       if ( this->parent() == e )
 	return;
     }
@@ -935,7 +925,7 @@ void Collection_t::operator--()  const  {
   Elt_t e = this->parent();
   while(m_node)  {
     m_node = m_children.previous();
-    if ( m_node && node_type(m_node) == ELEMENT_NODE_TYPE ) {
+    if ( m_node && _N(m_node)->getNodeType() == ELEMENT_NODE_TYPE ) {
       if ( this->parent() == e )
 	return;
     }
@@ -951,15 +941,14 @@ void Collection_t::operator--(int)  const  {
 }
 
 Handle_t Document::clone(Handle_t source) const  {
-#ifdef __TIXML__
-  return (XmlElement*)source.clone(0);
+#ifdef DD4HEP_USE_TINYXML
+  return _XE(source.clone(0));
 #else
-  
-  return (XmlElement*)(m_doc->importNode(source.ptr(),true));
+  return _XE(_D(m_doc)->importNode(_E(source.ptr()),true));
 #endif
 }
 
-#ifdef __TIXML__
+#ifdef DD4HEP_USE_TINYXML
 #include "tinyxml_inl.h"
 #include "tinyxmlerror_inl.h"
 #include "tinyxmlparser_inl.h"

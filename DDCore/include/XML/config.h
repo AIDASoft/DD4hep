@@ -9,58 +9,37 @@
 #ifndef DD4HEP_XML_CONFIG_H
 #define DD4HEP_XML_CONFIG_H
 
+
+#if      defined(DD4HEP_USE_TINYXML)
 #define  __TIXML__
-
-#ifndef  __TIXML__
-
-/* Setup XML parsing for the use of Apache Xerces-C
- *
- * @author M.Frank
- */
-#include "xercesc/dom/DOMException.hpp"
-XERCES_CPP_NAMESPACE_BEGIN
-  class DOMElement;
-  class DOMDocument;
-  class DOMNodeList;
-  class DOMNode;
-  class DOMAttr;
-  class DOMException;
-XERCES_CPP_NAMESPACE_END
-namespace DD4hep { namespace XML {  
-    typedef XMLSize_t              XmlSize_t;
-    typedef XMLCh                  XmlChar;
-    typedef xercesc::DOMElement    XmlElement;
-    typedef xercesc::DOMDocument   XmlDocument;
-    typedef xercesc::DOMNodeList   XmlNodeList;
-    typedef xercesc::DOMNode       XmlNode;
-    typedef xercesc::DOMAttr       XmlAttr;
-    typedef xercesc::DOMException  XmlException;
-}}
-#define XML_IMPLEMENTATION_TYPE " Apache Xerces-C DOM Parser"
-#define XML_HEADER_DECLARATION
-
-#else  // __TIXML__
+#endif
 
 #include <cstdlib>
-/* Setup XML parsing for the use of TiXml
+
+/* Setup XML parsing for the use of Apache Xerces-C and TiXml
  *
  * @author M.Frank
  */
-class TiXmlElement;
-class TiXmlDocument;
-class TiXmlNode;
-class TiXmlAttribute;
 namespace DD4hep { namespace XML {
-    typedef std::size_t     XmlSize_t;
-    typedef char            XmlChar;
-    typedef TiXmlElement    XmlElement;
-    typedef TiXmlDocument   XmlDocument;
-    typedef void            XmlNodeList;
-    typedef TiXmlNode       XmlNode;
-    typedef TiXmlAttribute  XmlAttr;
+    class XmlElement;
+    class XmlDocument;
+    class XmlNodeList;
+    class XmlNode;
+    class XmlAttr;
+    typedef std::size_t    XmlSize_t;
+#ifdef  __TIXML__
+    typedef char           XmlChar;
+#else
+    typedef unsigned short XmlChar;
+#endif
 }}
+
+#ifdef  __TIXML__
 #define XML_IMPLEMENTATION_TYPE " TinyXML DOM mini-parser   "
 #define XML_HEADER_DECLARATION  "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
-#endif // __TIXML__
+#else   // Xerces-C
+#define XML_IMPLEMENTATION_TYPE " Apache Xerces-C DOM Parser"
+#define XML_HEADER_DECLARATION
+#endif  // __TIXML__
 
 #endif // DD4HEP_XML_CONFIG_H

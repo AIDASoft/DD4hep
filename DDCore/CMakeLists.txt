@@ -2,11 +2,9 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
-                    ${ROOT_INCLUDE_DIR}
-                    ${XERCESC_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR})
 
-file(GLOB sources src/*.cpp src/Evaluator/*.cpp)
+file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
 file(GLOB plugin_sources src/plugins/*.cpp)
 
 if(DD4HEP_USE_PYROOT)
@@ -19,17 +17,13 @@ if(DD4HEP_USE_PYROOT)
   set(libraries  ${libraries} PyROOT)
 endif()
 
-if(DD4HEP_USE_XERCESC)
-  file(GLOB xmlsources src/XML/*.cpp)
-  list(APPEND sources ${xmlsources})
-  add_definitions(-DDD4HEP_USE_XERCESC)
-endif()
+include(DD4hep_XML_setup)
 
 add_library(DD4hepCore SHARED ${sources})
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} Geom Reflex ${libraries})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} Geom Reflex ${libraries})
 
 add_library(DD4hepPlugins SHARED ${plugin_sources})
-target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XERCESC_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
+target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
 #---Rootmap generation--------------------------------------------------------------
 dd4hep_generate_rootmap(DD4hepPlugins)
 

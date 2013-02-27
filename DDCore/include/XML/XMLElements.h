@@ -502,6 +502,8 @@ namespace DD4hep {
       operator DOC() const   {  return m_doc; }
       /// Accessot to DOM document behaviour using arrow operator
       DOC operator->() const {  return m_doc; }
+      /// Accessot to DOM document behaviour
+      DOC ptr() const        {  return m_doc; }
       /// Access the ROOT eleemnt of the DOM document
       Handle_t  root() const;
 

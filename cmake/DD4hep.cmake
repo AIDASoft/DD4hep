@@ -17,6 +17,7 @@ function(dd4hep_generate_rootmap library)
   #gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
 endfunction()
 
+
 #---------------------------------------------------------------------------------------------------
 # dd4hep_install_library(library)
 #

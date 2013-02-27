@@ -33,7 +33,7 @@ class TGeoMatrix;
 namespace DD4hep {
 
   /*
-   *   XML namespace declaration
+   *   Geomentry namespace declaration
    */
   namespace Geometry   {
 
