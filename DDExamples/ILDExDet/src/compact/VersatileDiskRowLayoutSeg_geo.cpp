@@ -1,9 +1,6 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/FieldTypes.h"
-#include "XML/DocumentHandler.h"
-#include "XML/Conversions.h"
-#include "xercesc/util/XMLURL.hpp"
 #include "VersatileDiskRowLayoutSeg.h"
 
 using namespace DD4hep::Geometry;    
