@@ -16,11 +16,11 @@ else
     mkdir ${ARCH_OS};
     cd    ${ARCH_OS};
     export ARCH=x86_64-${ARCH_OS};
-    if test $GCC_VSN = "46";
+    if test $GCC_VSN = "gcc46";
 	then 
 	. ${LCG_external_area}/gcc/4.6/${ARCH}/setup.sh /afs/cern.ch/sw/lcg/external;
 	fi;
-    if test $GCC_VSN = "43";
+    if test $GCC_VSN = "gcc43";
 	then
 	. ${LCG_external_area}/gcc/4.3/${ARCH}/setup.sh /afs/cern.ch/sw/lcg/external;
 	fi;
