@@ -67,7 +67,7 @@ svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk DD4hep
 
 mkdir build; cd build
 cmake ../DD4hep
-make -j4
+## setup environment first - see below: make -j4
 
 - Configure (for XercesC)
 
@@ -79,6 +79,11 @@ cmake -DDD4HEP_USE_XERCESC=ON -DDD4HEP_USE_PYROOT=OFF -DXERCESC_ROOT_DIR=<xerces
 . thisdd4hep.sh
      or
 source thisdd4hep.csh
+
+### now call make ###########
+make -j4
+
+
 
 - Run ILDEx display
 
