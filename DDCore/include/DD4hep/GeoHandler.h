@@ -46,6 +46,7 @@ namespace DD4hep {
     public:
 
       typedef std::set<TGeoVolume*>                              VolumeSet;
+      typedef std::vector<TGeoVolume*>                           VolumeVector;
       typedef std::set<const TGeoVolume*>                        ConstVolumeSet;
       typedef std::vector<std::pair<std::string, TGeoMatrix*> >  TransformSet;
       typedef std::set<TGeoShape*>                               SolidSet;
@@ -61,7 +62,8 @@ namespace DD4hep {
 
       struct GeometryInfo   {
 	SolidSet           solids;
-	VolumeSet          volumes;
+	VolumeSet          volumeSet;
+	VolumeVector       volumes;
 	TransformSet       trafos;
 	VisRefs            vis;
 	Fields             fields;

@@ -36,10 +36,7 @@ namespace DD4hep { namespace XML {
 
 #ifdef  __TIXML__
 #define XML_IMPLEMENTATION_TYPE " TinyXML DOM mini-parser   "
-#define XML_HEADER_DECLARATION  "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
 #else   // Xerces-C
 #define XML_IMPLEMENTATION_TYPE " Apache Xerces-C DOM Parser"
-#define XML_HEADER_DECLARATION
 #endif  // __TIXML__
-
 #endif // DD4HEP_XML_CONFIG_H

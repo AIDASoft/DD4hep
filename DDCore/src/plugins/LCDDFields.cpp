@@ -49,7 +49,7 @@ static Ref_t convert_solenoid(LCDD& lcdd, xml_h field, Ref_t object) {
   field.setAttr(_U(zmax),s->maxZ);
   return object;
 }
-DECLARE_XML_PROCESSOR(SolenoidMagnet_Convert2LCDD,convert_solenoid);
+DECLARE_XML_PROCESSOR(solenoid_Convert2LCDD,convert_solenoid);
 
 static Ref_t convert_dipole(LCDD& lcdd, xml_h field, Ref_t object) {
   char text[128];

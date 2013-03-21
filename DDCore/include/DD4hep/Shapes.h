@@ -213,7 +213,7 @@ namespace DD4hep {
       double GetRmin() const { return GetRmin1(); }
       double GetRmax() const { return GetRmax1(); }
     };
-    struct Tube : public Solid_type</*TGeoTubeSeg */ MyConeSeg>  {
+    struct Tube : public Solid_type<TGeoTubeSeg /* MyConeSeg */>  {
       protected:
       void make(const std::string& name,double rmin,double rmax,double z,double startPhi,double deltaPhi);
 
@@ -449,6 +449,11 @@ namespace DD4hep {
      *   @version 1.0
      */
     struct PolyhedraRegular : public Solid_type<TGeoPgon>  {
+      protected:
+      /// Helper function to create holy hedron
+      void _create(const std::string& name, int nsides, double rmin, double rmax, 
+		   double zpos, double zneg, double start, double delta);
+      public:
       /// Constructor to be used when reading the already parsed object
       template <typename Q> 
       PolyhedraRegular(const Handle<Q>& e) : Solid_type<Implementation>(e) {}

@@ -186,17 +186,17 @@ ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, d
 void Tube::make(const string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
   //_assign((TGeoTubeSeg*)new TGeoTube(rmin,rmax,z),name,"tube");
-  //_assign(new TGeoTubeSeg(rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube");
-  MyConeSeg* s = new MyConeSeg();
-  _assign(s,name,"tube");
-  setDimensions(rmin,rmax,z,startPhi,deltaPhi);
+  _assign(new TGeoTubeSeg(rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube");
+  //MyConeSeg* s = new MyConeSeg();
+  //_assign(s,name,"tube");
+  //setDimensions(rmin,rmax,z,startPhi,deltaPhi);
 }
 
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
-  //double params[] = {rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
-  double params[] = {z,rmin,rmax,rmin,rmax,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  double params[] = {rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  //double params[] = {z,rmin,rmax,rmin,rmax,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
   _setDimensions(params);
   return *this;
 }
@@ -375,8 +375,9 @@ Trap& Trap::setDimensions(double z,double theta,double phi,
   return *this;
 }
 
-/// Constructor to be used when creating a new object
-PolyhedraRegular::PolyhedraRegular(const string& name, int nsides, double rmin, double rmax, double zlen)  
+/// Helper function to create holy hedron
+void PolyhedraRegular::_create(const string& name, int nsides, double rmin, double rmax, 
+			       double zpos, double zneg, double start, double delta)
 {
   if ( rmin<0e0 || rmin>rmax )
     throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
@@ -384,71 +385,38 @@ PolyhedraRegular::PolyhedraRegular(const string& name, int nsides, double rmin, 
     throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
   _assign(new TGeoPgon(),name,"polyhedra",false);
   double params[] = {
-    RAD_2_DEGREE * 2 * M_PI,
+    0,
     RAD_2_DEGREE * 2 * M_PI,
     double(nsides),
     2e0,
-    zlen/2e0,rmin,rmax,
-    -zlen/2e0,rmin,rmax
+    zpos,rmin,rmax,
+    zneg,rmin,rmax
   };
   _setDimensions(&params[0]);
+}
+
+/// Constructor to be used when creating a new object
+PolyhedraRegular::PolyhedraRegular(const string& name, int nsides, double rmin, double rmax, double zlen)  
+{
+  _create(name,nsides,rmin,rmax,zlen/2,-zlen/2,0,2*M_PI);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zlen)  
 {
-  if ( rmin<0e0 || rmin>rmax )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
-  else if ( rmax<0e0 )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
-  _assign(new TGeoPgon(),"polyhedra",false);
-  double params[] = {
-    RAD_2_DEGREE * 2 * M_PI,
-    RAD_2_DEGREE * 2 * M_PI,
-    double(nsides),
-    2e0,
-    zlen/2e0,rmin,rmax,
-    -zlen/2e0,rmin,rmax
-  };
-  _setDimensions(&params[0]);
+  _create("",nsides,rmin,rmax,zlen/2,-zlen/2,0,2*M_PI);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, double rmax, double zlen)  
 {
-  if ( rmin<0e0 || rmin>rmax )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
-  else if ( rmax<0e0 )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
-  _assign(new TGeoPgon(),"polyhedra",false);
-  double params[] = {
-    RAD_2_DEGREE * phistart,
-    RAD_2_DEGREE * 2 * M_PI,
-    double(nsides),
-    2e0,
-    zlen/2e0,rmin,rmax,
-    -zlen/2e0,rmin,rmax
-  };
-  _setDimensions(&params[0]);
+  _create("",nsides,rmin,rmax,zlen/2,-zlen/2,phistart,2*M_PI);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2])  
 {
-  if ( rmin<0e0 || rmin>rmax )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
-  else if ( rmax<0e0 )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
-  _assign(new TGeoPgon(),"polyhedra",false);
-  double params[] = {
-    RAD_2_DEGREE * 2 * M_PI,
-    RAD_2_DEGREE * 2 * M_PI,
-    double(nsides),
-    2e0,
-    zplanes[0],rmin,rmax,
-    zplanes[1],rmin,rmax
-  };
-  _setDimensions(&params[0]);
+  _create("",nsides,rmin,rmax,zplanes[0],zplanes[1],0,2*M_PI);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation
@@ -548,8 +516,8 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2)  
 /// Constructor to be used when creating a new object. Placement by a generic transformation within the mother
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& trans)   {
   TGeoHMatrix* tr = new TGeoHMatrix();
-  Double_t* t = tr->GetTranslation();
-  Double_t* r = tr->GetRotationMatrix();
+  Double_t*    t  = tr->GetTranslation();
+  Double_t*    r  = tr->GetRotationMatrix();
   trans.GetComponents(r[0],r[1],r[2],t[0],r[3],r[4],r[5],t[1],r[6],r[7],r[8],t[2]);
   TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,identityTransform(),tr);
   _assign(new TGeoCompositeShape("",inter),"intersection");
@@ -557,8 +525,8 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
 
 /// Constructor to be used when creating a new object. Position is identity.
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)    {
-  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
-  TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
+  TGeoCombiTrans*   trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape("",inter),"intersection");
 }
 
@@ -566,9 +534,9 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans*   trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
   trans->SetRotation(rotation.Inverse());
-  TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
+  TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape("",inter),"intersection");
 }
 

@@ -82,7 +82,10 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
       //SensitiveDetector det = vol.sensitiveDetector();
 
       // Note : assemblies and the world do not have a real volume nor a material
-      if ( v ) info.volumes.insert(v);
+      if ( v && info.volumeSet.find(v) == info.volumeSet.end() )   {
+	info.volumeSet.insert(v);
+	info.volumes.push_back(v);
+      }
       if ( m ) info.materials.insert(m);
       if ( dynamic_cast<Volume::Object*>(v) ) {
 	if ( vis.isValid() ) info.vis.insert(vis.ptr());

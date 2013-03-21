@@ -454,8 +454,8 @@ vector<Attribute> Handle_t::attributes() const {
 #else
     xercesc::DOMNamedNodeMap* l = _E(m_node)->getAttributes();
     for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)  {
-      xercesc::DOMNode* node = l->item(i);
-      attrs.push_back(Attribute(node));
+      xercesc::DOMNode* n = l->item(i);
+      attrs.push_back(Attribute(n));
     }
 #endif
   }
@@ -704,6 +704,11 @@ Handle_t Handle_t::setRef(const XmlChar* tag, const XmlChar* ref_name) {
   return ref;
 }
 
+/// Add reference child as a new child node. The obj must have the "name" attribute!
+Handle_t Handle_t::setRef(const XmlChar* tag, const string& ref_name) {
+  return setRef(tag,Strng_t(ref_name).ptr());
+}
+
 /// Checksum (sub-)tree of a xml document/tree
 static unsigned int adler32(unsigned int adler,const char* buf,size_t len)    {
 #define DO1(buf,i)  {s1 +=(unsigned char)buf[i]; s2 += s1;}
@@ -828,8 +833,13 @@ Attribute Element::getAttr(const XmlChar* name)   const  {
 }
 
 /// Set the reference attribute to the node (adds attribute ref="ref-name")
-Attribute Element::setRef(const XmlChar* tag, const XmlChar* refname)  const  {
-  return setChild(tag).setAttr(Unicode_ref,refname);
+Attribute Element::setRef(const XmlChar* tag, const XmlChar* ref_name)  const  {
+  return setChild(tag).setAttr(Unicode_ref,ref_name);
+}
+
+/// Set the reference attribute to the node (adds attribute ref="ref-name")
+Attribute Element::setRef(const XmlChar* tag, const string& ref_name)  const  {
+  return setRef(tag,Strng_t(ref_name).ptr());
 }
 
 /// Access the value of the reference attribute of the node (attribute ref="ref-name")
@@ -846,8 +856,17 @@ Handle_t Element::addChild(const XmlChar* tag)  const  {
 
 /// Check if a child with the required tag exists - if not create it and add it to the current node
 Handle_t Element::setChild(const XmlChar* t)  const  {
-  Elt_t e = m_element.child(t);
+  Elt_t e = m_element.child(t,false);
   return e ? Handle_t(e) : addChild(t);
+}
+
+/// Add comment node to the element
+void Element::addComment(const char* text) const {
+#ifdef DD4HEP_USE_TINYXML
+  _N(m_element)->appendChild(new TiXmlComment(text));
+#else
+  _N(m_element)->appendChild(_D(document().m_doc)->createComment(Strng_t(text)));
+#endif
 }
 
 RefElement::RefElement(const Document& document, const XmlChar* type, const XmlChar* name)  

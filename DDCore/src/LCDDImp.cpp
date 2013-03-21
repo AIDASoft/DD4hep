@@ -137,34 +137,47 @@ namespace {
     GeoScan& operator()()  {
       GeoHandler::Data& data = *m_data;
       string nam;
+      cout << "++ Patching names of anonymous shapes...." << endl;
       for(GeoHandler::Data::const_reverse_iterator i=data.rbegin(); i != data.rend(); ++i)   {
         const GeoHandler::Data::mapped_type& v = (*i).second;
         for(GeoHandler::Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {
           const TGeoNode* n = *j;
-          TGeoVolume* v = n->GetVolume();
-          TGeoShape*  s = v->GetShape();
-          if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+          TGeoVolume* v     = n->GetVolume();
+          TGeoShape*  s     = v->GetShape();
+	  const char* sn    = s->GetName();
+          if ( 0 == sn || 0 == ::strlen(sn) ) {
             nam = v->GetName();
             nam += "_shape";
             s->SetName(nam.c_str());
           }
-          else {
-            nam = s->GetName();
+          else if ( 0 == ::strcmp(sn,s->IsA()->GetName()) ) {
+            nam = v->GetName();
+            nam += "_shape";
+            s->SetName(nam.c_str());
           }
-          if ( s->IsA()->Class() == TGeoCompositeShape::Class() ) {
+	  else {
+	    nam = sn;
+	    if ( nam.find("_shape") == string::npos ) nam += "_shape";
+            s->SetName(nam.c_str());
+	  }
+          if ( s->IsA() == TGeoCompositeShape::Class() ) {
             TGeoCompositeShape* c = (TGeoCompositeShape*)s;
             const TGeoBoolNode* boolean = c->GetBoolNode();
-            s = boolean->GetLeftShape();
-            if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
-              nam = v->GetName();
-              nam += "_left";
-              s->SetName(nam.c_str());
-            }
-            s = boolean->GetRightShape();
-            if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
-              nam = v->GetName();
-              nam += "_right";
-              s->SetName(nam.c_str());
+            s  = boolean->GetLeftShape();
+	    sn = s->GetName();
+	    if ( 0 == sn || 0 == ::strlen(sn) ) {
+              s->SetName((nam+"_left").c_str());
+	    }
+            else if ( 0 == ::strcmp(sn,s->IsA()->GetName()) ) {
+              s->SetName((nam+"_left").c_str());
+	    }
+            s  = boolean->GetRightShape();
+	    sn = s->GetName();
+	    if ( 0 == sn || 0 == ::strlen(sn) ) {
+              s->SetName((nam+"_right").c_str());
+	    }
+            else if ( 0 == ::strcmp(s->GetName(),s->IsA()->GetName()) ) {
+              s->SetName((nam+"_right").c_str());
             }
           }
         }
@@ -206,7 +219,8 @@ void LCDDImp::endDocument()  {
     //gGeoManager->SetTopVolume(m_worldVol);
     mgr->CloseGeometry();
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
-    ShapePatcher(m_world)();
+    ShapePatcher patcher(m_world);
+    patcher();
   }
 }
 

@@ -326,3 +326,16 @@ int DocumentHandler::output(Document doc, const std::string& fname) const {
 }
 
 #endif
+ 
+/// Create new XML document by parsing empty xml buffer
+Document DocumentHandler::create(const char* tag, const char* comment)  const  {
+  string top(tag);
+  string empty = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+  empty += "<"+top+"/>\0\0";
+  Document doc = parse(empty.c_str(),empty.length()+1);
+  if ( comment )  {
+    Element top_elt = doc.root();
+    top_elt.addComment(comment);
+  }
+  return doc;
+}

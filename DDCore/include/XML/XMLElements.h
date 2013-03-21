@@ -374,6 +374,8 @@ namespace DD4hep {
 
       /// Add reference child as a new child node. The obj must have the "name" attribute!
       Handle_t setRef(const XmlChar* tag, const XmlChar* ref);
+      /// Add reference child as a new child node. The obj must have the "name" attribute!
+      Handle_t setRef(const XmlChar* tag, const std::string& ref);
 
       /*** DOM Element child handling 
        */
@@ -606,8 +608,12 @@ namespace DD4hep {
       bool hasChild(const XmlChar* tag) const                   {  return m_element.hasChild(tag);        }
       /// Set the reference attribute to the node (adds attribute ref="ref-name")
       Attribute setRef(const XmlChar* tag, const XmlChar* refname)  const;
+      /// Set the reference attribute to the node (adds attribute ref="ref-name")
+      Attribute setRef(const XmlChar* tag, const std::string& refname)  const;
       /// Access the value of the reference attribute of the node (attribute ref="ref-name")
       const XmlChar* getRef(const XmlChar* tag)  const;
+      /// Add comment node to the element
+      void addComment(const char* text) const;
     };
 
     /** @class RefElement XMLElements.h XML/XMLElements.h

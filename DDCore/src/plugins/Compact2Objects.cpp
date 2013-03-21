@@ -148,7 +148,7 @@ static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e)  {
   obj.assign(ptr,c.nameStr(),c.typeStr());
   return obj;
 }
-DECLARE_XMLELEMENT(SolenoidMagnet,create_SolenoidField);
+DECLARE_XMLELEMENT(solenoid,create_SolenoidField);
 
 static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e)  {
   xml_comp_t c(e);
@@ -374,24 +374,28 @@ template <> void Converter<VisAttr>::operator()(xml_h e)  const  {
   float g = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
   float b = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
   attr.setColor(r,g,b);
-  if ( e.hasAttr(_U(alpha))         ) attr.setAlpha(e.attr<float>(_U(alpha)));
-  if ( e.hasAttr(_U(visible))       ) attr.setVisible(e.attr<bool>(_U(visible)));
-  if ( e.hasAttr(_U(lineStyle))     )   {
+  if ( e.hasAttr(_U(alpha))      ) attr.setAlpha(e.attr<float>(_U(alpha)));
+  if ( e.hasAttr(_U(visible))    ) attr.setVisible(e.attr<bool>(_U(visible)));
+  if ( e.hasAttr(_U(lineStyle))  )   {
     string ls = e.attr<string>(_U(lineStyle));
-    if ( ls == "unbroken" ) attr.setLineStyle(VisAttr::SOLID);
-    if ( ls == "broken" ) attr.setLineStyle(VisAttr::DASHED);
+    if      ( ls == "unbroken"  ) attr.setLineStyle(VisAttr::SOLID);
+    else if ( ls == "broken"    ) attr.setLineStyle(VisAttr::DASHED);
   }
   else  {
     attr.setLineStyle(VisAttr::SOLID);
   }
-  if ( e.hasAttr(_U(drawingStyle))  )   {
+  if ( e.hasAttr(_U(drawingStyle)) )   {
     string ds = e.attr<string>(_U(drawingStyle));
-    if ( ds == "wireframe" ) attr.setDrawingStyle(VisAttr::WIREFRAME);
+    if      ( ds == "wireframe" ) attr.setDrawingStyle(VisAttr::WIREFRAME);
+    else if ( ds == "solid"     ) attr.setDrawingStyle(VisAttr::SOLID);
   }
   else  {
-    attr.setDrawingStyle(VisAttr::WIREFRAME);
+    attr.setDrawingStyle(VisAttr::SOLID);
   }
-  if ( e.hasAttr(_U(showDaughters)) ) attr.setShowDaughters(e.attr<bool>(_U(showDaughters)));
+  if ( e.hasAttr(_U(showDaughters)) ) 
+    attr.setShowDaughters(e.attr<bool>(_U(showDaughters)));
+  else
+    attr.setShowDaughters(true);
   lcdd.addVisAttribute(attr);
 }
 

@@ -89,6 +89,7 @@ namespace DD4hep {
 	void checkMaterial(const std::string& name,const TNamed* n) const { check(name,n,checks.materials); }
 
 	xml_doc_t           doc;
+	xml_h               identity_rot, identity_pos;
 	xml_elt_t           doc_root, doc_header, doc_idDict, doc_detectors, doc_limits, doc_regions,
 	  doc_display, doc_gdml, doc_fields, doc_define, doc_materials, doc_solids, doc_structure, doc_setup;
 	GeometryInfo();
@@ -120,6 +121,9 @@ namespace DD4hep {
       /// Create geometry conversion in LCDD format
       xml_doc_t createLCDD(DetElement top);
 
+      /// Create geometry conversion in Vis format
+      xml_doc_t createVis(DetElement top);
+
       /// Add header information in LCDD format
       virtual void handleHeader() const;
 
@@ -134,7 +138,8 @@ namespace DD4hep {
 
       /// Convert the geometry type logical volume into the corresponding Xml object(s).
       virtual xml_h handleVolume(const std::string& name, const TGeoVolume* volume) const;
-      virtual void     collectVolume(const std::string& name, const TGeoVolume* volume) const;
+      virtual xml_h handleVolumeVis(const std::string& name, const TGeoVolume* volume) const;
+      virtual void  collectVolume(const std::string& name, const TGeoVolume* volume) const;
 
       /// Convert the geometry type volume placement into the corresponding Xml object(s).
       virtual xml_h handlePlacement(const std::string& name, const TGeoNode* node) const;

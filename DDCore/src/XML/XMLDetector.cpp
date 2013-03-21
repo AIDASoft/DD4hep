@@ -66,6 +66,10 @@ XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR(double,outer_z)
   XML_ATTR_ACCESSOR(double,inner_z)
 
+  XML_ATTR_ACCESSOR(double,b)
+  XML_ATTR_ACCESSOR(double,g)
+  XML_ATTR_ACCESSOR(double,B)
+  XML_ATTR_ACCESSOR(double,G)
   XML_ATTR_ACCESSOR(double,r)
   XML_ATTR_ACCESSOR_DOUBLE(r)
   XML_ATTR_ACCESSOR(double,R)
@@ -79,6 +83,11 @@ XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR(double,inner_radius)
 
   XML_ATTR_ACCESSOR(double,angle)
+  XML_ATTR_ACCESSOR(double,alpha)
+  XML_ATTR_ACCESSOR(double,beta)
+  XML_ATTR_ACCESSOR(double,gamma)
+  XML_ATTR_ACCESSOR(double,delta)
+  XML_ATTR_ACCESSOR(double,epsilon)
   XML_ATTR_ACCESSOR(double,theta)
   XML_ATTR_ACCESSOR(int,thetaBins)
   XML_ATTR_ACCESSOR(double,psi)
@@ -133,6 +142,9 @@ XML_ATTR_ACCESSOR(int,id)
   XML_ATTR_ACCESSOR(double,inner_field)
   XML_ATTR_ACCESSOR(double,outer_field)
   XML_ATTR_ACCESSOR(int,type)
+
+  XML_ATTR_ACCESSOR(bool,visible)
+  XML_ATTR_ACCESSOR(bool,show_daughters)
 #if 0
   XML_ATTR_ACCESSOR(double,)
   XML_ATTR_ACCESSOR(double,)
@@ -155,6 +167,10 @@ XML_ATTR_ACCESSOR(int,id)
 
 string Dimension::nameStr()  const  {
   return m_element.attr<string>(_U(name));
+}
+
+string Dimension::refStr()  const  {
+  return m_element.attr<string>(_U(ref));
 }
 
 string Dimension::typeStr()  const  {

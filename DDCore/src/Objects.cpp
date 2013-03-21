@@ -169,7 +169,7 @@ VisAttr::VisAttr(const string& name)    {
   assign(obj, name, "vis");
   obj->color  = 2;
   setLineStyle(SOLID);
-  setDrawingStyle(WIREFRAME);
+  setDrawingStyle(SOLID);
   setShowDaughters(true);
   setAlpha(0.1f);
 }

@@ -41,6 +41,8 @@ namespace DD4hep {
       DocumentHandler();
       /// Default destructor
       virtual ~DocumentHandler();
+      // Create new XML document by parsing empty xml buffer
+      Document create(const char* tag, const char* comment=0)  const;
       /// Load XML file and parse it.
       virtual Document load(const std::string& fname) const;
       /// Load secondary XML file with relative addressing with respect to handle
