@@ -1,10 +1,13 @@
 #
+#  ++++ Build DD4hep (simplest)
+#
+cmake -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_WITH_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF ../DD4hep
+#
 #  ++++ Build DD4hep with XERCES
 #
 cmake -DCMAKE_BUILD_TYPE=Debug \
--DDD4HEP_WITH_GEANT4=OFF \
+-DDD4HEP_WITH_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF         \
 -DDD4HEP_USE_XERCESC=ON  -DXERCESC_ROOT_DIR=${XERCESCSYS} \
--DDD4HEP_USE_PYROOT=OFF         \
 ../DD4hep
 #
 #
@@ -16,9 +19,17 @@ cmake -DCMAKE_BUILD_TYPE=Debug \
 -DDD4HEP_USE_PYROOT=OFF         \
 ../DD4hep
 #
+#
+#  ++++ Build DD4hep with GEANT4  (no Xerces)
+#
+cmake -DCMAKE_BUILD_TYPE=Debug \
+-DDD4HEP_WITH_GEANT4=ON  -DGeant4_ROOT_DIR=${G4SYS} \
+-DCLHEP_ROOT_DIR=${CLHEPSYS} -DDD4HEP_USE_PYROOT=OFF \
+../DD4hep
+#
 #  ++++ Build Geant 4
 #
-cmake -DCMAKE_INSTALL_PREFIX=`pwd`/../geant4 \
+cmake -DCMAKE_INSTALL_PREFIX=`pwd`/../g4.9.5 \
 -DCMAKE_BUILD_TYPE=Debug         \
 -DBUILD_SHARED_LIBS=ON           \
 -DGEANT4_INSTALL_DATA=ON         \
