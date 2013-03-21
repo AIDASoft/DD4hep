@@ -1556,7 +1556,7 @@
         </readout>
     </readouts>
     <fields>
-        <field name="GlobalSolenoid" type="SolenoidMagnet" 
+        <field name="GlobalSolenoid" type="solenoid" 
           inner_field="5.0*tesla"
           outer_field="-1.5*tesla" 
           zmax="SolenoidCoilOuterZ"

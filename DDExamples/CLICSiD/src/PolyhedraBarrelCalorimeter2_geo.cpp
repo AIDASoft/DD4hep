@@ -69,7 +69,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }
 
   PolyhedraRegular polyhedra(numSides,rmin,rmin+totalThickness,detZ);
-  Volume           envelopeVol(det_name,polyhedra,air);
+  Volume           envelopeVol(det_name+"_envelope",polyhedra,air);
 
   // Add the subdetector envelope to the structure.
   double innerAngle     = 2*M_PI/numSides;

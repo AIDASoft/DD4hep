@@ -33,8 +33,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double        totThick  = mod_z;
   DetElement    sdet      (det_name,det_id);
   Volume        motherVol = lcdd.pickMotherVolume(sdet);
-  PolyhedraRegular hedra(nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
-  Volume        envelope  (det_name,hedra,air);
+  PolyhedraRegular hedra  (nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
+  Volume        envelope  (det_name+"_envelope",hedra,air);
   PlacedVolume  env_phv   = motherVol.placeVolume(envelope,Rotation(0,0,M_PI/nsides));
 
   env_phv.addPhysVolID("system",det_id);

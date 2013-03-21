@@ -18,7 +18,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   Material   air       = lcdd.air();
   string     det_name  = x_det.nameStr();
   Tube       envelope;
-  Volume     envelopeVol(det_name,envelope,air);
+  Volume     envelopeVol(det_name+"_envelope",envelope,air);
   DetElement sdet       (det_name,x_det.id());
   double     z         = dim.outer_z();
   double     rmin      = dim.inner_r();

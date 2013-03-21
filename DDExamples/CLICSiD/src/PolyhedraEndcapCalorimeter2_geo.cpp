@@ -26,7 +26,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      zmin      = dim.zmin();
   Layering    layering(x_det);
   double      totalThickness = layering.totalThickness();
-  Volume      envelopeVol(det_name,PolyhedraRegular(numsides,rmin,rmax,totalThickness),air);
+  Volume      envelopeVol(det_name+"_envelope",PolyhedraRegular(numsides,rmin,rmax,totalThickness),air);
     
   int l_num = 0;
   int layerType   = 0;

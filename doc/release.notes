@@ -2,6 +2,26 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2013/20/03    Markus Frank
+--------------------------
+  1) Finished the compact->lcdd converter
+     Extract lcdd information
+      $ > geoConverter -compact2lcdd -input file:<compact-input-xml-file> -output <detector>.lcdd
+      $ > <SimDist>/scripts/slic.sh -o output.slcio -g SiD.lcdd -m <geant4-macro>.mac -r 100 
+
+
+  2) Finished the compact->gdml converter
+  Full GDML cycle can be tested (deplace <detector> with some meaningful identifier):
+   a) Extract gdml information
+      $ > geoConverter -compact2gdml -input file:<compact-input-xml-file> -output <detector>.gdml
+   b) Extract visualisation hints to csv file
+      $ > geoConverter -compact2vis -input file:<compact-input-xml-file> -output <detector>.vis.csv -ascii
+   c) Load GDML into ROOT:
+      $ > root.exe ../doc/gdml_root.C+\(\"<detector>\"\)
+      The macro expects *at least* the <detector>.gdml file. If no visualisation
+      information is found, the resulting graphics however is not very nice!
+ 
+
 2013/22/02    Markus Frank
 --------------------------
   1) Today a decision was taken to remove all _X() and _A() macros 

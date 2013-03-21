@@ -62,7 +62,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   SubtractionSolid envelopeSubtraction2(envelopeSubtraction1,beamOutTube,beamOutPos,beamOutRot);
 
   // Final envelope bool volume.
-  Volume envelopeVol(det_name, envelopeSubtraction2, air);
+  Volume envelopeVol(det_name+"_envelope", envelopeSubtraction2, air);
 
   // Process each layer element.
   double layerPosZ   = -thickness / 2;

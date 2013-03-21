@@ -17,11 +17,14 @@ namespace {
       "        Action flags:               Usage is exclusive, 1 required!           \n"
       "        -compact2lcdd               Convert compact xml geometry to lcdd.     \n"
       "        -compact2gdml               Convert compact xml geometry to gdml.     \n"
-      "        -compact2pandora            Convert compact xml to pandora xml      \n\n"
+      "        -compact2pandora            Convert compact xml to pandora xml        \n"
+      "        -compact2vis                Convert compact xml to visualisation attrs\n\n"
       "        -input  <file>  [REQUIRED]  Specify input file.                       \n"
       "        -output <file>  [OPTIONAL]  Specify output file.                      \n"
       "                                    if no output file is specified, the output\n"
       "                                    device is stdout.                         \n"
+      "        -ascii          [OPTIONAL]  Dump visualisation attrs in csv format.   \n"
+      "                                    [Only valid for -compact2vis]             \n"
 	 << endl;
     exit(EINVAL);
   }
@@ -29,9 +32,11 @@ namespace {
 
 //______________________________________________________________________________
 int main(int argc,char** argv)  {
+  bool ascii = false;
   bool compact2lcdd = false;
   bool compact2gdml = false;
   bool compact2pand = false;
+  bool compact2vis  = false;
   int output = 0;
   vector<char*> geo_files;
   for(int i=1; i<argc;++i) {
@@ -42,10 +47,14 @@ int main(int argc,char** argv)  {
 	compact2gdml = true;
       else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
 	compact2pand = true;
+      else if ( strncmp(argv[i],"-compact2vis",12)==0 )
+	compact2vis = true;
       else if ( strncmp(argv[i],"-input",2)==0 )
 	geo_files.push_back(argv[++i]);
       else if ( strncmp(argv[i],"-output",2)==0 )
         output = ++i;
+      else if ( strncmp(argv[i],"-ascii",5)==0 )
+        ascii = true;
       else
 	usage();
     }
@@ -53,7 +62,7 @@ int main(int argc,char** argv)  {
       usage();
     }
   }
-  if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand))
+  if ( geo_files.empty() || (!compact2lcdd && !compact2gdml && !compact2pand && !compact2vis))
     usage();
 
   LCDD& lcdd = dd4hep_instance();
@@ -65,5 +74,9 @@ int main(int argc,char** argv)  {
     run_plugin(lcdd,"DD4hepGeometry2GDML",output,&argv[output]);
   else if ( compact2pand )
     run_plugin(lcdd,"DD4hepGeometry2PANDORA",output,&argv[output]);
+  else if ( compact2vis && ascii )
+    run_plugin(lcdd,"DD4hepGeometry2VISASCII",output,&argv[output]);
+  else if ( compact2vis )
+    run_plugin(lcdd,"DD4hepGeometry2VIS",output,&argv[output]);
   return 0;
 }
