@@ -171,13 +171,13 @@ set(Geant4_FOUND GEANT_FOUND)  # The previous function sets only the uppercased 
 
 #----------------------------------------------------------------------------
 # If we found Geant4, set the needed non-cache variables
+#      G4persistency
 #
 if(Geant4_FOUND)
     set(Geant4_LIBRARIES -L${Geant4_LIBRARY_DIR}     
       G4vis_management
       G4modeling
       G4interfaces
-      G4persistency
       G4analysis
       G4error_propagation
       G4readout
