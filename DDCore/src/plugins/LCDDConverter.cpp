@@ -1139,27 +1139,27 @@ static long create_visASCII(LCDD& lcdd, int argc, char** argv)   {
   LCDDConverter wr(lcdd);
   xml_doc_t doc = wr.createVis(lcdd.world());
   LCDDConverter::GeometryInfo& geo = wr.data();
-  map<string,xml_comp_t> vis;
+  map<string,xml_comp_t> vis_map;
   for(xml_coll_t c(geo.doc_display,_U(vis)); c; ++c)
-    vis.insert(make_pair(xml_comp_t(c).nameStr(),xml_comp_t(c)));
+    vis_map.insert(make_pair(xml_comp_t(c).nameStr(),xml_comp_t(c)));
 
   const char* sep = ";";
   ofstream os(argv[0]);
   for(xml_coll_t c(geo.doc_structure,_U(volume)); c; ++c)  {
     xml_comp_t vol = c;
-    xml_comp_t   r = c.child(_U(visref));
-    xml_comp_t   v = (*vis.find(r.refStr())).second;
-    xml_comp_t   c = v.child(_U(color));
+    xml_comp_t ref = c.child(_U(visref));
+    xml_comp_t vis = (*vis_map.find(ref.refStr())).second;
+    xml_comp_t col = vis.child(_U(color));
     os << "vol:" << vol.nameStr() << sep
-       << "vis:" << v.nameStr() << sep
-       << "visible:" << v.visible() << sep
-       << "r:"   << c.R() << sep
-       << "g:"   << c.G() << sep
-       << "b:"   << c.B() << sep
-       << "alpha:"   << c.alpha() << sep
-       << "line_style:" << v.attr<string>(_U(line_style)) << sep
-       << "drawing_style:" << v.attr<string>(_U(drawing_style)) << sep
-       << "show_daughters:" << v.show_daughters() << sep
+       << "vis:" << vis.nameStr() << sep
+       << "visible:" << vis.visible() << sep
+       << "r:"   << col.R() << sep
+       << "g:"   << col.G() << sep
+       << "b:"   << col.B() << sep
+       << "alpha:"   << col.alpha() << sep
+       << "line_style:" << vis.attr<string>(_U(line_style)) << sep
+       << "drawing_style:" << vis.attr<string>(_U(drawing_style)) << sep
+       << "show_daughters:" << vis.show_daughters() << sep
        << endl;
   }
   os.close();
