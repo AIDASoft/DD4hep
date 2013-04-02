@@ -454,8 +454,8 @@ vector<Attribute> Handle_t::attributes() const {
 #else
     xercesc::DOMNamedNodeMap* l = _E(m_node)->getAttributes();
     for(XmlSize_t i=0, n=l->getLength(); i<n; ++i)  {
-      xercesc::DOMNode* n = l->item(i);
-      attrs.push_back(Attribute(n));
+      xercesc::DOMNode* attr_node = l->item(i);
+      attrs.push_back(Attribute(attr_node));
     }
 #endif
   }
