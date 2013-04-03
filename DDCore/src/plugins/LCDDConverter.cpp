@@ -1166,7 +1166,7 @@ static long create_visASCII(LCDD& lcdd, int argc, char** argv)   {
   return 1;
 }
 
-DECLARE_APPLY(DD4hepGeometry2VIS, create_vis);
+DECLARE_APPLY(DD4hepGeometry2VIS,      create_vis);
 DECLARE_APPLY(DD4hepGeometry2VISASCII, create_visASCII);
-DECLARE_APPLY(DD4hepGeometry2GDML,create_gdml);
-DECLARE_APPLY(DD4hepGeometry2LCDD,create_lcdd);
+DECLARE_APPLY(DD4hepGeometry2GDML,     create_gdml);
+DECLARE_APPLY(DD4hepGeometry2LCDD,     create_lcdd);

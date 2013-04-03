@@ -148,6 +148,8 @@ static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e)  {
   obj.assign(ptr,c.nameStr(),c.typeStr());
   return obj;
 }
+DECLARE_XMLELEMENT(SolenoidMagnet,create_SolenoidField);
+// This is the plugin required for slic: note the different name
 DECLARE_XMLELEMENT(solenoid,create_SolenoidField);
 
 static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e)  {
