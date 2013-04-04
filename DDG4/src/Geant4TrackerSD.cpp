@@ -20,7 +20,7 @@ namespace DD4hep {  namespace Simulation {
   /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   struct Tracker {};
   /// Method for generating hit(s) using the information of G4Step object.
-  template <> bool Geant4GenericSD<Tracker>::buildHits(G4Step* step,G4TouchableHistory* ) {
+  template <> bool Geant4GenericSD<Tracker>::buildHits(G4Step* step,G4TouchableHistory* hist) {
     StepHandler h(step);
     Position prePos    = h.prePos();
     Position postPos   = h.postPos();
@@ -31,11 +31,20 @@ namespace DD4hep {  namespace Simulation {
       double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
       direction *= new_len/hit_len;
     }
+
+    //    G4cout << "----------- Geant4GenericSD<Tracker>::buildHits : position : " << prePos << G4endl ;
+
     Geant4TrackerHit* hit = 
       new Geant4TrackerHit(h.track->GetTrackID(),
 			   h.track->GetDefinition()->GetPDGEncoding(),
 			   step->GetTotalEnergyDeposit(),
 			   h.track->GetGlobalTime());
+
+    
+    HitContribution contrib = Geant4Hit::extractContribution(step);
+    hit->cellID  = ( hist ? hist->GetVolume()->GetCopyNo() : 0 ) ; 
+    hit->energyDeposit =  contrib.deposit ;
+
     hit->position = position;
     hit->momentum = direction;
     hit->length   = hit_len;
