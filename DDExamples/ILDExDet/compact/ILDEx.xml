@@ -2,13 +2,13 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" 
     xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
-    <info name="clic_sid_cdr"
-        title="CLIC Silicon Detector CDR"
-        author="Christian Grefe"
-        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+    <info name="ild_toy"
+        title="ILD Detector Toy model"
+        author="F. Gaede"
+        url="http://ilcsoft.desy.de"
         status="development"
         version="$Id: compact.xml,v 1.3 2010/12/02 16:34:00 grefe Exp $">
-        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+        <comment>The compact format for the ILD Detector - toy model </comment>        
     </info>
   
     <includes>
@@ -22,7 +22,7 @@
         <constant name="world_x"                value="world_side/2"/>
         <constant name="world_y"                value="world_side/2"/>
         <constant name="world_z"                value="world_side/2"/>        
-        <constant name="CrossingAngle"          value="0.020"/>
+        <constant name="CrossingAngle"          value="0.014"/>
         
         <constant name="TPC_zhalf"              value="2500*mm"/>
         <constant name="TPC_outer_radius"       value="1800*mm"/>
@@ -156,8 +156,8 @@
         </readout>
     </readouts>
  <fields>
-        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="3.5*tesla"
                outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
                outer_radius="SolenoidalFieldRadius" />
-    </fields> 
+ </fields> 
 </lccdd>

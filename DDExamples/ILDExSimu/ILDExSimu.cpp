@@ -21,6 +21,11 @@
 #include "DDG4/Geant4DetectorConstruction.h"
 #include "DD4hep/LCDD.h"
 
+// -- lcio --
+#include "lcio.h"
+#include "IO/LCWriter.h"
+
+
 using namespace DD4hep::Geometry;
 using namespace DD4hep::Simulation;
 
@@ -28,6 +33,13 @@ using namespace DD4hep::Simulation;
 
 int main(int argc,char** argv)
 {
+  
+  std::string lcioOutFile("ILDExSimu.slcio") ;
+
+  // -- open LCIO file ----
+  lcio::LCWriter* lcWrt = lcio::LCFactory::getInstance()->createLCWriter()  ;
+  lcWrt->open( lcioOutFile , lcio::LCIO::WRITE_NEW ) ;
+
   
   // Choose the Random engine
   //
@@ -61,8 +73,10 @@ int main(int argc,char** argv)
   G4VUserPrimaryGeneratorAction* gen_action = 
   new ILDExPrimaryGeneratorAction(lcdd);
   runManager->SetUserAction(gen_action);
-  //
+
+  //---
   ILDExRunAction* run_action = new ILDExRunAction;  
+  run_action->lcioWriter = lcWrt ;
   runManager->SetUserAction(run_action);
   //
   ILDExEventAction* event_action = new ILDExEventAction(run_action);
@@ -108,7 +122,10 @@ int main(int argc,char** argv)
   
   
   delete runManager;
-  
+
+  lcWrt->close() ;
+  delete lcWrt ;
+
   return 0;
 }
 

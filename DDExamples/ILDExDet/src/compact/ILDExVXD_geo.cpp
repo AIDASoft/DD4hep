@@ -58,10 +58,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,suppmat);
 
-    Position    senspos   (0,0,0);
-    Position    supppos   (0,0,0);
-    // Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
-    // Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick+supp_thick/2.,0,0);
+    //Position    senspos   (0,0,0);
+    //Position    supppos   (0,0,0);
+    Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
+    Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick+supp_thick/2.,0,0);
       
     sensvol.setVisAttributes(lcdd.visAttributes(x_layer.visStr()));
     sensvol.setSensitiveDetector(sens);

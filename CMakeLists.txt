@@ -40,7 +40,7 @@ add_subdirectory(DDExamples/ILDExReco)
 add_subdirectory(DDExamples/ILDExTest)
 if(DD4HEP_WITH_GEANT4)
    add_subdirectory(DDExamples/CLICSiDSimu)
-#  add_subdirectory(DDExamples/ILDExSimu)
+   add_subdirectory(DDExamples/ILDExSimu)
 endif()
 
 #---Configuration-------------------------------------------------------------------

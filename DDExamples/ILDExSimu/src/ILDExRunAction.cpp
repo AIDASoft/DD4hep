@@ -8,6 +8,10 @@
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
 
+#include "lcio.h"
+#include "IMPL/LCRunHeaderImpl.h"
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 ILDExRunAction::ILDExRunAction()
@@ -24,6 +28,9 @@ void ILDExRunAction::BeginOfRunAction(const G4Run* aRun)
 { 
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
+  // keep the run around:
+  g4run = aRun ;
+
   //inform the runManager to save random number seed
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
 
@@ -34,6 +41,12 @@ void ILDExRunAction::BeginOfRunAction(const G4Run* aRun)
   sumESupport = sum2ESupport = sumESensitive = sum2ESensitive = 0.;
   sumLSupport = sum2LSupport = sumLSensitive = sum2LSensitive = 0.; 
   sumAngleSupport = sum2AngleSupport = sumAngleSensitive = sum2AngleSensitive = 0.;
+
+
+  // --- write an lcio::RunHeader ---------
+  lcio::LCRunHeaderImpl* rh =  new lcio::LCRunHeaderImpl ;
+  rh->setRunNumber( aRun->GetRunID()  ) ;
+  lcioWriter->writeRunHeader( rh ) ;
 
 }
 
