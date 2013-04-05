@@ -2,12 +2,12 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" 
     xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
-    <info name="ild_toy"
+    <info name="ILD_toy_v01"
         title="ILD Detector Toy model"
         author="F. Gaede"
         url="http://ilcsoft.desy.de"
         status="development"
-        version="$Id: compact.xml,v 1.3 2010/12/02 16:34:00 grefe Exp $">
+        version="$Id$">
         <comment>The compact format for the ILD Detector - toy model </comment>        
     </info>
   
@@ -65,34 +65,34 @@
     <detectors>
         <comment>Trackers</comment>
       
-        <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1" readout="VXDHits">
+        <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1" readout="VXDCollection">
           <layer id="1"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
+            <ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
           </layer>
           <layer id="2"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="18*mm"  width="1.100000000e+01" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
+            <ladder  zhalf="65*mm" radius="18*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
           </layer>
           <layer id="3"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="3.695000000e+01*mm"  width="2.200000000e+01" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
+            <ladder  zhalf="125*mm" radius="3.695000000e+01*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
           </layer>
           <layer id="4"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="39*mm"  width="2.200000000e+01" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
+            <ladder  zhalf="125*mm" radius="39*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
           </layer>
           <layer id="5"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="5.795000000e+01*mm"  width="2.200000000e+01" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
+            <ladder  zhalf="125*mm" radius="5.795000000e+01*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
           </layer>
           <layer id="6"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="60*mm"  width="2.200000000e+01" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
+            <ladder  zhalf="125*mm" radius="60*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
           </layer>
         </detector>
  
-        <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2" readout="SITHits">
+        <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2" readout="SITCollection">
           <layer id="1"  vis="SITLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
@@ -104,7 +104,7 @@
         </detector>
         
       
-        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" readout="TPCHits">
+        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" readout="TPCCollection">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
            <!-- GEAR Data-->
            <driftlength value="TPC_zhalf*0.9"/>
@@ -145,13 +145,13 @@
     </detectors>
 
     <readouts>
-        <readout name="VXDHits">
+        <readout name="VXDCollection">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
-        <readout name="SITHits">
+        <readout name="SITCollection">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
-        <readout name="TPCHits">
+        <readout name="TPCCollection">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
     </readouts>

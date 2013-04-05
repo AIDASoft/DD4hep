@@ -8,6 +8,7 @@
 #include "G4RunManager.hh"
 #include "G4UnitsTable.hh"
 
+//--- lcio --
 #include "lcio.h"
 #include "IMPL/LCRunHeaderImpl.h"
 
@@ -46,7 +47,8 @@ void ILDExRunAction::BeginOfRunAction(const G4Run* aRun)
   // --- write an lcio::RunHeader ---------
   lcio::LCRunHeaderImpl* rh =  new lcio::LCRunHeaderImpl ;
   rh->setRunNumber( aRun->GetRunID()  ) ;
-  lcioWriter->writeRunHeader( rh ) ;
+  rh->setDetectorName( runData.detectorName ) ;
+  runData.lcioWriter->writeRunHeader( rh ) ;
 
 }
 

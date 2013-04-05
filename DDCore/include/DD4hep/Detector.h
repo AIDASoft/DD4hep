@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -31,8 +31,8 @@ namespace DD4hep {
    */
   namespace Geometry  {
     
-    struct SensitiveDetector;
-    struct Detector;
+    // struct SensitiveDetector;
+    //  struct Detector;
     struct LCDD;
     
     /** @class SensitiveDetector Detector.h DD4hep/lcdd/Detector.h

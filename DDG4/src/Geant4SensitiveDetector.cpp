@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -18,7 +18,7 @@
 
 #include "TGeoNode.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 
 // C/C++ include files
@@ -136,20 +136,18 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   Position pos2 = step.postPos();
   Momentum mom = step.postMom();
 
-#if DEBUG
   ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
    	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
   ::printf("                pre-Vol: %s  Status:%s\n",
    	   step.preVolume()->GetName().c_str(), step.preStepStatus());
   ::printf("                post-Vol:%s  Status:%s\n",
    	   step.postVolume()->GetName().c_str(), step.postStepStatus());
-#endif
   
   const G4VPhysicalVolume* pv = step.volume(step.post);
   
   typedef Geant4Converter::PlacementMap Places;
   const Places& places = cnv.data().g4Placements;
-#if DEBUG
+
   for(Places::const_iterator i=places.begin(); i!=places.end();++i) {
     const G4PVPlacement* pl = (*i).second;
     const G4VPhysicalVolume* qv = pl;
@@ -159,5 +157,5 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
       printf("           Found TGeoNode:%s!\n",tpv->GetName());
     }
   }
-#endif
+
 }

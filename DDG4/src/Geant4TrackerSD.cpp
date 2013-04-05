@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -32,7 +32,7 @@ namespace DD4hep {  namespace Simulation {
       direction *= new_len/hit_len;
     }
 
-    //    G4cout << "----------- Geant4GenericSD<Tracker>::buildHits : position : " << prePos << G4endl ;
+    G4cout << "----------- Geant4GenericSD<Tracker>::buildHits : position : " << prePos << G4endl ;
 
     Geant4TrackerHit* hit = 
       new Geant4TrackerHit(h.track->GetTrackID(),
@@ -43,6 +43,8 @@ namespace DD4hep {  namespace Simulation {
     
     HitContribution contrib = Geant4Hit::extractContribution(step);
     hit->cellID  = ( hist ? hist->GetVolume()->GetCopyNo() : 0 ) ; 
+    //    hit->cellID  = ( hist ? hist->GetVolume()->GetId() : 0 ) ; 
+
     hit->energyDeposit =  contrib.deposit ;
 
     hit->position = position;

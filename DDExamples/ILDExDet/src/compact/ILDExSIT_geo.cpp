@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -52,7 +52,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double radius = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.);
       Position pos(radius*cos(j*dphi),radius*sin(j*dphi),0.);
       mother.placeVolume(laddervol,pos,Rotation(0,0,j*dphi));
-    }
+ 
+      std::cout <<" ************ placing SIT ladder at r=" << radius << std::endl ;
+   }
   }
   return sit;
 }

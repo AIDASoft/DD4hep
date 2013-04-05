@@ -9,10 +9,19 @@
 #include "globals.hh"
 
 #include "IO/LCWriter.h"
+#include <string>
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Run;
+
+// helper structfor 'global' run data:
+struct RunData{
+  std::string detectorName ;
+  IO::LCWriter* lcioWriter ;
+  RunData() : detectorName("UNKNOWN") , lcioWriter(0) {}
+} ;
+
 
 class ILDExRunAction : public G4UserRunAction
 {
@@ -28,7 +37,7 @@ public:
 		    G4double AngleSupport, G4double AngleSensitive);
 
   const G4Run*  g4run ;
-  IO::LCWriter* lcioWriter ;
+  RunData runData ;
 
 private:
 

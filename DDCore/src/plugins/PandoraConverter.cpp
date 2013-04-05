@@ -5,7 +5,7 @@
 //  Author     : M.Frank
 //
 //====================================================================
-// $Id:$
+// $Id$
 #ifndef DD4HEP_GEOMETRY_PANDORACONVERTER_H
 #define DD4HEP_GEOMETRY_PANDORACONVERTER_H
 
@@ -69,7 +69,7 @@ namespace DD4hep {
 //  Author     : M.Frank
 //
 //====================================================================
-// $Id:$
+// $Id$
 
 // Framework includes
 #include "DD4hep/LCDD.h"
@@ -194,7 +194,7 @@ import org.lcsim.geometry.util.SamplingFractionManager;
  * geometry input format.
  * 
  * @author Jeremy McCormick <jeremym@slac.stanford.edu>
- * @version $Id: Main.java,v 1.33 2011/03/17 22:06:36 jeremy Exp $
+ * @version $Id$
  */
 public class Main implements Converter
 {

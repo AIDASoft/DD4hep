@@ -38,8 +38,7 @@ int main(int argc,char** argv)
 
   // -- open LCIO file ----
   lcio::LCWriter* lcWrt = lcio::LCFactory::getInstance()->createLCWriter()  ;
-  lcWrt->open( lcioOutFile , lcio::LCIO::WRITE_NEW ) ;
-
+ 
   
   // Choose the Random engine
   //
@@ -76,8 +75,10 @@ int main(int argc,char** argv)
 
   //---
   ILDExRunAction* run_action = new ILDExRunAction;  
-  run_action->lcioWriter = lcWrt ;
+  run_action->runData.lcioWriter = lcWrt ;
+  run_action->runData.detectorName = lcdd.header().name() ;
   runManager->SetUserAction(run_action);
+
   //
   ILDExEventAction* event_action = new ILDExEventAction(run_action);
   runManager->SetUserAction(event_action);
@@ -96,6 +97,8 @@ int main(int argc,char** argv)
   //visManager->Initialize();
     
   // Get the pointer to the User Interface manager
+  
+  lcWrt->open( lcioOutFile , lcio::LCIO::WRITE_NEW ) ;
   
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
   

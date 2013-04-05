@@ -69,7 +69,6 @@ lcio::SimCalorimeterHitImpl* createSimCalorimeterHit( DD4hep::Simulation::Geant4
   return lh ;
 } 
 
-
 //------------------------------------------
 
 
@@ -183,7 +182,7 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
 	
 	for(int j=0,N= hCol->GetSize() ; j<N ; ++j) {
 	  
-	  lcio::SimTrackerHit* h =  createSimTrackerHit(   dynamic_cast<DD4hep::Simulation::Geant4TrackerHit*>( hCol->GetHit(0) )  ) ;
+	  lcio::SimTrackerHit* h =  createSimTrackerHit(   dynamic_cast<DD4hep::Simulation::Geant4TrackerHit*>( hCol->GetHit(j) )  ) ;
 
 	  col->addElement( h ) ;
 	  
@@ -202,7 +201,7 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
 	
 	for(int j=0,N= hCol->GetSize() ; j<N ; ++j) {
 	  
-	  lcio::SimCalorimeterHit* h =  createSimCalorimeterHit(   dynamic_cast<DD4hep::Simulation::Geant4CalorimeterHit*>( hCol->GetHit(0) )  ) ;
+	  lcio::SimCalorimeterHit* h =  createSimCalorimeterHit(   dynamic_cast<DD4hep::Simulation::Geant4CalorimeterHit*>( hCol->GetHit(j) )  ) ;
 
 	  col->addElement( h ) ;
 	  
@@ -220,8 +219,8 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
 
   // --- write the event
   lcEvt->setRunNumber( runAct->g4run->GetRunID()  ) ;
-
-  runAct->lcioWriter->writeEvent( lcEvt ) ;
+  lcEvt->setDetectorName( runAct->runData.detectorName ) ;
+  runAct->runData.lcioWriter->writeEvent( lcEvt ) ;
 
   
 }  
