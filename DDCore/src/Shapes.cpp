@@ -60,29 +60,29 @@ template<typename T> const char* Solid_type<T>::name() const {
 }
 
 void Box::make(const string& name, double x, double y, double z)  {
-  _assign(new TGeoBBox(x,y,z),name,"box");
+  _assign(new TGeoBBox(x*MM_2_CM,y*MM_2_CM,z*MM_2_CM),name,"box");
 }
 
 /// Set the box dimensions
 Box& Box::setDimensions(double x, double y, double z)   {
-  double params[] = {x,y,z};
+  double params[] = {x*MM_2_CM,y*MM_2_CM,z*MM_2_CM};
   _setDimensions(params);
   return *this;
 }
 
 /// Access half "length" of the box
 double Box::x() const {
-  return this->ptr()->GetDX();
+  return this->ptr()->GetDX()*CM_2_MM;
 }
 
 /// Access half "width" of the box
 double Box::y() const {
-  return this->ptr()->GetDY();
+  return this->ptr()->GetDY()*CM_2_MM;
 }
 
 /// Access half "depth" of the box
 double Box::z() const {
-  return this->ptr()->GetDZ();
+  return this->ptr()->GetDZ()*CM_2_MM;
 }
 
 /// Constructor to be used when creating a new object
@@ -111,9 +111,9 @@ Polycone::Polycone(double start, double delta, const vector<double>& rmin, const
   params.push_back(RAD_2_DEGREE * delta);
   params.push_back(rmin.size());
   for( size_t i=0; i<rmin.size(); ++i )  {
-    params.push_back(z[i]);
-    params.push_back(rmin[i]);
-    params.push_back(rmax[i]);
+    params.push_back(z[i]*MM_2_CM);
+    params.push_back(rmin[i]*MM_2_CM);
+    params.push_back(rmax[i]*MM_2_CM);
   }
   _assign( new TGeoPcon(&params[0]),"polycone");
 }
@@ -129,9 +129,9 @@ Polycone::Polycone(const string& name, double start, double delta, const vector<
   params.push_back(RAD_2_DEGREE * delta);
   params.push_back(rmin.size());
   for( size_t i=0; i<rmin.size(); ++i )  {
-    params.push_back(z[i]);
-    params.push_back(rmin[i]);
-    params.push_back(rmax[i]);
+    params.push_back(z[i]*MM_2_CM);
+    params.push_back(rmin[i]*MM_2_CM);
+    params.push_back(rmax[i]*MM_2_CM);
   }
   _assign( new TGeoPcon(&params[0]),name,"polycone");
 }
@@ -153,9 +153,9 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
     params.push_back(s->GetRmax(i));
   }
   for( size_t i=0; i<rmin.size(); ++i )  {
-    params.push_back(z[i]);
-    params.push_back(rmin[i]);
-    params.push_back(rmax[i]);
+    params.push_back(z[i]*MM_2_CM);
+    params.push_back(rmin[i]*MM_2_CM);
+    params.push_back(rmax[i]*MM_2_CM);
   }
   _setDimensions(&params[0]);
 }
@@ -167,17 +167,17 @@ ConeSegment::ConeSegment(const string& name)   {
 
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2)  {
-  _assign(new TGeoConeSeg(dz,rmin1,rmax1,rmin2,rmax2,RAD_2_DEGREE*phi1,RAD_2_DEGREE*phi2),"cone_segment");
+  _assign(new TGeoConeSeg(dz*MM_2_CM,rmin1*MM_2_CM,rmax1*MM_2_CM,rmin2*MM_2_CM,rmax2*MM_2_CM,RAD_2_DEGREE*phi1,RAD_2_DEGREE*phi2),"cone_segment");
 }
 
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(const string& name, double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2)  {
-  _assign(new TGeoConeSeg(dz,rmin1,rmax1,rmin2,rmax2,RAD_2_DEGREE*phi1,RAD_2_DEGREE*phi2),name,"cone_segment");
+  _assign(new TGeoConeSeg(dz*MM_2_CM,rmin1*MM_2_CM,rmax1*MM_2_CM,rmin2*MM_2_CM,rmax2*MM_2_CM,RAD_2_DEGREE*phi1,RAD_2_DEGREE*phi2),name,"cone_segment");
 }
 
 /// Set the cone segment dimensions
 ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
-  double params[] = {dz,rmin1,rmax1,rmin2,rmax2,RAD_2_DEGREE*phi1,RAD_2_DEGREE*phi2};
+  double params[] = {dz*MM_2_CM,rmin1*MM_2_CM,rmax1*MM_2_CM,rmin2*MM_2_CM,rmax2*MM_2_CM,RAD_2_DEGREE*phi1,RAD_2_DEGREE*phi2};
   _setDimensions(params);
   return *this;
 }
@@ -185,8 +185,8 @@ ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, d
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
-  //_assign((TGeoTubeSeg*)new TGeoTube(rmin,rmax,z),name,"tube");
-  _assign(new TGeoTubeSeg(rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube");
+  //_assign((TGeoTubeSeg*)new TGeoTube(rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM),name,"tube");
+  _assign(new TGeoTubeSeg(rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube");
   //MyConeSeg* s = new MyConeSeg();
   //_assign(s,name,"tube");
   //setDimensions(rmin,rmax,z,startPhi,deltaPhi);
@@ -195,8 +195,8 @@ void Tube::make(const string& name, double rmin, double rmax, double z, double s
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
-  double params[] = {rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
-  //double params[] = {z,rmin,rmax,rmin,rmax,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  double params[] = {rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  //double params[] = {z*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
   _setDimensions(params);
   return *this;
 }
@@ -209,11 +209,11 @@ void Cone::make(const string& name,
 		double rmin2,
 		double rmax2)
 {
-  _assign(new TGeoCone(z,rmin1,rmax1,rmin2,rmax2),name,"cone");
+  _assign(new TGeoCone(z*MM_2_CM,rmin1*MM_2_CM,rmax1*MM_2_CM,rmin2*MM_2_CM,rmax2*MM_2_CM),name,"cone");
 }
 
 Cone& Cone::setDimensions(double z,double rmin1,double rmax1,double rmin2,double rmax2)  {
-  double params[] = {z,rmin1,rmax1,rmin2,rmax2};
+  double params[] = {z*MM_2_CM,rmin1*MM_2_CM,rmax1*MM_2_CM,rmin2*MM_2_CM,rmax2*MM_2_CM};
   _setDimensions(params);
   return *this;
 }
@@ -230,17 +230,17 @@ Trapezoid::Trapezoid(const string& name)  {
 
 /// Constructor to be used when creating a new object with attribute initialization
 Trapezoid::Trapezoid(const string& name, double x1, double x2, double y1, double y2, double z)  {
-  _assign(new TGeoTrd2(x1,x2,y1,y2,z),name,"trd2");
+  _assign(new TGeoTrd2(x1*MM_2_CM,x2*MM_2_CM,y1*MM_2_CM,y2*MM_2_CM,z*MM_2_CM),name,"trd2");
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z)  {
-  _assign(new TGeoTrd2(x1,x2,y1,y2,z),"trd2");
+  _assign(new TGeoTrd2(x1*MM_2_CM,x2*MM_2_CM,y1*MM_2_CM,y2*MM_2_CM,z*MM_2_CM),"trd2");
 }
 
 /// Set the Trapezoid dimensions
 Trapezoid& Trapezoid::setDimensions(double x1, double x2, double y1, double y2, double z)  {
-  double params[] = {x1,x2,y1,y2,z};
+  double params[] = {x1*MM_2_CM,x2*MM_2_CM,y1*MM_2_CM,y2*MM_2_CM,z*MM_2_CM};
   _setDimensions(params);
   return *this;
 }
@@ -252,17 +252,17 @@ Paraboloid::Paraboloid(const string& name)  {
 
 /// Constructor to be used when creating a new identified object with attribute initialization
 Paraboloid::Paraboloid(const string& name, double r_low, double r_high, double delta_z)  {
-  _assign(new TGeoParaboloid(r_low,r_high,delta_z),name,"paraboloid");
+  _assign(new TGeoParaboloid(r_low*MM_2_CM,r_high*MM_2_CM,delta_z*MM_2_CM),name,"paraboloid");
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Paraboloid::Paraboloid(double r_low, double r_high, double delta_z)  {
-  _assign(new TGeoParaboloid(r_low,r_high,delta_z),"","paraboloid");
+  _assign(new TGeoParaboloid(r_low*MM_2_CM,r_high*MM_2_CM,delta_z*MM_2_CM),"","paraboloid");
 }
 
 /// Set the Paraboloid dimensions
 Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_z)  {
-  double params[] = {r_low,r_high,delta_z};
+  double params[] = {r_low*MM_2_CM,r_high*MM_2_CM,delta_z*MM_2_CM};
   _setDimensions(params);
   return *this;
 }
@@ -279,17 +279,17 @@ Sphere::Sphere(const string& name)  {
 
 /// Constructor to be used when creating a new identified object with attribute initialization
 Sphere::Sphere(const string& name, double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi)  {
-  _assign(new TGeoSphere(rmin,rmax,theta,delta_theta,phi,delta_phi),name,"sphere");
+  _assign(new TGeoSphere(rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*theta,RAD_2_DEGREE*delta_theta,RAD_2_DEGREE*phi,RAD_2_DEGREE*delta_phi),name,"sphere");
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi)  {
-  _assign(new TGeoSphere(rmin,rmax,theta,delta_theta,phi,delta_phi),"sphere");
+  _assign(new TGeoSphere(rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*theta,RAD_2_DEGREE*delta_theta,RAD_2_DEGREE*phi,RAD_2_DEGREE*delta_phi),"sphere");
 }
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi)  {
-  double params[] = {rmin,rmax,theta,delta_theta,phi,delta_phi};
+  double params[] = {rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*theta,RAD_2_DEGREE*delta_theta,RAD_2_DEGREE*phi,RAD_2_DEGREE*delta_phi};
   _setDimensions(params);
   return *this;
 }
@@ -306,17 +306,17 @@ Torus::Torus(const string& name)  {
 
 /// Constructor to be used when creating a new identified object with attribute initialization
 Torus::Torus(const string& name, double r, double rmin, double rmax, double phi, double delta_phi)  {
-  _assign(new TGeoTorus(r,rmin,rmax,phi,delta_phi),name,"torus");
+  _assign(new TGeoTorus(r*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*phi,RAD_2_DEGREE*delta_phi),name,"torus");
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Torus::Torus(double r, double rmin, double rmax, double phi, double delta_phi)  {
-  _assign(new TGeoTorus(r,rmin,rmax,phi,delta_phi),"torus");
+  _assign(new TGeoTorus(r*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*phi,RAD_2_DEGREE*delta_phi),"torus");
 }
 
 /// Set the Torus dimensions
 Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, double delta_phi)  {
-  double params[] = {r,rmin,rmax,phi,delta_phi};
+  double params[] = {r*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*phi,RAD_2_DEGREE*delta_phi};
   _setDimensions(params);
   return *this;
 }
@@ -335,7 +335,7 @@ Trap::Trap( const string& name,
             double x4,
             double alpha2)
 {
-  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1,x1,x2,alpha1,y2,x3,x4,alpha2),name,"trap");
+  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1*MM_2_CM,x1*MM_2_CM,x2*MM_2_CM,alpha1,y2*MM_2_CM,x3*MM_2_CM,x4*MM_2_CM,alpha2),name,"trap");
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
@@ -351,7 +351,7 @@ Trap::Trap( double z,
             double x4,
             double alpha2)
 {
-  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1,x1,x2,alpha1,y2,x3,x4,alpha2),"trap");
+  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1*MM_2_CM,x1*MM_2_CM,x2*MM_2_CM,alpha1,y2*MM_2_CM,x3*MM_2_CM,x4*MM_2_CM,alpha2),"trap");
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
@@ -363,14 +363,14 @@ Trap::Trap( double pz, double py, double px, double pLTX) {
   double x1     = px/2e0;
   double x2     = pLTX/2e0;
   double alpha1 = (pLTX-px)/py;
-  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1,x1,x2,alpha1,y1,x1,x2,alpha1),"trap");
+  _assign(new TGeoTrap(z,RAD_2_DEGREE*theta,RAD_2_DEGREE*phi,y1*MM_2_CM,x1*MM_2_CM,x2*MM_2_CM,alpha1,y1*MM_2_CM,x1*MM_2_CM,x2*MM_2_CM,alpha1),"trap");
 }
 
 /// Set the trap dimensions
 Trap& Trap::setDimensions(double z,double theta,double phi,
                          double y1,double x1,double x2,double alpha1,
                          double y2,double x3,double x4,double alpha2)  {
-  double params[] = {z,RAD_2_DEGREE * theta,RAD_2_DEGREE * phi,y1,x1,x2,alpha1,y2,x3,x4,alpha2};
+  double params[] = {z,RAD_2_DEGREE * theta,RAD_2_DEGREE * phi,y1*MM_2_CM,x1*MM_2_CM,x2*MM_2_CM,alpha1,y2*MM_2_CM,x3*MM_2_CM,x4*MM_2_CM,alpha2};
   _setDimensions(params);
   return *this;
 }
@@ -385,12 +385,12 @@ void PolyhedraRegular::_create(const string& name, int nsides, double rmin, doub
     throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
   _assign(new TGeoPgon(),name,"polyhedra",false);
   double params[] = {
-    0,
-    RAD_2_DEGREE * 2 * M_PI,
+    RAD_2_DEGREE * start,
+    RAD_2_DEGREE * delta,
     double(nsides),
     2e0,
-    zpos,rmin,rmax,
-    zneg,rmin,rmax
+    zpos*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,
+    zneg*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM
   };
   _setDimensions(&params[0]);
 }
@@ -431,13 +431,16 @@ SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, con
   Double_t* t = tr->GetTranslation();
   Double_t* r = tr->GetRotationMatrix();
   trans.GetComponents(r[0],r[1],r[2],t[0],r[3],r[4],r[5],t[1],r[6],r[7],r[8],t[2]);
+  t[0] *= MM_2_CM;
+  t[1] *= MM_2_CM;
+  t[2] *= MM_2_CM;
   TGeoSubtraction* sub  = new TGeoSubtraction(shape1,shape2,identityTransform(),tr);
   _assign(new TGeoCompositeShape("",sub),"subtraction");
 }
 
 /// Constructor to be used when creating a new object. Rotation is the identity rotation
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)   {
-  TGeoTranslation* tr = new TGeoTranslation(pos.X(),pos.Y(),pos.Z());
+  TGeoTranslation* tr   = new TGeoTranslation(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM);
   TGeoSubtraction* sub  = new TGeoSubtraction(shape1,shape2,identityTransform(),tr);
   _assign(new TGeoCompositeShape("",sub),"subtraction");
 }
@@ -446,7 +449,7 @@ SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, con
 SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   trans->SetRotation(rotation.Inverse());
   TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape("",sub),"subtraction");
@@ -456,7 +459,7 @@ SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, con
 SubtractionSolid::SubtractionSolid(const string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   trans->SetRotation(rotation.Inverse());
   TGeoSubtraction*    sub  = new TGeoSubtraction(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape(name.c_str(),sub), name, "subtraction");
@@ -475,6 +478,9 @@ UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Transform
   Double_t* t = tr->GetTranslation();
   Double_t* r = tr->GetRotationMatrix();
   trans.GetComponents(r[0],r[1],r[2],t[0],r[3],r[4],r[5],t[1],r[6],r[7],r[8],t[2]);
+  t[0] *= MM_2_CM;
+  t[1] *= MM_2_CM;
+  t[2] *= MM_2_CM;
   TGeoUnion*        uni = new TGeoUnion(shape1,shape2,identityTransform(),tr);
   _assign(new TGeoCompositeShape("",uni),"union");
 }
@@ -482,7 +488,7 @@ UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Transform
 /// Constructor to be used when creating a new object. Rotation is identity rotation
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)
 {
-  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   TGeoUnion*        uni = new TGeoUnion(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape("",uni),"union");
 }
@@ -491,7 +497,7 @@ UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position&
 UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans* tr = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans* tr = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   tr->SetRotation(rotation.Inverse());
   TGeoUnion*        uni = new TGeoUnion(shape1,shape2,identityTransform(),tr);
   _assign(new TGeoCompositeShape("",uni),"union");
@@ -501,7 +507,7 @@ UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position&
 UnionSolid::UnionSolid(const string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans* trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   trans->SetRotation(rotation.Inverse());
   TGeoUnion* uni = new TGeoUnion(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape(name.c_str(),uni), name, "union");
@@ -519,13 +525,16 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
   Double_t*    t  = tr->GetTranslation();
   Double_t*    r  = tr->GetRotationMatrix();
   trans.GetComponents(r[0],r[1],r[2],t[0],r[3],r[4],r[5],t[1],r[6],r[7],r[8],t[2]);
+  t[0] *= MM_2_CM;
+  t[1] *= MM_2_CM;
+  t[2] *= MM_2_CM;
   TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,identityTransform(),tr);
   _assign(new TGeoCompositeShape("",inter),"intersection");
 }
 
 /// Constructor to be used when creating a new object. Position is identity.
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos)    {
-  TGeoCombiTrans*   trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans*   trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape("",inter),"intersection");
 }
@@ -534,7 +543,7 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
 IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans*   trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans*   trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   trans->SetRotation(rotation.Inverse());
   TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape("",inter),"intersection");
@@ -544,7 +553,7 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
 IntersectionSolid::IntersectionSolid(const string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot)
 {
   TGeoRotation rotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X(),pos.Y(),pos.Z(),0);
+  TGeoCombiTrans*    trans = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,0);
   trans->SetRotation(rotation.Inverse());
   TGeoIntersection*  inter = new TGeoIntersection(shape1,shape2,identityTransform(),trans);
   _assign(new TGeoCompositeShape(name.c_str(),inter),name,"intersection");

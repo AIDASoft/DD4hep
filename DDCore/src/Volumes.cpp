@@ -288,7 +288,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
 }
 
 static TGeoTranslation* _translation(const Position& pos) {
-  return new TGeoTranslation("",pos.X(),pos.Y(),pos.Z());
+  return new TGeoTranslation("",pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM);
 }
 
 static TGeoRotation* _rotation(const Rotation& rot) {
@@ -301,35 +301,12 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& tr)  c
   Position pos;
   tr.GetDecomposition(rot,pos);
   return placeVolume(volume,rot,pos);
-#if 0
-  if ( volume.isValid() )   {
-    TGeoHMatrix *trans = new TGeoHMatrix();
-    double v[12], t[3], r[9];
-    tr.GetComponents(v);
-    t[0] = v[3];
-    t[1] = v[7];
-    t[2] = v[11];
-    r[0] = v[0];
-    r[1] = v[1];
-    r[2] = v[2];
-    r[3] = v[4];
-    r[4] = v[5];
-    r[5] = v[6];
-    r[6] = v[8];
-    r[7] = v[9];
-    r[8] = v[10];
-    trans->SetRotation(r);
-    trans->SetTranslation(t);
-    return _addNode(m_element,volume,trans);
-  }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
-#endif
 }
 
 /// Place translated and rotated daughter volume
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, const Rotation& rot)  const  {
   if ( volume.isValid() )   {
-    TGeoCombiTrans* transform = new TGeoCombiTrans("",pos.X(),pos.Y(),pos.Z(),_rotation(rot));
+    TGeoCombiTrans* transform = new TGeoCombiTrans("",pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,_rotation(rot));
     return _addNode(m_element,volume,transform);
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
@@ -344,9 +321,9 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot, cons
     trans->RotateY(rot.Theta()*RAD_2_DEGREE);
     trans->RotateX(rot.Psi()*RAD_2_DEGREE);
     pos.GetCoordinates(t);
-    trans->SetDx(t[0]);
-    trans->SetDy(t[1]);
-    trans->SetDz(t[2]);
+    trans->SetDx(t[0]*MM_2_CM);
+    trans->SetDy(t[1]*MM_2_CM);
+    trans->SetDz(t[2]*MM_2_CM);
     return _addNode(m_element,volume,trans);
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
