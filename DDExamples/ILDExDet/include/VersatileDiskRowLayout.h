@@ -12,7 +12,7 @@
 #include "DD4hep/Detector.h"
 #include "VersatileDiskRowLayoutSeg.h"
 #include "PadLayout.h"
-#include <Exceptions.h> 
+#include <DD4HepExceptions.h> 
 
 namespace DD4hep {
   
