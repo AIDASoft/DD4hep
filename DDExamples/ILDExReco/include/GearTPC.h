@@ -14,7 +14,7 @@
 
 #include "DD4hep/Detector.h"
 #include "TPCModule.h"
-#include <Exceptions.h> 
+#include <DD4HepExceptions.h> 
 
 namespace DD4hep {
   
