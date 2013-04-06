@@ -410,7 +410,25 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
   G4PVPlacement* g4    = info.g4Placements[node];
   if ( !g4 )   {
     TGeoMatrix*      trafo = node->GetMatrix();
+
     int              copy  = node->GetNumber();
+
+    // if the CellID0 volID is defined for the volume we 
+    // use it to overwrite the copy number
+    // this is then used in the sensitive detector to fill the CellID0
+    // of the SimTrackerHits
+
+    if ( dynamic_cast<const PlacedVolume::Object*>(node) ) {
+      PlacedVolume p = Ref_t(node);
+      const PlacedVolume::VolIDs& ids = p.volIDs();
+      //      copy = ids[ "CellID0" ] ;
+      PlacedVolume::VolIDs::const_iterator it = ids.find("CellID0") ;
+      if( it != ids.end() ) 
+	copy = it->second ;
+    }
+    //--------------------------------------------------------
+
+
     G4LogicalVolume* vol   = info.g4Volumes[node->GetVolume()];
     G4LogicalVolume* mot   = info.g4Volumes[node->GetMotherVolume()];
     if ( trafo ) {

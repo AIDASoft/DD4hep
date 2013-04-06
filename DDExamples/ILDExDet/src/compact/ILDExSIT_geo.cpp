@@ -8,6 +8,11 @@
 //====================================================================
 
 #include "DD4hep/DetFactoryHelper.h"
+
+// -- lcio 
+#include <UTIL/BitField64.h>
+#include <UTIL/ILDConf.h>
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -17,7 +22,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string      name  = x_det.nameStr();
   DetElement  sit(name,x_det.id());
   Volume      mother = lcdd.pickMotherVolume(sit);
-    
+  
+  
+  // setup the encoder
+  UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
+  encoder.reset() ;  // reset to 0
+  
+  encoder[ILDCellID0::subdet] = ILDDetID::SIT ; 
+  encoder[ILDCellID0::side] = 0 ;
+  encoder[ILDCellID0::module] = 0 ;
+  encoder[ILDCellID0::sensor] = 0 ;
+  
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
     xml_comp_t  x_layer   (c);
     xml_comp_t  x_support (x_layer.child(_U(support)));
@@ -43,17 +58,25 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     sensvol.setVisAttributes(lcdd.visAttributes(x_layer.visStr()));
     sensvol.setSensitiveDetector(sens);
 
-    laddervol.placeVolume(sensvol,senspos);
+    laddervol.placeVolume(sensvol,senspos) ;
+ 
+
     laddervol.placeVolume(suppvol,supppos);
     sit.setVisAttributes(lcdd, x_det.visStr(),laddervol);
       
+    encoder[ILDCellID0::layer]  = layer_id ;
+
     for(int j=0; j<nLadders; ++j) {
       string laddername = layername + _toString(j,"_ladder%d");
       double radius = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.);
       Position pos(radius*cos(j*dphi),radius*sin(j*dphi),0.);
-      mother.placeVolume(laddervol,pos,Rotation(0,0,j*dphi));
  
-      std::cout <<" ************ placing SIT ladder at r=" << radius << std::endl ;
+      // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
+      encoder[ILDCellID0::module]  = j  ;
+      int cellID0 = encoder.lowWord() ;
+
+      mother.placeVolume(laddervol,pos,Rotation(0,0,j*dphi)).addPhysVolID("CellID0", cellID0 )  ;
+
    }
   }
   return sit;

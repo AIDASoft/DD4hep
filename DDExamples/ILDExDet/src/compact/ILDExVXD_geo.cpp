@@ -9,6 +9,10 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "VXDData.h"
 
+// -- lcio 
+#include <UTIL/BitField64.h>
+#include <UTIL/ILDConf.h>
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -23,6 +27,15 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   vxd_data->id = x_det.id();
 
   Volume      mother = lcdd.pickMotherVolume(vxd);    
+
+  // setup the encoder
+  UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
+  encoder.reset() ;  // reset to 0
+  
+  encoder[ILDCellID0::subdet] = ILDDetID::VXD ; 
+  encoder[ILDCellID0::side] = 0 ;
+  encoder[ILDCellID0::sensor] = 0 ;
+  
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
@@ -91,6 +104,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     layer.RadLength    = sensmat->GetMaterial()->GetRadLen();
     vxd_data->_sVec.push_back(layer);
 
+    encoder[ILDCellID0::layer]  = layer_id ; 
 
     for(int j=0; j<nLadders; ++j) {
 
@@ -113,7 +127,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // rot.rotateZ(  phi ) ;
       
       //      if( dj < 3 ) 
-      mother.placeVolume(laddervol,pos, rot   );
+
+      // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
+      encoder[ILDCellID0::module]  = j  ;
+      int cellID0 = encoder.lowWord() ;
+
+      mother.placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
     }
     
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);

@@ -25,6 +25,7 @@
 #include "IMPL/SimTrackerHitImpl.h"
 #include "IMPL/SimCalorimeterHitImpl.h"
 #include "UTIL/Operators.h"
+#include "UTIL/ILDConf.h"
 
 
 #define DEBUG 1
@@ -179,7 +180,10 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
       if( isTracker ) { //-----------------------------------------------------------------
 
 	lcio::LCCollectionVec* col = new lcio::LCCollectionVec( lcio::LCIO::SIMTRACKERHIT ) ;
-	
+
+	// the encoder sets the correct cellid encoding string
+	ILDCellIDEncoder<SimTrackerHit> idDec( col ) ;	
+
 	for(int j=0,N= hCol->GetSize() ; j<N ; ++j) {
 	  
 	  lcio::SimTrackerHit* h =  createSimTrackerHit(   dynamic_cast<DD4hep::Simulation::Geant4TrackerHit*>( hCol->GetHit(j) )  ) ;

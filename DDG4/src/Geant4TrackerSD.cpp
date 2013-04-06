@@ -33,7 +33,7 @@ namespace DD4hep {  namespace Simulation {
     }
 
     G4cout << "----------- Geant4GenericSD<Tracker>::buildHits : position : " << prePos << G4endl ;
-
+    
     Geant4TrackerHit* hit = 
       new Geant4TrackerHit(h.track->GetTrackID(),
 			   h.track->GetDefinition()->GetPDGEncoding(),
@@ -42,8 +42,16 @@ namespace DD4hep {  namespace Simulation {
 
     
     HitContribution contrib = Geant4Hit::extractContribution(step);
-    hit->cellID  = ( hist ? hist->GetVolume()->GetCopyNo() : 0 ) ; 
-    //    hit->cellID  = ( hist ? hist->GetVolume()->GetId() : 0 ) ; 
+
+    // get the copy number of the parent volume -
+    // we need a more generic way of finding the volume that has the right copy number assigned...
+    // otherwise we couple detector construction sensitive detector !!
+    G4StepPoint* preStepPoint = step->GetPreStepPoint();    
+    G4TouchableHistory* theTouchable = (G4TouchableHistory*)( preStepPoint->GetTouchable() );
+    // G4int copyNo = theTouchable->GetVolume()->GetCopyNo();
+    G4int motherCopyNo = theTouchable->GetVolume(1)->GetCopyNo();
+    hit->cellID  = motherCopyNo ;
+
 
     hit->energyDeposit =  contrib.deposit ;
 
