@@ -12,7 +12,7 @@
 #define TPCMODULE_H
 
 #include "DD4hep/Detector.h"
-#include <DD4HepExceptions.h> 
+#include <DD4hepExceptions.h> 
 #include <PadLayout.h> 
 
 namespace DD4hep {
