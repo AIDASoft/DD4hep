@@ -19,20 +19,28 @@
 
 // Forward declarations
 #include "TGeoCone.h"
-class TGeoShape;
-class TGeoBBox;
-class TGeoPcon;
-class TGeoPgon;
-class TGeoCone;
-class TGeoConeSeg;
-class TGeoSphere;
-class TGeoTrd2;
-class TGeoTorus;
-class TGeoTrap;
-class TGeoTube;
-class TGeoTubeSeg;
-class TGeoParaboloid;
-class TGeoCompositeShape;
+#include "TGeoParaboloid.h"
+#include "TGeoPgon.h"
+#include "TGeoPcon.h"
+#include "TGeoSphere.h"
+#include "TGeoArb8.h"
+#include "TGeoTrd2.h"
+#include "TGeoTube.h"
+#include "TGeoTorus.h"
+#include "TGeoCompositeShape.h"
+//class TGeoShape;
+//class TGeoBBox;
+//class TGeoPcon;
+//class TGeoCone;
+//class TGeoConeSeg;
+//class TGeoSphere;
+//class TGeoTrd2;
+//class TGeoTorus;
+//class TGeoTrap;
+//class TGeoTube;
+//class TGeoTubeSeg;
+//class TGeoParaboloid;
+//class TGeoCompositeShape;
 
 /*
  *   DD4hep namespace declaration
