@@ -219,7 +219,7 @@ PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value)   {
 
 /// Volume material
 Material PlacedVolume::material() const 
-{  return Material::handle_t(m_element ? m_element->GetMedium()->GetMaterial() : 0);  }
+{  return Material::handle_t(m_element ? m_element->GetMedium() : 0);  }
 
 /// Logical volume of this placement
 Volume   PlacedVolume::volume() const 
@@ -458,7 +458,7 @@ Solid Volume::solid() const
 
 /// Access to the Volume material
 Material Volume::material() const   
-{  return Handle<TGeoMaterial>(m_element->GetMaterial());   }
+{  return Ref_t(m_element->GetMedium());   }
 
 /// Access the visualisation attributes
 VisAttr Volume::visAttributes() const
