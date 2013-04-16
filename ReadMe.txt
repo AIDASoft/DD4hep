@@ -139,3 +139,13 @@ export G4LEVELGAMMADATA=${G4SYS}/share/Geant4-9.5.1/data/PhotonEvaporation2.2
      file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml             \
      file:../DD4hep/DDExamples/CLICSiD/compact/sensitive_detectors.xml \
      ../DD4hep/DDExamples/CLICSiDSimu/run.mac 
+
+
+6) run SLIC simulation on lccd file created with DD4Hep:
+
+# create lcdd file from compact:
+./bin/geoConverter -compact2lcdd -input file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml  > ILD_toy.lcdd
+# remove superfluous lines at beginning of file ...
+# if slic is in the path:
+
+slic -g ./ILD_toy.lcdd -o ILD_toy.slcio -x -m ../DD4hep/DDExamples/ILDExSimu/run1.mac

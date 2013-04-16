@@ -15,6 +15,8 @@
 # muon 300 MeV to the direction (1.,0.,0.)
 # 3 events
 #
+/generator/select gun
+
 /gun/direction 1. 1. 1.
 /gun/particle mu+
 /gun/energy 1000 MeV
