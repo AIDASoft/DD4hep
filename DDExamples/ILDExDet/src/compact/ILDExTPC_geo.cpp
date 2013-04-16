@@ -47,6 +47,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
     bool        reflect   = px_det.reflect();
     
+    sens.setType("tracker");
     part_vol.setSensitiveDetector(sens);
     part_vol.setVisAttributes(lcdd,px_det.visStr());
     //cache the important volumes in TPCData for later use without having to know their name
