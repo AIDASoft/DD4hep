@@ -482,7 +482,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     cout << "Attempt to DOUBLE-place physical volume:" << name << " No:" << node->GetNumber() << endl;    
   }
   return g4;
-  }
+}
 
 /// Convert the geometry type region into the corresponding Geant4 object(s).
 void* Geant4Converter::handleRegion(const TNamed* region, const set<const TGeoVolume*>& volumes) const  {
