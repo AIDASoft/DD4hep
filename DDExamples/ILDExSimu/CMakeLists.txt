@@ -11,7 +11,6 @@ endif()
 find_package(LCIO REQUIRED) 
 
 
-
 include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
                      ${CMAKE_SOURCE_DIR}/DDG4/include
                      ${CMAKE_CURRENT_SOURCE_DIR}/include

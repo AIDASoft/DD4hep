@@ -36,10 +36,11 @@ add_subdirectory(DDExamples/UtilityApps)
 add_subdirectory(DDExamples/AlignDet)
 add_subdirectory(DDExamples/CLICSiD)
 
-## Cannot use these ones anymore, since Frank has introduced lcio.....
-##add_subdirectory(DDExamples/ILDExDet)
-##add_subdirectory(DDExamples/ILDExReco)
-##add_subdirectory(DDExamples/ILDExTest)
+## --- ILD examples ----- 
+add_subdirectory(DDExamples/ILDExDet)
+add_subdirectory(DDExamples/ILDExReco)
+add_subdirectory(DDExamples/ILDExTest)
+
 if(DD4HEP_WITH_GEANT4)
    add_subdirectory(DDExamples/CLICSiDSimu)
 endif()
