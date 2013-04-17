@@ -64,8 +64,8 @@
 
     <detectors>
         <comment>Trackers</comment>
-      
-        <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1" readout="VXDCollection">
+
+        <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1" readout="VXDCollection" insideTrackingVolume="true">
           <layer id="0"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
             <ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
@@ -92,7 +92,7 @@
           </layer>
         </detector>
  
-        <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2" readout="SITCollection">
+        <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2" readout="SITCollection" insideTrackingVolume="true">
           <layer id="0"  vis="SITLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
@@ -104,7 +104,7 @@
         </detector>
         
       
-        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" readout="TPCCollection">
+        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" readout="TPCCollection" insideTrackingVolume="true">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
            <!-- GEAR Data-->
            <driftlength value="TPC_zhalf*0.9"/>
@@ -156,7 +156,10 @@
         </readout>
     </readouts>
  <fields>
-        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="3.5*tesla"
+        <!--field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="3.5*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+               outer_radius="SolenoidalFieldRadius" /-->
+        <field type="solenoid" name="GlobalSolenoid" inner_field="3.5*tesla"
                outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
                outer_radius="SolenoidalFieldRadius" />
  </fields> 
