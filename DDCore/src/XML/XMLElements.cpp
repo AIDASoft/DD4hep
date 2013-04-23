@@ -19,7 +19,7 @@
 
 using namespace std;
 using namespace DD4hep::XML;
-#define INVALID_NODE ~0x0
+static const size_t INVALID_NODE = ~0U;
 
 // Forward declarations
 namespace DD4hep  {
@@ -417,6 +417,7 @@ const XmlChar* Handle_t::rawValue() const     {
 Handle_t Handle_t::clone(XmlDocument* new_doc) const  {
   if ( m_node ) {
 #ifdef DD4HEP_USE_TINYXML
+    if ( new_doc ) {}
     if ( _N(m_node)->Type() == ELEMENT_NODE_TYPE ) {
       XmlElement* e = _XE(_N(m_node)->Clone()->ToElement());
       if ( e ) return e;
@@ -822,7 +823,6 @@ Document Element::document() const   {
 /// Clone the DOM element tree
 Handle_t Element::clone(Handle_t h) const  {
   if ( m_element && h )  {    
-    Document d = document();
     return h.clone(Document::DOC(document()));
   }
   throw runtime_error("Element::clone: Invalid element pointer -- unable to clone node!");
@@ -869,21 +869,29 @@ void Element::addComment(const char* text) const {
 #endif
 }
 
+/// Initializing constructor to create a new XMLElement and add it to the document.
 RefElement::RefElement(const Document& document, const XmlChar* type, const XmlChar* name)  
 : Element(document, type) 
 {
   m_name = name ? setAttr(_U(name),name) : 0;
 }
 
+/// Construction from existing object handle
 RefElement::RefElement(const Handle_t& e)  
 : Element(e) 
 {
   m_name = m_element ? getAttr(_U(name)) : 0;
 }
 
+/// Copy constructor
 RefElement::RefElement(const RefElement& e)  
 : Element(e), m_name(e.m_name)
 {
+}
+
+/// Assignment operator
+RefElement& RefElement::operator=(const RefElement& e) {
+  m_element = e.m_element; return *this;
 }
 
 const XmlChar* RefElement::name() const  {

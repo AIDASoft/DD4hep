@@ -80,6 +80,12 @@ namespace DD4hep {
       /// Internal helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* node, int level);
 
+    private:
+      /// Never call Copy constructor
+      GeoHandler(const GeoHandler&) {}
+      /// Never call assignment operator
+      GeoHandler& operator=(const GeoHandler&) { return *this; }
+
     public:
       /// Default constructor
       GeoHandler();

@@ -123,22 +123,22 @@ namespace DD4hep {
       typedef T Implementation;
       typedef Handle<Implementation> handle_t;
       T* m_element;
-      Handle() : m_element(0)                 {                                 }
-      Handle(T* e) : m_element(e)             {                                 }
-      Handle(const Handle<T>& e) : m_element(e.m_element) {                     }
+      Handle() : m_element(0)                 {                                      }
+      Handle(T* e) : m_element(e)             {                                      }
+      Handle(const Handle<T>& e) : m_element(e.m_element) {                          }
       template<typename Q> Handle(Q* e)
-      : m_element((T*)e)                      {  verifyObject();                }
+      : m_element((T*)e)                      {  verifyObject();                     }
       template<typename Q> Handle(const Handle<Q>& e) 
-      : m_element((T*)e.m_element)            {  verifyObject();                }
-      
-      bool isValid() const                    {  return 0 != m_element;         }
-      bool operator!() const                  {  return 0 == m_element;         }
-      T* operator->() const                   {  return  m_element;             }
-      operator T& ()  const                   {  return *m_element;             }
-      T& operator*()  const                   {  return *m_element;             }
-      T* ptr() const                          {  return m_element;              }
-      template <typename Q> Q* _ptr() const   {  return (Q*)m_element;          }
-      template <typename Q> Q* data() const   {  return (Value<T,Q>*)m_element; }
+      : m_element((T*)e.m_element)            {  verifyObject();                     }
+      Handle<T>& operator=(const Handle<T>& e){ m_element=e.m_element; return *this; }
+      bool isValid() const                    {  return 0 != m_element;              }
+      bool operator!() const                  {  return 0 == m_element;              }
+      T* operator->() const                   {  return  m_element;                  }
+      operator T& ()  const                   {  return *m_element;                  }
+      T& operator*()  const                   {  return *m_element;                  }
+      T* ptr() const                          {  return m_element;                   }
+      template <typename Q> Q* _ptr() const   {  return (Q*)m_element;               }
+      template <typename Q> Q* data() const   {  return (Value<T,Q>*)m_element;      }
       void verifyObject() const {
         increment_object_validations();
         if ( m_element && dynamic_cast<T*>(m_element) == 0 )  {

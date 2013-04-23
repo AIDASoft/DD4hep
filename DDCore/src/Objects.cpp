@@ -256,7 +256,8 @@ string VisAttr::toString()  const {
   const VisAttr::Object* obj = &_data();
   TColor* col = gROOT->GetColor(obj->color);
   char text[256];
-  ::sprintf(text,"%-20s RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s",
+  ::snprintf(text,sizeof(text),
+	    "%-20s RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s",
 	    ptr()->GetName(),col->AsHexString(), obj->color, col->GetAlpha(), 
 	    int(obj->drawingStyle), int(obj->lineStyle),
 	    obj->showDaughters ? "YES" : "NO", obj->visible ? "YES" : "NO");
@@ -297,11 +298,13 @@ int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, 
 
 /// Assignment operator
 Limit& Limit::operator=(const Limit& c) 	{ 
-  particles = c.particles;
-  name      = c.name;
-  unit      = c.unit;
-  value     = c.value; 
-  content   = c.content;
+  if ( this != &c ) {
+    particles = c.particles;
+    name      = c.name;
+    unit      = c.unit;
+    value     = c.value; 
+    content   = c.content;
+  }
   return *this;
 }
 

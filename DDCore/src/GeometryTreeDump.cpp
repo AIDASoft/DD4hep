@@ -276,7 +276,7 @@ static void dumpStructure(PlacedVolume pv, int level) {
 
   _path += "/";
   _path += current->GetName();
-  ::sprintf(fmt, "%%4d %%%ds %%7s %%s\n",level*2+5);
+  ::snprintf(fmt, sizeof(fmt), "%%4d %%%ds %%7s %%s\n", level*2+5);
   ::printf(fmt,level,"","  ->LV:  ",volume->GetName());
   ::printf(fmt,level,"","  ->PV:  ",current->GetName());
   ::printf(fmt,level,"","  ->path:",_path.c_str());
@@ -296,7 +296,7 @@ static void dumpDetectors(DetElement parent,int level) {
 
   _path += "/";
   _path += parent.name();
-  ::sprintf(fmt, "%%4d %%%ds %%7s %%s\n",level*2+5);
+  ::snprintf(fmt, sizeof(fmt), "%%4d %%%ds %%7s %%s\n",level*2+5);
   ::printf(fmt,level,"","->path:",_path.c_str());
   if ( pl.isValid() ) {
     ::printf(fmt,level,"","   ->placement:",parent.placementPath().c_str());

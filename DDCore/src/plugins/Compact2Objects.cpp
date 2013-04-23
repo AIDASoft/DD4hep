@@ -359,6 +359,10 @@ template <> void Converter<Atom>::operator()(xml_h e)  const  {
 		    atom.attr<int>(_U(value))
 		    );
     element = tab->FindElement(eltname.c_str());
+    if ( !element ) {
+      throw runtime_error("Failed to properly insert the Element:"+
+			  eltname+" into the element table!");
+    }
   }
 }
 
@@ -727,7 +731,7 @@ template <> void Converter<Compact>::operator()(xml_h element)  const  {
   xml_coll_t(compact,_U(alignments)  ).for_each(_U(alignment),Converter<AlignmentEntry>(lcdd));
   xml_coll_t(compact,_U(fields)      ).for_each(_U(field),    Converter<CartesianField>(lcdd));
   xml_coll_t(compact,_U(sensitive_detectors)).for_each(_U(sd),Converter<SensitiveDetector>(lcdd));
-  ::sprintf(text,"%u",xml_h(element).checksum(0));
+  ::snprintf(text,sizeof(text),"%u",xml_h(element).checksum(0));
   lcdd.addConstant(Constant("compact_checksum",text));
   lcdd.endDocument();
 }

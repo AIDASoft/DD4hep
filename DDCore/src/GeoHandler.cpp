@@ -74,27 +74,29 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
     for(Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {
       const TGeoNode* n = *j;
       TGeoVolume* v = n->GetVolume();
-      TGeoMedium* m = v->GetMedium();
-      Volume      vol = Ref_t(v);
-      VisAttr     vis = vol.visAttributes();
-      //Region      reg = vol.region();
-      //LimitSet    lim = vol.limitSet();
-      //SensitiveDetector det = vol.sensitiveDetector();
+      if ( v ) {
+	TGeoMedium* m = v->GetMedium();
+	Volume      vol = Ref_t(v);
+	VisAttr     vis = vol.visAttributes();
+	//Region      reg = vol.region();
+	//LimitSet    lim = vol.limitSet();
+	//SensitiveDetector det = vol.sensitiveDetector();
 
-      // Note : assemblies and the world do not have a real volume nor a material
-      if ( v && info.volumeSet.find(v) == info.volumeSet.end() )   {
-	info.volumeSet.insert(v);
-	info.volumes.push_back(v);
-      }
-      if ( m ) info.materials.insert(m);
-      if ( dynamic_cast<Volume::Object*>(v) ) {
-	if ( vis.isValid() ) info.vis.insert(vis.ptr());
-      }
-      //if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
-      //if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
-      //if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);
+	// Note : assemblies and the world do not have a real volume nor a material
+	if ( info.volumeSet.find(v) == info.volumeSet.end() )   {
+	  info.volumeSet.insert(v);
+	  info.volumes.push_back(v);
+	}
+	if ( m ) info.materials.insert(m);
+	if ( dynamic_cast<Volume::Object*>(v) ) {
+	  if ( vis.isValid() ) info.vis.insert(vis.ptr());
+	}
+	//if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
+	//if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
+	//if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);
 
-      collectSolid(info,v->GetName(),n->GetName(),v->GetShape(),n->GetMatrix());
+	collectSolid(info,v->GetName(),n->GetName(),v->GetShape(),n->GetMatrix());
+      }
     }
   }
   return *this;

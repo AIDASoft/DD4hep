@@ -290,7 +290,7 @@ Document DocumentHandler::load(const string& fname)  const  {
 }
 
 /// Parse a standalong XML string into a document.
-Document DocumentHandler::parse(const char* doc_string, size_t length) const {
+Document DocumentHandler::parse(const char* doc_string, size_t /* length */) const {
   TiXmlDocument* doc = new TiXmlDocument();
   try  {
     if ( 0 == doc->Parse(doc_string) ) {

@@ -30,7 +30,7 @@ namespace {
 }
 #endif
 
-#define UNICODE(x)  extern const Tag_t Unicode_##x (#x)
+#define UNICODE(x)        extern const Tag_t Unicode_##x (#x)
 #include "XML/UnicodeValues.h"
 
 namespace DD4hep   { namespace XML  {

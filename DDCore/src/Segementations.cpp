@@ -13,8 +13,11 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-Segmentation::Object::Object() : magic(magic_word()), type(REGULAR), useForHitPosition(0) {
+Segmentation::Object::Object() 
+: magic(magic_word()), type(REGULAR), useForHitPosition(0) 
+{
   ::memset(data.values,0,sizeof(data.values));
+  _spare[5]=_spare[4]=_spare[3]=_spare[2]=_spare[1]=_spare[0]=0;
 }
 
 Segmentation::Object::~Object() {

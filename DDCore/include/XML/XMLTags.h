@@ -9,6 +9,8 @@
 #ifndef DD4hep_XML_TAGS_H
 #define DD4hep_XML_TAGS_H
 
+#define DECLARE_UNICODE_TAG(x)  namespace DD4hep { namespace XML { extern const Tag_t Unicode_##x (#x); }}
+
 #include "XML/XMLElements.h"
 #define UNICODE(x)  extern const Tag_t Unicode_##x
 #include "XML/UnicodeValues.h"

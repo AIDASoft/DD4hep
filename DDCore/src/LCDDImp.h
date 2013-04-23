@@ -30,6 +30,12 @@ namespace DD4hep {
   namespace Geometry  {
 
     class LCDDImp : public LCDD  {
+    private:
+      /// Disable copy constructor
+      LCDDImp(const LCDDImp&) {}
+      /// Disable assignment operator
+      LCDDImp& operator=(const LCDDImp&) { return *this; }
+
     public:
       struct InvalidObjectError : public std::runtime_error {
         InvalidObjectError(const std::string& msg) : std::runtime_error(msg) {}

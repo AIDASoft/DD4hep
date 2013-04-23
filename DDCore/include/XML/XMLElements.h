@@ -636,6 +636,8 @@ namespace DD4hep {
       RefElement(const RefElement& e);
       /// Initializing constructor to create a new XMLElement and add it to the document.
       RefElement(const Document& d, const XmlChar* type, const XmlChar* name);
+      /// Assignment operator
+      RefElement& operator=(const RefElement& e);
       /// Access the object's name in unicode
       const XmlChar* name() const;
       /// Access the object's reference name in unicode (same as name)

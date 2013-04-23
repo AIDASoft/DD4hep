@@ -63,7 +63,7 @@ void Box::make(const string& name, double x, double y, double z)  {
   _assign(new TGeoBBox(x*MM_2_CM,y*MM_2_CM,z*MM_2_CM),name,"box");
 }
 
-/// Set the box dimensions
+/// Set the box dimensionsy
 Box& Box::setDimensions(double x, double y, double z)   {
   double params[] = {x*MM_2_CM,y*MM_2_CM,z*MM_2_CM};
   _setDimensions(params);

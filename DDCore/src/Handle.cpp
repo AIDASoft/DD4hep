@@ -110,25 +110,25 @@ void DD4hep::Geometry::_toDictionary(const string& name, const string& value)  {
 
 string DD4hep::Geometry::_toString(bool value)    {
   char text[32];
-  ::sprintf(text,"%s",value ? "true" : "false");
+  ::snprintf(text,sizeof(text),"%s",value ? "true" : "false");
   return text;
 }
 
 string DD4hep::Geometry::_toString(int value)   {
   char text[32];
-  ::sprintf(text,"%d",value);
+  ::snprintf(text,sizeof(text),"%d",value);
   return text;
 }
 
 string DD4hep::Geometry::_toString(float value)   {
   char text[32];
-  ::sprintf(text,"%f",value);
+  ::snprintf(text,sizeof(text),"%f",value);
   return text;
 }
 
 string DD4hep::Geometry::_toString(double value)   {
   char text[32];
-  ::sprintf(text,"%f",value);
+  ::snprintf(text,sizeof(text),"%f",value);
   return text;
 }
 namespace DD4hep { namespace Geometry {

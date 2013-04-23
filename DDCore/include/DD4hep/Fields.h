@@ -67,6 +67,9 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> CartesianField(const Handle<Q>& e) : Ref_t(e)  {}
 
+      /// Assignment operator
+      CartesianField& operator=(const CartesianField& f) {  m_element=f.m_element;  return *this; }
+
       /// Access the field type
       int fieldType()  const {  return data<Object>()->type; }
 

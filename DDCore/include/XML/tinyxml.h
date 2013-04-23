@@ -134,23 +134,23 @@ public:
 	virtual ~TiXmlVisitor() {}
 
 	/// Visit a document.
-	virtual bool VisitEnter( const TiXmlDocument& doc )	{ return true; }
+	virtual bool VisitEnter( const TiXmlDocument& /* doc */)	{ return true; }
 	/// Visit a document.
-	virtual bool VisitExit( const TiXmlDocument& doc )	{ return true; }
+	virtual bool VisitExit( const TiXmlDocument& /* doc */)	{ return true; }
 
 	/// Visit an element.
-	virtual bool VisitEnter( const TiXmlElement& element, const TiXmlAttribute* firstAttribute )	{ return true; }
+	virtual bool VisitEnter( const TiXmlElement& /* element */, const TiXmlAttribute* /* firstAttribute */ )	{ return true; }
 	/// Visit an element.
-	virtual bool VisitExit( const TiXmlElement& element )											{ return true; }
+	virtual bool VisitExit( const TiXmlElement& /* element */ )											{ return true; }
 
 	/// Visit a declaration
-	virtual bool Visit( const TiXmlDeclaration& declaration )		{ return true; }
+	virtual bool Visit( const TiXmlDeclaration& /* declaration */ )		{ return true; }
 	/// Visit a text node
-	virtual bool Visit( const TiXmlText& text )						{ return true; }
+	virtual bool Visit( const TiXmlText& /* text */ )						{ return true; }
 	/// Visit a comment node
-	virtual bool Visit( const TiXmlComment& comment )				{ return true; }
+	virtual bool Visit( const TiXmlComment& /* comment */ )				{ return true; }
 	/// Visit an unknow node
-	virtual bool Visit( const TiXmlUnknown& unknown )				{ return true; }
+	virtual bool Visit( const TiXmlUnknown& /* unknown */ )				{ return true; }
 };
 
 // Only used by Attribute::Query functions

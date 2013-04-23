@@ -55,9 +55,11 @@ namespace DD4hep {
 	/// ID container
         VolIDs        volIDs;
 	/// Default constructor
-        Object() : volIDs() {}
+        Object() : magic(0), volIDs() {}
 	/// Copy constructor
 	Object(const Object& c) : magic(c.magic), volIDs(c.volIDs) {}
+	/// Assignment operator
+	Object& operator=(const Object& c) { magic=c.magic; volIDs=c.volIDs; return *this; }
       };
       /// Constructor to be used when reading the already parsed DOM tree
       PlacedVolume(const TGeoNode* e) : Handle<TGeoNodeMatrix>(e) {}
@@ -67,6 +69,9 @@ namespace DD4hep {
       PlacedVolume(const PlacedVolume& e) : Handle<TGeoNodeMatrix>(e) {}
       /// Copy assignment from other handle type
       template <typename T> PlacedVolume(const Handle<T>& e) : Handle<TGeoNodeMatrix>(e) {}
+      /// Assignment operator (must match copy constructor)
+      PlacedVolume& operator=(const PlacedVolume& v) {  m_element=v.m_element;  return *this; }
+
       /// Add identifier
       PlacedVolume& addPhysVolID(const std::string& name, int value);
       /// Volume material
@@ -99,8 +104,8 @@ namespace DD4hep {
         VisAttr       vis;
         Ref_t         sens_det;
 	int           referenced;
-        Object() : region(), limits(), vis(), sens_det(), referenced(0)  {}
-        void copy(const Object& c) { region=c.region; limits=c.limits; vis=c.vis; sens_det=c.sens_det; referenced=c.referenced; }
+        Object() : magic(0), region(), limits(), vis(), sens_det(), referenced(0)  {}
+        void copy(const Object& c) { magic=c.magic; region=c.region; limits=c.limits; vis=c.vis; sens_det=c.sens_det; referenced=c.referenced; }
       };
 
       public:
@@ -119,6 +124,9 @@ namespace DD4hep {
       /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
       Volume(const std::string& name, const Solid& s, const Material& m);
       
+      /// Assignment operator (must match copy constructor)
+      Volume& operator=(const Volume& a) {  m_element=a.m_element;  return *this; }
+
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol)  const  
       { return placeVolume(vol,IdentityPos());                        }
@@ -201,6 +209,9 @@ namespace DD4hep {
       
       /// Constructor to be used when creating a new geometry tree.
       Assembly(const std::string& name);
+
+      /// Assignment operator (must match copy constructor)
+      Assembly& operator=(const Assembly& a) {  m_element=a.m_element;  return *this; }
     };
 
   }       /* End namespace Geometry          */
