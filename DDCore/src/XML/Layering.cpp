@@ -25,9 +25,11 @@ Layer::Layer(const Layer& c)
 }
 
 Layer& Layer::operator=(const Layer& c)   {
-  _thickness = c._thickness;
-  _preOffset = c._preOffset;
-  _slices = c._slices;
+  if ( this != &c ) {
+    _thickness = c._thickness;
+    _preOffset = c._preOffset;
+    _slices = c._slices;
+  }
   return *this;
 }
 
