@@ -59,6 +59,12 @@ namespace DD4hep { namespace Geometry {
     BeamCal01() : BeamCal01Data() {}
     /// Detector construction function
     DetElement construct(LCDD& lcdd, xml_det_t e, SensitiveDetector sens_det);
+    /// 
+    static DetElement instance(LCDD& lcdd, xml_det_t e, SensitiveDetector sd) { 
+      Value<TNamed,BeamCal01>* p = new Value<TNamed,BeamCal01>(); 
+      p->self.assign(p,e.nameStr(),e.typeStr());
+      return p->construct(lcdd,e,sd);
+    }
   };
 }}
 
@@ -76,7 +82,6 @@ inline int split_n(double totLength, double initSegm)
 DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens_det)  {
   lcdd     = &l;
   name     = x_det.nameStr();
-  self.assign(dynamic_cast<Value<TNamed,BeamCal01>*>(this),name,x_det.typeStr());
   self._data().id = x_det.id();
   Assembly     assembly(name);
   PlacedVolume pv;
@@ -268,7 +273,8 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens
 
   // Place the BeamCalLayer and the absorber plates in the CaloVolumeLog
   for(int i = 1; i <= nLayers; i++) {
-    char index[5]; sprintf(index,"%i",i);
+    char index[5]; 
+    ::snprintf(index,sizeof(index),"%i",i);
     // Position of the hole depends on layer position!
     Position abs_pos((BCStart + dAbsorber/2. + dLayer*double(i-1))*crossing_pos.X(),0,0);
     solid = SubtractionSolid(absorberTube,CutOutGr2,abs_pos,crossing_rot);
@@ -297,6 +303,7 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens
 }
 
 static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens)  {
-  return (new Value<TNamed,BeamCal01>())->construct(lcdd,element,sens);
+  return BeamCal01::instance(lcdd,element,sens);
 }
+
 DECLARE_DETELEMENT(Tesla_BeamCal01,create_detector);
