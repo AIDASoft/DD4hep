@@ -75,7 +75,7 @@ namespace DD4hep {
       bool vis = plc.isValid();
       bool env = plc.isValid();
       bool mat = plc.isValid();
-      ::sprintf(text,"ID:%-3d Combine Hits:%3s Readout:%s Material:%s Envelope:%s VisAttr:%s",
+      ::snprintf(text,sizeof(text),"ID:%-3d Combine Hits:%3s Readout:%s Material:%s Envelope:%s VisAttr:%s",
 		sd.id(), yes_no(sd.combineHits()), 
 		rdo ? sd.readout()->GetName()  : yes_no(rdo),
 		mat ? plc.material()->GetName() : yes_no(mat),
@@ -90,7 +90,7 @@ namespace DD4hep {
 	VisAttr::Object* v = attr.data<VisAttr::Object>();
 	TColor* col = gROOT->GetColor(v->color);
 	char text[256];
-	::sprintf(text," RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s",
+	::snprintf(text,sizeof(text)," RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s",
 		  col->AsHexString(), v->color, col->GetAlpha(), int(v->drawingStyle), int(v->lineStyle),
 		  v->showDaughters ? "YES" : "NO", v->visible ? "YES" : "NO");
 	os << prefix << "|               VisAttr:  " << setw(32) << left << attr.name() << text << endl;
@@ -99,7 +99,7 @@ namespace DD4hep {
 	Volume vol = plc.volume();
 	Solid    s = vol.solid();
 	Material m = vol.material();
-	::sprintf(text,"Volume:%s Shape:%s Material:%s",
+	::snprintf(text,sizeof(text),"Volume:%s Shape:%s Material:%s",
 		  vol->GetName(), s.isValid() ? s.name() : "Unknonw", m.isValid() ? m->GetName() : "Unknown"
 		  );
 	os << prefix << "+-------------  " << text << endl;

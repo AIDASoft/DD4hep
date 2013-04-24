@@ -733,8 +733,7 @@ xml_h LCDDConverter::handleSensitive(const string& name, const TNamed* sens_det)
   xml_h sensdet = geo.xmlSensDets[sens_det];
   if ( !sensdet )   {
     SensitiveDetector sd = Ref_t(sens_det);
-    string type = sd.type(), name = sd.name();
-    geo.doc_detectors.append(sensdet = xml_elt_t(geo.doc,Unicode(type)));
+    geo.doc_detectors.append(sensdet = xml_elt_t(geo.doc,Unicode(sd.type())));
     sensdet.setAttr(_U(name),sd.name());
     sensdet.setAttr(_U(ecut),sd.energyCutoff());
     sensdet.setAttr(_U(eunit),"MeV");

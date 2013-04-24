@@ -91,6 +91,7 @@ static int variable(const string & name, double & result,
     pchar exp_end   = exp_begin + strlen(exp_begin) - 1;
     if (engine(exp_begin, exp_end, result, exp_end, dictionary) == EVAL::OK)
       return EVAL::OK;
+    return EVAL::ERROR_CALCULATION_ERROR;
   }
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
@@ -326,6 +327,7 @@ static int maker(int op, stack<double> & val)
     errno = 0;
     val.top() = pow(val1,val2);
     if (errno == 0) return EVAL::OK;
+    return EVAL::ERROR_CALCULATION_ERROR;
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }
@@ -591,10 +593,11 @@ double Evaluator::evaluate(const char * expression) {
   s->theStatus     = WARNING_BLANK_STRING;
   s->theResult     = 0.0;
   if (expression != 0) {
-    s->theExpression = new char[strlen(expression)+1];
-    strcpy(s->theExpression, expression);
+    size_t len = strlen(expression);
+    s->theExpression = new char[len+1];
+    strncpy(s->theExpression, expression, len+1);
     s->theStatus = engine(s->theExpression,
-			  s->theExpression+strlen(expression)-1,
+			  s->theExpression+len-1,
 			  s->theResult,
 			  s->thePosition,
 			  s->theDictionary);

@@ -247,10 +247,10 @@ DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
     // Read the endcap layers
     m_endcap.layers.clear();
     for(xml_coll_t c(x_endcap.child(_U(layers)),_U(layer)); c; ++c) {
-      xml_comp_t l(c);
-      layer.id = l.id();
+      xml_comp_t x_layer(c);
+      layer.id = x_layer.id();
       layer.values.endcap_layer.dummy = 0;
-      layer.values.endcap_layer.z_offset = l.z_offset();
+      layer.values.endcap_layer.z_offset = x_layer.z_offset();
       m_endcap.layers.push_back(layer);
     }
   } 

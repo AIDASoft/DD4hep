@@ -30,7 +30,8 @@ struct string {
 
   // Constructor from character string.
   string(const char* s) {
-    p = new srep; p->s = new char[strlen(s)+1]; strcpy(p->s, s);
+    size_t len = strlen(s)+1;
+    p = new srep; p->s = new char[len]; strncpy(p->s, s, len);
   }
 
   // Constructor from character substring.
@@ -59,9 +60,11 @@ struct string {
 
   // Assignment from string.
   string& operator=(const string & x) {
-    x.p->n++;           // protect against "st = st"
-    if (--p->n == 0) { delete [] p->s; delete p; }
-    p = x.p;
+    if ( this != &x ) {
+      x.p->n++;           // protect against "st = st"
+      if (--p->n == 0) { delete [] p->s; delete p; }
+      p = x.p;
+    }
     return *this;
   }
 
@@ -73,29 +76,38 @@ struct string {
 // Concatinations.
 //
 inline string operator+(char a, const string & b) {
-  string s; s.p->s = new char[strlen(b.c_str())+2];
-  s.p->s[0] = a; strcpy(s.p->s+1, b.c_str());
+  string s; 
+  size_t len = strlen(b.c_str())+2;
+  s.p->s = new char[len];
+  s.p->s[0] = a; 
+  strncpy(s.p->s+1, b.c_str(),len-1);
   return s;
 }
 
 inline string operator+(const char * a, const string & b) {
   int lena = strlen(a);
-  string s; s.p->s = new char[lena+strlen(b.c_str())+1];
-  strcpy(s.p->s, a); strcpy(s.p->s+lena, b.c_str());
+  int lenb = strlen(b.c_str());
+  string s; 
+  s.p->s = new char[lena+lenb+1];
+  strncpy(s.p->s, a, lena); 
+  strncpy(s.p->s+lena, b.c_str(), lenb+1);
   return s;
 }
 
 inline string operator+(const string & a, const char * b) {
-  int lena = strlen(a.c_str());
-  string s; s.p->s = new char[lena+strlen(b)+1];
-  strcpy(s.p->s, a.c_str()); strcpy(s.p->s+lena, b);
+  int lena = strlen(a.c_str()), lenb = strlen(b);
+  string s; s.p->s = new char[lena+lenb+1];
+  strncpy(s.p->s, a.c_str(),lena); 
+  strncpy(s.p->s+lena, b,lenb+1);
   return s;
 }
 
 inline string operator+(const string & a, const string & b) {
   int lena = strlen(a.c_str());
-  string s; s.p->s = new char[lena+strlen(b.c_str())+1];
-  strcpy(s.p->s, a.c_str()); strcpy(s.p->s+lena, b.c_str());
+  int lenb = strlen(b.c_str());
+  string s; s.p->s = new char[lena+lenb+1];
+  strncpy(s.p->s, a.c_str(), lena); 
+  strncpy(s.p->s+lena, b.c_str(), lenb+1);
   return s;
 }
   
