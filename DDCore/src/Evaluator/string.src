@@ -22,7 +22,7 @@ struct string {
   struct srep {
     char* s;            // pointer to data
     int   n;            // reference count
-    srep() : n(1) {}
+    srep() : n(1), s(0) {}
   } *p;
   
   // Default constructor.

@@ -8,6 +8,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
 include(DD4hep_XML_setup)
 file(GLOB sources src/*.cpp)
 
-add_executable(Aligntest test/main.cpp ${sources})
+add_library(Aligntest SHARED ${sources})
 target_link_libraries(Aligntest DD4hepCore ${ROOT_LIBRARIES} Rint Reflex)
-
+dd4hep_generate_rootmap(Aligntest)

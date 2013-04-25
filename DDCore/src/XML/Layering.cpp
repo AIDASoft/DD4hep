@@ -19,6 +19,15 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::XML;
 
+LayerSlice& LayerSlice::operator=(const LayerSlice& c)  { 
+  if ( &c != this ) {
+    _sensitive = c._sensitive; 
+    _thickness = c._thickness;
+    _material  = c._material; 
+  }
+  return *this;
+}
+
 Layer::Layer(const Layer& c) 
 : _thickness(c._thickness), _preOffset(c._preOffset), _slices(c._slices)
 {

@@ -66,9 +66,7 @@ namespace DD4hep {
       typedef T Implementation;
       void _setDimensions(double* param);
       /// Assign pointrs and register solid to geometry
-      void _assign(Implementation* n, const std::string& tit, bool cbbox=true);
-      /// Assign pointrs and register solid to geometry
-      void _assign(Implementation* n, const std::string& nam, const std::string& tit, bool cbbox=true);
+      void _assign(Implementation* n, const std::string& nam, const std::string& tit, bool cbbox);
 
       public:
 

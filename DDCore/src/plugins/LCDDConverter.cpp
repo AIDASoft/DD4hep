@@ -440,7 +440,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       tr  = rm->GetTranslation();
       solid.append(second=xml_elt_t(geo.doc,_U(second)));
       second.setAttr(_U(ref),rs->GetName());
-      ::sprintf(text,"_%p_",rm);
+      ::snprintf(text,sizeof(text),"_%p_",rm);
       string rnam = rs->GetName();
       rnam += text;
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
@@ -662,9 +662,9 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
     place.setRef(_U(volumeref),vol.name());
     if ( m )  {
       char text[32];
-      ::sprintf(text,"_%p_pos",node);
+      ::snprintf(text,sizeof(text),"_%p_pos",node);
       xml_ref_t pos = handlePosition(name+text,m);
-      ::sprintf(text,"_%p_rot",node);
+      ::snprintf(text,sizeof(text),"_%p_rot",node);
       xml_ref_t rot = handleRotation(name+text,m);
       place.setRef(_U(positionref),pos.name());
       place.setRef(_U(rotationref),rot.name());
@@ -847,9 +847,9 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp)   const {
 	id= (*id_it).second;
       }
       else {
-	char txt[32];
-	::sprintf(txt,"%d",++s_idd);
-	id = txt;
+	char text[32];
+	::snprintf(text,sizeof(text),"%d",++s_idd);
+	id = text;
       }
       processors.insert(make_pair(id,nam));
     }

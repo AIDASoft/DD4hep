@@ -27,6 +27,9 @@
  */
 template<class K, class T>
 class hash_map {
+private:
+  hash_map(const hash_map& ) {}
+  hash_map& operator=(const hash_map&) { return *this; }
 public:
   struct Entry {            // Hash_map entry   
     std::pair<const K,T> data;

@@ -22,6 +22,9 @@ class stack {
   int k, max_size;
   T * v;
 
+  stack(const stack& ) {}
+  stack& operator=(const stack&) { return *this; }
+
  public:
   stack() :  k(0), max_size(20), v(new T[20]) {}
   ~stack() { delete [] v; }  

@@ -266,6 +266,9 @@ namespace DD4hep {
       VisAttr(const VisAttr& e) : Ref_t(e) {}
       /// Constructor to be used when creating a new registered visualization object
       VisAttr(const std::string& name);
+      /// Assignment operator
+      VisAttr& operator=(const VisAttr& attr) {  m_element = attr.m_element; return *this; }
+
       /// Additional data accessor
       Object& _data()   const {  return *data<Object>();  }
 

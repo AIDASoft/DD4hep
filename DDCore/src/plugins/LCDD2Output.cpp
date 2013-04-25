@@ -59,10 +59,13 @@ namespace DD4hep {
   }
 
   template <> void Printer<LimitSet>::operator()(const LimitSet& val)  const  {
-    TMap*   m = dynamic_cast<TMap*>(val.ptr());
-    os << "++ LimitSet: ";
+    const LimitSet::Object& o = val.limits();
+    os << "++ LimitSet: " << val.name() << endl;
     val->TNamed::Print();
-    m->TMap::Print();
+    for(LimitSet::Object::const_iterator i=o.begin(); i!=o.end(); ++i) {
+      os << "++    Limit:" << (*i).name << " " << (*i).particles 
+	 << " [" << (*i).unit << "] " << (*i).content << " " << (*i).value << endl;
+    }
   }
 
   template <> void Printer<DetElement>::operator()(const DetElement& val)  const  {

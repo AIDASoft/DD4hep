@@ -26,8 +26,7 @@ namespace DD4hep {
       : _sensitive(s), _thickness(t), _material(m) {}
     LayerSlice(const LayerSlice& c)
       : _sensitive(c._sensitive), _thickness(c._thickness), _material(c._material) {}
-    LayerSlice& operator=(const LayerSlice& c)
-    { _sensitive=c._sensitive; _thickness=c._thickness; _material=c._material; return *this; }
+    LayerSlice& operator=(const LayerSlice& c);
   };
 
   struct Layer  {
