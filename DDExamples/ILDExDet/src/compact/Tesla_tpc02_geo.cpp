@@ -76,8 +76,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
 
   // TPC endplates
   Material endcapMat = lcdd.material(x_endcap.materialStr());
-  //TGeoMixture* mix = dynamic_cast<TGeoMixture*>(endcapMat.ptr());
-  TGeoMaterial* mix = dynamic_cast<TGeoMaterial*>(endcapMat.ptr()->GetMaterial());
   // Material = mix. Desity is mass for a box with 1 mm**2 as base and 100 mm long
   double density = (endcapMat.ptr()->GetMaterial())->GetDensity();
   //density = mix->GetWmixt()/(100*1);

@@ -74,7 +74,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double outer_support_thickness = x_outer_support.thickness();
   double outer_support_length    = x_outer_support.length();
 
-  struct Cylinder { double z_start, z_stop, r1, r2; } inner_cyl, outer_cyl;
+  struct Cylinder { 
+    double z_start, z_stop, r1, r2; 
+    Cylinder() : z_start(0), z_stop(0), r1(0), r2(0) {}
+  } inner_cyl, outer_cyl;
   PlacedVolume pv;
   for(xml_coll_t c(x_disks,_U(disk)); c; ++c)  {
     typedef Tesla::DiskExtension _Ext;
@@ -180,7 +183,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     assert(zhalf>0);
     
     Cone cone_cyl(inner_cyl.r1-outer_cyl_thickness-cables_thickness,inner_cyl.r1,
-	      inner_cyl.r2-outer_cyl_thickness-cables_thickness,inner_cyl.r2,zhalf);
+		  inner_cyl.r2-outer_cyl_thickness-cables_thickness,inner_cyl.r2,zhalf);
     Volume vol_cyl("innerCables",cone_cyl,supportMat);
     vol_cyl.setVisAttributes(cylinderVis);
     pv = ftdVol.placeVolume(vol_cyl,Position(0,0,cyl_z_pos));

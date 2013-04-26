@@ -98,7 +98,7 @@ namespace DD4hep {
     
     struct Hcal04 : public Hcal04Data  {
       /// Default constructor
-      Hcal04() : Hcal04Data()     {}
+      Hcal04() : Hcal04Data()     {  self = Ref_t(this); }
       /// Detector construction function
       DetElement construct(LCDD& lcdd, xml_det_t e);
       /// Build and place Barrel Regular Modules
@@ -120,10 +120,11 @@ using namespace DD4hep::Geometry;
 static double s_geo_tolerance = 1e-10;
 
 /// Detector construction function
-DetElement Hcal04::construct(LCDD& l, xml_det_t x_det)  {
-  lcdd     = &l;
+DetElement Hcal04::construct(LCDD& detector_description, xml_det_t x_det)  {
+  lcdd     = &detector_description;
   name     = x_det.nameStr();
-  self.assign(dynamic_cast<Value<TNamed,Hcal04>*>(this),name,x_det.typeStr());
+  self->SetName(name.c_str());
+  self->SetTitle(x_det.typeStr().c_str());
 
   xml_comp_t  x_barrel        = x_det.child(_U(barrel));
   xml_comp_t  x_endcap        = x_det.child(_U(endcap));
