@@ -8,7 +8,7 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 /// Constructor from another handle. Checks validity of assignment internally
-ILDExVXD::ILDExVXD(const Ref_t& e) : Geometry::DetElement(e)
+ILDExVXD::ILDExVXD(const Ref_t& e) : Geometry::DetElement(e), m_data(0)
 {
   if ( e.isValid() && (!isValid() || !(m_data=dynamic_cast<VXDData*>(e.ptr()))) )  {
     Ref_t::bad_assignment(typeid(*e.ptr()),typeid(VXDData));
@@ -26,8 +26,10 @@ ILDExVXD& ILDExVXD::operator=(const Ref_t& e) {
 
 /// Assignment from same type of object
 ILDExVXD& ILDExVXD::operator=(const ILDExVXD& e) {
-  this->DetElement::operator=(e);
-  m_data = e.m_data;
+  if ( &e != this ) {
+    this->DetElement::operator=(e);
+    m_data = e.m_data;
+  }
   return *this;
 }
 

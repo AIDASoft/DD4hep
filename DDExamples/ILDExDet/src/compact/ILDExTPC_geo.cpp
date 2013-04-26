@@ -55,12 +55,16 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     {
       case 2:
         tpcData->innerWall=part_det;
+	break;
       case 3:
         tpcData->outerWall=part_det;
+	break;
       case 4:
         tpcData->gasVolume=part_det;
+	break;
       case 5:
         tpcData->cathode=part_det;
+	break;
     }
     //Endplate
     if(part_det.id()== 0){
