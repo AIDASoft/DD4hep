@@ -9,6 +9,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" ON)
 option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" OFF)
+option(DD4HEP_WITH_LCIO  "Build ILD examples with LCIO - builds LCIO as external project or uses pre-installed" ON)
 
 find_package(ROOT REQUIRED)
 if(DD4HEP_USE_XERCESC)
@@ -36,10 +37,14 @@ add_subdirectory(DDExamples/UtilityApps)
 add_subdirectory(DDExamples/AlignDet)
 add_subdirectory(DDExamples/CLICSiD)
 
+
 ## --- ILD examples ----- 
+if( DD4HEP_WITH_LCIO )
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/ILDExReco)
 add_subdirectory(DDExamples/ILDExTest)
+endif()
+
 
 if(DD4HEP_WITH_GEANT4)
    add_subdirectory(DDExamples/CLICSiDSimu)
