@@ -443,24 +443,26 @@ namespace DD4hep {
 namespace ROOT { namespace Math {
     typedef DD4hep::Geometry::Position Position;
 
+#if 0  // Already present according to Lorenzo
     /// Addition of 2 positions
     inline Position operator + (const Position& l, const Position& r)
     {  return Position(l.X()+r.X(),l.Y()+r.Y(),l.Z()+r.Z());                               }
     /// Subtraction of to positions
     inline Position operator - (const Position& l, const Position& r)
     {  return Position(l.X()-r.X(),l.Y()-r.Y(),l.Z()-r.Z());                               }
-    /// Dot product of 3-vectors.
-    inline double operator * (const Position& l, const Position& r)
-    {  return sqrt(l.X()*r.X() + l.Y()*r.Y() + l.Z()*r.Z());                               }
+    /// Positions scaling from right
+    inline Position operator / (const Position& l, double r)
+    {  return Position(l.X()/r,l.Y()/r,l.Z()/r);                                           }
     /// Positions scaling from left
     inline Position operator * (double l, const Position& r) 
     {  return Position(r.X()*l,r.Y()*l,r.Z()*l);                                           }
     /// Positions scaling from right
     inline Position operator * (const Position& l, double r)
     {  return Position(l.X()*r,l.Y()*r,l.Z()*r);                                           }
-    /// Positions scaling from right
-    inline Position operator / (const Position& l, double r)
-    {  return Position(l.X()/r,l.Y()/r,l.Z()/r);                                           }
+#endif
+    /// Dot product of 3-vectors.
+    inline double operator * (const Position& l, const Position& r)
+    {  return sqrt(l.X()*r.X() + l.Y()*r.Y() + l.Z()*r.Z());                               }
     /// Calculate the mean length of two vectors
     inline double mean_length(const Position& p1, const Position& p2)
     {  return 0.5* (p1.R() + p2.R()) / 2.0;                                                }
