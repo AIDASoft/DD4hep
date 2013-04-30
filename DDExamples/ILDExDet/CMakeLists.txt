@@ -51,8 +51,9 @@ include(DD4hep_XML_setup)
 if(DD4HEP_USE_PYROOT)
   ROOT_GENERATE_DICTIONARY(G__ILDEx ${headers} LINKDEF include/ROOT/LinkDef.h)
   list(APPEND sources G__ILDEx.cxx)
-  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/VersatileDiskRowLayoutSeg.cpp)
-  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/VersatileDiskRowLayout.cpp)
+#fg: removing these causes undefined symbols in libILdEx.so/.dylib
+#  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/VersatileDiskRowLayoutSeg.cpp)
+#  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/VersatileDiskRowLayout.cpp)
 endif()
 
 add_library(ILDEx SHARED ${sources})
