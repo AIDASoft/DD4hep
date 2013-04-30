@@ -162,6 +162,9 @@ namespace DD4hep {
       /// Convert the geometry type SensitiveDetector into the corresponding Xml object(s).
       virtual xml_h handleSensitive(const std::string& name, const TNamed* sens_det)  const;
 
+      /// Convert the segmentation of a SensitiveDetector into the corresponding LCDD object
+      virtual xml_h handleSegmentation(Segmentation seg)  const;
+
       /// Convert the Position into the corresponding Xml object(s).
       virtual xml_h handlePosition(const std::string& name, const TGeoMatrix* trafo)   const;
 

@@ -39,6 +39,7 @@ bool Segmentation::useForHitPosition() const   {
   return _data().useForHitPosition != 0;
 }
 
+/// Segmentation type
 const string Segmentation::type() const   {
   return m_element->GetTitle();
 }
@@ -70,8 +71,50 @@ void* Segmentation::i_extension(const type_info& info)   const {
   throw runtime_error("extension: The segmentation object is not valid!");
 }
  
-ProjectiveCylinder::ProjectiveCylinder() 
-: Segmentation("projective_cylinder")   {}
+/// Segmentation type
+const string SegmentationParams::type() const   {
+  return m_element->GetTitle();
+}
+
+/// Access to the parameters
+SegmentationParams::Parameters SegmentationParams::parameters() const  {
+  const string& typ = type();
+  const Object& obj = _data();
+  const Object::Data& data = obj.data;
+  Parameters params;
+  if ( typ == "projective_cylinder" )  {
+    params.push_back(make_pair("ntheta",data.cylindrical_binning.ntheta));
+    params.push_back(make_pair("nphi",data.cylindrical_binning.nphi));
+  }
+  else if ( typ == "nonprojective_cylinder" )  {
+    params.push_back(make_pair("grid_size_z",data.cylindrical_grid.grid_size_phi));
+    params.push_back(make_pair("grid_size_phi",data.cylindrical_grid.grid_size_phi));
+    params.push_back(make_pair("lunit",_toDouble("mm")));
+  }
+  else if ( typ == "projective_zplane" )  {
+    params.push_back(make_pair("ntheta",data.cylindrical_binning.ntheta));
+    params.push_back(make_pair("nphi",data.cylindrical_binning.nphi));
+  }
+  else if ( typ == "grid_xy" || typ == "global_grid_xy" )  {
+    params.push_back(make_pair("grid_size_x",data.cartesian_grid.grid_size_x));
+    params.push_back(make_pair("grid_size_y",data.cartesian_grid.grid_size_y));
+    params.push_back(make_pair("lunit",_toDouble("mm")));
+  }
+  else if ( typ == "grid_xyz" || typ == "global_grid_xyz" )  {
+    params.push_back(make_pair("grid_size_x",data.cartesian_grid.grid_size_x));
+    params.push_back(make_pair("grid_size_y",data.cartesian_grid.grid_size_y));
+    params.push_back(make_pair("grid_size_z",data.cartesian_grid.grid_size_z));
+    params.push_back(make_pair("lunit",_toDouble("mm")));
+  }
+  else   {
+    throw runtime_error("The segmentation type "+typ+" is not supported by DD4hep.");
+  }
+  return params;
+}
+
+ProjectiveCylinder::ProjectiveCylinder() : Segmentation("projective_cylinder")   
+{
+}
 
 /// Accessors: get number of bins in theta
 int ProjectiveCylinder::thetaBins() const    {

@@ -10,6 +10,7 @@
 // Framework includes
 #include "DD4hep/Volumes.h"
 #include "DD4hep/FieldTypes.h"
+#include "DD4hep/Segmentations.h"
 #include "XML/DocumentHandler.h"
 #include "LCDDConverter.h"
 
@@ -402,10 +403,10 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       xml_h    right = handleSolid(rs->GetName(),rs);
       xml_h first(0), second(0);
       if ( !left )   {
-	throw runtime_error("G4Converter: No left Geant4 Solid present for composite shape:"+name);
+	throw runtime_error("G4Converter: No left LCDD Solid present for composite shape:"+name);
       }
       if ( !right )   {
-	throw runtime_error("G4Converter: No right Geant4 Solid present for composite shape:"+name);
+	throw runtime_error("G4Converter: No right LCDD Solid present for composite shape:"+name);
       }
 
       if (      oper == TGeoBoolNode::kGeoSubtraction )
@@ -539,9 +540,9 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
     xml_ref_t         sol = handleSolid(s->GetName(),s);
 
     if ( !sol )
-      throw runtime_error("G4Converter: No Geant4 Solid present for volume:"+n);
+      throw runtime_error("G4Converter: No LCDD Solid present for volume:"+n);
     else if ( !m && v->IsA() != TGeoVolumeAssembly::Class() )
-      throw runtime_error("G4Converter: No Geant4 material present for volume:"+n);
+      throw runtime_error("G4Converter: No LCDD material present for volume:"+n);
 
     geo.checkVolume(name,volume);
     geo.doc_structure.append(vol=xml_elt_t(geo.doc,_U(volume)));
@@ -687,7 +688,7 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
   return place;
 }
 
-/// Convert the geometry type region into the corresponding Geant4 object(s).
+/// Convert the geometry type region into the corresponding LCDD object(s).
 xml_h LCDDConverter::handleRegion(const std::string& name, const TNamed* region)   const  {
   GeometryInfo& geo = data();  
   xml_h reg = geo.xmlRegions[region];
@@ -704,7 +705,7 @@ xml_h LCDDConverter::handleRegion(const std::string& name, const TNamed* region)
   return reg;
 }
 
-/// Convert the geometry type LimitSet into the corresponding Geant4 object(s)
+/// Convert the geometry type LimitSet into the corresponding LCDD object(s)
 xml_h LCDDConverter::handleLimitSet(const std::string& name, const TNamed* limitset)    const  {
   GeometryInfo& geo = data();  
   xml_h xml = geo.xmlLimits[limitset];
@@ -727,7 +728,33 @@ xml_h LCDDConverter::handleLimitSet(const std::string& name, const TNamed* limit
   return xml;
 }
 
-/// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
+/// Convert the segmentation of a SensitiveDetector into the corresponding LCDD object
+xml_h  LCDDConverter::handleSegmentation(Segmentation seg)  const  {
+  xml_h xml;
+  if ( seg.isValid() )  {
+    typedef SegmentationParams::Parameters _P;
+    string typ = seg.type();
+    SegmentationParams par(seg);
+    _P p = par.parameters();
+    xml = xml_elt_t(data().doc,Unicode(typ));
+    for(_P::const_iterator i=p.begin(); i != p.end(); ++i)  {
+      const _P::value_type& v=*i;
+      if ( v.first == "lunit" )  {
+	string val = v.second == _toDouble("mm") ? "mm" : 
+	  v.second == _toDouble("cm") ? "cm" : 
+	  v.second == _toDouble("m")  ? "m"  : 
+	  v.second == _toDouble("micron") ? "micron" : 
+	  v.second == _toDouble("nanometer") ? "namometer" : "??";
+	xml.setAttr(Unicode(v.first),Unicode(val));
+	continue;
+      }
+      xml.setAttr(Unicode(v.first),v.second);
+    }
+  }
+  return xml;
+}
+
+/// Convert the geometry type SensitiveDetector into the corresponding LCDD object(s).
 xml_h LCDDConverter::handleSensitive(const string& name, const TNamed* sens_det)   const  {
   GeometryInfo& geo = data();
   xml_h sensdet = geo.xmlSensDets[sens_det];
@@ -744,6 +771,8 @@ xml_h LCDDConverter::handleSensitive(const string& name, const TNamed* sens_det)
     if ( ro.isValid() ) {
       xml_ref_t ref = handleIdSpec(ro.idSpec().name(),ro.idSpec().ptr());
       sensdet.setRef(_U(idspecref),ref.name());
+      xml_h seg = handleSegmentation(ro.segmentation());
+      if ( seg ) sensdet.append(seg);
     }
     geo.xmlSensDets[sens_det] = sensdet;
   }
@@ -777,7 +806,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
   return id;
 }
 
-/// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
+/// Convert the geometry visualisation attributes to the corresponding LCDD object(s).
 xml_h LCDDConverter::handleVis(const string& name, const TNamed* v) const  {
   GeometryInfo& geo = data();
   xml_h vis = geo.xmlVis[v];
@@ -869,7 +898,7 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp)   const {
     if ( result != 1 ) {
       throw runtime_error("Failed to invoke the plugin "+tag+" of type "+type);
     }
-    cout << "+++++ Executed Successfully Geant4 setup module *" << type << "* ." << endl;
+    cout << "+++++ Executed Successfully LCDD setup module *" << type << "* ." << endl;
   }
 }
 
@@ -948,7 +977,7 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   geo.doc_setup.setAttr(_U(name),Unicode("Default"));
   geo.doc_setup.setAttr(_U(version),Unicode("1.0"));
 
-  // Ensure that all required materials are present in the Geant4 material table
+  // Ensure that all required materials are present in the LCDD material table
 #if 0
   const LCDD::HandleMap& mat = lcdd.materials();
   for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
@@ -1057,7 +1086,7 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   geo.doc_setup.setAttr(_U(name),Unicode("Default"));
   geo.doc_setup.setAttr(_U(version),Unicode("1.0"));
 
-  // Ensure that all required materials are present in the Geant4 material table
+  // Ensure that all required materials are present in the LCDD material table
 #if 0
   const LCDD::HandleMap& mat = lcdd.materials();
   for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)

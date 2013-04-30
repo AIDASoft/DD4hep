@@ -6,7 +6,6 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
 #ifndef DD4HEP_GEOMETRY_SEGMENTATIONS_H
 #define DD4HEP_GEOMETRY_SEGMENTATIONS_H
 
@@ -15,6 +14,7 @@
 
 // C/C++ include files
 #include <cmath>
+#include <vector>
 
 /*
  *   DD4hep namespace declaration
@@ -26,7 +26,7 @@ namespace DD4hep {
    */
   namespace Geometry  {
     
-    /** @class Segmentation Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class Segmentation Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -34,7 +34,7 @@ namespace DD4hep {
     struct Segmentation : public Ref_t   {
     public:
       enum { REGULAR=0, EXTENDED=1 };
-      
+
       struct Object  {
         /// Magic word to check object integrity
         unsigned long magic;
@@ -110,14 +110,38 @@ namespace DD4hep {
       template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
       /// Access extension element by the type
       template <class T> T* extensionUnchecked() const {  return (T*)_data().data.extension.ptr;}
-      
+
       /// Compute the coordinate in one dimension given a eauidistant bin value.
       static double binCenter(int bin, double width)   {  return (double(bin) + .5) * width;    }
       /// Compute the equidistant bin given a coordinate in one dimension.
       static int bin(double value, double width)       {  return int(floor(value/width));       }
     };
     
-    /** @class ProjectiveCylinder Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class SegmentationParams Segmentations.h DD4hep/Segmentations.h
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    struct SegmentationParams : public Ref_t   {
+    public:
+      /// Segmentation parameter definition
+      typedef std::pair<std::string,double> Parameter;
+      /// Segmentation parameter container definition
+      typedef std::vector<Parameter>        Parameters;
+      /// Object type
+      typedef Segmentation::Object Object;
+
+      /// Constructor to be used when reading the already parsed object
+      SegmentationParams(const Segmentation& e) : Ref_t(e) {}
+      /// Accessor to ata structure
+      Object& _data() const {  return *data<Object>(); }
+      /// Segmentation type
+      const std::string type() const;
+      /// Access to the parameters
+      Parameters parameters() const;
+    };
+
+    /** @class ProjectiveCylinder Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -137,7 +161,7 @@ namespace DD4hep {
       void setPhiBins(int value);
     };
     
-    /** @class NonProjectiveCylinder Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class NonProjectiveCylinder Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -157,7 +181,7 @@ namespace DD4hep {
       void setPhiBinSize(double value);
     };
     
-    /** @class ProjectiveZPlane Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class ProjectiveZPlane Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -177,7 +201,7 @@ namespace DD4hep {
       void setPhiBins(int value);
     };
     
-    /** @class GridXY Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class GridXY Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -201,7 +225,7 @@ namespace DD4hep {
       double getGridSizeY()const;
     };
     
-    /** @class GridXYZ Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class GridXYZ Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -217,7 +241,7 @@ namespace DD4hep {
       void setGridSizeZ(double value);
     };
     
-    /** @class CartesianGridXY Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class CartesianGridXY Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
@@ -229,7 +253,7 @@ namespace DD4hep {
       CartesianGridXY() : GridXY("cartesian_grid_xy") {}
     };
     
-    /** @class GlobalGridXY Segmentations.h DD4hep/lcdd/Segmentations.h
+    /** @class GlobalGridXY Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
