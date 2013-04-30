@@ -57,6 +57,11 @@ namespace DD4hep {
 
 namespace {
   static UInt_t unique_mat_id = 0xAFFEFEED;
+  void throw_print(const std::string& msg)  {
+    cout << msg << endl;
+    throw runtime_error(msg);
+  }
+
 }
 
 static Ref_t create_GridXYZ(lcdd_t& /* lcdd */, xml_h e)  {
@@ -114,8 +119,6 @@ static Ref_t create_ProjectiveZPlane(lcdd_t& /* lcdd */, xml_h e)  {
 }
 DECLARE_XMLELEMENT(ProjectiveZPlane,create_ProjectiveZPlane);
 
-
-
 static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e)  {
   CartesianField obj;
   xml_comp_t field(e), strength(e.child(_U(strength)));
@@ -129,7 +132,6 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e)  {
   return obj;
 }
 DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
-
 
 static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e)  {
   xml_comp_t c(e);
@@ -233,82 +235,52 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
   xml_coll_t        fractions(m,_U(fraction));
   xml_coll_t        composites(m,_U(composite));
   bool has_density = true;
-  bool mat_created = false;
-  set<string> elts;
 
   if ( 0 == mat )  {
+    TGeoMaterial* comp_mat;
+    TGeoElement*  comp_elt;
     xml_h  radlen     = m.child(_U(RL),false);
     xml_h  intlen     = m.child(_U(NIL),false);
     xml_h  density    = m.child(_U(D),false);
-    double radlen_val = radlen.ptr() ? radlen.attr<double>(_U(value)) : 0.0;
-    double intlen_val = intlen.ptr() ? intlen.attr<double>(_U(value)) : 0.0;
+    double radlen_val = radlen.ptr()  ? radlen.attr<double>(_U(value)) : 0.0;
+    double intlen_val = intlen.ptr()  ? intlen.attr<double>(_U(value)) : 0.0;
     double dens_val   = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
     if ( 0 == mat && !density.ptr() ) {
-      cout << "Compact2Objects[WARNING]: Material:" << matname << " with NO density." << endl;
       has_density = false;
     }
     if ( mat == 0  ) mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
     mat->SetRadLen(radlen_val,intlen_val);
-    mat_created = true;
-    //cout << "Compact2Objects[INFO]: Creating material:" << matname << " composites:" << composites.size()+fractions.size() << endl;
-  }
-  if ( mat_created ) {
-    if ( mix )  {
-      for(Int_t i=0, n=mix->GetNelements(); i<n; ++i)
-	elts.insert(mix->GetElement(i)->GetName());
-    }
-    for(; composites; ++composites)  {
+    for(composites.reset(); composites; ++composites)  {
       std::string nam = composites.attr<string>(_U(ref));
-      TGeoMaterial*  comp_mat;
-      TGeoElement*   element;
-      if ( elts.find(nam) == elts.end() )  {
-	double fraction = composites.attr<double>(_U(n));
-	if ( 0 != (comp_mat=mgr->GetMaterial(nam.c_str())) ) {
-	  mix->AddElement(comp_mat,fraction);
-	}
-	else if ( 0 != (element=table->FindElement(nam.c_str())) ) {
-	  mix->AddElement(element,fraction);
-	}
-	else  {
-	  string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
-	  cout << msg << endl;
-	  throw runtime_error(msg);
-	}
-      }
+      if ( 0 == (comp_elt=table->FindElement(nam.c_str())) )
+	throw_print("Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam);
+      mix->AddElement(comp_elt,composites.attr<int>(_U(n)));
     }
-    for(; fractions; ++fractions)  {
+    for(fractions.reset(); fractions; ++fractions)  {
       std::string nam = fractions.attr<string>(_U(ref));
-      TGeoMaterial*  comp_mat;
-      TGeoElement*   element;
-      if ( elts.find(nam) == elts.end() )  {
-	double fraction = fractions.attr<double>(_U(n));
-	if ( 0 != (comp_mat=mgr->GetMaterial(nam.c_str())) )
-	  mix->AddElement(comp_mat,fraction);
-	else if ( 0 != (element=table->FindElement(nam.c_str())) )
-	  mix->AddElement(element,fraction);
-	else  {
-	  string msg = "Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam;
-	  cout << msg << endl;
-	  throw runtime_error(msg);
-	}
-      }
+      double fraction = fractions.attr<double>(_U(n));
+      if ( 0 != (comp_mat=mgr->GetMaterial(nam.c_str())) )
+	mix->AddElement(comp_mat,fraction);
+      else if ( 0 != (comp_elt=table->FindElement(nam.c_str())) )
+	mix->AddElement(comp_elt,fraction);
+      else
+	throw_print("Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam);
     }
     // Update estimated density if not provided.
     if ( !has_density && mix && 0 == mix->GetDensity() ) {
       double dens = 0.0;
       for(composites.reset(); composites; ++composites)  {
 	std::string nam = composites.attr<string>(_U(ref));
-	double fraction = composites.attr<double>(_U(n));
-	TGeoMaterial*  comp_mat = mgr->GetMaterial(nam.c_str());
-	dens += fraction*comp_mat->GetDensity();
+	comp_mat = mgr->GetMaterial(nam.c_str());
+	dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
       for(fractions.reset(); fractions; ++fractions)  {
 	std::string nam = fractions.attr<string>(_U(ref));
-	double fraction = fractions.attr<double>(_U(n));
-	TGeoMaterial*  comp_mat = mgr->GetMaterial(nam.c_str());
-	dens += fraction*comp_mat->GetDensity();
+	comp_mat = mgr->GetMaterial(nam.c_str());
+	dens +=  composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
-      cout << "Compact2Objects[WARNING]: Material" << matname << " Set density:" << dens << " g/cm**3 " << endl;
+      cout << "Compact2Objects[WARNING]: Material:" << matname << " with NO density."
+	   << " Set density to:" << dens << " g/cm**3 " << endl;
       mix->SetDensity(dens);
     }
   }
@@ -360,8 +332,7 @@ template <> void Converter<Atom>::operator()(xml_h e)  const  {
 		    );
     element = tab->FindElement(eltname.c_str());
     if ( !element ) {
-      throw runtime_error("Failed to properly insert the Element:"+
-			  eltname+" into the element table!");
+      throw_print("Failed to properly insert the Element:"+eltname+" into the element table!");
     }
   }
 }
@@ -470,7 +441,7 @@ template <> void Converter<Readout>::operator()(xml_h e)  const {
   if ( seg )  { // Segmentation is not mandatory!
     string type = seg.attr<string>(_U(type));
     Ref_t segment(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&seg));
-    if ( !segment.isValid() ) throw runtime_error("FAILED to create segmentation:"+type);
+    if ( !segment.isValid() ) throw_print("FAILED to create segmentation:"+type);
     ro.setSegmentation(segment);
   }
   if ( id )  {
@@ -513,7 +484,7 @@ template <> void Converter<Property>::operator()(xml_h e)  const {
   string name = e.attr<string>(_U(name));
   LCDD::Properties& prp = lcdd.properties();
   if ( name.empty() ) {
-    throw runtime_error("Failed to convert properties. No name given!");
+    throw_print("Failed to convert properties. No name given!");
   }
   vector<xml_attr_t> a = e.attributes();
   if ( prp.find(name) == prp.end() ) {
@@ -542,7 +513,7 @@ template <> void Converter<CartesianField>::operator()(xml_h e)  const  {
     // The field is not present: We create it and add it to LCDD
     field = Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&e));
     if ( !field.isValid() ) {
-      throw runtime_error("Failed to create field object of type "+type);
+      throw_print("Failed to create field object of type "+type);
     }
     lcdd.addField(field);
     msg = "created";
@@ -603,7 +574,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const 
       string   l  = element.attr<string>(limits);
       LimitSet ls = lcdd.limitSet(l);
       if ( !ls.isValid() )  {
-	throw runtime_error("Converter<SensitiveDetector>: Request for non-existing limitset:"+l);
+	throw_print("Converter<SensitiveDetector>: Request for non-existing limitset:"+l);
       }
       sd.setLimitSet(ls);
     }
@@ -612,7 +583,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const 
       string r   = element.attr<string>(region);
       Region reg = lcdd.region(r);
       if ( !reg.isValid() )  {
-	throw runtime_error("Converter<SensitiveDetector>: Request for non-existing region:"+r);
+	throw_print("Converter<SensitiveDetector>: Request for non-existing region:"+r);
       }
       sd.setRegion(reg);
     }
