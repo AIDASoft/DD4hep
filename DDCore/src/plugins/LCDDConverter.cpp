@@ -119,9 +119,10 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
       cout << "Converting material:" << name << endl;
     }
     if ( m->IsMixture() ) {
-      TGeoMixture* mix=(TGeoMixture*)m;
+      TGeoMixture  *mix  = (TGeoMixture*)m;
       const double *wmix = mix->GetWmixt();
-      double sum = 0e0;
+      const int    *nmix = mix->GetNmixt();
+      double        sum  = 0e0;
       for (int i=0, n=mix->GetNelements(); i < n; i++) {
 	TGeoElement *elt = mix->GetElement(i);
 	handleElement(elt->GetName(),elt);
@@ -130,8 +131,14 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
       for (int i=0, n=mix->GetNelements(); i < n; i++) {
 	TGeoElement *elt = mix->GetElement(i);
 	string formula = elt->GetTitle()+string("_elm");
-	mat.append(obj=xml_elt_t(geo.doc,_U(fraction)));
-	obj.setAttr(_U(n),wmix[i]/sum);
+	if ( nmix )  {
+	  mat.append(obj=xml_elt_t(geo.doc,_U(composite)));
+	  obj.setAttr(_U(n),nmix[i]);
+	}
+	else  {
+	  mat.append(obj=xml_elt_t(geo.doc,_U(fraction)));
+	  obj.setAttr(_U(n),wmix[i]/sum);
+	}
 	obj.setAttr(_U(ref),elt->GetName());
       }
     }

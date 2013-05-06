@@ -70,9 +70,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     ++layerType;
   }
-    
+
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
-  DetElement sdet(det_name,x_det.id());
+
+  DetElement sdet(det_name+"_pos",x_det.id());
   Volume motherVol = lcdd.pickMotherVolume(sdet);
   PlacedVolume  physvol = motherVol.placeVolume(envelopeVol,
 						Position(0,0,zmin+totalThickness/2),
@@ -82,13 +83,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   sdet.setPlacement(physvol);
     
   if ( reflect ) {
+    DetElement rdet(det_name+"_neg",x_det.id());
     physvol = motherVol.placeVolume(envelopeVol,
 				    Position(0,0,-(zmin+totalThickness/2)),
 				    Rotation(0,M_PI,M_PI/numsides));
     physvol.addPhysVolID("system",det_id);
     physvol.addPhysVolID("barrel",2);
-    DetElement rdet(det_name+"_reflect",x_det.id());
     rdet.setPlacement(physvol);
+    lcdd.addDetector(rdet);
   }
   return sdet;
 }

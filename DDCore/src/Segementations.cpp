@@ -82,6 +82,7 @@ SegmentationParams::Parameters SegmentationParams::parameters() const  {
   const Object& obj = _data();
   const Object::Data& data = obj.data;
   Parameters params;
+  //cout << "Segmentation:" << name() << " Type:" << typ << endl;
   if ( typ == "projective_cylinder" )  {
     params.push_back(make_pair("ntheta",data.cylindrical_binning.ntheta));
     params.push_back(make_pair("nphi",data.cylindrical_binning.nphi));
@@ -95,12 +96,18 @@ SegmentationParams::Parameters SegmentationParams::parameters() const  {
     params.push_back(make_pair("ntheta",data.cylindrical_binning.ntheta));
     params.push_back(make_pair("nphi",data.cylindrical_binning.nphi));
   }
-  else if ( typ == "grid_xy" || typ == "global_grid_xy" )  {
+  else if ( typ == "grid_xy"            ||
+	    typ == "cartesian_grid_xy"  ||
+            typ == "global_grid_xy"     
+	    )    {
     params.push_back(make_pair("grid_size_x",data.cartesian_grid.grid_size_x));
     params.push_back(make_pair("grid_size_y",data.cartesian_grid.grid_size_y));
     params.push_back(make_pair("lunit",_toDouble("mm")));
   }
-  else if ( typ == "grid_xyz" || typ == "global_grid_xyz" )  {
+  else if ( typ == "grid_xyz"           || 
+	    typ == "cartesian_grid_xyz" ||
+	    typ == "global_grid_xyz"    
+	    )    {
     params.push_back(make_pair("grid_size_x",data.cartesian_grid.grid_size_x));
     params.push_back(make_pair("grid_size_y",data.cartesian_grid.grid_size_y));
     params.push_back(make_pair("grid_size_z",data.cartesian_grid.grid_size_z));

@@ -213,25 +213,25 @@ namespace DD4hep  { namespace Geometry  {
 /// Add identifier
 PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value)   {
   Object* obj = data<Object>();
-  obj->volIDs[name] = value;
+  obj->volIDs.push_back(VolID(name,value));
   return *this;
 }
 
 /// Volume material
 Material PlacedVolume::material() const 
-{  return Material::handle_t(m_element ? m_element->GetMedium() : 0);  }
+{  return Material::handle_t(m_element ? m_element->GetMedium() : 0);     }
 
 /// Logical volume of this placement
 Volume   PlacedVolume::volume() const 
-{  return Volume::handle_t(m_element ? m_element->GetVolume() : 0);                   }
+{  return Volume::handle_t(m_element ? m_element->GetVolume() : 0);       }
 
 /// Parent volume (envelope)
 Volume PlacedVolume::motherVol() const 
-{  return Volume::handle_t(m_element ? m_element->GetMotherVolume() : 0);             }
+{  return Volume::handle_t(m_element ? m_element->GetMotherVolume() : 0); }
 
 /// Access to the volume IDs
 const PlacedVolume::VolIDs& PlacedVolume::volIDs() const 
-{  return data<Object>()->volIDs;                                                     }
+{  return data<Object>()->volIDs;                                         }
 
 /// String dump
 string PlacedVolume::toString() const {

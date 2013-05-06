@@ -90,10 +90,15 @@ static Ref_t create_CartesianGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<double>(_U(gridSizeY)));
   return obj;
 }
+
 DECLARE_XMLELEMENT(CartesianGridXY,create_CartesianGridXY);
 
-namespace DD4hep { namespace Geometry { typedef CartesianGridXY EcalBarrelCartesianGridXY; }}
-DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_CartesianGridXY);
+namespace DD4hep { namespace Geometry { 
+    typedef GridXYZ CartesianGridXYZ; 
+    typedef GridXYZ EcalBarrelCartesianGridXY; 
+}}
+DECLARE_XMLELEMENT(CartesianGridXYZ,create_GridXYZ);
+DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_GridXYZ);
   
 static Ref_t create_ProjectiveCylinder(lcdd_t& /* lcdd */, xml_h e)  {
   ProjectiveCylinder obj;

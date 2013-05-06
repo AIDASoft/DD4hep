@@ -48,7 +48,8 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct PlacedVolume : Handle<TGeoNodeMatrix> {
-      typedef std::map<std::string,int> VolIDs;
+      typedef std::pair<std::string,int> VolID;
+      typedef std::vector<VolID>         VolIDs;
       struct Object  {
 	/// Magic word
         unsigned long magic;
