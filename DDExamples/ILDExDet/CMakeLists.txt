@@ -11,6 +11,7 @@ if( NOT LCIO_FOUND ) # downlaod and build LCIO
   set( lcio_download_url SVN_REPOSITORY "svn://svn.freehep.org/lcio/trunk" )
   
   set( lcio_cmake_args
+    "-DLCIO_GENERATE_HEADERS=OFF"
     "-DINSTALL_JAR=OFF"
     "-DBUILD_LCIO_EXAMPLES=OFF"
     "-DBUILD_ROOTDICT=OFF"
@@ -19,23 +20,24 @@ if( NOT LCIO_FOUND ) # downlaod and build LCIO
 
   ExternalProject_Add( LCIO
     ${lcio_download_url}
-    CMAKE_ARGS ${lcio_cmake_args}
-    PREFIX ${DD4hep_SOURCE_DIR}/dependencies
+    CMAKE_ARGS ${lcio_cmake_args} install
+    PREFIX ${DD4hep_BINARY_DIR}/dependencies
     )
 
   MESSAGE( STATUS "===============  Adding LCIO as external project  ====================" ) 
   MESSAGE( STATUS "   to use an existing LCIO installation please specify -D LCIO_DIR=path_to_lcio !! " )
   MESSAGE( STATUS "======================================================================" ) 
   
-  set(LCIO_INCLUDE_DIRS "${DD4hep_SOURCE_DIR}/dependencies/src/LCIO/include" )
+  set(LCIO_INCLUDE_DIRS "${DD4hep_BINARY_DIR}/dependencies/src/LCIO/include" )
   
   set(LCIO_LIBRARIES 
-    "${DD4hep_SOURCE_DIR}/dependencies/src/LCIO/lib/${CMAKE_SHARED_LIBRARY_PREFIX}sio${CMAKE_SHARED_LIBRARY_SUFFIX}"
-    "${DD4hep_SOURCE_DIR}/dependencies/src/LCIO/lib/${CMAKE_SHARED_LIBRARY_PREFIX}lcio${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "${DD4hep_BINARY_DIR}/dependencies/src/LCIO/lib/${CMAKE_SHARED_LIBRARY_PREFIX}sio${CMAKE_SHARED_LIBRARY_SUFFIX}"
+    "${DD4hep_BINARY_DIR}/dependencies/src/LCIO/lib/${CMAKE_SHARED_LIBRARY_PREFIX}lcio${CMAKE_SHARED_LIBRARY_SUFFIX}"
     )
 
 endif()
 #-------------- lcio -------------------
+
 
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include

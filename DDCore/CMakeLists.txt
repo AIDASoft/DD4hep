@@ -4,6 +4,7 @@ project(DDCore)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR})
 
+
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
 file(GLOB plugin_sources src/plugins/*.cpp)
 
@@ -28,3 +29,16 @@ target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCor
 dd4hep_generate_rootmap(DD4hepPlugins)
 
 
+
+#--- install target-------------------------------------
+
+install(DIRECTORY include/DD4hep  include/XML
+  DESTINATION include
+  PATTERN ".svn" EXCLUDE )
+
+install(TARGETS DD4hepCore DD4hepPlugins
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+# to do: add corresponding uninstall...
+#-------------------------------------------------------
