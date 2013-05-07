@@ -49,7 +49,13 @@ namespace DD4hep {
      */
     struct PlacedVolume : Handle<TGeoNodeMatrix> {
       typedef std::pair<std::string,int> VolID;
-      typedef std::vector<VolID>         VolIDs;
+      struct VolIDs : public std::vector<VolID>   {
+	typedef std::vector<VolID> Base;
+        VolIDs() : Base() {}
+	~VolIDs () {}
+	Base::const_iterator find(const std::string& name)  const;
+	std::pair<Base::iterator,bool> insert(const std::string& name, int value);
+      };
       struct Object  {
 	/// Magic word
         unsigned long magic;

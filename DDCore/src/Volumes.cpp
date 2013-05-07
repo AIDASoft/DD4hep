@@ -210,6 +210,28 @@ namespace DD4hep  { namespace Geometry  {
 
 }}
 
+/// Lookup volume ID
+vector<PlacedVolume::VolID>::const_iterator 
+PlacedVolume::VolIDs::find(const string& name)  const   {
+  for(Base::const_iterator i=this->Base::begin(); i!=this->Base::end(); ++i)  
+    if ( name == (*i).first ) return i;
+  return this->end();
+}
+
+/// Insert a new value into the volume ID container
+std::pair<vector<PlacedVolume::VolID>::iterator,bool> 
+PlacedVolume::VolIDs::insert(const string& name, int value)   {
+  Base::iterator i = this->Base::begin();
+  for(; i!=this->Base::end(); ++i)  
+    if ( name == (*i).first ) break;
+  //
+  if ( i != this->Base::end() ) {
+    return make_pair(i,false);
+  }
+  i = this->Base::insert(this->Base::end(),make_pair(name,value));
+  return make_pair(i,true);
+}
+
 /// Add identifier
 PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value)   {
   Object* obj = data<Object>();
