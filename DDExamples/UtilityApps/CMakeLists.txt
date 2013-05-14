@@ -12,3 +12,12 @@ target_link_libraries(geoConverter DD4hepCore)
 #-----------------------------------------------------------------------------------
 add_executable(geoPluginRun src/plugin_runner.cpp)
 target_link_libraries(geoPluginRun DD4hepCore)
+
+#--- install target-------------------------------------
+
+install(TARGETS geoDisplay geoConverter geoPluginRun
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+# to do: add corresponding uninstall...
+#-------------------------------------------------------
