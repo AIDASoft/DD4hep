@@ -10,3 +10,12 @@ include(DD4hep_XML_setup)
 add_library(CLICSiD SHARED ${sources})
 target_link_libraries(CLICSiD DD4hepCore ${ROOT_LIBRARIES})
 dd4hep_generate_rootmap(CLICSiD)
+
+#--- install target-------------------------------------
+
+install(TARGETS CLICSiD
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+# to do: add corresponding uninstall...
+#-------------------------------------------------------

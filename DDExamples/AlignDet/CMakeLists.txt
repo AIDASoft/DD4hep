@@ -11,3 +11,12 @@ file(GLOB sources src/*.cpp)
 add_library(Aligntest SHARED ${sources})
 target_link_libraries(Aligntest DD4hepCore ${ROOT_LIBRARIES} Rint Reflex)
 dd4hep_generate_rootmap(Aligntest)
+
+#--- install target-------------------------------------
+
+install(TARGETS Aligntest
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+# to do: add corresponding uninstall...
+#-------------------------------------------------------

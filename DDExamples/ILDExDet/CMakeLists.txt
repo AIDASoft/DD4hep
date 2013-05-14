@@ -62,3 +62,12 @@ add_library(ILDEx SHARED ${sources})
 target_link_libraries(ILDEx DD4hepCore  ${LCIO_LIBRARIES})
 #---Rootmap generation--------------------------------------------------------------
 dd4hep_generate_rootmap(ILDEx)
+
+#--- install target-------------------------------------
+
+install(TARGETS ILDEx
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+# to do: add corresponding uninstall...
+#-------------------------------------------------------

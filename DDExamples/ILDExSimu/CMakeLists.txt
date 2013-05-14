@@ -22,4 +22,3 @@ include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
 file(GLOB sources src/*.cpp)
 add_executable(ILDExSimu ILDExSimu.cpp ${sources})
 target_link_libraries(ILDExSimu DD4hepCore DD4hepG4 ILDEx ${Geant4_LIBRARIES} ${LCIO_LIBRARIES})
-

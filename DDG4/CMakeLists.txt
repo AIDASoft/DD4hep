@@ -23,3 +23,16 @@ endif()
 add_library(DD4hepG4 SHARED ${sources})
 target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 dd4hep_generate_rootmap(DD4hepG4)
+
+#--- install target-------------------------------------
+
+install(DIRECTORY include/DDG4
+  DESTINATION include
+  PATTERN ".svn" EXCLUDE )
+
+install(TARGETS DD4hepG4
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+# to do: add corresponding uninstall...
+#-------------------------------------------------------

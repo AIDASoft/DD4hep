@@ -66,3 +66,4 @@ endif()
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
 configure_file(cmake/thisdd4hep.sh  thisdd4hep.sh @ONLY)
 
+

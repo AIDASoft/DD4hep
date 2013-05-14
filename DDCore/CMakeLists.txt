@@ -27,7 +27,7 @@ add_library(DD4hepPlugins SHARED ${plugin_sources})
 target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
 #---Rootmap generation--------------------------------------------------------------
 dd4hep_generate_rootmap(DD4hepPlugins)
-
+#dd4hep_install_library(DD4hepPlugins)
 
 
 #--- install target-------------------------------------
@@ -40,5 +40,6 @@ install(TARGETS DD4hepCore DD4hepPlugins
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
+
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
