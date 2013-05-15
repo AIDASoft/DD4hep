@@ -25,6 +25,10 @@ if(NOT DD4HEP_USE_XERCESC)
 endif()
 add_library(DD4hepG4 SHARED ${sources})
 target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+
+SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
+
 dd4hep_generate_rootmap(DD4hepG4)
 
 #--- install target-------------------------------------
