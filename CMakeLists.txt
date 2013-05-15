@@ -60,7 +60,10 @@ endif()
 if(DD4HEP_WITH_GEANT4)
    add_subdirectory(DDExamples/CLICSiDSimu)
 endif()
-#   add_subdirectory(DDExamples/ILDExSimu)
+
+if(DD4HEP_WITH_GEANT4 AND DD4HEP_WITH_LCIO)
+   add_subdirectory(DDExamples/ILDExSimu)
+endif()
 
 #---Configuration-------------------------------------------------------------------
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
