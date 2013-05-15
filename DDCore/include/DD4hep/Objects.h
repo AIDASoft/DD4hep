@@ -33,6 +33,7 @@ class TGeoIdentity;
 // C/C++ include files
 #include <set>
 #include <limits>
+#include <vector>
 
 #define _USE_MATH_DEFINES
 #include <cmath>

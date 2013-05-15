@@ -1,10 +1,13 @@
 #---Find Geant4-------------------------------------------------------------------
+
 find_package(Geant4 REQUIRED)
-if(NOT Geant4_clhep_FOUND)
-  find_package(CLHEP REQUIRED)
-  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
-  set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
-endif()
+#if(NOT Geant4_clhep_FOUND)
+#  find_package(CLHEP REQUIRED)
+#  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
+#  set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
+#endif()
+INCLUDE(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs
+
 
 include(DD4hep_XML_setup)
 

@@ -25,9 +25,9 @@ fi
 
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if [ -z "${LD_LIBRARY_PATH}" ]; then
-  LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
+  LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@:@Geant4_DIR@/..; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
 else
-  LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+  LD_LIBRARY_PATH=@LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@:@Geant4_DIR@/..:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
 fi
 
 #----DYLD_LIBRARY_PATH---------------------------------------------------------------

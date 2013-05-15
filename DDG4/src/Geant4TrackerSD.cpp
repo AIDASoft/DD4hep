@@ -64,4 +64,4 @@ namespace DD4hep {  namespace Simulation {
   typedef Geant4GenericSD<Tracker> Geant4Tracker;
 }}    // End namespace DD4hep::Simulation
 
-DECLARE_GEANT4SENSITIVEDETECTOR(Geant4Tracker);
+DECLARE_GEANT4SENSITIVEDETECTOR(Geant4Tracker)

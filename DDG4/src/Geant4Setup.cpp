@@ -90,4 +90,4 @@ static long setup_fields(lcdd_t& lcdd, const Geant4Converter& cnv, const map<str
   }
   return 1;
 }
-DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields);
+DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields)
