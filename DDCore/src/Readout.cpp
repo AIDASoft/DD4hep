@@ -8,9 +8,21 @@
 //====================================================================
 
 #include "DD4hep/Readout.h"
+#include "DD4hep/InstanceCount.h"
 
 using namespace std;
 using namespace DD4hep::Geometry;
+
+/// Standard constructor
+Readout::Object::Object()  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Readout::Object::~Object()  {
+  destroyHandle(segmentation);
+  InstanceCount::decrement(this);
+}
 
 /// Initializing constructor to create a new object
 Readout::Readout(const string& nam)

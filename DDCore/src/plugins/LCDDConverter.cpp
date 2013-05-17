@@ -720,8 +720,8 @@ xml_h LCDDConverter::handleLimitSet(const std::string& name, const TNamed* limit
     LimitSet lim = Ref_t(limitset);
     geo.doc_limits.append(xml=xml_elt_t(geo.doc,_U(limitset)));
     xml.setAttr(_U(name),lim.name());
-    const LimitSet::Object& obj = lim.limits();
-    for(LimitSet::Object::const_iterator i=obj.begin(); i!=obj.end(); ++i) {
+    const set<Limit>& obj = lim.limits();
+    for(set<Limit>::const_iterator i=obj.begin(); i!=obj.end(); ++i) {
       xml_h x = xml_elt_t(geo.doc,_U(limit));
       const Limit& l = *i;
       xml.append(x);

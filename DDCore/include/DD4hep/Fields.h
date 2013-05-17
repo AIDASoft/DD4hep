@@ -53,7 +53,9 @@ namespace DD4hep {
 	/// Field extensions
 	Properties properties;
 	/// Default constructor
-	Object() : type(UNKNOWN) {}
+	Object();
+	/// Default destructor
+	~Object();
 	/// Call to access the field components at a given location
 	virtual void fieldComponents(const double* pos, double* field) = 0;
       };
@@ -120,7 +122,10 @@ namespace DD4hep {
 	std::vector<CartesianField>  magnetic_components;
 	/// Field extensions
 	Properties                   properties;
-	Object() : type(0), electric(), magnetic() {}
+	/// Default constructor
+	Object();
+	/// Default destructor
+	~Object();
       };
 
       /// Default constructor

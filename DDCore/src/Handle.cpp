@@ -7,11 +7,16 @@
 //
 //====================================================================
 
+#include "DD4hep/InstanceCount.h"
 #include "DD4hep/Handle.h"
 #include "XML/Evaluator.h"
 #include <iostream>
 
 #include "DD4hep/LCDD.h"
+
+#if !defined(WIN32) && !defined(__ICC)
+#include "cxxabi.h"
+#endif
 
 namespace DD4hep  {
   XmlTools::Evaluator& evaluator();
@@ -24,6 +29,16 @@ namespace {
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+
+/// Standard constructor
+Counted::Counted() {
+  InstanceCount::increment(this);
+}
+
+/// Standard destructor
+Counted::~Counted() {
+  InstanceCount::decrement(this);
+}
 
 int DD4hep::Geometry::_toInt(const string& value)  {
   string s(value);
@@ -166,6 +181,130 @@ namespace DD4hep { namespace Geometry {
     throw runtime_error(msg);
   }
 }}
+
+
+
+static const std::string __typeinfoName( const std::type_info& tinfo) {
+  const char* class_name = tinfo.name();
+  std::string result;
+#ifdef WIN32
+  size_t off = 0;
+  if ( ::strncmp(class_name, "class ", 6) == 0 )   {
+    // The returned name is prefixed with "class "
+    off = 6;
+  }
+  if ( ::strncmp(class_name, "struct ", 7) == 0 )   {
+    // The returned name is prefixed with "struct "
+    off = 7;
+  }
+  if ( off != std::string::npos )    {
+    std::string tmp = class_name + off;
+    size_t loc = 0;
+    while( (loc = tmp.find("class ")) != std::string::npos )  {
+      tmp.erase(loc, 6);
+    }
+    loc = 0;
+    while( (loc = tmp.find("struct ")) != std::string::npos )  {
+      tmp.erase(loc, 7);
+    }
+    result = tmp;
+  }
+  else  {
+    result = class_name;
+  }
+  // Change any " *" to "*"
+  while ( (off=result.find(" *")) != std::string::npos )    {
+    result.replace(off, 2, "*");
+  }
+  // Change any " &" to "&"
+  while ( (off=result.find(" &")) != std::string::npos )    {
+    result.replace(off, 2, "&");
+  }
+#elif defined(sun)
+  result = class_name;
+#elif !defined(__ICC)
+  if ( ::strlen(class_name) == 1 ) {
+    // See http://www.realitydiluted.com/mirrors/reality.sgi.com/dehnert_engr/cxx/abi.pdf
+    // for details
+    switch(class_name[0]) {
+    case 'v':
+      result = "void";
+      break;
+    case 'w':
+      result = "wchar_t";
+      break;
+    case 'b':
+      result = "bool";
+      break;
+    case 'c':
+      result = "char";
+      break;
+    case 'h':
+      result = "unsigned char";
+      break;
+    case 's':
+      result = "short";
+      break;
+    case 't':
+      result = "unsigned short";
+      break;
+    case 'i':
+      result = "int";
+      break;
+    case 'j':
+      result = "unsigned int";
+      break;
+    case 'l':
+      result = "long";
+      break;
+    case 'm':
+      result = "unsigned long";
+      break;
+    case 'x':
+      result = "long long";
+      break;
+    case 'y':
+      result = "unsigned long long";
+      break;
+    case 'n':
+      result = "__int128";
+      break;
+    case 'o':
+      result = "unsigned __int128";
+      break;
+    case 'f':
+      result = "float";
+      break;
+    case 'd':
+      result = "double";
+      break;
+    case 'e':
+      result = "long double";
+      break;
+    case 'g':
+      result = "__float128";
+      break;
+    case 'z':
+      result = "ellipsis";
+      break;
+    }
+  }
+  else  {
+    char buff[16*1024];
+    size_t len = sizeof(buff);
+    int    status = 0;
+    result = __cxxabiv1::__cxa_demangle(class_name, buff, &len, &status);
+  }
+#else
+  result = class_name;
+  throw std::runtime_error("CXXABI is missing for ICC!");
+#endif
+  return result;
+}
+
+string DD4hep::Geometry::typeName(const type_info& typ) {
+  return __typeinfoName(typ);
+}
 
 #include "TMap.h"
 #include "TColor.h"

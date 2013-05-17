@@ -26,7 +26,7 @@ namespace DD4hep {
    */
   namespace Geometry  {
 
-    /** @class Readout  Readout.h DD4hep/lcdd/Readout.h
+    /** @class Readout  Readout.h DD4hep/Readout.h
       *
       * @author  M.Frank
       * @version 1.0
@@ -34,10 +34,22 @@ namespace DD4hep {
     struct Readout : public Ref_t {
       public:
 
+      /** @class Readout::Object  Readout.h DD4hep/Readout.h
+       *
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Object {
+	/// Handle to the readout segmentation
         Segmentation segmentation;
+	/// Handle to the volume
 	Volume       readoutWorld;
+	/// Handle to the field descriptor
         IDDescriptor id;
+	/// Standard constructor
+	Object();
+	/// Default destructor
+	~Object();
       };
       protected:
       /// Additional data accessor
