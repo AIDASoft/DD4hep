@@ -285,8 +285,14 @@ namespace DD4hep {
       /// Constructor for a new subdetector element
       DetElement(DetElement parent, const std::string& name, int id);
       
+      /// Operator less to insert into a map
+      bool operator <(const DetElement e)  const  {  return ptr() < e.ptr();               }
+
+      /// Equality operator
+      bool operator ==(const DetElement e)  const {  return ptr() == e.ptr();              }
+
       /// Assignment operator
-      DetElement& operator=(const DetElement& e) {  m_element=e.m_element;  return *this; }
+      DetElement& operator=(const DetElement& e)  {  m_element=e.m_element;  return *this; }
 
       /// Clone (Deep copy) the DetElement structure with a new name
       DetElement clone(const std::string& new_name) const;
@@ -314,7 +320,7 @@ namespace DD4hep {
        */
       std::string     type() const;
       ///  Set detector type (structure, tracker, calorimeter, etc.).
-      DetElement& setType(const std::string& typ);
+      DetElement&     setType(const std::string& typ);
       
       /// Path of the detector element (not necessarily identical to placement path!)
       std::string     path() const;
@@ -322,17 +328,17 @@ namespace DD4hep {
       std::string     placementPath() const;
       
       /// Set all attributes in one go
-      DetElement& setAttributes(const LCDD& lcdd, const Volume& volume,
-                                const std::string& region,
-                                const std::string& limits,
-                                const std::string& vis);
+      DetElement&     setAttributes(const LCDD& lcdd, const Volume& volume,
+				    const std::string& region,
+				    const std::string& limits,
+				    const std::string& vis);
       
       /// Set Visualization attributes to the detector element
-      DetElement& setVisAttributes(const LCDD& lcdd, const std::string& name, const Volume& volume);
+      DetElement&     setVisAttributes(const LCDD& lcdd, const std::string& name, const Volume& volume);
       /// Set the regional attributes to the detector element
-      DetElement& setRegion(const LCDD& lcdd, const std::string& name, const Volume& volume);
+      DetElement&     setRegion(const LCDD& lcdd, const std::string& name, const Volume& volume);
       /// Set the limits to the detector element
-      DetElement& setLimitSet(const LCDD& lcdd, const std::string& name, const Volume& volume);
+      DetElement&     setLimitSet(const LCDD& lcdd, const std::string& name, const Volume& volume);
       
       /// Access the readout structure
       Readout         readout() const;

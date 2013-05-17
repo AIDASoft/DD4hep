@@ -19,6 +19,7 @@
 #include "DD4hep/Readout.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Segmentations.h"
+#include "DD4hep/VolumeManager.h"
 
 // C/C++ include files
 #include <map>
@@ -86,6 +87,9 @@ namespace DD4hep {
       virtual Volume   worldVolume() const = 0;
       /// Return handle to the world volume containing the volume with the tracking devices
       virtual Volume   trackingVolume() const = 0;
+
+      /// Return handle to the VolumeManager
+      virtual VolumeManager volumeManager() const = 0;
 
       /// Accessor to the map of header entries
       virtual Header header()  const = 0;

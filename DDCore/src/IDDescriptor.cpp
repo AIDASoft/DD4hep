@@ -46,6 +46,7 @@ namespace {
 	throw runtime_error("Invalid field descriptor:"+dsc);
       field.first  = f.size() == 3 ? ::atoi(f[1].c_str()) : pos;
       field.second = f.size() == 3 ? ::atoi(f[2].c_str()) : ::atoi(f[1].c_str());
+      field.mask   = ~((~0x0ull<<(64-field.second))>>(64-field.second)<<(64-field.first-field.second));
       pos = field.first + ::abs(field.second);
       if ( pos>o->maxBit ) o->maxBit = pos;
       o->fieldIDs.push_back(make_pair(o->fieldMap.size(),f[0]));
@@ -62,11 +63,45 @@ IDDescriptor::IDDescriptor(const string& description)
   _construct(obj, description);
 }
 
-int IDDescriptor::maxBit() const             
-{ return data<Object>()->maxBit;   }
+/// The total number of encoding bits for this descriptor
+int IDDescriptor::maxBit() const  { 
+  return data<Object>()->maxBit;
+}
 
-const IDDescriptor::FieldIDs& IDDescriptor::ids() const    
-{ return data<Object>()->fieldIDs; }
+/// Access the field-id container 
+const IDDescriptor::FieldIDs& IDDescriptor::ids() const    {
+  if ( isValid() )  {
+    return data<Object>()->fieldIDs;
+  }
+  throw runtime_error("Attempt to access an invalid IDDescriptor object.");
+}
 
-const IDDescriptor::FieldMap& IDDescriptor::fields() const 
-{ return data<Object>()->fieldMap; }
+/// Access the fieldmap container 
+const IDDescriptor::FieldMap& IDDescriptor::fields() const  { 
+  if ( isValid() )  {
+    return data<Object>()->fieldMap; 
+  }
+  throw runtime_error("Attempt to access an invalid IDDescriptor object.");
+}
+
+/// Get the field descriptor of one field by name
+IDDescriptor::Field IDDescriptor::field(const string& field_name)  const  {
+  const FieldMap& m = fields(); // This already checks the object validity
+  for(FieldMap::const_iterator i=m.begin(); i!=m.end(); ++i)
+    if ( (*i).first == field_name ) return (*i).second;
+  throw runtime_error(string(name())+": This ID descriptor has now field with the name:"+field_name);
+}
+
+/// Get the field descriptor of one field by its identifier
+IDDescriptor::Field IDDescriptor::field(size_t identifier)  const   {
+  const FieldMap& m = fields(); // This already checks the object validity
+  return m[identifier].second;
+}
+
+/// Get the field identifier of one field by name
+size_t IDDescriptor::fieldID(const string& field_name)  const   {
+  const FieldIDs& m = ids(); // This already checks the object validity
+  for(FieldIDs::const_iterator i=m.begin(); i!=m.end(); ++i)
+    if ( (*i).second == field_name ) return (*i).first;
+  throw runtime_error(string(name())+": This ID descriptor has now field with the name:"+field_name);
+}

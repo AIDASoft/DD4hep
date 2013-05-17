@@ -107,7 +107,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
           // Slice placement.
           PlacedVolume slice_phv = l_vol.placeVolume(s_vol,Position(0,0,s_pos_z+s_thick/2));
-          slice_phv.addPhysVolID("layer", l_num);
+          //slice_phv.addPhysVolID("layer", l_num);
           slice_phv.addPhysVolID("slice", s_num);
           slice.setPlacement(slice_phv);
           // Increment Z position of slice.
@@ -148,9 +148,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     PlacedVolume pv = envelope.placeVolume(mod_vol,
 					   Position(-m_pos_x,-m_pos_y,0),
 					   Rotation(phi,M_PI*0.5,0));
-    pv.addPhysVolID("module",i);
     pv.addPhysVolID("system",det_id);
     pv.addPhysVolID("barrel",0);
+    pv.addPhysVolID("module",i);
     DetElement sd = i==0 ? stave_det : stave_det.clone(_toString(i,"stave%d"));
     sd.setPlacement(pv);
     sdet.add(sd);
