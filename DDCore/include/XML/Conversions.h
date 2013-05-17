@@ -6,7 +6,6 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
 #ifndef DD4hep_COMPACT_CONVERSION_H
 #define DD4hep_COMPACT_CONVERSION_H
 

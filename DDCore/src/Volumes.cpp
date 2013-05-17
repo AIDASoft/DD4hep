@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/LCDD.h"
+#include "DD4hep/InstanceCount.h"
 
 // ROOT include files
 #include "TColor.h"
@@ -36,8 +37,13 @@ namespace DD4hep  { namespace Geometry  {
   {
     Value(const TGeoVolume* v, const TGeoMatrix* m) : TGeoNodeMatrix(v,m), PlacedVolume::Object() {
       magic = magic_word();
+      InstanceCount::increment(this);
     }
     Value(const Value& c) : TGeoNodeMatrix(c.GetVolume(),c.GetMatrix()), PlacedVolume::Object(c) {
+      InstanceCount::increment(this);
+    }
+    virtual ~Value() {
+      InstanceCount::decrement(this);
     }
     virtual TGeoNode *MakeCopyNode() const {
       TGeoNodeMatrix *node = new Value<TGeoNodeMatrix,PlacedVolume::Object>(*this);
@@ -106,8 +112,13 @@ namespace DD4hep  { namespace Geometry  {
   template <> struct Value<TGeoVolume,Volume::Object>
   : public _VolWrap<TGeoVolume>, public Volume::Object  {
     Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) 
-      : _VolWrap<TGeoVolume>(name,s,m) {magic = magic_word();}
-    virtual ~Value() {}
+      : _VolWrap<TGeoVolume>(name,s,m) {
+      magic = magic_word();
+      InstanceCount::increment(this);
+    }
+    virtual ~Value() {
+      InstanceCount::decrement(this);
+    }
     TGeoVolume *_copyVol(TGeoShape *newshape) const {
       typedef Value<TGeoVolume,Volume::Object> _Vol;
       _Vol *vol = new _Vol(GetName(), newshape, fMedium);
@@ -172,9 +183,13 @@ namespace DD4hep  { namespace Geometry  {
   
   template <> struct Value<TGeoVolumeAssembly,Assembly::Object> 
   : public _VolWrap<TGeoVolumeAssembly>, public Assembly::Object  {
-    Value(const char* name) : _VolWrap<TGeoVolumeAssembly>(name,0,0) {  magic = magic_word(); }
-    virtual ~Value() {}
-    
+    Value(const char* name) : _VolWrap<TGeoVolumeAssembly>(name,0,0) {
+      magic = magic_word(); 
+      InstanceCount::increment(this);
+    }
+    virtual ~Value() {
+      InstanceCount::decrement(this);
+    }
     TGeoVolume *CloneVolume() const    {
       TGeoVolume *vol = new Value<TGeoVolumeAssembly,Assembly::Object>(GetName());
       Int_t i;
@@ -209,6 +224,21 @@ namespace DD4hep  { namespace Geometry  {
   };
 
 }}
+
+/// Default constructor
+PlacedVolume::Object::Object() : magic(0), volIDs() {
+  InstanceCount::increment(this);
+}
+
+/// Copy constructor
+PlacedVolume::Object::Object(const Object& c) : magic(c.magic), volIDs(c.volIDs) {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+PlacedVolume::Object::~Object()   {
+  InstanceCount::decrement(this);
+}
 
 /// Lookup volume ID
 vector<PlacedVolume::VolID>::const_iterator 
@@ -267,6 +297,21 @@ string PlacedVolume::toString() const {
   return s.str();
 }
 
+/// Default constructor
+Volume::Object::Object() : magic(0), region(), limits(), vis(), sens_det(), referenced(0)  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Volume::Object::~Object()  {
+  region.clear();
+  limits.clear();
+  vis.clear();
+  sens_det.clear();
+  InstanceCount::decrement(this);
+}
+
+/// Accessor to the data part of the Volume
 Volume::Object* _data(const Volume& v) {
   if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
   return dynamic_cast<Volume::Object*>(v.ptr());

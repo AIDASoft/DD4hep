@@ -85,8 +85,11 @@ namespace DD4hep {
       void setAuthorEmail(const std::string& addr);
     };
 
+
     /** @class Header Objects.h
      *  
+     *  Description of the geometry header. Containes useful auxiliary information.
+     *
      *  @author  M.Frank
      *  @version 1.0
      */

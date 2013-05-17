@@ -64,6 +64,7 @@ namespace DD4hep {
         }
       };
 		      
+      TGeoManager*        m_manager;
       ObjectHandleMap     m_readouts;
       ObjectHandleMap     m_idDict;
       ObjectHandleMap     m_limits;
@@ -77,7 +78,6 @@ namespace DD4hep {
       
       // GDML fields
       ObjectHandleMap     m_define;
-      ObjectHandleMap     m_materials;
       
       DetElement          m_world;
       DetElement          m_trackers;
@@ -114,16 +114,14 @@ namespace DD4hep {
       /// Manipulate geometry using facroy converter
       virtual void apply(const char* factory, int argc, char** argv);
 
-      /// Apply & lock realigments
-      //virtual void applyAlignment();
-      
-      //virtual void create();
       virtual void init();
       virtual void endDocument();
-      
+
       virtual Handle<TObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not=true)  const;
       virtual Volume          pickMotherVolume(const DetElement& sd) const;
 
+      /// Access the geometry manager of this instance
+      virtual TGeoManager& manager() const             { return *m_manager;             }
       /// Access to properties
       Properties&             properties()  const      { return *m_properties;          }
       /// Return handle to material describing air
@@ -166,8 +164,7 @@ namespace DD4hep {
       virtual VisAttr           visAttributes(const std::string& name) const
       {  return getRefChild(m_display,name,false);                                      }  
       /// Retrieve a matrial by it's name from the detector description
-      virtual Material          material(const std::string& name)  const 
-      {  return getRefChild(m_materials,name);                                          }
+      virtual Material          material(const std::string& name)  const;
       /// Retrieve a region object by it's name from the detector description
       virtual Region            region(const std::string& name)  const
       {  return getRefChild(m_regions,name);                                            }
@@ -198,8 +195,6 @@ namespace DD4hep {
       virtual const HandleMap& limitsets()  const       { return m_limits;              }
       /// Accessor to the map of region settings
       virtual const HandleMap& regions() const          { return m_regions;             }
-      /// Accessor to the map of materials
-      virtual const HandleMap& materials()  const       { return m_materials;           }
       /// Accessor to the map of readout structures
       virtual const HandleMap& readouts() const         { return m_readouts;            }
       /// Accessor to the map of sub-detectors
@@ -212,8 +207,6 @@ namespace DD4hep {
 #define __R  return *this
       /// Add a new constant to the detector description
       virtual LCDD& add(Constant x)                     { return addConstant(x);        }
-      /// Add a new material to the detector description
-      virtual LCDD& add(Material x)                     { return addMaterial(x);        }
       /// Add a new limit set to the detector description
       virtual LCDD& add(LimitSet x)                     { return addLimitSet(x);        }
       /// Add a new detector region to the detector description
@@ -233,8 +226,6 @@ namespace DD4hep {
       
       /// Add a new constant by named reference to the detector description
       virtual LCDD& addConstant(const Ref_t& x)         { m_define.append(x,false); __R;}
-      /// Add a new material by named reference to the detector description
-      virtual LCDD& addMaterial(const Ref_t& x)         { m_materials.append(x);    __R;}
       /// Add a new limit set by named reference to the detector description
       virtual LCDD& addLimitSet(const Ref_t& x)         { m_limits.append(x);       __R;}
       /// Add a new detector region by named reference to the detector description

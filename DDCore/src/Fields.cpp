@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/Fields.h"
+#include "DD4hep/InstanceCount.h"
 
 using namespace std;
 using namespace DD4hep::Geometry;
@@ -17,6 +18,16 @@ namespace {
     for(vector<CartesianField>::iterator i=v.begin(); i!=v.end(); ++i)
       (*i).value(pos,field);
   }
+}
+
+/// Default constructor
+CartesianField::Object::Object() : type(UNKNOWN) {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+CartesianField::Object::~Object()   {
+  InstanceCount::decrement(this);
 }
 
 /// Access the field type (string)
@@ -37,6 +48,16 @@ CartesianField::Properties& CartesianField::properties()  const   {
 /// Returns the 3 field components (x, y, z).
 void CartesianField::value(const double* pos, double* val)  const    { 
   data<Object>()->fieldComponents(pos,val); 
+}
+
+/// Default constructor
+OverlayedField::Object::Object() : type(0), electric(), magnetic() {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+OverlayedField::Object::~Object()  {
+  InstanceCount::decrement(this);
 }
 
 /// Object constructor
