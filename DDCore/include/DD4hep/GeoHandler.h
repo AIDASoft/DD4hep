@@ -77,6 +77,7 @@ namespace DD4hep {
     protected:
       Data* m_data;
 
+
       /// Internal helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* node, int level);
 
