@@ -8,18 +8,22 @@
 //====================================================================
 
 #include "DD4hep/Segmentations.h"
+#include "DD4hep/InstanceCount.h"
 #include <iostream>
 
 using namespace std;
 using namespace DD4hep::Geometry;
 
+/// Standard constructor
 Segmentation::Object::Object() 
 : magic(magic_word()), type(REGULAR), useForHitPosition(0) 
 {
+  InstanceCount::increment(this);
   ::memset(data.values,0,sizeof(data.values));
   _spare[5]=_spare[4]=_spare[3]=_spare[2]=_spare[1]=_spare[0]=0;
 }
 
+/// Default destructor
 Segmentation::Object::~Object() {
   if ( type == EXTENDED && data.extension.ptr != 0 ) {
     if ( data.extension.destructor ) {
@@ -29,6 +33,7 @@ Segmentation::Object::~Object() {
       data.extension.ptr = 0;
     }
   }
+  InstanceCount::decrement(this);
 }
 
 Segmentation::Segmentation(const string& type)  {

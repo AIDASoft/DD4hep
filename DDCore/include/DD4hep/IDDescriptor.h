@@ -51,11 +51,22 @@ namespace DD4hep {
       };
       typedef std::vector<std::pair<std::string,Field> >  FieldMap;
       typedef std::vector<std::pair<size_t,std::string> > FieldIDs;
+
+      /** @class IDDescriptor::Object IDDescriptor.h DDCore/IDDescriptor.h
+       *  
+       *  @author  M.Frank
+       *  @version 1.0
+       *  @date    2012/07/31
+       */
       struct Object {
+	std::string description;
 	FieldMap    fieldMap;
 	FieldIDs    fieldIDs;
 	int         maxBit;
-	Object() : maxBit(0) {}
+	/// Standard constructor
+	Object();
+	/// Default destructor
+	~Object();
       };
       public:
       /// Default constructor
@@ -77,6 +88,8 @@ namespace DD4hep {
       size_t fieldID(const std::string& field_name)  const;
       /// Get the field descriptor of one field by its identifier
       Field field(size_t identifier)  const;
+      /// Acces string representation
+      std::string toString() const;
     };
   }       /* End namespace Geometry    */
 }         /* End namespace DD4hep      */

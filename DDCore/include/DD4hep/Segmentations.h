@@ -35,6 +35,11 @@ namespace DD4hep {
     public:
       enum { REGULAR=0, EXTENDED=1 };
 
+      /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
+       *
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Object  {
         /// Magic word to check object integrity
         unsigned long magic;
@@ -77,7 +82,9 @@ namespace DD4hep {
           } cylindrical_grid;
           
         } data;
+	/// Standard constructor
         Object();
+	/// Default destructor
         ~Object();
       };
       

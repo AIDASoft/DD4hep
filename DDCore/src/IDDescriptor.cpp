@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/IDDescriptor.h"
+#include "DD4hep/InstanceCount.h"
 #include <stdexcept>
 #include <cstdlib>
 #include <cmath>
@@ -55,12 +56,30 @@ namespace {
   }
 }
 
+/// Standard constructor
+IDDescriptor::Object::Object() : maxBit(0) {
+  InstanceCount::increment(this);
+
+}
+/// Default destructor
+IDDescriptor::Object::~Object()  {
+  InstanceCount::decrement(this);
+}
+ 
 /// Initializing constructor
 IDDescriptor::IDDescriptor(const string& description) 
 {
   Value<TNamed,Object>* obj = new Value<TNamed,Object>();
   assign(obj,description,"iddescriptor");
   _construct(obj, description);
+}
+
+/// Acces string representation
+string IDDescriptor::toString() const  {
+  if ( isValid() )  {
+    return data<Object>()->description;
+  }
+  return "----";
 }
 
 /// The total number of encoding bits for this descriptor
