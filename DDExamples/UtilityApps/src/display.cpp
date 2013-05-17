@@ -16,9 +16,11 @@ namespace {
   void usage() {
     cout << "displayGeo -opt [-opt]                                                  \n"
       "        -compact       <file>       Specify the compact geometry file         \n"
-      "                                    At least one compact geo file is required!\n"
-      "        -load_only                  Dry-run to only load geometry without     \n"
+      "                     [REQUIRED]     At least one compact geo file is required!\n"
+      "        -load_only   [OPTIONAL]     Dry-run to only load geometry without     \n"
       "                                    starting the dispay.                      \n"
+      "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance    \n"
+      "                                    before exiting the application            \n"
 	 << endl;
     exit(EINVAL);
   }
@@ -26,7 +28,7 @@ namespace {
 
 //______________________________________________________________________________
 int main(int argc,char** argv)  {
-  bool dry_run = false;
+  bool dry_run = false, destroy = false;
   vector<char*> geo_files;
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
@@ -34,6 +36,8 @@ int main(int argc,char** argv)  {
 	geo_files.push_back(argv[++i]);
       else if ( strncmp(argv[i],"-load_only",2)==0 )
         dry_run = true;
+      else if ( strncmp(argv[i],"-destroy",2)==0 )
+        destroy = true;
       else
 	usage();
     }
@@ -57,5 +61,6 @@ int main(int argc,char** argv)  {
   else {
     cout << "The geometry was loaded. Application now exiting." << endl;
   }
+  if ( destroy ) delete &lcdd;
   return 0;
 }

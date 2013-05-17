@@ -83,7 +83,7 @@ static Ref_t create_GlobalGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   return obj;
 }
 DECLARE_XMLELEMENT(GlobalGridXY,create_GlobalGridXY);
-  
+
 static Ref_t create_CartesianGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   CartesianGridXY obj;
   if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<double>(_U(gridSizeX)));
@@ -231,11 +231,11 @@ template <> void Converter<Header>::operator()(xml_h e)  const  {
  */
 template <> void Converter<Material>::operator()(xml_h e)  const  {
   xml_ref_t         m(e);
-  TGeoManager*      mgr      = gGeoManager;
+  TGeoManager&      mgr      = lcdd.manager();
   xml_tag_t         mname    = m.name();
   const char*       matname  = mname.c_str();
-  TGeoElementTable* table    = mgr->GetElementTable();
-  TGeoMaterial*     mat      = mgr->GetMaterial(matname);
+  TGeoElementTable* table    = mgr.GetElementTable();
+  TGeoMaterial*     mat      = mgr.GetMaterial(matname);
   TGeoMixture*      mix      = dynamic_cast<TGeoMixture*>(mat);
   xml_coll_t        fractions(m,_U(fraction));
   xml_coll_t        composites(m,_U(composite));
@@ -264,7 +264,7 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
     for(fractions.reset(); fractions; ++fractions)  {
       std::string nam = fractions.attr<string>(_U(ref));
       double fraction = fractions.attr<double>(_U(n));
-      if ( 0 != (comp_mat=mgr->GetMaterial(nam.c_str())) )
+      if ( 0 != (comp_mat=mgr.GetMaterial(nam.c_str())) )
 	mix->AddElement(comp_mat,fraction);
       else if ( 0 != (comp_elt=table->FindElement(nam.c_str())) )
 	mix->AddElement(comp_elt,fraction);
@@ -276,12 +276,12 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
       double dens = 0.0;
       for(composites.reset(); composites; ++composites)  {
 	std::string nam = composites.attr<string>(_U(ref));
-	comp_mat = mgr->GetMaterial(nam.c_str());
+	comp_mat = mgr.GetMaterial(nam.c_str());
 	dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
       for(fractions.reset(); fractions; ++fractions)  {
 	std::string nam = fractions.attr<string>(_U(ref));
-	comp_mat = mgr->GetMaterial(nam.c_str());
+	comp_mat = mgr.GetMaterial(nam.c_str());
 	dens +=  composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
       cout << "Compact2Objects[WARNING]: Material:" << matname << " with NO density."
@@ -289,30 +289,24 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
       mix->SetDensity(dens);
     }
   }
-  TGeoMedium* medium = mgr->GetMedium(matname);
+  TGeoMedium* medium = mgr.GetMedium(matname);
   if ( 0 == medium )  {
     --unique_mat_id;
     medium = new TGeoMedium(matname,unique_mat_id,mat);
     medium->SetTitle("material");
     medium->SetUniqueID(unique_mat_id);
   }
-  lcdd.addMaterial(Ref_t(medium));
-
   // TGeo has no notion of a material "formula"
   // Hence, treat the formula the same way as the material itself
   if ( m.hasAttr(_U(formula)) ) {
     string form = m.attr<string>(_U(formula));
     if ( form != matname ) {
-      LCDD::HandleMap::const_iterator im=lcdd.materials().find(form);
-      if ( im == lcdd.materials().end() ) {
-	medium = mgr->GetMedium(form.c_str());
-	if ( 0 == medium ) {
-	  --unique_mat_id;
-	  medium = new TGeoMedium(form.c_str(),unique_mat_id,mat);
-	  medium->SetTitle("material");
-	  medium->SetUniqueID(unique_mat_id);      
-	}
-	lcdd.addMaterial(Ref_t(medium));
+      medium = mgr.GetMedium(form.c_str());
+      if ( 0 == medium ) {
+	--unique_mat_id;
+	medium = new TGeoMedium(form.c_str(),unique_mat_id,mat);
+	medium->SetTitle("material");
+	medium->SetUniqueID(unique_mat_id);      
       }
     }
   }
@@ -325,8 +319,8 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
 template <> void Converter<Atom>::operator()(xml_h e)  const  {
   xml_ref_t    elem(e);
   xml_tag_t    eltname  = elem.name();
-  TGeoManager* mgr      = gGeoManager;
-  TGeoElementTable* tab = mgr->GetElementTable();
+  TGeoManager& mgr      = lcdd.manager();
+  TGeoElementTable* tab = mgr.GetElementTable();
   TGeoElement*  element = tab->FindElement(eltname.c_str());
   if ( !element )  {
     xml_ref_t atom(elem.child(_U(atom)));
