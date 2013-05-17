@@ -7,6 +7,7 @@
 //
 //====================================================================
 
+#include "DD4hep/InstanceCount.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/LCDD.h"
 #include "TGeoVolume.h"
@@ -127,10 +128,21 @@ DetElement::Object::Object()
     alignment(), placement(), parent(), children(),
     worldTrafo(0), parentTrafo(0), referenceTrafo(0)
 {
+  InstanceCount::increment(this);
 }
 
 /// Internal object destructor: release extension object(s)
 DetElement::Object::~Object() {
+  for_each(children.begin(),children.end(), DestroyHandles<>());
+  deletePtr(worldTrafo);
+  deletePtr(parentTrafo);
+  deletePtr(referenceTrafo);
+  volume.clear();
+  readout.clear();
+  alignment.clear();
+  conditions.clear();
+  placement.clear();
+  parent.clear();
   ExtensionMap& m = detelement_extensions();
   for(Extensions::iterator i = extensions.begin(); i!=extensions.end(); ++i) {
     void* ptr = (*i).second;
@@ -143,6 +155,7 @@ DetElement::Object::~Object() {
     }
   }
   extensions.clear();
+  InstanceCount::decrement(this);
 }
 
 
@@ -320,6 +333,7 @@ string DetElement::placementPath() const {
   return "";
 }
 
+/// Access detector type (structure, tracker, calorimeter, etc.).
 string DetElement::type() const   {
   return m_element ? m_element->GetTitle() : "";
 }
@@ -556,9 +570,20 @@ bool DetElement::referenceToLocal(const Position& global, Position& local)  cons
   return true;
 }
 
+/// Default constructor
+SensitiveDetector::Object::Object() 
+  : magic(magic_word()), verbose(0), combineHits(0), ecut(0.0),
+    hitsCollection(), readout(), region(), limits(), extensions() 
+{
+  InstanceCount::increment(this);
+}
+
 /// Internal object destructor: release extension object(s)
 SensitiveDetector::Object::~Object() {
   ExtensionMap& m = sensitive_detector_extensions();
+  readout.clear();
+  region.clear();
+  limits.clear();
   for(Extensions::iterator i = extensions.begin(); i!=extensions.end(); ++i) {
     void* ptr = (*i).second;
     if ( ptr ) {
@@ -570,6 +595,7 @@ SensitiveDetector::Object::~Object() {
     }
   }
   extensions.clear();
+  InstanceCount::decrement(this);
 }
 
 /// Constructor

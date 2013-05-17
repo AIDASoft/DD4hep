@@ -12,6 +12,7 @@
 // Framework include files
 #include "DD4hep/Factories.h"
 #include "DD4hep/LCDD.h"
+
 // ROOT includes
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
@@ -24,20 +25,18 @@ static void* create_lcdd_instance(const char* /* name */) {
 }
 DECLARE_CONSTRUCTOR(LCDD_constructor,create_lcdd_instance);
 
-static long display(LCDD& /* lcdd */,int argc,char** argv)    {
-  TGeoManager* mgr = gGeoManager;
+static long display(LCDD& lcdd,int argc,char** argv)    {
+  TGeoManager& mgr = lcdd.manager();
   const char* opt = "ogl";
   if ( argc > 0 )   {
     opt = argv[0];
   }
-  if ( mgr ) {
-    mgr->SetVisLevel(4);
-    mgr->SetVisOption(1);
-    TGeoVolume* vol = mgr->GetTopVolume();
-    if ( vol ) {
-      vol->Draw(opt);
-      return 1;
-    }
+  mgr.SetVisLevel(4);
+  mgr.SetVisOption(1);
+  TGeoVolume* vol = mgr.GetTopVolume();
+  if ( vol ) {
+    vol->Draw(opt);
+    return 1;
   }
   return 0;
 }

@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/GeoHandler.h"
+#include "DD4hep/InstanceCount.h"
 #include "LCDDImp.h"
 
 // C/C++ include files
@@ -58,13 +59,14 @@ LCDDImp::LCDDImp()
   : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"),
     m_buildType(BUILD_NONE)
 {
+  InstanceCount::increment(this);
   m_properties = new Properties();
   //if ( 0 == gGeoManager )
   {
-    gGeoManager = new TGeoManager();
-    gGeoManager->AddNavigator();
-    gGeoManager->SetCurrentNavigator(0);
-    cout << "Navigator:" << (void*)gGeoManager->GetCurrentNavigator() << endl;
+    m_manager = gGeoManager = new TGeoManager();
+    m_manager->AddNavigator();
+    m_manager->SetCurrentNavigator(0);
+    //cout << "Navigator:" << (void*)m_manager->GetCurrentNavigator() << endl;
   }
   //if ( 0 == gGeoIdentity ) 
   {
@@ -83,12 +85,33 @@ LCDDImp::LCDDImp()
 
 /// Standard destructor
 LCDDImp::~LCDDImp() {
-  if ( m_properties ) delete m_properties;
-  m_properties = 0;
-  if ( m_volManager.isValid() )  {
-    delete m_volManager.ptr();
-    m_volManager = VolumeManager();
-  }
+  DestroyHandles<> del;
+  destroyHandle(m_world);
+  destroyHandle(m_field);
+  destroyHandle(m_header);
+  destroyHandle(m_volManager);
+  destroyObject(m_properties);
+  for_each(m_readouts.begin(),    m_readouts.end(),     del);
+  for_each(m_idDict.begin(),      m_idDict.end(),       del);
+  for_each(m_limits.begin(),      m_limits.end(),       del);
+  for_each(m_regions.begin(),     m_regions.end(),      del);
+  //for_each(m_detectors.begin(),   m_detectors.end(),    del);
+  for_each(m_alignments.begin(),  m_alignments.end(),   del);
+  for_each(m_sensitive.begin(),   m_sensitive.end(),    del);
+  for_each(m_display.begin(),     m_display.end(),      del);
+  for_each(m_fields.begin(),      m_fields.end(),       del);
+  for_each(m_define.begin(),      m_define.end(),       del);
+  // for_each(m_materials.begin(), m_materials.end(),  del);
+  //for_each(.begin(), .end(),  del);
+
+  m_trackers.clear();
+  m_worldVol.clear();
+  m_trackingVol.clear();
+  m_invisibleVis.clear();
+  m_materialVacuum.clear();
+  m_materialAir.clear();
+  delete m_manager;
+  InstanceCount::decrement(this);
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not existing
@@ -123,6 +146,15 @@ LCDD& LCDDImp::addField(const Ref_t& x) {
   m_field.add(x);
   m_fields.append(x);
   return *this;
+}
+
+/// Retrieve a matrial by it's name from the detector description
+Material LCDDImp::material(const string& name)  const    {
+  TGeoMedium* mat = m_manager->GetMedium(name.c_str());
+  if ( mat )   {
+    return Material(Ref_t(mat));
+  }
+  throw runtime_error("Cannot find a material the reference name:"+name);
 }
 
 Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, bool do_throw)  const  {
@@ -331,7 +363,7 @@ namespace {
 }
 
 void LCDDImp::endDocument()  {
-  TGeoManager* mgr = gGeoManager;
+  TGeoManager* mgr = m_manager;
   if ( !mgr->IsClosed() ) {
     LCDD& lcdd = *this;
     Material  air = material("Air");
@@ -359,13 +391,13 @@ void LCDDImp::endDocument()  {
 
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
-    //gGeoManager->SetTopVolume(m_worldVol);
     mgr->CloseGeometry();
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
-    m_volManager = VolumeManager("World", m_world);
+    m_volManager = VolumeManager("World", m_world, VolumeManager::TREE);
     ShapePatcher patcher(m_volManager,m_world);
     patcher.patchShapes();
     //patcher.printVolumes();
+    cout << m_volManager << endl;
   }
 }
 
@@ -387,7 +419,7 @@ void LCDDImp::init()  {
     m_materialVacuum = material("Vacuum");
     m_detectors.append(m_world);
     m_world.add(m_trackers);
-    gGeoManager->SetTopVolume(m_worldVol);
+    m_manager->SetTopVolume(m_worldVol);
   }
 }
 
@@ -430,7 +462,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
 }
 
 void LCDDImp::dump() const  {
-  TGeoManager* mgr = gGeoManager;
+  TGeoManager* mgr = m_manager;
   mgr->SetVisLevel(4);
   mgr->SetVisOption(1);
   m_worldVol->Draw("ogl");

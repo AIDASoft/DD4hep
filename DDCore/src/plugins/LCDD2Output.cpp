@@ -59,10 +59,10 @@ namespace DD4hep {
   }
 
   template <> void Printer<LimitSet>::operator()(const LimitSet& val)  const  {
-    const LimitSet::Object& o = val.limits();
+    const set<Limit>& o = val.limits();
     os << "++ LimitSet: " << val.name() << endl;
     val->TNamed::Print();
-    for(LimitSet::Object::const_iterator i=o.begin(); i!=o.end(); ++i) {
+    for(set<Limit>::const_iterator i=o.begin(); i!=o.end(); ++i) {
       os << "++    Limit:" << (*i).name << " " << (*i).particles 
 	 << " [" << (*i).unit << "] " << (*i).content << " " << (*i).value << endl;
     }
@@ -121,26 +121,6 @@ namespace DD4hep {
       p((*i).second);
   }
 
-  void dumpTopVolume();
-  template <> void Printer<const LCDD*>::operator()(const LCDD*const&)  const  {
-    //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
-#if 0
-    PrintMap<Constant  > (lcdd,os,lcdd.constants(),    "List of Constants")();
-    PrintMap<Material  > (lcdd,os,lcdd.materials(),    "List of Materials")();
-    PrintMap<VisAttr   > (lcdd,os,lcdd.visAttributes(),"List of Visualization attributes")();
-    PrintMap<Position  > (lcdd,os,lcdd.positions(),    "List of Positions")();
-    PrintMap<Rotation  > (lcdd,os,lcdd.rotations(),    "List of Rotations")();
-    PrintMap<LimitSet  > (lcdd,os,lcdd.readouts(),     "List of Readouts")();
-    PrintMap<Region    > (lcdd,os,lcdd.regions(),      "List of Regions")();
-    PrintMap<DetElement> (lcdd,os,lcdd.detectors(),    "List of DetElements")();
-#endif
-    //PrintMap<DetElement>(lcdd,os,lcdd.detectors(),   "List of DetElements")();
-    //PrintMap<VisAttr   > (lcdd,os,lcdd.visAttributes(),"List of Visualization attributes")();
-    //mpTopVolume();
-  }
-
-  void dumpVolume(TGeoVolume* vol, int level);
-
   void dumpNode(TGeoNode* n, int level) {
     TGeoMatrix*  mat = n->GetMatrix();
     TGeoVolume*  vol = n->GetVolume();
@@ -195,7 +175,25 @@ namespace DD4hep {
     }
   }
 
-  void dumpTopVolume() {
-    dumpVolume(gGeoManager->GetTopVolume(),0);
+  void dumpTopVolume(const LCDD& lcdd) {
+    dumpVolume(lcdd.manager().GetTopVolume(),0);
   }
+
+  template <> void Printer<const LCDD*>::operator()(const LCDD*const&)  const  {
+    //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
+#if 0
+    PrintMap<Constant  > (lcdd,os,lcdd.constants(),    "List of Constants")();
+    PrintMap<Material  > (lcdd,os,lcdd.materials(),    "List of Materials")();
+    PrintMap<VisAttr   > (lcdd,os,lcdd.visAttributes(),"List of Visualization attributes")();
+    PrintMap<Position  > (lcdd,os,lcdd.positions(),    "List of Positions")();
+    PrintMap<Rotation  > (lcdd,os,lcdd.rotations(),    "List of Rotations")();
+    PrintMap<LimitSet  > (lcdd,os,lcdd.readouts(),     "List of Readouts")();
+    PrintMap<Region    > (lcdd,os,lcdd.regions(),      "List of Regions")();
+    PrintMap<DetElement> (lcdd,os,lcdd.detectors(),    "List of DetElements")();
+#endif
+    //PrintMap<DetElement>(lcdd,os,lcdd.detectors(),   "List of DetElements")();
+    //PrintMap<VisAttr   > (lcdd,os,lcdd.visAttributes(),"List of Visualization attributes")();
+    dumpTopVolume(lcdd);
+  }
+
 }

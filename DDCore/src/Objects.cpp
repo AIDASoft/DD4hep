@@ -9,6 +9,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/IDDescriptor.h"
+#include "DD4hep/InstanceCount.h"
 
 #include "TMap.h"
 #include "TROOT.h"
@@ -28,6 +29,36 @@ using namespace DD4hep::Geometry;
 /// Constructor to be used when creating a new DOM tree
 Author::Author(LCDD& /* lcdd */)  {
   m_element = new TNamed("","author");
+}
+
+/// Access the auhor's name
+std::string Author::authorName() const   {
+  return m_element->GetName();
+}
+
+/// Set the author's name
+void Author::setAuthorName(const std::string& nam)   {
+  m_element->SetName(nam.c_str());
+}
+
+/// Access the auhor's email address
+std::string Author::authorEmail() const   {
+  return m_element->GetTitle();
+}
+
+/// Set the author's email address
+void Author::setAuthorEmail(const std::string& addr)   {
+  m_element->SetTitle(addr.c_str());
+}
+
+/// Standard constructor
+Header::Object::Object()  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Header::Object::~Object()  {
+  InstanceCount::decrement(this);
 }
 
 /// Constructor to be used when creating a new DOM tree
@@ -136,13 +167,6 @@ Atom::Atom(const string& name, const string& formula, int Z, int N, double densi
   m_element = e;
 }
 
-/// Constructor to be used when creating a new DOM tree
-Material::Material(const string& name)   {
-  //TGeoMaterial* mat = gGeoManager->GetMaterial(name.c_str());
-  TGeoMedium* mat = gGeoManager->GetMedium(name.c_str());
-  m_element = mat;
-}
-
 /// Access the radiation length of the undrelying material
 double Material::radLength() const {
   Handle<TGeoMedium>  val(*this);
@@ -161,6 +185,20 @@ string Material::toString()  const {
   os << val->GetName() << " " << val->GetTitle() << " id:" << hex << val->GetId() 
      << " Pointer:" << val->GetPointerName();
   return os.str();
+}
+
+/// Standard constructor
+VisAttr::Object::Object()  
+ : magic(magic_word()), col(0), color(0), alpha(0), 
+   drawingStyle(SOLID), lineStyle(SOLID), 
+   showDaughters(true), visible(true)
+{
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+VisAttr::Object::~Object()  {
+  InstanceCount::decrement(this);
 }
 
 /// Constructor to be used when creating a new DOM tree
@@ -329,6 +367,16 @@ string Limit::toString()  const {
   return res;
 }
 
+/// Standard constructor
+LimitSet::Object::Object()  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+LimitSet::Object::~Object()  {
+  InstanceCount::decrement(this);
+}
+
 /// Constructor to be used when creating a new DOM tree
 LimitSet::LimitSet(const string& name)   {
   assign(new Value<TNamed,Object>(),name,"limitset");
@@ -341,8 +389,20 @@ bool LimitSet::addLimit(const Limit& limit)   {
 }
 
 /// Accessor to limits container
-const LimitSet::Object& LimitSet::limits() const {
-  return *(data<Object>());
+const set<Limit>& LimitSet::limits() const {
+  const Object* o = data<Object>();
+  return *o;
+}
+
+
+/// Standard constructor
+Region::Object::Object()  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Region::Object::~Object()  {
+  InstanceCount::decrement(this);
 }
 
 /// Constructor to be used when creating a new DOM tree
@@ -415,6 +475,21 @@ const std::string& Region::energyUnit() const   {
 #undef setAttr
 
 #if 0
+
+/** @class IDSpec Objects.h
+ *  
+ *  @author  M.Frank
+ *  @version 1.0
+ */
+struct IDSpec : public Ref_t   {
+  /// Constructor to be used when reading the already parsed DOM tree
+  template <typename Q> 
+  IDSpec(const Handle<Q>& e) : Ref_t(e) {}
+  /// Constructor to be used when creating a new DOM tree
+  IDSpec(LCDD& doc, const std::string& name, const IDDescriptor& dsc);
+  void addField(const std::string& name, const std::pair<int,int>& field);
+};
+
 IDSpec::IDSpec(LCDD& lcdd, const string& name, const IDDescriptor& dsc) 
 : RefElement(doc,Tag_idspec,name)
 {

@@ -68,13 +68,21 @@ namespace DD4hep {
     struct Author : public Ref_t  {
       /// Default constructor
       Author() : Ref_t() {}
+      /// Constructorto be used for assignment from a handle
+      Author(const Author& e) : Ref_t(e) {}
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> 
       Author(const Handle<Q>& e) : Ref_t(e)  {}
       /// Constructor to be used when creating a new DOM tree
       Author(LCDD& doc);
-      //void setAuthorName(const char* nam)    {  setAttr("name",nam); }
-      //void setAuthorEmail(const char* addr)  {  setAttr("email",addr); }
+      /// Access the auhor's name
+      std::string authorName() const;
+      /// Set the author's name
+      void setAuthorName(const std::string& nam);
+      /// Access the auhor's email address
+      std::string authorEmail() const;
+      /// Set the author's email address
+      void setAuthorEmail(const std::string& addr);
     };
 
     /** @class Header Objects.h
@@ -89,9 +97,15 @@ namespace DD4hep {
 	std::string status;
 	std::string version;
 	std::string comment;
+	/// Standard constructor
+	Object();
+	/// Default destructor
+	~Object();	
       };
       /// Default constructor
       Header() : Ref_t() {}
+      /// Constructorto be used for assignment from a handle
+      Header(const Header& e) : Ref_t(e) {}
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> Header(const Handle<Q>& e) : Ref_t(e)  {}
       /// Constructor to be used when creating a new DOM tree
@@ -134,6 +148,8 @@ namespace DD4hep {
     struct Constant : public Ref_t  {
       /// Default constructor
       Constant() : Ref_t() {}
+      /// Constructorto be used for assignment from a handle
+      Constant(const Constant& e) : Ref_t(e) {}
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> 
       Constant(const Handle<Q>& e) : Ref_t(e)  {}
@@ -185,25 +201,7 @@ namespace DD4hep {
       /// Default constructor
       ReflectRot() : Rotation(M_PI,0.,0.) {}
     };
-#if 0
-    /** @class Transformation Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct Transform : public Handle<TGeoMatrix> {
-      /// Default constructor
-      Transform() : Handle<TGeoMatrix>() {}
-      /// Default constructor
-      Transform(TGeoMatrix* m) : Handle<TGeoMatrix>(m) {}
-      /// Constructor to be used when reading the already parsed DOM tree
-      template <typename Q> 
-      Transform(const Handle<Q>& e) : Handle<TGeoMatrix>(e) {}
-      /// Constructor to be used when creating a new DOM tree. Automatically sets attributes
-      Transform(LCDD& doc, const std::string& name);
-    };
 
-#endif
     /** @class Atom Objects.h
      *  
      *  @author  M.Frank
@@ -212,7 +210,9 @@ namespace DD4hep {
     struct Atom : public Handle<TGeoElement>  {
       /// Default constructor
       Atom() : Handle<TGeoElement>() {}
-      /// Constructor to be used when creating a new DOM tree
+      /// Constructorto be used for assignment from a handle
+      Atom(const Handle<TGeoElement>& e) : Handle<TGeoElement>(e) {}
+      /// Constructor to be used when creating from a object handle
       template <typename Q> 
       Atom(const Handle<Q>& e) : Handle<TGeoElement>(e) {}
       /// Constructor to be used when reading the already parsed DOM tree
@@ -227,11 +227,11 @@ namespace DD4hep {
     struct Material : public Handle<TGeoMedium>  {
       /// Default constructor
       Material() : Handle<TGeoMedium>() {}
-      /// Constructor to be used when creating a new DOM tree
+      /// Constructorto be used for assignment from material handle
+      Material(const Handle<TGeoMedium>& e) : Handle<TGeoMedium>(e) {}
+      /// Constructorto be used for assignment from object handle
       template <typename Q> 
       Material(const Handle<Q>& e) : Handle<TGeoMedium>(e) {}
-      /// Constructor to be used when reading the already parsed DOM tree
-      Material(const std::string& name);
       /// String representation of this object
       std::string toString()  const;
       /// Access the radiation length of the undrelying material
@@ -256,7 +256,10 @@ namespace DD4hep {
         int           color;
 	float         alpha;
         unsigned char drawingStyle, lineStyle, showDaughters, visible;
-        Object() : magic(magic_word()), col(0), color(0), alpha(0), drawingStyle(SOLID), lineStyle(SOLID), showDaughters(true), visible(true)  {}
+	/// Standard constructor
+	Object();
+	/// Default destructor
+	~Object();
       };
       /// Default constructor
       VisAttr() : Ref_t() {}
@@ -365,18 +368,23 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct LimitSet : public Ref_t  {
-      typedef std::set<Limit> Object;  
+      struct Object : public std::set<Limit>  {
+	/// Standard constructor
+	Object();
+	/// Default destructor
+	~Object();
+      };
       /// Constructor to be used when reading the already parsed DOM tree
       LimitSet() : Ref_t() {}
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> 
       LimitSet(const Handle<Q>& e) : Ref_t(e) {}
-      /// Constructor to be used when creating a new DOM tree
+      /// Constructor to be used when creating a new object
       LimitSet(const std::string& name);
       /// Add new limit. Returns true if the new limit was added, false if it already existed.
       bool addLimit(const Limit& limit);
       /// Accessor to limits container
-      const Object& limits() const;
+      const std::set<Limit>& limits() const;
     };
 
     /** @class Region Objects.h
@@ -392,13 +400,17 @@ namespace DD4hep {
         bool          store_secondaries;
         std::string   lunit, eunit;
 	std::vector<std::string> user_limits;
+	/// Standard constructor
+	Object();
+	/// Default destructor
+	~Object();
       };
       /// Default constructor
       Region() : Ref_t() {}
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> 
       Region(const Handle<Q>& e) : Ref_t(e) {}
-      /// Constructor to be used when creating a new DOM tree
+      /// Constructor to be used when creating a new object
       Region(const std::string& name);
 
       /// Additional data accessor
@@ -423,53 +435,21 @@ namespace DD4hep {
       const std::string& energyUnit() const;
     };
 
-    /** @class IDSpec Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct IDSpec : public Ref_t   {
-      /// Constructor to be used when reading the already parsed DOM tree
-      template <typename Q> 
-      IDSpec(const Handle<Q>& e) : Ref_t(e) {}
-      /// Constructor to be used when creating a new DOM tree
-      IDSpec(LCDD& doc, const std::string& name, const IDDescriptor& dsc);
-      void addField(const std::string& name, const std::pair<int,int>& field);
-    };
-
   }       /* End namespace Geometry           */
 }         /* End namespace DD4hep             */
 
 
 namespace ROOT { namespace Math {
     typedef DD4hep::Geometry::Position Position;
-
-#if 0  // Already present according to Lorenzo
-    /// Addition of 2 positions
-    inline Position operator + (const Position& l, const Position& r)
-    {  return Position(l.X()+r.X(),l.Y()+r.Y(),l.Z()+r.Z());                               }
-    /// Subtraction of to positions
-    inline Position operator - (const Position& l, const Position& r)
-    {  return Position(l.X()-r.X(),l.Y()-r.Y(),l.Z()-r.Z());                               }
-    /// Positions scaling from right
-    inline Position operator / (const Position& l, double r)
-    {  return Position(l.X()/r,l.Y()/r,l.Z()/r);                                           }
-    /// Positions scaling from left
-    inline Position operator * (double l, const Position& r) 
-    {  return Position(r.X()*l,r.Y()*l,r.Z()*l);                                           }
-    /// Positions scaling from right
-    inline Position operator * (const Position& l, double r)
-    {  return Position(l.X()*r,l.Y()*r,l.Z()*r);                                           }
-#endif
     /// Dot product of 3-vectors.
     inline double operator * (const Position& l, const Position& r)
-    {  return sqrt(l.X()*r.X() + l.Y()*r.Y() + l.Z()*r.Z());                               }
+    {  return sqrt(l.X()*r.X() + l.Y()*r.Y() + l.Z()*r.Z());         }
     /// Calculate the mean length of two vectors
     inline double mean_length(const Position& p1, const Position& p2)
-    {  return 0.5* (p1.R() + p2.R()) / 2.0;                                                }
+    {  return 0.5* (p1.R() + p2.R()) / 2.0;                          }
     /// Calculate the mean direction of two vectors
     inline Position mean_direction(const Position& p1, const Position& p2)
-    { return 0.5 * (p1 + p2);                                                              }
+    { return 0.5 * (p1 + p2);                                        }
 
 }}
 
