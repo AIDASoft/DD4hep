@@ -1094,11 +1094,6 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   geo.doc_setup.setAttr(_U(version),Unicode("1.0"));
 
   // Ensure that all required materials are present in the LCDD material table
-#if 0
-  const LCDD::HandleMap& mat = lcdd.materials();
-  for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
-    geo.materials.insert(dynamic_cast<TGeoMedium*>((*i).second.ptr()));
-#endif
   const LCDD::HandleMap& fld = lcdd.fields();
   for(LCDD::HandleMap::const_iterator i=fld.begin(); i!=fld.end(); ++i)
     geo.fields.insert((*i).second.ptr());

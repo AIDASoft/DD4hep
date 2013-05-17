@@ -322,7 +322,9 @@ namespace {
 				const vector<const TGeoNode*>& elt_nodes)
   {
     static int s_count = 0;
-    Readout ro = parent.readout();
+    Volume            vol = PlacedVolume(n).volume();
+    SensitiveDetector sd  = vol.sensitiveDetector();
+    Readout           ro  = sd.readout();
     const IDDescriptor& en = ro.idSpec();
     IDDescriptor::VolumeID volume_id = encode_cell(ro,ids);
     PlacedVolume pv = Ref_t(n);
@@ -393,11 +395,12 @@ void LCDDImp::endDocument()  {
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
-    m_volManager = VolumeManager("World", m_world, VolumeManager::TREE);
+    m_volManager = VolumeManager("World", m_world, Readout(), VolumeManager::TREE);
     ShapePatcher patcher(m_volManager,m_world);
     patcher.patchShapes();
     //patcher.printVolumes();
-    cout << m_volManager << endl;
+    //cout << m_volManager << endl;
+    cout << "++ Volume manager populated and shaped names successfully updated." << endl;
   }
 }
 

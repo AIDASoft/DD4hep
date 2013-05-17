@@ -74,13 +74,11 @@ namespace DD4hep {
       char text[256];
       const DetElement& sd = val;
       PlacedVolume plc = sd.placement();
-      bool rdo = sd.readout().isValid();
       bool vis = plc.isValid();
       bool env = plc.isValid();
       bool mat = plc.isValid();
-      ::snprintf(text,sizeof(text),"ID:%-3d Combine Hits:%3s Readout:%s Material:%s Envelope:%s VisAttr:%s",
+      ::snprintf(text,sizeof(text),"ID:%-3d Combine Hits:%3s Material:%s Envelope:%s VisAttr:%s",
 		sd.id(), yes_no(sd.combineHits()), 
-		rdo ? sd.readout()->GetName()  : yes_no(rdo),
 		mat ? plc.material()->GetName() : yes_no(mat),
 		env ? plc.motherVol()->GetName() : yes_no(env),
 		yes_no(vis)

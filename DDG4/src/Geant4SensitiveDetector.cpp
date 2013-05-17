@@ -31,11 +31,11 @@ using namespace DD4hep::Simulation;
 
 /// Constructor. The detector element is identified by the name
 Geant4SensitiveDetector::Geant4SensitiveDetector(const string& name, LCDD& lcdd)
-  : G4VSensitiveDetector(name), m_detector(), m_lcdd(lcdd), m_hce(0)
+  : G4VSensitiveDetector(name), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0)
 {
   m_sensitive = lcdd.sensitiveDetector(name);
   m_detector  = lcdd.detector(name);
-  m_readout   = m_detector.readout();
+  m_readout   = m_sensitive.readout();
 }
 
 /// Standard destructor
@@ -54,7 +54,8 @@ bool Geant4SensitiveDetector::defineCollection(const string& coll_name)   {
 
 /// Access HitCollection container names
 const string& Geant4SensitiveDetector::hitCollectionName(int which) const      { 
-  if ( which >= collectionName.size() || which < 0 ) {
+  size_t w = which;
+  if ( w >= collectionName.size() ) {
     throw runtime_error("The collection name index for subdetector "+name()+" is out of range!");
   }
   return collectionName[which];
@@ -86,7 +87,7 @@ void Geant4SensitiveDetector::Initialize(G4HCofThisEvent* HCE) {
 }
 
 /// Method invoked at the end of each event. 
-void Geant4SensitiveDetector::EndOfEvent(G4HCofThisEvent* HCE) {
+void Geant4SensitiveDetector::EndOfEvent(G4HCofThisEvent* /* HCE */) {
   m_hce = 0;
   // Eventuall print event summary
 }
@@ -114,7 +115,8 @@ Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::collectionByID(
 
 /// Retrieve the hits collection associated with this detector by its serial number
 Geant4SensitiveDetector::HitCollection* Geant4SensitiveDetector::collection(int which)    {
-  if ( which < collectionName.size() && which >= 0 ) {
+  size_t w = which;
+  if ( w < collectionName.size() ) {
     HitCollection* hc = (HitCollection*)m_hce->GetHC(GetCollectionID(which));
     if ( hc ) return hc;
     throw runtime_error("The collection index for subdetector "+name()+" is wrong!");
@@ -130,7 +132,7 @@ void Geant4SensitiveDetector::clear() {
 void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* history */) {
   Geant4StepHandler step(st);
   Geant4Converter& cnv = Geant4Converter::instance();
-  Geant4Converter::G4GeometryInfo& data = cnv.data();
+  //Geant4Converter::G4GeometryInfo& data = cnv.data();
 
   Position pos1 = step.prePos();
   Position pos2 = step.postPos();

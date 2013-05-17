@@ -124,7 +124,7 @@ static DetElement _par(DetElement o, DetElement top, vector<TGeoNode*>& det_node
 
 /// Default constructor
 DetElement::Object::Object()  
-  : magic(magic_word()), id(0), combineHits(0), readout(), 
+  : magic(magic_word()), id(0), combineHits(0),// readout(), 
     alignment(), placement(), parent(), children(),
     worldTrafo(0), parentTrafo(0), referenceTrafo(0)
 {
@@ -138,7 +138,7 @@ DetElement::Object::~Object() {
   deletePtr(parentTrafo);
   deletePtr(referenceTrafo);
   volume.clear();
-  readout.clear();
+  //readout.clear();
   alignment.clear();
   conditions.clear();
   placement.clear();
@@ -166,7 +166,7 @@ Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag
   Ref_t det(obj);
   obj->id           = new_id;
   obj->combineHits  = combineHits;
-  obj->readout      = readout;
+  //obj->readout      = readout;
   obj->volume       = volume;
   obj->alignment    = Alignment();
   obj->conditions   = Conditions();
@@ -372,7 +372,7 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens)   {
   if ( sens.isValid() ) sens.setCombineHits(value);
   return *this;
 }
-
+#if 0
 Readout DetElement::readout() const   {
   return _data().readout;
 }
@@ -381,7 +381,7 @@ DetElement& DetElement::setReadout(const Readout& readout)   {
   _data().readout = readout;
   return *this;
 }
-
+#endif
 const DetElement::Children& DetElement::children() const   {
   return _data().children;
 }

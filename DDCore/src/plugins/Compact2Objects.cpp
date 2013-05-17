@@ -651,9 +651,6 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
     DetElement det(Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sens)));
     if ( det.isValid() )  {
       setChildTitles(make_pair(name,det));
-      if ( attr_ro )  {
-	det.setReadout(sd.readout());
-      }
     }
     cout << (det.isValid() ? "Converted" : "FAILED    ")
 	 << " subdetector:" << name << " of type " << type;

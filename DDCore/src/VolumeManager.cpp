@@ -62,11 +62,26 @@ namespace {
     {
       const TGeoNode* node = pv.ptr();
       if ( node )  {
+	Volume vol = pv.volume();
 	node_chain.push_back(node);
 	elt_nodes.push_back(node);
 	ids.PlacedVolume::VolIDs::Base::insert(ids.end(),pv.volIDs().begin(),pv.volIDs().end());
-	if ( pv.volume().isSensitive() )  {
-	  add_entry(parent, e, node, ids, node_chain, elt_nodes);
+	if ( vol.isSensitive() )  {
+	  SensitiveDetector sd = vol.sensitiveDetector();
+	  Readout ro = sd.readout();
+	  //Readout ro = parent.readout();
+	  if ( ro.isValid() )  {
+	    add_entry(parent, e, node, ids, node_chain, elt_nodes);
+	  }
+	  else   {
+	    cout << "VolumeManager [" << parent.name() 
+		 << "]: Strange constellation volume " << pv.volume().name()
+		 << " is sensitive, but has no readout!" 
+		 << " sd:" << sd.ptr()
+		 << " ro:" << ro.ptr() << "," << ro.ptr()
+		 << " Id:" << ro.idSpec().ptr()
+		 << endl;
+	  }
 	}
 	for(Int_t idau=0, ndau=node->GetNdaughters(); idau<ndau; ++idau)  {
 	  TGeoNode* daughter = node->GetDaughter(idau);
@@ -98,9 +113,11 @@ namespace {
     void add_entry(DetElement parent, DetElement e,const TGeoNode* n, 
 		  const PlacedVolume::VolIDs& ids, const Chain& nodes, const Chain& elt_nodes)
     {
-      Readout ro = parent.readout();
-      IDDescriptor iddesc = ro.idSpec();
-      VolumeManager section = m_volManager.addSubdetector(parent);
+      Volume vol = PlacedVolume(n).volume();
+      SensitiveDetector sd = vol.sensitiveDetector();
+      Readout           ro = sd.readout();
+      IDDescriptor      iddesc = ro.idSpec();
+      VolumeManager     section = m_volManager.addSubdetector(parent,ro);
       pair<VolumeID,VolumeID> code = encoding(iddesc, ids);
 
       // This is the block, we effectively have to save for each physical volume with a VolID
@@ -124,7 +141,9 @@ namespace {
 		    const PlacedVolume::VolIDs& ids, const Chain& nodes, const Chain& elt_nodes)
     {
       static int s_count = 0;
-      Readout ro = parent.readout();
+      Volume vol = PlacedVolume(n).volume();
+      SensitiveDetector sd = vol.sensitiveDetector();
+      Readout ro = sd.readout();
       const IDDescriptor& en = ro.idSpec();
       PlacedVolume pv = Ref_t(n);
       bool sensitive  = pv.volume().isSensitive();
@@ -207,14 +226,14 @@ VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id)  
 }
 
 /// Initializing constructor to create a new object
-VolumeManager::VolumeManager(const string& nam, DetElement elt, int flags)
+VolumeManager::VolumeManager(const string& nam, DetElement elt, Readout ro, int flags)
 {
   Value<TNamed,Object>* ptr = new Value<TNamed,Object>();
   assign(ptr,nam,"VolumeManager");
   if ( elt.isValid() )   {
     Populator p(*this);
     Object& o = _data();
-    setDetector(elt);
+    setDetector(elt, ro);
     o.top   = ptr;
     o.flags = flags;
     p.populate(elt);
@@ -222,13 +241,12 @@ VolumeManager::VolumeManager(const string& nam, DetElement elt, int flags)
 }
 
 /// Add a new Volume manager section according to a new subdetector
-VolumeManager VolumeManager::addSubdetector(DetElement detector)  {
+VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
   if ( isValid() )  {
     Object& o = _data();
     Detectors::const_iterator i=o.subdetectors.find(detector);
     if ( i == o.subdetectors.end() )  {
       // First check all pre-conditions
-      Readout ro = detector.readout();
       if ( !ro.isValid() )  {
 	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with a "
 			    "valid readout descriptor are allowed. [Invalid DetElement]");
@@ -249,7 +267,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector)  {
       VolumeManager m = (*i).second;
       IDDescriptor::Field field = ro.idSpec().field(id.first);
       Object& mo = m._data();
-      m.setDetector(detector);
+      m.setDetector(detector,ro);
       mo.top    = o.top;
       mo.flags  = o.flags;
       mo.system = field;
@@ -278,11 +296,10 @@ VolumeManager VolumeManager::subdetector(VolumeID id)  const   {
 }
 
 /// Assign the top level detector element to this manager
-void VolumeManager::setDetector(DetElement e)   {
+void VolumeManager::setDetector(DetElement e, Readout ro)   {
   if ( isValid() )  {
     if ( e.isValid() )  {
       Object&  o = _data();
-      Readout ro = e.readout();
       o.id       = ro.isValid() ? ro.idSpec() : IDDescriptor();
       o.detector = e;
       return;
@@ -329,8 +346,10 @@ void VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
   }
   if ( i == o.volumes.end() )   {
     o.volumes[vid] = context;
+#if 0
     cout << "Inserted new volume:" << o.volumes.size() 
 	 << " ID:" << (void*)context->identifier << " Mask:" << (void*)context->mask << endl;
+#endif
     return;
   }
   err << "Attempt to register twice volume with identical volID to detector " << o.detector.name() 

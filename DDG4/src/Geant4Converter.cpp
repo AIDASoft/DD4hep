@@ -238,7 +238,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
       double phi_start = s->GetPhi1()*DEGREE_2_RAD;
       double phi_total = (s->GetDphi()+s->GetPhi1())*DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
-      for( size_t i=0; i<s->GetNz(); ++i )  {
+      for( Int_t i=0; i<s->GetNz(); ++i )  {
 	rmin.push_back(s->GetRmin(i)*CM_2_MM);
 	rmax.push_back(s->GetRmax(i)*CM_2_MM);
 	z.push_back(s->GetZ(i)*CM_2_MM);
@@ -250,7 +250,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
       double phi_start = s->GetPhi1()*DEGREE_2_RAD;
       double phi_total = (s->GetDphi()+s->GetPhi1())*DEGREE_2_RAD;
       vector<double> rmin, rmax, z;
-      for( size_t i=0; i<s->GetNz(); ++i )  {
+      for( Int_t i=0; i<s->GetNz(); ++i )  {
 	rmin.push_back(s->GetRmin(i)*CM_2_MM);
 	rmax.push_back(s->GetRmax(i)*CM_2_MM);
 	z.push_back(s->GetZ(i)*CM_2_MM);
@@ -351,6 +351,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     if ( !medium )   {
       throw runtime_error("G4Converter: No Geant4 material present for volume:"+n);
     }
+
     //Region          reg = _v.region();
     SensitiveDetector det = _v.sensitiveDetector();
     Geant4SensitiveDetector* sd = 0;
@@ -390,7 +391,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
 }
 
 /// Dump logical volume in GDML format to output stream
-void* Geant4Converter::collectVolume(const string& name, const TGeoVolume* volume)   const   {
+void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume* volume)   const   {
   G4GeometryInfo& info = data();
   const TGeoVolume* v = volume;
   Volume            _v  = Ref_t(v);
@@ -485,7 +486,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 }
 
 /// Convert the geometry type region into the corresponding Geant4 object(s).
-void* Geant4Converter::handleRegion(const TNamed* region, const set<const TGeoVolume*>& volumes) const  {
+void* Geant4Converter::handleRegion(const TNamed* region, const set<const TGeoVolume*>& /* volumes */) const  {
   G4Region* g4 = data().g4Regions[region];
   if ( !g4 )   {
     Region r = Ref_t(region);
@@ -526,13 +527,13 @@ void* Geant4Converter::handleRegion(const TNamed* region, const set<const TGeoVo
 }
 
 /// Convert the geometry type LimitSet into the corresponding Geant4 object(s).
-void* Geant4Converter::handleLimitSet(const TNamed* limitset, const set<const TGeoVolume*>& volumes) const  {
+void* Geant4Converter::handleLimitSet(const TNamed* limitset, const set<const TGeoVolume*>& /* volumes */) const  {
   G4UserLimits* g4   = data().g4Limits[limitset];
   if ( !g4 )   {
     LimitSet ls = Ref_t(limitset);
     g4 = new G4UserLimits(limitset->GetName());
-    const LimitSet::Object& obj = ls.limits();
-    for(LimitSet::Object::const_iterator i=obj.begin(); i!=obj.end(); ++i) {
+    const set<Limit>& limits = ls.limits();
+    for(LimitSet::Object::const_iterator i=limits.begin(); i!=limits.end(); ++i) {
       const Limit& l = *i;
       if ( l.name == "step_length_max" )
 	g4->SetMaxAllowedStep(l.value);
@@ -553,7 +554,7 @@ void* Geant4Converter::handleLimitSet(const TNamed* limitset, const set<const TG
 }
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& volumes) const  {
+void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
   G4GeometryInfo& info = data();
   Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
   if ( !g4 )   {
@@ -574,7 +575,7 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
 }
 
 /// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
-void* Geant4Converter::handleVis(const string& name, const TNamed* vis) const  {
+void* Geant4Converter::handleVis(const string& /* name */, const TNamed* vis) const  {
   G4GeometryInfo& info = data();
   G4VisAttributes* g4 = info.g4Vis[vis];
   if ( !g4 )   {
@@ -642,7 +643,7 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
 
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-void* Geant4Converter::printSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& volumes) const  {
+void* Geant4Converter::printSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
   G4GeometryInfo& info = data();
   Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
   ConstVolumeSet& volset = info.sensitives[sens_det];
@@ -734,23 +735,15 @@ template <typename O, typename C, typename F> void handleRMap(const O* o, const 
 
 /// Create geometry conversion
 void Geant4Converter::create(DetElement top) {
-  LCDD& lcdd = m_lcdd;
   G4GeometryInfo& geo = *(m_dataPtr=new G4GeometryInfo);
   m_data->clear();
   collect(top,geo);
   s_topPtr = top.placement().ptr();
   m_checkOverlaps = false;
 
-  // Ensure that all required materials are present in the Geant4 material table
-  const LCDD::HandleMap& mat = lcdd.materials();
-  for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
-    geo.materials.insert((TGeoMedium*)(*i).second.ptr());
-
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
-  handle(this, geo.materials, &Geant4Converter::handleMaterial);
-  cout << "++ Handled " << geo.materials.size() << " materials." << endl;
 
   handle(this, geo.volumes,   &Geant4Converter::collectVolume);
 

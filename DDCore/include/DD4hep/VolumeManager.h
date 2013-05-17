@@ -197,14 +197,14 @@ namespace DD4hep {
        *  Please see enum PopulateFlags for further info.
        *  No action whatsoever is performed here, if the detector element is not valid.
        */
-      VolumeManager(const std::string& name, DetElement world=DetElement(), int flags=NONE);
+      VolumeManager(const std::string& name, DetElement world=DetElement(), Readout ro=Readout(), int flags=NONE);
       /// Add a new Volume manager section according to a new subdetector
-      VolumeManager addSubdetector(DetElement detector);
+      VolumeManager addSubdetector(DetElement detector, Readout ro);
       /// Access the volume manager by cell id
       VolumeManager subdetector(VolumeID id) const;
 
       /// Assign the top level detector element to this manager
-      void setDetector(DetElement e);
+      void setDetector(DetElement det_eleemnt, Readout ro);
       /// Access the top level detector element
       DetElement detector() const;
       /// Assign IDDescription to VolumeManager structure

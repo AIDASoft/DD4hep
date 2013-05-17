@@ -105,7 +105,7 @@ namespace DD4hep {
     void increment_object_validations();
     std::string typeName(const std::type_info& type);
     
-    static unsigned long magic_word() { return 0xFEEDAFFEDEADFACEL; }
+    inline unsigned long magic_word() { return 0xFEEDAFFEDEADFACEL; }
     
     /** @class Value Handle.h
      *  
@@ -201,7 +201,7 @@ namespace DD4hep {
     /// Helper to delete objects from heap and reset the handle
     template <typename T> inline void destroyHandle(T& h)   {
       deletePtr(h.m_element);
-    };
+    }
     /// Functor to delete objects from heap and reset the pointer
     template <typename T> struct DestroyObject {
       void operator()(T& p) const { 
