@@ -85,6 +85,10 @@ LCDDImp::LCDDImp()
 LCDDImp::~LCDDImp() {
   if ( m_properties ) delete m_properties;
   m_properties = 0;
+  if ( m_volManager.isValid() )  {
+    delete m_volManager.ptr();
+    m_volManager = VolumeManager();
+  }
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not existing
@@ -131,14 +135,18 @@ Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, boo
   }
   return 0;
 }
+
 namespace {
   struct ShapePatcher : public GeoScan {
-    ShapePatcher(DetElement e) : GeoScan(e) {}
-    GeoScan& operator()()  {
+    VolumeManager m_volManager;
+    DetElement    m_world;
+    ShapePatcher(VolumeManager m, DetElement e) : GeoScan(e), m_volManager(m), m_world(e) {}
+    void patchShapes()  {
       GeoHandler::Data& data = *m_data;
       string nam;
       cout << "++ Patching names of anonymous shapes...." << endl;
       for(GeoHandler::Data::const_reverse_iterator i=data.rbegin(); i != data.rend(); ++i)   {
+	int level = (*i).first;
         const GeoHandler::Data::mapped_type& v = (*i).second;
         for(GeoHandler::Data::mapped_type::const_iterator j=v.begin(); j != v.end(); ++j) {
           const TGeoNode* n = *j;
@@ -182,9 +190,144 @@ namespace {
           }
         }
       }
+    }
+
+    typedef DetElement::Children _C;
+    DetElement findElt(DetElement e, PlacedVolume pv)  {
+      const _C& children = e.children();
+      if ( e.placement().ptr() == pv.ptr() ) return e;
+      for(_C::const_iterator i=children.begin(); i!=children.end(); ++i)   {
+	DetElement de = (*i).second;
+	if ( de.placement().ptr() == pv.ptr() ) return de;
+      }
+      for(_C::const_iterator i=children.begin(); i!=children.end(); ++i)   {
+	DetElement de = findElt((*i).second,pv);
+	if ( de.isValid() )  return de;
+      }
+      return DetElement();
+    }
+
+    unsigned long long int encode_cell(Readout ro, const PlacedVolume::VolIDs& ids)   {
+      unsigned long long value = ~0x0ull;
+      const IDDescriptor& en = ro.idSpec();
+      for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
+	const PlacedVolume::VolID& id = (*i);
+	value &= en.field(id.first).encode(id.second);
+      }
+      return value;
+    }
+
+    typedef void (::ShapePatcher::*Func_t)(DetElement parent, DetElement e,const TGeoNode* n, 
+					   const PlacedVolume::VolIDs& ids, 
+					   const vector<const TGeoNode*>& nodes,
+					   const vector<const TGeoNode*>& elt_nodes);
+
+    void scanNode(Func_t func,
+		  DetElement parent, DetElement e, PlacedVolume pv, 
+		  const PlacedVolume::VolIDs& vol_ids, 
+		  vector<const TGeoNode*>& nodes,
+		  vector<const TGeoNode*>& elt_nodes)
+    {
+      const TGeoNode* node = dynamic_cast<const TGeoNode*>(pv.ptr());
+      if ( node )  {
+	Int_t ndau = node->GetNdaughters();
+	PlacedVolume::VolIDs ids(vol_ids);
+	const PlacedVolume::VolIDs& ids_node = pv.volIDs();
+
+	nodes.push_back(node);
+	elt_nodes.push_back(node);
+	ids.PlacedVolume::VolIDs::Base::insert(ids.end(),ids_node.begin(),ids_node.end());
+	(this->*func)(parent, e, node, ids, nodes, elt_nodes);
+	for(Int_t idau=0; idau<ndau; ++idau)  {
+	  TGeoNode* daughter = node->GetDaughter(idau);
+	  if ( dynamic_cast<const PlacedVolume::Object*>(daughter) ) {
+	    PlacedVolume pv_dau = Ref_t(daughter);
+	    DetElement   de_dau = findElt(e,daughter);
+	    if ( de_dau.isValid() )  {
+	      vector<const TGeoNode*> dau_nodes;
+	      scanNode(func, parent, de_dau, pv_dau, ids, nodes, dau_nodes);
+	    }
+	    else {
+	      scanNode(func, parent, e, pv_dau, ids, nodes, elt_nodes);
+	    }
+	  }
+	}
+	elt_nodes.pop_back();
+	nodes.pop_back();
+      }
+    }
+    void scanVolumes(Func_t func)    {
+      const _C& children = m_world.children();
+      for(_C::const_iterator i=children.begin(); i!=children.end(); ++i)   {
+	DetElement   de = (*i).second;
+	PlacedVolume pv = de.placement();
+	if ( pv.isValid() )  {
+	  PlacedVolume::VolIDs ids;
+	  vector<const TGeoNode*> nodes, elt_nodes;
+	  scanNode(func, de, de, pv, ids, nodes, elt_nodes);
+	  continue;
+	}
+	cout << "++ Detector element " << de.name() << " has no placement." << endl;
+      }
+    }
+
+    void print_node(DetElement parent, DetElement e,const TGeoNode* n, 
+		    const PlacedVolume::VolIDs& ids, 
+		    const vector<const TGeoNode*>& nodes,
+		    const vector<const TGeoNode*>& elt_nodes);
+
+    GeoScan& printVolumes()  {
+      scanVolumes(&ShapePatcher::print_node);
       return *this;
     }
   };
+
+  void ShapePatcher::print_node(DetElement parent, 
+				DetElement e,
+				const TGeoNode* n, 
+				const PlacedVolume::VolIDs& ids, 
+				const vector<const TGeoNode*>& nodes,
+				const vector<const TGeoNode*>& elt_nodes)
+  {
+    static int s_count = 0;
+    Readout ro = parent.readout();
+    const IDDescriptor& en = ro.idSpec();
+    IDDescriptor::VolumeID volume_id = encode_cell(ro,ids);
+    PlacedVolume pv = Ref_t(n);
+    bool sensitive  = pv.volume().isSensitive();
+
+    if ( !sensitive ) return;
+    ++s_count;
+    cout << s_count << ": " << e.name() << " de:" << e.ptr() << " ro:" << ro.ptr() 
+	 << " pv:" << n->GetName() << " id:" << (void*)volume_id << " : ";
+    for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
+      const PlacedVolume::VolID& id = (*i);
+      IDDescriptor::Field f = ro.idSpec().field(id.first);
+      int value = en.field(id.first).decode(volume_id);
+      cout << id.first << "=" << id.second << "," << value 
+	   << " [" << f.first << "," << f.second << "] ";
+    }
+    cout << " Sensitive:" << (sensitive ? "YES" : "NO");
+    if ( sensitive )   {
+      VolumeManager section = m_volManager.subdetector(volume_id);
+      VolumeManager::Context* ctxt = section.lookupContext(volume_id|0xDEAD);
+      if ( ctxt->placement.ptr() != pv.ptr() )  {
+	cout << " !!!!! No Volume found!" << endl;
+      }
+      cout << " Pv:" << pv.ptr() << " <> " << ctxt->placement.ptr();
+    }
+    cout << endl;
+#if 0
+    cout << s_count << ": " << e.name() << " Detector GeoNodes:";
+    for(vector<const TGeoNode*>::const_iterator j=nodes.begin(); j!=nodes.end();++j)
+      cout << (void*)(*j) << " ";
+    cout << endl;
+    cout << s_count << ": " << e.name() << " Element  GeoNodes:";
+    for(vector<const TGeoNode*>::const_iterator j=elt_nodes.begin(); j!=elt_nodes.end();++j)
+      cout << (void*)(*j) << " ";
+    cout << endl;
+#endif
+  }
 }
 
 void LCDDImp::endDocument()  {
@@ -219,8 +362,10 @@ void LCDDImp::endDocument()  {
     //gGeoManager->SetTopVolume(m_worldVol);
     mgr->CloseGeometry();
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
-    ShapePatcher patcher(m_world);
-    patcher();
+    m_volManager = VolumeManager("World", m_world);
+    ShapePatcher patcher(m_volManager,m_world);
+    patcher.patchShapes();
+    //patcher.printVolumes();
   }
 }
 
