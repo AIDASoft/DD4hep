@@ -19,19 +19,19 @@ namespace DD4hep {
   
   struct VersatileDiskRowLayout : public PadLayout {
    
-    Geometry::DetElement                module;
-    Geometry::VersatileDiskRowLayoutSeg pads;
+    Geometry::DetElement                  module;
+    Geometry::VersatileDiskRowLayoutSeg   pads;
     Geometry::VersatileDiskRowLayoutData *padData;
-    Geometry::Tube                      tube;
+    Geometry::Tube                        tube;
     
     /// Default empty constructor
     VersatileDiskRowLayout() : module(), pads(), tube() {}
 
     /// Standard constructor with arguments
-    VersatileDiskRowLayout(const Geometry::DetElement& d);
+    VersatileDiskRowLayout(Geometry::DetElement d, Geometry::Readout readout);
 
     /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-    VersatileDiskRowLayout(const VersatileDiskRowLayout& c,const Geometry::DetElement& det);
+    VersatileDiskRowLayout(const VersatileDiskRowLayout& c, Geometry::DetElement det);
 
        
     /// Default destructor

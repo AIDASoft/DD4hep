@@ -31,6 +31,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   //DetElement    tpc  (name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
+  Readout     readout(sens.readout());
   
   for(xml_coll_t c(e,_U(detector)); c; ++c)  {
     xml_comp_t  px_det  (c);
@@ -99,11 +100,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
             PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(0,0,0),Rotation(0,0,rotz));
             m_phv.addPhysVolID("module",md);
             module.setPlacement(m_phv);
-            
-            module.setReadout(xml_pads);
             // Readout and placement must be present before adding extension,
             // since they are aquired internally for optimisation reasons. (MF)
-            module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module));
+            module.addExtension<PadLayout>(new FixedPadAngleDiskLayout(module,readout));
           }//modules
         }//rows
       }//module groups
@@ -125,7 +124,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1);
       rdet.setPlacement(part_phv2);
-      tpcData->endplate2=rdet;
+      tpcData->endplate2 = rdet;
       tpc.add(rdet);
     }
   }//subdetectors

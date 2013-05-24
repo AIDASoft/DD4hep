@@ -94,10 +94,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	  m_phv.addPhysVolID("module",modID);
 	  module.setPlacement(m_phv);
 	  //data for VersatileDiskRowLayout is added as user segmentataion	  
-	  module.setReadout(xml_pads);
 	  // Readout and placement must be present before adding extension,
 	  // since they are aquired internally for optimisation reasons. (MF)
-	  module.addExtension<PadLayout>(new VersatileDiskRowLayout(module));
+	  module.addExtension<PadLayout>(new VersatileDiskRowLayout(module,xml_pads));
 	}//modules
       }//module groups
     }//endplate

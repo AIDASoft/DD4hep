@@ -26,10 +26,10 @@ namespace DD4hep {
     FixedPadAngleDiskLayout() : module(), pads(), tube() {}
 
     /// Standard constructor with arguments
-    FixedPadAngleDiskLayout(const Geometry::DetElement& d);
+    FixedPadAngleDiskLayout(Geometry::DetElement d, Geometry::Readout r);
 
     /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-    FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& c,const Geometry::DetElement& det);
+    FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& c, Geometry::DetElement det);
 
     /// Default destructor
     virtual ~FixedPadAngleDiskLayout() {}

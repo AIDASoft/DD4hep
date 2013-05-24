@@ -26,16 +26,18 @@ namespace DD4hep {
   using namespace Geometry;
   
   /// Standard constructor with arguments
-  RectangularPadRowLayout::RectangularPadRowLayout(const Geometry::DetElement& d) : module(d) {
-    pads = module.readout().segmentation();
+  RectangularPadRowLayout::RectangularPadRowLayout(Geometry::DetElement d, Geometry::Readout readout)
+    : module(d)
+  {
+    pads = readout.segmentation();
     box = module.volume().solid();
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-  RectangularPadRowLayout::RectangularPadRowLayout(const RectangularPadRowLayout& /* c */, const Geometry::DetElement& det)
+  RectangularPadRowLayout::RectangularPadRowLayout(const RectangularPadRowLayout& c, Geometry::DetElement det)
     : module(det)
   {
-    pads = module.readout().segmentation();
+    pads = c.pads;
     box = module.volume().solid();
   }
 

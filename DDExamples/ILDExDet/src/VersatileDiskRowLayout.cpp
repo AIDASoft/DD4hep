@@ -22,18 +22,18 @@ namespace DD4hep {
   using namespace Geometry;
   
   /// Standard constructor with arguments
-  VersatileDiskRowLayout::VersatileDiskRowLayout(const Geometry::DetElement& d) : module(d) {
-    pads = module.readout().segmentation();
+  VersatileDiskRowLayout::VersatileDiskRowLayout(Geometry::DetElement d, Geometry::Readout readout) : module(d) {
+    pads = readout.segmentation();
     tube = module.volume().solid();
     padData = pads.extension<VersatileDiskRowLayoutData>();
     //needs some check if segmentation actually fits on module
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-  VersatileDiskRowLayout::VersatileDiskRowLayout(const VersatileDiskRowLayout& /* c */, const Geometry::DetElement& det)
+  VersatileDiskRowLayout::VersatileDiskRowLayout(const VersatileDiskRowLayout& c, Geometry::DetElement det)
     : module(det)
   {
-    pads = module.readout().segmentation();
+    pads = c.pads;
     tube = module.volume().solid();
     padData = pads.extension<VersatileDiskRowLayoutData>();
   }

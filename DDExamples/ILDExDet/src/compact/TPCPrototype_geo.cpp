@@ -96,10 +96,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
             PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(posx,posy,0),Rotation(0,0,0));
             m_phv.addPhysVolID("module",md);
             module.setPlacement(m_phv);
-            module.setReadout(xml_pads);
             // Readout and placement must be present before adding extension,
             // since they are aquired internally for optimisation reasons. (MF)
-            module.addExtension<PadLayout>(new RectangularPadRowLayout(module));
+            module.addExtension<PadLayout>(new RectangularPadRowLayout(module,xml_pads));
           }//modules
         }//rows
       }//module groups

@@ -28,16 +28,18 @@ namespace DD4hep {
   using namespace Geometry;
   
   /// Standard constructor with arguments
-  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const Geometry::DetElement& d) : module(d) {
-    pads = module.readout().segmentation();
+  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(Geometry::DetElement d,Geometry::Readout readout) 
+    : module(d)
+  {
+    pads = readout.segmentation();
     tube = module.volume().solid();
   }
   
   /// Standard extension constructor. det is the NEW detector element e.g. when reflecting a detector
-  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& /* c */, const Geometry::DetElement& det)
+  FixedPadAngleDiskLayout::FixedPadAngleDiskLayout(const FixedPadAngleDiskLayout& c, Geometry::DetElement det)
     : module(det)
   {
-    pads = module.readout().segmentation();
+    pads = c.pads;
     tube = module.volume().solid();
   }
 
