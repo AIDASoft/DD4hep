@@ -36,6 +36,7 @@ namespace {
 	if ( pv.isValid() )  {
 	  PlacedVolume::VolIDs ids;
 	  Chain node_chain, elt_nodes;
+	  //cout << "Scanning " << de.name() << endl;
 	  scanPhysicalVolume(de, de, pv, ids, node_chain, elt_nodes);
 	  continue;
 	}
@@ -79,7 +80,7 @@ namespace {
 		 << " is sensitive, but has no readout!" 
 		 << " sd:" << sd.ptr()
 		 << " ro:" << ro.ptr() << "," << ro.ptr()
-		 << " Id:" << ro.idSpec().ptr()
+	      // << " Id:" << ro.idSpec().ptr()
 		 << endl;
 	  }
 	}
@@ -89,15 +90,16 @@ namespace {
 	    Chain dau_nodes;
 	    PlacedVolume pv_dau = Ref_t(daughter);
 	    DetElement   de_dau = findElt(e,daughter);
+	    //cout << " ---> Scanning " << pv_dau.name() << endl;
 	    if ( de_dau.isValid() )
 	      scanPhysicalVolume(parent, de_dau, pv_dau, ids, node_chain, dau_nodes);
 	    else
 	      scanPhysicalVolume(parent, e, pv_dau, ids, node_chain, elt_nodes);
 	  }
 	}
-	elt_nodes.pop_back();
-	node_chain.pop_back();
       }
+      elt_nodes.pop_back();
+      node_chain.pop_back();
     }
     pair<VolumeID,VolumeID> encoding(const IDDescriptor iddesc, const PlacedVolume::VolIDs& ids )  const  {
       VolumeID volume_id = ~0x0ull, mask = 0;
@@ -128,6 +130,7 @@ namespace {
       context->detector   = parent;
       context->element    = e;
       context->placement  = Ref_t(n);
+      context->volID      = ids;
       for(size_t i=nodes.size(); i>1; --i)  {  // Omit the placement of the parent DetElement
 	TGeoMatrix* m = nodes[i-1]->GetMatrix();
 	context->toWorld.MultiplyLeft(m);
@@ -135,7 +138,9 @@ namespace {
       context->toDetector = context->toWorld;
       context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
       context->toWorld.MultiplyLeft(o.worldTransformation());
-      section.adoptPlacement(context);
+      if ( !section.adoptPlacement(context) )  {
+	print_node(parent,e,n,ids,nodes,elt_nodes);
+      }
     }
     void print_node(DetElement parent, DetElement e, const TGeoNode* n, 
 		    const PlacedVolume::VolIDs& ids, const Chain& nodes, const Chain& elt_nodes)
@@ -164,11 +169,13 @@ namespace {
       cout << " Sensitive:" << (sensitive ? "YES" : "NO");
       if ( sensitive )   {
 	VolumeManager section = m_volManager.subdetector(volume_id);
+#if 0
 	VolumeManager::Context* ctxt = section.lookupContext(volume_id|0xDEAD);
 	if ( ctxt->placement.ptr() != pv.ptr() )  {
 	  cout << " !!!!! No Volume found!" << endl;
 	}
 	cout << " Pv:" << pv.ptr() << " <> " << ctxt->placement.ptr();
+#endif
       }
       cout << endl;
 #if 0
@@ -246,20 +253,21 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
     Object& o = _data();
     Detectors::const_iterator i=o.subdetectors.find(detector);
     if ( i == o.subdetectors.end() )  {
+      string det_name = detector.name();
       // First check all pre-conditions
       if ( !ro.isValid() )  {
 	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with a "
-			    "valid readout descriptor are allowed. [Invalid DetElement]");
+			    "valid readout descriptor are allowed. [Invalid DetElement:"+det_name+"]");
       }
       PlacedVolume pv = detector.placement();
       if ( !pv.isValid() )   {
 	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with a "
-			    "valid placement are allowed. [Invalid DetElement]");
+			    "valid placement are allowed. [Invalid DetElement:"+det_name+"]");
       }
       PlacedVolume::VolIDs::Base::const_iterator vit = pv.volIDs().find("system");
       if ( vit == pv.volIDs().end() )   {
 	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with "
-			    "valid placement VolIDs are allowed. [Invalid DetElement]");
+			    "valid placement VolIDs are allowed. [Invalid DetElement:"+det_name+"]");
       }
 
       i = o.subdetectors.insert(make_pair(detector,VolumeManager(detector.name()))).first;
@@ -334,14 +342,16 @@ IDDescriptor VolumeManager::idSpec() const   {
 }
 
 /// Register physical volume with the manager (normally: section manager)
-void VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
+bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
   stringstream err;
   Object&      o  = _data();
   PlacedVolume pv = context->placement;
   VolIdentifier vid(VOLUME_IDENTIFIER(context->identifier,context->mask));
   Volumes::iterator i = o.volumes.find(vid);
   if ( (context->identifier&context->mask) != context->identifier )   {
-    err << "Bad context mask!";
+    err << "Bad context mask:" << (void*)context->mask << " id:" << (void*)context->identifier
+	<< " pv:" << pv.name() << " Sensitive:" 
+	<< (pv.volume().isSensitive() ? "YES" : "NO") << endl;
     goto Fail;
   }
   if ( i == o.volumes.end() )   {
@@ -350,18 +360,29 @@ void VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
     cout << "Inserted new volume:" << o.volumes.size() 
 	 << " ID:" << (void*)context->identifier << " Mask:" << (void*)context->mask << endl;
 #endif
-    return;
+    return true;
   }
-  err << "Attempt to register twice volume with identical volID to detector " << o.detector.name() 
-      << " pv:" << pv.name() << " Sensitive:" << (pv.volume().isSensitive() ? "YES" : "NO");
+  err << "Attempt to register twice volume with identical volID "
+      << (void*)context->identifier << " Mask:" << (void*)context->mask
+      << " to detector " << o.detector.name()
+      << " ptr:" << (void*)pv.ptr() << " -- " << (*i).second->placement.ptr()
+      << " pv:" << pv.name() << " Sensitive:" 
+      << (pv.volume().isSensitive() ? "YES" : "NO") << endl;
   goto Fail;
  Fail:
-  cout << "VolumeManager::adoptPlacement: " << err.str() << endl;
+  {
+    err << "++++ VolIDS:";
+    const PlacedVolume::VolIDs::Base& ids = context->volID;
+    for(PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+      err << (*vit).first << "=" << (*vit).second << "; ";
+  }
+  cout << "++++[!!!] VolumeManager::adoptPlacement: " << err.str() << endl;
   // throw runtime_error(err.str());
+  return false;
 }
 
 /// Register physical volume with the manager (normally: section manager)
-void VolumeManager::adoptPlacement(Context* context)   {
+bool VolumeManager::adoptPlacement(Context* context)   {
   stringstream err;
   if ( isValid() )  {
     Object& o = _data();
@@ -371,12 +392,14 @@ void VolumeManager::adoptPlacement(Context* context)   {
 	bool isTop = ptr() == o.top;
 	if ( !isTop && (o.flags&ONE) == ONE )  {
 	  VolumeManager top(Ref_t(o.top));
-	  top.adoptPlacement(sys_id,context);
+	  if ( top.adoptPlacement(sys_id,context) )
+	    return true;
 	}
 	if ( (o.flags&TREE) == TREE )  {
-	  adoptPlacement(sys_id,context);
+	  if ( adoptPlacement(sys_id,context) )
+	    return true;
 	}
-	return;
+	return false;
       }
       PlacedVolume pv = context->placement;
       err << "The placement " << pv.name() << " does not belong to detector:" << o.detector.name();
@@ -389,7 +412,8 @@ void VolumeManager::adoptPlacement(Context* context)   {
   goto Fail;
  Fail:
   throw runtime_error(err.str());
-}  
+  return false;
+}
 
 /// Lookup the context, which belongs to a registered physical volume.
 VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const  throw()  {

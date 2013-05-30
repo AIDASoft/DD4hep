@@ -253,23 +253,27 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
     if ( 0 == mat && !density.ptr() ) {
       has_density = false;
     }
-    if ( mat == 0  ) mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
+
+    //cout << "Creating material " << matname << endl;
+    mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
     mat->SetRadLen(radlen_val,intlen_val);
     for(composites.reset(); composites; ++composites)  {
       std::string nam = composites.attr<string>(_U(ref));
-      if ( 0 == (comp_elt=table->FindElement(nam.c_str())) )
+      double fraction = composites.attr<double>(_U(n));
+      if ( 0 != (comp_mat=mgr.GetMaterial(nam.c_str())) )
+	mix->AddElement(comp_mat,fraction);
+      else if ( 0 == (comp_elt=table->FindElement(nam.c_str())) )
 	throw_print("Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam);
-      mix->AddElement(comp_elt,composites.attr<int>(_U(n)));
+      mix->AddElement(comp_elt,fraction);
     }
     for(fractions.reset(); fractions; ++fractions)  {
       std::string nam = fractions.attr<string>(_U(ref));
       double fraction = fractions.attr<double>(_U(n));
       if ( 0 != (comp_mat=mgr.GetMaterial(nam.c_str())) )
 	mix->AddElement(comp_mat,fraction);
-      else if ( 0 != (comp_elt=table->FindElement(nam.c_str())) )
-	mix->AddElement(comp_elt,fraction);
-      else
+      else if ( 0 == (comp_elt=table->FindElement(nam.c_str())) )
 	throw_print("Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam);
+      mix->AddElement(comp_elt,fraction);
     }
     // Update estimated density if not provided.
     if ( !has_density && mix && 0 == mix->GetDensity() ) {
@@ -642,6 +646,9 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
     SensitiveDetector sd;
     if ( attr_ro )  {
       Readout ro = lcdd.readout(element.attr<string>(attr_ro));
+      if ( !ro.isValid() )   {
+	throw runtime_error("No Readout structure present!");
+      }
       sd = SensitiveDetector(name,"sensitive");
       sd.setHitsCollection(ro.name());
       sd.setReadout(ro);

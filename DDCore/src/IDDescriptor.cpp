@@ -47,6 +47,7 @@ namespace {
 	throw runtime_error("Invalid field descriptor:"+dsc);
       field.first  = f.size() == 3 ? ::atoi(f[1].c_str()) : pos;
       field.second = f.size() == 3 ? ::atoi(f[2].c_str()) : ::atoi(f[1].c_str());
+      field.second = ::abs(field.second);
       field.mask   = ~((~0x0ull<<(64-field.second))>>(64-field.second)<<(64-field.first-field.second));
       pos = field.first + ::abs(field.second);
       if ( pos>o->maxBit ) o->maxBit = pos;

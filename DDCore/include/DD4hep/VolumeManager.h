@@ -133,6 +133,8 @@ namespace DD4hep {
 	TGeoHMatrix   toDetector;
 	/// The transformation of space-points to the world corrdinate system 
 	TGeoHMatrix   toWorld;
+	
+	PlacedVolume::VolIDs::Base volID;
       public:
 	/// Default constructor
 	Context();
@@ -213,9 +215,9 @@ namespace DD4hep {
       IDDescriptor idSpec() const;
 
       /// Register physical volume with the manager (normally: section manager)
-      void adoptPlacement(Context* context);
+      bool adoptPlacement(Context* context);
       /// Register physical volume with the manager and pre-computed volume id
-      void adoptPlacement(VolumeID volume_id, Context* context);
+      bool adoptPlacement(VolumeID volume_id, Context* context);
 
       /// Lookup the context, which belongs to a registered physical volume.
       Context*     lookupContext(VolumeID volume_id) const throw();
