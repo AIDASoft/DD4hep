@@ -95,14 +95,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   Volume sensVol(name+"_gas",Tube(sens.inner_r,sens.outer_r,delta.z/2),gasMat);
   sensVol.setVisAttributes(lcdd.visAttributes(x_envelope.visStr()));
   sensVol.setLimitSet(limits);
-  assembly.placeVolume(sensVol,Position(0,0,+sens.z)).addPhysVolID("side",0);
-  assembly.placeVolume(sensVol,Position(0,0,-sens.z),reflect_rot).addPhysVolID("side",1);
 
   // SJA lets have a go at putting in the pad rows
   for (int layer = 0; layer < numberPadRows; layer++) {
     // create twice the number of rings as there are pads, producing an lower and upper part 
     // of the pad with the boundry between them the pad-ring centre
     cylinder_t lower, upper;
+    int layer_id = layer+1;
     lower.inner_r = sens.inner_r + (layer * padHeight);
     lower.outer_r = lower.inner_r + padHeight/2;
     upper.inner_r = lower.outer_r;
@@ -112,16 +111,18 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
     lowerVol.setVisAttributes(lcdd.invisible());
     lowerVol.setSensitiveDetector(sens_det);
     lowerVol.setLimitSet(limits);
-    sensVol.placeVolume(lowerVol).addPhysVolID("layer",layer+1);
+    sensVol.placeVolume(lowerVol).addPhysVolID("layer",layer_id);
 
     Tube   upperTub(upper.inner_r,upper.outer_r,delta.z / 2);
     Volume upperVol(name+_toString(layer,"_upper_layer%d"),upperTub,gasMat);
     upperVol.setVisAttributes(lcdd.invisible());
     upperVol.setSensitiveDetector(sens_det);
     upperVol.setLimitSet(limits);
-    sensVol.placeVolume(upperVol).addPhysVolID("layer",layer+1);
+    sensVol.placeVolume(upperVol).addPhysVolID("layer",-layer_id);
   }
   // SJA end of pad rows 
+  assembly.placeVolume(sensVol,Position(0,0,+sens.z)).addPhysVolID("side",0);
+  assembly.placeVolume(sensVol,Position(0,0,-sens.z),reflect_rot).addPhysVolID("side",1);
 
   // Assembly of the TPC Endplate
   double fracRadLength = 0;
@@ -151,6 +152,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   fracRadLength += dzPiece / mixMat.radLength();
 
   pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   sdet.setPlacement(pv);
   return sdet;
 }

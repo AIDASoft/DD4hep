@@ -93,12 +93,14 @@ void ClicYoke01::collectSensitiveDetectors(xml_det_t e)   {
   // Setup the sensitive detectors for barrel, endcap+ and endcap-
   m_barrel.sensDet = SensitiveDetector("YokeBarrel","yoke");
   Readout ro = lcdd->readout(c.readoutStr());
+  m_barrel.sensDet.setReadout(ro);
   m_barrel.sensDet.setHitsCollection(ro.name());
   m_barrel = DetElement(self,name+"_barrel",e.id());
 
   c = e.child(_U(endcap));
   m_endcapMinus.sensDet = m_endcapPlus.sensDet = SensitiveDetector("YokeEndcap","yoke");
   ro = lcdd->readout(c.readoutStr());
+  m_endcapPlus.sensDet.setReadout(ro);
   m_endcapPlus.sensDet.setHitsCollection(ro.name());
   m_endcapPlus = DetElement(self,name+"_endcap_plus",e.id());
 
@@ -106,6 +108,7 @@ void ClicYoke01::collectSensitiveDetectors(xml_det_t e)   {
     c = e.child(_U(endcap));
     m_plugMinus.sensDet = m_plugPlus.sensDet = SensitiveDetector("YokePlug","yoke");
     ro = lcdd->readout("YokePlugHits");
+    m_plugPlus.sensDet.setReadout(ro);
     m_plugPlus.sensDet.setHitsCollection(ro.name());
     m_plugPlus = DetElement(self,name+"_plug_plus",e.id());
   }
@@ -140,7 +143,6 @@ Volume ClicYoke01::buildEndcap()   {
   Volume           envelope(name+"_endcap_envelope",solid,yokeMat);
   PolyhedraRegular chamberSolid(symmetry,endcap.inner_r,barrel.outer_r,layer_thickness);
   Volume           chamberVol(name+"_endcap",chamberSolid,lcdd->air());
-  Volume           gasVol;
   PlacedVolume     pv;
 
   if ( rpc_last_layer.first+rpc_last_layer.second > layer_thickness ) {
@@ -152,26 +154,18 @@ Volume ClicYoke01::buildEndcap()   {
     Material m = rpc_layers[i].first;
     double   t = rpc_layers[i].second.second;
     PolyhedraRegular h(symmetry,endcap.inner_r,barrel.outer_r,t);
-    Volume   v(name+_toString(i,"_endcap_layer%d"),h,m);
+    Volume   v(name+_toString(i,"_endcap_layer%d_")+m.name(),h,m);
+    double zpos = -layer_thickness/2+rpc_layers[i].second.first+t/2;
     if ( m.ptr() == rpcGasMat.ptr() )   {
       v.setLimitSet(limitSet);
       v.setVisAttributes(rpcGasVis);
       v.setSensitiveDetector(m_barrel.sensDet);
-      gasVol = v;
     }
-    else {
-      double zpos = -layer_thickness/2+rpc_layers[i].second.first+t/2;
-      pv = chamberVol.placeVolume(v,Position(0,zpos,0));
-      pv.addPhysVolID("layer",i);
-    }
+    chamberVol.placeVolume(v,Position(0,zpos,0));
   }
 
   double shift_middle, shift_sensitive;
   for(int i = 0; i < num_layer; i++)      {
-    int id1 = i + 1 + 1000 * (0 + 1) + 100000 * 1;
-    int id2 = i + 1 + 1000 * (0 + 1) + 100000 * 24;
-    pv = chamberVol.placeVolume(gasVol,Position(0,-layer_thickness/2+rpc_chamber_position,0));
-    pv.addPhysVolID("layer",id1);
     if( i != (num_layer - 1))    {
       shift_middle    = -yokeThickness/2 + iron_thickness*(i+1) + (i+0.5)*layer_thickness; 
       shift_sensitive = zEndcap-yokeThickness/2 + iron_thickness*(i+1) + i*layer_thickness +rpc_chamber_position; 
@@ -183,8 +177,9 @@ Volume ClicYoke01::buildEndcap()   {
 #if 0
     muonECSD->AddLayer(i + 1, 0.0, 0.0, shift_sensitive); 
 #endif
+    //cout << "Place endcap layer " << i << endl;
     pv = envelope.placeVolume(chamberVol,Position(0,0,shift_middle));
-    pv.addPhysVolID("layer",id1);
+    pv.addPhysVolID("layer",i);
   }    // end loop over endcap layers
   return envelope;
 }
@@ -227,23 +222,17 @@ Volume ClicYoke01::buildPlug() {
     Material m = rpc_layers[i].first;
     double   t = rpc_layers[i].second.second;
     PolyhedraRegular h(symmetry,endcap.inner_r,HCAL_R_max,t);
-    Volume   v(name+_toString(i,"_plug_layers_layer%d"),h,m);
+    Volume   v(name+_toString(i,"_plug_layer%d_")+m.name(),h,m);
+    double zpos = -layer_thickness/2+rpc_layers[i].second.first+t/2;
     if ( m.ptr() == rpcGasMat.ptr() )   {
       v.setLimitSet(limitSet);
       v.setVisAttributes(rpcGasVis);
       v.setSensitiveDetector(m_plugPlus.sensDet);
-      gasVol = v;
     }
-    else {
-      double zpos = -layer_thickness/2+rpc_layers[i].second.first+t/2;
-      pv = chamberVol.placeVolume(v,Position(0,zpos,0));
-      pv.addPhysVolID("layer",i);
-    }
+    chamberVol.placeVolume(v,Position(0,zpos,0));
   }
   double bigAbsorber = 150;
   for(unsigned int i = 0; i < nLayerPlug; i++)   {
-    int id1 = i + 1 + 1000*(0+1) + 100000*6;
-    int id2 = i + 1 + 1000*(0+1) + 100000*7;
     double shift           = -HCAL_plug_thickness/2 + bigAbsorber + layer_thickness/2; 
     double shift_sensitive =  HCAL_plug_zpos - HCAL_plug_thickness/2 + bigAbsorber + rpc_chamber_position;
     if ( std::abs(shift) > HCAL_plug_thickness/2 )  {
@@ -251,7 +240,7 @@ Volume ClicYoke01::buildPlug() {
     }
     ///// muonPlugSD->AddLayer(i + 1, 0.0, 0.0, shift_sensitive);	    
     pv = plugVol.placeVolume(chamberVol,Position(0,0,shift));
-    pv.addPhysVolID("layer",id1);
+    pv.addPhysVolID("layer",i+1);
   }  //   end loop over plug layers
   return plugVol;
 }
@@ -260,10 +249,10 @@ Volume ClicYoke01::buildPlug() {
 Volume ClicYoke01::buildBarrel() {
   /// notice that the barrel is "short" and endcap has full radius !!! 
   PolyhedraRegular barrelSolid(symmetry,barrel.inner_r,barrel.outer_r,2*(zStartEndcap-yokeBarrelEndcapGap));
-  Volume barrelVol(name+"_barrel",barrelSolid,yokeMat);
-  double angle  = 2*M_PI / symmetry;
-  Volume       gasVol;
-  PlacedVolume pv;
+  Volume           barrelVol(name+"_barrel",barrelSolid,yokeMat);
+  double           angle  = 2*M_PI / symmetry;
+  Volume           gasVol;
+  PlacedVolume     pv;
 
   barrelVol.setVisAttributes(barrel.vis);
  
@@ -271,21 +260,20 @@ Volume ClicYoke01::buildBarrel() {
     double dx, dy, radius_low, radius_mid, radius_sensitive;
     if (i == 0)	  {
       radius_low = barrel.inner_r;
-      radius_mid = radius_low + 0.5 * layer_thickness; // middle of sensitive layer, where to place the chambers
-      radius_sensitive = radius_low + rpc_chamber_position;  // y-center of the layer
+      radius_mid = radius_low + 0.5 * layer_thickness;      // middle of sensitive layer, where to place the chambers
+      radius_sensitive = radius_low + rpc_chamber_position; // y-center of the layer
     }
     else if( i != num_layer)	  {
       radius_low       = barrel.inner_r + i * (iron_thickness + layer_thickness); 
       radius_mid       = radius_low + 0.5 * layer_thickness;  
       radius_sensitive = radius_low + rpc_chamber_position;
-	    
     }
     else  {   // there is always the layer on the "top" of the yoke that doesn't depend on the number of layers inside
       radius_low       = barrel.outer_r - layer_thickness; 
       radius_mid       = radius_low + 0.5 * layer_thickness;  
       radius_sensitive = radius_low + rpc_chamber_position;
     }
-    dx = radius_low * std::tan(angle/2) - 0.05;               // safety margines of 0.1 mm
+    dx = radius_low * std::tan(angle/2) - 0.05;          // safety margines of 0.1 mm
     dy = (zStartEndcap - yokeBarrelEndcapGap)/2. - 0.05; // safety margines 
 #if 0
     m_barrel.sensDet->AddLayer(i+1, dx, radius_sensitive, 0.0); 
@@ -300,18 +288,17 @@ Volume ClicYoke01::buildBarrel() {
     for(size_t j=0; j<rpc_layers.size(); ++j)   {
       Material m = rpc_layers[j].first;
       double   t = rpc_layers[j].second.second;
-      Volume   v(chamber_name+_toString(j,"_layer%d"),Box(dx,t/2,dy),m);
+      Volume   v(chamber_name+_toString(j,"_rpc%d"),Box(dx,t/2,dy),m);
       if ( m.ptr() == rpcGasMat.ptr() )   {
 	v.setLimitSet(limitSet);
 	v.setVisAttributes(rpcGasVis);
 	v.setSensitiveDetector(m_barrel.sensDet);
 	pv = chamberVol.placeVolume(v,Position(0,-chamberBox.y()+rpc_chamber_position,0));
-	pv.addPhysVolID("layer",1+i+100000*2);
+	pv.addPhysVolID("layer",i);
       }
       else {
 	double zpos = -chamberBox.y() + rpc_layers[j].second.first + t/2;
-	pv = chamberVol.placeVolume(v,Position(0,zpos,0));
-	pv.addPhysVolID("layer",i);
+	chamberVol.placeVolume(v,Position(0,zpos,0));
       }
     }
 
@@ -319,21 +306,20 @@ Volume ClicYoke01::buildBarrel() {
     Position pos_pos(radius_mid,0, (zStartEndcap-yokeBarrelEndcapGap)/2);
     Position pos_neg(radius_mid,0,-(zStartEndcap-yokeBarrelEndcapGap)/2);
     for(int j = 0; j < symmetry; j++)	  {
+      int mod_id = j+1;
       double phi = angle*(j+1)+tiltAngle;
       rot.SetPhi(-phi);
 #if 0
-      int id1 = 1 + i + 1000*(j+1) + 100000*2;
-      int id2 = 1 + i + 1000*(j+1) + 100000*3;
       m_barrel.sensDet->SetStaveRotationMatrix(j+1, phi);
 #endif
       // The VolIDs are wrong, but what is in the original code is plain brainless!
       Transform3D tr(rot,RotateZ(pos_pos,phi+M_PI/2));
       pv = barrelVol.placeVolume(chamberVol,tr);
-      pv.addPhysVolID("barrel",i+100*j);
+      pv.addPhysVolID("module",mod_id);
 
       // Equivalent construct without a Transform3D for the negative side:
       pv = barrelVol.placeVolume(chamberVol,RotateZ(pos_neg,phi+M_PI/2),rot);
-      pv.addPhysVolID("barrel",i+100*j);
+      pv.addPhysVolID("module",-mod_id);
     }
   }  // end loop over i (layers)
   return barrelVol;
@@ -417,6 +403,7 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   {
     Volume barrelVol = buildBarrel();
     pv = assembly.placeVolume(barrelVol,Position(),Rotation(tiltAngle,0,0));
+    pv.addPhysVolID("barrel",0);
     m_barrel.setPlacement(pv);
   }
   // -------------------------------------------------
@@ -425,8 +412,10 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   {
     Volume ecVolume = buildEndcap();
     pv = assembly.placeVolume(ecVolume,Position(0,0, zEndcap),Rotation(tiltAngle,0,0));
+    pv.addPhysVolID("barrel",1);
     m_endcapPlus.setPlacement(pv);
     pv = assembly.placeVolume(ecVolume,Position(0,0,-zEndcap),Rotation(tiltAngle+M_PI,0,0));
+    pv.addPhysVolID("barrel",2);
     m_endcapMinus = m_endcapPlus.clone(name+"_endcap_minus",x_det.id());
     m_endcapMinus.setPlacement(pv);
   }
@@ -436,14 +425,17 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   if( m_hasPlug )      {
     Volume plugVol = buildPlug();
     pv = assembly.placeVolume(plugVol,Position(0,0, HCAL_plug_zpos),Rotation(tiltAngle,0,0));
+    pv.addPhysVolID("barrel",3);
     m_plugPlus.setPlacement(pv);
     pv = assembly.placeVolume(plugVol,Position(0,0,-HCAL_plug_zpos),Rotation(tiltAngle+M_PI,0,0));
+    pv.addPhysVolID("barrel",4);
     m_plugMinus = m_plugPlus.clone(name+"_plug_minus",x_det.id());
     m_plugMinus.setPlacement(pv);
   }
   // now place the full assembly
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));
   pv = lcdd->pickMotherVolume(self).placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   self.setPlacement(pv);
   return self;
 }

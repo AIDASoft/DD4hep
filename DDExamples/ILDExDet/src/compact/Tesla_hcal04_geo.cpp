@@ -302,6 +302,7 @@ DetElement Hcal04::construct(LCDD& detector_description, xml_det_t x_det)  {
   buildEndcaps(assembly);
 
   PlacedVolume pv = motherVol.placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   m_barrel.setPlacement(pv);
   self.setPlacement(pv);
   return self;

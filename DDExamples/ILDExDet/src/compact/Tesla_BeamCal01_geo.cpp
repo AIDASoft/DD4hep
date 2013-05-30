@@ -80,9 +80,10 @@ inline int split_n(double totLength, double initSegm)
 
 /// Detector construction function
 DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens_det)  {
+  int det_id = x_det.id();
   lcdd     = &l;
   name     = x_det.nameStr();
-  self._data().id = x_det.id();
+  self._data().id = det_id;
   Assembly     assembly(name);
   PlacedVolume pv;
 
@@ -248,8 +249,9 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens
   vol = Volume(name+"_sensor",solid,materialDiamond);
   vol.setVisAttributes(sensVisAttributes);
   vol.setSensitiveDetector(sens_det);
-  layerVol.placeVolume(vol,Position(0,0,-dLayerBC+dSensor/2));
-  
+  pv = layerVol.placeVolume(vol,Position(0,0,-dLayerBC+dSensor/2));
+  pv.addPhysVolID("sensor",nLayers+1);
+
   // Electrode metalisation of gold
   solid = SubtractionSolid(Tube(inner_r,outer_r,dElectrMet/2,sPhi,TwoPI+sPhi),layerTube);
   vol = Volume(name+"_electrode",solid,materialGold);
@@ -291,13 +293,14 @@ DetElement BeamCal01::construct(LCDD& l, xml_det_t x_det, SensitiveDetector sens
   // Place the Forward calorimeter
   // use copy number to decide which side we are on in SD 1 for forward, 2 for backward
   pos = RotateY(Position(0,0,BCStart+BCLength/2),tiltForw);
-  assembly.placeVolume(caloVol,pos,Rotation(0,0,tiltForw)).addPhysVolID("side",1);
+  assembly.placeVolume(caloVol,pos,Rotation(0,0,tiltForw)).addPhysVolID("side",0);
   pos = RotateY(Position(0,0,BCStart+BCLength/2),tiltBack);
-  assembly.placeVolume(caloVol,pos,Rotation(M_PI,0,tiltBack)).addPhysVolID("side",2);
+  assembly.placeVolume(caloVol,pos,Rotation(M_PI,0,tiltBack)).addPhysVolID("side",1);
 
   // now place the full assembly
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));
   pv = lcdd->pickMotherVolume(self).placeVolume(assembly);
+  pv.addPhysVolID("system",det_id);
   self.setPlacement(pv);
   return self;
 }

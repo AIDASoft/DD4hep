@@ -102,6 +102,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   envVol.placeVolume(fchVol,Position(0,0,-(env.zhalf+wall.zhalf+fch.zhalf)));
 
   pv = motherVol.placeVolume(envVol);
+  pv.addPhysVolID("system",x_det.id());
   sdet.setPlacement(pv);
   return sdet;
 }

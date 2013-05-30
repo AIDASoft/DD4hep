@@ -319,8 +319,8 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   sd.setReadout(ro);
   lcdd->addSensitiveDetector(sd);
 
-  ec_ringSiVol1.setSensitiveDetector(m_endcap.ringSD);
-  ec_ringSiVol2.setSensitiveDetector(m_endcap.ringSD);
+  //ec_ringSiVol1.setSensitiveDetector(m_endcap.ringSD);
+  //ec_ringSiVol2.setSensitiveDetector(m_endcap.ringSD);
   ec_ringSiVol1.setVisAttributes(m_endcap.vis);
   ec_ringSiVol2.setVisAttributes(m_endcap.vis);
   ec_ringSiVol1.setLimitSet(m_limits);
@@ -356,7 +356,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   for(int stav_id=1; stav_id < 9; ++stav_id)   {
     int stave_ident = ECALBARREL*100+stav_id;
     DetElement stave_det(m_barrel,_toString(stav_id,"stave%d"),stave_ident);
-    Assembly staveVol(_toString(stav_id,"stave%d"));
+    Assembly   staveVol(_toString(stav_id,"stave%d"));
     for(int mod_id=1; mod_id < 6; ++mod_id)   {
       double phi = (stav_id-1) * M_PI/4.;
       double z_offset =  (2.*mod_id-6.)*m_barrel.dim_z/2.;
@@ -364,7 +364,7 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
       Position pos(X,Y,z_offset);
       int mod_ident = stave_ident+mod_id;
       pv = staveVol.placeVolume(stave.second,RotateZ(pos,phi),rot);
-      pv.addPhysVolID("barrel",ECALBARREL*100+stav_id*10+mod_id);
+      pv.addPhysVolID("module",mod_id);
       if ( !mod_det.isValid() ) { // same as if(first) ...
 	stave.first->SetName(_toString(mod_id,"module%d").c_str());
 	stave.first._data().id = mod_ident;
@@ -382,11 +382,13 @@ DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
       //theBarrelSD->SetModuleZOffset(mod_id,z_offset);
     }
     pv = assembly.placeVolume(staveVol);
+    pv.addPhysVolID("stave",stav_id);
     stave_det.setPlacement(pv);
   }
 
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));
   pv = motherVol.placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   m_barrel.setPlacement(pv);
   m_endcap.setPlacement(pv);
   self.setPlacement(pv);
@@ -472,7 +474,7 @@ Volume SEcal03::buildSlab(const string& prefix, bool barrel, Dimension dim, Sens
       double wafer_pos_z = -dim.Z()/2 + m_guard_ring_size + wafer_dim_z/2;
       for (int n_wafer_z = 1; n_wafer_z < 3; n_wafer_z++)	    {
 	PlacedVolume pv = siVol.placeVolume(waferVol,Position(wafer_pos_x,wafer_pos_z,0));
-	pv.addPhysVolID("wafer",iwaf*1000 + n_wafer_z);
+	pv.addPhysVolID("wafer_x",iwaf).addPhysVolID("wafer_z",n_wafer_z);
 	wafer_pos_z += wafer_dim_z + 2 * m_guard_ring_size;
       }
       wafer_pos_x += wafer_dim_x + 2 * m_guard_ring_size;
@@ -498,7 +500,7 @@ Volume SEcal03::buildSlab(const string& prefix, bool barrel, Dimension dim, Sens
       double wafer_pos_z = -dim.Z()/2 + m_guard_ring_size + wafer_dim_z/2;
       for (int iwaf_z = 1; iwaf_z < 3; ++iwaf_z)  {
 	PlacedVolume pv = siVol.placeVolume(waf_vol,Position(wafer_pos_x,wafer_pos_z,0));
-	pv.addPhysVolID("wafer",num_wafer_x*1000 + iwaf_z);
+	pv.addPhysVolID("wafer_x",num_wafer_x+1).addPhysVolID("wafer_z",iwaf_z);
 	wafer_pos_z += wafer_dim_z + 2 * m_guard_ring_size;
       }
     }
@@ -513,7 +515,7 @@ Volume SEcal03::buildSlab(const string& prefix, bool barrel, Dimension dim, Sens
       double wafer_pos_z = -dim.X()/2 + m_guard_ring_size + wafer_dim_x /2;
       for (int iwaf_z = 1; iwaf_z < 3; ++iwaf_z)    {
 	PlacedVolume pv = siVol.placeVolume(waferVol,Position(wafer_pos_z,wafer_pos_x,0));
-	pv.addPhysVolID("wafer",iwaf_x*1000 + iwaf_z);
+	pv.addPhysVolID("wafer_x",iwaf_x).addPhysVolID("wafer_z",iwaf_z);
 	wafer_pos_z += wafer_dim_x + 2 * m_guard_ring_size;
       }
       wafer_pos_x += wafer_dim_z + 2 * m_guard_ring_size;
@@ -535,7 +537,7 @@ Volume SEcal03::buildSlab(const string& prefix, bool barrel, Dimension dim, Sens
       double wafer_pos_z = -dim.X()/2 + m_guard_ring_size + wafer_dim_z /2;
       for (int iwaf_z = 1; iwaf_z < 3; iwaf_z++)    {
 	PlacedVolume pv = siVol.placeVolume(waf_vol,Position(wafer_pos_z,wafer_pos_x,0));
-	pv.addPhysVolID("wafer",num_wafer_x*1000 + iwaf_z);
+	pv.addPhysVolID("wafer_x",num_wafer_x+1).addPhysVolID("wafer_z",iwaf_z);
 	wafer_pos_z += wafer_dim_z + 2 * m_guard_ring_size;
       }
     }
@@ -672,7 +674,7 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
 	pos.SetZ(z_floor + m_slab.total_thickness/2);
 	pos = RotateZ(pos,angle_module);
 	pv  = endcap_vol.placeVolume(tower_slab,rot_o,pos);
-	pv.addPhysVolID("Layer",istave*100000 + (itow+1) * 1000 + layer_id);
+	pv.addPhysVolID("layer",istave*100000 + (itow+1) * 1000 + layer_id);
 	if (istave == 1 && itow == 0 && !Zminus) {
 	  //Box      tower_sol  = tower_vol.solid();
 	  //  theEndCapSD->AddLayer(layer_id,-pos.x-tower_sol.x(),pos.z-Si_Slab_Y_offset,pos.y-tower_sol.y());
@@ -690,7 +692,7 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
 	rot_o = (rotOdd*RotationX(M_PI))*RotationZ(angle_module);
 	if ( istave%2 == 1 ) rot_o = rot_o*RotationX(M_PI);
 	pv = endcap_vol.placeVolume(tower_slab,rot_o,pos);
-	pv.addPhysVolID("Layer",istave*100000 + (itow+1) * 1000 + layer_id+1);
+	pv.addPhysVolID("layer",istave*100000 + (itow+1) * 1000 + layer_id+1);
 	if (istave == 1 && itow == 0 && !Zminus) {
 	  //Box      tower_sol  = tower_vol.solid();
 	  //theEndCapSD->AddLayer(layer_id+1,-pos.x-tower_sol.x(),pos.z-Si_Slab_Y_offset,pos.y-tower_sol.y());
@@ -701,7 +703,7 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
       double z_ring = z_floor;
       // Place Si 1 (in z_ring + m_slab.total_thickness / 2)
       pv = endcap_vol.placeVolume(siVol,Position(0,0,z_ring+m_slab.total_thickness/2));
-      pv.addPhysVolID("Layer",layer_id);
+      pv.addPhysVolID("layer",layer_id);
       if(!Zminus) {    // set layer in SD
 	//theEndCapRingSD->AddLayer(layer_id,-siBox.x(),-siBox.y(),z_ring+m_slab.total_thickness/2);
       }
@@ -712,7 +714,7 @@ Volume SEcal03::buildEndcap(DetElement det,bool Zminus, const Endcap& endcap,
   
       // Place Si 2
       pv = endcap_vol.placeVolume(siVol,Position(0,0,z_ring+m_slab.total_thickness/2));
-      pv.addPhysVolID("Layer",layer_id + 1);
+      pv.addPhysVolID("layer",layer_id + 1);
       if(!Zminus) {
 	//theEndCapRingSD->AddLayer(layer_id+1,-siBox.x(),-siBox.y(),z_ring + m_slab.total_thickness/2);
       }
@@ -767,13 +769,14 @@ pair<DetElement,Volume> SEcal03::buildBarrelStave(const Barrel& barrel) {
 
     Dimension radDim1(alveolus_dim_x,rad_thick,m_alveolus.Z());
     Volume radVol1 = buildRadiator(l_nam+"_radiator1",radDim1,barrel.radiatorMaterial);
+
     for (int itow = m_barrel.numTowers; itow > 0; --itow )    {
       y_fl  = y_floor;
       x_off = 0; // to be calculed
       y_off = y_fl - barrel.thickness/2 + m_slab.total_thickness/2;
       // Place First Slab
       pv = staveVol.placeVolume(slabVol,Position(x_off,z_tower_center,y_off),Rotation(0,M_PI,0));
-      pv.addPhysVolID("tower",itow * 1000 + layer_id);
+      pv.addPhysVolID("tower",itow).addPhysVolID("layer",layer_id);
 #if 0
       if (itow == Ecal_barrel_number_of_towers)  {
 	theBarrelSD->AddLayer(layer_id,
@@ -787,13 +790,13 @@ pair<DetElement,Volume> SEcal03::buildBarrelStave(const Barrel& barrel) {
       // Radiator layer "inside" alveolus
       y_off  = -barrel.thickness/2 + y_fl + rad_thick/2;
       pv     =  staveVol.placeVolume(radVol1,Position(0,z_tower_center,y_off));
-      pv.addPhysVolID("tower",itow * 1000 + layer_id);
+      pv.addPhysVolID("tower",itow).addPhysVolID("layer",1000+layer_id);
 
       y_fl  +=  rad_thick + m_fiber_thickness;
       y_off  = -barrel.thickness/2 + y_fl + m_slab.total_thickness/2;
       // Second Slab: starts from bottom to up
       pv = staveVol.placeVolume(radVol1,Position(0,z_tower_center,y_off));
-      pv.addPhysVolID("tower",itow * 1000 + layer_id + 1);
+      pv.addPhysVolID("tower",itow).addPhysVolID("layer",2000+layer_id);
 #if 0
       if (itow == Ecal_barrel_number_of_towers)  	{
 	theBarrelSD->AddLayer(layer_id + 1,
@@ -821,7 +824,7 @@ pair<DetElement,Volume> SEcal03::buildBarrelStave(const Barrel& barrel) {
     Dimension radDim2(radiator_dim_x,rad_thick,radiator_dim_z);
     Volume radVol2 = buildRadiator(l_nam+"_radiator2",radDim2,barrel.radiatorMaterial);
     pv = staveVol.placeVolume(radVol2,Position(0,0,-barrel.thickness/2+y_floor+rad_thick/2));
-
+    
     // update the y_floor
     y_floor += (rad_thick + (N_FIBERS_ALVOULUS + N_FIBERS_W_STRUCTURE) * m_fiber_thickness);
   }

@@ -238,6 +238,7 @@ DetElement SHcalSc02::construct(LCDD& l, xml_det_t x_det)  {
   Assembly assembly = constructDetector();
   assembly.setVisAttributes(lcdd->visAttributes(x_det.visStr()));
   PlacedVolume pv = lcdd->pickMotherVolume(self).placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   self.setPlacement(pv);
   return self;
 }

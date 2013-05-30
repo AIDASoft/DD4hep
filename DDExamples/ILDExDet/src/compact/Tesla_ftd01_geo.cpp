@@ -88,8 +88,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double outer_r = x_disk.outer_r();
     DetElement disk_pos(sdet,_toString(id,"disk%d_neg"),id);
     DetElement disk_neg(sdet,_toString(id,"disk%d_pos"),id);
-    _Ext *ext_pos=disk_pos.addExtension<_Ext>(new _Ext());
-    _Ext *ext_neg=disk_neg.addExtension<_Ext>(new _Ext());
+    _Ext *ext_pos = disk_pos.addExtension<_Ext>(new _Ext());
+    _Ext *ext_neg = disk_neg.addExtension<_Ext>(new _Ext());
     { //... Si sensitive
       Tube   tub(inner_r,outer_r,si_thickness/2.0);
       Volume vol(name+_toString(id,"_disk%d_Si"),tub,diskMat);
@@ -111,10 +111,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double z = z_pos + si_thickness + inner_support_thickness;
       vol.setVisAttributes(supportVis);
       pv = ftdVol.placeVolume(vol,Position(0,0, z));
-      pv.addPhysVolID("disk",id);
       ext_pos->support = pv;
       pv = ftdVol.placeVolume(vol,Position(0,0,-z));
-      pv.addPhysVolID("disk",-id);
       ext_neg->support = pv;
     }
     /* { //... Outer support rings
@@ -198,6 +196,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     ftdVol.placeVolume(vol_cables);
   }
   pv = motherVol.placeVolume(ftdVol);
+  pv.addPhysVolID("system",x_det.id());
   sdet.setPlacement(pv);
   return sdet;
 }

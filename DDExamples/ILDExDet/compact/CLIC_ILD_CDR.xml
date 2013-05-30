@@ -639,7 +639,7 @@
 
         <!--                  maskX01 description 
         -->
-        <detector id="1209" name="clicmaskX01" type="Tesla_maskX01" crossing_angle="ILC_Main_Crossing_Angle/2" vis="MaskVis">
+        <detector id="3" name="clicmaskX01" type="Tesla_maskX01" crossing_angle="ILC_Main_Crossing_Angle/2" vis="MaskVis">
           <component name="QD0" crossType="1" material="Iron" vis="MaskMagnetsVis">
              <start inner_r="3.83*mm" outer_r="35*mm" z="4256*mm"/>
              <end   inner_r="3.83*mm" outer_r="35*mm" z="6965*mm"/>
@@ -672,7 +672,7 @@
 
         <!--                  LumiCalX parameters
         -->
-        <detector id="5" name="SLcal02" type="Tesla_LumiCalX" vis="LcalVis" readout="LcalHits">
+        <detector id="4" name="SLcal02" type="Tesla_LumiCalX" vis="LcalVis" readout="LcalHits">
           <layer inner_r="Lcal_inner_radius" 
                  outer_r="Lcal_outer_radius" 
                  inner_z="Lcal_z_begin"
@@ -692,7 +692,7 @@
 
         <!--                  SEcal03 parameters
         -->
-        <detector id="10" name="ECAL" type="Tesla_SEcal03" limits="EcalLimits" vis="EcalVis">
+        <detector id="5" name="ECAL" type="Tesla_SEcal03" limits="EcalLimits" vis="EcalVis">
           <param lateral_face_thickness="Ecal_lateral_face_thickness"
                  fiber_thickness="Ecal_fiber_thickness"
                  guard_ring_size="Ecal_guard_ring_size"
@@ -733,7 +733,7 @@
 
         <!--                  SHcalSc02 description
         -->
-        <detector id="9" name="Hcal" type="Tesla_SHcalSc02" limits="HcalLimits" vis="HcalVis">
+        <detector id="6" name="Hcal" type="Tesla_SHcalSc02" limits="HcalLimits" vis="HcalVis">
            <module       vis="HcalModuleVis"/>
            <chamber      vis="HcalChamberVis"/>
            <chambergap   vis="HcalChamberGapVis"/>
@@ -752,7 +752,7 @@
 
         <!--                  TPC06  description
         -->
-        <detector id="1197" name="clictpc01" type="Tesla_tpc06" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
+        <detector id="7" name="clictpc01" type="Tesla_tpc06" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
           <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_Ecal_Hcal_barrel_halfZ" vis="TPCTDR_gasVis"/>
           <inner_wall thickness="TPC_inner_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
           <outer_wall thickness="TPC_outer_wall_thickness" material="Aluminum" vis="TPCWallVis"/>
@@ -794,7 +794,7 @@
 
         <!--                  SFtd05 parameters  
          -->
-        <detector id="1198" name="ClicSFtd05" type="Tesla_SFtd05" vis="FtdVis" readout="FtdHits">
+        <detector id="8" name="ClicSFtd05" type="Tesla_SFtd05" vis="FtdVis" readout="FtdHits">
           <params cable_shield_thickness="0.1"
                   ftd1_sit1_radial_diff="-63.0" 
                   ftd3_sit2_radial_diff="-134.0"
@@ -823,7 +823,7 @@
 
         <!--                  SSit03 parameters        
          --> 
-        <detector id="1205" name="SSit03" type="Tesla_SSit03" vis="SitVis" readout="SitHits">
+        <detector id="9" name="SSit03" type="Tesla_SSit03" vis="SitVis" readout="SitHits">
           <params sit2_tpc_gap="20.0*mm" sit1_sit2_relative_gap="0.421687*mm" sensitive_thickness="0.275*mm" support_thickness="1.0*mm"/>
           <layers>
             <layer id="1" half_z="0.158004*mm"/>
@@ -833,7 +833,7 @@
 
         <!--                  SSet02 description
         -->
-        <detector id="1208" name="SSet02" type="Tesla_SSet02" readout="SetHits" vis="SetVis">
+        <detector id="10" name="SSet02" type="Tesla_SSet02" readout="SetHits" vis="SetVis">
           <param distance_set2_ecal_barrel="8.0*mm" 
                  set_layer_radial_diff="2.0*mm" 
                  sensitive_thickness="0.275*mm" 
@@ -842,7 +842,7 @@
 
         <!--                  SEtd02 description
         -->
-        <detector id="1196" name="SEtd02" type="Tesla_SEtd02" readout="EtdHits" vis="EtdVis">
+        <detector id="11" name="SEtd02" type="Tesla_SEtd02" readout="EtdHits" vis="EtdVis">
           <param etd3_ecalendcap_distance_z="20.0" 
                  sensitive_thickness="0.275" 
                  etd_ecalplug_radial_clearance="5.0"
@@ -853,7 +853,7 @@
 
         <!--                  BeamCal01 description
         -->
-        <detector id="1210" name="BeamCal08" type="Tesla_BeamCal01" readout="BeamCalHits" vis="BeamCalVis">
+        <detector id="12" name="BeamCal08" type="Tesla_BeamCal01" readout="BeamCalHits" vis="BeamCalVis">
           <params>
             <param value="0.3004" name="dSensor"/>
             <param value="0.05"   name="dAirgap"/>
@@ -864,7 +864,7 @@
 
         <!--                  SCoil02 description, driver:  coil00
         -->
-        <detector id="9" name="Coil" type="Tesla_coil00" vis="CoilVis">
+        <detector id="13" name="Coil" type="Tesla_coil00" vis="CoilVis">
           <coil inner_r="Hcal_R_max+Hcal_Coil_additional_gap"
                 outer_r="Hcal_R_max+Hcal_Coil_additional_gap+Coil_thickness" 
                 zhalf="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size"
@@ -873,7 +873,7 @@
 
         <!--                  ClicYoke01 description             
         -->
-        <detector id="1203" name="clicyoke01" type="Tesla_ClicYoke01" limits="YokeLimits" vis="YokeVis">
+        <detector id="14" name="clicyoke01" type="Tesla_ClicYoke01" limits="YokeLimits" vis="YokeVis">
           <yoke symmetry="12" vis="YokeVis" material="Iron"/>
           <muon cell_size="30.0" 
                 layer_thickness="40.0" 
@@ -913,34 +913,34 @@
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="BeamCalHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,layer:7,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="SitHits">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="FtdHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,disk:14,strip:20</id>
         </readout>
         <readout name="EtdHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,disk:10:-4,side:32:-2,strip:20</id>
         </readout>
         <readout name="SetHits">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="TPCHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,side:1,layer:20,strip:20</id>
         </readout>
         <readout name="TPCfchHits">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>
         <readout name="EcalBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,barrel:3,stave:4,module:3,tower:8,layer:6,wafer_x:8,wafer_z:8,side:38:-2,strip:20</id>
         </readout>
         <readout name="EcalEndcapHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,barrel:3,stave:4,tower:8,layer:6,wafer_x:8,wafer_z:8,side:35:-2,strip:20</id>
         </readout>
         <readout name="EcalEndcapRingHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:6,barrel:3,stave:4,tower:8,layer:6,wafer_x:8,wafer_z:8,side:35:-2,strip:20</id>
         </readout>
         <readout name="HcalRegularHits">
             <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
@@ -949,16 +949,16 @@
             <id>system:6,barrel:3,layer:4,module:16</id>
         </readout>
         <readout name="HcalEndcapHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:4,layer:6,module:16</id>
         </readout>
         <readout name="YokeBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:4,layer:8,module:16</id>
         </readout>
         <readout name="YokeEndcapHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:4,layer:8,module:16</id>
         </readout>
         <readout name="YokePlugHits">
-            <id>system:6,barrel:3,layer:4,module:16</id>
+            <id>system:6,barrel:4,layer:8,module:16</id>
         </readout>
     </readouts>
 

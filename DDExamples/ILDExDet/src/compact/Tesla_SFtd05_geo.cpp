@@ -104,10 +104,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
 #endif
 
   //... Disks
-  int cnt = 0;
+  int disk_id = 1;
   cylinder_t outer, inner;
   //... assembling detector
-  for(xml_coll_t c(x_disks,_U(disk)); c; ++c, ++cnt) {
+  for(xml_coll_t c(x_disks,_U(disk)); c; ++c, ++disk_id) {
     //... Get the disk parameters
     xml_comp_t x_disk(c);
     int id = x_disk.id();
@@ -244,19 +244,19 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
     }
 
     //... Si sensitive
-    Tube  diskTube(inner_radius,outer_radius,si_thickness/2);
-    Volume diskVol(disk_name+_toString(cnt,"_silicon_%d"),diskTube,siliconMat);
+    Tube   diskTub(inner_radius,outer_radius,si_thickness/2);
+    Volume diskVol(disk_name+_toString(disk_id,"_silicon_%d"),diskTub,siliconMat);
     diskVol.setSensitiveDetector(sens_det);
     diskVol.setVisAttributes(diskVis);
-    assembly.placeVolume(diskVol,Position(0,0, z_pos)).addPhysVolID("disk", id);
-    assembly.placeVolume(diskVol,Position(0,0,-z_pos)).addPhysVolID("disk",-id);
+    assembly.placeVolume(diskVol,Position(0,0, z_pos)).addPhysVolID("disk", disk_id);
+    assembly.placeVolume(diskVol,Position(0,0,-z_pos)).addPhysVolID("disk",-disk_id);
 
     //... Support
-    Tube  suppTube(inner_radius,outer_radius,support_thickness/2);
-    Volume suppVol(disk_name+_toString(cnt,"_support_%d"),suppTube,kaptonMat);
+    Tube   suppTub(inner_radius,outer_radius,support_thickness/2);
+    Volume suppVol(disk_name+_toString(disk_id,"_support_%d"),suppTub,kaptonMat);
     suppVol.setVisAttributes(supportVis);     
-    assembly.placeVolume(diskVol,Position(0,0,  z_pos+si_thickness/2+support_thickness/2));
-    assembly.placeVolume(diskVol,Position(0,0,-(z_pos+si_thickness/2+support_thickness/2)));
+    assembly.placeVolume(suppVol,Position(0,0,  z_pos+si_thickness/2+support_thickness/2));
+    assembly.placeVolume(suppVol,Position(0,0,-(z_pos+si_thickness/2+support_thickness/2)));
   }
   
   //... Outer cylinder
@@ -278,17 +278,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
 		    shield.rmin2,shield.rmin2+cables_thickness,
 		    cable_shield_thickness,inner.zhalf());
 
-  Cone cablesSolid(cables.zhalf,cables.rmin1,cables.rmax1,cables.rmin2,cables.rmax2);
-  Volume cablesVol(name+"_cables",cablesSolid,copperMat);
+  Cone   cablesSol(cables.zhalf,cables.rmin1,cables.rmax1,cables.rmin2,cables.rmax2);
+  Volume cablesVol(name+"_cables",cablesSol,copperMat);
   cablesVol.setVisAttributes(cablesVis);
   
-  Cone shieldSolid(shield.zhalf,shield.rmin1,shield.rmax1,shield.rmin2,shield.rmax2);
-  Volume shieldVol(name+"_shield",shieldSolid,kaptonMat);
+  Cone   shieldSol(shield.zhalf,shield.rmin1,shield.rmax1,shield.rmin2,shield.rmax2);
+  Volume shieldVol(name+"_shield",shieldSol,kaptonMat);
   shieldVol.setVisAttributes(cablesVis);
   shieldVol.placeVolume(cablesVol);
 
-  Cone cylinderSolid(inner_cone.zhalf,inner_cone.rmin1,inner_cone.rmax1,inner_cone.rmin2,inner_cone.rmax2);
-  Volume cylinderVol(name+"_cylinder",cylinderSolid,kaptonMat);
+  Cone   cylinderSol(inner_cone.zhalf,inner_cone.rmin1,inner_cone.rmax1,inner_cone.rmin2,inner_cone.rmax2);
+  Volume cylinderVol(name+"_cylinder",cylinderSol,kaptonMat);
   cylinderVol.setVisAttributes(cylinderVis);
   cylinderVol.placeVolume(shieldVol);
 
@@ -297,6 +297,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det) {
   assembly.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
 
   PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   sdet.setPlacement(pv);
   return sdet;
 }
