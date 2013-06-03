@@ -18,15 +18,15 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
-  DetElement  vxd;
-  xml_det_t   x_det = e;
-  string      name  = x_det.nameStr();
+  DetElement   vxd;
+  xml_det_t    x_det = e;
+  string       name  = x_det.nameStr();
+  Assembly     assembly(name+"_assembly");
+  PlacedVolume pv;
 
   VXDData* vxd_data = new VXDData();
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
-
-  Volume      mother = lcdd.pickMotherVolume(vxd);    
 
   // setup the encoder
   UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
@@ -133,11 +133,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       encoder[ILDCellID0::module]  = j  ;
       int cellID0 = encoder.lowWord() ;
 
-      mother.placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
+      assembly.placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
     }
-    
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);
   }
+  pv = lcdd.pickMotherVolume(vxd).placeVolume(assembly);
+  vxd.setPlacement(pv);
   return vxd;
 }
 

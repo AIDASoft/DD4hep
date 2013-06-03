@@ -411,7 +411,6 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
   G4PVPlacement* g4    = info.g4Placements[node];
   if ( !g4 )   {
     TGeoMatrix*      trafo = node->GetMatrix();
-
     int              copy  = node->GetNumber();
 
     // if the CellID0 volID is defined for the volume we 
@@ -428,16 +427,12 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	copy = it->second ;
     }
     //--------------------------------------------------------
-
-
     G4LogicalVolume* vol   = info.g4Volumes[node->GetVolume()];
     G4LogicalVolume* mot   = info.g4Volumes[node->GetMotherVolume()];
     if ( trafo ) {
       const Double_t*  trans = trafo->GetTranslation();
-      const Value<TGeoNodeMatrix,PlacedVolume::Object>* obj = 
-	dynamic_cast<const Value<TGeoNodeMatrix,PlacedVolume::Object>* >(node);
       if ( 0 == vol ) {
-	cout << "FATAL: Unknown G4 volume:" << (void*)obj << " " << obj->GetName() << endl; 
+	cout << "FATAL: Unknown G4 volume:" << (void*)node << " " << node->GetName() << endl; 
       }
       else if ( trafo->IsRotation() )    {
 	const Double_t*  rot   = trafo->GetRotationMatrix();
@@ -647,7 +642,7 @@ void* Geant4Converter::printSensitive(const TNamed* sens_det, const set<const TG
   G4GeometryInfo& info = data();
   Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
   ConstVolumeSet& volset = info.sensitives[sens_det];
-  SensitiveDetector sd = Ref_t(sens_det);
+  SensitiveDetector   sd = Ref_t(sens_det);
   bool verbose = sd.verbose();
 
   if ( verbose )    {

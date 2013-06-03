@@ -18,12 +18,12 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
   
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
-  xml_det_t   x_det = e;
-  string      name  = x_det.nameStr();
-  DetElement  sit(name,x_det.id());
-  Volume      mother = lcdd.pickMotherVolume(sit);
-  
-  
+  xml_det_t    x_det = e;
+  string       name  = x_det.nameStr();
+  DetElement   sit(name,x_det.id());
+  Assembly     assembly(name+"_assembly");
+  PlacedVolume pv;
+
   // setup the encoder
   UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
   encoder.reset() ;  // reset to 0
@@ -75,11 +75,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
       encoder[ILDCellID0::module]  = j  ;
       int cellID0 = encoder.lowWord() ;
-
-      mother.placeVolume(laddervol,pos,Rotation(0,0,j*dphi)).addPhysVolID("CellID0", cellID0 )  ;
-
+      assembly.placeVolume(laddervol,pos,Rotation(0,0,j*dphi)).addPhysVolID("CellID0", cellID0 )  ;
    }
   }
+  pv = lcdd.pickMotherVolume(sit).placeVolume(assembly);
+  sit.setPlacement(pv);
   return sit;
 }
 
