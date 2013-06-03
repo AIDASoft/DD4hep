@@ -79,6 +79,9 @@ int main(int argc,char** argv)  {
   LCDD& lcdd = dd4hep_instance();
   // Load compact files
   run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
+  // Create volume manager and populate it required
+  if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+  // Execute data converter.
   if ( compact2lcdd )
     run_plugin(lcdd,"DD4hepGeometry2LCDD",output,&argv[output]);
   else if ( compact2gdml )
@@ -89,7 +92,6 @@ int main(int argc,char** argv)  {
     run_plugin(lcdd,"DD4hepGeometry2VISASCII",output,&argv[output]);
   else if ( compact2vis )
     run_plugin(lcdd,"DD4hepGeometry2VIS",output,&argv[output]);
-  if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
   if ( destroy ) delete &lcdd;
   return 0;
 }

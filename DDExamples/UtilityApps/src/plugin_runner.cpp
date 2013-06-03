@@ -54,9 +54,10 @@ int main(int argc,char** argv)  {
   LCDD& lcdd = dd4hep_instance();
   // Load compact files
   run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
+  // Create volume manager and populate it required
+  if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
   // Execute plugin
   run_plugin(lcdd,plugin.c_str(),0,0);
-  if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
   if ( destroy ) delete &lcdd;
   return 0;
 }

@@ -263,7 +263,9 @@ PlacedVolume::VolIDs::insert(const string& name, int value)   {
 }
 
 static PlacedVolume::Object* _data(const PlacedVolume& v)  {
-  return dynamic_cast<PlacedVolume::Object*>(v.ptr());
+   PlacedVolume::Object* o = dynamic_cast<PlacedVolume::Object*>(v.ptr());
+   if ( o ) return o;
+   throw runtime_error("Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Add identifier
@@ -316,9 +318,12 @@ Volume::Object::~Object()  {
 }
 
 /// Accessor to the data part of the Volume
-Volume::Object* _data(const Volume& v) {
+Volume::Object* _data(const Volume& v, bool throw_exception = true) {
   //if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
-  return dynamic_cast<Volume::Object*>(v.ptr());
+  Volume::Object* o = dynamic_cast<Volume::Object*>(v.ptr());
+  if ( o ) return o;
+  else if ( !throw_exception ) return 0;
+  throw runtime_error("Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Constructor to be used when creating a new geometry tree.
@@ -535,12 +540,16 @@ Material Volume::material() const
 {  return Ref_t(m_element->GetMedium());   }
 
 /// Access the visualisation attributes
-VisAttr Volume::visAttributes() const
-{  return _data(*this)->vis;                              }
+VisAttr Volume::visAttributes() const  {  
+  Object* o = _data(*this,false);
+  if ( o ) return o->vis;
+  return VisAttr();
+}
 
 /// Access to the handle to the region structure
-Region Volume::region() const   
-{  return _data(*this)->region;                           }
+Region Volume::region() const    {
+  return _data(*this)->region;
+}
 
 /// Access to the limit set
 LimitSet Volume::limitSet() const   

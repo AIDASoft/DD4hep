@@ -72,7 +72,6 @@ void LCDDConverter::GeometryInfo::check(const string& name, const TNamed* n,map<
 
 /// Initializing Constructor
 LCDDConverter::LCDDConverter( LCDD& lcdd ) : m_lcdd(lcdd), m_dataPtr(0) {
-  m_checkOverlaps = true;
 }
 
 LCDDConverter::~LCDDConverter()   {
@@ -952,10 +951,9 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   }
   GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
   m_data->clear();
-
   collect(top,geo);
-  m_checkOverlaps = false;
 
+  cout << "++ ==> Converting in memory detector description to GDML format..." << endl;
   const char* comment = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description GDML in C++  ++++\n"
@@ -1020,8 +1018,7 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
   GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
   m_data->clear();
   collect(top,geo);
-  m_checkOverlaps = false;
-
+  cout << "++ ==> Dump visualisation attributes from in memory detector description..." << endl;
   const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description LCDD in C++  ++++\n"
@@ -1054,8 +1051,6 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   GeometryInfo& geo = *(m_dataPtr=new GeometryInfo);
   m_data->clear();
   collect(top,geo);
-  m_checkOverlaps = false;
-
   const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description LCDD in C++  ++++\n"
@@ -1098,6 +1093,7 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   for(LCDD::HandleMap::const_iterator i=fld.begin(); i!=fld.end(); ++i)
     geo.fields.insert((*i).second.ptr());
 
+  cout << "++ ==> Converting in memory detector description to LCDD format..." << endl;
   handleHeader();
   // Start creating the objects for materials, solids and log volumes.
   handle(this, geo.materials, &LCDDConverter::handleMaterial);
