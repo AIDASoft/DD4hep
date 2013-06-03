@@ -416,8 +416,10 @@ void LCDDImp::init()  {
     Volume tracking("tracking_volume",trackingSolid, vacuum);
     m_world          = TopDetElement("world",world);
     m_trackers       = TopDetElement("tracking",tracking);
-    m_worldVol       = world;
     m_trackingVol    = tracking;
+    m_worldVol       = world;
+    PlacedVolume pv  = m_worldVol.placeVolume(tracking);
+    m_trackers.setPlacement(pv);
     m_materialAir    = material("Air");
     m_materialVacuum = material("Vacuum");
     m_detectors.append(m_world);
