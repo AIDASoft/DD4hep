@@ -34,7 +34,7 @@ Readout::Readout(const string& nam)
 void Readout::setIDDescriptor(const Ref_t& new_descriptor)  const   {
   if ( isValid() )  {                    // Remember: segmentation is NOT owned by readout structure!
     if ( new_descriptor.isValid() )  {   // Do NOT delete!
-      object<Object>().id = new_descriptor;
+      data<Object>()->id = new_descriptor;
       return;
     }
   }
@@ -67,10 +67,30 @@ Segmentation Readout::segmentation() const  {
   return object<Object>().segmentation;
 }
 
+/// Standard constructor
+Alignment::Object::Object()  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Alignment::Object::~Object()  {
+  InstanceCount::decrement(this);
+}
+
 /// Initializing constructor to create a new object
 Alignment::Alignment(const LCDD& /* lcdd */, const string& nam)
 {
   assign(new Object(),nam,"alignment");
+}
+
+/// Standard constructor
+Conditions::Object::Object()  {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Conditions::Object::~Object()  {
+  InstanceCount::decrement(this);
 }
 
 /// Initializing constructor to create a new object

@@ -12,6 +12,7 @@
 // Framework include files
 #include "DD4hep/Factories.h"
 #include "DD4hep/LCDD.h"
+#include "../LCDDImp.h"
 
 // ROOT includes
 #include "TGeoManager.h"
@@ -52,3 +53,19 @@ static long load_compact(LCDD& lcdd,int argc,char** argv)    {
 }
 DECLARE_APPLY(DD4hepCompactLoader,load_compact);
 
+static long load_volmgr(LCDD& lcdd,int,char**)    {
+  try {
+    LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
+    imp->m_volManager = VolumeManager("World", imp->world(), Readout(), VolumeManager::TREE);
+    cout << "++ Volume manager populated and loaded." << endl;
+  }
+  catch(const exception& e)  {
+    throw runtime_error(string(e.what())+"\n"
+			"           while programming VolumeManager. Are your volIDs correct?");
+  }
+  catch(...)  {
+    throw runtime_error("UNKNOWN exception while programming VolumeManager. Are your volIDs correct?");
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hepVolumeManager,load_volmgr);

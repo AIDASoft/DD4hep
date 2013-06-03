@@ -66,6 +66,11 @@ namespace {
 	Volume vol = pv.volume();
 	node_chain.push_back(node);
 	elt_nodes.push_back(node);
+#if 0
+	const PlacedVolume::VolIDs::Base& vids = pv.volIDs();
+	for(PlacedVolume::VolIDs::Base::const_iterator i=vids.begin(); i!=vids.end(); ++i)
+	  ids.push_back(*i);
+#endif
 	ids.PlacedVolume::VolIDs::Base::insert(ids.end(),pv.volIDs().begin(),pv.volIDs().end());
 	if ( vol.isSensitive() )  {
 	  SensitiveDetector sd = vol.sensitiveDetector();

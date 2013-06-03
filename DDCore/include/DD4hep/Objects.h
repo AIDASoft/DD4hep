@@ -105,7 +105,7 @@ namespace DD4hep {
 	/// Standard constructor
 	Object();
 	/// Default destructor
-	~Object();	
+	virtual ~Object();	
       };
       /// Default constructor
       Header() : Ref_t() {}
@@ -270,7 +270,7 @@ namespace DD4hep {
 	/// Standard constructor
 	Object();
 	/// Default destructor
-	~Object();
+	virtual ~Object();
       };
       /// Default constructor
       VisAttr() : Ref_t() {}
@@ -380,7 +380,7 @@ namespace DD4hep {
 	/// Standard constructor
 	Object();
 	/// Default destructor
-	~Object();
+	virtual ~Object();
       };
       /// Constructor to be used when reading the already parsed DOM tree
       LimitSet() : Ref_t() {}
@@ -411,7 +411,7 @@ namespace DD4hep {
 	/// Standard constructor
 	Object();
 	/// Default destructor
-	~Object();
+	virtual ~Object();
       };
       /// Default constructor
       Region() : Ref_t() {}

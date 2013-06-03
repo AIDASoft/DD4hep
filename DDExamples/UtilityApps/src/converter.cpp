@@ -27,6 +27,8 @@ namespace {
       "                                    [Only valid for -compact2vis]             \n"
       "        -destroy        [OPTIONAL]  Force destruction of the LCDD instance    \n"
       "                                    before exiting the application            \n"
+      "        -volmgr         [OPTIONAL]  Load and populate phys.volume manager to  \n"
+      "                                    check the volume ids for duplicates etc.  \n"
 	 << endl;
     exit(EINVAL);
   }
@@ -36,6 +38,7 @@ namespace {
 //______________________________________________________________________________
 int main(int argc,char** argv)  {
   bool ascii = false;
+  bool volmgr = false;
   bool destroy      = false;
   bool compact2lcdd = false;
   bool compact2gdml = false;
@@ -61,6 +64,8 @@ int main(int argc,char** argv)  {
         ascii = true;
       else if ( strncmp(argv[i],"-destroy",2)==0 )
         destroy = true;
+      else if ( strncmp(argv[i],"-volmgr",2)==0 )
+        volmgr = true;
       else
 	usage();
     }
@@ -84,6 +89,7 @@ int main(int argc,char** argv)  {
     run_plugin(lcdd,"DD4hepGeometry2VISASCII",output,&argv[output]);
   else if ( compact2vis )
     run_plugin(lcdd,"DD4hepGeometry2VIS",output,&argv[output]);
+  if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
   if ( destroy ) delete &lcdd;
   return 0;
 }

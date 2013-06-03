@@ -1,14 +1,52 @@
 DD4hep  ----  Release Notes
 =================================
 
+2013/02/06    Markus Frank
+--------------------------
+  1) Simplyfy inheritance for common objects from TNamed.
+     Use direct inheritance of Object from TNamed rather than hidden 
+     using the Value<a,b> construct.
+  2) Added physical volume manager to simplyfy the detector element 
+     and sensitive detector lookup from a given physical volume.
+     This implies: If the volume manager is instantiated, the readout specifiers
+     MUST be correct. This is in most xml files NOT the case.
+     The "system" field holding the sibdetector-id is MANDATORY!
+     Otherwise you will receive messages like this:
+
+     Exception:SITCollection: This ID descriptor has no field with the name:CellID0
+               while programming VolumeManager. Are your volIDs correct?
+
+  3) To check the volume identification, add argument -volmgr to geoConverter,
+     geoDisplay, etc.
+  4) To trace possible memory leaks:
+     export DD4HEP_TRACE=Yes
+     then run you converter etc. At the end a table is displayed with a "leakage"
+     column, showing how many objects were not deleted.
+     
+     +----------------------------------------------------------------+
+     |   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O   |
+     +----------+---------+-------------------------------------------+
+     |   Total  | Leaking |      Type identifier                      |
+     +----------+---------+-------------------------------------------+
+     |        13|        0|DD4hep::Geometry::DetElement::Object
+     |         3|        0|DD4hep::Geometry::SensitiveDetector::Object
+     |         3|        0|DD4hep::Geometry::Readout::Object
+     |         1|        0|DD4hep::Geometry::OverlayedField::Object
+     |         1|        0|DD4hep::Geometry::CartesianField::Object
+     ....
+     Ideally the second column only has "0"s. Instances of 1 may be OK (singletons).
+
+  Prenotice:
+     As soon as ROOT v 6.00 is out, we will have to use it!
+     Andrei kindly agreed to implement a few changes to TGeo, which will make 
+     life much easier and the implementation cleaner and less cumbersome.
+
+
  --------
 | v00-01 |
  --------
     
     - first beta release...
-
-
-
 
 
 2013/20/03    Markus Frank

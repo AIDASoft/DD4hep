@@ -55,7 +55,7 @@ namespace DD4hep {
 	/// Default constructor
 	Object();
 	/// Default destructor
-	~Object();
+	virtual ~Object();
 	/// Call to access the field components at a given location
 	virtual void fieldComponents(const double* pos, double* field) = 0;
       };
@@ -125,7 +125,7 @@ namespace DD4hep {
 	/// Default constructor
 	Object();
 	/// Default destructor
-	~Object();
+	virtual ~Object();
       };
 
       /// Default constructor

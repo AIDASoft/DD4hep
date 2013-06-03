@@ -85,7 +85,7 @@ namespace DD4hep {
 	/// Standard constructor
         Object();
 	/// Default destructor
-        ~Object();
+        virtual ~Object();
       };
       
     protected:

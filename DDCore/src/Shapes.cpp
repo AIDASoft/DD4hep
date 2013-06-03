@@ -178,18 +178,16 @@ ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, d
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
-  //_assign((TGeoTubeSeg*)new TGeoTube(rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM),name,"tube",true);
-  _assign(new TGeoTubeSeg(rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube",true);
-  //MyConeSeg* s = new MyConeSeg();
-  //_assign(s,name,"tube",true);
-  //setDimensions(rmin,rmax,z,startPhi,deltaPhi);
+  //_assign(new TGeoTubeSeg(rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube",true);
+  _assign(new MyConeSeg(),name,"tube",true);
+  setDimensions(rmin,rmax,z,startPhi,deltaPhi);
 }
 
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi)
 {
-  double params[] = {rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
-  //double params[] = {z*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  //double params[] = {rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  double params[] = {z*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,rmin*MM_2_CM,rmax*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
   _setDimensions(params);
   return *this;
 }

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: Volumes.cpp 574 2013-05-17 20:38:31Z markus.frank $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -7,6 +7,7 @@
 //
 //====================================================================
 
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/InstanceCount.h"
 
@@ -17,7 +18,6 @@
 #include "TGeoNode.h"
 #include "TGeoMatrix.h"
 #include "TGeoMedium.h"
-
 #include "TGeoVoxelFinder.h"
 #include "TGeoShapeAssembly.h"
 
@@ -30,214 +30,33 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-namespace DD4hep  { namespace Geometry  {
-  
-  template <> struct Value<TGeoNodeMatrix,PlacedVolume::Object> 
-  : public TGeoNodeMatrix, public PlacedVolume::Object  
-  {
-    Value(const TGeoVolume* v, const TGeoMatrix* m) : TGeoNodeMatrix(v,m), PlacedVolume::Object() {
-      magic = magic_word();
-      InstanceCount::increment(this);
-    }
-    Value(const Value& c) : TGeoNodeMatrix(c.GetVolume(),c.GetMatrix()), PlacedVolume::Object(c) {
-      InstanceCount::increment(this);
-    }
-    virtual ~Value() {
-      InstanceCount::decrement(this);
-    }
-    virtual TGeoNode *MakeCopyNode() const {
-      TGeoNodeMatrix *node = new Value<TGeoNodeMatrix,PlacedVolume::Object>(*this);
-      node->SetName(GetName());
-      // set the mother
-      node->SetMotherVolume(fMother);
-      // set the copy number
-      node->SetNumber(fNumber);
-      // copy overlaps
-      if (fNovlp>0) {
-	if (fOverlaps) {
-	  Int_t *ovlps = new Int_t[fNovlp];
-	  memcpy(ovlps, fOverlaps, fNovlp*sizeof(Int_t));
-	  node->SetOverlaps(ovlps, fNovlp);
-	} else {
-	  node->SetOverlaps(fOverlaps, fNovlp);
-	}
-      }
-      // copy VC
-      if (IsVirtual()) node->SetVirtual();
-      return node;
-    }
-  };
-  
-  template <class T> struct _VolWrap : public T  {
-    _VolWrap(const char* name, TGeoShape* s=0, TGeoMedium* m=0);
-    virtual ~_VolWrap() {}
-    virtual void AddNode(const TGeoVolume *vol, Int_t copy_no, TGeoMatrix *mat, Option_t* = "") {
-      TGeoMatrix *matrix = mat;
-      if ( matrix == 0 ) matrix = gGeoIdentity;
-      else               matrix->RegisterYourself();
-      if (!vol)   {
-        this->T::Error("AddNode", "Volume is NULL");
-        return;
-      }
-      if (!vol->IsValid())   {
-        this->T::Error("AddNode", "Won't add node with invalid shape");
-        printf("### invalid volume was : %s\n", vol->GetName());
-        return;
-      }
-      if ( !this->T::fNodes ) this->T::fNodes = new TObjArray();   
-      
-      if ( this->T::fFinder )    {
-        // volume already divided.
-        this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no, this->T::GetName());
-        return;
-      }
-      
-      TGeoNodeMatrix *node = new Value<TGeoNodeMatrix,PlacedVolume::Object>(vol, matrix);
-      //node = new TGeoNodeMatrix(vol, matrix);
-      node->SetMotherVolume(this);
-      this->T::fNodes->Add(node);
-      TString name = TString::Format("%s_%d", vol->GetName(), copy_no);
-      if (this->T::fNodes->FindObject(name))
-        this->T::Warning("AddNode", "Volume %s : added node %s with same name", this->T::GetName(), name.Data());
-      node->SetName(name);
-      node->SetNumber(copy_no);
-    }
-  };
-  
-  template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
-  : TGeoVolume(name,s,m) {}
-  template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* /* s */, TGeoMedium* /* m */)
-  : TGeoVolumeAssembly(name) {}
-  
-  template <> struct Value<TGeoVolume,Volume::Object>
-  : public _VolWrap<TGeoVolume>, public Volume::Object  {
-    Value(const char* name, TGeoShape* s=0, TGeoMedium* m=0) 
-      : _VolWrap<TGeoVolume>(name,s,m) {
-      magic = magic_word();
-      InstanceCount::increment(this);
-    }
-    virtual ~Value() {
-      InstanceCount::decrement(this);
-    }
-    TGeoVolume *_copyVol(TGeoShape *newshape) const {
-      typedef Value<TGeoVolume,Volume::Object> _Vol;
-      _Vol *vol = new _Vol(GetName(), newshape, fMedium);
-      vol->copy(*this);
-      return vol;
-    }
-    virtual TGeoVolume* MakeCopyVolume(TGeoShape *newshape) {
-      // make a copy of this volume. build a volume with same name, shape and medium
-      TGeoVolume *vol = _copyVol(newshape);
-      vol->SetVisibility(IsVisible());
-      vol->SetLineColor(GetLineColor());
-      vol->SetLineStyle(GetLineStyle());
-      vol->SetLineWidth(GetLineWidth());
-      vol->SetFillColor(GetFillColor());
-      vol->SetFillStyle(GetFillStyle());
-      vol->SetField(fField);
-      if (fFinder) vol->SetFinder(fFinder);
-      CloneNodesAndConnect(vol);
-      ((TObject*)vol)->SetBit(kVolumeClone);
-      return vol;       
-    }
-    virtual TGeoVolume* CloneVolume() const    {
-      TGeoVolume *vol = _copyVol(fShape);
-      Int_t i;
-      // copy volume attributes
-      vol->SetLineColor(GetLineColor());
-      vol->SetLineStyle(GetLineStyle());
-      vol->SetLineWidth(GetLineWidth());
-      vol->SetFillColor(GetFillColor());
-      vol->SetFillStyle(GetFillStyle());
-      // copy other attributes
-      Int_t nbits = 8*sizeof(UInt_t);
-      for (i=0; i<nbits; i++) 
-        vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
-      for (i=14; i<24; i++)
-        vol->SetBit(1<<i, TestBit(1<<i));   
-      
-      // copy field
-      vol->SetField(fField);
-      // Set bits
-      for (i=0; i<nbits; i++) 
-        vol->SetBit(1<<i, TObject::TestBit(1<<i));
-      vol->SetBit(kVolumeClone);   
-      // copy nodes
-      //   CloneNodesAndConnect(vol);
-      vol->MakeCopyNodes(this);   
-      // if volume is divided, copy finder
-      vol->SetFinder(fFinder);
-      // copy voxels
-      TGeoVoxelFinder *voxels = 0;
-      if (fVoxels) {
-        voxels = new TGeoVoxelFinder(vol);
-        vol->SetVoxelFinder(voxels);
-      }   
-      // copy option, uid
-      vol->SetOption(fOption);
-      vol->SetNumber(fNumber);
-      vol->SetNtotal(fNtotal);
-      return vol;
-    }
-  };
-  
-  template <> struct Value<TGeoVolumeAssembly,Assembly::Object> 
-  : public _VolWrap<TGeoVolumeAssembly>, public Assembly::Object  {
-    Value(const char* name) : _VolWrap<TGeoVolumeAssembly>(name,0,0) {
-      magic = magic_word(); 
-      InstanceCount::increment(this);
-    }
-    virtual ~Value() {
-      InstanceCount::decrement(this);
-    }
-    TGeoVolume *CloneVolume() const    {
-      TGeoVolume *vol = new Value<TGeoVolumeAssembly,Assembly::Object>(GetName());
-      Int_t i;
-      // copy other attributes
-      Int_t nbits = 8*sizeof(UInt_t);
-      for (i=0; i<nbits; i++) 
-        vol->SetAttBit(1<<i, TGeoAtt::TestAttBit(1<<i));
-      for (i=14; i<24; i++)
-        vol->SetBit(1<<i, TestBit(1<<i));   
-      
-      // copy field
-      vol->SetField(fField);
-      // Set bits
-      for (i=0; i<nbits; i++) 
-        vol->SetBit(1<<i, TObject::TestBit(1<<i));
-      vol->SetBit(kVolumeClone);   
-      // make copy nodes
-      vol->MakeCopyNodes(this);
-      ((TGeoShapeAssembly*)vol->GetShape())->NeedsBBoxRecompute();
-      // copy voxels
-      TGeoVoxelFinder *voxels = 0;
-      if (fVoxels) {
-        voxels = new TGeoVoxelFinder(vol);
-        vol->SetVoxelFinder(voxels);
-      }   
-      // copy option, uid
-      vol->SetOption(fOption);
-      vol->SetNumber(fNumber);
-      vol->SetNtotal(fNtotal);
-      return vol;
-    }
-  };
-
-}}
-
 /// Default constructor
-PlacedVolume::Object::Object() : magic(0), volIDs() {
+PlacedVolume::Object::Object() : refCount(0), magic(0), volIDs() {
   InstanceCount::increment(this);
 }
 
 /// Copy constructor
-PlacedVolume::Object::Object(const Object& c) : magic(c.magic), volIDs(c.volIDs) {
+PlacedVolume::Object::Object(const Object& c) : refCount(0), magic(c.magic), volIDs(c.volIDs) {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
 PlacedVolume::Object::~Object()   {
   InstanceCount::decrement(this);
+}
+
+/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+TGeoExtension* PlacedVolume::Object::Grab() const   {
+  Object* ext = const_cast<Object*>(this);
+  ++ext->refCount;
+  return ext;
+}
+
+/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+void PlacedVolume::Object::Release() const  {
+  Object* ext = const_cast<Object*>(this);
+  --ext->refCount;
+  if ( 0 == ext->refCount ) delete ext;
 }
 
 /// Lookup volume ID
@@ -262,14 +81,15 @@ PlacedVolume::VolIDs::insert(const string& name, int value)   {
   return make_pair(i,true);
 }
 
-static PlacedVolume::Object* _data(const PlacedVolume& v)  {
-  return dynamic_cast<PlacedVolume::Object*>(v.ptr());
+/// Accessor to user structure
+PlacedVolume::Object& PlacedVolume::data() const   {
+  Object* o = (Object*)(ptr()->GetUserExtension());
+  return *o;
 }
 
 /// Add identifier
 PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value)   {
-  Object* obj = _data(*this);
-  obj->volIDs.push_back(VolID(name,value));
+  data().volIDs.push_back(VolID(name,value));
   return *this;
 }
 
@@ -287,49 +107,70 @@ Volume PlacedVolume::motherVol() const
 
 /// Access to the volume IDs
 const PlacedVolume::VolIDs& PlacedVolume::volIDs() const 
-{  return _data(*this)->volIDs;                                           }
+{  return data().volIDs;                                                  }
 
 /// String dump
 string PlacedVolume::toString() const {
   stringstream s;
-  Object* obj = _data(*this);
+  Object& obj = data();
   s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName()
-    << "' mat:'" << m_element->GetMatrix()->GetName() << "' volID[" << obj->volIDs.size() << "] ";
-  for(VolIDs::const_iterator i=obj->volIDs.begin(); i!=obj->volIDs.end();++i)
+    << "' mat:'" << m_element->GetMatrix()->GetName() << "' volID[" << obj.volIDs.size() << "] ";
+  for(VolIDs::const_iterator i=obj.volIDs.begin(); i!=obj.volIDs.end();++i)
     s << (*i).first << "=" << (*i).second << "  ";
   s << ends;
   return s.str();
 }
 
 /// Default constructor
-Volume::Object::Object() : magic(0), region(), limits(), vis(), sens_det(), referenced(0)  {
+Volume::Object::Object() : refCount(0), magic(0), region(), limits(), vis(), sens_det()  {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
 Volume::Object::~Object()  {
+  vis.clear();
   region.clear();
   limits.clear();
-  vis.clear();
   sens_det.clear();
   InstanceCount::decrement(this);
 }
 
-/// Accessor to the data part of the Volume
-Volume::Object* _data(const Volume& v) {
-  //if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
-  return dynamic_cast<Volume::Object*>(v.ptr());
+/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+TGeoExtension* Volume::Object::Grab() const  {
+  Object* ext = const_cast<Object*>(this);
+  ++ext->refCount;
+  return ext;
+}
+
+/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+void Volume::Object::Release() const  {
+  Object* ext = const_cast<Object*>(this);
+  --ext->refCount;
+  if ( 0 == ext->refCount )   {
+    delete ext;
+  }
+  else  {
+    cout << "Volume::Object::Release::refCount:" << ext->refCount << endl;
+  }
 }
 
 /// Constructor to be used when creating a new geometry tree.
 Volume::Volume(const string& name)    {
-  m_element = new Value<TGeoVolume,Volume::Object>(name.c_str());
+  m_element = new TGeoVolume();
+  m_element->SetName(name.c_str());
+  m_element->SetUserExtension(new Object());
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
 Volume::Volume(const string& name, const Solid& s, const Material& m) {
-  m_element = new Value<TGeoVolume,Volume::Object>(name.c_str(),s);
-  setMaterial(m);
+  m_element = new TGeoVolume(name.c_str(), s.ptr(), m.ptr());
+  m_element->SetUserExtension(new Object());
+}
+
+/// Accessor to user structure
+Volume::Object& Volume::data() const   {
+  Object* o = (Object*)(ptr()->GetUserExtension());
+  return *o;
 }
 
 /// Set the volume's material
@@ -354,8 +195,10 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
     transform->SetName(nam.c_str());
   }
   parent->AddNode(daughter,id,transform);
-  TGeoNode* n = parent->GetNode(id);
-  return PlacedVolume(n);
+  TGeoNodeMatrix* n = dynamic_cast<TGeoNodeMatrix*>(parent->GetNode(id));
+  PlacedVolume pv(n);
+  pv->SetUserExtension(new PlacedVolume::Object());
+  return pv;
 }
 
 static TGeoTranslation* _translation(const Position& pos) {
@@ -461,14 +304,14 @@ void Volume::setVisAttributes(const VisAttr& attr) const   {
     m_element->SetAttBit(TGeoAtt::kVisContainers,kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
   }
-  _data(*this)->vis = attr;
+  data().vis = attr;
 }
 
 /// Set Visualization attributes to the volume
 void Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
   if ( !name.empty() )   {
     VisAttr attr = lcdd.visAttributes(name);
-    _data(*this)->vis = attr;
+    data().vis = attr;
     setVisAttributes(attr);
   }
   else  {
@@ -499,55 +342,54 @@ void Volume::setAttributes(const LCDD& lcdd,
 
 /// Set the volume's solid shape
 void Volume::setSolid(const Solid& solid)  const  
-{  m_element->SetShape(solid);                              }
+{  m_element->SetShape(solid);                     }
 
 /// Set the regional attributes to the volume
 void Volume::setRegion(const Region& obj)  const   
-{  _data(*this)->region = obj;                            }
+{  data().region = obj;                            }
 
 /// Set the limits to the volume
 void Volume::setLimitSet(const LimitSet& obj)  const   
-{  _data(*this)->limits = obj;                            }
+{  data().limits = obj;                            }
 
 /// Assign the sensitive detector structure
 void Volume::setSensitiveDetector(const SensitiveDetector& obj) const   {
   //cout << "Setting sensitive detector '" << obj.name() << "' to volume:" << ptr() << " " << name() << endl;
-  _data(*this)->sens_det = obj;                          
+  data().sens_det = obj;                          
 }
 
 /// Access to the handle to the sensitive detector
 Ref_t Volume::sensitiveDetector() const
-{
-  const Object* o = _data(*this);
-  return o->sens_det;                         
-}
+{  return data().sens_det;                         }
 
 /// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
 bool Volume::isSensitive() const
-{  return _data(*this)->sens_det.isValid();               }
+{  return data().sens_det.isValid();               }
 
 /// Access to Solid (Shape)
 Solid Volume::solid() const   
-{  return Solid((*this)->GetShape());                       }
+{  return Solid((*this)->GetShape());              }
 
 /// Access to the Volume material
 Material Volume::material() const   
-{  return Ref_t(m_element->GetMedium());   }
+{  return Ref_t(m_element->GetMedium());           }
 
 /// Access the visualisation attributes
 VisAttr Volume::visAttributes() const
-{  return _data(*this)->vis;                              }
+{  return data().vis;                              }
 
 /// Access to the handle to the region structure
 Region Volume::region() const   
-{  return _data(*this)->region;                           }
+{  return data().region;                           }
 
 /// Access to the limit set
 LimitSet Volume::limitSet() const   
-{  return _data(*this)->limits;                           }
+{  return data().limits;                           }
 
 /// Constructor to be used when creating a new geometry tree.
-Assembly::Assembly(const string& name) {
-  m_element = new Value<TGeoVolumeAssembly,Volume::Object>(name.c_str());
+Assembly::Assembly(const string& name)   {
+  Object* ext = new Object();
+  m_element = new TGeoVolumeAssembly(name.c_str());
+  m_element->SetUserExtension(ext);
 }
 

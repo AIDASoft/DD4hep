@@ -179,7 +179,7 @@ namespace DD4hep {
 	/// Default constructor
 	Object();
 	/// Default destructor
-	~Object();
+	virtual ~Object();
 	/// Search the locally cached volumes for a matching ID
 	Context* search(const VolIdentifier& id)  const;
       };

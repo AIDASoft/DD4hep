@@ -326,6 +326,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   assembly.setVisAttributes(lcdd.visAttributes(x_det.visStr()));
   PlacedVolume lpv = motherVol.placeVolume(assembly);
+  lpv.addPhysVolID("system",x_det.id());
   vxd.setPlacement(lpv);
   return vxd;
 }

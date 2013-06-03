@@ -109,7 +109,7 @@ IDDescriptor::Field IDDescriptor::field(const string& field_name)  const  {
   const FieldMap& m = fields(); // This already checks the object validity
   for(FieldMap::const_iterator i=m.begin(); i!=m.end(); ++i)
     if ( (*i).first == field_name ) return (*i).second;
-  throw runtime_error(string(name())+": This ID descriptor has now field with the name:"+field_name);
+  throw runtime_error(string(name())+": This ID descriptor has no field with the name:"+field_name);
 }
 
 /// Get the field descriptor of one field by its identifier
@@ -123,5 +123,5 @@ size_t IDDescriptor::fieldID(const string& field_name)  const   {
   const FieldIDs& m = ids(); // This already checks the object validity
   for(FieldIDs::const_iterator i=m.begin(); i!=m.end(); ++i)
     if ( (*i).second == field_name ) return (*i).first;
-  throw runtime_error(string(name())+": This ID descriptor has now field with the name:"+field_name);
+  throw runtime_error(string(name())+": This ID descriptor has no field with the name:"+field_name);
 }

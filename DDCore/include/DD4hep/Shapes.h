@@ -219,7 +219,7 @@ namespace DD4hep {
       double GetRmin() const { return GetRmin1(); }
       double GetRmax() const { return GetRmax1(); }
     };
-    struct Tube : public Solid_type<TGeoTubeSeg /* MyConeSeg */>  {
+    struct Tube : public Solid_type< /*TGeoTubeSeg */ MyConeSeg >  {
       protected:
       void make(const std::string& name,double rmin,double rmax,double z,double startPhi,double deltaPhi);
 

@@ -1,4 +1,4 @@
-// $Id$
+// $Id: Volumes.h 574 2013-05-17 20:38:31Z markus.frank $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -20,6 +20,7 @@
 
 // ROOT include file (includes TGeoVolume + TGeoShape)
 #include "TGeoNode.h"
+#include "TGeoExtension.h"
 #include "TGeoPatternFinder.h"
 
 /*
@@ -47,7 +48,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct PlacedVolume : Handle<TGeoNode> {
+    struct PlacedVolume : Handle<TGeoNodeMatrix> {
       typedef std::pair<std::string,int> VolID;
       struct VolIDs : public std::vector<VolID>   {
 	typedef std::vector<VolID> Base;
@@ -56,7 +57,9 @@ namespace DD4hep {
 	Base::const_iterator find(const std::string& name)  const;
 	std::pair<Base::iterator,bool> insert(const std::string& name, int value);
       };
-      struct Object  {
+      struct Object : public TGeoExtension  {
+	/// Reference count on object (used to implement Grab/Release)
+	long          refCount;
 	/// Magic word
         unsigned long magic;
 	/// ID container
@@ -68,18 +71,29 @@ namespace DD4hep {
 	/// Default destructor
         virtual ~Object();
 	/// Assignment operator
-	Object& operator=(const Object& c) { magic=c.magic; volIDs=c.volIDs; return *this; }
+	Object& operator=(const Object& c) { 
+	  volIDs = c.volIDs;
+	  magic  = c.magic; 
+	  return *this; 
+	}
+	/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+	virtual TGeoExtension *Grab() const;
+	/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+	virtual void Release() const;
       };
-      /// Constructor to be used when reading the already parsed DOM tree
-      PlacedVolume(const TGeoNode* e) : Handle<TGeoNode>(e) {}
       /// Default constructor
-      PlacedVolume() : Handle<TGeoNode>() {}
+      PlacedVolume() : Handle<TGeoNodeMatrix>() {}
+      /// Constructor to be used when reading the already parsed DOM tree
+      PlacedVolume(const TGeoNode* e) : Handle<TGeoNodeMatrix>(e) {}
       /// Copy assignment
-      PlacedVolume(const PlacedVolume& e) : Handle<TGeoNode>(e) {}
+      PlacedVolume(const PlacedVolume& e) : Handle<TGeoNodeMatrix>(e) {}
       /// Copy assignment from other handle type
-      template <typename T> PlacedVolume(const Handle<T>& e) : Handle<TGeoNode>(e) {}
+      template <typename T> PlacedVolume(const Handle<T>& e) : Handle<TGeoNodeMatrix>(e) {}
       /// Assignment operator (must match copy constructor)
       PlacedVolume& operator=(const PlacedVolume& v) {  m_element=v.m_element;  return *this; }
+
+      /// Accessor to user structure
+      Object& data() const;
 
       /// Add identifier
       PlacedVolume& addPhysVolID(const std::string& name, int value);
@@ -106,25 +120,31 @@ namespace DD4hep {
 
       public:
       typedef Handle<TGeoVolume> Base;
-      struct Object  {
+      struct Object : public TGeoExtension  {
+	/// Reference count on object (used to implement Grab/Release)
+	long          refCount;
+	/// Magic word
         unsigned long magic;
         Region        region;
         LimitSet      limits;
         VisAttr       vis;
         Ref_t         sens_det;
-	int           referenced;
 	/// Default constructor
         Object();
 	/// Default destructor
         virtual ~Object();
+	/// Object copy
 	void copy(const Object& c) { 
-	  magic=c.magic; 
-	  region=c.region; 
-	  limits=c.limits; 
-	  vis=c.vis; 
-	  sens_det=c.sens_det; 
-	  referenced=c.referenced;
+	  magic      = c.magic; 
+	  region     = c.region; 
+	  limits     = c.limits; 
+	  vis        = c.vis; 
+	  sens_det   = c.sens_det; 
 	}
+	/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+	virtual TGeoExtension *Grab() const;
+	/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+	virtual void Release() const;
       };
 
       public:
@@ -146,10 +166,12 @@ namespace DD4hep {
       /// Assignment operator (must match copy constructor)
       Volume& operator=(const Volume& a) {  m_element=a.m_element;  return *this; }
 
+      /// Accessor to user structure
+      Object& data() const;
+
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol)  const  
       { return placeVolume(vol,IdentityPos());                        }
-
       /// Place daughter volume according to generic Transform3D
       PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr)  const;
       /// Place un-rotated daughter volume at the given position.

@@ -59,7 +59,7 @@ namespace DD4hep {
         /// Default constructor
         Object();
         /// Internal object destructor: release extension object(s)
-        ~Object();
+        virtual ~Object();
       };
       protected:
 

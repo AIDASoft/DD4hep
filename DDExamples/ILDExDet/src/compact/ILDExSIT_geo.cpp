@@ -79,6 +79,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
    }
   }
   pv = lcdd.pickMotherVolume(sit).placeVolume(assembly);
+  pv.addPhysVolID("system",x_det.id());
   sit.setPlacement(pv);
   return sit;
 }
