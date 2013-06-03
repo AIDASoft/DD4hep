@@ -235,7 +235,7 @@ VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id)  
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(const string& nam, DetElement elt, Readout ro, int flags)
 {
-  Value<TNamed,Object>* ptr = new Value<TNamed,Object>();
+  Object* ptr = new Object();
   assign(ptr,nam,"VolumeManager");
   if ( elt.isValid() )   {
     Populator p(*this);

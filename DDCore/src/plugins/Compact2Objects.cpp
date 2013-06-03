@@ -128,7 +128,7 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e)  {
   CartesianField obj;
   xml_comp_t field(e), strength(e.child(_U(strength)));
   string t = e.attr<string>(_U(field));
-  Value<TNamed,ConstantField>* ptr = new Value<TNamed,ConstantField>();
+  ConstantField* ptr = new ConstantField();
   ptr->type = ::toupper(t[0])=='E' ? CartesianField::ELECTRIC : CartesianField::MAGNETIC;
   ptr->direction.SetX(strength.x());
   ptr->direction.SetY(strength.y());
@@ -141,7 +141,7 @@ DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
 static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e)  {
   xml_comp_t c(e);
   CartesianField obj;
-  Value<TNamed,SolenoidField>* ptr = new Value<TNamed,SolenoidField>();
+  SolenoidField* ptr = new SolenoidField();
   if ( c.hasAttr(_U(inner_radius)) ) ptr->innerRadius = c.attr<double>(_U(inner_radius));
   else ptr->innerRadius = 0.0;
   if ( c.hasAttr(_U(outer_radius)) ) ptr->outerRadius = c.attr<double>(_U(outer_radius));
@@ -162,7 +162,7 @@ DECLARE_XMLELEMENT(solenoid,create_SolenoidField);
 static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e)  {
   xml_comp_t c(e);
   CartesianField obj;
-  Value<TNamed,DipoleField>* ptr = new Value<TNamed,DipoleField>();
+  DipoleField* ptr = new DipoleField();
   double val, lunit = c.attr<double>(_U(lunit)), funit = c.attr<double>(_U(funit));
 
   if ( c.hasAttr(_U(zmin))  ) ptr->zmin  = _multiply<double>(c.attr<string>(_U(zmin)),lunit);

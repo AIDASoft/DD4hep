@@ -37,11 +37,11 @@ Segmentation::Object::~Object() {
 }
 
 Segmentation::Segmentation(const string& type)  {
-  assign(new Value<TNamed,Segmentation::Object>(),"segmentation",type);
+  assign(new Object(),"segmentation",type);
 }
 
 bool Segmentation::useForHitPosition() const   {
-  return _data().useForHitPosition != 0;
+  return object<Object>().useForHitPosition != 0;
 }
 
 /// Segmentation type
@@ -51,7 +51,7 @@ const string Segmentation::type() const   {
 
 /// Add an extension object to the detector element
 void* Segmentation::i_setExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
-  Object& o = _data();
+  Object& o = object<Object>();
   o.type = EXTENDED;
   o.data.extension.ptr = ptr;
   o.data.extension.info = &info;
@@ -62,7 +62,7 @@ void* Segmentation::i_setExtension(void* ptr, const type_info& info, void (*dest
 /// Access an existing extension object from the detector element
 void* Segmentation::i_extension(const type_info& info)   const {
   if ( isValid() ) {
-    Object::Data::Extension& o = _data().data.extension;
+    Object::Data::Extension& o = object<Object>().data.extension;
     if ( o.ptr )   {
       if ( &info == o.info ) {
 	return o.ptr;
@@ -84,7 +84,7 @@ const string SegmentationParams::type() const   {
 /// Access to the parameters
 SegmentationParams::Parameters SegmentationParams::parameters() const  {
   const string& typ = type();
-  const Object& obj = _data();
+  const Object& obj = object<Object>();
   const Object::Data& data = obj.data;
   Parameters params;
   //cout << "Segmentation:" << name() << " Type:" << typ << endl;
@@ -130,22 +130,22 @@ ProjectiveCylinder::ProjectiveCylinder() : Segmentation("projective_cylinder")
 
 /// Accessors: get number of bins in theta
 int ProjectiveCylinder::thetaBins() const    {
-  return _data().data.cylindrical_binning.ntheta;
+  return object<Object>().data.cylindrical_binning.ntheta;
 }
 
 /// Accessors: get number of bins in phi
 int ProjectiveCylinder::phiBins() const    {
-  return _data().data.cylindrical_binning.nphi;
+  return object<Object>().data.cylindrical_binning.nphi;
 }
 
 /// Accessors: set number of bins in theta
 void ProjectiveCylinder::setThetaBins(int value)    {
-  _data().data.cylindrical_binning.ntheta = value;
+  object<Object>().data.cylindrical_binning.ntheta = value;
 }
 
 /// Accessors: set grid size in Y
 void ProjectiveCylinder::setPhiBins(int value)   {
-  _data().data.cylindrical_binning.nphi = value;
+  object<Object>().data.cylindrical_binning.nphi = value;
 }
 
 NonProjectiveCylinder::NonProjectiveCylinder()
@@ -154,21 +154,21 @@ NonProjectiveCylinder::NonProjectiveCylinder()
 }
 
 double NonProjectiveCylinder::gridSizeZ()  const   {
-  return _data().data.cylindrical_grid.grid_size_z;
+  return object<Object>().data.cylindrical_grid.grid_size_z;
 }
 
 double NonProjectiveCylinder::gridSizePhi()  const   {
-  return _data().data.cylindrical_grid.grid_size_phi;
+  return object<Object>().data.cylindrical_grid.grid_size_phi;
 }
 
 /// Accessors: set number of bins in theta
 void NonProjectiveCylinder::setThetaBinSize(double value)   {
-  _data().data.cylindrical_grid.grid_size_phi = value;
+  object<Object>().data.cylindrical_grid.grid_size_phi = value;
 }
 
 /// Accessors: set grid size in Y
 void NonProjectiveCylinder::setPhiBinSize(double value)   {
-  _data().data.cylindrical_grid.grid_size_z = value;
+  object<Object>().data.cylindrical_grid.grid_size_z = value;
 }
 
 
@@ -180,22 +180,22 @@ ProjectiveZPlane::ProjectiveZPlane()
 
 /// Accessors: get number of bins in phi
 int ProjectiveZPlane::phiBins() const  {
-  return _data().data.cylindrical_binning.nphi;
+  return object<Object>().data.cylindrical_binning.nphi;
 }
 
 /// Accessors: get number of bins in theta
 int ProjectiveZPlane::thetaBins() const  {
-  return _data().data.cylindrical_binning.ntheta;
+  return object<Object>().data.cylindrical_binning.ntheta;
 }
 
 /// Accessors: set number of bins in theta
 void ProjectiveZPlane::setThetaBins(int value)  {
-  _data().data.cylindrical_binning.ntheta = value;
+  object<Object>().data.cylindrical_binning.ntheta = value;
 }
 
 /// Accessors: set grid size in Y
 void ProjectiveZPlane::setPhiBins(int value)  {
-  _data().data.cylindrical_binning.nphi = value;
+  object<Object>().data.cylindrical_binning.nphi = value;
 }
 
 GridXY::GridXY() 
@@ -211,28 +211,28 @@ GridXY::GridXY(const string& tag)
 GridXY::GridXY(const string& tag, double size_x, double size_y)
 : Segmentation(tag)
 {
-  _data().data.cartesian_grid.grid_size_x = size_x;
-  _data().data.cartesian_grid.grid_size_y = size_y;
+  object<Object>().data.cartesian_grid.grid_size_x = size_x;
+  object<Object>().data.cartesian_grid.grid_size_y = size_y;
 }
 
 /// Accessors: get grid size in X
 double GridXY::getGridSizeX() const {
-  return _data().data.cartesian_grid.grid_size_x;
+  return object<Object>().data.cartesian_grid.grid_size_x;
 }
 
 /// Accessors: get grid size in Y
 double GridXY::getGridSizeY() const {
-  return _data().data.cartesian_grid.grid_size_y;
+  return object<Object>().data.cartesian_grid.grid_size_y;
 }
 
 /// Accessors: set grid size in X
 void GridXY::setGridSizeX(double value)  {
-  _data().data.cartesian_grid.grid_size_x = value;
+  object<Object>().data.cartesian_grid.grid_size_x = value;
 }
 
 /// Accessors: set grid size in Y
 void GridXY::setGridSizeY(double value)  {
-  _data().data.cartesian_grid.grid_size_y = value;
+  object<Object>().data.cartesian_grid.grid_size_y = value;
 }
 
 /// Constructor to be used when creating a new DOM tree.
@@ -245,9 +245,9 @@ GridXYZ::GridXYZ()
 GridXYZ::GridXYZ(double size_x, double size_y, double size_z)
 : GridXY("grid_xyz", size_x, size_y)
 {
-  _data().data.cartesian_grid.grid_size_z = size_z;
+  object<Object>().data.cartesian_grid.grid_size_z = size_z;
 }
 
 void GridXYZ::setGridSizeZ(double value)  {
-  _data().data.cartesian_grid.grid_size_z = value;
+  object<Object>().data.cartesian_grid.grid_size_z = value;
 }

@@ -58,7 +58,7 @@ namespace DD4hep {
        *  @version 1.0
        *  @date    2012/07/31
        */
-      struct Object {
+      struct Object : public TNamed {
 	std::string description;
 	FieldMap    fieldMap;
 	FieldIDs    fieldIDs;

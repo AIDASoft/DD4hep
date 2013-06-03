@@ -40,7 +40,7 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      struct Object  {
+      struct Object : public TNamed  {
         /// Magic word to check object integrity
         unsigned long magic;
         /// Segmentation type (REGULAR or EXTENDED)
@@ -104,8 +104,6 @@ namespace DD4hep {
       : Handle<Implementation>(e){}
       /// Constructor to create a new segmentation object (to be called by super class only)
       Segmentation(const std::string& type);
-      /// Accessor to ata structure
-      Object& _data() const                            {  return *data<Object>();               }
       /// Access flag for hit positioning
       bool useForHitPosition() const;
       /// Segmentation type
@@ -114,10 +112,10 @@ namespace DD4hep {
       template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)
       {  return (IFACE*)i_setExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
       /// Access extension element by the type
-      template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
+      template <class T> T* extensionUnchecked() const
+      {  return (T*)object<Object>().data.extension.ptr;                                        }
       /// Access extension element by the type
-      template <class T> T* extensionUnchecked() const {  return (T*)_data().data.extension.ptr;}
-
+      template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
       /// Compute the coordinate in one dimension given a eauidistant bin value.
       static double binCenter(int bin, double width)   {  return (double(bin) + .5) * width;    }
       /// Compute the equidistant bin given a coordinate in one dimension.
@@ -140,8 +138,6 @@ namespace DD4hep {
 
       /// Constructor to be used when reading the already parsed object
       SegmentationParams(const Segmentation& e) : Ref_t(e) {}
-      /// Accessor to ata structure
-      Object& _data() const {  return *data<Object>(); }
       /// Segmentation type
       const std::string type() const;
       /// Access to the parameters

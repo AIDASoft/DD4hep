@@ -58,7 +58,7 @@ namespace {
 }
 
 /// Standard constructor
-IDDescriptor::Object::Object() : maxBit(0) {
+IDDescriptor::Object::Object() : TNamed(), maxBit(0) {
   InstanceCount::increment(this);
 
 }
@@ -70,7 +70,7 @@ IDDescriptor::Object::~Object()  {
 /// Initializing constructor
 IDDescriptor::IDDescriptor(const string& description) 
 {
-  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
+  Object* obj = new Object();
   assign(obj,description,"iddescriptor");
   _construct(obj, description);
 }

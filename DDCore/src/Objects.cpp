@@ -52,7 +52,7 @@ void Author::setAuthorEmail(const std::string& addr)   {
 }
 
 /// Standard constructor
-Header::Object::Object()  {
+Header::Object::Object() : TNamed() {
   InstanceCount::increment(this);
 }
 
@@ -63,7 +63,7 @@ Header::Object::~Object()  {
 
 /// Constructor to be used when creating a new DOM tree
 Header::Header(const string& author, const string& url)   {
-  Value<TNamed,Object>* ptr = new Value<TNamed,Object>();
+  Object* ptr = new Object();
   assign(ptr,author, url);
 }
 
@@ -203,7 +203,7 @@ VisAttr::Object::~Object()  {
 
 /// Constructor to be used when creating a new DOM tree
 VisAttr::VisAttr(const string& name)    {
-  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
+  Object* obj = new Object();
   assign(obj, name, "vis");
   obj->color  = 2;
   setLineStyle(SOLID);
@@ -214,73 +214,73 @@ VisAttr::VisAttr(const string& name)    {
 
 /// Get Flag to show/hide daughter elements
 bool VisAttr::showDaughters() const  {
-  return _data().showDaughters;
+  return object<Object>().showDaughters;
 }
 
 /// Set Flag to show/hide daughter elements
 void VisAttr::setShowDaughters(bool value)   {
-  _data().showDaughters = value;
+  object<Object>().showDaughters = value;
 }
 
 /// Get visibility flag
 bool VisAttr::visible() const   {
-  return _data().visible;
+  return object<Object>().visible;
 }
 
 /// Set visibility flag
 void VisAttr::setVisible(bool value)   {
-  _data().visible = value;
+  object<Object>().visible = value;
 }
 
 /// Get line style
 int VisAttr::lineStyle()  const {
-  return _data().lineStyle;
+  return object<Object>().lineStyle;
 }
 
 /// Set line style
 void VisAttr::setLineStyle(int value)  {
-  _data().lineStyle = value;
+  object<Object>().lineStyle = value;
 }
 
 /// Get drawing style
 int VisAttr::drawingStyle()  const {
-  return _data().drawingStyle;
+  return object<Object>().drawingStyle;
 }
 
 /// Set drawing style
 void VisAttr::setDrawingStyle(int value)   {
-  _data().drawingStyle = value;
+  object<Object>().drawingStyle = value;
 }
 
 /// Get alpha value
 float VisAttr::alpha() const  {
   //TNamed* obj = first_value<TNamed>(*this);
   //obj->SetAlpha(value);
-  return _data().alpha;
+  return object<Object>().alpha;
 }
 
 /// Set alpha value
 void VisAttr::setAlpha(float value)   {
-  _data().alpha = value;
+  object<Object>().alpha = value;
   //TNamed* obj = first_value<TNamed>(*this);
   //obj->SetAlpha(value);
 }
 
 /// Get object color
 int VisAttr::color()   const  {
-  return _data().color;
+  return object<Object>().color;
 }
 
 /// Set object color
 void VisAttr::setColor(float red, float green, float blue)   {
-  Object& o = _data();
+  Object& o = object<Object>();
   o.color = TColor::GetColor(red,green,blue);
   o.col   = gROOT->GetColor(o.color);
 }
 
 /// Get RGB values of the color (if valid)
 bool VisAttr::rgb(float& red, float& green, float& blue) const {
-  Object& o = _data();
+  Object& o = object<Object>();
   if ( o.col ) {
     TColor* c = (TColor*)o.col;
     c->GetRGB(red,green,blue);
@@ -291,7 +291,7 @@ bool VisAttr::rgb(float& red, float& green, float& blue) const {
 
 /// String representation of this object
 string VisAttr::toString()  const {
-  const VisAttr::Object* obj = &_data();
+  const VisAttr::Object* obj = &object<Object>();
   TColor* col = gROOT->GetColor(obj->color);
   char text[256];
   ::snprintf(text,sizeof(text),
@@ -379,7 +379,7 @@ LimitSet::Object::~Object()  {
 
 /// Constructor to be used when creating a new DOM tree
 LimitSet::LimitSet(const string& name)   {
-  assign(new Value<TNamed,Object>(),name,"limitset");
+  assign(new Object(),name,"limitset");
 }
 
 /// Add new limit. Returns true if the new limit was added, false if it already existed.
@@ -407,7 +407,7 @@ Region::Object::~Object()  {
 
 /// Constructor to be used when creating a new DOM tree
 Region::Region(const string& name)   {
-  Value<TNamed,Object>* p = new Value<TNamed,Object>();
+  Object* p = new Object();
   assign(p, name, "region");
   p->magic = magic_word();
   p->store_secondaries = false;
@@ -418,58 +418,58 @@ Region::Region(const string& name)   {
 }
 
 Region& Region::setStoreSecondaries(bool value)  {
-  _data().store_secondaries = value;
+  object<Object>().store_secondaries = value;
   return *this;
 }
 
 Region& Region::setThreshold(double value)  {
-  _data().threshold = value;
+  object<Object>().threshold = value;
   return *this;
 }
 
 Region& Region::setCut(double value)  {
-  _data().cut = value;
+  object<Object>().cut = value;
   return *this;
 }
 
 Region& Region::setLengthUnit(const string& unit)  {
-  _data().lunit = unit;
+  object<Object>().lunit = unit;
   return *this;
 }
 
 Region& Region::setEnergyUnit(const string& unit)  {
-  _data().eunit = unit;
+  object<Object>().eunit = unit;
   return *this;
 }
 
 /// Access references to user limits
 vector<string>& Region::limits() const {
-  return _data().user_limits;
+  return object<Object>().user_limits;
 }
 
 /// Access cut value
 double Region::cut() const {
-  return _data().cut;
+  return object<Object>().cut;
 }
 
 /// Access production threshold
 double Region::threshold() const {
-  return _data().threshold;
+  return object<Object>().threshold;
 }
 
 /// Access secondaries flag
 bool Region::storeSecondaries() const {
-  return _data().store_secondaries;
+  return object<Object>().store_secondaries;
 }
 
 /// Access the length unit
 const std::string& Region::lengthUnit() const   {
-  return _data().lunit;
+  return object<Object>().lunit;
 }
 
 /// Access the energy unit
 const std::string& Region::energyUnit() const   {
-  return _data().eunit;
+  return object<Object>().eunit;
 }
 
 #undef setAttr
@@ -495,7 +495,7 @@ IDSpec::IDSpec(LCDD& lcdd, const string& name, const IDDescriptor& dsc)
 {
   const IDDescriptor::FieldIDs& f = dsc.ids();
   const IDDescriptor::FieldMap& m = dsc.fields();
-  _data().Attr_length = dsc.maxBit();
+  object<Object>().Attr_length = dsc.maxBit();
   for(IDDescriptor::FieldIDs::const_iterator i=f.begin(); i!=f.end();++i)  {
     int ident = (*i).first;
     const string& nam = (*i).second;
@@ -510,10 +510,10 @@ void IDSpec::addField(const string& name, const pair<int,int>& field)  {
 
 void IDSpec::addField(const string& name, const pair<int,int>& field)  {
   Element e(document(),Tag_idfield);
-  e._data().Attr_signed = field.second<0;
-  e._data().Attr_label = name;
-  e._data().Attr_start = field.first;
-  e._data().Attr_length = abs(field.second);
+  e.object<Object>().Attr_signed = field.second<0;
+  e.object<Object>().Attr_label = name;
+  e.object<Object>().Attr_start = field.first;
+  e.object<Object>().Attr_length = abs(field.second);
   m_element.append(e);
 }
 #endif
