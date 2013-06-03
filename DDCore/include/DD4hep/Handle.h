@@ -149,7 +149,7 @@ namespace DD4hep {
       InstanceCount::decrement(this); 
 #endif
     }
-    
+
     /** @class Handle Handle.h
      *  
      *  @author  M.Frank
@@ -173,9 +173,10 @@ namespace DD4hep {
       T* operator->() const                   {  return  m_element;                  }
       operator T& ()  const                   {  return *m_element;                  }
       T& operator*()  const                   {  return *m_element;                  }
-      T* ptr() const                          {  return m_element;                   }
-      template <typename Q> Q* _ptr() const   {  return (Q*)m_element;               }
-      template <typename Q> Q* data() const   {  return (Value<T,Q>*)m_element;      }
+      T* ptr() const                          {  return  m_element;                  }
+      template <typename Q> Q* _ptr() const   {  return  (Q*)m_element;              }
+      template <typename Q> Q*  data() const  {  return  (Q*)m_element;              }
+      template <typename Q> Q&  object() const{  return *(Q*)m_element;              }
       void verifyObject() const {
         increment_object_validations();
         if ( m_element && dynamic_cast<T*>(m_element) == 0 )  {
