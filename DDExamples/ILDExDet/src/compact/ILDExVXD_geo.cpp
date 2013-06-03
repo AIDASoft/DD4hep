@@ -22,7 +22,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det = e;
   string      name  = x_det.nameStr();
 
-  Value<TNamed,VXDData>* vxd_data = new Value<TNamed,VXDData>();
+  VXDData* vxd_data = new VXDData();
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
 

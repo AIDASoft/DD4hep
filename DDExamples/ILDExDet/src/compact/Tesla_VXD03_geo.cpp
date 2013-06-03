@@ -81,7 +81,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Material silicon_233 = lcdd.material("silicon_2.33gccm");
 
   
-  Value<TNamed,VXD03Data>* vxd_data = new Value<TNamed,VXD03Data>();
+  VXD03Data* vxd_data = new VXD03Data();
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
 

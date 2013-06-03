@@ -329,7 +329,7 @@ Volume ClicYoke01::buildBarrel() {
 DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
   lcdd     = &l;
   name     = x_det.nameStr();
-  self.assign(dynamic_cast<Value<TNamed,ClicYoke01>*>(this),name,x_det.typeStr());
+  self.assign(this,name,x_det.typeStr());
   self._data().id = x_det.id();
   Assembly    assembly(name);
   xml_comp_t  x_yoke       = x_det.child(_Unicode(yoke));
@@ -441,6 +441,6 @@ DetElement ClicYoke01::construct(LCDD& l, xml_det_t x_det)  {
 }
 
 static Ref_t create_detector(LCDD& lcdd, xml_h element, Ref_t)  {
-  return (new Value<TNamed,ClicYoke01>())->construct(lcdd,element);
+  return (new ClicYoke01())->construct(lcdd,element);
 }
 DECLARE_SUBDETECTOR(Tesla_ClicYoke01,create_detector);

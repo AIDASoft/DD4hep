@@ -10,7 +10,7 @@ namespace DD4hep {
   
   ILDExTPC::ILDExTPC(const string& name, const string& type, int id)
   {
-    Value<TNamed,TPCData>* p = new Value<TNamed,TPCData>();
+    TPCData* p = new TPCData();
     assign(p,name, type);
     p->id = id;
   }

@@ -61,7 +61,7 @@ namespace DD4hep { namespace Geometry {
     DetElement construct(LCDD& lcdd, xml_det_t e, SensitiveDetector sens_det);
     /// 
     static DetElement instance(LCDD& lcdd, xml_det_t e, SensitiveDetector sd) { 
-      Value<TNamed,BeamCal01>* p = new Value<TNamed,BeamCal01>(); 
+      BeamCal01* p = new BeamCal01(); 
       p->self.assign(p,e.nameStr(),e.typeStr());
       return p->construct(lcdd,e,sd);
     }

@@ -132,8 +132,8 @@ using namespace DD4hep::Geometry;
 DetElement SHcalSc02::construct(LCDD& l, xml_det_t x_det)  {
   lcdd     = &l;
   name     = x_det.nameStr();
-  self.assign(dynamic_cast<Value<TNamed,SHcalSc02>*>(this),name,x_det.typeStr());
-  self._data().id = x_det.id();
+  self.assign(this,name,x_det.typeStr());
+  this->id = x_det.id();
 
   xml_comp_t x_barrel             = x_det.child(_U(barrel));
   xml_comp_t x_endcap             = x_det.child(_U(endcap));
@@ -977,7 +977,7 @@ bool SHcalSc02::PostConstructAction(CGAGeometryEnvironment& )   {
 
 
 static Ref_t create_detector(LCDD& lcdd, xml_h element, Ref_t)  {
-  return (new Value<TNamed,SHcalSc02>())->construct(lcdd,element);
+  return (new SHcalSc02())->construct(lcdd,element);
 }
 
 DECLARE_SUBDETECTOR(Tesla_SHcalSc02,create_detector);

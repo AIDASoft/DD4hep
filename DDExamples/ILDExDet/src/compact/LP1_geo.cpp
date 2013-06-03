@@ -24,7 +24,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string      name  = x_det.nameStr();
   Material    mat    (lcdd.material(x_det.materialStr()));
   //if data is needed do this  
-  Value<TNamed,TPCData>* tpcData = new Value<TNamed,TPCData>();
+  TPCData* tpcData = new TPCData();
   DetElement tpc(tpcData, name, x_det.typeStr());
   tpcData->id = x_det.id();
   //else do this

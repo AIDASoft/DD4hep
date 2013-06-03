@@ -139,7 +139,7 @@ using namespace DD4hep::Geometry;
 DetElement SEcal03::construct(LCDD& l, xml_det_t x_det)  {
   lcdd = &l;
   name = x_det.nameStr();
-  self.assign(dynamic_cast<Value<TNamed,SEcal03>*>(this),name,x_det.typeStr());
+  self.assign(this,name,x_det.typeStr());
   self._data().id = x_det.id();
   xml_comp_t x_param             = x_det.child(_Unicode(param));
   xml_comp_t x_barrel            = x_det.child(_U(barrel));

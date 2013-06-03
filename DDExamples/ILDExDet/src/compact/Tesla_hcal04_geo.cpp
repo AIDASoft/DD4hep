@@ -620,6 +620,6 @@ Volume Hcal04::buildRPC1Box(const string& nam, Box box, const Layer& layer, Sens
 }
 
 static Ref_t create_detector(LCDD& lcdd, xml_h element, Ref_t)  {
-  return (new Value<TNamed,Hcal04>())->construct(lcdd,element);
+  return (new Hcal04())->construct(lcdd,element);
 }
 DECLARE_SUBDETECTOR(Tesla_hcal04,create_detector);
