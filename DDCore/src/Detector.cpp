@@ -124,7 +124,7 @@ static DetElement _par(DetElement o, DetElement top, vector<TGeoNode*>& det_node
 
 /// Default constructor
 DetElement::Object::Object()  
-  : magic(magic_word()), id(0), combineHits(0),// readout(), 
+  : TNamed(), magic(magic_word()), id(0), combineHits(0),// readout(), 
     alignment(), placement(), parent(), children(),
     worldTrafo(0), parentTrafo(0), referenceTrafo(0)
 {
@@ -158,10 +158,9 @@ DetElement::Object::~Object() {
   InstanceCount::decrement(this);
 }
 
-
 /// Deep object copy to replicate DetElement trees e.g. for reflection
-Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag)  const  {
-  Value<TNamed,Object>* obj = new Value<TNamed,Object>();
+DetElement::Object* DetElement::Object::clone(int new_id, int flag)  const  {
+  Object* obj = new Object();
   const ExtensionMap& m = detelement_extensions();
   Ref_t det(obj);
   obj->id           = new_id;
@@ -200,10 +199,7 @@ Value<TNamed,DetElement::Object>* DetElement::Object::clone(int new_id, int flag
 
 /// Conversion to reference object
 Ref_t DetElement::Object::asRef() {
-  TNamed* nam = dynamic_cast<TNamed*>(this);
-  if ( nam ) return Ref_t(nam);
-  return Ref_t(0);
-  //return Ref_t(dynamic_cast<Value<TNamed,DetElement::Object>*>(this));
+  return Ref_t(this);
 }
 
 /// Conversion to reference object
@@ -261,26 +257,26 @@ TGeoMatrix* DetElement::Object::referenceTransformation() {
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const string& name, const string& type, int id)   {
-  assign(new Value<TNamed,Object>(),name,type);
-  _data().id = id;
+  assign(new Object(),name,type);
+  object<Object>().id = id;
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const string& name, int id)   {
-  assign(new Value<TNamed,Object>(),name,"");
-  _data().id = id;
+  assign(new Object(),name,"");
+  object<Object>().id = id;
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(DetElement parent, const string& name, int id)   {
-  assign(new Value<TNamed,Object>(),name,parent.type());
-  _data().id = id;
+  assign(new Object(),name,parent.type());
+  object<Object>().id = id;
   parent.add(*this);
 }
 
 /// Add an extension object to the detector element
 void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)(const void*,DetElement), void (*destruct)(void*)) {
-  Object& o = _data();
+  Object& o = object<Object>();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
     ExtensionMap& m = detelement_extensions();
@@ -303,7 +299,7 @@ void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)
 
 /// Access an existing extension object from the detector element
 void* DetElement::i_extension(const type_info& info)   const {
-  Object& o = _data();
+  Object& o = object<Object>();
   Extensions::const_iterator j = o.extensions.find(&info);
   if ( j != o.extensions.end() )   {
     return (*j).second;
@@ -315,7 +311,7 @@ void* DetElement::i_extension(const type_info& info)   const {
 /// Access to the full path to the placed object
 string DetElement::placementPath() const {
   if ( isValid() ) {
-    Object& o = _data();
+    Object& o = object<Object>();
     if ( o.placementPath.empty() )   {
       string res = "";
       vector<TGeoNode*> nodes, path;
@@ -349,7 +345,7 @@ DetElement& DetElement::setType(const string& typ)   {
 
 string DetElement::path() const   {
   if ( m_element )  {
-    Object& o = _data();
+    Object& o = object<Object>();
     if ( o.path.empty() )   {
       DetElement par = o.parent;
       o.path = par.isValid() ? (par.path()+"/")+name() : string("/") + name();
@@ -360,36 +356,36 @@ string DetElement::path() const   {
 }
 
 int DetElement::id() const   {
-  return _data().id;
+  return object<Object>().id;
 }
 
 bool DetElement::combineHits() const   {
-  return _data().combineHits != 0;
+  return object<Object>().combineHits != 0;
 }
 
 DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens)   {
-  _data().combineHits = value;
+  object<Object>().combineHits = value;
   if ( sens.isValid() ) sens.setCombineHits(value);
   return *this;
 }
 #if 0
 Readout DetElement::readout() const   {
-  return _data().readout;
+  return object<Object>().readout;
 }
 
 DetElement& DetElement::setReadout(const Readout& readout)   {
-  _data().readout = readout;
+  object<Object>().readout = readout;
   return *this;
 }
 #endif
 const DetElement::Children& DetElement::children() const   {
-  return _data().children;
+  return object<Object>().children;
 }
 
 /// Access to individual children by name
 DetElement DetElement::child(const string& name) const {
   if ( isValid() )  {
-    const Children& c = _data().children;
+    const Children& c = object<Object>().children;
     Children::const_iterator i = c.find(name);
     return i == c.end() ? DetElement() : (*i).second;
   }
@@ -399,7 +395,7 @@ DetElement DetElement::child(const string& name) const {
 /// Access to the detector elements's parent
 DetElement DetElement::parent() const {
   if ( isValid() )  {
-    return _data().parent;
+    return object<Object>().parent;
   }
   return DetElement();
 }
@@ -412,9 +408,9 @@ void DetElement::check(bool condition, const string& msg) const  {
 
 DetElement& DetElement::add(DetElement sdet)  {
   if ( isValid() )  {
-    pair<Children::iterator,bool> r = _data().children.insert(make_pair(sdet.name(),sdet));
+    pair<Children::iterator,bool> r = object<Object>().children.insert(make_pair(sdet.name(),sdet));
     if ( r.second )   {
-      sdet._data().parent = *this;
+      sdet.object<Object>().parent = *this;
       return *this;
     }
     throw runtime_error("DetElement::add: Element "+string(sdet.name())+" is already present [Double-Insert]");
@@ -424,14 +420,16 @@ DetElement& DetElement::add(DetElement sdet)  {
 
 DetElement DetElement::clone(const string& new_name)  const  {
   if ( isValid() ) {
-    return DetElement(_data().clone(_data().id,COPY_NONE), new_name, ptr()->GetTitle());
+    Object& o = object<Object>();
+    return DetElement(o.clone(o.id,COPY_NONE), new_name, o.GetTitle());
   }
   throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id)  const  {
   if ( isValid() ) {
-    return DetElement(_data().clone(new_id, COPY_NONE), new_name, ptr()->GetTitle());
+    Object& o = object<Object>();
+    return DetElement(o.clone(new_id, COPY_NONE), new_name, o.GetTitle());
   }
   throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
@@ -439,7 +437,7 @@ DetElement DetElement::clone(const string& new_name, int new_id)  const  {
 /// Access to the physical volume of this detector element
 PlacedVolume DetElement::placement() const {
   if ( isValid() ) {
-    Object& o = _data();
+    Object& o = object<Object>();
     if ( o.placement.isValid() )  {
       return o.placement;
     }
@@ -451,7 +449,7 @@ PlacedVolume DetElement::placement() const {
 DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
   if ( isValid() ) {
     if ( placement.isValid() )  {
-      Object& o   = _data();
+      Object& o   = object<Object>();
       o.placement = placement;
       o.volume    = placement.volume();
       return *this;
@@ -464,7 +462,7 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
 /// Access to the logical volume of the placements (all daughters have the same!)
 Volume DetElement::volume() const   {
   if ( isValid() )  {
-    return _data().volume;
+    return object<Object>().volume;
   }
   throw runtime_error("DetElement::volume: Self is not defined [Invalid Handle]");
 }
@@ -507,12 +505,12 @@ DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume,
 
 /// Set detector element for reference transformations. Will delete existing reference trafo.
 DetElement& DetElement::setReference(DetElement reference) {
-  Object& o = _data();
+  Object& o = object<Object>();
   if ( o.referenceTrafo )  {
     delete o.referenceTrafo;
     o.referenceTrafo = 0;
   }
-  _data().reference = reference;
+  object<Object>().reference = reference;
   return *this;
 }
 
@@ -520,7 +518,7 @@ DetElement& DetElement::setReference(DetElement reference) {
 bool DetElement::localToWorld(const Position& local, Position& global)  const {
   Double_t master_point[3]={0,0,0}, local_point[3] = {local.X(),local.Y(),local.Z()};
   // If the path is unknown an exception will be thrown inside worldTransformation() !
-  _data().worldTransformation()->LocalToMaster(local_point,master_point);
+  object<Object>().worldTransformation()->LocalToMaster(local_point,master_point);
   global.SetCoordinates(master_point);
   return true;
 }
@@ -529,7 +527,7 @@ bool DetElement::localToWorld(const Position& local, Position& global)  const {
 bool DetElement::localToParent(const Position& local, Position& global)  const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
   Double_t master_point[3]={0,0,0}, local_point[3] = {local.X(),local.Y(),local.Z()};
-  _data().parentTransformation()->LocalToMaster(local_point,master_point);
+  object<Object>().parentTransformation()->LocalToMaster(local_point,master_point);
   global.SetCoordinates(master_point);
   return true;
 }
@@ -538,7 +536,7 @@ bool DetElement::localToParent(const Position& local, Position& global)  const {
 bool DetElement::localToReference(const Position& local, Position& global)  const {
   // If the path is unknown an exception will be thrown inside referenceTransformation() !
   Double_t master_point[3]={0,0,0}, local_point[3] = {local.X(),local.Y(),local.Z()};
-  _data().referenceTransformation()->LocalToMaster(local_point,master_point);
+  object<Object>().referenceTransformation()->LocalToMaster(local_point,master_point);
   global.SetCoordinates(master_point);
   return true;
 }
@@ -547,7 +545,7 @@ bool DetElement::localToReference(const Position& local, Position& global)  cons
 bool DetElement::worldToLocal(const Position& global, Position& local)  const {
   // If the path is unknown an exception will be thrown inside worldTransformation() !
   Double_t master_point[3]={global.X(),global.Y(),global.Z()}, local_point[3] = {0,0,0};
-  _data().worldTransformation()->MasterToLocal(master_point,local_point);
+  object<Object>().worldTransformation()->MasterToLocal(master_point,local_point);
   local.SetCoordinates(local_point);
   return true;
 }
@@ -556,7 +554,7 @@ bool DetElement::worldToLocal(const Position& global, Position& local)  const {
 bool DetElement::parentToLocal(const Position& global, Position& local)  const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
   Double_t master_point[3]={global.X(),global.Y(),global.Z()}, local_point[3] = {0,0,0};
-  _data().parentTransformation()->MasterToLocal(master_point,local_point);
+  object<Object>().parentTransformation()->MasterToLocal(master_point,local_point);
   local.SetCoordinates(local_point);
   return true;
 }
@@ -565,7 +563,7 @@ bool DetElement::parentToLocal(const Position& global, Position& local)  const {
 bool DetElement::referenceToLocal(const Position& global, Position& local)  const {
   // If the path is unknown an exception will be thrown inside referenceTransformation() !
   Double_t master_point[3]={global.X(),global.Y(),global.Z()}, local_point[3] = {0,0,0};
-  _data().referenceTransformation()->MasterToLocal(master_point,local_point);
+  object<Object>().referenceTransformation()->MasterToLocal(master_point,local_point);
   local.SetCoordinates(local_point);
   return true;
 }
@@ -606,9 +604,9 @@ SensitiveDetector::SensitiveDetector(const string& name, const string& type)  {
       <idspecref ref="EcalEndcapHits"/>
     </calorimeter>
   */
-  assign(new Value<TNamed,Object>(),name,type);
-  _data().ecut = 0e0;
-  _data().verbose = 0;
+  assign(new Object(),name,type);
+  object<Object>().ecut = 0e0;
+  object<Object>().verbose = 0;
 }
 
 /// Set the type of the sensitive detector
@@ -627,86 +625,86 @@ string SensitiveDetector::type() const  {
 
 /// Assign the IDDescriptor reference
 SensitiveDetector& SensitiveDetector::setReadout(Readout ro)  {
-  _data().readout = ro;
+  object<Object>().readout = ro;
   return *this;
 }
 
 /// Assign the IDDescriptor reference
 Readout SensitiveDetector::readout()  const  {
-  return _data().readout;
+  return object<Object>().readout;
 }
 
 /// Set energy cut off
 SensitiveDetector& SensitiveDetector::setEnergyCutoff(double value)   {
-  _data().ecut = value;
+  object<Object>().ecut = value;
   return *this;
 }
 
 /// Access energy cut off
 double SensitiveDetector::energyCutoff()  const {
-  return _data().ecut;
+  return object<Object>().ecut;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setHitsCollection(const string& collection)  {
-  _data().hitsCollection = collection;
+  object<Object>().hitsCollection = collection;
   return *this;
 }
 
 /// Access the hits collection name
 const string& SensitiveDetector::hitsCollection() const {
-  return _data().hitsCollection;
+  return object<Object>().hitsCollection;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setVerbose(bool value)  {
   int v = value ? 1 : 0;
-  _data().verbose = v;
+  object<Object>().verbose = v;
   return *this;
 }
 
 /// Access flag to combine hist
 bool SensitiveDetector::verbose() const {
-  return _data().verbose == 1;
+  return object<Object>().verbose == 1;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setCombineHits(bool value)  {
   int v = value ? 1 : 0;
-  _data().combineHits = v;
+  object<Object>().combineHits = v;
   return *this;
 }
 
 /// Access flag to combine hist
 bool SensitiveDetector::combineHits() const {
-  return _data().combineHits == 1;
+  return object<Object>().combineHits == 1;
 }
 
 /// Set the regional attributes to the sensitive detector 
 SensitiveDetector& SensitiveDetector::setRegion(Region reg)  {
-  _data().region = reg;
+  object<Object>().region = reg;
   return *this;
 }
 
 /// Access to the region setting of the sensitive detector (not mandatory)
 Region SensitiveDetector::region() const {
-  return _data().region;
+  return object<Object>().region;
 }
 
 /// Set the limits to the sensitive detector 
 SensitiveDetector& SensitiveDetector::setLimitSet(LimitSet limits)  {
-  _data().limits = limits;
+  object<Object>().limits = limits;
   return *this;
 }
 
 /// Access to the limit set of the sensitive detector (not mandatory). 
 LimitSet SensitiveDetector::limits() const {
-  return _data().limits;
+  return object<Object>().limits;
 }
 
 /// Add an extension object to the detector element
 void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
-  Object& o = _data();
+  Object& o = object<Object>();
   Extensions::iterator j = o.extensions.find(&info);
   if ( j == o.extensions.end() )   {
     ExtensionMap& m = sensitive_detector_extensions();
@@ -729,7 +727,7 @@ void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, void (
 
 /// Access an existing extension object from the detector element
 void* SensitiveDetector::i_extension(const type_info& info)   const {
-  Object& o = _data();
+  Object& o = object<Object>();
   Extensions::const_iterator j = o.extensions.find(&info);
   if ( j != o.extensions.end() )   {
     return (*j).second;
