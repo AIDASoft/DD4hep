@@ -66,6 +66,8 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Author : public Ref_t  {
+      /// Definition of the implementation type
+      typedef TNamed Object;
       /// Default constructor
       Author() : Ref_t() {}
       /// Constructorto be used for assignment from a handle
@@ -94,7 +96,7 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Header : public Ref_t  {
-      struct Object {
+      struct Object : public TNamed {
 	std::string url;
 	std::string author;
 	std::string status;
@@ -149,6 +151,8 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Constant : public Ref_t  {
+      /// Definition of the implementation type
+      typedef TNamed Object;
       /// Default constructor
       Constant() : Ref_t() {}
       /// Constructorto be used for assignment from a handle
@@ -211,6 +215,8 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Atom : public Handle<TGeoElement>  {
+      /// Definition of the implementation type
+      typedef TGeoElement Object;
       /// Default constructor
       Atom() : Handle<TGeoElement>() {}
       /// Constructorto be used for assignment from a handle
@@ -228,6 +234,8 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Material : public Handle<TGeoMedium>  {
+      /// Definition of the implementation type
+      typedef TGeoMedium Object;
       /// Default constructor
       Material() : Handle<TGeoMedium>() {}
       /// Constructorto be used for assignment from material handle
@@ -253,7 +261,7 @@ namespace DD4hep {
         DASHED=0x2,
         LAST_STYLE
       };
-      struct Object  {
+      struct Object : public TNamed  {
 	unsigned long magic;
 	void*         col;
         int           color;
@@ -275,9 +283,6 @@ namespace DD4hep {
       VisAttr(const std::string& name);
       /// Assignment operator
       VisAttr& operator=(const VisAttr& attr) {  m_element = attr.m_element; return *this; }
-
-      /// Additional data accessor
-      Object& _data()   const {  return *data<Object>();  }
 
       /// Get Flag to show/hide daughter elements
       bool showDaughters() const;
@@ -371,7 +376,7 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct LimitSet : public Ref_t  {
-      struct Object : public std::set<Limit>  {
+      struct Object : public TNamed, public std::set<Limit>  {
 	/// Standard constructor
 	Object();
 	/// Default destructor
@@ -396,7 +401,7 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Region : public Ref_t  {
-      struct Object  {
+      struct Object : public TNamed  {
 	unsigned long magic;
         double        threshold;
         double        cut;
@@ -416,8 +421,6 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object
       Region(const std::string& name);
 
-      /// Additional data accessor
-      Object& _data()   const {  return *data<Object>();  }
       Region& setStoreSecondaries(bool value);
       Region& setThreshold(double value);
       Region& setCut(double value);

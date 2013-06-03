@@ -40,7 +40,7 @@ using namespace DD4hep;
 using namespace std;
 namespace {
   struct TopDetElement : public DetElement {
-    TopDetElement(const string& nam, Volume vol) : DetElement(nam,/* "structure", */0) { _data().volume = vol;    }
+    TopDetElement(const string& nam, Volume vol) : DetElement(nam,/* "structure", */0) { object<Object>().volume = vol;    }
   };
   struct TypePreserve {
     LCDDBuildType& m_t;

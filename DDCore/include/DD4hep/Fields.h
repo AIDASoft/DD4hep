@@ -47,7 +47,7 @@ namespace DD4hep {
       typedef std::map<std::string,PropertyValues>  Properties;
 
       /// Internal data class shared by all handles of a given type
-      struct Object {
+      struct Object : public TNamed {
 	/// Field type
 	int type;
 	/// Field extensions
@@ -114,7 +114,7 @@ namespace DD4hep {
       typedef std::map<std::string,std::string> PropertyValues;
       typedef std::map<std::string,PropertyValues>  Properties;
 
-      struct Object   {
+      struct Object : public TNamed  {
 	int                          type;
 	CartesianField               electric;
 	CartesianField               magnetic;

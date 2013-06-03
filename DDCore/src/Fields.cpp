@@ -21,7 +21,7 @@ namespace {
 }
 
 /// Default constructor
-CartesianField::Object::Object() : type(UNKNOWN) {
+CartesianField::Object::Object() : TNamed(), type(UNKNOWN) {
   InstanceCount::increment(this);
 }
 
@@ -62,8 +62,7 @@ OverlayedField::Object::~Object()  {
 
 /// Object constructor
 OverlayedField::OverlayedField(const string& name) : Ref_t() {
-  Value<TNamed,Object>* ptr = new Value<TNamed,Object>();
-  assign(ptr,name,"overlay_field");
+  assign(new Object(),name,"overlay_field");
 }
 
 /// Access to properties container
