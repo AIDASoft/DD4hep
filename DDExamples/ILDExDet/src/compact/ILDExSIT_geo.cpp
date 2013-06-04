@@ -21,7 +21,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
   string       name  = x_det.nameStr();
   DetElement   sit(name,x_det.id());
-  Assembly     assembly(name+"_assembly");
+  Assembly assembly( name + "assembly"  ) ;
   PlacedVolume pv;
 
   // setup the encoder
@@ -34,6 +34,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   encoder[ILDCellID0::sensor] = 0 ;
   
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
+
+
     xml_comp_t  x_layer   (c);
     xml_comp_t  x_support (x_layer.child(_U(support)));
     xml_comp_t  x_ladder  (x_layer.child(_U(ladder)));
@@ -60,14 +62,21 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     sensvol.setSensitiveDetector(sens);
 
     laddervol.placeVolume(sensvol,senspos) ;
- 
-
     laddervol.placeVolume(suppvol,supppos);
     sit.setVisAttributes(lcdd, x_det.visStr(),laddervol);
       
     encoder[ILDCellID0::layer]  = layer_id ;
 
+
+    Assembly layer_assembly( name + _toString( layer_id,"layer_assembly_%d" ) ) ;
+    
+    //    PlacedVolume layer_physvol = lcdd.pickMotherVolume(sdet).placeVolume( layer_assembly  , IdentityPos());
+    PlacedVolume layer_physvol = assembly.placeVolume( layer_assembly,IdentityPos() ) ;
+
+    layer_physvol.addPhysVolID("layer", layer_id );
+
     for(int j=0; j<nLadders; ++j) {
+      
       string laddername = layername + _toString(j,"_ladder%d");
       double radius = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.);
       Position pos(radius*cos(j*dphi),radius*sin(j*dphi),0.);
@@ -75,12 +84,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
       encoder[ILDCellID0::module]  = j  ;
       int cellID0 = encoder.lowWord() ;
-      assembly.placeVolume(laddervol,pos,Rotation(0,0,j*dphi)).addPhysVolID("CellID0", cellID0 )  ;
+
+      layer_assembly.placeVolume(laddervol,pos,Rotation(0,0,j*dphi)).addPhysVolID( "module" , j )  ;
+
+
    }
   }
-  pv = lcdd.pickMotherVolume(sit).placeVolume(assembly);
-  pv.addPhysVolID("system",x_det.id());
+
+  pv = lcdd.pickMotherVolume(sit).placeVolume(assembly)  ;
+  pv.addPhysVolID( "system", x_det.id() ) ;
   sit.setPlacement(pv);
+
   return sit;
 }
 
