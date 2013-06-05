@@ -74,13 +74,13 @@
     <composite n="3" ref="O"/>
   </material>
 
-  <!--material name="PyrexGlass">
+  <material name="PyrexGlass">
     <D type="density" value="2.23" unit="g/cm3"/>
     <fraction n="0.806" ref="SiliconOxide"/>
     <fraction n="0.130" ref="BoronOxide"/>
     <fraction n="0.040" ref="SodiumOxide"/>
     <fraction n="0.023" ref="AluminumOxide"/>
-  </material-->
+  </material>
 
   <material name="CarbonFiber">
     <D type="density" value="1.5" unit="g/cm3"/>
@@ -117,10 +117,10 @@
     <composite n="381" ref="F"/>
   </material>
 
-  <!--material name="PolystyreneFoam">
+  <material name="PolystyreneFoam">
     <D type="density" value="0.0056" unit="g/cm3"/>
     <fraction n="1.0" ref="Polystyrene"/>
-  </material-->
+  </material>
 
   <material name="Kapton">
     <D value="1.43" unit="g/cm3" />

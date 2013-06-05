@@ -309,15 +309,27 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       const TGeoConeSeg* s = (const TGeoConeSeg*)shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(polycone)));
       solid.setAttr(_U(name),Unicode(name));
+      solid.setAttr(_U(startphi), s->GetPhi1()*DEGREE_2_RAD);
+      solid.setAttr(_U(deltaphi),(s->GetPhi2()-s->GetPhi1())*DEGREE_2_RAD);
+      solid.setAttr(_U(aunit),"rad");
+      solid.setAttr(_U(lunit),"mm");
+      xml_elt_t zplane = xml_elt_t(geo.doc,_U(zplane));
+      zplane.setAttr(_U(rmin),    s->GetRmin1()*CM_2_MM);
+      zplane.setAttr(_U(rmax),    s->GetRmax1()*CM_2_MM);
+      zplane.setAttr(_U(z),     -s->GetDz()*CM_2_MM);
+      solid.append(zplane);
+      zplane = xml_elt_t(geo.doc,_U(zplane));
+      zplane.setAttr(_U(rmin),    s->GetRmin2()*CM_2_MM);
+      zplane.setAttr(_U(rmax),    s->GetRmax2()*CM_2_MM);
+      zplane.setAttr(_U(z),      s->GetDz()*CM_2_MM);
+      solid.append(zplane);
+#if 0
       solid.setAttr(_U(z),        2*s->GetDz()*CM_2_MM);
       solid.setAttr(_U(rmin1),    s->GetRmin1()*CM_2_MM);
       solid.setAttr(_U(rmin2),    s->GetRmin2()*CM_2_MM);
       solid.setAttr(_U(rmax1),    s->GetRmax1()*CM_2_MM);
       solid.setAttr(_U(rmax2),    s->GetRmax2()*CM_2_MM);
-      solid.setAttr(_U(startphi), s->GetPhi1()*DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi),(s->GetPhi2()-s->GetPhi1())*DEGREE_2_RAD);
-      solid.setAttr(_U(aunit),"rad");
-      solid.setAttr(_U(lunit),"mm");
+#endif
     }
     else if ( shape->IsA() == TGeoCone::Class() ) {
       const TGeoCone* s = (const TGeoCone*)shape;
@@ -392,9 +404,10 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       solid.setAttr(_U(lunit),"mm");
     }
     else if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
-      TGeoShapeAssembly* s = (TGeoShapeAssembly*)shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(assembly)));
-      solid.setAttr(_U(name),Unicode(name));
+      //TGeoShapeAssembly* s = (TGeoShapeAssembly*)shape;
+      //geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(assembly)));
+      //solid.setAttr(_U(name),Unicode(name));
+      return solid;
     }
     else if ( shape->IsA() == TGeoCompositeShape::Class() ) {
       char text[32];
@@ -545,20 +558,27 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
     TGeoShape*        s   = v->GetShape();
     xml_ref_t         sol = handleSolid(s->GetName(),s);
 
-    if ( !sol )
-      throw runtime_error("G4Converter: No LCDD Solid present for volume:"+n);
-    else if ( !m && v->IsA() != TGeoVolumeAssembly::Class() )
-      throw runtime_error("G4Converter: No LCDD material present for volume:"+n);
-
     geo.checkVolume(name,volume);
-    geo.doc_structure.append(vol=xml_elt_t(geo.doc,_U(volume)));
-    vol.setAttr(_U(name),n);
-    if ( m )   {
-      string mat_name = m->GetName();
-      xml_ref_t med = handleMaterial(mat_name,m);
-      vol.setRef(_U(materialref),med.name());
+    if ( v->IsAssembly() )   {
+      vol=xml_elt_t(geo.doc,_U(assembly));
+      vol.setAttr(_U(name),n);
     }
-    vol.setRef(_U(solidref),sol.name());
+    else  {
+      if ( !sol )
+	throw runtime_error("G4Converter: No LCDD Solid present for volume:"+n);
+      else if ( !m )
+	throw runtime_error("G4Converter: No LCDD material present for volume:"+n);
+      
+      vol=xml_elt_t(geo.doc,_U(volume));
+      vol.setAttr(_U(name),n);
+      if ( m )   {
+	string mat_name = m->GetName();
+	xml_ref_t med = handleMaterial(mat_name,m);
+	vol.setRef(_U(materialref),med.name());
+      }
+      vol.setRef(_U(solidref),sol.name());
+    }
+    geo.doc_structure.append(vol);
     geo.xmlVolumes[v] = vol;
     const TObjArray*  dau = ((TGeoVolume*)v)->GetNodes();
     if ( dau && dau->GetEntries() > 0 ) {

@@ -254,7 +254,7 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
       has_density = false;
     }
 
-    //cout << "Creating material " << matname << endl;
+    cout << "Creating material " << matname << endl;
     mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
     mat->SetRadLen(radlen_val,intlen_val);
     for(composites.reset(); composites; ++composites)  {
@@ -262,18 +262,20 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
       double fraction = composites.attr<double>(_U(n));
       if ( 0 != (comp_mat=mgr.GetMaterial(nam.c_str())) )
 	mix->AddElement(comp_mat,fraction);
-      else if ( 0 == (comp_elt=table->FindElement(nam.c_str())) )
+      else if ( 0 != (comp_elt=table->FindElement(nam.c_str())) )
+	mix->AddElement(comp_elt,fraction);
+      else
 	throw_print("Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam);
-      mix->AddElement(comp_elt,fraction);
     }
     for(fractions.reset(); fractions; ++fractions)  {
       std::string nam = fractions.attr<string>(_U(ref));
       double fraction = fractions.attr<double>(_U(n));
       if ( 0 != (comp_mat=mgr.GetMaterial(nam.c_str())) )
 	mix->AddElement(comp_mat,fraction);
-      else if ( 0 == (comp_elt=table->FindElement(nam.c_str())) )
+      else if ( 0 != (comp_elt=table->FindElement(nam.c_str())) )
+	mix->AddElement(comp_elt,fraction);
+      else
 	throw_print("Compact2Objects[ERROR]: Creating material:"+mname+" Element missing: "+nam);
-      mix->AddElement(comp_elt,fraction);
     }
     // Update estimated density if not provided.
     if ( !has_density && mix && 0 == mix->GetDensity() ) {
