@@ -161,8 +161,22 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
 /// Dump solid in GDML format to output stream
 xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   const   {
   GeometryInfo& geo = data();
-  xml_h solid(geo.xmlSolids[shape]);
-  if ( !solid && shape ) {
+  SolidMap::iterator sit = geo.xmlSolids.find(shape);
+  if ( !shape )  {
+    // This is an invalid volume. Let's pray returning nothing will work,
+    // and the non-existing solid is also nowhere referenced in the GDML.
+    return xml_h(0);
+  }
+  else if ( sit != geo.xmlSolids.end() ) {
+    // The solidis already registered. Return the reference
+    return (*sit).second;
+  }
+  else if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
+    // Assemblies have no shape in GDML. Hence, return nothing.
+    return xml_h(0);
+  }
+  else   {
+    xml_h solid(0);
     xml_h zplane(0);
     geo.checkShape(name,shape);
     if ( shape->IsA() == TGeoBBox::Class() ) {
@@ -403,12 +417,6 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       solid.setAttr(_U(dz), s->GetDz()*CM_2_MM);
       solid.setAttr(_U(lunit),"mm");
     }
-    else if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
-      //TGeoShapeAssembly* s = (TGeoShapeAssembly*)shape;
-      //geo.doc_solids.append(solid = xml_elt_t(geo.doc,_U(assembly)));
-      //solid.setAttr(_U(name),Unicode(name));
-      return solid;
-    }
     else if ( shape->IsA() == TGeoCompositeShape::Class() ) {
       char text[32];
       const TGeoCompositeShape* s = (const TGeoCompositeShape*)shape;
@@ -477,9 +485,8 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
 	name + " of type " + string(shape->IsA()->GetName());
       throw runtime_error(err);
     }
-    data().xmlSolids[shape] = solid;
+    return data().xmlSolids[shape] = solid;
   }
-  return solid;
 }
 
 /// Convert the Position into the corresponding Xml object(s).
