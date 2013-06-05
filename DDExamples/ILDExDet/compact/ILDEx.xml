@@ -54,7 +54,7 @@
       <vis name="TPCVis"        alpha="1.0" r="0"   g="1.0" b="0.7"  showDaughters="true"  visible="false"/>
       <vis name="TPCSupportVis" alpha="1.0" r="0"   g="0.4" b="0.4"  showDaughters="false" visible="true"/>
       <vis name="TPCGasVis"     alpha="1.0" r="0.7" g="0"   b="0"    showDaughters="false" visible="false"/>
-      <vis name="VXDLayerVis"   alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+      <vis name="VXDLayerVis"   alpha="1.0" r="0.5" g=".5" b=".5"  showDaughters="true"  visible="true"/>
       <vis name="VXDSupportVis" alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
       <vis name="SITSupportVis" alpha="1.0" r="0.0" g="0.3" b="0.7"  showDaughters="true"  visible="true"/>
       <vis name="SITLayerVis"   alpha="1.0" r="0.0" g="0.7" b="0.3"  showDaughters="true"  visible="true"/>
@@ -104,7 +104,7 @@
         </detector>
         
       
-        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" readout="TPCCollection" insideTrackingVolume="true">
+        <detector name="TPC" type="ILDExTPCXXX" vis="TPCVis" id="3" readout="TPCCollection" insideTrackingVolume="true">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
            <!-- GEAR Data-->
            <driftlength value="TPC_zhalf*0.9"/>

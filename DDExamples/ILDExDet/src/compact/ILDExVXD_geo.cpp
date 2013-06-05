@@ -107,6 +107,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     encoder[ILDCellID0::layer]  = layer_id ; 
 
+
+    // Assembly layer_assembly( name + _toString( layer_id,"layer_assembly_%d" ) ) ;
+    // PlacedVolume layer_physvol = assembly.placeVolume( layer_assembly,IdentityPos() ) ;
+    // layer_physvol.addPhysVolID("layer", layer_id );
+
     for(int j=0; j<nLadders; ++j) {
 
       double dj = double(j);      
@@ -130,14 +135,19 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       //      if( dj < 3 ) 
 
       // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
-      encoder[ILDCellID0::module]  = j  ;
-      int cellID0 = encoder.lowWord() ;
+      // encoder[ILDCellID0::module]  = j  ;
+      // int cellID0 = encoder.lowWord() ;
+      // assembly.placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
 
-      assembly.placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
+      pv = assembly.placeVolume( laddervol, pos, rot ) ;
+      pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j )  ;
+
     }
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);
   }
   pv = lcdd.pickMotherVolume(vxd).placeVolume(assembly);
+  pv.addPhysVolID( "system", x_det.id() ) ;
+
   vxd.setPlacement(pv);
   return vxd;
 }
