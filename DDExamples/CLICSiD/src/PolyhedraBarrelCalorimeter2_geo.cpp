@@ -164,7 +164,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // Place the staves.
   placeStaves(sdet,stave,rmin,numSides,totalThickness,envelopeVol,innerAngle,staveOuterVol);
 
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0,0,M_PI/numSides));
+  double z_offset = dim.hasAttr(_U(z_offset)) ? dim.z_offset() : 0.0;
+  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,z_offset),Rotation(0,0,M_PI/numSides));
   env_phv.addPhysVolID("system", sdet.id());
   env_phv.addPhysVolID("barrel", 0);
   sdet.setPlacement(env_phv);
