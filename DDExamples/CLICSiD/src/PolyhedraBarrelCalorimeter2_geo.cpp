@@ -107,7 +107,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // Layer position in Z within the stave.
       layer_pos_z += layer_thickness / 2;
       // Layer box & volume
-      Volume layer_vol(layer_name, Box(layer_dim_x,detZ/2,layer_thickness), air);
+      Volume layer_vol(layer_name, Box(layer_dim_x,detZ/2,layer_thickness/2), air);
 
       // Create the slices (sublayers) within the layer.
       double slice_pos_z = -(layer_thickness / 2);
@@ -122,7 +122,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	slice_pos_z += slice_thickness / 2;
 
 	// Slice volume & box
-	Volume slice_vol(slice_name,Box(layer_dim_x,detZ/2,slice_thickness),slice_material);
+	Volume slice_vol(slice_name,Box(layer_dim_x,detZ/2,slice_thickness/2),slice_material);
 
 	if ( x_slice.isSensitive() ) {
 	  sens.setType("calorimeter");

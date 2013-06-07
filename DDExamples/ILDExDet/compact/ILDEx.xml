@@ -35,6 +35,14 @@
         <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0*m"/>
         <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
         <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
+
+        <!-- Add Hcal Barrel Toy: type from PolyhedraBarrelCalorimeter2 in CLICSiD-->
+	<!-- Fixed Box half length bug in PolyhedraBarrelCalorimeter2 -->
+        <constant name="CaloSides" value="8"/>
+        <constant name="HcalBarrel_rmin" value="2058.0*mm"/>
+        <constant name="HcalBarrel_zmax" value="TPC_zhalf"/>
+        <constant name="HcalBarrel_layers" value="(int) 40"/>
+        <constant name="HcalBarrel_layer_thickness" value="20.0*mm + 6.4*mm"/>
     </define>
 
     <materials>
@@ -60,6 +68,11 @@
       <vis name="SITLayerVis"   alpha="1.0" r="0.0" g="0.7" b="0.3"  showDaughters="true"  visible="true"/>
       <vis name="SupportVis"                r="0.5" g="0.1" b="0.99" showDaughters="false" visible="true"/>
       <vis name="LumiCalVis"                                         showDaughters="false" visible="true"/>
+
+      <vis name="HcalBarrelVis"          alpha="1" r="1"    g="1"    b="0.1" showDaughters="true" visible="true"/>
+      <vis name="HcalBarrelStavesVis"    alpha="1" r="1"    g="0"    b="0.3" showDaughters="true" visible="true"/>
+      <vis name="HcalBarrelLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="true" visible="true"/>
+      <vis name="HcalBarrelSensorVis"    alpha="1" r="1"    g="1"    b="0.7" showDaughters="true" visible="true"/>
     </display>
 
     <detectors>
@@ -142,6 +155,18 @@
           </detector>
         </detector>
 
+        <comment>Calorimeters</comment>
+        <detector id="7" name="HcalBarrel" type="PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
+            <comment>Hadron Calorimeter Barrel</comment>
+            <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="HcalBarrel_zmax*2"/>
+            <staves vis="HcalBarrelStavesVis"/>
+            <layer repeat="(int) HcalBarrel_layers">
+                <slice material = "Steel235" thickness = "20.0*mm" />
+                <slice material = "Polystyrene" thickness = "3.0*mm" sensitive = "yes" limits="cal_limits" vis="HcalBarrelSensorVis"/>       
+                <slice material = "Air" thickness = "3.4*mm" />
+            </layer>
+        </detector>
+
     </detectors>
 
     <readouts>
@@ -157,6 +182,12 @@
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
             <!--id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
         </readout>
+
+        <readout name="HcalBarrelHits">
+            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="30.0*mm" gridSizeY="30.0*mm" />
+            <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+        </readout>
+
     </readouts>
  <fields>
         <!--field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="3.5*tesla"
