@@ -173,9 +173,11 @@
         <readout name="VXDCollection">
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
 	    <!-- system:6,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
+         <segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/>
         </readout>
         <readout name="SITCollection">
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
+             <segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/>
             <!--id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
         </readout>
         <readout name="TPCCollection">
