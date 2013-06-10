@@ -1,6 +1,11 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-02 |  second beta release ...
+ --------
+
+
 2013/02/06    Markus Frank
 --------------------------
   1) Simplyfy inheritance for common objects from TNamed.
