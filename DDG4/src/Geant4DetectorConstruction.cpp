@@ -20,12 +20,13 @@ DD4hep::Simulation::Geant4DetectorConstruction::Geant4DetectorConstruction(Geome
 
 G4VPhysicalVolume* DD4hep::Simulation::Geant4DetectorConstruction::Construct() {
   typedef Simulation::Geant4Converter Geant4Converter;
-  TGeoNode* top = gGeoManager->GetTopNode();
-  Geant4Converter& conv = Geant4Converter::instance();
-  DetElement world = m_lcdd.world();
-  conv.create(world);
-  Geant4Converter::G4GeometryInfo& info = conv.data();
-  m_world = info.g4Placements[top];
+  TGeoNode*       top   = gGeoManager->GetTopNode();
+  Geant4Mapping&  g4map = Geant4Mapping::instance();
+  DetElement      world = m_lcdd.world();
+  Geant4Converter conv(m_lcdd);
+  Geant4Converter::G4GeometryInfo* info = conv.create(world).detach();
+  g4map.attach(info);
+  m_world = g4map.g4Placement(top);
 #ifdef GEANT4_HAS_GDML
   if ( ::getenv("DUMP_GDML") ) {
     G4GDMLParser parser;

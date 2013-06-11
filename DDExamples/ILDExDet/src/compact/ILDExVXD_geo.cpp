@@ -76,9 +76,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
     Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick+supp_thick/2.,0,0);
       
-    sensvol.setVisAttributes(lcdd.visAttributes(x_layer.visStr()));
     sens.setType("tracker");
     sensvol.setSensitiveDetector(sens);
+    sensvol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_layer.visStr());
+
     laddervol.placeVolume(sensvol,senspos);
     laddervol.placeVolume(suppvol,supppos);
 

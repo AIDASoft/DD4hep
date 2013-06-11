@@ -144,6 +144,7 @@ namespace DD4hep {
       /// Some useful Container abbreviations used by the VolumeManager
       typedef std::map<VolumeID,VolumeManager>   Managers;
       typedef std::map<DetElement,VolumeManager> Detectors;
+      typedef std::map<TGeoNode*,Context*>       PhysVolumes;
       typedef std::map<VolIdentifier,Context*>   Volumes;
 
       /** @class VolumeManager::Object  VolumeManager.h DD4hep/lcdd/VolumeManager.h
@@ -163,6 +164,8 @@ namespace DD4hep {
 	Managers      managers;
 	/// The container of placements managed by this instance
 	Volumes       volumes;
+	/// Map of placed volumes and their corresponding context
+	PhysVolumes   phys_volumes;
 	/// The Detector element handle managed by this instance
 	DetElement    detector;
 	/// The ID descriptor object
@@ -182,6 +185,8 @@ namespace DD4hep {
 	virtual ~Object();
 	/// Search the locally cached volumes for a matching ID
 	Context* search(const VolIdentifier& id)  const;
+	/// Search the locally cached volumes for a matching physical volume
+	Context* search(const PlacedVolume pv)  const;
       };
 
     protected:
@@ -219,6 +224,9 @@ namespace DD4hep {
       /// Register physical volume with the manager and pre-computed volume id
       bool adoptPlacement(VolumeID volume_id, Context* context);
 
+      /** This set of functions is required when reading/analyzing 
+       *  already created hits which have a VolumeID attached.
+       */
       /// Lookup the context, which belongs to a registered physical volume.
       Context*     lookupContext(VolumeID volume_id) const throw();
       /// Lookup a physical (placed) volume identified by its 64 bit hit ID
@@ -229,6 +237,20 @@ namespace DD4hep {
       DetElement   lookupDetElement(VolumeID volume_id)  const;
       /// Access the transformation of a physical volume to the world coordinate system
       const TGeoMatrix& worldTransformation(VolumeID volume_id)  const;
+
+      /** This set of functions is required when reading/analyzing 
+       *  already created hits which have a VolumeID attached.
+       */
+      /// Lookup the context, which belongs to a registered physical volume.
+      Context*     lookupContext(PlacedVolume vol) const throw();
+      /// Access the physical volume identifier from the placed volume
+      VolumeID     lookupID(PlacedVolume vol) const;
+      /// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
+      DetElement   lookupDetector(PlacedVolume vol)  const;
+      /// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
+      DetElement   lookupDetElement(PlacedVolume vol)  const;
+      /// Access the transformation of a physical volume to the world coordinate system
+      const TGeoMatrix& worldTransformation(PlacedVolume vol)  const;
     };
 
     /// Enable printouts for debugging

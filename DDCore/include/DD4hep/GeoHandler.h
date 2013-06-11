@@ -37,14 +37,13 @@ namespace DD4hep {
     struct DetElement;
     struct SensitiveDetector;
 
-    /** @class GeoHandler  GeoHandler.h
+    /** @class GeoHandlerTypes  GeoHandler.h
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class GeoHandler {
+    class GeoHandlerTypes {
     public:
-
       typedef std::set<TGeoVolume*>                              VolumeSet;
       typedef std::vector<TGeoVolume*>                           VolumeVector;
       typedef std::set<const TGeoVolume*>                        ConstVolumeSet;
@@ -59,7 +58,6 @@ namespace DD4hep {
       typedef std::set<TNamed*>                                  Fields;
       typedef std::set<TNamed*>                                  ObjectSet;
       typedef LCDD::HandleMap                                    DefinitionSet;
-
       struct GeometryInfo   {
 	SolidSet           solids;
 	VolumeSet          volumeSet;
@@ -74,9 +72,17 @@ namespace DD4hep {
 	std::set<TGeoMedium*>   media;
 	std::set<TGeoElement*>  elements;
       };
+    };
+
+    /** @class GeoHandler  GeoHandler.h
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class GeoHandler : public GeoHandlerTypes  {
+
     protected:
       Data* m_data;
-
 
       /// Internal helper to collect geometry information from traversal
       GeoHandler& i_collect(const TGeoNode* node, int level);

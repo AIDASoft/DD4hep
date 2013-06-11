@@ -11,6 +11,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/FieldTypes.h"
+#include "DD4hep/Printout.h"
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
 
@@ -58,7 +59,7 @@ namespace DD4hep {
 namespace {
   static UInt_t unique_mat_id = 0xAFFEFEED;
   void throw_print(const std::string& msg)  {
-    cout << msg << endl;
+    printout(ERROR,"Compact2Objects",msg.c_str());
     throw runtime_error(msg);
   }
 
@@ -140,18 +141,40 @@ DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
 
 static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e)  {
   xml_comp_t c(e);
+  bool has_inner_radius = c.hasAttr(_U(inner_radius));
+  bool has_outer_radius = c.hasAttr(_U(outer_radius));
+
+  if ( !has_inner_radius && !has_outer_radius )   {
+    throw_print("Compact2Objects[ERROR]: For a solenoidal field at least one of the "
+		" xml attributes inner_radius of outer_radius MUST be set.");
+  }
   CartesianField obj;
   SolenoidField* ptr = new SolenoidField();
-  if ( c.hasAttr(_U(inner_radius)) ) ptr->innerRadius = c.attr<double>(_U(inner_radius));
-  else ptr->innerRadius = 0.0;
-  if ( c.hasAttr(_U(outer_radius)) ) ptr->outerRadius = c.attr<double>(_U(outer_radius));
-  else ptr->outerRadius = lcdd.constant<double>("world_side");
+  //
+  // This logic is a bit weird, but has it's origin in the compact syntax:
+  // If no "inner_radius" is given, the "outer_radius" IS the "inner_radius"
+  // and the "outer_radius" is given by one side of the world volume's box
+  //
+  if ( has_inner_radius && has_outer_radius )  {
+    ptr->innerRadius = c.attr<double>(_U(inner_radius));
+    ptr->outerRadius = c.attr<double>(_U(outer_radius));
+  }
+  else if ( has_inner_radius )  {
+    Box box = lcdd.worldVolume().solid();
+    ptr->innerRadius = c.attr<double>(_U(inner_radius));
+    ptr->outerRadius = box.x();
+  }
+  else if ( has_outer_radius )  {
+    Box box = lcdd.worldVolume().solid();
+    ptr->innerRadius = c.attr<double>(_U(outer_radius));
+    ptr->outerRadius = box.x();
+  }
   if ( c.hasAttr(_U(inner_field))  ) ptr->innerField  = c.attr<double>(_U(inner_field));
   if ( c.hasAttr(_U(outer_field))  ) ptr->outerField  = c.attr<double>(_U(outer_field));
   if ( c.hasAttr(_U(zmax))         ) ptr->maxZ        = c.attr<double>(_U(zmax));
   else ptr->maxZ = lcdd.constant<double>("world_side");
   if ( c.hasAttr(_U(zmin))         ) ptr->minZ        = c.attr<double>(_U(zmin));
-  else                               ptr->minZ        = - ptr->maxZ;
+  else                               ptr->minZ        = -ptr->maxZ;
   obj.assign(ptr,c.nameStr(),c.typeStr());
   return obj;
 }
@@ -254,7 +277,7 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
       has_density = false;
     }
 
-    cout << "Creating material " << matname << endl;
+    printout(DEBUG,"Compact2Objects","++ Creating material %s",matname);
     mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
     mat->SetRadLen(radlen_val,intlen_val);
     for(composites.reset(); composites; ++composites)  {
@@ -290,8 +313,8 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
 	comp_mat = mgr.GetMaterial(nam.c_str());
 	dens +=  composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
-      cout << "Compact2Objects[WARNING]: Material:" << matname << " with NO density."
-	   << " Set density to:" << dens << " g/cm**3 " << endl;
+      printout(WARNING,"Compact2Objects","++ Material: %s with NO density. "
+	       "Set density to %7.3 g/cm**3",matname,dens);
       mix->SetDensity(dens);
     }
   }
@@ -540,7 +563,8 @@ template <> void Converter<CartesianField>::operator()(xml_h e)  const  {
       lcdd.field().properties() = prp;
     }
   }
-  cout << "Converted field: Successfully " << msg << " field " << name << " [" << type << "]" << endl;
+  printout(ALWAYS,"Compact2Objects","++ Converted field: Successfully %s field %s [%s]",
+	   msg.c_str(),name.c_str(),type.c_str());
 }
 
 /** Update sensitive detectors from group tags.
@@ -605,19 +629,16 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const 
     else if ( ecut ) { // If no unit is given , we assume the correct Geant4 unit is used!
       sd.setEnergyCutoff(element.attr<double>(ecut));
     }
-    if ( sd.verbose() ) {
-      cout << "SensitiveDetector-update:" << setw(18) << left << sd.name() 
-	   << setw(24)  << left << " ["+sd.type()+"] " 
-	   << "Hits:"   << setw(24) << left << sd.hitsCollection()
-	   << "Cutoff:" << sd.energyCutoff()
-	   << endl;
-    }
+    printout(DEBUG,"Compact2Objects","SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%f7.3f",
+	     sd.name(),(" ["+sd.type()+"]").c_str(),sd.hitsCollection().c_str(),sd.energyCutoff());
   }
   catch(const exception& e) {
-    cout << "FAILED    to convert sensitive detector:" << name << ": " << e.what() << endl;
+    printout(ERROR,"Compact2Objects","++ FAILED    to convert sensitive detector: %s: %s",
+	     name.c_str(),e.what());
   }
   catch(...) {
-    cout << "FAILED    to convert sensitive detector:" << name << ": UNKNONW Exception" << endl;
+    printout(ERROR,"Compact2Objects","++ FAILED    to convert sensitive detector: %s: %s",
+	     name.c_str(),"UNKNONW Exception");
   }
 }
 
@@ -668,10 +689,10 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
     lcdd.addDetector(det);
   }
   catch(const exception& e) {
-    cout << "FAILED    to convert subdetector:" << name << " of type " << type << ": " << e.what() << endl;
+    printout(ERROR,"Compact2Objects","++ FAILED    to convert subdetector: %s: %s",name.c_str(),e.what());
   }
   catch(...) {
-    cout << "FAILED    to convert subdetector:" << name << " of type " << type << ": UNKNONW Exception" << endl;
+    printout(ERROR,"Compact2Objects","++ FAILED    to convert subdetector: %s: %s",name.c_str(),"UNKNONW Exception");
   }
 }
   

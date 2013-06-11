@@ -10,31 +10,7 @@
 #define DD4HEP_GEANT4CONVERTER_H
 
 // Framework include files
-#include "DD4hep/GeoHandler.h"
-#include "DD4hep/LCDD.h"
-
-// C/C++ include files
-#include <set>
-#include <map>
-#include <vector>
-
-// Forward declarations
-class TGeoVolume;
-class TGeoElement;
-class TGeoShape;
-class TGeoMedium;
-class TGeoNode;
-
-class G4Element;
-class G4Material;
-class G4VSolid;
-class G4LogicalVolume;
-class G4PVPlacement;
-class G4Region;
-class G4Field;
-class G4FieldManager;
-class G4UserLimits;
-class G4VisAttributes;
+#include "DDG4/Geant4Mapping.h"
 
 /*
  *   DD4hep namespace declaration
@@ -46,9 +22,6 @@ namespace DD4hep {
    */
   namespace Simulation   {
 
-
-    class Geant4SensitiveDetector;
-
     /** @class Geant4Converter Geant4Converter.h DDG4/Geant4Converter.h
      * 
      * Geometry converter from DD4hep to Geant 4.
@@ -56,51 +29,17 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Converter : public Geometry::GeoHandler  {
-      typedef Geometry::LCDD       LCDD;
-      typedef Geometry::DetElement DetElement;
-      typedef std::map<const TGeoElement*,G4Element*>               ElementMap;
-      typedef std::map<const TGeoMedium*, G4Material*>              MaterialMap;
-      typedef std::map<const TNamed*,     G4UserLimits*>            LimitMap;
-      typedef std::map<const TGeoNode*,   G4PVPlacement*>           PlacementMap;
-      typedef std::map<const TNamed*,     G4Region*>                RegionMap;
-      typedef std::map<const TNamed*,     Geant4SensitiveDetector*> SensDetMap;
-      typedef std::map<const TGeoVolume*, G4LogicalVolume*>         VolumeMap;
-      typedef std::map<const TGeoShape*,  G4VSolid*>                SolidMap;
-      typedef std::map<const TNamed*,     G4VisAttributes*>         VisMap;
-      struct G4GeometryInfo : public GeometryInfo {
-	ElementMap              g4Elements;
-	MaterialMap             g4Materials;
-	SolidMap                g4Solids;
-	VolumeMap               g4Volumes;
-	PlacementMap            g4Placements;
-	RegionMap               g4Regions;
-	VisMap                  g4Vis;
-	LimitMap                g4Limits;
-	SensDetMap              g4SensDets;
-
-	SensitiveVolumes   sensitives;
-	RegionVolumes      regions;
-	LimitVolumes       limits;
-      };
-
-      LCDD&           m_lcdd;
+    struct Geant4Converter : public Geometry::GeoHandler, public Geant4Mapping  {
       bool            m_checkOverlaps;
 
-      G4GeometryInfo* m_dataPtr;
-      G4GeometryInfo& data() const { return *m_dataPtr; }
-      
       /// Initializing Constructor
       Geant4Converter( LCDD& lcdd );
 
       /// Standard destructor
-      virtual ~Geant4Converter() {}
-
-      /// Singleton instance
-      static Geant4Converter& instance();
+      virtual ~Geant4Converter();
 
       /// Create geometry conversion
-      void create(DetElement top);
+      Geant4Converter& create(DetElement top);
 
       /// Convert the geometry type material into the corresponding Geant4 object(s).
       virtual void* handleMaterial(const std::string& name, const TGeoMedium* medium) const;
@@ -140,8 +79,6 @@ namespace DD4hep {
       virtual void* printSensitive(const TNamed* sens_det, const std::set<const TGeoVolume*>& volumes) const;
       /// Print Geant4 placement
       virtual void* printPlacement(const std::string& name, const TGeoNode* node) const;
-
-
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

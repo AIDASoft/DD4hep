@@ -11,6 +11,7 @@
 
 // C/C++ includes
 #include <sstream>
+#include <iomanip>
 
 using namespace std;
 using namespace DD4hep::Geometry;
@@ -237,6 +238,14 @@ VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id)  
   return context;
 }
 
+/// Search the locally cached volumes for a matching physical volume
+VolumeManager::Context* VolumeManager::Object::search(const PlacedVolume pv)  const  {
+  PhysVolumes::const_iterator i = phys_volumes.find(pv.ptr());
+  if ( i != phys_volumes.end() )
+    return (*i).second;
+  return 0;
+}
+
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(const string& nam, DetElement elt, Readout ro, int flags)
 {
@@ -361,6 +370,7 @@ bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
   }
   if ( i == o.volumes.end() )   {
     o.volumes[vid] = context;
+    o.phys_volumes[pv.ptr()] = context;
 #if 0
     cout << "Inserted new volume:" << o.volumes.size() 
 	 << " ID:" << (void*)context->identifier << " Mask:" << (void*)context->mask << endl;
@@ -466,7 +476,6 @@ const TGeoMatrix& VolumeManager::worldTransformation(VolumeID volume_id)  const 
   return c->toWorld;
 }
 
-#include <iomanip>
 /// Enable printouts for debugging
 std::ostream& DD4hep::Geometry::operator<<(std::ostream& os, const VolumeManager& m)   {
   const VolumeManager::Object& o = *m.data<VolumeManager::Object>();
@@ -494,5 +503,50 @@ std::ostream& DD4hep::Geometry::operator<<(std::ostream& os, const VolumeManager
   for(VolumeManager::Managers::const_iterator i = o.managers.begin(); i!=o.managers.end(); ++i)
     cout << prefix << (*i).second << endl;
   return os;
+}
+
+/// Lookup the context, which belongs to a registered physical volume.
+VolumeManager::Context* VolumeManager::lookupContext(PlacedVolume pv) const throw()  {
+  if ( isValid() )  {
+    Context* c = 0;
+    const Object& o = _data();
+    if ( o.top != ptr() && (o.flags&ONE) == ONE )  {
+      return VolumeManager(Ref_t(o.top)).lookupContext(pv);
+    }
+    /// First look in our own volume cache if the entry is found.
+    c = o.search(pv);
+    if ( c ) return c;
+    /// Second: look in the subdetector volume cache if the entry is found.
+    for(Detectors::const_iterator j=o.subdetectors.begin(); j != o.subdetectors.end(); ++j)  {
+      if ( (c=(*j).second._data().search(pv)) != 0 )
+	return c;
+    }
+    throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]");
+  }
+  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Handle]");
+}
+
+/// Access the physical volume identifier from the placed volume
+VolumeManager::VolumeID VolumeManager::lookupID(PlacedVolume vol) const   {
+  Context* c = lookupContext(vol);
+  return c->identifier;
+}
+
+/// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
+DetElement   VolumeManager::lookupDetector(PlacedVolume vol)  const  {
+  Context* c = lookupContext(vol);
+  return c->detector;
+}
+
+/// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
+DetElement   VolumeManager::lookupDetElement(PlacedVolume vol)  const   {
+  Context* c = lookupContext(vol);
+  return c->element;
+}
+
+/// Access the transformation of a physical volume to the world coordinate system
+const TGeoMatrix& VolumeManager::worldTransformation(PlacedVolume vol)  const  {
+  Context* c = lookupContext(vol);
+  return c->toWorld;
 }
 

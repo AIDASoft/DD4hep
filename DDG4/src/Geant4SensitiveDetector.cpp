@@ -11,6 +11,7 @@
 #include "DDG4/Geant4SensitiveDetector.h"
 #include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4Hits.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
 
 #include "G4Step.hh"
@@ -131,18 +132,18 @@ void Geant4SensitiveDetector::clear() {
 /// Dump Step information (careful: very verbose)
 void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* history */) {
   Geant4StepHandler step(st);
-  Geant4Converter& cnv = Geant4Converter::instance();
+  Geant4Mapping& cnv = Geant4Mapping::instance();
   //Geant4Converter::G4GeometryInfo& data = cnv.data();
 
   Position pos1 = step.prePos();
   Position pos2 = step.postPos();
   Momentum mom = step.postMom();
 
-  ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
+  printout(INFO,"G4Step","  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
    	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
-  ::printf("                pre-Vol: %s  Status:%s\n",
+  printout(INFO,"G4Step","                pre-Vol: %s  Status:%s\n",
    	   step.preVolume()->GetName().c_str(), step.preStepStatus());
-  ::printf("                post-Vol:%s  Status:%s\n",
+  printout(INFO,"G4Step","                post-Vol:%s  Status:%s\n",
    	   step.postVolume()->GetName().c_str(), step.postStepStatus());
   
   const G4VPhysicalVolume* pv = step.volume(step.post);

@@ -32,7 +32,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
   Readout     readout(sens.readout());
-  
+
   for(xml_coll_t c(e,_U(detector)); c; ++c)  {
     xml_comp_t  px_det  (c);
     xml_comp_t  px_tube (px_det.child(_U(tubs)));
@@ -128,7 +128,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       tpc.add(rdet);
     }
   }//subdetectors
-  tpc_vol.setVisAttributes(lcdd, x_det.visStr());
+  tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+  
   PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
   tpc.setPlacement(phv);
   return tpc;

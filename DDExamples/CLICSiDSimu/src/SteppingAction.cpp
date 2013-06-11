@@ -22,8 +22,7 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)   {  
   Geant4StepHandler step(aStep);
-  Geant4Converter& cnv = Geant4Converter::instance();
-  Geant4Converter::G4GeometryInfo& data = cnv.data();
+  Geant4Mapping&    mapping = Geant4Mapping::instance();
   SiMaterial     = G4Material::GetMaterial("Silicon");
   TPCGasMaterial = G4Material::GetMaterial("Argon");  
 
@@ -65,16 +64,15 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
   ::printf("                post-Vol:%s  Status:%s  SD:%s\n",
 	   step.volName(step.post,"----"), step.postStepStatus(), step.sdName(step.post,"----"));
 #endif
-  const G4VPhysicalVolume* pv = step.volume(step.post);
-  typedef Geant4Converter::PlacementMap Places;
-  const Places& places = cnv.data().g4Placements;
-  for(Places::const_iterator i=places.begin(); i!=places.end();++i) {
-    const G4PVPlacement* pl = (*i).second;
-    const G4VPhysicalVolume* qv = pl;
-    if ( qv == pv ) {
-      const TGeoNode* tpv = (*i).first;
-      //printf("           Found TGeoNode:%s!\n",tpv->GetName());
-    }    
+  const G4VPhysicalVolume* pv  = step.volume(step.post);
+  Geometry::PlacedVolume place = mapping.placement(pv);
+  if ( place.isValid() )   {
+    if ( place.volume().isSensitive() )  {
+      // Example code to access the physical vlume and the cell id
+      Geometry::VolumeManager vm = mapping.lcdd().volumeManager();
+      Geometry::VolumeManager::VolumeID cell_id = vm.lookupID(place);
+      //const TGeoNode* tpv = pv.ptr();
+      printf("           Found Sensitive TGeoNode:%s CellID: %lld!\n",place.name(),cell_id);
+    }
   }
-  
 }

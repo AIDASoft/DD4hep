@@ -231,17 +231,12 @@ void LCDDImp::endDocument()  {
   TGeoManager* mgr = m_manager;
   if ( !mgr->IsClosed() ) {
     LCDD& lcdd = *this;
-    Material  air = material("Air");
-
-    m_worldVol.setMaterial(air);
-    m_trackingVol.setMaterial(air);
-
     Region trackingRegion("TrackingRegion");
     trackingRegion.setThreshold(1);
     trackingRegion.setStoreSecondaries(true);
     add(trackingRegion);
     m_trackingVol.setRegion(trackingRegion);
-    
+
     // Set the world volume to invisible.
     VisAttr worldVis("WorldVis");
     worldVis.setVisible(false);
@@ -257,7 +252,6 @@ void LCDDImp::endDocument()  {
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
-    m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));    
     ShapePatcher patcher(m_volManager,m_world);
     patcher.patchShapes();
   }
@@ -265,25 +259,28 @@ void LCDDImp::endDocument()  {
 
 void LCDDImp::init()  {
   if ( !m_world.isValid() ) {
+    TGeoManager* mgr = m_manager;
     Box worldSolid("world_box","world_x","world_y","world_z");
     Material vacuum = material("Vacuum");
-    Volume world("world_volume",worldSolid,vacuum);
+    Material  air   = material("Air");
+    Volume   world("world_volume",worldSolid,air);
     Tube trackingSolid("tracking_cylinder",
 		       0.,
 		       _toDouble("tracking_region_radius"),
 		       _toDouble("2*tracking_region_zmax"),2*M_PI);
-    Volume tracking("tracking_volume",trackingSolid, vacuum);
+    Volume tracking("tracking_volume",trackingSolid, air);
     m_world          = TopDetElement("world",world);
     m_trackers       = TopDetElement("tracking",tracking);
     m_trackingVol    = tracking;
     m_worldVol       = world;
     PlacedVolume pv  = m_worldVol.placeVolume(tracking);
     m_trackers.setPlacement(pv);
-    m_materialAir    = material("Air");
-    m_materialVacuum = material("Vacuum");
+    m_materialAir    = air;
+    m_materialVacuum = vacuum;
     m_detectors.append(m_world);
     m_world.add(m_trackers);
     m_manager->SetTopVolume(m_worldVol);
+    m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));    
   }
 }
 
