@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string      det_name  = x_det.nameStr();
   bool        reflect   = x_det.reflect(false);
   DetElement  sdet       (det_name,det_id);
-  Volume      motherVol = lcdd.trackingVolume();
+  Volume      motherVol = lcdd.pickMotherVolume(sdet);
   int         m_id=0, c_id=0, n_sensor=0;
   double      posY;
   map<string,Volume> modules;

@@ -109,7 +109,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }//endplate
     
     PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
-    part_phv.addPhysVolID(part_nam,px_det.id());
+    //part_phv.addPhysVolID(part_nam,px_det.id());
+    part_phv.addPhysVolID("side",0);
     part_det.setPlacement(part_phv);
     tpc.add(part_det);
     //now reflect it
@@ -119,7 +120,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Rotation r_rot(0,M_PI,M_PI);
       // Volume      part_vol_r(lcdd,part_nam+"_negativ",part_tub,part_mat);
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,r_pos,r_rot);
-      part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
+      //part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
+      part_phv2.addPhysVolID("side",1);
       // needs a copy function for DetElement
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1);
@@ -131,6 +133,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   
   PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
+  phv.addPhysVolID("system",x_det.id());
   tpc.setPlacement(phv);
   return tpc;
 }
