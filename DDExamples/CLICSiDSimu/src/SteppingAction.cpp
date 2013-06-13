@@ -56,14 +56,14 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
 	     long(step.track),pos2.R()/cm,len/cm,step.sdName(step.pre,"----"), step.preStepStatus(),
 	     edep/keV);
   }
-#if 0
+
   ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
 	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
   ::printf("                pre-Vol: %s  Status:%s  SD:%s\n",
 	   step.volName(step.pre,"----"), step.preStepStatus(), step.sdName(step.pre,"----"));
   ::printf("                post-Vol:%s  Status:%s  SD:%s\n",
 	   step.volName(step.post,"----"), step.postStepStatus(), step.sdName(step.post,"----"));
-#endif
+
   const G4VPhysicalVolume* pv  = step.volume(step.post);
   Geometry::PlacedVolume place = mapping.placement(pv);
   if ( place.isValid() )   {
@@ -75,4 +75,6 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
       printf("           Found Sensitive TGeoNode:%s CellID: %lld!\n",place.name(),cell_id);
     }
   }
+#if 0
+#endif
 }

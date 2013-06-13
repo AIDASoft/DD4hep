@@ -358,8 +358,9 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     Geant4SensitiveDetector* sd       = 0;
     G4VisAttributes*         vis_attr = 0;
 
-    printout(INFO,"Geant4Converter","++ Convert Volume %-32s: %p %s/%s assembly:%s",
-	     n.c_str(),v,s->IsA()->GetName(),v->IsA()->GetName(),(assembly ? "YES" : "NO"));
+    printout(DEBUG,"Geant4Converter","++ Convert Volume %-32s: %p %s/%s assembly:%s sensitive:%s",
+	     n.c_str(),v,s->IsA()->GetName(),v->IsA()->GetName(),(assembly ? "YES" : "NO"),
+	     (det.isValid() ? "YES" : "NO"));
 
     if ( det.isValid() )   {
       sd = info.g4SensDets[det.ptr()];
@@ -408,7 +409,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     }
     vol = new G4LogicalVolume(solid,medium,n,0,sd,user_limits);
     if ( region )   {
-      printout(INFO,"Geant4Converter","++ Volume     + Apply REGION settings: %s to volume %s.",reg.name(),_v.name());
+      printout(DEBUG,"Geant4Converter","++ Volume     + Apply REGION settings: %s to volume %s.",reg.name(),_v.name());
       vol->SetRegion(region);
       region->AddRootLogicalVolume(vol);
     }
@@ -416,12 +417,12 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       vol->SetVisAttributes(vis_attr);
     }
     if ( sd )   {
-      printout(INFO,"Geant4Converter","++ Volume:    + %s <> %s Solid:%s Mat:%s SD:%s",
+      printout(DEBUG,"Geant4Converter","++ Volume:    + %s <> %s Solid:%s Mat:%s SD:%s",
 	       name.c_str(),vol->GetName().c_str(),solid->GetName().c_str(),
 	       medium->GetName().c_str(),sd->GetName().c_str());
     }
     info.g4Volumes[v] = vol;
-    printout(INFO,"Geant4Converter",  "++ Volume     + %s converted: %p ---> G4: %p",n.c_str(),v,vol);
+    printout(DEBUG,"Geant4Converter",  "++ Volume     + %s converted: %p ---> G4: %p",n.c_str(),v,vol);
   }
   return vol;
 }
@@ -465,8 +466,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	copy = it->second ;
     }
     //--------------------------------------------------------
-    G4LogicalVolume*  g4vol = info.g4Volumes[vol];
-    G4LogicalVolume*  g4mot = info.g4Volumes[mot_vol];
+    G4LogicalVolume*  g4vol   = info.g4Volumes[vol];
+    G4LogicalVolume*  g4mot   = info.g4Volumes[mot_vol];
     G4AssemblyVolume* ass_mot = (G4AssemblyVolume*)g4mot;
     G4AssemblyVolume* ass_dau = (G4AssemblyVolume*)g4vol;
     bool daughter_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();

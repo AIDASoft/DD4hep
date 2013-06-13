@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_GEANT4FIELD_H
-#define DD4HEP_GEANT4FIELD_H
+#ifndef DD4HEP_DDG4_GEANT4FIELD_H
+#define DD4HEP_DDG4_GEANT4FIELD_H
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -51,4 +51,4 @@ namespace DD4hep {
 
   }    // End namespace Simulation
 }      // End namespace DD4hep
-#endif // DD4HEP_GEANT4FIELD_H
+#endif // DD4HEP_DDG4_GEANT4FIELD_H

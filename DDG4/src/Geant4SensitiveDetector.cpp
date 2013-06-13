@@ -139,11 +139,11 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   Position pos2 = step.postPos();
   Momentum mom = step.postMom();
 
-  printout(INFO,"G4Step","  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
+  printout(INFO,"G4Step","  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f",
    	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
-  printout(INFO,"G4Step","                pre-Vol: %s  Status:%s\n",
+  printout(INFO,"G4Step","                pre-Vol: %s  Status:%s",
    	   step.preVolume()->GetName().c_str(), step.preStepStatus());
-  printout(INFO,"G4Step","                post-Vol:%s  Status:%s\n",
+  printout(INFO,"G4Step","                post-Vol:%s  Status:%s",
    	   step.postVolume()->GetName().c_str(), step.postStepStatus());
   
   const G4VPhysicalVolume* pv = step.volume(step.post);

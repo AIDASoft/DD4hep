@@ -298,7 +298,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
     }
     return (*i).second;
   }
-  throw runtime_error("VolumeManager::addSubdetector: Failed to add subdetector section. [Invalid Handle]");
+  throw runtime_error("VolumeManager::addSubdetector: Failed to add subdetector section. [Invalid Manager Handle]");
 }
 
 /// Access the volume manager by cell id
@@ -314,7 +314,7 @@ VolumeManager VolumeManager::subdetector(VolumeID id)  const   {
     }
     throw runtime_error("VolumeManager::subdetector(VolID): Attempt to access unknown subdetector section.");
   }
-  throw runtime_error("VolumeManager::subdetector(VolID): Cannot assign ID descriptor [Invalid Handle]");
+  throw runtime_error("VolumeManager::subdetector(VolID): Cannot assign ID descriptor [Invalid Manager Handle]");
 }
 
 /// Assign the top level detector element to this manager
@@ -328,7 +328,7 @@ void VolumeManager::setDetector(DetElement e, Readout ro)   {
     }
     throw runtime_error("VolumeManager::setDetector: Cannot assign invalid detector element [Invalid Handle]");
   }
-  throw runtime_error("VolumeManager::setDetector: Cannot assign detector element [Invalid Handle]");
+  throw runtime_error("VolumeManager::setDetector: Cannot assign detector element [Invalid Manager Handle]");
 }
 
 /// Access the top level detector element
@@ -347,7 +347,7 @@ void VolumeManager::setIDDescriptor(IDDescriptor new_descriptor)  const   {
       return;
     }
   }
-  throw runtime_error("VolumeManager::setIDDescriptor: Cannot assign ID descriptor [Invalid Handle]");
+  throw runtime_error("VolumeManager::setIDDescriptor: Cannot assign ID descriptor [Invalid Manager Handle]");
 }
 
 /// Access IDDescription structure
@@ -423,7 +423,7 @@ bool VolumeManager::adoptPlacement(Context* context)   {
     err << "Failed to add new physical volume to detector:" << o.detector.name() << " [Invalid object]";
     goto Fail;
   }
-  err << "Failed to add new physical volume [Invalid Handle]";
+  err << "Failed to add new physical volume [Invalid Manager Handle]";
   goto Fail;
  Fail:
   throw runtime_error(err.str());
@@ -449,7 +449,7 @@ VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const  
     }
     throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]");
   }
-  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Handle]");
+  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
 }
 
 /// Lookup a physical (placed) volume identified by its 64 bit hit ID
@@ -523,7 +523,7 @@ VolumeManager::Context* VolumeManager::lookupContext(PlacedVolume pv) const thro
     }
     throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]");
   }
-  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Handle]");
+  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
 }
 
 /// Access the physical volume identifier from the placed volume

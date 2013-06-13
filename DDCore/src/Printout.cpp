@@ -42,7 +42,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)
 }
 
 
-  /// Set new print level. Returns the old print level
+/// Set new print level. Returns the old print level
 DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level)    {
   PrintLevel old = print_lvl;
   print_lvl = new_level;

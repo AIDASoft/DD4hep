@@ -1,11 +1,11 @@
-/generator/select gps
-/gps/pos/type Point
-/gps/pos/centre 0. 0. 0.
-/gps/ang/type iso
-/gps/ang/mintheta 179 deg
-/gps/ang/maxtheta 181 deg
-/gps/ang/minphi 0 deg
-/gps/ang/maxphi 360 deg
-/gps/ene/type Mono
-/gps/ene/mono 10 GeV
-/gps/particle pi+
+##/generator/select gun
+/gun/pos/type Point
+/gun/pos/centre 0. 0. 0.
+/gun/ang/type iso
+/gun/ang/mintheta 179 deg
+/gun/ang/maxtheta 181 deg
+/gun/ang/minphi 0 deg
+/gun/ang/maxphi 360 deg
+/gun/ene/type Mono
+/gun/ene/mono 10 GeV
+/gun/particle pi+

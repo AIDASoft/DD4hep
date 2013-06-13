@@ -1,8 +1,10 @@
 #include "DDG4/Geant4DetectorConstruction.h"
+#include "DDG4/Geant4HierarchyDump.h"
 #include "DDG4/Geant4Converter.h"
 #include "DD4hep/LCDD.h"
 #include "TGeoManager.h"
 #include "G4PVPlacement.hh"
+#include <iostream>
 
 #ifdef GEANT4_HAS_GDML
 #include "G4GDMLParser.hh"
@@ -27,6 +29,9 @@ G4VPhysicalVolume* DD4hep::Simulation::Geant4DetectorConstruction::Construct() {
   Geant4Converter::G4GeometryInfo* info = conv.create(world).detach();
   g4map.attach(info);
   m_world = g4map.g4Placement(top);
+  m_lcdd.apply("DD4hepVolumeManager",0,0);
+  //Geant4HierarchyDump dmp(m_lcdd);
+  //dmp.dump("",m_world);
 #ifdef GEANT4_HAS_GDML
   if ( ::getenv("DUMP_GDML") ) {
     G4GDMLParser parser;

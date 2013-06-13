@@ -231,23 +231,24 @@ void LCDDImp::endDocument()  {
   TGeoManager* mgr = m_manager;
   if ( !mgr->IsClosed() ) {
     LCDD& lcdd = *this;
+
+#if 0
     Region trackingRegion("TrackingRegion");
     trackingRegion.setThreshold(1);
     trackingRegion.setStoreSecondaries(true);
     add(trackingRegion);
     m_trackingVol.setRegion(trackingRegion);
-
-    // Set the world volume to invisible.
-    VisAttr worldVis("WorldVis");
-    worldVis.setVisible(false);
-    m_worldVol.setVisAttributes(worldVis);
-    add(worldVis);
-  
     // Set the tracking volume to invisible.
     VisAttr trackingVis("TrackingVis");
     trackingVis.setVisible(false);               
     m_trackingVol.setVisAttributes(trackingVis);
     add(trackingVis); 
+#endif
+    // Set the world volume to invisible.
+    VisAttr worldVis("WorldVis");
+    worldVis.setVisible(false);
+    m_worldVol.setVisAttributes(worldVis);
+    add(worldVis);
 
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
@@ -264,21 +265,25 @@ void LCDDImp::init()  {
     Material vacuum = material("Vacuum");
     Material  air   = material("Air");
     Volume   world("world_volume",worldSolid,air);
+
+    m_world          = TopDetElement("world",world);
+    m_worldVol       = world;
+
+#if 0
     Tube trackingSolid("tracking_cylinder",
 		       0.,
 		       _toDouble("tracking_region_radius"),
 		       _toDouble("2*tracking_region_zmax"),2*M_PI);
     Volume tracking("tracking_volume",trackingSolid, air);
-    m_world          = TopDetElement("world",world);
     m_trackers       = TopDetElement("tracking",tracking);
     m_trackingVol    = tracking;
-    m_worldVol       = world;
     PlacedVolume pv  = m_worldVol.placeVolume(tracking);
     m_trackers.setPlacement(pv);
+    m_world.add(m_trackers);
+#endif
     m_materialAir    = air;
     m_materialVacuum = vacuum;
     m_detectors.append(m_world);
-    m_world.add(m_trackers);
     m_manager->SetTopVolume(m_worldVol);
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));    
   }
