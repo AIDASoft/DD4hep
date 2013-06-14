@@ -34,15 +34,23 @@
         <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0*m"/>
         <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0*m"/>
         <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
-        <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
 
-        <!-- Add Hcal Barrel Toy: type from PolyhedraBarrelCalorimeter2 in CLICSiD-->
-	<!-- Fixed Box half length bug in PolyhedraBarrelCalorimeter2 -->
-        <constant name="CaloSides" value="8"/>
         <constant name="HcalBarrel_rmin" value="2058.0*mm"/>
-        <constant name="HcalBarrel_zmax" value="TPC_zhalf"/>
-        <constant name="HcalBarrel_layers" value="(int) 40"/>
-        <constant name="HcalBarrel_layer_thickness" value="20.0*mm + 6.4*mm"/>
+        <constant name="Hcal_outer_radius" value="3395.46*mm"/> 
+	<!-- rmax is 2410.0*mm-->
+        <constant name="TPC_Ecal_Hcal_barrel_halfZ" value="2350*mm"/>
+        <constant name="HcalBarrel_zmax" value="TPC_Ecal_Hcal_barrel_halfZ"/>
+        <constant name="HcalBarrel_staves" value="8"/>
+        <constant name="HcalBarrel_layers" value="(int) 48"/>
+        <constant name="Hcal_chamber_thickness" value="6.5*mm"/>
+        <constant name="Hcal_radiator_thickness" value="20.0*mm"/>
+        <!--constant name="HcalBarrel_layer_thickness" value="20.0*mm + 6.5*mm"/-->
+        <constant name="HcalBarrel_layer_thickness" value="Hcal_radiator_thickness+Hcal_chamber_thickness"/>
+        <constant name="Hcal_back_plate_thickness" value="19.0*mm"/>
+        <constant name="Hcal_lateral_structure_thickness" value="15.0*mm"/>
+        <constant name="Hcal_layer_air_gap" value="2.0*mm"/>
+
+        <constant name="SolenoidalFieldRadius"  value="Hcal_outer_radius+10.0mm"/>
     </define>
 
     <materials>
@@ -162,28 +170,31 @@
         </detector>
 
         <comment>Calorimeters</comment>
-        <detector id="7" name="HcalBarrel" type="PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
+        <detector id="7" name="HcalBarrel" type="AhcalBarrelCalorimeter" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
             <comment>Hadron Calorimeter Barrel</comment>
-            <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="HcalBarrel_zmax*2"/>
-            <staves vis="HcalBarrelStavesVis"/>
+
+            <material name="Steel235"/>
+
+            <dimensions numsides="(int) HcalBarrel_staves" rmin="HcalBarrel_rmin" z="HcalBarrel_zmax"/>
             <layer repeat="(int) HcalBarrel_layers">
-                <slice material = "Steel235" thickness = "20.0*mm" />
-                <slice material = "Polystyrene" thickness = "3.0*mm" sensitive = "yes" limits="cal_limits" vis="HcalBarrelSensorVis"/>       
-                <slice material = "Air" thickness = "3.4*mm" />
+                <slice material = "Air" thickness = "2.7*mm" />
+                <slice material = "Cu"  thickness = "0.1*mm" />
+                <slice material = "FR4" thickness = "0.7*mm" />
+                <slice material = "Polystyrene" thickness = "3.0*mm" sensitive = "yes" limits="cal_limits" vis="HcalBarrelSensorVis"/>
             </layer>
         </detector>
-
     </detectors>
 
     <readouts>
         <readout name="VXDCollection">
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
 	    <!-- system:6,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
-         <segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/>
+         <!--segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/-->
         </readout>
         <readout name="SITCollection">
-            <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
-             <segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/>
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <!--id>system:5,side:-2,layer:9,module:8,sensor:8</id-->
+             <!--segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/-->
             <!--id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
         </readout>
         <readout name="TPCCollection">
@@ -193,16 +204,14 @@
 
         <readout name="HcalBarrelHits">
             <segmentation type="RegularNgonCartesianGridXY" gridSizeX="30.0*mm" gridSizeY="30.0*mm" />
-            <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+            <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
 
     </readouts>
  <fields>
-        <!--field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="3.5*tesla"
-               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
-               outer_radius="SolenoidalFieldRadius" /-->
-        <field type="solenoid" name="GlobalSolenoid" inner_field="3.5*tesla"
-               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
-               outer_radius="SolenoidalFieldRadius" />
+        <field type="solenoid" name="GlobalSolenoid" inner_field="-3.5*tesla"
+               outer_field="1.5*tesla" zmax="SolenoidCoilOuterZ"
+               inner_radius="SolenoidalFieldRadius"
+               outer_radius="world_side" />
  </fields> 
 </lccdd>
