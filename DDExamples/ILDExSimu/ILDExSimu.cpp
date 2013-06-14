@@ -8,6 +8,10 @@
 #include "G4UImanager.hh"
 #include "G4UIsession.hh"
 #include "Randomize.hh"
+#include "G4VisExecutive.hh"
+#include "G4UIExecutive.hh"
+#include "G4UItcsh.hh"
+#include "G4UIQt.hh"
 
 //#include "ILDExDetectorConstruction.hh"
 #include "ILDExPhysicsList.h"
@@ -16,7 +20,6 @@
 #include "ILDExEventAction.h"
 #include "ILDExSteppingAction.h"
 #include "ILDExSteppingVerbose.h"
-#include "G4UIExecutive.hh"
 
 #include "DDG4/Geant4DetectorConstruction.h"
 #include "DD4hep/LCDD.h"
@@ -95,26 +98,28 @@ int main(int argc,char** argv)
   
   // Initialize visualization
   //
-  //G4VisManager* visManager = new G4VisExecutive;
-  //visManager->Initialize();
-    
+  G4VisManager* visManager = new G4VisExecutive;
+  visManager->Initialize();
+  
   // Get the pointer to the User Interface manager
   
   lcWrt->open( lcioOutFile , lcio::LCIO::WRITE_NEW ) ;
   
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
   
-  if (argc!=1) {   // batch mode
+  if ( argc!=1) {   // batch mode
+
     G4String command = "/control/execute ";
     G4String fileName = argv[argc-1];
     UImanager->ApplyCommand(command+fileName);    
-  }
-  else {  // interactive mode : define UI session
+
+  } else {  // interactive mode : define UI session
     
-    //G4UIsession* ui = new G4UIQt(argc, argv);
-    
-    //ui->SessionStart();
-    //delete ui;
+    G4UIsession *ui = new G4UIterminal(new G4UItcsh());
+    //    G4UIsession* ui = new G4UIQt(argc, argv);
+    ui->SessionStart();
+    // end ...
+    delete ui;
     
   }
   
@@ -123,9 +128,8 @@ int main(int argc,char** argv)
   //                 owned and deleted by the run manager, so they should not
   //                 be deleted in the main() program !
   
-  //delete visManager;
-  
-  
+
+  delete visManager;
   delete runManager;
 
   lcWrt->close() ;
