@@ -6,6 +6,15 @@
 
        http://www.engineeringtoolbox.com/air-composition-24_212.html
   -->
+  <material name="FR4">
+    <D type="density" unit="g/cm3" value="1.7"/>
+    <fraction n="0.1808" ref="Si"/>
+    <fraction n="0.4056" ref="O"/>
+    <fraction n="0.2780" ref="C"/>
+    <fraction n="0.0684" ref="H"/>
+    <fraction n="0.0671" ref="Br"/>
+  </material>
+
   <material name="Air">
     <D type="density" unit="g/cm3" value="0.0012"/>
     <fraction n="0.754" ref="N"/>
