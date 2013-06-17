@@ -12,6 +12,7 @@
 #include "G4UIExecutive.hh"
 #include "G4UItcsh.hh"
 #include "G4UIQt.hh"
+#include "QGSP_BERT.hh"
 
 //#include "ILDExDetectorConstruction.hh"
 #include "ILDExPhysicsList.h"
@@ -69,7 +70,7 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(detector);
   
   //
-  G4VUserPhysicsList* physics = new ILDExPhysicsList;
+  G4VUserPhysicsList* physics = new QGSP_BERT ; //new ILDExPhysicsList;
   runManager->SetUserInitialization(physics);
   
   // Set user action classes
