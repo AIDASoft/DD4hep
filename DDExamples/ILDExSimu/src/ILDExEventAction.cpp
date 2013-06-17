@@ -28,7 +28,7 @@
 #include "UTIL/ILDConf.h"
 
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 //------ helper functions ------------------
@@ -205,7 +205,9 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
 	
 	col->setFlag( UTIL::make_bitset32(  LCIO::CHBIT_LONG, LCIO::CHBIT_STEP ) ); 
 
-	std::cout << " setting collection flag: " << col->getFlag() << std::endl ;
+#if DEBUG
+       	std::cout << " setting collection flag:  0x" << std::hex << col->getFlag()  << std::dec << std::endl ;
+#endif	
 
 	for(int j=0,N= hCol->GetSize() ; j<N ; ++j) {
 	  

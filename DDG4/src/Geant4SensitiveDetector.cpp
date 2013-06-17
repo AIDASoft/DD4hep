@@ -19,7 +19,7 @@
 
 #include "TGeoNode.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 // C/C++ include files

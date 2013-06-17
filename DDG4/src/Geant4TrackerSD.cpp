@@ -32,7 +32,7 @@ namespace DD4hep {  namespace Simulation {
       direction *= new_len/hit_len;
     }
 
-    G4cout << "----------- Geant4GenericSD<Tracker>::buildHits : position : " << prePos << G4endl ;
+    //    G4cout << "----------- Geant4GenericSD<Tracker>::buildHits : position : " << prePos << G4endl ;
     
     Geant4TrackerHit* hit = 
       new Geant4TrackerHit(h.track->GetTrackID(),
