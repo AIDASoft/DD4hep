@@ -50,7 +50,7 @@
         <constant name="Hcal_lateral_structure_thickness" value="15.0*mm"/>
         <constant name="Hcal_layer_air_gap" value="2.0*mm"/>
 
-        <constant name="SolenoidalFieldRadius"  value="Hcal_outer_radius+10.0mm"/>
+        <constant name="SolenoidalFieldRadius"  value="Hcal_outer_radius+10.0*mm"/>
     </define>
 
     <materials>
@@ -209,8 +209,8 @@
 
     </readouts>
  <fields>
-        <field type="solenoid" name="GlobalSolenoid" inner_field="-3.5*tesla"
-               outer_field="1.5*tesla" zmax="SolenoidCoilOuterZ"
+        <field type="solenoid" name="GlobalSolenoid" inner_field="3.5*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
                inner_radius="SolenoidalFieldRadius"
                outer_radius="world_side" />
  </fields> 
