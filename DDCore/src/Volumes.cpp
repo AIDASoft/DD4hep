@@ -337,19 +337,6 @@ Volume::Volume(const string& name, const Solid& s, const Material& m) {
   setMaterial(m);
 }
 
-/// Set the volume's material
-void Volume::setMaterial(const Material& m)  const  {
-  if ( m.isValid() )   {
-    TGeoMedium* medium = m._ptr<TGeoMedium>();
-    if ( medium )  {
-      m_element->SetMedium(medium);
-      return;
-    }
-    throw runtime_error("Volume: Medium "+string(m.name())+" is not registered with geometry manager.");
-  }
-  throw runtime_error("Volume: Attempt to assign invalid material.");
-}
-
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
@@ -437,8 +424,26 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityRot& /* rot
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
+/// Set the volume's material
+const Volume& Volume::setMaterial(const Material& m)  const  {
+  if ( m.isValid() )   {
+    TGeoMedium* medium = m._ptr<TGeoMedium>();
+    if ( medium )  {
+      m_element->SetMedium(medium);
+      return *this;
+    }
+    throw runtime_error("Volume: Medium "+string(m.name())+" is not registered with geometry manager.");
+  }
+  throw runtime_error("Volume: Attempt to assign invalid material.");
+}
+
+/// Access to the Volume material
+Material Volume::material() const   {
+  return Ref_t(m_element->GetMedium());
+}
+
 /// Set Visualization attributes to the volume
-void Volume::setVisAttributes(const VisAttr& attr) const   {
+const Volume& Volume::setVisAttributes(const VisAttr& attr) const   {
   if ( attr.isValid() )  {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
     Color_t bright = TColor::GetColorBright(vis->color);
@@ -467,10 +472,11 @@ void Volume::setVisAttributes(const VisAttr& attr) const   {
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
   }
   _data(*this)->vis = attr;
+  return *this;
 }
 
 /// Set Visualization attributes to the volume
-void Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
+const Volume& Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
   if ( !name.empty() )   {
     VisAttr attr = lcdd.visAttributes(name);
     _data(*this)->vis = attr;
@@ -489,10 +495,11 @@ void Volume::setVisAttributes(const LCDD& lcdd, const string& name)  const {
      setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
      */
   }
+  return *this;
 }
 
 /// Attach attributes to the volume
-void Volume::setAttributes(const LCDD& lcdd,
+const Volume& Volume::setAttributes(const LCDD& lcdd,
                            const string& region, 
                            const string& limits, 
                            const string& vis)   const
@@ -500,44 +507,8 @@ void Volume::setAttributes(const LCDD& lcdd,
   if ( !region.empty() ) setRegion(lcdd.region(region));
   if ( !limits.empty() ) setLimitSet(lcdd.limitSet(limits));
   setVisAttributes(lcdd,vis);
+  return *this;
 }
-
-/// Set the volume's solid shape
-void Volume::setSolid(const Solid& solid)  const  
-{  m_element->SetShape(solid);                              }
-
-/// Set the regional attributes to the volume
-void Volume::setRegion(const Region& obj)  const   
-{  _data(*this)->region = obj;                            }
-
-/// Set the limits to the volume
-void Volume::setLimitSet(const LimitSet& obj)  const   
-{  _data(*this)->limits = obj;                            }
-
-/// Assign the sensitive detector structure
-void Volume::setSensitiveDetector(const SensitiveDetector& obj) const   {
-  //cout << "Setting sensitive detector '" << obj.name() << "' to volume:" << ptr() << " " << name() << endl;
-  _data(*this)->sens_det = obj;                          
-}
-
-/// Access to the handle to the sensitive detector
-Ref_t Volume::sensitiveDetector() const
-{
-  const Object* o = _data(*this);
-  return o->sens_det;                         
-}
-
-/// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
-bool Volume::isSensitive() const
-{  return _data(*this)->sens_det.isValid();               }
-
-/// Access to Solid (Shape)
-Solid Volume::solid() const   
-{  return Solid((*this)->GetShape());                       }
-
-/// Access to the Volume material
-Material Volume::material() const   
-{  return Ref_t(m_element->GetMedium());   }
 
 /// Access the visualisation attributes
 VisAttr Volume::visAttributes() const  {  
@@ -546,14 +517,72 @@ VisAttr Volume::visAttributes() const  {
   return VisAttr();
 }
 
+/// Set the volume's solid shape
+const Volume& Volume::setSolid(const Solid& solid)  const  {
+  m_element->SetShape(solid);
+  return *this;
+}
+
+/// Access to Solid (Shape)
+Solid Volume::solid() const   {
+  return Solid((*this)->GetShape());
+}
+
+/// Set the regional attributes to the volume
+const Volume& Volume::setRegion(const LCDD& lcdd, const string& name)  const  {
+  if ( !name.empty() )  {
+    return setRegion(lcdd.region(name));
+  }
+  return *this;
+}
+
+/// Set the regional attributes to the volume
+const Volume& Volume::setRegion(const Region& obj)  const    {
+  _data(*this)->region = obj;
+  return *this;
+}
+
 /// Access to the handle to the region structure
 Region Volume::region() const    {
   return _data(*this)->region;
 }
 
+/// Set the limits to the volume
+const Volume& Volume::setLimitSet(const LCDD& lcdd, const string& name)  const  {
+  if ( !name.empty() )  {
+    return setLimitSet(lcdd.limitSet(name));
+  }
+  return *this;
+}
+
+/// Set the limits to the volume
+const Volume& Volume::setLimitSet(const LimitSet& obj)  const    {
+  _data(*this)->limits = obj;
+  return *this;
+}
+
 /// Access to the limit set
-LimitSet Volume::limitSet() const   
-{  return _data(*this)->limits;                           }
+LimitSet Volume::limitSet() const   {
+  return _data(*this)->limits;
+}
+
+/// Assign the sensitive detector structure
+const Volume& Volume::setSensitiveDetector(const SensitiveDetector& obj) const   {
+  //cout << "Setting sensitive detector '" << obj.name() << "' to volume:" << ptr() << " " << name() << endl;
+  _data(*this)->sens_det = obj;                          
+  return *this;
+}
+
+/// Access to the handle to the sensitive detector
+Ref_t Volume::sensitiveDetector() const   {
+  const Object* o = _data(*this);
+  return o->sens_det;                         
+}
+
+/// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
+bool Volume::isSensitive() const   {
+  return _data(*this)->sens_det.isValid();
+}
 
 /// Constructor to be used when creating a new geometry tree.
 Assembly::Assembly(const string& name) {

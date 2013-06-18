@@ -146,7 +146,7 @@ void* Geant4Converter::handleElement(const string& name, const TGeoElement* elem
       }
       stringstream str;
       str << (*g4e);
-      printout(DEBUG,"Geant4Converter","++ Created G4 Element:%s",str.str().c_str());
+      printout(DEBUG,"Geant4Converter","++ Created G4 %s",str.str().c_str());
     }
     data().g4Elements[element] = g4e;
   }
@@ -204,7 +204,7 @@ void* Geant4Converter::handleMaterial(const string& name, const TGeoMedium* medi
       }
       stringstream str;
       str << (*mat);
-      printout(DEBUG,"Geant4Converter","++ Created G4 Material:%s",str.str().c_str());
+      printout(DEBUG,"Geant4Converter","++ Created G4 %s",str.str().c_str());
     }
     data().g4Materials[medium] = mat;
   }
@@ -755,12 +755,12 @@ string printSolid(G4VSolid* sol) {
 
 /// Print G4 placement
 void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) const {
-  G4GeometryInfo&  info = data();  
-  G4PVPlacement*   g4   = info.g4Placements[node];
-  G4LogicalVolume* vol  = info.g4Volumes[node->GetVolume()];
-  G4LogicalVolume* mot  = info.g4Volumes[node->GetMotherVolume()];
-  G4VSolid*        sol  = vol->GetSolid();
-  G4ThreeVector     tr  = g4->GetObjectTranslation();
+  G4GeometryInfo& info = data();  
+  G4PVPlacement*    g4 = info.g4Placements[node];
+  G4LogicalVolume* vol = info.g4Volumes[node->GetVolume()];
+  G4LogicalVolume* mot = info.g4Volumes[node->GetMotherVolume()];
+  G4VSolid*        sol = vol->GetSolid();
+  G4ThreeVector     tr = g4->GetObjectTranslation();
   
   G4VSensitiveDetector* sd = vol->GetSensitiveDetector();
   if ( !sd ) return g4;
@@ -814,6 +814,11 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
+  Material mat = m_lcdd.material("Argon");
+  handleMaterial(mat.name(),mat.ptr());
+  mat = m_lcdd.material("Silicon");
+  handleMaterial(mat.name(),mat.ptr());
+
   handle(this, geo.volumes,   &Geant4Converter::collectVolume);
   handle(this, geo.solids,    &Geant4Converter::handleSolid);
   printout(INFO,"Geant4Converter","++ Handled %ld solids.",geo.solids.size());

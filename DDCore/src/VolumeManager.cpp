@@ -8,12 +8,14 @@
 //====================================================================
 // Framework include files
 #include "DD4hep/VolumeManager.h"
+#include "DD4hep/Printout.h"
 
 // C/C++ includes
 #include <sstream>
 #include <iomanip>
 
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 #define VOLUME_IDENTIFIER(id,mask)  id
@@ -41,7 +43,8 @@ namespace {
 	  scanPhysicalVolume(de, de, pv, ids, node_chain, elt_nodes);
 	  continue;
 	}
-	cout << "++ Detector element " << de.name() << " has no placement." << endl;
+	printout(WARNING,"VolumeManager","++ Detector element %s of type %s has no placement.",
+		 de.name(),de.type().c_str());
       }
     }
     /// Find a detector element below with the corresponding placement
@@ -75,19 +78,15 @@ namespace {
 	ids.PlacedVolume::VolIDs::Base::insert(ids.end(),pv.volIDs().begin(),pv.volIDs().end());
 	if ( vol.isSensitive() )  {
 	  SensitiveDetector sd = vol.sensitiveDetector();
-	  Readout ro = sd.readout();
+	  Readout           ro = sd.readout();
 	  //Readout ro = parent.readout();
 	  if ( ro.isValid() )  {
 	    add_entry(parent, e, node, ids, node_chain, elt_nodes);
 	  }
 	  else   {
-	    cout << "VolumeManager [" << parent.name() 
-		 << "]: Strange constellation volume " << pv.volume().name()
-		 << " is sensitive, but has no readout!" 
-		 << " sd:" << sd.ptr()
-		 << " ro:" << ro.ptr() << "," << ro.ptr()
-	      // << " Id:" << ro.idSpec().ptr()
-		 << endl;
+	    printout(WARNING,"VolumeManager",
+		     "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p ro:%p",
+		     parent.name(), pv.volume().name(), sd.ptr(), ro.ptr());
 	  }
 	}
 	for(Int_t idau=0, ndau=node->GetNdaughters(); idau<ndau; ++idau)  {
@@ -371,10 +370,12 @@ bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
   if ( i == o.volumes.end() )   {
     o.volumes[vid] = context;
     o.phys_volumes[pv.ptr()] = context;
-#if 0
-    cout << "Inserted new volume:" << o.volumes.size() 
-	 << " ID:" << (void*)context->identifier << " Mask:" << (void*)context->mask << endl;
-#endif
+    err  << "Inserted new volume:" << setw(6) << left << o.volumes.size() 
+	 << " Ptr:"  << (void*)context->placement.ptr()
+	 << " ["     << context->placement.name() << "]"
+	 << " ID:"   << (void*)context->identifier 
+	 << " Mask:" << (void*)context->mask;
+    printout(DEBUG,"VolumeManager",err.str().c_str());
     return true;
   }
   err << "Attempt to register twice volume with identical volID "
@@ -391,7 +392,7 @@ bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
     for(PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
       err << (*vit).first << "=" << (*vit).second << "; ";
   }
-  cout << "++++[!!!] VolumeManager::adoptPlacement: " << err.str() << endl;
+  printout(DEBUG,"VolumeManager","++++[!!!] adoptPlacement: %s",err.str().c_str());
   // throw runtime_error(err.str());
   return false;
 }

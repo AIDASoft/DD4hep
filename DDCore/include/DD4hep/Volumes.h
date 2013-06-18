@@ -117,13 +117,14 @@ namespace DD4hep {
         Object();
 	/// Default destructor
         virtual ~Object();
+	/// Copy the object
 	void copy(const Object& c) { 
-	  magic=c.magic; 
-	  region=c.region; 
-	  limits=c.limits; 
-	  vis=c.vis; 
-	  sens_det=c.sens_det; 
-	  referenced=c.referenced;
+	  magic      = c.magic; 
+	  region     = c.region; 
+	  limits     = c.limits; 
+	  vis        = c.vis; 
+	  sens_det   = c.sens_det; 
+	  referenced = c.referenced;
 	}
       };
 
@@ -167,42 +168,46 @@ namespace DD4hep {
       PlacedVolume placeVolume(const Volume& vol, const IdentityRot& pos)  const;
       
       /// Attach attributes to the volume
-      void setAttributes(const LCDD& lcdd,
-                         const std::string& region, 
-                         const std::string& limits, 
-                         const std::string& vis) const;
+      const Volume& setAttributes(const LCDD& lcdd,
+				  const std::string& region, 
+				  const std::string& limits, 
+				  const std::string& vis) const;
       
+      /// Set the regional attributes to the volume. Note: If the name string is empty, the action is ignored.
+      const Volume& setRegion(const LCDD& lcdd, const std::string& name)  const;
       /// Set the regional attributes to the volume
-      void setRegion(const Region& obj)  const;
+      const Volume& setRegion(const Region& obj)  const;
       /// Access to the handle to the region structure
       Region region() const;
       
+      /// Set the limits to the volume. Note: If the name string is empty, the action is ignored.
+      const Volume& setLimitSet(const LCDD& lcdd, const std::string& name)  const;
       /// Set the limits to the volume
-      void setLimitSet(const LimitSet& obj)  const;
+      const Volume& setLimitSet(const LimitSet& obj)  const;
       /// Access to the limit set
       LimitSet limitSet() const;
 
       /// Set Visualization attributes to the volume
-      void setVisAttributes(const VisAttr& obj) const;
-      /// Set Visualization attributes to the volume
-      void setVisAttributes(const LCDD& lcdd, const std::string& name) const;
+      const Volume& setVisAttributes(const VisAttr& obj) const;
+      /// Set Visualization attributes to the volume. Note: If the name string is empty, the action is ignored.
+      const Volume& setVisAttributes(const LCDD& lcdd, const std::string& name) const;
       /// Access the visualisation attributes
       VisAttr  visAttributes() const;
       
       /// Assign the sensitive detector structure
-      void setSensitiveDetector(const SensitiveDetector& obj) const;
+      const Volume& setSensitiveDetector(const SensitiveDetector& obj) const;
       /// Access to the handle to the sensitive detector
       Ref_t sensitiveDetector() const;
       /// Accessor if volume is sensitive (ie. is attached to a sensitive detector)
       bool isSensitive() const;
 
       /// Set the volume's solid shape
-      void setSolid(const Solid& s)  const;
+      const Volume& setSolid(const Solid& s)  const;
       /// Access to Solid (Shape)
       Solid solid() const;
       
       /// Set the volume's material
-      void setMaterial(const Material& m)  const;
+      const Volume& setMaterial(const Material& m)  const;
       /// Access to the Volume material
       Material material() const;
       

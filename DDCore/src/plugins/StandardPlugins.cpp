@@ -53,6 +53,14 @@ static long load_compact(LCDD& lcdd,int argc,char** argv)    {
 }
 DECLARE_APPLY(DD4hepCompactLoader,load_compact);
 
+static long load_xml(LCDD& lcdd,int argc,char** argv)    {
+  string input = argv[0];
+  cout << "Processing compact input file : " << input << endl;
+  lcdd.fromXML(input);
+  return 1;
+}
+DECLARE_APPLY(DD4hepXMLLoader,load_xml);
+
 static long load_volmgr(LCDD& lcdd,int,char**)    {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);

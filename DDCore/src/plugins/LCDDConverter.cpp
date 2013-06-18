@@ -49,17 +49,6 @@ using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 
-namespace {
-  typedef Position XYZRotation;
-  XYZRotation getXYZangles(const Double_t* r)   {
-    Double_t cosb = sqrt(r[0]*r[0] + r[1]*r[1]);
-    if (cosb > 0.00001) {
-      return XYZRotation(atan2(r[5], r[8]), atan2(-r[2], cosb), atan2(r[1], r[0]));
-    }
-    return XYZRotation(atan2(-r[7], r[4]),atan2(-r[2], cosb),0);
-  }
-}
-
 void LCDDConverter::GeometryInfo::check(const string& name, const TNamed* n,map<string,const TNamed*>& m) const {
   map<string,const TNamed*>::const_iterator i=m.find(name);
   if ( i != m.end() ) {
@@ -448,23 +437,29 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
       solid.append(first=xml_elt_t(geo.doc,_U(first)));
       solid.setAttr(_U(name),Unicode(name));
       first.setAttr(_U(ref),ls->GetName());
-      XYZRotation    rot = getXYZangles(lm->Inverse().GetRotationMatrix());
       const double  *tr  = lm->GetTranslation();
-
+      double phi=0., theta=0., psi=0.;
+      TGeoRotation rot;
+      
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
 	first.append(obj=xml_elt_t(geo.doc,_U(firstposition)));
 	obj.setAttr(_U(x),tr[0]*CM_2_MM);
 	obj.setAttr(_U(y),tr[1]*CM_2_MM);
 	obj.setAttr(_U(z),tr[2]*CM_2_MM);
       }
-      if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
-	first.append(obj=xml_elt_t(geo.doc,_U(firstrotation)));
-	obj.setAttr(_U(x),rot.X()*DEGREE_2_RAD);
-	obj.setAttr(_U(y),rot.Y()*DEGREE_2_RAD);
-	obj.setAttr(_U(z),rot.Z()*DEGREE_2_RAD);
+      if ( lm->Inverse().IsRotation() )  {
+	rot.SetMatrix(lm->Inverse().GetRotationMatrix());
+	rot.GetAngles(phi,theta,psi);
+	if ( !(theta == 0.0 && phi == 0.0 && psi == 0.0) )  {
+	  first.append(obj=xml_elt_t(geo.doc,_U(firstrotation)));
+	  obj.setAttr(_U(x),theta*DEGREE_2_RAD);
+	  obj.setAttr(_U(y),psi*DEGREE_2_RAD);
+	  obj.setAttr(_U(z),phi*DEGREE_2_RAD);
+	}
       }
       TGeoMatrix& rinv = rm->Inverse();
-      rot = getXYZangles(rinv.GetRotationMatrix());
+      rot.SetMatrix(rinv.GetRotationMatrix());
+      rot.GetAngles(phi,theta,psi);
       tr  = rm->GetTranslation();
       solid.append(second=xml_elt_t(geo.doc,_U(second)));
       second.setAttr(_U(ref),rs->GetName());
@@ -475,7 +470,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
 	xml_ref_t pos = handlePosition(rnam+"pos",rm);
 	solid.setRef(_U(positionref),pos.name());
       }
-      if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
+      if ( !(theta == 0.0 && phi == 0.0 && psi == 0.0) )  {
 	xml_ref_t rot = handleRotation(rnam+"rot",&rinv);
 	solid.setRef(_U(rotationref),rot.name());
       }
@@ -525,15 +520,18 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
   GeometryInfo& geo = data();
   xml_h rot = geo.xmlRotations[trafo];
   if ( !rot ) {
-    XYZRotation r = getXYZangles(trafo->GetRotationMatrix());
-    if ( r.X() != 0.0 || r.Y() != 0.0 || r.Z() != 0.0 )  {
+    double phi=0., theta=0., psi=0.;
+    TGeoRotation r;
+    r.SetMatrix(trafo->GetRotationMatrix());
+    r.GetAngles(phi,theta,psi);
+    if ( !(theta == 0.0 && phi == 0.0 && psi == 0.0) )  {
       geo.checkRotation(name,trafo);
       geo.doc_define.append(rot=xml_elt_t(geo.doc,_U(rotation)));
       rot.setAttr(_U(name),name);
-      rot.setAttr(_U(x),r.X());
-      rot.setAttr(_U(y),r.Y());
-      rot.setAttr(_U(z),r.Z());
-      rot.setAttr(_U(unit),"rad");
+      rot.setAttr(_U(x),theta);
+      rot.setAttr(_U(y),psi);
+      rot.setAttr(_U(z),phi);
+      rot.setAttr(_U(unit),"deg");
     }
     else if ( geo.identity_rot )  {
       rot = geo.identity_rot;

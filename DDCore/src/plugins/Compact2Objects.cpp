@@ -59,7 +59,7 @@ namespace DD4hep {
 namespace {
   static UInt_t unique_mat_id = 0xAFFEFEED;
   void throw_print(const std::string& msg)  {
-    printout(ERROR,"Compact2Objects",msg.c_str());
+    printout(ERROR,"Compact",msg.c_str());
     throw runtime_error(msg);
   }
 
@@ -277,7 +277,7 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
       has_density = false;
     }
 
-    printout(DEBUG,"Compact2Objects","++ Creating material %s",matname);
+    printout(DEBUG,"Compact","++ Creating material %s",matname);
     mat = mix = new TGeoMixture(matname,composites.size(),dens_val);
     mat->SetRadLen(radlen_val,intlen_val);
     for(composites.reset(); composites; ++composites)  {
@@ -313,7 +313,7 @@ template <> void Converter<Material>::operator()(xml_h e)  const  {
 	comp_mat = mgr.GetMaterial(nam.c_str());
 	dens +=  composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
-      printout(WARNING,"Compact2Objects","++ Material: %s with NO density. "
+      printout(WARNING,"Compact","++ Material: %s with NO density. "
 	       "Set density to %7.3 g/cm**3",matname,dens);
       mix->SetDensity(dens);
     }
@@ -563,7 +563,7 @@ template <> void Converter<CartesianField>::operator()(xml_h e)  const  {
       lcdd.field().properties() = prp;
     }
   }
-  printout(ALWAYS,"Compact2Objects","++ Converted field: Successfully %s field %s [%s]",
+  printout(ALWAYS,"Compact","++ Converted field: Successfully %s field %s [%s]",
 	   msg.c_str(),name.c_str(),type.c_str());
 }
 
@@ -629,15 +629,15 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const 
     else if ( ecut ) { // If no unit is given , we assume the correct Geant4 unit is used!
       sd.setEnergyCutoff(element.attr<double>(ecut));
     }
-    printout(DEBUG,"Compact2Objects","SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%f7.3f",
+    printout(DEBUG,"Compact","SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%f7.3f",
 	     sd.name(),(" ["+sd.type()+"]").c_str(),sd.hitsCollection().c_str(),sd.energyCutoff());
   }
   catch(const exception& e) {
-    printout(ERROR,"Compact2Objects","++ FAILED    to convert sensitive detector: %s: %s",
+    printout(ERROR,"Compact","++ FAILED    to convert sensitive detector: %s: %s",
 	     name.c_str(),e.what());
   }
   catch(...) {
-    printout(ERROR,"Compact2Objects","++ FAILED    to convert sensitive detector: %s: %s",
+    printout(ERROR,"Compact","++ FAILED    to convert sensitive detector: %s: %s",
 	     name.c_str(),"UNKNONW Exception");
   }
 }
@@ -670,7 +670,7 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
     if ( attr_ro )  {
       Readout ro = lcdd.readout(element.attr<string>(attr_ro));
       if ( !ro.isValid() )   {
-	throw runtime_error("No Readout structure present!");
+	throw runtime_error("No Readout structure present for detector:"+name);
       }
       sd = SensitiveDetector(name,"sensitive");
       sd.setHitsCollection(ro.name());
@@ -682,17 +682,16 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
     if ( det.isValid() )  {
       setChildTitles(make_pair(name,det));
     }
-    cout << (det.isValid() ? "Converted" : "FAILED    ")
-	 << " subdetector:" << name << " of type " << type;
-    if ( sd.isValid() ) cout << " [" << sd.type() << "]";
-    cout << endl;
+    printout(det.isValid() ? INFO : ERROR,"Compact","%s sibdetector:%s of type %s %s",
+	     (det.isValid() ? "++ Converted" : "FAILED    "),name.c_str(),type.c_str(),
+	     (sd.isValid() ? ("["+sd.type()+"]").c_str() : ""));
     lcdd.addDetector(det);
   }
   catch(const exception& e) {
-    printout(ERROR,"Compact2Objects","++ FAILED    to convert subdetector: %s: %s",name.c_str(),e.what());
+    printout(ERROR,"Compact","++ FAILED    to convert subdetector: %s: %s",name.c_str(),e.what());
   }
   catch(...) {
-    printout(ERROR,"Compact2Objects","++ FAILED    to convert subdetector: %s: %s",name.c_str(),"UNKNONW Exception");
+    printout(ERROR,"Compact","++ FAILED    to convert subdetector: %s: %s",name.c_str(),"UNKNONW Exception");
   }
 }
   
