@@ -49,12 +49,14 @@
         verbose="true" 
         hit_aggregation="position">
     </sd>
+<!--
     <sd name="HcalBarrel"
         type="Geant4Calorimeter" 
         ecut="100.0*MeV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
+-->
     <sd name="HcalEndcap"
         type="Geant4Calorimeter" 
         ecut="100.0*MeV" 

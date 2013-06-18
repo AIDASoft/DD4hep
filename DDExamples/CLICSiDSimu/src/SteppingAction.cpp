@@ -24,7 +24,7 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
   Geant4StepHandler step(aStep);
   Geant4Mapping&    mapping = Geant4Mapping::instance();
   SiMaterial     = G4Material::GetMaterial("Silicon");
-  TPCGasMaterial = G4Material::GetMaterial("Argon");  
+  TPCGasMaterial = G4Material::GetMaterial("Argon");
 
   // get volume of the current step
   G4VPhysicalVolume* volume = step.preVolume();
@@ -75,6 +75,4 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
       printf("           Found Sensitive TGeoNode:%s CellID: %lld!\n",place.name(),cell_id);
     }
   }
-#if 0
-#endif
 }

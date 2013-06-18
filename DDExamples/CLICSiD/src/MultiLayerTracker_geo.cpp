@@ -17,10 +17,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string     det_name  = x_det.nameStr();
   string     det_type  = x_det.typeStr();
   Material   air       = lcdd.air();
-  DetElement sdet(det_name,x_det.id());
-  Volume     motherVol = lcdd.pickMotherVolume(sdet);
+  DetElement sdet        (det_name,x_det.id());
+  Assembly   assembly    (det_name);
+  PlacedVolume pv;
   int n = 0;
-    
+
   for(xml_coll_t i(x_det,_U(layer)); i; ++i, ++n)  {
     xml_comp_t x_layer = i;
     string  l_name = det_name+_toString(n,"_layer%d");
@@ -47,21 +48,25 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       }
       // Set Attributes
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-      PlacedVolume spv = l_vol.placeVolume(s_vol,IdentityPos());
+      pv = l_vol.placeVolume(s_vol,IdentityPos());
       // Slices have no extra id. Take the ID of the layer!
-      spv.addPhysVolID("layer",n);
+      pv.addPhysVolID("slice",m);
     }
     l_tub.setDimensions(rmin,r,z,0,2*M_PI);
     cout << l_name << " " << rmin << " " << r << " " << z << endl;
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
       
-    PlacedVolume lpv = motherVol.placeVolume(l_vol,IdentityPos());
-    lpv.addPhysVolID("system",sdet.id()).addPhysVolID("barrel",0);
-    layer.setPlacement(lpv);
+    pv = assembly.placeVolume(l_vol,IdentityPos());
+    pv.addPhysVolID("layer",n);
+    layer.setPlacement(pv);
   }
   if ( x_det.hasAttr(_U(combineHits)) ) {
     sdet.setCombineHits(x_det.combineHits(),sens);
   }
+
+  pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  pv.addPhysVolID("system",sdet.id()).addPhysVolID("barrel",0);
+  sdet.setPlacement(pv);
   return sdet;
 }
 

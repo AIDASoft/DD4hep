@@ -18,7 +18,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string     det_name  = x_det.nameStr();
   bool       reflect   = x_det.reflect();
   DetElement sdet(det_name,x_det.id());
-  Volume     motherVol = lcdd.pickMotherVolume(sdet);
+  Assembly   assembly(det_name);
+  PlacedVolume pv;
   int l_num = 0;
     
   for(xml_coll_t i(x_det,_U(layer)); i; ++i, ++l_num)  {
@@ -49,28 +50,29 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	s_vol.setSensitiveDetector(sens);
       }
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-
-      PlacedVolume spv = l_vol.placeVolume(s_vol,Position(0,0,z-zmin-layerWidth/2+thick/2));
-      spv.addPhysVolID("layer",l_num);
-      spv.addPhysVolID("slice",s_num);
+      pv = l_vol.placeVolume(s_vol,Position(0,0,z-zmin-layerWidth/2+thick/2));
+      pv.addPhysVolID("slice",s_num);
     }
 
-    PlacedVolume lpv = motherVol.placeVolume(l_vol,Position(0,0,zmin+layerWidth/2.));
-    lpv.addPhysVolID("system",sdet.id());
-    lpv.addPhysVolID("barrel",1);
-    DetElement layer(sdet,l_nam,l_num);
-    layer.setPlacement(lpv);
+    DetElement layer(sdet,l_nam+"_pos",l_num);
+    pv = assembly.placeVolume(l_vol,Position(0,0,zmin+layerWidth/2.));
+    pv.addPhysVolID("layer",l_num);
+    pv.addPhysVolID("barrel",1);
+    layer.setPlacement(pv);
     if ( reflect )  {
-      PlacedVolume lpvR = motherVol.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
-      lpvR.addPhysVolID("system",sdet.id());
-      lpvR.addPhysVolID("barrel",2);
-      DetElement layerR = layer.clone(l_nam+"_reflect");
-      sdet.add(layerR.setPlacement(lpvR));
+      pv = assembly.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
+      pv.addPhysVolID("layer",l_num);
+      pv.addPhysVolID("barrel",2);
+      DetElement layerR = layer.clone(l_nam+"_neg");
+      sdet.add(layerR.setPlacement(pv));
     }
   }
   if ( x_det.hasAttr(_U(combineHits)) ) {
     sdet.setCombineHits(x_det.attr<bool>(_U(combineHits)),sens);
   }
+  pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
+  pv.addPhysVolID("system", x_det.id());      // Set the subdetector system ID.
+  sdet.setPlacement(pv);
   return sdet;
 }
 
