@@ -369,7 +369,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& tr)  c
 /// Place translated and rotated daughter volume
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, const Rotation& rot)  const  {
   if ( volume.isValid() )   {
-    TGeoCombiTrans* transform = new TGeoCombiTrans("",pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,_rotation(rot));
+    TGeoCombiTrans* transform = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,_rotation(rot));
     return _addNode(m_element,volume,transform);
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
