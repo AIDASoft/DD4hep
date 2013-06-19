@@ -49,6 +49,9 @@
         <constant name="Hcal_back_plate_thickness" value="19.0*mm"/>
         <constant name="Hcal_lateral_structure_thickness" value="15.0*mm"/>
         <constant name="Hcal_layer_air_gap" value="2.0*mm"/>
+        <!-- Hcal Barrel roration angle M_PI/8.0 -->
+        <!-- constant name="Hcal_Barrel_rotation" value="0.392699075"/-->
+        <constant name="Hcal_Barrel_rotation" value="0."/>
 
         <constant name="SolenoidalFieldRadius"  value="Hcal_outer_radius+10.0*mm"/>
     </define>

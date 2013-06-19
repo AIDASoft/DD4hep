@@ -60,7 +60,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
                                            * HcalBarrel_layers + Hcal_back_plate_thickness;
   double      Hcal_module_radius         = Hcal_inner_radius + totalThickness_Hcal_Barrel;
 
-
+  double      Hcal_Barrel_rotation             = lcdd.constant<double>("Hcal_Barrel_rotation");
 
   DetElement  sdet(det_name,x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
@@ -236,7 +236,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   // ==========================================================================
 
   // Place Hcal Barrel volume into the world volume
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0,0,M_PI/numSides));
+  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0,0,Hcal_Barrel_rotation));
 
   // registry the system id
   env_phv.addPhysVolID("system", sdet.id());
