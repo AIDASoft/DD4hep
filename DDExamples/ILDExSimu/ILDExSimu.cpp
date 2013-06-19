@@ -108,21 +108,25 @@ int main(int argc,char** argv)
   
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
   
-  if ( argc!=1) {   // batch mode
+  // if ( argc > 3 ) {   // batch mode
 
-    G4String command = "/control/execute ";
-    G4String fileName = argv[argc-1];
-    UImanager->ApplyCommand(command+fileName);    
+  //   G4String command = "/control/execute ";
+  //   G4String fileName = argv[argc-1];
+  //   UImanager->ApplyCommand(command+fileName);    
 
-  } else {  // interactive mode : define UI session
+  //  } else {  // interactive mode : define UI session
     
-    G4UIsession *ui = new G4UIterminal(new G4UItcsh());
-    //    G4UIsession* ui = new G4UIQt(argc, argv);
+  //G4UIsession *ui = new G4UIterminal(new G4UItcsh());
+  //G4UIsession* ui = new G4UIQt(argc, argv);
+  G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+
+
+
     ui->SessionStart();
     // end ...
     delete ui;
     
-  }
+    //}
   
   // Job termination
   // Free the store: user actions, physics_list and detector_description are

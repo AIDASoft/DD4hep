@@ -81,6 +81,7 @@ using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 
+
 namespace {
   static TGeoNode* s_topPtr;
   static string indent = "";
@@ -381,6 +382,18 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     }
     if ( vis.isValid() ) {
       vis_attr = (G4VisAttributes*)handleVis(vis.name(),vis.ptr());
+
+      if(  std::string(vis.name())  == "WorldVis" ){ 
+
+	printout(INFO,"Geant4Converter","************** vis.name() == \"WorldVis\" " ) ;
+	vis_attr->SetVisibility(true)  ;
+      }
+
+      printout(INFO,"Geant4Converter","**************  (G4VisAttributes*)handleVis( %s , 0x%x )   =   %d ", vis.name() ,
+	       vis.ptr(), vis_attr->IsVisible() ) ;
+
+
+
     }
     Region    reg = _v.region();
     G4Region* region = 0;
