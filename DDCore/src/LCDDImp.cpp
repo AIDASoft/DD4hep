@@ -247,6 +247,7 @@ void LCDDImp::endDocument()  {
     // Set the world volume to invisible.
     VisAttr worldVis("WorldVis");
     worldVis.setVisible(false);
+    worldVis.setShowDaughters(true) ;
     m_worldVol.setVisAttributes(worldVis);
     add(worldVis);
 

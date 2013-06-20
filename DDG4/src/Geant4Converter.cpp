@@ -381,16 +381,16 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       }
     }
     if ( vis.isValid() ) {
+
       vis_attr = (G4VisAttributes*)handleVis(vis.name(),vis.ptr());
+      
+     
+      printout(WARNING,"Geant4Converter","******************* Workaround for issue with visualization attributes: "
+	       "call vis_attr->SetDaughtersInvisible(false)  for all volumes  !!!!" ) ;
+      vis_attr->SetDaughtersInvisible(false)  ;
 
-      if(  std::string(vis.name())  == "WorldVis" ){ 
-
-	printout(INFO,"Geant4Converter","************** vis.name() == \"WorldVis\" " ) ;
-	vis_attr->SetVisibility(true)  ;
-      }
-
-      printout(INFO,"Geant4Converter","**************  (G4VisAttributes*)handleVis( %s , 0x%x )   =   %d ", vis.name() ,
-	       vis.ptr(), vis_attr->IsVisible() ) ;
+      printout(INFO,"Geant4Converter","**************  (G4VisAttributes*)handleVis( %s , 0x%x )   =   %d - daughters: %d ", vis.name() ,
+	       vis.ptr(), vis_attr->IsVisible() , !vis_attr->IsDaughtersInvisible() ) ;
 
 
 
@@ -428,6 +428,12 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     }
     if ( vis_attr )   {
       vol->SetVisAttributes(vis_attr);
+
+      std::stringstream ss  ;
+      ss << *vis_attr ;
+      printout(INFO,"Geant4Converter","**************  vol->SetVisAttributes(vis_attr) %s ", ss.str().c_str() ) ;// vis_attr->IsVisible() ) ;
+
+
     }
     if ( sd )   {
       printout(DEBUG,"Geant4Converter","++ Volume:    + %s <> %s Solid:%s Mat:%s SD:%s",
