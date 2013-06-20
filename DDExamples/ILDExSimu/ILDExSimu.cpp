@@ -51,7 +51,21 @@ int main(int argc,char** argv)
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   
   LCDD& lcdd = LCDD::getInstance();
-  for(int i=1; i<argc-1;++i) {
+
+  if( argc < 3 ){
+    std::cout << " --- Usage: \n " 
+	      << "  [1] ./bin/ILDExSimu  file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml run1_g4.mac \n"
+	      << "  [2] ./bin/ILDExSimu  -i file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml \n"
+	      << "  [1]: batch mode - [2]: interactive " << std::endl ;
+    exit( 0 ) ;
+  }
+
+  bool isBatchMode = ( std::string( argv[1] ) != "-i" ) ;
+  int argStart = ( isBatchMode ?       1 : 2 ) ; 
+  int argEnd   = ( isBatchMode ?  argc-1 : argc ) ; 
+
+  for(int i=argStart; i < argEnd ; ++i ) {
+
     // We need to construct the geometry at this level already
     lcdd.fromCompact(argv[i]);
   }
@@ -108,25 +122,22 @@ int main(int argc,char** argv)
   
   G4UImanager* UImanager = G4UImanager::GetUIpointer();
   
-  // if ( argc > 3 ) {   // batch mode
-
-  //   G4String command = "/control/execute ";
-  //   G4String fileName = argv[argc-1];
-  //   UImanager->ApplyCommand(command+fileName);    
-
-  //  } else {  // interactive mode : define UI session
+  if ( isBatchMode) {   // batch mode
     
-  //G4UIsession *ui = new G4UIterminal(new G4UItcsh());
-  //G4UIsession* ui = new G4UIQt(argc, argv);
-  G4UIExecutive* ui = new G4UIExecutive(argc, argv);
-
-
-
+    G4String command = "/control/execute ";
+    G4String fileName = argv[argc-1];
+    UImanager->ApplyCommand(command+fileName);    
+    
+  } else {  // interactive mode : define UI session
+    
+    // G4UIsession *ui = new G4UIterminal(new G4UItcsh());
+    // G4UIsession* ui = new G4UIQt(argc, argv);
+    G4UIExecutive* ui = new G4UIExecutive(argc, argv);
+    
     ui->SessionStart();
     // end ...
     delete ui;
-    
-    //}
+ }
   
   // Job termination
   // Free the store: user actions, physics_list and detector_description are
