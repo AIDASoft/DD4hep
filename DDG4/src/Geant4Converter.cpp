@@ -385,10 +385,15 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       vis_attr = (G4VisAttributes*)handleVis(vis.name(),vis.ptr());
       
      
-      printout(WARNING,"Geant4Converter","******************* Workaround for issue with visualization attributes: "
-	       "call vis_attr->SetDaughtersInvisible(false)  for all volumes  !!!!" ) ;
-      vis_attr->SetDaughtersInvisible(false)  ;
+      static bool runDaughterVisibilityWorkaround = true ; //FIXME !
+      if( runDaughterVisibilityWorkaround ) {
 
+	printout(WARNING,"Geant4Converter","******************* Workaround for issue with visualization attributes: "
+		 "call vis_attr->SetDaughtersInvisible(false)  for all volumes  !!!!" ) ;
+
+	vis_attr->SetDaughtersInvisible(false)  ;
+	
+      }
       printout(INFO,"Geant4Converter","**************  (G4VisAttributes*)handleVis( %s , 0x%x )   =   %d - daughters: %d ", vis.name() ,
 	       vis.ptr(), vis_attr->IsVisible() , !vis_attr->IsDaughtersInvisible() ) ;
 
