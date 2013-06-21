@@ -31,13 +31,16 @@ SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION $
 
 dd4hep_generate_rootmap(DD4hepG4)
 
-#--- install target-------------------------------------
+#-----------------------------------------------------------------------------------
+add_executable(g4gdmlDisplay g4gdmlDisplay.cpp)
+target_link_libraries(g4gdmlDisplay DD4hepG4 DD4hepCore)
 
+#--- install target-------------------------------------
 install(DIRECTORY include/DDG4
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepG4
+install(TARGETS DD4hepG4 g4gdmlDisplay
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )

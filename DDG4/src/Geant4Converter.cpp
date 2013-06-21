@@ -482,7 +482,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 		 node,node->GetName(),node->IsA()->GetName(),vol->IsA()->GetName(),vol);
       }
       else if ( is_rot )    {
-	const Double_t*  rot   = trafo->GetRotationMatrix();
+	const Double_t* rot = trafo->GetRotationMatrix();
 	MyTransform3D transform(rot[0],rot[1],rot[2],trans[0]*CM_2_MM,
 				rot[3],rot[4],rot[5],trans[1]*CM_2_MM,
 				rot[6],rot[7],rot[8],trans[2]*CM_2_MM);

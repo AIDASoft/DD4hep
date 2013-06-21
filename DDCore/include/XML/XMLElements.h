@@ -570,6 +570,8 @@ namespace DD4hep {
       Elt_t ptr() const                                         {  return m_element;                      }
 
       /// Access the tag name of this DOM element
+      std::string tag() const                                   {  return m_element.tag();                }
+      /// Access the tag name of this DOM element
       const XmlChar* tagName() const                            {  return m_element.rawTag();             }
       /// Append a new element to the existing tree
       void append(Handle_t handle) const                        {  m_element.append(handle);              }

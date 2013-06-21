@@ -474,29 +474,18 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
 	obj.setAttr(_U(y),tr[1]*CM_2_MM);
 	obj.setAttr(_U(z),tr[2]*CM_2_MM);
       }
-      if ( lm->Inverse().IsRotation() )  {
-	XYZRotation rot = getXYZangles(lm->Inverse().GetRotationMatrix());
+      if ( lm->IsRotation() )  {
+	TGeoMatrix& linv = lm->Inverse();
+	XYZRotation rot = getXYZangles(linv.GetRotationMatrix());
 	if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
 	  first.append(obj=xml_elt_t(geo.doc,_U(firstrotation)));
-	  if ( lm->IsA() == TGeoCombiTrans::Class() )  {
-	    TGeoRotation rot;
-	    rot.SetMatrix(lm->Inverse().GetRotationMatrix());
-	    rot.GetAngles(phi,theta,psi);
-	    obj.setAttr(_U(x),theta*DEGREE_2_RAD);
-	    obj.setAttr(_U(y),psi*DEGREE_2_RAD);
-	    obj.setAttr(_U(z),phi*DEGREE_2_RAD);
-	    obj.setAttr(_U(unit),"rad");
-	  }
-	  else  {
-	    obj.setAttr(_U(name),name);
-	    obj.setAttr(_U(x),rot.X());
-	    obj.setAttr(_U(y),rot.Y());
-	    obj.setAttr(_U(z),rot.Z());
-	    obj.setAttr(_U(unit),"rad");
-	  }
+	  obj.setAttr(_U(name),name);
+	  obj.setAttr(_U(x),rot.X());
+	  obj.setAttr(_U(y),rot.Y());
+	  obj.setAttr(_U(z),rot.Z());
+	  obj.setAttr(_U(unit),"rad");
 	}
       }
-      TGeoMatrix& rinv = rm->Inverse();
       tr  = rm->GetTranslation();
       solid.append(second=xml_elt_t(geo.doc,_U(second)));
       second.setAttr(_U(ref),rs->GetName());
@@ -507,7 +496,8 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape)   c
 	xml_ref_t pos = handlePosition(rnam+"pos",rm);
 	solid.setRef(_U(positionref),pos.name());
       }
-      if ( rinv.IsRotation() )  {
+      if ( rm->IsRotation() )  {
+	TGeoMatrix& rinv = rm->Inverse();
 	XYZRotation rot = getXYZangles(rinv.GetRotationMatrix());
 	if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
 	  xml_ref_t rot = handleRotation(rnam+"rot",&rinv);
@@ -564,24 +554,11 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
     if ( !(r.X() == 0.0 && r.Y() == 0.0 && r.Z() == 0.0) )  {
       geo.checkRotation(name,trafo);
       geo.doc_define.append(rot=xml_elt_t(geo.doc,_U(rotation)));
-      if ( true && trafo->IsA() == TGeoCombiTrans::Class() )  {
-	double phi=0., theta=0., psi=0.;
-	TGeoRotation r;
-	r.SetMatrix(trafo->GetRotationMatrix());
-	r.GetAngles(phi,theta,psi);
-	rot.setAttr(_U(name),name);
-	rot.setAttr(_U(x),psi*DEGREE_2_RAD);
-	rot.setAttr(_U(y),theta*DEGREE_2_RAD);
-	rot.setAttr(_U(z),phi*DEGREE_2_RAD);
-	rot.setAttr(_U(unit),"rad");
-      }
-      else  {
-	rot.setAttr(_U(name),name);
-	rot.setAttr(_U(x),r.X());
-	rot.setAttr(_U(y),r.Y());
-	rot.setAttr(_U(z),r.Z());
-	rot.setAttr(_U(unit),"rad");
-      }
+      rot.setAttr(_U(name),name);
+      rot.setAttr(_U(x),r.X());
+      rot.setAttr(_U(y),r.Y());
+      rot.setAttr(_U(z),r.Z());
+      rot.setAttr(_U(unit),"rad");
     }
     else if ( geo.identity_rot )  {
       rot = geo.identity_rot;
@@ -751,14 +728,16 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
       place.setRef(_U(positionref),pos.name());
       place.setRef(_U(rotationref),rot.name());
     }
-    if ( dynamic_cast<const PlacedVolume::Object*>(node) ) {
-      PlacedVolume p = Ref_t(node);
-      const PlacedVolume::VolIDs& ids = p.volIDs();
-      for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
-	xml_h pvid = xml_elt_t(geo.doc,_U(physvolid));
-	pvid.setAttr(_U(field_name),(*i).first);
-	pvid.setAttr(_U(value),(*i).second);
-	place.append(pvid);
+    if ( geo.doc_root.tag() != "gdml" )  {
+      if ( dynamic_cast<const PlacedVolume::Object*>(node) ) {
+	PlacedVolume p = Ref_t(node);
+	const PlacedVolume::VolIDs& ids = p.volIDs();
+	for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
+	  xml_h pvid = xml_elt_t(geo.doc,_U(physvolid));
+	  pvid.setAttr(_U(field_name),(*i).first);
+	  pvid.setAttr(_U(value),(*i).second);
+	  place.append(pvid);
+	}
       }
     }
     geo.xmlPlacements[node] = place;
