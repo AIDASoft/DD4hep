@@ -72,7 +72,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   // ==========================================================================
 
   // Hcal Barrel module shapers
-  PolyhedraRegular polyhedra_shaper("polyhedra",numSides+1,Hcal_inner_radius,Hcal_module_radius,detZ*2);
+  PolyhedraRegular polyhedra_shaper("polyhedra",numSides,Hcal_inner_radius,Hcal_module_radius,detZ*2);
   Tube             tube_shaper(0.0,Hcal_outer_radius, detZ, 0.0, 2.0*M_PI);
 
   // Create Hcal Barrel volume with material Steel235 
