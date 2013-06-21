@@ -144,7 +144,7 @@ int main(int argc,char** argv)   {
   G4UIExecutive* ui = 0;
   if ( !gui_type.empty() ) {  // interactive mode : define UI session    
     const char* args[] = {"cmd"};
-    ui = new G4UIExecutive(1,(char**)args,gui_type);
+    ui = new G4UIExecutive(1,(char**)args);//,gui_type);
     if ( is_visual && !vis_setup.empty() )   {
       UImanager->ApplyCommand("/control/execute vis.mac"); 
       cout << "++++++++++++++++++++++++++++ executed vis.mac" << endl;
