@@ -28,6 +28,7 @@ namespace DD4hep {
    */
   namespace Geometry  {
 
+    TGeoIdentity*     identityTransform();
     TGeoTranslation* _translation(const Position& pos);
     TGeoRotation*    _rotation(const Rotation& rot);
     TGeoRotation*    _rotation3D(const Rotation3D& rot);

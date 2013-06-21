@@ -32,10 +32,6 @@ using namespace std;
 using namespace DD4hep::Geometry;
 
 namespace DD4hep  { namespace Geometry  {
-    TGeoIdentity* identityTransform();
-}}
-
-namespace DD4hep  { namespace Geometry  {
   
   template <> struct Value<TGeoNodeMatrix,PlacedVolume::Object> 
   : public TGeoNodeMatrix, public PlacedVolume::Object  

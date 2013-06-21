@@ -246,8 +246,12 @@ void LCDDImp::endDocument()  {
 #endif
     // Set the world volume to invisible.
     VisAttr worldVis("WorldVis");
+    worldVis.setAlpha(1.0);
     worldVis.setVisible(false);
-    worldVis.setShowDaughters(true) ;
+    worldVis.setShowDaughters(true);
+    worldVis.setColor(1.0,1.0,1.0);
+    worldVis.setLineStyle(VisAttr::SOLID);
+    worldVis.setDrawingStyle(VisAttr::WIREFRAME);
     m_worldVol.setVisAttributes(worldVis);
     add(worldVis);
 

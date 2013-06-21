@@ -13,6 +13,10 @@
 // ROOT includes
 #include "TGeoMatrix.h"
 
+TGeoIdentity* DD4hep::Geometry::identityTransform() {
+  return gGeoIdentity;
+}
+
 TGeoTranslation* DD4hep::Geometry::_translation(const Position& pos) {
   return new TGeoTranslation("",pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM);
 }

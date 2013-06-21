@@ -10,6 +10,7 @@
 #include "XML/Conversions.h"
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
 
 #include "TMap.h"
@@ -20,104 +21,10 @@
 #include <iostream>
 #include <iomanip>
 
+
 using namespace std;
-using namespace DD4hep::Geometry;
-
 namespace DD4hep {
-
-  template <> void Printer<Constant>::operator()(const Constant& val)  const  {
-    os << "++ Constant:" << val.toString() << endl;
-  }
-
-  template <> void Printer<Material>::operator()(const Material& mat)  const  {
-    os << "++ Medium:  " << mat.toString() << "|  " << endl;
-    mat->Print();
-  }
-
-  template <> void Printer<VisAttr>::operator()(const VisAttr& val)  const  {
-    os << "++ VisAttr: " << val.toString() << endl;
-  }
-
-  template <> void Printer<Readout>::operator()(const Readout& val)  const  {
-    os << "++ Readout: ";
-    val->Print();
-  }
-
-  template <> void Printer<Region>::operator()(const Region& val)  const  {
-    os << "++ Region:  ";
-    val->Print();
-  }
-
-  template <> void Printer<Rotation>::operator()(const Rotation& val)  const  {
-    os << "++ Rotation: ";
-    //val->Print();
-  }
-
-  template <> void Printer<Position>::operator()(const Position& val)  const  {
-    os << "++ Position: ";
-    //val->Print();
-  }
-
-  template <> void Printer<LimitSet>::operator()(const LimitSet& val)  const  {
-    const set<Limit>& o = val.limits();
-    os << "++ LimitSet: " << val.name() << endl;
-    val->TNamed::Print();
-    for(set<Limit>::const_iterator i=o.begin(); i!=o.end(); ++i) {
-      os << "++    Limit:" << (*i).name << " " << (*i).particles 
-	 << " [" << (*i).unit << "] " << (*i).content << " " << (*i).value << endl;
-    }
-  }
-
-  template <> void Printer<DetElement>::operator()(const DetElement& val)  const  {
-    DetElement::Object* obj = val.data<DetElement::Object>();
-    if ( obj )  {
-      char text[256];
-      const DetElement& sd = val;
-      PlacedVolume plc = sd.placement();
-      bool vis = plc.isValid();
-      bool env = plc.isValid();
-      bool mat = plc.isValid();
-      ::snprintf(text,sizeof(text),"ID:%-3d Combine Hits:%3s Material:%s Envelope:%s VisAttr:%s",
-		sd.id(), yes_no(sd.combineHits()), 
-		mat ? plc.material()->GetName() : yes_no(mat),
-		env ? plc.motherVol()->GetName() : yes_no(env),
-		yes_no(vis)
-		);
-      os << prefix << "+= DetElement: " << val->GetName() << " " << val.type() << endl;
-      os << prefix << "|               " << text << endl;
-
-      if ( vis )   {
-	VisAttr attr = plc.volume().visAttributes();
-	VisAttr::Object* v = attr.data<VisAttr::Object>();
-	TColor* col = gROOT->GetColor(v->color);
-	char text[256];
-	::snprintf(text,sizeof(text)," RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s",
-		  col->AsHexString(), v->color, col->GetAlpha(), int(v->drawingStyle), int(v->lineStyle),
-		  v->showDaughters ? "YES" : "NO", v->visible ? "YES" : "NO");
-	os << prefix << "|               VisAttr:  " << setw(32) << left << attr.name() << text << endl;
-      }
-      if ( plc.isValid() )  {
-	Volume vol = plc.volume();
-	Solid    s = vol.solid();
-	Material m = vol.material();
-	::snprintf(text,sizeof(text),"Volume:%s Shape:%s Material:%s",
-		  vol->GetName(), s.isValid() ? s.name() : "Unknonw", m.isValid() ? m->GetName() : "Unknown"
-		  );
-	os << prefix << "+-------------  " << text << endl;
-      }
-      const DetElement::Children& ch = sd.children();
-      for(DetElement::Children::const_iterator i=ch.begin(); i!=ch.end(); ++i)
-	Printer<DetElement>(lcdd,os,prefix+"| ")((*i).second);
-      return;
-    }
-  }
-
-  template <typename T> void PrintMap<T>::operator()()  const {
-    Printer<T> p(lcdd,os);
-    os << "++" << endl << "++          " << text << endl << "++" << endl;
-    for (LCDD::HandleMap::const_iterator i=cont.begin(); i != cont.end(); ++i) 
-      p((*i).second);
-  }
+  using namespace Geometry;
 
   void dumpNode(TGeoNode* n, int level) {
     TGeoMatrix*  mat = n->GetMatrix();
@@ -176,22 +83,4 @@ namespace DD4hep {
   void dumpTopVolume(const LCDD& lcdd) {
     dumpVolume(lcdd.manager().GetTopVolume(),0);
   }
-
-  template <> void Printer<const LCDD*>::operator()(const LCDD*const&)  const  {
-    //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
-#if 0
-    PrintMap<Constant  > (lcdd,os,lcdd.constants(),    "List of Constants")();
-    PrintMap<Material  > (lcdd,os,lcdd.materials(),    "List of Materials")();
-    PrintMap<VisAttr   > (lcdd,os,lcdd.visAttributes(),"List of Visualization attributes")();
-    PrintMap<Position  > (lcdd,os,lcdd.positions(),    "List of Positions")();
-    PrintMap<Rotation  > (lcdd,os,lcdd.rotations(),    "List of Rotations")();
-    PrintMap<LimitSet  > (lcdd,os,lcdd.readouts(),     "List of Readouts")();
-    PrintMap<Region    > (lcdd,os,lcdd.regions(),      "List of Regions")();
-    PrintMap<DetElement> (lcdd,os,lcdd.detectors(),    "List of DetElements")();
-#endif
-    //PrintMap<DetElement>(lcdd,os,lcdd.detectors(),   "List of DetElements")();
-    //PrintMap<VisAttr   > (lcdd,os,lcdd.visAttributes(),"List of Visualization attributes")();
-    dumpTopVolume(lcdd);
-  }
-
 }

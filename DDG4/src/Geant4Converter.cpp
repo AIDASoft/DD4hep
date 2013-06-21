@@ -252,7 +252,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
 	rmax.push_back(s->GetRmax(i)*CM_2_MM);
 	z.push_back(s->GetZ(i)*CM_2_MM);
       }
-      solid = new G4Polyhedra(name,phi_start,phi_total,s->GetNedges()-1,s->GetNz(),&z[0],&rmin[0],&rmax[0]);
+      solid = new G4Polyhedra(name,phi_start,phi_total,s->GetNedges(),s->GetNz(),&z[0],&rmin[0],&rmax[0]);
     }
     else if ( shape->IsA() == TGeoPcon::Class() ) {
       const TGeoPcon* s = (const TGeoPcon*)shape;
@@ -348,21 +348,15 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
   if ( !vol ) {
     const TGeoVolume*        v        = volume;
     Volume                   _v       = Ref_t(v);
-    VisAttr                  vis      = _v.visAttributes();
     string                   n        = v->GetName();
     TGeoMedium*              m        = v->GetMedium();
     TGeoShape*               s        = v->GetShape();
     G4VSolid*                solid    = (G4VSolid*)handleSolid(s->GetName(),s);
     G4Material*              medium   = 0;
-    SensitiveDetector        det      = _v.sensitiveDetector();
     bool                     assembly = s->IsA() == TGeoShapeAssembly::Class();
-    Geant4SensitiveDetector* sd       = 0;
-    G4VisAttributes*         vis_attr = 0;
 
-    printout(DEBUG,"Geant4Converter","++ Convert Volume %-32s: %p %s/%s assembly:%s sensitive:%s",
-	     n.c_str(),v,s->IsA()->GetName(),v->IsA()->GetName(),(assembly ? "YES" : "NO"),
-	     (det.isValid() ? "YES" : "NO"));
-
+    SensitiveDetector        det = _v.sensitiveDetector();
+    Geant4SensitiveDetector* sd  = 0;
     if ( det.isValid() )   {
       sd = info.g4SensDets[det.ptr()];
       if ( !sd ) {
@@ -380,25 +374,10 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
 			    "access Geant4 user limits.");
       }
     }
+    VisAttr          vis = _v.visAttributes();
+    G4VisAttributes* vis_attr = 0;
     if ( vis.isValid() ) {
-
       vis_attr = (G4VisAttributes*)handleVis(vis.name(),vis.ptr());
-      
-     
-      static bool runDaughterVisibilityWorkaround = true ; //FIXME !
-      if( runDaughterVisibilityWorkaround ) {
-
-	printout(WARNING,"Geant4Converter","******************* Workaround for issue with visualization attributes: "
-		 "call vis_attr->SetDaughtersInvisible(false)  for all volumes  !!!!" ) ;
-
-	vis_attr->SetDaughtersInvisible(false)  ;
-	
-      }
-      printout(INFO,"Geant4Converter","**************  (G4VisAttributes*)handleVis( %s , 0x%x )   =   %d - daughters: %d ", vis.name() ,
-	       vis.ptr(), vis_attr->IsVisible() , !vis_attr->IsDaughtersInvisible() ) ;
-
-
-
     }
     Region    reg = _v.region();
     G4Region* region = 0;
@@ -409,6 +388,11 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
 			    "access Geant4 region.");
       }
     }
+
+    printout(DEBUG,"Geant4Converter","++ Convert Volume %-32s: %p %s/%s assembly:%s sensitive:%s",
+	     n.c_str(),v,s->IsA()->GetName(),v->IsA()->GetName(),(assembly ? "YES" : "NO"),
+	     (det.isValid() ? "YES" : "NO"));
+
 
     if ( assembly )  {
       vol = (G4LogicalVolume*)new G4AssemblyVolume();
@@ -433,12 +417,6 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     }
     if ( vis_attr )   {
       vol->SetVisAttributes(vis_attr);
-
-      std::stringstream ss  ;
-      ss << *vis_attr ;
-      printout(INFO,"Geant4Converter","**************  vol->SetVisAttributes(vis_attr) %s ", ss.str().c_str() ) ;// vis_attr->IsVisible() ) ;
-
-
     }
     if ( sd )   {
       printout(DEBUG,"Geant4Converter","++ Volume:    + %s <> %s Solid:%s Mat:%s SD:%s",
@@ -675,7 +653,7 @@ void* Geant4Converter::handleVis(const string& /* name */, const TNamed* vis) co
     attr.rgb(r,g,b);
     g4 = new G4VisAttributes(attr.visible(),G4Colour(r,g,b,attr.alpha()));
     //g4->SetLineWidth(attr->GetLineWidth());
-    g4->SetDaughtersInvisible(attr.showDaughters());
+    g4->SetDaughtersInvisible(!attr.showDaughters());
     if ( style == VisAttr::SOLID ) {
       g4->SetLineStyle(G4VisAttributes::unbroken);
       g4->SetForceWireframe(false);

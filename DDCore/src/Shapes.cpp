@@ -31,10 +31,6 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-TGeoIdentity* DD4hep::Geometry::identityTransform() {
-  return gGeoIdentity;
-}
-
 template<typename T> void Solid_type<T>::_setDimensions(double* param) {
   this->ptr()->SetDimensions(param);
   this->ptr()->ComputeBBox();
