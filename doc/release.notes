@@ -2,6 +2,14 @@ DD4hep  ----  Release Notes
 =================================
 
  --------
+| v00-03 |  third beta release ...
+ --------   - broken geometry (for some rotations/translations)
+            - 'backup release' before placement options 
+               will be reduced
+
+
+
+ --------
 | v00-02 |  second beta release ...
  --------
 

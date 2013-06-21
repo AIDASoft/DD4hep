@@ -4,7 +4,7 @@ project(DD4hep)
 
 # project version
 SET( DD4hep_VERSION_MAJOR 0 )
-SET( DD4hep_VERSION_MINOR 2 )
+SET( DD4hep_VERSION_MINOR 3 )
 SET( DD4hep_VERSION_PATCH 0 )
 
 SET( DD4hep_VERSION "${DD4hep_VERSION_MAJOR}.${DD4hep_VERSION_MINOR}" )
