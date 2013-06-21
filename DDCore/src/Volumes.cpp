@@ -31,7 +31,9 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
-extern TGeoIdentity* DD4hep::Geometry::identityTransform();
+namespace DD4hep  { namespace Geometry  {
+    TGeoIdentity* identityTransform();
+}}
 
 namespace DD4hep  { namespace Geometry  {
   
