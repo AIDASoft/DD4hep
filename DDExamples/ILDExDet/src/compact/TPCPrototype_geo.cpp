@@ -93,7 +93,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
             mdcount++;
             double posx=row.modulePosX()+md*(width/2+pitch);
             double posy=row.modulePosY();
-            PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(posx,posy,0),Rotation(0,0,0));
+            PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Position(posx,posy,0));
             m_phv.addPhysVolID("module",md);
             module.setPlacement(m_phv);
             // Readout and placement must be present before adding extension,
@@ -104,7 +104,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       }//module groups
     }//endplate
     
-    PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,part_pos,part_rot);
+    PlacedVolume part_phv = tpc_vol.placeVolume(part_vol,Transform3D(Rotation3D(part_rot),part_pos));
     part_phv.addPhysVolID(part_nam,px_det.id());
     part_det.setPlacement(part_phv);
     tpc.add(part_det);
@@ -114,7 +114,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       //Attention: rotation is given in euler angles
       Rotation r_rot(M_PI,0,M_PI);
       // Volume      part_vol_r(lcdd,part_nam+"_negativ",part_tub,part_mat);
-      PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,r_pos,r_rot);
+      PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Transform3D(Rotation3D(r_rot),r_pos));
       part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
       // needs a copy function for DetElement
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);

@@ -1,13 +1,36 @@
 DD4hep  ----  Release Notes
 =================================
 
+2013/21/06    Markus Frank
+--------------------------
+   1) Since the placement model for combined translations and rotations
+      caused more confusion than good, it was agreed to move to a more
+      Geant4 like placement model using Vectors, Rotations and Transformations
+      from ROOT::Math. To place a physical volume only one of these
+      is allowed as an argument: either a rotation or a translation
+      for simple placements. Combinations may be constructed with Transform3D
+      objects allowing more complicated placements.
+      The same mechanism was applied for the operations to construct
+      boolean solids.
+   2) The CLICSid Examples were updated according to the changes necessary
+      from 1)
+   3) The Tesla drivers from the ILDExDet example were removed. They are
+      not compliant to 1).
+   4) The G4 package allows now to translate TGeo geometries to Geant4.
+      Visual inspection has shown an agreement between the two geometries.
+   5) The TGeo to LCDD/GDML conversion is still buggy. Hence, simulations
+      using slic as an engine do not yet work. This is being looked at.
+
+   IMPORTANT NOTICE:
+   The changes described in 1) may affect existing detector constructors.
+   Unless all problems are solved you should be careful to move to the svn
+   head. In any case save your checkout or use the tag v00-03.
+
  --------
 | v00-03 |  third beta release ...
  --------   - broken geometry (for some rotations/translations)
             - 'backup release' before placement options 
                will be reduced
-
-
 
  --------
 | v00-02 |  second beta release ...

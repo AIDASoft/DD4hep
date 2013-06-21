@@ -148,25 +148,16 @@ namespace DD4hep {
       Volume& operator=(const Volume& a) {  m_element=a.m_element;  return *this; }
 
       /// Place daughter volume. The position and rotation are the identity
-      PlacedVolume placeVolume(const Volume& vol)  const  
-      { return placeVolume(vol,IdentityPos());                        }
-
+      PlacedVolume placeVolume(const Volume& vol)  const;
       /// Place daughter volume according to generic Transform3D
       PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr)  const;
       /// Place un-rotated daughter volume at the given position.
       PlacedVolume placeVolume(const Volume& vol, const Position& pos)  const;
       /// Place rotated daughter volume. The position is automatically the identity position
       PlacedVolume placeVolume(const Volume& vol, const Rotation& rot)  const;
-      /// Place rotated and then translated daughter volume
-      PlacedVolume placeVolume(const Volume& vol, const Position& pos, const Rotation& rot)  const;
-      /// Place daughter volume in rotated and then translated mother coordinate system
-      PlacedVolume placeVolume(const Volume& vol, const Rotation& rot, const Position& pos)  const;
-      
-      /// Place daughter volume. The position and rotation are the identity
-      PlacedVolume placeVolume(const Volume& vol, const IdentityPos& pos)  const;
-      /// Place daughter volume. The position and rotation are the identity
-      PlacedVolume placeVolume(const Volume& vol, const IdentityRot& pos)  const;
-      
+      /// Place rotated daughter volume. The position is automatically the identity position
+      PlacedVolume placeVolume(const Volume& vol, const Rotation3D& rot)  const;
+     
       /// Attach attributes to the volume
       const Volume& setAttributes(const LCDD& lcdd,
 				  const std::string& region, 

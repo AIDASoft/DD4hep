@@ -60,7 +60,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     pv.addPhysVolID("barrel",1);
     layer.setPlacement(pv);
     if ( reflect )  {
-      pv = assembly.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
+      pv = assembly.placeVolume(l_vol,Transform3D(RotationY(M_PI),Position(0,0,-zmin-layerWidth/2)));
       pv.addPhysVolID("layer",l_num);
       pv.addPhysVolID("barrel",2);
       DetElement layerR = layer.clone(l_nam+"_neg");

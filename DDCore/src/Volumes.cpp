@@ -9,6 +9,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/InstanceCount.h"
+#include "MatrixHelpers.h"
 
 // ROOT include files
 #include "TColor.h"
@@ -29,6 +30,8 @@
 
 using namespace std;
 using namespace DD4hep::Geometry;
+
+extern TGeoIdentity* DD4hep::Geometry::identityTransform();
 
 namespace DD4hep  { namespace Geometry  {
   
@@ -350,44 +353,19 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   return PlacedVolume(n);
 }
 
-static TGeoTranslation* _translation(const Position& pos) {
-  return new TGeoTranslation("",pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM);
-}
-
-static TGeoRotation* _rotation(const Rotation& rot) {
-  return new TGeoRotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
-}
-
 /// Place daughter volume according to generic Transform3D
-PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& tr)  const  {
-  Rotation rot;
-  Position pos;
-  tr.GetDecomposition(rot,pos);
-  return placeVolume(volume,rot,pos);
-}
-
-/// Place translated and rotated daughter volume
-PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos, const Rotation& rot)  const  {
+PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& trans)  const  {
   if ( volume.isValid() )   {
-    TGeoCombiTrans* transform = new TGeoCombiTrans(pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM,_rotation(rot));
-    return _addNode(m_element,volume,transform);
+    return _addNode(m_element,volume,_transform(trans));
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+
 }
 
-/// Place daughter volume in rotated and then translated mother coordinate system
-PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot, const Position& pos)  const  {
+/// Place daughter volume. The position and rotation are the identity
+PlacedVolume Volume::placeVolume(const Volume& volume)  const   {
   if ( volume.isValid() )   {
-    TGeoHMatrix *trans = new TGeoHMatrix();
-    double t[3];
-    trans->RotateZ(rot.Phi()*RAD_2_DEGREE);
-    trans->RotateY(rot.Theta()*RAD_2_DEGREE);
-    trans->RotateX(rot.Psi()*RAD_2_DEGREE);
-    pos.GetCoordinates(t);
-    trans->SetDx(t[0]*MM_2_CM);
-    trans->SetDy(t[1]*MM_2_CM);
-    trans->SetDz(t[2]*MM_2_CM);
-    return _addNode(m_element,volume,trans);
+    return _addNode(m_element,volume,identityTransform());
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
@@ -408,18 +386,10 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot)  con
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }
 
-/// Place daughter volume. The position and rotation are the identity
-PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityPos& /* pos */)  const  {
+/// Place rotated daughter volume. The position is automatically the identity position
+PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation3D& rot)  const  {
   if ( volume.isValid() )   {
-    return _addNode(m_element,volume,identityTransform());
-  }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
-}
-
-/// Place daughter volume. The position and rotation are the identity
-PlacedVolume Volume::placeVolume(const Volume& volume, const IdentityRot& /* rot */)  const  {
-  if ( volume.isValid() )   {
-    return _addNode(m_element,volume,identityTransform());
+    return _addNode(m_element,volume,_rotation3D(rot));
   }
   throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
 }

@@ -22,10 +22,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   DetElement  det    (name,x_det.id());
   Volume      det_vol(name+"_vol",Box(box.x(),box.y(),box.z()), mat);
   Volume      mother = lcdd.pickMotherVolume(det);
-
+  Transform3D transform(Rotation3D(Rotation(rot.z(),rot.y(),rot.x())),Position(pos.x(),pos.y(),pos.z()));
   det_vol.setVisAttributes(lcdd, x_det.visStr());
-  PlacedVolume phv = mother.placeVolume(det_vol,Position(pos.x(),pos.y(),pos.z()),
-					Rotation(rot.z(),rot.y(),rot.x()));
+  PlacedVolume phv = mother.placeVolume(det_vol,transform);
   phv.addPhysVolID("id",x_det.id());
   det.setPlacement(phv);
   return det;

@@ -6,16 +6,19 @@ find_package(Geant4 REQUIRED)
 #  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
 #  set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
 #endif()
-find_package(Geant4 REQUIRED)
-
+find_package(Geant4 REQUIRED ui_all vis_all)
 
 
 if(Geant4_gdml_FOUND)
   add_definitions(-DGEANT4_HAS_GDML)
 endif()
+add_definitions(-DG4VIS_USE=ON)
+add_definitions(-DG4VIS_USE_OPENGLX=1)
+
 
 include(DD4hep_XML_setup)
 set(libraries CLICSiD ${XML_LIBRARIES})
+set(G4OGL CLICSiD G4OpenGL)
 
 include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
                      ${CMAKE_SOURCE_DIR}/DDG4/include
@@ -25,5 +28,5 @@ include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
 
 file(GLOB sources src/*.cpp)
 add_executable(CLICSiDSimu CLICSiDSimu.cpp ${sources})
-target_link_libraries(CLICSiDSimu DD4hepCore DD4hepG4 ${libraries} ${Geant4_LIBRARIES})
+target_link_libraries(CLICSiDSimu DD4hepCore DD4hepG4 ${libraries} ${Geant4_LIBRARIES} ${G4OGL})
 

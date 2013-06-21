@@ -85,7 +85,7 @@ static Ref_t create_detector(LCDD& lcdd, XML::Element x_det, SensitiveDetector s
     DetElement layer(sdet,l_nam,l_num);
     layer.setPlacement(lpv);
     if ( reflect )  {
-      PlacedVolume lpvR = motherVol.placeVolume(l_vol,Position(0,0,-zmin-layerWidth/2),ReflectRot());
+      PlacedVolume lpvR = motherVol.placeVolume(l_vol,Transform3D(Rotation3D(RotationY(M_PI)),Position(0,0,-zmin-layerWidth/2)));
       lpvR.addPhysVolID("system",sdet.id());
       lpvR.addPhysVolID("barrel",2);
       DetElement layerR = layer.clone(l_nam+"_reflect");

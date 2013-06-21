@@ -141,7 +141,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
        // lcdd.pickMotherVolume(vxd).placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
 
-      pv = assembly.placeVolume( laddervol, pos, rot ) ;
+      pv = assembly.placeVolume( laddervol,Transform3D(RotationZ(phi),pos));
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ) ;
 
 	//.addPhysVolID("CellID0", cellID0 )   ;

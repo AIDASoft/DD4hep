@@ -72,22 +72,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   // ==========================================================================
 
   // Hcal Barrel module shapers
-  PolyhedraRegular polyhedra_shaper("polyhedra",numSides,Hcal_inner_radius,Hcal_module_radius,detZ*2);
+  PolyhedraRegular polyhedra_shaper("polyhedra",numSides+1,Hcal_inner_radius,Hcal_module_radius,detZ*2);
   Tube             tube_shaper(0.0,Hcal_outer_radius, detZ, 0.0, 2.0*M_PI);
 
-  Position pos(0, 0, 0);
-  Rotation rot(M_PI/8.,0,0); // Check the rotation with ECAL and HCAL technical design
-
   // Create Hcal Barrel volume with material Steel235 
-  IntersectionSolid barrelModuleSolid(det_name+"ModuleSolid",
-				tube_shaper,polyhedra_shaper,
-				pos, rot);
-  
+  IntersectionSolid barrelModuleSolid(tube_shaper,polyhedra_shaper,Rotation(M_PI/numSides,0,0));
   Volume           envelopeVol(det_name+"_envelope",barrelModuleSolid,Steel235);
-
-  // Set envelope volume attributes.
-  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
-
 
   // ========= Create Hcal Barrel Chmaber (i.e. Layers) =======================
   // It will be the sub volume for placing the slices.
@@ -113,6 +103,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   // Create Hcal Barrel Chamber without radiator
   // Place into the Hcal Barrel envelope, after each radiator 
   int layer_num = 0;
+  Assembly staveVol("stave");
+  PlacedVolume pv;
+
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t   x_layer = c;
     int          repeat = x_layer.repeat();          // Get number of layers.
@@ -133,7 +126,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
       // The same Layer will be filled with skices, 
       // and placed into the HcalBarrel 16 times: 8 Staves * 2 modules: TODO 32 times.
       Volume layer_vol(layer_name, Box(active_layer_dim_x,active_layer_dim_y,active_layer_dim_z), air);
-
 
       // ========= Create sublayer slices =========================================
       // Create and place the slices into Layer
@@ -162,10 +154,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 	// Set region, limitset, and vis.
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// slice PlacedVolume
-	PlacedVolume slice_phv = layer_vol.placeVolume(slice_vol,Position(0,0,slice_pos_z));
-	slice_phv.addPhysVolID("slice",slice_number);
-
-	slice.setPlacement(slice_phv);
+	pv = layer_vol.placeVolume(slice_vol,Position(0,0,slice_pos_z));
+	pv.addPhysVolID("slice",slice_number);
+	slice.setPlacement(pv);
 	// Increment Z position for next slice.
 	slice_pos_z += slice_thickness / 2;
 	// Increment slice number.
@@ -184,30 +175,19 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
       // Acording to the number of staves and modules,
       // Place the same Layer into the HcalBarrel envelope
       // with the right position and rotation.
-      for(int stave_num=0;stave_num<8;stave_num++){
-	double delte_phi = M_PI/4.0*(stave_num);
-	string stave_layer = _toString(stave_num,"stave%d_layer");
-	// Layer physical volume.
-	double layer_pos_z = active_layer_dim_y + Hcal_lateral_structure_thickness;
-	for(int module_num=0;module_num<2;module_num++)
-	  {
-	    layer_pos_z = (module_num==0)?layer_pos_z:-layer_pos_z;
-	    PlacedVolume layer_phv = envelopeVol.placeVolume(layer_vol,
-							     Position(layer_pos_y*std::sin(delte_phi),
-								      layer_pos_y*std::cos(delte_phi),
-								      layer_pos_z),
-							     Rotation(-delte_phi, M_PI/2.,0));
-	    // registry the ID of Layer, stave and module
-	    layer_phv.addPhysVolID("layer",layer_num);
-	    layer_phv.addPhysVolID("stave",stave_num);
-	    layer_phv.addPhysVolID("module",module_num);
-	    // then setPlacement for it.
-	    layer.setPlacement(layer_phv);
 
-	  }
+      // Layer physical volume.
+      double layer_pos_z = active_layer_dim_y + Hcal_lateral_structure_thickness;
+      for(int module_num=0;module_num<2;module_num++)   {
+	layer_pos_z = (module_num==0)?layer_pos_z:-layer_pos_z;
+	Position l_pos(0,layer_pos_y-Hcal_inner_radius,layer_pos_z);
+	pv = staveVol.placeVolume(layer_vol,Transform3D(RotationX(M_PI/2),l_pos));
+	// registry the ID of Layer, stave and module
+	pv.addPhysVolID("layer",layer_num).addPhysVolID("module",module_num);
+	// then setPlacement for it.
+	layer.setPlacement(pv);
       }
-
-
+ 
       // ===== Prepare for next layer (i.e. next Chamber) =========================
       // Prepare the chamber placement position and the chamber dimension
       // ==========================================================================
@@ -229,18 +209,28 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
     }
   }
 
+  // Now place all staves
+  for(int stave_num=0;stave_num<numSides;stave_num++)  {
+    double r = Hcal_inner_radius+Hcal_radiator_thickness;
+    double phi = (2.*M_PI/numSides)*stave_num;
+    Position pos(r*std::sin(phi),r*std::cos(phi),0);
+    pv = envelopeVol.placeVolume(staveVol,Transform3D(Rotation(phi,M_PI,0),pos));
+    // registry the ID of Layer, stave and module
+    pv.addPhysVolID("stave",stave_num);
+  }
 
   // =========== Place Hcal Barrel envelope ===================================
   // Finally place the Hcal Barrel envelope into the world volume.
   // Registry the system ID.
   // ==========================================================================
 
+  // Set envelope volume attributes.
+  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   // Place Hcal Barrel volume into the world volume
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0,0,Hcal_Barrel_rotation));
-
+  pv = motherVol.placeVolume(envelopeVol,Rotation(0,0,Hcal_Barrel_rotation));
   // registry the system id
-  env_phv.addPhysVolID("system", sdet.id());
-  sdet.setPlacement(env_phv);
+  pv.addPhysVolID("system", sdet.id());
+  sdet.setPlacement(pv);
   return sdet;
 }
 

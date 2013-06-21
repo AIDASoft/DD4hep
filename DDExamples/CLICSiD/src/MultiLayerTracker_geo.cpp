@@ -38,7 +38,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Material mat = lcdd.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
       double thickness = x_slice.thickness();
-      Tube   s_tub(r,r+thickness,2*z,2*M_PI);
+      Tube   s_tub(r,r+thickness,z,2*M_PI);
       Volume s_vol(s_name, s_tub, mat);
 
       r += thickness;
@@ -48,15 +48,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       }
       // Set Attributes
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-      pv = l_vol.placeVolume(s_vol,IdentityPos());
+      pv = l_vol.placeVolume(s_vol);
       // Slices have no extra id. Take the ID of the layer!
       pv.addPhysVolID("slice",m);
     }
     l_tub.setDimensions(rmin,r,z,0,2*M_PI);
-    cout << l_name << " " << rmin << " " << r << " " << z << endl;
+    //cout << l_name << " " << rmin << " " << r << " " << z << endl;
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
       
-    pv = assembly.placeVolume(l_vol,IdentityPos());
+    pv = assembly.placeVolume(l_vol);
     pv.addPhysVolID("layer",n);
     layer.setPlacement(pv);
   }

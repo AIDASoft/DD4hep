@@ -48,12 +48,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
 	r = router;
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// Instantiate physical volume
-	layer_vol.placeVolume(slice_vol,IdentityPos());
+	layer_vol.placeVolume(slice_vol);
       }
       layer_vol.setVisAttributes(lcdd,x_layer.visStr());
       layer_tub.setDimensions(rlayer,r,z*2,0,2*M_PI);
         
-      PlacedVolume layer_physvol = envelopeVol.placeVolume(layer_vol,IdentityPos());
+      PlacedVolume layer_physvol = envelopeVol.placeVolume(layer_vol);
       layer_physvol.addPhysVolID("layer",n);
       ++n;
     }
@@ -62,7 +62,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   // Set region of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     
-  PlacedVolume physvol = lcdd.pickMotherVolume(sdet).placeVolume(envelopeVol,IdentityPos());
+  PlacedVolume physvol = lcdd.pickMotherVolume(sdet).placeVolume(envelopeVol);
   physvol.addPhysVolID("system",sdet.id()).addPhysVolID(_U(barrel),0);
   sdet.setPlacement(physvol);
   return sdet;

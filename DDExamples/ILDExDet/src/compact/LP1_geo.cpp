@@ -6,7 +6,7 @@
 //  Author     : A.Muennich
 //
 //====================================================================
-
+#if 0
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Detector.h"
 #include "TPCData.h"
@@ -129,3 +129,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 //first argument is the type from the xml file
 DECLARE_DETELEMENT(LP1,create_element)
+#endif

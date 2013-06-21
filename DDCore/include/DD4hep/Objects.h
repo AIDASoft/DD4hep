@@ -24,10 +24,13 @@ class TGeoIdentity;
 #include "TGeoPhysicalNode.h"
 #include "Math/Vector3D.h"
 #include "Math/Transform3D.h"
+#include "Math/Translation3D.h"
 #include "Math/RotationX.h"
 #include "Math/RotationY.h"
 #include "Math/RotationZ.h"
+#include "Math/Rotation3D.h"
 #include "Math/RotationZYX.h"
+#include "Math/EulerAngles.h"
 #include "Math/VectorUtil.h"
 
 // C/C++ include files
@@ -173,41 +176,14 @@ namespace DD4hep {
     template <class V> V RotateY(const V& v, double a) { return ROOT::Math::VectorUtil::RotateY(v,a); }
     template <class V> V RotateZ(const V& v, double a) { return ROOT::Math::VectorUtil::RotateZ(v,a); }
   
-    typedef ROOT::Math::RotationZYX  Rotation;
-    typedef ROOT::Math::RotationZ    RotationZ;
-    typedef ROOT::Math::RotationY    RotationY;
-    typedef ROOT::Math::RotationX    RotationX;
-    typedef ROOT::Math::Transform3D  Transform3D;
-
-    /** @class IdentityPos Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct IdentityPos {
-      /// Default constructor
-      IdentityPos() {}
-    };
-
-    /** @class IdentityRot Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct IdentityRot {
-      /// Default constructor
-      IdentityRot() {}
-    };
-
-    /** @class ReflectRot Objects.h
-     *  
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct ReflectRot : public Rotation {
-      /// Default constructor
-      ReflectRot() : Rotation(M_PI,0.,0.) {}
-    };
+    typedef ROOT::Math::RotationZYX   Rotation;
+    typedef ROOT::Math::RotationZ     RotationZ;
+    typedef ROOT::Math::RotationY     RotationY;
+    typedef ROOT::Math::RotationX     RotationX;
+    typedef ROOT::Math::Rotation3D    Rotation3D;
+    typedef ROOT::Math::EulerAngles   EulerAngles;
+    typedef ROOT::Math::Transform3D   Transform3D;
+    typedef ROOT::Math::Translation3D Translation3D;
 
     /** @class Atom Objects.h
      *  

@@ -39,27 +39,29 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      beamPosX   = std::tan(xangleHalf) * zpos;
 
   // Detector envelope solid. 
-  Tube envelopeTube(rmin,rmax,thickness);
+  Tube envelopeTube(rmin,rmax,thickness/2);
 
   // First envelope bool subtracion of outgoing beampipe.
   // Incoming beampipe solid.
-  Tube beamInTube(0,outgoingR,thickness*2);
+  Tube beamInTube(0,outgoingR,thickness);
   // Position of incoming beampipe.
   Position beamInPos(beamPosX,0,0);
   /// Rotation of incoming beampipe.
-  Rotation beamInRot(0,0,xangleHalf);
+  Rotation3D  beamInRot(RotationY(1.*xangleHalf));
+  Transform3D beamInTrans(beamInRot,beamInPos);
 
   // Second envelope bool subtracion of outgoing beampipe.
   // Outgoing beampipe solid.
-  Tube     beamOutTube(0,incomingR,thickness*2);
+  Tube     beamOutTube(0,incomingR,thickness);
   // Position of outgoing beampipe.
   Position beamOutPos(-beamPosX,0,0);
   // Rotation of outgoing beampipe.
-  Rotation beamOutRot(0,0,-xangleHalf);
+  Rotation3D  beamOutRot(RotationY(-xangleHalf));
+  Transform3D beamOutTrans(beamOutRot,beamOutPos);
 
   // First envelope bool subtraction of incoming beampipe.
-  SubtractionSolid envelopeSubtraction1(envelopeTube,beamInTube,beamInPos,beamInRot);
-  SubtractionSolid envelopeSubtraction2(envelopeSubtraction1,beamOutTube,beamOutPos,beamOutRot);
+  SubtractionSolid envelopeSubtraction1(envelopeTube,beamInTube,beamInTrans);
+  SubtractionSolid envelopeSubtraction2(envelopeSubtraction1,beamOutTube,beamOutTrans);
 
   // Final envelope bool volume.
   Volume envelopeVol(det_name+"_envelope", envelopeSubtraction2, air);
@@ -85,12 +87,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       DetElement  layer(sdet,layer_nam,sdet.id());
       double      layerGlobalZ = zinner + layerDisplZ;
       double      layerPosX    = tan(xangleHalf) * layerGlobalZ;
-      Position    layerSubtraction1Pos( layerPosX,0,0);
-      Position    layerSubtraction2Pos(-layerPosX,0,0);
+      Position    layer1SubPos( layerPosX,0,0);
+      Position    layer2SubPos(-layerPosX,0,0);
 
-      SubtractionSolid layerSubtraction1(layerTube,beamInTube,layerSubtraction1Pos,beamInRot);
+      SubtractionSolid layerSubtraction1(layerTube,beamInTube,Transform3D(beamInRot,layer1SubPos));
       // Second layer subtraction solid.
-      SubtractionSolid layerSubtraction2(layerSubtraction1,beamOutTube,layerSubtraction2Pos,beamOutRot);
+      SubtractionSolid layerSubtraction2(layerSubtraction1,beamOutTube,Transform3D(beamOutRot,layer2SubPos));
       // Layer LV.
       Volume layerVol(det_name+"_"+layer_nam,layerSubtraction2,air);
       
@@ -116,9 +118,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	double slicePosX    = std::tan(xangleHalf) * sliceGlobalZ;
 
 	// First slice subtraction solid.
-	SubtractionSolid sliceSubtraction1(sliceTube,beamInTube,Position(slicePosX,0,0),beamInRot);
+	SubtractionSolid sliceSubtraction1(sliceTube,beamInTube,Transform3D(beamInRot,Position(slicePosX,0,0)));
 	// Second slice subtraction solid.
-	SubtractionSolid sliceSubtraction2(sliceSubtraction1,beamOutTube,Position(-slicePosX,0,0),beamOutRot); 
+	SubtractionSolid sliceSubtraction2(sliceSubtraction1,beamOutTube,Transform3D(beamOutRot,Position(-slicePosX,0,0))); 
 	// Slice LV.
 	Volume sliceVol(det_name+"_"+layer_nam+"_"+slice_nam, sliceSubtraction2, slice_mat);
 
@@ -152,13 +154,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }
   sdet.setVisAttributes(lcdd, x_det.visStr(), envelopeVol);
   
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,zpos));
+  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,zpos)));
   env_phv.addPhysVolID("system", id);
   env_phv.addPhysVolID("barrel", 1);
   sdet.setPlacement(env_phv);
   // Reflect it.
   if ( reflect )  {
-    env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,-zpos),ReflectRot());
+    env_phv = motherVol.placeVolume(envelopeVol,Transform3D(RotationY(M_PI),Position(0,0,-zpos)));
     env_phv.addPhysVolID("system", id);
     env_phv.addPhysVolID("barrel", 2);
     DetElement rdet(det_name+"_reflect",x_det.id());

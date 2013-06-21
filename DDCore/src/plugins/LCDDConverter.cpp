@@ -564,7 +564,7 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
     if ( !(r.X() == 0.0 && r.Y() == 0.0 && r.Z() == 0.0) )  {
       geo.checkRotation(name,trafo);
       geo.doc_define.append(rot=xml_elt_t(geo.doc,_U(rotation)));
-      if ( trafo->IsA() == TGeoCombiTrans::Class() )  {
+      if ( true && trafo->IsA() == TGeoCombiTrans::Class() )  {
 	double phi=0., theta=0., psi=0.;
 	TGeoRotation r;
 	r.SetMatrix(trafo->GetRotationMatrix());
@@ -748,8 +748,8 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
       xml_ref_t pos = handlePosition(name+text,m);
       ::snprintf(text,sizeof(text),"_%p_rot",node);
       xml_ref_t rot = handleRotation(name+text,m);
-      place.setRef(_U(rotationref),rot.name());
       place.setRef(_U(positionref),pos.name());
+      place.setRef(_U(rotationref),rot.name());
     }
     if ( dynamic_cast<const PlacedVolume::Object*>(node) ) {
       PlacedVolume p = Ref_t(node);

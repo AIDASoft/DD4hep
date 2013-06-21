@@ -73,7 +73,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     .addPhysVolID("barrel",1);
   sdet.setPlacement(phv);
   if ( reflect )   {
-    phv=motherVol.placeVolume(envelopeVol,Position(0,0,-zmin-totWidth/2),ReflectRot());
+    phv=motherVol.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,-zmin-totWidth/2)));
     phv.addPhysVolID("system",sdet.id())
       .addPhysVolID("barrel",2);
   }

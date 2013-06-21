@@ -144,10 +144,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // Compute the stave position
     double m_pos_x = mod_x_off * std::cos(phi) - mod_y_off * std::sin(phi);
     double m_pos_y = mod_x_off * std::sin(phi) + mod_y_off * std::cos(phi);
-
-    PlacedVolume pv = envelope.placeVolume(mod_vol,
-					   Position(-m_pos_x,-m_pos_y,0),
-					   Rotation(phi,M_PI*0.5,0));
+    Transform3D tr(Rotation(0,phi,M_PI*0.5),Translation3D(-m_pos_x,-m_pos_y,0));
+    PlacedVolume pv = envelope.placeVolume(mod_vol,tr);
     pv.addPhysVolID("system",det_id);
     pv.addPhysVolID("barrel",0);
     pv.addPhysVolID("module",i);

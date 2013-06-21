@@ -9,9 +9,12 @@
 #include "G4UIsession.hh"
 #include "Randomize.hh"
 #include "G4VisExecutive.hh"
+#include "G4UIterminal.hh"
 #include "G4UIExecutive.hh"
 #include "G4UItcsh.hh"
+#ifdef G4VIS_USE_QT
 #include "G4UIQt.hh"
+#endif
 #include "QGSP_BERT.hh"
 
 //#include "ILDExDetectorConstruction.hh"

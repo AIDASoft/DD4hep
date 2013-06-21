@@ -213,12 +213,14 @@
     <display>
         <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
         <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
-        <vis name="SiVertexBarrelModuleVis" alpha="1.0" r="1" g="1" b="0.6" drawingStyle="wireframe" showDaughters="false" visible="true"/>
+        <vis name="SiVertexBarrelModuleVis" alpha="1.0" r="1" g="1" b="0.6" drawingStyle="wireframe" showDaughters="true" visible="true"/>
+        <vis name="SiVertexSensitiveVis" alpha="1.0" r="1" g="0.2" b="0.2" drawingStyle="solid" showDaughters="true" visible="true"/>
+        <vis name="SiVertexPassiveVis"   alpha="1.0" r="0" g="0.2" b="1" drawingStyle="solid" showDaughters="true" visible="true"/>
         <vis name="SiVertexBarrelLayerVis" alpha="1.0" r="1" g="1" b="0.6" showDaughters="true" visible="true"/>
         
         <vis name="SiVertexEndcapLayerVis" alpha="1.0" r="1" g="0.75" b="0" showDaughters="false" visible="true"/>
 
-        <vis name="SiTrackerBarrelModuleVis" alpha="1.0" r="1" g="1" b="0.6" drawingStyle="wireframe" showDaughters="false" visible="true"/>
+        <vis name="SiTrackerBarrelModuleVis" alpha="1.0" r="0" g="1" b="0.6" drawingStyle="wireframe" showDaughters="false" visible="true"/>
         <vis name="SiTrackerBarrelLayerVis" alpha="1.0" r="1" g="1" b="0.6" showDaughters="true" visible="true"/>
         
         <vis name="SiTrackerEndcapModuleVis" alpha="0.1" r="0.8" g="1.0" b="0.1" drawingStyle="wireframe" showDaughters="false" visible="true"/>        
@@ -267,24 +269,25 @@
         <vis name="BlueVis" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
     </display>
     <detectors>
+
         <comment>Trackers</comment> 
         <detector id="1" name="SiVertexBarrel" type="SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
             <comment>Vertex Detector Barrel</comment>
             <module name="VtxBarrelModuleInner" vis="SiVertexBarrelModuleVis">
                 <module_envelope width="10.0" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6"/>
-                <module_component width="7.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false">
+                <module_component width="7.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
                     <position z="-0.12"/>
                 </module_component>
-                <module_component width="9.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true">
+                <module_component width="9.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
                     <position z="0.225"/>
                 </module_component>
             </module>
             <module name="VtxBarrelModuleOuter" vis="SiVertexBarrelModuleVis">
                 <module_envelope width="14.0" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6"/>
-                <module_component width="11.6" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false">
+                <module_component width="11.6" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
                     <position z="-0.12"/>
                 </module_component>
-                <module_component width="13.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true">
+                <module_component width="13.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
                     <position z="0.210"/>
                 </module_component>
             </module>
@@ -314,27 +317,28 @@
                 <z_layout dr="0.0" z0="0.0" nz="1"/>
             </layer>
         </detector>
+
         <comment>Vertex Detector Endcaps</comment>
-        <detector id="2" name="SiVertexEndcap" type="SiTrackerEndcap2" readout="SiVertexEndcapHits">    
+        <detector id="2" name="SiVertexEndcap" type="SiTrackerEndcap2" readout="SiVertexEndcapHits" reflect="true">    
             <module name="SiVertexEndcapModule1">
                 <trd x1="VertexEndcap_rmin1 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin1) / 2" />
-                <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
-                <module_component thickness="0.013*cm"   material="Carbon" />
+                <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+                <module_component thickness="0.013*cm"   material="Carbon" vis="SiVertexPassiveVis" />
             </module>
             <module name="SiVertexEndcapModule2">
                 <trd x1="VertexEndcap_rmin2 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin2) / 2" />
-                <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
-                <module_component thickness="0.013*cm"   material="Carbon" />
+                <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+                <module_component thickness="0.013*cm"   material="Carbon" vis="SiVertexPassiveVis" />
             </module>
             <module name="SiVertexEndcapModule3">
                 <trd x1="VertexEndcap_rmin3 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin3) / 2" />
-                <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
-                <module_component thickness="0.013*cm"   material="Carbon" />
+                <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+                <module_component thickness="0.013*cm"   material="Carbon" vis="SiVertexPassiveVis" />
             </module>
             <module name="SiVertexEndcapModule4">
                 <trd x1="VertexEndcap_rmin4 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin4) / 2" />
-                <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
-                <module_component thickness="0.013*cm"   material="Carbon" />
+                <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+                <module_component thickness="0.013*cm"   material="Carbon"  vis="SiVertexPassiveVis"/>
             </module>
             <layer id="1"  vis="SiVertexEndcapLayerVis">
                 <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1" nmodules="(int) VertexEndcapModules" dz="0.011" module="SiVertexEndcapModule1"/>
@@ -349,6 +353,8 @@
                 <ring r="(VertexEndcap_rmax + VertexEndcap_rmin4) / 2" zstart="VertexEndcap_z4" nmodules="(int) VertexEndcapModules" dz="0.011" module="SiVertexEndcapModule4"/>
             </layer>
         </detector> 
+
+
         <detector id="3" name="SiTrackerBarrel" type="SiTrackerBarrel" readout="SiTrackerBarrelHits">
             <comment>Outer Tracker Barrel</comment>
             <module name="SiTrackerModule_Layer1" vis="SiTrackerBarrelModuleVis">                
@@ -527,6 +533,8 @@
                 <z_layout dr="4.0" z0="1476.497" nz="35"/>
             </layer>
         </detector>
+
+
         <detector id="4" name="SiTrackerEndcap" type="SiTrackerEndcap2" readout="SiTrackerEndcapHits" reflect="true">
             <comment>Outer Tracker Endcaps</comment>
             <module name="Module1" vis="SiTrackerEndcapModuleVis">
@@ -626,6 +634,8 @@
                 <ring r="(ForwardTracker_rmax + ForwardTracker_rmin3) / 2" zstart="ForwardTracker_z3" nmodules="(int) ForwardTrackerModules" dz="0.011" module="SiTrackerForwardModule3"/>
             </layer>
         </detector>
+
+
         <comment>Calorimeters</comment>
         <detector id="5" name="EcalBarrel" type="EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
             <comment>EM Calorimeter Barrel</comment>
@@ -654,6 +664,8 @@
                 <slice material = "Air"     thickness = "0.033*cm" />
             </layer>
         </detector>
+
+
         <detector id="6" name="EcalEndcap" type="PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
             <comment>EM Calorimeter Endcaps</comment>
             <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
@@ -680,7 +692,7 @@
                 <slice material = "Air"     thickness = "0.033*cm" />
             </layer>
         </detector>
-<!--
+
         <detector id="7" name="HcalBarrel" type="PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
             <comment>Hadron Calorimeter Barrel</comment>
             <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="EcalBarrel_zmax*2"/>
@@ -691,7 +703,8 @@
                 <slice material = "Air" thickness = "0.15*cm" />
             </layer>
         </detector>
--->
+
+
         <detector id="8" name="HcalEndcap" type="PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
             <comment>Hadron Calorimeter Endcaps</comment>
             <dimensions numsides="(int) CaloSides" zmin="HcalEndcap_zmin" rmin="HcalEndcap_rmin" rmax="HcalEndcap_rmax" />
@@ -724,11 +737,13 @@
                 <slice material="Iron" thickness="9.0*cm"  vis="MuonEndcapAbsorberVis"/>
             </layer>
         </detector>
+
+
         <detector id="10" name="MuonBarrel" type="PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
             <comment>Muon Calorimeter Barrel</comment>
             <dimensions numsides="(int) MuonSides" rmin="MuonBarrel_rmin" z="MuonBarrel_zmax * 2"/>
             <staves vis="MuonBarrelStavesVis"/>
-            <!-- Start with an active layer, followed by a thin 5.0cm absorber layer. The second active layer is followed by a thick 20.0cm steel layer to take the forces. -->
+
             <layer repeat="1" vis="MuonBarrelLayerVis">
             	<slice material="Aluminum" thickness="0.1*cm" />
                 <slice material="Air" thickness="0.35*cm" />
@@ -826,6 +841,7 @@
             </layer>
         </detector>
         
+
         <detector id="12" name="LumiCal" reflect="true" type="CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
             <comment>Luminosity Calorimeter</comment>
             <dimensions inner_r = "LumiCal_rmin" inner_z = "LumiCal_zmin" outer_r = "LumiCal_rmax" />
@@ -1030,7 +1046,7 @@
             		z="- (ForwardMask_zmin - BeamPipe_endThickness)" />
         </detector>
         <comment>Vertex Detector Supports and Readout</comment>
-        <detector name="VertexBarrelSupports" type="MultiLayerTracker" vis="SupportVis">
+        <detector name="VertexBarrelSupports" type="MultiLayerTracker" vis="SupportVis" reflect="true">
             <comment>Double-walled Carbon Fiber support tube</comment>
             <layer id="6" inner_r = "16.87*cm" outer_z = "89.48*cm">
                 <slice material = "CarbonFiber" thickness ="VXD_CF_support"/>
@@ -1174,7 +1190,7 @@
             		z="VertexService_zmax"/>
         </detector>
         <comment>Outer Tracker Supports and Readout</comment>
-        <detector name="TrackerBarrelSupports" type="MultiLayerTracker">
+        <detector name="TrackerBarrelSupports" type="MultiLayerTracker" reflect="true">
             <comment>Barrels</comment>
             <layer id="1" inner_r="206.0" outer_z="577.328">
                 <slice material="CarbonFiber" thickness="0.05*cm" />
@@ -1479,7 +1495,7 @@
         </detector>
   
         <comment>Solenoid</comment>
-        <detector name="SolenoidCoilBarrel" type="MultiLayerTracker" insideTrackingVolume="false">
+        <detector name="SolenoidCoilBarrel" type="MultiLayerTracker" insideTrackingVolume="false" reflect="true">
             <layer id="1" inner_r="SolenoidBarrelInnerRadius" outer_z="SolenoidBarrelOuterZ" vis="SolenoidBarrelLayerVis">
                 <slice material="Steel235" thickness="SolenoidBarrelInnerCryostatThickness" />
                 <slice material="Vacuum"   thickness="SolenoidBarrelInnerAirgapThickness" />

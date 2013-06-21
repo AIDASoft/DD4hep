@@ -28,7 +28,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     xml_comp_t x_mod  = mi;
     xml_comp_t m_env  = x_mod.child(_U(module_envelope));
     string     m_nam  = x_mod.nameStr();
-    Volume     m_vol(det_name+"_"+m_nam,Box(m_env.width(),m_env.length(),m_env.thickness()),air);
+    Volume     m_vol(det_name+"_"+m_nam,Box(m_env.width()/2,m_env.length()/2,m_env.thickness()/2),air);
     int        ncomponents = 0, sensor_number = 0;
 
     if ( volumes.find(m_nam) != volumes.end() )   {
@@ -41,13 +41,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       xml_comp_t x_pos  = x_comp.position(false);
       xml_comp_t x_rot  = x_comp.rotation(false);	
       string     c_nam  = det_name+"_"+m_nam+_toString(ncomponents,"_component%d");
-      Box        c_box(x_comp.width(),x_comp.length(),x_comp.thickness());
+      Box        c_box(x_comp.width()/2,x_comp.length()/2,x_comp.thickness()/2);
       Volume     c_vol(c_nam,c_box,lcdd.material(x_comp.materialStr()));
 
       if ( x_pos && x_rot ) {
 	Position   c_pos(x_pos.x(0),x_pos.y(0),x_pos.z(0));
 	Rotation   c_rot(x_rot.z(0),x_rot.y(0),x_rot.x(0));
-	pv = m_vol.placeVolume(c_vol, c_pos, c_rot);
+	pv = m_vol.placeVolume(c_vol, Transform3D(c_rot,c_pos));
       }
       else if ( x_rot ) {
 	pv = m_vol.placeVolume(c_vol,Rotation(x_rot.z(0),x_rot.y(0),x_rot.x(0)));
@@ -77,7 +77,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     string     m_nam    = x_layer.moduleStr();
     Volume     m_env    = volumes[m_nam];
     string     lay_nam  = det_name+"_"+m_nam+_toString(lay_id,"_layer%d");
-    Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
+    Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length()/2);
     Volume     lay_vol   (lay_nam,lay_tub,air);       // Create the layer envelope volume.
     double     phi0     = x_layout.phi0();            // Starting phi of first module.
     double     phi_tilt = x_layout.phi_tilt();        // Phi tilt of a module.
@@ -102,14 +102,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     for (int ii = 0; ii < nphi; ii++)	{
       double dx = z_dr * std::cos(phic + phi_tilt);	// Delta x of module position.
       double dy = z_dr * std::sin(phic + phi_tilt);	// Delta y of module position.
-      double  x = rc * std::cos(phic);                // Basic x module position.
+      double  x = rc * std::cos(phic);                  // Basic x module position.
       double  y = rc * std::sin(phic);               	// Basic y module position.
         
       // Loop over the number of modules in z.
       for (int j = 0; j < nz; j++)	  {
 	// Module PhysicalVolume.
-	pv = lay_vol.placeVolume(m_env,Position(x,y,module_z),
-				 Rotation(-((M_PI/2)-phic-phi_tilt),M_PI/2,0));
+	Transform3D tr(Rotation(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
+	pv = lay_vol.placeVolume(m_env,tr);
 	pv.addPhysVolID("module", module++);
 	// Adjust the x and y coordinates of the module.
 	x += dx;

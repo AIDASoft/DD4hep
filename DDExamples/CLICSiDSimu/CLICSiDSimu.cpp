@@ -1,15 +1,19 @@
 //#define G4UI_USE
 //#define G4VIS_USE
 //#define G4INTY_USE_XT
-//#define G4VIS_USE_OPENGL
+#define G4VIS_USE_OPENGL
 //#define G4UI_USE_TCSH
-//#define G4VIS_USE_OPENGLX
 
 #include "G4PVPlacement.hh"
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIsession.hh"
 #include "Randomize.hh"
+
+#ifdef G4VIS_USE_OPENGLX
+#include "G4OpenGLImmediateX.hh"
+#include "G4OpenGLStoredX.hh"
+#endif
 
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
@@ -33,30 +37,35 @@ using namespace std;
 using namespace DD4hep::Geometry;
 using namespace DD4hep::Simulation;
 
+static const char* get_arg(int argc, char**argv,int which)  {
+  if ( which>0 && which < argc ) return argv[which];
+  throw runtime_error("Invalid argument sequence");
+}
 
+/** main program
+ */
 int main(int argc,char** argv)   {
   // Choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   LCDD& lcdd = LCDD::getInstance();
-  bool is_gui = false;
   bool is_visual = false;
-  string gui_setup, vis_setup;
+  string gui_setup, vis_setup, gui_type;
   vector<string>        macros;
   vector<pair<string,string> > plugins;
   for(int i=1; i<argc;++i)   {
+    string nam = get_arg(argc,argv,i);
     if ( argv[i][0]=='-' )     {
       string plug, nam = argv[i]+1;
-      if ( strncmp(nam.c_str(),"gui_setup",5) == 0 )
-	gui_setup = argv[++i];
-      else if ( strncmp(nam.c_str(),"vis_setup",5) == 0 )
-	vis_setup = argv[++i];
-      // No else here!
-      if ( strncmp(nam.c_str(),"gui",3) == 0 )
-	is_gui = true;
+      if ( strncmp(nam.c_str(),"vissetup",4) == 0 )
+	vis_setup = get_arg(argc,argv,++i);
       else if ( strncmp(nam.c_str(),"vis",3) == 0 ) 
 	is_visual = true;
+      else if ( strncmp(nam.c_str(),"guisetup",4) == 0 )
+	gui_setup = get_arg(argc,argv,++i);
+      else if ( strncmp(nam.c_str(),"guitype",4) == 0 )
+	gui_type = get_arg(argc,argv,++i);
       else if ( strncmp(nam.c_str(),"macro",3) == 0 ) 
-	macros.push_back(argv[++i]);
+	macros.push_back(get_arg(argc,argv,++i));
       else  {
 	plug = nam;
 	size_t idx = plug.find(':');
@@ -68,7 +77,7 @@ int main(int argc,char** argv)   {
 	  plug = "DD4hepXMLLoader";
 	else if (  ::strncmp(plug.c_str(),"xml",3) == 0 )
 	  plug = "DD4hepXMLLoader";
-	nam = argv[++i];
+	nam = get_arg(argc,argv,++i);
 	plugins.push_back(make_pair(plug,nam));
       }
     }
@@ -117,7 +126,11 @@ int main(int argc,char** argv)   {
   // Initialize visualization
   G4VisManager* visManager = 0;
   if ( is_visual )  {
-    visManager = new G4VisExecutive;
+    visManager = new G4VisExecutive();
+#ifdef G4VIS_USE_OPENGLX
+    //visManager->RegisterGraphicsSystem (new G4OpenGLImmediateX());
+    //visManager->RegisterGraphicsSystem (new G4OpenGLStoredX());
+#endif
     visManager->Initialize();
   }
 
@@ -129,8 +142,9 @@ int main(int argc,char** argv)   {
     UImanager->ApplyCommand(command);
   }
   G4UIExecutive* ui = 0;
-  if ( is_gui ) {  // interactive mode : define UI session    
-    ui = new G4UIExecutive(argc,argv);
+  if ( !gui_type.empty() ) {  // interactive mode : define UI session    
+    const char* args[] = {"cmd"};
+    ui = new G4UIExecutive(1,(char**)args,gui_type);
     if ( is_visual && !vis_setup.empty() )   {
       UImanager->ApplyCommand("/control/execute vis.mac"); 
       cout << "++++++++++++++++++++++++++++ executed vis.mac" << endl;

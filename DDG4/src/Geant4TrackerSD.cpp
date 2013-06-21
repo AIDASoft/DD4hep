@@ -20,7 +20,7 @@ namespace DD4hep {  namespace Simulation {
   /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   struct Tracker {};
   /// Method for generating hit(s) using the information of G4Step object.
-  template <> bool Geant4GenericSD<Tracker>::buildHits(G4Step* step,G4TouchableHistory* hist) {
+    template <> bool Geant4GenericSD<Tracker>::buildHits(G4Step* step,G4TouchableHistory* /* hist */) {
     StepHandler h(step);
     Position prePos    = h.prePos();
     Position postPos   = h.postPos();

@@ -29,9 +29,11 @@ static void placeStaves(DetElement&   parent,
   double rotY = -offsetRotation;
   double posX = -sectCenterRadius  * std::sin(rotY);
   double posY =  sectCenterRadius  * std::cos(rotY);
+
   for (int module = 0; module < numsides; ++module)  {
     DetElement det  = module>0 ? stave.clone(_toString(module,"stave%d")) : stave;
-    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Rotation(0,rotY,rotX),Position(-posX,-posY,0));
+    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Transform3D(Rotation(0,rotY,rotX),
+									Translation3D(-posX,-posY,0)));
     // Not a valid volID: pv.addPhysVolID("stave", 0);
     pv.addPhysVolID("module",module);
     det.setPlacement(pv);
@@ -80,10 +82,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double staveThickness = totalThickness;
 
   Trapezoid staveTrdOuter(innerFaceLen/2,outerFaceLen/2,detZ/2,detZ/2,staveThickness/2);
-  Volume staveOuterVol(det_name+"_stave",staveTrdOuter,air);
+  Volume    staveOuterVol(det_name+"_stave",staveTrdOuter,air);
 
   Trapezoid staveTrdInner(innerFaceLen/2-gap,outerFaceLen/2-gap,detZ/2,detZ/2,staveThickness/2);
-  Volume staveInnerVol(det_name+"_inner",staveTrdInner,air);
+  Volume    staveInnerVol(det_name+"_inner",staveTrdInner,air);
 
   double layerOuterAngle = (M_PI-innerAngle)/2;
   double layerInnerAngle = (M_PI/2 - layerOuterAngle);
@@ -100,9 +102,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     const Layer* lay    = layering.layer(layer_num); // Get the layer from the layering engine.
     // Loop over repeats for this layer.
     for (int j = 0; j < repeat; j++)    {
-      string layer_name      = det_name+_toString(layer_num,"_layer%d");
-      double layer_thickness = lay->thickness();
-      DetElement  layer(stave,_toString(layer_num,"layer%d"),x_det.id());
+      string     layer_name      = det_name+_toString(layer_num,"_layer%d");
+      double     layer_thickness = lay->thickness();
+      DetElement layer(stave,_toString(layer_num,"layer%d"),x_det.id());
 
       // Layer position in Z within the stave.
       layer_pos_z += layer_thickness / 2;
@@ -120,7 +122,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	DetElement slice(layer,_toString(slice_number,"slice%d"),x_det.id());
 
 	slice_pos_z += slice_thickness / 2;
-
 	// Slice volume & box
 	Volume slice_vol(slice_name,Box(layer_dim_x,detZ/2,slice_thickness/2),slice_material);
 
@@ -138,7 +139,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	// Increment Z position for next slice.
 	slice_pos_z += slice_thickness / 2;
 	// Increment slice number.
-	++slice_number;             
+	++slice_number;
       }
       // Set region, limitset, and vis.
       layer_vol.setAttributes(lcdd,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
@@ -153,19 +154,20 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // Increment the layer Z position.
       layer_pos_z += layer_thickness / 2;
       // Increment the layer number.
-      ++layer_num;         
+      ++layer_num;
     }
   }
 
   // Add stave inner physical volume to outer stave volume.
-  staveOuterVol.placeVolume(staveInnerVol,IdentityPos());
+  staveOuterVol.placeVolume(staveInnerVol);
   // Set the vis attributes of the outer stave section.
   stave.setVisAttributes(lcdd,staves.visStr(),staveOuterVol);
   // Place the staves.
   placeStaves(sdet,stave,rmin,numSides,totalThickness,envelopeVol,innerAngle,staveOuterVol);
 
   double z_offset = dim.hasAttr(_U(z_offset)) ? dim.z_offset() : 0.0;
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Position(0,0,z_offset),Rotation(0,0,M_PI/numSides));
+  Transform3D transform(RotationZ(M_PI/numSides),Translation3D(0,0,z_offset));
+  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,transform);
   env_phv.addPhysVolID("system", sdet.id());
   env_phv.addPhysVolID("barrel", 0);
   sdet.setPlacement(env_phv);

@@ -46,7 +46,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     y1 = y2 = total_thickness / 2;
     Volume  m_volume(det_name+"_"+m_nam, Trapezoid(x1, x2, y1, y2, z), vacuum);      
     m_volume.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
-      
+
     for(ci.reset(), n_sensor=0, c_id=0, posY=-y1; ci; ++ci, ++c_id)  {
       xml_comp_t c       = ci;
       double     c_thick = c.thickness();
@@ -86,19 +86,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       for(int k=0; k<nmodules; ++k) {
 	string m_base = _toString(l_id,"layer%d") + _toString(mod_num,"_module%d");
-	double x = r*std::cos(phi);
-	double y = r*std::sin(phi);
+	double x = -r*std::cos(phi);
+	double y = -r*std::sin(phi);
 	DetElement module(sdet,m_base+"_pos",det_id);
-	pv = motherVol.placeVolume(m_vol,
-				   Position(x,y,zstart+dz),
-				   Rotation(-M_PI/2-phi,-M_PI/2,0));
+	pv = assembly.placeVolume(m_vol,Transform3D(Rotation(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart+dz)));
 	pv.addPhysVolID("barrel",1);
 	pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	module.setPlacement(pv);
 	if ( reflect ) {
-	  pv = motherVol.placeVolume(m_vol,
-				     Position(x,y,-zstart-dz),
-				     Rotation(-M_PI/2-phi,-M_PI/2,M_PI));
+	  pv = assembly.placeVolume(m_vol,Transform3D(Rotation(M_PI,-M_PI/2-phi,-M_PI/2),Position(x,y,-zstart-dz)));
 	  pv.addPhysVolID("barrel",2);
 	  pv.addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	  DetElement r_module(sdet,m_base+"_neg",det_id);

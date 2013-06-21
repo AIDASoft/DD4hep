@@ -7,8 +7,8 @@
 //
 //====================================================================
 
-#ifndef DD4hep_GEOMETRY_SOLIDS_H
-#define DD4hep_GEOMETRY_SOLIDS_H
+#ifndef DD4HEP_GEOMETRY_SOLIDS_H
+#define DD4HEP_GEOMETRY_SOLIDS_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
@@ -507,9 +507,9 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
-      SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
-       /// Constructor to be used when creating a new object
-      SubtractionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
+      SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot);
+      /// Constructor to be used when creating a new object
+      SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
    };
 
     /**@class UnionSolid Shapes.h 
@@ -529,9 +529,9 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
-      UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
+      UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot);
       /// Constructor to be used when creating a new object
-      UnionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
+      UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     };
 
     /**@class IntersectionSolid Shapes.h 
@@ -551,11 +551,11 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
-      IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
+      IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot);
       /// Constructor to be used when creating a new object
-      IntersectionSolid(const std::string& name, const Solid& shape1, const Solid& shape2, const Position& pos, const Rotation& rot);
+      IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     };
 
   }       /* End namespace Geometry           */
-}         /* End namespace DD4hep            */
-#endif    /* DD4hep_GEOMETRY_SOLIDS_H        */
+}         /* End namespace DD4hep             */
+#endif    /* DD4HEP_GEOMETRY_SOLIDS_H         */
