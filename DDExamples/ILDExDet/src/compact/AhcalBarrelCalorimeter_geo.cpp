@@ -56,9 +56,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   double      Hcal_lateral_structure_thickness = lcdd.constant<double>("Hcal_lateral_structure_thickness");
   double      Hcal_layer_air_gap               = lcdd.constant<double>("Hcal_layer_air_gap");
   double      Hcal_back_plate_thickness        = lcdd.constant<double>("Hcal_back_plate_thickness");
-  double      totalThickness_Hcal_Barrel = (Hcal_radiator_thickness + Hcal_chamber_thickness) 
-                                           * HcalBarrel_layers + Hcal_back_plate_thickness;
-  double      Hcal_module_radius         = Hcal_inner_radius + totalThickness_Hcal_Barrel;
+
+  double      totalThickness_Hcal_Barrel       = (Hcal_radiator_thickness + Hcal_chamber_thickness) 
+                                                 * HcalBarrel_layers + Hcal_back_plate_thickness;
+  double      Hcal_module_radius               = Hcal_inner_radius + totalThickness_Hcal_Barrel;
 
   double      Hcal_Barrel_rotation             = lcdd.constant<double>("Hcal_Barrel_rotation");
 
@@ -72,12 +73,21 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   // ==========================================================================
 
   // Hcal Barrel module shapers
-  PolyhedraRegular polyhedra_shaper("polyhedra",numSides,Hcal_inner_radius,Hcal_module_radius,detZ*2);
-  Tube             tube_shaper(0.0,Hcal_outer_radius, detZ, 0.0, 2.0*M_PI);
+  PolyhedraRegular polyhedra_shaper("polyhedra",numSides,Hcal_inner_radius,Hcal_module_radius,detZ*2.);
+  Tube             tube_shaper(0.,Hcal_outer_radius, detZ, 0., 2.*M_PI);
+  
+  // keep the envelope rotation as the same as the stave
+  // the stave number can be changed in the compact XML.
+  Rotation rot(M_PI/2. - M_PI/numSides,0,0);
 
   // Create Hcal Barrel volume with material Steel235 
-  IntersectionSolid barrelModuleSolid(tube_shaper,polyhedra_shaper,Rotation(M_PI/numSides,0,0));
+  IntersectionSolid barrelModuleSolid(tube_shaper,polyhedra_shaper,rot);
+  
   Volume           envelopeVol(det_name+"_envelope",barrelModuleSolid,Steel235);
+
+  // Set envelope volume attributes.
+  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+
 
   // ========= Create Hcal Barrel Chmaber (i.e. Layers) =======================
   // It will be the sub volume for placing the slices.
@@ -86,26 +96,23 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 
   // create Layer (air) and place the slices (Polystyrene,Cu,FR4,air) into it. 
   // place the Layer into the HcalBarrel envelope (Steel235).
-  double innerAngle      = 2*M_PI/numSides;
-  double halfInnerAngle  = innerAngle/2;
-  double tan_inner       = std::tan(halfInnerAngle) * 2;
+  double innerAngle      = 2.*M_PI/numSides;
+  double halfInnerAngle  = innerAngle/2.;
+  double tan_inner       = std::tan(halfInnerAngle) * 2.;
   double cos_inner       = std::cos(halfInnerAngle);
 
   double innerFaceLen    = (Hcal_inner_radius + Hcal_radiator_thickness) * tan_inner;
 
-  double layerOuterAngle = (M_PI-innerAngle)/2;
-  double layerInnerAngle = (M_PI/2 - layerOuterAngle);
+  double layerOuterAngle = (M_PI-innerAngle)/2.;
+  double layerInnerAngle = (M_PI/2. - layerOuterAngle);
 
   // First Hcal Barrel Chamber position, start after first radiator
-  double layer_pos_y     = Hcal_inner_radius + Hcal_radiator_thickness;                      
-  double layer_dim_x     = innerFaceLen/2 - gap/2;
+  double layer_pos_x     = Hcal_inner_radius + Hcal_radiator_thickness;                      
+  double layer_dim_y     = innerFaceLen/2. - gap/2.;
 
   // Create Hcal Barrel Chamber without radiator
   // Place into the Hcal Barrel envelope, after each radiator 
   int layer_num = 0;
-  Assembly staveVol("stave");
-  PlacedVolume pv;
-
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t   x_layer = c;
     int          repeat = x_layer.repeat();          // Get number of layers.
@@ -117,22 +124,23 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
       DetElement  layer(layer_name,_toString(layer_num,"layer%d"),x_det.id());
 
       // Layer position in Z within the stave.
-      layer_pos_y += layer_thickness / 2.0;
+      layer_pos_x += layer_thickness/2.;
       // Active Layer box & volume
-      double active_layer_dim_x = layer_dim_x;
-      double active_layer_dim_y = (detZ-Hcal_lateral_structure_thickness)/2.;
-      double active_layer_dim_z = layer_thickness/2.0;
+      double active_layer_dim_x = layer_thickness/2.;
+      double active_layer_dim_y = layer_dim_y;
+      double active_layer_dim_z = (detZ-Hcal_lateral_structure_thickness)/2.;
 
       // The same Layer will be filled with skices, 
       // and placed into the HcalBarrel 16 times: 8 Staves * 2 modules: TODO 32 times.
       Volume layer_vol(layer_name, Box(active_layer_dim_x,active_layer_dim_y,active_layer_dim_z), air);
+
 
       // ========= Create sublayer slices =========================================
       // Create and place the slices into Layer
       // ==========================================================================
 
       // Create the slices (sublayers) within the Hcal Barrel Chamber.
-      double slice_pos_z = -(layer_thickness / 2);
+      double slice_pos_x = -(layer_thickness/2.);
       int slice_number = 0;
       for(xml_coll_t k(x_layer,_U(slice)); k; ++k)  {
 	xml_comp_t x_slice = k;
@@ -141,11 +149,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 	Material slice_material  = lcdd.material(x_slice.materialStr());
 	DetElement slice(layer,_toString(slice_number,"slice%d"),x_det.id());
 
-	slice_pos_z += slice_thickness / 2;
+	slice_pos_x += slice_thickness/2.;
 
 	// Slice volume & box
-	double slice_dim_x = active_layer_dim_x - Hcal_layer_air_gap ;
-	Volume slice_vol(slice_name,Box(slice_dim_x,active_layer_dim_y,slice_thickness/2.0),slice_material);
+	double slice_dim_y = active_layer_dim_y - Hcal_layer_air_gap ;
+	Volume slice_vol(slice_name,Box(slice_thickness/2.,slice_dim_y,active_layer_dim_z),slice_material);
 
 	if ( x_slice.isSensitive() ) {
 	  sens.setType("calorimeter");
@@ -154,11 +162,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 	// Set region, limitset, and vis.
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 	// slice PlacedVolume
-	pv = layer_vol.placeVolume(slice_vol,Position(0,0,slice_pos_z));
-	pv.addPhysVolID("slice",slice_number);
-	slice.setPlacement(pv);
-	// Increment Z position for next slice.
-	slice_pos_z += slice_thickness / 2;
+	PlacedVolume slice_phv = layer_vol.placeVolume(slice_vol,Position(slice_pos_x,0.,0.));
+	slice_phv.addPhysVolID("slice",slice_number);
+
+	slice.setPlacement(slice_phv);
+	// Increment x position for next slice.
+	slice_pos_x += slice_thickness/2.;
 	// Increment slice number.
 	++slice_number;             
       }
@@ -175,62 +184,65 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
       // Acording to the number of staves and modules,
       // Place the same Layer into the HcalBarrel envelope
       // with the right position and rotation.
+      for(int stave_num = 0; stave_num < numSides; stave_num++){
+	double ds = double(stave_num);
+	double delte_phi = M_PI/2. - innerAngle*ds;
+	string stave_layer = _toString(stave_num,"stave%d_layer");
+	// Layer physical volume.
+	double layer_pos_z = active_layer_dim_z + Hcal_lateral_structure_thickness;
+	for(int module_num = 0; module_num < 2; module_num++)
+	  {
+	    layer_pos_z = (module_num==0)?layer_pos_z:-layer_pos_z;
+	    PlacedVolume layer_phv = envelopeVol.placeVolume(layer_vol,
+							     Transform3D(Rotation(delte_phi,0.,0.),
+									 Translation3D(layer_pos_x*std::cos(delte_phi),
+										       layer_pos_x*std::sin(delte_phi),
+										       layer_pos_z)));
+							     
+	    // registry the ID of Layer, stave and module
+	    layer_phv.addPhysVolID("layer",layer_num);
+	    layer_phv.addPhysVolID("stave",stave_num);
+	    layer_phv.addPhysVolID("module",module_num);
+	    // then setPlacement for it.
+	    layer.setPlacement(layer_phv);
 
-      // Layer physical volume.
-      double layer_pos_z = active_layer_dim_y + Hcal_lateral_structure_thickness;
-      for(int module_num=0;module_num<2;module_num++)   {
-	layer_pos_z = (module_num==0)?layer_pos_z:-layer_pos_z;
-	Position l_pos(0,layer_pos_y-Hcal_inner_radius,layer_pos_z);
-	pv = staveVol.placeVolume(layer_vol,Transform3D(RotationX(M_PI/2),l_pos));
-	// registry the ID of Layer, stave and module
-	pv.addPhysVolID("layer",layer_num).addPhysVolID("module",module_num);
-	// then setPlacement for it.
-	layer.setPlacement(pv);
+	  }
       }
- 
+
+
       // ===== Prepare for next layer (i.e. next Chamber) =========================
       // Prepare the chamber placement position and the chamber dimension
       // ==========================================================================
 
       // Prepare for next Layer
-      // Increment the layer_pos_y, and calculate the next layer_dim_x
+      // Increment the layer_pos_x, and calculate the next layer_dim_y
       // Place Hcal Barrel Chamber after each radiator 
-      layer_pos_y += layer_thickness / 2;
-      layer_pos_y += Hcal_radiator_thickness;
+      layer_pos_x += layer_thickness/2.;
+      layer_pos_x += Hcal_radiator_thickness;
       // Increment the layer X dimension.
-      if((layer_pos_y + layer_thickness ) < (Hcal_outer_radius - Hcal_back_plate_thickness)* cos_inner)
-	layer_dim_x += (layer_thickness + Hcal_radiator_thickness) * std::tan(layerInnerAngle);
+      if((layer_pos_x + layer_thickness ) < (Hcal_outer_radius - Hcal_back_plate_thickness)* cos_inner)
+	layer_dim_y += (layer_thickness + Hcal_radiator_thickness) * std::tan(layerInnerAngle);
       else
-	layer_dim_x = std::sqrt((Hcal_outer_radius-Hcal_radiator_thickness)
+	layer_dim_y = std::sqrt((Hcal_outer_radius-Hcal_radiator_thickness)
 				*(Hcal_outer_radius-Hcal_radiator_thickness)
-				- layer_pos_y*layer_pos_y) - gap/2;
+				- layer_pos_x*layer_pos_x) - gap/2.;
       // Increment the layer number.
       ++layer_num;         
     }
   }
 
-  // Now place all staves
-  for(int stave_num=0;stave_num<numSides;stave_num++)  {
-    double r = Hcal_inner_radius+Hcal_radiator_thickness;
-    double phi = (2.*M_PI/numSides)*stave_num;
-    Position pos(r*std::sin(phi),r*std::cos(phi),0);
-    pv = envelopeVol.placeVolume(staveVol,Transform3D(Rotation(phi,M_PI,0),pos));
-    // registry the ID of Layer, stave and module
-    pv.addPhysVolID("stave",stave_num);
-  }
 
   // =========== Place Hcal Barrel envelope ===================================
   // Finally place the Hcal Barrel envelope into the world volume.
   // Registry the system ID.
   // ==========================================================================
 
-  // Set envelope volume attributes.
-  envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   // Place Hcal Barrel volume into the world volume
-  pv = motherVol.placeVolume(envelopeVol,Rotation(0,0,Hcal_Barrel_rotation));
+  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0.,0.,Hcal_Barrel_rotation));
+
   // registry the system id
-  pv.addPhysVolID("system", sdet.id());
-  sdet.setPlacement(pv);
+  env_phv.addPhysVolID("system", sdet.id());
+  sdet.setPlacement(env_phv);
   return sdet;
 }
 
