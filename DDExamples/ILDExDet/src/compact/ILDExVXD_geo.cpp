@@ -10,7 +10,7 @@
 #include "VXDData.h"
 
 // -- lcio 
-#include <UTIL/BitField64.h>
+//#include <UTIL/BitField64.h>
 #include <UTIL/ILDConf.h>
 
 using namespace std;
@@ -28,14 +28,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
 
-  // setup the encoder
-  UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
-  encoder.reset() ;  // reset to 0
-  
-  encoder[ILDCellID0::subdet] = ILDDetID::VXD ; 
-  encoder[ILDCellID0::side] = 0 ;
-  encoder[ILDCellID0::sensor] = 0 ;
-  
+  // // setup the encoder
+  // UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
+  // encoder.reset() ;  // reset to 0
+  // encoder[ILDCellID0::subdet] = ILDDetID::VXD ; 
+  // encoder[ILDCellID0::side] = 0 ;
+  // encoder[ILDCellID0::sensor] = 0 ;
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
@@ -106,7 +104,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     layer.RadLength    = sensmat->GetMaterial()->GetRadLen();
     vxd_data->_sVec.push_back(layer);
 
-    encoder[ILDCellID0::layer]  = layer_id ; 
+    //    encoder[ILDCellID0::layer]  = layer_id ; 
 
 
     // Assembly layer_assembly( name + _toString( layer_id,"layer_assembly_%d" ) ) ;
@@ -136,15 +134,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       //      if( dj < 3 ) 
 
       // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
-      encoder[ILDCellID0::module]  = j  ;
-      int cellID0 = encoder.lowWord() ;
+      //      encoder[ILDCellID0::module]  = j  ;
+      //      int cellID0 = encoder.
+      // lcdd.pickMotherVolume(vxd).placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
 
-       // lcdd.pickMotherVolume(vxd).placeVolume(laddervol,pos, rot   ).addPhysVolID("CellID0", cellID0 )  ;
 
       pv = assembly.placeVolume( laddervol,Transform3D(RotationZ(phi),pos));
-      pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ) ;
-
-	//.addPhysVolID("CellID0", cellID0 )   ;
+      pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 )   ;
 
       //pv = assembly.placeVolume( sensvol, pos, rot ) ;
 
@@ -154,7 +150,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume mother =  lcdd.pickMotherVolume(vxd) ;
 
   pv = mother.placeVolume(assembly);
-  pv.addPhysVolID( "system", x_det.id() ) ;
+
+  pv.addPhysVolID( "system", x_det.id() ).addPhysVolID("side",0 )  ;
   
   vxd.setPlacement(pv);
   return vxd;
