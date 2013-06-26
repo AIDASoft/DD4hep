@@ -25,6 +25,12 @@
         verbose="true" 
         hit_aggregation="position">
     </sd>
+    <sd name="HcalEndcap"
+        type="Geant4Calorimeter"
+        ecut="0.5*keV"
+        verbose="true"
+        hit_aggregation="position">
+    </sd>
 
   </sensitive_detectors>
 
