@@ -39,6 +39,8 @@ namespace {
     o->maxBit = 0;
     o->fieldIDs.clear();
     o->fieldMap.clear();
+    o->description = dsc ;
+
     for(Elements::const_iterator i=elements.begin();i!=elements.end();++i)  {
       const string& s = *i;
       f.clear();
@@ -48,7 +50,10 @@ namespace {
       field.first  = f.size() == 3 ? ::atoi(f[1].c_str()) : pos;
       field.second = f.size() == 3 ? ::atoi(f[2].c_str()) : ::atoi(f[1].c_str());
       field.second = ::abs(field.second);
+
+      //FG:   field.mask = ( ( 0x0001LL << (field.second) ) - 1 ) << field.first ;
       field.mask   = ~((~0x0ull<<(64-field.second))>>(64-field.second)<<(64-field.first-field.second));
+
       pos = field.first + ::abs(field.second);
       if ( pos>o->maxBit ) o->maxBit = pos;
       o->fieldIDs.push_back(make_pair(o->fieldMap.size(),f[0]));
