@@ -233,22 +233,16 @@
     <readouts>
         <readout name="VXDCollection">
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
-	    <!-- system:6,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
-         <!--segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/-->
         </readout>
         <readout name="SITCollection">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
-            <!--id>system:5,side:-2,layer:9,module:8,sensor:8</id-->
-             <!--segmentation type="ProjectiveCylinder"  phiBins="617" thetaBins="21"/-->
-            <!--id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
+	    <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
         </readout>
         <readout name="TPCCollection">
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
-            <!--id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id-->
         </readout>
 
         <readout name="HcalBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="30.0*mm" gridSizeY="30.0*mm" />
+            <segmentation type="RegularNgonCartesianGridXY" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" />
             <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalEndcapHits">
