@@ -123,10 +123,11 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
     xml_h obj;
     TGeoMaterial* m = medium->GetMaterial();
     double        d = m->GetDensity(); //*(gram/cm3);
+    if ( d < 1e-25 ) d = 1e-25;
     mat = xml_elt_t(geo.doc,_U(material));
     mat.setAttr(_U(name),medium->GetName());
     mat.append(obj=xml_elt_t(geo.doc,_U(D)));
-    obj.setAttr(_U(value),m->GetDensity()  /*  *(g/cm3)  */);
+    obj.setAttr(_U(value),d  /*  *(g/cm3)  */);
     obj.setAttr(_U(unit),"g/cm3");
     obj.setAttr(_U(type),"density");
 
@@ -527,6 +528,7 @@ xml_h LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix* t
       pos.setAttr(_U(x),tr[0]*CM_2_MM);
       pos.setAttr(_U(y),tr[1]*CM_2_MM);
       pos.setAttr(_U(z),tr[2]*CM_2_MM);
+      pos.setAttr(_U(unit),"mm");
     }
     else if ( geo.identity_pos )  {
       pos = geo.identity_pos;
@@ -537,6 +539,7 @@ xml_h LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix* t
       geo.identity_pos.setAttr(_U(x),0);
       geo.identity_pos.setAttr(_U(y),0);
       geo.identity_pos.setAttr(_U(z),0);
+      geo.identity_pos.setAttr(_U(unit),"mm");
       pos = geo.identity_pos;
       geo.checkPosition("identity_pos",0);
     }
