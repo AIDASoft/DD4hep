@@ -17,6 +17,8 @@
 #include <iomanip>
 
 #include "DDG4/Geant4Hits.h" 
+#include "DD4hep/VolumeManager.h"
+#include "DD4hep/Volumes.h"
 
 //--- lcio
 #include "lcio.h"
@@ -75,8 +77,8 @@ lcio::SimCalorimeterHitImpl* createSimCalorimeterHit( DD4hep::Simulation::Geant4
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-ILDExEventAction::ILDExEventAction(ILDExRunAction* run)
-:runAct(run),printModulo(1),eventMessenger(0)
+ILDExEventAction::ILDExEventAction(ILDExRunAction* run, DD4hep::Geometry::LCDD& lcdd )
+  :runAct(run),printModulo(1),eventMessenger(0), _lcdd( lcdd ) 
 {
   eventMessenger = new ILDExEventActionMessenger(this);
 }
@@ -177,12 +179,55 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
       
 
 
+
+ 
+      // ------ get the readout/cellId description string from first element:
+
+          
+      std::string cellIDDesc("") ;
+      
+      DD4hep::Geometry::VolumeManager vm = _lcdd.volumeManager();
+
+      DD4hep::Geometry::VolumeManager::VolumeID volume_id = dynamic_cast<DD4hep::Simulation::Geant4Hit*>( hCol->GetHit(0) )->cellID ;   
+      
+      //      std::cout << " looking up placed volume for id " <<  std::hex << volume_id << std::dec  << std::endl ; 
+
+      const DD4hep::Geometry::PlacedVolume & pv =  vm.lookupPlacement ( volume_id ) ;
+
+
+#if DEBUG
+      const  DD4hep::Geometry::DetElement & detElem =  vm.lookupDetElement( volume_id) ;
+      if ( detElem.isValid() ) 
+	std::cout << "  ILDExEventAction::EndOfEventAction  --- for detector element : "  << detElem.name()  << std::endl ;
+      else
+	std::cout << "  ILDExEventAction::EndOfEventAction  --- detector element not found "   << std::endl ;
+#endif
+      
+      
+      if( pv.isValid() && pv.volume().isSensitive() ) {
+
+	DD4hep::Geometry::Volume            vol    = pv.volume();
+	DD4hep::Geometry::SensitiveDetector sd     = vol.sensitiveDetector();
+	DD4hep::Geometry::Readout           ro     = sd.readout();
+	DD4hep::Geometry::IDDescriptor      iddesc = ro.idSpec();
+	
+
+	cellIDDesc = iddesc.toString() ;
+
+      } else {
+
+	std::cout << " **** WARNING: could not get sensitive placedVolume for cellID : " << std::hex << volume_id << std::dec << std::endl ;
+      }
+
+
       if( isTracker ) { //-----------------------------------------------------------------
 
 	lcio::LCCollectionVec* col = new lcio::LCCollectionVec( lcio::LCIO::SIMTRACKERHIT ) ;
 
 	// the encoder sets the correct cellid encoding string
-	ILDCellIDEncoder<SimTrackerHit> idDec( col ) ;	
+	// ILDCellIDEncoder<SimTrackerHit> idDec( col ) ;	
+
+	UTIL::CellIDEncoder<SimTrackerHit> idDec( cellIDDesc, col ) ;  
 
 	for(int j=0,N= hCol->GetSize() ; j<N ; ++j) {
 	  
@@ -199,10 +244,13 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
 	lcEvt->addCollection( col , hCol->GetName() ) ; 
       } //-----------------------------------------------------------------
 
+
       if( isCalorimeter ) {
 
 	lcio::LCCollectionVec* col = new lcio::LCCollectionVec( lcio::LCIO::SIMCALORIMETERHIT ) ;
 	
+	UTIL::CellIDEncoder<SimCalorimeterHit> idDec( cellIDDesc, col ) ;  
+
 	col->setFlag( UTIL::make_bitset32(  LCIO::CHBIT_LONG, LCIO::CHBIT_STEP ) ); 
 
 #if DEBUG

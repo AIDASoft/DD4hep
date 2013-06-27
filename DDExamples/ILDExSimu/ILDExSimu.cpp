@@ -67,7 +67,7 @@ int main(int argc,char** argv)
 
 //**************************************************************
 
-  bool isBatchMode = ( std::string( argv[1] ) != "-i" )  ; // && !isReadGDML  ) ;
+  bool isBatchMode = ( std::string( argv[1] ) != "-i" )  ; 
 
   int argStart = ( isBatchMode ?       1 : 2 ) ; 
   int argEnd   = ( isBatchMode ?  argc-1 : argc ) ; 
@@ -113,7 +113,7 @@ int main(int argc,char** argv)
   runManager->SetUserAction(run_action);
   
   //
-  ILDExEventAction* event_action = new ILDExEventAction(run_action);
+  ILDExEventAction* event_action = new ILDExEventAction(run_action, lcdd );
   runManager->SetUserAction(event_action);
   //
   G4UserSteppingAction* stepping_action =

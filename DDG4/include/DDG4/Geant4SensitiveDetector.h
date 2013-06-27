@@ -97,6 +97,10 @@ namespace DD4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       virtual bool buildHits(G4Step* /* step */,G4TouchableHistory* /* history */) { return false; }
 
+
+      /// Returns the volumeID of the sensitive volume corresponding to the step.
+      long long getVolumeID(G4Step* step ) ;
+
       /** G4VSensitiveDetector interface: Method invoked at the begining of each event. 
        *  The hits collection(s) created by this sensitive detector must
        *  be set to the G4HCofThisEvent object at one of these two methods.
@@ -152,6 +156,8 @@ namespace DD4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       virtual bool buildHits(G4Step* step,G4TouchableHistory* history);
     };
+
+
 
   }    // End namespace Simulation
 }      // End namespace DD4hep

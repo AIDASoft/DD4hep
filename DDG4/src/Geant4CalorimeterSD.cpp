@@ -35,10 +35,19 @@ namespace DD4hep {  namespace Simulation {
     Geant4CalorimeterHit* hit=find(collection(0),HitPositionCompare<Geant4CalorimeterHit>(pos));
 
     if ( !hit ) {
-      collection(0)->insert(hit=new Geant4CalorimeterHit(pos));
+
+      hit = new Geant4CalorimeterHit(pos) ;
+
+      // set the cellID to the volumeID which is the or 
+      // of all physicalVolIDs set along the path
+      // of the current placed volume
+      hit->cellID  = getVolumeID( step ) ;
+      
+      collection(0)->insert(hit) ;
     }
     hit->truth.push_back(contrib);
     hit->energyDeposit += contrib.deposit;
+    
     return true;
   }
   typedef Geant4GenericSD<Calorimeter> Geant4Calorimeter;
@@ -72,6 +81,7 @@ namespace DD4hep {  namespace Simulation {
     /// Method for generating hit(s) using the information of G4Step object.
     virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* history) {
       G4Track * track =  step->GetTrack();
+
       // check that particle is optical photon:
       if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
 	return this->Geant4GenericSD<Calorimeter>::ProcessHits(step,history);

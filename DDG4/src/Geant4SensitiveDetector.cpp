@@ -162,3 +162,18 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   }
 
 }
+
+
+long long Geant4SensitiveDetector::getVolumeID(G4Step* step ){
+  
+  Geant4Mapping&    mapping = Geant4Mapping::instance();
+  Geant4StepHandler stepH(step);
+  const G4VPhysicalVolume* pv  = stepH.volume(stepH.pre);
+  Geometry::PlacedVolume placed = mapping.placement(pv);
+  Geometry::VolumeManager vm = m_lcdd.volumeManager();
+  
+  return ( placed.isValid() ?  vm.lookupID( placed ) : 0 )   ;
+}
+
+
+
