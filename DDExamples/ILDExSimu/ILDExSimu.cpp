@@ -26,8 +26,6 @@
 #include "ILDExSteppingVerbose.h"
 
 #include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4/Geant4GDMLDetector.h"
-
 #include "DD4hep/LCDD.h"
 
 // -- lcio --
@@ -61,8 +59,7 @@ int main(int argc,char** argv)
     std::cout << " --- Usage: \n " 
 	      << "  [1] ./bin/ILDExSimu  file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml run1_g4.mac \n"
 	      << "  [2] ./bin/ILDExSimu  -i file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml \n"
-	      << "  [3] ./bin/ILDExSimu  -g ./ILD_toy.gdml \n" 
-	      << "  [1]: batch mode - [2]: interactive [3]: interactive reading a gdml file " << std::endl ;
+	      << "  [1]: batch mode - [2]: interactive " << std::endl ;
     exit( 0 ) ;
   }
 
@@ -70,37 +67,22 @@ int main(int argc,char** argv)
 
 //**************************************************************
 
-  bool isReadGDML  = ( std::string( argv[1] ) == "-g" ) ;
-
-  bool isBatchMode = ( std::string( argv[1] ) != "-i" && !isReadGDML  ) ;
+  bool isBatchMode = ( std::string( argv[1] ) != "-i" )  ; // && !isReadGDML  ) ;
 
   int argStart = ( isBatchMode ?       1 : 2 ) ; 
   int argEnd   = ( isBatchMode ?  argc-1 : argc ) ; 
 
-  if( ! isReadGDML ) {
+  for(int i=argStart; i < argEnd ; ++i ) {
     
-    for(int i=argStart; i < argEnd ; ++i ) {
-      
-      // We need to construct the geometry at this level already
-      lcdd.fromCompact(argv[i]);
-    }
+    // We need to construct the geometry at this level already
+    lcdd.fromCompact(argv[i]);
   }
 
   //**************************************************************
 
   // Get the detector constructed
   //
-  //  G4VUserDetectorConstruction* detector  = ( isReadGDML ?    new Geant4GDMLeDetector( argv[2] )   :   new Geant4DetectorConstruction(lcdd)  ) ;
-  G4VUserDetectorConstruction* detector  =  0 ;
-  if( isReadGDML )  {
-    
-    detector  = new Geant4GDMLDetector( argv[2] ) ;
-
-  } else {
-    
-    detector  =  new Geant4DetectorConstruction( lcdd )   ;
-
-  }
+  G4VUserDetectorConstruction* detector  =  new Geant4DetectorConstruction( lcdd )   ;
 
   // User Verbose output class
   //
@@ -118,28 +100,25 @@ int main(int argc,char** argv)
   runManager->SetUserInitialization(physics);
   
 
-  if( ! isReadGDML ) {
-    // Set user action classes
-    //
-    G4VUserPrimaryGeneratorAction* gen_action = 
-      new ILDExPrimaryGeneratorAction(lcdd);
-    runManager->SetUserAction(gen_action);
-    
-    //---
-    ILDExRunAction* run_action = new ILDExRunAction;  
-    run_action->runData.lcioWriter = lcWrt ;
-    run_action->runData.detectorName = lcdd.header().name() ;
-    runManager->SetUserAction(run_action);
-    
-    //
-    ILDExEventAction* event_action = new ILDExEventAction(run_action);
-    runManager->SetUserAction(event_action);
-    //
-    G4UserSteppingAction* stepping_action =
-      new ILDExSteppingAction(event_action);
-    runManager->SetUserAction(stepping_action);
-    
-  }
+  // Set user action classes
+  //
+  G4VUserPrimaryGeneratorAction* gen_action = 
+    new ILDExPrimaryGeneratorAction(lcdd);
+  runManager->SetUserAction(gen_action);
+  
+  //---
+  ILDExRunAction* run_action = new ILDExRunAction;  
+  run_action->runData.lcioWriter = lcWrt ;
+  run_action->runData.detectorName = lcdd.header().name() ;
+  runManager->SetUserAction(run_action);
+  
+  //
+  ILDExEventAction* event_action = new ILDExEventAction(run_action);
+  runManager->SetUserAction(event_action);
+  //
+  G4UserSteppingAction* stepping_action =
+    new ILDExSteppingAction(event_action);
+  runManager->SetUserAction(stepping_action);
   
   // Initialize G4 kernel
   //
