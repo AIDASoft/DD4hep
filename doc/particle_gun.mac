@@ -1,4 +1,4 @@
-##/generator/select gun
+#/generator/select gun
 /gun/pos/type Point
 /gun/pos/centre 0. 0. 0.
 /gun/ang/type iso
