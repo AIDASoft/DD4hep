@@ -19,7 +19,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   int         det_id    = x_det.id();
   string      det_name  = x_det.nameStr();
   DetElement  sdet       (det_name,det_id);
-  Assembly    assembly   (det_name);
+  Assembly    assembly   (det_name+"_assembly");
   map<string, Volume>    volumes;
   PlacedVolume pv;
 
@@ -77,7 +77,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     string     m_nam    = x_layer.moduleStr();
     Volume     m_env    = volumes[m_nam];
     string     lay_nam  = det_name+"_"+m_nam+_toString(lay_id,"_layer%d");
-    Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length()/2);
+    Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
     Volume     lay_vol   (lay_nam,lay_tub,air);       // Create the layer envelope volume.
     double     phi0     = x_layout.phi0();            // Starting phi of first module.
     double     phi_tilt = x_layout.phi_tilt();        // Phi tilt of a module.
