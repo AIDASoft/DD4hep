@@ -163,7 +163,7 @@ void* Geant4Converter::handleMaterial(const string& name, const TGeoMedium* medi
       TGeoMaterial* m = medium->GetMaterial();
       G4State       state   = kStateUndefined;
       double        density = m->GetDensity()*(gram/cm3);
-
+      if ( density < 1e-25 ) density = 1e-25;
       switch(m->GetState()) {
       case TGeoMaterial::kMatStateSolid:
 	state = kStateSolid;
@@ -487,11 +487,22 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	MyTransform3D transform(rot[0],rot[1],rot[2],trans[0]*CM_2_MM,
 				rot[3],rot[4],rot[5],trans[1]*CM_2_MM,
 				rot[6],rot[7],rot[8],trans[2]*CM_2_MM);
+	CLHEP::HepRotation rotmat=transform.getRotation();
 	if ( mother_is_assembly )  {	  // Mother is an assembly:
+	  printout(DEBUG,"Geant4Converter","++ Assembly: AddPlacedVolume: %16p dau:%s "
+		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
+		   ass_mot,g4vol->GetName().c_str(),
+		   transform.dx(),transform.dy(),transform.dz(),
+		   rotmat.getPhi(),rotmat.getTheta(),rotmat.getPsi());
 	  ass_mot->AddPlacedVolume(g4vol,transform);
 	  return 0;
 	}
 	else if ( daughter_is_assembly )  {
+	  printout(DEBUG,"Geant4Converter","++ Assembly: makeImprint: %16p dau:%s "
+		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
+		   ass_dau,g4mot->GetName().c_str(),
+		   transform.dx(),transform.dy(),transform.dz(),
+		   rotmat.getPhi(),rotmat.getTheta(),rotmat.getPsi());
 	  ass_dau->MakeImprint(g4mot,transform,copy,m_checkOverlaps);
 	  return 0;
 	}
@@ -507,9 +518,17 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
 	G4ThreeVector pos(trans[0]*CM_2_MM,trans[1]*CM_2_MM,trans[2]*CM_2_MM);
 	if ( mother_is_assembly )  {	  // Mother is an assembly:
 	  ass_mot->AddPlacedVolume(g4vol,pos,0);
+	  printout(DEBUG,"Geant4Converter","++ Assembly: AddPlacedVolume: %16p dau:%s "
+		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
+		   ass_mot,g4vol->GetName().c_str(),
+		   pos.x(),pos.y(),pos.z(),0,0,0);
 	  return 0;
 	}
 	else if ( daughter_is_assembly )  {
+	  printout(DEBUG,"Geant4Converter","++ Assembly: makeImprint: %16p dau:%s "
+		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
+		   ass_dau,g4mot->GetName().c_str(),
+		   pos.x(),pos.y(),pos.z(),0,0,0);
 	  ass_dau->MakeImprint(g4mot,pos,0,copy,m_checkOverlaps);
 	  return 0;
 	}
