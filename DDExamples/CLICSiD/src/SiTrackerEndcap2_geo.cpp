@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string      det_name  = x_det.nameStr();
   bool        reflect   = x_det.reflect(false);
   DetElement  sdet        (det_name,det_id);
-  Assembly    assembly    (det_name);
+  Assembly    assembly    (det_name+"_assembly");
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
   int         m_id=0, c_id=0, n_sensor=0;
   map<string,Volume> modules;
@@ -59,7 +59,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       pv.addPhysVolID(_U(component),c_id);
       if ( c.isSensitive() ) {
 	sdet.check(n_sensor > 1,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");
-	pv.addPhysVolID("sensor",c_id);
+	pv.addPhysVolID("sensor",n_sensor);
 	c_vol.setSensitiveDetector(sens);
 	++n_sensor;
       }
