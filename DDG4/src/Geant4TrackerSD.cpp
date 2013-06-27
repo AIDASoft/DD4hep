@@ -62,10 +62,12 @@ namespace DD4hep {  namespace Simulation {
 	  Geometry::Readout           ro     = sd.readout();
 	  Geometry::IDDescriptor      iddesc = ro.idSpec();
 	  
-
 	  //-----  use a BitField64 object to store the cellID in the Linear collider convention
 	  BitField64 bf( iddesc.toString()  ) ; 
 
+#define test_cellID 0
+#if test_cellID  
+	  
 	  for( unsigned i=0, N=bf.size() ;i<N;++i){
 	    
 	    BitFieldValue& v = bf[i] ;
@@ -82,18 +84,27 @@ namespace DD4hep {  namespace Simulation {
 	    //	    b[i] = iddesc.field( b[i].name() ).decode( cell_id )  ; 
 	  }
 	  
-	  // G4cout << "---  IDDescriptor: " << iddesc.toString() 
-	  // 	 << " BitField64 : " <<  bf  
-	  // 	 <<   std::endl ; 
-	  
-	  // Geometry::IDDescriptor::Field modFld = iddesc.field("module");
-	  // int mod_id = modFld.decode( cell_id );
-	  // int layer  = iddesc.field("layer").decode( cell_id )  ;	  
-	  // G4cout << "---  layer " << layer << "  ---- module: " << mod_id << std::endl ;
+	   G4cout << "---  IDDescriptor: " << iddesc.toString() 
+		  <<   std::endl ; 
 	  
 	  
+	  BitField64 testBF( iddesc.toString()  ) ; 
+	  testBF.setValue( cell_id ) ;
+	  G4cout << "---  testing BitField64 testBF \n "  << testBF 
+		 << " \n           bf from IDDescriptor : " << bf << std::endl ;
+	 
+
+	  assert( testBF.getValue() == bf.getValue() ) ;
+
+#else	  
+
+	  bf.setValue( cell_id ) ;   // this sets the unused high bits to 0 !
+#endif
+
+
 	  cellID = bf.lowWord() ;
-	  
+
+
 	} else {
 	  
 	  G4cerr << "**ERROR** Geant4GenericSD<Tracker>::buildHits - called for insensitive volume: " 

@@ -31,8 +31,8 @@
 #include "DD4hep/LCDD.h"
 
 // -- lcio --
-#include <UTIL/BitField64.h>
-#include <UTIL/ILDConf.h>
+// #include <UTIL/BitField64.h>
+// #include <UTIL/ILDConf.h>
 #include "lcio.h"
 #include "IO/LCWriter.h"
 

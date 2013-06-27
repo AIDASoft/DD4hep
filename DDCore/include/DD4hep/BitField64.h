@@ -77,9 +77,9 @@ namespace DD4hep {
      */
     long64 getValue() const { return _value ; }
     
-    /** Set a new 64bit value 
+    /** Set a new 64bit value  - bits not used in description are set to 0.
      */
-    void  setValue(long64 value ) { _value = value ; }
+    void  setValue(long64 value ) { _value = ( _joined & value ) ; }
     
     /** Reset - same as setValue(0) - useful if the same encoder is used for many objects.
      */

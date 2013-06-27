@@ -108,6 +108,7 @@ namespace {
     }
     pair<VolumeID,VolumeID> encoding(const IDDescriptor iddesc, const PlacedVolume::VolIDs& ids )  const  {
       VolumeID volume_id = ~0x0ull, mask = 0;
+      //fg: default value 0 for volids does not seem to work (!?):  VolumeID volume_id = 0, mask = 0;
       for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end(); ++i) {
 	const PlacedVolume::VolID& id = (*i);
 	IDDescriptor::Field f = iddesc.field(id.first);

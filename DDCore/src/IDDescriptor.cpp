@@ -51,8 +51,8 @@ namespace {
       field.second = f.size() == 3 ? ::atoi(f[2].c_str()) : ::atoi(f[1].c_str());
       field.second = ::abs(field.second);
 
-      //FG:   field.mask = ( ( 0x0001LL << (field.second) ) - 1 ) << field.first ;
-      field.mask   = ~((~0x0ull<<(64-field.second))>>(64-field.second)<<(64-field.first-field.second));
+      field.mask = ~ ( ( ( 0x0001LL << (field.second) ) - 1 ) << field.first ) ;
+      //field.mask   = ~((~0x0ull<<(64-field.second))>>(64-field.second)<<(64-field.first-field.second));
 
       pos = field.first + ::abs(field.second);
       if ( pos>o->maxBit ) o->maxBit = pos;
