@@ -18,7 +18,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   string     det_type  = x_det.typeStr();
   Material   air       = lcdd.air();
   DetElement sdet        (det_name,x_det.id());
-  Assembly   assembly    (det_name);
+  Assembly   assembly    (det_name+"_assembly");
   PlacedVolume pv;
   int n = 0;
 
