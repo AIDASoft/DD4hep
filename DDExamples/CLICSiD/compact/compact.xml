@@ -607,7 +607,7 @@
             </layer>
         </detector>
         
-        <detector id="15" name="SiTrackerForward" type="SiTrackerEndcap2" readout="SiTrackerForwardHits">    
+        <detector id="5" name="SiTrackerForward" type="SiTrackerEndcap2" readout="SiTrackerForwardHits">    
             <comment>Forward Tracker inside Vertex Support Barrel</comment>
             <module name="SiTrackerForwardModule1">
                 <trd x1="ForwardTracker_rmin1 * tan(pi/(ForwardTrackerModules-0.1))" x2="ForwardTracker_rmax * sin(pi/(ForwardTrackerModules-0.1))" z="(ForwardTracker_rmax - ForwardTracker_rmin1) / 2" />
@@ -637,7 +637,7 @@
 
 
         <comment>Calorimeters</comment>
-        <detector id="5" name="EcalBarrel" type="EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
+        <detector id="6" name="EcalBarrel" type="EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
             <comment>EM Calorimeter Barrel</comment>
             <dimensions numsides="(int) CaloSides" rmin="EcalBarrel_rmin" z="EcalBarrel_zmax*2" />
             <staves vis="EcalBarrelStaveVis"/>
@@ -666,7 +666,7 @@
         </detector>
 
 
-        <detector id="6" name="EcalEndcap" type="PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
+        <detector id="7" name="EcalEndcap" type="PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
             <comment>EM Calorimeter Endcaps</comment>
             <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
             <layer repeat="1">
@@ -693,7 +693,7 @@
             </layer>
         </detector>
 
-        <detector id="7" name="HcalBarrel" type="PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
+        <detector id="8" name="HcalBarrel" type="PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
             <comment>Hadron Calorimeter Barrel</comment>
             <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="EcalBarrel_zmax*2"/>
             <staves vis="HcalBarrelStavesVis"/>
@@ -705,7 +705,7 @@
         </detector>
 
 
-        <detector id="8" name="HcalEndcap" type="PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
+        <detector id="9" name="HcalEndcap" type="PolyhedraEndcapCalorimeter2" readout="HcalEndcapHits" vis="HcalEndcapVis" calorimeterType="HAD_ENDCAP">
             <comment>Hadron Calorimeter Endcaps</comment>
             <dimensions numsides="(int) CaloSides" zmin="HcalEndcap_zmin" rmin="HcalEndcap_rmin" rmax="HcalEndcap_rmax" />
             <layer repeat="(int) HcalEndcap_layers">
@@ -714,7 +714,9 @@
                 <slice material = "Air" thickness = "0.15*cm" />
             </layer>
         </detector>
-        <detector id="9" name="HcalPlug" type="PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
+
+
+        <detector id="10" name="HcalPlug" type="PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
             <comment>Hadron Calorimeter Plug</comment>
             <dimensions numsides="(int) CaloSides" zmin="SolenoidCoilOuterZ" rmin="MuonEndcap_rmin" rmax="HcalEndcap_rmax" />
             <layer repeat="1" vis="MuonEndcapLayerVis">
@@ -739,7 +741,7 @@
         </detector>
 
 
-        <detector id="10" name="MuonBarrel" type="PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
+        <detector id="11" name="MuonBarrel" type="PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
             <comment>Muon Calorimeter Barrel</comment>
             <dimensions numsides="(int) MuonSides" rmin="MuonBarrel_rmin" z="MuonBarrel_zmax * 2"/>
             <staves vis="MuonBarrelStavesVis"/>
@@ -818,7 +820,8 @@
             	<slice material="Iron" thickness="20.0*cm" vis="MuonBarrelAbsorberVis"/>
             </layer>
         </detector>
-        <detector id="11" name="MuonEndcap" type="PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
+
+        <detector id="12" name="MuonEndcap" type="PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
             <comment>Muon Calorimeter Endcaps</comment>
             <dimensions numsides="(int) MuonSides" zmin="MuonEndcap_zmin" rmin="MuonEndcap_rmin" rmax="MuonEndcap_rmax" />
             <layer repeat="(int) MuonEndcap_layers" vis="MuonEndcapLayerVis">
@@ -842,7 +845,7 @@
         </detector>
         
 
-        <detector id="12" name="LumiCal" reflect="true" type="CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
+        <detector id="13" name="LumiCal" reflect="true" type="CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
             <comment>Luminosity Calorimeter</comment>
             <dimensions inner_r = "LumiCal_rmin" inner_z = "LumiCal_zmin" outer_r = "LumiCal_rmax" />
             <layer repeat="20" >
@@ -860,7 +863,8 @@
                 <slice material = "Air"     thickness = "0.033*cm" />
             </layer>
         </detector>
-        
+
+
         <detector name="LumiReadout_Forward" type="PolyconeSupport" vis="LumiCalVis">
         	<comment>Readout for Luminosity Calorimeter</comment>
         	<material name="G10"/>
@@ -876,7 +880,7 @@
         </detector>
         
  
-        <detector id="13" name="BeamCal" reflect="true" type="ForwardDetector" readout="BeamCalHits" vis="LumiCalVis" calorimeterType="BEAM">
+        <detector id="14" name="BeamCal" reflect="true" type="ForwardDetector" readout="BeamCalHits" vis="LumiCalVis" calorimeterType="BEAM">
             <comment>Beam Calorimeter</comment>
             <dimensions outer_r="BeamCal_rmax" inner_r="0.0*cm" inner_z="BeamCal_zmin" />
             <beampipe crossing_angle="CrossingAngle" outgoing_r="OutgoingBP_radius + 0.05*cm" incoming_r="IncomingBP_radius + 0.05*cm" />
@@ -1520,32 +1524,32 @@
 
     <readouts>
         <readout name="SiTrackerEndcapHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:8,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
         </readout>        
         <readout name="SiTrackerBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:12,sensor:1,side:v32:-2,strip:20</id>
+            <id>system:8,barrel:3,layer:4,module:12,sensor:1,side:v32:-2,strip:20</id>
         </readout>
         <readout name="SiVertexBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:12,sensor:1,side:32:-2,strip:24</id>
+            <id>system:8,barrel:3,layer:4,module:12,sensor:1,side:32:-2,strip:24</id>
         </readout>
         <readout name="SiVertexEndcapHits">
-            <id>system:6,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
+            <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
         </readout>
         <readout name="EcalBarrelHits">
             <segmentation type="EcalBarrelCartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
-            <id>system:6,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
         </readout>        
         <readout name="EcalEndcapHits">
             <segmentation type="GlobalGridXY" gridSizeX="3.5" gridSizeY="3.5" />
-            <id>system:6,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalBarrelHits">
             <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalEndcapHits">
             <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalPlugHits">
             <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
@@ -1560,7 +1564,7 @@
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="SiTrackerForwardHits">
-            <id>system:6,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:28</id>
+            <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:28</id>
         </readout>
         <readout name="LumiCalHits">
             <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
