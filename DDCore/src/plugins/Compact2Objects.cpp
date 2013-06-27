@@ -682,7 +682,7 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
     if ( det.isValid() )  {
       setChildTitles(make_pair(name,det));
     }
-    printout(det.isValid() ? INFO : ERROR,"Compact","%s sibdetector:%s of type %s %s",
+    printout(det.isValid() ? INFO : ERROR,"Compact","%s subdetector:%s of type %s %s",
 	     (det.isValid() ? "++ Converted" : "FAILED    "),name.c_str(),type.c_str(),
 	     (sd.isValid() ? ("["+sd.type()+"]").c_str() : ""));
     lcdd.addDetector(det);
