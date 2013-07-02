@@ -71,7 +71,26 @@ namespace DD4hep{
     }
   }
 
-  BitFieldValue& BitFieldValue::operator=(long64 in) {
+  long64 BitFieldValue::value(long64 id) const { 
+      
+    if(  _isSigned   ) {
+
+      long64 val = ( id & _mask ) >> _offset ;
+      
+      if( ( val  & ( 1LL << ( _width - 1 ) ) ) != 0 ) { // negative value
+	  
+	val -= ( 1LL << _width );
+      }
+	
+      return val ;
+
+    } else { 
+      
+      return  ( id & _mask ) >> _offset ;
+    }
+  }
+
+   BitFieldValue& BitFieldValue::operator=(long64 in) {
     
     // check range 
     if( in < _minVal || in > _maxVal  ) {

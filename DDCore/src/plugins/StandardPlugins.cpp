@@ -64,7 +64,7 @@ DECLARE_APPLY(DD4hepXMLLoader,load_xml);
 static long load_volmgr(LCDD& lcdd,int,char**)    {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
-    imp->m_volManager = VolumeManager("World", imp->world(), Readout(), VolumeManager::TREE);
+    imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
     cout << "++ Volume manager populated and loaded." << endl;
   }
   catch(const exception& e)  {

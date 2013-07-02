@@ -854,6 +854,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
     const IDDescriptor::FieldMap& m = desc.fields();
     for(IDDescriptor::FieldMap::const_iterator i=m.begin(); i!=m.end(); ++i) {
       xml_h idfield = xml_elt_t(geo.doc,_U(idfield));
+#if 0
       const IDDescriptor::Field& f = (*i).second;
       start = f.first;
       length = f.second<0 ? -f.second : f.second;
@@ -861,6 +862,13 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
       idfield.setAttr(_U(label),(*i).first);
       idfield.setAttr(_U(length),length);
       idfield.setAttr(_U(start),start);
+#else
+      IDDescriptor::Field f = (*i).second;
+      idfield.setAttr(_U(signed),f->isSigned() ? true : false);
+      idfield.setAttr(_U(label),f->name());
+      idfield.setAttr(_U(length),(int)f->width());
+      idfield.setAttr(_U(start),(int)f->offset());
+#endif
       id.append(idfield);
     }
     id.setAttr(_U(length),length+start);

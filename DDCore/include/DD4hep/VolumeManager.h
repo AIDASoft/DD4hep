@@ -26,6 +26,9 @@ namespace DD4hep {
    */
   namespace Geometry  {
 
+    // Forward declarations
+    class LCDD;
+
     /** @class VolumeManager  VolumeManager.h DD4hep/lcdd/VolumeManager.h
      * 
      *  The VolumeManager manages the repository of sensitive physical 
@@ -119,6 +122,9 @@ namespace DD4hep {
        */
       struct Context   {
       public:
+	typedef std::vector<const TGeoNode*> Path;
+	typedef PlacedVolume::VolIDs::Base VolIDs;
+
 	/// Placement identifier
 	VolumeID      identifier;
 	/// Ignore mask of the placement identifier
@@ -133,8 +139,10 @@ namespace DD4hep {
 	TGeoHMatrix   toDetector;
 	/// The transformation of space-points to the world corrdinate system 
 	TGeoHMatrix   toWorld;
-	
-	PlacedVolume::VolIDs::Base volID;
+	/// Volume IDS corresponding to this element
+	VolIDs        volID;
+	/// Path of placements to this sensitive volume
+	Path          path;
       public:
 	/// Default constructor
 	Context();
@@ -158,6 +166,8 @@ namespace DD4hep {
       public:
 	typedef IDDescriptor::Field Field;
       public:
+	/// Reference to the LCDD instance
+	LCDD&         lcdd;
 	/// The container of subdetector elements
 	Detectors     subdetectors;
 	/// The volume managers for the individual subdetector elements
@@ -180,7 +190,7 @@ namespace DD4hep {
 	int           flags;
       public:
 	/// Default constructor
-	Object();
+	Object(LCDD& lcdd);
 	/// Default destructor
 	virtual ~Object();
 	/// Search the locally cached volumes for a matching ID
@@ -204,7 +214,7 @@ namespace DD4hep {
        *  Please see enum PopulateFlags for further info.
        *  No action whatsoever is performed here, if the detector element is not valid.
        */
-      VolumeManager(const std::string& name, DetElement world=DetElement(), Readout ro=Readout(), int flags=NONE);
+      VolumeManager(LCDD& lcdd, const std::string& name, DetElement world=DetElement(), Readout ro=Readout(), int flags=NONE);
       /// Add a new Volume manager section according to a new subdetector
       VolumeManager addSubdetector(DetElement detector, Readout ro);
       /// Access the volume manager by cell id
@@ -237,20 +247,6 @@ namespace DD4hep {
       DetElement   lookupDetElement(VolumeID volume_id)  const;
       /// Access the transformation of a physical volume to the world coordinate system
       const TGeoMatrix& worldTransformation(VolumeID volume_id)  const;
-
-      /** This set of functions is required when reading/analyzing 
-       *  already created hits which have a VolumeID attached.
-       */
-      /// Lookup the context, which belongs to a registered physical volume.
-      Context*     lookupContext(PlacedVolume vol) const throw();
-      /// Access the physical volume identifier from the placed volume
-      VolumeID     lookupID(PlacedVolume vol) const;
-      /// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
-      DetElement   lookupDetector(PlacedVolume vol)  const;
-      /// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
-      DetElement   lookupDetElement(PlacedVolume vol)  const;
-      /// Access the transformation of a physical volume to the world coordinate system
-      const TGeoMatrix& worldTransformation(PlacedVolume vol)  const;
     };
 
     /// Enable printouts for debugging

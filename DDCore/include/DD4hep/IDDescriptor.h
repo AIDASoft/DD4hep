@@ -12,6 +12,7 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
+#include "DD4hep/BitField64.h"
 
 // C++ include files
 #include <string>
@@ -37,6 +38,7 @@ namespace DD4hep {
     struct IDDescriptor : public Ref_t  {
     public:
       typedef unsigned long long int VolumeID;
+#if 0
       //typedef std::pair<int,int>          Field;
       struct Field  {
 	int first, second;
@@ -52,6 +54,9 @@ namespace DD4hep {
 	  //xx return (~mask&value)>>(64-second-first);
 	}
       };
+#endif
+      typedef std::pair<std::string,int> VolID;
+      typedef BitFieldValue* Field;
       typedef std::vector<std::pair<std::string,Field> >  FieldMap;
       typedef std::vector<std::pair<size_t,std::string> > FieldIDs;
 
@@ -61,13 +66,13 @@ namespace DD4hep {
        *  @version 1.0
        *  @date    2012/07/31
        */
-      struct Object : public TNamed {
-	std::string description;
-	FieldMap    fieldMap;
-	FieldIDs    fieldIDs;
-	int         maxBit;
+      struct Object : public TNamed, public BitField64 {
+	FieldMap      fieldMap;
+	FieldIDs      fieldIDs;
+	std::string   description;
+	//unsigned      maxBit;
 	/// Standard constructor
-	Object();
+	Object(const std::string& initString);
 	/// Default destructor
 	virtual ~Object();
       };
@@ -80,7 +85,7 @@ namespace DD4hep {
       /// Initializing constructor
       IDDescriptor(const std::string& description);
       /// The total number of encoding bits for this descriptor
-      int maxBit() const;
+      unsigned maxBit() const;
       /// Access the field-id container 
       const FieldIDs& ids() const;
       /// Access the fieldmap container 
@@ -91,6 +96,8 @@ namespace DD4hep {
       size_t fieldID(const std::string& field_name)  const;
       /// Get the field descriptor of one field by its identifier
       Field field(size_t identifier)  const;
+      /// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
+      VolumeID encode(const std::vector<VolID>& ids)  const;
       /// Acces string representation
       std::string toString() const;
     };

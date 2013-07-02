@@ -30,6 +30,7 @@ namespace {
   }
 
   void _construct(IDDescriptor::Object* o, const string& dsc) {
+#if 0
     typedef vector<string>  Elements;
     Elements elements, f;
     IDDescriptor::Field field;
@@ -59,13 +60,23 @@ namespace {
       o->fieldIDs.push_back(make_pair(o->fieldMap.size(),f[0]));
       o->fieldMap.push_back(make_pair(f[0],field));
     }
+#endif
+
+    BitField64& bf = *o;
+    o->fieldIDs.clear();
+    o->fieldMap.clear();
+    o->description = dsc ;
+    for(size_t i=0; i < bf.size(); ++i)    {
+      IDDescriptor::Field f = &bf[i];
+      o->fieldIDs.push_back(make_pair(i,f->name()));
+      o->fieldMap.push_back(make_pair(f->name(),f));
+    }
   }
 }
 
 /// Standard constructor
-IDDescriptor::Object::Object() : TNamed(), maxBit(0) {
+IDDescriptor::Object::Object(const std::string& desc) : TNamed(), BitField64(desc) /*, maxBit(0) */ {
   InstanceCount::increment(this);
-
 }
 /// Default destructor
 IDDescriptor::Object::~Object()  {
@@ -75,7 +86,7 @@ IDDescriptor::Object::~Object()  {
 /// Initializing constructor
 IDDescriptor::IDDescriptor(const string& description) 
 {
-  Object* obj = new Object();
+  Object* obj = new Object(description);
   assign(obj,description,"iddescriptor");
   _construct(obj, description);
 }
@@ -83,14 +94,14 @@ IDDescriptor::IDDescriptor(const string& description)
 /// Acces string representation
 string IDDescriptor::toString() const  {
   if ( isValid() )  {
-    return data<Object>()->description;
+    return m_element->GetName();
   }
   return "----";
 }
 
 /// The total number of encoding bits for this descriptor
-int IDDescriptor::maxBit() const  { 
-  return data<Object>()->maxBit;
+unsigned IDDescriptor::maxBit() const  { 
+  return data<Object>()->highestBit();
 }
 
 /// Access the field-id container 
@@ -130,3 +141,15 @@ size_t IDDescriptor::fieldID(const string& field_name)  const   {
     if ( (*i).second == field_name ) return (*i).first;
   throw runtime_error(string(name())+": This ID descriptor has no field with the name:"+field_name);
 }
+
+/// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
+IDDescriptor::VolumeID IDDescriptor::encode(const std::vector<VolID>& ids)  const   {
+  typedef std::vector<VolID> VolIds;
+  VolumeID id = 0;
+  for(VolIds::const_iterator i=ids.begin(); i!=ids.end(); ++i)   {
+    Field f = field((*i).first);
+    id |= f->value((*i).second<<f->offset())<<f->offset();
+  }
+  return id;
+}
+

@@ -48,11 +48,7 @@ namespace DD4hep {
     typedef std::map<std::string, unsigned int> IndexMap ;
 
 
-    ~BitField64() {  // clean up
-      for(unsigned i=0;i<_fields.size();i++){
-	delete _fields[i] ;
-      }
-    }
+    virtual ~BitField64();  // clean up
   
     /** The c'tor takes an initialization string of the form:<br>
      *  <fieldDesc>[,<fieldDesc>...]<br>
@@ -234,6 +230,9 @@ namespace DD4hep {
      */
     long64 value() const ;
   
+    /// Calculate Field value given an external 64 bit bitmap value
+    long64 value(long64 id) const;
+
     /** Assignment operator for user convenience 
      */
     BitFieldValue& operator=(long64 in) ;
@@ -279,8 +278,11 @@ namespace DD4hep {
   };
 
 
-
-
+  inline BitField64::~BitField64() {  // clean up
+    for(unsigned i=0;i<_fields.size();i++){
+      delete _fields[i] ;
+    }
+  }
 
 
 } // end namespace
