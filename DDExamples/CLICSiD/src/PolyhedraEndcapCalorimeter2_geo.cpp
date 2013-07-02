@@ -28,7 +28,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      totalThickness = layering.totalThickness();
   Volume      envelopeVol(det_name+"_envelope",PolyhedraRegular(numsides,rmin,rmax,totalThickness),air);
     
-  int l_num = 0;
+  int l_num = 1;
   int layerType   = 0;
   double layerZ   = -totalThickness/2;
 
@@ -36,12 +36,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t       x_layer  = c;
-    double           l_thick  = layering.layer(l_num)->thickness();
+    double           l_thick  = layering.layer(l_num-1)->thickness();
     string           l_name   = det_name + _toString(layerType,"_layer%d");
     int              l_repeat = x_layer.repeat();
     Volume           l_vol(l_name,PolyhedraRegular(numsides,rmin,rmax,l_thick),air);
       
-    int s_num = 0;
+    int s_num = 1;
     double sliceZ = -l_thick/2;
     for(xml_coll_t s(x_layer,_U(slice)); s; ++s)  {
       xml_comp_t x_slice = s;

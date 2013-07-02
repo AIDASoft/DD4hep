@@ -30,8 +30,8 @@ static void placeStaves(DetElement&   parent,
   double posX = -sectCenterRadius  * std::sin(rotY);
   double posY =  sectCenterRadius  * std::cos(rotY);
 
-  for (int module = 0; module < numsides; ++module)  {
-    DetElement det  = module>0 ? stave.clone(_toString(module,"stave%d")) : stave;
+  for (int module = 1; module <= numsides; ++module)  {
+    DetElement det  = module>1 ? stave.clone(_toString(module,"stave%d")) : stave;
     PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Transform3D(Rotation(0,rotY,rotX),
 									Translation3D(-posX,-posY,0)));
     // Not a valid volID: pv.addPhysVolID("stave", 0);
@@ -60,7 +60,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      detZ        = dim.z();
   double      rmin        = dim.rmin();
   DetElement  sdet(det_name,x_det.id());
-  DetElement  stave("stave0",x_det.id());
+  DetElement  stave("stave1",x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
 
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {

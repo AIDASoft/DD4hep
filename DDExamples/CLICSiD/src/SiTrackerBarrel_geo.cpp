@@ -29,7 +29,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     xml_comp_t m_env  = x_mod.child(_U(module_envelope));
     string     m_nam  = x_mod.nameStr();
     Volume     m_vol(det_name+"_"+m_nam,Box(m_env.width()/2,m_env.length()/2,m_env.thickness()/2),air);
-    int        ncomponents = 0, sensor_number = 0;
+    int        ncomponents = 0, sensor_number = 1;
 
     if ( volumes.find(m_nam) != volumes.end() )   {
       printout(ERROR,"SiTrackerBarrel","Logics error in building modules.");
@@ -76,7 +76,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     int        lay_id   = x_layer.id();
     string     m_nam    = x_layer.moduleStr();
     Volume     m_env    = volumes[m_nam];
-    string     lay_nam  = det_name+"_"+m_nam+_toString(lay_id,"_layer%d");
+    string     lay_nam  = det_name+"_"+m_nam;
     Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
     Volume     lay_vol   (lay_nam,lay_tub,air);       // Create the layer envelope volume.
     double     phi0     = x_layout.phi0();            // Starting phi of first module.
@@ -96,7 +96,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double z_incr   = (2.0 * z0) / (nz - 1);
     // Starting z for module placement along Z axis.
     double module_z = -z0;
-    int module = 0;
+    int module = 1;
       
     // Loop over the number of modules in phi.
     for (int ii = 0; ii < nphi; ii++)	{

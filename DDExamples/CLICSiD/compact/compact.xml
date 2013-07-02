@@ -1524,13 +1524,13 @@
 
     <readouts>
         <readout name="SiTrackerEndcapHits">
-            <id>system:8,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+            <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
         </readout>        
         <readout name="SiTrackerBarrelHits">
-            <id>system:8,barrel:3,layer:4,module:12,sensor:1,side:v32:-2,strip:20</id>
+            <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
         </readout>
         <readout name="SiVertexBarrelHits">
-            <id>system:8,barrel:3,layer:4,module:12,sensor:1,side:32:-2,strip:24</id>
+            <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:24</id>
         </readout>
         <readout name="SiVertexEndcapHits">
             <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
@@ -1545,7 +1545,7 @@
         </readout>
         <readout name="HcalBarrelHits">
             <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,module:6,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalEndcapHits">
             <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />

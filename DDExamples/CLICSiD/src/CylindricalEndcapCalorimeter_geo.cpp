@@ -25,8 +25,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double     rmin      = dim.inner_r();
   double     rmax      = dim.outer_r();
   double     totWidth  = Layering(x_det).totalThickness();
-  double     z    = zmin;
-  int        n    = 0;
+  double     z         = zmin;
+  int        layer_num = 1;
     
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
@@ -35,7 +35,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       layerWidth += xml_comp_t(l).thickness();
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
       double     zlayer = z;
-      string     layer_name = det_name + _toString(n,"_layer%d");
+      string     layer_name = det_name + _toString(layer_num,"_layer%d");
       Volume     layer_vol(layer_name,Tube(rmin,rmax,layerWidth),air);
         
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
@@ -58,8 +58,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         
       Position layer_pos(0,0,zlayer-zmin-totWidth/2+layerWidth/2);
       PlacedVolume layer_phys = envelopeVol.placeVolume(layer_vol,layer_pos);
-      layer_phys.addPhysVolID("layer",n);
-      ++n;
+      layer_phys.addPhysVolID("layer",layer_num);
+      ++layer_num;
     }
   }
   envelope.setDimensions(rmin,rmax,totWidth,0,2*M_PI);
