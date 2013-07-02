@@ -238,7 +238,7 @@ namespace DD4hep {
        *  already created hits which have a VolumeID attached.
        */
       /// Lookup the context, which belongs to a registered physical volume.
-      Context*     lookupContext(VolumeID volume_id) const throw();
+      Context*     lookupContext(VolumeID volume_id) const;
       /// Lookup a physical (placed) volume identified by its 64 bit hit ID
       PlacedVolume lookupPlacement(VolumeID volume_id) const;
       /// Lookup a top level subdetector detector element according to a contained 64 bit hit ID

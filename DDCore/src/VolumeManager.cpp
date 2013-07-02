@@ -12,6 +12,7 @@
 #include "DD4hep/LCDD.h"
 
 // C/C++ includes
+#include <set>
 #include <cmath>
 #include <sstream>
 #include <iomanip>
@@ -29,64 +30,27 @@ namespace {
     typedef VolumeManager::VolumeID VolumeID;
     typedef vector<const TGeoNode*> Chain;
 
-    struct DetCtxt  {
-      DetElement        detector;
-      Chain             chain;
-      SensitiveDetector sd;
-      DetCtxt() {}
-      ~DetCtxt() {}
-    };
-    typedef map<TNamed*,DetCtxt*> DetContext;
     /// Reference to the LCDD instance
     LCDD&         m_lcdd;
     /// Reference to the volume manager to be populated
     VolumeManager m_volManager;
-    /// Flag
-    bool m_add;
-
-    DetContext m_detContext;
+    /// Set of already added entries
+    set<VolumeID> m_entries;
     /// Default constructor
-    Populator(LCDD& lcdd, VolumeManager vm) : m_lcdd(lcdd), m_volManager(vm), m_add(true)  {}
+    Populator(LCDD& lcdd, VolumeManager vm) : m_lcdd(lcdd), m_volManager(vm) {}
 
     /// Populate the Volume manager
-    void populate(DetElement e, bool add=true)   {
-      m_add = add;
+    void populate(DetElement e)   {
       const DetElement::Children& c = e.children();
       for(DetElement::Children::const_iterator i=c.begin(); i!=c.end(); ++i)   {
 	DetElement   de = (*i).second;
 	PlacedVolume pv = de.placement();
 	if ( pv.isValid() )  {
 	  Chain                chain;
+	  SensitiveDetector    sd;
 	  PlacedVolume::VolIDs ids;
-	  m_detContext.clear();
-	  scanPhysicalVolume(de, de, pv, ids, chain);
-	  if ( add )  {
-	    for(DetContext::const_iterator di=m_detContext.begin(); di != m_detContext.end(); ++di)  {	
-	      Chain det_chain;
-	      PlacedVolume::VolIDs ids;
-	      DetElement det = (*di).second->detector;
-	      const Chain& chain = (*di).second->chain;
-	      if ( !det.parent().isValid() ) continue;
-	      for(Chain::const_iterator ci=chain.begin(); ci!=chain.end(); ++ci)  {
-		PlacedVolume pv = Ref_t(*ci);
-		det_chain.push_back(*ci);
-		ids.PlacedVolume::VolIDs::Base::insert(ids.end(),pv.volIDs().begin(),pv.volIDs().end());
-		if ( pv.ptr() == det.placement().ptr() )  break;
-	      }
-	      if ( !ids.empty() )  {
-		stringstream log;
-		IDDescriptor            iddesc = (*di).second->sd.readout().idSpec();
-		pair<VolumeID,VolumeID> code   = encoding(iddesc, ids);
-		log << det.path() << " encoding:" << code.first << "," << code.second << " ids:";
-		for(size_t m=0; m<ids.size(); ++m)
-		  log << ids[m].first << "=" << ids[m].second << "  ";
-		printout(DEBUG,"VolumeManager","++ Add DetElements:%s",log.str().c_str());
-		add_entry((*di).second->sd, de, det, det.placement().ptr(), ids, det_chain);
-	      }
-	    }
-	  }
-	  for(DetContext::const_iterator di=m_detContext.begin(); di != m_detContext.end(); ++di)
-	    delete (*di).second;
+	  m_entries.clear();
+	  scanPhysicalVolume(de, de, pv, ids, sd, chain);
 	  continue;
 	}
 	printout(WARNING,"VolumeManager","++ Detector element %s of type %s has no placement.",
@@ -109,25 +73,21 @@ namespace {
     }
     /// Scan a single physical volume and look for sensitive elements below
     size_t scanPhysicalVolume(DetElement parent, DetElement e, PlacedVolume pv, 
-			      PlacedVolume::VolIDs ids, Chain& chain)
+			      PlacedVolume::VolIDs ids, SensitiveDetector& sd, Chain& chain)
     {
       const TGeoNode* node = pv.ptr();
       size_t count = 0;
       if ( node )  {
 	Volume vol = pv.volume();
 	chain.push_back(node);
-	ids.PlacedVolume::VolIDs::Base::insert(ids.end(),pv.volIDs().begin(),pv.volIDs().end());
+	PlacedVolume::VolIDs pv_ids = pv.volIDs();
+	ids.PlacedVolume::VolIDs::Base::insert(ids.end(),pv_ids.begin(),pv_ids.end());
 	if ( vol.isSensitive() )  {
-	  SensitiveDetector sd = vol.sensitiveDetector();
-	  Readout           ro = sd.readout();
+	  sd = vol.sensitiveDetector();
+	  Readout ro = sd.readout();
 	  if ( ro.isValid() )  {
-	    if ( m_add )  {
-	      add_entry(parent, e, node, ids, chain);
-	      ++count;
-	    }
-	    else  {
-	      find_entry(parent, e, node, ids, chain);
-	    }
+	    add_entry(sd, parent, e, node, ids, chain);
+	    ++count;
 	  }
 	  else  {
 	    printout(WARNING,"VolumeManager",
@@ -143,10 +103,13 @@ namespace {
 	    DetElement   de_dau = findElt(e,daughter);
 	    if ( de_dau.isValid() )  {
 	      Chain dau_chain;
-	      cnt = scanPhysicalVolume(parent, de_dau, pv_dau, ids, dau_chain);
+	      cnt = scanPhysicalVolume(parent, de_dau, pv_dau, ids, sd, dau_chain);
 	    }
 	    else  {
-	      cnt = scanPhysicalVolume(parent, e, pv_dau, ids, chain);
+	      cnt = scanPhysicalVolume(parent, e, pv_dau, ids, sd, chain);
+	    }
+	    if ( count == 0 && cnt>0 && !pv_ids.empty() )  {
+	      add_entry(sd, parent, e, node, ids, chain);
 	    }
 	    count += cnt;
 	  }
@@ -174,7 +137,7 @@ namespace {
     }
 
     void add_entry(DetElement parent, DetElement e,const TGeoNode* n, 
-		  const PlacedVolume::VolIDs& ids, const Chain& nodes)
+		   const PlacedVolume::VolIDs& ids, const Chain& nodes)
     {
       Volume            vol     = PlacedVolume(n).volume();
       SensitiveDetector sd      = vol.sensitiveDetector();
@@ -190,36 +153,29 @@ namespace {
       VolumeManager     section = m_volManager.addSubdetector(parent,ro);
       pair<VolumeID,VolumeID> code = encoding(iddesc, ids);
 
-      // This is the block, we effectively have to save for each physical volume with a VolID
-      VolumeManager::Context* context = new VolumeManager::Context;
-      DetElement::Object& o = parent._data();
-      context->identifier = code.first;
-      context->mask       = code.second;
-      context->detector   = parent;
-      context->element    = e;
-      context->placement  = Ref_t(n);
-      context->volID      = ids;
-      context->path       = nodes;
-      for(size_t i=nodes.size(); i>1; --i)  {  // Omit the placement of the parent DetElement
-	TGeoMatrix* m = nodes[i-1]->GetMatrix();
-	context->toWorld.MultiplyLeft(m);
-      }
-      context->toDetector = context->toWorld;
-      context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-      context->toWorld.MultiplyLeft(o.worldTransformation());
-      if ( parent.path().find("HcalBarrel") != string::npos ) print_node(sd,parent,e,n,ids,nodes);
-      if ( !section.adoptPlacement(context) )  {
-	print_node(sd,parent,e,n,ids,nodes);
-      }
-      if ( e.placement().ptr() != n )  {
-	DetContext::const_iterator di = m_detContext.find(e.ptr());
-	if ( di == m_detContext.end() )  {
-	  DetCtxt* c  = new DetCtxt();
-	  c->detector = e;
-	  c->chain    = nodes;
-	  c->sd       = sd;
-	  m_detContext[e.ptr()] = c;
+      if ( m_entries.find(code.first) == m_entries.end() )  {
+	// This is the block, we effectively have to save for each physical volume with a VolID
+	VolumeManager::Context* context = new VolumeManager::Context;
+	DetElement::Object& o = parent._data();
+	context->identifier = code.first;
+	context->mask       = code.second;
+	context->detector   = parent;
+	context->element    = e;
+	context->placement  = Ref_t(n);
+	context->volID      = ids;
+	context->path       = nodes;
+	for(size_t i=nodes.size(); i>1; --i)  {  // Omit the placement of the parent DetElement
+	  TGeoMatrix* m = nodes[i-1]->GetMatrix();
+	  context->toWorld.MultiplyLeft(m);
 	}
+	context->toDetector = context->toWorld;
+	context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
+	context->toWorld.MultiplyLeft(o.worldTransformation());
+	//if ( parent.id() == 8 ) print_node(sd,parent,e,n,ids,nodes);
+	if ( !section.adoptPlacement(context) )  {
+	  print_node(sd,parent,e,n,ids,nodes);
+	}
+	m_entries.insert(code.first);
       }
     }
     void find_entry(DetElement parent, DetElement e,const TGeoNode* n, 
@@ -287,7 +243,7 @@ namespace {
       pair<VolumeID,VolumeID> code = encoding(en, ids);
       IDDescriptor::VolumeID volume_id = code.first;
 
-      if ( !sensitive ) return;
+      //if ( !sensitive ) return;
       ++s_count;
       stringstream log;
       log << s_count << ": " << e.name() << " de:" << e.ptr() << " ro:" << ro.ptr() 
@@ -345,6 +301,10 @@ VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id)  
   Volumes::const_iterator i = volumes.find(id);
   if ( i != volumes.end() )
     context = (*i).second;
+  else if ( sysID == 8 )  {
+    //for(i=volumes.begin(); i!=volumes.end();++i)
+    //  cout << (void*)(*i).first << "  " << (*i).second->placement.name() << endl;
+  }
   return context;
 }
 
@@ -368,7 +328,6 @@ VolumeManager::VolumeManager(LCDD& lcdd, const string& nam, DetElement elt, Read
     o.top   = ptr;
     o.flags = flags;
     p.populate(elt);
-    p.populate(elt,false);
   }
 }
 
@@ -487,7 +446,7 @@ bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
 #endif
   if ( i == o.volumes.end() )   {
     o.volumes[vid] = context;
-    o.phys_volumes[pv.ptr()] = context;
+    //o.phys_volumes[pv.ptr()] = context;
     err  << "Inserted new volume:" << setw(6) << left << o.volumes.size() 
 	 << " Ptr:"  << (void*)context->placement.ptr()
 	 << " ["     << context->placement.name() << "]"
@@ -556,7 +515,7 @@ bool VolumeManager::adoptPlacement(Context* context)   {
 }
 
 /// Lookup the context, which belongs to a registered physical volume.
-VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const  throw()  {
+VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const  {
   if ( isValid() )  {
     Context* c = 0;
     const Object& o = _data();
@@ -576,7 +535,10 @@ VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const  
 	  return c;
       }
     }
-    throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]");
+    stringstream err;
+    err << "VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]" 
+	<< (void*)volume_id;
+    throw runtime_error(err.str());
   }
   throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
 }

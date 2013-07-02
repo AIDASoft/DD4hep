@@ -31,6 +31,8 @@ int main(int argc,char** argv)  {
   bool volmgr = false;
   bool destroy = false;
   vector<char*> geo_files;
+  vector<char*> arg;
+  arg.push_back("plugin_runner");
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
       if ( strncmp(argv[i],"-input",2)==0 )
@@ -42,7 +44,7 @@ int main(int argc,char** argv)  {
       else if ( strncmp(argv[i],"-volmgr",2)==0 )
         volmgr = true;
       else
-	usage();
+	arg.push_back(argv[i]);
     }
     else {
       usage();
@@ -50,14 +52,14 @@ int main(int argc,char** argv)  {
   }
   if ( geo_files.empty() || plugin.empty() )
     usage();
-
+  arg.push_back(0);
   LCDD& lcdd = dd4hep_instance();
   // Load compact files
   run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
   // Create volume manager and populate it required
   if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
   // Execute plugin
-  run_plugin(lcdd,plugin.c_str(),0,0);
+  run_plugin(lcdd,plugin.c_str(),(int)(arg.size()-1),&arg[0]);
   if ( destroy ) delete &lcdd;
   return 0;
 }
