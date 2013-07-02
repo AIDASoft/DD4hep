@@ -69,10 +69,10 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
   if ( place.isValid() )   {
     if ( place.volume().isSensitive() )  {
       // Example code to access the physical vlume and the cell id
-      Geometry::VolumeManager vm = mapping.lcdd().volumeManager();
-      Geometry::VolumeManager::VolumeID cell_id = vm.lookupID(place);
+      //Geometry::VolumeManager vm = mapping.lcdd().volumeManager();
+      //Geometry::VolumeManager::VolumeID cell_id = vm.lookupID(place);
       //const TGeoNode* tpv = pv.ptr();
-      printf("           Found Sensitive TGeoNode:%s CellID: %lld!\n",place.name(),cell_id);
+      //printf("           Found Sensitive TGeoNode:%s CellID: %lld!\n",place.name(),cell_id);
     }
   }
 }

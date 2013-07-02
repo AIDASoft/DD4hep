@@ -114,7 +114,6 @@ int main(int argc,char** argv)   {
   //
   EventAction* event_action = new EventAction(run_action);
   runManager->SetUserAction(event_action);
-
   //
   G4UserSteppingAction* stepping_action = new SteppingAction(event_action);
   runManager->SetUserAction(stepping_action);

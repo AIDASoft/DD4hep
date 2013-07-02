@@ -171,8 +171,8 @@ long long Geant4SensitiveDetector::getVolumeID(G4Step* step ){
   const G4VPhysicalVolume* pv  = stepH.volume(stepH.pre);
   Geometry::PlacedVolume placed = mapping.placement(pv);
   Geometry::VolumeManager vm = m_lcdd.volumeManager();
-  
-  return ( placed.isValid() ?  vm.lookupID( placed ) : 0 )   ;
+  return 0;
+  //return ( placed.isValid() ?  vm.lookupID( placed ) : 0 )   ;
 }
 
 
