@@ -61,6 +61,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   Volume mod_vol(det_name+"_module",trd,air);
 
+  sens.setType("calorimeter");
   { // =====  buildBarrelStave(lcdd, sens, module_volume) =====
     // Parameters for computing the layer X dimension:
     double stave_z  = trd_y1/2;
@@ -72,15 +73,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double l_pos_z  = -(layering.totalThickness() / 2);
 
     // Loop over the sets of layer elements in the detector.
-    int l_num = 0;
+    int l_num = 1;
     for(xml_coll_t li(x_det,_U(layer)); li; ++li)  {
       xml_comp_t x_layer = li;
       int repeat = x_layer.repeat();
       // Loop over number of repeats for this layer.
       for (int j=0; j<repeat; j++)    {
 	string l_name = _toString(l_num,"layer%d");
-	double l_thickness = layering.layer(l_num)->thickness();  // Layer's thickness.
-	double xcut = (l_thickness / tan_beta);                   // X dimension for this layer.
+	double l_thickness = layering.layer(l_num-1)->thickness();  // Layer's thickness.
+	double xcut = (l_thickness / tan_beta);                     // X dimension for this layer.
 	l_dim_x -= xcut/2;
 
 	Position   l_pos(0,0,l_pos_z+l_thickness/2);      // Position of the layer.
@@ -89,7 +90,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	DetElement layer(stave_det, l_name, det_id);
 
 	// Loop over the sublayers or slices for this layer.
-	int s_num = 0;
+	int s_num = 1;
 	double s_pos_z = -(l_thickness / 2);
 	for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
 	  xml_comp_t x_slice = si;
@@ -100,14 +101,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
           DetElement slice(layer,s_name,det_id);
 
           if ( x_slice.isSensitive() ) {
-	    sens.setType("calorimeter");
 	    s_vol.setSensitiveDetector(sens);
 	  }
           slice.setAttributes(lcdd,s_vol,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
           // Slice placement.
           PlacedVolume slice_phv = l_vol.placeVolume(s_vol,Position(0,0,s_pos_z+s_thick/2));
-          //slice_phv.addPhysVolID("layer", l_num);
           slice_phv.addPhysVolID("slice", s_num);
           slice.setPlacement(slice_phv);
           // Increment Z position of slice.
@@ -148,7 +147,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     PlacedVolume pv = envelope.placeVolume(mod_vol,tr);
     pv.addPhysVolID("system",det_id);
     pv.addPhysVolID("barrel",0);
-    pv.addPhysVolID("module",i);
+    pv.addPhysVolID("module",i+1);
     DetElement sd = i==0 ? stave_det : stave_det.clone(_toString(i,"stave%d"));
     sd.setPlacement(pv);
     sdet.add(sd);

@@ -1568,11 +1568,11 @@
         </readout>
         <readout name="LumiCalHits">
             <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
-            <id>system:8,layer:8,barrel:3,x:32:-16,y:-16</id>
+            <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="BeamCalHits">
             <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
-            <id>system:8,layer:8,barrel:3,x:32:-16,y:-16</id>
+            <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
     </readouts>
     <fields>

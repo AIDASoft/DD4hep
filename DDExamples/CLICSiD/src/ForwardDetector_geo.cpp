@@ -69,6 +69,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // Process each layer element.
   double layerPosZ   = -thickness / 2;
   double layerDisplZ = 0;
+  
+  int layerCount = 1;
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     double layerThickness = layering.singleLayerThickness(x_layer);
@@ -77,8 +79,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // in the repeat loop below.
     Tube layerTube(rmin,rmax,layerThickness);
 
-    for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
-      string layer_nam = _toString(i,"layer%d");
+    for(int i=0, repeat=x_layer.repeat(); i<repeat; ++i)  {
+      string layer_nam = _toString(layerCount,"layer%d");
       // Increment to new layer position.
       layerDisplZ += layerThickness / 2;
       layerPosZ   += layerThickness / 2;
@@ -97,10 +99,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Volume layerVol(det_name+"_"+layer_nam,layerSubtraction2,air);
       
       // Slice loop.
-      int sliceCount = 0;
+      int sliceCount = 1;
       double slicePosZ = -layerThickness / 2;
       double sliceDisplZ = 0;
-      for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
+      for(xml_coll_t l(x_layer,_U(slice)); l; ++l)  {
 	xml_comp_t x_slice = l;
 	string slice_nam = _toString(sliceCount,"slice%d");
 	/** Get slice parameters. */
@@ -132,7 +134,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 
 	// Place volume in layer
-	slice.setPlacement(layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ)));
+	PlacedVolume pv = layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ));
+	pv.addPhysVolID("slice",sliceCount);
+	slice.setPlacement(pv);
 
 	// Start of next slice.
 	sliceDisplZ += sliceThickness / 2;
@@ -144,12 +148,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       // Layer PV.
       PlacedVolume layerPV = envelopeVol.placeVolume(layerVol,Position(0,0,layerPosZ));
-      layerPV.addPhysVolID("layer", i);
+      layerPV.addPhysVolID("layer", layerCount);
       layer.setPlacement(layerPV);
 
       // Increment to start of next layer.
       layerDisplZ += layerThickness / 2;
       layerPosZ   += layerThickness / 2;
+      ++layerCount;
     }
   }
   sdet.setVisAttributes(lcdd, x_det.visStr(), envelopeVol);

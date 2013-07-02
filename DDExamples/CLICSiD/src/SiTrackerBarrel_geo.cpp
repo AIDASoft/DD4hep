@@ -76,7 +76,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     int        lay_id   = x_layer.id();
     string     m_nam    = x_layer.moduleStr();
     Volume     m_env    = volumes[m_nam];
-    string     lay_nam  = det_name+"_"+m_nam;
+    string     lay_nam  = det_name+"_"+m_nam+_toString(x_layer.id(),"_layer%d");
     Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
     Volume     lay_vol   (lay_nam,lay_tub,air);       // Create the layer envelope volume.
     double     phi0     = x_layout.phi0();            // Starting phi of first module.

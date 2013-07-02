@@ -27,7 +27,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double     totWidth  = Layering(x_det).totalThickness();
   double     z         = zmin;
   int        layer_num = 1;
-    
+  PlacedVolume pv;
+
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     double layerWidth = 0;
@@ -41,7 +42,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
 	double     w = x_slice.thickness();
-	string     slice_name = layer_name + _toString(m,"slice%d");
+	string     slice_name = layer_name + _toString(m+1,"slice%d");
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
 	Volume     slice_vol (slice_name,Tube(rmin,rmax,w),slice_mat);
           
@@ -51,14 +52,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	}
 	// Set attributes of slice
 	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-	layer_vol.placeVolume(slice_vol,Position(0,0,z-zlayer-layerWidth/2+w/2));
+	pv = layer_vol.placeVolume(slice_vol,Position(0,0,z-zlayer-layerWidth/2+w/2));
+	pv.addPhysVolID("slice",m+1);
 	z += w;
       }
       layer_vol.setVisAttributes(lcdd,x_layer.visStr());
-        
+
       Position layer_pos(0,0,zlayer-zmin-totWidth/2+layerWidth/2);
-      PlacedVolume layer_phys = envelopeVol.placeVolume(layer_vol,layer_pos);
-      layer_phys.addPhysVolID("layer",layer_num);
+      pv = envelopeVol.placeVolume(layer_vol,layer_pos);
+      pv.addPhysVolID("layer",layer_num);
       ++layer_num;
     }
   }

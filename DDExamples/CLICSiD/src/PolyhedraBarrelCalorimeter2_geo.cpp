@@ -91,15 +91,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double layerInnerAngle = (M_PI/2 - layerOuterAngle);
   double layer_pos_z = -(staveThickness / 2);                        
   double layer_dim_x = innerFaceLen/2 - gap * 2;
-  int layer_num = 0;
+  int layer_num = 1;
 
   // Set envelope volume attributes.
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t   x_layer = c;
-    int          repeat = x_layer.repeat();          // Get number of times to repeat this layer.
-    const Layer* lay    = layering.layer(layer_num); // Get the layer from the layering engine.
+    int          repeat = x_layer.repeat();            // Get number of times to repeat this layer.
+    const Layer* lay    = layering.layer(layer_num-1); // Get the layer from the layering engine.
     // Loop over repeats for this layer.
     for (int j = 0; j < repeat; j++)    {
       string     layer_name      = det_name+_toString(layer_num,"_layer%d");
@@ -113,7 +113,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       // Create the slices (sublayers) within the layer.
       double slice_pos_z = -(layer_thickness / 2);
-      int slice_number = 0;
+      int slice_number = 1;
       for(xml_coll_t k(x_layer,_U(slice)); k; ++k)  {
 	xml_comp_t x_slice = k;
 	string   slice_name      = layer_name + _toString(slice_number,"_slice%d");
