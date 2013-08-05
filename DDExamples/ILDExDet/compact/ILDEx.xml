@@ -24,7 +24,15 @@
         <constant name="world_z"                value="world_side/2"/>        
         <constant name="CrossingAngle"          value="0.014"/>
         
-        <constant name="TPC_zhalf"              value="2500*mm"/>
+        <constant name="VXD_inner_radius"       value="15*mm"/>
+        <constant name="VXD_outer_radius"       value="80*mm"/>
+	<constant name="VXD_zhalf"              value="130*mm"/>
+
+        <constant name="SIT_inner_radius"       value="150*mm"/>
+        <constant name="SIT_outer_radius"       value="330*mm"/>
+	<constant name="SIT_zhalf"              value="660*mm"/>
+
+	<constant name="TPC_zhalf"              value="2500*mm"/>
         <constant name="TPC_outer_radius"       value="1800*mm"/>
         <constant name="TPC_inner_radius"       value="350*mm"/>
         <constant name="TPC_inner_thickness"    value="2*mm"/>
@@ -107,6 +115,7 @@
         <comment>Trackers</comment>
 
         <detector name="VXD" type="ILDExVXD" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
+           <tubs rmin="VXD_inner_radius" rmax="VXD_outer_radius" zhalf="VXD_zhalf"/>
           <layer id="0"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
             <ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
@@ -134,7 +143,8 @@
         </detector>
  
         <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
-          <layer id="0"  vis="SITLayerVis">
+           <tubs rmin="SIT_inner_radius" rmax="SIT_outer_radius" zhalf="SIT_zhalf"/>
+           <layer id="0"  vis="SITLayerVis">
             <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
           </layer>
@@ -145,7 +155,7 @@
         </detector>
         
       
-        <detector name="TPC" type="XX_ILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
+        <detector name="TPC" type="XXX_ILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
            <!-- GEAR Data-->
            <driftlength value="TPC_zhalf*0.9"/>
@@ -184,7 +194,7 @@
         </detector>
 
         <comment>Calorimeters</comment>
-        <detector id="7" name="HcalBarrel" type="AhcalBarrelCalorimeter" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
+        <detector id="7" name="HcalBarrel" type="XXXAhcalBarrelCalorimeter" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
             <comment>Hadron Calorimeter Barrel</comment>
 
             <material name="Steel235"/>
@@ -197,7 +207,7 @@
                 <slice material = "Air" thickness = "2.7*mm"  vis="HcalBarrelAirVis" />
             </layer>
         </detector>
-        <detector id="8" name="HcalEndcap" type="AhcalEndcapCalorimeter" readout="HcalEndcapHits"  calorimeterType="HAD_ENDCAP" gap="15.*mm">
+        <detector id="8" name="HcalEndcap" type="XXXAhcalEndcapCalorimeter" readout="HcalEndcapHits"  calorimeterType="HAD_ENDCAP" gap="15.*mm">
             <comment>Hadron Calorimeter Endcap</comment>
 
             <material name="Steel235"/>

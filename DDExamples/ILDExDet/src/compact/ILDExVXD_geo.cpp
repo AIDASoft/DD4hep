@@ -21,19 +21,20 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement   vxd;
   xml_det_t    x_det = e;
   string       name  = x_det.nameStr();
-  Assembly     assembly(name+"_assembly");
+
+  //  Assembly     assembly(name+"_assembly");
+
+  // replace assembly with cylinder of air:
+  xml_comp_t  x_tube (x_det.child(_U(tubs)));
+  Tube        envelope_cylinder(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
+  Volume      assembly ("vxd_envelope_cyl", envelope_cylinder ,lcdd.air());
+
   PlacedVolume pv;
 
   VXDData* vxd_data = new VXDData();
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
 
-  // // setup the encoder
-  // UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
-  // encoder.reset() ;  // reset to 0
-  // encoder[ILDCellID0::subdet] = ILDDetID::VXD ; 
-  // encoder[ILDCellID0::side] = 0 ;
-  // encoder[ILDCellID0::sensor] = 0 ;
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
