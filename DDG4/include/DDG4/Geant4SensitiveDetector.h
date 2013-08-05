@@ -98,7 +98,9 @@ namespace DD4hep {
       virtual bool buildHits(G4Step* /* step */,G4TouchableHistory* /* history */) { return false; }
 
 
-      /// Returns the volumeID of the sensitive volume corresponding to the step.
+      /// Returns the volumeID of the sensitive volume corresponding to the step -
+      /// combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
+      //  from the current sensitive volume to the world volume
       long long getVolumeID(G4Step* step ) ;
 
       /** G4VSensitiveDetector interface: Method invoked at the begining of each event. 

@@ -34,15 +34,14 @@ namespace DD4hep {  namespace Simulation {
     HitContribution contrib = Geant4Hit::extractContribution(step);
     Geant4CalorimeterHit* hit=find(collection(0),HitPositionCompare<Geant4CalorimeterHit>(pos));
 
+    G4cout << "----------- Geant4GenericSD<Calorimeter>::buildHits : position : " << pos << G4endl ;
+
     if ( !hit ) {
 
       hit = new Geant4CalorimeterHit(pos) ;
 
-      // set the cellID to the volumeID which is the or 
-      // of all physicalVolIDs set along the path
-      // of the current placed volume
       hit->cellID  = getVolumeID( step ) ;
-      
+
       collection(0)->insert(hit) ;
     }
     hit->truth.push_back(contrib);
