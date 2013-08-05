@@ -190,35 +190,37 @@ void ILDExEventAction::EndOfEventAction(const G4Event* evt)
 
       DD4hep::Geometry::VolumeManager::VolumeID volume_id = dynamic_cast<DD4hep::Simulation::Geant4Hit*>( hCol->GetHit(0) )->cellID ;   
       
-      //      std::cout << " looking up placed volume for id " <<  std::hex << volume_id << std::dec  << std::endl ; 
+      std::cout << " looking up placed volume for id " <<  std::hex << volume_id << std::dec  << std::endl ; 
 
-      const DD4hep::Geometry::PlacedVolume & pv =  vm.lookupPlacement ( volume_id ) ;
+      if( volume_id ) {
+	const DD4hep::Geometry::PlacedVolume & pv =  vm.lookupPlacement ( volume_id ) ;
 
 
 #if DEBUG
-      const  DD4hep::Geometry::DetElement & detElem =  vm.lookupDetElement( volume_id) ;
-      if ( detElem.isValid() ) 
-	std::cout << "  ILDExEventAction::EndOfEventAction  --- for detector element : "  << detElem.name()  << std::endl ;
-      else
-	std::cout << "  ILDExEventAction::EndOfEventAction  --- detector element not found "   << std::endl ;
+	const  DD4hep::Geometry::DetElement & detElem =  vm.lookupDetElement( volume_id) ;
+	if ( detElem.isValid() ) 
+	  std::cout << "  ILDExEventAction::EndOfEventAction  --- for detector element : "  << detElem.name()  << std::endl ;
+	else
+	  std::cout << "  ILDExEventAction::EndOfEventAction  --- detector element not found "   << std::endl ;
 #endif
       
       
-      if( pv.isValid() && pv.volume().isSensitive() ) {
+	if( pv.isValid() && pv.volume().isSensitive() ) {
+	  
+	  DD4hep::Geometry::Volume            vol    = pv.volume();
+	  DD4hep::Geometry::SensitiveDetector sd     = vol.sensitiveDetector();
+	  DD4hep::Geometry::Readout           ro     = sd.readout();
+	  DD4hep::Geometry::IDDescriptor      iddesc = ro.idSpec();
+	  
+	  
+	  cellIDDesc = iddesc.fieldDescription() ;
 
-	DD4hep::Geometry::Volume            vol    = pv.volume();
-	DD4hep::Geometry::SensitiveDetector sd     = vol.sensitiveDetector();
-	DD4hep::Geometry::Readout           ro     = sd.readout();
-	DD4hep::Geometry::IDDescriptor      iddesc = ro.idSpec();
-	
+	} else {
 
-	cellIDDesc = iddesc.toString() ;
+	  std::cout << " **** WARNING: could not get sensitive placedVolume for cellID : " << std::hex << volume_id << std::dec << std::endl ;
+	}
 
-      } else {
-
-	std::cout << " **** WARNING: could not get sensitive placedVolume for cellID : " << std::hex << volume_id << std::dec << std::endl ;
       }
-
 
       if( isTracker ) { //-----------------------------------------------------------------
 
