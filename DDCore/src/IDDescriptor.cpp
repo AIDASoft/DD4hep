@@ -99,6 +99,11 @@ string IDDescriptor::toString() const  {
   return "----";
 }
 
+std::string  IDDescriptor::fieldDescription() const {
+  BitField64* bf = data<Object>() ;
+  return bf->fieldDescription() ;
+}
+
 /// The total number of encoding bits for this descriptor
 unsigned IDDescriptor::maxBit() const  { 
   return data<Object>()->highestBit();

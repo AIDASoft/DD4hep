@@ -81,9 +81,10 @@ namespace DD4hep {
       IDDescriptor() : Ref_t() {}
       /// Constructor to be used when reading the already parsed object
       template <typename Q> IDDescriptor(const Handle<Q>& e) : Ref_t(e) {}
-      
       /// Initializing constructor
       IDDescriptor(const std::string& description);
+      // the string description of all fields
+      std::string fieldDescription() const  ;
       /// The total number of encoding bits for this descriptor
       unsigned maxBit() const;
       /// Access the field-id container 
