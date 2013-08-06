@@ -67,10 +67,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       case 4:
 	{
 	  xml_comp_t  px_lay(px_det.child(_U(layer)));
-	  int     nTPClayer( px_lay.attr<int>("number") ) ;
-
-	  // double  ecutTPC( px_lay.attr<double>("ecut") ) ;
-	  // sens.setEnergyCutoff( 0.0 ) ;//ecutTPC );
+	  int  nTPClayer( px_lay.attr<int>(_U(number)) );
 
 	  double r0 = px_tube.rmin() +1.e-3 ;
 	  double r1 = px_tube.rmax() -1e-3  ;
