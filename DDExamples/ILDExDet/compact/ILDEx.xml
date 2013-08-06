@@ -155,29 +155,29 @@
         </detector>
         
       
-        <detector name="TPC" type="XXX_ILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
+        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
+
            <!-- GEAR Data-->
            <driftlength value="TPC_zhalf*0.9"/>
            <!-- End of GEAR Data-->
-          
-           <material name="Air"/>
+	   <material name="Air"/>
 
-           <detector name="TPC_InnerWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="0">
+           <detector name="TPC_InnerWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="2">
              <material name="Carbon"/>
              <tubs rmin="TPC_inner_radius" rmax="TPC_inner_radius+TPC_inner_thickness" zhalf="TPC_zhalf"/>
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
            </detector>
 
-           <detector name="TPC_OuterWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="1">
+           <detector name="TPC_OuterWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="3">
              <material name="Carbon" />
              <tubs rmin="TPC_outer_radius - TPC_outer_thickness" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
            </detector>
 
-           <detector name="TPC_EndPlate" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="2">
+           <detector name="TPC_EndPlate" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="0">
              <material name="Carbon" />
              <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_endcap_thickness"/>
              <position x="0" y="0" z="TPC_zhalf-0.5*TPC_endcap_thickness"/>
@@ -185,16 +185,17 @@
            </detector>
 
         
-           <detector name="TPC_GasVolume" type="TubeSegment" reflect="true" vis="TPCGasVis" id="5">
+           <detector name="TPC_GasVolume" type="TubeSegment" reflect="true" vis="TPCGasVis" id="4">
              <material name="Argon"/>
              <tubs rmin="TPC_inner_radius+TPC_inner_thickness" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="TPC_zhalf-TPC_endcap_thickness"/>
+	     <layer number="220" ecut="0.0"/>
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
           </detector>
         </detector>
 
         <comment>Calorimeters</comment>
-        <detector id="7" name="HcalBarrel" type="XXXAhcalBarrelCalorimeter" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
+        <detector id="7" name="HcalBarrel" type="AhcalBarrelCalorimeter" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
             <comment>Hadron Calorimeter Barrel</comment>
 
             <material name="Steel235"/>
@@ -207,7 +208,7 @@
                 <slice material = "Air" thickness = "2.7*mm"  vis="HcalBarrelAirVis" />
             </layer>
         </detector>
-        <detector id="8" name="HcalEndcap" type="XXXAhcalEndcapCalorimeter" readout="HcalEndcapHits"  calorimeterType="HAD_ENDCAP" gap="15.*mm">
+        <detector id="8" name="HcalEndcap" type="AhcalEndcapCalorimeter" readout="HcalEndcapHits"  calorimeterType="HAD_ENDCAP" gap="15.*mm">
             <comment>Hadron Calorimeter Endcap</comment>
 
             <material name="Steel235"/>

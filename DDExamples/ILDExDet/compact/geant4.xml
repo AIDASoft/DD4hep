@@ -15,7 +15,7 @@
     </sd>
     <sd name="TPC" 
         type="Geant4Tracker" 
-        ecut="0.5*keV" 
+        ecut="0.01*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>

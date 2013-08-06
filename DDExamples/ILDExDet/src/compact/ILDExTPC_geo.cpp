@@ -34,26 +34,30 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Readout     readout(sens.readout());
 
   for(xml_coll_t c(e,_U(detector)); c; ++c)  {
+
     xml_comp_t  px_det  (c);
     xml_comp_t  px_tube (px_det.child(_U(tubs)));
     xml_dim_t   px_pos  (px_det.child(_U(position)));
     xml_dim_t   px_rot  (px_det.child(_U(rotation)));
     xml_comp_t  px_mat  (px_det.child(_U(material)));
     string      part_nam(px_det.nameStr());
+
     Material    part_mat(lcdd.material(px_mat.nameStr()));
     DetElement  part_det(part_nam,px_det.typeStr(),px_det.id());
+
     Tube        part_tub(px_tube.rmin(),px_tube.rmax(),px_tube.zhalf());
     Volume      part_vol(part_nam,part_tub,part_mat);
+
     Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
     Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
     bool        reflect   = px_det.reflect();
     
     sens.setType("tracker");
-    part_vol.setSensitiveDetector(sens);
+
     part_vol.setVisAttributes(lcdd,px_det.visStr());
     //cache the important volumes in TPCData for later use without having to know their name
     switch(part_det.id())
-    {
+      {
       case 2:
         tpcData->innerWall=part_det;
 	break;
@@ -61,12 +65,40 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
         tpcData->outerWall=part_det;
 	break;
       case 4:
-        tpcData->gasVolume=part_det;
-	break;
+	{
+	  xml_comp_t  px_lay(px_det.child(_U(layer)));
+	  int     nTPClayer( px_lay.attr<int>("number") ) ;
+
+	  // double  ecutTPC( px_lay.attr<double>("ecut") ) ;
+	  // sens.setEnergyCutoff( 0.0 ) ;//ecutTPC );
+
+	  double r0 = px_tube.rmin() +1.e-3 ;
+	  double r1 = px_tube.rmax() -1e-3  ;
+	  double zh = px_tube.zhalf() - 1e-3 ;
+	  double dR = ( r1 - r0 ) / ( 2.* nTPClayer ) ;  
+
+
+	  for(int i=0 ; i < nTPClayer ; ++i){
+
+	    Tube    gas_tubL( r0 + (2*i) * dR , r0 + (2*i+1) * dR , zh );
+	    Volume  gas_volL(  _toString( i, "tpc_row_lower_%2d") , gas_tubL, part_mat);
+	    part_vol.placeVolume( gas_volL, Rotation(0,0,0) );
+
+	    Tube    gas_tubU( r0 + (2*i+1) * dR , r0 + (2*i+2) * dR , zh );
+	    Volume  gas_volU( _toString( i, "tpc_row_upper_%2d")  , gas_tubU, part_mat);
+
+	    gas_volU.setSensitiveDetector( sens );
+	    part_vol.placeVolume( gas_volU, Rotation(0,0,0) ).addPhysVolID("layer",i) ;
+	  }
+	  
+	 
+	  tpcData->gasVolume=part_det;
+	  break;
+	}
       case 5:
         tpcData->cathode=part_det;
 	break;
-    }
+      }
     //Endplate
     if(part_det.id()== 0){
       tpcData->endplate=part_det;
