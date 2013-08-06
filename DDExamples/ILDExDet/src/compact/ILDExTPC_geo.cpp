@@ -81,11 +81,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	  for(int i=0 ; i < nTPClayer ; ++i){
 
 	    Tube    gas_tubL( r0 + (2*i) * dR , r0 + (2*i+1) * dR , zh );
-	    Volume  gas_volL(  _toString( i, "tpc_row_lower_%2d") , gas_tubL, part_mat);
+	    Volume  gas_volL(  _toString( i, "tpc_row_lower_%03d") , gas_tubL, part_mat);
 	    part_vol.placeVolume( gas_volL, Rotation(0,0,0) );
 
 	    Tube    gas_tubU( r0 + (2*i+1) * dR , r0 + (2*i+2) * dR , zh );
-	    Volume  gas_volU( _toString( i, "tpc_row_upper_%2d")  , gas_tubU, part_mat);
+	    Volume  gas_volU( _toString( i, "tpc_row_upper_%03d")  , gas_tubU, part_mat);
 
 	    gas_volU.setSensitiveDetector( sens );
 	    part_vol.placeVolume( gas_volU, Rotation(0,0,0) ).addPhysVolID("layer",i) ;
