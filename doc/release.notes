@@ -27,6 +27,22 @@ DD4hep  ----  Release Notes
    head. In any case save your checkout or use the tag v00-03.
 
  --------
+| v00-04 |  fourth beta release ...
+ --------   - placement options are now compatible with geant4 
+            - fixed Geant4SensitiveDetector::getVolumeID()
+            - modified ILDEx model to not use assemblies (for now !?)
+	    - removed obsolete geant4 example ILDEx
+	    - Fix population procedure of volume manager
+	    - Fix uniqueness of volume identifiers.
+	    - Remove call with lookups by placed volume to the volume manager
+	    - improved ILDExtoy example:	   		
+	      - fixed creation of cellIDS for simhits
+	      - creates SimTrackerHits for VXD, SIT and TPC
+              - creates SimCalorimeterHits for AHcal barrele and endcap
+	      - works now wigth ILDExSimu _and_ SLIC 
+ 
+
+ --------
 | v00-03 |  third beta release ...
  --------   - broken geometry (for some rotations/translations)
             - 'backup release' before placement options 
