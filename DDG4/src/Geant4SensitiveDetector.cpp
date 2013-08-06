@@ -104,6 +104,9 @@ G4bool Geant4SensitiveDetector::ProcessHits(G4Step* step,G4TouchableHistory* his
       return buildHits(step,hist);
     }
   }
+#if DEBUG
+  std::cout << " *** too small energy deposit : " <<  step->GetTotalEnergyDeposit()  << " < " <<  ene_cut  << "    at " <<  step->GetPreStepPoint()->GetPosition() << std::endl ;
+#endif
   return false;
 }
 
