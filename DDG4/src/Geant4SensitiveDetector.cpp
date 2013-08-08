@@ -95,6 +95,11 @@ void Geant4SensitiveDetector::EndOfEvent(G4HCofThisEvent* /* HCE */) {
 
 /// Method for generating hit(s) using the information of G4Step object.
 G4bool Geant4SensitiveDetector::ProcessHits(G4Step* step,G4TouchableHistory* hist) {
+  return process(step,hist);
+}
+
+/// Method for generating hit(s) using the information of G4Step object.
+G4bool Geant4SensitiveDetector::process(G4Step* step,G4TouchableHistory* hist) {
   double ene_cut = m_sensitive.energyCutoff();
   if ( step->GetTotalEnergyDeposit() > ene_cut ) {
     if ( !Geant4Hit::isGeantino(step->GetTrack()) )   {
@@ -155,7 +160,7 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   const Places& places = cnv.data().g4Placements;
 
   for(Places::const_iterator i=places.begin(); i!=places.end();++i) {
-    const G4PVPlacement* pl = (*i).second;
+    const G4VPhysicalVolume* pl = (*i).second;
     const G4VPhysicalVolume* qv = pl;
     
     if ( qv == pv ) {

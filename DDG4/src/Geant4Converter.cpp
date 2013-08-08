@@ -44,7 +44,6 @@
 #include "G4Element.hh"
 #include "G4SDManager.hh"
 #include "G4Assembly.hh"
-#include "G4AssemblyVolume.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"
 #include "G4Tubs.hh"
@@ -72,6 +71,8 @@
 #include "G4ElectroMagneticField.hh"
 #include "G4FieldManager.hh"
 
+#include "G4ReflectionFactory.hh"
+
 #include <iostream>
 #include <iomanip>
 #include <sstream>
@@ -81,6 +82,112 @@ using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 
+#define private public
+#include "G4AssemblyVolume.hh"
+#undef private
+
+struct Geant4AssemblyVolume : public G4AssemblyVolume  {
+  Geant4AssemblyVolume() {}
+  size_t placeVolume(G4LogicalVolume* pPlacedVolume,
+		     G4Transform3D&   transformation)  {
+    size_t id = fTriplets.size();
+    this->AddPlacedVolume(pPlacedVolume,transformation);
+    return id;
+  }
+  void imprint( std::vector<G4VPhysicalVolume*>& nodes,
+		G4LogicalVolume*  pMotherLV,
+		G4Transform3D&    transformation,
+		G4int copyNumBase,
+		G4bool surfCheck );
+  
+};
+
+void Geant4AssemblyVolume::imprint( std::vector<G4VPhysicalVolume*>& nodes,
+                                    G4LogicalVolume*  pMotherLV,
+                                    G4Transform3D&    transformation,
+                                    G4int copyNumBase,
+                                    G4bool surfCheck )
+{
+  G4AssemblyVolume* pAssembly = this;
+  unsigned int  numberOfDaughters;  
+  if( copyNumBase == 0 )  {
+    numberOfDaughters = pMotherLV->GetNoDaughters();
+  }
+  else  {
+    numberOfDaughters = copyNumBase;
+  }
+  // We start from the first available index
+  numberOfDaughters++;
+  ImprintsCountPlus();
+  
+  std::vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
+  for( unsigned int   i = 0; i < triplets.size(); i++ )  {
+    G4Transform3D Ta( *(triplets[i].GetRotation()),
+                      triplets[i].GetTranslation() );
+    if ( triplets[i].IsReflection() )  { Ta = Ta * G4ReflectZ3D(); }
+
+    G4Transform3D Tfinal = transformation * Ta;
+    
+    if ( triplets[i].GetVolume() )
+    {
+      // Generate the unique name for the next PV instance
+      // The name has format:
+      //
+      // av_WWW_impr_XXX_YYY_ZZZ
+      // where the fields mean:
+      // WWW - assembly volume instance number
+      // XXX - assembly volume imprint number
+      // YYY - the name of a log. volume we want to make a placement of
+      // ZZZ - the log. volume index inside the assembly volume
+      //
+      std::stringstream pvName;
+      pvName << "av_"
+             << GetAssemblyID()
+             << "_impr_"
+             << GetImprintsCount()
+             << "_"
+             << triplets[i].GetVolume()->GetName().c_str()
+             << "_pv_"
+             << i
+             << std::ends;
+
+      // Generate a new physical volume instance inside a mother
+      // (as we allow 3D transformation use G4ReflectionFactory to 
+      //  take into account eventual reflection)
+      //
+      G4PhysicalVolumesPair pvPlaced
+        = G4ReflectionFactory::Instance()->Place( Tfinal,
+                                                  pvName.str().c_str(),
+                                                  triplets[i].GetVolume(),
+                                                  pMotherLV,
+                                                  false,
+                                                  numberOfDaughters + i,
+                                                  surfCheck );
+
+      // Register the physical volume created by us so we can delete it later
+      //
+      fPVStore.push_back( pvPlaced.first );
+      nodes.push_back(pvPlaced.first);
+      if ( pvPlaced.second )  { // Supported by G4, but not by TGeo!
+	fPVStore.push_back( pvPlaced.second ); 
+	G4Exception("G4AssemblyVolume::MakeImprint(..)",
+		    "GeomVol0003", FatalException,
+		    "Fancy construct popping new mother from the stack!");
+      }
+    }
+    else if ( triplets[i].GetAssembly() )    {
+      // Place volumes in this assembly with composed transformation
+      G4Exception("G4AssemblyVolume::MakeImprint(..)",
+                  "GeomVol0003", FatalException,
+                  "Assemblies within assembliesare not supported.");
+    }
+    else    {
+      G4Exception("G4AssemblyVolume::MakeImprint(..)",
+                  "GeomVol0003", FatalException,
+                  "Triplet has no volume and no assembly");
+    }  
+  }  
+}    
 
 namespace {
   static TGeoNode* s_topPtr;
@@ -117,8 +224,9 @@ namespace {
 
 /// Initializing Constructor
 Geant4Converter::Geant4Converter( LCDD& lcdd ) 
-  : Geant4Mapping(lcdd,new G4GeometryInfo()), m_checkOverlaps(true)
+  : Geant4Mapping(lcdd), m_checkOverlaps(true)
 {
+  this->Geant4Mapping::init();
 }
 
 /// Standard destructor
@@ -343,7 +451,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape)  
 
 /// Dump logical volume in GDML format to output stream
 void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume)   const   {
-  G4GeometryInfo& info = data();
+  Geant4GeometryInfo& info = data();
   G4LogicalVolume* vol = info.g4Volumes[volume];
   if ( !vol ) {
     const TGeoVolume*        v        = volume;
@@ -431,7 +539,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
 
 /// Dump logical volume in GDML format to output stream
 void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume* volume)   const   {
-  G4GeometryInfo& info = data();
+  Geant4GeometryInfo& info = data();
   const TGeoVolume* v = volume;
   Volume            _v  = Ref_t(v);
   Region            reg = _v.region();
@@ -446,128 +554,82 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
 
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node) const {
-  G4GeometryInfo& info = data();  
-  G4PVPlacement* g4    = info.g4Placements[node];
+  static Double_t identity_rot[] = { 1., 0., 0., 0., 1., 0., 0., 0., 1. };
+  Geant4GeometryInfo& info = data();  
+  PlacementMap::const_iterator g4it = info.g4Placements.find(node);
+  G4VPhysicalVolume* g4 = (g4it == info.g4Placements.end()) ? 0 : (*g4it).second;
   if ( !g4 )   {
     TGeoVolume*      mot_vol = node->GetMotherVolume();
     TGeoVolume*      vol     = node->GetVolume();
     TGeoMatrix*      trafo   = node->GetMatrix();
-    int              copy    = node->GetNumber();
-
-    //fg: this is not needed any more - the cellIDs are taken from the VolumIDs
-    //    set for the placed volumes ...
-    // // if the CellID0 volID is defined for the volume we 
-    // // use it to overwrite the copy number
-    // // this is then used in the sensitive detector to fill the CellID0
-    // // of the SimTrackerHits
-    // if ( dynamic_cast<const PlacedVolume::Object*>(node) ) {
-    //   PlacedVolume p = Ref_t(node);
-    //   const PlacedVolume::VolIDs& ids = p.volIDs();
-    //   //      copy = ids[ "CellID0" ] ;
-    //   PlacedVolume::VolIDs::const_iterator it = ids.find("CellID0") ;
-    //   if( it != ids.end() ) 
-    //  	copy = it->second ;
-    // }
-    //--------------------------------------------------------
-    G4LogicalVolume*  g4vol   = info.g4Volumes[vol];
-    G4LogicalVolume*  g4mot   = info.g4Volumes[mot_vol];
-    G4AssemblyVolume* ass_mot = (G4AssemblyVolume*)g4mot;
-    G4AssemblyVolume* ass_dau = (G4AssemblyVolume*)g4vol;
-    bool daughter_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
-    bool mother_is_assembly   = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
-    if ( trafo ) {
-      const Double_t*  trans = trafo->GetTranslation();
-      bool is_rot  = trafo->IsRotation();
-      if ( 0 == vol ) {
-	printout(FATAL,"Geant4Converter","++ Unknown G4 volume:%p %s of type %s vol:%s ptr:%s",
-		 node,node->GetName(),node->IsA()->GetName(),vol->IsA()->GetName(),vol);
-      }
-      else if ( is_rot )    {
-	const Double_t* rot = trafo->GetRotationMatrix();
-	MyTransform3D transform(rot[0],rot[1],rot[2],trans[0]*CM_2_MM,
-				rot[3],rot[4],rot[5],trans[1]*CM_2_MM,
-				rot[6],rot[7],rot[8],trans[2]*CM_2_MM);
-	CLHEP::HepRotation rotmat=transform.getRotation();
-	if ( mother_is_assembly )  {	  // Mother is an assembly:
-	  printout(DEBUG,"Geant4Converter","++ Assembly: AddPlacedVolume: %16p dau:%s "
-		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
-		   ass_mot,g4vol->GetName().c_str(),
-		   transform.dx(),transform.dy(),transform.dz(),
-		   rotmat.getPhi(),rotmat.getTheta(),rotmat.getPsi());
-	  ass_mot->AddPlacedVolume(g4vol,transform);
-	  return 0;
-	}
-	else if ( daughter_is_assembly )  {
-	  printout(DEBUG,"Geant4Converter","++ Assembly: makeImprint: %16p dau:%s "
-		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
-		   ass_dau,g4mot->GetName().c_str(),
-		   transform.dx(),transform.dy(),transform.dz(),
-		   rotmat.getPhi(),rotmat.getTheta(),rotmat.getPsi());
-	  ass_dau->MakeImprint(g4mot,transform,copy,m_checkOverlaps);
-	  return 0;
-	}
-	g4 = new G4PVPlacement(transform, // no rotation
-			       g4vol,     // its logical volume
-			       name,      // its name
-			       g4mot,     // its mother (logical) volume
-			       false,     // no boolean operations
-			       copy,      // its copy number
-			       m_checkOverlaps);
-      }
-      else {
-	G4ThreeVector pos(trans[0]*CM_2_MM,trans[1]*CM_2_MM,trans[2]*CM_2_MM);
-	if ( mother_is_assembly )  {	  // Mother is an assembly:
-	  ass_mot->AddPlacedVolume(g4vol,pos,0);
-	  printout(DEBUG,"Geant4Converter","++ Assembly: AddPlacedVolume: %16p dau:%s "
-		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
-		   ass_mot,g4vol->GetName().c_str(),
-		   pos.x(),pos.y(),pos.z(),0,0,0);
-	  return 0;
-	}
-	else if ( daughter_is_assembly )  {
-	  printout(DEBUG,"Geant4Converter","++ Assembly: makeImprint: %16p dau:%s "
-		   "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
-		   ass_dau,g4mot->GetName().c_str(),
-		   pos.x(),pos.y(),pos.z(),0,0,0);
-	  ass_dau->MakeImprint(g4mot,pos,0,copy,m_checkOverlaps);
-	  return 0;
-	}
-	g4 = new G4PVPlacement(0,         // no rotation
-			       pos,       // translation position
-			       g4vol,     // its logical volume
-			       name,      // its name
-			       g4mot,     // its mother (logical) volume
-			       false,     // no boolean operations
-			       copy,      // its copy number
-			       m_checkOverlaps);
-      }
-      data().g4Placements[node] = g4;
+    if ( !trafo ) {
+      printout(FATAL,"Geant4Converter","++ Attempt to handle placement without transformation:%p %s of type %s vol:%p",
+	       node,node->GetName(),node->IsA()->GetName(),vol);
     }
-    else if ( node == s_topPtr )  {
-      G4ThreeVector pos(0,0,0);
+    else if ( 0 == vol ) {
+      printout(FATAL,"Geant4Converter","++ Unknown G4 volume:%p %s of type %s vol:%s ptr:%p",
+	       node,node->GetName(),node->IsA()->GetName(),vol->IsA()->GetName(),vol);
+    }
+    else  {
+      int                   copy    = node->GetNumber();
+      G4LogicalVolume*      g4vol   = info.g4Volumes[vol];
+      G4LogicalVolume*      g4mot   = info.g4Volumes[mot_vol];
+      Geant4AssemblyVolume* ass_mot = (Geant4AssemblyVolume*)g4mot;
+      Geant4AssemblyVolume* ass_dau = (Geant4AssemblyVolume*)g4vol;
+      const Double_t*       trans   = trafo->GetTranslation();
+      const Double_t*       rot     = trafo->IsRotation() ? trafo->GetRotationMatrix() : identity_rot;
+      bool daughter_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
+      bool mother_is_assembly   = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
+      MyTransform3D transform(rot[0],rot[1],rot[2],trans[0]*CM_2_MM,
+			      rot[3],rot[4],rot[5],trans[1]*CM_2_MM,
+			      rot[6],rot[7],rot[8],trans[2]*CM_2_MM);
+      CLHEP::HepRotation rotmat=transform.getRotation();
+
       if ( mother_is_assembly )  {	  // Mother is an assembly:
-	ass_mot->AddPlacedVolume(g4vol,pos,0);
+	printout(DEBUG,"Geant4Converter","++ Assembly: AddPlacedVolume: %16p dau:%s "
+		 "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
+		 ass_mot,g4vol ? g4vol->GetName().c_str() : "---",
+		 transform.dx(),transform.dy(),transform.dz(),
+		 rotmat.getPhi(),rotmat.getTheta(),rotmat.getPsi());
+	size_t id = ass_mot->placeVolume(g4vol,transform);
+	info.g4AssemblyChildren[ass_mot].push_back(make_pair(id,node));
 	return 0;
       }
       else if ( daughter_is_assembly )  {
-	ass_dau->MakeImprint(g4mot,pos,0,copy,m_checkOverlaps);
+	printout(DEBUG,"Geant4Converter","++ Assembly: makeImprint: %16p dau:%s "
+		 "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n",
+		 ass_dau,g4mot ? g4mot->GetName().c_str() : "---",
+		 transform.dx(),transform.dy(),transform.dz(),
+		 rotmat.getPhi(),rotmat.getTheta(),rotmat.getPsi());
+	std::vector<G4VPhysicalVolume*> phys_volumes;
+	AssemblyChildMap::iterator i = info.g4AssemblyChildren.find(ass_dau);
+	if ( i == info.g4AssemblyChildren.end() )  {
+	  printout(ERROR, "Geant4Converter", "++ Non-existing assembly [%p]",ass_dau);
+	}
+	const AssemblyChildren& v = (*i).second;
+	ass_dau->imprint(phys_volumes,g4mot,transform,copy,m_checkOverlaps);
+	if ( v.size() != phys_volumes.size() )   {
+	  printout(ERROR, "Geant4Converter", "++ Unexpected number of placements in assembly: %ld <> %ld.",
+		   v.size(), phys_volumes.size());
+	}
+	for(size_t j=0; j<v.size(); ++j)  {
+	  info.g4Placements[v[j].second] = phys_volumes[j];
+	}
 	return 0;
       }
-      g4 = new G4PVPlacement(0,         // no rotation
-			     pos,       // translation position
+      g4 = new G4PVPlacement(transform, // no rotation
 			     g4vol,     // its logical volume
 			     name,      // its name
 			     g4mot,     // its mother (logical) volume
 			     false,     // no boolean operations
 			     copy,      // its copy number
 			     m_checkOverlaps);
-      data().g4Placements[node] = g4;
-      printout(ERROR, "Geant4Converter", "++ Attempt to convert TOP Detector node failed.");
     }
+    info.g4Placements[node] = g4;
   }
   else {
-    printout(ERROR, "Geant4Converter", "++ Attempt to DOUBLE-place physical volume: %s No:%d",
-	     name.c_str(),node->GetNumber());
+   printout(ERROR, "Geant4Converter", "++ Attempt to DOUBLE-place physical volume: %s No:%d",
+	    name.c_str(),node->GetNumber());
   }
   return g4;
 }
@@ -643,7 +705,7 @@ void* Geant4Converter::handleLimitSet(const TNamed* limitset, const set<const TG
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
-  G4GeometryInfo& info = data();
+  Geant4GeometryInfo& info = data();
   Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
   if ( !g4 )   {
     SensitiveDetector sd = Ref_t(sens_det);
@@ -651,8 +713,14 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
 
     g4 = ROOT::Reflex::PluginService::Create<Geant4SensitiveDetector*>(type,name,&m_lcdd);
     if ( !g4 ) {
-      throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
-			  "create Geant4 sensitive detector "+name+" of type "+type+".");
+      string tmp = type;
+      tmp[0] = ::toupper(tmp[0]);
+      type = "Geant4"+tmp;
+      g4 = ROOT::Reflex::PluginService::Create<Geant4SensitiveDetector*>(type,name,&m_lcdd);
+      if ( !g4 )  {
+	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
+			    "create Geant4 sensitive detector "+name+" of type "+type+".");
+      }
     }
     g4->Activate(true);
     g4->defineCollection(sd.hitsCollection());
@@ -664,7 +732,7 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
 
 /// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
 void* Geant4Converter::handleVis(const string& /* name */, const TNamed* vis) const  {
-  G4GeometryInfo& info = data();
+  Geant4GeometryInfo& info = data();
   G4VisAttributes* g4 = info.g4Vis[vis];
   if ( !g4 )   {
     float   r=0, g=0, b=0;
@@ -732,7 +800,7 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void* Geant4Converter::printSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
-  G4GeometryInfo& info = data();
+  Geant4GeometryInfo& info = data();
   Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
   ConstVolumeSet& volset = info.sensitives[sens_det];
   SensitiveDetector   sd = Ref_t(sens_det);
@@ -777,12 +845,12 @@ string printSolid(G4VSolid* sol) {
 
 /// Print G4 placement
 void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) const {
-  G4GeometryInfo& info = data();  
-  G4PVPlacement*    g4 = info.g4Placements[node];
-  G4LogicalVolume* vol = info.g4Volumes[node->GetVolume()];
-  G4LogicalVolume* mot = info.g4Volumes[node->GetMotherVolume()];
-  G4VSolid*        sol = vol->GetSolid();
-  G4ThreeVector     tr = g4->GetObjectTranslation();
+  Geant4GeometryInfo&  info = data();  
+  G4VPhysicalVolume* g4 = info.g4Placements[node];
+  G4LogicalVolume*  vol = info.g4Volumes[node->GetVolume()];
+  G4LogicalVolume*  mot = info.g4Volumes[node->GetMotherVolume()];
+  G4VSolid*         sol = vol->GetSolid();
+  G4ThreeVector      tr = g4->GetObjectTranslation();
   
   G4VSensitiveDetector* sd = vol->GetSensitiveDetector();
   if ( !sd ) return g4;
@@ -827,7 +895,7 @@ template <typename O, typename C, typename F> void handleRMap(const O* o, const 
 
 /// Create geometry conversion
 Geant4Converter& Geant4Converter::create(DetElement top) {
-  G4GeometryInfo& geo = *(m_dataPtr=new G4GeometryInfo);
+  Geant4GeometryInfo& geo = this->init();
   m_data->clear();
   collect(top, geo);
   s_topPtr = top.placement().ptr();
@@ -861,5 +929,6 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
 
   //handleMap(this, geo.sensitives, &Geant4Converter::printSensitive);
   //handleRMap(this, *m_data, &Geant4Converter::printPlacement);
+  geo.valid = true;
   return *this;
 }

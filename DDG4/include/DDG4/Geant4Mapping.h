@@ -10,32 +10,10 @@
 #define DD4HEP_GEANT4MAPPING_H
 
 // Framework include files
-#include "DD4hep/GeoHandler.h"
 #include "DD4hep/LCDD.h"
-
-// C/C++ include files
-#include <set>
-#include <map>
-#include <vector>
-
-// Forward declarations
-class TGeoVolume;
-class TGeoElement;
-class TGeoShape;
-class TGeoMedium;
-class TGeoNode;
-
-class G4Element;
-class G4Material;
-class G4VSolid;
-class G4LogicalVolume;
-class G4PVPlacement;
-class G4Region;
-class G4Field;
-class G4FieldManager;
-class G4UserLimits;
-class G4VisAttributes;
-class G4VPhysicalVolume;
+#include "DD4hep/GeoHandler.h"
+#include "DDG4/Geant4GeometryInfo.h"
+#include "DDG4/Geant4VolumeManager.h"
 
 /*
  *   DD4hep namespace declaration
@@ -46,8 +24,6 @@ namespace DD4hep {
    *   Simulation namespace declaration
    */
   namespace Simulation   {
-
-    class Geant4SensitiveDetector;
 
     /** @class Geant4Mapping Geant4Mapping.h DDG4/Geant4Mapping.h
      * 
@@ -67,60 +43,56 @@ namespace DD4hep {
       typedef Geometry::Material          Material;
       typedef Geometry::Region            Region;
 
-      typedef std::map<const TGeoElement*,G4Element*>               ElementMap;
-      typedef std::map<const TGeoMedium*, G4Material*>              MaterialMap;
-      typedef std::map<const TNamed*,     G4UserLimits*>            LimitMap;
-      typedef std::map<const TGeoNode*,   G4PVPlacement*>           PlacementMap;
-      typedef std::map<const TNamed*,     G4Region*>                RegionMap;
-      typedef std::map<const TNamed*,     Geant4SensitiveDetector*> SensDetMap;
-      typedef std::map<const TGeoVolume*, G4LogicalVolume*>         VolumeMap;
-      typedef std::map<const TGeoShape*,  G4VSolid*>                SolidMap;
-      typedef std::map<const TNamed*,     G4VisAttributes*>         VisMap;
-      struct G4GeometryInfo : public GeometryInfo {
-	ElementMap              g4Elements;
-	MaterialMap             g4Materials;
-	SolidMap                g4Solids;
-	VolumeMap               g4Volumes;
-	PlacementMap            g4Placements;
-	RegionMap               g4Regions;
-	VisMap                  g4Vis;
-	LimitMap                g4Limits;
-	SensDetMap              g4SensDets;
+      typedef Geant4GeometryInfo::PlacementPath      PlacementPath;
+      typedef Geant4GeometryInfo::AssemblyChildren   AssemblyChildren;
+      typedef Geant4GeometryInfo::ElementMap         ElementMap;
+      typedef Geant4GeometryInfo::MaterialMap        MaterialMap;
+      typedef Geant4GeometryInfo::LimitMap           LimitMap;
+      typedef Geant4GeometryInfo::PlacementMap       PlacementMap;
+      typedef Geant4GeometryInfo::AssemblyChildMap   AssemblyChildMap;
+      typedef Geant4GeometryInfo::RegionMap          RegionMap;
+      typedef Geant4GeometryInfo::SensDetMap         SensDetMap;
+      typedef Geant4GeometryInfo::VolumeMap          VolumeMap;
+      typedef Geant4GeometryInfo::SolidMap           SolidMap;
+      typedef Geant4GeometryInfo::VisMap             VisMap;
+      typedef Geant4GeometryInfo::PathMap            PathMap;
 
-	SensitiveVolumes   sensitives;
-	RegionVolumes      regions;
-	LimitVolumes       limits;
-      };
     protected:
-      LCDD&           m_lcdd;
-      G4GeometryInfo* m_dataPtr;
+      LCDD&               m_lcdd;
+      Geant4GeometryInfo* m_dataPtr;
 
       /// When resolving pointers, we must check for the validity of the data block
       void checkValidity() const;
     public:
-      /// Access to the data pointer
-      G4GeometryInfo& data() const { return *m_dataPtr; }
-      /// Release data and pass over the ownership
-      G4GeometryInfo* detach();
-      /// Set a new data block
-      void attach(G4GeometryInfo* data);
       /// Initializing Constructor
-      Geant4Mapping(LCDD& lcdd, G4GeometryInfo* data);
+      Geant4Mapping(LCDD& lcdd);
+
       /// Standard destructor
       virtual ~Geant4Mapping();
+
       /// Possibility to define a singleton instance
       static Geant4Mapping& instance();
 
       /// Accesor to the LCDD instance
       LCDD& lcdd() const {  return m_lcdd; }
 
-      /// Accessor to resolve G4 placements
-      G4PVPlacement* g4Placement(const TGeoNode* node)  const;
+      /// Access to the data pointer
+      Geant4GeometryInfo& data() const { return *m_dataPtr; }
+
+      /// Create and attach new data block. Delete old data block if present.
+      Geant4GeometryInfo& init();
+
+      /// Release data and pass over the ownership
+      Geant4GeometryInfo* detach();
+
+      /// Set a new data block
+      void attach(Geant4GeometryInfo* data);
+
+      /// Access the volume manager
+      Geant4VolumeManager volumeManager() const;
+
       /// Accessor to resolve geometry placements
       PlacedVolume placement(const G4VPhysicalVolume* node)  const;
-
-
-
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

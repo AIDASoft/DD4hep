@@ -7,6 +7,7 @@
 //
 //====================================================================
 
+#include "DD4hep/Printout.h"
 #include "DDG4/Geant4Mapping.h"
 #include "G4PVPlacement.hh"
 #include <stdexcept>
@@ -16,8 +17,7 @@ using namespace DD4hep::Geometry;
 using namespace std;
 
 /// Initializing Constructor
-Geant4Mapping::Geant4Mapping( LCDD& lcdd, G4GeometryInfo* data) 
-  : m_lcdd(lcdd), m_dataPtr(data)
+Geant4Mapping::Geant4Mapping(LCDD& lcdd) : m_lcdd(lcdd), m_dataPtr(0)
 {
 }
 
@@ -29,7 +29,7 @@ Geant4Mapping::~Geant4Mapping()  {
 
 /// Possibility to define a singleton instance
 Geant4Mapping& Geant4Mapping::instance()  {
-  static Geant4Mapping inst(LCDD::getInstance(),0);
+  static Geant4Mapping inst(LCDD::getInstance());
   return inst;
 }
 
@@ -39,25 +39,35 @@ void Geant4Mapping::checkValidity() const   {
   throw runtime_error("Geant4Mapping: Attempt to access an invalid data block!");
 }
 
+/// Create new data block. Delete old data block if present.
+Geant4GeometryInfo& Geant4Mapping::init()  {
+  Geant4GeometryInfo* p = detach();
+  if ( p ) delete p;
+  attach(new Geant4GeometryInfo());
+  return data();
+}
+
 /// Release data and pass over the ownership
-Geant4Mapping::G4GeometryInfo* Geant4Mapping::detach()   {
-  G4GeometryInfo* p = m_dataPtr;
+Geant4GeometryInfo* Geant4Mapping::detach()   {
+  Geant4GeometryInfo* p = m_dataPtr;
   m_dataPtr = 0;
   return p;
 }
 
 /// Set a new data block
-void Geant4Mapping::attach(G4GeometryInfo* data)   {
+void Geant4Mapping::attach(Geant4GeometryInfo* data)   {
   m_dataPtr = data;
 }
 
-/// Accessor to resolve G4 placements
-G4PVPlacement* Geant4Mapping::g4Placement(const TGeoNode* node)  const   {
-  checkValidity();
-  const PlacementMap& m = m_dataPtr->g4Placements;
-  PlacementMap::const_iterator i = m.find(node);
-  if ( i !=  m.end() ) return (*i).second;
-  return 0;
+/// Access the volume manager
+Geant4VolumeManager Geant4Mapping::volumeManager() const   {
+  if ( m_dataPtr )  {
+    if ( m_dataPtr->g4Paths.empty() )  {
+      return Geant4VolumeManager(m_lcdd,m_dataPtr);
+    }
+    return Geant4VolumeManager(Geometry::Handle<Geant4GeometryInfo>(m_dataPtr));
+  }
+  throw runtime_error(format("Geant4Mapping","Cannot create volume manager without Geant4 geometry info [Invalid-Info]"));
 }
 
 /// Accessor to resolve geometry placements

@@ -79,33 +79,41 @@ namespace DD4hep {
       const G4VTouchable* postTouchable()  const {
 	return post->GetTouchable();
       }
-      const char* volName(G4StepPoint* p, const char* undefined="")  const {
+      const char* volName(const G4StepPoint* p, const char* undefined="")  const {
 	G4VPhysicalVolume* v = volume(p);
 	return v ? v->GetName().c_str() : undefined;
       }
-      G4VPhysicalVolume* volume(G4StepPoint* p)  const {
+      G4VPhysicalVolume* volume(const G4StepPoint* p)  const {
 	return p->GetTouchableHandle()->GetVolume();
       }
-      G4VPhysicalVolume* physvol(G4StepPoint* p)   const {
+      G4VPhysicalVolume* physvol(const G4StepPoint* p)   const {
 	return p->GetPhysicalVolume();
       }
-      G4LogicalVolume* logvol(G4StepPoint* p)   const {
+      G4LogicalVolume* logvol(const G4StepPoint* p)   const {
 	G4VPhysicalVolume* pv = physvol(p);
 	return pv ? pv->GetLogicalVolume() : 0;
       }
-      G4VSensitiveDetector* sd(G4StepPoint* p)  const {
+      G4VSensitiveDetector* sd(const G4StepPoint* p)  const {
 	G4LogicalVolume* lv = logvol(p);
 	return lv ? lv->GetSensitiveDetector() : 0;
       }
-      const char* sdName(G4StepPoint* p, const char* undefined="")  const {
+      const char* sdName(const G4StepPoint* p, const char* undefined="")  const {
 	G4VSensitiveDetector* s = sd(p);
 	return s ? s->GetName().c_str() : undefined;
       }
-
-      G4VPhysicalVolume* preVolume()  const  {	return volume(pre);       }
-      G4VSensitiveDetector* preSD()  const   {	return sd(pre);           }
-      G4VPhysicalVolume* postVolume()  const {	return volume(post);      }
-      G4VSensitiveDetector* postSD()  const  {	return sd(post);          }
+      bool isSensitive(const G4LogicalVolume* lv) const  {
+	return lv ? (0 != lv->GetSensitiveDetector()) : false;
+      }
+      bool isSensitive(const G4VPhysicalVolume* pv) const  {
+	return pv ? isSensitive(pv->GetLogicalVolume()) : false;
+      }
+      bool isSensitive(const G4StepPoint* point) const  {
+	return point ? isSensitive(volume(point)) : false;
+      }
+      G4VPhysicalVolume*    preVolume()   const  {	return volume(pre);       }
+      G4VSensitiveDetector* preSD()       const  {	return sd(pre);           }
+      G4VPhysicalVolume*    postVolume()  const  {	return volume(post);      }
+      G4VSensitiveDetector* postSD()      const  {	return sd(post);          }
     };
 
   }    // End namespace Simulation

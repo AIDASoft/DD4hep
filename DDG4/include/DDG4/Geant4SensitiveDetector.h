@@ -115,6 +115,9 @@ namespace DD4hep {
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* history);
 
+      /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
+      virtual G4bool process(G4Step* step,G4TouchableHistory* history);
+
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
       /** Hits collections created but not beibg set to G4HCofThisEvent 
        *  at the event should be deleted.
