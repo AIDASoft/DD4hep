@@ -69,7 +69,7 @@ void VolIDTest::walk(DetElement e, VolIDs ids, size_t depth, size_t mx_depth)  c
     }
     if ( pv.volume().isSensitive() )  {
       stringstream err, log;
-      VolumeManager::VolumeID vid = m_iddesc.encode(child_ids);
+      VolumeID vid = m_iddesc.encode(child_ids);
       try {
 	DetElement det       = m_mgr.lookupDetector(vid);
         DetElement det_elem  = m_mgr.lookupDetElement(vid);

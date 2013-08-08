@@ -1,3 +1,5 @@
+#include "DD4hep/Detector.h"
+#include "DD4hep/Readout.h"
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4Converter.h"
 
@@ -7,6 +9,8 @@
 #include "G4PVPlacement.hh"
 #include "G4VSensitiveDetector.hh"
 
+// C/C++ include files
+#include <sstream>
 
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
@@ -19,10 +23,10 @@ SteppingAction::~SteppingAction()
 { }
 
 
+#include "G4StepPoint.hh"
 
 void SteppingAction::UserSteppingAction(const G4Step* aStep)   {  
   Geant4StepHandler step(aStep);
-  Geant4Mapping&    mapping = Geant4Mapping::instance();
   SiMaterial     = G4Material::GetMaterial("Silicon");
   TPCGasMaterial = G4Material::GetMaterial("Argon");
 
@@ -57,22 +61,39 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
 	     edep/keV);
   }
 
-  ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
-	   long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
-  ::printf("                pre-Vol: %s  Status:%s  SD:%s\n",
-	   step.volName(step.pre,"----"), step.preStepStatus(), step.sdName(step.pre,"----"));
-  ::printf("                post-Vol:%s  Status:%s  SD:%s\n",
-	   step.volName(step.post,"----"), step.postStepStatus(), step.sdName(step.post,"----"));
-
-  const G4VPhysicalVolume* pv  = step.volume(step.post);
-  Geometry::PlacedVolume place = mapping.placement(pv);
-  if ( place.isValid() )   {
-    if ( place.volume().isSensitive() )  {
-      // Example code to access the physical vlume and the cell id
-      //Geometry::VolumeManager vm = mapping.lcdd().volumeManager();
-      //Geometry::VolumeManager::VolumeID cell_id = vm.lookupID(place);
-      //const TGeoNode* tpv = pv.ptr();
-      //printf("           Found Sensitive TGeoNode:%s CellID: %lld!\n",place.name(),cell_id);
+  if ( step.isSensitive(step.post) )  {
+    ::printf("  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f \n",
+	     long(step.track), pos1.X(), pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
+    ::printf("                pre-Vol: %s  Status:%s  SD:%s\n",
+	     step.volName(step.pre,"----"), step.preStepStatus(), step.sdName(step.pre,"----"));
+    ::printf("                post-Vol:%s  Status:%s  SD:%s\n",
+	     step.volName(step.post,"----"), step.postStepStatus(), step.sdName(step.post,"----"));
+  }
+  Geant4VolumeManager      volMgr = Geant4Mapping::instance().volumeManager();
+  const G4VPhysicalVolume* pv     = step.volume(step.post);
+  Geometry::PlacedVolume   place  = volMgr.placement(pv);
+  if ( !place.isValid() )   {
+    ::printf("                 -->  Severe ERROR: incomplete placement map from Geant4 conversion.\n");
+  }
+  else  {
+    VolumeID id = volMgr.volumeID(step.postTouchable());
+    if ( id == Geant4VolumeManager::InvalidPath )  {
+      ::printf("                 -->  Severe ERROR: Invalid placement path: touchable corrupted?\n");
+    }
+    else if ( id == Geant4VolumeManager::Insensitive )  {
+      ::printf("                 -->  WARNING: Only sensitive volumes may be decoded.\n");
+    }
+    else if ( id == Geant4VolumeManager::NonExisting )  {
+      ::printf("                 -->  WARNING: non existing placement path.\n");
+    }
+    else  {
+      std::stringstream str;
+      Geant4VolumeManager::VolIDDescriptor dsc;
+      Geant4VolumeManager::VolIDFields& fields = dsc.second;
+      volMgr.volumeDescriptor(step.postTouchable(),dsc);
+      for(Geant4VolumeManager::VolIDFields::iterator i=fields.begin(); i!=fields.end();++i)
+	str << (*i).first->name() << "=" << (*i).second << " ";
+      ::printf("                 -->  CellID: %X [%X] -> %s\n",id,dsc.first,str.str().c_str());
     }
   }
 }
