@@ -12,6 +12,7 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
+#include "DD4hep/Primitives.h"
 #include "DD4hep/BitField64.h"
 
 // C++ include files
@@ -37,28 +38,12 @@ namespace DD4hep {
      */
     struct IDDescriptor : public Ref_t  {
     public:
-      typedef unsigned long long int VolumeID;
-#if 0
-      //typedef std::pair<int,int>          Field;
-      struct Field  {
-	int first, second;
-	VolumeID mask;
-	VolumeID encode(int value)  const  {
-	  VolumeID v = value;
-	  return  ( (  v  << first )  | mask  ) ;
-	  //xx	  return mask|((v<<(64-second))>>first);
-
-	}
-	int decode(VolumeID value)  const  {
-	  return  ( ~mask & value ) >> first  ;
-	  //xx return (~mask&value)>>(64-second-first);
-	}
-      };
-#endif
       typedef std::pair<std::string,int> VolID;
       typedef BitFieldValue* Field;
       typedef std::vector<std::pair<std::string,Field> >  FieldMap;
       typedef std::vector<std::pair<size_t,std::string> > FieldIDs;
+      typedef std::pair<Field,VolumeID>                   VolIDField;
+      typedef std::vector<VolIDField>                     VolIDFields;
 
       /** @class IDDescriptor::Object IDDescriptor.h DDCore/IDDescriptor.h
        *  
@@ -70,11 +55,14 @@ namespace DD4hep {
 	FieldMap      fieldMap;
 	FieldIDs      fieldIDs;
 	std::string   description;
-	//unsigned      maxBit;
 	/// Standard constructor
 	Object(const std::string& initString);
 	/// Default destructor
 	virtual ~Object();
+	/// Access to the field container of the BitField64
+	const std::vector<BitFieldValue*> fields() const  {
+	  return _fields;
+	}
       };
       public:
       /// Default constructor
@@ -99,6 +87,8 @@ namespace DD4hep {
       Field field(size_t identifier)  const;
       /// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
       VolumeID encode(const std::vector<VolID>& ids)  const;
+      /// Decode volume IDs and return filled descriptor with all fields
+      void decodeFields(VolumeID vid, VolIDFields& fields);
       /// Acces string representation
       std::string toString() const;
     };

@@ -61,8 +61,7 @@ namespace DD4hep {
      */
     struct VolumeManager : public Ref_t {
     public:
-      typedef unsigned long long int VolumeID;
-
+      typedef DD4hep::VolumeID VolumeID;
       // Creation flags
       enum PopulateFlags {
 	NONE = 0,

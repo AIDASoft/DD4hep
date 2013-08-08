@@ -11,6 +11,7 @@
 #include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
 #include <cstdarg>
+#include <stdexcept>
 
 static size_t _the_printer(void*, DD4hep::PrintLevel, const char* src, const char* text)  {
   size_t len = ::fputs(src,stdout);
@@ -31,15 +32,11 @@ static DD4hep::output_function_t print_func = _the_printer;
  *  @return Status code indicating success or failure
  */
 int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)   {
-  if ( severity >= print_lvl ) {                  // receives:
-    va_list args;                                // - the log level
-    va_start( args, fmt);                        // - a standard C formatted 
-    char str[4096];                              //   string (like printf)
-    size_t len = vsnprintf(str,sizeof(str)-2,fmt,args);
-    va_end (args);
-    str[len]   = '\n';
-    str[len+1] = '\0';
-    print_func(print_arg,severity,src,str);
+  if ( severity >= print_lvl ) {
+    va_list args;
+    va_start(args,fmt);
+    printout(severity,src,fmt,args);
+    va_end(args);
   }
   return 1;
 }
@@ -51,19 +48,14 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)
  *  @return Status code indicating success or failure
  */
 int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fmt, ...)   {
-  if ( severity >= print_lvl ) {                  // receives:
-    va_list args;                                // - the log level
-    va_start( args, fmt);                        // - a standard C formatted 
-    char str[4096];                              //   string (like printf)
-    size_t len = vsnprintf(str,sizeof(str)-2,fmt,args);
-    va_end (args);
-    str[len]   = '\n';
-    str[len+1] = '\0';
-    print_func(print_arg,severity,src.c_str(),str);
+  if ( severity >= print_lvl ) {
+    va_list args;
+    va_start(args,fmt);
+    printout(severity,src.c_str(),fmt,args);
+    va_end(args);
   }
   return 1;
 }
-
 
 /** Calls the display action
  *  @arg severity   [int,read-only]      Display severity flag
@@ -72,12 +64,41 @@ int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fm
  *  @return Status code indicating success or failure
  */
 int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fmt, ...)   {
-  if ( severity >= print_lvl ) {                  // receives:
-    va_list args;                                // - the log level
-    va_start( args, fmt);                        // - a standard C formatted 
-    char str[4096];                              //   string (like printf)
-    size_t len = vsnprintf(str,sizeof(str)-2,fmt.c_str(),args);
-    va_end (args);
+  if ( severity >= print_lvl ) {
+    va_list args;
+    va_start(args,fmt);
+    printout(severity,src,fmt.c_str(),args);
+    va_end(args);
+  }
+  return 1;
+}
+
+/** Calls the display action
+ *  @arg severity   [int,read-only]      Display severity flag
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+int DD4hep::printout(PrintLevel severity, const std::string& src, const std::string& fmt, ...)   {
+  if ( severity >= print_lvl )   {
+    va_list args;
+    va_start(args,fmt);
+    printout(severity,src.c_str(),fmt.c_str(),args);
+    va_end(args);
+  }
+  return 1;
+}
+
+/** Calls the display action
+ *  @arg severity   [int,read-only]      Display severity flag
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_list& args)   {
+  if ( severity >= print_lvl ) {
+    char str[4096];
+    size_t len = vsnprintf(str,sizeof(str)-2,fmt,args);
     str[len]   = '\n';
     str[len+1] = '\0';
     print_func(print_arg,severity,src,str);
@@ -91,18 +112,54 @@ int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fm
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const std::string& src, const std::string& fmt, ...)   {
-  if ( severity >= print_lvl ) {                  // receives:
-    va_list args;                                // - the log level
-    va_start( args, fmt);                        // - a standard C formatted 
-    char str[4096];                              //   string (like printf)
-    size_t len = vsnprintf(str,sizeof(str)-2,fmt.c_str(),args);
-    va_end (args);
-    str[len]   = '\n';
-    str[len+1] = '\0';
-    print_func(print_arg,severity,src.c_str(),str);
-  }
-  return 1;
+int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fmt, va_list& args)   {
+  return printout(severity,src.c_str(),fmt,args);
+}
+
+/** Calls the display action
+ *  @arg severity   [int,read-only]      Display severity flag
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fmt, va_list& args)   {
+  return printout(severity,src,fmt.c_str(),args);
+}
+
+/** Calls the display action
+ *  @arg severity   [int,read-only]      Display severity flag
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+int DD4hep::printout(PrintLevel severity, const std::string& src, const std::string& fmt, va_list& args)   {
+  return printout(severity,src.c_str(),fmt.c_str(),args);
+}
+
+/** Build exception string and throw std::runtime_error
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+std::string DD4hep::format(const std::string& src, const std::string& fmt, ...)   {
+  va_list args;
+  va_start(args,fmt);
+  std::string str = format(src,fmt,args);
+  va_end(args);
+  return str;
+}
+
+/** Build exception string and throw std::runtime_error
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+ *  @return Status code indicating success or failure
+ */
+std::string DD4hep::format(const std::string& src, const std::string& fmt, va_list& args)   {
+  char str[4096];
+  size_t len = ::snprintf(str,sizeof(str),"%s: ",src.c_str());
+  ::vsnprintf(str+len,sizeof(str)-len,fmt.c_str(),args);
+  return std::string(str);
 }
 
 /// Set new print level. Returns the old print level

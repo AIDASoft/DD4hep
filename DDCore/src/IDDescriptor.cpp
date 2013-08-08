@@ -17,51 +17,8 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 
-namespace {
-  void split(const string& str, char delim, vector<string>& result)  {
-    string t, s, d = str;
-    while( !d.empty() )  {
-      size_t idx = d.find(delim);
-      s = d.substr(0,idx);
-      result.push_back(s);
-      if ( idx == string::npos ) break;
-      d = string(d).substr(idx+1);
-    }
-  }
-
+namespace  {
   void _construct(IDDescriptor::Object* o, const string& dsc) {
-#if 0
-    typedef vector<string>  Elements;
-    Elements elements, f;
-    IDDescriptor::Field field;
-    int pos = 0;
-
-    split(dsc,',',elements);
-    o->maxBit = 0;
-    o->fieldIDs.clear();
-    o->fieldMap.clear();
-    o->description = dsc ;
-
-    for(Elements::const_iterator i=elements.begin();i!=elements.end();++i)  {
-      const string& s = *i;
-      f.clear();
-      split(s,':',f);
-      if ( !(f.size() == 2 || f.size() == 3) )
-	throw runtime_error("Invalid field descriptor:"+dsc);
-      field.first  = f.size() == 3 ? ::atoi(f[1].c_str()) : pos;
-      field.second = f.size() == 3 ? ::atoi(f[2].c_str()) : ::atoi(f[1].c_str());
-      field.second = ::abs(field.second);
-
-      field.mask = ~ ( ( ( 0x0001LL << (field.second) ) - 1 ) << field.first ) ;
-      //field.mask   = ~((~0x0ull<<(64-field.second))>>(64-field.second)<<(64-field.first-field.second));
-
-      pos = field.first + ::abs(field.second);
-      if ( pos>o->maxBit ) o->maxBit = pos;
-      o->fieldIDs.push_back(make_pair(o->fieldMap.size(),f[0]));
-      o->fieldMap.push_back(make_pair(f[0],field));
-    }
-#endif
-
     BitField64& bf = *o;
     o->fieldIDs.clear();
     o->fieldMap.clear();
@@ -148,7 +105,7 @@ size_t IDDescriptor::fieldID(const string& field_name)  const   {
 }
 
 /// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
-IDDescriptor::VolumeID IDDescriptor::encode(const std::vector<VolID>& ids)  const   {
+VolumeID IDDescriptor::encode(const std::vector<VolID>& ids)  const   {
   typedef std::vector<VolID> VolIds;
   VolumeID id = 0;
   for(VolIds::const_iterator i=ids.begin(); i!=ids.end(); ++i)   {
@@ -158,3 +115,14 @@ IDDescriptor::VolumeID IDDescriptor::encode(const std::vector<VolID>& ids)  cons
   return id;
 }
 
+/// Decode volume IDs and return filled descriptor with all fields
+void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& fields)   {
+  fields.clear();
+  if ( isValid() )  {
+    const vector<BitFieldValue*>& v = data<Object>()->fields();
+    for(vector<BitFieldValue*>::const_iterator i=v.begin(); i != v.end(); ++i)
+      fields.push_back(VolIDField(*i,(*i)->value(vid)));
+    return;
+  }
+  throw runtime_error("Attempt to access an invalid IDDescriptor object.");
+}

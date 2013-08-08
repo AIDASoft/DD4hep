@@ -27,7 +27,6 @@ using namespace DD4hep::Geometry;
 namespace {
 
   struct Populator  {
-    typedef VolumeManager::VolumeID VolumeID;
     typedef vector<const TGeoNode*> Chain;
 
     /// Reference to the LCDD instance
@@ -135,15 +134,6 @@ namespace {
       }
       return make_pair(volume_id,mask);
     }
-
-    void add_entry(DetElement parent, DetElement e,const TGeoNode* n, 
-		   const PlacedVolume::VolIDs& ids, const Chain& nodes)
-    {
-      Volume            vol     = PlacedVolume(n).volume();
-      SensitiveDetector sd      = vol.sensitiveDetector();
-      add_entry(sd, parent,e,n,ids,nodes);
-    }
-
     void add_entry(SensitiveDetector sd, 
 		   DetElement parent, DetElement e,const TGeoNode* n, 
 		   const PlacedVolume::VolIDs& ids, const Chain& nodes)
@@ -178,6 +168,16 @@ namespace {
 	m_entries.insert(code.first);
       }
     }
+
+#if 0
+    void add_entry(DetElement parent, DetElement e,const TGeoNode* n, 
+		   const PlacedVolume::VolIDs& ids, const Chain& nodes)
+    {
+      Volume            vol     = PlacedVolume(n).volume();
+      SensitiveDetector sd      = vol.sensitiveDetector();
+      add_entry(sd, parent,e,n,ids,nodes);
+    }
+
     void find_entry(DetElement parent, DetElement e,const TGeoNode* n, 
 		  const PlacedVolume::VolIDs& ids, const Chain& nodes)
     {
@@ -231,7 +231,7 @@ namespace {
       SensitiveDetector   sd = vol.sensitiveDetector();
       print_node(sd, parent, e, n, ids, nodes);
     }
-
+#endif
     void print_node(SensitiveDetector sd, DetElement parent, DetElement e, const TGeoNode* n, 
 		    const PlacedVolume::VolIDs& ids, const Chain& nodes)
     {
@@ -241,7 +241,7 @@ namespace {
       PlacedVolume        pv = Ref_t(n);
       bool                sensitive  = pv.volume().isSensitive();
       pair<VolumeID,VolumeID> code = encoding(en, ids);
-      IDDescriptor::VolumeID volume_id = code.first;
+      VolumeID volume_id = code.first;
 
       //if ( !sensitive ) return;
       ++s_count;
