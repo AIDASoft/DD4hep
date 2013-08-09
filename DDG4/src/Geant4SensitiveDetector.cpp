@@ -172,54 +172,92 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
 }
 
 
-long long Geant4SensitiveDetector::getVolumeID(G4Step* step ){
+long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep ){
   
-  Geant4Mapping&    mapping = Geant4Mapping::instance();
+  Geant4Mapping&  mapping = Geant4Mapping::instance();
+  
+  Geant4StepHandler step(aStep);
 
-  const G4NavigationHistory* hist = step->GetPreStepPoint()->GetTouchableHandle()->GetHistory() ;
-  int depth =  hist->GetDepth() ;
-  //------------ get the cellID description string -----------------------------------
-      
-  const G4VPhysicalVolume*  g4v = hist->GetVolume( depth ) ;
-  Geometry::PlacedVolume place  = mapping.placement( g4v ) ;
-      
-  if( ! place.isValid() || ! place.volume().isSensitive() )  {
-    G4cout << " **** Error in Geant4SensitiveDetector::getVolumeID:  invalid first sensitive volume in buildHits is not sensitive !!! " << std::endl ;
+  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+  
+  VolumeID id = volMgr.volumeID( step.preTouchable() );
+
+
+#if 0 //  additional checks ...
+   
+  const G4VPhysicalVolume* g4v = step.volume( step.pre );
+
+  if ( id == Geant4VolumeManager::InvalidPath )  {
+    ::printf("                 -->  Severe ERROR: Invalid placement path: touchable corrupted?\n");
   }
-  Geometry::Volume            vol    = place.volume();
-  Geometry::SensitiveDetector sd     = vol.sensitiveDetector();
-  Geometry::Readout           ro     = sd.readout();
-      
+  else if ( id == Geant4VolumeManager::Insensitive )  {
+    ::printf("                 -->  WARNING: Only sensitive volumes may be decoded. %s\n" , g4v->GetName().c_str() );
+  }
+  else if ( id == Geant4VolumeManager::NonExisting )  {
+    ::printf("                 -->  WARNING: non existing placement path.\n");
+  }
+  else  {
 
-  std::string  idDescStr =  ro.idSpec().fieldDescription() ;
-      
-  //  G4cout << "----------- Geant4SensitiveDetector::getVolumeID - idDescStr =  " << idDescStr  << std::endl  ;
-      
-  BitField64 bf( idDescStr ) ; 
-      
-  //------------ now fill the cellID from the volIDs of the complete path -----------------------------------
-      
-  for(int i=depth ; i>0 ; --i ) {
-	
-    g4v = hist->GetVolume(i) ;
-    Geometry::PlacedVolume place  = mapping.placement( g4v ) ;
-
-    if( ! place.isValid() ) {
-      G4cout << " **** WARNING in Geant4SensitiveDetector::getVolumeID: ingnoring invalid PlacedVolume for : " <<  g4v->GetName() << std::endl ;
-      continue ;
+    std::stringstream str;
+    Geant4VolumeManager::VolIDDescriptor dsc;
+    Geant4VolumeManager::VolIDFields& fields = dsc.second;
+    volMgr.volumeDescriptor( step.preTouchable(), dsc );
+    for(Geant4VolumeManager::VolIDFields::iterator i=fields.begin(); i!=fields.end();++i){
+      str << (*i).first->name() << "=" << (*i).second << " ";
     }
-	
-    // G4cout << "---  VolIDs : " << std::endl ;
-    Geometry::PlacedVolume::VolIDs ids = place.volIDs() ;
+    ::printf("                 -->  CellID: %X [%X] -> %s\n",id,dsc.first,str.str().c_str());
+    
+  }
 
-    for( Geometry::PlacedVolume::VolIDs::const_iterator it = ids.begin() ; it != ids.end() ; ++it ){
+#endif
+  
+  return id ;
+  
+
+ //   // old way of lookup ----------- does not work for assemblies ....
+
+ // //------------ get the cellID description string -----------------------------------
+ 
+ //  Geometry::PlacedVolume place  = mapping.placement( g4v ) ;
+      
+ //  if( ! place.isValid() || ! place.volume().isSensitive() )  {
+ //    G4cout << " **** Error in Geant4SensitiveDetector::getVolumeID:  invalid first sensitive volume in buildHits is not sensitive !!! " << std::endl ;
+ //  }
+ //  Geometry::Volume            vol    = place.volume();
+ //  Geometry::SensitiveDetector sd     = vol.sensitiveDetector();
+ //  Geometry::Readout           ro     = sd.readout();
+      
+ //  std::string  idDescStr =  ro.idSpec().fieldDescription() ;
+ //  BitField64 bf( idDescStr ) ; 
+
+ //  //------------ now fill the cellID from the volIDs of the complete path -----------------------------------
+
+ //  const G4NavigationHistory* hist = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory() ;
+ //  int depth =  hist->GetDepth() ;
+ //  //const G4VPhysicalVolume*  g4v = hist->GetVolume( depth ) ;
+      
+ //  for(int i=depth ; i>0 ; --i ) {
+	
+ //    g4v = hist->GetVolume(i) ;
+ //    Geometry::PlacedVolume place  = mapping.placement( g4v ) ;
+
+ //    if( ! place.isValid() ) {
+ //      G4cout << " **** WARNING in Geant4SensitiveDetector::getVolumeID: ingnoring invalid PlacedVolume for : " <<  g4v->GetName() << std::endl ;
+ //      continue ;
+ //    }
+	
+ //    // G4cout << "---  VolIDs : " << std::endl ;
+ //    Geometry::PlacedVolume::VolIDs ids = place.volIDs() ;
+
+ //    for( Geometry::PlacedVolume::VolIDs::const_iterator it = ids.begin() ; it != ids.end() ; ++it ){
 	  
-      //  G4cout << "--- " << it->first << " -- " << it->second << std::
-      bf[  it->first ] = it->second  ;
-    }
-  }
+ //      //  G4cout << "--- " << it->first << " -- " << it->second << std::
+ //      bf[  it->first ] = it->second  ;
+ //    }
+ //  }
 
-  return bf.getValue()  ;
+ //  return bf.getValue()  ;
+
 }
 
 
