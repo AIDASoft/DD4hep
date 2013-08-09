@@ -71,29 +71,38 @@ void SteppingAction::UserSteppingAction(const G4Step* aStep)   {
   }
   Geant4VolumeManager      volMgr = Geant4Mapping::instance().volumeManager();
   const G4VPhysicalVolume* pv     = step.volume(step.post);
-  Geometry::PlacedVolume   place  = volMgr.placement(pv);
-  if ( !place.isValid() )   {
-    ::printf("                 -->  Severe ERROR: incomplete placement map from Geant4 conversion.\n");
-  }
-  else  {
-    VolumeID id = volMgr.volumeID(step.postTouchable());
-    if ( id == Geant4VolumeManager::InvalidPath )  {
-      ::printf("                 -->  Severe ERROR: Invalid placement path: touchable corrupted?\n");
-    }
-    else if ( id == Geant4VolumeManager::Insensitive )  {
-      ::printf("                 -->  WARNING: Only sensitive volumes may be decoded.\n");
-    }
-    else if ( id == Geant4VolumeManager::NonExisting )  {
-      ::printf("                 -->  WARNING: non existing placement path.\n");
+  if ( pv )  {
+    // If the post step is no longer connected to a physical volume it does not make sense to follow
+    // it's properties!
+    Geometry::PlacedVolume   place  = volMgr.placement(pv);
+    if ( !place.isValid() )   {
+      ::printf("                 -->  Severe ERROR: incomplete placement map from Geant4 conversion.\n");
     }
     else  {
-      std::stringstream str;
-      Geant4VolumeManager::VolIDDescriptor dsc;
-      Geant4VolumeManager::VolIDFields& fields = dsc.second;
-      volMgr.volumeDescriptor(step.postTouchable(),dsc);
-      for(Geant4VolumeManager::VolIDFields::iterator i=fields.begin(); i!=fields.end();++i)
-	str << (*i).first->name() << "=" << (*i).second << " ";
-      ::printf("                 -->  CellID: %X [%X] -> %s\n",id,dsc.first,str.str().c_str());
+      VolumeID id = volMgr.volumeID(step.postTouchable());
+      if ( id == Geant4VolumeManager::InvalidPath )  {
+	::printf("                 -->  Severe ERROR: Invalid placement path: touchable corrupted?\n");
+      }
+      else if ( id == Geant4VolumeManager::Insensitive )  {
+	::printf("                 -->  WARNING: Only sensitive volumes may be decoded.\n");
+      }
+      else if ( id == Geant4VolumeManager::NonExisting )  {
+	::printf("                 -->  WARNING: non existing placement path.\n");
+      }
+      else  {
+	std::stringstream str;
+	Geant4VolumeManager::VolIDDescriptor dsc;
+	Geant4VolumeManager::VolIDFields& fields = dsc.second;
+	volMgr.volumeDescriptor(step.postTouchable(),dsc);
+	for(Geant4VolumeManager::VolIDFields::iterator i=fields.begin(); i!=fields.end();++i)
+	  str << (*i).first->name() << "=" << (*i).second << " ";
+	::printf("                 -->  CellID: %X [%X] -> %s\n",id,dsc.first,str.str().c_str());
+      }
     }
+  }
+  else  {
+    Position pos = step.postPos();
+    ::printf("  -->  Geant4 post-step point is not connected to a physical volume. "
+	     "Last position: x=%.3f y=%.3f z=%.3f\n",pos.X(), pos.Y(), pos.Z());
   }
 }
