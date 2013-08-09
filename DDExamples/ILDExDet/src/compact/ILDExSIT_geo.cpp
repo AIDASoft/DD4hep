@@ -21,16 +21,19 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
   string       name  = x_det.nameStr();
   DetElement   sit(name,x_det.id());
-  //  Assembly assembly( name + "assembly"  ) ;
+  Assembly assembly( name + "assembly"  ) ;
   PlacedVolume pv;
 
-  // replace assembly with cylinder of air:
-  xml_comp_t  x_tube (x_det.child(_U(tubs)));
-  Tube        envelope_cylinder(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
-  Volume      assembly ("sit_envelope_cyl", envelope_cylinder ,lcdd.air());
-
-
+  // // setup the encoder
+  // UTIL::BitField64 encoder( ILDCellID0::encoder_string ) ;
+  // encoder.reset() ;  // reset to 0
+  // encoder[ILDCellID0::subdet] = ILDDetID::SIT ; 
+  // encoder[ILDCellID0::side] = 0 ;
+  // encoder[ILDCellID0::module] = 0 ;
+  // encoder[ILDCellID0::sensor] = 0 ;
+  
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
+
 
     xml_comp_t  x_layer   (c);
     xml_comp_t  x_support (x_layer.child(_U(support)));
@@ -68,6 +71,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double radius = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.);
       Position pos(radius*cos(j*dphi),radius*sin(j*dphi),0.);
  
+      // place the volume and set the cellID0 - will be set to the copyNo in Geant4Converter
+      //      encoder[ILDCellID0::module]  = j  ;
+      //      int cellID0 = encoder.lowWord() ;
 
       pv = assembly.placeVolume(laddervol,Transform3D(RotationZ(j*dphi),pos));
 
