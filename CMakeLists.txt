@@ -49,6 +49,7 @@ include(DD4hep)
 add_subdirectory(DDCore)
 if(DD4HEP_WITH_GEANT4)
   add_subdirectory(DDG4)
+###  add_subdirectory(DDSense)
 endif()
 
 #---Examples------------------------------------------------------------------------
