@@ -259,7 +259,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 	  EndcapModule_pos_z = (module_num==0)?EndcapModule_pos_z:-EndcapModule_pos_z;
 
 	  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,
-						       Transform3D(Rotation(0.,0.,rot_EM),
+						       Transform3D(RotationX(rot_EM),
 								   Translation3D(EndcapModule_pos_x,
 										 EndcapModule_pos_y,
 										 EndcapModule_pos_z)));

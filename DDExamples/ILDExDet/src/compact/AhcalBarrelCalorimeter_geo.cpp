@@ -194,7 +194,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 	  {
 	    layer_pos_z = (module_num==0)?layer_pos_z:-layer_pos_z;
 	    PlacedVolume layer_phv = envelopeVol.placeVolume(layer_vol,
-							     Transform3D(Rotation(delte_phi,0.,0.),
+							     Transform3D(RotationZ(delte_phi),
 									 Translation3D(layer_pos_x*std::cos(delte_phi),
 										       layer_pos_x*std::sin(delte_phi),
 										       layer_pos_z)));
@@ -238,7 +238,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   // ==========================================================================
 
   // Place Hcal Barrel volume into the world volume
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Rotation(0.,0.,Hcal_Barrel_rotation));
+  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Transform3D( RotationZ(Hcal_Barrel_rotation) ));
 
   // registry the system id
   env_phv.addPhysVolID("system", sdet.id());
