@@ -1,6 +1,24 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-04 |  fourth beta release ...
+ --------   - placement options are now compatible with geant4 
+            - fixed Geant4SensitiveDetector::getVolumeID()
+            - modified ILDEx model to not use assemblies (for now !?)
+	    - removed obsolete geant4 example ILDEx
+	    - Fix population procedure of volume manager
+	    - Fix uniqueness of volume identifiers.
+	    - Remove call with lookups by placed volume to the volume manager
+	    - improved ILDEx toy example:	   		
+	      - fixed creation of cellIDS for simhits
+	      - creates SimTrackerHits for VXD, SIT and TPC
+              - creates SimCalorimeterHits for AHcal barrele and endcap
+	      - works now wigth ILDExSimu _and_ SLIC if no assemblies are used
+            - assemblies work with the DD4hep Geant4Converter and VolumeManager
+	    - added a prototype example for a ROOT independent 
+              plugin mechanism for SensitiveDetectors
+
 2013/21/06    Markus Frank
 --------------------------
    1) Since the placement model for combined translations and rotations
@@ -26,20 +44,6 @@ DD4hep  ----  Release Notes
    Unless all problems are solved you should be careful to move to the svn
    head. In any case save your checkout or use the tag v00-03.
 
- --------
-| v00-04 |  fourth beta release ...
- --------   - placement options are now compatible with geant4 
-            - fixed Geant4SensitiveDetector::getVolumeID()
-            - modified ILDEx model to not use assemblies (for now !?)
-	    - removed obsolete geant4 example ILDEx
-	    - Fix population procedure of volume manager
-	    - Fix uniqueness of volume identifiers.
-	    - Remove call with lookups by placed volume to the volume manager
-	    - improved ILDExtoy example:	   		
-	      - fixed creation of cellIDS for simhits
-	      - creates SimTrackerHits for VXD, SIT and TPC
-              - creates SimCalorimeterHits for AHcal barrele and endcap
-	      - works now wigth ILDExSimu _and_ SLIC 
  
 
  --------
