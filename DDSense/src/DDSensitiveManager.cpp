@@ -4,6 +4,7 @@
 #include "DD4hep/BitField64.h"  // provides StringTokenizer
 
 #include <dlfcn.h>
+#include <algorithm>
 #include <iostream>
 #include <cstdlib>
 #include <string>
