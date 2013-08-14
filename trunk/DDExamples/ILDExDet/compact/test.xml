@@ -1,0 +1,555 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id$">
+        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+    </info>
+  
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+  
+    <define>
+        <constant name="world_side"              value="10*m"/>
+        <constant name="world_x"                 value="world_side/2"/>
+        <constant name="world_y"                 value="world_side/2"/>
+        <constant name="world_z"                 value="world_side/2"/>        
+        <constant name="CrossingAngle"           value="0.020*rad"/>
+        <constant name="ILC_Main_Crossing_Angle" value="CrossingAngle"/>
+        
+        <constant name="TPC_zhalf"              value="2500*mm"/>
+        <constant name="TPC_inner_radius"       value="350*mm"/>
+        <constant name="TPC_inner_thickness"    value="2*mm"/>
+        <constant name="TPC_outer_thickness"    value="3*mm"/>
+        <constant name="TPC_endcap_thickness"   value="3*mm"/>
+
+
+
+        <!--                  Shared parameters                      -->
+        <constant name="TPC_outer_radius"                      value="1580*mm"/>
+        <constant name="TPC_Ecal_gap"                          value="35*mm"/>
+        <constant name="Ecal_Lcal_ring_gap"                    value="-48*mm"/>
+
+        <constant name="TPC_Ecal_Hcal_barrel_halfZ"            value="2730*mm"/>
+        <constant name="TPC_Ecal_gap"                          value="10*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="2500*mm"/>
+        <constant name="Ecal_outer_radius"                     value="1910*mm"/>
+
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Hcal_R_max"                            value="3000*mm"/>
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
+
+        <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0*m"/>
+        <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0*m"/>
+        <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
+        <constant name="SolenoidalFieldRadius"  value="TPC_outer_radius+0.2*m"/>
+
+        <!--                  Shared parameters                      -->
+        <constant name="Lcal_outer_radius"                     value="290*mm"/>
+        <constant name="TPC_Ecal_Hcal_barrel_halfZ"            value="2730*mm"/>
+        <constant name="TPC_Ecal_gap"                          value="10*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="2500*mm"/>
+        <constant name="Ecal_outer_radius"                     value="1910*mm"/>
+
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Hcal_R_max"                            value="3000*mm"/>
+        <constant name="Hcal_Ecal_gap"                         value="26*mm"/>
+        <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
+
+        <!--                   FTD parameters                        -->
+        <constant name="Ftd_total_cylinder_thickness"          value="1*mm"/>
+        <constant name="Ftd_cables_thickness"                  value="0.08*mm"/>
+        <constant name="Ftd_Si_thickness1"                     value="0.3*mm"/>
+        <constant name="Ftd_Si_thickness2"                     value="0.3*mm"/>
+        <constant name="Ftd_inner_support_thickness"           value="2*mm"/>
+        <constant name="Ftd_inner_support_length"              value="4*mm"/>
+        <constant name="Ftd_outer_support_thickness"           value="10*mm"/>
+        <constant name="Ftd_outer_support_length"              value="4*mm"/>
+
+        <!--                   TPC02 parameters                      -->
+        <constant name="TPC_inner_radius"                      value="320*mm"/>
+        <constant name="TPC_outer_radius"                      value="1690*mm"/>
+        <constant name="TPC_zhalf"                             value="TPC_Ecal_Hcal_barrel_halfZ"/>
+        <constant name="TPC_electronics_backend_thickness"     value="230*mm"/>
+        <constant name="TPC_inner_wall_thickness"              value="1.16*mm"/>
+        <constant name="TPC_outer_wall_thickness"              value="1.51*mm"/>
+        <constant name="TPC_sensitive_inner_gap"               value="66*mm"/>
+        <constant name="TPC_sensitive_outer_gap"               value="64*mm"/>
+        <constant name="TPC_fch_thickness"                     value="0.3*mm"/>
+
+
+        <!--                   COIL00 parameters                     -->
+        <constant name="Coil_thickness"                        value="850*mm"/>
+        <constant name="Coil_extra_size"                       value="2520*mm"/>
+        <constant name="Coil_inner_radius"                     value="Hcal_R_max"/>
+        <constant name="Coil_outer_radius"                     value="Hcal_R_max+Coil_thickness"/>
+        <constant name="Coil_half_z"                           value="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size"/>
+
+        <!--                   Yoke02 parameters                     -->
+        <constant name="Yoke_Z_start_endcaps"                  value="6625*mm"/>
+        <constant name="Yoke_barrel_inner_radius"              value="4450*mm"/>
+        <constant name="Yoke_thickness"                        value="2000*mm"/>
+        <constant name="Yoke_endcap_inner_radius"              value="240.50*mm"/>
+        <constant name="Yoke_symmetry"                         value="8"/>
+        <constant name="Yoke_Barrel_Half_Z"                    value="TPC_Ecal_Hcal_barrel_halfZ+Coil_extra_size+Yoke_thickness+20*mm"/>
+        <!--                  SEcal03 parameters                      -->
+        <constant name="Ecal_lateral_face_thickness"           value="2*mm"/>
+        <constant name="Ecal_front_face_thickness"             value="3*mm"/>
+        <constant name="Ecal_fiber_thickness"                  value="0.2*mm"/>
+        <constant name="Ecal_guard_ring_size"                  value="1*mm"/>
+        <constant name="Ecal_cell_size"                        value="4.9*mm"/>
+        <constant name="Ecal_Alveolus_Air_Gap"                 value="0.25*mm"/>
+        <constant name="Ecal_support_thickness"                value="9.3*mm"/>
+        <constant name="Ecal_Slab_PCB_thickness"               value="0.8*mm"/>
+        <constant name="Ecal_Slab_copper_thickness"            value="0.2*mm"/>
+        <constant name="Ecal_Slab_shield_thickness"            value="0.15*mm"/>
+        <constant name="Ecal_Slab_ground_thickness"            value="0.05*mm"/>
+        <constant name="Ecal_Slab_glue_gap"                    value="0.1*mm"/>
+        <constant name="Ecal_Si_thickness"                     value="0.5*mm"/>
+
+        <constant name="Ecal_EC_ring_gap"                      value="10*mm"/>
+        <constant name="Ecal_cables_gap"                       value="100*mm"/>
+
+        <constant name="Ecal_Barrel_halfZ"                     value="2350*mm"/>
+        <constant name="Ecal_barrel_number_of_towers"          value="7"/>
+        <constant name="Ecal_endcap_extra_size"                value="60.8*mm"/>
+        <constant name="Ecal_endcap_center_box_size"           value="600*mm"/>
+        <constant name="Ecal_H_fiber_thickness"                value="0.30*mm"/>
+        <constant name="Ecal_cells_size"                       value="10*mm"/>
+        <constant name="Ecal_endcap_zmax"                      value="1825*mm"/>
+        <constant name="Ecal_endcap_zmin"                      value="2329*mm"/>
+        <constant name="Ecal_nlayers1"                         value="20"/>
+        <constant name="Ecal_nlayers2"                         value="10"/>
+        <constant name="Ecal_nlayers3"                         value="0"/>
+        <constant name="Ecal_radiator_layers_set1_thickness"   value="2.1*mm"/>
+        <constant name="Ecal_radiator_layers_set2_thickness"   value="4.2*mm"/>
+        <constant name="Ecal_radiator_layers_set3_thickness"   value="0*mm"/>
+
+
+        <constant name="Yoke_symmetry"                         value="8"/>
+        <constant name="Yoke_symmetry"                         value="8"/>
+        <constant name="Hcal_radiator_thickness"               value="20*mm"/>
+        <constant name="Hcal_stave_gaps"                       value="3*mm"/>
+        <constant name="Hcal_back_plate_thickness"             value="30*mm"/>
+        <constant name="Hcal_barrel_end_module_type"           value="2"/>
+        <constant name="Hcal_endcap_cables_gap"                value="214*mm"/>
+        <constant name="Hcal_endcap_center_box_size"           value="600*mm"/>
+        <constant name="Hcal_endcap_module_dim_z"              value="1010*mm"/>
+
+        <constant name="Hcal_lateral_structure_thickness"      value="10*mm"/>
+        <constant name="Hcal_lateral_plate_thickness"          value="Hcal_lateral_structure_thickness"/>
+        <constant name="Hcal_nlayers"                          value="8"/>
+        <constant name="Hcal_outer_radius"                     value="3000*mm"/>
+        <constant name="Hcal_modules_gap"                      value="2*mm"/>
+        <constant name="Hcal_fiber_gap"                        value="1.5*mm"/>
+        <constant name="Hcal_cells_size"                       value="10*mm"/>
+
+        <constant name="Hcal_chamber_thickness"                value="6.5*mm"/>
+        <constant name="Hcal_total_z_size"                     value="140*mm + 2*TPC_Ecal_Hcal_barrel_halfZ"/>
+        <constant name="Hcal_normal_dim_z"                     value="Hcal_total_z_size/5*1080/1120"/>
+        <constant name="Hcal_top_end_dim_z"                    value="(Hcal_total_z_size-3*Hcal_normal_dim_z)/2"/>
+        <constant name="Hcal_start_z"                          value="1.5*Hcal_normal_dim_z + Hcal_top_end_dim_z + 2*Hcal_modules_gap + Hcal_endcap_cables_gap"/>
+        <constant name="Hcal_total_dim_y"                      value="Hcal_nlayers*(Hcal_radiator_thickness+Hcal_chamber_thickness) + Hcal_back_plate_thickness"/>
+        <constant name="Hcal_inner_radius"                     value="Ecal_outer_radius + Hcal_Ecal_gap"/>
+        <constant name="Hcal_module_radius"                    value="Hcal_inner_radius+Hcal_total_dim_y"/>
+
+        <constant name="Hcal_y_dim2_for_x"                     value="Hcal_module_radius*(1-cos(pi/8)) - Hcal_stave_gaps"/>
+        <constant name="Hcal_y_dim1_for_x"                     value="Hcal_total_dim_y - Hcal_y_dim2_for_x"/>
+        <constant name="Hcal_bottom_dim_x"                     value="2*Hcal_y_dim1_for_x*tan(pi/8) - Hcal_stave_gaps"/>
+        <constant name="Hcal_middle_dim_x"                     value="Hcal_bottom_dim_x+2*Hcal_y_dim1_for_x*tan(pi/8)"/>
+        <constant name="Hcal_top_dim_x"                        value="Hcal_middle_dim_x-2*Hcal_y_dim2_for_x/tan(pi/8)"/>
+
+        <constant name="Hcal_y_dim1_for_z"                     value="134.8"/>
+        <constant name="Hcal_y_dim2_for_z"                     value="(Hcal_top_end_dim_z-Hcal_normal_dim_z)*tan(39.28/2/pi)"/>
+        <constant name="Hcal_y_dim3_for_z"                     value="Hcal_total_dim_y-Hcal_y_dim1_for_z-Hcal_y_dim2_for_z"/>
+        <constant name="Hcal_regular_chamber_dim_z"            value="Hcal_normal_dim_z - 2*(Hcal_lateral_plate_thickness)"/>
+
+    </define>
+
+    <materials>
+        <material formula="Si" name="silicon_2.33gccm" state="solid" >
+          <RL type="X0" unit="cm" value="9.36607" />
+          <NIL type="lambda" unit="cm" value="45.7531" />
+          <D type="density" unit="g/cm3" value="2.33" />
+          <composite n="1" ref="Si" />
+        </material>
+
+        <material name="silicon_8.72gccm" state="solid" >
+          <RL type="X0" unit="cm" value="9.36607" />
+          <NIL type="lambda" unit="cm" value="45.7531" />
+          <D type="density" unit="g/cm3" value="8.72" />
+          <composite n="1" ref="Si" />
+        </material>
+
+        <material formula="W" name="tungsten_19.3gccm" state="solid" >
+          <RL type="X0" unit="cm" value="0.350418" />
+          <NIL type="lambda" unit="cm" value="10.3057" />
+          <D type="density" unit="g/cm3" value="19.3" />
+          <composite n="1" ref="W" />
+        </material>
+
+        <material name="TPCEndcapMaterial" state="solid">
+          <!-- density calculated internally  -->
+          <!-- D type="density" unit="g/cm3" value="19.3" -->
+          <composite n="0.1244" ref="Kapton"/>
+          <composite n="0.0156" ref="Copper"/>
+          <composite n="0.86"   ref="Air"/>
+        </material>
+
+        <material name="Graphite">
+        	<D value="1.7" unit="g/cm3"/>
+        	<composite n="1" ref="C"/>
+        </material>      
+    </materials>
+  
+    <limits>
+
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+
+        <limitset name="HcalLimits">
+            <limit name="step_length_max" particles="*" 
+                   value="min(Hcal_cells_size,Hcal_regular_chamber_dim_z/floor(Hcal_regular_chamber_dim_z/Hcal_cells_size))" 
+                   unit="mm" />
+        </limitset>
+
+        <limitset name="EcalLimits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+
+    </limits>
+
+    <display>
+
+      <vis name="FtdCylinderVis"       alpha="1.0" r="0.5" g="0.5"  b="0.5"     drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="FtdCablesVis"         alpha="1.0" r="0.75" g="0"   b="0.0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="FtdDiskVis"           alpha="1.0" r="0.0"  g="0"    b="0.75"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <vis name="MaskVis"              alpha="1.0" r="0.20" g="0"    b="0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskYokeVis"          alpha="1.0" r="0.2"  g="0.2"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="MaskCoilVis"          alpha="1.0" r="0.0"  g="0"    b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+      <vis name="TPCVis"               alpha="1.0" r="0.0"  g="0"    b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCInnerWallVis"      alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCOuterWallVis"      alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCEndcapVis"         alpha="1.0" r="0.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCChamberVis"        alpha="1.0" r="1.0"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="TPCGasVis"            alpha="1.0" r="1.0"  g="1.0"  b="1.0"    drawingStyle="wireframe" showDaughters="false" visible="true"/>
+      <vis name="TPCFchVis"            alpha="1.0" r="0.2"  g="0.0"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="false"/>
+      <vis name="TPCLayerVis"          alpha="1.0" r="0.2"  g="0.0"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="false"/>
+
+      <vis name="CoilVis"              alpha="1.0" r="0.0"  g="0.0"  b="0.7"    drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="YokeVis"              alpha="1.0" r="0.1"  g="0.8"  b="0.8"    drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+
+      <vis name="EcalVis"              alpha="1.0" r="0.8"  g="0.4"  b="0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalPCBVis"           alpha="1.0" r="0.5"  g="0.5"  b="0"      drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalRadiatorVis"      alpha="1.0" r="0.2"  g="0.5"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalTowerVis"         alpha="1.0" r="0"    g="0.1"  b="0.9"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalRingVis"          alpha="1.0" r="0"    g="0"    b="1"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalWaferVis"         alpha="1.0" r=".7"   g=".7"   b=".7"     drawingStyle="solid"                           visible="false"/>
+      <vis name="EcalSlabVis"          alpha="1.0" r="1"    g="1"    b="1"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="EcalSlabGroundVis"    alpha="1.0" r="0"    g="0"    b="1"      drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+      <vis name="EcalSlabSensitiveVis" alpha="1.0" r="0.5"  g="0.5"  b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalVis"              alpha="1.0" r="0.8"  g="0.8"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalChamberVis"       alpha="1.0" r="0"    g="1"    b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalModuleVis"        alpha="1.0" r="0"    g="0.6"  b="0.6"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalEndModuleVis"     alpha="1.0" r="1"    g="0"    b="0.5"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalRpcGasVis"        alpha="1.0" r="0.1"  g="0"    b="0.8"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalRpcGlassVis"      alpha="1.0" r="0.8"  g="0"    b="0"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalRpcSpacerVis"     alpha="1.0" r="1"    g="1"    b="1"      drawingStyle="solid"     showDaughters="true"  visible="true"/>
+      <vis name="HcalScintillatorVis"  alpha="1.0" r="0.8"  g="0.8"  b="0.2"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+
+    </display>
+
+    <detectors>
+        <comment>Trackers</comment>
+<!--
+-->
+        <detector id="10" name="ECAL" type="Tesla_SEcal03" limits="EcalLimits" vis="EcalVis">
+          <param lateral_face_thickness="Ecal_lateral_face_thickness"
+                 fiber_thickness="Ecal_fiber_thickness"
+                 guard_ring_size="Ecal_guard_ring_size"
+                 cell_size="Ecal_cell_size"
+                 alveolus_gap="Ecal_Alveolus_Air_Gap"
+                 crossing_angle="ILC_Main_Crossing_Angle"
+                 cables_gap="Ecal_cables_gap"
+                 front_face_thickness="Ecal_front_face_thickness"
+                 support_thickness="Ecal_support_thickness"
+               />
+          <pcbshield thickness="Ecal_Slab_PCB_thickness + Ecal_Slab_copper_thickness + Ecal_Slab_shield_thickness" vis="EcalPCBVis" material="G10"/>
+          <barrel    inner_r="TPC_outer_radius+TPC_Ecal_gap"
+                     zhalf="Ecal_Barrel_halfZ" 
+                     towers="Ecal_barrel_number_of_towers"
+                     radiatorMaterial="tungsten_19.3gccm"
+                     material="G10"
+                     readout="EcalBarrelHits"
+                     vis="EcalVis"/>
+          <endcap    inner_r="Lcal_outer_radius + Ecal_Lcal_ring_gap"
+                     ring_gap="Ecal_EC_ring_gap"
+                     extra_size="Ecal_endcap_extra_size"
+                     center_box_size="Ecal_endcap_center_box_size"
+                     readout="EcalEndcapHits"
+                     vis="EcalVis"/>
+
+          <layer id="1" repeat="Ecal_nlayers1" thickness="Ecal_radiator_layers_set1_thickness" material="tungsten_19.3gccm"/>
+          <layer id="2" repeat="Ecal_nlayers2" thickness="Ecal_radiator_layers_set2_thickness" material="tungsten_19.3gccm"/>
+          <layer id="3" repeat="Ecal_nlayers3" thickness="Ecal_radiator_layers_set3_thickness" material="tungsten_19.3gccm"/>
+          <slab h_fiber_thickness="Ecal_H_fiber_thickness">
+            <shielding thickness="Ecal_Slab_shield_thickness"/>
+            <copper    thickness="Ecal_Slab_copper_thickness" material="Cu"/>
+            <ground    thickness="Ecal_Slab_ground_thickness" material="Cu"/>
+            <glue      thickness="Ecal_Slab_glue_gap"/>
+            <sensitive thickness="Ecal_Si_thickness" material="silicon_2.33gccm"/>
+          </slab>
+        </detector>
+        <!--                  Hcal04 description
+        -->
+
+        <detector id="9" name="Hcal" type="Tesla_hcal04" limits="HcalLimits" vis="HcalVis">
+           <param  radiator_thickness="Hcal_radiator_thickness"
+                   radiator_material="Iron"
+                   sensitive_model="scintillator"
+                   fiber_gap="Hcal_fiber_gap"
+                   chamber_vis="HcalChamberVis"
+           />
+           <rpc cables_gap="Hcal_endcap_cables_gap">
+                <radiator thickness="" material="G10"/>
+                <gas      thickness="" material="RPCGAS1" vis="HcalRpcGasVis"/>
+                <glass    thickness="" material="pyrex"   vis="HcalRpcGlassVis"/>
+           </rpc>
+           <scintillator material="Polystyrene" vis="HcalScintillatorVis"/>
+           
+           <barrel    end_module_type="Hcal_barrel_end_module_type"
+                      center_box_size="Hcal_endcap_center_box_size"
+                      num_layer="Hcal_nlayers"
+                      chamber_thickness="Hcal_chamber_thickness" 
+                      inner_r="Hcal_inner_radius"
+                            >
+            <module dim_z="1080*mm"                  
+                    chamber_dim_z="1060*mm"
+                    module_y_offset="2415.0*mm"
+                    middle_dim_x="2238.81*mm"
+                    bottom_dim_x="1579.3*mm"
+                    top_dim_x="1206.01*mm"
+                    y_dim1_for_x="796.1*mm"
+                    y_dim2_for_x="213.9*mm"
+                    cell_dim_x="Hcal_cells_size"
+                    cell_dim_z="Hcal_regular_chamber_dim_z / floor(Hcal_regular_chamber_dim_z/Hcal_cells_size)"
+                    readout="HcalRegularHits"
+                    vis="HcalModuleVis"/>
+            <end_module y_dim3_for_z="793.409"
+                        y_dim2_for_z="81.7908"
+                        y_dim1_for_z="134.8"
+                        top_end_dim_z="1180.0"
+                        readout="HcalEndModuleHits"
+                        vis="HcalModuleVis"/>
+            <layers>
+              <layer id="1" y_offset="-483.75" dim_x="1590.0"/>
+              <layer id="2" y_offset="-459.25" dim_x="1610.0"/>
+              <layer id="3" y_offset="-434.75" dim_x="1630.0"/>
+              <layer id="4" y_offset="-410.25" dim_x="1650.0"/>
+              <layer id="5" y_offset="-385.75" dim_x="1670.0"/>
+              <layer id="6" y_offset="-361.25" dim_x="1690.0"/>
+              <layer id="7" y_offset="-336.75" dim_x="1710.0"/>
+              <layer id="8" y_offset="-312.25" dim_x="1730.0"/>
+              <layer id="9" y_offset="-287.75" dim_x="1750.0"/>
+              <layer id="10" y_offset="-263.25" dim_x="1770.0"/>
+              <layer id="11" y_offset="-238.75" dim_x="1790.0"/>
+              <layer id="12" y_offset="-214.25" dim_x="1810.0"/>
+              <layer id="13" y_offset="-189.75" dim_x="1830.0"/>
+              <layer id="14" y_offset="-165.25" dim_x="1850.0"/>
+              <layer id="15" y_offset="-140.75" dim_x="1870.0"/>
+              <layer id="16" y_offset="-116.25" dim_x="1890.0"/>
+              <layer id="17" y_offset="-91.75" dim_x="1910.0"/>
+              <layer id="18" y_offset="-67.25" dim_x="1930.0"/>
+              <layer id="19" y_offset="-42.75" dim_x="1950.0"/>
+              <layer id="20" y_offset="-18.25" dim_x="1970.0"/>
+              <layer id="21" y_offset="6.25" dim_x="2000.0"/>
+              <layer id="22" y_offset="30.75" dim_x="2020.0"/>
+              <layer id="23" y_offset="55.25" dim_x="2040.0"/>
+              <layer id="24" y_offset="79.75" dim_x="2060.0"/>
+              <layer id="25" y_offset="104.25" dim_x="2080.0"/>
+              <layer id="26" y_offset="128.75" dim_x="2100.0"/>
+              <layer id="27" y_offset="153.25" dim_x="2120.0"/>
+              <layer id="28" y_offset="177.75" dim_x="2140.0"/>
+              <layer id="29" y_offset="202.25" dim_x="2160.0"/>
+              <layer id="30" y_offset="226.75" dim_x="2180.0"/>
+              <layer id="31" y_offset="251.25" dim_x="2200.0"/>
+              <layer id="32" y_offset="275.75" dim_x="2220.0"/>
+              <layer id="33" y_offset="300.25" dim_x="2110.0"/>
+              <layer id="34" y_offset="324.75" dim_x="2000.0"/>
+              <layer id="35" y_offset="349.25" dim_x="1880.0"/>
+              <layer id="36" y_offset="373.75" dim_x="1760.0"/>
+              <layer id="37" y_offset="398.25" dim_x="1640.0"/>
+              <layer id="38" y_offset="422.75" dim_x="1520.0"/>
+              <layer id="39" y_offset="447.25" dim_x="1400.0"/>
+              <layer id="40" y_offset="471.75" dim_x="1290.0"/>
+            </layers>
+             <end_layers>
+               <end_layer z_offset="0.0" id="1" dim_z="1060.0"/>
+               <end_layer z_offset="0.0" id="2" dim_z="1060.0"/>
+               <end_layer z_offset="0.0" id="3" dim_z="1060.0"/>
+               <end_layer z_offset="0.0" id="4" dim_z="1060.0"/>
+               <end_layer z_offset="0.0" id="5" dim_z="1060.0"/>
+               <end_layer z_offset="0.0" id="6" dim_z="1060.0"/>
+               <end_layer z_offset="15.0" id="7" dim_z="1090.0"/>
+               <end_layer z_offset="30.0" id="8" dim_z="1120.0"/>
+               <end_layer z_offset="50.0" id="9" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="10" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="11" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="12" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="13" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="14" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="15" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="16" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="17" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="18" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="19" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="20" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="21" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="22" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="23" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="24" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="25" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="26" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="27" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="28" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="29" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="30" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="31" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="32" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="33" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="34" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="35" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="36" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="37" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="38" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="39" dim_z="1160.0"/>
+               <end_layer z_offset="50.0" id="40" dim_z="1160.0"/>
+             </end_layers>
+             <staves>
+               <stave phi="0.0/180*pi" id="1"/>
+               <stave phi="45.0/180*pi" id="2"/>
+               <stave phi="90.0/180*pi" id="3"/>
+               <stave phi="135.0/180*pi" id="4"/>
+               <stave phi="180.0/180*pi" id="5"/>
+               <stave phi="225.0/180*pi" id="6"/>
+               <stave phi="270.0/180*pi" id="7"/>
+               <stave phi="315.0/180*pi" id="8"/>
+             </staves>
+             <modules>
+               <module z_offset="-2164.0" id="1" type="2"/>
+               <module z_offset="-1082.0" id="2" type="1"/>
+               <module z_offset="0.0"     id="3" type="1"/>
+               <module z_offset="1082.0"  id="4" type="1"/>
+               <module z_offset="2164.0"  id="5" type="2"/>
+             </modules>
+           </barrel>
+           <endcap readout_plus="HcalEncapPlusHits"
+                   readout_minus="HcalEncapMinusHits"
+              >
+              <module 
+                rmin="Hcal_endcap_center_box_size/2" 
+                rmax="Hcal_module_radius"
+                dz="Hcal_endcap_module_dim_z/2"
+                readout="HcalEndcapHits"
+                vis="HcalModuleVis"
+              />
+             <layers>
+               <layer id="1" z_offset="-483.75"/>
+               <layer id="2" z_offset="-459.25"/>
+               <layer id="3" z_offset="-434.75"/>
+               <layer id="4" z_offset="-410.25"/>
+               <layer id="5" z_offset="-385.75"/>
+               <layer id="6" z_offset="-361.25"/>
+               <layer id="7" z_offset="-336.75"/>
+               <layer id="8" z_offset="-312.25"/>
+               <layer id="9" z_offset="-287.75"/>
+               <layer id="10" z_offset="-263.25"/>
+               <layer id="11" z_offset="-238.75"/>
+               <layer id="12" z_offset="-214.25"/>
+               <layer id="13" z_offset="-189.75"/>
+               <layer id="14" z_offset="-165.25"/>
+               <layer id="15" z_offset="-140.75"/>
+               <layer id="16" z_offset="-116.25"/>
+               <layer id="17" z_offset="-91.75"/>
+               <layer id="18" z_offset="-67.25"/>
+               <layer id="19" z_offset="-42.75"/>
+               <layer id="20" z_offset="-18.25"/>
+               <layer id="21" z_offset="6.25"/>
+               <layer id="22" z_offset="30.75"/>
+               <layer id="23" z_offset="55.25"/>
+               <layer id="24" z_offset="79.75"/>
+               <layer id="25" z_offset="104.25"/>
+               <layer id="26" z_offset="128.75"/>
+               <layer id="27" z_offset="153.25"/>
+               <layer id="28" z_offset="177.75"/>
+               <layer id="29" z_offset="202.25"/>
+               <layer id="30" z_offset="226.75"/>
+               <layer id="31" z_offset="251.25"/>
+               <layer id="32" z_offset="275.75"/>
+               <layer id="33" z_offset="300.25"/>
+               <layer id="34" z_offset="324.75"/>
+               <layer id="35" z_offset="349.25"/>
+               <layer id="36" z_offset="373.75"/>
+               <layer id="37" z_offset="398.25"/>
+               <layer id="38" z_offset="422.75"/>
+               <layer id="39" z_offset="447.25"/>
+               <layer id="40" z_offset="471.75"/>
+            </layers>
+            <positions>
+              <position phi="0.0" id="1" x="0" y="0" z="3523*mm"/>
+              <position phi="0.0" id="2" x="0" y="0" z="-3523*mm"/>
+            </positions>
+         </endcap>
+      </detector>
+
+    </detectors>
+
+
+    <readouts>
+        <readout name="VXDHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="LcalHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="SITHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="TPCHits">
+            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
+        </readout>
+        <readout name="EcalBarrelHits">
+            <id>system:6,barrel:3,layer:4,module:16</id>
+        </readout>
+        <readout name="EcalEndcapHits">
+            <id>system:6,barrel:3,layer:4,module:16</id>
+        </readout>
+        <readout name="HcalRegularHits">
+            <id>system:6,barrel:3,layer:4,module:16</id>
+        </readout>
+        <readout name="HcalEndModuleHits">
+            <id>system:6,barrel:3,layer:4,module:16</id>
+        </readout>
+        <readout name="HcalEndcapHits">
+            <id>system:6,barrel:3,layer:4,module:16</id>
+        </readout>
+    </readouts>
+
+    <fields>
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+               outer_radius="SolenoidalFieldRadius" />
+    </fields>
+</lccdd>

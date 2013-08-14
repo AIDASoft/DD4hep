@@ -1,0 +1,171 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="LP1"
+        title="Large TPC Prototype LP1"
+        author="Astrid Muennich"
+        status="development"
+        version="$Id$">
+        <comment>compact discription of simple TPC prototype</comment>        
+    </info>
+  
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+  
+    <define>
+        <constant name="world_side"             value="40*m"/>
+        <constant name="world_x"                value="world_side/2"/>
+        <constant name="world_y"                value="world_side/2"/>
+        <constant name="world_z"                value="world_side/2"/>        
+        <constant name="CrossingAngle"          value="0.020"/>
+        
+        <constant name="TPC_zhalf"              value="300*mm"/>
+        <constant name="TPC_outer_radius"       value="363.35*mm"/>
+        <constant name="TPC_inner_radius"       value="0*mm"/>
+        <constant name="TPC_outer_thickness"    value="2*mm"/>
+        <constant name="TPC_endcap_thickness"   value="45*mm"/>
+        <constant name="TPC_center_x"           value="1503.615*mm"/>
+
+        <constant name="tracking_region_radius" value="TPC_outer_radius + 1.0"/>
+        <constant name="tracking_region_zmax"   value="TPC_zhalf + 1.0"/>
+    </define>
+
+    <materials>
+        <material name="Graphite">
+        	<D value="1.7" unit="g/cm3"/>
+        	<composite n="1" ref="C"/>
+        </material>      
+    </materials>
+  
+    <limits>
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+    </limits>
+
+    <display>
+      <vis name="TPCVis"         alpha="1.0" r="0"   g="1.0" b="0.0"  showDaughters="true"  visible="false"/>
+      <vis name="TPCEndplateVis" alpha="1.0" r="0"   g="1.0" b="0.0"  showDaughters="false"  visible="true"/>
+      <vis name="TPCModuleVis"   alpha="1.0" r="0"   g="0.0" b="1.0"  showDaughters="false" visible="true"/>
+      <vis name="TPCSupportVis"  alpha="1.0" r="0"   g="0.4" b="0.4"  showDaughters="false" visible="true"/>
+      <vis name="TPCGasVis"      alpha="0.5" r="0.7" g="0"   b="0"    showDaughters="false" visible="false"/>
+    </display>
+
+    <detectors>
+        <comment>Trackers</comment>
+      
+       
+        <detector name="TPC" type="LP1" vis="TPCVis" id="3">
+           <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
+          
+           <material name="Air"/>
+
+    
+           <detector name="TPC_OuterWall" type="TubeSegment" reflect="false" vis="TPCSupportVis" id="3">
+             <material name="Carbon" />
+             <tubs rmin="TPC_outer_radius - TPC_outer_thickness" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
+             <position x="1503.615" y="0" z="TPC_zhalf"/>
+             <rotation x="0" y="0" z="0"/>
+           </detector>
+
+           <detector name="TPC_EndPlate" type="TubeSegment" reflect="false" vis="TPCEndPlateVis" id="0">
+             <material name="Carbon" />
+             <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="0.5*TPC_endcap_thickness"/>
+             <position x="1503.615" y="0" z="2*TPC_zhalf+0.5*TPC_endcap_thickness"/>
+             <rotation x="0" y="0" z="0"/>
+            
+             <modules name="TPC_Module" vis="TPCModuleVis">  
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="0">
+               <position x="-171.615-1503.615" y="0" z="0"/>
+               <rotation x="0" y="0" z="- 8.3870 / 2. - 3.0"/>
+              </module>
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="1">
+               <position x="-171.615-1503.615" y="0" z="0"/>
+               <rotation x="0" y="0" z=" - 8.3870 / 2. + 5.39"/>
+              </module>
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="2">
+               <position x="-1503.615" y="0" z="0"/>
+               <rotation x="0" y="0" z=" - 8.3870 / 2. - 8.50"/>
+              </module>
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="3">
+               <position x="-1503.615" y="0" z="0"/>
+               <rotation x="0" y="0" z="- 8.3870 / 2. - 0.11"/>
+              </module>
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="4">
+               <position x="-1503.615" y="0" z="0"/>
+               <rotation x="0" y="0" z=" - 8.3870 / 2. + 8.27 "/>
+              </module>
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="5">
+               <position x="172.5-1503.615" y="0" z="0"/>
+               <rotation x="0" y="0" z=" - 8.3870 / 2. - 5.0"/>
+              </module>
+              <module type ="TubeSegment" rmin="1430" rmax="1600" phi0="8.387*deg"  pads="PadLayout0" id="6">
+               <position x="172.5-1503.615" y="" z="0"/>
+               <rotation x="0" y="0" z="- 8.3870 / 2. + 3.39"/>
+              </module>
+             </modules>
+           </detector>
+
+        
+           <detector name="TPC_GasVolume" type="TubeSegment" reflect="false" vis="TPCGasVis" id="4">
+             <material name="Argon"/>
+             <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius-TPC_outer_thickness" zhalf="TPC_zhalf"/>
+             <position x="1503.615" y="0" z="TPC_zhalf"/>
+             <rotation x="0" y="0" z="0"/>
+          </detector>
+         
+          <detector name="TPC_Cathode" type="TubeSegment" reflect="false" vis="TPCSupportVis" id="5">
+             <material name="Argon"/>
+             <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="0.5"/>
+             <position x="1503.615" y="0" z="0"/>
+             <rotation x="0" y="0" z="0"/>
+          </detector>
+        </detector>
+
+    </detectors>
+
+    <readouts>
+       <readout name="PadLayout0">
+        <segmentation type="VersatileDiskRowLayoutSeg" rmin="1439.96">
+         <row nPads="176" padPitch="1.18511" rowHeight="5.36"  offset="0" RowID="0"> </row>
+         <row nPads="176" padPitch="1.18951" rowHeight="5.36"  offset="0.594754" RowID="1"></row>
+	 <row nPads="176" padPitch="1.19391" rowHeight="5.36"  offset="0" RowID="2"></row>
+	 <row nPads="176" padPitch="1.19832" rowHeight="5.36"  offset="0.599158" RowID="3"></row>
+	 <row nPads="176" padPitch="1.20272" rowHeight="5.36"  offset="0" RowID="4"></row>
+	 <row nPads="176" padPitch="1.20712" rowHeight="5.36"  offset="0.603561" RowID="5"></row>
+	 <row nPads="176" padPitch="1.21152" rowHeight="5.36"  offset="0" RowID="6"></row>
+	 <row nPads="176" padPitch="1.21593" rowHeight="5.36"  offset="0.607964" RowID="7"></row>
+	 <row nPads="176" padPitch="1.22033" rowHeight="5.36"  offset="0" RowID="8"></row>
+	 <row nPads="176" padPitch="1.22473" rowHeight="5.36"  offset="0.612367" RowID="9"></row>
+	 <row nPads="176" padPitch="1.22914" rowHeight="5.36"  offset="0" RowID="10"></row>
+	 <row nPads="176" padPitch="1.23354" rowHeight="5.36"  offset="0.61677" RowID="11"></row>
+	 <row nPads="176" padPitch="1.23794" rowHeight="5.36"  offset="0" RowID="12"></row>
+	 <row nPads="176" padPitch="1.24235" rowHeight="5.36"  offset="0.621173" RowID="13"></row>
+	 <row nPads="192" padPitch="1.14285" rowHeight="5.36"  offset="0" RowID="14"></row>
+	 <row nPads="192" padPitch="1.14689" rowHeight="5.36"  offset="0.573445" RowID="15"></row>
+	 <row nPads="192" padPitch="1.15093" rowHeight="5.36"  offset="0" RowID="16"></row>
+	 <row nPads="192" padPitch="1.15496" rowHeight="5.36"  offset="0.577481" RowID="17"></row>
+	 <row nPads="192" padPitch="1.159"   rowHeight="5.36"  offset="0" RowID="18"></row>
+	 <row nPads="192" padPitch="1.16304" rowHeight="5.36"  offset="0.581518" RowID="19"></row>
+	 <row nPads="192" padPitch="1.16707" rowHeight="5.36"  offset="0" RowID="20"></row>
+	 <row nPads="192" padPitch="1.17111" rowHeight="5.36"  offset="0.585554" RowID="21"></row>
+	 <row nPads="192" padPitch="1.17514" rowHeight="5.36"  offset="0" RowID="22"></row>
+	 <row nPads="192" padPitch="1.17918" rowHeight="5.36"  offset="0.58959" RowID="23"></row>
+	 <row nPads="192" padPitch="1.18322" rowHeight="5.36"  offset="0" RowID="24"></row>
+	 <row nPads="192" padPitch="1.18725" rowHeight="5.36"  offset="0.593626" RowID="25"></row>
+	 <row nPads="192" padPitch="1.19129" rowHeight="5.36"  offset="0" RowID="26"></row>
+	 <row nPads="192" padPitch="1.19532" rowHeight="5.36"  offset="0.597662" RowID="27"></row>
+        </segmentation>      
+         <id>system:6</id>
+        </readout>
+    </readouts>
+ <fields>
+        <field type="SolenoidMagnet" name="GlobalSolenoid" inner_field="5.0*tesla"
+               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+               outer_radius="SolenoidalFieldRadius" />
+    </fields> 
+</lccdd>
