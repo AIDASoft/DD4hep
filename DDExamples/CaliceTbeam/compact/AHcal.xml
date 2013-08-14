@@ -1,0 +1,83 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="CALICE_TB_Calo"
+        title="CALICE testbeam calo detectors model"
+        author="S. Lu"
+        url="http://ilcsoft.desy.de"
+        status="development"
+        version="$Id: CALICETb.xml Lu $">
+        <comment>The compact format for the CALICE testbeam Detector - toy model </comment>        
+    </info>
+  
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+  
+    <define>
+        <constant name="world_side"              value="10*m"/>
+        <constant name="world_x"                 value="world_side/2"/>
+        <constant name="world_y"                 value="world_side/2"/>
+        <constant name="world_z"                 value="world_side/2"/>        
+
+        <constant name="TBAHcal_cell_size"       value="30*mm"/>    <!-- CellSize 30*mm-->
+        <constant name="TBAHcal_cell_Imax"       value="30"/>       <!-- HBU 24        -->
+        <constant name="TBAHcal_cell_Jmax"       value="30"/>       <!-- HBU 24        -->
+        <constant name="TBAHcal_layers"          value="38"/>       <!-- Total Layers  -->
+        <constant name="Hcal_chamber_thickness"  value="17.5*mm"/>
+        <constant name="Hcal_radiator_thickness" value="20.0*mm"/>
+        <constant name="TBAHcal_layer_thickness" value="Hcal_radiator_thickness+Hcal_chamber_thickness"/>
+
+        <constant name="TBAHcal_position"        value="3000.0*mm"/>
+    </define>
+
+    <limits>
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="30.0" unit="mm" />
+        </limitset>
+    </limits>
+
+    <display>
+      <vis name="AHcalVis"          alpha="1" r="1"    g="1"    b="0.1" showDaughters="true" visible="false"/>
+      <vis name="AHcalRadiatorVis"  alpha="1" r="0.69" g="0.77" b="0.87"showDaughters="true" visible="true"/>
+      <vis name="AHcalLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="true" visible="true"/>
+      <vis name="AHcalSensorVis"    alpha="1" r="0"    g="1"    b="1"   showDaughters="true" visible="true"/>
+      <vis name="AHcalFR4Vis"       alpha="1" r="0.44" g="0.77" b="0.44"showDaughters="true" visible="true"/>
+      <vis name="AHcalCuVis"        alpha="1" r="0.8"  g="0.4"  b="0"   showDaughters="true" visible="true"/>
+      <vis name="AHcalAirVis"       alpha="1" r="1"    g="1"    b="1"   showDaughters="true" visible="true"/>
+    </display>
+
+    <detectors>
+        <detector id="7" name="AHcal" type="CalotbeamBox" readout="AHcalHits" vis="AHcalVis" calorimeterType="HCAL">
+            <comment>Analog Hadron Calorimeter Prototype</comment>
+
+            <!-- detector online alignment -->
+            <dimensions x="TBAHcal_cell_size*TBAHcal_cell_Imax" y="TBAHcal_cell_size*TBAHcal_cell_Jmax" z="TBAHcal_layer_thickness*TBAHcal_layers+20.0"/>
+	    <position x="0" y="0" z="TBAHcal_position"/>
+            <rotation x="0" y="0" z="0"/>
+	    <layers>
+            <layer repeat="(int) TBAHcal_layers">
+                <slice material = "Steel235"    thickness = "20.0*mm"  vis="AHcalRadiatorVis" />
+                <slice material = "Polystyrene" thickness =  "3.0*mm" sensitive = "yes" limits="cal_limits" vis="AHcalSensorVis"/>
+                <slice material = "FR4"         thickness =  "0.7*mm" vis="AHcalFR4Vis" />
+                <slice material = "Cu"          thickness =  "0.1*mm" vis="AHcalCuVis" />
+                <slice material = "Air"         thickness =  "7.7*mm" /> <!--vis="AHcalAirVis" /-->
+            </layer>
+            <layer repeat="(int) 1">
+                <slice material = "Steel235"    thickness = "20.0*mm"  vis="AHcalRadiatorVis" />
+            </layer>
+	    </layers>
+        </detector>
+    </detectors>
+
+    <readouts>
+        <readout name="AHcalHits">
+            <segmentation type="GlobalGridXY" gridSizeX="30.0*mm" gridSizeY="30.0*mm" />
+            <id>system:6,module:7,layer:8,slice:5,x:32:-16,y:-16</id>
+        </readout>
+    </readouts>
+
+</lccdd>

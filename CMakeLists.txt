@@ -63,6 +63,7 @@ if( DD4HEP_WITH_LCIO )
 add_subdirectory(DDExamples/ILDExDet)
 add_subdirectory(DDExamples/ILDExReco)
 add_subdirectory(DDExamples/ILDExTest)
+add_subdirectory(DDExamples/CaliceTbeam)
 endif()
 
 
