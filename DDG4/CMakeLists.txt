@@ -13,7 +13,6 @@ include(DD4hep_XML_setup)
 
 #---Includedirs-------------------------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
-                    ${CMAKE_SOURCE_DIR}/DDSense/include
                     ${CMAKE_CURRENT_SOURCE_DIR}/include 
                     ${ROOT_INCLUDE_DIR}
                     ${CLHEP_INCLUDE_DIR}
@@ -25,7 +24,7 @@ if(NOT DD4HEP_USE_XERCESC)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/Geant4XML.cpp)
 endif()
 add_library(DD4hepG4 SHARED ${sources})
-target_link_libraries(DD4hepG4 DD4hepCore DD4hepSense ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 
 SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
