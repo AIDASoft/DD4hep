@@ -1,6 +1,0 @@
-/vis/scene/create
-/vis/scene/add/hits
-/vis/scene/add/trajectories
-/vis/open OGLIX
-#/vis/viewer/panTo 0 0 
-/vis/viewer/zoom 2.4
