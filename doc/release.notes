@@ -18,6 +18,9 @@ DD4hep  ----  Release Notes
             - assemblies work with the DD4hep Geant4Converter and VolumeManager
 	    - added a prototype example for a ROOT independent 
               plugin mechanism for SensitiveDetectors
+        - added example implemetation for Calice test beam
+          calorimeters: CaliceTbeam  (Shaojun Lu, DESY)
+
 
 2013/21/06    Markus Frank
 --------------------------
