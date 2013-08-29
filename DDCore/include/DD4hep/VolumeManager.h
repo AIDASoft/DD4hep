@@ -185,6 +185,8 @@ namespace DD4hep {
 	Field         system;
 	/// System identifier
 	VolumeID      sysID;
+	/// Sub-detector mask
+	VolumeID      detMask;
 	/// Population flags
 	int           flags;
       public:

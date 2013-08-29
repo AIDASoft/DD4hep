@@ -277,7 +277,9 @@ VolumeManager::Context::~Context()   {
 }
 
 /// Default constructor
-VolumeManager::Object::Object(LCDD& l) : lcdd(l), top(0), sysID(0), flags(VolumeManager::NONE)  {
+VolumeManager::Object::Object(LCDD& l) 
+: lcdd(l), top(0), sysID(0), detMask(~0x0ULL), flags(VolumeManager::NONE)
+{
 }
 
 /// Default destructor
@@ -298,13 +300,15 @@ VolumeManager::Object::~Object()   {
 /// Search the locally cached volumes for a matching ID
 VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id)  const  {
   Context* context = 0;
-  Volumes::const_iterator i = volumes.find(id);
+  VolIdentifier volume_id(id);
+  volume_id &= detMask;
+  Volumes::const_iterator i = volumes.find(volume_id);
   if ( i != volumes.end() )
     context = (*i).second;
-  else if ( sysID == 8 )  {
-    //for(i=volumes.begin(); i!=volumes.end();++i)
-    //  cout << (void*)(*i).first << "  " << (*i).second->placement.name() << endl;
-  }
+  //else if ( sysID == 8 )  {
+  //  for(i=volumes.begin(); i!=volumes.end();++i)
+  //    cout << (void*)(*i).first << "  " << (*i).second->placement.name() << endl;
+  //}
   return context;
 }
 
@@ -323,10 +327,9 @@ VolumeManager::VolumeManager(LCDD& lcdd, const string& nam, DetElement elt, Read
   assign(ptr,nam,"VolumeManager");
   if ( elt.isValid() )   {
     Populator p(lcdd, *this);
-    Object& o = _data();
     setDetector(elt, ro);
-    o.top   = ptr;
-    o.flags = flags;
+    ptr->top   = ptr;
+    ptr->flags = flags;
     p.populate(elt);
   }
 }
@@ -363,10 +366,11 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
       }
       Object& mo = m._data();
       m.setDetector(detector,ro);
-      mo.top    = o.top;
-      mo.flags  = o.flags;
-      mo.system = field;
-      mo.sysID  = id.second;
+      mo.top     = o.top;
+      mo.flags   = o.flags;
+      mo.system  = field;
+      mo.sysID   = id.second;
+      mo.detMask = mo.sysID;
       o.managers[mo.sysID] = m;
     }
     return (*i).second;
@@ -446,6 +450,7 @@ bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context)   {
 #endif
   if ( i == o.volumes.end() )   {
     o.volumes[vid] = context;
+    o.detMask |= context->mask;
     //o.phys_volumes[pv.ptr()] = context;
     err  << "Inserted new volume:" << setw(6) << left << o.volumes.size() 
 	 << " Ptr:"  << (void*)context->placement.ptr()
