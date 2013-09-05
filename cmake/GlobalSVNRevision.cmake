@@ -8,4 +8,4 @@ EXECUTE_PROCESS( COMMAND "svnversion"
         SET(GLOBAL_SVN_REVISION "NoNumberAvailable")
     ENDIF()
 
-MESSAGE(STATUS "Found global svn revision to be ${GLOBAL_SVN_REVISION}.")
+MESSAGE(STATUS "Found global svn revision to be ${GLOBAL_SVN_REVISION}")
