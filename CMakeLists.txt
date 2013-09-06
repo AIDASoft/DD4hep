@@ -31,7 +31,7 @@ option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" OFF)
 #option(DD4HEP_WITH_LCIO  "Build ILD examples with LCIO - builds LCIO as external project or uses pre-installed" ON)
 
 
-#---DD4hep macros -------------------------------------------------------
+#---DD4hep functions and macros -------------------------------------------------------
 include(DD4hep)
 include( DD4hepMacros ) 
 
@@ -47,12 +47,14 @@ include(CTest)
 enable_testing()
 
 #---Documentation-------------------------------------------------------------------
-include(GlobalSVNRevision)
-include(DD4hepDoxygen)
 
+OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" OFF )
+IF( INSTALL_DOC )
+  INSTALL( CODE "EXECUTE_PROCESS( COMMAND ${CMAKE_BUILD_TOOL} doc)" )
+  include(GlobalSVNRevision)
+  include(DD4hepDoxygen)
+ENDIF()
 
-#---DD4hep internal functions  -------------------------------------------------------
-#include(DD4hep)
 
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDCore)
@@ -64,9 +66,10 @@ endif()
 
 add_subdirectory(UtilityApps)
 
-##---Examples------------------------------------------------------------------------
-# FG: examples are no longer built with DD4hep - but rather will be moved to standalone packages
-#-----------------------------------------------------------
+##---Examples--------------------------------------------------------------
+# FG: examples are no longer built with DD4hep 
+#     now in ./examples directory as standalone packages
+#--------------------------------------------------------------------------
 
 #add_subdirectory(DDExamples/AlignDet)
 #add_subdirectory(DDExamples/CLICSiD)
@@ -89,11 +92,14 @@ add_subdirectory(UtilityApps)
 #   add_subdirectory(DDExamples/ILDExSimu)
 #endif()
 
+
 #---Configuration-------------------------------------------------------------------
-#~ configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
-#~ configure_file(cmake/thisdd4hep.sh  thisdd4hep.sh @ONLY)
+configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
+configure_file(cmake/thisdd4hep.sh  thisdd4hep.sh @ONLY)
 
-
+install(FILES ${CMAKE_BINARY_DIR}/thisdd4hep.csh ${CMAKE_BINARY_DIR}/thisdd4hep.sh
+  DESTINATION bin
+  )
 
 #-----------------------------------------------------------------------------------
 display_std_variables()
