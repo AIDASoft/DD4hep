@@ -10,23 +10,23 @@ set THIS="`dirname ${ARGS[2]}`"
 
 #----PATH----------------------------------------------------------------------------
 if ($?PATH) then
-   setenv PATH @EXECUTABLE_OUTPUT_PATH@:$PATH      # Linux, ELF HP-UX
+   setenv PATH @CMAKE_INSTALL_PREFIX@/bin:$PATH      # Linux, ELF HP-UX
 else
-   setenv PATH @EXECUTABLE_OUTPUT_PATH@
+   setenv PATH @CMAKE_INSTALL_PREFIX@/bin
 endif
 
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if ($?LD_LIBRARY_PATH) then
-   setenv LD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH      # Linux, ELF HP-UX
+   setenv LD_LIBRARY_PATH @CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:$LD_LIBRARY_PATH      # Linux, ELF HP-UX
 else
-   setenv LD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib
+   setenv LD_LIBRARY_PATH @CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib
 endif
 
 #----DYLD_LIBRARY_PATH---------------------------------------------------------------
 if ($?DYLD_LIBRARY_PATH) then
-   setenv DYLD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH  # Mac OS X
+   setenv DYLD_LIBRARY_PATH @CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH  # Mac OS X
 else
-   setenv DYLD_LIBRARY_PATH @LIBRARY_OUTPUT_PATH@:@XERCESC_ROOT_DIR@/lib
+   setenv DYLD_LIBRARY_PATH @CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib
 endif
 
 #----PYTHONPATH---------------------------------------------------------------
