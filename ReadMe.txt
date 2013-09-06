@@ -57,21 +57,52 @@ system before building and running the examples
 To build and run the simulation examples Geant4 will be required. 
 
 
-2) How to build and run
+2) How to build DD4hep 
 -----------------------
 
 - Checkout code
-svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk DD4hep
 
-- Configure (for PyROOT)
+  svn co https://svnsrv.desy.de/public/aidasoft/DD4hep/trunk DD4hep
 
-mkdir build; cd build
-cmake ../DD4hep
-## setup environment first - see below: make -j4
+- set the environment, at least ROOT needs to be initialized, e.g.
 
-- Configure (for XercesC)
+  source  /data/ilcsoft/root/5.34.03/bin/thisroot.sh
 
-cmake -DDD4HEP_USE_XERCESC=ON -DDD4HEP_USE_PYROOT=OFF -DXERCESC_ROOT_DIR=<xercesc> ../DD4hep
+- configure and build:
+
+  cd DD4hep
+  mkdir build; cd build
+  cmake ..
+  make -j install
+
+
+- some useful build options:
+
+  * build doxygen documentation ( after 'install' open ./doc/html/index.html)
+    -D INSTALL_DOC=on 
+ 
+  * build with geant4 support:
+   -D DD4HEP_WITH_GEANT4=on -D Geant4_DIR=__path_to_Geant4Config.cmake__
+  
+    [note: you might have to update your environment beforehand to have all needed 
+     libraries in the shared lib search path (this will vary with OS, shell, etc.) e.g 
+      . /data/ilcsoft/geant4/9.5/bin/geant4.sh
+      export CLHEP_BASE_DIR="/data/ilcsoft/HEAD/CLHEP/2.1.0.1"
+      export CLHEP_INCLUDE_DIR="$CLHEP_BASE_DIR/include"
+      export PATH="$CLHEP_BASE_DIR/bin:$PATH"
+      export LD_LIBRARY_PATH="$CLHEP_BASE_DIR/lib:$LD_LIBRARY_PATH"
+     ]
+
+  * use xerces instead of tinyxml    
+  -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=<xercesc>
+
+
+  * use pyroot to write python geometry drivers ( currently broken !?)
+   -DDD4HEP_USE_PYROOT=ON
+
+
+
+
 
 
 - Setup the running environment
@@ -106,39 +137,37 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
   forgotten to update the information here.
 
 
-5) Running the examples
+5) Building the examples
 -----------------------
 
-Here are a few command lines for running examples
-Do not forget to set for Geant4:  
-G4SYS = Geant4_ROOT_DIR
-export G4LEDATA=${G4SYS}/share/Geant4-9.5.1/data/G4EMLOW6.23
-export G4LEVELGAMMADATA=${G4SYS}/share/Geant4-9.5.1/data/PhotonEvaporation2.2
+Before any of the (new) examples in the ./examples directory can be build,
+one needs to set the environment:
+
+ source __path_where_ROOT_is_installed___/bin/thisroot.sh
+ source __path_where_DD4hep_is_installed_/bin/thisdd4hep.sh
+ 
+ [note: possible other scripts need to be called, e.g. when using geant4  - see above ]
 
 
-- ILDExDet example with the example detectors
-  bin/geoDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
+- then building the examples should be very straight forward. e.g:
+   (check for additional instructions in example subdirectory)
 
-- Run Geant4 with ILDExDet detector
-  bin/CLICSiDSimu   \
-     file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml  \
-     file:../DD4hep/DDExamples/ILDExDet/compact/geant4.xml \
-     ../DD4hep/DDExamples/ILDExSimu/run1.mac 
+  cd ./examples/ILDExDet/
+  mkdir build ; cd build 
+  cmake ..
+  make -j install
 
-- ILDExDet example with Astrid's prototype TPC
-  bin/geoDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/TPCPrototype.xml
+- before running the example, again the (DY)LD_LIBRARY_PATH has to be updated:
+  export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PWD/../lib
 
-- ILDExDet example with the LDC00_01Sc detector (under construction)
-  bin/geoDisplay  file:../DD4hep/DDExamples/ILDExDet/compact/Tesla.xml
+- then you can for example display the ILD detector (toy model):
 
-- CLICSid example with all SiD sub-detectors
-  bin/geoDisplay file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml 
+  geoDisplay ../compact/ILDEx.xml
 
-- Geant4 example with SiD (careful, need to set Geant4 variables in addition)
-  bin/CLICSiDSimu   \
-     file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml             \
-     file:../DD4hep/DDExamples/CLICSiD/compact/sensitive_detectors.xml \
-     ../DD4hep/DDExamples/CLICSiDSimu/run.mac 
+- or convert the compact to an lcdd file:
+
+  geoConverter -compact2lcdd -input file:../compact/ILDEx.xml -output ILD_toy.lcdd
+
 
 
 6) run SLIC simulation on lccd file created with DD4Hep:

@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
+#---------------------------
 set( PackageName ILDExDet )
+#---------------------------
+
 project(${PackageName})
 
 # project version
@@ -35,8 +38,13 @@ include( DD4hep )
 
 find_package( ROOT REQUIRED )
 #find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
-
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
+
+#-------------------------------------------------------------
+# add additional packages here
+
+
+#-------------------------------------------------------------
 
 include_directories( ${CMAKE_SOURCE_DIR}/include
   ${DD4hep_INCLUDE_DIRS}
@@ -58,6 +66,7 @@ add_library(${PackageName} SHARED ${sources})
 target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
+
 dd4hep_generate_rootmap(${PackageName} )
 
 #--- install target-------------------------------------

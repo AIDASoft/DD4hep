@@ -1,5 +1,26 @@
 DD4hep  ----  Release Notes
 =================================
+ --------
+| vXX-YY ---- 
+ -------- 
+       - changes to build system:
+         (see ReadMe.txt for details)
+
+         - moved examples to ./example directory   
+           - they are not built as part of DD4hep anymore
+
+         - install thisdd4hep.sh in ./bin
+           (modified to have the correct pathes) 
+
+         - added -DINSTALL_DOC=on/off option
+           to build doxygen documentation (in ./doc/html/index.html)
+
+         - create DD4hepConfig.cmake for easy building against DD4hep
+           ( see examples CMakeLists.txt)
+
+       - fixed doxygen API documentation (C.Rosemann)
+          (greatly improved with many graphs)
+
 
  --------
 | v00-04 |  fourth beta release ...
