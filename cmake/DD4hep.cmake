@@ -5,19 +5,40 @@
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
   find_package(ROOT QUIET)
+  find_package(DD4hep QUIET)
+
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
-  add_custom_command(OUTPUT ${rootmapfile}
-                     COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
-                             -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-                             -P ${CMAKE_SOURCE_DIR}/cmake/MakeRootMap.cmake
-                     DEPENDS ${library})
-  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
 
-  install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
-    DESTINATION lib
+
+#---------------------------------------------------------------------------------------
+if( DD4hep_FOUND )  
+  # we are building an external tool and need to source ${DD4hep_ROOT}/bin/thisdd4hep.sh
+  
+  add_custom_command(OUTPUT ${rootmapfile}
+    COMMAND cd ${LIBRARY_OUTPUT_PATH} && 
+    . ${DD4hep_ROOT}/bin/thisdd4hep.sh &&
+    genmap ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
+    DEPENDS ${library})
+  
+else()  # we are building DD4hep itself - only need thisroot.sh
+  
+  add_custom_command(OUTPUT ${rootmapfile}
+    COMMAND cd ${LIBRARY_OUTPUT_PATH} && 
+    . ${ROOT_ROOT}/bin/thisroot.sh &&
+    genmap ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
+    DEPENDS ${library})
+endif()
+
+
+add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+
+install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
+  DESTINATION lib
   )
+#--------------------------------------------------------------------------------------
+
 
   # Notify the project level target
   #gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)

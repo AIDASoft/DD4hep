@@ -2,6 +2,7 @@
 # This module sets up ROOT information 
 # It defines:
 # ROOT_FOUND          If the ROOT is found
+# ROOT_ROOT           the root directory ($ROOTSYS)
 # ROOT_INCLUDE_DIR    PATH to the include directory
 # ROOT_LIBRARIES      Most common libraries
 # ROOT_LIBRARY_DIR    PATH to the library directory 
@@ -32,6 +33,8 @@ if(ROOT_CONFIG_EXECUTABLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
+
+  set(ROOT_ROOT ${ROOTSYS})
 
   # Make variables changeble to the advanced user
   mark_as_advanced(ROOT_CONFIG_EXECUTABLE)

@@ -68,6 +68,9 @@ To build and run the simulation examples Geant4 will be required.
 
   source  /data/ilcsoft/root/5.34.03/bin/thisroot.sh
 
+  ( minimum is: export ROOTSYS=/data/ilcsoft/root/5.34.03 )
+
+
 - configure and build:
 
   cd DD4hep
@@ -101,28 +104,13 @@ To build and run the simulation examples Geant4 will be required.
    -DDD4HEP_USE_PYROOT=ON
 
 
-
-
-
-
-- Setup the running environment
-
-. thisdd4hep.sh
+- Setup the environment for running 
+  
+ . ./bin/thisdd4hep.sh
      or
-source thisdd4hep.csh
-
-### now call make ###########
-make -j4
+source ./bin/thisdd4hep.csh
 
 
-
-- Run ILDEx display
-
-DDExamples/ILDExDisplay/ILDExDisplay file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml
-
-- Run CLICSiD display
-
-DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact.xml
 
 
 3) Extending
@@ -143,11 +131,8 @@ DDExamples/CLICSiD/CLICSiDtest file:../DD4hep/DDExamples/CLICSiD/compact/compact
 Before any of the (new) examples in the ./examples directory can be build,
 one needs to set the environment:
 
- source __path_where_ROOT_is_installed___/bin/thisroot.sh
  source __path_where_DD4hep_is_installed_/bin/thisdd4hep.sh
  
- [note: possible other scripts need to be called, e.g. when using geant4  - see above ]
-
 
 - then building the examples should be very straight forward. e.g:
    (check for additional instructions in example subdirectory)
@@ -157,8 +142,9 @@ one needs to set the environment:
   cmake ..
   make -j install
 
-- before running the example, again the (DY)LD_LIBRARY_PATH has to be updated:
-  export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$PWD/../lib
+- before running the example, initialize the environment:
+  . ./bin/thisILDExDet.sh 
+
 
 - then you can for example display the ILD detector (toy model):
 
@@ -172,8 +158,6 @@ one needs to set the environment:
 
 6) run SLIC simulation on lccd file created with DD4Hep:
 
-# create lcdd file from compact:
-./bin/geoConverter -compact2lcdd -input file:../DD4hep/DDExamples/ILDExDet/compact/ILDEx.xml -output ILD_toy.lcdd
 
 # make sure slic is in the path and then:
 slic -g ./ILD_toy.lcdd -o ILD_toy.slcio -x -m ../DD4hep/DDExamples/ILDExSimu/run1.mac

@@ -62,6 +62,11 @@ add_subdirectory(DDCore)
 if(DD4HEP_WITH_GEANT4)
   add_subdirectory(DDG4)
   add_subdirectory(DDSense)
+
+  #--- create a geant4 variables for the thisdd4hep.sh script
+  find_package( Geant4 ) 
+  get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
+
 endif()
 
 add_subdirectory(UtilityApps)

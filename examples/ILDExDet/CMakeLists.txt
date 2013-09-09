@@ -69,6 +69,15 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${RO
 
 dd4hep_generate_rootmap(${PackageName} )
 
+
+#---- configure run environment ---------------
+configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+
+install(FILES ${CMAKE_BINARY_DIR}/this${PackageName}.sh
+  DESTINATION bin
+  )
+
+
 #--- install target-------------------------------------
 
 install(TARGETS ${PackageName}

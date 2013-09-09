@@ -16,6 +16,19 @@ else
     THIS=$(dirname ${BASH_ARGV[0]})
 fi
 
+
+#----------- source the ROOT environment first
+source @ROOT_ROOT@/bin/thisroot.sh
+
+if [ @DD4hep_WITH_GEANT4@ ]
+then
+    export G4INSTALL=@Geant4_ROOT@/../../
+    export G4ENV_INIT=@Geant4_ROOT@/../../bin/geant4.sh
+#    export G4SYSTEM="Darwin-g++"
+    test -r ${G4ENV_INIT} && { cd $(dirname ${G4ENV_INIT}) ; . ./$(basename ${G4ENV_INIT}) ; cd $OLDPWD ; }
+fi
+
+
 #----PATH-----------------------------------------------------------------
 if [ -z "${PATH}" ]; then
   PATH=@CMAKE_INSTALL_PREFIX@/bin; export PATH       # Linux, ELF HP-UX
@@ -25,16 +38,16 @@ fi
 
 #----LD_LIBRARY_PATH-----------------------------------------------------------------
 if [ -z "${LD_LIBRARY_PATH}" ]; then
-  LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@:@Geant4_DIR@/..; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
+  LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@Geant4_DIR@/..; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
 else
-  LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@:@Geant4_DIR@/..:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+  LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@Geant4_DIR@/..:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
 fi
 
 #----DYLD_LIBRARY_PATH---------------------------------------------------------------
 if [ -z "${DYLD_LIBRARY_PATH}" ]; then
-  DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@; export DYLD_LIBRARY_PATH   # Mac OS X
+  DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib; export DYLD_LIBRARY_PATH   # Mac OS X
 else
-  DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@ROOT_LIBRARY_DIR@:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
+  DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
 fi
 
 #----PYTHONPATH---------------------------------------------------------------

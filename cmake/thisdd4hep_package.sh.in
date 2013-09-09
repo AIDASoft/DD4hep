@@ -1,0 +1,19 @@
+#################################################################################
+#
+#  environment script for DD4hep examples - initializes DD4hep (and ROOT) as well
+# 
+#  @author F.Gaede, DESY, 2013
+#
+#################################################################################
+
+
+source @DD4hep_ROOT@/bin/thisDD4hep.sh
+
+export PATH=$PATH:@CMAKE_INSTALL_PREFIX@/bin
+
+if [ @APPLE@ ]
+then
+    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
+else
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
+fi
