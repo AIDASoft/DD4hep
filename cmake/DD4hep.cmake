@@ -9,14 +9,15 @@ function(dd4hep_generate_rootmap library)
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
   add_custom_command(OUTPUT ${rootmapfile}
-                     COMMAND cd ${LIBRARY_OUTPUT_PATH} && genmap
-		             ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
+                     COMMAND cd ${LIBRARY_OUTPUT_PATH} && 
+		     	     . ${CMAKE_BINARY_DIR}/thisdd4hep.sh &&
+		     	     genmap ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
                      DEPENDS ${library})
   add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
 
   install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
     DESTINATION lib
-    )
+  )
 
   # Notify the project level target
   #gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
@@ -33,7 +34,7 @@ function(dd4hep_install_library library)
 
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
 
-   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
+  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_MODULE_SUFFIX})
 
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND echo
