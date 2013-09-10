@@ -29,7 +29,11 @@ target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBR
 SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 
-dd4hep_generate_rootmap(DD4hepG4)
+if(APPLE)
+  dd4hep_generate_rootmap_apple(DD4hepG4)
+else()
+  dd4hep_generate_rootmap(DD4hepG4)
+endif()
 
 #-----------------------------------------------------------------------------------
 add_executable(g4gdmlDisplay g4gdmlDisplay.cpp)

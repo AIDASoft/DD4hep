@@ -90,8 +90,13 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}
 
 
 #---Rootmap generation--------------------------------------------------------------
-# fg: not needed here
-#dd4hep_generate_rootmap(${PackageName} )
+# fg: not needed here (?)
+#if(APPLE)
+#  dd4hep_generate_rootmap_apple(${PackageName} )
+#else()
+#  dd4hep_generate_rootmap(${PackageName} )
+#endif()
+
 
 #---- configure run environment ---------------
 configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)

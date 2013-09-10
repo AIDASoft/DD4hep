@@ -31,8 +31,11 @@ target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCor
 SET_TARGET_PROPERTIES( DD4hepCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 #---Rootmap generation--------------------------------------------------------------
-dd4hep_generate_rootmap(DD4hepPlugins)
-#dd4hep_install_library(DD4hepPlugins)
+if(APPLE)
+  dd4hep_generate_rootmap_apple(DD4hepPlugins)
+else()
+  dd4hep_generate_rootmap(DD4hepPlugins)
+endif()
 
 
 #--- install target-------------------------------------

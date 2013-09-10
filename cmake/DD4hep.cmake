@@ -4,6 +4,32 @@
 # Create the .rootmap file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
+
+  find_package(ROOT QUIET)
+  set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
+
+  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
+
+  add_custom_command(OUTPUT ${rootmapfile}
+                     COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
+                             -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
+                             -P ${CMAKE_SOURCE_DIR}/cmake/MakeRootMap.cmake
+                     DEPENDS ${library})
+
+  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+
+  install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
+    DESTINATION lib
+  )
+endfunction()
+
+
+
+#
+#FG: the following function works nicely on MacOS - for dd4hep and examples 
+#    but not on SL or Ubuntu ...
+#
+function(dd4hep_generate_rootmap_apple library)
   find_package(ROOT QUIET)
   find_package(DD4hep QUIET)
 
@@ -38,11 +64,10 @@ install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
   DESTINATION lib
   )
 #--------------------------------------------------------------------------------------
-
-
-  # Notify the project level target
-  #gaudi_merge_files_append(Rootmap ${library}Rootmap ${CMAKE_CURRENT_BINARY_DIR}/${library}.rootmap)
 endfunction()
+
+
+
 
 
 #---------------------------------------------------------------------------------------------------

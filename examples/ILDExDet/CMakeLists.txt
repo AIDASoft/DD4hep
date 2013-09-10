@@ -67,7 +67,11 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${RO
 
 #---Rootmap generation--------------------------------------------------------------
 
-dd4hep_generate_rootmap(${PackageName} )
+if(APPLE)
+  dd4hep_generate_rootmap_apple(${PackageName} )
+else()
+  dd4hep_generate_rootmap(${PackageName} )
+endif()
 
 
 #---- configure run environment ---------------
