@@ -5,6 +5,10 @@
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
 
+  if ( NOT DD4hep_ROOT )
+    SET ( DD4hep_ROOT ${CMAKE_SOURCE_DIR} )
+  endif()
+
   find_package(ROOT QUIET)
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
 
@@ -13,7 +17,7 @@ function(dd4hep_generate_rootmap library)
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-                             -P ${CMAKE_SOURCE_DIR}/cmake/MakeRootMap.cmake
+                             -P ${DD4hep_ROOT}/cmake/MakeRootMap.cmake
                      DEPENDS ${library})
 
   add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
