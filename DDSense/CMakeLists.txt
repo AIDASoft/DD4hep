@@ -38,11 +38,11 @@ file(GLOB exsrc example/*.cpp)
 #  list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/Geant4XML.cpp)
 #endif()
 add_library(DD4hepSenseExample SHARED ${exsrc} )
-target_link_libraries(DD4hepSenseExample  DD4hepSense ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepSenseExample  DD4hepSense ${Geant4_LIBRARIES} ${CMAKE_DL_LIBS} )
 
 #-----------------------------------------------------------------------------------
 add_executable(ddsense_example example/ddsense_example.cpp )
-target_link_libraries(ddsense_example DD4hepSense)
+target_link_libraries(ddsense_example DD4hepSense ${CMAKE_DL_LIBS} )
 
 
 #--- install target-------------------------------------
