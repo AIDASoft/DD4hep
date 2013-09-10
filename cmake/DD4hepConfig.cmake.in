@@ -37,7 +37,7 @@ SET( DD4hep_LIBRARIES DD4hep_LIBRARIES-NOTFOUND )
 MARK_AS_ADVANCED( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
 
 
-INCLUDE( ${DD4hep_ROOT}/cmake/DD4HepMacros.cmake )
+INCLUDE( ${DD4hep_ROOT}/cmake/DD4hepMacros.cmake )
 
 # only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
 # additional components are set by cmake in variable PKG_FIND_COMPONENTS
