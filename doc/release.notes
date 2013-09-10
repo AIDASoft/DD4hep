@@ -1,5 +1,25 @@
 DD4hep  ----  Release Notes
 =================================
+
+
+2013/10/09    Markus Frank
+--------------------------
+  - Add more explicit error messages in case a plugin is not found.
+  - Add file TGeoUnits.h, which allows to use the "usual SystemOfUnits"
+    from CLHEP using TGeo with the namespace tgeo::xxx
+    Example: tgeo::mm -> 0.1 (Geant3: cm, sec,  GeV, degree)
+                 ::mm -> 1.0 (Geant4: mm, nsec, MeV, radian)
+    I hope I got all translations right.
+    Geant4                                   Geant3
+    ----------------------------------------------------------------
+    millimeter         mm=1,cm=10            centimeter  mm=0.1,cm=1
+    nanosecond         s=1e9                 second      ns=1e-9,s=1
+    Mega electron Volt GeV=1e3               GeV         GeV=1
+    radian             rad=1                 degree      rad=180/pi
+
+    Unclear to me was if in Geant3 steradian is also 2*2*pi or 2*2*180 degree.
+
+
  --------
 | vXX-YY ---- 
  -------- 
