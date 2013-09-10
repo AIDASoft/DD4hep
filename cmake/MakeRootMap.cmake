@@ -8,7 +8,7 @@ endif()
 
 MESSAGE( STATUS " *** MakeROOTMap.cmake run command : genmap -debug -i ${libname} -o ${rootmapfile}
                  WORKING_DIRECTORY ${genmap_install_dir} "
-
+)
 EXECUTE_PROCESS( COMMAND 
 		 genmap -debug -i ${libname} -o ${rootmapfile}
                  WORKING_DIRECTORY ${genmap_install_dir}
