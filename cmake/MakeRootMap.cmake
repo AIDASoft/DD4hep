@@ -6,7 +6,10 @@ else()
   SET ( ENV{LD_LIBRARY_PATH} ./:$ENV{LD_LIBRARY_PATH} )
 endif()
 
+MESSAGE( STATUS " *** MakeROOTMap.cmake run command : genmap -debug -i ${libname} -o ${rootmapfile}
+                 WORKING_DIRECTORY ${genmap_install_dir} "
+
 EXECUTE_PROCESS( COMMAND 
-		 genmap -i ${libname} -o ${rootmapfile}
+		 genmap -debug -i ${libname} -o ${rootmapfile}
                  WORKING_DIRECTORY ${genmap_install_dir}
 )
