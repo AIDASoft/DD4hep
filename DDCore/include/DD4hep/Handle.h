@@ -10,6 +10,7 @@
 #ifndef DD4HEP_ELEMENTS_H
 #define DD4HEP_ELEMENTS_H
 #include "DD4hep/config.h"
+#include "DD4hep/Primitives.h"
 
 #include <string>
 #include <typeinfo>
@@ -190,11 +191,6 @@ namespace DD4hep {
     typedef Handle<>       Elt_t;
     typedef Handle<TNamed> Ref_t;
     
-    /// Helper to delete objects from heap and reset the pointer
-    template <typename T> inline void deletePtr(T*& p) {
-      if(p) delete p;
-      p = 0;
-    }
     /// Helper to delete objects from heap and reset the pointer
     template <typename T> inline void destroyObject(T*& p) {
       deletePtr(p);

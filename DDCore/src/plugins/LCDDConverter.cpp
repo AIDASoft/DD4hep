@@ -8,6 +8,7 @@
 //====================================================================
 
 // Framework includes
+#include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Segmentations.h"
@@ -40,7 +41,6 @@
 #include "TGeoNode.h"
 #include "TClass.h"
 #include "TMath.h"
-#include "Reflex/PluginService.h"
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -921,12 +921,14 @@ xml_h LCDDConverter::handleField(const std::string& name, const TNamed* f)   con
     string type = f->GetTitle();
     field=xml_elt_t(geo.doc,Unicode(type));
     field.setAttr(_U(name),f->GetName());
-    fld = ROOT::Reflex::PluginService::Create<TNamed*>(type+"_Convert2LCDD",&m_lcdd,&field,&fld);
+    fld = PluginService::Create<TNamed*>(type+"_Convert2LCDD",&m_lcdd,&field,&fld);
     cout << "++ " << (fld.isValid() ? "Converted" : "FAILED    to convert ")
 	 << " electromagnetic field:" << f->GetName() << " of type " << type << endl;
     if ( !fld.isValid() ) {
+      PluginDebug dbg;
+      PluginService::Create<TNamed*>(type+"_Convert2LCDD",&m_lcdd,&field,&fld);
       throw runtime_error("Failed to locate plugin to convert electromagnetic field:"+
-			  string(f->GetName())+" of type "+type);
+			  string(f->GetName())+" of type "+type+". "+dbg.missingFactory(type));
     }
     geo.doc_fields.append(field);
   }
@@ -960,10 +962,12 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp)   const {
     const LCDD::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;
     string tag  = type + "_Geant4_action";
-    long result = ROOT::Reflex::PluginService::Create<long>(tag,&m_lcdd,ptr,&vals);
+    long result = PluginService::Create<long>(tag,&m_lcdd,ptr,&vals);
     if ( 0 == result ) {
+      PluginDebug dbg;
+      PluginService::Create<long>(tag,&m_lcdd,ptr,&vals);
       throw runtime_error("Failed to locate plugin to interprete files of type"
-			  " \""+tag+"\" - no factory:"+type);
+			  " \""+tag+"\" - no factory:"+type+". "+dbg.missingFactory(tag));
     }
     result = *(long*)result;
     if ( result != 1 ) {

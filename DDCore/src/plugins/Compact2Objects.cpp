@@ -12,15 +12,15 @@
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/Plugins.h"
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
 
 // Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
-#include "Reflex/PluginService.h"
 
-
+// C/C++ include files
 #include <climits>
 #include <iostream>
 #include <iomanip>
@@ -468,8 +468,12 @@ template <> void Converter<Readout>::operator()(xml_h e)  const {
 
   if ( seg )  { // Segmentation is not mandatory!
     string type = seg.attr<string>(_U(type));
-    Ref_t segment(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&seg));
-    if ( !segment.isValid() ) throw_print("FAILED to create segmentation:"+type);
+    Ref_t segment(PluginService::Create<TNamed*>(type,&lcdd,&seg));
+    if ( !segment.isValid() )   {
+      PluginDebug dbg;
+      PluginService::Create<TNamed*>(type,&lcdd,&seg);
+      throw_print("FAILED to create segmentation:"+type+". "+dbg.missingFactory(type));
+    }
     ro.setSegmentation(segment);
   }
   if ( id )  {
@@ -539,9 +543,11 @@ template <> void Converter<CartesianField>::operator()(xml_h e)  const  {
   CartesianField field = lcdd.field(name);
   if ( !field.isValid() ) {
     // The field is not present: We create it and add it to LCDD
-    field = Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&e));
+    field = Ref_t(PluginService::Create<TNamed*>(type,&lcdd,&e));
     if ( !field.isValid() ) {
-      throw_print("Failed to create field object of type "+type);
+      PluginDebug dbg;
+      PluginService::Create<TNamed*>(type,&lcdd,&e);
+      throw_print("Failed to create field object of type "+type+". "+dbg.missingFactory(type));
     }
     lcdd.addField(field);
     msg = "created";
@@ -678,20 +684,29 @@ template <> void Converter<DetElement>::operator()(xml_h element)  const {
       lcdd.addSensitiveDetector(sd);
     }
     Ref_t sens = sd;
-    DetElement det(Ref_t(ROOT::Reflex::PluginService::Create<TNamed*>(type,&lcdd,&element,&sens)));
+    DetElement det(Ref_t(PluginService::Create<TNamed*>(type,&lcdd,&element,&sens)));
     if ( det.isValid() )  {
       setChildTitles(make_pair(name,det));
     }
     printout(det.isValid() ? INFO : ERROR,"Compact","%s subdetector:%s of type %s %s",
 	     (det.isValid() ? "++ Converted" : "FAILED    "),name.c_str(),type.c_str(),
 	     (sd.isValid() ? ("["+sd.type()+"]").c_str() : ""));
+
+    if ( !det.isValid() )  {
+      PluginDebug dbg;
+      PluginService::Create<TNamed*>(type,&lcdd,&element,&sens);
+      throw runtime_error("Failed to execute subdetector creation plugin. "+dbg.missingFactory(type));
+    }
     lcdd.addDetector(det);
+    return;
   }
   catch(const exception& e) {
     printout(ERROR,"Compact","++ FAILED    to convert subdetector: %s: %s",name.c_str(),e.what());
+    terminate();
   }
   catch(...) {
     printout(ERROR,"Compact","++ FAILED    to convert subdetector: %s: %s",name.c_str(),"UNKNONW Exception");
+    terminate();
   }
 }
   

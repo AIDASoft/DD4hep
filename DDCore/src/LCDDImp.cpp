@@ -7,6 +7,7 @@
 //
 //====================================================================
 
+#include "DD4hep/Plugins.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/InstanceCount.h"
 #include "LCDDImp.h"
@@ -22,7 +23,6 @@
 #include "TGeoVolume.h"
 #include "TGeoShape.h"
 #include "TClass.h"
-#include "Reflex/PluginService.h"
 #include "XML/DocumentHandler.h"
 
 #if DD4HEP_USE_PYROOT
@@ -307,10 +307,12 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   try {
     LCDD* lcdd = this;
     string type = tag + "_XML_reader";
-    long result = ROOT::Reflex::PluginService::Create<long>(type,lcdd,&xml_root);
+    long result = PluginService::Create<long>(type,lcdd,&xml_root);
     if ( 0 == result ) {
+      PluginDebug dbg;
+      PluginService::Create<long>(type,lcdd,&xml_root);
       throw runtime_error("Failed to locate plugin to interprete files of type"
-			  " \""+tag+"\" - no factory:"+type);
+			  " \""+tag+"\" - no factory:"+type+". "+dbg.missingFactory(type));
     }
     result = *(long*)result;
     if ( result != 1 ) {
@@ -341,9 +343,11 @@ void LCDDImp::dump() const  {
 void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
   string fac = factory_type;
   try {
-    long result = ROOT::Reflex::PluginService::Create<long>(fac,(LCDD*)this,argc,argv);
+    long result = PluginService::Create<long>(fac,(LCDD*)this,argc,argv);
     if ( 0 == result ) {
-      throw runtime_error("apply-plugin: Failed to locate plugin "+fac);
+      PluginDebug dbg;
+      PluginService::Create<long>(fac,(LCDD*)this,argc,argv);
+      throw runtime_error("apply-plugin: Failed to locate plugin "+fac+". "+dbg.missingFactory(fac));
     }
     result = *(long*)result;
     if ( result != 1 ) {
