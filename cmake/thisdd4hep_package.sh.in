@@ -7,7 +7,7 @@
 #################################################################################
 
 
-source @DD4hep_ROOT@/bin/thisDD4hep.sh
+source @DD4hep_ROOT@/bin/thisdd4hep.sh
 
 export PATH=$PATH:@CMAKE_INSTALL_PREFIX@/bin
 
