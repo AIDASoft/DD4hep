@@ -782,57 +782,6 @@
     </detectors>
 
     <readouts>
-        <readout name="SiTrackerEndcapHits">
-            <id>system:6,barrel:3,layer:4,module:16,sensor:1,side:32:-2,strip:20</id>
-        </readout>        
-        <readout name="SiTrackerBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:12,sensor:1,side:v32:-2,strip:20</id>
-        </readout>
-        <readout name="SiVertexBarrelHits">
-            <id>system:6,barrel:3,layer:4,module:12,sensor:1,side:32:-2,strip:24</id>
-        </readout>
-        <readout name="SiVertexEndcapHits">
-            <id>system:6,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
-        </readout>
-        <readout name="EcalBarrelHits">
-            <segmentation type="EcalBarrelCartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
-            <id>system:6,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
-        </readout>        
-        <readout name="EcalEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.5" gridSizeY="3.5" />
-            <id>system:6,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="HcalBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="HcalEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="HcalPlugHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="MuonBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="MuonEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
-            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="SiTrackerForwardHits">
-            <id>system:6,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:28</id>
-        </readout>
-        <readout name="LumiCalHits">
-            <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
-            <id>system:8,layer:8,barrel:3,x:32:-16,y:-16</id>
-        </readout>
-        <readout name="BeamCalHits">
-            <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
-            <id>system:8,layer:8,barrel:3,x:32:-16,y:-16</id>
-        </readout>
     </readouts>
     <fields>
         <field name="GlobalSolenoid" type="solenoid" 

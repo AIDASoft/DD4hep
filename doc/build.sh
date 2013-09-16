@@ -7,7 +7,7 @@ if test -z "$GCC_VSN";
     GCC_VSN=gcc46;
     echo "Using default gcc version:${GCC_VSN}";
     fi;
-if test -z "$1";
+if test -z "${ARCH_OS}";
     then
     echo "You must supply the architecture as first argument:";
     echo "$0 [os-version:slc5,slc6]  [gcc-version:gcc43,gcc46]";
@@ -32,8 +32,7 @@ else
     echo "PATH=${PATH}";
 
     cmake -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_WITH_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF ../DD4hep;
-    . thisdd4hep.sh;
     make -j 5;
-    ./bin/geoDisplay file:../DD4hep/DDExamples/ILDExDet/compact/CLIC_ILD_CDR.xml
-    
+    . thisdd4hep.sh;
+    ./bin/geoDisplay file:../DD4hep/DDExamples/ILDExDet/compact/CLIC_ILD_CDR.xml    
 fi;
