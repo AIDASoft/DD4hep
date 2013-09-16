@@ -1,0 +1,3 @@
+/afs/cern.ch/user/c/cgrefe/workspace/DD4hep/examples/CLICSiD/lib/libCLICSiD.rootmap
+/afs/cern.ch/user/c/cgrefe/workspace/DD4hep/examples/CLICSiD/bin/thisCLICSiD.sh
+/afs/cern.ch/user/c/cgrefe/workspace/DD4hep/examples/CLICSiD/lib/libCLICSiD.so
