@@ -1,3 +1,0 @@
-/afs/cern.ch/user/c/cgrefe/workspace/DD4hep/examples/CLICSiD/build/CMakeFiles/CLICSiD.dir
-/afs/cern.ch/user/c/cgrefe/workspace/DD4hep/examples/CLICSiD/build/CMakeFiles/CLICSiDRootmap.dir
-/afs/cern.ch/user/c/cgrefe/workspace/DD4hep/examples/CLICSiD/build/CMakeFiles/CalorimeterReco.dir
