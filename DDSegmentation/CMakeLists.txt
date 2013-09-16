@@ -13,14 +13,6 @@ target_link_libraries(DDSegmentation DD4hepCore ${ROOT_LIBRARIES})
 
 SET_TARGET_PROPERTIES( DDSegmentation PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-#---Rootmap generation--------------------------------------------------------------
-if(APPLE)
-  dd4hep_generate_rootmap_apple(DDSegmentation)
-else()
-  dd4hep_generate_rootmap(DDSegmentation)
-endif()
-#--- install target-------------------------------------
-
 install(DIRECTORY include/DDSegmentation
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
