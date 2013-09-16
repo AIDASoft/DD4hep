@@ -167,7 +167,7 @@ Atom::Atom(const string& name, const string& formula, int Z, int N, double densi
   m_element = e;
 }
 
-/// Access the radiation length of the undrelying material
+/// Access the radiation length of the underlying material
 double Material::radLength() const {
   Handle<TGeoMedium>  val(*this);
   if ( val.isValid() ) {
@@ -176,6 +176,17 @@ double Material::radLength() const {
     throw runtime_error("The medium "+string(val->GetName())+" has an invalid material reference!");
   }
   throw runtime_error("Attempt to access radiation length from invalid material handle!");
+}
+
+/// Access the radiation length of the underlying material
+double Material::intLength() const {
+  Handle<TGeoMedium>  val(*this);
+  if ( val.isValid() ) {
+    TGeoMaterial* m = val->GetMaterial();
+    if ( m ) return m->GetIntLen();
+    throw runtime_error("The medium "+string(val->GetName())+" has an invalid material reference!");
+  }
+  throw runtime_error("Attempt to access interaction length from invalid material handle!");
 }
 
 /// String representation of this object
