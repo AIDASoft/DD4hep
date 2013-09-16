@@ -8,7 +8,8 @@ file(GLOB sources src/*.cpp)
 include(DD4hep_XML_setup)
 
 add_library(DDSegmentation SHARED ${sources})
-target_link_libraries(DDSegmentation ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES})
+target_link_libraries(DDSegmentation DD4hepCore ${ROOT_LIBRARIES})
+#target_link_libraries(DDSegmentation ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES})
 
 SET_TARGET_PROPERTIES( DDSegmentation PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
