@@ -85,6 +85,10 @@ namespace DD4hep {
       double phi0() const;
       /// Access parameters: phi0, if not present returns default
       double phi0(double default_value) const;
+      /// Access rotation constants: phi1
+      double phi1() const;
+      /// Access parameters: phi1, if not present returns default
+      double phi1(double default_value) const;
       /// Access rotation constants: psi
       double psi() const;
 
