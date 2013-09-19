@@ -19,9 +19,12 @@
      Ar=new G4Material("ArgonGas",z=18., a= 39.95*g/mole, density=1.782*mg/cm3);
    -> does not work (right now)
 
- - vis attribute wireframe="true" does not seem to work
+ - vis attribute drawingStyle="wireframe" does not seem to work (w/ geoDisplay )
 
-
+ - definition of rotations not intuitive - need clear documentation:
+    Rotation rot( 0, 0 , phi ) 
+    behaves differently  from RotationZ(phi)  !!??
+ 
 
  - original G4VSensitiveDetector classes are not yet used in DD4hep port
    => need to change DDG4/Geant4SensitiveDetector ....

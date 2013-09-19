@@ -118,10 +118,10 @@
 
   <display>
     <vis name="TrackerVis"      r="1.0" g="0.0"  b="1.0" alpha="1" showDaughters="true"  visible="true"/>
-    <vis name="TrackerLayerVis" r="0.5" g="0.0"  b="1.0" alpha="1" showDaughters="false" visible="true" wireframe="true"/>
+    <vis name="TrackerLayerVis" r="0.5" g="0.0"  b="1.0" alpha="1" showDaughters="false" visible="true" drawingStyle="wireframe"/>
     <vis name="CaloVis"         r="1.0" g="1.0"  b="0.0" alpha="1" showDaughters="true"  visible="true"/>
     <vis name="CaloLayerVis"    r="0.7" g="1.0"  b="0.0" alpha="1" showDaughters="true"  visible="true"/>
-    <vis name="MuonVis"         r="0.0" g="1.0"  b="1.0" alpha="1" showDaughters="true"  visible="true" wireframe="true"/>
+    <vis name="MuonVis"         r="0.0" g="1.0"  b="1.0" alpha="1" showDaughters="true"  visible="true" drawingStyle="wireframe" />
   </display>
 
   <detectors>
