@@ -89,11 +89,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	double x = -r*std::cos(phi);
 	double y = -r*std::sin(phi);
 	DetElement module(sdet,m_base+"_pos",det_id);
-	pv = assembly.placeVolume(m_vol,Transform3D(Rotation(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart+dz)));
+	pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart+dz)));
 	pv.addPhysVolID("barrel",1).addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
 	module.setPlacement(pv);
 	if ( reflect ) {
-	  pv = assembly.placeVolume(m_vol,Transform3D(Rotation(M_PI,-M_PI/2-phi,-M_PI/2),Position(x,y,-zstart-dz)));
+	  pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(M_PI,-M_PI/2-phi,-M_PI/2),Position(x,y,-zstart-dz)));
 	  pv.addPhysVolID("barrel",2).addPhysVolID("layer",l_id).addPhysVolID("module",mod_num);
 	  DetElement r_module(sdet,m_base+"_neg",det_id);
 	  r_module.setPlacement(pv);

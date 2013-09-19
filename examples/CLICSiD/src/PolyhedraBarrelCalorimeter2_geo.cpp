@@ -34,7 +34,7 @@ static void placeStaves(DetElement&   parent,
 
   for (int module = 1; module <= numsides; ++module)  {
     DetElement det  = module>1 ? stave.clone(_toString(module,"stave%d")) : stave;
-    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Transform3D(Rotation(0,rotY,rotX),
+    PlacedVolume pv = envelopeVolume.placeVolume(sectVolume,Transform3D(RotationZYX(0,rotY,rotX),
 									Translation3D(-posX,-posY,0)));
     // Not a valid volID: pv.addPhysVolID("stave", 0);
     pv.addPhysVolID("module",module);

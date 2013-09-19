@@ -45,12 +45,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Volume     c_vol(c_nam,c_box,lcdd.material(x_comp.materialStr()));
 
       if ( x_pos && x_rot ) {
-	Position   c_pos(x_pos.x(0),x_pos.y(0),x_pos.z(0));
-	Rotation   c_rot(x_rot.z(0),x_rot.y(0),x_rot.x(0));
+	Position    c_pos(x_pos.x(0),x_pos.y(0),x_pos.z(0));
+	RotationZYX c_rot(x_rot.z(0),x_rot.y(0),x_rot.x(0));
 	pv = m_vol.placeVolume(c_vol, Transform3D(c_rot,c_pos));
       }
       else if ( x_rot ) {
-	pv = m_vol.placeVolume(c_vol,Rotation(x_rot.z(0),x_rot.y(0),x_rot.x(0)));
+	pv = m_vol.placeVolume(c_vol,RotationZYX(x_rot.z(0),x_rot.y(0),x_rot.x(0)));
       }
       else if ( x_pos ) {
 	pv = m_vol.placeVolume(c_vol,Position(x_pos.x(0),x_pos.y(0),x_pos.z(0)));
@@ -108,7 +108,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // Loop over the number of modules in z.
       for (int j = 0; j < nz; j++)	  {
 	// Module PhysicalVolume.
-	Transform3D tr(Rotation(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
+	Transform3D tr(RotationZYX(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
 	pv = lay_vol.placeVolume(m_env,tr);
 	pv.addPhysVolID("module", module++);
 	// Adjust the x and y coordinates of the module.

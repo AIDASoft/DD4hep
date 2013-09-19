@@ -76,7 +76,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement sdet(det_name,x_det.id());
   Volume motherVol = lcdd.pickMotherVolume(sdet);
   PlacedVolume  physvol = motherVol.placeVolume(envelopeVol,
-						Transform3D(Rotation(M_PI/numsides,0,0),
+						Transform3D(RotationZYX(M_PI/numsides,0,0),
 							    Position(0,0,zmin+totalThickness/2)));
   physvol.addPhysVolID("system",det_id);
   physvol.addPhysVolID("barrel",1);        
@@ -85,7 +85,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   if ( reflect ) {
     DetElement rdet(det_name+"_neg",x_det.id());
     physvol = motherVol.placeVolume(envelopeVol,
-				    Transform3D(Rotation(M_PI/numsides,M_PI,0),
+				    Transform3D(RotationZYX(M_PI/numsides,M_PI,0),
 						Position(0,0,-(zmin+totalThickness/2))));
     physvol.addPhysVolID("system",det_id);
     physvol.addPhysVolID("barrel",2);

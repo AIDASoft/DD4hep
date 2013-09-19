@@ -26,7 +26,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   DetElement   sdet(name,x_det.id());
   Volume       mother = lcdd.pickMotherVolume(sdet);
   PlacedVolume phv = 
-    mother.placeVolume(vol,Transform3D(Rotation(rot.z(),rot.y(),rot.x()),Position(-pos.x(),-pos.y(),pos.z())));
+    mother.placeVolume(vol,Transform3D(RotationZYX(rot.z(),rot.y(),rot.x()),Position(-pos.x(),-pos.y(),pos.z())));
   phv.addPhysVolID("id",x_det.id());
   sdet.setPlacement(phv);
   return sdet;
