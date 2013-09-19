@@ -2,6 +2,14 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2013/10/18    Markus Frank
+--------------------------
+  - Throw exception if the expression evaluator sees a problem.
+    The message printed before was often not seen.
+  - Improve printout on exceptions and plugin abortion
+  - Remove the typedef RotationZYX -> Rotation and
+    import the type RotationZYX from ROOT::Math.
+
 2013/10/09    Markus Frank
 --------------------------
   - Add more explicit error messages in case a plugin is not found.
