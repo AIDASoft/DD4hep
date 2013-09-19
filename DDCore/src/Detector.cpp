@@ -83,7 +83,7 @@ static TGeoHMatrix* create_trafo(const vector<TGeoNode*>& det_nodes)   {
   }
   vector<TGeoNode*> nodes;
   if ( !collect_detector_nodes(det_nodes,nodes) ) {
-    throw runtime_error("DetElement cannot connect "+string(det_nodes[0]->GetName())+
+    throw runtime_error("DD4hep: DetElement cannot connect "+string(det_nodes[0]->GetName())+
 			" to child "+string(det_nodes[1]->GetName()));
   }
   TGeoHMatrix* mat = new TGeoHMatrix(*gGeoIdentity);
@@ -191,7 +191,7 @@ DetElement::Object* DetElement::Object::clone(int new_id, int flag)  const  {
       child._data().parent = det;
     }
     else {
-      throw runtime_error("DetElement::copy: Element "+string(child.name())+" is already present [Double-Insert]");
+      throw runtime_error("DD4hep: DetElement::copy: Element "+string(child.name())+" is already present [Double-Insert]");
     }
   }
   return obj;
@@ -244,7 +244,7 @@ TGeoMatrix* DetElement::Object::referenceTransformation() {
       DetElement me(this->asRef());
       DetElement elt = _par(ref,me,nodes);
       if ( !elt.isValid() )   {
-	throw runtime_error("referenceTransformation: No path from "+string(self.name())+
+	throw runtime_error("DD4hep: referenceTransformation: No path from "+string(self.name())+
 			    " to reference element "+string(ref.name())+" present!");
       }
       TGeoMatrix* m = create_trafo(nodes);
@@ -293,7 +293,7 @@ void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)
     //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
     return o.extensions[&info] = ptr;
   }
-  throw runtime_error("addExtension: The object "+string(name())+
+  throw runtime_error("DD4hep: addExtension: The object "+string(name())+
 		      " already has an extension of type:"+string(info.name())+".");
 }
 
@@ -304,7 +304,7 @@ void* DetElement::i_extension(const type_info& info)   const {
   if ( j != o.extensions.end() )   {
     return (*j).second;
   }
-  throw runtime_error("extension: The object "+string(name())+
+  throw runtime_error("DD4hep: extension: The object "+string(name())+
 		      " has no extension of type:"+string(info.name())+".");
 }
  
@@ -317,7 +317,7 @@ string DetElement::placementPath() const {
       vector<TGeoNode*> nodes, path;
       _top(*this,nodes);
       if ( !collect_detector_nodes(nodes,path) ) {
-	throw runtime_error("DetElement cannot determine placement path of "+string(name()));
+	throw runtime_error("DD4hep: DetElement cannot determine placement path of "+string(name()));
       }
       path.push_back(gGeoManager->GetTopNode());
       for(vector<TGeoNode*>::const_reverse_iterator i=path.rbegin(); i!=path.rend(); ++i)
@@ -340,7 +340,7 @@ DetElement& DetElement::setType(const string& typ)   {
     m_element->SetTitle(typ.c_str());
     return *this;
   }
-  throw runtime_error("DetElement::setType: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::setType: Self is not defined [Invalid Handle]");
 }
 
 string DetElement::path() const   {
@@ -402,7 +402,7 @@ DetElement DetElement::parent() const {
 
 void DetElement::check(bool condition, const string& msg) const  {
   if ( condition )  {
-    throw runtime_error(msg);
+    throw runtime_error("DD4hep: "+msg);
   }
 }
 
@@ -413,9 +413,9 @@ DetElement& DetElement::add(DetElement sdet)  {
       sdet.object<Object>().parent = *this;
       return *this;
     }
-    throw runtime_error("DetElement::add: Element "+string(sdet.name())+" is already present [Double-Insert]");
+    throw runtime_error("DD4hep: DetElement::add: Element "+string(sdet.name())+" is already present [Double-Insert]");
   }
-  throw runtime_error("DetElement::add: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::add: Self is not defined [Invalid Handle]");
 }
 
 DetElement DetElement::clone(const string& new_name)  const  {
@@ -423,7 +423,7 @@ DetElement DetElement::clone(const string& new_name)  const  {
     Object& o = object<Object>();
     return DetElement(o.clone(o.id,COPY_NONE), new_name, o.GetTitle());
   }
-  throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id)  const  {
@@ -431,7 +431,7 @@ DetElement DetElement::clone(const string& new_name, int new_id)  const  {
     Object& o = object<Object>();
     return DetElement(o.clone(new_id, COPY_NONE), new_name, o.GetTitle());
   }
-  throw runtime_error("DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
 }
 
 /// Access to the physical volume of this detector element
@@ -454,9 +454,9 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
       o.volume    = placement.volume();
       return *this;
     }
-    throw runtime_error("DetElement::setPlacement: Placement is not defined [Invalid Handle]");
+    throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
   }
-  throw runtime_error("DetElement::setPlacement: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::setPlacement: Self is not defined [Invalid Handle]");
 }
 
 /// Access to the logical volume of the placements (all daughters have the same!)
@@ -464,7 +464,7 @@ Volume DetElement::volume() const   {
   if ( isValid() )  {
     return object<Object>().volume;
   }
-  throw runtime_error("DetElement::volume: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::volume: Self is not defined [Invalid Handle]");
 }
 
 DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& name, const Volume& volume)  {
@@ -472,7 +472,7 @@ DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& name, c
     volume.setVisAttributes(lcdd,name);
     return *this;
   }
-  throw runtime_error("DetElement::setVisAttributes: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::setVisAttributes: Self is not defined [Invalid Handle]");
 }
 
 DetElement& DetElement::setRegion(const LCDD& lcdd, const string& name, const Volume& volume)  {
@@ -482,7 +482,7 @@ DetElement& DetElement::setRegion(const LCDD& lcdd, const string& name, const Vo
     }
     return *this;
   }
-  throw runtime_error("DetElement::setRegion: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::setRegion: Self is not defined [Invalid Handle]");
 }
 
 DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& name, const Volume& volume)  {
@@ -492,7 +492,7 @@ DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& name, const 
     }
     return *this;
   }
-  throw runtime_error("DetElement::setLimitSet: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::setLimitSet: Self is not defined [Invalid Handle]");
 }
 
 DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume,
@@ -615,7 +615,7 @@ SensitiveDetector& SensitiveDetector::setType(const string& typ)   {
     m_element->SetTitle(typ.c_str());
     return *this;
   }
-  throw runtime_error("SensitiveDetector::setType: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: SensitiveDetector::setType: Self is not defined [Invalid Handle]");
 }
 
 /// Access the type of the sensitive detector
@@ -721,7 +721,7 @@ void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, void (
     cout << "Extension["<<name()<<"]:" << ptr << " " << typeid(*(TNamed*)ptr).name() << endl;
     return o.extensions[&info] = ptr;
   }
-  throw runtime_error("addExtension: The object "+string(name())+
+  throw runtime_error("DD4hep: addExtension: The object "+string(name())+
 		      " already has an extension of type:"+string(info.name())+".");
 }
 
@@ -732,7 +732,7 @@ void* SensitiveDetector::i_extension(const type_info& info)   const {
   if ( j != o.extensions.end() )   {
     return (*j).second;
   }
-  throw runtime_error("extension: The object "+string(name())+
+  throw runtime_error("DD4hep: extension: The object "+string(name())+
 		      " has no extension of type:"+string(info.name())+".");
 }
  

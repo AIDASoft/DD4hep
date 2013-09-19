@@ -507,7 +507,7 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       SubtractionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
-      SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot);
+      SubtractionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
       /// Constructor to be used when creating a new object
       SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
    };
@@ -529,7 +529,7 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       UnionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
-      UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot);
+      UnionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
       /// Constructor to be used when creating a new object
       UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     };
@@ -551,7 +551,7 @@ namespace DD4hep {
       /// Constructor to be used when creating a new object. Rotation is identity-rotation!
       IntersectionSolid(const Solid& shape1, const Solid& shape2, const Position& pos);
       /// Constructor to be used when creating a new object
-      IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot);
+      IntersectionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot);
       /// Constructor to be used when creating a new object
       IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation3D& rot);
     };

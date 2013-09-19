@@ -67,13 +67,13 @@ void* Segmentation::i_extension(const type_info& info)   const {
       if ( &info == o.info ) {
 	return o.ptr;
       }
-      throw runtime_error("extension: The segmentation object "+string(type())+
+      throw runtime_error("DD4hep: extension: The segmentation object "+string(type())+
 			  " has the wrong type!");
     }
-    throw runtime_error("extension: The segmentation object "+string(type())+
+    throw runtime_error("DD4hep: extension: The segmentation object "+string(type())+
 			" has no extension defined.");
   }
-  throw runtime_error("extension: The segmentation object is not valid!");
+  throw runtime_error("DD4hep: extension: The segmentation object is not valid!");
 }
  
 /// Segmentation type
@@ -119,7 +119,7 @@ SegmentationParams::Parameters SegmentationParams::parameters() const  {
     params.push_back(make_pair("lunit",_toDouble("mm")));
   }
   else   {
-    throw runtime_error("The segmentation type "+typ+" is not supported by DD4hep.");
+    throw runtime_error("DD4hep: The segmentation type "+typ+" is not supported by DD4hep.");
   }
   return params;
 }

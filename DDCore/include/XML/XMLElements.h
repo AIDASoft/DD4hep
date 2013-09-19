@@ -473,15 +473,27 @@ namespace DD4hep {
       void operator--(int)  const;
       /// Access to current element
       Elt_t current() const { return m_node; }
+      /// Helper function to throw an exception
+      void throw_loop_exception(const std::exception& e) const;
       /// Loop processor using function object
       template <class T> void for_each(T oper) const  {
-        for(const Collection_t& c=*this; c; ++c)
-          oper(*this);
+	try  {
+	  for(const Collection_t& c=*this; c; ++c)
+	    oper(*this);
+	}
+	catch(const std::exception& e)  {
+	  throw_loop_exception(e);
+	}
       }
       /// Loop processor using function object
-      template <class T> void for_each(const XmlChar* tag, T oper) const  {
-        for(const Collection_t& c=*this; c; ++c)
-          Collection_t(c.m_node, tag).for_each(oper);
+      template <class T> void for_each(const XmlChar* tag_name, T oper) const  {
+	try {
+	  for(const Collection_t& c=*this; c; ++c)
+	    Collection_t(c.m_node, tag_name).for_each(oper);
+	}
+	catch(const std::exception& e)  {
+	  throw_loop_exception(e);
+	}
       }
     };
 

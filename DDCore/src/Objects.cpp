@@ -173,9 +173,9 @@ double Material::radLength() const {
   if ( val.isValid() ) {
     TGeoMaterial* m = val->GetMaterial();
     if ( m ) return m->GetRadLen();
-    throw runtime_error("The medium "+string(val->GetName())+" has an invalid material reference!");
+    throw runtime_error("DD4hep: The medium "+string(val->GetName())+" has an invalid material reference!");
   }
-  throw runtime_error("Attempt to access radiation length from invalid material handle!");
+  throw runtime_error("DD4hep: Attempt to access radiation length from invalid material handle!");
 }
 
 /// Access the radiation length of the underlying material
@@ -321,16 +321,16 @@ AlignmentEntry::AlignmentEntry(const string& path)   {
 
 /// Align the PhysicalNode (translation only)
 int AlignmentEntry::align(const Position& pos, bool check, double overlap) {
-  return align(pos,Rotation(),check,overlap);
+  return align(pos,RotationZYX(),check,overlap);
 }
 
 /// Align the PhysicalNode (rotation only)
-int AlignmentEntry::align(const Rotation& rot, bool check, double overlap) {
+int AlignmentEntry::align(const RotationZYX& rot, bool check, double overlap) {
   return align(Position(),rot,check,overlap);
 }
 
 /// Align the PhysicalNode (translation + rotation)
-int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, double overlap) {
+int AlignmentEntry::align(const Position& pos, const RotationZYX& rot, bool check, double overlap) {
 
   if ( isValid() ) {
     TGeoHMatrix* new_matrix = dynamic_cast<TGeoHMatrix*>(m_element->GetOriginalMatrix()->MakeClone());
@@ -341,7 +341,7 @@ int AlignmentEntry::align(const Position& pos, const Rotation& rot, bool check, 
     m_element->Align(new_matrix,0,check,overlap);
     return 1;
   }
-  throw runtime_error("Callot align non existing physical node.");
+  throw runtime_error("DD4hep: Cannot align non existing physical node.");
 }
 
 

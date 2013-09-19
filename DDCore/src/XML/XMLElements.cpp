@@ -169,6 +169,7 @@ int DD4hep::XML::_toInt(const XmlChar* value)  {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
+      throw runtime_error("DD4hep: Severe error during expression evaluation of "+s);
     }
     return (int)result;
   }
@@ -191,6 +192,7 @@ float DD4hep::XML::_toFloat(const XmlChar* value)   {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
+      throw runtime_error("DD4hep: Severe error during expression evaluation of "+s);
     }
     return (float)result;
   }
@@ -204,6 +206,7 @@ double DD4hep::XML::_toDouble(const XmlChar* value)   {
     if (eval.status() != XmlTools::Evaluator::OK) {
       cerr << s << ": ";
       eval.print_error();
+      throw runtime_error("DD4hep: Severe error during expression evaluation of "+s);
     }
     return result;
   }
@@ -220,6 +223,7 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, const XmlChar* value)  {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << v << ": ";
     eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation of "+v);
   }
   eval.setVariable(n.c_str(),result);
 }
@@ -928,19 +932,32 @@ Collection_t::Collection_t(Handle_t element, const char* tag)
   m_node = m_children.reset();
 }
 
+/// Constructor over XmlElements in a node list
 Collection_t::Collection_t(NodeList node_list) 
   : m_children(node_list)
 {
   m_node = m_children.reset();
 }
 
+/// Reset the collection object to restart the iteration
 Collection_t& Collection_t::reset()  {
   m_node = m_children.reset();
   return *this;
 }
 
+/// Access the collection size. Avoid this call -- sloooow!
 size_t Collection_t::size()  const  {
   return Handle_t(m_children.m_node).numChildren(m_children.m_tag,false);
+}
+
+/// Helper function to throw an exception
+void Collection_t::throw_loop_exception(const std::exception& e)  const   {
+  if ( m_node )  {
+    throw runtime_error(std::string(e.what())+"\n"+
+			"DD4hep: Error interpreting XML nodes of type <"+tag()+"/>");
+  }
+  throw runtime_error(std::string(e.what())+"\n"+
+		      "DD4hep: Error interpreting collections XML nodes.");
 }
 
 void Collection_t::operator++()  const  {

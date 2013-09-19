@@ -418,7 +418,7 @@ template <> void Converter<AlignmentEntry>::operator()(xml_h e)  const  {
   bool overlap = e.hasAttr(_U(overlap));
   AlignmentEntry alignment(path);
   Position pos;
-  Rotation rot;
+  RotationZYX rot;
   if ( (child=e.child(_U(position),false)) )  { // Position is not mandatory!
     pos.SetXYZ(child.x(),child.y(),child.z());
   }
@@ -637,6 +637,9 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element)  const 
     }
     printout(DEBUG,"Compact","SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%f7.3f",
 	     sd.name(),(" ["+sd.type()+"]").c_str(),sd.hitsCollection().c_str(),sd.energyCutoff());
+    xml_attr_t sequence = element.attr_nothrow(_U(sequence));
+    if ( sequence )   {
+    }
   }
   catch(const exception& e) {
     printout(ERROR,"Compact","++ FAILED    to convert sensitive detector: %s: %s",

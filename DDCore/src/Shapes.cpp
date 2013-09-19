@@ -94,7 +94,7 @@ Polycone::Polycone(double start, double delta, const vector<double>& rmin, const
 {
   vector<double> params;
   if ( rmin.size() < 2 )  {
-    throw runtime_error("PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
+    throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
   params.push_back(RAD_2_DEGREE * start);
   params.push_back(RAD_2_DEGREE * delta);
@@ -112,7 +112,7 @@ Polycone::Polycone(const string& name, double start, double delta, const vector<
 {
   vector<double> params;
   if ( rmin.size() < 2 )  {
-    throw runtime_error("PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
+    throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
   params.push_back(RAD_2_DEGREE * start);
   params.push_back(RAD_2_DEGREE * delta);
@@ -131,7 +131,7 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
   vector<double> params;
   size_t num = s->GetNz();
   if ( rmin.size() < 2 )  {
-    throw runtime_error("PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
+    throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
   params.push_back(s->GetPhi1());
   params.push_back(s->GetDphi());
@@ -367,9 +367,9 @@ void PolyhedraRegular::_create(const string& name, int nsides, double rmin, doub
 			       double zpos, double zneg, double start, double delta)
 {
   if ( rmin<0e0 || rmin>rmax )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
+    throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmin:<"+_toString(rmin)+"> is invalid!");
   else if ( rmax<0e0 )
-    throw runtime_error("PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
+    throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmax:<"+_toString(rmax)+"> is invalid!");
   _assign(new TGeoPgon(),name,"polyhedra",false);
   double params[] = {
     RAD_2_DEGREE * start,
@@ -421,8 +421,8 @@ SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, con
 }
 
 /// Constructor to be used when creating a new object
-SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot)   {
-  TGeoSubtraction* sub  = new TGeoSubtraction(shape1,shape2,identityTransform(),_rotation(rot));
+SubtractionSolid::SubtractionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot)   {
+  TGeoSubtraction* sub  = new TGeoSubtraction(shape1,shape2,identityTransform(),_rotationZYX(rot));
   _assign(new TGeoCompositeShape("",sub),"","subtraction",true);
 }
 
@@ -451,8 +451,8 @@ UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Position&
 }
 
 /// Constructor to be used when creating a new object
-UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot)   {
-  TGeoUnion *uni = new TGeoUnion(shape1,shape2,identityTransform(),_rotation(rot));
+UnionSolid::UnionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot)   {
+  TGeoUnion *uni = new TGeoUnion(shape1,shape2,identityTransform(),_rotationZYX(rot));
   _assign(new TGeoCompositeShape("",uni),"","union",true);
 }
 
@@ -481,8 +481,8 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
 }
 
 /// Constructor to be used when creating a new object
-IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const Rotation& rot)  {
-  TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,identityTransform(),_rotation(rot));
+IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, const RotationZYX& rot)  {
+  TGeoIntersection* inter = new TGeoIntersection(shape1,shape2,identityTransform(),_rotationZYX(rot));
   _assign(new TGeoCompositeShape("",inter),"","intersection",true);
 }
 

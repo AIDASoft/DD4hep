@@ -176,7 +176,7 @@ namespace DD4hep {
     template <class V> V RotateY(const V& v, double a) { return ROOT::Math::VectorUtil::RotateY(v,a); }
     template <class V> V RotateZ(const V& v, double a) { return ROOT::Math::VectorUtil::RotateZ(v,a); }
   
-    typedef ROOT::Math::RotationZYX   Rotation;
+    typedef ROOT::Math::RotationZYX   RotationZYX;
     typedef ROOT::Math::RotationZ     RotationZ;
     typedef ROOT::Math::RotationY     RotationY;
     typedef ROOT::Math::RotationX     RotationX;
@@ -316,9 +316,9 @@ namespace DD4hep {
       /// Align the PhysicalNode (translation only)
       int align(const Position& pos, bool check=false, double overlap=0.001);
       /// Align the PhysicalNode (rotation only)
-      int align(const Rotation& rot, bool check=false, double overlap=0.001);
+      int align(const RotationZYX& rot, bool check=false, double overlap=0.001);
       /// Align the PhysicalNode (translation + rotation)
-      int align(const Position& pos, const Rotation& rot, bool check=false, double overlap=0.001);
+      int align(const Position& pos, const RotationZYX& rot, bool check=false, double overlap=0.001);
     };
 
 

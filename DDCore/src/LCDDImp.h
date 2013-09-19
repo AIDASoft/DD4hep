@@ -38,7 +38,7 @@ namespace DD4hep {
 
     public:
       struct InvalidObjectError : public std::runtime_error {
-        InvalidObjectError(const std::string& msg) : std::runtime_error(msg) {}
+        InvalidObjectError(const std::string& msg) : std::runtime_error("DD4hep: "+msg) {}
       };
       
       struct ObjectHandleMap : public HandleMap  {

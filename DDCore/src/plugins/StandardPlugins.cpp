@@ -69,7 +69,7 @@ static long load_volmgr(LCDD& lcdd,int,char**)    {
   }
   catch(const exception& e)  {
     throw runtime_error(string(e.what())+"\n"
-			"           while programming VolumeManager. Are your volIDs correct?");
+			"DD4hep: while programming VolumeManager. Are your volIDs correct?");
   }
   catch(...)  {
     throw runtime_error("UNKNOWN exception while programming VolumeManager. Are your volIDs correct?");

@@ -311,23 +311,23 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
     if ( 0 == result ) {
       PluginDebug dbg;
       PluginService::Create<long>(type,lcdd,&xml_root);
-      throw runtime_error("Failed to locate plugin to interprete files of type"
+      throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
 			  " \""+tag+"\" - no factory:"+type+". "+dbg.missingFactory(type));
     }
     result = *(long*)result;
     if ( result != 1 ) {
-      throw runtime_error("Failed to parse the XML file "+xmlfile+" with the plugin "+type);
+      throw runtime_error("DD4hep: Failed to parse the XML file "+xmlfile+" with the plugin "+type);
     }
   }
   catch(const XML::XmlException& e)  {
-    throw runtime_error("XML-DOM Exception:\n\""+XML::_toString(e.msg)+
-			"\"\n  while parsing "+xmlfile);
+    throw runtime_error(XML::_toString(e.msg)+
+			"\nDD4hep: XML-DOM Exception while parsing "+xmlfile);
   } 
   catch(const exception& e)  {
-    throw runtime_error(string(e.what())+"\n           while parsing "+xmlfile);
+    throw runtime_error(string(e.what())+"\nDD4hep: while parsing "+xmlfile);
   }
   catch(...)  {
-    throw runtime_error("UNKNOWN exception while parsing "+xmlfile);
+    throw runtime_error("DD4hep: UNKNOWN exception while parsing "+xmlfile);
   }
 #endif
 }
@@ -347,23 +347,20 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv)   {
     if ( 0 == result ) {
       PluginDebug dbg;
       PluginService::Create<long>(fac,(LCDD*)this,argc,argv);
-      throw runtime_error("apply-plugin: Failed to locate plugin "+fac+". "+dbg.missingFactory(fac));
+      throw runtime_error("DD4hep: apply-plugin: Failed to locate plugin "+fac+". "+dbg.missingFactory(fac));
     }
     result = *(long*)result;
     if ( result != 1 ) {
-      throw runtime_error("apply-plugin: Failed to execute plugin "+fac);
+      throw runtime_error("DD4hep: apply-plugin: Failed to execute plugin "+fac);
     }
   }
   catch(const XML::XmlException& e)  {
-    cout << "XML-DOM Exception:" << XML::_toString(e.msg) << endl;
-    throw runtime_error("XML-DOM Exception:\""+XML::_toString(e.msg)+"\" with plugin:"+fac);
+    throw runtime_error(XML::_toString(e.msg)+"\nDD4hep: XML-DOM Exception with plugin:"+fac);
   } 
   catch(const exception& e)  {
-    cout << "Exception:" << e.what() << endl;
-    throw runtime_error("Exception:\""+string(e.what())+"\" with plugin:"+fac);
+    throw runtime_error(string(e.what())+"\nDD4hep: with plugin:"+fac);
   }
   catch(...)  {
-    cout << "UNKNOWN Exception" << endl;
     throw runtime_error("UNKNOWN exception from plugin:"+fac);
   }
 }

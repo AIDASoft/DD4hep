@@ -30,7 +30,7 @@ namespace DD4hep {
 
     TGeoIdentity*     identityTransform();
     TGeoTranslation* _translation(const Position& pos);
-    TGeoRotation*    _rotation(const Rotation& rot);
+    TGeoRotation*    _rotationZYX(const RotationZYX& rot);
     TGeoRotation*    _rotation3D(const Rotation3D& rot);
     TGeoHMatrix*     _transform(const Transform3D& trans);
 

@@ -148,12 +148,12 @@ Document DocumentHandler::load(const string& fname)  const  {
   try {
     parser->parse(path.c_str());
   }
-  catch(std::exception& e) {
+  catch(exception& e) {
     cout << "parse(path):" << e.what() << endl;
     try {
       parser->parse(fname.c_str());
     }
-    catch(std::exception& ex) {
+    catch(exception& ex) {
       cout << "parse(URI):" << ex.what() << endl;      
     }
   }
@@ -174,7 +174,7 @@ Document DocumentHandler::parse(const char* bytes, size_t length)  const {
 }
 
 /// Write xml document to output file (stdout if file name empty)
-int DocumentHandler::output(Document doc, const std::string& fname) const {
+int DocumentHandler::output(Document doc, const string& fname) const {
   XMLFormatTarget   *tar = 0;
   DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
   DOMLSOutput       *out = imp->createLSOutput();
@@ -272,13 +272,13 @@ Document DocumentHandler::load(const string& fname)  const  {
 	cout << "Document:" << doc->Value() << endl;
 	cout << "Location: Line:" << doc->ErrorRow() 
 	     << " Column:" << doc->ErrorCol() << endl;
-	throw runtime_error(doc->ErrorDesc());
+	throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
       }
       else
-	throw runtime_error("Unknown error whaile parsing XML document with TiXml.");
+	throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");
     }
   }
-  catch(std::exception& e) {
+  catch(exception& e) {
     cout << "parse(path):" << e.what() << endl;
   }
   if ( result ) {
@@ -301,11 +301,11 @@ Document DocumentHandler::parse(const char* doc_string, size_t /* length */) con
       cout << "Document:" << doc->Value() << endl;
       cout << "Location: Line:" << doc->ErrorRow() 
 	   << " Column:" << doc->ErrorCol() << endl;
-      throw runtime_error(doc->ErrorDesc());
+      throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
     }
-    throw runtime_error("Unknown error whaile parsing XML document with TiXml.");
+    throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");
   }
-  catch(std::exception& e) {
+  catch(exception& e) {
     cout << "parse(xml-string):" << e.what() << endl;
   }
   delete doc;
@@ -313,7 +313,7 @@ Document DocumentHandler::parse(const char* doc_string, size_t /* length */) con
 }
 
 /// Write xml document to output file (stdout if file name empty)
-int DocumentHandler::output(Document doc, const std::string& fname) const {
+int DocumentHandler::output(Document doc, const string& fname) const {
   FILE* file = fname.empty() ? stdout : ::fopen(fname.c_str(),"w");
   if ( !file ) {
     cout << "Failed to open output file:" << fname << endl;

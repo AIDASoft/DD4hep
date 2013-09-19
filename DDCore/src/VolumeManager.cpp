@@ -343,17 +343,17 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
       string det_name = detector.name();
       // First check all pre-conditions
       if ( !ro.isValid() )  {
-	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with a "
+	throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
 			    "valid readout descriptor are allowed. [Invalid DetElement:"+det_name+"]");
       }
       PlacedVolume pv = detector.placement();
       if ( !pv.isValid() )   {
-	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with a "
+	throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
 			    "valid placement are allowed. [Invalid DetElement:"+det_name+"]");
       }
       PlacedVolume::VolIDs::Base::const_iterator vit = pv.volIDs().find("system");
       if ( vit == pv.volIDs().end() )   {
-	throw runtime_error("VolumeManager::addSubdetector: Only subdetectors with "
+	throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with "
 			    "valid placement VolIDs are allowed. [Invalid DetElement:"+det_name+"]");
       }
 
@@ -362,7 +362,8 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
       VolumeManager m = (*i).second;
       IDDescriptor::Field field = ro.idSpec().field(id.first);
       if ( !field )   {
-	throw runtime_error("VolumeManager::addSubdetector: IdDescriptor of "+string(detector.name())+" has no field "+id.first);
+	throw runtime_error("DD4hep: VolumeManager::addSubdetector: IdDescriptor of "+
+			    string(detector.name())+" has no field "+id.first);
       }
       Object& mo = m._data();
       m.setDetector(detector,ro);
@@ -375,7 +376,8 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro)  {
     }
     return (*i).second;
   }
-  throw runtime_error("VolumeManager::addSubdetector: Failed to add subdetector section. [Invalid Manager Handle]");
+  throw runtime_error("DD4hep: VolumeManager::addSubdetector: "
+		      "Failed to add subdetector section. [Invalid Manager Handle]");
 }
 
 /// Access the volume manager by cell id
@@ -390,9 +392,9 @@ VolumeManager VolumeManager::subdetector(VolumeID id)  const   {
       if ( sys_id == mo.sysID )
 	return (*j).second;
     }
-    throw runtime_error("VolumeManager::subdetector(VolID): Attempt to access unknown subdetector section.");
+    throw runtime_error("DD4hep: VolumeManager::subdetector(VolID): Attempt to access unknown subdetector section.");
   }
-  throw runtime_error("VolumeManager::subdetector(VolID): Cannot assign ID descriptor [Invalid Manager Handle]");
+  throw runtime_error("DD4hep: VolumeManager::subdetector(VolID): Cannot assign ID descriptor [Invalid Manager Handle]");
 }
 
 /// Assign the top level detector element to this manager
@@ -404,9 +406,9 @@ void VolumeManager::setDetector(DetElement e, Readout ro)   {
       o.detector = e;
       return;
     }
-    throw runtime_error("VolumeManager::setDetector: Cannot assign invalid detector element [Invalid Handle]");
+    throw runtime_error("DD4hep: VolumeManager::setDetector: Cannot assign invalid detector element [Invalid Handle]");
   }
-  throw runtime_error("VolumeManager::setDetector: Cannot assign detector element [Invalid Manager Handle]");
+  throw runtime_error("DD4hep: VolumeManager::setDetector: Cannot assign detector element [Invalid Manager Handle]");
 }
 
 /// Access the top level detector element
@@ -414,7 +416,7 @@ DetElement VolumeManager::detector() const   {
   if ( isValid() )  {
     return _data().detector;
   }
-  throw runtime_error("VolumeManager::detector: Cannot access DetElement [Invalid Handle]");
+  throw runtime_error("DD4hep: VolumeManager::detector: Cannot access DetElement [Invalid Handle]");
 }
 
 /// Assign IDDescription to VolumeManager structure
@@ -425,7 +427,7 @@ void VolumeManager::setIDDescriptor(IDDescriptor new_descriptor)  const   {
       return;
     }
   }
-  throw runtime_error("VolumeManager::setIDDescriptor: Cannot assign ID descriptor [Invalid Manager Handle]");
+  throw runtime_error("DD4hep: VolumeManager::setIDDescriptor: Cannot assign ID descriptor [Invalid Manager Handle]");
 }
 
 /// Access IDDescription structure
@@ -515,7 +517,7 @@ bool VolumeManager::adoptPlacement(Context* context)   {
   err << "Failed to add new physical volume [Invalid Manager Handle]";
   goto Fail;
  Fail:
-  throw runtime_error(err.str());
+  throw runtime_error("DD4hep: "+err.str());
   return false;
 }
 
@@ -543,9 +545,9 @@ VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const  
     stringstream err;
     err << "VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]" 
 	<< (void*)volume_id;
-    throw runtime_error(err.str());
+    throw runtime_error("DD4hep: "+err.str());
   }
-  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
+  throw runtime_error("DD4hep: VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
 }
 
 /// Lookup a physical (placed) volume identified by its 64 bit hit ID

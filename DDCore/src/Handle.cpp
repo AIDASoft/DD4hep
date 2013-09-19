@@ -50,6 +50,7 @@ int DD4hep::Geometry::_toInt(const string& value)  {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
   }
   return (int)result;
 }
@@ -64,6 +65,7 @@ long DD4hep::Geometry::_toLong(const string& value)  {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
   }
   return (long)result;
 }
@@ -77,6 +79,7 @@ float DD4hep::Geometry::_toFloat(const string& value)   {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
   }
   return (float)result;
 }
@@ -86,6 +89,7 @@ double DD4hep::Geometry::_toDouble(const string& value)   {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
   }
   return result;
 }
@@ -119,6 +123,7 @@ void DD4hep::Geometry::_toDictionary(const string& name, const string& value)  {
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation "+name+"="+value);
   }
   eval.setVariable(n.c_str(),result);
 }

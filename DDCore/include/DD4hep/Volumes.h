@@ -154,7 +154,7 @@ namespace DD4hep {
       /// Place un-rotated daughter volume at the given position.
       PlacedVolume placeVolume(const Volume& vol, const Position& pos)  const;
       /// Place rotated daughter volume. The position is automatically the identity position
-      PlacedVolume placeVolume(const Volume& vol, const Rotation& rot)  const;
+      PlacedVolume placeVolume(const Volume& vol, const RotationZYX& rot)  const;
       /// Place rotated daughter volume. The position is automatically the identity position
       PlacedVolume placeVolume(const Volume& vol, const Rotation3D& rot)  const;
      

@@ -71,7 +71,7 @@ const IDDescriptor::FieldIDs& IDDescriptor::ids() const    {
   if ( isValid() )  {
     return data<Object>()->fieldIDs;
   }
-  throw runtime_error("Attempt to access an invalid IDDescriptor object.");
+  throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
 }
 
 /// Access the fieldmap container 
@@ -79,7 +79,7 @@ const IDDescriptor::FieldMap& IDDescriptor::fields() const  {
   if ( isValid() )  {
     return data<Object>()->fieldMap; 
   }
-  throw runtime_error("Attempt to access an invalid IDDescriptor object.");
+  throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
 }
 
 /// Get the field descriptor of one field by name
@@ -87,7 +87,7 @@ IDDescriptor::Field IDDescriptor::field(const string& field_name)  const  {
   const FieldMap& m = fields(); // This already checks the object validity
   for(FieldMap::const_iterator i=m.begin(); i!=m.end(); ++i)
     if ( (*i).first == field_name ) return (*i).second;
-  throw runtime_error(string(name())+": This ID descriptor has no field with the name:"+field_name);
+  throw runtime_error("DD4hep: "+string(name())+": This ID descriptor has no field with the name:"+field_name);
 }
 
 /// Get the field descriptor of one field by its identifier
@@ -101,7 +101,7 @@ size_t IDDescriptor::fieldID(const string& field_name)  const   {
   const FieldIDs& m = ids(); // This already checks the object validity
   for(FieldIDs::const_iterator i=m.begin(); i!=m.end(); ++i)
     if ( (*i).second == field_name ) return (*i).first;
-  throw runtime_error(string(name())+": This ID descriptor has no field with the name:"+field_name);
+  throw runtime_error("DD4hep: "+string(name())+": This ID descriptor has no field with the name:"+field_name);
 }
 
 /// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
@@ -124,5 +124,5 @@ void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& fields)   {
       fields.push_back(VolIDField(*i,(*i)->value(vid)));
     return;
   }
-  throw runtime_error("Attempt to access an invalid IDDescriptor object.");
+  throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
 }

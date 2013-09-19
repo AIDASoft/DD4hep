@@ -218,7 +218,7 @@ namespace DD4hep {
 	     prefix.c_str(),val->GetName(),val->GetTitle());
   }
 
-  template <> void Printer<Rotation>::operator()(const Rotation& val)  const  {
+  template <> void Printer<RotationZYX>::operator()(const RotationZYX& val)  const  {
     printout(INFO,"Printer","%s ++ ZYXRotation: phi: %7.3 rad theta: %7.3 rad psi: %7.3 rad",
 	     prefix.c_str(),val.Phi(),val.Theta(),val.Psi());
   }

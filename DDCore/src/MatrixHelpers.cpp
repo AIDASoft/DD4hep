@@ -21,7 +21,7 @@ TGeoTranslation* DD4hep::Geometry::_translation(const Position& pos) {
   return new TGeoTranslation("",pos.X()*MM_2_CM,pos.Y()*MM_2_CM,pos.Z()*MM_2_CM);
 }
 
-TGeoRotation* DD4hep::Geometry::_rotation(const Rotation& rot) {
+TGeoRotation* DD4hep::Geometry::_rotationZYX(const RotationZYX& rot) {
   return new TGeoRotation("",rot.Phi()*RAD_2_DEGREE,rot.Theta()*RAD_2_DEGREE,rot.Psi()*RAD_2_DEGREE);
 }
 
@@ -40,9 +40,9 @@ TGeoHMatrix* DD4hep::Geometry::_transform(const Transform3D& trans)   {
   t[1] *= MM_2_CM;
   t[2] *= MM_2_CM;
 #endif
-  double t[3];
-  Rotation rot;
-  Position pos;
+  double      t[3];
+  RotationZYX rot;
+  Position    pos;
   trans.GetDecomposition(rot,pos);
   TGeoHMatrix *tr = new TGeoHMatrix();
   tr->RotateZ(rot.Phi()*RAD_2_DEGREE);

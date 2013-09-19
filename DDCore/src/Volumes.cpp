@@ -266,7 +266,7 @@ PlacedVolume::VolIDs::insert(const string& name, int value)   {
 static PlacedVolume::Object* _data(const PlacedVolume& v)  {
    PlacedVolume::Object* o = dynamic_cast<PlacedVolume::Object*>(v.ptr());
    if ( o ) return o;
-   throw runtime_error("Attempt to access invalid handle of type: PlacedVolume");
+   throw runtime_error("DD4hep: Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Add identifier
@@ -324,7 +324,7 @@ Volume::Object* _data(const Volume& v, bool throw_exception = true) {
   Volume::Object* o = dynamic_cast<Volume::Object*>(v.ptr());
   if ( o ) return o;
   else if ( !throw_exception ) return 0;
-  throw runtime_error("Attempt to access invalid handle of type: PlacedVolume");
+  throw runtime_error("DD4hep: Attempt to access invalid handle of type: PlacedVolume");
 }
 
 /// Constructor to be used when creating a new geometry tree.
@@ -356,7 +356,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& trans)
   if ( volume.isValid() )   {
     return _addNode(m_element,volume,_transform(trans));
   }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
 
 }
 
@@ -365,7 +365,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume)  const   {
   if ( volume.isValid() )   {
     return _addNode(m_element,volume,identityTransform());
   }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
 }
 
 /// Place un-rotated daughter volume at the given position.
@@ -373,15 +373,15 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos)  con
   if ( volume.isValid() )   {
     return _addNode(m_element,volume,_translation(pos));
   }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
-PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation& rot)  const  {
+PlacedVolume Volume::placeVolume(const Volume& volume, const RotationZYX& rot)  const  {
   if ( volume.isValid() )   {
-    return _addNode(m_element,volume,_rotation(rot));
+    return _addNode(m_element,volume,_rotationZYX(rot));
   }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
@@ -389,7 +389,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation3D& rot)  c
   if ( volume.isValid() )   {
     return _addNode(m_element,volume,_rotation3D(rot));
   }
-  throw runtime_error("Volume: Attempt to assign an invalid physical volume.");
+  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
 }
 
 /// Set the volume's material
@@ -400,9 +400,9 @@ const Volume& Volume::setMaterial(const Material& m)  const  {
       m_element->SetMedium(medium);
       return *this;
     }
-    throw runtime_error("Volume: Medium "+string(m.name())+" is not registered with geometry manager.");
+    throw runtime_error("DD4hep: Volume: Medium "+string(m.name())+" is not registered with geometry manager.");
   }
-  throw runtime_error("Volume: Attempt to assign invalid material.");
+  throw runtime_error("DD4hep: Volume: Attempt to assign invalid material.");
 }
 
 /// Access to the Volume material

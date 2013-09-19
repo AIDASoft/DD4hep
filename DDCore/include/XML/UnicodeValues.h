@@ -203,6 +203,7 @@ namespace DD4hep   { namespace XML  {
   UNICODE(material);
   UNICODE(materialref);
   UNICODE(materials);
+  UNICODE(member);
   UNICODE(MeV);
   UNICODE(mm);
   UNICODE(module);
@@ -320,6 +321,7 @@ namespace DD4hep   { namespace XML  {
   UNICODE(sensitive_detector);
   UNICODE(sensitive_detectors);
   UNICODE(sensor);
+  UNICODE(sequence);
   UNICODE(setup);
   UNICODE(signed);
   UNICODE(solidref);
