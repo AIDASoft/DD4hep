@@ -12,11 +12,10 @@
 /event/verbose 0
 /tracking/verbose 1
 # 
-# muon 300 MeV to the direction (1.,0.,0.)
-# 3 events
+# 3 3 GeV Muons events 
 #
 ##/generator/select gun
-/gun/direction 1. 1. 1.
-/gun/particle pi+
-/gun/energy 100 MeV
+/gun/direction 1. 1. .1
+/gun/particle mu+
+/gun/energy 3 GeV
 /run/beamOn 3
