@@ -12,6 +12,7 @@
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4Field.h"
 #include "DDG4/Geant4Converter.h"
+#include "DDG4/G4SDFactory.h"
 #include "DDG4/Geant4SensitiveDetector.h"
 
 // ROOT includes
@@ -464,7 +465,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     bool                     assembly = s->IsA() == TGeoShapeAssembly::Class();
 
     SensitiveDetector        det = _v.sensitiveDetector();
-    Geant4SensitiveDetector* sd  = 0;
+    G4VSensitiveDetector* sd  = 0;
     if ( det.isValid() )   {
       sd = info.g4SensDets[det.ptr()];
       if ( !sd ) {
@@ -703,27 +704,73 @@ void* Geant4Converter::handleLimitSet(const TNamed* limitset, const set<const TG
   return g4;
 }
 
+// /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
+// void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
+//   Geant4GeometryInfo& info = data();
+//   G4VSensitiveDetector* g4 = info.g4SensDets[sens_det];
+//   if ( !g4 )   {
+//     SensitiveDetector sd = Ref_t(sens_det);
+//     string type = sd.type(), name = sd.name();
+
+//     g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+//     if ( !g4 ) {
+//       string tmp = type;
+//       tmp[0] = ::toupper(tmp[0]);
+//       type = "Geant4"+tmp;
+//       g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+//       if ( !g4 )  {
+// 	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
+// 			    "create Geant4 sensitive detector "+name+" of type "+type+".");
+//       }
+//     }
+//     g4->Activate(true);
+//     g4->defineCollection(sd.hitsCollection());
+//     G4SDManager::GetSDMpointer()->AddNewDetector(g4);
+//     info.g4SensDets[sens_det] = g4;
+//   }
+//   return g4;
+// }
+
+
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
   Geant4GeometryInfo& info = data();
-  Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
+  G4VSensitiveDetector* g4 = info.g4SensDets[sens_det];
   if ( !g4 )   {
     SensitiveDetector sd = Ref_t(sens_det);
     string type = sd.type(), name = sd.name();
 
-    g4 = ROOT::Reflex::PluginService::Create<Geant4SensitiveDetector*>(type,name,&m_lcdd);
-    if ( !g4 ) {
+    //    g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+    G4SDFactory* sdf = ROOT::Reflex::PluginService::Create<G4SDFactory*>(type) ;
+    
+    if ( !sdf ) {
       string tmp = type;
       tmp[0] = ::toupper(tmp[0]);
       type = "Geant4"+tmp;
-      g4 = ROOT::Reflex::PluginService::Create<Geant4SensitiveDetector*>(type,name,&m_lcdd);
-      if ( !g4 )  {
+
+      // g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type,name,&m_lcdd);
+      sdf = ROOT::Reflex::PluginService::Create<G4SDFactory*>(type) ;
+
+      if ( !sdf )  {
 	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
-			    "create Geant4 sensitive detector "+name+" of type "+type+".");
+			    "create Geant4 sensitive detector factory "+name+" of type "+type+".");
       }
     }
+    g4 = sdf->createSD(  name , m_lcdd ) ;
+
+    if ( !g4 ) {
+	throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
+			    "create SD from factory "+name+" of type "+type+".");
+    }
+
     g4->Activate(true);
-    g4->defineCollection(sd.hitsCollection());
+
+    // fg: don't know if this is needed ...
+    Geant4SensitiveDetector* g4sd =  dynamic_cast<Geant4SensitiveDetector*>( g4 ) ;
+    if( g4sd) 
+      g4sd->defineCollection(sd.hitsCollection());
+    // ...but to be save we treat old Geant4SensitiveDetectors as before ...
+
     G4SDManager::GetSDMpointer()->AddNewDetector(g4);
     info.g4SensDets[sens_det] = g4;
   }
@@ -801,7 +848,7 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp)   const {
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
 void* Geant4Converter::printSensitive(const TNamed* sens_det, const set<const TGeoVolume*>& /* volumes */) const  {
   Geant4GeometryInfo& info = data();
-  Geant4SensitiveDetector* g4 = info.g4SensDets[sens_det];
+  G4VSensitiveDetector* g4 = info.g4SensDets[sens_det];
   ConstVolumeSet& volset = info.sensitives[sens_det];
   SensitiveDetector   sd = Ref_t(sens_det);
   stringstream str;

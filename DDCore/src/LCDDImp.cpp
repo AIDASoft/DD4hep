@@ -267,6 +267,7 @@ void LCDDImp::init()  {
   if ( !m_world.isValid() ) {
     TGeoManager* mgr = m_manager;
     Box worldSolid("world_box","world_x","world_y","world_z");
+    std::cout << " *********** created World volume with size : " << worldSolid->GetDX() << ", " << worldSolid->GetDY() << ", " << worldSolid->GetDZ() << std::endl ;
     Material vacuum = material("Vacuum");
     Material  air   = material("Air");
     Volume   world("world_volume",worldSolid,air);

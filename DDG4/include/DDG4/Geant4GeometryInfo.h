@@ -33,6 +33,7 @@ class G4UserLimits;
 class G4VisAttributes;
 class G4VPhysicalVolume;
 class G4AssemblyVolume;
+class G4VSensitiveDetector;
 
 /*
  *   DD4hep namespace declaration
@@ -46,7 +47,6 @@ namespace DD4hep {
 
     // Forward declarations
     class Geant4Mapping;
-    class Geant4SensitiveDetector;
     
     struct Geant4GeometryInfo : public TNamed, public Geometry::GeoHandlerTypes::GeometryInfo   {
     public:
@@ -58,7 +58,7 @@ namespace DD4hep {
       typedef std::map<const TGeoNode*,        G4VPhysicalVolume*>       PlacementMap;
       typedef std::map<const G4AssemblyVolume*,AssemblyChildren>         AssemblyChildMap;
       typedef std::map<const TNamed*,          G4Region*>                RegionMap;
-      typedef std::map<const TNamed*,          Geant4SensitiveDetector*> SensDetMap;
+      typedef std::map<const TNamed*,          G4VSensitiveDetector*>    SensDetMap;
       typedef std::map<const TGeoVolume*,      G4LogicalVolume*>         VolumeMap;
       typedef std::map<const TGeoShape*,       G4VSolid*>                SolidMap;
       typedef std::map<const TNamed*,          G4VisAttributes*>         VisMap;

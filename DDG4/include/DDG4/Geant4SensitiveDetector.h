@@ -12,6 +12,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DDG4/Geant4Hits.h"
+#include "DDG4/G4SDFactory.h"
 
 // Geant 4 include files
 #include "G4Step.hh"
@@ -37,6 +38,7 @@ namespace DD4hep {
     class Geant4SensitiveDetector;
 
     /** @class Geant4SensitiveDetector Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
+     *  Example G4VSensitiveDetector implementation.
      *
      * @author  M.Frank
      * @version 1.0

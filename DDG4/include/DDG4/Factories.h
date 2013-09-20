@@ -32,6 +32,7 @@ namespace DD4hep {
   namespace Simulation {  
     class Geant4Converter;
     class Geant4SensitiveDetector; 
+    class G4SDFactory; 
     template <typename T> class Geant4SetupAction  {
     public:
       static long create(Geometry::LCDD& lcdd, const Geant4Converter& cnv, const std::map<std::string,std::string>& attrs);
@@ -53,6 +54,13 @@ namespace {
       long ret = DD4hep::Simulation::Geant4SetupAction<P>::create(*lcdd,*cnv,*attr);
       new(retaddr) (long)(ret);
     }
+  };
+
+  /// Factory to create Geant4 sensitive detectors
+  template <typename P> class Factory<P, DD4hep::Simulation::G4SDFactory*()> {
+  public:  typedef DD4hep::Simulation::G4SDFactory SD;
+    static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) 
+      {  *(SD**)retaddr = (SD*)new P();           }
   };
 
   /// Factory to create Geant4 sensitive detectors
@@ -87,9 +95,20 @@ namespace {
   };
 }
 
+// Plugin definition to create Geant4 sensitive detectors
+#define DECLARE_G4SDFACTORY(name) namespace DD4hep { namespace Simulation { }}  using DD4hep::Simulation::name; \
+  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::G4SDFactory*())
+
+// // /// Plugin definition to create Geant4 sensitive detectors
+// // #define DECLARE_GEANT4SENSITIVEDETECTOR(name) namespace DD4hep { namespace Simulation { }}  using DD4hep::Simulation::name; \
+// //   typedef DD4hep::Simulation::SimpleG4SDFactory<name> SDF##name ; \
+// //   PLUGINSVC_FACTORY_WITH_ID(SDF##name,std::string(#name),SDF##name*())
+
+
 /// Plugin definition to create Geant4 sensitive detectors
 #define DECLARE_GEANT4SENSITIVEDETECTOR(name) namespace DD4hep { namespace Simulation { }}  using DD4hep::Simulation::name; \
-  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4SensitiveDetector*(std::string,DD4hep::Geometry::LCDD*))
+  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::G4SDFactory*())
+  // PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4SensitiveDetector*(std::string,DD4hep::Geometry::LCDD*))
 
 /// Plugin definition to create Geant4 stpper objects
 #define DECLARE_GEANT4_STEPPER(name)    PLUGINSVC_FACTORY_WITH_ID(G4##name,std::string(#name),G4MagIntegratorStepper*(G4EquationOfMotion*))
