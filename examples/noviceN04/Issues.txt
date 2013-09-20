@@ -21,12 +21,4 @@
 
  - vis attribute drawingStyle="wireframe" does not seem to work (w/ geoDisplay )
 
- - definition of rotations not intuitive - need clear documentation:
-    Rotation rot( 0, 0 , phi ) 
-    behaves differently  from RotationZ(phi)  !!??
- 
 
- - original G4VSensitiveDetector classes are not yet used in DD4hep port
-   => need to change DDG4/Geant4SensitiveDetector ....
-
-   -> exampleN04 does not yet work (crashes due to missing SDs)

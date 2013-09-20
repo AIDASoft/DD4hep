@@ -10,7 +10,7 @@
 #
 /run/verbose 0
 /event/verbose 0
-/tracking/verbose 1
+/tracking/verbose 0
 # 
 # muon 300 MeV to the direction (1.,0.,0.)
 # 3 events
