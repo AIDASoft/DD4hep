@@ -155,7 +155,7 @@
         </detector>
         
       
-        <detector name="TPC" type="XXXILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
+        <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
 
            <!-- GEAR Data-->

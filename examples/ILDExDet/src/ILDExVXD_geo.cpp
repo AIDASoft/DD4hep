@@ -123,7 +123,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
        		    (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
        		    0. ) ;
 
-      Rotation rot( 0, 0 , phi ) ;
+      RotationZYX rot( 0, 0 , phi ) ;
 
 
       pv = assembly.placeVolume( laddervol,Transform3D(RotationZ(phi),pos));

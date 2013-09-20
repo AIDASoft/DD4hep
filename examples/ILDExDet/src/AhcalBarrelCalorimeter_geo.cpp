@@ -78,7 +78,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   
   // keep the envelope rotation as the same as the stave
   // the stave number can be changed in the compact XML.
-  Rotation rot(M_PI/2. - M_PI/numSides,0,0);
+  RotationZYX rot(M_PI/2. - M_PI/numSides,0,0);
 
   // Create Hcal Barrel volume with material Steel235 
   IntersectionSolid barrelModuleSolid(tube_shaper,polyhedra_shaper,rot);

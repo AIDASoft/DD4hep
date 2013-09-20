@@ -49,7 +49,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Volume      part_vol(part_nam,part_tub,part_mat);
 
     Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
-    Rotation    part_rot(px_rot.x(),px_rot.y(),px_rot.z());
+    RotationZYX    part_rot(px_rot.z(),px_rot.y(),px_rot.x());
     bool        reflect   = px_det.reflect();
     
     sens.setType("tracker");
@@ -79,13 +79,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 	    Tube    gas_tubL( r0 + (2*i) * dR , r0 + (2*i+1) * dR , zh );
 	    Volume  gas_volL(  _toString( i, "tpc_row_lower_%03d") , gas_tubL, part_mat);
-	    part_vol.placeVolume( gas_volL, Rotation(0,0,0) );
+	    part_vol.placeVolume( gas_volL, RotationZYX(0,0,0) );
 
 	    Tube    gas_tubU( r0 + (2*i+1) * dR , r0 + (2*i+2) * dR , zh );
 	    Volume  gas_volU( _toString( i, "tpc_row_upper_%03d")  , gas_tubU, part_mat);
 
 	    gas_volU.setSensitiveDetector( sens );
-	    part_vol.placeVolume( gas_volU, Rotation(0,0,0) ).addPhysVolID("layer",i) ;
+	    part_vol.placeVolume( gas_volU, RotationZYX(0,0,0) ).addPhysVolID("layer",i) ;
 	  }
 	  
 	 
@@ -126,7 +126,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
             DetElement  module(part_det,m_nam,mdcount);
             mdcount++;
             double rotz=md*2*M_PI/nmodules+row.modulePitch()/(rmin+(rmax-rmin))/2;
-            PlacedVolume m_phv = part_vol.placeVolume(mr_vol,Rotation(rotz,0,0));
+            PlacedVolume m_phv = part_vol.placeVolume(mr_vol,RotationZYX(rotz,0,0));
             m_phv.addPhysVolID("module",md);
             module.setPlacement(m_phv);
             // Readout and placement must be present before adding extension,
@@ -147,7 +147,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     if(reflect){
       Position r_pos(px_pos.x(),px_pos.y(),-px_pos.z());
       //Attention: rotation is given in euler angles
-      Rotation r_rot(0,M_PI,M_PI);
+      RotationZYX r_rot(0,M_PI,M_PI);
       // Volume      part_vol_r(lcdd,part_nam+"_negativ",part_tub,part_mat);
       PlacedVolume part_phv2 = tpc_vol.placeVolume(part_vol,Transform3D(Rotation3D(r_rot),r_pos));
       //part_phv2.addPhysVolID(part_nam+"_negativ",px_det.id()+1);
