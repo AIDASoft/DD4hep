@@ -9,9 +9,13 @@
 
 #include "DD4hep/Readout.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/LCDD.h"
 
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using tgeo::mm;
 
 /// Standard constructor
 Readout::Object::Object()  {
@@ -35,6 +39,11 @@ void Readout::setIDDescriptor(const Ref_t& new_descriptor)  const   {
   if ( isValid() )  {                    // Remember: segmentation is NOT owned by readout structure!
     if ( new_descriptor.isValid() )  {   // Do NOT delete!
       data<Object>()->id = new_descriptor;
+      Segmentation seg = data<Object>()->segmentation;
+      IDDescriptor id = new_descriptor;
+      if (seg.isValid()) {
+    	  seg.segmentation()->setDecoder(id.decoder());
+      }
       return;
     }
   }
@@ -65,6 +74,34 @@ void Readout::setSegmentation(const Segmentation& seg)   const  {
 /// Access segmentation structure
 Segmentation Readout::segmentation() const  {
   return object<Object>().segmentation;
+}
+
+/// full ID decoder interface
+PlacedVolume Readout::getPlacement(const long64& cellID) const {
+	VolumeManager volMan = LCDD::getInstance().volumeManager();
+	return volMan.lookupPlacement(cellID);
+}
+DetElement Readout::getSubDetector(const long64& cellID) const{
+	VolumeManager volMan = LCDD::getInstance().volumeManager();
+	return volMan.lookupDetector(cellID);
+}
+DetElement Readout::getDetectorElement(const long64& cellID) const {
+	VolumeManager volMan = LCDD::getInstance().volumeManager();
+	return volMan.lookupDetElement(cellID);
+}
+Position Readout::getPosition(const long64& cellID) const {
+	double global[3] = {0., 0., 0.};
+	VolumeManager volMan = LCDD::getInstance().volumeManager();
+	volMan.worldTransformation(cellID).LocalToMaster(&(segmentation().segmentation()->getLocalPosition(cellID))[0], global);
+	return Position(global[0]/tgeo::mm, global[1]/tgeo::mm, global[2]/tgeo::mm);
+}
+Position Readout::getLocalPosition(const long64& cellID) const {
+	std::vector<double> v = segmentation().segmentation()->getLocalPosition(cellID);
+	return Position(v[0], v[1], v[2]);
+}
+const TGeoMatrix& Readout::getWorldTransformation(const long64& cellID) const {
+	VolumeManager volMan = LCDD::getInstance().volumeManager();
+	return volMan.worldTransformation(cellID);
 }
 
 /// Standard constructor

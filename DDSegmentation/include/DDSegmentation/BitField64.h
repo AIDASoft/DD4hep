@@ -1,5 +1,5 @@
-#ifndef DD4hep_BitField64_H
-#define DD4hep_BitField64_H 1
+#ifndef DDSegmentation_BitField64_H
+#define DDSegmentation_BitField64_H 1
 
 #include <iostream>
 
@@ -10,11 +10,12 @@
 
 
 namespace DD4hep {
-  
-  //fixme: do  need to do this also for 32 bit machines ?
-  typedef long long64 ;
-  typedef unsigned long ulong64 ;
 
+//fixme: do  need to do this also for 32 bit machines ?
+typedef long long64 ;
+typedef unsigned long ulong64 ;
+
+namespace DDSegmentation {
 
   class BitFieldValue ;
   class StringTokenizer ; 
@@ -284,6 +285,8 @@ namespace DD4hep {
     }
   }
 
+
+} // end namespace
 
 } // end namespace
 

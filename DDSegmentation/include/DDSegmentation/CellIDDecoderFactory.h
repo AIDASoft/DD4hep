@@ -12,7 +12,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Segmentations.h"
-#include "DDSegmentation/CartesianXYSegmentation.h"
+#include "DDSegmentation/CartesianGridXY.h"
 
 #include <iostream>
 #include <string>
@@ -30,7 +30,7 @@ CellIDDecoder getCellIDDecoder(const std::string& collectionName) {
 	std::string type = s.type();
 	if (type == "grid_xyz") {
 		Geometry::GridXYZ g = (Geometry::GridXY) s;
-		segmentation = new CartesianXYSegmentation(readout.idSpec().fieldDescription(), g.getGridSizeX(), g.getGridSizeY());
+		segmentation = new CartesianGridXY(readout.idSpec().decoder(), g.getGridSizeX(), g.getGridSizeY());
 	} else {
 	    throw std::runtime_error("The segmentation type "+type+" is not supported by CellIDDecoderFactory.");
 	}

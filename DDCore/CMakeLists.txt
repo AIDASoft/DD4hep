@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSegmentation/include )
 
 
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
@@ -22,7 +22,7 @@ include(DD4hep_XML_setup)
 
 add_library(DD4hepCore SHARED ${sources} )
 
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} Geom Reflex ${libraries})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDSegmentation Geom Reflex ${libraries})
 
 add_library(DD4hepPlugins SHARED ${plugin_sources})
 target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})

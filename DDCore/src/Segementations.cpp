@@ -18,6 +18,7 @@ using namespace DD4hep::Geometry;
 Segmentation::Object::Object() 
 : magic(magic_word()), type(REGULAR), useForHitPosition(0) 
 {
+  segmentation = 0;
   InstanceCount::increment(this);
   ::memset(data.values,0,sizeof(data.values));
   _spare[5]=_spare[4]=_spare[3]=_spare[2]=_spare[1]=_spare[0]=0;
@@ -33,6 +34,9 @@ Segmentation::Object::~Object() {
       data.extension.ptr = 0;
     }
   }
+  if (segmentation != 0) {
+	  delete segmentation;
+  }
   InstanceCount::decrement(this);
 }
 
@@ -46,7 +50,20 @@ bool Segmentation::useForHitPosition() const   {
 
 /// Segmentation type
 const string Segmentation::type() const   {
-  return m_element->GetTitle();
+  return object<Object>().segmentation->type();
+}
+
+/// Assign segmentation object
+void Segmentation::setSegmentation(DD4hep::DDSegmentation::Segmentation* segmentation) {
+	Object& o = object<Object>();
+	if (o.segmentation != 0) {
+		delete o.segmentation;
+	}
+	o.segmentation = segmentation;
+}
+/// Access segmentation object
+DD4hep::DDSegmentation::Segmentation* Segmentation::segmentation() {
+	return object<Object>().segmentation;
 }
 
 /// Add an extension object to the detector element
@@ -83,45 +100,7 @@ const string SegmentationParams::type() const   {
 
 /// Access to the parameters
 SegmentationParams::Parameters SegmentationParams::parameters() const  {
-  const string& typ = type();
-  const Object& obj = object<Object>();
-  const Object::Data& data = obj.data;
-  Parameters params;
-  //cout << "Segmentation:" << name() << " Type:" << typ << endl;
-  if ( typ == "projective_cylinder" )  {
-    params.push_back(make_pair("ntheta",data.cylindrical_binning.ntheta));
-    params.push_back(make_pair("nphi",data.cylindrical_binning.nphi));
-  }
-  else if ( typ == "nonprojective_cylinder" )  {
-    params.push_back(make_pair("grid_size_z",data.cylindrical_grid.grid_size_phi));
-    params.push_back(make_pair("grid_size_phi",data.cylindrical_grid.grid_size_phi));
-    params.push_back(make_pair("lunit",_toDouble("mm")));
-  }
-  else if ( typ == "projective_zplane" )  {
-    params.push_back(make_pair("ntheta",data.cylindrical_binning.ntheta));
-    params.push_back(make_pair("nphi",data.cylindrical_binning.nphi));
-  }
-  else if ( typ == "grid_xy"            ||
-	    typ == "cartesian_grid_xy"  ||
-            typ == "global_grid_xy"     
-	    )    {
-    params.push_back(make_pair("grid_size_x",data.cartesian_grid.grid_size_x));
-    params.push_back(make_pair("grid_size_y",data.cartesian_grid.grid_size_y));
-    params.push_back(make_pair("lunit",_toDouble("mm")));
-  }
-  else if ( typ == "grid_xyz"           || 
-	    typ == "cartesian_grid_xyz" ||
-	    typ == "global_grid_xyz"    
-	    )    {
-    params.push_back(make_pair("grid_size_x",data.cartesian_grid.grid_size_x));
-    params.push_back(make_pair("grid_size_y",data.cartesian_grid.grid_size_y));
-    params.push_back(make_pair("grid_size_z",data.cartesian_grid.grid_size_z));
-    params.push_back(make_pair("lunit",_toDouble("mm")));
-  }
-  else   {
-    throw runtime_error("DD4hep: The segmentation type "+typ+" is not supported by DD4hep.");
-  }
-  return params;
+  return object<Object>().segmentation->parameters();
 }
 
 ProjectiveCylinder::ProjectiveCylinder() : Segmentation("projective_cylinder")   

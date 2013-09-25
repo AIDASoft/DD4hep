@@ -11,7 +11,7 @@
 #include "DDG4/Factories.h"
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4Mapping.h"
-#include "DD4hep/BitField64.h"
+//#include "DDSegmentation/BitField64.h"
 
 /*
  *   DD4hep::Simulation namespace declaration

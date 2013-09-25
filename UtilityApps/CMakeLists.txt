@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include 
-                     ${ROOT_INCLUDE_DIR})
+                     ${ROOT_INCLUDE_DIR}
+                     ${CMAKE_SOURCE_DIR}/DDSegmentation/include)
 
 #-----------------------------------------------------------------------------------
 add_executable(geoDisplay src/display.cpp)

@@ -15,6 +15,8 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using DDSegmentation::BitField64;
+using DDSegmentation::BitFieldValue;
 
 
 namespace  {
@@ -104,7 +106,7 @@ size_t IDDescriptor::fieldID(const string& field_name)  const   {
   throw runtime_error("DD4hep: "+string(name())+": This ID descriptor has no field with the name:"+field_name);
 }
 
-/// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
+/// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
 VolumeID IDDescriptor::encode(const std::vector<VolID>& ids)  const   {
   typedef std::vector<VolID> VolIds;
   VolumeID id = 0;
@@ -125,4 +127,9 @@ void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& fields)   {
     return;
   }
   throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");
+}
+
+/// Access the BitField64 object
+BitField64* IDDescriptor::decoder() {
+	return data<Object>();
 }

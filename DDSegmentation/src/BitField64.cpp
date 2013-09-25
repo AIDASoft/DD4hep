@@ -1,11 +1,12 @@
-#include "DD4hep/BitField64.h"
+#include "DDSegmentation/BitField64.h"
 
 #include <cmath>
 #include <algorithm>
 #include <stdexcept>
 
 namespace DD4hep{
-  
+
+namespace DDSegmentation {
   
     BitFieldValue::BitFieldValue( long64& bitfield, const std::string& name, 
 				  unsigned offset, int signedWidth ) :
@@ -291,4 +292,5 @@ namespace DD4hep{
   } 
 
 } // namespace
- 
+
+} // namespace

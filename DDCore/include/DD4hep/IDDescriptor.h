@@ -13,7 +13,7 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/Primitives.h"
-#include "DD4hep/BitField64.h"
+#include "DDSegmentation/BitField64.h"
 
 // C++ include files
 #include <string>
@@ -39,7 +39,7 @@ namespace DD4hep {
     struct IDDescriptor : public Ref_t  {
     public:
       typedef std::pair<std::string,int> VolID;
-      typedef BitFieldValue* Field;
+      typedef DDSegmentation::BitFieldValue* Field;
       typedef std::vector<std::pair<std::string,Field> >  FieldMap;
       typedef std::vector<std::pair<size_t,std::string> > FieldIDs;
       typedef std::pair<Field,VolumeID>                   VolIDField;
@@ -51,7 +51,7 @@ namespace DD4hep {
        *  @version 1.0
        *  @date    2012/07/31
        */
-      struct Object : public TNamed, public BitField64 {
+      struct Object : public TNamed, public DDSegmentation::BitField64 {
 	FieldMap      fieldMap;
 	FieldIDs      fieldIDs;
 	std::string   description;
@@ -60,7 +60,7 @@ namespace DD4hep {
 	/// Default destructor
 	virtual ~Object();
 	/// Access to the field container of the BitField64
-	const std::vector<BitFieldValue*> fields() const  {
+	const std::vector<DDSegmentation::BitFieldValue*> fields() const  {
 	  return _fields;
 	}
       };
@@ -85,12 +85,14 @@ namespace DD4hep {
       size_t fieldID(const std::string& field_name)  const;
       /// Get the field descriptor of one field by its identifier
       Field field(size_t identifier)  const;
-      /// Encoede a set of volume identifiers (corresponding to this description of course!) to a volumeID.
+      /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
       VolumeID encode(const std::vector<VolID>& ids)  const;
       /// Decode volume IDs and return filled descriptor with all fields
       void decodeFields(VolumeID vid, VolIDFields& fields);
-      /// Acces string representation
+      /// Access string representation
       std::string toString() const;
+      /// Access the BitField64 object
+      DDSegmentation::BitField64* decoder();
     };
   }       /* End namespace Geometry    */
 }         /* End namespace DD4hep      */

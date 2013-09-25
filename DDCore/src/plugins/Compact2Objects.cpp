@@ -16,6 +16,9 @@
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
 
+#include "DDSegmentation/CartesianGridXY.h"
+#include "DDSegmentation/CartesianGridXYZ.h"
+
 // Root/TGeo include files
 #include "TGeoManager.h"
 #include "TGeoMaterial.h"
@@ -67,39 +70,44 @@ namespace {
 
 static Ref_t create_GridXYZ(lcdd_t& /* lcdd */, xml_h e)  {
   GridXYZ obj;
-  if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_U(gridSizeX)));
-  if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_U(gridSizeY)));
-  if ( e.hasAttr(_U(gridSizeZ)) ) obj.setGridSizeZ(e.attr<float>(_U(gridSizeZ)));
+  DDSegmentation::CartesianGridXYZ* seg = new DDSegmentation::CartesianGridXYZ("");
+  obj.setSegmentation(seg);
+  if ( e.hasAttr(_U(gridSizeX)) ) seg->setGridSizeX(e.attr<float>(_U(gridSizeX)));
+  if ( e.hasAttr(_U(gridSizeY)) ) seg->setGridSizeY(e.attr<float>(_U(gridSizeY)));
+  if ( e.hasAttr(_U(gridSizeZ)) ) seg->setGridSizeZ(e.attr<float>(_U(gridSizeZ)));
   return obj;
 }
 DECLARE_XMLELEMENT(GridXYZ,create_GridXYZ);
 
-namespace DD4hep { namespace Geometry { typedef GridXYZ RegularNgonCartesianGridXY; }}
-DECLARE_XMLELEMENT(RegularNgonCartesianGridXY,create_GridXYZ);
-
 static Ref_t create_GlobalGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   GlobalGridXY obj;
-  if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_U(gridSizeX)));
-  if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_U(gridSizeY)));
+  DDSegmentation::CartesianGridXY* seg = new DDSegmentation::CartesianGridXY("");
+    obj.setSegmentation(seg);
+  if ( e.hasAttr(_U(gridSizeX)) ) seg->setGridSizeX(e.attr<float>(_U(gridSizeX)));
+  if ( e.hasAttr(_U(gridSizeY)) ) seg->setGridSizeY(e.attr<float>(_U(gridSizeY)));
   return obj;
 }
 DECLARE_XMLELEMENT(GlobalGridXY,create_GlobalGridXY);
 
 static Ref_t create_CartesianGridXY(lcdd_t& /* lcdd */, xml_h e)  {
   CartesianGridXY obj;
-  if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<double>(_U(gridSizeX)));
-  if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<double>(_U(gridSizeY)));
+  DDSegmentation::CartesianGridXY* seg = new DDSegmentation::CartesianGridXY("");
+  obj.setSegmentation(seg);
+  if ( e.hasAttr(_U(gridSizeX)) ) seg->setGridSizeX(e.attr<double>(_U(gridSizeX)));
+  if ( e.hasAttr(_U(gridSizeY)) ) seg->setGridSizeY(e.attr<double>(_U(gridSizeY)));
   return obj;
 }
-
 DECLARE_XMLELEMENT(CartesianGridXY,create_CartesianGridXY);
 
+namespace DD4hep { namespace Geometry { typedef CartesianGridXY RegularNgonCartesianGridXY; }}
+DECLARE_XMLELEMENT(RegularNgonCartesianGridXY,create_CartesianGridXY);
+
 namespace DD4hep { namespace Geometry { 
-    typedef GridXYZ CartesianGridXYZ; 
-    typedef GridXYZ EcalBarrelCartesianGridXY; 
+    typedef GridXYZ CartesianGridXYZ;
+    typedef CartesianGridXY EcalBarrelCartesianGridXY;
 }}
-DECLARE_XMLELEMENT(CartesianGridXYZ,create_GridXYZ);
-DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_GridXYZ);
+DECLARE_XMLELEMENT(CartesianGridXYZ,create_CartesianGridXY);
+DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_CartesianGridXY);
   
 static Ref_t create_ProjectiveCylinder(lcdd_t& /* lcdd */, xml_h e)  {
   ProjectiveCylinder obj;
@@ -465,6 +473,7 @@ template <> void Converter<Readout>::operator()(xml_h e)  const {
   xml_h   seg  = e.child(_U(segmentation),false);
   string  name = e.attr<string>(_U(name));
   Readout ro(name);
+  Ref_t idSpec;
 
   if ( seg )  { // Segmentation is not mandatory!
     string type = seg.attr<string>(_U(type));
@@ -477,8 +486,8 @@ template <> void Converter<Readout>::operator()(xml_h e)  const {
     ro.setSegmentation(segment);
   }
   if ( id )  {
-    //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id> 
-    Ref_t idSpec = IDDescriptor(id.text());
+    //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    idSpec = IDDescriptor(id.text());
     idSpec->SetName(ro.name());
     ro.setIDDescriptor(idSpec);
     lcdd.addIDSpecification(idSpec);

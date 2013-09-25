@@ -14,6 +14,7 @@ INCLUDE(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and 
 
 #---Includedirs-------------------------------------------------------------------
 include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
+  ${CMAKE_SOURCE_DIR}/DDSegmentation/include
   ${CMAKE_CURRENT_SOURCE_DIR}/include 
   #${CLHEP_INCLUDE_DIR}
   ${Geant4_INCLUDE_DIRS}

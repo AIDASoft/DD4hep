@@ -26,6 +26,8 @@ namespace DD4hep {
    */
   namespace Geometry  {
 
+  class DetElement;
+
     /** @class Readout  Readout.h DD4hep/Readout.h
       *
       * @author  M.Frank
@@ -43,7 +45,7 @@ namespace DD4hep {
 	/// Handle to the readout segmentation
         Segmentation segmentation;
 	/// Handle to the volume
-	Volume       readoutWorld;
+        Volume readoutWorld;
 	/// Handle to the field descriptor
         IDDescriptor id;
 	/// Standard constructor
@@ -66,6 +68,14 @@ namespace DD4hep {
       void setSegmentation(const Segmentation& segment) const;
       /// Access segmentation structure
       Segmentation segmentation()  const;
+
+      /// ID decoder interface
+      PlacedVolume getPlacement(const long64& cellID) const;
+      DetElement getSubDetector(const long64& cellID) const;
+      DetElement getDetectorElement(const long64& cellID) const;
+      Position getPosition(const long64& cellID) const;
+      Position getLocalPosition(const long64& cellID) const;
+      const TGeoMatrix& getWorldTransformation(const long64& cellID) const;
     };
 
     /** @class Alignment  Readoutn.h DD4hep/lcdd/Readout.h

@@ -1,7 +1,7 @@
 #include "DDSense/DDSensitiveManager.h"
 #include "DDSense/G4SensitiveDetector.h"
 
-#include "DD4hep/BitField64.h"  // provides StringTokenizer
+#include "DDSegmentation/BitField64.h"  // provides StringTokenizer
 
 #include <dlfcn.h>
 #include <algorithm>
@@ -66,7 +66,7 @@ namespace DD4hep {
     void DDSensitiveManager::loadLibraries(){
       
       StringVec libs ;
-      StringTokenizer t( libs, ':' ) ;
+      DDSegmentation::StringTokenizer t( libs, ':' ) ;
       
       std::string sds("") ;
       

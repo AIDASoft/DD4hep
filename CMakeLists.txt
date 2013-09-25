@@ -57,8 +57,8 @@ ENDIF()
 
 
 #---Packages------------------------------------------------------------------------
-add_subdirectory(DDCore)
 add_subdirectory(DDSegmentation)
+add_subdirectory(DDCore)
 
 if(DD4HEP_WITH_GEANT4)
   add_subdirectory(DDG4)

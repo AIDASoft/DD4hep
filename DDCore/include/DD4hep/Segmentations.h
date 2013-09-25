@@ -11,6 +11,9 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
+#include "DD4hep/IDDescriptor.h"
+
+#include "DDSegmentation/Segmentation.h"
 
 // C/C++ include files
 #include <cmath>
@@ -49,11 +52,13 @@ namespace DD4hep {
         unsigned char useForHitPosition;
         /// Spares to start 16 byte Byte aligned
         unsigned char _spare[6];
+        /// The segmentation object
+        DDSegmentation::Segmentation* segmentation;
         
         union Data {
-          /// Maximal size and data buffer for specialized user segentations
+          /// Maximal size and data buffer for specialized user segmentations
           double values[32];
-          /// Extension buffer for specialized user segentations, where above values are insufficient
+          /// Extension buffer for specialized user segmentations, where above values are insufficient
           struct Extension {
             const std::type_info* info;
             void (*destructor)(void*);
@@ -108,6 +113,10 @@ namespace DD4hep {
       bool useForHitPosition() const;
       /// Segmentation type
       const std::string type() const;
+      /// Assign segmentation object
+      void setSegmentation(DDSegmentation::Segmentation* segmentation);
+      /// Access segmentation object
+      DDSegmentation::Segmentation* segmentation();
       /// Extend the segmentation object with an arbitrary structure accessible by the type
       template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)
       {  return (IFACE*)i_setExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
