@@ -6,10 +6,8 @@
  */
 
 #include "DD4hep/LCDD.h"
-#include "DD4hep/BitField64.h"
 
-#include "DDSegmentation/CellIDDecoder.h"
-#include "DDSegmentation/CellIDDecoderFactory.h"
+#include "DDSegmentation/BitField64.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -22,9 +20,9 @@ int main(int argc, char** argv) {
 	lcdd.fromCompact(argv[1]);
 	lcdd.apply("DD4hepVolumeManager",0,0);
 
-	CellIDDecoder idDecoder = CellIDDecoderFactory::getCellIDDecoder("MuonBarrelHits");
+	Readout ro = lcdd.readout("MuonBarrelHits");
 
-	BitField64 idEncoder(idDecoder.fieldDescription());
+	BitField64 idEncoder(ro.idSpec().fieldDescription());
 	idEncoder["system"] = 10;
 	idEncoder["barrel"] = 0;
 	idEncoder["layer"] = 15;
@@ -33,8 +31,8 @@ int main(int argc, char** argv) {
 	idEncoder["x"] = 13;
 	idEncoder["y"] = -10;
 	long64 cellID = idEncoder.getValue();
-	Position lp = idDecoder.getLocalPosition(cellID);
-	Position gp = idDecoder.getPosition(cellID);
+	Position lp = ro.getLocalPosition(cellID);
+	Position gp = ro.getPosition(cellID);
 	std::cout << "Local position: " << lp.x() << ", " << lp.y() << ", " << lp.z() << std::endl;
 	std::cout << "Global position: " << gp.x() << ", " << gp.y() << ", " << gp.z() << std::endl;
 
