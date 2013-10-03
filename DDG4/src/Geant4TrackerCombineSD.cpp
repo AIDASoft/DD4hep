@@ -107,8 +107,7 @@ namespace DD4hep {  namespace Simulation {
       }
       return return_code;
     }
-    //    typedef Geant4GenericSD<TrackerCombine>  Geant4TrackerCombine;
-    typedef SimpleG4SDFactory< Geant4GenericSD<TrackerCombine> >  Geant4TrackerCombine;
+    typedef Geant4GenericSD<TrackerCombine>  Geant4TrackerCombine;
 }}    // End namespace DD4hep::Simulation
 
 DECLARE_GEANT4SENSITIVEDETECTOR(Geant4TrackerCombine)

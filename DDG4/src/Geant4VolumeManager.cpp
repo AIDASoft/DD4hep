@@ -80,7 +80,7 @@ namespace {
 	}
 	else  {
 	  printout(WARNING,"VolumeManager",
-		   "Strange constellation volume %s is sensitive, but has no readout! sd:%p",
+		   "populate: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
 		   pv.volume().name(), sd.ptr());
 	}
       }
@@ -109,13 +109,13 @@ namespace {
 	  }
 	}
 	if ( m_geo.g4Paths.find(path) != m_geo.g4Paths.end() )  {
-	  cout <<  "Severe error: Duplicated Geant4 path!!!!" << endl;
+	  printout(ERROR,"VolumeManager","populate: Severe error: Duplicated Geant4 path!!!!");
 	}
 	m_geo.g4Paths[path] = code;
 	m_entries.insert(code);
       }
       else   {
-	cout <<  "Severe error: Duplicated Volume entry:" << (void*)code << endl;
+	printout(ERROR,"VolumeManager","populate: Severe error: Duplicated Volume entry: %X",code);
       }
     }
   };

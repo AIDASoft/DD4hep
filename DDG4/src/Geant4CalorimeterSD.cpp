@@ -49,8 +49,7 @@ namespace DD4hep {  namespace Simulation {
     
     return true;
   }
-    //typedef  Geant4GenericSD<Calorimeter> Geant4Calorimeter;
-    typedef SimpleG4SDFactory< Geant4GenericSD<Calorimeter> > Geant4Calorimeter;
+    typedef  Geant4GenericSD<Calorimeter> Geant4Calorimeter;
 }}    // End namespace DD4hep::Simulation
 
 DECLARE_GEANT4SENSITIVEDETECTOR(Geant4Calorimeter)
@@ -105,8 +104,7 @@ namespace DD4hep {  namespace Simulation {
       }
     }
   };
-    //typedef Geant4GenericSD<OpticalCalorimeter>  Geant4OpticalCalorimeter;
-    typedef SimpleG4SDFactory< Geant4GenericSD<OpticalCalorimeter> > Geant4OpticalCalorimeter;
+    typedef Geant4GenericSD<OpticalCalorimeter>  Geant4OpticalCalorimeter;
 }}    // End namespace DD4hep::Simulation
 
 DECLARE_GEANT4SENSITIVEDETECTOR(Geant4OpticalCalorimeter)

@@ -56,8 +56,7 @@ namespace DD4hep {  namespace Simulation {
       collection(0)->insert(hit);
       return hit != 0;
     }
-    //typedef Geant4GenericSD<Tracker> Geant4Tracker;
-     typedef SimpleG4SDFactory< Geant4GenericSD<Tracker> > Geant4Tracker;
+    typedef Geant4GenericSD<Tracker> Geant4Tracker;
   }}    // End namespace DD4hep::Simulation
 
 DECLARE_GEANT4SENSITIVEDETECTOR(Geant4Tracker)

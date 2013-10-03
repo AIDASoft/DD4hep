@@ -174,7 +174,7 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
 
 long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep ){
   
-  Geant4Mapping&  mapping = Geant4Mapping::instance();
+  //Geant4Mapping&  mapping = Geant4Mapping::instance();
   
   Geant4StepHandler step(aStep);
 
