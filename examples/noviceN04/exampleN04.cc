@@ -69,8 +69,8 @@ int main(int argc,char** argv)
 
   if( argc < 3 ){
     std::cout << " --- Usage: \n " 
-	      << "  [1] exampleN04     file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml run1_g4.mac \n"
-	      << "  [2] exampleN04  -i file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml \n"
+	      << "  [1] exampleN04      file:../compact/N04.xml file:../compact/geant4.xml ../exampleN04.in \n"
+	      << "  [2] exampleN04  -i  file:../compact/N04.xml file:../compact/geant4.xml \n"
 	      << "  [1]: batch mode - [2]: interactive " << std::endl ;
     exit( 0 ) ;
   }
