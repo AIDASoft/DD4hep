@@ -28,8 +28,11 @@ option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
 option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" OFF)
 
-#option(DD4HEP_WITH_LCIO  "Build ILD examples with LCIO - builds LCIO as external project or uses pre-installed" ON)
 
+#---------------------------------------------------------------------------------------
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "One of: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
 
 #---DD4hep functions and macros -------------------------------------------------------
 include(DD4hep)
