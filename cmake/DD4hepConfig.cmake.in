@@ -43,9 +43,9 @@ INCLUDE( ${DD4hep_ROOT}/cmake/DD4hepMacros.cmake )
 # additional components are set by cmake in variable PKG_FIND_COMPONENTS
 # first argument should be the package name
 if(@DD4HEP_WITH_GEANT4@)
-  CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DD4hepPlugins DD4hepG4 ) 
+  CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepPlugins DD4hepG4 ) 
 else()
-  CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DD4hepPlugins ) 
+  CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepPlugins ) 
 endif()
 
 
