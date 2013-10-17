@@ -55,15 +55,20 @@ const string Segmentation::type() const   {
 
 /// Assign segmentation object
 void Segmentation::setSegmentation(DD4hep::DDSegmentation::Segmentation* segmentation) {
-	Object& o = object<Object>();
-	if (o.segmentation != 0) {
-		delete o.segmentation;
-	}
-	o.segmentation = segmentation;
+  Object& o = object<Object>();
+  if (o.segmentation != 0) {
+    delete o.segmentation;
+  }
+  o.segmentation = segmentation;
 }
+
 /// Access segmentation object
 DD4hep::DDSegmentation::Segmentation* Segmentation::segmentation() {
-	return object<Object>().segmentation;
+  Object& o = object<Object>();
+  if (o.segmentation != 0)
+    return o.segmentation;
+  throw runtime_error("DD4hep: The segmentation object "+string(type())+
+		      " knows no implementation object [This is no longer allowed in the presence of DDSegmentation]");
 }
 
 /// Add an extension object to the detector element
