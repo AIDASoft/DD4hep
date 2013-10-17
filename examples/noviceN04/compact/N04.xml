@@ -170,12 +170,14 @@
     </readout>
 
     <readout name="CalorimeterCollection">
-      <segmentation type="NonProjectiveCylinder" gridSizePhi="caloCell_dphi" gridSizeZ="caloRing_dz" />
+      <segmentation type="RegularNgonCartesianGridXY" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" />
+      <!--FIXME: should actually be (seg faults):  segmentation type="NonProjectiveCylinder" gridSizePhi="caloCell_dphi" gridSizeZ="caloRing_dz" /-->
       <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
     </readout>
 
     <readout name="MuonCollection">
-      <segmentation type="ProjectiveCylinder" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" />
+      <segmentation type="RegularNgonCartesianGridXY" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" />
+      <!--FIXME: should actually be (seg faults):  segmentation type="ProjectiveCylinder" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" /-->
       <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
     </readout>
 
