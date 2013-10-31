@@ -16,7 +16,7 @@ using std::vector;
 
 /// default constructor using an encoding string
 template<> CartesianGridXYZ::CartesianGridXYZ(const string& cellEncoding, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, string xField, string yField, string zField) :
+		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
 		CartesianGridXY(cellEncoding, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
 				offsetZ), _zId(zField) {
 	_type = "grid_xyz";
@@ -24,7 +24,7 @@ template<> CartesianGridXYZ::CartesianGridXYZ(const string& cellEncoding, double
 
 /// default constructor using an encoding string
 template<> CartesianGridXYZ::CartesianGridXYZ(string cellEncoding, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, string xField, string yField, string zField) :
+		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
 		CartesianGridXY(cellEncoding, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
 				offsetZ), _zId(zField) {
 	_type = "grid_xyz";
@@ -32,15 +32,15 @@ template<> CartesianGridXYZ::CartesianGridXYZ(string cellEncoding, double gridSi
 
 /// default constructor using an encoding string
 template<> CartesianGridXYZ::CartesianGridXYZ(const char* cellEncoding, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, string xField, string yField, string zField) :
+		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
 		CartesianGridXY(cellEncoding, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
 				offsetZ), _zId(zField) {
 	_type = "grid_xyz";
 }
 
 /// default constructor using an existing decoder
-CartesianGridXYZ::CartesianGridXYZ(BitField64* decoder, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, string xField, string yField, string zField) :
+template<> CartesianGridXYZ::CartesianGridXYZ(BitField64* decoder, double gridSizeX, double gridSizeY, double gridSizeZ,
+		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
 		CartesianGridXY(decoder, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
 				offsetZ), _zId(zField) {
 	_type = "grid_xyz";
@@ -51,8 +51,8 @@ CartesianGridXYZ::~CartesianGridXYZ() {
 
 }
 
-/// determine the local position based on the cell ID
-vector<double> CartesianGridXYZ::getLocalPosition(const long64& cellID) const {
+/// determine the position based on the cell ID
+vector<double> CartesianGridXYZ::getPosition(const long64& cellID) const {
 	_decoder->setValue(cellID);
 	vector<double> localPosition(3);
 	localPosition[0] = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
@@ -61,7 +61,7 @@ vector<double> CartesianGridXYZ::getLocalPosition(const long64& cellID) const {
 	return localPosition;
 }
 
-/// determine the cell ID based on the local position
+/// determine the cell ID based on the position
 long64 CartesianGridXYZ::getCellID(double x, double y, double z) const {
 	_decoder->reset();
 	(*_decoder)[_xId] = positionToBin(x, _gridSizeX, _offsetX);
@@ -76,6 +76,9 @@ Parameters CartesianGridXYZ::parameters() const {
 	parameters.push_back(make_pair("grid_size_x", _gridSizeX));
 	parameters.push_back(make_pair("grid_size_y", _gridSizeY));
 	parameters.push_back(make_pair("grid_size_z", _gridSizeZ));
+	parameters.push_back(make_pair("offset_x", _offsetX));
+	parameters.push_back(make_pair("offset_y", _offsetY));
+	parameters.push_back(make_pair("offset_z", _offsetZ));
 	return parameters;
 }
 

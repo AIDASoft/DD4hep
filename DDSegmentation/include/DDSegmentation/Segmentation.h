@@ -26,19 +26,25 @@ class Segmentation {
 public:
 	/// default constructor using an arbitrary type
 	template <typename TYPE> Segmentation(TYPE cellEncoding);
-	/// default constructor using an existing decoder
-	Segmentation(BitField64* decoder);
 	/// destructor
 	virtual ~Segmentation();
 
-	/// determine the local position based on the cell ID
-	virtual std::vector<double> getLocalPosition(const long64& cellID) const = 0;
-	/// determine the cell ID based on the local position
+	/// determine the position based on the cell ID
+	virtual std::vector<double> getPosition(const long64& cellID) const = 0;
+	/// determine the cell ID based on the position
 	virtual long64 getCellID(double x, double y, double z) const = 0;
-	/// determine the cell ID based on the local position
-	long64 getCellID(const std::vector<double>& localPosition) const;
-	/// determine the cell ID based on the local position
-	long64 getCellID(const double* localPosition) const;
+	/// determine the cell ID based on the position
+	long64 getCellID(const std::vector<double>& position) const;
+	/// determine the cell ID based on the position
+	long64 getCellID(const double* position) const;
+	/// check if it is a local segmentation
+	bool isLocal() const {
+		return _isLocal;
+	}
+	/// set if the segmentation is using local coordinates
+	void setLocal(bool isLocal) {
+		_isLocal = isLocal;
+	}
 	/// access the encoding string
 	std::string fieldDescription() const {
 		return _decoder->fieldDescription();
@@ -63,6 +69,13 @@ protected:
 	bool _ownsDecoder;
 	/// the segmentation type
 	std::string _type;
+	/// distinguish between local and global coordinate systems
+	bool _isLocal;
+
+	/// helper method to convert a bin number to a 1D position
+	double binToPosition(long64 bin, double cellSize, double offset = 0.) const;
+	/// helper method to convert a 1D position to a cell ID
+	int positionToBin(double position, double cellSize, double offset = 0.) const;
 };
 
 } /* namespace DDSegmentation */

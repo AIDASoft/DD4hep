@@ -20,13 +20,6 @@ public:
 protected:
 	/// default constructor using an arbitrary type
 	template <typename TYPE> CartesianGrid(TYPE cellEncoding);
-	/// default constructor using an existing decoder
-	CartesianGrid(BitField64* decoder);
-
-	/// helper method to convert a bin number to a 1D position
-	double binToPosition(long64 bin, double cellSize, double ofset) const;
-	/// helper method to convert a 1D position to a cell ID
-	int positionToBin(double position, double cellSize, double offset) const;
 };
 
 } /* namespace DDSegmentation */

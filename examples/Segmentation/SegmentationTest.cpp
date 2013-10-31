@@ -31,9 +31,7 @@ int main(int argc, char** argv) {
 	idEncoder["x"] = 13;
 	idEncoder["y"] = -10;
 	long64 cellID = idEncoder.getValue();
-	Position lp = ro.getLocalPosition(cellID);
 	Position gp = ro.getPosition(cellID);
-	std::cout << "Local position: " << lp.x() << ", " << lp.y() << ", " << lp.z() << std::endl;
 	std::cout << "Global position: " << gp.x() << ", " << gp.y() << ", " << gp.z() << std::endl;
 
 	return 0;

@@ -17,18 +17,14 @@ class CartesianGridXYZ: public CartesianGridXY {
 public:
 	/// default constructor using an arbitrary type
 	template <typename TYPE> CartesianGridXYZ(TYPE cellEncoding, double gridSizeX = 1., double gridSizeY = 1., double gridSizeZ = 1.,
-			double offsetX = 0., double offsetY = 0., double offsetZ = 0., std::string xField = "x",
-			std::string yField = "y", std::string zField = "z");
-	/// default constructor using an existing decoder
-	CartesianGridXYZ(BitField64* decoder, double gridSizeX = 1., double gridSizeY = 1., double gridSizeZ = 1., double offsetX =
-			0., double offsetY = 0., double offsetZ = 0., std::string xField = "x", std::string yField = "y",
-			std::string zField = "z");
+			double offsetX = 0., double offsetY = 0., double offsetZ = 0., const std::string& xField = "x",
+			const std::string& yField = "y", const std::string& zField = "z");
 	/// destructor
 	virtual ~CartesianGridXYZ();
 
-	/// determine the local position based on the cell ID
-	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
-	/// determine the cell ID based on the local position
+	/// determine the position based on the cell ID
+	virtual std::vector<double> getPosition(const long64& cellID) const;
+	/// determine the cell ID based on the position
 	virtual long64 getCellID(double x, double y, double z) const;
 	/// access the grid size in Z
 	double getGridSizeZ() const {
@@ -51,7 +47,7 @@ public:
 		_offsetZ = offset;
 	}
 	/// set the field name used for Z
-	void setFieldNameZ(std::string name) {
+	void setFieldNameZ(const std::string& name) {
 		_zId = name;
 	}
 	/// access the set of parameters for this segmentation
