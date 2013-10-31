@@ -65,7 +65,7 @@ std::vector<double> ProjectiveCylinder::getPosition(const long64& cellID) const 
 }
 
 /// determine the cell ID based on the position
-virtual long64 ProjectiveCylinder::getCellID(double x, double y, double z) const {
+long64 ProjectiveCylinder::getCellID(double x, double y, double z) const {
 	// TODO
 	return 0;
 }
