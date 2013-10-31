@@ -57,7 +57,7 @@ ProjectiveCylinder::~ProjectiveCylinder() {
 }
 
 /// determine the local based on the cell ID
-virtual std::vector<double> ProjectiveCylinder::getPosition(const long64& cellID) const {
+std::vector<double> ProjectiveCylinder::getPosition(const long64& cellID) const {
 	double r = getRadius(cellID);
 	double theta = getTheta(cellID);
 	double phi = getPhi(cellID);

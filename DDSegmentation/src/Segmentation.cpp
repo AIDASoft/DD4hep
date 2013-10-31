@@ -82,12 +82,12 @@ Parameters Segmentation::parameters() const {
 }
 
 /// helper method to convert a bin number to a 1D position
-double CartesianGrid::binToPosition(long64 bin, double cellSize, double offset) const {
+double Segmentation::binToPosition(long64 bin, double cellSize, double offset) const {
 	return bin * cellSize + offset;
 }
 
 /// helper method to convert a 1D position to a cell ID
-int CartesianGrid::positionToBin(double position, double cellSize, double offset) const {
+int Segmentation::positionToBin(double position, double cellSize, double offset) const {
 	if (cellSize == 0.) {
 		throw std::runtime_error("Invalid cell size: 0.0");
 	}

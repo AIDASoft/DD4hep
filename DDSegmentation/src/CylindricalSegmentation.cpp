@@ -49,7 +49,7 @@ CylindricalSegmentation::~CylindricalSegmentation() {
 }
 
 /// determine the radius based on the cell ID
-string CylindricalSegmentation::getRadius(const long64& cellID) const {
+double CylindricalSegmentation::getRadius(const long64& cellID) const {
 	_decoder->setValue(cellID);
 	int layer = (*_decoder)[_layerID];
 	map<int, double>::const_iterator itMap = _layerRadiusMap.find(layer);

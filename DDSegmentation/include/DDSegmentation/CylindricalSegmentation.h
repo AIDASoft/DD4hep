@@ -21,7 +21,7 @@ public:
 	virtual ~CylindricalSegmentation();
 
 	/// determine the radius based on the cell ID
-	std::string getRadius(const long64& cellID) const;
+	double getRadius(const long64& cellID) const;
 	/// access the field name used for layer
 	std::string getFieldNameLayer() const {
 		return _layerID;
