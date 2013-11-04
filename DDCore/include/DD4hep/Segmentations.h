@@ -96,7 +96,7 @@ namespace DD4hep {
       /// Constructor to be used when reading the already parsed object
       SegmentationParams(const Segmentation& e) : Segmentation(e) {}
       /// Segmentation type
-      const std::string& type() const;
+      std::string type() const;
       /// Access to the parameters
       Parameters parameters() const;
     };
@@ -116,6 +116,8 @@ namespace DD4hep {
         Data(BitField64* decoder=0) : Object(), BaseSegmentation(decoder), nphi(0), ntheta(0), nz(0) {}
 	/// Default destructor
 	virtual ~Data();
+	/// determine the position based on the cell ID
+	virtual std::vector<double> getPosition(const long64& cellID) const;
 	/// determine the local position based on the cell ID
 	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
 	/// determine the cell ID based on the local position
@@ -153,6 +155,8 @@ namespace DD4hep {
         Data(BitField64* decoder=0) : Object(), BaseSegmentation(decoder) { grid_size_phi=grid_size_theta=grid_size_z=0;}
 	/// Default destructor
 	virtual ~Data();
+	/// determine the position based on the cell ID
+	virtual std::vector<double> getPosition(const long64& cellID) const;
 	/// determine the local position based on the cell ID
 	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
 	/// determine the cell ID based on the local position
@@ -186,6 +190,8 @@ namespace DD4hep {
         Data(BitField64* decoder=0) : Object(), BaseSegmentation(decoder) { nphi=ntheta=nz=0;}
 	/// Default destructor
 	virtual ~Data();
+	/// determine the position based on the cell ID
+	virtual std::vector<double> getPosition(const long64& cellID) const;
 	/// determine the local position based on the cell ID
 	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
 	/// determine the cell ID based on the local position

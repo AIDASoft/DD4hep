@@ -44,7 +44,7 @@ bool Segmentation::useForHitPosition() const   {
 }
 
 /// Segmentation type
-const string& SegmentationParams::type() const   {
+string SegmentationParams::type() const   {
   return object<Object>().segmentation->type();
 }
 
@@ -67,14 +67,20 @@ ProjectiveCylinder::Data::~Data()  {
 }
 
 /// determine the local position based on the cell ID
+std::vector<double> ProjectiveCylinder::Data::getPosition(const long64& cellID) const   {
+  not_implemented_call("ProjectiveCylinder::Data::getLocalPosition");
+  return vector<double>();
+}
+
+/// determine the local position based on the cell ID
 std::vector<double> ProjectiveCylinder::Data::getLocalPosition(const long64& cellID) const   {
-  not_implemented_call("GridXY::Data::getLocalPosition");
+  not_implemented_call("ProjectiveCylinder::Data::getLocalPosition");
   return vector<double>();
 }
 
 /// determine the cell ID based on the local position
 long64 ProjectiveCylinder::Data::getCellID(double x, double y, double z) const   {
-  not_implemented_call("GridXY::Data::getCellID");
+  not_implemented_call("ProjectiveCylinder::Data::getCellID");
   return 0;
 }
 
@@ -118,14 +124,20 @@ NonProjectiveCylinder::Data::~Data()  {
 }
 
 /// determine the local position based on the cell ID
+std::vector<double> NonProjectiveCylinder::Data::getPosition(const long64& cellID) const   {
+  not_implemented_call("NonProjectiveCylinder::Data::getLocalPosition");
+  return vector<double>();
+}
+
+/// determine the local position based on the cell ID
 std::vector<double> NonProjectiveCylinder::Data::getLocalPosition(const long64& cellID) const   {
-  not_implemented_call("GridXY::Data::getLocalPosition");
+  not_implemented_call("NonProjectiveCylinder::Data::getLocalPosition");
   return vector<double>();
 }
 
 /// determine the cell ID based on the local position
 long64 NonProjectiveCylinder::Data::getCellID(double x, double y, double z) const   {
-  not_implemented_call("GridXY::Data::getCellID");
+  not_implemented_call("NonProjectiveCylinder::Data::getCellID");
   return 0;
 }
 
@@ -160,13 +172,19 @@ ProjectiveZPlane::Data::~Data()  {
 
 /// determine the local position based on the cell ID
 std::vector<double> ProjectiveZPlane::Data::getLocalPosition(const long64& cellID) const   {
-  not_implemented_call("GridXY::Data::getLocalPosition");
+  not_implemented_call("ProjectiveZPlane::Data::getLocalPosition");
+  return vector<double>();
+}
+
+/// determine the local position based on the cell ID
+std::vector<double> ProjectiveZPlane::Data::getPosition(const long64& cellID) const   {
+  not_implemented_call("ProjectiveZPlane::Data::getLocalPosition");
   return vector<double>();
 }
 
 /// determine the cell ID based on the local position
 long64 ProjectiveZPlane::Data::getCellID(double x, double y, double z) const   {
-  not_implemented_call("GridXY::Data::getCellID");
+  not_implemented_call("ProjectiveZPlane::Data::getCellID");
   return 0;
 }
 

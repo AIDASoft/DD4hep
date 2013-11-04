@@ -95,12 +95,12 @@ DetElement Readout::getDetectorElement(const long64& cellID) const {
 Position Readout::getPosition(const long64& cellID) const {
   double global[3] = {0., 0., 0.};
   VolumeManager volMan = LCDD::getInstance().volumeManager();
-  volMan.worldTransformation(cellID).LocalToMaster(&(segmentation().segmentation()->getLocalPosition(cellID))[0], global);
+  volMan.worldTransformation(cellID).LocalToMaster(&(segmentation().segmentation()->getPosition(cellID))[0], global);
   return Position(global[0]/tgeo::mm, global[1]/tgeo::mm, global[2]/tgeo::mm);
 }
 
 Position Readout::getLocalPosition(const long64& cellID) const {
-  std::vector<double> v = segmentation().segmentation()->getLocalPosition(cellID);
+  std::vector<double> v = segmentation().segmentation()->getPosition(cellID);
   return Position(v[0], v[1], v[2]);
 }
 
