@@ -338,6 +338,7 @@ void PropertyManager::dump()  const   {
   DD4HEP_INSTANTIATE_PROPERTY_TYPE1(x);		\
   DD4HEP_INSTANTIATE_PROPERTY_TYPE1(unsigned x)
 
+namespace DD4hep {
 DD4HEP_INSTANTIATE_PROPERTY_TYPE2(char);
 DD4HEP_INSTANTIATE_PROPERTY_TYPE2(short);
 DD4HEP_INSTANTIATE_PROPERTY_TYPE2(int);
@@ -351,4 +352,4 @@ DD4HEP_INSTANTIATE_PROPERTY_TYPE1(string);
 
 typedef map<string,int> map_string_int;
 DD4HEP_INSTANTIATE_PROPERTY_TYPE(map_string_int);
-
+}

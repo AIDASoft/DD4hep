@@ -37,7 +37,7 @@ namespace DD4hep  {
     vector<XML::Attribute> attrs = props.attributes();
     for(vector<XML::Attribute>::iterator i=attrs.begin(); i!=attrs.end(); ++i)   {
       XML::Attribute a = *i;
-      handle[props.attr_name(a)].str(props.attr<string>(a));
+      handle[XML::_toString(props.attr_name(a))].str(props.attr<string>(a));
     }
   }
   template <typename T> static void _setProperties(const T& handle, xml_h& e)  {
