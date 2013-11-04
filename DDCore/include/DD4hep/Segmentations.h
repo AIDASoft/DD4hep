@@ -12,8 +12,7 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/IDDescriptor.h"
-
-#include "DDSegmentation/Segmentation.h"
+#include "DDSegmentation/CartesianGridXYZ.h"
 
 // C/C++ include files
 #include <cmath>
@@ -28,127 +27,76 @@ namespace DD4hep {
    *   XML namespace declaration
    */
   namespace Geometry  {
-    
+
+    typedef DDSegmentation::BitField64 BitField64;
+
     /** @class Segmentation Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Segmentation : public Ref_t   {
+    struct Segmentation : public Handle<DDSegmentation::Segmentation>  {
     public:
-      enum { REGULAR=0, EXTENDED=1 };
+      typedef DDSegmentation::Segmentation BaseSegmentation;
 
       /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
        *
        * @author  M.Frank
        * @version 1.0
        */
-      struct Object : public TNamed  {
+      struct Object   {
         /// Magic word to check object integrity
         unsigned long magic;
-        /// Segmentation type (REGULAR or EXTENDED)
-        unsigned char type;
         /// Flag to use segmentation for hit positioning
         unsigned char useForHitPosition;
-        /// Spares to start 16 byte Byte aligned
-        unsigned char _spare[6];
-        /// The segmentation object
-        DDSegmentation::Segmentation* segmentation;
-        
-        union Data {
-          /// Maximal size and data buffer for specialized user segmentations
-          double values[32];
-          /// Extension buffer for specialized user segmentations, where above values are insufficient
-          struct Extension {
-            const std::type_info* info;
-            void (*destructor)(void*);
-            void* ptr;
-          } extension;
-          /// No the regular structures for default segmentations
-          struct Cartesian {
-            int nx;
-            int ny;
-            int nz;
-          } cartesian;
-          struct CartesianGrid {
-            double grid_size_x;
-            double grid_size_y;
-            double grid_size_z;
-          } cartesian_grid;
-          struct CylindricalBinning  {
-            int nphi;
-            int ntheta;
-            int nz;
-          } cylindrical_binning;
-          struct CylindricalGrid   {
-            double grid_size_phi;
-            double grid_size_theta;
-            double grid_size_z;
-          } cylindrical_grid;
-          
-        } data;
+	/// Reference to base segmentation
+	BaseSegmentation* segmentation;
 	/// Standard constructor
         Object();
 	/// Default destructor
         virtual ~Object();
       };
-      
-    protected:
-      /// Templated destructor function
-      template <typename T> static void  _delete(void* ptr) { delete (T*)(ptr); }
-      /// Add an extension object to the detector element
-      void* i_setExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
-      /// Access an existing extension object from the detector element
-      void* i_extension(const std::type_info& info)  const;
-      
+
     public:
       /// Default constructor
       Segmentation() : Handle<Implementation>() {}
+      /// Initializing constructor creating new object
+      template <typename T> Segmentation(T* o, const std::string& nam, const std::string& typ)
+	: Handle<Implementation>()  {
+	o->segmentation = o;
+	assign(o,nam,typ);
+      }
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Segmentation(const Handle<Q>& e)
-      : Handle<Implementation>(e){}
-      /// Constructor to create a new segmentation object (to be called by super class only)
-      Segmentation(const std::string& type);
+      template <typename Q> Segmentation(const Handle<Q>& e) : Handle<Implementation>(e) {}
       /// Access flag for hit positioning
       bool useForHitPosition() const;
-      /// Segmentation type
-      const std::string type() const;
-      /// Assign segmentation object
-      void setSegmentation(DDSegmentation::Segmentation* segmentation);
+      /// Accessor: Segmentation type
+      std::string type() const;
+      /// Accessor: Set segmentation type
+      void setType(const std::string& new_type);
       /// Access segmentation object
-      DDSegmentation::Segmentation* segmentation();
-      /// Extend the segmentation object with an arbitrary structure accessible by the type
-      template<typename IFACE, typename CONCRETE> IFACE* setExtension(CONCRETE* c)
-      {  return (IFACE*)i_setExtension(dynamic_cast<IFACE*>(c),typeid(IFACE),_delete<IFACE>);   }
-      /// Access extension element by the type
-      template <class T> T* extensionUnchecked() const
-      {  return (T*)object<Object>().data.extension.ptr;                                        }
-      /// Access extension element by the type
-      template <class T> T* extension()  const         {  return (T*)i_extension(typeid(T));    }
-      /// Compute the coordinate in one dimension given a eauidistant bin value.
-      static double binCenter(int bin, double width)   {  return (double(bin) + .5) * width;    }
-      /// Compute the equidistant bin given a coordinate in one dimension.
-      static int bin(double value, double width)       {  return int(floor(value/width));       }
+      BaseSegmentation* segmentation() const;
+      /// determine the local position based on the cell ID
+      std::vector<double> getLocalPosition(const long64& cellID) const;
+      /// determine the cell ID based on the local position
+      long64 getCellID(double x, double y, double z) const;
     };
-    
+
     /** @class SegmentationParams Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct SegmentationParams : public Ref_t   {
+    struct SegmentationParams : public Segmentation   {
     public:
       /// Segmentation parameter definition
       typedef std::pair<std::string,double> Parameter;
       /// Segmentation parameter container definition
       typedef std::vector<Parameter>        Parameters;
-      /// Object type
-      typedef Segmentation::Object Object;
-
       /// Constructor to be used when reading the already parsed object
-      SegmentationParams(const Segmentation& e) : Ref_t(e) {}
+      SegmentationParams(const Segmentation& e) : Segmentation(e) {}
       /// Segmentation type
-      const std::string type() const;
+      const std::string& type() const;
       /// Access to the parameters
       Parameters parameters() const;
     };
@@ -159,18 +107,36 @@ namespace DD4hep {
      * @version 1.0
      */
     struct ProjectiveCylinder : public Segmentation  {
+
+      struct Data : public Object, public BaseSegmentation {
+	int nphi;
+	int ntheta;
+	int nz;
+	/// Default constructor
+        Data(BitField64* decoder=0) : Object(), BaseSegmentation(decoder), nphi(0), ntheta(0), nz(0) {}
+	/// Default destructor
+	virtual ~Data();
+	/// determine the local position based on the cell ID
+	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
+	/// determine the cell ID based on the local position
+	virtual long64 getCellID(double x, double y, double z) const;
+      };
       /// Constructor to be used when reading the already parsed object
       template <typename Q> ProjectiveCylinder(const Handle<Q>& e) : Segmentation(e) {}
       /// Constructor to create a new segmentation object
-      ProjectiveCylinder();
+      ProjectiveCylinder(LCDD& lcdd);
       /// Accessors: get number of bins in theta
       int thetaBins() const;
       /// Accessors: get number of bins in phi
       int phiBins() const;
+      /// Accessors: get number of bins in z
+      int zBins() const;
       /// Accessors: set number of bins in theta
       void setThetaBins(int value);
-      /// Accessors: set grid size in Y
+      /// Accessors: set number of bins in phi
       void setPhiBins(int value);
+      /// Accessors: set number of bins in Z
+      void setZBins(int value);
     };
     
     /** @class NonProjectiveCylinder Segmentations.h DD4hep/Segmentations.h
@@ -179,10 +145,23 @@ namespace DD4hep {
      * @version 1.0
      */
     struct NonProjectiveCylinder : public Segmentation  {
+      struct Data : public Object, public BaseSegmentation {
+	double grid_size_phi;
+	double grid_size_theta;
+	double grid_size_z;
+	/// Default constructor
+        Data(BitField64* decoder=0) : Object(), BaseSegmentation(decoder) { grid_size_phi=grid_size_theta=grid_size_z=0;}
+	/// Default destructor
+	virtual ~Data();
+	/// determine the local position based on the cell ID
+	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
+	/// determine the cell ID based on the local position
+	virtual long64 getCellID(double x, double y, double z) const;
+      };
       /// Constructor to be used when reading the already parsed object
       template <typename Q> NonProjectiveCylinder(const Handle<Q>& e) : Segmentation(e) {}
       /// Constructor to create a new segmentation object
-      NonProjectiveCylinder();
+      NonProjectiveCylinder(LCDD& lcdd);
       /// Accessors: get size of bins in Z
       double gridSizeZ() const;
       /// Accessors: get size of bins in phi
@@ -199,10 +178,23 @@ namespace DD4hep {
      * @version 1.0
      */
     struct ProjectiveZPlane : public Segmentation  {
+      struct Data : public Object, public BaseSegmentation {
+	int nphi;
+	int ntheta;
+	int nz;
+	/// Default constructor
+        Data(BitField64* decoder=0) : Object(), BaseSegmentation(decoder) { nphi=ntheta=nz=0;}
+	/// Default destructor
+	virtual ~Data();
+	/// determine the local position based on the cell ID
+	virtual std::vector<double> getLocalPosition(const long64& cellID) const;
+	/// determine the cell ID based on the local position
+	virtual long64 getCellID(double x, double y, double z) const;
+      };
       /// Constructor to be used when reading the already parsed object
       template <typename Q> ProjectiveZPlane(const Handle<Q>& e) : Segmentation(e) {}
       /// Constructor to create a new segmentation object
-      ProjectiveZPlane();
+      ProjectiveZPlane(LCDD& lcdd);
       /// Accessors: get number of bins in theta
       int thetaBins() const;
       /// Accessors: get number of bins in phi
@@ -219,22 +211,24 @@ namespace DD4hep {
      * @version 1.0
      */
     struct GridXY : public Segmentation   {
+      struct Data : public Object, public DDSegmentation::CartesianGridXY {
+	/// Default constructor
+        Data(BitField64* decoder=0) : Object(), DDSegmentation::CartesianGridXY(decoder) {}
+	/// Default destructor
+	virtual ~Data();
+      };
       /// Constructor to be used when reading the already parsed object
       template <typename Q> GridXY(const Handle<Q>& e) : Segmentation(e) {}
       /// Constructor to create a new segmentation object
-      GridXY();
-      /// Constructor to be used when creating a new object. Data are taken from the input handle
-      GridXY(const std::string& tag);
-      /// Constructor to be used when creating a new object.
-      GridXY(const std::string& tag, double size_x, double size_y);
+      GridXY(LCDD& lcdd, const std::string& typ);
       /// Accessors: set grid size in X
       void setGridSizeX(double value);
       /// Accessors: set grid size in Y
       void setGridSizeY(double value);
       /// Accessors: get grid size in X
-      double getGridSizeX()const;
+      double getGridSizeX()  const;
       /// Accessors: get grid size in Y
-      double getGridSizeY()const;
+      double getGridSizeY()  const;
     };
     
     /** @class GridXYZ Segmentations.h DD4hep/Segmentations.h
@@ -242,42 +236,31 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct GridXYZ : public GridXY  {
+    struct GridXYZ : public Segmentation  {
+      struct Data : public Object, public DDSegmentation::CartesianGridXYZ {
+	/// Default constructor
+        Data(BitField64* decoder=0) : Object(), DDSegmentation::CartesianGridXYZ(decoder) {}
+	/// Default destructor
+	virtual ~Data();
+      };
       /// Constructor to be used when reading the already parsed object
       template <typename Q> GridXYZ(const Handle<Q>& e) : GridXY(e) {}
       /// Constructor to be used when creating a new object.
-      GridXYZ();
-      /// Constructor to be used when creating a new object.
-      GridXYZ(double size_x, double size_y, double size_z);
+      GridXYZ(LCDD& lcdd, const std::string& typ);
+      /// Accessors: set grid size in X
+      void setGridSizeX(double value);
+      /// Accessors: set grid size in Y
+      void setGridSizeY(double value);
       /// Accessors: set grid size in Z
       void setGridSizeZ(double value);
+      /// Accessors: get grid size in X
+      double getGridSizeX()  const;
+      /// Accessors: get grid size in Y
+      double getGridSizeY()  const;
+      /// Accessors: get grid size in Z
+      double getGridSizeZ()  const;
     };
-    
-    /** @class CartesianGridXY Segmentations.h DD4hep/Segmentations.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct CartesianGridXY : public GridXY   {
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> CartesianGridXY(const Handle<Q>& e) : GridXY(e) {}
-      /// Constructor to be used when creating a new object. Data are taken from the input handle
-      CartesianGridXY() : GridXY("cartesian_grid_xy") {}
-    };
-    
-    /** @class GlobalGridXY Segmentations.h DD4hep/Segmentations.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct GlobalGridXY : public GridXY   {
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> GlobalGridXY(const Handle<Q>& e) : GridXY(e) {}
-      /// Constructor to be used when creating a new object. Data are taken from the input handle
-      GlobalGridXY() : GridXY("global_grid_xy") {}
-    };
-    
-    
+
   }       /* End namespace Geometry              */
 }         /* End namespace DD4hep                */
 #endif    /* DD4HEP_GEOMETRY_SEGMENTATIONS_H     */

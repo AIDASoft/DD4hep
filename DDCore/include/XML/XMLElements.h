@@ -593,6 +593,10 @@ namespace DD4hep {
       bool hasAttr(const XmlChar* name) const                   {  return m_element.hasAttr(name);        }
       /// Access attribute with implicit return type conversion
       template <class T> T attr(const XmlChar* tag) const       {  return m_element.attr<T>(tag);         }
+      /// Access attribute name (throws exception if not present)
+      const XmlChar* attr_name(const Attribute attr)  const     {  return m_element.attr_name(attr);      }
+      /// Access attribute value by the attribute  (throws exception if not present)
+      const XmlChar* attr_value(const Attribute attr)  const    {  return m_element.attr_value(attr);     }
       /// Access the number of children of this DOM element with a given tag name
       size_t numChildren(const XmlChar* tag,bool exc=true) const{  return m_element.numChildren(tag,exc); }
       /// Remove own attributes and copy all attributes from handle 'e'

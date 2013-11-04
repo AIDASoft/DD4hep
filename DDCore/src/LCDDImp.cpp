@@ -47,11 +47,28 @@ namespace {
     TypePreserve(LCDDBuildType& t) : m_t(t) { }
     ~TypePreserve() { m_t = BUILD_NONE; }
   };
+
+  struct ExtensionEntry {
+    int     id;
+  };
+  typedef map<const type_info*, ExtensionEntry> ExtensionMap;
+  static int s_extensionID = 0;
+  ExtensionMap& lcdd_extensions() {
+    static ExtensionMap s_map;
+    return s_map;
+  }
+  static LCDD* s_lcdd = 0;
 }
 
 LCDD& LCDD::getInstance() {
-  static LCDD* s_lcdd = new LCDDImp();
+  if ( !s_lcdd )  s_lcdd = new LCDDImp();
   return *s_lcdd; 
+}
+
+/// Destroy the instance
+void LCDD::destroyInstance()   {
+  if ( s_lcdd ) delete s_lcdd;
+  s_lcdd = 0;
 }
 
 /// Default constructor
@@ -88,21 +105,20 @@ LCDDImp::LCDDImp()
 
 /// Standard destructor
 LCDDImp::~LCDDImp() {
-  DestroyHandles<> del;
   destroyHandle(m_world);
   destroyHandle(m_field);
   destroyHandle(m_header);
   destroyHandle(m_volManager);
   destroyObject(m_properties);
-  for_each(m_readouts.begin(),    m_readouts.end(),     del);
-  for_each(m_idDict.begin(),      m_idDict.end(),       del);
-  for_each(m_limits.begin(),      m_limits.end(),       del);
-  for_each(m_regions.begin(),     m_regions.end(),      del);
-  for_each(m_alignments.begin(),  m_alignments.end(),   del);
-  for_each(m_sensitive.begin(),   m_sensitive.end(),    del);
-  for_each(m_display.begin(),     m_display.end(),      del);
-  for_each(m_fields.begin(),      m_fields.end(),       del);
-  for_each(m_define.begin(),      m_define.end(),       del);
+  for_each(m_readouts.begin(),    m_readouts.end(),     destroyHandles(m_readouts));
+  for_each(m_idDict.begin(),      m_idDict.end(),       destroyHandles(m_idDict));
+  for_each(m_limits.begin(),      m_limits.end(),       destroyHandles(m_limits));
+  for_each(m_regions.begin(),     m_regions.end(),      destroyHandles(m_regions));
+  for_each(m_alignments.begin(),  m_alignments.end(),   destroyHandles(m_alignments));
+  for_each(m_sensitive.begin(),   m_sensitive.end(),    destroyHandles(m_sensitive));
+  for_each(m_display.begin(),     m_display.end(),      destroyHandles(m_display));
+  for_each(m_fields.begin(),      m_fields.end(),       destroyHandles(m_fields));
+  for_each(m_define.begin(),      m_define.end(),       destroyHandles(m_define));
 
   m_trackers.clear();
   m_worldVol.clear();
@@ -112,6 +128,36 @@ LCDDImp::~LCDDImp() {
   m_materialAir.clear();
   delete m_manager;
   InstanceCount::decrement(this);
+}
+
+/// Add an extension object to the detector element
+void* LCDDImp::addUserExtension(void* ptr, const std::type_info& info)  {
+  Extensions::iterator j = m_extensions.find(&info);
+  if ( j == m_extensions.end() )   {
+    ExtensionMap& m = lcdd_extensions();
+    ExtensionMap::iterator i = m.find(&info);
+    if ( i == m.end() ) {
+      ExtensionEntry entry;
+      entry.id = ++s_extensionID;
+      m.insert(make_pair(&info,entry));
+      i = m.find(&info);
+    }
+    ExtensionEntry& e = (*i).second;
+    //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
+    return m_extensions[&info] = ptr;
+  }
+  throw runtime_error("DD4hep: LCDD::addUserExtension: The object "
+		      " already has an extension of type:"+string(info.name())+".");
+}
+
+/// Access an existing extension object from the detector element
+void* LCDDImp::userExtension(const std::type_info& info)  const    {
+  Extensions::const_iterator j = m_extensions.find(&info);
+  if ( j != m_extensions.end() )   {
+    return (*j).second;
+  }
+  throw runtime_error("DD4hep: LCDD::userExtension: The object "
+		      " has no extension of type:"+string(info.name())+".");
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const  {     // throw if not existing

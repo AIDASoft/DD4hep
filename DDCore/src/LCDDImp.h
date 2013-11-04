@@ -93,6 +93,10 @@ namespace DD4hep {
       Properties*         m_properties;
       LCDDBuildType       m_buildType;
 
+      /// Definition of the extension type
+      typedef std::map<const std::type_info*,void*>  Extensions;
+      Extensions          m_extensions;
+
       /// Default constructor
       LCDDImp();
 
@@ -116,6 +120,11 @@ namespace DD4hep {
 
       virtual void init();
       virtual void endDocument();
+
+      /// Add an extension object to the detector element
+      virtual void* addUserExtension(void* ptr, const std::type_info& info);
+      /// Access an existing extension object from the detector element
+      virtual void* userExtension(const std::type_info& info)  const;
 
       virtual Handle<TObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not=true)  const;
       virtual Volume          pickMotherVolume(const DetElement& sd) const;

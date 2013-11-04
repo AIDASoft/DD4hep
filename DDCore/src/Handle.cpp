@@ -12,8 +12,6 @@
 #include "XML/Evaluator.h"
 #include <iostream>
 
-#include "DD4hep/LCDD.h"
-
 #if !defined(WIN32) && !defined(__ICC)
 #include "cxxabi.h"
 #endif
@@ -151,43 +149,43 @@ string DD4hep::Geometry::_toString(double value)   {
   ::snprintf(text,sizeof(text),"%f",value);
   return text;
 }
-namespace DD4hep { namespace Geometry {
-  static long s_numVerifies = 0;
+namespace DD4hep {
+  namespace Geometry {
+    static long s_numVerifies = 0;
 
-  long num_object_validations()         {    return s_numVerifies;  }
-  void increment_object_validations()   {    ++s_numVerifies;       }
+    long num_object_validations()         {    return s_numVerifies;  }
+    void increment_object_validations()   {    ++s_numVerifies;       }
 
-  template <typename T> void Handle<T>::bad_assignment(const type_info& from, const type_info& to) {
-    string msg = "Wrong assingment from ";
-    msg += from.name();
-    msg += " to ";
-    msg += to.name();
-    msg += " not possible!!";
-    throw runtime_error(msg);
+    template <typename T> void Handle<T>::bad_assignment(const type_info& from, const type_info& to) {
+      string msg = "Wrong assingment from ";
+      msg += from.name();
+      msg += " to ";
+      msg += to.name();
+      msg += " not possible!!";
+      throw runtime_error(msg);
+    }
+    template <typename T> void Handle<T>::assign(T* n, const string& nam, const string& tit) {
+      this->m_element = n;
+      if ( !nam.empty() ) n->SetName(nam.c_str());
+      if ( !tit.empty() ) n->SetTitle(tit.c_str());
+    }
+
+    template <typename T> const char* Handle<T>::name() const  
+    { return this->m_element ? this->m_element->GetName() : "";   }
+
+    template <> const char* Handle<TObject>::name() const  
+    { return "";   }
+
+    template <> void Handle<TObject>::bad_assignment(const type_info& from, const type_info& to) {
+      string msg = "Wrong assingment from ";
+      msg += from.name();
+      msg += " to ";
+      msg += to.name();
+      msg += " not possible!!";
+      throw runtime_error(msg);
+    }
   }
-  template <typename T> void Handle<T>::assign(T* n, const string& nam, const string& tit) {
-    this->m_element = n;
-    if ( !nam.empty() ) n->SetName(nam.c_str());
-    if ( !tit.empty() ) n->SetTitle(tit.c_str());
-  }
-
-  template <typename T> const char* Handle<T>::name() const  
-  { return this->m_element ? this->m_element->GetName() : "";   }
-
-  template <> const char* Handle<TObject>::name() const  
-  { return "";   }
-
-  template <> void Handle<TObject>::bad_assignment(const type_info& from, const type_info& to) {
-    string msg = "Wrong assingment from ";
-    msg += from.name();
-    msg += " to ";
-    msg += to.name();
-    msg += " not possible!!";
-    throw runtime_error(msg);
-  }
-}}
-
-
+}
 
 static const std::string __typeinfoName( const std::type_info& tinfo) {
   const char* class_name = tinfo.name();
@@ -307,10 +305,27 @@ static const std::string __typeinfoName( const std::type_info& tinfo) {
   return result;
 }
 
-string DD4hep::Geometry::typeName(const type_info& typ) {
+string DD4hep::typeName(const type_info& typ) {
   return __typeinfoName(typ);
 }
 
+
+
+#include "DDSegmentation/Segmentation.h"
+typedef DDSegmentation::Segmentation _Segmentation;
+//INSTANTIATE_UNNAMED(_Segmentation);
+namespace DD4hep { namespace Geometry {
+    template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string& t) {
+      this->m_element = s;
+      s->setType(t);
+      s->setName(n);
+    }
+    template <> const char* Handle<_Segmentation>::name() const
+    { return this->m_element ? this->m_element->name().c_str() : "";   }
+    template struct DD4hep::Geometry::Handle<_Segmentation>;
+}}
+
+#include "DD4hep/LCDD.h"
 #include "TMap.h"
 #include "TColor.h"
 

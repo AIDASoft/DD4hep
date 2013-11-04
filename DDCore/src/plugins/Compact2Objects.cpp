@@ -68,65 +68,59 @@ namespace {
 
 }
 
-static Ref_t create_GridXYZ(lcdd_t& /* lcdd */, xml_h e)  {
-  GridXYZ obj;
-  DDSegmentation::CartesianGridXYZ* seg = new DDSegmentation::CartesianGridXYZ("");
-  obj.setSegmentation(seg);
-  if ( e.hasAttr(_U(gridSizeX)) ) seg->setGridSizeX(e.attr<float>(_U(gridSizeX)));
-  if ( e.hasAttr(_U(gridSizeY)) ) seg->setGridSizeY(e.attr<float>(_U(gridSizeY)));
-  if ( e.hasAttr(_U(gridSizeZ)) ) seg->setGridSizeZ(e.attr<float>(_U(gridSizeZ)));
+static Ref_t create_GridXYZ(lcdd_t& lcdd, xml_h e)  {
+  GridXYZ obj(lcdd,"grid_xyz");
+  if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_U(gridSizeX)));
+  if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_U(gridSizeY)));
+  if ( e.hasAttr(_U(gridSizeZ)) ) obj.setGridSizeZ(e.attr<float>(_U(gridSizeZ)));
   return obj;
 }
 DECLARE_XMLELEMENT(GridXYZ,create_GridXYZ);
 
-static Ref_t create_GlobalGridXY(lcdd_t& /* lcdd */, xml_h e)  {
-  GlobalGridXY obj;
-  DDSegmentation::CartesianGridXY* seg = new DDSegmentation::CartesianGridXY("");
-    obj.setSegmentation(seg);
-  if ( e.hasAttr(_U(gridSizeX)) ) seg->setGridSizeX(e.attr<float>(_U(gridSizeX)));
-  if ( e.hasAttr(_U(gridSizeY)) ) seg->setGridSizeY(e.attr<float>(_U(gridSizeY)));
+static Ref_t create_GlobalGridXY(lcdd_t& lcdd, xml_h e)  {
+  GridXY obj(lcdd,"global_grid_xy");
+  if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<float>(_U(gridSizeX)));
+  if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<float>(_U(gridSizeY)));
   return obj;
 }
 DECLARE_XMLELEMENT(GlobalGridXY,create_GlobalGridXY);
 
-static Ref_t create_CartesianGridXY(lcdd_t& /* lcdd */, xml_h e)  {
-  CartesianGridXY obj;
-  DDSegmentation::CartesianGridXY* seg = new DDSegmentation::CartesianGridXY("");
-  obj.setSegmentation(seg);
-  if ( e.hasAttr(_U(gridSizeX)) ) seg->setGridSizeX(e.attr<double>(_U(gridSizeX)));
-  if ( e.hasAttr(_U(gridSizeY)) ) seg->setGridSizeY(e.attr<double>(_U(gridSizeY)));
+static Ref_t create_CartesianGridXY(lcdd_t& lcdd, xml_h e)  {
+  GridXY obj(lcdd,"cartesian_grid_xy");
+  if ( e.hasAttr(_U(gridSizeX)) ) obj.setGridSizeX(e.attr<double>(_U(gridSizeX)));
+  if ( e.hasAttr(_U(gridSizeY)) ) obj.setGridSizeY(e.attr<double>(_U(gridSizeY)));
   return obj;
 }
 DECLARE_XMLELEMENT(CartesianGridXY,create_CartesianGridXY);
 
-namespace DD4hep { namespace Geometry { typedef CartesianGridXY RegularNgonCartesianGridXY; }}
+namespace DD4hep { namespace Geometry { typedef GridXY RegularNgonCartesianGridXY; }}
 DECLARE_XMLELEMENT(RegularNgonCartesianGridXY,create_CartesianGridXY);
 
 namespace DD4hep { namespace Geometry { 
     typedef GridXYZ CartesianGridXYZ;
-    typedef CartesianGridXY EcalBarrelCartesianGridXY;
+    typedef GridXY EcalBarrelCartesianGridXY;
 }}
 DECLARE_XMLELEMENT(CartesianGridXYZ,create_CartesianGridXY);
 DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_CartesianGridXY);
   
-static Ref_t create_ProjectiveCylinder(lcdd_t& /* lcdd */, xml_h e)  {
-  ProjectiveCylinder obj;
+static Ref_t create_ProjectiveCylinder(lcdd_t& lcdd, xml_h e)  {
+  ProjectiveCylinder obj(lcdd);
   if ( e.hasAttr(_U(phiBins))   ) obj.setPhiBins(e.attr<int>(_U(phiBins)));
   if ( e.hasAttr(_U(thetaBins)) ) obj.setThetaBins(e.attr<int>(_U(thetaBins)));
   return obj;
 }
 DECLARE_XMLELEMENT(ProjectiveCylinder,create_ProjectiveCylinder);
   
-static Ref_t create_NonProjectiveCylinder(lcdd_t& /* lcdd */, xml_h e)  {
-  NonProjectiveCylinder obj;
+static Ref_t create_NonProjectiveCylinder(lcdd_t& lcdd, xml_h e)  {
+  NonProjectiveCylinder obj(lcdd);
   if ( e.hasAttr(_U(gridSizePhi)) ) obj.setThetaBinSize(e.attr<double>(_U(gridSizePhi)));
   if ( e.hasAttr(_U(gridSizeZ))   ) obj.setPhiBinSize(e.attr<double>(_U(gridSizeZ)));
   return obj;
 }
 DECLARE_XMLELEMENT(NonProjectiveCylinder,create_NonProjectiveCylinder);
   
-static Ref_t create_ProjectiveZPlane(lcdd_t& /* lcdd */, xml_h e)  {
-  ProjectiveZPlane obj;
+static Ref_t create_ProjectiveZPlane(lcdd_t& lcdd, xml_h e)  {
+  ProjectiveZPlane obj(lcdd);
   if ( e.hasAttr(_U(phiBins))   ) obj.setThetaBins(e.attr<int>(_U(phiBins)));
   if ( e.hasAttr(_U(thetaBins)) ) obj.setPhiBins(e.attr<int>(_U(thetaBins)));
   return obj;

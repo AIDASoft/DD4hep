@@ -49,6 +49,9 @@ class TGeoManager;
  */
 namespace DD4hep {
   
+  /// Access to the CXX abi name 
+  std::string typeName(const std::type_info& type);
+
   /*
    *   Geometry sub-namespace declaration
    */
@@ -104,9 +107,8 @@ namespace DD4hep {
 
     long num_object_validations();
     void increment_object_validations();
-    std::string typeName(const std::type_info& type);
     
-    inline unsigned long magic_word() { return 0xFEEDAFFEDEADFACEL; }
+    inline unsigned long long int magic_word() { return 0xFEEDAFFEDEADFACEULL; }
     
     /** @class Value Handle.h
      *  
@@ -191,38 +193,36 @@ namespace DD4hep {
     typedef Handle<>       Elt_t;
     typedef Handle<TNamed> Ref_t;
     
-    /// Helper to delete objects from heap and reset the pointer
-    template <typename T> inline void destroyObject(T*& p) {
-      deletePtr(p);
-    }
     /// Helper to delete objects from heap and reset the handle
     template <typename T> inline void destroyHandle(T& h)   {
       deletePtr(h.m_element);
     }
-    /// Functor to delete objects from heap and reset the pointer
-    template <typename T> struct DestroyObject {
-      void operator()(T& p) const { 
-	destroyObject(p);
-      }
-    };
+    /// Helper to delete objects from heap and reset the handle
+    template <typename T> inline void releaseHandle(T& h)   {
+      releasePtr(h.m_element);
+    }
     /// Functor to destroy handles and delete the cached object
     template <typename T=Ref_t> struct DestroyHandle {
       void operator()(T p) const {
 	destroyHandle(p);
       }
     };
-    /// map Functor to delete objects from heap
-    template <typename K=std::string,typename T=Ref_t> struct DestroyObjects {
-      void operator()(std::pair<K,T> p) const {
-	DestroyObject<T>()(p.second); 
+    /// Functor to destroy handles and delete the cached object
+    template <typename T=Ref_t> struct ReleaseHandle {
+      void operator()(T p) const {
+	releaseHandle(p);
       }
     };
     /// map Functor to destroy handles and delete the cached object
-    template <typename K=std::string, typename T=Ref_t> struct DestroyHandles {
-      void operator()(std::pair<K,T> p) const {
-	DestroyHandle<T>()(p.second);
+    template <typename M> struct DestroyHandles {
+      M& object;
+      DestroyHandles(M& m) : object(m) {}
+      ~DestroyHandles() { object.clear(); }
+      void operator()(std::pair<typename M::key_type,typename M::mapped_type> p) const {
+	DestroyHandle<typename M::mapped_type>()(p.second);
       }
     };
+    template<typename M> DestroyHandles<M> destroyHandles(M& m) { return DestroyHandles<M>(m); }
     
 
   }       /* End namespace Geometry  */

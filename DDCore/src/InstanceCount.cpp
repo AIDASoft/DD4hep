@@ -18,7 +18,6 @@
 
 using namespace std;
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
 
 /// Do not clutter global namespace
 namespace {

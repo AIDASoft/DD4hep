@@ -289,10 +289,10 @@ VolumeManager::Object::~Object()   {
   bool  hasTop = (flags&VolumeManager::ONE)==VolumeManager::ONE;
   bool  isSdet = (flags&VolumeManager::TREE)==VolumeManager::TREE && obj != this;
   /// Cleanup volume tree
-  for_each(volumes.begin(),volumes.end(),DestroyObjects<VolIdentifier,Context*>());
+  for_each(volumes.begin(),volumes.end(),destroyObjects(volumes));
   volumes.clear();
   /// Cleanup dependent managers
-  for_each(managers.begin(),managers.end(),DestroyHandles<VolumeID,VolumeManager>());
+  for_each(managers.begin(),managers.end(),destroyHandles(managers));
   managers.clear();
   subdetectors.clear();
 }

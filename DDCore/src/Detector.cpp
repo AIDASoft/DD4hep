@@ -133,7 +133,7 @@ DetElement::Object::Object()
 
 /// Internal object destructor: release extension object(s)
 DetElement::Object::~Object() {
-  for_each(children.begin(),children.end(), DestroyHandles<>());
+  for_each(children.begin(),children.end(),destroyHandles(children));
   deletePtr(worldTrafo);
   deletePtr(parentTrafo);
   deletePtr(referenceTrafo);

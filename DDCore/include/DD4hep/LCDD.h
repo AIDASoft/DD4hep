@@ -206,8 +206,25 @@ namespace DD4hep {
       /// Manipulate geometry using facroy converter
       virtual void apply(const char* factory, int argc, char** argv) = 0;
 
+      /// Extend the sensitive detector element with an arbitrary structure accessible by the type
+      template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
+      {  return (IFACE*)addUserExtension(dynamic_cast<IFACE*>(c),typeid(IFACE));  }      
+
+      /// Access extension element by the type
+      template <class T> T* extension()  const
+      {  return (T*)userExtension(typeid(T));      }
+
       ///---Factory method-------
       static LCDD& getInstance(void);
+      /// Destroy the instance
+      static void destroyInstance();
+
+    protected:
+      /// Add an extension object to the detector element
+      virtual void* addUserExtension(void* ptr, const std::type_info& info) = 0;
+      /// Access an existing extension object from the detector element
+      virtual void* userExtension(const std::type_info& info)  const = 0;
+
     };
 
 

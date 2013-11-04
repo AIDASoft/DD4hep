@@ -71,9 +71,10 @@ namespace DD4hep {
 
       /// ID decoder interface
       PlacedVolume getPlacement(const long64& cellID) const;
-      DetElement getSubDetector(const long64& cellID) const;
-      DetElement getDetectorElement(const long64& cellID) const;
-      Position getPosition(const long64& cellID) const;
+      DetElement   getSubDetector(const long64& cellID) const;
+      DetElement   getDetectorElement(const long64& cellID) const;
+      Position     getPosition(const long64& cellID) const;
+      Position     getLocalPosition(const long64& cellID) const;
       const TGeoMatrix& getWorldTransformation(const long64& cellID) const;
     };
 

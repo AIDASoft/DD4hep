@@ -39,3 +39,9 @@ static long create_Geant4(lcdd_t& lcdd, const xml_h& element) {
   return 1;
 }
 DECLARE_XML_DOC_READER(geant4,create_Geant4);
+
+static Ref_t handle_Geant4(lcdd_t& lcdd, const xml_h& element) {
+  (Converter<Geant4>(lcdd))(element);
+  return Ref_t(0);
+}
+DECLARE_XMLELEMENT(geant4_xml_setup,handle_Geant4);
