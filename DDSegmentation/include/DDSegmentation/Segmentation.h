@@ -83,6 +83,8 @@ protected:
 	std::string _type;
 	/// the segmentation name
 	std::string _name;
+        // M.Frank: Temp fix for compilation
+        bool _isLocal;
 };
 
 } /* namespace DDSegmentation */
