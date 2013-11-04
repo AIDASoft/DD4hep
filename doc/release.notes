@@ -27,6 +27,17 @@ DD4hep  ----  Release Notes
     - Missing is a modular description of the G4 UI and VIS manager(s).
     - Documentation is to come. Before documentation is not present
       the usage is discouraged.
+    Note:
+    - This version of DDG4 uses boost::spirit. It will compile without
+      the BOOST include files and the old functionality is preserved, 
+      but it will not work.
+      To use BOOST add to the cmake statement the following tags:
+      cmake <regular tags> \
+      -DDD4HEP_USE_BOOST=ON \
+      -DBOOST_INCLUDE_DIR=${BOOST_INCLUDE_DIR}  ....
+      Where BOOST_INCLUDE_DIR should point to the boost header directory.
+      BOOST libraries are not used.
+
 
 2013/10/18    Markus Frank
 --------------------------
