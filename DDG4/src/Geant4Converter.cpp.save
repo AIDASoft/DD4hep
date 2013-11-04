@@ -1,4 +1,4 @@
-// $Id$
+// $Id: Geant4Converter.cpp 788 2013-09-20 17:04:50Z gaede $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -38,12 +38,11 @@
 #include "TClass.h"
 #include "TMath.h"
 
-// Geant4 include files
 #include "G4VSensitiveDetector.hh"
 #include "G4VisAttributes.hh"
 #include "G4ProductionCuts.hh"
 #include "G4VUserRegionInformation.hh"
-
+// Geant4 include files
 #include "G4Element.hh"
 #include "G4SDManager.hh"
 #include "G4Assembly.hh"
@@ -59,8 +58,11 @@
 #include "G4Paraboloid.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
+
 #include "G4Region.hh"
 #include "G4UserLimits.hh"
+#include "G4VSensitiveDetector.hh"
+
 #include "G4LogicalVolume.hh"
 #include "G4Material.hh"
 #include "G4Element.hh"
@@ -70,6 +72,7 @@
 #include "G4PVPlacement.hh"
 #include "G4ElectroMagneticField.hh"
 #include "G4FieldManager.hh"
+
 #include "G4ReflectionFactory.hh"
 
 #include <iostream>

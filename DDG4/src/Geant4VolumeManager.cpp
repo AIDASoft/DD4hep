@@ -93,17 +93,16 @@ namespace {
       chain.pop_back();
     }
 
-    void add_entry(SensitiveDetector sd, const TGeoNode* n, const PlacedVolume::VolIDs& ids, const Chain& nodes)  {
+    void add_entry(SensitiveDetector sd, const TGeoNode* /* n */, const PlacedVolume::VolIDs& ids, const Chain& nodes)  {
       Readout      ro      = sd.readout();
       IDDescriptor iddesc  = ro.idSpec();
       VolumeID     code    = iddesc.encode(ids);
       if ( m_entries.find(code) == m_entries.end() )  {
-	PlacedVolume place = Ref_t(n);
 	Geant4Mapping::PlacementPath path;
 	path.reserve(nodes.size());
 	for(Chain::const_reverse_iterator i=nodes.rbegin(); i != nodes.rend(); ++i)   {
-	  const TGeoNode* n = *i;
-	  PlacementMap::const_iterator g4pit = m_geo.g4Placements.find(n);
+	  const TGeoNode* node = *i;
+	  PlacementMap::const_iterator g4pit = m_geo.g4Placements.find(node);
 	  if ( g4pit != m_geo.g4Placements.end() )  {
 	    path.push_back((*g4pit).second);
 	  }
