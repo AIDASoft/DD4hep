@@ -2,11 +2,34 @@ DD4hep  ----  Release Notes
 =================================
 
 
- --------
-| v00-05 | 
- -------- 
+2013/11/03    Markus Frank
+--------------------------
+  - doc: Add CHEP2013 paper about DD4hep as a start of the documentation 
+    section. More to come hopefully.
+  - DDCore: several small improvements:
+    - Segmentations are no longer Ref_t's.
+    - Base internal implementing object directly on the segmentations 
+      classes from Christian.
+    - Rearrangement of some code from Handle.h to Primitives.h
+    - Allow to attach extensions to LCDD
+  - DDG4: Fix Frank's simulation problem, which he caused himself
+    introducing his famous factories....
+  - DDG4: First attempt to fix simulation problem with mignetic field.
+    Ready for testing.
+  - DDG4: First commit of a independent simulation aimed for LHCb and LHeC
+    + other newcomers. Documentation needs to be written.
+    Features:
+    - Modular setup of all Geant4 action routines as plugins, including the
+      Run-, event-, tracking-, stacking-, stepping- and generator-actions 
+      as well as the physics lists with particle and physics constructors.
+    - Setup is possible in XML or with C++ either as an AClick in root or
+      standalone. Python based starter to come.
+    - Missing is a modular description of the G4 UI and VIS manager(s).
+    - Documentation is to come. Before documentation is not present
+      the usage is discouraged.
 
-	Markus Frank:
+2013/10/18    Markus Frank
+--------------------------
   - Throw exception if the expression evaluator sees a problem.
     The message printed before was often not seen.
   - Improve printout on exceptions and plugin abortion
@@ -28,7 +51,10 @@ DD4hep  ----  Release Notes
 
     Unclear to me was if in Geant3 steradian is also 2*2*pi or 2*2*180 degree.
 
-	F. Gaede:
+
+
+No-date    F. Gaede
+-------------------
        - changes to build system:
          (see ReadMe.txt for details)
 
