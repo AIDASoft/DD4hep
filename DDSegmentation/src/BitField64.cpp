@@ -72,15 +72,22 @@ namespace DDSegmentation {
     }
   }
 
-  long64 BitFieldValue::value(long64 id) const {       
+  long64 BitFieldValue::value(long64 id) const { 
+      
     if(  _isSigned   ) {
-      long64 val = (id & _mask) >> _offset ;
-      if( (val  & (1LL << (_width - 1))) != 0 ) { // negative value
-	val -= (1LL << _width);
+
+      long64 val = ( id & _mask ) >> _offset ;
+      
+      if( ( val  & ( 1LL << ( _width - 1 ) ) ) != 0 ) { // negative value
+	  
+	val -= ( 1LL << _width );
       }
+	
       return val ;
-    } else {
-      return  (id & _mask) >> _offset ;
+
+    } else { 
+      
+      return  ( id & _mask ) >> _offset ;
     }
   }
 
