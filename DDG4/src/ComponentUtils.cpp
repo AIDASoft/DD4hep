@@ -241,10 +241,10 @@ Property& Property::str(const std::string& input)   {
 }
 
 /// Assignment operator / set new balue
-Property& Property::operator=(const string& val)  {
-  this->set<string>(val);
-  return *this;
-}
+//Property& Property::operator=(const string& val)  {
+//  this->set<string>(val);
+//  return *this;
+//}
 
 /// Assignment operator / set new balue
 Property& Property::operator=(const char* val)  {

@@ -116,7 +116,7 @@ namespace DD4hep {
     /// Assignment operator / set new balue
     Property& operator=(const char* val);
     /// Assignment operator / set new balue
-    Property& operator=(const std::string& val);
+    //Property& operator=(const std::string& val);
     /// Assignment operator / set new balue
     template <typename TYPE> Property& operator=(const TYPE& val);
     /// Retrieve value
