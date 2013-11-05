@@ -59,6 +59,7 @@ find_package(LCIO REQUIRED)
 #-------------------------------------------------------------
 
 include_directories( ${CMAKE_SOURCE_DIR}/include
+  include
   ${DD4hep_INCLUDE_DIRS}
   ${ROOT_INCLUDE_DIR}
   ${Geant4_INCLUDE_DIRS}
@@ -101,7 +102,7 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}
 #---- configure run environment ---------------
 configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
-install(FILES ${CMAKE_BINARY_DIR}/this${PackageName}.sh
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
   DESTINATION bin
   )
 

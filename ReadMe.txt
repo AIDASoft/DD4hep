@@ -28,9 +28,9 @@ build internally when required.
   The option DD4HEP_WITH_GEANT4:BOOL controls the building or not of this package that has the dependency
 to Geant4. The Geant4 installation needs to be located using the variable -DGeant4_DIR=<path to Geant4Config.cmake>
 
-- DDExamples
+- examples
 
-  Contains different detector examples (CLICSiD, ILDEx) together with example applications to illustrate
+  Contains different detector examples (CLICSiD, ILDExDet, ILDExSimu) together with example applications to illustrate
 the their usage for simulation, reconstruction and visualization with an emphasis to minimize software
 dependencies. For instance, the simulation application example will require to compiler and link 
 against Geant4 but not the reconstruction application.
@@ -39,9 +39,6 @@ against Geant4 but not the reconstruction application.
 directory ‘drivers’ contains the Python functions to construct the detector from the XML, the ‘include’ 
 and ‘src’ contain the equivalent drivers for the XercesC parser.
 
-- DDExamples/ILDEx
-
-  Contains the original example ILDEx adapted from the Geant4 example N03
 
 3) Pre-requisites
 -----------------
@@ -141,6 +138,15 @@ one needs to set the environment:
   mkdir build ; cd build 
   cmake ..
   make -j install
+
+or build all examples in one go:
+
+  cd ./examples
+  mkdir build ; cd build 
+  cmake ..
+  make -j install
+ 
+
 
 - before running the example, initialize the environment:
   . ./bin/thisILDExDet.sh 

@@ -73,34 +73,8 @@ if(DD4HEP_WITH_GEANT4)
 
 endif()
 
+
 add_subdirectory(UtilityApps)
-
-##---Examples--------------------------------------------------------------
-# FG: examples are no longer built with DD4hep 
-#     now in ./examples directory as standalone packages
-#--------------------------------------------------------------------------
-
-#add_subdirectory(DDExamples/AlignDet)
-#add_subdirectory(DDExamples/CLICSiD)
-#
-#
-### --- ILD examples ----- 
-#if( DD4HEP_WITH_LCIO )
-#add_subdirectory(DDExamples/ILDExDet)
-#add_subdirectory(DDExamples/ILDExReco)
-#add_subdirectory(DDExamples/ILDExTest)
-#add_subdirectory(DDExamples/CaliceTbeam)
-#endif()
-#
-#
-#if(DD4HEP_WITH_GEANT4)
-#   add_subdirectory(DDExamples/CLICSiDSimu)
-#endif()
-#
-#if(DD4HEP_WITH_GEANT4 AND DD4HEP_WITH_LCIO)
-#   add_subdirectory(DDExamples/ILDExSimu)
-#endif()
-
 
 #---Configuration-------------------------------------------------------------------
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)

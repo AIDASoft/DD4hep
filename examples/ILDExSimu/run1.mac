@@ -8,13 +8,14 @@
 /control/verbose 1
 /control/saveHistory
 #
-/run/verbose 2
+/run/verbose 0
 /event/verbose 0
-/tracking/verbose 1
+/tracking/verbose 0
 # 
 # 3 3 GeV Muons events 
 #
-##/generator/select gun
+# uncomment when running slic
+#/generator/select gun
 /gun/direction 1. 1. .1
 /gun/particle mu+
 /gun/energy 3 GeV
