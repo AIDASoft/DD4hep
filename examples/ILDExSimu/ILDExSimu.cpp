@@ -57,8 +57,8 @@ int main(int argc,char** argv)
 
   if( argc < 3 ){
     std::cout << " --- Usage: \n " 
-	      << "  [1] ./bin/ILDExSimu  file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml run1_g4.mac \n"
-	      << "  [2] ./bin/ILDExSimu  -i file:../DDExamples/ILDExDet/compact/ILDEx.xml file:../DDExamples/ILDExDet/compact/geant4.xml \n"
+	      << "  [1] ILDExSimu  file:../ILDExDet/compact/ILDEx.xml file:../ILDExDet/compact/geant4.xml run1.mac \n"
+	      << "  [2] ILDExSimu  -i file:../ILDExDet/compact/ILDEx.xml file:../ILDExDet/compact/geant4.xml \n"
 	      << "  [1]: batch mode - [2]: interactive " << std::endl ;
     exit( 0 ) ;
   }
