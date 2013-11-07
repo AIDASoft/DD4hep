@@ -1,5 +1,4 @@
 #include "DDG4/Factories.h"
-#include "DDG4/G4SDFactory.h"
 #include "DD4hep/LCDD.h"
 
 #include "ExN04CalorimeterSD.hh"
