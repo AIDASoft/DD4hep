@@ -32,14 +32,17 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct SimpleGDMLWriter : public GeoHandler  {
+    struct SimpleGDMLWriter: public GeoHandler {
 
       /// Reference to output stream
       std::ostream& m_output;
 
-      SimpleGDMLWriter(std::ostream& os) : m_output(os) {}
+      SimpleGDMLWriter(std::ostream& os)
+          : m_output(os) {
+      }
       /// Standard destructor
-      virtual ~SimpleGDMLWriter() {}
+      virtual ~SimpleGDMLWriter() {
+      }
       /// Main entry point: create required object(s)
       void create(DetElement top);
 
@@ -53,16 +56,15 @@ namespace DD4hep {
       /// Dump all constants in GDML format to output stream
       virtual void handleDefines(const DefinitionSet& defs) const;
       /// Dump all visualisation specs in LCDD format to output stream
-      void handleVisualisation(const VisRefs& vis)   const;
+      void handleVisualisation(const VisRefs& vis) const;
       /// Dump all solids in GDML format to output stream
       virtual void handleSolids(const SolidSet& solids) const;
       /// Dump Transformations in GDML format to output stream
       virtual void handleTransformations(const TransformSet& trafos) const;
       /// Dump structure information in GDML format to output stream
-      virtual void handleStructure(const VolumeSet& volset)  const;
+      virtual void handleStructure(const VolumeSet& volset) const;
     };
   }    // End namespace Geometry
 }      // End namespace DD4hep
 
 #endif // DD4HEP_SIMPLEGDMLWRITER_H
-

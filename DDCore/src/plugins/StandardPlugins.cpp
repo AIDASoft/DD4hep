@@ -4,7 +4,7 @@
 //--------------------------------------------------------------------
 //
 //  Standard plugins necessary for nearly everything.
-// 
+//
 //  Author     : M.Frank
 //
 //====================================================================
@@ -26,16 +26,16 @@ static void* create_lcdd_instance(const char* /* name */) {
 }
 DECLARE_CONSTRUCTOR(LCDD_constructor,create_lcdd_instance);
 
-static long display(LCDD& lcdd,int argc,char** argv)    {
+static long display(LCDD& lcdd, int argc, char** argv) {
   TGeoManager& mgr = lcdd.manager();
   const char* opt = "ogl";
-  if ( argc > 0 )   {
+  if (argc > 0) {
     opt = argv[0];
   }
   mgr.SetVisLevel(4);
   mgr.SetVisOption(1);
   TGeoVolume* vol = mgr.GetTopVolume();
-  if ( vol ) {
+  if (vol) {
     vol->Draw(opt);
     return 1;
   }
@@ -43,8 +43,8 @@ static long display(LCDD& lcdd,int argc,char** argv)    {
 }
 DECLARE_APPLY(DD4hepGeometryDisplay,display);
 
-static long load_compact(LCDD& lcdd,int argc,char** argv)    {
-  for(size_t j=0; j<argc; ++j) {
+static long load_compact(LCDD& lcdd, int argc, char** argv) {
+  for (size_t j = 0; j < argc; ++j) {
     string input = argv[j];
     cout << "Processing compact input file : " << input << endl;
     lcdd.fromCompact(input);
@@ -53,7 +53,7 @@ static long load_compact(LCDD& lcdd,int argc,char** argv)    {
 }
 DECLARE_APPLY(DD4hepCompactLoader,load_compact);
 
-static long load_xml(LCDD& lcdd,int argc,char** argv)    {
+static long load_xml(LCDD& lcdd, int argc, char** argv) {
   string input = argv[0];
   cout << "Processing compact input file : " << input << endl;
   lcdd.fromXML(input);
@@ -61,17 +61,17 @@ static long load_xml(LCDD& lcdd,int argc,char** argv)    {
 }
 DECLARE_APPLY(DD4hepXMLLoader,load_xml);
 
-static long load_volmgr(LCDD& lcdd,int,char**)    {
+static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
     imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
     cout << "++ Volume manager populated and loaded." << endl;
   }
-  catch(const exception& e)  {
-    throw runtime_error(string(e.what())+"\n"
-			"DD4hep: while programming VolumeManager. Are your volIDs correct?");
+  catch (const exception& e) {
+    throw runtime_error(string(e.what()) + "\n"
+        "DD4hep: while programming VolumeManager. Are your volIDs correct?");
   }
-  catch(...)  {
+  catch (...) {
     throw runtime_error("UNKNOWN exception while programming VolumeManager. Are your volIDs correct?");
   }
   return 1;

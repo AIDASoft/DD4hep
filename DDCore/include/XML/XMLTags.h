@@ -20,5 +20,4 @@
 #define _U(a) DD4hep::XML::Unicode_##a
 #define _Unicode(a) DD4hep::XML::Strng_t(#a)
 
-
 #endif // DD4hep_XML_TAGS_H

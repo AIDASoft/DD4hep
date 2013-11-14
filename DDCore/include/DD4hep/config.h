@@ -16,11 +16,11 @@
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
-  
+
   /*
    *   Geometry sub-namespace declaration
    */
-  namespace Geometry  {
-  }       /* End namespace Geometry  */
-}         /* End namespace DD4hep    */
+  namespace Geometry {
+  } /* End namespace Geometry  */
+} /*   End namespace DD4hep    */
 #endif    /* DD4HEP_CONFIG_H         */

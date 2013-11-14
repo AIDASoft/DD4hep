@@ -16,11 +16,11 @@
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
-  
+
   typedef ROOT::Reflex::PluginService PluginService;
 
   /** @class PluginDebug. PluginDebug.h DD4hep/PluginDebug.h
-   * 
+   *
    *  Small helper class to adjust the plugin service debug level
    *  for a limited code scope. Automatically back-adjusts the debug
    *  level at object destruction.
@@ -31,12 +31,12 @@ namespace DD4hep {
   struct PluginDebug {
     int m_debug;
     /// Default constructor
-    PluginDebug(int dbg=2);
+    PluginDebug(int dbg = 2);
     /// Default destructor
     ~PluginDebug();
     /// Helper to check factory existence
     std::string missingFactory(const std::string& name) const;
   };
 
-}         /* End namespace DD4hep    */
+} /* End namespace DD4hep    */
 #endif    /* DD4HEP_PLUGINS_H        */

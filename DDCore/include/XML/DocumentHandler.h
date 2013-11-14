@@ -17,18 +17,18 @@
 namespace DD4hep {
 
   /*
-  *   XML namespace declaration
-  */
-  namespace XML  {
+   *   XML namespace declaration
+   */
+  namespace XML {
 
     // Forward declarations
     struct DocumentErrorHandler;
 
     /** @class DocumentHandler XMLDetector.h XML/XMLDetector.h
-     * 
+     *
      *  Wrapper object around the document parser.
      *  Supports both, XercesC and TiXml.
-     *  
+     *
      *  @author  M.Frank
      *  @version 1.0
      */
@@ -42,7 +42,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~DocumentHandler();
       // Create new XML document by parsing empty xml buffer
-      Document create(const char* tag, const char* comment=0)  const;
+      Document create(const char* tag, const char* comment = 0) const;
       /// Load XML file and parse it.
       virtual Document load(const std::string& fname) const;
       /// Load secondary XML file with relative addressing with respect to handle
@@ -53,5 +53,5 @@ namespace DD4hep {
       virtual int output(Document doc, const std::string& fname) const;
     };
   }
-}         /* End namespace DD4hep            */
+} /* End namespace DD4hep            */
 #endif    /* DD4HEP_XML_DOCUMENTHANDLER_H    */

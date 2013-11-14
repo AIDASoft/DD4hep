@@ -15,23 +15,23 @@ using namespace DD4hep;
 using namespace ROOT::Reflex;
 
 /// Default constructor
-PluginDebug::PluginDebug(int dbg) : m_debug(0)  {
+PluginDebug::PluginDebug(int dbg)
+    : m_debug(0) {
   m_debug = PluginService::Debug();
   PluginService::SetDebug(dbg);
 }
 
 /// Default destructor
-PluginDebug::~PluginDebug()  {
-  PluginService::SetDebug(m_debug);
+PluginDebug::~PluginDebug() {
+  PluginService::SetDebug (m_debug);
 }
 
 /// Helper to check factory existence
-string PluginDebug::missingFactory(const string& name) const   {
+string PluginDebug::missingFactory(const string& name) const {
   string msg = "";
   Scope factories = Scope::ByName(PLUGINSVC_FACTORY_NS);
   string factoryname = PluginService::FactoryName(name);
-  msg = "\n\t\tNo factory with name "+factoryname+" for type "+name+" found.\n\t\tPlease check library load path.";
+  msg = "\n\t\tNo factory with name " + factoryname + " for type " + name + " found.\n\t\tPlease check library load path.";
   return msg;
 }
-
 

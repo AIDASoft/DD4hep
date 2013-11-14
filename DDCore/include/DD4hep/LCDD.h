@@ -31,40 +31,36 @@ class TGeoManager;
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
-  
+
   /*
    *   Geometry namespace declaration
    */
-  namespace Geometry  {
+  namespace Geometry {
 
     /** @enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
      * Detector description build types.
-     * The corresponding flag is ONLY valid while parsing the 
+     * The corresponding flag is ONLY valid while parsing the
      * compact description. If no eometry, ie. at all other times
      * the accessor to the flag returns BUILD_NONE.
      */
     enum LCDDBuildType {
-      BUILD_NONE = 0,
-      BUILD_DEFAULT = 1,
-      BUILD_SIMU = BUILD_DEFAULT,
-      BUILD_RECO,
-      BUILD_DISPLAY
+      BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY
     };
 
-
     /** @class LCDD LCDD.h  DD4hep/LCDD.h
-     *  
+     *
      *  @author  M.Frank
      *  @version 1.0
      */
     struct LCDD {
 
-      typedef std::map<std::string,Handle<> >       HandleMap;
-      typedef std::map<std::string,std::string>     PropertyValues;
-      typedef std::map<std::string,PropertyValues>  Properties;
+      typedef std::map<std::string, Handle<> > HandleMap;
+      typedef std::map<std::string, std::string> PropertyValues;
+      typedef std::map<std::string, PropertyValues> Properties;
 
       /// Destructor
-      virtual ~LCDD() {}
+      virtual ~LCDD() {
+      }
 
       /// Access flag to steer the detail of building of the geometry/detector description
       virtual LCDDBuildType buildType() const = 0;
@@ -82,7 +78,7 @@ namespace DD4hep {
       /// Return handle to material describing vacuum
       virtual Material vacuum() const = 0;
       /// Return handle to "invisible" visualization attributes
-      virtual VisAttr  invisible() const = 0;
+      virtual VisAttr invisible() const = 0;
 
       /// Return reference to the top-most (world) detector element
       virtual DetElement world() const = 0;
@@ -90,15 +86,15 @@ namespace DD4hep {
       virtual DetElement trackers() const = 0;
 
       /// Return handle to the world volume containing everything
-      virtual Volume   worldVolume() const = 0;
-      /// Return handle to the world volume containing the volume with the tracking devices
-      virtual Volume   trackingVolume() const = 0;
+      virtual Volume worldVolume() const = 0;
+      /// Return handle to the volume containing the tracking devices
+      virtual Volume trackingVolume() const = 0;
 
       /// Return handle to the VolumeManager
       virtual VolumeManager volumeManager() const = 0;
 
       /// Accessor to the map of header entries
-      virtual Header header()  const = 0;
+      virtual Header header() const = 0;
       /// Accessor to the header entry
       virtual void setHeader(Header h) = 0;
 
@@ -106,71 +102,71 @@ namespace DD4hep {
       virtual OverlayedField field() const = 0;
 
       /// Accessor to the map of constants
-      virtual const HandleMap& constants()  const = 0;
+      virtual const HandleMap& constants() const = 0;
       /// Accessor to the map of region settings
       virtual const HandleMap& regions() const = 0;
       /// Accessor to the map of sub-detectors
-      virtual const HandleMap& detectors()  const = 0;
+      virtual const HandleMap& detectors() const = 0;
       /// Accessor to the map of readout structures
       virtual const HandleMap& readouts() const = 0;
       /// Accessor to the map of visualisation attributes
       virtual const HandleMap& visAttributes() const = 0;
       /// Accessor to the map of limit settings
-      virtual const HandleMap& limitsets()  const = 0;
+      virtual const HandleMap& limitsets() const = 0;
       /// Accessor to the map of aligment entries
-      virtual const HandleMap& alignments()  const = 0;
+      virtual const HandleMap& alignments() const = 0;
       /// Accessor to the map of field entries, which together form the global field
-      virtual const HandleMap& fields()  const = 0;
+      virtual const HandleMap& fields() const = 0;
 
-      virtual Volume            pickMotherVolume(const DetElement& sd)     const = 0;
+      virtual Volume pickMotherVolume(const DetElement& sd) const = 0;
 
       /// Typed access to constants: access string values
-      virtual std::string       constantAsString(const std::string& name)  const = 0;
+      virtual std::string constantAsString(const std::string& name) const = 0;
       /// Typed access to constants: long values
-      virtual long              constantAsLong(const std::string& name)    const = 0;
+      virtual long constantAsLong(const std::string& name) const = 0;
       /// Typed access to constants: double values
-      virtual double            constantAsDouble(const std::string& name)  const = 0;
+      virtual double constantAsDouble(const std::string& name) const = 0;
 
       /// Retrieve a constant by it's name from the detector description
-      virtual Constant          constant(const std::string& name)          const = 0;
+      virtual Constant constant(const std::string& name) const = 0;
       /// Typed access to constants: access any type values
-      template<class T> T       constant(const std::string& name) const;
+      template <class T> T constant(const std::string& name) const;
 
       /// Retrieve a matrial by it's name from the detector description
-      virtual Material          material(const std::string& name)          const = 0;
+      virtual Material material(const std::string& name) const = 0;
       /// Retrieve a id descriptor by it's name from the detector description
-      virtual IDDescriptor      idSpecification(const std::string& name)   const = 0;
+      virtual IDDescriptor idSpecification(const std::string& name) const = 0;
       /// Retrieve a region object by it's name from the detector description
-      virtual Region            region(const std::string& name)            const = 0;
+      virtual Region region(const std::string& name) const = 0;
       /// Retrieve a visualization attribute by it's name from the detector description
-      virtual VisAttr           visAttributes(const std::string& name)     const = 0;
+      virtual VisAttr visAttributes(const std::string& name) const = 0;
       /// Retrieve a limitset by it's name from the detector description
-      virtual LimitSet          limitSet(const std::string& name)          const = 0;
+      virtual LimitSet limitSet(const std::string& name) const = 0;
       /// Retrieve a readout object by it's name from the detector description
-      virtual Readout           readout(const std::string& name)           const = 0;
+      virtual Readout readout(const std::string& name) const = 0;
       /// Retrieve an alignment entry by it's name from the detector description
-      virtual AlignmentEntry    alignment(const std::string& path)         const = 0;
+      virtual AlignmentEntry alignment(const std::string& path) const = 0;
       /// Retrieve a sensitive detector by it's name from the detector description
       virtual SensitiveDetector sensitiveDetector(const std::string& name) const = 0;
       /// Retrieve a subdetector element by it's name from the detector description
-      virtual CartesianField    field(const std::string& name)             const = 0;
+      virtual CartesianField field(const std::string& name) const = 0;
       /// Retrieve a field component by it's name from the detector description
-      virtual DetElement        detector(const std::string& name)          const = 0;
+      virtual DetElement detector(const std::string& name) const = 0;
 
       /// Add a new constant to the detector description
-      virtual LCDD& add(Constant constant)    = 0;
+      virtual LCDD& add(Constant constant) = 0;
       /// Add a new visualisation attribute to the detector description
-      virtual LCDD& add(VisAttr attr)         = 0;
+      virtual LCDD& add(VisAttr attr) = 0;
       /// Add a new limit set to the detector description
-      virtual LCDD& add(LimitSet limitset)    = 0;
+      virtual LCDD& add(LimitSet limitset) = 0;
       /// Add a new detector region to the detector description
-      virtual LCDD& add(Region region)        = 0;
+      virtual LCDD& add(Region region) = 0;
       /// Add a new id descriptor to the detector description
-      virtual LCDD& add(IDDescriptor spec)    = 0;
+      virtual LCDD& add(IDDescriptor spec) = 0;
       /// Add a new detector readout to the detector description
-      virtual LCDD& add(Readout readout)      = 0;
+      virtual LCDD& add(Readout readout) = 0;
       /// Add a new subdetector to the detector description
-      virtual LCDD& add(DetElement detector)  = 0;
+      virtual LCDD& add(DetElement detector) = 0;
       /// Add alignment entry to the detector description
       virtual LCDD& add(AlignmentEntry entry) = 0;
       /// Add a field component to the detector description
@@ -198,21 +194,23 @@ namespace DD4hep {
       virtual LCDD& addField(const Ref_t& field) = 0;
 
       /// Read compact geometry description or alignment file
-      virtual void fromCompact(const std::string& fname, LCDDBuildType type=BUILD_DEFAULT) = 0;
+      virtual void fromCompact(const std::string& fname, LCDDBuildType type = BUILD_DEFAULT) = 0;
       /// Read any geometry description or alignment file
-      virtual void fromXML(const std::string& fname, LCDDBuildType type=BUILD_DEFAULT) = 0;
-      /// 
+      virtual void fromXML(const std::string& fname, LCDDBuildType type = BUILD_DEFAULT) = 0;
+      ///
       virtual void dump() const = 0;
       /// Manipulate geometry using facroy converter
       virtual void apply(const char* factory, int argc, char** argv) = 0;
 
       /// Extend the sensitive detector element with an arbitrary structure accessible by the type
-      template<typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c)    
-      {  return (IFACE*)addUserExtension(dynamic_cast<IFACE*>(c),typeid(IFACE));  }      
+      template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
+        return (IFACE*) addUserExtension(dynamic_cast<IFACE*>(c), typeid(IFACE));
+      }
 
       /// Access extension element by the type
-      template <class T> T* extension()  const
-      {  return (T*)userExtension(typeid(T));      }
+      template <class T> T* extension() const {
+        return (T*) userExtension(typeid(T));
+      }
 
       ///---Factory method-------
       static LCDD& getInstance(void);
@@ -223,53 +221,61 @@ namespace DD4hep {
       /// Add an extension object to the detector element
       virtual void* addUserExtension(void* ptr, const std::type_info& info) = 0;
       /// Access an existing extension object from the detector element
-      virtual void* userExtension(const std::type_info& info)  const = 0;
+      virtual void* userExtension(const std::type_info& info) const = 0;
 
     };
 
-
     /*
      *   The following are convenience implementations to access constants by type.
-     *   I do not think this violates the interface approach, but it is so much 
+     *   I do not think this violates the interface approach, but it is so much
      *   more intuitiv to say constant<int>(name) than constantAsInt(name).
      */
 #ifndef __CINT__
     /// Typed access to constants: short values
-    template <> inline short LCDD::constant<short>(const std::string& name)  const
-    {  return (short)constantAsLong(name);                  }
+    template <> inline short LCDD::constant<short>(const std::string& name) const {
+      return (short) constantAsLong(name);
+    }
 
     /// Typed access to constants: unsigned short values
-    template <> inline unsigned short LCDD::constant<unsigned short>(const std::string& name)  const
-    {  return (unsigned short)constantAsLong(name);         }
+    template <> inline unsigned short LCDD::constant<unsigned short>(const std::string& name) const {
+      return (unsigned short) constantAsLong(name);
+    }
 
     /// Typed access to constants: integer values
-    template <> inline int LCDD::constant<int>(const std::string& name)  const
-    {  return (int)constantAsLong(name);                    }
+    template <> inline int LCDD::constant<int>(const std::string& name) const {
+      return (int) constantAsLong(name);
+    }
 
     /// Typed access to constants: unsigned integer values
-    template <> inline unsigned int LCDD::constant<unsigned int>(const std::string& name)  const
-    {  return (unsigned int)constantAsLong(name);           }
+    template <> inline unsigned int LCDD::constant<unsigned int>(const std::string& name) const {
+      return (unsigned int) constantAsLong(name);
+    }
 
     /// Typed access to constants: long values
-    template <> inline long LCDD::constant<long>(const std::string& name)  const
-    {  return constantAsLong(name);                         }
+    template <> inline long LCDD::constant<long>(const std::string& name) const {
+      return constantAsLong(name);
+    }
 
     /// Typed access to constants: unsigned long values
-    template <> inline unsigned long LCDD::constant<unsigned long>(const std::string& name)  const
-      {  return (unsigned long)constantAsLong(name);        }
+    template <> inline unsigned long LCDD::constant<unsigned long>(const std::string& name) const {
+      return (unsigned long) constantAsLong(name);
+    }
 
     /// Typed access to constants: float values
-    template <> inline float LCDD::constant<float>(const std::string& name)  const
-    {  return (float)constantAsDouble(name);                }
+    template <> inline float LCDD::constant<float>(const std::string& name) const {
+      return (float) constantAsDouble(name);
+    }
 
     /// Typed access to constants: double values
-    template <> inline double LCDD::constant<double>(const std::string& name)  const
-    {  return constantAsDouble(name);                       }
+    template <> inline double LCDD::constant<double>(const std::string& name) const {
+      return constantAsDouble(name);
+    }
 
     /// Typed access to constants: string values
-    template <> inline std::string LCDD::constant<std::string>(const std::string& name) const 
-    {  return constantAsString(name);                       }
+    template <> inline std::string LCDD::constant<std::string>(const std::string& name) const {
+      return constantAsString(name);
+    }
 #endif
-  }       /* End namespace Geometry  */
-}         /* End namespace DD4hep   */
+  } /* End namespace Geometry  */
+} /* End namespace DD4hep   */
 #endif    /* DD4HEP_LCDD_LCDD_H     */

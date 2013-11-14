@@ -26,15 +26,15 @@ namespace DD4hep {
   /*
    *   Geometry namespace declaration
    */
-  namespace Geometry  {
+  namespace Geometry {
 
-    TGeoIdentity*     identityTransform();
+    TGeoIdentity* identityTransform();
     TGeoTranslation* _translation(const Position& pos);
-    TGeoRotation*    _rotationZYX(const RotationZYX& rot);
-    TGeoRotation*    _rotation3D(const Rotation3D& rot);
-    TGeoHMatrix*     _transform(const Transform3D& trans);
+    TGeoRotation* _rotationZYX(const RotationZYX& rot);
+    TGeoRotation* _rotation3D(const Rotation3D& rot);
+    TGeoHMatrix* _transform(const Transform3D& trans);
 
-  }       /* End namespace Geometry           */
-}         /* End namespace DD4hep            */
+  } /* End namespace Geometry           */
+} /* End namespace DD4hep            */
 
 #endif // DD4HEP_IMP_MATRIXHELPERS_H

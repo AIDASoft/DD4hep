@@ -32,10 +32,12 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct GeometryTreeDump : public GeoHandler  {
-      GeometryTreeDump() {}
+    struct GeometryTreeDump: public GeoHandler {
+      GeometryTreeDump() {
+      }
       /// Standard destructor
-      virtual ~GeometryTreeDump() {}
+      virtual ~GeometryTreeDump() {
+      }
       /// Main entry point: create required object(s)
       void create(DetElement top);
 
@@ -49,16 +51,15 @@ namespace DD4hep {
       /// Dump all constants in GDML format to output stream
       virtual void handleDefines(const LCDD::HandleMap& defs) const;
       /// Dump all visualisation specs in LCDD format to output stream
-      void handleVisualisation(const LCDD::HandleMap& vis)   const;
+      void handleVisualisation(const LCDD::HandleMap& vis) const;
       /// Dump all solids in GDML format to output stream
       virtual void handleSolids(const SolidSet& solids) const;
       /// Dump Transformations in GDML format to output stream
       virtual void handleTransformations(const TransformSet& trafos) const;
       /// Dump structure information in GDML format to output stream
-      virtual void handleStructure(const VolumeSet& volset)  const;
+      virtual void handleStructure(const VolumeSet& volset) const;
     };
   }    // End namespace Geometry
 }      // End namespace DD4hep
 
 #endif // DD4HEP_GeometryTreeDump_H
-

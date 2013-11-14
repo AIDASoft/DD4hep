@@ -22,34 +22,36 @@ namespace DD4hep {
   /*
    *   Geoemtry namespace declaration
    */
-  namespace Geometry  {
+  namespace Geometry {
 
     /** @class ConstantField FieldTypes.h
-     *  
+     *
      *  Generic constant uniform field
      *
      *  @author  M.Frank
      *  @version 1.0
      */
-    class ConstantField : public CartesianField::Object {
+    class ConstantField: public CartesianField::Object {
     public:
       /// Field direction
       Direction direction;
     public:
       /// Initializing constructor
-      ConstantField() : direction() { }
+      ConstantField()
+          : direction() {
+      }
       /// Call to access the field components at a given location
       virtual void fieldComponents(const double* /* pos */, double* field);
     };
 
     /** @class SolenoidField FieldTypes.h DD4hep/FieldTypes.h
-     *  
+     *
      *  Generic solonoid magnetic field
      *
      *  @author  M.Frank
      *  @version 1.0
      */
-    class SolenoidField : public CartesianField::Object {
+    class SolenoidField: public CartesianField::Object {
     public:
       double innerField;
       double outerField;
@@ -66,18 +68,18 @@ namespace DD4hep {
     };
 
     /** @class DipoleField FieldTypes.h DD4hep/FieldTypes.h
-     *  
+     *
      *  Generic solonoid magnetic field
      *
      *  @author  M.Frank
      *  @version 1.0
      */
-    class DipoleField  : public CartesianField::Object  {
+    class DipoleField: public CartesianField::Object {
     public:
       typedef std::vector<double> Coefficents;
-      double      zmax;
-      double      zmin;
-      double      rmax;
+      double zmax;
+      double zmin;
+      double rmax;
       Coefficents coefficents;
     public:
       /// Initializing constructor
@@ -86,6 +88,6 @@ namespace DD4hep {
       virtual void fieldComponents(const double* pos, double* field);
     };
 
-  }       /* End namespace Geometry           */
-}         /* End namespace DD4hep             */
+  } /* End namespace Geometry           */
+} /* End namespace DD4hep             */
 #endif    /* DD4HEP_GEOMETRY_FIELDTYPES_H     */

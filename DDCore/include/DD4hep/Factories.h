@@ -1,6 +1,6 @@
 // $Id$
 //====================================================================
-//  AIDA Detector description 
+//  AIDA Detector description
 //--------------------------------------------------------------------
 //
 //  Author     : M.Frank
@@ -38,8 +38,9 @@ namespace DD4hep {
     struct SensitiveDetector;
     struct DetElement;
 
-    template <typename T> class ConstructionFactory  {
-    public:  static void* create(const char* arg);
+    template <typename T> class ConstructionFactory {
+    public:
+      static void* create(const char* arg);
     };
 
     /** @class TranslationFactory Factories.h DDCore/Factories.h
@@ -50,7 +51,7 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    template <typename T> class ApplyFactory  {
+    template <typename T> class ApplyFactory {
     public:
       static long create(LCDD& lcdd, int argc, char** argv);
     };
@@ -63,7 +64,7 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    template <typename T> class TranslationFactory  {
+    template <typename T> class TranslationFactory {
     public:
       static Ref_t create(LCDD& lcdd);
     };
@@ -75,7 +76,7 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    template <typename T> class XMLElementFactory  {
+    template <typename T> class XMLElementFactory {
     public:
       static Ref_t create(LCDD& lcdd, XML::Handle_t e);
     };
@@ -87,7 +88,7 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    template <typename T> class XMLDocumentReaderFactory  {
+    template <typename T> class XMLDocumentReaderFactory {
     public:
       static long create(LCDD& lcdd, XML::Handle_t e);
     };
@@ -99,7 +100,7 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    template <typename T> class XMLConversionFactory  {
+    template <typename T> class XMLConversionFactory {
     public:
       static long create(LCDD& lcdd, Ref_t& handle, XML::Handle_t element);
     };
@@ -112,81 +113,79 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    template <typename T> class DetElementFactory  {
+    template <typename T> class DetElementFactory {
     public:
       static Ref_t create(LCDD& lcdd, XML::Handle_t e, Ref_t sens);
     };
-  }  
+  }
 }
 
 namespace {
 
-  template < typename P > class Factory<P, void*(const char*)> {
+  template <typename P> class Factory<P, void*(const char*)> {
   public:
-    static void Func(void *ret, void*, const std::vector<void*>& arg, void*)
-      { *(void**)ret=DD4hep::Geometry::ConstructionFactory<P>::create((const char*)arg[0]); }
+    static void Func(void *ret, void*, const std::vector<void*>& arg, void*) {
+      *(void**) ret = DD4hep::Geometry::ConstructionFactory<P>::create((const char*) arg[0]);
+    }
   };
 
-  template < typename P > class Factory<P, TNamed*(DD4hep::Geometry::LCDD*)> {
+  template <typename P> class Factory<P, TNamed*(DD4hep::Geometry::LCDD*)> {
   public:
-    typedef DD4hep::Geometry::LCDD  LCDD;
+    typedef DD4hep::Geometry::LCDD LCDD;
     typedef DD4hep::Geometry::Ref_t Ref_t;
     static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      LCDD*  lcdd = (LCDD* )arg[0];
+      LCDD* lcdd = (LCDD*) arg[0];
       Ref_t handle = DD4hep::Geometry::TranslationFactory<P>::create(*lcdd);
-      *(void**)retaddr = handle.ptr();
+      *(void**) retaddr = handle.ptr();
     }
   };
 
-  template < typename P > class Factory<P, long(DD4hep::Geometry::LCDD*,int,char**)> {
+  template <typename P> class Factory<P, long(DD4hep::Geometry::LCDD*, int, char**)> {
   public:
-    typedef DD4hep::Geometry::LCDD  LCDD;
+    typedef DD4hep::Geometry::LCDD LCDD;
     static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      LCDD*  lcdd = (LCDD* )arg[0];
-      long handle = DD4hep::Geometry::ApplyFactory<P>::create(*lcdd,*(int*)arg[1],(char**)arg[2]);
-      new(retaddr) (long)(handle);
+      LCDD* lcdd = (LCDD*) arg[0];
+      long handle = DD4hep::Geometry::ApplyFactory<P>::create(*lcdd, *(int*) arg[1], (char**) arg[2]);
+      new (retaddr) (long)(handle);
     }
   };
 
-
-  template < typename P > class Factory<P, TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*)> {
+  template <typename P> class Factory<P, TNamed*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*)> {
   public:
-    typedef DD4hep::Geometry::LCDD  LCDD;
-    typedef DD4hep::XML::Handle_t   xml_h;
+    typedef DD4hep::Geometry::LCDD LCDD;
+    typedef DD4hep::XML::Handle_t xml_h;
     typedef DD4hep::Geometry::Ref_t Ref_t;
     static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      LCDD*  lcdd = (LCDD* )arg[0];
-      xml_h* elt  = (xml_h*)arg[1];
-      Ref_t handle = DD4hep::Geometry::XMLElementFactory<P>::create(*lcdd,*elt);
-      *(void**)retaddr = handle.ptr();
+      LCDD* lcdd = (LCDD*) arg[0];
+      xml_h* elt = (xml_h*) arg[1];
+      Ref_t handle = DD4hep::Geometry::XMLElementFactory<P>::create(*lcdd, *elt);
+      *(void**) retaddr = handle.ptr();
     }
   };
 
-
-  template < typename P > class Factory<P, long(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*)> {
+  template <typename P> class Factory<P, long(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*)> {
   public:
-    typedef DD4hep::Geometry::LCDD  LCDD;
-    typedef DD4hep::XML::Handle_t   xml_h;
+    typedef DD4hep::Geometry::LCDD LCDD;
+    typedef DD4hep::XML::Handle_t xml_h;
     static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      LCDD*  lcdd = (LCDD* )arg[0];
-      xml_h* elt  = (xml_h*)arg[1];
-      long ret = DD4hep::Geometry::XMLDocumentReaderFactory<P>::create(*lcdd,*elt);
-      new(retaddr) (long)(ret);
+      LCDD* lcdd = (LCDD*) arg[0];
+      xml_h* elt = (xml_h*) arg[1];
+      long ret = DD4hep::Geometry::XMLDocumentReaderFactory<P>::create(*lcdd, *elt);
+      new (retaddr) (long)(ret);
     }
   };
 
-
-  template < typename P > class Factory<P, TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*)> {
+  template <typename P> class Factory<P, TNamed*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*, DD4hep::Geometry::Ref_t*)> {
   public:
-    typedef DD4hep::Geometry::LCDD  LCDD;
-    typedef DD4hep::XML::Handle_t   xml_h;
+    typedef DD4hep::Geometry::LCDD LCDD;
+    typedef DD4hep::XML::Handle_t xml_h;
     typedef DD4hep::Geometry::Ref_t Ref_t;
     static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      LCDD*  lcdd = (LCDD* )arg[0];
-      xml_h* elt  = (xml_h*)arg[1];
-      Ref_t* sens = (Ref_t*)arg[2];
-      Ref_t handle = DD4hep::Geometry::DetElementFactory<P>::create(*lcdd,*elt,*sens);
-      *(void**)retaddr = handle.ptr();
+      LCDD* lcdd = (LCDD*) arg[0];
+      xml_h* elt = (xml_h*) arg[1];
+      Ref_t* sens = (Ref_t*) arg[2];
+      Ref_t handle = DD4hep::Geometry::DetElementFactory<P>::create(*lcdd, *elt, *sens);
+      *(void**) retaddr = handle.ptr();
     }
   };
 }

@@ -16,7 +16,7 @@
 #include "cxxabi.h"
 #endif
 
-namespace DD4hep  {
+namespace DD4hep {
   XmlTools::Evaluator& evaluator();
 }
 
@@ -38,123 +38,130 @@ Counted::~Counted() {
   InstanceCount::decrement(this);
 }
 
-int DD4hep::Geometry::_toInt(const string& value)  {
+int DD4hep::Geometry::_toInt(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
-  if ( idx != string::npos ) 
-    s.erase(idx,5);
-  while(s[0]==' ')s.erase(0,1);
+  if (idx != string::npos)
+    s.erase(idx, 5);
+  while (s[0] == ' ')
+    s.erase(0, 1);
   double result = eval.evaluate(s.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
+    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
   }
-  return (int)result;
+  return (int) result;
 }
 
-long DD4hep::Geometry::_toLong(const string& value)  {
+long DD4hep::Geometry::_toLong(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
-  if ( idx != string::npos ) 
-    s.erase(idx,5);
-  while(s[0]==' ')s.erase(0,1);
+  if (idx != string::npos)
+    s.erase(idx, 5);
+  while (s[0] == ' ')
+    s.erase(0, 1);
   double result = eval.evaluate(s.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
+    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
   }
-  return (long)result;
+  return (long) result;
 }
 
-bool   DD4hep::Geometry::_toBool(const string& value)   {
+bool DD4hep::Geometry::_toBool(const string& value) {
   return value == "true";
 }
 
-float DD4hep::Geometry::_toFloat(const string& value)   {
+float DD4hep::Geometry::_toFloat(const string& value) {
   double result = eval.evaluate(value.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
+    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
   }
-  return (float)result;
+  return (float) result;
 }
 
-double DD4hep::Geometry::_toDouble(const string& value)   {
+double DD4hep::Geometry::_toDouble(const string& value) {
   double result = eval.evaluate(value.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation of "+value);
+    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
   }
   return result;
 }
 
-template <> int    DD4hep::Geometry::_multiply<int>(const string& left, const string& right) {
-  return (int)_toDouble(left+"*"+right);
+template <> int DD4hep::Geometry::_multiply<int>(const string& left, const string& right) {
+  return (int) _toDouble(left + "*" + right);
 }
 
-template <> long   DD4hep::Geometry::_multiply<long>(const string& left, const string& right) {
-  return (long)_toDouble(left+"*"+right);
+template <> long DD4hep::Geometry::_multiply<long>(const string& left, const string& right) {
+  return (long) _toDouble(left + "*" + right);
 }
 
-template <> float  DD4hep::Geometry::_multiply<float>(const string& left, const string& right) {
-  return _toFloat(left+"*"+right);
+template <> float DD4hep::Geometry::_multiply<float>(const string& left, const string& right) {
+  return _toFloat(left + "*" + right);
 }
 
 template <> double DD4hep::Geometry::_multiply<double>(const string& left, const string& right) {
-  return _toDouble(left+"*"+right);
+  return _toDouble(left + "*" + right);
 }
 
-void DD4hep::Geometry::_toDictionary(const string& name, const string& value)  {
-  string n=name, v=value;
+void DD4hep::Geometry::_toDictionary(const string& name, const string& value) {
+  string n = name, v = value;
   size_t idx = v.find("(int)");
-  if ( idx != string::npos ) 
-    v.erase(idx,5);
+  if (idx != string::npos)
+    v.erase(idx, 5);
   idx = v.find("(float)");
-  if ( idx != string::npos ) 
-    v.erase(idx,7);
-  while(v[0]==' ')v.erase(0,1);
+  if (idx != string::npos)
+    v.erase(idx, 7);
+  while (v[0] == ' ')
+    v.erase(0, 1);
   double result = eval.evaluate(v.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
     eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation "+name+"="+value);
+    throw runtime_error("DD4hep: Severe error during expression evaluation " + name + "=" + value);
   }
-  eval.setVariable(n.c_str(),result);
+  eval.setVariable(n.c_str(), result);
 }
 
-string DD4hep::Geometry::_toString(bool value)    {
+string DD4hep::Geometry::_toString(bool value) {
   char text[32];
-  ::snprintf(text,sizeof(text),"%s",value ? "true" : "false");
+  ::snprintf(text, sizeof(text), "%s", value ? "true" : "false");
   return text;
 }
 
-string DD4hep::Geometry::_toString(int value)   {
+string DD4hep::Geometry::_toString(int value) {
   char text[32];
-  ::snprintf(text,sizeof(text),"%d",value);
+  ::snprintf(text, sizeof(text), "%d", value);
   return text;
 }
 
-string DD4hep::Geometry::_toString(float value)   {
+string DD4hep::Geometry::_toString(float value) {
   char text[32];
-  ::snprintf(text,sizeof(text),"%f",value);
+  ::snprintf(text, sizeof(text), "%f", value);
   return text;
 }
 
-string DD4hep::Geometry::_toString(double value)   {
+string DD4hep::Geometry::_toString(double value) {
   char text[32];
-  ::snprintf(text,sizeof(text),"%f",value);
+  ::snprintf(text, sizeof(text), "%f", value);
   return text;
 }
 namespace DD4hep {
   namespace Geometry {
     static long s_numVerifies = 0;
 
-    long num_object_validations()         {    return s_numVerifies;  }
-    void increment_object_validations()   {    ++s_numVerifies;       }
+    long num_object_validations() {
+      return s_numVerifies;
+    }
+    void increment_object_validations() {
+      ++s_numVerifies;
+    }
 
     template <typename T> void Handle<T>::bad_assignment(const type_info& from, const type_info& to) {
       string msg = "Wrong assingment from ";
@@ -166,15 +173,19 @@ namespace DD4hep {
     }
     template <typename T> void Handle<T>::assign(T* n, const string& nam, const string& tit) {
       this->m_element = n;
-      if ( !nam.empty() ) n->SetName(nam.c_str());
-      if ( !tit.empty() ) n->SetTitle(tit.c_str());
+      if (!nam.empty())
+        n->SetName(nam.c_str());
+      if (!tit.empty())
+        n->SetTitle(tit.c_str());
     }
 
-    template <typename T> const char* Handle<T>::name() const  
-    { return this->m_element ? this->m_element->GetName() : "";   }
+    template <typename T> const char* Handle<T>::name() const {
+      return this->m_element ? this->m_element->GetName() : "";
+    }
 
-    template <> const char* Handle<TObject>::name() const  
-    { return "";   }
+    template <> const char* Handle<TObject>::name() const {
+      return "";
+    }
 
     template <> void Handle<TObject>::bad_assignment(const type_info& from, const type_info& to) {
       string msg = "Wrong assingment from ";
@@ -187,49 +198,49 @@ namespace DD4hep {
   }
 }
 
-static const std::string __typeinfoName( const std::type_info& tinfo) {
+static const std::string __typeinfoName(const std::type_info& tinfo) {
   const char* class_name = tinfo.name();
   std::string result;
 #ifdef WIN32
   size_t off = 0;
-  if ( ::strncmp(class_name, "class ", 6) == 0 )   {
+  if ( ::strncmp(class_name, "class ", 6) == 0 ) {
     // The returned name is prefixed with "class "
     off = 6;
   }
-  if ( ::strncmp(class_name, "struct ", 7) == 0 )   {
+  if ( ::strncmp(class_name, "struct ", 7) == 0 ) {
     // The returned name is prefixed with "struct "
     off = 7;
   }
-  if ( off != std::string::npos )    {
+  if ( off != std::string::npos ) {
     std::string tmp = class_name + off;
     size_t loc = 0;
-    while( (loc = tmp.find("class ")) != std::string::npos )  {
+    while( (loc = tmp.find("class ")) != std::string::npos ) {
       tmp.erase(loc, 6);
     }
     loc = 0;
-    while( (loc = tmp.find("struct ")) != std::string::npos )  {
+    while( (loc = tmp.find("struct ")) != std::string::npos ) {
       tmp.erase(loc, 7);
     }
     result = tmp;
   }
-  else  {
+  else {
     result = class_name;
   }
   // Change any " *" to "*"
-  while ( (off=result.find(" *")) != std::string::npos )    {
+  while ( (off=result.find(" *")) != std::string::npos ) {
     result.replace(off, 2, "*");
   }
   // Change any " &" to "&"
-  while ( (off=result.find(" &")) != std::string::npos )    {
+  while ( (off=result.find(" &")) != std::string::npos ) {
     result.replace(off, 2, "&");
   }
 #elif defined(sun)
   result = class_name;
 #elif !defined(__ICC)
-  if ( ::strlen(class_name) == 1 ) {
+  if (::strlen(class_name) == 1) {
     // See http://www.realitydiluted.com/mirrors/reality.sgi.com/dehnert_engr/cxx/abi.pdf
     // for details
-    switch(class_name[0]) {
+    switch (class_name[0]) {
     case 'v':
       result = "void";
       break;
@@ -292,10 +303,10 @@ static const std::string __typeinfoName( const std::type_info& tinfo) {
       break;
     }
   }
-  else  {
-    char buff[16*1024];
+  else {
+    char buff[16 * 1024];
     size_t len = sizeof(buff);
-    int    status = 0;
+    int status = 0;
     result = __cxxabiv1::__cxa_demangle(class_name, buff, &len, &status);
   }
 #else
@@ -309,21 +320,22 @@ string DD4hep::typeName(const type_info& typ) {
   return __typeinfoName(typ);
 }
 
-
-
 #include "DDSegmentation/Segmentation.h"
 typedef DDSegmentation::Segmentation _Segmentation;
 //INSTANTIATE_UNNAMED(_Segmentation);
-namespace DD4hep { namespace Geometry {
+namespace DD4hep {
+  namespace Geometry {
     template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string& t) {
       this->m_element = s;
       s->setType(t);
       s->setName(n);
     }
-    template <> const char* Handle<_Segmentation>::name() const
-    { return this->m_element ? this->m_element->name().c_str() : "";   }
+    template <> const char* Handle<_Segmentation>::name() const {
+      return this->m_element ? this->m_element->name().c_str() : "";
+    }
     template struct DD4hep::Geometry::Handle<_Segmentation>;
-}}
+  }
+}
 
 #include "DD4hep/LCDD.h"
 #include "TMap.h"

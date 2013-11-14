@@ -18,14 +18,13 @@
 namespace DD4hep {
 
   /*
-  *   XML namespace declaration
-  */
-  namespace XML  {
-
+   *   XML namespace declaration
+   */
+  namespace XML {
 
     /** @class Dimension XMLDetector.h XML/XMLDetector.h
-     * 
-     *  Helper class to access any field in a xml tag in a 
+     *
+     *  Helper class to access any field in a xml tag in a
      *  very easy way.
      *  - You may assign any xml handle to a dimension object
      *  - Any attribute of this xml element may then be accessed
@@ -33,30 +32,36 @@ namespace DD4hep {
      *    reflected by the Dimmension object's member functions.
      *  - If an attribute is requested and not present, a exception
      *    is thrown.
-     *  - Functions, which accept a default value do NOT throw 
+     *  - Functions, which accept a default value do NOT throw
      *    an exception if the attribute is not present. These
      *    rather return the default value.
-     *  - If a often used function is not present - the 
+     *  - If a often used function is not present - the
      *    implementation thereof is simple.
-     *  
+     *
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Dimension : public Element  {
+    struct Dimension: public Element {
       /// Default constructor
-      Dimension() : Element(Handle_t(0)) {}
+      Dimension()
+          : Element(Handle_t(0)) {
+      }
       /// Constructor from Handle
-      Dimension(Handle_t e) : Element(e) {}
+      Dimension(Handle_t e)
+          : Element(e) {
+      }
       /// Constructor from Element
-      Dimension(const Element& e) : Element(e) {}
+      Dimension(const Element& e)
+          : Element(e) {
+      }
 
       /// Access parameters: id
-      int    id() const;
+      int id() const;
       /// Access parameters: id, if not present returns default
-      int    id(int default_value) const;
+      int id(int default_value) const;
 
       /// Access parameters: type
-      int    type() const;
+      int type() const;
       /// Access rotation constants: combineHits
       bool combineHits() const;
 
@@ -98,26 +103,26 @@ namespace DD4hep {
       double deltaphi() const;
 
       /// Access parameters: b
-      double b()  const;
+      double b() const;
       /// Access parameters: B
-      double B()  const;
+      double B() const;
       /// Access parameters: g
-      double g()  const;
+      double g() const;
       /// Access parameters: G
-      double G()  const;
+      double G() const;
 
       /// Access parameters: r
-      double r()  const;
+      double r() const;
       /// Access parameters: r, if not present returns default
-      double r(double default_value)  const;
+      double r(double default_value) const;
       /// Access parameters: R
-      double R()  const;
+      double R() const;
       /// Access parameters: dr
-      double dr()  const;
+      double dr() const;
       /// Access parameters: r0
-      double r0()  const;
+      double r0() const;
       /// Access parameters: dr, if not present returns default
-      double dr(double default_value)  const;
+      double dr(double default_value) const;
       /// Access min/max parameters: rmin
       double rmin() const;
       /// Access min/max parameters: rmax
@@ -156,7 +161,7 @@ namespace DD4hep {
       /// Access parameters: dx
       double dx() const;
       /// Access parameters: dx, if not present returns default
-      double dx(double default_value)  const;
+      double dx(double default_value) const;
       /// Access min/max parameters: xmax
       double xmin() const;
       /// Access min/max parameters: xmax
@@ -181,7 +186,7 @@ namespace DD4hep {
       /// Access parameters: dy
       double dy() const;
       /// Access parameters: dz, if not present returns default
-      double dy(double default_value)  const;
+      double dy(double default_value) const;
       /// Access min/max parameters: ymax
       double ymin() const;
       /// Access min/max parameters: ymax
@@ -206,7 +211,7 @@ namespace DD4hep {
       /// Access parameters: dz
       double dz() const;
       /// Access parameters: dz, if not present returns default
-      double dz(double default_value)  const;
+      double dz(double default_value) const;
       /// Access min/max parameters: zmax
       double zmin() const;
       /// Access min/max parameters: zmax
@@ -240,13 +245,13 @@ namespace DD4hep {
       /// Access attribute values: phi_size_max
       double phi_size_max() const;
       /// Access attribute values: reflect
-      bool   reflect() const;
+      bool reflect() const;
       /// Access attribute values: reflect
-      bool   reflect(bool default_value) const;
+      bool reflect(bool default_value) const;
       /// Access attribute values: crossing_angle
       double crossing_angle() const;
       /// Access attribute values: repeat
-      int    repeat()  const;
+      int repeat() const;
 
       /// Access attribute values: outgoing_r
       double outgoing_r() const;
@@ -257,14 +262,14 @@ namespace DD4hep {
       /// Access attribute values: offset
       double offset(double default_value) const;
       /// Access attribute values: number
-      int    number() const;
+      int number() const;
 
       /// Access attribute values: nmodules
-      int    nmodules() const;
+      int nmodules() const;
       /// Access attribute values: nModules
-      int    nModules() const;
+      int nModules() const;
       /// Access attribute values: RowID
-      int    RowID() const;
+      int RowID() const;
       /// Access attribute values: moduleHeight
       double moduleHeight() const;
       /// Access attribute values: moduleWidth
@@ -277,7 +282,7 @@ namespace DD4hep {
       double modulePosY() const;
 
       /// Access attribute values: nPads
-      int    nPads() const;
+      int nPads() const;
       /// Access attribute values: rowPitch
       double rowPitch() const;
       /// Access attribute values: padPitch
@@ -288,24 +293,24 @@ namespace DD4hep {
       std::string padType() const;
 
       /// Access attribute values: numsides
-      int    numsides() const;
+      int numsides() const;
 
       /// Access attribute values: phi_tilt
       double phi_tilt() const;
       /// Access attribute values: nphi
-      int    nphi() const;
+      int nphi() const;
       /// Access attribute values: rc
-      double rc()  const;
-      
+      double rc() const;
+
       /// Access attribute values: zstart
       double zstart() const;
       /// Access attribute values: nz
-      int    nz() const;
+      int nz() const;
 
       /// Access attribute values: start
-      double start()  const;
+      double start() const;
       /// Access attribute values: end
-      double end()    const;
+      double end() const;
       /// Access attribute values: inner_field
       double inner_field() const;
       /// Access attribute values: outer_field
@@ -315,39 +320,39 @@ namespace DD4hep {
       bool visible() const;
       /// Access attribute values: show_daughters
       bool show_daughters() const;
-      
+
       /// Access child element with tag "dimensions" as Dimension object
-      Dimension dimensions(bool throw_if_not_present=true)  const;
+      Dimension dimensions(bool throw_if_not_present = true) const;
       /// Child access: position
-      Dimension position(bool throw_if_not_present=true) const;
+      Dimension position(bool throw_if_not_present = true) const;
       /// Child access: rotation
-      Dimension rotation(bool throw_if_not_present=true) const;
+      Dimension rotation(bool throw_if_not_present = true) const;
       /// Child access: trd
-      Dimension trd(bool throw_if_not_present=true) const;
+      Dimension trd(bool throw_if_not_present = true) const;
       /// Child access: tubs
-      Dimension tubs(bool throw_if_not_present=true) const;
+      Dimension tubs(bool throw_if_not_present = true) const;
       /// Child access: staves
-      Dimension staves(bool throw_if_not_present=true) const;
+      Dimension staves(bool throw_if_not_present = true) const;
       /// Child access: beampipe
-      Dimension beampipe(bool throw_if_not_present=true) const;
+      Dimension beampipe(bool throw_if_not_present = true) const;
 
       /// Access name attribute as STL string
-      std::string   nameStr() const;
+      std::string nameStr() const;
       /// Access ref attribute as a string
-      std::string   refStr()  const;
+      std::string refStr() const;
       /// Access type attribute as STL string
-      std::string   typeStr() const;
+      std::string typeStr() const;
       /// Access module attribute as STL string
-      std::string   moduleStr() const;
+      std::string moduleStr() const;
       /// Access readout attribute as STL string
-      std::string   readoutStr() const;
+      std::string readoutStr() const;
       /// Access vis attribute as STL string. If not present empty return empty string
-      std::string   visStr() const;
+      std::string visStr() const;
       /// Access region attribute as STL string. If not present empty return empty string
-      std::string   regionStr() const;
+      std::string regionStr() const;
       /// Access limits attribute as STL string. If not present empty return empty string
-      std::string   limitsStr() const;
+      std::string limitsStr() const;
     };
-  }       /* End namespace XML       */
-}         /* End namespace DD4hep    */
+  } /* End namespace XML       */
+} /* End namespace DD4hep    */
 #endif    /* DD4HEP_XMLDIMENSION_H   */

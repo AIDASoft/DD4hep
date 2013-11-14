@@ -44,33 +44,33 @@ namespace DD4hep {
      */
     class GeoHandlerTypes {
     public:
-      typedef std::set<TGeoVolume*>                              VolumeSet;
-      typedef std::vector<TGeoVolume*>                           VolumeVector;
-      typedef std::set<const TGeoVolume*>                        ConstVolumeSet;
-      typedef std::vector<std::pair<std::string, TGeoMatrix*> >  TransformSet;
-      typedef std::set<TGeoShape*>                               SolidSet;
-      typedef std::set<TGeoMedium*>                              MaterialSet;
-      typedef std::map<const TNamed*,ConstVolumeSet>             SensitiveVolumes;
-      typedef std::map<const TNamed*,ConstVolumeSet>             RegionVolumes;
-      typedef std::map<const TNamed*,ConstVolumeSet>             LimitVolumes;
-      typedef std::map<int, std::set<const TGeoNode*> >          Data;
-      typedef std::set<const TNamed*>                            VisRefs;
-      typedef std::set<TNamed*>                                  Fields;
-      typedef std::set<TNamed*>                                  ObjectSet;
-      typedef LCDD::HandleMap                                    DefinitionSet;
-      struct GeometryInfo   {
-	SolidSet           solids;
-	VolumeSet          volumeSet;
-	VolumeVector       volumes;
-	TransformSet       trafos;
-	VisRefs            vis;
-	Fields             fields;
-	MaterialSet        materials;
-	// SensitiveVolumes   sensitives;
-	// RegionVolumes      regions;
-	// LimitVolumes       limits;
-	std::set<TGeoMedium*>   media;
-	std::set<TGeoElement*>  elements;
+      typedef std::set<TGeoVolume*> VolumeSet;
+      typedef std::vector<TGeoVolume*> VolumeVector;
+      typedef std::set<const TGeoVolume*> ConstVolumeSet;
+      typedef std::vector<std::pair<std::string, TGeoMatrix*> > TransformSet;
+      typedef std::set<TGeoShape*> SolidSet;
+      typedef std::set<TGeoMedium*> MaterialSet;
+      typedef std::map<const TNamed*, ConstVolumeSet> SensitiveVolumes;
+      typedef std::map<const TNamed*, ConstVolumeSet> RegionVolumes;
+      typedef std::map<const TNamed*, ConstVolumeSet> LimitVolumes;
+      typedef std::map<int, std::set<const TGeoNode*> > Data;
+      typedef std::set<const TNamed*> VisRefs;
+      typedef std::set<TNamed*> Fields;
+      typedef std::set<TNamed*> ObjectSet;
+      typedef LCDD::HandleMap DefinitionSet;
+      struct GeometryInfo {
+        SolidSet solids;
+        VolumeSet volumeSet;
+        VolumeVector volumes;
+        TransformSet trafos;
+        VisRefs vis;
+        Fields fields;
+        MaterialSet materials;
+        // SensitiveVolumes   sensitives;
+        // RegionVolumes      regions;
+        // LimitVolumes       limits;
+        std::set<TGeoMedium*> media;
+        std::set<TGeoElement*> elements;
       };
     };
 
@@ -79,7 +79,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class GeoHandler : public GeoHandlerTypes  {
+    class GeoHandler: public GeoHandlerTypes {
 
     protected:
       Data* m_data;
@@ -89,9 +89,12 @@ namespace DD4hep {
 
     private:
       /// Never call Copy constructor
-      GeoHandler(const GeoHandler&) {}
+      GeoHandler(const GeoHandler&) {
+      }
       /// Never call assignment operator
-      GeoHandler& operator=(const GeoHandler&) { return *this; }
+      GeoHandler& operator=(const GeoHandler&) {
+        return *this;
+      }
 
     public:
       /// Default constructor
@@ -109,10 +112,10 @@ namespace DD4hep {
     };
 
     struct GeoScan {
-      protected:
+    protected:
       /// Data holder
       GeoHandler::Data* m_data;
-      public:
+    public:
       /// Initializing constructor
       GeoScan(DetElement e);
       /// Default destructor
@@ -124,4 +127,3 @@ namespace DD4hep {
 }      // End namespace DD4hep
 
 #endif // DD4HEP_GEOHANDLER_H
-
