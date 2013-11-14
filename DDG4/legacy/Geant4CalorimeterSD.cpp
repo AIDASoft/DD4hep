@@ -1,4 +1,4 @@
-// $Id$
+// $Id: Geant4CalorimeterSD.cpp 796 2013-10-03 19:19:39Z markus.frank@cern.ch $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------

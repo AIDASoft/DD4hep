@@ -17,16 +17,18 @@
 namespace DD4hep {
 
   // Forward declarations
-  namespace Geometry { class LCDD; }
+  namespace Geometry {
+    class LCDD;
+  }
 
   /*
    *   Simulation namespace declaration
    */
   namespace Simulation {
 
-    struct Geant4HierarchyDump  {
-      typedef Geometry::LCDD   LCDD;
-      LCDD&                    m_lcdd;
+    struct Geant4HierarchyDump {
+      typedef Geometry::LCDD LCDD;
+      LCDD& m_lcdd;
 
     public:
       /// Initializing Constructor

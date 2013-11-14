@@ -22,16 +22,16 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /** @class Geant4EventAction Geant4Action.h DDG4/Geant4Action.h
-     * 
-     * Concrete basic implementation of the Geant4 event action 
+     *
+     * Concrete basic implementation of the Geant4 event action
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4EventAction : public Geant4Action   {
+    class Geant4EventAction : public Geant4Action {
     public:
       /// Standard constructor
       Geant4EventAction(Geant4Context* context, const std::string& nam);
@@ -44,13 +44,13 @@ namespace DD4hep {
     };
 
     /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
-     * 
+     *
      * Concrete implementation of the Geant4 event action sequence
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4EventActionSequence : public Geant4Action    {
+    class Geant4EventActionSequence : public Geant4Action {
     protected:
       /// Callback sequence for event initialization action
       CallbackSequence m_begin;
@@ -64,11 +64,15 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4EventActionSequence();
       /// Register begin-of-event callback
-      template <typename Q, typename T> 
-	void callAtBegin(Q* p, void (T::*f)(const G4Event*)) { m_begin.add(p,f);}
+      template <typename Q, typename T>
+      void callAtBegin(Q* p, void (T::*f)(const G4Event*)) {
+        m_begin.add(p, f);
+      }
       /// Register end-of-event callback
-      template <typename Q, typename T> 
-	void callAtEnd(Q* p, void (T::*f)(const G4Event*))   { m_end.add(p,f);  }
+      template <typename Q, typename T>
+      void callAtEnd(Q* p, void (T::*f)(const G4Event*)) {
+        m_end.add(p, f);
+      }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4EventAction* action);
       /// begin-of-event callback

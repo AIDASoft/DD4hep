@@ -43,47 +43,47 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     // Forward declarations
     class Geant4Mapping;
-    
-    struct Geant4GeometryInfo : public TNamed, public Geometry::GeoHandlerTypes::GeometryInfo   {
+
+    struct Geant4GeometryInfo : public TNamed, public Geometry::GeoHandlerTypes::GeometryInfo {
     public:
-      typedef std::vector<const G4VPhysicalVolume*>                      PlacementPath;
-      typedef std::vector<std::pair<size_t,const TGeoNode*> >            AssemblyChildren;
-      typedef std::map<const TGeoElement*,     G4Element*>               ElementMap;
-      typedef std::map<const TGeoMedium*,      G4Material*>              MaterialMap;
-      typedef std::map<const TNamed*,          G4UserLimits*>            LimitMap;
-      typedef std::map<const TGeoNode*,        G4VPhysicalVolume*>       PlacementMap;
-      typedef std::map<const G4AssemblyVolume*,AssemblyChildren>         AssemblyChildMap;
-      typedef std::map<const TNamed*,          G4Region*>                RegionMap;
-      typedef std::map<const TNamed*,          G4VSensitiveDetector*>    SensDetMap;
-      typedef std::map<const TGeoVolume*,      G4LogicalVolume*>         VolumeMap;
-      typedef std::map<const TGeoShape*,       G4VSolid*>                SolidMap;
-      typedef std::map<const TNamed*,          G4VisAttributes*>         VisMap;
-      typedef std::map<PlacementPath,          VolumeID>                 PathMap;
+      typedef std::vector<const G4VPhysicalVolume*> PlacementPath;
+      typedef std::vector<std::pair<size_t, const TGeoNode*> > AssemblyChildren;
+      typedef std::map<const TGeoElement*, G4Element*> ElementMap;
+      typedef std::map<const TGeoMedium*, G4Material*> MaterialMap;
+      typedef std::map<const TNamed*, G4UserLimits*> LimitMap;
+      typedef std::map<const TGeoNode*, G4VPhysicalVolume*> PlacementMap;
+      typedef std::map<const G4AssemblyVolume*, AssemblyChildren> AssemblyChildMap;
+      typedef std::map<const TNamed*, G4Region*> RegionMap;
+      typedef std::map<const TNamed*, G4VSensitiveDetector*> SensDetMap;
+      typedef std::map<const TGeoVolume*, G4LogicalVolume*> VolumeMap;
+      typedef std::map<const TGeoShape*, G4VSolid*> SolidMap;
+      typedef std::map<const TNamed*, G4VisAttributes*> VisMap;
+      typedef std::map<PlacementPath, VolumeID> PathMap;
 
-      typedef Geometry::GeoHandlerTypes::SensitiveVolumes                SensitiveVolumes;
-      typedef Geometry::GeoHandlerTypes::RegionVolumes                   RegionVolumes;
-      typedef Geometry::GeoHandlerTypes::LimitVolumes                    LimitVolumes;
+      typedef Geometry::GeoHandlerTypes::SensitiveVolumes SensitiveVolumes;
+      typedef Geometry::GeoHandlerTypes::RegionVolumes RegionVolumes;
+      typedef Geometry::GeoHandlerTypes::LimitVolumes LimitVolumes;
 
-      ElementMap              g4Elements;
-      MaterialMap             g4Materials;
-      SolidMap                g4Solids;
-      VolumeMap               g4Volumes;
-      PlacementMap            g4Placements;
-      AssemblyChildMap        g4AssemblyChildren;
-      RegionMap               g4Regions;
-      VisMap                  g4Vis;
-      LimitMap                g4Limits;
-      SensDetMap              g4SensDets;
-      PathMap                 g4Paths;
+      ElementMap g4Elements;
+      MaterialMap g4Materials;
+      SolidMap g4Solids;
+      VolumeMap g4Volumes;
+      PlacementMap g4Placements;
+      AssemblyChildMap g4AssemblyChildren;
+      RegionMap g4Regions;
+      VisMap g4Vis;
+      LimitMap g4Limits;
+      SensDetMap g4SensDets;
+      PathMap g4Paths;
 
-      SensitiveVolumes        sensitives;
-      RegionVolumes           regions;
-      LimitVolumes            limits;
-      bool                    valid;
+      SensitiveVolumes sensitives;
+      RegionVolumes regions;
+      LimitVolumes limits;
+      bool valid;
     private:
       friend class Geant4Mapping;
       /// Default constructor

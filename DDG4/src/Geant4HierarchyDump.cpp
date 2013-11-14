@@ -12,7 +12,6 @@
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4HierarchyDump.h"
 
-
 #include "Reflex/PluginService.h"
 
 #include "G4VisAttributes.hh"
@@ -54,36 +53,37 @@
 #include <iomanip>
 #include <sstream>
 
-
 using namespace DD4hep::Simulation;
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 
-static const char* _T(const std::string& s)  {  return s.c_str(); }
+static const char* _T(const std::string& s) {
+  return s.c_str();
+}
 //static const char* _T(const char* s)  {  return s; }
 
-enum { G4DUMP_ALL = 0xFFFFFFFF,
-       G4DUMP_LOGVOL  = 1<<0,
-       G4DUMP_SOLID   = 1<<1,
-       G4DUMP_SENSDET = 1<<2,
-       G4DUMP_LIMITS  = 1<<3,
-       G4DUMP_REGION  = 1<<4,
-       G4DUMP_LAST
+enum {
+  G4DUMP_ALL = 0xFFFFFFFF,
+  G4DUMP_LOGVOL = 1 << 0,
+  G4DUMP_SOLID = 1 << 1,
+  G4DUMP_SENSDET = 1 << 2,
+  G4DUMP_LIMITS = 1 << 3,
+  G4DUMP_REGION = 1 << 4,
+  G4DUMP_LAST
 };
 static unsigned long m_flags = ~0x0UL;
 
 /// Initializing Constructor
-Geant4HierarchyDump::Geant4HierarchyDump( LCDD& lcdd) 
-: m_lcdd(lcdd)
-{
+Geant4HierarchyDump::Geant4HierarchyDump(LCDD& lcdd)
+    : m_lcdd(lcdd) {
 }
 
 /// Standard destructor
-Geant4HierarchyDump::~Geant4HierarchyDump()  {
+Geant4HierarchyDump::~Geant4HierarchyDump() {
 }
 
-void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)  const {
+void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v) const {
   G4LogicalVolume* lv = v->GetLogicalVolume();
   G4VSensitiveDetector* sd = lv->GetSensitiveDetector();
   G4Material* mat = lv->GetMaterial();
@@ -95,32 +95,32 @@ void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)
   stringstream str;
 
   m_flags &= ~G4DUMP_SOLID;
-  printout(INFO,"Geant4Hierarchy","%s -> Placement:%s LV:%s Material:%s Solid:%s # of Daughters:%d",indent.c_str(),
-	   _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()), _T(sol->GetName()),ndau);
+  printout(INFO, "Geant4Hierarchy", "%s -> Placement:%s LV:%s Material:%s Solid:%s # of Daughters:%d", indent.c_str(),
+      _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()), _T(sol->GetName()), ndau);
 
-  if ( sd && (m_flags&G4DUMP_SOLID) )   {
+  if (sd && (m_flags & G4DUMP_SOLID)) {
     str.str("");
     sol->StreamInfo(str);
-    printout(INFO,"Geant4Hierarchy","%s    Solid:%s",indent.c_str(),str.str().c_str());
+    printout(INFO, "Geant4Hierarchy", "%s    Solid:%s", indent.c_str(), str.str().c_str());
   }
-  if ( rg && (m_flags&G4DUMP_LIMITS) )   {
+  if (rg && (m_flags & G4DUMP_LIMITS)) {
     G4UserLimits* rg_limits = rg->GetUserLimits();
     str.str("");
-    str << indent << "    Region:" << rg->GetName() << " #Materials:" << rg->GetNumberOfMaterials()
-	<< " #Volumes:" << rg->GetNumberOfRootVolumes();
-    if ( rg_limits ) str << " Limits:" << rg_limits->GetType();
-    printout(INFO,"Geant4Hierarchy",str.str().c_str());
+    str << indent << "    Region:" << rg->GetName() << " #Materials:" << rg->GetNumberOfMaterials() << " #Volumes:"
+        << rg->GetNumberOfRootVolumes();
+    if (rg_limits)
+      str << " Limits:" << rg_limits->GetType();
+    printout(INFO, "Geant4Hierarchy", str.str().c_str());
   }
-  if ( sd && (m_flags&G4DUMP_SENSDET) )   {
-    printout(INFO,"Geant4Hierarchy","%s    Sens.det:%p %s path:%s Active:%-3s #Coll:%d",indent.c_str(),
-	     sd, _T(sd->GetName()), _T(sd->GetFullPathName()), sd->isActive() ? "YES" : "NO",
-	     sd->GetNumberOfCollections());
+  if (sd && (m_flags & G4DUMP_SENSDET)) {
+    printout(INFO, "Geant4Hierarchy", "%s    Sens.det:%p %s path:%s Active:%-3s #Coll:%d", indent.c_str(), sd,
+        _T(sd->GetName()), _T(sd->GetFullPathName()), sd->isActive() ? "YES" : "NO", sd->GetNumberOfCollections());
   }
-  if ( ul && (m_flags&G4DUMP_LIMITS) )   {
-    printout(INFO,"Geant4Hierarchy","%s    Limits:%s ",indent.c_str(),_T(ul->GetType()));
+  if (ul && (m_flags & G4DUMP_LIMITS)) {
+    printout(INFO, "Geant4Hierarchy", "%s    Limits:%s ", indent.c_str(), _T(ul->GetType()));
   }
-  for(G4int idau = 0; idau < ndau; ++idau)   {
-    ::sprintf(text,"  %-3d",idau);
-    dump(indent+text,lv->GetDaughter(idau));
+  for (G4int idau = 0; idau < ndau; ++idau) {
+    ::sprintf(text, "  %-3d", idau);
+    dump(indent + text, lv->GetDaughter(idau));
   }
 }

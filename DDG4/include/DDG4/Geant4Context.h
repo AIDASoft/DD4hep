@@ -20,7 +20,7 @@ class G4TrackingManager;
 namespace DD4hep {
 
   // Forward declarations
-  namespace Geometry  {
+  namespace Geometry {
     class LCDD;
     class DetElement;
   }
@@ -28,7 +28,7 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     class Geant4Kernel;
     class Geant4RunActionSequence;
@@ -39,26 +39,29 @@ namespace DD4hep {
     class Geant4GeneratorActionSequence;
     class Geant4SensDetSequences;
 
-
     /** @class Geant4Context  Geant4Context.h DDG4/Geant4Context.h
-     * 
+     *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Context    {
+    struct Geant4Context {
       typedef Geometry::LCDD LCDD;
 
-      Geant4Kernel*       m_kernel;
+      Geant4Kernel* m_kernel;
       /// Reference to Geant4 track manager
-      G4TrackingManager*  m_trackMgr;
+      G4TrackingManager* m_trackMgr;
       /// Default constructor
       Geant4Context(Geant4Kernel* kernel);
       /// Default destructor
       virtual ~Geant4Context();
       /// Access the tracking manager
-      G4TrackingManager* trackMgr() const  { return m_trackMgr; }
+      G4TrackingManager* trackMgr() const {
+        return m_trackMgr;
+      }
       /// Access to the kernel object
-      Geant4Kernel& kernel()               { return *m_kernel;  }
+      Geant4Kernel& kernel() {
+        return *m_kernel;
+      }
       /// Access to detector description
       LCDD& lcdd() const;
       /// Create a user trajectory

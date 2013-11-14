@@ -20,19 +20,19 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /** @class Geant4TrackingPreAction Geant4TrackingPreAction.h DDG4/Geant4TrackingPreAction.h
-     * 
+     *
      * Default base class for all geant 4 tracking actions.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4TrackingPreAction : public Geant4TrackingAction   {
+    class Geant4TrackingPreAction: public Geant4TrackingAction {
     public:
       /// Standard constructor
-      Geant4TrackingPreAction(Geant4Context* context, const std::string& name="");
+      Geant4TrackingPreAction(Geant4Context* context, const std::string& name = "");
       /// Default destructor
       virtual ~Geant4TrackingPreAction();
       /// Begin-of-tracking callback

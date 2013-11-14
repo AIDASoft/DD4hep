@@ -16,29 +16,28 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4TrackingPreAction::Geant4TrackingPreAction(Geant4Context* context, const std::string& name) 
-: Geant4TrackingAction(context,name) 
-{
+Geant4TrackingPreAction::Geant4TrackingPreAction(Geant4Context* context, const std::string& name)
+    : Geant4TrackingAction(context, name) {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4TrackingPreAction::~Geant4TrackingPreAction()  {
+Geant4TrackingPreAction::~Geant4TrackingPreAction() {
   InstanceCount::decrement(this);
 }
 
 /// Begin-of-tracking callback
-void Geant4TrackingPreAction::begin(const G4Track* track)  {
-  // Is the track valid? Is tracking manager valid? 
+void Geant4TrackingPreAction::begin(const G4Track* track) {
+  // Is the track valid? Is tracking manager valid?
   // Does trajectory already exist?
-  if( 0 == track || 0 == trackMgr() || 0 != trackMgr()->GimmeTrajectory()  ) 
+  if (0 == track || 0 == trackMgr() || 0 != trackMgr()->GimmeTrajectory())
     return;
   trackMgr()->SetStoreTrajectory(true);
-  // create GaussTrajectory and inform Tracking Manager 
+  // create GaussTrajectory and inform Tracking Manager
   G4VTrajectory* tr = m_context->createTrajectory(track);
   trackMgr()->SetTrajectory(tr);
 }
 
 /// End-of-tracking callback
-void Geant4TrackingPreAction::end(const G4Track* /* track */)  {
+void Geant4TrackingPreAction::end(const G4Track* /* track */) {
 }

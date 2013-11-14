@@ -115,6 +115,7 @@ namespace DD4hep {
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<SimpleTracker>::defineCollections() {
       m_collectionID = defineCollection<SimpleTracker::Hit>(name()+"Hits");
+      //m_collectionID = defineCollection<SimpleHit>(name()+"Hits");
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
@@ -139,7 +140,7 @@ namespace DD4hep {
       
       HitContribution contrib = Hit::extractContribution(step);
       hit->cellID        = volumeID( step ) ;
-      hit->energyDeposit =  contrib.deposit ;
+      hit->energyDeposit = contrib.deposit ;
       hit->position      = position;
       hit->momentum      = direction;
       hit->length        = hit_len;
@@ -154,6 +155,7 @@ namespace DD4hep {
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<SimpleCalorimeter>::defineCollections() {
       m_collectionID = defineCollection<SimpleCalorimeter::Hit>(name()+"Hits");
+      //m_collectionID = defineCollection<SimpleHit>(name()+"Hits");
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<SimpleCalorimeter>::process(G4Step* step,G4TouchableHistory*) {

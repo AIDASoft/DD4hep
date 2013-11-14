@@ -30,7 +30,7 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     // Forward declarations;
     class Geant4TrackHandler;
@@ -44,55 +44,91 @@ namespace DD4hep {
      * @version 1.0
      */
     class Geant4TrackHandler {
-      public:
+    public:
       typedef G4VUserTrackInformation Info;
       typedef G4ReferenceCountedHandle<G4VTouchable> Touchable;
       /// Reference to the track object
       const G4Track* track;
       /// Initializing constructor
-      Geant4TrackHandler(const G4Track* t) : track(t) {                                      }
+      Geant4TrackHandler(const G4Track* t)
+          : track(t) {
+      }
       /// Conversion to G4Track
-      operator const G4Track* () const          { return track;                              }
+      operator const G4Track*() const {
+        return track;
+      }
       /// Track's particle definition
-      G4ParticleDefinition* trackDef()  const   { return track->GetDefinition();             }
+      G4ParticleDefinition* trackDef() const {
+        return track->GetDefinition();
+      }
       /// Track position
-      const G4ThreeVector& position()  const    { return track->GetPosition();               }
+      const G4ThreeVector& position() const {
+        return track->GetPosition();
+      }
       /// Track energy
-      double energy() const                     { return track->GetTotalEnergy();            }
+      double energy() const {
+        return track->GetTotalEnergy();
+      }
       /// Track velocity
-      double velocity() const                   { return track->GetVelocity();               }
+      double velocity() const {
+        return track->GetVelocity();
+      }
       /// Track length
-      double length() const                     { return track->GetTrackLength();            }
+      double length() const {
+        return track->GetTrackLength();
+      }
       /// Track time
-      double time()  const                      { return track->GetGlobalTime();             }
+      double time() const {
+        return track->GetGlobalTime();
+      }
       /// Physical (original) volume of the track
-      G4VPhysicalVolume* vol() const            { return track->GetVolume();                 }
+      G4VPhysicalVolume* vol() const {
+        return track->GetVolume();
+      }
       /// Next physical volume of the track
-      G4VPhysicalVolume* nextVol() const        { return track->GetNextVolume();             }
+      G4VPhysicalVolume* nextVol() const {
+        return track->GetNextVolume();
+      }
       /// Logical volume of the origine vertex
-      const G4LogicalVolume* vertexVol() const  { return track->GetLogicalVolumeAtVertex();  }
+      const G4LogicalVolume* vertexVol() const {
+        return track->GetLogicalVolumeAtVertex();
+      }
 
       /// Touchable of the track
-      const Touchable& touchable() const        { return track->GetTouchableHandle();        }
+      const Touchable& touchable() const {
+        return track->GetTouchableHandle();
+      }
       /// Next touchable of the track
-      const Touchable& nextTouchable() const    { return track->GetNextTouchableHandle();    }
+      const Touchable& nextTouchable() const {
+        return track->GetNextTouchableHandle();
+      }
 
       /// Physical process of the track generation
-      const G4VProcess* creatorProcess() const  { return track->GetCreatorProcess();         }
+      const G4VProcess* creatorProcess() const {
+        return track->GetCreatorProcess();
+      }
       /// User information block
-      Info* userInfo() const                    { return track->GetUserInformation();        }
+      Info* userInfo() const {
+        return track->GetUserInformation();
+      }
       /// Set user information block (const mis-match)
       //void setUserInfo(Info* info)              { track->SetUserInformation(info);           }
       /// Specific user information block
-      template <typename T> T* info() const     { return (T*)userInfo();                     }
+      template <typename T> T* info() const {
+        return (T*) userInfo();
+      }
       /// Step information
-      const G4Step* step()  const               { return track->GetStep();                   }
-      /// Step number 
-      G4int stepNumber() const                  { return track->GetCurrentStepNumber();      }
+      const G4Step* step() const {
+        return track->GetStep();
+      }
+      /// Step number
+      G4int stepNumber() const {
+        return track->GetCurrentStepNumber();
+      }
 
-      int pdgID() const  {
-	G4ParticleDefinition* def = trackDef();
-	return def ? def->GetPDGEncoding() : 0;
+      int pdgID() const {
+        G4ParticleDefinition* def = trackDef();
+        return def ? def->GetPDGEncoding() : 0;
       }
     };
 

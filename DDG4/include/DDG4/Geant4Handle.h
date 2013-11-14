@@ -10,7 +10,7 @@
 #define DD4HEP_DDG4_GEANT4SETUP_H
 
 // Framework include files
-#include "DDG4/ComponentUtils.h"
+#include "DDG4/ComponentProperties.h"
 #include "DD4hep/LCDD.h"
 
 // C/C++ include files
@@ -25,20 +25,20 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /// Forward declarations
     class Geant4Kernel;
     class Geant4Action;
 
     /** @class Geant4Handle Geant4Handle.h DDG4/Geant4Handle.h
-     * 
+     *
      * Handle to Geant4 actions with built-in creation mechanism
      *
      * @author  M.Frank
      * @version 1.0
      */
-    template <typename TYPE> struct Geant4Handle  {
+    template <typename TYPE> struct Geant4Handle {
     protected:
       void checked_assign(TYPE* p);
     public:
@@ -46,14 +46,14 @@ namespace DD4hep {
       mutable handled_type* value;
       Geant4Handle();
       Geant4Handle(handled_type* typ);
-      template <typename T> Geant4Handle(T* typ) : value(0)
-      { checked_assign(dynamic_cast<TYPE*>(typ));  }
+      template <typename T> Geant4Handle(T* typ)
+          : value(0) {
+        checked_assign(dynamic_cast<TYPE*>(typ));
+      }
       Geant4Handle(Geant4Handle& handle);
-      Geant4Handle(const Geant4Kernel&,const std::string& type_name);
+      Geant4Handle(const Geant4Kernel&, const std::string& type_name);
       /// Constructor only implemented for sensitive objects
-      Geant4Handle(const Geant4Kernel& ctxt,
-		   const std::string& type_name,
-		   const std::string& detector);
+      Geant4Handle(const Geant4Kernel& ctxt, const std::string& type_name, const std::string& detector);
       ~Geant4Handle();
       Property& operator[](const std::string& property_name) const;
       Geant4Handle& operator=(Geant4Handle& handle);

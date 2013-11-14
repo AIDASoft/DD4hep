@@ -83,6 +83,12 @@
 		    Property_string="'Hello_1'"/>
       </action>
       <action name="UserEvent_2"/>
+      <action name="Geant4Output2ROOT/RootOutput">
+	<properties Output="simple.root"/>
+      </action>
+      <action name="Geant4Output2LCIO/LCIOOutput">
+	<properties Output="simple_lcio"/>
+      </action>
     </sequence>
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
       <action name="Geant4ParticleGun/Gun">

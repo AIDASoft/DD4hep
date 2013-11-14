@@ -15,20 +15,21 @@
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
-  
+
   /*
    *   Simulation namespace declaration
    */
   namespace Simulation {
-    
-    class Geant4GDMLDetector : public G4VUserDetectorConstruction  {
+
+    class Geant4GDMLDetector : public G4VUserDetectorConstruction {
     public:
-      
-      Geant4GDMLDetector(const std::string& gdmlFile );
-      virtual ~Geant4GDMLDetector() {}
+
+      Geant4GDMLDetector(const std::string& gdmlFile);
+      virtual ~Geant4GDMLDetector() {
+      }
       G4VPhysicalVolume* Construct();
     private:
-      std::string m_fileName ; 
+      std::string m_fileName;
       G4VPhysicalVolume* m_world;
     };
   }

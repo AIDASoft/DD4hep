@@ -11,11 +11,10 @@
 using namespace DD4hep::Simulation;
 
 /// Default constructor
-Geant4GeometryInfo::Geant4GeometryInfo() 
-: TNamed("Geant4GeometryInfo","Geant4GeometryInfo"), valid(false)
-{
+Geant4GeometryInfo::Geant4GeometryInfo()
+    : TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), valid(false) {
 }
 
 /// Default destructor
-Geant4GeometryInfo::~Geant4GeometryInfo()   {
+Geant4GeometryInfo::~Geant4GeometryInfo() {
 }

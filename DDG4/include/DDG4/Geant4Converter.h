@@ -20,20 +20,21 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /** @class Geant4Converter Geant4Converter.h DDG4/Geant4Converter.h
-     * 
+     *
      * Geometry converter from DD4hep to Geant 4.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Converter : public Geometry::GeoHandler, public Geant4Mapping  {
-      bool            m_checkOverlaps;
+    class Geant4Converter : public Geometry::GeoHandler, public Geant4Mapping {
+    public:
+      bool m_checkOverlaps;
 
       /// Initializing Constructor
-      Geant4Converter( LCDD& lcdd );
+      Geant4Converter(LCDD& lcdd);
 
       /// Standard destructor
       virtual ~Geant4Converter();

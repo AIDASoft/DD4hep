@@ -56,8 +56,8 @@
  *  @date 2006-05-12
  */
 // ============================================================================
-namespace DD4hep  {
-  namespace Parsers  {
+namespace DD4hep {
+  namespace Parsers {
     // ========================================================================
     /** parse the <c>bool</c> value
      *  @see DD4hep::Parsers::BoolGrammar
@@ -70,146 +70,146 @@ namespace DD4hep  {
      *  @date 2006-05-12
      */
     PARSERS_DECL_FOR_SINGLE(bool)
-      // ========================================================================
-      /** parse the <c>char</c> value
-       *
-       *  @see DD4hep::Parsers::CharGrammar
-       *  @param result (output) boolean result
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-12
-       */
-      PARSERS_DECL_FOR_SINGLE(char)
-      /// @see DD4hep::Parsers::parser(char&,std::string&)
-      PARSERS_DECL_FOR_SINGLE(unsigned char)
-      /// @see DD4hep::Parsers::parser(char&,std::string&)
-      PARSERS_DECL_FOR_SINGLE(signed char)
-      // ========================================================================
-      /** parse the <c>int</c> value
-       *
-       *  @see DD4hep::Parsers::IntGrammar
-       *  @param result (output) integer result
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-14
-       */
-      PARSERS_DECL_FOR_SINGLE(int)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(short)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(unsigned short)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(unsigned int)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(long)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(unsigned long)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(long long)
-      /// @see DD4hep::Parsers::parser( int&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(unsigned long long)
-      // ========================================================================
-      /** parse the <c>double</c> value
-       *
-       *  @see DD4hep::Parsers::RealGrammar
-       *  @param result (output) double result
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-14
-       */
-      PARSERS_DECL_FOR_SINGLE(double)
-      /// @see DD4hep::Parsers::parser( double&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(float)
-      /// @see DD4hep::Parsers::parser( double&, const std::string& )
-      PARSERS_DECL_FOR_SINGLE(long double)
-      // ========================================================================
-      /** parse the <c>std::string</c> value
-       *
-       *  @see DD4hep::Parsers::StringGrammar
-       *  @param result (output) string result
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-14
-       */
-      PARSERS_DECL_FOR_SINGLE(std::string)
-      // ========================================================================
+    // ========================================================================
+    /** parse the <c>char</c> value
+     *
+     *  @see DD4hep::Parsers::CharGrammar
+     *  @param result (output) boolean result
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-12
+     */
+    PARSERS_DECL_FOR_SINGLE(char)
+    /// @see DD4hep::Parsers::parser(char&,std::string&)
+    PARSERS_DECL_FOR_SINGLE(unsigned char)
+    /// @see DD4hep::Parsers::parser(char&,std::string&)
+    PARSERS_DECL_FOR_SINGLE(signed char)
+    // ========================================================================
+    /** parse the <c>int</c> value
+     *
+     *  @see DD4hep::Parsers::IntGrammar
+     *  @param result (output) integer result
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    PARSERS_DECL_FOR_SINGLE(int)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(short)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(unsigned short)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(unsigned int)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(long)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(unsigned long)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(long long)
+    /// @see DD4hep::Parsers::parser( int&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(unsigned long long)
+    // ========================================================================
+    /** parse the <c>double</c> value
+     *
+     *  @see DD4hep::Parsers::RealGrammar
+     *  @param result (output) double result
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    PARSERS_DECL_FOR_SINGLE(double)
+    /// @see DD4hep::Parsers::parser( double&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(float)
+    /// @see DD4hep::Parsers::parser( double&, const std::string& )
+    PARSERS_DECL_FOR_SINGLE(long double)
+    // ========================================================================
+    /** parse the <c>std::string</c> value
+     *
+     *  @see DD4hep::Parsers::StringGrammar
+     *  @param result (output) string result
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    PARSERS_DECL_FOR_SINGLE(std::string)
+    // ========================================================================
 
-      PARSERS_DECL_FOR_LIST(bool)
-      PARSERS_DECL_FOR_LIST(char)
-      PARSERS_DECL_FOR_LIST(unsigned char)
-      PARSERS_DECL_FOR_LIST(signed char)
+    PARSERS_DECL_FOR_LIST(bool)
+    PARSERS_DECL_FOR_LIST(char)
+    PARSERS_DECL_FOR_LIST(unsigned char)
+    PARSERS_DECL_FOR_LIST(signed char)
 
-      PARSERS_DECL_FOR_LIST(int)
-      PARSERS_DECL_FOR_LIST(short)
-      PARSERS_DECL_FOR_LIST(unsigned short)
-      PARSERS_DECL_FOR_LIST(unsigned int)
-      PARSERS_DECL_FOR_LIST(long)
-      PARSERS_DECL_FOR_LIST(unsigned long)
-      PARSERS_DECL_FOR_LIST(long long)
-      PARSERS_DECL_FOR_LIST(unsigned long long)
+    PARSERS_DECL_FOR_LIST(int)
+    PARSERS_DECL_FOR_LIST(short)
+    PARSERS_DECL_FOR_LIST(unsigned short)
+    PARSERS_DECL_FOR_LIST(unsigned int)
+    PARSERS_DECL_FOR_LIST(long)
+    PARSERS_DECL_FOR_LIST(unsigned long)
+    PARSERS_DECL_FOR_LIST(long long)
+    PARSERS_DECL_FOR_LIST(unsigned long long)
 
-      PARSERS_DECL_FOR_LIST(double)
-      PARSERS_DECL_FOR_LIST(float)
-      PARSERS_DECL_FOR_LIST(long double)
+    PARSERS_DECL_FOR_LIST(double)
+    PARSERS_DECL_FOR_LIST(float)
+    PARSERS_DECL_FOR_LIST(long double)
 
-      PARSERS_DECL_FOR_LIST(std::string)
-      // ========================================================================
-      // Advanced parses
-      // ========================================================================
-      /** parse the <c>std::pair\<double,double\></c> value
-       *
-       *  @see DD4hep::Parsers::PairGrammar
-       *  @see DD4hep::Parsers::RealGrammar
-       *  @param result (output) pair of doubles
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-14
-       */
-      PARSERS_DECL_FOR_PAIR(double,double)
-      // ========================================================================
-      /** parse the <c>std::pair\<int,int\></c> value
-       *
-       *  @see DD4hep::Parsers::PairGrammar
-       *  @see DD4hep::Parsers::IntGrammar
-       *  @param result (output) pair of integers
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-14
-       */
-      PARSERS_DECL_FOR_PAIR(int, int)
-      // ========================================================================
-      /** parse the <c>std::vector\<std::pair\<double,double\> \></c> value
-       *
-       *  @see DD4hep::Parsers::VectorGrammar
-       *  @see DD4hep::Parsers::PairGrammar
-       *  @see DD4hep::Parsers::RealGrammar
-       *  @param result (output) vector with pairs of doubles
-       *  @param input  (input) the string to be parsed
-       *  @return status code
-       *
-       *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
-       *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
-       *  @date 2006-05-14
-       */
-      int parse(std::vector< std::pair<double,double> >& result,const std::string& input);
+    PARSERS_DECL_FOR_LIST(std::string)
+    // ========================================================================
+    // Advanced parses
+    // ========================================================================
+    /** parse the <c>std::pair\<double,double\></c> value
+     *
+     *  @see DD4hep::Parsers::PairGrammar
+     *  @see DD4hep::Parsers::RealGrammar
+     *  @param result (output) pair of doubles
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    PARSERS_DECL_FOR_PAIR(double, double)
+    // ========================================================================
+    /** parse the <c>std::pair\<int,int\></c> value
+     *
+     *  @see DD4hep::Parsers::PairGrammar
+     *  @see DD4hep::Parsers::IntGrammar
+     *  @param result (output) pair of integers
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    PARSERS_DECL_FOR_PAIR(int, int)
+    // ========================================================================
+    /** parse the <c>std::vector\<std::pair\<double,double\> \></c> value
+     *
+     *  @see DD4hep::Parsers::VectorGrammar
+     *  @see DD4hep::Parsers::PairGrammar
+     *  @see DD4hep::Parsers::RealGrammar
+     *  @param result (output) vector with pairs of doubles
+     *  @param input  (input) the string to be parsed
+     *  @return status code
+     *
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
+     *  @date 2006-05-14
+     */
+    int parse(std::vector<std::pair<double, double> >& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::vector\<std::pair\<int,int\> \></c> value
      *
@@ -224,9 +224,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::vector< std::pair<int,int> >& result ,
-	const std::string&                 input  ) ;
+    int parse(std::vector<std::pair<int, int> >& result, const std::string& input);
     // ========================================================================
     // vector< vector< TYPE > >
     // ========================================================================
@@ -242,7 +240,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse(std::vector< std::vector<std::string> >& result,const std::string& input);
+    int parse(std::vector<std::vector<std::string> >& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::vector\<std::vector\<double\> \></c> value
      *
@@ -256,7 +254,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse(std::vector< std::vector<double> >& result,const std::string& input);
+    int parse(std::vector<std::vector<double> >& result, const std::string& input);
     // ========================================================================
     // map< TYPE, TYPE >
     // ========================================================================
@@ -272,9 +270,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< int , int >& result ,
-	const std::string&     input  ) ;
+    int parse(std::map<int, int>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<int , double\></c> value
      *
@@ -289,9 +285,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< int , double >& result ,
-	const std::string&        input  ) ;
+    int parse(std::map<int, double>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::string\></c> value
      *
@@ -305,9 +299,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< std::string , std::string >& result ,
-	const std::string&                     input  ) ;
+    int parse(std::map<std::string, std::string>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<std::string , int\></c> value
      *
@@ -322,9 +314,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< std::string , int >& result ,
-	const std::string&             input  ) ;
+    int parse(std::map<std::string, int>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<std::string , double\></c> value
      *
@@ -339,9 +329,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< std::string , double >& result ,
-	const std::string&                input  ) ;
+    int parse(std::map<std::string, double>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::vector\<std::string\> \></c>
      *  value
@@ -358,9 +346,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< std::string , std::vector< std::string> >& result ,
-	const std::string&                                   input  ) ;
+    int parse(std::map<std::string, std::vector<std::string> >& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::vector\<int\> \></c> value
      *
@@ -377,9 +363,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< std::string , std::vector< int > >& result ,
-	const std::string&                            input  ) ;
+    int parse(std::map<std::string, std::vector<int> >& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<std::string , std::vector\<double\> \></c> value
      *
@@ -396,9 +380,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-14
      */
-    int parse
-      ( std::map< std::string , std::vector< double > >& result ,
-	const std::string&                               input  ) ;
+    int parse(std::map<std::string, std::vector<double> >& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<int,std::string\> \></c> objects
      *
@@ -407,9 +389,7 @@ namespace DD4hep  {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-12-06
      */
-    int parse
-      ( std::map<int, std::string>& result ,
-	const std::string&          input  ) ;
+    int parse(std::map<int, std::string>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<unsigned int,std::string\> \></c> objects
      *
@@ -418,7 +398,7 @@ namespace DD4hep  {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2007-12-06
      */
-    int parse(std::map<unsigned int, std::string>& result,const std::string& input);
+    int parse(std::map<unsigned int, std::string>& result, const std::string& input);
     // ========================================================================
     /** parse the <c>std::map\<unsigned int,std::string\> \></c> objects
      *
@@ -453,10 +433,7 @@ namespace DD4hep  {
      *  @author Vanya BELYAEV  ibelyaev@physics.syr.edu
      *  @date 2006-05-12
      */
-    int parse
-      ( std::string&       name  ,
-	std::string&       value ,
-	const std::string& input ) ;
+    int parse(std::string& name, std::string& value, const std::string& input);
 
     // ========================================================================
     /** helper function, needed for implementation of map of pairs
@@ -470,9 +447,7 @@ namespace DD4hep  {
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @date 2009-05-19
      */
-    int parse
-      ( std::map<std::string,std::pair<double,double> >& params ,
-	const std::string&                               input  ) ;
+    int parse(std::map<std::string, std::pair<double, double> >& params, const std::string& input);
     // ========================================================================
     /** parser function for C-arrays
      *  @param params C-array
@@ -482,16 +457,19 @@ namespace DD4hep  {
      *  @date 2009-09-15
      */
     template <class T, unsigned int N>
-      int parse ( T(&result)[N] , const std::string& input )
-    {
-      typedef std::vector<T> _Vct ;
+    int parse(T (&result)[N], const std::string& input) {
+      typedef std::vector<T> _Vct;
       // create the temporary vector
-      _Vct tmp ;
-      int sc = parse ( tmp , input ) ;
-      if ( !sc  ) { return sc; }  //  RETURN
-      if ( N != tmp.size() ) { return 0;  }  //  RETURN
+      _Vct tmp;
+      int sc = parse(tmp, input);
+      if (!sc) {
+        return sc;
+      }   //  RETURN
+      if (N != tmp.size()) {
+        return 0;
+      }   //  RETURN
       //
-      std::copy ( tmp.begin() , tmp.end() , result ) ;
+      std::copy(tmp.begin(), tmp.end(), result);
       //
       return 1;                            //  RETURN
     }
@@ -504,28 +482,31 @@ namespace DD4hep  {
      *  @date 2009-09-15
      */
     template <unsigned int N>
-      int parse ( char(&result)[N] , const std::string& input )
-      {
-	// clear the string
-	std::fill_n ( result , N , ' ' ) ;
-	// create the temporary string
-	std::string tmp ;
-	int sc = parse ( tmp , input ) ;
-	if ( !sc ) { return sc                 ; }  //  RETURN
-	if       ( N     == tmp.size() )
-	  { std::copy ( tmp.begin() , tmp.end() , result ) ; }
-	else if  ( N + 2    == tmp.size()                 &&
-		   ( '\''   == tmp[0] || '\"' == tmp[0] ) &&
-		   ( tmp[0] == tmp[tmp.size()-1]          ))
-	  { std::copy ( tmp.begin() + 1 , tmp.end() -1 , result ) ; }
-	else { return 0; }
-	//
-	return 1;                            //  RETURN
+    int parse(char (&result)[N], const std::string& input) {
+      // clear the string
+      std::fill_n(result, N, ' ');
+      // create the temporary string
+      std::string tmp;
+      int sc = parse(tmp, input);
+      if (!sc) {
+        return sc;
+      }   //  RETURN
+      if (N == tmp.size()) {
+        std::copy(tmp.begin(), tmp.end(), result);
       }
-    // ========================================================================
-  } //                                          end of namespace Parsers
-  // ==========================================================================
-} //                                                     end of namespace DD4hep
+      else if (N + 2 == tmp.size() && ('\'' == tmp[0] || '\"' == tmp[0]) && (tmp[0] == tmp[tmp.size() - 1])) {
+        std::copy(tmp.begin() + 1, tmp.end() - 1, result);
+      }
+      else {
+        return 0;
+      }
+      //
+      return 1;                            //  RETURN
+    }
+  // ========================================================================
+  }//                                          end of namespace Parsers
+// ==========================================================================
+}//                                                     end of namespace DD4hep
 // ============================================================================
 // The END
 // ============================================================================

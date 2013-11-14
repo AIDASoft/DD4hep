@@ -23,42 +23,42 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /** @class Geant4Mapping Geant4Mapping.h DDG4/Geant4Mapping.h
-     * 
+     *
      * Geometry mapping from DD4hep to Geant 4.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Mapping : public Geometry::GeoHandlerTypes   {
+    struct Geant4Mapping: public Geometry::GeoHandlerTypes {
     public:
-      typedef Geometry::LCDD              LCDD;
-      typedef Geometry::DetElement        DetElement;
+      typedef Geometry::LCDD LCDD;
+      typedef Geometry::DetElement DetElement;
       typedef Geometry::SensitiveDetector SensitiveDetector;
-      typedef Geometry::Solid             Solid;
-      typedef Geometry::Volume            Volume;
-      typedef Geometry::PlacedVolume      PlacedVolume;
-      typedef Geometry::Material          Material;
-      typedef Geometry::Region            Region;
+      typedef Geometry::Solid Solid;
+      typedef Geometry::Volume Volume;
+      typedef Geometry::PlacedVolume PlacedVolume;
+      typedef Geometry::Material Material;
+      typedef Geometry::Region Region;
 
-      typedef Geant4GeometryInfo::PlacementPath      PlacementPath;
-      typedef Geant4GeometryInfo::AssemblyChildren   AssemblyChildren;
-      typedef Geant4GeometryInfo::ElementMap         ElementMap;
-      typedef Geant4GeometryInfo::MaterialMap        MaterialMap;
-      typedef Geant4GeometryInfo::LimitMap           LimitMap;
-      typedef Geant4GeometryInfo::PlacementMap       PlacementMap;
-      typedef Geant4GeometryInfo::AssemblyChildMap   AssemblyChildMap;
-      typedef Geant4GeometryInfo::RegionMap          RegionMap;
-      typedef Geant4GeometryInfo::SensDetMap         SensDetMap;
-      typedef Geant4GeometryInfo::VolumeMap          VolumeMap;
-      typedef Geant4GeometryInfo::SolidMap           SolidMap;
-      typedef Geant4GeometryInfo::VisMap             VisMap;
-      typedef Geant4GeometryInfo::PathMap            PathMap;
+      typedef Geant4GeometryInfo::PlacementPath PlacementPath;
+      typedef Geant4GeometryInfo::AssemblyChildren AssemblyChildren;
+      typedef Geant4GeometryInfo::ElementMap ElementMap;
+      typedef Geant4GeometryInfo::MaterialMap MaterialMap;
+      typedef Geant4GeometryInfo::LimitMap LimitMap;
+      typedef Geant4GeometryInfo::PlacementMap PlacementMap;
+      typedef Geant4GeometryInfo::AssemblyChildMap AssemblyChildMap;
+      typedef Geant4GeometryInfo::RegionMap RegionMap;
+      typedef Geant4GeometryInfo::SensDetMap SensDetMap;
+      typedef Geant4GeometryInfo::VolumeMap VolumeMap;
+      typedef Geant4GeometryInfo::SolidMap SolidMap;
+      typedef Geant4GeometryInfo::VisMap VisMap;
+      typedef Geant4GeometryInfo::PathMap PathMap;
 
     protected:
-      LCDD&               m_lcdd;
+      LCDD& m_lcdd;
       Geant4GeometryInfo* m_dataPtr;
 
       /// When resolving pointers, we must check for the validity of the data block
@@ -74,10 +74,14 @@ namespace DD4hep {
       static Geant4Mapping& instance();
 
       /// Accesor to the LCDD instance
-      LCDD& lcdd() const {  return m_lcdd; }
+      LCDD& lcdd() const {
+        return m_lcdd;
+      }
 
       /// Access to the data pointer
-      Geant4GeometryInfo& data() const { return *m_dataPtr; }
+      Geant4GeometryInfo& data() const {
+        return *m_dataPtr;
+      }
 
       /// Create and attach new data block. Delete old data block if present.
       Geant4GeometryInfo& init();
@@ -92,7 +96,7 @@ namespace DD4hep {
       Geant4VolumeManager volumeManager() const;
 
       /// Accessor to resolve geometry placements
-      PlacedVolume placement(const G4VPhysicalVolume* node)  const;
+      PlacedVolume placement(const G4VPhysicalVolume* node) const;
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

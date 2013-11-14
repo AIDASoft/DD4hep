@@ -48,6 +48,7 @@ namespace DD4hep  {
       _setAttributes(handle, props);
     }
   }
+
   static Action _convertSensitive(LCDD& lcdd, xml_h e, const string& detector)  {
     xml_comp_t action(e);
     Kernel& kernel = Kernel::access(lcdd);
@@ -58,11 +59,15 @@ namespace DD4hep  {
     for(xml_coll_t f(e,_Unicode(filter)); f; ++f)  {
       string nam = f.attr<string>(_U(name));
       Filter filter(kernel.globalFilter(nam,false));
+      filter->installMessengers();
       handle->adopt(filter);
     }
-    cout << "Added Sensitive " << tn.second << " of type " << tn.first << endl;
+    handle->installMessengers();
+    printout(INFO,"Geant4Setup","+++ Added sensitive element %s of type %s",
+	     tn.second.c_str(),tn.first.c_str());
     return Action(handle);
   }
+
   static Action _convertAction(LCDD& lcdd, xml_h e)  {
     xml_comp_t action(e);
     Kernel& kernel = Kernel::access(lcdd);
@@ -70,7 +75,8 @@ namespace DD4hep  {
     // Create the object using the factory method
     Action handle(kernel,action.attr<string>(_U(name)));
     _setProperties(handle,e);
-    cout << "Added Action " << tn.second << " of type " << tn.first << endl;
+    printout(INFO,"Geant4Setup","+++ Added action %s of type %s",tn.second.c_str(),tn.first.c_str());
+    handle->installMessengers();
     return handle;
   }
   enum { SENSITIVE, ACTION, FILTER };
@@ -111,6 +117,9 @@ namespace DD4hep  {
   }
 
   /** Convert Sensitive detector filters
+   *
+   *  Note: Filters are Geant4Actions and - if global - may also receive properties!
+   *
    *  <filters>
    *    <filter name="GeantinoRejector"/>
    *    <filter name="EnergyDepositMinimumCut">
@@ -234,8 +243,8 @@ namespace DD4hep  {
       seqNam = seq.attr<string>(_U(name));
       seqType = TypeName::split(seqNam);
     }
-    cout << "Add Sequence " << seqType.second << " of type " 
-	 << seqType.first << endl;
+    printout(INFO,"Geant4Setup","+++ ActionSequence %s of type %s added.",
+	     seqType.second.c_str(),seqType.first.c_str());
 
     if ( seqType.second == "PhysicsList" )  {
       PhysicsActionSeq pl(&kernel.physicsList());
@@ -269,13 +278,16 @@ namespace DD4hep  {
 				   " cannot be attached to any sequence '%s'."
 				   " [Sequence-Missing]",nam.c_str(), seqNam.c_str()));	
       }
-      cout << "Sequence: " << seqType.second << " Added filter: " << action->name() << endl;
+      printout(INFO,"Geant4Setup","+++ ActionSequence %s added filter object:%s",
+	       seqType.second.c_str(),action->name().c_str());
     }
     if ( what == SENSITIVE )  {
       for(xml_coll_t a(seq,_Unicode(filter)); a; ++a)  {
 	string   nam = a.attr<string>(_U(name));
 	Action action(_createAction(lcdd,a,"",FILTER));
-	cout << "Sequence: " << seqType.second << " Added filter: " << action->name() << endl;
+	action->installMessengers();
+	printout(INFO,"Geant4Setup","+++ ActionSequence %s added filter object:%s",
+		 seqType.second.c_str(),action->name().c_str());
 	if ( sdSeq.get() )
 	  sdSeq->adopt(_action<Filter::handled_type>(action.get()));
 	else   {
@@ -310,7 +322,7 @@ namespace DD4hep  {
       p.ordAlongSteptDoIt = proc.attr<int>(_Unicode(ordAlongSteptDoIt));
       p.ordPostStepDoIt   = proc.attr<int>(_Unicode(ordPostStepDoIt));
       procs.push_back(p);
-      printout(INFO,"+++ Converter<ParticleProcesses>","+++ Particle:%s add process %s %d %d %d",
+      printout(INFO,"Geant4Setup","+++ Converter<ParticleProcesses: Particle:%s add process %s %d %d %d",
 	       part_name.c_str(),p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
     }
   }
@@ -331,7 +343,7 @@ namespace DD4hep  {
     xml_comp_t part(e);
     string n = part.nameStr();
     parts.push_back(n);
-    printout(INFO,"+++ Converter<ParticleConstructor>","Add particle constructor '%s'",n.c_str());
+    printout(INFO,"Geant4Setup","+++ ParticleConstructor: Add Geant4 particle constructor '%s'",n.c_str());
   }
 
   /** Convert PhysicsList objects: Physics constructors
@@ -347,7 +359,22 @@ namespace DD4hep  {
     xml_comp_t part(e);
     string n = part.nameStr();
     parts.push_back(n);
-    printout(INFO,"+++ Converter<PhysicsConstructor>","Add physics constructor '%s'",n.c_str());
+    printout(INFO,"Geant4Setup","+++ PhysicsConstructor: Add Geant4 physics constructor '%s'",n.c_str());
+  }
+
+
+  /** Convert PhysicsList objects: Predefined Geant4 Physics lists
+   *  <physicslist>
+   *    <list name="TQGSP_FTFP_BERT_95"/>
+   *  </physicslist>
+   *  Note: list items are Geant4Actions and - if global - may receive properties!
+   */
+  struct PhysicsListExtension;
+  template <> void Converter<PhysicsListExtension>::operator()(xml_h e) const {
+    Kernel& kernel = Kernel::access(lcdd);
+    string ext = xml_comp_t(e).nameStr();
+    kernel.physicsList().properties()["extends"].str(ext);
+    printout(INFO,"Geant4Setup","+++ PhysicsListExtension: Set predefined Geant4 physics list to '%s'",ext.c_str());
   }
 
   template <> void Converter<PhysicsList>::operator()(xml_h e)  const  {
@@ -358,6 +385,7 @@ namespace DD4hep  {
     xml_coll_t(e,_Unicode(particles)).for_each(_Unicode(construct),Converter<Geant4PhysicsList::ParticleConstructor>(lcdd,handle.get()));
     xml_coll_t(e,_Unicode(processes)).for_each(_Unicode(particle),Converter<Geant4PhysicsList::ParticleProcesses>(lcdd,handle.get()));
     xml_coll_t(e,_Unicode(physics)).for_each(_Unicode(construct),Converter<Geant4PhysicsList::PhysicsConstructor>(lcdd,handle.get()));
+    xml_coll_t(e,_Unicode(extends)).for_each(Converter<PhysicsListExtension>(lcdd,handle.get()));
     kernel.physicsList().adopt(handle);
   }
 

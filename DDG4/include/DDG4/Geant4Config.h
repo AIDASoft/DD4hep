@@ -20,8 +20,7 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
-
+  namespace Simulation {
 
     template <typename TYPE> class Geant4Handle;
     class Geant4Kernel;
@@ -49,30 +48,30 @@ namespace DD4hep {
     /*
      *   Simulation setup namespace declaration
      */
-    namespace Setup  {
+    namespace Setup {
       // Basics
-      typedef Geant4Kernel                                  Kernel;
+      typedef Geant4Kernel Kernel;
       // Actions
-      typedef Geant4Handle<Geant4Action>                    Action;
-      typedef Geant4Handle<Geant4Filter>                    Filter;
-      typedef Geant4Handle<Geant4GeneratorAction>           GenAction;
-      typedef Geant4Handle<Geant4RunAction>                 RunAction;
-      typedef Geant4Handle<Geant4EventAction>               EventAction;
-      typedef Geant4Handle<Geant4TrackingAction>            TrackAction;
-      typedef Geant4Handle<Geant4StackingAction>            StackAction;
-      typedef Geant4Handle<Geant4SteppingAction>            StepAction;
-      typedef Geant4Handle<Geant4PhysicsList>               PhysicsList;
-      typedef Geant4Handle<Geant4ActionPhase>               Phase;
-      typedef Geant4Handle<Geant4Sensitive>                 Sensitive;
+      typedef Geant4Handle<Geant4Action> Action;
+      typedef Geant4Handle<Geant4Filter> Filter;
+      typedef Geant4Handle<Geant4GeneratorAction> GenAction;
+      typedef Geant4Handle<Geant4RunAction> RunAction;
+      typedef Geant4Handle<Geant4EventAction> EventAction;
+      typedef Geant4Handle<Geant4TrackingAction> TrackAction;
+      typedef Geant4Handle<Geant4StackingAction> StackAction;
+      typedef Geant4Handle<Geant4SteppingAction> StepAction;
+      typedef Geant4Handle<Geant4PhysicsList> PhysicsList;
+      typedef Geant4Handle<Geant4ActionPhase> Phase;
+      typedef Geant4Handle<Geant4Sensitive> Sensitive;
       // Sequences
-      typedef Geant4Handle<Geant4SensDetActionSequence>     SensitiveSeq;
-      typedef Geant4Handle<Geant4GeneratorActionSequence>   GeneratorSeq;
-      typedef Geant4Handle<Geant4RunActionSequence>         RunActionSeq;
-      typedef Geant4Handle<Geant4EventActionSequence>       EventActionSeq;
-      typedef Geant4Handle<Geant4TrackingActionSequence>    TrackActionSeq;
-      typedef Geant4Handle<Geant4SteppingActionSequence>    StepActionSeq;
-      typedef Geant4Handle<Geant4StackingActionSequence>    StackActionSeq;
-      typedef Geant4Handle<Geant4PhysicsListActionSequence> PhysicsActionSeq; 
+      typedef Geant4Handle<Geant4SensDetActionSequence> SensitiveSeq;
+      typedef Geant4Handle<Geant4GeneratorActionSequence> GeneratorSeq;
+      typedef Geant4Handle<Geant4RunActionSequence> RunActionSeq;
+      typedef Geant4Handle<Geant4EventActionSequence> EventActionSeq;
+      typedef Geant4Handle<Geant4TrackingActionSequence> TrackActionSeq;
+      typedef Geant4Handle<Geant4SteppingActionSequence> StepActionSeq;
+      typedef Geant4Handle<Geant4StackingActionSequence> StackActionSeq;
+      typedef Geant4Handle<Geant4PhysicsListActionSequence> PhysicsActionSeq;
     }
 
   }    // End namespace Simulation

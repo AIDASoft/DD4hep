@@ -44,7 +44,7 @@ namespace {
   }
 }
 
-static long setup_fields(lcdd_t& lcdd, const Simulation::Geant4Converter& /* cnv */, const map<string,string>& vals) {
+static long setup_fields(lcdd_t& lcdd, const DD4hep::Simulation::Geant4Converter& /* cnv */, const map<string,string>& vals) {
   Geant4SetupPropertyMap pm(vals);
   DD4hep::Geometry::OverlayedField fld  = lcdd.field();
   G4MagIntegratorStepper*  stepper = 0;

@@ -17,58 +17,57 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
 /// Default constructor
-Geant4Context::Geant4Context(Geant4Kernel* kernel) 
-: m_kernel(kernel), m_trackMgr(0)
-{
+Geant4Context::Geant4Context(Geant4Kernel* kernel)
+    : m_kernel(kernel), m_trackMgr(0) {
 }
 
 /// Default destructor
-Geant4Context::~Geant4Context()   {
+Geant4Context::~Geant4Context() {
 }
 
 /// Access to detector description
-Geometry::LCDD& Geant4Context::lcdd() const   {
+Geometry::LCDD& Geant4Context::lcdd() const {
   return m_kernel->lcdd();
 }
 
 /// Create a user trajectory
-G4VTrajectory* Geant4Context::createTrajectory(const G4Track* /* track */) const   {
-  string err    = DD4hep::format("Geant4Kernel","createTrajectory: Purely virtual method. requires overloading!");
-  DD4hep::printout(DD4hep::FATAL,"Geant4Kernel","createTrajectory: Purely virtual method. requires overloading!");
+G4VTrajectory* Geant4Context::createTrajectory(const G4Track* /* track */) const {
+  string err = DD4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
+  DD4hep::printout(DD4hep::FATAL, "Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
   throw runtime_error(err);
 }
 
 /// Access to the main run action sequence from the kernel object
-Geant4RunActionSequence& Geant4Context::runAction() const   {
+Geant4RunActionSequence& Geant4Context::runAction() const {
   return m_kernel->runAction();
 }
 
 /// Access to the main event action sequence from the kernel object
-Geant4EventActionSequence& Geant4Context::eventAction() const   {
+Geant4EventActionSequence& Geant4Context::eventAction() const {
   return m_kernel->eventAction();
 }
 
 /// Access to the main stepping action sequence from the kernel object
-Geant4SteppingActionSequence& Geant4Context::steppingAction() const   {
+Geant4SteppingActionSequence& Geant4Context::steppingAction() const {
   return m_kernel->steppingAction();
 }
 
 /// Access to the main tracking action sequence from the kernel object
-Geant4TrackingActionSequence& Geant4Context::trackingAction() const   {
+Geant4TrackingActionSequence& Geant4Context::trackingAction() const {
   return m_kernel->trackingAction();
 }
 
 /// Access to the main stacking action sequence from the kernel object
-Geant4StackingActionSequence& Geant4Context::stackingAction() const   {
+Geant4StackingActionSequence& Geant4Context::stackingAction() const {
   return m_kernel->stackingAction();
 }
 
 /// Access to the main generator action sequence from the kernel object
-Geant4GeneratorActionSequence& Geant4Context::generatorAction() const   {
+Geant4GeneratorActionSequence& Geant4Context::generatorAction() const {
   return m_kernel->generatorAction();
 }
 
 /// Access to the main generator action sequence from the kernel object
-Geant4SensDetSequences& Geant4Context::sensitiveActions() const   {
+Geant4SensDetSequences& Geant4Context::sensitiveActions() const {
   return m_kernel->sensitiveActions();
 }

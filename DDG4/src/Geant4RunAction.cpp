@@ -17,33 +17,32 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4RunAction::Geant4RunAction(Geant4Context* context, const std::string& nam)
-: Geant4Action(context,nam)  
-{
+    : Geant4Action(context, nam) {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4RunAction::~Geant4RunAction()  {
+Geant4RunAction::~Geant4RunAction() {
   InstanceCount::decrement(this);
 }
 
 /// begin-of-run callback
-void Geant4RunAction::begin(const G4Run* )  {
+void Geant4RunAction::begin(const G4Run*) {
 }
 
 /// End-of-run callback
-void Geant4RunAction::end(const G4Run* )  {
+void Geant4RunAction::end(const G4Run*) {
 }
 
 /// Standard constructor
 Geant4RunActionSequence::Geant4RunActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name)
-{
+    : Geant4Action(context, name) {
+  m_needsControl = true;
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4RunActionSequence::~Geant4RunActionSequence()  {
+Geant4RunActionSequence::~Geant4RunActionSequence() {
   m_actors(&Geant4RunAction::release);
   m_actors.clear();
   m_begin.clear();
@@ -52,8 +51,8 @@ Geant4RunActionSequence::~Geant4RunActionSequence()  {
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
-void Geant4RunActionSequence::adopt(Geant4RunAction* action)  {
-  if ( action )  {
+void Geant4RunActionSequence::adopt(Geant4RunAction* action) {
+  if (action) {
     action->addRef();
     m_actors.add(action);
     return;
@@ -62,13 +61,13 @@ void Geant4RunActionSequence::adopt(Geant4RunAction* action)  {
 }
 
 /// Pre-track action callback
-void  Geant4RunActionSequence::begin(const G4Run* run)  { 
-  m_actors(&Geant4RunAction::begin,run);
+void Geant4RunActionSequence::begin(const G4Run* run) {
+  m_actors(&Geant4RunAction::begin, run);
   m_begin(run);
 }
 
 /// Post-track action callback
-void  Geant4RunActionSequence::end(const G4Run* run) { 
+void Geant4RunActionSequence::end(const G4Run* run) {
   m_end(run);
-  m_actors(&Geant4RunAction::end,run);
+  m_actors(&Geant4RunAction::end, run);
 }

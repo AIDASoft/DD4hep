@@ -20,18 +20,18 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     // Forward declarations;
-    typedef Geometry::Position             Position;
-    typedef Geometry::Position             Direction;
-    typedef Geometry::Position             Momentum;
-    typedef Geometry::LCDD                 LCDD;
-    typedef Geometry::Readout              Readout;
-    typedef Geometry::DetElement           DetElement;
+    typedef Geometry::Position Position;
+    typedef Geometry::Position Direction;
+    typedef Geometry::Position Momentum;
+    typedef Geometry::LCDD LCDD;
+    typedef Geometry::Readout Readout;
+    typedef Geometry::DetElement DetElement;
 
-    template<class HIT> struct HitCompare;
-    template<class HIT> struct HitPositionCompare;
+    template <class HIT> struct HitCompare;
+    template <class HIT> struct HitPositionCompare;
     class Geant4StepHandler;
     class Geant4Hit;
     class Geant4TrackerHit;

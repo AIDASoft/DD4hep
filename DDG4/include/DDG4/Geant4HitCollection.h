@@ -10,6 +10,7 @@
 #define DD4HEP_DDG4_GEANT4HITCOLLECTION_H
 
 // Framework include files
+#include "DDG4/ComponentUtils.h"
 #include "G4VHitsCollection.hh"
 #include "G4VHit.hh"
 
@@ -27,14 +28,14 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
-    
+  namespace Simulation {
+
     // Forward declarations
     class Geant4HitCollection;
     class Geant4HitWrapper;
 
     /** @class Geant4HitWrapper Geant4HitCollection.h DDG4/Geant4HitCollection.h
-     * 
+     *
      *  Default base class for all geant 4 created hits.
      *  The hit is stored in an opaque way and can be accessed by the
      *  collection.
@@ -42,104 +43,73 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    class Geant4HitWrapper : public G4VHit  {
+    class Geant4HitWrapper: public G4VHit {
     private:
     public:
-      struct InvalidHit { virtual ~InvalidHit();  };
+      struct InvalidHit {
+        virtual ~InvalidHit();
+      };
 
       struct HitManipulator {
       public:
-	typedef std::pair<void*,HitManipulator*> Wrapper;
-	typedef void  (*destroy_t)(Wrapper& data);
-	typedef void* (*cast_t)(const Wrapper& data);
-	const std::type_info& type;
-	destroy_t             destroy;
-	cast_t                cast;
+        typedef std::pair<void*, HitManipulator*> Wrapper;
+        typedef void (*destroy_t)(Wrapper& data);
+        const ComponentCast& cast;
+        const ComponentCast& vec_type;
+        destroy_t destroy;
 
-	/// Initializing Constructor
-	HitManipulator(const std::type_info& t, destroy_t d, cast_t c);
-	/// Check to collection type against the argument (used during insertion)
-	void checkHitType(const std::type_info& type) const;
-	/// Check pointer to be of proper type
-	template <typename TYPE> Wrapper checkHit(TYPE* obj)   {
-	  if ( obj )  {
-	    Wrapper wrap(obj,this);
-	    HitManipulator* obj_type = HitManipulator::instance<TYPE>();
-	    if ( obj_type == this )   {
-	      return wrap;
-	    }
-	    wrap.first = (obj_type->cast)(wrap);
-	    if ( wrap.first )  {
-	      return wrap;
-	    }
-	    checkHitType(obj_type->type);
-	  }
-	  throw std::runtime_error("Invalid hit pointer passed to collection!");
-	}
-	/// Static function to delete contained hits
-	template <typename TYPE> static void deleteHit(Wrapper& obj) {
-	  TYPE* p = (TYPE*)obj.first;
-	  if ( p ) delete p;
-	  obj.first = 0;
-	}
-	/// Static function to cast to the desired type
-	template <typename TYPE> static void* castHit(const Wrapper& obj) {
-	  HitManipulator* me = HitManipulator::instance<TYPE>();
-	  if ( me == obj.second )   {
-	    return (TYPE*)obj.first;
-	  }
-	  G4VHit* hit = (G4VHit*)obj.first;
-	  TYPE* p = dynamic_cast<TYPE*>(hit);
-	  if ( p )  {
-	    return p;
-	  }
-	  if ( obj.first )  {
-	    obj.second->checkHitType(me->type);
-	  }
-	  return 0;
-	}
-	/// Static function to cast to the desired type
-	template <typename TYPE> static const void* castHit(const Wrapper& obj) {
-	  HitManipulator* me = HitManipulator::instance<TYPE>();
-	  if ( me == obj.second )   {
-	    return (const TYPE*)obj.first;
-	  }
-	  G4VHit* hit = (G4VHit*)obj.first;
-	  const TYPE* p = dynamic_cast<const TYPE*>(hit);
-	  if ( p )  {
-	    return p;
-	  }
-	  if ( obj.first )  {
-	    obj.second->checkHitType(me->type);
-	  }
-	  return 0;
-	}
-	template <typename TYPE> static HitManipulator* instance()  {
-	  static HitManipulator m(typeid(TYPE),deleteHit<TYPE>,castHit<TYPE>);
-	  return &m;
-	}
+        /// Initializing Constructor
+        HitManipulator(const ComponentCast& c, const ComponentCast& v, destroy_t d);
+        /// Default destructor
+        ~HitManipulator();
+        /// Check pointer to be of proper type
+        template <typename TYPE> Wrapper castHit(TYPE* obj) {
+          if (obj) {
+            ComponentCast& me = ComponentCast::instance<TYPE>();
+            Wrapper wrap(obj, this);
+            if (&cast == &me) {
+              return wrap;
+            }
+            // Need to ensure that the container types are the same!
+            wrap.first = me.apply_dynCast(cast.type, obj);
+            return wrap;
+          }
+          throw std::runtime_error("Invalid hit pointer passed to collection!");
+        }
+        /// Static function to delete contained hits
+        template <typename TYPE> static void deleteHit(Wrapper& obj) {
+          TYPE* p = (TYPE*) obj.first;
+          if (p)
+            delete p;
+          obj.first = 0;
+        }
+        template <typename TYPE> static HitManipulator* instance() {
+          static HitManipulator m(ComponentCast::instance<TYPE>(), ComponentCast::instance<std::vector<TYPE*> >(),
+              deleteHit<TYPE>);
+          return &m;
+        }
       };
 
-    protected:
       typedef HitManipulator::Wrapper Wrapper;
+    protected:
       mutable Wrapper m_data;
 
     public:
-      
+
       /// Default constructor
-      Geant4HitWrapper()  {
+      Geant4HitWrapper() {
         m_data.second = manipulator<InvalidHit>();
-	m_data.first = 0;
+        m_data.first = 0;
       }
       /// Copy constructor
-      Geant4HitWrapper(const Geant4HitWrapper& v)  {	
-	m_data = v.m_data;
-	v.m_data.first = 0;
-	//v.release();
+      Geant4HitWrapper(const Geant4HitWrapper& v) {
+        m_data = v.m_data;
+        v.m_data.first = 0;
+        //v.release();
       }
       /// Copy constructor
-      Geant4HitWrapper(const Wrapper& v)  {	
-	m_data = v;
+      Geant4HitWrapper(const Wrapper& v) {
+        m_data = v;
       }
       /// Default destructor
       virtual ~Geant4HitWrapper();
@@ -151,25 +121,37 @@ namespace DD4hep {
       void* release();
       /// Release data for copy
       Wrapper releaseData();
+      /// Access to cast grammar
+      HitManipulator* manip() const {
+        return m_data.second;
+      }
+      /// Pointer/Object access
+      void* data() {
+        return m_data.first;
+      }
+      /// Pointer/Object access (CONST)
+      void* data() const {
+        return m_data.first;
+      }
       /// Generate manipulator object
-      template <typename TYPE> static HitManipulator* manipulator()  {
-	return HitManipulator::instance<TYPE>();
+      template <typename TYPE> static HitManipulator* manipulator() {
+        return HitManipulator::instance<TYPE>();
       }
       /// Assignment transfers the pointer ownership
-      Geant4HitWrapper& operator=(const Geant4HitWrapper& v)  {
-	m_data = v.m_data;
-	v.m_data.first = 0;
-	//v.release();
-	return *this;
+      Geant4HitWrapper& operator=(const Geant4HitWrapper& v) {
+        m_data = v.m_data;
+        v.m_data.first = 0;
+        //v.release();
+        return *this;
       }
       /// Automatic conversion to the desired type
-      template <typename TYPE> operator TYPE*() const   {
-	return (TYPE*)(m_data.second->cast(m_data));
+      template <typename TYPE> operator TYPE*() const {
+        return (TYPE*) m_data.second->cast.apply_downCast(typeid(TYPE), m_data.first);
       }
     };
 
     /** @class Geant4HitCollection Geant4HitCollection.h DDG4/Geant4HitCollection.h
-     * 
+     *
      * Opaque hit collection.
      * This hit collection is for good reasons homomorph,
      * Polymorphism without an explicit type would only
@@ -178,64 +160,106 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4HitCollection  : public G4VHitsCollection  {
+    class Geant4HitCollection: public G4VHitsCollection {
     public:
-      typedef std::vector<Geant4HitWrapper>    WrappedHits;
+      typedef std::vector<Geant4HitWrapper> WrappedHits;
       typedef Geant4HitWrapper::HitManipulator Manip;
 
       /** @class Compare Geant4HitCollection.h DDG4/Geant4HitCollection.h
-       * 
+       *
        *  Base class for hit comparisons.
        *
        * @author  M.Frank
        * @version 1.0
        */
       struct Compare {
-	/// Comparison function
-	virtual void* operator()(const Geant4HitWrapper& w) const = 0;
+        /// Comparison function
+        virtual void* operator()(const Geant4HitWrapper& w) const = 0;
       };
 
     protected:
       /// The collection of hit pointers in the wrapped format
       WrappedHits m_hits;
       /// The type of the objects in this collection. Set by the constructor
-      Manip*      m_manipulator;
+      Manip* m_manipulator;
 
     protected:
       /// Notification to increase the instance counter
       void newInstance();
       /// Find hit in a collection by comparison of attributes
-      void* findHit(const Compare& cmp)  const;
+      void* findHit(const Compare& cmp) const;
+      /// Release all hits from the Geant4 container and pass ownership to the caller
+      void releaseData(const ComponentCast& cast, std::vector<void*>* result);
+      /// Release all hits from the Geant4 container. Ownership stays with the container
+      void getData(const ComponentCast& cast, std::vector<void*>* result);
 
     public:
+      /// Initializing constructor (C++ version)
+      template <typename TYPE>
+      Geant4HitCollection(const std::string& det, const std::string& coll)
+          : G4VHitsCollection(det, coll), m_manipulator(Geant4HitWrapper::manipulator<TYPE>()) {
+        newInstance();
+        m_hits.reserve(200);
+      }
       /// Initializing constructor
       template <typename TYPE>
-	Geant4HitCollection(const std::string& det, const std::string& coll, const TYPE*)
-	: G4VHitsCollection(det,coll), m_manipulator(Geant4HitWrapper::manipulator<TYPE>())
-	{
-	  newInstance();
-	  m_hits.reserve(200);
-	}
+      Geant4HitCollection(const std::string& det, const std::string& coll, const TYPE*)
+          : G4VHitsCollection(det, coll), m_manipulator(Geant4HitWrapper::manipulator<TYPE>()) {
+        newInstance();
+        m_hits.reserve(200);
+      }
       /// Default destructor
       virtual ~Geant4HitCollection();
+      /// Type information of the object stored
+      const ComponentCast& type() const;
+      /// Type information of the vector type for extracting data
+      const ComponentCast& vector_type() const;
       /// Access individual hits
-      virtual G4VHit* GetHit(size_t which) const      {  return (G4VHit*)&m_hits.at(which); } 
+      virtual G4VHit* GetHit(size_t which) const {
+        return (G4VHit*) &m_hits.at(which);
+      }
       /// Access the collection size
-      virtual size_t  GetSize() const                 {  return m_hits.size();              }
+      virtual size_t GetSize() const {
+        return m_hits.size();
+      }
       /// Access the hit wrapper
-      Geant4HitWrapper& hit(size_t which)             {  return m_hits.at(which);           }
+      Geant4HitWrapper& hit(size_t which) {
+        return m_hits.at(which);
+      }
       /// Access the hit wrapper (CONST)
-      const Geant4HitWrapper& hit(size_t which) const {  return m_hits.at(which);           }
+      const Geant4HitWrapper& hit(size_t which) const {
+        return m_hits.at(which);
+      }
       /// Add a new hit with a check, that the hit is of the same type
-      template <typename TYPE> void add(TYPE* hit)   {
-	Geant4HitWrapper w(m_manipulator->checkHit(hit));
-	m_hits.push_back(w);
+      template <typename TYPE> void add(TYPE* hit) {
+        Geant4HitWrapper w(m_manipulator->castHit(hit));
+        m_hits.push_back(w);
       }
       /// Find hits in a collection by comparison of attributes
-      template <typename TYPE> TYPE* find(const Compare& cmp)  const  {
-	return (TYPE*)findHit(cmp);
+      template <typename TYPE> TYPE* find(const Compare& cmp) const {
+        return (TYPE*) findHit(cmp);
       }
+      /// Release all hits from the Geant4 container and pass ownership to the caller
+      template <typename TYPE> std::vector<TYPE*> releaseHits() {
+        std::vector<TYPE*> vec;
+        if (m_hits.size() != 0) {
+          releaseData(ComponentCast::instance<TYPE>(), (std::vector<void*>*) &vec);
+        }
+        return vec;
+      }
+      /// Release all hits from the Geant4 container and pass ownership to the caller
+      void releaseHitsUnchecked(std::vector<void*>& result);
 
+      /// Release all hits from the Geant4 container. Ownership stays with the container
+      template <typename TYPE> std::vector<TYPE*> getHits() {
+        std::vector<TYPE*> vec;
+        if (m_hits.size() != 0) {
+          getData(ComponentCast::instance<TYPE>(), (std::vector<void*>*) &vec);
+        }
+        return vec;
+      }
+      /// Release all hits from the Geant4 container. Ownership stays with the container
+      void getHitsUnchecked(std::vector<void*>& result);
     };
 
   }    // End namespace Simulation

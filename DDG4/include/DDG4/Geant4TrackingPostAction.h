@@ -21,24 +21,24 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /** @class Geant4TrackingPostAction Geant4TrackingPostAction.h DDG4/Geant4TrackingPostAction.h
-     * 
+     *
      * Default base class for all geant 4 tracking actions.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4TrackingPostAction : public Geant4TrackingAction   {
+    class Geant4TrackingPostAction: public Geant4TrackingAction {
     protected:
       typedef std::vector<std::string> StringV;
       StringV m_requiredProcs;
       StringV m_ignoredProcs;
-      bool    m_storeMarkedTracks;
+      bool m_storeMarkedTracks;
     public:
       /// Standard constructor
-      Geant4TrackingPostAction(Geant4Context* context, const std::string& name="");
+      Geant4TrackingPostAction(Geant4Context* context, const std::string& name = "");
       /// Default destructor
       virtual ~Geant4TrackingPostAction();
 

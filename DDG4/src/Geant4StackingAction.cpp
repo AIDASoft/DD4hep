@@ -15,28 +15,27 @@
 #include <stdexcept>
 
 using namespace DD4hep::Simulation;
-  
+
 /// Standard constructor
 Geant4StackingAction::Geant4StackingAction(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name)
-{
+    : Geant4Action(context, name) {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4StackingAction::~Geant4StackingAction()   {
+Geant4StackingAction::~Geant4StackingAction() {
   InstanceCount::decrement(this);
 }
- 
+
 /// Standard constructor
 Geant4StackingActionSequence::Geant4StackingActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name)
-{
+    : Geant4Action(context, name) {
+  m_needsControl = true;
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4StackingActionSequence::~Geant4StackingActionSequence()  {
+Geant4StackingActionSequence::~Geant4StackingActionSequence() {
   m_actors(&Geant4StackingAction::release);
   m_actors.clear();
   m_newStage.clear();
@@ -45,8 +44,8 @@ Geant4StackingActionSequence::~Geant4StackingActionSequence()  {
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
-void Geant4StackingActionSequence::adopt(Geant4StackingAction* action)  {
-  if ( action )  {
+void Geant4StackingActionSequence::adopt(Geant4StackingAction* action) {
+  if (action) {
     action->addRef();
     m_actors.add(action);
     return;
@@ -55,13 +54,13 @@ void Geant4StackingActionSequence::adopt(Geant4StackingAction* action)  {
 }
 
 /// Pre-track action callback
-void  Geant4StackingActionSequence::newStage()  {
+void Geant4StackingActionSequence::newStage() {
   m_actors(&Geant4StackingAction::newStage);
   m_newStage();
 }
 
 /// Post-track action callback
-void  Geant4StackingActionSequence::prepare()  {
+void Geant4StackingActionSequence::prepare() {
   m_actors(&Geant4StackingAction::prepare);
   m_prepare();
 }

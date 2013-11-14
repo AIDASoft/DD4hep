@@ -17,25 +17,24 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4GeneratorAction::Geant4GeneratorAction(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name)  
-{
+    : Geant4Action(context, name) {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4GeneratorAction::~Geant4GeneratorAction()  {
+Geant4GeneratorAction::~Geant4GeneratorAction() {
   InstanceCount::decrement(this);
 }
 
 /// Standard constructor
 Geant4GeneratorActionSequence::Geant4GeneratorActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name)
-{
+    : Geant4Action(context, name) {
+  m_needsControl = true;
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Geant4GeneratorActionSequence::~Geant4GeneratorActionSequence()  {
+Geant4GeneratorActionSequence::~Geant4GeneratorActionSequence() {
   m_actors(&Geant4GeneratorAction::release);
   m_actors.clear();
   m_calls.clear();
@@ -43,8 +42,8 @@ Geant4GeneratorActionSequence::~Geant4GeneratorActionSequence()  {
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
-void Geant4GeneratorActionSequence::adopt(Geant4GeneratorAction* action)  {
-  if ( action )  {
+void Geant4GeneratorActionSequence::adopt(Geant4GeneratorAction* action) {
+  if (action) {
     action->addRef();
     m_actors.add(action);
     return;
@@ -53,7 +52,7 @@ void Geant4GeneratorActionSequence::adopt(Geant4GeneratorAction* action)  {
 }
 
 /// Generator callback
-void  Geant4GeneratorActionSequence::operator()(G4Event* event) { 
-  m_actors(&Geant4GeneratorAction::operator(),event);
+void Geant4GeneratorActionSequence::operator()(G4Event* event) {
+  m_actors(&Geant4GeneratorAction::operator(), event);
   m_calls(event);
 }

@@ -8,12 +8,13 @@
   --   	ordDefault = 1000,	// default ordering parameter
   --   	ordLast    = 9999 	// ordering parameter to indicate the last DoIt
   -->
-  <!--
+
   <sequences>
-    <sequence name="Geant4PhysicsListSequence/PhysicsList" transportation="true" decays="true"/>
+    <sequence name="Geant4PhysicsListSequence/PhysicsList"/>
   </sequences>
 
   <physicslist name="Geant4PhysicsList/MyPhysics.0">
+    <extends name="QGSP_BERT"/>
     <particles>
       <construct name="G4Geantino"/>
       <construct name="G4ChargedGeantino"/>
@@ -24,6 +25,18 @@
       <construct name="G4MesonConstructor"/>
       <construct name="G4BaryonConstructor"/>
     </particles>
+  </physicslist>
+<!--
+  <sequences>
+  // No transportation nor decays if you are already extending an existing physics list!
+    <sequence name="Geant4PhysicsListSequence/PhysicsList" transportation="true" decays="true" extends="QGSP_BERT"/>
+  </sequences>
+-->
+  <!--
+
+
+  <physicslist name="Geant4PhysicsList/MyPhysics.0">
+
 
     <physics>
       <construct name="G4EmStandardPhysics"/>

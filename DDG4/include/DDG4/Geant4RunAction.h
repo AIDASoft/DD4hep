@@ -21,16 +21,16 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
-    
-    /** @class Geant4RunAction Geant4Action.h DDG4/Geant4Action.h
-     * 
-     * Concrete basic implementation of the Geant4 run action 
+  namespace Simulation {
+
+    /** @class Geant4RunAction Geant4RunAction.h DDG4/Geant4RunAction.h
+     *
+     * Concrete basic implementation of the Geant4 run action
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4RunAction : public Geant4Action   {
+    class Geant4RunAction: public Geant4Action {
     public:
       /// Standard constructor
       Geant4RunAction(Geant4Context* context, const std::string& nam);
@@ -42,14 +42,14 @@ namespace DD4hep {
       virtual void end(const G4Run* run);
     };
 
-    /** @class Geant4RunActionSequence Geant4Action.h DDG4/Geant4Action.h
-     * 
+    /** @class Geant4RunActionSequence Geant4RunAction.h DDG4/Geant4RunAction.h
+     *
      * Concrete implementation of the Geant4 run action sequence
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4RunActionSequence : public Geant4Action   {
+    class Geant4RunActionSequence: public Geant4Action {
     protected:
       /// Callback sequence for begin-run action
       CallbackSequence m_begin;
@@ -63,11 +63,15 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4RunActionSequence();
       /// Register begin-of-run callback. Types Q and T must be polymorph!
-      template <typename Q, typename T> 
-	void callAtBegin(Q* p, void (T::*f)(const G4Run*))  { m_begin.add(p,f);  }
+      template <typename Q, typename T>
+      void callAtBegin(Q* p, void (T::*f)(const G4Run*)) {
+        m_begin.add(p, f);
+      }
       /// Register end-of-run callback. Types Q and T must be polymorph!
-      template <typename Q,typename T> 
-	void callAtEnd  (Q* p, void (T::*f)(const G4Run*))  { m_end.add(p,f);    }
+      template <typename Q, typename T>
+      void callAtEnd(Q* p, void (T::*f)(const G4Run*)) {
+        m_end.add(p, f);
+      }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4RunAction* action);
       /// begin-of-run callback

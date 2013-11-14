@@ -1,7 +1,7 @@
 #include "DDG4/Geant4GDMLDetector.h"
 #include <iostream>
 
-//#define GEANT4_HAS_GDML 
+//#define GEANT4_HAS_GDML
 
 #ifdef GEANT4_HAS_GDML
 #include "G4GDMLParser.hh"
@@ -10,9 +10,8 @@
 using namespace std;
 using namespace DD4hep;
 
-DD4hep::Simulation::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile ) 
-: m_fileName(gdmlFile), m_world(0)
-{
+DD4hep::Simulation::Geant4GDMLDetector::Geant4GDMLDetector(const std::string& gdmlFile)
+    : m_fileName(gdmlFile), m_world(0) {
 }
 
 G4VPhysicalVolume* DD4hep::Simulation::Geant4GDMLDetector::Construct() {

@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
                     ${CMAKE_CURRENT_SOURCE_DIR}/include 
                     ${ROOT_INCLUDE_DIR}
                     ${CLHEP_INCLUDE_DIR}
-                    ${Geant4_INCLUDE_DIRS})
+                    ${Geant4_INCLUDE_DIRS} ${LCIO_DIR}/include )
 
 #---Add Library-------------------------------------------------------------------
 if(DD4HEP_USE_BOOST)
@@ -31,14 +31,44 @@ if(NOT DD4HEP_USE_XERCESC)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/Geant4XML.cpp)
 endif()
 
+#---------------------------  Main geant4 interface library (no plugins!)-----------
 add_library(DD4hepG4 SHARED ${sources})
 target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
-
 SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+# No rootmap for link libraries!
+
+#---------------------------  Legacy libraries (for Frank) -------------------------
+file(GLOB legacy_sources legacy/*.cpp)
+add_library(DD4hepG4Legacy SHARED ${legacy_sources})
+target_link_libraries(DD4hepG4Legacy DD4hepCore DD4hepG4 ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+
+SET_TARGET_PROPERTIES(DD4hepG4Legacy PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 if(APPLE)
-  dd4hep_generate_rootmap_apple(DD4hepG4)
+  dd4hep_generate_rootmap_apple(DD4hepG4Legacy)
 else()
-  dd4hep_generate_rootmap(DD4hepG4)
+  dd4hep_generate_rootmap(DD4hepG4Legacy)
+endif()
+
+#---------------------------  New Plugin library for new simulation framework  -----
+file(GLOB plugins_sources plugins/*.cpp)
+add_library(DD4hepG4Plugins SHARED ${plugins_sources})
+target_link_libraries(DD4hepG4Plugins DD4hepCore DD4hepG4 ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+
+SET_TARGET_PROPERTIES(DD4hepG4Plugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+if(APPLE)
+  dd4hep_generate_rootmap_apple(DD4hepG4Plugins)
+else()
+  dd4hep_generate_rootmap(DD4hepG4Plugins)
+endif()
+
+#---------------------------  LCIO Plugins for new simulation framework  -----------
+if(LCIO_DIR)
+  list(APPEND include_directories ${LCIO_DIR}/include)
+  file(GLOB lcio_sources lcio/*.cpp)
+  add_library(DD4hepG4LCIO SHARED ${lcio_sources})
+  target_link_libraries(DD4hepG4LCIO DD4hepCore DD4hepG4 ${Geant4_LIBRARIES} -L${LCIO_DIR}/lib -llcio ${ROOT_LIBRARIES} Reflex)
+  SET_TARGET_PROPERTIES(DD4hepG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+  dd4hep_generate_rootmap(DD4hepG4LCIO)
 endif()
 
 #-----------------------------------------------------------------------------------

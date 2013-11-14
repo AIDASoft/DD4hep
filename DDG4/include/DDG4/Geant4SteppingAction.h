@@ -24,16 +24,16 @@ namespace DD4hep {
   /*
    *   Simulation namespace declaration
    */
-  namespace Simulation   {
+  namespace Simulation {
 
     /** @class Geant4SteppingAction Geant4Action.h DDG4/Geant4Action.h
-     * 
+     *
      * Concrete implementation of the Geant4 stepping action sequence
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4SteppingAction : public Geant4Action   {
+    class Geant4SteppingAction: public Geant4Action {
     public:
       /// Standard constructor
       Geant4SteppingAction(Geant4Context* context, const std::string& name);
@@ -44,13 +44,13 @@ namespace DD4hep {
     };
 
     /** @class Geant4SteppingActionSequence Geant4Action.h DDG4/Geant4Action.h
-     * 
+     *
      * Concrete implementation of the Geant4 stepping action sequence
      *
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4SteppingActionSequence : public Geant4Action   {
+    class Geant4SteppingActionSequence: public Geant4Action {
     protected:
       /// Callback sequence for user stepping action calls
       CallbackSequence m_calls;
@@ -63,8 +63,10 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4SteppingActionSequence();
       /// Register stepping action callback. Types Q and T must be polymorph!
-      template <typename Q, typename T> 
-	void call(Q* p, void (T::*f)(const G4Step*,G4SteppingManager*))  { m_calls.add(p,f); }
+      template <typename Q, typename T>
+      void call(Q* p, void (T::*f)(const G4Step*, G4SteppingManager*)) {
+        m_calls.add(p, f);
+      }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4SteppingAction* action);
       /// User stepping callback

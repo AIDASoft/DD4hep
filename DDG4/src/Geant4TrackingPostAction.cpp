@@ -20,10 +20,14 @@
 using namespace std;
 using namespace DD4hep::Simulation;
 
-struct FindString  {
+struct FindString {
   const std::string& m_name;
-  FindString(const std::string& n) : m_name(n) {}
-  bool operator()(const std::string& n) const  {  return m_name == n; }
+  FindString(const std::string& n)
+      : m_name(n) {
+  }
+  bool operator()(const std::string& n) const {
+    return m_name == n;
+  }
   //template <class T> bool operator==(const std::pair<std::string,T>& cmp)  const
   //{  return cmp.first == m_name;  }
   //template <class T> bool operator==(const std::pair<T,std::string>& cmp)  const
@@ -31,61 +35,59 @@ struct FindString  {
 };
 
 /// Standard constructor
-Geant4TrackingPostAction::Geant4TrackingPostAction(Geant4Context* context, const std::string& name) 
-: Geant4TrackingAction(context,name) 
-{
+Geant4TrackingPostAction::Geant4TrackingPostAction(Geant4Context* context, const std::string& name)
+    : Geant4TrackingAction(context, name) {
   InstanceCount::increment(this);
-  declareProperty("IgnoredProcesses",m_ignoredProcs);
-  declareProperty("RequiredProcesses",m_requiredProcs);
+  declareProperty("IgnoredProcesses", m_ignoredProcs);
+  declareProperty("RequiredProcesses", m_requiredProcs);
 }
 
 /// Default destructor
-Geant4TrackingPostAction::~Geant4TrackingPostAction()  {
+Geant4TrackingPostAction::~Geant4TrackingPostAction() {
   InstanceCount::decrement(this);
 }
 
 /// Begin-of-tracking callback
-void Geant4TrackingPostAction::begin(const G4Track* track)  {
+void Geant4TrackingPostAction::begin(const G4Track* track) {
 
-  // Is the track valid? Is tracking manager valid? 
+  // Is the track valid? Is tracking manager valid?
   // Does trajectory already exist?
-  if( 0 == track || 0 == trackMgr() || 0 != trackMgr()->GimmeTrajectory()  ) 
+  if (0 == track || 0 == trackMgr() || 0 != trackMgr()->GimmeTrajectory())
     return;
   trackMgr()->SetStoreTrajectory(true);
-  // create GaussTrajectory and inform Tracking Manager 
+  // create GaussTrajectory and inform Tracking Manager
   G4VTrajectory* tr = m_context->createTrajectory(track);
   trackMgr()->SetTrajectory(tr);
 }
 
 /// End-of-tracking callback
-void Geant4TrackingPostAction::end(const G4Track* tr)  {
-  if ( 0 == tr )
+void Geant4TrackingPostAction::end(const G4Track* tr) {
+  if (0 == tr)
     return;
-  else if ( 0 == trackMgr() )
+  else if (0 == trackMgr())
     return;
 
   Geant4TrackHandler track(tr);
   //Geant4TrackInformation* info = track.info<Geant4TrackInformation>();
   const string& proc = track.creatorProcess()->GetProcessName();
-  StringV::const_iterator trIt = find_if(m_ignoredProcs.begin(),m_ignoredProcs.end(),FindString(proc));
-  if ( trIt != m_ignoredProcs.end() )  {
-    warning("Particles created by processes of type %s are not kept!",(*trIt).c_str());
+  StringV::const_iterator trIt = find_if(m_ignoredProcs.begin(), m_ignoredProcs.end(), FindString(proc));
+  if (trIt != m_ignoredProcs.end()) {
+    warning("Particles created by processes of type %s are not kept!", (*trIt).c_str());
     return;
   }
-  trIt = find_if(m_requiredProcs.begin(),m_requiredProcs.end(),FindString(proc));
-  if ( trIt != m_requiredProcs.end() )  {
+  trIt = find_if(m_requiredProcs.begin(), m_requiredProcs.end(), FindString(proc));
+  if (trIt != m_requiredProcs.end()) {
     saveTrack(track);
     return;
   }
 
-  if ( m_storeMarkedTracks )   {
+  if (m_storeMarkedTracks) {
   }
-
 
 }
 
-void Geant4TrackingPostAction::saveTrack(const G4Track* track)    {
-  if ( 0 != track )  {
+void Geant4TrackingPostAction::saveTrack(const G4Track* track) {
+  if (0 != track) {
   }
 }
 

@@ -34,15 +34,18 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Field : public G4MagneticField   {
+    struct Geant4Field : public G4MagneticField {
       /// Reference to the detector description field
-      Geometry::OverlayedField  m_field;
+      Geometry::OverlayedField m_field;
 
-      public:
+    public:
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4Field(Geometry::OverlayedField field) : m_field(field) {}
+      Geant4Field(Geometry::OverlayedField field)
+          : m_field(field) {
+      }
       /// Standard destructor
-      virtual ~Geant4Field() {}
+      virtual ~Geant4Field() {
+      }
       /// Access field values at a given point
       virtual void GetFieldValue(const double pos[4], double *arr) const;
       /// Does field change energy ?
