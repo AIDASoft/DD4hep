@@ -1,6 +1,22 @@
 DD4hep  ----  Release Notes
 =================================
 
+2013/11/14    Markus Frank
+--------------------------
+  - Reformat files in DDCode and DDG4 to remove the <TAB>s from the source files.
+    Hopefully the content is now more readable.
+  - DDCore: Remove empty and named constructors for shapes. Empty constructors
+    were simply a dangerous hook to memory leaks, named constructors are 
+    deprecated since along time.
+  - DDG4: add support for messengers to access and modify properties from
+    the Geant4 prompt. For the test hit classes and the simple sensitive 
+    detector a ROOT I/O plugin was provided.
+  - DDG4: Split into several libraries:
+     -- libDD4hepG4.so pure    link library without any plugins
+     -- libDD4hepG4Legacy.so   'Old' plugins. The old stuff at some point
+                               will have to disappear.
+     -- libDD4hepG4Plugins.so  New framework plugins
+     -- libDD4hepG4LCIO.so     LCIO output plugin for new framework
 
 2013/11/03    Markus Frank
 --------------------------
