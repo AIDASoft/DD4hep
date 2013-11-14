@@ -25,12 +25,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   for(xml_coll_t i(x_det,_U(layer)); i; ++i, ++n)  {
     xml_comp_t x_layer = i;
     string  l_name = det_name+_toString(n,"_layer%d");
-    DetElement layer(sdet,_toString(n,"layer%d"),x_layer.id());
-    Tube    l_tub;
-    Volume  l_vol(l_name,l_tub,air);
     double  z    = x_layer.outer_z();
     double  rmin = x_layer.inner_r();
     double  r    = rmin;
+    DetElement layer(sdet,_toString(n,"layer%d"),x_layer.id());
+    Tube    l_tub (rmin,2*rmin,z,0.0,2*M_PI);
+    Volume  l_vol(l_name,l_tub,air);
     int m = 0;
 
     for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++m)  {
@@ -43,8 +43,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       r += thickness;
       if ( x_slice.isSensitive() ) {
-	sens.setType("tracker");
-	s_vol.setSensitiveDetector(sens);
+        sens.setType("tracker");
+        s_vol.setSensitiveDetector(sens);
       }
       // Set Attributes
       s_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());

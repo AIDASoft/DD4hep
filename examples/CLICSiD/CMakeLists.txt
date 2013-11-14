@@ -64,10 +64,10 @@ endif()
 
 add_library(${PackageName} SHARED ${sources})
 
-add_executable(CalorimeterReco CalorimeterReco.cpp ${sources})
+add_executable(CalorimeterReco CalorimeterReco.cpp)
 
 target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES} )
+target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
 

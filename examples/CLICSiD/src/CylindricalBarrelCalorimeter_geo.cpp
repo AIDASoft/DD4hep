@@ -17,21 +17,21 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   xml_dim_t  dim       = x_det.dimensions();
   Material   air       = lcdd.air();
   string     det_name  = x_det.nameStr();
-  Tube       envelope;
-  Volume     envelopeVol(det_name+"_envelope",envelope,air);
   DetElement sdet       (det_name,x_det.id());
   double     z         = dim.outer_z();
   double     rmin      = dim.inner_r();
   double     r         = rmin;
   int        n         = 0;
+  Tube       envelope(rmin,2*rmin,2*z,0.0,2*M_PI);
+  Volume     envelopeVol(det_name+"_envelope",envelope,air);
     
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
       string layer_name = det_name + _toString(n,"_layer%d");
-      Tube   layer_tub;
-      Volume layer_vol(layer_name,layer_tub,air);
       double rlayer = r;
+      Tube   layer_tub(rmin,rlayer,2*z,0,2*M_PI);
+      Volume layer_vol(layer_name,layer_tub,air);
         
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
