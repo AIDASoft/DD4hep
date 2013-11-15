@@ -102,7 +102,7 @@ void Geant4HitCollection::releaseData(const ComponentCast& cast, std::vector<voi
     if (&cast == &m->cast)
       result->push_back(w.release());
     else
-      result->push_back(m->cast.apply_downCast(cast.type, w.release()));
+      result->push_back(m->cast.apply_downCast(cast, w.release()));
   }
 }
 
@@ -114,7 +114,7 @@ void Geant4HitCollection::getData(const ComponentCast& cast, std::vector<void*>*
     if (&cast == &m->cast)
       result->push_back(w.data());
     else
-      result->push_back(m->cast.apply_downCast(cast.type, w.data()));
+      result->push_back(m->cast.apply_downCast(cast, w.data()));
   }
 }
 

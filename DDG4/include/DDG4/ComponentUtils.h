@@ -58,11 +58,11 @@ namespace DD4hep {
     }
 
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_dynCast(const std::type_info& to, const void* ptr) const;
+    void* apply_dynCast(const ComponentCast& to, const void* ptr) const;
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_upCast(const std::type_info& to, const void* ptr) const;
+    void* apply_upCast(const ComponentCast& to, const void* ptr) const;
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_downCast(const std::type_info& to, const void* ptr) const;
+    void* apply_downCast(const ComponentCast& to, const void* ptr) const;
   };
 
 }      // End namespace DD4hep

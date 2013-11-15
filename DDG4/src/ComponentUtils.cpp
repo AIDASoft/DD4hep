@@ -19,6 +19,7 @@
 #ifndef _WIN32
 #include <cxxabi.h>
 typedef abi::__class_type_info class_t;
+using abi::__dynamic_cast;
 #endif
 
 using namespace std;
@@ -191,48 +192,61 @@ ComponentCast::~ComponentCast() {
 //   -3: src_type is a multiple public non-virtual base of dst_type
 extern "C" void*
 __dynamic_cast(const void* __src_ptr,// Starting object.
-    const __class_type_info* __src_type,// Static type of object.
-    const __class_type_info* __dst_type,// Desired target type.
-    ptrdiff_t __src2dst);// How src and dst are related.
+	       const abi::__class_type_info* __src_type,// Static type of object.
+	       const abi::__class_type_info* __dst_type,// Desired target type.
+	       ptrdiff_t __src2dst);// How src and dst are related.
 #endif
 
-/// Apply cast using typeinfo instead of dynamic_cast
-void* ComponentCast::apply_dynCast(const std::type_info& to, const void* ptr) const {
-  if (&to == &type) {
-    return (void*) ptr;
-  }
-  const class_t* src_type = dynamic_cast<const class_t*>(&to);
-  if (src_type) {
-    // First try down cast
-    void *r = abi::__dynamic_cast(ptr, src_type, (const class_t*) abi_class, -1);
-    if (r)
-      return r;
-    // Now try the up-cast
-    r = abi::__dynamic_cast(ptr, (const class_t*) abi_class, src_type, -1);
-    if (r)
-      return r;
-    throw unrelated_type_error(type, to, "Failed to apply abi dynamic cast operation!");
-  }
-  throw unrelated_type_error(type, to, "Target type is not an abi class type!");
+static inline void* cast_wrap(const void* p,
+			      const abi::__class_type_info* src,
+			      const abi::__class_type_info* dst,
+			      ptrdiff_t src2dst)
+{
+  return abi::__dynamic_cast(p,src,dst,src2dst);
+  // Don't know what to do on the damned MACs....
+  //return (p && src && dst && src2dst) ? 0 : 0;
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* ComponentCast::apply_upCast(const std::type_info& to, const void* ptr) const {
+void* ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const {
+  if (&to == this) {
+    return (void*) ptr;
+  }
+  const class_t* src_type = (const class_t*)to.abi_class;
+  if (src_type) {
+    // First try down cast
+    void *r = cast_wrap(ptr, src_type, (const class_t*) abi_class, -1);
+    if (r)
+      return r;
+    // Now try the up-cast
+    r = cast_wrap(ptr, (const class_t*) abi_class, src_type, -1);
+    if (r)
+      return r;
+    throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
+  }
+  throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
+}
+
+/// Apply cast using typeinfo instead of dynamic_cast
+void* ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const {
+  if (&to == this) {
+    return (void*) ptr;
+  }
   return apply_dynCast(to, ptr);
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* ComponentCast::apply_downCast(const std::type_info& to, const void* ptr) const {
-  if (&to == &type) {
+void* ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const {
+  if (&to == this) {
     return (void*) ptr;
   }
-  const class_t* src_type = dynamic_cast<const class_t*>(&to);
+  const class_t* src_type = (const class_t*)to.abi_class;
   if (src_type) {
-    void *r = abi::__dynamic_cast(ptr, src_type, (const class_t*) abi_class, -1);
+    void *r = cast_wrap(ptr, src_type, (const class_t*)abi_class, -1);
     if (r)
       return r;
-    throw unrelated_type_error(type, to, "Failed to apply abi dynamic cast operation!");
+    throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
   }
-  throw unrelated_type_error(type, to, "Target type is not an abi class type!");
+  throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
 }
 

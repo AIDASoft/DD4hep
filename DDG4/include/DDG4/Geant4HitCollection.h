@@ -71,7 +71,7 @@ namespace DD4hep {
               return wrap;
             }
             // Need to ensure that the container types are the same!
-            wrap.first = me.apply_dynCast(cast.type, obj);
+            wrap.first = me.apply_dynCast(cast, obj);
             return wrap;
           }
           throw std::runtime_error("Invalid hit pointer passed to collection!");
@@ -146,7 +146,8 @@ namespace DD4hep {
       }
       /// Automatic conversion to the desired type
       template <typename TYPE> operator TYPE*() const {
-        return (TYPE*) m_data.second->cast.apply_downCast(typeid(TYPE), m_data.first);
+        return (TYPE*) m_data.second->
+	  cast.apply_downCast(ComponentCast::instance<TYPE>(),m_data.first);
       }
     };
 
