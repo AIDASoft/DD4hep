@@ -167,9 +167,19 @@ namespace DD4hep {
 
     /** @class SubDetector Detector.h DD4hep/lcdd/Detector.h
      *
-     *  The basic object type to access all information of a given
-     *  Subdetector including it's hierarchical structure with
-     *  other dependending DetElement daughters.
+     * Detector elements (class DetElement are entities which represent 
+     * subdetectors or sizable parts of a subdetector.
+     * A DetElement instance has the means to provide to clients information about
+     *
+     * --  the detector hierarchy by exposing its children.
+     * --  its placement within the overall experiment if it represents an 
+     * entire subdetector or its placement with respect to its parent
+     * if the \tw{DetElement} represents a part of a subdetector.
+     * --  information about the \tw{Readout} structure if the object is 
+     * instrumented and read-out. Otherwise this link is empty.
+     * --  information about the environmental conditions etc. (\tw{conditons}).
+     * --  alignment information.
+     *
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -369,7 +379,7 @@ namespace DD4hep {
       /// Set the limits to the detector element
       DetElement& setLimitSet(const LCDD& lcdd, const std::string& name, const Volume& volume);
 
-      /// Access to the logical volume of the daughter placement
+      /// Access to the logical volume of the detector element's placement
       Volume volume() const;
 
       /// Access to the physical volume of this detector element
@@ -385,6 +395,11 @@ namespace DD4hep {
       DetElement child(const std::string& name) const;
       /// Access to the detector elements's parent
       DetElement parent() const;
+
+      /// Access to the alignment information
+      Alignment alignment() const;
+      /// Access to the conditions information 
+      Conditions conditions() const;
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
       DetElement& setReference(DetElement reference);

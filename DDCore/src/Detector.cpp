@@ -374,16 +374,17 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
     sens.setCombineHits(value);
   return *this;
 }
-#if 0
-Readout DetElement::readout() const {
-  return object<Object>().readout;
+
+/// Access to the alignment information
+Alignment DetElement::alignment() const   {
+  return object<Object>().alignment;
 }
 
-DetElement& DetElement::setReadout(const Readout& readout) {
-  object<Object>().readout = readout;
-  return *this;
+/// Access to the conditions information 
+Conditions DetElement::conditions() const  {
+  return object<Object>().conditions;
 }
-#endif
+
 const DetElement::Children& DetElement::children() const {
   return object<Object>().children;
 }
