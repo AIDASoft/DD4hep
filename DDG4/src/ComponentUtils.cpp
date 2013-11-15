@@ -16,10 +16,12 @@
 #include <cstring>
 #include <map>
 
-#ifndef _WIN32
+#if defined(__linux) || defined(__APPLE__)
 #include <cxxabi.h>
+#ifndef __APPLE__
 typedef abi::__class_type_info class_t;
-using abi::__dynamic_cast;
+using   abi::__dynamic_cast;
+#endif
 #endif
 
 using namespace std;
@@ -170,12 +172,16 @@ string unrelated_type_error::msg(const std::type_info& typ1, const std::type_inf
 }
 
 /// Initializing Constructor
-ComponentCast::ComponentCast(const std::type_info& t)
-    : type(t) {
+ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
+  : type(t), destroy(d), cast(c) {
+#ifdef __APPLE__
+  abi_class = 0;
+#else
   abi_class = dynamic_cast<const class_t*>(&type);
   if (!abi_class) {
     throw std::runtime_error("Class type " + typeinfoName(type) + " is not an abi object type!");
   }
+#endif
 }
 
 /// Defautl destructor
@@ -197,21 +203,30 @@ __dynamic_cast(const void* __src_ptr,// Starting object.
 	       ptrdiff_t __src2dst);// How src and dst are related.
 #endif
 
+#ifndef __APPLE__
 static inline void* cast_wrap(const void* p,
 			      const abi::__class_type_info* src,
 			      const abi::__class_type_info* dst,
 			      ptrdiff_t src2dst)
 {
   return abi::__dynamic_cast(p,src,dst,src2dst);
-  // Don't know what to do on the damned MACs....
-  //return (p && src && dst && src2dst) ? 0 : 0;
 }
+#endif
 
 /// Apply cast using typeinfo instead of dynamic_cast
 void* ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const {
   if (&to == this) {
     return (void*) ptr;
   }
+#ifdef __APPLE__
+  // First try down cast
+  void *r = (*to.cast)(ptr);
+  if (r) 
+    return r;
+  {
+    // Now try the up-cast
+    r = (*cast)(ptr);
+#else
   const class_t* src_type = (const class_t*)to.abi_class;
   if (src_type) {
     // First try down cast
@@ -220,6 +235,7 @@ void* ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) con
       return r;
     // Now try the up-cast
     r = cast_wrap(ptr, (const class_t*) abi_class, src_type, -1);
+#endif
     if (r)
       return r;
     throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
@@ -240,9 +256,14 @@ void* ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) co
   if (&to == this) {
     return (void*) ptr;
   }
+#ifdef __APPLE__
+  void *r = (*to.cast)(ptr);
+  {
+#else
   const class_t* src_type = (const class_t*)to.abi_class;
-  if (src_type) {
+  if (src_type)    {
     void *r = cast_wrap(ptr, src_type, (const class_t*)abi_class, -1);
+#endif
     if (r)
       return r;
     throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");

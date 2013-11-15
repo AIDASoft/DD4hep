@@ -41,19 +41,32 @@ namespace DD4hep {
    *   @date    13.08.2013
    */
   class ComponentCast {
+  public:
+    typedef void  (*destroy_t)(void*);
+    typedef void* (*cast_t)(const void*);
+    const std::type_info& type;
+    const void* abi_class;
+    destroy_t   destroy;
+    cast_t      cast;
+
   private:
     /// Initializing Constructor
-    ComponentCast(const std::type_info& t);
+    ComponentCast(const std::type_info& t, destroy_t d, cast_t c);
     /// Defautl destructor
     virtual ~ComponentCast();
 
   public:
-    const std::type_info& type;
-    const void* abi_class;
-
-  public:
+    template <typename TYPE> static void _destroy(void* p)  {
+      TYPE* q = (TYPE*)p;
+      if (q)	delete q;
+    }
+    template <typename TYPE> static void* _cast(const void* p)  {
+      TYPE* q = (TYPE*)p;
+      q = dynamic_cast<TYPE*>(q);
+      return (void*)q;
+    }
     template <typename TYPE> static ComponentCast& instance() {
-      static ComponentCast c(typeid(TYPE));
+      static ComponentCast c(typeid(TYPE),_destroy<TYPE>,_cast<TYPE>);
       return c;
     }
 

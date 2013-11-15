@@ -21,8 +21,8 @@ Geant4HitWrapper::InvalidHit::~InvalidHit() {
 }
 
 /// Initializing Constructor
-Geant4HitWrapper::HitManipulator::HitManipulator(const ComponentCast& c, const ComponentCast& v, destroy_t d)
-    : cast(c), vec_type(v), destroy(d) {
+Geant4HitWrapper::HitManipulator::HitManipulator(const ComponentCast& c, const ComponentCast& v)
+    : cast(c), vec_type(v) {
   InstanceCount::increment(this);
 }
 
@@ -34,7 +34,8 @@ Geant4HitWrapper::HitManipulator::~HitManipulator() {
 /// Default destructor
 Geant4HitWrapper::~Geant4HitWrapper() {
   if (m_data.first && m_data.second) {
-    (m_data.second->destroy)(m_data);
+    (*m_data.second->cast.destroy)(m_data.first);
+    m_data.first = 0;
   }
 }
 

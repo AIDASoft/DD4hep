@@ -53,13 +53,11 @@ namespace DD4hep {
       struct HitManipulator {
       public:
         typedef std::pair<void*, HitManipulator*> Wrapper;
-        typedef void (*destroy_t)(Wrapper& data);
         const ComponentCast& cast;
         const ComponentCast& vec_type;
-        destroy_t destroy;
 
         /// Initializing Constructor
-        HitManipulator(const ComponentCast& c, const ComponentCast& v, destroy_t d);
+        HitManipulator(const ComponentCast& c, const ComponentCast& v);
         /// Default destructor
         ~HitManipulator();
         /// Check pointer to be of proper type
@@ -84,8 +82,7 @@ namespace DD4hep {
           obj.first = 0;
         }
         template <typename TYPE> static HitManipulator* instance() {
-          static HitManipulator m(ComponentCast::instance<TYPE>(), ComponentCast::instance<std::vector<TYPE*> >(),
-              deleteHit<TYPE>);
+          static HitManipulator m(ComponentCast::instance<TYPE>(), ComponentCast::instance<std::vector<TYPE*> >());
           return &m;
         }
       };
@@ -115,7 +112,7 @@ namespace DD4hep {
       virtual ~Geant4HitWrapper();
       /// Geant4 required object allocator
       void *operator new(size_t);
-      /// Geat4 required object destroyer
+      /// Geant4 required object destroyer
       void operator delete(void *ptr);
       /// Pointer/Object release
       void* release();
