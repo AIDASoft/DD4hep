@@ -13,6 +13,7 @@
 #include "DDG4/ComponentProperties.h"
 #include "DDG4/Geant4Callback.h"
 #include "G4UImessenger.hh"
+#include "G4UIdirectory.hh"
 
 /*
  *   DD4hep namespace declaration
