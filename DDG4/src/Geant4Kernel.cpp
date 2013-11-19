@@ -72,9 +72,9 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd)
   m_context = new Geant4Context(this);
   m_lcdd.addExtension < Geant4Kernel > (this);
 
-  m_controlName = "/properties/";
+  m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
-  m_control->SetGuidance("Property control for all Geant4 named actions");
+  m_control->SetGuidance("Control for all named Geant4 actions");
   InstanceCount::increment(this);
 }
 

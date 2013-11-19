@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DDG4/Geant4Action.h"
+
 // Forward declaration
 class G4Run;
 
@@ -27,6 +28,11 @@ namespace DD4hep {
      *
      * Concrete basic implementation of the Geant4 run action
      *
+     * The Run Action is called once per start and end of a run. 
+     * i.e. a series of generated events. These two callbacks
+     * allow clients to define run-dependent actions such as statistics
+     * summaries etc.
+     *
      * @author  M.Frank
      * @version 1.0
      */
@@ -36,7 +42,7 @@ namespace DD4hep {
       Geant4RunAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4RunAction();
-      /// begin-of-run callback
+      /// Begin-of-run callback
       virtual void begin(const G4Run* run);
       /// End-of-run callback
       virtual void end(const G4Run* run);
@@ -44,7 +50,10 @@ namespace DD4hep {
 
     /** @class Geant4RunActionSequence Geant4RunAction.h DDG4/Geant4RunAction.h
      *
-     * Concrete implementation of the Geant4 run action sequence
+     * Concrete implementation of the Geant4 run action sequence.
+     * The sequence dispatches the callbacks at the beginning and the and
+     * of a run to all registered Geant4RunAction members and all 
+     * registered callbacks.
      *
      * @author  M.Frank
      * @version 1.0
@@ -74,7 +83,7 @@ namespace DD4hep {
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4RunAction* action);
-      /// begin-of-run callback
+      /// Begin-of-run callback
       virtual void begin(const G4Run* run);
       /// End-of-run callback
       virtual void end(const G4Run* run);

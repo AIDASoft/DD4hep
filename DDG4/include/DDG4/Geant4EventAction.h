@@ -27,6 +27,12 @@ namespace DD4hep {
     /** @class Geant4EventAction Geant4Action.h DDG4/Geant4Action.h
      *
      * Concrete basic implementation of the Geant4 event action
+     * 
+     * The EventAction is called for every event.
+     * During the callback all particles are created which form the 
+     * microscopic kinematic action of the particle collision.
+     * This input may either origin directly from an event generator 
+     * program or come from file.
      *
      * @author  M.Frank
      * @version 1.0
@@ -37,7 +43,7 @@ namespace DD4hep {
       Geant4EventAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4EventAction();
-      /// begin-of-event callback
+      /// Begin-of-event callback
       virtual void begin(const G4Event* event);
       /// End-of-event callback
       virtual void end(const G4Event* event);
@@ -46,6 +52,9 @@ namespace DD4hep {
     /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
      *
      * Concrete implementation of the Geant4 event action sequence
+     * The sequence dispatches the callbacks at the beginning and the and
+     * of an event to all registered Geant4EventAction members and all 
+     * registered callbacks.
      *
      * @author  M.Frank
      * @version 1.0
@@ -75,7 +84,7 @@ namespace DD4hep {
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4EventAction* action);
-      /// begin-of-event callback
+      /// Begin-of-event callback
       virtual void begin(const G4Event* event);
       /// End-of-event callback
       virtual void end(const G4Event* event);

@@ -47,6 +47,10 @@ namespace DD4hep {
      *
      * Concrete implementation of the Geant4 stacking action sequence
      *
+     * The sequence dispatches the callbacks for each stepping action
+     * to all registered Geant4StackingAction members and all 
+     * registered callbacks.
+     *
      * @author  M.Frank
      * @version 1.0
      */

@@ -53,14 +53,18 @@ namespace DD4hep {
       /// Mark a single child of the track to be stored
       bool storeChild(Geant4TrackInformation* info) const;
       /// Pre-track action callback
-      virtual void begin(const G4Track* trk);
+      virtual void begin(const G4Track* track);
       /// Post-track action callback
-      virtual void end(const G4Track* trk);
+      virtual void end(const G4Track* track);
     };
 
     /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
      *
      * Concrete implementation of the Geant4 tracking action sequence
+     *
+     * The sequence dispatches the callbacks for each tracking action
+     * to all registered Geant4SteppingAction members and all 
+     * registered callbacks.
      *
      * @author  M.Frank
      * @version 1.0
@@ -68,9 +72,9 @@ namespace DD4hep {
     class Geant4TrackingActionSequence: public Geant4Action {
     protected:
       /// Callback sequence for pre tracking action
-      CallbackSequence m_begin;
+      CallbackSequence             m_begin;
       /// Callback sequence for post tracking action
-      CallbackSequence m_end;
+      CallbackSequence             m_end;
       /// The list of action objects to be called
       Actors<Geant4TrackingAction> m_actors;
     public:
@@ -88,10 +92,10 @@ namespace DD4hep {
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4TrackingAction* action);
-      /// Pre-track action callback
-      virtual void begin(const G4Track* trk);
-      /// Post-track action callback
-      virtual void end(const G4Track* trk);
+      /// Pre-tracking action callback
+      virtual void begin(const G4Track* track);
+      /// Post-tracking action callback
+      virtual void end(const G4Track* track);
     };
 
   }    // End namespace Simulation

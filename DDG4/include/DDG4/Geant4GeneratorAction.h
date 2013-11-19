@@ -28,6 +28,14 @@ namespace DD4hep {
      *
      * Concrete implementation of the Geant4 generator action base class
      *
+     * The Geant4GeneratorAction is called for every event.
+     * During the callback all particles are created which form the 
+     * microscopic kinematic action of the particle collision.
+     * This input may either origin directly from an event generator program
+     * or come from file.
+     *
+     * The callback signature is: void operator()(G4Event* event)
+     *
      * @author  M.Frank
      * @version 1.0
      */
@@ -48,6 +56,12 @@ namespace DD4hep {
      *
      * Concrete implementation of the Geant4 generator action sequence
      *
+     * The sequence dispatches the callbacks at the beginning 
+     * of an event to all registered Geant4GeneratorAction members and all 
+     * registered callbacks.
+     *
+     * The callback signature is: void operator()(G4Event* event)
+     *
      * @author  M.Frank
      * @version 1.0
      */
@@ -62,7 +76,7 @@ namespace DD4hep {
       Geant4GeneratorActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4GeneratorActionSequence();
-      /// Register begin-of-run callback. Types Q and T must be polymorph!
+      /// Register primary particle generation callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
       void call(Q* p, void (T::*f)(G4Event*)) {
         m_calls.add(p, f);
