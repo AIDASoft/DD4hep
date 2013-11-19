@@ -24,7 +24,7 @@ namespace DD4hep {
    */
   namespace Simulation {
 
-    /** \class Geant4EventAction Geant4Action.h DDG4/Geant4Action.h
+    /** @class Geant4EventAction Geant4Action.h DDG4/Geant4Action.h
      *
      * Concrete basic implementation of the Geant4 event action
      * 
@@ -49,7 +49,7 @@ namespace DD4hep {
       virtual void end(const G4Event* event);
     };
 
-    /** \class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
+    /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
      *
      * Concrete implementation of the Geant4 event action sequence
      * The sequence dispatches the callbacks at the beginning and the and
