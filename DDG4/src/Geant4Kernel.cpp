@@ -202,7 +202,7 @@ Geant4Action* Geant4Kernel::globalAction(const std::string& action_name, bool th
   GlobalActions::iterator i = m_globalActions.find(action_name);
   if (i == m_globalActions.end()) {
     if (throw_if_not_present) {
-      throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is not already globally "
+      throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is not globally "
           "registered. [Action-Missing]", action_name.c_str()));
     }
     return 0;

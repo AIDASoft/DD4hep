@@ -93,6 +93,12 @@ template <typename TYPE> Geant4Handle<TYPE>::~Geant4Handle() {
   value = 0;
 }
 
+template <typename TYPE> TYPE* Geant4Handle<TYPE>::release() {
+  TYPE* temp = value;
+  value = 0;
+  return temp;
+}
+
 template <typename TYPE> void Geant4Handle<TYPE>::checked_assign(TYPE* p) {
   if (value)
     value->release();
@@ -122,6 +128,10 @@ template <typename TYPE> TYPE* Geant4Handle<TYPE>::operator->() const {
   return checked_value(value);
 }
 
+template <typename TYPE> Geant4Action* Geant4Handle<TYPE>::action() const {
+  return checked_value(value);
+}
+
 template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(Geant4Handle& handle) {
   if (value)
     value->release();
@@ -142,6 +152,14 @@ template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(TYPE*
 
 namespace DD4hep {
   namespace Simulation {
+
+    KernelHandle::KernelHandle()  {
+      value = &Geant4Kernel::instance(Geometry::LCDD::getInstance());
+    }
+    void KernelHandle::destroy()  {
+      if ( value ) delete value;
+      value = 0;
+    }
 
     template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(const Geant4Kernel& kernel, const string& type_name,
         const string& detector) {

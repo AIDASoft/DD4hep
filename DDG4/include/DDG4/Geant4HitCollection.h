@@ -53,9 +53,13 @@ namespace DD4hep {
       struct HitManipulator {
       public:
         typedef std::pair<void*, HitManipulator*> Wrapper;
+#ifdef __CINT__
+        const ComponentCast* cast;
+        const ComponentCast* vec_type;
+#else
         const ComponentCast& cast;
         const ComponentCast& vec_type;
-
+#endif
         /// Initializing Constructor
         HitManipulator(const ComponentCast& c, const ComponentCast& v);
         /// Default destructor

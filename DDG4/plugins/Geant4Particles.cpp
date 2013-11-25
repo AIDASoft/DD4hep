@@ -135,6 +135,8 @@ DECLARE_GEANT4_PARTICLE(G4AntiLambdab)
 DECLARE_GEANT4_PARTICLE(G4XicZero)
 #include "G4SigmacZero.hh"
 DECLARE_GEANT4_PARTICLE(G4SigmacZero)
+#include "G4BaryonConstructor.hh"
+DECLARE_GEANT4_PARTICLEGROUP(G4BaryonConstructor)
 
 // ---- ions
 #include "G4AntiHe3.hh"
@@ -217,6 +219,8 @@ DECLARE_GEANT4_PARTICLE(G4PionMinus)
 DECLARE_GEANT4_PARTICLE(G4Etac)
 #include "G4BcMesonPlus.hh"
 DECLARE_GEANT4_PARTICLE(G4BcMesonPlus)
+#include "G4MesonConstructor.hh"
+DECLARE_GEANT4_PARTICLEGROUP(G4MesonConstructor)
 
 // ---- leptons
 #include "G4MuonPlus.hh"
@@ -235,8 +239,6 @@ DECLARE_GEANT4_PARTICLE(G4TauMinus)
 DECLARE_GEANT4_PARTICLE(G4Positron)
 #include "G4AntiNeutrinoMu.hh"
 DECLARE_GEANT4_PARTICLE(G4AntiNeutrinoMu)
-#include "G4LeptonConstructor.hh"
-DECLARE_GEANT4_PARTICLEGROUP(G4LeptonConstructor)
 #include "G4NeutrinoMu.hh"
 DECLARE_GEANT4_PARTICLE(G4NeutrinoMu)
 #include "G4AntiNeutrinoE.hh"
@@ -245,6 +247,8 @@ DECLARE_GEANT4_PARTICLE(G4AntiNeutrinoE)
 DECLARE_GEANT4_PARTICLE(G4Electron)
 #include "G4NeutrinoTau.hh"
 DECLARE_GEANT4_PARTICLE(G4NeutrinoTau)
+#include "G4LeptonConstructor.hh"
+DECLARE_GEANT4_PARTICLEGROUP(G4LeptonConstructor)
 
 // ---- shortlived
 #include "G4ExcitedXiConstructor.hh"

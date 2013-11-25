@@ -82,9 +82,9 @@ Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& name, DetEle
   if (!det.isValid()) {
     throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", name.c_str()));
   }
-  m_sequence = ctxt->kernel().sensitiveAction(m_detector.name());
+  m_sequence  = ctxt->kernel().sensitiveAction(m_detector.name());
   m_sensitive = lcdd.sensitiveDetector(det.name());
-  m_readout = m_sensitive.readout();
+  m_readout   = m_sensitive.readout();
 }
 
 /// Standard destructor
@@ -92,6 +92,12 @@ Geant4Sensitive::~Geant4Sensitive() {
   m_filters(&Geant4Filter::release);
   m_filters.clear();
   InstanceCount::decrement(this);
+}
+
+/// Add an actor responding to all callbacks. Sequence takes ownership.
+void Geant4Sensitive::adoptFilter(Geant4Action* action)   {
+  Geant4Filter* filter = dynamic_cast<Geant4Filter*>(action);
+  adopt(filter);
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.
@@ -175,6 +181,9 @@ Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* context,
     : Geant4Action(context, nam), m_hce(0) {
   m_needsControl = true;
   context->sensitiveActions().insert(name(), this);
+  /// Update the sensitive detector type, so that the proper instance is created
+  Geometry::SensitiveDetector sd = context->lcdd().sensitiveDetector(nam);
+  sd.setType("Geant4SensDet");
   InstanceCount::increment(this);
 }
 
@@ -185,6 +194,12 @@ Geant4SensDetActionSequence::~Geant4SensDetActionSequence() {
   m_filters.clear();
   m_actors.clear();
   InstanceCount::decrement(this);
+}
+
+/// Add an actor responding to all callbacks. Sequence takes ownership.
+void Geant4SensDetActionSequence::adoptFilter(Geant4Action* action)   {
+  Geant4Filter* filter = dynamic_cast<Geant4Filter*>(action);
+  adopt(filter);
 }
 
 /// Add an actor responding to all callbacks
@@ -349,3 +364,7 @@ void Geant4SensDetSequences::insert(const string& name, Geant4SensDetActionSeque
       "sequence with name:%s", name.c_str()));
 }
 
+/// Clear the sequence list
+void Geant4SensDetSequences::clear()   {
+  m_sequences.clear();
+}

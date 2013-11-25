@@ -35,6 +35,18 @@ namespace DD4hep {
     }
   };
 
+  /** @class unrelated_value_error
+   *
+   *   @author  M.Frank
+   *   @date    13.08.2013
+   */
+  struct unrelated_value_error : public std::runtime_error {
+    static std::string msg(const std::type_info& typ, const std::string& text);
+    unrelated_value_error(const std::type_info& typ, const std::string& text = "")
+        : std::runtime_error(msg(typ, text)) {
+    }
+  };
+
   /** @class
    *
    *   @author  M.Frank
@@ -44,7 +56,11 @@ namespace DD4hep {
   public:
     typedef void  (*destroy_t)(void*);
     typedef void* (*cast_t)(const void*);
+#ifdef __CINT__
+    const std::type_info* type;
+#else
     const std::type_info& type;
+#endif
     const void* abi_class;
     destroy_t   destroy;
     cast_t      cast;

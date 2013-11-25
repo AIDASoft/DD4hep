@@ -79,6 +79,7 @@ namespace DD4hep {
       *(TYPE*)ptr = temp;
       return true;
     }
+    PropertyGrammar::invalidConversion(str, typeid(TYPE));
     return false;
 #else
     if (!ptr || str.length() == 0) {

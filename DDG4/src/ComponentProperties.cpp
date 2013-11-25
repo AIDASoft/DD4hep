@@ -27,6 +27,13 @@ PropertyGrammar::~PropertyGrammar() {
 }
 
 /// Error callback on invalid conversion
+void PropertyGrammar::invalidConversion(const string& value, const type_info& to) {
+  string to_name = typeinfoName(to);
+  throw unrelated_value_error(to,
+      "The Property data conversion of '" + value + "' to type " + to_name + " is not defined.");
+}
+
+/// Error callback on invalid conversion
 void PropertyGrammar::invalidConversion(const type_info& from, const type_info& to) {
   string to_name = typeinfoName(to);
   string from_name = typeinfoName(from);
@@ -111,6 +118,12 @@ PropertyManager::PropertyManager() {
 /// Default destructor
 PropertyManager::~PropertyManager() {
   m_properties.clear();
+}
+
+/// Check for existence
+bool PropertyManager::exists(const std::string& name) const   {
+  Properties::const_iterator i = m_properties.find(name);
+  return i != m_properties.end();
 }
 
 /// Verify that this property does not exist (throw exception if the name was found)

@@ -70,7 +70,10 @@ long Geant4Action::addRef() {
 long Geant4Action::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
-    cout << "Geant4Action: Deleting object " << name() << " of type " << typeinfoName(typeid(*this)) << endl;
+    cout << "Geant4Action: Deleting object " << name() 
+	 << " of type " << typeinfoName(typeid(*this)) 
+	 << " Ptr:" << (void*)this
+	 << endl;
     delete this;
   }
   return count;
@@ -87,6 +90,16 @@ Geant4Action& Geant4Action::setProperties(PropertyConfigurator& setup) {
   return *this;
 }
 
+/// Check property for existence
+bool Geant4Action::hasProperty(const std::string& name) const    {
+  return m_properties.exists(name);
+}
+
+/// Access single property
+Property& Geant4Action::property(const std::string& name)   {
+  return properties()[name];
+}
+
 /// Install all control messenger if wanted
 void Geant4Action::installMessengers() {
   //m_needsControl = true;
@@ -95,12 +108,32 @@ void Geant4Action::installMessengers() {
     path += name() + "/";
     m_control = new Geant4UIMessenger(name(), path);
     installPropertyMessenger();
+    installCommandMessenger();
   }
 }
 
 /// Install property control messenger if wanted
 void Geant4Action::installPropertyMessenger() {
   m_control->exportProperties(m_properties);
+}
+
+/// Install command control messenger if wanted
+void Geant4Action::installCommandMessenger()   {
+}
+
+/// Access to the UI messenger
+Geant4UIMessenger* Geant4Action::control() const   {
+  if ( m_control )   {
+    return m_control;
+  }
+  except("No control was installed for this action item.");
+  return 0;
+}
+
+/// Enable and install UI messenger
+void Geant4Action::enableUI()   {
+  m_needsControl = true;
+  installMessengers();
 }
 
 /// Support of debug messages.

@@ -9,6 +9,7 @@
 
 // Framework include files
 #include "DDG4/Geant4PhysicsList.h"
+#include "DDG4/Geant4UIMessenger.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
@@ -94,6 +95,55 @@ Geant4PhysicsList::Geant4PhysicsList(Geant4Context* context, const string& nam)
 /// Default destructor
 Geant4PhysicsList::~Geant4PhysicsList() {
   InstanceCount::decrement(this);
+}
+
+/// Install command control messenger if wanted
+void Geant4PhysicsList::installCommandMessenger()   {
+  control()->addCall("dump", "Dump content of " + name(), Callback(this).make(&Geant4PhysicsList::dump));
+}
+
+/// Dump content to stdout
+void Geant4PhysicsList::dump()    {
+  printout(ALWAYS,name(),"+++ Geant4PhysicsList Dump");
+  for (PhysicsConstructors::const_iterator i = m_physics.begin(); i != m_physics.end(); ++i)
+    printout(ALWAYS,name(),"+++ PhysicsConstructor:           %s",(*i).c_str());
+  for (ParticleConstructors::const_iterator i = m_particles.begin(); i != m_particles.end(); ++i)
+    printout(ALWAYS,name(),"+++ ParticleConstructor:          %s",(*i).c_str());
+  for (PhysicsProcesses::const_iterator i = m_processes.begin(); i != m_processes.end(); ++i) {
+    const string& part_name = (*i).first;
+    const ParticleProcesses& procs = (*i).second;
+    printout(ALWAYS,name(),"+++ PhysicsProcesses of particle  %s",part_name.c_str());
+    for (ParticleProcesses::const_iterator ip = procs.begin(); ip != procs.end(); ++ip) {
+      const Process& p = (*ip);
+      printout(ALWAYS,name(),"+++        Process    %s  ordAtRestDoIt=%d ordAlongSteptDoIt=%d ordPostStepDoIt=%d",
+	       p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
+    }
+  }
+}
+
+/// Add physics particle constructor by name
+void Geant4PhysicsList::addParticleConstructor(const std::string& part_name)   {
+  particles().push_back(part_name);
+}
+
+/// Add particle process by name with arguments
+void Geant4PhysicsList::addParticleProcess(const std::string& part_name, 
+					   const std::string& proc_name,
+					   int ordAtRestDoIt,
+					   int ordAlongSteptDoIt,
+					   int ordPostStepDoIt)
+{
+  Process p;
+  p.name = proc_name;
+  p.ordAtRestDoIt     = ordAtRestDoIt;
+  p.ordAlongSteptDoIt = ordAlongSteptDoIt;
+  p.ordPostStepDoIt   = ordPostStepDoIt;
+  processes(part_name).push_back(p);
+}
+
+/// Add PhysicsConstructor by name
+void Geant4PhysicsList::addPhysicsConstructor(const std::string& phys_name)  {
+  physics().push_back(phys_name);
 }
 
 /// Access processes for one particle type
@@ -201,6 +251,20 @@ Geant4PhysicsListActionSequence::~Geant4PhysicsListActionSequence() {
   m_actors.clear();
   m_process.clear();
   InstanceCount::decrement(this);
+}
+
+/// Install command control messenger if wanted
+void Geant4PhysicsListActionSequence::installCommandMessenger()   {
+  control()->addCall("dump", "Dump content of " + name(), Callback(this).make(&Geant4PhysicsListActionSequence::dump));
+}
+
+/// Dump content to stdout
+void Geant4PhysicsListActionSequence::dump()    {
+  printout(ALWAYS,name(),"+++ Dump");
+  printout(ALWAYS,name(),"+++ Extension name       %s",m_extends.c_str());
+  printout(ALWAYS,name(),"+++ Transportation flag: %d",m_transportation);
+  printout(ALWAYS,name(),"+++ Program decays:      %d",m_decays);
+  m_actors(&Geant4PhysicsList::dump);
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.

@@ -285,15 +285,25 @@ namespace DD4hep {
       PropertyManager& properties() {
         return m_properties;
       }
+      /// Access to the UI messenger
+      Geant4UIMessenger* control() const;
+      /// Enable and install UI messenger
+      void enableUI();
       /// Declare property
       template <typename T> Geant4Action& declareProperty(const std::string& nam, T& val);
       /// Declare property
       template <typename T> Geant4Action& declareProperty(const char* nam, T& val);
+      /// Check property for existence
+      bool hasProperty(const std::string& name) const;
+      /// Access single property
+      Property& property(const std::string& name);
       /// Set object properties
       Geant4Action& setProperties(PropertyConfigurator& setup);
 
       /// Install property control messenger if wanted
       virtual void installMessengers();
+      /// Install command control messenger if wanted
+      virtual void installCommandMessenger();
       /// Install property control messenger if wanted
       void installPropertyMessenger();
 

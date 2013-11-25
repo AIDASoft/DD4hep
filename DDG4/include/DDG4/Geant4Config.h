@@ -51,6 +51,7 @@ namespace DD4hep {
     namespace Setup {
       // Basics
       typedef Geant4Kernel Kernel;
+      typedef Geant4Handle<Geant4Kernel> KernelH;
       // Actions
       typedef Geant4Handle<Geant4Action> Action;
       typedef Geant4Handle<Geant4Filter> Filter;
@@ -64,13 +65,13 @@ namespace DD4hep {
       typedef Geant4Handle<Geant4ActionPhase> Phase;
       typedef Geant4Handle<Geant4Sensitive> Sensitive;
       // Sequences
-      typedef Geant4Handle<Geant4SensDetActionSequence> SensitiveSeq;
-      typedef Geant4Handle<Geant4GeneratorActionSequence> GeneratorSeq;
-      typedef Geant4Handle<Geant4RunActionSequence> RunActionSeq;
-      typedef Geant4Handle<Geant4EventActionSequence> EventActionSeq;
-      typedef Geant4Handle<Geant4TrackingActionSequence> TrackActionSeq;
-      typedef Geant4Handle<Geant4SteppingActionSequence> StepActionSeq;
-      typedef Geant4Handle<Geant4StackingActionSequence> StackActionSeq;
+      typedef Geant4Handle<Geant4SensDetActionSequence>     SensitiveSeq;
+      typedef Geant4Handle<Geant4GeneratorActionSequence>   GeneratorSeq;
+      typedef Geant4Handle<Geant4RunActionSequence>         RunActionSeq;
+      typedef Geant4Handle<Geant4EventActionSequence>       EventActionSeq;
+      typedef Geant4Handle<Geant4TrackingActionSequence>    TrackActionSeq;
+      typedef Geant4Handle<Geant4SteppingActionSequence>    StepActionSeq;
+      typedef Geant4Handle<Geant4StackingActionSequence>    StackActionSeq;
       typedef Geant4Handle<Geant4PhysicsListActionSequence> PhysicsActionSeq;
     }
 

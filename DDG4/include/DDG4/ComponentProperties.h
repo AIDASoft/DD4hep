@@ -48,6 +48,8 @@ namespace DD4hep {
     virtual ~PropertyGrammar();
     /// Error callback on invalid conversion
     static void invalidConversion(const std::type_info& from, const std::type_info& to);
+    /// Error callback on invalid conversion
+    static void invalidConversion(const std::string& value, const std::type_info& to);
     /// Access to the type information
     virtual const std::type_info& type() const = 0;
     /// Serialize an opaque value to a string
@@ -184,6 +186,8 @@ namespace DD4hep {
     PropertyManager();
     /// Default destructor
     virtual ~PropertyManager();
+    /// Check for existence
+    bool exists(const std::string& name) const;
     /// Access property by name (CONST)
     const Property& property(const std::string& name) const;
     /// Access property by name

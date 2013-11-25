@@ -171,6 +171,11 @@ string unrelated_type_error::msg(const std::type_info& typ1, const std::type_inf
   return m;
 }
 
+string unrelated_value_error::msg(const std::type_info& typ, const string& text) {
+  std::string m = "The type " + __typename(typ.name()) + " cannot be converted: " + text;
+  return m;
+}
+
 /// Initializing Constructor
 ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
   : type(t), destroy(d), cast(c) {

@@ -29,11 +29,11 @@ SensitiveSeq::handled_type* setupDetector(Kernel& kernel, const std::string& nam
 }
 
 void setupG4_CINT()  {
-  Geant4Kernel& kernel = Geant4Kernel::instance(LCDD::getInstance());
+  Kernel kernel();
 
   Phase p;
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml");
-  kernel.loadXML("../geant4/sensitive_detectors.xml");
+  kernel.loadXML("sensitive_detectors.xml");
 
   GenAction gun(kernel,"Geant4ParticleGun/Gun");
   gun["energy"] = 0.5*GeV;

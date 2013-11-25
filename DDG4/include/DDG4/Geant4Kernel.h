@@ -131,10 +131,12 @@ namespace DD4hep {
       };
       /// Default destructor
       virtual ~Geant4Kernel();
+#ifndef __CINT__
       /// Instance accessor
       static Geant4Kernel& instance(LCDD& lcdd);
       /// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
       static Geant4Kernel& access(LCDD& lcdd);
+#endif
       /// Access the context
       Geant4Context* context() const {
         return m_context;
