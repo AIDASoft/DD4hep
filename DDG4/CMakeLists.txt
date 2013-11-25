@@ -83,7 +83,7 @@ install(DIRECTORY include/DDG4
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepG4 g4gdmlDisplay
+install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy DD4hepG4LCIO g4gdmlDisplay
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
