@@ -26,7 +26,7 @@ namespace DD4hep {
    */
   namespace Geometry {
 
-// Forward declarations
+    // Forward declarations
     class LCDD;
 
     /** @class VolumeManager  VolumeManager.h DD4hep/lcdd/VolumeManager.h
@@ -165,7 +165,11 @@ namespace DD4hep {
         typedef IDDescriptor::Field Field;
       public:
         /// Reference to the LCDD instance
+#ifdef __CINT__
+        LCDD* lcdd;
+#else
         LCDD& lcdd;
+#endif
         /// The container of subdetector elements
         Detectors subdetectors;
         /// The volume managers for the individual subdetector elements

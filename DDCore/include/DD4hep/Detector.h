@@ -303,6 +303,12 @@ namespace DD4hep {
           : Ref_t(e) {
       }
 
+#ifdef __MAKECINT__
+      /// Constructor to copy handle
+      DetElement(const Ref_t& e)
+          : Ref_t(e) {
+      }
+#endif
       /// Constructor for a new subdetector element
       DetElement(const std::string& name, const std::string& type, int id);
 

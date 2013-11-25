@@ -45,3 +45,20 @@ static Ref_t handle_Geant4(lcdd_t& lcdd, const xml_h& element) {
   return Ref_t(0);
 }
 DECLARE_XMLELEMENT(geant4_xml_setup,handle_Geant4);
+
+#include <iostream>
+using namespace std;
+struct Blabla;
+namespace DD4hep {
+template <> void Converter<Blabla>::operator()(xml_h element)  const  {
+  xml_elt_t e(element);
+  xml_h s = e.child(_Unicode(electronics_structure_thickness));
+  double value = _toDouble(e.child(_Unicode(electronics_structure_thickness)).text());
+  cout << s.tag() << " = " << s.text() << " --> double value:" << value << endl;
+}
+}
+static long handle_blabla(lcdd_t& lcdd, const xml_h& element) {
+  (Converter<Blabla>(lcdd))(element);
+  return 1;
+}
+DECLARE_XML_DOC_READER(blabla,handle_blabla);

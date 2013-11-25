@@ -107,6 +107,8 @@ namespace DD4hep {
       virtual const HandleMap& regions() const = 0;
       /// Accessor to the map of sub-detectors
       virtual const HandleMap& detectors() const = 0;
+      /// Accessor to the map of sub-detectors
+      virtual const HandleMap& sensitiveDetectors() const = 0;
       /// Accessor to the map of readout structures
       virtual const HandleMap& readouts() const = 0;
       /// Accessor to the map of visualisation attributes

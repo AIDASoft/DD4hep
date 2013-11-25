@@ -265,6 +265,10 @@ namespace DD4hep {
       virtual const HandleMap& detectors() const {
         return m_detectors;
       }
+      /// Retrieve a sensitive detector by it's name from the detector description
+      virtual const HandleMap& sensitiveDetectors() const {
+        return m_sensitive;
+      }
       /// Accessor to the map of aligment entries
       virtual const HandleMap& alignments() const {
         return m_alignments;
