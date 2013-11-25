@@ -83,7 +83,7 @@ install(DIRECTORY include/DDG4
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy DD4hepG4LCIO g4gdmlDisplay
+install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
@@ -92,5 +92,13 @@ install(TARGETS DD4hepG4 g4FromXML
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
+
+if(LCIO_DIR)
+install(TARGETS DD4hepG4LCIO 
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib
+  )
+endif()
+
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
