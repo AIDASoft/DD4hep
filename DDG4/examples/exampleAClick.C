@@ -33,7 +33,7 @@ void setupG4_CINT()  {
 
   Phase p;
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml");
-  kernel.loadXML("sensitive_detectors.xml");
+  kernel.loadXML("DDG4_field.xml");
 
   GenAction gun(kernel,"Geant4ParticleGun/Gun");
   gun["energy"] = 0.5*GeV;

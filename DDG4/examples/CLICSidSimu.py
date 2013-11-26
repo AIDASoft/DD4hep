@@ -15,7 +15,7 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml")
-  kernel.loadXML("sensitive_detectors.xml")
+  kernel.loadXML("DDG4_field.xml")
 
   lcdd = kernel.lcdd()
   print '+++   List of sensitive detectors:'
