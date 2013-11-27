@@ -7,7 +7,7 @@ import ROOT
 def compileAClick(dictionary,g4=True):
   from ROOT import gInterpreter, gSystem
   dd4hep = os.environ['DD4hep_DIR']
-  inc    = ' -I'+dd4hep+'/include '
+  inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
   lib    = ' -L'+dd4hep+'/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation '
   if g4:
     geant4 = os.environ['Geant4_DIR']
@@ -18,7 +18,7 @@ def compileAClick(dictionary,g4=True):
   gSystem.AddLinkedLibs(lib)
   #####print "Includes:   ",gSystem.GetIncludePath(),"\n","Linked libs:",gSystem.GetLinkedLibs()
   gInterpreter.ProcessLine('.L '+dictionary+'+')
-  #####gInterpreter.Load('Geant4Dict_C.so')
+  #####gInterpreter.Load('DDG4Dict_C.so')
   from ROOT import DD4hep as module
   return module
 
@@ -29,12 +29,24 @@ def _import_class(ns,nam):
   setattr(current,nam,getattr(scope,nam))
 
 #---------------------------------------------------------------------------
-DD4hep     = compileAClick(dictionary='DDG4Dict.C',g4=True) 
+DD4hep     = compileAClick(dictionary='./DDG4Dict.C',g4=True) 
 Sim        = DD4hep.Simulation
 Simulation = DD4hep.Simulation
 
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
+
+class _Levels:
+  def __init__(self):
+    self.VERBOSE=1
+    self.DEBUG=2
+    self.INFO=3
+    self.WARNING=4
+    self.ERROR=5
+    self.FATAL=6 
+    self.ALWAYS=7
+
+OutputLevel = _Levels()
 
 def _registerGlobalAction(self,action):
   self.get().registerGlobalAction(Interface.toAction(action))
