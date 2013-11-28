@@ -16,7 +16,7 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
                     ${CMAKE_CURRENT_SOURCE_DIR}/include 
                     ${ROOT_INCLUDE_DIR}
                     ${CLHEP_INCLUDE_DIR}
-                    ${Geant4_INCLUDE_DIRS} ${LCIO_DIR}/include )
+                    ${Geant4_INCLUDE_DIRS} ) #${LCIO_DIR}/include )
 
 #---Add Library-------------------------------------------------------------------
 if(DD4HEP_USE_BOOST)
@@ -69,11 +69,18 @@ else()
 endif()
 
 #---------------------------  LCIO Plugins for new simulation framework  -----------
-if(LCIO_DIR)
-  list(APPEND include_directories ${LCIO_DIR}/include)
+#if(LCIO_DIR)
+#  list(APPEND include_directories ${LCIO_DIR}/include)
+
+if(DD4HEP_USE_LCIO)
+  find_package(LCIO REQUIRED)
+  include_directories(  ${LCIO_INCLUDE_DIRS} )
+
   file(GLOB lcio_sources lcio/*.cpp)
   add_library(DD4hepG4LCIO SHARED ${lcio_sources})
-  target_link_libraries(DD4hepG4LCIO DD4hepCore DD4hepG4 ${Geant4_LIBRARIES} -L${LCIO_DIR}/lib -llcio ${ROOT_LIBRARIES} Reflex)
+
+  target_link_libraries(DD4hepG4LCIO DD4hepCore DD4hepG4 ${Geant4_LIBRARIES} ${LCIO_LIBRARIES} ${ROOT_LIBRARIES} Reflex)
+
   SET_TARGET_PROPERTIES(DD4hepG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   dd4hep_generate_rootmap(DD4hepG4LCIO)
 endif()
