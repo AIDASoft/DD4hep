@@ -20,9 +20,16 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 
 #---Add Library-------------------------------------------------------------------
 if(DD4HEP_USE_BOOST)
-  list(APPEND include_directories ${BOOST_INCLUDE_DIR})
+ #fg:  canonical way of finding Boost w/ cmake uses 
+ #     -D Boost_DIR=_path_to_boost
+ #     and then FindBoost.cmake sets the variable Boost_INCLUDE_DIR
+  FIND_PACKAGE( Boost REQUIRED) 
+  include_directories( ${Boost_INCLUDE_DIR})
+  #list(APPEND include_directories ${BOOST_INCLUDE_DIR})
   file(GLOB sources src/*.cpp parsers/*.cpp)  
   add_definitions(-DDD4HEP_USE_BOOST)
+#  MESSAGE( STATUS  "Boost_INCLUDE_DIR = ${Boost_INCLUDE_DIR} ")
+#  MESSAGE( STATUS  "include_directories= ${include_directories} ")
 else()
   file(GLOB sources src/*.cpp)
 endif()
