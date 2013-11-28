@@ -69,6 +69,25 @@ namespace {
   static LCDD* s_lcdd = 0;
 }
 
+void lcdd_unexpected(){
+  try{
+    throw ;
+  }catch( std::exception& e){
+    std::cout << "\n"
+              << "**************************************************** \n" 
+              << "*  A runtime error has occured :                     \n"
+              << "*    " << e.what()   << std::endl
+              << "*  the program will have to be terminated - sorry.   \n" 
+              << "**************************************************** \n"
+              << std::endl ;
+
+   // this provokes ROOT seg fault and stack trace (comment out to avoid it)
+   exit(1) ;
+  }
+}
+
+
+
 LCDD& LCDD::getInstance() {
   if (!s_lcdd)
     s_lcdd = new LCDDImp();
@@ -85,7 +104,11 @@ void LCDD::destroyInstance() {
 /// Default constructor
 LCDDImp::LCDDImp()
     : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"), m_buildType(BUILD_NONE) {
-  InstanceCount::increment(this);
+
+  std::set_unexpected( lcdd_unexpected ) ;
+  std::set_terminate( lcdd_unexpected ) ;
+
+ InstanceCount::increment(this);
   m_properties = new Properties();
   if (0 == gGeoManager) {
     gGeoManager = new TGeoManager();
