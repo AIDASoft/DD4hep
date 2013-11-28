@@ -52,7 +52,11 @@ else()
 endif()
 
 
-
+#---- build with Boost ?
+if(@DD4HEP_USE_BOOST@)
+  include_directories( @Boost_INCLUDE_DIR@ )
+  add_definitions(-DDD4HEP_USE_BOOST)
+endif()
 
 # ---------- final checking ---------------------------------------------------
 INCLUDE( FindPackageHandleStandardArgs )
