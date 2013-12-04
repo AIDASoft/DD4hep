@@ -9,6 +9,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "VXDData.h"
 
+//#include "GearWrapper.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -32,6 +33,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   vxd.assign(vxd_data,name,x_det.typeStr());
   vxd_data->id = x_det.id();
 
+
+  // //--------------- create gear::ZPlanarParameters and add them as Extension
+  // GearZPlanarParameters* gearZPlanar = new GearZPlanarParameters ;
+  // vxd.addExtension<GearZPlanarParameters>( gearZPlanar ) ;
+  // //--------------------------------------------------------------------
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
@@ -119,15 +125,34 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       double lthick = sens_thick + supp_thick ;
       
-      Position pos( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
-       		    (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
-       		    0. ) ;
-
       RotationZYX rot( 0, 0 , phi ) ;
 
 
-      pv = assembly.placeVolume( laddervol,Transform3D(RotationZ(phi),pos));
+#if 0
+      pv = assembly.placeVolume( laddervol,Transform3D( rot, Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
+									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
+									  0. ) ));
+
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 )   ;
+
+#else
+
+      // put one wafer at plus z and one at minus z
+      
+      pv = assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
+									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
+									  zhalf ) ) );
+
+      pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 ).addPhysVolID("side", 1 )   ;
+
+
+      pv = assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
+									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
+									  -zhalf ) ) );
+
+      pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 ).addPhysVolID("side", -1 )   ;  ;
+
+#endif
 
       //pv = assembly.placeVolume( sensvol, pos, rot ) ;
 
