@@ -125,7 +125,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       double lthick = sens_thick + supp_thick ;
       
-      RotationZYX rot( 0, 0 , phi ) ;
+      RotationZYX rot( phi , 0, 0  ) ;
 
 
 #if 0
