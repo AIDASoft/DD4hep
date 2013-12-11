@@ -22,7 +22,7 @@
         <constant name="world_x"                value="world_side/2"/>
         <constant name="world_y"                value="world_side/2"/>
         <constant name="world_z"                value="world_side/2"/>        
-        <constant name="CrossingAngle"          value="0.014"/>
+        <constant name="CrossingAngle"          value="0.014*rad"/>
         
         <constant name="VXD_inner_radius"       value="15*mm"/>
         <constant name="VXD_outer_radius"       value="80*mm"/>
@@ -221,22 +221,22 @@
             </layer>
 
             <dimensions numsides="(int) Hcal_endcap_modules" rmin="362.0*mm" z="Hcal_endcap_zmin">
-              <dimensions id="1"  y_offset= "543.5" dim_x="375.0" dim_y="1287.0" dim_z="1087.0"/>
-              <dimensions id="2"  y_offset= "905.5" dim_x="375.0" dim_y="1287.0" dim_z="1811.0"/>
-              <dimensions id="3"  y_offset="1086.5" dim_x="375.0" dim_y="1287.0" dim_z="2173.0"/>
-              <dimensions id="4"  y_offset="1268.0" dim_x="375.0" dim_y="1287.0" dim_z="2536.0"/>
-              <dimensions id="5"  y_offset="1268.0" dim_x="375.0" dim_y="1287.0" dim_z="2536.0"/>
-              <dimensions id="6"  y_offset="1449.0" dim_x="375.0" dim_y="1287.0" dim_z="2898.0"/>
-              <dimensions id="7"  y_offset="1449.0" dim_x="375.0" dim_y="1287.0" dim_z="2898.0"/>
-              <dimensions id="8"  y_offset="1630.0" dim_x="375.0" dim_y="1287.0" dim_z="2536.0"/>
-              <dimensions id="9"  y_offset="1630.0" dim_x="375.0" dim_y="1287.0" dim_z="2536.0"/>
-              <dimensions id="10" y_offset="1449.0" dim_x="375.0" dim_y="1287.0" dim_z="2898.0"/>
-              <dimensions id="11" y_offset="1449.0" dim_x="375.0" dim_y="1287.0" dim_z="2898.0"/>
-              <dimensions id="12" y_offset="1268.0" dim_x="375.0" dim_y="1287.0" dim_z="2536.0"/>
-              <dimensions id="13" y_offset="1268.0" dim_x="375.0" dim_y="1287.0" dim_z="2536.0"/>
-              <dimensions id="14" y_offset="1086.5" dim_x="375.0" dim_y="1287.0" dim_z="2173.0"/>
-              <dimensions id="15" y_offset= "905.5" dim_x="375.0" dim_y="1287.0" dim_z="1811.0"/>
-              <dimensions id="16" y_offset= "543.5" dim_x="375.0" dim_y="1287.0" dim_z="1087.0"/>
+              <dimensions id="1"  y_offset= "543.5*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="1087.0*mm"/>
+              <dimensions id="2"  y_offset= "905.5*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="1811.0*mm"/>
+              <dimensions id="3"  y_offset="1086.5*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2173.0*mm"/>
+              <dimensions id="4"  y_offset="1268.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2536.0*mm"/>
+              <dimensions id="5"  y_offset="1268.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2536.0*mm"/>
+              <dimensions id="6"  y_offset="1449.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2898.0*mm"/>
+              <dimensions id="7"  y_offset="1449.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2898.0*mm"/>
+              <dimensions id="8"  y_offset="1630.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2536.0*mm"/>
+              <dimensions id="9"  y_offset="1630.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2536.0*mm"/>
+              <dimensions id="10" y_offset="1449.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2898.0*mm"/>
+              <dimensions id="11" y_offset="1449.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2898.0*mm"/>
+              <dimensions id="12" y_offset="1268.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2536.0*mm"/>
+              <dimensions id="13" y_offset="1268.0*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2536.0*mm"/>
+              <dimensions id="14" y_offset="1086.5*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="2173.0*mm"/>
+              <dimensions id="15" y_offset= "905.5*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="1811.0*mm"/>
+              <dimensions id="16" y_offset= "543.5*mm" dim_x="375.0*mm" dim_y="1287.0*mm" dim_z="1087.0*mm"/>
 	    </dimensions>
         </detector>
     </detectors>
