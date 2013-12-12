@@ -99,7 +99,6 @@ namespace DD4hep {
   template <typename M> ReleaseObjects<M> releaseObjects(M& m) {
     return ReleaseObjects<M>(m);
   }
-
   /*
    *   Geometry namespace declaration
    */

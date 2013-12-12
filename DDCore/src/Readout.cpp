@@ -41,7 +41,7 @@ void Readout::setIDDescriptor(const Ref_t& new_descriptor) const {
       Segmentation seg = data<Object>()->segmentation;
       IDDescriptor id = new_descriptor;
       if (seg.isValid()) {
-        //seg.segmentation()->setDecoder(id.decoder());
+        seg.segmentation()->setDecoder(id.decoder());
       }
       return;
     }

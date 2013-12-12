@@ -301,11 +301,31 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     xml_h density = m.child(_U(D), false);
     double radlen_val = radlen.ptr() ? radlen.attr<double>(_U(value)) : 0.0;
     double intlen_val = intlen.ptr() ? intlen.attr<double>(_U(value)) : 0.0;
-    double dens_val = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
-    if (0 == mat && !density.ptr()) {
+    double dens_val   = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
+    double dens_unit  = 1.0;
+    if ( 0 == mat && !density.ptr() ) {
       has_density = false;
     }
-
+    if ( density.ptr() && density.hasAttr(_U(unit)) )   {
+      dens_unit = density.attr<double>(_U(unit))/XML::_toDouble("gram/cm3");
+    }
+    if ( dens_unit != 1.0 )  {
+      cout << matname << " Density unit:" << dens_unit;
+      if ( dens_unit != 1.0 ) cout << " " << density.attr<string>(_U(unit));
+      cout << " Density Value raw:" << dens_val << " normalized:" << (dens_val*dens_unit) << endl;
+      dens_val *= dens_unit;
+    }
+#if 0
+    cout << "Gev    " << XML::_toDouble("GeV") << endl;
+    cout << "sec    " << XML::_toDouble("second") << endl;
+    cout << "nsec   " << XML::_toDouble("nanosecond") << endl;
+    cout << "kilo   " << XML::_toDouble("kilogram") << endl;
+    cout << "kilo   " << XML::_toDouble("joule*s*s/(m*m)") << endl;
+    cout << "meter  " << XML::_toDouble("meter") << endl;
+    cout << "ampere " << XML::_toDouble("ampere") << endl;
+    cout << "degree " << XML::_toDouble("degree") << endl;
+#endif
+    //throw 1;
     printout(DEBUG, "Compact", "++ Creating material %s", matname);
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
     mat->SetRadLen(radlen_val, intlen_val);

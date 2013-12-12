@@ -10,7 +10,9 @@
 #define DD4HEP_PLUGINS_H
 
 // ROOT include files
+#ifndef __CINT__
 #include "Reflex/PluginService.h"
+#endif
 
 /*
  *   DD4hep namespace declaration

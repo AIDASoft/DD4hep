@@ -18,7 +18,7 @@ TGeoIdentity* DD4hep::Geometry::identityTransform() {
 }
 
 TGeoTranslation* DD4hep::Geometry::_translation(const Position& pos) {
-  return new TGeoTranslation("", pos.X() * MM_2_CM, pos.Y() * MM_2_CM, pos.Z() * MM_2_CM);
+  return new TGeoTranslation("", pos.X(), pos.Y(), pos.Z());
 }
 
 TGeoRotation* DD4hep::Geometry::_rotationZYX(const RotationZYX& rot) {
@@ -36,9 +36,6 @@ TGeoHMatrix* DD4hep::Geometry::_transform(const Transform3D& trans) {
   Double_t* t = tr->GetTranslation();
   Double_t* r = tr->GetRotationMatrix();
   trans.GetComponents(r[0],r[1],r[2],t[0],r[3],r[4],r[5],t[1],r[6],r[7],r[8],t[2]);
-  t[0] *= MM_2_CM;
-  t[1] *= MM_2_CM;
-  t[2] *= MM_2_CM;
 #endif
   double t[3];
   RotationZYX rot;
@@ -49,8 +46,8 @@ TGeoHMatrix* DD4hep::Geometry::_transform(const Transform3D& trans) {
   tr->RotateY(rot.Theta() * RAD_2_DEGREE);
   tr->RotateX(rot.Psi() * RAD_2_DEGREE);
   pos.GetCoordinates(t);
-  tr->SetDx(t[0] * MM_2_CM);
-  tr->SetDy(t[1] * MM_2_CM);
-  tr->SetDz(t[2] * MM_2_CM);
+  tr->SetDx(t[0]);
+  tr->SetDy(t[1]);
+  tr->SetDz(t[2]);
   return tr;
 }

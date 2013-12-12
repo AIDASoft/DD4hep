@@ -188,11 +188,11 @@ namespace DD4hep {
     void operator()() const;
   };
 
-/// Helper function to print booleans in format YES/NO
+  /// Helper function to print booleans in format YES/NO
   inline const char* yes_no(bool value) {
     return value ? "YES" : "NO ";
   }
-/// Helper function to print booleans in format true/false
+  /// Helper function to print booleans in format true/false
   inline const char* true_false(bool value) {
     return value ? "true " : "false";
   }

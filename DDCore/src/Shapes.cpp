@@ -50,34 +50,34 @@ template <typename T> const char* Solid_type<T>::name() const {
 }
 
 void Box::make(const string& name, double x, double y, double z) {
-  _assign(new TGeoBBox(x * MM_2_CM, y * MM_2_CM, z * MM_2_CM), name, "box", true);
+  _assign(new TGeoBBox(x, y, z), name, "box", true);
 }
 
 /// Set the box dimensionsy
 Box& Box::setDimensions(double x, double y, double z) {
-  double params[] = { x * MM_2_CM, y * MM_2_CM, z * MM_2_CM };
+  double params[] = { x, y, z};
   _setDimensions(params);
   return *this;
 }
 
 /// Access half "length" of the box
 double Box::x() const {
-  return this->ptr()->GetDX() * CM_2_MM;
+  return this->ptr()->GetDX();
 }
 
 /// Access half "width" of the box
 double Box::y() const {
-  return this->ptr()->GetDY() * CM_2_MM;
+  return this->ptr()->GetDY();
 }
 
 /// Access half "depth" of the box
 double Box::z() const {
-  return this->ptr()->GetDZ() * CM_2_MM;
+  return this->ptr()->GetDZ();
 }
 
 /// Constructor to be used when creating a new object
 Polycone::Polycone(double start, double delta) {
-  _assign(new TGeoPcon(RAD_2_DEGREE * start, RAD_2_DEGREE * delta, 0), "", "polycone", false);
+  _assign(new TGeoPcon(start, delta, 0), "", "polycone", false);
 }
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
@@ -87,13 +87,13 @@ Polycone::Polycone(double start, double delta, const vector<double>& rmin, const
   if (rmin.size() < 2) {
     throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
-  params.push_back(RAD_2_DEGREE * start);
-  params.push_back(RAD_2_DEGREE * delta);
+  params.push_back(start);
+  params.push_back(delta);
   params.push_back(rmin.size());
   for (size_t i = 0; i < rmin.size(); ++i) {
-    params.push_back(z[i] * MM_2_CM);
-    params.push_back(rmin[i] * MM_2_CM);
-    params.push_back(rmax[i] * MM_2_CM);
+    params.push_back(z[i] );
+    params.push_back(rmin[i] );
+    params.push_back(rmax[i] );
   }
   _assign(new TGeoPcon(&params[0]), "", "polycone", true);
 }
@@ -115,9 +115,9 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
     params.push_back(s->GetRmax(i));
   }
   for (size_t i = 0; i < rmin.size(); ++i) {
-    params.push_back(z[i] * MM_2_CM);
-    params.push_back(rmin[i] * MM_2_CM);
-    params.push_back(rmax[i] * MM_2_CM);
+    params.push_back(z[i] );
+    params.push_back(rmin[i] );
+    params.push_back(rmax[i] );
   }
   _setDimensions(&params[0]);
 }
@@ -125,66 +125,65 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
   _assign(
-      new TGeoConeSeg(dz * MM_2_CM, rmin1 * MM_2_CM, rmax1 * MM_2_CM, rmin2 * MM_2_CM, rmax2 * MM_2_CM, RAD_2_DEGREE * phi1,
-          RAD_2_DEGREE * phi2), "", "cone_segment", true);
+      new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1,phi2), "", "cone_segment", true);
 }
 
 /// Set the cone segment dimensions
 ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1,
     double phi2) {
-  double params[] = { dz * MM_2_CM, rmin1 * MM_2_CM, rmax1 * MM_2_CM, rmin2 * MM_2_CM, rmax2 * MM_2_CM, RAD_2_DEGREE * phi1,
-      RAD_2_DEGREE * phi2 };
+  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1,
+      phi2 };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  //_assign(new TGeoTubeSeg(rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube",true);
+  //_assign(new TGeoTubeSeg(rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi),name,"tube",true);
   _assign(new MyConeSeg(), name, "tube", true);
   setDimensions(rmin, rmax, z, startPhi, deltaPhi);
 }
 
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  //double params[] = {rmin*MM_2_CM,rmax*MM_2_CM,z*MM_2_CM,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
-  double params[] = { z * MM_2_CM, rmin * MM_2_CM, rmax * MM_2_CM, rmin * MM_2_CM, rmax * MM_2_CM, RAD_2_DEGREE * startPhi,
-      RAD_2_DEGREE * deltaPhi };
+  //double params[] = {rmin,rmax,z,RAD_2_DEGREE*startPhi,RAD_2_DEGREE*deltaPhi};
+  double params[] = { z, rmin, rmax, rmin, rmax, startPhi,
+      deltaPhi };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 void Cone::make(const string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2) {
-  _assign(new TGeoCone(z * MM_2_CM, rmin1 * MM_2_CM, rmax1 * MM_2_CM, rmin2 * MM_2_CM, rmax2 * MM_2_CM), name, "cone", true);
+  _assign(new TGeoCone(z, rmin1, rmax1, rmin2, rmax2 ), name, "cone", true);
 }
 
 Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
-  double params[] = { z * MM_2_CM, rmin1 * MM_2_CM, rmax1 * MM_2_CM, rmin2 * MM_2_CM, rmax2 * MM_2_CM };
+  double params[] = { z, rmin1, rmax1, rmin2, rmax2  };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z) {
-  _assign(new TGeoTrd2(x1 * MM_2_CM, x2 * MM_2_CM, y1 * MM_2_CM, y2 * MM_2_CM, z * MM_2_CM), "", "trd2", true);
+  _assign(new TGeoTrd2(x1, x2, y1, y2, z ), "", "trd2", true);
 }
 
 /// Set the Trapezoid dimensions
 Trapezoid& Trapezoid::setDimensions(double x1, double x2, double y1, double y2, double z) {
-  double params[] = { x1 * MM_2_CM, x2 * MM_2_CM, y1 * MM_2_CM, y2 * MM_2_CM, z * MM_2_CM };
+  double params[] = { x1, x2, y1, y2, z  };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Paraboloid::Paraboloid(double r_low, double r_high, double delta_z) {
-  _assign(new TGeoParaboloid(r_low * MM_2_CM, r_high * MM_2_CM, delta_z * MM_2_CM), "", "paraboloid", true);
+  _assign(new TGeoParaboloid(r_low, r_high, delta_z ), "", "paraboloid", true);
 }
 
 /// Set the Paraboloid dimensions
 Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_z) {
-  double params[] = { r_low * MM_2_CM, r_high * MM_2_CM, delta_z * MM_2_CM };
+  double params[] = { r_low, r_high, delta_z  };
   _setDimensions(params);
   return *this;
 }
@@ -192,27 +191,26 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
 /// Constructor to be used when creating a new object with attribute initialization
 Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
   _assign(
-      new TGeoSphere(rmin * MM_2_CM, rmax * MM_2_CM, RAD_2_DEGREE * theta, RAD_2_DEGREE * delta_theta, RAD_2_DEGREE * phi,
-          RAD_2_DEGREE * delta_phi), "", "sphere", true);
+      new TGeoSphere(rmin, rmax, theta, delta_theta, phi, delta_phi), "", "sphere", true);
 }
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  double params[] = { rmin * MM_2_CM, rmax * MM_2_CM, RAD_2_DEGREE * theta, RAD_2_DEGREE * delta_theta, RAD_2_DEGREE * phi,
-      RAD_2_DEGREE * delta_phi };
+  double params[] = { rmin, rmax, theta, delta_theta, phi,
+      delta_phi };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 Torus::Torus(double r, double rmin, double rmax, double phi, double delta_phi) {
-  _assign(new TGeoTorus(r * MM_2_CM, rmin * MM_2_CM, rmax * MM_2_CM, RAD_2_DEGREE * phi, RAD_2_DEGREE * delta_phi), "", "torus",
+  _assign(new TGeoTorus(r, rmin, rmax, phi, delta_phi), "", "torus",
       true);
 }
 
 /// Set the Torus dimensions
 Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, double delta_phi) {
-  double params[] = { r * MM_2_CM, rmin * MM_2_CM, rmax * MM_2_CM, RAD_2_DEGREE * phi, RAD_2_DEGREE * delta_phi };
+  double params[] = { r, rmin, rmax, phi, delta_phi };
   _setDimensions(params);
   return *this;
 }
@@ -221,8 +219,7 @@ Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, doub
 Trap::Trap(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2, double x3, double x4,
     double alpha2) {
   _assign(
-      new TGeoTrap(z, RAD_2_DEGREE * theta, RAD_2_DEGREE * phi, y1 * MM_2_CM, x1 * MM_2_CM, x2 * MM_2_CM, alpha1, y2 * MM_2_CM,
-          x3 * MM_2_CM, x4 * MM_2_CM, alpha2), "", "trap", true);
+      new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1, y2, x3, x4, alpha2), "", "trap", true);
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
@@ -235,15 +232,13 @@ Trap::Trap(double pz, double py, double px, double pLTX) {
   double x2 = pLTX / 2e0;
   double alpha1 = (pLTX - px) / py;
   _assign(
-      new TGeoTrap(z, RAD_2_DEGREE * theta, RAD_2_DEGREE * phi, y1 * MM_2_CM, x1 * MM_2_CM, x2 * MM_2_CM, alpha1, y1 * MM_2_CM,
-          x1 * MM_2_CM, x2 * MM_2_CM, alpha1), "", "trap", true);
+      new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1, y1, x1, x2, alpha1), "", "trap", true);
 }
 
 /// Set the trap dimensions
 Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2,
     double x3, double x4, double alpha2) {
-  double params[] = { z, RAD_2_DEGREE * theta, RAD_2_DEGREE * phi, y1 * MM_2_CM, x1 * MM_2_CM, x2 * MM_2_CM, alpha1, y2
-      * MM_2_CM, x3 * MM_2_CM, x4 * MM_2_CM, alpha2 };
+  double params[] = { z, theta, phi, y1, x1, x2, alpha1, y2, x3, x4, alpha2 };
   _setDimensions(params);
   return *this;
 }
@@ -256,8 +251,7 @@ void PolyhedraRegular::_create(const string& name, int nsides, double rmin, doub
   else if (rmax < 0e0)
     throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmax:<" + _toString(rmax) + "> is invalid!");
   _assign(new TGeoPgon(), name, "polyhedra", false);
-  double params[] = { RAD_2_DEGREE * start, RAD_2_DEGREE * delta, double(nsides), 2e0, zpos * MM_2_CM, rmin * MM_2_CM, rmax
-      * MM_2_CM, zneg * MM_2_CM, rmin * MM_2_CM, rmax * MM_2_CM };
+  double params[] = { start, delta, double(nsides), 2e0, zpos, rmin, rmax, zneg, rmin, rmax };
   _setDimensions(&params[0]);
 }
 

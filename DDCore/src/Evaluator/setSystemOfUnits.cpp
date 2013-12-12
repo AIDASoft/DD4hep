@@ -81,14 +81,15 @@ void Evaluator::setSystemOfUnits(double meter,
   //
   // ======================================================================
 
+  const double pi  = 3.14159265358979323846;
   // Plane angle 
-  const double rad = 1.;
+  //const double rad = 1.;  // Geant4 (rad units)
+  const double rad = 180.0/pi;  // Degree units
   setVariable("radian", rad);
   setVariable("rad",    rad);
   setVariable("milliradian", milli_ * rad);
   setVariable("mrad",        milli_ * rad);
 
-  const double pi  = 3.14159265358979323846;
   const double deg = rad*pi/180.;
   setVariable("degree", deg);
   setVariable("deg",    deg);

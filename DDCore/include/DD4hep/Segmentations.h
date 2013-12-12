@@ -121,6 +121,7 @@ namespace DD4hep {
         /// Default constructor
         Data(BitField64* decoder = 0)
             : Object(), BaseSegmentation(decoder), nphi(0), ntheta(0), nz(0) {
+	  segmentation = this;
         }
         /// Default destructor
         virtual ~Data();
@@ -165,6 +166,7 @@ namespace DD4hep {
         Data(BitField64* decoder = 0)
             : Object(), BaseSegmentation(decoder) {
           grid_size_phi = grid_size_theta = grid_size_z = 0;
+	  segmentation = this;
         }
         /// Default destructor
         virtual ~Data();
@@ -205,6 +207,7 @@ namespace DD4hep {
         Data(BitField64* decoder = 0)
             : Object(), BaseSegmentation(decoder) {
           nphi = ntheta = nz = 0;
+	  segmentation = this;
         }
         /// Default destructor
         virtual ~Data();
@@ -241,6 +244,7 @@ namespace DD4hep {
         /// Default constructor
         Data(BitField64* decoder = 0)
             : Object(), DDSegmentation::CartesianGridXY(decoder) {
+	  segmentation = this;
         }
         /// Default destructor
         virtual ~Data();
@@ -271,6 +275,7 @@ namespace DD4hep {
         /// Default constructor
         Data(BitField64* decoder = 0)
             : Object(), DDSegmentation::CartesianGridXYZ(decoder) {
+	  segmentation = this;
         }
         /// Default destructor
         virtual ~Data();

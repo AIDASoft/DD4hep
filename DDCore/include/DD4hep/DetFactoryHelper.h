@@ -12,6 +12,7 @@
 #include "XML/XMLDetector.h"
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Factories.h"
+#include "DD4hep/TGeoUnits.h"
 
 // Shortcuts to elements of the XML namespace
 typedef DD4hep::XML::Tag_t xml_tag_t;

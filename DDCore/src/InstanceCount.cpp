@@ -81,30 +81,33 @@ void InstanceCount::dump(int typ) {
   if ((typ & STRING) && s_strCounts.get()) {
     if (s_strCounts->begin() != s_strCounts->end()) {
       StringCounter::const_iterator i;
-      std::cout << "+----------------------------------------------------------------+" << std::endl;
-      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    N A M E           |" << std::endl;
-      std::cout << "+----------+---------+-------------------------------------------+" << std::endl;
-      std::cout << "|   Total  | Leaking |      Type identifier                      |" << std::endl;
-      std::cout << "+----------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "+-----------------------------------------------------------------------+" << std::endl;
+      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    N A M E                  |" << std::endl;
+      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "|   Total  |  Max | Leaking |      Type identifier                      |" << std::endl;
+      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
       for (i = s_strCounts->begin(); i != s_strCounts->end(); ++i) {
-        std::cout << "|" << std::setw(10) << (*i).second->total() << "|" << std::setw(9) << (*i).second->value() << "|"
-            << (*i).first << std::endl;
+        std::cout << "|" << std::setw(10) << (*i).second->total() 
+		  << "|" << std::setw(6) << (*i).second->maximum()
+		  << "|" << std::setw(9) << (*i).second->value() 
+		  << "|" << (*i).first << std::endl;
       }
       need_footer = true;
     }
   }
-
   if ((typ & TYPEINFO) && s_typCounts.get()) {
     if (s_typCounts->begin() != s_typCounts->end()) {
       TypeCounter::const_iterator i;
-      std::cout << "+----------------------------------------------------------------+" << std::endl;
-      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O   |" << std::endl;
-      std::cout << "+----------+---------+-------------------------------------------+" << std::endl;
-      std::cout << "|   Total  | Leaking |      Type identifier                      |" << std::endl;
-      std::cout << "+----------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "+-----------------------------------------------------------------------+" << std::endl;
+      std::cout << "|   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O          |" << std::endl;
+      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
+      std::cout << "|   Total  |  Max | Leaking |      Type identifier                      |" << std::endl;
+      std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
       for (i = s_typCounts->begin(); i != s_typCounts->end(); ++i) {
-        std::cout << "|" << std::setw(10) << (*i).second->total() << "|" << std::setw(9) << (*i).second->value() << "|"
-            << typeName(*((*i).first)) << std::endl;
+        std::cout << "|" << std::setw(10) << (*i).second->total() 
+		  << "|" << std::setw(6) << (*i).second->maximum()
+		  << "|" << std::setw(9) << (*i).second->value() 
+		  << "|" << typeName(*((*i).first)) << std::endl;
       }
       need_footer = true;
     }

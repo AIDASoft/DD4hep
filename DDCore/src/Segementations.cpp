@@ -20,11 +20,18 @@ namespace {
   void not_implemented_call(const char* tag) {
     throw runtime_error(tag);
   }
+  template <typename T> T& _obj(const DDSegmentation::Segmentation* ptr)  {
+    // ---> This would be so much more efficient, but sissies refused....
+    // T* p = (T*)(((const char*)ptr) - sizeof(Segmentation::Object));
+    // return *p;
+    const T* p = dynamic_cast<const T*>(ptr);
+    return *(T*)p;
+  }
 }
 
 /// Standard constructor
 Segmentation::Object::Object()
-    : magic(magic_word()), useForHitPosition(0) {
+  : magic(magic_word()), useForHitPosition(0), segmentation(0) {
   InstanceCount::increment(this);
 }
 
@@ -39,22 +46,26 @@ std::string Segmentation::type() const {
 }
 
 bool Segmentation::useForHitPosition() const {
-  return object<Object>().useForHitPosition != 0;
+  return _obj<Object>(ptr()).useForHitPosition != 0;
 }
 
 /// Segmentation type
 string SegmentationParams::type() const {
-  return object<Object>().segmentation->type();
+  return _obj<Object>(ptr()).segmentation->type();
 }
 
 /// Access to the parameters
 SegmentationParams::Parameters SegmentationParams::parameters() const {
-  return object<Object>().segmentation->parameters();
+  Object& o = _obj<Object>(ptr());
+  if (o.segmentation != 0)  {
+    return o.segmentation->parameters();
+  }
+  throw runtime_error("DD4hep: The segmentation object " + string(type()) + " is invalid!");
 }
 
 /// Access segmentation object
 DD4hep::DDSegmentation::Segmentation* Segmentation::segmentation() const {
-  Object& o = object<Object>();
+  Object& o = _obj<Object>(ptr());
   if (o.segmentation != 0)
     return o.segmentation;
   throw runtime_error(
@@ -91,32 +102,32 @@ ProjectiveCylinder::ProjectiveCylinder(LCDD&)
 
 /// Accessors: get number of bins in theta
 int ProjectiveCylinder::thetaBins() const {
-  return object<Data>().ntheta;
+  return _obj<Data>(ptr()).ntheta;
 }
 
 /// Accessors: get number of bins in phi
 int ProjectiveCylinder::phiBins() const {
-  return object<Data>().nphi;
+  return _obj<Data>(ptr()).nphi;
 }
 
 /// Accessors: get number of bins in z
 int ProjectiveCylinder::zBins() const {
-  return object<Data>().nz;
+  return _obj<Data>(ptr()).nz;
 }
 
 /// Accessors: set number of bins in theta
 void ProjectiveCylinder::setThetaBins(int value) {
-  object<Data>().ntheta = value;
+  _obj<Data>(ptr()).ntheta = value;
 }
 
 /// Accessors: set grid size in Y
 void ProjectiveCylinder::setPhiBins(int value) {
-  object<Data>().nphi = value;
+  _obj<Data>(ptr()).nphi = value;
 }
 
 /// Accessors: set number of bins in Z
 void ProjectiveCylinder::setZBins(int value) {
-  object<Data>().nz = value;
+  _obj<Data>(ptr()).nz = value;
 }
 
 /// Default destructor
@@ -148,22 +159,22 @@ NonProjectiveCylinder::NonProjectiveCylinder(LCDD&)
 
 /// Accessors: get size of bins in Z
 double NonProjectiveCylinder::gridSizeZ() const {
-  return object<Data>().grid_size_z;
+  return _obj<Data>(ptr()).grid_size_z;
 }
 
 /// Accessors: get size of bins in phi
 double NonProjectiveCylinder::gridSizePhi() const {
-  return object<Data>().grid_size_phi;
+  return _obj<Data>(ptr()).grid_size_phi;
 }
 
 /// Accessors: set number of bins in theta
 void NonProjectiveCylinder::setThetaBinSize(double value) {
-  object<Data>().grid_size_phi = value;
+  _obj<Data>(ptr()).grid_size_phi = value;
 }
 
 /// Accessors: set grid size in Y
 void NonProjectiveCylinder::setPhiBinSize(double value) {
-  object<Data>().grid_size_z = value;
+  _obj<Data>(ptr()).grid_size_z = value;
 }
 
 /// Default destructor
@@ -195,22 +206,22 @@ ProjectiveZPlane::ProjectiveZPlane(LCDD&)
 
 /// Accessors: get number of bins in phi
 int ProjectiveZPlane::phiBins() const {
-  return object<Data>().nphi;
+  return _obj<Data>(ptr()).nphi;
 }
 
 /// Accessors: get number of bins in theta
 int ProjectiveZPlane::thetaBins() const {
-  return object<Data>().ntheta;
+  return _obj<Data>(ptr()).ntheta;
 }
 
 /// Accessors: set number of bins in theta
 void ProjectiveZPlane::setThetaBins(int value) {
-  object<Data>().ntheta = value;
+  _obj<Data>(ptr()).ntheta = value;
 }
 
 /// Accessors: set grid size in Y
 void ProjectiveZPlane::setPhiBins(int value) {
-  object<Data>().nphi = value;
+  _obj<Data>(ptr()).nphi = value;
 }
 
 /// Default destructor
@@ -224,22 +235,22 @@ GridXY::GridXY(LCDD&, const std::string& typ)
 
 /// Accessors: get grid size in X
 double GridXY::getGridSizeX() const {
-  return object<Data>().getGridSizeX();
+  return _obj<Data>(ptr()).getGridSizeX();
 }
 
 /// Accessors: get grid size in Y
 double GridXY::getGridSizeY() const {
-  return object<Data>().getGridSizeY();
+  return _obj<Data>(ptr()).getGridSizeY();
 }
 
 /// Accessors: set grid size in X
 void GridXY::setGridSizeX(double value) {
-  object<Data>().setGridSizeX(value);
+  _obj<Data>(ptr()).setGridSizeX(value);
 }
 
 /// Accessors: set grid size in Y
 void GridXY::setGridSizeY(double value) {
-  object<Data>().setGridSizeY(value);
+  _obj<Data>(ptr()).setGridSizeY(value);
 }
 
 /// Default destructor
@@ -254,30 +265,30 @@ GridXYZ::GridXYZ(LCDD&, const std::string& typ)
 
 /// Accessors: get grid size in X
 double GridXYZ::getGridSizeX() const {
-  return object<Data>().getGridSizeX();
+  return _obj<Data>(ptr()).getGridSizeX();
 }
 
 /// Accessors: get grid size in Y
 double GridXYZ::getGridSizeY() const {
-  return object<Data>().getGridSizeY();
+  return _obj<Data>(ptr()).getGridSizeY();
 }
 
 /// Accessors: get grid size in Z
 double GridXYZ::getGridSizeZ() const {
-  return object<Data>().getGridSizeZ();
+  return _obj<Data>(ptr()).getGridSizeZ();
 }
 
 /// Accessors: set grid size in X
 void GridXYZ::setGridSizeX(double value) {
-  object<Data>().setGridSizeX(value);
+  _obj<Data>(ptr()).setGridSizeX(value);
 }
 
 /// Accessors: set grid size in Y
 void GridXYZ::setGridSizeY(double value) {
-  object<Data>().setGridSizeY(value);
+  _obj<Data>(ptr()).setGridSizeY(value);
 }
 
 /// Accessors: set grid size in Z
 void GridXYZ::setGridSizeZ(double value) {
-  object<Data>().setGridSizeZ(value);
+  _obj<Data>(ptr()).setGridSizeZ(value);
 }

@@ -190,11 +190,11 @@ namespace DD4hep {
 
       /// Constructor to create a new ConeSegment object
       ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1 = 0.0,
-          double phi2 = 2.0 * M_PI);
+          double phi2 = 2.0 * M_PI*RAD_2_DEGREE);
 
       /// Set the cone segment dimensions
       ConeSegment& setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1 = 0.0,
-          double phi2 = 2.0 * M_PI);
+          double phi2 = 2.0 * M_PI*RAD_2_DEGREE);
     };
 
     /**@class Tube Shapes.h
@@ -227,7 +227,12 @@ namespace DD4hep {
       }
 
       /// Constructor to create a new anonymous tube object with attribute initialization
-      Tube(double rmin, double rmax, double z, double deltaPhi = 2 * M_PI) {
+      Tube(double rmin, double rmax, double z) {
+        make("", rmin, rmax, z, 0, 2*M_PI*RAD_2_DEGREE);
+      }
+
+      /// Constructor to create a new anonymous tube object with attribute initialization
+      Tube(double rmin, double rmax, double z, double deltaPhi) {
         make("", rmin, rmax, z, 0, deltaPhi);
       }
 
@@ -237,7 +242,12 @@ namespace DD4hep {
       }
 
       /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-      Tube(const std::string& name, double rmin, double rmax, double z, double deltaPhi = 2 * M_PI) {
+      Tube(const std::string& name, double rmin, double rmax, double z) {
+        make(name, rmin, rmax, z, 0, 2*M_PI*RAD_2_DEGREE);
+      }
+
+      /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
+      Tube(const std::string& name, double rmin, double rmax, double z, double deltaPhi) {
         make(name, rmin, rmax, z, 0, deltaPhi);
       }
 
@@ -331,7 +341,7 @@ namespace DD4hep {
           : Solid_type<TGeoTorus>(e) {
       }
       /// Constructor to create a new anonymous object with attribute initialization
-      Torus(double r, double rmin, double rmax, double phi = M_PI, double delta_phi = 2. * M_PI);
+      Torus(double r, double rmin, double rmax, double phi = M_PI*RAD_2_DEGREE, double delta_phi = 2. * M_PI*RAD_2_DEGREE);
       /// Set the Torus dimensions
       Torus& setDimensions(double r, double rmin, double rmax, double phi, double delta_phi);
     };
@@ -347,8 +357,8 @@ namespace DD4hep {
           : Solid_type<TGeoSphere>(e) {
       }
       /// Constructor to create a new anonymous object with attribute initialization
-      Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0,
-          double delta_phi = 2. * M_PI);
+      Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI*RAD_2_DEGREE, double phi = 0.0,
+          double delta_phi = 2. * M_PI*RAD_2_DEGREE);
       /// Set the Sphere dimensions
       Sphere& setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi);
     };
