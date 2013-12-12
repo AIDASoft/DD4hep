@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
   double     rmin      = dim.inner_r();
   double     r         = rmin;
   int        n         = 0;
-  Tube       envelope(rmin,2*rmin,2*z,0.0,2*M_PI);
+  Tube       envelope(rmin,2*rmin,2*z);
   Volume     envelopeVol(det_name+"_envelope",envelope,air);
     
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
@@ -30,7 +30,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
     for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
       string layer_name = det_name + _toString(n,"_layer%d");
       double rlayer = r;
-      Tube   layer_tub(rmin,rlayer,2*z,0,2*M_PI);
+      Tube   layer_tub(rmin,rlayer,2*z);
       Volume layer_vol(layer_name,layer_tub,air);
         
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
@@ -58,7 +58,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)   {
       ++n;
     }
   }
-  envelope.setDimensions(rmin,r,2*z,0,2*M_PI);
+  envelope.setDimensions(rmin,r,2*z);
   // Set region of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
     

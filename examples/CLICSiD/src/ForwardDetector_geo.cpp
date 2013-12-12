@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   int         id         = x_det.id();
   Material    air        = lcdd.air();
   DetElement  sdet       (det_name,id);
-  Layering    layering(x_det);
+  Layering    layering   (x_det);
 
   Volume      motherVol  = lcdd.pickMotherVolume(sdet);
 
@@ -31,7 +31,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      zinner     = dim.inner_z();
   double      outgoingR  = beam.outgoing_r();
   double      incomingR  = beam.incoming_r();
-  double      xangle     = beam.crossing_angle();
+  double      xangle     = beam.crossing_angle()/tgeo::rad;
   double      xangleHalf = xangle/2;
   double      thickness  = layering.totalThickness();
   double      zpos       = zinner + thickness/2;
@@ -69,7 +69,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // Process each layer element.
   double layerPosZ   = -thickness / 2;
   double layerDisplZ = 0;
-  
+
   int layerCount = 1;
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
@@ -88,7 +88,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // First layer subtraction solid.
       DetElement  layer(sdet,layer_nam,sdet.id());
       double      layerGlobalZ = zinner + layerDisplZ;
-      double      layerPosX    = tan(xangleHalf) * layerGlobalZ;
+      double      layerPosX    = std::tan(xangleHalf) * layerGlobalZ;
       Position    layer1SubPos( layerPosX,0,0);
       Position    layer2SubPos(-layerPosX,0,0);
 

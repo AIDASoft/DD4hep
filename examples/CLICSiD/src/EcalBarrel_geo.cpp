@@ -26,7 +26,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_comp_t    x_dim     = x_det.dimensions();
   int           nsides    = x_dim.numsides();
   double        inner_r   = x_dim.rmin();
-  double        dphi      = 2*M_PI / nsides;
+  double        dphi      = (2*M_PI/nsides);
   double        hphi      = dphi/2;
   double        mod_z     = layering.totalThickness();
   double        outer_r   = inner_r + mod_z;

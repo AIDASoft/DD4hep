@@ -29,8 +29,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
   if ( num < 2 )  {
     throw runtime_error("PolyCone["+name+"]> Not enough Z planes. minimum is 2!");
   }
-  Polycone   cone   (0.,2.*M_PI,rmin,rmax,z);
-  Volume     volume (name, cone, mat);
+  Polycone   cone  (0.,2.*M_PI*RAD_2_DEGREE,rmin,rmax,z);
+  Volume     volume(name, cone, mat);
   volume.setVisAttributes(lcdd, x_det.visStr());
   sdet.setPlacement(lcdd.pickMotherVolume(sdet).placeVolume(volume));
   return sdet;

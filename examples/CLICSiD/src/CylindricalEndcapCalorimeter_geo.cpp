@@ -24,7 +24,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double     rmax      = dim.outer_r();
   double     totWidth  = Layering(x_det).totalThickness();
   double     z         = zmin;
-  Tube       envelope   (rmin,rmax,totWidth/2,0,2*M_PI);
+  Tube       envelope   (rmin,rmax,totWidth/2);
   Volume     envelopeVol(det_name+"_envelope",envelope,air);
   int        layer_num = 1;
   PlacedVolume pv;
@@ -46,7 +46,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	string     slice_name = layer_name + _toString(m+1,"slice%d");
 	Material   slice_mat  = lcdd.material(x_slice.materialStr());
 	Volume     slice_vol (slice_name,Tube(rmin,rmax,w),slice_mat);
-          
+
 	if ( x_slice.isSensitive() )  {
 	  sens.setType("calorimeter");
 	  slice_vol.setSensitiveDetector(sens);
@@ -64,7 +64,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       ++layer_num;
     }
   }
-  envelope.setDimensions(rmin,rmax,totWidth/2,0,2*M_PI);
+  envelope.setDimensions(rmin,rmax,totWidth/2);
   // Set attributes of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 

@@ -29,7 +29,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double  rmin = x_layer.inner_r();
     double  r    = rmin;
     DetElement layer(sdet,_toString(n,"layer%d"),x_layer.id());
-    Tube    l_tub (rmin,2*rmin,z,0.0,2*M_PI);
+    Tube    l_tub (rmin,2*rmin,z);
     Volume  l_vol(l_name,l_tub,air);
     int m = 0;
 
@@ -38,7 +38,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Material mat = lcdd.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
       double thickness = x_slice.thickness();
-      Tube   s_tub(r,r+thickness,z,2*M_PI);
+      Tube   s_tub(r,r+thickness,z,2*M_PI*tgeo::rad);
       Volume s_vol(s_name, s_tub, mat);
 
       r += thickness;
@@ -52,7 +52,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // Slices have no extra id. Take the ID of the layer!
       pv.addPhysVolID("slice",m);
     }
-    l_tub.setDimensions(rmin,r,z,0,2*M_PI);
+    l_tub.setDimensions(rmin,r,z);
     //cout << l_name << " " << rmin << " " << r << " " << z << endl;
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
       
