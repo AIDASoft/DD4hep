@@ -258,7 +258,7 @@ namespace DD4hep {
       }
 
       /// Set the tube dimensions
-      Tube& setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi);
+      Tube& setDimensions(double rmin, double rmax, double z, double startPhi=0.0, double deltaPhi=2*M_PI*RAD_2_DEGREE);
     };
 
     /**@class Cone Shapes.h
