@@ -24,12 +24,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double     rmax      = dim.outer_r();
   double     totWidth  = Layering(x_det).totalThickness();
   double     z         = zmin;
-  Tube       envelope   (rmin,rmax,totWidth,0,2*M_PI);
+  Tube       envelope   (rmin,rmax,totWidth/2,0,2*M_PI);
   Volume     envelopeVol(det_name+"_envelope",envelope,air);
   int        layer_num = 1;
   PlacedVolume pv;
 
-	// Set attributes of slice
+  // Set attributes of slice
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t x_layer = c;
     double layerWidth = 0;
@@ -39,7 +39,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double     zlayer = z;
       string     layer_name = det_name + _toString(layer_num,"_layer%d");
       Volume     layer_vol(layer_name,Tube(rmin,rmax,layerWidth),air);
-        
+
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
 	xml_comp_t x_slice = l;
 	double     w = x_slice.thickness();
@@ -64,7 +64,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       ++layer_num;
     }
   }
-  envelope.setDimensions(rmin,rmax,totWidth,0,2*M_PI);
+  envelope.setDimensions(rmin,rmax,totWidth/2,0,2*M_PI);
   // Set attributes of slice
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 

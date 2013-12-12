@@ -10,6 +10,7 @@
 #include "DD4hep/Printout.h"
 
 using namespace std;
+using namespace tgeo;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
@@ -77,23 +78,23 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     string     m_nam    = x_layer.moduleStr();
     Volume     m_env    = volumes[m_nam];
     string     lay_nam  = det_name+"_"+m_nam+_toString(x_layer.id(),"_layer%d");
-    Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length());
-    Volume     lay_vol   (lay_nam,lay_tub,air);       // Create the layer envelope volume.
-    double     phi0     = x_layout.phi0();            // Starting phi of first module.
-    double     phi_tilt = x_layout.phi_tilt();        // Phi tilt of a module.
-    double     rc       = x_layout.rc();              // Radius of the module center.
-    int        nphi     = x_layout.nphi();            // Number of modules in phi.
-    double     rphi_dr  = x_layout.dr();              // The delta radius of every other module.
-    double     phi_incr = (M_PI * 2) / nphi;          // Phi increment for one module.
-    double     phic     = phi0;                       // Phi of the module center.
-    double     z0       = z_layout.z0();              // Z position of first module in phi.
-    double     nz       = z_layout.nz();              // Number of modules to place in z.
-    double     z_dr     = z_layout.dr();              // Radial displacement parameter, of every other module.
+    Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length()/2);
+    Volume     lay_vol   (lay_nam,lay_tub,air);         // Create the layer envelope volume.
+    double     phi0     = x_layout.phi0()/tgeo::rad;    // Starting phi of first module.
+    double     phi_tilt = x_layout.phi_tilt()/tgeo::rad;// Phi tilt of a module.
+    double     rc       = x_layout.rc();                // Radius of the module center.
+    int        nphi     = x_layout.nphi();              // Number of modules in phi.
+    double     rphi_dr  = x_layout.dr();                // The delta radius of every other module.
+    double     phi_incr = (M_PI * 2) / nphi;            // Phi increment for one module.
+    double     phic     = phi0;                         // Phi of the module center.
+    double     z0       = z_layout.z0();                // Z position of first module in phi.
+    double     nz       = z_layout.nz();                // Number of modules to place in z.
+    double     z_dr     = z_layout.dr();                // Radial displacement parameter, of every other module.
 
     // Z increment for module placement along Z axis.
     // Adjust for z0 at center of module rather than
     // the end of cylindrical envelope.
-    double z_incr   = (2.0 * z0) / (nz - 1);
+    double z_incr   = nz > 1 ? (2.0 * z0) / (nz - 1) : 0.0;
     // Starting z for module placement along Z axis.
     double module_z = -z0;
     int module = 1;

@@ -18,12 +18,12 @@
     </includes>
     
     <define>
-        <constant name="world_side" value="30000"/>
+        <constant name="world_side" value="30000*mm"/>
         <constant name="world_x" value="world_side"/>
         <constant name="world_y" value="world_side"/>
         <constant name="world_z" value="world_side"/>
         
-        <constant name="CrossingAngle" value="0.020"/>
+        <constant name="CrossingAngle" value="0.020*rad"/>
         
         <constant name="CaloSides" value="12"/>
         <constant name="MuonSides" value="8"/>
@@ -44,8 +44,8 @@
         <constant name="HcalEndcap_layer_thickness" value="2.0*cm + 0.65*cm"/>
         <constant name="HcalEndcap_zmax" value="HcalEndcap_zmin + HcalEndcap_layers * HcalEndcap_layer_thickness"/>
         
-        <constant name="tracking_region_radius" value="EcalBarrel_rmin - 1.0"/>
-        <constant name="tracking_region_zmax" value="EcalEndcap_zmin - 1.0"/>
+        <constant name="tracking_region_radius" value="EcalBarrel_rmin - 1.0*mm"/>
+        <constant name="tracking_region_zmax" value="EcalEndcap_zmin - 1.0*mm"/>
         <constant name="VXD_CF_sensor" value="0.026*cm"/>
         <constant name="VXD_CF_support" value="0.05*cm"/>
         
@@ -216,7 +216,7 @@
         <vis name="SiVertexBarrelModuleVis" alpha="1.0" r="1" g="1" b="0.6" drawingStyle="wireframe" showDaughters="true" visible="true"/>
         <vis name="SiVertexSensitiveVis" alpha="1.0" r="1" g="0.2" b="0.2" drawingStyle="solid" showDaughters="true" visible="true"/>
         <vis name="SiVertexPassiveVis"   alpha="1.0" r="0" g="0.2" b="1" drawingStyle="solid" showDaughters="true" visible="true"/>
-        <vis name="SiVertexBarrelLayerVis" alpha="1.0" r="1" g="1" b="0.6" showDaughters="true" visible="true"/>
+        <vis name="SiVertexBarrelLayerVis" alpha="1.0" r="1" g="1" b="0.6" showDaughters="true" visible="false"/>
         
         <vis name="SiVertexEndcapLayerVis" alpha="1.0" r="1" g="0.75" b="0" showDaughters="false" visible="true"/>
 
@@ -274,46 +274,46 @@
         <detector id="1" name="SiVertexBarrel" type="SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
             <comment>Vertex Detector Barrel</comment>
             <module name="VtxBarrelModuleInner" vis="SiVertexBarrelModuleVis">
-                <module_envelope width="10.0" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6"/>
-                <module_component width="7.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
-                    <position z="-0.12"/>
+                <module_envelope width="10.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
+                <module_component width="7.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
+                    <position z="-0.12*cm"/>
                 </module_component>
-                <module_component width="9.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
-                    <position z="0.225"/>
+                <module_component width="9.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
+                    <position z="0.225*cm"/>
                 </module_component>
             </module>
             <module name="VtxBarrelModuleOuter" vis="SiVertexBarrelModuleVis">
-                <module_envelope width="14.0" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6"/>
-                <module_component width="11.6" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
-                    <position z="-0.12"/>
+                <module_envelope width="14.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
+                <module_component width="11.6*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
+                    <position z="-0.12*cm"/>
                 </module_component>
-                <module_component width="13.8" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
-                    <position z="0.210"/>
+                <module_component width="13.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
+                    <position z="0.210*cm"/>
                 </module_component>
             </module>
             <layer module="VtxBarrelModuleInner" id="1" vis="SiVertexBarrelLayerVis">
                 <barrel_envelope inner_r="VertexBarrel_r1 - 0.2*cm" outer_r="VertexBarrel_r1 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0" nphi="18" phi0="0.2618" rc="VertexBarrel_r1" dr="-1.15"/>
+                <rphi_layout phi_tilt="0.0*rad" nphi="18" phi0="0.2618*rad" rc="VertexBarrel_r1" dr="-1.15*mm"/>
                 <z_layout dr="0.0" z0="0.0" nz="1"/>
             </layer>
             <layer module="VtxBarrelModuleOuter" id="2" vis="SiVertexBarrelLayerVis">
                 <barrel_envelope inner_r="VertexBarrel_r2 - 0.2*cm" outer_r="VertexBarrel_r2 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0" nphi="18" phi0="0.2618" rc="VertexBarrel_r2" dr="-1.13"/>
+                <rphi_layout phi_tilt="0.0*rad" nphi="18" phi0="0.2618*rad" rc="VertexBarrel_r2" dr="-1.13*mm"/>
                 <z_layout dr="0.0" z0="0.0" nz="1"/>
             </layer>
             <layer module="VtxBarrelModuleOuter" id="3" vis="SiVertexBarrelLayerVis">
                 <barrel_envelope inner_r="VertexBarrel_r3 - 0.2*cm" outer_r="VertexBarrel_r3 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0" nphi="24" phi0="0.0" rc="VertexBarrel_r3" dr="-0.89"/>
+                <rphi_layout phi_tilt="0.0*rad" nphi="24" phi0="0.0*rad" rc="VertexBarrel_r3" dr="-0.89*mm"/>
                 <z_layout dr="0.0" z0="0.0" nz="1"/>
             </layer>
             <layer module="VtxBarrelModuleOuter" id="4" vis="SiVertexBarrelLayerVis">
                 <barrel_envelope inner_r="VertexBarrel_r4 - 0.2*cm" outer_r="VertexBarrel_r4 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0" nphi="30" phi0="0.1309" rc="VertexBarrel_r4" dr="0.81"/>
+                <rphi_layout phi_tilt="0.0*rad" nphi="30" phi0="0.1309*rad" rc="VertexBarrel_r4" dr="0.81*mm"/>
                 <z_layout dr="0.0" z0="0.0" nz="1"/>
             </layer>
             <layer module="VtxBarrelModuleOuter" id="5" vis="SiVertexBarrelLayerVis">
                 <barrel_envelope inner_r="VertexBarrel_r5 - 0.2*cm" outer_r="VertexBarrel_r5 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0" nphi="36" phi0="0.0" rc="VertexBarrel_r5" dr="0.77"/>
+                <rphi_layout phi_tilt="0.0*rad" nphi="36" phi0="0.0*rad" rc="VertexBarrel_r5" dr="0.77*mm"/>
                 <z_layout dr="0.0" z0="0.0" nz="1"/>
             </layer>
         </detector>
@@ -321,216 +321,215 @@
         <comment>Vertex Detector Endcaps</comment>
         <detector id="2" name="SiVertexEndcap" type="SiTrackerEndcap2" readout="SiVertexEndcapHits" reflect="true">    
             <module name="SiVertexEndcapModule1">
-                <trd x1="VertexEndcap_rmin1 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin1) / 2" />
+                <trd x1="VertexEndcap_rmin1 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin1) / 2" />
                 <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
                 <module_component thickness="0.013*cm"   material="Carbon" vis="SiVertexPassiveVis" />
             </module>
             <module name="SiVertexEndcapModule2">
-                <trd x1="VertexEndcap_rmin2 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin2) / 2" />
+                <trd x1="VertexEndcap_rmin2 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin2) / 2" />
                 <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
                 <module_component thickness="0.013*cm"   material="Carbon" vis="SiVertexPassiveVis" />
             </module>
             <module name="SiVertexEndcapModule3">
-                <trd x1="VertexEndcap_rmin3 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin3) / 2" />
+                <trd x1="VertexEndcap_rmin3 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin3) / 2" />
                 <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
                 <module_component thickness="0.013*cm"   material="Carbon" vis="SiVertexPassiveVis" />
             </module>
             <module name="SiVertexEndcapModule4">
-                <trd x1="VertexEndcap_rmin4 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1))" z="(VertexEndcap_rmax - VertexEndcap_rmin4) / 2" />
+                <trd x1="VertexEndcap_rmin4 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin4) / 2" />
                 <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
                 <module_component thickness="0.013*cm"   material="Carbon"  vis="SiVertexPassiveVis"/>
             </module>
             <layer id="1"  vis="SiVertexEndcapLayerVis">
-                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1" nmodules="(int) VertexEndcapModules" dz="0.011" module="SiVertexEndcapModule1"/>
+                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule1"/>
             </layer>
             <layer id="2"  vis="SiVertexEndcapLayerVis">
-                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin2) / 2" zstart="VertexEndcap_z2" nmodules="(int) VertexEndcapModules" dz="0.011" module="SiVertexEndcapModule2"/>
+                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin2) / 2" zstart="VertexEndcap_z2" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule2"/>
             </layer>
             <layer id="3"  vis="SiVertexEndcapLayerVis">
-                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin3) / 2" zstart="VertexEndcap_z3" nmodules="(int) VertexEndcapModules" dz="0.011" module="SiVertexEndcapModule3"/>
+                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin3) / 2" zstart="VertexEndcap_z3" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule3"/>
             </layer>
             <layer id="4"  vis="SiVertexEndcapLayerVis">
-                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin4) / 2" zstart="VertexEndcap_z4" nmodules="(int) VertexEndcapModules" dz="0.011" module="SiVertexEndcapModule4"/>
+                <ring r="(VertexEndcap_rmax + VertexEndcap_rmin4) / 2" zstart="VertexEndcap_z4" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule4"/>
             </layer>
         </detector> 
-
 
         <detector id="3" name="SiTrackerBarrel" type="SiTrackerBarrel" readout="SiTrackerBarrelHits">
             <comment>Outer Tracker Barrel</comment>
             <module name="SiTrackerModule_Layer1" vis="SiTrackerBarrelModuleVis">                
-                <module_envelope width="97.79" length="97.79" thickness="0.3*cm"/>                
-                <module_component width="97.79" length="97.79" thickness="0.02*cm" material="PEEK" sensitive="false">
+                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*mm"/>                
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
                     <position z="-0.14*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="-0.122*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
                     <position z="-0.024*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
                     <position z="0.07475*cm" />
                 </module_component>
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="0.0915*cm" />
                 </module_component>                
-                <module_component width="92.031" length="92.031" thickness="0.03*cm" material="Silicon" sensitive="true">
+                <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
                     <position z="0.1145*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00048*cm" material="Silicon" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
                     <position z="0.12974*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0038*cm" material="Kapton" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0038*cm" material="Kapton" sensitive="false">
                     <position z="0.1375*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00038*cm" material="Copper" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00038*cm" material="Copper" sensitive="false">
                     <position z="0.146*cm"/>
                 </module_component>                
             </module>
             <module name="SiTrackerModule_Layer2" vis="SiTrackerBarrelModuleVis">                
-                <module_envelope width="97.79" length="97.79" thickness="0.3*cm"/>                
-                <module_component width="97.79" length="97.79" thickness="0.02*cm" material="PEEK" sensitive="false">
+                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
                     <position z="-0.14*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="-0.122*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
                     <position z="-0.024*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
                     <position z="0.07475*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="0.0915*cm" />
                 </module_component>                
-                <module_component width="92.031" length="92.031" thickness="0.03*cm" material="Silicon" sensitive="true">
+                <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
                     <position z="0.1145*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00048*cm" material="Silicon" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
                     <position z="0.12974*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0051*cm" material="Kapton" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0051*cm" material="Kapton" sensitive="false">
                     <position z="0.1375*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00052*cm" material="Copper" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00052*cm" material="Copper" sensitive="false">
                     <position z="0.146*cm"/>
                 </module_component>                
             </module>
             <module name="SiTrackerModule_Layer3" vis="SiTrackerBarrelModuleVis">                
-                <module_envelope width="97.79" length="97.79" thickness="0.3*cm"/>                
-                <module_component width="97.79" length="97.79" thickness="0.02*cm" material="PEEK" sensitive="false">
+                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
                     <position z="-0.14*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="-0.122*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
                     <position z="-0.024*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
                     <position z="0.07475*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="0.0915*cm" />
                 </module_component>                
-                <module_component width="92.031" length="92.031" thickness="0.03*cm" material="Silicon" sensitive="true">
+                <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
                     <position z="0.1145*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00048*cm" material="Silicon" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
                     <position z="0.12974*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0064*cm" material="Kapton" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0064*cm" material="Kapton" sensitive="false">
                     <position z="0.1375*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00065*cm" material="Copper" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00065*cm" material="Copper" sensitive="false">
                     <position z="0.146*cm"/>
                 </module_component>                
             </module>
             <module name="SiTrackerModule_Layer4" vis="SiTrackerBarrelModuleVis">                
-                <module_envelope width="97.79" length="97.79" thickness="0.3*cm"/>                
-                <module_component width="97.79" length="97.79" thickness="0.02*cm" material="PEEK" sensitive="false">
+                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
                     <position z="-0.14*cm" />
                 </module_component>               
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="-0.122*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
                     <position z="-0.024*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
                     <position z="0.07475*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="0.0915*cm" />
                 </module_component>                
-                <module_component width="92.031" length="92.031" thickness="0.03*cm" material="Silicon" sensitive="true">
+                <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
                     <position z="0.1145*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00048*cm" material="Silicon" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
                     <position z="0.12974*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0078*cm" material="Kapton" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0078*cm" material="Kapton" sensitive="false">
                     <position z="0.1375*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00079*cm" material="Copper" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00079*cm" material="Copper" sensitive="false">
                     <position z="0.146*cm"/>
                 </module_component>                
             </module>
             <module name="SiTrackerModule_Layer5" vis="SiTrackerBarrelModuleVis">                
-                <module_envelope width="97.79" length="97.79" thickness="0.3*cm"/>                
-                <module_component width="97.79" length="97.79" thickness="0.02*cm" material="PEEK" sensitive="false">
+                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
                     <position z="-0.14*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="-0.122*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
                     <position z="-0.024*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
                     <position z="0.07475*cm" />
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
                     <position z="0.0915*cm" />
                 </module_component>                
-                <module_component width="92.031" length="92.031" thickness="0.03*cm" material="Silicon" sensitive="true">
+                <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
                     <position z="0.1145*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00048*cm" material="Silicon" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
                     <position z="0.12974*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.0091*cm" material="Kapton" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.0091*cm" material="Kapton" sensitive="false">
                     <position z="0.1375*cm"/>
                 </module_component>                
-                <module_component width="97.79" length="97.79" thickness="0.00093*cm" material="Copper" sensitive="false">
+                <module_component width="97.79*mm" length="97.79*mm" thickness="0.00093*cm" material="Copper" sensitive="false">
                     <position z="0.146*cm"/>
                 </module_component>                
             </module>
             <layer module="SiTrackerModule_Layer1" id="1" vis="SiTrackerBarrelLayerVis">
-                <barrel_envelope inner_r="215.075" outer_r="245.0" z_length="578 * 2"/>
-                <rphi_layout phi_tilt="0.17506" nphi="20" phi0="0." rc="216.355 + 5.0" dr="0.0"/>
-                <z_layout dr="4.0" z0="512.128" nz="13"/>
+                <barrel_envelope inner_r="215.075*mm" outer_r="245.0*mm" z_length="578 * 2*mm"/>
+                <rphi_layout phi_tilt="0.17506*rad" nphi="20" phi0="0." rc="(216.355 + 5.0)*mm" dr="0.0"/>
+                <z_layout dr="4.0*mm" z0="512.128*mm" nz="13"/>
             </layer>                
             <layer module="SiTrackerModule_Layer2" id="2" vis="SiTrackerBarrelLayerVis">
-                <barrel_envelope inner_r="465.075" outer_r="501.0" z_length="749.8 * 2"/>
-                <rphi_layout phi_tilt="0.12217" nphi="38" phi0="0.087" rc="466.355 + 5.0" dr="0.0"/>
-                <z_layout dr="4.0" z0="690.605" nz="17"/>
+                <barrel_envelope inner_r="465.075*mm" outer_r="501.0*mm" z_length="749.8 * 2*mm"/>
+                <rphi_layout phi_tilt="0.12217*rad" nphi="38" phi0="0.087*rad" rc="(466.355 + 5.0)*mm" dr="0.0"/>
+                <z_layout dr="4.0*mm" z0="690.605*mm" nz="17"/>
             </layer>
             <layer module="SiTrackerModule_Layer3" id="3" vis="SiTrackerBarrelLayerVis">
-                <barrel_envelope inner_r="715.075" outer_r="756.0" z_length="1013.9 * 2"/>
-                <rphi_layout phi_tilt="0.11493" nphi="58" phi0="0.058" rc="716.355 + 5.0" dr="0.0"/>
-                <z_layout dr="4.0" z0="954.625" nz="23"/>
+                <barrel_envelope inner_r="715.075*mm" outer_r="756.0*mm" z_length="1013.9 * 2*mm"/>
+                <rphi_layout phi_tilt="0.11493*rad" nphi="58" phi0="0.058*rad" rc="(716.355 + 5.0)*mm" dr="0.0"/>
+                <z_layout dr="4.0*mm" z0="954.625*mm" nz="23"/>
             </layer>            
             <layer module="SiTrackerModule_Layer4" id="4" vis="SiTrackerBarrelLayerVis">
-                <barrel_envelope inner_r="965.075" outer_r="1012.0" z_length="1272.3 * 2"/>
-                <rphi_layout phi_tilt="0.11502" nphi="80" phi0="0.0436" rc="966.355 + 5.0" dr="0.0"/>
-                <z_layout dr="4.0" z0="1213.073" nz="29"/>
+                <barrel_envelope inner_r="965.075*mm" outer_r="1012.0*mm" z_length="1272.3 * 2*mm"/>
+                <rphi_layout phi_tilt="0.11502*rad" nphi="80" phi0="0.0436*rad" rc="(966.355 + 5.0)*mm" dr="0.0"/>
+                <z_layout dr="4.0*mm" z0="1213.073*mm" nz="29"/>
             </layer>                        
             <layer module="SiTrackerModule_Layer5" id="5" vis="SiTrackerBarrelLayerVis">
-                <barrel_envelope inner_r="1215.075" outer_r="1263.0" z_length="1535.7 * 2"/>
-                <rphi_layout phi_tilt="0.11467" nphi="102" phi0="0.01745" rc="1216.355 + 5.0" dr="0.0"/>
-                <z_layout dr="4.0" z0="1476.497" nz="35"/>
+                <barrel_envelope inner_r="1215.075*mm" outer_r="1263.0*mm" z_length="1535.7 * 2*mm"/>
+                <rphi_layout phi_tilt="0.11467*rad" nphi="102" phi0="0.01745*rad" rc="(1216.355 + 5.0)*mm" dr="0.0"/>
+                <z_layout dr="4.0*mm" z0="1476.497*mm" nz="35"/>
             </layer>
         </detector>
 
@@ -538,7 +537,7 @@
         <detector id="4" name="SiTrackerEndcap" type="SiTrackerEndcap2" readout="SiTrackerEndcapHits" reflect="true">
             <comment>Outer Tracker Endcaps</comment>
             <module name="Module1" vis="SiTrackerEndcapModuleVis">
-                <trd x1="36.112" x2="46.635" z="100.114/2" />
+                <trd x1="36.112*mm" x2="46.635*mm" z="100.114/2*mm" />
                 <module_component thickness="0.00052*cm"   material="Copper" />
                 <module_component thickness="0.0051*cm"   material="Kapton" />
                 <module_component thickness="0.00048*cm" material="Silicon" />
@@ -553,7 +552,7 @@
                 <module_component thickness="0.00052*cm"   material="Copper" />
             </module> 
             <module name="Module2" vis="SiTrackerEndcapModuleVis">
-                <trd x1="45.245" x2="54.680" z="89.773/2" />
+                <trd x1="45.245*mm" x2="54.680*mm" z="89.773/2*mm" />
                 <module_component thickness="0.00079*cm"   material="Copper" />
                 <module_component thickness="0.0078*cm"   material="Kapton" />
                 <module_component thickness="0.00048*cm" material="Silicon" />
@@ -568,44 +567,46 @@
                 <module_component thickness="0.00079*cm"   material="Copper" />
             </module>
             <layer id="1">
-                <ring r="256.716" zstart="787.105+1.75" nmodules="24" dz="1.75" module="Module1"/>
-                <ring r="353.991" zstart="778.776+1.75" nmodules="32" dz="1.75" module="Module1"/>
-                <ring r="449.180" zstart="770.544+1.75" nmodules="40" dz="1.75" module="Module1"/>
+                <ring r="256.716*mm" zstart="(787.105+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+                <ring r="353.991*mm" zstart="(778.776+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+                <ring r="449.180*mm" zstart="(770.544+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
             </layer>
             <layer id="2">
-                <ring r="256.716" zstart="1073.293+1.75" nmodules="24" dz="1.75" module="Module1"/>
-                <ring r="353.991" zstart="1064.966+1.75" nmodules="32" dz="1.75" module="Module1"/>
-                <ring r="449.180" zstart="1056.734+1.75" nmodules="40" dz="1.75" module="Module1"/>
-                <ring r="538.520" zstart="1048.466+1.75" nmodules="40" dz="1.75" module="Module2"/>
-                <ring r="625.654" zstart="1041.067+1.75" nmodules="48" dz="1.75" module="Module2"/>
-                <ring r="703.666" zstart="1033.725+1.75" nmodules="54" dz="1.75" module="Module2" phi0="pi/54"/>
+                <ring r="256.716*mm" zstart="(1073.293+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+                <ring r="353.991*mm" zstart="(1064.966+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+                <ring r="449.180*mm" zstart="(1056.734+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+                <ring r="538.520*mm" zstart="(1048.466+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module2"/>
+                <ring r="625.654*mm" zstart="(1041.067+1.75)*mm" nmodules="48" dz="1.75*mm" module="Module2"/>
+                <ring r="703.666*mm" zstart="(1033.725+1.75)*mm" nmodules="54" dz="1.75*mm" module="Module2" phi0="pi/54"/>
             </layer>
             <layer id="3">
-                <ring r="256.716" zstart="1353.786+1.75" nmodules="24" dz="1.75" module="Module1"/>
-                <ring r="353.991" zstart="1345.457+1.75" nmodules="32" dz="1.75" module="Module1"/>
-                <ring r="449.180" zstart="1337.225+1.75" nmodules="40" dz="1.75" module="Module1"/>
-                <ring r="538.520" zstart="1328.957+1.75" nmodules="40" dz="1.75" module="Module2"/>
-                <ring r="625.654" zstart="1321.558+1.75" nmodules="48" dz="1.75" module="Module2"/>
-                <ring r="703.666" zstart="1314.217+1.75" nmodules="54" dz="1.75" module="Module2" phi0="pi/54"/>
-                <ring r="793.448" zstart="1306.828+1.75" nmodules="58" dz="1.75" module="Module2" phi0="pi/58"/>
-                <ring r="874.239" zstart="1299.486+1.75" nmodules="64" dz="1.75" module="Module2"/>
-                <ring r="958.364" zstart="1292.189+1.75" nmodules="68" dz="1.75" module="Module2"/>
+                <ring r="256.716*mm" zstart="(1353.786+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+                <ring r="353.991*mm" zstart="(1345.457+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+                <ring r="449.180*mm" zstart="(1337.225+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+                <ring r="538.520*mm" zstart="(1328.957+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module2"/>
+                <ring r="625.654*mm" zstart="(1321.558+1.75)*mm" nmodules="48" dz="1.75*mm" module="Module2"/>
+                <ring r="703.666*mm" zstart="(1314.217+1.75)*mm" nmodules="54" dz="1.75*mm" module="Module2" phi0="pi/54"/>
+                <ring r="793.448*mm" zstart="(1306.828+1.75)*mm" nmodules="58" dz="1.75*mm" module="Module2" phi0="pi/58"/>
+                <ring r="874.239*mm" zstart="(1299.486+1.75)*mm" nmodules="64" dz="1.75*mm" module="Module2"/>
+                <ring r="958.364*mm" zstart="(1292.189+1.75)*mm" nmodules="68" dz="1.75*mm" module="Module2"/>
             </layer>
             <layer id="4">
-                <ring r="256.716" zstart="1639.164+1.75" nmodules="24" dz="1.75" module="Module1"/>
-                <ring r="353.991" zstart="1630.835+1.75" nmodules="32" dz="1.75" module="Module1"/>
-                <ring r="449.180" zstart="1622.603+1.75" nmodules="40" dz="1.75" module="Module1"/>
-                <ring r="538.520" zstart="1614.335+1.75" nmodules="40" dz="1.75" module="Module2"/>
-                <ring r="625.654" zstart="1606.936+1.75" nmodules="48" dz="1.75" module="Module2"/>
-                <ring r="703.666" zstart="1599.595+1.75" nmodules="54" dz="1.75" module="Module2" phi0="pi/54"/>
-                <ring r="793.448" zstart="1592.206+1.75" nmodules="58" dz="1.75" module="Module2" phi0="pi/58"/>
-                <ring r="874.239" zstart="1584.864+1.75" nmodules="64" dz="1.75" module="Module2"/>
-                <ring r="958.364" zstart="1577.567+1.75" nmodules="68" dz="1.75" module="Module2"/>
-                <ring r="1040.970" zstart="1570.222+1.75" nmodules="72" dz="1.75" module="Module2"/>
-                <ring r="1124.167" zstart="1562.916+1.75" nmodules="78" dz="1.75" module="Module2" phi0="pi/78"/>
-                <ring r="1206.937" zstart="1555.647+1.75" nmodules="84" dz="1.75" module="Module2"/>
+                <ring r="256.716*mm" zstart="(1639.164+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+                <ring r="353.991*mm" zstart="(1630.835+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+                <ring r="449.180*mm" zstart="(1622.603+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+                <ring r="538.520*mm" zstart="(1614.335+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module2"/>
+                <ring r="625.654*mm" zstart="(1606.936+1.75)*mm" nmodules="48" dz="1.75*mm" module="Module2"/>
+                <ring r="703.666*mm" zstart="(1599.595+1.75)*mm" nmodules="54" dz="1.75*mm" module="Module2" phi0="pi/54"/>
+                <ring r="793.448*mm" zstart="(1592.206+1.75)*mm" nmodules="58" dz="1.75*mm" module="Module2" phi0="pi/58"/>
+                <ring r="874.239*mm" zstart="(1584.864+1.75)*mm" nmodules="64" dz="1.75*mm" module="Module2"/>
+                <ring r="958.364*mm" zstart="(1577.567+1.75)*mm" nmodules="68" dz="1.75*mm" module="Module2"/>
+                <ring r="1040.970*mm" zstart="(1570.222+1.75)*mm" nmodules="72" dz="1.75*mm" module="Module2"/>
+                <ring r="1124.167*mm" zstart="(1562.916+1.75)*mm" nmodules="78" dz="1.75*mm" module="Module2" phi0="pi/78"/>
+                <ring r="1206.937*mm" zstart="(1555.647+1.75)*mm" nmodules="84" dz="1.75*mm" module="Module2"/>
             </layer>
         </detector>
+<!--
+
         
         <detector id="5" name="SiTrackerForward" type="SiTrackerEndcap2" readout="SiTrackerForwardHits">    
             <comment>Forward Tracker inside Vertex Support Barrel</comment>
@@ -800,7 +801,7 @@
                 <slice material="Air" thickness="1.0*cm" />
                 <slice material="Iron" thickness="10.0*cm" vis="MuonBarrelAbsorberVis"/>
             </layer>
-            <!-- The last Iron layer is again 20.0cm to take the forces. -->
+
             <layer repeat="1" vis="MuonBarrelLayerVis">
             	<slice material="Aluminum" thickness="0.1*cm" />
                 <slice material="Air" thickness="0.35*cm" />
@@ -985,6 +986,7 @@
             <position x="((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle)/2.0)" y="0" z="- (ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
             <rotation x="0.0" y="CrossingAngle/2.0" z="0.0" />
         </detector>
+-->
         <!-- Beam pipe liner is not needed, use thicker conical steel pipe instead
         <detector name="BeamPipeLiner" type="PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
             <comment>BeamPipe Liner to shield bremsstrahlung photons</comment>
@@ -997,6 +999,7 @@
             <zplane rmin="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness" rmax="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness" z="tracking_region_zmax" />
         </detector>
         -->
+<!--
         <detector name="BeamPipeVacuum" type="PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
             <comment>Vacuum inside beampipe</comment>
             <material name="Vacuum"/>
@@ -1196,27 +1199,27 @@
         <comment>Outer Tracker Supports and Readout</comment>
         <detector name="TrackerBarrelSupports" type="MultiLayerTracker" reflect="true">
             <comment>Barrels</comment>
-            <layer id="1" inner_r="206.0" outer_z="577.328">
+            <layer id="1" inner_r="206.0*mm" outer_z="577.328*mm">
                 <slice material="CarbonFiber" thickness="0.05*cm" />
                 <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
                 <slice material="CarbonFiber" thickness="0.05*cm" />
             </layer>
-            <layer id="2" inner_r="456.0" outer_z="749.781">
+            <layer id="2" inner_r="456.0*mm" outer_z="749.781*mm">
                 <slice material="CarbonFiber" thickness="0.05*cm" />
                 <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
                 <slice material="CarbonFiber" thickness="0.05*cm" />
             </layer>
-            <layer id="3" inner_r="706.0" outer_z="1013.802">
+            <layer id="3" inner_r="706.0*mm" outer_z="1013.802*mm">
                 <slice material= "CarbonFiber" thickness = "0.05*cm" />
                 <slice material= "Rohacell31_15percent" thickness="0.8075*cm" />
                 <slice material= "CarbonFiber" thickness="0.05*cm" />
             </layer>
-            <layer id="4" inner_r="956.0" outer_z="1272.251">
+            <layer id="4" inner_r="956.0*mm" outer_z="1272.251*mm">
                 <slice material="CarbonFiber" thickness="0.05*cm" />
                 <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
                 <slice material="CarbonFiber" thickness="0.05*cm" />
             </layer>
-            <layer id="5" inner_r="1206.0" outer_z="1535.676">
+            <layer id="5" inner_r="1206.0*mm" outer_z="1535.676*mm">
                 <slice material="CarbonFiber" thickness="0.05*cm" />
                 <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
                 <slice material="CarbonFiber" thickness="0.05*cm" />
@@ -1225,191 +1228,191 @@
         <comment>Dished endcap disks</comment>
         <detector name="SiTrackerEndcapSupport1" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="510.448" rmax="510.448" z="750.417-0.001" />
-            <zplane rmin="504.711" rmax="510.448" z="750.919-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="777.034-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="777.535-0.001" />
+            <zplane rmin="510.448*mm" rmax="510.448*mm" z="(750.417-0.001)*mm" />
+            <zplane rmin="504.711*mm" rmax="510.448*mm" z="(750.919-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(777.034-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(777.535-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport2" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="510.448" rmax="510.448" z="750.919" />
-            <zplane rmin="438.449" rmax="510.448" z="757.218" />
-            <zplane rmin="206.234" rmax="278.187" z="777.535" />
-            <zplane rmin="206.234" rmax="206.234" z="783.834" />
+            <zplane rmin="510.448*mm" rmax="510.448*mm" z="750.919*mm" />
+            <zplane rmin="438.449*mm" rmax="510.448*mm" z="757.218*mm" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="777.535*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="783.834*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport3" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="510.448" rmax="510.448" z="757.218+0.001" />
-            <zplane rmin="504.711" rmax="510.448" z="757.720+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="783.834+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="784.336+0.001 " />
+            <zplane rmin="510.448" rmax="510.448" z="(757.218+0.001)*mm" />
+            <zplane rmin="504.711" rmax="510.448" z="(757.720+0.001)*mm" />
+            <zplane rmin="206.234" rmax="211.970" z="(783.834+0.001)*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="(784.336+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport4" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="763.796" rmax="763.796" z="1014.437-0.001" />
-            <zplane rmin="758.059" rmax="763.796" z="1014.939-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="1063.219-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="1063.721-0.001" />
+            <zplane rmin="763.796" rmax="763.796" z="(1014.437-0.001)*mm" />
+            <zplane rmin="758.059" rmax="763.796" z="(1014.939-0.001)*mm" />
+            <zplane rmin="206.234" rmax="211.970" z="(1063.219-0.001)*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="(1063.721-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport5" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="763.796" rmax="763.796" z="1014.939" />
-            <zplane rmin="691.797" rmax="763.796" z="1021.238" />
-            <zplane rmin="206.234" rmax="278.187" z="1063.721" />
-            <zplane rmin="206.234" rmax="206.234" z="1070.020" />
+            <zplane rmin="763.796" rmax="763.796" z="1014.939*mm" />
+            <zplane rmin="691.797" rmax="763.796" z="1021.238*mm" />
+            <zplane rmin="206.234" rmax="278.187" z="1063.721*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="1070.020*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport6" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="763.796" rmax="763.796" z="1021.238+0.001" />
-            <zplane rmin="758.059" rmax="763.796" z="1021.740+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="1070.020+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="1070.522+0.001" />
+            <zplane rmin="763.796" rmax="763.796" z="(1021.238+0.001)*mm" />
+            <zplane rmin="758.059" rmax="763.796" z="(1021.740+0.001)*mm" />
+            <zplane rmin="206.234" rmax="211.970" z="(1070.020+0.001)*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="(1070.522+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport7" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1015.748" rmax="1015.748" z="1272.885-0.001" />
-            <zplane rmin="1010.011" rmax="1015.748" z="1273.387-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="1343.711-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="1344.213-0.001" />
+            <zplane rmin="1015.748" rmax="1015.748" z="(1272.885-0.001)*mm" />
+            <zplane rmin="1010.011" rmax="1015.748" z="(1273.387-0.001)*mm" />
+            <zplane rmin="206.234" rmax="211.970" z="(1343.711-0.001)*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="(1344.213-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport8" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="1015.748" rmax="1015.748" z="1273.387" />
-            <zplane rmin="943.753" rmax="1015.748" z="1279.686" />
-            <zplane rmin="206.234" rmax="278.187" z="1344.213" />
-            <zplane rmin="206.234" rmax="206.234" z="1350.512" />
+            <zplane rmin="1015.748" rmax="1015.748" z="1273.387*mm" />
+            <zplane rmin="943.753" rmax="1015.748" z="1279.686*mm" />
+            <zplane rmin="206.234" rmax="278.187" z="1344.213*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="1350.512*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport9" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1015.748" rmax="1015.748" z="1279.686+0.001" />
-            <zplane rmin="1010.011" rmax="1015.748" z="1280.188+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="1350.512+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="1351.014+0.001" />
+            <zplane rmin="1015.748" rmax="1015.748" z="(1279.686+0.001)*mm" />
+            <zplane rmin="1010.011" rmax="1015.748" z="(1280.188+0.001)*mm" />
+            <zplane rmin="206.234" rmax="211.970" z="(1350.512+0.001)*mm" />
+            <zplane rmin="206.234" rmax="206.234" z="(1351.014+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport10" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1263.808" rmax="1263.808" z="1536.560-0.001" />
-            <zplane rmin="1258.071" rmax="1263.808" z="1537.062-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="1629.089-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="1629.591-0.001" />
+            <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(1536.560-0.001)*mm" />
+            <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(1537.062-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1629.089-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1629.591-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport11" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="1263.808" rmax="1263.808" z="1537.062" />
-            <zplane rmin="1191.810" rmax="1263.808" z="1543.361" />
-            <zplane rmin="206.234" rmax="278.187" z="1629.591" />
-            <zplane rmin="206.234" rmax="206.234" z="1635.890" />
+            <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="1537.062*mm" />
+            <zplane rmin="1191.810*mm" rmax="1263.808*mm" z="1543.361*mm" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="1629.591*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="1635.890*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport12" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1263.808" rmax="1263.808" z="1543.361+0.001" />
-            <zplane rmin="1258.071" rmax="1263.808" z="1543.863+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="1635.890+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="1636.392+0.001" />
+            <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(1543.361+0.001)*mm" />
+            <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(1543.863+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1635.890+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1636.392+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport1Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="510.448" rmax="510.448" z="-750.417+0.001" />
-            <zplane rmin="504.711" rmax="510.448" z="-750.919+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-777.034+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-777.535+0.001" />
+            <zplane rmin="510.448*mm" rmax="510.448*mm" z="(-750.417+0.001)*mm" />
+            <zplane rmin="504.711*mm" rmax="510.448*mm" z="(-750.919+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-777.034+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-777.535+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport2Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="510.448" rmax="510.448" z="-750.919" />
-            <zplane rmin="438.449" rmax="510.448" z="-757.218" />
-            <zplane rmin="206.234" rmax="278.187" z="-777.535" />
-            <zplane rmin="206.234" rmax="206.234" z="-783.834" />
+            <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919" />
+            <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834" />
         </detector>
         <detector name="SiTrackerEndcapSupport3Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="510.448" rmax="510.448" z="-757.218-0.001" />
-            <zplane rmin="504.711" rmax="510.448" z="-757.720-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-783.834-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-784.336-0.001 " />
+            <zplane rmin="510.448*mm" rmax="510.448*mm" z="(-757.218-0.001)*mm" />
+            <zplane rmin="504.711*mm" rmax="510.448*mm" z="(-757.720-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-783.834-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-784.336-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport4Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="763.796" rmax="763.796" z="-1014.437+0.001" />
-            <zplane rmin="758.059" rmax="763.796" z="-1014.939+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-1063.219+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-1063.721+0.001" />
+            <zplane rmin="763.796*mm" rmax="763.796*mm" z="(-1014.437+0.001)*mm" />
+            <zplane rmin="758.059*mm" rmax="763.796*mm" z="(-1014.939+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1063.219+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1063.721+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport5Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="763.796" rmax="763.796" z="-1014.939" />
-            <zplane rmin="691.797" rmax="763.796" z="-1021.238" />
-            <zplane rmin="206.234" rmax="278.187" z="-1063.721" />
-            <zplane rmin="206.234" rmax="206.234" z="-1070.020" />
+            <zplane rmin="763.796*mm" rmax="763.796*mm" z="-1014.939*mm" />
+            <zplane rmin="691.797*mm" rmax="763.796*mm" z="-1021.238*mm" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1063.721*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1070.020*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport6Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="763.796" rmax="763.796" z="-1021.238-0.001" />
-            <zplane rmin="758.059" rmax="763.796" z="-1021.740-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-1070.020-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-1070.522-0.001" />
+            <zplane rmin="763.796*mm" rmax="763.796*mm" z="(-1021.238-0.001)*mm" />
+            <zplane rmin="758.059*mm" rmax="763.796*mm" z="(-1021.740-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1070.020-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1070.522-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport7Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1015.748" rmax="1015.748" z="-1272.885+0.001" />
-            <zplane rmin="1010.011" rmax="1015.748" z="-1273.387+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-1343.711+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-1344.213+0.001" />
+            <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(-1272.885+0.001)*mm" />
+            <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(-1273.387+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1343.711+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1344.213+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport8Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="1015.748" rmax="1015.748" z="-1273.387" />
-            <zplane rmin="943.753" rmax="1015.748" z="-1279.686" />
-            <zplane rmin="206.234" rmax="278.187" z="-1344.213" />
-            <zplane rmin="206.234" rmax="206.234" z="-1350.512" />
+            <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="-1273.387*mm" />
+            <zplane rmin="943.753*mm" rmax="1015.748*mm" z="-1279.686*mm" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1344.213*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1350.512*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport9Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1015.748" rmax="1015.748" z="-1279.686-0.001" />
-            <zplane rmin="1010.011" rmax="1015.748" z="-1280.188-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-1350.512-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-1351.014-0.001" />
+            <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(-1279.686-0.001)*mm" />
+            <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(-1280.188-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1350.512-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1351.014-0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport10Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1263.808" rmax="1263.808" z="-1536.560+0.001" />
-            <zplane rmin="1258.071" rmax="1263.808" z="-1537.062+0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-1629.089+0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-1629.591+0.001" />
+            <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(-1536.560+0.001)*mm" />
+            <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(-1537.062+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1629.089+0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1629.591+0.001)*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport11Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="1263.808" rmax="1263.808" z="-1537.062" />
-            <zplane rmin="1191.810" rmax="1263.808" z="-1543.361" />
-            <zplane rmin="206.234" rmax="278.187" z="-1629.591" />
-            <zplane rmin="206.234" rmax="206.234" z="-1635.890" />
+            <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="-1537.062*mm" />
+            <zplane rmin="1191.810*mm" rmax="1263.808*mm" z="-1543.361*mm" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1629.591*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1635.890*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport12Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>
-            <zplane rmin="1263.808" rmax="1263.808" z="-1543.361-0.001" />
-            <zplane rmin="1258.071" rmax="1263.808" z="-1543.863-0.001" />
-            <zplane rmin="206.234" rmax="211.970" z="-1635.890-0.001" />
-            <zplane rmin="206.234" rmax="206.234" z="-1636.392-0.001" />
+            <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(-1543.361-0.001)*mm" />
+            <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(-1543.863-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1635.890-0.001)*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1636.392-0.001)*mm" />
         </detector>        
         <detector name="TrackerReadout" type="DiskTracker" reflect="true" vis="GreenVis">
             <comment>Readouts</comment>
-            <layer id="1" inner_r="25.7*cm" inner_z="590.402" outer_r="45.6*cm">
+            <layer id="1" inner_r="25.7*cm" inner_z="590.402*mm" outer_r="45.6*cm">
                 <slice material="G10" thickness="0.057*cm" />
                 <slice material="Copper" thickness="0.0038*cm" />
             </layer>
-            <layer id="2" inner_r="51.0*cm" inner_z="762.854" outer_r="70.6*cm">
+            <layer id="2" inner_r="51.0*cm" inner_z="762.854*mm" outer_r="70.6*cm">
                 <slice material = "G10" thickness="0.102*cm" />
                 <slice material = "Copper" thickness="0.0068*cm" />
             </layer>
-            <layer id="3" inner_r="76.3*cm" inner_z="1026.874" outer_r="95.6*cm">
+            <layer id="3" inner_r="76.3*cm" inner_z="1026.874*mm" outer_r="95.6*cm">
                 <slice material="G10" thickness="0.108*cm" />
                 <slice material="Copper" thickness="0.0072*cm" />
             </layer>
-            <layer id="4" inner_r="101.3*cm" inner_z="1285.322" outer_r="120.6*cm">
+            <layer id="4" inner_r="101.3*cm" inner_z="1285.322*mm" outer_r="120.6*cm">
                 <slice material="G10" thickness="0.186*cm" />
                 <slice material="Copper" thickness="0.0124*cm" />
             </layer>
-            <layer id="5" inner_r= "101.3*cm" inner_z="1610.0" outer_r="120.6*cm">
+            <layer id="5" inner_r= "101.3*cm" inner_z="1610.0*mm" outer_r="120.6*cm">
                 <slice material="G10" thickness="0.246*cm" />
                 <slice material="Copper" thickness="0.0164*cm" />
             </layer>
@@ -1519,7 +1522,7 @@
                 <slice material="Steel235" thickness="SolenoidEndcapCryostatThickness" />
             </layer>
         </detector>
-
+-->
     </detectors>
 
     <readouts>
