@@ -15,6 +15,8 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
+#define no_split_ladders 0
+
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement   vxd;
   xml_det_t    x_det = e;
@@ -50,7 +52,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     int         nLadders   = x_ladder.number();
     string      layername  = name+_toString(layer_id,"_layer%d");
     double      dphi       = 2.*M_PI/double(nLadders);
+
+#if no_split_ladders
     double      zhalf      = x_ladder.zhalf();
+#else
+    double      zhalf      = x_ladder.zhalf() / 2 ;
+#endif
+
     double      offset     = x_ladder.offset();
     double      sens_radius= x_ladder.radius();
     double      sens_thick = x_ladder.thickness();
@@ -128,7 +136,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       RotationZYX rot( phi , 0, 0  ) ;
 
 
-#if 0
+#if no_split_ladders
+
       pv = assembly.placeVolume( laddervol,Transform3D( rot, Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
 									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
 									  0. ) ));

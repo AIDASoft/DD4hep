@@ -243,7 +243,7 @@
 
     <readouts>
         <readout name="VXDCollection">
-            <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
+            <id>system:5,side:2,layer:9,module:8,sensor:8</id>
         </readout>
         <readout name="SITCollection">
 	    <id>system:5,side:-2,layer:9,module:8,sensor:8</id>

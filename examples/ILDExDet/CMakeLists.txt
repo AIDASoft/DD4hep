@@ -31,7 +31,7 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-find_package( DD4hep ) 
+find_package( DD4hep REQUIRED)
 
 set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake ) 
 include( DD4hep )
@@ -40,6 +40,8 @@ find_package( ROOT REQUIRED )
 #find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
+
+find_package( Gear REQUIRED)
 #-------------------------------------------------------------
 # add additional packages here
 
@@ -50,7 +52,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/include
   include
   ${DD4hep_INCLUDE_DIRS}
   ${ROOT_INCLUDE_DIR}
-  )
+  ${GEAR_INCLUDE_DIRS}
+ )
 
 file(GLOB sources src/*.cpp )
 file(GLOB headers include/*.h)
@@ -64,7 +67,10 @@ endif()
 
 add_library(${PackageName} SHARED ${sources})
 
-target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
+target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}  
+  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
+  ${GEAR_LIBRARIES}
+  )
 
 #---Rootmap generation--------------------------------------------------------------
 
@@ -84,6 +90,13 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
 
 
 #--- install target-------------------------------------
+
+
+FILE(GLOB hfiles "include/*.h")
+INSTALL(FILES ${hfiles} 
+  DESTINATION include/${PackageName} 
+  )
+
 
 install(TARGETS ${PackageName}
   RUNTIME DESTINATION bin

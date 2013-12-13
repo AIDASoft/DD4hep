@@ -14,6 +14,9 @@
 //#include "TPCModule.h"
 //#include "FixedPadAngleDiskLayout.h"
 
+#include "GearWrapper.h"
+#include <gearimpl/FixedPadSizeDiskLayout.h>
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -32,6 +35,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
   Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
   Readout     readout(sens.readout());
+
+  //--- some parameters needed for gear: 
+  double g_driftlength  ;
+  double g_rMin, g_rMax, g_padHeight, g_padWidth, g_maxRow, g_padGap, g_phiMax ;
+  double g_inner_r, g_outer_r, g_inner_wt, g_outer_wt ;
+
 
   for(xml_coll_t c(e,_U(detector)); c; ++c)  {
 
@@ -74,6 +83,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	  double zh = px_tube.zhalf() - 1e-3 ;
 	  double dR = ( r1 - r0 ) / ( 2.* nTPClayer ) ;  
 
+
+	  //---------------------------- gear stuff --------------
+	  g_driftlength = zh ;
+	  g_rMin = r0 ;
+	  g_rMax = r1 ;
+	  g_padHeight =  2. * dR   ;
+	  g_padWidth = 1.0 ;    // FIXME:  where do we define this ?
+	  g_maxRow = nTPClayer ;
+	  g_padGap = 0. ;
+	  g_phiMax = 6.283185307e+00 ; // FIXME: where to define ? is it allways 2PI ?
+	  //------------------------------------------------------
 
 	  for(int i=0 ; i < nTPClayer ; ++i){
 
@@ -162,6 +182,27 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }//subdetectors
   tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   
+  //--------------- create gear::TPCParameters and add them as Extension
+  GearTPCParameters* gearTPC = new GearTPCParameters( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
+  
+  gearTPC->setPadLayout( new gear::FixedPadSizeDiskLayout( g_rMin, g_rMax, g_padHeight, g_padWidth, g_maxRow, g_padGap, g_phiMax ) ) ;
+
+  Tube t =  DetElement(tpcData->innerWall).volume().solid() ;
+  g_inner_r  = t->GetRmin() * 10.  ;
+  g_inner_wt = ( t->GetRmax() - t->GetRmin() ) * 10. ;
+
+  t =  DetElement(tpcData->outerWall).volume().solid() ;
+  g_outer_r  = t->GetRmax() * 10. ;
+  g_outer_wt = ( t->GetRmax() - t->GetRmin() ) * 10. ;
+  
+  gearTPC->setDoubleVal("tpcInnerRadius", g_inner_r )  ; // inner r of support tube
+  gearTPC->setDoubleVal("tpcOuterRadius", g_outer_r )  ; // outer radius of TPC
+  gearTPC->setDoubleVal("tpcInnerWallThickness", g_inner_wt)  ;   // thickness of inner shell
+  gearTPC->setDoubleVal("tpcOuterWallThickness", g_outer_wt)  ;   // thickness of outer shell
+  
+  tpc.addExtension<GearTPCParameters>( gearTPC ) ;
+  //--------------------------------------------------------------------
+
   PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
   phv.addPhysVolID("system",x_det.id());
   tpc.setPlacement(phv);

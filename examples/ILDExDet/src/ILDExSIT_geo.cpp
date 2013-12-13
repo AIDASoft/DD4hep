@@ -9,6 +9,7 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 
+#include "GearWrapper.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -22,6 +23,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   PlacedVolume pv;
 
   
+  //--------------- create gear::ZPlanarParameters and add them as Extension
+  GearZPlanarParameters* gearZPlanar = new GearZPlanarParameters ;
+  sit.addExtension<GearZPlanarParameters>( gearZPlanar ) ;
+  //--------------------------------------------------------------------
+
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
 
@@ -67,6 +73,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
    }
   }
+  
+
+
   pv = lcdd.pickMotherVolume(sit).placeVolume(assembly)  ;
 
   pv.addPhysVolID("system", x_det.id()).addPhysVolID("side",0 ) ;

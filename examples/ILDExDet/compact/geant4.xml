@@ -2,31 +2,31 @@
 <geant4>
   <sensitive_detectors>
     <sd name="VXD" 
-        type="Geant4Tracker" 
+        type="Tracker" 
         ecut="1.0*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
     <sd name="SIT" 
-        type="Geant4Tracker" 
+        type="Tracker" 
         ecut="1.0*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
     <sd name="TPC" 
-        type="Geant4Tracker" 
+        type="Tracker" 
         ecut="0.01*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
     <sd name="HcalBarrel" 
-        type="Geant4Calorimeter"
+        type="Calorimeter"
         ecut="0.5*keV" 
         verbose="true" 
         hit_aggregation="position">
     </sd>
     <sd name="HcalEndcap"
-        type="Geant4Calorimeter"
+        type="Calorimeter"
         ecut="0.5*keV"
         verbose="true"
         hit_aggregation="position">
