@@ -41,7 +41,7 @@ find_package( ROOT REQUIRED )
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 
-find_package( Gear REQUIRED)
+find_package( GEAR REQUIRED)
 #-------------------------------------------------------------
 # add additional packages here
 
