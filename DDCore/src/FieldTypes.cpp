@@ -32,11 +32,15 @@ SolenoidField::SolenoidField()
 
 /// Call to access the field components at a given location
 void SolenoidField::fieldComponents(const double* pos, double* field) {
-  double radius = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
-  if (radius < innerRadius)
-    field[2] += innerField;
-  else if (radius < outerRadius)
-    field[2] += outerField;
+  double z = pos[2] ;
+//  std::cout << " field z=" << z << " maxZ=" << maxZ << " minZ = " << minZ << std::endl ;
+  if( z > minZ && z < maxZ ){ 
+    double radius = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
+    if (radius < innerRadius)
+      field[2] += innerField;
+    else if (radius < outerRadius)
+      field[2] += outerField;
+  }
 }
 
 /// Initializing constructor
