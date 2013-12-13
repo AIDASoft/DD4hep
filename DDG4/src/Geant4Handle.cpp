@@ -49,7 +49,7 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(TYPE* typ)
     value->addRef();
 }
 
-template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Handle<TYPE>& handle)
+template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Handle<TYPE>& handle)
     : value(0) {
   value = handle.get();
   if (value)
@@ -132,7 +132,7 @@ template <typename TYPE> Geant4Action* Geant4Handle<TYPE>::action() const {
   return checked_value(value);
 }
 
-template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(Geant4Handle& handle) {
+template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(const Geant4Handle& handle) {
   if (value)
     value->release();
   value = handle.get();
