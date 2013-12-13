@@ -148,34 +148,52 @@ namespace DD4hep  {
     typedef Geant4ActionPhase PH;
     Phase p;
 
-    if ( nam == "RunAction/begin" )
-      kernel.runAction().callAtBegin((p=kernel.addPhase<const G4Run*>(nam)).get(),
-				       &PH::call<const G4Run*>);
-    else if ( nam == "RunAction/end" )
-      kernel.runAction().callAtEnd((p=kernel.addPhase<const G4Run*>(nam)).get(),
-				   &PH::call<const G4Run*>);
-    else if ( nam == "EventAction/begin" )
-      kernel.eventAction().callAtBegin((p=kernel.addPhase<const G4Event*>(nam)).get(),
-				       &PH::call<const G4Event*>);
-    else if ( nam == "EventAction/end" )
-      kernel.eventAction().callAtEnd((p=kernel.addPhase<const G4Event*>(nam)).get(),
-				     &PH::call<const G4Event*>);
-    else if ( nam == "TrackingAction/begin" )
-      kernel.trackingAction().callAtBegin((p=kernel.addPhase<const G4Track*>(nam)).get(),
-					  &PH::call<const G4Track*>);
-    else if ( nam == "TrackingAction/end" )
-      kernel.trackingAction().callAtEnd((p=kernel.addPhase<const G4Track*>(nam,false)).get(),
-					&PH::call<const G4Track*>);
-    else if ( nam == "StackingAction/newStage" )
+    if ( nam == "RunAction/begin" )  {
+      void (Geant4ActionPhase::*func)(const G4Run*) = &Geant4ActionPhase::call;
+      kernel.runAction().callAtBegin((p=kernel.addPhase<const G4Run*>(nam)).get(),func);
+      //&Geant4ActionPhase::call<const G4Run*>);
+    }
+    else if ( nam == "RunAction/end" )  {
+      void (Geant4ActionPhase::*func)(const G4Run*) = &Geant4ActionPhase::call;
+      kernel.runAction().callAtEnd((p=kernel.addPhase<const G4Run*>(nam)).get(),func);
+      //&PH::call<const G4Run*>);
+    }
+    else if ( nam == "EventAction/begin" )  {
+      void (Geant4ActionPhase::*func)(const G4Event*) = &Geant4ActionPhase::call;
+      kernel.eventAction().callAtBegin((p=kernel.addPhase<const G4Event*>(nam)).get(),func);
+      //&PH::call<const G4Event*>);
+    }
+    else if ( nam == "EventAction/end" )  {
+      void (Geant4ActionPhase::*func)(const G4Event*) = &Geant4ActionPhase::call;
+      kernel.eventAction().callAtEnd((p=kernel.addPhase<const G4Event*>(nam)).get(),func);
+      //&PH::call<const G4Event*>);
+    }
+    else if ( nam == "TrackingAction/begin" )  {
+      void (Geant4ActionPhase::*func)(const G4Track*) = &Geant4ActionPhase::call;
+      kernel.trackingAction().callAtBegin((p=kernel.addPhase<const G4Track*>(nam)).get(),func);
+      //&PH::call<const G4Track*>);
+    }
+    else if ( nam == "TrackingAction/end" )  {
+      void (Geant4ActionPhase::*func)(const G4Track*) = &Geant4ActionPhase::call;
+      kernel.trackingAction().callAtEnd((p=kernel.addPhase<const G4Track*>(nam,false)).get(),func);
+      //&PH::call<const G4Track*>);
+    }
+    else if ( nam == "StackingAction/newStage" )  {
       kernel.stackingAction().callAtNewStage((p=kernel.addPhase<void>(nam,false)).get(),&PH::call);
-    else if ( nam == "StackingAction/prepare" )
+    }
+    else if ( nam == "StackingAction/prepare" )  {
       kernel.stackingAction().callAtPrepare((p=kernel.addPhase<void>(nam,false)).get(),&PH::call);
-    else if ( nam == "SteppingAction" )
-      kernel.steppingAction().call((p=kernel.addPhase<const G4Step*>(nam)).get(),
-				   &PH::call<const G4Step*,G4SteppingManager*>);
-    else if ( nam == "GeneratorAction/primaries" )
-      kernel.generatorAction().call((p=kernel.addPhase<G4Event*>(nam)).get(),
-				    &PH::call<G4Event*>);
+    }
+    else if ( nam == "SteppingAction" )  {
+      void (Geant4ActionPhase::*func)(const G4Step*,G4SteppingManager*) = &Geant4ActionPhase::call;
+      kernel.steppingAction().call((p=kernel.addPhase<const G4Step*>(nam)).get(),func);
+      //&PH::call<const G4Step*,G4SteppingManager*>);
+    }
+    else if ( nam == "GeneratorAction/primaries" )  {
+      void (Geant4ActionPhase::*func)(G4Event*) = &Geant4ActionPhase::call;
+      kernel.generatorAction().call((p=kernel.addPhase<G4Event*>(nam)).get(),func);
+      //&PH::call<G4Event*>);
+    }
     else   {
       TypeName tn = TypeName::split(nam);
       DetElement det = lcdd.detector(tn.first);
