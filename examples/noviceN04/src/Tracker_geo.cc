@@ -82,4 +82,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 }
 
 //first argument is the type from the xml file
-DECLARE_DETELEMENT( Tracker ,create_element );
+DECLARE_DETELEMENT( Tracker ,create_element )
