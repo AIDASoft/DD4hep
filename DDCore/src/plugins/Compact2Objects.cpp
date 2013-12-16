@@ -307,7 +307,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       has_density = false;
     }
     if ( density.ptr() && density.hasAttr(_U(unit)) )   {
-      dens_unit = density.attr<double>(_U(unit))/XML::_toDouble("gram/cm3");
+      dens_unit = density.attr<double>(_U(unit))/XML::_toDouble(_Unicode(gram/cm3));
     }
     if ( dens_unit != 1.0 )  {
       cout << matname << " Density unit:" << dens_unit;
