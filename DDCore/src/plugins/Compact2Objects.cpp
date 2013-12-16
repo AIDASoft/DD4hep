@@ -15,9 +15,7 @@
 #include "DD4hep/Plugins.h"
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
-
-#include "DDSegmentation/CartesianGridXY.h"
-#include "DDSegmentation/CartesianGridXYZ.h"
+#include "DDSegmentation/SegmentationFactory.h"
 
 // Root/TGeo include files
 #include "TGeoManager.h"
@@ -67,84 +65,6 @@ namespace {
   }
 
 }
-
-static Ref_t create_GridXYZ(lcdd_t& lcdd, xml_h e) {
-  GridXYZ obj(lcdd, "grid_xyz");
-  if (e.hasAttr(_U(gridSizeX)))
-    obj.setGridSizeX(e.attr<float>(_U(gridSizeX)));
-  if (e.hasAttr(_U(gridSizeY)))
-    obj.setGridSizeY(e.attr<float>(_U(gridSizeY)));
-  if (e.hasAttr(_U(gridSizeZ)))
-    obj.setGridSizeZ(e.attr<float>(_U(gridSizeZ)));
-  return obj;
-}
-DECLARE_XMLELEMENT(GridXYZ,create_GridXYZ);
-
-static Ref_t create_GlobalGridXY(lcdd_t& lcdd, xml_h e) {
-  GridXY obj(lcdd, "global_grid_xy");
-  if (e.hasAttr(_U(gridSizeX)))
-    obj.setGridSizeX(e.attr<float>(_U(gridSizeX)));
-  if (e.hasAttr(_U(gridSizeY)))
-    obj.setGridSizeY(e.attr<float>(_U(gridSizeY)));
-  return obj;
-}
-DECLARE_XMLELEMENT(GlobalGridXY,create_GlobalGridXY);
-
-static Ref_t create_CartesianGridXY(lcdd_t& lcdd, xml_h e) {
-  GridXY obj(lcdd, "cartesian_grid_xy");
-  if (e.hasAttr(_U(gridSizeX)))
-    obj.setGridSizeX(e.attr<double>(_U(gridSizeX)));
-  if (e.hasAttr(_U(gridSizeY)))
-    obj.setGridSizeY(e.attr<double>(_U(gridSizeY)));
-  return obj;
-}
-DECLARE_XMLELEMENT(CartesianGridXY,create_CartesianGridXY);
-
-namespace DD4hep {
-  namespace Geometry {
-    typedef GridXY RegularNgonCartesianGridXY;
-  }
-}
-DECLARE_XMLELEMENT(RegularNgonCartesianGridXY,create_CartesianGridXY);
-
-namespace DD4hep {
-  namespace Geometry {
-    typedef GridXYZ CartesianGridXYZ;
-    typedef GridXY EcalBarrelCartesianGridXY;
-  }
-}
-DECLARE_XMLELEMENT(CartesianGridXYZ,create_CartesianGridXY);
-DECLARE_XMLELEMENT(EcalBarrelCartesianGridXY,create_CartesianGridXY);
-
-static Ref_t create_ProjectiveCylinder(lcdd_t& lcdd, xml_h e) {
-  ProjectiveCylinder obj(lcdd);
-  if (e.hasAttr(_U(phiBins)))
-    obj.setPhiBins(e.attr<int>(_U(phiBins)));
-  if (e.hasAttr(_U(thetaBins)))
-    obj.setThetaBins(e.attr<int>(_U(thetaBins)));
-  return obj;
-}
-DECLARE_XMLELEMENT(ProjectiveCylinder,create_ProjectiveCylinder);
-
-static Ref_t create_NonProjectiveCylinder(lcdd_t& lcdd, xml_h e) {
-  NonProjectiveCylinder obj(lcdd);
-  if (e.hasAttr(_U(gridSizePhi)))
-    obj.setThetaBinSize(e.attr<double>(_U(gridSizePhi)));
-  if (e.hasAttr(_U(gridSizeZ)))
-    obj.setPhiBinSize(e.attr<double>(_U(gridSizeZ)));
-  return obj;
-}
-DECLARE_XMLELEMENT(NonProjectiveCylinder,create_NonProjectiveCylinder);
-
-static Ref_t create_ProjectiveZPlane(lcdd_t& lcdd, xml_h e) {
-  ProjectiveZPlane obj(lcdd);
-  if (e.hasAttr(_U(phiBins)))
-    obj.setThetaBins(e.attr<int>(_U(phiBins)));
-  if (e.hasAttr(_U(thetaBins)))
-    obj.setPhiBins(e.attr<int>(_U(thetaBins)));
-  return obj;
-}
-DECLARE_XMLELEMENT(ProjectiveZPlane,create_ProjectiveZPlane);
 
 static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e) {
   CartesianField obj;
@@ -520,12 +440,24 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   Ref_t idSpec;
 
   if (seg) {   // Segmentation is not mandatory!
+	typedef DDSegmentation::Segmentation BaseSegmentation;
     string type = seg.attr < string > (_U(type));
-    Ref_t segment(PluginService::Create<TNamed*>(type, &lcdd, &seg));
-    if (!segment.isValid()) {
-      PluginDebug dbg;
-      PluginService::Create<TNamed*>(type, &lcdd, &seg);
-      throw_print("FAILED to create segmentation:" + type + ". " + dbg.missingFactory(type));
+    BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(type);
+    if (not s) {
+      throw_print("FAILED to create segmentation: " + type + ". Missing factory method for: " + type + "!");
+    }
+    Segmentation segment(s, name, type);
+    if (segment.isValid()) {
+      DDSegmentation::Parameters parameters = s->parameters();
+      DDSegmentation::Parameters::iterator it;
+      for (it = parameters.begin(); it != parameters.end(); ++it) {
+        DDSegmentation::Parameter p = *it;
+    	if (seg.hasAttr(Unicode(p->name()))) {
+    	  p->value() = seg.attr<double>(Unicode(p->name()));
+        } else if (not p->isOptional()) {
+    	  throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
+    	}
+      }
     }
     ro.setSegmentation(segment);
   }

@@ -15,11 +15,11 @@ namespace DDSegmentation {
 
 class CartesianGrid: public Segmentation {
 public:
-	/// destructor
+	/// Destructor
 	virtual ~CartesianGrid();
 protected:
-	/// default constructor using an arbitrary type
-	template <typename TYPE> CartesianGrid(TYPE cellEncoding);
+	/// Default constructor used by derived classes passing the encoding string
+	CartesianGrid(const std::string& cellEncoding = "");
 };
 
 } /* namespace DDSegmentation */

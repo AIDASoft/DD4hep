@@ -63,9 +63,6 @@ endif()
 
 add_executable(Segmentation SegmentationTest.cpp ${sources})
 
-MESSAGE( STATUS "${DD4hep_LIBRARIES}" ) 
-MESSAGE( STATUS "${ROOT_LIBRARIES}" ) 
-
 target_link_libraries(Segmentation ${DD4hep_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------

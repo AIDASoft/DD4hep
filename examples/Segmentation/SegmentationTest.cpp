@@ -7,7 +7,8 @@
 
 #include "DD4hep/LCDD.h"
 
-#include "DDSegmentation/BitField64.h"
+#include "DDSegmentation/SegmentationFactory.h"
+#include "DDSegmentation/SegmentationParameter.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -16,23 +17,20 @@ using namespace DDSegmentation;
 
 int main(int argc, char** argv) {
 
-	LCDD& lcdd = LCDD::getInstance();
-	lcdd.fromCompact(argv[1]);
-	lcdd.apply("DD4hepVolumeManager",0,0);
+	SegmentationFactory* f = SegmentationFactory::instance();
 
-	Readout ro = lcdd.readout("MuonBarrelHits");
-
-	BitField64 idEncoder(ro.idSpec().fieldDescription());
-	idEncoder["system"] = 10;
-	idEncoder["barrel"] = 0;
-	idEncoder["layer"] = 15;
-	idEncoder["module"] = 8;
-	idEncoder["slice"] = 11;
-	idEncoder["x"] = 13;
-	idEncoder["y"] = -10;
-	long64 cellID = idEncoder.getValue();
-	Position gp = ro.getPosition(cellID);
-	std::cout << "Global position: " << gp.x() << ", " << gp.y() << ", " << gp.z() << std::endl;
-
+	cout << "Registered Segmentations:" << std::endl;
+	vector<string> segmentations = f->registeredSegmentations();
+	vector<string>::const_iterator it;
+	for (it = segmentations.begin(); it != segmentations.end(); ++it) {
+		string typeName = *it;
+		DDSegmentation::Segmentation* s = f->create(typeName);
+		cout << "\t" << typeName << ", " << s->type() << endl;
+		Parameters parameters = s->parameters();
+		Parameters::iterator it;
+		for (it = parameters.begin(); it != parameters.end(); ++it) {
+			cout << "\t\t" << it->first << " = " << it->second << endl;
+		}
+	}
 	return 0;
 };

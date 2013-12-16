@@ -16,42 +16,40 @@ namespace DDSegmentation {
 class ProjectiveCylinder: public CylindricalSegmentation {
 public:
 	/// default constructor using an arbitrary type
-	template<typename TYPE> ProjectiveCylinder(TYPE cellEncoding, int thetaBins = 1, int phiBins = 1,
-			double offsetTheta = 0., double offsetPhi = 0., const std::string& thetaField = "theta",
-			const std::string& phiField = "phi", const std::string& layerField = "layer");
+	ProjectiveCylinder(const std::string& cellEncoding);
 	/// destructor
 	virtual ~ProjectiveCylinder();
 
 	/// determine the position based on the cell ID
-	virtual std::vector<double> getPosition(const long64& cellID) const;
+	virtual Position position(const CellID& cellID) const;
 	/// determine the cell ID based on the position
-	virtual long64 getCellID(double x, double y, double z) const;
+	virtual CellID cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const;
 	/// determine the polar angle theta based on the cell ID
-	double getTheta(const long64& cellID) const;
+	double theta(const long64& cellID) const;
 	/// determine the azimuthal angle phi based on the cell ID
-	double getPhi(const long64& cellID) const;
+	double phi(const long64& cellID) const;
 	/// access the number of bins in theta
-	int getThetaBins() const {
+	int thetaBins() const {
 		return _thetaBins;
 	}
 	/// access the number of bins in theta
-	int getPhiBins() const {
+	int phiBins() const {
 		return _phiBins;
 	}
 	/// access the coordinate offset in theta
-	double getOffsetTheta() const {
+	double offsetTheta() const {
 		return _offsetTheta;
 	}
 	/// access the coordinate offset in phi
-	double getOffsetPhi() const {
+	double offsetPhi() const {
 		return _offsetPhi;
 	}
 	/// access the field name used for theta
-	std::string getFieldNameTheta() const {
+	std::string fieldNameTheta() const {
 		return _thetaID;
 	}
 	/// access the field name used for phi
-	std::string getFieldNamePhi() const {
+	std::string fieldNamePhi() const {
 		return _phiID;
 	}
 	/// set the number of bins in theta
@@ -78,14 +76,12 @@ public:
 	void setFieldNamePhi(const std::string& name) {
 		_phiID = name;
 	}
-	/// access the set of parameters for this segmentation
-	Parameters parameters() const;
 
 protected:
 	/// the number of bins in theta
-	int _thetaBins;
+	double _thetaBins;
 	/// the number of bins in phi
-	int _phiBins;
+	double _phiBins;
 	/// the coordinate offset in theta
 	double _offsetTheta;
 	/// the coordinate offset in phi

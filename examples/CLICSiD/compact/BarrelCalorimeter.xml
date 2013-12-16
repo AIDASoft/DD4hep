@@ -396,7 +396,7 @@
     <readouts>
 
         <readout name="MuonBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
 <!--

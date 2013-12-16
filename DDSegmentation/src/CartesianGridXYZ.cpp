@@ -10,40 +10,19 @@
 namespace DD4hep {
 namespace DDSegmentation {
 
-using std::make_pair;
 using std::string;
-using std::vector;
 
 /// default constructor using an encoding string
-template<> CartesianGridXYZ::CartesianGridXYZ(const string& cellEncoding, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
-		CartesianGridXY(cellEncoding, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
-				offsetZ), _zId(zField) {
-	_type = "grid_xyz";
-}
+CartesianGridXYZ::CartesianGridXYZ(const string& cellEncoding) :
+		CartesianGridXY(cellEncoding) {
+	// define type and description
+	_type = "CartesianGridXYZ";
+	_description = "Cartesian segmentation in the local coordinates";
 
-/// default constructor using an encoding string
-template<> CartesianGridXYZ::CartesianGridXYZ(string cellEncoding, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
-		CartesianGridXY(cellEncoding, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
-				offsetZ), _zId(zField) {
-	_type = "grid_xyz";
-}
-
-/// default constructor using an encoding string
-template<> CartesianGridXYZ::CartesianGridXYZ(const char* cellEncoding, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
-		CartesianGridXY(cellEncoding, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
-				offsetZ), _zId(zField) {
-	_type = "grid_xyz";
-}
-
-/// default constructor using an existing decoder
-template<> CartesianGridXYZ::CartesianGridXYZ(BitField64* decoder, double gridSizeX, double gridSizeY, double gridSizeZ,
-		double offsetX, double offsetY, double offsetZ, const string& xField, const string& yField, const string& zField) :
-		CartesianGridXY(decoder, gridSizeX, gridSizeY, offsetX, offsetY, xField, yField), _gridSizeZ(gridSizeZ), _offsetZ(
-				offsetZ), _zId(zField) {
-	_type = "grid_xyz";
+	// register all necessary parameters
+	registerParameter("gridSizeZ", "Cell size in Z", _gridSizeZ, 1.);
+	registerParameter("offsetZ", "Cell offset in Z", _offsetZ, 0., true);
+	_zId = "z";
 }
 
 /// destructor
@@ -52,35 +31,25 @@ CartesianGridXYZ::~CartesianGridXYZ() {
 }
 
 /// determine the position based on the cell ID
-vector<double> CartesianGridXYZ::getPosition(const long64& cellID) const {
+Position CartesianGridXYZ::position(const CellID& cellID) const {
 	_decoder->setValue(cellID);
-	vector<double> localPosition(3);
-	localPosition[0] = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
-	localPosition[1] = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY);
-	localPosition[2] = binToPosition((*_decoder)[_zId].value(), _gridSizeZ, _offsetZ);
-	return localPosition;
+	Position position;
+	position.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
+	position.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY);
+	position.Z = binToPosition((*_decoder)[_zId].value(), _gridSizeZ, _offsetZ);
+	return position;
 }
 
 /// determine the cell ID based on the position
-long64 CartesianGridXYZ::getCellID(double x, double y, double z) const {
+CellID CartesianGridXYZ::cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const {
 	_decoder->reset();
-	(*_decoder)[_xId] = positionToBin(x, _gridSizeX, _offsetX);
-	(*_decoder)[_yId] = positionToBin(y, _gridSizeY, _offsetY);
-	(*_decoder)[_zId] = positionToBin(z, _gridSizeZ, _offsetZ);
+	(*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
+	(*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY);
+	(*_decoder)[_zId] = positionToBin(localPosition.Z, _gridSizeZ, _offsetZ);
 	return _decoder->getValue();
 }
 
-/// access the set of parameters for this segmentation
-Parameters CartesianGridXYZ::parameters() const {
-	Parameters parameters;
-	parameters.push_back(make_pair("grid_size_x", _gridSizeX));
-	parameters.push_back(make_pair("grid_size_y", _gridSizeY));
-	parameters.push_back(make_pair("grid_size_z", _gridSizeZ));
-	parameters.push_back(make_pair("offset_x", _offsetX));
-	parameters.push_back(make_pair("offset_y", _offsetY));
-	parameters.push_back(make_pair("offset_z", _offsetZ));
-	return parameters;
-}
+REGISTER_SEGMENTATION(CartesianGridXYZ)
 
 } /* namespace DDSegmentation */
 } /* namespace DD4hep */

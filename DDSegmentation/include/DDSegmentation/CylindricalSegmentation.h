@@ -20,28 +20,9 @@ public:
 	/// destructor
 	virtual ~CylindricalSegmentation();
 
-	/// determine the radius based on the cell ID
-	double getRadius(const long64& cellID) const;
-	/// access the field name used for layer
-	std::string getFieldNameLayer() const {
-		return _layerID;
-	}
-	/// set the field name used for the layer
-	void setFieldNameLayer(const std::string& name) {
-		_layerID = name;
-	}
-	/// set the radius of the given layer index
-	void setLayerRadius(int layerIndex, double radius) {
-		_layerRadiusMap[layerIndex] = radius;
-	}
 protected:
 	/// default constructor using an arbitrary type
-	template <typename TYPE> CylindricalSegmentation(TYPE cellEncoding, const std::string& layerField = "layer");
-	/// default constructor using an existing decoder
-	CylindricalSegmentation(BitField64* decoder);
-	/// store layer radii
-	std::map<int, double> _layerRadiusMap;
-	std::string _layerID;
+	CylindricalSegmentation(const std::string& cellEncoding);
 };
 
 

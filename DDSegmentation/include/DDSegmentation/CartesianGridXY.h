@@ -15,38 +15,37 @@ namespace DDSegmentation {
 
 class CartesianGridXY: public CartesianGrid {
 public:
-	/// default constructor using an arbitrary type
-	template <typename TYPE> CartesianGridXY(TYPE cellEncoding, double gridSizeX = 1., double gridSizeY = 1., double offsetX = 0.,
-			double offsetY = 0., const std::string& xField = "x", const std::string& yField = "y");
+	/// Default constructor passing the encoding string
+	CartesianGridXY(const std::string& cellEncoding = "");
 	/// destructor
 	virtual ~CartesianGridXY();
 
 	/// determine the position based on the cell ID
-	virtual std::vector<double> getPosition(const long64& cellID) const;
+	virtual Position position(const CellID& cellID) const;
 	/// determine the cell ID based on the position
-	virtual long64 getCellID(double x, double y, double z) const;
+	virtual CellID cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const;
 	/// access the grid size in X
-	double getGridSizeX() const {
+	double gridSizeX() const {
 		return _gridSizeX;
 	}
 	/// access the grid size in Y
-	double getGridSizeY() const {
+	double gridSizeY() const {
 		return _gridSizeY;
 	}
 	/// access the coordinate offset in X
-	double getOffsetX() const {
+	double offsetX() const {
 		return _offsetX;
 	}
 	/// access the coordinate offset in Y
-	double getOffsetY() const {
+	double offsetY() const {
 		return _offsetY;
 	}
 	/// access the field name used for X
-	std::string getFieldNameX() const {
+	const std::string& fieldNameX() const {
 		return _xId;
 	}
 	/// access the field name used for Y
-	std::string getFieldNameY() const {
+	const std::string& fieldNameY() const {
 		return _yId;
 	}
 	/// set the grid size in X
@@ -73,8 +72,6 @@ public:
 	void setFieldNameY(const std::string& name) {
 		_yId = name;
 	}
-	/// access the set of parameters for this segmentation
-	Parameters parameters() const;
 
 protected:
 	/// the grid size in X

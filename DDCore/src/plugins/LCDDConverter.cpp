@@ -800,21 +800,20 @@ xml_h LCDDConverter::handleLimitSet(const std::string& name, const TNamed* limit
 xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
   xml_h xml;
   if (seg.isValid()) {
-    typedef SegmentationParams::Parameters _P;
+    typedef DDSegmentation::Parameters _P;
     string typ = seg.type();
-    SegmentationParams par(seg);
-    _P p = par.parameters();
+    _P p = seg.parameters();
     xml = xml_elt_t(data().doc, Unicode(typ));
     for (_P::const_iterator i = p.begin(); i != p.end(); ++i) {
       const _P::value_type& v = *i;
-      if (v.first == "lunit") {
-        string val = v.second == _toDouble("mm") ? "mm" : v.second == _toDouble("cm") ? "cm" :
-                     v.second == _toDouble("m") ? "m" : v.second == _toDouble("micron") ? "micron" :
-                     v.second == _toDouble("nanometer") ? "namometer" : "??";
-        xml.setAttr(Unicode(v.first), Unicode(val));
+      if (v->name() == "lunit") {
+        string val = v->value() == _toDouble("mm") ? "mm" : v->value() == _toDouble("cm") ? "cm" :
+                     v->value() == _toDouble("m") ? "m" : v->value() == _toDouble("micron") ? "micron" :
+                     v->value() == _toDouble("nanometer") ? "namometer" : "??";
+        xml.setAttr(Unicode(v->name()), Unicode(val));
         continue;
       }
-      xml.setAttr(Unicode(v.first), v.second);
+      xml.setAttr(Unicode(v->name()), v->value());
     }
   }
   return xml;

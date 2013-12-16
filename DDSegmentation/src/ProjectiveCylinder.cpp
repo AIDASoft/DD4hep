@@ -15,40 +15,21 @@ namespace DD4hep {
 namespace DDSegmentation {
 
 using std::string;
-using SegmentationUtil::getPositionFromRThetaPhi;
 
 /// default constructor using an encoding string
-template<> ProjectiveCylinder::ProjectiveCylinder(const string& cellEncoding, int thetaBins, int phiBins,
-		double offsetTheta, double offsetPhi, const string& thetaField, const string& phiField,
-		const string& layerField) :
-		CylindricalSegmentation(cellEncoding, layerField), _thetaBins(thetaBins), _phiBins(phiBins), _offsetTheta(
-				offsetTheta), _offsetPhi(offsetPhi), _thetaID(thetaField), _phiID(phiField) {
-	_type = "projective_cylinder";
-}
+ProjectiveCylinder::ProjectiveCylinder(const string& cellEncoding) :
+	CylindricalSegmentation(cellEncoding) {
+	// define type and description
+	_type = "ProjectiveCylinder";
+	_description = "Projective segmentation in the global coordinates";
 
-/// default constructor using an encoding string
-template<> ProjectiveCylinder::ProjectiveCylinder(string cellEncoding, int thetaBins, int phiBins, double offsetTheta,
-		double offsetPhi, const string& thetaField, const string& phiField, const string& layerField) :
-		CylindricalSegmentation(cellEncoding, layerField), _thetaBins(thetaBins), _phiBins(phiBins), _offsetTheta(
-				offsetTheta), _offsetPhi(offsetPhi), _thetaID(thetaField), _phiID(phiField) {
-	_type = "projective_cylinder";
-}
-
-/// default constructor using an encoding string
-template<> ProjectiveCylinder::ProjectiveCylinder(const char* cellEncoding, int thetaBins, int phiBins,
-		double offsetTheta, double offsetPhi, const string& thetaField, const string& phiField,
-		const string& layerField) :
-		CylindricalSegmentation(cellEncoding, layerField), _thetaBins(thetaBins), _phiBins(phiBins), _offsetTheta(
-				offsetTheta), _offsetPhi(offsetPhi), _thetaID(thetaField), _phiID(phiField) {
-	_type = "projective_cylinder";
-}
-
-/// default constructor using an existing decoder
-template<> ProjectiveCylinder::ProjectiveCylinder(BitField64* decoder, int thetaBins, int phiBins, double offsetTheta,
-		double offsetPhi, const string& thetaField, const string& phiField, const string& layerField) :
-		CylindricalSegmentation(decoder, layerField), _thetaBins(thetaBins), _phiBins(phiBins), _offsetTheta(
-				offsetTheta), _offsetPhi(offsetPhi), _thetaID(thetaField), _phiID(phiField) {
-	_type = "projective_cylinder";
+	// register all necessary parameters
+	registerParameter("thetaBins", "Number of bins theta", _thetaBins, 1.);
+	registerParameter("phiBins", "Number of bins phi", _phiBins, 1.);
+	registerParameter("offsetTheta", "Angular offset in theta", _offsetTheta, 0., true);
+	registerParameter("offsetPhi", "Angular offset in phi", _offsetPhi, 0., true);
+	_thetaID = "theta";
+	_phiID = "phi";
 }
 
 /// destructor
@@ -57,29 +38,28 @@ ProjectiveCylinder::~ProjectiveCylinder() {
 }
 
 /// determine the local based on the cell ID
-std::vector<double> ProjectiveCylinder::getPosition(const long64& cellID) const {
-	double r = getRadius(cellID);
-	double theta = getTheta(cellID);
-	double phi = getPhi(cellID);
-	return getPositionFromRThetaPhi(r, theta, phi);
+Position ProjectiveCylinder::position(const long64& cellID) const {
+	return Util::positionFromRThetaPhi(1.0, theta(cellID), phi(cellID));
 }
 
 /// determine the cell ID based on the position
-long64 ProjectiveCylinder::getCellID(double x, double y, double z) const {
+CellID ProjectiveCylinder::cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const {
 	// TODO
 	return 0;
 }
 
 /// determine the polar angle theta based on the cell ID
-double ProjectiveCylinder::getTheta(const long64& cellID) const {
+double ProjectiveCylinder::theta(const long64& cellID) const {
 	int thetaIndex = (*_decoder)[_thetaID].value();
 	return M_PI * ((double) thetaIndex + 0.5) / (double) _thetaBins;
 }
 /// determine the azimuthal angle phi based on the cell ID
-double ProjectiveCylinder::getPhi(const long64& cellID) const {
+double ProjectiveCylinder::phi(const long64& cellID) const {
 	int phiIndex = (*_decoder)[_phiID].value();
 	return 2. * M_PI * ((double) phiIndex + 0.5) / (double) _phiBins;
 }
+
+REGISTER_SEGMENTATION(ProjectiveCylinder)
 
 } /* namespace DDSegmentation */
 } /* namespace DD4hep */

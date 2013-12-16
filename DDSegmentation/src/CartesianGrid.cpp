@@ -12,33 +12,13 @@ namespace DDSegmentation {
 
 using std::string;
 
-/// default constructor using an encoding string
-template<> CartesianGrid::CartesianGrid(const string& cellEncoding) :
+/// Default constructor used by derived classes passing the encoding string
+CartesianGrid::CartesianGrid(const string& cellEncoding) :
 		Segmentation(cellEncoding) {
-
 }
 
-/// default constructor using an encoding string
-template<> CartesianGrid::CartesianGrid(string cellEncoding) :
-		Segmentation(cellEncoding) {
-
-}
-
-/// default constructor using an encoding string
-template<> CartesianGrid::CartesianGrid(const char* cellEncoding) :
-		Segmentation(cellEncoding) {
-
-}
-
-/// default constructor using an existing decoder
-template<> CartesianGrid::CartesianGrid(BitField64* decoder) :
-		Segmentation(decoder) {
-
-}
-
-/// destructor
+/// Destructor
 CartesianGrid::~CartesianGrid() {
-
 }
 
 } /* namespace DDSegmentation */
