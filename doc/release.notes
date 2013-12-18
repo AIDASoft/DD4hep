@@ -1,6 +1,38 @@
 DD4hep  ----  Release Notes
 =================================
 
+2013/12/17    Markus Frank
+--------------------------
+  - Whole load of fixes to keep coverity quiet....
+  - Fix bug in DDG4 field interface component
+  - Allow the usage of units, positions and lorentzvectors and in DDG4 properties.
+    Example using a position property (ROOT::Math::XYZVector):
+    Idle> /ddg4/Gun/position (1*mm,1*cm,0.01*m) 
+    Geant4UIMessenger: +++ Gun> Setting property value position = (1*mm,1*cm,0.01*m)  
+                       native:( 1 , 10 , 10 ).
+
+  - Support for std::vector<T>/std::list<T>/std::set<T> properties.
+
+  - Support for include directives of the format
+        <include ref="file-name"/>
+    for the top level <lccdd> tags
+       Parent tag    Included root tag  Data content
+    -- <lccdd>       <define>           See below.
+                     <detectors>
+		     <detector>
+		     <display>
+		     <lccdd>            Nested includes (with DTD validation for Xerces-C)
+    -- <define>      <define>           Set of constants
+    -- <detectors>   <detector>         Single XML subdetector description
+    -- <detectors>   <detectors>        Multiple XML subdetector descriptions
+    -- <display>     <display>          Set ov visualization attributes
+
+    DTD validation is only performed using Xerces-C for root tags <lccdd>.
+
+    Note: 
+    <lccdd> include directives are executed BEFORE any other directive!
+    Other include directives are executed BEFORE the corresponding named directive!
+
 2013/11/14    Markus Frank
 --------------------------
   - Reformat files in DDCode and DDG4 to remove the <TAB>s from the source files.
