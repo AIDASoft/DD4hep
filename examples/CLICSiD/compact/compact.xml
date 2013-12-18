@@ -274,52 +274,7 @@
     <detectors>
 
         <comment>Trackers</comment> 
-        <detector id="1" name="SiVertexBarrel" type="SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
-            <comment>Vertex Detector Barrel</comment>
-            <module name="VtxBarrelModuleInner" vis="SiVertexBarrelModuleVis">
-                <module_envelope width="10.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
-                <module_component width="7.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
-                    <position z="-0.12*cm"/>
-                </module_component>
-                <module_component width="9.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
-                    <position z="0.225*cm"/>
-                </module_component>
-            </module>
-            <module name="VtxBarrelModuleOuter" vis="SiVertexBarrelModuleVis">
-                <module_envelope width="14.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
-                <module_component width="11.6*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
-                    <position z="-0.12*cm"/>
-                </module_component>
-                <module_component width="13.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
-                    <position z="0.210*cm"/>
-                </module_component>
-            </module>
-            <layer module="VtxBarrelModuleInner" id="1" vis="SiVertexBarrelLayerVis">
-                <barrel_envelope inner_r="VertexBarrel_r1 - 0.2*cm" outer_r="VertexBarrel_r1 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0*rad" nphi="18" phi0="0.2618*rad" rc="VertexBarrel_r1" dr="-1.15*mm"/>
-                <z_layout dr="0.0" z0="0.0" nz="1"/>
-            </layer>
-            <layer module="VtxBarrelModuleOuter" id="2" vis="SiVertexBarrelLayerVis">
-                <barrel_envelope inner_r="VertexBarrel_r2 - 0.2*cm" outer_r="VertexBarrel_r2 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0*rad" nphi="18" phi0="0.2618*rad" rc="VertexBarrel_r2" dr="-1.13*mm"/>
-                <z_layout dr="0.0" z0="0.0" nz="1"/>
-            </layer>
-            <layer module="VtxBarrelModuleOuter" id="3" vis="SiVertexBarrelLayerVis">
-                <barrel_envelope inner_r="VertexBarrel_r3 - 0.2*cm" outer_r="VertexBarrel_r3 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0*rad" nphi="24" phi0="0.0*rad" rc="VertexBarrel_r3" dr="-0.89*mm"/>
-                <z_layout dr="0.0" z0="0.0" nz="1"/>
-            </layer>
-            <layer module="VtxBarrelModuleOuter" id="4" vis="SiVertexBarrelLayerVis">
-                <barrel_envelope inner_r="VertexBarrel_r4 - 0.2*cm" outer_r="VertexBarrel_r4 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0*rad" nphi="30" phi0="0.1309*rad" rc="VertexBarrel_r4" dr="0.81*mm"/>
-                <z_layout dr="0.0" z0="0.0" nz="1"/>
-            </layer>
-            <layer module="VtxBarrelModuleOuter" id="5" vis="SiVertexBarrelLayerVis">
-                <barrel_envelope inner_r="VertexBarrel_r5 - 0.2*cm" outer_r="VertexBarrel_r5 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
-                <rphi_layout phi_tilt="0.0*rad" nphi="36" phi0="0.0*rad" rc="VertexBarrel_r5" dr="0.77*mm"/>
-                <z_layout dr="0.0" z0="0.0" nz="1"/>
-            </layer>
-        </detector>
+	<include ref="VertexBarrel.xml"/>
 
         <comment>Vertex Detector Endcaps</comment>
         <detector id="2" name="SiVertexEndcap" type="SiTrackerEndcap2" readout="SiVertexEndcapHits" reflect="true">    
@@ -360,7 +315,7 @@
         <detector id="3" name="SiTrackerBarrel" type="SiTrackerBarrel" readout="SiTrackerBarrelHits">
             <comment>Outer Tracker Barrel</comment>
             <module name="SiTrackerModule_Layer1" vis="SiTrackerBarrelModuleVis">                
-                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*mm"/>                
+                <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
                 <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
                     <position z="-0.14*cm" />
                 </module_component>                
@@ -535,7 +490,6 @@
                 <z_layout dr="4.0*mm" z0="1476.497*mm" nz="35"/>
             </layer>
         </detector>
-
 
         <detector id="4" name="SiTrackerEndcap" type="SiTrackerEndcap2" readout="SiTrackerEndcapHits" reflect="true">
             <comment>Outer Tracker Endcaps</comment>
@@ -1542,42 +1496,42 @@
             <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
         </readout>
         <readout name="EcalBarrelHits">
-            <segmentation type="EcalBarrelCartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
             <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
         </readout>        
         <readout name="EcalEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.5" gridSizeY="3.5" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
             <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
             <id>system:8,barrel:3,module:6,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalPlugHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="MuonBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="MuonEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="SiTrackerForwardHits">
             <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:28</id>
         </readout>
         <readout name="LumiCalHits">
-            <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
             <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="BeamCalHits">
-            <segmentation type="GridXYZ" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
+            <segmentation type="CartesianGridXY" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
             <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
     </readouts>
