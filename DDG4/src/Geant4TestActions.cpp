@@ -59,7 +59,8 @@ void Geant4TestRunAction::begin(const G4Run* run) {
 }
 /// End-of-run callback
 void Geant4TestRunAction::end(const G4Run* run) {
-  printout(INFO, name(), "%s> calling end(run_id=%d, num_event=%d)", m_type.c_str(), run->GetRunID(), run->GetNumberOfEvent());
+  printout(INFO, name(), "%s> calling end(run_id=%d, num_event=%d)", 
+	   m_type.c_str(), run->GetRunID(), run->GetNumberOfEvent());
 }
 /// begin-of-event callback
 void Geant4TestRunAction::beginEvent(const G4Event* evt) {
@@ -89,14 +90,16 @@ void Geant4TestEventAction::end(const G4Event* evt) {
 
 /// begin-of-run callback
 void Geant4TestEventAction::beginRun(const G4Run* run) {
-  printout(INFO, name(), "%s> calling beginRun(run_id=%d,num_event=%d)", m_type.c_str(), run->GetRunID(),
-      run->GetNumberOfEventToBeProcessed());
+  printout(INFO, name(), "%s> calling beginRun(run_id=%d,num_event=%d)",
+	   m_type.c_str(), run->GetRunID(),
+	   run->GetNumberOfEventToBeProcessed());
 }
 
 /// End-of-run callback
 void Geant4TestEventAction::endRun(const G4Run* run) {
-  printout(INFO, name(), "%s> calling endRun(run_id=%d, num_event=%d)", m_type.c_str(), run->GetRunID(),
-      run->GetNumberOfEvent());
+  printout(INFO, name(), "%s> calling endRun(run_id=%d, num_event=%d)", 
+	   m_type.c_str(), run->GetRunID(),
+	   run->GetNumberOfEvent());
 }
 
 Geant4TestTrackAction::Geant4TestTrackAction(Geant4Context* c, const std::string& n)
@@ -108,14 +111,16 @@ Geant4TestTrackAction::~Geant4TestTrackAction() {
 }
 /// Begin-of-tracking callback
 void Geant4TestTrackAction::begin(const G4Track* trk) {
-  printout(INFO, name(), "%s> calling begin(track=%d, parent=%d, position=(%f,%f,%f))", m_type.c_str(), trk->GetTrackID(),
-      trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z());
+  printout(INFO, name(), "%s> calling begin(track=%d, parent=%d, position=(%f,%f,%f))", 
+	   m_type.c_str(), trk->GetTrackID(),
+	   trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z());
 }
 
 /// End-of-tracking callback
 void Geant4TestTrackAction::end(const G4Track* trk) {
-  printout(INFO, name(), "%s> calling end(track=%d, parent=%d, position=(%f,%f,%f))", m_type.c_str(), trk->GetTrackID(),
-      trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z());
+  printout(INFO, name(), "%s> calling end(track=%d, parent=%d, position=(%f,%f,%f))", 
+	   m_type.c_str(), trk->GetTrackID(),
+	   trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z());
 }
 
 Geant4TestStepAction::Geant4TestStepAction(Geant4Context* c, const std::string& n)
@@ -143,23 +148,27 @@ Geant4TestSensitive::~Geant4TestSensitive() {
 /// Begin-of-tracking callback
 void Geant4TestSensitive::begin(G4HCofThisEvent* hce) {
   Geant4HitCollection* c = collectionByID(m_collectionID);
-  printout(INFO, name(), "%s> calling begin(num_coll=%d, coll=%s)", m_type.c_str(), hce->GetNumberOfCollections(),
-      c ? c->GetName().c_str() : "None");
+  printout(INFO, name(), "%s> calling begin(num_coll=%d, coll=%s)", 
+	   m_type.c_str(), hce->GetNumberOfCollections(),
+	   c ? c->GetName().c_str() : "None");
 }
 
 /// End-of-tracking callback
 void Geant4TestSensitive::end(G4HCofThisEvent* hce) {
   Geant4HitCollection* c = collection(m_collectionID);
-  printout(INFO, name(), "%s> calling end(num_coll=%d, coll=%s)", m_type.c_str(), hce->GetNumberOfCollections(),
-      c ? c->GetName().c_str() : "None");
+  printout(INFO, name(), "%s> calling end(num_coll=%d, coll=%s)", 
+	   m_type.c_str(), hce->GetNumberOfCollections(),
+	   c ? c->GetName().c_str() : "None");
 }
 
 /// Method for generating hit(s) using the information of G4Step object.
 bool Geant4TestSensitive::process(G4Step* step, G4TouchableHistory*) {
   Geant4HitCollection* c = collection(m_collectionID);
   printout(INFO, name(), "%s> calling process(track=%d, dE=%f, dT=%f len=%f, First,last in Vol=(%c,%c), coll=%s)",
-      m_type.c_str(), step->GetTrack()->GetTrackID(), step->GetTotalEnergyDeposit(), step->GetDeltaTime(),
-      step->GetStepLength(), step->IsFirstStepInVolume() ? 'Y' : 'N', step->IsLastStepInVolume() ? 'Y' : 'N',
-      c ? c->GetName().c_str() : "None");
+	   m_type.c_str(), step->GetTrack()->GetTrackID(), 
+	   step->GetTotalEnergyDeposit(), step->GetDeltaTime(),
+	   step->GetStepLength(), step->IsFirstStepInVolume() ? 'Y' : 'N', 
+	   step->IsLastStepInVolume() ? 'Y' : 'N',
+	   c ? c->GetName().c_str() : "None");
   return true;
 }

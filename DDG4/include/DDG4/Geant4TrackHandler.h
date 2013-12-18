@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_GEANT4TRACKHANDLER_H
-#define DD4HEP_GEANT4TRACKHANDLER_H
+#ifndef DD4HEP_DDG4_GEANT4TRACKHANDLER_H
+#define DD4HEP_DDG4_GEANT4TRACKHANDLER_H
 
 // Framework include files
 #include "DDG4/Defs.h"
@@ -17,6 +17,10 @@
 #include "G4TrajectoryPoint.hh"
 #include "G4VTouchable.hh"
 #include "G4VSensitiveDetector.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4VProcess.hh"
+
+#include <stdexcept>
 
 // Forward declarations
 class G4VTouchableHandle;
@@ -52,22 +56,66 @@ namespace DD4hep {
       /// Initializing constructor
       Geant4TrackHandler(const G4Track* t)
           : track(t) {
+	/// Should test here if the track pointer is valid to avoind any later trouble
+	if ( 0 == t )  {
+	  throw std::runtime_error("Geant4TrackHandler: NULL pointer passed to constructor!");
+	}
       }
+      const char* statusName() const    {
+	switch( track->GetTrackStatus() )  {
+	case fAlive:                    return "Alive";
+	case fStopButAlive:             return "StopButAlive";
+	case fStopAndKill:              return "StopAndKill";
+	case fKillTrackAndSecondaries:  return "KillTrackAndSecondaries";
+	case fSuspend:                  return "Suspend";
+	case fPostponeToNextEvent:      return "PostponeToNextEvent";
+	default:                        return "UNKNOWN";
+	}
+      }
+
       /// Conversion to G4Track
       operator const G4Track*() const {
         return track;
+      }
+      /// Track's identifier
+      int id() const  {
+	return track->GetTrackID();
+      }
+      /// Track's parent identifier
+      int parent()  const  {
+	return track->GetParentID();
       }
       /// Track's particle definition
       G4ParticleDefinition* trackDef() const {
         return track->GetDefinition();
       }
-      /// Track position
+      /// Track's particle name
+      const std::string& name()  const  {
+	return trackDef()->GetParticleName();
+      }
+      /// Track's position
       const G4ThreeVector& position() const {
         return track->GetPosition();
       }
-      /// Track energy
+      /// Track's vertex position, where the track was created
+      const G4ThreeVector& vertex() const {
+        return track->GetVertexPosition();
+      }
+      /// Track global time 
+      double globalTime() const  {
+	return track->GetGlobalTime();
+      }
+      /// Track proper time 
+      double properTime() const  {
+	return track->GetProperTime();
+      }
+      /// Track's energy
       double energy() const {
         return track->GetTotalEnergy();
+      }
+      /// Track's kinetic energy
+      double kineticEnergy() const {
+        return track->GetKineticEnergy();
       }
       /// Track velocity
       double velocity() const {
@@ -93,7 +141,6 @@ namespace DD4hep {
       const G4LogicalVolume* vertexVol() const {
         return track->GetLogicalVolumeAtVertex();
       }
-
       /// Touchable of the track
       const Touchable& touchable() const {
         return track->GetTouchableHandle();
@@ -102,17 +149,20 @@ namespace DD4hep {
       const Touchable& nextTouchable() const {
         return track->GetNextTouchableHandle();
       }
-
       /// Physical process of the track generation
       const G4VProcess* creatorProcess() const {
         return track->GetCreatorProcess();
+      }
+      /// Physical process of the track generation
+      const std::string creatorName() const {
+	const G4VProcess* p = creatorProcess();
+        if ( p ) return p->GetProcessName();
+	return "";
       }
       /// User information block
       Info* userInfo() const {
         return track->GetUserInformation();
       }
-      /// Set user information block (const mis-match)
-      //void setUserInfo(Info* info)              { track->SetUserInformation(info);           }
       /// Specific user information block
       template <typename T> T* info() const {
         return (T*) userInfo();
@@ -125,7 +175,7 @@ namespace DD4hep {
       G4int stepNumber() const {
         return track->GetCurrentStepNumber();
       }
-
+      /// Access the PDG particle identification
       int pdgID() const {
         G4ParticleDefinition* def = trackDef();
         return def ? def->GetPDGEncoding() : 0;
@@ -134,5 +184,4 @@ namespace DD4hep {
 
   }    // End namespace Simulation
 }      // End namespace DD4hep
-
-#endif // DD4HEP_GEANT4HITS_H
+#endif // DD4HEP_DDG4_GEANT4TRACKHANDLER_H

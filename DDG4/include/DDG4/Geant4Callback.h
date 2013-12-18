@@ -282,12 +282,21 @@ namespace DD4hep {
 
   struct CallbackSequence {
     typedef std::vector<Callback> Callbacks;
+    enum Location { FRONT, END };
     Callbacks callbacks;
+    /// Default constructor
     CallbackSequence() {
     }
+    /// Copy constructor
     CallbackSequence(const CallbackSequence& c)
         : callbacks(c.callbacks) {
     }
+    /// Assignment operator
+    CallbackSequence& operator=(const CallbackSequence& c)  {
+      if ( this != & c ) callbacks = c.callbacks;
+      return *this;
+    }
+
     //template <typename TYPE, typename R, typename OBJECT>
     //  CallbackSequence(const std::vector<TYPE*>& objects, R (TYPE::value_type::*pmf)())  {
     //}
@@ -297,8 +306,11 @@ namespace DD4hep {
     void clear() {
       callbacks.clear();
     }
-    void add(const Callback& cb) {
-      callbacks.push_back(cb);
+    void add(const Callback& cb,Location where) {
+      if ( where == CallbackSequence::FRONT )
+	callbacks.insert(callbacks.begin(),cb);
+      else 
+	callbacks.insert(callbacks.end(),cb);
     }
     void operator()() const;
     template <typename A0> void operator()(A0 a0) const;
@@ -308,19 +320,19 @@ namespace DD4hep {
     static void checkTypes(const std::type_info& typ1, const std::type_info& typ2, void* test);
 
     template <typename TYPE, typename R, typename OBJECT>
-    void add(TYPE* pointer, R (OBJECT::*pmf)()) {
+      void add(TYPE* pointer, R (OBJECT::*pmf)(),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
-      add(Callback(pointer).make(pmf));
+      add(Callback(pointer).make(pmf),where);
     }
     template <typename TYPE, typename R, typename OBJECT, typename A>
-    void add(TYPE* pointer, R (OBJECT::*pmf)(A)) {
+    void add(TYPE* pointer, R (OBJECT::*pmf)(A),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
-      add(Callback(pointer).make(pmf));
+      add(Callback(pointer).make(pmf),where);
     }
     template <typename TYPE, typename R, typename OBJECT, typename A1, typename A2>
-    void add(TYPE* pointer, R (OBJECT::*pmf)(A1, A2)) {
+    void add(TYPE* pointer, R (OBJECT::*pmf)(A1, A2),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
-      add(Callback(pointer).make(pmf));
+      add(Callback(pointer).make(pmf),where);
     }
   };
 

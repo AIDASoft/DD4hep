@@ -16,7 +16,9 @@
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4VolumeManager.h"
+#include "DDG4/Geant4MonteCarloTruth.h"
 
+#include <G4Step.hh>
 #include <G4SDManager.hh>
 #include <G4VSensitiveDetector.hh>
 
@@ -166,6 +168,16 @@ bool Geant4Sensitive::process(G4Step* /* step */, G4TouchableHistory* /* history
 
 /// Method is invoked if the event abortion is occured.
 void Geant4Sensitive::clear(G4HCofThisEvent* /* HCE */) {
+}
+
+/// Mark the track to be kept for MC truth propagation during hit processing
+void Geant4Sensitive::mark(const G4Track* track) const  {
+  mcTruthMgr().mark(track);
+}
+
+/// Mark the track of this step to be kept for MC truth propagation during hit processing
+void Geant4Sensitive::mark(const G4Step* step) const  {
+  mcTruthMgr().mark(step);
 }
 
 /// Returns the volumeID of the sensitive volume corresponding to the step

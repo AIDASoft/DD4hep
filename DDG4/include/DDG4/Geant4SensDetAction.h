@@ -152,6 +152,12 @@ namespace DD4hep {
         return detector().readoutGeometry();
       }
 
+      /// Mark the track to be kept for MC truth propagation during hit processing
+      void mark(const G4Track* track) const;
+
+      /// Mark the track of this step to be kept for MC truth propagation during hit processing
+      void mark(const G4Step* step) const;
+
       /// Access to the hosting sequence
       Geant4SensDetActionSequence& sequence() const;
 

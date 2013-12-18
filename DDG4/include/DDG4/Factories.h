@@ -173,12 +173,16 @@ namespace {
   DECLARE_EXTERNAL_GEANT4SENSITIVEDETECTOR(name,DD4hep::Simulation::__sd_create__##name)
 #endif
 
-#define DECLARE_GEANT4SENSITIVE(name) namespace DD4hep { namespace Simulation { }}  using DD4hep::Simulation::name; \
+#define DECLARE_GEANT4SENSITIVE_NS(ns,name) using ns::name; \
   PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4Sensitive*(DD4hep::Simulation::Geant4Context*,std::string,DD4hep::Geometry::DetElement*,DD4hep::Geometry::LCDD*))
+#define DECLARE_GEANT4SENSITIVE(name) DECLARE_GEANT4SENSITIVE_NS(DD4hep::Simulation,name)
 
 /// Plugin defintion to create Geant4Action objects
-#define DECLARE_GEANT4ACTION(name) namespace DD4hep { namespace Simulation { }}  using DD4hep::Simulation::name; \
+#define DECLARE_GEANT4ACTION_NS(ns,name) using ns::name; \
   PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4Action*(DD4hep::Simulation::Geant4Context*,std::string))
+/// Plugin defintion to create Geant4Action objects
+#define DECLARE_GEANT4ACTION(name)  DECLARE_GEANT4ACTION_NS(DD4hep::Simulation,name)
+
 /// Plugin definition to create Geant4 stepper objects
 #define DECLARE_GEANT4_STEPPER(name)    PLUGINSVC_FACTORY_WITH_ID(G4##name,std::string(#name),G4MagIntegratorStepper*(G4EquationOfMotion*))
 #define DECLARE_GEANT4_MAGSTEPPER(name) PLUGINSVC_FACTORY_WITH_ID(G4##name,std::string(#name),G4MagIntegratorStepper*(G4Mag_EqRhs*))

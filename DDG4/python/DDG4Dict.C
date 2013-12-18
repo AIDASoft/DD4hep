@@ -48,7 +48,8 @@ namespace DD4hep {
       Geant4##x* action;   \
       x##Handle(Geant4##x* a)       : action(a)        { if ( action ) action->addRef();} \
       x##Handle(const x##Handle& h) : action(h.action) { if ( action ) action->addRef();} \
-      ~x##Handle()                  { if ( action) action->release(); }  \
+      ~x##Handle()                  { if ( action) action->release();                   } \
+      Geant4##x* release()          { Geant4##x* tmp = action; action=0; return tmp;    } \
       operator Geant4##x* () const  { return action;     }  \
       Geant4##x* operator->() const { return action;     }  \
       Geant4##x* get() const        { return action;     }  \
@@ -158,6 +159,19 @@ namespace DD4hep {
       static int setProperty(Geant4Action* action, const string& name, const string& value)  {
 	if ( action->hasProperty(name) )  {
 	  action->property(name).str(value);
+	  return 1;
+	}
+	return 0;
+      }
+      static PropertyResult getPropertyKernel(Geant4Kernel* kernel, const string& name)  {
+	if ( kernel->hasProperty(name) )  {
+	  return PropertyResult(kernel->property(name).str(),1);
+	}
+	return PropertyResult("",0);
+      }
+      static int setPropertyKernel(Geant4Kernel* kernel, const string& name, const string& value)  {
+	if ( kernel->hasProperty(name) )  {
+	  kernel->property(name).str(value);
 	  return 1;
 	}
 	return 0;

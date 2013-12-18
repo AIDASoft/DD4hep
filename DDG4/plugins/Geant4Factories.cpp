@@ -34,6 +34,14 @@ DECLARE_GEANT4ACTION(Geant4PhysicsListActionSequence)
 #include "DDG4/Geant4SensDetAction.h"
 DECLARE_GEANT4ACTION(Geant4SensDetActionSequence)
 
+#include "DDG4/Geant4UIManager.h"
+DECLARE_GEANT4ACTION(Geant4UIManager)
+
+#include "DDG4/Geant4TrackPersistency.h"
+DECLARE_GEANT4ACTION(Geant4TrackPersistency)
+#include "DDG4/Geant4MonteCarloRecordManager.h"
+DECLARE_GEANT4ACTION(Geant4MonteCarloRecordManager)
+
 //=============================
 #include "DDG4/Geant4TrackingPreAction.h"
 DECLARE_GEANT4ACTION(Geant4TrackingPreAction)

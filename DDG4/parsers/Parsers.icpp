@@ -1,7 +1,7 @@
 // $Id: Parsers.icpp,v 1.5 2008/10/28 14:02:18 marcocle Exp $
 // ============================================================================
-#ifndef GAUDIKERNEL_PARSERS_ICPP
-#define GAUDIKERNEL_PARSERS_ICPP 1
+#ifndef DD4HEP_PARSERS_ICPP
+#define DD4HEP_PARSERS_ICPP 1
 // ============================================================================
 // Include files
 // ============================================================================

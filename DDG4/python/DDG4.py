@@ -6,6 +6,7 @@ import ROOT
 # We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
 def compileAClick(dictionary,g4=True):
   from ROOT import gInterpreter, gSystem
+  import os.path
   dd4hep = os.environ['DD4hep_DIR']
   inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
   lib    = ' -L'+dd4hep+'/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation '
@@ -17,7 +18,10 @@ def compileAClick(dictionary,g4=True):
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
   #####print "Includes:   ",gSystem.GetIncludePath(),"\n","Linked libs:",gSystem.GetLinkedLibs()
-  gInterpreter.ProcessLine('.L '+dictionary+'+')
+  package = imp.find_module('DDG4')
+  dic = os.path.dirname(package[1])+os.sep+dictionary
+  ###print dic
+  gInterpreter.ProcessLine('.L '+dic+'+')
   #####gInterpreter.Load('DDG4Dict_C.so')
   from ROOT import DD4hep as module
   return module
@@ -29,7 +33,7 @@ def _import_class(ns,nam):
   setattr(current,nam,getattr(scope,nam))
 
 #---------------------------------------------------------------------------
-DD4hep     = compileAClick(dictionary='./DDG4Dict.C',g4=True) 
+DD4hep     = compileAClick(dictionary='DDG4Dict.C',g4=True) 
 Sim        = DD4hep.Simulation
 Simulation = DD4hep.Simulation
 
@@ -52,12 +56,38 @@ def _registerGlobalAction(self,action):
   self.get().registerGlobalAction(Interface.toAction(action))
 def _registerGlobalFilter(self,filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
+#---------------------------------------------------------------------------
+def _getKernelProperty(self, name):
+  print '_getKernelProperty:',str(type(self)),name
+  ret = Interface.getPropertyKernel(self.get(),name)
+  if ret.status > 0:
+    return ret.data
+  elif hasattr(self.get(),name):
+    return getattr(self.get(),name)
+  elif hasattr(self,name):
+    return getattr(self,name)
+  msg = 'Geant4Kernel::GetProperty [Unhandled]: Cannot access Kernel.'+name
+  raise exceptions.KeyError(msg)
+
+#---------------------------------------------------------------------------
+def _setKernelProperty(self, name, value):
+  #print '_setKernelProperty:',name,value
+  if Interface.setPropertyKernel(self.get(),name,str(value)):
+    return
+  msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
+  raise exceptions.KeyError(msg)
 
 Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
+Kernel.__getattr__ = _getKernelProperty
+Kernel.__setattr__ = _setKernelProperty
+
+
 ActionHandle                = Sim.ActionHandle
 #---------------------------------------------------------------------------
 def SensitiveAction(kernel,nam,det): return Interface.createSensitive(kernel,nam,det)
+#---------------------------------------------------------------------------
+def Action(kernel,nam):              return Interface.createAction(kernel,nam)
 #---------------------------------------------------------------------------
 def Filter(kernel,nam):              return Interface.createFilter(kernel,nam)
 #---------------------------------------------------------------------------

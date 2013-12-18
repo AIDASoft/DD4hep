@@ -140,7 +140,7 @@ DECLARE_GEANT4ACTION(EnergyDepositMinimumCut)
 
 /// Constructor. 
 ParticleFilter::ParticleFilter(Geant4Context* context, const std::string& name)
-  : Geant4Filter(context,name)
+: Geant4Filter(context,name), m_definition(0)
 {
   declareProperty("particle",m_particle);
   InstanceCount::increment(this);

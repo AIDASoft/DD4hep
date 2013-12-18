@@ -29,8 +29,11 @@
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4PhysicsList.h"
 #include "DDG4/Geant4Kernel.h"
+#include "DDG4/Geant4UIManager.h"
 
 #include <memory>
+#include <stdexcept>
+
 /*
  *   DD4hep namespace declaration
  */
@@ -40,30 +43,29 @@ namespace DD4hep {
    *   Simulation namespace declaration
    */
   namespace Simulation {
-    namespace {
-      template <typename T> struct _Seq {
-        typedef _Seq<T> Base;
-        T* m_sequence;
-        _Seq()
-            : m_sequence(0) {
-        }
-        _Seq(T* seq) {
-          _aquire(seq);
-        }
-        virtual ~_Seq() {
-          _release();
-        }
-        void _aquire(T* s) {
-          InstanceCount::increment(this);
-          m_sequence = s;
-          m_sequence->addRef();
-        }
-        void _release() {
-          releasePtr(m_sequence);
-          InstanceCount::decrement(this);
-        }
-      };
-    }
+    template <typename T> struct SequenceHdl {
+      typedef SequenceHdl<T> Base;
+      T* m_sequence;
+      SequenceHdl()
+	: m_sequence(0) {
+      }
+      SequenceHdl(T* seq) {
+	_aquire(seq);
+      }
+      virtual ~SequenceHdl() {
+	_release();
+      }
+      void _aquire(T* s) {
+	InstanceCount::increment(this);
+	m_sequence = s;
+	m_sequence->addRef();
+      }
+      void _release() {
+	releasePtr(m_sequence);
+	InstanceCount::decrement(this);
+      }
+    };
+
     /** @class Geant4UserRunAction
      *
      * Concrete implementation of the Geant4 run action
@@ -71,7 +73,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserRunAction : public G4UserRunAction, public _Seq<Geant4RunActionSequence> {
+    struct Geant4UserRunAction : public G4UserRunAction, public SequenceHdl<Geant4RunActionSequence> {
       /// Standard constructor
       Geant4UserRunAction(Geant4RunActionSequence* seq)
           : Base(seq) {
@@ -96,7 +98,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserEventAction : public G4UserEventAction, public _Seq<Geant4EventActionSequence> {
+    struct Geant4UserEventAction : public G4UserEventAction, public SequenceHdl<Geant4EventActionSequence> {
       /// Standard constructor
       Geant4UserEventAction(Geant4EventActionSequence* seq)
           : Base(seq) {
@@ -121,7 +123,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserTrackingAction : public G4UserTrackingAction, public _Seq<Geant4TrackingActionSequence> {
+    struct Geant4UserTrackingAction : public G4UserTrackingAction, public SequenceHdl<Geant4TrackingActionSequence> {
       /// Standard constructor
       Geant4UserTrackingAction(Geant4TrackingActionSequence* seq)
           : Base(seq) {
@@ -131,11 +133,13 @@ namespace DD4hep {
       }
       /// Pre-track action callback
       virtual void PreUserTrackingAction(const G4Track* trk) {
+	m_sequence->context()->kernel().setTrackMgr(fpTrackingManager);
         m_sequence->begin(trk);
       }
       /// Post-track action callback
       virtual void PostUserTrackingAction(const G4Track* trk) {
         m_sequence->end(trk);
+	m_sequence->context()->kernel().setTrackMgr(0);
       }
     };
 
@@ -146,7 +150,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserStackingAction : public G4UserStackingAction, public _Seq<Geant4StackingActionSequence> {
+    struct Geant4UserStackingAction : public G4UserStackingAction, public SequenceHdl<Geant4StackingActionSequence> {
       /// Standard constructor
       Geant4UserStackingAction(Geant4StackingActionSequence* seq)
           : Base(seq) {
@@ -171,7 +175,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserGeneratorAction : public G4VUserPrimaryGeneratorAction, public _Seq<Geant4GeneratorActionSequence> {
+    struct Geant4UserGeneratorAction : public G4VUserPrimaryGeneratorAction, public SequenceHdl<Geant4GeneratorActionSequence> {
       /// Standard constructor
       Geant4UserGeneratorAction(Geant4GeneratorActionSequence* seq)
           : G4VUserPrimaryGeneratorAction(), Base(seq) {
@@ -192,7 +196,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserSteppingAction : public G4UserSteppingAction, public _Seq<Geant4SteppingActionSequence> {
+    struct Geant4UserSteppingAction : public G4UserSteppingAction, public SequenceHdl<Geant4SteppingActionSequence> {
       /// Standard constructor
       Geant4UserSteppingAction(Geant4SteppingActionSequence* seq)
           : Base(seq) {
@@ -221,18 +225,6 @@ using namespace DD4hep::Simulation;
 
 // Geant4 include files
 #include "G4RunManager.hh"
-
-//--
-#define G4VIS_USE_OPENGL
-#include "G4UImanager.hh"
-#include "G4UIsession.hh"
-#ifdef G4VIS_USE_OPENGLX
-#include "G4OpenGLImmediateX.hh"
-#include "G4OpenGLStoredX.hh"
-#endif
-#include "G4VisManager.hh"
-#include "G4VisExecutive.hh"
-#include "G4UIExecutive.hh"
 
 /// Configure the simulation
 int Geant4Exec::configure(Geant4Kernel& kernel) {
@@ -282,6 +274,11 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
     Geant4UserEventAction* action = new Geant4UserEventAction(kernel.eventAction(false));
     runManager.SetUserAction(action);
   }
+  // Set the tracking action sequence
+  if (kernel.trackingAction(false)) {
+    Geant4UserTrackingAction* action = new Geant4UserTrackingAction(kernel.trackingAction(false));
+    runManager.SetUserAction(action);
+  }
   // Set the stepping action sequence
   if (kernel.steppingAction(false)) {
     Geant4UserSteppingAction* action = new Geant4UserSteppingAction(kernel.steppingAction(false));
@@ -307,50 +304,23 @@ int Geant4Exec::initialize(Geant4Kernel& kernel) {
 }
 
 /// Run the simulation
-int Geant4Exec::run(Geant4Kernel&) {
-  bool is_visual = false;
-  string gui_setup, vis_setup, gui_type = "tcsh";
-
-  // Initialize visualization
-  G4VisManager* visManager = 0;
-  if (is_visual) {
-    visManager = new G4VisExecutive();
-#ifdef G4VIS_USE_OPENGLX
-    //visManager->RegisterGraphicsSystem (new G4OpenGLImmediateX());
-    //visManager->RegisterGraphicsSystem (new G4OpenGLStoredX());
-#endif
-    visManager->Initialize();
-  }
-
-  // Get the pointer to the User Interface manager
-  G4UImanager* UImanager = G4UImanager::GetUIpointer();
-  G4String command = "/control/execute run.mac";
-  cout << "++++++++++++++++++++++++++++ executing command:" << command << endl;
-  UImanager->ApplyCommand(command);
-
-  G4UIExecutive* ui = 0;
-  if (!gui_type.empty()) {   // interactive mode : define UI session
-    const char* args[] = { "cmd" };
-    ui = new G4UIExecutive(1, (char**) args);   //,gui_type);
-    if (is_visual && !vis_setup.empty()) {
-      UImanager->ApplyCommand("/control/execute vis.mac");
-      cout << "++++++++++++++++++++++++++++ executed vis.mac" << endl;
-    }
-    if (ui->IsGUI()) {
-      if (!gui_setup.empty()) {
-        UImanager->ApplyCommand("/control/execute " + gui_setup);
-        cout << "++++++++++++++++++++++++++++ executed gui.mac" << endl;
+int Geant4Exec::run(Geant4Kernel& kernel) {
+  Property& p = kernel.property("UI");
+  string value = p.value<string>();
+  if ( !value.empty() )  {
+    Geant4Action* ui = kernel.globalAction(value);
+    if ( ui )  {
+      Geant4Call* c = dynamic_cast<Geant4Call*>(ui);
+      if ( c )  {
+	(*c)(0);
+	return 1;
       }
+      ui->except("++ Geant4Exec: Failed to start UI interface.");
     }
-    ui->SessionStart();
-    delete ui;
+    throw runtime_error(format("Geant4Exec","++ Failed to locate UI interface %s.",value.c_str()));
   }
-  // Job termination
-  // Free the store: user actions, physics_list and detector_description are
-  //                 owned and deleted by the run manager, so they should not
-  //                 be deleted in the main() program !
-  if (visManager)
-    delete visManager;
+  long nevt = kernel.property("NumEvent").value<long>();
+  kernel.runManager().BeamOn(nevt);
   return 1;
 }
 

@@ -38,6 +38,8 @@ namespace DD4hep {
     class Geant4StackingActionSequence;
     class Geant4GeneratorActionSequence;
     class Geant4SensDetSequences;
+    class Geant4MonteCarloTruth;
+    class Geant4MonteCarloRecordManager;
 
     /** @class Geant4Context  Geant4Context.h DDG4/Geant4Context.h
      *
@@ -48,22 +50,18 @@ namespace DD4hep {
       typedef Geometry::LCDD LCDD;
 
       Geant4Kernel* m_kernel;
-      /// Reference to Geant4 track manager
-      G4TrackingManager* m_trackMgr;
       /// Default constructor
       Geant4Context(Geant4Kernel* kernel);
       /// Default destructor
       virtual ~Geant4Context();
-      /// Access the tracking manager
-      G4TrackingManager* trackMgr() const {
-        return m_trackMgr;
-      }
       /// Access to the kernel object
       Geant4Kernel& kernel() {
         return *m_kernel;
       }
       /// Access to detector description
       LCDD& lcdd() const;
+      /// Access the tracking manager
+      G4TrackingManager* trackMgr() const;
       /// Create a user trajectory
       virtual G4VTrajectory* createTrajectory(const G4Track* track) const;
       /// Access to the main run action sequence from the kernel object
@@ -80,6 +78,12 @@ namespace DD4hep {
       Geant4GeneratorActionSequence& generatorAction() const;
       /// Access to the sensitive detector sequences from the kernel object
       Geant4SensDetSequences& sensitiveActions() const;
+
+      /// Access to the Track Manager from the kernel object
+      Geant4MonteCarloTruth& mcTruthMgr() const;
+      /// Access to the MC record manager from the kernel object (if instantiated!)
+      Geant4MonteCarloRecordManager& mcRecordMgr() const;
+
     };
 
   }    // End namespace Simulation

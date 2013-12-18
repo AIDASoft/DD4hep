@@ -42,10 +42,12 @@ namespace DD4hep {
       Geant4TrackingAction(Geant4Context* context, const std::string& name = "");
       /// Default destructor
       virtual ~Geant4TrackingAction();
-      /// Access the tracking manager
+      /// Access the Geant4 tracking manager. Only use between tracking pre- and post action
       G4TrackingManager* trackMgr() const {
         return m_context->trackMgr();
       }
+      /// Mark the track to be kept for MC truth propagation
+      void mark(const G4Track* track) const;
       /// Get the valid Geant4 tarck information
       Geant4TrackInformation* trackInfo(G4Track* track) const;
       /// Mark all children of the track to be stored
@@ -72,9 +74,13 @@ namespace DD4hep {
     class Geant4TrackingActionSequence: public Geant4Action {
     protected:
       /// Callback sequence for pre tracking action
+      CallbackSequence             m_front;
+      /// Callback sequence for pre tracking action
       CallbackSequence             m_begin;
       /// Callback sequence for post tracking action
       CallbackSequence             m_end;
+      /// Callback sequence for pre tracking action
+      CallbackSequence             m_final;
       /// The list of action objects to be called
       Actors<Geant4TrackingAction> m_actors;
     public:
@@ -82,13 +88,29 @@ namespace DD4hep {
       Geant4TrackingActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4TrackingActionSequence();
+      /// Register Pre-track action callback before anything else
+      template <typename Q, typename T> 
+	void callUpFront(Q* p, void (T::*f)(const G4Track*), 
+			 CallbackSequence::Location where=CallbackSequence::END) {
+        m_front.add(p, f, where);
+      }
       /// Register Pre-track action callback
-      template <typename Q, typename T> void callAtBegin(Q* p, void (T::*f)(const G4Track*)) {
-        m_begin.add(p, f);
+      template <typename Q, typename T> 
+	void callAtBegin(Q* p, void (T::*f)(const G4Track*), 
+			 CallbackSequence::Location where=CallbackSequence::END) {
+        m_begin.add(p, f, where);
       }
       /// Register Post-track action callback
-      template <typename Q, typename T> void callAtEnd(Q* p, void (T::*f)(const G4Track*)) {
-        m_end.add(p, f);
+      template <typename Q, typename T> 
+	void callAtEnd(Q* p, void (T::*f)(const G4Track*), 
+		       CallbackSequence::Location where=CallbackSequence::END) {
+        m_end.add(p, f, where);
+      }
+      /// Register Post-track action callback
+      template <typename Q, typename T> 
+	void callAtFinal(Q* p, void (T::*f)(const G4Track*), 
+			 CallbackSequence::Location where=CallbackSequence::END) {
+        m_final.add(p, f, where);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4TrackingAction* action);

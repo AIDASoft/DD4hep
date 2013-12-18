@@ -481,7 +481,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       throw runtime_error("G4Converter: No Geant4 material present for volume:" + n);
     }
     if (user_limits) {
-      printout(DEBUG, "++ Volume     + Apply LIMITS settings:%-24s to volume %s.", lim.name(), _v.name());
+      printout(DEBUG, "Geant4Converter", "++ Volume     + Apply LIMITS settings:%-24s to volume %s.", lim.name(), _v.name());
     }
     vol = new G4LogicalVolume(solid, medium, n, 0, sd, user_limits);
     if (region) {
@@ -868,6 +868,8 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   handleMaterial(mat.name(), mat.ptr());
   mat = m_lcdd.material("Silicon");
   handleMaterial(mat.name(), mat.ptr());
+
+  //setPrintLevel(VERBOSE);
 
   handle(this, geo.volumes, &Geant4Converter::collectVolume);
   handle(this, geo.solids, &Geant4Converter::handleSolid);

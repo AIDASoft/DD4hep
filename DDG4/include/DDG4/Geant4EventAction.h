@@ -65,6 +65,8 @@ namespace DD4hep {
       CallbackSequence m_begin;
       /// Callback sequence for event finalization action
       CallbackSequence m_end;
+      /// Callback sequence for event finalization action
+      CallbackSequence m_final;
       /// The list of action objects to be called
       Actors<Geant4EventAction> m_actors;
     public:
@@ -81,6 +83,11 @@ namespace DD4hep {
       template <typename Q, typename T>
       void callAtEnd(Q* p, void (T::*f)(const G4Event*)) {
         m_end.add(p, f);
+      }
+      /// Register event-cleanup callback (after end-of-event callback -- unordered)
+      template <typename Q, typename T>
+      void callAtFinal(Q* p, void (T::*f)(const G4Event*)) {
+        m_final.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4EventAction* action);

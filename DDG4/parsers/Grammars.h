@@ -3,7 +3,7 @@
 #define DD4HEPKERNEL_GRAMMARS_H 1
 #ifdef __GNUC__
 #warning \
-  The headers GaudiKernel/Grammars.h and GaudiKernel/Parsers.icpp are deprecated \
+  The headers Grammars.h and Parsers.icpp are deprecated \
   and will be removed from the next release of Gaudi. You should migrate your \
   code the new pasers based on Boost.Spirit 2.
 #endif

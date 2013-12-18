@@ -8,6 +8,7 @@
 //====================================================================
 // Framework include files
 #include "DDG4/Geant4SensDetAction.h"
+#include "DDG4/Geant4MonteCarloTruth.h"
 #include "DDG4/Geant4Data.h"
 #include "DD4hep/Printout.h"
 
@@ -145,6 +146,7 @@ namespace DD4hep {
       hit->momentum      = direction;
       hit->length        = hit_len;
       collection(m_collectionID)->add(hit);
+      mcTruthMgr().mark(h.track,true);
       return hit != 0;
     }
     typedef Geant4SensitiveAction<SimpleTracker> Geant4SimpleTrackerAction;
@@ -178,6 +180,7 @@ namespace DD4hep {
       }
       hit->truth.push_back(contrib);
       hit->energyDeposit += contrib.deposit;    
+      mcTruthMgr().mark(h.track,true);
       return true;
     }
     typedef Geant4SensitiveAction<SimpleCalorimeter> Geant4SimpleCalorimeterAction;
@@ -215,6 +218,7 @@ namespace DD4hep {
 	hit->energyDeposit += contrib.deposit;
 	hit->truth.push_back(contrib);
 	track->SetTrackStatus(fStopAndKill); // don't step photon any further
+	mcTruthMgr().mark(h.track,true);
 	return true;
       }
     }
@@ -267,6 +271,7 @@ namespace DD4hep {
 	hit->length = path_len;
 	clear();
 	c->insert(hit);
+	mcTruthMgr().mark(h.track,true);
 	return hit;
       }
     };

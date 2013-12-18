@@ -47,6 +47,7 @@ Geant4EventActionSequence::~Geant4EventActionSequence() {
   m_actors.clear();
   m_begin.clear();
   m_end.clear();
+  m_final.clear();
   InstanceCount::decrement(this);
 }
 
@@ -70,4 +71,5 @@ void Geant4EventActionSequence::begin(const G4Event* event) {
 void Geant4EventActionSequence::end(const G4Event* event) {
   m_end(event);
   m_actors(&Geant4EventAction::end, event);
+  m_final(event);
 }

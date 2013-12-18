@@ -17,6 +17,9 @@
 #include <list>
 #include <string>
 #include <sstream>
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
 
 // ============================================================================
 /** @file DD4hepKernel/ToStream.h
@@ -53,12 +56,12 @@ namespace DD4hep {
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-    inline std::ostream& toStream(ITERATOR first,                       // begin of the sequence
-        ITERATOR last,                       //   end of the sequence
-        std::ostream& s,                       //            the stream
-        const std::string& open,                       //               opening
-        const std::string& close,                       //               closing
-        const std::string& delim);                     //             delimiter
+    inline std::ostream& toStream(ITERATOR first, // begin of the sequence
+        ITERATOR last,                            //   end of the sequence
+        std::ostream& s,                          //            the stream
+        const std::string& open,                  //               opening
+        const std::string& close,                 //               closing
+        const std::string& delim);                //             delimiter
     // ========================================================================
     /** the printtout of the strings.
      *  the string is printed a'la Python using the quotes
@@ -244,12 +247,12 @@ namespace DD4hep {
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-    inline std::ostream& toStream(ITERATOR first,                       // begin of the sequence
-        ITERATOR last,                       //   end of the sequence
-        std::ostream& s,                       //            the stream
-        const std::string& open,                       //               opening
-        const std::string& close,                       //               closing
-        const std::string& delim)                       //             delimiter
+    inline std::ostream& toStream(ITERATOR first,     // begin of the sequence
+        ITERATOR last,                                //   end of the sequence
+        std::ostream& s,                              //            the stream
+        const std::string& open,                      //               opening
+        const std::string& close,                     //               closing
+        const std::string& delim)                     //             delimiter
         {
       s << open;
       for (ITERATOR curr = first; curr != last; ++curr) {
@@ -279,6 +282,14 @@ namespace DD4hep {
       s.flags(orig_flags);
       return s.str();
     }
+    // ============================================================================
+    /// print XYZ point 
+    std::ostream& toStream(const ROOT::Math::XYZPoint& obj, std::ostream& s);
+    // print XYZ-vector
+    std::ostream& toStream(const ROOT::Math::XYZVector& obj, std::ostream& s);
+    /// print Lorentz vector  
+    std::ostream& toStream(const ROOT::Math::PxPyPzEVector& obj, std::ostream& s);
+
   // ========================================================================
   }//                                            end of namespace DD4hep::Utils
 // ==========================================================================

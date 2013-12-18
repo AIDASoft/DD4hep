@@ -52,6 +52,8 @@ namespace DD4hep {
     class Geant4PhysicsListActionSequence;
     class Geant4SensDetActionSequence;
     class Geant4SensDetSequences;
+    class Geant4MonteCarloTruth;
+    class Geant4MonteCarloRecordManager;
 
     /** @class Invoke Geant4Kernel.h DDG4/Geant4Kernel.h
      *
@@ -91,6 +93,13 @@ namespace DD4hep {
       Geant4SensDetSequences* m_sensDetActions;
       /// Reference to the geant4 physics list
       Geant4PhysicsListActionSequence* m_physicsList;
+      /// Reference to track persistency manager
+      Geant4MonteCarloTruth* m_mcTruthMgr;
+      /// Reference to MC record manager
+      Geant4MonteCarloRecordManager* m_mcRecordMgr;
+      /// Reference to Geant4 track manager
+      G4TrackingManager* m_trackMgr;
+
       /// Action phases
       Phases m_phases;
       /// Globally registered actions
@@ -99,8 +108,12 @@ namespace DD4hep {
       GlobalActions m_globalFilters;
       /// Detector description object
       LCDD& m_lcdd;
-      /// Name of the G4UI command tree
+      /// Property: Name of the G4UI command tree
       std::string m_controlName;
+      /// Property: Name of the UI action. Must be member of the global actions
+      std::string m_uiName;
+      /// Property: Number of events to be executed in batch mode
+      long        m_numEvent;
       /// Helper to register an action sequence
       template <typename C> bool registerSequence(C*& seq, const std::string& name);
 
@@ -122,6 +135,8 @@ namespace DD4hep {
         PhaseSelector(Geant4Kernel* kernel);
         /// Copy constructor
         PhaseSelector(const PhaseSelector& c);
+	/// Assignment operator
+	PhaseSelector& operator=(const PhaseSelector& c);
         /// Phase access to the map
         Geant4ActionPhase& operator[](const std::string& name) const;
       } phase;
@@ -157,12 +172,28 @@ namespace DD4hep {
       LCDD& lcdd() const {
         return m_lcdd;
       }
+      /// Access the tracking manager
+      G4TrackingManager* trackMgr() const  {
+	return m_trackMgr;
+      }
+      /// Access the tracking manager
+      void setTrackMgr(G4TrackingManager* mgr)  {
+	m_trackMgr = mgr;
+      }
       /// Access to the Geant4 run manager
       G4RunManager& runManager();
       /// Access the command directory
       const std::string& directoryName() const {
         return m_controlName;
       }
+      /// Declare property
+      template <typename T> Geant4Kernel& declareProperty(const std::string& nam, T& val);
+      /// Declare property
+      template <typename T> Geant4Kernel& declareProperty(const char* nam, T& val);
+      /// Check property for existence
+      bool hasProperty(const std::string& name) const;
+      /// Access single property
+      Property& property(const std::string& name);
 
       /// Register action by name to be retrieved when setting up and connecting action objects
       /** Note: registered actions MUST be unique.
@@ -258,6 +289,10 @@ namespace DD4hep {
       Geant4PhysicsListActionSequence& physicsList() {
         return *physicsList(true);
       }
+      /// Access to the Track Manager from the kernel object
+      Geant4MonteCarloTruth& mcTruthMgr();
+      /// Access to the MC record manager from the kernel object (if instantiated!)
+      Geant4MonteCarloRecordManager& mcRecordMgr();
 
       /// Construct detector geometry using lcdd plugin
       void loadGeometry(const std::string& compact_file);
@@ -268,7 +303,18 @@ namespace DD4hep {
       void terminate();
       void loadXML(const char* fname);
     };
+    /// Declare property
+    template <typename T> Geant4Kernel& Geant4Kernel::declareProperty(const std::string& nam, T& val) {
+      m_properties.add(nam, val);
+      return *this;
+    }
 
+    /// Declare property
+    template <typename T> Geant4Kernel& Geant4Kernel::declareProperty(const char* nam, T& val) {
+      m_properties.add(nam, val);
+      return *this;
+    }
+ 
     struct Geant4Exec {
       static int configure(Geant4Kernel& kernel);
       static int initialize(Geant4Kernel& kernel);

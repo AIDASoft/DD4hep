@@ -11,6 +11,9 @@
 #include <list>
 #include <set>
 #include <map>
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
 
 // ============================================================================
 #define PARSERS_DECL_FOR_SINGLE(Type)			\
@@ -503,6 +506,178 @@ namespace DD4hep {
       //
       return 1;                            //  RETURN
     }
+
+    // ========================================================================
+    /** parse 3D-point 
+     *
+     *  Valid representations of 3D-point:
+     *
+     *      - a'la python tuple with 3 elements ("canonical")
+     *      - a'la python list with 3 elements 
+     *      - tuple or list with named ordered fields 
+     *
+     *  @code
+     *
+     *    " (1,2,3) " 
+     *    " [1,2,3] " 
+     *    " [ x : 1, 2, Z:3 ] " 
+     *    " [ pX : 1 , PY : 2, 3] " 
+     *     
+     *  @endcode 
+     *
+     *  Valid keys for names fields:
+     *
+     *  @code
+     *
+     *    "x", "X" , "pX" , "Px" , "PX "
+     *    "y", "Y" , "pY" , "Py" , "PY "
+     *    "z", "Z" , "pZ" , "Pz" , "PZ "
+     *
+     *  @endcode 
+     *
+     *  @attention Named fields must be ordered <code>(x,y,z)</code>
+     *
+     *  @param result (output) the parsed point 
+     *  @param input  (input)  the input string 
+     *  @return status code 
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @date 2009-09-05
+     */
+    int parse(ROOT::Math::XYZPoint& result, const std::string& input);
+
+    // ========================================================================
+    /** parse 3D-vector 
+     *
+     *  Valid representations of 3D-vector:
+     *
+     *      - a'la python tuple with 3 elements ("canonical")
+     *      - a'la python list with 3 elements 
+     *      - tuple or list with named ordered fields 
+     *
+     *  @code
+     *
+     *    " (1,2,3) " 
+     *    " [1,2,3] " 
+     *    " [ x : 1, 2, Z:3 ] " 
+     *    " [ pX : 1 , PY : 2, 3] " 
+     *     
+     *  @endcode 
+     *
+     *  Valid keys for names fields:
+     *
+     *  @code
+     *
+     *    "x", "X" , "pX" , "Px" , "PX "
+     *    "y", "Y" , "pY" , "Py" , "PY "
+     *    "z", "Z" , "pZ" , "Pz" , "PZ "
+     *
+     *  @endcode 
+     *
+     *  @attention Named fields must be ordered <code>(x,y,z)</code>
+     *
+     *  @param result (output) the parsed vector
+     *  @param input  (input)  the input string 
+     *  @return status code 
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @date 2009-09-05
+     */
+    int parse( ROOT::Math::XYZVector& result, const std::string& input);
+
+    // ========================================================================
+    /** parse PxPyPzEVector
+     *
+     *  Valid representations of Lorenzt vector
+     *
+     *      - a'la python tuple with 4 elements ("canonical")
+     *      - a'la python list with 4 elements 
+     *      - python/list with inner representation of 3D-point/vector
+     *      - tuple or list with named ordered fields 
+     *
+     *  @code
+     *
+     *    " (1,2,3,4) "     
+     *    " (1,2,3;4) "
+     *
+     *    " [1,2,3,4] " 
+     *    " [1,2,3;4] " 
+     *
+     *    " [ x:1 ,2,3; e= 4] " 
+     *    " [ pX : 1 , PY : 2, 3 , T= 4] " 
+     *
+     *    " [ ( pX : 1 , PY : 2, 3 ) , 4] " 
+     *    " [ ( pX : 1 , PY : 2, 3 ) ; 4] " 
+     *
+     *    " [ 4 , ( pX : 1 , PY : 2, 3 ) ] " 
+     *    " [ 4 ; ( pX : 1 , PY : 2, 3 ) ] " 
+     *
+     *    " [ [ pX : 1 , PY : 2, 3 ] , 4] " 
+     *    " [ [ pX : 1 , PY : 2, 3 ] ; 4] " 
+     *
+     *    " [ 4 , [ pX : 1 , PY : 2, 3 ] ] " 
+     *    " [ 4 ; [ pX : 1 , PY : 2, 3 ] ] " 
+     *
+     *    " ( ( pX : 1 , PY : 2, 3 ) , 4 )" 
+     *    " ( ( pX : 1 , PY : 2, 3 ) ; 4 )" 
+     *
+     *    " ( 4 , ( pX : 1 , PY : 2, 3 ) )" 
+     *    " ( 4 ; ( pX : 1 , PY : 2, 3 ) )" 
+     *
+     *    " ( [ pX : 1 , PY : 2, 3 ] , 4 )" 
+     *    " ( [ pX : 1 , PY : 2, 3 ] ; 4 )" 
+     *
+     *    " ( 4 , [ pX : 1 , PY : 2, 3 ] )" 
+     *    " ( 4 ; [ pX : 1 , PY : 2, 3 ] )" 
+     *
+     *     
+     *  @endcode 
+     *
+     *  Note that "eenrgy" element can be separated with semicolumn.
+     *
+     *  Valid keys for names fields:
+     *
+     *  @code
+     *
+     *    "x", "X" , "pX" , "Px" , "PX "
+     *    "y", "Y" , "pY" , "Py" , "PY "
+     *    "z", "Z" , "pZ" , "Pz" , "PZ "
+     *    "t", "T" , "e"  , "E" 
+     *
+     *  @endcode 
+     *
+     *  @attention Named fields must be ordered <code>(x,y,z)</code>
+     *
+     *  @param result (output) the parsed lorentz vector  
+     *  @param input  (input)  the input string 
+     *  @return status code 
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @date 2009-09-05
+     */
+    int parse(ROOT::Math::PxPyPzEVector& result, const std::string& input);
+    // ========================================================================
+    /** parse the vector of points 
+     *  @param resut (OUTPUT) the parser vector 
+     *  @param input (INPIUT) the string to be parsed 
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @date 2009-09-05
+     */
+    int parse( std::vector<ROOT::Math::XYZPoint>& result, const std::string& input);
+    // ========================================================================
+    /** parse the vector of vectors 
+     *  @param resut (OUTPUT) the parser vector 
+     *  @param input (INPIUT) the string to be parsed 
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @date 2009-09-05
+     */
+    int parse( std::vector<ROOT::Math::XYZVector>& result, const std::string& input);
+    // ========================================================================
+    /** parse the vector of vectors 
+     *  @param resut (OUTPUT) the parser vector 
+     *  @param input (INPIUT) the string to be parsed 
+     *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
+     *  @date 2009-09-05
+     */
+    int parse(std::vector<ROOT::Math::PxPyPzEVector>& result, const std::string& input);
+
   // ========================================================================
   }//                                          end of namespace Parsers
 // ==========================================================================

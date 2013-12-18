@@ -62,7 +62,10 @@ namespace DD4hep {
       TypeName(const std::string& typ, const std::string& nam)
           : std::pair<std::string, std::string>(typ, nam) {
       }
+      /// Split string pair according to default delimiter ('/')
       static TypeName split(const std::string& type_name);
+      /// Split string pair according to custom delimiter
+      static TypeName split(const std::string& type_name, const std::string& delim);
     };
 
     /** @class Geant4TrackInformation Geant4Action.h DDG4/Geant4Action.h
@@ -288,7 +291,7 @@ namespace DD4hep {
       /// Access to the UI messenger
       Geant4UIMessenger* control() const;
       /// Enable and install UI messenger
-      void enableUI();
+      virtual void enableUI();
       /// Declare property
       template <typename T> Geant4Action& declareProperty(const std::string& nam, T& val);
       /// Declare property
@@ -322,6 +325,9 @@ namespace DD4hep {
       /// Support of exceptions: Print fatal message and throw runtime_error.
       void except(const std::string& fmt, ...) const;
 
+      /// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
+      void abortRun(const std::string& exception, const std::string& fmt, ...) const;
+
       /// Access to the main run action sequence from the kernel object
       Geant4RunActionSequence& runAction() const;
       /// Access to the main event action sequence from the kernel object
@@ -334,6 +340,10 @@ namespace DD4hep {
       Geant4StackingActionSequence& stackingAction() const;
       /// Access to the main generator action sequence from the kernel object
       Geant4GeneratorActionSequence& generatorAction() const;
+      /// Access to the Track Persistency Manager from the kernel object
+      Geant4MonteCarloTruth& mcTruthMgr() const;
+      /// Access to the MC record manager from the kernel object
+      Geant4MonteCarloRecordManager& mcRecordMgr() const;
     };
 
     /// Declare property

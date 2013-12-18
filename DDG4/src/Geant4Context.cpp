@@ -18,7 +18,7 @@ using namespace DD4hep::Simulation;
 
 /// Default constructor
 Geant4Context::Geant4Context(Geant4Kernel* kernel)
-    : m_kernel(kernel), m_trackMgr(0) {
+    : m_kernel(kernel) {
 }
 
 /// Default destructor
@@ -35,6 +35,11 @@ G4VTrajectory* Geant4Context::createTrajectory(const G4Track* /* track */) const
   string err = DD4hep::format("Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
   DD4hep::printout(DD4hep::FATAL, "Geant4Kernel", "createTrajectory: Purely virtual method. requires overloading!");
   throw runtime_error(err);
+}
+
+/// Access the tracking manager
+G4TrackingManager* Geant4Context::trackMgr() const {
+  return m_kernel->trackMgr();
 }
 
 /// Access to the main run action sequence from the kernel object
@@ -71,3 +76,14 @@ Geant4GeneratorActionSequence& Geant4Context::generatorAction() const {
 Geant4SensDetSequences& Geant4Context::sensitiveActions() const {
   return m_kernel->sensitiveActions();
 }
+
+/// Access to the Track Manager from the kernel object
+Geant4MonteCarloTruth& Geant4Context::mcTruthMgr() const   {
+  return m_kernel->mcTruthMgr();
+}
+
+/// Access to the MC record manager from the kernel object
+Geant4MonteCarloRecordManager& Geant4Context::mcRecordMgr() const   {
+  return m_kernel->mcRecordMgr();
+}
+

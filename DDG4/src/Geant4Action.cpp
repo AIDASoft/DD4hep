@@ -21,14 +21,18 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
-TypeName TypeName::split(const string& type_name) {
-  size_t idx = type_name.find("/");
+TypeName TypeName::split(const string& type_name, const std::string& delim) {
+  size_t idx = type_name.find(delim);
   string typ = type_name, nam = type_name;
   if (idx != string::npos) {
     typ = type_name.substr(0, idx);
     nam = type_name.substr(idx + 1);
   }
   return TypeName(typ, nam);
+}
+
+TypeName TypeName::split(const string& type_name) {
+  return split(type_name,"/");
 }
 
 /// Default constructor
@@ -197,32 +201,55 @@ void Geant4Action::except(const string& fmt, ...) const {
   throw runtime_error(err);
 }
 
+/// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
+void Geant4Action::abortRun(const string& exception, const string& fmt, ...) const {
+  string desc, typ = typeinfoName(typeid(*this));
+  string issuer = name()+" ["+typ+"]";
+  va_list args;
+  va_start(args, fmt);
+  desc = DD4hep::format("*** Geant4Action:", fmt, args);
+  va_end(args);
+  G4Exception(issuer.c_str(),exception.c_str(),RunMustBeAborted,desc.c_str());
+  //throw runtime_error(issuer+"> "+desc);  
+}
+
 /// Access to the main run action sequence from the kernel object
 Geant4RunActionSequence& Geant4Action::runAction() const {
-  return m_context->runAction();
+  return m_context->kernel().runAction();
 }
 
 /// Access to the main event action sequence from the kernel object
 Geant4EventActionSequence& Geant4Action::eventAction() const {
-  return m_context->eventAction();
+  return m_context->kernel().eventAction();
 }
 
 /// Access to the main stepping action sequence from the kernel object
 Geant4SteppingActionSequence& Geant4Action::steppingAction() const {
-  return m_context->steppingAction();
+  return m_context->kernel().steppingAction();
 }
 
 /// Access to the main tracking action sequence from the kernel object
 Geant4TrackingActionSequence& Geant4Action::trackingAction() const {
-  return m_context->trackingAction();
+  return m_context->kernel().trackingAction();
 }
 
 /// Access to the main stacking action sequence from the kernel object
 Geant4StackingActionSequence& Geant4Action::stackingAction() const {
-  return m_context->stackingAction();
+  return m_context->kernel().stackingAction();
 }
 
 /// Access to the main generator action sequence from the kernel object
 Geant4GeneratorActionSequence& Geant4Action::generatorAction() const {
-  return m_context->generatorAction();
+  return m_context->kernel().generatorAction();
 }
+
+/// Access to the Track Manager from the kernel object
+Geant4MonteCarloTruth& Geant4Action::mcTruthMgr() const   {
+  return m_context->kernel().mcTruthMgr();
+}
+
+/// Access to the MC record manager from the kernel object
+Geant4MonteCarloRecordManager& Geant4Action::mcRecordMgr() const   {
+  return m_context->kernel().mcRecordMgr();
+}
+

@@ -25,6 +25,8 @@
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4DetectorConstruction.h"
+#include "DDG4/Geant4MonteCarloRecordManager.h"
+#include "DDG4/Geant4TrackPersistency.h"
 
 // Geant4 include files
 #include "G4RunManager.hh"
@@ -47,6 +49,14 @@ Geant4Kernel::PhaseSelector::PhaseSelector(const PhaseSelector& c)
     : m_kernel(c.m_kernel) {
 }
 
+/// Assignment operator
+Geant4Kernel::PhaseSelector& Geant4Kernel::PhaseSelector::operator=(const PhaseSelector& c) {
+  if ( this != &c )  {
+    m_kernel = c.m_kernel;
+  }
+  return *this;
+}
+
 /// Phase access to the map
 Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& name) const {
   Geant4ActionPhase* phase = m_kernel->getPhase(name);
@@ -58,8 +68,10 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd)
-    : m_context(0), m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0), m_trackingAction(0), m_steppingAction(
-        0), m_stackingAction(0), m_sensDetActions(0), m_physicsList(0), m_lcdd(lcdd), phase(this) {
+    : m_context(0), m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0), 
+      m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0), 
+      m_physicsList(0), m_mcTruthMgr(0), m_mcRecordMgr(0),
+      m_lcdd(lcdd), phase(this) {
 #if 0
   registerSequence(m_runAction, "RunAction");
   registerSequence(m_eventAction, "EventAction");
@@ -72,6 +84,8 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd)
   m_context = new Geant4Context(this);
   m_lcdd.addExtension < Geant4Kernel > (this);
 
+  declareProperty("UI",m_uiName);
+  declareProperty("NumEvents",m_numEvent = 10);
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for all named Geant4 actions");
@@ -83,7 +97,9 @@ Geant4Kernel::~Geant4Kernel() {
   destroyPhases();
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
-  deletePtr (m_runManager);
+  deletePtr  (m_runManager);
+  deletePtr  (m_mcTruthMgr);
+  releasePtr (m_mcRecordMgr);
   releasePtr (m_physicsList);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
@@ -91,8 +107,8 @@ Geant4Kernel::~Geant4Kernel() {
   releasePtr (m_eventAction);
   releasePtr (m_generatorAction);
   releasePtr (m_runAction);
-  deletePtr (m_sensDetActions);
-  deletePtr (m_context);
+  deletePtr  (m_sensDetActions);
+  deletePtr  (m_context);
   m_lcdd.destroyInstance();
   InstanceCount::decrement(this);
 }
@@ -101,6 +117,16 @@ Geant4Kernel::~Geant4Kernel() {
 Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
   static Geant4Kernel obj(lcdd);
   return obj;
+}
+
+/// Check property for existence
+bool Geant4Kernel::hasProperty(const std::string& name) const    {
+  return m_properties.exists(name);
+}
+
+/// Access single property
+DD4hep::Property& Geant4Kernel::property(const std::string& name)   {
+  return properties()[name];
 }
 
 /// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
@@ -154,7 +180,9 @@ void Geant4Kernel::terminate() {
   destroyPhases();
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
-  deletePtr (m_runManager);
+  deletePtr  (m_runManager);
+  deletePtr  (m_mcTruthMgr);
+  releasePtr (m_mcRecordMgr);
   releasePtr (m_physicsList);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
@@ -162,8 +190,8 @@ void Geant4Kernel::terminate() {
   releasePtr (m_eventAction);
   releasePtr (m_generatorAction);
   releasePtr (m_runAction);
-  deletePtr (m_sensDetActions);
-  deletePtr (m_context);
+  deletePtr  (m_sensDetActions);
+  deletePtr  (m_context);
   //return *this;
 }
 
@@ -188,6 +216,8 @@ Geant4Kernel& Geant4Kernel::registerGlobalAction(Geant4Action* action) {
     if (i == m_globalActions.end()) {
       action->addRef();
       m_globalActions[nam] = action;
+      printout(INFO,"Geant4Kernel","++ Registered global action %s of type %s",
+	       nam.c_str(),typeinfoName(typeid(*action)).c_str());
       return *this;
     }
     throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is already globally "
@@ -348,5 +378,33 @@ Geant4PhysicsListActionSequence* Geant4Kernel::physicsList(bool create) {
   if (!m_physicsList && create)
     registerSequence(m_physicsList, "PhysicsList");
   return m_physicsList;
+}
+
+/// Access to the Track Manager from the kernel object
+Geant4MonteCarloTruth& Geant4Kernel::mcTruthMgr()     {
+  if ( m_mcTruthMgr ) return *m_mcTruthMgr;
+  // If not present, check if the action is registered.
+  Geant4Action* a = globalAction("MonteCarloTruthHandler",false);
+  if ( 0 != a ) {
+    m_mcTruthMgr = dynamic_cast<Geant4MonteCarloTruth*>(a);
+    if ( m_mcTruthMgr ) return *m_mcTruthMgr;
+  }
+  // No action registered to handle monte carlo truth. This is fatal
+  throw runtime_error(format("Geant4Kernel", "DDG4: No Geant4MonteCarloTruth defined. "
+			     "Geant4 monte carlo information cannot be saved!"));
+}
+
+/// Access to the MC record manager from the kernel object
+Geant4MonteCarloRecordManager& Geant4Kernel::mcRecordMgr()    {
+  if ( m_mcRecordMgr ) return *m_mcRecordMgr;
+  // If not present, check if the action is registered.
+  Geant4Action* a = globalAction("MonteCarloRecordManager",false);
+  if ( 0 != a ) {
+    m_mcRecordMgr = dynamic_cast<Geant4MonteCarloRecordManager*>(a);
+    if ( m_mcRecordMgr ) return *m_mcRecordMgr;
+  }
+  // No action registered to save tracks. This is fatal
+  throw runtime_error(format("Geant4Kernel", "DDG4: No MonteCarloRecordManager defined. "
+			     "Geant4 tracks cannot be saved!"));
 }
 

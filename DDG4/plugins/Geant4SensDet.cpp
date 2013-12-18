@@ -25,29 +25,27 @@ namespace DD4hep {
    */
   namespace Simulation   {
 
-    namespace {
-      template <typename T> struct _Seq  {
-	typedef _Seq<T> Base;
-	T* m_sequence;
-	_Seq() : m_sequence(0) {                 }
-	_Seq(T* seq)           {   _aquire(seq); }
-	virtual ~_Seq()        { _release();     }
-	void _aquire(T* s)  {
-	  InstanceCount::increment(this);
-	  m_sequence = s;
-	  m_sequence->addRef();
-	}
-	void _release()  {
-	  releasePtr(m_sequence);
-	  InstanceCount::decrement(this);
-	}
-      };
-    }
+    template <typename T> struct RefCountedSequence  {
+      typedef RefCountedSequence<T> Base;
+      T* m_sequence;
+      RefCountedSequence() : m_sequence(0) {                 }
+      RefCountedSequence(T* seq)           {   _aquire(seq); }
+      virtual ~RefCountedSequence()        { _release();     }
+      void _aquire(T* s)  {
+	InstanceCount::increment(this);
+	m_sequence = s;
+	m_sequence->addRef();
+      }
+      void _release()  {
+	releasePtr(m_sequence);
+	InstanceCount::decrement(this);
+      }
+    };
 
     struct Geant4SensDet : virtual public G4VSensitiveDetector, 
 			   virtual public G4VSDFilter,
 			   virtual public Geant4ActionSD,
-			   virtual public _Seq<Geant4SensDetActionSequence>
+			   virtual public RefCountedSequence<Geant4SensDetActionSequence>
     {
       /// Constructor. The detector element is identified by the name
       Geant4SensDet(const std::string& nam, Geometry::LCDD& lcdd)

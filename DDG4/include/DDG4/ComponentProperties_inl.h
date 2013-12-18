@@ -49,6 +49,10 @@ namespace DD4hep {
     virtual std::string str(const void* ptr) const;
     /// PropertyGrammar overload: Retrieve value from string
     virtual bool fromString(void* ptr, const std::string& value) const;
+    /// Evaluate string value if possible before calling boost::spirit
+    virtual int evaluate(void* ptr, const std::string& value) const;
+    /// Pre-parse string
+    virtual std::string pre_parse(const std::string& in) const;
   };
 
   /// Standarsd constructor
@@ -69,24 +73,40 @@ namespace DD4hep {
   template <typename TYPE> const std::type_info& Grammar<TYPE>::type() const {
     return typeid(TYPE);
   }
+
+  /// Evaluate string value if possible before calling boost::spirit
+  template <typename TYPE> int Grammar<TYPE>::evaluate(void*, const std::string&) const {
+    return 0;
+  }
+  /// Pre-parse string
+  template <typename TYPE> std::string Grammar<TYPE>::pre_parse(const std::string& in) const{
+    return in;
+  }
+
   /// PropertyGrammar overload: Retrieve value from string
   template <typename TYPE> bool Grammar<TYPE>::fromString(void* ptr, const std::string& str) const {
-#ifdef DD4HEP_USE_BOOST
+    int sc = 0;
     TYPE temp;
-    int sc = Parsers::parse(temp,str);
-    //std::cout << "Converting value: " << str << " to type " << typeid(TYPE).name() << std::endl;
-    if ( sc ) {
+#ifdef DD4HEP_USE_BOOST
+    sc = Parsers::parse(temp,str);
+#endif
+    if ( !sc ) sc = evaluate(&temp,str);
+#if 0
+    std::cout << "Sc=" << sc << "  Converting value: " << str 
+	      << " to type " << typeid(TYPE).name() 
+	      << std::endl;
+#endif
+    if ( sc )   {
       *(TYPE*)ptr = temp;
       return true;
     }
+#ifndef DD4HEP_USE_BOOST
+    throw std::runtime_error("This version of DD4HEP is not compiled to use boost::spirit.\n"
+			     "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
+			     "and BOOST_INCLUDE_DIR=<boost include path>");
+#else
     PropertyGrammar::invalidConversion(str, typeid(TYPE));
     return false;
-#else
-    if (!ptr || str.length() == 0) {
-    }
-    throw std::runtime_error("This version of DD4HEP is not compiled to use boost::spirit.\n"
-        "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
-        "and BOOST_INCLUDE_DIR=<boost include path>");
 #endif
   }
 

@@ -86,7 +86,7 @@ namespace DD4hep  {
     Kernel&  kernel = Kernel::access(lcdd);
     Action action((what==FILTER) ? (Geant4Action*)kernel.globalFilter(typ.second,false)
 		  : (what==ACTION) ? kernel.globalAction(typ.second,false)
-		  : (what==FILTER) ? kernel.globalAction(typ.second,false)
+		  ///  : (what==FILTER) ? kernel.globalAction(typ.second,false)
 		  : 0);
     // Create the object using the factory method
     if ( !action )  {

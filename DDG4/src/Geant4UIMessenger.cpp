@@ -65,7 +65,8 @@ void Geant4UIMessenger::addCall(const std::string& name, const std::string& desc
 void Geant4UIMessenger::exportProperties(PropertyManager& mgr) {
   InstallProperties installer(m_propertyCmd, m_path, this);
   m_properties = &mgr;
-  addCall("show", "Show all properties of Geant4 component:" + m_name, Callback(m_properties).make(&PropertyManager::dump));
+  addCall("show", "Show all properties of Geant4 component:" + m_name, 
+	  Callback(m_properties).make(&PropertyManager::dump));
   m_properties->for_each(installer);
 }
 
@@ -76,7 +77,8 @@ G4String Geant4UIMessenger::GetCurrentValue(G4UIcommand * c) {
     const string& n = (*i).second;
     return (*m_properties)[n].str();
   }
-  printout(INFO, "Geant4UIMessenger", "+++ %s> Failed to access property value.", m_name.c_str());
+  printout(INFO, "Geant4UIMessenger", 
+	   "+++ %s> Failed to access property value.", m_name.c_str());
   return "";
 }
 
@@ -86,13 +88,16 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
   if (m_properties && i != m_propertyCmd.end()) {
     const string& n = (*i).second;
     if (!v.empty()) {
-      printout(INFO, "Geant4UIMessenger", "+++ %s> Setting new property value %s = %s.", m_name.c_str(), n.c_str(), v.c_str());
-      (*m_properties)[n].str(v);
+      Property& p = (*m_properties)[n];
+      p.str(v);
+      printout(INFO, "Geant4UIMessenger", 
+	       "+++ %s> Setting property value %s = %s  native:%s.", 
+	       m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
     }
     else {
       string value = (*m_properties)[n].str();
-      printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.", m_name.c_str(), n.c_str(),
-          value.c_str());
+      printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
+	       m_name.c_str(), n.c_str(), value.c_str());
     }
     return;
   }

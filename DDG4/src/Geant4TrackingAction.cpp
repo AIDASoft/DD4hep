@@ -10,6 +10,7 @@
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4TrackingAction.h"
+#include "DDG4/Geant4MonteCarloTruth.h"
 
 // Geant4 include files
 #include "G4Track.hh"
@@ -36,6 +37,8 @@ Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* contex
 Geant4TrackingActionSequence::~Geant4TrackingActionSequence() {
   m_actors(&Geant4TrackingAction::release);
   m_actors.clear();
+  m_front.clear();
+  m_final.clear();
   m_begin.clear();
   m_end.clear();
   InstanceCount::decrement(this);
@@ -53,6 +56,7 @@ void Geant4TrackingActionSequence::adopt(Geant4TrackingAction* action) {
 
 /// Pre-track action callback
 void Geant4TrackingActionSequence::begin(const G4Track* track) {
+  m_front(track);
   m_actors(&Geant4TrackingAction::begin, track);
   m_begin(track);
 }
@@ -61,6 +65,7 @@ void Geant4TrackingActionSequence::begin(const G4Track* track) {
 void Geant4TrackingActionSequence::end(const G4Track* track) {
   m_end(track);
   m_actors(&Geant4TrackingAction::end, track);
+  m_final(track);
 }
 
 /// Standard constructor
@@ -80,6 +85,11 @@ void Geant4TrackingAction::begin(const G4Track*) {
 
 /// Post-track action callback
 void Geant4TrackingAction::end(const G4Track*) {
+}
+
+/// Mark the track to be kept for MC truth propagation
+void Geant4TrackingAction::mark(const G4Track* track) const    {
+  mcTruthMgr().mark(track);
 }
 
 /// Get the valid Geant4 tarck information

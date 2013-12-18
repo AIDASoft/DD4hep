@@ -65,7 +65,7 @@
         <properties particle="opticalphoton"/>
     </filter>
     <filter name="EnergyDepositMinimumCut">
-      <properties Cut="10"/>
+      <properties Cut="10*keV"/>
     </filter>
   </filters>
 
@@ -92,7 +92,7 @@
     </sequence>
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
       <action name="Geant4ParticleGun/Gun">
-        <properties energy="500"
+        <properties energy="500*GeV"
   	  	    particle="'e-'"
 		    multiplicity="1"/>
       </action>

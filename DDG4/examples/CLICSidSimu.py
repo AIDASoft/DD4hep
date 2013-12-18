@@ -14,8 +14,9 @@ from SystemOfUnits import *
 """
 def run():
   kernel = DDG4.Kernel()
+  kernel.UI = "UI"
   kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml")
-  kernel.loadXML("DDG4_field.xml")
+  kernel.loadXML("file:../DD4hep.trunk/DDG4/examples/DDG4_field.xml")
 
   lcdd = kernel.lcdd()
   print '+++   List of sensitive detectors:'
@@ -24,6 +25,14 @@ def run():
     sd = lcdd.sensitiveDetector(o.name())
     if sd.isValid():
       print '+++  %-32s type:%s'%(o.name(), sd.type(), )
+
+  # Configure UI
+  ui = DDG4.Action(kernel,"Geant4UIManager/UI")
+  ui.HaveVIS = True
+  ui.HaveUI = True
+  ui.SessionType = 'csh'
+  kernel.registerGlobalAction(ui)
+  
 
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
@@ -52,6 +61,13 @@ def run():
   kernel.eventAction().add(evt1)
   kernel.eventAction().add(evt2)
 
+  trk = DDG4.Action(kernel,"Geant4TrackPersistency/MonteCarloTruthHandler")
+  mc  = DDG4.Action(kernel,"Geant4MonteCarloRecordManager/MonteCarloRecordManager")
+  kernel.registerGlobalAction(trk)
+  kernel.registerGlobalAction(mc)
+  trk.release()
+  mc.release()
+
   # Configure I/O
   evt_root = DDG4.EventAction(kernel,'Geant4Output2ROOT/RootOutput')
   evt_root.Control = True
@@ -70,8 +86,18 @@ def run():
   gun.energy   = 0.5*GeV
   gun.particle = 'e-'
   gun.multiplicity = 1
+  gun.position = (0.15*mm,0.12*mm,0.1*cm)
   gun.enableUI()
   kernel.generatorAction().add(gun)
+  """
+  rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
+  rdr.zSpread = 0.0
+  rdr.lorentzAngle = 0.0
+  rdr.OutputLevel = DDG4.OutputLevel.INFO
+  rdr.Input = "LcioEventReader|test.data"
+  rdr.enableUI()
+  kernel.generatorAction().add(rdr)
+  """
 
   # Setup global filters fur use in sensntive detectors
   f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')

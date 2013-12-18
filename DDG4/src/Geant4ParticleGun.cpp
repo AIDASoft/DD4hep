@@ -17,23 +17,24 @@
 
 // C/C++ include files
 #include <stdexcept>
+#include <limits>
+#include <cmath>
 
+using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const std::string& name)
-    : Geant4GeneratorAction(context, name), m_particle(0), m_gun(0) {
+Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
+  : Geant4GeneratorAction(context, name), m_position(0,0,0), m_direction(1,1,0.3),
+    m_particle(0), m_gun(0) 
+{
   InstanceCount::increment(this);
   m_needsControl = true;
+  declareProperty("particle", m_particleName = "e-");
   declareProperty("energy", m_energy = 50 * MeV);
   declareProperty("multiplicity", m_multiplicity = 1);
-  declareProperty("pos_x", m_position.x = 0);
-  declareProperty("pos_y", m_position.y = 0);
-  declareProperty("pos_z", m_position.z = 0);
-  declareProperty("direction_x", m_direction.x = 1);
-  declareProperty("direction_y", m_direction.y = 1);
-  declareProperty("direction_z", m_direction.z = 0.3);
-  declareProperty("particle", m_particleName = "e-");
+  declareProperty("position", m_position);
+  declareProperty("direction", m_direction);
 }
 
 /// Default destructor
@@ -52,12 +53,16 @@ void Geant4ParticleGun::operator()(G4Event* event) {
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
     m_particle = particleTable->FindParticle(m_particleName);
     if (0 == m_particle) {
-      throw std::runtime_error("Bad particle type!");
+      throw runtime_error("Bad particle type!");
     }
+  }
+  double r = m_direction.R(), eps = numeric_limits<float>::epsilon();
+  if ( r > eps && std::fabs(r-1.0) > eps )  {
+    m_direction.SetXYZ(m_direction.X()/r, m_direction.Y()/r, m_direction.Z()/r);
   }
   m_gun->SetParticleDefinition(m_particle);
   m_gun->SetParticleEnergy(m_energy);
-  m_gun->SetParticleMomentumDirection(G4ThreeVector(m_direction.x, m_direction.y, m_direction.z));
-  m_gun->SetParticlePosition(G4ThreeVector(m_position.x, m_position.y, m_position.z));
+  m_gun->SetParticleMomentumDirection(G4ThreeVector(m_direction.X(), m_direction.Y(), m_direction.Z()));
+  m_gun->SetParticlePosition(G4ThreeVector(m_position.X(), m_position.Y(), m_position.Z()));
   m_gun->GeneratePrimaryVertex(event);
 }

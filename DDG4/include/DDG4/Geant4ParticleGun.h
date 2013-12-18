@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
+#include "Math/Vector3D.h"
 
 // Forward declarations
 class G4ParticleDefinition;
@@ -35,9 +36,7 @@ namespace DD4hep {
     class Geant4ParticleGun: public Geant4GeneratorAction {
     protected:
       /// Position and shooting direction of the gun
-      struct {
-        double x, y, z;
-      } m_position, m_direction;
+      ROOT::Math::XYZVector m_position, m_direction;
       /// Particle energy
       double m_energy;
       /// Desired multiplicity of the particles to be shot
