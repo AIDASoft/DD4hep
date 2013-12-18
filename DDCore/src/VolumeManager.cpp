@@ -277,7 +277,7 @@ VolumeManager::Context::~Context() {
 
 /// Default constructor
 VolumeManager::Object::Object(LCDD& l)
-    : lcdd(l), top(0), sysID(0), detMask(~0x0ULL), flags(VolumeManager::NONE) {
+  : lcdd(l), top(0), system(0), sysID(0), detMask(~0x0ULL), flags(VolumeManager::NONE) {
 }
 
 /// Default destructor

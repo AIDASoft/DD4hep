@@ -64,8 +64,11 @@ DECLARE_APPLY(DD4hepXMLLoader,load_xml);
 static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
-    imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
-    cout << "++ Volume manager populated and loaded." << endl;
+    if ( imp )  {
+      imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
+      cout << "++ Volume manager populated and loaded." << endl;
+      return 1;
+    }
   }
   catch (const exception& e) {
     throw runtime_error(string(e.what()) + "\n"
@@ -74,6 +77,6 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
   catch (...) {
     throw runtime_error("UNKNOWN exception while programming VolumeManager. Are your volIDs correct?");
   }
-  return 1;
+  return 0;
 }
 DECLARE_APPLY(DD4hepVolumeManager,load_volmgr);

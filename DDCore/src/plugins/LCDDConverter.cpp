@@ -970,9 +970,12 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp) const {
     long result = PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
     if (0 == result) {
       PluginDebug dbg;
-      PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
-      throw runtime_error("Failed to locate plugin to interprete files of type"
-          " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(tag));
+      result = PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
+      if (0 == result) {
+	throw runtime_error("Failed to locate plugin to interprete files of type"
+			    " \"" + tag + "\" - no factory:" + type + ". " + 
+			    dbg.missingFactory(tag));
+      }
     }
     result = *(long*) result;
     if (result != 1) {

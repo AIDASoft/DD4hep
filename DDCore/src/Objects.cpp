@@ -404,7 +404,9 @@ const set<Limit>& LimitSet::limits() const {
 }
 
 /// Standard constructor
-Region::Object::Object() {
+Region::Object::Object() 
+  : magic(magic_word()), threshold(10.0), cut(10.0), store_secondaries(false)
+{
   InstanceCount::increment(this);
 }
 

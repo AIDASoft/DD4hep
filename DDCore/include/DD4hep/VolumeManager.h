@@ -228,6 +228,12 @@ namespace DD4hep {
        */
       VolumeManager(LCDD& lcdd, const std::string& name, DetElement world = DetElement(), Readout ro = Readout(), int flags =
           NONE);
+
+      /// Assignment operator
+      VolumeManager& operator=(const VolumeManager& m)  {
+	m_element = m.m_element;
+	return *this;
+      }      
       /// Add a new Volume manager section according to a new subdetector
       VolumeManager addSubdetector(DetElement detector, Readout ro);
       /// Access the volume manager by cell id

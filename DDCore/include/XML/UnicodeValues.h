@@ -160,6 +160,7 @@ namespace DD4hep {
     UNICODE (idfield);
     UNICODE (idspec);
     UNICODE (idspecref);
+    UNICODE (include);
     UNICODE (includes);
     UNICODE (incoming_r);
     UNICODE (info);

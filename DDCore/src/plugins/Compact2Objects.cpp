@@ -37,6 +37,7 @@ namespace DD4hep {
     struct GdmlFile;
     struct Property;
     struct AlignmentFile;
+    struct DetElementInclude {};
   }
   template <> void Converter<Constant>::operator()(xml_h e) const;
   template <> void Converter<Material>::operator()(xml_h e) const;
@@ -53,6 +54,7 @@ namespace DD4hep {
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
   template <> void Converter<AlignmentFile>::operator()(xml_h element) const;
   template <> void Converter<Header>::operator()(xml_h element) const;
+  template <> void Converter<DetElementInclude>::operator()(xml_h element) const;
   template <> void Converter<Compact>::operator()(xml_h element) const;
 }
 
@@ -235,14 +237,14 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       dens_val *= dens_unit;
     }
 #if 0
-    cout << "Gev    " << XML::_toDouble("GeV") << endl;
-    cout << "sec    " << XML::_toDouble("second") << endl;
-    cout << "nsec   " << XML::_toDouble("nanosecond") << endl;
-    cout << "kilo   " << XML::_toDouble("kilogram") << endl;
-    cout << "kilo   " << XML::_toDouble("joule*s*s/(m*m)") << endl;
-    cout << "meter  " << XML::_toDouble("meter") << endl;
-    cout << "ampere " << XML::_toDouble("ampere") << endl;
-    cout << "degree " << XML::_toDouble("degree") << endl;
+    cout << "Gev    " << XML::_toDouble(_Unicode(GeV)) << endl;
+    cout << "sec    " << XML::_toDouble(_Unicode(second)) << endl;
+    cout << "nsec   " << XML::_toDouble(_Unicode(nanosecond)) << endl;
+    cout << "kilo   " << XML::_toDouble(_Unicode(kilogram)) << endl;
+    cout << "kilo   " << XML::_toDouble(_Unicode(joule*s*s/(m*m))) << endl;
+    cout << "meter  " << XML::_toDouble(_Unicode(meter)) << endl;
+    cout << "ampere " << XML::_toDouble(_Unicode(ampere)) << endl;
+    cout << "degree " << XML::_toDouble(_Unicode(degree)) << endl;
 #endif
     //throw 1;
     printout(DEBUG, "Compact", "++ Creating material %s", matname);
@@ -707,20 +709,42 @@ template <> void Converter<AlignmentFile>::operator()(xml_h element) const {
   xml_coll_t(alignments, _U(alignment)).for_each(Converter < AlignmentEntry > (this->lcdd));
 }
 
+/// Read material entries from a seperate file in one of the include sections of the geometry
+template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
+  xml_h node = XML::DocumentHandler().load(element, element.attr_value(_U(ref))).root();
+  string tag = node.tag();
+  if ( tag == "lcdd" )  
+    Converter < Compact > (this->lcdd)(node);
+  else if ( tag == "define" )
+    xml_coll_t(node, _U(constant)).for_each(Converter < Constant > (this->lcdd));
+  else if ( tag == "display" )
+    xml_coll_t(node,_U(vis)).for_each(Converter < VisAttr > (this->lcdd));
+  else if ( tag == "detector" )  
+    Converter < DetElement > (this->lcdd)(node);
+  else if ( tag == "detectors" )
+    xml_coll_t(node,_U(detector)).for_each(Converter < DetElement > (this->lcdd));
+}
+
 template <> void Converter<Compact>::operator()(xml_h element) const {
   char text[32];
   xml_elt_t compact(element);
   xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter < GdmlFile > (lcdd));
+  xml_coll_t(compact, _U(include)).for_each(Converter < DetElementInclude > (this->lcdd));
+
   if (element.hasChild(_U(info)))
     (Converter < Header > (lcdd))(xml_h(compact.child(_U(info))));
+
+  xml_coll_t(compact, _U(define)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   xml_coll_t(compact, _U(define)).for_each(_U(constant), Converter < Constant > (lcdd));
   xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter < Atom > (lcdd));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter < Material > (lcdd));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter < Property > (lcdd));
   lcdd.init();
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter < LimitSet > (lcdd));
+  xml_coll_t(compact, _U(display)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter < VisAttr > (lcdd));
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter < Readout > (lcdd));
+  xml_coll_t(compact, _U(detectors)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   xml_coll_t(compact, _U(detectors)).for_each(_U(detector), Converter < DetElement > (lcdd));
   xml_coll_t(compact, _U(includes)).for_each(_U(alignment), Converter < AlignmentFile > (lcdd));
   xml_coll_t(compact, _U(alignments)).for_each(_U(alignment), Converter < AlignmentEntry > (lcdd));
