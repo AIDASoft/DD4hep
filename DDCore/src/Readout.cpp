@@ -46,7 +46,7 @@ void Readout::setIDDescriptor(const Ref_t& new_descriptor) const {
       return;
     }
   }
-  throw runtime_error("DD4hep: Readout::setSegmentation: Cannot assign ID descriptor [Invalid Handle]");
+  throw runtime_error("DD4hep: Readout::setIDDescriptor: Cannot assign ID descriptor [Invalid Handle]");
 }
 
 /// Access IDDescription structure

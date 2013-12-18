@@ -14,6 +14,7 @@
 #include "DD4hep/Handle.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DDSegmentation/Segmentation.h"
+#include "DDSegmentation/SegmentationFactory.h"
 
 // C/C++ include files
 #include <cmath>
@@ -39,6 +40,8 @@ namespace DD4hep {
     struct Segmentation: public Handle<DDSegmentation::Segmentation> {
     public:
       typedef DDSegmentation::Segmentation BaseSegmentation;
+      typedef DDSegmentation::Parameter Parameter;
+      typedef DDSegmentation::Parameters Parameters;
 
       /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
        *
@@ -50,8 +53,6 @@ namespace DD4hep {
         unsigned long magic;
         /// Flag to use segmentation for hit positioning
         unsigned char useForHitPosition;
-        /// Reference to base segmentation
-        BaseSegmentation* segmentation;
         /// determine the local position based on the cell ID
         DDSegmentation::Position position(const long64& cellID) const;
         /// determine the cell ID based on the local position
@@ -60,6 +61,28 @@ namespace DD4hep {
         Object(BaseSegmentation* s = 0);
         /// Default destructor
         virtual ~Object();
+    	/// Access the encoding string
+    	std::string fieldDescription() const;
+    	/// Access the segmentation name
+    	const std::string& name() const;
+    	/// Set the segmentation name
+    	void setName(const std::string& value);
+    	/// Access the segmentation type
+    	const std::string& type() const;
+    	/// Access the description of the segmentation
+    	const std::string& description() const;
+    	/// Access the underlying decoder
+    	BitField64* decoder();
+    	/// Set the underlying decoder
+    	void setDecoder(BitField64* decoder);
+    	/// Access to parameter by name
+    	Parameter parameter(const std::string& parameterName) const;
+    	/// Access to all parameters
+    	Parameters parameters() const;
+    	/// Set all parameters from an existing set of parameters
+    	void setParameters(const Parameters& parameters);
+        /// Reference to base segmentation
+        BaseSegmentation* segmentation;
       };
 
     public:
@@ -67,20 +90,11 @@ namespace DD4hep {
       Segmentation()
           : Handle<Implementation>() {
       }
-      /// Initializing constructor creating new object
-      template <typename T> Segmentation(T* o, const std::string& nam, const std::string& typ)
-          : Handle<Implementation>() {
-        o->segmentation = o;
-        assign(o, nam, typ);
-      }
+      /// Initializing constructor creating a new object of the given DDSegmentation type
+      Segmentation(const std::string& type, const std::string& name);
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Segmentation(const Handle<Q>& e)
           : Handle<Implementation>(e) {
-      }
-      /// Constructor to used when creating a new object
-      Segmentation(BaseSegmentation* s, const std::string& nam, const std::string& typ) :
-    	  Handle<Implementation>() {
-    	  assign(new Object(s), nam, typ);
       }
       /// Access flag for hit positioning
       bool useForHitPosition() const;
@@ -91,7 +105,7 @@ namespace DD4hep {
       /// Access segmentation object
       BaseSegmentation* segmentation() const;
       /// Access to the parameters
-      DDSegmentation::Parameters parameters() const;
+      Parameters parameters() const;
       /// determine the local position based on the cell ID
       Position position(const long64& cellID) const;
       /// determine the cell ID based on the local position

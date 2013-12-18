@@ -15,7 +15,6 @@
 #include "DD4hep/Plugins.h"
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
-#include "DDSegmentation/SegmentationFactory.h"
 
 // Root/TGeo include files
 #include "TGeoManager.h"
@@ -440,18 +439,14 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   Ref_t idSpec;
 
   if (seg) {   // Segmentation is not mandatory!
-	typedef DDSegmentation::Segmentation BaseSegmentation;
     string type = seg.attr < string > (_U(type));
-    BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(type);
-    if (not s) {
-      throw_print("FAILED to create segmentation: " + type + ". Missing factory method for: " + type + "!");
-    }
-    Segmentation segment(s, name, type);
+    Segmentation segment(type, name);
     if (segment.isValid()) {
-      DDSegmentation::Parameters parameters = s->parameters();
-      DDSegmentation::Parameters::iterator it;
+      segment->parameters();
+      Segmentation::Parameters parameters = segment.parameters();
+      Segmentation::Parameters::iterator it;
       for (it = parameters.begin(); it != parameters.end(); ++it) {
-        DDSegmentation::Parameter p = *it;
+        Segmentation::Parameter p = *it;
     	if (seg.hasAttr(Unicode(p->name()))) {
     	  p->value() = seg.attr<double>(Unicode(p->name()));
         } else if (not p->isOptional()) {

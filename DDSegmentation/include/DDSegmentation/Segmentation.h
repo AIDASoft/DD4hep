@@ -66,61 +66,48 @@ public:
 	virtual CellID cellID(const Position& localPosition, const Position& globalPosition,
 			const VolumeID& volumeID) const = 0;
 	/// Access the encoding string
-	std::string fieldDescription() const {
+	virtual std::string fieldDescription() const {
 		return _decoder->fieldDescription();
 	}
 	/// Access the segmentation name
-	const std::string& name() const {
+	virtual const std::string& name() const {
 		return _name;
 	}
 	/// Set the segmentation name
-	void setName(const std::string& value) {
+	virtual void setName(const std::string& value) {
 		_name = value;
 	}
 	/// Access the segmentation type
-	const std::string& type() const {
+	virtual const std::string& type() const {
 		return _type;
 	}
-	/// Set the segmentation type
-	void setType(const std::string& value) {
-		//FIXME: Should not be able to change the type!
-		_type = value;
-	}
 	/// Access the description of the segmentation
-	const std::string& description() const {
+	virtual const std::string& description() const {
 		return _description;
 	}
 	/// Access the underlying decoder
-	BitField64* decoder() {
+	virtual BitField64* decoder() {
 		return _decoder;
 	}
 	/// Set the underlying decoder
-	void setDecoder(BitField64* decoder);
-	/// Access the set of parameters
-//	Parameters parameters() const;
+	virtual void setDecoder(BitField64* decoder);
 	/// Access to parameter by name
-	SegmentationParameter* parameter(const std::string& parameterName);
-	/// Access to parameter by name
-	const SegmentationParameter* parameter(const std::string& parameterName) const;
-	/// Access to parameter value by name
-	double parameterValue(const std::string& parameterName) const;
-	/// Set the parameter value by name
-	void setParameterValue(const std::string& parameterName, double value);
+	virtual Parameter parameter(const std::string& parameterName) const;
 	/// Access to all parameters
-	std::vector<SegmentationParameter*> parameters();
-	/// Access to all parameters
-	std::vector<const SegmentationParameter*> parameters() const;
+	virtual Parameters parameters() const;
+	/// Set all parameters from an existing set of parameters
+	virtual void setParameters(const Parameters& parameters);
 
 protected:
 	/// Default constructor used by derived classes passing the encoding string
 	Segmentation(const std::string& cellEncoding = "");
 
 	/// Add a parameter to this segmentation. Used by derived classes to define their parameters
-	void registerParameter(const std::string& name, const std::string& description, double& parameter, double defaultValue = 0., bool isOptional = false);
+	virtual void registerParameter(const std::string& name, const std::string& description, double& parameter, const double& defaultValue, bool isOptional = false);
 	/// Helper method to convert a bin number to a 1D position
-	double binToPosition(CellID bin, double cellSize, double offset = 0.) const;
+	static double binToPosition(CellID bin, double cellSize, double offset = 0.);
 	/// Helper method to convert a 1D position to a cell ID
-	int positionToBin(double position, double cellSize, double offset = 0.) const;
+	static int positionToBin(double position, double cellSize, double offset = 0.);
 
 	/// The cell ID encoder and decoder
 	mutable BitField64* _decoder;
@@ -132,10 +119,12 @@ protected:
 	std::string _type;
 	/// The description of the segmentation
 	std::string _description;
+	/// The parameters for this segmentation
+	std::map<std::string, Parameter> _parameters;
 
 private:
-	/// The parameters for this segmentation
-	std::map<std::string, SegmentationParameter*> _parameters;
+	/// No copy constructor allowed
+	Segmentation(const Segmentation&);
 };
 
 /// Macro to instantiate a new SegmentationCreator by its type name

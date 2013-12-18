@@ -327,7 +327,6 @@ namespace DD4hep {
   namespace Geometry {
     template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string& t) {
       this->m_element = s;
-      s->setType(t);
       s->setName(n);
     }
     template <> const char* Handle<_Segmentation>::name() const {
