@@ -49,7 +49,7 @@ G4VisManager* Geant4UIManager::startVis()  {
 G4UIExecutive* Geant4UIManager::startUI()   {
   G4UIExecutive* ui = 0;
   const char* args[] = {"DDG4","",""};
-  ui = new G4UIExecutive(1,(char**)args,m_sessionType.c_str());
+  ui = new G4UIExecutive(1,(char**)args) ; //,m_sessionType.c_str());
   return ui;
 }
 
