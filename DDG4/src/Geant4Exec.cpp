@@ -319,7 +319,7 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
     }
     throw runtime_error(format("Geant4Exec","++ Failed to locate UI interface %s.",value.c_str()));
   }
-  long nevt = kernel.property("NumEvent").value<long>();
+  long nevt = kernel.property("NumEvents").value<long>();
   kernel.runManager().BeamOn(nevt);
   return 1;
 }
