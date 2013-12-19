@@ -132,7 +132,7 @@ namespace DD4hep {
 	double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
 	direction *= new_len/hit_len;
       }
-      printout(INFO,"SimpleTracker","%s> Add hit with deposit:%f  Pos:%f %f %f",
+      printout(DEBUG,"SimpleTracker","%s> Add hit with deposit:%f  Pos:%f %f %f",
 	       c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z());
       Hit* hit = new Hit(h.track->GetTrackID(),
 			 h.track->GetDefinition()->GetPDGEncoding(),
@@ -171,11 +171,11 @@ namespace DD4hep {
 	hit = new Hit(pos) ;
 	hit->cellID = volumeID( step ) ;
 	coll->add(hit) ;
-	printout(INFO,"SimpleTracker","%s> CREATE hit with deposit:%f  Pos:%f %f %f",
+	printout(DEBUG,"SimpleTracker","%s> CREATE hit with deposit:%f  Pos:%f %f %f",
 	       c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
       }
       else  {
-	printout(INFO,"SimpleTracker","%s> UPDATE hit with deposit:%f  Pos:%f %f %f",
+	printout(DEBUG,"SimpleTracker","%s> UPDATE hit with deposit:%f  Pos:%f %f %f",
 	       c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
       }
       hit->truth.push_back(contrib);

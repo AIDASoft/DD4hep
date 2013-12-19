@@ -407,10 +407,20 @@ namespace DD4hep  {
     kernel.physicsList().adopt(handle);
   }
 
+  template <> void Converter<Kernel>::operator()(xml_h e) const {
+    Kernel& kernel = Kernel::access(lcdd);
+    xml_comp_t k(e);
+    if ( k.hasAttr(_Unicode(NumEvents)) )  
+      kernel.property("NumEvents").str(k.attr<string>(_Unicode(NumEvents)));
+    if ( k.hasAttr(_Unicode(UI)) )  
+      kernel.property("UI").str(k.attr<string>(_Unicode(UI)));
+  }
+
   template <> void Converter<XMLSetup>::operator()(xml_h seq)  const  {
     xml_elt_t compact(seq);
     // First execute the basic setup from the plugins module
     ROOT::Reflex::PluginService::Create<TNamed*>("geant4_xml_setup",&lcdd,&seq);
+    xml_coll_t(compact,_Unicode(kernel)).for_each(Converter<Kernel>(lcdd,param));
     // Now deal with the new stuff.....
     xml_coll_t(compact,_Unicode(actions) ).for_each(_Unicode(action),Converter<Action>(lcdd,param));
     xml_coll_t(compact,_Unicode(filters) ).for_each(_Unicode(filter),Converter<Filter>(lcdd,param));

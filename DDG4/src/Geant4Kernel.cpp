@@ -98,8 +98,10 @@ Geant4Kernel::~Geant4Kernel() {
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
-  deletePtr  (m_mcTruthMgr);
-  releasePtr (m_mcRecordMgr);
+  m_mcTruthMgr = 0;
+  m_mcRecordMgr = 0;  // These are already released by the global actions....
+  //deletePtr  (m_mcTruthMgr);
+  //releasePtr (m_mcRecordMgr);
   releasePtr (m_physicsList);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
@@ -181,8 +183,10 @@ void Geant4Kernel::terminate() {
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
-  deletePtr  (m_mcTruthMgr);
-  releasePtr (m_mcRecordMgr);
+  m_mcTruthMgr = 0;
+  m_mcRecordMgr = 0;  // These are already released by the global actions....
+  //deletePtr  (m_mcTruthMgr);
+  //releasePtr (m_mcRecordMgr);
   releasePtr (m_physicsList);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);

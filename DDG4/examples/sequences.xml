@@ -3,6 +3,17 @@
 
 
 
+  <!-- Kernel parameters  
+  --   UI="UI" is default, 
+  --
+  --   Note:
+  --   NumEvents is ignored in interactive sessions, but  used
+  --   in batch mode without ui nor vis.
+  --
+  --   To run batch: set UI=""
+  -->
+  <kernel UI="UI" NumEvents="1"/>  
+
   <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
   --   object and may be retrieved by there using the action name.
   --
@@ -21,6 +32,15 @@
 		  Property_double="5e15"
 		  Property_string="Hello_2"/>
      </action>
+
+    <!-- UI handler initializing vis and ui. NAME IS FIXED/COMMON KNOWLEDGE -->
+    <action name="Geant4UIManager/UI">
+      <properties HaveVIS="1"
+		  HaveUI="1"
+		  SessionType="csh"/>
+     </action>
+    <!-- void and empty for the time being.... NAME IS FIXED/COMMON KNOWLEDGE -->
+    <action name="Geant4DummyTruthHandler/MonteCarloTruthHandler"/>
   </actions>
 
   <!-- List of known phases.
@@ -92,7 +112,7 @@
     </sequence>
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
       <action name="Geant4ParticleGun/Gun">
-        <properties energy="500*GeV"
+        <properties energy="500*MeV"
   	  	    particle="'e-'"
 		    multiplicity="1"/>
       </action>

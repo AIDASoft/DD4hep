@@ -10,6 +10,7 @@
 #define DD4HEP_DDG4_GEANT4MONTECARLOTRUTH_H
 
 // Framework include files
+#include "DDG4/Geant4Action.h"
 
 // C/C++ include files
 
@@ -51,6 +52,32 @@ namespace DD4hep {
       /// Store a track produced in a step to be kept for later MC truth analysis
       virtual void mark(const G4Step* step, bool created_hit) = 0;
     };
+
+    /** @class Geant4DummyTruthHandler Geant4DummyTruthHandler.h DDG4/Geant4DummyTruthHandler.h
+     *
+     * Void implementation doing nothing at all.
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class Geant4DummyTruthHandler : 
+    public Geant4Action, public Geant4MonteCarloTruth  
+      {
+    public:
+      /// Standard constructor
+      Geant4DummyTruthHandler(Geant4Context* ctxt,const std::string& nam);
+      /// Default destructor
+      virtual ~Geant4DummyTruthHandler();
+      /// Mark a Geant4 track to be kept for later MC truth analysis
+      virtual void mark(const G4Track* track);
+      /// Store a track, with a flag
+      virtual void mark(const G4Track* track, bool created_hit);
+      /// Mark a Geant4 track of the step to be kept for later MC truth analysis
+      virtual void mark(const G4Step* step);
+      /// Store a track produced in a step to be kept for later MC truth analysis
+      virtual void mark(const G4Step* step, bool created_hit);
+    };
+
   }    // End namespace Simulation
 }      // End namespace DD4hep
 

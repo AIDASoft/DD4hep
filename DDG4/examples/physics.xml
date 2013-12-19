@@ -10,31 +10,26 @@
   -->
 
   <sequences>
-    <sequence name="Geant4PhysicsListSequence/PhysicsList"/>
-  </sequences>
+    <sequence name="Geant4PhysicsListSequence/PhysicsList" decays="true" extends="FTFP_BERT"/>
 
-  <physicslist name="Geant4PhysicsList/MyPhysics.0">
-    <extends name="QGSP_BERT"/>
-    <particles>
-      <construct name="G4Geantino"/>
-      <construct name="G4ChargedGeantino"/>
-      <construct name="G4Electron"/>
-      <construct name="G4Gamma"/>
-      <construct name="G4BosonConstructor"/>
-      <construct name="G4LeptonConstructor"/>
-      <construct name="G4MesonConstructor"/>
-      <construct name="G4BaryonConstructor"/>
-    </particles>
-  </physicslist>
 <!--
-  <sequences>
-  // No transportation nor decays if you are already extending an existing physics list!
-    <sequence name="Geant4PhysicsListSequence/PhysicsList" transportation="true" decays="true" extends="QGSP_BERT"/>
-  </sequences>
+    <physicslist name="Geant4PhysicsList/MyPhysics.0" decays="true">
+      <extends name="FTFP_BERT"/>
+      <particles>
+	<construct name="G4BosonConstructor"/>
+	<construct name="G4LeptonConstructor"/>
+      </particles>
+      <processes>
+	<particle name="e[+-]" cut="0.001*mm">
+	  <process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+	  <process name="G4eIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
+	</particle>
+      </processes>
+    </physicslist>
 -->
+  </sequences>
+
   <!--
-
-
   <physicslist name="Geant4PhysicsList/MyPhysics.0">
 
 

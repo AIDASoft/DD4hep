@@ -22,3 +22,30 @@ Geant4MonteCarloTruth::Geant4MonteCarloTruth()   {
 Geant4MonteCarloTruth::~Geant4MonteCarloTruth() {
   InstanceCount::decrement(this);
 }
+
+/// Standard constructor
+Geant4DummyTruthHandler::Geant4DummyTruthHandler(Geant4Context* ctxt,const std::string& nam) : Geant4Action(ctxt,nam), Geant4MonteCarloTruth()
+{
+}
+
+/// Default destructor
+Geant4DummyTruthHandler::~Geant4DummyTruthHandler()
+{
+}
+
+/// Mark a Geant4 track to be kept for later MC truth analysis
+void Geant4DummyTruthHandler::mark(const G4Track* )  {
+}
+
+/// Store a track, with a flag
+void Geant4DummyTruthHandler::mark(const G4Track* , bool ) {
+}
+
+/// Mark a Geant4 track of the step to be kept for later MC truth analysis
+void Geant4DummyTruthHandler::mark(const G4Step* ) {
+}
+
+/// Store a track produced in a step to be kept for later MC truth analysis
+void Geant4DummyTruthHandler::mark(const G4Step* , bool ) {
+}
+
