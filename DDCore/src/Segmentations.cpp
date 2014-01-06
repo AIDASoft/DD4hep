@@ -22,7 +22,6 @@ using DD4hep::DDSegmentation::SegmentationParameter;
 /// Standard constructor
 Segmentation::Object::Object(BaseSegmentation* s)
   : magic(magic_word()), useForHitPosition(0), segmentation(s) {
-	cout << "Creating Object " << this << ", segmentation " << s << endl;
   InstanceCount::increment(this);
 }
 

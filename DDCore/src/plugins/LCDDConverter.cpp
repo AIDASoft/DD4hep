@@ -813,7 +813,16 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
         xml.setAttr(Unicode(v->name()), Unicode(val));
         continue;
       }
-      xml.setAttr(Unicode(v->name()), v->value());
+      // translate from TGeo units to Geant4 units if necessary
+      if (v->unitType() == DDSegmentation::SegmentationParameter::LengthUnit) {
+    	  double value = _toDouble(v->value()) * CM_2_MM;
+    	  xml.setAttr(Unicode(v->name()), value);
+      } else if (v->unitType() == DDSegmentation::SegmentationParameter::AngleUnit) {
+    	  double value = _toDouble(v->value()) * DEGREE_2_RAD;
+    	  xml.setAttr(Unicode(v->name()), value);
+      } else {
+    	  xml.setAttr(Unicode(v->name()), v->value());
+      }
     }
   }
   return xml;

@@ -31,11 +31,11 @@ SegmentationFactory* SegmentationFactory::instance() {
 }
 
 /// Create a new segmentation object with the given type name. Returns NULL if type name is unknown.
-Segmentation* SegmentationFactory::create(const string& name) const {
+Segmentation* SegmentationFactory::create(const string& name, const string& identifier) const {
 	map<string, SegmentationCreatorBase*>::const_iterator it;
 	it = _segmentations.find(name);
 	if (it != _segmentations.end()) {
-		return it->second->create();
+		return it->second->create(identifier);
 	}
 	return 0;
 }

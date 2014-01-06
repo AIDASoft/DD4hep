@@ -20,9 +20,9 @@ CartesianGridXYZ::CartesianGridXYZ(const string& cellEncoding) :
 	_description = "Cartesian segmentation in the local coordinates";
 
 	// register all necessary parameters
-	registerParameter("gridSizeZ", "Cell size in Z", _gridSizeZ, 1.);
-	registerParameter("offsetZ", "Cell offset in Z", _offsetZ, 0., true);
-	_zId = "z";
+	registerParameter("grid_size_z", "Cell size in Z", _gridSizeZ, 1., SegmentationParameter::LengthUnit);
+	registerParameter("offset_z", "Cell offset in Z", _offsetZ, 0., SegmentationParameter::LengthUnit, true);
+	registerIdentifier("identifier_z", "Cell ID identifier for Z", _zId, "z");
 }
 
 /// destructor
@@ -42,7 +42,7 @@ Position CartesianGridXYZ::position(const CellID& cellID) const {
 
 /// determine the cell ID based on the position
 CellID CartesianGridXYZ::cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const {
-	_decoder->reset();
+	_decoder->setValue(volumeID);
 	(*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
 	(*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY);
 	(*_decoder)[_zId] = positionToBin(localPosition.Z, _gridSizeZ, _offsetZ);

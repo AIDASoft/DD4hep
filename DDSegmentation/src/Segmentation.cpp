@@ -24,7 +24,12 @@ using std::vector;
 
 /// Default constructor used by derived classes passing the encoding string
 Segmentation::Segmentation(const string& cellEncoding) :
-	_name("Segmentation"), _type("Segmentation"), _decoder(new BitField64(cellEncoding)), _ownsDecoder(true) {
+		_name("Segmentation"), _type("Segmentation"), _decoder(new BitField64(cellEncoding)), _ownsDecoder(true) {
+}
+
+/// Default constructor used by derived classes passing an existing decoder
+Segmentation::Segmentation(BitField64* decoder) :
+		_name("Segmentation"), _type("Segmentation"), _decoder(decoder), _ownsDecoder(false) {
 }
 
 /// Destructor
@@ -42,10 +47,32 @@ Segmentation::~Segmentation() {
 	}
 }
 
+/// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
+void Segmentation::neighbours(const CellID& cellID, std::set<CellID>& neighbours) const {
+	map<string, StringParameter>::const_iterator it;
+	for (it = _indexIdentifiers.begin(); it != _indexIdentifiers.end(); ++it) {
+		string identifier = it->second->typedValue();
+		_decoder->setValue(cellID);
+		int currentValue = (*_decoder)[identifier];
+		// add both neighbouring cell IDs, don't add out of bound indices
+		try {
+			(*_decoder)[identifier] = currentValue - 1;
+			neighbours.insert(_decoder->getValue());
+		} catch (runtime_error& e) {
+			// nothing to do
+		}
+		try {
+			(*_decoder)[identifier] = currentValue + 1;
+			neighbours.insert(_decoder->getValue());
+		} catch (runtime_error& e) {
+			// nothing to do
+		}
+	}
+}
+
 /// Set the underlying decoder
 void Segmentation::setDecoder(BitField64* decoder) {
 	if (_ownsDecoder and _decoder != 0) {
-		std::cout << _decoder << std::endl;
 		delete _decoder;
 	}
 	_decoder = decoder;
@@ -83,11 +110,14 @@ void Segmentation::setParameters(const Parameters& parameters) {
 	}
 }
 
-/// Add a parameter to this segmentation. Used by derived classes to define their parameters
-void Segmentation::registerParameter(const std::string& name, const std::string& description, double& parameter, const double& defaultValue, bool isOptional) {
-	_parameters[name] = new SegmentationParameter(name, description, parameter, defaultValue, isOptional);
+/// Add a cell identifier to this segmentation. Used by derived classes to define their required identifiers
+void Segmentation::registerIdentifier(const string& name, const string& description, string& identifier,
+		const string& defaultValue) {
+	StringParameter idParameter = new TypedSegmentationParameter<string>(name, description, identifier, defaultValue,
+			SegmentationParameter::NoUnit, true);
+	_parameters[name] = idParameter;
+	_indexIdentifiers[name] = idParameter;
 }
-
 
 /// Helper method to convert a bin number to a 1D position
 double Segmentation::binToPosition(long64 bin, double cellSize, double offset) {
@@ -99,7 +129,7 @@ int Segmentation::positionToBin(double position, double cellSize, double offset)
 	if (cellSize == 0.) {
 		throw runtime_error("Invalid cell size: 0.0");
 	}
-	return int((position + 0.5 * cellSize - offset)/cellSize);
+	return int((position + 0.5 * cellSize - offset) / cellSize);
 }
 
 } /* namespace DDSegmentation */

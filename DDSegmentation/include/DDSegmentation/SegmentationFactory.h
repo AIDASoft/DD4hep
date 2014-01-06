@@ -31,7 +31,7 @@ public:
 	/// Destructor
 	virtual ~SegmentationCreatorBase() {};
 	/// Create a new object
-	virtual Segmentation* create() const = 0;
+	virtual Segmentation* create(const std::string& identifier) const = 0;
 };
 
 /// Concrete class to create segmentation objects. Every segmentation needs to instantiate a static instance of this.
@@ -42,7 +42,7 @@ public:
 	/// Destructor
 	virtual ~SegmentationCreator() {};
 	/// Create a new object of the given type.
-	Segmentation* create() const {return new TYPE("");};
+	Segmentation* create(const std::string& identifier) const {return new TYPE(identifier);};
 };
 
 /// Factory for creating segmentation objects by type name
@@ -53,7 +53,7 @@ public:
 	/// Access to the global factory instance
 	static SegmentationFactory* instance();
 	/// Create a new segmentation object with the given type name. Returns NULL if type name is unknown.
-	Segmentation* create(const std::string& name) const;
+	Segmentation* create(const std::string& name, const std::string& identifier = "") const;
 	/// Access to the list of registered segmentations
 	std::vector<std::string> registeredSegmentations() const;
 protected:

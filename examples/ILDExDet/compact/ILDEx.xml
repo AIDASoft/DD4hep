@@ -253,11 +253,11 @@
         </readout>
 
         <readout name="HcalBarrelHits">
-            <segmentation type="RegularNgonCartesianGridXY" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" />
+            <segmentation type="CartesianGridXZ" grid_size_x="30.0*mm" grid_size_z="30.0*mm" />
             <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalEndcapHits">
-            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
             <id>system:6,stave:1,module:1,endcapID:5,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
 

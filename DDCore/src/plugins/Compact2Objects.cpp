@@ -450,7 +450,16 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
       for (it = parameters.begin(); it != parameters.end(); ++it) {
         Segmentation::Parameter p = *it;
     	if (seg.hasAttr(Unicode(p->name()))) {
-    	  p->value() = seg.attr<double>(Unicode(p->name()));
+    	  string pType = p->type();
+    	  if (pType.compare("int") == 0) {
+    		p->setValue(_toString(seg.attr<int>(Unicode(p->name()))));
+    	  } else if (pType.compare("float") == 0) {
+    		p->setValue(_toString(seg.attr<float>(Unicode(p->name()))));
+    	  } else if (pType.compare("double") == 0) {
+      		p->setValue(_toString(seg.attr<double>(Unicode(p->name()))));
+      	  } else {
+      		p->setValue(seg.attr<string>(Unicode(p->name())));
+      	  }
         } else if (not p->isOptional()) {
     	  throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
     	}
