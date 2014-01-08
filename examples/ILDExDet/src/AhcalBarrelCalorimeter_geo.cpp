@@ -74,7 +74,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 
   // Hcal Barrel module shapers
   PolyhedraRegular polyhedra_shaper(numSides,Hcal_inner_radius,Hcal_module_radius,detZ*2.);
-  Tube             tube_shaper(0.,Hcal_outer_radius, detZ, 0., 2.*M_PI);
+  Tube             tube_shaper(0.,Hcal_outer_radius, detZ );
   
   // keep the envelope rotation as the same as the stave
   // the stave number can be changed in the compact XML.
