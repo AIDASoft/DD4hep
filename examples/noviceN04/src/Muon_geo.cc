@@ -8,7 +8,10 @@
 //====================================================================
 #include "DD4hep/DetFactoryHelper.h"
 
+#include "DD4hep/TGeoUnits.h"
+
 using namespace std;
+using namespace tgeo ;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
@@ -37,14 +40,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     
     double radius = x_det.radius() ;
     
-    double phi = deltaphi * i ;
+    double phi = deltaphi/rad * i ;
 
     Position trans( radius * sin( phi ) ,
 		    radius * cos( phi ) ,
 		    0. ) ;
 
-    // Rotation rot( 0, 0 , phi ) ;
-    // FG: RotationZ(phi) is not the same as rot( 0, 0 , phi )  !!!???
     PlacedVolume muon_phys = experimentalHall_log.placeVolume( muon_log , Transform3D( RotationZ(phi) , trans ) );
 
     muon_phys.addPhysVolID( "system", x_det.id() )  ;
