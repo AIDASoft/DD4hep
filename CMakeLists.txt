@@ -46,8 +46,13 @@ if(DD4HEP_USE_XERCESC)
 endif()
 
 #---Testing-------------------------------------------------------------------------
-include(CTest)
-enable_testing()
+if(BUILD_TESTING)
+
+  include(CTest)
+  enable_testing()
+  add_subdirectory(DDTest)
+
+endif(BUILD_TESTING)
 
 #---Documentation-------------------------------------------------------------------
 
