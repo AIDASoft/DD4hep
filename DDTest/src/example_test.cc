@@ -1,13 +1,14 @@
-#include "DD4hepTest.h"
+#include "DDTest.h"
 #include <exception>
 #include <iostream>
 #include <assert.h>
 #include <cmath>
 
 using namespace std ;
+using namespace DD4hep ;
 
 // this should be the first line in your test
-DD4hepTest test = DD4hepTest( "example" ) ; 
+DDTest test = DDTest( "example" ) ; 
 
 //=============================================================================
 

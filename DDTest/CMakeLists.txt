@@ -1,6 +1,4 @@
 
-
-
 #--------------------------------------------------
 
 include_directories( ./include )
@@ -16,3 +14,8 @@ SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PA
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
 
 #--------------------------------------------------
+
+
+install(FILES ./include/DDTest.h
+  DESTINATION include/DD4hep
+  )
