@@ -73,10 +73,16 @@ int main(int argc, char** argv ){
 
 
     //======== densities =========
-    double rho1 = lcdd.constant<double>( "rho1" )  / kg * m3 ;
+    double rho1 = lcdd.constant<double>( "rho1" )  / g * cm3 ;
     double rho2 = lcdd.constant<double>( "rho2" )  / g * cm3 ;
 
-    test( STR(rho1), STR(1000.*rho2) , " densities [kg/m3] - [g/cm3]  " ) ; 
+    test( STR(rho1), STR(rho2) , " densities in [g/cm3]  " ) ; 
+
+    rho1 = lcdd.constant<double>( "rho1" )  / kg * m3 ;
+    rho2 = lcdd.constant<double>( "rho2" )  / kg * m3 ;
+    
+    test( STR(rho1), STR(rho2) , " densities in [kg/cm3]  " ) ; 
+
 
     // --------------------------------------------------------------------
 
