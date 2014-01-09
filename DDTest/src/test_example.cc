@@ -1,4 +1,4 @@
-#include "DDTest.h"
+#include "DD4hep/DDTest.h"
 #include <exception>
 #include <iostream>
 #include <assert.h>
@@ -36,9 +36,9 @@ int main(int argc, char** argv ){
     test(  1.1 * pi_f > pi_d   , " example comparison:  1.1* float(M_PI)  > double( M_PI) " ) ;  
 
     // ... guess which of these will pass ...
-    // test(  double(pi_f) == pi_d  , " example comparison:  float(M_PI) == double( M_PI) " ) ;  
-    // test(  double(pi_f) <  pi_d  , " example comparison:  float(M_PI)  < double( M_PI) " ) ;  
-    // test(  double(pi_f) >  pi_d  , " example comparison:  float(M_PI)  > double( M_PI) " ) ;  
+    // test(  pi_f == pi_d  , " example comparison:  float(M_PI) == double( M_PI) " ) ;  
+    // test(  pi_f <  pi_d  , " example comparison:  float(M_PI)  < double( M_PI) " ) ;  
+    // test(  pi_f >  pi_d  , " example comparison:  float(M_PI)  > double( M_PI) " ) ;  
 
     // --------------------------------------------------------------------
 

@@ -76,7 +76,10 @@ namespace DD4hep{
 
       } else {
 
-	pass( name ) ;
+	std::stringstream sstr ;
+	sstr << "  " << name<< " : [" << v1 << "] == [" << v2 <<"]" ;
+
+	pass( sstr.str() ) ;
       }
 
       return ;
@@ -96,7 +99,10 @@ namespace DD4hep{
       
       } else {      
 
-	pass( name ) ;
+	std::stringstream sstr ;
+	sstr << "  " << name<< " : [" << c  << "] " ;
+
+	pass( sstr.str() ) ;
       }
       return ;
     }
@@ -114,7 +120,7 @@ namespace DD4hep{
       _passed++;
       _last_test_status = true ;
 
-      _out << "[" << _testname << "] test " << last_test_status() << " : " << msg << std::endl;
+      _out << "[" << _testname << "] test " << last_test_status() << ":  " << msg << std::endl;
     }
 
 

@@ -1,0 +1,52 @@
+#######################################################################
+#
+# DDTest - (unit) tests for DD4hep
+#
+# F.Gaede, DESY, 2014
+#######################################################################
+
+
+Package for the definition of (unit) tests using the CTest mechanism.
+
+
+If build with -DBUILD_TESTING=1 (default), testing will be enabled.
+
+Run the tests with:
+
+  cd build
+  make install
+  make test
+
+run the tests with verbose output:
+
+ ctest -V
+
+----------------------------------------------------------------------------------------
+
+New test programs can be added to ./DDTest/src as test_xxx.cc
+
+Add corresponding lines to ./DDTest/CMakeLists.txt:
+
+ SET( test_name "test_xxx" )
+ ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
+ ADD_TEST( t_${test_name} "${EXECUTABLE_OUTPUT_PATH}/${test_name}" )
+ SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
+ SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
+
+----------------------------------------------------------------------------------------
+
+Nightly test results will be published at
+
+  http://aidasoft.desy.de/CDash/index.php
+
+
+This is not yet implemented. For now the command:
+
+ make Experimental
+
+
+will publish the result at the dashboard.
+
+----------------------------------------------------------------------------------------
+
+
