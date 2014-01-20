@@ -1,6 +1,15 @@
 DD4hep  ----  Release Notes
 =================================
 
+2014/01/17    Markus Frank
+--------------------------
+  - Prepare implementation of Alignment using Release and Grap features of TGeoVolume
+    and TGeoNode. In principle this was done in a backwards compatible way, but 
+    I cannot really check 100% the #ifdef's.
+  - Fix handling of XML collections using XercesC.
+    (Bug reported by P.Kostka).
+  - Fix several compiler warnings issued by Coverity.
+
 2013/12/17    Markus Frank
 --------------------------
   - Whole load of fixes to keep coverity quiet....
