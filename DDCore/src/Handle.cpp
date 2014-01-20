@@ -11,10 +11,14 @@
 #include "DD4hep/Handle.h"
 #include "XML/Evaluator.h"
 #include <iostream>
+#include <cstring>
+#include <cstdio>
 
 #if !defined(WIN32) && !defined(__ICC)
 #include "cxxabi.h"
 #endif
+
+class TObject;
 
 namespace DD4hep {
   XmlTools::Evaluator& evaluator();
@@ -27,16 +31,6 @@ namespace {
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-
-/// Standard constructor
-Counted::Counted() {
-  InstanceCount::increment(this);
-}
-
-/// Standard destructor
-Counted::~Counted() {
-  InstanceCount::decrement(this);
-}
 
 int DD4hep::Geometry::_toInt(const string& value) {
   string s(value);

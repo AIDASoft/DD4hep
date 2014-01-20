@@ -11,6 +11,13 @@
 #define DD4HEP_CONFIG_H
 
 #define DD4HEP_INSTANCE_COUNTS
+#ifdef DD4HEP_INSTANCE_COUNTS
+#define INCREMENT_COUNTER InstanceCount::increment(this)
+#define DECREMENT_COUNTER InstanceCount::decrement(this)
+#else
+#define INCREMENT_COUNTER 
+#define DECREMENT_COUNTER 
+#endif
 
 /*
  *   DD4hep namespace declaration

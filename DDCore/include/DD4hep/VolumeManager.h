@@ -231,7 +231,7 @@ namespace DD4hep {
 
       /// Assignment operator
       VolumeManager& operator=(const VolumeManager& m)  {
-	m_element = m.m_element;
+	if ( this != &m ) m_element = m.m_element;
 	return *this;
       }      
       /// Add a new Volume manager section according to a new subdetector

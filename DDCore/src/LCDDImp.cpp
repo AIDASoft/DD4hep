@@ -44,7 +44,7 @@ namespace {
   struct TopDetElement: public DetElement {
     TopDetElement(const string& nam, Volume vol)
         : DetElement(nam,/* "structure", */0) {
-      object<Object>().volume = vol;
+      //object<Object>().volume = vol;
     }
   };
   struct TypePreserve {
@@ -241,6 +241,11 @@ Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, boo
     return (*i).second;
   }
   if (do_throw) {
+    int cnt = 0;
+    cout << "GetRefChild: Failed to find child with name: " << name
+	 << " Map contains " << e.size() << " elements." << endl;
+    for(i=e.begin(); i!=e.end(); ++i)
+      cout << "   " << cnt << "  " << (*i).first << endl;
     throw runtime_error("Cannot find a child with the reference name:" + name);
   }
   return 0;
@@ -392,9 +397,11 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
     long result = PluginService::Create<long>(type, lcdd, &xml_root);
     if (0 == result) {
       PluginDebug dbg;
-      PluginService::Create<long>(type, lcdd, &xml_root);
-      throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
-          " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));
+      result = PluginService::Create<long>(type, lcdd, &xml_root);
+      if ( 0 == result )  {
+	throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
+			    " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));
+      }
     }
     result = *(long*) result;
     if (result != 1) {
@@ -427,8 +434,11 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv) {
     long result = PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
     if (0 == result) {
       PluginDebug dbg;
-      PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
-      throw runtime_error("DD4hep: apply-plugin: Failed to locate plugin " + fac + ". " + dbg.missingFactory(fac));
+      result = PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
+      if ( 0 == result )  {
+	throw runtime_error("DD4hep: apply-plugin: Failed to locate plugin " + 
+			    fac + ". " + dbg.missingFactory(fac));
+      }
     }
     result = *(long*) result;
     if (result != 1) {

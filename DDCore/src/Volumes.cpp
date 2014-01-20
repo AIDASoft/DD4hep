@@ -31,25 +31,56 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+#ifdef DD4HEP_EMULATE_TGEOEXTENSIONS
 namespace DD4hep {
   namespace Geometry {
 
-    template <> struct Value<TGeoNodeMatrix, PlacedVolume::Object> : public TGeoNodeMatrix, public PlacedVolume::Object {
-      Value(const TGeoVolume* v, const TGeoMatrix* m)
-          : TGeoNodeMatrix(v, m), PlacedVolume::Object() {
-        magic = magic_word();
-        InstanceCount::increment(this);
+    /** @class Value Handle.h
+     *
+     *  Class to simply combine to object types to one
+     *
+     *  @author  M.Frank
+     *  @version 1.0
+     */
+    template <typename Q, typename P> struct Value: public Q, public P  {
+      typedef Q first_base;
+      typedef P second_base;
+      /// Standard constructor
+      Value();
+      /// Standard destructor
+      virtual ~Value();
+    };
+
+    template <typename Q, typename P> inline Value<Q, P>::Value() {
+      INCREMENT_COUNTER;
+    }
+    template <typename Q, typename P> inline Value<Q, P>::~Value() {
+      DECREMENT_COUNTER;
+    }
+
+    struct DD_TGeoNodeMatrix : public TGeoNodeMatrix {
+      TGeoExtension* m_extension;
+      DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
+	: TGeoNodeMatrix(v, m), m_extension(0) {
+        INCREMENT_COUNTER;
       }
-      Value(const Value& c)
-          : TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), PlacedVolume::Object(c) {
-        InstanceCount::increment(this);
+      DD_TGeoNodeMatrix(const DD_TGeoNodeMatrix& c)
+	: TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), m_extension(0) {
+	if ( c.m_extension ) m_extension = c.m_extension->Grab();
+        INCREMENT_COUNTER;
       }
-      virtual ~Value() {
-        InstanceCount::decrement(this);
+      virtual ~DD_TGeoNodeMatrix() {
+	if ( m_extension ) m_extension->Release();
+        DECREMENT_COUNTER;
+      }
+      void SetUserExtension(TGeoExtension *ext)  {
+	if (m_extension) m_extension->Release();
+	m_extension = 0;
+	if (ext) m_extension = ext->Grab();
       }
       virtual TGeoNode *MakeCopyNode() const {
-        TGeoNodeMatrix *node = new Value<TGeoNodeMatrix, PlacedVolume::Object>(*this);
-        node->SetName(GetName());
+        TGeoNodeMatrix *node = new DD_TGeoNodeMatrix(*this);
+        node->SetName(this->TGeoNodeMatrix::GetName());
         // set the mother
         node->SetMotherVolume(fMother);
         // set the copy number
@@ -101,7 +132,7 @@ namespace DD4hep {
           return;
         }
 
-        TGeoNodeMatrix *node = new Value<TGeoNodeMatrix, PlacedVolume::Object>(vol, matrix);
+        TGeoNodeMatrix *node = new DD_TGeoNodeMatrix(vol, matrix);
         //node = new TGeoNodeMatrix(vol, matrix);
         node->SetMotherVolume(this);
         this->T::fNodes->Add(node);
@@ -124,14 +155,14 @@ namespace DD4hep {
       Value(const char* name, TGeoShape* s = 0, TGeoMedium* m = 0)
           : _VolWrap<TGeoVolume>(name, s, m) {
         magic = magic_word();
-        InstanceCount::increment(this);
+        INCREMENT_COUNTER;
       }
       virtual ~Value() {
-        InstanceCount::decrement(this);
+        DECREMENT_COUNTER;
       }
       TGeoVolume *_copyVol(TGeoShape *newshape) const {
         typedef Value<TGeoVolume, Volume::Object> _Vol;
-        _Vol *vol = new _Vol(GetName(), newshape, fMedium);
+        _Vol *vol = new _Vol(this->TGeoVolume::GetName(), newshape, fMedium);
         vol->copy(*this);
         return vol;
       }
@@ -165,13 +196,13 @@ namespace DD4hep {
         for (i = 0; i < nbits; i++)
           vol->SetAttBit(1 << i, TGeoAtt::TestAttBit(1 << i));
         for (i = 14; i < 24; i++)
-          vol->SetBit(1 << i, TestBit(1 << i));
+          vol->SetBit(1 << i, this->TGeoVolume::TestBit(1 << i));
 
         // copy field
         vol->SetField(fField);
         // Set bits
         for (i = 0; i < nbits; i++)
-          vol->SetBit(1 << i, TObject::TestBit(1 << i));
+          vol->SetBit(1 << i, this->TGeoVolume::TestBit(1 << i));
         vol->SetBit(kVolumeClone);
         // copy nodes
         //   CloneNodesAndConnect(vol);
@@ -197,26 +228,26 @@ namespace DD4hep {
       Value(const char* name)
           : _VolWrap<TGeoVolumeAssembly>(name, 0, 0) {
         magic = magic_word();
-        InstanceCount::increment(this);
+        INCREMENT_COUNTER;
       }
       virtual ~Value() {
-        InstanceCount::decrement(this);
+        DECREMENT_COUNTER;
       }
       TGeoVolume *CloneVolume() const {
-        TGeoVolume *vol = new Value<TGeoVolumeAssembly, Assembly::Object>(GetName());
+        TGeoVolume *vol = new Value<TGeoVolumeAssembly, Assembly::Object>(this->TGeoVolumeAssembly::GetName());
         Int_t i;
         // copy other attributes
         Int_t nbits = 8 * sizeof(UInt_t);
         for (i = 0; i < nbits; i++)
           vol->SetAttBit(1 << i, TGeoAtt::TestAttBit(1 << i));
         for (i = 14; i < 24; i++)
-          vol->SetBit(1 << i, TestBit(1 << i));
+          vol->SetBit(1 << i, this->TGeoVolumeAssembly::TestBit(1 << i));
 
         // copy field
         vol->SetField(fField);
         // Set bits
         for (i = 0; i < nbits; i++)
-          vol->SetBit(1 << i, TObject::TestBit(1 << i));
+          vol->SetBit(1 << i, this->TGeoVolumeAssembly::TestBit(1 << i));
         vol->SetBit(kVolumeClone);
         // make copy nodes
         vol->MakeCopyNodes(this);
@@ -237,22 +268,76 @@ namespace DD4hep {
 
   }
 }
+typedef DD_TGeoNodeMatrix geo_node_t;
+
+TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m) {
+  TGeoVolume* v = new Value<TGeoVolume,Volume::Object>(name.c_str());   
+  v->SetShape(s);
+  v->SetMedium(m);
+}
+TGeoVolume* _createTGeoVolumeAssembly(const string& name) {
+  return new Value<TGeoVolumeAssembly,Assembly::Object>(name.c_str());
+}
+PlacedVolume::Object* _userExtension(const PlacedVolume& v)  {
+  geo_node_t* n = (geo_node_t*)v.ptr();
+  return (PlacedVolume::Object*)n->m_extension;
+}
+template <typename T> static typename T::Object* _userExtension(const T& v)  {
+  return dynamic_cast<typename T::Object*>(v.ptr());
+}
+#else
+typedef TGeoNode geo_node_t;
+TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
+  TGeoVolume* e = new TGeoVolume(name.c_str(),s,m);
+  e->SetUserExtension(new Volume::Object());
+  return e;
+}
+TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
+  TGeoVolume* e = new TGeoVolumeAssembly(name.c_str()); // It is important to use the correct constructor!!
+  e->SetUserExtension(new Assembly::Object());
+  return e;
+}
+template <typename T> static typename T::Object* _userExtension(const T& v)  {
+  typedef typename T::Object O;
+  O* o = (O*)(v.ptr()->GetUserExtension());
+  return o;
+}
+#endif
 
 /// Default constructor
 PlacedVolume::Object::Object()
-    : magic(0), volIDs() {
-  InstanceCount::increment(this);
+  : TGeoExtension(), magic(0), refCount(-1), volIDs(), detector() {
+  magic = magic_word();
+  INCREMENT_COUNTER;
 }
 
 /// Copy constructor
 PlacedVolume::Object::Object(const Object& c)
-    : magic(c.magic), volIDs(c.volIDs) {
-  InstanceCount::increment(this);
+    : TGeoExtension(), magic(c.magic), refCount(-1), volIDs(c.volIDs), detector(c.detector) {
+  INCREMENT_COUNTER;
 }
 
 /// Default destructor
 PlacedVolume::Object::~Object() {
-  InstanceCount::decrement(this);
+  DECREMENT_COUNTER;
+}
+
+/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+TGeoExtension* PlacedVolume::Object::Grab()   {
+  Object* ext = const_cast<Object*>(this);
+  ++ext->refCount;
+#ifdef ___print_vols
+  if ( detector.ptr() ) cout << "Placement grabbed with valid detector element....." << endl;
+  else  cout << "Placement grabbed....." << endl;
+#endif
+  return ext;
+}
+
+/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+void PlacedVolume::Object::Release() const  {
+  Object* ext = const_cast<Object*>(this);
+  --ext->refCount;
+  if ( 0 == ext->refCount ) delete ext;
 }
 
 /// Lookup volume ID
@@ -278,7 +363,7 @@ std::pair<vector<PlacedVolume::VolID>::iterator, bool> PlacedVolume::VolIDs::ins
 }
 
 static PlacedVolume::Object* _data(const PlacedVolume& v) {
-  PlacedVolume::Object* o = dynamic_cast<PlacedVolume::Object*>(v.ptr());
+  PlacedVolume::Object* o = _userExtension(v);
   if (o)
     return o;
   throw runtime_error("DD4hep: Attempt to access invalid handle of type: PlacedVolume");
@@ -311,6 +396,18 @@ const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
   return _data(*this)->volIDs;
 }
 
+/// Set the detector element if appropriate (requires degenerate geometry subtree)
+void PlacedVolume::setDetector(const DetElement& e)   const {
+  PlacedVolume::Object* o = _userExtension(*this);
+  if ( o ) o->detector = e;
+}
+#if 0
+/// Access the corresponding detector element of this placement (if set)
+DetElement PlacedVolume::detector() const   {
+  DetElement e(_data(*this)->detector.ptr());
+  return e;
+}
+#endif
 /// String dump
 string PlacedVolume::toString() const {
   stringstream s;
@@ -325,8 +422,8 @@ string PlacedVolume::toString() const {
 
 /// Default constructor
 Volume::Object::Object()
-    : magic(0), region(), limits(), vis(), sens_det(), referenced(0) {
-  InstanceCount::increment(this);
+  : TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0) {
+  INCREMENT_COUNTER;
 }
 
 /// Default destructor
@@ -335,13 +432,43 @@ Volume::Object::~Object() {
   limits.clear();
   vis.clear();
   sens_det.clear();
-  InstanceCount::decrement(this);
+  DECREMENT_COUNTER;
+}
+
+/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+TGeoExtension* Volume::Object::Grab()  {
+  Object* ext = const_cast<Object*>(this);
+  ++ext->refCount;
+#ifdef ___print_vols
+  if ( ext->sens_det.isValid() ) 
+    cout << "Volume grabbed with valid sensitive detector....." << endl;
+  else
+    cout << "Volume grabbed....." << endl;
+#endif
+  return ext;
+}
+
+/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+void Volume::Object::Release() const  {
+  Object* ext = const_cast<Object*>(this);
+  --ext->refCount;
+  if ( 0 == ext->refCount )   {
+#ifdef ___print_vols
+    cout << "Volume deleted....." << endl;
+#endif
+    delete ext;
+  }
+  else  {
+#ifdef ___print_vols
+    cout << "Volume::Object::Release::refCount:" << ext->refCount << endl;
+#endif
+  }
 }
 
 /// Accessor to the data part of the Volume
 Volume::Object* _data(const Volume& v, bool throw_exception = true) {
   //if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
-  Volume::Object* o = dynamic_cast<Volume::Object*>(v.ptr());
+  Volume::Object* o = _userExtension<Volume>(v);
   if (o)
     return o;
   else if (!throw_exception)
@@ -351,13 +478,12 @@ Volume::Object* _data(const Volume& v, bool throw_exception = true) {
 
 /// Constructor to be used when creating a new geometry tree.
 Volume::Volume(const string& name) {
-  m_element = new Value<TGeoVolume, Volume::Object>(name.c_str());
+  m_element = _createTGeoVolume(name,0,0);
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
 Volume::Volume(const string& name, const Solid& s, const Material& m) {
-  m_element = new Value<TGeoVolume, Volume::Object>(name.c_str(), s);
-  setMaterial(m);
+  m_element = _createTGeoVolume(name,s.ptr(),m.ptr());
 }
 
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
@@ -369,7 +495,8 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
     transform->SetName(nam.c_str());
   }
   parent->AddNode(daughter, id, transform);
-  TGeoNode* n = parent->GetNode(id);
+  geo_node_t* n = (geo_node_t*)parent->GetNode(id);
+  n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
 }
 
@@ -575,6 +702,6 @@ bool Volume::isSensitive() const {
 
 /// Constructor to be used when creating a new geometry tree.
 Assembly::Assembly(const string& name) {
-  m_element = new Value<TGeoVolumeAssembly, Volume::Object>(name.c_str());
+  m_element = _createTGeoVolumeAssembly(name);
 }
 

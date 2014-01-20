@@ -139,8 +139,6 @@ DetElement::Object::~Object() {
   deletePtr (worldTrafo);
   deletePtr (parentTrafo);
   deletePtr (referenceTrafo);
-  volume.clear();
-  //readout.clear();
   alignment.clear();
   conditions.clear();
   placement.clear();
@@ -168,8 +166,6 @@ DetElement::Object* DetElement::Object::clone(int new_id, int flag) const {
   Ref_t det(obj);
   obj->id = new_id;
   obj->combineHits = combineHits;
-  //obj->readout      = readout;
-  obj->volume = volume;
   obj->alignment = Alignment();
   obj->conditions = Conditions();
   obj->parent = DetElement();
@@ -458,7 +454,8 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
     if (placement.isValid()) {
       Object& o = object<Object>();
       o.placement = placement;
-      o.volume = placement.volume();
+      //o.volume = placement.volume();
+      placement.setDetector(*this);
       return *this;
     }
     throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
@@ -469,7 +466,7 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
 /// Access to the logical volume of the placements (all daughters have the same!)
 Volume DetElement::volume() const {
   if (isValid()) {
-    return object<Object>().volume;
+    return object<Object>().placement.volume();
   }
   throw runtime_error("DD4hep: DetElement::volume: Self is not defined [Invalid Handle]");
 }

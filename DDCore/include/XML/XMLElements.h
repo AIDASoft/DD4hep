@@ -94,8 +94,9 @@ namespace DD4hep {
       XmlChar* m_tag;
       XmlElement* m_node;
 #ifndef __TIXML__
-      XmlNodeList* m_ptr;
-      mutable XmlSize_t m_index;
+      //XmlNodeList* m_ptr;
+      //mutable XmlSize_t m_index;
+      mutable XmlElement* m_ptr;
 #else
       mutable XmlElement* m_ptr;
 #endif

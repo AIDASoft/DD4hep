@@ -452,13 +452,13 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     	if (seg.hasAttr(Unicode(p->name()))) {
     	  string pType = p->type();
     	  if (pType.compare("int") == 0) {
-    		p->setValue(_toString(seg.attr<int>(Unicode(p->name()))));
+	    p->setValue(_toString(seg.attr<int>(Unicode(p->name()))));
     	  } else if (pType.compare("float") == 0) {
-    		p->setValue(_toString(seg.attr<float>(Unicode(p->name()))));
+	    p->setValue(_toString(seg.attr<float>(Unicode(p->name()))));
     	  } else if (pType.compare("double") == 0) {
-      		p->setValue(_toString(seg.attr<double>(Unicode(p->name()))));
+	    p->setValue(_toString(seg.attr<double>(Unicode(p->name()))));
       	  } else {
-      		p->setValue(seg.attr<string>(Unicode(p->name())));
+	    p->setValue(seg.attr<string>(Unicode(p->name())));
       	  }
         } else if (not p->isOptional()) {
     	  throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
@@ -474,6 +474,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     ro.setIDDescriptor(idSpec);
     lcdd.addIDSpecification(idSpec);
   }
+  printout(DEBUG, "Compact", "++ Registered readout structure: %s.",ro.name());
   lcdd.addReadout(ro);
 }
 
@@ -752,8 +753,11 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter < LimitSet > (lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter < VisAttr > (lcdd));
+  printout(DEBUG, "Compact", "++ Converting readout structures...");
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter < Readout > (lcdd));
+  printout(DEBUG, "Compact", "++ Converting included files with subdetector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
+  printout(DEBUG, "Compact", "++ Converting detector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(detector), Converter < DetElement > (lcdd));
   xml_coll_t(compact, _U(includes)).for_each(_U(alignment), Converter < AlignmentFile > (lcdd));
   xml_coll_t(compact, _U(alignments)).for_each(_U(alignment), Converter < AlignmentEntry > (lcdd));

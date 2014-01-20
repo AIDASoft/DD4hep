@@ -36,6 +36,19 @@ namespace {
   inline StringCounter& strings() {
     return *(s_strCounts.get());
   }
+  int s_global = 1;
+  struct _Global {
+    _Global() {}
+    ~_Global() { s_global = 0; }
+  } s_globalObj;
+  int on_exit_destructors()  {
+    static bool first = true;
+    if ( first && s_global == 0 && s_trace_instances )  {
+      first = false;
+      ::printf("Static out of order destructors occurred. Reference count table is unreliable.....\n");
+    }
+    return 1;
+  }
 }
 
 /// Standard Constructor
@@ -70,11 +83,45 @@ InstanceCount::Counter* InstanceCount::getCounter(const std::type_info& typ) {
   Counter* cnt = s_trace_instances ? types()[&typ] : &s_nullCount;
   return (0 != cnt) ? cnt : types()[&typ] = new Counter();
 }
+
 /// Access counter object for local caching on optimizations
 InstanceCount::Counter* InstanceCount::getCounter(const std::string& typ) {
   Counter* cnt = s_trace_instances ? strings()[&typ] : &s_nullCount;
   return (0 != cnt) ? cnt : strings()[&typ] = new Counter();
 }
+
+/// Increment count according to string information
+void InstanceCount::increment(const std::string& typ) {
+  if ( s_global ) 
+    getCounter(typ)->increment();
+  else 
+    on_exit_destructors();
+}
+
+/// Decrement count according to string information
+void InstanceCount::decrement(const std::string& typ) {
+  if ( s_global ) 
+    getCounter(typ)->decrement();
+  else 
+    on_exit_destructors();
+}
+
+/// Increment count according to type information
+void InstanceCount::increment(const std::type_info& typ) {
+  if ( s_global ) 
+    getCounter(typ)->increment();
+  else 
+    on_exit_destructors();
+}
+
+/// Decrement count according to type information
+void InstanceCount::decrement(const std::type_info& typ) {
+  if ( s_global ) 
+    getCounter(typ)->decrement();
+  else 
+    on_exit_destructors();
+}
+
 /// Force dump of counters
 void InstanceCount::dump(int typ) {
   bool need_footer = false;

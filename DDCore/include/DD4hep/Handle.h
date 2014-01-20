@@ -15,15 +15,8 @@
 #include <string>
 #include <typeinfo>
 #include <stdexcept>
-#include <TNamed.h>
 
-#ifdef DD4HEP_INSTANCE_COUNTS
-#include "DD4hep/InstanceCount.h"
-#endif
-
-class TObject;
-class TObjArray;
-class TGeoManager;
+class TNamed;
 
 // Conversion factor from radians to degree: 360/(2*PI)
 #ifndef RAD_2_DEGREE
@@ -129,49 +122,6 @@ namespace DD4hep {
       return 0xFEEDAFFEDEADFACEULL;
     }
 
-    /** @class Value Handle.h
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    struct Counted {
-      /// Standard constructor
-      Counted();
-      /// Standard destructor
-      virtual ~Counted();
-    };
-
-    /** @class Value Handle.h
-     *
-     *  Class to simply combine to object types to one
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    template <typename Q, typename P> struct Value: public Q, public P
-#ifdef DD4HEP_INSTANCE_COUNTS
-    , public Counted
-#endif
-    {
-      typedef Q first_base;
-      typedef P second_base;
-      /// Standard constructor
-      Value();
-      /// Standard destructor
-      virtual ~Value();
-    };
-
-    template <typename Q, typename P> inline Value<Q, P>::Value() {
-#ifdef DD4HEP_INSTANCE_COUNTS
-      InstanceCount::increment(this);
-#endif
-    }
-    template <typename Q, typename P> inline Value<Q, P>::~Value() {
-#ifdef DD4HEP_INSTANCE_COUNTS
-      InstanceCount::decrement(this);
-#endif
-    }
-
     /** @class Handle Handle.h
      *
      *  @author  M.Frank
@@ -242,7 +192,6 @@ namespace DD4hep {
       static void bad_assignment(const std::type_info& from, const std::type_info& to);
       void assign(Implementation* n, const std::string& nam, const std::string& title);
     };
-    typedef Handle<> Elt_t;
     typedef Handle<TNamed> Ref_t;
 
     /// Helper to delete objects from heap and reset the handle
@@ -254,13 +203,13 @@ namespace DD4hep {
       releasePtr(h.m_element);
     }
     /// Functor to destroy handles and delete the cached object
-    template <typename T = Ref_t> struct DestroyHandle {
+    template <typename T> struct DestroyHandle {
       void operator()(T p) const {
         destroyHandle(p);
       }
     };
     /// Functor to destroy handles and delete the cached object
-    template <typename T = Ref_t> struct ReleaseHandle {
+    template <typename T> struct ReleaseHandle {
       void operator()(T p) const {
         releaseHandle(p);
       }

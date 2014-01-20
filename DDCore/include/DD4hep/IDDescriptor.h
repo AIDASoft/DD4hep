@@ -14,6 +14,7 @@
 #include "DD4hep/Handle.h"
 #include "DD4hep/Primitives.h"
 #include "DDSegmentation/BitField64.h"
+#include "TNamed.h"
 
 // C++ include files
 #include <string>

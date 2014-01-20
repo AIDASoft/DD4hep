@@ -93,36 +93,28 @@ namespace DD4hep {
     static Counter* getCounter(const std::string& typ);
     /// Increment count according to type information
     template <class T> static void increment(T*) {
-      getCounter(typeid(T))->increment();
+      increment(typeid(T));
     }
     /// Decrement count according to type information
     template <class T> static void decrement(T*) {
-      getCounter(typeid(T))->decrement();
+      decrement(typeid(T));
     }
     /// Access current counter
     template <class T> static counter_t get(T*) {
       return getCounter(typeid(T))->value();
     }
     /// Increment count according to type information
-    static void increment(const std::type_info& typ) {
-      getCounter(typ)->increment();
-    }
+    static void increment(const std::type_info& typ);
     /// Decrement count according to type information
-    static void decrement(const std::type_info& typ) {
-      getCounter(typ)->decrement();
-    }
+    static void decrement(const std::type_info& typ);
     /// Access current counter
     static counter_t get(const std::type_info& typ) {
       return getCounter(typ)->value();
     }
     /// Increment count according to string information
-    static void increment(const std::string& typ) {
-      getCounter(typ)->increment();
-    }
+    static void increment(const std::string& typ);
     /// Decrement count according to string information
-    static void decrement(const std::string& typ) {
-      getCounter(typ)->decrement();
-    }
+    static void decrement(const std::string& typ);
     /// Access current counter
     static counter_t get(const std::string& typ) {
       return getCounter(typ)->value();

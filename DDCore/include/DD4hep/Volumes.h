@@ -14,6 +14,7 @@
 #include "DD4hep/Handle.h"
 #include "DD4hep/Shapes.h"
 #include "DD4hep/Objects.h"
+//#include "DD4hep/Detector.h"
 
 // C/C++ include files
 #include <map>
@@ -21,6 +22,24 @@
 // ROOT include file (includes TGeoVolume + TGeoShape)
 #include "TGeoNode.h"
 #include "TGeoPatternFinder.h"
+
+#if ROOT_VERSION_CODE > ROOT_VERSION(5,34,9)
+// Recent ROOT versions
+#include "TGeoExtension.h"
+
+#else
+// Older ROOT version
+#define DD4HEP_EMULATE_TGEOEXTENSIONS
+class TGeoExtension : public TObject  {
+ public:  
+  virtual ~TGeoExtension() {}
+  /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+  virtual TGeoExtension *Grab() = 0;
+  /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+  virtual void Release() const = 0;
+};
+
+#endif
 
 /*
  *   DD4hep namespace declaration
@@ -39,6 +58,7 @@ namespace DD4hep {
     struct Material;
     struct VisAttr;
     struct Volume;
+    struct DetElement;
     struct PlacedVolume;
     struct SensitiveDetector;
 
@@ -59,11 +79,15 @@ namespace DD4hep {
         Base::const_iterator find(const std::string& name) const;
         std::pair<Base::iterator, bool> insert(const std::string& name, int value);
       };
-      struct Object {
-        /// Magic word
+      struct Object : public TGeoExtension  {
+        /// Magic word to detect memory corruptions
         unsigned long magic;
+	/// Reference count on object (used to implement Grab/Release)
+	long refCount;
         /// ID container
         VolIDs volIDs;
+	/// Detector element with the placement
+	Ref_t detector;
         /// Default constructor
         Object();
         /// Copy constructor
@@ -76,6 +100,10 @@ namespace DD4hep {
           volIDs = c.volIDs;
           return *this;
         }
+	/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+	virtual TGeoExtension *Grab();
+	/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+	virtual void Release() const;
       };
       /// Constructor to be used when reading the already parsed DOM tree
       PlacedVolume(const TGeoNode* e)
@@ -109,11 +137,15 @@ namespace DD4hep {
       Volume motherVol() const;
       /// Access to the volume IDs
       const VolIDs& volIDs() const;
+      /// Set the detector element if appropriate (requires degenerate geometry subtree)
+      void setDetector(const DetElement& e) const;
+      /// Access the corresponding detector element of this placement (if set)
+      //const DetElement detector() const;
       /// String dump
       std::string toString() const;
     };
 
-    /** @class Volume Volume.h  DD4hep/lcdd/Volume.h
+    /** @class Volume Volume.h  DD4hep/Volume.h
      *
      *  Handle describing a Volume
      *
@@ -124,8 +156,19 @@ namespace DD4hep {
 
     public:
       typedef Handle<TGeoVolume> Base;
-      struct Object {
+
+      /** @class Volume::Object Volume.h  DD4hep/Volume.h
+       *
+       *  Internal data structure optional to TGeo data
+       *
+       *  @author  M.Frank
+       *  @version 1.0
+       */
+      struct Object : public TGeoExtension {
+        /// Magic word to detect memory corruptions
         unsigned long magic;
+	/// Reference count on object (used to implement Grab/Release)
+	long          refCount;
         Region region;
         LimitSet limits;
         VisAttr vis;
@@ -144,6 +187,10 @@ namespace DD4hep {
           sens_det = c.sens_det;
           referenced = c.referenced;
         }
+	/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+	virtual TGeoExtension *Grab();
+	/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+	virtual void Release() const;
       };
 
     public:

@@ -108,6 +108,7 @@ namespace DD4hep {
      */
     struct Header: public Ref_t {
       struct Object: public TNamed {
+      public:
         std::string url;
         std::string author;
         std::string status;
@@ -117,6 +118,11 @@ namespace DD4hep {
         Object();
         /// Default destructor
         virtual ~Object();
+      private:
+	/// Private copy constructor
+        Object(const Object&) : TNamed() {}
+	/// Private assignment operator
+	Object& operator=(const Object&) { return *this; }
       };
       /// Default constructor
       Header()

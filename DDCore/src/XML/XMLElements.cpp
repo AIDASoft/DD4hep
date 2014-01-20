@@ -115,12 +115,32 @@ void DD4hep::XML::XmlString::release(char** p) {
 
 namespace {
   size_t node_count(XmlElement* e, const XmlChar* t) {
-    xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
-    return l ? l->getLength() : INVALID_NODE;
+    size_t cnt = 0;
+    string tag =  _toString(t);
+    xercesc::DOMElement* elt, *ee = e ? Xml(e).e : 0;
+    for(elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
+      if ( elt->getParentNode() == ee )   {
+	string child_tag = _toString(elt->getTagName());
+	if ( child_tag == tag ) ++cnt;
+      }
+    }
+    return cnt;
+    //xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
+    //return l ? l->getLength() : INVALID_NODE;
   }
   XmlElement* node_first(XmlElement* e, const XmlChar* t) {
-    xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
-    return Xml(l ? l->item(0) : 0).xe;
+    //xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
+    //return Xml(l ? l->item(0) : 0).xe;
+    size_t cnt = 0;
+    string tag = _toString(t);
+    xercesc::DOMElement* elt, *ee = e ? Xml(e).e : 0;
+    for(elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
+      if ( elt->getParentNode() == ee )   {
+	string child_tag = _toString(elt->getTagName());
+	if ( child_tag == tag ) return _XE(elt);
+      }
+    }
+    return 0;
   }
 }
 string DD4hep::XML::_toString(const XmlChar *toTranscode) {
@@ -404,7 +424,7 @@ Tag_t& Tag_t::operator=(const string& s) {
 NodeList::NodeList(const NodeList& copy)
     : m_node(copy.m_node), m_ptr(0)
 #ifndef DD4HEP_USE_TINYXML
-        , m_index(0)
+      //        , m_index(0)
 #endif
 {
   m_tag = XmlString::replicate(copy.m_tag);
@@ -415,7 +435,7 @@ NodeList::NodeList(const NodeList& copy)
 NodeList::NodeList(XmlElement* node, const XmlChar* tag)
     : m_node(node), m_ptr(0)
 #ifndef DD4HEP_USE_TINYXML
-        , m_index(0)
+      //        , m_index(0)
 #endif
 {
   m_tag = XmlString::replicate(tag);
@@ -433,9 +453,10 @@ XmlElement* NodeList::reset() {
 #ifdef DD4HEP_USE_TINYXML
   return m_ptr=node_first(m_node,m_tag);
 #else
-  xercesc::DOMNodeList* l = Xml(m_node).e->getElementsByTagName(m_tag);
-  m_ptr = (XmlNodeList*) l;
-  return _XE(l->item(m_index=0));
+  return m_ptr=node_first(m_node,m_tag);
+  //xercesc::DOMNodeList* l = Xml(m_node).e->getElementsByTagName(m_tag);
+  //m_ptr = (XmlNodeList*) l;
+  //return _XE(l->item(m_index=0));
 #endif
 }
 
@@ -444,7 +465,13 @@ XmlElement* NodeList::next() const {
 #ifdef DD4HEP_USE_TINYXML
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag) : 0);
 #else
-  return _XE(_L(m_ptr)->item(++m_index));
+  //return _XE(_L(m_ptr)->item(++m_index));
+  xercesc::DOMElement *elt = Xml(m_ptr).e;
+  for(elt=elt->getNextElementSibling(); elt; elt=elt->getNextElementSibling()) {
+    string child_tag = _toString(elt->getTagName());
+    if ( child_tag == m_tag ) return m_ptr=Xml(elt).xe;
+  }
+  return m_ptr=0;
 #endif
 }
 
@@ -453,7 +480,13 @@ XmlElement* NodeList::previous() const {
 #ifdef DD4HEP_USE_TINYXML
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement(m_tag) : 0);
 #else
-  return _XE(m_index>0 ? _L(m_ptr)->item(--m_index) : 0);
+  //return _XE(m_index>0 ? _L(m_ptr)->item(--m_index) : 0);
+  xercesc::DOMElement *elt = Xml(m_ptr).e;
+  for(elt=elt->getPreviousElementSibling(); elt; elt=elt->getPreviousElementSibling()) {
+    string child_tag = _toString(elt->getTagName());
+    if ( child_tag == m_tag ) return m_ptr=Xml(elt).xe;
+  }
+  return m_ptr=0;
 #endif
 }
 
