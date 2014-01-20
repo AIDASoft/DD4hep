@@ -49,20 +49,23 @@ static G4Allocator<Geant4TrackerHit> TrackerHitAllocator;
 
 /// Default constructor
 Geant4TrackerHit::Geant4TrackerHit()
-    : Geant4Hit(), position(), momentum(), length(0.0), truth() {
+  : Geant4Hit(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
 }
 
 /// Standard initializing constructor
 Geant4TrackerHit::Geant4TrackerHit(int track_id, int pdg_id, double deposit, double time_stamp)
-    : Geant4Hit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp) {
+    : Geant4Hit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
 }
 
 /// Assignment operator
 Geant4TrackerHit& Geant4TrackerHit::operator=(const Geant4TrackerHit& c) {
-  position = c.position;
-  momentum = c.momentum;
-  length = c.length;
-  truth = c.truth;
+  if ( this != &c )  {
+    position = c.position;
+    momentum = c.momentum;
+    length = c.length;
+    truth = c.truth;
+    energyDeposit = c.energyDeposit;
+  }
   return *this;
 }
 
@@ -72,6 +75,7 @@ Geant4TrackerHit& Geant4TrackerHit::clear() {
   momentum.SetXYZ(0, 0, 0);
   length = 0.0;
   truth.clear();
+  energyDeposit = 0.0;
   return *this;
 }
 
@@ -85,6 +89,7 @@ Geant4TrackerHit& Geant4TrackerHit::storePoint(G4Step* step, G4StepPoint* pnt) {
   truth.pdgID = trk->GetDefinition()->GetPDGEncoding();
   truth.deposit = step->GetTotalEnergyDeposit();
   truth.time = trk->GetGlobalTime();
+  energyDeposit = step->GetTotalEnergyDeposit();
   position.SetXYZ(pos.x(), pos.y(), pos.z());
   momentum.SetXYZ(mom.x(), mom.y(), mom.z());
   length = 0;

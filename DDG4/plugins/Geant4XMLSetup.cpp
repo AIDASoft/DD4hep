@@ -31,6 +31,10 @@ namespace DD4hep  {
   template <typename TYPE, typename PTR> TYPE* _action(PTR* in)  {
     return dynamic_cast<TYPE*>(in);
   }
+  template <typename T> static void installMessenger(const T& handle)  {
+    handle->installMessengers();
+  }
+
   template <typename T> static void _setAttributes(const T& handle, xml_h& e)  {
     XML::Handle_t props(e);
     // Now we set the object properties
@@ -47,6 +51,9 @@ namespace DD4hep  {
     if ( props )  {
       _setAttributes(handle, props);
     }
+    if ( action.hasAttr(_Unicode(Control)) )   {
+      handle["Control"].str(props.attr<string>(_Unicode(Control)));      
+    }
   }
 
   static Action _convertSensitive(LCDD& lcdd, xml_h e, const string& detector)  {
@@ -59,10 +66,9 @@ namespace DD4hep  {
     for(xml_coll_t f(e,_Unicode(filter)); f; ++f)  {
       string nam = f.attr<string>(_U(name));
       Filter filter(kernel.globalFilter(nam,false));
-      filter->installMessengers();
       handle->adopt(filter);
     }
-    handle->installMessengers();
+    installMessenger(handle);
     printout(INFO,"Geant4Setup","+++ Added sensitive element %s of type %s",
 	     tn.second.c_str(),tn.first.c_str());
     return Action(handle);
@@ -76,9 +82,10 @@ namespace DD4hep  {
     Action handle(kernel,action.attr<string>(_U(name)));
     _setProperties(handle,e);
     printout(INFO,"Geant4Setup","+++ Added action %s of type %s",tn.second.c_str(),tn.first.c_str());
-    handle->installMessengers();
+    installMessenger(handle);
     return handle;
   }
+
   enum { SENSITIVE, ACTION, FILTER };
   Action _createAction(LCDD& lcdd, xml_h a, const std::string& seqType, int what)  {
     string   nam = a.attr<string>(_U(name));
@@ -303,7 +310,7 @@ namespace DD4hep  {
       for(xml_coll_t a(seq,_Unicode(filter)); a; ++a)  {
 	string   nam = a.attr<string>(_U(name));
 	Action action(_createAction(lcdd,a,"",FILTER));
-	action->installMessengers();
+	installMessenger(action);
 	printout(INFO,"Geant4Setup","+++ ActionSequence %s added filter object:%s",
 		 seqType.second.c_str(),action->name().c_str());
 	if ( sdSeq.get() )

@@ -55,8 +55,10 @@ Property::Property(const Property& property)
 
 /// Assignment operator
 Property& Property::operator=(const Property& property) {
-  m_par = property.m_par;
-  m_hdl = property.m_hdl;
+  if ( &property != this )  {
+    m_par = property.m_par;
+    m_hdl = property.m_hdl;
+  }
   return *this;
 }
 

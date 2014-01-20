@@ -3,12 +3,15 @@
 #include <string>
 
 using namespace std;
+
 string make_str(const char* data)  {
   cout << "make_str:  '" << (data ? data : "Bad-Pointer") << "'" << endl;
   return string(data);
 }
 
 void initAClick()  {
+  string cwd = gSystem->WorkingDirectory();
+  cout << "CWD:" << cwd << endl;
   string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
   string g4_base = make_str(gSystem->Getenv("Geant4_DIR"));
   string dd4hep  = make_str(gSystem->Getenv("DD4hep_DIR"));

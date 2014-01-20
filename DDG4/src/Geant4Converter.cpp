@@ -535,8 +535,8 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
           node->GetName(), node->IsA()->GetName(), vol);
     }
     else if (0 == vol) {
-      printout(FATAL, "Geant4Converter", "++ Unknown G4 volume:%p %s of type %s vol:%s ptr:%p", node, node->GetName(),
-          node->IsA()->GetName(), vol->IsA()->GetName(), vol);
+      printout(FATAL, "Geant4Converter", "++ Unknown G4 volume:%p %s of type %s ptr:%p", node, node->GetName(),
+          node->IsA()->GetName(), vol);
     }
     else {
       int copy = node->GetNumber();
@@ -561,6 +561,9 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         info.g4AssemblyChildren[ass_mot].push_back(make_pair(id, node));
         return 0;
       }
+      else if ( 0 == g4mot )  {
+	throw logic_error("Geant4Converter: Invalid mother volume found!");
+      }
       else if (daughter_is_assembly) {
         printout(DEBUG, "Geant4Converter", "++ Assembly: makeImprint: %16p dau:%s "
             "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n", ass_dau,
@@ -570,6 +573,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         AssemblyChildMap::iterator i = info.g4AssemblyChildren.find(ass_dau);
         if (i == info.g4AssemblyChildren.end()) {
           printout(ERROR, "Geant4Converter", "++ Non-existing assembly [%p]", ass_dau);
+	  throw logic_error("Geant4Converter: Dealing with invalid daughter assembly!");
         }
         const AssemblyChildren& v = (*i).second;
         ass_dau->imprint(phys_volumes, g4mot, transform, copy, m_checkOverlaps);
@@ -684,8 +688,10 @@ void* Geant4Converter::handleSensitive(const TNamed* sens_det, const set<const T
       if (!g4) {
         PluginDebug dbg;
         g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
-        throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
-            "create Geant4 sensitive detector factory " + name + " of type " + type + ".");
+	if ( !g4 )  {
+	  throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
+			      "create Geant4 sensitive detector factory " + name + " of type " + type + ".");
+	}
       }
     }
     g4->Activate(true);
@@ -737,7 +743,7 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
       }
       else {
         char txt[32];
-        ::sprintf(txt, "%d", ++s_idd);
+        ::snprintf(txt, sizeof(txt), "%d", ++s_idd);
         id = txt;
       }
       processors.insert(make_pair(id, nam));
@@ -816,9 +822,9 @@ void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) 
   G4ThreeVector tr = g4->GetObjectTranslation();
 
   G4VSensitiveDetector* sd = vol->GetSensitiveDetector();
-  if (!sd)
+  if (!sd)  {
     return g4;
-
+  }
   stringstream str;
   str << "G4Cnv::placement: + " << name << " No:" << node->GetNumber() << " Vol:" << vol->GetName() << " Solid:"
       << sol->GetName();
@@ -832,7 +838,7 @@ void* Geant4Converter::printPlacement(const string& name, const TGeoNode* node) 
       << " Mother:" << (char*) (mot ? mot->GetName().c_str() : "---");
   printout(DEBUG, "G4Placement", str.str().c_str());
   str.str("");
-  str << "                  |" << " SD:" << (char*) (sd ? sd->GetName().c_str() : "---");
+  str << "                  |" << " SD:" << sd->GetName();
   printout(DEBUG, "G4Placement", str.str().c_str());
   return g4;
 }

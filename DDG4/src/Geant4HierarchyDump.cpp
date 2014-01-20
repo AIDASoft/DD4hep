@@ -120,7 +120,7 @@ void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)
     printout(INFO, "Geant4Hierarchy", "%s    Limits:%s ", indent.c_str(), _T(ul->GetType()));
   }
   for (G4int idau = 0; idau < ndau; ++idau) {
-    ::sprintf(text, "  %-3d", idau);
+    ::snprintf(text, sizeof(text), "  %-3d", idau);
     dump(indent + text, lv->GetDaughter(idau));
   }
 }

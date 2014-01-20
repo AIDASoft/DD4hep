@@ -138,16 +138,18 @@ namespace DD4hep {
 			 h.track->GetDefinition()->GetPDGEncoding(),
 			 step->GetTotalEnergyDeposit(),
 			 h.track->GetGlobalTime());
-      
-      HitContribution contrib = Hit::extractContribution(step);
-      hit->cellID        = volumeID( step ) ;
-      hit->energyDeposit = contrib.deposit ;
-      hit->position      = position;
-      hit->momentum      = direction;
-      hit->length        = hit_len;
-      collection(m_collectionID)->add(hit);
-      mcTruthMgr().mark(h.track,true);
-      return hit != 0;
+      if ( hit )  {
+	HitContribution contrib = Hit::extractContribution(step);
+	hit->cellID        = volumeID( step ) ;
+	hit->energyDeposit = contrib.deposit ;
+	hit->position      = position;
+	hit->momentum      = direction;
+	hit->length        = hit_len;
+	collection(m_collectionID)->add(hit);
+	mcTruthMgr().mark(h.track,true);
+	return true;
+      }
+      throw std::runtime_error("new() failed: Cannot allocate hit object");
     }
     typedef Geant4SensitiveAction<SimpleTracker> Geant4SimpleTrackerAction;
 

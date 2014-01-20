@@ -67,7 +67,8 @@ void Geant4UIManager::start() {
   // Start visualization
   if ( m_haveVis || !m_visSetup.empty() ) {
     m_vis = startVis();
-    m_haveUI = true;   // No graphics without UI!
+    m_haveVis = true;   // If graphics setup, vis is always true
+    m_haveUI = true;    // No graphics without UI!
   }
   // Start UI instance
   if ( m_haveUI || !m_uiSetup.empty() ) {
@@ -86,7 +87,7 @@ void Geant4UIManager::start() {
     printout(INFO,"Geant4UIManager","++ Executed UI setup:%s",m_uiSetup.c_str());
   }
   // Start UI session if present
-  if ( m_ui )   {
+  if ( m_haveUI && m_ui )   {
     m_ui->SessionStart();
     return;
   }

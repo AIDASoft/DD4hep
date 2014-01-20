@@ -79,10 +79,12 @@ Geant4PhysicsList::Process::Process(const Process& p)
 
 /// Assignment operator
 Geant4PhysicsList::Process& Geant4PhysicsList::Process::operator=(const Process& p) {
-  name = p.name;
-  ordAtRestDoIt = p.ordAtRestDoIt;
-  ordAlongSteptDoIt = p.ordAlongSteptDoIt;
-  ordPostStepDoIt = p.ordPostStepDoIt;
+  if ( this != &p )  {
+    name = p.name;
+    ordAtRestDoIt = p.ordAtRestDoIt;
+    ordAlongSteptDoIt = p.ordAlongSteptDoIt;
+    ordPostStepDoIt = p.ordPostStepDoIt;
+  }
   return *this;
 }
 

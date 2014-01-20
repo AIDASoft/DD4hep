@@ -64,13 +64,13 @@ SimpleHit::Contribution SimpleHit::extractContribution(G4Step* step) {
 
 /// Default constructor
 SimpleTracker::Hit::Hit()
-    : SimpleHit(), position(), momentum(), length(0.0), truth() {
+  : SimpleHit(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
   InstanceCount::increment(this);
 }
 
 /// Standard initializing constructor
 SimpleTracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp)
-    : SimpleHit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp) {
+  : SimpleHit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
   InstanceCount::increment(this);
 }
 
@@ -81,10 +81,12 @@ SimpleTracker::Hit::~Hit() {
 
 /// Assignment operator
 SimpleTracker::Hit& SimpleTracker::Hit::operator=(const Hit& c) {
-  position = c.position;
-  momentum = c.momentum;
-  length = c.length;
-  truth = c.truth;
+  if ( &c != this )  {
+    position = c.position;
+    momentum = c.momentum;
+    length = c.length;
+    truth = c.truth;
+  }
   return *this;
 }
 

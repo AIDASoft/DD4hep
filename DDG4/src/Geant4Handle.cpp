@@ -133,20 +133,20 @@ template <typename TYPE> Geant4Action* Geant4Handle<TYPE>::action() const {
 }
 
 template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(const Geant4Handle& handle) {
-  if (value)
-    value->release();
-  value = handle.get();
-  if (value)
-    value->addRef();
+  if ( &handle != this )  {
+    if (value) value->release();
+    value = handle.get();
+    if (value) value->addRef();
+  }
   return *this;
 }
 
 template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(TYPE* typ) {
-  if (value)
-    value->release();
-  value = typ;
-  if (value)
-    value->addRef();
+  if ( typ != value )  {
+    if (value)    value->release();
+    value = typ;
+    if (value)    value->addRef();
+  }
   return *this;
 }
 

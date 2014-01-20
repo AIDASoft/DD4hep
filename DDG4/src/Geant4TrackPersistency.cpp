@@ -144,22 +144,22 @@ bool cleanTree(Geant4TrackPersistency* p, const string& proc, Track* trk)     {
 
   if ( remove )  {
     string pnam = trk->process ? trk->process->GetProcessName().c_str() : "---";
-    if ( remove || pnam == proc )   {
+    //if ( pnam == proc )   {
       bool keep = keepTrackTree(proc,trk);
       if ( !keep )   {
 	releaseTrack(p,trk);
 	return true;
       }
-    }
+    //}
   }
   return false;
 }
 
 void printTree(const Track* trk,const char* msg, int cnt)     {
   char text[64];
-  ::sprintf(text," %-8d |  ",cnt);
+  ::snprintf(text,sizeof(text)," %-8d |  ",cnt);
   printf(" %-6d ",cnt);
-  ::sprintf(text,"|  ");
+  ::snprintf(text,sizeof(text),"|  ");
   std::string m(text);
   m += msg;
   printTrack(trk, 1, msg);
@@ -197,7 +197,7 @@ void printSecondaries(const Track* trk)  {
  char text[256];
   int ndau = 1;
   for(TrackMap2::const_iterator j=trk->secondaries.begin(); j!=trk->secondaries.end(); ++j, ++ndau)  {
-    ::sprintf(text,"  ---> Daughter [%3d]",ndau);
+    ::snprintf(text,sizeof(text),"  ---> Daughter [%3d]",ndau);
     ::printTrack((*j).second,2,text);
   }
 }
@@ -205,7 +205,7 @@ void printParents(const Track* trk)   {
   char text[256];
   int npar = 1;
   for(Track* p=trk->parent; p; p=p->parent, ++npar)   {
-    ::sprintf(text,"  ---> Parent [%3d]",npar);
+    ::snprintf(text,sizeof(text),"  ---> Parent [%3d]",npar);
     printTrack(p,4,text);
   }
 }
@@ -295,6 +295,7 @@ void deleteTrackTree(Track* trk)   {
 
 /// Standard constructor
 Geant4TrackPersistency::TrackInfo::TrackInfo() : G4VUserTrackInformation() {
+  this->info    = 0;
   this->manager = 0;
   this->track   = 0;
   this->store   = false;

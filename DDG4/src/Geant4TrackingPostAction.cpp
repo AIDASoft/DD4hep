@@ -38,8 +38,9 @@ struct FindString {
 Geant4TrackingPostAction::Geant4TrackingPostAction(Geant4Context* context, const std::string& name)
     : Geant4TrackingAction(context, name) {
   InstanceCount::increment(this);
-  declareProperty("IgnoredProcesses", m_ignoredProcs);
+  declareProperty("IgnoredProcesses",  m_ignoredProcs);
   declareProperty("RequiredProcesses", m_requiredProcs);
+  declareProperty("StoreMarkedTracks", m_storeMarkedTracks=true);
 }
 
 /// Default destructor

@@ -13,6 +13,9 @@
 #include "DDG4/Geant4Mapping.h"
 //#include "DDSegmentation/BitField64.h"
 
+// C include files
+#include <stdexcept> 
+
 /*
  *   DD4hep::Simulation namespace declaration
  */
@@ -43,18 +46,18 @@ namespace DD4hep {  namespace Simulation {
 			     h.track->GetDefinition()->GetPDGEncoding(),
 			     step->GetTotalEnergyDeposit(),
 			     h.track->GetGlobalTime());
-      
-      HitContribution contrib = Geant4Hit::extractContribution(step);
-      
-      hit->cellID  = getVolumeID( step ) ;
 
-      hit->energyDeposit =  contrib.deposit ;
-
-      hit->position = position;
-      hit->momentum = direction;
-      hit->length   = hit_len;
-      collection(0)->insert(hit);
-      return hit != 0;
+      if ( hit )  {
+	HitContribution contrib = Geant4Hit::extractContribution(step);
+	hit->cellID  = getVolumeID( step ) ;
+	hit->energyDeposit =  contrib.deposit ;
+	hit->position = position;
+	hit->momentum = direction;
+	hit->length   = hit_len;
+	collection(0)->insert(hit);
+	return 1;
+      }
+      throw std::runtime_error("new() failed: Cannot allocate hit object");
     }
     typedef Geant4GenericSD<Tracker> Geant4Tracker;
   }}    // End namespace DD4hep::Simulation

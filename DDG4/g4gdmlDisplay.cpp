@@ -1,7 +1,7 @@
 //#define G4UI_USE
 //#define G4VIS_USE
 //#define G4INTY_USE_XT
-#define G4VIS_USE_OPENGL
+//#define G4VIS_USE_OPENGL
 //#define G4UI_USE_TCSH
 
 #include "G4PVPlacement.hh"

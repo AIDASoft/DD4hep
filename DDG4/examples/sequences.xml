@@ -12,7 +12,7 @@
   --
   --   To run batch: set UI=""
   -->
-  <kernel UI="UI" NumEvents="1"/>  
+  <kernel UI="UI" NumEvents="5"/>  
 
   <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
   --   object and may be retrieved by there using the action name.
@@ -23,20 +23,23 @@
   -->
   <actions>
     <action name="Geant4TestRunAction/RunInit">
-      <properties Property_int="12345"
+      <properties Control="true"
+		  Property_int="12345"
 		  Property_double="-5e15"
 		  Property_string="Startrun: Hello_2"/>
      </action>
     <action name="Geant4TestEventAction/UserEvent_2">
-      <properties Property_int="1234"
+      <properties Control="true"
+		  Property_int="1234"
 		  Property_double="5e15"
 		  Property_string="Hello_2"/>
-     </action>
+    </action>
 
     <!-- UI handler initializing vis and ui. NAME IS FIXED/COMMON KNOWLEDGE -->
     <action name="Geant4UIManager/UI">
-      <properties HaveVIS="1"
+      <properties HaveVIS="0"
 		  HaveUI="1"
+		  SetupUI="run.mac"
 		  SessionType="csh"/>
      </action>
     <!-- void and empty for the time being.... NAME IS FIXED/COMMON KNOWLEDGE -->
@@ -54,7 +57,8 @@
     <phase type="RunAction/begin">
       <action name="RunInit"/>
       <action name="Geant4TestRunAction/UserRunInit">
-	<properties Property_int="1234"
+	<properties Conrol="true"
+		    Property_int="1234"
 		    Property_double="5e15"
 		    Property_string="'Hello_2'"/>
       </action>
@@ -79,13 +83,13 @@
   <filters>
     <filter name="GeantinoRejectFilter/GeantinoRejector"/>
     <filter name="ParticleRejectFilter/OpticalPhotonRejector">
-        <properties particle="opticalphoton"/>
+        <properties particle="opticalphoton" Control="true"/>
     </filter>
     <filter name="ParticleSelectFilter/OpticalPhotonSelector">
-        <properties particle="opticalphoton"/>
+        <properties particle="opticalphoton" Control="true"/>
     </filter>
     <filter name="EnergyDepositMinimumCut">
-      <properties Cut="10*keV"/>
+      <properties Cut="10*keV" Control="true"/>
     </filter>
   </filters>
 
@@ -97,31 +101,38 @@
   -->
   <sequences>
     <sequence name="Geant4EventActionSequence/EventAction">
+      <properties Control="true"/>
       <action name="Geant4TestEventAction/UserEvent_1">
-        <properties Property_int="01234"
+        <properties Control="true"
+		    Property_int="01234"
   	  	    Property_double="1e11"
 		    Property_string="'Hello_1'"/>
       </action>
       <action name="UserEvent_2"/>
       <action name="Geant4Output2ROOT/RootOutput">
-	<properties Output="simple.root"/>
+	<properties Control="true" Output="simple.root"/>
       </action>
       <action name="Geant4Output2LCIO/LCIOOutput">
-	<properties Output="simple_lcio"/>
+	<properties Control="true" Output="simple_lcio"/>
       </action>
     </sequence>
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
       <action name="Geant4ParticleGun/Gun">
-        <properties energy="500*MeV"
+        <properties Control="true"
+		    energy="500*MeV"
   	  	    particle="'e-'"
-		    multiplicity="1"/>
+		    multiplicity="1"
+		    direction="(1,1,1)"/>
       </action>
     </sequence>
 
     <sequence sd="SiVertexBarrel" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
       <filter name="GeantinoRejector"/>
       <filter name="EnergyDepositMinimumCut"/>
-      <action name="Geant4SimpleTrackerAction/SiVertexBarrelHandler"/>
+      <action name="Geant4SimpleTrackerAction/SiVertexBarrelHandler">
+	<properties Control="true"/>
+      </action>
     </sequence>
     <sequence sd="SiVertexEndcap" type="Geant4SensDetActionSequence">
       <filter name="GeantinoRejector"/>
@@ -134,9 +145,11 @@
       <action name="Geant4SimpleTrackerAction/SiTrackerBarrelHandler"/>
     </sequence>
     <sequence sd="SiTrackerEndcap" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
       <action name="Geant4SimpleTrackerAction/SiTrackerEndcapHandler"/>
     </sequence>
     <sequence sd="SiTrackerForward" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
       <action name="Geant4SimpleTrackerAction/SiTrackerForwardHandler"/>
     </sequence>
     <sequence sd="EcalBarrel" type="Geant4SensDetActionSequence">
@@ -146,10 +159,13 @@
       <action name="Geant4SimpleCalorimeterAction/EcalEndCapHandler"/>
     </sequence>
     <sequence sd="HcalBarrel" type="Geant4SensDetActionSequence">
+      <properties Control="true"/>
       <action name="Geant4SimpleCalorimeterAction/HcalBarrelHandler">
+	<properties Control="true"/>
 	<filter name="OpticalPhotonRejector"/>
       </action>
       <action name="Geant4SimpleOpticalCalorimeterAction/HcalBarrelHandler">
+	<properties Control="true"/>
 	<filter name="OpticalPhotonSelector"/>
       </action>
     </sequence>
