@@ -71,6 +71,8 @@ public:
 	/// Determine the cell ID based on the position
 	virtual CellID cellID(const Position& localPosition, const Position& globalPosition,
 			const VolumeID& volumeID) const = 0;
+	/// Determine the volume ID from the full cell ID by removing all local fields
+	virtual VolumeID volumeID(const CellID& cellID) const;
 	/// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
 	virtual void neighbours(const CellID& cellID, std::set<CellID>& neighbours) const;
 	/// Access the encoding string

@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <cmath>
 
 namespace DD4hep {
 namespace DDSegmentation {
@@ -45,6 +46,17 @@ Segmentation::~Segmentation() {
 			p = 0;
 		}
 	}
+}
+
+/// Determine the volume ID from the full cell ID by removing all local fields
+VolumeID Segmentation::volumeID(const CellID& cellID) const {
+	map<string, StringParameter>::const_iterator it;
+	_decoder->setValue(cellID);
+	for (it = _indexIdentifiers.begin(); it != _indexIdentifiers.end(); ++it) {
+		string identifier = it->second->typedValue();
+		(*_decoder)[identifier] = 0;
+	}
+	return _decoder->getValue();
 }
 
 /// Calculates the neighbours of the given cell ID and adds them to the list of neighbours
@@ -129,7 +141,7 @@ int Segmentation::positionToBin(double position, double cellSize, double offset)
 	if (cellSize == 0.) {
 		throw runtime_error("Invalid cell size: 0.0");
 	}
-	return int((position + 0.5 * cellSize - offset) / cellSize);
+	return int(floor((position + 0.5 * cellSize - offset) / cellSize));
 }
 
 } /* namespace DDSegmentation */
