@@ -279,13 +279,23 @@ TGeoVolume* _createTGeoVolumeAssembly(const string& name) {
   return new Value<TGeoVolumeAssembly,Assembly::Object>(name.c_str());
 }
 PlacedVolume::Object* _userExtension(const PlacedVolume& v)  {
-  geo_node_t* n = (geo_node_t*)v.ptr();
-  return (PlacedVolume::Object*)n->m_extension;
+  geo_node_t* n = dynamic_cast<geo_node_t*>(v.ptr());
+  // The above dynamic_cast fails for the top-level volume, where the placement is set by the
+  // TGeoManager. This volume will not have a placement....
+  return (PlacedVolume::Object*)(n ? n->m_extension : 0);
 }
 template <typename T> static typename T::Object* _userExtension(const T& v)  {
   return dynamic_cast<typename T::Object*>(v.ptr());
 }
 #else
+
+/*
+ *  The section below uses the new ROOT features using user extensions to volumes
+ *  and placements. Once this is common, the above mechanism should be thrown away....
+ *
+ *  M.Frank
+ */
+
 typedef TGeoNode geo_node_t;
 TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
   TGeoVolume* e = new TGeoVolume(name.c_str(),s,m);
