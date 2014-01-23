@@ -100,6 +100,8 @@ To build and run the simulation examples Geant4 will be required.
   * use pyroot to write python geometry drivers ( currently broken !?)
    -DDD4HEP_USE_PYROOT=ON
 
+ - example for building a 'complete' DD4hep:
+    cmake -D DD4HEP_WITH_GEANT4=1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On ..
 
 - Setup the environment for running 
   
