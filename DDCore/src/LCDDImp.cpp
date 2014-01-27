@@ -376,7 +376,7 @@ void LCDDImp::init() {
     m_materialAir = air;
     m_materialVacuum = vacuum;
     m_detectors.append(m_world);
-    m_manager->SetTopVolume(m_worldVol);
+    m_manager->SetTopVolume(m_worldVol.ptr());
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));
   }
 }
