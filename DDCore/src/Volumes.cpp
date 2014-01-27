@@ -35,29 +35,6 @@ using namespace DD4hep::Geometry;
 namespace DD4hep {
   namespace Geometry {
 
-    /** @class Value Handle.h
-     *
-     *  Class to simply combine to object types to one
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     */
-    template <typename Q, typename P> struct Value: public Q, public P  {
-      typedef Q first_base;
-      typedef P second_base;
-      /// Standard constructor
-      Value();
-      /// Standard destructor
-      virtual ~Value();
-    };
-
-    template <typename Q, typename P> inline Value<Q, P>::Value() {
-      INCREMENT_COUNTER;
-    }
-    template <typename Q, typename P> inline Value<Q, P>::~Value() {
-      DECREMENT_COUNTER;
-    }
-
     struct DD_TGeoNodeMatrix : public TGeoNodeMatrix {
       TGeoExtension* m_extension;
       DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
@@ -104,8 +81,15 @@ namespace DD4hep {
     };
 
     template <class T> struct _VolWrap: public T {
+      TGeoExtension* m_extension;
       _VolWrap(const char* name, TGeoShape* s = 0, TGeoMedium* m = 0);
       virtual ~_VolWrap() {
+	if ( m_extension ) m_extension->Release();
+	m_extension = 0;
+        DECREMENT_COUNTER;
+      }
+      TGeoExtension* GetUserExtension() const  {
+	return m_extension;
       }
       virtual void AddNode(const TGeoVolume *vol, Int_t copy_no, TGeoMatrix *mat, Option_t* = "") {
         TGeoMatrix *matrix = mat;
@@ -145,25 +129,23 @@ namespace DD4hep {
     };
 
     template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
-        : TGeoVolume(name, s, m) {
+        : TGeoVolume(name, s, m), m_extension(0) {
+        INCREMENT_COUNTER;
     }
     template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* /* s */, TGeoMedium* /* m */)
-        : TGeoVolumeAssembly(name) {
+        : TGeoVolumeAssembly(name), m_extension(0) {
+        INCREMENT_COUNTER;
     }
 
-    template <> struct Value<TGeoVolume, Volume::Object> : public _VolWrap<TGeoVolume>, public Volume::Object {
-      Value(const char* name, TGeoShape* s = 0, TGeoMedium* m = 0)
-          : _VolWrap<TGeoVolume>(name, s, m) {
-        magic = magic_word();
-        INCREMENT_COUNTER;
-      }
-      virtual ~Value() {
-        DECREMENT_COUNTER;
-      }
+    struct TGeoVolumeValue : public _VolWrap<TGeoVolume> {
+      TGeoVolumeValue(const char* name) : _VolWrap<TGeoVolume>(name, 0, 0) {      }
+      virtual ~TGeoVolumeValue() {      }
       TGeoVolume *_copyVol(TGeoShape *newshape) const {
-        typedef Value<TGeoVolume, Volume::Object> _Vol;
-        _Vol *vol = new _Vol(this->TGeoVolume::GetName(), newshape, fMedium);
-        vol->copy(*this);
+        TGeoVolumeValue *vol = new TGeoVolumeValue(this->TGeoVolume::GetName());
+	vol->SetShape(newshape);
+	vol->SetMedium(fMedium);
+	if ( m_extension ) vol->m_extension = m_extension->Grab();
+        //vol->copy(*this);
         return vol;
       }
       virtual TGeoVolume* MakeCopyVolume(TGeoShape *newshape) {
@@ -223,18 +205,14 @@ namespace DD4hep {
       }
     };
 
-    template <> struct Value<TGeoVolumeAssembly, Assembly::Object> : public _VolWrap<TGeoVolumeAssembly>,
-        public Assembly::Object {
-      Value(const char* name)
-          : _VolWrap<TGeoVolumeAssembly>(name, 0, 0) {
-        magic = magic_word();
-        INCREMENT_COUNTER;
+    struct TGeoVolumeAssemblyValue : public _VolWrap<TGeoVolumeAssembly>  {
+      TGeoVolumeAssemblyValue(const char* name) : _VolWrap<TGeoVolumeAssembly>(name, 0, 0) {
       }
-      virtual ~Value() {
-        DECREMENT_COUNTER;
+      virtual ~TGeoVolumeAssemblyValue() {
       }
       TGeoVolume *CloneVolume() const {
-        TGeoVolume *vol = new Value<TGeoVolumeAssembly, Assembly::Object>(this->TGeoVolumeAssembly::GetName());
+        TGeoVolumeAssemblyValue *vol = new TGeoVolumeAssemblyValue(this->TGeoVolume::GetName());
+	if ( m_extension ) vol->m_extension = m_extension->Grab();
         Int_t i;
         // copy other attributes
         Int_t nbits = 8 * sizeof(UInt_t);
@@ -271,12 +249,13 @@ namespace DD4hep {
 typedef DD_TGeoNodeMatrix geo_node_t;
 
 TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m) {
-  TGeoVolume* v = new Value<TGeoVolume,Volume::Object>(name.c_str());   
+  TGeoVolume* v = new TGeoVolumeValue(name.c_str());   
   v->SetShape(s);
   v->SetMedium(m);
+  return v;
 }
 TGeoVolume* _createTGeoVolumeAssembly(const string& name) {
-  return new Value<TGeoVolumeAssembly,Assembly::Object>(name.c_str());
+  return new TGeoVolumeAssemblyValue(name.c_str());
 }
 PlacedVolume::Object* _userExtension(const PlacedVolume& v)  {
   geo_node_t* n = dynamic_cast<geo_node_t*>(v.ptr());
@@ -284,8 +263,17 @@ PlacedVolume::Object* _userExtension(const PlacedVolume& v)  {
   // TGeoManager. This volume will not have a placement....
   return (PlacedVolume::Object*)(n ? n->m_extension : 0);
 }
-template <typename T> static typename T::Object* _userExtension(const T& v)  {
-  return dynamic_cast<typename T::Object*>(v.ptr());
+Volume::Object* _userExtension(const Volume& v)  {
+  const TGeoVolume* vol = v.ptr();
+  if ( vol->IsA() == TGeoVolume::Class() )  {
+    const TGeoVolumeValue* o = dynamic_cast<const TGeoVolumeValue*>(v.ptr());
+    return (Volume::Object*)(o ? o->GetUserExtension() : 0);
+  }
+  else if ( vol->IsA() == TGeoVolumeAssembly::Class() )  {
+    const TGeoVolumeAssemblyValue* o = dynamic_cast<const TGeoVolumeAssemblyValue*>(v.ptr());
+    return (Volume::Object*)(o ? o->GetUserExtension() : 0);
+  }
+  return 0;
 }
 #else
 
@@ -478,7 +466,7 @@ void Volume::Object::Release() const  {
 /// Accessor to the data part of the Volume
 Volume::Object* _data(const Volume& v, bool throw_exception = true) {
   //if ( v.ptr() && v.ptr()->IsA() == TGeoVolume::Class() ) return v.data<Volume::Object>();
-  Volume::Object* o = _userExtension<Volume>(v);
+  Volume::Object* o = _userExtension(v);
   if (o)
     return o;
   else if (!throw_exception)
