@@ -338,7 +338,9 @@ void LCDDImp::endDocument() {
     worldVis.setColor(1.0, 1.0, 1.0);
     worldVis.setLineStyle(VisAttr::SOLID);
     worldVis.setDrawingStyle(VisAttr::WIREFRAME);
+#ifndef DD4HEP_EMULATE_TGEOEXTENSIONS
     m_worldVol.setVisAttributes(worldVis);
+#endif
     add(worldVis);
 
     /// Since we allow now for anonymous shapes,
