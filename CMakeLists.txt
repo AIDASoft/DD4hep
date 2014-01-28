@@ -84,11 +84,15 @@ add_subdirectory(UtilityApps)
 #---Configuration-------------------------------------------------------------------
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
 configure_file(cmake/thisdd4hep.sh  thisdd4hep.sh @ONLY)
+configure_file(cmake/run_test.sh run_test.sh @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/thisdd4hep.csh ${CMAKE_BINARY_DIR}/thisdd4hep.sh
   DESTINATION bin
   )
-
+install(PROGRAMS ${CMAKE_BINARY_DIR}/run_test.sh
+  DESTINATION bin
+  )
+#  PERMISSIONS OWNER_READ, OWNER_WRITE, OWNER_EXECUTE, GROUP_READ, GROUP_EXECUTE, WORLD_READ, WORLD_EXECUTE,
 #-----------------------------------------------------------------------------------
 display_std_variables()
 
