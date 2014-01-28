@@ -54,7 +54,7 @@ system before building and running the examples
 To build and run the simulation examples Geant4 will be required. 
 
 
-2) How to build DD4hep 
+4) How to build DD4hep 
 -----------------------
 
 - Checkout code
@@ -105,26 +105,48 @@ To build and run the simulation examples Geant4 will be required.
 
 - Setup the environment for running 
   
- . ./bin/thisdd4hep.sh
+  . ./bin/thisdd4hep.sh
      or
-source ./bin/thisdd4hep.csh
+  source ./bin/thisdd4hep.csh
 
 
+5) Testing
+-----------
 
+ DD4hep has a testing mechanism built on CMake/CTest. If configured with -DBUILD_TESTING=On, some make targets are
+ created automatically. 
+ - running the tests:
 
-3) Extending
+  cd build
+  make install
+  make test
+
+ - running the build - after an update (to the trunk) and then the tests with finally submitting the results to the Dasboard 
+   ( http://aidasoft.desy.de/CDash/index.php?project=DD4hep )
+
+  cd build
+  make -j4 ExperimentalStart ExperimentalUpdate ExperimentalBuild ExperimentalSubmit
+  make install ExperimentalTest ExperimentalSubmit
+
+ - running individual tests with output (e.g. in case of failed tests):
+
+  cd build 
+  ctest -V -R units
+  # runs only test_units
+
+6) Extending
 ------------
 
   Users may extend the models by changing the compact description or adding new drivers
 
 
-4) Release notes
+7) Release notes
 ----------------
   If things do not work please also consult the release notes. It may happen that it was 
   forgotten to update the information here.
 
 
-5) Building the examples
+8) Building the examples
 -----------------------
 
 Before any of the (new) examples in the ./examples directory can be build,
@@ -164,7 +186,7 @@ or build all examples in one go:
 
 
 
-6) run SLIC simulation on lccd file created with DD4Hep:
+9) run SLIC simulation on lccd file created with DD4Hep:
 
 
 # make sure slic is in the path and then:
