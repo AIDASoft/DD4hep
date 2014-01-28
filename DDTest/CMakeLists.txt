@@ -3,6 +3,8 @@
 
 include_directories( 
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/DDCore/include
+  ${CMAKE_SOURCE_DIR}/DDSegmentation/include
   ${CMAKE_SOURCE_DIR}/include
   ${ROOT_INCLUDE_DIR}
   )
