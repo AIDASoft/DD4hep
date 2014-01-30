@@ -126,7 +126,8 @@ namespace DD4hep {
         m_element = v.m_element;
         return *this;
       }
-
+      /// Check if placement is properly instrumented
+      Object* data() const;
       /// Add identifier
       PlacedVolume& addPhysVolID(const std::string& name, int value);
       /// Volume material

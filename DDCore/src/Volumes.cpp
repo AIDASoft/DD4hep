@@ -353,6 +353,12 @@ static PlacedVolume::Object* _data(const PlacedVolume& v) {
   throw runtime_error("DD4hep: Attempt to access invalid handle of type: PlacedVolume");
 }
 
+/// Check if placement is properly instrumented
+PlacedVolume::Object* PlacedVolume::data() const   {
+  PlacedVolume::Object* o = _userExtension(*this);
+  return o;
+}
+
 /// Add identifier
 PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value) {
   Object* obj = _data(*this);

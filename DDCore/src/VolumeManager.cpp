@@ -98,7 +98,8 @@ namespace {
         }
         for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
           TGeoNode* daughter = node->GetDaughter(idau);
-          if (dynamic_cast<const PlacedVolume::Object*>(daughter)) {
+	  PlacedVolume placement(daughter);
+          if ( placement.data() ) {
             size_t cnt;
             PlacedVolume pv_dau = Ref_t(daughter);
             DetElement de_dau = findElt(e, daughter);
@@ -114,6 +115,9 @@ namespace {
             }
             count += cnt;
           }
+	  else  {
+	    throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+" [Internal error -- bad detector constructor]");
+	  }
         }
         chain.pop_back();
       }
