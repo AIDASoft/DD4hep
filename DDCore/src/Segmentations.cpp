@@ -45,53 +45,53 @@ long64 Segmentation::Object::cellID(const DDSegmentation::Position& localPositio
 
 /// Access the encoding string
 string Segmentation::Object::fieldDescription() const {
-	return segmentation->fieldDescription();
+  return segmentation->fieldDescription();
 }
 /// Access the segmentation name
 const string& Segmentation::Object::name() const {
-	return segmentation->name();
+  return segmentation->name();
 }
 /// Set the segmentation name
 void Segmentation::Object::setName(const string& value) {
-	segmentation->setName(value);
+  segmentation->setName(value);
 }
 /// Access the segmentation type
 const string& Segmentation::Object::type() const {
-	return segmentation->type();
+  return segmentation->type();
 }
 /// Access the description of the segmentation
 const string& Segmentation::Object::description() const {
-	return segmentation->description();
+  return segmentation->description();
 }
 /// Access the underlying decoder
 BitField64* Segmentation::Object::decoder() {
-	return segmentation->decoder();
+  return segmentation->decoder();
 }
 /// Set the underlying decoder
 void Segmentation::Object::setDecoder(BitField64* decoder) {
-	segmentation->setDecoder(decoder);
+  segmentation->setDecoder(decoder);
 }
 /// Access to parameter by name
 Parameter Segmentation::Object::parameter(const string& parameterName) const {
-	return segmentation->parameter(parameterName);
+  return segmentation->parameter(parameterName);
 }
 /// Access to all parameters
 Parameters Segmentation::Object::parameters() const {
-	return segmentation->parameters();
+  return segmentation->parameters();
 }
 /// Set all parameters from an existing set of parameters
 void Segmentation::Object::setParameters(const Parameters& parameters) {
-	segmentation->setParameters(parameters);
+  segmentation->setParameters(parameters);
 }
 
 /// Constructor to used when creating a new object
 Segmentation::Segmentation(const string& type, const string& name) :
-	Handle<Implementation>() {
+  Handle<Implementation>() {
   BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(type);
   if (s != 0) {
     assign(new Object(s), name, "");
   } else {
-	  throw runtime_error("FAILED to create segmentation: " + type + ". Missing factory method for: " + type + "!");
+    throw runtime_error("FAILED to create segmentation: " + type + ". Missing factory method for: " + type + "!");
   }
 }
 
@@ -106,20 +106,20 @@ bool Segmentation::useForHitPosition() const {
 
 /// Access to the parameters
 Parameters Segmentation::parameters() const {
-	return data<Object>()->parameters();
+  return data<Object>()->parameters();
 }
 
 /// Access segmentation object
 DDSegmentation::Segmentation* Segmentation::segmentation() const {
-	return data<Object>()->segmentation;
+  return data<Object>()->segmentation;
 }
 
 /// determine the local position based on the cell ID
 Position Segmentation::position(const long64& cellID) const {
-	return Position(segmentation()->position(cellID));
+  return Position(segmentation()->position(cellID));
 }
 
 /// determine the cell ID based on the local position
 long64 Segmentation::cellID(const Position& localPosition, const Position& globalPosition, const long64& volumeID) const {
-	return segmentation()->cellID(localPosition, globalPosition, volumeID);
+  return segmentation()->cellID(localPosition, globalPosition, volumeID);
 }

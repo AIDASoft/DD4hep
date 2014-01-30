@@ -101,7 +101,7 @@ PandoraConverter::~PandoraConverter() {
 }
 
 /// Create geometry conversion in Pandora XML format
-xml_doc_t PandoraConverter::create(DetElement top) {
+xml_doc_t PandoraConverter::create(DetElement /* top */) {
   const char empty_xml[] = "<?xml version=\"1.0\" encoding=\"UTF-8\">\n"
       "<!--                                                               \n"
       "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
@@ -131,7 +131,7 @@ xml_doc_t PandoraConverter::create(DetElement top) {
   return geo.doc;
 }
 
-static long create_lcdd(LCDD& lcdd, int argc, char** argv) {
+static long create_lcdd(LCDD& /* lcdd */, int /* argc */, char** /* argv */) {
   throw runtime_error("The pandora xml conversion plugin is not yet implemented");
   return 0;
 #if 0
@@ -889,4 +889,4 @@ public class Main implements Converter
   }
 #endif
 }
-DECLARE_APPLY(DD4hepGeometry2PANDORA,create_lcdd);
+DECLARE_APPLY(DD4hepGeometry2PANDORA,create_lcdd)

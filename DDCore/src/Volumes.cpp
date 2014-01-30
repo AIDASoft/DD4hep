@@ -35,25 +35,36 @@ using namespace DD4hep::Geometry;
 namespace DD4hep {
   namespace Geometry {
 
-    struct DD_TGeoNodeMatrix : public TGeoNodeMatrix {
+    struct DDExtension  {
       TGeoExtension* m_extension;
-      DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
-	: TGeoNodeMatrix(v, m), m_extension(0) {
-        INCREMENT_COUNTER;
-      }
-      DD_TGeoNodeMatrix(const DD_TGeoNodeMatrix& c)
-	: TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), m_extension(0) {
+      DDExtension() : m_extension(0) {}
+      DDExtension(const DDExtension& c) : m_extension(0) {
 	if ( c.m_extension ) m_extension = c.m_extension->Grab();
-        INCREMENT_COUNTER;
       }
-      virtual ~DD_TGeoNodeMatrix() {
+      virtual ~DDExtension() {
 	if ( m_extension ) m_extension->Release();
-        DECREMENT_COUNTER;
       }
       void SetUserExtension(TGeoExtension *ext)  {
 	if (m_extension) m_extension->Release();
 	m_extension = 0;
 	if (ext) m_extension = ext->Grab();
+      }
+      TGeoExtension* GetUserExtension() const  {
+	return m_extension;
+      }
+    };
+    struct DD_TGeoNodeMatrix : public TGeoNodeMatrix, public DDExtension  {
+      TGeoExtension* m_extension;
+      DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
+	: TGeoNodeMatrix(v, m), DDExtension() {
+        INCREMENT_COUNTER;
+      }
+      DD_TGeoNodeMatrix(const DD_TGeoNodeMatrix& c)
+	: TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), DDExtension(c) {
+        INCREMENT_COUNTER;
+      }
+      virtual ~DD_TGeoNodeMatrix() {
+        DECREMENT_COUNTER;
       }
       virtual TGeoNode *MakeCopyNode() const {
         TGeoNodeMatrix *node = new DD_TGeoNodeMatrix(*this);
@@ -80,16 +91,12 @@ namespace DD4hep {
       }
     };
 
-    template <class T> struct _VolWrap: public T {
-      TGeoExtension* m_extension;
-      _VolWrap(const char* name, TGeoShape* s = 0, TGeoMedium* m = 0);
-      virtual ~_VolWrap() {
-	if ( m_extension ) m_extension->Release();
-	m_extension = 0;
-        DECREMENT_COUNTER;
+    template <class T> struct _VolWrap: public T, public DDExtension {
+      _VolWrap(const char* name) : T(name), DDExtension() {
+        INCREMENT_COUNTER;
       }
-      TGeoExtension* GetUserExtension() const  {
-	return m_extension;
+      virtual ~_VolWrap() {
+        DECREMENT_COUNTER;
       }
       virtual void AddNode(const TGeoVolume *vol, Int_t copy_no, TGeoMatrix *mat, Option_t* = "") {
         TGeoMatrix *matrix = mat;
@@ -128,22 +135,18 @@ namespace DD4hep {
       }
     };
 
-    template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name, TGeoShape* s, TGeoMedium* m)
-        : TGeoVolume(name, s, m), m_extension(0) {
+    template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name) : TGeoVolume(name,0,0), DDExtension() {
         INCREMENT_COUNTER;
-    }
-    template <> _VolWrap<TGeoVolumeAssembly>::_VolWrap(const char* name, TGeoShape* /* s */, TGeoMedium* /* m */)
-        : TGeoVolumeAssembly(name), m_extension(0) {
-        INCREMENT_COUNTER;
-    }
+      }
 
     struct TGeoVolumeValue : public _VolWrap<TGeoVolume> {
-      TGeoVolumeValue(const char* name) : _VolWrap<TGeoVolume>(name, 0, 0) {      }
+      TGeoVolumeValue(const char* name, TGeoShape* s, TGeoMedium* m) : _VolWrap<TGeoVolume>(name) {
+	SetShape(s);
+	SetMedium(m);
+      }
       virtual ~TGeoVolumeValue() {      }
       TGeoVolume *_copyVol(TGeoShape *newshape) const {
-        TGeoVolumeValue *vol = new TGeoVolumeValue(this->TGeoVolume::GetName());
-	vol->SetShape(newshape);
-	vol->SetMedium(fMedium);
+        TGeoVolumeValue *vol = new TGeoVolumeValue(this->TGeoVolume::GetName(),newshape,fMedium);
 	if ( m_extension ) vol->m_extension = m_extension->Grab();
         //vol->copy(*this);
         return vol;
@@ -206,7 +209,7 @@ namespace DD4hep {
     };
 
     struct TGeoVolumeAssemblyValue : public _VolWrap<TGeoVolumeAssembly>  {
-      TGeoVolumeAssemblyValue(const char* name) : _VolWrap<TGeoVolumeAssembly>(name, 0, 0) {
+      TGeoVolumeAssemblyValue(const char* name) : _VolWrap<TGeoVolumeAssembly>(name) {
       }
       virtual ~TGeoVolumeAssemblyValue() {
       }
@@ -246,34 +249,15 @@ namespace DD4hep {
 
   }
 }
-typedef DD_TGeoNodeMatrix geo_node_t;
+typedef DD_TGeoNodeMatrix       geo_node_t;
+typedef TGeoVolumeValue         geo_volume_t;
+typedef TGeoVolumeAssemblyValue geo_assembly_t;
 
-TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m) {
-  TGeoVolume* v = new TGeoVolumeValue(name.c_str());   
-  v->SetShape(s);
-  v->SetMedium(m);
-  return v;
-}
-TGeoVolume* _createTGeoVolumeAssembly(const string& name) {
-  return new TGeoVolumeAssemblyValue(name.c_str());
-}
-PlacedVolume::Object* _userExtension(const PlacedVolume& v)  {
-  geo_node_t* n = dynamic_cast<geo_node_t*>(v.ptr());
-  // The above dynamic_cast fails for the top-level volume, where the placement is set by the
-  // TGeoManager. This volume will not have a placement....
-  return (PlacedVolume::Object*)(n ? n->m_extension : 0);
-}
-Volume::Object* _userExtension(const Volume& v)  {
-  const TGeoVolume* vol = v.ptr();
-  if ( vol->IsA() == TGeoVolume::Class() )  {
-    const TGeoVolumeValue* o = dynamic_cast<const TGeoVolumeValue*>(v.ptr());
-    return (Volume::Object*)(o ? o->GetUserExtension() : 0);
-  }
-  else if ( vol->IsA() == TGeoVolumeAssembly::Class() )  {
-    const TGeoVolumeAssemblyValue* o = dynamic_cast<const TGeoVolumeAssemblyValue*>(v.ptr());
-    return (Volume::Object*)(o ? o->GetUserExtension() : 0);
-  }
-  return 0;
+template <typename T> static typename T::Object* _userExtension(const T& v)  {
+  typedef typename T::Object O;
+  const DDExtension* p = dynamic_cast<const DDExtension*>(v.ptr());
+  O* o = (O*)(p ? p->GetUserExtension() : 0);
+  return o;
 }
 #else
 
@@ -284,17 +268,9 @@ Volume::Object* _userExtension(const Volume& v)  {
  *  M.Frank
  */
 
-typedef TGeoNode geo_node_t;
-TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
-  TGeoVolume* e = new TGeoVolume(name.c_str(),s,m);
-  e->SetUserExtension(new Volume::Object());
-  return e;
-}
-TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
-  TGeoVolume* e = new TGeoVolumeAssembly(name.c_str()); // It is important to use the correct constructor!!
-  e->SetUserExtension(new Assembly::Object());
-  return e;
-}
+typedef TGeoNode                geo_node_t;
+typedef TGeoVolume              geo_volume_t;
+typedef TGeoVolumeAssembly      geo_assembly_t;
 template <typename T> static typename T::Object* _userExtension(const T& v)  {
   typedef typename T::Object O;
   O* o = (O*)(v.ptr()->GetUserExtension());
@@ -302,16 +278,27 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
 }
 #endif
 
+static TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
+  geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
+  e->SetUserExtension(new Volume::Object());
+  return e;
+}
+static TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
+  geo_assembly_t* e = new geo_assembly_t(name.c_str()); // It is important to use the correct constructor!!
+  e->SetUserExtension(new Assembly::Object());
+  return e;
+}
+
 /// Default constructor
 PlacedVolume::Object::Object()
-  : TGeoExtension(), magic(0), refCount(-1), volIDs(), detector() {
+  : TGeoExtension(), magic(0), refCount(0), volIDs(), detector() {
   magic = magic_word();
   INCREMENT_COUNTER;
 }
 
 /// Copy constructor
 PlacedVolume::Object::Object(const Object& c)
-    : TGeoExtension(), magic(c.magic), refCount(-1), volIDs(c.volIDs), detector(c.detector) {
+    : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs), detector(c.detector) {
   INCREMENT_COUNTER;
 }
 
@@ -322,13 +309,12 @@ PlacedVolume::Object::~Object() {
 
 /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
 TGeoExtension* PlacedVolume::Object::Grab()   {
-  Object* ext = const_cast<Object*>(this);
-  ++ext->refCount;
+  ++this->refCount;
 #ifdef ___print_vols
   if ( detector.ptr() ) cout << "Placement grabbed with valid detector element....." << endl;
   else  cout << "Placement grabbed....." << endl;
 #endif
-  return ext;
+  return this;
 }
 
 /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
@@ -571,6 +557,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
       m_element->SetFillStyle(1001);   // Root: solid
     }
     else {
+      //m_element->SetStyle();
       m_element->SetFillColor(0);
       m_element->SetFillStyle(0);    // Root: hollow
     }
@@ -586,7 +573,8 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
   }
-  _data(*this)->vis = attr;
+  Volume::Object* o = _userExtension(*this);
+  if ( o ) o->vis = attr;
   return *this;
 }
 
@@ -594,7 +582,6 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 const Volume& Volume::setVisAttributes(const LCDD& lcdd, const string& name) const {
   if (!name.empty()) {
     VisAttr attr = lcdd.visAttributes(name);
-    _data(*this)->vis = attr;
     setVisAttributes(attr);
   }
   else {

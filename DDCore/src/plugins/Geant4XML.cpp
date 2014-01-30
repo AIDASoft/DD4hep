@@ -38,13 +38,13 @@ static long create_Geant4(lcdd_t& lcdd, const xml_h& element) {
   (Converter < Geant4 > (lcdd))(element);
   return 1;
 }
-DECLARE_XML_DOC_READER(geant4,create_Geant4);
+DECLARE_XML_DOC_READER(geant4,create_Geant4)
 
 static Ref_t handle_Geant4(lcdd_t& lcdd, const xml_h& element) {
   (Converter < Geant4 > (lcdd))(element);
   return Ref_t(0);
 }
-DECLARE_XMLELEMENT(geant4_xml_setup,handle_Geant4);
+DECLARE_XMLELEMENT(geant4_xml_setup,handle_Geant4)
 
 #include <iostream>
 using namespace std;
@@ -61,4 +61,4 @@ static long handle_blabla(lcdd_t& lcdd, const xml_h& element) {
   (Converter<Blabla>(lcdd))(element);
   return 1;
 }
-DECLARE_XML_DOC_READER(blabla,handle_blabla);
+DECLARE_XML_DOC_READER(blabla,handle_blabla)

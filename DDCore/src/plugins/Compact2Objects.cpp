@@ -79,7 +79,7 @@ static Ref_t create_ConstantField(lcdd_t& /* lcdd */, xml_h e) {
   obj.assign(ptr, field.nameStr(), field.typeStr());
   return obj;
 }
-DECLARE_XMLELEMENT(ConstantField,create_ConstantField);
+DECLARE_XMLELEMENT(ConstantField,create_ConstantField)
 
 static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e) {
   xml_comp_t c(e);
@@ -126,9 +126,9 @@ static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e) {
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }
-DECLARE_XMLELEMENT(SolenoidMagnet,create_SolenoidField);
+DECLARE_XMLELEMENT(SolenoidMagnet,create_SolenoidField)
 // This is the plugin required for slic: note the different name
-DECLARE_XMLELEMENT(solenoid,create_SolenoidField);
+DECLARE_XMLELEMENT(solenoid,create_SolenoidField)
 
 static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
   xml_comp_t c(e);
@@ -150,14 +150,14 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }
-DECLARE_XMLELEMENT(DipoleMagnet,create_DipoleField);
+DECLARE_XMLELEMENT(DipoleMagnet,create_DipoleField)
 
 static long create_Compact(lcdd_t& lcdd, xml_h element) {
   Converter < Compact > converter(lcdd);
   converter(element);
   return 1;
 }
-DECLARE_XML_DOC_READER(lccdd,create_Compact);
+DECLARE_XML_DOC_READER(lccdd,create_Compact)
 
 /** Convert compact constant objects (defines)
  *
@@ -580,7 +580,6 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
 template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
   string name = element.attr < string > (_U(name));
   try {
-    DetElement det = lcdd.detector(name);
     SensitiveDetector sd = lcdd.sensitiveDetector(name);
 
     xml_attr_t type = element.attr_nothrow(_U(type));

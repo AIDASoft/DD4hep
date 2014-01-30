@@ -163,7 +163,7 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z) {
+void Trapezoid::make(double x1, double x2, double y1, double y2, double z) {
   _assign(new TGeoTrd2(x1, x2, y1, y2, z ), "", "trd2", true);
 }
 
@@ -200,7 +200,7 @@ Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double del
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-Torus::Torus(double r, double rmin, double rmax, double phi, double delta_phi) {
+void Torus::make(double r, double rmin, double rmax, double phi, double delta_phi) {
   _assign(new TGeoTorus(r, rmin, rmax, phi, delta_phi), "", "torus", true);
 }
 
@@ -218,7 +218,7 @@ Trap::Trap(double z, double theta, double phi, double y1, double x1, double x2, 
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
-Trap::Trap(double pz, double py, double px, double pLTX) {
+void Trap::make(double pz, double py, double px, double pLTX) {
   double z = pz / 2e0;
   double theta = 0e0;
   double phi = 0e0;

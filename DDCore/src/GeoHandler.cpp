@@ -72,7 +72,6 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   m_data->clear();
   i_collect(element.placement().ptr(), 0);
   for (Data::const_reverse_iterator i = m_data->rbegin(); i != m_data->rend(); ++i) {
-    int level = (*i).first;
     const Data::mapped_type& v = (*i).second;
     for (Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
       const TGeoNode* n = *j;

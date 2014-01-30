@@ -24,7 +24,7 @@ using namespace DD4hep::Geometry;
 static void* create_lcdd_instance(const char* /* name */) {
   return &LCDD::getInstance();
 }
-DECLARE_CONSTRUCTOR(LCDD_constructor,create_lcdd_instance);
+DECLARE_CONSTRUCTOR(LCDD_constructor,create_lcdd_instance)
 
 static long display(LCDD& lcdd, int argc, char** argv) {
   TGeoManager& mgr = lcdd.manager();
@@ -41,25 +41,28 @@ static long display(LCDD& lcdd, int argc, char** argv) {
   }
   return 0;
 }
-DECLARE_APPLY(DD4hepGeometryDisplay,display);
+DECLARE_APPLY(DD4hepGeometryDisplay,display)
 
 static long load_compact(LCDD& lcdd, int argc, char** argv) {
-  for (size_t j = 0; j < argc; ++j) {
+  for (int j = 0; j < argc; ++j) {
     string input = argv[j];
     cout << "Processing compact input file : " << input << endl;
     lcdd.fromCompact(input);
   }
   return 1;
 }
-DECLARE_APPLY(DD4hepCompactLoader,load_compact);
+DECLARE_APPLY(DD4hepCompactLoader,load_compact)
 
 static long load_xml(LCDD& lcdd, int argc, char** argv) {
-  string input = argv[0];
-  cout << "Processing compact input file : " << input << endl;
-  lcdd.fromXML(input);
-  return 1;
+  if ( argc >= 1 )  {
+    string input = argv[0];
+    cout << "Processing compact input file : " << input << endl;
+    lcdd.fromXML(input);
+    return 1;
+  }
+  throw runtime_error("load_xml: Invalid number of arguments [argc=0]");
 }
-DECLARE_APPLY(DD4hepXMLLoader,load_xml);
+DECLARE_APPLY(DD4hepXMLLoader,load_xml)
 
 static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
@@ -79,4 +82,5 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
   }
   return 0;
 }
-DECLARE_APPLY(DD4hepVolumeManager,load_volmgr);
+DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
+

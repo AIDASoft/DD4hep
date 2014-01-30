@@ -232,8 +232,9 @@ namespace {
       print_node(sd, parent, e, n, ids, nodes);
     }
 #endif
-    void print_node(SensitiveDetector sd, DetElement parent, DetElement e, const TGeoNode* n, const PlacedVolume::VolIDs& ids,
-        const Chain& nodes) {
+    void print_node(SensitiveDetector sd, DetElement /* parent */, DetElement e, 
+		    const TGeoNode* n, const PlacedVolume::VolIDs& ids, const Chain& /* nodes */) 
+    {
       static int s_count = 0;
       Readout ro = sd.readout();
       const IDDescriptor& en = ro.idSpec();
@@ -282,10 +283,6 @@ VolumeManager::Object::Object(LCDD& l)
 
 /// Default destructor
 VolumeManager::Object::~Object() {
-  Object* obj = dynamic_cast<Object*>(top);
-  bool isTop = obj == this;
-  bool hasTop = (flags & VolumeManager::ONE) == VolumeManager::ONE;
-  bool isSdet = (flags & VolumeManager::TREE) == VolumeManager::TREE && obj != this;
   /// Cleanup volume tree
   for_each(volumes.begin(), volumes.end(), destroyObjects(volumes));
   volumes.clear();
@@ -301,8 +298,9 @@ VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id) c
   VolIdentifier volume_id(id);
   volume_id &= detMask;
   Volumes::const_iterator i = volumes.find(volume_id);
-  if (i != volumes.end())
+  if (i != volumes.end())  {
     context = (*i).second;
+  }
   //else if ( sysID == 8 )  {
   //  for(i=volumes.begin(); i!=volumes.end();++i)
   //    cout << (void*)(*i).first << "  " << (*i).second->placement.name() << endl;
@@ -433,7 +431,7 @@ IDDescriptor VolumeManager::idSpec() const {
 }
 
 /// Register physical volume with the manager (normally: section manager)
-bool VolumeManager::adoptPlacement(VolumeID sys_id, Context* context) {
+bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
   stringstream err;
   Object& o = _data();
   PlacedVolume pv = context->placement;
@@ -569,8 +567,8 @@ std::ostream& DD4hep::Geometry::operator<<(std::ostream& os, const VolumeManager
   const VolumeManager::Object& o = *m.data<VolumeManager::Object>();
   VolumeManager::Object* top = dynamic_cast<VolumeManager::Object*>(o.top);
   bool isTop = top == &o;
-  bool hasTop = (o.flags & VolumeManager::ONE) == VolumeManager::ONE;
-  bool isSdet = (o.flags & VolumeManager::TREE) == VolumeManager::TREE && top != &o;
+  //bool hasTop = (o.flags & VolumeManager::ONE) == VolumeManager::ONE;
+  //bool isSdet = (o.flags & VolumeManager::TREE) == VolumeManager::TREE && top != &o;
   string prefix(isTop ? "" : "++  ");
   os << prefix << (isTop ? "TOP Level " : "Secondary ") << "Volume manager:" << &o << " " << o.detector.name() << " IDD:"
       << o.id.toString() << " SysID:" << (void*) o.sysID << " " << o.managers.size() << " subsections " << o.volumes.size()

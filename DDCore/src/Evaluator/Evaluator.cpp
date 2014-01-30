@@ -30,13 +30,32 @@ struct Item {
 typedef char * pchar;
 typedef hash_map<string,Item> dic_type;
 
-struct Struct {
-  dic_type theDictionary;
-  pchar    theExpression;
-  pchar    thePosition;
-  int      theStatus;
-  double   theResult;
-};
+namespace {
+  struct Struct {
+    dic_type theDictionary;
+    pchar    theExpression;
+    pchar    thePosition;
+    int      theStatus;
+    double   theResult;
+  };
+
+  union FCN {
+    void* ptr;
+    double (*f0)();
+    double (*f1)(double);
+    double (*f2)(double,double);
+    double (*f3)(double,double,double);
+    double (*f4)(double,double,double,double);
+    double (*f5)(double,double,double,double,double);
+    FCN(void* p) { ptr = p; }
+    FCN(double (*f)()) { f0 = f; }
+    FCN(double (*f)(double)) { f1 = f; }
+    FCN(double (*f)(double,double)) { f2 = f; }
+    FCN(double (*f)(double,double,double)) { f3 = f; }
+    FCN(double (*f)(double,double,double,double)) { f4 = f; }
+    FCN(double (*f)(double,double,double,double,double)) { f5 = f; }
+  }; 
+}
 
 //---------------------------------------------------------------------------
 #define EVAL XmlTools::Evaluator
@@ -91,7 +110,6 @@ static int variable(const string & name, double & result,
     pchar exp_end   = exp_begin + strlen(exp_begin) - 1;
     if (engine(exp_begin, exp_end, result, exp_end, dictionary) == EVAL::OK)
       return EVAL::OK;
-    return EVAL::ERROR_CALCULATION_ERROR;
   }
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
@@ -127,27 +145,25 @@ static int function(const string & name, stack<double> & par,
   for(int i=0; i<npar; i++) { pp[i] = par.top(); par.pop(); }
   errno = 0;
   if (item.function == 0)       return EVAL::ERROR_CALCULATION_ERROR;
+  FCN fcn(item.function);
   switch (npar) {
   case 0:
-    result = ((double (*)())item.function)();
+    result = (*fcn.f0)();
     break;  
   case 1:
-    result = ((double (*)(double))item.function)(pp[0]);
+    result = (*fcn.f1)(pp[0]);
     break;  
   case 2:
-    result = ((double (*)(double,double))item.function)(pp[1], pp[0]);
+    result = (*fcn.f2)(pp[1], pp[0]);
     break;  
   case 3:
-    result = ((double (*)(double,double,double))item.function)
-      (pp[2],pp[1],pp[0]);
+    result = (*fcn.f3)(pp[2],pp[1],pp[0]);
     break;  
   case 4:
-    result = ((double (*)(double,double,double,double))item.function)
-      (pp[3],pp[2],pp[1],pp[0]);
+    result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
     break;  
   case 5:
-    result = ((double (*)(double,double,double,double,double))item.function)
-      (pp[4],pp[3],pp[2],pp[1],pp[0]);
+    result = (*fcn.f5)(pp[4],pp[3],pp[2],pp[1],pp[0]);
     break;  
   }
   return (errno == 0) ? EVAL::OK : EVAL::ERROR_CALCULATION_ERROR;
@@ -327,7 +343,6 @@ static int maker(int op, stack<double> & val)
     errno = 0;
     val.top() = pow(val1,val2);
     if (errno == 0) return EVAL::OK;
-    return EVAL::ERROR_CALCULATION_ERROR;
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
   }
@@ -593,11 +608,10 @@ double Evaluator::evaluate(const char * expression) {
   s->theStatus     = WARNING_BLANK_STRING;
   s->theResult     = 0.0;
   if (expression != 0) {
-    size_t len = strlen(expression);
-    s->theExpression = new char[len+1];
-    strncpy(s->theExpression, expression, len+1);
+    s->theExpression = new char[strlen(expression)+1];
+    strcpy(s->theExpression, expression);
     s->theStatus = engine(s->theExpression,
-			  s->theExpression+len-1,
+			  s->theExpression+strlen(expression)-1,
 			  s->theResult,
 			  s->thePosition,
 			  s->theDictionary);
@@ -658,29 +672,35 @@ void Evaluator::setVariable(const char * name, const char * expression)
 { setItem("", name, Item(expression), (Struct *)p); }
 
 //---------------------------------------------------------------------------
-void Evaluator::setFunction(const char * name,
-			    double (*fun)())
-{ setItem("0", name, Item((void *)fun), (Struct *)p); }
+void Evaluator::setFunction(const char * name,double (*fun)())   { 
+  FCN fcn(fun);
+  setItem("0", name, Item(fcn.ptr), (Struct *)p); 
+}
 
-void Evaluator::setFunction(const char * name,
-			    double (*fun)(double))
-{ setItem("1", name, Item((void *)fun), (Struct *)p); }
+void Evaluator::setFunction(const char * name,double (*fun)(double))   { 
+  FCN fcn(fun);
+  setItem("1", name, Item(fcn.ptr), (Struct *)p); 
+}
 
-void Evaluator::setFunction(const char * name,
-			    double (*fun)(double,double))
-{ setItem("2", name, Item((void *)fun), (Struct *)p); }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
+  FCN fcn(fun);
+  setItem("2", name, Item(fcn.ptr), (Struct *)p); 
+}
 
-void Evaluator::setFunction(const char * name,
-			    double (*fun)(double,double,double))
-{ setItem("3", name, Item((void *)fun), (Struct *)p); }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
+  FCN fcn(fun);
+  setItem("3", name, Item(fcn.ptr), (Struct *)p); 
+}
 
-void Evaluator::setFunction(const char * name,
-			    double (*fun)(double,double,double,double))
-{ setItem("4", name, Item((void *)fun), (Struct *)p); }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
+  FCN fcn(fun);
+  setItem("4", name, Item(fcn.ptr), (Struct *)p); 
+}
 
-void Evaluator::setFunction(const char * name,
-			    double (*fun)(double,double,double,double,double))
-{ setItem("5", name, Item((void *)fun), (Struct *)p); }
+void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
+  FCN fcn(fun);
+  setItem("5", name, Item(fcn.ptr), (Struct *)p); 
+}
 
 //---------------------------------------------------------------------------
 bool Evaluator::findVariable(const char * name) const {

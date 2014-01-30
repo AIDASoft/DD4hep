@@ -319,7 +319,7 @@ typedef DDSegmentation::Segmentation _Segmentation;
 //INSTANTIATE_UNNAMED(_Segmentation);
 namespace DD4hep {
   namespace Geometry {
-    template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string& t) {
+    template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string&) {
       this->m_element = s;
       s->setName(n);
     }

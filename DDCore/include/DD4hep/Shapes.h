@@ -297,6 +297,9 @@ namespace DD4hep {
      *   @version 1.0
      */
     struct Trap: public Solid_type<TGeoTrap> {
+    private:
+      void make(double pz, double py, double px, double pLTX);
+    public:
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Trap(const Handle<Q>& e)
           : Solid_type<TGeoTrap>(e) {
@@ -307,8 +310,12 @@ namespace DD4hep {
           double alpha2);
 
       /// Constructor to create a new anonymous object for right angular wedge from STEP (Se G4 manual for details)
-      Trap(double pz, double py, double px, double pLTX);
-
+      Trap(double pz, double py, double px, double pLTX)  {  make(pz,py,px,pLTX);  }
+      
+      /// Constructor to create a new anonymous object with attribute initialization
+      template <typename PZ,typename PY,typename PX,typename PLTX> Trap(PZ pz, PY py, PX px, PLTX pLTX)
+      { make(_toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); } 
+      
       /// Set the trap dimensions
       Trap& setDimensions(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2,
           double x3, double x4, double alpha2);
@@ -320,12 +327,19 @@ namespace DD4hep {
      *   @version 1.0
      */
     struct Trapezoid: public Solid_type<TGeoTrd2> {
+    private:
+      void make(double x1, double x2, double y1, double y2, double z);
+    public:
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Trapezoid(const Handle<Q>& e)
           : Solid_type<TGeoTrd2>(e) {
       }
       /// Constructor to create a new anonymous object with attribute initialization
-      Trapezoid(double x1, double x2, double y1, double y2, double z);
+      Trapezoid(double x1, double x2, double y1, double y2, double z) { make(x1,x2,y1,y2,z);  }
+      /// Constructor to create a new anonymous object with attribute initialization
+      template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
+	Trapezoid(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
+      { make(_toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); } 
       /// Set the Trapezoid dimensions
       Trapezoid& setDimensions(double x1, double x2, double y1, double y2, double z);
     };
@@ -336,12 +350,20 @@ namespace DD4hep {
      *   @version 1.0
      */
     struct Torus: public Solid_type<TGeoTorus> {
+    private:
+      void make(double r, double rmin, double rmax, double phi, double delta_phi);
+    public:
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Torus(const Handle<Q>& e)
           : Solid_type<TGeoTorus>(e) {
       }
       /// Constructor to create a new anonymous object with attribute initialization
-      Torus(double r, double rmin, double rmax, double phi = M_PI*RAD_2_DEGREE, double delta_phi = 2. * M_PI*RAD_2_DEGREE);
+      template<typename R, typename RMIN, typename RMAX, typename PHI, typename DELTA_PHI>
+	Torus(R r, RMIN rmin, RMAX rmax, PHI phi = M_PI*RAD_2_DEGREE, DELTA_PHI delta_phi = 2. * M_PI*RAD_2_DEGREE)
+      {   make(_toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(phi),_toDouble(delta_phi));  }
+      /// Constructor to create a new anonymous object with attribute initialization
+      Torus(double r, double rmin, double rmax, double phi = M_PI*RAD_2_DEGREE, double delta_phi = 2. * M_PI*RAD_2_DEGREE)
+	{   make(r,rmin,rmax,phi,delta_phi);  }
       /// Set the Torus dimensions
       Torus& setDimensions(double r, double rmin, double rmax, double phi, double delta_phi);
     };

@@ -26,6 +26,10 @@ Readout::Object::Object() {
 Readout::Object::~Object() {
   //destroyHandle(segmentation);
   InstanceCount::decrement(this);
+  if ( segmentation.isValid() )  {
+    delete segmentation.ptr();
+    segmentation = Segmentation();
+  }
 }
 
 /// Initializing constructor to create a new object

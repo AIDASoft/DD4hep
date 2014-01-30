@@ -27,7 +27,7 @@ target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDSegmentati
 add_library(DD4hepPlugins SHARED ${plugin_sources})
 target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
 
-
+SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 SET_TARGET_PROPERTIES( DD4hepCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 #---Rootmap generation--------------------------------------------------------------

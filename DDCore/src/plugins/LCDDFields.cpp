@@ -13,7 +13,7 @@
 
 using namespace DD4hep::Geometry;
 
-static Ref_t convert_constant_field(LCDD& lcdd, xml_h field, Ref_t object) {
+static Ref_t convert_constant_field(LCDD&, xml_h field, Ref_t object) {
   xml_doc_t doc = xml_elt_t(field).document();
   ConstantField* s = object.data<ConstantField>();
   field.setAttr(_U(lunit), "mm");
@@ -30,9 +30,9 @@ static Ref_t convert_constant_field(LCDD& lcdd, xml_h field, Ref_t object) {
   field.append(strength);
   return object;
 }
-DECLARE_XML_PROCESSOR(ConstantField_Convert2LCDD,convert_constant_field);
+DECLARE_XML_PROCESSOR(ConstantField_Convert2LCDD,convert_constant_field)
 
-static Ref_t convert_solenoid(LCDD& lcdd, xml_h field, Ref_t object) {
+static Ref_t convert_solenoid(LCDD&, xml_h field, Ref_t object) {
   char text[128];
   SolenoidField* s = object.data<SolenoidField>();
   field.setAttr(_U(lunit), "mm");
@@ -49,9 +49,9 @@ static Ref_t convert_solenoid(LCDD& lcdd, xml_h field, Ref_t object) {
   field.setAttr(_U(zmax), s->maxZ);
   return object;
 }
-DECLARE_XML_PROCESSOR(solenoid_Convert2LCDD,convert_solenoid);
+DECLARE_XML_PROCESSOR(solenoid_Convert2LCDD,convert_solenoid)
 
-static Ref_t convert_dipole(LCDD& lcdd, xml_h field, Ref_t object) {
+static Ref_t convert_dipole(LCDD&, xml_h field, Ref_t object) {
   char text[128];
   xml_doc_t doc = xml_elt_t(field).document();
   DipoleField* s = object.data<DipoleField>();
@@ -71,5 +71,5 @@ static Ref_t convert_dipole(LCDD& lcdd, xml_h field, Ref_t object) {
   }
   return object;
 }
-DECLARE_XML_PROCESSOR(DipoleField_Convert2LCDD,convert_dipole);
+DECLARE_XML_PROCESSOR(DipoleField_Convert2LCDD,convert_dipole)
 

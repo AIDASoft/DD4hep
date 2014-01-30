@@ -99,7 +99,7 @@ LCDDConverter::~LCDDConverter() {
 }
 
 /// Dump element in GDML format to output stream
-xml_h LCDDConverter::handleElement(const string& name, const TGeoElement* element) const {
+xml_h LCDDConverter::handleElement(const string& /* name */, const TGeoElement* element) const {
   GeometryInfo& geo = data();
   xml_h e = geo.xmlElements[element];
   if (!e) {
@@ -316,7 +316,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       solid.setAttr(_U(numsides), s->GetNedges());
       solid.setAttr(_U(aunit), "rad");
       solid.setAttr(_U(lunit), "mm");
-      for (size_t i = 0; i < s->GetNz(); ++i) {
+      for (Int_t i = 0; i < s->GetNz(); ++i) {
         zplane = xml_elt_t(geo.doc, _U(zplane));
         zplane.setAttr(_U(rmin), s->GetRmin(i) * CM_2_MM);
         zplane.setAttr(_U(rmax), s->GetRmax(i) * CM_2_MM);
@@ -332,7 +332,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       solid.setAttr(_U(deltaphi), s->GetDphi() * DEGREE_2_RAD);
       solid.setAttr(_U(aunit), "rad");
       solid.setAttr(_U(lunit), "mm");
-      for (size_t i = 0; i < s->GetNz(); ++i) {
+      for (Int_t i = 0; i < s->GetNz(); ++i) {
         zplane = xml_elt_t(geo.doc, _U(zplane));
         zplane.setAttr(_U(rmin), s->GetRmin(i) * CM_2_MM);
         zplane.setAttr(_U(rmax), s->GetRmax(i) * CM_2_MM);
@@ -470,7 +470,6 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       solid.setAttr(_U(name), Unicode(name));
       first.setAttr(_U(ref), ls->GetName());
       const double *tr = lm->GetTranslation();
-      double phi = 0., theta = 0., psi = 0.;
 
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
         first.append(obj = xml_elt_t(geo.doc, _U(firstposition)));
@@ -493,7 +492,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       tr = rm->GetTranslation();
       solid.append(second = xml_elt_t(geo.doc, _U(second)));
       second.setAttr(_U(ref), rs->GetName());
-      ::snprintf(text, sizeof(text), "_%p_", rm);
+      ::snprintf(text, sizeof(text), "_%p_", (void*)rm);
       string rnam = rs->GetName();
       rnam += text;
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
@@ -651,7 +650,7 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
 }
 
 /// Dump logical volume in GDML format to output stream
-xml_h LCDDConverter::handleVolumeVis(const string& name, const TGeoVolume* volume) const {
+xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume* volume) const {
   GeometryInfo& geo = data();
   xml_h vol = geo.xmlVolumes[volume];
   if (!vol) {
@@ -672,7 +671,7 @@ xml_h LCDDConverter::handleVolumeVis(const string& name, const TGeoVolume* volum
 }
 
 /// Dump logical volume in GDML format to output stream
-void LCDDConverter::collectVolume(const string& name, const TGeoVolume* volume) const {
+void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* volume) const {
   Volume v = Ref_t(volume);
   if (dynamic_cast<const Volume::Object*>(volume)) {
     GeometryInfo& geo = data();
@@ -729,9 +728,9 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
     place.setRef(_U(volumeref), vol.name());
     if (m) {
       char text[32];
-      ::snprintf(text, sizeof(text), "_%p_pos", node);
+      ::snprintf(text, sizeof(text), "_%p_pos", (void*)node);
       xml_ref_t pos = handlePosition(name + text, m);
-      ::snprintf(text, sizeof(text), "_%p_rot", node);
+      ::snprintf(text, sizeof(text), "_%p_rot", (void*)node);
       xml_ref_t rot = handleRotation(name + text, m);
       place.setRef(_U(positionref), pos.name());
       place.setRef(_U(rotationref), rot.name());
@@ -757,7 +756,7 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
 }
 
 /// Convert the geometry type region into the corresponding LCDD object(s).
-xml_h LCDDConverter::handleRegion(const std::string& name, const TNamed* region) const {
+xml_h LCDDConverter::handleRegion(const std::string& /* name */, const TNamed* region) const {
   GeometryInfo& geo = data();
   xml_h reg = geo.xmlRegions[region];
   if (!reg) {
@@ -774,7 +773,7 @@ xml_h LCDDConverter::handleRegion(const std::string& name, const TNamed* region)
 }
 
 /// Convert the geometry type LimitSet into the corresponding LCDD object(s)
-xml_h LCDDConverter::handleLimitSet(const std::string& name, const TNamed* limitset) const {
+xml_h LCDDConverter::handleLimitSet(const std::string& /* name */, const TNamed* limitset) const {
   GeometryInfo& geo = data();
   xml_h xml = geo.xmlLimits[limitset];
   if (!xml) {
@@ -829,7 +828,7 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
 }
 
 /// Convert the geometry type SensitiveDetector into the corresponding LCDD object(s).
-xml_h LCDDConverter::handleSensitive(const string& name, const TNamed* sens_det) const {
+xml_h LCDDConverter::handleSensitive(const string& /* name */, const TNamed* sens_det) const {
   GeometryInfo& geo = data();
   xml_h sensdet = geo.xmlSensDets[sens_det];
   if (!sensdet) {
@@ -891,7 +890,7 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
 }
 
 /// Convert the geometry visualisation attributes to the corresponding LCDD object(s).
-xml_h LCDDConverter::handleVis(const string& name, const TNamed* v) const {
+xml_h LCDDConverter::handleVis(const string& /* name */, const TNamed* v) const {
   GeometryInfo& geo = data();
   xml_h vis = geo.xmlVis[v];
   if (!vis) {
@@ -926,7 +925,7 @@ xml_h LCDDConverter::handleVis(const string& name, const TNamed* v) const {
 }
 
 /// Convert the electric or magnetic fields into the corresponding Xml object(s).
-xml_h LCDDConverter::handleField(const std::string& name, const TNamed* f) const {
+xml_h LCDDConverter::handleField(const std::string& /* name */, const TNamed* f) const {
   GeometryInfo& geo = data();
   xml_h field = geo.xmlFields[f];
   if (!field) {
@@ -1097,7 +1096,6 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
 
 /// Create geometry conversion
 xml_doc_t LCDDConverter::createVis(DetElement top) {
-  LCDD& lcdd = m_lcdd;
   if (!top.isValid()) {
     throw runtime_error("Attempt to call createLCDD with an invalid geometry!");
   }
@@ -1247,9 +1245,9 @@ static long create_vis(LCDD& lcdd, int argc, char** argv) {
   return dump_output(wr.createVis(lcdd.world()), argc, argv);
 }
 
-static long create_visASCII(LCDD& lcdd, int argc, char** argv) {
+static long create_visASCII(LCDD& lcdd, int /* argc */, char** argv) {
   LCDDConverter wr(lcdd);
-  xml_doc_t doc = wr.createVis(lcdd.world());
+  /* xml_doc_t doc = */ wr.createVis(lcdd.world());
   LCDDConverter::GeometryInfo& geo = wr.data();
   map<string, xml_comp_t> vis_map;
   for (xml_coll_t c(geo.doc_display, _U(vis)); c; ++c)
@@ -1271,7 +1269,7 @@ static long create_visASCII(LCDD& lcdd, int argc, char** argv) {
   return 1;
 }
 
-DECLARE_APPLY(DD4hepGeometry2VIS, create_vis);
-DECLARE_APPLY(DD4hepGeometry2VISASCII, create_visASCII);
-DECLARE_APPLY(DD4hepGeometry2GDML, create_gdml);
-DECLARE_APPLY(DD4hepGeometry2LCDD, create_lcdd);
+DECLARE_APPLY(DD4hepGeometry2VIS, create_vis)
+DECLARE_APPLY(DD4hepGeometry2VISASCII, create_visASCII)
+DECLARE_APPLY(DD4hepGeometry2GDML, create_gdml)
+DECLARE_APPLY(DD4hepGeometry2LCDD, create_lcdd)

@@ -42,9 +42,7 @@ using namespace DD4hep;
 using namespace std;
 namespace {
   struct TopDetElement: public DetElement {
-    TopDetElement(const string& nam, Volume vol)
-        : DetElement(nam,/* "structure", */0) {
-      //object<Object>().volume = vol;
+    TopDetElement(const string& nam) : DetElement(nam,/* "structure", */0) {
     }
   };
   struct TypePreserve {
@@ -171,9 +169,7 @@ void* LCDDImp::addUserExtension(void* ptr, const std::type_info& info) {
       ExtensionEntry entry;
       entry.id = ++s_extensionID;
       m.insert(make_pair(&info, entry));
-      i = m.find(&info);
     }
-    ExtensionEntry& e = (*i).second;
     //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
     return m_extensions[&info] = ptr;
   }
@@ -263,7 +259,6 @@ namespace {
       string nam;
       cout << "++ Patching names of anonymous shapes...." << endl;
       for (GeoHandler::Data::const_reverse_iterator i = data.rbegin(); i != data.rend(); ++i) {
-        int level = (*i).first;
         const GeoHandler::Data::mapped_type& v = (*i).second;
         for (GeoHandler::Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
           const TGeoNode* n = *j;
@@ -316,8 +311,6 @@ namespace {
 void LCDDImp::endDocument() {
   TGeoManager* mgr = m_manager;
   if (!mgr->IsClosed()) {
-    LCDD& lcdd = *this;
-
 #if 0
     Region trackingRegion("TrackingRegion");
     trackingRegion.setThreshold(1);
@@ -338,8 +331,8 @@ void LCDDImp::endDocument() {
     worldVis.setColor(1.0, 1.0, 1.0);
     worldVis.setLineStyle(VisAttr::SOLID);
     worldVis.setDrawingStyle(VisAttr::WIREFRAME);
-#ifndef DD4HEP_EMULATE_TGEOEXTENSIONS
     m_worldVol.setVisAttributes(worldVis);
+#ifndef DD4HEP_EMULATE_TGEOEXTENSIONS
 #endif
     add(worldVis);
 
@@ -356,27 +349,24 @@ void LCDDImp::init() {
     TGeoManager* mgr = m_manager;
     Box worldSolid("world_x", "world_y", "world_z");
     std::cout << " *********** created World volume with size : " << worldSolid->GetDX() << ", " << worldSolid->GetDY() << ", "
-        << worldSolid->GetDZ() << std::endl;
-    Material vacuum = material("Vacuum");
-    Material air = material("Air");
-    Volume world("world_volume", worldSolid, air);
+	      << worldSolid->GetDZ() << std::endl;
 
-    m_world = TopDetElement("world", world);
+    m_materialAir = material("Air");
+    m_materialVacuum = material("Vacuum");
+
+    Volume world("world_volume", worldSolid, m_materialAir);
+    m_world = TopDetElement("world");
     m_worldVol = world;
 
 #if 0
-    Tube trackingSolid(0.,
-        _toDouble("tracking_region_radius"),
-        _toDouble("2*tracking_region_zmax"),2*M_PI);
-    Volume tracking("tracking_volume",trackingSolid, air);
-    m_trackers = TopDetElement("tracking",tracking);
+    Tube trackingSolid(0.,"tracking_region_radius","2*tracking_region_zmax",2*M_PI);
+    Volume tracking("tracking_volume",trackingSolid, m_materialAir);
+    m_trackers = TopDetElement("tracking");
     m_trackingVol = tracking;
     PlacedVolume pv = m_worldVol.placeVolume(tracking);
     m_trackers.setPlacement(pv);
     m_world.add(m_trackers);
 #endif
-    m_materialAir = air;
-    m_materialVacuum = vacuum;
     m_detectors.append(m_world);
     m_manager->SetTopVolume(m_worldVol.ptr());
     m_world.setPlacement(PlacedVolume(mgr->GetTopNode()));

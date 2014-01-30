@@ -35,7 +35,6 @@ namespace {
     return s_map;
   }
 }
-;
 
 static bool find_child(TGeoNode* parent, TGeoNode* child, vector<TGeoNode*>& path) {
   if (parent && child) {
@@ -290,12 +289,12 @@ void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)
       m.insert(make_pair(&info, entry));
       i = m.find(&info);
     }
-    ExtensionEntry& e = (*i).second;
     //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
     return o.extensions[&info] = ptr;
   }
   throw runtime_error(
-      "DD4hep: addExtension: The object " + string(name()) + " already has an extension of type:" + string(info.name()) + ".");
+      "DD4hep: addExtension: The object " + string(name()) 
+      + " already has an extension of type:" + string(info.name()) + ".");
 }
 
 /// Access an existing extension object from the detector element
@@ -717,8 +716,7 @@ void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, void (
       m.insert(make_pair(&info, entry));
       i = m.find(&info);
     }
-    ExtensionEntry& e = (*i).second;
-    cout << "Extension[" << name() << "]:" << ptr << " " << typeid(*(TNamed*) ptr).name() << endl;
+    //cout << "Add Extension[" << name() << "]:" << ptr << " " << typeid(*(TNamed*) ptr).name() << endl;
     return o.extensions[&info] = ptr;
   }
   throw runtime_error(
