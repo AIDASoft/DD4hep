@@ -37,6 +37,7 @@ endif()
 if(NOT DD4HEP_USE_XERCESC)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/Geant4XML.cpp)
 endif()
+SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 
 #---------------------------  Main geant4 interface library (no plugins!)-----------
 add_library(DD4hepG4 SHARED ${sources})
