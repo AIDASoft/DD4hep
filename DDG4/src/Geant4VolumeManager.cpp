@@ -86,7 +86,8 @@ namespace {
       }
       for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
         TGeoNode* daughter = node->GetDaughter(idau);
-        if (dynamic_cast<const PlacedVolume::Object*>(daughter)) {
+	PlacedVolume placement(daughter);
+	if ( placement.data() ) {
           scanPhysicalVolume(daughter, ids, sd, chain);
         }
       }

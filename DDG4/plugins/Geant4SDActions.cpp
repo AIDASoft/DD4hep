@@ -12,6 +12,8 @@
 #include "DDG4/Geant4Data.h"
 #include "DD4hep/Printout.h"
 
+using namespace std;
+
 /*
  *   DD4hep namespace declaration
  */
@@ -29,7 +31,7 @@ namespace DD4hep {
     public:
       typedef SimpleHit::Contribution HitContribution;
       /// Standard , initializing constructor
-      Geant4SensitiveAction(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd);
+      Geant4SensitiveAction(Geant4Context* context, const string& name, DetElement det, LCDD& lcdd);
       /// Default destructor
       virtual ~Geant4SensitiveAction();
       /// Define collections created by this sensitivie action object
@@ -53,7 +55,7 @@ namespace DD4hep {
     /// Standard , initializing constructor
     template <typename T> 
     Geant4SensitiveAction<T>::Geant4SensitiveAction(Geant4Context* context, 
-						    const std::string& name, 
+						    const string& name, 
 						    DetElement det, 
 						    LCDD& lcdd)
       : Geant4Sensitive(context,name,det,lcdd), m_collectionID(0)
@@ -147,9 +149,13 @@ namespace DD4hep {
 	hit->length        = hit_len;
 	collection(m_collectionID)->add(hit);
 	mcTruthMgr().mark(h.track,true);
+	if ( 0 == hit->cellID )  {
+	  hit->cellID        = volumeID( step ) ;
+	  throw runtime_error("Invalid CELL ID for hit!");
+	}
 	return true;
       }
-      throw std::runtime_error("new() failed: Cannot allocate hit object");
+      throw runtime_error("new() failed: Cannot allocate hit object");
     }
     typedef Geant4SensitiveAction<SimpleTracker> Geant4SimpleTrackerAction;
 
@@ -175,6 +181,10 @@ namespace DD4hep {
 	coll->add(hit) ;
 	printout(DEBUG,"SimpleTracker","%s> CREATE hit with deposit:%f  Pos:%f %f %f",
 	       c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
+	if ( 0 == hit->cellID )  {
+	  hit->cellID        = volumeID( step ) ;
+	  throw runtime_error("Invalid CELL ID for hit!");
+	}
       }
       else  {
 	printout(DEBUG,"SimpleTracker","%s> UPDATE hit with deposit:%f  Pos:%f %f %f",
@@ -214,8 +224,13 @@ namespace DD4hep {
 	Position        pos     = h.prePos();
 	Hit* hit = coll->find<Hit>(PositionCompare<Hit>(pos));
 	if ( !hit ) {
-	  hit=new Hit(pos);
+	  hit = new Hit(pos);
+	  hit->cellID        = volumeID( step ) ;
 	  coll->add(hit);
+	  if ( 0 == hit->cellID )  {
+	    hit->cellID        = volumeID( step ) ;
+	    throw runtime_error("Invalid CELL ID for hit!");
+	  }
 	}
 	hit->energyDeposit += contrib.deposit;
 	hit->truth.push_back(contrib);

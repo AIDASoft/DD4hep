@@ -35,6 +35,7 @@
 #include "TGeoParaboloid.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
+#include "TGeoManager.h"
 #include "TClass.h"
 #include "TMath.h"
 
@@ -561,7 +562,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
         info.g4AssemblyChildren[ass_mot].push_back(make_pair(id, node));
         return 0;
       }
-      else if ( 0 == g4mot )  {
+      else if ( node != gGeoManager->GetTopNode() && 0 == g4mot )  {
 	throw logic_error("Geant4Converter: Invalid mother volume found!");
       }
       else if (daughter_is_assembly) {
