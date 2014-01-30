@@ -1496,42 +1496,42 @@
             <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
         </readout>
         <readout name="EcalBarrelHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
             <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
         </readout>        
         <readout name="EcalEndcapHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.5" grid_size_y="3.5" />
             <id>system:8,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalBarrelHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
             <id>system:8,barrel:3,module:6,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalEndcapHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="HcalPlugHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="MuonBarrelHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="MuonEndcapHits">
-            <segmentation type="CartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
             <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="SiTrackerForwardHits">
             <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:28</id>
         </readout>
         <readout name="LumiCalHits">
-            <segmentation type="CartesianGridXY" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="0.35*cm" grid_size_y="0.35*cm" />
             <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
         <readout name="BeamCalHits">
-            <segmentation type="CartesianGridXY" gridSizeX="0.35*cm" gridSizeY="0.35*cm" />
+            <segmentation type="CartesianGridXY" grid_size_x="0.35*cm" grid_size_y="0.35*cm" />
             <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
     </readouts>
