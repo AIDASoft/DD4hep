@@ -11,7 +11,7 @@ source @DD4hep_ROOT@/bin/thisdd4hep.sh
 
 export PATH=$PATH:@CMAKE_INSTALL_PREFIX@/bin
 
-if [ @APPLE@ ]
+if [ @USE_DYLD@ ]
 then
     export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
 else

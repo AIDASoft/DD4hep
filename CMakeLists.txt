@@ -76,12 +76,45 @@ if(DD4HEP_WITH_GEANT4)
   find_package( Geant4 ) 
   get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
 
+  #----- if geant4 is build with external CLHEP we also need to export this fact
+
+  string(FIND "${Geant4_THIRD_PARTY_INCLUDE_DIRS}"  "CLHEP" CLHEP_POS )
+ 
+  if( NOT "${CLHEP_POS}" STREQUAL "-1"  )
+
+    set( GEANT4_WITH_CLHEP 1 )
+
+    #---- use FindCLHEP shipped with geant4 -----------
+    set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${Geant4_ROOT}/cmake/Modules ) 
+    
+    if( CLHEP_DIR ) #---- use 'canonical' name -----
+      set( CLHEP_ROOT_DIR ${CLHEP_DIR} )
+    endif()
+
+    find_package( CLHEP REQUIRED)
+
+    get_filename_component(CLHEP_LIBRARY_PATH "${CLHEP_LIBRARIES}" PATH)
+    
+    message( STATUS " *** geant4 was build with external CLHEP *** CLHEP_LIBRARY_PATH = ${CLHEP_LIBRARY_PATH}"  )
+  else()
+    set( GEANT4_WITH_CLHEP 0 )
+  endif()
+
 endif()
 
 
 add_subdirectory(UtilityApps)
 
+
+
 #---Configuration-------------------------------------------------------------------
+# ----for APPLE scripts have to set the DYLD_LIBRARY_PATH ?
+if( APPLE )
+  set( USE_DYLD 1)
+else()
+  set( USE_DYLD 0)
+endif()
+
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
 configure_file(cmake/thisdd4hep.sh  thisdd4hep.sh @ONLY)
 configure_file(cmake/run_test.sh run_test.sh @ONLY)

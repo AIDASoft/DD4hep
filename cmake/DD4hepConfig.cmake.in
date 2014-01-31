@@ -47,6 +47,12 @@ INCLUDE( ${DD4hep_ROOT}/cmake/DD4hepMacros.cmake )
 # first argument should be the package name
 if(@DD4HEP_WITH_GEANT4@)
   CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepPlugins DD4hepG4 ) 
+
+  #--- if geant 4 was built with CLHEP we need to export this to client packages
+  if( @GEANT4_WITH_CLHEP@)
+    set(GEANT4_WITH_CLHEP  1 ) 
+  endif()
+
 else()
   CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepPlugins ) 
 endif()
@@ -57,6 +63,12 @@ if(@DD4HEP_USE_BOOST@)
   include_directories( @Boost_INCLUDE_DIR@ )
   add_definitions(-DDD4HEP_USE_BOOST)
 endif()
+
+
+#----- APPLE ? -------
+
+set( USE_DYLD @USE_DYLD@ )
+MARK_AS_ADVANCED( USE_DYLD )
 
 # ---------- final checking ---------------------------------------------------
 INCLUDE( FindPackageHandleStandardArgs )

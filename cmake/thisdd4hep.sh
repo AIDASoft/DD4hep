@@ -20,13 +20,19 @@ fi
 #----------- source the ROOT environment first
 source @ROOT_ROOT@/bin/thisroot.sh
 
-if [ @DD4hep_WITH_GEANT4@ ]
+if [ @DD4HEP_WITH_GEANT4@ ]
 then
-    export G4INSTALL=@Geant4_ROOT@/../../
-    export G4ENV_INIT=@Geant4_ROOT@/../../bin/geant4.sh
-#    export G4SYSTEM="Darwin-g++"
+    export G4INSTALL=@Geant4_ROOT@
+    export G4ENV_INIT=@Geant4_ROOT@/bin/geant4.sh
+
+# ---------- initialze geant4 environment
     test -r ${G4ENV_INIT} && { cd $(dirname ${G4ENV_INIT}) ; . ./$(basename ${G4ENV_INIT}) ; cd $OLDPWD ; }
+
+    if [ @GEANT4_WITH_CLHEP@ ] ; then
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CLHEP_LIBRARY_PATH@
+    fi
 fi
+
 
 
 #----PATH-----------------------------------------------------------------
@@ -36,18 +42,21 @@ else
   PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH; export PATH
 fi
 
-#----LD_LIBRARY_PATH-----------------------------------------------------------------
-if [ -z "${LD_LIBRARY_PATH}" ]; then
-  LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@Geant4_DIR@/..; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
-else
-  LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@Geant4_DIR@/..:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
-fi
 
-#----DYLD_LIBRARY_PATH---------------------------------------------------------------
-if [ -z "${DYLD_LIBRARY_PATH}" ]; then
-  DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib; export DYLD_LIBRARY_PATH   # Mac OS X
+#----(DY)LD_LIBRARY_PATH---------------------------------------------------------------
+if [ @USE_DYLD@ ]
+then
+    if [ -z "${DYLD_LIBRARY_PATH}" ]; then
+	DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib; export DYLD_LIBRARY_PATH   # Mac OS X
+    else
+	DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
+    fi
 else
-  DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:$DYLD_LIBRARY_PATH; export DYLD_LIBRARY_PATH
+    if [ -z "${LD_LIBRARY_PATH}" ]; then
+	LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@Geant4_DIR@/..; export LD_LIBRARY_PATH       # Linux, ELF HP-UX
+    else
+	LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:@XERCESC_ROOT_DIR@/lib:@Geant4_DIR@/..:$LD_LIBRARY_PATH; export LD_LIBRARY_PATH
+    fi
 fi
 
 #----PYTHONPATH---------------------------------------------------------------
