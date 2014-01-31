@@ -152,8 +152,18 @@ To build and run the simulation examples Geant4 will be required.
 Before any of the (new) examples in the ./examples directory can be build,
 one needs to set the environment:
 
- source __path_where_DD4hep_is_installed_/bin/thisdd4hep.sh
- 
+  source __path_where_DD4hep_is_installed_/bin/thisdd4hep.sh
+  source __path_to_ilcsoft_installation/init_ilcsoft.sh
+
+or, optionally one can initialize ROOT only, and then specify all dependencies
+on the cmake command line - replace 'cmake ..' below with, e.g:
+
+  source /space/ilcsoft/root/5.34.05/bin/thisroot.sh 
+  cmake -DDD4hep_DIR=~/DD4Hep/trunk/ -DGeant4_DIR=/space/ilcsoft/geant4/9.6.p01/lib/Geant4-9.6.1  \
+        -D LCIO_DIR=/space/ilcsoft/v01-17-04/lcio/v02-04-03 -D GEAR_DIR=/space/ilcsoft/v01-17-04/gear/v01-03-01  ..
+
+(change pathes according to your environment)
+
 
 - then building the examples should be very straight forward. e.g:
    (check for additional instructions in example subdirectory)
@@ -170,7 +180,6 @@ or build all examples in one go:
   cmake ..
   make -j install
  
-
 
 - before running the example, initialize the environment:
   . ./bin/thisILDExDet.sh 
