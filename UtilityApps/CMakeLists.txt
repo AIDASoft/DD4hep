@@ -13,6 +13,9 @@ target_link_libraries(geoConverter DD4hepCore)
 #-----------------------------------------------------------------------------------
 add_executable(geoPluginRun src/plugin_runner.cpp)
 target_link_libraries(geoPluginRun DD4hepCore)
+#-----------------------------------------------------------------------------------
+add_executable(teveDisplay src/teve_display.cpp)
+target_link_libraries(teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES})
 
 #--- install target-------------------------------------
 

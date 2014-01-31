@@ -28,11 +28,12 @@ namespace {
 //______________________________________________________________________________
 int main(int argc,char** argv)  {
   string plugin;
+  char plugin_runner[64] = "plugin_runner";
   bool volmgr = false;
   bool destroy = false;
   vector<char*> geo_files;
   vector<char*> arg;
-  arg.push_back("plugin_runner");
+  arg.push_back(plugin_runner);
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
       if ( strncmp(argv[i],"-input",2)==0 )
