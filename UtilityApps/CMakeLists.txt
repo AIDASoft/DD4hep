@@ -19,7 +19,7 @@ target_link_libraries(teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES})
 
 #--- install target-------------------------------------
 
-install(TARGETS geoDisplay geoConverter geoPluginRun
+install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
