@@ -133,28 +133,28 @@ install(TARGETS ${PackageName}
 # 
 ####################################
 
-SET( test_name "test_converter_lcdd" )
+SET( test_name "test_converter_ild_lcdd" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  geoConverter -compact2lcdd -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.lcdd )
+  geoConverter -compact2lcdd -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/ILDEx.xml -output ILDExDet.lcdd )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
 
-SET( test_name "test_converter_gdml" )
+SET( test_name "test_converter_ild_gdml" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  geoConverter -compact2gdml -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.gdml )
+  geoConverter -compact2gdml -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/ILDEx.xml -output ILDExDet.gdml )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
 
-SET( test_name "test_converter_vis" )
+SET( test_name "test_converter_ild_vis" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  geoConverter -compact2vis -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.vis )
+  geoConverter -compact2vis -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/ILDEx.xml -output ILDExDet.vis )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
 
 
 #SET( test_name "test_converter_pandora" )
 #ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-#  geoConverter -compact2pandora -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.pandora )
+#  geoConverter -compact2pandora -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/ILDEx.xml -output ILDExDet.pandora )
 ##----- here we simply require that at least 100 volumes have been converted
 #SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
 

@@ -77,6 +77,16 @@ else()
   dd4hep_generate_rootmap(${PackageName} )
 endif()
 
+#---Testing-------------------------------------------------------------------------
+if(BUILD_TESTING)
+  include(CTest)
+  enable_testing()
+endif(BUILD_TESTING)
+
+configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
+  DESTINATION bin )
+
 
 #---- configure run environment ---------------
 configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
@@ -94,3 +104,32 @@ install(TARGETS ${PackageName}
   )
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
+
+####################################
+#
+#  Add Tests foir CLICSid here
+# 
+####################################
+
+SET( test_name "test_converter_clic_lcdd" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  geoConverter -compact2lcdd -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml -output ILDExDet.lcdd )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+SET( test_name "test_converter_clic_gdml" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  geoConverter -compact2gdml -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml -output ILDExDet.gdml )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+SET( test_name "test_converter_clic_vis" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  geoConverter -compact2vis -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml -output ILDExDet.vis )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+
+
+# no explicit failed condition
+#SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
