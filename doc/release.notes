@@ -1,6 +1,24 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+ --------
+| v00-06 |  sixth beta release ...
+ --------   
+
+2014/02/04  Frank Gaede
+-----------------------
+  - fixed environment scripts thisdd4hep.sh and this${PackageName}.sh
+    to also export library pathes for external libraries (CLHEP, LCIO, gear)
+
+  - added some simple tests to ILDExDet, ILDExSimu and noviceN04
+    - provide cmake script run_test_package.sh ( configured as run_test_${PackageName} ) 
+      to call test binaries after initializing the environment
+      (needed for automated/nightly tests)
+
+  - updated Readme.txt wrt build procedure and running the tests
+
+
 2014/01/17    Markus Frank
 --------------------------
   - Prepare implementation of Alignment using Release and Grap features of TGeoVolume

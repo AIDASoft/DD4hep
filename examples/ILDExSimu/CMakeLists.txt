@@ -54,6 +54,10 @@ INCLUDE(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and 
 
 
 find_package(LCIO REQUIRED) 
+# add all lcio library pathes to External_LIBRARY_DIRS for the environment script
+foreach(lp ${LCIO_LIBRARY_DIRS})
+  set( External_LIBRARY_DIRS "${External_LIBRARY_DIRS} ${lp}")
+endforeach(lp) 
 
 
 #-------------------------------------------------------------
@@ -90,6 +94,16 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}
   )
 
 
+#---Testing-------------------------------------------------------------------------
+if(BUILD_TESTING)
+  include(CTest)
+  enable_testing()
+endif(BUILD_TESTING)
+
+configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
+  DESTINATION bin )
+
 #---Rootmap generation--------------------------------------------------------------
 # fg: not needed here (?)
 #if(APPLE)
@@ -117,3 +131,17 @@ install(TARGETS ${PackageName}
 
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
+
+####################################
+#
+#  Add Tests foir ILDExSimu here
+# 
+####################################
+
+SET( test_name "test_sim_ildexdet" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  ILDExSimu file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/ILDEx.xml file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/geant4.xml ${CMAKE_CURRENT_SOURCE_DIR}/run1.mac )
+
+#----- check for typical expected output:
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Begin of event: 2" )
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "-End of Run-" )

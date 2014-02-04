@@ -17,3 +17,20 @@ then
 else
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
 fi
+
+
+# -- need to extend dynamic search path for all external libraries:
+
+for lp in @External_LIBRARY_DIRS@
+do
+
+
+    if [ @USE_DYLD@ ]
+    then
+	# echo "  ### 	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp} "
+	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp}
+    else
+	# echo "  ### 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp} "
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp}
+    fi
+done

@@ -44,16 +44,8 @@ set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 # add additional packages here
 
 find_package(Geant4 REQUIRED ui_all vis_all)
-##---Handle the case CLHEP is not included in Geant4------------------------------
-#if(NOT Geant4_clhep_FOUND)
-#  find_package(CLHEP REQUIRED)
-#  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
-#  set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
-#endif()
+
 INCLUDE(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs
-
-
-#find_package(LCIO REQUIRED) 
 
 
 #-------------------------------------------------------------
@@ -87,14 +79,18 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}
 
 add_executable( exampleN04 exampleN04.cc )
 
-target_link_libraries(exampleN04 ${PackageName} 
-#  ${DD4hep_LIBRARIES}  
-#  ${ROOT_LIBRARIES} 
-#  ${ROOT_COMPONENT_LIBRARIES} 
-#  ${Geant4_LIBRARIES} 
-#  ${LCIO_LIBRARIES}
-  )
+target_link_libraries(exampleN04 ${PackageName}  )
 
+
+#---Testing-------------------------------------------------------------------------
+if(BUILD_TESTING)
+  include(CTest)
+  enable_testing()
+endif(BUILD_TESTING)
+
+configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
+  DESTINATION bin )
 
 #---Rootmap generation--------------------------------------------------------------
 if(APPLE)
@@ -102,6 +98,9 @@ if(APPLE)
 else()
   dd4hep_generate_rootmap(${PackageName} )
 endif()
+
+
+
 
 
 #---- configure run environment ---------------
@@ -145,3 +144,17 @@ install(TARGETS ${PackageName} exampleN04
 
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
+
+
+####################################
+#
+#  Add Tests foir noviceN04 here
+# 
+####################################
+
+SET( test_name "test_noviceN04" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  exampleN04 file:${CMAKE_CURRENT_SOURCE_DIR}/compact/N04.xml file:${CMAKE_CURRENT_SOURCE_DIR}/compact/geant4.xml ${CMAKE_CURRENT_SOURCE_DIR}/exampleN04.in )
+
+#----- check for typical expected output:
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Number of events processed : 3" )

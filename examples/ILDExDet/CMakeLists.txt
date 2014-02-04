@@ -41,7 +41,16 @@ find_package( ROOT REQUIRED )
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 
+
 find_package( GEAR REQUIRED)
+
+# add all gear library pathes to External_LIBRARY_DIRS for the environment script
+foreach(lp ${GEAR_LIBRARY_DIRS})
+  set( External_LIBRARY_DIRS "${External_LIBRARY_DIRS} ${lp}")
+endforeach(lp) 
+#message( STATUS " *** pathes : ${External_LIBRARY_DIRS} "  )
+
+
 #-------------------------------------------------------------
 # add additional packages here
 
@@ -81,6 +90,16 @@ else()
 endif()
 
 
+#---Testing-------------------------------------------------------------------------
+if(BUILD_TESTING)
+  include(CTest)
+  enable_testing()
+endif(BUILD_TESTING)
+
+configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
+  DESTINATION bin )
+
 #---- configure run environment ---------------
 configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
@@ -102,5 +121,45 @@ install(TARGETS ${PackageName}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
+
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
+
+
+
+####################################
+#
+#  Add Tests foir ILDExDet here
+# 
+####################################
+
+SET( test_name "test_converter_lcdd" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  geoConverter -compact2lcdd -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.lcdd )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+SET( test_name "test_converter_gdml" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  geoConverter -compact2gdml -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.gdml )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+SET( test_name "test_converter_vis" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  geoConverter -compact2vis -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.vis )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+
+#SET( test_name "test_converter_pandora" )
+#ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+#  geoConverter -compact2pandora -input ${CMAKE_SOURCE_DIR}/ILDExDet/compact/ILDEx.xml -output ILDExDet.pandora )
+##----- here we simply require that at least 100 volumes have been converted
+#SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
+
+
+# no explicit failed condition
+#SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
+
+

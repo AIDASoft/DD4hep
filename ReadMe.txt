@@ -194,6 +194,16 @@ or build all examples in one go:
   geoConverter -compact2lcdd -input file:../compact/ILDEx.xml -output ILD_toy.lcdd
 
 
+- running example tests:
+  -----------------------
+
+  make install ; make test
+ 
+  or: 
+  ctest -V -R converter
+  ctest -V -R sim
+  ctest -V -R noviceN04
+
 
 9) run SLIC simulation on lccd file created with DD4Hep:
 

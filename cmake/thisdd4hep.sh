@@ -3,8 +3,10 @@
 #
 # This script if for the csh like shells, see thisdd4hep.csh for csh like shells.
 #
-# Author: Pere Mato
+# Author: Pere Mato. F. Gaede
 
+
+#echo " ### thisdd4hep.sh:   initialize the environment for DD4hep ! " 
 
 if [ "x${BASH_ARGV[0]}" = "x" ]; then
     if [ ! -f bin/thisdd4hep.sh ]; then
@@ -28,8 +30,15 @@ then
 # ---------- initialze geant4 environment
     test -r ${G4ENV_INIT} && { cd $(dirname ${G4ENV_INIT}) ; . ./$(basename ${G4ENV_INIT}) ; cd $OLDPWD ; }
 
+
+#---- if geant4 was built with external CLHEP we have to extend the dynamic search path
     if [ @GEANT4_WITH_CLHEP@ ] ; then
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CLHEP_LIBRARY_PATH@
+	if [ @USE_DYLD@ ]
+	then
+	    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:@CLHEP_LIBRARY_PATH@
+	else
+	    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CLHEP_LIBRARY_PATH@
+	fi
     fi
 fi
 

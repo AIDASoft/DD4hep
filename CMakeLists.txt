@@ -4,7 +4,7 @@ project(DD4hep)
 
 # project version
 SET( DD4hep_VERSION_MAJOR 0 )
-SET( DD4hep_VERSION_MINOR 5 )
+SET( DD4hep_VERSION_MINOR 6 )
 SET( DD4hep_VERSION_PATCH 0 )
 
 SET( DD4hep_VERSION "${DD4hep_VERSION_MAJOR}.${DD4hep_VERSION_MINOR}" )
@@ -108,11 +108,9 @@ add_subdirectory(UtilityApps)
 
 
 #---Configuration-------------------------------------------------------------------
-# ----for APPLE scripts have to set the DYLD_LIBRARY_PATH ?
-if( APPLE )
+# ----for APPLE scripts have to set the DYLD_LIBRARY_PATH 
+if( APPLE ) 
   set( USE_DYLD 1)
-else()
-  set( USE_DYLD 0)
 endif()
 
 configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
@@ -125,7 +123,7 @@ install(FILES ${CMAKE_BINARY_DIR}/thisdd4hep.csh ${CMAKE_BINARY_DIR}/thisdd4hep.
 install(PROGRAMS ${CMAKE_BINARY_DIR}/run_test.sh
   DESTINATION bin
   )
-#  PERMISSIONS OWNER_READ, OWNER_WRITE, OWNER_EXECUTE, GROUP_READ, GROUP_EXECUTE, WORLD_READ, WORLD_EXECUTE,
+
 #-----------------------------------------------------------------------------------
 display_std_variables()
 
