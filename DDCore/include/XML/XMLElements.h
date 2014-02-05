@@ -76,6 +76,10 @@ namespace DD4hep {
       XmlException(const std::string& m) : msg(m) {}
       XmlException(const XmlException& e) : msg(e.msg) {}
       virtual ~XmlException() {}
+      XmlException& operator=(const XmlException& c) {
+        if ( &c != this ) msg = c.msg;
+        return *this;
+      }
     };
 #endif
 
@@ -183,6 +187,10 @@ namespace DD4hep {
       Strng_t(const std::string& c) {
         m_xml = XmlString::transcode(c.c_str());
       }
+      /// Copy constructor
+      Strng_t(const Strng_t& c) {
+        m_xml = XmlString::replicate(c.m_xml);
+      }
       /// Default destructor - release unicode string
       ~Strng_t() {
         if (m_xml)
@@ -238,7 +246,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Tag_t: public Strng_t {
+    struct Tag_t : public Strng_t {
       /// STL string buffer
       std::string m_str;
 
@@ -504,7 +512,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Collection_t: public Handle_t {
+    struct Collection_t : public Handle_t {
       /// Reference to the list of child nodes
       NodeList m_children;
 #ifndef __TIXML__
@@ -603,7 +611,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct DocumentHolder: public Document {
+    struct DocumentHolder : public Document {
       /// Constructor
       DocumentHolder(DOC d)
           : Document(d) {
@@ -659,7 +667,6 @@ namespace DD4hep {
       Elt_t ptr() const {
         return m_element;
       }
-
       /// Access the tag name of this DOM element
       std::string tag() const {
         return m_element.tag();
@@ -758,7 +765,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct RefElement: public Element {
+    struct RefElement : public Element {
       /// Attribute holding thre name
       Attribute m_name;
       /// Construction from existing object handle

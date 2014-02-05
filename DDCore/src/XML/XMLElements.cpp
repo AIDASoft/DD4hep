@@ -125,19 +125,19 @@ namespace {
       }
     }
     return cnt;
-    //xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
-    //return l ? l->getLength() : INVALID_NODE;
   }
   XmlElement* node_first(XmlElement* e, const XmlChar* t) {
-    //xercesc::DOMNodeList* l = e ? Xml(e).e->getElementsByTagName(t) : 0;
-    //return Xml(l ? l->item(0) : 0).xe;
-    size_t cnt = 0;
-    string tag = _toString(t);
-    xercesc::DOMElement* elt, *ee = e ? Xml(e).e : 0;
-    for(elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
-      if ( elt->getParentNode() == ee )   {
-	string child_tag = _toString(elt->getTagName());
-	if ( child_tag == tag ) return _XE(elt);
+    if ( e )  {
+      size_t cnt = 0;
+      string tag = _toString(t);
+      xercesc::DOMElement* ee = e ? Xml(e).e : 0;
+      if ( ee )  {
+	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
+	  if ( elt->getParentNode() == ee )   {
+	    string child_tag = _toString(elt->getTagName());
+	    if ( child_tag == tag ) return _XE(elt);
+	  }
+	}
       }
     }
     return 0;
@@ -158,12 +158,10 @@ namespace {
   const XmlChar* attribute_value(Attribute a) {
     return Xml(a).a->getValue();
   }
-  int node_type(XmlNode* n) {
-    return Xml(n).n->getNodeType();
-  }
-  int node_type(Handle_t n) {
-    return Xml(n.ptr()).n->getNodeType();
-  }
+#if 0
+int node_type(XmlNode* n) {return Xml(n).n->getNodeType();}
+int node_type(Handle_t n) {return Xml(n.ptr()).n->getNodeType();}
+#endif
 }
 
 string DD4hep::XML::_toString(Attribute attr) {
@@ -405,10 +403,15 @@ Tag_t& Tag_t::operator=(const char* s) {
 }
 
 Tag_t& Tag_t::operator=(const Strng_t& s) {
-  if (m_xml)
+  if (m_xml)  {
     XmlString::release (&m_xml);
-  m_str = s.m_xml ? XmlString::transcode(s.m_xml) : "";
+  }
+  char* ns = s.m_xml ? XmlString::transcode(s.m_xml) : 0;
+  m_str = ns ? ns : "";
   m_xml = XmlString::transcode(m_str.c_str());
+  if (ns)  {
+    XmlString::release(&ns);
+  }
   return *this;
 }
 
@@ -454,9 +457,6 @@ XmlElement* NodeList::reset() {
   return m_ptr=node_first(m_node,m_tag);
 #else
   return m_ptr=node_first(m_node,m_tag);
-  //xercesc::DOMNodeList* l = Xml(m_node).e->getElementsByTagName(m_tag);
-  //m_ptr = (XmlNodeList*) l;
-  //return _XE(l->item(m_index=0));
 #endif
 }
 
@@ -465,7 +465,6 @@ XmlElement* NodeList::next() const {
 #ifdef DD4HEP_USE_TINYXML
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag) : 0);
 #else
-  //return _XE(_L(m_ptr)->item(++m_index));
   xercesc::DOMElement *elt = Xml(m_ptr).e;
   for(elt=elt->getNextElementSibling(); elt; elt=elt->getNextElementSibling()) {
     string child_tag = _toString(elt->getTagName());
@@ -480,7 +479,6 @@ XmlElement* NodeList::previous() const {
 #ifdef DD4HEP_USE_TINYXML
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement(m_tag) : 0);
 #else
-  //return _XE(m_index>0 ? _L(m_ptr)->item(--m_index) : 0);
   xercesc::DOMElement *elt = Xml(m_ptr).e;
   for(elt=elt->getPreviousElementSibling(); elt; elt=elt->getPreviousElementSibling()) {
     string child_tag = _toString(elt->getTagName());

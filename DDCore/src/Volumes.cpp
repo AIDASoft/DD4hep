@@ -44,6 +44,10 @@ namespace DD4hep {
       virtual ~DDExtension() {
 	if ( m_extension ) m_extension->Release();
       }
+      DDExtension& operator=(const DDExtension& c) {
+	if ( this != &c ) SetUserExtension(c.GetUserExtension());
+	return *this;
+      }
       void SetUserExtension(TGeoExtension *ext)  {
 	if (m_extension) m_extension->Release();
 	m_extension = 0;
@@ -54,6 +58,9 @@ namespace DD4hep {
       }
     };
     struct DD_TGeoNodeMatrix : public TGeoNodeMatrix, public DDExtension  {
+    private:
+      DD_TGeoNodeMatrix& operator=(const DD_TGeoNodeMatrix&) { return *this; }
+    public:
       TGeoExtension* m_extension;
       DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
 	: TGeoNodeMatrix(v, m), DDExtension() {
@@ -92,6 +99,7 @@ namespace DD4hep {
     };
 
     template <class T> struct _VolWrap: public T, public DDExtension {
+    public:
       _VolWrap(const char* name) : T(name), DDExtension() {
         INCREMENT_COUNTER;
       }
