@@ -565,7 +565,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       else if ( node != gGeoManager->GetTopNode() && 0 == g4mot )  {
 	throw logic_error("Geant4Converter: Invalid mother volume found!");
       }
-      else if (daughter_is_assembly) {
+      else if ( g4mot && daughter_is_assembly ) {
         printout(DEBUG, "Geant4Converter", "++ Assembly: makeImprint: %16p dau:%s "
             "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n", ass_dau,
             g4mot ? g4mot->GetName().c_str() : "---", transform.dx(), transform.dy(), transform.dz(), rotmat.getPhi(),
@@ -586,6 +586,9 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
           info.g4Placements[v[j].second] = phys_volumes[j];
         }
         return 0;
+      }
+      else if ( daughter_is_assembly ) {  // g4mot is NULL !
+	throw logic_error("Geant4Converter: Invalid mother - daughter relationship in assembly! ["+name+"]");
       }
       g4 = new G4PVPlacement(transform,   // no rotation
           g4vol,     // its logical volume
