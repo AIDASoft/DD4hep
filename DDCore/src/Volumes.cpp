@@ -61,7 +61,6 @@ namespace DD4hep {
     private:
       DD_TGeoNodeMatrix& operator=(const DD_TGeoNodeMatrix&) { return *this; }
     public:
-      TGeoExtension* m_extension;
       DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
 	: TGeoNodeMatrix(v, m), DDExtension() {
         INCREMENT_COUNTER;

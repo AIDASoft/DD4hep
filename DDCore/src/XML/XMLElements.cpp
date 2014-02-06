@@ -116,12 +116,16 @@ void DD4hep::XML::XmlString::release(char** p) {
 namespace {
   size_t node_count(XmlElement* e, const XmlChar* t) {
     size_t cnt = 0;
-    string tag =  _toString(t);
-    xercesc::DOMElement* elt, *ee = e ? Xml(e).e : 0;
-    for(elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
-      if ( elt->getParentNode() == ee )   {
-	string child_tag = _toString(elt->getTagName());
-	if ( child_tag == tag ) ++cnt;
+    if ( e )  {
+      string tag =  _toString(t);
+      xercesc::DOMElement *ee = Xml(e).e;
+      if ( ee )  {
+	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
+	  if ( elt->getParentNode() == ee )   {
+	    string child_tag = _toString(elt->getTagName());
+	    if ( child_tag == tag ) ++cnt;
+	  }
+	}
       }
     }
     return cnt;
@@ -130,7 +134,7 @@ namespace {
     if ( e )  {
       size_t cnt = 0;
       string tag = _toString(t);
-      xercesc::DOMElement* ee = e ? Xml(e).e : 0;
+      xercesc::DOMElement* ee = Xml(e).e;
       if ( ee )  {
 	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
 	  if ( elt->getParentNode() == ee )   {

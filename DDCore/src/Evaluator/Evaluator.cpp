@@ -110,6 +110,7 @@ static int variable(const string & name, double & result,
     pchar exp_end   = exp_begin + strlen(exp_begin) - 1;
     if (engine(exp_begin, exp_end, result, exp_end, dictionary) == EVAL::OK)
       return EVAL::OK;
+    return EVAL::ERROR_CALCULATION_ERROR;
   }
   default:
     return EVAL::ERROR_CALCULATION_ERROR;
