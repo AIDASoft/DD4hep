@@ -156,12 +156,12 @@
         
       
         <detector name="TPC" type="ILDExTPC" vis="TPCVis" id="3" limits="TPC_limits" readout="TPCCollection" insideTrackingVolume="true">
+
            <tubs rmin="TPC_inner_radius" rmax="TPC_outer_radius" zhalf="TPC_zhalf"/>
 
-           <!-- GEAR Data-->
-           <driftlength value="TPC_zhalf*0.9"/>
-           <!-- End of GEAR Data-->
-	   <material name="Air"/>
+           <global driftLength="TPC_zhalf-TPC_endcap_thickness" padWidth="1.0*mm"/>
+
+	   <!-- <material name="Air"/> -->
 
            <detector name="TPC_InnerWall" type="TubeSegment" reflect="true" vis="TPCSupportVis" id="2">
              <material name="Carbon"/>
@@ -192,6 +192,7 @@
              <position x="0" y="0" z="0"/>
              <rotation x="0" y="0" z="0"/>
           </detector>
+
         </detector>
 
         <comment>Calorimeters</comment>

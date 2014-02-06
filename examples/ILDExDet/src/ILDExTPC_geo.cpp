@@ -1,3 +1,4 @@
+
 // $Id: ILDExTPC_geo.cpp 680 2013-08-06 15:07:53Z gaede $
 //====================================================================
 //  AIDA Detector description implementation for LCD
@@ -9,15 +10,16 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Detector.h"
-//#include "TPCModuleData.h"
-#include "TPCData.h"
-//#include "TPCModule.h"
-//#include "FixedPadAngleDiskLayout.h"
+#include "DD4hep/TGeoUnits.h"
 
-#include "GearWrapper.h"
-#include <gearimpl/FixedPadSizeDiskLayout.h>
+#include "TPCData.h"
+
+#include "DDGear.h"
+#include "gearimpl/TPCParametersImpl.h"
+#include "gearimpl/FixedPadSizeDiskLayout.h"
 
 using namespace std;
+//using namespace tgeo ;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
@@ -25,7 +27,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det = e;
   xml_comp_t  x_tube (x_det.child(_U(tubs)));
   string      name  = x_det.nameStr();
-  Material    mat    (lcdd.material(x_det.materialStr()));
+
+  Material envmat = lcdd.material("Air" ) ; // x_det.materialStr()));
+
   //if data is needed do this
   TPCData* tpcData = new TPCData();
   DetElement tpc(tpcData, name, x_det.typeStr());
@@ -33,13 +37,23 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   //else do this
   //DetElement    tpc  (name,x_det.typeStr(),x_det.id());
   Tube        tpc_tub(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
-  Volume      tpc_vol(name+"_envelope_volume", tpc_tub, mat);
+  Volume      tpc_vol(name+"_envelope_volume", tpc_tub, envmat);
+
   Readout     readout(sens.readout());
 
   //--- some parameters needed for gear: 
   double g_driftlength  ;
   double g_rMin, g_rMax, g_padHeight, g_padWidth, g_maxRow, g_padGap, g_phiMax ;
   double g_inner_r, g_outer_r, g_inner_wt, g_outer_wt ;
+
+  xml_comp_t x_global( x_det.child( _Unicode( global ) ) );
+
+  //-------- global gear parameters ----------------
+
+  g_driftlength = x_global.attr<double>("driftLength") ;
+  g_padWidth = x_global.attr<double>("padWidth") ;
+
+  //-------- global gear parameters ----------------
 
 
   for(xml_coll_t c(e,_U(detector)); c; ++c)  {
@@ -49,6 +63,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     xml_dim_t   px_pos  (px_det.child(_U(position)));
     xml_dim_t   px_rot  (px_det.child(_U(rotation)));
     xml_comp_t  px_mat  (px_det.child(_U(material)));
+
+    
+
     string      part_nam(px_det.nameStr());
 
     Material    part_mat(lcdd.material(px_mat.nameStr()));
@@ -85,11 +102,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 
 	  //---------------------------- gear stuff --------------
-	  g_driftlength = zh ;
-	  g_rMin = r0 ;
-	  g_rMax = r1 ;
-	  g_padHeight =  2. * dR   ;
-	  g_padWidth = 1.0 ;    // FIXME:  where do we define this ?
+	  g_driftlength = zh / tgeo::mm ;
+	  g_rMin = r0 /  tgeo::mm ;
+	  g_rMax = r1 /  tgeo::mm ;
+	  g_padHeight =  2. * dR / tgeo::mm  ;
 	  g_maxRow = nTPClayer ;
 	  g_padGap = 0. ;
 	  g_phiMax = 6.283185307e+00 ; // FIXME: where to define ? is it allways 2PI ?
@@ -183,26 +199,32 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   
   //--------------- create gear::TPCParameters and add them as Extension
-  GearTPCParameters* gearTPC = new GearTPCParameters( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
+  //  GearTPCParameters* gearTPC = new GearTPCParameters( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
+  gear::TPCParametersImpl* gearTPC = new gear::TPCParametersImpl( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
   
   gearTPC->setPadLayout( new gear::FixedPadSizeDiskLayout( g_rMin, g_rMax, g_padHeight, g_padWidth, g_maxRow, g_padGap, g_phiMax ) ) ;
 
   Tube t =  DetElement(tpcData->innerWall).volume().solid() ;
-  g_inner_r  = t->GetRmin() * 10.  ;
-  g_inner_wt = ( t->GetRmax() - t->GetRmin() ) * 10. ;
+  g_inner_r  = t->GetRmin() / tgeo::mm   ;
+  g_inner_wt = ( t->GetRmax() - t->GetRmin() ) / tgeo::mm ;
 
   t =  DetElement(tpcData->outerWall).volume().solid() ;
-  g_outer_r  = t->GetRmax() * 10. ;
-  g_outer_wt = ( t->GetRmax() - t->GetRmin() ) * 10. ;
+  g_outer_r  = t->GetRmax()  / tgeo::mm   ;
+  g_outer_wt = ( t->GetRmax() - t->GetRmin() )   / tgeo::mm  ;
   
   gearTPC->setDoubleVal("tpcInnerRadius", g_inner_r )  ; // inner r of support tube
   gearTPC->setDoubleVal("tpcOuterRadius", g_outer_r )  ; // outer radius of TPC
   gearTPC->setDoubleVal("tpcInnerWallThickness", g_inner_wt)  ;   // thickness of inner shell
   gearTPC->setDoubleVal("tpcOuterWallThickness", g_outer_wt)  ;   // thickness of outer shell
   
-  tpc.addExtension<GearTPCParameters>( gearTPC ) ;
-  //--------------------------------------------------------------------
+  //  tpc.addExtension<GearTPCParameters>( gearTPC ) ;
 
+  //  tpc.addExtension<GearHandle<gear::TPCParametersImpl> >( new GearHandle<gear::TPCParametersImpl>( gearTPC ) ) ;
+
+  tpc.addExtension< GearHandle >( new GearHandle( gearTPC, "TPCParameters" ) ) ;
+  
+  //--------------------------------------------------------------------
+  
   PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
   phv.addPhysVolID("system",x_det.id());
   tpc.setPlacement(phv);

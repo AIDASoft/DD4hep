@@ -9,7 +9,8 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 
-#include "GearWrapper.h"
+#include "DDGear.h"
+#include "gearimpl/ZPlanarParametersImpl.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -24,8 +25,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   
   //--------------- create gear::ZPlanarParameters and add them as Extension
-  GearZPlanarParameters* gearZPlanar = new GearZPlanarParameters ;
-  sit.addExtension<GearZPlanarParameters>( gearZPlanar ) ;
+  gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( 0 ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
+
+  // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
+
+
+  sit.addExtension<GearHandle>( new GearHandle( gearZPlanar, "SITParameters" )  ) ;
   //--------------------------------------------------------------------
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {

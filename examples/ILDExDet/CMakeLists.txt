@@ -41,8 +41,7 @@ find_package( ROOT REQUIRED )
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 
-
-find_package( GEAR REQUIRED)
+find_package( GEAR REQUIRED COMPONENTS geartgeo)
 
 # add all gear library pathes to External_LIBRARY_DIRS for the environment script
 foreach(lp ${GEAR_LIBRARY_DIRS})
@@ -78,8 +77,18 @@ add_library(${PackageName} SHARED ${sources})
 
 target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}  
   ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
+  ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES}
+  )
+
+#------ binary ----------
+
+add_executable( convertToGear src/convertToGear.cc)
+
+target_link_libraries(convertToGear ${PackageName} ${DD4hep_LIBRARIES}  
+  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
   ${GEAR_LIBRARIES}
   )
+
 
 #---Rootmap generation--------------------------------------------------------------
 
@@ -117,7 +126,7 @@ INSTALL(FILES ${hfiles}
   )
 
 
-install(TARGETS ${PackageName}
+install(TARGETS ${PackageName} convertToGear
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
