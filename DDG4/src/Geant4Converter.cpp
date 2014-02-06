@@ -568,7 +568,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       else if ( g4mot && daughter_is_assembly ) {
         printout(DEBUG, "Geant4Converter", "++ Assembly: makeImprint: %16p dau:%s "
             "Tr:x=%8.3f y=%8.3f z=%8.3f  Rot:phi=%7.3f theta=%7.3f psi=%7.3f\n", ass_dau,
-            g4mot ? g4mot->GetName().c_str() : "---", transform.dx(), transform.dy(), transform.dz(), rotmat.getPhi(),
+            g4mot->GetName().c_str(), transform.dx(), transform.dy(), transform.dz(), rotmat.getPhi(),
             rotmat.getTheta(), rotmat.getPsi());
         std::vector<G4VPhysicalVolume*> phys_volumes;
         AssemblyChildMap::iterator i = info.g4AssemblyChildren.find(ass_dau);
