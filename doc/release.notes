@@ -2,6 +2,19 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2014/02/07  Frank Gaede
+-----------------------
+   - added DDGear, support for interfacing to gear for backward compatibility
+     - lives currently in ILDExDet ( should become (optional) part of core DD4hep)
+     - users need to GearParameter objects as extensions to the DetElement
+       -> see ILDExTPC_geo.cpp, ILDExVXD_geo.cpp, ILDExTPCSIT_geo.cpp as examples
+     - program convertToGear creates gear xml file from compact file 
+       ( only if  GearParameter objects are avialble as extensions)
+     - added test_convert_ild_gear 
+   - fixed  geometry in ILDExVXD_geo.cpp, ILDExTPCSIT_geo.cpp
+     wrt. to position of support ans sensitive ladders
+
+
  --------
 | v00-06 |  sixth beta release ...
  --------   

@@ -40,19 +40,38 @@ namespace DD4hep{
 
     //------------------ SubdetectorParamters ----------------------------------
   
-    typedef std::map<std::string, DetElement> DEMap ;
-    DEMap chMap = world.children() ;
-  
-    for ( DEMap::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
+    std::vector< DetElement > dets ;
+    dets.reserve(1024) ;
+
+    DetElement::Children chMap = world.children() ;
+
+    // --- get all DetElements and their children into on vector
+    //     ( expect gear parameters to be only at top two levels )
     
+    for ( DetElement::Children::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
+      
       DetElement subDet = (*it).second ;
+      dets.push_back( subDet ) ;
+      //      std::cout << "  *** subdetector : " << subDet.name() << std::endl ;
+      
+      DetElement::Children grCh = subDet.children() ;
+      
+      for ( DetElement::Children::const_iterator it=grCh.begin() ; it != grCh.end() ; ++it ){
+	DetElement subDet = (*it).second ;
+	dets.push_back( subDet ) ;
+	//	std::cout << "    *** sub-subdetector : " << subDet.name() << std::endl ;
+      }
+    }
     
-      std::cout << "  *** subdetector : " << subDet.name() << std::endl ;
-    
+    for( unsigned i=0, N= dets.size() ; i<N ; ++i){
+      
       DD4hep::GearHandle* gearH = 0 ;
+      
       try{
       
-	gearH = subDet.extension<DD4hep::GearHandle>() ;
+	gearH = dets[i].extension<DD4hep::GearHandle>() ;
+
+	std::cout << " *** subdetector " << dets[i].name() << " - found gear object : " << gearH->name() << std::endl ; 
 
       } catch( std::exception& e) {
       
@@ -64,7 +83,7 @@ namespace DD4hep{
       // --- check for canonical names of GearHandle objects :
       //   (fixme: will have to iterate over daughters as well ... )
 
-      if     ( gearH->name() == "TPCParameters" )        { gearMgr->setTPCParameters       ( dynamic_cast<gear::TPCParameters*     >( gearH->takeGearObject() ) ) ; }
+      if     ( gearH->name() == "TPCParameters" )        { gearMgr->setTPCParameters       ( dynamic_cast<gear::TPCParameters*         >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "EcalBarrelParameters" ) { gearMgr->setEcalBarrelParameters( dynamic_cast<gear::CalorimeterParameters* >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "EcalEndcapParameters" ) { gearMgr->setEcalEndcapParameters( dynamic_cast<gear::CalorimeterParameters* >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "EcalPlugParameters" )   { gearMgr->setEcalPlugParameters  ( dynamic_cast<gear::CalorimeterParameters* >( gearH->takeGearObject() ) ) ; }

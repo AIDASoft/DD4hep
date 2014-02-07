@@ -145,11 +145,11 @@
         <detector name="SIT" type="ILDExSIT" vis="SITVis" id="2" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
            <tubs rmin="SIT_inner_radius" rmax="SIT_outer_radius" zhalf="SIT_zhalf"/>
            <layer id="0"  vis="SITLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
+            <support thickness="1.0*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="370*mm" radius="155*mm" material="Silicon" number="10" />
           </layer>
           <layer id="1"  vis="SITLayerVis">
-            <support thickness="0.01*mm" material="Carbon" vis="SITSupportVis"/>
+            <support thickness="1.0*mm" material="Carbon" vis="SITSupportVis"/>
             <ladder  thickness="0.1*mm"  zhalf="650*mm" radius="300*mm" material="Silicon" number="19" />
           </layer>
         </detector>
@@ -196,7 +196,7 @@
         </detector>
 
         <comment>Calorimeters</comment>
-        <detector id="7" name="HcalBarrel" type="AhcalBarrelCalorimeter" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
+        <detector id="7" name="HcalBarrel" type="AhcalBarrelCalorimeter" readout="HcalBarrelRegCollection" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="10.*mm">
             <comment>Hadron Calorimeter Barrel</comment>
 
             <material name="Steel235"/>
@@ -253,7 +253,7 @@
             <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
         </readout>
 
-        <readout name="HcalBarrelHits">
+        <readout name="HcalBarrelRegCollection">
             <segmentation type="CartesianGridXZ" grid_size_x="30.0*mm" grid_size_z="30.0*mm" />
             <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>

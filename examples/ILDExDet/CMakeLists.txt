@@ -161,6 +161,14 @@ ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9][0-9]+ volumes" )
 
 
+SET( test_name "test_converter_ild_gear" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  convertToGear ${CMAKE_CURRENT_SOURCE_DIR}/compact/ILDEx.xml )
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "found gear object : SITParameters" )
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "found gear object : TPCParameters" )
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "found gear object : VXDParameters" )
+
+
 #SET( test_name "test_converter_pandora" )
 #ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
 #  geoConverter -compact2pandora -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/ILDEx.xml -output ILDExDet.pandora )

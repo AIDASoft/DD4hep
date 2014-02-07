@@ -43,9 +43,9 @@ int main(int argc, char** argv ){
 
   //----------------------------------------------------------------------------------
 
-  std::cout << "  ***************************** GEAR parameters **************************************** " << std::endl ;
-  std::cout <<         *gearMgr ;
-  std::cout << "  ************************* End of GEAR parameters ************************************* " << std::endl ;
+  // std::cout << "  ***************************** GEAR parameters **************************************** " << std::endl ;
+  // std::cout <<         *gearMgr ;
+  // std::cout << "  ************************* End of GEAR parameters ************************************* " << std::endl ;
 
   //----------------------------------------------------------------------------------
   
@@ -55,8 +55,11 @@ int main(int argc, char** argv ){
     outFile = "gear_"  + gearMgr->getDetectorName() + ".xml" ;
   }
     
-
   gear::GearXML::createXMLFile ( gearMgr, outFile ) ;
+
+  std::cout << "  ************************************************************** " << std::endl ;
+  std::cout << "   created gear file : " << outFile << std::endl ;
+  std::cout << "  ************************************************************** " << std::endl ;
 
   return 0;
 }

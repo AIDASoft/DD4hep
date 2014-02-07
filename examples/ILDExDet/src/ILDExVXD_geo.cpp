@@ -9,7 +9,8 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "VXDData.h"
 
-//#include "GearWrapper.h"
+#include "DDGear.h"
+#include "gearimpl/ZPlanarParametersImpl.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -36,10 +37,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   vxd_data->id = x_det.id();
 
 
-  // //--------------- create gear::ZPlanarParameters and add them as Extension
-  // GearZPlanarParameters* gearZPlanar = new GearZPlanarParameters ;
-  // vxd.addExtension<GearZPlanarParameters>( gearZPlanar ) ;
-  // //--------------------------------------------------------------------
+  //--------------- gear: create gear::ZPlanarParameters and add them as Extension
+  gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( gear::ZPlanarParameters::CCD ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
+  // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
+  // -> this VXD has no outer shell ...
+  vxd.addExtension<GearHandle>( new GearHandle( gearZPlanar, "VXDParameters" )  ) ;
+  //--------------------------------------------------------------------
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
@@ -63,7 +66,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double      sens_radius= x_ladder.radius();
     double      sens_thick = x_ladder.thickness();
     double      supp_thick = x_support.thickness();
-    double      radius     = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.);
+
+    // double      radius     = sens_radius + ((sens_thick+supp_thick)/2. - sens_thick/2.);
+    //fg: this is the radius(distance) of the support ladder which should be under(inside) the sensitive ladder
+    double      radius     = sens_radius  - supp_thick ;
+
     double      phi0       =  x_layer.phi0() ;
 
     //    double      width      = 2.*tan(dphi/2.)*(sens_radius-sens_thick/2.);
@@ -81,10 +88,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,suppmat);
 
-    //Position    senspos   (0,0,0);
-    //Position    supppos   (0,0,0);
-    Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
-    Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick+supp_thick/2.,0,0);
+    // --- position the sensitive on top of the support !
+    Position    senspos   ( (sens_thick+supp_thick)/2. - sens_thick/2., 0, 0 );
+    Position    supppos   ( (sens_thick+supp_thick)/2. - sens_thick - supp_thick/2., 0, 0 );
       
     sens.setType("tracker");
     sensvol.setSensitiveDetector(sens);
@@ -128,9 +134,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       string laddername = layername + _toString(j,"_ladder%d");
 
-      // Position pos(radius*cos(dj*dphi) - offset*sin(dj*dphi),
-      // 		   radius*sin(dj*dphi) - offset*cos(dj*dphi),0.);
-
       double lthick = sens_thick + supp_thick ;
       
       RotationZYX rot( phi , 0, 0  ) ;
@@ -167,6 +170,19 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     }
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);
+
+    //----------------- gear ---------------------------------------------
+    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
+    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
+    
+    gearZPlanar->addLayer ( nLadders, phi0 ,  radius/tgeo::mm, offset/tgeo::mm ,  supp_thick/tgeo::mm  , 2*zhalf/tgeo::mm, width/tgeo::mm, ladderRadLength,  
+			    (radius+supp_thick)/tgeo::mm,  offset/tgeo::mm ,  sens_thick/tgeo::mm ,  2*zhalf/tgeo::mm ,  width/tgeo::mm, sensitiveRadLength) ;
+    
+    // addLayer (int nLadders, double phi0, double ladderDistance, double ladderOffset, double ladderThickness, double ladderLength, double ladderWidth, double ladderRadLength, 
+    //           double sensitiveDistance, double sensitiveOffset, double sensitiveThickness, double sensitiveLength, double sensitiveWidth, double sensitiveRadLength)
+    //----------------- gear ---------------------------------------------
+
+
   }
   Volume mother =  lcdd.pickMotherVolume(vxd) ;
 
