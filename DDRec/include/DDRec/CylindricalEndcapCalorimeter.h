@@ -8,8 +8,8 @@
 #ifndef CYLINDRICALENDCAPCALORIMETER_H_
 #define CYLINDRICALENDCAPCALORIMETER_H_
 
-#include "CylindricalCalorimeter.h"
-#include "EndcapDetector.h"
+#include "DDRec/CylindricalCalorimeter.h"
+#include "DDRec/EndcapDetector.h"
 
 namespace DD4hep {
 namespace DDRec {

@@ -12,18 +12,19 @@
 
 namespace DD4hep {
 
-namespace DDRec {
-class BarrelDetector: virtual public DetElement {
+  namespace DDRec {
+    class BarrelDetector: virtual public Geometry::DetElement {
 
-public:
-	BarrelDetector(const DetElement& e) : DetElement(e) {};
-	virtual ~BarrelDetector() {}
+    public:
+      typedef Geometry::DetElement DetElement;
+      BarrelDetector(const DetElement& e) : DetElement(e) {};
+      virtual ~BarrelDetector() {}
 
-	bool isBarrel() const {
-		return true;
-	}
-};
+      bool isBarrel() const {
+	return true;
+      }
+    };
 
-} /* namespace DDRec */
+  } /* namespace DDRec */
 } /* namespace DD4hep */
 #endif /* BARRELDETECTOR_H_ */

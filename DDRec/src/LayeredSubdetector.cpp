@@ -1,23 +1,20 @@
-#include "LayeredSubdetector.h"
+#include "DDRec/LayeredSubdetector.h"
 
-namespace DD4hep {
-namespace DDRec{
+using namespace DD4hep::Geometry;
+using namespace DD4hep::DDRec;
 
-LayeredSubdetector::LayeredSubdetector(const DetElement& e) :
-		DetElement(e) {
-	getExtension();
+LayeredSubdetector::LayeredSubdetector(const DetElement& e)
+ : DetElement(e) 
+{
+  getExtension();
 }
 
 LayeredSubdetector::~LayeredSubdetector() {
-
 }
 
 void LayeredSubdetector::getExtension() {
-	layerStack = isValid() ? extension<LayerStack>() : 0;
-	if (layerStack == 0) {
-		std::cout << "Failed to get the extension" << std::endl;
-	}
+  layerStack = isValid() ? extension<LayerStack>() : 0;
+  if (layerStack == 0) {
+    std::cout << "Failed to get the extension" << std::endl;
+  }
 }
-
-} /* namespace DDRec */
-} /* namespace DD4hep */

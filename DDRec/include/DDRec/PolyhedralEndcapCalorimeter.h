@@ -8,8 +8,8 @@
 #ifndef POLYHEDRALENDCAPCALORIMETER_H_
 #define POLYHEDRALENDCAPCALORIMETER_H_
 
-#include "EndcapDetector.h"
-#include "PolyhedralCalorimeter.h"
+#include "DDRec/EndcapDetector.h"
+#include "DDRec/PolyhedralCalorimeter.h"
 
 namespace DD4hep {
 namespace DDRec {

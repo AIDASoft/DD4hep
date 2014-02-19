@@ -8,8 +8,7 @@
 #ifndef CALORIMETER_H_
 #define CALORIMETER_H_
 
-#include "DD4hep/Detector.h"
-#include "LayeredSubdetector.h"
+#include "DDRec/LayeredSubdetector.h"
 
 namespace DD4hep {
 
