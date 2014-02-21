@@ -14,7 +14,8 @@
 
 #include "TPCData.h"
 
-#include "DDGear.h"
+#include "DDRec/DDGear.h"
+
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
 

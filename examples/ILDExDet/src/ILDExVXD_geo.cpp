@@ -9,7 +9,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "VXDData.h"
 
-#include "DDGear.h"
+#include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 
 using namespace std;

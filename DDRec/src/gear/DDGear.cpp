@@ -1,4 +1,4 @@
-#include "DDGear.h"
+#include "DDRec/DDGear.h"
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/TGeoUnits.h"

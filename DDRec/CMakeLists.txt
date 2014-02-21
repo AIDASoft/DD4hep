@@ -8,9 +8,37 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 
 file(GLOB sources src/*.cpp)
 
+
+#---------------------------  GEAR wrappers for backward compatibility  -----------
+if(DD4HEP_WITH_GEAR)
+
+  find_package(GEAR REQUIRED COMPONENTS geartgeo)
+
+  include_directories(  ${GEAR_INCLUDE_DIRS} )
+
+  set(sources ${sources} src/gear/DDGear.cpp)
+
+endif()
+#-------------------------------------------------------------------------------------
+
 add_library(DD4hepRec SHARED ${sources} )
 
-target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} DDSegmentation DD4hepCore Geom Reflex ${libraries})
+if(DD4HEP_WITH_GEAR)
+  target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} DDSegmentation DD4hepCore Geom Reflex ${libraries} ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES})
+
+  #------ binary ----------
+  
+  add_executable( convertToGear src/convertToGear.cc)
+  
+  target_link_libraries(convertToGear ${PackageName} ${DD4hep_LIBRARIES}  DD4hepRec
+    ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
+    ${GEAR_LIBRARIES}
+    )
+
+else()
+  target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} DDSegmentation DD4hepCore Geom Reflex ${libraries})
+endif(DD4HEP_WITH_GEAR)
+
 
 SET(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 SET_TARGET_PROPERTIES( DD4hepRec PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
@@ -20,7 +48,7 @@ install(DIRECTORY include/DDRec
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepRec
+install(TARGETS DD4hepRec convertToGear
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )

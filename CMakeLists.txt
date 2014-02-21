@@ -28,6 +28,8 @@ option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
 option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" OFF)
 
+option(DD4HEP_WITH_GEAR "Build gear wrapper for backward compatibility" OFF)
+
 
 #---------------------------------------------------------------------------------------
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -67,10 +69,11 @@ ENDIF()
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDSegmentation)
 add_subdirectory(DDCore)
+add_subdirectory(DDRec)
+add_subdirectory(DDSense)
 
 if(DD4HEP_WITH_GEANT4)
   add_subdirectory(DDG4)
-  add_subdirectory(DDSense)
 
   #--- create a geant4 variables for the thisdd4hep.sh script
   find_package( Geant4 ) 
