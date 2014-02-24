@@ -48,10 +48,18 @@ install(DIRECTORY include/DDRec
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepRec convertToGear
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
+if(DD4HEP_WITH_GEAR)
+  install(TARGETS DD4hepRec convertToGear
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
   )
+else()
+  install(TARGETS DD4hepRec
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+  )
+endif()
+
 
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
