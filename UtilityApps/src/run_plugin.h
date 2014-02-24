@@ -65,62 +65,104 @@ namespace {
     return EINVAL;
   }
 
-  void usage_default(const char* name) {
-    cout << " " << name << " -opt [-opt]                                             \n"
-      "        -compact       <file>       Specify the compact geometry file         \n"
-      "                     [REQUIRED]     At least one compact geo file is required!\n"
-      "        -load_only   [OPTIONAL]     Dry-run to only load geometry without     \n"
-      "                                    starting the dispay.                      \n"
+  std::ostream& print_default_args()  {
+    cout << 
+      "        -build_type <number/string> Specify the build type                         \n"
+      "                     [OPTIONAL]     MUST come immediately after the -compact input.\n"
+      "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
+      "                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]\n",
       "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance    \n"
       "                                    before exiting the application            \n"
       "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to  \n"
-      "                                    check the volume ids for duplicates etc.  \n"
-	 << endl;
+      "                                    check the volume ids for duplicates etc.  \n";
+    return cout;
+  }
+
+  void usage_default(const char* name) {
+    cout << " " << name << " -opt [-opt]                                                  \n"
+      "        -compact       <file>       Specify the compact geometry file              \n"
+      "                     [REQUIRED]     At least one compact geo file is required!     \n";
+    print_default_args() <<
+      "        -load_only   [OPTIONAL]     Dry-run to only load geometry without     \n"
+      "                                    starting the dispay.                      \n"
+			 << endl;
     exit(EINVAL);
   }
 
+  struct Args  {
+    bool volmgr, dry_run, destroy;
+    std::vector<const char*> geo_files, build_types;
+    
+    Args() {
+      volmgr  = false;
+      dry_run = false;
+      destroy = false;
+    }
+    int handle(int& i, int argc, char** argv)    {
+      if ( strncmp(argv[i],"-compact",2)==0 || strncmp(argv[i],"-input",2)==0 )  {
+	geo_files.push_back(argv[++i]);
+	if ( argc>i+2 && strncmp(argv[i+1],"-build_type",6)==0 )  {
+	  build_types.push_back(argv[i+2]);
+	  i += 2;
+	}
+	else  {
+	  build_types.push_back("BUILD_DEFAULT");
+	}
+      }
+      else if ( strncmp(argv[i],"-load_only",2)==0 )
+	dry_run = true;
+      else if ( strncmp(argv[i],"-destroy",2)==0 )
+	destroy = true;
+      else if ( strncmp(argv[i],"-volmgr",2)==0 )
+	volmgr = true;
+      else 
+	return 0;
+      return 1;
+    }
+  };
+
+  void load_compact(LCDD& lcdd, Args& args)   {
+    // Load all compact files
+    for(size_t i=0; i<args.geo_files.size(); ++i)  {
+      const char* argv[] = {args.geo_files[i], args.build_types[i], 0};
+      run_plugin(lcdd,"DD4hepCompactLoader",2,(char**)argv);
+    }
+  }
   //______________________________________________________________________________
   int main_default(const char* name, int argc,char** argv)  {
-    bool volmgr = false;
-    bool dry_run = false, destroy = false;
-    vector<char*> geo_files;
+    Args args;
     for(int i=1; i<argc;++i) {
       if ( argv[i][0]=='-' ) {
-	if ( strncmp(argv[i],"-compact",2)==0 )
-	  geo_files.push_back(argv[++i]);
-	else if ( strncmp(argv[i],"-load_only",2)==0 )
-	  dry_run = true;
-	else if ( strncmp(argv[i],"-destroy",2)==0 )
-	  destroy = true;
-	else if ( strncmp(argv[i],"-volmgr",2)==0 )
-	  volmgr = true;
+	if ( args.handle(i,argc,argv) )
+	  continue;
 	else
 	  usage_default(name);
       }
       else {  // This is the default
-	geo_files.push_back(argv[i]);
+	args.geo_files.push_back(argv[i]);
+	args.build_types.push_back("BUILD_DEFAULT");
       }
     }
-    if ( geo_files.empty() )
+    if ( args.geo_files.empty() )
       usage_default(name);
 
     LCDD& lcdd = dd4hep_instance();
     // Load all compact files
-    run_plugin(lcdd,"DD4hepCompactLoader",int(geo_files.size()),&geo_files[0]);
+    load_compact(lcdd, args);
     // Create volume manager and populate it required
-    if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
+    if ( args.volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
 
     // Create an interactive ROOT application
-    if ( !dry_run ) {
-      pair<int, char**> args(0,0);
-      TRint app(name, &args.first, args.second);
-      run_plugin(lcdd,name,args.first,args.second);
+    if ( !args.dry_run ) {
+      pair<int, char**> a(0,0);
+      TRint app(name, &a.first, a.second);
+      run_plugin(lcdd,name,a.first,a.second);
       app.Run();
     }
     else {
       cout << "The geometry was loaded. Application now exiting." << endl;
     }
-    if ( destroy ) delete &lcdd;
+    if ( args.destroy ) delete &lcdd;
     return 0;
   }
 }
