@@ -21,6 +21,24 @@
 using namespace std;
 using namespace DD4hep::Geometry;
 
+static LCDDBuildType build_type(const char* value)   {
+  if ( strcmp(value,"BUILD_DEFAULT")==0 )
+    return BUILD_DEFAULT;
+  else if ( strcmp(value,"BUILD_SIMU")==0 )
+    return BUILD_SIMU;
+  else if ( strcmp(value,"1")==0 )
+    return BUILD_DEFAULT;
+  else if ( strcmp(value,"BUILD_RECO")==0 )
+    return BUILD_RECO;
+  else if ( strcmp(value,"2")==0 )
+    return BUILD_RECO;
+  else if ( strcmp(value,"BUILD_DISPLAY")==0 )
+    return BUILD_DISPLAY;
+  else if ( strcmp(value,"3")==0 )
+    return BUILD_DISPLAY;
+  throw runtime_error(string("Invalid build type value: ")+value);
+}
+ 
 static void* create_lcdd_instance(const char* /* name */) {
   return &LCDD::getInstance();
 }
@@ -44,23 +62,40 @@ static long display(LCDD& lcdd, int argc, char** argv) {
 DECLARE_APPLY(DD4hepGeometryDisplay,display)
 
 static long load_compact(LCDD& lcdd, int argc, char** argv) {
-  for (int j = 0; j < argc; ++j) {
-    string input = argv[j];
-    cout << "Processing compact input file : " << input << endl;
+  if ( argc > 0 )   {
+    LCDDBuildType type = BUILD_DEFAULT;
+    string input = argv[0];
+    cout << "Processing compact input file : " << input;
+    if ( argc > 1 )  {
+      type = build_type(argv[1]);
+      cout << " with flag " << argv[1] << endl;
+      lcdd.fromCompact(input,type);
+      return 1;
+    }
+    cout << endl;
     lcdd.fromCompact(input);
+    return 1;
   }
-  return 1;
+  return 0;
 }
 DECLARE_APPLY(DD4hepCompactLoader,load_compact)
 
 static long load_xml(LCDD& lcdd, int argc, char** argv) {
-  if ( argc >= 1 )  {
+  if ( argc > 0 )   {
+    LCDDBuildType type = BUILD_DEFAULT;
     string input = argv[0];
-    cout << "Processing compact input file : " << input << endl;
+    cout << "Processing compact input file : " << input;
+    if ( argc > 1 )  {
+      type = build_type(argv[1]);
+      cout << " with flag " << argv[1] << endl;
+      lcdd.fromXML(input,type);
+      return 1;
+    }
+    cout << endl;
     lcdd.fromXML(input);
     return 1;
   }
-  throw runtime_error("load_xml: Invalid number of arguments [argc=0]");
+  return 0;
 }
 DECLARE_APPLY(DD4hepXMLLoader,load_xml)
 
