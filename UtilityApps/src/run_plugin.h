@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Printout.h"
 
 // C/C++ include files
 #include <iostream>
@@ -71,10 +72,14 @@ namespace {
       "                     [OPTIONAL]     MUST come immediately after the -compact input.\n"
       "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
       "                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]\n",
-      "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance    \n"
-      "                                    before exiting the application            \n"
-      "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to  \n"
-      "                                    check the volume ids for duplicates etc.  \n";
+      "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         \n"
+      "                                    before exiting the application                 \n"
+      "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       \n"
+      "                                    check the volume ids for duplicates etc.       \n"
+      "        -print      <number/string> Specify output level. Default: INFO(=3)        \n"
+      "                     [OPTIONAL]     Allowed values: VERBOSE(=1), DEBUG(=2),        \n"
+      "                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    \n"
+      "                                    The lover the level, the more printout...      \n";
     return cout;
   }
 
@@ -90,13 +95,15 @@ namespace {
   }
 
   struct Args  {
-    bool volmgr, dry_run, destroy;
+    bool        volmgr, dry_run, destroy;
+    int         print;
     std::vector<const char*> geo_files, build_types;
     
     Args() {
       volmgr  = false;
       dry_run = false;
       destroy = false;
+      print   = DD4hep::INFO;
     }
     int handle(int& i, int argc, char** argv)    {
       if ( strncmp(argv[i],"-compact",2)==0 || strncmp(argv[i],"-input",2)==0 )  {
@@ -111,6 +118,8 @@ namespace {
       }
       else if ( strncmp(argv[i],"-load_only",2)==0 )
 	dry_run = true;
+      else if ( strncmp(argv[i],"-print",2)==0 )
+	DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
       else if ( strncmp(argv[i],"-destroy",2)==0 )
 	destroy = true;
       else if ( strncmp(argv[i],"-volmgr",2)==0 )
@@ -118,6 +127,34 @@ namespace {
       else 
 	return 0;
       return 1;
+    }
+    int decodePrintLevel(const std::string& val)   {
+      switch(::toupper(val[0]))  {
+      case '1':
+      case 'V':
+	return DD4hep::VERBOSE;
+      case '2':
+      case 'D':
+	return DD4hep::DEBUG;
+      case '3':
+      case 'I':
+	return DD4hep::INFO;
+      case '4':
+      case 'W':
+	return DD4hep::WARNING;
+      case '5':
+      case 'E':
+	return DD4hep::ERROR;
+      case '6':
+      case 'F':
+	return DD4hep::FATAL;
+      case '7':
+      case 'A':
+	return DD4hep::FATAL;
+      default:
+	cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << endl;
+	throw std::runtime_error("Invalid printLevel:"+val);
+      }
     }
   };
 
