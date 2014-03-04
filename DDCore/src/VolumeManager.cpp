@@ -453,23 +453,44 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
     o.volumes[vid] = context;
     o.detMask |= context->mask;
     //o.phys_volumes[pv.ptr()] = context;
-    err << "Inserted new volume:" << setw(6) << left << o.volumes.size() << " Ptr:" << (void*) context->placement.ptr() << " ["
-        << context->placement.name() << "]" << " ID:" << (void*) context->identifier << " Mask:" << (void*) context->mask;
+    err << "Inserted new volume:" << setw(6) << left << o.volumes.size() << " Ptr:" << (void*) pv.ptr() << " ["
+        << pv.name() << "]" << " ID:" << (void*) context->identifier << " Mask:" << (void*) context->mask;
     printout(DEBUG, "VolumeManager", err.str().c_str());
     return true;
   }
-  err << "Attempt to register twice volume with identical volID " << (void*) context->identifier << " Mask:"
-      << (void*) context->mask << " to detector " << o.detector.name() << " ptr:" << (void*) pv.ptr() << " -- "
-      << (*i).second->placement.ptr() << " pv:" << pv.name() << " clashes with " << (*i).second->placement.name()
+  err << "+++ Attempt to register duplicate volID " << (void*) context->identifier 
+      << " Mask:" << (void*) context->mask 
+      << " to detector " << o.detector.name() 
+      << " ptr:" << (void*) pv.ptr() 
+      << " Name:" << pv.name() 
       << " Sensitive:" << (pv.volume().isSensitive() ? "YES" : "NO") << endl;
+  printout(ERROR, "VolumeManager", "%s", err.str().c_str());
+  err.str("");
+  err << " !!!!!                      ++++ VolIDS ";
+  const PlacedVolume::VolIDs::Base& ids = context->volID;
+  for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+    err << (*vit).first << "=" << (*vit).second << "; ";
+  printout(ERROR, "VolumeManager", "%s", err.str().c_str());
+  err.str("");
+  context = (*i).second;
+  pv = context->placement;
+  err << " !!!!!               +++ Clashing volID " << (void*) context->identifier 
+      << " Mask:" << (void*) context->mask 
+      << " to detector " << o.detector.name() 
+      << " ptr:" << (void*) pv.ptr() 
+      << " Name:" << pv.name() 
+      << " Sensitive:" << (pv.volume().isSensitive() ? "YES" : "NO") << endl;
+  printout(ERROR, "VolumeManager", "%s", err.str().c_str());
+  err.str("");
+
   goto Fail;
   Fail: {
-    err << "++++ VolIDS:";
+    err << " !!!!!                      ++++ VolIDS ";
     const PlacedVolume::VolIDs::Base& ids = context->volID;
     for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
       err << (*vit).first << "=" << (*vit).second << "; ";
   }
-  printout(ERROR, "VolumeManager", "++++[!!!] adoptPlacement: %s", err.str().c_str());
+  printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   // throw runtime_error(err.str());
   return false;
 }

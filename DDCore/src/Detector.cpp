@@ -9,6 +9,7 @@
 
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/IDDescriptor.h"
+#include "DD4hep/DetectorTools.h"
 #include "DD4hep/LCDD.h"
 #include "TGeoVolume.h"
 #include "TGeoMatrix.h"
@@ -17,6 +18,8 @@
 
 using namespace std;
 using namespace DD4hep::Geometry;
+typedef DetectorTools::PlacementPath PlacementPath;
+typedef DetectorTools::ElementPath   ElementPath;
 
 namespace {
   struct ExtensionEntry {
@@ -34,95 +37,6 @@ namespace {
     static ExtensionMap s_map;
     return s_map;
   }
-}
-
-static bool find_child(TGeoNode* parent, TGeoNode* child, vector<TGeoNode*>& path) {
-  if (parent && child) {
-    if (parent == child) {
-      path.push_back(child);
-      return true;
-    }
-    TIter next(parent->GetVolume()->GetNodes());
-    for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
-      if (daughter == child) {
-        path.push_back(daughter);
-        return true;
-      }
-    }
-    next.Reset();
-    for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
-      bool res = find_child(daughter, child, path);
-      if (res) {
-        path.push_back(daughter);
-        return res;
-      }
-    }
-  }
-  return false;
-}
-
-static bool collect_detector_nodes(const vector<TGeoNode*>& det_nodes, vector<TGeoNode*>& nodes) {
-  if (det_nodes.size() < 1) {
-    return false;
-  }
-  if (det_nodes.size() < 2) {
-    return true;
-  }
-  for (size_t i = 0, n = det_nodes.size(); i < n - 1; ++i) {
-    if (!find_child(det_nodes[i + 1], det_nodes[i], nodes)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-/// Create cached matrix to transform to positions to an upper level DetElement
-static TGeoHMatrix* create_trafo(const vector<TGeoNode*>& det_nodes) {
-  if (det_nodes.size() < 2) {
-    return new TGeoHMatrix(*gGeoIdentity);
-  }
-  vector<TGeoNode*> nodes;
-  if (!collect_detector_nodes(det_nodes, nodes)) {
-    throw runtime_error(
-        "DD4hep: DetElement cannot connect " + string(det_nodes[0]->GetName()) + " to child "
-            + string(det_nodes[1]->GetName()));
-  }
-  TGeoHMatrix* mat = new TGeoHMatrix(*gGeoIdentity);
-  for (vector<TGeoNode*>::const_iterator i = nodes.begin(); i != nodes.end(); ++i) {
-    TGeoMatrix* m = (*i)->GetMatrix();
-    mat->MultiplyLeft(m);
-  }
-  return mat;
-}
-
-/// Top detector element
-static DetElement _top(DetElement o, vector<TGeoNode*>& det_nodes) {
-  DetElement par = o, pp = o;
-  while (par.isValid()) {
-    if (par.placement().isValid()) {
-      det_nodes.push_back(par.placement().ptr());
-      pp = par;
-    }
-    par = par.parent();
-  }
-  return pp;
-}
-
-/// Top detector element
-static DetElement _par(DetElement o, DetElement top, vector<TGeoNode*>& det_nodes) {
-  DetElement par = o, pp = o;
-  while (par.isValid()) {
-    if (par.placement().isValid()) {
-      det_nodes.push_back(par.placement().ptr());
-      pp = par;
-    }
-    if (par.ptr() == top.ptr())
-      break;
-    par = par.parent();
-  }
-  if (pp.ptr() == top.ptr())
-    return pp;
-  return DetElement();
 }
 
 /// Default constructor
@@ -208,10 +122,9 @@ DetElement::Object::operator Ref_t() {
 /// Create cached matrix to transform to world coordinates
 TGeoMatrix* DetElement::Object::worldTransformation() {
   if (!worldTrafo) {
-    vector<TGeoNode*> det_nodes;
-    _top(DetElement(asRef()), det_nodes);
-    TGeoHMatrix* mat = create_trafo(det_nodes);
-    worldTrafo = mat;
+    PlacementPath nodes;
+    DetectorTools::placementPath(DetElement(asRef()), nodes);
+    worldTrafo = DetectorTools::placementTrafo(nodes,true);
   }
   return worldTrafo;
 }
@@ -219,10 +132,9 @@ TGeoMatrix* DetElement::Object::worldTransformation() {
 /// Create cached matrix to transform to parent coordinates
 TGeoMatrix* DetElement::Object::parentTransformation() {
   if (!parentTrafo) {
-    vector<TGeoNode*> det_nodes;
-    det_nodes.push_back(placement.ptr());
-    det_nodes.push_back(DetElement(parent).placement().ptr());
-    parentTrafo = create_trafo(det_nodes);
+    PlacementPath nodes;
+    DetectorTools::placementPath(DetElement(parent), DetElement(asRef()), nodes);
+    parentTrafo = DetectorTools::placementTrafo(nodes,true);
   }
   return parentTrafo;
 }
@@ -230,25 +142,25 @@ TGeoMatrix* DetElement::Object::parentTransformation() {
 /// Create cached matrix to transform to reference coordinates
 TGeoMatrix* DetElement::Object::referenceTransformation() {
   if (!referenceTrafo) {
-    vector<TGeoNode*> nodes;
-    DetElement ref(reference);
-    DetElement self(asRef());
-    DetElement elt = _par(self, ref, nodes);
-    if (elt.isValid()) {
-      referenceTrafo = create_trafo(nodes);
+    ElementPath elements;
+    DetElement  ref(reference);
+    DetElement  self(asRef());
+    if ( ref.ptr() == self.ptr() )  {
+      referenceTrafo = new TGeoHMatrix(gGeoIdentity->Inverse());
     }
-    else {
-      nodes.clear();
-      DetElement me(this->asRef());
-      DetElement elt = _par(ref, me, nodes);
-      if (!elt.isValid()) {
-        throw runtime_error(
-            "DD4hep: referenceTransformation: No path from " + string(self.name()) + " to reference element "
-                + string(ref.name()) + " present!");
-      }
-      TGeoMatrix* m = create_trafo(nodes);
-      referenceTrafo = new TGeoHMatrix(m->Inverse());
-      delete m;
+    else if ( DetectorTools::findParent(ref,self,elements) ) {
+      PlacementPath nodes;
+      DetectorTools::placementPath(ref, self, nodes);
+      referenceTrafo = DetectorTools::placementTrafo(nodes,true);
+    }
+    else if ( DetectorTools::findParent(self,ref,elements) ) {
+      PlacementPath nodes;
+      DetectorTools::placementPath(self, ref, nodes);
+      referenceTrafo = DetectorTools::placementTrafo(nodes,true);
+    }
+    else  {
+      throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) + 
+			  " to reference element " + string(ref.name()) + " present!");
     }
   }
   return referenceTrafo;
@@ -313,16 +225,9 @@ string DetElement::placementPath() const {
   if (isValid()) {
     Object& o = object<Object>();
     if (o.placementPath.empty()) {
-      string res = "";
-      vector<TGeoNode*> nodes, path;
-      _top(*this, nodes);
-      if (!collect_detector_nodes(nodes, path)) {
-        throw runtime_error("DD4hep: DetElement cannot determine placement path of " + string(name()));
-      }
-      path.push_back(gGeoManager->GetTopNode());
-      for (vector<TGeoNode*>::const_reverse_iterator i = path.rbegin(); i != path.rend(); ++i)
-        res += (string("/") + (*i)->GetName());
-      o.placementPath = res;
+      PlacementPath path;
+      DetectorTools::placementPath(*this, path);
+      o.placementPath = DetectorTools::nodePath(path);
     }
     return o.placementPath;
   }
@@ -454,7 +359,7 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
       Object& o = object<Object>();
       o.placement = placement;
       //o.volume = placement.volume();
-      placement.setDetector(*this);
+      //placement.setDetector(*this);
       return *this;
     }
     throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");

@@ -268,7 +268,7 @@ namespace DD4hep {
       const TGeoMatrix& worldTransformation(VolumeID volume_id) const;
     };
 
-/// Enable printouts for debugging
+    /// Enable printouts for debugging
     std::ostream& operator<<(std::ostream& os, const VolumeManager& m);
 
   } /* End namespace Geometry               */

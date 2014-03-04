@@ -113,8 +113,8 @@ LCDDImp::LCDDImp()
   }
   {
     m_manager = gGeoManager;
-    m_manager->AddNavigator();
-    m_manager->SetCurrentNavigator(0);
+    //m_manager->AddNavigator();
+    //m_manager->SetCurrentNavigator(0);
     //cout << "Navigator:" << (void*)m_manager->GetCurrentNavigator() << endl;
   }
   //if ( 0 == gGeoIdentity )

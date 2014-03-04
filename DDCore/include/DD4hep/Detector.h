@@ -15,6 +15,7 @@
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Readout.h"
+#include "DD4hep/Alignment.h"
 #include "DD4hep/Segmentations.h"
 
 // C/C++ include files

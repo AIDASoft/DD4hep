@@ -74,35 +74,6 @@ namespace DD4hep {
       Segmentation segmentation() const;
     };
 
-    /** @class Alignment  Readoutn.h DD4hep/lcdd/Readout.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct Alignment: public Ref_t {
-      struct Object: public TNamed {
-        Volume volume;
-        /// Standard constructor
-        Object();
-        /// Default destructor
-        virtual ~Object();
-      };
-      /// Default constructor
-      Alignment()
-          : Ref_t() {
-      }
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> Alignment(const Handle<Q>& e)
-          : Ref_t(e) {
-      }
-      /// Initializing constructor
-      Alignment(const LCDD& doc, const std::string& name);
-      /// Additional data accessor
-      Object& _data() const {
-        return *data<Object>();
-      }
-    };
-
     /** @class Conditions  Readout.h DD4hep/lcdd/Readout.h
      *
      * @author  M.Frank

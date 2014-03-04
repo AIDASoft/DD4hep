@@ -80,21 +80,6 @@ Segmentation Readout::segmentation() const {
 }
 
 /// Standard constructor
-Alignment::Object::Object() {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Alignment::Object::~Object() {
-  InstanceCount::decrement(this);
-}
-
-/// Initializing constructor to create a new object
-Alignment::Alignment(const LCDD& /* lcdd */, const string& nam) {
-  assign(new Object(), nam, "alignment");
-}
-
-/// Standard constructor
 Conditions::Object::Object() {
   InstanceCount::increment(this);
 }

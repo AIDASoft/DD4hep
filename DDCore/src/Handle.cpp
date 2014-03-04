@@ -396,7 +396,7 @@ INSTANTIATE(TGeoCompositeShape);
 
 // Volume Placements (needed by "Volumes.cpp")
 #include "TGeoPhysicalNode.h"
-INSTANTIATE_UNNAMED(TGeoPhysicalNode);
+INSTANTIATE(TGeoPhysicalNode);
 
 // Replicated Volumes (needed by "Volumes.cpp")
 #include "TGeoPatternFinder.h"

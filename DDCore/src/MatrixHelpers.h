@@ -33,6 +33,7 @@ namespace DD4hep {
     TGeoRotation* _rotationZYX(const RotationZYX& rot);
     TGeoRotation* _rotation3D(const Rotation3D& rot);
     TGeoHMatrix* _transform(const Transform3D& trans);
+    TGeoHMatrix* _transform(const Position& pos, const RotationZYX& rot);
 
   } /* End namespace Geometry           */
 } /* End namespace DD4hep            */
