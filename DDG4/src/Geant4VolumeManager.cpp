@@ -114,23 +114,43 @@ namespace {
         }
         if (m_geo.g4Paths.find(path) != m_geo.g4Paths.end()) {
 	  stringstream log;
-          printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!!");
+          printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s",
+		   " [THIS SHOULD NEVER HAPPEN]");
+
 	  for(Geant4Mapping::PlacementPath::const_iterator j=path.begin(); j!=path.end(); ++j)  {
 	    log << "/" << (*j)->GetName();
 	  }
-	  printout(ERROR, "Geant4VolumeManager", "         Geant4 path exists in at least 2 instances: %s", log.str().c_str());
-        }
+	  printout(ERROR, "Geant4VolumeManager", "          Geant4 path has >= 2 instances: %s", log.str().c_str());
+	  log.str("");
+	  for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+	    log << (*vit).first << "=" << (*vit).second << "; ";
+	  printout(ERROR, "Geant4VolumeManager", "          Offend.VolIDs: %s", log.str().c_str());
+	  log.str("");
+	  for (Chain::const_iterator jc=nodes.begin(); jc!=nodes.end(); ++jc)
+	    log << "/" << (*jc)->GetName();
+	  printout(ERROR, "Geant4VolumeManager", "          TGeo path:     %s", log.str().c_str());
+	}
         m_geo.g4Paths[path] = code;
         m_entries.insert(make_pair(code,path));
       }
       else {
 	stringstream log;
-        printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X", code);
+        printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X  %s", 
+		 code, " [THIS SHOULD NEVER HAPPEN]");
+
 	const Geant4Mapping::PlacementPath& path = (*i).second;
 	for(Geant4Mapping::PlacementPath::const_iterator j=path.begin(); j!=path.end(); ++j)  {
 	  log << "/" << (*j)->GetName();
 	}
-        printout(ERROR, "Geant4VolumeManager", "         Geant4 path: %s", log.str().c_str());
+        printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s", log.str().c_str());
+	log.str("");
+	for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+	  log << (*vit).first << "=" << (*vit).second << "; ";
+        printout(ERROR, "Geant4VolumeManager", "          Offend.VolIDs: %s", log.str().c_str());
+	log.str("");
+	for (Chain::const_iterator jc=nodes.begin(); jc!=nodes.end(); ++jc)
+	  log << "/" << (*jc)->GetName();
+        printout(ERROR, "Geant4VolumeManager", "          TGeo path:     %s", log.str().c_str());
       }
     }
   };
