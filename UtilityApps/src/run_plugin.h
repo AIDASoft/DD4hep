@@ -79,7 +79,7 @@ namespace {
       "        -print      <number/string> Specify output level. Default: INFO(=3)        \n"
       "                     [OPTIONAL]     Allowed values: VERBOSE(=1), DEBUG(=2),        \n"
       "                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    \n"
-      "                                    The lover the level, the more printout...      \n";
+      "                                    The lower the level, the more printout...      \n";
     return cout;
   }
 
