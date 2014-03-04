@@ -19,6 +19,9 @@
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
 
+// C/C++ include files
+#include <sstream>
+
 using namespace DD4hep::Simulation;
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
@@ -34,11 +37,11 @@ namespace {
     typedef DD4hep::Geometry::LCDD LCDD;
     typedef DD4hep::Geometry::Readout Readout;
     typedef DD4hep::Geometry::DetElement DetElement;
-
+    typedef map<VolumeID,Geant4Mapping::PlacementPath> Registries;
     /// Reference to the LCDD instance
     LCDD& m_lcdd;
     /// Set of already added entries
-    set<VolumeID> m_entries;
+    Registries m_entries;
     /// Reference to Geant4 translation information
     Geant4GeometryInfo& m_geo;
 
@@ -61,7 +64,7 @@ namespace {
           scanPhysicalVolume(pv.ptr(), ids, sd, chain);
           continue;
         }
-        printout(WARNING, "VolumeManager", "++ Detector element %s of type %s has no placement.", de.name(), de.type().c_str());
+        printout(WARNING, "Geant4VolumeManager", "++ Detector element %s of type %s has no placement.", de.name(), de.type().c_str());
       }
     }
 
@@ -79,7 +82,7 @@ namespace {
           add_entry(sd, node, ids, chain);
         }
         else {
-          printout(WARNING, "VolumeManager",
+          printout(WARNING, "Geant4VolumeManager",
               "populate: Strange constellation volume %s is sensitive, but has no readout! sd:%p", pv.volume().name(),
               sd.ptr());
         }
@@ -98,7 +101,8 @@ namespace {
       Readout ro = sd.readout();
       IDDescriptor iddesc = ro.idSpec();
       VolumeID code = iddesc.encode(ids);
-      if (m_entries.find(code) == m_entries.end()) {
+      Registries::const_iterator i = m_entries.find(code);
+      if (i == m_entries.end()) {
         Geant4Mapping::PlacementPath path;
         path.reserve(nodes.size());
         for (Chain::const_reverse_iterator i = nodes.rbegin(); i != nodes.rend(); ++i) {
@@ -109,13 +113,24 @@ namespace {
           }
         }
         if (m_geo.g4Paths.find(path) != m_geo.g4Paths.end()) {
-          printout(ERROR, "VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!!");
+	  stringstream log;
+          printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!!");
+	  for(Geant4Mapping::PlacementPath::const_iterator j=path.begin(); j!=path.end(); ++j)  {
+	    log << "/" << (*j)->GetName();
+	  }
+	  printout(ERROR, "Geant4VolumeManager", "         Geant4 path exists in at least 2 instances: %s", log.str().c_str());
         }
         m_geo.g4Paths[path] = code;
-        m_entries.insert(code);
+        m_entries.insert(make_pair(code,path));
       }
       else {
-        printout(ERROR, "VolumeManager", "populate: Severe error: Duplicated Volume entry: %X", code);
+	stringstream log;
+        printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X", code);
+	const Geant4Mapping::PlacementPath& path = (*i).second;
+	for(Geant4Mapping::PlacementPath::const_iterator j=path.begin(); j!=path.end(); ++j)  {
+	  log << "/" << (*j)->GetName();
+	}
+        printout(ERROR, "Geant4VolumeManager", "         Geant4 path: %s", log.str().c_str());
       }
     }
   };
