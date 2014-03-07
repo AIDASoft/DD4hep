@@ -34,7 +34,7 @@ Vector3D ZCylinderSurface::getNormal(const Vector3D& point) const {
 /// Access to the measurement directions at the given point
 Measurement ZCylinderSurface::measurement(const Vector3D& point) const {
 	// TODO
-	return Vector3D();
+	return Measurement();
 }
 
 } /* namespace DDSurfaces */

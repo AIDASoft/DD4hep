@@ -25,18 +25,18 @@ public:
 	}
 
 	/// Checks if the surface has measurement directions
-	bool hasMeasurement() const {
+	virtual bool hasMeasurement() const {
 		return m_measurement != 0;
 	}
 
 	/// Checks if the given point lies within the surface
-	bool isInsideBoundaries(const Vector3D& point) const = 0;
+	virtual bool isInsideBoundaries(const Vector3D& point) const = 0;
 
 	/// Access to the normal direction at the given point
-	Vector3D getNormal(const Vector3D& point) const = 0;
+	virtual Vector3D getNormal(const Vector3D& point) const = 0;
 
 	/// Access to the measurement directions at the given point
-	Measurement measurement(const Vector3D& point) const = 0;
+	virtual Measurement measurement(const Vector3D& point) const = 0;
 
 	/// Access to the material in opposite direction of the normal
 	const Material& innerMaterial() const {
@@ -65,7 +65,7 @@ public:
 
 protected:
 	/// Constructor which can be used by derived classes
-	ISurface(const Material& innerMaterial=Material(), const Material& outerMaterial=Material()) :
+	ISurface(const Material& innerMaterial = Material(), const Material& outerMaterial = Material()) :
 		m_innerMaterial(innerMaterial), m_outerMaterial(outerMaterial), m_measurement(0) {
 	}
 

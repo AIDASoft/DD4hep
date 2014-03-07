@@ -12,7 +12,9 @@
 
 namespace DDSurfaces {
 
-class ZCylinderBoundary;
+struct ZCylinderBoundary {
+	;
+};
 
 class ZCylinderSurface: public ISurface {
 public:
@@ -23,13 +25,13 @@ public:
 	virtual ~ZCylinderSurface();
 
 	/// Checks if the given point lies within the surface
-	bool isInsideBoundaries(const Vector3D& point) const;
+	virtual bool isInsideBoundaries(const Vector3D& point) const;
 
 	/// Access to the normal direction at the given point
-	Vector3D getNormal(const Vector3D& point) const;
+	virtual Vector3D getNormal(const Vector3D& point) const;
 
 	/// Access to the measurement directions at the given point
-	Measurement measurement(const Vector3D& point) const;
+	virtual Measurement measurement(const Vector3D& point) const;
 
 protected:
 	ZCylinderBoundary m_boundary;

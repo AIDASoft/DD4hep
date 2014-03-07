@@ -14,7 +14,7 @@ namespace DDSurfaces {
 class Material {
 public:
 	/// Default constructor
-	Material(int Z=0, int A=0, double density=0., double radiationLength = 0.) :
+	Material(int Z = 0, int A = 0, double density = 0., double radiationLength = 0.) :
 			m_Z(Z), m_A(A), m_density(density), m_radiationLength(
 					radiationLength) {
 	}
