@@ -21,9 +21,9 @@ public:
 	virtual ~CartesianGridXYZ();
 
 	/// determine the position based on the cell ID
-	virtual Position position(const CellID& cellID) const;
+	virtual Vector3D position(const CellID& cellID) const;
 	/// determine the cell ID based on the position
-	virtual CellID cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const;
+	virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;
 	/// access the grid size in Z
 	double gridSizeZ() const {
 		return _gridSizeZ;

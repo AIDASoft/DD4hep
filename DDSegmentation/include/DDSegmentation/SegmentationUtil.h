@@ -29,22 +29,22 @@ namespace Util {
 
 
 /// calculates the radius in xyz from Cartesian coordinates
-double magFromXYZ(const Position& position) {
+double magFromXYZ(const Vector3D& position) {
 	return std::sqrt(position.X * position.X + position.Y * position.Y + position.Z * position.Z);
 }
 
 /// calculates the radius in the xy-plane from Cartesian coordinates
-double radiusFromXYZ(const Position& position) {
+double radiusFromXYZ(const Vector3D& position) {
 	return std::sqrt(position.X * position.X + position.Y * position.Y);
 }
 
 /// calculates the polar angle theta from Cartesian coordinates
-double thetaFromXYZ(const Position& position) {
+double thetaFromXYZ(const Vector3D& position) {
 	return std::acos(position.Z / radiusFromXYZ(position));
 }
 
 /// calculates the azimuthal angle phi from Cartesian coordinates
-double phiFromXYZ(const Position& position) {
+double phiFromXYZ(const Vector3D& position) {
 	return std::atan2(position.Y, position.X);
 }
 
@@ -53,8 +53,8 @@ double phiFromXYZ(const Position& position) {
 /////////////////////////////////////////////////////////////
 
 /// calculates the Cartesian position from cylindrical coordinates
-Position positionFromRPhiZ(double r, double phi, double z) {
-	return Position(r * std::cos(phi), r * std::sin(phi), z);
+Vector3D positionFromRPhiZ(double r, double phi, double z) {
+	return Vector3D(r * std::cos(phi), r * std::sin(phi), z);
 }
 
 /// calculates the radius in xyz from cylindrical coordinates
@@ -82,14 +82,14 @@ double thetaFromRPhiZ(double r, double phi, double z) {
 /////////////////////////////////////////////////////////////
 
 /// calculates the Cartesian position from spherical coordinates
-Position positionFromRThetaPhi(double r, double theta, double phi) {
-	return Position(r * std::cos(phi), r * std::sin(phi), r * std::tan(theta));
+Vector3D positionFromRThetaPhi(double r, double theta, double phi) {
+	return Vector3D(r * std::cos(phi), r * std::sin(phi), r * std::tan(theta));
 }
 
 /// calculates the Cartesian position from spherical coordinates
-Position positionFromMagThetaPhi(double mag, double theta, double phi) {
+Vector3D positionFromMagThetaPhi(double mag, double theta, double phi) {
 	double r = mag * sin(theta);
-	return Position(r * std::cos(phi), r * std::sin(phi), mag * std::cos(theta));
+	return Vector3D(r * std::cos(phi), r * std::sin(phi), mag * std::cos(theta));
 }
 
 } /* namespace Util */

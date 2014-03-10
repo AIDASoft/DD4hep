@@ -27,6 +27,10 @@ typedef TypedSegmentationParameter<int>* IntParameter;
 typedef TypedSegmentationParameter<float>* FloatParameter;
 typedef TypedSegmentationParameter<double>* DoubleParameter;
 typedef TypedSegmentationParameter<std::string>* StringParameter;
+typedef TypedSegmentationParameter<std::vector<int> >* IntVecParameter;
+typedef TypedSegmentationParameter<std::vector<float> >* FloatVecParameter;
+typedef TypedSegmentationParameter<std::vector<double> >* DoubleVecParameter;
+typedef TypedSegmentationParameter<std::vector<std::string> >* StringVecParameter;
 typedef SegmentationParameter::UnitType UnitType;
 
 /// Useful typedefs to differentiate cell IDs and volume IDs
@@ -34,13 +38,13 @@ typedef long long int CellID;
 typedef long long int VolumeID;
 
 /// Simple container for a physics vector
-struct Position {
+struct Vector3D {
 	/// Default constructor
-	Position(double x = 0., double y = 0., double z = 0.) :
+	Vector3D(double x = 0., double y = 0., double z = 0.) :
 			X(x), Y(y), Z(z) {
 	}
 	/// Constructor using a foreign vector class. Requires methods x(), y() and z()
-	template<typename T> Position(const T& v) {
+	template<typename T> Vector3D(const T& v) {
 		X = v.x();
 		Y = v.y();
 		Z = v.Z();
@@ -67,9 +71,9 @@ public:
 	virtual ~Segmentation();
 
 	/// Determine the local position based on the cell ID
-	virtual Position position(const CellID& cellID) const = 0;
+	virtual Vector3D position(const CellID& cellID) const = 0;
 	/// Determine the cell ID based on the position
-	virtual CellID cellID(const Position& localPosition, const Position& globalPosition,
+	virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition,
 			const VolumeID& volumeID) const = 0;
 	/// Determine the volume ID from the full cell ID by removing all local fields
 	virtual VolumeID volumeID(const CellID& cellID) const;
@@ -116,8 +120,10 @@ protected:
 
 	/// Add a parameter to this segmentation. Used by derived classes to define their parameters
 	template<typename TYPE> void registerParameter(const std::string& name, const std::string& description,
-			TYPE& parameter, const TYPE& defaultValue, UnitType unitType = SegmentationParameter::NoUnit, bool isOptional = false) {
-		_parameters[name] = new TypedSegmentationParameter<TYPE>(name, description, parameter, defaultValue, unitType, isOptional);
+			TYPE& parameter, const TYPE& defaultValue, UnitType unitType = SegmentationParameter::NoUnit,
+			bool isOptional = false) {
+		_parameters[name] = new TypedSegmentationParameter<TYPE>(name, description, parameter, defaultValue, unitType,
+				isOptional);
 	}
 	/// Add a cell identifier to this segmentation. Used by derived classes to define their required identifiers
 	void registerIdentifier(const std::string& name, const std::string& description, std::string& identifier,

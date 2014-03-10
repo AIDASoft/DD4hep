@@ -9,6 +9,8 @@
 #ifndef DD4HEP_DD4HEP_PRIMITIVES_H
 #define DD4HEP_DD4HEP_PRIMITIVES_H
 
+#include "DDSegmentation/Segmentation.h"
+
 // C/C++ include files
 #include <algorithm>
 
@@ -18,7 +20,8 @@
 namespace DD4hep {
 
   // Put here global basic type definitions derived from primitive types of the DD4hep namespace
-  typedef unsigned long long int VolumeID;
+  typedef DDSegmentation::CellID CellID;
+  typedef DDSegmentation::VolumeID VolumeID;
 
   /// Helper to delete objects from heap and reset the pointer. Saves many many lines of code
   template <typename T> inline void deletePtr(T*& p) {

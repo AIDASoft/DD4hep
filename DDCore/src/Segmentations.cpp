@@ -34,12 +34,12 @@ Segmentation::Object::~Object() {
 }
 
 /// determine the local position based on the cell ID
-DDSegmentation::Position Segmentation::Object::position(const long64& cellID) const {
+DDSegmentation::Vector3D Segmentation::Object::position(const long64& cellID) const {
   return segmentation->position(cellID);
 }
 
 /// determine the cell ID based on the local position
-long64 Segmentation::Object::cellID(const DDSegmentation::Position& localPosition, const DDSegmentation::Position& globalPosition, const long64& volumeID) const {
+long64 Segmentation::Object::cellID(const DDSegmentation::Vector3D& localPosition, const DDSegmentation::Vector3D& globalPosition, const long64& volumeID) const {
   return segmentation->cellID(localPosition, globalPosition, volumeID);
 }
 

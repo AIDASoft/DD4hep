@@ -40,12 +40,12 @@ ProjectiveCylinder::~ProjectiveCylinder() {
 }
 
 /// determine the local based on the cell ID
-Position ProjectiveCylinder::position(const long64& cellID) const {
+Vector3D ProjectiveCylinder::position(const long64& cellID) const {
 	return Util::positionFromRThetaPhi(1.0, theta(cellID), phi(cellID));
 }
 
 /// determine the cell ID based on the position
-CellID ProjectiveCylinder::cellID(const Position& localPosition, const Position& globalPosition, const VolumeID& volumeID) const {
+CellID ProjectiveCylinder::cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const {
 	_decoder->setValue(volumeID);
 	double theta = thetaFromXYZ(globalPosition);
 	double phi = phiFromXYZ(globalPosition);

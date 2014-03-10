@@ -54,9 +54,9 @@ namespace DD4hep {
         /// Flag to use segmentation for hit positioning
         unsigned char useForHitPosition;
         /// determine the local position based on the cell ID
-        DDSegmentation::Position position(const long64& cellID) const;
+        DDSegmentation::Vector3D position(const long64& cellID) const;
         /// determine the cell ID based on the local position
-        long64 cellID(const DDSegmentation::Position& localPosition, const DDSegmentation::Position& globalPosition, const long64& volumeID) const;
+        long64 cellID(const DDSegmentation::Vector3D& localPosition, const DDSegmentation::Vector3D& globalPosition, const long64& volumeID) const;
         /// Standard constructor
         Object(BaseSegmentation* s = 0);
         /// Default destructor

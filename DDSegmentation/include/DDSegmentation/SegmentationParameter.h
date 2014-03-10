@@ -13,42 +13,71 @@
 #include <sstream>
 #include <string>
 #include <typeinfo>
+#include <vector>
 
 namespace DD4hep {
 namespace DDSegmentation {
 
 /// Helper class to extract type names
-template <typename TYPE> struct TypeName {
+template<typename TYPE> struct TypeName {
 	static const char* name() {
 		return typeid(TYPE).name();
 	}
 };
 
 /// Specialization for int type
-template <> struct TypeName<int> {
+template<> struct TypeName<int> {
 	static const char* name() {
 		return "int";
 	}
 };
 
 /// Specialization for float type
-template <> struct TypeName<float> {
+template<> struct TypeName<float> {
 	static const char* name() {
 		return "float";
 	}
 };
 
 /// Specialization for double type
-template <> struct TypeName<double> {
+template<> struct TypeName<double> {
 	static const char* name() {
 		return "double";
 	}
 };
 
 /// Specialization for string type
-template <> struct TypeName<std::string> {
+template<> struct TypeName<std::string> {
 	static const char* name() {
 		return "string";
+	}
+};
+
+/// Specialization for int vector type
+template<> struct TypeName<std::vector<int> > {
+	static const char* name() {
+		return "intvec";
+	}
+};
+
+/// Specialization for float vector type
+template<> struct TypeName<std::vector<float> > {
+	static const char* name() {
+		return "floatvec";
+	}
+};
+
+/// Specialization for double vector type
+template<> struct TypeName<std::vector<double> > {
+	static const char* name() {
+		return "doublevec";
+	}
+};
+
+/// Specialization for string vector type
+template<> struct TypeName<std::vector<std::string> > {
+	static const char* name() {
+		return "stringvec";
 	}
 };
 
@@ -56,7 +85,9 @@ template <> struct TypeName<std::string> {
 class SegmentationParameter {
 public:
 	/// Defines the parameter unit type (useful to convert to default set of units)
-	enum UnitType {NoUnit, LengthUnit, AngleUnit};
+	enum UnitType {
+		NoUnit, LengthUnit, AngleUnit
+	};
 	/// Destructor
 	virtual ~SegmentationParameter() {
 	}
@@ -95,7 +126,8 @@ public:
 	}
 protected:
 	/// Default constructor used by derived classes
-	SegmentationParameter(const std::string& name, const std::string& description, UnitType unitType = NoUnit, bool isOptional = false) :
+	SegmentationParameter(const std::string& name, const std::string& description, UnitType unitType = NoUnit,
+			bool isOptional = false) :
 			_name(name), _description(description), _unitType(unitType), _isOptional(isOptional) {
 	}
 	/// The parameter name
@@ -112,7 +144,8 @@ template<typename TYPE> class TypedSegmentationParameter: public SegmentationPar
 public:
 	/// Default constructor
 	TypedSegmentationParameter(const std::string& name, const std::string& description, TYPE& value,
-			const TYPE& defaultValue, SegmentationParameter::UnitType unitType = SegmentationParameter::NoUnit, bool isOptional = false) :
+			const TYPE& defaultValue, SegmentationParameter::UnitType unitType = SegmentationParameter::NoUnit,
+			bool isOptional = false) :
 			SegmentationParameter(name, description, unitType, isOptional), _value(value), _defaultValue(defaultValue) {
 		_value = defaultValue;
 	}
@@ -161,6 +194,91 @@ public:
 protected:
 	TYPE& _value;
 	TYPE _defaultValue;
+};
+
+template<typename TYPE> class TypedSegmentationParameter<std::vector<TYPE> > : public SegmentationParameter {
+public:
+	/// Default constructor
+	TypedSegmentationParameter(const std::string& name, const std::string& description, std::vector<TYPE>& value,
+			const std::vector<TYPE>& defaultValue, SegmentationParameter::UnitType unitType =
+					SegmentationParameter::NoUnit, bool isOptional = false) :
+			SegmentationParameter(name, description, unitType, isOptional), _value(value), _defaultValue(defaultValue) {
+		_value = defaultValue;
+	}
+
+	/// Access to the parameter value
+	const std::vector<TYPE>& typedValue() const {
+		return _value;
+	}
+
+	/// Set the parameter value
+	void setTypedValue(const std::vector<TYPE>& value) {
+		_value = value;
+	}
+
+	/// Access to the parameter default value
+	const std::vector<TYPE>& typedDefaultValue() const {
+		return _defaultValue;
+	}
+
+	/// Access to the parameter type
+	std::string type() const {
+		std::stringstream s;
+		s << TypeName<TYPE>::name() << "Vec";
+		return s.str() ;
+	}
+
+	/// Access to the parameter value in string representation
+	std::string value() const {
+		std::stringstream s;
+		typename std::vector<TYPE>::const_iterator it = _value.begin();
+		for (; it != _value.end(); ++it) {
+			s << *it;
+			s << " ";
+		}
+		return s.str();
+	}
+
+	/// Set the parameter value in string representation
+	void setValue(const std::string& value) {
+		std::vector<std::string> elements = splitString(value);
+		_value.clear();
+		for (std::vector<std::string>::const_iterator it = elements.begin(); it != elements.end(); ++it) {
+			if (not it->empty()) {
+				TYPE entry;
+				std::stringstream s;
+				s << *it;
+				s >> entry;
+				_value.push_back(entry);
+			}
+		}
+	}
+
+	/// Access to the parameter default value in string representation
+	std::string defaultValue() const {
+		std::stringstream s;
+		typename std::vector<TYPE>::const_iterator it = _defaultValue.begin();
+		for (; it != _defaultValue.end(); ++it) {
+			s << *it;
+			s << " ";
+		}
+		return s.str();
+	}
+
+protected:
+	std::vector<TYPE>& _value;
+	std::vector<TYPE> _defaultValue;
+
+	/// Helper method to split string into tokens
+	std::vector<std::string> splitString(const std::string& s, char delimiter = ' ') {
+		std::vector<std::string> elements;
+		std::stringstream ss(s);
+		std::string item;
+		while (std::getline(ss, item, delimiter)) {
+			elements.push_back(item);
+		}
+		return elements;
+	}
 };
 
 } /* namespace DDSegmentation */
