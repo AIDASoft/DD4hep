@@ -18,6 +18,9 @@
 
 namespace DD4hep {
 
+typedef DDSegmentation::CellID CellID;
+typedef DDSegmentation::VolumeID VolumeID;
+
 class IDDecoder {
 public:
 	/**
