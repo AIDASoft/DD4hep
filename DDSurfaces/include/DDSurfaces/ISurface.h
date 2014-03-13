@@ -9,7 +9,7 @@
 #define DDSurfaces_ISURFACE_H_
 
 #include "DDSurfaces/Material.h"
-#include "DDSurfaces/Measurement.h"
+#include "DDSurfaces/MeasurementDirections.h"
 #include "DDSurfaces/Vector3D.h"
 
 namespace DDSurfaces {
@@ -36,7 +36,7 @@ public:
 	virtual Vector3D getNormal(const Vector3D& point) const = 0;
 
 	/// Access to the measurement directions at the given point
-	virtual Measurement measurement(const Vector3D& point) const = 0;
+	virtual MeasurementDirections measurement(const Vector3D& point) const = 0;
 
 	/// Access to the material in opposite direction of the normal
 	const Material& innerMaterial() const {
@@ -59,8 +59,8 @@ public:
 	}
 
 	/// Sets the nominal measurement directions
-	void setMeasurement(const Measurement& measurement) {
-		m_measurement = new Measurement(measurement);
+	void setMeasurement(const MeasurementDirections& measurement) {
+		m_measurement = new MeasurementDirections(measurement);
 	}
 
 protected:
@@ -71,7 +71,7 @@ protected:
 
 	Material m_innerMaterial; /// the material in opposite direction of the normal
 	Material m_outerMaterial; /// the material in direction of the normal
-	Measurement* m_measurement; /// the nominal measurement directions
+	MeasurementDirections* m_measurement; /// the nominal measurement directions
 };
 
 } /* namespace DDSurfaces */

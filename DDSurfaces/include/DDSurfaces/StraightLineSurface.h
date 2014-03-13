@@ -31,7 +31,7 @@ public:
 	virtual Vector3D getNormal(const Vector3D& point) const;
 
 	/// Access to the measurement directions at the given point
-	virtual Measurement measurement(const Vector3D& point) const;
+	virtual MeasurementDirections measurement(const Vector3D& point) const;
 
 protected:
 	StraightLineBoundary m_boundary;
