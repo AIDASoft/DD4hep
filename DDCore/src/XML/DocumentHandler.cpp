@@ -134,7 +134,7 @@ DocumentHandler::~DocumentHandler() {
 }
 
 /// Build qualified URI from base element and additional path
-string DocumentHandler::uri(Handle_t base, const XMLCh* fname)   {
+static string uri(Handle_t base, const XMLCh* fname)   {
   xercesc::DOMElement* e = (xercesc::DOMElement*) base.ptr();
   xercesc::XMLURL base_url(e->getBaseURI());
   xercesc::XMLURL ref_url(base_url, fname);
