@@ -1,6 +1,7 @@
+#include "DDG4/Geant4Data.h"
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4TestActions.h"
-#include "DDG4/Geant4TrackHandler.h"
+
 #include <iostream>
 
 using namespace std;
@@ -17,6 +18,21 @@ using namespace DD4hep::Simulation::Setup;
 #pragma link C++ class Geant4GeneratorActionSequence;
 #pragma link C++ class Geant4Action;
 #pragma link C++ class Geant4Kernel;
+#pragma link C++ class KernelHandle;
+
+// Simple Event classes
+#pragma link C++ class SimpleRun+;
+#pragma link C++ class SimpleEvent+;
+#pragma link C++ class SimpleHit+;
+#pragma link C++ class std::vector<SimpleHit*>+;
+#pragma link C++ class SimpleHit::Contribution+;
+#pragma link C++ class SimpleHit::Contributions+;
+#pragma link C++ class SimpleTracker+;
+#pragma link C++ class SimpleTracker::Hit+;
+#pragma link C++ class std::vector<SimpleTracker::Hit*>+;
+#pragma link C++ class SimpleCalorimeter+;
+#pragma link C++ class SimpleCalorimeter::Hit+;
+#pragma link C++ class std::vector<SimpleCalorimeter::Hit*>+;
 #endif
 
 SensitiveSeq::handled_type* setupDetector(Kernel& kernel, const std::string& name)   {
@@ -29,11 +45,13 @@ SensitiveSeq::handled_type* setupDetector(Kernel& kernel, const std::string& nam
 }
 
 void setupG4_CINT()  {
-  Kernel kernel();
-
+  Geant4Kernel kernel(Geometry::LCDD::getInstance());
+  string install_dir = getenv("DD4hepINSTALL");
+  string ddg4_examples = install_dir+"/examples/DDG4/examples";
   Phase p;
-  kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml");
-  kernel.loadXML("DDG4_field.xml");
+
+  kernel.loadGeometry(("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml").c_str());
+  kernel.loadXML(("file:"+ddg4_examples+"/DDG4_field.xml").c_str());
 
   GenAction gun(kernel,"Geant4ParticleGun/Gun");
   gun["energy"] = 0.5*GeV;
@@ -87,4 +105,3 @@ void setupG4_CINT()  {
 void exampleAClick()  {
   setupG4_CINT();
 }
-

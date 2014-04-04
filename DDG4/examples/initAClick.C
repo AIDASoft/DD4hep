@@ -1,3 +1,4 @@
+#include "TInterpreter.h"
 #include "TSystem.h"
 #include <iostream>
 #include <string>
@@ -9,12 +10,10 @@ string make_str(const char* data)  {
   return string(data);
 }
 
-void initAClick()  {
-  string cwd = gSystem->WorkingDirectory();
-  cout << "CWD:" << cwd << endl;
+void initAClick(const char* command=0)  {
   string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
-  string g4_base = make_str(gSystem->Getenv("Geant4_DIR"));
-  string dd4hep  = make_str(gSystem->Getenv("DD4hep_DIR"));
+  string g4_base = make_str(gSystem->Getenv("G4INSTALL"));
+  string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
   string inc     = " -I"+dd4hep+"/include -I"+g4_base+"/include/Geant4 -Wno-shadow -g -O0";
   string libs = (" -L"+rootsys+"/lib");
   libs += " -lCore -lCint -lMathCore -L"+dd4hep+"/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation";
@@ -23,4 +22,13 @@ void initAClick()  {
   gSystem->AddLinkedLibs(libs.c_str());
   cout << "Includes:   " << gSystem->GetIncludePath() << endl;
   cout << "Linked libs:" << gSystem->GetLinkedLibs()  << endl;
+
+  string ddg4_examples = string(getenv("DD4hepINSTALL"))+"/examples/DDG4/examples";
+  string cmd = ".L "+ddg4_examples+"/dictionaries.C+";
+  //gInterpreter->ProcessLine(cmd.c_str());
+  if ( command )   {
+    string cmd = command;
+    cout << "Executing command:" << cmd << endl;
+    gInterpreter->ProcessLine(cmd.c_str());
+  }
 }

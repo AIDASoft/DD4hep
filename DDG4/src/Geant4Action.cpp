@@ -35,21 +35,6 @@ TypeName TypeName::split(const string& type_name) {
   return split(type_name,"/");
 }
 
-/// Default constructor
-Geant4TrackInformation::Geant4TrackInformation()
-    : G4VUserTrackInformation(), m_flags(0) {
-}
-
-/// Standard destructor
-Geant4TrackInformation::~Geant4TrackInformation() {
-}
-
-/// Access flag if track should be stored
-Geant4TrackInformation& Geant4TrackInformation::storeTrack(bool value) {
-  value ? m_flags |= STORE : m_flags &= ~STORE;
-  return *this;
-}
-
 /// Standard constructor
 Geant4Action::Geant4Action(Geant4Context* context, const string& nam)
     : m_context(context), m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {

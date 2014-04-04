@@ -11,6 +11,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4MonteCarloTruth.h"
+#include "DDG4/Geant4TrackInformation.h"
 
 // Geant4 include files
 #include "G4Track.hh"

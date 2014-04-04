@@ -98,6 +98,16 @@ install(DIRECTORY include/DDG4
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
+install(DIRECTORY examples
+  DESTINATION examples/DDG4
+  PATTERN ".svn" EXCLUDE )
+
+install(DIRECTORY python
+  DESTINATION python/DDG4
+  PATTERN ".d" EXCLUDE
+  PATTERN ".so" EXCLUDE
+  PATTERN ".svn" EXCLUDE )
+
 install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib

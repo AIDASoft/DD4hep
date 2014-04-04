@@ -7,11 +7,11 @@ import ROOT
 def compileAClick(dictionary,g4=True):
   from ROOT import gInterpreter, gSystem
   import os.path
-  dd4hep = os.environ['DD4hep_DIR']
+  dd4hep = os.environ['DD4hepINSTALL']
   inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
   lib    = ' -L'+dd4hep+'/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation '
   if g4:
-    geant4 = os.environ['Geant4_DIR']
+    geant4 = os.environ['G4INSTALL']
     inc    = inc + ' -I'+geant4+'/include/Geant4 -Wno-shadow -g -O0 '
     lib    = lib + ' -L'+geant4+'/lib  -L'+geant4+'/lib64 -lG4event -lG4tracking -lG4particles '
 

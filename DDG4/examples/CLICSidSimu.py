@@ -1,6 +1,6 @@
 #
 #
-import DDG4
+import os, DDG4
 from SystemOfUnits import *
 #
 #
@@ -13,10 +13,12 @@ from SystemOfUnits import *
 
 """
 def run():
+  install_dir = os.environ['DD4hepINSTALL']
+  example_dir = install_dir+'/examples/DDG4/examples';
   kernel = DDG4.Kernel()
   kernel.UI = "UI"
-  kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml")
-  kernel.loadXML("file:../DD4hep.trunk/DDG4/examples/DDG4_field.xml")
+  kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
+  kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
 
   lcdd = kernel.lcdd()
   print '+++   List of sensitive detectors:'
@@ -73,13 +75,12 @@ def run():
   evt_root.Control = True
   evt_root.Output = "simple.root"
   evt_root.enableUI()
-
-  evt_lcio = DDG4.EventAction(kernel,'Geant4Output2LCIO/LcioOutput')
-  evt_lcio.Output = "simple_lcio"
-  evt_lcio.enableUI()
-
   kernel.eventAction().add(evt_root)
-  kernel.eventAction().add(evt_lcio)
+
+  #evt_lcio = DDG4.EventAction(kernel,'Geant4Output2LCIO/LcioOutput')
+  #evt_lcio.Output = "simple_lcio"
+  #evt_lcio.enableUI()
+  #kernel.eventAction().add(evt_lcio)
 
   # Setup particle gun
   gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/Gun")

@@ -117,7 +117,7 @@ namespace {
           printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s",
 		   " [THIS SHOULD NEVER HAPPEN]");
 
-	  for(Geant4Mapping::PlacementPath::const_iterator j=path.begin(); j!=path.end(); ++j)  {
+	  for(Geant4Mapping::PlacementPath::const_reverse_iterator j=path.rbegin(); j!=path.rend(); ++j)  {
 	    log << "/" << (*j)->GetName();
 	  }
 	  printout(ERROR, "Geant4VolumeManager", "          Geant4 path has >= 2 instances: %s", log.str().c_str());
@@ -139,7 +139,7 @@ namespace {
 		 code, " [THIS SHOULD NEVER HAPPEN]");
 
 	const Geant4Mapping::PlacementPath& path = (*i).second;
-	for(Geant4Mapping::PlacementPath::const_iterator j=path.begin(); j!=path.end(); ++j)  {
+	for(Geant4Mapping::PlacementPath::const_reverse_iterator j=path.rbegin(); j!=path.rend(); ++j)  {
 	  log << "/" << (*j)->GetName();
 	}
         printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s", log.str().c_str());

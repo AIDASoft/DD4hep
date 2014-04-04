@@ -14,8 +14,6 @@
 #include "DDG4/Geant4Callback.h"
 #include "DDG4/ComponentProperties.h"
 
-#include "G4VUserTrackInformation.hh"
-
 // Geant4 forward declarations
 class G4Run;
 class G4Event;
@@ -68,29 +66,8 @@ namespace DD4hep {
       static TypeName split(const std::string& type_name, const std::string& delim);
     };
 
-    /** @class Geant4TrackInformation Geant4Action.h DDG4/Geant4Action.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct Geant4TrackInformation : public G4VUserTrackInformation {
-      enum {
-        STORE = 1 << 0, LAST = 1 << 31
-      };
-      int m_flags;
-      /// Default constructor
-      Geant4TrackInformation();
-      /// Standard destructor
-      virtual ~Geant4TrackInformation();
-      /// Access flag if track should be stored
-      bool storeTrack() const {
-        return (m_flags & STORE) != 0;
-      }
-      /// Access flag if track should be stored
-      Geant4TrackInformation& storeTrack(bool value);
-    };
-
 #if 0
+
     /** @class Geant4UserTrajectory Geant4Action.h DDG4/Geant4Action.h
      *
      * @author  M.Frank
