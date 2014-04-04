@@ -42,8 +42,6 @@ then
     fi
 fi
 
-
-
 #----PATH-----------------------------------------------------------------
 if [ -z "${PATH}" ]; then
   PATH=@CMAKE_INSTALL_PREFIX@/bin; export PATH       # Linux, ELF HP-UX
@@ -70,8 +68,10 @@ fi
 
 #----PYTHONPATH---------------------------------------------------------------
 if [ -z "${PYTHONPATH}" ]; then
-  PYTHONPATH=@CMAKE_SOURCE_DIR@/DDCore/python; export PYTHONPATH
+  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/DDG4/python:@CMAKE_SOURCE_DIR@/DDCore/python; export PYTHONPATH
 else
-  PYTHONPATH=@CMAKE_SOURCE_DIR@/DDCore/python:$PYTHONPATH; export PYTHONPATH
+  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/DDG4/python:@CMAKE_SOURCE_DIR@/DDCore/python:$PYTHONPATH; export PYTHONPATH
 fi
 
+#----DD4hep installation directory--------------------------------------------
+DD4hepINSTALL=@CMAKE_INSTALL_PREFIX@; export DD4hepINSTALL;
