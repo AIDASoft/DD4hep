@@ -422,8 +422,9 @@ namespace DD4hep {
     UNICODE (x3);
     UNICODE (x4);
     UNICODE (xhalf);
-    UNICODE (xmin);
     UNICODE (xmax);
+    UNICODE (xmin);
+    UNICODE (xml);
 
     UNICODE (y);
     UNICODE (Y);

@@ -182,12 +182,7 @@ namespace DD4hep {
       template <typename Q> Q& object() const {
         return *(Q*) m_element;
       }
-      void verifyObject() const {
-        increment_object_validations();
-        if (m_element && dynamic_cast<T*>(m_element) == 0) {
-          bad_assignment(typeid(*m_element), typeid(T));
-        }
-      }
+      void verifyObject() const;
       const char* name() const;
       static void bad_assignment(const std::type_info& from, const std::type_info& to);
       void assign(Implementation* n, const std::string& nam, const std::string& title);

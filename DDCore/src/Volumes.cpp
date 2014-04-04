@@ -8,8 +8,9 @@
 //====================================================================
 
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "MatrixHelpers.h"
+#include "DD4hep/MatrixHelpers.h"
 
 // ROOT include files
 #include "TColor.h"
@@ -483,6 +484,12 @@ Volume::Volume(const string& name, const Solid& s, const Material& m) {
   m_element = _createTGeoVolume(name,s.ptr(),m.ptr());
 }
 
+/// Check if placement is properly instrumented
+Volume::Object* Volume::data() const   {
+  Volume::Object* o = _userExtension(*this);
+  return o;
+}
+
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
@@ -556,35 +563,69 @@ Material Volume::material() const {
   return Ref_t(m_element->GetMedium());
 }
 
+#include "TROOT.h"
+
 /// Set Visualization attributes to the volume
 const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
   if (attr.isValid()) {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
-    Color_t bright = TColor::GetColorBright(vis->color);
-    Color_t dark = TColor::GetColorDark(vis->color);
+    Color_t bright = vis->color;//kBlue;//TColor::GetColorBright(vis->color);
+    Color_t dark = vis->color;//kRed;//TColor::GetColorDark(vis->color);
+    TColor* c = (TColor*)vis->col;//gROOT->GetColor(dark);
     int draw_style = vis->drawingStyle;
     int line_style = vis->lineStyle;
+
+    m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
+    m_element->SetVisContainers(kTRUE);
+    //m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
+    m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
+    printout(DEBUG,"setVisAttributes",
+	     "Set color %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
+	     int(vis->color),
+	     c ? int(255*c->GetRed()) : 0xFF,
+	     c ? int(255*c->GetGreen()) : 0xFF,
+	     c ? int(255*c->GetBlue()) : 0xFF,
+	     draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
+	     line_style == VisAttr::SOLID ? "Solid" : "Dashed",
+	     name()
+	     );
     m_element->SetLineColor(dark);
     if (draw_style == VisAttr::SOLID) {
+      m_element->SetLineColor(bright);
       m_element->SetFillColor(bright);
       m_element->SetFillStyle(1001);   // Root: solid
     }
     else {
-      //m_element->SetStyle();
+      printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
+      m_element->SetLineColor(kBlack);
       m_element->SetFillColor(0);
-      m_element->SetFillStyle(0);    // Root: hollow
+      m_element->SetFillStyle(0);      // Root: hollow
     }
+    if (line_style == VisAttr::SOLID)  // Root line style: 1=solid, 2=dash, 3=dot, 4=dash-dot.
+      m_element->SetLineStyle(1);
+    else if (line_style == VisAttr::DASHED)
+      m_element->SetLineStyle(2);
+    else
+      m_element->SetLineStyle(line_style);
+
+    m_element->SetLineWidth(10);
+
+    /*
+    m_element->SetVisibility(kTRUE);
+    m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
+    m_element->SetVisDaughters(kTRUE);
+    printout(INFO,"setVisAttributes","Set Line color for volume %s",name());
+    m_element->SetLineColor(bright);
+    m_element->SetFillColor(bright);
+    m_element->SetFillStyle(1001);   // Root: solid
     if (line_style == VisAttr::SOLID)
       m_element->SetFillStyle(1);
     else if (line_style == VisAttr::DASHED)
       m_element->SetFillStyle(2);
     else
       m_element->SetFillStyle(line_style);
-
     m_element->SetLineWidth(10);
-    m_element->SetVisibility(vis->visible ? kTRUE : kFALSE);
-    m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
-    m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
+    */
   }
   Volume::Object* o = _userExtension(*this);
   if ( o ) o->vis = attr;

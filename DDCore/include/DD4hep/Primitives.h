@@ -39,6 +39,7 @@ namespace DD4hep {
       destroyObject(p);
     }
   };
+
   /// map Functor to delete objects from heap
   template <typename M> struct DestroyObjects {
     M& object;
@@ -50,6 +51,9 @@ namespace DD4hep {
     }
     void operator()(std::pair<typename M::key_type, typename M::mapped_type> p) const {
       DestroyObject<typename M::mapped_type>()(p.second);
+    }
+    void operator()() const {
+      for_each(object.begin(),object.end(),(*this));
     }
   };
   template <typename M> DestroyObjects<M> destroyObjects(M& m) {
@@ -67,6 +71,9 @@ namespace DD4hep {
     }
     void operator()(std::pair<typename M::key_type, typename M::mapped_type> p) const {
       DestroyObject<typename M::key_type>()(p.first);
+    }
+    void operator()() const {
+      for_each(object.begin(),object.end(),(*this));
     }
   };
   template <typename M> DestroyFirst<M> destroyFirst(M& m) {
@@ -97,6 +104,9 @@ namespace DD4hep {
     }
     void operator()(std::pair<typename M::key_type, typename M::mapped_type> p) const {
       ReleaseObject<typename M::mapped_type>()(p.second);
+    }
+    void operator()() const {
+      for_each(object.begin(),object.end(),(*this));
     }
   };
   template <typename M> ReleaseObjects<M> releaseObjects(M& m) {

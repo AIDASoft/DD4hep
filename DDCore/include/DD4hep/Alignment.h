@@ -39,6 +39,10 @@ namespace DD4hep {
     public:
       /// Default constructor
       Alignment();
+      /// Default constructor
+      Alignment(TGeoPhysicalNode* p) 
+	: Handle<TGeoPhysicalNode>(p)  {
+      }
       /// Copy constructor
       Alignment(const Alignment& c);
       /// Constructor to be used when reading the already parsed object
@@ -49,7 +53,7 @@ namespace DD4hep {
       Alignment(const std::string& path);
       /// Assignment operator
       Alignment& operator=(const Alignment& c);
-      /// Number of nodes in this branch
+      /// Number of nodes in this branch (=depth of the placement hierarchy from the top level volume)
       int numNodes() const;
       /// Access the placement of this node
       PlacedVolume placement()   const;
@@ -62,13 +66,23 @@ namespace DD4hep {
        *                    == direct mother of placement()
        */
       PlacedVolume nodePlacement(int level=-1)   const;
+      /// Access the currently applied alignment/placement matrix with respect to the world
+      Transform3D toGlobal(int level=-1) const;
+      /// Transform a point from local coordinates of a given level to global coordinates
+      Position toGlobal(const Position& localPoint, int level=-1) const;
+      /// Transform a point from global coordinates to local coordinates of a given level
+      Position globalToLocal(const Position& globalPoint, int level=-1) const;
 
-      /// Align the PhysicalNode (translation only)
-      int align(const Position& pos, bool check = false, double overlap = 0.001);
-      /// Align the PhysicalNode (rotation only)
-      int align(const RotationZYX& rot, bool check = false, double overlap = 0.001);
-      /// Align the PhysicalNode (translation + rotation)
-      int align(const Position& pos, const RotationZYX& rot, bool check = false, double overlap = 0.001);
+      /// Access the currently applied alignment/placement matrix with respect to mother volume
+      Transform3D toMother(int level=-1) const;
+
+      /// Access the currently applied alignment/placement matrix (mother to daughter)
+      Transform3D nominal() const;
+      /// Access the currently applied correction matrix (delta) (mother to daughter)
+      Transform3D delta() const;
+      /// Access the inverse of the currently applied correction matrix (delta) (mother to daughter)
+      Transform3D invDelta() const;
+
     };
 
   } /* End namespace Geometry               */

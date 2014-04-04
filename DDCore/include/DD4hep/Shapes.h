@@ -190,11 +190,11 @@ namespace DD4hep {
 
       /// Constructor to create a new ConeSegment object
       ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1 = 0.0,
-          double phi2 = 2.0 * M_PI*RAD_2_DEGREE);
+          double phi2 = 2.0 * M_PI);
 
       /// Set the cone segment dimensions
       ConeSegment& setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1 = 0.0,
-          double phi2 = 2.0 * M_PI*RAD_2_DEGREE);
+          double phi2 = 2.0 * M_PI);
     };
 
     /**@class Tube Shapes.h
@@ -228,7 +228,7 @@ namespace DD4hep {
 
       /// Constructor to create a new anonymous tube object with attribute initialization
       Tube(double rmin, double rmax, double z) {
-        make("", rmin, rmax, z, 0, 2*M_PI*RAD_2_DEGREE);
+        make("", rmin, rmax, z, 0, 2*M_PI);
       }
 
       /// Constructor to create a new anonymous tube object with attribute initialization
@@ -243,7 +243,7 @@ namespace DD4hep {
 
       /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
       Tube(const std::string& name, double rmin, double rmax, double z) {
-        make(name, rmin, rmax, z, 0, 2*M_PI*RAD_2_DEGREE);
+        make(name, rmin, rmax, z, 0, 2*M_PI);
       }
 
       /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
@@ -258,7 +258,7 @@ namespace DD4hep {
       }
 
       /// Set the tube dimensions
-      Tube& setDimensions(double rmin, double rmax, double z, double startPhi=0.0, double deltaPhi=2*M_PI*RAD_2_DEGREE);
+      Tube& setDimensions(double rmin, double rmax, double z, double startPhi=0.0, double deltaPhi=2*M_PI);
     };
 
     /**@class Cone Shapes.h
@@ -359,10 +359,10 @@ namespace DD4hep {
       }
       /// Constructor to create a new anonymous object with attribute initialization
       template<typename R, typename RMIN, typename RMAX, typename PHI, typename DELTA_PHI>
-	Torus(R r, RMIN rmin, RMAX rmax, PHI phi = M_PI*RAD_2_DEGREE, DELTA_PHI delta_phi = 2. * M_PI*RAD_2_DEGREE)
+	Torus(R r, RMIN rmin, RMAX rmax, PHI phi=M_PI, DELTA_PHI delta_phi = 2.*M_PI)
       {   make(_toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(phi),_toDouble(delta_phi));  }
       /// Constructor to create a new anonymous object with attribute initialization
-      Torus(double r, double rmin, double rmax, double phi = M_PI*RAD_2_DEGREE, double delta_phi = 2. * M_PI*RAD_2_DEGREE)
+      Torus(double r, double rmin, double rmax, double phi=M_PI, double delta_phi = 2.*M_PI)
 	{   make(r,rmin,rmax,phi,delta_phi);  }
       /// Set the Torus dimensions
       Torus& setDimensions(double r, double rmin, double rmax, double phi, double delta_phi);
@@ -379,8 +379,8 @@ namespace DD4hep {
           : Solid_type<TGeoSphere>(e) {
       }
       /// Constructor to create a new anonymous object with attribute initialization
-      Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI*RAD_2_DEGREE, double phi = 0.0,
-          double delta_phi = 2. * M_PI*RAD_2_DEGREE);
+      Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0,
+          double delta_phi = 2. * M_PI);
       /// Set the Sphere dimensions
       Sphere& setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi);
     };
@@ -408,7 +408,7 @@ namespace DD4hep {
      */
     struct PolyhedraRegular: public Solid_type<TGeoPgon> {
     protected:
-      /// Helper function to create holy hedron
+      /// Helper function to create the polyhedron
       void _create(const std::string& name, int nsides, double rmin, double rmax, double zpos, double zneg, double start,
           double delta);
     public:
@@ -424,6 +424,24 @@ namespace DD4hep {
       PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2]);
       /// Constructor to create a new object with phi_start, deltaPhi=2PI, Z-planes at -zlen/2 and +zlen/2
       PolyhedraRegular(int nsides, double phi_start, double rmin, double rmax, double zlen);
+    };
+
+    /**@class EightPointSolid Shapes.h
+     *
+     *   @author  M.Frank
+     *   @version 1.0
+     */
+    struct EightPointSolid: public Solid_type<TGeoArb8> {
+    private: 
+      /// Creator method
+      void make(double dz, const double* vtx);
+    public:
+      /// Constructor to be used when reading the already parsed object
+      template <typename Q> EightPointSolid(const Handle<Q>& e)
+          : Solid_type<TGeoArb8>(e) {
+      }
+      /// Constructor to create a new anonymous object with attribute initialization
+      EightPointSolid(double dz, const double* vertices) { make(dz,vertices);  }
     };
 
     /**@class BooleanSolid Shapes.h

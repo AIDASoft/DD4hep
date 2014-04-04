@@ -206,12 +206,17 @@ namespace DD4hep {
 
       /// Extend the sensitive detector element with an arbitrary structure accessible by the type
       template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
-        return (IFACE*) addUserExtension(dynamic_cast<IFACE*>(c), typeid(IFACE));
+        return (IFACE*) addUserExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _delete<IFACE>);
+      }
+
+      /// Remove an existing extension object from the LCDD instance. If not destroyed, the instance is returned
+      template <class T> T* removeExtension(bool destroy=true)  {
+        return (T*) removeUserExtension(typeid(T),destroy);
       }
 
       /// Access extension element by the type
-      template <class T> T* extension() const {
-        return (T*) userExtension(typeid(T));
+      template <class T> T* extension(bool alert=true) const {
+        return (T*) userExtension(typeid(T),alert);
       }
 
       ///---Factory method-------
@@ -220,10 +225,16 @@ namespace DD4hep {
       static void destroyInstance();
 
     protected:
+      /// Templated destructor function
+      template <typename T> static void _delete(void* ptr) {
+        delete (T*) (ptr);
+      }
       /// Add an extension object to the detector element
-      virtual void* addUserExtension(void* ptr, const std::type_info& info) = 0;
+      virtual void* addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) = 0;
+      /// Remove an existing extension object from the LCDD instance. If not destroyed, the instance is returned
+      virtual void* removeUserExtension(const std::type_info& info, bool destroy) = 0;
       /// Access an existing extension object from the detector element
-      virtual void* userExtension(const std::type_info& info) const = 0;
+      virtual void* userExtension(const std::type_info& info, bool alert=true) const = 0;
 
     };
 

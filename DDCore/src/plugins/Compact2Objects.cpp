@@ -36,6 +36,7 @@ namespace DD4hep {
     struct Includes;
     struct GdmlFile;
     struct Property;
+    struct XMLFile;
     struct AlignmentFile;
     struct DetElementInclude {};
   }
@@ -52,6 +53,7 @@ namespace DD4hep {
   template <> void Converter<SensitiveDetector>::operator()(xml_h element) const;
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
+  template <> void Converter<XMLFile>::operator()(xml_h element) const;
   template <> void Converter<AlignmentFile>::operator()(xml_h element) const;
   template <> void Converter<Header>::operator()(xml_h element) const;
   template <> void Converter<DetElementInclude>::operator()(xml_h element) const;
@@ -713,9 +715,15 @@ template <> void Converter<GdmlFile>::operator()(xml_h element) const {
 }
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
+template <> void Converter<XMLFile>::operator()(xml_h element) const {
+  this->lcdd.fromXML(element.attr<string>(_U(ref)));
+}
+
+/// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<AlignmentFile>::operator()(xml_h element) const {
   xml_h alignments = XML::DocumentHandler().load(element, element.attr_value(_U(ref))).root();
   xml_coll_t(alignments, _U(alignment)).for_each(Converter < AlignmentEntry > (this->lcdd));
+  xml_coll_t(alignments, _U(include)).for_each(Converter < XMLFile > (this->lcdd));
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
@@ -759,6 +767,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   printout(DEBUG, "Compact", "++ Converting detector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(detector), Converter < DetElement > (lcdd));
   xml_coll_t(compact, _U(includes)).for_each(_U(alignment), Converter < AlignmentFile > (lcdd));
+  xml_coll_t(compact, _U(includes)).for_each(_U(xml), Converter < XMLFile > (lcdd));
   xml_coll_t(compact, _U(alignments)).for_each(_U(alignment), Converter < AlignmentEntry > (lcdd));
   xml_coll_t(compact, _U(fields)).for_each(_U(field), Converter < CartesianField > (lcdd));
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter < SensitiveDetector > (lcdd));

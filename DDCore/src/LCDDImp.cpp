@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/Plugins.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/InstanceCount.h"
 #include "LCDDImp.h"
@@ -55,10 +56,8 @@ namespace {
     }
   };
 
-  struct ExtensionEntry {
-    int id;
-  };
-  typedef map<const type_info*, ExtensionEntry> ExtensionMap;
+  typedef pair<int,void(*)(void*)> ExtensionEntry;
+  typedef map<const type_info*, ExtensionEntry>  ExtensionMap;
   static int s_extensionID = 0;
   ExtensionMap& lcdd_extensions() {
     static ExtensionMap s_map;
@@ -109,7 +108,7 @@ LCDDImp::LCDDImp()
  InstanceCount::increment(this);
   m_properties = new Properties();
   if (0 == gGeoManager) {
-    gGeoManager = new TGeoManager();
+    gGeoManager = new TGeoManager("world", "LCDD Geometry");
   }
   {
     m_manager = gGeoManager;
@@ -159,32 +158,56 @@ LCDDImp::~LCDDImp() {
   InstanceCount::decrement(this);
 }
 
-/// Add an extension object to the detector element
-void* LCDDImp::addUserExtension(void* ptr, const std::type_info& info) {
+/// Add an extension object to the LCDD instance
+void* LCDDImp::addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
   Extensions::iterator j = m_extensions.find(&info);
   if (j == m_extensions.end()) {
     ExtensionMap& m = lcdd_extensions();
     ExtensionMap::iterator i = m.find(&info);
     if (i == m.end()) {
-      ExtensionEntry entry;
-      entry.id = ++s_extensionID;
+      ExtensionEntry entry(++s_extensionID,destruct);
       m.insert(make_pair(&info, entry));
     }
-    //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
     return m_extensions[&info] = ptr;
   }
   throw runtime_error("DD4hep: LCDD::addUserExtension: The object "
-      " already has an extension of type:" + string(info.name()) + ".");
+		      " already has an extension of type:" + string(info.name()) + ".");
 }
 
-/// Access an existing extension object from the detector element
-void* LCDDImp::userExtension(const std::type_info& info) const {
-  Extensions::const_iterator j = m_extensions.find(&info);
+/// Remove an existing extension object from the LCDD instance
+void* LCDDImp::removeUserExtension(const std::type_info& info, bool destroy)  {
+  Extensions::iterator j = m_extensions.find(&info);
   if (j != m_extensions.end()) {
-    return (*j).second;
+    void *ptr = (*j).second;
+    if ( destroy )  {
+      ExtensionMap& m = lcdd_extensions();
+      ExtensionMap::iterator i = m.find(&info);
+      if (i != m.end()) {
+	ExtensionEntry& e = (*i).second;
+	(*e.second)((*j).second);
+	printout(INFO,"LCDD","Destructed LCDD Extension: %p of type %s",ptr,info.name());
+	ptr = 0;
+      }
+    }
+    else  {
+      printout(INFO,"LCDD","Detached LCDD Extension: %p of type %s",ptr,info.name());
+    }
+    m_extensions.erase(j);
+    return ptr;
   }
+  throw runtime_error("DD4hep: LCDD::removeUserExtension: The object "
+		      " of type " + string(info.name()) + " is not present.");
+}
+
+/// Access an existing extension object from the LCDD instance
+void* LCDDImp::userExtension(const std::type_info& info, bool alert) const {
+  Extensions::const_iterator j = m_extensions.find(&info);
+  if ( j != m_extensions.end() )
+    return (*j).second;
+  else if ( !alert ) 
+    return 0;
   throw runtime_error("DD4hep: LCDD::userExtension: The object "
-      " has no extension of type:" + string(info.name()) + ".");
+		      " has no extension of type:" + string(info.name()) + ".");
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const {     // throw if not existing
@@ -323,19 +346,6 @@ void LCDDImp::endDocument() {
     m_trackingVol.setVisAttributes(trackingVis);
     add(trackingVis);
 #endif
-    // Set the world volume to invisible.
-    VisAttr worldVis("WorldVis");
-    worldVis.setAlpha(1.0);
-    worldVis.setVisible(false);
-    worldVis.setShowDaughters(true);
-    worldVis.setColor(1.0, 1.0, 1.0);
-    worldVis.setLineStyle(VisAttr::SOLID);
-    worldVis.setDrawingStyle(VisAttr::WIREFRAME);
-    m_worldVol.setVisAttributes(worldVis);
-#ifndef DD4HEP_EMULATE_TGEOEXTENSIONS
-#endif
-    add(worldVis);
-
     /// Since we allow now for anonymous shapes,
     /// we will rename them to use the name of the volume they are assigned to
     mgr->CloseGeometry();
@@ -348,8 +358,8 @@ void LCDDImp::init() {
   if (!m_world.isValid()) {
     TGeoManager* mgr = m_manager;
     Box worldSolid("world_x", "world_y", "world_z");
-    std::cout << " *********** created World volume with size : " << worldSolid->GetDX() << ", " << worldSolid->GetDY() << ", "
-	      << worldSolid->GetDZ() << std::endl;
+    printout(INFO,"LCDD"," *********** created World volume with size : %7.0f %7.0f %7.0f", 
+	     worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
 
     m_materialAir = material("Air");
     m_materialVacuum = material("Vacuum");
@@ -357,6 +367,19 @@ void LCDDImp::init() {
     Volume world("world_volume", worldSolid, m_materialAir);
     m_world = TopDetElement("world");
     m_worldVol = world;
+    // Set the world volume to invisible.
+    VisAttr worldVis("WorldVis");
+    worldVis.setAlpha(1.0);
+    worldVis.setVisible(false);
+    worldVis.setShowDaughters(true);
+    worldVis.setColor(1.0, 1.0, 1.0);
+    worldVis.setLineStyle(VisAttr::SOLID);
+    worldVis.setDrawingStyle(VisAttr::WIREFRAME);
+    //m_worldVol.setVisAttributes(worldVis);
+    m_worldVol->SetVisibility(kFALSE);
+    m_worldVol->SetVisDaughters(kTRUE);
+    m_worldVol->SetVisContainers(kTRUE);
+    add(worldVis);
 
 #if 0
     Tube trackingSolid(0.,"tracking_region_radius","2*tracking_region_zmax",2*M_PI);

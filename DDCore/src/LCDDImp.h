@@ -130,10 +130,12 @@ namespace DD4hep {
       virtual void init();
       virtual void endDocument();
 
-      /// Add an extension object to the detector element
-      virtual void* addUserExtension(void* ptr, const std::type_info& info);
-      /// Access an existing extension object from the detector element
-      virtual void* userExtension(const std::type_info& info) const;
+      /// Add an extension object to the LCDD instance
+      virtual void* addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
+      /// Remove an existing extension object from the LCDD instance. If not destroyed, the instance is returned
+      virtual void* removeUserExtension(const std::type_info& info, bool destroy=true);
+      /// Access an existing extension object from the LCDD instance
+      virtual void* userExtension(const std::type_info& info, bool alert=true) const;
 
       virtual Handle<TObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not = true) const;
       virtual Volume pickMotherVolume(const DetElement& sd) const;

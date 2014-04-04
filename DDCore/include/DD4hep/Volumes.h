@@ -222,9 +222,11 @@ namespace DD4hep {
         return *this;
       }
 
+      /// Check if placement is properly instrumented
+      Object* data() const;
       /// Place daughter volume. The position and rotation are the identity
       PlacedVolume placeVolume(const Volume& vol) const;
-      /// Place daughter volume according to generic Transform3D
+      /// Place daughter volume according to a generic Transform3D
       PlacedVolume placeVolume(const Volume& volume, const Transform3D& tr) const;
       /// Place un-rotated daughter volume at the given position.
       PlacedVolume placeVolume(const Volume& vol, const Position& pos) const;

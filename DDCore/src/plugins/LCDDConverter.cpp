@@ -50,7 +50,7 @@ using namespace DD4hep;
 using namespace std;
 namespace {
   typedef Position XYZRotation;
-#if 0
+
   XYZRotation getXYZangles(const Double_t* r) {
     Double_t cosb = sqrt(r[0]*r[0] + r[1]*r[1]);
     if (cosb > 0.00001) {
@@ -58,7 +58,8 @@ namespace {
     }
     return XYZRotation(atan2(-r[7], r[4]),atan2(-r[2], cosb),0);
   }
-#endif
+
+#if 0
   XYZRotation getXYZangles(const Double_t* rotationMatrix) {
     Double_t a, b, c;
     Double_t rad = 1.0;   // RAD by default! 180.0 / TMath::ACos(-1.0);
@@ -74,7 +75,20 @@ namespace {
       b = TMath::ATan2(-r[2], cosb) * rad;
       c = 0;
     }
+    XYZRotation rr(a, b, c);
+    cout << " X:" << a << " " << rr.X() << " Y:" << b << " " << rr.Y() << " Z:" << c << " " << rr.Z() 
+	 << " lx:" << r[0] << " ly:" << r[4] << " lz:" << r[8] << endl;
     return XYZRotation(a, b, c);
+  }
+#endif
+
+  bool is_volume(const TGeoVolume* volume)  {
+    Volume v = Ref_t(volume);
+    return v.data() != 0;
+  }
+  bool is_placement(const TGeoNode* node)  {
+    PlacedVolume v = Ref_t(node);
+    return v.data() != 0;
   }
 }
 
@@ -623,7 +637,7 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
         handlePlacement(node->GetName(), node);
       }
     }
-    if (geo.doc_header && dynamic_cast<const Volume::Object*>(volume)) {
+    if (geo.doc_header && is_volume(volume)) {
       Region reg = _v.region();
       LimitSet lim = _v.limitSet();
       VisAttr vis = _v.visAttributes();
@@ -656,7 +670,7 @@ xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume*
   if (!vol) {
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
-    if (dynamic_cast<const Volume::Object*>(volume)) {
+    if (is_volume(volume)) {
       VisAttr vis = _v.visAttributes();
       if (vis.isValid()) {
         geo.doc_structure.append(vol = xml_elt_t(geo.doc, _U(volume)));
@@ -673,7 +687,7 @@ xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume*
 /// Dump logical volume in GDML format to output stream
 void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* volume) const {
   Volume v = Ref_t(volume);
-  if (dynamic_cast<const Volume::Object*>(volume)) {
+  if ( is_volume(volume) )     {
     GeometryInfo& geo = data();
     Region reg = v.region();
     LimitSet lim = v.limitSet();
@@ -695,7 +709,7 @@ void LCDDConverter::checkVolumes(const string& name, const TGeoVolume* volume) c
   if (i != m_checkNames.end()) {
     Volume v = Ref_t(volume);
     cout << "checkVolumes: Volume " << name << " ";
-    if (dynamic_cast<const Volume::Object*>(volume)) {
+    if (is_volume(volume))     {
       SensitiveDetector s = v.sensitiveDetector();
       VisAttr vis = v.visAttributes();
       if (s.isValid()) {
@@ -731,12 +745,14 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
       ::snprintf(text, sizeof(text), "_%p_pos", (void*)node);
       xml_ref_t pos = handlePosition(name + text, m);
       ::snprintf(text, sizeof(text), "_%p_rot", (void*)node);
-      xml_ref_t rot = handleRotation(name + text, m);
       place.setRef(_U(positionref), pos.name());
-      place.setRef(_U(rotationref), rot.name());
+      if ( m->IsRotation() )  {
+	xml_ref_t rot = handleRotation(name + text, m);
+	place.setRef(_U(rotationref), rot.name());
+      }
     }
     if (geo.doc_root.tag() != "gdml") {
-      if (dynamic_cast<const PlacedVolume::Object*>(node)) {
+      if (is_placement(node)) {
         PlacedVolume p = Ref_t(node);
         const PlacedVolume::VolIDs& ids = p.volIDs();
         for (PlacedVolume::VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {

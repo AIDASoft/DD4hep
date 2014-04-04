@@ -12,6 +12,7 @@
 // Framework include files
 #include "DD4hep/Factories.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Printout.h"
 #include "../LCDDImp.h"
 
 // ROOT includes
@@ -19,6 +20,7 @@
 #include "TGeoVolume.h"
 
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 static LCDDBuildType build_type(const char* value)   {
@@ -110,7 +112,7 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
   }
   catch (const exception& e) {
     throw runtime_error(string(e.what()) + "\n"
-        "DD4hep: while programming VolumeManager. Are your volIDs correct?");
+			"DD4hep: while programming VolumeManager. Are your volIDs correct?");
   }
   catch (...) {
     throw runtime_error("UNKNOWN exception while programming VolumeManager. Are your volIDs correct?");
@@ -119,3 +121,61 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
 }
 DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
+static long dump_geometry(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 1 )   {
+    string output = argv[1];
+    cout << "Dump geometry to root file : " << output << endl;
+    lcdd.manager().Export(output.c_str()+1);
+    return 1;
+  }
+  return 0;
+}
+DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
+
+static long dump_geometry(PlacedVolume pv,int level) {
+  char fmt[64];
+  const TGeoNode* node = pv.ptr();
+  ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
+  printout(INFO,"+++",fmt,"",node->GetName());
+  for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
+    TGeoNode* daughter = node->GetDaughter(idau);
+    PlacedVolume placement(daughter);
+    if ( placement.data() )   {
+      PlacedVolume pv_dau = Ref_t(daughter);
+      dump_geometry(pv_dau,level+1);
+    }
+  }
+  return 1;
+}
+static long dump_geometry(DetElement de,int level) {
+  const DetElement::Children& c = de.children();
+  char fmt[64];
+  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)   {
+    ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
+    printout(INFO,"+++",fmt,"",(*i).second.placementPath().c_str());
+    dump_geometry((*i).second,level+1);
+  }
+  return 1;
+}
+
+/** Basic entry point to print otu the detector element hierarchy
+ *
+ *  @author  M.Frank
+ *  @version 1.0
+ *  @date    01/04/2014
+ */
+static long dump_detelement_tree(LCDD& lcdd, int, char**) {
+  return dump_geometry(lcdd.world(),0);
+}
+DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree)
+
+/** Basic entry point to print otu the volume hierarchy
+ *
+ *  @author  M.Frank
+ *  @version 1.0
+ *  @date    01/04/2014
+ */
+static long dump_volume_tree(LCDD& lcdd, int, char**) {
+  return dump_geometry(lcdd.world().placement(),0);
+}
+DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)

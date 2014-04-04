@@ -42,7 +42,7 @@ namespace {
 /// Default constructor
 DetElement::Object::Object()
     : TNamed(), magic(magic_word()), id(0), combineHits(0),   // readout(),
-    alignment(), placement(), parent(), children(), worldTrafo(0), parentTrafo(0), referenceTrafo(0) {
+      alignment(), volume_alignments(), conditions(), placement(), parent(), children(), worldTrafo(0), parentTrafo(0), referenceTrafo(0) {
   InstanceCount::increment(this);
 }
 
@@ -225,9 +225,7 @@ string DetElement::placementPath() const {
   if (isValid()) {
     Object& o = object<Object>();
     if (o.placementPath.empty()) {
-      PlacementPath path;
-      DetectorTools::placementPath(*this, path);
-      o.placementPath = DetectorTools::nodePath(path);
+      o.placementPath = DetectorTools::placementPath(*this);
     }
     return o.placementPath;
   }

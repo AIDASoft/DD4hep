@@ -199,7 +199,11 @@ namespace DD4hep {
         /// Full path to this detector element. May be invalid
         std::string path;
         int combineHits;
+	/// Basic detector element alignment entry
         Alignment alignment;
+	/// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
+	std::vector<Alignment> volume_alignments;
+	/// The detector elements condition entry
         Conditions conditions;
         PlacedVolume placement;
         Parent parent;

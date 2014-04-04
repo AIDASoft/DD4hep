@@ -9,7 +9,7 @@
 
 #define _USE_MATH_DEFINES
 #include "DD4hep/LCDD.h"
-#include "MatrixHelpers.h"
+#include "DD4hep/MatrixHelpers.h"
 // C/C++ include files
 #include <stdexcept>
 
@@ -125,20 +125,20 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
   _assign(
-      new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1,phi2), "", "cone_segment", true);
+      new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1*RAD_2_DEGREE, phi2*RAD_2_DEGREE), "", "cone_segment", true);
 }
 
 /// Set the cone segment dimensions
 ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1,
     double phi2) {
-  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1, phi2 };
+  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1*RAD_2_DEGREE, phi2*RAD_2_DEGREE };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  //_assign(new TGeoTubeSeg(rmin,rmax,z,startPhi,deltaPhi),name,"tube",true);
+  //_assign(new TGeoTubeSeg(rmin,rmax,z,startPhi*RAD_2_DEGREE,deltaPhi*RAD_2_DEGREE),name,"tube",true);
   _assign(new MyConeSeg(), name, "tube", true);
   setDimensions(rmin, rmax, z, startPhi, deltaPhi);
 }
@@ -146,7 +146,7 @@ void Tube::make(const string& name, double rmin, double rmax, double z, double s
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi) {
   //double params[] = {rmin,rmax,z,startPhi,deltaPhi};
-  double params[] = { z, rmin, rmax, rmin, rmax, startPhi,deltaPhi };
+  double params[] = { z, rmin, rmax, rmin, rmax, startPhi*RAD_2_DEGREE,deltaPhi*RAD_2_DEGREE };
   _setDimensions(params);
   return *this;
 }
@@ -188,25 +188,25 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
 
 /// Constructor to be used when creating a new object with attribute initialization
 Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  _assign(new TGeoSphere(rmin, rmax, theta, delta_theta, phi, delta_phi), "", "sphere", true);
+  _assign(new TGeoSphere(rmin, rmax, theta, delta_theta*RAD_2_DEGREE, phi*RAD_2_DEGREE, delta_phi*RAD_2_DEGREE), "", "sphere", true);
 }
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  double params[] = { rmin, rmax, theta, delta_theta, phi,
-      delta_phi };
+  double params[] = { rmin, rmax, theta, delta_theta*RAD_2_DEGREE, phi*RAD_2_DEGREE,
+      delta_phi*RAD_2_DEGREE };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 void Torus::make(double r, double rmin, double rmax, double phi, double delta_phi) {
-  _assign(new TGeoTorus(r, rmin, rmax, phi, delta_phi), "", "torus", true);
+  _assign(new TGeoTorus(r, rmin, rmax, phi*RAD_2_DEGREE, delta_phi*RAD_2_DEGREE), "", "torus", true);
 }
 
 /// Set the Torus dimensions
 Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, double delta_phi) {
-  double params[] = { r, rmin, rmax, phi, delta_phi };
+  double params[] = { r, rmin, rmax, phi*RAD_2_DEGREE, delta_phi*RAD_2_DEGREE };
   _setDimensions(params);
   return *this;
 }
@@ -262,6 +262,11 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, dou
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2]) {
   _create("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2*M_PI*RAD_2_DEGREE);
+}
+
+/// Creator method
+void EightPointSolid::make(double dz, const double* vtx)   {
+  _assign(new TGeoArb8(dz, (double*)vtx), "", "Arb8", true);
 }
 
 /// Constructor to be used when creating a new object. Position is identity, Rotation is the identity rotation

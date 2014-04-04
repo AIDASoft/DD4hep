@@ -177,10 +177,6 @@ namespace DD4hep {
       return this->m_element ? this->m_element->GetName() : "";
     }
 
-    template <> const char* Handle<TObject>::name() const {
-      return "";
-    }
-
     template <> void Handle<TObject>::bad_assignment(const type_info& from, const type_info& to) {
       string msg = "Wrong assingment from ";
       msg += from.name();
@@ -334,13 +330,28 @@ namespace DD4hep {
 #include "TMap.h"
 #include "TColor.h"
 
-#define INSTANTIATE(X)   template struct DD4hep::Geometry::Handle<X>
+#define INSTANTIATE(X)     namespace DD4hep { namespace Geometry {  \
+  template <> void Handle<X>::verifyObject() const {	                \
+    increment_object_validations();					\
+    if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
+      bad_assignment(typeid(*m_element), typeid(X));			\
+    }									\
+  }}}									\
+  template struct DD4hep::Geometry::Handle<X> 
+
 #define INSTANTIATE_UNNAMED(X)   namespace DD4hep { namespace Geometry {                         \
   template <> void Handle<X>::assign(X* n, const string&, const string&) { this->m_element = n;} \
   template <> const char* Handle<X>::name() const { return ""; }	                         \
+  template <> void Handle<X>::verifyObject() const {			                         \
+    increment_object_validations(); 					                         \
+    if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
+      bad_assignment(typeid(*m_element), typeid(X));			                         \
+    }									                         \
+  }									                         \
 }}									                         \
 template struct DD4hep::Geometry::Handle<X>
 
+INSTANTIATE_UNNAMED(TObject);
 INSTANTIATE(TNamed);
 
 #include "TGeoMedium.h"
@@ -380,6 +391,7 @@ INSTANTIATE(TGeoNodeOffset);
 INSTANTIATE(TGeoVolume);
 INSTANTIATE(TGeoBBox);
 INSTANTIATE(TGeoCone);
+INSTANTIATE(TGeoArb8);
 INSTANTIATE(TGeoConeSeg);
 INSTANTIATE(MyConeSeg);
 INSTANTIATE(TGeoParaboloid);
