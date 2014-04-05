@@ -35,15 +35,21 @@
     <!-- need to define vacuum and air -->
     <materials>
       <material name="Vacuum">
-	<D type="density" unit="g/cm3" value="0.00000001" />
-	<fraction n="1" ref="H" />
+	    <D type="density" unit="g/cm3" value="0.00000001" />
+	    <fraction n="1" ref="H" />
       </material>
       <material name="Air">
-	<D type="density" unit="g/cm3" value="0.0012"/>
-	<fraction n="0.754" ref="N"/>
-	<fraction n="0.234" ref="O"/>
-	<fraction n="0.012" ref="Ar"/>
+	    <D type="density" unit="g/cm3" value="0.0012"/>
+	    <fraction n="0.754" ref="N"/>
+	    <fraction n="0.234" ref="O"/>
+	    <fraction n="0.012" ref="Ar"/>
       </material>    
+      <material formula="Si" name="Silicon" state="solid" >
+        <RL type="X0" unit="cm" value="9.36607" />
+        <NIL type="lambda" unit="cm" value="45.7531" />
+        <D type="density" unit="g/cm3" value="2.33" />
+        <composite n="1" ref="Si" />
+      </material>
     </materials>
 
 </lccdd>
