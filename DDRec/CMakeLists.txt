@@ -4,6 +4,7 @@ project(DDRec)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
 		    ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSegmentation/include 
+		    ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSurfaces/include 
 		    ${CMAKE_SOURCE_DIR}/DDCore/include)
 
 file(GLOB sources src/*.cpp)
