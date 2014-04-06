@@ -52,7 +52,7 @@ namespace DD4hep {
     bool VolPlane::insideBounds(const Vector3D& point, double epsilon) const {
 
 
-#if 1
+#if 0
       double dist = std::abs ( distance( point ) ) ;
       
       bool inShape = volume()->GetShape()->Contains( point ) ;
@@ -65,7 +65,7 @@ namespace DD4hep {
       return dist < epsilon && inShape ;
  #else
 	
-      return ( std::abs ( distance() ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
+      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
  #endif
  
     }
@@ -79,7 +79,7 @@ namespace DD4hep {
     /// Checks if the given point lies within the surface
     bool VolCylinder::insideBounds(const Vector3D& point, double epsilon) const {
       
-#if 1
+#if 0
       double distR = std::abs( distance( point ) ) ;
       
       bool inShapeT = volume()->GetShape()->Contains( point ) ;
@@ -91,7 +91,7 @@ namespace DD4hep {
       return distR < epsilon && inShapeT ;
 #else
       
-      return ( std::abs ( distance() ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
+      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
 
 #endif
     }

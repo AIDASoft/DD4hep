@@ -4,13 +4,22 @@
 include_directories( 
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   ${CMAKE_SOURCE_DIR}/DDCore/include
-  ${CMAKE_SOURCE_DIR}/DDG4/include
   ${CMAKE_SOURCE_DIR}/DDSegmentation/include
+  ${CMAKE_SOURCE_DIR}/DDSurfaces/include
+  ${CMAKE_SOURCE_DIR}/DDRec/include
   ${CMAKE_SOURCE_DIR}/include
   ${ROOT_INCLUDE_DIR}
   )
+if(DD4HEP_WITH_GEANT4)
+  include_directories( ${CMAKE_SOURCE_DIR}/DDG4/include )
+endif() 
 
-link_libraries(DD4hepG4 DD4hepCore DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+if(DD4HEP_WITH_GEANT4)
+  link_libraries(DD4hepG4 DD4hepCore DD4hepRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+else()
+  link_libraries(DD4hepCore DD4hepRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+endif()
+
 #--------------------------------------------------
 #ADD_TEST( t_init source "${CMAKE_CURRENT_WORK_DIR}/thisdd4hep.sh" )
 

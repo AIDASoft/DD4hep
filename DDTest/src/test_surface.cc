@@ -1,10 +1,12 @@
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/LCDD.h"
-//#include "DD4hep/TGeoUnits.h"
-#include "DD4hep/Surface.h"
+#include "DD4hep/TGeoUnits.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Detector.h"
+
+#include "DDRec/Surface.h"
+//#include "DDSurfaces/ISurface.h"
 
 #include <exception>
 #include <iostream>
@@ -15,6 +17,9 @@
 using namespace std ;
 using namespace DD4hep ;
 using namespace Geometry;
+using namespace DDRec ;
+using namespace DDSurfaces ;
+
 //using namespace tgeo ;
 
 // this should be the first line in your test
@@ -62,7 +67,7 @@ int main(int argc, char** argv ){
 
     lcdd.fromCompact( argv[1] );
 
-    //
+    // --- test a planar surface
     double thick  = 0.005 ;
     double width  = 1.0  ;
     double length = 10.0 ;
@@ -71,24 +76,54 @@ int main(int argc, char** argv ){
     Box         box   ( thick/2.,  width/2.,  length/2. );
     Volume      vol   ( "test_box", box, mat);
     
-    Surface::Vector3D u( 0. , 1. , 0. ) ;
-    Surface::Vector3D v( 0. , 0. , 1. ) ;
-    Surface::Vector3D n( 1. , 0. , 0. ) ;
-    Surface::Vector3D o( 0. , 0. , 0. ) ;
+    Vector3D u( 0. , 1. , 0. ) ;
+    Vector3D v( 0. , 0. , 1. ) ;
+    Vector3D n( 1. , 0. , 0. ) ;
+    Vector3D o( 0. , 0. , 0. ) ;
 
 
-    Surface surf( vol , Surface::Plane, true, thick/2, thick/2 , u,v,n,o ) ;
+    VolPlane surf( vol , SurfaceType( SurfaceType::Sensitive ), thick/2, thick/2 , u,v,n,o ) ;
+
+    // test inside bounds for some points:
+
+    test( surf.insideBounds(  Vector3D(  0. , 23. , 42.  )  ) , false , " insideBounds Vector3D(   0. , 23. , 42. )   " ) ; 
+
+    test( surf.insideBounds(  Vector3D(  0,  .23 ,  .42  )  ) , true , " insideBounds Vector3D(    0,  .23 ,  .42  )   " ) ; 
+
+    test( surf.insideBounds(  Vector3D(  0.00003 ,  .23 ,  .42  )  ) , true , " insideBounds Vector3D(   0.00003 ,  .23 ,  .42  )   " ) ; 
 
 
-    test( surf.isInsideBounds(  Surface::Vector3D(  0. , 23. , 42.  )  ) , false , " isInsideBounds Vector3D(   0. , 23. , 42. )   " ) ; 
+    // --- test SurfaceMaterial
+    SurfaceMaterial sm( mat ) ;
 
-    test( surf.isInsideBounds(  Surface::Vector3D(  0,  .23 ,  .42  )  ) , true , " isInsideBounds Vector3D(    0,  .23 ,  .42  )   " ) ; 
+    // FIXME: these cause a seg fault ....
 
-    test( surf.isInsideBounds(  Surface::Vector3D(  0.00003 ,  .23 ,  .42  )  ) , true , " isInsideBounds Vector3D(   0.00003 ,  .23 ,  .42  )   " ) ; 
+    // test( STR( sm.A() )  , STR( 93.4961 ) , "   SurfaceMaterial.A() == 93.4961 " ) ; 
+    
+    // test( STR( sm.Z() )  , STR( 93.4961 ) , "   SurfaceMaterial.Z() == 93.4961 " ) ; 
+
+    test( STR( sm.radiationLength() / tgeo::mm )  , STR( 93.4961 ) , "   SurfaceMaterial.radiationLength() == 93.4961 * mm " ) ; 
+
+    test( STR( sm.interactionLength() / tgeo::mm )  , STR( 457.532 ) , "   SurfaceMaterial.interactionLength() == 457.532 * mm " ) ; 
+    
+
+
+    // test surface type:
+
+    test( surf.type().isSensitive() , true , " surface is sensitive " )  ;
+
+    test( surf.type().isPlane() , true , " surface is Plane " )  ;
+
+    surf.type().checkParallelToZ(  surf ) ;
+
+    test( surf.type().isZPlane() , true , " surface is ZPlane " )  ;
+
+    test( surf.type().isCylinder() , false , " surface is no Cylinder " )  ;
 
 
     // --------------------------------------------------------------------
 
+    // test a cylindrical surface
 
     thick  = 1.0 ;
     length = 100.0 ;
@@ -98,23 +133,35 @@ int main(int argc, char** argv ){
     Tube    tube  ( radius - thick/2., radius + thick/2. , length/2. );
     vol = Volume( "test_tube", tube , mat);
 
-    Surface::Vector3D o_radius = Surface::Vector3D( radius , 0. , 0.  ) ;
+    Vector3D o_radius = Vector3D( radius , 0. , 0.  ) ;
     
-    Surface surfT( vol , Surface::Cylinder , true, thick/2,  thick/2 , u,v,n, o_radius ) ;
+    VolCylinder surfT( vol , SurfaceType( SurfaceType::Sensitive ), thick/2, thick/2 , u,v,n, o_radius  ) ;
 
-    test( surfT.isInsideBounds(  Surface::Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 49.  )) , true 
-	  , " isInsideBounds Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 49. )  " ) ; 
+    test( surfT.insideBounds(  Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 49.  )) , true 
+	  , " insideBounds Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 49. )  " ) ; 
 
-    test( surfT.isInsideBounds(  Surface::Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 50.01  )) , false 
-	  , " isInsideBounds Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 50.01 )  " ) ; 
+    test( surfT.insideBounds(  Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 50.01  )) , false 
+	  , " insideBounds Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 50.01 )  " ) ; 
 
-    test( surfT.isInsideBounds(  Surface::Vector3D(  (radius+0.001) * sin(0.75) , (radius+0.001) * cos( 0.75 ) , 49.  )) , false 
-	  , " isInsideBounds Vector3D(  (radius+0.001) * sin(0.75) , (radius+0.001) * cos( 0.75 ) , 49. )  " ) ; 
+    test( surfT.insideBounds(  Vector3D(  (radius+0.001) * sin(0.75) , (radius+0.001) * cos( 0.75 ) , 49.  )) , false 
+	  , " insideBounds Vector3D(  (radius+0.001) * sin(0.75) , (radius+0.001) * cos( 0.75 ) , 49. )  " ) ; 
 
 
-    test( surfT.isInsideBounds(  Surface::Vector3D(  (radius+0.00005) * sin(0.75) , (radius+0.00005) * cos( 0.75 ) , 49.  )) , true
-	  , " isInsideBounds Vector3D(  (radius+0.00005) * sin(0.75) , (radius+0.00005) * cos( 0.75 ) , 49. )  " ) ; 
+    test( surfT.insideBounds(  Vector3D(  (radius+0.00005) * sin(0.75) , (radius+0.00005) * cos( 0.75 ) , 49.  )) , true
+	  , " insideBounds Vector3D(  (radius+0.00005) * sin(0.75) , (radius+0.00005) * cos( 0.75 ) , 49. )  " ) ; 
 
+
+
+    // test surface type:
+
+    test( surfT.type().isSensitive() , true , " surface is sensitive " )  ;
+
+    test( surfT.type().isPlane() , false , " surface is no Plane " )  ;
+
+
+    surfT.type().checkParallelToZ(  surfT ) ;
+
+    test( surfT.type().isZCylinder() , true , " surface is ZCylinder " )  ;
 
 
    // --------------------------------------------------------------------

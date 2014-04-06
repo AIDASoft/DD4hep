@@ -21,7 +21,7 @@ namespace DD4hep {
      * @date Apr, 6 2014
      * @version $Id:$
      */
-    struct SurfaceMaterial : public virtual Geometry::Material , IMaterial{
+    struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
 
       /** Copy c'tor - copies handle */
       SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
@@ -90,7 +90,7 @@ namespace DD4hep {
      * @date Apr, 6 2014
      * @version $Id:$
      */
-    class VolSurface : public Geometry::Handle< SurfaceData > , ISurface {
+    class VolSurface : public Geometry::Handle< SurfaceData > , public ISurface {
     
     protected:
     
@@ -111,7 +111,7 @@ namespace DD4hep {
       /** properties of the surface encoded in Type.
        * @see SurfaceType
        */
-      virtual SurfaceType type() const { return object<SurfaceData>()._type ; }
+      virtual const SurfaceType& type() const { return object<SurfaceData>()._type ; }
     
       //==== geometry ====
       
@@ -199,8 +199,9 @@ namespace DD4hep {
 	
 	VolSurface( vol, type, thickness_inner, thickness_outer, u,v,n,o ) {
 
-	type._bits.set( SurfaceType::Cylinder , false ) ;
-	type._bits.set( SurfaceType::Plane    , true ) ;
+	object<SurfaceData>()._type.setProperty( SurfaceType::Plane    , true ) ;
+	object<SurfaceData>()._type.setProperty( SurfaceType::Cylinder , false ) ;
+
       }      
       
       /** Distance to surface */
@@ -230,8 +231,9 @@ namespace DD4hep {
 	
 	VolSurface( vol, type, thickness_inner, thickness_outer, u,v,n,o ) {
 
-	type._bits.set( SurfaceType::Plane    , false ) ;
-	type._bits.set( SurfaceType::Cylinder , true ) ;
+	object<SurfaceData>()._type.setProperty( SurfaceType::Plane    , false ) ;
+	object<SurfaceData>()._type.setProperty( SurfaceType::Cylinder , true ) ;
+
       }      
       
       /** Distance to surface */
