@@ -69,6 +69,7 @@ ENDIF()
 #---Packages------------------------------------------------------------------------
 add_subdirectory(DDSegmentation)
 add_subdirectory(DDCore)
+add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
 add_subdirectory(DDSense)
 
