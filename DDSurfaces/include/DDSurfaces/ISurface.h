@@ -5,6 +5,7 @@
 #include "DDSurfaces/Vector3D.h"
 
 #include <bitset>
+#include <math.h>
 
 namespace DDSurfaces {
   
@@ -25,7 +26,7 @@ namespace DDSurfaces {
     virtual ~ISurface() {}
     
     /// properties of the surface encoded in Type.
-    virtual SurfaceType type() const =0 ;
+    virtual const SurfaceType& type() const =0 ;
     
     /// Checks if the given point lies within the surface
     virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const =0 ;
@@ -67,8 +68,9 @@ namespace DDSurfaces {
    * @version $Id: $
    * @date Apr 6 2014
    */
-  struct SurfaceType{
+  class SurfaceType{
   
+  public:
     /// enum for defining the bits used to decode the properties
     enum{
       Cylinder = 1,
@@ -109,7 +111,7 @@ namespace DDSurfaces {
     } 
     
     /// set the given peorperty
-    void setProperty( unsigned prop ) { _bits.set( prop ) ;  } 
+    void setProperty( unsigned prop , bool val = true ) { _bits.set( prop , val ) ;  } 
     
     /// true if surface is sensitive
     bool isSensitive() const { return _bits[ SurfaceType::Sensitive ] ; }
@@ -133,7 +135,8 @@ namespace DDSurfaces {
     bool isZCylinder() const  { return ( _bits[ SurfaceType::Cylinder ] &&  _bits[ SurfaceType::ParallelToZ ] ) ; } 
 
    /// true if this is a plane parallel to Z
-    bool isZPlane() const  { return ( _bits[ SurfaceType::Plane ] &&  _bits[ SurfaceType::ParallelToZ ] ) ; } 
+    bool isZPlane() const  { return ( _bits[ SurfaceType::Plane ] &&  _bits[ SurfaceType::ParallelToZ ] ) ; 
+    } 
     
     /// true if this is a plane orthogonal to Z
     bool isZDisk() const  { return ( _bits[ SurfaceType::Plane ] &&  _bits[ SurfaceType::OrthogonalToZ ] ) ; } 
@@ -142,22 +145,34 @@ namespace DDSurfaces {
     /** True if surface is parallel to Z with accuracy epsilon - result is cached in bit SurfaceType::ParallelToZ */
     bool checkParallelToZ( const ISurface& surf , double epsilon=1.e-6 ) const { 
       
-      double proj = std::abs( surf.normal() * Vector3D(0.,0.,1.) )  ;
+      double proj = std::fabs( surf.normal() * Vector3D(0.,0.,1.) )  ;
       
-      _bits.set(  SurfaceType::ParallelToZ , ( std::abs( proj - 1. ) < epsilon )  ) ;
+      _bits.set(  SurfaceType::ParallelToZ , ( proj < epsilon )  ) ;
       
+      // std::cout << " ** checkParallelToZ() - normal : " <<  surf.normal() << " pojection : " << proj 
+      // 		<< " _bits[ SurfaceType::ParallelToZ ] = " <<  bool( _bits[ SurfaceType::ParallelToZ ] )
+      // 		<< "  ( std::fabs( proj - 1. ) < epsilon )  ) = " <<   ( proj < epsilon ) << std::endl ;
+
       return  _bits[ SurfaceType::ParallelToZ ] ;
     }
 
     /** True if surface is orthogonal to Z with accuracy epsilon - result is cached in bit SurfaceType::OrthogonalToZ */
     bool checkOrthogonalToZ( const ISurface& surf , double epsilon=1.e-6 ) const { 
       
-      double proj = std::abs( surf.normal() * Vector3D(0.,0.,1.) )  ;
+      double proj = std::fabs( surf.normal() * Vector3D(0.,0.,1.) )  ;
       
-      _bits.set(  SurfaceType::OrthogonalToZ , ( proj < epsilon )  ) ;
+      _bits.set(  SurfaceType::OrthogonalToZ , ( std::fabs( proj - 1. ) < epsilon )  ) ;
       
+      // std::cout << " ** checkOrthogonalToZ() - normal : " <<  surf.normal() << " pojection : " << proj 
+      // 		<< " _bits[ SurfaceType::OrthogonalToZ ] = " << bool( _bits[ SurfaceType::OrthogonalToZ ] ) 
+      // 		<< "  ( std::fabs( proj - 1. ) < epsilon )  ) = " <<  ( std::fabs( proj - 1. ) < epsilon ) << std::endl ;
+
+
       return  _bits[ SurfaceType::OrthogonalToZ ] ;
     }
+
+
+  protected:
 
     mutable std::bitset<32> _bits ;
   } ;
