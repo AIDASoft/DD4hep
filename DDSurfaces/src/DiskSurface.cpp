@@ -1,3 +1,5 @@
+#define OBSOLETE
+#ifndef OBSOLETE
 /*
  * DiskSurface.cpp
  *
@@ -38,3 +40,5 @@ MeasurementDirections DiskSurface::measurement(const Vector3D& point) const {
 }
 
 } /* namespace DDSurfaces */
+
+#endif

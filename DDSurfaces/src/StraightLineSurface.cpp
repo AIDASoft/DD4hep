@@ -1,3 +1,5 @@
+#define OBSOLETE
+#ifndef OBSOLETE
 /*
  * StraightLineSurface.cpp
  *
@@ -38,3 +40,5 @@ MeasurementDirections StraightLineSurface::measurement(const Vector3D& point) co
 }
 
 } /* namespace DDSurfaces */
+
+#endif

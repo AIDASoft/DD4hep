@@ -1,3 +1,5 @@
+#define OBSOLETE
+#ifndef OBSOLETE
 /*
  * ZPlanarSurface.cpp
  *
@@ -38,3 +40,6 @@ MeasurementDirections ZPlanarSurface::measurement(const Vector3D& point) const {
 }
 
 } /* namespace DDSurfaces */
+
+#endif
+

@@ -1,3 +1,5 @@
+#define OBSOLETE
+#ifndef OBSOLETE
 /*
  * ZCylinderSurface.cpp
  *
@@ -38,3 +40,5 @@ MeasurementDirections ZCylinderSurface::measurement(const Vector3D& point) const
 }
 
 } /* namespace DDSurfaces */
+
+#endif
