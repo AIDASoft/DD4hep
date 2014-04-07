@@ -88,8 +88,6 @@ To build and run the simulation examples Geant4 will be required.
      libraries in the shared lib search path (this will vary with OS, shell, etc.) e.g 
       . /data/ilcsoft/geant4/9.5/bin/geant4.sh
       export CLHEP_BASE_DIR="/data/ilcsoft/HEAD/CLHEP/2.1.0.1"
-      export CLHEP_INCLUDE_DIR="$CLHEP_BASE_DIR/include"
-      export PATH="$CLHEP_BASE_DIR/bin:$PATH"
       export LD_LIBRARY_PATH="$CLHEP_BASE_DIR/lib:$LD_LIBRARY_PATH"
      ]
 
@@ -102,6 +100,7 @@ To build and run the simulation examples Geant4 will be required.
 
  - example for building a 'complete' DD4hep:
     cmake -D DD4HEP_WITH_GEANT4=1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On ..
+    (if geant4 was built with external CLHEP, add:   -D CLHEP_DIR=_path_to_CLHEP )
 
 - Setup the environment for running 
   
