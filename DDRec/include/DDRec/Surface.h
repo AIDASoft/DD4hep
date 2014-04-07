@@ -3,11 +3,13 @@
 
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
+#include "DD4hep/Detector.h"
 
 #include "DDSurfaces/ISurface.h"
 
 #include <list>
 
+class TGeoMatrix ;
 
 namespace DD4hep {
   namespace DDRec {
@@ -146,7 +148,7 @@ namespace DD4hep {
       virtual double distance(const Vector3D& point ) const  { return 0. ; }
       
       /// Checks if the given point lies within the surface
-      virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-6) const { return false ; }
+      virtual bool insideBounds(const Vector3D& point, double epsilon ) const { return false ; }
     };
 
 
@@ -246,6 +248,81 @@ namespace DD4hep {
 
     //======================================================================================================
 
+    /** Implementation of Surface class holding a local surface attached to a volume and the DetElement 
+     *  holding this surface.
+     * 
+     * @author F.Gaede, DESY
+     * @date Apr, 7 2014
+     * @version $Id:$
+     */
+    class Surface:  public ISurface {
+    
+    protected:
+      
+      VolSurface _volSurf ;
+      Geometry::DetElement _det ;
+
+      // this surface 
+      SurfaceType _type ;
+      Vector3D _u ;
+      Vector3D _v ;
+      Vector3D _n ;
+      Vector3D _o ;
+
+      TGeoMatrix* _wtM ; // matrix for world transformation of surface
+    
+      Surface() { }
+
+    public:
+    
+      virtual ~Surface() {} 
+
+      Surface( Geometry::DetElement det, VolSurface volSurf ) ;      
+    
+      /** properties of the surface encoded in Type.
+       * @see SurfaceType
+       */
+      virtual const SurfaceType& type() const { return _type ; }
+    
+      //==== geometry ====
+      
+      /** First direction of measurement U */
+      virtual const Vector3D& u( const Vector3D& point = Vector3D() ) const { return _u ; }
+    
+      /** Second direction of measurement V */
+      virtual const Vector3D& v(const Vector3D& point = Vector3D() ) const { return _v ; }
+    
+      /// Access to the normal direction at the given point
+      virtual const Vector3D& normal(const Vector3D& point = Vector3D() ) const { return _n ; }
+    
+      /** Get Origin of local coordinate system on surface */
+      virtual const Vector3D& origin() const { return _o ;}
+
+      /** Thickness of inner material */
+      virtual double innerThickness() const { return _volSurf.innerThickness() ; }
+
+      /** Thickness of outer material */
+      virtual double outerThickness() const { return _volSurf.outerThickness() ; }
+
+      /// Access to the material in opposite direction of the normal
+      virtual IMaterial innerMaterial() const ;
+      
+      /// Access to the material in direction of the normal
+      virtual IMaterial outerMaterial() const ;
+          
+      /** Distance to surface */
+      virtual double distance(const Vector3D& point ) const  ;
+      
+      /// Checks if the given point lies within the surface
+      virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const ;
+
+    protected:
+      void initialize() ;
+
+    };
+
+
+    //======================================================================================================
 
   
   } /* namespace */

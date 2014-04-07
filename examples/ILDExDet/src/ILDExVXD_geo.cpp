@@ -179,7 +179,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       DetElement   ladderDE( layerDE ,  laddername , x_det.id() );
       ladderDE.setPlacement( pv ) ;
 
-      ladderDE.addExtension<SurfaceList >(  new SurfaceList ) ; 
 
 #else
 
@@ -207,7 +206,15 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       DetElement   ladderDEnegZ( vxd ,  laddername+"_negZ" , x_det.id() );
       ladderDEnegZ.setPlacement( pv ) ;
 
+      volSurfaceList( ladderDEnegZ)->push_back( surf ) ;
+
+
 #endif
+
+      //=========== debug test ===============================
+      //      Surface* gSurf = new Surface( ladderDEnegZ,  surf ) ;
+      //======================================================
+
 
       //pv = layer_assembly.placeVolume( sensvol, pos, rot ) ;
 
