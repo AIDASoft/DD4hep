@@ -27,18 +27,18 @@ namespace DD4hep {
       SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
       
       /// averaged proton number
-      virtual double Z() const { return Geometry::Material()->GetMaterial()->GetZ() ; }
+      virtual double Z() const { return m_element->GetMaterial()->GetZ()  ; }
       
       /// averaged atomic number
-      virtual double A() const { return Geometry::Material()->GetMaterial()->GetA() ; }
+      virtual double A() const { return m_element->GetMaterial()->GetA() ; }
       
       /// density - units ?
-      virtual double density() const { return Geometry::Material()->GetMaterial()->GetDensity() ; } 
+      virtual double density() const { return m_element->GetMaterial()->GetDensity() ; } 
       
-      /// radiation length - units ?
+      /// radiation length - tgeo units 
       virtual double radiationLength() const { return Geometry::Material::radLength() ; } 
       
-      /// interaction length - units ?
+      /// interaction length - tgeo units 
       virtual double interactionLength() const  { return Geometry::Material::intLength() ; }
 
     };

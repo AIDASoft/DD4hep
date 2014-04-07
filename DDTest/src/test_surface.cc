@@ -96,11 +96,12 @@ int main(int argc, char** argv ){
     // --- test SurfaceMaterial
     SurfaceMaterial sm( mat ) ;
 
-    // FIXME: these cause a seg fault ....
+    // material properies of Si :
+    test( STR( sm.A() )  , STR( 28.0855 ) , "   SurfaceMaterial.A() == 28.0855 " ) ; 
 
-    // test( STR( sm.A() )  , STR( 93.4961 ) , "   SurfaceMaterial.A() == 93.4961 " ) ; 
-    
-    // test( STR( sm.Z() )  , STR( 93.4961 ) , "   SurfaceMaterial.Z() == 93.4961 " ) ; 
+    test( STR( sm.Z() )  , STR( 14 ) , "   SurfaceMaterial.Z() == 14 " ) ; 
+
+    test( STR( sm.density() )  , STR( 2.33 ) , "   SurfaceMaterial.density() == 2.33 " ) ; 
 
     test( STR( sm.radiationLength() / tgeo::mm )  , STR( 93.4961 ) , "   SurfaceMaterial.radiationLength() == 93.4961 * mm " ) ; 
 
