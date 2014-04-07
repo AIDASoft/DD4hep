@@ -12,9 +12,13 @@
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 
+#include "DDRec/Surface.h"
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using namespace DD4hep::DDRec ;
+using namespace DDSurfaces ;
 
 #define no_split_ladders 0
 
@@ -23,12 +27,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
   string       name  = x_det.nameStr();
 
-  //  Assembly     assembly(name+"_assembly");
+  Assembly     assembly(name+"_assembly");
 
   // replace assembly with cylinder of air:
   xml_comp_t  x_tube (x_det.child(_U(tubs)));
   Tube        envelope_cylinder(x_tube.rmin(),x_tube.rmax(),x_tube.zhalf());
-  Volume      assembly ("vxd_envelope_cyl", envelope_cylinder ,lcdd.air());
+  //  Volume      assembly ("vxd_envelope_cyl", envelope_cylinder ,lcdd.air());
 
   PlacedVolume pv;
 
@@ -55,6 +59,18 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     int         nLadders   = x_ladder.number();
     string      layername  = name+_toString(layer_id,"_layer%d");
     double      dphi       = 2.*M_PI/double(nLadders);
+
+
+    // --- create an assembly and DetElement for the layer 
+    // Assembly     layer_assembly( "layer_assembly" +_toString(layer_id,"_%d") );
+    
+    // DetElement   layerDE( vxd , _toString(layer_id,"layer_%d"), x_det.id() );
+    
+    // pv = assembly.placeVolume(  layer_assembly );
+    
+    // layerDE.setPlacement( pv ) ;
+    //--------------------------------
+
 
 #if no_split_ladders
     double      zhalf      = x_ladder.zhalf();
@@ -83,6 +99,14 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Material    sensmat    = lcdd.material(x_ladder.materialStr());
     Box         sensbox   (sens_thick/2.,  width/2.,   zhalf);
     Volume      sensvol   (layername+"_sens",sensbox,sensmat);
+
+
+    // create a measurement plane for the tracking surface attched to the sensitive volume 
+    Vector3D u( 0. , 1. , 0. ) ;
+    Vector3D v( 0. , 0. , 1. ) ;
+    Vector3D n( 1. , 0. , 0. ) ;
+    //    Vector3D o( 0. , 0. , 0. ) ;
+    VolPlane surf( sensvol , SurfaceType(SurfaceType::Sensitive) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ; //,o ) ;
 
     Material    suppmat  = lcdd.material(x_support.materialStr());
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
@@ -138,35 +162,54 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       
       RotationZYX rot( phi , 0, 0  ) ;
 
+      //=========
+      Assembly&  layer_assembly = assembly ;
+      //=========
+
 
 #if no_split_ladders
 
-      pv = assembly.placeVolume( laddervol,Transform3D( rot, Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
+      pv = layer_assembly.placeVolume( laddervol,Transform3D( rot, Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
 									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
 									  0. ) ));
 
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 )   ;
 
+
+      DetElement   ladderDE( layerDE ,  laddername , x_det.id() );
+      ladderDE.setPlacement( pv ) ;
+
+      ladderDE.addExtension<SurfaceList >(  new SurfaceList ) ; 
+
 #else
 
       // put one wafer at plus z and one at minus z
       
-      pv = assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
+      pv = layer_assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
 									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
 									  zhalf ) ) );
 
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 ).addPhysVolID("side", 1 )   ;
 
+      //      DetElement   ladderDEposZ( layerDE ,  laddername+"_posZ" , x_det.id() );
+      DetElement   ladderDEposZ( vxd ,  laddername+"_posZ" , x_det.id() );
+      ladderDEposZ.setPlacement( pv ) ;
 
-      pv = assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
+      volSurfaceList( ladderDEposZ)->push_back( surf ) ;
+
+      pv = layer_assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
 									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
 									  -zhalf ) ) );
 
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 ).addPhysVolID("side", -1 )   ;  ;
 
+      //      DetElement   ladderDEnegZ( layerDE ,  laddername+"_negZ" , x_det.id() );
+      DetElement   ladderDEnegZ( vxd ,  laddername+"_negZ" , x_det.id() );
+      ladderDEnegZ.setPlacement( pv ) ;
+
 #endif
 
-      //pv = assembly.placeVolume( sensvol, pos, rot ) ;
+      //pv = layer_assembly.placeVolume( sensvol, pos, rot ) ;
 
     }
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);
