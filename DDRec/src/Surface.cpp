@@ -1,6 +1,7 @@
 #include "DDRec/Surface.h"
 #include "DD4hep/Detector.h"
 
+#include <math.h>
 
 namespace DD4hep {
   namespace DDRec {
@@ -101,7 +102,7 @@ namespace DD4hep {
     //====================
 
 
-    VolSurfaceList* surfaceList( DetElement& det ) {
+    VolSurfaceList* volSurfaceList( DetElement& det ) {
 
       
       VolSurfaceList* list = 0 ;
