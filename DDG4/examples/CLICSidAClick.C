@@ -102,6 +102,6 @@ void setupG4_CINT()  {
   kernel.terminate();
 }
 
-void exampleAClick()  {
+void CLICSidAClick()  {
   setupG4_CINT();
 }
