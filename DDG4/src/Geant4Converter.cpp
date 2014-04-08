@@ -47,7 +47,6 @@
 
 #include "G4Element.hh"
 #include "G4SDManager.hh"
-#include "G4Assembly.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"
 #include "G4Tubs.hh"
@@ -302,7 +301,10 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       return solid;
     }
     else if (shape->IsA() == TGeoShapeAssembly::Class()) {
-      solid = (G4VSolid*) new G4Assembly();
+      // Assemblies have no corresponding 'shape' in Geant4. Ignore the shape translation.
+      // It does not harm, since this 'shape' is never accessed afterwards.
+      data().g4Solids[shape] = solid;
+      return solid;
     }
     else if (shape->IsA() == TGeoBBox::Class()) {
       const TGeoBBox* s = (const TGeoBBox*) shape;
