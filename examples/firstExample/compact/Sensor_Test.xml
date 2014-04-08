@@ -1,0 +1,62 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="Sensor"
+        title="Sensor for Telescope"
+        author="Christoph Hombach"
+	url="http:dummy-url.de" 
+        status="development"
+        version="$Id: compact.xml,v 1.0 2012/04/26 16:34:00 grefe Exp $">
+        <comment> One sunny day we'll find out how this works... </comment>       
+    </info>
+    <includes>
+   	 <gdmlFile ref="elements.xml"/>
+ 	 <gdmlFile ref="materials.xml"/>  
+         
+    </includes>
+  
+    <define>
+        <constant name="world_side"             value="1*m"/>
+        <constant name="world_x"                value="world_side/2"/>
+        <constant name="world_y"                value="world_side/2"/>
+        <constant name="world_z"                value="world_side/2"/>        
+        <constant name="CrossingAngle"          value="0.020"/>
+    
+    </define>
+
+    <materials>
+    </materials>
+  
+    <limits>
+    </limits>
+
+    <display>
+         <vis name="DetVis"        alpha="1.0" r="0"   g="0.0" b="1.0"  showDaughters="true"  visible="false"/>
+         <vis name="ModVis"        alpha="0.0" r="0"   g="0.0" b="1.0"  showDaughters="true"  visible="true"/>
+      
+         
+    
+    </display>
+
+  <detectors>
+        <comment>No comment so far</comment>
+      
+    <detector name="Telescope" type="TestBox"  vis="DetVis" id ="1">
+
+	<module name="H05-W0082" x="0.1*mm" y="-0.*mm" z="0.*mm" id="1" vis="ModVis" rotx="-0.*radian" roty="-0.*radian" rotz="-0.*radian" />
+	          
+      
+      
+    </detector>
+ 
+
+  </detectors>
+
+  <readouts>
+    
+  </readouts>
+  <fields>
+    
+  </fields>
+</lccdd>
