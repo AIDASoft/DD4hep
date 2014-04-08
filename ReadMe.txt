@@ -54,7 +54,7 @@ system before building and running the examples
 To build and run the simulation examples Geant4 will be required. 
 
 
-4) How to build DD4hep 
+4.1) How to build DD4hep 
 -----------------------
 
 - Checkout code
@@ -107,6 +107,17 @@ To build and run the simulation examples Geant4 will be required.
   . ./bin/thisdd4hep.sh
      or
   source ./bin/thisdd4hep.csh
+
+4.2) Running a first basic example
+-----------------------------------
+ A simple 'Hello World' example can be found in examples/firstexample:
+ cd examples/firstexample
+ mkdir build
+ cmake -DDD4hep_DIR=../../ ../
+ make -j
+ ./bin/Test_execute ../compact/Sensor_Test.xml
+
+ A simple box should be shown now.  	
 
 
 5) Testing
