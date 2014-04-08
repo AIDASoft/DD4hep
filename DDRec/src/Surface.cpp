@@ -1,6 +1,9 @@
 #include "DDRec/Surface.h"
 #include "DD4hep/Detector.h"
 
+// #include "DD4hep/LCDD.h"
+// #include "DD4hep/VolumeManager.h"
+
 #include <math.h>
 #include <exception>
 
@@ -10,6 +13,20 @@ namespace DD4hep {
   namespace DDRec {
  
     using namespace Geometry ;
+
+    //--------------------------------------------------------
+
+    /** Copy c'tor - copies handle */
+    SurfaceMaterial::SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
+    
+    SurfaceMaterial::SurfaceMaterial( const SurfaceMaterial& sm ) {
+      (*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
+    }
+    
+    SurfaceMaterial:: ~SurfaceMaterial() {} 
+
+    //--------------------------------------------------------
+
 
     SurfaceData::SurfaceData() : _type( SurfaceType() ) ,
 		    _u( Vector3D() ) ,
@@ -123,7 +140,7 @@ namespace DD4hep {
     }
 
 
-    //====================
+    //======================================================================================================================
 
     bool findVolume( PlacedVolume pv,  Volume theVol, std::list< PlacedVolume >& volList ) {
       
@@ -188,28 +205,65 @@ namespace DD4hep {
     } 
 
 
-    Surface::Surface( Geometry::DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), _wtM(0){
+    Surface::Surface( Geometry::DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), _wtM(0) , _id( 0) , _type( _volSurf.type() )  {
 
       initialize() ;
     }      
  
 
-    IMaterial Surface::innerMaterial() const {
+    const IMaterial& Surface::innerMaterial() const {
+      
+     SurfaceMaterial& mat = _volSurf->_innerMat ;
+      
+      if( ! mat.isValid() ) {
+	
+	// fixme: for now just set the material of the volume holding the surface
+	//        neeed averaged material in case of several volumes...
+	//	_volSurf.setInnerMaterial( _volSurf.volume().material() ) ;
+	
+	mat = _volSurf.volume().material() ;
 
+	//	std::cout << "  **** Surface::innerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
+      }
+      return  _volSurf.innerMaterial()  ;
     }
       
 
-    IMaterial Surface::outerMaterial() const {
+    const IMaterial& Surface::outerMaterial() const {
 
+     SurfaceMaterial& mat = _volSurf->_outerMat ;
+      
+      if( ! mat.isValid() ) {
+	
+	// fixme: for now just set the material of the volume holding the surface
+	//        neeed averaged material in case of several volumes...
+	//	_volSurf.setOuterMaterial( _volSurf.volume().material() ) ;
+	
+	mat  =  _volSurf.volume().material() ;
+
+ 	//std::cout << "  **** Surface::outerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
+     }
+
+      return  _volSurf.outerMaterial()  ;
     }          
 
     double Surface::distance(const Vector3D& point ) const {
 
+      double pa[3] ;
+      _wtM->MasterToLocal( point , pa ) ;
+      Vector3D localPoint( pa ) ;
+
+      return _volSurf.distance( localPoint ) ;
     }
       
     bool Surface::insideBounds(const Vector3D& point, double epsilon) const {
 
-    }
+      double pa[3] ;
+      _wtM->MasterToLocal( point , pa ) ;
+      Vector3D localPoint( pa ) ;
+      
+      return _volSurf.insideBounds( localPoint ) ;
+   }
 
     void Surface::initialize() {
       
@@ -223,33 +277,16 @@ namespace DD4hep {
 	throw std::runtime_error( " ***** ERROR: No Volume found for DetElement with surface " ) ;
       } 
 
-      // //-----------------------------------
-      // if (nodes.size() < 2) {
-      // 	return new TGeoHMatrix(*gGeoIdentity);
-      // }
-      // auto_ptr<TGeoHMatrix> mat(new TGeoHMatrix(*gGeoIdentity));
-      // for (size_t i = 0, n=nodes.size(); n>0 && i < n-1; ++i)  {
-      // 	const PlacedVolume& p = nodes[i];
-      // 	TGeoMatrix* m = p->GetMatrix();
-      // 	mat->MultiplyLeft(m);
-      // }
-      // if ( inverse )  {
-      // 	auto_ptr<TGeoHMatrix> inv(new TGeoHMatrix(mat->Inverse()));
-      // 	mat = inv;
-      // }
-      // return mat.release();
-      //--------------------------------------
-      
-      std::cout << " **** Surface::initialize() # placements for surface = " << pVList.size() 
-		<< " worldTransform : " 
-		<< std::endl ; 
+      // std::cout << " **** Surface::initialize() # placements for surface = " << pVList.size() 
+      // 		<< " worldTransform : " 
+      // 		<< std::endl ; 
       
 
       //=========== compute and cache world transform for surface ==========
 
       TGeoMatrix* wm = _det.object<DetElement::Object>().worldTransformation() ;
 
-#if 1 // debug
+#if 0 // debug
       wm->Print() ;
       for( std::list<PlacedVolume>::iterator it= pVList.begin(), n = pVList.end() ; it != n ; ++it ){
 	PlacedVolume pv = *it ;
@@ -262,63 +299,86 @@ namespace DD4hep {
       // need to get the inverse transformation ( see Detector.cpp )
       std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm->Inverse() ) ) ;
 
-      //---- if the volSurface is not in the DetElement's volume, we left mutliply the path to the volume to the world transform
+      //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
+      // DetElements world transform
       for( std::list<PlacedVolume>::iterator it = ++( pVList.begin() ) , n = pVList.end() ; it != n ; ++it ){
 
       	PlacedVolume pv = *it ;
       	TGeoMatrix* m = pv->GetMatrix();
       	// std::cout << "  +++ matrix for placed volume : " << std::endl ;
       	// m->Print() ;
+	//      	wtI->MultiplyLeft( m );
 
-      	wtI->MultiplyLeft( m );
+      	wtI->Multiply( m );
       }
+
+      //      std::cout << "  +++ new world transform matrix  : " << std::endl ;
+
+#if 0 //fixme: which convention to use here - the correct should be wtI, however it is the inverse of what is stored in DetElement ???
       std::auto_ptr<TGeoHMatrix> wt( new TGeoHMatrix( wtI->Inverse() ) ) ;
-
-      std::cout << "  +++ new world transform matrix  : " << std::endl ;
       wt->Print() ;
-
       // cache the world transform for the surface
       _wtM = wt.release()  ;
+#else
+      //      wtI->Print() ;
+      // cache the world transform for the surface
+      _wtM = wtI.release()  ;
+#endif
 
 
       //  ============ now fill the global surface vectors ==========================
 
-      // void      TGeoMatrix::MasterToLocal(const Double_t *master, Double_t *local)
-      // void      TGeoMatrix::LocalToMaster(const Double_t *local, Double_t *master)
-      // void      TGeoMatrix::MasterToLocalVect(const Double_t *master, Double_t *local)
-      // void      TGeoMatrix::LocalToMasterVect(const Double_t *local, Double_t *master)
-
       double ua[3], va[3], na[3], oa[3] ;
-      // double um[3], vm[3], nm[3], om[3] ;
-      // double ul[3], vl[3], nl[3], ol[3] ;
-      
-      const Vector3D& u =  _volSurf.u()  ;
-      const Vector3D& v =  _volSurf.v()  ;
-      const Vector3D& n =  _volSurf.normal()  ;
-      const Vector3D& o =  _volSurf.origin()  ;
 
-      _wtM->LocalToMasterVect( u , ua ) ;
-      _wtM->LocalToMasterVect( v , va ) ;
-      _wtM->LocalToMasterVect( n , na ) ;
-      _wtM->LocalToMaster(     o , oa ) ;
+      _wtM->LocalToMasterVect( _volSurf.u()      , ua ) ;
+      _wtM->LocalToMasterVect( _volSurf.v()      , va ) ;
+      _wtM->LocalToMasterVect( _volSurf.normal() , na ) ;
+      _wtM->LocalToMaster    ( _volSurf.origin() , oa ) ;
 
+      _u.fill( ua ) ;
+      _v.fill( va ) ;
+      _n.fill( na ) ;
+      _o.fill( oa ) ;
+
+      // std::cout << " --- global surface vectors : ------- " << std::endl 
+      // 		<< "    u : " << _u << std::endl 
+      // 		<< "    v : " << _v << std::endl 
+      // 		<< "    n : " << _n << std::endl 
+      // 		<< "    o : " << _o << std::endl ;
       
+
+      //  =========== check parallel and orthogonal to Z ===================
+      
+      _type.checkParallelToZ( *this ) ;
+
+      _type.checkOrthogonalToZ( *this ) ;
+    
+      
+
+    // LCDD& lcdd = LCDD::getInstance();
+    // VolumeManager volMgr( lcdd  , "volMan" , lcdd.world() ) ;
+
+      //======== set the unique surface ID from the DetElement ( and placements below ? )
+
+      //FIXME: - no method found - to be done ... 
+      //_id = _det.volumeID() ;
+      typedef PlacedVolume::VolIDs IDV ;
+      DetElement d = _det ;
+      while( d.isValid() &&  d.parent().isValid() ){
+	PlacedVolume pv = d.placement() ;
+	if( pv.isValid() ){
+	  const IDV& idV = pv.volIDs() ; 
+	  std::cout	<< " VolIDs : " << d.name() << std::endl ;
+	  for( unsigned i=0, n=idV.size() ; i<n ; ++i){
+	    std::cout  << "  " << idV[i].first << " - " << idV[i].second << std::endl ;
+	  }
+	}
+	d = d.parent() ;
+      }
      
-      _u = Vector3D( ua ) ;
-      _v = Vector3D( va ) ;
-      _n = Vector3D( na ) ;
-      _o = Vector3D( oa ) ;
-
-      std::cout << " --- global surface vectors : ------- " << std::endl 
-      		<< "    u : " << _u << std::endl 
-      		<< "    v : " << _v << std::endl 
-      		<< "    n : " << _n << std::endl 
-      		<< "    o : " << _o << std::endl ;
-      
-
-      
     }
-
+    //===================================================================================================================
+      
 
   } // namespace
 } // namespace

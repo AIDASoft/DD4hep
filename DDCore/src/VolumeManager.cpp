@@ -611,70 +611,70 @@ std::ostream& DD4hep::Geometry::operator<<(std::ostream& os, const VolumeManager
   return os;
 }
 
-#if 0
+// #if 0
 
-It was wishful thinking, the implementation of the reverse lookups would be as simple.
-Hence the folling calls are removed for the time being.
+// It was wishful thinking, the implementation of the reverse lookups would be as simple.
+// Hence the folling calls are removed for the time being.
 
-Markus Frank
+// Markus Frank
 
-/** This set of functions is required when reading/analyzing
- *  already created hits which have a VolumeID attached.
- */
-/// Lookup the context, which belongs to a registered physical volume.
-Context* lookupContext(PlacedVolume vol) const throw();
-/// Access the physical volume identifier from the placed volume
-VolumeID lookupID(PlacedVolume vol) const;
-/// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
-DetElement lookupDetector(PlacedVolume vol) const;
-/// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
-DetElement lookupDetElement(PlacedVolume vol) const;
-/// Access the transformation of a physical volume to the world coordinate system
-const TGeoMatrix& worldTransformation(PlacedVolume vol) const;
+// /** This set of functions is required when reading/analyzing
+//  *  already created hits which have a VolumeID attached.
+//  */
+// /// Lookup the context, which belongs to a registered physical volume.
+// Context* lookupContext(PlacedVolume vol) const throw();
+// /// Access the physical volume identifier from the placed volume
+// VolumeID lookupID(PlacedVolume vol) const;
+// /// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
+// DetElement lookupDetector(PlacedVolume vol) const;
+// /// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
+// DetElement lookupDetElement(PlacedVolume vol) const;
+// /// Access the transformation of a physical volume to the world coordinate system
+// const TGeoMatrix& worldTransformation(PlacedVolume vol) const;
 
-/// Lookup the context, which belongs to a registered physical volume.
-VolumeManager::Context* VolumeManager::lookupContext(PlacedVolume pv) const throw() {
-  if ( isValid() ) {
-    Context* c = 0;
-    const Object& o = _data();
-    if ( o.top != ptr() && (o.flags&ONE) == ONE ) {
-      return VolumeManager(Ref_t(o.top)).lookupContext(pv);
-    }
-    /// First look in our own volume cache if the entry is found.
-    c = o.search(pv);
-    if ( c ) return c;
-    /// Second: look in the subdetector volume cache if the entry is found.
-    for(Detectors::const_iterator j=o.subdetectors.begin(); j != o.subdetectors.end(); ++j) {
-      if ( (c=(*j).second._data().search(pv)) != 0 )
-      return c;
-    }
-    throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]");
-  }
-  throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
-}
+// /// Lookup the context, which belongs to a registered physical volume.
+// VolumeManager::Context* VolumeManager::lookupContext(PlacedVolume pv) const throw() {
+//   if ( isValid() ) {
+//     Context* c = 0;
+//     const Object& o = _data();
+//     if ( o.top != ptr() && (o.flags&ONE) == ONE ) {
+//       return VolumeManager(Ref_t(o.top)).lookupContext(pv);
+//     }
+//     /// First look in our own volume cache if the entry is found.
+//     c = o.search(pv);
+//     if ( c ) return c;
+//     /// Second: look in the subdetector volume cache if the entry is found.
+//     for(Detectors::const_iterator j=o.subdetectors.begin(); j != o.subdetectors.end(); ++j) {
+//       if ( (c=(*j).second._data().search(pv)) != 0 )
+//       return c;
+//     }
+//     throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Unknown identifier]");
+//   }
+//   throw runtime_error("VolumeManager::lookupContext: Failed to search Volume context [Invalid Manager Handle]");
+// }
 
-/// Access the physical volume identifier from the placed volume
-VolumeManager::VolumeID VolumeManager::lookupID(PlacedVolume vol) const {
-  Context* c = lookupContext(vol);
-  return c->identifier;
-}
+// /// Access the physical volume identifier from the placed volume
+// VolumeManager::VolumeID VolumeManager::lookupID(PlacedVolume vol) const {
+//   Context* c = lookupContext(vol);
+//   return c->identifier;
+// }
 
-/// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
-DetElement VolumeManager::lookupDetector(PlacedVolume vol) const {
-  Context* c = lookupContext(vol);
-  return c->detector;
-}
+// /// Lookup a top level subdetector detector element according to a contained 64 bit hit ID
+// DetElement VolumeManager::lookupDetector(PlacedVolume vol) const {
+//   Context* c = lookupContext(vol);
+//   return c->detector;
+// }
 
-/// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
-DetElement VolumeManager::lookupDetElement(PlacedVolume vol) const {
-  Context* c = lookupContext(vol);
-  return c->element;
-}
+// /// Lookup the closest subdetector detector element in the hierarchy according to a contained 64 bit hit ID
+// DetElement VolumeManager::lookupDetElement(PlacedVolume vol) const {
+//   Context* c = lookupContext(vol);
+//   return c->element;
+// }
 
-/// Access the transformation of a physical volume to the world coordinate system
-const TGeoMatrix& VolumeManager::worldTransformation(PlacedVolume vol) const {
-  Context* c = lookupContext(vol);
-  return c->toWorld;
-}
+// /// Access the transformation of a physical volume to the world coordinate system
+// const TGeoMatrix& VolumeManager::worldTransformation(PlacedVolume vol) const {
+//   Context* c = lookupContext(vol);
+//   return c->toWorld;
+// }
 
-#endif
+// #endif

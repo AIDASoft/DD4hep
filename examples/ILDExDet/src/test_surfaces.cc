@@ -1,6 +1,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/TGeoUnits.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/Volumes.h"
 
 #include "DDRec/Surface.h"
 
@@ -77,14 +78,24 @@ int main(int argc, char** argv ){
     DetElement det = (*li) ;
     
     if( ! volSurfaceList(det)->empty() ) {
-      std::cout <<  "     detector  " << det.name() << " has " <<  volSurfaceList(det)->size() << " surfaces "   << std::endl ; 
-  
+
+      std::cout <<  "     detector  " << det.name() << " id: " << det.id() << " has " <<  volSurfaceList(det)->size() << " surfaces "  << std::endl ; 
+
+ 
       // take first surface for now :
       VolSurface volSurf =  volSurfaceList(det)->front() ;
       
       Surface* surf = new Surface(  det,  volSurf ) ;
 
+      std::cout << " ------------------------- " 
+		<< " surface: " << *surf          << std::endl
+		<< " ------------------------- "  << std::endl ;
+
+
+
+      
     }
+
   }
 
 

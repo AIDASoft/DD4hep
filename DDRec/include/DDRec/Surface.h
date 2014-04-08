@@ -26,8 +26,18 @@ namespace DD4hep {
     struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
 
       /** Copy c'tor - copies handle */
-      SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
-      
+      SurfaceMaterial( Geometry::Material m ) ; // : Geometry::Material( m ) {} 
+
+      SurfaceMaterial( const SurfaceMaterial& sm ) ;
+      // {
+      // 	(*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
+      // }
+
+      virtual ~SurfaceMaterial() ; //{} 
+
+      /// material name
+      virtual std::string name() const { return m_element->GetMaterial()->GetName()  ; }
+
       /// averaged proton number
       virtual double Z() const { return m_element->GetMaterial()->GetZ()  ; }
       
@@ -59,8 +69,8 @@ namespace DD4hep {
       Vector3D _o ;
       double _th_i ;
       double _th_o ;
-      Geometry::Material _innerMat ;
-      Geometry::Material _outerMat ;
+      SurfaceMaterial _innerMat ;
+      SurfaceMaterial _outerMat ;
     
       SurfaceData();
     
@@ -130,10 +140,10 @@ namespace DD4hep {
       virtual const Vector3D& origin() const { return object<SurfaceData>()._o ;}
 
       /// Access to the material in opposite direction of the normal
-      virtual IMaterial innerMaterial() const{ return SurfaceMaterial( object<SurfaceData>()._innerMat ) ; }
-      
+      virtual const IMaterial& innerMaterial() const{  return  object<SurfaceData>()._innerMat ;  }
+
       /// Access to the material in direction of the normal
-      virtual IMaterial outerMaterial() const { return  SurfaceMaterial( object<SurfaceData>()._outerMat ) ; }
+      virtual const IMaterial& outerMaterial() const { return  object<SurfaceData>()._outerMat  ; }
     
       /** Thickness of inner material */
       virtual double innerThickness() const { return object<SurfaceData>()._th_i ; }
@@ -148,7 +158,16 @@ namespace DD4hep {
       virtual double distance(const Vector3D& point ) const  { return 0. ; }
       
       /// Checks if the given point lies within the surface
-      virtual bool insideBounds(const Vector3D& point, double epsilon ) const { return false ; }
+      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const { return false ; }
+
+
+      //fixme: protected: + friend declaration ?
+
+      /// set the inner Material
+      void setInnerMaterial( Geometry::Material mat ){  object<SurfaceData>()._innerMat = mat ; }
+      /// set the outer Materal
+      void setOuterMaterial( Geometry::Material mat ){  object<SurfaceData>()._outerMat = mat ; }
+
     };
 
 
@@ -259,19 +278,20 @@ namespace DD4hep {
     
     protected:
       
-      VolSurface _volSurf ;
       Geometry::DetElement _det ;
+      VolSurface _volSurf ;
+      TGeoMatrix* _wtM ; // matrix for world transformation of surface
 
-      // this surface 
+      long64 _id ;
+
       SurfaceType _type ;
       Vector3D _u ;
       Vector3D _v ;
       Vector3D _n ;
       Vector3D _o ;
 
-      TGeoMatrix* _wtM ; // matrix for world transformation of surface
     
-      Surface() { }
+      Surface() :_det( Geometry::DetElement() ), _volSurf( VolSurface() ), _wtM( 0 ) , _id( 0)  { }
 
     public:
     
@@ -279,6 +299,9 @@ namespace DD4hep {
 
       Surface( Geometry::DetElement det, VolSurface volSurf ) ;      
     
+      /// The id of this surface - corresponds to DetElement id ( or'ed with the placement ids )
+      virtual long64 id() { return _id ; }
+
       /** properties of the surface encoded in Type.
        * @see SurfaceType
        */
@@ -305,10 +328,10 @@ namespace DD4hep {
       virtual double outerThickness() const { return _volSurf.outerThickness() ; }
 
       /// Access to the material in opposite direction of the normal
-      virtual IMaterial innerMaterial() const ;
-      
+      virtual const IMaterial& innerMaterial() const ;
+     
       /// Access to the material in direction of the normal
-      virtual IMaterial outerMaterial() const ;
+      virtual const IMaterial& outerMaterial() const ;
           
       /** Distance to surface */
       virtual double distance(const Vector3D& point ) const  ;

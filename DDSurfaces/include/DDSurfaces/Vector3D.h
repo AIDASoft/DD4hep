@@ -54,6 +54,14 @@ namespace DDSurfaces {
     //   _z( t.z() ){
     // }
     
+
+    inline const Vector3D& fill( const double* v) {    
+
+      _x = v[0] ; _y = v[1] ; _z = v[2] ; 
+      return *this ;
+    }  
+
+
     /** Cartesian x coordinate */
     inline double x() const { return  _x ; }
     

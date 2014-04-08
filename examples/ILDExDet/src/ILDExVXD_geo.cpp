@@ -194,7 +194,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       DetElement   ladderDEposZ( vxd ,  laddername+"_posZ" , x_det.id() );
       ladderDEposZ.setPlacement( pv ) ;
 
+
+      //      if( j == 0 || j == 1 )
       volSurfaceList( ladderDEposZ)->push_back( surf ) ;
+
 
       pv = layer_assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,
 									  (radius + lthick/2.)*sin(phi)  + offset * cos( phi ) ,
@@ -205,6 +208,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       //      DetElement   ladderDEnegZ( layerDE ,  laddername+"_negZ" , x_det.id() );
       DetElement   ladderDEnegZ( vxd ,  laddername+"_negZ" , x_det.id() );
       ladderDEnegZ.setPlacement( pv ) ;
+
 
       volSurfaceList( ladderDEnegZ)->push_back( surf ) ;
 

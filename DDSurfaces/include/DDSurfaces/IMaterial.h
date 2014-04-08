@@ -17,6 +17,9 @@ namespace DDSurfaces {
     /// Destructor
     virtual ~IMaterial() {}
     
+    /// material name
+    virtual std::string name() const =0 ;
+
     /// averaged proton number
     virtual double Z() const =0 ;
     
@@ -33,6 +36,15 @@ namespace DDSurfaces {
     virtual double interactionLength() const =0 ;
 
   };
+
+ /// dump IMaterial operator 
+  std::ostream& operator<<( std::ostream& os , const IMaterial& m ) {
+
+    os << "  " << m.name() << ", Z: " << m.Z() << ", A: " << m.A() << ", densitiy: " << m.density() << ", radiationLength: " <<  m.radiationLength() 
+       << ", interactionLength: " << m.interactionLength() ;
+
+    return os ;
+  }
 
 } /* namespace DDSurfaces */
 

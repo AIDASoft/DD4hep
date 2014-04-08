@@ -44,10 +44,10 @@ namespace DDSurfaces {
     virtual const Vector3D& origin() const =0 ;
     
     /// Access to the material in opposite direction of the normal
-    virtual IMaterial innerMaterial() const =0 ;
+    virtual const IMaterial& innerMaterial() const =0 ;
     
     /// Access to the material in direction of the normal
-    virtual IMaterial outerMaterial() const =0 ;
+    virtual const IMaterial& outerMaterial() const =0 ;
     
     /** Thickness of inner material */
     virtual double innerThickness() const =0 ;
@@ -177,8 +177,28 @@ namespace DDSurfaces {
     mutable std::bitset<32> _bits ;
   } ;
 
+  /// dump SurfaceType operator 
+  std::ostream& operator<<( std::ostream& os , const SurfaceType& t ) {
+
+    os << "sensitive[" << t.isSensitive() << "] helper[" << t.isHelper() << "] plane[" << t.isPlane()  << "] cylinder[" << t.isCylinder()  
+       << "] parallelToZ[" << t.isParallelToZ()  << "] orthogonalToZ[" << t. isOrthogonalToZ()  << "] zCylinder[" << t.isZCylinder() 
+       <<  "] zPlane[" << t.isZPlane() << "]"  ; 
+
+    return os ;
+  }
 
 
+
+  /// dump ISurface operator 
+  std::ostream& operator<<( std::ostream& os , const ISurface& s ) {
+    
+    os <<  "   type : " << s.type() << std::endl  
+       <<  "   u : " << s.u() << " v : " << s.v() << " normal : " << s.normal() << " origin : " << s.origin() << std::endl   ;
+    os <<  "   inner material : " << s.innerMaterial() << std::endl  
+       <<  "   outerMaterial :  " << s.outerMaterial() << std::endl   ;
+
+      return os ;
+  }
 
 
 } /* namespace DDSurfaces */

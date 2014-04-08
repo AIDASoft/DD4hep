@@ -119,7 +119,7 @@
           <layer id="0"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
             <ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
-          </layer>
+         </layer>
           <layer id="1"  vis="VXDLayerVis" phi0="-1.570796327e+00">
             <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
             <ladder  zhalf="65*mm" radius="18*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>

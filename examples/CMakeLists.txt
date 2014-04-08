@@ -26,11 +26,11 @@ endif(BUILD_TESTING)
 #
 add_subdirectory(ILDExDet)
  	
-add_subdirectory(ILDExSimu)
+#add_subdirectory(ILDExSimu)
  	
-add_subdirectory(CLICSiD)
+#add_subdirectory(CLICSiD)
  	
-add_subdirectory(noviceN04)
+#add_subdirectory(noviceN04)
  	
 #---- does not build on mac or ubuntu ...
 #add_subdirectory(Segmentation)
