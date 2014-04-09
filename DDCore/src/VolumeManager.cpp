@@ -84,10 +84,12 @@ namespace {
         chain.push_back(node);
         PlacedVolume::VolIDs pv_ids = pv.volIDs();
         ids.PlacedVolume::VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
+	bool got_readout = false;
         if (vol.isSensitive()) {
           sd = vol.sensitiveDetector();
           Readout ro = sd.readout();
           if (ro.isValid()) {
+	    got_readout = true;
             add_entry(sd, parent, e, node, ids, chain);
             ++count;
           }
@@ -119,6 +121,20 @@ namespace {
 	    throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+" [Internal error -- bad detector constructor]");
 	  }
         }
+	if ( sd.isValid() )   {
+	  // We recuperate volumes from lower levels by reusing the subdetector
+	  // This only works if there is exactly one sensitive detector per subdetector!
+	  // I hate this, but I could not talk Frank out of this!  M.F.
+          Readout ro = sd.readout();
+          if (ro.isValid()) {
+	    IDDescriptor iddesc = ro.idSpec();
+	    pair<VolumeID, VolumeID> det_encoding = encoding(iddesc,ids);
+	    printout(DEBUG,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
+		     got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
+		     (void*)det_encoding.first, (void*)det_encoding.second);
+	    e.object<DetElement::Object>().volumeID = det_encoding.first;
+	  }
+	}
         chain.pop_back();
       }
       return count;

@@ -194,22 +194,41 @@ namespace DD4hep {
         COPY_NONE = 0, COPY_PLACEMENT = 1 << 0, COPY_PARENT = 1 << 1, COPY_ALIGNMENT = 1 << 2, LAST
       };
       struct Object: public TNamed {
+	/// Magic number to ensure data integrity
         unsigned int magic;
+	/// Unique integer identifier of the detector instance
         int id;
         /// Full path to this detector element. May be invalid
         std::string path;
+	/// Flag to process hits
         int combineHits;
+
+	/// The subdetector placement corresponding to the detector element's volume
+        PlacedVolume placement;
+	/** The cached VolumeID of this subdetector element
+	 *  Please note:
+	 *  These values are set when populating the volume manager.
+	 *  There are restrictions: e.g. only sensitive subdetectors are present.
+	 */
+	VolumeID volumeID;
+	/// Reference to the parent element
+        Parent parent;
+	/// Reference element for stored transformations
+        Parent reference;
+	/// The array of children
+        Children children;
+	/// User extensions
+        Extensions extensions;
+
+	/**@info: Additional information set externally to facilitate the processing of event data */
 	/// Basic detector element alignment entry
         Alignment alignment;
 	/// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
 	std::vector<Alignment> volume_alignments;
 	/// The detector elements condition entry
         Conditions conditions;
-        PlacedVolume placement;
-        Parent parent;
-        Parent reference;
-        Children children;
-        Extensions extensions;
+
+	/**@info: Cached information of the detector element  */
         /// Intermediate buffer to store the transformation to the world coordination system
         TGeoMatrix* worldTrafo;
         /// Intermediate buffer to store the transformation to the parent detector element
@@ -219,6 +238,7 @@ namespace DD4hep {
         /// The path to the placement of the detector element (if placed)
         std::string placementPath;
 
+	/**@info: Public methods to ease the usage of the data. */
         /// Default constructor
         Object();
         /// Internal object destructor: release extension object(s)
@@ -396,6 +416,8 @@ namespace DD4hep {
       PlacedVolume placement() const;
       /// Set the physical volumes of the detector element
       DetElement& setPlacement(const PlacedVolume& volume);
+      /// The cached VolumeID of this subdetector element
+      VolumeID volumeID() const;
 
       /// Add new child to the detector structure
       DetElement& add(DetElement sub_element);

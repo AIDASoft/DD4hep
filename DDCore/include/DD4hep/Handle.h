@@ -43,6 +43,10 @@ namespace DD4hep {
 
   /// Access to the CXX abi name
   std::string typeName(const std::type_info& type);
+  /// Throw exception when handles are check for validity
+  void invalidHandleError(const std::type_info& type);
+  /// Throw exception when handles are badly assigned
+  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to);
 
   /*
    *   Geometry sub-namespace declaration
@@ -182,6 +186,8 @@ namespace DD4hep {
       template <typename Q> Q& object() const {
         return *(Q*) m_element;
       }
+      /// Checked object access. Throws invalid handle runtime exception
+      T* access() const;
       void verifyObject() const;
       const char* name() const;
       static void bad_assignment(const std::type_info& from, const std::type_info& to);

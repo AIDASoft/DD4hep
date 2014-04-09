@@ -147,35 +147,41 @@ static long dump_geometry(PlacedVolume pv,int level) {
   }
   return 1;
 }
-static long dump_geometry(DetElement de,int level) {
+
+static long dump_geometry(DetElement de,int level, bool sensitive_only) {
   const DetElement::Children& c = de.children();
   char fmt[64];
-  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)   {
-    ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
-    printout(INFO,"+++",fmt,"",(*i).second.placementPath().c_str());
-    dump_geometry((*i).second,level+1);
+  if ( !sensitive_only || 0 != de.volumeID() )  {
+    ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+    printout(INFO,"+++",fmt,"",de.placementPath().c_str(),int(c.size()),(void*)de.volumeID());
   }
+  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
+    dump_geometry((*i).second,level+1,sensitive_only);
   return 1;
 }
 
-/** Basic entry point to print otu the detector element hierarchy
+/** Basic entry point to print out the detector element hierarchy
  *
  *  @author  M.Frank
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long dump_detelement_tree(LCDD& lcdd, int, char**) {
-  return dump_geometry(lcdd.world(),0);
+static long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
+  bool sensitive_only = false;
+  for(int i=0; i<argc; ++i)  {
+    if ( ::strcmp(argv[i],"--sensitive")==0 ) { sensitive_only = true; }
+  }
+  return dump_geometry(lcdd.world(),0,sensitive_only);
 }
 DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree)
 
-/** Basic entry point to print otu the volume hierarchy
+/** Basic entry point to print out the volume hierarchy
  *
  *  @author  M.Frank
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long dump_volume_tree(LCDD& lcdd, int, char**) {
+static long dump_volume_tree(LCDD& lcdd, int , char** ) {
   return dump_geometry(lcdd.world().placement(),0);
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)

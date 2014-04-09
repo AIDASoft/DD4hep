@@ -132,7 +132,7 @@ namespace {
   }
   XmlElement* node_first(XmlElement* e, const XmlChar* t) {
     if ( e )  {
-      size_t cnt = 0;
+      //size_t cnt = 0;
       string tag = _toString(t);
       xercesc::DOMElement* ee = Xml(e).e;
       if ( ee )  {
@@ -689,13 +689,16 @@ void Handle_t::removeAttrs() const {
 }
 
 /// Set attributes as in argument handle
+#ifdef DD4HEP_USE_TINYXML
 void Handle_t::setAttrs(Handle_t elt) const {
   removeAttrs();
-#ifdef DD4HEP_USE_TINYXML
   TiXmlElement* e = Xml(elt).e;
   for(TiXmlAttribute* a=e->FirstAttribute(); a; a=a->Next())
   e->SetAttribute(a->Name(),a->Value());
+}
 #else
+void Handle_t::setAttrs(Handle_t /* elt */) const {
+  removeAttrs();
   xercesc::DOMElement* e = _E(m_node);
   xercesc::DOMNamedNodeMap* l = e->getAttributes();
   for (XmlSize_t i = 0, len = l->getLength(); i < len; ++i) {
@@ -705,8 +708,8 @@ void Handle_t::setAttrs(Handle_t elt) const {
       e->setAttribute(a->getName(), a->getValue());
     }
   }
-#endif
 }
+#endif
 
 /// Access attribute pointer by the attribute's unicode name (throws exception if not present)
 Attribute Handle_t::attr_ptr(const XmlChar* t) const {
@@ -822,7 +825,7 @@ Handle_t Handle_t::setRef(const XmlChar* tag, const string& ref_name) {
 }
 
 /// Checksum (sub-)tree of a xml document/tree
-static unsigned int adler32(unsigned int adler, const char* buf, size_t len) {
+static unsigned int adler32(unsigned int adler, const XmlChar* xml_buff, size_t len) {
 #define DO1(buf,i)  {s1 +=(unsigned char)buf[i]; s2 += s1;}
 #define DO2(buf,i)  DO1(buf,i); DO1(buf,i+1);
 #define DO4(buf,i)  DO2(buf,i); DO2(buf,i+2);
@@ -834,6 +837,7 @@ static unsigned int adler32(unsigned int adler, const char* buf, size_t len) {
   static const unsigned int NMAX = 5550;
   unsigned int s1 = adler & 0xffff;
   unsigned int s2 = (adler >> 16) & 0xffff;
+  const char* buf = (const char*)xml_buff;
   int k;
 
   if (buf == NULL)
@@ -860,7 +864,8 @@ static unsigned int adler32(unsigned int adler, const char* buf, size_t len) {
 }
 
 /// Checksum (sub-)tree of a xml document/tree
-unsigned int Handle_t::checksum(unsigned int param, unsigned int (fcn)(unsigned int, const XmlChar*, size_t)) const {
+typedef unsigned int (fcn_t)(unsigned int, const XmlChar*, size_t);
+unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
   typedef std::map<std::string, std::string> StringMap;
 #ifdef DD4HEP_USE_TINYXML
   TiXmlNode* n = Xml(m_node).n;
@@ -893,7 +898,9 @@ unsigned int Handle_t::checksum(unsigned int param, unsigned int (fcn)(unsigned 
     param = Handle_t((XmlElement*)c->ToElement()).checksum(param,fcn);
   }
 #else
-
+  if ( 0 == fcn ) fcn = adler32;
+  if ( 0 == fcn )  {
+  }
 #endif
   return param;
 }

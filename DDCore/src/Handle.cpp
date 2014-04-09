@@ -8,7 +8,7 @@
 //====================================================================
 
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/Handle.h"
+#include "DD4hep/Handle.inl"
 #include "XML/Evaluator.h"
 #include <iostream>
 #include <cstring>
@@ -156,35 +156,6 @@ namespace DD4hep {
     void increment_object_validations() {
       ++s_numVerifies;
     }
-
-    template <typename T> void Handle<T>::bad_assignment(const type_info& from, const type_info& to) {
-      string msg = "Wrong assingment from ";
-      msg += from.name();
-      msg += " to ";
-      msg += to.name();
-      msg += " not possible!!";
-      throw runtime_error(msg);
-    }
-    template <typename T> void Handle<T>::assign(T* n, const string& nam, const string& tit) {
-      this->m_element = n;
-      if (!nam.empty())
-        n->SetName(nam.c_str());
-      if (!tit.empty())
-        n->SetTitle(tit.c_str());
-    }
-
-    template <typename T> const char* Handle<T>::name() const {
-      return this->m_element ? this->m_element->GetName() : "";
-    }
-
-    template <> void Handle<TObject>::bad_assignment(const type_info& from, const type_info& to) {
-      string msg = "Wrong assingment from ";
-      msg += from.name();
-      msg += " to ";
-      msg += to.name();
-      msg += " not possible!!";
-      throw runtime_error(msg);
-    }
   }
 }
 
@@ -310,6 +281,19 @@ string DD4hep::typeName(const type_info& typ) {
   return __typeinfoName(typ);
 }
 
+void DD4hep::invalidHandleError(const type_info& type)   {
+  throw runtime_error("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
+}
+
+void DD4hep::invalidHandleAssignmentError(const type_info& from, const type_info& to)  {
+  string msg = "Wrong assingment from ";
+  msg += typeName(from);
+  msg += " to ";
+  msg += typeName(to);
+  msg += " not possible!!";
+  throw runtime_error(msg);
+}
+
 #include "DDSegmentation/Segmentation.h"
 typedef DDSegmentation::Segmentation _Segmentation;
 //INSTANTIATE_UNNAMED(_Segmentation);
@@ -330,49 +314,28 @@ namespace DD4hep {
 #include "TMap.h"
 #include "TColor.h"
 
-#define INSTANTIATE(X)     namespace DD4hep { namespace Geometry {  \
-  template <> void Handle<X>::verifyObject() const {	                \
-    increment_object_validations();					\
-    if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
-      bad_assignment(typeid(*m_element), typeid(X));			\
-    }									\
-  }}}									\
-  template struct DD4hep::Geometry::Handle<X> 
-
-#define INSTANTIATE_UNNAMED(X)   namespace DD4hep { namespace Geometry {                         \
-  template <> void Handle<X>::assign(X* n, const string&, const string&) { this->m_element = n;} \
-  template <> const char* Handle<X>::name() const { return ""; }	                         \
-  template <> void Handle<X>::verifyObject() const {			                         \
-    increment_object_validations(); 					                         \
-    if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
-      bad_assignment(typeid(*m_element), typeid(X));			                         \
-    }									                         \
-  }									                         \
-}}									                         \
-template struct DD4hep::Geometry::Handle<X>
-
-INSTANTIATE_UNNAMED(TObject);
-INSTANTIATE(TNamed);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TObject);
+DD4HEP_INSTANTIATE_HANDLE(TNamed);
 
 #include "TGeoMedium.h"
 #include "TGeoMaterial.h"
 #include "TGeoElement.h"
-INSTANTIATE(TGeoElement);
-INSTANTIATE(TGeoMaterial);
-INSTANTIATE(TGeoMedium);
+DD4HEP_INSTANTIATE_HANDLE(TGeoElement);
+DD4HEP_INSTANTIATE_HANDLE(TGeoMaterial);
+DD4HEP_INSTANTIATE_HANDLE(TGeoMedium);
 
 #include "TGeoMatrix.h"
-INSTANTIATE(TGeoMatrix);
-INSTANTIATE(TGeoRotation);
-INSTANTIATE(TGeoTranslation);
-INSTANTIATE(TGeoIdentity);
-INSTANTIATE(TGeoCombiTrans);
-INSTANTIATE(TGeoGenTrans);
+DD4HEP_INSTANTIATE_HANDLE(TGeoMatrix);
+DD4HEP_INSTANTIATE_HANDLE(TGeoRotation);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTranslation);
+DD4HEP_INSTANTIATE_HANDLE(TGeoIdentity);
+DD4HEP_INSTANTIATE_HANDLE(TGeoCombiTrans);
+DD4HEP_INSTANTIATE_HANDLE(TGeoGenTrans);
 
 #include "TGeoNode.h"
-INSTANTIATE(TGeoNode);
-INSTANTIATE(TGeoNodeMatrix);
-INSTANTIATE(TGeoNodeOffset);
+DD4HEP_INSTANTIATE_HANDLE(TGeoNode);
+DD4HEP_INSTANTIATE_HANDLE(TGeoNodeMatrix);
+DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 
 // Shapes (needed by "Shapes.cpp")
 #include "TGeoBBox.h"
@@ -388,41 +351,41 @@ INSTANTIATE(TGeoNodeOffset);
 #include "TGeoBoolNode.h"
 #include "TGeoVolume.h"
 #include "TGeoCompositeShape.h"
-INSTANTIATE(TGeoVolume);
-INSTANTIATE(TGeoBBox);
-INSTANTIATE(TGeoCone);
-INSTANTIATE(TGeoArb8);
-INSTANTIATE(TGeoConeSeg);
-INSTANTIATE(MyConeSeg);
-INSTANTIATE(TGeoParaboloid);
-INSTANTIATE(TGeoPcon);
-INSTANTIATE(TGeoPgon);
-INSTANTIATE(TGeoTube);
-INSTANTIATE(TGeoTubeSeg);
-INSTANTIATE(TGeoTrap);
-INSTANTIATE(TGeoTrd2);
-INSTANTIATE(TGeoSphere);
-INSTANTIATE(TGeoTorus);
-INSTANTIATE(TGeoShape);
-INSTANTIATE(TGeoCompositeShape);
+DD4HEP_INSTANTIATE_HANDLE(TGeoVolume);
+DD4HEP_INSTANTIATE_HANDLE(TGeoBBox);
+DD4HEP_INSTANTIATE_HANDLE(TGeoCone);
+DD4HEP_INSTANTIATE_HANDLE(TGeoArb8);
+DD4HEP_INSTANTIATE_HANDLE(TGeoConeSeg);
+DD4HEP_INSTANTIATE_HANDLE(MyConeSeg);
+DD4HEP_INSTANTIATE_HANDLE(TGeoParaboloid);
+DD4HEP_INSTANTIATE_HANDLE(TGeoPcon);
+DD4HEP_INSTANTIATE_HANDLE(TGeoPgon);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTube);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTubeSeg);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTrap);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTrd2);
+DD4HEP_INSTANTIATE_HANDLE(TGeoSphere);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTorus);
+DD4HEP_INSTANTIATE_HANDLE(TGeoShape);
+DD4HEP_INSTANTIATE_HANDLE(TGeoCompositeShape);
 
 // Volume Placements (needed by "Volumes.cpp")
 #include "TGeoPhysicalNode.h"
-INSTANTIATE(TGeoPhysicalNode);
+DD4HEP_INSTANTIATE_HANDLE(TGeoPhysicalNode);
 
 // Replicated Volumes (needed by "Volumes.cpp")
 #include "TGeoPatternFinder.h"
-INSTANTIATE_UNNAMED(TGeoPatternFinder);
-INSTANTIATE_UNNAMED(TGeoPatternX);
-INSTANTIATE_UNNAMED(TGeoPatternY);
-INSTANTIATE_UNNAMED(TGeoPatternZ);
-INSTANTIATE_UNNAMED(TGeoPatternParaX);
-INSTANTIATE_UNNAMED(TGeoPatternParaY);
-INSTANTIATE_UNNAMED(TGeoPatternParaZ);
-INSTANTIATE_UNNAMED(TGeoPatternTrapZ);
-INSTANTIATE_UNNAMED(TGeoPatternCylR);
-INSTANTIATE_UNNAMED(TGeoPatternCylPhi);
-INSTANTIATE_UNNAMED(TGeoPatternSphR);
-INSTANTIATE_UNNAMED(TGeoPatternSphTheta);
-INSTANTIATE_UNNAMED(TGeoPatternSphPhi);
-INSTANTIATE_UNNAMED(TGeoPatternHoneycomb);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternFinder);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternX);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternY);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternZ);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternParaX);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternParaY);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternParaZ);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternTrapZ);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternCylR);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternCylPhi);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternSphR);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternSphTheta);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternSphPhi);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoPatternHoneycomb);

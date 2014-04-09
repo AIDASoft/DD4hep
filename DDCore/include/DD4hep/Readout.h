@@ -103,5 +103,5 @@ namespace DD4hep {
     };
 
   } /* End namespace Geometry               */
-} /* End namespace DD4hep                */
-#endif    /* DD4hep_GEOMETRY_READOUT_H           */
+} /* End namespace DD4hep                   */
+#endif    /* DD4hep_GEOMETRY_READOUT_H      */

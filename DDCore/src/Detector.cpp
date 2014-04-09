@@ -41,8 +41,10 @@ namespace {
 
 /// Default constructor
 DetElement::Object::Object()
-    : TNamed(), magic(magic_word()), id(0), combineHits(0),   // readout(),
-      alignment(), volume_alignments(), conditions(), placement(), parent(), children(), worldTrafo(0), parentTrafo(0), referenceTrafo(0) {
+    : TNamed(), magic(magic_word()), id(0), combineHits(0),
+      placement(), volumeID(0), parent(), reference(), children(), extensions(), 
+      alignment(), volume_alignments(), conditions(), 
+      worldTrafo(0), parentTrafo(0), referenceTrafo(0) {
   InstanceCount::increment(this);
 }
 
@@ -363,6 +365,14 @@ DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
     throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
   }
   throw runtime_error("DD4hep: DetElement::setPlacement: Self is not defined [Invalid Handle]");
+}
+
+/// The cached VolumeID of this subdetector element
+DD4hep::VolumeID DetElement::volumeID() const   {
+  if (isValid()) {
+    return object<Object>().volumeID;
+  }
+  return 0;
 }
 
 /// Access to the logical volume of the placements (all daughters have the same!)

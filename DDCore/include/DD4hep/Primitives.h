@@ -23,6 +23,15 @@ namespace DD4hep {
   typedef DDSegmentation::CellID CellID;
   typedef DDSegmentation::VolumeID VolumeID;
 
+  /// Helper to copy objects.
+  template <typename T> inline void copyObject(void* target,const void* source)  {
+    const T* s = (const T*)source;
+    ::new(target) T(*s);
+  }
+  /// Helper to destruct objects. Note: The memory is NOT released!
+  template <typename T> inline void destructObject(T* p) {
+    p->~T();
+  }
   /// Helper to delete objects from heap and reset the pointer. Saves many many lines of code
   template <typename T> inline void deletePtr(T*& p) {
     if (0 != p)
