@@ -11,6 +11,8 @@ namespace DDSurfaces {
   
   struct SurfaceType ;
 
+  typedef long long int long64 ;
+
  /** Interface for tracking surfaces. 
    * The surface provides access to vectors for u,v,n and the orgigin and
    * the inner and outer materials with corresponding thicknesses.
@@ -28,6 +30,9 @@ namespace DDSurfaces {
     /// properties of the surface encoded in Type.
     virtual const SurfaceType& type() const =0 ;
     
+    /// The id of this surface - corresponds to DetElement id ( or'ed with the placement ids )
+    virtual long64 id() const =0 ;
+
     /// Checks if the given point lies within the surface
     virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const =0 ;
     
@@ -178,7 +183,7 @@ namespace DDSurfaces {
   } ;
 
   /// dump SurfaceType operator 
-  std::ostream& operator<<( std::ostream& os , const SurfaceType& t ) {
+  inline std::ostream& operator<<( std::ostream& os , const SurfaceType& t ) {
 
     os << "sensitive[" << t.isSensitive() << "] helper[" << t.isHelper() << "] plane[" << t.isPlane()  << "] cylinder[" << t.isCylinder()  
        << "] parallelToZ[" << t.isParallelToZ()  << "] orthogonalToZ[" << t. isOrthogonalToZ()  << "] zCylinder[" << t.isZCylinder() 
@@ -190,9 +195,9 @@ namespace DDSurfaces {
 
 
   /// dump ISurface operator 
-  std::ostream& operator<<( std::ostream& os , const ISurface& s ) {
+  inline std::ostream& operator<<( std::ostream& os , const ISurface& s ) {
     
-    os <<  "   type : " << s.type() << std::endl  
+    os <<  "   id: " << s.id() << " type : " << s.type() << std::endl  
        <<  "   u : " << s.u() << " v : " << s.v() << " normal : " << s.normal() << " origin : " << s.origin() << std::endl   ;
     os <<  "   inner material : " << s.innerMaterial() << std::endl  
        <<  "   outerMaterial :  " << s.outerMaterial() << std::endl   ;

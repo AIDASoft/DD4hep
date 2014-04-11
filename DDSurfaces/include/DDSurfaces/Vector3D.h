@@ -287,7 +287,7 @@ namespace DDSurfaces {
   
   
   /** Output operator */
-  std::ostream & operator << (std::ostream & os, const Vector3D &v) {
+  inline std::ostream & operator << (std::ostream & os, const Vector3D &v) {
 
     os << "( " << v[0] << ", " << v[1] << ", " << v[2] << " )" ;
 
