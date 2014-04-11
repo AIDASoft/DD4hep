@@ -120,7 +120,10 @@ namespace DD4hep {
       Geometry::Volume volume() const { return _vol ; }
     
 
-      /** properties of the surface encoded in Type.
+      /// The id of this surface - always 0 for VolSurfaces
+      virtual long64 id() const  { return 0 ; } 
+
+     /** properties of the surface encoded in Type.
        * @see SurfaceType
        */
       virtual const SurfaceType& type() const { return object<SurfaceData>()._type ; }
@@ -300,7 +303,7 @@ namespace DD4hep {
       Surface( Geometry::DetElement det, VolSurface volSurf ) ;      
     
       /// The id of this surface - corresponds to DetElement id ( or'ed with the placement ids )
-      virtual long64 id() { return _id ; }
+      virtual long64 id() const { return _id ; }
 
       /** properties of the surface encoded in Type.
        * @see SurfaceType
@@ -344,6 +347,44 @@ namespace DD4hep {
 
     };
 
+
+    //======================================================================================================
+    /** std::list of Surfaces that optionally takes ownership.
+     * @author F.Gaede, DESY
+     * @date Apr, 10 2014
+     * @version $Id:$
+     */
+    class SurfaceList : public std::list< Surface* > {
+    
+    protected:
+      bool _isOwner ;
+
+    public:
+      SurfaceList(bool isOwner=false ) : _isOwner( isOwner )  {}
+
+      SurfaceList(const SurfaceList& other ) : _isOwner( false ), std::list< Surface* >( other ) {}
+
+      // required c'tors for extension mechanism
+      SurfaceList(const Geometry::DetElement& d){
+	// anything to do here  ?
+      }
+      SurfaceList(const SurfaceList& c,const Geometry::DetElement& det){
+	// anything to do here  ?
+      }
+    
+      virtual ~SurfaceList(){
+      
+	if( _isOwner ) {
+	  // delete all surfaces attached to this volume
+	  for( SurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
+	    delete (*i) ;
+	  }
+	}
+      }
+
+    } ;
+  
+    //    SurfaceList* surfaceList( Geometry::DetElement& det ) ;
 
     //======================================================================================================
 

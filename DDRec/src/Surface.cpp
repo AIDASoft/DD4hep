@@ -1,9 +1,6 @@
 #include "DDRec/Surface.h"
 #include "DD4hep/Detector.h"
 
-// #include "DD4hep/LCDD.h"
-// #include "DD4hep/VolumeManager.h"
-
 #include <math.h>
 #include <exception>
 
@@ -105,14 +102,14 @@ namespace DD4hep {
       
       bool inShapeT = volume()->GetShape()->Contains( point ) ;
       
-      std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << distR 
- 		<< " origin = " << origin() 
- 		<< " isInShape : " << inShapeT << std::endl ;
+				      std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << distR 
+						<< " origin = " << origin() 
+						<< " isInShape : " << inShapeT << std::endl ;
       
-      return distR < epsilon && inShapeT ;
+				      return distR < epsilon && inShapeT ;
 #else
       
-      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
+				      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
 
 #endif
     }
@@ -213,7 +210,7 @@ namespace DD4hep {
 
     const IMaterial& Surface::innerMaterial() const {
       
-     SurfaceMaterial& mat = _volSurf->_innerMat ;
+      SurfaceMaterial& mat = _volSurf->_innerMat ;
       
       if( ! mat.isValid() ) {
 	
@@ -231,7 +228,7 @@ namespace DD4hep {
 
     const IMaterial& Surface::outerMaterial() const {
 
-     SurfaceMaterial& mat = _volSurf->_outerMat ;
+      SurfaceMaterial& mat = _volSurf->_outerMat ;
       
       if( ! mat.isValid() ) {
 	
@@ -242,7 +239,7 @@ namespace DD4hep {
 	mat  =  _volSurf.volume().material() ;
 
  	//std::cout << "  **** Surface::outerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
-     }
+      }
 
       return  _volSurf.outerMaterial()  ;
     }          
@@ -263,7 +260,7 @@ namespace DD4hep {
       Vector3D localPoint( pa ) ;
       
       return _volSurf.insideBounds( localPoint ) ;
-   }
+    }
 
     void Surface::initialize() {
       
@@ -289,10 +286,10 @@ namespace DD4hep {
 #if 0 // debug
       wm->Print() ;
       for( std::list<PlacedVolume>::iterator it= pVList.begin(), n = pVList.end() ; it != n ; ++it ){
-	PlacedVolume pv = *it ;
-	TGeoMatrix* m = pv->GetMatrix();
-	std::cout << "  +++ matrix for placed volume : " << std::endl ;
-	m->Print() ;
+      PlacedVolume pv = *it ;
+      TGeoMatrix* m = pv->GetMatrix();
+      std::cout << "  +++ matrix for placed volume : " << std::endl ;
+      m->Print() ;
       }
 #endif
 
@@ -354,27 +351,24 @@ namespace DD4hep {
       _type.checkOrthogonalToZ( *this ) ;
     
       
+     //======== set the unique surface ID from the DetElement ( and placements below ? )
 
-    // LCDD& lcdd = LCDD::getInstance();
-    // VolumeManager volMgr( lcdd  , "volMan" , lcdd.world() ) ;
+      // just use the DetElement ID for now ...
+      _id = _det.volumeID() ;
 
-      //======== set the unique surface ID from the DetElement ( and placements below ? )
-
-      //FIXME: - no method found - to be done ... 
-      //_id = _det.volumeID() ;
-      typedef PlacedVolume::VolIDs IDV ;
-      DetElement d = _det ;
-      while( d.isValid() &&  d.parent().isValid() ){
-	PlacedVolume pv = d.placement() ;
-	if( pv.isValid() ){
-	  const IDV& idV = pv.volIDs() ; 
-	  std::cout	<< " VolIDs : " << d.name() << std::endl ;
-	  for( unsigned i=0, n=idV.size() ; i<n ; ++i){
-	    std::cout  << "  " << idV[i].first << " - " << idV[i].second << std::endl ;
-	  }
-	}
-	d = d.parent() ;
-      }
+      // typedef PlacedVolume::VolIDs IDV ;
+      // DetElement d = _det ;
+      // while( d.isValid() &&  d.parent().isValid() ){
+      // 	PlacedVolume pv = d.placement() ;
+      // 	if( pv.isValid() ){
+      // 	  const IDV& idV = pv.volIDs() ; 
+      // 	  std::cout	<< " VolIDs : " << d.name() << std::endl ;
+      // 	  for( unsigned i=0, n=idV.size() ; i<n ; ++i){
+      // 	    std::cout  << "  " << idV[i].first << " - " << idV[i].second << std::endl ;
+      // 	  }
+      // 	}
+      // 	d = d.parent() ;
+      // }
      
     }
     //===================================================================================================================
