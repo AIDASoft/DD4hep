@@ -80,9 +80,8 @@ if(DD4HEP_USE_PYROOT)
   list(APPEND sources G__ILDEx.cxx)
 endif()
 
-#add_library(${PackageName} SHARED ${sources})
+add_library(${PackageName} SHARED ${sources})
 
-add_executable(ILDExSimu ILDExSimu.cpp ${sources})
 
 #MESSAGE( STATUS "********* DD4hep_LIBRARIES : ${DD4hep_LIBRARIES}") 
 
@@ -93,6 +92,23 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}
   ${LCIO_LIBRARIES}
   )
 
+add_executable(ildex_simu ILDExSimu.cpp )
+
+target_link_libraries(ildex_simu  ${PackageName} )
+# ${DD4hep_LIBRARIES}  
+#  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
+#  ${GEAR_LIBRARIES}
+#  ${LCIO_LIBRARIES}
+#  )
+
+add_executable( test_surfaces src/test_surfaces.cc)
+
+target_link_libraries(test_surfaces  ${PackageName} )
+#${DD4hep_LIBRARIES}  
+#  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
+#  ${GEAR_LIBRARIES}
+#  ${LCIO_LIBRARIES}
+#  )
 
 #---Testing-------------------------------------------------------------------------
 if(BUILD_TESTING)
@@ -123,7 +139,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
 
 #--- install target-------------------------------------
 
-install(TARGETS ${PackageName}
+install(TARGETS ${PackageName} ildex_simu test_surfaces
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
@@ -140,8 +156,16 @@ install(TARGETS ${PackageName}
 
 SET( test_name "test_sim_ildexdet" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  ILDExSimu file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/ILDEx.xml file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/geant4.xml ${CMAKE_CURRENT_SOURCE_DIR}/run1.mac )
+  ildex_simu file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/ILDEx.xml file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/geant4.xml ${CMAKE_CURRENT_SOURCE_DIR}/run1.mac )
 
 #----- check for typical expected output:
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Begin of event: 2" )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "-End of Run-" )
+
+SET( test_name "test_surfaces" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  test_surfaces file:${CMAKE_CURRENT_SOURCE_DIR}/../ILDExDet/compact/ILDEx.xml ILDExSimu.slcio)
+#----- check for typical expected output:
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
+

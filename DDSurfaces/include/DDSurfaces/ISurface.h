@@ -197,7 +197,7 @@ namespace DDSurfaces {
   /// dump ISurface operator 
   inline std::ostream& operator<<( std::ostream& os , const ISurface& s ) {
     
-    os <<  "   id: " << s.id() << " type : " << s.type() << std::endl  
+    os <<  "   id: " << std::hex << s.id() << std::dec << " type : " << s.type() << std::endl  
        <<  "   u : " << s.u() << " v : " << s.v() << " normal : " << s.normal() << " origin : " << s.origin() << std::endl   ;
     os <<  "   inner material : " << s.innerMaterial() << std::endl  
        <<  "   outerMaterial :  " << s.outerMaterial() << std::endl   ;

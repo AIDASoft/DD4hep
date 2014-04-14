@@ -158,7 +158,7 @@ namespace DD4hep {
       // need default implementations for putting it in list....
       
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const  { return 0. ; }
+      virtual double distance(const Vector3D& point ) const  { return 1.e99 ; }
       
       /// Checks if the given point lies within the surface
       virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const { return false ; }
@@ -217,6 +217,8 @@ namespace DD4hep {
     public:
       
       VolPlane() : VolSurface() { }
+
+      VolPlane(const VolSurface& vs ) : VolSurface( vs ) { }
       
       VolPlane( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
 		Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) :
@@ -249,6 +251,8 @@ namespace DD4hep {
     public:
       
       VolCylinder() : VolSurface() { }
+
+      VolCylinder(const VolSurface& vs ) : VolSurface( vs ) { }
       
       VolCylinder( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
 		Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) :

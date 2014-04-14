@@ -81,12 +81,6 @@ target_link_libraries(${PackageName} ${DD4hep_LIBRARIES}
   )
 
 
-add_executable( test_surfaces src/test_surfaces.cc)
-
-target_link_libraries(test_surfaces  ${PackageName} ${DD4hep_LIBRARIES}  
-  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} 
-  ${GEAR_LIBRARIES}
-  )
 
 #---Rootmap generation--------------------------------------------------------------
 

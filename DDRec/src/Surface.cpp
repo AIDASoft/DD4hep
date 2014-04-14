@@ -249,8 +249,8 @@ namespace DD4hep {
       double pa[3] ;
       _wtM->MasterToLocal( point , pa ) ;
       Vector3D localPoint( pa ) ;
-
-      return _volSurf.distance( localPoint ) ;
+      
+      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).distance( localPoint )  : VolCylinder(_volSurf).distance( localPoint ) ) ;
     }
       
     bool Surface::insideBounds(const Vector3D& point, double epsilon) const {
@@ -259,7 +259,7 @@ namespace DD4hep {
       _wtM->MasterToLocal( point , pa ) ;
       Vector3D localPoint( pa ) ;
       
-      return _volSurf.insideBounds( localPoint ) ;
+      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).insideBounds( localPoint )  : VolCylinder(_volSurf).insideBounds( localPoint ) ) ;
     }
 
     void Surface::initialize() {
