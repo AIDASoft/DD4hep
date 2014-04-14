@@ -115,7 +115,7 @@ int main(int argc, char** argv ){
 	bool isInside = surf->insideBounds( point )  ;
 
 
-	sst.clear() ;
+	sst.str("") ;
 	sst << " point " << point << " is on surface " ;
 
 	// ====== test that hit points are inside their surface ================================
@@ -128,6 +128,24 @@ int main(int argc, char** argv ){
 	// 	  << " distance from surface : " << dist/tgeo::mm << std::endl 
 	// 	  << std::endl ;
 	       
+	// ====== test that slightly moved hit points are inside their surface ================================
+
+	Vector3D point2 = point + 1e-5 * surf->normal() ;
+	sst.str("") ;
+	sst << " point2 " << point2 << " is on surface " ;
+	isInside = surf->insideBounds( point2 )  ;
+	test( isInside , true , sst.str() ) ;
+
+	// ====== test that moved hit points are outside their surface ================================
+
+	Vector3D point3 = point + 1e-3 * surf->normal() ;
+	sst.str("") ;
+	sst << " point3 " << point3 << " is not on surface " ;
+	isInside = surf->insideBounds( point3)  ;
+	test( isInside , false , sst.str() ) ;
+
+
+
       } else {
 
 	std::cout << "ERROR:   no surface found for id: " << idDecoder << std::endl ;
