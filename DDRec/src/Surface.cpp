@@ -2,6 +2,7 @@
 #include "DD4hep/Detector.h"
 
 #include <math.h>
+#include <memory>
 #include <exception>
 
 #include "TGeoMatrix.h"
@@ -16,8 +17,8 @@ namespace DD4hep {
     /** Copy c'tor - copies handle */
     SurfaceMaterial::SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
     
-    SurfaceMaterial::SurfaceMaterial( const SurfaceMaterial& sm ) {
-      (*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
+    SurfaceMaterial::SurfaceMaterial( const SurfaceMaterial& sm )  : Geometry::Material( sm ) {
+      //      (*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
     }
     
     SurfaceMaterial:: ~SurfaceMaterial() {} 
@@ -167,7 +168,7 @@ namespace DD4hep {
 	  
 	  throw std::runtime_error("*** findVolume: Invalid  placement:  - node pointer Null ! " );
 	}
-	Volume vol = pv.volume();
+	//	Volume vol = pv.volume();
 	
 	//	std::cout << "              ndau = " << node->GetNdaughters() << std::endl ;
 
@@ -259,7 +260,7 @@ namespace DD4hep {
       _wtM->MasterToLocal( point , pa ) ;
       Vector3D localPoint( pa ) ;
       
-      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).insideBounds( localPoint )  : VolCylinder(_volSurf).insideBounds( localPoint ) ) ;
+      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).insideBounds( localPoint, epsilon )  : VolCylinder(_volSurf).insideBounds( localPoint , epsilon) ) ;
     }
 
     void Surface::initialize() {

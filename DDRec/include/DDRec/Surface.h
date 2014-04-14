@@ -131,13 +131,13 @@ namespace DD4hep {
       //==== geometry ====
       
       /** First direction of measurement U */
-      virtual const Vector3D& u( const Vector3D& point = Vector3D() ) const { return object<SurfaceData>()._u ; }
+      virtual const Vector3D& u( const Vector3D& point = Vector3D() ) const {  point.x() ; return object<SurfaceData>()._u ; }
     
       /** Second direction of measurement V */
-      virtual const Vector3D& v(const Vector3D& point = Vector3D() ) const { return object<SurfaceData>()._v ; }
+      virtual const Vector3D& v(const Vector3D& point = Vector3D() ) const { point.x() ;  return object<SurfaceData>()._v ; }
     
       /// Access to the normal direction at the given point
-      virtual const Vector3D& normal(const Vector3D& point = Vector3D() ) const { return object<SurfaceData>()._n ; }
+      virtual const Vector3D& normal(const Vector3D& point = Vector3D() ) const {  point.x() ; return object<SurfaceData>()._n ; }
     
       /** Get Origin of local coordinate system on surface */
       virtual const Vector3D& origin() const { return object<SurfaceData>()._o ;}
@@ -158,10 +158,10 @@ namespace DD4hep {
       // need default implementations for putting it in list....
       
       /** Distance to surface */
-      virtual double distance(const Vector3D& point ) const  { return 1.e99 ; }
+      virtual double distance(const Vector3D& point ) const  {  point.x() ; return 1.e99 ; }
       
       /// Checks if the given point lies within the surface
-      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const { return false ; }
+      virtual bool insideBounds(const Vector3D& point, double epsilon=1e-4 ) const {  point.x() ; (void) epsilon ; return false ; }
 
 
       //fixme: protected: + friend declaration ?
@@ -186,10 +186,10 @@ namespace DD4hep {
     
       VolSurfaceList() {}
       // required c'tors for extension mechanism
-      VolSurfaceList(const Geometry::DetElement& d){
+      VolSurfaceList(const Geometry::DetElement& ){
 	// anything to do here  ?
       }
-      VolSurfaceList(const VolSurfaceList& c,const Geometry::DetElement& det){
+      VolSurfaceList(const VolSurfaceList& ,const Geometry::DetElement& ){
 	// anything to do here  ?
       }
     
@@ -317,13 +317,13 @@ namespace DD4hep {
       //==== geometry ====
       
       /** First direction of measurement U */
-      virtual const Vector3D& u( const Vector3D& point = Vector3D() ) const { return _u ; }
+      virtual const Vector3D& u( const Vector3D& point = Vector3D() ) const { point.x() ; return _u ; }
     
       /** Second direction of measurement V */
-      virtual const Vector3D& v(const Vector3D& point = Vector3D() ) const { return _v ; }
+      virtual const Vector3D& v(const Vector3D& point = Vector3D() ) const {  point.x() ; return _v ; }
     
       /// Access to the normal direction at the given point
-      virtual const Vector3D& normal(const Vector3D& point = Vector3D() ) const { return _n ; }
+      virtual const Vector3D& normal(const Vector3D& point = Vector3D() ) const {  point.x() ; return _n ; }
     
       /** Get Origin of local coordinate system on surface */
       virtual const Vector3D& origin() const { return _o ;}
@@ -366,13 +366,13 @@ namespace DD4hep {
     public:
       SurfaceList(bool isOwner=false ) : _isOwner( isOwner )  {}
 
-      SurfaceList(const SurfaceList& other ) : _isOwner( false ), std::list< Surface* >( other ) {}
+      SurfaceList(const SurfaceList& other ) : std::list< Surface* >( other ), _isOwner( false ){}
 
       // required c'tors for extension mechanism
-      SurfaceList(const Geometry::DetElement& d){
+      SurfaceList(const Geometry::DetElement& ){
 	// anything to do here  ?
       }
-      SurfaceList(const SurfaceList& c,const Geometry::DetElement& det){
+      SurfaceList(const SurfaceList& ,const Geometry::DetElement& ){
 	// anything to do here  ?
       }
     
