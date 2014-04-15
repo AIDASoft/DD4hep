@@ -12,9 +12,13 @@
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 
+#include "DDRec/Surface.h"
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using namespace DDRec ;
+using namespace DDSurfaces ;
   
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
@@ -30,6 +34,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   // -> the SIT has no outer shell - set type to HYPRID to keep gear happy (needs fix in gear)
   sit.addExtension<GearHandle>( new GearHandle( gearZPlanar, "SITParameters" )  ) ;
   //--------------------------------------------------------------------
+
+
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
 
@@ -57,6 +63,27 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,lcdd.material(x_support.materialStr()));
 
+
+    // create a measurement plane for the tracking surface attched to the sensitive volume 
+    Vector3D u( 0. , 1. , 0. ) ;
+    Vector3D v( 0. , 0. , 1. ) ;
+
+    // implement 7 deg stereo angle 
+    if( layer_id % 2 ){
+      
+      u.fill( 0. ,  cos( 3.5/180.*M_PI  ) ,  sin( 3.5/180.*M_PI  ) ) ;
+      v.fill( 0. , -sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+
+    } else {
+
+      u.fill( 0. ,  cos( 3.5/180.*M_PI  ) , -sin( 3.5/180.*M_PI  ) ) ;
+      v.fill( 0. ,  sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+    }
+
+    Vector3D n( 1. , 0. , 0. ) ;
+    VolPlane surf( sensvol , SurfaceType(SurfaceType::Sensitive) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ;
+
+
     // Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
     // Position    supppos   (-(sens_thick+supp_thick)/2.+sens_thick+supp_thick/2.,0,0);
     // --- position the sensitive on top of the support !
@@ -83,6 +110,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // this will result int the correct cellID to be set...
       pv.addPhysVolID("layer",layer_id).addPhysVolID("module",j).addPhysVolID("sensor",0 ) ;
 
+      // create a DetElement for the ladder and assign the meassurment surface to it
+      DetElement   ladderDE( sit ,  laddername , x_det.id() );
+      ladderDE.setPlacement( pv ) ;
+      volSurfaceList( ladderDE )->push_back( surf ) ;
 
    }
     //----------------- gear ---------------------------------------------

@@ -194,9 +194,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       DetElement   ladderDEposZ( vxd ,  laddername+"_posZ" , x_det.id() );
       ladderDEposZ.setPlacement( pv ) ;
 
-
-      //      if( j == 0 || j == 1 )
-      volSurfaceList( ladderDEposZ)->push_back( surf ) ;
+      volSurfaceList( ladderDEposZ )->push_back( surf ) ;
 
 
       pv = layer_assembly.placeVolume( laddervol, Transform3D( rot ,  Position( (radius + lthick/2.)*cos(phi)  - offset * sin( phi ) ,

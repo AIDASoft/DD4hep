@@ -61,6 +61,11 @@ namespace DDSurfaces {
       return *this ;
     }  
 
+    inline const Vector3D& fill( double x, double y, double z) {    
+
+      _x = x ; _y = y ; _z = z ; 
+      return *this ;
+    }  
 
     /** Cartesian x coordinate */
     inline double x() const { return  _x ; }
