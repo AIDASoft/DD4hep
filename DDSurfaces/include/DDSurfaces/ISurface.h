@@ -5,7 +5,7 @@
 #include "DDSurfaces/Vector3D.h"
 
 #include <bitset>
-#include <math.h>
+#include <cmath>
 
 namespace DDSurfaces {
   
