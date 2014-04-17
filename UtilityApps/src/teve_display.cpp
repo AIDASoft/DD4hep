@@ -12,12 +12,27 @@
 #include "DD4hep/LCDD.h"
 #include "DDRec/SurfaceManager.h"
 
+#include "EvNavHandler.h"
 
 #include "run_plugin.h"
 #include "TRint.h"
+
 #include "TEveGeoNode.h"
-//#include "TEveElement.h"
+#include "TEveBrowser.h"
+#include "TGNumberEntry.h"
+#include "TGButton.h"
+#include "TGLabel.h"
+#include "TStyle.h"
+#include "TGComboBox.h"
+#include "TEveManager.h"
+#include "TSystem.h"
 #include "TGLViewer.h"
+#include "TEveViewer.h"
+#include "TGLPerspectiveCamera.h"
+#include "TGLCamera.h"
+#include "TEveStraightLineSet.h"
+
+
 #include "TGeoManager.h"
 //#include "TGLUtil.h"
 #include "TGLClip.h"
@@ -25,11 +40,9 @@
 #include "TMap.h"
 #include "TObjString.h"
 
-#define private public
-#include "TEveManager.h"
+// #define private public
+// #include "TEveManager.h"
 
-#include "TEveStraightLineSet.h"
-#include "TRandom.h"
 #include "TGeoShape.h"
 
 using namespace DD4hep ;
@@ -38,7 +51,256 @@ using namespace Geometry ;
 using namespace DDSurfaces ;
 
 //=====================================================================================
-TEveStraightLineSet* drawSurfaceVectors() {
+// function declarations: 
+void next_event();
+void make_gui();
+
+TEveStraightLineSet* getSurfaces() ;
+TEveStraightLineSet* getSurfaceVectors() ;
+
+//=====================================================================================
+
+// class MultiView;
+// MultiView* gMultiView = 0;
+
+//=====================================================================================
+// class EvNavHandler {
+// public:
+//   void Fwd() {
+//     next_event();
+//   }
+//   void Bck() {}
+// };
+//=====================================================================================
+// Multi-view (3d, rphi, rhoz) service class using EVE Window Manager.
+// Author: Matevz Tadel 2009
+
+// #include <TEveManager.h>
+
+// #include <TEveViewer.h>
+// #include <TGLViewer.h>
+
+// #include <TEveScene.h>
+
+// #include <TEveProjectionManager.h>
+// #include <TEveProjectionAxes.h>
+
+// #include <TEveBrowser.h>
+// #include <TEveWindow.h>
+
+// // MultiView
+// //
+// // Structure encapsulating standard views: 3D, r-phi and rho-z.
+// // Includes scenes and projection managers.
+// //
+// // Should be used in compiled mode.
+
+// struct MultiView
+// {
+//    TEveProjectionManager *fRPhiMgr;
+//    TEveProjectionManager *fRhoZMgr;
+
+//    TEveViewer            *f3DView;
+//    TEveViewer            *fRPhiView;
+//    TEveViewer            *fRhoZView;
+
+//    TEveScene             *fRPhiGeomScene;
+//    TEveScene             *fRhoZGeomScene;
+//    TEveScene             *fRPhiEventScene;
+//    TEveScene             *fRhoZEventScene;
+
+//    //---------------------------------------------------------------------------
+
+//    MultiView()
+//    {
+//       // Constructor --- creates required scenes, projection managers
+//       // and GL viewers.
+
+//       // Scenes
+//       //========
+
+//       fRPhiGeomScene  = gEve->SpawnNewScene("RPhi Geometry",
+//                                             "Scene holding projected geometry for the RPhi view.");
+//       fRhoZGeomScene  = gEve->SpawnNewScene("RhoZ Geometry",
+//                                             "Scene holding projected geometry for the RhoZ view.");
+//       fRPhiEventScene = gEve->SpawnNewScene("RPhi Event Data",
+//                                             "Scene holding projected event-data for the RPhi view.");
+//       fRhoZEventScene = gEve->SpawnNewScene("RhoZ Event Data",
+//                                             "Scene holding projected event-data for the RhoZ view.");
+
+
+//       // Projection managers
+//       //=====================
+
+//       fRPhiMgr = new TEveProjectionManager(TEveProjection::kPT_RPhi);
+//       gEve->AddToListTree(fRPhiMgr, kFALSE);
+//       {
+//          TEveProjectionAxes* a = new TEveProjectionAxes(fRPhiMgr);
+//          a->SetMainColor(kWhite);
+//          a->SetTitle("R-Phi");
+//          a->SetTitleSize(0.05);
+//          a->SetTitleFont(102);
+//          a->SetLabelSize(0.025);
+//          a->SetLabelFont(102);
+//          fRPhiGeomScene->AddElement(a);
+//       }
+
+//       fRhoZMgr = new TEveProjectionManager(TEveProjection::kPT_RhoZ);
+//       gEve->AddToListTree(fRhoZMgr, kFALSE);
+//       {
+//          TEveProjectionAxes* a = new TEveProjectionAxes(fRhoZMgr);
+//          a->SetMainColor(kWhite);
+//          a->SetTitle("Rho-Z");
+//          a->SetTitleSize(0.05);
+//          a->SetTitleFont(102);
+//          a->SetLabelSize(0.025);
+//          a->SetLabelFont(102);
+//          fRhoZGeomScene->AddElement(a);
+//       }
+
+
+//       // Viewers
+//       //=========
+
+//       TEveWindowSlot *slot = 0;
+//       TEveWindowPack *pack = 0;
+
+//       slot = TEveWindow::CreateWindowInTab(gEve->GetBrowser()->GetTabRight());
+//       pack = slot->MakePack();
+//       pack->SetElementName("Multi View");
+//       pack->SetHorizontal();
+//       pack->SetShowTitleBar(kFALSE);
+//       pack->NewSlot()->MakeCurrent();
+//       f3DView = gEve->SpawnNewViewer("3D View", "");
+//       f3DView->AddScene(gEve->GetGlobalScene());
+//       f3DView->AddScene(gEve->GetEventScene());
+
+//       pack = pack->NewSlot()->MakePack();
+//       pack->SetShowTitleBar(kFALSE);
+//       pack->NewSlot()->MakeCurrent();
+//       fRPhiView = gEve->SpawnNewViewer("RPhi View", "");
+//       fRPhiView->GetGLViewer()->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
+//       fRPhiView->AddScene(fRPhiGeomScene);
+//       fRPhiView->AddScene(fRPhiEventScene);
+
+//       pack->NewSlot()->MakeCurrent();
+//       fRhoZView = gEve->SpawnNewViewer("RhoZ View", "");
+//       fRhoZView->GetGLViewer()->SetCurrentCamera(TGLViewer::kCameraOrthoXOY);
+//       fRhoZView->AddScene(fRhoZGeomScene);
+//       fRhoZView->AddScene(fRhoZEventScene);
+//    }
+
+//    //---------------------------------------------------------------------------
+
+//    void SetDepth(Float_t d)
+//    {
+//       // Set current depth on all projection managers.
+
+//       fRPhiMgr->SetCurrentDepth(d);
+//       fRhoZMgr->SetCurrentDepth(d);
+//    }
+
+//    //---------------------------------------------------------------------------
+
+//    void ImportGeomRPhi(TEveElement* el)
+//    { 
+//       fRPhiMgr->ImportElements(el, fRPhiGeomScene);
+//    }
+
+//    void ImportGeomRhoZ(TEveElement* el)
+//    { 
+//       fRhoZMgr->ImportElements(el, fRhoZGeomScene);
+//    }
+
+//    void ImportEventRPhi(TEveElement* el)
+//    { 
+//       fRPhiMgr->ImportElements(el, fRPhiEventScene);
+//    }
+
+//    void ImportEventRhoZ(TEveElement* el)
+//    { 
+//       fRhoZMgr->ImportElements(el, fRhoZEventScene);
+//    }
+
+//    //---------------------------------------------------------------------------
+
+//    void DestroyEventRPhi()
+//    {
+//       fRPhiEventScene->DestroyElements();
+//    }
+
+//    void DestroyEventRhoZ()
+//    {
+//       fRhoZEventScene->DestroyElements();
+//    }
+// };
+//=====================================================================================
+
+static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
+  TGeoManager* mgr = &lcdd.manager();
+  TEveManager::Create();
+
+  //  gEve->fGeometries->Add(new TObjString("DefaultGeometry"),mgr);
+
+  TEveGeoTopNode* tn = new TEveGeoTopNode(mgr, mgr->GetTopNode());
+  tn->SetVisLevel(4);
+
+  EvNavHandler *fh = new EvNavHandler;
+
+  // // ---- try to set transparency - does not seem to work ...
+  // TGeoNode* node1 = gGeoManager->GetTopNode();
+  // int k_nodes = node1->GetNdaughters();
+  // for(int i=0; i<k_nodes; i++) {
+  //   TGeoNode * CurrentNode = node1->GetDaughter(i);
+  //   CurrentNode->GetMedium()->GetMaterial()->SetTransparency(80);
+  //   // TEveGeoNode CurrentNode( node1->GetDaughter(i) ) ;
+  //   // CurrentNode.SetMainTransparency( 80 ) ;
+  // }
+  // this code seems to have no effect either ...
+  // tn->CSCApplyMainTransparencyToAllChildren() ;
+  // tn->SetMainTransparency( 80 ) ;
+
+
+  gEve->AddGlobalElement( tn );
+  gEve->AddGlobalElement( getSurfaceVectors() ) ;
+  gEve->AddGlobalElement( getSurfaces() ) ;
+
+  // gMultiView = new MultiView;
+  // gMultiView->ImportGeomRPhi( tn );
+  // gMultiView->ImportGeomRhoZ( tn );
+
+  make_gui();
+  next_event();
+
+  gEve->FullRedraw3D(kTRUE);
+
+
+ // // EClipType not exported to CINT (see TGLUtil.h):
+ //  // 0 - no clip, 1 - clip plane, 2 - clip box
+ //  TGLViewer *v = gEve->GetDefaultGLViewer();
+ //  //  v->GetClipSet()->SetClipType(TGLClip::kClipPlane);
+ //  //  v->ColorSet().Background().SetColor(kMagenta+4);
+ //  v->ColorSet().Background().SetColor(kWhite);
+ //  v->SetGuideState(TGLUtil::kAxesEdge, kTRUE, kFALSE, 0);
+ //  v->RefreshPadEditor(v);
+ //  //  v->CurrentCamera().RotateRad(-1.2, 0.5);
+ //  v->DoDraw();
+
+  return 1;
+}
+DECLARE_APPLY(DD4hepTEveDisplay,teve_display)
+
+//______________________________________________________________________________
+int main(int argc,char** argv)  {
+  return main_default("DD4hepTEveDisplay",argc,argv);
+}
+
+
+
+
+
+//=====================================================================================================================
+TEveStraightLineSet* getSurfaceVectors() {
 
   TEveStraightLineSet* ls = new TEveStraightLineSet("SurfaceVectors");
 
@@ -74,12 +336,12 @@ TEveStraightLineSet* drawSurfaceVectors() {
   ls->SetMarkerSize(1);
   ls->SetMarkerStyle(4);
   
-  gEve->AddElement(ls);
+  //  gEve->AddElement(ls);
 
   return ls;
 }
 //=====================================================================================
-TEveStraightLineSet* drawSurfaces() {
+TEveStraightLineSet* getSurfaces() {
 
   TEveStraightLineSet* ls = new TEveStraightLineSet("Surfaces");
 
@@ -110,54 +372,6 @@ TEveStraightLineSet* drawSurfaces() {
       ls->AddLine( vert[i].x(), vert[i].y(), vert[i].z(), vert[j].x() , vert[j].y() , vert[j].z()  ) ;
     }
     
-
-    // Volume vol = surf->volume() ; 
-    // const TGeoShape* shape = vol->GetShape() ;
-
-    // // get extend of surface volume along u and v
-    // VolSurface volSurf = surf->volSurface() ;
-
-    // const DDSurfaces::Vector3D& lu = volSurf.u() ;
-    // const DDSurfaces::Vector3D& lv = volSurf.v() ;
-    // const DDSurfaces::Vector3D& ln = volSurf.normal() ;
-    // const DDSurfaces::Vector3D& lo = volSurf.origin() ;
-
-
-    // // TGeoShape::DistFromInside(Double_t *point[3], Double_t *dir[3],
-    // //                               Int_t iact, Double_t step, Double_t *safe)
- 
-    // double safe = 0. ; 
-    // double lup = shape->DistFromInside( lo,  lu, 2, 0.1 , &safe ) ;
-    // double lun = shape->DistFromInside( lo, -lu, 2, 0.1 , &safe ) ;
-    // double lvp = shape->DistFromInside( lo,  lv, 2, 0.1 , &safe ) ;
-    // double lvn = shape->DistFromInside( lo, -lv, 2, 0.1 , &safe ) ;
-    
-    
-    // // std::cout << "*** lu : " << lu << " lv : " << lv << " ln : " << ln << " lo : " << lo << std::endl ; 
-    // // std::cout << "*** lup : " << lup << " lun : " << lun << " lvp : " << lvp << " lvn : " << lvn << std::endl ; 
-
-    // const DDSurfaces::Vector3D& u = surf->u() ;
-    // const DDSurfaces::Vector3D& v = surf->v() ;
-    // const DDSurfaces::Vector3D& n = surf->normal() ;
-    // const DDSurfaces::Vector3D& o = surf->origin() ;
-    
-
-    // if( surf->type().isPlane() ) {
-      
-    //   DDSurfaces::Vector3D c0 = o + lup * u  + lvp * v ;
-    //   DDSurfaces::Vector3D c1 = o + lup * u  - lvn * v ;
-    //   DDSurfaces::Vector3D c2 = o - lun * u  - lvn * v ;
-    //   DDSurfaces::Vector3D c3 = o - lun * u  + lvn * v ;
-      
-      
-    //   ls->AddLine( c0.x(), c0.y(), c0.z(), c1.x() , c1.y() , c1.z()  ) ;
-    //   ls->AddLine( c1.x(), c1.y(), c1.z(), c2.x() , c2.y() , c2.z()  ) ;
-    //   ls->AddLine( c2.x(), c2.y(), c2.z(), c3.x() , c3.y() , c3.z()  ) ;
-    //   ls->AddLine( c3.x(), c3.y(), c3.z(), c0.x() , c0.y() , c0.z()  ) ;
-      
-    //   //    ls->AddMarker(  o.x(), o.y(), o.z() );
-    // }
-
     ls->SetLineColor( kRed ) ;
     ls->SetMarkerColor( kRed ) ;
     ls->SetMarkerSize(.1);
@@ -165,62 +379,49 @@ TEveStraightLineSet* drawSurfaces() {
 
   } // don't know what to do ...
 
-  gEve->AddElement(ls);
+  //  gEve->AddElement(ls);
 
   return ls;
 }
 //=====================================================================================
 
+void make_gui() {
 
-static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
-  TGeoManager* mgr = &lcdd.manager();
-  TEveManager::Create();
-  gEve->fGeometries->Add(new TObjString("DefaultGeometry"),mgr);
-  TEveGeoTopNode* tn = new TEveGeoTopNode(mgr, mgr->GetTopNode());
-  tn->SetVisLevel(4);
+   // Create minimal GUI for event navigation.
 
+   TEveBrowser* browser = gEve->GetBrowser();
+   browser->StartEmbedding(TRootBrowser::kLeft);
 
-  // // ---- try to set transparency - does not seem to work ...
-  // TGeoNode* node1 = gGeoManager->GetTopNode();
-  // int k_nodes = node1->GetNdaughters();
-  // for(int i=0; i<k_nodes; i++) {
-  //   TGeoNode * CurrentNode = node1->GetDaughter(i);
-  //   CurrentNode->GetMedium()->GetMaterial()->SetTransparency(80);
-  //   // TEveGeoNode CurrentNode( node1->GetDaughter(i) ) ;
-  //   // CurrentNode.SetMainTransparency( 80 ) ;
-  // }
-  // this code seems to have no effect either ...
-  tn->CSCApplyMainTransparencyToAllChildren() ;
-  tn->SetMainTransparency( 80 ) ;
+   TGMainFrame* frmMain = new TGMainFrame(gClient->GetRoot(), 1000, 600);
+   frmMain->SetWindowName("DD4hep GUI");
+   frmMain->SetCleanup(kDeepCleanup);
 
+   TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);
+   {
+      
+      TString icondir( Form("%s/icons/", gSystem->Getenv("ROOTSYS")) );
+      TGPictureButton* b = 0;
+      EvNavHandler    *fh = new EvNavHandler;
 
-  drawSurfaceVectors() ;
-  drawSurfaces() ;
+      b = new TGPictureButton(hf, gClient->GetPicture(icondir+"GoBack.gif"));
+      b->SetEnabled(kFALSE);
+      b->SetToolTipText("Go to previous event - not supported.");
+      hf->AddFrame(b);
+      b->Connect("Clicked()", "EvNavHandler", fh, "Bck()");
 
-  gEve->AddGlobalElement(tn);
-  gEve->FullRedraw3D(kTRUE);
+      b = new TGPictureButton(hf, gClient->GetPicture(icondir+"GoForward.gif"));
+      b->SetToolTipText("Generate new event.");
+      hf->AddFrame(b);
+      b->Connect("Clicked()", "EvNavHandler", fh, "Fwd()");
+   }
+   frmMain->AddFrame(hf);
 
+   frmMain->MapSubwindows();
+   frmMain->Resize();
+   frmMain->MapWindow();
 
-  // EClipType not exported to CINT (see TGLUtil.h):
-  // 0 - no clip, 1 - clip plane, 2 - clip box
-  TGLViewer *v = gEve->GetDefaultGLViewer();
-
-  //  v->GetClipSet()->SetClipType(TGLClip::kClipPlane);
-  //  v->ColorSet().Background().SetColor(kMagenta+4);
-  v->ColorSet().Background().SetColor(kWhite);
-
-  v->SetGuideState(TGLUtil::kAxesEdge, kTRUE, kFALSE, 0);
-  v->RefreshPadEditor(v);
-  //  v->CurrentCamera().RotateRad(-1.2, 0.5);
-  v->DoDraw();
-  return 1;
-
-
+   browser->StopEmbedding();
+   browser->SetTabTitle("Event Control", 0);
 }
-DECLARE_APPLY(DD4hepTEveDisplay,teve_display)
-
-//______________________________________________________________________________
-int main(int argc,char** argv)  {
-  return main_default("DD4hepTEveDisplay",argc,argv);
-}
+//=====================================================================================
 
