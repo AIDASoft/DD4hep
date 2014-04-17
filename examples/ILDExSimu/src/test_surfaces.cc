@@ -84,7 +84,7 @@ int main(int argc, char** argv ){
 
   std::vector< std::string > colNames ;
   colNames.push_back( "VXDCollection" ) ;
-  colNames.push_back( "SITCollection" ) ;
+  //  colNames.push_back( "SITCollection" ) ;
 
   while( ( evt = rdr->readNextEvent() ) != 0 ){
 
@@ -132,11 +132,15 @@ int main(int argc, char** argv ){
 	  
 	  test( isInside , true , sst.str() ) ;
 	  
-	  // std::cout << " found surface with same id " <<  *surf << std::endl 
-	  // 	  << " point : " << point 
-	  // 	  << " is inside : " <<  isInside
-	  // 	  << " distance from surface : " << dist/tgeo::mm << std::endl 
-	  // 	  << std::endl ;
+	  if( ! isInside ) {
+
+	    std::cout << " found surface " <<  *surf << std::endl
+		      << " id : " << idDecoder 
+		      << " point : " << point 
+		      << " is inside : " <<  isInside
+		      << " distance from surface : " << dist/tgeo::mm << std::endl 
+		      << std::endl ;
+	  }
 
 	  // ====== test that slightly moved hit points are inside their surface ================================
 	  
@@ -146,6 +150,17 @@ int main(int argc, char** argv ){
 	  isInside = surf->insideBounds( point2 )  ;
 	  test( isInside , true , sst.str() ) ;
 	  
+	  if( ! isInside ) {
+
+	    std::cout << " found surface " <<  *surf << std::endl
+		      << " id : " << idDecoder 
+		      << " point : " << point 
+		      << " is inside : " <<  isInside
+		      << " distance from surface : " << dist/tgeo::mm << std::endl 
+		      << std::endl ;
+
+	  }
+
 	  // ====== test that moved hit points are outside their surface ================================
 	  
 	  Vector3D point3 = point + 1e-3 * surf->normal() ;

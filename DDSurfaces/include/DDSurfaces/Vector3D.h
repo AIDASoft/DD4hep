@@ -55,17 +55,27 @@ namespace DDSurfaces {
     // }
     
 
+    /// fill vector from arbitrary class that defines operator[] 
+    template <class T>
+    inline const Vector3D& fill(  const T& v  ) {    
+
+      _x = v[0] ; _y = v[1] ; _z = v[2] ; 
+      return *this ;
+    }  
+
+    /// fill vector from double array
     inline const Vector3D& fill( const double* v) {    
 
       _x = v[0] ; _y = v[1] ; _z = v[2] ; 
       return *this ;
     }  
 
+    /// fill from double values
     inline const Vector3D& fill( double x, double y, double z) {    
-
       _x = x ; _y = y ; _z = z ; 
       return *this ;
     }  
+
 
     /** Cartesian x coordinate */
     inline double x() const { return  _x ; }
@@ -86,7 +96,7 @@ namespace DDSurfaces {
     inline double& z() { return  _z ; }
     
     
-    /** Accessing x,y,z with bracket operator */
+   /** Accessing x,y,z with bracket operator */
     inline double operator[](int i) const {
       switch(i) {
       case 0: return _x ; break ;
@@ -176,6 +186,11 @@ namespace DDSurfaces {
       return &_x ;
     }
 
+    /// direct access to data as double* - allows modification 
+    inline double* array() {
+      return &_x ;
+    }
+
 
     /** Implicit templated conversion to anything that has a c'tor T(x,y,z) 
      *  and accessor functions x(),y(),z(). For safety the result is checked which 
@@ -249,6 +264,12 @@ namespace DDSurfaces {
     return Vector3D( s * v.x()  , s * v.y()  ,  s * v.z() ) ;
   }
   
+ /** Negative vector */
+  inline Vector3D operator-(  const Vector3D& v) { 
+    
+    return Vector3D( -v.x(), - v.y(), - v.z()  ) ;
+  }
+
   /// operator for scalar product
   inline double operator*( const Vector3D& v0, const Vector3D& v1 ){
     return v0.dot( v1 ) ;

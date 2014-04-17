@@ -297,7 +297,6 @@ namespace DD4hep {
       Vector3D _n ;
       Vector3D _o ;
 
-    
       Surface() :_det( Geometry::DetElement() ), _volSurf( VolSurface() ), _wtM( 0 ) , _id( 0)  { }
 
     public:
@@ -314,6 +313,11 @@ namespace DD4hep {
        */
       virtual const SurfaceType& type() const { return _type ; }
     
+      Geometry::Volume volume() const { return _volSurf.volume()  ; }
+
+      VolSurface volSurface() const { return _volSurf ; }
+
+
       //==== geometry ====
       
       /** First direction of measurement U */
@@ -345,6 +349,12 @@ namespace DD4hep {
       
       /// Checks if the given point lies within the surface
       virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const ;
+
+      //---------------------------------------------------
+      /** Get vertices constraining the surface for drawing ( might not be exact boundaries) -
+       *  at most nMax points are returned.
+       */
+      std::vector< Vector3D > getVertices( unsigned nMax=360 ) ;
 
     protected:
       void initialize() ;
