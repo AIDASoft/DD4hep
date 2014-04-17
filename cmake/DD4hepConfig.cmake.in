@@ -75,5 +75,20 @@ INCLUDE( FindPackageHandleStandardArgs )
 # set DD4HEP_FOUND to TRUE if all listed variables are TRUE and not empty
 FIND_PACKAGE_HANDLE_STANDARD_ARGS( DD4hep DEFAULT_MSG DD4hep_ROOT DD4hep_INCLUDE_DIRS DD4hep_LIBRARIES )
 
-SET( DD4hep_FOUND ${DD4HEP_FOUND} )
-
+# set variables and display results
+IF( DD4hep_INCLUDE_DIR AND NOT DD4hep_FINDLIB_FAILED )
+    SET( DD4hep_FOUND ${DD4HEP_FOUND} )
+    #SET( DD4hep_FOUND TRUE )
+    SET( DD4hep_INCLUDE_DIRS ${DD4hep_INCLUDE_DIR} ${DD4hep_INCLUDE_DIR}/DD4hep @ROOT_INCLUDE_DIRS@ )
+    SET( DD4hep_LIBRARY_DIRS @CMAKE_INSTALL_PREFIX@/lib @ROOT_LIBRARY_DIR@ )
+	SET( DD4hep_LIBRARIES ${DD4hep_LIBS} @ROOT_LIBS@)
+    MARK_AS_ADVANCED( DD4hep_INCLUDE_DIRS DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
+	MESSAGE( STATUS "Check for DD4hep: it works" )
+ELSE()
+	IF( DD4hep_FIND_REQUIRED )
+		MESSAGE( FATAL_ERROR "Check for DD4hep: @CMAKE_INSTALL_PREFIX@ -- failed!!" )
+    ELSE( DD4hep_FIND_REQUIRED )
+        MESSAGE( STATUS "Check for DD4hep: @CMAKE_INSTALL_PREFIX@"
+						" -- failed!! will skip this package..." )
+    ENDIF( DD4hep_FIND_REQUIRED )
+ENDIF()
