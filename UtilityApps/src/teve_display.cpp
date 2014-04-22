@@ -196,18 +196,21 @@ TEveStraightLineSet* getSurfaces() {
 
     Surface* surf = *it ;
 
-    const std::vector< Vector3D > vert = surf->getVertices() ;
+    if( ! surf->type().isVisible() ) 
+      continue ;
 
-    if( vert.empty() )
-      std::cout << " **** drawSurfaces() : empty vertices for surface " << *surf << std::endl ;
+    const std::vector< std::pair<Vector3D,Vector3D> > lines = surf->getLines() ;
 
-    unsigned nV = vert.size() ;
+    if( lines.empty() )
+      std::cout << " **** drawSurfaces() : empty lines vector for surface " << *surf << std::endl ;
 
-    for( unsigned i=0 ; i<nV ; ++i){
+    unsigned nL = lines.size() ;
 
-      unsigned j = ( i < nV-1 ?  i+1 : 0 ) ;
+    for( unsigned i=0 ; i<nL ; ++i){
 
-      ls->AddLine( vert[i].x(), vert[i].y(), vert[i].z(), vert[j].x() , vert[j].y() , vert[j].z()  ) ;
+
+      ls->AddLine( lines[i].first.x(),  lines[i].first.y(),  lines[i].first.z(), 
+		   lines[i].second.x(), lines[i].second.y(), lines[i].second.z() ) ;
     }
     
     ls->SetLineColor( kRed ) ;
@@ -215,12 +218,11 @@ TEveStraightLineSet* getSurfaces() {
     ls->SetMarkerSize(.1);
     ls->SetMarkerStyle(4);
 
-  } // don't know what to do ...
-
-  //  gEve->AddElement(ls);
+  }
 
   return ls;
 }
+
 //=====================================================================================
 
 void make_gui() {

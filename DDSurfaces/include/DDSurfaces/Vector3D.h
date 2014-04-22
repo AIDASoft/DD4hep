@@ -25,6 +25,9 @@ namespace DDSurfaces {
     Vector3D() : _x(0.0),_y(0.0),_z(0.0) {}
     
     
+    /** Copy constructor*/
+    Vector3D(const Vector3D& v) : _x(v[0]),_y(v[1]),_z(v[2]) {}
+
     /** Constructor for float array.*/
     Vector3D(const float* v) : _x(v[0]),_y(v[1]),_z(v[2]) {}
     
@@ -54,6 +57,13 @@ namespace DDSurfaces {
     //   _z( t.z() ){
     // }
     
+    //assignment operator
+    Vector3D& operator=(const Vector3D& v) {
+      _x = v[0] ;
+      _y = v[1] ;
+      _z = v[2] ;
+      return *this ; 
+    }
 
     /// fill vector from arbitrary class that defines operator[] 
     template <class T>

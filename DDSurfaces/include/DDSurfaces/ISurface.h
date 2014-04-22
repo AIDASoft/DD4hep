@@ -9,7 +9,7 @@
 
 namespace DDSurfaces {
   
-  struct SurfaceType ;
+  class SurfaceType ;
 
   typedef long long int long64 ;
 
@@ -78,12 +78,13 @@ namespace DDSurfaces {
   public:
     /// enum for defining the bits used to decode the properties
     enum{
-      Cylinder = 1,
+      Cylinder = 0,
       Plane,
       Sensitive,
       Helper,
       ParallelToZ,
-      OrthogonalToZ
+      OrthogonalToZ,
+      Invisible
     } ;
     
     ///default c'tor
@@ -136,6 +137,9 @@ namespace DDSurfaces {
     /// true if surface is orthogonal to Z
     bool isOrthogonalToZ() const { return _bits[ SurfaceType::OrthogonalToZ ] ; } 
    
+    /// true if surface is not invisble - for drawing only
+    bool isVisible() const { return ! _bits[ SurfaceType::Invisible ] ; } 
+
    /// true if this is a cylinder parallel to Z
     bool isZCylinder() const  { return ( _bits[ SurfaceType::Cylinder ] &&  _bits[ SurfaceType::ParallelToZ ] ) ; } 
 

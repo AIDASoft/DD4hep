@@ -354,7 +354,12 @@ namespace DD4hep {
       /** Get vertices constraining the surface for drawing ( might not be exact boundaries) -
        *  at most nMax points are returned.
        */
-      std::vector< Vector3D > getVertices( unsigned nMax=360 ) ;
+      //      std::vector< Vector3D > getVertices( unsigned nMax=360 ) ;
+
+      /** Get lines constraining the surface for drawing ( might not be exact boundaries) -
+       *  at most nMax lines are returned.
+       */
+      std::vector< std::pair< Vector3D, Vector3D> > getLines(unsigned nMax=100) ;
 
     protected:
       void initialize() ;

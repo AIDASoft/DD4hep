@@ -11,6 +11,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/TGeoUnits.h"
+#include "DDRec/Surface.h"
 
 #include "TPCData.h"
 
@@ -23,6 +24,8 @@ using namespace std;
 //using namespace tgeo ;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using namespace DD4hep::DDRec ;
+using namespace DDSurfaces ;
 
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det = e;
@@ -76,23 +79,47 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Volume      part_vol(part_nam,part_tub,part_mat);
 
     Position    part_pos(px_pos.x(),px_pos.y(),px_pos.z());
-    RotationZYX    part_rot(px_rot.z(),px_rot.y(),px_rot.x());
-    bool        reflect   = px_det.reflect();
+    RotationZYX part_rot(px_rot.z(),px_rot.y(),px_rot.x());
+    bool        reflect = px_det.reflect();
     
     sens.setType("tracker");
 
     part_vol.setVisAttributes(lcdd,px_det.visStr());
+
+    // vectors for measurement plane 
+    Vector3D u( 0. , 1. , 0. ) ;
+    Vector3D v( 0. , 0. , 1. ) ;
+    Vector3D n( 1. , 0. , 0. ) ;
+
+    
+    double  rcyl = ( px_tube.rmax() + px_tube.rmin() ) * 0.5  ;
+    double drcyl =   px_tube.rmax() - px_tube.rmin() ;
+    Vector3D ocyl( rcyl , 0. , 0. ) ;
+	
+
     //cache the important volumes in TPCData for later use without having to know their name
     switch(part_det.id())
       {
-      case 2:
+      case 2: {
         tpcData->innerWall=part_det;
+	// add a surface to the det element
+	VolCylinder surf( part_vol , SurfaceType( SurfaceType::Helper ) , drcyl*.5 , drcyl*.5 , u,v,n , ocyl ) ;
+	volSurfaceList( part_det )->push_back( surf ) ;
+      }
 	break;
-      case 3:
+
+      case 3: {
         tpcData->outerWall=part_det;
+	// add a surface to the det element
+	VolCylinder surf( part_vol , SurfaceType( SurfaceType::Helper ) , drcyl*.5 , drcyl*.5 , u,v,n , ocyl ) ;
+	volSurfaceList( part_det )->push_back( surf ) ;
+      }
 	break;
+
       case 4:
 	{
+	  tpcData->gasVolume=part_det;
+
 	  xml_comp_t  px_lay(px_det.child(_U(layer)));
 	  int  nTPClayer( px_lay.attr<int>(_U(number)) );
 
@@ -112,6 +139,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	  g_phiMax = 6.283185307e+00 ; // FIXME: where to define ? is it allways 2PI ?
 	  //------------------------------------------------------
 
+	  
 	  for(int i=0 ; i < nTPClayer ; ++i){
 
 	    Tube    gas_tubL( r0 + (2*i) * dR , r0 + (2*i+1) * dR , zh );
@@ -122,11 +150,21 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	    Volume  gas_volU( _toString( i, "tpc_row_upper_%03d")  , gas_tubU, part_mat);
 
 	    gas_volU.setSensitiveDetector( sens );
-	    part_vol.placeVolume( gas_volU, RotationZYX(0,0,0) ).addPhysVolID("layer",i) ;
+
+	    PlacedVolume pv = part_vol.placeVolume( gas_volU, RotationZYX(0,0,0) ) ;
+	    pv.addPhysVolID("layer",i) ;
+
+	    DetElement   layerDE( tpc ,   _toString( i, "tpc_row_upper_%03d") , x_det.id() );
+	    layerDE.setPlacement( pv ) ;
+
+	    Vector3D o( r0 + (2*i+1) * dR , 0. , 0. ) ;
+
+	    VolCylinder surf( gas_volU , SurfaceType(SurfaceType::Sensitive, SurfaceType::Invisible ) , dR , dR , u,v,n ,o ) ;
+
+	    volSurfaceList( layerDE )->push_back( surf ) ;
 	  }
 	  
 	 
-	  tpcData->gasVolume=part_det;
 	  break;
 	}
       case 5:
@@ -136,6 +174,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     //Endplate
     if(part_det.id()== 0){
       tpcData->endplate=part_det;
+
+      // add a plane to the endcap volume 
+      // note: u and v are exchanged: normal is along z ...
+      VolPlane surf( part_vol , SurfaceType( SurfaceType::Helper ) , px_tube.zhalf() , x_tube.zhalf(), u , n , v ) ;
+      volSurfaceList( part_det )->push_back( surf ) ;
+
       //modules
       int mdcount=0;
       for(xml_coll_t m(px_det,_U(modules)); m; ++m)  {
@@ -180,6 +224,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     part_phv.addPhysVolID("side",0);
     part_det.setPlacement(part_phv);
     tpc.add(part_det);
+
     //now reflect it
     if(reflect){
       Position r_pos(px_pos.x(),px_pos.y(),-px_pos.z());
