@@ -61,15 +61,38 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double      dphi       = 2.*M_PI/double(nLadders);
 
 
+
+
+
+    /// ======== test layer assembly -> results in assembly in assembly and
+#define use_layer_assembly 0         // crashes ild_exsimu
+#if use_layer_assembly 
+
     // --- create an assembly and DetElement for the layer 
-    // Assembly     layer_assembly( "layer_assembly" +_toString(layer_id,"_%d") );
+
+    Assembly     layer_assembly( "layer_assembly" +_toString(layer_id,"_%d") );
     
-    // DetElement   layerDE( vxd , _toString(layer_id,"layer_%d"), x_det.id() );
+    DetElement   layerDE( vxd , _toString(layer_id,"layer_%d"), x_det.id() );
     
-    // pv = assembly.placeVolume(  layer_assembly );
-    
-    // layerDE.setPlacement( pv ) ;
+    pv = assembly.placeVolume(  layer_assembly );
+    pv.addPhysVolID("layer", layer_id );  
+
+    layerDE.setPlacement( pv ) ;
+
     //--------------------------------
+#else
+    //=========
+    Assembly&  layer_assembly = assembly ;
+    //=========
+
+#endif 
+
+
+
+
+
+
+
 
 
 #if no_split_ladders
@@ -147,10 +170,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     vxd_data->_sVec.push_back(layer);
 
 
-    // Assembly layer_assembly( name + _toString( layer_id,"layer_assembly_%d" ) ) ;
-    // PlacedVolume layer_physvol = assembly.placeVolume( layer_assembly,IdentityPos() ) ;
-    // layer_physvol.addPhysVolID("layer", layer_id );
-
     for(int j=0; j<nLadders; ++j) {
 
       double dj = double(j);      
@@ -161,10 +180,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double lthick = sens_thick + supp_thick ;
       
       RotationZYX rot( phi , 0, 0  ) ;
-
-      //=========
-      Assembly&  layer_assembly = assembly ;
-      //=========
 
 
 #if no_split_ladders
@@ -190,8 +205,16 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 ).addPhysVolID("side", 1 )   ;
 
-      //      DetElement   ladderDEposZ( layerDE ,  laddername+"_posZ" , x_det.id() );
+
+
+#if use_layer_assembly 
+      DetElement   ladderDEposZ( layerDE ,  laddername+"_posZ" , x_det.id() );
+#else
       DetElement   ladderDEposZ( vxd ,  laddername+"_posZ" , x_det.id() );
+#endif
+
+
+
       ladderDEposZ.setPlacement( pv ) ;
 
       volSurfaceList( ladderDEposZ )->push_back( surf ) ;
@@ -203,9 +226,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 ).addPhysVolID("side", -1 )   ;  ;
 
-      //      DetElement   ladderDEnegZ( layerDE ,  laddername+"_negZ" , x_det.id() );
+#if use_layer_assembly 
+      DetElement   ladderDEnegZ( layerDE ,  laddername+"_negZ" , x_det.id() );
+#else
       DetElement   ladderDEnegZ( vxd ,  laddername+"_negZ" , x_det.id() );
-      ladderDEnegZ.setPlacement( pv ) ;
+ #endif
+
+     ladderDEnegZ.setPlacement( pv ) ;
 
 
       volSurfaceList( ladderDEnegZ)->push_back( surf ) ;
