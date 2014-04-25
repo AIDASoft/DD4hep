@@ -186,6 +186,11 @@ string Dimension::typeStr() const {
   return m_element.attr < string > (_U(type));
 }
 
+/// Access "value" attribute as STL string
+std::string Dimension::valueStr() const   {
+  return m_element.attr < string > (_U(value));
+}
+
 string Dimension::regionStr() const {
   return m_element.hasAttr(_U(region)) ? m_element.attr < string > (_U(region)) : string();
 }

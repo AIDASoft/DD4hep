@@ -7,37 +7,70 @@
 //
 //====================================================================
 // Framework include files
+#define DETECTORTOOLS_CPP
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/objects/DetectorInterna.h"
+
+// C/C++ include files
 #include <stdexcept>
 #include <memory>
 
 // ROOT include files
 #include "TGeoMatrix.h"
 
+
+
+/*
+ *   DD4hep namespace declaration
+ */
+namespace DD4hep {
+
+  /*
+   *   Geometry namespace declaration
+   */
+  namespace Geometry {
+
+    /** @class Detectortools  DetectorTools.h DD4hep/Detectortools.h
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    namespace DetectorTools {
+      /// Assemble the path of the PlacedVolume selection
+      std::string elementPath(const PlacementPath& nodes);
+      /// Collect detector elements to any parent detector element
+      void elementPath(DetElement parent, DetElement elt, ElementPath& detectors);
+      /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
+      void elementPath(DetElement elt, PlacementPath& nodes);
+      /// Collect detector elements placements to the parent detector element [no holes!]
+      void elementPath(DetElement parent, DetElement element, PlacementPath& nodes);
+      /// Find DetElement as child of the top level volume by it's absolute path
+      DetElement findElement(LCDD& lcdd, const std::string& path);
+      /// Find Child of PlacedVolume and assemble on the fly the path of PlacedVolumes
+      bool findChild(PlacedVolume parent, PlacedVolume child, PlacementPath& path);
+
+
+      // Internal helper
+      static void makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes);
+    }
+  }
+}
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-/// Collect detector elements to any parent detector element
-bool DetectorTools::findParent(DetElement parent, DetElement elt, vector<DetElement>& detectors)  {
-  detectors.clear();
-  if ( parent.isValid() && elt.isValid() )  {
-    if ( parent.ptr() == elt.ptr() )  {
-      detectors.push_back(elt);
-      return true;
-    }
-    ElementPath elements;
-    for(DetElement par = elt; par.isValid(); par = par.parent())  {
-      elements.push_back(par);
-      if ( par.ptr() == parent.ptr() )  {
-	detectors = elements;
-	return true;
-      }
+/// Find path between the child element and the parent element
+bool DetectorTools::isParentElement(DetElement parent, DetElement child)   {
+  if ( parent.isValid() && child.isValid() )  {
+    if ( parent.ptr() == child.ptr() ) return true;
+    for(DetElement par=child; par.isValid(); par=par.parent())  {
+      if ( par.ptr() == parent.ptr() ) return true;
     }
   }
-  throw runtime_error("Search for parent detector element with invalid handles not allowed.");
+  throw runtime_error("Search for parent detector element with invalid handles not allowed."); 
 }
 
 /// Find Child of PlacedVolume and assemble on the fly the path of PlacedVolumes
@@ -103,26 +136,60 @@ static bool findChildByName(PlacedVolume parent, PlacedVolume child, DetectorToo
 }
 
 /// Collect detector elements to the top detector element (world)
-void DetectorTools::elementPath(DetElement elt, ElementPath& detectors) {
-  for(DetElement par = elt; par.isValid(); par = par.parent())
+void DetectorTools::elementPath(DetElement element, ElementPath& detectors) {
+  for(DetElement par = element; par.isValid(); par = par.parent())
     detectors.push_back(par);
 }
 
 /// Collect detector elements to any parent detector element
-void DetectorTools::elementPath(DetElement parent, DetElement elt, ElementPath& detectors)  {
-  if ( findParent(parent,elt,detectors) ) 
-    return;
-  throw runtime_error(string("The detector element ")+parent.name()+string(" is no parent of ")+elt.name());
+void DetectorTools::elementPath(DetElement parent, DetElement child, ElementPath& detectors)  {
+  detectors.clear();
+  if ( parent.isValid() && child.isValid() )  {
+    if ( parent.ptr() == child.ptr() )  {
+      detectors.push_back(child);
+      return;
+    }
+    ElementPath elements;
+    for(DetElement par = child; par.isValid(); par = par.parent())  {
+      elements.push_back(par);
+      if ( par.ptr() == parent.ptr() )  {
+	detectors = elements;
+	return;
+      }
+    }
+    throw runtime_error(string("The detector element ")+parent.name()+string(" is no parent of ")+child.name());
+  }
+  throw runtime_error("Search for parent detector element with invalid handles not allowed.");
 }
 
 /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
-void DetectorTools::elementPath(DetElement element, vector<PlacedVolume>& det_nodes) {
+void DetectorTools::elementPath(DetElement parent, DetElement element, PlacementPath& det_nodes) {
   for(DetElement par = element; par.isValid(); par = par.parent())  {
     PlacedVolume pv = par.placement();
-    if ( pv.isValid() ) {
+    if ( pv.isValid() )  {
+      det_nodes.push_back(pv);
+    }
+    if ( par.ptr() == parent.ptr() ) return;
+  }
+  throw runtime_error(string("The detector element ")+parent.name()+string(" is no parent of ")+element.name());
+}
+
+/// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
+void DetectorTools::elementPath(DetElement element, PlacementPath& det_nodes) {
+  for(DetElement par = element; par.isValid(); par = par.parent())  {
+    PlacedVolume pv = par.placement();
+    if ( pv.isValid() )  {
       det_nodes.push_back(pv);
     }
   }
+}
+
+/// Assemble the path of the PlacedVolume selection
+std::string DetectorTools::elementPath(const PlacementPath& nodes)   {
+  string s = "";
+  for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+    s += "/" + string((*i).name());
+  return s;
 }
 
 /// Assemble the path of the PlacedVolume selection
@@ -142,24 +209,24 @@ std::string DetectorTools::elementPath(DetElement element)  {
 
 /// Find DetElement as child of the top level volume by it's absolute path
 DetElement DetectorTools::findElement(LCDD& lcdd, const std::string& path)   {
-  return findElement(lcdd.world(),path);
+  return findDaughterElement(lcdd.world(),path);
 }
 
 /// Find DetElement as child of a parent by it's relative or absolute path
-DetElement DetectorTools::findElement(DetElement parent, const std::string& subpath)  {
+DetElement DetectorTools::findDaughterElement(DetElement parent, const std::string& subpath)  {
   if ( parent.isValid() )   {
     size_t idx = subpath.find('/',1);
-    if ( subpath[0] == '/' )  {
+    if ( subpath[0] == '/' )   {
       DetElement top = topElement(parent);
       if ( idx == string::npos ) return top;
-      return findElement(top,subpath.substr(idx+1));
+      return findDaughterElement(top,subpath.substr(idx+1));
     }
     if ( idx == string::npos )
       return parent.child(subpath);
     string name = subpath.substr(0,idx);
     DetElement node = parent.child(name);
-    if ( node.isValid() )  {
-      return findElement(node,subpath.substr(idx+1));
+    if ( node.isValid() )   {
+      return findDaughterElement(node,subpath.substr(idx+1));
     }
     throw runtime_error("DD4hep: DetElement "+parent.path()+" has no child named:"+name+" [No such child]");
   }
@@ -176,32 +243,30 @@ DetElement DetectorTools::topElement(DetElement child)   {
   throw runtime_error("DD4hep: DetElement cannot determine top parent (world) [invalid handle]");
 }
 
-/// Collect detector elements placements to the top detector element (world) [no holes!]
-void DetectorTools::placementPath(DetElement element, PlacementPath& nodes)   {
-  PlacementPath det_nodes, all_nodes;
-  DetectorTools::elementPath(element,det_nodes);
-  for (size_t i = 0, n = det_nodes.size(); i < n-1; ++i)  {
-    if (!findChildByName(det_nodes[i + 1], det_nodes[i], nodes))  {
+static void DetectorTools::makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes)   {
+  for (size_t i = 0, n = det_nodes.size(); i < n-1; ++i)   {
+    if (!findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
       throw runtime_error("DD4hep: DetElement cannot determine placement path of " 
-			  + string(element.name()) + " [internal error]");
+			  + string(det_nodes[i].name()) + " [internal error]");
     }
   }
-  if ( det_nodes.size()>0 )   {
-    nodes.push_back(det_nodes.back());
+  if ( det_nodes.size() > 0 )   {
+    all_nodes.push_back(det_nodes.back());
   }
 }
 
+/// Collect detector elements placements to the top detector element (world) [no holes!]
+void DetectorTools::placementPath(DetElement element, PlacementPath& all_nodes)   {
+  PlacementPath det_nodes;
+  elementPath(element,det_nodes);
+  makePlacementPath(det_nodes, all_nodes);
+}
+
 /// Collect detector elements placements to the parent detector element [no holes!]
-void DetectorTools::placementPath(DetElement parent, DetElement child, PlacementPath& nodes)   {
-  ElementPath   det_nodes;
-  PlacementPath all_nodes;
-  DetectorTools::elementPath(parent,child,det_nodes);
-  for (size_t i = 0, n = det_nodes.size(); i < n-1; ++i) {
-    if (!findChild(det_nodes[i + 1], det_nodes[i], nodes)) {
-      throw runtime_error("Invalid placement path "+elementPath(det_nodes)+" [internal error]");
-    }
-  }
-  if ( det_nodes.size()>0 ) nodes.push_back(det_nodes.back());
+void DetectorTools::placementPath(DetElement parent, DetElement element, PlacementPath& all_nodes)   {
+  PlacementPath det_nodes;
+  elementPath(parent,element,det_nodes);
+  makePlacementPath(det_nodes, all_nodes);
 }
 
 /// Assemble the path of the PlacedVolume selection
@@ -219,21 +284,71 @@ std::string DetectorTools::placementPath(const PlacementPath& nodes)  {
   return s;
 }
 
-/// Create cached matrix to transform to positions to an upper level Placement
-TGeoMatrix* DetectorTools::placementTrafo(const PlacementPath& nodes, bool inverse) {
-  if (nodes.size() < 2) {
-    return new TGeoHMatrix(*gGeoIdentity);
+/// Update cached matrix to transform to positions to an upper level Placement
+void DetectorTools::placementTrafo(const PlacementPath& nodes, bool inverse, TGeoHMatrix*& mat) {
+  if ( !mat ) mat = new TGeoHMatrix(*gGeoIdentity);
+  placementTrafo(nodes,inverse,*mat);
+}
+
+/// Update cached matrix to transform to positions to an upper level Placement
+void DetectorTools::placementTrafo(const PlacementPath& nodes, bool inverse, TGeoHMatrix& mat) {
+  mat = *gGeoIdentity;
+  if (nodes.size() > 0) {
+    for (size_t i = 0, n=nodes.size(); n>0 && i < n-1; ++i)  {
+      const PlacedVolume& p = nodes[i];
+      mat.MultiplyLeft(p->GetMatrix());
+    }
+    if ( inverse ) mat = mat.Inverse();
   }
-  auto_ptr<TGeoHMatrix> mat(new TGeoHMatrix(*gGeoIdentity));
-  for (size_t i = 0, n=nodes.size(); n>0 && i < n-1; ++i)  {
-    const PlacedVolume& p = nodes[i];
-    TGeoMatrix* m = p->GetMatrix();
-    mat->MultiplyLeft(m);
+}
+
+/// Find a given node in the hierarchy starting from the top node (absolute placement!)
+PlacedVolume DetectorTools::findNode(PlacedVolume top_place, const std::string& place)   {
+  TGeoNode* top = top_place.ptr();
+  const char* path = place.c_str();
+  // Check if a geometry path is valid without changing the state of the navigator.
+  Int_t length = strlen(path);
+  if (!length) return 0;
+  TString spath = path;
+  TGeoVolume *vol;
+  // Check first occurance of a '/'
+  Int_t ind1 = spath.Index("/");
+  if (ind1<0) {
+    // No '/' so we check directly the path against the name of the top
+    if ( strcmp(path,top->GetName()) ) return 0;
+    return top;
   }
-  if ( inverse )  {
-    auto_ptr<TGeoHMatrix> inv(new TGeoHMatrix(mat->Inverse()));
-    mat = inv;
+  Int_t ind2 = ind1;
+  Bool_t end = kFALSE;
+  if (ind1>0) ind1 = -1;   // no trailing '/'
+  else ind2 = spath.Index("/", ind1+1);
+
+  if (ind2<0) ind2 = length;
+  TString name(spath(ind1+1, ind2-ind1-1));
+  if ( name == top->GetName() ) {
+    if (ind2>=length-1) return top;
+    ind1 = ind2;
+  } 
+  else  {
+    return 0;
   }
-  return mat.release();
+  TGeoNode *node = top;
+  // Deeper than just top level
+  while (!end) {
+    ind2 = spath.Index("/", ind1+1);
+    if (ind2<0) {
+      ind2 = length;
+      end  = kTRUE;
+    }
+    vol = node->GetVolume();
+    name = spath(ind1+1, ind2-ind1-1);
+    node = vol->GetNode(name.Data());
+    if (!node) 
+      return 0;
+    else if (ind2>=length-1) 
+      return node;
+    ind1 = ind2;
+  }
+  return node;
 }
 

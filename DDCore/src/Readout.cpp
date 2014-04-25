@@ -78,18 +78,3 @@ void Readout::setSegmentation(const Segmentation& seg) const {
 Segmentation Readout::segmentation() const {
   return object<Object>().segmentation;
 }
-
-/// Standard constructor
-Conditions::Object::Object() {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Conditions::Object::~Object() {
-  InstanceCount::decrement(this);
-}
-
-/// Initializing constructor to create a new object
-Conditions::Conditions(const LCDD& /* lcdd */, const string& nam) {
-  assign(new Object(), nam, "conditions");
-}

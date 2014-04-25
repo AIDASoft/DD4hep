@@ -13,6 +13,8 @@
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
+#include "DD4hep/objects/DetectorInterna.h"
+
 #include "XML/DocumentHandler.h"
 #include "XML/Conversions.h"
 
@@ -709,7 +711,8 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<GdmlFile>::operator()(xml_h element) const {
-  xml_h materials = XML::DocumentHandler().load(element, element.attr_value(_U(ref))).root();
+  XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+  xml_h materials = doc.root();
   xml_coll_t(materials, _U(element)).for_each(Converter < Atom > (this->lcdd));
   xml_coll_t(materials, _U(material)).for_each(Converter < Material > (this->lcdd));
 }
@@ -721,14 +724,16 @@ template <> void Converter<XMLFile>::operator()(xml_h element) const {
 
 /// Read alignment entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<AlignmentFile>::operator()(xml_h element) const {
-  xml_h alignments = XML::DocumentHandler().load(element, element.attr_value(_U(ref))).root();
+  XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+  xml_h alignments = doc.root();
   xml_coll_t(alignments, _U(alignment)).for_each(Converter < AlignmentEntry > (this->lcdd));
   xml_coll_t(alignments, _U(include)).for_each(Converter < XMLFile > (this->lcdd));
 }
 
 /// Read material entries from a seperate file in one of the include sections of the geometry
 template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
-  xml_h node = XML::DocumentHandler().load(element, element.attr_value(_U(ref))).root();
+  XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+  xml_h node = doc.root();
   string tag = node.tag();
   if ( tag == "lcdd" )  
     Converter < Compact > (this->lcdd)(node);

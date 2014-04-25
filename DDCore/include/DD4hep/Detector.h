@@ -6,16 +6,17 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
-#ifndef DD4HEP_LCDD_DETECTOR_H
-#define DD4HEP_LCDD_DETECTOR_H
+#ifndef DD4HEP_DETECTOR_H
+#define DD4HEP_DETECTOR_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
+#include "DD4hep/Callback.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Readout.h"
 #include "DD4hep/Alignment.h"
+#include "DD4hep/Conditions.h"
 #include "DD4hep/Segmentations.h"
 
 // C/C++ include files
@@ -32,36 +33,23 @@ namespace DD4hep {
    */
   namespace Geometry {
 
-    // struct SensitiveDetector;
-    //  struct Detector;
-    struct LCDD;
+    class LCDD;
+    class DetElementObject;
+    class SensitiveDetectorObject;
 
     /** @class SensitiveDetector Detector.h DD4hep/lcdd/Detector.h
      *
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct SensitiveDetector: public Ref_t {
+    class SensitiveDetector: public Handle<SensitiveDetectorObject> {
     public:
-      /// Definition of the extension type
-      typedef std::map<const std::type_info*, void*> Extensions;
-
-      struct Object: public TNamed {
-        unsigned int magic;
-        int verbose;
-        int combineHits;
-        double ecut;
-        std::string hitsCollection;
-        Readout readout;
-        Region region;
-        LimitSet limits;
-        Extensions extensions;
-
-        /// Default constructor
-        Object();
-        /// Internal object destructor: release extension object(s)
-        virtual ~Object();
-      };
+      /// Extensions destructor type
+      typedef void (*destruct_t)(void*);
+      /// Internal object type
+      typedef SensitiveDetectorObject Object;
+      /// Definition of the base handle type
+      typedef Handle<SensitiveDetectorObject> RefObject;
     protected:
 
       /// Templated destructor function
@@ -78,24 +66,29 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-      SensitiveDetector()
-          : Ref_t() {
+    SensitiveDetector()
+      : RefObject() {
       }
 
-      /// Copy from handle
-      SensitiveDetector(const SensitiveDetector& sd)
-          : Ref_t(sd) {
+      /// Constructor to copy handled object
+    SensitiveDetector(Object* ptr)
+      : RefObject(ptr) {
       }
 
       /// Copy from named handle
-      SensitiveDetector(const Ref_t& sd)
-          : Ref_t(sd) {
+    SensitiveDetector(const RefObject& sd)
+      : RefObject(sd) {
+      }
+
+      /// Copy from handle
+    SensitiveDetector(const SensitiveDetector& sd)
+      : RefObject(sd) {
       }
 
       /// Templated constructor for handle conversions
       template <typename Q>
-      SensitiveDetector(const Handle<Q>& e)
-          : Ref_t(e) {
+	SensitiveDetector(const Handle<Q>& e)
+	: RefObject(e) {
       }
 
       /// Constructor for a new sensitive detector element
@@ -185,76 +178,34 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct DetElement: public Ref_t {
-      typedef Ref_t Parent;
+    class DetElement: public Handle<DetElementObject>  {
+    public:
+      /// Internal object type
+      typedef DetElementObject Object;
+      /// Definition of the base handle type
+      typedef Handle<DetElementObject> RefObject;
+      typedef DetElement Parent;
+
+      /// Extensions copy constructor type
+      typedef void* (*copy_t)(const void*, DetElement);
+      /// Extensions destructor type
+      typedef void (*destruct_t)(void*);
+
       typedef std::map<std::string, DetElement> Children;
       typedef std::map<const std::type_info*, void*> Extensions;
 
       enum CopyParameters {
         COPY_NONE = 0, COPY_PLACEMENT = 1 << 0, COPY_PARENT = 1 << 1, COPY_ALIGNMENT = 1 << 2, LAST
       };
-      struct Object: public TNamed {
-	/// Magic number to ensure data integrity
-        unsigned int magic;
-	/// Unique integer identifier of the detector instance
-        int id;
-        /// Full path to this detector element. May be invalid
-        std::string path;
-	/// Flag to process hits
-        int combineHits;
 
-	/// The subdetector placement corresponding to the detector element's volume
-        PlacedVolume placement;
-	/** The cached VolumeID of this subdetector element
-	 *  Please note:
-	 *  These values are set when populating the volume manager.
-	 *  There are restrictions: e.g. only sensitive subdetectors are present.
-	 */
-	VolumeID volumeID;
-	/// Reference to the parent element
-        Parent parent;
-	/// Reference element for stored transformations
-        Parent reference;
-	/// The array of children
-        Children children;
-	/// User extensions
-        Extensions extensions;
-
-	/**@info: Additional information set externally to facilitate the processing of event data */
-	/// Basic detector element alignment entry
-        Alignment alignment;
-	/// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-	std::vector<Alignment> volume_alignments;
-	/// The detector elements condition entry
-        Conditions conditions;
-
-	/**@info: Cached information of the detector element  */
-        /// Intermediate buffer to store the transformation to the world coordination system
-        TGeoMatrix* worldTrafo;
-        /// Intermediate buffer to store the transformation to the parent detector element
-        TGeoMatrix* parentTrafo;
-        /// Intermediate buffer for the transformation to an arbitrary DetElement
-        TGeoMatrix* referenceTrafo;
-        /// The path to the placement of the detector element (if placed)
-        std::string placementPath;
-
-	/**@info: Public methods to ease the usage of the data. */
-        /// Default constructor
-        Object();
-        /// Internal object destructor: release extension object(s)
-        virtual ~Object();
-        /// Deep object copy to replicate DetElement trees e.g. for reflection
-        virtual Object* clone(int new_id, int flag) const;
-        /// Conversion to reference object
-        operator Ref_t();
-        /// Conversion to reference object
-        Ref_t asRef();
-        /// Create cached matrix to transform to world coordinates
-        TGeoMatrix* worldTransformation();
-        /// Create cached matrix to transform to parent coordinates
-        TGeoMatrix* parentTransformation();
-        /// Create cached matrix to transform to reference coordinates
-        TGeoMatrix* referenceTransformation();
+      enum UpdateParam { 
+	CONDITIONS_CHANGED = 1<<0,
+	PLACEMENT_CHANGED  = 1<<1,
+	SOMETHING_CHANGED  = 1<<2,
+	PLACEMENT_ELEMENT  = 1<<20,
+	PLACEMENT_HIGHEST  = 1<<21,
+	PLACEMENT_DETECTOR = 1<<22,
+	PLACEMENT_NONE
       };
 
       /// Internal assert function to check conditions
@@ -272,21 +223,31 @@ namespace DD4hep {
       }
 
       /// Add an extension object to the detector element
-      void* i_addExtension(void* ptr, const std::type_info& info, void* (*copy)(const void*, DetElement),
-          void (*destruct)(void*));
+      void* i_addExtension(void* ptr, const std::type_info& info, copy_t ctor, destruct_t dtor) const;
       /// Access an existing extension object from the detector element
       void* i_extension(const std::type_info& info) const;
+      /// Internal call to extend the detector element with an arbitrary structure accessible by the type
+      void i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const;
 
     public:
 
       /// Default constructor
-      DetElement()
-          : Ref_t() {
+    DetElement()
+      : RefObject() {
       }
 
+      /// Constructor to copy handled object
+    DetElement(Object* ptr)
+      : RefObject(ptr) {
+      }
+
+      /// Clone constructor
+      DetElement(Object* data, const std::string& name, const std::string& type);
+
+#if 0
       /// Default constructor
       template <typename Q> DetElement(Q* data, const std::string& name, const std::string& type)
-          : Ref_t(data) {
+	: RefObject(data) {
         this->assign(data, name, type);
       }
 
@@ -297,7 +258,7 @@ namespace DD4hep {
 
       /// Construction function for a new subdetector element
       template <typename Q>
-      static Q* createObject(const std::string& name, const std::string& type, int id) {
+	static Q* createObject(const std::string& name, const std::string& type, int id) {
         DetElement det;
         Q *p = new Q();
         Object* o = p;
@@ -310,27 +271,27 @@ namespace DD4hep {
 
       /// Construction function for a new subdetector element
       template <typename Q>
-      static DetElement create(const std::string& name, const std::string& type, int id, Q** ptr = 0) {
+	static DetElement create(const std::string& name, const std::string& type, int id, Q** ptr = 0) {
         Q* p = createObject<Q>(name, type, id);
         if (ptr)
           *ptr = p;
-        return DetElement(Ref_t(p));
+        return DetElement(p);
       }
-
+#endif
       /// Templated constructor for handle conversions
       template <typename Q> DetElement(const Handle<Q>& e)
-          : Ref_t(e) {
+	: RefObject(e) {
       }
 
       /// Constructor to copy handle
-      DetElement(const DetElement& e)
-          : Ref_t(e) {
+    DetElement(const DetElement& e)
+      : RefObject(e) {
       }
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
-      DetElement(const Ref_t& e)
-          : Ref_t(e) {
+    DetElement(const Ref_t& e)
+      : RefObject(e) {
       }
 #endif
       /// Constructor for a new subdetector element
@@ -370,7 +331,8 @@ namespace DD4hep {
       DetElement clone(const std::string& new_name, int new_id) const;
 
       /// Extend the detector element with an arbitrary structure accessible by the type
-      template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {
+      template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
+	CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
         return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _copy<CONCRETE>, _delete<IFACE>);
       }
 
@@ -378,6 +340,17 @@ namespace DD4hep {
       template <class T> T* extension() const {
         return (T*) i_extension(typeid(T));
       }
+
+      /// Extend the detector element with an arbitrary callback
+      template <typename Q, typename T> 
+	void callAtUpdate(unsigned int type, Q* pointer, 
+			  void (T::*pmf)(unsigned int typ, DetElement& det, void* opt_par)) const
+      {
+	CallbackSequence::checkTypes(typeid(T), typeid(Q), dynamic_cast<T*>(pointer));
+	i_addUpdateCall(type, Callback(pointer).make(pmf));
+      }
+      /// Remove callback from object
+      void removeAtUpdate(unsigned int type, void* pointer) const;
 
       /// Set the detector identifier
       int id() const;
@@ -400,7 +373,7 @@ namespace DD4hep {
 
       /// Set all attributes in one go
       DetElement& setAttributes(const LCDD& lcdd, const Volume& volume, const std::string& region, const std::string& limits,
-          const std::string& vis);
+				const std::string& vis);
 
       /// Set Visualization attributes to the detector element
       DetElement& setVisAttributes(const LCDD& lcdd, const std::string& name, const Volume& volume);
@@ -443,15 +416,26 @@ namespace DD4hep {
       /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
       bool localToReference(const Position& local, Position& reference) const;
 
+      /// Create cached matrix to transform to world coordinates
+      const TGeoHMatrix& worldTransformation() const;
+      /// Create cached matrix to transform to parent coordinates
+      const TGeoHMatrix& parentTransformation() const;
+      /// Create cached matrix to transform to reference coordinates
+      const TGeoHMatrix& referenceTransformation() const;
       /// Transformation from world coordinates of the local placed volume coordinates
       bool worldToLocal(const Position& global, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
       bool parentToLocal(const Position& parent, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
       bool referenceToLocal(const Position& reference, Position& local) const;
-
     };
 
   } /* End namespace Geometry      */
 } /* End namespace DD4hep        */
-#endif    /* DD4HEP_LCDD_DETECTOR_H      */
+
+// It is not so clear if Clients do really rely on the interna 
+// of the DetElement and the SensitiveDetector object ....
+
+//#include "DD4hep/objects/DetectorInterna.h"
+
+#endif    /* DD4HEP_DETECTOR_H      */

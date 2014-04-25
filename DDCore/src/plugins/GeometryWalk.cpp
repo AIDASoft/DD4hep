@@ -74,22 +74,17 @@ GeometryWalk::GeometryWalk(LCDD& lcdd, DetElement sdet) : m_det(sdet) {
   }
   walk(m_det,VolIDs());
 }
-#include "TClass.h"
-#include "TGeoManager.h"
-void GeometryWalk::dumpPathes(DetElement e, PlacedVolume pv) const  {
+
+/// Printout volume information
+void GeometryWalk::print(DetElement e, PlacedVolume pv, const VolIDs& /* child_ids */)  const {
   stringstream log;
-  PlacementPath det_nodes, all_nodes;
+  PlacementPath all_nodes;
   ElementPath   det_elts;
   DetectorTools::elementPath(e,det_elts);
-  DetectorTools::elementPath(e,det_nodes);
   DetectorTools::placementPath(e,all_nodes);
   string elt_path  = DetectorTools::elementPath(det_elts);
   string node_path = DetectorTools::placementPath(all_nodes);
-  string det_path  = DetectorTools::placementPath(det_nodes);
   log << "Lookup " << left << setw(32) << pv.name() << " Detector[" << det_elts.size() << "]: " << elt_path;
-  printout(INFO,m_det.name(),log.str());
-  log.str("");
-  log << "       " << left << setw(32) << pv.name() << " Elements[" << det_nodes.size() << "]: " << det_path;
   printout(INFO,m_det.name(),log.str());
   log.str("");
   log << "       " << left << setw(32) << "       " << " Places[" <<  all_nodes.size()  << "]:   " << node_path;
@@ -101,40 +96,6 @@ void GeometryWalk::dumpPathes(DetElement e, PlacedVolume pv) const  {
     if ( i+1 == all_nodes.end() ) log << "( -> " << (*i)->GetName() << ")";
   }
   printout(INFO,m_det.name(),log.str());
-}
-
-/// Printout volume information
-void GeometryWalk::print(DetElement e, PlacedVolume pv, const VolIDs& /* child_ids */)  const {
-  stringstream log;
-  PlacementPath det_nodes, all_nodes;
-  DetectorTools::elementPath(e,det_nodes);
-  DetectorTools::placementPath(e,all_nodes);
-  string node_path = DetectorTools::placementPath(all_nodes);
-  string det_path  = DetectorTools::placementPath(det_nodes);
-  dumpPathes(e, pv);
-  if ( det_path == "/world_volume_1" ||
-       det_path == "/world_volume_1/MuonBarrel_envelope_13" ||
-       det_path == "/world_volume_1/MuonBarrel_envelope_13/MuonBarrel_stave_7" ||
-       det_path == "/world_volume_1/MuonBarrel_envelope_13/MuonBarrel_stave_7/MuonBarrel_layer8_7" 
-)
-    {
-    PlacedVolume pv = e.placement();
-    TIter next(pv->GetVolume()->GetNodes());
-    // Now check next layer children
-    for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
-      cout << pv->GetName() << "  --> " << daughter->GetName() << endl;
-    }
-  }
-  //cout << node_path << endl;
-  const char* path = "/world_volume_1/MuonBarrel_envelope_13/MuonBarrel_stave_7/MuonBarrel_inner_0/MuonBarrel_layer9_8";
-  size_t path_len = strlen(path);
-  if ( strncmp(node_path.c_str(),path,path_len) == 0 )    {
-    gGeoManager->cd(node_path.c_str());
-      //dumpPathes(e, pv);
-    //DetectorAlignment alignment(e);
-    //alignment.align(Position(0,0,1));
-      //dumpPathes(e,pv);
-  }
 }
 
 /// Walk through tree of volume placements

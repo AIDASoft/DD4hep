@@ -11,6 +11,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/objects/DetectorInterna.h"
 #include "LCDDImp.h"
 
 // C/C++ include files
@@ -55,14 +56,6 @@ namespace {
       m_t = BUILD_NONE;
     }
   };
-
-  typedef pair<int,void(*)(void*)> ExtensionEntry;
-  typedef map<const type_info*, ExtensionEntry>  ExtensionMap;
-  static int s_extensionID = 0;
-  ExtensionMap& lcdd_extensions() {
-    static ExtensionMap s_map;
-    return s_map;
-  }
   static LCDD* s_lcdd = 0;
 }
 
@@ -83,8 +76,6 @@ void lcdd_unexpected(){
   }
 }
 
-
-
 LCDD& LCDD::getInstance() {
   if (!s_lcdd)
     s_lcdd = new LCDDImp();
@@ -100,12 +91,14 @@ void LCDD::destroyInstance() {
 
 /// Default constructor
 LCDDImp::LCDDImp()
-    : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"), m_buildType(BUILD_NONE) {
+  : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"), m_buildType(BUILD_NONE),
+    m_extensions(typeid(LCDDImp))
+{
 
   std::set_unexpected( lcdd_unexpected ) ;
   std::set_terminate( lcdd_unexpected ) ;
 
- InstanceCount::increment(this);
+  InstanceCount::increment(this);
   m_properties = new Properties();
   if (0 == gGeoManager) {
     gGeoManager = new TGeoManager("world", "LCDD Geometry");
@@ -133,6 +126,7 @@ LCDDImp::LCDDImp()
 
 /// Standard destructor
 LCDDImp::~LCDDImp() {
+  m_extensions.clear();
   destroyHandle(m_world);
   destroyHandle(m_field);
   destroyHandle(m_header);
@@ -160,54 +154,17 @@ LCDDImp::~LCDDImp() {
 
 /// Add an extension object to the LCDD instance
 void* LCDDImp::addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*)) {
-  Extensions::iterator j = m_extensions.find(&info);
-  if (j == m_extensions.end()) {
-    ExtensionMap& m = lcdd_extensions();
-    ExtensionMap::iterator i = m.find(&info);
-    if (i == m.end()) {
-      ExtensionEntry entry(++s_extensionID,destruct);
-      m.insert(make_pair(&info, entry));
-    }
-    return m_extensions[&info] = ptr;
-  }
-  throw runtime_error("DD4hep: LCDD::addUserExtension: The object "
-		      " already has an extension of type:" + string(info.name()) + ".");
+  return m_extensions.addExtension(ptr,info,destruct);
 }
 
 /// Remove an existing extension object from the LCDD instance
 void* LCDDImp::removeUserExtension(const std::type_info& info, bool destroy)  {
-  Extensions::iterator j = m_extensions.find(&info);
-  if (j != m_extensions.end()) {
-    void *ptr = (*j).second;
-    if ( destroy )  {
-      ExtensionMap& m = lcdd_extensions();
-      ExtensionMap::iterator i = m.find(&info);
-      if (i != m.end()) {
-	ExtensionEntry& e = (*i).second;
-	(*e.second)((*j).second);
-	printout(INFO,"LCDD","Destructed LCDD Extension: %p of type %s",ptr,info.name());
-	ptr = 0;
-      }
-    }
-    else  {
-      printout(INFO,"LCDD","Detached LCDD Extension: %p of type %s",ptr,info.name());
-    }
-    m_extensions.erase(j);
-    return ptr;
-  }
-  throw runtime_error("DD4hep: LCDD::removeUserExtension: The object "
-		      " of type " + string(info.name()) + " is not present.");
+  return m_extensions.removeExtension(info,destroy);
 }
 
 /// Access an existing extension object from the LCDD instance
 void* LCDDImp::userExtension(const std::type_info& info, bool alert) const {
-  Extensions::const_iterator j = m_extensions.find(&info);
-  if ( j != m_extensions.end() )
-    return (*j).second;
-  else if ( !alert ) 
-    return 0;
-  throw runtime_error("DD4hep: LCDD::userExtension: The object "
-		      " has no extension of type:" + string(info.name()) + ".");
+  return m_extensions.extension(info,alert);
 }
 
 Volume LCDDImp::pickMotherVolume(const DetElement&) const {     // throw if not existing
@@ -404,10 +361,11 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());
 #else
-  XML::Handle_t xml_root = XML::DocumentHandler().load(xmlfile).root();
-  string tag = xml_root.tag();
   try {
     LCDD* lcdd = this;
+    XML::DocumentHolder doc(XML::DocumentHandler().load(xmlfile));
+    XML::Handle_t xml_root = doc.root();
+    string tag = xml_root.tag();
     string type = tag + "_XML_reader";
     long result = PluginService::Create<long>(type, lcdd, &xml_root);
     if (0 == result) {

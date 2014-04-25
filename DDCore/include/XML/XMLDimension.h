@@ -336,15 +336,17 @@ namespace DD4hep {
       /// Child access: beampipe
       Dimension beampipe(bool throw_if_not_present = true) const;
 
-      /// Access name attribute as STL string
+      /// Access "name" attribute as STL string
       std::string nameStr() const;
-      /// Access ref attribute as a string
+      /// Access "ref" attribute as a string
       std::string refStr() const;
-      /// Access type attribute as STL string
+      /// Access "type" attribute as STL string
       std::string typeStr() const;
-      /// Access module attribute as STL string
+      /// Access "value" attribute as STL string
+      std::string valueStr() const;
+      /// Access "module" attribute as STL string
       std::string moduleStr() const;
-      /// Access readout attribute as STL string
+      /// Access "readout" attribute as STL string
       std::string readoutStr() const;
       /// Access vis attribute as STL string. If not present empty return empty string
       std::string visStr() const;

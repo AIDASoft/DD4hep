@@ -130,6 +130,9 @@ namespace DD4hep {
 /// Set new print level. Returns the old print level
   PrintLevel setPrintLevel(PrintLevel new_level);
 
+  /// Access the current printer level
+  PrintLevel printLevel();
+
 /// Customize printer function
   void setPrinter(void* print_arg, output_function_t fcn);
 

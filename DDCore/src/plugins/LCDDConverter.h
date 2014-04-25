@@ -37,6 +37,9 @@ namespace DD4hep {
    */
   namespace Geometry {
 
+    // Forward declarations
+    class SensitiveDetectorObject;
+
     /** @class LCDDConverter LCDDConverter.h XML/LCDDConverter.h
      *
      * Geometry converter from DD4hep to Geant 4.

@@ -12,6 +12,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/ObjectExtensions.h"
 
 // Forward declarations
 class TGeoManager;
@@ -32,7 +33,7 @@ namespace DD4hep {
     class LCDDImp: public LCDD {
     private:
       /// Disable copy constructor
-      LCDDImp(const LCDDImp&) {
+    LCDDImp(const LCDDImp&) : m_extensions(typeid(LCDDImp))  {
       }
       /// Disable assignment operator
       LCDDImp& operator=(const LCDDImp&) {
@@ -100,8 +101,7 @@ namespace DD4hep {
       LCDDBuildType m_buildType;
 
       /// Definition of the extension type
-      typedef std::map<const std::type_info*, void*> Extensions;
-      Extensions m_extensions;
+      ObjectExtensions m_extensions;
 
       /// Default constructor
       LCDDImp();

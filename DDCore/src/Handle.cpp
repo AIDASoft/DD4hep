@@ -18,8 +18,6 @@
 #include "cxxabi.h"
 #endif
 
-class TObject;
-
 namespace DD4hep {
   XmlTools::Evaluator& evaluator();
 }
@@ -159,141 +157,6 @@ namespace DD4hep {
   }
 }
 
-static const std::string __typeinfoName(const std::type_info& tinfo) {
-  const char* class_name = tinfo.name();
-  std::string result;
-#ifdef WIN32
-  size_t off = 0;
-  if ( ::strncmp(class_name, "class ", 6) == 0 ) {
-    // The returned name is prefixed with "class "
-    off = 6;
-  }
-  if ( ::strncmp(class_name, "struct ", 7) == 0 ) {
-    // The returned name is prefixed with "struct "
-    off = 7;
-  }
-  if ( off != std::string::npos ) {
-    std::string tmp = class_name + off;
-    size_t loc = 0;
-    while( (loc = tmp.find("class ")) != std::string::npos ) {
-      tmp.erase(loc, 6);
-    }
-    loc = 0;
-    while( (loc = tmp.find("struct ")) != std::string::npos ) {
-      tmp.erase(loc, 7);
-    }
-    result = tmp;
-  }
-  else {
-    result = class_name;
-  }
-  // Change any " *" to "*"
-  while ( (off=result.find(" *")) != std::string::npos ) {
-    result.replace(off, 2, "*");
-  }
-  // Change any " &" to "&"
-  while ( (off=result.find(" &")) != std::string::npos ) {
-    result.replace(off, 2, "&");
-  }
-#elif defined(sun)
-  result = class_name;
-#elif !defined(__ICC)
-  if (::strlen(class_name) == 1) {
-    // See http://www.realitydiluted.com/mirrors/reality.sgi.com/dehnert_engr/cxx/abi.pdf
-    // for details
-    switch (class_name[0]) {
-    case 'v':
-      result = "void";
-      break;
-    case 'w':
-      result = "wchar_t";
-      break;
-    case 'b':
-      result = "bool";
-      break;
-    case 'c':
-      result = "char";
-      break;
-    case 'h':
-      result = "unsigned char";
-      break;
-    case 's':
-      result = "short";
-      break;
-    case 't':
-      result = "unsigned short";
-      break;
-    case 'i':
-      result = "int";
-      break;
-    case 'j':
-      result = "unsigned int";
-      break;
-    case 'l':
-      result = "long";
-      break;
-    case 'm':
-      result = "unsigned long";
-      break;
-    case 'x':
-      result = "long long";
-      break;
-    case 'y':
-      result = "unsigned long long";
-      break;
-    case 'n':
-      result = "__int128";
-      break;
-    case 'o':
-      result = "unsigned __int128";
-      break;
-    case 'f':
-      result = "float";
-      break;
-    case 'd':
-      result = "double";
-      break;
-    case 'e':
-      result = "long double";
-      break;
-    case 'g':
-      result = "__float128";
-      break;
-    case 'z':
-      result = "ellipsis";
-      break;
-    }
-  }
-  else {
-    char buff[16 * 1024];
-    size_t len = sizeof(buff);
-    int status = 0;
-    result = __cxxabiv1::__cxa_demangle(class_name, buff, &len, &status);
-  }
-#else
-  result = class_name;
-  throw std::runtime_error("CXXABI is missing for ICC!");
-#endif
-  return result;
-}
-
-string DD4hep::typeName(const type_info& typ) {
-  return __typeinfoName(typ);
-}
-
-void DD4hep::invalidHandleError(const type_info& type)   {
-  throw runtime_error("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
-}
-
-void DD4hep::invalidHandleAssignmentError(const type_info& from, const type_info& to)  {
-  string msg = "Wrong assingment from ";
-  msg += typeName(from);
-  msg += " to ";
-  msg += typeName(to);
-  msg += " not possible!!";
-  throw runtime_error(msg);
-}
-
 #include "DDSegmentation/Segmentation.h"
 typedef DDSegmentation::Segmentation _Segmentation;
 //INSTANTIATE_UNNAMED(_Segmentation);
@@ -344,6 +207,7 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 #include "TGeoTube.h"
 #include "TGeoCone.h"
 #include "TGeoArb8.h"
+#include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
 #include "TGeoParaboloid.h"
 #include "TGeoSphere.h"
@@ -351,6 +215,7 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoNodeOffset);
 #include "TGeoBoolNode.h"
 #include "TGeoVolume.h"
 #include "TGeoCompositeShape.h"
+#include "TGeoShapeAssembly.h"
 DD4HEP_INSTANTIATE_HANDLE(TGeoVolume);
 DD4HEP_INSTANTIATE_HANDLE(TGeoBBox);
 DD4HEP_INSTANTIATE_HANDLE(TGeoCone);
@@ -363,15 +228,22 @@ DD4HEP_INSTANTIATE_HANDLE(TGeoPgon);
 DD4HEP_INSTANTIATE_HANDLE(TGeoTube);
 DD4HEP_INSTANTIATE_HANDLE(TGeoTubeSeg);
 DD4HEP_INSTANTIATE_HANDLE(TGeoTrap);
+DD4HEP_INSTANTIATE_HANDLE(TGeoTrd1);
 DD4HEP_INSTANTIATE_HANDLE(TGeoTrd2);
 DD4HEP_INSTANTIATE_HANDLE(TGeoSphere);
 DD4HEP_INSTANTIATE_HANDLE(TGeoTorus);
 DD4HEP_INSTANTIATE_HANDLE(TGeoShape);
+DD4HEP_INSTANTIATE_HANDLE(TGeoShapeAssembly);
 DD4HEP_INSTANTIATE_HANDLE(TGeoCompositeShape);
 
 // Volume Placements (needed by "Volumes.cpp")
 #include "TGeoPhysicalNode.h"
 DD4HEP_INSTANTIATE_HANDLE(TGeoPhysicalNode);
+
+#include "TGeoBoolNode.h"
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoUnion);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoIntersection);
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(TGeoSubtraction);
 
 // Replicated Volumes (needed by "Volumes.cpp")
 #include "TGeoPatternFinder.h"

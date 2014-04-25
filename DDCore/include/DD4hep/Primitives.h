@@ -19,6 +19,83 @@
  */
 namespace DD4hep {
 
+  /// We need it so often: one-at-time 32 bit hash function
+  inline unsigned int hash32(const char* key) {
+    unsigned int hash = 0;
+    const char* k = key;
+    for (; *k; k++) {
+      hash += *k; 
+      hash += (hash << 10); 
+      hash ^= (hash >> 6);
+    }
+    hash += (hash << 3); 
+    hash ^= (hash >> 11); hash += (hash << 15);
+    return hash;
+  }
+  /// ABI information about type names
+  std::string typeName(const std::type_info& type);
+  void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "");
+  /// Throw exception when handles are check for validity
+  void invalidHandleError(const std::type_info& type);
+  /// Throw exception when handles are badly assigned
+  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to);
+
+  /// Throw exception when handles are check for validity
+  template <typename T> void invalidHandleError()  {
+    invalidHandleError(typeid(T));
+  }
+
+  /// Throw exception when handles are check for validity
+  void notImplemented(const std::string& msg);
+
+  /** @class ComponentCast Primitives.h DD4hep/Primitives.h
+   *
+   *   @author  M.Frank
+   *   @date    13.08.2013
+   */
+  class ComponentCast {
+  public:
+    typedef void  (*destroy_t)(void*);
+    typedef void* (*cast_t)(const void*);
+#ifdef __CINT__
+    const std::type_info* type;
+#else
+    const std::type_info& type;
+#endif
+    const void* abi_class;
+    destroy_t   destroy;
+    cast_t      cast;
+
+  private:
+    /// Initializing Constructor
+    ComponentCast(const std::type_info& t, destroy_t d, cast_t c);
+    /// Defautl destructor
+    virtual ~ComponentCast();
+
+  public:
+    template <typename TYPE> static void _destroy(void* p)  {
+      TYPE* q = (TYPE*)p;
+      if (q)	delete q;
+    }
+    template <typename TYPE> static void* _cast(const void* p)  {
+      TYPE* q = (TYPE*)p;
+      q = dynamic_cast<TYPE*>(q);
+      return (void*)q;
+    }
+    template <typename TYPE> static ComponentCast& instance() {
+      static ComponentCast c(typeid(TYPE),_destroy<TYPE>,_cast<TYPE>);
+      return c;
+    }
+
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_dynCast(const ComponentCast& to, const void* ptr) const;
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_upCast(const ComponentCast& to, const void* ptr) const;
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* apply_downCast(const ComponentCast& to, const void* ptr) const;
+  };
+
+
   // Put here global basic type definitions derived from primitive types of the DD4hep namespace
   typedef DDSegmentation::CellID CellID;
   typedef DDSegmentation::VolumeID VolumeID;

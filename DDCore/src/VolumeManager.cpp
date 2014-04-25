@@ -10,6 +10,7 @@
 #include "DD4hep/VolumeManager.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/objects/DetectorInterna.h"
 
 // C/C++ includes
 #include <set>
@@ -21,14 +22,11 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-#define VOLUME_IDENTIFIER(id,mask)  id
-//#define VOLUME_IDENTIFIER(id,mask)  id,mask
-
 namespace {
 
   struct Populator {
+    typedef PlacedVolume::VolIDs VolIDs;
     typedef vector<const TGeoNode*> Chain;
-
     /// Reference to the LCDD instance
     LCDD& m_lcdd;
     /// Reference to the volume manager to be populated
@@ -49,7 +47,7 @@ namespace {
         if (pv.isValid()) {
           Chain chain;
           SensitiveDetector sd;
-          PlacedVolume::VolIDs ids;
+          VolIDs ids;
           m_entries.clear();
           scanPhysicalVolume(de, de, pv, ids, sd, chain);
           continue;
@@ -75,15 +73,15 @@ namespace {
       return DetElement();
     }
     /// Scan a single physical volume and look for sensitive elements below
-    size_t scanPhysicalVolume(DetElement parent, DetElement e, PlacedVolume pv, PlacedVolume::VolIDs ids, SensitiveDetector& sd,
+    size_t scanPhysicalVolume(DetElement parent, DetElement e, PlacedVolume pv, VolIDs ids, SensitiveDetector& sd,
         Chain& chain) {
       const TGeoNode* node = pv.ptr();
       size_t count = 0;
       if (node) {
         Volume vol = pv.volume();
         chain.push_back(node);
-        PlacedVolume::VolIDs pv_ids = pv.volIDs();
-        ids.PlacedVolume::VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
+        VolIDs pv_ids = pv.volIDs();
+        ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
 	bool got_readout = false;
         if (vol.isSensitive()) {
           sd = vol.sensitiveDetector();
@@ -95,7 +93,7 @@ namespace {
           }
           else {
             printout(WARNING, "VolumeManager", "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
-                parent.name(), pv.volume().name(), sd.ptr());
+		     parent.name(), pv.volume().name(), sd.ptr());
           }
         }
         for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
@@ -139,24 +137,19 @@ namespace {
       }
       return count;
     }
-    pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const PlacedVolume::VolIDs& ids) const {
-      //VolumeID volume_id = ~0x0ULL, mask = 0;
+    pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const VolIDs& ids) const {
       VolumeID volume_id = 0, mask = 0;
-      for (PlacedVolume::VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
+      for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
         const PlacedVolume::VolID& id = (*i);
         IDDescriptor::Field f = iddesc.field(id.first);
         VolumeID msk = f->mask();
         int offset = f->offset();
-        // This pads the unused bits with '1' instead of '0':
-        // volume_id &= ~msk;
         volume_id |= f->value(id.second << offset) << offset;
         mask |= msk;
-        //volume_id &= f.encode(id.second);
-        //mask |= f.mask;
       }
       return make_pair(volume_id, mask);
     }
-    void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, const TGeoNode* n, const PlacedVolume::VolIDs& ids,
+    void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, const TGeoNode* n, const VolIDs& ids,
         const Chain& nodes) {
       Readout ro = sd.readout();
       IDDescriptor iddesc = ro.idSpec();
@@ -166,12 +159,11 @@ namespace {
       if (m_entries.find(code.first) == m_entries.end()) {
         // This is the block, we effectively have to save for each physical volume with a VolID
         VolumeManager::Context* context = new VolumeManager::Context;
-        DetElement::Object& o = parent._data();
         context->identifier = code.first;
         context->mask = code.second;
         context->detector = parent;
+        context->placement = PlacedVolume(n);
         context->element = e;
-        context->placement = Ref_t(n);
         context->volID = ids;
         context->path = nodes;
         for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
@@ -180,8 +172,7 @@ namespace {
         }
         context->toDetector = context->toWorld;
         context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-        context->toWorld.MultiplyLeft(o.worldTransformation());
-        //if ( parent.id() == 8 ) print_node(sd,parent,e,n,ids,nodes);
+        context->toWorld.MultiplyLeft(&parent.worldTransformation());
         if (!section.adoptPlacement(context)) {
           print_node(sd, parent, e, n, ids, nodes);
         }
@@ -189,71 +180,8 @@ namespace {
       }
     }
 
-#if 0
-    void add_entry(DetElement parent, DetElement e,const TGeoNode* n,
-        const PlacedVolume::VolIDs& ids, const Chain& nodes)
-    {
-      Volume vol = PlacedVolume(n).volume();
-      SensitiveDetector sd = vol.sensitiveDetector();
-      add_entry(sd, parent,e,n,ids,nodes);
-    }
-
-    void find_entry(DetElement parent, DetElement e,const TGeoNode* n,
-        const PlacedVolume::VolIDs& ids, const Chain& nodes)
-    {
-      Volume vol = PlacedVolume(n).volume();
-      SensitiveDetector sd = vol.sensitiveDetector();
-      Readout ro = sd.readout();
-      IDDescriptor iddesc = ro.idSpec();
-      pair<VolumeID,VolumeID> code = encoding(iddesc, ids);
-#if 0
-      VolumeID id = (VolumeID(rand())<<32) + VolumeID(rand());
-      id &= ~code.second;
-      id |= code.second;
-      VolumeID volID = id&code.first;
-#else
-      VolumeID volID = code.first;
-#endif
-
-      VolumeManager::Context* context = m_volManager.lookupContext(volID);
-      stringstream log;
-      if ( !context ) {
-        log << "CANNOT FIND volume:"
-        << " Ptr:" << (void*)n
-        << " [" << n->GetName() << "]"
-        << " ID:" << (void*)volID
-        << " Mask:" << (void*)code.second;
-        printout(ERROR,"VolumeManager",log.str().c_str());
-        return;
-      }
-      else if ( context->placement.ptr() != n ) {
-        log << "FOUND WRONG volume:"
-        << " Ptr:" << (void*)context->placement.ptr()
-        << " instead of " << (void*)n
-        << " [" << context->placement.name()
-        << " instead of " << n->GetName() << "]"
-        << " ID:" << (void*)context->identifier
-        << " instead of " << (void*)volID;
-        printout(ERROR,"VolumeManager",log.str().c_str());
-        return;
-      }
-      log << "Found volume:"
-      << " Ptr:" << (void*)context->placement.ptr()
-      << " [" << context->placement.name() << "]"
-      << " ID:" << (void*)context->identifier
-      << " Mask:" << (void*)context->mask;
-      printout(DEBUG,"VolumeManager",log.str().c_str());
-    }
-    void print_node(DetElement parent, DetElement e, const TGeoNode* n,
-        const PlacedVolume::VolIDs& ids, const Chain& nodes)
-    {
-      Volume vol = PlacedVolume(n).volume();
-      SensitiveDetector sd = vol.sensitiveDetector();
-      print_node(sd, parent, e, n, ids, nodes);
-    }
-#endif
     void print_node(SensitiveDetector sd, DetElement /* parent */, DetElement e, 
-		    const TGeoNode* n, const PlacedVolume::VolIDs& ids, const Chain& /* nodes */) 
+		    const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */) 
     {
       static int s_count = 0;
       Readout ro = sd.readout();
@@ -268,13 +196,13 @@ namespace {
       stringstream log;
       log << s_count << ": " << e.name() << " de:" << e.ptr() << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
           << (void*) volume_id << " : ";
-      for (PlacedVolume::VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
+      for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
         const PlacedVolume::VolID& id = (*i);
         IDDescriptor::Field f = ro.idSpec().field(id.first);
         VolumeID value = f->value(volume_id);
         log << id.first << "=" << id.second << "," << value << " [" << f->offset() << "," << f->width() << "] ";
       }
-      log << " Sensitive:" << (sensitive ? "YES" : "NO");
+      log << " Sensitive:" << yes_no(sensitive);
       printout(INFO, "VolumeManager", log.str().c_str());
 #if 0
       log.str("");
@@ -312,28 +240,30 @@ VolumeManager::Object::~Object() {
   subdetectors.clear();
 }
 
+/// Update callback when alignment has changed (called only for subdetectors....)
+void VolumeManager::Object::update(unsigned int tags, DetElement& det, void* param)   {
+  if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
+    printout(INFO,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
+  if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  
+    printout(INFO,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
+
+  for(Volumes::iterator i=volumes.begin(); i != volumes.end(); ++i)  {
+    Context* c = (*i).second;
+    printout(INFO,"VolumeManager","+++ Alignment update %s",c->placement.name());
+    
+  }
+}
+
 /// Search the locally cached volumes for a matching ID
-VolumeManager::Context* VolumeManager::Object::search(const VolIdentifier& id) const {
+VolumeManager::Context* VolumeManager::Object::search(const VolumeID& id) const {
   Context* context = 0;
-  VolIdentifier volume_id(id);
+  VolumeID volume_id(id);
   volume_id &= detMask;
   Volumes::const_iterator i = volumes.find(volume_id);
   if (i != volumes.end())  {
     context = (*i).second;
   }
-  //else if ( sysID == 8 )  {
-  //  for(i=volumes.begin(); i!=volumes.end();++i)
-  //    cout << (void*)(*i).first << "  " << (*i).second->placement.name() << endl;
-  //}
   return context;
-}
-
-/// Search the locally cached volumes for a matching physical volume
-VolumeManager::Context* VolumeManager::Object::search(const PlacedVolume pv) const {
-  PhysVolumes::const_iterator i = phys_volumes.find(pv.ptr());
-  if (i != phys_volumes.end())
-    return (*i).second;
-  return 0;
 }
 
 /// Initializing constructor to create a new object
@@ -366,7 +296,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
             "valid placement are allowed. [Invalid DetElement:" + det_name + "]");
       }
-      PlacedVolume::VolIDs::Base::const_iterator vit = pv.volIDs().find("system");
+      VolIDs::Base::const_iterator vit = pv.volIDs().find("system");
       if (vit == pv.volIDs().end()) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with "
             "valid placement VolIDs are allowed. [Invalid DetElement:" + det_name + "]");
@@ -388,6 +318,8 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
       mo.sysID = id.second;
       mo.detMask = mo.sysID;
       o.managers[mo.sysID] = m;
+      detector.callAtUpdate(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,
+			    &mo,&Object::update);
     }
     return (*i).second;
   }
@@ -454,21 +386,20 @@ IDDescriptor VolumeManager::idSpec() const {
 bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
   stringstream err;
   Object& o = _data();
+  VolumeID vid = context->identifier;
   PlacedVolume pv = context->placement;
-  VolIdentifier vid(VOLUME_IDENTIFIER(context->identifier,context->mask));
   Volumes::iterator i = o.volumes.find(vid);
 #if 0
   if ( (context->identifier&context->mask) != context->identifier ) {
     err << "Bad context mask:" << (void*)context->mask << " id:" << (void*)context->identifier
     << " pv:" << pv.name() << " Sensitive:"
-    << (pv.volume().isSensitive() ? "YES" : "NO") << endl;
+    << yes_no(pv.volume().isSensitive()) << endl;
     goto Fail;
   }
 #endif
   if (i == o.volumes.end()) {
     o.volumes[vid] = context;
     o.detMask |= context->mask;
-    //o.phys_volumes[pv.ptr()] = context;
     err << "Inserted new volume:" << setw(6) << left << o.volumes.size() << " Ptr:" << (void*) pv.ptr() << " ["
         << pv.name() << "]" << " ID:" << (void*) context->identifier << " Mask:" << (void*) context->mask;
     printout(DEBUG, "VolumeManager", err.str().c_str());
@@ -479,12 +410,12 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
       << " to detector " << o.detector.name() 
       << " ptr:" << (void*) pv.ptr() 
       << " Name:" << pv.name() 
-      << " Sensitive:" << (pv.volume().isSensitive() ? "YES" : "NO") << endl;
+      << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
   err << " !!!!!                      ++++ VolIDS ";
-  const PlacedVolume::VolIDs::Base& ids = context->volID;
-  for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+  const VolIDs::Base& ids = context->volID;
+  for (VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
     err << (*vit).first << "=" << (*vit).second << "; ";
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
@@ -495,15 +426,15 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
       << " to detector " << o.detector.name() 
       << " ptr:" << (void*) pv.ptr() 
       << " Name:" << pv.name() 
-      << " Sensitive:" << (pv.volume().isSensitive() ? "YES" : "NO") << endl;
+      << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
 
   goto Fail;
   Fail: {
     err << " !!!!!                      ++++ VolIDS ";
-    const PlacedVolume::VolIDs::Base& ids = context->volID;
-    for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+    const VolIDs::Base& ids = context->volID;
+    for (VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
       err << (*vit).first << "=" << (*vit).second << "; ";
   }
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
@@ -560,7 +491,7 @@ VolumeManager::Context* VolumeManager::lookupContext(VolumeID volume_id) const {
     if (!is_top && one_tree) {
       return VolumeManager(Ref_t(o.top)).lookupContext(volume_id);
     }
-    VolIdentifier id(VOLUME_IDENTIFIER(volume_id,~0x0ULL));
+    VolumeID id = volume_id;
     /// First look in our own volume cache if the entry is found.
     c = o.search(id);
     if (c)

@@ -38,7 +38,6 @@ class TGeoExtension : public TObject  {
   /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
   virtual void Release() const = 0;
 };
-
 #endif
 
 /*
@@ -86,8 +85,6 @@ namespace DD4hep {
 	long refCount;
         /// ID container
         VolIDs volIDs;
-	/// Detector element with the placement
-	Ref_t detector;
         /// Default constructor
         Object();
         /// Copy constructor
@@ -138,10 +135,6 @@ namespace DD4hep {
       Volume motherVol() const;
       /// Access to the volume IDs
       const VolIDs& volIDs() const;
-      /// Set the detector element if appropriate (requires degenerate geometry subtree)
-      void setDetector(const DetElement& e) const;
-      /// Access the corresponding detector element of this placement (if set)
-      //const DetElement detector() const;
       /// String dump
       std::string toString() const;
     };

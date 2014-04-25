@@ -120,8 +120,9 @@ void Evaluator::setSystemOfUnits(double meter,
   // Pressure
   // ---  honors Blaise Pascal (1623-1662) of France
   const double Pa = N / (m*m);
-  setVariable("pascal", Pa);
-  setVariable("Pa",     Pa);
+  setVariable("pascal",    Pa);
+  setVariable("Pa",        Pa);
+  setVariable("hPa", 100.0*Pa);
 
   const double atm = 101325. * Pa;
   setVariable("atmosphere", atm);

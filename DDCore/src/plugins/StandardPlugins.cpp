@@ -10,8 +10,8 @@
 //====================================================================
 
 // Framework include files
-#include "DD4hep/Factories.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 #include "../LCDDImp.h"
 
@@ -67,14 +67,14 @@ static long load_compact(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     LCDDBuildType type = BUILD_DEFAULT;
     string input = argv[0];
-    cout << "Processing compact input file : " << input;
     if ( argc > 1 )  {
       type = build_type(argv[1]);
-      cout << " with flag " << argv[1] << endl;
+      printout(INFO,"CompactLoader","+++ Processing compact file: %s with flag %s",
+	       input.c_str(), argv[1]);
       lcdd.fromCompact(input,type);
       return 1;
     }
-    cout << endl;
+    printout(INFO,"CompactLoader","+++ Processing compact file: %s",input.c_str());
     lcdd.fromCompact(input);
     return 1;
   }
@@ -86,14 +86,14 @@ static long load_xml(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     LCDDBuildType type = BUILD_DEFAULT;
     string input = argv[0];
-    cout << "Processing compact input file : " << input;
     if ( argc > 1 )  {
       type = build_type(argv[1]);
-      cout << " with flag " << argv[1] << endl;
+      printout(INFO,"XMLLoader","+++ Processing XML file: %s with flag %s",
+	       input.c_str(), argv[1]);
       lcdd.fromXML(input,type);
       return 1;
     }
-    cout << endl;
+    printout(INFO,"XMLLoader","+++ Processing compact file: %s",input.c_str());
     lcdd.fromXML(input);
     return 1;
   }
@@ -106,7 +106,7 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
     if ( imp )  {
       imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
-      cout << "++ Volume manager populated and loaded." << endl;
+      printout(INFO,"VolumeManager","+++ Volume manager populated and loaded.");
       return 1;
     }
   }
@@ -124,7 +124,7 @@ DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 static long dump_geometry(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 1 )   {
     string output = argv[1];
-    cout << "Dump geometry to root file : " << output << endl;
+    printout(INFO,"Geometry2Root","+++ Dump geometry to root file:%s",output.c_str());
     lcdd.manager().Export(output.c_str()+1);
     return 1;
   }
@@ -132,33 +132,24 @@ static long dump_geometry(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
 
-static long dump_geometry(PlacedVolume pv,int level) {
-  char fmt[64];
-  const TGeoNode* node = pv.ptr();
-  ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
-  printout(INFO,"+++",fmt,"",node->GetName());
-  for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
-    TGeoNode* daughter = node->GetDaughter(idau);
-    PlacedVolume placement(daughter);
-    if ( placement.data() )   {
-      PlacedVolume pv_dau = Ref_t(daughter);
-      dump_geometry(pv_dau,level+1);
-    }
-  }
-  return 1;
+/** Basic entry point to print out the volume hierarchy
+ *
+ *  @author  M.Frank
+ *  @version 1.0
+ *  @date    01/04/2014
+ */
+static long dump_volume_tree(LCDD& lcdd, int , char** ) {
+  struct Actor { static long dump(TGeoNode* node,int level) {
+    char fmt[64];
+    ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
+    printout(INFO,"+++",fmt,"",node->GetName());
+    for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau)
+      Actor::dump(node->GetDaughter(idau),level+1);
+    return 1;
+  }};
+  return Actor::dump(lcdd.world().placement().ptr(),0);
 }
-
-static long dump_geometry(DetElement de,int level, bool sensitive_only) {
-  const DetElement::Children& c = de.children();
-  char fmt[64];
-  if ( !sensitive_only || 0 != de.volumeID() )  {
-    ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-    printout(INFO,"+++",fmt,"",de.placementPath().c_str(),int(c.size()),(void*)de.volumeID());
-  }
-  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-    dump_geometry((*i).second,level+1,sensitive_only);
-  return 1;
-}
+DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
 /** Basic entry point to print out the detector element hierarchy
  *
@@ -167,11 +158,22 @@ static long dump_geometry(DetElement de,int level, bool sensitive_only) {
  *  @date    01/04/2014
  */
 static long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
+  struct Actor { static long dump(DetElement de,int level, bool sensitive_only) {
+    const DetElement::Children& c = de.children();
+    char fmt[64];
+    if ( !sensitive_only || 0 != de.volumeID() )  {
+      ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+      printout(INFO,"+++",fmt,"",de.placementPath().c_str(),int(c.size()),(void*)de.volumeID());
+    }
+    for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
+      Actor::dump((*i).second,level+1,sensitive_only);
+    return 1;
+  }};
   bool sensitive_only = false;
   for(int i=0; i<argc; ++i)  {
     if ( ::strcmp(argv[i],"--sensitive")==0 ) { sensitive_only = true; }
   }
-  return dump_geometry(lcdd.world(),0,sensitive_only);
+  return Actor::dump(lcdd.world(),0,sensitive_only);
 }
 DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree)
 
@@ -181,7 +183,17 @@ DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree)
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long dump_volume_tree(LCDD& lcdd, int , char** ) {
-  return dump_geometry(lcdd.world().placement(),0);
+static long detelement_cache(LCDD& lcdd, int , char** ) {
+  struct Actor {  static long cache(DetElement de) {
+    const DetElement::Children& c = de.children();
+    de.worldTransformation();
+    de.parentTransformation();
+    de.placementPath();
+    de.path();
+    for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
+      Actor::cache((*i).second);
+    return 1;
+  }};
+  return Actor::cache(lcdd.world());
 }
-DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
+DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)

@@ -8,6 +8,7 @@
 //====================================================================
 
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/InstanceCount.h"
 
@@ -304,7 +305,7 @@ string VisAttr::toString() const {
   char text[256];
   ::snprintf(text, sizeof(text), "%-20s RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s", ptr()->GetName(),
       col->AsHexString(), obj->color, col->GetAlpha(), int(obj->drawingStyle), int(obj->lineStyle),
-      obj->showDaughters ? "YES" : "NO", obj->visible ? "YES" : "NO");
+	     yes_no(obj->showDaughters), yes_no(obj->visible));
   return text;
 }
 

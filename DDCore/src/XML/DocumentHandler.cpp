@@ -1,3 +1,12 @@
+// $Id$
+//====================================================================
+//  AIDA Detector description implementation
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+#include "DD4hep/Printout.h"
 #include "XML/DocumentHandler.h"
 #include <iostream>
 #include <stdexcept>
@@ -55,6 +64,10 @@ namespace DD4hep {
       /// Constructor
       DocumentErrorHandler() {
       }
+      /// Destructor
+      virtual ~DocumentErrorHandler()  {
+	printout(DEBUG,"DocumentErrorHandler","+++ Destructing the XercesC DOM-XML document error handler....");
+      }
       /// Reset errors (Noop)
       void resetErrors() {
       }
@@ -68,24 +81,26 @@ namespace DD4hep {
       virtual bool handleError(const DOMError& domError);
     };
     bool DocumentErrorHandler::handleError(const DOMError& domError) {
+      string err = "DOM UNKNOWN: ";
       switch (domError.getSeverity()) {
       case DOMError::DOM_SEVERITY_WARNING:
-        cout << "DOM WARNING: ";
+        err = "DOM WARNING: ";
         break;
       case DOMError::DOM_SEVERITY_ERROR:
-        cout << "DOM ERROR:   ";
+        err = "DOM ERROR:   ";
         break;
       case DOMError::DOM_SEVERITY_FATAL_ERROR:
-        cout << "DOM FATAL:   ";
+        err = "DOM FATAL:   ";
         break;
       default:
-        cout << "DOM UNKNOWN: ";
         return false;
       }
-      cout << _toString(domError.getType()) << ": " << _toString(domError.getMessage()) << endl;
+      printout(FATAL,"DocumentErrorHandler", "+++ %s %s: %s", err.c_str(),
+	       _toString(domError.getType()).c_str(),_toString(domError.getMessage()).c_str());
       DOMLocator* loc = domError.getLocation();
       if (loc) {
-        cout << "Location: Line:" << loc->getLineNumber() << " Column:" << loc->getColumnNumber() << endl;
+	printout(FATAL,"DocumentErrorHandler","+++ Location: Line:%d Column: %d",
+		 loc->getLineNumber(),loc->getColumnNumber());
       }
       return false;
     }
@@ -99,15 +114,14 @@ namespace DD4hep {
           || m.find("for attribute 'ID' is invalid Name or NMTOKEN value") != string::npos)
         return;
       string sys(_toString(e.getSystemId()));
-      cout << "Error at file \"" << sys << "\", line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl
-          << "Message: " << m << endl;
+      printout(ERROR,"XercesC","+++ Error at file \"%s\", Line %d Column: %d Message:%s",
+	       sys.c_str(), e.getLineNumber(), e.getColumnNumber(), m.c_str());
     }
     void DocumentErrorHandler::fatalError(const SAXParseException& e) {
       string m(_toString(e.getMessage()));
       string sys(_toString(e.getSystemId()));
-      cout << "Fatal Error at file \"" << sys << "\", line " << e.getLineNumber() << ", column " << e.getColumnNumber() << endl
-          << "Message: " << m << endl;
-      //throw runtime_error( "Standard pool exception : Fatal Error on the DOM Parser" );
+      printout(FATAL,"XercesC","+++ FATAL Error at file \"%s\", Line %d Column: %d Message:%s",
+	       sys.c_str(), e.getLineNumber(), e.getColumnNumber(), m.c_str());
     }
 
     void dumpTree(xercesc::DOMDocument* doc) {
@@ -147,25 +161,26 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname) const {
 }
 
 Document DocumentHandler::load(const string& fname) const {
-  cout << "Loading document URI:" << fname << endl;
+  printout(INFO,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   XMLURL xerurl = (const XMLCh*) Strng_t(fname);
   string path = _toString(xerurl.getPath());
   string proto = _toString(xerurl.getProtocolName());
   auto_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
-  cout << "            protocol:" << proto << endl << "                path:" << path << endl;
+  printout(INFO,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
   try {
     parser->parse(path.c_str());
   }
-  catch (exception& e) {
-    cout << "parse(path):" << e.what() << endl;
+  catch (const exception& e) {
+    printout(ERROR,"DocumentHandler","+++ Exception(XercesC): parse(path):%s",e.what());
     try {
       parser->parse(fname.c_str());
     }
-    catch (exception& ex) {
-      cout << "parse(URI):" << ex.what() << endl;
+    catch (const exception& ex) {
+      printout(FATAL,"DocumentHandler","+++ Exception(XercesC): parse(URI):%s",ex.what());
+      throw;
     }
   }
-  cout << "Document succesfully parsed....." << endl;
+  printout(INFO,"DocumentHandler","+++ Document %s succesfully parsed with XercesC .....",path.c_str());
   return (XmlDocument*) parser->adoptDocument();
 }
 
@@ -271,28 +286,26 @@ Document DocumentHandler::load(Handle_t base, const XmlChar* fname) const {
 }
 
 Document DocumentHandler::load(const string& fname) const {
-  cout << "Loading document URI:" << fname << endl;
+  printout(INFO,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   TiXmlDocument* doc = new TiXmlDocument(_clean_fname(fname).c_str());
   bool result = false;
   try {
     result = doc->LoadFile();
     if ( !result ) {
       if ( doc->Error() ) {
-        cout << "Unknown error whaile parsing XML document with TiXml:" << endl;
-        cout << "Document:" << doc->Value() << endl;
-        cout << "Location: Line:" << doc->ErrorRow()
-        << " Column:" << doc->ErrorCol() << endl;
+	printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
+	printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
+		 doc->Value().c_str(), doc->ErrorRow(), doc->ErrorCol());
         throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
       }
-      else
-      throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");
+      throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TinyXML.");
     }
   }
   catch(exception& e) {
-    cout << "parse(path):" << e.what() << endl;
+    printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(path):%s",e.what());
   }
   if ( result ) {
-    cout << "Document " << fname << " succesfully parsed....." << endl;
+    printout(INFO,"DocumentHandler","+++ Document %s succesfully parsed with TinyXML .....",fname.c_str());
     return (XmlDocument*)doc;
   }
   delete doc;
@@ -307,16 +320,15 @@ Document DocumentHandler::parse(const char* doc_string, size_t /* length */) con
       return (XmlDocument*)doc;
     }
     if ( doc->Error() ) {
-      cout << "Unknown error whaile parsing XML document with TiXml:" << endl;
-      cout << "Document:" << doc->Value() << endl;
-      cout << "Location: Line:" << doc->ErrorRow()
-      << " Column:" << doc->ErrorCol() << endl;
+      printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
+      printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
+	       doc->Value().c_str(), doc->ErrorRow(), doc->ErrorCol());
       throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
     }
     throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");
   }
   catch(exception& e) {
-    cout << "parse(xml-string):" << e.what() << endl;
+    printout(ERROR,"DocumentHandler","+++ Exception (TinyXML): parse(string):%s",e.what());
   }
   delete doc;
   return 0;
@@ -326,7 +338,7 @@ Document DocumentHandler::parse(const char* doc_string, size_t /* length */) con
 int DocumentHandler::output(Document doc, const string& fname) const {
   FILE* file = fname.empty() ? stdout : ::fopen(fname.c_str(),"w");
   if ( !file ) {
-    cout << "Failed to open output file:" << fname << endl;
+    printout(ERROR,"DocumentHandler","+++ Failed to open output file: %s",fname.c_str());
     return 0;
   }
   TiXmlDocument* d = (TiXmlDocument*)doc.ptr();

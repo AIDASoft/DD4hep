@@ -52,8 +52,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct LCDD {
-
+    class LCDD {
+    public:
       typedef std::map<std::string, Handle<> > HandleMap;
       typedef std::map<std::string, std::string> PropertyValues;
       typedef std::map<std::string, PropertyValues> Properties;

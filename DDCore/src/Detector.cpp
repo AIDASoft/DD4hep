@@ -7,229 +7,67 @@
 //
 //====================================================================
 
-#include "DD4hep/InstanceCount.h"
-#include "DD4hep/IDDescriptor.h"
+// Framework include files
+#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/LCDD.h"
-#include "TGeoVolume.h"
-#include "TGeoMatrix.h"
-#include "TGeoManager.h"
-#include <iostream>
 
 using namespace std;
 using namespace DD4hep::Geometry;
-typedef DetectorTools::PlacementPath PlacementPath;
-typedef DetectorTools::ElementPath   ElementPath;
 
-namespace {
-  struct ExtensionEntry {
-    void* (*copy)(const void*, DetElement);
-    void (*destruct)(void*);
-    int id;
-  };
-  typedef map<const type_info*, ExtensionEntry> ExtensionMap;
-  static int s_extensionID = 0;
-  ExtensionMap& detelement_extensions() {
-    static ExtensionMap s_map;
-    return s_map;
-  }
-  ExtensionMap& sensitive_detector_extensions() {
-    static ExtensionMap s_map;
-    return s_map;
-  }
-}
-
-/// Default constructor
-DetElement::Object::Object()
-    : TNamed(), magic(magic_word()), id(0), combineHits(0),
-      placement(), volumeID(0), parent(), reference(), children(), extensions(), 
-      alignment(), volume_alignments(), conditions(), 
-      worldTrafo(0), parentTrafo(0), referenceTrafo(0) {
-  InstanceCount::increment(this);
-}
-
-/// Internal object destructor: release extension object(s)
-DetElement::Object::~Object() {
-  for_each(children.begin(), children.end(), destroyHandles(children));
-  deletePtr (worldTrafo);
-  deletePtr (parentTrafo);
-  deletePtr (referenceTrafo);
-  alignment.clear();
-  conditions.clear();
-  placement.clear();
-  parent.clear();
-  ExtensionMap& m = detelement_extensions();
-  for (Extensions::iterator i = extensions.begin(); i != extensions.end(); ++i) {
-    void* ptr = (*i).second;
-    if (ptr) {
-      ExtensionMap::iterator j = m.find((*i).first);
-      if (j != m.end()) {
-        ExtensionEntry& e = (*j).second;
-        if (e.destruct)
-          (*(e.destruct))(ptr);
-      }
-    }
-  }
-  extensions.clear();
-  InstanceCount::decrement(this);
-}
-
-/// Deep object copy to replicate DetElement trees e.g. for reflection
-DetElement::Object* DetElement::Object::clone(int new_id, int flag) const {
-  Object* obj = new Object();
-  const ExtensionMap& m = detelement_extensions();
-  Ref_t det(obj);
-  obj->id = new_id;
-  obj->combineHits = combineHits;
-  obj->alignment = Alignment();
-  obj->conditions = Conditions();
-  obj->parent = DetElement();
-  obj->placement = ((flag & COPY_PLACEMENT) == COPY_PLACEMENT) ? placement : PlacedVolume();
-
-  // This implicitly assumes that the children do not access the parent's extensions!
-  obj->extensions.clear();
-  for (DetElement::Extensions::const_iterator i = extensions.begin(); i != extensions.end(); ++i) {
-    const type_info* info = (*i).first;
-    ExtensionMap::const_iterator j = m.find(info);
-    const ExtensionEntry& e = (*j).second;
-    obj->extensions[info] = (*(e.copy))((*i).second, det);
-  }
-
-  obj->children.clear();
-  for (DetElement::Children::const_iterator i = children.begin(); i != children.end(); ++i) {
-    const TNamed* pc = (*i).second.ptr();
-    const DetElement::Object& d = (*i).second._data();
-    DetElement child(d.clone(d.id, COPY_PLACEMENT), pc->GetName(), pc->GetTitle());
-    pair<Children::iterator, bool> r = obj->children.insert(make_pair(child.name(), child));
-    if (r.second) {
-      child._data().parent = det;
-    }
-    else {
-      throw runtime_error("DD4hep: DetElement::copy: Element " + string(child.name()) + " is already present [Double-Insert]");
-    }
-  }
-  return obj;
-}
-
-/// Conversion to reference object
-Ref_t DetElement::Object::asRef() {
-  return Ref_t(this);
-}
-
-/// Conversion to reference object
-DetElement::Object::operator Ref_t() {
-  return this->asRef();
-}
-
-/// Create cached matrix to transform to world coordinates
-TGeoMatrix* DetElement::Object::worldTransformation() {
-  if (!worldTrafo) {
-    PlacementPath nodes;
-    DetectorTools::placementPath(DetElement(asRef()), nodes);
-    worldTrafo = DetectorTools::placementTrafo(nodes,true);
-  }
-  return worldTrafo;
-}
-
-/// Create cached matrix to transform to parent coordinates
-TGeoMatrix* DetElement::Object::parentTransformation() {
-  if (!parentTrafo) {
-    PlacementPath nodes;
-    DetectorTools::placementPath(DetElement(parent), DetElement(asRef()), nodes);
-    parentTrafo = DetectorTools::placementTrafo(nodes,true);
-  }
-  return parentTrafo;
-}
-
-/// Create cached matrix to transform to reference coordinates
-TGeoMatrix* DetElement::Object::referenceTransformation() {
-  if (!referenceTrafo) {
-    ElementPath elements;
-    DetElement  ref(reference);
-    DetElement  self(asRef());
-    if ( ref.ptr() == self.ptr() )  {
-      referenceTrafo = new TGeoHMatrix(gGeoIdentity->Inverse());
-    }
-    else if ( DetectorTools::findParent(ref,self,elements) ) {
-      PlacementPath nodes;
-      DetectorTools::placementPath(ref, self, nodes);
-      referenceTrafo = DetectorTools::placementTrafo(nodes,true);
-    }
-    else if ( DetectorTools::findParent(self,ref,elements) ) {
-      PlacementPath nodes;
-      DetectorTools::placementPath(self, ref, nodes);
-      referenceTrafo = DetectorTools::placementTrafo(nodes,true);
-    }
-    else  {
-      throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) + 
-			  " to reference element " + string(ref.name()) + " present!");
-    }
-  }
-  return referenceTrafo;
+/// Clone constructor
+DetElement::DetElement(Object* data, const string& name, const string& type)
+  : RefObject(data) {
+  this->assign(data, name, type);
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const string& name, const string& type, int id) {
   assign(new Object(), name, type);
-  object<Object>().id = id;
+  ptr()->id = id;
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const string& name, int id) {
   assign(new Object(), name, "");
-  object<Object>().id = id;
+  ptr()->id = id;
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(DetElement parent, const string& name, int id) {
   assign(new Object(), name, parent.type());
-  object<Object>().id = id;
+  ptr()->id = id;
   parent.add(*this);
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(void* ptr, const type_info& info, void* (*copy)(const void*, DetElement),
-    void (*destruct)(void*)) {
-  Object& o = object<Object>();
-  Extensions::iterator j = o.extensions.find(&info);
-  if (j == o.extensions.end()) {
-    ExtensionMap& m = detelement_extensions();
-    ExtensionMap::iterator i = m.find(&info);
-    if (i == m.end()) {
-      ExtensionEntry entry;
-      entry.destruct = destruct;
-      entry.copy = copy;
-      entry.id = ++s_extensionID;
-      m.insert(make_pair(&info, entry));
-      i = m.find(&info);
-    }
-    //cout << "Extension[" << name() << "]:" << ptr << " " << info.name() << endl;
-    return o.extensions[&info] = ptr;
-  }
-  throw runtime_error(
-      "DD4hep: addExtension: The object " + string(name()) 
-      + " already has an extension of type:" + string(info.name()) + ".");
+void* DetElement::i_addExtension(void* ptr, const type_info& info, copy_t ctor, destruct_t dtor) const {
+  return access()->addExtension(ptr, info, ObjectExtensions::copy_t(ctor), dtor);
 }
 
 /// Access an existing extension object from the detector element
 void* DetElement::i_extension(const type_info& info) const {
-  Object& o = object<Object>();
-  Extensions::const_iterator j = o.extensions.find(&info);
-  if (j != o.extensions.end()) {
-    return (*j).second;
-  }
-  throw runtime_error(
-      "DD4hep: extension: The object " + string(name()) + " has no extension of type:" + string(info.name()) + ".");
+  return access()->extension(info);
+}
+
+/// Internal call to extend the detector element with an arbitrary structure accessible by the type
+void DetElement::i_addUpdateCall(unsigned int callback_type, const Callback& callback)  const  {
+  access()->updateCalls.push_back(make_pair(callback,callback_type));
+}
+
+/// Remove callback from object
+void DetElement::removeAtUpdate(unsigned int type, void* pointer)  const {
+  access()->removeAtUpdate(type,pointer);
 }
 
 /// Access to the full path to the placed object
 string DetElement::placementPath() const {
-  if (isValid()) {
-    Object& o = object<Object>();
-    if (o.placementPath.empty()) {
-      o.placementPath = DetectorTools::placementPath(*this);
+  Object* o = ptr();
+  if ( o ) {
+    if (o->placementPath.empty()) {
+      o->placementPath = DetectorTools::placementPath(*this);
     }
-    return o.placementPath;
+    return o->placementPath;
   }
   return "";
 }
@@ -241,35 +79,33 @@ string DetElement::type() const {
 
 /// Set the type of the sensitive detector
 DetElement& DetElement::setType(const string& typ) {
-  if (isValid()) {
-    m_element->SetTitle(typ.c_str());
-    return *this;
-  }
-  throw runtime_error("DD4hep: DetElement::setType: Self is not defined [Invalid Handle]");
+  Object* o = access();
+  o->SetTitle(typ.c_str());
+  return *this;
 }
 
 string DetElement::path() const {
-  if (m_element) {
-    Object& o = object<Object>();
-    if (o.path.empty()) {
-      DetElement par = o.parent;
-      o.path = par.isValid() ? (par.path() + "/") + name() : string("/") + name();
+  Object* o = ptr();
+  if ( o ) {
+    if ( o->path.empty() ) {
+      DetElement par = o->parent;
+      o->path = par.isValid() ? (par.path() + "/") + name() : string("/") + name();
     }
-    return o.path;
+    return o->path;
   }
   return "";
 }
 
 int DetElement::id() const {
-  return object<Object>().id;
+  return access()->id;
 }
 
 bool DetElement::combineHits() const {
-  return object<Object>().combineHits != 0;
+  return access()->combineHits != 0;
 }
 
 DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
-  object<Object>().combineHits = value;
+  access()->combineHits = value;
   if (sens.isValid())
     sens.setCombineHits(value);
   return *this;
@@ -277,22 +113,22 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
 
 /// Access to the alignment information
 Alignment DetElement::alignment() const   {
-  return object<Object>().alignment;
+  return access()->alignment;
 }
 
 /// Access to the conditions information 
 Conditions DetElement::conditions() const  {
-  return object<Object>().conditions;
+  return access()->conditions;
 }
 
 const DetElement::Children& DetElement::children() const {
-  return object<Object>().children;
+  return access()->children;
 }
 
 /// Access to individual children by name
 DetElement DetElement::child(const string& name) const {
   if (isValid()) {
-    const Children& c = object<Object>().children;
+    const Children& c = ptr()->children;
     Children::const_iterator i = c.find(name);
     return i == c.end() ? DetElement() : (*i).second;
   }
@@ -301,10 +137,8 @@ DetElement DetElement::child(const string& name) const {
 
 /// Access to the detector elements's parent
 DetElement DetElement::parent() const {
-  if (isValid()) {
-    return object<Object>().parent;
-  }
-  return DetElement();
+  Object* o = ptr();
+  return (o) ? o->parent : 0;
 }
 
 void DetElement::check(bool condition, const string& msg) const {
@@ -317,7 +151,7 @@ DetElement& DetElement::add(DetElement sdet) {
   if (isValid()) {
     pair<Children::iterator, bool> r = object<Object>().children.insert(make_pair(sdet.name(), sdet));
     if (r.second) {
-      sdet.object<Object>().parent = *this;
+      sdet.access()->parent = *this;
       return *this;
     }
     throw runtime_error("DD4hep: DetElement::add: Element " + string(sdet.name()) + " is already present [Double-Insert]");
@@ -326,19 +160,13 @@ DetElement& DetElement::add(DetElement sdet) {
 }
 
 DetElement DetElement::clone(const string& new_name) const {
-  if (isValid()) {
-    Object& o = object<Object>();
-    return DetElement(o.clone(o.id, COPY_NONE), new_name, o.GetTitle());
-  }
-  throw runtime_error("DD4hep: DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
+  Object* o = access();
+  return DetElement(o->clone(o->id, COPY_NONE), new_name, o->GetTitle());
 }
 
 DetElement DetElement::clone(const string& new_name, int new_id) const {
-  if (isValid()) {
-    Object& o = object<Object>();
-    return DetElement(o.clone(new_id, COPY_NONE), new_name, o.GetTitle());
-  }
-  throw runtime_error("DD4hep: DetElement::clone: Self is not defined - clone failed! [Invalid Handle]");
+  Object* o = access();
+  return DetElement(o->clone(new_id, COPY_NONE), new_name, o->GetTitle());
 }
 
 /// Access to the physical volume of this detector element
@@ -354,17 +182,15 @@ PlacedVolume DetElement::placement() const {
 
 /// Set the physical volumes of the detector element
 DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
-  if (isValid()) {
-    if (placement.isValid()) {
-      Object& o = object<Object>();
-      o.placement = placement;
-      //o.volume = placement.volume();
-      //placement.setDetector(*this);
-      return *this;
+  if (placement.isValid()) {
+    Object* o = access();
+    o->placement = placement;
+    if ( !o->idealPlace.isValid() )  {
+      o->idealPlace = placement;
     }
-    throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
+    return *this;
   }
-  throw runtime_error("DD4hep: DetElement::setPlacement: Self is not defined [Invalid Handle]");
+  throw runtime_error("DD4hep: DetElement::setPlacement: Placement is not defined [Invalid Handle]");
 }
 
 /// The cached VolumeID of this subdetector element
@@ -377,38 +203,26 @@ DD4hep::VolumeID DetElement::volumeID() const   {
 
 /// Access to the logical volume of the placements (all daughters have the same!)
 Volume DetElement::volume() const {
-  if (isValid()) {
-    return object<Object>().placement.volume();
-  }
-  throw runtime_error("DD4hep: DetElement::volume: Self is not defined [Invalid Handle]");
+  return access()->placement.volume();
 }
 
 DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& name, const Volume& volume) {
-  if (isValid()) {
-    volume.setVisAttributes(lcdd, name);
-    return *this;
-  }
-  throw runtime_error("DD4hep: DetElement::setVisAttributes: Self is not defined [Invalid Handle]");
+  volume.setVisAttributes(lcdd, name);
+  return *this;
 }
 
 DetElement& DetElement::setRegion(const LCDD& lcdd, const string& name, const Volume& volume) {
-  if (isValid()) {
-    if (!name.empty()) {
-      volume.setRegion(lcdd.region(name));
-    }
-    return *this;
+  if (!name.empty()) {
+    volume.setRegion(lcdd.region(name));
   }
-  throw runtime_error("DD4hep: DetElement::setRegion: Self is not defined [Invalid Handle]");
+  return *this;
 }
 
 DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& name, const Volume& volume) {
-  if (isValid()) {
-    if (!name.empty()) {
-      volume.setLimitSet(lcdd.limitSet(name));
-    }
-    return *this;
+  if (!name.empty()) {
+    volume.setLimitSet(lcdd.limitSet(name));
   }
-  throw runtime_error("DD4hep: DetElement::setLimitSet: Self is not defined [Invalid Handle]");
+  return *this;
 }
 
 DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume, const string& region, const string& limits,
@@ -427,11 +241,26 @@ DetElement& DetElement::setReference(DetElement reference) {
   return *this;
 }
 
+/// Create cached matrix to transform to world coordinates
+const TGeoHMatrix& DetElement::worldTransformation() const   {
+  return access()->worldTransformation();
+}
+
+/// Create cached matrix to transform to parent coordinates
+const TGeoHMatrix& DetElement::parentTransformation() const   {
+  return access()->parentTransformation();
+}
+
+/// Create cached matrix to transform to reference coordinates
+const TGeoHMatrix& DetElement::referenceTransformation() const   {
+  return access()->referenceTransformation();
+}
+
 /// Transformation from local coordinates of the placed volume to the world system
 bool DetElement::localToWorld(const Position& local, Position& global) const {
   Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
   // If the path is unknown an exception will be thrown inside worldTransformation() !
-  object<Object>().worldTransformation()->LocalToMaster(local_point, master_point);
+  worldTransformation().LocalToMaster(local_point, master_point);
   global.SetCoordinates(master_point);
   return true;
 }
@@ -440,7 +269,7 @@ bool DetElement::localToWorld(const Position& local, Position& global) const {
 bool DetElement::localToParent(const Position& local, Position& global) const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
   Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
-  object<Object>().parentTransformation()->LocalToMaster(local_point, master_point);
+  parentTransformation().LocalToMaster(local_point, master_point);
   global.SetCoordinates(master_point);
   return true;
 }
@@ -449,7 +278,7 @@ bool DetElement::localToParent(const Position& local, Position& global) const {
 bool DetElement::localToReference(const Position& local, Position& global) const {
   // If the path is unknown an exception will be thrown inside referenceTransformation() !
   Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
-  object<Object>().referenceTransformation()->LocalToMaster(local_point, master_point);
+  referenceTransformation().LocalToMaster(local_point, master_point);
   global.SetCoordinates(master_point);
   return true;
 }
@@ -458,7 +287,7 @@ bool DetElement::localToReference(const Position& local, Position& global) const
 bool DetElement::worldToLocal(const Position& global, Position& local) const {
   // If the path is unknown an exception will be thrown inside worldTransformation() !
   Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  object<Object>().worldTransformation()->MasterToLocal(master_point, local_point);
+  worldTransformation().MasterToLocal(master_point, local_point);
   local.SetCoordinates(local_point);
   return true;
 }
@@ -467,7 +296,7 @@ bool DetElement::worldToLocal(const Position& global, Position& local) const {
 bool DetElement::parentToLocal(const Position& global, Position& local) const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
   Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  object<Object>().parentTransformation()->MasterToLocal(master_point, local_point);
+  parentTransformation().MasterToLocal(master_point, local_point);
   local.SetCoordinates(local_point);
   return true;
 }
@@ -476,36 +305,9 @@ bool DetElement::parentToLocal(const Position& global, Position& local) const {
 bool DetElement::referenceToLocal(const Position& global, Position& local) const {
   // If the path is unknown an exception will be thrown inside referenceTransformation() !
   Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  object<Object>().referenceTransformation()->MasterToLocal(master_point, local_point);
+  referenceTransformation().MasterToLocal(master_point, local_point);
   local.SetCoordinates(local_point);
   return true;
-}
-
-/// Default constructor
-SensitiveDetector::Object::Object()
-    : magic(magic_word()), verbose(0), combineHits(0), ecut(0.0), hitsCollection(), readout(), region(), limits(), extensions() {
-  InstanceCount::increment(this);
-}
-
-/// Internal object destructor: release extension object(s)
-SensitiveDetector::Object::~Object() {
-  ExtensionMap& m = sensitive_detector_extensions();
-  readout.clear();
-  region.clear();
-  limits.clear();
-  for (Extensions::iterator i = extensions.begin(); i != extensions.end(); ++i) {
-    void* ptr = (*i).second;
-    if (ptr) {
-      ExtensionMap::iterator j = m.find((*i).first);
-      if (j != m.end()) {
-        ExtensionEntry& e = (*j).second;
-        if (e.destruct)
-          (*(e.destruct))(ptr);
-      }
-    }
-  }
-  extensions.clear();
-  InstanceCount::decrement(this);
 }
 
 /// Constructor
@@ -523,11 +325,8 @@ SensitiveDetector::SensitiveDetector(const string& name, const string& type) {
 
 /// Set the type of the sensitive detector
 SensitiveDetector& SensitiveDetector::setType(const string& typ) {
-  if (isValid()) {
-    m_element->SetTitle(typ.c_str());
-    return *this;
-  }
-  throw runtime_error("DD4hep: SensitiveDetector::setType: Self is not defined [Invalid Handle]");
+  access()->SetTitle(typ.c_str());
+  return *this;
 }
 
 /// Access the type of the sensitive detector
@@ -537,113 +336,89 @@ string SensitiveDetector::type() const {
 
 /// Assign the IDDescriptor reference
 SensitiveDetector& SensitiveDetector::setReadout(Readout ro) {
-  object<Object>().readout = ro;
+  access()->readout = ro;
   return *this;
 }
 
 /// Assign the IDDescriptor reference
 Readout SensitiveDetector::readout() const {
-  return object<Object>().readout;
+  return access()->readout;
 }
 
 /// Set energy cut off
 SensitiveDetector& SensitiveDetector::setEnergyCutoff(double value) {
-  object<Object>().ecut = value;
+  access()->ecut = value;
   return *this;
 }
 
 /// Access energy cut off
 double SensitiveDetector::energyCutoff() const {
-  return object<Object>().ecut;
+  return access()->ecut;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setHitsCollection(const string& collection) {
-  object<Object>().hitsCollection = collection;
+  access()->hitsCollection = collection;
   return *this;
 }
 
 /// Access the hits collection name
 const string& SensitiveDetector::hitsCollection() const {
-  return object<Object>().hitsCollection;
+  return access()->hitsCollection;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setVerbose(bool value) {
   int v = value ? 1 : 0;
-  object<Object>().verbose = v;
+  access()->verbose = v;
   return *this;
 }
 
 /// Access flag to combine hist
 bool SensitiveDetector::verbose() const {
-  return object<Object>().verbose == 1;
+  return access()->verbose == 1;
 }
 
 /// Assign the name of the hits collection
 SensitiveDetector& SensitiveDetector::setCombineHits(bool value) {
   int v = value ? 1 : 0;
-  object<Object>().combineHits = v;
+  access()->combineHits = v;
   return *this;
 }
 
 /// Access flag to combine hist
 bool SensitiveDetector::combineHits() const {
-  return object<Object>().combineHits == 1;
+  return access()->combineHits == 1;
 }
 
 /// Set the regional attributes to the sensitive detector
 SensitiveDetector& SensitiveDetector::setRegion(Region reg) {
-  object<Object>().region = reg;
+  access()->region = reg;
   return *this;
 }
 
 /// Access to the region setting of the sensitive detector (not mandatory)
 Region SensitiveDetector::region() const {
-  return object<Object>().region;
+  return access()->region;
 }
 
 /// Set the limits to the sensitive detector
 SensitiveDetector& SensitiveDetector::setLimitSet(LimitSet limits) {
-  object<Object>().limits = limits;
+  access()->limits = limits;
   return *this;
 }
 
 /// Access to the limit set of the sensitive detector (not mandatory).
 LimitSet SensitiveDetector::limits() const {
-  return object<Object>().limits;
+  return access()->limits;
 }
 
 /// Add an extension object to the detector element
-void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, void (*destruct)(void*)) {
-  Object& o = object<Object>();
-  Extensions::iterator j = o.extensions.find(&info);
-  if (j == o.extensions.end()) {
-    ExtensionMap& m = sensitive_detector_extensions();
-    ExtensionMap::iterator i = m.find(&info);
-    if (i == m.end()) {
-      ExtensionEntry entry;
-      entry.destruct = destruct;
-      entry.copy = 0;
-      entry.id = ++s_extensionID;
-      m.insert(make_pair(&info, entry));
-      i = m.find(&info);
-    }
-    //cout << "Add Extension[" << name() << "]:" << ptr << " " << typeid(*(TNamed*) ptr).name() << endl;
-    return o.extensions[&info] = ptr;
-  }
-  throw runtime_error(
-      "DD4hep: addExtension: The object " + string(name()) + " already has an extension of type:" + string(info.name()) + ".");
+void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, destruct_t dtor)  {
+  return access()->addExtension(ptr, info, dtor);
 }
 
 /// Access an existing extension object from the detector element
 void* SensitiveDetector::i_extension(const type_info& info) const {
-  Object& o = object<Object>();
-  Extensions::const_iterator j = o.extensions.find(&info);
-  if (j != o.extensions.end()) {
-    return (*j).second;
-  }
-  throw runtime_error(
-      "DD4hep: extension: The object " + string(name()) + " has no extension of type:" + string(info.name()) + ".");
+  return access()->extension(info);
 }
-

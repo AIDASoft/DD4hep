@@ -18,6 +18,7 @@
 #include "TGeoPcon.h"
 #include "TGeoPgon.h"
 #include "TGeoTube.h"
+#include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
 #include "TGeoArb8.h"
 #include "TGeoCone.h"
@@ -160,6 +161,11 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
   double params[] = { z, rmin1, rmax1, rmin2, rmax2  };
   _setDimensions(params);
   return *this;
+}
+
+/// Constructor to create a new anonymous object with attribute initialization
+Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z)   { 
+  make(x1,x2,y1,y2,z);  
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
@@ -373,5 +379,6 @@ INSTANTIATE(TGeoTorus);
 INSTANTIATE(TGeoTube);
 INSTANTIATE(TGeoTubeSeg);
 INSTANTIATE(TGeoTrap);
+INSTANTIATE(TGeoTrd1);
 INSTANTIATE(TGeoTrd2);
 INSTANTIATE(TGeoCompositeShape);

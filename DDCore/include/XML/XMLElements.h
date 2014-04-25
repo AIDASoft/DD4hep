@@ -83,44 +83,6 @@ namespace DD4hep {
     };
 #endif
 
-    /** NodeList  XMLElements.h XML/XMLElements.h
-     *
-     *  Definition of a "list" of xml elements hanging of the parent.
-     *  The list allows iterations, which can be restarted.
-     *  Please not: Copies are not entirely free, since the
-     *  string tag need to be replicated using strdup/free
-     *  (or when using xerces the corresponding unicode routines).
-     *
-     *  @author   M.Frank
-     *  @version  1.0
-     */
-    struct NodeList {
-      XmlChar* m_tag;
-      XmlElement* m_node;
-#ifndef __TIXML__
-      //XmlNodeList* m_ptr;
-      //mutable XmlSize_t m_index;
-      mutable XmlElement* m_ptr;
-#else
-      mutable XmlElement* m_ptr;
-#endif
-
-      /// Copy constructor
-      NodeList(const NodeList& l);
-      /// Initializing constructor
-      NodeList(XmlElement* frst, const XmlChar* t);
-      /// Default destructor
-      ~NodeList();
-      /// Reset the nodelist - e.g. restart iteration from beginning
-      XmlElement* reset();
-      /// Advance to next element
-      XmlElement* next() const;
-      /// Go back to previous element
-      XmlElement* previous() const;
-      /// Assignment operator
-      NodeList& operator=(const NodeList& l);
-    };
-
     typedef const std::string& CSTR;
 
     /// Dump DOM tree of a document
@@ -249,17 +211,16 @@ namespace DD4hep {
     struct Tag_t : public Strng_t {
       /// STL string buffer
       std::string m_str;
-
+#ifndef __TIXML__
       /// Constructor from normal ASCII string
       Tag_t(const char* s)
           : Strng_t(s), m_str(s) {
       }
-#ifndef __TIXML__
+#endif
       /// Constructor from unicode string
       Tag_t(const XmlChar* s)
           : Strng_t(s), m_str(_toString(s)) {
       }
-#endif
       /// Constructor from internal XML string
       Tag_t(const Strng_t& s)
           : Strng_t(s), m_str(_toString(s)) {
@@ -309,6 +270,38 @@ namespace DD4hep {
     inline bool operator==(const std::string& c, const Tag_t& b) {
       return c == b.m_str;
     }
+
+    /** NodeList  XMLElements.h XML/XMLElements.h
+     *
+     *  Definition of a "list" of xml elements hanging of the parent.
+     *  The list allows iterations, which can be restarted.
+     *  Please not: Copies are not entirely free, since the
+     *  string tag need to be replicated using strdup/free
+     *  (or when using xerces the corresponding unicode routines).
+     *
+     *  @author   M.Frank
+     *  @version  1.0
+     */
+    struct NodeList {
+      Tag_t m_tag;
+      XmlElement* m_node;
+      mutable XmlElement* m_ptr;
+
+      /// Copy constructor
+      NodeList(const NodeList& l);
+      /// Initializing constructor
+      NodeList(XmlElement* frst, const XmlChar* t);
+      /// Default destructor
+      ~NodeList();
+      /// Reset the nodelist - e.g. restart iteration from beginning
+      XmlElement* reset();
+      /// Advance to next element
+      XmlElement* next() const;
+      /// Go back to previous element
+      XmlElement* previous() const;
+      /// Assignment operator
+      NodeList& operator=(const NodeList& l);
+    };
 
     /** @class Handle_t XMLElements.h XML/XMLElements.h
      *

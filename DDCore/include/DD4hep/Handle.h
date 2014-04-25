@@ -41,13 +41,6 @@ class TNamed;
  */
 namespace DD4hep {
 
-  /// Access to the CXX abi name
-  std::string typeName(const std::type_info& type);
-  /// Throw exception when handles are check for validity
-  void invalidHandleError(const std::type_info& type);
-  /// Throw exception when handles are badly assigned
-  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to);
-
   /*
    *   Geometry sub-namespace declaration
    */

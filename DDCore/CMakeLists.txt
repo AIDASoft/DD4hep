@@ -8,6 +8,20 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${CM
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
 file(GLOB plugin_sources src/plugins/*.cpp)
 
+#---Add Library-------------------------------------------------------------------
+if(DD4HEP_USE_BOOST)
+  #fg:  canonical way of finding Boost w/ cmake uses 
+  #     -D Boost_DIR=_path_to_boost
+  #     and then FindBoost.cmake sets the variable Boost_INCLUDE_DIR
+  FIND_PACKAGE( Boost REQUIRED) 
+  include_directories( ${Boost_INCLUDE_DIR})
+  #list(APPEND include_directories ${BOOST_INCLUDE_DIR})
+  file(GLOB parser_sources src/parsers/*.cpp )
+  add_definitions(-DDD4HEP_USE_BOOST)
+else()
+  file(GLOB parser_sources )
+endif()
+
 if(DD4HEP_USE_PYROOT)
   file(GLOB headers include/DD4hep/*.h)
   list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
@@ -20,7 +34,7 @@ endif()
 
 include(DD4hep_XML_setup)
 
-add_library(DD4hepCore SHARED ${sources} )
+add_library(DD4hepCore SHARED ${sources} ${parser_sources} )
 
 target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDSegmentation Geom Reflex ${libraries})
 

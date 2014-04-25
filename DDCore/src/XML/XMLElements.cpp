@@ -7,6 +7,7 @@
 //
 //====================================================================
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "XML/Evaluator.h"
 #include "XML/XMLElements.h"
 #include "XML/XMLTags.h"
@@ -63,13 +64,17 @@ union Xml {
 };
 
 namespace {
-  XmlElement* node_first(XmlElement* e, const XmlChar* t) {
+  XmlElement* node_first(XmlElement* e, const Tag_t& t) {
+    if ( t=="*" ) return e ? (XmlElement*)_E(e)->FirstChildElement() : 0;
     return e ? (XmlElement*)_E(e)->FirstChildElement(t) : 0;
   }
-  size_t node_count(XmlElement* elt, const XmlChar* t) {
+  size_t node_count(XmlElement* elt, const Tag_t& t) {
     size_t cnt = 0;
     TiXmlElement* e = Xml(elt).e;
-    for(e=e->FirstChildElement(t);e; e=e->NextSiblingElement(t)) ++cnt;
+    if ( t=="*" ) 
+      for(e=e->FirstChildElement();e; e=e->NextSiblingElement()) ++cnt;
+    else
+      for(e=e->FirstChildElement(t);e; e=e->NextSiblingElement(t)) ++cnt;
     return cnt;
   }
 }
@@ -114,30 +119,30 @@ void DD4hep::XML::XmlString::release(char** p) {
 }
 
 namespace {
-  size_t node_count(XmlElement* e, const XmlChar* t) {
+  size_t node_count(XmlElement* e, const Tag_t& t) {
     size_t cnt = 0;
     if ( e )  {
-      string tag =  _toString(t);
+      const string& tag = t;
       xercesc::DOMElement *ee = Xml(e).e;
       if ( ee )  {
 	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
 	  if ( elt->getParentNode() == ee )   {
 	    string child_tag = _toString(elt->getTagName());
-	    if ( child_tag == tag ) ++cnt;
+	    if ( tag == "*" || child_tag == tag ) ++cnt;
 	  }
 	}
       }
     }
     return cnt;
   }
-  XmlElement* node_first(XmlElement* e, const XmlChar* t) {
+  XmlElement* node_first(XmlElement* e, const Tag_t& t) {
     if ( e )  {
-      //size_t cnt = 0;
-      string tag = _toString(t);
+      const string& tag = t;
       xercesc::DOMElement* ee = Xml(e).e;
       if ( ee )  {
 	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
 	  if ( elt->getParentNode() == ee )   {
+	    if ( tag == "*" ) return _XE(elt);
 	    string child_tag = _toString(elt->getTagName());
 	    if ( child_tag == tag ) return _XE(elt);
 	  }
@@ -429,48 +434,37 @@ Tag_t& Tag_t::operator=(const string& s) {
 
 /// Copy constructor
 NodeList::NodeList(const NodeList& copy)
-    : m_node(copy.m_node), m_ptr(0)
-#ifndef DD4HEP_USE_TINYXML
-      //        , m_index(0)
-#endif
+  : m_tag(copy.m_tag), m_node(copy.m_node), m_ptr(0)
 {
-  m_tag = XmlString::replicate(copy.m_tag);
   reset();
 }
 
 /// Initializing constructor
 NodeList::NodeList(XmlElement* node, const XmlChar* tag)
-    : m_node(node), m_ptr(0)
-#ifndef DD4HEP_USE_TINYXML
-      //        , m_index(0)
-#endif
+  : m_tag(tag), m_node(node), m_ptr(0)
 {
-  m_tag = XmlString::replicate(tag);
   reset();
 }
 
 /// Default destructor
 NodeList::~NodeList() {
-  if (m_tag)
-    XmlString::release (&m_tag);
 }
 
 /// Reset the nodelist
 XmlElement* NodeList::reset() {
-#ifdef DD4HEP_USE_TINYXML
   return m_ptr=node_first(m_node,m_tag);
-#else
-  return m_ptr=node_first(m_node,m_tag);
-#endif
 }
 
 /// Advance to next element
 XmlElement* NodeList::next() const {
 #ifdef DD4HEP_USE_TINYXML
+  if ( m_tag.str()=="*" ) 
+    return m_ptr =_XE(m_ptr ? _E(m_ptr)->NextSiblingElement() : 0);
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag) : 0);
 #else
   xercesc::DOMElement *elt = Xml(m_ptr).e;
   for(elt=elt->getNextElementSibling(); elt; elt=elt->getNextElementSibling()) {
+    if ( m_tag == "*" ) return m_ptr=Xml(elt).xe;
     string child_tag = _toString(elt->getTagName());
     if ( child_tag == m_tag ) return m_ptr=Xml(elt).xe;
   }
@@ -481,10 +475,13 @@ XmlElement* NodeList::next() const {
 /// Go back to previous element
 XmlElement* NodeList::previous() const {
 #ifdef DD4HEP_USE_TINYXML
+  if ( m_tag=="*" ) 
+    return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement() : 0);
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement(m_tag) : 0);
 #else
   xercesc::DOMElement *elt = Xml(m_ptr).e;
   for(elt=elt->getPreviousElementSibling(); elt; elt=elt->getPreviousElementSibling()) {
+    if ( m_tag=="*" ) return m_ptr=Xml(elt).xe;
     string child_tag = _toString(elt->getTagName());
     if ( child_tag == m_tag ) return m_ptr=Xml(elt).xe;
   }
@@ -495,9 +492,7 @@ XmlElement* NodeList::previous() const {
 /// Assignment operator
 NodeList& NodeList::operator=(const NodeList& l) {
   if (this != &l) {
-    if (m_tag)
-      XmlString::release (&m_tag);
-    m_tag = XmlString::replicate(l.m_tag);
+    m_tag = l.m_tag;
     m_node = l.m_node;
     reset();
   }
@@ -923,12 +918,14 @@ Handle_t Document::root() const {
 
 /// Standard destructor - releases the document
 DocumentHolder::~DocumentHolder() {
+  if (m_doc)   {
+    printout(DEBUG,"DocumentHolder","+++ Release DOM document....");
 #ifdef DD4HEP_USE_TINYXML
-  if (m_doc) delete _D(m_doc);
+    delete _D(m_doc);
 #else
-  if (m_doc)
     _D(m_doc)->release();
 #endif
+  }
   m_doc = 0;
 }
 

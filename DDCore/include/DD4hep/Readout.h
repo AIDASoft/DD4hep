@@ -16,6 +16,9 @@
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/Segmentations.h"
 
+// C/C++ include files
+#include <map>
+
 /*
  *   DD4hep namespace declaration
  */
@@ -72,34 +75,6 @@ namespace DD4hep {
       void setSegmentation(const Segmentation& segment) const;
       /// Access segmentation structure
       Segmentation segmentation() const;
-    };
-
-    /** @class Conditions  Readout.h DD4hep/lcdd/Readout.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct Conditions: public Ref_t {
-      struct Object: public TNamed {
-        /// Standard constructor
-        Object();
-        /// Default destructor
-        virtual ~Object();
-      };
-      /// Default constructor
-      Conditions()
-          : Ref_t() {
-      }
-      /// Constructor to be used when reading the already parsed object
-      template <typename Q> Conditions(const Handle<Q>& e)
-          : Ref_t(e) {
-      }
-      /// Initializing constructor
-      Conditions(const LCDD& doc, const std::string& name);
-      /// Additional data accessor
-      Object& _data() const {
-        return *data<Object>();
-      }
     };
 
   } /* End namespace Geometry               */

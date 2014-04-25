@@ -169,6 +169,11 @@ DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level) {
   return old;
 }
 
+/// Access the current printer level
+DD4hep::PrintLevel DD4hep::printLevel()  {
+  return print_lvl;
+}
+
 /// Customize printer function
 void DD4hep::setPrinter(void* arg, output_function_t fcn) {
   print_arg = arg;
@@ -242,9 +247,9 @@ namespace DD4hep {
       bool env = plc.isValid();
       bool mat = plc.isValid();
       ::snprintf(text, sizeof(text), "ID:%-3d Combine Hits:%3s Material:%s Envelope:%s VisAttr:%s", sd.id(),
-          yes_no(sd.combineHits()), mat ? plc.material()->GetName() : yes_no(mat),
+          yes_no(sd.combineHits()), mat ? plc.material().name() : yes_no(mat),
           env ? plc.motherVol()->GetName() : yes_no(env), yes_no(vis));
-      os << prefix << "+= DetElement: " << val->GetName() << " " << val.type() << endl;
+      os << prefix << "+= DetElement: " << val.name() << " " << val.type() << endl;
       os << prefix << "|               " << text << endl;
 
       if (vis) {
@@ -253,8 +258,9 @@ namespace DD4hep {
         TColor* col = gROOT->GetColor(v->color);
         char text[256];
         ::snprintf(text, sizeof(text), " RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s", col->AsHexString(),
-            v->color, col->GetAlpha(), int(v->drawingStyle), int(v->lineStyle), v->showDaughters ? "YES" : "NO",
-            v->visible ? "YES" : "NO");
+		   v->color, col->GetAlpha(), int(v->drawingStyle), 
+		   int(v->lineStyle), yes_no(v->showDaughters),
+		   yes_no(v->visible));
         os << prefix << "|               VisAttr:  " << setw(32) << left << attr.name() << text << endl;
       }
       if (plc.isValid()) {

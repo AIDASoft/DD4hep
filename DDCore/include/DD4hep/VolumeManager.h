@@ -62,54 +62,15 @@ namespace DD4hep {
     struct VolumeManager: public Ref_t {
     public:
       typedef DD4hep::VolumeID VolumeID;
+      typedef VolumeID VolIdentifier;
       // Creation flags
       enum PopulateFlags {
-        NONE = 0, TREE = 1 << 1,   // Build 1 level DetElement hierarchy while populating
-        ONE = 1 << 2,   // Populate all daughter volumes into one big lookup-container
+        NONE = 0, 
+	TREE = 1 << 1,   // Build 1 level DetElement hierarchy while populating
+        ONE = 1 << 2,    // Populate all daughter volumes into one big lookup-container
         // This flag may be in parallel with 'TREE'
         LAST
       };
-
-#if 0
-      /** @class VolumeManager::VolIdentifier  VolumeManager.h DD4hep/lcdd/VolumeManager.h
-       *
-       * @author  M.Frank
-       * @version 1.0
-       */
-      struct VolIdentifier {
-      public:
-        /// The volume identifier and it's mask
-        VolumeID identifier, mask;
-      private:
-        /// Equality operator is provate. Not to be used!
-        bool operator==(const VolIdentifier& c) const {
-          return identifier == c.identifier && mask == c.mask;
-        }
-      public:
-        /// Default constructor
-        VolIdentifier() : identifier(0), mask(~0x0ull) {
-        }
-        /// Initializing constructor
-        VolIdentifier(VolumeID id, VolumeID msk) : identifier(id), mask(msk) {
-        }
-        /// Copt constructor
-        VolIdentifier(const VolIdentifier& c) : identifier(c.identifier), mask(c.mask) {
-        }
-        /** Operator less for map storage.
-         *  Note, that this takes advantag, the only volumes with the same descriptor length are
-         *  stored in one map, because some bits are masked out. Otherwise all breaks!
-         */
-        bool operator< (const VolIdentifier& c) const {
-          return identifier < (c.identifier&mask);
-        }
-        /// Assignment operator
-        VolIdentifier& operator=(const VolIdentifier& c) {
-          identifier=c.identifier; mask=c.mask;
-          return *this;
-        }
-      };
-#endif
-      typedef VolumeID VolIdentifier;
 
       /** @class VolumeManager::Context  VolumeManager.h DD4hep/lcdd/VolumeManager.h
        *
@@ -145,13 +106,14 @@ namespace DD4hep {
         /// Default constructor
         Context();
         /// Default destructor
-        ~Context();
+        virtual ~Context();
       };
       /// Some useful Container abbreviations used by the VolumeManager
       typedef std::map<VolumeID, VolumeManager> Managers;
       typedef std::map<DetElement, VolumeManager> Detectors;
       typedef std::map<TGeoNode*, Context*> PhysVolumes;
-      typedef std::map<VolIdentifier, Context*> Volumes;
+      typedef std::map<VolumeID, Context*> Volumes;
+      typedef PlacedVolume::VolIDs VolIDs;
 
       /** @class VolumeManager::Object  VolumeManager.h DD4hep/lcdd/VolumeManager.h
        *
@@ -176,8 +138,6 @@ namespace DD4hep {
         Managers managers;
         /// The container of placements managed by this instance
         Volumes volumes;
-        /// Map of placed volumes and their corresponding context
-        PhysVolumes phys_volumes;
         /// The Detector element handle managed by this instance
         DetElement detector;
         /// The ID descriptor object
@@ -198,9 +158,9 @@ namespace DD4hep {
         /// Default destructor
         virtual ~Object();
         /// Search the locally cached volumes for a matching ID
-        Context* search(const VolIdentifier& id) const;
-        /// Search the locally cached volumes for a matching physical volume
-        Context* search(const PlacedVolume pv) const;
+        Context* search(const VolumeID& id) const;
+	/// Update callback when alignment has changed (called only for subdetectors....)
+	void update(unsigned int tags, DetElement& det, void* param);
       };
 
     protected:

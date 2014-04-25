@@ -299,14 +299,14 @@ static TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
 
 /// Default constructor
 PlacedVolume::Object::Object()
-  : TGeoExtension(), magic(0), refCount(0), volIDs(), detector() {
+  : TGeoExtension(), magic(0), refCount(0), volIDs() {
   magic = magic_word();
   INCREMENT_COUNTER;
 }
 
 /// Copy constructor
 PlacedVolume::Object::Object(const Object& c)
-    : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs), detector(c.detector) {
+    : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs) {
   INCREMENT_COUNTER;
 }
 
@@ -319,7 +319,6 @@ PlacedVolume::Object::~Object() {
 TGeoExtension* PlacedVolume::Object::Grab()   {
   ++this->refCount;
 #ifdef ___print_vols
-  if ( detector.ptr() ) cout << "Placement grabbed with valid detector element....." << endl;
   else  cout << "Placement grabbed....." << endl;
 #endif
   return this;
@@ -394,24 +393,12 @@ const PlacedVolume::VolIDs& PlacedVolume::volIDs() const {
   return _data(*this)->volIDs;
 }
 
-/// Set the detector element if appropriate (requires degenerate geometry subtree)
-void PlacedVolume::setDetector(const DetElement& e)   const {
-  PlacedVolume::Object* o = _userExtension(*this);
-  if ( o ) o->detector = e;
-}
-#if 0
-/// Access the corresponding detector element of this placement (if set)
-DetElement PlacedVolume::detector() const   {
-  DetElement e(_data(*this)->detector.ptr());
-  return e;
-}
-#endif
 /// String dump
 string PlacedVolume::toString() const {
   stringstream s;
   Object* obj = _data(*this);
   s << m_element->GetName() << ":  vol='" << m_element->GetVolume()->GetName() << "' mat:'" << m_element->GetMatrix()->GetName()
-      << "' volID[" << obj->volIDs.size() << "] ";
+    << "' volID[" << obj->volIDs.size() << "] ";
   for (VolIDs::const_iterator i = obj->volIDs.begin(); i != obj->volIDs.end(); ++i)
     s << (*i).first << "=" << (*i).second << "  ";
   s << ends;
@@ -589,6 +576,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 	     line_style == VisAttr::SOLID ? "Solid" : "Dashed",
 	     name()
 	     );
+    m_element->SetLineWidth(10);
     m_element->SetLineColor(dark);
     if (draw_style == VisAttr::SOLID) {
       m_element->SetLineColor(bright);
@@ -608,7 +596,6 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     else
       m_element->SetLineStyle(line_style);
 
-    m_element->SetLineWidth(10);
 
     /*
     m_element->SetVisibility(kTRUE);

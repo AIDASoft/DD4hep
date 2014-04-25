@@ -12,6 +12,8 @@
 // Framework include files
 #include "DD4hep/Detector.h"
 
+class TGeoHMatrix;
+
 /*
  *   DD4hep namespace declaration
  */
@@ -30,47 +32,42 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class DetectorTools {
-    public:
+    namespace DetectorTools {
       typedef std::vector<DetElement>   ElementPath;
       typedef std::vector<PlacedVolume> PlacementPath;
+
+      /// Determine top level element (=world) for any element walking up the detector element tree
+      DetElement topElement(DetElement child);
+
       /// Assemble the path of a particular detector element
       std::string elementPath(DetElement element);
       /// Assemble the path of the PlacedVolume selection
-      static std::string elementPath(const ElementPath& nodes);
+      std::string elementPath(const ElementPath& nodes);
+
       /// Collect detector elements to the top detector element (world)
-      static void elementPath(DetElement elt, ElementPath& detectors);
-      /// Collect detector elements to any parent detector element
-      static void elementPath(DetElement parent, DetElement elt, ElementPath& detectors);
-      /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
-      static void elementPath(DetElement elt, PlacementPath& nodes);
-
-      /// Find DetElement as child of the top level volume by it's absolute path
-      static DetElement findElement(LCDD& lcdd, const std::string& path);
+      void elementPath(DetElement elt, ElementPath& detectors);
       /// Find DetElement as child of a parent by it's relative or absolute path
-      static DetElement findElement(DetElement parent, const std::string& subpath);
-      /// Determine top level element (=world) for any element walking up the detector element tree
-      static DetElement topElement(DetElement child);
-      
-      /// Assemble the placement path from a given detector element to the world volume
-      static std::string placementPath(DetElement element);
-      /// Assemble the path of the PlacedVolume selection
-      static std::string placementPath(const PlacementPath& nodes);
-      /// Collect detector elements placements to the top detector element (world) [no holes!]
-      static void placementPath(DetElement elt, PlacementPath& nodes);
-      /// Collect detector elements placements to the parent detector element [no holes!]
-      static void placementPath(DetElement parent, DetElement child, PlacementPath& nodes);
-
-
-      /// Find Child of PlacedVolume and assemble on the fly the path of PlacedVolumes
-      static bool findChild(PlacedVolume parent, PlacedVolume child, PlacementPath& path);
+      DetElement findDaughterElement(DetElement parent, const std::string& subpath);
       /// Find path between the child element and the parent element
-      static bool findParent(DetElement parent, DetElement child, ElementPath& detectors);
+      bool isParentElement(DetElement parent, DetElement child);
 
-      /// Create cached matrix to transform to positions to an upper level Placement
-      static TGeoMatrix* placementTrafo(const PlacementPath& nodes, bool inverse);
+      /// Assemble the placement path from a given detector element to the world volume
+      std::string placementPath(DetElement element);
+      /// Assemble the path of the PlacedVolume selection
+      std::string placementPath(const PlacementPath& nodes);
 
-    };
+      /// Collect detector elements placements to the top detector element (world) [no holes!]
+      void placementPath(DetElement elt, PlacementPath& nodes);
+      /// Collect detector elements placements to the parent detector element [no holes!]
+      void placementPath(DetElement parent, DetElement child, PlacementPath& nodes);
+
+      /// Find a given node in the hierarchy starting from the top node (absolute placement!)
+      PlacedVolume findNode(PlacedVolume top_place, const std::string& place);
+      /// Update cached matrix to transform to positions to an upper level Placement
+      void placementTrafo(const PlacementPath& nodes, bool inverse, TGeoHMatrix*& mat);
+      /// Update cached matrix to transform to positions to an upper level Placement
+      void placementTrafo(const PlacementPath& nodes, bool inverse, TGeoHMatrix& mat);
+    }
 
   } /* End namespace Geometry               */
 } /* End namespace DD4hep                   */
