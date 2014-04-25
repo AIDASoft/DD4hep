@@ -85,7 +85,7 @@ DECLARE_APPLY(ConditionsTest1,conditions_test)
 namespace {
 
   struct Callee  {
-    void call(unsigned int tags, DetElement& det, void* param)    {
+    void call(unsigned long tags, DetElement& det, void* param)    {
       if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
 	printout(INFO,"Callee","+++ Conditions update %s param:%p",det.path().c_str(),param);
       if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  
