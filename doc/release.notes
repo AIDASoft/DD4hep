@@ -2,6 +2,24 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2014/04/25  Markus Frank
+------------------------
+   - Moved boost::spirit parsers to DDCore, since these parsers are also used
+     in other packages such as DDCond and DDAlign - whenever strings have to be
+     converted to objects.
+     Consequently, the boost spirit code fragments were removed from DDG4.
+   - Improved and more correct type checking when assigning handles
+   - Explicit implementation of the object extension mechanism to be used 
+     through inheritance or aggregation rather than having seperate and nearly
+     identical implementations for various objects.
+   - Improved defintition of basic objects describing Conditions and Alignment.
+   - Improved implementation of DDAlign, the alignment support.
+     Not to be used currently - experimental package.
+   - Initial implementation of DDCond the package supporting the handling of 
+     conditions.
+     Not to be used currently - experimental package.
+
+
 2014/02/07  Frank Gaede
 -----------------------
    - added DDGear, support for interfacing to gear for backward compatibility
