@@ -295,7 +295,7 @@ Document DocumentHandler::load(const string& fname) const {
       if ( doc->Error() ) {
 	printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
 	printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
-		 doc->Value().c_str(), doc->ErrorRow(), doc->ErrorCol());
+		 doc->Value(), doc->ErrorRow(), doc->ErrorCol());
         throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
       }
       throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TinyXML.");
@@ -322,7 +322,7 @@ Document DocumentHandler::parse(const char* doc_string, size_t /* length */) con
     if ( doc->Error() ) {
       printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
       printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
-	       doc->Value().c_str(), doc->ErrorRow(), doc->ErrorCol());
+	       doc->Value(), doc->ErrorRow(), doc->ErrorCol());
       throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
     }
     throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");
