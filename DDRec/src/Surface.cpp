@@ -1,5 +1,5 @@
 #include "DDRec/Surface.h"
-#include "DD4hep/Detector.h"
+#include "DD4hep/objects/DetectorInterna.h"
 
 #include <math.h>
 #include <memory>
@@ -287,7 +287,7 @@ namespace DD4hep {
 
       //=========== compute and cache world transform for surface ==========
 
-      TGeoMatrix* wm = _det.object<DetElement::Object>().worldTransformation() ;
+      const TGeoMatrix* wm = &_det.worldTransformation() ;
 
 #if 0 // debug
       wm->Print() ;
