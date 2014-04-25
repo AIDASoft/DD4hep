@@ -64,10 +64,10 @@ endif()
 
 add_library(${PackageName} SHARED ${sources})
 
-add_executable(CalorimeterReco CalorimeterReco.cpp)
+#add_executable(CalorimeterReco CalorimeterReco.cpp)
 
 target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
+#target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
 
@@ -102,6 +102,10 @@ install(TARGETS ${PackageName}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
+install(DIRECTORY compact
+  DESTINATION examples/${PackageName}
+  PATTERN ".svn" EXCLUDE )
+
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
 

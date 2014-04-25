@@ -23,11 +23,13 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   bool        reflect   = x_det.reflect(false);
   DetElement  sdet        (det_name,det_id);
   Assembly    assembly    (det_name+"_assembly");
+  //Volume      assembly    (det_name+"_assembly",Box(10000,10000,10000),vacuum);
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
   int         m_id=0, c_id=0, n_sensor=0;
   map<string,Volume> modules;
   PlacedVolume pv;
 
+  //assembly.setVisAttributes(lcdd.invisible());
   sens.setType("tracker");
 
   for(xml_coll_t mi(x_det,_U(module)); mi; ++mi, ++m_id)  {

@@ -35,7 +35,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double thickness = xml_comp_t(j).thickness();
       layerWidth += thickness;
     }
-    Tube    l_tub(rmin,rmax,layerWidth,2*M_PI*tgeo::rad);
+    Tube    l_tub(rmin,rmax,layerWidth,2*M_PI);
     Volume  l_vol(l_nam,l_tub,air);
     l_vol.setVisAttributes(lcdd,x_layer.visStr());
     for(xml_coll_t j(x_layer,_U(slice)); j; ++j, ++s_num)  {
