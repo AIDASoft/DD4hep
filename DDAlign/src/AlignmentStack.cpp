@@ -10,25 +10,35 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/InstanceCount.h"
 #include "DDAlign/AlignmentStack.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static AlignmentStack* s_alignStack = 0;
-
+static auto_ptr<AlignmentStack>& _stack()  {
+  static auto_ptr<AlignmentStack> s;
+  return s;
+}
+static auto_ptr<AlignmentStack>& _stack(AlignmentStack* obj)  {
+  auto_ptr<AlignmentStack>& s = _stack();
+  s = auto_ptr<AlignmentStack>(obj);
+  return s;
+}
 
 /// Fully initializing constructor
-AlignmentStack::StackEntry::StackEntry(const DetElement& p, const std::string& placement, const Transform3D& t, double ov, int f)
+AlignmentStack::StackEntry::StackEntry(const DetElement& p, const string& placement, const Transform3D& t, double ov, int f)
   : detector(p), transform(t), path(placement), overlap(ov), flag(f)
 {
+  InstanceCount::increment(this);
 }
 
 /// Constructor with partial initialization
 AlignmentStack::StackEntry::StackEntry(DetElement element, bool rst, bool rst_children)
   : detector(element), transform(), overlap(0.001), flag(0)
 {
+  InstanceCount::increment(this);
   if ( rst ) flag |= RESET_VALUE;
   if ( rst_children ) flag |= RESET_CHILDREN;
   if ( detector.isValid() ) path = detector.placementPath();
@@ -38,6 +48,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, bool rst, bool rst_ch
 AlignmentStack::StackEntry::StackEntry(DetElement element, const Transform3D& trafo, bool rst, bool rst_children)
   : detector(element), transform(trafo), overlap(0.001), flag(0)
 {
+  InstanceCount::increment(this);
   flag |= MATRIX_DEFINED;
   if ( rst ) flag |= RESET_VALUE;
   if ( rst_children ) flag |= RESET_CHILDREN;
@@ -48,6 +59,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const Transform3D& tr
 AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& translation, bool rst, bool rst_children)
 : detector(element), transform(translation), overlap(0.001), flag(0)
 {
+  InstanceCount::increment(this);
   flag |= MATRIX_DEFINED;
   if ( rst ) flag |= RESET_VALUE;
   if ( rst_children ) flag |= RESET_CHILDREN;
@@ -58,6 +70,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& trans
 AlignmentStack::StackEntry::StackEntry(DetElement element, const RotationZYX& rot, bool rst, bool rst_children)
 : detector(element), transform(rot), overlap(0.001), flag(0)
 {
+  InstanceCount::increment(this);
   flag |= MATRIX_DEFINED;
   if ( rst ) flag |= RESET_VALUE;
   if ( rst_children ) flag |= RESET_CHILDREN;
@@ -68,6 +81,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const RotationZYX& ro
 AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& translation, const RotationZYX& rot, bool rst, bool rst_children) 
   : detector(element), transform(rot,translation), overlap(0.001), flag(0)
 {
+  InstanceCount::increment(this);
   flag |= MATRIX_DEFINED;
   if ( rst ) flag |= RESET_VALUE;
   if ( rst_children ) flag |= RESET_CHILDREN;
@@ -78,6 +92,24 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& trans
 AlignmentStack::StackEntry::StackEntry(const StackEntry& e)
 : detector(e.detector), transform(e.transform), path(e.path), overlap(e.overlap), flag(e.flag)
 {
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+AlignmentStack::StackEntry::~StackEntry() {
+  InstanceCount::decrement(this);
+}
+
+/// Assignment operator
+AlignmentStack::StackEntry& AlignmentStack::StackEntry::operator=(const StackEntry& e)   {
+  if ( this != &e )  {
+    detector = e.detector;
+    transform = e.transform;
+    overlap = e.overlap;
+    path = e.path;
+    flag = e.flag;
+  }
+  return *this;
 }
 
 /// Attach transformation object
@@ -126,45 +158,46 @@ AlignmentStack::StackEntry& AlignmentStack::StackEntry::setOverlapPrecision(doub
 /// Default constructor
 AlignmentStack::AlignmentStack()
 {
+  InstanceCount::increment(this);
 }
 
 /// Default destructor
 AlignmentStack::~AlignmentStack()   {
   destroyObjects(m_stack)();
+  InstanceCount::decrement(this);
 }
 
 /// Static client accessor
 AlignmentStack& AlignmentStack::get()  {
-  if ( s_alignStack ) return *s_alignStack;
+  if ( _stack().get() ) return *_stack();
   throw runtime_error("AlignmentStack> Stack not allocated -- may not be retrieved!");
 }
 
 /// Create an alignment stack instance. The creation of a second instance will be refused.
 void AlignmentStack::create()   {
-  if ( s_alignStack )   {
+  if ( _stack().get() )   {
     throw runtime_error("AlignmentStack> Stack already allocated. Multiple copies are not allowed!");
   }
-  s_alignStack = new AlignmentStack();
+  _stack(new AlignmentStack());
 }
 
 /// Check existence of alignment stack
 bool AlignmentStack::exists()   {
-  return s_alignStack != 0;
+  return _stack().get() != 0;
 }
 
 /// Clear data content and remove the slignment stack
 void AlignmentStack::release()    {
-  if ( s_alignStack )  {
-    delete s_alignStack;
-    s_alignStack = 0;
+  if ( _stack().get() )  {
+    _stack(0);
     return;
   }
   throw runtime_error("AlignmentStack> Attempt to delete non existing stack.");
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentStack::insert(const std::string& full_path, StackEntry* entry)  {
-  if ( entry && !full_path.empty() )  {
+bool AlignmentStack::insert(const string& full_path, auto_ptr<StackEntry>& entry)  {
+  if ( entry.get() && !full_path.empty() )  {
     entry->path = full_path;
     return get().add(entry);
   }
@@ -172,16 +205,23 @@ bool AlignmentStack::insert(const std::string& full_path, StackEntry* entry)  {
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentStack::insert(StackEntry* entry)  {
+bool AlignmentStack::insert(auto_ptr<StackEntry>& entry)  {
   return get().add(entry);
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentStack::add(StackEntry* entry)  {
-  if ( entry && !entry->path.empty() )  {
+bool AlignmentStack::add(auto_ptr<StackEntry>& entry)  {
+  if ( entry.get() && !entry->path.empty() )  {
     Stack::const_iterator i = m_stack.find(entry->path);
     if ( i == m_stack.end() )   {
-      m_stack.insert(make_pair(entry->path,entry));
+
+      // Need to make some checks BEFORE insertion
+      if ( !entry->detector.isValid() )   {
+	throw runtime_error("AlignmentStack> Invalid alignment entry [No such detector]");
+      }
+      printout(INFO,"AlignmentStack","Add node:%s",entry->path.c_str());
+      m_stack.insert(make_pair(entry->path,entry.get()));
+      entry.release();
       return true;
     }
     throw runtime_error("AlignmentStack> The entry with path "+entry->path+

@@ -9,14 +9,16 @@ include( DD4hep )
 
 find_package( ROOT REQUIRED )
 #---Includedirs ------------------------------------------------------------------
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
+include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
+	            ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
+                    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${DD4hep_INCLUDE_DIRS}
     ${ROOT_INCLUDE_DIR} )
 
 #---DD4hepAlign library --------------------------------------------------------------
 file(GLOB sources src/*.cpp)
 add_library(DD4hepAlign SHARED ${sources})
-target_link_libraries(DD4hepAlign ${DD4hep_LIBRARIES} DD4hepCore ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES})
+target_link_libraries(DD4hepAlign DD4hepCore ${ROOT_LIBRARIES})
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)

@@ -97,8 +97,8 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operator()(Nodes::value_type& n) const  {
   Entry& e = *n.second.second;
-  bool check = e.checkOverflow();
-  bool overlap = e.checkOverlap();
+  bool check = e.checkOverlap();
+  bool overlap = e.overlapDefined();
   bool has_matrix  = e.hasMatrix();
   DetElement det = e.detector;
   bool valid = det.alignment().isValid();
@@ -125,13 +125,13 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operat
   bool is_not_volume = e.path == det_placement;
   if ( check && overlap )     {
     alignment = is_not_volume 
-      ? ad.align(e.transform, e.overflowValue(), e.overlap)
-      : ad.align(e.path, e.transform, e.overflowValue(), e.overlap);
+      ? ad.align(e.transform, e.overlapValue(), e.overlap)
+      : ad.align(e.path, e.transform, e.overlapValue(), e.overlap);
   }
   else if ( check )    {
     alignment = is_not_volume 
-      ? ad.align(e.transform, e.overflowValue())
-      : ad.align(e.path, e.transform, e.overflowValue());
+      ? ad.align(e.transform, e.overlapValue())
+      : ad.align(e.path, e.transform, e.overlapValue());
   }
   else     {
     alignment = is_not_volume ? ad.align(e.transform) : ad.align(e.path, e.transform);

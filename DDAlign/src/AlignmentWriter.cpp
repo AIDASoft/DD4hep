@@ -165,7 +165,7 @@ static long create_alignment_file(LCDD& lcdd, int argc, char** argv)   {
   printout(ALWAYS,"AlignmentWriter",
 	   "++++ Writing DD4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
 	   path.c_str(), output.c_str());
-  top = DetectorTools::findElement(lcdd.world(),path);
+  top = DetectorTools::findDaughterElement(lcdd.world(),path);
   if ( top.isValid() )   {
     AlignmentWriter wr(lcdd);
     return wr.write(wr.dump(top,enable_transactions), output);

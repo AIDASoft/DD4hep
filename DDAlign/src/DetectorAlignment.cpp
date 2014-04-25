@@ -11,6 +11,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/objects/DetectorInterna.h"
 
 // ROOT include files
 #include "TGeoMatrix.h"
@@ -109,12 +110,12 @@ Alignment DetectorAlignment::alignment() const   {
 }
 
 /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-std::vector<Alignment>& DetectorAlignment::volumeAlignments()  {
+vector<Alignment>& DetectorAlignment::volumeAlignments()  {
   return _data().volume_alignments;
 }
 
 /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-const std::vector<Alignment>& DetectorAlignment::volumeAlignments() const   {
+const vector<Alignment>& DetectorAlignment::volumeAlignments() const   {
   return _data().volume_alignments;
 }
 

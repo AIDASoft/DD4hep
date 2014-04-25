@@ -19,6 +19,7 @@
 #include "DDAlign/AlignmentTags.h"
 #include "DDAlign/AlignmentStack.h"
 #include "DDAlign/AlignmentCache.h"
+#include "DDAlign/AlignmentTransaction.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -27,41 +28,6 @@ namespace DD4hep  {
 
   namespace   {
 
-    /** @class AlignmentTransaction
-     *
-     *  Manage alignment transaction to the cache for a given LCDD instance
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    01/04/2014
-     */
-    struct AlignmentTransaction {
-      /// Internal flag to remember transaction contexts
-      bool flag;
-      /// Reference to the current LCDD instance
-      lcdd_t& lcdd;
-      /// Reference to the alignment cache
-      Geometry::AlignmentCache* m_cache;
-      
-      /// Default constructor
-      AlignmentTransaction(lcdd_t& l, xml_h e) : lcdd(l) {
-	flag = e.hasChild(_U(close_transaction));
-	/// First check if a transaction is to be opened
-	m_cache = lcdd.extension<Geometry::AlignmentCache>();
-	m_cache->addRef();
-	if ( e.hasChild(_U(open_transaction)) )  {
-	  m_cache->openTransaction();
-	}
-      }
-      /// Default destructor
-      ~AlignmentTransaction()   {
-	/// Last check if a transaction is to be closed
-	if ( flag ) {
-	  lcdd.extension<Geometry::AlignmentCache>()->closeTransaction();
-	}
-	m_cache->release();
-      }
-    };
     /// Some utility class to specialize the convetrers:
     class alignment;
     class detelement;
@@ -234,7 +200,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
   if ( check       ) flags |= AlignmentStack::CHECKOVL_DEFINED;
   if ( check_val   ) flags |= AlignmentStack::CHECKOVL_VALUE;
 
-  StackEntry* entry = new StackEntry(elt->first,placementPath,trafo.second,ovl,flags);
+  auto_ptr<StackEntry> entry(new StackEntry(elt->first,placementPath,trafo.second,ovl,flags));
   AlignmentStack::insert(entry);
   pair<DetElement,string> vol_param(elt->first,subpath);
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param));
@@ -261,18 +227,12 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   string path      = e.attr<string>(_U(path));
   bool   check     = e.hasAttr(_U(check_overlaps));
   bool   check_val = check ? e.attr<bool>(_U(check_overlaps)) : false;
-  bool   reset     = e.hasAttr(_U(reset)) ? e.attr<bool>(_U(reset)) : true;
-  bool   reset_dau = e.hasAttr(_U(reset_children)) ? e.attr<bool>(_U(reset_children)) : true;
+  bool   reset     = e.hasAttr(_U(reset)) ? e.attr<bool>(_U(reset)) : false;
+  bool   reset_dau = e.hasAttr(_U(reset_children)) ? e.attr<bool>(_U(reset_children)) : false;
   bool   overlap   = e.hasAttr(_U(overlap));
   double ovl       = overlap ? e.attr<double>(_U(overlap)) : 0.001;
-  DetElement elt   = Geometry::DetectorTools::findElement(det,path);
+  DetElement elt   = Geometry::DetectorTools::findDaughterElement(det,path);
   string placementPath = elt.isValid() ? elt.placementPath() : string("-----");
-
-  printout(INFO,"Alignment<detelement>","path:%s [%s] placement:%s reset:%s children:%s",
-	   path.c_str(), 
-	   elt.isValid() ? elt.path().c_str() : "-----",
-	   placementPath.c_str(),
-	   yes_no(reset), yes_no(reset_dau));
 
   if ( !elt.isValid() )   {
     string err = "DD4hep: DetElement "+det.path()+" has no child:"+path+" [No such child]";
@@ -282,14 +242,23 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
   pair<bool,Transform3D> trafo;
   Converter<transform3d>(lcdd,&trafo)(e);
   int flags = 0;
+  if ( trafo.first )  {
+    flags |= AlignmentStack::MATRIX_DEFINED;
+    reset = reset_dau = true;
+  }
   if ( overlap     ) flags |= AlignmentStack::OVERLAP_DEFINED;
   if ( check       ) flags |= AlignmentStack::CHECKOVL_DEFINED;
-  if ( trafo.first ) flags |= AlignmentStack::MATRIX_DEFINED;
   if ( reset       ) flags |= AlignmentStack::RESET_VALUE;
   if ( reset_dau   ) flags |= AlignmentStack::RESET_CHILDREN;
   if ( check_val   ) flags |= AlignmentStack::CHECKOVL_VALUE;
 
-  StackEntry* entry = new StackEntry(elt,placementPath,trafo.second,ovl,flags);
+  printout(INFO,"Alignment<detelement>","path:%s [%s] placement:%s matrix:%s reset:%s children:%s",
+	   path.c_str(), 
+	   elt.isValid() ? elt.path().c_str() : "-----",
+	   placementPath.c_str(),
+	   yes_no(trafo.first), yes_no(reset), yes_no(reset_dau));
+
+  auto_ptr<StackEntry> entry(new StackEntry(elt,placementPath,trafo.second,ovl,flags));
   AlignmentStack::insert(entry);
 
   pair<DetElement,string> vol_param(elt,"");
@@ -310,7 +279,8 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
  *  @date    01/04/2014
  */
 template <> void Converter<include_file>::operator()(xml_h element) const {
-  xml_h node = XML::DocumentHandler().load(element, element.attr_value(_U(ref))).root();
+  XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
+  xml_h node = doc.root();
   string tag = node.tag();
   if ( tag == "alignment" )  
     Converter<alignment>(lcdd,param)(node);
@@ -335,7 +305,6 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
  *  @date    01/04/2014
  */
 template <> void Converter<alignment>::operator()(xml_h e)  const  {
-  AlignmentTransaction tr(lcdd, e);
   DetElement top = param ? *(DetElement*)param : lcdd.world();
 
   /// Now we process all allowed elements within the alignment tag:
@@ -354,6 +323,7 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
  */
 static long setup_Alignment(lcdd_t& lcdd, const xml_h& e) {
   AlignmentCache::install(lcdd);
+  AlignmentTransaction tr(lcdd, e);
   (DD4hep::Converter<DD4hep::alignment>(lcdd))(e);
   return 1;
 }

@@ -34,6 +34,9 @@ namespace DD4hep {
      */
     class AlignmentStack  {
     public:
+
+      friend class std::auto_ptr<AlignmentStack>;
+
       enum {
 	OVERLAP_DEFINED     = 1<<0,
 	MATRIX_DEFINED      = 1<<1,
@@ -45,10 +48,15 @@ namespace DD4hep {
       } Flags;
 
       struct StackEntry {
+	/// Reference to the detector element
 	DetElement    detector;
+	/// 3-D Transformation matrix for the volume
 	Transform3D   transform;
+	/// Path to the misaligned volume
 	std::string   path;
+	/// Parameter for overlap checking
 	double        overlap;
+	/// Flag containing various encodings
 	int           flag;
 
 	/// Fully initializing constructor
@@ -66,13 +74,24 @@ namespace DD4hep {
 	/// Copy constructor
 	StackEntry(const StackEntry& e);
 	/// Default destructor
-	~StackEntry() {}
+	virtual ~StackEntry();
+
+	/// Assignment operator
+	StackEntry& operator=(const StackEntry& e);
+
+	/// Check a given flag
 	bool checkFlag(int mask) const {  return (flag&mask) == mask; }
-	bool checkOverflow() const     {  return checkFlag(CHECKOVL_DEFINED); }
-	bool overflowValue() const     {  return checkFlag(CHECKOVL_VALUE); }
-	bool checkOverlap() const      {  return checkFlag(OVERLAP_DEFINED); }
+	/// Check if the overlap flag checking is enabled
+	bool overlapDefined() const    {  return checkFlag(OVERLAP_DEFINED); }
+	/// Check if the overlap flag checking is enabled
+	bool checkOverlap() const      {  return checkFlag(CHECKOVL_DEFINED); }
+	/// Check if the overalp value is present
+	bool overlapValue() const      {  return checkFlag(CHECKOVL_VALUE); }
+	/// Check if this alignment entry has a non unitary transformation matrix
 	bool hasMatrix() const         {  return checkFlag(MATRIX_DEFINED); }
+	/// Check flag if the node location should be reset
 	bool needsReset() const        {  return checkFlag(RESET_VALUE); }
+	/// Check flag if the node location and all children should be reset
 	bool resetChildren() const     {  return checkFlag(RESET_CHILDREN); }
 
 	/// Attach transformation object
@@ -96,11 +115,11 @@ namespace DD4hep {
 
       /// Default constructor
       AlignmentStack();
+      /// Default destructor. Careful with this one: 
+      virtual ~AlignmentStack();
 
     public:
 
-      /// Default destructor. Careful with this one: 
-      virtual ~AlignmentStack();
       /// Static client accessor
       static AlignmentStack& get(); 
       /// Create an alignment stack instance. The creation of a second instance will be refused.
@@ -108,15 +127,15 @@ namespace DD4hep {
       /// Check existence of alignment stack
       static bool exists();
       /// Add a new entry to the cache. The key is the placement path
-      static bool insert(const std::string& full_path, StackEntry* new_entry);
+      static bool insert(const std::string& full_path, std::auto_ptr<StackEntry>& new_entry);
       /// Add a new entry to the cache. The key is the placement path. The placement path must be set in the entry
-      static bool insert(StackEntry* new_entry);
+      static bool insert(std::auto_ptr<StackEntry>& new_entry);
       /// Clear data content and remove the slignment stack
       void release();
       /// Access size of the alignment stack
       size_t size() const  {  return m_stack.size(); }
       /// Add a new entry to the cache. The key is the placement path
-      bool add(StackEntry* new_entry);
+      bool add(std::auto_ptr<StackEntry>& new_entry);
       /// Retrieve an alignment entry of the current stack
       std::auto_ptr<StackEntry> pop();
       /// Get all path entries to be aligned. Note: transient!

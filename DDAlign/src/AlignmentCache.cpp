@@ -12,36 +12,17 @@
 #include "DD4hep/DetectorTools.h"
 #include "DDAlign/AlignmentCache.h"
 #include "DDAlign/AlignmentOperators.h"
+#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 // ROOT include files
 #include "TGeoManager.h"
-
-// C/C++ include files
-#include <stdexcept>
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 using namespace DD4hep::Geometry::DDAlign_standard_operations;
-
 typedef AlignmentStack::StackEntry Entry;
-
-namespace {
-  /// one-at-time hash function
-  inline unsigned int hash32(const char* key) {
-    unsigned int hash = 0;
-    const char* k = key;
-    for (; *k; k++) {
-      hash += *k; 
-      hash += (hash << 10); 
-      hash ^= (hash >> 6);
-    }
-    hash += (hash << 3); 
-    hash ^= (hash >> 11); hash += (hash << 15);
-    return hash;
-  }
-
-}
 
 DetElement _detector(DetElement child)   {
   if ( child.isValid() )   {
@@ -56,7 +37,7 @@ DetElement _detector(DetElement child)   {
 }
 
 /// Default constructor
-AlignmentCache::AlignmentCache(LCDD& lcdd, const std::string& sdPath, bool top)
+AlignmentCache::AlignmentCache(LCDD& lcdd, const string& sdPath, bool top)
   : m_lcdd(lcdd), m_sdPath(sdPath), m_sdPathLen(sdPath.length()), m_refCount(1), m_top(top)
 {
 }
@@ -101,7 +82,7 @@ bool AlignmentCache::insert(Alignment alignment)  {
 }
 
 /// Retrieve the cache section corresponding to the path of an entry.
-AlignmentCache* AlignmentCache::section(const std::string& path_name) const   {
+AlignmentCache* AlignmentCache::section(const string& path_name) const   {
   size_t idx, idq;
   if ( path_name[0] != '/' )   {
     return section(m_lcdd.world().placementPath()+'/'+path_name);
@@ -118,8 +99,8 @@ AlignmentCache* AlignmentCache::section(const std::string& path_name) const   {
   return (j==m_detectors.end()) ? 0 : (*j).second;
 }
 
-/// Retrieve an alignment entry by its lacement path
-Alignment AlignmentCache::get(const std::string& path_name) const   {
+/// Retrieve an alignment entry by its placement path
+Alignment AlignmentCache::get(const string& path_name) const   {
   size_t idx, idq;
   unsigned int index = hash32(path_name.c_str()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
@@ -184,11 +165,7 @@ void AlignmentCache::closeTransaction()   {
     mgr.UnlockGeometry();
     apply(AlignmentStack::get());
     AlignmentStack::get().release();
-    printout(INFO,"AlignmentCache","Alignments were applied. Refreshing physical nodes....");
     mgr.LockGeometry();
-    mgr.GetCurrentNavigator()->ResetAll();
-    mgr.GetCurrentNavigator()->BuildCache();
-    mgr.RefreshPhysicalNodes();
     return;
   }
   printout(WARNING,"Alignment<alignment>",
@@ -211,7 +188,7 @@ void AlignmentCache::uninstall(LCDD& lcdd)   {
 }
 
 /// Retrieve branch cache by name. If not present it will be created
-AlignmentCache* AlignmentCache::subdetectorAlignments(const std::string& name)    {
+AlignmentCache* AlignmentCache::subdetectorAlignments(const string& name)    {
   SubdetectorAlignments::const_iterator i = m_detectors.find(name);
   if ( i == m_detectors.end() )   {
     AlignmentCache* ptr = new AlignmentCache(m_lcdd,name,false);
@@ -223,25 +200,60 @@ AlignmentCache* AlignmentCache::subdetectorAlignments(const std::string& name)  
 
 /// Apply a complete stack of ordered alignments to the geometry structure
 void AlignmentCache::apply(AlignmentStack& stack)    {
-  typedef map<TNamed*,vector<Entry*> > sd_entries_t;
-  sd_entries_t all;
+  typedef map<string,DetElement> DetElementUpdates;
+  typedef map<DetElement,vector<Entry*> > sd_entries_t;
+  TGeoManager& mgr = m_lcdd.manager();
+  DetElementUpdates detelt_updates;
+  sd_entries_t all, highest;
+
   while(stack.size() > 0)    {
     Entry* e = stack.pop().release();
     DetElement det = _detector(e->detector);
-    all[det.ptr()].push_back(e);
+    all[det].push_back(e);
+    if ( e->hasMatrix() || e->needsReset() || e->resetChildren() )  {
+      detelt_updates.insert(make_pair(e->detector.path(),e->detector));
+    }
   }
   for(sd_entries_t::iterator i=all.begin(); i!=all.end(); ++i)  {
-    DetElement det(Ref_t((*i).first));
+    DetElement det((*i).first);
     AlignmentCache* sd_cache = subdetectorAlignments(det.placement().name());
     sd_cache->apply( (*i).second );
     (*i).second.clear();
   }
-}
 
+  printout(INFO,"AlignmentCache","Alignments were applied. Refreshing physical nodes....");
+  mgr.GetCurrentNavigator()->ResetAll();
+  mgr.GetCurrentNavigator()->BuildCache();
+  mgr.RefreshPhysicalNodes();
+
+  // Provide update callback for every detector element with a changed placement
+  for(DetElementUpdates::iterator i=detelt_updates.begin(); i!=detelt_updates.end(); ++i)  {
+    DetElement elt((*i).second);
+    printout(DEBUG,"AlignmentCache","+++ Trigger placement update for %s [2]",elt.path().c_str());
+    elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_ELEMENT,elt.ptr());
+  }
+  // Provide update callback for the highest detector element
+  string last_path = "?????";
+  for(DetElementUpdates::iterator i=detelt_updates.begin(); i!=detelt_updates.end(); ++i)  {
+    const string& path = (*i).first;
+    if ( path.find(last_path) == string::npos )  {
+      DetElement elt((*i).second);
+      printout(DEBUG,"AlignmentCache","+++ Trigger placement update for %s [1]",elt.path().c_str());
+      elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_HIGHEST,elt.ptr());
+      last_path = (*i).first;
+    }
+  }
+  // Provide update callback at the detector level
+  for(sd_entries_t::iterator i=all.begin(); i!=all.end(); ++i)  {
+    DetElement elt((*i).first);
+    printout(DEBUG,"AlignmentCache","+++ Trigger placement update for %s [0]",elt.path().c_str());
+    elt->update(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,elt.ptr());
+  }
+}
 
 /// Apply a vector of SD entries of ordered alignments to the geometry structure
 void AlignmentCache::apply(const vector<Entry*>& changes)   {
-  typedef std::map<std::string,std::pair<TGeoPhysicalNode*,Entry*> > Nodes;
+  typedef map<string,pair<TGeoPhysicalNode*,Entry*> > Nodes;
   typedef vector<Entry*> Changes;
   Nodes nodes;
 
