@@ -241,7 +241,7 @@ VolumeManager::Object::~Object() {
 }
 
 /// Update callback when alignment has changed (called only for subdetectors....)
-void VolumeManager::Object::update(unsigned int tags, DetElement& det, void* param)   {
+void VolumeManager::Object::update(unsigned long tags, DetElement& det, void* param)   {
   if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
     printout(INFO,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
   if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  

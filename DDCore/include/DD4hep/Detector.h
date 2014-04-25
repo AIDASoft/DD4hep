@@ -344,7 +344,7 @@ namespace DD4hep {
       /// Extend the detector element with an arbitrary callback
       template <typename Q, typename T> 
 	void callAtUpdate(unsigned int type, Q* pointer, 
-			  void (T::*pmf)(unsigned int typ, DetElement& det, void* opt_par)) const
+			  void (T::*pmf)(unsigned long typ, DetElement& det, void* opt_par)) const
       {
 	CallbackSequence::checkTypes(typeid(T), typeid(Q), dynamic_cast<T*>(pointer));
 	i_addUpdateCall(type, Callback(pointer).make(pmf));

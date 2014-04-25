@@ -160,7 +160,7 @@ namespace DD4hep {
         /// Search the locally cached volumes for a matching ID
         Context* search(const VolumeID& id) const;
 	/// Update callback when alignment has changed (called only for subdetectors....)
-	void update(unsigned int tags, DetElement& det, void* param);
+	void update(unsigned long tags, DetElement& det, void* param);
       };
 
     protected:
