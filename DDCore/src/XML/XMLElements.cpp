@@ -65,16 +65,16 @@ union Xml {
 
 namespace {
   XmlElement* node_first(XmlElement* e, const Tag_t& t) {
-    if ( t=="*" ) return e ? (XmlElement*)_E(e)->FirstChildElement() : 0;
-    return e ? (XmlElement*)_E(e)->FirstChildElement(t) : 0;
+    if ( t.str()=="*" ) return e ? (XmlElement*)_E(e)->FirstChildElement() : 0;
+    return e ? (XmlElement*)_E(e)->FirstChildElement(t.str()) : 0;
   }
   size_t node_count(XmlElement* elt, const Tag_t& t) {
     size_t cnt = 0;
     TiXmlElement* e = Xml(elt).e;
-    if ( t=="*" ) 
+    if ( t.str()=="*" ) 
       for(e=e->FirstChildElement();e; e=e->NextSiblingElement()) ++cnt;
     else
-      for(e=e->FirstChildElement(t);e; e=e->NextSiblingElement(t)) ++cnt;
+      for(e=e->FirstChildElement(t.str());e; e=e->NextSiblingElement(t.str())) ++cnt;
     return cnt;
   }
 }
@@ -460,11 +460,11 @@ XmlElement* NodeList::next() const {
 #ifdef DD4HEP_USE_TINYXML
   if ( m_tag.str()=="*" ) 
     return m_ptr =_XE(m_ptr ? _E(m_ptr)->NextSiblingElement() : 0);
-  return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag) : 0);
+  return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag.str()) : 0);
 #else
   xercesc::DOMElement *elt = Xml(m_ptr).e;
   for(elt=elt->getNextElementSibling(); elt; elt=elt->getNextElementSibling()) {
-    if ( m_tag == "*" ) return m_ptr=Xml(elt).xe;
+    if ( m_tag.str() == "*" ) return m_ptr=Xml(elt).xe;
     string child_tag = _toString(elt->getTagName());
     if ( child_tag == m_tag ) return m_ptr=Xml(elt).xe;
   }
@@ -475,13 +475,13 @@ XmlElement* NodeList::next() const {
 /// Go back to previous element
 XmlElement* NodeList::previous() const {
 #ifdef DD4HEP_USE_TINYXML
-  if ( m_tag=="*" ) 
+  if ( m_tag.str()=="*" ) 
     return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement() : 0);
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement(m_tag) : 0);
 #else
   xercesc::DOMElement *elt = Xml(m_ptr).e;
   for(elt=elt->getPreviousElementSibling(); elt; elt=elt->getPreviousElementSibling()) {
-    if ( m_tag=="*" ) return m_ptr=Xml(elt).xe;
+    if ( m_tag.str()=="*" ) return m_ptr=Xml(elt).xe;
     string child_tag = _toString(elt->getTagName());
     if ( child_tag == m_tag ) return m_ptr=Xml(elt).xe;
   }
