@@ -1,0 +1,26 @@
+<alignment print="true">
+  <open_transaction/>
+  <subdetectors>
+    <!--
+	Note: The subdetector name MUST be in the list of top level
+	detector elements attached to the LCDD structure.
+
+    -->
+    <detelement path="TPC" reset="false">
+      <detelement path="/world/TPC/TPC_SideA" reset="true" reset_children="false">
+	<position x="0"   y="0"  z="0"/>
+	<rotation x="-0.25" y="0"  z="0"/>
+      </detelement>
+<!--
+      <detelement path="/world/TPC/TPC_SideA/TPC_SideA_sector05" reset="true"/>
+      <detelement path="/world/TPC/TPC_SideA/TPC_SideA_sector02" reset="true"/>
+      <detelement path="TPC_SideA/TPC_SideA_sector03" reset="true">
+	<volume path="layer4_0"	reset="true"/>
+      </detelement>
+      <detelement path="TPC_SideA/TPC_SideA_sector10" reset="true"/>
+-->
+      <detelement path="/world/TPC/TPC_SideB" reset="true" reset_children="false"/>
+    </detelement>
+  </subdetectors>
+  <close_transaction/>
+</alignment>
