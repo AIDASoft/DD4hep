@@ -24,26 +24,31 @@
  */
 namespace DD4hep {
 
-  struct Property;
-  struct PropertyGrammar;
-  struct PropertyConfigurator {
+  class Property;
+  class BasicGrammar;
+  class PropertyGrammar;
+
+
+  class PropertyConfigurator {
   protected:
     virtual ~PropertyConfigurator();
   public:
     virtual void set(const PropertyGrammar& setter, const std::string&, const std::string&, void* ptr) const = 0;
   };
 
+
   /** @class PropertyGrammar
    *
    *   @author  M.Frank
    *   @date    13.08.2013
    */
-  struct PropertyGrammar {
+  class PropertyGrammar {
   protected:
     friend class Property;
-
+    const BasicGrammar& m_grammar;
+  public:
     /// Default constructor
-    PropertyGrammar();
+    PropertyGrammar(const BasicGrammar& g);
     /// Default destructor
     virtual ~PropertyGrammar();
     /// Error callback on invalid conversion
@@ -51,11 +56,11 @@ namespace DD4hep {
     /// Error callback on invalid conversion
     static void invalidConversion(const std::string& value, const std::type_info& to);
     /// Access to the type information
-    virtual const std::type_info& type() const = 0;
+    virtual const std::type_info& type() const;
     /// Serialize an opaque value to a string
-    virtual std::string str(const void* ptr) const = 0;
+    virtual std::string str(const void* ptr) const;
     /// Set value from serialized string. On successful data conversion TRUE is returned.
-    virtual bool fromString(void* ptr, const std::string& value) const = 0;
+    virtual bool fromString(void* ptr, const std::string& value) const;
   };
 
   /** @class Property

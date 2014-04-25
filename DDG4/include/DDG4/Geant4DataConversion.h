@@ -97,10 +97,10 @@ namespace DD4hep {
       if ( i != conversions().end() ) {
         return *((*i).second);
       }
-      throw std::runtime_error(typeinfoName(typeid(self_t))+
+      throw std::runtime_error(typeName(typeid(self_t))+
           ": No appropriate LCIO_OUTPUT conversion "
           "mechanism known for tag:"+
-          typeinfoName(typ));
+          typeName(typ));
     }
 
     /** @class Geant4DataConversion Geant4DataConversion.h DDG4/Geant4DataConversion.h
@@ -117,7 +117,7 @@ namespace DD4hep {
       Geant4DataConversion(void*) : Geant4Conversion<OUTPUT,ARGS>()
       {
         this->self_t::conversions().insert(make_pair(&typeid(TAG),this));
-        //std::cout << "Registered " << typeinfoName(typeid(*this)) << std::endl;
+        //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
       }
       virtual OUTPUT* operator()(const ARGS& args) const;
     };

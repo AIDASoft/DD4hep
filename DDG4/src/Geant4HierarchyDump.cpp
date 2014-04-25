@@ -114,7 +114,7 @@ void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)
   }
   if (sd && (m_flags & G4DUMP_SENSDET)) {
     printout(INFO, "Geant4Hierarchy", "%s    Sens.det:%p %s path:%s Active:%-3s #Coll:%d", indent.c_str(), sd,
-        _T(sd->GetName()), _T(sd->GetFullPathName()), sd->isActive() ? "YES" : "NO", sd->GetNumberOfCollections());
+	     _T(sd->GetName()), _T(sd->GetFullPathName()), yes_no(sd->isActive()), sd->GetNumberOfCollections());
   }
   if (ul && (m_flags & G4DUMP_LIMITS)) {
     printout(INFO, "Geant4Hierarchy", "%s    Limits:%s ", indent.c_str(), _T(ul->GetType()));

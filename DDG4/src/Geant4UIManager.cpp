@@ -28,7 +28,7 @@ Geant4UIManager::Geant4UIManager(Geant4Context* context, const std::string& name
 {
   declareProperty("SetupUI", m_uiSetup="");
   declareProperty("SetupVIS", m_visSetup="");
-  declareProperty("SessionType", m_sessionType="cmd");
+  declareProperty("SessionType", m_sessionType="tcsh");
   declareProperty("HaveVIS", m_haveVis=false);
   declareProperty("HaveUI", m_haveUI=true);
 }
@@ -40,6 +40,7 @@ Geant4UIManager::~Geant4UIManager()   {
 /// Start visualization
 G4VisManager* Geant4UIManager::startVis()  {
   // Initialize visualization
+  printout(INFO,"Geant4UIManager","+++ Starting G4VisExecutive ....");
   G4VisManager* vis = new G4VisExecutive();
   vis->Initialize();
   return vis;
@@ -49,7 +50,9 @@ G4VisManager* Geant4UIManager::startVis()  {
 G4UIExecutive* Geant4UIManager::startUI()   {
   G4UIExecutive* ui = 0;
   const char* args[] = {"DDG4","",""};
-  ui = new G4UIExecutive(1,(char**)args) ; //,m_sessionType.c_str());
+  printout(INFO,"Geant4UIManager","+++ Starting G4UIExecutive '%s' of type %s....",
+	   args[0], m_sessionType.c_str());
+  ui = new G4UIExecutive(1,(char**)args,m_sessionType.c_str());
   return ui;
 }
 

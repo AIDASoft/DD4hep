@@ -36,7 +36,7 @@ template <typename TYPE> static inline TYPE* checked_value(TYPE* p) {
     return p;
   }
   throw runtime_error(
-      format("Geant4Handle", "Attempt to access an invalid object of type:%s!", typeinfoName(typeid(TYPE)).c_str()));
+      format("Geant4Handle", "Attempt to access an invalid object of type:%s!", typeName(typeid(TYPE)).c_str()));
 }
 
 template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle()
@@ -62,7 +62,7 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& ke
   Geant4Context* ctxt = kernel.context();
   Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
   if (!object && typ.first == typ.second) {
-    typ.first = typeinfoName(typeid(TYPE));
+    typ.first = typeName(typeid(TYPE));
     printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Object factory for %s not found. Try out %s", typ.second.c_str(),
         typ.first.c_str());
     object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
@@ -82,7 +82,7 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& ke
     }
     throw runtime_error(
         format("Geant4Handle", "Failed to convert object of type %s to handle of type %s!", type_name.c_str(),
-            typeinfoName(typeid(TYPE)).c_str()));
+            typeName(typeid(TYPE)).c_str()));
   }
   throw runtime_error(format("Geant4Handle", "Failed to create object of type %s!", type_name.c_str()));
 }
@@ -94,7 +94,7 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& ke
   Geant4Context* ctxt = kernel.context();
   Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
   if (!object && typ.first == typ.second) {
-    typ.first = typeinfoName(typeid(TYPE));
+    typ.first = typeName(typeid(TYPE));
     printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Object factory for %s not found. Try out %s", typ.second.c_str(),
         typ.first.c_str());
     object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
@@ -114,7 +114,7 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& ke
     }
     throw runtime_error(
         format("Geant4Handle", "Failed to convert object of type %s to handle of type %s!", type_name.c_str(),
-            typeinfoName(typeid(TYPE)).c_str()));
+            typeName(typeid(TYPE)).c_str()));
   }
   throw runtime_error(format("Geant4Handle", "Failed to create object of type %s!", type_name.c_str()));
 }

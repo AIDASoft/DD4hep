@@ -9,19 +9,18 @@
 
 // Framework include files
 #include "DD4hep/Printout.h"
-#include "DDG4/ComponentProperties_inl.h"
-#include "DDG4/ToStream.h"
+#include "DD4hep/BasicGrammar.h"
+#include "DDG4/ComponentProperties.h"
 
 // C/C++ include files
 #include <stdexcept>
 #include <cstring>
-#include <set>
 
 using namespace std;
 using namespace DD4hep;
 
 /// Default constructor
-PropertyGrammar::PropertyGrammar() {
+PropertyGrammar::PropertyGrammar(const BasicGrammar& g) : m_grammar(g) {
 }
 
 /// Default destructor
@@ -29,23 +28,33 @@ PropertyGrammar::~PropertyGrammar() {
 }
 
 /// Error callback on invalid conversion
-void PropertyGrammar::invalidConversion(const string& value, const type_info& to) {
-  string to_name = typeinfoName(to);
-  throw unrelated_value_error(to,
-      "The Property data conversion of '" + value + "' to type " + to_name + " is not defined.");
+void PropertyGrammar::invalidConversion(const std::type_info& from, const std::type_info& to)  {
+  BasicGrammar::invalidConversion(from,to);
 }
 
 /// Error callback on invalid conversion
-void PropertyGrammar::invalidConversion(const type_info& from, const type_info& to) {
-  string to_name = typeinfoName(to);
-  string from_name = typeinfoName(from);
-  throw unrelated_type_error(from, to,
-      "The Property data conversion from type " + from_name + " to " + to_name + " is not implemented.");
+void PropertyGrammar::invalidConversion(const std::string& value, const std::type_info& to)   {
+  BasicGrammar::invalidConversion(value,to);
+}
+
+/// Access to the type information
+const std::type_info& PropertyGrammar::type() const  {
+  return m_grammar.type();
+}
+
+/// Serialize an opaque value to a string
+std::string PropertyGrammar::str(const void* ptr) const  {
+  return m_grammar.str(ptr);
+}
+
+/// Set value from serialized string. On successful data conversion TRUE is returned.
+bool PropertyGrammar::fromString(void* ptr, const std::string& value) const  {
+  return m_grammar.fromString(ptr,value);
 }
 
 /// Default constructor
 Property::Property()
-    : m_par(0), m_hdl(0) {
+  : m_par(0), m_hdl(0) {
 }
 
 /// Copy constructor
@@ -69,7 +78,7 @@ string Property::type(const Property& property) {
 
 /// Property type name
 string Property::type(const type_info& typ) {
-  return typeinfoName(typ);
+  return typeName(typ);
 }
 
 /// Property type name
@@ -196,168 +205,35 @@ void PropertyManager::dump() const {
   }
 }
 
-#include "XML/Evaluator.h"
-namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
-namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
+#include "DDG4/ComponentProperties_inl.h"
+#include <vector>
+#include <list>
+#include <set>
+#include <map>
 
-static string pre_parse_obj(const string& in)   {
-  string res = "";
-  res.reserve(1024);
-  for(const char* c = in.c_str(); *c; ++c)   {
-    switch(*c)  {
-    case '\'':
-      return "Bad object representation";
-    case ',':
-      res += "','";
-      break;
-    case '(':
-    case '[':
-      res += "['";
-      break;
-    case ')':
-    case ']':
-      res += "']";
-      break;
-    default:
-      res += *c;
-      break;
-    }
-  }
-  //cout << "Pre-parsed:" << res << endl;
-  return res;
-}
-
-template <typename TYPE> static int fill(std::vector<TYPE>* p,const std::vector<string>& temp)  {
-  const Grammar<TYPE>& g = Grammar<TYPE>::instance();
-  TYPE val;
-  for(std::vector<string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
-    if ( !g.fromString(&val,*i) )
-      return 0;
-    p->push_back(val);
-  }
-  return 1;
-}
-template <typename TYPE> static int fill(std::list<TYPE>* p,const std::vector<string>& temp)  {
-  const Grammar<TYPE>& g = Grammar<TYPE>::instance();
-  TYPE val;
-  for(std::vector<string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
-    if ( !g.fromString(&val,*i) )
-      return 0;
-    p->push_back(val);
-  }
-  return 1;
-}
-template <typename TYPE> static int fill(std::set<TYPE>* p,const std::vector<string>& temp)  {
-  const Grammar<TYPE>& g = Grammar<TYPE>::instance();
-  TYPE val;
-  for(std::vector<string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
-    if ( !g.fromString(&val,*i) )
-      return 0;
-    p->insert(val);
-  }
-  return 1;
-}
-
-template <typename TYPE> static int eval(TYPE* p, const string& str)  {
-#ifdef DD4HEP_USE_BOOST
-  std::vector<string> buff;
-  int sc = Parsers::parse(buff,str);
-  if ( sc )  {
-    return fill(p,buff);
-  }
-  else   {
-    TYPE temp;
-    std::string temp_str = pre_parse_obj(str);
-    sc = Parsers::parse(temp,temp_str);
-    if ( sc )   {
-      *p = temp;
-      return 1;
-    }
-    buff.clear();
-    sc = Parsers::parse(buff,temp_str);
-    if ( sc )  {
-      return fill(p,buff);
-    }
-  }
-#else
-  if ( p && str.empty() ) return 0;
-#endif
-  return 0;
-}
-
-template <typename T> static int _eval(T* p, string s)  {
-  size_t idx = s.find("(int)");
-  if (idx != string::npos)
-    s.erase(idx, 5);
-  while (s[0] == ' ')
-    s.erase(0, 1);
-  double result = s__eval.evaluate(s.c_str());
-  if (s__eval.status() != XmlTools::Evaluator::OK) {
-    return 0;
-  }
-  *p = (T)result;
-  return 1;
-}
-
-static int _eval(ROOT::Math::XYZPoint* p, const string& str)
-{  return Grammar<ROOT::Math::XYZPoint>::instance().fromString(p,pre_parse_obj(str));  }
-static int _eval(ROOT::Math::XYZVector* p, const string& str)
-{  return Grammar<ROOT::Math::XYZVector>::instance().fromString(p,pre_parse_obj(str));  }
-static int _eval(ROOT::Math::PxPyPzEVector* p, const string& str)
-{  return Grammar<ROOT::Math::PxPyPzEVector>::instance().fromString(p,pre_parse_obj(str));  }
-
-#define DD4HEP_INSTANTIATE_PROPERTY_EVALUATE(x) \
-  template<> int Grammar<x >::evaluate(void* p, const string& v) const { return _eval((x*)p,v); }
-
-#define DD4HEP_INSTANTIATE_PROPERTY_EVALUATE1(x) DD4HEP_INSTANTIATE_PROPERTY_EVALUATE(x)\
-  template<> int Grammar<vector<x> >::evaluate(void* p,const string& v)const{return eval((std::vector<x>*)p,v);} \
-  template<> int Grammar<list<x>   >::evaluate(void* p,const string& v)const{return eval((std::list<x>*)p,v);} \
-  template<> int Grammar<set<x>    >::evaluate(void* p,const string& v)const{return eval((std::set<x>*)p,v);}
-
-#define DD4HEP_INSTANTIATE_PROPERTY_TYPE1(x)            \
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE(x);			\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE(std::vector<x>);	\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE(std::list<x>);	\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE(std::set<x>)
-
-#define DD4HEP_INSTANTIATE_PROPERTY_TYPE2(x)	\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1(x);		\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1(unsigned x)
-
-// Macros for evaluated properties:
-
-#define DD4HEP_INSTANTIATE_PROPERTY_TYPE0E(x)   \
-  DD4HEP_INSTANTIATE_PROPERTY_EVALUATE(x)       \
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE(x)
-
-#define DD4HEP_INSTANTIATE_PROPERTY_TYPE1E(x)   \
-  DD4HEP_INSTANTIATE_PROPERTY_EVALUATE1(x)      \
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1(x)
-
-#define DD4HEP_INSTANTIATE_PROPERTY_TYPE2E(x)	\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1E(x);	\
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1E(unsigned x)
+#include "Math/Point3D.h"
+#include "Math/Vector3D.h"
+#include "Math/Vector4D.h"
 
 namespace DD4hep {
+  DD4HEP_DEFINE_PROPERTY_U_CONT(char);
+  DD4HEP_DEFINE_PROPERTY_U_CONT(short);
+  DD4HEP_DEFINE_PROPERTY_U_CONT(int);
+  DD4HEP_DEFINE_PROPERTY_U_CONT(long);
+  DD4HEP_DEFINE_PROPERTY_U_CONT(long long);
 
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE2E(char);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE2E(short);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE2E(int);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE2E(long);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE2E(long long);
-
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1E(bool);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1E(float);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1E(double);
+  DD4HEP_DEFINE_PROPERTY_CONT(bool);
+  DD4HEP_DEFINE_PROPERTY_CONT(float);
+  DD4HEP_DEFINE_PROPERTY_CONT(double);
 
   // STL objects
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE1(string);
+  DD4HEP_DEFINE_PROPERTY_CONT(string);
 
   typedef map<string, int> map_string_int;
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE(map_string_int);
+  DD4HEP_DEFINE_PROPERTY_TYPE(map_string_int);
 
   // ROOT::Math Object instances
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE0E(ROOT::Math::XYZPoint);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE0E(ROOT::Math::XYZVector);
-  DD4HEP_INSTANTIATE_PROPERTY_TYPE0E(ROOT::Math::PxPyPzEVector);
+  DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZPoint);
+  DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZVector);
+  DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::PxPyPzEVector);
 }

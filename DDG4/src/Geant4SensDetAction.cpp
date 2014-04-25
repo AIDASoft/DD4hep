@@ -44,7 +44,7 @@ namespace {
           format("Geant4Sensitive", "DDG4: You may only configure actions "
               "for sensitive detectors of type Geant4ActionSD.\n"
               "DDG4: The sensitive detector of %s is of type %s, which is incompatible.", name.c_str(),
-              typeinfoName(typeid(*sd)).c_str()));
+              typeName(typeid(*sd)).c_str()));
     }
     return action_sd;
   }

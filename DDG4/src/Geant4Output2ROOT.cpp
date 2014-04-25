@@ -82,7 +82,7 @@ int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, v
         m_branches.insert(make_pair(nam, b));
       }
       else {
-        throw runtime_error("No ROOT TClass object availible for object type:" + typeinfoName(type.type));
+        throw runtime_error("No ROOT TClass object availible for object type:" + typeName(type.type));
       }
     }
     else {

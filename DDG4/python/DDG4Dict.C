@@ -182,6 +182,7 @@ namespace DD4hep {
 
 typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 
+#include "DD4hep/objects/DetectorInterna.h"
 // CINT configuration for DDG4
 #if defined(__MAKECINT__)
 #pragma link C++ class PropertyResult;
@@ -249,6 +250,8 @@ using namespace DD4hep::Geometry;
 #if defined(__MAKECINT__)
 
 //#pragma link C++ class Handle<TObject>;
+#pragma link C++ class ObjectExtensions;
+
 #pragma link C++ class Handle<TNamed>;
 #pragma link C++ class LCDD::HandleMap;
 #pragma link C++ class LCDD::HandleMap::iterator;
@@ -276,11 +279,16 @@ using namespace DD4hep::Geometry;
 // Readout.h
 #pragma link C++ class Readout;
 #pragma link C++ class Alignment;
+#pragma link C++ class Condition;
 #pragma link C++ class Conditions;
 
 // DetElement.h
 #pragma link C++ class DetElement;
+#pragma link C++ class DetElementObject;
+#pragma link C++ class Handle<DetElementObject>;
+#pragma link C++ class SensitiveDetectorObject;
 #pragma link C++ class SensitiveDetector;
+#pragma link C++ class Handle<SensitiveDetectorObject>;
 
 // Volume.h
 #pragma link C++ class Volume;

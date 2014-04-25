@@ -60,7 +60,7 @@ long Geant4Action::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
     cout << "Geant4Action: Deleting object " << name() 
-	 << " of type " << typeinfoName(typeid(*this)) 
+	 << " of type " << typeName(typeid(*this)) 
 	 << " Ptr:" << (void*)this
 	 << endl;
     delete this;
@@ -188,7 +188,7 @@ void Geant4Action::except(const string& fmt, ...) const {
 
 /// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
 void Geant4Action::abortRun(const string& exception, const string& fmt, ...) const {
-  string desc, typ = typeinfoName(typeid(*this));
+  string desc, typ = typeName(typeid(*this));
   string issuer = name()+" ["+typ+"]";
   va_list args;
   va_start(args, fmt);

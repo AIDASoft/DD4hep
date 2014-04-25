@@ -83,7 +83,6 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd)
   m_sensDetActions = new Geant4SensDetSequences();
   m_context = new Geant4Context(this);
   m_lcdd.addExtension < Geant4Kernel > (this);
-
   declareProperty("UI",m_uiName);
   declareProperty("NumEvents",m_numEvent = 10);
   m_controlName = "/ddg4/";
@@ -111,6 +110,7 @@ Geant4Kernel::~Geant4Kernel() {
   releasePtr (m_runAction);
   deletePtr  (m_sensDetActions);
   deletePtr  (m_context);
+  m_lcdd.removeExtension < Geant4Kernel > (false);
   m_lcdd.destroyInstance();
   InstanceCount::decrement(this);
 }
@@ -221,7 +221,7 @@ Geant4Kernel& Geant4Kernel::registerGlobalAction(Geant4Action* action) {
       action->addRef();
       m_globalActions[nam] = action;
       printout(INFO,"Geant4Kernel","++ Registered global action %s of type %s",
-	       nam.c_str(),typeinfoName(typeid(*action)).c_str());
+	       nam.c_str(),typeName(typeid(*action)).c_str());
       return *this;
     }
     throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is already globally "
