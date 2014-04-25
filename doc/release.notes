@@ -18,7 +18,8 @@ DD4hep  ----  Release Notes
    - Initial implementation of DDCond the package supporting the handling of 
      conditions.
      Not to be used currently - experimental package.
-
+   - Geant4Converter: I convinced myself, that the bug in handling assemblies
+     of assemblies is resolved. To be tested though.
 
 2014/02/07  Frank Gaede
 -----------------------
