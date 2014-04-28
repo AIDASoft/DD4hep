@@ -45,7 +45,7 @@ namespace DD4hep {
       typedef Geometry::IDDescriptor IDDescriptor;
       typedef IDDescriptor::VolIDFields VolIDFields;
       typedef std::pair<VolumeID, VolIDFields> VolIDDescriptor;
-      typedef Geant4GeometryInfo::PlacementPath PlacementPath;
+      typedef Geant4GeometryMaps::Geant4PlacementPath PlacementPath;
       typedef Geant4GeometryInfo Object;
 
     protected:
@@ -89,20 +89,10 @@ namespace DD4hep {
       
       /// Helper: Generate placement path from touchable object
       PlacementPath placementPath(const G4VTouchable* touchable, bool exception = true) const;
-
-      /// Accessor to resolve TGeo geometry placements from Geant4 placements
-      PlacedVolume placement(const G4VPhysicalVolume* node) const;
-      /// Accessor to resolve Geant4 geometry placements from TGeo placements
-      G4VPhysicalVolume* placement(const TGeoNode* node) const;
-      /// Accessor to resolve Geant4 geometry placements from TGeo placements
-      G4VPhysicalVolume* placement(const PlacedVolume& node) const {
-        return placement(node.ptr());
-      }
       /// Access CELLID by placement path
       VolumeID volumeID(const PlacementPath& path) const;
       /// Access CELLID by Geant4 touchable object
       VolumeID volumeID(const G4VTouchable* touchable) const;
-
       /// Accessfully decoded volume fields  by placement path
       void volumeDescriptor(const PlacementPath& path, VolIDDescriptor& volume_desc) const;
       /// Access fully decoded volume fields by Geant4 touchable object

@@ -20,8 +20,6 @@
 // ROOT include files
 #include "TGeoMatrix.h"
 
-
-
 /*
  *   DD4hep namespace declaration
  */
@@ -39,7 +37,7 @@ namespace DD4hep {
      */
     namespace DetectorTools {
       /// Assemble the path of the PlacedVolume selection
-      std::string elementPath(const PlacementPath& nodes);
+      std::string elementPath(const PlacementPath& nodes, bool reverse);
       /// Collect detector elements to any parent detector element
       void elementPath(DetElement parent, DetElement elt, ElementPath& detectors);
       /// Collect detector elements placements to the top detector element (world) [fast, but may have holes!]
@@ -185,18 +183,30 @@ void DetectorTools::elementPath(DetElement element, PlacementPath& det_nodes) {
 }
 
 /// Assemble the path of the PlacedVolume selection
-std::string DetectorTools::elementPath(const PlacementPath& nodes)   {
+std::string DetectorTools::elementPath(const PlacementPath& nodes, bool reverse)   {
   string s = "";
+  if ( reverse )  {
   for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
     s += "/" + string((*i).name());
+  }
+  else  {
+    for(PlacementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
+      s += "/" + string((*i)->GetName());
+  }
   return s;
 }
 
 /// Assemble the path of the PlacedVolume selection
-std::string DetectorTools::elementPath(const ElementPath& nodes)  {
+std::string DetectorTools::elementPath(const ElementPath& nodes, bool reverse)  {
   string s = "";
+  if ( reverse )  {
   for(ElementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
     s += "/" + string((*i)->GetName());
+  }
+  else  {
+    for(ElementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
+      s += "/" + string((*i)->GetName());
+  }
   return s;
 }
 
@@ -277,10 +287,30 @@ std::string DetectorTools::placementPath(DetElement element)  {
 }
 
 /// Assemble the path of the PlacedVolume selection
-std::string DetectorTools::placementPath(const PlacementPath& nodes)  {
+std::string DetectorTools::placementPath(const PlacementPath& nodes, bool reverse)  {
   string s="";
-  for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-    s += "/" + string((*i)->GetName());
+  if ( reverse )  {
+    for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+      s += "/" + string((*i)->GetName());
+  }
+  else  {
+    for(PlacementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
+      s += "/" + string((*i)->GetName());
+  }
+  return s;
+}
+
+/// Assemble the path of the PlacedVolume selection
+std::string DetectorTools::placementPath(const std::vector<const TGeoNode*>& nodes, bool reverse)   {
+  string s="";
+  if ( reverse )  {
+    for(std::vector<const TGeoNode*>::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+      s += "/" + string((*i)->GetName());
+  }
+  else  {
+    for(std::vector<const TGeoNode*>::const_iterator i=nodes.begin();i!=nodes.end();++i)
+      s += "/" + string((*i)->GetName());
+  }
   return s;
 }
 
@@ -351,4 +381,25 @@ PlacedVolume DetectorTools::findNode(PlacedVolume top_place, const std::string& 
   }
   return node;
 }
+
+/// Convert VolumeID to string
+std::string DetectorTools::toString(const PlacedVolume::VolIDs& ids)   {
+  stringstream log;
+  for (PlacedVolume::VolIDs::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+    log << (*vit).first << "=" << (*vit).second << "; ";
+  return log.str();
+}
+
+/// Convert VolumeID to string
+std::string DetectorTools::toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code)   {
+  stringstream log;
+  for (PlacedVolume::VolIDs::const_iterator idIt = ids.begin(); idIt != ids.end(); ++idIt) {
+    const PlacedVolume::VolID& id = (*idIt);
+    IDDescriptor::Field f = dsc.field(id.first);
+    VolumeID value = f->value(code);
+    log << id.first << "=" << id.second << "," << value << " [" << f->offset() << "," << f->width() << "] ";
+  }
+  return log.str();
+}
+
 

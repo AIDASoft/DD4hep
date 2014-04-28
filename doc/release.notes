@@ -2,6 +2,12 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2014/04/28  Markus Frank
+------------------------
+   - First attempt to understand fully the handling of recursive assemblies
+     from the 2014/04/25 was apparently with limited success. Now they should
+     work!
+
 2014/04/25  Markus Frank
 ------------------------
    - Moved boost::spirit parsers to DDCore, since these parsers are also used

@@ -290,9 +290,9 @@ namespace DD4hep {
         return *physicsList(true);
       }
       /// Access to the Track Manager from the kernel object
-      Geant4MonteCarloTruth& mcTruthMgr();
+      Geant4MonteCarloTruth* mcTruthMgr(bool throw_exception=true);
       /// Access to the MC record manager from the kernel object (if instantiated!)
-      Geant4MonteCarloRecordManager& mcRecordMgr();
+      Geant4MonteCarloRecordManager* mcRecordMgr(bool throw_exception=true);
 
       /// Construct detector geometry using lcdd plugin
       void loadGeometry(const std::string& compact_file);

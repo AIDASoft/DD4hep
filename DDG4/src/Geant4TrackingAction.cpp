@@ -90,7 +90,8 @@ void Geant4TrackingAction::end(const G4Track*) {
 
 /// Mark the track to be kept for MC truth propagation
 void Geant4TrackingAction::mark(const G4Track* track) const    {
-  mcTruthMgr().mark(track);
+  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  if ( truth ) truth->mark(track,true);
 }
 
 /// Get the valid Geant4 tarck information

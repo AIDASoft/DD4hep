@@ -229,12 +229,12 @@ Geant4GeneratorActionSequence& Geant4Action::generatorAction() const {
 }
 
 /// Access to the Track Manager from the kernel object
-Geant4MonteCarloTruth& Geant4Action::mcTruthMgr() const   {
-  return m_context->kernel().mcTruthMgr();
+Geant4MonteCarloTruth* Geant4Action::mcTruthMgr(bool throw_exception) const   {
+  return m_context->kernel().mcTruthMgr(throw_exception);
 }
 
 /// Access to the MC record manager from the kernel object
-Geant4MonteCarloRecordManager& Geant4Action::mcRecordMgr() const   {
-  return m_context->kernel().mcRecordMgr();
+Geant4MonteCarloRecordManager* Geant4Action::mcRecordMgr(bool throw_exception) const   {
+  return m_context->kernel().mcRecordMgr(throw_exception);
 }
 

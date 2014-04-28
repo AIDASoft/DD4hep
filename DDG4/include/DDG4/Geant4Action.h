@@ -318,9 +318,9 @@ namespace DD4hep {
       /// Access to the main generator action sequence from the kernel object
       Geant4GeneratorActionSequence& generatorAction() const;
       /// Access to the Track Persistency Manager from the kernel object
-      Geant4MonteCarloTruth& mcTruthMgr() const;
+      Geant4MonteCarloTruth* mcTruthMgr(bool throw_exception=true) const;
       /// Access to the MC record manager from the kernel object
-      Geant4MonteCarloRecordManager& mcRecordMgr() const;
+      Geant4MonteCarloRecordManager* mcRecordMgr(bool throw_exception=true) const;
     };
 
     /// Declare property

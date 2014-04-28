@@ -73,32 +73,39 @@
 #include "G4ElectroMagneticField.hh"
 #include "G4FieldManager.hh"
 #include "G4ReflectionFactory.hh"
-#include "G4AssemblyVolume.hh"
 
 #include <iostream>
 #include <iomanip>
 #include <sstream>
 
 using namespace DD4hep::Simulation;
+using namespace DD4hep::Simulation::Geant4GeometryMaps;
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 
-#if 0
+#include "DDG4/Geant4AssemblyVolume.h"
+#include "DD4hep/DetectorTools.h"
 #include "G4RotationMatrix.hh"
 #include "G4AffineTransform.hh"
 #include "G4LogicalVolume.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4ReflectionFactory.hh"
 
-void G4AssemblyVolume::MakeImprint( G4AssemblyVolume* pAssembly,
-                                    G4LogicalVolume*  pMotherLV,
-                                    G4Transform3D&    transformation,
-                                    G4int copyNumBase,
-                                    G4bool surfCheck )
+void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
+				   const TGeoNode*   parent,
+				   Chain chain, 
+				   Geant4AssemblyVolume* pAssembly,
+				   G4LogicalVolume*  pMotherLV,
+				   G4Transform3D&    transformation,
+				   G4int copyNumBase,
+				   G4bool surfCheck )
 {
+  TGeoVolume* vol = parent->GetVolume();
   static int level=0;
   ++level;
+  
+
   unsigned int  numberOfDaughters;
 
   if( copyNumBase == 0 )
@@ -117,9 +124,14 @@ void G4AssemblyVolume::MakeImprint( G4AssemblyVolume* pAssembly,
   ImprintsCountPlus();
   
   std::vector<G4AssemblyTriplet> triplets = pAssembly->fTriplets;
+  //cout << " Assembly:" << DetectorTools::placementPath(chain) << endl;
 
-  for( unsigned int   i = 0; i < triplets.size(); i++ )
-  {
+  for( unsigned int i = 0; i < triplets.size(); i++ )  {
+    const TGeoNode* node = pAssembly->m_entries[i];
+    Chain new_chain = chain;
+    new_chain.push_back(node);
+    //cout << " Assembly: Entry: " << DetectorTools::placementPath(new_chain) << endl;
+
     G4Transform3D Ta( *(triplets[i].GetRotation()),
                       triplets[i].GetTranslation() );
     if ( triplets[i].IsReflection() )  { Ta = Ta * G4ReflectZ3D(); }
@@ -165,30 +177,36 @@ void G4AssemblyVolume::MakeImprint( G4AssemblyVolume* pAssembly,
       // Register the physical volume created by us so we can delete it later
       //
       fPVStore.push_back( pvPlaced.first );
-      if ( pvPlaced.second )  { fPVStore.push_back( pvPlaced.second ); }
+      info.g4VolumeImprints[vol].push_back(make_pair(new_chain,pvPlaced.first));
+#if 0
+      cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName() 
+	   << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
+	   << DetectorTools::placementPath(new_chain) << endl;
+      cout << endl;
+#endif
+
+      if ( pvPlaced.second )  {
+        G4Exception("G4AssemblyVolume::MakeImprint(..)", "GeomVol0003", FatalException,
+            "Fancy construct popping new mother from the stack!");
+	//fPVStore.push_back( pvPlaced.second ); 
+      }
     }
-    else if ( triplets[i].GetAssembly() )
-    {
+    else if ( triplets[i].GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
-      //
-      MakeImprint( triplets[i].GetAssembly(), pMotherLV,
-                   Tfinal, i*100+copyNumBase, surfCheck ); 
+      imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplets[i].GetAssembly(), pMotherLV, Tfinal, i*100+copyNumBase, surfCheck ); 
     }
-    else
-    {
+    else   {
       --level;
       G4Exception("G4AssemblyVolume::MakeImprint(..)",
                   "GeomVol0003", FatalException,
                   "Triplet has no volume and no assembly");
-    }  
+    }
   }  
-  cout << "Imprinted assembly level:" << level << " in mother:" << pMotherLV->GetName() << endl;
+  //cout << "Imprinted assembly level:" << level << " in mother:" << pMotherLV->GetName() << endl;
   --level;
 }    
-#endif
 
 namespace {
-  static TGeoNode* s_topPtr;
   static string indent = "";
   static Double_t s_identity_rot[] = { 1., 0., 0., 0., 1., 0., 0., 0., 1. };
   struct MyTransform3D : public G4Transform3D {
@@ -448,8 +466,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
 void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume) const {
   Geant4GeometryInfo& info = data();
   VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
-  AssemblyMap::const_iterator assIt = info.g4Assemblies.find(volume);
-  if (volIt == info.g4Volumes.end() && assIt == info.g4Assemblies.end() ) {
+  if (volIt == info.g4Volumes.end() ) {
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
     string n = v->GetName();
@@ -498,8 +515,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
         s->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly), yes_no(det.isValid()));
 
     if (assembly) {
-      G4AssemblyVolume* ass = new G4AssemblyVolume();
-      info.g4Assemblies[v] = ass;
+      //info.g4AssemblyVolumes[v] = new Geant4AssemblyVolume();
       return 0;
     }
     medium = (G4Material*) handleMaterial(m->GetName(), m);
@@ -552,31 +568,26 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* node) const {
   TGeoVolume* vol = node->GetVolume();
-  bool assembly = vol->GetShape()->IsA() == TGeoShapeAssembly::Class() || vol->IsA() == TGeoVolumeAssembly::Class();
-  if ( !assembly )    {
+  if ( vol->IsA() != TGeoVolumeAssembly::Class() )    {
     return 0;
   }
   Geant4GeometryInfo& info = data();
-  G4AssemblyVolume* g4 = info.g4Assemblies[vol];
-  if ( !node || !g4 )  {
-    printout(FATAL, "Geant4Converter", "+++ Invalid assembly pointer at %s : %d "
-	     "G4AssemblyVolume: %16p, TGeoNode: %16p [%s]",
-	     __FILE__, __LINE__, g4, node, name.c_str());
-  }
-  if ( g4->TotalImprintedVolumes() == 0 )  {
+  Geant4AssemblyVolume* g4 = info.g4AssemblyVolumes[node];
+  if ( !g4 )  {
+    g4 = new Geant4AssemblyVolume();
     TGeoVolume* mot_vol = node->GetVolume();
     for(Int_t i=0; i < vol->GetNdaughters(); ++i)   {
-      TGeoNode* d = vol->GetNode(i);
+      TGeoNode*   d = vol->GetNode(i);
       TGeoVolume* dau_vol = d->GetVolume();
       TGeoMatrix* tr = d->GetMatrix();
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
       if ( dau_vol->IsA() == TGeoVolumeAssembly::Class() )  {
-	AssemblyMap::iterator assIt = info.g4Assemblies.find(dau_vol);
-	if ( assIt == info.g4Assemblies.end() )  {
+	AssemblyMap::iterator assIt = info.g4AssemblyVolumes.find(d);
+	if ( assIt == info.g4AssemblyVolumes.end() )  {
 	  printout(FATAL, "Geant4Converter", "+++ Invalid child assembly at %s : %d  parent: %s child:%s",
-		   __FILE__, __LINE__, node->GetName(), d->GetName());
+		   __FILE__, __LINE__, name.c_str(), d->GetName());
 	}
-	g4->AddPlacedAssembly((*assIt).second,transform);
+	g4->placeAssembly(d,(*assIt).second,transform);
         printout(DEBUG, "Geant4Converter", "+++ Assembly: AddPlacedAssembly : dau:%s "
 		 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
 		 dau_vol->GetName(), mot_vol->GetName(),
@@ -586,15 +597,16 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
 	VolumeMap::iterator volIt = info.g4Volumes.find(dau_vol);
 	if ( volIt == info.g4Volumes.end() )  {
 	  printout(FATAL, "Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
-		   __FILE__, __LINE__, node->GetName(), d->GetName());
+		   __FILE__, __LINE__, name.c_str(), d->GetName());
 	}
-	g4->AddPlacedVolume((*volIt).second, transform);
+	g4->placeVolume(d,(*volIt).second, transform);
         printout(DEBUG, "Geant4Converter", "+++ Assembly: AddPlacedVolume : dau:%s "
 		 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
 		 dau_vol->GetName(), mot_vol->GetName(),
 		 transform.dx(), transform.dy(), transform.dz());
       }
     }
+    info.g4AssemblyVolumes[node] = g4;
   }
   return g4;
 }
@@ -618,33 +630,43 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
     }
     else {
       int copy = node->GetNumber();
-      bool daughter_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
+      bool node_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
       bool mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
       VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
 
-      if ( daughter_is_assembly && volIt != info.g4Volumes.end() )   {
-        printout(DEBUG, "Geant4Converter", "+++ Assembly: makeImprint: dau:%s in mother %s "
-		 "Tr:x=%8.3f y=%8.3f z=%8.3f",
-		 node->GetName(), mot_vol->GetName(), 
-		 transform.dx(), transform.dy(), transform.dz());
-	G4AssemblyVolume* ass = info.g4Assemblies[vol];
-	ass->MakeImprint((*volIt).second, transform, copy, m_checkOverlaps);
-	info.g4Placements[node] = (G4VPhysicalVolume*)node;
-	return 0;
-      }
-      else if ( mother_is_assembly )   {	  // Mother is an assembly:
+      if ( mother_is_assembly )   {
+	//
+	// Mother is an assembly:
+	// Nothing to do here, because:
+	// -- placed volumes were already added before in "handleAssembly"
+	// -- imprint cannot be made, because this requires a logical volume as a mother
+	//
         printout(DEBUG, "Geant4Converter", "+++ Assembly: **** : dau:%s "
 		 "to mother %s Tr:x=%8.3f y=%8.3f z=%8.3f",
 		 vol->GetName(), mot_vol->GetName(),
 		 transform.dx(), transform.dy(), transform.dz());
-	info.g4Placements[node] = (G4VPhysicalVolume*)node;
         return 0;
+      }
+      else if ( node_is_assembly )   {
+	//
+	// Node is an assembly:
+	// Imprint the assembly. The mother MUST already be transformed.
+	//
+        printout(INFO, "Geant4Converter", "+++ Assembly: makeImprint: dau:%s in mother %s "
+		 "Tr:x=%8.3f y=%8.3f z=%8.3f",
+		 node->GetName(), mot_vol->GetName(), 
+		 transform.dx(), transform.dy(), transform.dz());
+	Geant4AssemblyVolume* ass = (Geant4AssemblyVolume*)info.g4AssemblyVolumes[node];
+	Geant4AssemblyVolume::Chain chain;
+	chain.push_back(node);
+	ass->imprint(info,node,chain,ass,(*volIt).second, transform, copy, m_checkOverlaps);
+	return 0;
       }
       else if ( node != gGeoManager->GetTopNode() && volIt == info.g4Volumes.end() )  {
 	throw logic_error("Geant4Converter: Invalid mother volume found!");
       }
-      else if ( daughter_is_assembly ) {  // g4mot is NULL !
+      else if ( node_is_assembly ) {  // g4mot is NULL !
 	throw logic_error("Geant4Converter: Invalid mother - daughter relationship in assembly! ["+name+"]");
       }
       G4LogicalVolume* g4vol = info.g4Volumes[vol];
@@ -929,7 +951,6 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   Geant4GeometryInfo& geo = this->init();
   m_data->clear();
   collect(top, geo);
-  s_topPtr = top.placement().ptr();
   m_checkOverlaps = false;
 
   // We do not have to handle defines etc.
@@ -963,6 +984,8 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
 
   //handleMap(this, geo.sensitives, &Geant4Converter::printSensitive);
   //handleRMap(this, *m_data, &Geant4Converter::printPlacement);
+
+  geo.setWorld(top.placement().ptr());
   geo.valid = true;
   return *this;
 }

@@ -172,12 +172,14 @@ void Geant4Sensitive::clear(G4HCofThisEvent* /* HCE */) {
 
 /// Mark the track to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Track* track) const  {
-  mcTruthMgr().mark(track);
+  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  if ( truth ) truth->mark(track,true);
 }
 
 /// Mark the track of this step to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Step* step) const  {
-  mcTruthMgr().mark(step);
+  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  if ( truth ) truth->mark(step);
 }
 
 /// Returns the volumeID of the sensitive volume corresponding to the step

@@ -8,7 +8,6 @@
 //====================================================================
 // Framework include files
 #include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4MonteCarloTruth.h"
 #include "DDG4/Geant4Data.h"
 #include "DD4hep/Printout.h"
 
@@ -48,6 +47,7 @@ namespace DD4hep {
   }
 }
 #include "DD4hep/InstanceCount.h"
+#include "DDG4/Geant4TouchableHandler.h"
 
 namespace DD4hep {
   namespace Simulation   {
@@ -93,6 +93,8 @@ namespace DD4hep {
 }
 
 #include "DDG4/Geant4StepHandler.h"
+#include "DDG4/Geant4VolumeManager.h"
+#include "DDG4/Geant4Mapping.h"
 #include "G4OpticalPhoton.hh"
 #include "G4VProcess.hh"
 
@@ -143,16 +145,22 @@ namespace DD4hep {
       if ( hit )  {
 	HitContribution contrib = Hit::extractContribution(step);
 	hit->cellID        = volumeID( step ) ;
+
 	hit->energyDeposit = contrib.deposit ;
 	hit->position      = position;
 	hit->momentum      = direction;
 	hit->length        = hit_len;
 	collection(m_collectionID)->add(hit);
-	mcTruthMgr().mark(h.track,true);
+	mark(h.track);
 	if ( 0 == hit->cellID )  {
 	  hit->cellID        = volumeID( step ) ;
 	  throw runtime_error("Invalid CELL ID for hit!");
 	}
+	printout(INFO,"SimpleTracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+		 c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
+		 (void*)hit->cellID);
+	Geant4TouchableHandler handler(step);
+	printout(INFO,"SimpleTracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
 	return true;
       }
       throw runtime_error("new() failed: Cannot allocate hit object");
@@ -192,7 +200,7 @@ namespace DD4hep {
       }
       hit->truth.push_back(contrib);
       hit->energyDeposit += contrib.deposit;    
-      mcTruthMgr().mark(h.track,true);
+      mark(h.track);
       return true;
     }
     typedef Geant4SensitiveAction<SimpleCalorimeter> Geant4SimpleCalorimeterAction;
@@ -235,8 +243,8 @@ namespace DD4hep {
 	hit->energyDeposit += contrib.deposit;
 	hit->truth.push_back(contrib);
 	track->SetTrackStatus(fStopAndKill); // don't step photon any further
-	mcTruthMgr().mark(h.track,true);
-	return true;
+	mark(h.track);
+      	return true;
       }
     }
     typedef Geant4SensitiveAction<SimpleOpticalCalorimeter>  Geant4SimpleOpticalCalorimeterAction;
@@ -288,7 +296,7 @@ namespace DD4hep {
 	hit->length = path_len;
 	clear();
 	c->insert(hit);
-	mcTruthMgr().mark(h.track,true);
+	mark(h.track);
 	return hit;
       }
     };

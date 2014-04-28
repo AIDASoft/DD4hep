@@ -127,4 +127,4 @@ namespace DD4hep {
   }    // End namespace Simulation
 }      // End namespace DD4hep
 
-#endif // DD4HEP_GEANT4HITS_H
+#endif // DD4HEP_GEANT4STEPHANDLER_H

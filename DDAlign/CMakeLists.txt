@@ -19,6 +19,8 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 file(GLOB sources src/*.cpp)
 add_library(DD4hepAlign SHARED ${sources})
 target_link_libraries(DD4hepAlign DD4hepCore ${ROOT_LIBRARIES})
+#
+#
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)
@@ -26,9 +28,10 @@ else()
   add_definitions(-DDD4HEP_USE_TINYXML)
 endif()
 SET_TARGET_PROPERTIES( DD4hepAlign PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+#
 #---DD4hepAlign rootmap --------------------------------------------------------------
 dd4hep_generate_rootmap(DD4hepAlign)
-
+#
 install(DIRECTORY include/DDAlign
   DESTINATION include
   PATTERN ".svn" EXCLUDE )

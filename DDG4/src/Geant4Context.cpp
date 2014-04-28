@@ -79,11 +79,11 @@ Geant4SensDetSequences& Geant4Context::sensitiveActions() const {
 
 /// Access to the Track Manager from the kernel object
 Geant4MonteCarloTruth& Geant4Context::mcTruthMgr() const   {
-  return m_kernel->mcTruthMgr();
+  return *m_kernel->mcTruthMgr(true);
 }
 
 /// Access to the MC record manager from the kernel object
 Geant4MonteCarloRecordManager& Geant4Context::mcRecordMgr() const   {
-  return m_kernel->mcRecordMgr();
+  return *m_kernel->mcRecordMgr(true);
 }
 

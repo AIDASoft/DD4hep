@@ -11,7 +11,9 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/DetectorTools.h"
 #include "DDG4/Geant4VolumeManager.h"
+#include "DDG4/Geant4TouchableHandler.h"
 #include "DDG4/Geant4Mapping.h"
 
 // Geant4 include files
@@ -23,12 +25,12 @@
 #include <sstream>
 
 using namespace DD4hep::Simulation;
+using namespace DD4hep::Simulation::Geant4GeometryMaps;
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 
-typedef Geant4GeometryInfo::PathMap PathMap;
-typedef Geant4GeometryInfo::PlacementMap PlacementMap;
+#include "DDG4/Geant4AssemblyVolume.h"
 
 namespace {
 
@@ -37,7 +39,7 @@ namespace {
     typedef DD4hep::Geometry::LCDD LCDD;
     typedef DD4hep::Geometry::Readout Readout;
     typedef DD4hep::Geometry::DetElement DetElement;
-    typedef map<VolumeID,Geant4Mapping::PlacementPath> Registries;
+    typedef map<VolumeID,Geant4PlacementPath> Registries;
     /// Reference to the LCDD instance
     LCDD& m_lcdd;
     /// Set of already added entries
@@ -61,6 +63,7 @@ namespace {
           SensitiveDetector sd;
           PlacedVolume::VolIDs ids;
           m_entries.clear();
+	  chain.push_back(m_lcdd.world().placement().ptr());
           scanPhysicalVolume(pv.ptr(), ids, sd, chain);
           continue;
         }
@@ -98,60 +101,81 @@ namespace {
     }
 
     void add_entry(SensitiveDetector sd, const TGeoNode* /* n */, const PlacedVolume::VolIDs& ids, const Chain& nodes) {
+      Chain control;
+      const TGeoNode* node;
+      const TGeoVolume* vol;
+      Geant4PlacementPath path;
       Readout ro = sd.readout();
       IDDescriptor iddesc = ro.idSpec();
       VolumeID code = iddesc.encode(ids);
       Registries::const_iterator i = m_entries.find(code);
+      PrintLevel print_action = DEBUG;
+      PrintLevel print_chain = DEBUG;
+      PrintLevel print_res = DEBUG;
+      
+      printout(print_action,"Geant4VolumeManager","+++ Add path:%s vid:%016X",
+	       DetectorTools::placementPath(nodes,true).c_str(),code);
+
       if (i == m_entries.end()) {
-        Geant4Mapping::PlacementPath path;
         path.reserve(nodes.size());
-        for (Chain::const_reverse_iterator i = nodes.rbegin(); i != nodes.rend(); ++i) {
-          const TGeoNode* node = *i;
+        for (Chain::const_reverse_iterator k = nodes.rbegin(), kend=nodes.rend(); k != kend; ++k) {
+          node = *(k);
           PlacementMap::const_iterator g4pit = m_geo.g4Placements.find(node);
-          if (g4pit != m_geo.g4Placements.end()) {
+	  if (g4pit != m_geo.g4Placements.end()) {
             path.push_back((*g4pit).second);
+	    printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s [%s]",
+		     node->GetName(), (*g4pit).second->GetName().c_str());
+	    continue;
           }
-        }
-        if (m_geo.g4Paths.find(path) != m_geo.g4Paths.end()) {
-	  stringstream log;
-          printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s",
-		   " [THIS SHOULD NEVER HAPPEN]");
-
-	  for(Geant4Mapping::PlacementPath::const_reverse_iterator j=path.rbegin(); j!=path.rend(); ++j)  {
-	    log << "/" << (*j)->GetName();
+	  control.insert(control.begin(),node);
+	  vol = node->GetVolume();
+	  VolumeImprintMap::const_iterator iVolImp = m_geo.g4VolumeImprints.find(vol);
+	  if ( iVolImp != m_geo.g4VolumeImprints.end() )   {
+	    const Imprints& imprints = (*iVolImp).second;
+	    //size_t len = kend-k;
+	    for(Imprints::const_iterator iImp=imprints.begin(); iImp != imprints.end(); ++iImp)  {
+	      const VolumeChain& c = (*iImp).first;
+	      if ( c.size() <= control.size() && control == c )   {
+		path.push_back((*iImp).second);
+		printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s %s -> %s",
+			 node->GetName(), DetectorTools::placementPath(c,false).c_str(),
+			 (*iImp).second->GetName().c_str());
+		control.clear();
+		break;
+	      }
+	    }
 	  }
-	  printout(ERROR, "Geant4VolumeManager", "          Geant4 path has >= 2 instances: %s", log.str().c_str());
-	  log.str("");
-	  for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
-	    log << (*vit).first << "=" << (*vit).second << "; ";
-	  printout(ERROR, "Geant4VolumeManager", "          Offend.VolIDs: %s", log.str().c_str());
-	  log.str("");
-	  for (Chain::const_iterator jc=nodes.begin(); jc!=nodes.end(); ++jc)
-	    log << "/" << (*jc)->GetName();
-	  printout(ERROR, "Geant4VolumeManager", "          TGeo path:     %s", log.str().c_str());
 	}
-        m_geo.g4Paths[path] = code;
-        m_entries.insert(make_pair(code,path));
+	if ( control.empty() )   {
+	  printout(print_res, "Geant4VolumeManager", "+++     Volume  IDs:%s",
+		   DetectorTools::toString(ro.idSpec(),ids,code).c_str());
+	  path.erase(path.begin()+path.size()-1);
+	  printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
+		   (void*)code, placementPath(path).c_str());
+	  if (m_geo.g4Paths.find(path) == m_geo.g4Paths.end()) {
+	    m_geo.g4Paths[path] = code;
+	    m_entries.insert(make_pair(code,path));
+	    return;
+	  }
+	  printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s %s",
+		   " [THIS SHOULD NEVER HAPPEN]",placementPath(path).c_str());
+	  goto Err;
+	}
+	printout(INFO, "Geant4VolumeManager", "Control block has still %d entries:%s",
+		 int(control.size()),DetectorTools::placementPath(control,true).c_str());
+	goto Err;
       }
-      else {
-	stringstream log;
-        printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X  %s", 
-		 code, " [THIS SHOULD NEVER HAPPEN]");
+      printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X  %s", 
+	       code, " [THIS SHOULD NEVER HAPPEN]");
 
-	const Geant4Mapping::PlacementPath& path = (*i).second;
-	for(Geant4Mapping::PlacementPath::const_reverse_iterator j=path.rbegin(); j!=path.rend(); ++j)  {
-	  log << "/" << (*j)->GetName();
-	}
-        printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s", log.str().c_str());
-	log.str("");
-	for (PlacedVolume::VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
-	  log << (*vit).first << "=" << (*vit).second << "; ";
-        printout(ERROR, "Geant4VolumeManager", "          Offend.VolIDs: %s", log.str().c_str());
-	log.str("");
-	for (Chain::const_iterator jc=nodes.begin(); jc!=nodes.end(); ++jc)
-	  log << "/" << (*jc)->GetName();
-        printout(ERROR, "Geant4VolumeManager", "          TGeo path:     %s", log.str().c_str());
-      }
+    Err:
+      if ( i != m_entries.end() ) 
+	printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s",placementPath((*i).second).c_str());
+      else if ( !path.empty() )
+	printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s",placementPath(path).c_str());
+      printout(ERROR, "Geant4VolumeManager", "          Offend.VolIDs: %s", 
+	       DetectorTools::toString(ids).c_str());
+      throw runtime_error("Failed to populate Geant4 volume manager!");
     }
   };
 }
@@ -168,18 +192,9 @@ Geant4VolumeManager::Geant4VolumeManager(LCDD& lcdd, Geant4GeometryInfo* info)
 }
 
 /// Helper: Generate placement path from touchable object
-Geant4VolumeManager::PlacementPath Geant4VolumeManager::placementPath(const G4VTouchable* touchable, bool exception) const {
-  Geant4Mapping::PlacementPath path;
-  if (touchable) {
-    for (int i = 0, n = touchable->GetHistoryDepth(); i < n; ++i) {
-      G4VPhysicalVolume* pv = touchable->GetVolume(i);
-      path.push_back(pv);
-    }
-  }
-  else if (exception) {
-    throw runtime_error(format("Geant4VolumeManager", "Attempt to use invalid Geant4 touchable [Invalid-Touchable]"));
-  }
-  return path;
+Geant4PlacementPath Geant4VolumeManager::placementPath(const G4VTouchable* touchable, bool exception) const {
+  Geant4TouchableHandler handler(touchable);
+  return handler.placementPath(exception);
 }
 
 /// Check the validity of the information before accessing it.
@@ -197,50 +212,27 @@ bool Geant4VolumeManager::checkValidity() const {
   return m_isValid;
 }
 
-/// Accessor to resolve G4 placements
-G4VPhysicalVolume* Geant4VolumeManager::placement(const TGeoNode* node) const {
-  if (node && checkValidity()) {
-    const PlacementMap& m = ptr()->g4Placements;
-    PlacementMap::const_iterator i = m.find(node);
-    if (i != m.end())
-      return (*i).second;
-    return 0;
-  }
-  throw runtime_error(format("Geant4VolumeManager", "Attempt to use invalid Geant4 volume manager [Invalid-Handle]"));
-}
-
-/// Accessor to resolve geometry placements
-PlacedVolume Geant4VolumeManager::placement(const G4VPhysicalVolume* node) const {
-  if (node && checkValidity()) {
-    const PlacementMap& m = ptr()->g4Placements;
-    for (PlacementMap::const_iterator i = m.begin(); i != m.end(); ++i) {
-      if ((*i).second == node)
-        return PlacedVolume((*i).first);
-    }
-    return PlacedVolume(0);
-  }
-  throw runtime_error(format("Geant4VolumeManager", "Attempt to lookup invalid TGeo placement [Null-Pointer]"));
-}
-
 /// Access CELLID by placement path
 VolumeID Geant4VolumeManager::volumeID(const PlacementPath& path) const {
   if (!path.empty() && checkValidity()) {
-    const PathMap& m = ptr()->g4Paths;
-    PathMap::const_iterator i = m.find(path);
+    const Geant4PathMap& m = ptr()->g4Paths;
+    Geant4PathMap::const_iterator i = m.find(path);
     if (i != m.end())
       return (*i).second;
     if (!path[0])
       return InvalidPath;
     else if (!path[0]->GetLogicalVolume()->GetSensitiveDetector())
       return Insensitive;
-    return NonExisting;
   }
+  printout(INFO, "Geant4VolumeManager","+++   Bad volume Geant4 Path: %s", 
+	   Geant4GeometryMaps::placementPath(path).c_str());
   return NonExisting;
 }
 
 /// Access CELLID by Geant4 touchable object
 VolumeID Geant4VolumeManager::volumeID(const G4VTouchable* touchable) const {
-  return volumeID(placementPath(touchable));
+  Geant4TouchableHandler handler(touchable);
+  return volumeID(handler.placementPath());
 }
 
 /// Accessfully decoded volume fields  by placement path
@@ -248,18 +240,24 @@ void Geant4VolumeManager::volumeDescriptor(const PlacementPath& path, VolIDDescr
   vol_desc.second.clear();
   vol_desc.first = NonExisting;
   if (!path.empty() && checkValidity()) {
-    const PathMap& m = ptr()->g4Paths;
-    PathMap::const_iterator i = m.find(path);
+    const Geant4PathMap& m = ptr()->g4Paths;
+    Geant4PathMap::const_iterator i = m.find(path);
     if (i != m.end()) {
       VolumeID vid = (*i).second;
       G4LogicalVolume* lvol = path[0]->GetLogicalVolume();
       if (lvol->GetSensitiveDetector()) {
-        PlacedVolume pv = placement(path[0]);
-        Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
-        Geometry::IDDescriptor dsc = sd.readout().idSpec();
-        vol_desc.first = vid;
-        dsc.decodeFields(vid, vol_desc.second);
-        return;
+	const G4VPhysicalVolume* node = path[0];
+	const PlacementMap& m = ptr()->g4Placements;
+	for (PlacementMap::const_iterator i = m.begin(); i != m.end(); ++i) {
+	  if ((*i).second == node)  {
+	    PlacedVolume pv = (*i).first;
+	    Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+	    Geometry::IDDescriptor dsc = sd.readout().idSpec();
+	    vol_desc.first = vid;
+	    dsc.decodeFields(vid, vol_desc.second);
+	    return;
+	  }
+	}
       }
       vol_desc.first = Insensitive;
       return;

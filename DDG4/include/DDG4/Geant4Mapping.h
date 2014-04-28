@@ -43,19 +43,6 @@ namespace DD4hep {
       typedef Geometry::Material Material;
       typedef Geometry::Region Region;
 
-      typedef Geant4GeometryInfo::PlacementPath PlacementPath;
-      typedef Geant4GeometryInfo::ElementMap ElementMap;
-      typedef Geant4GeometryInfo::MaterialMap MaterialMap;
-      typedef Geant4GeometryInfo::LimitMap LimitMap;
-      typedef Geant4GeometryInfo::PlacementMap PlacementMap;
-      typedef Geant4GeometryInfo::RegionMap RegionMap;
-      typedef Geant4GeometryInfo::SensDetMap SensDetMap;
-      typedef Geant4GeometryInfo::AssemblyMap AssemblyMap;
-      typedef Geant4GeometryInfo::VolumeMap VolumeMap;
-      typedef Geant4GeometryInfo::SolidMap SolidMap;
-      typedef Geant4GeometryInfo::VisMap VisMap;
-      typedef Geant4GeometryInfo::PathMap PathMap;
-
     protected:
       LCDD& m_lcdd;
       Geant4GeometryInfo* m_dataPtr;

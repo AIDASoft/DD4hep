@@ -158,7 +158,7 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
 
   const G4VPhysicalVolume* pv = step.volume(step.post);
 
-  typedef Geant4Converter::PlacementMap Places;
+  typedef Geant4GeometryMaps::PlacementMap Places;
   const Places& places = cnv.data().g4Placements;
 
   for (Places::const_iterator i = places.begin(); i != places.end(); ++i) {

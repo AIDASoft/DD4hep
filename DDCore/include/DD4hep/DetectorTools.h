@@ -42,7 +42,7 @@ namespace DD4hep {
       /// Assemble the path of a particular detector element
       std::string elementPath(DetElement element);
       /// Assemble the path of the PlacedVolume selection
-      std::string elementPath(const ElementPath& nodes);
+      std::string elementPath(const ElementPath& nodes, bool reverse=true);
 
       /// Collect detector elements to the top detector element (world)
       void elementPath(DetElement elt, ElementPath& detectors);
@@ -54,7 +54,9 @@ namespace DD4hep {
       /// Assemble the placement path from a given detector element to the world volume
       std::string placementPath(DetElement element);
       /// Assemble the path of the PlacedVolume selection
-      std::string placementPath(const PlacementPath& nodes);
+      std::string placementPath(const PlacementPath& nodes, bool reverse=true);
+      /// Assemble the path of the PlacedVolume selection
+      std::string placementPath(const std::vector<const TGeoNode*>& nodes, bool reverse=true);
 
       /// Collect detector elements placements to the top detector element (world) [no holes!]
       void placementPath(DetElement elt, PlacementPath& nodes);
@@ -67,6 +69,13 @@ namespace DD4hep {
       void placementTrafo(const PlacementPath& nodes, bool inverse, TGeoHMatrix*& mat);
       /// Update cached matrix to transform to positions to an upper level Placement
       void placementTrafo(const PlacementPath& nodes, bool inverse, TGeoHMatrix& mat);
+
+
+      /// Convert VolumeID to string
+      std::string toString(const PlacedVolume::VolIDs& ids);
+      /// Convert VolumeID to string
+      std::string toString(const IDDescriptor& dsc, const PlacedVolume::VolIDs& ids, VolumeID code);
+
     }
 
   } /* End namespace Geometry               */

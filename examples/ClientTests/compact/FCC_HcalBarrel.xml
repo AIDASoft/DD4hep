@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+    </includes>
+
+    <define>
+        <constant name="world_size" value="30*m"/>
+        <constant name="world_x" value="world_size"/>
+        <constant name="world_y" value="world_size"/>
+        <constant name="world_z" value="world_size"/>
+        <constant name="HcalBarrel_rmin" value="300*cm"/>
+        <constant name="HcalBarrel_rmax" value="500*cm"/>
+        <constant name="HcalBarrel_zmax" value="600*cm"/>
+    </define>
+
+    <display>
+        <vis name="Invisible" showDaughters="false" visible="false"/>
+        <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+        <vis name="VisibleBlue" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+        <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+        <vis name="HcalStrip" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="false"/>
+        <vis name="HcalAbsorber" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+        <vis name="HcalActive" r="0.86" g="0.86" b="0.86" showDaughters="false" visible="true"/>
+    </display>
+
+    <limits>
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+    </limits>
+
+    <detectors>
+        <detector id="1" name="HcalBarrel" type="FCC_HcalBarrel" readout="HcalBarrelHits" vis="InvisibleWithChildren">
+            <comment>A barrel hadronic calorimeter inspired on the ATLAS Tile hadronic calorimeter</comment>
+            <dimensions rmin="HcalBarrel_rmin" rmax="HcalBarrel_rmax" z="HcalBarrel_zmax" phiBins="64" />
+            <layer dr="10.00*cm" dz="3.00*cm" vis="HcalStrip">
+                <slice material="Steel235" dz="1.00*cm" vis="HcalAbsorber"/>
+                <slice material="Polystyrene" dz="0.50*cm" sensitive="yes" limits="cal_limits" vis="HcalActive"/>
+                <slice material="Steel235" dz="1.00*cm" vis="HcalAbsorber"/>
+                <slice material="Steel235" dz="0.50*cm" vis="HcalAbsorber"/>
+            </layer>
+            <layer dr="10.00*cm" dz="3.00*cm" vis="HcalStrip">
+                <slice material="Steel235" dz="1.00*cm" vis="HcalAbsorber"/>
+                <slice material="Steel235" dz="0.50*cm" vis="HcalAbsorber"/>
+                <slice material="Steel235" dz="1.00*cm" vis="HcalAbsorber"/>
+                <slice material="Polystyrene" dz="0.50*cm" sensitive="yes" limits="cal_limits" vis="HcalActive"/>
+            </layer>
+        </detector>
+     </detectors>
+     
+     <readouts>
+       <readout name="HcalBarrelHits">
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+            <id>system:8,barrel:3,module:6,layer:8,slice:5,x:32:-16,y:-16</id>
+       </readout>
+     </readouts>
+
+    <fields>
+        <field name="GlobalSolenoid" type="solenoid" 
+          inner_field="5.0*tesla"
+          outer_field="-1.5*tesla" 
+          zmax="2*m"
+          outer_radius="3*m">
+        </field>
+    </fields>
+
+</lccdd>

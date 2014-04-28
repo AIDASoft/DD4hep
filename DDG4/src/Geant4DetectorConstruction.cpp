@@ -20,14 +20,12 @@ DD4hep::Simulation::Geant4DetectorConstruction::Geant4DetectorConstruction(Geome
 
 G4VPhysicalVolume* DD4hep::Simulation::Geant4DetectorConstruction::Construct() {
   typedef Simulation::Geant4Converter Geant4Converter;
-  TGeoNode* top = gGeoManager->GetTopNode();
   Geant4Mapping& g4map = Geant4Mapping::instance();
   DetElement world = m_lcdd.world();
   Geant4Converter conv(m_lcdd);
   Geant4GeometryInfo* info = conv.create(world).detach();
   g4map.attach(info);
-  Geant4VolumeManager mgr = g4map.volumeManager();
-  m_world = mgr.placement(top);
+  m_world = info->world();
   m_lcdd.apply("DD4hepVolumeManager", 0, 0);
   //Geant4HierarchyDump dmp(m_lcdd);
   //dmp.dump("",m_world);

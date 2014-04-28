@@ -530,7 +530,8 @@ void Geant4TrackPersistency::end(const G4Track* track)   {
   }
   /// If required save Track record...
   if ( m_current.store )   {
-    mcRecordMgr().save(m_current);
+    Geant4MonteCarloRecordManager* mgr = mcRecordMgr(true);
+    mgr->save(m_current);
   }
   m_current.set(0,0);
   trackMgr()->SetUserTrackInformation(0);

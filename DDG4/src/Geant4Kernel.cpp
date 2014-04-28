@@ -385,28 +385,30 @@ Geant4PhysicsListActionSequence* Geant4Kernel::physicsList(bool create) {
 }
 
 /// Access to the Track Manager from the kernel object
-Geant4MonteCarloTruth& Geant4Kernel::mcTruthMgr()     {
-  if ( m_mcTruthMgr ) return *m_mcTruthMgr;
+Geant4MonteCarloTruth* Geant4Kernel::mcTruthMgr(bool throw_exception)     {
+  if ( m_mcTruthMgr ) return m_mcTruthMgr;
   // If not present, check if the action is registered.
   Geant4Action* a = globalAction("MonteCarloTruthHandler",false);
   if ( 0 != a ) {
     m_mcTruthMgr = dynamic_cast<Geant4MonteCarloTruth*>(a);
-    if ( m_mcTruthMgr ) return *m_mcTruthMgr;
+    if ( m_mcTruthMgr ) return m_mcTruthMgr;
   }
+  if ( !throw_exception ) return 0;
   // No action registered to handle monte carlo truth. This is fatal
   throw runtime_error(format("Geant4Kernel", "DDG4: No Geant4MonteCarloTruth defined. "
 			     "Geant4 monte carlo information cannot be saved!"));
 }
 
 /// Access to the MC record manager from the kernel object
-Geant4MonteCarloRecordManager& Geant4Kernel::mcRecordMgr()    {
-  if ( m_mcRecordMgr ) return *m_mcRecordMgr;
+Geant4MonteCarloRecordManager* Geant4Kernel::mcRecordMgr(bool throw_exception)    {
+  if ( m_mcRecordMgr ) return m_mcRecordMgr;
   // If not present, check if the action is registered.
   Geant4Action* a = globalAction("MonteCarloRecordManager",false);
   if ( 0 != a ) {
     m_mcRecordMgr = dynamic_cast<Geant4MonteCarloRecordManager*>(a);
-    if ( m_mcRecordMgr ) return *m_mcRecordMgr;
+    if ( m_mcRecordMgr ) return m_mcRecordMgr;
   }
+  if ( !throw_exception ) return 0;
   // No action registered to save tracks. This is fatal
   throw runtime_error(format("Geant4Kernel", "DDG4: No MonteCarloRecordManager defined. "
 			     "Geant4 tracks cannot be saved!"));

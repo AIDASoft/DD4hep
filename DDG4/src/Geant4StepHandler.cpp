@@ -48,4 +48,3 @@ const char* Geant4StepHandler::preStepStatus() const {
 const char* Geant4StepHandler::postStepStatus() const {
   return stepStatus(post ? post->GetStepStatus() : fUndefined);
 }
-
