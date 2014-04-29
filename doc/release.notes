@@ -2,6 +2,26 @@ DD4hep  ----  Release Notes
 =================================
 
 
+
+2014/04/05-2014/04/29 Frank Gaede
+---------------------------------
+   - Implementation of Surface classes for track reconstruction
+     - abstract interfaces in DDSurface:  ISurface and IMaterial  
+     - implementation in DDRec:  Surface, SurfaceManager, DetectorSurfaces
+     - basic functionality exists:
+     - meassurement surface vectors u,v, normal and origin
+     - check if point is inside the bounds of the corresponding volume
+     - currently the material is taken to be the one from the volume 
+      -> to do: average material if surface thicknesses extend beyond the
+                volume for comound materials
+   - added drawing of surfaces and (Sim)TrackerHits and (Sim)CalorimeterHits to teveDisplay
+     ( link lcio file to teve_infile.slcio )
+   - added some surfaces to ILDExDet: VXD, SIT, TPC
+   - added test_surfaces to ILDExSimu
+     (fails currently for some hits that are not created on the surface ...)
+     
+   
+
 2014/04/28  Markus Frank
 ------------------------
    - First attempt to understand fully the handling of recursive assemblies
