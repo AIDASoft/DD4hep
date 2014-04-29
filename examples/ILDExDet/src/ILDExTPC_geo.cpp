@@ -245,6 +245,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // needs a copy function for DetElement
       // DetElement rdet(lcdd,part_nam+"_negativ",px_det.typeStr(),px_det.id()+1);
       DetElement rdet = part_det.clone(part_nam+"_negativ",px_det.id()+1);
+
+      if(part_det.id()== 0){
+	VolPlane surf( part_vol , SurfaceType( SurfaceType::Helper ) , px_tube.zhalf() , x_tube.zhalf(), u , n , v ) ;
+	volSurfaceList( rdet )->push_back( surf ) ;
+      }
+
       rdet.setPlacement(part_phv2);
       tpcData->endplate2 = rdet;
       tpc.add(rdet);
