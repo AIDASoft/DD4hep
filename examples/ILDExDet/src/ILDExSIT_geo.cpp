@@ -24,7 +24,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t    x_det = e;
   string       name  = x_det.nameStr();
   DetElement   sit(name,x_det.id());
-  Assembly assembly( name + "assembly"  ) ;
+  Assembly assembly( name + "_assembly"  ) ;
   PlacedVolume pv;
 
   
@@ -63,6 +63,19 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,lcdd.material(x_support.materialStr()));
 
+
+    // --- create an assembly and DetElement for the layer 
+
+    Assembly     layer_assembly( layername );
+    
+    DetElement   layerDE( sit , _toString(layer_id,"layer_%d"), x_det.id() );
+    
+    pv = assembly.placeVolume(  layer_assembly );
+    pv.addPhysVolID("layer", layer_id );  
+
+    layerDE.setPlacement( pv ) ;
+
+    //--------------------------------
 
     // create a measurement plane for the tracking surface attched to the sensitive volume 
     Vector3D u( 0. , 1. , 0. ) ;
@@ -105,7 +118,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       string laddername = layername + _toString(j,"_ladder%d");
       Position pos(radius*cos(j*dphi),radius*sin(j*dphi),0.);
 
-      pv = assembly.placeVolume(laddervol,Transform3D(RotationZ(j*dphi),pos));
+      pv = layer_assembly.placeVolume(laddervol,Transform3D(RotationZ(j*dphi),pos));
 
       // this will result int the correct cellID to be set...
       pv.addPhysVolID("layer",layer_id).addPhysVolID("module",j).addPhysVolID("sensor",0 ) ;

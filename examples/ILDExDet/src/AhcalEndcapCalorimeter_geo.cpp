@@ -38,6 +38,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   xml_dim_t   dim         = x_det.dimensions();
   string      det_name    = x_det.nameStr();
   string      det_type    = x_det.typeStr();
+
+  Assembly    assembly(det_name+"_assembly");
+  // Assembly    assembly_fwd(det_name+"_assembly_fwd");
+  // Assembly    assembly_bwd(det_name+"_assembly_bwd");
+
   Material    air         = lcdd.air();
   Material    Steel235    = lcdd.material(x_det.materialStr());
   double      gap         = xml_dim_t(x_det).gap();
@@ -87,7 +92,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
   
   
   DetElement   sdet(det_name,x_det.id());
-  Volume      motherVol = lcdd.pickMotherVolume(sdet); 
   
   // ========= Create Hcal Endcap Modules envelope ============================
   //  They will be the volume for palcing the Hcal Chamber(i.e. Layers).
@@ -258,12 +262,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
 	  
 	  EndcapModule_pos_z = (module_num==0)?EndcapModule_pos_z:-EndcapModule_pos_z;
 
-	  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,
-						       Transform3D(RotationX(rot_EM),
-								   Translation3D(EndcapModule_pos_x,
-										 EndcapModule_pos_y,
-										 EndcapModule_pos_z)));
+	  //	  Assembly& assembly = (module_num==0)?assembly_fwd:assembly_bwd;
 	  
+	  PlacedVolume env_phv = assembly.placeVolume(envelopeVol,
+						      Transform3D(RotationX(rot_EM),
+								  Translation3D(EndcapModule_pos_x,
+										EndcapModule_pos_y,
+										EndcapModule_pos_z)));
+	  
+
 	  env_phv.addPhysVolID("stave",stave_num);   // y: up /down
 	  env_phv.addPhysVolID("module",module_num); // z: +/-
 	  env_phv.addPhysVolID("system",x_det.id());
@@ -276,6 +283,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h element, SensitiveDetector sens) 
     }
   
   
+
+  Volume mother = lcdd.pickMotherVolume(sdet); 
+  PlacedVolume pv = mother.placeVolume(assembly);
+  pv.addPhysVolID( "system", x_det.id() )  ;
+  
+  sdet.setPlacement(pv);
   
   return sdet;
 }
