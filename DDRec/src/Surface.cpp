@@ -287,10 +287,10 @@ namespace DD4hep {
 
       //=========== compute and cache world transform for surface ==========
 
-      const TGeoMatrix* wm = &_det.worldTransformation() ;
+      const TGeoHMatrix& wm = _det.worldTransformation() ;
 
 #if 0 // debug
-      wm->Print() ;
+      wm.Print() ;
       for( std::list<PlacedVolume>::iterator it= pVList.begin(), n = pVList.end() ; it != n ; ++it ){
       PlacedVolume pv = *it ;
       TGeoMatrix* m = pv->GetMatrix();
@@ -300,7 +300,7 @@ namespace DD4hep {
 #endif
 
       // need to get the inverse transformation ( see Detector.cpp )
-      std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm->Inverse() ) ) ;
+      std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm.Inverse() ) ) ;
 
       //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
       // DetElements world transform
@@ -384,7 +384,7 @@ namespace DD4hep {
 
       const static double epsilon = 1e-6 ; 
 
-      std::vector< std::pair<Vector3D, Vector3D> > _vert ;
+      std::vector< std::pair<Vector3D, Vector3D> > lines ;
 
 	
       // get local and global surface vectors
@@ -440,17 +440,89 @@ namespace DD4hep {
 	    _wtM->LocalToMasterVect( ubl , ub.array() ) ;
 	    _wtM->LocalToMasterVect( vbl , vb.array() ) ;
 	    
-	    _vert.reserve(4) ;
+	    lines.reserve(4) ;
 	    
-	    _vert.push_back( std::make_pair( _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ) ) ;
-	    _vert.push_back( std::make_pair( _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ) ) ;
-	    _vert.push_back( std::make_pair( _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ) ) ;
-	    _vert.push_back( std::make_pair( _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ) ) ;
+	    lines.push_back( std::make_pair( _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ) ) ;
+	    lines.push_back( std::make_pair( _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ,  _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ) ) ;
+	    lines.push_back( std::make_pair( _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ) ) ;
+	    lines.push_back( std::make_pair( _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ,  _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ) ) ;
 	    
-	    return _vert ;
+	    return lines ;
 	  }	    
+
+	} else if( shape->IsA() == TGeoConeSeg::Class() ) {
+
+	  TGeoCone* cone = ( TGeoCone* ) shape  ;
+
+	  // can only deal with special case of z-disk and origin in center of cone
+	  if( type().isZDisk() && lo.rho() < epsilon ) {
+	    
+	    double zhalf = cone->GetDZ() ;
+	    double rmax1 = cone->GetRmax1() ;
+	    double rmax2 = cone->GetRmax2() ;
+	    double rmin1 = cone->GetRmin1() ;
+	    double rmin2 = cone->GetRmin2() ;
+	    
+	    // two circles around origin 
+	    // get radii at position of plane 
+	    double r0 =  rmin1 +  ( rmin2 - rmin1 ) / ( 2. * zhalf )   *  ( zhalf + lo.z()  ) ;  
+	    double r1 =  rmax1 +  ( rmax2 - rmax1 ) / ( 2. * zhalf )   *  ( zhalf + lo.z()  ) ;  
+
+	    
+	    unsigned n = nMax / 4 ;
+	    double dPhi = 2.* ROOT::Math::Pi() / double( n ) ; 
+	    
+	    for( unsigned i = 0 ; i < n ; ++i ) {
+	      
+	      Vector3D rv00(  r0*sin(  i   *dPhi ) , r0*cos(  i   *dPhi )  , 0. ) ;
+	      Vector3D rv01(  r0*sin( (i+1)*dPhi ) , r0*cos( (i+1)*dPhi )  , 0. ) ;
+
+	      Vector3D rv10(  r1*sin(  i   *dPhi ) , r1*cos(  i   *dPhi )  , 0. ) ;
+	      Vector3D rv11(  r1*sin( (i+1)*dPhi ) , r1*cos( (i+1)*dPhi )  , 0. ) ;
+	      
+	     
+	      Vector3D pl0 =  lo + rv00 ;
+	      Vector3D pl1 =  lo + rv01 ;
+
+	      Vector3D pl2 =  lo + rv10 ;
+	      Vector3D pl3 =  lo + rv11 ;
+	      
+
+	      Vector3D pg0,pg1,pg2,pg3 ;
+	      
+	      _wtM->LocalToMaster( pl0, pg0.array() ) ;
+	      _wtM->LocalToMaster( pl1, pg1.array() ) ;
+	      _wtM->LocalToMaster( pl2, pg2.array() ) ;
+	      _wtM->LocalToMaster( pl3, pg3.array() ) ;
+	      
+	      lines.push_back( std::make_pair( pg0, pg1 ) ) ;
+	      lines.push_back( std::make_pair( pg2, pg3 ) ) ;
+	    }
+
+	    //add some vertical and horizontal lines so that the disc is seen in the rho-z projection
+
+	    n = 4 ; dPhi = 2.* ROOT::Math::Pi() / double( n ) ;
+
+	    for( unsigned i = 0 ; i < n ; ++i ) {
+	      
+	      Vector3D rv0(  r0*sin( i * dPhi ) , r0*cos(  i * dPhi )  , 0. ) ;
+	      Vector3D rv1(  r1*sin( i * dPhi ) , r1*cos(  i * dPhi )  , 0. ) ;
+	      
+	      Vector3D pl0 =  lo + rv0 ;
+	      Vector3D pl1 =  lo + rv1 ;
+
+	      Vector3D pg0,pg1 ;
+	      
+	      _wtM->LocalToMaster( pl0, pg0.array() ) ;
+	      _wtM->LocalToMaster( pl1, pg1.array() ) ;
+	      
+	      lines.push_back( std::make_pair( pg0, pg1 ) ) ;
+	    }
+
+	  }
+	  
+	  return lines ;
 	}
-	
 	// ===== default for arbitrary planes in arbitrary shapes ================= 
 	
 	// We create nMax vertices by rotating the local u vector around the normal
@@ -460,7 +532,7 @@ namespace DD4hep {
 	// The alterative would be to compute the true intersections a plane and the most
 	// common shapes - at least for boxes that should be not too hard. To be done...
 	
-	_vert.reserve( nMax ) ;
+	lines.reserve( nMax ) ;
 	
 	double dAlpha =  2.* ROOT::Math::Pi() / double( nMax ) ; 
 
@@ -492,16 +564,22 @@ namespace DD4hep {
 	  
 	  _wtM->LocalToMaster( lp , gp.array() ) ;
 
-	  //	  std::cout << " **** normal:" << ln << " lu:" << lu  << " alpha:" << alpha << " luRot:" << luRot << " lp :" << lp  << " gp:" << gp << std::endl;
+	  // std::cout << " **** normal:" << ln << " lu:" << lu  << " alpha:" << alpha << " luRot:" << luRot << " lp :" << lp  << " gp:" << gp << " dist : " << dist 
+	  // 	    << " is point " << gp << " inside : " << shape->Contains( gp )  
+	  // 	    << " dist from outside for lo,lu " <<  shape->DistFromOutside( lo , lu  , 3 )    
+	  // 	    << " dist from inside for lo,ln " <<  shape->DistFromInside( lo , ln  , 3 )    
+	  // 	    << std::endl;
+	  //	  shape->Dump() ;
+	  
 
 	  if( i >  0 ) 
-	    _vert.push_back( std::make_pair( previous, gp )  ) ;
+	    lines.push_back( std::make_pair( previous, gp )  ) ;
 	  else
 	    first = gp ;
 
 	  previous = gp ;
 	}
-	_vert.push_back( std::make_pair( previous, first )  ) ;
+	lines.push_back( std::make_pair( previous, first )  ) ;
 
 
       } else if( type().isCylinder() ) {  
@@ -509,7 +587,7 @@ namespace DD4hep {
 	//	if( shape->IsA() == TGeoTube::Class() ) {
 	if( shape->IsA() == TGeoConeSeg::Class() ) {
 
-	  _vert.reserve( nMax ) ;
+	  lines.reserve( nMax ) ;
 
 	  TGeoTube* tube = ( TGeoTube* ) shape  ;
 	  
@@ -543,42 +621,14 @@ namespace DD4hep {
 	    _wtM->LocalToMaster( pl2, pg2.array() ) ;
 	    _wtM->LocalToMaster( pl3, pg3.array() ) ;
 
-	    _vert.push_back( std::make_pair( pg0, pg1 ) ) ;
-	    _vert.push_back( std::make_pair( pg1, pg2 ) ) ;
-	    _vert.push_back( std::make_pair( pg2, pg3 ) ) ;
-	    _vert.push_back( std::make_pair( pg3, pg0 ) ) ;
+	    lines.push_back( std::make_pair( pg0, pg1 ) ) ;
+	    lines.push_back( std::make_pair( pg1, pg2 ) ) ;
+	    lines.push_back( std::make_pair( pg2, pg3 ) ) ;
+	    lines.push_back( std::make_pair( pg3, pg0 ) ) ;
 	  }
-
-	  // unsigned n = nMax / 4 ;
-	  // double dPhi = 2.* ROOT::Math::Pi() / double( n ) ; 
-
-	  // for( unsigned i = 0 ; i < n ; ++i ) {
-
-	  //   Vector3D rv0(  r*sin(  i   *dPhi ) , r*cos(  i   *dPhi )  , 0. ) ;
-	  //   Vector3D rv1(  r*sin( (i+1)*dPhi ) , r*cos( (i+1)*dPhi )  , 0. ) ;
-
-	  //   // 4 points on local cylinder
-
-	  //   Vector3D pl0 =  zv + rv0 ;
-	  //   Vector3D pl1 =  zv + rv1 ;
-	  //   Vector3D pl2 = -zv + rv1  ;
-	  //   Vector3D pl3 = -zv + rv0 ;
-
-	  //   Vector3D pg0,pg1,pg2,pg3 ;
-
-	  //   _wtM->LocalToMaster( pl0, pg0.array() ) ;
-	  //   _wtM->LocalToMaster( pl1, pg1.array() ) ;
-	  //   _wtM->LocalToMaster( pl2, pg2.array() ) ;
-	  //   _wtM->LocalToMaster( pl3, pg3.array() ) ;
-
-	  //   _vert.push_back( std::make_pair( pg0, pg1 ) ) ;
-	  //   _vert.push_back( std::make_pair( pg1, pg2 ) ) ;
-	  //   _vert.push_back( std::make_pair( pg2, pg3 ) ) ;
-	  //   _vert.push_back( std::make_pair( pg3, pg0 ) ) ;
-	  // }
 	}
       }
-      return _vert ;
+      return lines ;
 
     }
 

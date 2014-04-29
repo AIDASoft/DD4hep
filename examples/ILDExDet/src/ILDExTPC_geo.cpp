@@ -10,6 +10,10 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Detector.h"
+
+//fixme: TPCData should not depend on this internal header  
+#include "DD4hep/objects/DetectorInterna.h"
+
 #include "DD4hep/TGeoUnits.h"
 #include "DDRec/Surface.h"
 
@@ -177,6 +181,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       // add a plane to the endcap volume 
       // note: u and v are exchanged: normal is along z ...
+      // Vector3D u( 0. , 1. , 0. ) ;
+      // Vector3D v( 0. , 0. , 1. ) ;
+      // Vector3D n( 1. , 0. , 0. ) ;
+      
       VolPlane surf( part_vol , SurfaceType( SurfaceType::Helper ) , px_tube.zhalf() , x_tube.zhalf(), u , n , v ) ;
       volSurfaceList( part_det )->push_back( surf ) ;
 

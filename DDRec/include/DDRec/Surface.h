@@ -185,12 +185,19 @@ namespace DD4hep {
     struct VolSurfaceList : std::list< VolSurface > {
     
       VolSurfaceList() {}
+
       // required c'tors for extension mechanism
-      VolSurfaceList(const Geometry::DetElement& ){
-	// anything to do here  ?
+      VolSurfaceList(Geometry::DetElement& det){
+	// det.addExtension<VolSurfaceList>( this ) ;
       }
-      VolSurfaceList(const VolSurfaceList& ,const Geometry::DetElement& ){
-	// anything to do here  ?
+
+      VolSurfaceList(const VolSurfaceList& vsl, Geometry::DetElement& det ){
+	
+	//fixme: this causes a seg fault ...
+
+	// VolSurfaceList* nL = new VolSurfaceList ;
+	// nL->insert( nL->end() , vsl.begin() , vsl.end() ) ;
+	// det.addExtension<VolSurfaceList>( nL ) ;
       }
     
       virtual ~VolSurfaceList(){

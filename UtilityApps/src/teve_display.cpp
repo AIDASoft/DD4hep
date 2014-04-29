@@ -192,6 +192,8 @@ TEveStraightLineSet* getSurfaces() {
 
   const SurfaceList& sL = surfMan.surfaceList() ;
 
+  //  std::cout << " getSurfaces() - #surfaces : " << sL.size() << std::endl ;
+
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
 
     Surface* surf = *it ;
@@ -208,6 +210,7 @@ TEveStraightLineSet* getSurfaces() {
 
     for( unsigned i=0 ; i<nL ; ++i){
 
+      //      std::cout << " **** drawSurfaces() : draw line for surface " <<   lines[i].first << " - " <<  lines[i].second  << std::endl ;
 
       ls->AddLine( lines[i].first.x(),  lines[i].first.y(),  lines[i].first.z(), 
 		   lines[i].second.x(), lines[i].second.y(), lines[i].second.z() ) ;

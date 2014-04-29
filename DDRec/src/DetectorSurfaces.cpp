@@ -45,9 +45,9 @@ namespace DD4hep {
 	  
 	  Surface* surf = new Surface(  det,  volSurf ) ;
 	  
-	  // std::cout << " ------------------------- " 
-	  // 	    << " surface: "   << *surf        << std::endl
-	  // 	    << " ------------------------- "  << std::endl ;
+	   // std::cout << " ------------------------- " 
+	   // 	    << " surface: "   << *surf        << std::endl
+	   // 	    << " ------------------------- "  << std::endl ;
 	  
 	  
 	  _sL->push_back( surf ) ;
