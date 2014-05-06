@@ -1,7 +1,15 @@
 DD4hep  ----  Release Notes
 =================================
 
-
+2014/05/06 Frank Gaede
+-----------------------
+  - DDSurfaces/DDRec:
+    - added ICylinder and CylinderSurface to provide
+      access to cylinder radius for the tracking
+  - teveDisplay: 
+     - draw sensitive surfaces in red and helper surfaces in gray
+     - protect against missing lcio input file
+  - reduced printout from VolumeManager  (changed INFO to DEBUG)
 
 2014/04/05-2014/04/29 Frank Gaede
 ---------------------------------
@@ -19,8 +27,7 @@ DD4hep  ----  Release Notes
    - added some surfaces to ILDExDet: VXD, SIT, TPC
    - added test_surfaces to ILDExSimu
      (fails currently for some hits that are not created on the surface ...)
-     
-   
+   - added some assemblies to ILDExDet to better structure the geometry hierarchy   
 
 2014/04/28  Markus Frank
 ------------------------

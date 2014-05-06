@@ -180,11 +180,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       tpcData->endplate=part_det;
 
       // add a plane to the endcap volume 
-      // note: u and v are exchanged: normal is along z ...
-      // Vector3D u( 0. , 1. , 0. ) ;
-      // Vector3D v( 0. , 0. , 1. ) ;
-      // Vector3D n( 1. , 0. , 0. ) ;
-      
+      // note: u and v are exchanged: normal is along z ...      
       VolPlane surf( part_vol , SurfaceType( SurfaceType::Helper ) , px_tube.zhalf() , x_tube.zhalf(), u , n , v ) ;
       volSurfaceList( part_det )->push_back( surf ) ;
 

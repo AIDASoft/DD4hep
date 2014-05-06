@@ -60,8 +60,8 @@ using namespace DDSurfaces ;
 void next_event();
 void make_gui();
 
-TEveStraightLineSet* getSurfaces() ;
-TEveStraightLineSet* getSurfaceVectors() ;
+TEveStraightLineSet* getSurfaces(int col=kRed, const SurfaceType& type=SurfaceType() ) ;
+TEveStraightLineSet* getSurfaceVectors( ) ;
 
 //=====================================================================================
 
@@ -93,10 +93,12 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
 
   gEve->AddGlobalElement( tn );
 
-  TEveElement* surfaces = getSurfaces() ;
+  TEveElement* surfaces = getSurfaces(  kRed, SurfaceType( SurfaceType::Sensitive ) ) ;
+  TEveElement* helperSurfaces = getSurfaces(  kGray, SurfaceType( SurfaceType::Helper ) ) ;
   TEveElement* surfaceVectors = getSurfaceVectors() ;
 
   gEve->AddGlobalElement( surfaces ) ;
+  gEve->AddGlobalElement( helperSurfaces ) ;
   gEve->AddGlobalElement( surfaceVectors ) ;
 
   TGLViewer *v = gEve->GetDefaultGLViewer();
@@ -107,15 +109,10 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
   v->RefreshPadEditor(v);
   //  v->CurrentCamera().RotateRad(-1.2, 0.5);
 
-
-  // -- tgeo shapes cannot be projected ...
-  // MultiView::instance()->ImportGeomRPhi( tn );
-  // MultiView::instance()->ImportGeomRhoZ( tn );
   MultiView::instance()->ImportGeomRPhi( surfaces );
   MultiView::instance()->ImportGeomRhoZ( surfaces ) ;
-  //-- don't show the surface vectors...
-  //MultiView::instance()->ImportGeomRPhi( surfaceVectors );
-  //MultiView::instance()->ImportGeomRhoZ( surfaceVectors );
+  MultiView::instance()->ImportGeomRPhi( helperSurfaces );
+  MultiView::instance()->ImportGeomRhoZ( helperSurfaces ) ;
 
 
   make_gui();
@@ -179,7 +176,7 @@ TEveStraightLineSet* getSurfaceVectors() {
   return ls;
 }
 //=====================================================================================
-TEveStraightLineSet* getSurfaces() {
+TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
 
   TEveStraightLineSet* ls = new TEveStraightLineSet("Surfaces");
 
@@ -198,7 +195,7 @@ TEveStraightLineSet* getSurfaces() {
 
     Surface* surf = *it ;
 
-    if( ! surf->type().isVisible() ) 
+    if( ! ( surf->type().isVisible() && ( surf->type().isSimilar( type ) ) ) ) 
       continue ;
 
     const std::vector< std::pair<Vector3D,Vector3D> > lines = surf->getLines() ;
@@ -216,8 +213,8 @@ TEveStraightLineSet* getSurfaces() {
 		   lines[i].second.x(), lines[i].second.y(), lines[i].second.z() ) ;
     }
     
-    ls->SetLineColor( kRed ) ;
-    ls->SetMarkerColor( kRed ) ;
+    ls->SetLineColor( col ) ;
+    ls->SetMarkerColor( col ) ;
     ls->SetMarkerSize(.1);
     ls->SetMarkerStyle(4);
 

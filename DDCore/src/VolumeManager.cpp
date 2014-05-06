@@ -203,13 +203,13 @@ namespace {
         log << id.first << "=" << id.second << "," << value << " [" << f->offset() << "," << f->width() << "] ";
       }
       log << " Sensitive:" << yes_no(sensitive);
-      printout(INFO, "VolumeManager", log.str().c_str());
+      printout(DEBUG, "VolumeManager", log.str().c_str());
 #if 0
       log.str("");
       log << s_count << ": " << e.name() << " Detector GeoNodes:";
       for(vector<const TGeoNode*>::const_iterator j=nodes.begin(); j!=nodes.end();++j)
       log << (void*)(*j) << " ";
-      printout(INFO,"VolumeManager",log.str().c_str());
+      printout(DEBUG,"VolumeManager",log.str().c_str());
 #endif
     }
   };
@@ -243,13 +243,13 @@ VolumeManager::Object::~Object() {
 /// Update callback when alignment has changed (called only for subdetectors....)
 void VolumeManager::Object::update(unsigned long tags, DetElement& det, void* param)   {
   if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
-    printout(INFO,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
+    printout(DEBUG,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
   if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  
-    printout(INFO,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
+    printout(DEBUG,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
 
   for(Volumes::iterator i=volumes.begin(); i != volumes.end(); ++i)  {
     Context* c = (*i).second;
-    printout(INFO,"VolumeManager","+++ Alignment update %s",c->placement.name());
+    printout(DEBUG,"VolumeManager","+++ Alignment update %s",c->placement.name());
     
   }
 }
