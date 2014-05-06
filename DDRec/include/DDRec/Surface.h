@@ -203,9 +203,11 @@ namespace DD4hep {
       virtual ~VolSurfaceList(){
       
 	// delete all surfaces attached to this volume
-	for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
-	  delete (*i).ptr() ;
-	}
+	// fixme: causes seg fault if same surfaces attached to more than one list
+	//         -> how do we deal with this ?
+	// for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
+	//   delete (*i).ptr() ;
+	// }
       
       }
     } ;
@@ -373,6 +375,19 @@ namespace DD4hep {
 
     };
 
+    //======================================================================================================
+
+    class CylinderSurface:  public Surface, public ICylinder {
+
+    public:
+
+      CylinderSurface( Geometry::DetElement det, VolSurface volSurf ) : Surface( det, volSurf ) { }      
+      
+      virtual double radius() const {
+	
+	return _volSurf.origin().rho() ;
+      }
+    } ;
 
     //======================================================================================================
     /** std::list of Surfaces that optionally takes ownership.

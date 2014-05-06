@@ -65,7 +65,21 @@ namespace DDSurfaces {
     
   } ;
   
-
+  //==============================================================================================
+  /** Minimal interface to provide acces to radius of cylinder surfaces.
+   * @author F. Gaede, DESY
+   * @version $Id: $
+   * @date May 6 2014
+   */
+  class ICylinder {
+    
+  public:
+    /// Destructor
+    virtual ~ICylinder() {}
+    virtual double radius() const=0 ;
+  };
+  
+  
   /** Helper class for describing surface properties.
    *  Usage: SurfaceType type(  SurfaceType::Plane, SurfaceType::Sensitive ) ; 
    *
@@ -206,7 +220,12 @@ namespace DDSurfaces {
     os <<  "   inner material : " << s.innerMaterial() << "  thickness: " <<  s.innerThickness()  << std::endl  
        <<  "   outerMaterial :  " << s.outerMaterial() << "  thickness: " <<  s.outerThickness()  << std::endl   ;
 
-      return os ;
+    const ICylinder* cyl = dynamic_cast< const ICylinder* > ( &s ) ;
+
+    if( cyl )
+      os << "   cylinder radius : " << cyl->radius() <<  std::endl   ;
+
+    return os ;
   }
 
 
