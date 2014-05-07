@@ -58,7 +58,7 @@ namespace DD4hep {
     VolSurface::VolSurface( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
 			    Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o ) :  
       
-      Handle( new SurfaceData( type, thickness_inner ,thickness_outer, u,v,n,o) ) ,
+      Geometry::Handle< SurfaceData >( new SurfaceData( type, thickness_inner ,thickness_outer, u,v,n,o) ) ,
 
       _vol( vol ) {
     }      
