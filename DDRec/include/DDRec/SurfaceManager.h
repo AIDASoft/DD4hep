@@ -11,7 +11,7 @@ namespace DD4hep {
      *
      * @author F.Gaede, DESY
      * @date Apr, 11 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class SurfaceManager {
 

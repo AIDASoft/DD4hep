@@ -343,11 +343,11 @@ namespace DD4hep {
       _n.fill( na ) ;
       _o.fill( oa ) ;
 
-      // std::cout << " --- global surface vectors : ------- " << std::endl 
-      // 		<< "    u : " << _u << std::endl 
-      // 		<< "    v : " << _v << std::endl 
-      // 		<< "    n : " << _n << std::endl 
-      // 		<< "    o : " << _o << std::endl ;
+       // std::cout << " --- local and global surface vectors : ------- " << std::endl 
+       // 			<< "    u : " << _volSurf.u()       << "  -  " << _u << std::endl 
+       // 			<< "    v : " << _volSurf.v()       << "  -  " << _v << std::endl 
+       // 			<< "    n : " << _volSurf.normal()  << "  -  " << _n << std::endl 
+       // 			<< "    o : " << _volSurf.origin()  << "  -  " << _o << std::endl ;
       
 
       //  =========== check parallel and orthogonal to Z ===================

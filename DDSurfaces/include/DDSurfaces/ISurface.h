@@ -18,7 +18,7 @@ namespace DDSurfaces {
    * the inner and outer materials with corresponding thicknesses.
    *  
    * @author C.Grefe, CERN, F. Gaede, DESY
-   * @version $Id: $
+   * @version $Id$
    * @date Mar 7 2014
    */
   class ISurface {
@@ -68,7 +68,7 @@ namespace DDSurfaces {
   //==============================================================================================
   /** Minimal interface to provide acces to radius of cylinder surfaces.
    * @author F. Gaede, DESY
-   * @version $Id: $
+   * @version $Id$
    * @date May 6 2014
    */
   class ICylinder {
@@ -85,7 +85,7 @@ namespace DDSurfaces {
    *  Usage: SurfaceType type(  SurfaceType::Plane, SurfaceType::Sensitive ) ; 
    *
    * @author F. Gaede, DESY
-   * @version $Id: $
+   * @version $Id$
    * @date Apr 6 2014
    */
   class SurfaceType{

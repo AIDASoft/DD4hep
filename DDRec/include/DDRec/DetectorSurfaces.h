@@ -11,7 +11,7 @@ namespace DD4hep {
      *
      * @author F.Gaede, DESY
      * @date Apr, 10 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class DetectorSurfaces: virtual public Geometry::DetElement {
 

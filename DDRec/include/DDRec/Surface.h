@@ -21,7 +21,7 @@ namespace DD4hep {
      *
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
-     * @version $Id:$
+     * @version $Id$
      */
     struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
 
@@ -58,7 +58,7 @@ namespace DD4hep {
     /** Helper class for holding surface data. 
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
-     * @version $Id:$
+     * @version $Id$
      */
     struct SurfaceData{
     
@@ -100,7 +100,7 @@ namespace DD4hep {
      * 
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class VolSurface : public Geometry::Handle< SurfaceData > , public ISurface {
     
@@ -180,7 +180,7 @@ namespace DD4hep {
     /** std::list of VolSurfaces that takes ownership.
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
-     * @version $Id:$
+     * @version $Id$
      */
     struct VolSurfaceList : std::list< VolSurface > {
     
@@ -219,7 +219,7 @@ namespace DD4hep {
     /** Implementation of planar surface attached to a volume 
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class VolPlane : public VolSurface {
       
@@ -253,7 +253,7 @@ namespace DD4hep {
     /** Implementation of cylindrical surface attached to a volume 
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class VolCylinder : public VolSurface {
       
@@ -288,7 +288,7 @@ namespace DD4hep {
      * 
      * @author F.Gaede, DESY
      * @date Apr, 7 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class Surface:  public ISurface {
     
@@ -393,7 +393,7 @@ namespace DD4hep {
     /** std::list of Surfaces that optionally takes ownership.
      * @author F.Gaede, DESY
      * @date Apr, 10 2014
-     * @version $Id:$
+     * @version $Id$
      */
     class SurfaceList : public std::list< Surface* > {
     

@@ -13,7 +13,7 @@ namespace DDSurfaces {
    *  cartesian. (copy of original version from gear).
    *
    *  @author F. Gaede, DESY
-   *  @version $Id: $
+   *  @version $Id$
    *  @date Apr 6 2014
    */
   

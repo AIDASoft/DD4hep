@@ -19,7 +19,7 @@ namespace DD4hep {
      can be added to DetElements with the extension mechanism.
      There can only be one such object added to any given DetElement 
      @author  F.Gaede, DESY
-     @version $Id:$
+     @version $Id$
   */
 
   class GearHandle  { //: public gear::GearParametersImpl {
@@ -66,7 +66,7 @@ namespace DD4hep {
   /** Factory method that creates a GearMgr object pobulated with the GearParametersImpl objects from
       all (top level) DetElements in the lcdd object
       @author  F.Gaede, DESY
-      @version $Id:$
+      @version $Id$
   */
   gear::GearMgr* createGearMgr( const Geometry::LCDD& lcdd ) ;
 
