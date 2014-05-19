@@ -195,6 +195,10 @@ namespace DDSurfaces {
     inline operator const double*() const {
       return &_x ;
     }
+    /// direct access to data as const double* 
+    inline const double* const_array() const {
+      return &_x ;
+    }
 
     /// direct access to data as double* - allows modification 
     inline double* array() {

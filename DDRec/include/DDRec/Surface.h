@@ -1,5 +1,5 @@
-#ifndef DD4Surfaces_Surface_H
-#define DD4Surfaces_Surface_H
+#ifndef DDRec_Surface_H
+#define DDRec_Surface_H
 
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
@@ -17,6 +17,8 @@ namespace DD4hep {
     using namespace DDSurfaces ;
     
 
+    // typedef DDRec::Material SurfaceMaterial ;
+
     /** Wrapper class to  Geometry::Material that implements the DDSurfaces::IMaterial interface.
      *
      * @author F.Gaede, DESY
@@ -26,26 +28,23 @@ namespace DD4hep {
     struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
 
       /** Copy c'tor - copies handle */
-      SurfaceMaterial( Geometry::Material m ) ; // : Geometry::Material( m ) {} 
+      SurfaceMaterial( Geometry::Material m )  : Geometry::Material( m ) {}  
 
-      SurfaceMaterial( const SurfaceMaterial& sm ) ;
-      // {
-      // 	(*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
-      // }
+      SurfaceMaterial( const SurfaceMaterial& sm ) : Geometry::Material( sm ) {}  
 
-      virtual ~SurfaceMaterial() ; //{} 
+      virtual ~SurfaceMaterial() {}
 
       /// material name
-      virtual std::string name() const { return m_element->GetMaterial()->GetName()  ; }
+      virtual std::string name() const { return Geometry::Material::name() ; }
 
       /// averaged proton number
-      virtual double Z() const { return m_element->GetMaterial()->GetZ()  ; }
+      virtual double Z() const {  return Geometry::Material::Z() ; } 
       
       /// averaged atomic number
-      virtual double A() const { return m_element->GetMaterial()->GetA() ; }
+      virtual double A() const { return Geometry::Material::A() ; } 
       
       /// density - units ?
-      virtual double density() const { return m_element->GetMaterial()->GetDensity() ; } 
+      virtual double density() const {  return Geometry::Material::density() ; }
       
       /// radiation length - tgeo units 
       virtual double radiationLength() const { return Geometry::Material::radLength() ; } 

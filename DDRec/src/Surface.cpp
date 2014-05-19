@@ -17,27 +17,26 @@ namespace DD4hep {
 
     //--------------------------------------------------------
 
-    /** Copy c'tor - copies handle */
-    SurfaceMaterial::SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
+    // /** Copy c'tor - copies handle */
+    // SurfaceMaterial::SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
     
-    SurfaceMaterial::SurfaceMaterial( const SurfaceMaterial& sm )  : Geometry::Material( sm ) {
-      //      (*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
-    }
-    
-    SurfaceMaterial:: ~SurfaceMaterial() {} 
+    // SurfaceMaterial::SurfaceMaterial( const SurfaceMaterial& sm )  : Geometry::Material( sm ) {
+    //   //      (*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
+    // }
+    // SurfaceMaterial:: ~SurfaceMaterial() {} 
 
     //--------------------------------------------------------
 
 
     SurfaceData::SurfaceData() : _type( SurfaceType() ) ,
-		    _u( Vector3D() ) ,
-		    _v( Vector3D()  ) ,
-		    _n( Vector3D() ) ,
-		    _o( Vector3D() ) ,
-		    _th_i( 0. ),
-		    _th_o( 0. ),
-		    _innerMat( Material() ),
-		    _outerMat( Material() ) {
+				 _u( Vector3D() ) ,
+				 _v( Vector3D()  ) ,
+				 _n( Vector3D() ) ,
+				 _o( Vector3D() ) ,
+				 _th_i( 0. ),
+				 _th_o( 0. ),
+				 _innerMat( Geometry::Material() ),
+				 _outerMat( Geometry::Material() ) {
     }
   
   
@@ -49,8 +48,8 @@ namespace DD4hep {
 								     _o( o ),
 								     _th_i( thickness_inner ),
 								     _th_o( thickness_outer ),  
-								     _innerMat( Material() ),
-								     _outerMat( Material() ) {
+								     _innerMat( Geometry::Material() ),
+								     _outerMat( Geometry::Material() ) {
     }
   
   
@@ -77,7 +76,7 @@ namespace DD4hep {
 #if 0
       double dist = std::abs ( distance( point ) ) ;
       
-      bool inShape = volume()->GetShape()->Contains( point ) ;
+      bool inShape = volume()->GetShape()->Contains( point.const_array() ) ;
       
       std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << dist 
  		<< " origin = " << origin() << " normal = " << normal() 
@@ -87,7 +86,7 @@ namespace DD4hep {
       return dist < epsilon && inShape ;
  #else
 	
-      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
+      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point.const_array()  ) ; 
  #endif
  
     }
@@ -104,7 +103,7 @@ namespace DD4hep {
 #if 0
       double distR = std::abs( distance( point ) ) ;
       
-      bool inShapeT = volume()->GetShape()->Contains( point ) ;
+      bool inShapeT = volume()->GetShape()->Contains( point.const_array()  ) ;
       
 				      std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << distR 
 						<< " origin = " << origin() 
@@ -113,7 +112,7 @@ namespace DD4hep {
 				      return distR < epsilon && inShapeT ;
 #else
       
-				      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point ) ; 
+				      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point.const_array()  ) ; 
 
 #endif
     }
@@ -555,7 +554,7 @@ namespace DD4hep {
 	  DDSurfaces::Vector3D luRot ;
 	  luRot.fill( vecR ) ;
  	  
-	  double dist = shape->DistFromInside( lo, luRot , 3, 0.1 ) ;
+	  double dist = shape->DistFromInside( lo.const_array() , luRot.const_array()  , 3, 0.1 ) ;
 	  
 	  // local point at volume boundary
 	  DDSurfaces::Vector3D lp = lo + dist * luRot ;
@@ -565,9 +564,9 @@ namespace DD4hep {
 	  _wtM->LocalToMaster( lp , gp.array() ) ;
 
 	  // std::cout << " **** normal:" << ln << " lu:" << lu  << " alpha:" << alpha << " luRot:" << luRot << " lp :" << lp  << " gp:" << gp << " dist : " << dist 
-	  // 	    << " is point " << gp << " inside : " << shape->Contains( gp )  
-	  // 	    << " dist from outside for lo,lu " <<  shape->DistFromOutside( lo , lu  , 3 )    
-	  // 	    << " dist from inside for lo,ln " <<  shape->DistFromInside( lo , ln  , 3 )    
+	  // 	    << " is point " << gp << " inside : " << shape->Contains( gp.const_array()  )  
+	  // 	    << " dist from outside for lo,lu " <<  shape->DistFromOutside( lo.const_array()  , lu.const_array()   , 3 )    
+	  // 	    << " dist from inside for lo,ln " <<  shape->DistFromInside( lo.const_array()  , ln.const_array()   , 3 )    
 	  // 	    << std::endl;
 	  //	  shape->Dump() ;
 	  
@@ -735,7 +734,7 @@ namespace DD4hep {
     // 	  DDSurfaces::Vector3D luRot ;
     // 	  luRot.fill( vecR ) ;
  	  
-    // 	  double dist = shape->DistFromInside( lo, luRot , 3, 0.1 ) ;
+    // 	  double dist = shape->DistFromInside( lo.const_array() , luRot.const_array()  , 3, 0.1 ) ;
 	  
     // 	  // local point at volume boundary
     // 	  DDSurfaces::Vector3D lp = lo + dist * luRot ;

@@ -167,6 +167,41 @@ Atom::Atom(const string& name, const string& formula, int Z, int N, double densi
   m_element = e;
 }
 
+/// proton number of the underlying material
+double  Material::Z() const {
+  Handle < TGeoMedium > val(*this);
+  if (val.isValid()) {
+    TGeoMaterial* m = val->GetMaterial();
+    if (m)
+      return m->GetZ();
+    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+  }
+  throw runtime_error("DD4hep: Attempt to access proton number from invalid material handle!");
+}
+/// atomic number of the underlying material
+double  Material::A() const {
+  Handle < TGeoMedium > val(*this);
+  if (val.isValid()) {
+    TGeoMaterial* m = val->GetMaterial();
+    if (m)
+      return m->GetA();
+    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+  }
+  throw runtime_error("DD4hep: Attempt to access atomic number from invalid material handle!");
+}
+
+/// density of the underlying material
+double  Material::density() const {
+  Handle < TGeoMedium > val(*this);
+  if (val.isValid()) {
+    TGeoMaterial* m = val->GetMaterial();
+    if (m)
+      return m->GetDensity();
+    throw runtime_error("DD4hep: The medium " + string(val->GetName()) + " has an invalid material reference!");
+  }
+  throw runtime_error("DD4hep: Attempt to access density from invalid material handle!");
+}
+ 
 /// Access the radiation length of the underlying material
 double Material::radLength() const {
   Handle < TGeoMedium > val(*this);
