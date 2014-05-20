@@ -18,6 +18,11 @@ target_link_libraries(geoConverter DD4hepCore)
 add_executable(geoPluginRun src/plugin_runner.cpp)
 target_link_libraries(geoPluginRun DD4hepCore)
 #-----------------------------------------------------------------------------------
+add_executable( print_materials src/print_materials.cc)
+target_link_libraries(print_materials DD4hepCore DD4hepRec)
+#-----------------------------------------------------------------------------------
+
+
 
 root_generate_dictionary( G__teve src/EvNavHandler.h LINKDEF src/LinkDef.h)
 if(DD4HEP_USE_LCIO)
@@ -31,7 +36,7 @@ target_link_libraries( teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES} DD4hepRec ${
 
 #--- install target-------------------------------------
 
-install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay
+install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )

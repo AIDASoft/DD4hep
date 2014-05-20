@@ -1,6 +1,8 @@
 #include "DDRec/Surface.h"
 #include "DD4hep/objects/DetectorInterna.h"
 
+#include "DDRec/MaterialManager.h"
+
 #include <math.h>
 #include <memory>
 #include <exception>
@@ -223,6 +225,18 @@ namespace DD4hep {
 	//        neeed averaged material in case of several volumes...
 	//	_volSurf.setInnerMaterial( _volSurf.volume().material() ) ;
 	
+	MaterialManager matMgr ;
+	Vector3D p = _o - innerThickness() * _n  ;
+
+	const MaterialVec& materials = matMgr.materials( _o , p  ) ;
+	
+	// std::cout << " ####### found materials between points : " << _o << " and " << p << " : " ;
+	// for( unsigned i=0,n=materials.size();i<n;++i){
+	//   std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
+	// }
+	// std::cout << std::endl ;
+	//std::cout <<  "  #### material at origin : " << matMgr.material( _o ).name() <<  " material at endpoint : " <<    matMgr.material( p ).name() << std::endl ;
+
 	mat = _volSurf.volume().material() ;
 
 	//	std::cout << "  **** Surface::innerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
@@ -243,7 +257,7 @@ namespace DD4hep {
 	
 	mat  =  _volSurf.volume().material() ;
 
- 	//std::cout << "  **** Surface::outerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
+	// 	std::cout << "  **** Surface::outerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
       }
 
       return  _volSurf.outerMaterial()  ;
@@ -631,184 +645,6 @@ namespace DD4hep {
 
     }
 
-    // //===================================================================================================================
-      
-    // std::vector< Vector3D > Surface::getVertices(unsigned nMax) {
-
-
-    //   const static double epsilon = 1e-6 ; 
-
-    //   std::vector< Vector3D > _vert ;
-
-	
-    //   // get local and global surface vectors
-    //   const DDSurfaces::Vector3D& lu = _volSurf.u() ;
-    //   const DDSurfaces::Vector3D& lv = _volSurf.v() ;
-    //   const DDSurfaces::Vector3D& ln = _volSurf.normal() ;
-    //   const DDSurfaces::Vector3D& lo = _volSurf.origin() ;
-      
-    //   Volume vol = volume() ; 
-    //   const TGeoShape* shape = vol->GetShape() ;
-      
-      
-    //   if( type().isPlane() ) {
-	
-    // 	if( shape->IsA() == TGeoBBox::Class() ) {
-	  
-    // 	  TGeoBBox* box = ( TGeoBBox* ) shape  ;
-	  
-    // 	  DDSurfaces::Vector3D boxDim(  box->GetDX() , box->GetDY() , box->GetDZ() ) ;  
-	  
-	  
-    // 	  bool isYZ = std::fabs(  ln.x() - 1.0 ) < epsilon  ; // normal parallel to x
-    // 	  bool isXZ = std::fabs(  ln.y() - 1.0 ) < epsilon  ; // normal parallel to y
-    // 	  bool isXY = std::fabs(  ln.z() - 1.0 ) < epsilon  ; // normal parallel to z
-	  
-	  
-    // 	  if( isYZ || isXZ || isXY ) {  // plane is parallel to one of the box' sides -> need 4 vertices from box dimensions
-	    
-    // 	    // if isYZ :
-    // 	    unsigned uidx = 1 ;
-    // 	    unsigned vidx = 2 ;
-	    
-    // 	    DDSurfaces::Vector3D ubl(  0., 1., 0. ) ; 
-    // 	    DDSurfaces::Vector3D vbl(  0., 0., 1. ) ;
-	    
-    // 	    if( isXZ ) {
-	      
-    // 	      ubl.fill( 1., 0., 0. ) ;
-    // 	      vbl.fill( 0., 0., 1. ) ;
-    // 	      uidx = 0 ;
-    // 	      vidx = 2 ;
-	      
-    // 	    } else if( isXY ) {
-	      
-    // 	      ubl.fill( 1., 0., 0. ) ;
-    // 	      vbl.fill( 0., 1., 0. ) ;
-    // 	      uidx = 0 ;
-    // 	      vidx = 1 ;
-    // 	    }
-	    
-    // 	    DDSurfaces::Vector3D ub ;
-    // 	    DDSurfaces::Vector3D vb ;
-    // 	    _wtM->LocalToMasterVect( ubl , ub.array() ) ;
-    // 	    _wtM->LocalToMasterVect( vbl , vb.array() ) ;
-	    
-    // 	    _vert.resize(4) ;
-	    
-    // 	    _vert[0] = _o + boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ;
-    // 	    _vert[1] = _o - boxDim[ uidx ] * ub  + boxDim[ vidx ] * vb ;
-    // 	    _vert[2] = _o - boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ;
-    // 	    _vert[3] = _o + boxDim[ uidx ] * ub  - boxDim[ vidx ] * vb ;
-	    
-    // 	    return _vert ;
-    // 	  }	    
-    // 	}
-	
-    // 	// ===== default for arbitrary planes in arbitrary shapes ================= 
-	
-    // 	// We create nMax vertices by rotating the local u vector around the normal
-    // 	// and checking the distance to the volume boundary in that direction.
-    // 	// This is brute force and not very smart, as many points are created on straight 
-    // 	// lines and the edges are still rounded. 
-    // 	// The alterative would be to compute the true intersections a plane and the most
-    // 	// common shapes - at least for boxes that should be not too hard. To be done...
-	
-    // 	_vert.resize( nMax ) ;
-	
-    // 	double dAlpha =  2.* ROOT::Math::Pi() / double( nMax ) ; 
-
-    // 	TVector3 normal( ln.x() , ln.y() , ln.z() ) ;
-
-    // 	for(unsigned i=0 ; i< nMax ; ++i ){ 
-	  
-    // 	  double alpha = double(i) * dAlpha ;
-	  
-    // 	  TVector3 vec( lu.x() , lu.y() , lu.z() ) ;
-
-    // 	  TRotation rot ;
-    // 	  rot.Rotate( alpha , normal );
-	
-    // 	  TVector3 vecR = rot * vec ;
-	  
-    // 	  DDSurfaces::Vector3D luRot ;
-    // 	  luRot.fill( vecR ) ;
- 	  
-    // 	  double dist = shape->DistFromInside( lo.const_array() , luRot.const_array()  , 3, 0.1 ) ;
-	  
-    // 	  // local point at volume boundary
-    // 	  DDSurfaces::Vector3D lp = lo + dist * luRot ;
-
-    // 	  DDSurfaces::Vector3D gp ;
-	  
-    // 	  _wtM->LocalToMaster( lp , gp.array() ) ;
-
-    // 	  //	  std::cout << " **** normal:" << ln << " lu:" << lu  << " alpha:" << alpha << " luRot:" << luRot << " lp :" << lp  << " gp:" << gp << std::endl;
-
-    // 	  _vert[i] = gp ;
-    // 	}
-
-
-    //   } else if( type().isCylinder() ) {  
-
-    // 	//	if( shape->IsA() == TGeoTube::Class() ) {
-    // 	if( shape->IsA() == TGeoConeSeg::Class() ) {
-
-    // 	  _vert.resize( nMax ) ;
-
-    // 	  TGeoTube* tube = ( TGeoTube* ) shape  ;
-	  
-    // 	  double zHalf = tube->GetDZ() ;
-
-    // 	  Vector3D zv( 0. , 0. , zHalf ) ;
-	  
-    // 	  double r = lo.rho() ;
-
-    // 	  unsigned n = nMax / 4 ;
-    // 	  n = 8 ;
-
-    // 	  double dPhi = 2.* ROOT::Math::Pi() / double( n ) ; 
-
-    // 	  for( unsigned i = 0 ; i < n ; ++i ) {
-
-    // 	    Vector3D rv0(  r*sin(  i   *dPhi ) , r*cos(  i   *dPhi )  , 0. ) ;
-    // 	    Vector3D rv1(  r*sin( (i+1)*dPhi ) , r*cos( (i+1)*dPhi )  , 0. ) ;
-
-    // 	    // 4 points on local cylinder
-
-    // 	    Vector3D pl0 =  zv + rv0 ;
-    // 	    Vector3D pl1 =  zv + rv1 ;
-    // 	    Vector3D pl2 = -zv + rv1  ;
-    // 	    Vector3D pl3 = -zv + rv0 ;
-
-    // 	    Vector3D pg0,pg1,pg2,pg3 ;
-
-    // 	    _wtM->LocalToMaster( pl0, pg0.array() ) ;
-    // 	    _wtM->LocalToMaster( pl1, pg1.array() ) ;
-    // 	    _wtM->LocalToMaster( pl2, pg2.array() ) ;
-    // 	    _wtM->LocalToMaster( pl3, pg3.array() ) ;
-
-    // 	    _vert[ i*5     ] = pg0 ;
-    // 	    _vert[ i*5 + 1 ] = pg1 ;
-    // 	    _vert[ i*5 + 2 ] = pg2 ;
-    // 	    _vert[ i*5 + 3 ] = pg3 ;
-    // 	    _vert[ i*5 + 3 ] = pg0 ;
-	    
-    // 	  }
-    // 	}
-    //   }
-    //   return _vert ;
-
-    // }
-
-    //===================================================================================================================
-
-    // double CylinderSurfaceSurface::radius() const {
-
-    //   return _volSurf.origin().rho() ;
-    // }
-
-    // //===================================================================================================================
 
   } // namespace
 } // namespace
