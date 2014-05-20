@@ -3,6 +3,7 @@
 
 #include "DD4hep/Objects.h"
 #include "DDSurfaces/Vector3D.h"
+#include "DDRec/Material.h"
 
 #include <vector>
 
@@ -40,6 +41,9 @@ namespace DD4hep {
       /** Get the material at the given position
        */
       const Material& material(const DDSurfaces::Vector3D& pos );
+
+
+      void createAveragedMaterial( const MaterialVec& materials, MaterialData& mData ) ;
 
     protected :
 

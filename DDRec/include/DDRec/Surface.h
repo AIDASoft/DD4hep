@@ -6,6 +6,7 @@
 #include "DD4hep/Detector.h"
 
 #include "DDSurfaces/ISurface.h"
+#include "DDRec/Material.h"
 
 #include <list>
 
@@ -16,44 +17,47 @@ namespace DD4hep {
   
     using namespace DDSurfaces ;
     
+#if 1
+    typedef MaterialData SurfaceMaterial ;
 
-    // typedef DDRec::Material SurfaceMaterial ;
-
+#else
     /** Wrapper class to  Geometry::Material that implements the DDSurfaces::IMaterial interface.
-     *
-     * @author F.Gaede, DESY
-     * @date Apr, 6 2014
-     * @version $Id$
-     */
-    struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
+      *
+      * @author F.Gaede, DESY
+      * @date Apr, 6 2014
+      * @version $Id$
+      */
+     struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
+    
+       /** Copy c'tor - copies handle */
+       SurfaceMaterial( Geometry::Material m )  : Geometry::Material( m ) {}  
+    
+       SurfaceMaterial( const SurfaceMaterial& sm ) : Geometry::Material( sm ) {}  
+    
+       virtual ~SurfaceMaterial() {}
+    
+       /// material name
+       virtual std::string name() const { return Geometry::Material::name() ; }
+    
+       /// averaged proton number
+       virtual double Z() const {  return Geometry::Material::Z() ; } 
+    
+       /// averaged atomic number
+       virtual double A() const { return Geometry::Material::A() ; } 
+    
+       /// density - units ?
+       virtual double density() const {  return Geometry::Material::density() ; }
+    
+       /// radiation length - tgeo units 
+       virtual double radiationLength() const { return Geometry::Material::radLength() ; } 
+    
+       /// interaction length - tgeo units 
+       virtual double interactionLength() const  { return Geometry::Material::intLength() ; }
+    
+     };
+#endif
 
-      /** Copy c'tor - copies handle */
-      SurfaceMaterial( Geometry::Material m )  : Geometry::Material( m ) {}  
-
-      SurfaceMaterial( const SurfaceMaterial& sm ) : Geometry::Material( sm ) {}  
-
-      virtual ~SurfaceMaterial() {}
-
-      /// material name
-      virtual std::string name() const { return Geometry::Material::name() ; }
-
-      /// averaged proton number
-      virtual double Z() const {  return Geometry::Material::Z() ; } 
-      
-      /// averaged atomic number
-      virtual double A() const { return Geometry::Material::A() ; } 
-      
-      /// density - units ?
-      virtual double density() const {  return Geometry::Material::density() ; }
-      
-      /// radiation length - tgeo units 
-      virtual double radiationLength() const { return Geometry::Material::radLength() ; } 
-      
-      /// interaction length - tgeo units 
-      virtual double interactionLength() const  { return Geometry::Material::intLength() ; }
-
-    };
-
+    
     /** Helper class for holding surface data. 
      * @author F.Gaede, DESY
      * @date Apr, 6 2014

@@ -231,16 +231,17 @@ namespace DD4hep {
 
 	const MaterialVec& materials = matMgr.materials( _o , p  ) ;
 	
-	// std::cout << " ####### found materials between points : " << _o << " and " << p << " : " ;
-	// for( unsigned i=0,n=materials.size();i<n;++i){
-	//   std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
-	// }
-	// std::cout << std::endl ;
-	//std::cout <<  "  #### material at origin : " << matMgr.material( _o ).name() <<  " material at endpoint : " <<    matMgr.material( p ).name() << std::endl ;
+	std::cout << " ####### found materials between points : " << _o << " and " << p << " : " ;
+	for( unsigned i=0,n=materials.size();i<n;++i){
+	  std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
+	}
+	std::cout << std::endl ;
 
+	std::cout <<  "  #### material at origin : " << matMgr.material( _o ).name() <<  " material at endpoint : " <<    matMgr.material( p ).name() << std::endl ;
+	
 	mat = _volSurf.volume().material() ;
 
-	//	std::cout << "  **** Surface::innerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
+	std::cout << "  **** Surface::innerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
       }
       return  _volSurf.innerMaterial()  ;
     }

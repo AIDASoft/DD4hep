@@ -65,7 +65,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 
     /// ======== test layer assembly -> results in assembly in assembly and
-#define use_layer_assembly 1        // crashes ild_exsimu
+#define use_layer_assembly 0        // crashes ild_exsimu
 #if use_layer_assembly 
 
     // --- create an assembly and DetElement for the layer 
@@ -129,7 +129,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Vector3D v( 0. , 0. , 1. ) ;
     Vector3D n( 1. , 0. , 0. ) ;
     //    Vector3D o( 0. , 0. , 0. ) ;
-    VolPlane surf( sensvol , SurfaceType(SurfaceType::Sensitive) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ; //,o ) ;
+    VolPlane surf( sensvol , SurfaceType(SurfaceType::Sensitive) , sens_thick/2 + supp_thick , sens_thick/2 , u,v,n ) ; //,o ) ;
 
     Material    suppmat  = lcdd.material(x_support.materialStr());
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
@@ -262,6 +262,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     //----------------- gear ---------------------------------------------
 
 
+    layer_assembly->GetShape()->ComputeBBox() ;
+ 
+
   }
   Volume mother =  lcdd.pickMotherVolume(vxd) ;
 
@@ -270,6 +273,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   pv.addPhysVolID( "system", x_det.id() ).addPhysVolID("side",0 )  ;
   
   vxd.setPlacement(pv);
+	
+  assembly->GetShape()->ComputeBBox() ;
+  //  TGeoBBox* bbox =  assembly->GetShape()->GetBBox() ;
+
+
+
   return vxd;
 }
 
