@@ -88,7 +88,8 @@ namespace DD4hep {
       return dist < epsilon && inShape ;
  #else
 	
-      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point.const_array()  ) ; 
+      //fixme: older versions of ROOT (~<5.34.10 ) take a non const pointer as argument - therefore use a const cast here for the time being ...
+      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( const_cast<double*> (point.const_array() )  ) ; 
  #endif
  
     }
@@ -105,7 +106,7 @@ namespace DD4hep {
 #if 0
       double distR = std::abs( distance( point ) ) ;
       
-      bool inShapeT = volume()->GetShape()->Contains( point.const_array()  ) ;
+      bool inShapeT = volume()->GetShape()->Contains( const_cast<double*> ( point.const_array() ) ) ;
       
 				      std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << distR 
 						<< " origin = " << origin() 
@@ -114,7 +115,7 @@ namespace DD4hep {
 				      return distR < epsilon && inShapeT ;
 #else
       
-				      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( point.const_array()  ) ; 
+				      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( const_cast<double*> (point.const_array())  ) ; 
 
 #endif
     }
@@ -568,7 +569,7 @@ namespace DD4hep {
 	  DDSurfaces::Vector3D luRot ;
 	  luRot.fill( vecR ) ;
  	  
-	  double dist = shape->DistFromInside( lo.const_array() , luRot.const_array()  , 3, 0.1 ) ;
+	  double dist = shape->DistFromInside( const_cast<double*> (lo.const_array()) , const_cast<double*> (luRot.const_array())  , 3, 0.1 ) ;
 	  
 	  // local point at volume boundary
 	  DDSurfaces::Vector3D lp = lo + dist * luRot ;
