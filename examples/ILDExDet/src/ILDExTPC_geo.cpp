@@ -19,10 +19,11 @@
 
 #include "TPCData.h"
 
+#ifdef DD4HEP_WITH_GEAR
 #include "DDRec/DDGear.h"
-
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
+#endif
 
 using namespace std;
 //using namespace tgeo ;
@@ -255,6 +256,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }//subdetectors
   tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   
+#ifdef DD4HEP_WITH_GEAR
   //--------------- create gear::TPCParameters and add them as Extension
   //  GearTPCParameters* gearTPC = new GearTPCParameters( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
   gear::TPCParametersImpl* gearTPC = new gear::TPCParametersImpl( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
@@ -281,6 +283,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   tpc.addExtension< GearHandle >( new GearHandle( gearTPC, "TPCParameters" ) ) ;
   
   //--------------------------------------------------------------------
+#endif
   
   PlacedVolume phv = lcdd.pickMotherVolume(tpc).placeVolume(tpc_vol);
   phv.addPhysVolID("system",x_det.id());

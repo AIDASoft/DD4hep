@@ -41,14 +41,21 @@ find_package( ROOT REQUIRED )
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 
-find_package( GEAR REQUIRED COMPONENTS )
 
-# add all gear library pathes to External_LIBRARY_DIRS for the environment script
-foreach(lp ${GEAR_LIBRARY_DIRS})
-  set( External_LIBRARY_DIRS "${External_LIBRARY_DIRS} ${lp}")
-endforeach(lp) 
-#message( STATUS " *** pathes : ${External_LIBRARY_DIRS} "  )
 
+if(DD4HEP_WITH_GEAR)
+
+  find_package( GEAR REQUIRED COMPONENTS )
+
+  # add all gear library pathes to External_LIBRARY_DIRS for the environment script
+  foreach(lp ${GEAR_LIBRARY_DIRS})
+    set( External_LIBRARY_DIRS "${External_LIBRARY_DIRS} ${lp}")
+  endforeach(lp) 
+  #message( STATUS " *** pathes : ${External_LIBRARY_DIRS} "  )
+
+  add_definitions("-D DD4HEP_WITH_GEAR")
+
+endif()
 
 #-------------------------------------------------------------
 # add additional packages here

@@ -9,8 +9,10 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 
+#ifdef DD4HEP_WITH_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
+#endif
 
 #include "DDRec/Surface.h"
 
@@ -28,13 +30,14 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   PlacedVolume pv;
 
   
+#ifdef DD4HEP_WITH_GEAR
   //--------------- gear: create gear::ZPlanarParameters and add them as Extension
   gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( gear::ZPlanarParameters::HYBRID ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
   // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
   // -> the SIT has no outer shell - set type to HYPRID to keep gear happy (needs fix in gear)
   sit.addExtension<GearHandle>( new GearHandle( gearZPlanar, "SITParameters" )  ) ;
   //--------------------------------------------------------------------
-
+#endif
 
 
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
@@ -129,6 +132,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       volSurfaceList( ladderDE )->push_back( surf ) ;
 
    }
+
+#ifdef DD4HEP_WITH_GEAR
     //----------------- gear ---------------------------------------------
     double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
     double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
@@ -139,6 +144,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // addLayer (int nLadders, double phi0, double ladderDistance, double ladderOffset, double ladderThickness, double ladderLength, double ladderWidth, double ladderRadLength, 
     //           double sensitiveDistance, double sensitiveOffset, double sensitiveThickness, double sensitiveLength, double sensitiveWidth, double sensitiveRadLength)
     //----------------- gear ---------------------------------------------
+#endif
 
   }
   
