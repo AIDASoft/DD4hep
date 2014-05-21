@@ -58,8 +58,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   //-------- global gear parameters ----------------
 
-  g_driftlength = x_global.attr<double>("driftLength") ;
-  g_padWidth = x_global.attr<double>("padWidth") ;
+  g_driftlength = x_global.attr<double>(_Unicode(driftLength) ) ;
+
+  g_padWidth = x_global.attr<double>(_Unicode(padWidth)) ;
 
   //-------- global gear parameters ----------------
 
