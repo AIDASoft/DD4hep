@@ -37,8 +37,8 @@ namespace DD4hep {
 				 _o( Vector3D() ) ,
 				 _th_i( 0. ),
 				 _th_o( 0. ),
-				 _innerMat( Geometry::Material() ),
-				 _outerMat( Geometry::Material() ) {
+				 _innerMat( MaterialData() ),
+				 _outerMat( MaterialData() ) {
     }
   
   
@@ -50,8 +50,8 @@ namespace DD4hep {
 								     _o( o ),
 								     _th_i( thickness_inner ),
 								     _th_o( thickness_outer ),  
-								     _innerMat( Geometry::Material() ),
-								     _outerMat( Geometry::Material() ) {
+								     _innerMat( MaterialData() ),
+								     _outerMat( MaterialData() ) {
     }
   
   
@@ -220,30 +220,29 @@ namespace DD4hep {
       
       SurfaceMaterial& mat = _volSurf->_innerMat ;
       
+      //      std::cout << "  **** Surface::innerMaterial() " << mat << std::endl ;
+
       if( ! mat.isValid() ) {
 	
-	// fixme: for now just set the material of the volume holding the surface
-	//        neeed averaged material in case of several volumes...
-	//	_volSurf.setInnerMaterial( _volSurf.volume().material() ) ;
-	
 	MaterialManager matMgr ;
+
 	Vector3D p = _o - innerThickness() * _n  ;
 
-	const MaterialVec& materials = matMgr.materials( _o , p  ) ;
+	const MaterialVec& materials = matMgr.materialsBetween( _o , p  ) ;
 	
-	std::cout << " ####### found materials between points : " << _o << " and " << p << " : " ;
-	for( unsigned i=0,n=materials.size();i<n;++i){
-	  std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
-	}
-	std::cout << std::endl ;
+	// std::cout << " ####### found materials between points : " << _o << " and " << p << " : " ;
+	// for( unsigned i=0,n=materials.size();i<n;++i){
+	//   std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
+	// }
+	// std::cout << std::endl ;
+	// const MaterialData& matAvg = matMgr.createAveragedMaterial( materials ) ; 
+	// mat = matAvg ;
+	// std::cout << "  **** Surface::innerMaterial() - assigning averaged material to surface : " << mat << std::endl ;
 
-	std::cout <<  "  #### material at origin : " << matMgr.material( _o ).name() <<  " material at endpoint : " <<    matMgr.material( p ).name() << std::endl ;
-	
-	mat = _volSurf.volume().material() ;
+	mat = ( materials.size() > 1  ? matMgr.createAveragedMaterial( materials ) : materials[0].first  ) ;
 
-	std::cout << "  **** Surface::innerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
       }
-      return  _volSurf.innerMaterial()  ;
+      return  mat ;
     }
       
 
@@ -253,16 +252,16 @@ namespace DD4hep {
       
       if( ! mat.isValid() ) {
 	
-	// fixme: for now just set the material of the volume holding the surface
-	//        neeed averaged material in case of several volumes...
-	//	_volSurf.setOuterMaterial( _volSurf.volume().material() ) ;
+	MaterialManager matMgr ;
+
+	Vector3D p = _o + outerThickness() * _n  ;
+
+	const MaterialVec& materials = matMgr.materialsBetween( _o , p  ) ;
 	
-	mat  =  _volSurf.volume().material() ;
+	mat = ( materials.size() > 1  ? matMgr.createAveragedMaterial( materials ) : materials[0].first  ) ;
 
-	// 	std::cout << "  **** Surface::outerMaterial() - assigning volume material to surface : " << mat.name() << std::endl ;
       }
-
-      return  _volSurf.outerMaterial()  ;
+      return  mat ;
     }          
 
     double Surface::distance(const Vector3D& point ) const {

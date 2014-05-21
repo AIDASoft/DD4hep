@@ -1,6 +1,32 @@
 DD4hep  ----  Release Notes
 =================================
 
+2014/05/21 Frank Gaede
+-----------------------
+  - add MaterialManager class providing
+    - access to materials at any point or on straight
+      line between two points
+    - creation of material with averaged properties (A,Z,rho,x0,Lambda)
+ 
+  - added utility print_materials to print material properties along  
+    a straight line between two points including integrated radiation and 
+    interaction lengths (useful for debugging geometries and materials)
+ 
+  - use avaeraged material for Surfaces where the thickness extends
+    beyond the volume boundaries
+    - introduced new simple data class MaterialData for this       
+    
+
+  *** known issues
+     ** materials don't work for detectors with assemblies in assemblies
+        as the TGeo navigation dose not seem to work:
+	Error in <TGeoVoxelFinder::SortAll>: Wrong bounding box for volume SIT_assembly
+        -> ROOT bug or feature ?
+
+     ** using <composite/> in compound materials results in incorrect material properties
+       see ILDExDet/compact/materials Polysterene as example
+
+
 2014/05/06 Frank Gaede
 -----------------------
   - DDSurfaces/DDRec:

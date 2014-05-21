@@ -22,7 +22,7 @@ namespace DD4hep {
       
     }
     
-    const MaterialVec&MaterialManager:: materials(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 ) {
+    const MaterialVec&MaterialManager:: materialsBetween(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 , double epsilon) {
       
       if( ( p0 != _p0 ) && ( p1 != _p1 ) ) {
 	
@@ -30,7 +30,7 @@ namespace DD4hep {
 	_mV.clear() ;
 	
 	//
-	// algorithm copied from TGeoGearDistanceProperties.cc :
+	// algorithm copied from TGeoGearDistanceProperties.cc (A.Munnich):
 	// 
 
 	double startpoint[3], endpoint[3], direction[3];
@@ -100,14 +100,16 @@ namespace DD4hep {
 	    track->AddPoint(endpoint[0], endpoint[1], endpoint[2], 0.);
 	    
 	    
-	    _mV.push_back( std::make_pair( Material( node1->GetMedium() ) , length )  ) ; 
+	    if( length > epsilon ) 
+	      _mV.push_back( std::make_pair( Material( node1->GetMedium() ) , length )  ) ; 
 	    
 	    break;
 	  }
 	  
 	  track->AddPoint(position[0], position[1], position[2], 0.);
 	  
-	  _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
+	  if( length > epsilon ) 
+	    _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
 	  
 	  node1=node2;
 	}
@@ -125,7 +127,7 @@ namespace DD4hep {
     }
 
     
-    const Geometry::Material& MaterialManager::material(const DDSurfaces::Vector3D& pos ){
+    const Geometry::Material& MaterialManager::materialAt(const DDSurfaces::Vector3D& pos ){
 
       if( pos != _pos ) {
 	
@@ -147,6 +149,60 @@ namespace DD4hep {
       return _m ; ;
     }
     
+    MaterialData MaterialManager::createAveragedMaterial( const MaterialVec& materials ) {
+      
+      std::stringstream sstr ;
+      
+      double sum_l = 0 ;
+      double sum_rho_l = 0 ;
+      double sum_rho_l_over_A = 0 ;
+      double sum_rho_l_Z_over_A = 0 ;
+      //double sum_rho_l_over_x = 0 ;
+      double sum_l_over_x = 0 ;
+      //double sum_rho_l_over_lambda = 0 ;
+      double sum_l_over_lambda = 0 ;
+
+     for(unsigned i=0,n=materials.size(); i<n ; ++i){
+
+	Material mat = materials[i].first ;
+	double   l   = materials[i].second ;
+
+	if( i != 0 ) sstr << "_" ; 
+	sstr << mat.name() << "_" << l ;
+
+	double rho      = mat.density() ;
+	double  A       = mat.A() ;
+	double  Z       = mat.Z() ;
+	double  x       = mat.radLength() ;
+	double  lambda  = mat.intLength() ;
+	
+	sum_l                 +=   l ;
+	sum_rho_l             +=   rho * l  ;
+	sum_rho_l_over_A      +=   rho * l / A ;
+	sum_rho_l_Z_over_A    +=   rho * l * Z / A ;
+	sum_l_over_x          +=   l / x ;
+	sum_l_over_lambda     +=   l / lambda ;
+	// sum_rho_l_over_x      +=   rho * l / x ;
+	// sum_rho_l_over_lambda +=   rho * l / lambda ;
+     }
+
+     double rho      =  sum_rho_l / sum_l ;
+
+     double  A       =  sum_rho_l / sum_rho_l_over_A ;
+     double  Z       =  sum_rho_l_Z_over_A / sum_rho_l_over_A ;
+
+     // radiation and interaction lengths already given in cm - average by length
+     
+     // double  x       =  sum_rho_l / sum_rho_l_over_x ;
+     double  x       =  sum_l / sum_l_over_x ;
+
+     //     double  lambda  =  sum_rho_l / sum_rho_l_over_lambda ;
+     double  lambda  =  sum_l / sum_l_over_lambda ;
+
+     
+     return MaterialData( sstr.str() , Z, A, rho, x, lambda ) ;
+
+    }
     
   } /* namespace DDRec */
 } /* namespace DD4hep */

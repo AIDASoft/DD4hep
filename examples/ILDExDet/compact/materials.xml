@@ -49,6 +49,19 @@
 
   <material name="Polystyrene">
     <D value="1.032" unit="g/cm3"/>
+      <fraction n="0.077418" ref="H"/>
+      <fraction n="0.922582" ref="C"/>
+  </material>
+
+  <!-- FIXME: definition with composites results
+       in invalid material properties:
+Polystyrene Z: 135 A: 249.37 densitiy: 1.032 radiationLength: 1.19602 interactionLength: 1.1644
+   - the above results in:
+Polystyrene Z: 5.61291 A: 11.1589 densitiy: 1.032 radiationLength: 42.0422 interactionLength: 70.7405
+
+  -->
+  <material name="Polystyrene_BAD">
+    <D value="1.032" unit="g/cm3"/>
     <composite n="19" ref="C"/>
     <composite n="21" ref="H"/>
   </material>

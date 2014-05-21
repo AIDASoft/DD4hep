@@ -53,17 +53,48 @@ int main(int argc, char** argv ){
 
   MaterialManager matMgr ;
 
-  const MaterialVec& materials = matMgr.materials( p0 , p1  ) ;
+  const MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
 	
   std::cout  << std::endl  << " #######  materials between the two  points : " << p0 << "*cm  and " << p1 << "*cm :  "  << std::endl ;
 
+  double sum_x0 = 0 ;
+  double sum_lambda = 0 ;
+  double path_length = 0 ;
   for( unsigned i=0,n=materials.size();i<n;++i){
 
-    std::cout <<  "      " << materials[i].first << "  \t  thickness: " <<   materials[i].second / tgeo::mm << " mm " << std::endl ;
+    Material mat =  materials[i].first  ;
+    double length = materials[i].second  ;
+
+    double nx0 = length / mat.radLength()  ;
+    sum_x0 += nx0 ;
+
+    double nLambda = length / mat.intLength()  ;
+    sum_lambda += nLambda ;
+
+    path_length += length ;
+
+    std::cout <<  "      " << mat << " thickness: " <<  length << " path_length:" << path_length  << " integrated_X0: " <<  sum_x0 << " integrated_lambda: " <<  sum_lambda << std::endl ;
   }
 
   std::cout << "############################################################################### "  << std::endl  << std::endl  ;
 	
+
+  const MaterialData& avMat = matMgr.createAveragedMaterial( materials ) ;
+
+  std::cout << "     averaged Material : " << " Z: " << avMat.Z() << " A: " << avMat.A() << " densitiy: " << avMat.density()
+	    << " radiationLength: " <<  avMat.radiationLength() 
+	    << " interactionLength: " << avMat.interactionLength()  << std::endl << std::endl  ;
+  
+
+  std::cout << "     Total length : "  << path_length / tgeo::mm << " mm "  << std::endl  ;
+
+  std::cout << "     Integrated radiation lengths : "     << path_length / avMat.radiationLength()  << " X0 " << std::endl  ;
+
+  std::cout << "     Integrated interaction lengths : "  << path_length / avMat.interactionLength() << " lambda "   << std::endl  ;
+
+  std::cout << "############################################################################### "  << std::endl  << std::endl  ;
+
+
   return 0;
 }
 
