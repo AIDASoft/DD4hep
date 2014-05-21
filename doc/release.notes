@@ -1,6 +1,26 @@
 DD4hep  ----  Release Notes
 =================================
 
+2014/05/21 Markus Frank
+-----------------------
+  - Fix material creation from XML
+    JIRA bug: DD4hep -  DDFORHEP-4
+    https://sft.its.cern.ch/jira/browse/DDFORHEP-4
+    using <composite> in material xml files results in wrong material properties
+
+  - Fix JIRA bug: DD4hep -   DDFORHEP-3
+    https://sft.its.cern.ch/jira/browse/DDFORHEP-3
+    Recursive assemblies result in error in TGeo geometry
+    Bug results in errors when closing the geometry like:
+    "Error in <TGeoVoxelFinder::SortAll>: Wrong bounding box for volume SIT_assembly"
+
+  - Provision to store survey constants to the DetElement as an extension
+    for Alignment calculations (priv. comm. C.Parkes)
+
+  - Fix bug in expression evaluation of angles.
+    All detector constructors receive angles in "rad". No correction 
+    from degree to rad should be necessary.
+
 2014/05/21 Frank Gaede
 -----------------------
   - add MaterialManager class providing

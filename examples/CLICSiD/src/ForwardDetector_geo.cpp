@@ -31,7 +31,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      zinner     = dim.inner_z();
   double      outgoingR  = beam.outgoing_r();
   double      incomingR  = beam.incoming_r();
-  double      xangle     = beam.crossing_angle()/tgeo::rad;
+  double      xangle     = beam.crossing_angle();
   double      xangleHalf = xangle/2;
   double      thickness  = layering.totalThickness();
   double      zpos       = zinner + thickness/2;

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <materials>
+    <element Z="1" formula="H" name="H" >
+      <atom type="A" unit="g/mol" value="1.00794" />
+    </element>
+    <material formula="H" name="Hydrogen" state="gas" >
+      <RL type="X0" unit="cm" value="752776" />
+      <NIL type="lambda" unit="cm" value="421239" />
+      <D type="density" unit="g/cm3" value="8.3748e-05" />
+      <composite n="1" ref="H" />
+    </material>
+
+    <element Z="6" formula="C" name="C" >
+      <atom type="A" unit="g/mol" value="12.0107" />
+    </element>
+    <material formula="C" name="Carbon" state="solid" >
+      <RL type="X0" unit="cm" value="21.3485" />
+      <NIL type="lambda" unit="cm" value="40.1008" />
+      <D type="density" unit="g/cm3" value="2" />
+      <composite n="1" ref="C" />
+    </material>
+
+    <element Z="7" formula="N" name="N" >
+      <atom type="A" unit="g/mol" value="14.0068" />
+    </element>
+    <material formula="N" name="Nitrogen" state="gas" >
+      <RL type="X0" unit="cm" value="32602.2" />
+      <NIL type="lambda" unit="cm" value="72430.3" />
+      <D type="density" unit="g/cm3" value="0.0011652" />
+      <composite n="1" ref="N" />
+    </material>
+    
+    <element Z="8" formula="O" name="O" >
+      <atom type="A" unit="g/mol" value="15.9994" />
+    </element>
+    <material formula="O" name="Oxygen" state="gas" >
+      <RL type="X0" unit="cm" value="25713.8" />
+      <NIL type="lambda" unit="cm" value="66233.9" />
+      <D type="density" unit="g/cm3" value="0.00133151" />
+      <composite n="1" ref="O" />
+    </material>
+
+    <element Z="18" formula="Ar" name="Ar" >
+      <atom type="A" unit="g/mol" value="39.9477" />
+    </element>
+    <material formula="Ar" name="Argon" state="gas" >
+      <RL type="X0" unit="cm" value="11762.1" />
+      <NIL type="lambda" unit="cm" value="71926" />
+      <D type="density" unit="g/cm3" value="0.00166201" />
+      <composite n="1" ref="Ar" />
+    </material>
+    
+
+    <material name="Air">
+      <D type="density" unit="g/cm3" value="0.0012"/>
+      <fraction n="0.754" ref="N"/>
+      <fraction n="0.234" ref="O"/>
+      <fraction n="0.012" ref="Ar"/>
+    </material>
+    
+    <material name="Vacuum">
+      <D type="density" unit="g/cm3" value="0.00000001" />
+      <fraction n="1" ref="H" />
+    </material>
+    <material name="Polystyrene">
+      <D value="1.032" unit="g/cm3"/>
+      <composite n="19" ref="C"/>
+      <composite n="21" ref="H"/>
+    </material>
+    <material name="Polystyrene_FRACTION">
+      <D value="1.032" unit="g/cm3"/>
+      <fraction n="0.077418" ref="H"/>
+      <fraction n="0.922582" ref="C"/>
+    </material>
+    <material name="Polystyrene_COMPOSITE">
+      <D value="1.032" unit="g/cm3"/>
+      <composite n="21" ref="H"/>
+      <composite n="19" ref="C"/>
+    </material>
+    <material name="Polystyrene_CORR_FRACTION">
+      <D value="1.032" unit="g/cm3"/>
+      <fraction n="0.084429" ref="H"/>
+      <fraction n="0.915571" ref="C"/>
+    </material>
+  </materials>
+
+  <detectors>
+    <detector id="1" name="MaterialTester" type="MaterialTester">
+      <test name="Air"/>
+      <test name="Vacuum"/>
+      <test name="Polystyrene"/>
+      <test name="Polystyrene_FRACTION"/>
+      <test name="Polystyrene_COMPOSITE"/>
+      <test name="Polystyrene_CORR_FRACTION"/>
+    </detector>
+  </detectors>
+</lccdd>

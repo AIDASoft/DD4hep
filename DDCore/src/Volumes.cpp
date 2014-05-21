@@ -478,12 +478,26 @@ Volume::Object* Volume::data() const   {
 }
 
 static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* transform) {
+  if ( !daughter )   {
+    throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical daughter volume.");
+  }
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
   Int_t id = a ? a->GetEntries() : 0;
   if (transform && transform != identityTransform()) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
+  }
+  TGeoShape* shape = daughter->GetShape();
+  // Need to fix the daughter's BBox of assemblies, if the BBox was not calculated....
+  if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
+    TGeoShapeAssembly* as = (TGeoShapeAssembly*)shape;
+    if ( std::fabs(as->GetDX()) < numeric_limits<double>::epsilon() &&
+	 std::fabs(as->GetDY()) < numeric_limits<double>::epsilon() &&
+	 std::fabs(as->GetDZ()) < numeric_limits<double>::epsilon() )  {
+      as->NeedsBBoxRecompute();
+      as->ComputeBBox();
+    }
   }
   parent->AddNode(daughter, id, transform);
   geo_node_t* n = (geo_node_t*)parent->GetNode(id);
@@ -493,43 +507,27 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
 
 /// Place daughter volume according to generic Transform3D
 PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& trans) const {
-  if (volume.isValid()) {
-    return _addNode(m_element, volume, _transform(trans));
-  }
-  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
-
+  return _addNode(m_element, volume, _transform(trans));
 }
 
 /// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume) const {
-  if (volume.isValid()) {
-    return _addNode(m_element, volume, identityTransform());
-  }
-  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
+  return _addNode(m_element, volume, identityTransform());
 }
 
 /// Place un-rotated daughter volume at the given position.
 PlacedVolume Volume::placeVolume(const Volume& volume, const Position& pos) const {
-  if (volume.isValid()) {
-    return _addNode(m_element, volume, _translation(pos));
-  }
-  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
+  return _addNode(m_element, volume, _translation(pos));
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const RotationZYX& rot) const {
-  if (volume.isValid()) {
-    return _addNode(m_element, volume, _rotationZYX(rot));
-  }
-  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
+  return _addNode(m_element, volume, _rotationZYX(rot));
 }
 
 /// Place rotated daughter volume. The position is automatically the identity position
 PlacedVolume Volume::placeVolume(const Volume& volume, const Rotation3D& rot) const {
-  if (volume.isValid()) {
-    return _addNode(m_element, volume, _rotation3D(rot));
-  }
-  throw runtime_error("DD4hep: Volume: Attempt to assign an invalid physical volume.");
+  return _addNode(m_element, volume, _rotation3D(rot));
 }
 
 /// Set the volume's material

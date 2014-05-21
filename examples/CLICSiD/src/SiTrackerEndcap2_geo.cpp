@@ -29,7 +29,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   map<string,Volume> modules;
   PlacedVolume pv;
 
-  //assembly.setVisAttributes(lcdd.invisible());
+  assembly.setVisAttributes(lcdd.invisible());
   sens.setType("tracker");
 
   for(xml_coll_t mi(x_det,_U(module)); mi; ++mi, ++m_id)  {

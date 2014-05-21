@@ -24,11 +24,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_dim_t x_det_dim(x_det.dimensions());
   double inner_r = x_det_dim.rmin();
   double outer_r = x_det_dim.rmax();
-  //Tube: DDCore/DD4hep/Shapes.h
-  Tube calo_shape(inner_r,outer_r,x_det_dim.z(),2*M_PI/x_det_dim.phiBins());
-  
-  //Create the detector mother volume
-  Volume calo_vol(x_det.nameStr()+"_envelope",calo_shape,lcdd.air());
+  // Tube: DDCore/DD4hep/Shapes.h
+  //Tube calo_shape(inner_r,outer_r,x_det_dim.z(),0.0,2*M_PI/x_det_dim.phiBins());  
+  // Create the detector mother volume
+  //Volume calo_vol(x_det.nameStr()+"_envelope",calo_shape,lcdd.air());
+  Assembly calo_vol(x_det.nameStr()+"_envelope");
 
   //Set envelope volume attributes
   calo_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
@@ -116,6 +116,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	tile_seq.placeVolume(tile_vol,Position(0,total_thickness,0));
 	total_thickness += tile_thickness;
 	if ( tile_xml.isSensitive() ) {
+	  cout << "Set volume " << tile_name << " sensitive...." << endl;
 	  tile_vol.setSensitiveDetector(sens);
 	}
 	

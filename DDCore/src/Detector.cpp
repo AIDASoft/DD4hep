@@ -116,6 +116,11 @@ Alignment DetElement::alignment() const   {
   return access()->alignment;
 }
 
+/// Access to the survey alignment information
+Alignment DetElement::surveyAlignment() const  {
+  return access()->survey;
+}
+
 /// Access to the conditions information 
 Conditions DetElement::conditions() const  {
   return access()->conditions;

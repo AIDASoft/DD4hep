@@ -112,8 +112,12 @@ namespace DD4hep {
       /**@info: Additional information set externally to facilitate the processing of event data */
       /// Basic detector element alignment entry
       Alignment alignment;
+      /// Basic detector element alignment entry containing the survey data
+      Alignment survey;
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
       std::vector<Alignment> volume_alignments;
+      /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
+      std::vector<Alignment> volume_surveys;
       /// The detector elements condition entry
       Conditions conditions;
 

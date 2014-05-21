@@ -38,7 +38,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Material mat = lcdd.material(x_slice.materialStr());
       string s_name= l_name+_toString(m,"_slice%d");
       double thickness = x_slice.thickness();
-      Tube   s_tub(r,r+thickness,z,2*M_PI*tgeo::rad);
+      Tube   s_tub(r,r+thickness,z,2*M_PI);
       Volume s_vol(s_name, s_tub, mat);
 
       r += thickness;

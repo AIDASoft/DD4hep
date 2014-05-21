@@ -254,18 +254,31 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     printout(DEBUG, "Compact", "++ Creating material %s", matname);
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
     mat->SetRadLen(radlen_val, intlen_val);
-    for (composites.reset(); composites; ++composites) {
-      std::string nam = composites.attr < string > (_U(ref));
+    size_t ifrac = 0;
+    vector<double> composite_fractions;
+    double composite_fractions_total = 0.0;
+    for (composites.reset(); composites; ++composites)   {
+      std::string nam = composites.attr<string>(_U(ref));
       double fraction = composites.attr<double>(_U(n));
+      if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
+	fraction *= comp_mat->GetA();
+      else if (0 != (comp_elt = table->FindElement(nam.c_str())))
+	fraction *= comp_elt->A();
+      else
+        throw_print("Compact2Objects[ERROR]: Creating material:" + mname + " Element missing: " + nam);
+      composite_fractions_total += fraction;
+      composite_fractions.push_back(fraction);
+    }
+    for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
+      std::string nam = composites.attr<string>(_U(ref));
+      double fraction = composite_fractions[ifrac]/composite_fractions_total;
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
         mix->AddElement(comp_elt, fraction);
-      else
-        throw_print("Compact2Objects[ERROR]: Creating material:" + mname + " Element missing: " + nam);
     }
     for (fractions.reset(); fractions; ++fractions) {
-      std::string nam = fractions.attr < string > (_U(ref));
+      std::string nam = fractions.attr<string>(_U(ref));
       double fraction = fractions.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
@@ -275,15 +288,18 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         throw_print("Compact2Objects[ERROR]: Creating material:" + mname + " Element missing: " + nam);
     }
     // Update estimated density if not provided.
-    if (!has_density && mix && 0 == mix->GetDensity()) {
+    if ( has_density )   {
+      mix->SetDensity(dens_val);
+    }
+    else if (!has_density && mix && 0 == mix->GetDensity()) {
       double dens = 0.0;
-      for (composites.reset(); composites; ++composites) {
-        std::string nam = composites.attr < string > (_U(ref));
+      for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
+        std::string nam = composites.attr<string>(_U(ref));
         comp_mat = mgr.GetMaterial(nam.c_str());
         dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
       for (fractions.reset(); fractions; ++fractions) {
-        std::string nam = fractions.attr < string > (_U(ref));
+        std::string nam = fractions.attr<string>(_U(ref));
         comp_mat = mgr.GetMaterial(nam.c_str());
         dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
@@ -302,7 +318,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
   // TGeo has no notion of a material "formula"
   // Hence, treat the formula the same way as the material itself
   if (m.hasAttr(_U(formula))) {
-    string form = m.attr < string > (_U(formula));
+    string form = m.attr<string>(_U(formula));
     if (form != matname) {
       medium = mgr.GetMedium(form.c_str());
       if (0 == medium) {
@@ -327,7 +343,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
   TGeoElement* element = tab->FindElement(eltname.c_str());
   if (!element) {
     xml_ref_t atom(elem.child(_U(atom)));
-    tab->AddElement(elem.attr < string > (_U(name)).c_str(), elem.attr < string > (_U(formula)).c_str(), elem.attr<int>(_U(Z)),
+    tab->AddElement(elem.attr<string>(_U(name)).c_str(), elem.attr<string>(_U(formula)).c_str(), elem.attr<int>(_U(Z)),
         atom.attr<int>(_U(value)));
     element = tab->FindElement(eltname.c_str());
     if (!element) {
@@ -345,7 +361,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
  *       visible="true"/>
  */
 template <> void Converter<VisAttr>::operator()(xml_h e) const {
-  VisAttr attr(e.attr < string > (_U(name)));
+  VisAttr attr(e.attr<string>(_U(name)));
   float r = e.hasAttr(_U(r)) ? e.attr<float>(_U(r)) : 1.0f;
   float g = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
   float b = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
@@ -355,7 +371,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   if (e.hasAttr(_U(visible)))
     attr.setVisible(e.attr<bool>(_U(visible)));
   if (e.hasAttr(_U(lineStyle))) {
-    string ls = e.attr < string > (_U(lineStyle));
+    string ls = e.attr<string>(_U(lineStyle));
     if (ls == "unbroken")
       attr.setLineStyle(VisAttr::SOLID);
     else if (ls == "broken")
@@ -365,7 +381,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
     attr.setLineStyle(VisAttr::SOLID);
   }
   if (e.hasAttr(_U(drawingStyle))) {
-    string ds = e.attr < string > (_U(drawingStyle));
+    string ds = e.attr<string>(_U(drawingStyle));
     if (ds == "wireframe")
       attr.setDrawingStyle(VisAttr::WIREFRAME);
     else if (ds == "solid")
@@ -390,7 +406,7 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
  */
 template <> void Converter<AlignmentEntry>::operator()(xml_h e) const {
   xml_comp_t child(e);
-  string path = e.attr < string > (_U(name));
+  string path = e.attr<string>(_U(name));
   bool check = e.hasAttr(_U(check));
   bool overlap = e.hasAttr(_U(overlap));
   AlignmentEntry alignment(path);
@@ -416,17 +432,17 @@ template <> void Converter<AlignmentEntry>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<Region>::operator()(xml_h e) const {
-  Region region(e.attr < string > (_U(name)));
-  vector < string > &limits = region.limits();
-  string ene = e.attr < string > (_U(eunit)), len = e.attr < string > (_U(lunit));
+  Region region(e.attr<string>(_U(name)));
+  vector<string>&limits = region.limits();
+  string ene = e.attr<string>(_U(eunit)), len = e.attr<string>(_U(lunit));
 
   region.setEnergyUnit(ene);
   region.setLengthUnit(len);
-  region.setCut(_multiply<double>(e.attr < string > (_U(cut)), len));
-  region.setThreshold(_multiply<double>(e.attr < string > (_U(threshold)), ene));
+  region.setCut(_multiply<double>(e.attr<string>(_U(cut)), len));
+  region.setThreshold(_multiply<double>(e.attr<string>(_U(threshold)), ene));
   region.setStoreSecondaries(e.attr<bool>(_U(store_secondaries)));
   for (xml_coll_t user_limits(e, _U(limitsetref)); user_limits; ++user_limits)
-    limits.push_back(user_limits.attr < string > (_U(name)));
+    limits.push_back(user_limits.attr<string>(_U(name)));
   lcdd.addRegion(region);
 }
 
@@ -440,12 +456,12 @@ template <> void Converter<Region>::operator()(xml_h e) const {
 template <> void Converter<Readout>::operator()(xml_h e) const {
   xml_h id = e.child(_U(id));
   xml_h seg = e.child(_U(segmentation), false);
-  string name = e.attr < string > (_U(name));
+  string name = e.attr<string>(_U(name));
   Readout ro(name);
   Ref_t idSpec;
 
   if (seg) {   // Segmentation is not mandatory!
-    string type = seg.attr < string > (_U(type));
+    string type = seg.attr<string>(_U(type));
     Segmentation segment(type, name);
     if (segment.isValid()) {
       segment->parameters();
@@ -489,13 +505,13 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
  *  ... </limitset>
  */
 template <> void Converter<LimitSet>::operator()(xml_h e) const {
-  LimitSet ls(e.attr < string > (_U(name)));
+  LimitSet ls(e.attr<string>(_U(name)));
   for (xml_coll_t c(e, _U(limit)); c; ++c) {
     Limit limit;
-    limit.particles = c.attr < string > (_U(particles));
-    limit.name = c.attr < string > (_U(name));
-    limit.content = c.attr < string > (_U(value));
-    limit.unit = c.attr < string > (_U(unit));
+    limit.particles = c.attr<string>(_U(particles));
+    limit.name = c.attr<string>(_U(name));
+    limit.content = c.attr<string>(_U(value));
+    limit.unit = c.attr<string>(_U(unit));
     limit.value = _multiply<double>(limit.content, limit.unit);
     ls.addLimit(limit);
   }
@@ -509,7 +525,7 @@ template <> void Converter<LimitSet>::operator()(xml_h e) const {
  *  ... </properties>
  */
 template <> void Converter<Property>::operator()(xml_h e) const {
-  string name = e.attr < string > (_U(name));
+  string name = e.attr<string>(_U(name));
   LCDD::Properties& prp = lcdd.properties();
   if (name.empty()) {
     throw_print("Failed to convert properties. No name given!");
@@ -519,7 +535,7 @@ template <> void Converter<Property>::operator()(xml_h e) const {
     prp.insert(make_pair(name, LCDD::PropertyValues()));
   }
   for (vector<xml_attr_t>::iterator i = a.begin(); i != a.end(); ++i) {
-    pair < string, string > val(xml_tag_t(e.attr_name(*i)), e.attr < string > (*i));
+    pair < string, string > val(xml_tag_t(e.attr_name(*i)), e.attr<string>(*i));
     prp[name].insert(val);
   }
 }
@@ -534,8 +550,8 @@ template <> void Converter<Property>::operator()(xml_h e) const {
  */
 template <> void Converter<CartesianField>::operator()(xml_h e) const {
   string msg = "updated";
-  string name = e.attr < string > (_U(name));
-  string type = e.attr < string > (_U(type));
+  string name = e.attr<string>(_U(name));
+  string type = e.attr<string>(_U(type));
   CartesianField field = lcdd.field(name);
   if (!field.isValid()) {
     // The field is not present: We create it and add it to LCDD
@@ -552,13 +568,13 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
   // Now update the field structure with the generic part ie. set it's properties
   CartesianField::Properties& prp = field.properties();
   for (xml_coll_t c(e, _U(properties)); c; ++c) {
-    string props_name = c.attr < string > (_U(name));
+    string props_name = c.attr<string>(_U(name));
     vector < xml_attr_t > a = c.attributes();
     if (prp.find(props_name) == prp.end()) {
       prp.insert(make_pair(props_name, CartesianField::PropertyValues()));
     }
     for (vector<xml_attr_t>::iterator i = a.begin(); i != a.end(); ++i) {
-      pair < string, string > val(xml_tag_t(c.attr_name(*i)), c.attr < string > (*i));
+      pair < string, string > val(xml_tag_t(c.attr_name(*i)), c.attr<string>(*i));
       prp[props_name].insert(val);
     }
     if (c.hasAttr(_U(global)) && c.attr<bool>(_U(global))) {
@@ -582,13 +598,13 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
  *
  */
 template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
-  string name = element.attr < string > (_U(name));
+  string name = element.attr<string>(_U(name));
   try {
     SensitiveDetector sd = lcdd.sensitiveDetector(name);
 
     xml_attr_t type = element.attr_nothrow(_U(type));
     if (type) {
-      sd.setType(element.attr < string > (type));
+      sd.setType(element.attr<string>(type));
     }
     xml_attr_t verbose = element.attr_nothrow(_U(verbose));
     if (verbose) {
@@ -600,7 +616,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     }
     xml_attr_t limits = element.attr_nothrow(_U(limits));
     if (limits) {
-      string l = element.attr < string > (limits);
+      string l = element.attr<string>(limits);
       LimitSet ls = lcdd.limitSet(l);
       if (!ls.isValid()) {
         throw_print("Converter<SensitiveDetector>: Request for non-existing limitset:" + l);
@@ -609,7 +625,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     }
     xml_attr_t region = element.attr_nothrow(_U(region));
     if (region) {
-      string r = element.attr < string > (region);
+      string r = element.attr<string>(region);
       Region reg = lcdd.region(r);
       if (!reg.isValid()) {
         throw_print("Converter<SensitiveDetector>: Request for non-existing region:" + r);
@@ -618,7 +634,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
     }
     xml_attr_t hits = element.attr_nothrow(_U(hits_collection));
     if (hits) {
-      sd.setHitsCollection(element.attr < string > (hits));
+      sd.setHitsCollection(element.attr<string>(hits));
     }
     xml_attr_t ecut = element.attr_nothrow(_U(ecut));
     xml_attr_t eunit = element.attr_nothrow(_U(eunit));
@@ -657,8 +673,8 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
   static const char* req_typs = ::getenv("REQUIRED_DETECTOR_TYPES");
   static const char* ign_dets = ::getenv("IGNORED_DETECTORS");
   static const char* ign_typs = ::getenv("IGNORED_DETECTOR_TYPES");
-  string type = element.attr < string > (_U(type));
-  string name = element.attr < string > (_U(name));
+  string type = element.attr<string>(_U(type));
+  string name = element.attr<string>(_U(name));
   string name_match = ":" + name + ":";
   string type_match = ":" + type + ":";
   if (req_dets && !strstr(req_dets, name_match.c_str()))
@@ -673,7 +689,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     xml_attr_t attr_ro = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
     if (attr_ro) {
-      Readout ro = lcdd.readout(element.attr < string > (attr_ro));
+      Readout ro = lcdd.readout(element.attr<string>(attr_ro));
       if (!ro.isValid()) {
         throw runtime_error("No Readout structure present for detector:" + name);
       }

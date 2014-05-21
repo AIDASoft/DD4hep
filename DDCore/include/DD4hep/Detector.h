@@ -244,40 +244,6 @@ namespace DD4hep {
       /// Clone constructor
       DetElement(Object* data, const std::string& name, const std::string& type);
 
-#if 0
-      /// Default constructor
-      template <typename Q> DetElement(Q* data, const std::string& name, const std::string& type)
-	: RefObject(data) {
-        this->assign(data, name, type);
-      }
-
-      template <typename Q> DetElement(const std::string& name, const std::string& type, int id, const Q&) {
-        assign(new Q(), name, type);
-        object<Object>().id = id;
-      }
-
-      /// Construction function for a new subdetector element
-      template <typename Q>
-	static Q* createObject(const std::string& name, const std::string& type, int id) {
-        DetElement det;
-        Q *p = new Q();
-        Object* o = p;
-        if (o) {                  // This should cause a compilation error if Q is
-          det.assign(p, name, type);   // not a subclass of Object, which is mandatoryyyy
-        }
-        det.object<Object>().id = id;
-        return p;
-      }
-
-      /// Construction function for a new subdetector element
-      template <typename Q>
-	static DetElement create(const std::string& name, const std::string& type, int id, Q** ptr = 0) {
-        Q* p = createObject<Q>(name, type, id);
-        if (ptr)
-          *ptr = p;
-        return DetElement(p);
-      }
-#endif
       /// Templated constructor for handle conversions
       template <typename Q> DetElement(const Handle<Q>& e)
 	: RefObject(e) {
@@ -401,20 +367,15 @@ namespace DD4hep {
       /// Access to the detector elements's parent
       DetElement parent() const;
 
-      /// Access to the alignment information
+      /// Access to the actual alignment information
       Alignment alignment() const;
+      /// Access to the survey alignment information
+      Alignment surveyAlignment() const;
       /// Access to the conditions information 
       Conditions conditions() const;
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
       DetElement& setReference(DetElement reference);
-
-      /// Transformation from local coordinates of the placed volume to the world system
-      bool localToWorld(const Position& local, Position& global) const;
-      /// Transformation from local coordinates of the placed volume to the parent system
-      bool localToParent(const Position& local, Position& parent) const;
-      /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
-      bool localToReference(const Position& local, Position& reference) const;
 
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation() const;
@@ -422,6 +383,14 @@ namespace DD4hep {
       const TGeoHMatrix& parentTransformation() const;
       /// Create cached matrix to transform to reference coordinates
       const TGeoHMatrix& referenceTransformation() const;
+ 
+      /// Transformation from local coordinates of the placed volume to the world system
+      bool localToWorld(const Position& local, Position& global) const;
+      /// Transformation from local coordinates of the placed volume to the parent system
+      bool localToParent(const Position& local, Position& parent) const;
+      /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
+      bool localToReference(const Position& local, Position& reference) const;
+
       /// Transformation from world coordinates of the local placed volume coordinates
       bool worldToLocal(const Position& global, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates

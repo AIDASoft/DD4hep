@@ -56,7 +56,7 @@
      <readouts>
        <readout name="HcalBarrelHits">
             <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
-            <id>system:8,barrel:3,module:6,layer:8,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,stave:8,module:6,layer:8,slice:5,x:46:-8,y:-8</id>
        </readout>
      </readouts>
 

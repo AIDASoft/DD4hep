@@ -10,7 +10,6 @@
 #include "DD4hep/Printout.h"
 
 using namespace std;
-using namespace tgeo;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
@@ -80,8 +79,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     string     lay_nam  = det_name+"_"+m_nam+_toString(x_layer.id(),"_layer%d");
     Tube       lay_tub   (x_barrel.inner_r(),x_barrel.outer_r(),x_barrel.z_length()/2);
     Volume     lay_vol   (lay_nam,lay_tub,air);         // Create the layer envelope volume.
-    double     phi0     = x_layout.phi0()/tgeo::rad;    // Starting phi of first module.
-    double     phi_tilt = x_layout.phi_tilt()/tgeo::rad;// Phi tilt of a module.
+    double     phi0     = x_layout.phi0();              // Starting phi of first module.
+    double     phi_tilt = x_layout.phi_tilt();          // Phi tilt of a module.
     double     rc       = x_layout.rc();                // Radius of the module center.
     int        nphi     = x_layout.nphi();              // Number of modules in phi.
     double     rphi_dr  = x_layout.dr();                // The delta radius of every other module.
@@ -127,6 +126,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       module_z  = -z0;           // Reset the Z placement parameter for module.
     }
     // Create the PhysicalVolume for the layer.
+    assembly.setVisAttributes(lcdd.invisible());
     pv = assembly.placeVolume(lay_vol); // Place layer in mother
     pv.addPhysVolID("layer", lay_id);       // Set the layer ID.
     DetElement m_elt(sdet,lay_nam,lay_id);
