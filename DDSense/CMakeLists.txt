@@ -27,8 +27,7 @@ file(GLOB sources src/*.cpp)
 #endif()
 
 add_library(DD4hepSense SHARED ${sources})
-
-#target_link_libraries(DDSense ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepSense ${CMAKE_DL_LIBS} )
 
 SET_TARGET_PROPERTIES( DD4hepSense PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
