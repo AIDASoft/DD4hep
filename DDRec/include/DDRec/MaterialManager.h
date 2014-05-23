@@ -14,7 +14,8 @@ class TGeoManager ;
 namespace DD4hep {
   namespace DDRec {
 
-    typedef Geometry::Material Material ;
+    //  export Geometry::Material to this namespace ;
+    using  Geometry::Material ;
 
     typedef std::vector< std::pair< Material, double > > MaterialVec ;
     
