@@ -209,9 +209,9 @@ namespace DDSurfaces {
       /** Component wise comparison of two vectors - true if all components differ less than epsilon */
       inline bool isEqual(  const Vector3D& b , double epsilon=1e-6) { 
       
-      if( std::fabs( x() - b.x() ) < epsilon &&
-	  std::fabs( y() - b.y() ) < epsilon && 
-	  std::fabs( z() - b.z() ) < epsilon )
+      if( fabs( x() - b.x() ) < epsilon &&
+	  fabs( y() - b.y() ) < epsilon && 
+	  fabs( z() - b.z() ) < epsilon )
 	return true;
       else
 	return false;
