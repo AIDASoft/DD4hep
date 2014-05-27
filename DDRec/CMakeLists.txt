@@ -19,6 +19,8 @@ if(DD4HEP_WITH_GEAR)
 
   set(sources ${sources} src/gear/DDGear.cpp)
 
+  add_definitions("-D DD4HEP_WITH_GEAR")
+
 endif()
 #-------------------------------------------------------------------------------------
 

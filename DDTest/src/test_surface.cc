@@ -136,7 +136,9 @@ int main(int argc, char** argv ){
 
     Vector3D o_radius = Vector3D( radius , 0. , 0.  ) ;
     
-    VolCylinder surfT( vol , SurfaceType( SurfaceType::Sensitive ), thick/2, thick/2 , u,v,n, o_radius  ) ;
+    VolCylinder surfT( vol , SurfaceType( SurfaceType::Sensitive ), thick/2, thick/2 , o_radius  ) ;
+
+    std::cout << " *** cylinder surface : " << surfT << std::endl ;
 
     test( surfT.insideBounds(  Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 49.  )) , true 
 	  , " insideBounds Vector3D(  radius * sin(0.75) , radius * cos( 0.75 ) , 49. )  " ) ; 
@@ -151,6 +153,23 @@ int main(int argc, char** argv ){
     test( surfT.insideBounds(  Vector3D(  (radius+0.00005) * sin(0.75) , (radius+0.00005) * cos( 0.75 ) , 49.  )) , true
 	  , " insideBounds Vector3D(  (radius+0.00005) * sin(0.75) , (radius+0.00005) * cos( 0.75 ) , 49. )  " ) ; 
 
+
+    Vector3D y( 0. , radius , 42 ) ;
+    
+    Vector3D yn = surfT.normal( y ) ;
+
+    bool dummy =   yn.isEqual( Vector3D( 0. , 1. , 0 ) ) ;
+    test( dummy , true , "  normal at (0.,radius,42) is  Vector3D( 0. , 1. , 0 ) " ) ; 
+      
+    if( ! dummy ) 
+      std::cout << " ** yn = " << yn << std::endl ;
+
+
+    Vector3D yv = surfT.v( y ) ;
+    dummy = yv.isEqual( Vector3D( -1. , 0. , 0 ) ) ;
+    test( dummy , true , "  v at (0.,radius,42) is  Vector3D( -1. , 0. , 0 ) " ) ; 
+    if( ! dummy ) 
+      std::cout << " ** yv = " << yv << std::endl ;
 
 
     // test surface type:

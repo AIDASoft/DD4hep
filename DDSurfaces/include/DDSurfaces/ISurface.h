@@ -37,13 +37,13 @@ namespace DDSurfaces {
     virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const =0 ;
     
     /** First direction of measurement U */
-    virtual const Vector3D& u( const Vector3D& point = Vector3D() ) const =0 ;
+    virtual Vector3D u( const Vector3D& point = Vector3D() ) const =0 ;
     
     /** Second direction of measurement V */
-    virtual const Vector3D& v(const Vector3D& point = Vector3D() ) const =0 ;
+    virtual Vector3D v(const Vector3D& point = Vector3D() ) const =0 ;
     
     /// Access to the normal direction at the given point
-    virtual const Vector3D& normal(const Vector3D& point = Vector3D() ) const =0 ;
+    virtual Vector3D normal(const Vector3D& point = Vector3D() ) const =0 ;
     
     /** Get Origin of local coordinate system on surface */
     virtual const Vector3D& origin() const =0 ;

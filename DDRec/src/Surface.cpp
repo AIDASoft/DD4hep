@@ -55,12 +55,13 @@ namespace DD4hep {
     }
   
   
-  
+    
+
     VolSurface::VolSurface( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
-			    Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o ) :  
+ 			    Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o ) :  
       
       Geometry::Handle< SurfaceData >( new SurfaceData( type, thickness_inner ,thickness_outer, u,v,n,o) ) ,
-
+      
       _vol( vol ) {
     }      
     
@@ -94,6 +95,58 @@ namespace DD4hep {
  
     }
 
+
+    //=============================================================================================================
+
+    Vector3D VolCylinder::u( const Vector3D& point  ) const { 
+      // for now we just have u const as (0,0,1)
+      point.x() ; return VolSurface::u() ; 
+    }
+    
+    Vector3D VolCylinder::v(const Vector3D& point ) const {  
+
+      Vector3D n( 1. , point.phi() , 0. , Vector3D::cylindrical ) ;
+
+      // std::cout << " u : " << u()
+      // 		<< " n : " << n 
+      // 		<< " u X n :" << u().cross( n ) ;  
+      return u().cross( n ) ; 
+    }
+    
+    Vector3D VolCylinder::normal(const Vector3D& point ) const {  
+
+      // normal is just given by phi of the point 
+      return Vector3D( 1. , point.phi() , 0. , Vector3D::cylindrical ) ;
+     }
+
+
+
+    VolCylinder::VolCylinder( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D o ) :
+
+      VolSurface( vol, type, thickness_inner, thickness_outer, Vector3D() , Vector3D() , Vector3D() , o ) {
+    
+      Vector3D u( 0., 0., 1. ) ;
+
+      Vector3D o_rphi( o.x() , o.y() , 0. ) ;
+
+      Vector3D n =  o_rphi.unit() ; 
+    
+      Vector3D v = u.cross( n ) ;
+
+      setU( u ) ;
+      setV( v ) ;
+      setNormal( n ) ;
+
+      object<SurfaceData>()._type.setProperty( SurfaceType::Plane    , false ) ;
+
+      object<SurfaceData>()._type.setProperty( SurfaceType::Cylinder , true ) ;
+ 
+      object<SurfaceData>()._type.checkParallelToZ( *this ) ;
+
+      object<SurfaceData>()._type.checkOrthogonalToZ( *this ) ;
+     }      
+
+
     /** Distance to surface */
     double VolCylinder::distance(const Vector3D& point ) const {
 
@@ -122,7 +175,8 @@ namespace DD4hep {
 
 
 
-    //====================
+
+    //================================================================================================================
 
 
     VolSurfaceList* volSurfaceList( DetElement& det ) {
@@ -210,12 +264,14 @@ namespace DD4hep {
     } 
 
 
-    Surface::Surface( Geometry::DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), _wtM(0) , _id( 0) , _type( _volSurf.type() )  {
+    Surface::Surface( Geometry::DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), 
+								       _wtM(0) , _id( 0) , _type( _volSurf.type() )  {
 
       initialize() ;
     }      
  
 
+    
     const IMaterial& Surface::innerMaterial() const {
       
       SurfaceMaterial& mat = _volSurf->_innerMat ;
@@ -645,6 +701,35 @@ namespace DD4hep {
       return lines ;
 
     }
+
+    //================================================================================================================
+    Vector3D CylinderSurface::u( const Vector3D& point  ) const { 
+
+      Vector3D lp , u ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+      const DDSurfaces::Vector3D& lu = _volSurf.u( lp  ) ;
+      _wtM->LocalToMasterVect( lu , u.array() ) ;
+      return u ; 
+    }
+    
+    Vector3D CylinderSurface::v(const Vector3D& point ) const {  
+      Vector3D lp , v ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+      const DDSurfaces::Vector3D& lv = _volSurf.v( lp  ) ;
+      _wtM->LocalToMasterVect( lv , v.array() ) ;
+      return v ; 
+    }
+    
+    Vector3D CylinderSurface::normal(const Vector3D& point ) const {  
+      Vector3D lp , n ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+      const DDSurfaces::Vector3D& ln = _volSurf.normal( lp  ) ;
+      _wtM->LocalToMasterVect( ln , n.array() ) ;
+      return n ; 
+    }
+    //================================================================================================================
+
+
 
 
   } // namespace

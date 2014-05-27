@@ -109,7 +109,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       case 2: {
         tpcData->innerWall=part_det;
 	// add a surface to the det element
-	VolCylinder surf( part_vol , SurfaceType( SurfaceType::Helper ) , drcyl*.5 , drcyl*.5 , u,v,n , ocyl ) ;
+	VolCylinder surf( part_vol , SurfaceType( SurfaceType::Helper ) , drcyl*.5 , drcyl*.5 , ocyl ) ;
 	volSurfaceList( part_det )->push_back( surf ) ;
       }
 	break;
@@ -117,7 +117,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       case 3: {
         tpcData->outerWall=part_det;
 	// add a surface to the det element
-	VolCylinder surf( part_vol , SurfaceType( SurfaceType::Helper ) , drcyl*.5 , drcyl*.5 , u,v,n , ocyl ) ;
+	VolCylinder surf( part_vol , SurfaceType( SurfaceType::Helper ) , drcyl*.5 , drcyl*.5 , ocyl ) ;
 	volSurfaceList( part_det )->push_back( surf ) ;
       }
 	break;
@@ -165,7 +165,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 	    Vector3D o( r0 + (2*i+1) * dR , 0. , 0. ) ;
 
-	    VolCylinder surf( gas_volU , SurfaceType(SurfaceType::Sensitive, SurfaceType::Invisible ) , dR , dR , u,v,n ,o ) ;
+	    VolCylinder surf( gas_volU , SurfaceType(SurfaceType::Sensitive, SurfaceType::Invisible ) , dR , dR , o ) ;
 
 	    volSurfaceList( layerDE )->push_back( surf ) ;
 	  }

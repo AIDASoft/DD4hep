@@ -69,7 +69,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 
     /// ======== test layer assembly -> results in assembly in assembly and
-#define use_layer_assembly 0        // crashes ild_exsimu
+#define use_layer_assembly 1        // crashes ild_exsimu
 #if use_layer_assembly 
 
     // --- create an assembly and DetElement for the layer 

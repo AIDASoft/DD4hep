@@ -206,6 +206,19 @@ namespace DDSurfaces {
     }
 
 
+      /** Component wise comparison of two vectors - true if all components differ less than epsilon */
+      inline bool isEqual(  const Vector3D& b , double epsilon=1e-6) { 
+      
+      if( std::fabs( x() - b.x() ) < epsilon &&
+	  std::fabs( y() - b.y() ) < epsilon && 
+	  std::fabs( z() - b.z() ) < epsilon )
+	return true;
+      else
+	return false;
+  }
+  
+
+
     // this causes template lookup errors on some machines :
     //   -> use explicit conversion with to<T>()
     // /** Implicit templated conversion to anything that has a c'tor T(x,y,z) 
@@ -265,7 +278,7 @@ namespace DDSurfaces {
     
     return Vector3D( a.x() - b.x()  , a.y() - b.y(), a.z() - b.z()  ) ;
   }
-  /** Comparison of two vectors */
+  /** Exact comparison of two vectors */
   inline bool operator==(  const Vector3D& a, const Vector3D& b ) { 
     
     if( a.x() == b.x()  &&  a.y() == b.y() && a.z() == b.z()  ) 
@@ -273,7 +286,7 @@ namespace DDSurfaces {
     else
       return false;
   }
-  
+
   /** Multiplication with scalar */
   inline Vector3D operator*( double s , const Vector3D& v ) { 
     
