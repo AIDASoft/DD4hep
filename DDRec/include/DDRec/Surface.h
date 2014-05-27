@@ -158,6 +158,12 @@ namespace DD4hep {
       /** Get Origin of local coordinate system on surface */
       virtual const Vector3D& origin() const { return object<SurfaceData>()._o ;}
 
+      /** Convert the global position to the local position (u,v) on the surface */
+      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      
+      /** Convert the global position to the local position (u,v) on the surface */
+      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+
       /// Access to the material in opposite direction of the normal
       virtual const IMaterial& innerMaterial() const{  return  object<SurfaceData>()._innerMat ;  }
 
@@ -395,6 +401,12 @@ namespace DD4hep {
     
       /** Get Origin of local coordinate system on surface */
       virtual const Vector3D& origin() const { return _o ;}
+
+      /** Convert the global position to the local position (u,v) on the surface */
+      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      
+      /** Convert the global position to the local position (u,v) on the surface */
+      virtual Vector3D localToGlobal( const Vector2D& point) const ;
 
       /** Thickness of inner material */
       virtual double innerThickness() const { return _volSurf.innerThickness() ; }

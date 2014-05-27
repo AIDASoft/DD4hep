@@ -93,6 +93,54 @@ int main(int argc, char** argv ){
     test( surf.insideBounds(  Vector3D(  0.00003 ,  .23 ,  .42  )  ) , true , " insideBounds Vector3D(   0.00003 ,  .23 ,  .42  )   " ) ; 
 
 
+    // === test global to local =====
+
+    Vector3D point = o + 34.3 * u - 42.7 * v ; 
+
+    ISurface::Vector2D lp = surf.globalToLocal( point ) ;
+    //    std::cout << " --- local coordinates of " << point << " : (" << lp[0] << "," << lp[1] << ")" << std::endl ;
+    test(  STR( lp[0] ) == STR( 34.3 ) , true , " local u coordinate is 34.4 "  ) ;  
+    test(  STR( lp[1] ) == STR( -42.7 ) , true , " local v coordinate is -42.7 "  ) ;  
+
+    Vector3D pointPrime = surf.localToGlobal( lp ) ;
+    test(  pointPrime.isEqual( point ) , true , " point after global to local to global is the same " ) ;
+
+    // ----- test with rotated coordinates
+    Vector3D ur,vr ; 
+    ur.fill( 0. ,  cos( 3.5/180.*M_PI  ) ,  sin( 3.5/180.*M_PI  ) ) ;
+    vr.fill( 0. , -sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+    VolPlane surfR( vol , SurfaceType( SurfaceType::Sensitive ), thick/2, thick/2 , ur,vr,n,o ) ;
+
+    Vector3D pointR = o + 34.3 * ur - 42.7 * vr ; 
+
+    lp = surfR.globalToLocal( pointR ) ;
+    //    std::cout << " --- local coordinates of " << pointR << " : (" << lp[0] << "," << lp[1] << ")" << std::endl ;
+    test(  STR( lp[0] ) == STR( 34.3 ) , true , " local u coordinate is 34.4 "  ) ;  
+    test(  STR( lp[1] ) == STR( -42.7 ) , true , " local v coordinate is -42.7 "  ) ;  
+
+    Vector3D pointPrimeR = surfR.localToGlobal( lp ) ;
+    test(  pointPrimeR.isEqual( pointR ) , true , " point after global to local to global is the same " ) ;
+
+    // ----- test with non-orthogonal rotated coordinates
+    Vector3D vr2 ; 
+    vr2.fill( 0. , -sin( 35./180.*M_PI  ) ,  cos( 35./180.*M_PI  ) ) ;
+    VolPlane surfR2( vol , SurfaceType( SurfaceType::Sensitive ), thick/2, thick/2 , ur,vr2,n,o ) ;
+
+    Vector3D pointR2 = o + 34.3 * ur - 42.7 * vr2 ; 
+
+    lp = surfR2.globalToLocal( pointR2 ) ;
+    //    std::cout << " --- local coordinates of " << pointR << " : (" << lp[0] << "," << lp[1] << ")" << std::endl ;
+    test(  STR( lp[0] ) == STR( 34.3 ) , true , " local u coordinate is 34.4 "  ) ;  
+    test(  STR( lp[1] ) == STR( -42.7 ) , true , " local v coordinate is -42.7 "  ) ;  
+
+    Vector3D pointPrimeR2 = surfR2.localToGlobal( lp ) ;
+    test(  pointPrimeR2.isEqual( pointR2 ) , true , " point after global to local to global is the same " ) ;
+
+
+    //==================================================
+
+
+
     // --- test SurfaceMaterial
     SurfaceMaterial sm( mat ) ;
 

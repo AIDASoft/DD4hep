@@ -66,6 +66,31 @@ namespace DD4hep {
     }      
     
 
+    ISurface::Vector2D VolSurface::globalToLocal( const Vector3D& point) const {
+
+      Vector3D p = point - origin() ;
+
+      // create new orthogonal unit vectors
+      // FIXME: these vectors should be cached really ... 
+
+      double uv = u() * v() ;
+      Vector3D uprime = ( u() - uv * v() ).unit() ; 
+      Vector3D vprime = ( v() - uv * u() ).unit() ; 
+      double uup = u() * uprime ;
+      double vvp = v() * vprime ;
+      
+      return  ISurface::Vector2D(   p*uprime / uup ,  p*vprime / vvp ) ;
+    }
+    
+    Vector3D VolSurface::localToGlobal( const ISurface::Vector2D& point) const {
+
+      Vector3D g = origin() + point[0] * u() + point[1] * v() ;
+
+      return g ;
+    }
+
+
+
     /** Distance to surface */
     double VolPlane::distance(const Vector3D& point ) const {
 
@@ -74,8 +99,7 @@ namespace DD4hep {
     
     /// Checks if the given point lies within the surface
     bool VolPlane::insideBounds(const Vector3D& point, double epsilon) const {
-
-
+      
 #if 0
       double dist = std::abs ( distance( point ) ) ;
       
@@ -319,6 +343,31 @@ namespace DD4hep {
       }
       return  mat ;
     }          
+
+
+    ISurface::Vector2D Surface::globalToLocal( const Vector3D& point) const {
+
+    Vector3D p = point - origin() ;
+
+      // create new orthogonal unit vectors
+      // FIXME: these vectors should be cached really ... 
+
+      double uv = u() * v() ;
+      Vector3D uprime = ( u() - uv * v() ).unit() ; 
+      Vector3D vprime = ( v() - uv * u() ).unit() ; 
+      double uup = u() * uprime ;
+      double vvp = v() * vprime ;
+      
+      return  ISurface::Vector2D(   p*uprime / uup ,  p*vprime / vvp ) ;
+    }
+    
+    
+    Vector3D Surface::localToGlobal( const ISurface::Vector2D& point) const {
+
+      Vector3D g = origin() + point[0] * u() + point[1] * v() ;
+      return g ;
+    }
+
 
     double Surface::distance(const Vector3D& point ) const {
 

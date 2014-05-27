@@ -13,7 +13,8 @@ namespace DDSurfaces {
 
   typedef long long int long64 ;
 
- /** Interface for tracking surfaces. 
+
+  /** Interface for tracking surfaces. 
    * The surface provides access to vectors for u,v,n and the orgigin and
    * the inner and outer materials with corresponding thicknesses.
    *  
@@ -24,6 +25,18 @@ namespace DDSurfaces {
   class ISurface {
     
   public:
+
+    /** Helper class for 2d vectors */
+    struct Vector2D{
+      double _x,_y ;
+      Vector2D() : _x(0.),_y(0.) {}
+      Vector2D(double x, double y ) : _x(x),_y(y) {}
+      double operator[](unsigned i) const { return i==0 ? _x : _y ; }  
+      double x() const { return _x ; } 
+      double y() const { return _y ; } 
+    };
+
+
     /// Destructor
     virtual ~ISurface() {}
     
@@ -45,6 +58,12 @@ namespace DDSurfaces {
     /// Access to the normal direction at the given point
     virtual Vector3D normal(const Vector3D& point = Vector3D() ) const =0 ;
     
+    /** Convert the global position to the local position (u,v) on the surface */
+    virtual Vector2D globalToLocal( const Vector3D& point) const=0 ;
+
+    /** Convert the global position to the local position (u,v) on the surface */
+    virtual Vector3D localToGlobal( const Vector2D& point) const=0 ;
+
     /** Get Origin of local coordinate system on surface */
     virtual const Vector3D& origin() const =0 ;
     
