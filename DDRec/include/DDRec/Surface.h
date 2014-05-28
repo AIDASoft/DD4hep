@@ -161,7 +161,7 @@ namespace DD4hep {
       /** Convert the global position to the local position (u,v) on the surface */
       virtual Vector2D globalToLocal( const Vector3D& point) const ;
       
-      /** Convert the global position to the local position (u,v) on the surface */
+      /** Convert the local position (u,v) on the surface to the global position */
       virtual Vector3D localToGlobal( const Vector2D& point) const ;
 
       /// Access to the material in opposite direction of the normal
@@ -334,7 +334,12 @@ namespace DD4hep {
       /// Checks if the given point lies within the surface
       virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const  ;
 
-    } ;
+      /** Convert the global position to the local position (u,v) on the surface - u runs along the axis of the cylinder, v is r*phi */
+      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      
+      /** Convert the local position (u,v) on the surface to the global position  - u runs along the axis of the cylinder, v is r*phi*/
+      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+   } ;
 
     //======================================================================================================
 
@@ -405,7 +410,7 @@ namespace DD4hep {
       /** Convert the global position to the local position (u,v) on the surface */
       virtual Vector2D globalToLocal( const Vector3D& point) const ;
       
-      /** Convert the global position to the local position (u,v) on the surface */
+      /** Convert the local position (u,v) on the surface to the global position*/
       virtual Vector3D localToGlobal( const Vector2D& point) const ;
 
       /** Thickness of inner material */
@@ -470,6 +475,12 @@ namespace DD4hep {
        *  No check is done whether the point actually is on the cylinder surface
        */
       virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+
+      /** Convert the global position to the local position (u,v) on the surface - u runs along the axis of the cylinder, v is r*phi */
+      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      
+      /** Convert the local position (u,v) on the surface to the global position  - u runs along the axis of the cylinder, v is r*phi*/
+      virtual Vector3D localToGlobal( const Vector2D& point) const ;
 
       /// the radius of the cylinder (rho of the origin vector)
       virtual double radius() const {

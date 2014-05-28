@@ -3,7 +3,7 @@
 
 #include "DDRec/MaterialManager.h"
 
-#include <math.h>
+#include <cmath>
 #include <memory>
 #include <exception>
 #include <memory> 
@@ -142,6 +142,32 @@ namespace DD4hep {
       // normal is just given by phi of the point 
       return Vector3D( 1. , point.phi() , 0. , Vector3D::cylindrical ) ;
      }
+
+
+
+
+    ISurface::Vector2D VolCylinder::globalToLocal( const Vector3D& point) const {
+      
+      // cylinder is parallel to here so u is dZ and v is r *dPhi
+      double phi = point.phi() - origin().phi() ;
+      
+      while( phi < -M_PI ) phi += 2.*M_PI ;
+      while( phi >  M_PI ) phi -= 2.*M_PI ;
+
+      return  ISurface::Vector2D(  point.z() - origin().z() , origin().rho() * phi  ) ;
+    }
+    
+    
+    Vector3D VolCylinder::localToGlobal( const ISurface::Vector2D& point) const {
+
+      double z = point.u() + origin().z() ;
+      double phi = point.v() / origin().rho() + origin().phi() ;
+
+      while( phi < -M_PI ) phi += 2.*M_PI ;
+      while( phi >  M_PI ) phi -= 2.*M_PI ;
+
+      return Vector3D( origin().rho() , phi, z  , Vector3D::cylindrical )    ;
+    }
 
 
 
@@ -752,6 +778,7 @@ namespace DD4hep {
     }
 
     //================================================================================================================
+
     Vector3D CylinderSurface::u( const Vector3D& point  ) const { 
 
       Vector3D lp , u ;
@@ -776,6 +803,25 @@ namespace DD4hep {
       _wtM->LocalToMasterVect( ln , n.array() ) ;
       return n ; 
     }
+
+    ISurface::Vector2D CylinderSurface::globalToLocal( const Vector3D& point) const {
+      
+      Vector3D lp , n ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+
+      return  _volSurf.globalToLocal( lp )  ;
+    }
+    
+    
+    Vector3D CylinderSurface::localToGlobal( const ISurface::Vector2D& point) const {
+
+      Vector3D lp = _volSurf.localToGlobal( point ) ;
+      Vector3D p ;
+      _wtM->LocalToMasterVect( lp , p.array() ) ;
+
+      return p ;
+    }
+
     //================================================================================================================
 
 

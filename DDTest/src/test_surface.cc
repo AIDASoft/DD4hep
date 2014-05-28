@@ -93,7 +93,7 @@ int main(int argc, char** argv ){
     test( surf.insideBounds(  Vector3D(  0.00003 ,  .23 ,  .42  )  ) , true , " insideBounds Vector3D(   0.00003 ,  .23 ,  .42  )   " ) ; 
 
 
-    // === test global to local =====
+    //=============== test global to local ===================
 
     Vector3D point = o + 34.3 * u - 42.7 * v ; 
 
@@ -218,6 +218,30 @@ int main(int argc, char** argv ){
     test( dummy , true , "  v at (0.,radius,42) is  Vector3D( -1. , 0. , 0 ) " ) ; 
     if( ! dummy ) 
       std::cout << " ** yv = " << yv << std::endl ;
+
+
+    //=============== test global to local ===================
+    
+    Vector3D pointC( radius , -42.7/radius , 34.3  , Vector3D::cylindrical  )  ;
+    
+    ISurface::Vector2D lpC = surfT.globalToLocal( pointC ) ;
+
+    // std::cout << " --- local coordinates of " << pointC << " : (" << lpC[0] << "," << lpC[1] << ")" << std::endl ;
+
+    test(  STR( lpC[0] ) == STR( 34.3 ) , true , " local u coordinate is 34.4 "  ) ;  
+    test(  STR( lpC[1] ) == STR( -42.7 ) , true , " local v coordinate is -42.7 "  ) ;  
+
+    Vector3D pointPrimeC = surfT.localToGlobal( lpC ) ;
+
+    // std::cout << " --- global coordinates of point after local to global ( " << pointC.rho() << ", " << pointC.phi() << ", " << pointC.z()
+    //   	      << " ) : (" << lpC[0] << "," << lpC[1] << ")" << std::endl ;
+
+    test(  pointPrimeC.isEqual( pointC ) , true , " point after global to local to global is the same " ) ;
+
+    //========================================================
+
+
+
 
 
     // test surface type:
