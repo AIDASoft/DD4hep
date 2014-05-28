@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geant4_setup>
+
+  <!-- Definition of the physics list.
+  --
+  --   Ordering values:
+  --   	ordInActive = -1,	// ordering parameter to indicate InActive DoIt
+  --   	ordDefault = 1000,	// default ordering parameter
+  --   	ordLast    = 9999 	// ordering parameter to indicate the last DoIt
+  -->
+
+  <sequences>
+    <sequence name="Geant4PhysicsListSequence/PhysicsList" decays="true" extends="FTFP_BERT"/>
+
+<!--
+    <physicslist name="Geant4PhysicsList/MyPhysics.0" decays="true">
+      <extends name="FTFP_BERT"/>
+      <particles>
+	<construct name="G4BosonConstructor"/>
+	<construct name="G4LeptonConstructor"/>
+      </particles>
+      <processes>
+	<particle name="e[+-]" cut="0.001*mm">
+	  <process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+	  <process name="G4eIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
+	</particle>
+      </processes>
+    </physicslist>
+-->
+  </sequences>
+
+  <!--
+  <physicslist name="Geant4PhysicsList/MyPhysics.0">
+
+
+    <physics>
+      <construct name="G4EmStandardPhysics"/>
+      <construct name="HadronPhysicsQGSP"/>
+    </physics>
+
+    <processes>
+      <particle name="gamma">
+      </particle>
+
+      <particle name="e[+-]" cut="1*mm">
+	<process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+	<process name="G4eIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
+      </particle>
+
+      <particle name="mu[+-]">
+	<process name="G4MuMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+	<process name="G4MuIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
+      </particle>
+
+      <particle name="pi[+-]">
+	<process name="G4hMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+	<process name="G4hIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
+      </particle>
+    </processes>
+  </physicslist>
+
+  <physicslist name="Geant4PhysicsList/MyPhysics.0">
+    <physics>
+      <construct name="G4EmStandardPhysics"/>
+    </physics>
+  </physicslist>
+  -->
+  
+</geant4_setup>

@@ -1,0 +1,24 @@
+##########################################
+# 
+# Issues observed in porting geant4 example
+# novice/N04 to DD4hep
+#
+#########################################
+
+
+ - incosistent parameters in Tubs/TGeoTubeSegment:
+    phistart,deltaPhi vs phi0, phi1
+   
+  - question: which xml tags are used/allowed  
+   (e.g. tubs. phi0, phi1 ...)
+
+ - specifying materials in xml:
+   would like to write:
+     <material name="ArgonGas" z="18." a="39.95*g/mole" density="1.782*mg/cm3"/>
+   which is close to geant4:
+     Ar=new G4Material("ArgonGas",z=18., a= 39.95*g/mole, density=1.782*mg/cm3);
+   -> does not work (right now)
+
+ - vis attribute drawingStyle="wireframe" does not seem to work (w/ geoDisplay )
+
+

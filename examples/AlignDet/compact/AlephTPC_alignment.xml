@@ -1,0 +1,79 @@
+<alignment>
+
+  <open_transaction/>
+  <subdetectors>
+    <!--
+	Note: The subdetector name MUST be in the list of top level
+	detector elements attached to the LCDD structure.
+
+A generic alignment transformation is defined by
+- a translation in 3D space identified in XML as a
+<position/> element
+- a rotation in 3D space around a pivot point specified in XML by
+2 elements: the <rotation/> and the <pivot/> element.
+The specification of any of the elements is optional:
+- The absence of a translation implies the origin (0,0,0)
+- The absence of a pivot point implies the origin (0,0,0)
+- The absence of a rotation implies the identity rotation.
+Any supplied pivot point in this case is ignored.
+
+<position x="30"   y="30"  z="80"/>
+
+    -->
+
+    <detelement path="TPC" reset="true" reset_children="true">
+      <comment ref="Move the entire TPC in the world volume."/>
+      <position x="0"   y="0"  z="0*mm"/>
+      <rotation x="0" y="0" z="0"/>     
+
+      <comment ref="Twist a bit the entire endcap A"/>
+      <detelement path="/world/TPC/TPC_SideA" check_overlaps="false">
+	<position x="0"   y="0"  z="-500*mm"/>
+	<rotation x="-0.2" y="-0.2"  z="0"/>
+
+	<comment ref="A detector element relative to the parent"/>
+	<detelement path="TPC_SideA_sector02" check_overlaps="true">
+	  <position x="0"   y="0"   z="0"/>
+	  <rotation x="0.5" y="0.1" z="0.2"/>     
+	</detelement>
+      </detelement>
+
+      <detelement path="TPC_SideA/TPC_SideA_sector03" check_overlaps="true">
+	<position x="0" y="0"    z="290.0*mm"/>
+	<rotation x="0" y="pi/2" z="0"/>     
+	<pivot    x="0" y="0"    z="100"/>     
+	<volume path="TPC_sector_K_layer2_2">
+	  <position x="0" y="0"  z="0.0001*mm"/>
+	  <rotation x="0" y="0.5"  z="0"/>     
+	</volume>
+      </detelement>
+
+      <detelement path="TPC_SideA/TPC_SideA_sector05" check_overlaps="false">
+	<position x="0"    y="0" z="150.0*mm"/>
+	<rotation x="0" y="0" z="0"/>     
+      </detelement>
+
+      <detelement path="TPC_SideA/TPC_SideA_sector10" check_overlaps="false">
+	<position x="0"  y="0" z="450.0*mm"/>
+	<rotation x="0"  y="0" z="pi/4"/>     
+      </detelement>
+
+      <comment ref="Twist a bit the entire endcap B"/>
+      <detelement path="TPC_SideB" check_overlaps="false">
+	<position x="0"   y="0"  z="0"/>
+	<rotation x="0" y="0"  z="0"/>
+
+	<comment ref="A detector element relative to the parent"/>
+	<detelement path="TPC_SideB_sector02" check_overlaps="true">
+	  <position x="0"   y="0"   z="0"/>
+	  <rotation x="0.5" y="0.1" z="0.2"/>     
+	</detelement>
+      </detelement>  <comment ref="end: TPC side B"/>
+<!--
+-->
+    </detelement>  <!-- end: TPC -->
+
+  </subdetectors>
+
+  <close_transaction/>
+</alignment>

@@ -1,0 +1,192 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  
+  <info name="noviceN04"
+        title="ExN04 to DD4hep"
+        author="F. Gaede"
+        url="http://aidasoft.cern.ch/dd4hep"
+        status="development"
+        version="$Id:$">
+    <comment>geant4 example novice N04 ported to DD4hep </comment>        
+  </info>
+  
+  <includes>
+    <gdmlFile  ref="elements.xml"/>
+    <gdmlFile  ref="materials.xml"/>
+    <pyBuilder ref="../drivers"/>
+  </includes>
+  
+  <define>
+    <!-- constants as defined in ExN04DetectorParameter.icc -->
+    <constant name="world_side" value="600*cm"/>
+    <!-- DD4hep expects world_xyz parameters : -->
+    <constant name="world_x"    value="world_side"/>
+    <constant name="world_y"    value="world_side"/>
+    <constant name="world_z"    value="world_side"/>        
+    <constant name="expHall_x"  value="world_side"/>
+    <constant name="expHall_y"  value="world_side"/>
+    <constant name="expHall_z"  value="world_side"/>        
+     
+    <constant name="trkTubs_rmax" value="50.*cm"/>
+    <constant name="trkTubs_rmin" value="20.*cm"/>
+    <constant name="trkTubs_dz  " value="100.*cm"/>
+    <constant name="trkTubs_sphi" value="0.*deg"/>
+    <constant name="trkTubs_dphi" value="360.*deg"/>
+    
+    <constant name="notrkLayers" value="5"/>
+    <constant name="tracker_radius0" value="25.*cm"/>
+    <constant name="tracker_radius1" value="30.*cm"/>
+    <constant name="tracker_radius2" value="35.*cm"/>
+    <constant name="tracker_radius3" value="40.*cm"/>
+    <constant name="tracker_radius4" value="45.*cm"/>
+    <constant name="tracker_thick    " value="0.5*cm"/>
+    
+    <constant name="  tracker_length0" value="tracker_radius0"/>
+    <constant name="  tracker_length1" value="tracker_radius1"/>
+    <constant name="  tracker_length2" value="tracker_radius2"/>
+    <constant name="  tracker_length3" value="tracker_radius3"/>
+    <constant name="  tracker_length4" value="tracker_radius4"/>
+    
+    <constant name="caloTubs_rmax" value="300.*cm"/>
+    <constant name="caloTubs_rmin" value=" 50.*cm"/>
+    <constant name="caloTubs_dz  " value="200.*cm"/>
+    <constant name="caloTubs_sphi" value="0.*deg"/>
+    <constant name="caloTubs_dphi" value="360.*deg"/>
+    <constant name="absorber_thick" value="3.*cm"/>
+    <constant name="scinti_thick" value="2.*cm"/>
+    
+    <constant name="nocaloLayers" value="int((caloTubs_rmax-caloTubs_rmin)/(absorber_thick+scinti_thick))"/>
+    
+    <constant name="segmentsinPhi" value="48"/>
+    <constant name="caloCell_rmax" value="caloTubs_rmax"/>
+    <constant name="caloCell_rmin" value="caloTubs_rmin"/>
+    <constant name="caloCell_dz  " value="caloTubs_dz"/>
+    <constant name="caloCell_sphi" value="caloTubs_sphi"/>
+    <constant name="caloCell_dphi" value="caloTubs_dphi/segmentsinPhi"/>
+    
+    <constant name="segmentsinZ" value="20"/>
+    <constant name="caloRing_rmax" value="caloCell_rmax"/>
+    <constant name="caloRing_rmin" value="caloCell_rmin"/>
+    <constant name="caloRing_dz  " value="caloCell_dz/segmentsinZ "/>
+    <constant name="caloRing_sphi" value="caloCell_sphi"/>
+    <constant name="caloRing_dphi" value="caloCell_dphi"/>
+    
+    <constant name="nomucounter" value="4"/>
+    <constant name="muBox_radius" value="350.*cm"/>
+    <constant name="muBox_width " value="muBox_radius-5.*cm"/>
+    <constant name="muBox_thick " value="1.*cm"/>
+    <constant name="muBox_length" value="expHall_z-10*cm"/>
+  </define>
+
+  <materials>
+    <!--  Ar =   new G4Material("ArgonGas",z=18., a= 39.95*g/mole, density=1.782*mg/cm3); -->
+    <!-- material name="ArgonGas" z="18." a="39.95*g/mole" density="1.782*mg/cm3"/-->
+    <!--    Silicon =  new G4Material("Silicon", z=14., a= 28.09*g/mole, density= 2.33*g/cm3); -->
+    <!--material name="Silicon" z="14." a="28.09*g/mole" density="2.33*g/cm3" /-->
+
+    <material name="ArgonGas">
+      <D type="density" unit="mg/cm3" value="1.782" />
+      <fraction n="1" ref="Ar" />
+    </material>
+    <material name="Silicon">
+      <D type="density" unit="g/cm3" value="2.33" />
+      <fraction n="1" ref="Si" />
+    </material>
+    
+    <material name="Scintillator">
+      <D value="1.032" unit="g/cm3"/>
+      <composite n="9" ref="C"/>
+      <composite n="10" ref="H"/>
+    </material>
+    
+  </materials>
+  
+  <!-- doe we need limits ?
+       <limits>
+       <limitset name="cal_limits">
+       <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+       </limitset>
+       <limitset name="TPC_limits">
+       <limit name="step_length_max" particles="*" value="10.0" unit="mm" />
+       </limitset>
+       <limitset name="Tracker_limits">
+       <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+       </limitset>
+       </limits>
+  -->
+
+  <display>
+    <vis name="TrackerVis"      r="1.0" g="0.0"  b="1.0" alpha="1" showDaughters="true"  visible="true"/>
+    <vis name="TrackerLayerVis" r="0.5" g="0.0"  b="1.0" alpha="1" showDaughters="false" visible="true" drawingStyle="wireframe"/>
+    <vis name="CaloVis"         r="1.0" g="1.0"  b="0.0" alpha="1" showDaughters="true"  visible="true"/>
+    <vis name="CaloLayerVis"    r="0.7" g="1.0"  b="0.0" alpha="1" showDaughters="true"  visible="true"/>
+    <vis name="MuonVis"         r="0.0" g="1.0"  b="1.0" alpha="1" showDaughters="true"  visible="true" drawingStyle="wireframe" />
+  </display>
+
+  <detectors>
+    <comment>Trackers</comment>
+    <detector name="TrackerN04" type="Tracker" vis="TrackerVis" id="1" readout="TrackerCollection" insideTrackingVolume="true">
+
+      <tubs rmin="trkTubs_rmin" rmax="trkTubs_rmax" dz="trkTubs_dz" phi0="trkTubs_sphi" deltaphi="trkTubs_dphi"/>
+
+      <layer id="0" vis="TrackerLayerVis" rmin="tracker_radius0" rmax="tracker_radius0+tracker_thick" 
+	     dz="tracker_length0" phi0="trkTubs_sphi" deltaphi="trkTubs_dphi" material="silicon" />
+      <layer id="1" vis="TrackerLayerVis" rmin="tracker_radius1" rmax="tracker_radius1+tracker_thick" 
+	     dz="tracker_length1" phi0="trkTubs_sphi" deltaphi="trkTubs_dphi" material="silicon" />
+      <layer id="2" vis="TrackerLayerVis" rmin="tracker_radius2" rmax="tracker_radius2+tracker_thick" 
+	     dz="tracker_length2" phi0="trkTubs_sphi" deltaphi="trkTubs_dphi" material="silicon" />
+      <layer id="3" vis="TrackerLayerVis" rmin="tracker_radius3" rmax="tracker_radius3+tracker_thick" 
+	     dz="tracker_length3" phi0="trkTubs_sphi" deltaphi="trkTubs_dphi" material="silicon" />
+      <layer id="4" vis="TrackerLayerVis" rmin="tracker_radius4" rmax="tracker_radius4+tracker_thick" 
+	     dz="tracker_length4" phi0="trkTubs_sphi" deltaphi="trkTubs_dphi" material="silicon" />
+    </detector>
+
+    <comment>Calorimeters</comment>
+
+    <detector name="CalorimeterN04" type="Calorimeter" vis="CaloVis" id="2" readout="CalorimeterCollection"
+	      insideTrackingVolume="false">
+
+      <tubs rmin="caloTubs_rmin" rmax="caloTubs_rmax" dz="caloTubs_dz" phi0="caloTubs_sphi" deltaphi="caloTubs_dphi"/>
+
+      <layer repeat="nocaloLayers" vis="CaloVis">
+	<slice material = "Scintillator" thickness = "scinti_thick" sensitive = "yes"/>
+	<slice material = "Lead"         thickness = "absorber_thick" />
+      </layer>
+
+    </detector>
+
+    <detector name="MuonN04" type="Muon" vis="MuonVis" id="3" readout="MuonCollection" radius="muBox_radius" 
+	      insideTrackingVolume="false">
+      <box width="muBox_width" thickness="muBox_thick" length="muBox_length" 
+	   repeat="nomucounter" deltaphi="360.*deg/nomucounter"/>
+    </detector>
+    
+  </detectors>
+
+  <readouts>
+    <readout name="TrackerCollection">
+      <id>system:5,side:-2,layer:9,module:8,sensor:8</id>
+    </readout>
+
+    <readout name="CalorimeterCollection">
+      <segmentation type="CartesianGridXZ" grid_size_x="30.0*mm" grid_size_z="30.0*mm" />
+      <!--FIXME: should actually be (seg faults):  segmentation type="NonProjectiveCylinder" gridSizePhi="caloCell_dphi" gridSizeZ="caloRing_dz" /-->
+      <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+
+    <readout name="MuonCollection">
+      <segmentation type="CartesianGridXZ" grid_size_x="30.0*mm" grid_size_z="30.0*mm" />
+      <!--FIXME: should actually be (seg faults):  segmentation type="ProjectiveCylinder" gridSizeY="30.0*mm" gridSizeZ="30.0*mm" /-->
+      <id>system:6,stave:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+
+  </readouts>
+  <fields>
+    <!-- see: ExN04Field.cc -->
+    <field type="solenoid" name="GlobalSolenoid" inner_field="3.0*tesla"
+	   outer_field="0*tesla" zmax="100*cm"
+	   inner_radius="50*cm"
+	   outer_radius="world_side" />
+  </fields> 
+</lccdd>

@@ -1,0 +1,122 @@
+// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+#ifndef DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H
+#define DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H
+
+#include "DD4hep/Detector.h"
+#include "DDG4/Geant4SensDetAction.h"
+#include "DDG4/Geant4SteppingAction.h"
+
+/*
+ *   DD4hep namespace declaration
+ */
+namespace DD4hep {
+
+  /*
+   *   Simulation namespace declaration
+   */
+  namespace Simulation {
+
+    /** @class Geant4EscapeCounter Geant4EscapeCounter.h DDG4/Geant4EscapeCounter.h
+     *
+     * Measure escaping energy....
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class Geant4EscapeCounter : /* virtual public Geant4SteppingAction, virtual */ public Geant4Sensitive {
+      /// Collection identifiers
+      size_t m_collectionID;
+      std::vector<std::string> m_detectorNames;
+    public:
+      /// Standard constructor
+      Geant4EscapeCounter(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd);
+      /// Default destructor
+      virtual ~Geant4EscapeCounter();
+      /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
+      virtual bool process(G4Step* step, G4TouchableHistory* history);
+    };
+
+  }    // End namespace Simulation
+}      // End namespace DD4hep
+
+#endif /* DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H */
+
+// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+#include "DD4hep/Printout.h"
+#include "DD4hep/InstanceCount.h"
+
+#include "DDG4/Geant4TouchableHandler.h"
+#include "DDG4/Geant4TrackHandler.h"
+#include "DDG4/Geant4StepHandler.h"
+#include "DDG4/Geant4Mapping.h"
+#include "DDG4/Geant4Data.h"
+
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "G4VProcess.hh"
+
+using namespace std;
+using namespace CLHEP;
+using namespace DD4hep;
+using namespace DD4hep::Geometry;
+using namespace DD4hep::Simulation;
+
+/// Standard constructor
+Geant4EscapeCounter::Geant4EscapeCounter(Geant4Context* context, const string& nam, DetElement det, LCDD& lcdd)
+  //    : Geant4SteppingAction(context, nam) 
+  : Geant4Sensitive(context, nam, det, lcdd) 
+{
+  string coll_name = name()+"Hits";
+  m_needsControl = true;
+  declareProperty("Shells",m_detectorNames);
+  m_collectionID = defineCollection<SimpleTracker::Hit>(coll_name);
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Geant4EscapeCounter::~Geant4EscapeCounter() {
+  InstanceCount::decrement(this);
+}
+
+/// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
+bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history */)   {
+  typedef SimpleHit::Contribution HitContribution;
+  typedef vector<string> _V;
+  Geant4StepHandler h(step);
+  Geant4TrackHandler th(h.track);
+  Geant4TouchableHandler handler(step);
+  string   path       = handler.path();
+  Position prePos     = h.prePos();
+  HitCollection* coll = collection(m_collectionID);
+  SimpleTracker::Hit* hit = new SimpleTracker::Hit(th.id(),th.pdgID(),h.deposit(),th.time());
+  hit->cellID        = volumeID(step);
+  hit->energyDeposit = th.energy();
+  hit->position      = prePos;
+  hit->momentum      = h.trkMom();
+  hit->length        = 0;
+  coll->add(hit);
+  mark(h.track);
+ 
+  print(name(),"+++ Track:%4d  %8.2f MeV [%s] %s Geant4 path:%s",
+	h.trkID(),h.trkEnergy()/MeV,th.name().c_str(),th.creatorName().c_str(),path.c_str());
+  // Kill track, so that it does no longer participate in the propagation
+  h.track->SetTrackStatus(fStopAndKill);
+  return true;
+}
+
+#include "DDG4/Factories.h"
+DECLARE_GEANT4SENSITIVE(Geant4EscapeCounter)
+

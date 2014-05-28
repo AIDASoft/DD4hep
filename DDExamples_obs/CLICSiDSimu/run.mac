@@ -1,0 +1,41 @@
+# $Id: run1.mac,v 1.2 2000-11-21 10:59:42 maire Exp $
+#
+# Macro file for "exampleN03.cc"
+# 
+# can be run in batch, without graphic
+# or interactively: Idle> /control/execute run1.mac
+#
+# create empty scene
+#/vis/scene/create
+#
+/run/verbose 1
+/run/initialize
+#
+# Create a scene handler for a specific graphics system
+#/vis/open DAWNFILE
+# draw scene
+#/vis/viewer/zoom 35
+#/vis/drawVolume
+#/vis/viewer/flush
+#if you want to see trajectories and hits points
+#/vis/scene/add/trajectories
+#/vis/modeling/trajectories/create/drawByCharge
+#/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 0.2
+
+
+#/control/verbose 1
+#/control/saveHistory
+#
+/event/verbose 0
+/tracking/verbose 0
+##/geometry/test/grid_test true
+# 
+# muon 300 MeV to the direction (1.,0.,0.)
+# 3 events
+#
+/gun/position 0 0 -0.1 mm
+#/gun/particle geantino
+/gun/particle mu+
+/gun/energy 300 GeV
+/run/beamOn 3000

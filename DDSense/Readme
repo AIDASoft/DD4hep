@@ -1,0 +1,27 @@
+ **********************
+ *   DDSense
+ *
+ *  @author F.Gaede
+ *  08 2013
+ **********************
+
+ First shot at a sensitive detector subpackage with a 
+ plugin mechanism.
+
+ classes:   G4SensitiveDetector, DDSensitiveManager
+            G4ExampleTrackingSD
+
+  see: ./example/ddsense_example.cpp
+
+
+ * To build uncomment in $DD4hep/CMakeLists.txt:
+   ##  add_subdirectory(DDSense) 
+
+ * to run test:
+ 
+ export DD4hep_SD_DLL=./lib/libDD4hepSenseExample.dylib
+ 
+ ./bin/ddsense_example
+
+
+

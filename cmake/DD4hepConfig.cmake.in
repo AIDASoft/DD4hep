@@ -1,0 +1,79 @@
+##############################################################################
+# cmake configuration file for DD4hep
+#
+# returns following variables:
+#
+#   DD4hep_FOUND      : set to TRUE if DD4hep found
+#   DD4hep_VERSION    : package version
+#   DD4hep_ROOT       : path to this DD4hep installation
+#   DD4hep_LIBRARIES  : list of DD4hep libraries
+#   DD4hep_INCLUDE_DIRS  : list of paths to be used with INCLUDE_DIRECTORIES
+#   DD4hep_LIBRARY_DIRS  : list of paths to be used with LINK_DIRECTORIES
+#
+# @author Jan Engels, Desy
+##############################################################################
+
+SET( DD4hep_ROOT "@CMAKE_INSTALL_PREFIX@" )
+SET( DD4hep_VERSION "@DD4hep_VERSION@" )
+
+
+# ---------- include dirs -----------------------------------------------------
+# do not store find results in cache
+SET( DD4hep_INCLUDE_DIRS DD4hep_INCLUDE_DIRS-NOTFOUND )
+MARK_AS_ADVANCED( DD4hep_INCLUDE_DIRS )
+
+FIND_PATH( DD4hep_INCLUDE_DIRS
+	NAMES DD4hep/Detector.h
+	PATHS ${DD4hep_ROOT}/include
+	NO_DEFAULT_PATH
+)
+
+# ---------- default build type  --------------------------------------------------------
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "One of: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
+endif()
+
+# ---------- libraries --------------------------------------------------------
+# do not store find results in cache
+SET( DD4hep_LIBRARY_DIRS ${DD4hep_ROOT}/lib )
+SET( DD4hep_LIBRARIES DD4hep_LIBRARIES-NOTFOUND )
+MARK_AS_ADVANCED( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
+
+
+INCLUDE( ${DD4hep_ROOT}/cmake/DD4hepMacros.cmake )
+
+# only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
+# additional components are set by cmake in variable PKG_FIND_COMPONENTS
+# first argument should be the package name
+if(@DD4HEP_WITH_GEANT4@)
+  CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepRec DD4hepPlugins DD4hepG4 ) 
+
+  #--- if geant 4 was built with CLHEP we need to export this to client packages
+  if( @GEANT4_WITH_CLHEP@)
+    set(GEANT4_WITH_CLHEP  1 ) 
+  endif()
+
+else()
+  CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepRec DD4hepPlugins ) 
+endif()
+
+
+#---- build with Boost ?
+if(@DD4HEP_USE_BOOST@)
+  include_directories( @Boost_INCLUDE_DIR@ )
+  add_definitions(-DDD4HEP_USE_BOOST)
+endif()
+
+
+#----- APPLE ? -------
+
+set( USE_DYLD @USE_DYLD@ )
+MARK_AS_ADVANCED( USE_DYLD )
+
+# ---------- final checking ---------------------------------------------------
+INCLUDE( FindPackageHandleStandardArgs )
+# set DD4HEP_FOUND to TRUE if all listed variables are TRUE and not empty
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( DD4hep DEFAULT_MSG DD4hep_ROOT DD4hep_INCLUDE_DIRS DD4hep_LIBRARIES )
+
+SET( DD4hep_FOUND ${DD4HEP_FOUND} )
+

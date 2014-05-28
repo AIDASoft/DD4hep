@@ -1,0 +1,55 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="units_test"
+	  title="units"
+	  url=""
+	  author="gaede"
+	  status="test"
+	  version="$Id: $">
+        <comment>minimal compact file used for units conversion tests</comment>        
+    </info>
+  
+    <includes>
+    </includes>
+    
+    <define>
+      <!-- need to define world volume -->
+      <constant name="world_side"             value="10*m"/>
+      <constant name="world_x"                value="world_side/2"/>
+      <constant name="world_y"                value="world_side/2"/>
+      <constant name="world_z"                value="world_side/2"/>
+
+      <constant name="M_PI"  value="3.14159265358979323846"/>
+
+      <!-- some constants with units -->
+      <constant name="alpha_half_arc_deg"  value="180.*deg"/>
+      <constant name="alpha_half_arc_rad"  value="M_PI*rad"/>
+
+      <constant name="rho1"  value="2.5e3*kg/m3"/>
+      <constant name="rho2"  value="2.5*g/cm3"/>
+      
+    </define>
+    
+    <!-- need to define vacuum and air -->
+    <materials>
+      <material name="Vacuum">
+	    <D type="density" unit="g/cm3" value="0.00000001" />
+	    <fraction n="1" ref="H" />
+      </material>
+      <material name="Air">
+	    <D type="density" unit="g/cm3" value="0.0012"/>
+	    <fraction n="0.754" ref="N"/>
+	    <fraction n="0.234" ref="O"/>
+	    <fraction n="0.012" ref="Ar"/>
+      </material>    
+      <material formula="Si" name="Silicon" state="solid" >
+        <RL type="X0" unit="cm" value="9.36607" />
+        <NIL type="lambda" unit="cm" value="45.7531" />
+        <D type="density" unit="g/cm3" value="2.33" />
+        <composite n="1" ref="Si" />
+      </material>
+    </materials>
+
+</lccdd>

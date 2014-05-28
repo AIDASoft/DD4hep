@@ -1,0 +1,460 @@
+DD4hep  ----  Release Notes
+=================================
+
+ --------   2014/05/28 Markus Frank
+| v00-07 |  seventh beta release ...
+ --------   
+
+2014/05/28 Markus Frank
+-----------------------
+  - Several fixes and improvements in DDG4
+    - Cache output levels in Geant4Kernel object
+    - Add shell handler to measure energy escape e.g. in calorimeters
+  - Fix bug in Polycone shapes concerning angles.
+      IMPORTANT: If you forked the repository examples/CLICSiD
+      your PolyconeSupport does not work anymore, because the angles
+      were given in degrees. They should be given in radians!
+
+2014/05/21 Markus Frank
+-----------------------
+  - Fix material creation from XML
+    JIRA bug: DD4hep -  DDFORHEP-4
+    https://sft.its.cern.ch/jira/browse/DDFORHEP-4
+    using <composite> in material xml files results in wrong material properties
+
+  - Fix JIRA bug: DD4hep -   DDFORHEP-3
+    https://sft.its.cern.ch/jira/browse/DDFORHEP-3
+    Recursive assemblies result in error in TGeo geometry
+    Bug results in errors when closing the geometry like:
+    "Error in <TGeoVoxelFinder::SortAll>: Wrong bounding box for volume SIT_assembly"
+
+  - Provision to store survey constants to the DetElement as an extension
+    for Alignment calculations (priv. comm. C.Parkes)
+
+  - Fix bug in expression evaluation of angles.
+    All detector constructors receive angles in "rad". No correction 
+    from degree to rad should be necessary.
+
+2014/05/21 Frank Gaede
+-----------------------
+  - add MaterialManager class providing
+    - access to materials at any point or on straight
+      line between two points
+    - creation of material with averaged properties (A,Z,rho,x0,Lambda)
+ 
+  - added utility print_materials to print material properties along  
+    a straight line between two points including integrated radiation and 
+    interaction lengths (useful for debugging geometries and materials)
+ 
+  - use avaeraged material for Surfaces where the thickness extends
+    beyond the volume boundaries
+    - introduced new simple data class MaterialData for this       
+    
+
+  *** known issues
+     ** materials don't work for detectors with assemblies in assemblies
+        as the TGeo navigation dose not seem to work:
+	Error in <TGeoVoxelFinder::SortAll>: Wrong bounding box for volume SIT_assembly
+        -> ROOT bug or feature ?
+
+     ** using <composite/> in compound materials results in incorrect material properties
+       see ILDExDet/compact/materials Polysterene as example
+
+
+2014/05/06 Frank Gaede
+-----------------------
+  - DDSurfaces/DDRec:
+    - added ICylinder and CylinderSurface to provide
+      access to cylinder radius for the tracking
+  - teveDisplay: 
+     - draw sensitive surfaces in red and helper surfaces in gray
+     - protect against missing lcio input file
+  - reduced printout from VolumeManager  (changed INFO to DEBUG)
+
+2014/04/05-2014/04/29 Frank Gaede
+---------------------------------
+   - Implementation of Surface classes for track reconstruction
+     - abstract interfaces in DDSurface:  ISurface and IMaterial  
+     - implementation in DDRec:  Surface, SurfaceManager, DetectorSurfaces
+     - basic functionality exists:
+     - meassurement surface vectors u,v, normal and origin
+     - check if point is inside the bounds of the corresponding volume
+     - currently the material is taken to be the one from the volume 
+      -> to do: average material if surface thicknesses extend beyond the
+                volume for comound materials
+   - added drawing of surfaces and (Sim)TrackerHits and (Sim)CalorimeterHits to teveDisplay
+     ( link lcio file to teve_infile.slcio )
+   - added some surfaces to ILDExDet: VXD, SIT, TPC
+   - added test_surfaces to ILDExSimu
+     (fails currently for some hits that are not created on the surface ...)
+   - added some assemblies to ILDExDet to better structure the geometry hierarchy   
+
+2014/04/28  Markus Frank
+------------------------
+   - First attempt to understand fully the handling of recursive assemblies
+     from the 2014/04/25 was apparently with limited success. Now they should
+     work!
+
+2014/04/25  Markus Frank
+------------------------
+   - Moved boost::spirit parsers to DDCore, since these parsers are also used
+     in other packages such as DDCond and DDAlign - whenever strings have to be
+     converted to objects.
+     Consequently, the boost spirit code fragments were removed from DDG4.
+   - Improved and more correct type checking when assigning handles
+   - Explicit implementation of the object extension mechanism to be used 
+     through inheritance or aggregation rather than having seperate and nearly
+     identical implementations for various objects.
+   - Improved defintition of basic objects describing Conditions and Alignment.
+   - Improved implementation of DDAlign, the alignment support.
+     Not to be used currently - experimental package.
+   - Initial implementation of DDCond the package supporting the handling of 
+     conditions.
+     Not to be used currently - experimental package.
+   - Geant4Converter: I convinced myself, that the bug in handling assemblies
+     of assemblies is resolved. To be tested though.
+
+2014/02/07  Frank Gaede
+-----------------------
+   - added DDGear, support for interfacing to gear for backward compatibility
+     - lives currently in ILDExDet ( should become (optional) part of core DD4hep)
+     - users need to GearParameter objects as extensions to the DetElement
+       -> see ILDExTPC_geo.cpp, ILDExVXD_geo.cpp, ILDExTPCSIT_geo.cpp as examples
+     - program convertToGear creates gear xml file from compact file 
+       ( only if  GearParameter objects are avialble as extensions)
+     - added test_convert_ild_gear 
+   - fixed  geometry in ILDExVXD_geo.cpp, ILDExTPCSIT_geo.cpp
+     wrt. to position of support ans sensitive ladders
+
+
+ --------
+| v00-06 |  sixth beta release ...
+ --------   
+
+2014/02/04  Frank Gaede
+-----------------------
+  - fixed environment scripts thisdd4hep.sh and this${PackageName}.sh
+    to also export library pathes for external libraries (CLHEP, LCIO, gear)
+
+  - added some simple tests to ILDExDet, ILDExSimu and noviceN04
+    - provide cmake script run_test_package.sh ( configured as run_test_${PackageName} ) 
+      to call test binaries after initializing the environment
+      (needed for automated/nightly tests)
+
+  - updated Readme.txt wrt build procedure and running the tests
+
+
+2014/01/17    Markus Frank
+--------------------------
+  - Prepare implementation of Alignment using Release and Grap features of TGeoVolume
+    and TGeoNode. In principle this was done in a backwards compatible way, but 
+    I cannot really check 100% the #ifdef's.
+  - Fix handling of XML collections using XercesC.
+    (Bug reported by P.Kostka).
+  - Fix several compiler warnings issued by Coverity.
+
+2013/12/17    Markus Frank
+--------------------------
+  - Whole load of fixes to keep coverity quiet....
+  - Fix bug in DDG4 field interface component
+  - Allow the usage of units, positions and lorentzvectors and in DDG4 properties.
+    Example using a position property (ROOT::Math::XYZVector):
+    Idle> /ddg4/Gun/position (1*mm,1*cm,0.01*m) 
+    Geant4UIMessenger: +++ Gun> Setting property value position = (1*mm,1*cm,0.01*m)  
+                       native:( 1 , 10 , 10 ).
+
+  - Support for std::vector<T>/std::list<T>/std::set<T> properties.
+
+  - Support for include directives of the format
+        <include ref="file-name"/>
+    for the top level <lccdd> tags
+       Parent tag    Included root tag  Data content
+    -- <lccdd>       <define>           See below.
+                     <detectors>
+		     <detector>
+		     <display>
+		     <lccdd>            Nested includes (with DTD validation for Xerces-C)
+    -- <define>      <define>           Set of constants
+    -- <detectors>   <detector>         Single XML subdetector description
+    -- <detectors>   <detectors>        Multiple XML subdetector descriptions
+    -- <display>     <display>          Set ov visualization attributes
+
+    DTD validation is only performed using Xerces-C for root tags <lccdd>.
+
+    Note: 
+    <lccdd> include directives are executed BEFORE any other directive!
+    Other include directives are executed BEFORE the corresponding named directive!
+
+2013/11/14    Markus Frank
+--------------------------
+  - Reformat files in DDCode and DDG4 to remove the <TAB>s from the source files.
+    Hopefully the content is now more readable.
+  - DDCore: Remove empty and named constructors for shapes. Empty constructors
+    were simply a dangerous hook to memory leaks, named constructors are 
+    deprecated since along time.
+  - DDG4: add support for messengers to access and modify properties from
+    the Geant4 prompt. For the test hit classes and the simple sensitive 
+    detector a ROOT I/O plugin was provided.
+  - DDG4: Split into several libraries:
+     -- libDD4hepG4.so pure    link library without any plugins
+     -- libDD4hepG4Legacy.so   'Old' plugins. The old stuff at some point
+                               will have to disappear.
+     -- libDD4hepG4Plugins.so  New framework plugins
+     -- libDD4hepG4LCIO.so     LCIO output plugin for new framework
+
+2013/11/03    Markus Frank
+--------------------------
+  - doc: Add CHEP2013 paper about DD4hep as a start of the documentation 
+    section. More to come hopefully.
+  - DDCore: several small improvements:
+    - Segmentations are no longer Ref_t's.
+    - Base internal implementing object directly on the segmentations 
+      classes from Christian.
+    - Rearrangement of some code from Handle.h to Primitives.h
+    - Allow to attach extensions to LCDD
+  - DDG4: Fix Frank's simulation problem, which he caused himself
+    introducing his famous factories....
+  - DDG4: First attempt to fix simulation problem with mignetic field.
+    Ready for testing.
+  - DDG4: First commit of a independent simulation aimed for LHCb and LHeC
+    + other newcomers. Documentation needs to be written.
+    Features:
+    - Modular setup of all Geant4 action routines as plugins, including the
+      Run-, event-, tracking-, stacking-, stepping- and generator-actions 
+      as well as the physics lists with particle and physics constructors.
+    - Setup is possible in XML or with C++ either as an AClick in root or
+      standalone. Python based starter to come.
+    - Missing is a modular description of the G4 UI and VIS manager(s).
+    - Documentation is to come. Before documentation is not present
+      the usage is discouraged.
+    Note:
+    - This version of DDG4 uses boost::spirit. It will compile without
+      the BOOST include files and the old functionality is preserved, 
+      but it will not work.
+      To use BOOST add to the cmake statement the following tags:
+      cmake <regular tags> \
+      -DDD4HEP_USE_BOOST=ON \
+      -DBOOST_INCLUDE_DIR=${BOOST_INCLUDE_DIR}  ....
+      Where BOOST_INCLUDE_DIR should point to the boost header directory.
+      BOOST libraries are not used.
+
+
+2013/10/18    Markus Frank
+--------------------------
+  - Throw exception if the expression evaluator sees a problem.
+    The message printed before was often not seen.
+  - Improve printout on exceptions and plugin abortion
+  - Remove the typedef RotationZYX -> Rotation and
+    import the type RotationZYX from ROOT::Math.
+
+  - Add more explicit error messages in case a plugin is not found.
+  - Add file TGeoUnits.h, which allows to use the "usual SystemOfUnits"
+    from CLHEP using TGeo with the namespace tgeo::xxx
+    Example: tgeo::mm -> 0.1 (Geant3: cm, sec,  GeV, degree)
+                 ::mm -> 1.0 (Geant4: mm, nsec, MeV, radian)
+    I hope I got all translations right.
+    Geant4                                   Geant3
+    ----------------------------------------------------------------
+    millimeter         mm=1,cm=10            centimeter  mm=0.1,cm=1
+    nanosecond         s=1e9                 second      ns=1e-9,s=1
+    Mega electron Volt GeV=1e3               GeV         GeV=1
+    radian             rad=1                 degree      rad=180/pi
+
+    Unclear to me was if in Geant3 steradian is also 2*2*pi or 2*2*180 degree.
+
+
+
+No-date    F. Gaede
+-------------------
+       - changes to build system:
+         (see ReadMe.txt for details)
+
+         - moved examples to ./example directory   
+           - they are not built as part of DD4hep anymore
+
+         - install thisdd4hep.sh in ./bin
+           (modified to have the correct pathes) 
+
+         - added -DINSTALL_DOC=on/off option
+           to build doxygen documentation (in ./doc/html/index.html)
+
+         - create DD4hepConfig.cmake for easy building against DD4hep
+           ( see examples CMakeLists.txt)
+
+       - fixed doxygen API documentation (C.Rosemann)
+          (greatly improved with many graphs)
+
+
+ --------
+| v00-04 |  fourth beta release ...
+ --------   - placement options are now compatible with geant4 
+            - fixed Geant4SensitiveDetector::getVolumeID()
+            - modified ILDEx model to not use assemblies (for now !?)
+	    - removed obsolete geant4 example ILDEx
+	    - Fix population procedure of volume manager
+	    - Fix uniqueness of volume identifiers.
+	    - Remove call with lookups by placed volume to the volume manager
+	    - improved ILDEx toy example:	   		
+	      - fixed creation of cellIDS for simhits
+	      - creates SimTrackerHits for VXD, SIT and TPC
+              - creates SimCalorimeterHits for AHcal barrele and endcap
+	      - works now wigth ILDExSimu _and_ SLIC if no assemblies are used
+            - assemblies work with the DD4hep Geant4Converter and VolumeManager
+	    - added a prototype example for a ROOT independent 
+              plugin mechanism for SensitiveDetectors
+        - added example implemetation for Calice test beam
+          calorimeters: CaliceTbeam  (Shaojun Lu, DESY)
+
+
+2013/21/06    Markus Frank
+--------------------------
+   1) Since the placement model for combined translations and rotations
+      caused more confusion than good, it was agreed to move to a more
+      Geant4 like placement model using Vectors, Rotations and Transformations
+      from ROOT::Math. To place a physical volume only one of these
+      is allowed as an argument: either a rotation or a translation
+      for simple placements. Combinations may be constructed with Transform3D
+      objects allowing more complicated placements.
+      The same mechanism was applied for the operations to construct
+      boolean solids.
+   2) The CLICSid Examples were updated according to the changes necessary
+      from 1)
+   3) The Tesla drivers from the ILDExDet example were removed. They are
+      not compliant to 1).
+   4) The G4 package allows now to translate TGeo geometries to Geant4.
+      Visual inspection has shown an agreement between the two geometries.
+   5) The TGeo to LCDD/GDML conversion is still buggy. Hence, simulations
+      using slic as an engine do not yet work. This is being looked at.
+
+   IMPORTANT NOTICE:
+   The changes described in 1) may affect existing detector constructors.
+   Unless all problems are solved you should be careful to move to the svn
+   head. In any case save your checkout or use the tag v00-03.
+
+ 
+
+ --------
+| v00-03 |  third beta release ...
+ --------   - broken geometry (for some rotations/translations)
+            - 'backup release' before placement options 
+               will be reduced
+
+ --------
+| v00-02 |  second beta release ...
+ --------
+
+
+2013/02/06    Markus Frank
+--------------------------
+  1) Simplyfy inheritance for common objects from TNamed.
+     Use direct inheritance of Object from TNamed rather than hidden 
+     using the Value<a,b> construct.
+  2) Added physical volume manager to simplyfy the detector element 
+     and sensitive detector lookup from a given physical volume.
+     This implies: If the volume manager is instantiated, the readout specifiers
+     MUST be correct. This is in most xml files NOT the case.
+     The "system" field holding the sibdetector-id is MANDATORY!
+     Otherwise you will receive messages like this:
+
+     Exception:SITCollection: This ID descriptor has no field with the name:CellID0
+               while programming VolumeManager. Are your volIDs correct?
+
+  3) To check the volume identification, add argument -volmgr to geoConverter,
+     geoDisplay, etc.
+  4) To trace possible memory leaks:
+     export DD4HEP_TRACE=Yes
+     then run you converter etc. At the end a table is displayed with a "leakage"
+     column, showing how many objects were not deleted.
+     
+     +----------------------------------------------------------------+
+     |   I n s t a n c e   c o u n t e r s   b y    T Y P E I N F O   |
+     +----------+---------+-------------------------------------------+
+     |   Total  | Leaking |      Type identifier                      |
+     +----------+---------+-------------------------------------------+
+     |        13|        0|DD4hep::Geometry::DetElement::Object
+     |         3|        0|DD4hep::Geometry::SensitiveDetector::Object
+     |         3|        0|DD4hep::Geometry::Readout::Object
+     |         1|        0|DD4hep::Geometry::OverlayedField::Object
+     |         1|        0|DD4hep::Geometry::CartesianField::Object
+     ....
+     Ideally the second column only has "0"s. Instances of 1 may be OK (singletons).
+
+  Prenotice:
+     As soon as ROOT v 6.00 is out, we will have to use it!
+     Andrei kindly agreed to implement a few changes to TGeo, which will make 
+     life much easier and the implementation cleaner and less cumbersome.
+
+
+ --------
+| v00-01 |
+ --------
+    
+    - first beta release...
+
+
+2013/20/03    Markus Frank
+--------------------------
+  1) Finished the compact->lcdd converter
+     Extract lcdd information
+      $ > geoConverter -compact2lcdd -input file:<compact-input-xml-file> -output <detector>.lcdd
+      $ > <SimDist>/scripts/slic.sh -o output.slcio -g SiD.lcdd -m <geant4-macro>.mac -r 100 
+
+
+  2) Finished the compact->gdml converter
+  Full GDML cycle can be tested (deplace <detector> with some meaningful identifier):
+   a) Extract gdml information
+      $ > geoConverter -compact2gdml -input file:<compact-input-xml-file> -output <detector>.gdml
+   b) Extract visualisation hints to csv file
+      $ > geoConverter -compact2vis -input file:<compact-input-xml-file> -output <detector>.vis.csv -ascii
+   c) Load GDML into ROOT:
+      $ > root.exe ../doc/gdml_root.C+\(\"<detector>\"\)
+      The macro expects *at least* the <detector>.gdml file. If no visualisation
+      information is found, the resulting graphics however is not very nice!
+ 
+
+2013/22/02    Markus Frank
+--------------------------
+  1) Today a decision was taken to remove all _X() and _A() macros 
+  accessing static unicode strings. A common macro will be used to
+  address both XML elements and XML attributes using the macro _U(...).
+  The original usage only created confusion.
+  All _X and _A macros were replaced by _U.
+
+  2) Improve the executables running the plugin mechanism in UtitlityApps.
+  They now complain if the plugin was not found.
+
+
+2013/21/02    Markus Frank
+--------------------------
+  Require strict checks for the existence of xml attributes.
+  e.g. default=false for Element::attr<bool>() is no longer an option.
+  if the attribute is not present in the element, an exception
+  is thrown.
+
+  Slightly change the factory method for creating detector elements.
+  Use a more generic pattern do support also more generic XML 
+  processing.
+
+2013/20/02    Markus Frank
+--------------------------
+  Install rootmap mechanism for the usage of plugins.
+  It is no longer necessary to have separate programs
+  for the various detector models (ILD/SiD).
+  One generic display program servest them all.
+  ==> Creation of package DDExamples/UtilityApps
+  example: $> bin/displayGeo -compact <compact-xml-file>
+
+  This move has another consequence:
+  All libraries are build into a common install area:
+  the <build directory>/lib.
+  All executable binaries are build into a common install area:
+  the <build directory>/bin.
+
+  The LD_LIBRARY_PATH and PATH variables as defined in 
+  'thisdd4hep.(c)sh' do include these directories
+
+2013/20/02    Markus Frank
+--------------------------
+  DD4hep release notes. Better start them late than never.
+  If you perform significant changes to the DD4hep core,
+  plase leave a small notice here.

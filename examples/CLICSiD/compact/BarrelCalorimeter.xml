@@ -1,0 +1,427 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+        <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+    </info>
+
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+        <pyBuilder ref="../drivers"/>
+    </includes>
+    
+    <define>
+        <constant name="world_side" value="30000"/>
+        <constant name="world_x" value="world_side"/>
+        <constant name="world_y" value="world_side"/>
+        <constant name="world_z" value="world_side"/>
+        
+        <constant name="CrossingAngle" value="0.020"/>
+        
+        <constant name="CaloSides" value="12"/>
+        <constant name="MuonSides" value="8"/>
+        
+        <constant name="EcalBarrel_rmin" value="126.50*cm"/>
+        <constant name="EcalBarrel_zmax" value="176.50*cm"/>
+        <constant name="EcalEndcap_rmin" value="21.0*cm"/>
+        <constant name="EcalEndcap_rmax" value="(EcalBarrel_rmin - 1.5*cm) / (cos(pi/CaloSides))"/> <!-- Correction from going from inner circle to outer circle -->
+        <constant name="EcalEndcap_zmin" value="165.70*cm"/>
+        
+        <constant name="HcalBarrel_rmin" value="141.90*cm"/>
+        <constant name="HcalBarrel_layers" value="(int) 75"/>
+        <constant name="HcalBarrel_layer_thickness" value="1.0*cm + 0.65*cm"/>
+        <constant name="HcalEndcap_zmin" value="EcalBarrel_zmax + 4.0*cm"/> <!-- Gap for cables -->
+        <constant name="HcalEndcap_rmin" value="50.0*cm"/>
+        <constant name="HcalEndcap_rmax" value="(HcalBarrel_rmin + HcalBarrel_layers * HcalBarrel_layer_thickness) / (cos(pi/CaloSides))"/> <!-- Correction from going from inner circle to outer circle -->
+        <constant name="HcalEndcap_layers" value="60"/>
+        <constant name="HcalEndcap_layer_thickness" value="2.0*cm + 0.65*cm"/>
+        <constant name="HcalEndcap_zmax" value="HcalEndcap_zmin + HcalEndcap_layers * HcalEndcap_layer_thickness"/>
+        
+        <constant name="tracking_region_radius" value="EcalBarrel_rmin - 1.0"/>
+        <constant name="tracking_region_zmax" value="EcalEndcap_zmin - 1.0"/>
+        <constant name="VXD_CF_sensor" value="0.026*cm"/>
+        <constant name="VXD_CF_support" value="0.05*cm"/>
+        
+        <constant name="SolenoidBarrelInnerRadius" value="HcalEndcap_rmax + 2.0*cm"/>
+        <constant name="SolenoidCoilOuterZ" value="HcalEndcap_zmax"/> <!-- Aligned with HCAL endcap -->
+        <constant name="SolenoidBarrelInnerCryostatThickness" value="3.0*cm"/>
+        <constant name="SolenoidBarrelInnerAirgapThickness" value="11.0*cm"/>
+        <constant name="SolenoidBarrelAlConductorThickness" value="38.4*cm"/>
+        <constant name="SolenoidBarrelQuenchbackThickness" value="5.0*cm"/>
+        <constant name="SolenoidBarrelOuterAirgapThickness" value="18.7*cm"/>
+        <constant name="SolenoidBarrelOuterCryostatThickness" value="4.0*cm"/>
+        <constant name="SolenoidEndcapCryostatThickness" value="6.0*cm"/>
+        <constant name="SolenoidEndcapAirgapThickness" value="12.0*cm"/>
+        <constant name="SolenoidBarrelOuterZ" value="SolenoidCoilOuterZ+SolenoidEndcapAirgapThickness"/>
+        <constant name="SolenoidBarrelConductorInnerRadius" value="SolenoidBarrelInnerRadius + SolenoidBarrelInnerCryostatThickness + SolenoidBarrelInnerAirgapThickness"/>
+        <constant name="SolenoidBarrelOuterCryostatInnerRadius" value="SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness + SolenoidBarrelQuenchbackThickness"/>
+        <constant name="SolenoidBarrelOuterRadius" value="SolenoidBarrelOuterCryostatInnerRadius + SolenoidBarrelOuterAirgapThickness + SolenoidBarrelOuterCryostatThickness"/>
+        <constant name="SolenoidalFieldRadius" value="(SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness / 2.0)"/>
+        
+        <constant name="MuonBarrel_rmin" value="SolenoidBarrelOuterRadius + 1.0*cm"/>
+        <constant name="MuonBarrel_zmax" value="SolenoidBarrelOuterZ + SolenoidEndcapCryostatThickness"/>
+        <constant name="MuonBarrel_layers" value="15"/>
+        <constant name="MuonBarrel_layer_thickness" value="10.0*cm + 4.0*cm"/>
+        <constant name="MuonEndcap_zmin" value="MuonBarrel_zmax + 10.0*cm"/> <!-- Space for cables etc. -->
+        <constant name="MuonEndcap_rmin" value="69.0*cm"/> <!-- Space for QD0 and anti-solenoid-->
+        <constant name="MuonEndcap_rmax" value="(MuonBarrel_rmin + 57.0*cm + MuonBarrel_layers * MuonBarrel_layer_thickness) / (cos(pi/MuonSides))"/> <!-- Correction from going from inner circle to outer circle -->
+        <constant name="MuonEndcap_layers" value="18"/>
+        <constant name="MuonEndcap_layer_thickness" value="10.0*cm + 4.0*cm"/>
+        <constant name="MuonEndcap_zmax" value="MuonEndcap_zmin + MuonEndcap_layers * MuonEndcap_layer_thickness"/>
+        
+        <constant name="LumiCal_rmin" value="6.4*cm"/>
+        <constant name="LumiCal_rmax" value="EcalEndcap_rmin + 3.0*cm"/>
+        <constant name="LumiCal_zmin" value="HcalEndcap_zmin"/>
+        <constant name="LumiCal_thickness" value="20*0.371*cm + 15*0.643*cm"/>
+        <constant name="LumiCal_zmax" value="LumiCal_zmin + LumiCal_thickness"/>
+        <constant name="LumiCalElectronics_rmax" value="LumiCal_rmax+5.0*cm"/>
+        
+        <constant name="SupportTube_thickness" value="1.0*cm"/>
+        <constant name="ForwardVacuumValve_thickness" value="36.0*cm"/>
+        <constant name="ForwardShielding_thickness" value="5.0*cm"/>
+        <constant name="ForwardMask_thickness" value="10.0*cm"/>
+        <constant name="ForwardMask_zmin" value="LumiCal_zmax + ForwardShielding_thickness + ForwardVacuumValve_thickness"/>
+        <constant name="BeamCal_rmax" value="13.0*cm"/>
+        <constant name="BeamCal_zmin" value="ForwardMask_zmin + ForwardMask_thickness"/>
+        
+        <constant name="VertexSupport_r1" value="16.87*cm"/>
+        <constant name="VertexSupport_r2" value="18.42*cm"/>
+        <constant name="VertexSupport_zmax" value="89.48*cm"/>
+        
+        <constant name="VertexBarrel_zmax" value="10.0*cm"/>
+        <constant name="VertexBarrel_r1" value="2.7*cm"/>
+        <constant name="VertexBarrel_r2" value="3.8*cm"/>
+        <constant name="VertexBarrel_r3" value="5.1*cm"/>
+        <constant name="VertexBarrel_r4" value="6.4*cm"/>
+        <constant name="VertexBarrel_r5" value="7.7*cm"/>
+        
+        <constant name="CentralBeamPipe_zmax" value="23.0*cm"/>
+        <constant name="CentralBeamPipe_rmax" value="VertexBarrel_r1 - 0.2*cm"/>
+        <constant name="CentralBeamPipe_thickness" value="CentralBeamPipe_rmax * 0.02"/> <!-- 1% of the diameter -->
+        <constant name="CentralBeamPipe_rmin" value="CentralBeamPipe_rmax - CentralBeamPipe_thickness"/>
+        <constant name="BeamPipe_thickness" value="0.4*cm"/>
+        <constant name="BeamPipe_endThickness" value="0.1*cm"/>
+        <constant name="BeamPipe_zmax" value="LumiCal_zmin - 0.5*cm"/>
+        <constant name="BeamPipe_rmax" value="19.0*cm"/>
+        <constant name="BeamPipe_rmin" value="BeamPipe_rmax - BeamPipe_thickness"/>
+        <constant name="bp_cone_slope" value="(BeamPipe_rmax-CentralBeamPipe_rmax)/(tracking_region_zmax-CentralBeamPipe_zmax)"/>
+        <constant name="BeamPipe_zmin" value="CentralBeamPipe_zmax + (BeamPipe_thickness - CentralBeamPipe_thickness)/bp_cone_slope"/>
+        <constant name="BeamPipeLiner_thickness" value="0.0*cm"/>
+        
+        <constant name="VertexEndcap_rmax" value="11.5*cm"/>
+        <constant name="VertexEndcap_z1" value="12.0*cm"/>
+        <constant name="VertexEndcap_z2" value="16.0*cm"/>
+        <constant name="VertexEndcap_z3" value="20.0*cm"/>
+        <constant name="VertexEndcap_z4" value="24.0*cm"/>
+        <constant name="VertexEndcap_offset" value="0.2*cm"/>
+        <constant name="VertexEndcapModules" value="16"/>
+        <constant name="VertexEndcap_rmin1" value="CentralBeamPipe_rmax + VertexEndcap_offset"/>
+        <constant name="VertexEndcap_rmin2" value="CentralBeamPipe_rmax + VertexEndcap_offset"/>
+        <constant name="VertexEndcap_rmin3" value="CentralBeamPipe_rmax + VertexEndcap_offset"/>
+        <constant name="VertexEndcap_rmin4" value="(VertexEndcap_z4 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexEndcap_offset"/>
+        
+        <constant name="ForwardTracker_rmax" value="16.87*cm"/>
+        <constant name="ForwardTracker_z1" value="28.0*cm"/>
+        <constant name="ForwardTracker_z2" value="50.0*cm"/>
+        <constant name="ForwardTracker_z3" value="83.0*cm"/>
+        <constant name="ForwardTracker_offset" value="0.2*cm"/>
+        <constant name="ForwardTrackerModules" value="16"/>
+        <constant name="ForwardTracker_rmin1" value="(ForwardTracker_z1 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + ForwardTracker_offset"/>
+        <constant name="ForwardTracker_rmin2" value="(ForwardTracker_z2 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + ForwardTracker_offset"/>
+        <constant name="ForwardTracker_rmin3" value="(ForwardTracker_z3 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + ForwardTracker_offset"/>
+        
+        <constant name="VertexService_zmin" value="ForwardTracker_z1 + 1.0*cm"/>
+        <constant name="VertexService_zmax" value="VertexService_zmin + 2.0*cm"/>
+        <constant name="VertexServiceThickness" value="0.3*cm"/>
+        <constant name="VertexCableThickness" value="0.005*cm"/>
+        
+        <constant name="IncomingBP_radius" value="0.25*cm"/>
+        <constant name="IncomingBP_thickness" value="0.05*cm"/>
+        <constant name="OutgoingBP_radius" value="tan(CrossingAngle/2)*BeamCal_zmin"/>
+        <constant name="OutgoingBP_thickness" value="0.1*cm"/>
+        
+    </define>
+    <materials>
+        <material name="TungstenDens23">
+            <D value="17.7" unit="g/cm3"/>
+            <fraction n="0.925" ref="W"/>
+            <fraction n="0.066" ref="Ni"/>
+            <fraction n="0.009" ref="Fe"/>
+        </material>
+        <material name="TungstenDens24">
+            <D value="17.8" unit="g/cm3"/>
+            <fraction n="0.93" ref="W"/>
+            <fraction n="0.061" ref="Ni"/>
+            <fraction n="0.009" ref="Fe"/>
+        </material>
+        <material name="TungstenDens25">
+            <D value="18.2" unit="g/cm3"/>
+            <fraction n="0.950" ref="W"/>
+            <fraction n="0.044" ref="Ni"/>
+            <fraction n="0.006" ref="Fe"/>
+        </material>
+        <material name="CarbonFiber_25percent">
+            <D type="density" value="0.375" unit="g/cm3"/>
+            <fraction n="1.0" ref="CarbonFiber"/>
+        </material>
+        <material name="CarbonFiber_15percent">
+            <D type="density" value="0.225" unit="g/cm3"/>
+            <fraction n="1.0" ref="CarbonFiber"/>
+        </material>
+        <material name="Rohacell31_50percent">
+            <D type="density" value="0.016" unit="g/cm3"/>
+            <fraction n="1.0" ref="Rohacell31"/>
+        </material>
+        <material name="Rohacell31_15percent">
+            <D type="density" value="0.0048" unit="g/cm3"/>
+            <fraction n="1.0" ref="Rohacell31"/>
+        </material>
+        <material name="BoratedPolyethylene5">
+            <D value="0.93" unit="g/cm3"/>
+            <fraction n="0.612" ref="C"/>
+            <fraction n="0.222" ref="O"/>
+            <fraction n="0.116" ref="H"/>
+            <fraction n="0.050" ref="B"/>
+        </material>
+        <material name="SiliconCarbide">
+            <D value="3.1" unit="g/cm3"/>
+            <composite n="1" ref="Si"/>
+            <composite n="1" ref="C"/>
+        </material> 
+        <material name="SiliconCarbide_6percent">
+            <D value="0.186" unit="g/cm3"/>
+            <fraction n="1.0" ref="SiliconCarbide"/>
+        </material>
+        <material name="Graphite">
+        	<D value="1.7" unit="g/cm3"/>
+        	<composite n="1" ref="C"/>
+        </material>      
+    </materials>
+    <limits>
+        <limitset name="cal_limits">
+            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+        </limitset>
+    </limits>
+
+
+    <display>
+        <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+        <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+
+        <vis name="MuonBarrelVis"          alpha="1" r="1"    g="0.4"  b="0.62" showDaughters="true" visible="true"/>
+        <vis name="MuonBarrelStavesVis"    alpha="1" r="0"    g="0.7"  b="0.3" showDaughters="true" visible="true"/>
+        <vis name="MuonBarrelLayerVis"     alpha="1" r="0"    g="1"    b="0.3" showDaughters="true" visible="true"/>
+        <vis name="MuonBarrelSensorVis"    alpha="1" r="0.54" g="0.4"  b="0.41" visible="true"/>
+        <vis name="MuonBarrelAbsorberVis"  alpha="1" r="0.28" g="0.4"  b="0.62" visible="true"/>        
+
+        <vis name="MuonEndcapVis"          alpha="1" r="1"    g="0.4"  b="0.62" showDaughters="true" visible="true"/>
+        <vis name="MuonEndcapLayerVis"     alpha="1" r="0"    g="1"    b="0.3"  showDaughters="true" visible="true"/>
+        <vis name="MuonEndcapSensorVis"    alpha="1" r="0.54" g="0.4"  b="0.41" visible="true"/>
+        <vis name="MuonEndcapAbsorberVis"  alpha="1" r="0.28" g="0.4"  b="0.62" visible="true"/>        
+                       
+    </display>
+    <detectors>
+
+        <comment>Calorimeters</comment>
+<!--
+        <detector id="5" name="EcalBarrel" type="EcalBarrel" readout="EcalBarrelHits" vis="EcalBarrelVis" calorimeterType="EM_BARREL">
+            <comment>EM Calorimeter Barrel</comment>
+            <dimensions numsides="(int) CaloSides" rmin="EcalBarrel_rmin" z="EcalBarrel_zmax*2" />
+            <staves vis="EcalBarrelStaveVis"/>
+            <layer repeat="1">
+                <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+                <slice material = "Copper"  thickness = "0.005*cm" />
+                <slice material = "Kapton"  thickness = "0.030*cm" />
+                <slice material = "Air"     thickness = "0.033*cm" />
+            </layer>      
+            <layer repeat="20">
+                <slice material = "TungstenDens24" thickness = "0.25*cm" />
+                <slice material = "Air"     thickness = "0.025*cm" />
+                <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+                <slice material = "Copper"  thickness = "0.005*cm" />
+                <slice material = "Kapton"  thickness = "0.030*cm" />
+                <slice material = "Air"     thickness = "0.033*cm" />
+            </layer>
+            <layer repeat="10">
+                <slice material = "TungstenDens24" thickness = "0.5*cm" />
+                <slice material = "Air"     thickness = "0.025*cm" />
+                <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+                <slice material = "Copper"  thickness = "0.005*cm" />
+                <slice material = "Kapton"  thickness = "0.030*cm" />
+                <slice material = "Air"     thickness = "0.033*cm" />
+            </layer>
+        </detector>
+
+        <detector id="6" name="EcalEndcap" type="PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
+            <comment>EM Calorimeter Endcaps</comment>
+            <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
+            <layer repeat="1">
+                <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+                <slice material = "Copper"  thickness = "0.005*cm" />
+                <slice material = "Kapton"  thickness = "0.030*cm" />
+                <slice material = "Air"     thickness = "0.033*cm" />
+            </layer>       
+            <layer repeat="20">
+                <slice material = "TungstenDens24" thickness = "0.25*cm" />
+                <slice material = "Air"     thickness = "0.025*cm" />
+                <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+                <slice material = "Copper"  thickness = "0.005*cm" />
+                <slice material = "Kapton"  thickness = "0.030*cm" />
+                <slice material = "Air"     thickness = "0.033*cm" />
+            </layer>
+            <layer repeat="10">
+                <slice material = "TungstenDens24" thickness = "0.5*cm" />
+                <slice material = "Air"     thickness = "0.025*cm" />
+                <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+                <slice material = "Copper"  thickness = "0.005*cm" />
+                <slice material = "Kapton"  thickness = "0.030*cm" />
+                <slice material = "Air"     thickness = "0.033*cm" />
+            </layer>
+        </detector>
+-->
+
+        <detector id="10" name="MuonBarrel" type="PolyhedraBarrelCalorimeter2" readout="MuonBarrelHits" vis="MuonBarrelVis" calorimeterType="MUON_BARREL" gap="0.*cm" material="Steel235">
+            <comment>Muon Calorimeter Barrel</comment>
+            <dimensions numsides="(int) MuonSides" rmin="MuonBarrel_rmin" z="MuonBarrel_zmax * 2"/>
+            <staves vis="MuonBarrelStavesVis"/>
+            <!-- Start with an active layer, followed by a thin 5.0cm absorber layer. The second active layer is followed by a thick 20.0cm steel layer to take the forces. -->
+            <layer repeat="1" vis="MuonBarrelLayerVis">
+            	<slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="1.0*cm" />
+                <slice material="Iron" thickness="5.0*cm" vis="MuonBarrelAbsorberVis"/>
+           </layer>
+           <layer repeat="1" vis="MuonBarrelLayerVis">
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="1.0*cm" />
+                <slice material="Iron" thickness="20.0*cm" vis="MuonBarrelAbsorberVis"/>
+            </layer>
+            <layer repeat="(int) MuonBarrel_layers" vis="MuonBarrelLayerVis">
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="1.0*cm" />
+                <slice material="Iron" thickness="10.0*cm" vis="MuonBarrelAbsorberVis"/>
+            </layer>
+            <!-- The last Iron layer is again 20.0cm to take the forces. -->
+            <layer repeat="1" vis="MuonBarrelLayerVis">
+            	<slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="1.0*cm" />
+            	<slice material="Iron" thickness="20.0*cm" vis="MuonBarrelAbsorberVis"/>
+            </layer>
+        </detector>
+
+<!--
+        <detector id="11" name="MuonEndcap" type="PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
+            <comment>Muon Calorimeter Endcaps</comment>
+            <dimensions numsides="(int) MuonSides" zmin="MuonEndcap_zmin" rmin="MuonEndcap_rmin" rmax="MuonEndcap_rmax" />
+            <layer repeat="(int) MuonEndcap_layers" vis="MuonEndcapLayerVis">
+                <slice material="Iron" thickness="10.0*cm"  vis="MuonEndcapAbsorberVis"/>
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes"  vis="MuonEndcapSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes"  vis="MuonEndcapSensorVis"/>
+                <slice material="PyrexGlass" thickness="0.2*cm" />
+                <slice material="Air" thickness="0.35*cm" />
+                <slice material="Aluminum" thickness="0.1*cm" />
+                <slice material="Air" thickness="1.0*cm" />
+            </layer>
+        </detector>
+-->
+    </detectors>
+
+    <readouts>
+
+        <readout name="MuonBarrelHits">
+            <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+        </readout>
+<!--
+        <readout name="EcalBarrelHits">
+            <segmentation type="EcalBarrelCartesianGridXY" gridSizeX="3.5" gridSizeY="3.5" />
+            <id>system:6,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+        </readout>        
+        <readout name="EcalEndcapHits">
+            <segmentation type="GlobalGridXY" gridSizeX="3.5" gridSizeY="3.5" />
+            <id>system:6,barrel:3,module:4,layer:6,slice:5,x:32:-16,y:-16</id>
+        </readout>
+
+        <readout name="MuonEndcapHits">
+            <segmentation type="GlobalGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+            <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+        </readout>  
+-->
+    </readouts>
+
+    <fields>
+        <field name="GlobalSolenoid" type="solenoid" 
+          inner_field="5.0*tesla"
+          outer_field="-1.5*tesla" 
+          zmax="SolenoidCoilOuterZ"
+          outer_radius="SolenoidalFieldRadius">
+        </field>
+    </fields>
+</lccdd>

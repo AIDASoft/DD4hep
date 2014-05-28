@@ -1,0 +1,116 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  
+  <info name="Alignment_aleph_tpc"
+	title="Alignment test detector with ALPEH TPC like sectors"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test detector with ALPEH TPC like sectors</comment>        
+  </info>
+  
+  <includes>
+    <gdmlFile  ref="elements.xml"/>
+    <gdmlFile  ref="materials.xml"/>
+    <pyBuilder ref="../drivers"/>
+
+    <!--
+    <xml       ref="file:../DD4hep.trunk/DDExamples/AlignDet/compact/AlephTPC_alignment.xml"/>
+    -->
+  </includes>
+  
+  <define>
+    <constant name="world_side" value="30000"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+    
+    <constant name="tracking_region_radius" value="10000"/>
+    <constant name="tracking_region_zmax"   value="10000"/>
+
+    <!-- Parameters for the ALEPH TPC 90 model  -->
+    <constant name="TPC_outer_radius"         value="1800*mm"/>
+    <constant name="TPC_inner_radius"         value="310*mm"/>
+    <constant name="TPC_length"               value="4700*mm"/>
+    <constant name="TPC_inner_wall_thickness" value="2*mm"/>
+    <constant name="TPC_outer_wall_thickness" value="5*mm"/>
+  </define>
+
+  <materials>
+    <material name="CH4">
+      <D type="density" value="0.000656" unit="g/cm3"/>
+      <composite n="1" ref="C"/>
+      <composite n="4" ref="H"/>
+    </material>
+     <material name="ArCH4_90">
+      <D value="1.0015614" unit="g/cm3"/>
+      <fraction n="0.9" ref="Ar"/>
+      <fraction n="0.1" ref="CH4"/>
+    </material>
+
+    <!-- This is wrong!!!! -->
+    <material name="Mylar">
+      <D value="1.43" unit="g/cm3" />
+      <composite n="22" ref="C"/>
+      <composite n="10" ref="H" />
+      <composite n="2" ref="N" />
+      <composite n="5" ref="O" />
+    </material>
+
+  </materials>
+
+  <limits>
+    <limitset name="cal_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+  
+  <display>
+    <!--    Aleph TPC visualization parameters    -->
+    <vis name="TPCVis"           alpha="1.0" r="1"   g="1"    b="0.6"  drawingStyle="solid"     showDaughters="true"  visible="false" top="true"/>
+    <vis name="TPCInnerWallVis"       alpha="1.0" r="0"   g="0"  b="0.5"  drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCOuterWallVis"       alpha="1.0" r="0"   g="0.5"  b="0"  drawingStyle="solid"     lineStyle="broken" showDaughters="true"  visible="true"/>
+    <vis name="TPCEndcapVis"     alpha="1.0" r="1"   g="1"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCSectorKVis"    alpha="1.0" r="1"   g="0"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCSectorMVis"    alpha="1.0" r="0"   g="1"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCSectorWVis"    alpha="1.0" r="0"   g="0"    b="1"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCGasVis"        alpha="1.0" r="1"   g="1"    b="1"    drawingStyle="solid"     showDaughters="false" visible="true"/>
+    <vis name="TPCCathodeVis"    alpha="1.0" r="1"   g="0.1"  b="0.1"  drawingStyle="solid"     showDaughters="false" visible="true"/>
+    <vis name="TPCCopperVis"     alpha="1.0" r="1"   g="0.3"  b="0.1"  drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCAluminumVis"   alpha="1.0" r="0.9" g="0.9"  b="0.9"  drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="TPCGreenVis"      alpha="1.0" r="0"   g="1"    b="0"    drawingStyle="solid"     showDaughters="true"  visible="true"/>
+  </display>
+  
+  <detectors>
+    <comment>ALEPH TPC example</comment>
+    <detector id="7" name="TPC" type="AlephTPC" limits="TPCLimits" readout="TPCHits" vis="TPCVis">
+      <envelope   inner_r="TPC_inner_radius" outer_r="TPC_outer_radius" zhalf="TPC_length/2" vis="invisible"/>
+      <inner_wall inner_r="TPC_inner_radius" thickness="5*mm" material="Mylar" vis="TPCInnerWallVis"/>
+      <outer_wall outer_r="TPC_outer_radius" thickness="5*mm" material="Mylar" vis="TPCOuterWallVis"/>
+      <gas zhalf="2.2*m" material="ArCH4_90" vis="invisible"/>
+      <pads  height="30*mm" width="6.2*mm" pitch="0.5*mm"/>
+      <trigger_pads  height="6.8*mm" width="15*degree" pitch="0.5*mm"/>
+      <sectors>
+	<layers>
+	  <layer material="Copper" thickness="0.1*cm" vis="TPCCopperVis" sensitive="true"/>
+	  <layer material="Kapton" thickness="0.03*cm"  vis="TPCGreenVis"/>
+	  <layer material="Copper" thickness="0.1*cm" vis="TPCAluminumVis"/>
+	  <layer material="Aluminum" thickness="3*cm"/>
+	</layers>
+	<sector type="K" rmin="38*cm"  rmax="91*cm"  padrows="9"  trgrows="8"  numwires="148" vis="TPCSectorKVis"/>
+	<sector type="M" rmin="100*cm" rmax="170*cm" padrows="12" trgrows="11" numwires="196" vis="TPCSectorMVis"/>
+	<sector type="W" rmin="100*cm" rmax="170*cm" padrows="12" trgrows="11" numwires="196" vis="TPCSectorWVis"/>
+      </sectors>
+      <cathode material="Mylar" thickness="0.05*mm" vis="TPCCathodeVis"/>
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="TPCHits">
+      <!-- |+++ Detector identifier ++++| |+++loc.coord++++|  -->
+      <id>system:8,side:1,type:2,sector:5,padrow:4,padnum:12</id>
+    </readout>
+  </readouts>
+</lccdd>
