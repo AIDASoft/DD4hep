@@ -13,10 +13,10 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
 static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
-  xml_det_t  x_det   = e;
-  string     name    = x_det.nameStr();
-  DetElement sdet   (name,x_det.id());
-  Material   mat    (lcdd.material(x_det.materialStr()));
+  xml_det_t  x_det = e;
+  string     name  = x_det.nameStr();
+  DetElement sdet (name,x_det.id());
+  Material   mat  (lcdd.material(x_det.materialStr()));
   vector<double> rmin,rmax,z;
   int num = 0;
 
@@ -29,10 +29,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
   if ( num < 2 )  {
     throw runtime_error("PolyCone["+name+"]> Not enough Z planes. minimum is 2!");
   }
-  Polycone   cone  (0.,2.*M_PI*RAD_2_DEGREE,rmin,rmax,z);
+  Polycone   cone  (0,2*M_PI,rmin,rmax,z);
   Volume     volume(name, cone, mat);
   volume.setVisAttributes(lcdd, x_det.visStr());
-  sdet.setPlacement(lcdd.pickMotherVolume(sdet).placeVolume(volume));
+  PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(volume);
+  sdet.setPlacement(pv);
+  if ( x_det.hasAttr(_U(id)) )  {
+    int det_id = x_det.id();
+    pv.addPhysVolID("system",det_id);
+  }
   return sdet;
 }
 

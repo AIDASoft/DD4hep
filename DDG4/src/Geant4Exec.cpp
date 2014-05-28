@@ -235,11 +235,12 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   G4RunManager& runManager = kernel.runManager();
 
   // Check if the geometry was loaded
-  if (lcdd.detectors().size() <= 2) {
-    cout << "Error, no geometry." << endl;
+  if (lcdd.detectors().size() <= 1) {
+    printout(INFO, "Geant4Exec", "+++ Only %d subdetectors present. "
+	     "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
   }
   // Get the detector constructed
-  Geant4DetectorConstruction* detector = new Geant4DetectorConstruction(lcdd);
+  Geant4DetectorConstruction* detector = new Geant4DetectorConstruction(kernel);
 
   runManager.SetUserInitialization(detector);
   G4VUserPhysicsList* physics = 0;

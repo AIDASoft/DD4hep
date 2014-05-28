@@ -24,7 +24,6 @@
 #include "DDG4/Geant4StackingAction.h"
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4DetectorConstruction.h"
 #include "DDG4/Geant4MonteCarloRecordManager.h"
 #include "DDG4/Geant4TrackPersistency.h"
 
@@ -84,7 +83,9 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd)
   m_context = new Geant4Context(this);
   m_lcdd.addExtension < Geant4Kernel > (this);
   declareProperty("UI",m_uiName);
+  declareProperty("OutputLevel",m_outputLevel = DEBUG);
   declareProperty("NumEvents",m_numEvent = 10);
+  declareProperty("OutputLevels",m_clientLevels);
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for all named Geant4 actions");
@@ -121,6 +122,15 @@ Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
   return obj;
 }
 
+void Geant4Kernel::printProperties()  const  {
+  printout(ALWAYS,"Geant4Kernel","OutputLevel:  %d",m_outputLevel);
+  printout(ALWAYS,"Geant4Kernel","UI:           %s",m_uiName.c_str());
+  printout(ALWAYS,"Geant4Kernel","NumEvents:    %ld",m_numEvent);
+  for(ClientOutputLevels::const_iterator i=m_clientLevels.begin(); i!=m_clientLevels.end();++i)  {
+    printout(ALWAYS,"Geant4Kernel","OutputLevel[%s]:  %d",(*i).first.c_str(),(*i).second);
+  }
+}
+
 /// Check property for existence
 bool Geant4Kernel::hasProperty(const std::string& name) const    {
   return m_properties.exists(name);
@@ -139,6 +149,25 @@ Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
         "extension of type Geant4Kernel [No-Extension]"));
   }
   return *kernel;
+}
+
+/// Fill cache with the global output level of a named object. Must be set before instantiation
+void Geant4Kernel::setOutputLevel(const std::string object, PrintLevel new_level)   {
+  m_clientLevels[object] = new_level;
+}
+
+/// Retrieve the global output level of a named object.
+DD4hep::PrintLevel Geant4Kernel::getOutputLevel(const std::string object) const   {
+  ClientOutputLevels::const_iterator i=m_clientLevels.find(object);
+  if ( i != m_clientLevels.end() ) return (PrintLevel)(*i).second;
+  return DD4hep::PrintLevel(DD4hep::printLevel()-1);
+}
+
+/// Set the output level; returns previous value
+DD4hep::PrintLevel Geant4Kernel::setOutputLevel(PrintLevel new_level)  {
+  int old = m_outputLevel;
+  m_outputLevel = new_level;
+  return (PrintLevel)old;
 }
 
 /// Access to the Geant4 run manager

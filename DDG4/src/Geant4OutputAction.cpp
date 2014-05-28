@@ -8,6 +8,7 @@
 //====================================================================
 
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4RunAction.h"
 #include "DDG4/Geant4OutputAction.h"
@@ -42,13 +43,18 @@ void Geant4OutputAction::begin(const G4Event* /* event */) {
 void Geant4OutputAction::end(const G4Event* evt) {
   OutputContext < G4Event > ctxt(evt);
   G4HCofThisEvent* hce = evt->GetHCofThisEvent();
-  int nCol = hce->GetNumberOfCollections();
-  saveEvent(ctxt);
-  for (int i = 0; i < nCol; ++i) {
-    G4VHitsCollection* hc = hce->GetHC(i);
-    saveCollection(ctxt, hc);
+  if ( hce )  {
+    int nCol = hce->GetNumberOfCollections();
+    saveEvent(ctxt);
+    for (int i = 0; i < nCol; ++i) {
+      G4VHitsCollection* hc = hce->GetHC(i);
+      saveCollection(ctxt, hc);
+    }
+    commit(ctxt);
+    return;
   }
-  commit(ctxt);
+  printout(WARNING,"Geant4OutputAction",
+	   "+++ The value of G4HCofThisEvent is NULL. No collections saved!");
 }
 
 /// Commit data at end of filling procedure

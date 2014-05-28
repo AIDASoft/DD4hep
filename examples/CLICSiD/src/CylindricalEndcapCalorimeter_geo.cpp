@@ -35,7 +35,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double layerWidth = 0;
     for(xml_coll_t l(x_layer,_U(slice)); l; ++l)
       layerWidth += xml_comp_t(l).thickness();
-    for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i, m=0)  {
+    for(int i=0, m=0, repeat=x_layer.repeat(); i<repeat; ++i)  {
       double     zlayer = z;
       string     layer_name = det_name + _toString(layer_num,"_layer%d");
       Volume     layer_vol(layer_name,Tube(rmin,rmax,layerWidth),air);
@@ -69,15 +69,23 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   envelopeVol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
   DetElement   sdet(det_name,x_det.id());
+  Assembly     assembly(det_name+"_assembly");
   Volume       motherVol = lcdd.pickMotherVolume(sdet);
-  PlacedVolume phv = motherVol.placeVolume(envelopeVol,Position(0,0,zmin+totWidth/2));
-  phv.addPhysVolID("system",sdet.id())
-    .addPhysVolID("barrel",1);
+  PlacedVolume phv = motherVol.placeVolume(assembly);
+  phv.addPhysVolID("system",sdet.id());
   sdet.setPlacement(phv);
+
+  DetElement   sdetA(sdet,det_name+(reflect ? "_A" : ""),x_det.id());
+  phv = assembly.placeVolume(envelopeVol,Position(0,0,zmin+totWidth/2));
+  phv.addPhysVolID("barrel",1);
+  sdetA.setPlacement(phv);
+
   if ( reflect )   {
-    phv=motherVol.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,-zmin-totWidth/2)));
-    phv.addPhysVolID("system",sdet.id())
-      .addPhysVolID("barrel",2);
+    phv=assembly.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,-zmin-totWidth/2)));
+    phv.addPhysVolID("barrel",2);
+    /// Create the detector element for the opposite side....
+    DetElement   sdetB(sdet,det_name+"_B",x_det.id());
+    sdetB.setPlacement(phv);
   }
   return sdet;
 }

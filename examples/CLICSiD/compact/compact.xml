@@ -1528,7 +1528,7 @@
         </readout>
         <readout name="LumiCalHits">
             <segmentation type="CartesianGridXY" grid_size_x="0.35*cm" grid_size_y="0.35*cm" />
-            <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
+            <id>system:8,barrel:3,layer:8,slice:8,x:32:-16,y:-16</id>
         </readout>
         <readout name="BeamCalHits">
             <segmentation type="CartesianGridXY" grid_size_x="0.35*cm" grid_size_y="0.35*cm" />

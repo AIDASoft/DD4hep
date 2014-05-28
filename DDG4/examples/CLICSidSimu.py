@@ -1,6 +1,7 @@
 #
 #
-import os, DDG4
+import os, time, DDG4
+from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
 #
@@ -62,18 +63,18 @@ def run():
 
   kernel.eventAction().add(evt1)
   kernel.eventAction().add(evt2)
-
+  """
   trk = DDG4.Action(kernel,"Geant4TrackPersistency/MonteCarloTruthHandler")
   mc  = DDG4.Action(kernel,"Geant4MonteCarloRecordManager/MonteCarloRecordManager")
   kernel.registerGlobalAction(trk)
   kernel.registerGlobalAction(mc)
   trk.release()
   mc.release()
-
+  """
   # Configure I/O
   evt_root = DDG4.EventAction(kernel,'Geant4Output2ROOT/RootOutput')
   evt_root.Control = True
-  evt_root.Output = "simple.root"
+  evt_root.Output = "CLICSiD_"+time.strftime("%Y-%m-%d_%H-%M")+".root"
   evt_root.enableUI()
   kernel.eventAction().add(evt_root)
 
@@ -84,10 +85,11 @@ def run():
 
   # Setup particle gun
   gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/Gun")
-  gun.energy   = 0.5*GeV
+  gun.energy   = 50*GeV
   gun.particle = 'e-'
   gun.multiplicity = 1
-  gun.position = (0.15*mm,0.12*mm,0.1*cm)
+  gun.position = (0*mm,0*mm,0*cm)
+  gun.isotrop = True
   gun.enableUI()
   kernel.generatorAction().add(gun)
   """
@@ -136,6 +138,7 @@ def run():
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerEndcap')
   act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerEndcapHandler','SiTrackerEndcap')
+  #act.OutputLevel = Output.INFO
   seq.add(act)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerForward')

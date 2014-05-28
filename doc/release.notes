@@ -1,6 +1,16 @@
 DD4hep  ----  Release Notes
 =================================
 
+2014/05/28 Markus Frank
+-----------------------
+  - Several fixes and improvements in DDG4
+    - Cache output levels in Geant4Kernel object
+    - Add shell handler to measure energy escape e.g. in calorimeters
+  - Fix bug in Polycone shapes concerning angles.
+      IMPORTANT: If you forked the repository examples/CLICSiD
+      your PolyconeSupport does not work anymore, because the angles
+      were given in degrees. They should be given in radians!
+
 2014/05/21 Markus Frank
 -----------------------
   - Fix material creation from XML

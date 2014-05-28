@@ -54,6 +54,7 @@ namespace DD4hep {
       {
 	Geant4Kernel& kernel = Geant4Kernel::access(lcdd);
 	setContext(kernel.context());
+	m_outputLevel = kernel.getOutputLevel(nam);
 	_aquire(kernel.sensitiveAction(nam));
 	m_sequence->defineCollections(this);
 	this->G4VSensitiveDetector::SetFilter(this);

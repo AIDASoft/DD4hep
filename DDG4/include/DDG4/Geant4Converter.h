@@ -10,6 +10,7 @@
 #define DD4HEP_GEANT4CONVERTER_H
 
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "DDG4/Geant4Mapping.h"
 
 /*
@@ -32,9 +33,13 @@ namespace DD4hep {
     class Geant4Converter : public Geometry::GeoHandler, public Geant4Mapping {
     public:
       bool m_checkOverlaps;
+      PrintLevel m_outputLevel;
 
       /// Initializing Constructor
       Geant4Converter(LCDD& lcdd);
+
+      /// Initializing Constructor
+      Geant4Converter(LCDD& lcdd, PrintLevel level);
 
       /// Standard destructor
       virtual ~Geant4Converter();

@@ -113,7 +113,9 @@ VolumeID IDDescriptor::encode(const std::vector<VolID>& ids) const {
   VolumeID id = 0;
   for (VolIds::const_iterator i = ids.begin(); i != ids.end(); ++i) {
     Field f = field((*i).first);
-    id |= f->value((*i).second << f->offset()) << f->offset();
+    VolumeID vid = (*i).second;
+    vid = vid << f->offset();
+    id |= f->value(vid) << f->offset();
   }
   return id;
 }

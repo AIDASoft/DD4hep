@@ -58,7 +58,7 @@ def _registerGlobalFilter(self,filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
-  print '_getKernelProperty:',str(type(self)),name
+  #print '_getKernelProperty:',str(type(self)),name
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
     return ret.data

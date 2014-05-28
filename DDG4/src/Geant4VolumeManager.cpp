@@ -114,7 +114,7 @@ namespace {
       PrintLevel print_res = DEBUG;
       
       printout(print_action,"Geant4VolumeManager","+++ Add path:%s vid:%016X",
-	       DetectorTools::placementPath(nodes,true).c_str(),code);
+	       DetectorTools::placementPath(nodes,false).c_str(),code);
 
       if (i == m_entries.end()) {
         path.reserve(nodes.size());
@@ -165,16 +165,17 @@ namespace {
 		 int(control.size()),DetectorTools::placementPath(control,true).c_str());
 	goto Err;
       }
-      printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X  %s", 
-	       code, " [THIS SHOULD NEVER HAPPEN]");
+      printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X"
+	       " [THIS SHOULD NEVER HAPPEN]", code);
 
     Err:
       if ( i != m_entries.end() ) 
-	printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s",placementPath((*i).second).c_str());
-      else if ( !path.empty() )
-	printout(ERROR, "Geant4VolumeManager", "          Geant4 path:   %s",placementPath(path).c_str());
-      printout(ERROR, "Geant4VolumeManager", "          Offend.VolIDs: %s", 
-	       DetectorTools::toString(ids).c_str());
+	printout(ERROR,"Geant4VolumeManager"," Known G4 path: %s",placementPath((*i).second).c_str());
+      if ( !path.empty() )
+	printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s",placementPath(path).c_str());
+      if ( !nodes.empty() )
+	printout(ERROR,"Geant4VolumeManager","     TGeo path: %s",DetectorTools::placementPath(nodes,false).c_str());
+      printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s",DetectorTools::toString(ro.idSpec(),ids,code).c_str());
       throw runtime_error("Failed to populate Geant4 volume manager!");
     }
   };

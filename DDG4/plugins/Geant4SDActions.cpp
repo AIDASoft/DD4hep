@@ -136,17 +136,13 @@ namespace DD4hep {
 	double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
 	direction *= new_len/hit_len;
       }
-      printout(DEBUG,"SimpleTracker","%s> Add hit with deposit:%f  Pos:%f %f %f",
-	       c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z());
-      Hit* hit = new Hit(h.track->GetTrackID(),
-			 h.track->GetDefinition()->GetPDGEncoding(),
-			 step->GetTotalEnergyDeposit(),
-			 h.track->GetGlobalTime());
+      print("SimpleTracker","%s> Add hit with deposit:%7.2f MeV  Pos:%8.2f %8.2f %8.2f",
+	    c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z());
+      Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
       if ( hit )  {
 	HitContribution contrib = Hit::extractContribution(step);
-	hit->cellID        = volumeID( step ) ;
-
-	hit->energyDeposit = contrib.deposit ;
+	hit->cellID        = volumeID(step);
+	hit->energyDeposit = contrib.deposit;
 	hit->position      = position;
 	hit->momentum      = direction;
 	hit->length        = hit_len;
@@ -156,11 +152,11 @@ namespace DD4hep {
 	  hit->cellID        = volumeID( step ) ;
 	  throw runtime_error("Invalid CELL ID for hit!");
 	}
-	printout(INFO,"SimpleTracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-		 c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
-		 (void*)hit->cellID);
+	print("SimpleTracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+	      c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
+	      (void*)hit->cellID);
 	Geant4TouchableHandler handler(step);
-	printout(INFO,"SimpleTracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
+	print("SimpleTracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
 	return true;
       }
       throw runtime_error("new() failed: Cannot allocate hit object");
@@ -182,21 +178,23 @@ namespace DD4hep {
       Position        pos     = 0.5 * (h.prePos() + h.postPos());
       HitContribution contrib = Hit::extractContribution(step);
       HitCollection*  coll    = collection(m_collectionID);
-      Hit* hit = coll->find<Hit>(PositionCompare<Hit>(pos));
+      Hit* hit = 0;//coll->find<Hit>(PositionCompare<Hit>(pos));
       if ( !hit ) {
-	hit = new Hit(pos) ;
-	hit->cellID = volumeID( step ) ;
-	coll->add(hit) ;
-	printout(DEBUG,"SimpleTracker","%s> CREATE hit with deposit:%f  Pos:%f %f %f",
-	       c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
+	Geant4TouchableHandler handler(step);
+	//hit = new Hit(pos);
+	hit = new Hit(h.prePos());
+	hit->cellID = volumeID(step);
+	coll->add(hit);
+	print("SimpleCalorimeter","%s> CREATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f  %s",
+	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),handler.path().c_str());
 	if ( 0 == hit->cellID )  {
-	  hit->cellID        = volumeID( step ) ;
+	  hit->cellID        = volumeID(step);
 	  throw runtime_error("Invalid CELL ID for hit!");
 	}
       }
       else  {
-	printout(DEBUG,"SimpleTracker","%s> UPDATE hit with deposit:%f  Pos:%f %f %f",
-	       c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
+	print("SimpleCalorimeter","%s> UPDATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f",
+	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
       }
       hit->truth.push_back(contrib);
       hit->energyDeposit += contrib.deposit;    
@@ -233,10 +231,10 @@ namespace DD4hep {
 	Hit* hit = coll->find<Hit>(PositionCompare<Hit>(pos));
 	if ( !hit ) {
 	  hit = new Hit(pos);
-	  hit->cellID        = volumeID( step ) ;
+	  hit->cellID = volumeID(step);
 	  coll->add(hit);
 	  if ( 0 == hit->cellID )  {
-	    hit->cellID        = volumeID( step ) ;
+	    hit->cellID = volumeID(step);
 	    throw runtime_error("Invalid CELL ID for hit!");
 	  }
 	}

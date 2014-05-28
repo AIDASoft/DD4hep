@@ -24,19 +24,25 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_dim_t x_det_dim(x_det.dimensions());
   double inner_r = x_det_dim.rmin();
   double outer_r = x_det_dim.rmax();
-  // Tube: DDCore/DD4hep/Shapes.h
-  //Tube calo_shape(inner_r,outer_r,x_det_dim.z(),0.0,2*M_PI/x_det_dim.phiBins());  
-  // Create the detector mother volume
-  //Volume calo_vol(x_det.nameStr()+"_envelope",calo_shape,lcdd.air());
   Assembly calo_vol(x_det.nameStr()+"_envelope");
+  PlacedVolume pv;
 
   //Set envelope volume attributes
   calo_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
 
+#if 0
 
   //Declare this sensitive detector as a calorimeter
+  Tube tub(inner_r,outer_r,x_det_dim.z()/2.0,0.0,2*M_PI);
+  //Volume tub_vol(x_det.nameStr()+"_tube",tub,lcdd.material("PyrexGlass"));
+  Volume tub_vol(x_det.nameStr()+"_tube",tub,lcdd.material("Iron"));
+  calo_vol.placeVolume(tub_vol);
   sens.setType("calorimeter");
+  tub_vol.setSensitiveDetector(sens);
+  d_det.setAttributes(lcdd,tub_vol,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
+#endif
 
+#if 1
 
   int layer_num = 0;  
   float layer_pos_z = 0;
@@ -88,18 +94,17 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       //DetElement layer(layer_name,_toString(layer_num,"layer%d"),x_det.id());
       
       //Fill the volume with tiles
-      
-      
-      int tile_number = 0;  
       vector<Volume> tiles;
 
       //Assembly tile_seq(layer_name+"_seq");
       Trapezoid tile_seq_shape(x1,x2,x_det_layer.dz(),x_det_layer.dz(),x_det_layer.dr());
       Volume tile_seq(layer_name + "_seq",tile_seq_shape,lcdd.air());
-      tile_seq.setVisAttributes(lcdd.visAttributes("VisibleGreen"));
       double total_thickness = 0;
       //Repeat slices until we reach the end of the calorimeter
-      for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {	
+      int slice_num = 0, tile_number = 0;  
+
+      tile_seq.setVisAttributes(lcdd.visAttributes("VisibleGreen"));
+      for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k, ++slice_num)  {	
 	xml_comp_t tile_xml       = k;
 	string     tile_name      = layer_name + _toString(tile_number,"_slice%d");
 	Material   tile_material  = lcdd.material(tile_xml.materialStr());
@@ -108,49 +113,36 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	float      tile_y2        = tile_thickness;
 	float      tile_z         = x_det_layer.dr();
 	
-	//Shape a Trapezoid (tile): DDCore/DD4hep/Shapes.h
 	Trapezoid tile_shape(x1,x2,tile_y1,tile_y2,tile_z);
-	
-	//Create a volume with trapezoid shape
 	Volume tile_vol(tile_name,tile_shape,tile_material);
-	tile_seq.placeVolume(tile_vol,Position(0,total_thickness,0));
+	pv = tile_seq.placeVolume(tile_vol,Position(0,total_thickness,0));
+	pv.addPhysVolID("slice",slice_num);
 	total_thickness += tile_thickness;
 	if ( tile_xml.isSensitive() ) {
 	  cout << "Set volume " << tile_name << " sensitive...." << endl;
 	  tile_vol.setSensitiveDetector(sens);
 	}
 	
-	//Set region, limitset, and visibility settings
+	// Set region, limitset, and visibility settings
 	tile_vol.setAttributes(lcdd,tile_xml.regionStr(),tile_xml.limitsStr(),tile_xml.visStr());	
 	tiles.push_back(tile_vol);
 	tile_number++;
       }
       
-      //Place the same volumes inside the envelope
+      // Place the same volumes inside the envelope
       float tile_pos_z = -x_det_dim.z()/2.;
+      int   tile_num = 0;
       while(tile_pos_z<x_det_dim.z()/2.){
-	layer_vol.placeVolume(tile_seq,Position(0,tile_pos_z,0));
+	pv = layer_vol.placeVolume(tile_seq,Position(0,tile_pos_z,0));
+	pv.addPhysVolID("tile",tile_num);
 	tile_pos_z += total_thickness;
-#if 0
-	for(xml_coll_t k(x_det_layer,_U(slice)); k; ++k)  {
-	  xml_comp_t             tile_xml       = k;
-	  float                  tile_thickness = tile_xml.dz();
-	  
-	  //Place the tile inside the layer
-	  PlacedVolume tile_plv = layer_vol.placeVolume(tiles.at(tile_number),Position(0,tile_pos_z,0));	  
-	  //Increment the z pos of the tile
-	  tile_pos_z += tile_thickness;
-	  tile_number++;	  
-	}
-#endif
+	tile_num++;
       }
       
-      //Place the same layer around the beam axis phiBins times
+      // Place the same layer around the beam axis phiBins times
       Transform3D tr(RotationZYX(M_PI*0.5,M_PI*0.5,0),Translation3D(r,0,layer_pos_z));
       PlacedVolume pv = stave_vol.placeVolume(layer_vol,tr);
-      //pv.addPhysVolID("layer",i+1);
-      //DetElement sd = i==0 ? stave_det : stave_det.clone(_toString(i,"stave%d"));
-      
+      pv.addPhysVolID("layer",layer_num);
       r += dr;
       cout << "+++ R=" << r << endl;
     }
@@ -168,9 +160,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     pv.addPhysVolID("stave",i+1);
   }
 
-
   cout << "Number of layers: " << layer_num << endl;
-  
+#endif
   //Place the calo inside the world
   PlacedVolume  calo_plv = lcdd.pickMotherVolume(d_det).placeVolume(calo_vol);
   calo_plv.addPhysVolID("system",x_det.id());

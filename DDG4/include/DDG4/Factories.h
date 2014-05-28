@@ -16,6 +16,10 @@
 
 // Framework include files
 #include "DDG4/Defs.h"
+#include "DD4hep/Printout.h"
+#include "DD4hep/Primitives.h"
+
+// C/C++ include files
 #include <string>
 #include <map>
 
@@ -150,6 +154,8 @@ namespace {
   template <typename P> class Factory<P, G4VUserPhysicsList*(DS::Geant4PhysicsListActionSequence*, int)> {
   public:
     static void Func(void *ret, void*, ARGS a, void*) {
+      DD4hep::printout(DD4hep::INFO,"PhysicsList","+++ Create physics list of type:%s",
+		       DD4hep::typeName(typeid(P)).c_str());
       *(G4VUserPhysicsList**) ret = (G4VUserPhysicsList*) new P((DS::Geant4PhysicsListActionSequence*) a[0], *(int*) a[1]);
     }
   };

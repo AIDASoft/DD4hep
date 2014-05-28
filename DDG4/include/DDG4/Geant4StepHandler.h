@@ -54,6 +54,9 @@ namespace DD4hep {
       G4ParticleDefinition* trackDef() const {
         return track->GetDefinition();
       }
+      int trkPdgID() const {
+        return track->GetDefinition()->GetPDGEncoding();
+      }
       static const char* stepStatus(G4StepStatus status);
       const char* preStepStatus() const;
       const char* postStepStatus() const;
@@ -72,6 +75,22 @@ namespace DD4hep {
       Momentum postMom() const {
         const G4ThreeVector& p = post->GetMomentum();
         return Momentum(p.x(), p.y(), p.z());
+      }
+      Momentum trkMom() const {
+        const G4ThreeVector& p = track->GetMomentum();
+        return Momentum(p.x(), p.y(), p.z());
+      }
+      double deposit() const  {
+	return step->GetTotalEnergyDeposit();
+      }
+      int trkID() const  {
+	return track->GetTrackID();
+      }
+      double trkEnergy() const  {
+	return track->GetTotalEnergy();
+      }
+      double trkKineEnergy() const  {
+	return track->GetKineticEnergy();
       }
       const G4VTouchable* preTouchable() const {
         return pre->GetTouchable();
@@ -121,6 +140,12 @@ namespace DD4hep {
       }
       G4VSensitiveDetector* postSD() const {
         return sd(post);
+      }
+      bool firstInVolume() const  {
+	return step->IsFirstStepInVolume();
+      }
+      bool lastInVolume() const  {
+	return step->IsLastStepInVolume();
       }
     };
 

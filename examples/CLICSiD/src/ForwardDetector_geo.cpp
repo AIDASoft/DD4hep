@@ -159,17 +159,29 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }
   sdet.setVisAttributes(lcdd, x_det.visStr(), envelopeVol);
   
-  PlacedVolume env_phv = motherVol.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,zpos)));
-  env_phv.addPhysVolID("system", id);
-  env_phv.addPhysVolID("barrel", 1);
-  sdet.setPlacement(env_phv);
   // Reflect it.
   if ( reflect )  {
-    env_phv = motherVol.placeVolume(envelopeVol,Transform3D(RotationY(M_PI),Position(0,0,-zpos)));
-    env_phv.addPhysVolID("system", id);
-    env_phv.addPhysVolID("barrel", 2);
-    DetElement rdet(det_name+"_reflect",x_det.id());
-    rdet.setPlacement(env_phv);
+    Assembly assembly(det_name+"_assembly");
+    PlacedVolume pv = motherVol.placeVolume(assembly);
+    pv.addPhysVolID("system", id);
+    sdet.setPlacement(pv);
+
+    DetElement   sdetA(sdet,det_name+"_A",x_det.id());
+    pv = assembly.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,zpos)));
+    pv.addPhysVolID("barrel", 1);
+    sdetA.setPlacement(pv);
+
+    DetElement   sdetB = sdetA.clone(det_name+"_B",x_det.id());
+    sdet.add(sdetB);
+    pv = assembly.placeVolume(envelopeVol,Transform3D(RotationY(M_PI),Position(0,0,-zpos)));
+    pv.addPhysVolID("barrel", 2);
+    sdetB.setPlacement(pv);
+  }
+  else  {
+    PlacedVolume pv = motherVol.placeVolume(envelopeVol,Transform3D(RotationZ(M_PI),Position(0,0,zpos)));
+    pv.addPhysVolID("system", id);
+    pv.addPhysVolID("barrel", 1);
+    sdet.setPlacement(pv);
   }
   return sdet;
 }

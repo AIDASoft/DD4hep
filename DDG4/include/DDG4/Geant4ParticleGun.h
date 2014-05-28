@@ -16,6 +16,7 @@
 // Forward declarations
 class G4ParticleDefinition;
 class G4ParticleGun;
+class TRandom1;
 
 /*
  *   DD4hep namespace declaration
@@ -37,16 +38,22 @@ namespace DD4hep {
     protected:
       /// Position and shooting direction of the gun
       ROOT::Math::XYZVector m_position, m_direction;
-      /// Particle energy
-      double m_energy;
-      /// Desired multiplicity of the particles to be shot
-      int m_multiplicity;
-      /// Particle name
-      std::string m_particleName;
       /// Pointer to geant4 particle definition
       G4ParticleDefinition* m_particle;
       /// Pointer to the particle gun itself
       G4ParticleGun* m_gun;
+      /// Random number generator
+      TRandom1* m_rndm;
+      /// Particle energy
+      double m_energy;
+      /// Particle name
+      std::string m_particleName;
+      /// Desired multiplicity of the particles to be shot
+      int m_multiplicity;
+      /// Shot number in sequence
+      int m_shotNo;
+      /// Isotrope particles?
+      bool m_isotrop;
     public:
       /// Standard constructor
       Geant4ParticleGun(Geant4Context* context, const std::string& name);

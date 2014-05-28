@@ -78,7 +78,7 @@ double Box::z() const {
 
 /// Constructor to be used when creating a new object
 Polycone::Polycone(double start, double delta) {
-  _assign(new TGeoPcon(start, delta, 0), "", "polycone", false);
+  _assign(new TGeoPcon(start*RAD_2_DEGREE, delta*RAD_2_DEGREE, 0), "", "polycone", false);
 }
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
@@ -88,8 +88,8 @@ Polycone::Polycone(double start, double delta, const vector<double>& rmin, const
   if (rmin.size() < 2) {
     throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
-  params.push_back(start);
-  params.push_back(delta);
+  params.push_back(start*RAD_2_DEGREE);
+  params.push_back(delta*RAD_2_DEGREE);
   params.push_back(rmin.size());
   for (size_t i = 0; i < rmin.size(); ++i) {
     params.push_back(z[i] );

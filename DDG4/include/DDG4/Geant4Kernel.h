@@ -10,6 +10,7 @@
 #define DD4HEP_DDG4_GEANT4KERNEL_H
 
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "DDG4/Geant4Primitives.h"
 #include "DDG4/Geant4Action.h"
 
@@ -114,6 +115,11 @@ namespace DD4hep {
       std::string m_uiName;
       /// Property: Number of events to be executed in batch mode
       long        m_numEvent;
+      /// Property: Output level
+      int         m_outputLevel;
+      /// Property: Client output levels
+      typedef std::map<std::string,int> ClientOutputLevels;
+      ClientOutputLevels m_clientLevels;
       /// Helper to register an action sequence
       template <typename C> bool registerSequence(C*& seq, const std::string& name);
 
@@ -164,6 +170,8 @@ namespace DD4hep {
       PropertyManager& properties() {
         return m_properties;
       }
+      /// Print the property values
+      void printProperties() const;
       /// Access phase phases
       const Phases& phases() const {
         return m_phases;
@@ -194,6 +202,16 @@ namespace DD4hep {
       bool hasProperty(const std::string& name) const;
       /// Access single property
       Property& property(const std::string& name);
+      /// Access the output level
+      PrintLevel outputLevel() const  {
+	return (PrintLevel)m_outputLevel;
+      }
+      /// Set the global output level of the kernel object; returns previous value
+      PrintLevel setOutputLevel(PrintLevel new_level);
+      /// Fill cache with the global output level of a named object. Must be set before instantiation
+      void setOutputLevel(const std::string object, PrintLevel new_level);
+      /// Retrieve the global output level of a named object.
+      PrintLevel getOutputLevel(const std::string object) const;
 
       /// Register action by name to be retrieved when setting up and connecting action objects
       /** Note: registered actions MUST be unique.

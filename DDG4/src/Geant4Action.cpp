@@ -39,6 +39,7 @@ TypeName TypeName::split(const string& type_name) {
 Geant4Action::Geant4Action(Geant4Context* context, const string& nam)
     : m_context(context), m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
   InstanceCount::increment(this);
+  m_outputLevel = context ? context->kernel().getOutputLevel(nam) : (printLevel()-1);
   declareProperty("Name", m_name);
   declareProperty("name", m_name);
   declareProperty("OutputLevel", m_outputLevel);
@@ -71,6 +72,13 @@ long Geant4Action::release() {
 /// Set the context pointer
 void Geant4Action::setContext(Geant4Context* context) {
   m_context = context;
+}
+
+/// Set the output level; returns previous value
+PrintLevel Geant4Action::setOutputLevel(PrintLevel new_level)  {
+  int old = m_outputLevel;
+  m_outputLevel = new_level;
+  return (PrintLevel)old;
 }
 
 /// Set object properties
@@ -123,6 +131,26 @@ Geant4UIMessenger* Geant4Action::control() const   {
 void Geant4Action::enableUI()   {
   m_needsControl = true;
   installMessengers();
+}
+
+/// Support for messages with variable output level using output level
+void Geant4Action::print(const std::string& fmt, ...) const   {
+  if ( outputLevel() >= printLevel() )  {
+    va_list args;
+    va_start(args, fmt);
+    DD4hep::printout((PrintLevel)outputLevel(),m_name, fmt, args);
+    va_end(args);
+  }
+}
+
+/// Support for messages with variable output level using output level
+void Geant4Action::print(const std::string& tag, const std::string& fmt, ...) const  {
+  if ( outputLevel() >= printLevel() )  {
+    va_list args;
+    va_start(args, fmt);
+    DD4hep::printout((PrintLevel)outputLevel(),tag, fmt, args);
+    va_end(args);
+  }
 }
 
 /// Support of debug messages.
