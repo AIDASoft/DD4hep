@@ -19,6 +19,8 @@
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
 
+#include <fstream>
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -131,7 +133,7 @@ static long dump_geometry(LCDD& lcdd, int argc, char** argv) {
   return 0;
 }
 DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
-
+#include "DD4hep/DetectorTools.h"
 /** Basic entry point to print out the volume hierarchy
  *
  *  @author  M.Frank
@@ -139,15 +141,31 @@ DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
  *  @date    01/04/2014
  */
 static long dump_volume_tree(LCDD& lcdd, int , char** ) {
-  struct Actor { static long dump(TGeoNode* node,int level) {
-    char fmt[64];
-    ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
-    printout(INFO,"+++",fmt,"",node->GetName());
-    for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau)
-      Actor::dump(node->GetDaughter(idau),level+1);
+  struct Actor { static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
+    char fmt[256];
+    if ( ideal == aligned )  {
+      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
+    }
+    else  {
+      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
+		 level+1,2*level+1,(void*)ideal,(void*)aligned);
+    }
+    printout(INFO,"+++",fmt,"",aligned->GetName());
+    TGeoVolume* volume = ideal->GetVolume();
+    for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
+      TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
+      const char* daughter_name    = ideal_daughter->GetName();
+      TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
+      Actor::dump(ideal_daughter,aligned_daughter,level+1);
+    }
     return 1;
   }};
-  return Actor::dump(lcdd.world().placement().ptr(),0);
+  string place = lcdd.world().placementPath();
+  DetectorTools::PlacementPath path;
+  DetectorTools::placementPath(lcdd.world(), path);
+  PlacedVolume  pv = DetectorTools::findNode(lcdd.world().placement(),place);
+  return Actor::dump(lcdd.world().placement().ptr(),pv.ptr(),0);
+  //return Actor::dump(lcdd.manager().GetTopNode(),pv.ptr(),0);
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
@@ -197,3 +215,29 @@ static long detelement_cache(LCDD& lcdd, int , char** ) {
   return Actor::cache(lcdd.world());
 }
 DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)
+
+#include "../GeometryTreeDump.h"
+static long exec_GeometryTreeDump(LCDD& lcdd, int, char** ) {
+  GeometryTreeDump dmp;
+  dmp.create(lcdd.world());
+  return 1;
+}
+DECLARE_APPLY(DD4hepGeometryTreeDump,exec_GeometryTreeDump)
+
+#include "../SimpleGDMLWriter.h"
+static long exec_SimpleGDMLWriter(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 1 )   {
+    string output = argv[1];
+    ofstream out(output.c_str()+1,ios_base::out);
+    SimpleGDMLWriter dmp(out);
+    dmp.create(lcdd.world());
+  }
+  else   {
+    SimpleGDMLWriter dmp(cout);
+    dmp.create(lcdd.world());
+  }
+  return 1;
+}
+
+DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
+

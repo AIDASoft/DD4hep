@@ -22,12 +22,18 @@ else()
   file(GLOB parser_sources )
 endif()
 
+file(GLOB headers include/DD4hep/*.h)
+file(GLOB internal_headers include/DD4hep/objects/*.h)
+list(APPEND headers ${CMAKE_SOURCE_DIR}/DDSegmentation/include/DDSegmentation/BitField64.h)
+list(APPEND headers ${CMAKE_SOURCE_DIR}/DDSegmentation/include/DDSegmentation/Segmentation.h)
+list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Plugins.h
+  )
+root_generate_dictionary( G__DD4hep ${headers} ${internal_headers} LINKDEF include/ROOT/LinkDef.h)
+list(APPEND sources G__DD4hep.cxx)
+
 if(DD4HEP_USE_PYROOT)
-  file(GLOB headers include/DD4hep/*.h)
-  list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
-                           ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h)
-  root_generate_dictionary( G__DD4hep ${headers} LINKDEF include/ROOT/LinkDef.h)
-  list(APPEND sources G__DD4hep.cxx)
   add_definitions(-DDD4HEP_USE_PYROOT)
   set(libraries  ${libraries} PyROOT)
 endif()

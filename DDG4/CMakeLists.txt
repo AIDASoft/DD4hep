@@ -38,6 +38,9 @@ endif()
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 
 #---------------------------  Main geant4 interface library (no plugins!)-----------
+root_generate_dictionary( G__DDG4 ${CMAKE_CURRENT_SOURCE_DIR}/python/DDG4Dict.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
+list(APPEND sources G__DDG4.cxx)
+#
 add_library(DD4hepG4 SHARED ${sources})
 target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})

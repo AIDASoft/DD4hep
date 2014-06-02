@@ -11,7 +11,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/VolumeManagerInterna.h"
 #include "LCDDImp.h"
 
 // C/C++ include files
@@ -76,6 +76,15 @@ void lcdd_unexpected(){
   }
 }
 
+/// Disable copy constructor
+LCDDImp::LCDDImp(const LCDDImp&) : LCDDData(), m_volManager(), m_buildType(BUILD_NONE)  {
+}
+
+/// Disable assignment operator
+LCDDImp& LCDDImp::operator=(const LCDDImp&) {
+  return *this;
+}
+
 LCDD& LCDD::getInstance() {
   if (!s_lcdd)
     s_lcdd = new LCDDImp();
@@ -91,15 +100,13 @@ void LCDD::destroyInstance() {
 
 /// Default constructor
 LCDDImp::LCDDImp()
-  : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"), m_buildType(BUILD_NONE),
-    m_extensions(typeid(LCDDImp))
+  : LCDDData(), m_volManager(), m_buildType(BUILD_NONE)
 {
 
   std::set_unexpected( lcdd_unexpected ) ;
   std::set_terminate( lcdd_unexpected ) ;
 
   InstanceCount::increment(this);
-  m_properties = new Properties();
   if (0 == gGeoManager) {
     gGeoManager = new TGeoManager("world", "LCDD Geometry");
   }
@@ -126,29 +133,8 @@ LCDDImp::LCDDImp()
 
 /// Standard destructor
 LCDDImp::~LCDDImp() {
-  m_extensions.clear();
-  destroyHandle(m_world);
-  destroyHandle(m_field);
-  destroyHandle(m_header);
   destroyHandle(m_volManager);
-  destroyObject(m_properties);
-  for_each(m_readouts.begin(), m_readouts.end(), destroyHandles(m_readouts));
-  for_each(m_idDict.begin(), m_idDict.end(), destroyHandles(m_idDict));
-  for_each(m_limits.begin(), m_limits.end(), destroyHandles(m_limits));
-  for_each(m_regions.begin(), m_regions.end(), destroyHandles(m_regions));
-  for_each(m_alignments.begin(), m_alignments.end(), destroyHandles(m_alignments));
-  for_each(m_sensitive.begin(), m_sensitive.end(), destroyHandles(m_sensitive));
-  for_each(m_display.begin(), m_display.end(), destroyHandles(m_display));
-  for_each(m_fields.begin(), m_fields.end(), destroyHandles(m_fields));
-  for_each(m_define.begin(), m_define.end(), destroyHandles(m_define));
-
-  m_trackers.clear();
-  m_worldVol.clear();
-  m_trackingVol.clear();
-  m_invisibleVis.clear();
-  m_materialVacuum.clear();
-  m_materialAir.clear();
-  delete m_manager;
+  destroyData();
   InstanceCount::decrement(this);
 }
 

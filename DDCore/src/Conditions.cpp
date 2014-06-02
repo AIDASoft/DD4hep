@@ -62,7 +62,7 @@ std::string Block::str()   {
 
 /// Initializing constructor
 Condition::Condition(const string& nam) : Handle<Object>()  {
-  assign(new ConditionsInterna::Object(),nam,"condition");
+  assign(new ConditionsInterna::ConditionObject(),nam,"condition");
 }
 
 /// Assignment operator
@@ -202,7 +202,7 @@ int Conditions::set(Entry* cond)   {
     }
     else  {
       DetElement det(cond->detector);
-      assign(o=new ConditionsInterna::Container(),cond->name,cond->detector.name());
+      assign(o=new ConditionsInterna::ConditionContainer(),cond->name,cond->detector.name());
       det._data().conditions = *this;  // Ugly. Need to fix this....
     }
     if ( status == 1 )   {

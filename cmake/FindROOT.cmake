@@ -9,7 +9,7 @@
 
 
 find_program(ROOT_CONFIG_EXECUTABLE root-config
-  PATHS $ENV{ROOTSYS}/bin)
+  PATHS ${ROOTSYS}/bin $ENV{ROOTSYS}/bin)
 
 if(ROOT_CONFIG_EXECUTABLE)
   execute_process(
@@ -56,7 +56,7 @@ FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ROOTSYS ROOT_INCLUDE_DIR)
 mark_as_advanced(ROOT_FOUND ROOT_INCLUDE_DIR)
 
 include(CMakeParseArguments)
-find_program(ROOTCINT_EXECUTABLE rootcint PATHS $ENV{ROOTSYS}/bin)
+find_program(ROOTCINT_EXECUTABLE rootcint PATHS ${ROOTSYS}/bin $ENV{ROOTSYS}/bin)
 
 #----------------------------------------------------------------------------
 # function root_generate_dictionary( dictionary   
@@ -100,8 +100,10 @@ function(root_generate_dictionary dictionary)
   endforeach()
   #---call rootcint------------------------------------------
   add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
-                     COMMAND ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx 
+                     COMMAND echo ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx 
                                           -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
+                     COMMAND ${ROOTCINT_EXECUTABLE} -f  ${dictionary}.cxx 
+                                          -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
                      DEPENDS ${headerfiles} ${linkdefs})
 endfunction()
 

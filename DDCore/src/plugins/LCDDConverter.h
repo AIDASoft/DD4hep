@@ -49,17 +49,17 @@ namespace DD4hep {
      */
     struct LCDDConverter: public GeoHandler {
       typedef XML::XmlElement XmlElement;
-      typedef std::map<const TGeoElement*, XmlElement*> ElementMap;
-      typedef std::map<const TGeoMedium*, XmlElement*> MaterialMap;
-      typedef std::map<const TNamed*, XmlElement*> LimitMap;
-      typedef std::map<const TGeoNode*, XmlElement*> PlacementMap;
-      typedef std::map<const TNamed*, XmlElement*> RegionMap;
-      typedef std::map<const TNamed*, XmlElement*> SensDetMap;
-      typedef std::map<const TGeoVolume*, XmlElement*> VolumeMap;
-      typedef std::map<const TGeoShape*, XmlElement*> SolidMap;
-      typedef std::map<const TNamed*, XmlElement*> VisMap;
-      typedef std::map<const TNamed*, XmlElement*> FieldMap;
-      typedef std::map<const TNamed*, XmlElement*> IdSpecMap;
+      typedef std::map<Atom,              XmlElement*> ElementMap;
+      typedef std::map<Material,          XmlElement*> MaterialMap;
+      typedef std::map<LimitSet,          XmlElement*> LimitMap;
+      typedef std::map<PlacedVolume,      XmlElement*> PlacementMap;
+      typedef std::map<Region,            XmlElement*> RegionMap;
+      typedef std::map<SensitiveDetector, XmlElement*> SensDetMap;
+      typedef std::map<Volume,            XmlElement*> VolumeMap;
+      typedef std::map<IDDescriptor,      XmlElement*> IdSpecMap;
+      typedef std::map<VisAttr,           XmlElement*> VisMap;
+      typedef std::map<const TGeoShape*,  XmlElement*> SolidMap;
+      typedef std::map<OverlayedField,    XmlElement*> FieldMap;
       typedef std::map<const TGeoMatrix*, XmlElement*> TrafoMap;
       struct GeometryInfo: public GeoHandler::GeometryInfo {
         ElementMap xmlElements;
@@ -75,9 +75,9 @@ namespace DD4hep {
         TrafoMap xmlPositions;
         TrafoMap xmlRotations;
         FieldMap xmlFields;
-        ObjectSet sensitives;
-        ObjectSet regions;
-        ObjectSet limits;
+        SensitiveDetectorSet sensitives;
+        RegionSet regions;
+        LimitSetSet limits;
         // These we need for redundancy and checking the data integrity
         typedef std::map<std::string, const TNamed*> CheckIter;
         struct _checks {
@@ -97,8 +97,8 @@ namespace DD4hep {
         void checkShape(const std::string& name, const TNamed* n) const {
           check(name, n, checks.solids);
         }
-        void checkMaterial(const std::string& name, const TNamed* n) const {
-          check(name, n, checks.materials);
+        void checkMaterial(const std::string& name, Material n) const {
+          check(name, n.ptr(), checks.materials);
         }
 
         xml_doc_t doc;
@@ -119,7 +119,7 @@ namespace DD4hep {
       }
 
       /// Data integrity checker
-      void checkVolumes(const std::string& name, const TGeoVolume* volume) const;
+      void checkVolumes(const std::string& name, Volume volume) const;
 
       /// Initializing Constructor
       LCDDConverter(LCDD& lcdd);
@@ -140,39 +140,39 @@ namespace DD4hep {
       virtual void handleHeader() const;
 
       /// Convert the geometry type material into the corresponding Xml object(s).
-      virtual xml_h handleMaterial(const std::string& name, const TGeoMedium* medium) const;
+      virtual xml_h handleMaterial(const std::string& name, Material medium) const;
 
       /// Convert the geometry type element into the corresponding Xml object(s).
-      virtual xml_h handleElement(const std::string& name, const TGeoElement* element) const;
+      virtual xml_h handleElement(const std::string& name, Atom element) const;
 
       /// Convert the geometry type solid into the corresponding Xml object(s).
       virtual xml_h handleSolid(const std::string& name, const TGeoShape* volume) const;
 
       /// Convert the geometry type logical volume into the corresponding Xml object(s).
-      virtual xml_h handleVolume(const std::string& name, const TGeoVolume* volume) const;
+      virtual xml_h handleVolume(const std::string& name, Volume volume) const;
       virtual xml_h handleVolumeVis(const std::string& name, const TGeoVolume* volume) const;
       virtual void collectVolume(const std::string& name, const TGeoVolume* volume) const;
 
       /// Convert the geometry type volume placement into the corresponding Xml object(s).
-      virtual xml_h handlePlacement(const std::string& name, const TGeoNode* node) const;
+      virtual xml_h handlePlacement(const std::string& name, PlacedVolume node) const;
 
       /// Convert the geometry type field into the corresponding Xml object(s).
       ///virtual xml_h handleField(const std::string& name, Ref_t field) const;
 
       /// Convert the geometry type region into the corresponding Xml object(s).
-      virtual xml_h handleRegion(const std::string& name, const TNamed* region) const;
+      virtual xml_h handleRegion(const std::string& name, Region region) const;
 
       /// Convert the geometry visualisation attributes to the corresponding Xml object(s).
-      virtual xml_h handleVis(const std::string& name, const TNamed* vis) const;
+      virtual xml_h handleVis(const std::string& name, VisAttr vis) const;
 
       /// Convert the geometry id dictionary entry to the corresponding Xml object(s).
-      virtual xml_h handleIdSpec(const std::string& name, const TNamed* vis) const;
+      virtual xml_h handleIdSpec(const std::string& name, IDDescriptor idspec) const;
 
       /// Convert the geometry type LimitSet into the corresponding Xml object(s).
-      virtual xml_h handleLimitSet(const std::string& name, const TNamed* limitset) const;
+      virtual xml_h handleLimitSet(const std::string& name, LimitSet limitset) const;
 
       /// Convert the geometry type SensitiveDetector into the corresponding Xml object(s).
-      virtual xml_h handleSensitive(const std::string& name, const TNamed* sens_det) const;
+      virtual xml_h handleSensitive(const std::string& name, SensitiveDetector sens_det) const;
 
       /// Convert the segmentation of a SensitiveDetector into the corresponding LCDD object
       virtual xml_h handleSegmentation(Segmentation seg) const;
@@ -184,7 +184,7 @@ namespace DD4hep {
       virtual xml_h handleRotation(const std::string& name, const TGeoMatrix* trafo) const;
 
       /// Convert the electric or magnetic fields into the corresponding Xml object(s).
-      virtual xml_h handleField(const std::string& name, const TNamed* field) const;
+      virtual xml_h handleField(const std::string& name, OverlayedField field) const;
 
       /// Handle the geant 4 specific properties
       void handleProperties(LCDD::Properties& prp) const;

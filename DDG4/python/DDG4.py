@@ -26,6 +26,18 @@ def compileAClick(dictionary,g4=True):
   from ROOT import DD4hep as module
   return module
 
+def loadDDG4():
+  from ROOT import gSystem
+  import os.path
+  result = gSystem.Load("libDD4hepCore")
+  if 0 != result:
+    raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepCore: '+gSystem.GetErrorStr())
+  result = gSystem.Load("libDD4hepG4")
+  if 0 != result:
+    raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepG4: '+gSystem.GetErrorStr())
+  from ROOT import DD4hep as module
+  return module
+
 # We are nearly there ....
 current = __import__(__name__)
 def _import_class(ns,nam):  
@@ -33,7 +45,17 @@ def _import_class(ns,nam):
   setattr(current,nam,getattr(scope,nam))
 
 #---------------------------------------------------------------------------
-DD4hep     = compileAClick(dictionary='DDG4Dict.C',g4=True) 
+#
+try:
+  DD4hep     = loadDDG4() 
+except Exception,X:
+  print '+--%-100s--+'%(100*'-',)
+  print '|  %-100s  |'%('Failed to load DDG4 library:',)
+  print '|  %-100s  |'%(str(X),)
+  print '|  %-100s  |'%('Try to compile AClick on the fly.',)
+  print '+--%-100s--+'%(100*'-',)
+  DD4hep     = compileAClick(dictionary='DDG4Dict.C',g4=True)  
+Core       = DD4hep
 Sim        = DD4hep.Simulation
 Simulation = DD4hep.Simulation
 
@@ -173,6 +195,10 @@ _props('PhysicsListActionSequenceHandle')
 _props('SensDetActionSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
+
+#---------------------------------------------------------------------------
+_import_class('Core','NamedObject')
+
 #---------------------------------------------------------------------------
 Geo        = DD4hep.Geometry
 Geometry   = DD4hep.Geometry

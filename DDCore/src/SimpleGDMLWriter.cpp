@@ -60,7 +60,7 @@ namespace {
 
 /// Dump logical volume in GDML format to output stream
 void* SimpleGDMLWriter::handleVolume(const string& name, const TGeoVolume* volume) const {
-  Volume vol = Handle<>(volume);
+  Volume vol(volume);
   VisAttr vis = vol.visAttributes();
   TGeoShape* shape = volume->GetShape();
   TGeoMedium* medium = volume->GetMedium();
@@ -68,13 +68,15 @@ void* SimpleGDMLWriter::handleVolume(const string& name, const TGeoVolume* volum
 
   m_output << "\t\t<volume name=\"" << name << "\">" << endl;
   m_output << "\t\t\t<solidref ref=\"" << shape->GetName() << "\"/>" << endl;
-  m_output << "\t\t\t<materialref ref=\"" << medium->GetName() << "\"/>" << endl;
+  m_output << "\t\t\t<materialref ref=\"" 
+	   << (medium ? medium->GetName() : "UnknownMaterial") << "\"/>" << endl;
   if (vis.isValid()) {
     m_output << "\t\t\t<visref ref=\"" << vis.name() << "\"/>" << endl;
   }
   if (num > 0) {
     for (int i = 0; i < num; ++i) {
-      TGeoNode* n = volume->GetNode(i);
+      //TGeoNode* n = volume->GetNode(i);
+      TGeoNode* n   = volume->GetNode(volume->GetNode(i)->GetName());
       TGeoVolume* v = n->GetVolume();
       TGeoMatrix* m = n->GetMatrix();
       m_output << "\t\t\t<physvol>" << endl;
@@ -180,9 +182,9 @@ void* SimpleGDMLWriter::handleSolid(const string& name, const TGeoShape* shape) 
 }
 
 /// Dump structure information in GDML format to output stream
-void SimpleGDMLWriter::handleStructure(const VolumeSet& volset) const {
+void SimpleGDMLWriter::handleStructure(const VolumeVector& volset) const {
   m_output << "\t<structure>" << endl;
-  for (VolumeSet::const_iterator i = volset.begin(); i != volset.end(); ++i)
+  for (VolumeVector::const_iterator i = volset.begin(); i != volset.end(); ++i)
     handleVolume((*i)->GetName(), (*i));
   m_output << "\t</structure>" << endl;
 }
@@ -282,9 +284,9 @@ void SimpleGDMLWriter::create(DetElement top) {
   GeometryInfo geo;
   collect(top, geo);
   //handleSetup(LCDD::getInstance().header());
-  //handleDefines(LCDD::getInstance().constants());
+  handleDefines(LCDD::getInstance().constants());
   handleVisualisation(geo.vis);
-  //handleTransformations(geo.trafos);
-  //handleSolids(geo.solids);
-  //handleStructure(geo.volumes);
+  handleTransformations(geo.trafos);
+  handleSolids(geo.solids);
+  handleStructure(geo.volumes);
 }

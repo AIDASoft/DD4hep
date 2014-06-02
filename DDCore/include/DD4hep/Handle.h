@@ -16,8 +16,6 @@
 #include <typeinfo>
 #include <stdexcept>
 
-class TNamed;
-
 // Conversion factor from radians to degree: 360/(2*PI)
 #ifndef RAD_2_DEGREE
 #define RAD_2_DEGREE 57.295779513082320876798154814105
@@ -41,11 +39,14 @@ class TNamed;
  */
 namespace DD4hep {
 
+  // Forward declarations
+  class NamedObject;
+
   /*
    *   Geometry sub-namespace declaration
    */
   namespace Geometry {
-    struct LCDD;
+    class LCDD;
 
     std::string _toString(bool value);
     std::string _toString(int value);
@@ -124,7 +125,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    template <typename T = TNamed> struct Handle {
+    template <typename T> class Handle {
+    public:
       typedef T Implementation;
       typedef Handle<Implementation> handle_t;
       T* m_element;
@@ -145,9 +147,22 @@ namespace DD4hep {
           : m_element((T*) e.m_element) {
         verifyObject();
       }
+      /// Assignment operator
       Handle<T>& operator=(const Handle<T>& e) {
         m_element = e.m_element;
         return *this;
+      }
+      /// Boolean operator == used for RB tree insertions
+      bool operator==(const Handle<T>& e)  const {
+        return m_element == e.m_element;
+      }
+      /// Boolean operator < used for RB tree insertions
+      bool operator<(const Handle<T>& e)  const {
+        return m_element < e.m_element;
+      }
+      /// Boolean operator > used for RB tree insertions
+      bool operator>(const Handle<T>& e)  const {
+        return m_element > e.m_element;
       }
       bool isValid() const {
         return 0 != m_element;
@@ -155,8 +170,9 @@ namespace DD4hep {
       bool operator!() const {
         return 0 == m_element;
       }
-      void clear() {
+      Handle<T>& clear() {
         m_element = 0;
+	return *this;
       }
       T* operator->() const {
         return m_element;
@@ -186,7 +202,8 @@ namespace DD4hep {
       static void bad_assignment(const std::type_info& from, const std::type_info& to);
       void assign(Implementation* n, const std::string& nam, const std::string& title);
     };
-    typedef Handle<TNamed> Ref_t;
+
+    typedef Handle<NamedObject> Ref_t;
 
     /// Helper to delete objects from heap and reset the handle
     template <typename T> inline void destroyHandle(T& h) {

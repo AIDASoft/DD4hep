@@ -29,8 +29,8 @@ namespace DD4hep {
     class DetElement;
 
     namespace ConditionsInterna  {
-      class Container;
-      class Object;
+      class ConditionContainer;
+      class ConditionObject;
       class Entry;
       class IOV;
     }
@@ -76,9 +76,9 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class Condition: public Handle<ConditionsInterna::Object> {
+    class Condition: public Handle<ConditionsInterna::ConditionObject> {
     public:
-      typedef ConditionsInterna::Object Object;
+      typedef ConditionsInterna::ConditionObject Object;
       typedef ConditionsInterna::Entry Entry;
       typedef ConditionsInterna::IOV IOV;
 
@@ -151,15 +151,15 @@ namespace DD4hep {
     };
 
     /// Initializing constructor
-    inline Condition::Condition(Object* p) : Handle<Object>(p)  {
+    inline Condition::Condition(Condition::Object* p) : Handle<Condition::Object>(p)  {
     }
 
     /// Copy constructor
-    inline Condition::Condition(const Condition& c) : Handle<Object>(c)   {
+    inline Condition::Condition(const Condition& c) : Handle<Condition::Object>(c)   {
     }
 
     /// Default constructor
-    inline Condition::Condition() : Handle<Object>()   {
+    inline Condition::Condition() : Handle<Condition::Object>()   {
     }
 
     /** @class Conditions  Conditions.h DD4hep/Conditions.h
@@ -171,9 +171,9 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Conditions : public Handle<ConditionsInterna::Container> {
+    struct Conditions : public Handle<ConditionsInterna::ConditionContainer> {
       /// Standard object type
-      typedef ConditionsInterna::Container Object;
+      typedef ConditionsInterna::ConditionContainer Object;
       /// Local helper definition
       typedef ConditionsInterna::Entry     Entry;
 

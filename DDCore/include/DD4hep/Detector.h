@@ -256,7 +256,7 @@ namespace DD4hep {
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
-    DetElement(const Ref_t& e)
+      DetElement(const Ref_t& e)
       : RefObject(e) {
       }
 #endif

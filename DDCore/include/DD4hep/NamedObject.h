@@ -17,11 +17,6 @@
  */
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
-  namespace Geometry {
-
     /** @class Container  NamedObject.h DD4hep/NamedObject.h
      * 
      *  The data class behind a conditions container handle.
@@ -50,22 +45,24 @@ namespace DD4hep {
       virtual ~NamedObject();
       /// Assignment operator
       NamedObject& operator=(const NamedObject& c);
+
+      /// Access name
+      const char* GetName()  const  {
+	return name.c_str();
+      }
       /// Set name (used by Handle)
       void SetName(const char* nam)  {
 	name = nam;
       }
-#if 0
-      /// Get name (used by Handle)
-      const char* GetName() const  {
-	return name.c_str();
-      }
-#endif
       /// Set Title (used by Handle)
       void SetTitle(const char* tit)  {
 	type = tit;
       }
+      /// Get name (used by Handle)
+      const char* GetTitle() const  {
+	return type.c_str();
+      }
     };
 
-  } /* End namespace Geometry               */
 } /* End namespace DD4hep                   */
 #endif    /*  DD4HEP_GEOMETRY_INTERNAL_NAMEDOBJECT_H   */

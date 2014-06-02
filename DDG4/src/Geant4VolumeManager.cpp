@@ -103,7 +103,7 @@ namespace {
     void add_entry(SensitiveDetector sd, const TGeoNode* /* n */, const PlacedVolume::VolIDs& ids, const Chain& nodes) {
       Chain control;
       const TGeoNode* node;
-      const TGeoVolume* vol;
+      Volume vol;
       Geant4PlacementPath path;
       Readout ro = sd.readout();
       IDDescriptor iddesc = ro.idSpec();
@@ -128,7 +128,7 @@ namespace {
 	    continue;
           }
 	  control.insert(control.begin(),node);
-	  vol = node->GetVolume();
+	  vol = Volume(node->GetVolume());
 	  VolumeImprintMap::const_iterator iVolImp = m_geo.g4VolumeImprints.find(vol);
 	  if ( iVolImp != m_geo.g4VolumeImprints.end() )   {
 	    const Imprints& imprints = (*iVolImp).second;

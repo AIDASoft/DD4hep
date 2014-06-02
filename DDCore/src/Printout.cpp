@@ -9,6 +9,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Objects.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/Printout.h"
 #include <cstdarg>
 #include <stdexcept>
@@ -194,6 +195,9 @@ namespace DD4hep {
       p((*i).second);
   }
 
+  template <> void Printer<Handle<NamedObject> >::operator()(const Handle<NamedObject>& val) const {
+    printout(INFO, "Printer", "%s ++ Handle:%s %s", prefix.c_str(), val->GetName(), val->GetTitle());
+  }
   template <> void Printer<Handle<TNamed> >::operator()(const Handle<TNamed>& val) const {
     printout(INFO, "Printer", "%s ++ Handle:%s %s", prefix.c_str(), val->GetName(), val->GetTitle());
   }
@@ -226,7 +230,7 @@ namespace DD4hep {
   template <> void Printer<Position>::operator()(const Position& val) const {
     printout(INFO, "Printer", "%s ++ Position:    x: %9.3 mm y: %9.3 mm z: %9.3 mm", prefix.c_str(), val.X(), val.Y(), val.Z());
   }
-
+#if 0
   template <> void Printer<LimitSet>::operator()(const LimitSet& val) const {
     const set<Limit>& o = val.limits();
     printout(INFO, "Printer", "%s ++ LimitSet: %s", prefix.c_str(), val.name());
@@ -277,13 +281,13 @@ namespace DD4hep {
       return;
     }
   }
-
+#endif
   template <> void Printer<const LCDD*>::operator()(const LCDD* const &) const {
     //Header(lcdd.header()).fromCompact(doc,compact.child(Tag_info),Strng_t("In memory"));
     PrintMap < Constant > (lcdd, os, lcdd->constants(), "List of Constants")();
-    PrintMap < VisAttr > (lcdd, os, lcdd->visAttributes(), "List of Visualization attributes")();
-    PrintMap < LimitSet > (lcdd, os, lcdd->readouts(), "List of Readouts")();
-    PrintMap < Region > (lcdd, os, lcdd->regions(), "List of Regions")();
-    PrintMap < DetElement > (lcdd, os, lcdd->detectors(), "List of DetElements")();
+    //PrintMap < VisAttr > (lcdd, os, lcdd->visAttributes(), "List of Visualization attributes")();
+    //PrintMap < LimitSet > (lcdd, os, lcdd->readouts(), "List of Readouts")();
+    //PrintMap < Region > (lcdd, os, lcdd->regions(), "List of Regions")();
+    //PrintMap < DetElement > (lcdd, os, lcdd->detectors(), "List of DetElements")();
   }
 }

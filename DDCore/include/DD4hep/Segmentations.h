@@ -32,76 +32,97 @@ namespace DD4hep {
 
     typedef DDSegmentation::BitField64 BitField64;
 
+    /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class SegmentationObject : public DDSegmentation::Segmentation {
+    public:
+      typedef DDSegmentation::Segmentation BaseSegmentation;
+      typedef DDSegmentation::Parameter Parameter;
+      typedef DDSegmentation::Parameters Parameters;
+    public:
+      /// Magic word to check object integrity
+      unsigned long magic;
+      /// Flag to use segmentation for hit positioning
+      unsigned char useForHitPosition;
+      /// determine the local position based on the cell ID
+      DDSegmentation::Vector3D position(const long64& cellID) const;
+      /// determine the cell ID based on the local position
+      long64 cellID(const DDSegmentation::Vector3D& localPosition, const DDSegmentation::Vector3D& globalPosition, const long64& volumeID) const;
+      /// Standard constructor
+      SegmentationObject(BaseSegmentation* s = 0);
+      /// Default destructor
+      virtual ~SegmentationObject();
+      /// Access the encoding string
+      std::string fieldDescription() const;
+      /// Access the segmentation name
+      const std::string& name() const;
+      /// Set the segmentation name
+      void setName(const std::string& value);
+      /// Access the segmentation type
+      const std::string& type() const;
+      /// Access the description of the segmentation
+      const std::string& description() const;
+      /// Access the underlying decoder
+      BitField64* decoder();
+      /// Set the underlying decoder
+      void setDecoder(BitField64* decoder);
+      /// Access to parameter by name
+      Parameter parameter(const std::string& parameterName) const;
+      /// Access to all parameters
+      Parameters parameters() const;
+      /// Set all parameters from an existing set of parameters
+      void setParameters(const Parameters& parameters);
+      /// Reference to base segmentation
+      BaseSegmentation* segmentation;
+    };
+
+
     /** @class Segmentation Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Segmentation: public Handle<DDSegmentation::Segmentation> {
+    struct Segmentation: public Handle<SegmentationObject> {
     public:
+      typedef SegmentationObject Object;
       typedef DDSegmentation::Segmentation BaseSegmentation;
       typedef DDSegmentation::Parameter Parameter;
       typedef DDSegmentation::Parameters Parameters;
 
-      /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
-       *
-       * @author  M.Frank
-       * @version 1.0
-       */
-      struct Object : public BaseSegmentation {
-        /// Magic word to check object integrity
-        unsigned long magic;
-        /// Flag to use segmentation for hit positioning
-        unsigned char useForHitPosition;
-        /// determine the local position based on the cell ID
-        DDSegmentation::Vector3D position(const long64& cellID) const;
-        /// determine the cell ID based on the local position
-        long64 cellID(const DDSegmentation::Vector3D& localPosition, const DDSegmentation::Vector3D& globalPosition, const long64& volumeID) const;
-        /// Standard constructor
-        Object(BaseSegmentation* s = 0);
-        /// Default destructor
-        virtual ~Object();
-    	/// Access the encoding string
-    	std::string fieldDescription() const;
-    	/// Access the segmentation name
-    	const std::string& name() const;
-    	/// Set the segmentation name
-    	void setName(const std::string& value);
-    	/// Access the segmentation type
-    	const std::string& type() const;
-    	/// Access the description of the segmentation
-    	const std::string& description() const;
-    	/// Access the underlying decoder
-    	BitField64* decoder();
-    	/// Set the underlying decoder
-    	void setDecoder(BitField64* decoder);
-    	/// Access to parameter by name
-    	Parameter parameter(const std::string& parameterName) const;
-    	/// Access to all parameters
-    	Parameters parameters() const;
-    	/// Set all parameters from an existing set of parameters
-    	void setParameters(const Parameters& parameters);
-        /// Reference to base segmentation
-        BaseSegmentation* segmentation;
-      };
-
     public:
+      /// Initializing constructor creating a new object of the given DDSegmentation type
+      Segmentation(const std::string& type, const std::string& name);
       /// Default constructor
       Segmentation()
           : Handle<Implementation>() {
       }
-      /// Initializing constructor creating a new object of the given DDSegmentation type
-      Segmentation(const std::string& type, const std::string& name);
+      /// Copy Constructor from object
+      Segmentation(const Segmentation& e)
+          : Handle<Object>(e) {
+      }
+#ifndef __CINT__
+      /// Copy Constructor from handle
+      Segmentation(const Handle<SegmentationObject>& e)
+          : Handle<Object>(e) {
+      }
+#endif
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Segmentation(const Handle<Q>& e)
           : Handle<Implementation>(e) {
+      }
+      /// Assignment operator
+      Segmentation& operator=(const Segmentation& seg)  {
+	if ( &seg == this ) return *this;
+	m_element = seg.m_element;
+	return *this;
       }
       /// Access flag for hit positioning
       bool useForHitPosition() const;
       /// Accessor: Segmentation type
       std::string type() const;
-      /// Accessor: Set segmentation type
-      void setType(const std::string& new_type);
       /// Access segmentation object
       BaseSegmentation* segmentation() const;
       /// Access to the parameters

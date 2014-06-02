@@ -29,19 +29,23 @@ class TNamed;
  */
 namespace DD4hep {
 
-/// Forward declarations
+  class NamedObject;
+
+  /// Forward declarations
   namespace Geometry {
-    template <typename T> struct Handle;
     class LCDD;
     class VisAttr;
     class DetElement;
     class PlacedVolume;
+    template <typename T> struct Handle;
+    typedef Handle<NamedObject> Ref_t;
   }
 
   enum PrintLevel {
     NOLOG = 0, VERBOSE=1, DEBUG=2, INFO=3, WARNING=4, ERROR=5, FATAL=6, ALWAYS
   };
 
+#ifndef __CINT__
   typedef size_t (*output_function_t)(void*, PrintLevel severity, const char*, const char*);
 
   /** Calls the display action
@@ -127,14 +131,16 @@ namespace DD4hep {
    */
   std::string format(const std::string& src, const std::string& fmt, va_list& args);
 
-/// Set new print level. Returns the old print level
+  /// Customize printer function
+  void setPrinter(void* print_arg, output_function_t fcn);
+
+#endif // __CINT__
+
+  /// Set new print level. Returns the old print level
   PrintLevel setPrintLevel(PrintLevel new_level);
 
   /// Access the current printer level
   PrintLevel printLevel();
-
-/// Customize printer function
-  void setPrinter(void* print_arg, output_function_t fcn);
 
   /** @class Printer Conversions.h  DD4hep/compact/Conversions.h
    *
@@ -173,7 +179,7 @@ namespace DD4hep {
    */
   template <typename T> struct PrintMap {
     typedef T item_type;
-    typedef const std::map<std::string, Geometry::Handle<TNamed> > cont_type;
+    typedef const std::map<std::string, Geometry::Ref_t> cont_type;
 
     /// Reference to the detector description object
     const Geometry::LCDD* lcdd;

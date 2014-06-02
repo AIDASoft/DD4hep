@@ -12,7 +12,10 @@
 // Framework include files
 #include "DD4hep/Detector.h"
 #include "DD4hep/BasicGrammar.h"
-#include "DD4hep/objects/NamedObject.h"
+#include "DD4hep/NamedObject.h"
+
+#include <map>
+
 /*
  *   DD4hep namespace declaration
  */
@@ -34,8 +37,8 @@ namespace DD4hep {
      *
      */
     namespace ConditionsInterna {
-
-      class Object;
+      class ConditionContainer;
+      class ConditionObject;
       class Entry;
       class IOV;
 
@@ -76,7 +79,7 @@ namespace DD4hep {
        * @version 1.0
        */
       class BlockData : public Block   {
-	friend class ::DD4hep::Geometry::Condition;
+	friend class Condition;
 	friend class Object;
 
       private:
@@ -91,10 +94,10 @@ namespace DD4hep {
 	void (*destruct)(void*);
 	/// Constructor function -- only set if the object is valid
 	void (*copy)(void*,const void*);
-	/// Data buffer type: Must be a bitmap!
-	int type;
 
       public:
+	/// Data buffer type: Must be a bitmap!
+	int type;
 
 	/// Standard initializing constructor
 	BlockData();
@@ -146,7 +149,7 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      class Object : public NamedObject {
+      class ConditionObject : public NamedObject {
       public:
 	/// Condition value (in string form)
 	std::string value;
@@ -163,11 +166,11 @@ namespace DD4hep {
 	/// Interval of validity
 	IOV iov;
 	/// Standard constructor
-	Object();
+	ConditionObject();
 	/// Standard Destructor
-	virtual ~Object();
+	virtual ~ConditionObject();
 	/// Move data content: 'from' will be reset to NULL
-	Object& move(Object& from);
+	ConditionObject& move(ConditionObject& from);
       };
 
       /** @class Container  ConditionsInterna.h DD4hep/ConditionsInterna.h
@@ -177,16 +180,17 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      class Container : public NamedObject {
+      class ConditionContainer : public NamedObject {
       public:
+#ifndef __CINT__
 	/// Container definition
-	typedef std::map<std::string, Condition> Entries;
-
-	Entries entries;
+	typedef std::map<std::string, DD4hep::Geometry::Condition> Entries;
+#endif
+	std::map<std::string,DD4hep::Geometry::Condition> entries;
         /// Standard constructor
-        Container();
+        ConditionContainer();
         /// Default destructor
-        virtual ~Container();
+        virtual ~ConditionContainer();
 	/// Clear all conditions. Auto-delete of all existing entries
 	void removeElements();
       };

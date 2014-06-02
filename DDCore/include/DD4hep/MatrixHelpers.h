@@ -36,6 +36,7 @@ namespace DD4hep {
     TGeoHMatrix*     _transform(const Transform3D& trans);
     TGeoHMatrix*     _transform(const Position& pos);
     TGeoHMatrix*     _transform(const RotationZYX& rot);
+    TGeoHMatrix*     _transform(const Rotation3D& rot3D);
     TGeoHMatrix*     _transform(const Position& pos, const RotationZYX& rot);
 
     Transform3D      _transform(const TGeoMatrix* matrix);

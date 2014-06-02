@@ -63,12 +63,11 @@ namespace {
 }
 
 /// Dump logical volume in GDML format to output stream
-void* GeometryTreeDump::handleVolume(const string& name, const TGeoVolume* volume) const {
-  Volume vol = Handle<>(volume);
+void* GeometryTreeDump::handleVolume(const string& name, Volume vol) const {
   VisAttr vis = vol.visAttributes();
-  TGeoShape* shape = volume->GetShape();
-  TGeoMedium* medium = volume->GetMedium();
-  int num = volume->GetNdaughters();
+  TGeoShape* shape = vol->GetShape();
+  TGeoMedium* medium = vol->GetMedium();
+  int num = vol->GetNdaughters();
 
   m_output << "\t\t<volume name=\"" << name << "\">" << endl;
   m_output << "\t\t\t<solidref ref=\"" << shape->GetName() << "\"/>" << endl;
@@ -78,7 +77,8 @@ void* GeometryTreeDump::handleVolume(const string& name, const TGeoVolume* volum
   }
   if (num > 0) {
     for (int i = 0; i < num; ++i) {
-      TGeoNode* n = volume->GetNode(i);
+      //TGeoNode* n   = volume->GetNode(i);
+      TGeoNode* n   = vol.ptr()->GetNode(vol->GetNode(i)->GetName());
       TGeoVolume* v = n->GetVolume();
       TGeoMatrix* m = n->GetMatrix();
       m_output << "\t\t\t<physvol>" << endl;
@@ -234,7 +234,7 @@ void GeometryTreeDump::handleSolids(const SolidSet& solids) const {
 void GeometryTreeDump::handleDefines(const LCDD::HandleMap& defs) const {
   m_output << "\t<define>" << endl;
   for (LCDD::HandleMap::const_iterator i = defs.begin(); i != defs.end(); ++i)
-    m_output << "\t\t<constant name=\"" << (*i).second->GetName() << "\" value=\"" << (*i).second->GetTitle() << "\" />"
+    m_output << "\t\t<constant name=\"" << (*i).second->name << "\" value=\"" << (*i).second->type << "\" />"
         << endl;
   m_output << "\t</define>" << endl;
 }

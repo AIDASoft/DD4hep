@@ -166,7 +166,7 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
     const G4VPhysicalVolume* qv = pl;
 
     if (qv == pv) {
-      const TGeoNode* tpv = (*i).first;
+      const TGeoNode* tpv = (*i).first.ptr();
       printf("           Found TGeoNode:%s!\n", tpv->GetName());
     }
   }

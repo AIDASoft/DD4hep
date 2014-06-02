@@ -169,7 +169,7 @@ DECLARE_XML_DOC_READER(lccdd,create_Compact)
  */
 template <> void Converter<Constant>::operator()(xml_h e) const {
   xml_ref_t constant(e);
-  TNamed* obj = new TNamed(constant.attr < string > (_U(name)).c_str(), constant.attr < string > (_U(value)).c_str());
+  NamedObject* obj = new NamedObject(constant.attr < string > (_U(name)).c_str(), constant.attr < string > (_U(value)).c_str());
   Ref_t cons(obj);
   _toDictionary(obj->GetName(), obj->GetTitle());
   lcdd.addConstant(cons);
@@ -555,10 +555,10 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
   CartesianField field = lcdd.field(name);
   if (!field.isValid()) {
     // The field is not present: We create it and add it to LCDD
-    field = Ref_t(PluginService::Create<TNamed*>(type, &lcdd, &e));
+    field = Ref_t(PluginService::Create<NamedObject*>(type, &lcdd, &e));
     if (!field.isValid()) {
       PluginDebug dbg;
-      PluginService::Create<TNamed*>(type, &lcdd, &e);
+      PluginService::Create<NamedObject*>(type, &lcdd, &e);
       throw_print("Failed to create field object of type " + type + ". " + dbg.missingFactory(type));
     }
     lcdd.addField(field);
@@ -699,7 +699,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       lcdd.addSensitiveDetector(sd);
     }
     Ref_t sens = sd;
-    DetElement det(Ref_t(PluginService::Create<TNamed*>(type, &lcdd, &element, &sens)));
+    DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens)));
     if (det.isValid()) {
       setChildTitles(make_pair(name, det));
     }
@@ -709,7 +709,7 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
 
     if (!det.isValid()) {
       PluginDebug dbg;
-      PluginService::Create<TNamed*>(type, &lcdd, &element, &sens);
+      PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens);
       throw runtime_error("Failed to execute subdetector creation plugin. " + dbg.missingFactory(type));
     }
     lcdd.addDetector(det);

@@ -53,7 +53,7 @@ namespace DD4hep {
       bad_assignment(typeid(*m_element), typeid(X));			\
     }									\
   }}}									\
-  template struct DD4hep::Geometry::Handle<X>
+  template class DD4hep::Geometry::Handle<X>
 
 #define DD4HEP_INSTANTIATE_HANDLE_NAMED(X)                              \
   namespace DD4hep { namespace Geometry {                               \
@@ -67,11 +67,11 @@ namespace DD4hep {
   }                                                                     \
   template <> void Handle<X>::verifyObject() const {	                \
     increment_object_validations();					\
-    if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
+    if (m_element && dynamic_cast<X*>((NamedObject*)m_element) == 0) {	\
       bad_assignment(typeid(*m_element), typeid(X));			\
     }									\
   }}}									\
-  template struct DD4hep::Geometry::Handle<X>
+  template class DD4hep::Geometry::Handle<X>
 
 #define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(X)                            \
   namespace DD4hep { namespace Geometry {                               \

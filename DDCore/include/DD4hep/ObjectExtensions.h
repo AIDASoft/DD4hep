@@ -39,9 +39,9 @@ namespace DD4hep {
     typedef std::map<const std::type_info*, Entry> ExtensionMap;
 
     /// The extensions object
-    Extensions    extensions;
+    Extensions    extensions; //!
     /// Pointer to the extension map
-    ExtensionMap* extensionMap;
+    ExtensionMap* extensionMap; //!
 
   public:
     /// Default constructor
@@ -49,7 +49,7 @@ namespace DD4hep {
     /// Default destructor
     virtual ~ObjectExtensions();
     /// Clear all extensions
-    void clear();
+    void clear(bool destroy=true);
     /// Copy object extensions from another object. Hosting type must be identical!
     void copyFrom(const Extensions& ext, void* arg);
     /// Add an extension object to the detector element

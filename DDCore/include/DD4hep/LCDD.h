@@ -20,6 +20,7 @@
 #include "DD4hep/Detector.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/VolumeManager.h"
+#include "DD4hep/NamedObject.h"
 
 // C/C++ include files
 #include <map>
@@ -31,6 +32,9 @@ class TGeoManager;
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
+
+  // Foward declarations
+  class NamedObject;
 
   /*
    *   Geometry namespace declaration
@@ -54,7 +58,7 @@ namespace DD4hep {
      */
     class LCDD {
     public:
-      typedef std::map<std::string, Handle<> > HandleMap;
+      typedef std::map<std::string, Handle<NamedObject> > HandleMap;
       typedef std::map<std::string, std::string> PropertyValues;
       typedef std::map<std::string, PropertyValues> Properties;
 
@@ -119,6 +123,8 @@ namespace DD4hep {
       virtual const HandleMap& alignments() const = 0;
       /// Accessor to the map of field entries, which together form the global field
       virtual const HandleMap& fields() const = 0;
+      /// Accessor to the map of ID specifications
+      virtual const HandleMap& idSpecifications() const = 0;
 
       virtual Volume pickMotherVolume(const DetElement& sd) const = 0;
 
@@ -167,6 +173,8 @@ namespace DD4hep {
       virtual LCDD& add(IDDescriptor spec) = 0;
       /// Add a new detector readout to the detector description
       virtual LCDD& add(Readout readout) = 0;
+      /// Add a new sensitive detector to the detector description
+      virtual LCDD& add(SensitiveDetector entry) = 0;
       /// Add a new subdetector to the detector description
       virtual LCDD& add(DetElement detector) = 0;
       /// Add alignment entry to the detector description

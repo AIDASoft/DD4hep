@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DD4hep/Callback.h"
+#include "DD4hep/NamedObject.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Alignment.h"
@@ -38,7 +39,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    class SensitiveDetectorObject: public TNamed, public ObjectExtensions {
+    class SensitiveDetectorObject: public NamedObject, public ObjectExtensions {
     public:
       unsigned int magic;
       int verbose;
@@ -51,6 +52,8 @@ namespace DD4hep {
 
       /// Default constructor
       SensitiveDetectorObject();
+      /// Initializing constructor
+      SensitiveDetectorObject(const std::string& nam);
       /// Internal object destructor: release extension object(s)
       virtual ~SensitiveDetectorObject();
     };
@@ -60,7 +63,7 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    class DetElementObject: public TNamed, public ObjectExtensions {
+    class DetElementObject: public NamedObject, public ObjectExtensions {
     public:
       typedef DetElement::destruct_t destruct_t;
       typedef DetElement::copy_t copy_t;
@@ -130,6 +133,8 @@ namespace DD4hep {
       TGeoHMatrix* referenceTrafo;
 
       /**@info: Public methods to ease the usage of the data. */
+      /// Initializing constructor
+      DetElementObject(const std::string& nam, int ident);
       /// Default constructor
       DetElementObject();
       /// Internal object destructor: release extension object(s)

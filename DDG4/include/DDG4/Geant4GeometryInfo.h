@@ -10,6 +10,7 @@
 #define DD4HEP_DDG4_GEANT4GEOMETRYINFO_H
 
 // Framework include files
+#include "DD4hep/Objects.h"
 #include "DD4hep/GeoHandler.h"
 #include "DDG4/Geant4Primitives.h"
 
@@ -50,22 +51,31 @@ namespace DD4hep {
     class Geant4AssemblyVolume;
 
     namespace Geant4GeometryMaps  {
+      typedef Geometry::Atom Atom;
+      typedef Geometry::Material Material;
+      typedef Geometry::VisAttr VisAttr;
+      typedef Geometry::Volume Volume;
+      typedef Geometry::PlacedVolume PlacedVolume;
+      typedef Geometry::Region Region;
+      typedef Geometry::LimitSet LimitSet;
+      typedef Geometry::SensitiveDetector SensitiveDetector;
+
       typedef std::vector<const G4VPhysicalVolume*> Geant4PlacementPath;
-      typedef std::map<const TGeoElement*, G4Element*> ElementMap;
-      typedef std::map<const TGeoMedium*, G4Material*> MaterialMap;
-      typedef std::map<const TNamed*, G4UserLimits*> LimitMap;
-      typedef std::map<const TGeoNode*, G4VPhysicalVolume*> PlacementMap;
-      typedef std::map<const TNamed*, G4Region*> RegionMap;
-      typedef std::map<const TNamed*, G4VSensitiveDetector*> SensDetMap;
-      typedef std::map<const TGeoVolume*, G4LogicalVolume*> VolumeMap;
-      typedef std::map<const TGeoNode*, Geant4AssemblyVolume*>  AssemblyMap;
+      typedef std::map<Atom, G4Element*> ElementMap;
+      typedef std::map<Material, G4Material*> MaterialMap;
+      typedef std::map<LimitSet, G4UserLimits*> LimitMap;
+      typedef std::map<PlacedVolume, G4VPhysicalVolume*> PlacementMap;
+      typedef std::map<Region, G4Region*> RegionMap;
+      typedef std::map<SensitiveDetector, G4VSensitiveDetector*> SensDetMap;
+      typedef std::map<Volume, G4LogicalVolume*> VolumeMap;
+      typedef std::map<PlacedVolume, Geant4AssemblyVolume*>  AssemblyMap;
 
       typedef std::vector<const TGeoNode*> VolumeChain;
       typedef std::pair<VolumeChain,const G4VPhysicalVolume*> ImprintEntry;
       typedef std::vector<ImprintEntry> Imprints;
-      typedef std::map<const TGeoVolume*,Imprints>   VolumeImprintMap;
+      typedef std::map<Volume,Imprints>   VolumeImprintMap;
       typedef std::map<const TGeoShape*, G4VSolid*> SolidMap;
-      typedef std::map<const TNamed*, G4VisAttributes*> VisMap;
+      typedef std::map<VisAttr, G4VisAttributes*> VisMap;
       typedef std::map<Geant4PlacementPath, VolumeID> Geant4PathMap;
 
       typedef Geometry::GeoHandlerTypes::SensitiveVolumes SensitiveVolumes;

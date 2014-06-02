@@ -62,7 +62,7 @@ namespace DD4hep {
       /// Dump Transformations in GDML format to output stream
       virtual void handleTransformations(const TransformSet& trafos) const;
       /// Dump structure information in GDML format to output stream
-      virtual void handleStructure(const VolumeSet& volset) const;
+      virtual void handleStructure(const VolumeVector& volset) const;
     };
   }    // End namespace Geometry
 }      // End namespace DD4hep

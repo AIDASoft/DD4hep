@@ -7,10 +7,12 @@
 //
 //====================================================================
 // Framework include files
-#include "DD4hep/VolumeManager.h"
-#include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Handle.inl"
+#include "DD4hep/Printout.h"
+#include "DD4hep/VolumeManager.h"
 #include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/VolumeManagerInterna.h"
 
 // C/C++ includes
 #include <set>
@@ -18,9 +20,13 @@
 #include <sstream>
 #include <iomanip>
 
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+
+DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
+
 
 namespace {
 
@@ -216,21 +222,21 @@ namespace {
 }
 
 /// Default constructor
-VolumeManager::Context::Context()
+VolumeManagerContext::VolumeManagerContext()
     : identifier(0), mask(~0x0ULL) {
 }
 
 /// Default destructor
-VolumeManager::Context::~Context() {
+VolumeManagerContext::~VolumeManagerContext() {
 }
 
 /// Default constructor
-VolumeManager::Object::Object(LCDD& l)
-  : lcdd(l), top(0), system(0), sysID(0), detMask(~0x0ULL), flags(VolumeManager::NONE) {
+VolumeManagerObject::VolumeManagerObject(LCDD& l)
+  : lcdd(&l), top(0), system(0), sysID(0), detMask(~0x0ULL), flags(VolumeManager::NONE) {
 }
 
 /// Default destructor
-VolumeManager::Object::~Object() {
+VolumeManagerObject::~VolumeManagerObject() {
   /// Cleanup volume tree
   for_each(volumes.begin(), volumes.end(), destroyObjects(volumes));
   volumes.clear();
@@ -241,7 +247,7 @@ VolumeManager::Object::~Object() {
 }
 
 /// Update callback when alignment has changed (called only for subdetectors....)
-void VolumeManager::Object::update(unsigned long tags, DetElement& det, void* param)   {
+void VolumeManagerObject::update(unsigned long tags, DetElement& det, void* param)   {
   if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
     printout(DEBUG,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
   if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  
@@ -255,7 +261,7 @@ void VolumeManager::Object::update(unsigned long tags, DetElement& det, void* pa
 }
 
 /// Search the locally cached volumes for a matching ID
-VolumeManager::Context* VolumeManager::Object::search(const VolumeID& id) const {
+VolumeManager::Context* VolumeManagerObject::search(const VolumeID& id) const {
   Context* context = 0;
   VolumeID volume_id(id);
   volume_id &= detMask;
@@ -302,7 +308,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
             "valid placement VolIDs are allowed. [Invalid DetElement:" + det_name + "]");
       }
 
-      i = o.subdetectors.insert(make_pair(detector, VolumeManager(o.lcdd, detector.name()))).first;
+      i = o.subdetectors.insert(make_pair(detector, VolumeManager(*o.lcdd, detector.name()))).first;
       const PlacedVolume::VolID& id = (*vit);
       VolumeManager m = (*i).second;
       IDDescriptor::Field field = ro.idSpec().field(id.first);

@@ -14,7 +14,6 @@
 #include "DD4hep/Handle.h"
 #include "DD4hep/Primitives.h"
 #include "DDSegmentation/BitField64.h"
-#include "TNamed.h"
 
 // C++ include files
 #include <string>
@@ -31,48 +30,31 @@ namespace DD4hep {
    */
   namespace Geometry {
 
+    class IDDescriptorObject;
+
     /** @class IDDescriptor IDDescriptor.h DDCore/IDDescriptor.h
      *
      *  @author  M.Frank
      *  @version 1.0
      *  @date    2012/07/31
      */
-    struct IDDescriptor: public Ref_t {
+    class IDDescriptor: public Handle<IDDescriptorObject> {
     public:
-      typedef std::pair<std::string, int> VolID;
+      typedef IDDescriptorObject Object;
       typedef DDSegmentation::BitFieldValue* Field;
       typedef std::vector<std::pair<std::string, Field> > FieldMap;
       typedef std::vector<std::pair<size_t, std::string> > FieldIDs;
       typedef std::pair<Field, VolumeID> VolIDField;
       typedef std::vector<VolIDField> VolIDFields;
 
-      /** @class IDDescriptor::Object IDDescriptor.h DDCore/IDDescriptor.h
-       *
-       *  @author  M.Frank
-       *  @version 1.0
-       *  @date    2012/07/31
-       */
-      struct Object: public TNamed, public DDSegmentation::BitField64 {
-        FieldMap fieldMap;
-        FieldIDs fieldIDs;
-        std::string description;
-        /// Standard constructor
-        Object(const std::string& initString);
-        /// Default destructor
-        virtual ~Object();
-        /// Access to the field container of the BitField64
-        const std::vector<DDSegmentation::BitFieldValue*> fields() const {
-          return _fields;
-        }
-      };
     public:
       /// Default constructor
       IDDescriptor()
-          : Ref_t() {
+          : Handle<Object>() {
       }
       /// Constructor to be used when reading the already parsed object
       template <typename Q> IDDescriptor(const Handle<Q>& e)
-          : Ref_t(e) {
+	: Handle<Object>(e) {
       }
       /// Initializing constructor
       IDDescriptor(const std::string& description);
@@ -90,8 +72,11 @@ namespace DD4hep {
       size_t fieldID(const std::string& field_name) const;
       /// Get the field descriptor of one field by its identifier
       Field field(size_t identifier) const;
+#ifndef __MAKECINT__
       /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
+      typedef std::pair<std::string, int> VolID;
       VolumeID encode(const std::vector<VolID>& ids) const;
+#endif
       /// Decode volume IDs and return filled descriptor with all fields
       void decodeFields(VolumeID vid, VolIDFields& fields);
       /// Access string representation

@@ -19,7 +19,8 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 using namespace DD4hep::Geometry::ConditionsInterna;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsInterna::Object);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsInterna::ConditionObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsInterna::ConditionContainer);
 
 /// Initializing constructor
 IOV::IOV(int t) : type(t)  {
@@ -97,17 +98,17 @@ void BlockData::assign(const void* ptr, const type_info& typ)  {
 }
 
 /// Standard constructor
-Object::Object() : NamedObject(), detector(), data(), iov()   {
+ConditionObject::ConditionObject() : NamedObject(), detector(), data(), iov()   {
   InstanceCount::increment(this);
 }
 
 /// Standard Destructor
-Object::~Object()  {
+ConditionObject::~ConditionObject()  {
   InstanceCount::decrement(this);
 }
 
 /// Assignment operator
-Object& Object::move(Object& c)   {
+ConditionObject& ConditionObject::move(ConditionObject& c)   {
   if ( this != &c )  {
     name = c.name;
     type = c.type;
@@ -153,18 +154,18 @@ Entry& Entry::operator=(const Entry& c)   {
 }
 
 /// Standard constructor
-Container::Container() : NamedObject() {
+ConditionContainer::ConditionContainer() : NamedObject() {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-Container::~Container() {
+ConditionContainer::~ConditionContainer() {
   removeElements();
   InstanceCount::decrement(this);
 }
 
 /// Clear all conditions. Auto-delete of all existing entries
-void Container::removeElements()    {
+void ConditionContainer::removeElements()    {
   for(Entries::iterator i=entries.begin(); i != entries.end(); ++i)
     delete (*i).second.ptr();
   entries.clear();

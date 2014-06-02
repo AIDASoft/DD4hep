@@ -9,7 +9,7 @@
 //  Author     : M.Frank
 //
 //====================================================================
-// FRamework include files
+// Framework include files
 #include "DDG4/Geant4Data.h"
 #include <vector>
 

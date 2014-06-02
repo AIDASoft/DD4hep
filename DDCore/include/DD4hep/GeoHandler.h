@@ -26,16 +26,19 @@ class TGeoNode;
  */
 namespace DD4hep {
 
+  class  NamedObject;
+
   /*
    *   Geometry namespace declaration
    */
   namespace Geometry {
 
-    struct LCDD;
-    struct Volume;
-    struct PlacedVolume;
-    struct DetElement;
-    struct SensitiveDetector;
+    class  LCDD;
+    class  Volume;
+    class  PlacedVolume;
+    class  DetElement;
+    class  SensitiveDetector;
+    class  VisAttrObject;
 
     /** @class GeoHandlerTypes  GeoHandler.h
      *
@@ -44,21 +47,25 @@ namespace DD4hep {
      */
     class GeoHandlerTypes {
     public:
-      typedef std::set<TGeoVolume*> VolumeSet;
-      typedef std::vector<TGeoVolume*> VolumeVector;
+      typedef std::set<Volume> VolumeSet;
+      typedef std::vector<Volume> VolumeVector;
       typedef std::set<const TGeoVolume*> ConstVolumeSet;
       typedef std::vector<std::pair<std::string, TGeoMatrix*> > TransformSet;
       typedef std::set<TGeoShape*> SolidSet;
-      typedef std::set<TGeoMedium*> MaterialSet;
-      typedef std::map<const TNamed*, ConstVolumeSet> SensitiveVolumes;
-      typedef std::map<const TNamed*, ConstVolumeSet> RegionVolumes;
-      typedef std::map<const TNamed*, ConstVolumeSet> LimitVolumes;
+      typedef std::set<Material> MaterialSet;
+      typedef std::map<SensitiveDetector, ConstVolumeSet> SensitiveVolumes;
+      typedef std::map<Region,   ConstVolumeSet> RegionVolumes;
+      typedef std::map<LimitSet, ConstVolumeSet> LimitVolumes;
       typedef std::map<int, std::set<const TGeoNode*> > Data;
-      typedef std::set<const TNamed*> VisRefs;
-      typedef std::set<TNamed*> Fields;
+      typedef std::set<VisAttr> VisRefs;
+      typedef std::set<SensitiveDetector> SensitiveDetectorSet;
+      typedef std::set<Region>            RegionSet;
+      typedef std::set<LimitSet>          LimitSetSet;
+      typedef std::set<Ref_t>             Fields;
       typedef std::set<TNamed*> ObjectSet;
-      typedef LCDD::HandleMap DefinitionSet;
-      struct GeometryInfo {
+      typedef LCDD::HandleMap             DefinitionSet;
+      class GeometryInfo {
+      public:
         SolidSet solids;
         VolumeSet volumeSet;
         VolumeVector volumes;
@@ -66,10 +73,7 @@ namespace DD4hep {
         VisRefs vis;
         Fields fields;
         MaterialSet materials;
-        // SensitiveVolumes   sensitives;
-        // RegionVolumes      regions;
-        // LimitVolumes       limits;
-        std::set<TGeoMedium*> media;
+        std::set<TGeoMedium*>  media;
         std::set<TGeoElement*> elements;
       };
     };

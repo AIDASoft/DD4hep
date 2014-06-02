@@ -1,6 +1,28 @@
 DD4hep  ----  Release Notes
 =================================
 
+2014/06/03 Markus Frank
+-----------------------
+  - Provision for ROOT persistency for DD4hep detector descriptions:
+    Create Cint dictionary for DD4hepCore by default when building the library.
+    For the time being the area of DDSegmentation is left out, since these
+    objects require changes due to the handling of references and template
+    specializations. Besides these, DD4hep detector descriptions can be
+    saved and read-back directly to/from ROOT files - which may improve
+    a lot the startup time of processes.
+
+  - The DDG4 dictionary is created by default when building the library.
+    When importing DDG4 from python only the DD4hepCore DD4hepG4 libraries
+    must be present. It should no longer be necessary to compile the
+    necessary AClick on the fly.
+
+  - Investigations on wirframe drawing:
+    Wireframes are a property of the scene graph. You can toggle to wireframe
+    using the 'w' key on the keyboard. Other representations are 
+    'r': Solid view
+    't': Solid + wireframe view.
+    This information is accessible from the help menu of the ROOT OGL widget.
+
  --------   2014/05/28 Markus Frank
 | v00-07 |  seventh beta release ...
  --------   

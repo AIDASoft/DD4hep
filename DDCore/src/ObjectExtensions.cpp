@@ -39,14 +39,14 @@ ObjectExtensions::~ObjectExtensions()   {
 }
 
 /// Internal object destructor: release extension object(s)
-void ObjectExtensions::clear() {
+void ObjectExtensions::clear(bool destroy) {
   for (Extensions::iterator i = extensions.begin(); i != extensions.end(); ++i) {
     void* ptr = (*i).second;
     if (ptr) {
       ExtensionMap::iterator j = extensionMap->find((*i).first);
       if (j != extensionMap->end()) {
         Entry& e = (*j).second;
-        if (e.destruct)
+        if (destroy && e.destruct)
           (*(e.destruct))(ptr);
       }
     }

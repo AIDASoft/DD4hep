@@ -23,19 +23,19 @@ DetElement::DetElement(Object* data, const string& name, const string& type)
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const string& name, const string& type, int id) {
-  assign(new Object(), name, type);
+  assign(new Object(name,id), name, type);
   ptr()->id = id;
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(const string& name, int id) {
-  assign(new Object(), name, "");
+  assign(new Object(name,id), name, "");
   ptr()->id = id;
 }
 
 /// Constructor for a new subdetector element
 DetElement::DetElement(DetElement parent, const string& name, int id) {
-  assign(new Object(), name, parent.type());
+  assign(new Object(name,id), name, parent.type());
   ptr()->id = id;
   parent.add(*this);
 }
@@ -323,7 +323,7 @@ SensitiveDetector::SensitiveDetector(const string& name, const string& type) {
    <idspecref ref="EcalEndcapHits"/>
    </calorimeter>
    */
-  assign(new Object(), name, type);
+  assign(new Object(name), name, type);
   object<Object>().ecut = 0e0;
   object<Object>().verbose = 0;
 }
