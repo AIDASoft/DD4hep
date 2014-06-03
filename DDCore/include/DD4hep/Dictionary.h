@@ -12,6 +12,7 @@
 #include "DD4hep/LCDDData.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/FieldTypes.h"
+#include "DD4hep/DD4hepRootPersistency.h"
 #include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
@@ -55,6 +56,7 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::LCDDData::ObjectHandleMap+;
 #pragma link C++ class DD4hep::Geometry::LCDD::PropertyValues+;
 #pragma link C++ class DD4hep::Geometry::LCDD::Properties+;
+#pragma link C++ class DD4hepRootPersistency+;
 
 // These below are the Namedobject instances to be generated ....
 //#pragma link C++ class DD4hep::Geometry::LCDD::HandleMap+;

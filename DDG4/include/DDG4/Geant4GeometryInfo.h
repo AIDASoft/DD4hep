@@ -51,14 +51,14 @@ namespace DD4hep {
     class Geant4AssemblyVolume;
 
     namespace Geant4GeometryMaps  {
-      typedef Geometry::Atom Atom;
-      typedef Geometry::Material Material;
-      typedef Geometry::VisAttr VisAttr;
-      typedef Geometry::Volume Volume;
-      typedef Geometry::PlacedVolume PlacedVolume;
-      typedef Geometry::Region Region;
-      typedef Geometry::LimitSet LimitSet;
-      typedef Geometry::SensitiveDetector SensitiveDetector;
+      using Geometry::Atom;
+      using Geometry::Material;
+      using Geometry::VisAttr;
+      using Geometry::Volume;
+      using Geometry::PlacedVolume;
+      using Geometry::Region;
+      using Geometry::LimitSet;
+      using Geometry::SensitiveDetector;
 
       typedef std::vector<const G4VPhysicalVolume*> Geant4PlacementPath;
       typedef std::map<Atom, G4Element*> ElementMap;

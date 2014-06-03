@@ -12,7 +12,6 @@
 
 // Framework include files
 #include "DD4hep/Handle.h"
-#include "DD4hep/Primitives.h"
 #include "DDSegmentation/BitField64.h"
 
 // C++ include files
@@ -41,7 +40,7 @@ namespace DD4hep {
     class IDDescriptor: public Handle<IDDescriptorObject> {
     public:
       typedef IDDescriptorObject Object;
-      typedef DDSegmentation::BitFieldValue* Field;
+      typedef BitFieldValue* Field;
       typedef std::vector<std::pair<std::string, Field> > FieldMap;
       typedef std::vector<std::pair<size_t, std::string> > FieldIDs;
       typedef std::pair<Field, VolumeID> VolIDField;
@@ -82,7 +81,7 @@ namespace DD4hep {
       /// Access string representation
       std::string toString() const;
       /// Access the BitField64 object
-      DDSegmentation::BitField64* decoder();
+      BitField64* decoder();
     };
   } /* End namespace Geometry    */
 } /* End namespace DD4hep      */

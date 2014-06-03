@@ -104,6 +104,7 @@ namespace DD4hep {
       LCDDData();
       /// Default destructor
       virtual ~LCDDData();
+    public:
       /// Clear data content: releases all allocated resources
       void destroyData();
       /// Clear data content: DOES NOT RELEASEW ALLOCATED RESOURCES!

@@ -177,6 +177,8 @@ namespace DD4hep {
        * @version 1.0
        */
       struct Compare {
+	/// Default destructor
+	virtual ~Compare();
         /// Comparison function
         virtual void* operator()(const Geant4HitWrapper& w) const = 0;
       };

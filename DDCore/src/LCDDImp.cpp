@@ -77,7 +77,7 @@ void lcdd_unexpected(){
 }
 
 /// Disable copy constructor
-LCDDImp::LCDDImp(const LCDDImp&) : LCDDData(), m_volManager(), m_buildType(BUILD_NONE)  {
+LCDDImp::LCDDImp(const LCDDImp&) : LCDD(), LCDDData(), m_volManager(), m_buildType(BUILD_NONE)  {
 }
 
 /// Disable assignment operator

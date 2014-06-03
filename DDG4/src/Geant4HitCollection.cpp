@@ -66,6 +66,10 @@ Geant4HitWrapper::Wrapper Geant4HitWrapper::releaseData() {
 }
 
 /// Default destructor
+Geant4HitCollection::Compare::~Compare()  {
+}
+
+/// Default destructor
 Geant4HitCollection::~Geant4HitCollection() {
   m_hits.clear();
   InstanceCount::decrement(this);

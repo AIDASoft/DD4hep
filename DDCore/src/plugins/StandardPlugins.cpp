@@ -13,6 +13,8 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/DetectorTools.h"
+#include "DD4hep/DD4hepRootPersistency.h"
 #include "../LCDDImp.h"
 
 // ROOT includes
@@ -123,17 +125,33 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
 }
 DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
-static long dump_geometry(LCDD& lcdd, int argc, char** argv) {
-  if ( argc > 1 )   {
-    string output = argv[1];
-    printout(INFO,"Geometry2Root","+++ Dump geometry to root file:%s",output.c_str());
-    lcdd.manager().Export(output.c_str()+1);
-    return 1;
+static long dump_geometry2root(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 0 )   {
+    string output = argv[0];
+    printout(INFO,"Geometry2ROOT","+++ Dump geometry to root file:%s",output.c_str());
+    //lcdd.manager().Export(output.c_str()+1);
+    if ( DD4hepRootPersistency::save(lcdd,output.c_str(),"Geometry") > 1 )  {
+      return 1;
+    }
   }
+  printout(ERROR,"Geometry2ROOT","+++ No output file name given.");
   return 0;
 }
-DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
-#include "DD4hep/DetectorTools.h"
+DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
+
+static long load_geometryFromroot(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 0 )   {
+    string input = argv[0];
+    printout(INFO,"DD4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
+    if ( 1 == DD4hepRootPersistency::load(lcdd,input.c_str(),"Geometry") )  {
+      return 1;
+    }
+  }
+  printout(ERROR,"DD4hepRootLoader","+++ No input file name given.");
+  return 0;
+}
+DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
+
 /** Basic entry point to print out the volume hierarchy
  *
  *  @author  M.Frank

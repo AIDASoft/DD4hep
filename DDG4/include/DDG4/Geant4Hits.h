@@ -43,6 +43,8 @@ namespace DD4hep {
      * @version 1.0
      */
     template <class HIT> struct HitCompare {
+      /// Default destructor
+      virtual ~HitCompare() {}
       /// Comparison function
       virtual bool operator()(const HIT* h) const = 0;
     };
@@ -60,6 +62,8 @@ namespace DD4hep {
       HitPositionCompare(const Position& p)
           : pos(p) {
       }
+      /// Default destructor
+      virtual ~HitPositionCompare() {}
       /// Comparison function
       virtual bool operator()(const HIT* h) const {
         return pos == h->position;

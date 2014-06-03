@@ -136,9 +136,9 @@ namespace DD4hep {
      *  @version 1.0
      *  @date    2012/07/31
      */
-    class IDDescriptorObject: public NamedObject, public DDSegmentation::BitField64 {
+    class IDDescriptorObject: public NamedObject, public BitField64 {
     public:
-      typedef DDSegmentation::BitFieldValue* Field;
+      typedef BitFieldValue* Field;
       typedef std::vector<std::pair<std::string, Field> > FieldMap;
       typedef std::vector<std::pair<size_t, std::string> > FieldIDs;
       FieldMap fieldMap; //! not ROOT-persistent
@@ -152,7 +152,7 @@ namespace DD4hep {
       virtual ~IDDescriptorObject();
 #ifndef __CINT__
       /// Access to the field container of the BitField64
-      const std::vector<DDSegmentation::BitFieldValue*> fields() const {
+      const std::vector<BitFieldValue*> fields() const {
 	return _fields;
       }
 #endif

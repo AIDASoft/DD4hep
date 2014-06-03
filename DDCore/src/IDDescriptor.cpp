@@ -17,8 +17,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-using DDSegmentation::BitField64;
-using DDSegmentation::BitFieldValue;
 
 namespace {
   void _construct(IDDescriptor::Object* o, const string& dsc) {

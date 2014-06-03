@@ -30,8 +30,6 @@ namespace DD4hep {
    */
   namespace Geometry {
 
-    typedef DDSegmentation::BitField64 BitField64;
-
     /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
@@ -40,8 +38,8 @@ namespace DD4hep {
     class SegmentationObject : public DDSegmentation::Segmentation {
     public:
       typedef DDSegmentation::Segmentation BaseSegmentation;
-      typedef DDSegmentation::Parameter Parameter;
       typedef DDSegmentation::Parameters Parameters;
+      typedef DDSegmentation::Parameter Parameter;
     public:
       /// Magic word to check object integrity
       unsigned long magic;
