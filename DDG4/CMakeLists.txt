@@ -103,11 +103,7 @@ install(DIRECTORY examples
   DESTINATION examples/DDG4
   PATTERN ".svn" EXCLUDE )
 
-install(DIRECTORY python
-  DESTINATION python/DDG4
-  PATTERN ".d" EXCLUDE
-  PATTERN ".so" EXCLUDE
-  PATTERN ".svn" EXCLUDE )
+install(FILES python/DD4hep.py python/DDG4.py python/DDG4Dict.C  DESTINATION python)
 
 install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay
   RUNTIME DESTINATION bin

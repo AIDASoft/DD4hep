@@ -25,13 +25,14 @@
 #include "TGeoNode.h"
 #include "TGeoShape.h"
 #include "TGeoCone.h"
+#include "TGeoHype.h"
 #include "TGeoPcon.h"
 #include "TGeoPgon.h"
 #include "TGeoSphere.h"
 #include "TGeoTorus.h"
-#include "TGeoTube.h"
 #include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
+#include "TGeoTube.h"
 #include "TGeoArb8.h"
 #include "TGeoMatrix.h"
 #include "TGeoBoolNode.h"
@@ -53,7 +54,9 @@
 #include "G4Box.hh"
 #include "G4Trd.hh"
 #include "G4Tubs.hh"
+#include "G4Trap.hh"
 #include "G4Cons.hh"
+#include "G4Hype.hh"
 #include "G4Torus.hh"
 #include "G4Sphere.hh"
 #include "G4Polycone.hh"
@@ -383,6 +386,12 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = new G4Trd(name, s->GetDx1() * CM_2_MM, s->GetDx2() * CM_2_MM, s->GetDy1() * CM_2_MM, s->GetDy2() * CM_2_MM,
           s->GetDz() * CM_2_MM);
     }
+    else if (shape->IsA() == TGeoHype::Class()) {
+      const TGeoHype* s = (const TGeoHype*) shape;
+      solid = new G4Hype(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, 
+			 s->GetStIn() * DEGREE_2_RAD, s->GetStOut() * DEGREE_2_RAD,
+			 s->GetDz() * CM_2_MM);
+    }
     else if (shape->IsA() == TGeoPgon::Class()) {
       const TGeoPgon* s = (const TGeoPgon*) shape;
       double phi_start = s->GetPhi1() * DEGREE_2_RAD;
@@ -425,6 +434,12 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       const TGeoTorus* s = (const TGeoTorus*) shape;
       solid = new G4Torus(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetR() * CM_2_MM,
           s->GetPhi1() * DEGREE_2_RAD, s->GetDphi() * DEGREE_2_RAD);
+    }
+    else if (shape->IsA() == TGeoTrap::Class()) {
+      const TGeoTrap* s = (const TGeoTrap*) shape;
+      solid = new G4Trap(name, s->GetDz() * CM_2_MM, s->GetTheta(), s->GetPhi(), 
+          s->GetH1() * CM_2_MM, s->GetBl1() * CM_2_MM, s->GetTl1() * CM_2_MM, s->GetAlpha1() * DEGREE_2_RAD,
+          s->GetH2() * CM_2_MM, s->GetBl2() * CM_2_MM, s->GetTl2() * CM_2_MM, s->GetAlpha2() * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoCompositeShape::Class()) {
       const TGeoCompositeShape* s = (const TGeoCompositeShape*) shape;

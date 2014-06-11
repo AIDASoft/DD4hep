@@ -1,37 +1,7 @@
-import os, sys, imp, exceptions
-# Add ROOT to the python path in case it is not yet there....
-sys.path.append(os.environ['ROOTSYS']+os.sep+'lib')
-import ROOT
-#---------------------------------------------------------------------------
-# We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
-def compileAClick(dictionary,g4=True):
-  from ROOT import gInterpreter, gSystem
-  import os.path
-  dd4hep = os.environ['DD4hepINSTALL']
-  inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
-  lib    = ' -L'+dd4hep+'/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation '
-  if g4:
-    geant4 = os.environ['G4INSTALL']
-    inc    = inc + ' -I'+geant4+'/include/Geant4 -Wno-shadow -g -O0 '
-    lib    = lib + ' -L'+geant4+'/lib  -L'+geant4+'/lib64 -lG4event -lG4tracking -lG4particles '
-
-  gSystem.AddIncludePath(inc)
-  gSystem.AddLinkedLibs(lib)
-  #####print "Includes:   ",gSystem.GetIncludePath(),"\n","Linked libs:",gSystem.GetLinkedLibs()
-  package = imp.find_module('DDG4')
-  dic = os.path.dirname(package[1])+os.sep+dictionary
-  ###print dic
-  gInterpreter.ProcessLine('.L '+dic+'+')
-  #####gInterpreter.Load('DDG4Dict_C.so')
-  from ROOT import DD4hep as module
-  return module
+from DD4hep import *
 
 def loadDDG4():
   from ROOT import gSystem
-  import os.path
-  result = gSystem.Load("libDD4hepCore")
-  if 0 != result:
-    raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepCore: '+gSystem.GetErrorStr())
   result = gSystem.Load("libDD4hepG4")
   if 0 != result:
     raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepG4: '+gSystem.GetErrorStr())
@@ -54,7 +24,7 @@ except Exception,X:
   print '|  %-100s  |'%(str(X),)
   print '|  %-100s  |'%('Try to compile AClick on the fly.',)
   print '+--%-100s--+'%(100*'-',)
-  DD4hep     = compileAClick(dictionary='DDG4Dict.C',g4=True)  
+  DD4hep   = compileAClick(dictionary='DDG4Dict.C',g4=True)  
 Core       = DD4hep
 Sim        = DD4hep.Simulation
 Simulation = DD4hep.Simulation
@@ -62,24 +32,13 @@ Simulation = DD4hep.Simulation
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
 
-class _Levels:
-  def __init__(self):
-    self.VERBOSE=1
-    self.DEBUG=2
-    self.INFO=3
-    self.WARNING=4
-    self.ERROR=5
-    self.FATAL=6 
-    self.ALWAYS=7
-
-OutputLevel = _Levels()
-
 def _registerGlobalAction(self,action):
   self.get().registerGlobalAction(Interface.toAction(action))
 def _registerGlobalFilter(self,filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
+  import exceptions
   #print '_getKernelProperty:',str(type(self)),name
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
@@ -103,7 +62,6 @@ Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
-
 
 ActionHandle                = Sim.ActionHandle
 #---------------------------------------------------------------------------
@@ -195,57 +153,3 @@ _props('PhysicsListActionSequenceHandle')
 _props('SensDetActionSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
-
-#---------------------------------------------------------------------------
-_import_class('Core','NamedObject')
-
-#---------------------------------------------------------------------------
-Geo        = DD4hep.Geometry
-Geometry   = DD4hep.Geometry
-
-_import_class('Geo','LCDD')
-_import_class('Geo','VolumeManager')
-_import_class('Geo','OverlayedField')
-
-#// Objects.h
-_import_class('Geo','Author')
-_import_class('Geo','Header')
-_import_class('Geo','Constant')
-_import_class('Geo','Atom')
-_import_class('Geo','Material')
-_import_class('Geo','VisAttr')
-_import_class('Geo','AlignmentEntry')
-_import_class('Geo','Limit')
-_import_class('Geo','LimitSet')
-_import_class('Geo','Region')
-
-#// Readout.h
-_import_class('Geo','Readout')
-_import_class('Geo','Alignment')
-_import_class('Geo','Conditions')
-
-#// DetElement.h
-_import_class('Geo','DetElement')
-_import_class('Geo','SensitiveDetector')
-
-#// Volume.h
-_import_class('Geo','Volume')
-_import_class('Geo','PlacedVolume')
-
-#// Shapes.h
-_import_class('Geo','Polycone')
-_import_class('Geo','ConeSegment')
-_import_class('Geo','Box')
-_import_class('Geo','Torus')
-_import_class('Geo','Cone')
-_import_class('Geo','Tube')
-_import_class('Geo','Trap')
-_import_class('Geo','Trapezoid')
-_import_class('Geo','Sphere')
-_import_class('Geo','Paraboloid')
-_import_class('Geo','PolyhedraRegular')
-_import_class('Geo','BooleanSolid')
-_import_class('Geo','SubtractionSolid')
-_import_class('Geo','UnionSolid')
-_import_class('Geo','IntersectionSolid')
-
