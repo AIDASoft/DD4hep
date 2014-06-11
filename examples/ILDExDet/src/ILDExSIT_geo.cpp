@@ -61,7 +61,24 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Material sensmat =  lcdd.material( x_ladder.materialStr() );
 
     Volume      laddervol (layername+"_ladder",ladderbox , suppmat );
+
+#if 0 /// debug: replacing Box with Trap ...
+    Trap sensbox( zhalf,
+		  0.0,
+		  0.0,
+		  width/2.,
+		  sens_thick/2.,
+		  sens_thick/2.,
+		  0.0,
+		  width/2.,
+		  sens_thick/2.,
+		  sens_thick/2.,
+		  0.0 ) ;
+#else
     Box         sensbox   (sens_thick/2.,width/2.,zhalf);
+#endif
+
+
     Volume      sensvol   (layername+"_sens",sensbox, sensmat );
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,lcdd.material(x_support.materialStr()));
