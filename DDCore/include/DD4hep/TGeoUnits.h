@@ -73,9 +73,15 @@ namespace tgeo {
 //
 // Angle
 //
-  static const double radian = 180. / 3.14159265358979323846;   // => degree=1
+  // static const double radian = 180. / 3.14159265358979323846;   // => degree=1
+  // static const double milliradian = 1.e-3 * radian;
+  // static const double degree = 1.;   //= (3.14159265358979323846/180.0)*radian;
+
+  //fg: use radians as default unit as this is needed for all math functions
+  //    and everywhere else, except in TGeo shapes -> this is taken care of in shape Handles .... 
+  static const double radian = 1. ; 
   static const double milliradian = 1.e-3 * radian;
-  static const double degree = 1.;   //= (3.14159265358979323846/180.0)*radian;
+  static const double degree = (3.14159265358979323846/180.0)*radian;
 
   static const double steradian = 1.;
 

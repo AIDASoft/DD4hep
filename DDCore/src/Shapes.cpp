@@ -10,6 +10,7 @@
 #define _USE_MATH_DEFINES
 #include "DD4hep/LCDD.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/TGeoUnits.h"
 // C/C++ include files
 #include <stdexcept>
 
@@ -78,7 +79,7 @@ double Box::z() const {
 
 /// Constructor to be used when creating a new object
 Polycone::Polycone(double start, double delta) {
-  _assign(new TGeoPcon(start*RAD_2_DEGREE, delta*RAD_2_DEGREE, 0), "", "polycone", false);
+  _assign(new TGeoPcon(start/tgeo::deg, delta/tgeo::deg, 0), "", "polycone", false);
 }
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
@@ -88,8 +89,8 @@ Polycone::Polycone(double start, double delta, const vector<double>& rmin, const
   if (rmin.size() < 2) {
     throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
   }
-  params.push_back(start*RAD_2_DEGREE);
-  params.push_back(delta*RAD_2_DEGREE);
+  params.push_back(start/tgeo::deg);
+  params.push_back(delta/tgeo::deg);
   params.push_back(rmin.size());
   for (size_t i = 0; i < rmin.size(); ++i) {
     params.push_back(z[i] );
@@ -126,20 +127,20 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
   _assign(
-      new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1*RAD_2_DEGREE, phi2*RAD_2_DEGREE), "", "cone_segment", true);
+      new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/tgeo::deg, phi2/tgeo::deg), "", "cone_segment", true);
 }
 
 /// Set the cone segment dimensions
 ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1,
     double phi2) {
-  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1*RAD_2_DEGREE, phi2*RAD_2_DEGREE };
+  double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1/tgeo::deg, phi2/tgeo::deg };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 void Tube::make(const string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi) {
-  //_assign(new TGeoTubeSeg(rmin,rmax,z,startPhi*RAD_2_DEGREE,deltaPhi*RAD_2_DEGREE),name,"tube",true);
+  //_assign(new TGeoTubeSeg(rmin,rmax,z,startPhi/tgeo::deg,deltaPhi/tgeo::deg),name,"tube",true);
   _assign(new MyConeSeg(), name, "tube", true);
   setDimensions(rmin, rmax, z, startPhi, deltaPhi);
 }
@@ -147,7 +148,7 @@ void Tube::make(const string& name, double rmin, double rmax, double z, double s
 /// Set the tube dimensions
 Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, double deltaPhi) {
   //double params[] = {rmin,rmax,z,startPhi,deltaPhi};
-  double params[] = { z, rmin, rmax, rmin, rmax, startPhi*RAD_2_DEGREE,deltaPhi*RAD_2_DEGREE };
+  double params[] = { z, rmin, rmax, rmin, rmax, startPhi/tgeo::deg,deltaPhi/tgeo::deg };
   _setDimensions(params);
   return *this;
 }
@@ -194,25 +195,25 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
 
 /// Constructor to be used when creating a new object with attribute initialization
 Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  _assign(new TGeoSphere(rmin, rmax, theta, delta_theta*RAD_2_DEGREE, phi*RAD_2_DEGREE, delta_phi*RAD_2_DEGREE), "", "sphere", true);
+  _assign(new TGeoSphere(rmin, rmax, theta, delta_theta/tgeo::deg, phi/tgeo::deg, delta_phi/tgeo::deg), "", "sphere", true);
 }
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  double params[] = { rmin, rmax, theta, delta_theta*RAD_2_DEGREE, phi*RAD_2_DEGREE,
-      delta_phi*RAD_2_DEGREE };
+  double params[] = { rmin, rmax, theta, delta_theta/tgeo::deg, phi/tgeo::deg,
+      delta_phi/tgeo::deg };
   _setDimensions(params);
   return *this;
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
 void Torus::make(double r, double rmin, double rmax, double phi, double delta_phi) {
-  _assign(new TGeoTorus(r, rmin, rmax, phi*RAD_2_DEGREE, delta_phi*RAD_2_DEGREE), "", "torus", true);
+  _assign(new TGeoTorus(r, rmin, rmax, phi/tgeo::deg, delta_phi/tgeo::deg), "", "torus", true);
 }
 
 /// Set the Torus dimensions
 Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, double delta_phi) {
-  double params[] = { r, rmin, rmax, phi*RAD_2_DEGREE, delta_phi*RAD_2_DEGREE };
+  double params[] = { r, rmin, rmax, phi/tgeo::deg, delta_phi/tgeo::deg };
   _setDimensions(params);
   return *this;
 }
@@ -220,7 +221,7 @@ Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, doub
 /// Constructor to be used when creating a new anonymous object with attribute initialization
 Trap::Trap(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2, double x3, double x4,
     double alpha2) {
-  _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1, y2, x3, x4, alpha2), "", "trap", true);
+  _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1/tgeo::deg, y2, x3, x4, alpha2/tgeo::deg), "", "trap", true);
 }
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
@@ -232,13 +233,13 @@ void Trap::make(double pz, double py, double px, double pLTX) {
   double x1 = px / 2e0;
   double x2 = pLTX / 2e0;
   double alpha1 = (pLTX - px) / py;
-  _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1, y1, x1, x2, alpha1), "", "trap", true);
+  _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1/tgeo::deg, y1, x1, x2, alpha1/tgeo::deg), "", "trap", true);
 }
 
 /// Set the trap dimensions
 Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2,
     double x3, double x4, double alpha2) {
-  double params[] = { z, theta, phi, y1, x1, x2, alpha1, y2, x3, x4, alpha2 };
+  double params[] = { z, theta, phi, y1, x1, x2, alpha1/tgeo::deg, y2, x3, x4, alpha2/tgeo::deg };
   _setDimensions(params);
   return *this;
 }
@@ -257,17 +258,17 @@ void PolyhedraRegular::_create(const string& name, int nsides, double rmin, doub
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zlen) {
-  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 2*M_PI*RAD_2_DEGREE);
+  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 360.);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, double rmax, double zlen) {
-  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart, 2*M_PI*RAD_2_DEGREE);
+  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart, 360.);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2]) {
-  _create("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 2*M_PI*RAD_2_DEGREE);
+  _create("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 360.);
 }
 
 /// Creator method

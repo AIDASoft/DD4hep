@@ -69,6 +69,10 @@ int main(int argc, char** argv ){
     double al0_deg = lcdd.constant<double>( "alpha_half_arc_deg" )  / deg ;
     double al1_deg = lcdd.constant<double>( "alpha_half_arc_rad" )  / deg ;
 
+    test( STR( al0_deg ) , STR( 180. )  , " alpha_half_arc_deg in deg is 180." ) ; 
+    test( STR( al1_deg ) , STR( 180. )  , " alpha_half_arc_rad in deg is 180." ) ; 
+
+
     test( STR(al0_deg), STR(al1_deg) , " alpha_half_arc in deg " ) ; 
 
 

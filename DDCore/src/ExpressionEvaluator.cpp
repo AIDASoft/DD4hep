@@ -1,4 +1,6 @@
 #include "XML/Evaluator.h"
+#include "DD4hep/TGeoUnits.h"
+
 
 namespace {
   void _init(XmlTools::Evaluator& e) {
@@ -17,7 +19,10 @@ namespace {
     //                   1 Coulomb = 1/e As
     // Ampere = C/s = 1/e * As / s = 1. / 1.60217733e-19
     // kilogram = joule*s*s/(m*m)          1/e_SI * 1 *1 / 1e2 / 1e2
-    e.setSystemOfUnits(1.e+2, 1./1.60217733e-6, 1.0, 1./1.60217733e-19, 1.0, 1.0, 1.0);
+
+    //    e.setSystemOfUnits(1.e+2, 1./1.60217733e-6, 1.0, 1./1.60217733e-19, 1.0, 1.0, 1.0);
+    // use the units as defined in TGeoUnits.h:
+    e.setSystemOfUnits( tgeo::meter, tgeo::kilogram , tgeo::second , tgeo::ampere , tgeo::kelvin , tgeo::mole , tgeo::candela , tgeo::rad );
   }
   void _g4Units(XmlTools::Evaluator& e) {
     // ===================================================================================
