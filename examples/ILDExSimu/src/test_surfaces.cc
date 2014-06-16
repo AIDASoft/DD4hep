@@ -130,7 +130,7 @@ int main(int argc, char** argv ){
 
 	if( surf != 0 ){
 	  
-	  std::cout << " found surface " <<  *surf << std::endl ;
+	  //  std::cout << " found surface " <<  *surf << std::endl ;
 
 	  Vector3D point( sHit->getPosition()[0]* tgeo::mm , sHit->getPosition()[1]* tgeo::mm ,  sHit->getPosition()[2]* tgeo::mm ) ;
 	  
