@@ -254,13 +254,13 @@ namespace DD4hep {
 
       volList.push_back( pv ) ;
       
-      // unsigned count = volList.size() ;
-      // for(unsigned i=0 ; i < count ; ++i) {
-      //  	std::cout << " **" ;
-      // }
-      // std::cout << " searching for volume: " << theVol.name() << " " << std::hex << theVol.ptr() << "  <-> pv.volume : "  << pv.name() << " " <<  pv.volume().ptr() 
-      //  		<< " pv.volume().ptr() == theVol.ptr() " <<  (pv.volume().ptr() == theVol.ptr() )
-      //  		<< std::endl ;
+    //   unsigned count = volList.size() ;
+    //   for(unsigned i=0 ; i < count ; ++i) {
+    //   	std::cout << " **" ;
+    //   }
+    //   std::cout << " searching for volume: " << theVol.name() << " " << std::hex << theVol.ptr() << "  <-> pv.volume : "  << pv.name() << " " <<  pv.volume().ptr() 
+    //    		<< " pv.volume().ptr() == theVol.ptr() " <<  (pv.volume().ptr() == theVol.ptr() )
+    //    		<< std::endl ;
       
 
       if( pv.volume().ptr() == theVol.ptr() ) { 
@@ -421,8 +421,8 @@ namespace DD4hep {
       Volume theVol = _volSurf.volume() ;
       
       if( ! findVolume(  pv, theVol , pVList ) ){
-	
-	throw std::runtime_error( " ***** ERROR: No Volume found for DetElement with surface " ) ;
+	     std::stringstream sst ; sst << " ***** ERROR: Volume " << theVol.name() << " not found for DetElement " << _det.name()  << " with surface "  ;
+	     throw std::runtime_error( sst.str() ) ;
       } 
 
       // std::cout << " **** Surface::initialize() # placements for surface = " << pVList.size() 

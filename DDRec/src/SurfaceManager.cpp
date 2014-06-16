@@ -58,10 +58,29 @@ namespace DD4hep {
 	
 	DetElement det = (*li) ;
 	
+
+
 	// create surfaces
 	DetectorSurfaces ds( det ) ;
 	
 	const SurfaceList& detSL = ds.surfaceList() ;
+
+
+	// // ---------------------- debug printout
+	// std::cout << " ---- DetElement id: " << det.volumeID() << " name : " << det.name() << "  #surfaces : " << detSL.size() << std::endl ; 
+	// PlacedVolume pv = det.placement() ;
+	// if( pv.isValid() ) {
+	//   try{ // needed as above is also true for world whcih has invalid placment ...
+	//     PlacedVolume::VolIDs volIDs = pv.volIDs() ;
+	//     for(unsigned i=0,n=volIDs.size(); i<n ; ++i){
+	//       std::cout << "        " << volIDs[i].first << " : " << volIDs[i].second << std::endl ;
+	//     }
+	//   }catch(...){}
+	// }else{
+	//   std::cout << "        invalid placement for DetElement ??? !! " << std::endl ;
+	// }
+	// // ------------------------- end debug printout
+
 
 	// and add copy them to this list
 	_sL.insert( _sL.end(), detSL.begin(), detSL.end() );

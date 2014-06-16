@@ -60,9 +60,9 @@ int main(int argc, char** argv ){
     Surface* surf =  *it ;
     
     // std::cout << " ------------------------- " 
-    // 	      << " surface: "  << *surf          << std::endl
-    // 	      << " ------------------------- "  << std::endl ;
-
+    //  	      << " surface: "  << *surf          << std::endl
+    //  	      << " ------------------------- "  << std::endl ;
+    
     
     surfMap[ surf->id() ] = surf ;
 
@@ -84,15 +84,27 @@ int main(int argc, char** argv ){
 
   std::vector< std::string > colNames ;
   colNames.push_back( "VXDCollection" ) ;
-  //  colNames.push_back( "SITCollection" ) ;
+  colNames.push_back( "SITCollection" ) ;
+  colNames.push_back( "SETCollection" ) ;
+  colNames.push_back( "FTDCollection" ) ;
+  colNames.push_back( "TPCCollection" ) ;
 
   while( ( evt = rdr->readNextEvent() ) != 0 ){
 
 
     for(unsigned icol=0, ncol = colNames.size() ; icol < ncol ; ++icol ){
 
-      LCCollection* col = evt->getCollection( colNames[ icol ] ) ;
+      
+      LCCollection* col = 0 ; 
+      try{ 
 
+	col = evt->getCollection( colNames[ icol ] ) ;
+
+      }catch(lcio::DataNotAvailableException&e){
+
+	std::cout << " --- collection  : " << colNames[ icol ] << " not in event ... " << std::endl ;
+	continue ;
+      }
       int nHit = col->getNumberOfElements() ;
       
 
