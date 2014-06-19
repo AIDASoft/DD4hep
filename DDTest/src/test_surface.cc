@@ -1,7 +1,7 @@
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/LCDD.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Detector.h"
 
@@ -151,9 +151,9 @@ int main(int argc, char** argv ){
 
     test( STR( sm.density() )  , STR( 2.33 ) , "   SurfaceMaterial.density() == 2.33 " ) ; 
 
-    test( STR( sm.radiationLength() / tgeo::mm )  , STR( 93.4961 ) , "   SurfaceMaterial.radiationLength() == 93.4961 * mm " ) ; 
+    test( STR( sm.radiationLength() / dd4hep::mm )  , STR( 93.4961 ) , "   SurfaceMaterial.radiationLength() == 93.4961 * mm " ) ; 
 
-    test( STR( sm.interactionLength() / tgeo::mm )  , STR( 457.532 ) , "   SurfaceMaterial.interactionLength() == 457.532 * mm " ) ; 
+    test( STR( sm.interactionLength() / dd4hep::mm )  , STR( 457.532 ) , "   SurfaceMaterial.interactionLength() == 457.532 * mm " ) ; 
     
 
 

@@ -3,7 +3,7 @@
 // ----------------------------------------------------------------------
 
 #include "XML/Evaluator.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include <cmath>	// for sqrt and pow
 
@@ -46,10 +46,10 @@ void Evaluator::setStdMath() {
   // setVariable("rad",    1.0);
   // setVariable("degree", 3.14159265358979323846/180.);
   // setVariable("deg",    3.14159265358979323846/180.);
-  setVariable("radian", tgeo::rad );
-  setVariable("rad",    tgeo::rad );
-  setVariable("degree", tgeo::deg );
-  setVariable("deg",    tgeo::deg );
+  setVariable("radian", dd4hep::rad );
+  setVariable("rad",    dd4hep::rad );
+  setVariable("degree", dd4hep::deg );
+  setVariable("deg",    dd4hep::deg );
 
   //   S E T   S T A N D A R D   F U N C T I O N S
 

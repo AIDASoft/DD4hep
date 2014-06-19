@@ -5,7 +5,7 @@
 #include "DDRec/SurfaceManager.h"
 #include "DD4hep/DDTest.h"
 
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include "lcio.h"
 #include "IO/LCReader.h"
@@ -132,7 +132,7 @@ int main(int argc, char** argv ){
 	  
 	  //  std::cout << " found surface " <<  *surf << std::endl ;
 
-	  Vector3D point( sHit->getPosition()[0]* tgeo::mm , sHit->getPosition()[1]* tgeo::mm ,  sHit->getPosition()[2]* tgeo::mm ) ;
+	  Vector3D point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
 	  
 	  double dist = surf->distance( point ) ;
 	  
@@ -152,7 +152,7 @@ int main(int argc, char** argv ){
 		      << " id : " << idDecoder 
 		      << " point : " << point 
 		      << " is inside : " <<  isInside
-		      << " distance from surface : " << dist/tgeo::mm << std::endl 
+		      << " distance from surface : " << dist/dd4hep::mm << std::endl 
 		      << std::endl ;
 	  }
 
@@ -170,7 +170,7 @@ int main(int argc, char** argv ){
 		      << " id : " << idDecoder 
 		      << " point : " << point 
 		      << " is inside : " <<  isInside
-		      << " distance from surface : " << dist/tgeo::mm << std::endl 
+		      << " distance from surface : " << dist/dd4hep::mm << std::endl 
 		      << std::endl ;
 
 	  }

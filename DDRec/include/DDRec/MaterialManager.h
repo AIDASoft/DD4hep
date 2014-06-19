@@ -4,7 +4,7 @@
 #include "DD4hep/Objects.h"
 #include "DDSurfaces/Vector3D.h"
 #include "DDRec/Material.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include <vector>
 

@@ -1,5 +1,5 @@
 #include "DD4hep/LCDD.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Fields.h"
 
 #include "TGeoManager.h"
@@ -20,7 +20,7 @@
 using namespace std ;
 using namespace DD4hep ;
 using namespace DD4hep::Geometry;
-using namespace tgeo ;
+using namespace dd4hep ;
 
 //=============================================================================
 

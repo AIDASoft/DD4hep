@@ -8,10 +8,10 @@
 //====================================================================
 #include "DD4hep/DetFactoryHelper.h"
 
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 using namespace std;
-using namespace tgeo ;
+using namespace dd4hep ;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 

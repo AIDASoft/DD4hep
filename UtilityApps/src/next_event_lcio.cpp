@@ -12,7 +12,7 @@
 #include "EVENT/TrackerHit.h"
 #include "UTIL/Operators.h"
 
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include "MultiView.h"
 
@@ -143,7 +143,7 @@ TEveElement* createPointSet( lcio::LCCollection* col, const std::string& name, u
     // pos[1] = hit->getPosition()[1] ;
     // pos[2] = hit->getPosition()[2] ;
      
-    ps->SetNextPoint( pos[0]*tgeo::mm , pos[1]*tgeo::mm, pos[2]*tgeo::mm );
+    ps->SetNextPoint( pos[0]*dd4hep::mm , pos[1]*dd4hep::mm, pos[2]*dd4hep::mm );
      
     int id[2] ;
     id[0] = hit->getCellID0()  ;

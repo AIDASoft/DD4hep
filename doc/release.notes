@@ -1,6 +1,28 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2014/06/19 Frank Gaede
+----------------------
+    - replaced TGeoUnits.h by  DD4hepUnits.h
+    - renamed namespace tgeo to dd4hep
+       -> users need to replace tgeo::mm by dd4hep::mm
+
+
+2014/06/12 Frank Gaede
+----------------------
+   - changed default unit for angles to be radians   (tgeo::rad = 1.)
+   - enforce usage of units from TGeoUnits.h in xml expression evaluators
+   - convert to degrees for angles in TGeoShapes constructors
+   - NB: there is one inconsistency left here:  angles returned
+         from TGeoShapes are already in degrees, this is the one
+         case where a quantity returned from DD4hep/TGeo does not have the default
+         units - thus one should not write
+         double phi = coneSeg.Phi1() / tgeo::rad ;
+         but rather
+         double phi = coneSeg.Phi1() * tgeo::deg ;
+
+
 2014/06/03 Markus Frank
 -----------------------
   - Provision for ROOT persistency for DD4hep detector descriptions:

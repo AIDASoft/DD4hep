@@ -152,11 +152,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 #ifdef DD4HEP_WITH_GEAR
     //----------------- gear ---------------------------------------------
-    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
-    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
+    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
+    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
 
-    gearZPlanar->addLayer ( nLadders, 0. , radius/tgeo::mm, 0. ,  supp_thick/tgeo::mm  , 2*zhalf/tgeo::mm, width/tgeo::mm, ladderRadLength,  
-			    (radius+supp_thick)/tgeo::mm,  0 ,  sens_thick/tgeo::mm ,  2*zhalf/tgeo::mm ,  width/tgeo::mm, sensitiveRadLength) ;
+    gearZPlanar->addLayer ( nLadders, 0. , radius/dd4hep::mm, 0. ,  supp_thick/dd4hep::mm  , 2*zhalf/dd4hep::mm, width/dd4hep::mm, ladderRadLength,  
+			    (radius+supp_thick)/dd4hep::mm,  0 ,  sens_thick/dd4hep::mm ,  2*zhalf/dd4hep::mm ,  width/dd4hep::mm, sensitiveRadLength) ;
 
     // addLayer (int nLadders, double phi0, double ladderDistance, double ladderOffset, double ladderThickness, double ladderLength, double ladderWidth, double ladderRadLength, 
     //           double sensitiveDistance, double sensitiveOffset, double sensitiveThickness, double sensitiveLength, double sensitiveWidth, double sensitiveRadLength)

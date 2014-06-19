@@ -1,7 +1,7 @@
 #include "DDRec/DDGear.h"
 
 #include "DD4hep/LCDD.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Fields.h"
 
 // ROOT
@@ -117,7 +117,7 @@ namespace DD4hep{
     OverlayedField ovField = lcdd.field() ;
     ovField.magneticField( origin , bfield  ) ;
   
-    gearMgr->setBField( new gear::ConstantBField( gear::Vector3D( bfield[0]/ tgeo::tesla , bfield[1]/ tgeo::tesla , bfield[2] / tgeo::tesla ) ) ) ;
+    gearMgr->setBField( new gear::ConstantBField( gear::Vector3D( bfield[0]/ dd4hep::tesla , bfield[1]/ dd4hep::tesla , bfield[2] / dd4hep::tesla ) ) ) ;
 
 
     //----------------- PointProperties and DistanceProperties -------------------------

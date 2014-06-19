@@ -10,7 +10,7 @@
 //
 //====================================================================
 #include "DD4hep/LCDD.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include "DDRec/MaterialManager.h"
 
@@ -19,7 +19,7 @@ using namespace DD4hep ;
 using namespace DD4hep::Geometry;
 using namespace DD4hep::DDRec;
 using namespace DDSurfaces ;
-using namespace tgeo ;
+using namespace dd4hep ;
 
 //=============================================================================
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv ){
 	    << " interactionLength: " << avMat.interactionLength()  << std::endl << std::endl  ;
   
 
-  std::cout << "     Total length : "  << path_length / tgeo::mm << " mm "  << std::endl  ;
+  std::cout << "     Total length : "  << path_length / dd4hep::mm << " mm "  << std::endl  ;
 
   std::cout << "     Integrated radiation lengths : "     << path_length / avMat.radiationLength()  << " X0 " << std::endl  ;
 

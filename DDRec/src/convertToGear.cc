@@ -1,5 +1,5 @@
 #include "DD4hep/LCDD.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Fields.h"
 
 #include "TGeoManager.h"

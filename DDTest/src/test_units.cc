@@ -1,7 +1,7 @@
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/LCDD.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include <exception>
 #include <iostream>
@@ -12,7 +12,7 @@
 using namespace std ;
 using namespace DD4hep ;
 using namespace Geometry;
-using namespace tgeo ;
+using namespace dd4hep ;
 
 // this should be the first line in your test
 DDTest test = DDTest( "units" ) ; 
