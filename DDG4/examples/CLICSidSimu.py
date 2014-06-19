@@ -85,8 +85,8 @@ def run():
 
   # Setup particle gun
   gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/Gun")
-  gun.energy   = 50*GeV
-  gun.particle = 'e-'
+  gun.energy   = 100*GeV
+  gun.particle = 'pi-'
   gun.multiplicity = 1
   gun.position = (0*mm,0*mm,0*cm)
   gun.isotrop = True
@@ -159,7 +159,7 @@ def run():
   act.adoptFilter(kernel.globalFilter('OpticalPhotonRejector'))
   seq.add(act)
 
-  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/HcalOpticalBarrelHandler','HcalBarrel')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/HcalBarrelHandler','HcalBarrel')
   act.adoptFilter(kernel.globalFilter('OpticalPhotonSelector'))
   seq.add(act)
 

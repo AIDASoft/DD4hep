@@ -68,6 +68,7 @@ void ObjectExtensions::copyFrom(const Extensions& ext, void* arg)  {
 void* ObjectExtensions::addExtension(void* ptr, const type_info& info, destruct_t dtor)  {
   return addExtension(ptr, info, 0, dtor);
 }
+
 /// Add an extension object to the detector element
 void* ObjectExtensions::addExtension(void* ptr, const type_info& info, copy_t ctor, destruct_t dtor)  {
   Extensions::iterator j = extensions.find(&info);

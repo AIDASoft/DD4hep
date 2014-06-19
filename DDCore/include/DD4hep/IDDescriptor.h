@@ -31,6 +31,7 @@ namespace DD4hep {
 
     class IDDescriptorObject;
 
+    /// Class implementing the ID encoding of detector response
     /** @class IDDescriptor IDDescriptor.h DDCore/IDDescriptor.h
      *
      *  @author  M.Frank

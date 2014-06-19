@@ -7,9 +7,8 @@
 
 namespace XmlTools {
 
+  /// Evaluator of arithmetic expressions with an extendable dictionary.
   /**
-   * Evaluator of arithmetic expressions with an extendable dictionary.
-   *
    * Taken from CLHEP 1.9.2.1
    *
    * Example:

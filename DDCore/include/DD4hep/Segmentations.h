@@ -30,6 +30,7 @@ namespace DD4hep {
    */
   namespace Geometry {
 
+    /// Implementation class supporting generic Segmentation of sensitive detectors
     /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank
@@ -78,6 +79,7 @@ namespace DD4hep {
     };
 
 
+    /// Handle class supporting generic Segmentation of sensitive detectors
     /** @class Segmentation Segmentations.h DD4hep/Segmentations.h
      *
      * @author  M.Frank

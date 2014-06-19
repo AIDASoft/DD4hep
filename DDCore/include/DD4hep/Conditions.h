@@ -35,9 +35,10 @@ namespace DD4hep {
       class IOV;
     }
 
-    /** @class Block  ConditionsInterna.h DD4hep/ConditionsInterna.h
-     * 
-     *  Class describing an opaque conditions data block
+    /// Class describing an opaque conditions data block
+    /** 
+     *  Access methods are templated. Once the access is fixed
+     *  on the first call, the data type may not be changed anymore.
      *
      * @author  M.Frank
      * @version 1.0
@@ -67,14 +68,13 @@ namespace DD4hep {
       template <typename T> inline const T& get() const;
     };
 
-    /** @class Condition  Condition.h DD4hep/Condition.h
-     * 
-     *  See the documentation about the TGeoPhysicalNode for further
-     *  details.
+    /// Main condition object handle.
+    /**  
+     *  This objects allows access to the data block and
+     *  the interval of validity for a single condition.
      *
-     *
-     * @author  M.Frank
-     * @version 1.0
+     *  @author  M.Frank
+     *  @version 1.0
      */
     class Condition: public Handle<ConditionsInterna::ConditionObject> {
     public:
@@ -162,8 +162,8 @@ namespace DD4hep {
     inline Condition::Condition() : Handle<Condition::Object>()   {
     }
 
-    /** @class Conditions  Conditions.h DD4hep/Conditions.h
-     *
+    /// Container class for condition handles aggregated by a detector element
+    /** 
      *  Note: The conditions container is owner by the detector element
      *        On deletion the detector element will destroy the container
      *        and all associated entries.

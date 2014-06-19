@@ -51,7 +51,16 @@ namespace DD4hep {
       BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY
     };
 
+    /// The main interface to the DD4hep detector description package
     /** @class LCDD LCDD.h  DD4hep/LCDD.h
+     *
+     *  Note: The usage of the factory method:
+     *
+     *      static LCDD& getInstance(void);
+     *
+     *  is DEPRECATED!
+     *
+     *  You should rather use the plugin mechanism to create a new instance.
      *
      *  @author  M.Frank
      *  @version 1.0

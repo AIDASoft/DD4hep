@@ -33,6 +33,7 @@ namespace DD4hep {
     class DetElement;
     class ReadoutObject;
 
+    /// Handle to the implementation of the readout structure of a subdetector
     /** @class Readout  Readout.h DD4hep/Readout.h
      *
      * @author  M.Frank

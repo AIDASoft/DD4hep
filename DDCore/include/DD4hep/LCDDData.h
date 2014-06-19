@@ -13,6 +13,7 @@
 // Framework includes
 #include "DD4hep/LCDD.h"
 #include "DD4hep/ObjectExtensions.h"
+#include "DD4hep/objects/VolumeManagerInterna.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -30,6 +31,7 @@ namespace DD4hep {
    */
   namespace Geometry {
 
+    /// Data implementation class of the LCDD interface
     /** @class LCDDData   LCDDData.h  DD4hep/LCDDData.h
      *
      * @author  M.Frank
@@ -99,6 +101,9 @@ namespace DD4hep {
 
       /// Definition of the extension type
       ObjectExtensions m_extensions;
+      /// Volume manager reference
+      VolumeManager m_volManager;
+
     protected:
       /// Default constructor
       LCDDData();

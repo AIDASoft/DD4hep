@@ -24,6 +24,7 @@ namespace DD4hep {
    */
   namespace Geometry {
 
+    /// Implementation object of a field with constant strength
     /** @class ConstantField FieldTypes.h
      *
      *  Generic constant uniform field
@@ -44,6 +45,7 @@ namespace DD4hep {
       virtual void fieldComponents(const double* /* pos */, double* field);
     };
 
+    /// Implementation object of a solenoidal magnetic field.
     /** @class SolenoidField FieldTypes.h DD4hep/FieldTypes.h
      *
      *  Generic solonoid magnetic field
@@ -67,6 +69,7 @@ namespace DD4hep {
       virtual void fieldComponents(const double* pos, double* field);
     };
 
+    /// Implementation object of a dipole magnetic field.
     /** @class DipoleField FieldTypes.h DD4hep/FieldTypes.h
      *
      *  Generic solonoid magnetic field

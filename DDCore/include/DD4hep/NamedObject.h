@@ -17,6 +17,7 @@
  */
 namespace DD4hep {
 
+    /// Implementation of a named object
     /** @class Container  NamedObject.h DD4hep/NamedObject.h
      * 
      *  The data class behind a conditions container handle.

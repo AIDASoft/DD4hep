@@ -71,13 +71,15 @@ void lcdd_unexpected(){
               << "**************************************************** \n"
               << std::endl ;
 
+    std::set_unexpected( std::unexpected ) ;
+    std::set_terminate( std::terminate ) ;
    // this provokes ROOT seg fault and stack trace (comment out to avoid it)
    exit(1) ;
   }
 }
 
 /// Disable copy constructor
-LCDDImp::LCDDImp(const LCDDImp&) : LCDD(), LCDDData(), m_volManager(), m_buildType(BUILD_NONE)  {
+LCDDImp::LCDDImp(const LCDDImp&) : LCDD(), LCDDData(), m_buildType(BUILD_NONE)  {
 }
 
 /// Disable assignment operator
@@ -99,8 +101,7 @@ void LCDD::destroyInstance() {
 }
 
 /// Default constructor
-LCDDImp::LCDDImp()
-  : LCDDData(), m_volManager(), m_buildType(BUILD_NONE)
+LCDDImp::LCDDImp() : LCDDData(), m_buildType(BUILD_NONE)
 {
 
   std::set_unexpected( lcdd_unexpected ) ;
@@ -133,9 +134,15 @@ LCDDImp::LCDDImp()
 
 /// Standard destructor
 LCDDImp::~LCDDImp() {
-  destroyHandle(m_volManager);
+  if ( m_manager == gGeoManager ) gGeoManager = 0;
   destroyData();
   InstanceCount::decrement(this);
+}
+
+// Load volume manager
+void LCDDImp::imp_loadVolumeManager()   {
+  destroyHandle(m_volManager);
+  m_volManager = VolumeManager(*this, "World", world(), Readout(), VolumeManager::TREE);
 }
 
 /// Add an extension object to the LCDD instance
@@ -223,7 +230,7 @@ namespace {
     void patchShapes() {
       GeoHandler::Data& data = *m_data;
       string nam;
-      cout << "++ Patching names of anonymous shapes...." << endl;
+      printout(INFO,"LCDD","+++ Patching names of anonymous shapes....");
       for (GeoHandler::Data::const_reverse_iterator i = data.rbegin(); i != data.rend(); ++i) {
         const GeoHandler::Data::mapped_type& v = (*i).second;
         for (GeoHandler::Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {

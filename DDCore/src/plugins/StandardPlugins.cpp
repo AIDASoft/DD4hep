@@ -109,7 +109,7 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
     if ( imp )  {
-      imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
+      imp->imp_loadVolumeManager();
       printout(INFO,"VolumeManager","+++ Volume manager populated and loaded.");
       return 1;
     }

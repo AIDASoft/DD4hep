@@ -22,6 +22,15 @@
 #include <map>
 typedef DD4hep::Geometry::PlacedVolumeExtension::VolID VolID;
 
+#include "TRint.h"
+namespace DD4hep {
+  void run_interpreter(const std::string& name)  {
+    pair<int, char**> a(0,0);
+    TRint app(name.c_str(), &a.first, a.second);
+    app.Run();
+  }
+}
+
 
 // -------------------------------------------------------------------------
 // Regular DD4hep dictionaries
@@ -67,6 +76,7 @@ template class DD4hep::Geometry::Handle<TNamed>;
 
 #pragma link C++ class DD4hep::Geometry::VolumeManager+;
 #pragma link C++ class DD4hep::Geometry::VolumeManagerObject+;
+#pragma link C++ class DD4hep::Geometry::VolumeManagerContext+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::VolumeManagerObject>+;
 
 #pragma link C++ class DD4hep::Geometry::CartesianField+;
@@ -150,6 +160,8 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class vector<DD4hep::Geometry::DetElement>+;
 #pragma link C++ class pair<string,DD4hep::Geometry::DetElement>+;
 #pragma link C++ class map<string,DD4hep::Geometry::DetElement>+;
+#pragma link C++ class map<string,DD4hep::Geometry::DetElement>::iterator;
+#pragma link C++ class map<string,DD4hep::Geometry::DetElement>::const_iterator;
 
 #pragma link C++ class DD4hep::Geometry::SensitiveDetector+;
 #pragma link C++ class DD4hep::Geometry::SensitiveDetectorObject+;
@@ -171,6 +183,8 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class DD4hep::Geometry::PlacedVolumeExtension+;
 #pragma link C++ class vector<DD4hep::Geometry::PlacedVolume>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoNode>+;
+#pragma link C++ class vector<TGeoNode*>+;
+#pragma link C++ class vector<TGeoVolume*>+;
 
 
 // Shapes.h
@@ -233,6 +247,7 @@ template vector<pair<string, int> >::iterator;
 
 #pragma link C++ class DD4hep::Geometry::LCDD+;
 
+#pragma link C++ function DD4hep::run_interpreter(const std::string& name);
 #pragma link C++ function DD4hep::Geometry::_toDictionary(const string&, const string&);
 
 #endif  // __CINT__

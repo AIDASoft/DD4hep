@@ -18,7 +18,10 @@
  */
 namespace DD4hep {
 
+  /// Implementation of an object supporting arbitrary user extensions
   /** @class ObjectExtensions DetectorInterna.h DD4hep/objects/DetectorInterna.h
+   *
+   *  Usage by inheritance of the client supporting the functionality
    *
    *  @author  M.Frank
    *  @version 1.0
@@ -31,6 +34,7 @@ namespace DD4hep {
     typedef void* (*copy_t)(const void*, void* arg);
     /// Extensions destructor type
     typedef void (*destruct_t)(void*);
+    /// Defintiion of the extension entry
     struct Entry {
       copy_t copy;
       destruct_t destruct;

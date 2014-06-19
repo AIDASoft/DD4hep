@@ -41,7 +41,7 @@ namespace DD4hep {
      */
     class VolumeManagerContext {
     public:
-      typedef std::vector<const TGeoNode*> Path;
+      typedef std::vector<TGeoNode*> Path;
       typedef PlacedVolume::VolIDs::Base VolIDs;
 
       /// Placement identifier
@@ -85,8 +85,6 @@ namespace DD4hep {
       typedef VolumeManager::Context Context;
 
     public:
-      /// Reference to the LCDD instance
-      LCDD* lcdd;
       /// The container of subdetector elements
       Detectors subdetectors;
       /// The volume managers for the individual subdetector elements
@@ -109,7 +107,7 @@ namespace DD4hep {
       int flags;
     public:
       /// Default constructor
-      VolumeManagerObject(LCDD& lcdd);
+      VolumeManagerObject();
       /// Default destructor
       virtual ~VolumeManagerObject();
       /// Search the locally cached volumes for a matching ID
@@ -117,9 +115,6 @@ namespace DD4hep {
       /// Update callback when alignment has changed (called only for subdetectors....)
       void update(unsigned long tags, DetElement& det, void* param);
     };
-
-    /// Enable printouts for debugging
-    std::ostream& operator<<(std::ostream& os, const VolumeManager& m);
 
   } /* End namespace Geometry               */
 } /* End namespace DD4hep                */

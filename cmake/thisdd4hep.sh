@@ -68,9 +68,9 @@ fi
 
 #----PYTHONPATH---------------------------------------------------------------
 if [ -z "${PYTHONPATH}" ]; then
-  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/DDG4/python:@CMAKE_SOURCE_DIR@/DDCore/python; export PYTHONPATH
+  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python:@CMAKE_SOURCE_DIR@/DDCore/python; export PYTHONPATH
 else
-  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/DDG4/python:@CMAKE_SOURCE_DIR@/DDCore/python:$PYTHONPATH; export PYTHONPATH
+  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python:@CMAKE_SOURCE_DIR@/DDCore/python:$PYTHONPATH; export PYTHONPATH
 fi
 
 #----DD4hep installation directory--------------------------------------------

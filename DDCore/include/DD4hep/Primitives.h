@@ -53,7 +53,12 @@ namespace DD4hep {
   /// Throw exception when handles are check for validity
   void notImplemented(const std::string& msg);
 
+  /// Class to perform dynamic casts using unknown pointers.
   /** @class ComponentCast Primitives.h DD4hep/Primitives.h
+   *
+   *  It is mandatory that the pointers referred do actually
+   *  support the asked functionalty. 
+   *  Miracles also I cannot do.....
    *
    *   @author  M.Frank
    *   @date    13.08.2013

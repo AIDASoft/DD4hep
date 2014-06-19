@@ -586,6 +586,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     if (draw_style == VisAttr::SOLID) {
       m_element->SetLineColor(bright);
       m_element->SetFillColor(bright);
+      // ROOT 6: m_element->SetFillColorAlpha(bright,vis->alpha);
       m_element->SetFillStyle(1001);   // Root: solid
     }
     else {

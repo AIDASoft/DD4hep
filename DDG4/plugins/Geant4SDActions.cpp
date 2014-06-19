@@ -119,8 +119,7 @@ namespace DD4hep {
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<SimpleTracker>::defineCollections() {
-      m_collectionID = defineCollection<SimpleTracker::Hit>(name()+"Hits");
-      //m_collectionID = defineCollection<SimpleHit>(name()+"Hits");
+      m_collectionID = defineCollection<SimpleTracker::Hit>(m_sensitive.readout().name());
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
@@ -168,8 +167,7 @@ namespace DD4hep {
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<SimpleCalorimeter>::defineCollections() {
-      m_collectionID = defineCollection<SimpleCalorimeter::Hit>(name()+"Hits");
-      //m_collectionID = defineCollection<SimpleHit>(name()+"Hits");
+      m_collectionID = defineCollection<SimpleCalorimeter::Hit>(m_sensitive.readout().name());
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<SimpleCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
@@ -209,7 +207,7 @@ namespace DD4hep {
     struct SimpleOpticalCalorimeter {};
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<SimpleOpticalCalorimeter>::defineCollections() {
-      m_collectionID = defineCollection<SimpleCalorimeter::Hit>("Ceren_"+name()+"Hits");
+      m_collectionID = defineCollection<SimpleCalorimeter::Hit>(m_sensitive.readout().name());
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<SimpleOpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {

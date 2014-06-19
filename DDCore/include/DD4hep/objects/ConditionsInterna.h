@@ -58,7 +58,8 @@ namespace DD4hep {
 	} _IOVTypes;
 	/// IOV buffer type: Must be a bitmap!
 	int type;
-	unsigned char data[16];
+	int data[4];
+	int _spare;
 	/// Initializing constructor
 	IOV(int t=UNKNOWN_IOV);
 	/// Standard Destructor

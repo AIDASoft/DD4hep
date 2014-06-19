@@ -40,6 +40,7 @@ namespace DD4hep {
     class  SensitiveDetector;
     class  VisAttrObject;
 
+    /// Defintion of the object types used by generic geometry handlers
     /** @class GeoHandlerTypes  GeoHandler.h
      *
      * @author  M.Frank
@@ -78,7 +79,14 @@ namespace DD4hep {
       };
     };
 
+    /// The base class for all DD4hep geometry crawlers
     /** @class GeoHandler  GeoHandler.h
+     *
+     *  Geometry crawlers are used for multiple purposes, whenever entire
+     *  geometries must be traversed like e.g. to create a new geometry
+     *  for simulation etc.
+     *  While analysing the geometry, information is collected, which 
+     *  may be later processed.
      *
      * @author  M.Frank
      * @version 1.0
@@ -115,6 +123,7 @@ namespace DD4hep {
       Data* release();
     };
 
+    /// Geometry scanner (handle object)
     struct GeoScan {
     protected:
       /// Data holder

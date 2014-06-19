@@ -19,10 +19,9 @@
  */
 namespace DD4hep {
 
-  /**@class Callback  Callback.h CPP/Callback.h
-   *
-   *  Definition of the generic callback structure for member functions
-   *
+  
+  /// Definition of the generic callback structure for member functions
+  /**
    * @author  M.Frank
    * @date    01/03/2013
    * @version 0.1
@@ -280,6 +279,12 @@ namespace DD4hep {
     }
   };
 
+  /// Definition of an actor on sequences of callbacks
+  /**
+   * @author  M.Frank
+   * @date    01/03/2013
+   * @version 0.1
+   */
   struct CallbackSequence {
     typedef std::vector<Callback> Callbacks;
     enum Location { FRONT, END };
@@ -312,9 +317,13 @@ namespace DD4hep {
       else 
 	callbacks.insert(callbacks.end(),cb);
     }
+    /// Execution overload for callbacks with no arguments
     void operator()() const;
+    /// Execution overload for callbacks with 1 argument
     template <typename A0> void operator()(A0 a0) const;
+    /// Execution overload for callbacks with 2 arguments
     template <typename A0, typename A1> void operator()(A0 a0, A1 a1) const;
+    /// Execution overload for callbacks with 3 arguments
     template <typename A0, typename A1, typename A2> void operator()(A0 a0, A1 a1, A2 a2) const;
     /// Check the compatibility of two typed objects. The test is the result of a dynamic_cast
     static void checkTypes(const std::type_info& typ1, const std::type_info& typ2, void* test);
@@ -336,6 +345,7 @@ namespace DD4hep {
     }
   };
 
+  /// Execution overload for callbacks with no arguments
   inline void CallbackSequence::operator()() const {
     if (!callbacks.empty()) {
       const void* args[1] = { 0 };
@@ -343,6 +353,7 @@ namespace DD4hep {
         (*i).execute(args);
     }
   }
+  /// Execution overload for callbacks with 1 argument
   template <typename A0> inline
   void CallbackSequence::operator()(A0 a0) const {
     if (!callbacks.empty()) {
@@ -351,6 +362,7 @@ namespace DD4hep {
         (*i).execute(args);
     }
   }
+  /// Execution overload for callbacks with 2 arguments
   template <typename A0, typename A1> inline
   void CallbackSequence::operator()(A0 a0, A1 a1) const {
     if (!callbacks.empty()) {
@@ -359,6 +371,7 @@ namespace DD4hep {
         (*i).execute(args);
     }
   }
+  /// Execution overload for callbacks with 3 arguments
   template <typename A0, typename A1, typename A2> inline
   void CallbackSequence::operator()(A0 a0, A1 a1, A2 a2) const {
     if (!callbacks.empty()) {

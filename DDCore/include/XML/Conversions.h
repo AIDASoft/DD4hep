@@ -24,10 +24,8 @@ namespace DD4hep {
     struct Handle_t;
   }
 
-  /** @class Converter Conversions.h  DD4hep/compact/Conversions.h
-   *
-   *  Basic conversion objects for handling DD4hep XML files.
-   *
+  /// Basic conversion objects for handling DD4hep XML files.
+  /**
    *  @author   M.Frank
    *  @version  1.0
    */

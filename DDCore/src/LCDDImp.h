@@ -44,7 +44,10 @@ namespace DD4hep {
 
     public:
 
-      VolumeManager m_volManager;
+      /// Local method (no interface): Load volume manager. 
+      void imp_loadVolumeManager();
+
+      /// VolumeManager m_volManager;
       LCDDBuildType m_buildType;
 
       /// Default constructor
@@ -158,6 +161,7 @@ namespace DD4hep {
       }
       /// Retrieve a matrial by it's name from the detector description
       virtual Material material(const std::string& name) const;
+
       /// Retrieve a region object by it's name from the detector description
       virtual Region region(const std::string& name) const {
         return getRefChild(m_regions, name);

@@ -120,6 +120,7 @@ namespace DD4hep {
       return 0xFEEDAFFEDEADFACEULL;
     }
 
+    /// Handle: a templated class like a shared pointer, which allows specialized access to tgeometry objects.
     /** @class Handle Handle.h
      *
      *  @author  M.Frank
@@ -130,19 +131,24 @@ namespace DD4hep {
       typedef T Implementation;
       typedef Handle<Implementation> handle_t;
       T* m_element;
+      /// Defaulot constructor
       Handle()
           : m_element(0) {
       }
+      /// Initializing constructor from pointer
       Handle(T* e)
           : m_element(e) {
       }
+      /// Copy constructor
       Handle(const Handle<T>& e)
           : m_element(e.m_element) {
       }
+      /// Initializing constructor from unrelated pointer with type checking
       template <typename Q> Handle(Q* e)
           : m_element((T*) e) {
         verifyObject();
       }
+      /// Initializing constructor from unrelated handle with type checking
       template <typename Q> Handle(const Handle<Q>& e)
           : m_element((T*) e.m_element) {
         verifyObject();
@@ -164,45 +170,59 @@ namespace DD4hep {
       bool operator>(const Handle<T>& e)  const {
         return m_element > e.m_element;
       }
+      /// Check the validity of the object held by the handle
       bool isValid() const {
         return 0 != m_element;
       }
+      /// Check the validity of the object held by the handle
       bool operator!() const {
         return 0 == m_element;
       }
+      /// Release the object held by the handle
       Handle<T>& clear() {
         m_element = 0;
 	return *this;
       }
+      /// Access the held object using the -> operator
       T* operator->() const {
         return m_element;
       }
+      /// Automatic type conversion to an object references
       operator T&() const {
         return *m_element;
       }
+      /// Access the held object using the * operator
       T& operator*() const {
         return *m_element;
       }
+      /// Access to the held object
       T* ptr() const {
         return m_element;
       }
+      /// Access to an unrelated object type
       template <typename Q> Q* _ptr() const {
         return (Q*) m_element;
       }
+      /// Access to an unrelated object type
       template <typename Q> Q* data() const {
         return (Q*) m_element;
       }
+      /// Access to an unrelated object type
       template <typename Q> Q& object() const {
         return *(Q*) m_element;
       }
       /// Checked object access. Throws invalid handle runtime exception
       T* access() const;
+      /// Verify the object type after a (re-)assignment
       void verifyObject() const;
+      /// Access the object name (or "" if not supported by the object)
       const char* name() const;
+      /// Helper routine called when unrelated types are assigned.
       static void bad_assignment(const std::type_info& from, const std::type_info& to);
+      /// Assign a new named object. Note: object references must be managed by the user
       void assign(Implementation* n, const std::string& nam, const std::string& title);
     };
-
+    /// Default Ref_t definition describing named objects
     typedef Handle<NamedObject> Ref_t;
 
     /// Helper to delete objects from heap and reset the handle
@@ -238,6 +258,7 @@ namespace DD4hep {
         DestroyHandle<typename M::mapped_type>()(p.second);
       }
     };
+    /// Functional created of map destruction functors
     template <typename M> DestroyHandles<M> destroyHandles(M& m) {
       return DestroyHandles<M>(m);
     }

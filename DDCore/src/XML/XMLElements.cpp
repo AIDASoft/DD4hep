@@ -210,6 +210,11 @@ string DD4hep::XML::_toString(int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
+/// Format signed long integer to string with atrbitrary format
+string DD4hep::XML::_toString(long v, const char* fmt)   {
+  return __to_string(v, fmt);
+}
+
 /// Format single procision float number (32 bits) to string with atrbitrary format
 string DD4hep::XML::_toString(float v, const char* fmt) {
   return __to_string(v, fmt);
@@ -291,6 +296,25 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, const XmlChar* value) {
   }
   eval.setVariable(n.c_str(), result);
 }
+
+template <typename T> 
+void DD4hep::XML::_toDictionary(const XmlChar* name, T value)   {
+  Strng_t item = _toString(value);
+  const XmlChar* item_value = item;
+  _toDictionary(name, item_value);
+}
+#ifndef DD4HEP_USE_TINYXML
+template void DD4hep::XML::_toDictionary(const XmlChar* name, const char* value);
+#endif
+template void DD4hep::XML::_toDictionary(const XmlChar* name, const std::string& value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned long value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned int value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned short value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, int value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, long value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, short value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, float value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, double value);
 
 template <typename B>
 static inline string i_add(const string& a, B b) {
