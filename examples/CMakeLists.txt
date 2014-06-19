@@ -32,5 +32,7 @@ add_subdirectory(CLICSiD)
  	
 add_subdirectory(noviceN04)
  	
+add_subdirectory(firstExample)
+
 #---- does not build on mac or ubuntu ...
 #add_subdirectory(Segmentation)
