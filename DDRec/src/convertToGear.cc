@@ -20,7 +20,7 @@
 using namespace std ;
 using namespace DD4hep ;
 using namespace DD4hep::Geometry;
-using namespace tgeo ;
+using namespace dd4hep ;
 
 //=============================================================================
 

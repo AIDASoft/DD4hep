@@ -20,7 +20,6 @@ using namespace Geometry;
 using namespace DDRec ;
 using namespace DDSurfaces ;
 
-//using namespace tgeo ;
 
 // this should be the first line in your test
 DDTest test = DDTest( "surface" ) ; 

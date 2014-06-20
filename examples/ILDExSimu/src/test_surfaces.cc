@@ -25,7 +25,6 @@ using namespace DDSurfaces ;
 using namespace lcio;
 
 
-//using namespace tgeo ;
 DDTest test = DDTest( "surfaces" ) ; 
 
 //=============================================================================
