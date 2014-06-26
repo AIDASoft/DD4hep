@@ -263,7 +263,7 @@ PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double 
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, double rmax, double zlen) {
-  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart, 360.);
+  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phistarti/dd4hep::deg, 360.);
 }
 
 /// Constructor to be used when creating a new object
