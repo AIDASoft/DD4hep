@@ -37,7 +37,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
     // a simple box 
     Box box( 10, 10, 1) ;
 
-//#define debug_hole
+#define debug_hole 1
 #ifdef debug_hole 
 // -------- debug code for subtraction solid -----------------
       
@@ -45,12 +45,23 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
       
       Box hole( 3, 3, 1.01 ) ; // not z slightly larger than original 
 #else
+#if franks_trap
+      // This trap is ill defined. and does not work!
       // cut out a trap
       Trap hole( 4.2, 
 		 0., 0.,
 		 2., 4.,  3., 
 		 0. , 0. ,
 		 2., 4., 3.) ;
+#else
+      // Fixed version from Andrei. This works
+      // cut out a trap
+      Trap hole( 4.2, 
+		 0., 0.,
+		 2., 4.,  3., 
+		 0. ,
+		 2., 4., 3., 0) ;
+#endif
 #endif
       
       SubtractionSolid solid(  box, hole , Transform3D() ) ;

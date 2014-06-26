@@ -1,0 +1,6 @@
+<ddeve>
+  <view name="3D TPC" type="View3D" structure="true" sensitive="true">
+    <detelement name="TPC" load_geo="5" show="5" alpha="0.5"/>
+  </view>
+  <include ref="AlephTPC.xml"/>
+</ddeve>
