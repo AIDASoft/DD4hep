@@ -1,0 +1,121 @@
+// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+// Framework include files
+
+// C/C++ include files
+#include <vector>
+#include "Math/Vector3D.h"
+#include "Math/VectorUtil.h"
+namespace DD4hep { namespace Geometry {
+    typedef ROOT::Math::XYZVector Position;
+  }
+}
+class G4Step;
+class G4StepPoint;
+#include "DDG4/Geant4Data.h"
+#include "DDEve/SimulationHit.h"
+
+
+#ifdef __DD4HEP_DDEVE_EXCLUSIVE__
+
+/*
+ *   DD4hep namespace declaration
+ */
+namespace DD4hep {
+
+  /*
+   *   Simulation namespace declaration
+   */
+  namespace Simulation {
+    #define NO_CALL {      throw "This function shoule never ever be called!";    }
+    /// Default constructor
+    inline SimpleRun::SimpleRun() {    }
+    /// Default destructor
+    inline SimpleRun::~SimpleRun() {    }
+    /// Default constructor
+    inline SimpleEvent::SimpleEvent() {    }
+    /// Default destructor
+    inline SimpleEvent::~SimpleEvent() {    }
+    /// Default constructor
+    inline SimpleHit::SimpleHit()   {    }
+    /// Default destructor
+    inline  SimpleHit::~SimpleHit()  {    }
+    /// Extract the MC contribution for a given hit from the step information
+    inline SimpleHit::Contribution SimpleHit::extractContribution(G4Step*) { return Contribution(); }
+    /// Default constructor
+    inline SimpleTracker::Hit::Hit()   {    }
+    /// Initializing constructor
+    inline SimpleTracker::Hit::Hit(int, int, double, double)   {}
+    /// Default destructor
+    inline SimpleTracker::Hit::~Hit()  {    }
+    /// Assignment operator
+    inline SimpleTracker::Hit& SimpleTracker::Hit::operator=(const Hit&)   { return *this; }
+    /// Clear hit content
+    inline SimpleTracker::Hit& SimpleTracker::Hit::clear()    { return *this; }
+    /// Store Geant4 point and step information into tracker hit structure.
+    inline SimpleTracker::Hit& SimpleTracker::Hit::storePoint(G4Step*, G4StepPoint*)  { return *this;}
+    /// Default constructor
+    inline SimpleCalorimeter::Hit::Hit()   {    }
+    /// Initializing constructor
+    inline SimpleCalorimeter::Hit::Hit(const Position&)  {}
+    /// Default destructor
+    inline SimpleCalorimeter::Hit::~Hit()   {    }
+  }
+}
+
+// CINT configuration
+#if defined(__MAKECINT__)
+
+//#pragma link C++ class Position+;
+//#pragma link C++ class Direction+;
+#pragma link C++ class DD4hep::Simulation::SimpleRun+;
+#pragma link C++ class DD4hep::Simulation::SimpleEvent+;
+#pragma link C++ class DD4hep::Simulation::SimpleHit+;
+#pragma link C++ class std::vector<DD4hep::Simulation::SimpleHit*>+;
+#pragma link C++ class DD4hep::Simulation::SimpleHit::Contribution+;
+#pragma link C++ class DD4hep::Simulation::SimpleHit::Contributions+;
+#pragma link C++ class DD4hep::Simulation::SimpleTracker+;
+#pragma link C++ class DD4hep::Simulation::SimpleTracker::Hit+;
+#pragma link C++ class std::vector<DD4hep::Simulation::SimpleTracker::Hit*>+;
+#pragma link C++ class DD4hep::Simulation::SimpleCalorimeter+;
+#pragma link C++ class DD4hep::Simulation::SimpleCalorimeter::Hit+;
+#pragma link C++ class std::vector<DD4hep::Simulation::SimpleCalorimeter::Hit*>+;
+
+#else
+using namespace std;
+using namespace DD4hep;
+using namespace DD4hep::Simulation;
+
+static void* _convertHitCollection(const char* source)  {
+  typedef DD4hep::DDEve::SimulationHit SimulationHit;
+  const std::vector<SimpleHit*>* c = (std::vector<SimpleHit*>*)source;
+  std::vector<SimulationHit>* pv = new std::vector<SimulationHit>();
+  if ( source && c->size() > 0 )   {
+    for(std::vector<SimpleHit*>::const_iterator k=c->begin(); k!=c->end(); ++k)   {
+      SimpleTracker::Hit* trh = dynamic_cast<SimpleTracker::Hit*>(*k);
+      if ( trh )   {
+	pv->push_back(SimulationHit(trh->position, trh->energyDeposit));
+	continue;
+      }
+      SimpleCalorimeter::Hit* cah = dynamic_cast<SimpleCalorimeter::Hit*>(*k);
+      if ( cah )   {
+	pv->push_back(SimulationHit(cah->position, cah->energyDeposit));
+	continue;
+      }
+    }
+  }
+  return pv;
+}
+
+#include "DD4hep/Factories.h"
+using namespace DD4hep::Geometry;
+DECLARE_CONSTRUCTOR(DDEve_DDG4CollectionAccess,_convertHitCollection)
+#endif
+#endif
+

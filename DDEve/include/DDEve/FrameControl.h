@@ -1,0 +1,71 @@
+// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
+//====================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//====================================================================
+#ifndef DD4HEP_DDEVE_FRAMECONTROL_H
+#define DD4HEP_DDEVE_FRAMECONTROL_H
+
+// ROOT include files
+#include "TGFrame.h"
+
+// C/C++ include files
+#include <string>
+
+// Forward declarations
+class TGClient;
+class TGPicture;
+class TGCompositeFrame;
+
+/*
+ *   DD4hep namespace declaration
+ */
+namespace DD4hep {
+
+  /** @class FrameControl  FrameControl.h DDEve/FrameControl.h
+   *
+   *  @author  M.Frank
+   *  @version 1.0
+   */
+  class FrameControl : public TGMainFrame  {
+
+  protected:
+    /// Reference to TEve manager
+    TGClient* m_client;
+    /// Reference to control's frame
+    TGCompositeFrame* m_frame;
+
+  public:
+    /// Standard constructor
+    FrameControl(TGClient* client, const std::string& name, unsigned int width, unsigned int height);
+    /// Default destructor
+    virtual ~FrameControl();
+    /// Access to the windows client
+    TGClient& client() const  {  return *m_client; }
+    /// Access to the top level frame
+    TGCompositeFrame* frame() const {  return m_frame; }
+    /// Build the control
+    virtual void Build();
+    /// User callback to add elements to the control
+    virtual void OnBuild();
+
+    /// Create the frame for this control structure. Default: create horizontal frame
+    virtual TGCompositeFrame* CreateFrame();
+
+    /** Helper functions to fill the graphics pane(s)   */
+
+    /// Helper: Load picture using path name
+    virtual const TGPicture* LoadPicture(const std::string& path);
+
+    ClassDef(FrameControl,0)  // Top level window frame
+  };
+
+
+} /* End namespace DD4hep   */
+
+
+#endif /* DD4HEP_DDEVE_FRAMECONTROL_H */
+

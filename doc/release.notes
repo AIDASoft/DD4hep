@@ -2,6 +2,19 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2014/06/27 Markus Frank
+-----------------------
+    - Separate XML loading from LCDD implementation.
+    - New package: DDEve: a bit more sophisticated TEve specialization
+      To start use examples/CLICSiD/compact/DDEve.xml
+      DDEve can interface currently to ROOT files created by DDG4.
+      An example data file is provided as well in:
+      examples/CLICSiD/compact/CLICSiD_events.root
+      Documentation is lacking a bit....
+      start the display with:
+      $> root.exe ${DD4hepINSTALL}/examples/DDEve/DDEve.C
+
+
 2014/06/19 Frank Gaede
 ----------------------
     - replaced TGeoUnits.h by  DD4hepUnits.h
