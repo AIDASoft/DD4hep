@@ -79,7 +79,7 @@ void lcdd_unexpected(){
 }
 
 /// Disable copy constructor
-LCDDImp::LCDDImp(const LCDDImp&) : LCDD(), LCDDData(), m_buildType(BUILD_NONE)  {
+LCDDImp::LCDDImp(const LCDDImp&) : LCDD(), LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)  {
 }
 
 /// Disable assignment operator
@@ -101,7 +101,7 @@ void LCDD::destroyInstance() {
 }
 
 /// Default constructor
-LCDDImp::LCDDImp() : LCDDData(), m_buildType(BUILD_NONE)
+LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
 {
 
   std::set_unexpected( lcdd_unexpected ) ;
@@ -354,35 +354,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());
 #else
-  try {
-    LCDD* lcdd = this;
-    XML::DocumentHolder doc(XML::DocumentHandler().load(xmlfile));
-    XML::Handle_t xml_root = doc.root();
-    string tag = xml_root.tag();
-    string type = tag + "_XML_reader";
-    long result = PluginService::Create<long>(type, lcdd, &xml_root);
-    if (0 == result) {
-      PluginDebug dbg;
-      result = PluginService::Create<long>(type, lcdd, &xml_root);
-      if ( 0 == result )  {
-	throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
-			    " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));
-      }
-    }
-    result = *(long*) result;
-    if (result != 1) {
-      throw runtime_error("DD4hep: Failed to parse the XML file " + xmlfile + " with the plugin " + type);
-    }
-  }
-  catch (const XML::XmlException& e) {
-    throw runtime_error(XML::_toString(e.msg) + "\nDD4hep: XML-DOM Exception while parsing " + xmlfile);
-  }
-  catch (const exception& e) {
-    throw runtime_error(string(e.what()) + "\nDD4hep: while parsing " + xmlfile);
-  }
-  catch (...) {
-    throw runtime_error("DD4hep: UNKNOWN exception while parsing " + xmlfile);
-  }
+  processXML(xmlfile);
 #endif
 }
 

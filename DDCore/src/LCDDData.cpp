@@ -38,7 +38,7 @@ LCDDData::~LCDDData() {
 }
 
 /// Clear data content: releases all allocated resources
-void LCDDData::destroyData()   {
+void LCDDData::destroyData(bool destroy_mgr)   {
   m_extensions.clear();
   destroyHandle(m_world);
   destroyHandle(m_field);
@@ -53,15 +53,21 @@ void LCDDData::destroyData()   {
   for_each(m_fields.begin(), m_fields.end(), destroyHandles(m_fields));
   for_each(m_define.begin(), m_define.end(), destroyHandles(m_define));
 
+  destroyHandle(m_volManager);
   m_properties.clear();
   m_trackers.clear();
-  m_worldVol.clear();
   m_trackingVol.clear();
+  m_worldVol.clear();
   m_invisibleVis.clear();
   m_materialVacuum.clear();
   m_materialAir.clear();
-  destroyHandle(m_volManager);
-  deletePtr(m_manager);
+
+  if ( destroy_mgr ) 
+    deletePtr(m_manager);
+  else  {
+    gGeoManager = m_manager;
+    m_manager = 0;
+  }
 }
 
 

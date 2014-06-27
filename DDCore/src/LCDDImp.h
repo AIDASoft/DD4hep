@@ -12,6 +12,7 @@
 
 // Framework include files
 #include "DD4hep/LCDDData.h"
+#include "DD4hep/LCDDLoad.h"
 
 // Forward declarations
 class TGeoManager;
@@ -34,7 +35,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class LCDDImp: public LCDD, public LCDDData  {
+    class LCDDImp: public LCDD, public LCDDData, public LCDDLoad  {
     private:
       /// Disable copy constructor
       LCDDImp(const LCDDImp&);

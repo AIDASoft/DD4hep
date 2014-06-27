@@ -36,20 +36,20 @@ namespace DD4hep {
   // Foward declarations
   class NamedObject;
 
+  /** @enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
+   * Detector description build types.
+   * The corresponding flag is ONLY valid while parsing the
+   * compact description. If no eometry, ie. at all other times
+   * the accessor to the flag returns BUILD_NONE.
+   */
+  enum LCDDBuildType {
+    BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY
+  };
+
   /*
    *   Geometry namespace declaration
    */
   namespace Geometry {
-
-    /** @enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
-     * Detector description build types.
-     * The corresponding flag is ONLY valid while parsing the
-     * compact description. If no eometry, ie. at all other times
-     * the accessor to the flag returns BUILD_NONE.
-     */
-    enum LCDDBuildType {
-      BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY
-    };
 
     /// The main interface to the DD4hep detector description package
     /** @class LCDD LCDD.h  DD4hep/LCDD.h

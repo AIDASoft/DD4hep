@@ -69,7 +69,8 @@ namespace DD4hep {
      *  @author   M.Frank
      *  @version  1.0
      */
-    struct XmlException {
+    class XmlException {
+    public:
       std::string msg;
       XmlException() : msg() {}
       XmlException(const std::string& m) : msg(m) {}
@@ -134,7 +135,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Strng_t {
+    class Strng_t {
+    public:
       /// Pointer to unicode string
       XmlChar* m_xml;
 #ifndef __TIXML__
@@ -212,7 +214,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Tag_t : public Strng_t {
+    class Tag_t : public Strng_t {
+    public:
       /// STL string buffer
       std::string m_str;
 #ifndef __TIXML__
@@ -286,7 +289,8 @@ namespace DD4hep {
      *  @author   M.Frank
      *  @version  1.0
      */
-    struct NodeList {
+    class NodeList {
+    public:
       Tag_t m_tag;
       XmlElement* m_node;
       mutable XmlElement* m_ptr;
@@ -315,7 +319,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Handle_t {
+    class Handle_t {
+    public:
       // Abbreviation for internal use
       typedef XmlElement* Elt_t;
 
@@ -505,7 +510,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Collection_t : public Handle_t {
+    class Collection_t : public Handle_t {
+    public:
       /// Reference to the list of child nodes
       NodeList m_children;
 #ifndef __TIXML__
@@ -564,7 +570,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Document {
+    class Document {
+    public:
       typedef XmlDocument* DOC;
       DOC m_doc;
 
@@ -604,7 +611,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct DocumentHolder : public Document {
+    class DocumentHolder : public Document {
+    public:
       /// Constructor
       DocumentHolder(DOC d)
           : Document(d) {
@@ -624,7 +632,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Element {
+    class Element {
+    public:
       /// Simplification type declarations
       typedef Handle_t::Elt_t Elt_t;
 
@@ -758,7 +767,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct RefElement : public Element {
+    class RefElement : public Element {
+    public:
       /// Attribute holding thre name
       Attribute m_name;
       /// Construction from existing object handle
