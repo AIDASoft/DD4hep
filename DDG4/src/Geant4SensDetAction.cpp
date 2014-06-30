@@ -172,13 +172,13 @@ void Geant4Sensitive::clear(G4HCofThisEvent* /* HCE */) {
 
 /// Mark the track to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Track* track) const  {
-  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
   if ( truth ) truth->mark(track,true);
 }
 
 /// Mark the track of this step to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Step* step) const  {
-  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
   if ( truth ) truth->mark(step);
 }
 
@@ -310,6 +310,7 @@ bool Geant4SensDetActionSequence::process(G4Step* step, G4TouchableHistory* hist
  */
 void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_hce = hce;
+  m_actors(ContextUpdate(context()));
   for (size_t count = 0; count < m_collections.size(); ++count) {
     const std::pair<string, create_t>& cr = m_collections[count];
     G4VHitsCollection* c = (*cr.second)(name(), cr.first);
@@ -324,6 +325,7 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
+  m_actors(ContextUpdate());
   m_hce = 0;
 }
 

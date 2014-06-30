@@ -62,6 +62,7 @@ void Geant4RunActionSequence::adopt(Geant4RunAction* action) {
 
 /// Pre-track action callback
 void Geant4RunActionSequence::begin(const G4Run* run) {
+  m_actors(ContextUpdate(context()));
   m_actors(&Geant4RunAction::begin, run);
   m_begin(run);
 }
@@ -70,4 +71,5 @@ void Geant4RunActionSequence::begin(const G4Run* run) {
 void Geant4RunActionSequence::end(const G4Run* run) {
   m_end(run);
   m_actors(&Geant4RunAction::end, run);
+  m_actors(ContextUpdate());
 }

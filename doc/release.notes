@@ -1,6 +1,23 @@
 DD4hep  ----  Release Notes
 =================================
 
+2014/06/30 Markus Frank
+-----------------------
+    - DDG4: Support user (context-) extensions for Geant4.
+      User contexts are availible for events and runs. The contexts
+      are accessible from the Geant4Context meber of each Geant4Action,
+      the base class for all processing entities.
+      --        Adding a context:
+      context()->event().addExtension(pointer_to_object, typeid(TYPE), 0);
+      or 
+      context()->event().addExtension<TYPE>(pointer_to_object);
+      In the first case the object is NOT DELETED at the end of the event.
+      In the second case the object is deleted.
+      --        Accessing the context:
+          TYPE* ctx = context()->event().extension<TYPE>(false);
+      The boolean argument indicates if an exception should be thrown
+      if the extension is not present ie. here no exception.
+    - DDCore: adjust a few print statements.
 
 2014/06/27 Markus Frank
 -----------------------

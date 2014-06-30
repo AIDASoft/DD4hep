@@ -70,8 +70,6 @@ namespace DD4hep {
       typedef std::map<std::string, Geant4Action*> GlobalActions;
 
     protected:
-      /// Reference to execution context
-      Geant4Context* m_context;
       /// Reference to the run manager
       G4RunManager* m_runManager;
       /// Top level control directory
@@ -158,14 +156,6 @@ namespace DD4hep {
       /// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
       static Geant4Kernel& access(LCDD& lcdd);
 #endif
-      /// Access the context
-      Geant4Context* context() const {
-        return m_context;
-      }
-      /// Automatic conversion to the context
-      operator Geant4Context*() const {
-        return m_context;
-      }
       /// Access to the properties of the object
       PropertyManager& properties() {
         return m_properties;
@@ -299,7 +289,7 @@ namespace DD4hep {
       /// Access to the sensitive detector sequences from the kernel object
       Geant4SensDetSequences& sensitiveActions() const;
       /// Access to the sensitive detector action from the kernel object
-      Geant4SensDetActionSequence* sensitiveAction(const std::string& name) const;
+      Geant4SensDetActionSequence* sensitiveAction(const std::string& name);
 
       /// Access to the physics list
       Geant4PhysicsListActionSequence* physicsList(bool create);
@@ -307,11 +297,12 @@ namespace DD4hep {
       Geant4PhysicsListActionSequence& physicsList() {
         return *physicsList(true);
       }
+#if 0
       /// Access to the Track Manager from the kernel object
       Geant4MonteCarloTruth* mcTruthMgr(bool throw_exception=true);
       /// Access to the MC record manager from the kernel object (if instantiated!)
       Geant4MonteCarloRecordManager* mcRecordMgr(bool throw_exception=true);
-
+#endif
       /// Construct detector geometry using lcdd plugin
       void loadGeometry(const std::string& compact_file);
       /// Run the simulation

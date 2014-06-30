@@ -128,7 +128,7 @@ namespace {
           if (ro.isValid()) {
 	    IDDescriptor iddesc = ro.idSpec();
 	    pair<VolumeID, VolumeID> det_encoding = encoding(iddesc,ids);
-	    printout(DEBUG,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
+	    printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
 		     got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
 		     (void*)det_encoding.first, (void*)det_encoding.second);
 	    e.object<DetElement::Object>().volumeID = det_encoding.first;
@@ -334,7 +334,7 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
     o.detMask |= context->mask;
     err << "Inserted new volume:" << setw(6) << left << o.volumes.size() << " Ptr:" << (void*) pv.ptr() << " ["
         << pv.name() << "]" << " ID:" << (void*) context->identifier << " Mask:" << (void*) context->mask;
-    printout(DEBUG, "VolumeManager", err.str().c_str());
+    printout(VERBOSE, "VolumeManager", err.str().c_str());
     return true;
   }
   err << "+++ Attempt to register duplicate volID " << (void*) context->identifier 

@@ -16,6 +16,7 @@ from SystemOfUnits import *
 def run():
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
+  DDG4.setPrintLevel(Output.DEBUG)
   kernel = DDG4.Kernel()
   kernel.UI = "UI"
   kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
@@ -65,10 +66,10 @@ def run():
   kernel.eventAction().add(evt2)
   """
   trk = DDG4.Action(kernel,"Geant4TrackPersistency/MonteCarloTruthHandler")
-  mc  = DDG4.Action(kernel,"Geant4MonteCarloRecordManager/MonteCarloRecordManager")
   kernel.registerGlobalAction(trk)
-  kernel.registerGlobalAction(mc)
   trk.release()
+  mc  = DDG4.Action(kernel,"Geant4MonteCarloRecordManager/MonteCarloRecordManager")
+  kernel.registerGlobalAction(mc)
   mc.release()
   """
   # Configure I/O
@@ -82,6 +83,9 @@ def run():
   #evt_lcio.Output = "simple_lcio"
   #evt_lcio.enableUI()
   #kernel.eventAction().add(evt_lcio)
+
+  gen = DDG4.GeneratorAction(kernel,"Geant4TestGeneratorAction/Generate")
+  kernel.generatorAction().add(gen)
 
   # Setup particle gun
   gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/Gun")
@@ -206,6 +210,7 @@ def run():
 
   kernel.configure()
   kernel.initialize()
+
   kernel.run()
   kernel.terminate()
 

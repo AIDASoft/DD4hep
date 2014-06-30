@@ -45,6 +45,8 @@ G4VPhysicalVolume* DD4hep::Simulation::Geant4DetectorConstruction::Construct() {
   g4map.attach(info);
   m_world = info->world();
   m_lcdd.apply("DD4hepVolumeManager", 0, 0);
+  // Create Geant4 volume manager
+  g4map.volumeManager();
   //Geant4HierarchyDump dmp(m_lcdd);
   //dmp.dump("",m_world);
 #ifdef GEANT4_HAS_GDML

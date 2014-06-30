@@ -32,7 +32,9 @@ namespace DD4hep {
   namespace Simulation {
 
     namespace Test {
-      /** @class Geant4TestRunAction
+
+      /// Common base class for test action
+      /** 
        *
        * @author  M.Frank
        * @version 1.0
@@ -49,6 +51,26 @@ namespace DD4hep {
         /// Default destructor
         virtual ~Geant4TestBase();
       };
+
+      /// Example generator action doing nothing, but print
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
+      struct Geant4TestGeneratorAction: public Geant4GeneratorAction, public Geant4TestBase {
+        /// Standard constructor with initializing arguments
+        Geant4TestGeneratorAction(Geant4Context* c, const std::string& n);
+        /// Default destructor
+        virtual ~Geant4TestGeneratorAction();
+	/// Callback to generate primary particles
+	virtual void operator()(G4Event*);
+      };
+
+      /// Example run action doing nothing, but print
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Geant4TestRunAction: public Geant4RunAction, public Geant4TestBase {
         /// Standard constructor with initializing arguments
         Geant4TestRunAction(Geant4Context* c, const std::string& n);
@@ -63,6 +85,12 @@ namespace DD4hep {
         /// End-of-event callback
         void endEvent(const G4Event*);
       };
+
+      /// Example event action doing nothing, but print
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Geant4TestEventAction: public Geant4EventAction, public Geant4TestBase {
         /// Standard constructor with initializing arguments
         Geant4TestEventAction(Geant4Context* c, const std::string& n);
@@ -77,6 +105,12 @@ namespace DD4hep {
         /// End-of-run callback
         void endRun(const G4Run*);
       };
+
+      /// Example tracking action doing nothing, but print
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Geant4TestTrackAction: public Geant4TrackingAction, public Geant4TestBase {
         /// Standard constructor with initializing arguments
         Geant4TestTrackAction(Geant4Context* c, const std::string& n);
@@ -87,6 +121,12 @@ namespace DD4hep {
         /// End-of-tracking callback
         virtual void end(const G4Track*);
       };
+
+      /// Example stepping action doing nothing, but print
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Geant4TestStepAction: public Geant4SteppingAction, public Geant4TestBase {
         /// Standard constructor with initializing arguments
         Geant4TestStepAction(Geant4Context* c, const std::string& n);
@@ -95,6 +135,12 @@ namespace DD4hep {
         /// User stepping callback
         void operator()(const G4Step*, G4SteppingManager*);
       };
+
+      /// Example sensitve detector action doing nothing, but print
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
       struct Geant4TestSensitive: public Geant4Sensitive, public Geant4TestBase {
         size_t m_collectionID;
         /// Standard constructor with initializing arguments

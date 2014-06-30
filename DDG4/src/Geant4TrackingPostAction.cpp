@@ -57,7 +57,7 @@ void Geant4TrackingPostAction::begin(const G4Track* track) {
     return;
   trackMgr()->SetStoreTrajectory(true);
   // create GaussTrajectory and inform Tracking Manager
-  G4VTrajectory* tr = m_context->createTrajectory(track);
+  G4VTrajectory* tr = context()->createTrajectory(track);
   trackMgr()->SetTrajectory(tr);
 }
 

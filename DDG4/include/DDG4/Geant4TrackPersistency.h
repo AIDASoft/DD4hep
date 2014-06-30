@@ -11,6 +11,8 @@
 
 // Framework include files
 #include "DDG4/Geant4Action.h"
+#include "DDG4/Geant4EventAction.h"
+#include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4MonteCarloTruth.h"
 #include "Math/PxPyPzE4D.h"
 #include "G4VUserTrackInformation.hh"
@@ -45,7 +47,10 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4TrackPersistency : public Geant4Action, public Geant4MonteCarloTruth {
+    class Geant4TrackPersistency 
+      : public Geant4GeneratorAction, 
+      public Geant4MonteCarloTruth 
+      {
     public:
       typedef ROOT::Math::PxPyPzE4D<double> FourMomentum;
       typedef std::map<int,void*> TrackMap;
@@ -99,7 +104,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4TrackPersistency();
       /// Access the Geant4 tracking manager. Only use between tracking pre- and post action
-      G4TrackingManager* trackMgr() const { return m_context->trackMgr();   }
+      G4TrackingManager* trackMgr() const { return m_context.trackMgr();   }
+      /// Event generation action callback
+      virtual void operator()(G4Event* event);
       /// User stepping callback
       virtual void step(const G4Step* step, G4SteppingManager* mgr);
       /// Pre-event action callback

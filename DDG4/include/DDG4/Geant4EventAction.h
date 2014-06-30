@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DDG4/Geant4Action.h"
+
 // Forward declarations
 class G4Event;
 

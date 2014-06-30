@@ -57,6 +57,7 @@ void Geant4TrackingActionSequence::adopt(Geant4TrackingAction* action) {
 
 /// Pre-track action callback
 void Geant4TrackingActionSequence::begin(const G4Track* track) {
+  m_actors(ContextUpdate(context()));
   m_front(track);
   m_actors(&Geant4TrackingAction::begin, track);
   m_begin(track);
@@ -67,6 +68,7 @@ void Geant4TrackingActionSequence::end(const G4Track* track) {
   m_end(track);
   m_actors(&Geant4TrackingAction::end, track);
   m_final(track);
+  m_actors(ContextUpdate(0));
 }
 
 /// Standard constructor
@@ -90,7 +92,7 @@ void Geant4TrackingAction::end(const G4Track*) {
 
 /// Mark the track to be kept for MC truth propagation
 void Geant4TrackingAction::mark(const G4Track* track) const    {
-  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
   if ( truth ) truth->mark(track,true);
 }
 
@@ -99,7 +101,7 @@ Geant4TrackInformation* Geant4TrackingAction::trackInfo(G4Track* track) const {
   if (track) {
     Geant4TrackInformation* gau = 0;
     G4VUserTrackInformation* g4 = track->GetUserInformation();
-    if (0 == g4) {
+    if (0 == g4)   {
       gau = new Geant4TrackInformation();
       track->SetUserInformation(gau);
       return gau;                                                 // RETURN

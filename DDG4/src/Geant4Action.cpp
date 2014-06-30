@@ -35,10 +35,25 @@ TypeName TypeName::split(const string& type_name) {
   return split(type_name,"/");
 }
 
+void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
+  if ( context )  {
+    action->m_context.setRun(context->runPtr());
+    action->m_context.setEvent(context->eventPtr());
+  }
+#if 0
+  else  {
+    action->m_context.setRun(0);
+    action->m_context.setEvent(0);
+  }
+#endif
+}
+
 /// Standard constructor
 Geant4Action::Geant4Action(Geant4Context* context, const string& nam)
-    : m_context(context), m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
+    : m_context(0), 
+      m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
   InstanceCount::increment(this);
+  if ( context ) m_context = *context;
   m_outputLevel = context ? context->kernel().getOutputLevel(nam) : (printLevel()-1);
   declareProperty("Name", m_name);
   declareProperty("name", m_name);
@@ -67,11 +82,6 @@ long Geant4Action::release() {
     delete this;
   }
   return count;
-}
-
-/// Set the context pointer
-void Geant4Action::setContext(Geant4Context* context) {
-  m_context = context;
 }
 
 /// Set the output level; returns previous value
@@ -161,11 +171,27 @@ void Geant4Action::debug(const string& fmt, ...) const {
   va_end(args);
 }
 
+/// Support for messages with variable output level using output level
+void Geant4Action::debug(const std::string& tag, const std::string& fmt, ...) const  {
+  va_list args;
+  va_start(args, fmt);
+  DD4hep::printout(DD4hep::DEBUG, tag, fmt, args);
+  va_end(args);
+}
+
 /// Support of info messages.
 void Geant4Action::info(const string& fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::INFO, "Geant4Action", fmt, args);
+  va_end(args);
+}
+
+/// Support for messages with variable output level using output level
+void Geant4Action::info(const std::string& tag, const std::string& fmt, ...) const  {
+  va_list args;
+  va_start(args, fmt);
+  DD4hep::printout(DD4hep::INFO, tag, fmt, args);
   va_end(args);
 }
 
@@ -177,11 +203,27 @@ void Geant4Action::warning(const string& fmt, ...) const {
   va_end(args);
 }
 
+/// Support for messages with variable output level using output level
+void Geant4Action::warning(const std::string& tag, const std::string& fmt, ...) const  {
+  va_list args;
+  va_start(args, fmt);
+  DD4hep::printout(DD4hep::WARNING, tag, fmt, args);
+  va_end(args);
+}
+
 /// Action to support error messages.
 void Geant4Action::error(const string& fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::ERROR, "Geant4Action", fmt, args);
+  va_end(args);
+}
+
+/// Support for messages with variable output level using output level
+void Geant4Action::error(const std::string& tag, const std::string& fmt, ...) const  {
+  va_list args;
+  va_start(args, fmt);
+  DD4hep::printout(DD4hep::ERROR, tag, fmt, args);
   va_end(args);
 }
 
@@ -203,6 +245,14 @@ void Geant4Action::fatal(const string& fmt, ...) const {
   va_end(args);
 }
 
+/// Support for messages with variable output level using output level
+void Geant4Action::fatal(const std::string& tag, const std::string& fmt, ...) const  {
+  va_list args;
+  va_start(args, fmt);
+  DD4hep::printout(DD4hep::FATAL, tag, fmt, args);
+  va_end(args);
+}
+
 /// Support of exceptions: Print fatal message and throw runtime_error.
 void Geant4Action::except(const string& fmt, ...) const {
   string err;
@@ -212,6 +262,14 @@ void Geant4Action::except(const string& fmt, ...) const {
   err = DD4hep::format("Geant4Action", fmt, args);
   va_end(args);
   throw runtime_error(err);
+}
+
+/// Support for messages with variable output level using output level
+void Geant4Action::except(const std::string& tag, const std::string& fmt, ...) const  {
+  va_list args;
+  va_start(args, fmt);
+  DD4hep::printout(DD4hep::FATAL, tag, fmt, args);
+  va_end(args);
 }
 
 /// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
@@ -228,41 +286,30 @@ void Geant4Action::abortRun(const string& exception, const string& fmt, ...) con
 
 /// Access to the main run action sequence from the kernel object
 Geant4RunActionSequence& Geant4Action::runAction() const {
-  return m_context->kernel().runAction();
+  return m_context.kernel().runAction();
 }
 
 /// Access to the main event action sequence from the kernel object
 Geant4EventActionSequence& Geant4Action::eventAction() const {
-  return m_context->kernel().eventAction();
+  return m_context.kernel().eventAction();
 }
 
 /// Access to the main stepping action sequence from the kernel object
 Geant4SteppingActionSequence& Geant4Action::steppingAction() const {
-  return m_context->kernel().steppingAction();
+  return m_context.kernel().steppingAction();
 }
 
 /// Access to the main tracking action sequence from the kernel object
 Geant4TrackingActionSequence& Geant4Action::trackingAction() const {
-  return m_context->kernel().trackingAction();
+  return m_context.kernel().trackingAction();
 }
 
 /// Access to the main stacking action sequence from the kernel object
 Geant4StackingActionSequence& Geant4Action::stackingAction() const {
-  return m_context->kernel().stackingAction();
+  return m_context.kernel().stackingAction();
 }
 
 /// Access to the main generator action sequence from the kernel object
 Geant4GeneratorActionSequence& Geant4Action::generatorAction() const {
-  return m_context->kernel().generatorAction();
+  return m_context.kernel().generatorAction();
 }
-
-/// Access to the Track Manager from the kernel object
-Geant4MonteCarloTruth* Geant4Action::mcTruthMgr(bool throw_exception) const   {
-  return m_context->kernel().mcTruthMgr(throw_exception);
-}
-
-/// Access to the MC record manager from the kernel object
-Geant4MonteCarloRecordManager* Geant4Action::mcRecordMgr(bool throw_exception) const   {
-  return m_context->kernel().mcRecordMgr(throw_exception);
-}
-

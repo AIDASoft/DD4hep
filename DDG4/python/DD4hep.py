@@ -78,6 +78,8 @@ import_class('Core','NamedObject')
 import_class('Core','run_interpreter')
 
 def import_geometry():
+  import_class('Core','setPrintLevel')
+  import_class('Core','printLevel')
   import_class('Geo','LCDD')
   import_class('Geo','VolumeManager')
   import_class('Geo','OverlayedField')

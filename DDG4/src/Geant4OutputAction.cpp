@@ -23,7 +23,8 @@ using namespace std;
 
 /// Standard constructor
 Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
-    : Geant4EventAction(ctxt, nam) {
+  : Geant4EventAction(ctxt, nam)
+{
   InstanceCount::increment(this);
   declareProperty("Output", m_output);
   context()->runAction().callAtBegin(this, &Geant4OutputAction::beginRun);

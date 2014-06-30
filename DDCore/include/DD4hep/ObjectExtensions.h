@@ -47,6 +47,10 @@ namespace DD4hep {
     /// Pointer to the extension map
     ExtensionMap* extensionMap; //!
 
+    /// Function to be passed as dtor if object should NOT be deleted!
+    static void _noDelete(void*) {}
+    /// If the object SHOULD be deleted, use DD4hep::deletePtr<TYPE>!
+
   public:
     /// Default constructor
     ObjectExtensions(const std::type_info& parent_type);

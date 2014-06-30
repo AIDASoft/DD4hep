@@ -16,13 +16,64 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
+/// Intializing constructor
+Geant4Run::Geant4Run(const G4Run* run)
+: ObjectExtensions(typeid(Geant4Run)), m_run(run)
+{
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Geant4Run::~Geant4Run()   {
+  InstanceCount::decrement(this);
+}
+
+/// Intializing constructor
+Geant4Event::Geant4Event(const G4Event* evt) 
+: ObjectExtensions(typeid(Geant4Event)), m_event(evt)  
+{
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Geant4Event::~Geant4Event()  {
+  InstanceCount::decrement(this);
+}
+
 /// Default constructor
 Geant4Context::Geant4Context(Geant4Kernel* kernel)
-    : m_kernel(kernel) {
+  : m_kernel(kernel), m_run(0), m_event(0) {
+  InstanceCount::increment(this);
 }
 
 /// Default destructor
 Geant4Context::~Geant4Context() {
+  // Do not delete run and event structures here. This is done outside in the framework
+  InstanceCount::decrement(this);
+}
+
+/// Set the geant4 run reference
+void Geant4Context::setRun(Geant4Run* new_run)    {
+  m_run = new_run;
+}
+
+/// Access the geant4 run -- valid only between BeginRun() and EndRun()!
+Geant4Run& Geant4Context::run()  const   {
+  if ( m_run ) return *m_run;
+  invalidHandleError<Geant4Run>();
+  return *m_run;
+}
+
+/// Set the geant4 event reference
+void Geant4Context::setEvent(Geant4Event* new_event)   {
+  m_event = new_event;
+}
+
+/// Access the geant4 event -- valid only between BeginEvent() and EndEvent()!
+Geant4Event& Geant4Context::event()  const   {
+  if ( m_event ) return *m_event;
+  invalidHandleError<Geant4Event>();
+  return *m_event;
 }
 
 /// Access to detector description
@@ -76,14 +127,3 @@ Geant4GeneratorActionSequence& Geant4Context::generatorAction() const {
 Geant4SensDetSequences& Geant4Context::sensitiveActions() const {
   return m_kernel->sensitiveActions();
 }
-
-/// Access to the Track Manager from the kernel object
-Geant4MonteCarloTruth& Geant4Context::mcTruthMgr() const   {
-  return *m_kernel->mcTruthMgr(true);
-}
-
-/// Access to the MC record manager from the kernel object
-Geant4MonteCarloRecordManager& Geant4Context::mcRecordMgr() const   {
-  return *m_kernel->mcRecordMgr(true);
-}
-
