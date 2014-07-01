@@ -194,8 +194,8 @@ namespace DDSurfaces {
     /// true if this is a plane orthogonal to Z
     bool isZDisk() const  { return ( _bits[ SurfaceType::Plane ] &&  _bits[ SurfaceType::OrthogonalToZ ] ) ; } 
 
-    /// true if the mesurement is only 1D, i.e. the second direction v is not used
-    bool isMeasurment1D() const { return _bits[ SurfaceType::Measurement1D ] ; } 
+    /// true if the measurement is only 1D, i.e. the second direction v is not used
+    bool isMeasurement1D() const { return _bits[ SurfaceType::Measurement1D ] ; } 
 
 
     /// true if all properties of otherType are also true for this type.
