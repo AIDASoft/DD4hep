@@ -60,6 +60,9 @@ namespace DD4hep {
       virtual void saveCollection( OutputContext<G4Event>& ctxt, G4VHitsCollection* collection);
       /// Commit data at end of filling procedure
       virtual void commit( OutputContext<G4Event>& ctxt);
+
+      /// begin-of-event callback - creates LCIO event and adds it to the event context
+      virtual void begin(const G4Event* event);
     };
 
   }    // End namespace Simulation
@@ -132,8 +135,10 @@ void Geant4Output2LCIO::endRun(const G4Run* )  {
 
 /// Commit data at end of filling procedure
 void Geant4Output2LCIO::commit( OutputContext<G4Event>& ctxt)   {
-  lcio::LCEventImpl* e = ctxt.data<lcio::LCEventImpl>();
+  //lcio::LCEventImpl* e = ctxt.data<lcio::LCEventImpl>();
+  lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
   m_file->writeEvent(e);
+  std::cout << " ########### Geant4Output2LCIO::commit() : writing LCIO event to file .... "  << std::endl ;
 }
 
 /// Callback to store the Geant4 run information
@@ -145,14 +150,31 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   m_file->writeRunHeader(rh);
 }
 
+
+void Geant4Output2LCIO::begin(const G4Event* event){
+
+  lcio::LCEventImpl* e  = new lcio::LCEventImpl;
+
+  //fg: fixme: should be this call (deleting the pointer in the end) but that does not compile ...
+  //  context()->event().addExtension<lcio::LCEventImpl>( e );
+
+  context()->event().addExtension( e , typeid( lcio::LCEventImpl ), 0);
+
+  //  std::cout << " ########### Geant4Output2LCIO::begin  add new LCIO event  event context " << std::endl ;
+}
+
+
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
-  lcio::LCEventImpl* e  = new lcio::LCEventImpl;
-  ctxt.userData = e;
+  // lcio::LCEventImpl* e  = new lcio::LCEventImpl;
+  //  ctxt.userData = e;
+  lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
+
   e->setRunNumber(m_runNo);
   e->setEventNumber(ctxt.context->GetEventID());
   e->setDetectorName(context()->lcdd().header().name());
   e->setRunNumber(m_runNo);
+
 }
 
 /// Callback to store each Geant4 hit collection
@@ -163,7 +185,8 @@ void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& ctxt, G4VHitsColl
     typedef pair<Geometry::VolumeManager,G4VHitsCollection*> _A;
     typedef Geant4Conversion<lcio::LCCollectionVec,_A> _C;
     const _C& cnv = _C::converter(typeid(Geant4HitCollection));
-    lcio::LCEventImpl* evt = ctxt.data<lcio::LCEventImpl>();
+    //lcio::LCEventImpl* evt = ctxt.data<lcio::LCEventImpl>();
+    lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
     lcio::LCCollectionVec* col = cnv(_A(m_volMgr,collection));
     evt->addCollection(col,hc_nam);
   }
