@@ -141,6 +141,9 @@ namespace DD4hep {
       /// Reference count. Initial value: 1
       long m_refCount;
 
+      //fg: ContextUpdate needs to be public for the clang compiler
+      //    as it is used in SequenceHdl::setContextToClients()  
+    public:
       /// Functor to update the context of a Geant4Action object
       /**
        * @author  M.Frank
@@ -156,6 +159,8 @@ namespace DD4hep {
 	void operator()(Geant4Action* action)  const;
       };
       friend class ContextUpdate;
+    protected:
+
       /// Actor class to manipulate action groups
       /**
        * @author  M.Frank
