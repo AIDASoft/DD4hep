@@ -42,40 +42,38 @@ public:
 void next_event(){
   
   static int count = 1 ;
-
+  
   static LCReader* rdr = 0 ;
-
+  
   std::string lcioFileName = "teve_infile.slcio" ; 
-
+  
   std::cout <<  " next_event_lcio called ..." << std::endl ;
-
-  if( rdr == 0 && count==1 ){
-
+  
+  if( count==1 ){
+    
     rdr = LCFactory::getInstance()->createLCReader() ;
-
+    
     try{
-
+      
       rdr->open( lcioFileName ) ;
-
+      
     }catch(lcio::IOException& e) {
-
+      
       std::cout << " ------------------------------------------------------------------------------------------------ "     << std::endl
 		<<  "*** file " << lcioFileName << " does not exist - can't read LCIO events  !                       "     << std::endl
 		<<  "    will display detector geometry only. Link LCIO file to " << lcioFileName << " to display events ! "<< std::endl
 		<< " -------------------------------------------------------------------------------------------------"  	
 		<< std::endl ;
-      ++count ;
-
+      
       return ;
     }
-
-  } else {
-
-    // nothing to do as inoutfile does not exist:
-    return ;
   }
 
+  if( rdr == 0 )
+    // nothing to do as inputfile does not exist:
+    return ;
   
+
   TEveElementList* tevent = (TEveElementList* ) gEve->GetCurrentEvent() ;
   
   if( tevent ) 
@@ -121,7 +119,8 @@ void next_event(){
   
   gEve->Redraw3D();
   
-  count += 3 ;
+  ++count ;
+  //count += 3 ;
 }
 
 
