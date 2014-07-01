@@ -118,7 +118,8 @@ namespace DDSurfaces {
       Helper,
       ParallelToZ,
       OrthogonalToZ,
-      Invisible
+      Invisible,
+      Measurement1D
     } ;
     
     ///default c'tor
@@ -148,6 +149,15 @@ namespace DDSurfaces {
       _bits.set( prop1 ) ;
       _bits.set( prop2 ) ;
       _bits.set( prop3 ) ;
+    } 
+ 
+   // c'tor that sets five properties
+    SurfaceType( unsigned prop0 , unsigned prop1 , unsigned prop2, unsigned prop3, unsigned prop4 ) : _bits(0) { 
+      _bits.set( prop0 ) ;
+      _bits.set( prop1 ) ;
+      _bits.set( prop2 ) ;
+      _bits.set( prop3 ) ;
+      _bits.set( prop4 ) ;
     } 
     
     /// set the given peorperty
@@ -183,6 +193,9 @@ namespace DDSurfaces {
     
     /// true if this is a plane orthogonal to Z
     bool isZDisk() const  { return ( _bits[ SurfaceType::Plane ] &&  _bits[ SurfaceType::OrthogonalToZ ] ) ; } 
+
+    /// true if the mesurement is only 1D, i.e. the second direction v is not used
+    bool isMeasurment1D() const { return _bits[ SurfaceType::Measurement1D ] ; } 
 
 
     /// true if all properties of otherType are also true for this type.

@@ -62,21 +62,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     Volume      laddervol (layername+"_ladder",ladderbox , suppmat );
 
-#if 0 /// debug: replacing Box with Trap ...
-    Trap sensbox( zhalf,
-		  0.0,
-		  0.0,
-		  width/2.,
-		  sens_thick/2.,
-		  sens_thick/2.,
-		  0.0,
-		  width/2.,
-		  sens_thick/2.,
-		  sens_thick/2.,
-		  0.0 ) ;
-#else
     Box         sensbox   (sens_thick/2.,width/2.,zhalf);
-#endif
 
 
     Volume      sensvol   (layername+"_sens",sensbox, sensmat );
@@ -104,17 +90,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // implement 7 deg stereo angle 
     if( layer_id % 2 ){
       
-      u.fill( 0. ,  cos( 3.5/180.*M_PI  ) ,  sin( 3.5/180.*M_PI  ) ) ;
-      v.fill( 0. , -sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+      u.fill( 0. ,  cos( 3.5*dd4hep::deg  ) ,  sin( 3.5*dd4hep::deg  ) ) ;
+      v.fill( 0. , -sin( 3.5*dd4hep::deg  ) ,  cos( 3.5*dd4hep::deg  ) ) ;
 
     } else {
 
-      u.fill( 0. ,  cos( 3.5/180.*M_PI  ) , -sin( 3.5/180.*M_PI  ) ) ;
-      v.fill( 0. ,  sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+      u.fill( 0. ,  cos( 3.5*dd4hep::deg  ) , -sin( 3.5*dd4hep::deg  ) ) ;
+      v.fill( 0. ,  sin( 3.5*dd4hep::deg  ) ,  cos( 3.5*dd4hep::deg  ) ) ;
     }
 
     Vector3D n( 1. , 0. , 0. ) ;
-    VolPlane surf( sensvol , SurfaceType(SurfaceType::Sensitive) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ;
+    VolPlane surf( sensvol , SurfaceType( SurfaceType::Sensitive, SurfaceType::Measurement1D ) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ;
 
 
     // Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
