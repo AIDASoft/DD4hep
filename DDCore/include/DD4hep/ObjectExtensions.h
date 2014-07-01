@@ -49,7 +49,11 @@ namespace DD4hep {
 
     /// Function to be passed as dtor if object should NOT be deleted!
     static void _noDelete(void*) {}
-    /// If the object SHOULD be deleted, use DD4hep::deletePtr<TYPE>!
+
+    /// Templated destructor function
+    template <typename T> static void _delete(void* ptr) {
+      delete (T*) (ptr);
+    }
 
   public:
     /// Default constructor

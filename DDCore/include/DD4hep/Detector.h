@@ -154,8 +154,8 @@ namespace DD4hep {
       }
 
       /// Access extension element by the type
-      template <class T> T* extension() const {
-        return (T*) i_extension(typeid(T));
+      template <typename IFACE> IFACE* extension() const {
+        return (IFACE*) i_extension(typeid(IFACE));
       }
     };
 
@@ -302,12 +302,10 @@ namespace DD4hep {
 	CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
         return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _copy<CONCRETE>, _delete<IFACE>);
       }
-
       /// Access extension element by the type
-      template <class T> T* extension() const {
-        return (T*) i_extension(typeid(T));
+      template <typename IFACE> IFACE* extension() const {
+        return (IFACE*) i_extension(typeid(IFACE));
       }
-
       /// Extend the detector element with an arbitrary callback
       template <typename Q, typename T> 
 	void callAtUpdate(unsigned int type, Q* pointer, 

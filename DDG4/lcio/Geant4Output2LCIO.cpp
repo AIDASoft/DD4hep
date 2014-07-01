@@ -82,6 +82,7 @@ namespace DD4hep {
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4DataConversion.h"
+#include "DDG4/Geant4Context.h"
 
 //#include "DDG4/Geant4Output2LCIO.h"
 #include "G4Event.hh"
@@ -158,7 +159,8 @@ void Geant4Output2LCIO::begin(const G4Event* event){
   //fg: fixme: should be this call (deleting the pointer in the end) but that does not compile ...
   //  context()->event().addExtension<lcio::LCEventImpl>( e );
 
-  context()->event().addExtension( e , typeid( lcio::LCEventImpl ), 0);
+  context()->event().addExtension<lcio::LCEventImpl>( e );
+  //context()->event().addExtension( e , typeid( lcio::LCEventImpl ), 0);
 
   //  std::cout << " ########### Geant4Output2LCIO::begin  add new LCIO event  event context " << std::endl ;
 }
