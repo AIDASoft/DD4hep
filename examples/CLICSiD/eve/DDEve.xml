@@ -1,5 +1,5 @@
 <ddeve>
-  <display visLevel="7" loadLevel="2"/>
+  <display visLevel="7" loadLevel="1"/>
   <calodata name="Ecal" hits="EcalBarrelHits" towerH="100" emax="20"
 	    n_eta="200" eta_min="-5" eta_max="5" 
 	    n_phi="200" phi_min="-pi" phi_max="pi" 
@@ -36,8 +36,8 @@
     <detelement name="SiTrackerBarrel"   load_geo="-1" show="4" alpha="0.5"/>
   </view>
   <view name="3D Trackers R-Phi (Local)" type="RhoPhiProjection" structure="false" sensitive="true">
-    <detelement name="SiVertexBarrel"    load_geo="4" show="4" alpha="0.5"/>
-    <detelement name="SiTrackerBarrel"   load_geo="4" show="4" alpha="0.5"/>
+    <detelement name="SiVertexBarrel"    load_geo="3" show="4" alpha="0.5"/>
+    <detelement name="SiTrackerBarrel"   load_geo="3" show="4" alpha="0.5"/>
   </view>
 <!--
     <detelement name="SiTrackerEndcap"   load_geo="-1" show="2" alpha="0.5"/>
@@ -53,16 +53,16 @@
     <detelement name="SiTrackerForward"  load_geo="-1" show="2" alpha="0.5"/>
   </view>
   <view name="3D Vertex" type="View3D" structure="false" sensitive="true">
-    <detelement name="SiVertexBarrel" load_geo="2" show="2" alpha="0.5"/>
-    <detelement name="SiVertexEndcap" load_geo="2" show="2" alpha="0.5"/>
+    <detelement name="SiVertexBarrel" load_geo="1" show="2" alpha="0.5"/>
+    <detelement name="SiVertexEndcap" load_geo="1" show="2" alpha="0.5"/>
   </view>
 
   <view name="3D Calorimeters" type="View3D" show="2" load_geo="2" structure="false" sensitive="true">
-    <detelement name="EcalBarrel" load_geo="3" show="0" alpha="0.5"/>
-    <detelement name="EcalEndcap" load_geo="3" show="0" alpha="0.5"/>
-    <detelement name="HcalPlug"   load_geo="3" show="0" alpha="0.5"/>
-    <detelement name="HcalBarrel" load_geo="3" show="0" alpha="0.5"/>
-    <detelement name="HcalEndcap" load_geo="3" show="0" alpha="0.5"/>
+    <detelement name="EcalBarrel" load_geo="2" show="0" alpha="0.5"/>
+    <detelement name="EcalEndcap" load_geo="2" show="0" alpha="0.5"/>
+    <detelement name="HcalPlug"   load_geo="2" show="0" alpha="0.5"/>
+    <detelement name="HcalBarrel" load_geo="2" show="0" alpha="0.5"/>
+    <detelement name="HcalEndcap" load_geo="2" show="0" alpha="0.5"/>
 <!--
     <detelement name="MuonBarrel" load_geo="1" show="0" alpha="0.5"/>
     <detelement name="MuonEndcap" load_geo="1" show="0" alpha="0.5"/>

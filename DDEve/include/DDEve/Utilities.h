@@ -23,10 +23,10 @@
 namespace DD4hep {
 
   namespace Utilities {
-    bool findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, std::string* sub_path=0);
+    int findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, std::string* sub_path=0);
 
     std::pair<bool,TEveElement*> 
-      createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, TGeoHMatrix mat);
+      createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, TGeoHMatrix mat, const std::string& node_name);
 
     std::pair<bool,TEveElement*> 
       LoadDetElement(Geometry::DetElement element,int levels, TEveElement* parent);

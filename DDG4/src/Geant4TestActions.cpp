@@ -32,7 +32,7 @@ namespace {
   };
 }
 
-#define PRINT info
+#define PRINT print
 
 
 /// Standard constructor

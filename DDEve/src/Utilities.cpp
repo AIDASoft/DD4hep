@@ -59,23 +59,32 @@ void Utilities::MakeNodesVisible(TEveElement* e, bool visible, int level)   {
 }
 
 std::pair<bool,TEveElement*> 
-Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, TGeoHMatrix mat)  {
+Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n, TGeoHMatrix mat, const std::string& nam)  {
   TGeoVolume* vol = n ? n->GetVolume() : 0;
   bool created = false;
 
-  if ( 0 == vol || level >= max_level ) return make_pair(created,(TEveElement*)0);
+  if ( 0 == vol || level > max_level ) return make_pair(created,(TEveElement*)0);
 
   VisAttr vis(Volume(vol).visAttributes());
   TGeoShape* geoShape = vol->GetShape();
   TEveElement* element = 0;
 
   if ( p )   {
-    element = (TEveGeoShape*)p->FindChild(n->GetName());
+    TGeoNode* pn = (TGeoNode*)p->GetUserData();
+    if ( pn == n )  {
+      element = p;
+    }
+    if ( !element )  {
+      element = (TEveGeoShape*)p->FindChild(n->GetName());
+    }
+    if ( !element && !nam.empty() )  {
+      element = (TEveGeoShape*)p->FindChild(nam.c_str());
+    }
     if ( element ) goto Daughters;
   }  
 
   if ( geoShape->IsA() == TGeoShapeAssembly::Class() )  {
-    //printout(INFO,"createEveShape","+++ SKIP assembly Shape %s.",n->GetName());
+    //printout(INFO,"createEveShape","+++ Assembly Shape %s Userdata:%p.",n->GetName(),n);
     ElementList* shape = new ElementList(n->GetName(),n->GetName(),true,true);
     shape->SetUserData(n);
     shape->SetMainTransparency(true);
@@ -92,15 +101,14 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
   }  
   else if ( 0 == element )  {
     TEveGeoShape* shape = new TEveGeoShape(n->GetName());
-    //printout(INFO,"createEveShape","+++ Create TEveGeoShape %s [%s].",
-    //n->GetName(),geoShape->IsA()->GetName());
+    //printout(INFO,"createEveShape","+++ Create TEveGeoShape %s [%s] Userdata:%p.",
+    //n->GetName(),geoShape->IsA()->GetName(),n);
     created = true;
     if ( vis.isValid() )  {
       float r,g,b;
       vis.rgb(r,g,b);
       shape->SetMainColorRGB(r,g,b);
     }
-    shape->SetUserData(n);
     shape->SetMainTransparency(true);
     shape->SetMainAlpha(0.5);
     shape->SetPickable(kTRUE);
@@ -118,15 +126,18 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
     shape->SetUserData(n);
     element = shape;
   }
+  else  {
+    printout(INFO,"createEveShape","Weird!! %s",n->GetName());
+  }
 
  Daughters:
   for (Int_t idau = 0, ndau = n->GetNdaughters(); idau < ndau; ++idau) {
     TGeoNode* daughter = n->GetDaughter(idau);
-    TGeoHMatrix dau_mat = mat;
+    TGeoHMatrix dau_mat(mat);
     TGeoMatrix* matrix = daughter->GetMatrix();
     dau_mat.Multiply(matrix);
     pair<bool,TEveElement*> dau_shape = 
-      createEveShape(level+1, max_level, element, daughter, dau_mat);
+      createEveShape(level+1, max_level, element, daughter, dau_mat, daughter->GetName());
     if ( dau_shape.first )  {
       element->AddElement(dau_shape.second);
     }
@@ -134,29 +145,30 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
   return make_pair(created,element);
 }
 
-bool Utilities::findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, string* sub_path)  {
-  if ( p == n ) return true;
+int Utilities::findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, string* sub_path)  {
+  if ( p == n ) return 1;
+  TGeoHMatrix dau_mat;
   for (Int_t idau = 0, ndau = p->GetNdaughters(); idau < ndau; ++idau) {
     string spath;
     TGeoNode*   daughter = p->GetDaughter(idau);
     TGeoHMatrix* daughter_matrix = 0;
     if ( mat )  {
-      TGeoHMatrix dau_mat  = *mat;
-      TGeoMatrix* matrix   = daughter->GetMatrix();
+      TGeoMatrix* matrix = daughter->GetMatrix();
+      dau_mat = *mat;
       dau_mat.Multiply(matrix);
       daughter_matrix = &dau_mat;
     }
-    bool found = findNodeWithMatrix(daughter,n,daughter_matrix,sub_path ? &spath : 0);
-    if ( found )  {
+    int level = findNodeWithMatrix(daughter,n,daughter_matrix,sub_path ? &spath : 0);
+    if ( level>0 )  {
       if ( sub_path )  {
 	*sub_path += "/";
 	*sub_path += spath;
       }
       if ( mat ) *mat = *daughter_matrix;
-      return true;
+      return level+1;
     }
   }
-  return false;
+  return 0;
 }
 
 std::pair<bool,TEveElement*> Utilities::LoadDetElement(Geometry::DetElement de,int levels, TEveElement* parent)  {
@@ -167,7 +179,7 @@ std::pair<bool,TEveElement*> Utilities::LoadDetElement(Geometry::DetElement de,i
       TGeoMatrix* matrix = n->GetMatrix();
       gGeoManager = 0;
       gGeoManager = new TGeoManager();
-      std::pair<bool,TEveElement*> e = createEveShape(0, levels, parent, n, *matrix);
+      std::pair<bool,TEveElement*> e = createEveShape(0, levels, parent, n, *matrix, de.name());
       TEveElementList* list = dynamic_cast<TEveElementList*>(e.second);
       if ( list )  {
 	list->SetName(de.name());

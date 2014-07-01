@@ -534,8 +534,8 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
             "access Geant4 region.");
       }
     }
-
-    printout(m_outputLevel, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s sensitive:%s", n.c_str(), v,
+    PrintLevel lvl = m_outputLevel; //string(det.name())=="SiTrackerBarrel" ? WARNING : m_outputLevel;
+    printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s sensitive:%s", n.c_str(), v,
         s->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly), yes_no(det.isValid()));
 
     if (assembly) {

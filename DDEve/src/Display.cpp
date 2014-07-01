@@ -97,7 +97,7 @@ Display::CalodataContext& Display::CalodataContext::operator=(const CalodataCont
 /// Standard constructor
 Display::Display(TEveManager* eve) 
   : m_eve(eve), m_lcdd(0), m_evtHandler(0), m_geoGlobal(0), m_eveGlobal(0),
-    m_viewMenu(0), m_dd4Menu(0), m_visLevel(7), m_loadLevel(3)
+    m_viewMenu(0), m_dd4Menu(0), m_visLevel(7), m_loadLevel(1)
 {
   TEveBrowser* br = m_eve->GetBrowser();
   TGMenuBar* bar = br->GetMenuBar();
@@ -567,12 +567,29 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
       printout(INFO,"Display","+++ Load children of %s to %d levels",Utilities::GetName(start),levels);
       if ( 0 != n )   {
 	TGeoHMatrix mat;
-	Utilities::findNodeWithMatrix(lcdd().world().placement().ptr(),n,&mat);
-	pair<bool,TEveElement*> e = Utilities::createEveShape(0, levels, start, n, mat);
-	if ( e.first )  { // newly created
-	  start->AddElement(e.second);
+	const char* node_name = n->GetName();
+	int level = Utilities::findNodeWithMatrix(lcdd().world().placement().ptr(),n,&mat);
+	if ( level > 0 )   {
+	  pair<bool,TEveElement*> e(false,0);
+	  const DetElement::Children& c = world.children();
+	  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
+	    DetElement de = (*i).second;
+	    if ( de.placement().ptr() == n )  {
+	      e = Utilities::createEveShape(0, levels, start, n, mat, de.name());
+	      break;
+	    }
+	  }
+	  if ( !e.first && !e.second )  {
+	    e = Utilities::createEveShape(0, levels, start, n, mat, node_name);
+	  }
+	  if ( e.first )  { // newly created
+	    start->AddElement(e.second);
+	  }
+	  printout(INFO,"Display","+++ Import geometry node %s with %d levels.",node_name, levels);
 	}
-	printout(INFO,"Display","+++ Import geometry node %s with %d levels.",n->GetName(), levels);
+	else   {
+	  printout(INFO,"Display","+++ FAILED to import geometry node %s with %d levels.",node_name, levels);
+	}
       }
       else  {
 	LoadGeoChildren(0,levels,false);

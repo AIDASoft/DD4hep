@@ -131,6 +131,7 @@ namespace DD4hep {
       Position direction = postPos - prePos;
       Position position  = mean_direction(prePos,postPos);
       double   hit_len   = direction.R();
+
       if (hit_len > 0) {
 	double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
 	direction *= new_len/hit_len;

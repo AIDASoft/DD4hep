@@ -16,7 +16,6 @@ from SystemOfUnits import *
 def run():
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  DDG4.setPrintLevel(Output.DEBUG)
   kernel = DDG4.Kernel()
   kernel.UI = "UI"
   kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
@@ -125,20 +124,20 @@ def run():
   act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiVertexBarrelHandler','SiVertexBarrel')
   seq.add(act)
   seq.add(f1)
-  seq.add(f4)
+  #seq.add(f4)
   act.add(f1)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiVertexEndcap')
   act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiVertexEndcapHandler','SiVertexEndcap')
   seq.add(act)
   seq.add(f1)
-  seq.add(f4)
+  #seq.add(f4)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerBarrel')
   act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerBarrelHandler','SiTrackerBarrel')
   seq.add(act)
   seq.add(f1)
-  seq.add(f4)
+  #seq.add(f4)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerEndcap')
   act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerEndcapHandler','SiTrackerEndcap')
@@ -211,6 +210,7 @@ def run():
   kernel.configure()
   kernel.initialize()
 
+  #DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
   kernel.terminate()
 
