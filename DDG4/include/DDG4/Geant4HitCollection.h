@@ -220,6 +220,8 @@ namespace DD4hep {
       const ComponentCast& type() const;
       /// Type information of the vector type for extracting data
       const ComponentCast& vector_type() const;
+      /// Clear the collection (Deletes all valid references to real hits)
+      virtual void clear();
       /// Access individual hits
       virtual G4VHit* GetHit(size_t which) const {
         return (G4VHit*) &m_hits.at(which);

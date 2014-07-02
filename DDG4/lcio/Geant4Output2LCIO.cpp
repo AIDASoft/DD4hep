@@ -93,15 +93,12 @@ namespace DD4hep {
 #include "IMPL/LCRunHeaderImpl.h"
 #include "IMPL/LCCollectionVec.h"
 
-
 using namespace DD4hep::Simulation;
 using namespace DD4hep;
 using namespace std;
 
-
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4Output2LCIO)
-
 
 /// Standard constructor
 Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
@@ -112,14 +109,14 @@ Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
 
 /// Default destructor
 Geant4Output2LCIO::~Geant4Output2LCIO()  {
-  InstanceCount::decrement(this);
   if ( m_file )  {
     m_file->close();
     deletePtr(m_file);
   }
+  InstanceCount::decrement(this);
 }
 
-// Callback to store the Geant4 run information
+/// Callback to store the Geant4 run information
 void Geant4Output2LCIO::beginRun(const G4Run* )  {
   if ( 0 == m_file && !m_output.empty() )   {
     m_file = lcio::LCFactory::getInstance()->createLCWriter();
@@ -153,25 +150,17 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
 
 
 void Geant4Output2LCIO::begin(const G4Event* event){
-
   lcio::LCEventImpl* e  = new lcio::LCEventImpl;
-
   //fg: fixme: should be this call (deleting the pointer in the end) but that does not compile ...
   //  context()->event().addExtension<lcio::LCEventImpl>( e );
-
-  context()->event().addExtension<lcio::LCEventImpl>( e );
+  context()->event().addExtension(e);
   //context()->event().addExtension( e , typeid( lcio::LCEventImpl ), 0);
-
   //  std::cout << " ########### Geant4Output2LCIO::begin  add new LCIO event  event context " << std::endl ;
 }
 
-
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
-  // lcio::LCEventImpl* e  = new lcio::LCEventImpl;
-  //  ctxt.userData = e;
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
-
   e->setRunNumber(m_runNo);
   e->setEventNumber(ctxt.context->GetEventID());
   e->setDetectorName(context()->lcdd().header().name());
@@ -187,7 +176,6 @@ void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& ctxt, G4VHitsColl
     typedef pair<Geometry::VolumeManager,G4VHitsCollection*> _A;
     typedef Geant4Conversion<lcio::LCCollectionVec,_A> _C;
     const _C& cnv = _C::converter(typeid(Geant4HitCollection));
-    //lcio::LCEventImpl* evt = ctxt.data<lcio::LCEventImpl>();
     lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
     lcio::LCCollectionVec* col = cnv(_A(m_volMgr,collection));
     evt->addCollection(col,hc_nam);

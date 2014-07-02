@@ -78,10 +78,11 @@ def run():
   evt_root.enableUI()
   kernel.eventAction().add(evt_root)
 
-  #evt_lcio = DDG4.EventAction(kernel,'Geant4Output2LCIO/LcioOutput')
-  #evt_lcio.Output = "simple_lcio"
-  #evt_lcio.enableUI()
-  #kernel.eventAction().add(evt_lcio)
+  evt_lcio = DDG4.EventAction(kernel,'Geant4Output2LCIO/LcioOutput')
+  evt_lcio.Control = True
+  evt_lcio.Output = "CLICSiD_"+time.strftime("%Y-%m-%d_%H-%M")+".lcio"
+  evt_lcio.enableUI()
+  kernel.eventAction().add(evt_lcio)
 
   gen = DDG4.GeneratorAction(kernel,"Geant4TestGeneratorAction/Generate")
   kernel.generatorAction().add(gen)

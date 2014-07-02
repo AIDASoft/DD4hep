@@ -90,6 +90,11 @@ void Geant4HitCollection::newInstance() {
   InstanceCount::increment(this);
 }
 
+/// Clear the collection (Deletes all valid references to real hits)
+void Geant4HitCollection::clear()   {
+  m_hits.clear();
+}
+
 /// Find hit in a collection by comparison of attributes
 void* Geant4HitCollection::findHit(const Compare& cmp) const {
   void* p = 0;
