@@ -152,8 +152,8 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
 void Geant4Output2LCIO::begin(const G4Event* event){
   lcio::LCEventImpl* e  = new lcio::LCEventImpl;
   //fg: fixme: should be this call (deleting the pointer in the end) but that does not compile ...
-  //  context()->event().addExtension<lcio::LCEventImpl>( e );
-  context()->event().addExtension(e);
+  context()->event().addExtension<lcio::LCEventImpl>( e );
+  //context()->event().addExtension(e);
   //context()->event().addExtension( e , typeid( lcio::LCEventImpl ), 0);
   //  std::cout << " ########### Geant4Output2LCIO::begin  add new LCIO event  event context " << std::endl ;
 }
