@@ -93,12 +93,15 @@ namespace DD4hep {
 #include "IMPL/LCRunHeaderImpl.h"
 #include "IMPL/LCCollectionVec.h"
 
+
 using namespace DD4hep::Simulation;
 using namespace DD4hep;
 using namespace std;
 
+
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4Output2LCIO)
+
 
 /// Standard constructor
 Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
@@ -116,7 +119,7 @@ Geant4Output2LCIO::~Geant4Output2LCIO()  {
   InstanceCount::decrement(this);
 }
 
-/// Callback to store the Geant4 run information
+// Callback to store the Geant4 run information
 void Geant4Output2LCIO::beginRun(const G4Run* )  {
   if ( 0 == m_file && !m_output.empty() )   {
     m_file = lcio::LCFactory::getInstance()->createLCWriter();
@@ -133,10 +136,9 @@ void Geant4Output2LCIO::endRun(const G4Run* )  {
 
 /// Commit data at end of filling procedure
 void Geant4Output2LCIO::commit( OutputContext<G4Event>& ctxt)   {
-  //lcio::LCEventImpl* e = ctxt.data<lcio::LCEventImpl>();
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
   m_file->writeEvent(e);
-  std::cout << " ########### Geant4Output2LCIO::commit() : writing LCIO event to file .... "  << std::endl ;
+  //  std::cout << " ########### Geant4Output2LCIO::commit() : writing LCIO event to file .... "  << std::endl ;
 }
 
 /// Callback to store the Geant4 run information
@@ -150,13 +152,18 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
 
 
 void Geant4Output2LCIO::begin(const G4Event* event){
+
   lcio::LCEventImpl* e  = new lcio::LCEventImpl;
-  //fg: fixme: should be this call (deleting the pointer in the end) but that does not compile ...
-  context()->event().addExtension<lcio::LCEventImpl>( e );
-  //context()->event().addExtension(e);
-  //context()->event().addExtension( e , typeid( lcio::LCEventImpl ), 0);
-  //  std::cout << " ########### Geant4Output2LCIO::begin  add new LCIO event  event context " << std::endl ;
+
+  //fg: fixme: should be this call taking ownership of the LCEvent
+  //    deleting it at the end - however does not seem to work
+  //    see fixme in Geant4Output2LCIO::saveCollection() below
+  //context()->event().addExtension<lcio::LCEventImpl>( e , 1 );
+  context()->event().addExtension<lcio::LCEventImpl>( e , 0 );
+
+
 }
+
 
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
@@ -180,4 +187,9 @@ void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& ctxt, G4VHitsColl
     lcio::LCCollectionVec* col = cnv(_A(m_volMgr,collection));
     evt->addCollection(col,hc_nam);
   }
+  //fg: fixme: for the memory handling with LCIO we need to take away the ownership from
+  //    the Geant4HitCollection - however this creates a seg fault at the end of event...
+  // Geant4HitCollection* g4hcol = (Geant4HitCollection* ) collection ;
+  // std::vector<void*> v ;
+  // g4hcol->releaseHitsUnchecked(v) ;
 }
