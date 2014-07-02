@@ -136,7 +136,7 @@ void Geant4Output2LCIO::endRun(const G4Run* )  {
 }
 
 /// Commit data at end of filling procedure
-void Geant4Output2LCIO::commit( OutputContext<G4Event>& ctxt)   {
+void Geant4Output2LCIO::commit( OutputContext<G4Event>& /* ctxt */)   {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
   m_file->writeEvent(e);
   //  std::cout << " ########### Geant4Output2LCIO::commit() : writing LCIO event to file .... "  << std::endl ;
@@ -152,20 +152,9 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
 }
 
 
-void Geant4Output2LCIO::begin(const G4Event* event){
-
+void Geant4Output2LCIO::begin(const G4Event* /* event */)  {
   lcio::LCEventImpl* e  = new lcio::LCEventImpl;
-
-  //fg: fixme: should be this call taking ownership of the LCEvent
-  //    deleting it at the end - however does not seem to work
-  //    see fixme in Geant4Output2LCIO::saveCollection() below
-//#define debug_memory_handling
-#ifdef debug_memory_handling
-   context()->event().addExtension<lcio::LCEventImpl>( e , 1 );
-#else
-   context()->event().addExtension<lcio::LCEventImpl>( e , 0 );
-#endif
-
+  context()->event().addExtension<lcio::LCEventImpl>( e );
 }
 
 
@@ -180,22 +169,15 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
 }
 
 /// Callback to store each Geant4 hit collection
-void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection)  {
+void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection)  {
   size_t nhits = collection->GetSize();
   std::string hc_nam = collection->GetName();
   if ( nhits > 0 )   {
-    typedef pair<Geometry::VolumeManager,G4VHitsCollection*> _A;
-    typedef Geant4Conversion<lcio::LCCollectionVec,_A> _C;
+    typedef pair<Geometry::VolumeManager,G4VHitsCollection*> _Args;
+    typedef Geant4Conversion<lcio::LCCollectionVec,_Args> _C;
     const _C& cnv = _C::converter(typeid(Geant4HitCollection));
     lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
-    lcio::LCCollectionVec* col = cnv(_A(m_volMgr,collection));
+    lcio::LCCollectionVec* col = cnv(_Args(m_volMgr,collection));
     evt->addCollection(col,hc_nam);
   }
-#ifdef debug_memory_handling
-  //fg: fixme: for the memory handling with LCIO we need to take away the ownership from
-  //    the Geant4HitCollection - however this creates a seg fault at the end of event...
-  Geant4HitCollection* g4hcol = (Geant4HitCollection* ) collection ;
-  std::vector<void*> v ;
-  g4hcol->releaseHitsUnchecked(v) ;
-#endif
 }
