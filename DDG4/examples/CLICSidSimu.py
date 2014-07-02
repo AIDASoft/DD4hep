@@ -72,15 +72,16 @@ def run():
   mc.release()
   """
   # Configure I/O
+  """
   evt_root = DDG4.EventAction(kernel,'Geant4Output2ROOT/RootOutput')
   evt_root.Control = True
   evt_root.Output = "CLICSiD_"+time.strftime("%Y-%m-%d_%H-%M")+".root"
   evt_root.enableUI()
   kernel.eventAction().add(evt_root)
-
+  """
   evt_lcio = DDG4.EventAction(kernel,'Geant4Output2LCIO/LcioOutput')
   evt_lcio.Control = True
-  evt_lcio.Output = "CLICSiD_"+time.strftime("%Y-%m-%d_%H-%M")+".lcio"
+  evt_lcio.Output = "CLICSiD_"+time.strftime("%Y-%m-%d_%H-%M")
   evt_lcio.enableUI()
   kernel.eventAction().add(evt_lcio)
 
@@ -122,31 +123,31 @@ def run():
 
   # First the tracking detectors
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiVertexBarrel')
-  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiVertexBarrelHandler','SiVertexBarrel')
+  act = DDG4.SensitiveAction(kernel,'LcioTestTrackerAction/SiVertexBarrelHandler','SiVertexBarrel')
   seq.add(act)
   seq.add(f1)
   #seq.add(f4)
   act.add(f1)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiVertexEndcap')
-  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiVertexEndcapHandler','SiVertexEndcap')
+  act = DDG4.SensitiveAction(kernel,'LcioTestTrackerAction/SiVertexEndcapHandler','SiVertexEndcap')
   seq.add(act)
   seq.add(f1)
   #seq.add(f4)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerBarrel')
-  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerBarrelHandler','SiTrackerBarrel')
+  act = DDG4.SensitiveAction(kernel,'LcioTestTrackerAction/SiTrackerBarrelHandler','SiTrackerBarrel')
   seq.add(act)
   seq.add(f1)
   #seq.add(f4)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerEndcap')
-  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerEndcapHandler','SiTrackerEndcap')
+  act = DDG4.SensitiveAction(kernel,'LcioTestTrackerAction/SiTrackerEndcapHandler','SiTrackerEndcap')
   #act.OutputLevel = Output.INFO
   seq.add(act)
 
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerForward')
-  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerForwardHandler','SiTrackerForward')
+  act = DDG4.SensitiveAction(kernel,'LcioTestTrackerAction/SiTrackerForwardHandler','SiTrackerForward')
   seq.add(act)
 
   # Now the calorimeters

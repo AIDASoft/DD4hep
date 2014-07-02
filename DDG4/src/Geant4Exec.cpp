@@ -297,7 +297,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
 
   // Check if the geometry was loaded
   if (lcdd.detectors().size() <= 1) {
-    printout(INFO, "Geant4Exec", "+++ Only %d subdetectors present. "
+    printout(WARNING, "Geant4Exec", "+++ Only %d subdetectors present. "
 	     "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
   }
   // Get the detector constructed
