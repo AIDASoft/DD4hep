@@ -16,6 +16,7 @@
 // lcio include files
 #include "lcio.h"
 #include "IO/LCWriter.h"
+#include "IMPL/LCEventImpl.h"
 
 /*
  *   DD4hep namespace declaration
@@ -158,9 +159,12 @@ void Geant4Output2LCIO::begin(const G4Event* event){
   //fg: fixme: should be this call taking ownership of the LCEvent
   //    deleting it at the end - however does not seem to work
   //    see fixme in Geant4Output2LCIO::saveCollection() below
-  //context()->event().addExtension<lcio::LCEventImpl>( e , 1 );
-  context()->event().addExtension<lcio::LCEventImpl>( e , 0 );
-
+//#define debug_memory_handling
+#ifdef debug_memory_handling
+   context()->event().addExtension<lcio::LCEventImpl>( e , 1 );
+#else
+   context()->event().addExtension<lcio::LCEventImpl>( e , 0 );
+#endif
 
 }
 
@@ -187,9 +191,11 @@ void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& ctxt, G4VHitsColl
     lcio::LCCollectionVec* col = cnv(_A(m_volMgr,collection));
     evt->addCollection(col,hc_nam);
   }
+#ifdef debug_memory_handling
   //fg: fixme: for the memory handling with LCIO we need to take away the ownership from
   //    the Geant4HitCollection - however this creates a seg fault at the end of event...
-  // Geant4HitCollection* g4hcol = (Geant4HitCollection* ) collection ;
-  // std::vector<void*> v ;
-  // g4hcol->releaseHitsUnchecked(v) ;
+  Geant4HitCollection* g4hcol = (Geant4HitCollection* ) collection ;
+  std::vector<void*> v ;
+  g4hcol->releaseHitsUnchecked(v) ;
+#endif
 }
