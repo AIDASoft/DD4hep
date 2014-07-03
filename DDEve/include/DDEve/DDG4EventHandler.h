@@ -26,9 +26,6 @@ class TBranch;
  */
 namespace DD4hep {
 
-  // Forward declarations
-  namespace Simulation { class SimpleHit; }
-
   /** @class DDG4EventHandler  DDG4EventHandler.h DDEve/DDG4EventHandler.h
    *
    * @author  M.Frank
@@ -36,47 +33,37 @@ namespace DD4hep {
    */
   class DDG4EventHandler : public EventHandler  {
   public:
-    typedef Simulation::SimpleHit Hit;
     typedef std::map<std::string,std::pair<TBranch*,void*> > Branches;
+    typedef void* (*HitAccessor_t)(void*, DDEveHit*);
   protected:
     /// Reference to data file
     std::pair<TFile*,TTree*> m_file;
     /// Branch map
     Branches m_branches;
-    /// Data collection map
-    Data     m_data;
     /// File entry number
     Long64_t m_entry;
-
+    /// 
+    HitAccessor_t m_simhitConverter;
   public:
     /// Standard constructor
     DDG4EventHandler();
     /// Default destructor
     virtual ~DDG4EventHandler();
 
-    const Branches& branches()  const   {  return m_branches; }
-    /// Access the map of simulation data collections
-    virtual const Data& data()  const { return m_data;  }
-    /// Check if a data file is connected to the handler
-    virtual bool hasFile() const;
     /// Access the number of events on the current input data source (-1 if no data source connected)
     virtual long numEvents() const;
     /// Access the data source name
     std::string datasourceName() const;
-
+    /// Call functor on hit collection
+    virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor);
     /// Open new data file
     virtual bool Open(const std::string& file_name);
-
     /// User overloadable function: Load the next event
     virtual bool NextEvent();
     /// User overloadable function: Load the previous event
     virtual bool PreviousEvent();
     /// Goto a specified event in the file
     virtual bool GotoEvent(long event_number);
-
-    /// Fill eta-phi histogram from a hit collection
-    virtual size_t FillEtaPhiHistogram(const std::string& collection, TH2F* histogram);
-
     /// Load the specified event
     Int_t ReadEvent(Long64_t n);
 

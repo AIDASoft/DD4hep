@@ -102,13 +102,14 @@ void EventControl::OnFileOpen(EventHandler* handler)  {
 
 /// Consumer event data
 void EventControl::OnNewEvent(EventHandler* handler)   {
-  typedef EventHandler::Data Data;
-  typedef EventHandler::Collection Collection;
-  const Data& event = handler->data();
+  typedef EventHandler::TypedEventCollections Types;
+  typedef std::vector<EventHandler::Collection> Collections;
+  const Types& types = handler->data();
   size_t cnt = 1;
   m_lines[0].second.first->SetText("Hit collection name");
   m_lines[0].second.second->SetText("No.Hits");
-  for(Data::const_iterator i=event.begin(); i!=event.end() && cnt+1<m_lines.size(); ++i)  {
+  for(Types::const_iterator i=types.begin(); i!=types.end() && cnt+1<m_lines.size(); ++i)  {
+    const Collections& colls = (*i).second;
     Line line = m_lines[cnt++];
     string cl = (*i).first.substr((*i).first.find("Simple"));
     cl = cl.substr(0,cl.find('*'));
@@ -116,10 +117,9 @@ void EventControl::OnNewEvent(EventHandler* handler)   {
     line.second.second->SetTextColor(kRed);
     line.second.first->SetText(("Coll.Type: "+cl).c_str());
     line.second.second->SetText("");
-    for(std::vector<Collection>::const_iterator j=(*i).second.begin(); j!=(*i).second.end() && cnt+1<m_lines.size(); ++j)   {
+    for(Collections::const_iterator j=colls.begin(); j!=colls.end() && cnt+1<m_lines.size(); ++j)   {
       char text[132];
-      const vector<void*>* coll_data = (*j).second;
-      ::snprintf(text,sizeof(text),"%ld",long(coll_data->size()));
+      ::snprintf(text,sizeof(text),"%ld",long((*j).second));
       line = m_lines[cnt++];
       line.second.first->SetText((*j).first);
       line.second.second->SetText(text);

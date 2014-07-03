@@ -10,6 +10,7 @@
 #define DD4HEP_DDEVE_EVENTHANDLER_H
 
 // Framework include files
+#include "DDEve/DDEveEventData.h"
 #include "TClass.h"
 class TH2F;
 
@@ -26,50 +27,61 @@ class TH2F;
 namespace DD4hep {
 
   class EventConsumer;
+  /// Event data actor base class. Used to extract data from concrete classes.
+  /** 
+   * @author  M.Frank
+   * @version 1.0
+   */
+  struct DDEveHitActor  {
+    virtual ~DDEveHitActor() {}
+    virtual void operator()(const DDEveHit&) = 0;
+    virtual void setSize(size_t /* num_elements */) {}
+  };
 
-  /** @class EventHandler  EventHandler.h DDEve/EventHandler.h
-   *
+  /// Event handler base class. Interface to all DDEve I/O actions
+  /** 
    * @author  M.Frank
    * @version 1.0
    */
   class EventHandler   {
   public:
-    typedef std::pair<const char*,std::vector<void*>* > Collection;
-    typedef std::map<std::string,std::vector<Collection> > Data;
+    /// Collection definition: name, size
+    typedef std::pair<const char*,size_t> Collection;
+    /// Types collection: collections are grouped by type (class name)
+    typedef std::map<std::string,std::vector<Collection> > TypedEventCollections;
+    /// Subscriber set
     typedef std::set<EventConsumer*> Subscriptions;
 
-    typedef std::pair<const std::type_info*,std::string> DataID;
-    typedef void (*fcn)(void*);
-    typedef std::pair<fcn,void*> DataHolder;
-    typedef std::map<DataID, DataHolder> EventCollections;
   protected:
+    /// Data collection map
+    TypedEventCollections m_data;
     /// Data subscriptions (unordered)
     Subscriptions m_subscriptions;
-    EventCollections m_collections;
+    /// Flag to indicate that a file is opened
+    bool m_hasFile;
+    /// Flag to indicate that an event is loaded
     bool m_hasEvent;
   public:
     /// Standard constructor
     EventHandler();
     /// Default destructor
     virtual ~EventHandler();
-
-    template <typename T> std::vector<const T*> GetHits(const std::string& collection);
     /// Access the map of simulation data collections
-    virtual const Data& data()  const = 0;
-    /// Check if a data file is connected to the handler
-    virtual bool hasFile() const = 0;
+    virtual const TypedEventCollections& data()  const   { return m_data;      }
+    /// Check if an event is present in memory
     virtual bool hasEvent() const  { return m_hasEvent; }
+    /// Check if a data file is connected to the handler
+    virtual bool hasFile() const   { return m_hasFile;  }
     /// Access the number of events on the current input data source (-1 if no data source connected)
     virtual long numEvents() const = 0;
     /// Access the data source name
     virtual std::string datasourceName() const = 0;
-
+    /// Loop over collection and extract data
+    virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor) = 0;
     /// Clear all event related data caches
     virtual void ClearCache();
-
     /// Open a new event data file
     virtual bool Open(const std::string& file_name) = 0;
-
     /// Load the next event
     virtual bool NextEvent() = 0;
     /// User overloadable function: Load the previous event
@@ -81,9 +93,6 @@ namespace DD4hep {
     virtual void Subscribe(EventConsumer* display);
     /// Unsubscribe from notification of new data present
     virtual void Unsubscribe(EventConsumer* display);
-
-    /// Fill eta-phi histogram from a hit collection
-    virtual size_t FillEtaPhiHistogram(const std::string& collection, TH2F* histogram)  = 0;
 
 #ifndef __CINT__
     /// Notfy all subscribers

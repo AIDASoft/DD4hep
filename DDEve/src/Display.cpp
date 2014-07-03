@@ -18,7 +18,7 @@
 #include "DDEve/EvePgonSetProjectedContextMenu.h"
 #include "DDEve/DDG4EventHandler.h"
 #include "DDEve/Utilities.h"
-#include "DDEve/SimulationHit.h"
+#include "DDEve/DDEveEventData.h"
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/LCDDData.h"
@@ -71,6 +71,22 @@ namespace DD4hep {
       //display->LoadXML("file:../DD4hep/examples/CLICSiD/compact/DDEve.xml");
     }
   }
+
+  struct PointsetCreator : public DDEveHitActor  {
+    TEvePointSet* points;
+    int count;
+    PointsetCreator(TEvePointSet* ps) : points(ps), count(0) {}
+    virtual void operator()(const DDEveHit& hit)  
+    {     points->SetPoint(count++, hit.x/10e0, hit.y/10e0, hit.z/10e0);    }
+  };
+  struct EtaPhiHistogramActor : public DDEveHitActor  {
+    TH2F* histogram;
+    EtaPhiHistogramActor(TH2F* h) : DDEveHitActor(), histogram(h) {}
+    virtual void operator()(const DDEveHit& hit)   {
+      const Geometry::Position pos(hit.x/10e0,hit.y/10e0,hit.z/10e0);
+      histogram->Fill(pos.Eta(),pos.Phi(),hit.deposit);
+    }
+  };
 }
 
 Display::CalodataContext::CalodataContext() 
@@ -241,7 +257,8 @@ Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
 	ctx.calo3D->SetAutoRange(kTRUE);
 	ctx.calo3D->SetMaxTowerH(10);
 	ImportGeo(ctx.calo3D);
-	eventHandler().FillEtaPhiHistogram(hits.c_str(),h);
+	EtaPhiHistogramActor actor(h);
+	eventHandler().collectionLoop(hits,actor);
 	ctx.eveHist->DataChanged();
       }
       else   {
@@ -412,29 +429,22 @@ TFile* Display::Open(const char* name) const   {
 
 /// Consumer event data
 void Display::OnNewEvent(EventHandler* handler )   {
-  typedef DD4hep::DDEve::SimulationHit Hit;
-  typedef EventHandler::Data Data;
-  typedef EventHandler::Collection Collection;
-  const Data& event = handler->data();
+  typedef EventHandler::TypedEventCollections Types;
+  typedef std::vector<EventHandler::Collection> Collections;
+  const Types& types = handler->data();
 
   printout(ERROR,"EventHandler","+++ Display new event.....");
   GetEve().DestroyElements();
-  for(Data::const_iterator i=event.begin(); i!=event.end(); ++i)  {
-    for(std::vector<Collection>::const_iterator j=(*i).second.begin(); j!=(*i).second.end(); ++j)   {
-      const std::vector<void*>* c = (*j).second;
-      if ( c->size() > 0 )   {
-	typedef std::vector<const Hit*> _P;
-	string coll_name = (*j).first;
-	_P pv = handler->GetHits<Hit>(coll_name);
-	if ( pv.size() > 0 )   {
-	  cout << coll_name << ": Got " << pv.size() << " positions." << endl;
-	  TEvePointSet* ps = new TEvePointSet(coll_name.c_str(),pv.size());
-	  for(int m=0; m < int(pv.size()); ++m)  {
-	    const Position& p = pv.at(m)->position;
-	    ps->SetPoint(m, p.X()/10, p.Y()/10, p.Z()/10);
-	  }
-	  ImportEvent(ps);
-	}
+  for(Types::const_iterator i=types.begin(); i!=types.end(); ++i)  {
+    const Collections& colls = (*i).second;
+    for(Collections::const_iterator j=colls.begin(); j!=colls.end(); ++j)   {
+      size_t len = (*j).second;
+      if ( len > 0 )   {
+	TEvePointSet* ps = new TEvePointSet((*j).first,len);
+	ps->SetMarkerSize(0.2);
+	PointsetCreator cr(ps);
+	handler->collectionLoop((*j).first, cr);
+	ImportEvent(ps);
       }
     }
   }
@@ -445,7 +455,8 @@ void Display::OnNewEvent(EventHandler* handler )   {
   for(Calodata::iterator i = m_calodata.begin(); i != m_calodata.end(); ++i)  {
     CalodataContext& ctx = (*i).second;
     TH2F* h = ctx.eveHist->GetHist(0);
-    long n = eventHandler().FillEtaPhiHistogram(ctx.config.hits,h);
+    EtaPhiHistogramActor actor(h);
+    size_t n = eventHandler().collectionLoop(ctx.config.hits, actor);
     ctx.eveHist->DataChanged();
     printout(INFO,"FillEtaPhiHistogram","+++ %s: Filled %ld hits from %s....",
 	     ctx.calo3D->GetName(), n, ctx.config.hits.c_str());

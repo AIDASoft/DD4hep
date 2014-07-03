@@ -9,9 +9,9 @@
 
 // Framework include files
 #include "DDEve/DDG4EventHandler.h"
-#include "DDEve/SimulationHit.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Objects.h"
+#include "DD4hep/Factories.h"
 
 #include "TH2.h"
 #include "TFile.h"
@@ -29,9 +29,21 @@ using namespace std;
 using namespace DD4hep;
 
 ClassImp(DDG4EventHandler)
+namespace {
+  union FCN  {
+    FCN(void* p) { ptr = p; }
+    DDG4EventHandler::HitAccessor_t func;
+    void* ptr;
+  };
+}
 
 /// Standard constructor
 DDG4EventHandler::DDG4EventHandler() : EventHandler(), m_file(0,0), m_entry(-1) {
+  void* ptr = ROOT::Reflex::PluginService::Create<void*>("DDEve_DDG4HitAccess",(const char*)"");
+  if ( 0 == ptr )   {
+    throw runtime_error("FATAL: Failed to access function pointer from factory DDEve_DDG4HitAccess");
+  }
+  m_simhitConverter = FCN(ptr).func;
 }
 
 /// Default destructor
@@ -46,7 +58,7 @@ DDG4EventHandler::~DDG4EventHandler()   {
 
 /// Load the next event
 bool DDG4EventHandler::NextEvent()   {
-  ReadEvent(++m_entry) > 0;
+  return ReadEvent(++m_entry) > 0;
 }
 
 /// Load the previous event
@@ -57,11 +69,6 @@ bool DDG4EventHandler::PreviousEvent()   {
 /// Goto a specified event in the file
 bool DDG4EventHandler::GotoEvent(long event_number)   {
   return ReadEvent(m_entry = event_number) > 0;
-}
-
-/// Check if a data file is connected to the handler
-bool DDG4EventHandler::hasFile() const  {
-  return 0 != m_file.first && 0 != m_file.second;
 }
 
 /// Access the number of events on the current input data source (-1 if no data source connected)
@@ -80,18 +87,22 @@ std::string DDG4EventHandler::datasourceName() const   {
   return "UNKNOWN";
 }
 
-/// Fill eta-phi histogram from a hit collection
-size_t DDG4EventHandler::FillEtaPhiHistogram(const std::string& collection, TH2F* histogram)  {
-  typedef DD4hep::DDEve::SimulationHit Hit;
-  typedef std::vector<const Hit*> _P;
-  if ( hasEvent() )  {
-    _P pv = GetHits<Hit>(collection.c_str());
-    for(_P::const_iterator i=pv.begin(); i!=pv.end(); ++i)   {
-      const Geometry::Position& pos = (*i)->position;
-      float deposit = (*i)->deposit;
-      histogram->Fill(pos.Eta(),pos.Phi(),deposit);
+/// Call functor on hit collection
+size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor)   {
+  typedef std::vector<void*> _P;
+  Branches::const_iterator i = m_branches.find(collection);
+  if ( i != m_branches.end() )   {
+    const _P* data = (_P*)(*i).second.second;
+    if ( data )  {
+      DDEveHit hit;
+      actor.setSize(data->size());
+      for(_P::const_iterator i=data->begin(); i!=data->end(); ++i)   {
+	if ( (*m_simhitConverter)(*i,&hit) )    {
+	  actor(hit);
+	}
+      }
+      return data->size();
     }
-    return pv.size();
   }
   return 0;
 }
@@ -118,7 +129,7 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
 	for(Branches::const_iterator i=m_branches.begin(); i != m_branches.end(); ++i)  {
 	  TBranch* b = (*i).second.first;
 	  std::vector<void*>* data = *(std::vector<void*>**)b->GetAddress();
-	  m_data[b->GetClassName()].push_back(make_pair(b->GetName(),data));
+	  m_data[b->GetClassName()].push_back(make_pair(b->GetName(),data->size()));
 	}
 	m_hasEvent = true;
 	NotifySubscribers(&EventConsumer::OnNewEvent);
@@ -143,6 +154,7 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
 bool DDG4EventHandler::Open(const std::string& name)   {
   string err;
   if ( m_file.first ) m_file.first->Close();
+  m_hasFile = false;
   m_hasEvent = false;
   try {
     char buff[PATH_MAX];
@@ -167,6 +179,7 @@ bool DDG4EventHandler::Open(const std::string& name)   {
 	  if ( !b ) continue;
 	  b->SetAddress(&m_branches[b->GetName()].second);
 	}
+	m_hasFile = true;
 	NotifySubscribers(&EventConsumer::OnFileOpen);
 	return true;
       }

@@ -19,7 +19,7 @@ namespace DD4hep { namespace Geometry {
 class G4Step;
 class G4StepPoint;
 #include "DDG4/Geant4Data.h"
-#include "DDEve/SimulationHit.h"
+#include "DDEve/DDEveEventData.h"
 
 
 #ifdef __DD4HEP_DDEVE_EXCLUSIVE__
@@ -86,36 +86,38 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::Simulation::SimpleCalorimeter+;
 #pragma link C++ class DD4hep::Simulation::SimpleCalorimeter::Hit+;
 #pragma link C++ class std::vector<DD4hep::Simulation::SimpleCalorimeter::Hit*>+;
-
 #else
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
-
-static void* _convertHitCollection(const char* source)  {
-  typedef DD4hep::DDEve::SimulationHit SimulationHit;
-  const std::vector<SimpleHit*>* c = (std::vector<SimpleHit*>*)source;
-  std::vector<SimulationHit>* pv = new std::vector<SimulationHit>();
-  if ( source && c->size() > 0 )   {
-    for(std::vector<SimpleHit*>::const_iterator k=c->begin(); k!=c->end(); ++k)   {
-      SimpleTracker::Hit* trh = dynamic_cast<SimpleTracker::Hit*>(*k);
-      if ( trh )   {
-	pv->push_back(SimulationHit(trh->position, trh->energyDeposit));
-	continue;
-      }
-      SimpleCalorimeter::Hit* cah = dynamic_cast<SimpleCalorimeter::Hit*>(*k);
-      if ( cah )   {
-	pv->push_back(SimulationHit(cah->position, cah->energyDeposit));
-	continue;
-      }
-    }
+template <typename T> static T* _fill(SimpleHit* ptr, DDEveHit* target)   {
+  T* s = dynamic_cast<T*>(ptr);
+  if ( s )   {
+    Geometry::Position* p = &s->position;
+    target->x = p->X();
+    target->y = p->Y();
+    target->z = p->Z();
+    target->deposit = s->energyDeposit;
   }
-  return pv;
+  return s;
+}
+
+static void* _convertHitFunc(void* source, DDEveHit* target)  {
+  void* result;
+  SimpleHit* hit = (SimpleHit*)source;
+  if ((result=_fill<SimpleTracker::Hit>(hit,target))) return result;
+  if ((result=_fill<SimpleCalorimeter::Hit>(hit,target))) return result;
+  return 0;
+}
+
+static void* _convertHit(const char*)  {
+  return (void*)_convertHitFunc;
 }
 
 #include "DD4hep/Factories.h"
 using namespace DD4hep::Geometry;
-DECLARE_CONSTRUCTOR(DDEve_DDG4CollectionAccess,_convertHitCollection)
+DECLARE_CONSTRUCTOR(DDEve_DDG4HitAccess,_convertHit)
 #endif
 #endif
 
