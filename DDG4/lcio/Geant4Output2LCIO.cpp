@@ -154,6 +154,8 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
 
 void Geant4Output2LCIO::begin(const G4Event* /* event */)  {
   lcio::LCEventImpl* e  = new lcio::LCEventImpl;
+  //fg: here the event context takes ownership and
+  //    deletes the event in the end 
   context()->event().addExtension<lcio::LCEventImpl>( e );
 }
 
