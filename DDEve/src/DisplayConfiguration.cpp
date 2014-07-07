@@ -57,7 +57,7 @@ DisplayConfiguration::ViewConfig& DisplayConfiguration::ViewConfig::operator=(co
 DisplayConfiguration::Config::Config()   {
   ::memset(&data,0,sizeof(data));
   data.defaults.load_geo = -1;
-  data.defaults.load_eve = -2;
+  data.defaults.show_evt =  1;
   data.defaults.alpha = 0.5;
 }
 

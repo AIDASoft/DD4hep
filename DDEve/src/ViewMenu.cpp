@@ -57,46 +57,38 @@ void ViewMenu::Build(TGMenuBar* bar, int hints)    {
   menu->AddEntry("Rho-&Phi Projection",this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__RhoPhiProjection","Rho-Phi"));
   const Display::ViewConfigurations& vc = m_display->viewConfigurations();
   for(Display::ViewConfigurations::const_iterator i=vc.begin(); i!=vc.end(); ++i)  {
-    ViewConfiguration* v = (*i).second;
-    menu->AddEntry(v->name().c_str(), this, &ViewMenu::CreateGenericView, v);
+    const Display::ViewConfig& v = (*i).second;
+    menu->AddEntry(v.name.c_str(), this, &ViewMenu::CreateView,p=new pair<string,string>("DD4hep__"+v.type,v.name));
   }
   bar->AddPopup(m_title.c_str(),*menu, new TGLayoutHints(hints, 0, 4, 0, 0));
-}
-
-/// Create a new 3D view
-void ViewMenu::CreateGenericView(TGMenuEntry*, void* ud)   {
-  ViewConfiguration* c = (ViewConfiguration*)ud;
-  string typ = "DD4hep__"+c->type();
-  View* v = PluginService::Create<View*>(typ.c_str(),m_display,c->name().c_str());
-  if ( v ) BuildView(v);
 }
 
 /// Create a new generic view
 void ViewMenu::CreateView(TGMenuEntry*, void* ud)   {
   pair<string,string>* args = (pair<string,string>*)ud;
-  View* v = PluginService::Create<View*>(args->first.c_str(),m_display,args->second.c_str());
+  CreateView(args->first,args->second);
+}
+
+View* ViewMenu::CreateView(const std::string& type, const std::string& title)   {
+  pair<string,string> args("DD4hep__"+type,title);
+  View* v = PluginService::Create<View*>(type.c_str(),m_display,title.c_str());
   BuildView(v);
+  return v;
 }
 
 /// Create a new 3D view
 View* ViewMenu::CreateView3D(const std::string& title)   {
-  View* v = PluginService::Create<View*>("DD4hep__View3D",m_display,title.c_str());
-  BuildView(v);
-  return v;
+  return CreateView("DD4hep__View3D",title.c_str());
 }
 
 /// Create a new R-Z view
 View* ViewMenu::CreateRhoZProjection(const std::string& title )  {
-  View* v = PluginService::Create<View*>("DD4hep__RhoZProjection",m_display,title.c_str());
-  BuildView(v);
-  return v;
+  return CreateView("DD4hep__RhoZProjection",title.c_str());
 }
 
 /// Create a new R-Phi view
 View* ViewMenu::CreateRhoPhiProjection(const std::string& title )  {
-  View* v = PluginService::Create<View*>("DD4hep__RhoPhiProjection",m_display,title.c_str());
-  BuildView(v);
-  return v;
+  return CreateView("DD4hep__RhoPhiProjection",title.c_str());
 }
 
 /// Import Geometry data
@@ -105,26 +97,10 @@ void ViewMenu::BuildView(View* v)  const  {
   TEveBrowser    *browser = m.GetBrowser();
   TGTab          *right = browser->GetTabRight();
   TEveWindowSlot *slot = TEveWindow::CreateWindowInTab(right);
-  TEveScene      *evt=0, *geo=0;
   v->Build(slot);
   m_display->RegisterEvents(v);
-  m_display->ConfigureGeometry(v);
-  m_display->PrepareEvent(v);
-  m_display->ConfigureEvent(v);
-  evt = v->eveScene();
-  geo = v->geoScene();
-  if ( evt ) evt->Repaint(kTRUE);
-  if ( geo ) geo->Repaint(kTRUE);
-  /// Update color set
-  TGLViewer* glv = v->viewer()->GetGLViewer();
-  glv->PostSceneBuildSetup(kTRUE);
-  glv->SetSmartRefresh(kFALSE);
-  if ( m.GetViewers()->UseLightColorSet() )
-    glv->UseLightColorSet();
-  else
-    glv->UseDarkColorSet();
-  glv->RequestDraw(TGLRnrCtx::kLODHigh);
-  glv->SetSmartRefresh(kTRUE);
+  v->ConfigureGeometry();
+  v->ConfigureEvent();
+  v->Initialize();
   right->SetTab(right->GetNumberOfTabs()-1);
 }
-

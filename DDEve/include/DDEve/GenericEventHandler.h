@@ -6,77 +6,68 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_DDEVE_DDG4EVENTHANDLER_H
-#define DD4HEP_DDEVE_DDG4EVENTHANDLER_H
+#ifndef DD4HEP_DDEVE_GENERICEVENTHANDLER_H
+#define DD4HEP_DDEVE_GENERICEVENTHANDLER_H
 
 // Framework include files
 #include "DDEve/EventHandler.h"
 
-// C/C++ include files
-#include <map>
-#include <string>
-
 // Forward declarations
-class TTree;
-class TFile;
-class TBranch;
 
 /*
  *   DD4hep namespace declaration
  */
 namespace DD4hep {
 
-  /** @class DDG4EventHandler  DDG4EventHandler.h DDEve/DDG4EventHandler.h
-   *
+  /// Event handler base class. Interface to all DDEve I/O actions
+  /** 
    * @author  M.Frank
    * @version 1.0
    */
-  class DDG4EventHandler : public EventHandler  {
-  public:
-    typedef std::map<std::string,std::pair<TBranch*,void*> > Branches;
-    typedef void* (*HitAccessor_t)(void*, DDEveHit*);
+  class GenericEventHandler : public EventHandler  {
   protected:
-    /// Reference to data file
-    std::pair<TFile*,TTree*> m_file;
-    /// Branch map
-    Branches m_branches;
-    /// File entry number
-    Long64_t m_entry;
-    /// 
-    HitAccessor_t m_simhitConverter;
-    /// Data collection map
-    TypedEventCollections m_data;
+    /// Subscriber set
+    typedef std::set<EventConsumer*> Subscriptions;
+    std::map<std::string,EventHandler*> m_handlers;
+    EventHandler* m_current;
+    /// Data subscriptions (unordered)
+    Subscriptions m_subscriptions;
+
+    EventHandler* current() const;
   public:
     /// Standard constructor
-    DDG4EventHandler();
+    GenericEventHandler();
     /// Default destructor
-    virtual ~DDG4EventHandler();
-
+    virtual ~GenericEventHandler();
     /// Access the map of simulation data collections
-    virtual const TypedEventCollections& data()  const   { return m_data;  }
+    virtual const TypedEventCollections& data()  const   { return current()->data();  }
     /// Access the number of events on the current input data source (-1 if no data source connected)
     virtual long numEvents() const;
     /// Access the data source name
-    std::string datasourceName() const;
-    /// Call functor on hit collection
+    virtual std::string datasourceName() const;
+    /// Loop over collection and extract data
     virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor);
-    /// Open new data file
+    /// Open a new event data file
     virtual bool Open(const std::string& type, const std::string& file_name);
-    /// User overloadable function: Load the next event
+    /// Load the next event
     virtual bool NextEvent();
     /// User overloadable function: Load the previous event
     virtual bool PreviousEvent();
     /// Goto a specified event in the file
     virtual bool GotoEvent(long event_number);
-    /// Load the specified event
-    Int_t ReadEvent(Long64_t n);
+    /// Subscribe to notification of new data present
+    virtual void Subscribe(EventConsumer* display);
+    /// Unsubscribe from notification of new data present
+    virtual void Unsubscribe(EventConsumer* display);
 
-    ClassDef(DDG4EventHandler,0);
+#ifndef __CINT__
+    /// Notfy all subscribers
+    virtual void NotifySubscribers(void (EventConsumer::*pmf)(EventHandler*));
+#endif
+ 
+    ClassDef(GenericEventHandler,0);
   };
-
-
 } /* End namespace DD4hep   */
 
-
-#endif /* DD4HEP_DDEVE_DDG4EVENTHANDLER_H */
+#endif /* DD4HEP_DDEVE_GENERICEVENTHANDLER_H */
 

@@ -13,10 +13,9 @@
 #include "DDEve/ElementList.h"
 #include "DDEve/ViewMenu.h"
 #include "DDEve/DD4hepMenu.h"
-#include "DDEve/ViewConfiguration.h"
 #include "DDEve/EveShapeContextMenu.h"
 #include "DDEve/EvePgonSetProjectedContextMenu.h"
-#include "DDEve/DDG4EventHandler.h"
+#include "DDEve/GenericEventHandler.h"
 #include "DDEve/Utilities.h"
 #include "DDEve/DDEveEventData.h"
 
@@ -54,7 +53,7 @@ ClassImp(Display)
 
 namespace DD4hep {
   void EveDisplay(const char* xmlConfig = 0)  {
-    Display* display = new Display(TEveManager::Create(true,"V"));
+    Display* display = new Display(TEveManager::Create(true,"VI"));
     if ( xmlConfig != 0 )   {
       char text[PATH_MAX];
       ::snprintf(text,sizeof(text),"%s%s",strncmp(xmlConfig,"file:",5)==0 ? "file:" : "",xmlConfig);
@@ -77,7 +76,7 @@ namespace DD4hep {
     int count;
     PointsetCreator(TEvePointSet* ps) : points(ps), count(0) {}
     virtual void operator()(const DDEveHit& hit)  
-    {     points->SetPoint(count++, hit.x/10e0, hit.y/10e0, hit.z/10e0);    }
+    {  points->SetPoint(count++, hit.x/10e0, hit.y/10e0, hit.z/10e0); }
   };
   struct EtaPhiHistogramActor : public DDEveHitActor  {
     TH2F* histogram;
@@ -90,7 +89,7 @@ namespace DD4hep {
 }
 
 Display::CalodataContext::CalodataContext() 
-: slice(0), calo3D(0), caloViz(0), eveHist(0), config()
+  : slice(0), calo3D(0), caloViz(0), eveHist(0), config()
 {
 }
 
@@ -121,7 +120,7 @@ Display::Display(TEveManager* eve)
   EvePgonSetProjectedContextMenu::install(this);
   ElementListContextMenu::install(this);
   m_lcdd = &Geometry::LCDD::getInstance();
-  m_evtHandler = new DDG4EventHandler();
+  m_evtHandler = new GenericEventHandler();
   m_evtHandler->Subscribe(this);
   m_lcdd->addExtension<Display>(this);
   br->ShowCloseTab(kFALSE);
@@ -135,7 +134,7 @@ Display::Display(TEveManager* eve)
 Display::~Display()   {
   TRootBrowser* br = m_eve->GetBrowser();
   m_lcdd->removeExtension<Display>(false);
-  destroyObjects(m_viewConfigs)();
+  m_viewConfigs.clear();
   deletePtr(m_evtHandler);
   deletePtr(m_eveGlobal);
   deletePtr(m_geoGlobal);
@@ -188,7 +187,7 @@ TGClient& Display::client() const   {
 }
 
 /// Access to the event reader
-EventHandler& Display::eventHandler() const   {
+GenericEventHandler& Display::eventHandler() const   {
   if ( m_evtHandler )  {
     return *m_evtHandler;
   }
@@ -206,27 +205,15 @@ void Display::AddMenu(TGMenuBar* bar, PopupMenu* menu, int hints)  {
 void Display::ImportConfiguration(const DisplayConfiguration& config)   {
   DisplayConfiguration::ViewConfigurations::const_iterator i;
   for(i=config.views.begin(); i!=config.views.end(); ++i)  
-    RegisterViewConfiguration(new ViewConfiguration(this,*i));
+    m_viewConfigs[(*i).name] = *i;
 
   DisplayConfiguration::Configurations::const_iterator j;
   for(j=config.calodata.begin(); j!=config.calodata.end(); ++j)  
     m_calodataConfigs[(*j).name] = *j;
 }
 
-/// Register a data filter by name
-void Display::RegisterViewConfiguration(ViewConfiguration* cfg)   {
-  ViewConfigurations::iterator i = m_viewConfigs.find(cfg->name());
-  printout(INFO,"Display","+++ Register view configuration for %s Config=%p.",cfg->name().c_str(),cfg);
-  if ( i != m_viewConfigs.end() )  {
-    delete (*i).second;
-    (*i).second = cfg;
-    return;
-  }
-  m_viewConfigs[cfg->name()] = cfg;
-}
-
 /// Access to calo data histograms by name as defined in the configuration
-Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
+Display::CalodataContext& Display::GetCaloHistogram(const string& nam)   {
   Calodata::iterator i = m_calodata.find(nam);
   if ( i == m_calodata.end() )  {
     CalodataConfigurations::const_iterator j = m_calodataConfigs.find(nam);
@@ -252,10 +239,10 @@ Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
 
 	ctx.calo3D = new TEveCalo3D(ctx.eveHist);
 	ctx.calo3D->SetName(n);
-	ctx.calo3D->SetBarrelRadius(cd.rmin*MM_2_CM);
-	ctx.calo3D->SetEndCapPos(cd.dz*MM_2_CM);
+	ctx.calo3D->SetBarrelRadius(cd.rmin);
+	ctx.calo3D->SetEndCapPos(cd.dz);
 	ctx.calo3D->SetAutoRange(kTRUE);
-	ctx.calo3D->SetMaxTowerH(10);
+	ctx.calo3D->SetMaxTowerH(cd.towerH);
 	ImportGeo(ctx.calo3D);
 	EtaPhiHistogramActor actor(h);
 	eventHandler().collectionLoop(hits,actor);
@@ -277,59 +264,15 @@ Display::CalodataContext& Display::GetCaloHistogram(const std::string& nam)   {
 }
 
 /// Access a data filter by name. Data filters are used to customize views
-ViewConfiguration* Display::GetViewConfiguration(const string& nam)  const   {
+const Display::ViewConfig* Display::GetViewConfiguration(const string& nam)  const   {
   ViewConfigurations::const_iterator i = m_viewConfigs.find(nam);
-  return (i == m_viewConfigs.end()) ? 0 : (*i).second;
+  return (i == m_viewConfigs.end()) ? 0 : &((*i).second);
 }
 
 /// Access a data filter by name. Data filters are used to customize calodatas
-const Display::CalodataConfiguration* Display::GetCalodataConfiguration(const string& nam)  const   {
+const Display::CalodataConfig* Display::GetCalodataConfiguration(const string& nam)  const   {
   CalodataConfigurations::const_iterator i = m_calodataConfigs.find(nam);
   return (i == m_calodataConfigs.end()) ? 0 : &((*i).second);
-}
-
-/// Configure a view using the view's name and a proper ViewConfiguration if present
-void Display::ConfigureGeometry(View* view)     {
-  ViewConfiguration* cfg = GetViewConfiguration(view->name());
-  printout(INFO,"Display","+++ Configure view %s Config=%p.",view->name().c_str(),cfg);
-  if ( 0 != cfg )   {
-    cfg->ConfigureGeometry(view);
-  }
-  else  {
-    TEveElementList* l = &GetGeoTopic("Sensitive");
-    TEveElementList* t = &view->GetGeoTopic("Sensitive");
-    for(TEveElementList::List_i i=l->BeginChildren(); i!=l->EndChildren(); ++i)
-      view->ImportGeo(*t,*i);
-    
-    l = &GetGeoTopic("Structure");
-    t = &view->GetGeoTopic("Structure");
-    for(TEveElementList::List_i i=l->BeginChildren(); i!=l->EndChildren(); ++i) 
-      view->ImportGeo(*t,*i);
-  }
-  view->ImportGeoTopics(view->name());
-}
-
-/// Configure the adding of event data 
-void Display::ConfigureEvent(View* view)  const   {
-  ViewConfiguration* cfg = GetViewConfiguration(view->name());
-  printout(INFO,"Display","+++ Import event data into view %s.",view->name().c_str());
-  if ( cfg )   {
-    cfg->ConfigureEvent(view);
-  }
-  else   {
-    //    view->ImportEvent(manager().GetEventScene());
-    TEveElementList* l = manager().GetEventScene();
-    for(TEveElementList::List_i i=l->BeginChildren(); i!=l->EndChildren(); ++i) 
-      view->ImportEvent(*i);
-  }
-  view->ImportEventTopics();
-}
-
-/// Prepare the view for adding event data 
-void Display::PrepareEvent(View* view)  const   {
-  ViewConfiguration* cfg = GetViewConfiguration(view->name());
-  printout(INFO,"Display","+++ Prepare view %s for event data.",view->name().c_str());
-  ( cfg ) ? cfg->PrepareEvent(view) : view->PrepareEvent();
 }
 
 /// Register to the main event scene on new events
@@ -346,7 +289,7 @@ void Display::UnregisterEvents(View* view)   {
 }
 
 /// Open standard message box
-void Display::MessageBox(PrintLevel level, const std::string& text, const std::string& title) const   {
+void Display::MessageBox(PrintLevel level, const string& text, const string& title) const   {
   string path = TString::Format("%s/icons/", gSystem->Getenv("ROOTSYS")).Data();
   const TGPicture* pic = 0;
   if ( level == VERBOSE )
@@ -366,7 +309,7 @@ void Display::MessageBox(PrintLevel level, const std::string& text, const std::s
 }
 
 /// Popup XML file chooser. returns chosen file name; empty on cancel
-std::string Display::OpenXmlFileDialog(const std::string& default_dir)   const {
+string Display::OpenXmlFileDialog(const string& default_dir)   const {
   static const char *evtFiletypes[] = { 
     "xml files",    "*.xml",
     "XML files",    "*.XML",
@@ -387,10 +330,11 @@ std::string Display::OpenXmlFileDialog(const std::string& default_dir)   const {
 }
 
 /// Popup ROOT file chooser. returns chosen file name; empty on cancel
-std::string Display::OpenRootFileDialog(const std::string& default_dir)   const {
+string Display::OpenEventFileDialog(const string& default_dir)   const {
   static const char *evtFiletypes[] = { 
     "ROOT files",    "*.root",
-    //"LCIO files",    "*.lcio",
+    "SLCIO files",   "*.slcio",
+    "LCIO files",    "*.lcio",
     "All files",     "*",
     0,               0 
   };
@@ -430,11 +374,11 @@ TFile* Display::Open(const char* name) const   {
 /// Consumer event data
 void Display::OnNewEvent(EventHandler* handler )   {
   typedef EventHandler::TypedEventCollections Types;
-  typedef std::vector<EventHandler::Collection> Collections;
+  typedef vector<EventHandler::Collection> Collections;
   const Types& types = handler->data();
 
   printout(ERROR,"EventHandler","+++ Display new event.....");
-  GetEve().DestroyElements();
+  manager().GetEventScene()->DestroyElements();
   for(Types::const_iterator i=types.begin(); i!=types.end(); ++i)  {
     const Collections& colls = (*i).second;
     for(Collections::const_iterator j=colls.begin(); j!=colls.end(); ++j)   {
@@ -450,8 +394,6 @@ void Display::OnNewEvent(EventHandler* handler )   {
   }
   for(Calodata::iterator i = m_calodata.begin(); i != m_calodata.end(); ++i)
     (*i).second.eveHist->GetHist(0)->Reset();
-  for(Views::iterator i = m_eveViews.begin(); i != m_eveViews.end(); ++i)
-    PrepareEvent(*i);
   for(Calodata::iterator i = m_calodata.begin(); i != m_calodata.end(); ++i)  {
     CalodataContext& ctx = (*i).second;
     TH2F* h = ctx.eveHist->GetHist(0);
@@ -462,7 +404,7 @@ void Display::OnNewEvent(EventHandler* handler )   {
 	     ctx.calo3D->GetName(), n, ctx.config.hits.c_str());
   }
   for(Views::iterator i = m_eveViews.begin(); i != m_eveViews.end(); ++i)
-    ConfigureEvent(*i);
+    (*i)->ConfigureEvent();
 
   manager().Redraw3D();
 }
@@ -488,7 +430,7 @@ TEveElementList& Display::GetGeoTopic(const string& name)    {
   return *((*i).second);
 }
 
-/// Access/Create a topic by name
+/// Access/Create a topic by name. Throws exception if the topic does not exist
 TEveElementList& Display::GetGeoTopic(const string& name) const   {
   Topics::const_iterator i=m_geoTopics.find(name);
   if ( i == m_geoTopics.end() )  {
@@ -497,29 +439,19 @@ TEveElementList& Display::GetGeoTopic(const string& name) const   {
   return *((*i).second);
 }
 
-/// Access/Create an event topic by name
-TEveElementList& Display::GetEve()   {
-  if ( 0 == m_eveGlobal )  {
-    m_eveGlobal = manager().GetEventScene();
-    //m_eveGlobal = new ElementList("Eve-Global","Eve-Global", true, true);
-    //manager().GetEventScene()->AddElement(m_eveGlobal);
-  }
-  return *m_eveGlobal;
-}
-
 /// Access/Create a topic by name
 TEveElementList& Display::GetEveTopic(const string& name)    {
   Topics::iterator i=m_eveTopics.find(name);
   if ( i == m_eveTopics.end() )  {
     TEveElementList* topic = new ElementList(name.c_str(), name.c_str(), true, true);
     m_eveTopics[name] = topic;
-    GetEve().AddElement(topic);
+    manager().GetEventScene()->AddElement(topic);
     return *topic;
   }
   return *((*i).second);
 }
 
-/// Access/Create a topic by name
+/// Access/Create a topic by name. Throws exception if the topic does not exist
 TEveElementList& Display::GetEveTopic(const string& name) const   {
   Topics::const_iterator i=m_eveTopics.find(name);
   if ( i == m_eveTopics.end() )  {
@@ -545,7 +477,7 @@ void Display::ImportEvent(const string& topic, TEveElement* el)  {
 
 /// Call to import top level event elements 
 void Display::ImportEvent(TEveElement* el)  { 
-  GetEve().AddElement(el);
+  manager().GetEventScene()->AddElement(el);
 }
 
 /// Load 'levels' Children into the geometry scene
@@ -567,7 +499,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
 	DetElement de = (*i).second;
 	SensitiveDetector sd = m_lcdd->sensitiveDetector(de.name());
 	TEveElementList& parent = sd.isValid() ? sens : struc;
-	std::pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
+	pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
 	if ( e.second && e.first )  {
 	  parent.AddElement(e.second);
 	}

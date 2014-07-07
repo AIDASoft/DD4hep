@@ -36,10 +36,10 @@ namespace DD4hep {
   protected:
     Display* m_display;
   public:
-    enum { CALODATA=1<<1, DETELEMENT=1<<2, VIEW=1<<3 };
+    enum { CALODATA=1<<1, DETELEMENT=1<<2, VIEW=1<<3, PANEL=1<<4 };
     struct Defaults {
       char load_geo;
-      char load_eve;
+      char show_evt;
       short color;
       float alpha;
     };
@@ -54,6 +54,8 @@ namespace DD4hep {
       short n_phi;
       int spare;
     };
+    struct Panel : public Defaults {
+    };
     class Config  {
     public:
       union Values  {
@@ -61,6 +63,7 @@ namespace DD4hep {
 	Defaults defaults;
 	Calo3D calo3d;
 	Calodata calodata;
+	Panel pane;
       } data;
       std::string name;
       std::string hits;

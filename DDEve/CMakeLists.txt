@@ -20,11 +20,17 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 #---DD4hepEve library --------------------------------------------------------------
 file(GLOB headers include/DDEve/*.h)
 file(GLOB sources src/*.cpp)
+if(DD4HEP_USE_LCIO)
+  find_package(LCIO REQUIRED)
+  include_directories( ${LCIO_INCLUDE_DIRS} )
+  list(APPEND sources lcio/LCIOEventHandler.cpp)
+endif()
+
 root_generate_dictionary( G__DDEve ${headers} LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
 list(APPEND sources G__DDEve.cxx)
 
 add_library(DD4hepEve SHARED ${sources})
-target_link_libraries(DD4hepEve DD4hepCore ${ROOT_EVE_LIBRARIES} -lFTGL)
+target_link_libraries(DD4hepEve DD4hepCore ${ROOT_EVE_LIBRARIES} -lFTGL ${LCIO_LIBRARIES} )
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 
 SET_TARGET_PROPERTIES( DD4hepEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})

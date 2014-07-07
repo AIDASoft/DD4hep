@@ -11,7 +11,7 @@
 
 // Framework include files
 #include "DDEve/FrameControl.h"
-#include "DDEve/EventHandler.h"
+#include "DDEve/GenericEventHandler.h"
 
 class TGPictureButton;
 class TGLabel;

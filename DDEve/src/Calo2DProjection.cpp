@@ -17,6 +17,7 @@
 #include "TEveCalo.h"
 #include "TEveScene.h"
 #include "TGLViewer.h"
+#include "TEveArrow.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -43,7 +44,7 @@ View& Calo2DProjection::Build(TEveWindow* slot)   {
   AddToGlobalItems(name());
   return Map(slot);
 }
-#include "TEveArrow.h"
+
 /// Configure a single geometry view
 void Calo2DProjection::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    {
   DisplayConfiguration::Configurations::const_iterator fit;

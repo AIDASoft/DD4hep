@@ -74,9 +74,9 @@ bool EventControl::Open()   {
   // pi- shots:
   //m_display->eventHandler().Open("/home/frankm/SW/DD4hep_head_dbg.root_v5.34.10/build/CLICSiD_2014-06-18_12-48.root");
 
-  std::string fname = m_display->OpenRootFileDialog(".");
+  std::string fname = m_display->OpenEventFileDialog(".");
   if ( !fname.empty() )  {
-    return m_display->eventHandler().Open(fname);
+    return m_display->eventHandler().Open("",fname);
   }
   return false;
 }
@@ -111,8 +111,12 @@ void EventControl::OnNewEvent(EventHandler* handler)   {
   for(Types::const_iterator i=types.begin(); i!=types.end() && cnt+1<m_lines.size(); ++i)  {
     const Collections& colls = (*i).second;
     Line line = m_lines[cnt++];
-    string cl = (*i).first.substr((*i).first.find("Simple"));
-    cl = cl.substr(0,cl.find('*'));
+    string cl = (*i).first;
+    size_t idx = cl.find("Simple");
+    if ( idx != string::npos ) { 
+      cl = cl.substr(idx);
+      cl = cl.substr(0,cl.find('*'));
+    }
     line.second.first->SetTextColor(kRed);
     line.second.second->SetTextColor(kRed);
     line.second.first->SetText(("Coll.Type: "+cl).c_str());

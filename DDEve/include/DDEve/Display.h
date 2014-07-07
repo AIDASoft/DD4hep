@@ -44,7 +44,7 @@ namespace DD4hep {
   class DD4hepMenu;
   class ViewConfiguration;
   class CalodataConfiguration;
-  class EventHandler;
+  class GenericEventHandler;
   class DisplayConfiguration;
 
   /** @class Display  Display.h DDEve/Display.h
@@ -54,13 +54,14 @@ namespace DD4hep {
    */
   class Display : public EventConsumer {
   public:
-    typedef DisplayConfiguration::Config CalodataConfiguration;
+    typedef DisplayConfiguration::ViewConfig ViewConfig;
+    typedef DisplayConfiguration::Config CalodataConfig;
     typedef std::set<View*> Views;
     typedef std::set<DisplayConfiguration*> Configurations;
     typedef std::set<PopupMenu*> Menus;
-    typedef std::map<std::string, TEveElementList*> Topics;
-    typedef std::map<std::string, ViewConfiguration*> ViewConfigurations;
-    typedef std::map<std::string, CalodataConfiguration> CalodataConfigurations;
+    typedef std::map<std::string, TEveElementList*>  Topics;
+    typedef std::map<std::string, ViewConfig>        ViewConfigurations;
+    typedef std::map<std::string, CalodataConfig>    CalodataConfigurations;
 
     struct CalodataContext {
       int slice;
@@ -80,7 +81,7 @@ namespace DD4hep {
     /// Reference to geometry hub
     Geometry::LCDD* m_lcdd;
     /// Reference to the event reader object
-    EventHandler* m_evtHandler;
+    GenericEventHandler* m_evtHandler;
     TEveElementList* m_geoGlobal;
     TEveElementList* m_eveGlobal;
     ViewMenu* m_viewMenu;
@@ -106,13 +107,13 @@ namespace DD4hep {
     /// Access to geometry hub
     Geometry::LCDD& lcdd() const;
     /// Access to the EVE manager
-    TEveManager& manager() const { return *m_eve; }
+    TEveManager& manager() const                         { return *m_eve;           }
     /// Access View configurations
-    const ViewConfigurations& viewConfigurations() const { return m_viewConfigs; }
+    const ViewConfigurations& viewConfigurations() const { return m_viewConfigs;    }
     /// Set Vis level in geo manager (either from XML or BEFORE XML file was loaded)
-    void setVisLevel(int new_level)  { m_visLevel = new_level; }
+    void setVisLevel(int new_level)                      { m_visLevel = new_level;  }
     /// Set Eve Geometry load level in manager (either from XML or BEFORE XML file was loaded)
-    void setLoadLevel(int new_level)  { m_loadLevel = new_level; }
+    void setLoadLevel(int new_level)                     { m_loadLevel = new_level; }
     /// Access to X-client
     TGClient& client() const;
 
@@ -126,7 +127,7 @@ namespace DD4hep {
     TFile* Open(const char* rootFile) const;
 
     /// Access to the event reader
-    EventHandler& eventHandler() const;
+    GenericEventHandler& eventHandler() const;
 
     /// Open standard message box
     void MessageBox(PrintLevel level, const std::string& text, const std::string& title="") const;
@@ -135,7 +136,7 @@ namespace DD4hep {
     std::string OpenXmlFileDialog(const std::string& default_dir)  const;
 
     /// Popup ROOT file chooser. returns chosen file name; empty on cancel
-    std::string OpenRootFileDialog(const std::string& default_dir)  const;
+    std::string OpenEventFileDialog(const std::string& default_dir)  const;
 
     /// Load 'levels' Children into the geometry scene
     void LoadGeoChildren(TEveElement* start, int levels, bool redraw);
@@ -145,22 +146,13 @@ namespace DD4hep {
     /// Import configuration parameters
     void ImportConfiguration(const DisplayConfiguration& config);
 
-    /// Register a data filter by name
-    void RegisterViewConfiguration(ViewConfiguration* filter);
     /// Access a data filter by name. Data filters are used to customize views
-    ViewConfiguration* GetViewConfiguration(const std::string& name)  const;
+    const ViewConfig* GetViewConfiguration(const std::string& name)  const;
     /// Access a data filter by name. Data filters are used to customize views
-    const CalodataConfiguration* GetCalodataConfiguration(const std::string& name)  const;
+    const CalodataConfig* GetCalodataConfiguration(const std::string& name)  const;
     /// Access to calo data histograms by name as defined in the configuration
     CalodataContext& GetCaloHistogram(const std::string& name);
 
-    /// Configure a view using the view's name and a proper ViewConfiguration if present
-    virtual void ConfigureGeometry(View* view);
-
-    /// Prepare the view for adding event data 
-    virtual void PrepareEvent(View* view)  const;
-    /// Configure the adding of event data 
-    virtual void ConfigureEvent(View* view)  const;
     /// Register to the main event scene on new events
     virtual void RegisterEvents(View* view);
     /// Unregister from the main event scene
@@ -170,7 +162,7 @@ namespace DD4hep {
     TEveElementList& GetGeo();
     /// Access/Create an geometry topic by name
     virtual TEveElementList& GetGeoTopic(const std::string& name);
-    /// Access/Create an geometry topic by name
+    /// Access/Create an geometry topic by name. Throws exception if the topic does not exist
     virtual TEveElementList& GetGeoTopic(const std::string& name)  const;
 
     /// Call to import geometry elements 
@@ -179,10 +171,8 @@ namespace DD4hep {
     void ImportGeo(const std::string& topic, TEveElement* el);
 
     /// Access/Create an event topic by name
-    virtual TEveElementList& GetEve();
-    /// Access/Create an event topic by name
     virtual TEveElementList& GetEveTopic(const std::string& name);
-    /// Access/Create an event topic by name
+    /// Access/Create an event topic by name. Throws exception if the topic does not exist
     virtual TEveElementList& GetEveTopic(const std::string& name)  const;
 
     /// Call to import top level event elements 

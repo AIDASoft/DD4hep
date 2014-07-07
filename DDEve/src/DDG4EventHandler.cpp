@@ -13,17 +13,12 @@
 #include "DD4hep/Objects.h"
 #include "DD4hep/Factories.h"
 
-#include "TH2.h"
 #include "TFile.h"
 #include "TTree.h"
 #include "TBranch.h"
-#include "TSystem.h"
-#include "TBranch.h"
-#include "TGMsgBox.h"
 
 // C/C++ include files
 #include <stdexcept>
-#include <climits>
 
 using namespace std;
 using namespace DD4hep;
@@ -36,6 +31,13 @@ namespace {
     void* ptr;
   };
 }
+
+static void* _create(const char*)  {
+  EventHandler* h = new DDG4EventHandler();
+  return h;
+}
+using namespace DD4hep::Geometry;
+DECLARE_CONSTRUCTOR(DDEve_DDG4EventHandler,_create)
 
 /// Standard constructor
 DDG4EventHandler::DDG4EventHandler() : EventHandler(), m_file(0,0), m_entry(-1) {
@@ -109,93 +111,65 @@ size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveHitA
 
 /// Load the specified event
 Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
-  ClearCache();
   m_data.clear();
   m_hasEvent = false;
-  try {
-    if ( hasFile() )  {
-      if ( event_number >= m_file.second->GetEntries() )  {
-	event_number = m_file.second->GetEntries()-1;
-	printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Cannot read across End-of-file! Reading last event:%d.",event_number);
-      }
-      else if ( event_number < 0 )  {
-	event_number = 0;
-	printout(ERROR,"DDG4EventHandler","+++ nextEvent: Cannot read across Start-of-file! Reading first event:%d.",event_number);
-      }
-
-      Int_t nbytes = m_file.second->GetEntry(event_number);
-      if ( nbytes >= 0 )   {
-	printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Read %d bytes of event data for entry:%d",nbytes,event_number);
-	for(Branches::const_iterator i=m_branches.begin(); i != m_branches.end(); ++i)  {
-	  TBranch* b = (*i).second.first;
-	  std::vector<void*>* data = *(std::vector<void*>**)b->GetAddress();
-	  m_data[b->GetClassName()].push_back(make_pair(b->GetName(),data->size()));
-	}
-	m_hasEvent = true;
-	NotifySubscribers(&EventConsumer::OnNewEvent);
-	return nbytes;
-      }
-      printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Cannot read event data for entry:%d",event_number);
-      throw runtime_error("+++ EventHandler::readEvent: Failed to read event");
+  if ( hasFile() )  {
+    if ( event_number >= m_file.second->GetEntries() )  {
+      event_number = m_file.second->GetEntries()-1;
+      printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Cannot read across End-of-file! Reading last event:%d.",event_number);
     }
-    throw runtime_error("+++ EventHandler::readEvent: No file open!");
+    else if ( event_number < 0 )  {
+      event_number = 0;
+      printout(ERROR,"DDG4EventHandler","+++ nextEvent: Cannot read across Start-of-file! Reading first event:%d.",event_number);
+    }
+
+    Int_t nbytes = m_file.second->GetEntry(event_number);
+    if ( nbytes >= 0 )   {
+      printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Read %d bytes of event data for entry:%d",nbytes,event_number);
+      for(Branches::const_iterator i=m_branches.begin(); i != m_branches.end(); ++i)  {
+	TBranch* b = (*i).second.first;
+	std::vector<void*>* data = *(std::vector<void*>**)b->GetAddress();
+	m_data[b->GetClassName()].push_back(make_pair(b->GetName(),data->size()));
+      }
+      m_hasEvent = true;
+      return nbytes;
+    }
+    printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Cannot read event data for entry:%d",event_number);
+    throw runtime_error("+++ EventHandler::readEvent: Failed to read event");
   }
-  catch(const std::exception& e)  {
-    string path = TString::Format("%s/icons/stop_t.xpm", gSystem->Getenv("ROOTSYS")).Data();
-    string err = "\nAn exception occurred \n"
-      "while reading a new event:\n" + string(e.what()) + "\n\n";
-    const TGPicture* pic = gClient->GetPicture(path.c_str());
-    new TGMsgBox(gClient->GetRoot(),0,"Failed to read event", err.c_str(),pic);
-  }
-  return -1;
+  throw runtime_error("+++ EventHandler::readEvent: No file open!");
 }
 
 /// Open new data file
-bool DDG4EventHandler::Open(const std::string& name)   {
+bool DDG4EventHandler::Open(const std::string&, const std::string& name)   {
   string err;
   if ( m_file.first ) m_file.first->Close();
   m_hasFile = false;
   m_hasEvent = false;
-  try {
-    char buff[PATH_MAX];
-    string dir = ::getcwd(buff,sizeof(buff));
-    TFile* f = TFile::Open(name.c_str());
-    if ( f && !f->IsZombie() )  {
-      m_file.first = f;
-      TTree* t = (TTree*)f->Get("EVENT");
-      if ( t )   {
-	TObjArray* br = t->GetListOfBranches();
-	m_file.second = t;
-	m_entry = -1;
-	m_branches.clear();
-	for(Int_t i=0; i<br->GetSize(); ++i)  {
-	  TBranch* b = (TBranch*)br->At(i);
-	  if ( !b ) continue;
-	  m_branches[b->GetName()] = make_pair(b,(void*)0);
-	  printout(INFO,"DDG4EventHandler::open","+++ Branch %s has %ld entries.",b->GetName(),b->GetEntries());
-	}
-	for(Int_t i=0; i<br->GetSize(); ++i)  {
-	  TBranch* b = (TBranch*)br->At(i);
-	  if ( !b ) continue;
-	  b->SetAddress(&m_branches[b->GetName()].second);
-	}
-	m_hasFile = true;
-	NotifySubscribers(&EventConsumer::OnFileOpen);
-	return true;
+  TFile* f = TFile::Open(name.c_str());
+  if ( f && !f->IsZombie() )  {
+    m_file.first = f;
+    TTree* t = (TTree*)f->Get("EVENT");
+    if ( t )   {
+      TObjArray* br = t->GetListOfBranches();
+      m_file.second = t;
+      m_entry = -1;
+      m_branches.clear();
+      for(Int_t i=0; i<br->GetSize(); ++i)  {
+	TBranch* b = (TBranch*)br->At(i);
+	if ( !b ) continue;
+	m_branches[b->GetName()] = make_pair(b,(void*)0);
+	printout(INFO,"DDG4EventHandler::open","+++ Branch %s has %ld entries.",b->GetName(),b->GetEntries());
       }
-      err = "+++ Failed to access tree EVENT in ROOT file:"+name+" in "+dir;
+      for(Int_t i=0; i<br->GetSize(); ++i)  {
+	TBranch* b = (TBranch*)br->At(i);
+	if ( !b ) continue;
+	b->SetAddress(&m_branches[b->GetName()].second);
+      }
+      m_hasFile = true;
+      return true;
     }
-    else {
-      err = "+++ Failed to open ROOT file:"+name+" in "+dir;
-    }
+    throw runtime_error("+++ Failed to access tree EVENT in ROOT file:"+name);
   }
-  catch(const std::exception& e)  {
-    err = "\nAn exception occurred \n"
-      "while opening event data:\n" + string(e.what()) + "\n\n";
-  }
-  string path = TString::Format("%s/icons/stop_t.xpm", gSystem->Getenv("ROOTSYS")).Data();
-  const TGPicture* pic = gClient->GetPicture(path.c_str());
-  new TGMsgBox(gClient->GetRoot(),0,"Failed to open event data", err.c_str(),pic);
-  return false;
+  throw runtime_error("+++ Failed to open ROOT file:"+name);
 }
-

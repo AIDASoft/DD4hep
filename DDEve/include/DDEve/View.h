@@ -56,14 +56,22 @@ namespace DD4hep {
     TEveScene             *m_eveScene;
     /// Reference to the global item (if added
     TEveElementList       *m_global;
+    const DisplayConfiguration::ViewConfig* m_config;
+
     /// The name of the view
     std::string            m_name;
 
     Topics m_geoTopics;
     Topics m_eveTopics;
+    bool m_showGlobal;
+
   public:
+    /// Call an element to a geometry element list
+    virtual TEveElement* ImportGeoElement(TEveElement* element, TEveElementList* list);
+    /// Call an element to a geometry element list
+    virtual TEveElement* ImportGeoTopic(TEveElement* element, TEveElementList* list);
     /// Call an element to a event element list
-    virtual TEveElement* ImportElement(TEveElement* element, TEveElementList* list);
+    virtual TEveElement* ImportEventElement(TEveElement* element, TEveElementList* list);
 
   public:
     /// Initializing constructor
@@ -71,12 +79,18 @@ namespace DD4hep {
     /// Default destructor
     virtual ~View();
     /// Access to the view name/title
-    const std::string& name()  const { return m_name;  }
-    const char* c_name() const { return m_name.c_str(); }
+    const std::string& name()  const { return m_name;         }
+    const char* c_name() const       { return m_name.c_str(); }
     /// Access to the Eve viewer
-    TEveViewer* viewer()  const {   return m_view;     }
+    TEveViewer* viewer()  const      { return m_view;         }
+    /// Show global directory
+    bool showGlobal() const          { return m_showGlobal;   }
+    /// Set show globals
+    void setShowGlobal(bool value)   { m_showGlobal = value;  }
     /// Build the view view and map it to the given slot
     virtual View& Build(TEveWindow* slot);
+    /// Initialize the view port
+    virtual void Initialize();
     /// Map the view view to the slot
     virtual View& Map(TEveWindow* slot);
 
@@ -91,8 +105,14 @@ namespace DD4hep {
     TEveScene* geoScene() const {   return m_geoScene; }
     /// Create the geometry scene
     virtual View& CreateGeoScene();
+
+    /// Configure a view with geo info. Used configuration if present.
+    virtual void ConfigureGeometry();
+    /// Configure a single geometry view by default from the global geometry scene with all subdetectors
+    virtual void ConfigureGeometryFromGlobal();
     /// Configure a single geometry view
     virtual void ConfigureGeometry(const DisplayConfiguration::ViewConfig& config);
+
     /// Create a new instance of the geometry of a sub-detector
     virtual std::pair<bool,TEveElement*> 
       CreateGeometry(DetElement de, const DisplayConfiguration::Config& cfg);
@@ -109,8 +129,9 @@ namespace DD4hep {
     virtual void ImportGeo(TEveElement* element);
     /// Call to import geometry topics. If title is empty, do not add to global item list
     virtual void ImportGeoTopics(const std::string& title);
-    /// Call to destroy all geometry elements
-    virtual void DestroyGeo();
+    /// Access/Create an geometry topic by name
+    virtual TEveElementList& GetGeoTopic(const std::string& name);
+
 
     /** Manipulation of the event scene */
 
@@ -118,31 +139,17 @@ namespace DD4hep {
     TEveScene* eveScene() const {   return m_eveScene; }
     /// Create the event scene
     virtual View& CreateEventScene();
+    /// Configure a view with event info. Used configuration if present.
+    virtual void ConfigureEvent();
+    /// Configure an event view by default from the global event scene
+    virtual void ConfigureEventFromGlobal();
     /// Configure a single event scene view
     virtual void ConfigureEvent(const DisplayConfiguration::ViewConfig& config);
     /// Call to import event elements into the main event scene
     virtual void ImportEvent(TEveElement* element);
-    /// Import event data from event handler for a given subdetector
-    virtual void ImportEvent(EventHandler& hdlr, 
-			     DetElement det, 
-			     SensitiveDetector sd,
-			     const DisplayConfiguration::ViewConfig& config);
     /// Import event typics after creation
     virtual void ImportEventTopics();
-    /// Call to destroy all event elements
-    virtual void DestroyEvent();
-    /// Prepare the view before loading new event data
-    virtual void PrepareEvent();
 
-    /// Access/Create an geometry topic by name
-    virtual TEveElementList& GetGeoTopic(const std::string& name);
-#if 0
-    /// Access/Create an event topic by name
-    virtual TEveElementList& GetEveTopic(const std::string& name);
-    /// Call to import event elements into topics
-    virtual void ImportEvent(const std::string& topic, TEveElement* element);
-    void Finalize();
-#endif
     /// Root implementation macro
     ClassDef(View,0);
   };

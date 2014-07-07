@@ -36,6 +36,13 @@ namespace DD4hep {
 
     /// Call an element to a event element list
     virtual TEveElement* ImportElement(TEveElement* el, TEveElementList* list);
+    /// Call an element to a geometry element list
+    virtual TEveElement* ImportGeoElement(TEveElement* element, TEveElementList* list);
+    /// Call an element to a geometry element list
+    virtual TEveElement* ImportGeoTopic(TEveElement* element, TEveElementList* list);
+    /// Call an element to a event element list
+    virtual TEveElement* ImportEventElement(TEveElement* element, TEveElementList* list);
+
 
   public:
     /// Initializing constructor

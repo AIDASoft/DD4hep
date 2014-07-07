@@ -37,8 +37,13 @@ void Projection::SetDepth(Float_t d)  {
   m_projMgr->SetCurrentDepth(d);
 }
 
+/// Call an element to a geometry element list
+TEveElement* Projection::ImportGeoTopic(TEveElement*, TEveElementList*)   {
+  return 0;
+}
+
 /// Call an element to a event element list
-TEveElement* Projection::ImportElement(TEveElement* el, TEveElementList* list)  { 
+TEveElement* Projection::ImportElement(TEveElement* el, TEveElementList* list)  {
   TEveElementList* unprojected = &GetGeoTopic("Unprojected");
   for(Topics::iterator i=m_geoTopics.begin(); i!=m_geoTopics.end(); ++i)  {
     if ( el == unprojected )   {
@@ -46,25 +51,29 @@ TEveElement* Projection::ImportElement(TEveElement* el, TEveElementList* list)  
       return 0;
     }
   }
-  TEveElement* e = m_projMgr->ImportElements(el, m_geoScene);
+  TEveElement* e = m_projMgr->ImportElements(el, list);
   printout(INFO,"Projection","ImportElement %s [%s] into list: %s Projectable:%s [%p]",
 	   Utilities::GetName(el),el->IsA()->GetName(),list->GetName(),
 	   dynamic_cast<TEveProjectable*>(list) ? "true" : "false", e);
 
   unprojected->AddElement(el);
-  TEveElement::List_ci ci = std::find(m_projMgr->BeginChildren(),m_projMgr->EndChildren(),list);
-  if ( list != m_geoScene && ci == m_projMgr->EndChildren() )  {
-    m_projMgr->AddElement(list);
-    m_geoScene->AddElement(list);
-  }
-  if ( e )  {
-    if ( list != m_geoScene )  {
-      list->AddElement(e);
+  if ( list != m_geoScene && list != m_eveScene )   {
+    TEveElement::List_ci ci = std::find(m_geoScene->BeginChildren(),m_geoScene->EndChildren(),list);
+    if ( ci == m_geoScene->EndChildren() )  {
+      m_geoScene->AddElement(list);
     }
-    m_projMgr->RemoveElement(e); 
-    m_geoScene->RemoveElement(e);
   }
   return e;
+}
+
+/// Call an element to a geometry element list
+TEveElement* Projection::ImportGeoElement(TEveElement* element, TEveElementList* list)  {
+  return element ? ImportElement(element, list) : 0;
+}
+
+/// Call an element to a event element list
+TEveElement* Projection::ImportEventElement(TEveElement* element, TEveElementList* list)  {
+  return element ? ImportElement(element, list) : 0;
 }
 
 /// Add axis to the projection view

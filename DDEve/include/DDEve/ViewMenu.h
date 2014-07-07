@@ -49,17 +49,18 @@ namespace DD4hep {
 
     /// Import Geometry data and build the view
     void BuildView(View *view)  const;
-    /// Menu callback: Create a generic view from an XML configuration
-    void CreateGenericView(TGMenuEntry* e, void* ud);
-    /// Menu callback: Create a new 3D view
+    /// Menu callback: Create a generic view using the user data
     void CreateView(TGMenuEntry* e, void* ud);
 
-    /// Create a new 3D view
+    /// Create a generic view of a given type with title
+    View* CreateView(const std::string& type,const std::string& title);
+    /// Specialization: Create a new 3D view
     View* CreateView3D(const std::string& title);
-    /// Create a new R-Z view
+    /// Specialization: Create a new R-Z view
     View* CreateRhoZProjection(const std::string& title);
-    /// Create a new R-Phi view
+    /// Specialization: Create a new R-Phi view
     View* CreateRhoPhiProjection(const std::string& title);
+
     /// ROOT implementation macro
     ClassDef(ViewMenu,0);
   };

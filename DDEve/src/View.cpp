@@ -11,14 +11,14 @@
 #include "DDEve/View.h"
 #include "DDEve/Display.h"
 #include "DDEve/ElementList.h"
-#include "DDEve/EventHandler.h"
 #include "DDEve/Utilities.h"
+#include "DDEve/Annotation.h"
 #include "DD4hep/InstanceCount.h"
 
 // Eve include files
 #include <TEveManager.h>
-#include <TEveBrowser.h>
 #include <TEveWindow.h>
+#include <TEveCalo.h>
 #include <TGLViewer.h>
 
 using namespace std;
@@ -31,11 +31,11 @@ static inline typename T::const_iterator find(const T& c,const string& s)  {
   return c.end();
 }
 
-
 /// Initializing constructor
 View::View(Display* eve, const string& name)
-  : m_eve(eve), m_view(0), m_geoScene(0), m_eveScene(0), m_global(0), m_name(name)
+  : m_eve(eve), m_view(0), m_geoScene(0), m_eveScene(0), m_global(0), m_name(name), m_showGlobal(false)
 {
+  m_config = m_eve->GetViewConfiguration(m_name);
   InstanceCount::increment(this);
 }
 
@@ -55,20 +55,57 @@ View& View::Build(TEveWindow* /* slot */)   {
   return *this;
 }
 
+/// Initialize the view port
+void View::Initialize()  {
+  TEveScene *evt = this->eveScene();
+  TEveScene *geo = this->geoScene();
+  if ( evt ) evt->Repaint(kTRUE);
+  if ( geo ) geo->Repaint(kTRUE);
+  /// Update color set
+  TGLViewer* glv = viewer()->GetGLViewer();
+  glv->PostSceneBuildSetup(kTRUE);
+  glv->SetSmartRefresh(kFALSE);
+  if ( m_eve->manager().GetViewers()->UseLightColorSet() )
+    glv->UseLightColorSet();
+  else
+    glv->UseDarkColorSet();
+  glv->RequestDraw(TGLRnrCtx::kLODHigh);
+  glv->SetSmartRefresh(kTRUE);
+}
+
 /// Add the view to the global list of eve objects
 TEveElementList* View::AddToGlobalItems(const string& nam)   {
   if ( 0 == m_global )   {
     m_global = new ElementList(nam.c_str(), nam.c_str(), true, true);
     if ( m_geoScene ) m_global->AddElement(geoScene());
     if ( m_eveScene ) m_global->AddElement(eveScene());
-    m_eve->manager().AddToListTree(m_global,kFALSE);
+    if ( m_showGlobal ) m_eve->manager().AddToListTree(m_global,kFALSE);
   }
   return m_global;
 }
 
 /// Call an element to a event element list
-TEveElement* View::ImportElement(TEveElement* el, TEveElementList* list)  { 
-  list->AddElement(el);
+TEveElement* View::ImportGeoElement(TEveElement* el, TEveElementList* list)  { 
+  TEveScene* s = dynamic_cast<TEveScene*>(el);
+  if ( s )   {
+    printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",s->GetName());
+  }
+  if ( el ) list->AddElement(el);
+  return el;
+}
+
+/// Call an element to a geometry element list
+TEveElement* View::ImportGeoTopic(TEveElement* element, TEveElementList* list)   {
+  return ImportGeoElement(element, list);
+}
+
+/// Call an element to a event element list
+TEveElement* View::ImportEventElement(TEveElement* el, TEveElementList* list)  { 
+  TEveScene* s = dynamic_cast<TEveScene*>(el);
+  if ( s )   {
+    printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",s->GetName());
+  }
+  if ( el ) list->AddElement(el);
   return el;
 }
 
@@ -89,28 +126,65 @@ View::CreateGeometry(DetElement de, const DisplayConfiguration::Config& cfg)   {
   return Utilities::LoadDetElement(de,cfg.data.defaults.load_geo,&topic);
 }
 
+/// Configure a view using the view's name and a proper ViewConfiguration if present
+void View::ConfigureGeometry()     {
+  printout(INFO,"View","+++ Configure Geometry for view %s Config=%p.",c_name(),m_config);
+  (m_config) ? ConfigureGeometry(*m_config) : ConfigureGeometryFromGlobal();
+  ImportGeoTopics(name());
+}
+
+/// Configure a single geometry view by default from the global geometry scene
+void View::ConfigureGeometryFromGlobal()    {
+  TEveElementList* l = &m_eve->GetGeoTopic("Sensitive");
+  TEveElementList* t = &GetGeoTopic("Sensitive");
+  for(TEveElementList::List_i i=l->BeginChildren(); i!=l->EndChildren(); ++i)
+    ImportGeo(*t,*i);
+    
+  l = &m_eve->GetGeoTopic("Structure");
+  t = &GetGeoTopic("Structure");
+  for(TEveElementList::List_i i=l->BeginChildren(); i!=l->EndChildren(); ++i) 
+    ImportGeo(*t,*i);
+}
+
 /// Configure a single geometry view
 void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    {
   string dets;
+  DisplayConfiguration::Configurations::const_iterator ic;
+  float legend_y = Annotation::DefaultTextSize()+Annotation::DefaultMargin();
   const DetElement::Children& c = m_eve->lcdd().world().children();
-  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-    DetElement de = (*i).second;
-    SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(de.name());
-    if ( (sd.isValid() && config.show_sensitive) || (!sd.isValid() && config.show_structure) )   {
-      DisplayConfiguration::Configurations::const_iterator i = find(config.subdetectors,de.name());
-      if ( i != config.subdetectors.end() )  {
+  for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)   {
+    const DisplayConfiguration::Config& cfg = *ic;
+    string nam = cfg.name;
+    if ( nam == "global" ) {
+      m_view->AddScene(m_eve->manager().GetGlobalScene());
+      m_view->AddScene(m_eve->manager().GetEventScene());
+      dets += nam;
+    }
+    else if ( cfg.type == DisplayConfiguration::CALODATA )   {
+      // Note: The histogram grid must be handled like a geometry item.
+      const Display::CalodataContext& ctx = m_eve->GetCaloHistogram(nam);
+      if ( ctx.config.use.empty() ) ImportGeo(ctx.calo3D);
+      printout(INFO,"View","+++ %s: add detector %s  %s",name().c_str(),nam.c_str(),ctx.config.use.c_str());
+      Color_t col = ctx.calo3D->GetDataSliceColor(ctx.slice);
+      Annotation* a = new Annotation(viewer(),nam.c_str(),Annotation::DefaultMargin(),legend_y,col);
+      legend_y += a->GetTextSize();
+      dets += nam + "(Calo3D)  ";
+    }
+    else if ( cfg.type == DisplayConfiguration::DETELEMENT )    {
+      DetElement::Children::const_iterator i = c.find(nam);
+      if ( i != c.end() )   {
+	DetElement de = (*i).second;
+	SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
 	TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
-	const DisplayConfiguration::Config& cfg = *i;
 	pair<bool,TEveElement*> e(false,0);
 	if ( cfg.data.defaults.load_geo > 0 )       // Create a new instance
 	  e = CreateGeometry(de,cfg);               // with the given number of levels
 	else if ( cfg.data.defaults.load_geo < 0 )  // Use the global geometry instance
 	  e = GetGlobalGeometry(de,cfg);            // with the given number of levels
 	if ( e.first && e.second )   {
-	  dets += de.name();
-	  dets += "  ";
 	  ImportGeo(topic,e.second);
 	}
+	dets += nam + "(Geo)  ";
       }
     }
   }
@@ -123,68 +197,71 @@ void View::ImportGeoTopics(const string& title)   {
   printout(INFO,"View","+++ %s: Import geometry topics.",c_name());
   for(Topics::iterator i=m_geoTopics.begin(); i!=m_geoTopics.end(); ++i)  {
     printout(INFO,"ViewConfiguration","+++     Add topic %s",(*i).second->GetName());
-    ImportElement((*i).second,m_geoScene);
+    ImportGeoTopic((*i).second,m_geoScene);
   }
   if ( !title.empty() ) AddToGlobalItems(title);
 }
 
 /// Call to import geometry elements by topic
 void View::ImportGeo(const string& topic, TEveElement* element)  { 
-  ImportElement(element,&GetGeoTopic(topic));
+  ImportGeoElement(element,&GetGeoTopic(topic));
 }
 
 /// Call to import geometry elements into topics
 void View::ImportGeo(TEveElementList& topic, TEveElement* element)   {
-  ImportElement(element,&topic);
+  ImportGeoElement(element,&topic);
 }
 
 /// Call to import geometry elements
 void View::ImportGeo(TEveElement* el)  { 
-  ImportElement(el, m_geoScene);
+  ImportGeoElement(el, m_geoScene);
 }
 
-/// Call to destroy all event elements
-void View::DestroyGeo()  {
-  m_geoScene->DestroyElements();
+/// Configure the adding of event data 
+void View::ConfigureEvent()    {
+  printout(INFO,"View","+++ Import event data into view %s Config=%p.",c_name(),m_config);
+  (m_config) ? ConfigureEvent(*m_config) : ConfigureEventFromGlobal();
+  ImportEventTopics();
 }
 
+/// Configure an event view by default from the global event scene
+void View::ConfigureEventFromGlobal()    {
+  TEveElementList* l = m_eve->manager().GetEventScene();
+  for(TEveElementList::List_i i=l->BeginChildren(); i!=l->EndChildren(); ++i) 
+    ImportEvent(*i);
+}
 
 /// Configure a single view
 void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)    {
-  LCDD& lcdd = m_eve->lcdd();
-  DetElement world = lcdd.world();
-  EventHandler& handler = m_eve->eventHandler();
+  DetElement world = m_eve->lcdd().world();
   const DetElement::Children& c = world.children();
-
-  printout(INFO,"View","+++ Configure event for view %s.",c_name());
-  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-    DetElement de = (*i).second;
-    SensitiveDetector sd = lcdd.sensitiveDetector(de.name());
-    if ( sd.isValid() )  {
-      DisplayConfiguration::Configurations::const_iterator i=find(config.subdetectors,de.name());
-      if ( i != config.subdetectors.end() )  {
-	ImportEvent(handler, de, sd, config);
+  DisplayConfiguration::Configurations::const_iterator ic;
+  for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)   {
+    const DisplayConfiguration::Config& cfg = *ic;
+    string nam = cfg.name;
+    if ( nam == "global" ) {
+      continue;
+    }
+    else if ( cfg.type == DisplayConfiguration::CALODATA )   {
+      continue;
+    }
+    else if ( cfg.type == DisplayConfiguration::DETELEMENT )    {
+      // Not using the global scene!
+      DetElement::Children::const_iterator i = c.find(nam);
+      if ( i != c.end() && cfg.data.defaults.show_evt>0 )   {
+	SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
+	if ( sd.isValid() )  {
+	  // This should be configurable!
+	  const char* coll = sd.readout().name();
+	  TEveElement* child = m_eve->manager().GetEventScene()->FindChild(coll);
+	  printout(INFO,"View","+++     Add detector event %s collection:%s data:%p scene:%p",
+		   nam.c_str(),coll,child,m_eveScene);
+	  if ( child )   {
+	    ImportEvent(child);
+	  }
+	}
       }
     }
-  }
-}
-
-/// Import event data from event handler for a given subdetector
-void View::ImportEvent(EventHandler& /* hdlr */, 
-		       DetElement de, 
-		       SensitiveDetector sd,
-		       const DisplayConfiguration::ViewConfig& /* config */)
-{
-  ///
-  /// By default we reuse the "global" event. We do not want to recreate the data
-  /// unless really necessary....
-  ///
-  const char* coll = sd.readout().name();
-  TEveElement* child = m_eve->GetEve().FindChild(coll);
-  printout(INFO,"View","+++     Add detector event %s collection:%s data:%p",
-	   de.name(), coll, child);
-  if ( child )   {
-    ImportEvent(child);
   }
 }
 
@@ -194,16 +271,7 @@ void View::ImportEventTopics()  {
 
 /// Call to import event elements into the main event scene
 void View::ImportEvent(TEveElement* el)  { 
-  ImportElement(el, m_eveScene);
-}
-
-/// Call to destroy all event elements
-void View::DestroyEvent()  {
-  m_eveScene->DestroyElements();
-}
-
-/// Prepare the view before loading new event data
-void View::PrepareEvent()  {
+  if ( m_eveScene ) ImportEventElement(el, m_eveScene);
 }
 
 /// Access/Create a topic by name
@@ -216,24 +284,6 @@ TEveElementList& View::GetGeoTopic(const string& name)    {
   }
   return *((*i).second);
 }
-
-#if 0
-/// Access/Create a topic by name
-TEveElementList& View::GetEveTopic(const string& name)    {
-  Topics::iterator i=m_eveTopics.find(name);
-  if ( i == m_eveTopics.end() )  {
-    TEveElementList* topic = new TEveElementList(name.c_str(), name.c_str(), true, true);
-    m_eveTopics[name] = topic;
-    return *topic;
-  }
-  return *((*i).second);
-}
-
-/// Call to import event elements by topic
-void View::ImportEvent(const string& topic, TEveElement* el)  { 
-  GetEveTopic(topic).AddElement(el);
-}
-#endif
 
 /// Create the geometry and the event scene
 View& View::CreateScenes()  {

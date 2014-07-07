@@ -89,7 +89,7 @@ void DD4hepMenu::OnLoadXML(TGMenuEntry* /* entry */, void* /* ptr */)  {
 
 /// Callback when loading the configuration
 void DD4hepMenu::OnLoadRootGeometry(TGMenuEntry* /* entry */, void* /* ptr */)  {
-  std::string fname = m_display->OpenRootFileDialog(".");
+  std::string fname = m_display->OpenEventFileDialog(".");
   if ( !fname.empty() )  {
     m_display->LoadGeometryRoot(fname.c_str());
   }

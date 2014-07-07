@@ -30,6 +30,7 @@ namespace DD4hep  {  namespace   {
     /// Some utility class to specialize the convetrers:
     class ddeve;
     class view;
+    class panel;
     class calodata;
     class calodata_configs;
     class detelement;
@@ -44,6 +45,7 @@ namespace DD4hep  {  namespace   {
   template <> void Converter<ddeve>::operator()(xml_h seq)  const;
   template <> void Converter<display>::operator()(xml_h seq)  const;
   template <> void Converter<view>::operator()(xml_h seq)  const;
+  template <> void Converter<panel>::operator()(xml_h seq)  const;
   template <> void Converter<include>::operator()(xml_h seq)  const;
   template <> void Converter<calodata>::operator()(xml_h e)  const;
   template <> void Converter<calodata_configs>::operator()(xml_h e)  const;
@@ -54,7 +56,7 @@ namespace DD4hep  {  namespace   {
 namespace {
   DECL_TAG(clone);
   DECL_TAG(load_geo);
-  DECL_TAG(load_eve);
+  DECL_TAG(show_evt);
   DECL_TAG(use);
   DECL_TAG(emax);
   DECL_TAG(hits);
@@ -73,7 +75,7 @@ namespace {
 static void extract(DisplayConfiguration::Config& c, xml_h e, int typ)   {
   c.name  = e.attr<string>(_U(name));
   c.type = typ;
-  //c.data.defaults.load_eve  = e.hasAttr(u_load_eve) ? e.attr<int>(u_load_eve) : 2;
+  c.data.defaults.show_evt  = e.hasAttr(u_show_evt) ? e.attr<int>(u_show_evt) :  1;
   c.data.defaults.load_geo  = e.hasAttr(u_load_geo) ? e.attr<int>(u_load_geo) : -1;
   c.data.defaults.color = e.hasAttr(_U(color)) ? e.attr<int>(_U(color)) : 0xBBBBBB;
   c.data.defaults.alpha = e.hasAttr(_U(alpha)) ? e.attr<float>(_U(alpha)) : -1.0;
@@ -98,6 +100,12 @@ template <> void Converter<detelement>::operator()(xml_h e)  const  {
   Configurations* configs = (Configurations*)param;
   DisplayConfiguration::Config c;
   extract(c,e,DisplayConfiguration::DETELEMENT);
+  configs->push_back(c);
+}
+template <> void Converter<panel>::operator()(xml_h e)  const  {
+  Configurations* configs = (Configurations*)param;
+  DisplayConfiguration::Config c;
+  extract(c,e,DisplayConfiguration::PANEL);
   configs->push_back(c);
 }
 template <> void Converter<calodata_configs>::operator()(xml_h e)  const  {
@@ -128,6 +136,7 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
   c.name  = e.attr<string>(_U(name));
   printout(INFO,"DisplayConfiguration","+++ View: %s sensitive:%d structure:%d.",
 	   c.name.c_str(), c.show_sensitive, c.show_structure);
+  xml_coll_t(e,_Unicode(panel)).for_each(Converter<panel>(lcdd,&c.subdetectors));
   xml_coll_t(e,_Unicode(detelement)).for_each(Converter<detelement>(lcdd,&c.subdetectors));
   xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata_configs>(lcdd,&c.subdetectors));
   config->views.push_back(c);
