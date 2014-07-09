@@ -165,8 +165,14 @@ namespace DD4hep {
 			 pair<VolMgr,Geant4HitCollection*>,
 			 lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const 
     {
-      lcio::LCCollectionVec* lc = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
-      return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc);
+      Geant4HitCollection* coll = args.second;
+      lcio::SimTrackerHitImpl* hit = coll->hit(0);
+      long long int id1 = hit->getCellID1(), id0=hit->getCellID0();
+      long long int cellID = (((id1<<32)&0xFFFFFFFF00000000)|(id0&0xFFFFFFFF));
+      string dsc = encoding(args.first, cellID);
+      lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
+      return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc_coll);
     }
 
     /// Data conversion interface moving lcio::SimCalorimeterHitImpl objects from a Geant4HitCollection to a LCCollectionVec
@@ -187,7 +193,13 @@ namespace DD4hep {
 			 pair<VolMgr,Geant4HitCollection*>,
 			 lcio::SimCalorimeterHitImpl>::operator()(const arg_t& args)  const 
     {
+      Geant4HitCollection* coll = args.second;
+      lcio::SimCalorimeterHitImpl* hit = coll->hit(0);
       output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
+      long long int id1 = hit->getCellID1(), id0=hit->getCellID0();
+      long long int cellID = (((id1<<32)&0xFFFFFFFF00000000)|(id0&0xFFFFFFFF));
+      string dsc = encoding(args.first, cellID);
+      UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc);
       lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP)); 
       return moveEntries<tag_t>(args.second,lc);
     }

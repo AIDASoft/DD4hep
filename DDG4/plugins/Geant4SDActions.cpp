@@ -182,12 +182,12 @@ namespace DD4hep {
 	Geant4TouchableHandler handler(step);
 	//hit = new Hit(pos);
 	hit = new Hit(h.prePos());
-	hit->cellID = volumeID(step);
+	hit->cellID = cellID(step);
 	coll->add(hit);
 	print("SimpleCalorimeter","%s> CREATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f  %s",
 	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),handler.path().c_str());
 	if ( 0 == hit->cellID )  {
-	  hit->cellID        = volumeID(step);
+	  hit->cellID = cellID(step);
 	  throw runtime_error("Invalid CELL ID for hit!");
 	}
       }
@@ -196,7 +196,7 @@ namespace DD4hep {
 	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
       }
       hit->truth.push_back(contrib);
-      hit->energyDeposit += contrib.deposit;    
+      hit->energyDeposit += contrib.deposit;
       mark(h.track);
       return true;
     }
