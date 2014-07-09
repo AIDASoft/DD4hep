@@ -141,7 +141,7 @@ namespace DD4hep {
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
       if ( hit )  {
 	HitContribution contrib = Hit::extractContribution(step);
-	hit->cellID        = volumeID(step);
+	hit->cellID        = cellID(step);
 	hit->energyDeposit = contrib.deposit;
 	hit->position      = position;
 	hit->momentum      = direction;

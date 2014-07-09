@@ -153,3 +153,79 @@ _props('PhysicsListActionSequenceHandle')
 _props('SensDetActionSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
+
+"""
+Helper object to perform stuff, which occurs very often.
+I am sick of typing the same over and over again.
+
+@author  M.Frank
+@version 1.0
+
+"""
+class Simple:
+  def __init__(self, kernel,calo='Geant4SimpleCalorimeterAction',tracker='Geant4SimpleTrackerAction'):
+    kernel.UI = "UI"
+    kernel.printProperties()
+    self.kernel = kernel
+    self.calo = calo
+    self.tracker = tracker
+  def printDetectors(self):
+    lcdd = self.kernel.lcdd()
+    print '+++  List of sensitive detectors:'
+    for i in lcdd.detectors(): 
+      o = DetElement(i.second)
+      sd = lcdd.sensitiveDetector(o.name())
+      if sd.isValid():
+        print '+++  %-32s type:%s'%(o.name(), sd.type(), )
+
+  def setupDetector(self,name,sensitive_type):
+    seq = SensitiveSequence(self.kernel,'Geant4SensDetActionSequence/'+name)
+    act = SensitiveAction(self.kernel,sensitive_type+'/'+name+'Handler',name)
+    seq.add(act)
+    return (seq,act)
+
+  def setupCalorimeter(self,name,type=None):
+    if type is None: type = self.calo
+    return self.setupDetector(name,type)
+
+  def setupTracker(self,name,type=None):
+    if type is None: type = self.tracker
+    return self.setupDetector(name,type)
+
+  def setupPhysics(self,name):
+    phys = self.kernel.physicsList()
+    phys.extends = name
+    phys.decays  = True
+    phys.enableUI()
+    phys.dump()
+    return phys
+  def setupGun(self, name, particle, energy, isotrop=True, multiplicity=1, position=(0.0,0.0,0.0)):
+    gun = GeneratorAction(self.kernel,"Geant4ParticleGun/"+name)
+    gun.energy   = energy
+    gun.particle = particle
+    gun.multiplicity = multiplicity
+    gun.position = position
+    gun.isotrop = isotrop
+    gun.enableUI()
+    self.kernel.generatorAction().add(gun)
+  def setupCshUI(self):
+    # Configure UI
+    ui = Action(self.kernel,"Geant4UIManager/UI")
+    ui.HaveVIS = True
+    ui.HaveUI = True
+    ui.SessionType = 'csh'
+    self.kernel.registerGlobalAction(ui)
+  def setupROOTOutput(self,name,output):
+    evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)
+    evt_root.Control = True
+    evt_root.Output = output+'.root'
+    evt_root.enableUI()
+    self.kernel.eventAction().add(evt_root)
+    return evt_root
+  def setupLCIOOutput(self,name,output):
+    evt_lcio = EventAction(self.kernel,'Geant4Output2LCIO/'+name)
+    evt_lcio.Control = True
+    evt_lcio.Output = output
+    evt_lcio.enableUI()
+    self.kernel.eventAction().add(evt_lcio)
+    return evt_lcio

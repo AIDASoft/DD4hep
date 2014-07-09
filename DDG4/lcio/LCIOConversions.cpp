@@ -17,8 +17,12 @@
 
 // LCIO includes
 #include "IMPL/LCCollectionVec.h"
+//
+#include "IMPL/ClusterImpl.h"
 #include "IMPL/SimTrackerHitImpl.h"
 #include "IMPL/SimCalorimeterHitImpl.h"
+#include "IMPL/MCParticleImpl.h"
+//
 #include "UTIL/Operators.h"
 #include "UTIL/ILDConf.h"
 using namespace std;
@@ -130,6 +134,19 @@ namespace DD4hep {
       return lc_coll;
     }
 
+    template <typename T> lcio::LCCollectionVec* moveEntries(Geant4HitCollection* coll, lcio::LCCollectionVec* lc_coll)  {
+      size_t nhits = coll->GetSize();
+      lc_coll->reserve(nhits);
+      for(size_t i=0; i<nhits; ++i)   {
+	Geant4HitWrapper& wrap = coll->hit(i);
+        T* lc_hit = wrap;
+	wrap.release();  // Now we have ownership!
+	lc_coll->addElement(lc_hit);
+      }
+      coll->clear(); // Since the collection now only contains NULL pointers, better clear it!
+      return lc_coll;
+    }
+
     /// Data conversion interface moving lcio::SimTrackerHitImpl objects from a Geant4HitCollection to a LCCollectionVec
     /**
      *  This converter is to be used, when the sensitive detectors create fill collections
@@ -148,19 +165,8 @@ namespace DD4hep {
 			 pair<VolMgr,Geant4HitCollection*>,
 			 lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const 
     {
-      Geant4HitCollection* coll = args.second;
-      lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
-      lc_coll->reserve(coll->GetSize());
-      printout(DEBUG,"LCIOConversion",
-	       "+++ Converting %s to LCCollectionVec(SIMTRACKERHIT)",coll->GetName().c_str());
-      for(size_t i=0, nhits = coll->GetSize(); i<nhits; ++i)   {
-	Geant4HitWrapper& wrap = coll->hit(i);
-	lcio::SimTrackerHitImpl* lc_hit = wrap;
-	wrap.release();  // Now we have ownership!
-	lc_coll->addElement(lc_hit);
-      }
-      coll->clear(); // Since the collection now only contains NULL pointers, better clear it!
-      return lc_coll;
+      lcio::LCCollectionVec* lc = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc);
     }
 
     /// Data conversion interface moving lcio::SimCalorimeterHitImpl objects from a Geant4HitCollection to a LCCollectionVec
@@ -181,20 +187,38 @@ namespace DD4hep {
 			 pair<VolMgr,Geant4HitCollection*>,
 			 lcio::SimCalorimeterHitImpl>::operator()(const arg_t& args)  const 
     {
-      Geant4HitCollection* coll = args.second;
-      lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
-      lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP)); 
-      lc_coll->reserve(coll->GetSize());
-      printout(DEBUG,"LCIOConversion",
-	       "+++ Converting %s to LCCollectionVec(SIMCALORIMETERHIT)",coll->GetName().c_str());
-      for(size_t i=0, nhits = coll->GetSize(); i<nhits; ++i)   {
-	Geant4HitWrapper& wrap = coll->hit(i);
-	lcio::SimCalorimeterHitImpl* lc_hit = wrap;
-	wrap.release();  // Now we have ownership!
-	lc_coll->addElement(lc_hit);
-      }
-      coll->clear(); // Since the collection now only contains NULL pointers, better clear it!
-      return lc_coll;
+      output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
+      lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP)); 
+      return moveEntries<tag_t>(args.second,lc);
+    }
+
+    /// Data conversion interface moving lcio::ClusterImpl objects from a Geant4HitCollection to a LCCollectionVec
+    /** Same comments apply as for the data mover for lcio::SimCalorimeterHitImpl and lcio::SimTrackerHitImpl
+     *
+     *  @author M.Frank
+     *  @version 1.0
+     */
+    template <> lcio::LCCollectionVec* 
+    Geant4DataConversion<lcio::LCCollectionVec,
+			 pair<VolMgr,Geant4HitCollection*>,
+			 lcio::ClusterImpl>::operator()(const arg_t& args)  const 
+    {
+      output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::CLUSTER);
+      return moveEntries<tag_t>(args.second,lc);
+    }
+    /// Data conversion interface moving lcio::MCParticleImpl objects from a Geant4HitCollection to a LCCollectionVec
+    /** Same comments apply as for the data mover for lcio::SimCalorimeterHitImpl and lcio::SimTrackerHitImpl
+     *
+     *  @author M.Frank
+     *  @version 1.0
+     */
+    template <> lcio::LCCollectionVec* 
+    Geant4DataConversion<lcio::LCCollectionVec,
+			 pair<VolMgr,Geant4HitCollection*>,
+			 lcio::MCParticleImpl>::operator()(const arg_t& args)  const 
+    {
+      output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::MCPARTICLE);
+      return moveEntries<tag_t>(args.second,lc);
     }
 
     typedef pair<VolMgr,G4VHitsCollection*> RAW_CONVERSION_ARGS;
@@ -209,6 +233,8 @@ namespace DD4hep {
     // Hit converters for standard LCIO objects
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::SimTrackerHitImpl)
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::SimCalorimeterHitImpl)
+    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::ClusterImpl)
+    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::MCParticleImpl)
   }    // End namespace Simulation
 }      // End namespace DD4hep
 
