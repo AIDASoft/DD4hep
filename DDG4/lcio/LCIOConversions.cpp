@@ -119,7 +119,7 @@ namespace DD4hep {
       string     dsc   = encoding(args.first, hit->cellID);
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);	
       UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
-      lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP)); 
+      lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
       lc_coll->reserve(nhits);
       for(size_t i=0; i<nhits; ++i)   {
 	const SimpleCalorimeter::Hit* g4_hit = coll->hit(i);
@@ -200,7 +200,7 @@ namespace DD4hep {
       long long int cellID = (((id1<<32)&0xFFFFFFFF00000000)|(id0&0xFFFFFFFF));
       string dsc = encoding(args.first, cellID);
       UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc);
-      lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP)); 
+      lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
       return moveEntries<tag_t>(args.second,lc);
     }
 
