@@ -202,8 +202,9 @@ long long int Geant4Sensitive::cellID(G4Step* s) {
   if ( m_segmentation.isValid() )  {
     G4ThreeVector global = 0.5 * ( h.prePosG4()+h.postPosG4());
     G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
-    Position loc(local.x(), local.y(), local.z()), glob(global.x(), global.y(), global.z());
-    VolumeID cellID      = m_segmentation.cellID(loc,glob,volID);
+    Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
+    Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
+    VolumeID cellID = m_segmentation.cellID(loc,glob,volID);
     return cellID;
   }
   return volID;
