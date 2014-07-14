@@ -52,7 +52,13 @@ G4UIExecutive* Geant4UIManager::startUI()   {
   const char* args[] = {"DDG4","",""};
   printout(INFO,"Geant4UIManager","+++ Starting G4UIExecutive '%s' of type %s....",
 	   args[0], m_sessionType.c_str());
+
+#if (G4VERSION_NUMBER >= 960)
   ui = new G4UIExecutive(1,(char**)args,m_sessionType.c_str());
+#else
+  ui = new G4UIExecutive(1,(char**)args );
+#endif
+
   return ui;
 }
 
