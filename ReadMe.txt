@@ -68,6 +68,15 @@ To build and run the simulation examples Geant4 will be required.
   ( minimum is: export ROOTSYS=/data/ilcsoft/root/5.34.03 )
 
 
+- configure and build DDSegmentation
+
+  cd DD4hep/DDSegmentation
+  mkdir build; cd build
+  cmake ..
+  make install
+  cd ../../..
+  export CMAKE_PREFIX_PATH=`pwd`/DD4hep/DDSegmentation/
+
 - configure and build:
 
   cd DD4hep
