@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSegmentation/include )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${DDSegmentation_INCLUDE_DIR} )
 
 
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
@@ -22,10 +22,16 @@ else()
   file(GLOB parser_sources )
 endif()
 
+# Find the DDSegmentation libraries
+find_library(DDSegmentation_LIBS
+  NAMES ${DDSegmentation_LIBRARIES}
+  PATHS ${DDSegmentation_LIBRARY_DIR}
+)
+
 file(GLOB headers include/DD4hep/*.h)
 file(GLOB internal_headers include/DD4hep/objects/*.h)
-list(APPEND headers ${CMAKE_SOURCE_DIR}/DDSegmentation/include/DDSegmentation/BitField64.h)
-list(APPEND headers ${CMAKE_SOURCE_DIR}/DDSegmentation/include/DDSegmentation/Segmentation.h)
+list(APPEND headers ${DDSegmentation_INCLUDE_DIR}/DDSegmentation/BitField64.h)
+list(APPEND headers ${DDSegmentation_INCLUDE_DIR}/DDSegmentation/Segmentation.h)
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Plugins.h
@@ -42,7 +48,7 @@ include(DD4hep_XML_setup)
 
 add_library(DD4hepCore SHARED ${sources} ${parser_sources} )
 
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDSegmentation Geom Reflex ${libraries})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBS} Geom Reflex ${libraries})
 
 add_library(DD4hepPlugins SHARED ${plugin_sources})
 target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})

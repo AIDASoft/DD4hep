@@ -266,6 +266,7 @@ template vector<pair<string, int> >::iterator;
 #include "DDSegmentation/ProjectiveCylinder.h"
 #include "DDSegmentation/SegmentationParameter.h"
 #include "DDSegmentation/TiledLayerSegmentation.h"
+typedef DD4hep::DDSegmentation::VolumeID VolumeID;
 typedef DD4hep::DDSegmentation::CellID CellID;
 
 #ifdef __CINT__
