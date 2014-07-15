@@ -22,11 +22,11 @@ else()
   file(GLOB parser_sources )
 endif()
 
-# Find the DDSegmentation libraries
-find_library(DDSegmentation_LIBS
-  NAMES ${DDSegmentation_LIBRARIES}
-  PATHS ${DDSegmentation_LIBRARY_DIR}
-)
+## Find the DDSegmentation libraries
+#find_library(DDSegmentation_LIBS
+#  NAMES ${DDSegmentation_LIBRARIES}
+#  PATHS ${DDSegmentation_LIBRARY_DIR}
+#)
 
 file(GLOB headers include/DD4hep/*.h)
 file(GLOB internal_headers include/DD4hep/objects/*.h)
@@ -48,7 +48,7 @@ include(DD4hep_XML_setup)
 
 add_library(DD4hepCore SHARED ${sources} ${parser_sources} )
 
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBS} Geom Reflex ${libraries})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom Reflex ${libraries})
 
 add_library(DD4hepPlugins SHARED ${plugin_sources})
 target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})

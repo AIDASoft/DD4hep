@@ -66,10 +66,19 @@ IF( INSTALL_DOC )
 ENDIF()
 
 
-find_package(DDSegmentation REQUIRED)
+#------ allow to use a pre-built DDSegmentation  ----------------------------
+
+find_package(DDSegmentation QUIET)
+
+#if it does not exist, simply build DDSegmentation as part of DD4hep:
+if( NOT DDSegmentation_FOUND ) 
+  add_subdirectory(DDSegmentation)
+  SET( DDSegmentation_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/DDSegmentation/include)
+  SET( DDSegmentation_LIBRARIES DDSegmentation)
+endif()
 
 #---Packages------------------------------------------------------------------------
-#add_subdirectory(DDSegmentation)
+
 add_subdirectory(DDCore)
 add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
