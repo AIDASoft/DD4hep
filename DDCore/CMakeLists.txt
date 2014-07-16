@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${DDSegmentation_INCLUDE_DIR} )
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${DDSegmentation_INCLUDE_DIRS} )
 
 
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
@@ -13,8 +13,8 @@ if(DD4HEP_USE_BOOST)
   #fg:  canonical way of finding Boost w/ cmake uses 
   #     -D Boost_DIR=_path_to_boost
   #     and then FindBoost.cmake sets the variable Boost_INCLUDE_DIR
-  FIND_PACKAGE( Boost REQUIRED) 
-  include_directories( ${Boost_INCLUDE_DIR})
+  FIND_PACKAGE( Boost REQUIRED ) 
+  include_directories( ${Boost_INCLUDE_DIRS} )
   #list(APPEND include_directories ${BOOST_INCLUDE_DIR})
   file(GLOB parser_sources src/parsers/*.cpp )
   add_definitions(-DDD4HEP_USE_BOOST)
@@ -22,16 +22,10 @@ else()
   file(GLOB parser_sources )
 endif()
 
-## Find the DDSegmentation libraries
-#find_library(DDSegmentation_LIBS
-#  NAMES ${DDSegmentation_LIBRARIES}
-#  PATHS ${DDSegmentation_LIBRARY_DIR}
-#)
-
 file(GLOB headers include/DD4hep/*.h)
 file(GLOB internal_headers include/DD4hep/objects/*.h)
-list(APPEND headers ${DDSegmentation_INCLUDE_DIR}/DDSegmentation/BitField64.h)
-list(APPEND headers ${DDSegmentation_INCLUDE_DIR}/DDSegmentation/Segmentation.h)
+list(APPEND headers ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/BitField64.h)
+list(APPEND headers ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/Segmentation.h)
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Plugins.h

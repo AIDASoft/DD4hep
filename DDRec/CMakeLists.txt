@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 project(DDRec)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
-		    ${DDSegmentation_INCLUDE_DIR}
+		    ${DDSegmentation_INCLUDE_DIRS}
 		    ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSurfaces/include 
 		    ${CMAKE_SOURCE_DIR}/DDCore/include)
 
@@ -25,12 +25,6 @@ endif()
 #-------------------------------------------------------------------------------------
 
 add_library(DD4hepRec SHARED ${sources} )
-
-## Find the DDSegmentation libraries
-#find_library(DDSegmentation_LIBS
-#  NAMES ${DDSegmentation_LIBRARIES}
-#  PATHS ${DDSegmentation_LIBRARY_DIR}
-#)
 
 if(DD4HEP_WITH_GEAR)
   target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} ${DDSegmentation_LIBRARIES} DD4hepCore Geom Reflex ${libraries} ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES})

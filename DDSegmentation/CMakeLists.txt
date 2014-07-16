@@ -24,6 +24,12 @@ add_library(DDSegmentation SHARED ${sources})
 
 SET_TARGET_PROPERTIES( DDSegmentation PROPERTIES VERSION ${DDSegmentation_VERSION} SOVERSION ${DDSegmentation_SOVERSION})
 
+#if DDSegmentation is build as part of dd4hep
+if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR ) 
+  SET ( DDSegmentation_LIBRARIES DDSegmentation  PARENT_SCOPE )
+  SET ( DDSegmentation_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/include  PARENT_SCOPE )
+endif()
+
 install(DIRECTORY include/DDSegmentation
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
