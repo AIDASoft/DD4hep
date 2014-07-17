@@ -1,6 +1,6 @@
 #---Find Geant4-------------------------------------------------------------------
 
-find_package(Geant4 REQUIRED gdml ui_all vis_all)
+#find_package(Geant4 REQUIRED gdml ui_all vis_all)
 #if(NOT Geant4_clhep_FOUND)
 #  find_package(CLHEP REQUIRED)
 #  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})

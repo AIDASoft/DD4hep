@@ -53,6 +53,8 @@ if(@DD4HEP_USE_GEANT4@)
     set(GEANT4_USE_CLHEP  1 ) 
   endif()
 
+  set( Geant4_DIR @Geant4_DIR@)
+
 else()
   CHECK_PACKAGE_LIBS( DD4hep DD4hepCore DDSegmentation DD4hepRec DD4hepPlugins ) 
 endif()

@@ -83,23 +83,23 @@ ENDIF()
 
 #---Packages------------------------------------------------------------------------
 
-#------ allow to use a pre-built DDSegmentation  ----------------------------
-find_package( DDSegmentation QUIET )
-if( NOT DDSegmentation_FOUND ) 
-  add_subdirectory(DDSegmentation)
-endif()
+##------ don't allow to use a pre-built DDSegmentation  ----------------------------
+#find_package( DDSegmentation QUIET )
+#if( NOT DDSegmentation_FOUND ) 
+#  add_subdirectory(DDSegmentation)
+#endif()
 
+add_subdirectory(DDSegmentation)
 add_subdirectory(DDCore)
 add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
 add_subdirectory(DDSense)
 
 if(DD4HEP_USE_GEANT4)
-  add_subdirectory(DDG4)
 
   #--- create a geant4 variables for the thisdd4hep.sh script
-  find_package( Geant4 REQUIRED )
-  get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
+  find_package( Geant4 REQUIRED  gdml ui_all vis_all)
+
 
   #----- if geant4 is build with external CLHEP we also need to export this fact
 
@@ -108,6 +108,8 @@ if(DD4HEP_USE_GEANT4)
   if( NOT "${CLHEP_POS}" STREQUAL "-1"  )
 
     set( GEANT4_USE_CLHEP 1 )
+
+    get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
 
     #---- use FindCLHEP shipped with geant4 -----------
     set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${Geant4_ROOT}/cmake/Modules ) 
@@ -124,6 +126,13 @@ if(DD4HEP_USE_GEANT4)
   else()
     set( GEANT4_USE_CLHEP 0 )
   endif()
+
+  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
+  set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
+
+
+#------- now configure DDG4 -------
+  add_subdirectory(DDG4)
 
 endif()
 
