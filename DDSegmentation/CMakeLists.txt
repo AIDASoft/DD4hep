@@ -43,7 +43,7 @@ install(TARGETS DDSegmentation
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGE DDSegmentation)
+#export(PACKAGE DDSegmentation)
  
 # Create the DDSegmentationConfig.cmake and DDSegmentationConfigVersion files
 configure_file(cmake/DDSegmentationConfig.cmake.in ${CMAKE_INSTALL_PREFIX}/DDSegmentationConfig.cmake)
