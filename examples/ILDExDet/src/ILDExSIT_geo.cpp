@@ -9,7 +9,7 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 #endif
@@ -30,7 +30,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   PlacedVolume pv;
 
   
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
   //--------------- gear: create gear::ZPlanarParameters and add them as Extension
   gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( gear::ZPlanarParameters::HYBRID ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
   // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
@@ -136,7 +136,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
    }
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
     //----------------- gear ---------------------------------------------
     double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
     double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 

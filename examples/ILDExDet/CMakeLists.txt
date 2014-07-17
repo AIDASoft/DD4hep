@@ -43,7 +43,7 @@ set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 
 
-if(DD4HEP_WITH_GEAR)
+if(DD4HEP_USE_GEAR)
 
   find_package( GEAR REQUIRED COMPONENTS )
 
@@ -53,7 +53,7 @@ if(DD4HEP_WITH_GEAR)
   endforeach(lp) 
   #message( STATUS " *** pathes : ${External_LIBRARY_DIRS} "  )
 
-  add_definitions("-D DD4HEP_WITH_GEAR")
+  add_definitions("-D DD4HEP_USE_GEAR")
 
 endif()
 

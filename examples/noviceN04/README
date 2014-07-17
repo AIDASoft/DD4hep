@@ -19,7 +19,7 @@ Run:
 
  geoDisplay ../compact/N04.xml
 
-#simulate w/ ILD example (needs DD4HEP_WITH_GEANT4 )
+#simulate w/ ILD example (needs DD4HEP_USE_GEANT4 )
 
   ILDExSimu  file:../compact/N04.xml file:../compact/geant4.xml ../run1.mac
 

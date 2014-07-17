@@ -9,7 +9,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "VXDData.h"
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 #endif
@@ -43,7 +43,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   vxd_data->id = x_det.id();
 
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
   //--------------- gear: create gear::ZPlanarParameters and add them as Extension
   gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( gear::ZPlanarParameters::CCD ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
   // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
@@ -254,7 +254,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
     //----------------- gear ---------------------------------------------
     double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
     double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 

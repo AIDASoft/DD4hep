@@ -24,11 +24,23 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #---Options-------------------------------------------------------------------------
+
+#For backward compatibility for now
+IF( DEFINED DD4HEP_WITH_GEANT4 )
+  SET ( DD4HEP_USE_GEANT4 ${DD4HEP_WITH_GEANT4} )
+ENDIF()
+
+IF( DEFINED DD4HEP_WITH_GEAR )
+  SET ( DD4HEP_USE_GEAR ${DD4HEP_WITH_GEAR} )
+ENDIF()
+
+
+
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
-option(DD4HEP_WITH_GEANT4 "Enable the simulation part based on Geant4" OFF)
-
-option(DD4HEP_WITH_GEAR "Build gear wrapper for backward compatibility" OFF)
+option(DD4HEP_USE_GEANT4 "Enable the simulation part based on Geant4" OFF)
+option(DD4HEP_USE_GEAR "Build gear wrapper for backward compatibility" OFF)
+option(DD4HEP_USE_LCIO "Build lcio extensions" OFF)
 
 
 #---------------------------------------------------------------------------------------
@@ -43,8 +55,9 @@ include( DD4hepMacros )
 #-----------------------------
 
 find_package(ROOT REQUIRED)
+
 if(DD4HEP_USE_XERCESC)
-  find_package(XercesC)
+  find_package(XercesC REQUIRED)
 endif()
 
 #---Testing-------------------------------------------------------------------------
@@ -81,11 +94,11 @@ add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
 add_subdirectory(DDSense)
 
-if(DD4HEP_WITH_GEANT4)
+if(DD4HEP_USE_GEANT4)
   add_subdirectory(DDG4)
 
   #--- create a geant4 variables for the thisdd4hep.sh script
-  find_package( Geant4 ) 
+  find_package( Geant4 REQUIRED )
   get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
 
   #----- if geant4 is build with external CLHEP we also need to export this fact
@@ -94,7 +107,7 @@ if(DD4HEP_WITH_GEANT4)
  
   if( NOT "${CLHEP_POS}" STREQUAL "-1"  )
 
-    set( GEANT4_WITH_CLHEP 1 )
+    set( GEANT4_USE_CLHEP 1 )
 
     #---- use FindCLHEP shipped with geant4 -----------
     set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${Geant4_ROOT}/cmake/Modules ) 
@@ -103,13 +116,13 @@ if(DD4HEP_WITH_GEANT4)
       set( CLHEP_ROOT_DIR ${CLHEP_DIR} )
     endif()
 
-    find_package( CLHEP REQUIRED)
+    find_package( CLHEP REQUIRED )
 
     get_filename_component(CLHEP_LIBRARY_PATH "${CLHEP_LIBRARIES}" PATH)
     
     message( STATUS " *** geant4 was build with external CLHEP *** CLHEP_LIBRARY_PATH = ${CLHEP_LIBRARY_PATH}"  )
   else()
-    set( GEANT4_WITH_CLHEP 0 )
+    set( GEANT4_USE_CLHEP 0 )
   endif()
 
 endif()
@@ -138,6 +151,15 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/run_test.sh
 
 #-----------------------------------------------------------------------------------
 display_std_variables()
+
+IF( DEFINED DD4HEP_WITH_GEANT4)
+  MESSAGE ( WARNING "DD4HEP_WITH_GEANT4 is deprecated use DD4HEP_USE_GEANT4")
+ENDIF()
+
+IF( DEFINED DD4HEP_WITH_GEAR )
+  MESSAGE (WARNING "DD4HEP_WITH_GEAR is deprecated use DD4HEP_USE_GEAR")
+ENDIF()
+
 
 ##############################################################################
 # generate and install following configuration files

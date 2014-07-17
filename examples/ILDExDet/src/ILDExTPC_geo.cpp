@@ -19,7 +19,7 @@
 
 #include "TPCData.h"
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
@@ -256,7 +256,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }//subdetectors
   tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
   //--------------- create gear::TPCParameters and add them as Extension
   //  GearTPCParameters* gearTPC = new GearTPCParameters( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
   gear::TPCParametersImpl* gearTPC = new gear::TPCParametersImpl( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
