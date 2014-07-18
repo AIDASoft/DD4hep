@@ -159,6 +159,12 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/run_test.sh
   DESTINATION bin
   )
 
+install(DIRECTORY cmake
+  DESTINATION ${CMAKE_INSTALL_PREFIX}
+  FILES_MATCHING PATTERN "*.cmake" PATTERN "thisdd4hep_package.sh.in" PATTERN "run*.sh"
+  PATTERN ".svn" EXCLUDE
+  )
+
 #-----------------------------------------------------------------------------------
 display_std_variables()
 
