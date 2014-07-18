@@ -28,6 +28,12 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #---Options-------------------------------------------------------------------------
 
+option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
+option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
+option(DD4HEP_USE_GEANT4 "Enable the simulation part based on Geant4" OFF)
+option(DD4HEP_USE_GEAR "Build gear wrapper for backward compatibility" OFF)
+option(DD4HEP_USE_LCIO "Build lcio extensions" OFF)
+
 #For backward compatibility for now
 IF( DEFINED DD4HEP_WITH_GEANT4 )
   SET ( DD4HEP_USE_GEANT4 ${DD4HEP_WITH_GEANT4} )
@@ -36,14 +42,6 @@ ENDIF()
 IF( DEFINED DD4HEP_WITH_GEAR )
   SET ( DD4HEP_USE_GEAR ${DD4HEP_WITH_GEAR} )
 ENDIF()
-
-
-
-option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
-option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
-option(DD4HEP_USE_GEANT4 "Enable the simulation part based on Geant4" OFF)
-option(DD4HEP_USE_GEAR "Build gear wrapper for backward compatibility" OFF)
-option(DD4HEP_USE_LCIO "Build lcio extensions" OFF)
 
 
 #---------------------------------------------------------------------------------------
