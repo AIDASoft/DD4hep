@@ -374,7 +374,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
     else if (shape->IsA() == TGeoTubeSeg::Class()) {
       const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
       solid = new G4Tubs(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetDz() * CM_2_MM,
-          s->GetPhi1() * DEGREE_2_RAD, s->GetPhi2() * DEGREE_2_RAD);
+          s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoTrd1::Class()) {
       const TGeoTrd1* s = (const TGeoTrd1*) shape;
@@ -419,7 +419,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
     else if (shape->IsA() == TGeoConeSeg::Class()) {
       const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
       solid = new G4Cons(name, s->GetRmin1() * CM_2_MM, s->GetRmax1() * CM_2_MM, s->GetRmin2() * CM_2_MM,
-          s->GetRmax2() * CM_2_MM, s->GetDz() * CM_2_MM, s->GetPhi1() * DEGREE_2_RAD, s->GetPhi2() * DEGREE_2_RAD);
+          s->GetRmax2() * CM_2_MM, s->GetDz() * CM_2_MM, s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
     }
     else if (shape->IsA() == TGeoParaboloid::Class()) {
       const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
