@@ -1,4 +1,5 @@
 if(DD4HEP_USE_XERCESC)
+  find_package( XercesC REQUIRED )
   add_definitions(-DDD4HEP_USE_XERCESC)
   include_directories(SYSTEM ${XERCESC_INCLUDE_DIRS})
   set(XML_LIBRARIES ${XERCESC_LIBRARIES})

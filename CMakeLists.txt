@@ -57,8 +57,18 @@ include( DD4hepMacros )
 
 find_package(ROOT REQUIRED)
 
-if(DD4HEP_USE_XERCESC)
-  find_package(XercesC REQUIRED)
+##checks for xercesc or not and sets up the include_directories
+include(DD4hep_XML_setup)
+
+if(DD4HEP_USE_BOOST)
+  find_package( Boost REQUIRED ) 
+  include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
+  add_definitions( -DDD4HEP_USE_BOOST )
+endif()
+
+if(DD4HEP_USE_LCIO)
+  find_package( LCIO REQUIRED )
+  include_directories( SYSTEM ${LCIO_INCLUDE_DIRS} )
 endif()
 
 #---Testing-------------------------------------------------------------------------
@@ -101,6 +111,7 @@ if(DD4HEP_USE_GEANT4)
   #--- create a geant4 variables for the thisdd4hep.sh script
   find_package( Geant4 REQUIRED  gdml ui_all vis_all)
 
+  include(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs
 
   #----- if geant4 is build with external CLHEP we also need to export this fact
 
