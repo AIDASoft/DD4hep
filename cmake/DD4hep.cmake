@@ -50,6 +50,14 @@ endfunction()
 # Create the .rootmap file needed by the plug-in system.
 #---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap library)
+  if(APPLE)
+    dd4hep_generate_rootmap_apple( ${library} )
+  else()
+    dd4hep_generate_rootmap_notapple( ${library} )
+  endif()
+endfunction()
+
+function(dd4hep_generate_rootmap_notapple library)
 
   if ( NOT DD4hep_ROOT )
     SET ( DD4hep_ROOT ${CMAKE_SOURCE_DIR} )
@@ -79,46 +87,9 @@ endfunction()
 #
 function(dd4hep_generate_rootmap_apple library)
 
-# for now do the same for apple that is done for the rest
-dd4hep_generate_rootmap( ${library}  )
+  # for now do the same for apple that is done for the rest
+  dd4hep_generate_rootmap( ${library} )
 
-#FG: the following function works nicely on MacOS - for dd4hep and examples 
-#    but not on SL or Ubuntu ...
-
-#  find_package(ROOT QUIET)
-#  find_package(DD4hep QUIET)
-#
-#  set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
-#
-#  set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
-#
-#
-##---------------------------------------------------------------------------------------
-#if( DD4hep_FOUND )  
-#  # we are building an external tool and need to source ${DD4hep_ROOT}/bin/thisdd4hep.sh
-#  
-#  add_custom_command(OUTPUT ${rootmapfile}
-#    COMMAND cd ${LIBRARY_OUTPUT_PATH} && 
-#    . ${DD4hep_ROOT}/bin/thisdd4hep.sh &&
-#    genmap ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
-#    DEPENDS ${library})
-#  
-#else()  # we are building DD4hep itself - only need thisroot.sh
-#  
-#  add_custom_command(OUTPUT ${rootmapfile}
-#    COMMAND cd ${LIBRARY_OUTPUT_PATH} && 
-#    . ${ROOT_ROOT}/bin/thisroot.sh &&
-#    genmap ${ROOT_genmap_CMD} -i ${libname} -o ${rootmapfile}
-#    DEPENDS ${library})
-#endif()
-#
-#
-#add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
-#
-#install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
-#  DESTINATION lib
-#  )
-##--------------------------------------------------------------------------------------
 endfunction()
 
 
