@@ -56,6 +56,7 @@ include( DD4hepMacros )
 #-----------------------------
 
 find_package(ROOT REQUIRED)
+include_directories( SYSTEM ${ROOT_INCLUDE_DIR} )
 
 ##checks for xercesc or not and sets up the include_directories
 include(DD4hep_XML_setup)
@@ -131,6 +132,7 @@ if(DD4HEP_USE_GEANT4)
     endif()
 
     find_package( CLHEP REQUIRED )
+    include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
 
     get_filename_component(CLHEP_LIBRARY_PATH "${CLHEP_LIBRARIES}" PATH)
     
