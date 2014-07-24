@@ -10,14 +10,7 @@ file(GLOB plugin_sources src/plugins/*.cpp)
 
 #---Add Library-------------------------------------------------------------------
 if(DD4HEP_USE_BOOST)
-  #fg:  canonical way of finding Boost w/ cmake uses 
-  #     -D Boost_DIR=_path_to_boost
-  #     and then FindBoost.cmake sets the variable Boost_INCLUDE_DIR
-  FIND_PACKAGE( Boost REQUIRED ) 
-  include_directories( ${Boost_INCLUDE_DIRS} )
-  #list(APPEND include_directories ${BOOST_INCLUDE_DIR})
   file(GLOB parser_sources src/parsers/*.cpp )
-  add_definitions(-DDD4HEP_USE_BOOST)
 else()
   file(GLOB parser_sources )
 endif()
@@ -38,24 +31,16 @@ if(DD4HEP_USE_PYROOT)
   set(libraries  ${libraries} PyROOT)
 endif()
 
-include(DD4hep_XML_setup)
-
 add_library(DD4hepCore SHARED ${sources} ${parser_sources} )
 
 target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom Reflex ${libraries})
 
-add_library(DD4hepPlugins SHARED ${plugin_sources})
+## generates rootmap and installs the library
+add_dd4hep_plugin(DD4hepPlugins SHARED ${plugin_sources})
 target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
 
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 SET_TARGET_PROPERTIES( DD4hepCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
-
-#---Rootmap generation--------------------------------------------------------------
-if(APPLE)
-  dd4hep_generate_rootmap_apple(DD4hepPlugins)
-else()
-  dd4hep_generate_rootmap(DD4hepPlugins)
-endif()
 
 
 #--- install target-------------------------------------
@@ -64,7 +49,7 @@ install(DIRECTORY include/DD4hep  include/XML
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepCore DD4hepPlugins
+install(TARGETS DD4hepCore
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
