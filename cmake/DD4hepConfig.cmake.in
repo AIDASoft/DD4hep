@@ -16,6 +16,10 @@
 SET( DD4hep_ROOT "@CMAKE_INSTALL_PREFIX@" )
 SET( DD4hep_VERSION "@DD4hep_VERSION@" )
 
+INCLUDE( ${DD4hep_ROOT}/cmake/DD4hep.cmake )
+
+set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_ROOT}/cmake/  )
+
 
 # ---------- include dirs -----------------------------------------------------
 # do not store find results in cache
@@ -62,10 +66,18 @@ endif()
 
 #---- build with Boost ?
 if(@DD4HEP_USE_BOOST@)
-  include_directories( @Boost_INCLUDE_DIR@ )
-  add_definitions(-DDD4HEP_USE_BOOST)
+  set( DD4HEP_USE_BOOST True )
+  find_package( Boost REQUIRED )
+  include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
+  add_definitions( -DDD4HEP_USE_BOOST )
 endif()
 
+
+#---- build with xercesc or tinyxml ?
+if( @DD4HEP_USE_XERCESC@ )
+  set( DD4HEP_USE_XERCESC True )
+endif()
+INCLUDE( ${DD4hep_ROOT}/cmake/DD4hep_XML_setup.cmake )
 
 #----- APPLE ? -------
 
