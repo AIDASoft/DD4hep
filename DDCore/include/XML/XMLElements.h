@@ -693,6 +693,12 @@ namespace DD4hep {
       template <class T> T attr(const XmlChar* tag) const {
         return m_element.attr<T>(tag);
       }
+#ifndef __TIXML__
+      /// Access typed attribute value by it's name
+      template <class T> T attr(const char* name) const {
+        return this->attr<T>(Strng_t(name));
+      }
+#endif
       /// Access attribute name (throws exception if not present)
       const XmlChar* attr_name(const Attribute attr) const {
         return m_element.attr_name(attr);
