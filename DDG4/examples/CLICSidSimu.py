@@ -66,10 +66,12 @@ def run():
 
   # Setup particle gun
   gun = simple.setupGun('Gun','pi-',100*GeV,True)
-  """
+
   trk = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().add(trk)
+  trk.SaveProcesses = ['conv','Decay']
   trk.enableUI()
+  """
   """
 
   """

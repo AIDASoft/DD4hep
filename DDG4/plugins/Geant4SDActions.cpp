@@ -132,11 +132,13 @@ namespace DD4hep {
       Position position  = mean_direction(prePos,postPos);
       double   hit_len   = direction.R();
 
+      if ( step->GetTotalEnergyDeposit() < 1e-5 ) return true;
+
       if (hit_len > 0) {
 	double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
 	direction *= new_len/hit_len;
       }
-      print("SimpleTracker","%s> Add hit with deposit:%7.2f MeV  Pos:%8.2f %8.2f %8.2f",
+      print("SimpleTracker","%s> Add hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f",
 	    c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z());
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
       if ( hit )  {
@@ -178,13 +180,14 @@ namespace DD4hep {
       HitContribution contrib = Hit::extractContribution(step);
       HitCollection*  coll    = collection(m_collectionID);
       Hit* hit = 0;//coll->find<Hit>(PositionCompare<Hit>(pos));
+      if ( step->GetTotalEnergyDeposit() < 1e-5 ) return true;
       if ( !hit ) {
 	Geant4TouchableHandler handler(step);
 	//hit = new Hit(pos);
 	hit = new Hit(h.prePos());
 	hit->cellID = cellID(step);
 	coll->add(hit);
-	print("SimpleCalorimeter","%s> CREATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f  %s",
+	print("SimpleCalorimeter","%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
 	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),handler.path().c_str());
 	if ( 0 == hit->cellID )  {
 	  hit->cellID = cellID(step);

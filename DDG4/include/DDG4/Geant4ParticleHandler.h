@@ -27,7 +27,9 @@
 class G4Step;
 class G4Track;
 class G4Event;
+class G4VProcess;
 class G4SteppingManager;
+class G4ParticleDefinition;
 
 /*
  *   DD4hep namespace declaration
@@ -51,10 +53,27 @@ namespace DD4hep {
     class Geant4ParticleHandler : public Geant4GeneratorAction, public Geant4MonteCarloTruth 
       {
       public:
-	typedef ROOT::Math::PxPyPzE4D<double> FourMomentum;
-	typedef std::map<int,void*> ParticleMap;
-	typedef std::map<int,std::set<int> > TrackIDTree;
-	typedef std::map<int,long> TrackReasons;
+	class Particle {
+	public:
+	  int id, parent, theParent, reason;
+	  double vx, vy, vz;
+	  double px, py, pz, energy, time;
+	  const G4VProcess *process;
+	  const G4ParticleDefinition *definition;
+	  std::set<int> daughters;
+	  /// Default constructor
+	  Particle();
+	  /// Copy constructor
+	  Particle(const Particle& c);
+	  /// Default destructor
+	  virtual ~Particle();
+	  /// Remove daughter from set
+	  void removeDaughter(int id_daughter);
+	};
+
+	typedef std::map<int,Particle*>  ParticleMap;
+	typedef std::map<int,int>        TrackEquivalents;
+	typedef std::vector<std::string> Processes;
       protected:
       
 	/// Property: Steer printout at tracking action begin
@@ -62,10 +81,18 @@ namespace DD4hep {
 	/// Property: Steer printout at tracking action end
 	bool m_printEndTracking;
 
-      public:
-	TrackIDTree m_trackIDTree;
-	TrackReasons m_trackReasons;
+	Particle m_currTrack;
 	ParticleMap m_particleMap;
+	TrackEquivalents m_equivalentTracks;
+	Processes m_processNames;
+
+	int recombineParents();
+	/// Print record of kept particles
+	void printParticles();
+	/// Clear particle maps
+	void clear();
+	/// Check the record consistency
+	void checkConsistency()  const;
 
       public:
 	/// Standard constructor
