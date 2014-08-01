@@ -53,8 +53,6 @@ namespace DD4hep {
     class Geant4PhysicsListActionSequence;
     class Geant4SensDetActionSequence;
     class Geant4SensDetSequences;
-    class Geant4MonteCarloTruth;
-    class Geant4MonteCarloRecordManager;
 
     /** @class Invoke Geant4Kernel.h DDG4/Geant4Kernel.h
      *
@@ -92,10 +90,6 @@ namespace DD4hep {
       Geant4SensDetSequences* m_sensDetActions;
       /// Reference to the geant4 physics list
       Geant4PhysicsListActionSequence* m_physicsList;
-      /// Reference to track persistency manager
-      Geant4MonteCarloTruth* m_mcTruthMgr;
-      /// Reference to MC record manager
-      Geant4MonteCarloRecordManager* m_mcRecordMgr;
       /// Reference to Geant4 track manager
       G4TrackingManager* m_trackMgr;
 
@@ -297,12 +291,6 @@ namespace DD4hep {
       Geant4PhysicsListActionSequence& physicsList() {
         return *physicsList(true);
       }
-#if 0
-      /// Access to the Track Manager from the kernel object
-      Geant4MonteCarloTruth* mcTruthMgr(bool throw_exception=true);
-      /// Access to the MC record manager from the kernel object (if instantiated!)
-      Geant4MonteCarloRecordManager* mcRecordMgr(bool throw_exception=true);
-#endif
       /// Construct detector geometry using lcdd plugin
       void loadGeometry(const std::string& compact_file);
       /// Run the simulation

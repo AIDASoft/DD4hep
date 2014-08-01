@@ -176,7 +176,7 @@ void Geant4Sensitive::clear(G4HCofThisEvent* /* HCE */) {
 /// Mark the track to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Track* track) const  {
   Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
-  if ( truth ) truth->mark(track,true);
+  if ( truth ) truth->mark(track);
 }
 
 /// Mark the track of this step to be kept for MC truth propagation during hit processing

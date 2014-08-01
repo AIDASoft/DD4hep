@@ -15,17 +15,16 @@
 #include "DDG4/Geant4EventAction.h"
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4MonteCarloRecordManager.h"
 #include "DDG4/Geant4ParticleHandler.h"
 
+#include "G4Step.hh"
+#include "G4Track.hh"
+#include "G4Event.hh"
+#include "G4TrackStatus.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4PrimaryParticle.hh"
 #include "G4TrackingManager.hh"
 #include "G4ParticleDefinition.hh"
-#include "G4Track.hh"
-#include "G4Step.hh"
-#include "G4TrackStatus.hh"
-#include "G4PrimaryParticle.hh"
-#include "G4PrimaryVertex.hh"
-#include "G4Event.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include <set>
@@ -159,6 +158,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   Geant4TrackHandler h(track);
   double kine = h.kineticEnergy();
   G4ThreeVector m = track->GetMomentum();
+  const G4ThreeVector& v = h.vertex();
 
   // Extract here all the information from the start of the tracking action
   // which we will need later to create a proper MC particle.
@@ -170,9 +170,9 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   m_currTrack.definition = h.trackDef();
   m_currTrack.process    = h.creatorProcess();
   m_currTrack.time       = h.globalTime();
-  m_currTrack.vsx        = h.vertex().x();
-  m_currTrack.vsy        = h.vertex().y();
-  m_currTrack.vsz        = h.vertex().z();
+  m_currTrack.vsx        = v.x();
+  m_currTrack.vsy        = v.y();
+  m_currTrack.vsz        = v.z();
   m_currTrack.vex        = 0.0;
   m_currTrack.vey        = 0.0;
   m_currTrack.vez        = 0.0;
@@ -182,6 +182,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   m_currTrack.pex        = 0.0;
   m_currTrack.pey        = 0.0;
   m_currTrack.pez        = 0.0;
+  m_currTrack.daughters.clear();
   // If the creator process of the track is in the list of process products to be kept, set the proper flag
   if ( m_currTrack.process )  {
     Processes::iterator i=find(m_processNames.begin(),m_processNames.end(),m_currTrack.process->GetProcessName());
@@ -217,9 +218,10 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     //
     // Update vertex end point and final momentum
     G4ThreeVector m = track->GetMomentum();
-    m_currTrack.vex = h.vertex().x();
-    m_currTrack.vey = h.vertex().y();
-    m_currTrack.vez = h.vertex().z();
+    const G4ThreeVector& v = h.vertex();
+    m_currTrack.vex = v.x();
+    m_currTrack.vey = v.y();
+    m_currTrack.vez = v.z();
     m_currTrack.pex = m.x();
     m_currTrack.pey = m.y();
     m_currTrack.pez = m.z();
@@ -286,7 +288,10 @@ void Geant4ParticleHandler::endEvent(const G4Event* )  {
   checkConsistency();
 }
 
+/// Clean the monte carlo record. Remove all unwanted stuff.
+/// This is the core of the object executed at the end of each event action.
 int Geant4ParticleHandler::recombineParents()  {
+  int break_trackID = 38;
   set<int> remove;
   /// Need to start from BACK, to clean first the latest produced stuff.
   /// Otherwise the daughter list of the earlier produced tracks would not be empty!
@@ -306,12 +311,16 @@ int Geant4ParticleHandler::recombineParents()  {
       int  parent_id      = par->g4Parent;
       bool remove_me      = false;
 
+      if ( id == break_trackID )   {  // Used for debugging to set break point
+	remove_me      = false;
+      }
+
       /// Primary particles MUST be kept!
       if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
 	continue;
       }
       else if ( keep_parent )  {
-	continue;
+	//continue;
       }
       else if ( keep_process )  {
 	ParticleMap::iterator ip = m_particleMap.find(parent_id);
@@ -364,7 +373,6 @@ int Geant4ParticleHandler::recombineParents()  {
       m_particleMap.erase(ir);
     }
   }
-  printout(INFO,name(),"+++ Size of track container:%d",int(m_particleMap.size()));
   return int(remove.size());
 }
 

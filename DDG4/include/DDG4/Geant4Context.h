@@ -47,9 +47,6 @@ namespace DD4hep {
     class Geant4StackingActionSequence;
     class Geant4GeneratorActionSequence;
     class Geant4SensDetSequences;
-    class Geant4MonteCarloTruth;
-    class Geant4MonteCarloRecordManager;
-
 
     ///  User run context for DDG4 
     /** 

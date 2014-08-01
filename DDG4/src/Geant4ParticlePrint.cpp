@@ -43,11 +43,13 @@ void Geant4ParticlePrint::begin(const G4Event* )  {
 /// Post-event action callback
 void Geant4ParticlePrint::end(const G4Event* )  {
   Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>();
-  const ParticleMap& particles = truth->particles();
-  // Table printout....
-  if ( (m_outputType&1) != 0 ) printParticles(particles);
-  // Tree printout....
-  if ( (m_outputType&2) != 0 ) printParticleTree(particles);
+  if ( truth )   {
+    const ParticleMap& particles = truth->particles();
+    if ( (m_outputType&1) != 0 ) printParticles(particles);     // Table printout....
+    if ( (m_outputType&2) != 0 ) printParticleTree(particles);  // Tree printout....
+    return;
+  }
+  except("No Geant4MonteCarloTruth object present in the event structure to access the particle information!", c_name());
 }
 
 void Geant4ParticlePrint::printParticle(const std::string& prefix, const Particle* p) const   {
@@ -63,7 +65,7 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, const Particl
   if ( p->g4Parent != p->parent )  {
     ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
   }
-  printout(INFO,name(),"+++ %sID: %6d %12s %6d%-7s %7s %3s %5d %6s %8.3g %4s %7s %7s %3s [%s%s%s]",
+  printout(INFO,name(),"+++ %sID: %6d %12s %6d%-7s %7s %3s %5d %6s %8.3g %-4s %-7s %-7s %-3s [%s%s%s]",
 	   prefix.c_str(),
 	   p->id,
 	   p->definition->GetParticleName().c_str(),
@@ -94,7 +96,7 @@ void Geant4ParticlePrint::printParticles(const ParticleMap& particles) const  {
   int num_tracker_hits = 0;
 
   printout(INFO,name(),"+++ MC Particles #Tracks:%6d %-12s Parent%-7s "
-	   "Primary Secondary Energy %-9s Calo Tracker Process/Par Details",
+	   "Primary Secondary Energy %-8s Calo Tracker Process/Par Details",
 	   int(particles.size()),"ParticleType","","in [MeV]");
   for(ParticleMap::const_iterator i=particles.begin(); i!=particles.end(); ++i)  {
     const Particle* p = (*i).second;
@@ -109,11 +111,11 @@ void Geant4ParticlePrint::printParticles(const ParticleMap& particles) const  {
     else if ( mask.isSet(G4PARTICLE_KEEP_PROCESS) ) ++num_process;
   }
   printout(INFO,name(),"+++ MC Particles #Tracks:%6d %-12s Parent%-7s "
-	   "Primary Secondary Energy %-9s Calo Tracker Process/Parent",
-	   int(particles.size()),"ParticleType","","");
-  printout(INFO,name(),"+++ MC Particles #Tracks:%6d %-12s Parent%-7s "
-	   "%7d %9d %6d %-9s %4d %7d %7d %6d",
-	   int(particles.size()),"ParticleType","",
+	   "Primary Secondary Energy %-8s Calo Tracker Process/Parent",
+	   int(particles.size()),"","","");
+  printout(INFO,name(),"+++ MC Particle Summary: %6s %-12s %6s%-7s "
+	   "%7d %9d %6d %-8s %4d %7d %7d %6d",
+	   "","","","",
 	   num_primary, num_secondaries, num_energy,"",
 	   num_calo_hits,num_tracker_hits,num_process,num_parent);
 }
@@ -144,6 +146,9 @@ void Geant4ParticlePrint::printParticleTree(const ParticleMap& particles, int le
 /// Print tree of kept particles
 void Geant4ParticlePrint::printParticleTree(const ParticleMap& particles)  const  {
   printout(INFO,name(),"+++ MC Particle Parent daughter relationships. [%d particles]",int(particles.size()));
+  printout(INFO,name(),"+++ MC Particles %12s #Tracks:%7d %-12s Parent%-7s "
+	   "Primary Secondary Energy %-8s Calo Tracker Process/Par Details",
+	   "",int(particles.size()),"ParticleType","","in [MeV]");
   for(ParticleMap::const_iterator i=particles.begin(); i!=particles.end(); ++i)  {
     const Particle* p = (*i).second;
     PropertyMask mask(p->reason);

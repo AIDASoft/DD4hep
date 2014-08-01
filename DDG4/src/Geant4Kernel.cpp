@@ -24,8 +24,6 @@
 #include "DDG4/Geant4StackingAction.h"
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4SensDetAction.h"
-#include "DDG4/Geant4MonteCarloRecordManager.h"
-#include "DDG4/Geant4TrackPersistency.h"
 
 // Geant4 include files
 #include "G4RunManager.hh"
@@ -69,8 +67,7 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 Geant4Kernel::Geant4Kernel(LCDD& lcdd)
     : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0), 
       m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0), 
-      m_physicsList(0), m_mcTruthMgr(0), m_mcRecordMgr(0),
-      m_lcdd(lcdd), phase(this) {
+      m_physicsList(0), m_lcdd(lcdd), phase(this) {
 #if 0
   registerSequence(m_runAction, "RunAction");
   registerSequence(m_eventAction, "EventAction");
@@ -97,10 +94,6 @@ Geant4Kernel::~Geant4Kernel() {
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
-  m_mcTruthMgr = 0;
-  m_mcRecordMgr = 0;  // These are already released by the global actions....
-  //deletePtr  (m_mcTruthMgr);
-  //releasePtr (m_mcRecordMgr);
   releasePtr (m_physicsList);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
@@ -210,10 +203,6 @@ void Geant4Kernel::terminate() {
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
-  m_mcTruthMgr = 0;
-  m_mcRecordMgr = 0;  // These are already released by the global actions....
-  //deletePtr  (m_mcTruthMgr);
-  //releasePtr (m_mcRecordMgr);
   releasePtr (m_physicsList);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
@@ -412,35 +401,3 @@ Geant4PhysicsListActionSequence* Geant4Kernel::physicsList(bool create) {
     registerSequence(m_physicsList, "PhysicsList");
   return m_physicsList;
 }
-
-#if 0
-/// Access to the Track Manager from the kernel object
-Geant4MonteCarloTruth* Geant4Kernel::mcTruthMgr(bool throw_exception)     {
-  if ( m_mcTruthMgr ) return m_mcTruthMgr;
-  // If not present, check if the action is registered.
-  Geant4Action* a = globalAction("MonteCarloTruthHandler",false);
-  if ( 0 != a ) {
-    m_mcTruthMgr = dynamic_cast<Geant4MonteCarloTruth*>(a);
-    if ( m_mcTruthMgr ) return m_mcTruthMgr;
-  }
-  if ( !throw_exception ) return 0;
-  // No action registered to handle monte carlo truth. This is fatal
-  throw runtime_error(format("Geant4Kernel", "DDG4: No Geant4MonteCarloTruth defined. "
-			     "Geant4 monte carlo information cannot be saved!"));
-}
-
-/// Access to the MC record manager from the kernel object
-Geant4MonteCarloRecordManager* Geant4Kernel::mcRecordMgr(bool throw_exception)    {
-  if ( m_mcRecordMgr ) return m_mcRecordMgr;
-  // If not present, check if the action is registered.
-  Geant4Action* a = globalAction("MonteCarloRecordManager",false);
-  if ( 0 != a ) {
-    m_mcRecordMgr = dynamic_cast<Geant4MonteCarloRecordManager*>(a);
-    if ( m_mcRecordMgr ) return m_mcRecordMgr;
-  }
-  if ( !throw_exception ) return 0;
-  // No action registered to save tracks. This is fatal
-  throw runtime_error(format("Geant4Kernel", "DDG4: No MonteCarloRecordManager defined. "
-			     "Geant4 tracks cannot be saved!"));
-}
-#endif
