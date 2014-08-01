@@ -52,6 +52,10 @@ def run():
   kernel.eventAction().add(evt1)
   kernel.eventAction().add(evt2)
 
+  prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
+  prt.OutputType = 3 # Print both: table and tree
+  kernel.eventAction().add(prt)
+
   """
   mc  = DDG4.Action(kernel,"Geant4MonteCarloRecordManager/MonteCarloRecordManager")
   kernel.registerGlobalAction(mc)
@@ -65,14 +69,12 @@ def run():
   kernel.generatorAction().add(gen)
 
   # Setup particle gun
-  gun = simple.setupGun('Gun','pi-',100*GeV,True)
+  gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
 
   trk = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().add(trk)
-  trk.SaveProcesses = ['conv','Decay']
+  trk.saveProcesses = ['conv','Decay']
   trk.enableUI()
-  """
-  """
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")

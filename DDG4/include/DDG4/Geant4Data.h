@@ -97,6 +97,43 @@ namespace DD4hep {
       virtual ~SimpleEvent();
     };
 
+    /// Track properties
+    enum ParticleProperties {
+      G4PARTICLE_CREATED_HIT = 1<<0, 
+      G4PARTICLE_PRIMARY = 1<<1,
+      G4PARTICLE_HAS_SECONDARIES = 1<<2,
+      G4PARTICLE_ABOVE_ENERGY_THRESHOLD = 1<<3,
+      G4PARTICLE_KEEP_PROCESS = 1<<4,
+      G4PARTICLE_KEEP_PARENT = 1<<5,
+      G4PARTICLE_CREATED_CALORIMETER_HIT = 1<<6,
+      G4PARTICLE_CREATED_TRACKER_HIT = 1<<7,
+      G4PARTICLE_LAST_NOTHING = 1<<31
+    };
+
+    /// Data structure to store the MC particle information 
+    /**
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class Particle {
+    public:
+      int id, g4Parent, parent, reason, steps, secondaries;
+      double vsx, vsy, vsz;
+      double vex, vey, vez;
+      double psx, psy, psz, pex, pey, pez, energy, time;
+      const G4VProcess *process;
+      const G4ParticleDefinition *definition;
+      std::set<int> daughters;
+      /// Default constructor
+      Particle();
+      /// Copy constructor
+      Particle(const Particle& c);
+      /// Default destructor
+      virtual ~Particle();
+      /// Remove daughter from set
+      void removeDaughter(int id_daughter);
+    };
+
     /** @class SimpleHit Geant4Data.h DDG4/Geant4Data.h
      *
      * Base class for geant4 hit structures created by the

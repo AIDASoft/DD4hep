@@ -38,7 +38,7 @@ void Geant4DummyTruthHandler::mark(const G4Track*)  {
 }
 
 /// Store a track, with a flag
-void Geant4DummyTruthHandler::mark(const G4Track*, bool ) {
+void Geant4DummyTruthHandler::mark(const G4Track*, int ) {
 }
 
 /// Mark a Geant4 track of the step to be kept for later MC truth analysis
@@ -46,6 +46,6 @@ void Geant4DummyTruthHandler::mark(const G4Step*) {
 }
 
 /// Store a track produced in a step to be kept for later MC truth analysis
-void Geant4DummyTruthHandler::mark(const G4Step*, bool ) {
+void Geant4DummyTruthHandler::mark(const G4Step*, int ) {
 }
 

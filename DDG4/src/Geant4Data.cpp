@@ -41,6 +41,45 @@ SimpleEvent::~SimpleEvent() {
   InstanceCount::decrement(this);
 }
 
+/// Copy constructor
+Particle::Particle(const Particle& c)
+  : id(c.id), g4Parent(c.g4Parent), parent(c.parent), reason(c.reason), steps(c.steps),
+    vsx(c.vsx), vsy(c.vsy), vsz(c.vsz), 
+    vex(c.vex), vey(c.vey), vez(c.vez), 
+    psx(c.psx), psy(c.psy), psz(c.psz), 
+    pex(c.pex), pey(c.pey), pez(c.pez), 
+    energy(c.energy), time(c.time),
+    process(c.process), definition(c.definition),
+    daughters(c.daughters)
+{
+  InstanceCount::increment(this);
+}
+
+/// Default constructor
+Particle::Particle()
+  : id(0), g4Parent(0), parent(0), reason(0), steps(0),
+    vsx(0.0), vsy(0.0), vsz(0.0), 
+    vex(0.0), vey(0.0), vez(0.0), 
+    psx(0.0), psy(0.0), psz(0.0), 
+    pex(0.0), pey(0.0), pez(0.0), 
+    energy(0.0), time(0.0),
+    process(0), definition(0),
+    daughters()
+{
+  InstanceCount::increment(this);
+}
+
+/// Default destructor
+Particle::~Particle()  {
+  InstanceCount::decrement(this);
+}
+
+/// Remove daughter from set
+void Particle::removeDaughter(int id_daughter)  {
+  set<int>::iterator j = daughters.find(id_daughter);
+  if ( j != daughters.end() ) daughters.erase(j);
+}
+
 /// Default constructor
 SimpleHit::SimpleHit()
     : cellID(0) {

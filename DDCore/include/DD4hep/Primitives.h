@@ -217,6 +217,39 @@ namespace DD4hep {
   template <typename M> ReleaseObjects<M> releaseObjects(M& m) {
     return ReleaseObjects<M>(m);
   }
+
+
+  /// Data structure to manipulate a bitmask held by reference and represented by an integer
+  /**
+   * @author  M.Frank
+   * @version 1.0
+   */
+  template <typename T> class ReferenceBitMask  {
+  public:
+    /// Reference to the data
+    T& mask;
+    /// Standard constructor
+    ReferenceBitMask(T& m);
+    T value() const  {
+      return mask;
+    }
+    void set(const T& m)   {
+      mask |= m;
+    }
+    bool isSet(const T& m)   {
+      return (mask&m) == m;
+    }
+    bool testBit(int bit) const  {
+      T m = T(1)<<bit;
+      return isSet(m);
+    }
+    bool isNull() const { 
+      return mask == 0; 
+    }
+  };
+  /// Standard constructor
+  template <typename T>  ReferenceBitMask<T>::ReferenceBitMask(T& m) : mask(m) {}
+
   /*
    *   Geometry namespace declaration
    */

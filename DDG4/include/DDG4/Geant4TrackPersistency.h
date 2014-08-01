@@ -88,6 +88,10 @@ namespace DD4hep {
       };
     protected:
 
+      /// Map with stored MC Particles
+      ParticleMap m_particleMap;
+      /// Map associating the G4Track identifiers with identifiers of existing MCParticles
+      TrackEquivalents m_equivalentTracks;
       /// Information block for current track 
       Geant4TrackPersistency::TrackInfo m_current;
       /// Property: Steer printout at tracking action begin
@@ -105,7 +109,10 @@ namespace DD4hep {
       virtual ~Geant4TrackPersistency();
       /// Access the Geant4 tracking manager. Only use between tracking pre- and post action
       G4TrackingManager* trackMgr() const { return m_context.trackMgr();   }
-      /// Event generation action callback
+      /// Access the particle map
+      virtual const ParticleMap& particles() const { return m_particleMap; }
+      /// Access the map of track equivalents
+      virtual const TrackEquivalents& equivalents() const { return m_equivalentTracks; }           /// Event generation action callback
       virtual void operator()(G4Event* event);
       /// User stepping callback
       virtual void step(const G4Step* step, G4SteppingManager* mgr);
@@ -121,11 +128,11 @@ namespace DD4hep {
       /// Mark a Geant4 track to be kept for later MC truth analysis
       virtual void mark(const G4Track* track);
       /// Store a track
-      virtual void mark(const G4Track* track, bool created_hit);
+      virtual void mark(const G4Track* track, int reason);
       /// Mark a Geant4 track of the step to be kept for later MC truth analysis
       virtual void mark(const G4Step* step);
       /// Store a track produced in a step to be kept for later MC truth analysis
-      virtual void mark(const G4Step* step, bool created_hit);
+      virtual void mark(const G4Step* step, int reason);
 
     };
   }    // End namespace Simulation

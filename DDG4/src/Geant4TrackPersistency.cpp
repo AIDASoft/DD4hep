@@ -351,19 +351,19 @@ Geant4TrackPersistency::~Geant4TrackPersistency()  {
 }
 
 /// Mark a Geant4 track to be kept for later MC truth analysis
-void Geant4TrackPersistency::mark(const G4Track* track, bool created_hit)   {
+void Geant4TrackPersistency::mark(const G4Track* track, int reason)   {
   mark(track);  // Does all the checking...
-  if ( created_hit )  {
+  if ( reason )  {
     Track* trk = (Track*)m_current.info;
     trk->flag |= Track::CREATED_HIT;
-    m_current.createdHit = created_hit;
+    m_current.createdHit = reason != 0;
   }
 }
 
 /// Store a track produced in a step to be kept for later MC truth analysis
-void Geant4TrackPersistency::mark(const G4Step* step, bool created_hit)   {
+void Geant4TrackPersistency::mark(const G4Step* step, int reason)   {
   if ( step )  {
-    mark(step->GetTrack(),created_hit);
+    mark(step->GetTrack(),reason);
     return;
   }
   except("Cannot mark the G4Track if the step-pointer is invalid!", c_name());

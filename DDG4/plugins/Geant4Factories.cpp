@@ -49,6 +49,9 @@ DECLARE_GEANT4ACTION(Geant4MonteCarloRecordManager)
 #include "DDG4/Geant4ParticleHandler.h"
 DECLARE_GEANT4ACTION(Geant4ParticleHandler)
 
+#include "DDG4/Geant4ParticlePrint.h"
+DECLARE_GEANT4ACTION(Geant4ParticlePrint)
+
 //=============================
 #include "DDG4/Geant4TrackingPreAction.h"
 DECLARE_GEANT4ACTION(Geant4TrackingPreAction)
