@@ -32,7 +32,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4MonteCarloRecordManager : public Geant4Action {
+    class Geant4MonteCarloRecordManager : public Geant4GeneratorAction {
     public:
       /// Flag to indicate if the track information should be collected
       bool m_collectInfo;
@@ -41,6 +41,8 @@ namespace DD4hep {
       Geant4MonteCarloRecordManager(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4MonteCarloRecordManager();
+      /// Event generation action callback
+      virtual void operator()(G4Event* event);
       /// Save G4Track data
       virtual void save(const Geant4TrackPersistency::TrackInfo& track);
     };

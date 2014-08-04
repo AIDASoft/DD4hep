@@ -43,13 +43,24 @@ namespace DD4hep {
    *   Simulation namespace declaration
    */
   namespace Simulation {
+
+    namespace {
+      Geant4Context* s_globalContext = 0;
+    }
+
+    Geant4Context* ddg4_globalContext()   {
+      return s_globalContext;
+    }
+
+
     template <typename T> struct SequenceHdl {
       typedef SequenceHdl<T> Base;
       T* m_sequence;
+      Geant4Context* m_activeContext;
       SequenceHdl()
-	: m_sequence(0) {
+	: m_sequence(0), m_activeContext(0) {
       }
-      SequenceHdl(T* seq) {
+      SequenceHdl(Geant4Context* context, T* seq) : m_sequence(0), m_activeContext(context)  {
 	_aquire(seq);
       }
       virtual ~SequenceHdl() {
@@ -64,6 +75,41 @@ namespace DD4hep {
 	releasePtr(m_sequence);
 	InstanceCount::decrement(this);
       }
+      void setContextToClients()   {
+	(Geant4Action::ContextUpdate(m_activeContext))(m_sequence);
+      }
+      void releaseContextFromClients()  {
+	Geant4Action::ContextUpdate(0)(m_sequence);
+      }
+      void releaseContextFromClients2()  {
+	Geant4Action::ContextUpdate(0)(m_sequence);
+      }
+      void createClientContext(const G4Run* run)   {
+	Geant4Run* r = new Geant4Run(run);
+	m_activeContext->setRun(r);
+	setContextToClients();
+      }
+      void destroyClientContext(const G4Run*)   {
+	Geant4Run* r = m_activeContext->runPtr();
+	releaseContextFromClients();
+	if ( r )  {
+	  m_activeContext->setRun(0);
+	  deletePtr(r);
+	}
+      }
+      void createClientContext(const G4Event* evt)   {
+	Geant4Event* e = new Geant4Event(evt);
+	m_activeContext->setEvent(e);
+	setContextToClients();
+      }
+      void destroyClientContext(const G4Event*)   {
+	Geant4Event* e = m_activeContext->eventPtr();
+	releaseContextFromClients();
+	if ( e )  {
+	  m_activeContext->setEvent(0);
+	  deletePtr(e);
+	}
+      }
     };
 
     /** @class Geant4UserRunAction
@@ -75,19 +121,21 @@ namespace DD4hep {
      */
     struct Geant4UserRunAction : public G4UserRunAction, public SequenceHdl<Geant4RunActionSequence> {
       /// Standard constructor
-      Geant4UserRunAction(Geant4RunActionSequence* seq)
-          : Base(seq) {
+      Geant4UserRunAction(Geant4Context* context, Geant4RunActionSequence* seq)
+	: Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserRunAction() {
       }
       /// begin-of-run callback
       virtual void BeginOfRunAction(const G4Run* run) {
+	createClientContext(run);
         m_sequence->begin(run);
       }
       /// End-of-run callback
       virtual void EndOfRunAction(const G4Run* run) {
         m_sequence->end(run);
+	destroyClientContext(run);
       }
     };
 
@@ -100,19 +148,21 @@ namespace DD4hep {
      */
     struct Geant4UserEventAction : public G4UserEventAction, public SequenceHdl<Geant4EventActionSequence> {
       /// Standard constructor
-      Geant4UserEventAction(Geant4EventActionSequence* seq)
-          : Base(seq) {
+      Geant4UserEventAction(Geant4Context* context, Geant4EventActionSequence* seq)
+	: Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserEventAction() {
       }
       /// begin-of-event callback
       virtual void BeginOfEventAction(const G4Event* evt) {
+	setContextToClients();
         m_sequence->begin(evt);
       }
       /// End-of-event callback
       virtual void EndOfEventAction(const G4Event* evt) {
         m_sequence->end(evt);
+	destroyClientContext(evt);
       }
     };
 
@@ -125,14 +175,15 @@ namespace DD4hep {
      */
     struct Geant4UserTrackingAction : public G4UserTrackingAction, public SequenceHdl<Geant4TrackingActionSequence> {
       /// Standard constructor
-      Geant4UserTrackingAction(Geant4TrackingActionSequence* seq)
-          : Base(seq) {
+      Geant4UserTrackingAction(Geant4Context* context, Geant4TrackingActionSequence* seq)
+	: Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserTrackingAction() {
       }
       /// Pre-track action callback
       virtual void PreUserTrackingAction(const G4Track* trk) {
+	setContextToClients();
 	m_sequence->context()->kernel().setTrackMgr(fpTrackingManager);
         m_sequence->begin(trk);
       }
@@ -140,6 +191,7 @@ namespace DD4hep {
       virtual void PostUserTrackingAction(const G4Track* trk) {
         m_sequence->end(trk);
 	m_sequence->context()->kernel().setTrackMgr(0);
+	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -152,19 +204,23 @@ namespace DD4hep {
      */
     struct Geant4UserStackingAction : public G4UserStackingAction, public SequenceHdl<Geant4StackingActionSequence> {
       /// Standard constructor
-      Geant4UserStackingAction(Geant4StackingActionSequence* seq)
-          : Base(seq) {
+      Geant4UserStackingAction(Geant4Context* context, Geant4StackingActionSequence* seq)
+	: Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserStackingAction() {
       }
       /// New-stage callback
       virtual void NewStage() {
+	setContextToClients();
         m_sequence->newStage();
+	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
       }
       /// Preparation callback
       virtual void PrepareNewEvent() {
+	setContextToClients();
         m_sequence->prepare();
+	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -177,15 +233,17 @@ namespace DD4hep {
      */
     struct Geant4UserGeneratorAction : public G4VUserPrimaryGeneratorAction, public SequenceHdl<Geant4GeneratorActionSequence> {
       /// Standard constructor
-      Geant4UserGeneratorAction(Geant4GeneratorActionSequence* seq)
-          : G4VUserPrimaryGeneratorAction(), Base(seq) {
+      Geant4UserGeneratorAction(Geant4Context* context, Geant4GeneratorActionSequence* seq)
+	: G4VUserPrimaryGeneratorAction(), Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserGeneratorAction() {
       }
       /// Generate primary particles
       virtual void GeneratePrimaries(G4Event* event) {
+	createClientContext(event);
         (*m_sequence)(event);
+	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -198,15 +256,17 @@ namespace DD4hep {
      */
     struct Geant4UserSteppingAction : public G4UserSteppingAction, public SequenceHdl<Geant4SteppingActionSequence> {
       /// Standard constructor
-      Geant4UserSteppingAction(Geant4SteppingActionSequence* seq)
-          : Base(seq) {
+      Geant4UserSteppingAction(Geant4Context* context, Geant4SteppingActionSequence* seq)
+	: Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserSteppingAction() {
       }
       /// User stepping callback
       virtual void UserSteppingAction(const G4Step* s) {
+	setContextToClients();
         (*m_sequence)(s, fpSteppingManager);
+	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -230,13 +290,14 @@ using namespace DD4hep::Simulation;
 int Geant4Exec::configure(Geant4Kernel& kernel) {
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   Geometry::LCDD& lcdd = kernel.lcdd();
+  Geant4Context* ctx = s_globalContext = new Geant4Context(&kernel);
 
   // Construct the default run manager
   G4RunManager& runManager = kernel.runManager();
 
   // Check if the geometry was loaded
   if (lcdd.detectors().size() <= 1) {
-    printout(INFO, "Geant4Exec", "+++ Only %d subdetectors present. "
+    printout(WARNING, "Geant4Exec", "+++ Only %d subdetectors present. "
 	     "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
   }
   // Get the detector constructed
@@ -259,35 +320,34 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
     throw runtime_error("Panic! No valid user physics list present!");
   }
   runManager.SetUserInitialization(physics);
+  // Set user generator action sequence. Not optional, since event context is defined inside
+  Geant4UserGeneratorAction* gen_action = 
+    new Geant4UserGeneratorAction(ctx,kernel.generatorAction(false));
+  runManager.SetUserAction(gen_action);
 
-  // Set user generator action sequence
-  if (kernel.generatorAction(false)) {
-    Geant4UserGeneratorAction* action = new Geant4UserGeneratorAction(kernel.generatorAction(false));
-    runManager.SetUserAction(action);
-  }
-  // Set the run action sequence
-  if (kernel.runAction(false)) {
-    Geant4UserRunAction* action = new Geant4UserRunAction(kernel.runAction(false));
-    runManager.SetUserAction(action);
-  }
-  // Set the event action sequence
-  if (kernel.eventAction(false)) {
-    Geant4UserEventAction* action = new Geant4UserEventAction(kernel.eventAction(false));
-    runManager.SetUserAction(action);
-  }
+  // Set the run action sequence. Not optional, since run context is defined/destroyed inside
+  Geant4UserRunAction* run_action = 
+    new Geant4UserRunAction(ctx,kernel.runAction(false));
+  runManager.SetUserAction(run_action);
+
+  // Set the event action sequence. Not optional, since event context is destroyed inside
+  Geant4UserEventAction* evt_action =
+    new Geant4UserEventAction(ctx,kernel.eventAction(false));
+  runManager.SetUserAction(evt_action);
+
   // Set the tracking action sequence
   if (kernel.trackingAction(false)) {
-    Geant4UserTrackingAction* action = new Geant4UserTrackingAction(kernel.trackingAction(false));
+    Geant4UserTrackingAction* action = new Geant4UserTrackingAction(ctx,kernel.trackingAction(false));
     runManager.SetUserAction(action);
   }
   // Set the stepping action sequence
   if (kernel.steppingAction(false)) {
-    Geant4UserSteppingAction* action = new Geant4UserSteppingAction(kernel.steppingAction(false));
+    Geant4UserSteppingAction* action = new Geant4UserSteppingAction(ctx,kernel.steppingAction(false));
     runManager.SetUserAction(action);
   }
   // Set the stacking action sequence
   if (kernel.stackingAction(false)) {
-    Geant4UserStackingAction* action = new Geant4UserStackingAction(kernel.stackingAction(false));
+    Geant4UserStackingAction* action = new Geant4UserStackingAction(ctx,kernel.stackingAction(false));
     runManager.SetUserAction(action);
   }
   return 1;
@@ -327,5 +387,6 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
 
 /// Run the simulation
 int Geant4Exec::terminate(Geant4Kernel&) {
+  deletePtr(s_globalContext);
   return 1;
 }

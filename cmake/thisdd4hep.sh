@@ -22,7 +22,7 @@ fi
 #----------- source the ROOT environment first
 source @ROOT_ROOT@/bin/thisroot.sh
 
-if [ @DD4HEP_WITH_GEANT4@ ]
+if [ @DD4HEP_USE_GEANT4@ ]
 then
     export G4INSTALL=@Geant4_ROOT@
     export G4ENV_INIT=@Geant4_ROOT@/bin/geant4.sh
@@ -32,7 +32,7 @@ then
 
 
 #---- if geant4 was built with external CLHEP we have to extend the dynamic search path
-    if [ @GEANT4_WITH_CLHEP@ ] ; then
+    if [ @GEANT4_USE_CLHEP@ ] ; then
 	if [ @USE_DYLD@ ]
 	then
 	    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:@CLHEP_LIBRARY_PATH@
@@ -68,9 +68,9 @@ fi
 
 #----PYTHONPATH---------------------------------------------------------------
 if [ -z "${PYTHONPATH}" ]; then
-  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/DDG4/python:@CMAKE_SOURCE_DIR@/DDCore/python; export PYTHONPATH
+  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python:@CMAKE_SOURCE_DIR@/DDCore/python; export PYTHONPATH
 else
-  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python/DDG4/python:@CMAKE_SOURCE_DIR@/DDCore/python:$PYTHONPATH; export PYTHONPATH
+  PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python:@CMAKE_SOURCE_DIR@/DDCore/python:$PYTHONPATH; export PYTHONPATH
 fi
 
 #----DD4hep installation directory--------------------------------------------

@@ -12,7 +12,7 @@
 #include "XML/XMLDetector.h"
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Factories.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 // Shortcuts to elements of the XML namespace
 typedef DD4hep::XML::Tag_t xml_tag_t;
@@ -37,10 +37,12 @@ namespace DD4hep {
    *   Geometry sub-namespace declaration
    */
   namespace Geometry {
+    /// std::string conversion of XML strings (e.g. Unicode for Xerces-C)
     static inline std::string _toString(const DD4hep::XML::XmlChar* value) {
       return XML::_toString(value);
     }
 
+    /// std::string conversion of arbitrary entities including user defined formatting.
     template <typename T> inline std::string _toString(T value, const char* fmt) {
       return XML::_toString(value, fmt);
     }

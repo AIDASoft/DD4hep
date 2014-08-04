@@ -1,4 +1,50 @@
 #---------------------------------------------------------------------------------------------------
+# add_dd4hep_plugin ( libraryName )
+#
+# generates the rootmap and installs the library
+# all other arguments ( SHARED, ${sources} ) are collected in ${ARGN}
+#---------------------------------------------------------------------------------------------------
+
+function( add_dd4hep_plugin libraryName )
+  ADD_LIBRARY ( ${libraryName}  ${ARGN} )
+
+  if(APPLE)
+    dd4hep_generate_rootmap_apple( ${libraryName} )
+  else()
+    dd4hep_generate_rootmap( ${libraryName} )
+  endif()
+
+  install( TARGETS ${libraryName}
+    LIBRARY DESTINATION lib
+    )
+
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+# dd4hep_instantiate_package
+# calls all the function/includes/configurations that are needed to be done to create dd4hep plugins
+#---------------------------------------------------------------------------------------------------
+function ( dd4hep_instantiate_package PackageName )
+  MESSAGE (STATUS "instantiating the dd4hep package ${PackageName}" )
+
+  IF ( NOT ${DD4hep_FOUND} )
+    MESSAGE ( FATAL "DD4HEP was not found" )
+  ENDIF()
+
+  INCLUDE( DD4hepMacros )
+
+  #---- configure run environment ---------------
+  configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
+    DESTINATION bin
+    )
+
+
+endfunction()
+
+
+#---------------------------------------------------------------------------------------------------
 # dd4hep_generate_rootmap(library)
 #
 # Create the .rootmap file needed by the plug-in system.

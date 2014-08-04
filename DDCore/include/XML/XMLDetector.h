@@ -22,8 +22,8 @@ namespace DD4hep {
    */
   namespace XML {
 
-    /** @class DetElement::Component XMLDetector.h XML/XMLDetector.h
-     *
+    /// XML Handle class extending the XML handle Dimension
+    /**
      *  Helper class to access any field in a xml tag.
      *  Specialized for attributes of a detector sub-element.
      *
@@ -45,8 +45,8 @@ namespace DD4hep {
       std::string materialStr() const;
     };
 
-    /** @class DetElement XMLDetector.h XML/XMLDetector.h
-     *
+    /// XML Handle class extending the XML handle Dimension
+    /**
      *  Helper class to access any field in a xml tag.
      *  Specialized for some of the attributes of a detector element.
      *

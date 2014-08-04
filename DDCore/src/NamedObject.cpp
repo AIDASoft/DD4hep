@@ -8,7 +8,7 @@
 //====================================================================
 
 // Framework includes
-#include "DD4hep/objects/NamedObject.h"
+#include "DD4hep/NamedObject.h"
 #include "DD4hep/Handle.inl"
 #include "TObject.h"
 

@@ -1,6 +1,6 @@
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)
-  include_directories(${XERCESC_INCLUDE_DIR})
+  include_directories(SYSTEM ${XERCESC_INCLUDE_DIRS})
   set(XML_LIBRARIES ${XERCESC_LIBRARIES})
 else()
   add_definitions(-DDD4HEP_USE_TINYXML)

@@ -27,7 +27,8 @@ namespace DD4hep {
     // Forward declarations
     class LCDD;
 
-    /** @class Detectortools  DetectorTools.h DD4hep/Detectortools.h
+    /// Helper namespace used to answer detector element specific questons
+    /**
      *
      * @author  M.Frank
      * @version 1.0

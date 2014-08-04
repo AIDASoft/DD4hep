@@ -7,6 +7,7 @@
 //
 //====================================================================
 
+#include "DD4hep/Handle.inl"
 #include "DD4hep/FieldTypes.h"
 #include <cmath>
 
@@ -16,6 +17,10 @@ using namespace DD4hep::Geometry;
 #ifndef INFINITY
 #define INFINITY (numeric_limits<double>::max())
 #endif
+
+DD4HEP_INSTANTIATE_HANDLE(ConstantField);
+DD4HEP_INSTANTIATE_HANDLE(SolenoidField);
+DD4HEP_INSTANTIATE_HANDLE(DipoleField);
 
 /// Call to access the field components at a given location
 void ConstantField::fieldComponents(const double* /* pos */, double* field) {

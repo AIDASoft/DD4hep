@@ -177,6 +177,8 @@ namespace DD4hep {
        * @version 1.0
        */
       struct Compare {
+	/// Default destructor
+	virtual ~Compare();
         /// Comparison function
         virtual void* operator()(const Geant4HitWrapper& w) const = 0;
       };
@@ -218,6 +220,8 @@ namespace DD4hep {
       const ComponentCast& type() const;
       /// Type information of the vector type for extracting data
       const ComponentCast& vector_type() const;
+      /// Clear the collection (Deletes all valid references to real hits)
+      virtual void clear();
       /// Access individual hits
       virtual G4VHit* GetHit(size_t which) const {
         return (G4VHit*) &m_hits.at(which);

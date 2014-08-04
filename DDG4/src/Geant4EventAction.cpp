@@ -13,10 +13,11 @@
 // C/C++ include files
 #include <stdexcept>
 
+using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4EventAction::Geant4EventAction(Geant4Context* context, const std::string& nam)
+Geant4EventAction::Geant4EventAction(Geant4Context* context, const string& nam)
     : Geant4Action(context, nam) {
   InstanceCount::increment(this);
 }
@@ -35,7 +36,7 @@ void Geant4EventAction::end(const G4Event*) {
 }
 
 /// Standard constructor
-Geant4EventActionSequence::Geant4EventActionSequence(Geant4Context* context, const std::string& name)
+Geant4EventActionSequence::Geant4EventActionSequence(Geant4Context* context, const string& name)
     : Geant4Action(context, name) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -58,11 +59,12 @@ void Geant4EventActionSequence::adopt(Geant4EventAction* action) {
     m_actors.add(action);
     return;
   }
-  throw std::runtime_error("Geant4EventActionSequence: Attempt to add invalid actor!");
+  throw runtime_error("Geant4EventActionSequence: Attempt to add invalid actor!");
 }
 
 /// Pre-track action callback
 void Geant4EventActionSequence::begin(const G4Event* event) {
+  m_actors(ContextUpdate(context()));
   m_actors(&Geant4EventAction::begin, event);
   m_begin(event);
 }
@@ -72,4 +74,5 @@ void Geant4EventActionSequence::end(const G4Event* event) {
   m_end(event);
   m_actors(&Geant4EventAction::end, event);
   m_final(event);
+  m_actors(ContextUpdate());
 }

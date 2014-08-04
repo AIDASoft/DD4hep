@@ -50,58 +50,78 @@ namespace DD4hep {
    */
   namespace Geometry {
 
-// Forward declarations
-    struct LCDD;
-    struct Region;
-    struct LimitSet;
-    struct Material;
-    struct VisAttr;
-    struct Volume;
-    struct DetElement;
-    struct PlacedVolume;
-    struct SensitiveDetector;
+    // Forward declarations
+    class  LCDD;
+    class  Region;
+    class  LimitSet;
+    class  Material;
+    class  VisAttr;
+    class  Volume;
+    class  DetElement;
+    class  PlacedVolume;
+    class  SensitiveDetector;
 
-    /** @class PlacedVolume Volume.h  DD4hep/lcdd/Volume.h
+    /// Implementation class extending the ROOT placed volume (TGeoNode)
+    /** @class PlacedVolumeExtension Volume.h  DD4hep/lcdd/Volume.h
      *
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct PlacedVolume: Handle<TGeoNode> {
+    class PlacedVolumeExtension : public TGeoExtension  {
+    public:
       typedef std::pair<std::string, int> VolID;
-      struct VolIDs: public std::vector<VolID> {
+      /// Volume ID container
+      class VolIDs: public std::vector<VolID> {
+      public:
         typedef std::vector<VolID> Base;
-        VolIDs()
-            : Base() {
+        VolIDs() : std::vector<VolID>() {
         }
         ~VolIDs() {
         }
-        Base::const_iterator find(const std::string& name) const;
-        std::pair<Base::iterator, bool> insert(const std::string& name, int value);
+        std::vector<VolID>::const_iterator find(const std::string& name) const;
+        std::pair<std::vector<VolID>::iterator, bool> insert(const std::string& name, int value);
       };
-      struct Object : public TGeoExtension  {
-        /// Magic word to detect memory corruptions
-        unsigned long magic;
-	/// Reference count on object (used to implement Grab/Release)
-	long refCount;
-        /// ID container
-        VolIDs volIDs;
-        /// Default constructor
-        Object();
-        /// Copy constructor
-        Object(const Object& c);
-        /// Default destructor
-        virtual ~Object();
-        /// Assignment operator
-        Object& operator=(const Object& c) {
-          magic = c.magic;
-          volIDs = c.volIDs;
-          return *this;
-        }
-	/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-	virtual TGeoExtension *Grab();
-	/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-	virtual void Release() const;
-      };
+      /// Magic word to detect memory corruptions
+      unsigned long magic;
+      /// Reference count on object (used to implement Grab/Release)
+      long refCount;
+      /// ID container
+      VolIDs volIDs;
+      /// Default constructor
+      PlacedVolumeExtension();
+      /// Copy constructor
+      PlacedVolumeExtension(const PlacedVolumeExtension& c);
+      /// Default destructor
+      virtual ~PlacedVolumeExtension();
+      /// Assignment operator
+      PlacedVolumeExtension& operator=(const PlacedVolumeExtension& c) {
+	magic = c.magic;
+	volIDs = c.volIDs;
+	return *this;
+      }
+      /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+      virtual TGeoExtension *Grab();
+      /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+      virtual void Release() const;
+      /// Enable ROOT persistency
+      ClassDef(PlacedVolumeExtension,1);
+    };
+
+    /// Handle class holding a placed volume (also called physical volume)
+    /** @class PlacedVolume Volume.h  DD4hep/lcdd/Volume.h
+     *
+     *   For any further documentation please see the following ROOT documentation:
+     *   @see http://root.cern.ch/root/html/TGeoNode.html 
+     *
+     *  @author  M.Frank
+     *  @version 1.0
+     */
+    class PlacedVolume : public Handle<TGeoNode> {
+    public:
+      typedef PlacedVolumeExtension Object;
+      typedef Object::VolIDs VolIDs;
+      typedef Object::VolID  VolID;
+
       /// Constructor to be used when reading the already parsed DOM tree
       PlacedVolume(const TGeoNode* e)
           : Handle<TGeoNode>(e) {
@@ -139,58 +159,72 @@ namespace DD4hep {
       std::string toString() const;
     };
 
-    /** @class Volume Volume.h  DD4hep/Volume.h
+    /// Implementation class extending the ROOT volume (TGeoVolume)
+    /** @class Volume::Object Volume.h  DD4hep/Volume.h
      *
-     *  Handle describing a Volume
+     *  Internal data structure optional to TGeo data
      *
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Volume: public Handle<TGeoVolume> {
+    class VolumeExtension : public TGeoExtension {
+    public:
+      /// Magic word to detect memory corruptions
+      unsigned long magic;
+      /// Reference count on object (used to implement Grab/Release)
+      long          refCount;
+      Region region;
+      LimitSet limits;
+      VisAttr vis;
+      Ref_t sens_det;
+      int referenced;
+      /// Default constructor
+      VolumeExtension();
+      /// Default destructor
+      virtual ~VolumeExtension();
+      /// Copy the object
+      void copy(const VolumeExtension& c) {
+	magic = c.magic;
+	region = c.region;
+	limits = c.limits;
+	vis = c.vis;
+	sens_det = c.sens_det;
+	referenced = c.referenced;
+      }
+      /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
+      virtual TGeoExtension *Grab();
+      /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
+      virtual void Release() const;
+      /// Enable ROOT persistency
+      ClassDef(VolumeExtension,1);
+    };
+
+    /// Handle class holding a placed volume (also called physical volume)
+    /** @class Volume Volume.h  DD4hep/Volume.h
+     *
+     *   Handle describing a Volume
+     *
+     *   For any further documentation please see the following ROOT documentation:
+     *   @see http://root.cern.ch/root/html/TGeoVolume.html 
+     *
+     *   @author  M.Frank
+     *   @version 1.0
+     */
+    class Volume: public Handle<TGeoVolume> {
 
     public:
       typedef Handle<TGeoVolume> Base;
-
-      /** @class Volume::Object Volume.h  DD4hep/Volume.h
-       *
-       *  Internal data structure optional to TGeo data
-       *
-       *  @author  M.Frank
-       *  @version 1.0
-       */
-      struct Object : public TGeoExtension {
-        /// Magic word to detect memory corruptions
-        unsigned long magic;
-	/// Reference count on object (used to implement Grab/Release)
-	long          refCount;
-        Region region;
-        LimitSet limits;
-        VisAttr vis;
-        Ref_t sens_det;
-        int referenced;
-        /// Default constructor
-        Object();
-        /// Default destructor
-        virtual ~Object();
-        /// Copy the object
-        void copy(const Object& c) {
-          magic = c.magic;
-          region = c.region;
-          limits = c.limits;
-          vis = c.vis;
-          sens_det = c.sens_det;
-          referenced = c.referenced;
-        }
-	/// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-	virtual TGeoExtension *Grab();
-	/// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-	virtual void Release() const;
-      };
+      typedef VolumeExtension Object;
 
     public:
       /// Default constructor
       Volume()
           : Base(0) {
+      }
+
+      /// Copy from handle
+      Volume(const TGeoVolume* v)
+          : Base(v) {
       }
 
       /// Copy from handle
@@ -283,7 +317,8 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Assembly: public Volume {
+    class Assembly: public Volume {
+    public:
       /// Default constructor
       Assembly()
           : Volume() {

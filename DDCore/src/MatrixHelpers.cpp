@@ -48,6 +48,13 @@ TGeoHMatrix* DD4hep::Geometry::_transform(const RotationZYX& rot)   {
   return tr;
 }
 
+TGeoHMatrix* DD4hep::Geometry::_transform(const Rotation3D& rot)   {
+  TGeoHMatrix *tr = new TGeoHMatrix();
+  Double_t* r = tr->GetRotationMatrix();
+  rot.GetComponents(r);
+  return tr;
+}
+
 TGeoHMatrix* DD4hep::Geometry::_transform(const Transform3D& trans) {
   Position pos;
   RotationZYX rot;

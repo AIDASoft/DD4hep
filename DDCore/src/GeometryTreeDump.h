@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_GeometryTreeDump_H
-#define DD4HEP_GeometryTreeDump_H
+#ifndef DD4HEP_GEOMETRYTREEDUMP_H
+#define DD4HEP_GEOMETRYTREEDUMP_H
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/GeoHandler.h"
@@ -42,7 +42,7 @@ namespace DD4hep {
       void create(DetElement top);
 
       /// Dump logical volume in GDML format to output stream
-      virtual void* handleVolume(const std::string& name, const TGeoVolume* volume) const;
+      virtual void* handleVolume(const std::string& name, Volume volume) const;
       /// Dump single volume transformation in GDML format to output stream
       virtual void* handleTransformation(const std::string& name, const TGeoMatrix* matrix) const;
       /// Dump solid in GDML format to output stream
@@ -62,4 +62,4 @@ namespace DD4hep {
   }    // End namespace Geometry
 }      // End namespace DD4hep
 
-#endif // DD4HEP_GeometryTreeDump_H
+#endif // DD4HEP_GEOMETRYTREEDUMP_H

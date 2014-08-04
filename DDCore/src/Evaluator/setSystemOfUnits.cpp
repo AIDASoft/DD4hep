@@ -12,7 +12,8 @@ void Evaluator::setSystemOfUnits(double meter,
 				 double ampere,
 				 double kelvin,
 				 double mole,
-				 double candela)
+				 double candela,
+				 double radians)
 {			    
   const double kilo_  = 1.e+03; // chilioi (Greek) "thousand"
   const double mega_  = 1.e+06; // megas (Greek) "large"
@@ -83,14 +84,18 @@ void Evaluator::setSystemOfUnits(double meter,
 
   const double pi  = 3.14159265358979323846;
   // Plane angle 
-  const double rad = 1.;  // Geant4 (rad units)
+  // const double rad = 1.;  // Geant4 (rad units)
   //const double rad = pi;    // Degree units
+
+  const double rad = radians ;
+
   setVariable("radian", rad);
   setVariable("rad",    rad);
   setVariable("milliradian", milli_ * rad);
   setVariable("mrad",        milli_ * rad);
 
   const double deg = rad*pi/180.;
+
   setVariable("degree", deg);
   setVariable("deg",    deg);
 

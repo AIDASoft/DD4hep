@@ -329,9 +329,10 @@ void Geant4TrackPersistency::TrackInfo::set(const G4Track* trk, void* inf)   {
 
 /// Standard constructor
 Geant4TrackPersistency::Geant4TrackPersistency(Geant4Context* context, const std::string& nam)
-  : Geant4Action(context,nam), Geant4MonteCarloTruth(), m_current()
+  : Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth(), m_current()
 {
   m_current.manager = this;
+  generatorAction().adopt(this);
   eventAction().callAtBegin(this,&Geant4TrackPersistency::beginEvent);
   eventAction().callAtFinal(this,&Geant4TrackPersistency::endEvent);
   trackingAction().callAtFinal(this,&Geant4TrackPersistency::end,CallbackSequence::FRONT);
@@ -393,9 +394,16 @@ void Geant4TrackPersistency::mark(const G4Track* track)   {
 	 track,m_current.track);
 }
 
+/// Event generation action callback
+void Geant4TrackPersistency::operator()(G4Event* )  {
+  typedef Geant4MonteCarloTruth _MC;
+  m_trackMap.clear();
+  printout(INFO,name(),"+++ Add EVENT extension of type Geant4TrackPersistency.....");
+  context()->event().addExtension((_MC*)this, typeid(_MC), 0);
+}
+
 /// Pre-event action callback
 void Geant4TrackPersistency::beginEvent(const G4Event* )  {
-  m_trackMap.clear();
 }
 
 /// Pre-event action callback
@@ -519,7 +527,7 @@ void Geant4TrackPersistency::end(const G4Track* track)   {
     Geant4TrackHandler t(track);
     std::string   proc = t.creatorName();
     G4ThreeVector pos  = t.position();
-    
+
     this->info("END   Track %p ID=%4d Parent:%4d  E:%7.2f MeV  "
 	       "%-6s %-8s L:%7.2f Pos:(%8.2f %8.2f %8.2f) Ref:%d Keep:%s Tracked:%s Hit:%s",
 	       track,t.id(), t.parent(), t.energy(),
@@ -530,8 +538,9 @@ void Geant4TrackPersistency::end(const G4Track* track)   {
   }
   /// If required save Track record...
   if ( m_current.store )   {
-    Geant4MonteCarloRecordManager* mgr = mcRecordMgr(true);
-    mgr->save(m_current);
+    Geant4MonteCarloRecordManager* mgr = 
+      context()->event().extension<Geant4MonteCarloRecordManager>(false);
+    if ( mgr ) mgr->save(m_current);
   }
   m_current.set(0,0);
   trackMgr()->SetUserTrackInformation(0);

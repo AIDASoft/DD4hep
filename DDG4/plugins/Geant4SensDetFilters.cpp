@@ -181,7 +181,8 @@ bool ParticleFilter::isGeantino(const G4Track* track) const   {
 }
 
 /// Constructor. 
-GeantinoRejectFilter::GeantinoRejectFilter(Geant4Context* c, const std::string& n): ParticleFilter(c,n) {
+GeantinoRejectFilter::GeantinoRejectFilter(Geant4Context* c, const std::string& n)
+: ParticleFilter(c,n) {
   InstanceCount::increment(this);
 }
 
@@ -196,7 +197,8 @@ bool GeantinoRejectFilter::operator()(const G4Step* step) const   {
 }
 
 /// Constructor. 
-ParticleRejectFilter::ParticleRejectFilter(Geant4Context* c, const std::string& n): ParticleFilter(c,n) {
+ParticleRejectFilter::ParticleRejectFilter(Geant4Context* c, const std::string& n)
+: ParticleFilter(c,n) {
   InstanceCount::increment(this);
 }
 
@@ -211,7 +213,8 @@ bool ParticleRejectFilter::operator()(const G4Step* step) const   {
 }
 
 /// Constructor. 
-ParticleSelectFilter::ParticleSelectFilter(Geant4Context* c, const std::string& n) : ParticleFilter(c,n) {
+ParticleSelectFilter::ParticleSelectFilter(Geant4Context* c, const std::string& n) 
+  : ParticleFilter(c,n) {
   InstanceCount::increment(this);
 }
 
@@ -226,7 +229,8 @@ bool ParticleSelectFilter::operator()(const G4Step* step) const   {
 }
 
 /// Constructor. 
-EnergyDepositMinimumCut::EnergyDepositMinimumCut(Geant4Context* c, const std::string& n) : Geant4Filter(c,n) {
+EnergyDepositMinimumCut::EnergyDepositMinimumCut(Geant4Context* c, const std::string& n) 
+  : Geant4Filter(c,n) {
   InstanceCount::increment(this);
   declareProperty("Cut",m_energyCut=0.0);
 }

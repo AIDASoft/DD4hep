@@ -12,6 +12,7 @@
 // Framework include files
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/NamedObject.h"
 #include "DD4hep/IDDescriptor.h"
 
 // ROOT include files
@@ -28,7 +29,10 @@ namespace DD4hep {
 
     // Forward declarations
     class LCDD;
+    class VolumeManagerContext;
+    class VolumeManagerObject;
 
+    /// Class to support the retrieval of detector elements and volumes given a valid identifier
     /** @class VolumeManager  VolumeManager.h DD4hep/lcdd/VolumeManager.h
      *
      *  The VolumeManager manages the repository of sensitive physical
@@ -59,7 +63,7 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct VolumeManager: public Ref_t {
+    struct VolumeManager: public Handle<VolumeManagerObject> {
     public:
       typedef DD4hep::VolumeID VolumeID;
       typedef VolumeID VolIdentifier;
@@ -72,96 +76,14 @@ namespace DD4hep {
         LAST
       };
 
-      /** @class VolumeManager::Context  VolumeManager.h DD4hep/lcdd/VolumeManager.h
-       *
-       *  This structure describes the cached data for one placement
-       *
-       * @author  M.Frank
-       * @version 1.0
-       */
-      struct Context {
-      public:
-        typedef std::vector<const TGeoNode*> Path;
-        typedef PlacedVolume::VolIDs::Base VolIDs;
-
-        /// Placement identifier
-        VolumeID identifier;
-        /// Ignore mask of the placement identifier
-        VolumeID mask;
-        /// The placement
-        PlacedVolume placement;
-        /// Handle to the subdetector element handle
-        DetElement detector;
-        /// Handle to the closest Detector element
-        DetElement element;
-        /// The transformation of space-points to the corrdinate system of the closests detector element
-        TGeoHMatrix toDetector;
-        /// The transformation of space-points to the world corrdinate system
-        TGeoHMatrix toWorld;
-        /// Volume IDS corresponding to this element
-        VolIDs volID;
-        /// Path of placements to this sensitive volume
-        Path path;
-      public:
-        /// Default constructor
-        Context();
-        /// Default destructor
-        virtual ~Context();
-      };
       /// Some useful Container abbreviations used by the VolumeManager
+      typedef VolumeManagerObject Object;
+      typedef VolumeManagerContext Context;
       typedef std::map<VolumeID, VolumeManager> Managers;
       typedef std::map<DetElement, VolumeManager> Detectors;
-      typedef std::map<TGeoNode*, Context*> PhysVolumes;
-      typedef std::map<VolumeID, Context*> Volumes;
+      typedef std::map<VolumeID, VolumeManagerContext*> Volumes;
       typedef PlacedVolume::VolIDs VolIDs;
-
-      /** @class VolumeManager::Object  VolumeManager.h DD4hep/lcdd/VolumeManager.h
-       *
-       * This structure describes the internal data of the volume manager object
-       *
-       * @author  M.Frank
-       * @version 1.0
-       */
-      struct Object: public TNamed {
-      public:
-        typedef IDDescriptor::Field Field;
-      public:
-        /// Reference to the LCDD instance
-#ifdef __CINT__
-        LCDD* lcdd;
-#else
-        LCDD& lcdd;
-#endif
-        /// The container of subdetector elements
-        Detectors subdetectors;
-        /// The volume managers for the individual subdetector elements
-        Managers managers;
-        /// The container of placements managed by this instance
-        Volumes volumes;
-        /// The Detector element handle managed by this instance
-        DetElement detector;
-        /// The ID descriptor object
-        IDDescriptor id;
-        /// The reference to the TOP level VolumeManager
-        TNamed* top;
-        /// The system field descriptor
-        Field system;
-        /// System identifier
-        VolumeID sysID;
-        /// Sub-detector mask
-        VolumeID detMask;
-        /// Population flags
-        int flags;
-      public:
-        /// Default constructor
-        Object(LCDD& lcdd);
-        /// Default destructor
-        virtual ~Object();
-        /// Search the locally cached volumes for a matching ID
-        Context* search(const VolumeID& id) const;
-	/// Update callback when alignment has changed (called only for subdetectors....)
-	void update(unsigned long tags, DetElement& det, void* param);
-      };
+      typedef std::map<TGeoNode*, Context*> PhysVolumes;
 
     protected:
       /// Additional data accessor
@@ -172,15 +94,21 @@ namespace DD4hep {
     public:
       /// Default constructor
       VolumeManager()
-          : Ref_t() {
+          : Handle<VolumeManagerObject>() {
       }
       /// Constructor to be used when reading the already parsed object
       VolumeManager(const VolumeManager& e)
-          : Ref_t(e) {
+          : Handle<VolumeManagerObject>(e) {
       }
+#ifndef __CINT__
+      /// Constructor to be used when reading the already parsed object
+      VolumeManager(const Handle<VolumeManagerObject>& e)
+          : Handle<VolumeManagerObject>(e) {
+      }
+#endif
       /// Constructor to be used when reading the already parsed object
       template <typename Q> VolumeManager(const Handle<Q>& e)
-          : Ref_t(e) {
+          : Handle<VolumeManagerObject>(e) {
       }
       /** Initializing constructor. The tree will automatically be built if the detelement is valid
        *  Please see enum PopulateFlags for further info.
@@ -188,6 +116,8 @@ namespace DD4hep {
        */
       VolumeManager(LCDD& lcdd, const std::string& name, DetElement world = DetElement(), Readout ro = Readout(), int flags =
           NONE);
+      /// Initializing constructor for subdetector volume managers.
+      VolumeManager(DetElement subdetector, Readout ro);
 
       /// Assignment operator
       VolumeManager& operator=(const VolumeManager& m)  {
@@ -199,12 +129,8 @@ namespace DD4hep {
       /// Access the volume manager by cell id
       VolumeManager subdetector(VolumeID id) const;
 
-      /// Assign the top level detector element to this manager
-      void setDetector(DetElement det_eleemnt, Readout ro);
       /// Access the top level detector element
       DetElement detector() const;
-      /// Assign IDDescription to VolumeManager structure
-      void setIDDescriptor(IDDescriptor spec) const;
       /// Access IDDescription structure
       IDDescriptor idSpec() const;
 

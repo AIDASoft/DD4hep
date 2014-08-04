@@ -55,6 +55,7 @@ void Geant4StackingActionSequence::adopt(Geant4StackingAction* action) {
 
 /// Pre-track action callback
 void Geant4StackingActionSequence::newStage() {
+  m_actors(ContextUpdate(context()));
   m_actors(&Geant4StackingAction::newStage);
   m_newStage();
 }
@@ -63,4 +64,5 @@ void Geant4StackingActionSequence::newStage() {
 void Geant4StackingActionSequence::prepare() {
   m_actors(&Geant4StackingAction::prepare);
   m_prepare();
+  m_actors(ContextUpdate());
 }

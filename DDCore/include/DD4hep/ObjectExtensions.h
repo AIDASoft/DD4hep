@@ -18,7 +18,10 @@
  */
 namespace DD4hep {
 
+  /// Implementation of an object supporting arbitrary user extensions
   /** @class ObjectExtensions DetectorInterna.h DD4hep/objects/DetectorInterna.h
+   *
+   *  Usage by inheritance of the client supporting the functionality
    *
    *  @author  M.Frank
    *  @version 1.0
@@ -31,6 +34,7 @@ namespace DD4hep {
     typedef void* (*copy_t)(const void*, void* arg);
     /// Extensions destructor type
     typedef void (*destruct_t)(void*);
+    /// Defintiion of the extension entry
     struct Entry {
       copy_t copy;
       destruct_t destruct;
@@ -39,9 +43,17 @@ namespace DD4hep {
     typedef std::map<const std::type_info*, Entry> ExtensionMap;
 
     /// The extensions object
-    Extensions    extensions;
+    Extensions    extensions; //!
     /// Pointer to the extension map
-    ExtensionMap* extensionMap;
+    ExtensionMap* extensionMap; //!
+
+    /// Function to be passed as dtor if object should NOT be deleted!
+    static void _noDelete(void*) {}
+
+    /// Templated destructor function
+    template <typename T> static void _delete(void* ptr) {
+      delete (T*) (ptr);
+    }
 
   public:
     /// Default constructor
@@ -49,7 +61,7 @@ namespace DD4hep {
     /// Default destructor
     virtual ~ObjectExtensions();
     /// Clear all extensions
-    void clear();
+    void clear(bool destroy=true);
     /// Copy object extensions from another object. Hosting type must be identical!
     void copyFrom(const Extensions& ext, void* arg);
     /// Add an extension object to the detector element

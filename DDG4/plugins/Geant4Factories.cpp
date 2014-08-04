@@ -46,6 +46,9 @@ DECLARE_GEANT4ACTION(Geant4TrackPersistency)
 #include "DDG4/Geant4MonteCarloRecordManager.h"
 DECLARE_GEANT4ACTION(Geant4MonteCarloRecordManager)
 
+#include "DDG4/Geant4ParticleHandler.h"
+DECLARE_GEANT4ACTION(Geant4ParticleHandler)
+
 //=============================
 #include "DDG4/Geant4TrackingPreAction.h"
 DECLARE_GEANT4ACTION(Geant4TrackingPreAction)
@@ -81,7 +84,7 @@ DECLARE_GEANT4ACTION(Geant4TestEventAction)
 DECLARE_GEANT4ACTION(Geant4TestStepAction)
 DECLARE_GEANT4ACTION(Geant4TestTrackAction)
 //DECLARE_GEANT4ACTION(Geant4TestStackingAction)
-//DECLARE_GEANT4ACTION(Geant4TestGeneratorAction)
+DECLARE_GEANT4ACTION(Geant4TestGeneratorAction)
 DECLARE_GEANT4SENSITIVE(Geant4TestSensitive)
 DECLARE_GEANT4SENSITIVE(Geant4TestSensitiveTracker)
 DECLARE_GEANT4SENSITIVE(Geant4TestSensitiveCalorimeter)

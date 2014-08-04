@@ -14,12 +14,12 @@
 //fixme: TPCData should not depend on this internal header  
 #include "DD4hep/objects/DetectorInterna.h"
 
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DDRec/Surface.h"
 
 #include "TPCData.h"
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
@@ -136,10 +136,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 
 	  //---------------------------- gear stuff --------------
-	  g_driftlength = zh / tgeo::mm ;
-	  g_rMin = r0 /  tgeo::mm ;
-	  g_rMax = r1 /  tgeo::mm ;
-	  g_padHeight =  2. * dR / tgeo::mm  ;
+	  g_driftlength = zh / dd4hep::mm ;
+	  g_rMin = r0 /  dd4hep::mm ;
+	  g_rMax = r1 /  dd4hep::mm ;
+	  g_padHeight =  2. * dR / dd4hep::mm  ;
 	  g_maxRow = nTPClayer ;
 	  g_padGap = 0. ;
 	  g_phiMax = 6.283185307e+00 ; // FIXME: where to define ? is it allways 2PI ?
@@ -256,7 +256,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }//subdetectors
   tpc_vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
   //--------------- create gear::TPCParameters and add them as Extension
   //  GearTPCParameters* gearTPC = new GearTPCParameters( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
   gear::TPCParametersImpl* gearTPC = new gear::TPCParametersImpl( g_driftlength , gear::PadRowLayout2D::POLAR ) ;
@@ -264,12 +264,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   gearTPC->setPadLayout( new gear::FixedPadSizeDiskLayout( g_rMin, g_rMax, g_padHeight, g_padWidth, g_maxRow, g_padGap, g_phiMax ) ) ;
 
   Tube t =  DetElement(tpcData->innerWall).volume().solid() ;
-  g_inner_r  = t->GetRmin() / tgeo::mm   ;
-  g_inner_wt = ( t->GetRmax() - t->GetRmin() ) / tgeo::mm ;
+  g_inner_r  = t->GetRmin() / dd4hep::mm   ;
+  g_inner_wt = ( t->GetRmax() - t->GetRmin() ) / dd4hep::mm ;
 
   t =  DetElement(tpcData->outerWall).volume().solid() ;
-  g_outer_r  = t->GetRmax()  / tgeo::mm   ;
-  g_outer_wt = ( t->GetRmax() - t->GetRmin() )   / tgeo::mm  ;
+  g_outer_r  = t->GetRmax()  / dd4hep::mm   ;
+  g_outer_wt = ( t->GetRmax() - t->GetRmin() )   / dd4hep::mm  ;
   
   gearTPC->setDoubleVal("tpcInnerRadius", g_inner_r )  ; // inner r of support tube
   gearTPC->setDoubleVal("tpcOuterRadius", g_outer_r )  ; // outer radius of TPC

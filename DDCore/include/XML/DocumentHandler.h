@@ -24,8 +24,8 @@ namespace DD4hep {
     // Forward declarations
     struct DocumentErrorHandler;
 
-    /** @class DocumentHandler XMLDetector.h XML/XMLDetector.h
-     *
+    /// Class supporting to read and parse XML documents.
+    /** 
      *  Wrapper object around the document parser.
      *  Supports both, XercesC and TiXml.
      *

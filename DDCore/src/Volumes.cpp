@@ -11,6 +11,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/MatrixHelpers.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 
 // ROOT include files
 #include "TColor.h"
@@ -285,6 +286,7 @@ template <typename T> static typename T::Object* _userExtension(const T& v)  {
   return o;
 }
 #endif
+ClassImp(PlacedVolumeExtension)
 
 static TGeoVolume* _createTGeoVolume(const string& name, TGeoShape* s, TGeoMedium* m)  {
   geo_volume_t* e = new geo_volume_t(name.c_str(),s,m);
@@ -298,25 +300,25 @@ static TGeoVolume* _createTGeoVolumeAssembly(const string& name)  {
 }
 
 /// Default constructor
-PlacedVolume::Object::Object()
+PlacedVolumeExtension::PlacedVolumeExtension()
   : TGeoExtension(), magic(0), refCount(0), volIDs() {
   magic = magic_word();
   INCREMENT_COUNTER;
 }
 
 /// Copy constructor
-PlacedVolume::Object::Object(const Object& c)
+PlacedVolumeExtension::PlacedVolumeExtension(const PlacedVolumeExtension& c)
     : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs) {
   INCREMENT_COUNTER;
 }
 
 /// Default destructor
-PlacedVolume::Object::~Object() {
+PlacedVolumeExtension::~PlacedVolumeExtension() {
   DECREMENT_COUNTER;
 }
 
 /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-TGeoExtension* PlacedVolume::Object::Grab()   {
+TGeoExtension* PlacedVolumeExtension::Grab()   {
   ++this->refCount;
 #ifdef ___print_vols
   else  cout << "Placement grabbed....." << endl;
@@ -325,14 +327,15 @@ TGeoExtension* PlacedVolume::Object::Grab()   {
 }
 
 /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-void PlacedVolume::Object::Release() const  {
-  Object* ext = const_cast<Object*>(this);
+void PlacedVolumeExtension::Release() const  {
+  PlacedVolumeExtension* ext = const_cast<PlacedVolumeExtension*>(this);
   --ext->refCount;
   if ( 0 == ext->refCount ) delete ext;
 }
 
 /// Lookup volume ID
-vector<PlacedVolume::VolID>::const_iterator PlacedVolume::VolIDs::find(const string& name) const {
+vector<PlacedVolumeExtension::VolID>::const_iterator 
+PlacedVolumeExtension::VolIDs::find(const string& name) const {
   for (Base::const_iterator i = this->Base::begin(); i != this->Base::end(); ++i)
     if (name == (*i).first)
       return i;
@@ -340,7 +343,8 @@ vector<PlacedVolume::VolID>::const_iterator PlacedVolume::VolIDs::find(const str
 }
 
 /// Insert a new value into the volume ID container
-std::pair<vector<PlacedVolume::VolID>::iterator, bool> PlacedVolume::VolIDs::insert(const string& name, int value) {
+std::pair<vector<PlacedVolumeExtension::VolID>::iterator, bool> 
+PlacedVolumeExtension::VolIDs::insert(const string& name, int value) {
   Base::iterator i = this->Base::begin();
   for (; i != this->Base::end(); ++i)
     if (name == (*i).first)
@@ -405,14 +409,17 @@ string PlacedVolume::toString() const {
   return s.str();
 }
 
+/// Enable ROOT persistency
+ClassImp(VolumeExtension)
+
 /// Default constructor
-Volume::Object::Object()
+VolumeExtension::VolumeExtension()
   : TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0) {
   INCREMENT_COUNTER;
 }
 
 /// Default destructor
-Volume::Object::~Object() {
+VolumeExtension::~VolumeExtension() {
   region.clear();
   limits.clear();
   vis.clear();
@@ -421,8 +428,8 @@ Volume::Object::~Object() {
 }
 
 /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
-TGeoExtension* Volume::Object::Grab()  {
-  Object* ext = const_cast<Object*>(this);
+TGeoExtension* VolumeExtension::Grab()  {
+  VolumeExtension* ext = const_cast<VolumeExtension*>(this);
   ++ext->refCount;
 #ifdef ___print_vols
   if ( ext->sens_det.isValid() ) 
@@ -434,8 +441,8 @@ TGeoExtension* Volume::Object::Grab()  {
 }
 
 /// TGeoExtension overload: Method called always when the pointer to the extension is not needed anymore
-void Volume::Object::Release() const  {
-  Object* ext = const_cast<Object*>(this);
+void VolumeExtension::Release() const  {
+  VolumeExtension* ext = const_cast<VolumeExtension*>(this);
   --ext->refCount;
   if ( 0 == ext->refCount )   {
 #ifdef ___print_vols
@@ -445,7 +452,7 @@ void Volume::Object::Release() const  {
   }
   else  {
 #ifdef ___print_vols
-    cout << "Volume::Object::Release::refCount:" << ext->refCount << endl;
+    cout << "VolumeExtension::Release::refCount:" << ext->refCount << endl;
 #endif
   }
 }
@@ -556,7 +563,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     VisAttr::Object* vis = attr.data<VisAttr::Object>();
     Color_t bright = vis->color;//kBlue;//TColor::GetColorBright(vis->color);
     Color_t dark = vis->color;//kRed;//TColor::GetColorDark(vis->color);
-    TColor* c = (TColor*)vis->col;//gROOT->GetColor(dark);
+    TColor* c = vis->col;//gROOT->GetColor(dark);
     int draw_style = vis->drawingStyle;
     int line_style = vis->lineStyle;
 
@@ -579,6 +586,7 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     if (draw_style == VisAttr::SOLID) {
       m_element->SetLineColor(bright);
       m_element->SetFillColor(bright);
+      // ROOT 6: m_element->SetFillColorAlpha(bright,vis->alpha);
       m_element->SetFillStyle(1001);   // Root: solid
     }
     else {

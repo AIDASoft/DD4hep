@@ -25,7 +25,7 @@ on the C++ XercesC parser, and another one based on Python and using the PyROOT 
   Is the package that contains the conversion of DD4hep geometry into Geant4 geometry to be used for 
 simulation. The conversion is currently based on the Virtual Geometry Modeler (VGM) package that is
 build internally when required.
-  The option DD4HEP_WITH_GEANT4:BOOL controls the building or not of this package that has the dependency
+  The option DD4HEP_USE_GEANT4:BOOL controls the building or not of this package that has the dependency
 to Geant4. The Geant4 installation needs to be located using the variable -DGeant4_DIR=<path to Geant4Config.cmake>
 
 - examples
@@ -68,7 +68,7 @@ To build and run the simulation examples Geant4 will be required.
   ( minimum is: export ROOTSYS=/data/ilcsoft/root/5.34.03 )
 
 
-- configure and build:
+- configure and build 
 
   cd DD4hep
   mkdir build; cd build
@@ -82,7 +82,7 @@ To build and run the simulation examples Geant4 will be required.
     -D INSTALL_DOC=on 
  
   * build with geant4 support:
-   -D DD4HEP_WITH_GEANT4=on -D Geant4_DIR=__path_to_Geant4Config.cmake__
+   -D DD4HEP_USE_GEANT4=on -D Geant4_DIR=__path_to_Geant4Config.cmake__
   
     [note: you might have to update your environment beforehand to have all needed 
      libraries in the shared lib search path (this will vary with OS, shell, etc.) e.g 
@@ -99,9 +99,9 @@ To build and run the simulation examples Geant4 will be required.
    -DDD4HEP_USE_PYROOT=ON
 
  - examples for building a 'complete' DD4hep:
-    cmake -D DD4HEP_WITH_GEANT4=1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On ..
+    cmake -D DD4HEP_USE_GEANT4=1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On ..
     (if geant4 was built with external CLHEP, add:   -D CLHEP_DIR=_path_to_CLHEP )
-    cmake -D DD4HEP_WITH_GEANT4=1 -DGeant4_DIR=/data/ilcsoft/geant4/9.6.p01/lib/Geant4-9.6.1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On -D CLHEP_DIR=/data/ilcsoft/HEAD/CLHEP/2.1.3.1 ..
+    cmake -D DD4HEP_USE_GEANT4=1 -DGeant4_DIR=/data/ilcsoft/geant4/9.6.p01/lib/Geant4-9.6.1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On -D CLHEP_DIR=/data/ilcsoft/HEAD/CLHEP/2.1.3.1 ..
 
 
 - Setup the environment for running 

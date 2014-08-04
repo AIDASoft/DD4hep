@@ -40,8 +40,11 @@ namespace DD4hep {
       typedef Geometry::Solid Solid;
       typedef Geometry::Volume Volume;
       typedef Geometry::PlacedVolume PlacedVolume;
+      typedef Geometry::Atom Atom;
       typedef Geometry::Material Material;
       typedef Geometry::Region Region;
+      typedef Geometry::VisAttr VisAttr;
+      typedef Geometry::LimitSet LimitSet;
 
     protected:
       LCDD& m_lcdd;

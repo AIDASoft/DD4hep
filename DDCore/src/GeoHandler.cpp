@@ -9,6 +9,7 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/GeoHandler.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 
 // ROOT includes
 #include "TGeoManager.h"
@@ -77,14 +78,14 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
       const TGeoNode* n = *j;
       TGeoVolume* v = n->GetVolume();
       if (v) {
-        TGeoMedium* m = v->GetMedium();
+        Material m(v->GetMedium());
         Volume vol = Ref_t(v);
         // Note : assemblies and the world do not have a real volume nor a material
-        if (info.volumeSet.find(v) == info.volumeSet.end()) {
-          info.volumeSet.insert(v);
-          info.volumes.push_back(v);
+        if (info.volumeSet.find(vol) == info.volumeSet.end()) {
+          info.volumeSet.insert(vol);
+          info.volumes.push_back(vol);
         }
-        if (m)
+        if (m.isValid())
           info.materials.insert(m);
         if (dynamic_cast<Volume::Object*>(v)) {
           VisAttr vis = vol.visAttributes();
@@ -93,7 +94,7 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
           //SensitiveDetector det = vol.sensitiveDetector();
 
           if (vis.isValid())
-            info.vis.insert(vis.ptr());
+            info.vis.insert(vis);
           //if ( lim.isValid() ) info.limits[lim.ptr()].insert(v);
           //if ( reg.isValid() ) info.regions[reg.ptr()].insert(v);
           //if ( det.isValid() ) info.sensitives[det.ptr()].insert(v);

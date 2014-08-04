@@ -64,9 +64,15 @@ namespace DD4hep {
         const G4ThreeVector& p = pre->GetPosition();
         return Position(p.x(), p.y(), p.z());
       }
+      const G4ThreeVector& prePosG4() const {
+        return pre->GetPosition();
+      }
       Position postPos() const {
         const G4ThreeVector& p = post->GetPosition();
         return Position(p.x(), p.y(), p.z());
+      }
+      const G4ThreeVector& postPosG4() const {
+        return post->GetPosition();
       }
       Momentum preMom() const {
         const G4ThreeVector& p = pre->GetMomentum();

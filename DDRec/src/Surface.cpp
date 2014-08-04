@@ -3,7 +3,7 @@
 
 #include "DDRec/MaterialManager.h"
 
-#include <math.h>
+#include <cmath>
 #include <memory>
 #include <exception>
 #include <memory> 
@@ -145,6 +145,32 @@ namespace DD4hep {
 
 
 
+
+    ISurface::Vector2D VolCylinder::globalToLocal( const Vector3D& point) const {
+      
+      // cylinder is parallel to here so u is dZ and v is r *dPhi
+      double phi = point.phi() - origin().phi() ;
+      
+      while( phi < -M_PI ) phi += 2.*M_PI ;
+      while( phi >  M_PI ) phi -= 2.*M_PI ;
+
+      return  ISurface::Vector2D(  point.z() - origin().z() , origin().rho() * phi  ) ;
+    }
+    
+    
+    Vector3D VolCylinder::localToGlobal( const ISurface::Vector2D& point) const {
+
+      double z = point.u() + origin().z() ;
+      double phi = point.v() / origin().rho() + origin().phi() ;
+
+      while( phi < -M_PI ) phi += 2.*M_PI ;
+      while( phi >  M_PI ) phi -= 2.*M_PI ;
+
+      return Vector3D( origin().rho() , phi, z  , Vector3D::cylindrical )    ;
+    }
+
+
+
     VolCylinder::VolCylinder( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D o ) :
 
       VolSurface( vol, type, thickness_inner, thickness_outer, Vector3D() , Vector3D() , Vector3D() , o ) {
@@ -228,13 +254,13 @@ namespace DD4hep {
 
       volList.push_back( pv ) ;
       
-      // unsigned count = volList.size() ;
-      // for(unsigned i=0 ; i < count ; ++i) {
-      //  	std::cout << " **" ;
-      // }
-      // std::cout << " searching for volume: " << theVol.name() << " " << std::hex << theVol.ptr() << "  <-> pv.volume : "  << pv.name() << " " <<  pv.volume().ptr() 
-      //  		<< " pv.volume().ptr() == theVol.ptr() " <<  (pv.volume().ptr() == theVol.ptr() )
-      //  		<< std::endl ;
+    //   unsigned count = volList.size() ;
+    //   for(unsigned i=0 ; i < count ; ++i) {
+    //   	std::cout << " **" ;
+    //   }
+    //   std::cout << " searching for volume: " << theVol.name() << " " << std::hex << theVol.ptr() << "  <-> pv.volume : "  << pv.name() << " " <<  pv.volume().ptr() 
+    //    		<< " pv.volume().ptr() == theVol.ptr() " <<  (pv.volume().ptr() == theVol.ptr() )
+    //    		<< std::endl ;
       
 
       if( pv.volume().ptr() == theVol.ptr() ) { 
@@ -395,8 +421,8 @@ namespace DD4hep {
       Volume theVol = _volSurf.volume() ;
       
       if( ! findVolume(  pv, theVol , pVList ) ){
-	
-	throw std::runtime_error( " ***** ERROR: No Volume found for DetElement with surface " ) ;
+	     std::stringstream sst ; sst << " ***** ERROR: Volume " << theVol.name() << " not found for DetElement " << _det.name()  << " with surface "  ;
+	     throw std::runtime_error( sst.str() ) ;
       } 
 
       // std::cout << " **** Surface::initialize() # placements for surface = " << pVList.size() 
@@ -752,6 +778,7 @@ namespace DD4hep {
     }
 
     //================================================================================================================
+
     Vector3D CylinderSurface::u( const Vector3D& point  ) const { 
 
       Vector3D lp , u ;
@@ -776,6 +803,25 @@ namespace DD4hep {
       _wtM->LocalToMasterVect( ln , n.array() ) ;
       return n ; 
     }
+
+    ISurface::Vector2D CylinderSurface::globalToLocal( const Vector3D& point) const {
+      
+      Vector3D lp , n ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+
+      return  _volSurf.globalToLocal( lp )  ;
+    }
+    
+    
+    Vector3D CylinderSurface::localToGlobal( const ISurface::Vector2D& point) const {
+
+      Vector3D lp = _volSurf.localToGlobal( point ) ;
+      Vector3D p ;
+      _wtM->LocalToMasterVect( lp , p.array() ) ;
+
+      return p ;
+    }
+
     //================================================================================================================
 
 

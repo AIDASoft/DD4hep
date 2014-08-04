@@ -18,8 +18,8 @@
  */
 namespace DD4hep {
 
-  /** @class BasicGrammar
-   *
+  /// Base class describing string evaluation to C++ objects using boost::spirit
+  /** 
    *   @author  M.Frank
    *   @date    13.08.2013
    */

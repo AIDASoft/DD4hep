@@ -21,13 +21,19 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4MonteCarloRecordManager::Geant4MonteCarloRecordManager(Geant4Context* context, const std::string& nam) 
-  : Geant4Action(context,nam)  
+  : Geant4GeneratorAction(context,nam)  
 {
   declareProperty("Collect",m_collectInfo=true);
 }
 
 /// Default destructor
 Geant4MonteCarloRecordManager::~Geant4MonteCarloRecordManager()  {
+}
+
+/// Event generation action callback
+void Geant4MonteCarloRecordManager::operator()(G4Event* )  {
+  printout(INFO,name(),"+++ Add EVENT extension of type Geant4MonteCarloRecordManager.....");
+  context()->event().addExtension(this, typeid(*this),0);
 }
 
 /// Save G4Track data

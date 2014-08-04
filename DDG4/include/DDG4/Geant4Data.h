@@ -10,8 +10,10 @@
 #define DD4HEP_GEANT4DATA_H
 
 // Framework include files
+#ifndef __DD4HEP_DDEVE_EXCLUSIVE__
 #include "DD4hep/Objects.h"
 #include "G4Step.hh"
+#endif
 
 /*
  *   DD4hep namespace declaration
@@ -224,5 +226,4 @@ namespace DD4hep {
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep
-
 #endif // DD4HEP_GEANT4DATA_H

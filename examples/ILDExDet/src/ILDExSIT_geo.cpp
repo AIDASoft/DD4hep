@@ -9,7 +9,7 @@
 
 #include "DD4hep/DetFactoryHelper.h"
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 #endif
@@ -30,7 +30,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   PlacedVolume pv;
 
   
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
   //--------------- gear: create gear::ZPlanarParameters and add them as Extension
   gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( gear::ZPlanarParameters::HYBRID ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
   // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
@@ -61,7 +61,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     Material sensmat =  lcdd.material( x_ladder.materialStr() );
 
     Volume      laddervol (layername+"_ladder",ladderbox , suppmat );
+
     Box         sensbox   (sens_thick/2.,width/2.,zhalf);
+
+
     Volume      sensvol   (layername+"_sens",sensbox, sensmat );
     Box         suppbox   (supp_thick/2.,width/2.,zhalf);
     Volume      suppvol   (layername+"_supp",suppbox,lcdd.material(x_support.materialStr()));
@@ -87,17 +90,17 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     // implement 7 deg stereo angle 
     if( layer_id % 2 ){
       
-      u.fill( 0. ,  cos( 3.5/180.*M_PI  ) ,  sin( 3.5/180.*M_PI  ) ) ;
-      v.fill( 0. , -sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+      u.fill( 0. ,  cos( 3.5*dd4hep::deg  ) ,  sin( 3.5*dd4hep::deg  ) ) ;
+      v.fill( 0. , -sin( 3.5*dd4hep::deg  ) ,  cos( 3.5*dd4hep::deg  ) ) ;
 
     } else {
 
-      u.fill( 0. ,  cos( 3.5/180.*M_PI  ) , -sin( 3.5/180.*M_PI  ) ) ;
-      v.fill( 0. ,  sin( 3.5/180.*M_PI  ) ,  cos( 3.5/180.*M_PI  ) ) ;
+      u.fill( 0. ,  cos( 3.5*dd4hep::deg  ) , -sin( 3.5*dd4hep::deg  ) ) ;
+      v.fill( 0. ,  sin( 3.5*dd4hep::deg  ) ,  cos( 3.5*dd4hep::deg  ) ) ;
     }
 
     Vector3D n( 1. , 0. , 0. ) ;
-    VolPlane surf( sensvol , SurfaceType(SurfaceType::Sensitive) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ;
+    VolPlane surf( sensvol , SurfaceType( SurfaceType::Sensitive, SurfaceType::Measurement1D ) , sens_thick/2 + supp_thick/2 , sens_thick/2 , u,v,n ) ;
 
 
     // Position    senspos   (-(sens_thick+supp_thick)/2.+sens_thick/2.,0,0);
@@ -133,13 +136,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
    }
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
     //----------------- gear ---------------------------------------------
-    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
-    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
+    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
+    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
 
-    gearZPlanar->addLayer ( nLadders, 0. , radius/tgeo::mm, 0. ,  supp_thick/tgeo::mm  , 2*zhalf/tgeo::mm, width/tgeo::mm, ladderRadLength,  
-			    (radius+supp_thick)/tgeo::mm,  0 ,  sens_thick/tgeo::mm ,  2*zhalf/tgeo::mm ,  width/tgeo::mm, sensitiveRadLength) ;
+    gearZPlanar->addLayer ( nLadders, 0. , radius/dd4hep::mm, 0. ,  supp_thick/dd4hep::mm  , 2*zhalf/dd4hep::mm, width/dd4hep::mm, ladderRadLength,  
+			    (radius+supp_thick)/dd4hep::mm,  0 ,  sens_thick/dd4hep::mm ,  2*zhalf/dd4hep::mm ,  width/dd4hep::mm, sensitiveRadLength) ;
 
     // addLayer (int nLadders, double phi0, double ladderDistance, double ladderOffset, double ladderThickness, double ladderLength, double ladderWidth, double ladderRadLength, 
     //           double sensitiveDistance, double sensitiveOffset, double sensitiveThickness, double sensitiveLength, double sensitiveWidth, double sensitiveRadLength)

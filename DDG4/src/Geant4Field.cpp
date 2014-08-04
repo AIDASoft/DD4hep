@@ -8,7 +8,7 @@
 //====================================================================
 // Framework include files
 #include "DDG4/Geant4Field.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 using namespace DD4hep::Simulation;
@@ -18,8 +18,8 @@ G4bool Geant4Field::DoesFieldChangeEnergy() const {
 }
 
 void Geant4Field::GetFieldValue(const double pos[4], double *field) const {
-  static const double fac1 = tgeo::mm/CLHEP::mm;
-  static const double fac2 = CLHEP::tesla/tgeo::tesla;
+  static const double fac1 = dd4hep::mm/CLHEP::mm;
+  static const double fac2 = CLHEP::tesla/dd4hep::tesla;
   double p[3] = {pos[0]*fac1, pos[1]*fac1, pos[2]*fac1}; // Convert from CLHEP units to tgeo units
   field[0] = field[1] = field[2] = 0.0;                  // Reset field vector
   m_field.magneticField(p, field);

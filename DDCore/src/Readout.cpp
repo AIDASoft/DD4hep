@@ -8,33 +8,20 @@
 //====================================================================
 
 #include "DD4hep/Readout.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Handle.inl"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-using tgeo::mm;
-
-/// Standard constructor
-Readout::Object::Object() {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Readout::Object::~Object() {
-  //destroyHandle(segmentation);
-  InstanceCount::decrement(this);
-  if ( segmentation.isValid() )  {
-    delete segmentation.ptr();
-    segmentation = Segmentation();
-  }
-}
+using dd4hep::mm;
 
 /// Initializing constructor to create a new object
 Readout::Readout(const string& nam) {
-  assign(new Object(), nam, "readout");
+  assign(new ReadoutObject(), nam, "readout");
 }
 
 /// Assign IDDescription to readout structure

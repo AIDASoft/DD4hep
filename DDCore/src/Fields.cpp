@@ -7,11 +7,18 @@
 //
 //====================================================================
 
+#include "DD4hep/Handle.inl"
 #include "DD4hep/Fields.h"
 #include "DD4hep/InstanceCount.h"
 
 using namespace std;
 using namespace DD4hep::Geometry;
+
+typedef CartesianField::Object CartesianFieldObject;
+DD4HEP_INSTANTIATE_HANDLE(CartesianFieldObject);
+
+typedef OverlayedField::Object OverlayedFieldObject;
+DD4HEP_INSTANTIATE_HANDLE(OverlayedFieldObject);
 
 namespace {
   void calculate_combined_field(vector<CartesianField>& v, const double* pos, double* field) {
@@ -22,7 +29,7 @@ namespace {
 
 /// Default constructor
 CartesianField::Object::Object()
-    : TNamed(), type(UNKNOWN) {
+    : NamedObject(), type(UNKNOWN) {
   InstanceCount::increment(this);
 }
 
@@ -44,6 +51,16 @@ bool CartesianField::changesEnergy() const {
 /// Access to properties container
 CartesianField::Properties& CartesianField::properties() const {
   return data<Object>()->properties;
+}
+
+/// Returns the 3 field components (x, y, z).
+void CartesianField::value(const Position& pos, Direction& field) const  { 
+  value(pos,(double*)&field); 
+}
+
+/// Returns the 3 field components (x, y, z).
+void CartesianField::value(const Position& pos, double* val) const   {
+  value((double*)&pos,val);
 }
 
 /// Returns the 3 field components (x, y, z).

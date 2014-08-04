@@ -14,6 +14,7 @@
 #endif
 #include "RVersion.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/NamedObject.h"
 #include "XML/XMLElements.h"
 #include <cstdarg>
 
@@ -25,8 +26,9 @@ namespace DD4hep {
    *   XML sub-namespace declaration
    */
   namespace XML {
-    struct Handle_t;
+    class Handle_t;
   }
+  class NamedObject;
 
   /*
    *   Geometry sub-namespace declaration
@@ -34,9 +36,9 @@ namespace DD4hep {
   namespace Geometry {
 
     // Forward declarations
-    struct LCDD;
-    struct SensitiveDetector;
-    struct DetElement;
+    class LCDD;
+    class SensitiveDetector;
+    class DetElement;
 
     template <typename T> class ConstructionFactory {
     public:
@@ -129,7 +131,7 @@ namespace {
     }
   };
 
-  template <typename P> class Factory<P, TNamed*(DD4hep::Geometry::LCDD*)> {
+  template <typename P> class Factory<P, DD4hep::NamedObject*(DD4hep::Geometry::LCDD*)> {
   public:
     typedef DD4hep::Geometry::LCDD LCDD;
     typedef DD4hep::Geometry::Ref_t Ref_t;
@@ -150,7 +152,7 @@ namespace {
     }
   };
 
-  template <typename P> class Factory<P, TNamed*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*)> {
+  template <typename P> class Factory<P, DD4hep::NamedObject*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*)> {
   public:
     typedef DD4hep::Geometry::LCDD LCDD;
     typedef DD4hep::XML::Handle_t xml_h;
@@ -175,7 +177,7 @@ namespace {
     }
   };
 
-  template <typename P> class Factory<P, TNamed*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*, DD4hep::Geometry::Ref_t*)> {
+  template <typename P> class Factory<P, DD4hep::NamedObject*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*, DD4hep::Geometry::Ref_t*)> {
   public:
     typedef DD4hep::Geometry::LCDD LCDD;
     typedef DD4hep::XML::Handle_t xml_h;
@@ -191,18 +193,18 @@ namespace {
 }
 
 #define DECLARE_DETELEMENT_FACTORY(x) \
-  PLUGINSVC_FACTORY(x,TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
+  PLUGINSVC_FACTORY(x,DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 #define DECLARE_NAMESPACE_DETELEMENT_FACTORY(n,x)  using n::x; \
-  PLUGINSVC_FACTORY(x,TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
+  PLUGINSVC_FACTORY(x,DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
 #define DECLARE_NAMED_APPLY_FACTORY(n,x)  using n::x;\
   PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),long(DD4hep::Geometry::LCDD*,int, char**))
 #define DECLARE_NAMED_TRANSLATION_FACTORY(n,x)  using n::x;\
-  PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),TNamed*(DD4hep::Geometry::LCDD*))
+  PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*))
 #define DECLARE_NAMED_XMLELEMENT_FACTORY(n,x)  using n::x;\
-  PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
+  PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)  using n::x;\
-  PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
+  PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
 #define DECLARE_APPLY(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct name {}; }            \
@@ -225,7 +227,7 @@ namespace {
   namespace DD4hep { namespace Geometry { namespace { struct xml_element_##name {}; }   \
   template <> DD4hep::Geometry::Ref_t XMLElementFactory<DD4hep::Geometry::xml_element_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }}\
   using DD4hep::Geometry::xml_element_##name;\
-  PLUGINSVC_FACTORY_WITH_ID(xml_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
+  PLUGINSVC_FACTORY_WITH_ID(xml_element_##name,std::string(#name),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
 
 #define DECLARE_XML_DOC_READER(name,func) \
   namespace DD4hep { namespace Geometry { namespace { struct xml_document_##name {}; }  \
@@ -237,7 +239,7 @@ namespace {
   namespace DD4hep { namespace Geometry { struct det_element_##name {};	\
   template <> DD4hep::Geometry::Ref_t DetElementFactory< DD4hep::Geometry::det_element_##name >::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e,DD4hep::Geometry::Ref_t h){return func(l,e,h);}}} \
   using DD4hep::Geometry::det_element_##name;\
-  PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),TNamed*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
+  PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
 #define DECLARE_SUBDETECTOR(name,func) DECLARE_XML_PROCESSOR(name,func)
 #define DECLARE_DETELEMENT(name,func)  DECLARE_XML_PROCESSOR(name,func)

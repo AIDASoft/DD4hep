@@ -92,6 +92,7 @@ namespace DD4hep {
       typedef Geometry::LCDD LCDD;
       typedef Geometry::Readout Readout;
       typedef Geometry::DetElement DetElement;
+      typedef Geometry::Segmentation Segmentation;
       typedef Geometry::SensitiveDetector SensitiveDetector;
       typedef Geant4StepHandler StepHandler;
       typedef Geant4HitCollection HitCollection;
@@ -111,6 +112,8 @@ namespace DD4hep {
       SensitiveDetector m_sensitive;
       /// Reference to the readout structure
       Readout m_readout;
+      /// Reference to segmentation
+      Segmentation m_segmentation;
       /// The list of sensitive detector filter objects
       Actors<Geant4Filter> m_filters;
 
@@ -209,6 +212,13 @@ namespace DD4hep {
        * from the current sensitive volume to the world volume
        */
       long long int volumeID(G4Step* step);
+
+      /// Returns the cellID of the sensitive volume corresponding to the step
+      /** The CellID is the VolumeID + the local coordinates of the sensitive area.
+       *  Calculated by combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
+       *  from the current sensitive volume to the world volume
+       */
+      long long int cellID(G4Step* step);
 
     };
 

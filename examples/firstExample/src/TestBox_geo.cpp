@@ -33,7 +33,51 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
     double x = x_mod.x();
     double y = x_mod.y();
     double z = x_mod.z();
-    Volume m_volume(det_name+"_"+m_nam, Box(10, 10, 1), air);
+
+    // a simple box 
+    Box box( 10, 10, 1) ;
+
+#define debug_hole 1
+#ifdef debug_hole 
+// -------- debug code for subtraction solid -----------------
+      
+#if 0    // cut out a box 
+      
+      Box hole( 3, 3, 1.01 ) ; // not z slightly larger than original 
+#else
+#if franks_trap
+      // This trap is ill defined. and does not work!
+      // cut out a trap
+      Trap hole( 4.2, 
+		 0., 0.,
+		 2., 4.,  3., 
+		 0. , 0. ,
+		 2., 4., 3.) ;
+#else
+      // Fixed version from Andrei. This works
+      // cut out a trap
+      Trap hole( 4.2, 
+		 0., 0.,
+		 2., 4.,  3., 
+		 0. ,
+		 2., 4., 3., 0) ;
+#endif
+#endif
+      
+      SubtractionSolid solid(  box, hole , Transform3D() ) ;
+      
+      Volume m_volume(det_name+"_"+m_nam, solid , air);
+
+#else 
+// -------- end debug code for subtraction solid -----------------
+      
+
+      Volume m_volume(det_name+"_"+m_nam, box , air);
+      
+#endif
+      
+
+
     m_volume.setVisAttributes(lcdd.visAttributes(x_mod.visStr()));
     pv = motherVol.placeVolume(m_volume,Transform3D(RotationZYX(0,0,0),Position(x,y,z)));
   }

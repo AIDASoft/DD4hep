@@ -12,7 +12,7 @@
 #include "EVENT/TrackerHit.h"
 #include "UTIL/Operators.h"
 
-#include "DD4hep/TGeoUnits.h"
+#include "DD4hep/DD4hepUnits.h"
 
 #include "MultiView.h"
 
@@ -42,40 +42,38 @@ public:
 void next_event(){
   
   static int count = 1 ;
-
+  
   static LCReader* rdr = 0 ;
-
+  
   std::string lcioFileName = "teve_infile.slcio" ; 
-
+  
   std::cout <<  " next_event_lcio called ..." << std::endl ;
-
-  if( rdr == 0 && count==1 ){
-
+  
+  if( count==1 ){
+    
     rdr = LCFactory::getInstance()->createLCReader() ;
-
+    
     try{
-
+      
       rdr->open( lcioFileName ) ;
-
+      
     }catch(lcio::IOException& e) {
-
+      
       std::cout << " ------------------------------------------------------------------------------------------------ "     << std::endl
 		<<  "*** file " << lcioFileName << " does not exist - can't read LCIO events  !                       "     << std::endl
 		<<  "    will display detector geometry only. Link LCIO file to " << lcioFileName << " to display events ! "<< std::endl
 		<< " -------------------------------------------------------------------------------------------------"  	
 		<< std::endl ;
-      ++count ;
-
+      
       return ;
     }
-
-  } else {
-
-    // nothing to do as inoutfile does not exist:
-    return ;
   }
 
+  if( rdr == 0 )
+    // nothing to do as inputfile does not exist:
+    return ;
   
+
   TEveElementList* tevent = (TEveElementList* ) gEve->GetCurrentEvent() ;
   
   if( tevent ) 
@@ -121,7 +119,8 @@ void next_event(){
   
   gEve->Redraw3D();
   
-  count += 3 ;
+  ++count ;
+  //count += 3 ;
 }
 
 
@@ -143,7 +142,7 @@ TEveElement* createPointSet( lcio::LCCollection* col, const std::string& name, u
     // pos[1] = hit->getPosition()[1] ;
     // pos[2] = hit->getPosition()[2] ;
      
-    ps->SetNextPoint( pos[0]*tgeo::mm , pos[1]*tgeo::mm, pos[2]*tgeo::mm );
+    ps->SetNextPoint( pos[0]*dd4hep::mm , pos[1]*dd4hep::mm, pos[2]*dd4hep::mm );
      
     int id[2] ;
     id[0] = hit->getCellID0()  ;

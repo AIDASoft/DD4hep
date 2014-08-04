@@ -19,6 +19,11 @@
  */
 namespace DD4hep {
 
+  namespace DDSegmentation  {
+    class BitField64;
+    class BitFieldValue;
+  }
+
   /// We need it so often: one-at-time 32 bit hash function
   inline unsigned int hash32(const char* key) {
     unsigned int hash = 0;
@@ -48,7 +53,12 @@ namespace DD4hep {
   /// Throw exception when handles are check for validity
   void notImplemented(const std::string& msg);
 
+  /// Class to perform dynamic casts using unknown pointers.
   /** @class ComponentCast Primitives.h DD4hep/Primitives.h
+   *
+   *  It is mandatory that the pointers referred do actually
+   *  support the asked functionalty. 
+   *  Miracles also I cannot do.....
    *
    *   @author  M.Frank
    *   @date    13.08.2013
@@ -97,8 +107,17 @@ namespace DD4hep {
 
 
   // Put here global basic type definitions derived from primitive types of the DD4hep namespace
+#ifdef __CINT__
   typedef DDSegmentation::CellID CellID;
   typedef DDSegmentation::VolumeID VolumeID;
+  typedef DDSegmentation::BitField64 BitField64;
+  typedef DDSegmentation::BitFieldValue BitFieldValue;
+#else
+  using DDSegmentation::CellID;
+  using DDSegmentation::VolumeID;
+  using DDSegmentation::BitField64;
+  using DDSegmentation::BitFieldValue;
+#endif
 
   /// Helper to copy objects.
   template <typename T> inline void copyObject(void* target,const void* source)  {

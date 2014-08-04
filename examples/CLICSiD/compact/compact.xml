@@ -830,7 +830,6 @@
         	<zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="-(LumiCal_zmin+LumiCal_thickness)"/>
         </detector>
         
- -->
         <detector id="14" name="BeamCal" reflect="true" type="ForwardDetector" readout="BeamCalHits" vis="LumiCalVis" calorimeterType="BEAM">
             <comment>Beam Calorimeter</comment>
             <dimensions outer_r="BeamCal_rmax" inner_r="0.0*cm" inner_z="BeamCal_zmin" />

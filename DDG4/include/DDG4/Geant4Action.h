@@ -118,17 +118,15 @@ namespace DD4hep {
     };
 #endif
 
-    /** @class Invoke Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Default base class for all geant 4 actions and derivates thereof.
-     *
+    /// Default base class for all geant 4 actions and derivates thereof.
+    /**
      * @author  M.Frank
      * @version 1.0
      */
     class Geant4Action {
     protected:
       /// Reference to the Geant4 context
-      Geant4Context* m_context;
+      Geant4Context m_context;
       /// Control directory of this action
       Geant4UIMessenger* m_control;
 
@@ -143,8 +141,33 @@ namespace DD4hep {
       /// Reference count. Initial value: 1
       long m_refCount;
 
+      //fg: ContextUpdate needs to be public for the clang compiler
+      //    as it is used in SequenceHdl::setContextToClients()  
+    public:
+      /// Functor to update the context of a Geant4Action object
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
+      class ContextUpdate  {
+      public:
+	/// reference to the context;
+	const Geant4Context* context;
+	/// Constructor
+        ContextUpdate(const Geant4Context* c=0) : context(c)  {}
+	/// Callback
+	void operator()(Geant4Action* action)  const;
+      };
+      friend class ContextUpdate;
+    protected:
+
+      /// Actor class to manipulate action groups
+      /**
+       * @author  M.Frank
+       * @version 1.0
+       */
       template <typename T> struct Actors {
-        typedef std::vector<T*> _V;
+        typedef typename std::vector<T*> _V;
         _V m_v;
         Actors() {
         }
@@ -167,6 +190,17 @@ namespace DD4hep {
         }
         _V* operator->() {
           return &m_v;
+        }
+	typename _V::iterator begin() { return m_v.begin(); }
+	typename _V::iterator end()   { return m_v.end();   }
+	typename _V::const_iterator begin() const  { return m_v.begin(); }
+	typename _V::const_iterator end()   const  { return m_v.end();   }
+        /// Context updates
+        void operator()(const ContextUpdate& context) {
+          if (m_v.empty())
+            return;
+          for (typename _V::iterator i = m_v.begin(); i != m_v.end(); ++i)
+	    context(*i);
         }
         /// NON-CONST actions
         template <typename R, typename Q> void operator()(R (Q::*pmf)()) {
@@ -244,11 +278,9 @@ namespace DD4hep {
       long addRef();
       /// Decrease reference count. Implicit destruction
       long release();
-      /// Set the context pointer
-      void setContext(Geant4Context* context);
       /// Access the context
-      Geant4Context* context() const {
-        return m_context;
+      const Geant4Context* context()  const {
+        return &m_context;
       }
       /// Access name of the action
       const std::string& name() const {
@@ -301,18 +333,30 @@ namespace DD4hep {
 
       /// Support of debug messages.
       void debug(const std::string& fmt, ...) const;
+      /// Support of warning messages.
+      void debug(const std::string& tag, const std::string& fmt, ...) const;
       /// Support of info messages.
       void info(const std::string& fmt, ...) const;
       /// Support of warning messages.
+      void info(const std::string& tag, const std::string& fmt, ...) const;
+      /// Support of warning messages.
       void warning(const std::string& fmt, ...) const;
+      /// Support of warning messages.
+      void warning(const std::string& tag, const std::string& fmt, ...) const;
       /// Support of error messages.
       void error(const std::string& fmt, ...) const;
+      /// Support of error messages.
+      void error(const std::string& tag, const std::string& fmt, ...) const;
       /// Action to support error messages.
       bool error(bool return_value, const std::string& fmt, ...) const;
       /// Support of fatal messages. Throws exception
       void fatal(const std::string& fmt, ...) const;
+      /// Support of warning messages.
+      void fatal(const std::string& tag, const std::string& fmt, ...) const;
       /// Support of exceptions: Print fatal message and throw runtime_error.
       void except(const std::string& fmt, ...) const;
+      /// Support of warning messages.
+      void except(const std::string& tag, const std::string& fmt, ...) const;
 
       /// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
       void abortRun(const std::string& exception, const std::string& fmt, ...) const;
@@ -329,10 +373,6 @@ namespace DD4hep {
       Geant4StackingActionSequence& stackingAction() const;
       /// Access to the main generator action sequence from the kernel object
       Geant4GeneratorActionSequence& generatorAction() const;
-      /// Access to the Track Persistency Manager from the kernel object
-      Geant4MonteCarloTruth* mcTruthMgr(bool throw_exception=true) const;
-      /// Access to the MC record manager from the kernel object
-      Geant4MonteCarloRecordManager* mcRecordMgr(bool throw_exception=true) const;
     };
 
     /// Declare property

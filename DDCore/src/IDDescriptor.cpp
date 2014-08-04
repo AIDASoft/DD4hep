@@ -7,7 +7,9 @@
 //
 //====================================================================
 
+#include "DD4hep/Handle.inl"
 #include "DD4hep/IDDescriptor.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/InstanceCount.h"
 #include <stdexcept>
 #include <cstdlib>
@@ -15,8 +17,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-using DDSegmentation::BitField64;
-using DDSegmentation::BitFieldValue;
 
 namespace {
   void _construct(IDDescriptor::Object* o, const string& dsc) {
@@ -30,16 +30,6 @@ namespace {
       o->fieldMap.push_back(make_pair(f->name(), f));
     }
   }
-}
-
-/// Standard constructor
-IDDescriptor::Object::Object(const std::string& desc)
-    : TNamed(), BitField64(desc) /*, maxBit(0) */{
-  InstanceCount::increment(this);
-}
-/// Default destructor
-IDDescriptor::Object::~Object() {
-  InstanceCount::decrement(this);
 }
 
 /// Initializing constructor
@@ -124,7 +114,7 @@ VolumeID IDDescriptor::encode(const std::vector<VolID>& ids) const {
 void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& fields) {
   fields.clear();
   if (isValid()) {
-    const vector<BitFieldValue*>& v = data<Object>()->fields();
+    const vector<BitFieldValue*>& v = ptr()->fields();
     for (vector<BitFieldValue*>::const_iterator i = v.begin(); i != v.end(); ++i)
       fields.push_back(VolIDField(*i, (*i)->value(vid)));
     return;

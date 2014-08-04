@@ -67,5 +67,9 @@ install(DIRECTORY compact
   DESTINATION examples/${PackageName}
   PATTERN ".svn" EXCLUDE )
 
+install(DIRECTORY scripts
+  DESTINATION examples/${PackageName}
+  PATTERN ".svn" EXCLUDE )
+
 # to do: add corresponding uninstall...
 #-------------------------------------------------------

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 project(DDRec)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
-		    ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSegmentation/include 
+		    ${DDSegmentation_INCLUDE_DIRS}
 		    ${ROOT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/DDSurfaces/include 
 		    ${CMAKE_SOURCE_DIR}/DDCore/include)
 
@@ -11,7 +11,7 @@ file(GLOB sources src/*.cpp)
 
 
 #---------------------------  GEAR wrappers for backward compatibility  -----------
-if(DD4HEP_WITH_GEAR)
+if(DD4HEP_USE_GEAR)
 
   find_package(GEAR REQUIRED COMPONENTS geartgeo)
 
@@ -19,15 +19,15 @@ if(DD4HEP_WITH_GEAR)
 
   set(sources ${sources} src/gear/DDGear.cpp)
 
-  add_definitions("-D DD4HEP_WITH_GEAR")
+  add_definitions("-D DD4HEP_USE_GEAR")
 
 endif()
 #-------------------------------------------------------------------------------------
 
 add_library(DD4hepRec SHARED ${sources} )
 
-if(DD4HEP_WITH_GEAR)
-  target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} DDSegmentation DD4hepCore Geom Reflex ${libraries} ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES})
+if(DD4HEP_USE_GEAR)
+  target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} ${DDSegmentation_LIBRARIES} DD4hepCore Geom Reflex ${libraries} ${GEAR_LIBRARIES} ${GEAR_COMPONENT_LIBRARIES})
 
   #------ binary ----------
   
@@ -39,8 +39,8 @@ if(DD4HEP_WITH_GEAR)
     )
 
 else()
-  target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} DDSegmentation DD4hepCore Geom Reflex ${libraries})
-endif(DD4HEP_WITH_GEAR)
+  target_link_libraries(DD4hepRec ${ROOT_LIBRARIES} ${DDSegmentation_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
+endif(DD4HEP_USE_GEAR)
 
 
 SET(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
@@ -51,7 +51,7 @@ install(DIRECTORY include/DDRec
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-if(DD4HEP_WITH_GEAR)
+if(DD4HEP_USE_GEAR)
   install(TARGETS DD4hepRec convertToGear
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib

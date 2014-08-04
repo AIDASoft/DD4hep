@@ -1,0 +1,35 @@
+##############################################################################
+# cmake configuration file for DDSegmentation
+#
+# returns following variables:
+#
+#   DDSegmentation_FOUND      : set to TRUE if DDSegmentation found
+#   DDSegmentation_VERSION    : package version
+#   DDSegmentation_ROOT       : path to this DDSegmentation installation
+#   DDSegmentation_LIBRARIES  : list of DD4hep libraries
+#   DDSegmentation_INCLUDE_DIRS  : list of paths to be used with INCLUDE_DIRECTORIES
+#   DDSegmentation_LIBRARY_DIR  : list of paths to be used with LINK_DIRECTORIES
+#
+# @author Christian Grefe, CERN
+##############################################################################
+
+SET( DDSegmentation_ROOT "@CMAKE_INSTALL_PREFIX@" )
+SET( DDSegmentation_VERSION "@DDSegmentation_VERSION@" )
+
+# ---------- libraries --------------------------------------------------------
+# do not store find results in cache
+SET( DDSegmentation_INCLUDE_DIRS "@CMAKE_INSTALL_PREFIX@/include" )
+
+
+# Find the DDSegmentation libraries
+find_library(DDSegmentation_LIBRARIES
+  NAMES DDSegmentation
+  PATHS "@CMAKE_INSTALL_PREFIX@/lib"
+)
+
+MARK_AS_ADVANCED( DDSegmentation_INCLUDE_DIRS DDSegmentation_LIBRARY_DIRS DDSegmentation_LIBRARIES )
+
+INCLUDE( FindPackageHandleStandardArgs )
+# set DDSegmentation_FOUND to TRUE if all listed variables are TRUE and not empty
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( DDSegmentation DEFAULT_MSG DDSegmentation_ROOT DDSegmentation_INCLUDE_DIRS DDSegmentation_LIBRARIES )
+

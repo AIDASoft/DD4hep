@@ -48,10 +48,10 @@ namespace DD4hep {
       Geant4Converter& create(DetElement top);
 
       /// Convert the geometry type material into the corresponding Geant4 object(s).
-      virtual void* handleMaterial(const std::string& name, const TGeoMedium* medium) const;
+      virtual void* handleMaterial(const std::string& name, Material medium) const;
 
       /// Convert the geometry type element into the corresponding Geant4 object(s).
-      virtual void* handleElement(const std::string& name, const TGeoElement* element) const;
+      virtual void* handleElement(const std::string& name, Atom element) const;
 
       /// Convert the geometry type solid into the corresponding Geant4 object(s).
       virtual void* handleSolid(const std::string& name, const TGeoShape* volume) const;
@@ -68,22 +68,22 @@ namespace DD4hep {
       ///virtual void* handleField(const std::string& name, Ref_t field) const;
 
       /// Convert the geometry type region into the corresponding Geant4 object(s).
-      virtual void* handleRegion(const TNamed* region, const std::set<const TGeoVolume*>& volumes) const;
+      virtual void* handleRegion(Region region, const std::set<const TGeoVolume*>& volumes) const;
 
       /// Convert the geometry visualisation attributes to the corresponding Geant4 object(s).
-      virtual void* handleVis(const std::string& name, const TNamed* vis) const;
+      virtual void* handleVis(const std::string& name, VisAttr vis) const;
 
       /// Convert the geometry type LimitSet into the corresponding Geant4 object(s).
-      virtual void* handleLimitSet(const TNamed* limitset, const std::set<const TGeoVolume*>& volumes) const;
+      virtual void* handleLimitSet(LimitSet limitset, const std::set<const TGeoVolume*>& volumes) const;
 
       /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-      virtual void* handleSensitive(const TNamed* sens_det, const std::set<const TGeoVolume*>& volumes) const;
+      virtual void* handleSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
 
       /// Handle the geant 4 specific properties
       void handleProperties(LCDD::Properties& prp) const;
 
       /// Print the geometry type SensitiveDetector
-      virtual void* printSensitive(const TNamed* sens_det, const std::set<const TGeoVolume*>& volumes) const;
+      virtual void* printSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
       /// Print Geant4 placement
       virtual void* printPlacement(const std::string& name, const TGeoNode* node) const;
     };

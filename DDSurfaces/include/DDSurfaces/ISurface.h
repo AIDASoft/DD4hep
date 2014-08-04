@@ -28,12 +28,12 @@ namespace DDSurfaces {
 
     /** Helper class for 2d vectors */
     struct Vector2D{
-      double _x,_y ;
-      Vector2D() : _x(0.),_y(0.) {}
-      Vector2D(double x, double y ) : _x(x),_y(y) {}
-      double operator[](unsigned i) const { return i==0 ? _x : _y ; }  
-      double x() const { return _x ; } 
-      double y() const { return _y ; } 
+      double _u,_v ;
+      Vector2D() : _u(0.),_v(0.) {}
+      Vector2D(double u, double v ) : _u(u),_v(v) {}
+      double operator[](unsigned i) const { return i==0 ? _u : _v ; }  
+      double u() const { return _u ; } 
+      double v() const { return _v ; } 
     };
 
 
@@ -61,7 +61,7 @@ namespace DDSurfaces {
     /** Convert the global position to the local position (u,v) on the surface */
     virtual Vector2D globalToLocal( const Vector3D& point) const=0 ;
 
-    /** Convert the global position to the local position (u,v) on the surface */
+    /** Convert the local position (u,v) on the surface to the global position*/
     virtual Vector3D localToGlobal( const Vector2D& point) const=0 ;
 
     /** Get Origin of local coordinate system on surface */
@@ -118,7 +118,8 @@ namespace DDSurfaces {
       Helper,
       ParallelToZ,
       OrthogonalToZ,
-      Invisible
+      Invisible,
+      Measurement1D
     } ;
     
     ///default c'tor
@@ -148,6 +149,15 @@ namespace DDSurfaces {
       _bits.set( prop1 ) ;
       _bits.set( prop2 ) ;
       _bits.set( prop3 ) ;
+    } 
+ 
+   // c'tor that sets five properties
+    SurfaceType( unsigned prop0 , unsigned prop1 , unsigned prop2, unsigned prop3, unsigned prop4 ) : _bits(0) { 
+      _bits.set( prop0 ) ;
+      _bits.set( prop1 ) ;
+      _bits.set( prop2 ) ;
+      _bits.set( prop3 ) ;
+      _bits.set( prop4 ) ;
     } 
     
     /// set the given peorperty
@@ -183,6 +193,9 @@ namespace DDSurfaces {
     
     /// true if this is a plane orthogonal to Z
     bool isZDisk() const  { return ( _bits[ SurfaceType::Plane ] &&  _bits[ SurfaceType::OrthogonalToZ ] ) ; } 
+
+    /// true if the measurement is only 1D, i.e. the second direction v is not used
+    bool isMeasurement1D() const { return _bits[ SurfaceType::Measurement1D ] ; } 
 
 
     /// true if all properties of otherType are also true for this type.

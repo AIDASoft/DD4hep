@@ -105,6 +105,9 @@ install(TARGETS ${PackageName}
 install(DIRECTORY compact
   DESTINATION examples/${PackageName}
   PATTERN ".svn" EXCLUDE )
+install(DIRECTORY eve
+  DESTINATION examples/${PackageName}
+  PATTERN ".svn" EXCLUDE )
 
 # to do: add corresponding uninstall...
 #-------------------------------------------------------

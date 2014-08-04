@@ -11,7 +11,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/VolumeManagerInterna.h"
 #include "LCDDImp.h"
 
 // C/C++ include files
@@ -71,9 +71,20 @@ void lcdd_unexpected(){
               << "**************************************************** \n"
               << std::endl ;
 
+    std::set_unexpected( std::unexpected ) ;
+    std::set_terminate( std::terminate ) ;
    // this provokes ROOT seg fault and stack trace (comment out to avoid it)
    exit(1) ;
   }
+}
+
+/// Disable copy constructor
+LCDDImp::LCDDImp(const LCDDImp&) : LCDD(), LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)  {
+}
+
+/// Disable assignment operator
+LCDDImp& LCDDImp::operator=(const LCDDImp&) {
+  return *this;
 }
 
 LCDD& LCDD::getInstance() {
@@ -90,16 +101,13 @@ void LCDD::destroyInstance() {
 }
 
 /// Default constructor
-LCDDImp::LCDDImp()
-  : m_world(), m_trackers(), m_worldVol(), m_trackingVol(), m_field("global"), m_buildType(BUILD_NONE),
-    m_extensions(typeid(LCDDImp))
+LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
 {
 
   std::set_unexpected( lcdd_unexpected ) ;
   std::set_terminate( lcdd_unexpected ) ;
 
   InstanceCount::increment(this);
-  m_properties = new Properties();
   if (0 == gGeoManager) {
     gGeoManager = new TGeoManager("world", "LCDD Geometry");
   }
@@ -126,30 +134,15 @@ LCDDImp::LCDDImp()
 
 /// Standard destructor
 LCDDImp::~LCDDImp() {
-  m_extensions.clear();
-  destroyHandle(m_world);
-  destroyHandle(m_field);
-  destroyHandle(m_header);
-  destroyHandle(m_volManager);
-  destroyObject(m_properties);
-  for_each(m_readouts.begin(), m_readouts.end(), destroyHandles(m_readouts));
-  for_each(m_idDict.begin(), m_idDict.end(), destroyHandles(m_idDict));
-  for_each(m_limits.begin(), m_limits.end(), destroyHandles(m_limits));
-  for_each(m_regions.begin(), m_regions.end(), destroyHandles(m_regions));
-  for_each(m_alignments.begin(), m_alignments.end(), destroyHandles(m_alignments));
-  for_each(m_sensitive.begin(), m_sensitive.end(), destroyHandles(m_sensitive));
-  for_each(m_display.begin(), m_display.end(), destroyHandles(m_display));
-  for_each(m_fields.begin(), m_fields.end(), destroyHandles(m_fields));
-  for_each(m_define.begin(), m_define.end(), destroyHandles(m_define));
-
-  m_trackers.clear();
-  m_worldVol.clear();
-  m_trackingVol.clear();
-  m_invisibleVis.clear();
-  m_materialVacuum.clear();
-  m_materialAir.clear();
-  delete m_manager;
+  if ( m_manager == gGeoManager ) gGeoManager = 0;
+  destroyData();
   InstanceCount::decrement(this);
+}
+
+// Load volume manager
+void LCDDImp::imp_loadVolumeManager()   {
+  destroyHandle(m_volManager);
+  m_volManager = VolumeManager(*this, "World", world(), Readout(), VolumeManager::TREE);
 }
 
 /// Add an extension object to the LCDD instance
@@ -237,7 +230,7 @@ namespace {
     void patchShapes() {
       GeoHandler::Data& data = *m_data;
       string nam;
-      cout << "++ Patching names of anonymous shapes...." << endl;
+      printout(INFO,"LCDD","+++ Patching names of anonymous shapes....");
       for (GeoHandler::Data::const_reverse_iterator i = data.rbegin(); i != data.rend(); ++i) {
         const GeoHandler::Data::mapped_type& v = (*i).second;
         for (GeoHandler::Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
@@ -361,35 +354,7 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());
 #else
-  try {
-    LCDD* lcdd = this;
-    XML::DocumentHolder doc(XML::DocumentHandler().load(xmlfile));
-    XML::Handle_t xml_root = doc.root();
-    string tag = xml_root.tag();
-    string type = tag + "_XML_reader";
-    long result = PluginService::Create<long>(type, lcdd, &xml_root);
-    if (0 == result) {
-      PluginDebug dbg;
-      result = PluginService::Create<long>(type, lcdd, &xml_root);
-      if ( 0 == result )  {
-	throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
-			    " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));
-      }
-    }
-    result = *(long*) result;
-    if (result != 1) {
-      throw runtime_error("DD4hep: Failed to parse the XML file " + xmlfile + " with the plugin " + type);
-    }
-  }
-  catch (const XML::XmlException& e) {
-    throw runtime_error(XML::_toString(e.msg) + "\nDD4hep: XML-DOM Exception while parsing " + xmlfile);
-  }
-  catch (const exception& e) {
-    throw runtime_error(string(e.what()) + "\nDD4hep: while parsing " + xmlfile);
-  }
-  catch (...) {
-    throw runtime_error("DD4hep: UNKNOWN exception while parsing " + xmlfile);
-  }
+  processXML(xmlfile);
 #endif
 }
 

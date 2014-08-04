@@ -79,7 +79,9 @@ bool Geant4Filter::operator()(const G4Step*) const {
 
 /// Constructor. The detector element is identified by the name
 Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& name, DetElement det, LCDD& lcdd)
-    : Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0), m_lcdd(lcdd), m_detector(det), m_sensitive(), m_readout() {
+  : Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0), m_lcdd(lcdd), 
+    m_detector(det), m_sensitive(), m_readout(), m_segmentation()
+{
   InstanceCount::increment(this);
   if (!det.isValid()) {
     throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", name.c_str()));
@@ -87,6 +89,7 @@ Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& name, DetEle
   m_sequence  = ctxt->kernel().sensitiveAction(m_detector.name());
   m_sensitive = lcdd.sensitiveDetector(det.name());
   m_readout   = m_sensitive.readout();
+  m_segmentation = m_readout.segmentation();
 }
 
 /// Standard destructor
@@ -172,13 +175,13 @@ void Geant4Sensitive::clear(G4HCofThisEvent* /* HCE */) {
 
 /// Mark the track to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Track* track) const  {
-  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
   if ( truth ) truth->mark(track,true);
 }
 
 /// Mark the track of this step to be kept for MC truth propagation during hit processing
 void Geant4Sensitive::mark(const G4Step* step) const  {
-  Geant4MonteCarloTruth* truth = mcTruthMgr(false);
+  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
   if ( truth ) truth->mark(step);
 }
 
@@ -190,9 +193,27 @@ long long int Geant4Sensitive::volumeID(G4Step* s) {
   return id;
 }
 
+/// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the step
+long long int Geant4Sensitive::cellID(G4Step* s) {
+  StepHandler h(s);
+  typedef DDSegmentation::Vector3D _V;
+  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+  VolumeID volID = volMgr.volumeID(h.preTouchable());
+  if ( m_segmentation.isValid() )  {
+    G4ThreeVector global = 0.5 * ( h.prePosG4()+h.postPosG4());
+    G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
+    Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
+    Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
+    VolumeID cellID = m_segmentation.cellID(loc,glob,volID);
+    return cellID;
+  }
+  return volID;
+}
+
 /// Standard constructor
 Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* context, const string& nam)
-    : Geant4Action(context, nam), m_hce(0) {
+  : Geant4Action(context, nam), m_hce(0)
+{
   m_needsControl = true;
   context->sensitiveActions().insert(name(), this);
   /// Update the sensitive detector type, so that the proper instance is created
@@ -310,6 +331,7 @@ bool Geant4SensDetActionSequence::process(G4Step* step, G4TouchableHistory* hist
  */
 void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_hce = hce;
+  m_actors(ContextUpdate(context()));
   for (size_t count = 0; count < m_collections.size(); ++count) {
     const std::pair<string, create_t>& cr = m_collections[count];
     G4VHitsCollection* c = (*cr.second)(name(), cr.first);
@@ -324,6 +346,7 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
+  m_actors(ContextUpdate());
   m_hce = 0;
 }
 

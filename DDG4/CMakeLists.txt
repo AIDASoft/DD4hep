@@ -1,6 +1,6 @@
 #---Find Geant4-------------------------------------------------------------------
 
-find_package(Geant4 REQUIRED gdml ui_all vis_all)
+#find_package(Geant4 REQUIRED gdml ui_all vis_all)
 #if(NOT Geant4_clhep_FOUND)
 #  find_package(CLHEP REQUIRED)
 #  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
@@ -38,6 +38,9 @@ endif()
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 
 #---------------------------  Main geant4 interface library (no plugins!)-----------
+root_generate_dictionary( G__DDG4 ${CMAKE_CURRENT_SOURCE_DIR}/python/DDG4Dict.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
+list(APPEND sources G__DDG4.cxx)
+#
 add_library(DD4hepG4 SHARED ${sources})
 target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
@@ -100,11 +103,7 @@ install(DIRECTORY examples
   DESTINATION examples/DDG4
   PATTERN ".svn" EXCLUDE )
 
-install(DIRECTORY python
-  DESTINATION python/DDG4
-  PATTERN ".d" EXCLUDE
-  PATTERN ".so" EXCLUDE
-  PATTERN ".svn" EXCLUDE )
+install(FILES python/DD4hep.py python/DDG4.py python/DDG4Dict.C  DESTINATION python)
 
 install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay
   RUNTIME DESTINATION bin

@@ -9,7 +9,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 #include "VXDData.h"
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
 #include "DDRec/DDGear.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 #endif
@@ -43,7 +43,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   vxd_data->id = x_det.id();
 
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
   //--------------- gear: create gear::ZPlanarParameters and add them as Extension
   gear::ZPlanarParametersImpl* gearZPlanar = new gear::ZPlanarParametersImpl( gear::ZPlanarParameters::CCD ,  0.0,  0.0,  0.0,  0.0,  0.0 ) ;
   // ZPlanarParametersImpl( int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength ) ;
@@ -254,13 +254,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     }
     vxd.setVisAttributes(lcdd, x_det.visStr(),laddervol);
 
-#ifdef DD4HEP_WITH_GEAR
+#ifdef DD4HEP_USE_GEAR
     //----------------- gear ---------------------------------------------
-    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
-    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /tgeo::mm ; 
+    double ladderRadLength = suppmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
+    double sensitiveRadLength = sensmat->GetMaterial()->GetRadLen() /dd4hep::mm ; 
     
-    gearZPlanar->addLayer ( nLadders, phi0 ,  radius/tgeo::mm, offset/tgeo::mm ,  supp_thick/tgeo::mm  , 2*zhalf/tgeo::mm, width/tgeo::mm, ladderRadLength,  
-			    (radius+supp_thick)/tgeo::mm,  offset/tgeo::mm ,  sens_thick/tgeo::mm ,  2*zhalf/tgeo::mm ,  width/tgeo::mm, sensitiveRadLength) ;
+    gearZPlanar->addLayer ( nLadders, phi0 ,  radius/dd4hep::mm, offset/dd4hep::mm ,  supp_thick/dd4hep::mm  , 2*zhalf/dd4hep::mm, width/dd4hep::mm, ladderRadLength,  
+			    (radius+supp_thick)/dd4hep::mm,  offset/dd4hep::mm ,  sens_thick/dd4hep::mm ,  2*zhalf/dd4hep::mm ,  width/dd4hep::mm, sensitiveRadLength) ;
     
     // addLayer (int nLadders, double phi0, double ladderDistance, double ladderOffset, double ladderThickness, double ladderLength, double ladderWidth, double ladderRadLength, 
     //           double sensitiveDistance, double sensitiveOffset, double sensitiveThickness, double sensitiveLength, double sensitiveWidth, double sensitiveRadLength)

@@ -67,7 +67,7 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd)
-    : m_context(0), m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0), 
+    : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0), 
       m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0), 
       m_physicsList(0), m_mcTruthMgr(0), m_mcRecordMgr(0),
       m_lcdd(lcdd), phase(this) {
@@ -80,7 +80,6 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd)
   registerSequence(m_generatorAction,"GeneratorAction");
 #endif
   m_sensDetActions = new Geant4SensDetSequences();
-  m_context = new Geant4Context(this);
   m_lcdd.addExtension < Geant4Kernel > (this);
   declareProperty("UI",m_uiName);
   declareProperty("OutputLevel",m_outputLevel = DEBUG);
@@ -110,7 +109,6 @@ Geant4Kernel::~Geant4Kernel() {
   releasePtr (m_generatorAction);
   releasePtr (m_runAction);
   deletePtr  (m_sensDetActions);
-  deletePtr  (m_context);
   m_lcdd.removeExtension < Geant4Kernel > (false);
   m_lcdd.destroyInstance();
   InstanceCount::decrement(this);
@@ -224,13 +222,13 @@ void Geant4Kernel::terminate() {
   releasePtr (m_generatorAction);
   releasePtr (m_runAction);
   deletePtr  (m_sensDetActions);
-  deletePtr  (m_context);
   //return *this;
 }
 
 template <class C> bool Geant4Kernel::registerSequence(C*& seq, const std::string& name) {
   if (!name.empty()) {
-    seq = new C(m_context, name);
+    Geant4Context ctxt(this);
+    seq = new C(&ctxt, name);
     seq->installMessengers();
     return true;
   }
@@ -322,7 +320,8 @@ Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_inf
     const type_info& arg2, bool throw_on_exist) {
   Phases::const_iterator i = m_phases.find(nam);
   if (i == m_phases.end()) {
-    Geant4ActionPhase* p = new Geant4ActionPhase(m_context, nam, arg0, arg1, arg2);
+    Geant4Context ctxt(this);
+    Geant4ActionPhase* p = new Geant4ActionPhase(&ctxt, nam, arg0, arg1, arg2);
     m_phases.insert(make_pair(nam, p));
     return p;
   }
@@ -397,11 +396,12 @@ Geant4SensDetSequences& Geant4Kernel::sensitiveActions() const {
 }
 
 /// Access to the sensitive detector action from the kernel object
-Geant4SensDetActionSequence* Geant4Kernel::sensitiveAction(const string& nam) const {
+Geant4SensDetActionSequence* Geant4Kernel::sensitiveAction(const string& nam) {
   Geant4SensDetActionSequence* ptr = m_sensDetActions->find(nam);
   if (ptr)
     return ptr;
-  ptr = new Geant4SensDetActionSequence(context(), nam);
+  Geant4Context ctxt(this);
+  ptr = new Geant4SensDetActionSequence(&ctxt, nam);
   m_sensDetActions->insert(nam, ptr);
   return ptr;
 }
@@ -413,6 +413,7 @@ Geant4PhysicsListActionSequence* Geant4Kernel::physicsList(bool create) {
   return m_physicsList;
 }
 
+#if 0
 /// Access to the Track Manager from the kernel object
 Geant4MonteCarloTruth* Geant4Kernel::mcTruthMgr(bool throw_exception)     {
   if ( m_mcTruthMgr ) return m_mcTruthMgr;
@@ -442,4 +443,4 @@ Geant4MonteCarloRecordManager* Geant4Kernel::mcRecordMgr(bool throw_exception)  
   throw runtime_error(format("Geant4Kernel", "DDG4: No MonteCarloRecordManager defined. "
 			     "Geant4 tracks cannot be saved!"));
 }
-
+#endif

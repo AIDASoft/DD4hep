@@ -56,22 +56,22 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Handle<TYP
     value->addRef();
 }
 
-template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& kernel, const string& type_name)
+template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, const string& type_name)
     : value(0) {
   TypeName typ = TypeName::split(type_name);
-  Geant4Context* ctxt = kernel.context();
-  Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
+  Geant4Context ctxt(&kernel);
+  Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
   if (!object && typ.first == typ.second) {
     typ.first = typeName(typeid(TYPE));
     printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Object factory for %s not found. Try out %s", typ.second.c_str(),
-        typ.first.c_str());
-    object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
+	     typ.first.c_str());
+    object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
     if (!object) {
       size_t idx = typ.first.rfind(':');
       if (idx != string::npos)
         typ.first = string(typ.first.substr(idx + 1));
       printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Try out object factory for %s", typ.first.c_str());
-      object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
+      object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
     }
   }
   if (object) {
@@ -87,23 +87,23 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& ke
   throw runtime_error(format("Geant4Handle", "Failed to create object of type %s!", type_name.c_str()));
 }
 
-template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Kernel& kernel, const char* type_name_char)
+template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, const char* type_name_char)
     : value(0) {
   string type_name = type_name_char;
   TypeName typ = TypeName::split(type_name);
-  Geant4Context* ctxt = kernel.context();
-  Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
+  Geant4Context ctxt(&kernel);
+  Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
   if (!object && typ.first == typ.second) {
     typ.first = typeName(typeid(TYPE));
     printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Object factory for %s not found. Try out %s", typ.second.c_str(),
         typ.first.c_str());
-    object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
+    object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
     if (!object) {
       size_t idx = typ.first.rfind(':');
       if (idx != string::npos)
         typ.first = string(typ.first.substr(idx + 1));
       printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Try out object factory for %s", typ.first.c_str());
-      object = PluginService::Create<Geant4Action*>(typ.first, ctxt, typ.second);
+      object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
     }
   }
   if (object) {
@@ -193,14 +193,14 @@ namespace DD4hep {
       value = 0;
     }
 
-    template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(const Geant4Kernel& kernel, const string& type_name,
+    template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(Geant4Kernel& kernel, const string& type_name,
         const string& detector) {
       try {
-        Geant4Context* ctxt = kernel.context();
+        Geant4Context ctxt(&kernel);
         TypeName typ = TypeName::split(type_name);
         Geometry::LCDD& lcdd = kernel.lcdd();
         Geometry::DetElement det = lcdd.detector(detector);
-        Geant4Sensitive* object = PluginService::Create<Geant4Sensitive*>(typ.first, ctxt, typ.second, &det, &lcdd);
+        Geant4Sensitive* object = PluginService::Create<Geant4Sensitive*>(typ.first, &ctxt, typ.second, &det, &lcdd);
         if (object) {
           value = object;
           return;

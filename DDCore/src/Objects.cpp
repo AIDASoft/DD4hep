@@ -7,10 +7,12 @@
 //
 //====================================================================
 
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/IDDescriptor.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 
 #include "TMap.h"
 #include "TROOT.h"
@@ -20,6 +22,7 @@
 #include "TGeoElement.h"
 #include "TGeoMaterial.h"
 
+// C/C++ include files
 #include <cmath>
 #include <sstream>
 #include <iomanip>
@@ -29,7 +32,7 @@ using namespace DD4hep::Geometry;
 
 /// Constructor to be used when creating a new DOM tree
 Author::Author(LCDD& /* lcdd */) {
-  m_element = new TNamed("", "author");
+  m_element = new NamedObject("", "author");
 }
 
 /// Access the auhor's name
@@ -50,17 +53,6 @@ std::string Author::authorEmail() const {
 /// Set the author's email address
 void Author::setAuthorEmail(const std::string& addr) {
   m_element->SetTitle(addr.c_str());
-}
-
-/// Standard constructor
-Header::Object::Object()
-    : TNamed() {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Header::Object::~Object() {
-  InstanceCount::decrement(this);
 }
 
 /// Constructor to be used when creating a new DOM tree
@@ -141,12 +133,12 @@ void Header::setComment(const std::string& new_comment) {
 
 /// Constructor to be used when creating a new DOM tree
 Constant::Constant(const string& nam, const string& val) {
-  m_element = new TNamed(nam.c_str(), val.c_str());
+  m_element = new NamedObject(nam.c_str(), val.c_str());
 }
 
 /// Constructor to be used when creating a new DOM tree
 Constant::Constant(const string& name) {
-  m_element = new TNamed(name.c_str(), "");
+  m_element = new NamedObject(name.c_str(), "");
 }
 
 /// String representation of this object
@@ -234,19 +226,19 @@ string Material::toString() const {
   return os.str();
 }
 
-/// Standard constructor
-VisAttr::Object::Object()
-    : magic(magic_word()), col(0), color(0), alpha(0), drawingStyle(SOLID), lineStyle(SOLID), showDaughters(true), visible(true) {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-VisAttr::Object::~Object() {
-  InstanceCount::decrement(this);
+/// Constructor to be used when creating a new DOM tree
+VisAttr::VisAttr(const string& name) {
+  Object* obj = new Object();
+  assign(obj, name, "vis");
+  obj->color = 2;
+  setLineStyle (SOLID);
+  setDrawingStyle(SOLID);
+  setShowDaughters(true);
+  setAlpha(0.1f);
 }
 
 /// Constructor to be used when creating a new DOM tree
-VisAttr::VisAttr(const string& name) {
+VisAttr::VisAttr(const char* name) {
   Object* obj = new Object();
   assign(obj, name, "vis");
   obj->color = 2;
@@ -298,7 +290,7 @@ void VisAttr::setDrawingStyle(int value) {
 
 /// Get alpha value
 float VisAttr::alpha() const {
-  //TNamed* obj = first_value<TNamed>(*this);
+  //NamedObject* obj = first_value<NamedObject>(*this);
   //obj->SetAlpha(value);
   return object<Object>().alpha;
 }
@@ -306,7 +298,7 @@ float VisAttr::alpha() const {
 /// Set alpha value
 void VisAttr::setAlpha(float value) {
   object<Object>().alpha = value;
-  //TNamed* obj = first_value<TNamed>(*this);
+  //NamedObject* obj = first_value<NamedObject>(*this);
   //obj->SetAlpha(value);
 }
 
@@ -412,16 +404,6 @@ string Limit::toString() const {
   return res;
 }
 
-/// Standard constructor
-LimitSet::Object::Object() {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-LimitSet::Object::~Object() {
-  InstanceCount::decrement(this);
-}
-
 /// Constructor to be used when creating a new DOM tree
 LimitSet::LimitSet(const string& name) {
   assign(new Object(), name, "limitset");
@@ -437,18 +419,6 @@ bool LimitSet::addLimit(const Limit& limit) {
 const set<Limit>& LimitSet::limits() const {
   const Object* o = data<Object>();
   return *o;
-}
-
-/// Standard constructor
-Region::Object::Object() 
-  : magic(magic_word()), threshold(10.0), cut(10.0), store_secondaries(false)
-{
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Region::Object::~Object() {
-  InstanceCount::decrement(this);
 }
 
 /// Constructor to be used when creating a new DOM tree

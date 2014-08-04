@@ -29,15 +29,16 @@ namespace DD4hep {
     class DetElement;
 
     namespace ConditionsInterna  {
-      class Container;
-      class Object;
+      class ConditionContainer;
+      class ConditionObject;
       class Entry;
       class IOV;
     }
 
-    /** @class Block  ConditionsInterna.h DD4hep/ConditionsInterna.h
-     * 
-     *  Class describing an opaque conditions data block
+    /// Class describing an opaque conditions data block
+    /** 
+     *  Access methods are templated. Once the access is fixed
+     *  on the first call, the data type may not be changed anymore.
      *
      * @author  M.Frank
      * @version 1.0
@@ -67,18 +68,17 @@ namespace DD4hep {
       template <typename T> inline const T& get() const;
     };
 
-    /** @class Condition  Condition.h DD4hep/Condition.h
-     * 
-     *  See the documentation about the TGeoPhysicalNode for further
-     *  details.
+    /// Main condition object handle.
+    /**  
+     *  This objects allows access to the data block and
+     *  the interval of validity for a single condition.
      *
-     *
-     * @author  M.Frank
-     * @version 1.0
+     *  @author  M.Frank
+     *  @version 1.0
      */
-    class Condition: public Handle<ConditionsInterna::Object> {
+    class Condition: public Handle<ConditionsInterna::ConditionObject> {
     public:
-      typedef ConditionsInterna::Object Object;
+      typedef ConditionsInterna::ConditionObject Object;
       typedef ConditionsInterna::Entry Entry;
       typedef ConditionsInterna::IOV IOV;
 
@@ -151,19 +151,19 @@ namespace DD4hep {
     };
 
     /// Initializing constructor
-    inline Condition::Condition(Object* p) : Handle<Object>(p)  {
+    inline Condition::Condition(Condition::Object* p) : Handle<Condition::Object>(p)  {
     }
 
     /// Copy constructor
-    inline Condition::Condition(const Condition& c) : Handle<Object>(c)   {
+    inline Condition::Condition(const Condition& c) : Handle<Condition::Object>(c)   {
     }
 
     /// Default constructor
-    inline Condition::Condition() : Handle<Object>()   {
+    inline Condition::Condition() : Handle<Condition::Object>()   {
     }
 
-    /** @class Conditions  Conditions.h DD4hep/Conditions.h
-     *
+    /// Container class for condition handles aggregated by a detector element
+    /** 
      *  Note: The conditions container is owner by the detector element
      *        On deletion the detector element will destroy the container
      *        and all associated entries.
@@ -171,9 +171,9 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Conditions : public Handle<ConditionsInterna::Container> {
+    struct Conditions : public Handle<ConditionsInterna::ConditionContainer> {
       /// Standard object type
-      typedef ConditionsInterna::Container Object;
+      typedef ConditionsInterna::ConditionContainer Object;
       /// Local helper definition
       typedef ConditionsInterna::Entry     Entry;
 

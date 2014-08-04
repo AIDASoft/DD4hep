@@ -73,25 +73,37 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     ++layerType;
   }
 
-  DetElement sdet(det_name,x_det.id());
+  DetElement sdet(det_name,det_id);
   Volume motherVol = lcdd.pickMotherVolume(sdet);
-  PlacedVolume  physvol = motherVol.placeVolume(envelopeVol,
-						Transform3D(RotationZYX(M_PI/numsides,0,0),
-							    Position(0,0,zmin+totalThickness/2)));
-  physvol.addPhysVolID("system",det_id);
-  physvol.addPhysVolID("barrel",1);        
-  sdet.setPlacement(physvol);
-    
-  if ( reflect ) {
-    DetElement rdet(det_name+"_neg",x_det.id());
-    physvol = motherVol.placeVolume(envelopeVol,
-				    Transform3D(RotationZYX(M_PI/numsides,M_PI,0),
+  // Reflect it.
+  if ( reflect )  {
+    Assembly assembly(det_name+"_assembly");
+    PlacedVolume pv = motherVol.placeVolume(assembly);
+    pv.addPhysVolID("system", det_id);
+    sdet.setPlacement(pv);
+
+    DetElement   sdetA(sdet,det_name+"_A",x_det.id());
+    pv = assembly.placeVolume(envelopeVol,Transform3D(RotationZYX(M_PI/numsides,0,0),
+						      Position(0,0,zmin+totalThickness/2)));
+    pv.addPhysVolID("barrel", 1);
+    sdetA.setPlacement(pv);
+
+    DetElement   sdetB = sdetA.clone(det_name+"_B",x_det.id());
+    sdet.add(sdetB);
+    pv = assembly.placeVolume(envelopeVol,Transform3D(RotationZYX(M_PI/numsides,M_PI,0),
 						Position(0,0,-(zmin+totalThickness/2))));
-    physvol.addPhysVolID("system",det_id);
-    physvol.addPhysVolID("barrel",2);
-    rdet.setPlacement(physvol);
-    lcdd.addDetector(rdet);
+    pv.addPhysVolID("barrel", 2);
+    sdetB.setPlacement(pv);
   }
+  else  {
+    PlacedVolume pv = motherVol.placeVolume(envelopeVol,
+					    Transform3D(RotationZYX(M_PI/numsides,0,0),
+							Position(0,0,zmin+totalThickness/2)));
+    pv.addPhysVolID("system", det_id);
+    pv.addPhysVolID("barrel", 1);
+    sdet.setPlacement(pv);
+  }
+
   return sdet;
 }
 

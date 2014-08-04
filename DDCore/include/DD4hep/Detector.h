@@ -37,8 +37,8 @@ namespace DD4hep {
     class DetElementObject;
     class SensitiveDetectorObject;
 
-    /** @class SensitiveDetector Detector.h DD4hep/lcdd/Detector.h
-     *
+    /// Handle class to hold the information of a sensitive detector.
+    /**
      *  @author  M.Frank
      *  @version 1.0
      */
@@ -154,26 +154,27 @@ namespace DD4hep {
       }
 
       /// Access extension element by the type
-      template <class T> T* extension() const {
-        return (T*) i_extension(typeid(T));
+      template <typename IFACE> IFACE* extension() const {
+        return (IFACE*) i_extension(typeid(IFACE));
       }
     };
 
-    /** @class SubDetector Detector.h DD4hep/lcdd/Detector.h
-     *
+    /// Handle class describing a detector element
+    /**
      * Detector elements (class DetElement are entities which represent 
      * subdetectors or sizable parts of a subdetector.
      * A DetElement instance has the means to provide to clients information about
      *
-     * --  the detector hierarchy by exposing its children.
-     * --  its placement within the overall experiment if it represents an 
-     * entire subdetector or its placement with respect to its parent
-     * if the \tw{DetElement} represents a part of a subdetector.
-     * --  information about the \tw{Readout} structure if the object is 
-     * instrumented and read-out. Otherwise this link is empty.
-     * --  information about the environmental conditions etc. (\tw{conditons}).
-     * --  alignment information.
-     *
+     * <ul>
+     * <li>  the detector hierarchy by exposing its children.
+     * <li>  its placement within the overall experiment if it represents an 
+     *       entire subdetector or its placement with respect to its parent
+     *       if the \tw{DetElement} represents a part of a subdetector.
+     * <li>  information about the \tw{Readout} structure if the object is 
+     *       instrumented and read-out. Otherwise this link is empty.
+     * <li>  information about the environmental conditions etc. (\tw{conditons}).
+     * <li>  alignment information.
+     * </ul>
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -236,7 +237,7 @@ namespace DD4hep {
       : RefObject() {
       }
 
-      /// Constructor to copy handled object
+      /// Constructor to hold handled object
     DetElement(Object* ptr)
       : RefObject(ptr) {
       }
@@ -256,7 +257,7 @@ namespace DD4hep {
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
-    DetElement(const Ref_t& e)
+      DetElement(const Ref_t& e)
       : RefObject(e) {
       }
 #endif
@@ -301,12 +302,10 @@ namespace DD4hep {
 	CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
         return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _copy<CONCRETE>, _delete<IFACE>);
       }
-
       /// Access extension element by the type
-      template <class T> T* extension() const {
-        return (T*) i_extension(typeid(T));
+      template <typename IFACE> IFACE* extension() const {
+        return (IFACE*) i_extension(typeid(IFACE));
       }
-
       /// Extend the detector element with an arbitrary callback
       template <typename Q, typename T> 
 	void callAtUpdate(unsigned int type, Q* pointer, 
@@ -401,10 +400,5 @@ namespace DD4hep {
 
   } /* End namespace Geometry      */
 } /* End namespace DD4hep        */
-
-// It is not so clear if Clients do really rely on the interna 
-// of the DetElement and the SensitiveDetector object ....
-
-//#include "DD4hep/objects/DetectorInterna.h"
 
 #endif    /* DD4HEP_DETECTOR_H      */

@@ -13,11 +13,15 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/DetectorTools.h"
+#include "DD4hep/DD4hepRootPersistency.h"
 #include "../LCDDImp.h"
 
 // ROOT includes
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
+
+#include <fstream>
 
 using namespace std;
 using namespace DD4hep;
@@ -105,7 +109,7 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
     LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
     if ( imp )  {
-      imp->m_volManager = VolumeManager(lcdd, "World", imp->world(), Readout(), VolumeManager::TREE);
+      imp->imp_loadVolumeManager();
       printout(INFO,"VolumeManager","+++ Volume manager populated and loaded.");
       return 1;
     }
@@ -121,16 +125,32 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
 }
 DECLARE_APPLY(DD4hepVolumeManager,load_volmgr)
 
-static long dump_geometry(LCDD& lcdd, int argc, char** argv) {
-  if ( argc > 1 )   {
-    string output = argv[1];
-    printout(INFO,"Geometry2Root","+++ Dump geometry to root file:%s",output.c_str());
-    lcdd.manager().Export(output.c_str()+1);
-    return 1;
+static long dump_geometry2root(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 0 )   {
+    string output = argv[0];
+    printout(INFO,"Geometry2ROOT","+++ Dump geometry to root file:%s",output.c_str());
+    //lcdd.manager().Export(output.c_str()+1);
+    if ( DD4hepRootPersistency::save(lcdd,output.c_str(),"Geometry") > 1 )  {
+      return 1;
+    }
   }
+  printout(ERROR,"Geometry2ROOT","+++ No output file name given.");
   return 0;
 }
-DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
+DECLARE_APPLY(DD4hepGeometry2ROOT,dump_geometry2root)
+
+static long load_geometryFromroot(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 0 )   {
+    string input = argv[0];
+    printout(INFO,"DD4hepRootLoader","+++ Read geometry from root file:%s",input.c_str());
+    if ( 1 == DD4hepRootPersistency::load(lcdd,input.c_str(),"Geometry") )  {
+      return 1;
+    }
+  }
+  printout(ERROR,"DD4hepRootLoader","+++ No input file name given.");
+  return 0;
+}
+DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
 
 /** Basic entry point to print out the volume hierarchy
  *
@@ -139,15 +159,31 @@ DECLARE_APPLY(DD4hepGeometry2Root,dump_geometry)
  *  @date    01/04/2014
  */
 static long dump_volume_tree(LCDD& lcdd, int , char** ) {
-  struct Actor { static long dump(TGeoNode* node,int level) {
-    char fmt[64];
-    ::sprintf(fmt,"%03d %%-%ds %%s",level+1,2*level+1);
-    printout(INFO,"+++",fmt,"",node->GetName());
-    for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau)
-      Actor::dump(node->GetDaughter(idau),level+1);
+  struct Actor { static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
+    char fmt[256];
+    if ( ideal == aligned )  {
+      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
+    }
+    else  {
+      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
+		 level+1,2*level+1,(void*)ideal,(void*)aligned);
+    }
+    printout(INFO,"+++",fmt,"",aligned->GetName());
+    TGeoVolume* volume = ideal->GetVolume();
+    for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
+      TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
+      const char* daughter_name    = ideal_daughter->GetName();
+      TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
+      Actor::dump(ideal_daughter,aligned_daughter,level+1);
+    }
     return 1;
   }};
-  return Actor::dump(lcdd.world().placement().ptr(),0);
+  string place = lcdd.world().placementPath();
+  DetectorTools::PlacementPath path;
+  DetectorTools::placementPath(lcdd.world(), path);
+  PlacedVolume  pv = DetectorTools::findNode(lcdd.world().placement(),place);
+  return Actor::dump(lcdd.world().placement().ptr(),pv.ptr(),0);
+  //return Actor::dump(lcdd.manager().GetTopNode(),pv.ptr(),0);
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 
@@ -197,3 +233,29 @@ static long detelement_cache(LCDD& lcdd, int , char** ) {
   return Actor::cache(lcdd.world());
 }
 DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)
+
+#include "../GeometryTreeDump.h"
+static long exec_GeometryTreeDump(LCDD& lcdd, int, char** ) {
+  GeometryTreeDump dmp;
+  dmp.create(lcdd.world());
+  return 1;
+}
+DECLARE_APPLY(DD4hepGeometryTreeDump,exec_GeometryTreeDump)
+
+#include "../SimpleGDMLWriter.h"
+static long exec_SimpleGDMLWriter(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 1 )   {
+    string output = argv[1];
+    ofstream out(output.c_str()+1,ios_base::out);
+    SimpleGDMLWriter dmp(out);
+    dmp.create(lcdd.world());
+  }
+  else   {
+    SimpleGDMLWriter dmp(cout);
+    dmp.create(lcdd.world());
+  }
+  return 1;
+}
+
+DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
+

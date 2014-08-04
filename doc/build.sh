@@ -37,7 +37,7 @@ then
 	echo "`pwd`";
 	mkdir ${BUILD_DIR};
 	cd    ${BUILD_DIR};
-	cmake -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_WITH_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF ${BUILD_DIR}/DD4hep;
+	cmake -DCMAKE_BUILD_TYPE=Debug -DDD4HEP_USE_GEANT4=OFF -DDD4HEP_USE_PYROOT=OFF ${BUILD_DIR}/DD4hep;
 	make -j 5;
 	. thisdd4hep.sh;
 	export LD_LIBRARY_PATH=${BUILD_DIR}/lib:${BUILD_DIR}/../DD4hep/examples/CLICSiD/lib:$LD_LIBRARY_PATH;

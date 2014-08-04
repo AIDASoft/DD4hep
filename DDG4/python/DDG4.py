@@ -1,28 +1,10 @@
-import os, sys, imp, exceptions
-# Add ROOT to the python path in case it is not yet there....
-sys.path.append(os.environ['ROOTSYS']+os.sep+'lib')
-import ROOT
-#---------------------------------------------------------------------------
-# We compile the DDG4 plugin on the fly if it does not exist using the AClick mechanism:
-def compileAClick(dictionary,g4=True):
-  from ROOT import gInterpreter, gSystem
-  import os.path
-  dd4hep = os.environ['DD4hepINSTALL']
-  inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
-  lib    = ' -L'+dd4hep+'/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation '
-  if g4:
-    geant4 = os.environ['G4INSTALL']
-    inc    = inc + ' -I'+geant4+'/include/Geant4 -Wno-shadow -g -O0 '
-    lib    = lib + ' -L'+geant4+'/lib  -L'+geant4+'/lib64 -lG4event -lG4tracking -lG4particles '
+from DD4hep import *
 
-  gSystem.AddIncludePath(inc)
-  gSystem.AddLinkedLibs(lib)
-  #####print "Includes:   ",gSystem.GetIncludePath(),"\n","Linked libs:",gSystem.GetLinkedLibs()
-  package = imp.find_module('DDG4')
-  dic = os.path.dirname(package[1])+os.sep+dictionary
-  ###print dic
-  gInterpreter.ProcessLine('.L '+dic+'+')
-  #####gInterpreter.Load('DDG4Dict_C.so')
+def loadDDG4():
+  from ROOT import gSystem
+  result = gSystem.Load("libDD4hepG4")
+  if 0 != result:
+    raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepG4: '+gSystem.GetErrorStr())
   from ROOT import DD4hep as module
   return module
 
@@ -33,24 +15,22 @@ def _import_class(ns,nam):
   setattr(current,nam,getattr(scope,nam))
 
 #---------------------------------------------------------------------------
-DD4hep     = compileAClick(dictionary='DDG4Dict.C',g4=True) 
+#
+try:
+  DD4hep     = loadDDG4() 
+except Exception,X:
+  print '+--%-100s--+'%(100*'-',)
+  print '|  %-100s  |'%('Failed to load DDG4 library:',)
+  print '|  %-100s  |'%(str(X),)
+  print '|  %-100s  |'%('Try to compile AClick on the fly.',)
+  print '+--%-100s--+'%(100*'-',)
+  DD4hep   = compileAClick(dictionary='DDG4Dict.C',g4=True)  
+Core       = DD4hep
 Sim        = DD4hep.Simulation
 Simulation = DD4hep.Simulation
 
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
-
-class _Levels:
-  def __init__(self):
-    self.VERBOSE=1
-    self.DEBUG=2
-    self.INFO=3
-    self.WARNING=4
-    self.ERROR=5
-    self.FATAL=6 
-    self.ALWAYS=7
-
-OutputLevel = _Levels()
 
 def _registerGlobalAction(self,action):
   self.get().registerGlobalAction(Interface.toAction(action))
@@ -58,6 +38,7 @@ def _registerGlobalFilter(self,filter):
   self.get().registerGlobalFilter(Interface.toAction(filter))
 #---------------------------------------------------------------------------
 def _getKernelProperty(self, name):
+  import exceptions
   #print '_getKernelProperty:',str(type(self)),name
   ret = Interface.getPropertyKernel(self.get(),name)
   if ret.status > 0:
@@ -81,7 +62,6 @@ Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
-
 
 ActionHandle                = Sim.ActionHandle
 #---------------------------------------------------------------------------
@@ -173,53 +153,79 @@ _props('PhysicsListActionSequenceHandle')
 _props('SensDetActionSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
-#---------------------------------------------------------------------------
-Geo        = DD4hep.Geometry
-Geometry   = DD4hep.Geometry
 
-_import_class('Geo','LCDD')
-_import_class('Geo','VolumeManager')
-_import_class('Geo','OverlayedField')
+"""
+Helper object to perform stuff, which occurs very often.
+I am sick of typing the same over and over again.
 
-#// Objects.h
-_import_class('Geo','Author')
-_import_class('Geo','Header')
-_import_class('Geo','Constant')
-_import_class('Geo','Atom')
-_import_class('Geo','Material')
-_import_class('Geo','VisAttr')
-_import_class('Geo','AlignmentEntry')
-_import_class('Geo','Limit')
-_import_class('Geo','LimitSet')
-_import_class('Geo','Region')
+@author  M.Frank
+@version 1.0
 
-#// Readout.h
-_import_class('Geo','Readout')
-_import_class('Geo','Alignment')
-_import_class('Geo','Conditions')
+"""
+class Simple:
+  def __init__(self, kernel,calo='Geant4SimpleCalorimeterAction',tracker='Geant4SimpleTrackerAction'):
+    kernel.UI = "UI"
+    kernel.printProperties()
+    self.kernel = kernel
+    self.calo = calo
+    self.tracker = tracker
+  def printDetectors(self):
+    lcdd = self.kernel.lcdd()
+    print '+++  List of sensitive detectors:'
+    for i in lcdd.detectors(): 
+      o = DetElement(i.second)
+      sd = lcdd.sensitiveDetector(o.name())
+      if sd.isValid():
+        print '+++  %-32s type:%s'%(o.name(), sd.type(), )
 
-#// DetElement.h
-_import_class('Geo','DetElement')
-_import_class('Geo','SensitiveDetector')
+  def setupDetector(self,name,sensitive_type):
+    seq = SensitiveSequence(self.kernel,'Geant4SensDetActionSequence/'+name)
+    act = SensitiveAction(self.kernel,sensitive_type+'/'+name+'Handler',name)
+    seq.add(act)
+    return (seq,act)
 
-#// Volume.h
-_import_class('Geo','Volume')
-_import_class('Geo','PlacedVolume')
+  def setupCalorimeter(self,name,type=None):
+    if type is None: type = self.calo
+    return self.setupDetector(name,type)
 
-#// Shapes.h
-_import_class('Geo','Polycone')
-_import_class('Geo','ConeSegment')
-_import_class('Geo','Box')
-_import_class('Geo','Torus')
-_import_class('Geo','Cone')
-_import_class('Geo','Tube')
-_import_class('Geo','Trap')
-_import_class('Geo','Trapezoid')
-_import_class('Geo','Sphere')
-_import_class('Geo','Paraboloid')
-_import_class('Geo','PolyhedraRegular')
-_import_class('Geo','BooleanSolid')
-_import_class('Geo','SubtractionSolid')
-_import_class('Geo','UnionSolid')
-_import_class('Geo','IntersectionSolid')
+  def setupTracker(self,name,type=None):
+    if type is None: type = self.tracker
+    return self.setupDetector(name,type)
 
+  def setupPhysics(self,name):
+    phys = self.kernel.physicsList()
+    phys.extends = name
+    phys.decays  = True
+    phys.enableUI()
+    phys.dump()
+    return phys
+  def setupGun(self, name, particle, energy, isotrop=True, multiplicity=1, position=(0.0,0.0,0.0)):
+    gun = GeneratorAction(self.kernel,"Geant4ParticleGun/"+name)
+    gun.energy   = energy
+    gun.particle = particle
+    gun.multiplicity = multiplicity
+    gun.position = position
+    gun.isotrop = isotrop
+    gun.enableUI()
+    self.kernel.generatorAction().add(gun)
+  def setupCshUI(self):
+    # Configure UI
+    ui = Action(self.kernel,"Geant4UIManager/UI")
+    ui.HaveVIS = True
+    ui.HaveUI = True
+    ui.SessionType = 'csh'
+    self.kernel.registerGlobalAction(ui)
+  def setupROOTOutput(self,name,output):
+    evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)
+    evt_root.Control = True
+    evt_root.Output = output+'.root'
+    evt_root.enableUI()
+    self.kernel.eventAction().add(evt_root)
+    return evt_root
+  def setupLCIOOutput(self,name,output):
+    evt_lcio = EventAction(self.kernel,'Geant4Output2LCIO/'+name)
+    evt_lcio.Control = True
+    evt_lcio.Output = output
+    evt_lcio.enableUI()
+    self.kernel.eventAction().add(evt_lcio)
+    return evt_lcio

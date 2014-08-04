@@ -12,6 +12,7 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Segmentations.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "XML/DocumentHandler.h"
 #include "LCDDConverter.h"
@@ -87,7 +88,7 @@ namespace {
     Volume v = Ref_t(volume);
     return v.data() != 0;
   }
-  bool is_placement(const TGeoNode* node)  {
+  bool is_placement(PlacedVolume node)  {
     PlacedVolume v = Ref_t(node);
     return v.data() != 0;
   }
@@ -114,7 +115,7 @@ LCDDConverter::~LCDDConverter() {
 }
 
 /// Dump element in GDML format to output stream
-xml_h LCDDConverter::handleElement(const string& /* name */, const TGeoElement* element) const {
+xml_h LCDDConverter::handleElement(const string& /* name */, Atom element) const {
   GeometryInfo& geo = data();
   xml_h e = geo.xmlElements[element];
   if (!e) {
@@ -133,7 +134,7 @@ xml_h LCDDConverter::handleElement(const string& /* name */, const TGeoElement* 
 }
 
 /// Dump material in GDML format to output stream
-xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium) const {
+xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
   GeometryInfo& geo = data();
   xml_h mat = geo.xmlMaterials[medium];
   if (!mat) {
@@ -160,7 +161,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
       double sum = 0e0;
       for (int i = 0, n = mix->GetNelements(); i < n; i++) {
         TGeoElement *elt = mix->GetElement(i);
-        handleElement(elt->GetName(), elt);
+        handleElement(elt->GetName(), Atom(elt));
         sum += wmix[i];
       }
       for (int i = 0, n = mix->GetNelements(); i < n; i++) {
@@ -181,7 +182,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, const TGeoMedium* medium
       TGeoElement *elt = m->GetElement(0);
       cout << "Converting non mixing material:" << name << endl;
       xml_elt_t atom(geo.doc, _U(atom));
-      handleElement(elt->GetName(), elt);
+      handleElement(elt->GetName(), Atom(elt));
       mat.append(atom);
       mat.setAttr(_U(Z), m->GetZ());
       atom.setAttr(_U(type), "A");
@@ -598,7 +599,7 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
 }
 
 /// Dump logical volume in GDML format to output stream
-xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) const {
+xml_h LCDDConverter::handleVolume(const string& name, Volume volume) const {
   GeometryInfo& geo = data();
   xml_h vol = geo.xmlVolumes[volume];
   if (!vol) {
@@ -624,7 +625,7 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
       vol.setAttr(_U(name), n);
       if (m) {
         string mat_name = m->GetName();
-        xml_ref_t med = handleMaterial(mat_name, m);
+        xml_ref_t med = handleMaterial(mat_name, Material(m));
         vol.setRef(_U(materialref), med.name());
       }
       vol.setRef(_U(solidref), sol.name());
@@ -644,19 +645,19 @@ xml_h LCDDConverter::handleVolume(const string& name, const TGeoVolume* volume) 
       VisAttr vis = _v.visAttributes();
       SensitiveDetector det = _v.sensitiveDetector();
       if (det.isValid()) {
-        xml_ref_t data = handleSensitive(det.name(), det.ptr());
+        xml_ref_t data = handleSensitive(det.name(), det);
         vol.setRef(_U(sdref), data.name());
       }
       if (reg.isValid()) {
-        xml_ref_t data = handleRegion(reg.name(), reg.ptr());
+        xml_ref_t data = handleRegion(reg.name(), reg);
         vol.setRef(_U(regionref), data.name());
       }
       if (lim.isValid()) {
-        xml_ref_t data = handleLimitSet(lim.name(), lim.ptr());
+        xml_ref_t data = handleLimitSet(lim.name(), lim);
         vol.setRef(_U(limitsetref), data.name());
       }
       if (vis.isValid()) {
-        xml_ref_t data = handleVis(vis.name(), vis.ptr());
+        xml_ref_t data = handleVis(vis.name(), vis);
         vol.setRef(_U(visref), data.name());
       }
     }
@@ -676,7 +677,7 @@ xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume*
       if (vis.isValid()) {
         geo.doc_structure.append(vol = xml_elt_t(geo.doc, _U(volume)));
         vol.setAttr(_U(name), v->GetName());
-        xml_ref_t data = handleVis(vis.name(), vis.ptr());
+        xml_ref_t data = handleVis(vis.name(), vis);
         vol.setRef(_U(visref), data.name());
         geo.xmlVolumes[v] = vol;
       }
@@ -694,23 +695,22 @@ void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* vo
     LimitSet lim = v.limitSet();
     SensitiveDetector det = v.sensitiveDetector();
     if (lim.isValid())
-      geo.limits.insert(lim.ptr());
+      geo.limits.insert(lim);
     if (reg.isValid())
-      geo.regions.insert(reg.ptr());
+      geo.regions.insert(reg);
     if (det.isValid())
-      geo.sensitives.insert(det.ptr());
+      geo.sensitives.insert(det);
   }
   else {
     cout << "LCDDConverter::collectVolume: Skip volume:" << volume->GetName() << endl;
   }
 }
 
-void LCDDConverter::checkVolumes(const string& name, const TGeoVolume* volume) const {
+void LCDDConverter::checkVolumes(const string& name, Volume v) const {
   NameSet::const_iterator i = m_checkNames.find(name);
   if (i != m_checkNames.end()) {
-    Volume v = Ref_t(volume);
     cout << "checkVolumes: Volume " << name << " ";
-    if (is_volume(volume))     {
+    if (is_volume(v.ptr()))     {
       SensitiveDetector s = v.sensitiveDetector();
       VisAttr vis = v.visAttributes();
       if (s.isValid()) {
@@ -727,7 +727,7 @@ void LCDDConverter::checkVolumes(const string& name, const TGeoVolume* volume) c
 }
 
 /// Dump volume placement in GDML format to output stream
-xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) const {
+xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const {
   GeometryInfo& geo = data();
   xml_h place = geo.xmlPlacements[node];
   if (!place) {
@@ -743,9 +743,9 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
     place.setRef(_U(volumeref), vol.name());
     if (m) {
       char text[32];
-      ::snprintf(text, sizeof(text), "_%p_pos", (void*)node);
+      ::snprintf(text, sizeof(text), "_%p_pos", (void*)node.ptr());
       xml_ref_t pos = handlePosition(name + text, m);
-      ::snprintf(text, sizeof(text), "_%p_rot", (void*)node);
+      ::snprintf(text, sizeof(text), "_%p_rot", (void*)node.ptr());
       place.setRef(_U(positionref), pos.name());
       if ( m->IsRotation() )  {
 	xml_ref_t rot = handleRotation(name + text, m);
@@ -754,8 +754,7 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
     }
     if (geo.doc_root.tag() != "gdml") {
       if (is_placement(node)) {
-        PlacedVolume p = Ref_t(node);
-        const PlacedVolume::VolIDs& ids = p.volIDs();
+        const PlacedVolume::VolIDs& ids = node.volIDs();
         for (PlacedVolume::VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
           xml_h pvid = xml_elt_t(geo.doc, _U(physvolid));
           pvid.setAttr(_U(field_name), (*i).first);
@@ -773,28 +772,26 @@ xml_h LCDDConverter::handlePlacement(const string& name, const TGeoNode* node) c
 }
 
 /// Convert the geometry type region into the corresponding LCDD object(s).
-xml_h LCDDConverter::handleRegion(const std::string& /* name */, const TNamed* region) const {
+xml_h LCDDConverter::handleRegion(const std::string& /* name */, Region region) const {
   GeometryInfo& geo = data();
   xml_h reg = geo.xmlRegions[region];
   if (!reg) {
-    Region r = Ref_t(region);
     geo.doc_regions.append(reg = xml_elt_t(geo.doc, _U(region)));
-    reg.setAttr(_U(name), r.name());
-    reg.setAttr(_U(cut), r.cut());
-    reg.setAttr(_U(eunit), r.energyUnit());
-    reg.setAttr(_U(lunit), r.lengthUnit());
-    reg.setAttr(_U(store_secondaries), r.storeSecondaries());
+    reg.setAttr(_U(name), region.name());
+    reg.setAttr(_U(cut), region.cut());
+    reg.setAttr(_U(eunit), region.energyUnit());
+    reg.setAttr(_U(lunit), region.lengthUnit());
+    reg.setAttr(_U(store_secondaries), region.storeSecondaries());
     geo.xmlRegions[region] = reg;
   }
   return reg;
 }
 
 /// Convert the geometry type LimitSet into the corresponding LCDD object(s)
-xml_h LCDDConverter::handleLimitSet(const std::string& /* name */, const TNamed* limitset) const {
+xml_h LCDDConverter::handleLimitSet(const std::string& /* name */, LimitSet lim) const {
   GeometryInfo& geo = data();
-  xml_h xml = geo.xmlLimits[limitset];
+  xml_h xml = geo.xmlLimits[lim];
   if (!xml) {
-    LimitSet lim = Ref_t(limitset);
     geo.doc_limits.append(xml = xml_elt_t(geo.doc, _U(limitset)));
     xml.setAttr(_U(name), lim.name());
     const set<Limit>& obj = lim.limits();
@@ -807,7 +804,7 @@ xml_h LCDDConverter::handleLimitSet(const std::string& /* name */, const TNamed*
       x.setAttr(_U(value), l.value);
       x.setAttr(_U(particles), l.particles);
     }
-    geo.xmlLimits[limitset] = xml;
+    geo.xmlLimits[lim] = xml;
   }
   return xml;
 }
@@ -845,11 +842,10 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
 }
 
 /// Convert the geometry type SensitiveDetector into the corresponding LCDD object(s).
-xml_h LCDDConverter::handleSensitive(const string& /* name */, const TNamed* sens_det) const {
+xml_h LCDDConverter::handleSensitive(const string& /* name */, SensitiveDetector sd) const {
   GeometryInfo& geo = data();
-  xml_h sensdet = geo.xmlSensDets[sens_det];
+  xml_h sensdet = geo.xmlSensDets[sd];
   if (!sensdet) {
-    SensitiveDetector sd = Ref_t(sens_det);
     geo.doc_detectors.append(sensdet = xml_elt_t(geo.doc, Unicode(sd.type())));
     sensdet.setAttr(_U(name), sd.name());
     sensdet.setAttr(_U(ecut), sd.energyCutoff());
@@ -860,19 +856,19 @@ xml_h LCDDConverter::handleSensitive(const string& /* name */, const TNamed* sen
       sensdet.setAttr(_U(combine_hits), sd.combineHits());
     Readout ro = sd.readout();
     if (ro.isValid()) {
-      xml_ref_t ref = handleIdSpec(ro.idSpec().name(), ro.idSpec().ptr());
+      xml_ref_t ref = handleIdSpec(ro.idSpec().name(), ro.idSpec());
       sensdet.setRef(_U(idspecref), ref.name());
       xml_h seg = handleSegmentation(ro.segmentation());
       if (seg)
         sensdet.append(seg);
     }
-    geo.xmlSensDets[sens_det] = sensdet;
+    geo.xmlSensDets[sd] = sensdet;
   }
   return sensdet;
 }
 
 /// Convert the geometry id dictionary entry to the corresponding Xml object(s).
-xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec) const {
+xml_h LCDDConverter::handleIdSpec(const std::string& name, IDDescriptor id_spec) const {
   GeometryInfo& geo = data();
   xml_h id = geo.xmlIdSpecs[id_spec];
   if (!id) {
@@ -907,12 +903,11 @@ xml_h LCDDConverter::handleIdSpec(const std::string& name, const TNamed* id_spec
 }
 
 /// Convert the geometry visualisation attributes to the corresponding LCDD object(s).
-xml_h LCDDConverter::handleVis(const string& /* name */, const TNamed* v) const {
+xml_h LCDDConverter::handleVis(const string& /* name */, VisAttr attr) const {
   GeometryInfo& geo = data();
-  xml_h vis = geo.xmlVis[v];
+  xml_h vis = geo.xmlVis[attr];
   if (!vis) {
     float r = 0, g = 0, b = 0;
-    VisAttr attr = Ref_t(v);
     int style = attr.lineStyle();
     int draw = attr.drawingStyle();
 
@@ -936,13 +931,13 @@ xml_h LCDDConverter::handleVis(const string& /* name */, const TNamed* v) const 
     col.setAttr(_U(G), g);
     col.setAttr(_U(B), b);
     vis.append(col);
-    geo.xmlVis[v] = vis;
+    geo.xmlVis[attr] = vis;
   }
   return vis;
 }
 
 /// Convert the electric or magnetic fields into the corresponding Xml object(s).
-xml_h LCDDConverter::handleField(const std::string& /* name */, const TNamed* f) const {
+xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f) const {
   GeometryInfo& geo = data();
   xml_h field = geo.xmlFields[f];
   if (!field) {
@@ -1195,7 +1190,7 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   // Ensure that all required materials are present in the LCDD material table
   const LCDD::HandleMap& fld = lcdd.fields();
   for (LCDD::HandleMap::const_iterator i = fld.begin(); i != fld.end(); ++i)
-    geo.fields.insert((*i).second.ptr());
+    geo.fields.insert((*i).second);
 
   cout << "++ ==> Converting in memory detector description to LCDD format..." << endl;
   handleHeader();

@@ -93,6 +93,10 @@ namespace DD4hep {
       const std::string& name()  const  {
 	return trackDef()->GetParticleName();
       }
+      /// Track's particle type
+      const std::string& type()  const  {
+	return trackDef()->GetParticleType();
+      }
       /// Track's position
       const G4ThreeVector& position() const {
         return track->GetPosition();

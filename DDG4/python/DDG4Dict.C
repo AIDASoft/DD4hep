@@ -206,7 +206,6 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class PhysicsListActionSequenceHandle;
 #pragma link C++ class SensDetActionSequenceHandle;
 
-
 #pragma link C++ class Geant4ActionCreation;
 #pragma link C++ class Geant4Action;
 #pragma link C++ class Geant4Kernel;
@@ -238,121 +237,8 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class Geant4ActionSD;
 #pragma link C++ class Geant4Sensitive;
 #pragma link C++ class Geant4SensDetActionSequence;
-
 #pragma link C++ class Geant4ActionPhase;
-
 #endif
-
-
-using namespace DD4hep::Geometry;
-
-// CINT configuration for DD4hep
-#if defined(__MAKECINT__)
-
-//#pragma link C++ class Handle<TObject>;
-#pragma link C++ class ObjectExtensions;
-
-#pragma link C++ class Handle<TNamed>;
-#pragma link C++ class LCDD::HandleMap;
-#pragma link C++ class LCDD::HandleMap::iterator;
-#pragma link C++ class LCDD::HandleMap::const_iterator;
-#pragma link C++ class LCDD::HandleMap::key_type;
-#pragma link C++ class LCDD::HandleMap::value_type;
-#pragma link C++ class LCDD::PropertyValues;
-#pragma link C++ class LCDD::Properties;
-#pragma link C++ class LCDD;
-#pragma link C++ class VolumeManager;
-#pragma link C++ class OverlayedField;
-
-// Objects.h
-#pragma link C++ class Author;
-#pragma link C++ class Header;
-#pragma link C++ class Constant;
-#pragma link C++ class Atom;
-#pragma link C++ class Material;
-#pragma link C++ class VisAttr;
-#pragma link C++ class AlignmentEntry;
-#pragma link C++ class Limit;
-#pragma link C++ class LimitSet;
-#pragma link C++ class Region;
-
-// Readout.h
-#pragma link C++ class Readout;
-#pragma link C++ class Alignment;
-#pragma link C++ class Condition;
-#pragma link C++ class Conditions;
-
-// DetElement.h
-#pragma link C++ class DetElement;
-#pragma link C++ class DetElementObject;
-#pragma link C++ class Handle<DetElementObject>;
-#pragma link C++ class SensitiveDetectorObject;
-#pragma link C++ class SensitiveDetector;
-#pragma link C++ class Handle<SensitiveDetectorObject>;
-
-// Volume.h
-#pragma link C++ class Volume;
-#pragma link C++ class PlacedVolume;
-
-// Shapes.h
-#pragma link C++ class Polycone;
-#pragma link C++ class Solid_type<TGeoPcon>;
-#pragma link C++ class Handle<TGeoPcon>;
-
-#pragma link C++ class ConeSegment;
-#pragma link C++ class Solid_type<TGeoConeSeg>;
-#pragma link C++ class Handle<TGeoConeSeg>;
-
-#pragma link C++ class Box;
-#pragma link C++ class Solid_type<TGeoBBox>;
-#pragma link C++ class Handle<TGeoBBox>;
-
-#pragma link C++ class Torus;
-#pragma link C++ class Solid_type<TGeoTorus>;
-#pragma link C++ class Handle<TGeoTorus>;
-
-#pragma link C++ class Cone;
-#pragma link C++ class Solid_type<TGeoCone>;
-#pragma link C++ class Handle<TGeoCone>;
-
-#pragma link C++ class Tube;
-#pragma link C++ class Solid_type<TGeoTubeSeg>;
-#pragma link C++ class Handle<TGeoTubeSeg>;
-
-#pragma link C++ class Trap;
-#pragma link C++ class Solid_type<TGeoTrap>;
-#pragma link C++ class Handle<TGeoTrap>;
-
-#pragma link C++ class Trapezoid;
-#pragma link C++ class Solid_type<TGeoTrd2>;
-#pragma link C++ class Handle<TGeoTrd2>;
-
-#pragma link C++ class Sphere;
-#pragma link C++ class Solid_type<TGeoSphere>;
-#pragma link C++ class Handle<TGeoSphere>;
-
-#pragma link C++ class Paraboloid;
-#pragma link C++ class Solid_type<TGeoParaboloid>;
-#pragma link C++ class Handle<TGeoParaboloid>;
-
-#pragma link C++ class PolyhedraRegular;
-#pragma link C++ class Solid_type<TGeoPgon>;
-#pragma link C++ class Handle<TGeoPgon>;
-
-#pragma link C++ class BooleanSolid;
-#pragma link C++ class Solid_type<TGeoCompositeShape>;
-#pragma link C++ class Handle<TGeoCompositeShape>;
-
-#pragma link C++ class SubtractionSolid;
-#pragma link C++ class UnionSolid;
-#pragma link C++ class IntersectionSolid;
-
-
-//#pragma link C++ class Solid_type<>;
-//#pragma link C++ class Handle<>;
-#endif
-
-
 
 int Geant4Dict()  {
   return 0;

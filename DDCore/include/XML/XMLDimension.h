@@ -22,8 +22,8 @@ namespace DD4hep {
    */
   namespace XML {
 
-    /** @class Dimension XMLDetector.h XML/XMLDetector.h
-     *
+    /// XML Handle to xml elements with predefined attribute access
+    /**
      *  Helper class to access any field in a xml tag in a
      *  very easy way.
      *  - You may assign any xml handle to a dimension object
@@ -37,6 +37,11 @@ namespace DD4hep {
      *    rather return the default value.
      *  - If a often used function is not present - the
      *    implementation thereof is simple.
+     *
+     *  Such heklper classes may be defined locally by any user
+     *  since XML element handles may easily be transferred.
+     *  Run-time exceptions occur however, if non-exiting attributes
+     *  are accessed.
      *
      *  @author  M.Frank
      *  @version 1.0

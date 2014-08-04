@@ -66,6 +66,10 @@ Geant4HitWrapper::Wrapper Geant4HitWrapper::releaseData() {
 }
 
 /// Default destructor
+Geant4HitCollection::Compare::~Compare()  {
+}
+
+/// Default destructor
 Geant4HitCollection::~Geant4HitCollection() {
   m_hits.clear();
   InstanceCount::decrement(this);
@@ -84,6 +88,11 @@ const ComponentCast& Geant4HitCollection::vector_type() const {
 /// Notification to increase the instance counter
 void Geant4HitCollection::newInstance() {
   InstanceCount::increment(this);
+}
+
+/// Clear the collection (Deletes all valid references to real hits)
+void Geant4HitCollection::clear()   {
+  m_hits.clear();
 }
 
 /// Find hit in a collection by comparison of attributes

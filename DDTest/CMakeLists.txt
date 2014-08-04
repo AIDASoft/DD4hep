@@ -10,11 +10,11 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/include
   ${ROOT_INCLUDE_DIR}
   )
-if(DD4HEP_WITH_GEANT4)
+if(DD4HEP_USE_GEANT4)
   include_directories( ${CMAKE_SOURCE_DIR}/DDG4/include )
 endif() 
 
-if(DD4HEP_WITH_GEANT4)
+if(DD4HEP_USE_GEANT4)
   link_libraries(DD4hepG4 DD4hepCore DD4hepRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 else()
   link_libraries(DD4hepCore DD4hepRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})

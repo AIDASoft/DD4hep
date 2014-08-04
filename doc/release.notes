@@ -1,6 +1,112 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-07 |  seventh beta release ...
+ --------   
+
+ - Some minor fixes:
+    - made compatible with older geant4 versions (9.5)
+    - add Bitflag to store CellID1 in SimCalorimeterHit collections
+    - fix position conversion from Geant4 to ROOT
+    - add cellID determination to SensitiveAction
+    - ...
+
+
+Andre Sailer, 2014-07-17
+------------------------
+  Unify cmake option variables, small cmake corrections
+  Change options _WITH_ to _USE_
+  Print Warning that variables with _WITH_ are deprecated
+  Change Defintions to _USE_ as well
+  Add REQUIRED to find_package geant4 and xercesc if they are turned on
+  Updated documentation
+  Updated ILDExDet example
+
+Christian.Grefe, 2014-07-15
+---------------------------
+  made DDSegmentation optionally a stand-alone package
+  create DDSgementationConfig.cmake when build as part of DD4hep
+
+
+ Markus Frank, 2014-07-02
+ ------------------------
+    - add LCIO conversions from DDSim - sensitive detectors 
+      can now simply instantiate LCIO Sim hits
+
+2014/06/30 Markus Frank
+-----------------------
+    - DDG4: Support user (context-) extensions for Geant4.
+      User contexts are availible for events and runs. The contexts
+      are accessible from the Geant4Context meber of each Geant4Action,
+      the base class for all processing entities.
+      --        Adding a context:
+      context()->event().addExtension(pointer_to_object, typeid(TYPE), 0);
+      or 
+      context()->event().addExtension<TYPE>(pointer_to_object);
+      In the first case the object is NOT DELETED at the end of the event.
+      In the second case the object is deleted.
+      --        Accessing the context:
+          TYPE* ctx = context()->event().extension<TYPE>(false);
+      The boolean argument indicates if an exception should be thrown
+      if the extension is not present ie. here no exception.
+    - DDCore: adjust a few print statements.
+
+2014/06/27 Markus Frank
+-----------------------
+    - Separate XML loading from LCDD implementation.
+    - New package: DDEve: a bit more sophisticated TEve specialization
+      To start use examples/CLICSiD/compact/DDEve.xml
+      DDEve can interface currently to ROOT files created by DDG4.
+      An example data file is provided as well in:
+      examples/CLICSiD/compact/CLICSiD_events.root
+      Documentation is lacking a bit....
+      start the display with:
+      $> root.exe ${DD4hepINSTALL}/examples/DDEve/DDEve.C
+
+
+2014/06/19 Frank Gaede
+----------------------
+    - replaced TGeoUnits.h by  DD4hepUnits.h
+    - renamed namespace tgeo to dd4hep
+       -> users need to replace tgeo::mm by dd4hep::mm
+
+
+2014/06/12 Frank Gaede
+----------------------
+   - changed default unit for angles to be radians   (tgeo::rad = 1.)
+   - enforce usage of units from TGeoUnits.h in xml expression evaluators
+   - convert to degrees for angles in TGeoShapes constructors
+   - NB: there is one inconsistency left here:  angles returned
+         from TGeoShapes are already in degrees, this is the one
+         case where a quantity returned from DD4hep/TGeo does not have the default
+         units - thus one should not write
+         double phi = coneSeg.Phi1() / tgeo::rad ;
+         but rather
+         double phi = coneSeg.Phi1() * tgeo::deg ;
+
+
+2014/06/03 Markus Frank
+-----------------------
+  - Provision for ROOT persistency for DD4hep detector descriptions:
+    Create Cint dictionary for DD4hepCore by default when building the library.
+    For the time being the area of DDSegmentation is left out, since these
+    objects require changes due to the handling of references and template
+    specializations. Besides these, DD4hep detector descriptions can be
+    saved and read-back directly to/from ROOT files - which may improve
+    a lot the startup time of processes.
+
+  - The DDG4 dictionary is created by default when building the library.
+    When importing DDG4 from python only the DD4hepCore DD4hepG4 libraries
+    must be present. It should no longer be necessary to compile the
+    necessary AClick on the fly.
+
+  - Investigations on wirframe drawing:
+    Wireframes are a property of the scene graph. You can toggle to wireframe
+    using the 'w' key on the keyboard. Other representations are 
+    'r': Solid view
+    't': Solid + wireframe view.
+    This information is accessible from the help menu of the ROOT OGL widget.
 
  --------   2014/05/28 Markus Frank
 | v00-07 |  seventh beta release ...

@@ -44,8 +44,10 @@ Geant4SteppingActionSequence::~Geant4SteppingActionSequence() {
 
 /// Pre-track action callback
 void Geant4SteppingActionSequence::operator()(const G4Step* step, G4SteppingManager* mgr) {
+  m_actors(ContextUpdate(context()));
   m_actors(&Geant4SteppingAction::operator(), step, mgr);
   m_calls(step, mgr);
+  m_actors(ContextUpdate());
 }
 
 /// Add an actor responding to all callbacks. Sequence takes ownership.

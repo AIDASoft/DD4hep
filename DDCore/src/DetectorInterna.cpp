@@ -19,16 +19,28 @@
 #include "DD4hep/objects/DetectorInterna.h"
 
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::Geometry;
 typedef DetectorTools::PlacementPath PlacementPath;
 typedef DetectorTools::ElementPath   ElementPath;
 
-DD4HEP_INSTANTIATE_HANDLE(DetElementObject);
-DD4HEP_INSTANTIATE_HANDLE(SensitiveDetectorObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(DetElementObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(SensitiveDetectorObject);
 
 /// Default constructor
 SensitiveDetectorObject::SensitiveDetectorObject()
-  : TNamed(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()), verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
+  : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()), 
+    verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
+  printout(VERBOSE,"SensitiveDetectorObject","+++ Created new anonymous SensitiveDetectorObject()");
+  InstanceCount::increment(this);
+}
+
+/// Initializing constructor
+SensitiveDetectorObject::SensitiveDetectorObject(const std::string& nam)
+  : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()), 
+    verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
+  SetName(nam.c_str());
+  printout(VERBOSE,"SensitiveDetectorObject","+++ Created new SensitiveDetectorObject('%s')",nam.c_str());
   InstanceCount::increment(this);
 }
 
@@ -43,10 +55,24 @@ SensitiveDetectorObject::~SensitiveDetectorObject() {
 
 /// Default constructor
 DetElementObject::DetElementObject()
-  : TNamed(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()), flag(0), id(0), combineHits(0), path(), placementPath(),
+  : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()), 
+    flag(0), id(0), combineHits(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
     alignment(), volume_alignments(), conditions(), 
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
+  printout(VERBOSE,"DetElementObject","+++ Created new anonymous DetElementObject()");
+  InstanceCount::increment(this);
+}
+
+/// Initializing constructor
+DetElementObject::DetElementObject(const std::string& nam, int ident)
+  : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()), 
+    flag(0), id(ident), combineHits(0), path(), placementPath(),
+    idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
+    alignment(), volume_alignments(), conditions(), 
+    worldTrafo(), parentTrafo(), referenceTrafo(0) {
+  SetName(nam.c_str());
+  printout(VERBOSE,"DetElementObject","+++ Created new DetElementObject('%s', %d)",nam.c_str(),id);
   InstanceCount::increment(this);
 }
 
@@ -84,7 +110,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flag) const {
 
   obj->children.clear();
   for (DetElement::Children::const_iterator i = children.begin(); i != children.end(); ++i) {
-    const TNamed* pc = (*i).second.ptr();
+    const NamedObject* pc = (*i).second.ptr();
     const DetElementObject& d = (*i).second._data();
     DetElement child(d.clone(d.id, DetElement::COPY_PLACEMENT), pc->GetName(), pc->GetTitle());
     pair<Children::iterator, bool> r = obj->children.insert(make_pair(child.name(), child));
@@ -92,7 +118,8 @@ DetElementObject* DetElementObject::clone(int new_id, int flag) const {
       child._data().parent = obj;
     }
     else {
-      throw runtime_error("DD4hep: DetElement::copy: Element " + string(child.name()) + " is already present [Double-Insert]");
+      throw runtime_error("DD4hep: DetElement::copy: Element " + string(child.name()) + 
+			  " is already present [Double-Insert]");
     }
   }
   return obj;
