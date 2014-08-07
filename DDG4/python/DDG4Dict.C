@@ -17,6 +17,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
+
 // CINT configuration
 #if defined(__MAKECINT__)
 //#pragma link C++ class Position+;
@@ -25,6 +26,7 @@ using namespace DD4hep::Simulation;
 #pragma link C++ class SimpleEvent+;
 //#pragma link C++ class SimpleEvent::Seeds+;
 #pragma link C++ class SimpleHit+;
+#pragma link C++ class Particle+;
 #pragma link C++ class std::vector<SimpleHit*>+;
 #pragma link C++ class SimpleHit::Contribution+;
 #pragma link C++ class SimpleHit::Contributions+;
@@ -34,10 +36,13 @@ using namespace DD4hep::Simulation;
 #pragma link C++ class SimpleCalorimeter+;
 #pragma link C++ class SimpleCalorimeter::Hit+;
 #pragma link C++ class std::vector<SimpleCalorimeter::Hit*>+;
+#pragma link C++ class std::vector<Particle*>+;
+
 //#pragma link C++ class ;
 #endif
 
 #include "DDG4/Geant4Config.h"
+#include "DDG4/Geant4DataDump.h"
 #include <iostream>
 
 namespace DD4hep {
@@ -205,6 +210,8 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class StackingActionSequenceHandle;
 #pragma link C++ class PhysicsListActionSequenceHandle;
 #pragma link C++ class SensDetActionSequenceHandle;
+
+#pragma link C++ class Geant4DataDump;
 
 #pragma link C++ class Geant4ActionCreation;
 #pragma link C++ class Geant4Action;

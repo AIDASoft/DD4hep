@@ -90,7 +90,10 @@ namespace DD4hep {
       /// Access the particle map
       virtual const ParticleMap& particles() const { return m_particleMap; }
       /// Access the map of track equivalents
-      virtual const TrackEquivalents& equivalents() const { return m_equivalentTracks; }      
+      virtual const TrackEquivalents& equivalents() const { return m_equivalentTracks; }
+      /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
+      virtual int particleID(int track, bool throw_if_not_found=true) const;
+    
       /// Mark a Geant4 track to be kept for later MC truth analysis. Default flag: CREATED_HIT
       virtual void mark(const G4Track* track);
       /// Store a track

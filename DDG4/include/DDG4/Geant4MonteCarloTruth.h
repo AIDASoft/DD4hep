@@ -54,6 +54,8 @@ namespace DD4hep {
       virtual const ParticleMap& particles() const = 0;
       /// Access the map of track equivalents
       virtual const TrackEquivalents& equivalents() const = 0;
+      /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
+      virtual int particleID(int track, bool throw_if_not_found=true) const = 0;
       /// Mark a Geant4 track to be kept for later MC truth analysis
       virtual void mark(const G4Track* track) = 0;
       /// Store a track, with a flag
@@ -87,7 +89,9 @@ namespace DD4hep {
       /// Access the particle map
       virtual const ParticleMap& particles() const { return m_particleMap; }
       /// Access the map of track equivalents
-      virtual const TrackEquivalents& equivalents() const { return m_equivalentTracks; }      
+      virtual const TrackEquivalents& equivalents() const { return m_equivalentTracks; }
+      /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
+      virtual int particleID(int track, bool)  const {  return track; }
       /// Mark a Geant4 track to be kept for later MC truth analysis. Default flag: CREATED_HIT
       virtual void mark(const G4Track* track);
       /// Store a track, with a flag

@@ -162,26 +162,29 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
 
   // Extract here all the information from the start of the tracking action
   // which we will need later to create a proper MC particle.
-  m_currTrack.id         = h.id();
-  m_currTrack.reason     = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
-  m_currTrack.energy     = kine;
-  m_currTrack.g4Parent   = h.parent();
-  m_currTrack.parent     = h.parent();
-  m_currTrack.definition = h.trackDef();
-  m_currTrack.process    = h.creatorProcess();
-  m_currTrack.time       = h.globalTime();
-  m_currTrack.vsx        = v.x();
-  m_currTrack.vsy        = v.y();
-  m_currTrack.vsz        = v.z();
-  m_currTrack.vex        = 0.0;
-  m_currTrack.vey        = 0.0;
-  m_currTrack.vez        = 0.0;
-  m_currTrack.psx        = m.x();
-  m_currTrack.psy        = m.y();
-  m_currTrack.psz        = m.z();
-  m_currTrack.pex        = 0.0;
-  m_currTrack.pey        = 0.0;
-  m_currTrack.pez        = 0.0;
+  m_currTrack.id          = h.id();
+  m_currTrack.reason      = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
+  m_currTrack.steps       = 0;
+  m_currTrack.secondaries = 0;
+  m_currTrack.pdgID       = h.trackDef()->GetPDGEncoding();
+  m_currTrack.energy      = kine;
+  m_currTrack.g4Parent    = h.parent();
+  m_currTrack.parent      = h.parent();
+  m_currTrack.definition  = h.trackDef();
+  m_currTrack.process     = h.creatorProcess();
+  m_currTrack.time        = h.globalTime();
+  m_currTrack.vsx         = v.x();
+  m_currTrack.vsy         = v.y();
+  m_currTrack.vsz         = v.z();
+  m_currTrack.vex         = 0.0;
+  m_currTrack.vey         = 0.0;
+  m_currTrack.vez         = 0.0;
+  m_currTrack.psx         = m.x();
+  m_currTrack.psy         = m.y();
+  m_currTrack.psz         = m.z();
+  m_currTrack.pex         = 0.0;
+  m_currTrack.pey         = 0.0;
+  m_currTrack.pez         = 0.0;
   m_currTrack.daughters.clear();
   // If the creator process of the track is in the list of process products to be kept, set the proper flag
   if ( m_currTrack.process )  {
@@ -362,6 +365,8 @@ int Geant4ParticleHandler::recombineParents()  {
 	  PropertyMask(parent_part->reason).set(mask.value());
 	  // Remove track from parent's list of daughters
 	  parent_part->removeDaughter(id);
+	  parent_part->steps += par->steps;
+	  parent_part->secondaries += par->secondaries;
 	}
       }
     }
@@ -438,4 +443,9 @@ int Geant4ParticleHandler::equivalentTrack(int g4_id)  const  {
     }
   }
   return equiv_id;
+}
+
+/// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
+int Geant4ParticleHandler::particleID(int track, bool) const    {
+  return equivalentTrack(track);
 }

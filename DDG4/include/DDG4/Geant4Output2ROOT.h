@@ -63,6 +63,9 @@ namespace DD4hep {
       virtual void beginRun(const G4Run* run);
       /// Callback to store each Geant4 hit collection
       virtual void saveCollection(OutputContext<G4Event>& ctxt, G4VHitsCollection* collection);
+      /// Callback to store the Geant4 event
+      virtual void saveEvent(OutputContext<G4Event>& ctxt);
+
       /// Commit data at end of filling procedure
       virtual void commit(OutputContext<G4Event>& ctxt);
     };

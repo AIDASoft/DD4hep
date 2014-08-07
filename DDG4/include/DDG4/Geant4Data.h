@@ -13,7 +13,11 @@
 #ifndef __DD4HEP_DDEVE_EXCLUSIVE__
 #include "DD4hep/Objects.h"
 #include "G4Step.hh"
+#else
+typedef void G4VProcess;
+typedef void G4ParticleDefinition;
 #endif
+#include <set>
 
 /*
  *   DD4hep namespace declaration
@@ -117,12 +121,12 @@ namespace DD4hep {
      */
     class Particle {
     public:
-      int id, g4Parent, parent, reason, steps, secondaries;
+      int id, g4Parent, parent, reason, steps, secondaries, pdgID;
       double vsx, vsy, vsz;
       double vex, vey, vez;
       double psx, psy, psz, pex, pey, pez, energy, time;
-      const G4VProcess *process;
-      const G4ParticleDefinition *definition;
+      const G4VProcess *process;  //!
+      const G4ParticleDefinition *definition;  //!
       std::set<int> daughters;
       /// Default constructor
       Particle();
@@ -177,9 +181,9 @@ namespace DD4hep {
 	MonteCarloContrib& operator=(const MonteCarloContrib& c)  {
 	  if ( this != &c )  {
 	    trackID = c.trackID;
-	    pdgID = c.pdgID;
+	    pdgID   = c.pdgID;
 	    deposit = c.deposit;
-	    time = c.time;
+	    time    = c.time;
 	  }
 	  return *this;
 	}

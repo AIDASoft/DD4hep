@@ -71,6 +71,7 @@
 
   <view name="Calo 3D" type="Calo3DProjection">
     <calodata name="Ecal"/>
+    <calodata name="Hcal"/>
     <calodata name="EcalEndcap"/>
     <calodata name="HcalEndcap"/>
   </view>

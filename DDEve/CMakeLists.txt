@@ -20,12 +20,18 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 #---DD4hepEve library --------------------------------------------------------------
 file(GLOB headers include/DDEve/*.h)
 file(GLOB sources src/*.cpp)
+#---------------------------  Support for the LCIO data I/O ------------------------
 if(DD4HEP_USE_LCIO)
   find_package(LCIO REQUIRED)
   include_directories( ${LCIO_INCLUDE_DIRS} )
   list(APPEND sources lcio/LCIOEventHandler.cpp)
 endif()
-
+#---------------------------  Support for the DDG4 data I/O ------------------------
+if(DD4HEP_WITH_GEANT4)
+  root_generate_dictionary( G__DDG4IO ${CMAKE_CURRENT_SOURCE_DIR}/DDEve/DDG4IO.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
+  list(APPEND sources G__DDG4IO.cxx)
+endif()
+#---------------------------  Add DDEve dictionary for interactive ROOT sessions ---
 root_generate_dictionary( G__DDEve ${headers} LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
 list(APPEND sources G__DDEve.cxx)
 
@@ -36,7 +42,7 @@ SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 SET_TARGET_PROPERTIES( DD4hepEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 #---DD4hepEve rootmap --------------------------------------------------------------
 dd4hep_generate_rootmap(DD4hepEve)
-
+#---Package installation procedure(s) ----------------------------------------------
 install(DIRECTORY include/DDEve
   DESTINATION include
   PATTERN ".svn" EXCLUDE )

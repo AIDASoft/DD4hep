@@ -8,6 +8,8 @@
 //====================================================================
 // Framework include files
 
+#define __DD4HEP_DDEVE_EXCLUSIVE__
+
 // C/C++ include files
 #include <vector>
 #include "Math/Vector3D.h"
@@ -42,6 +44,16 @@ namespace DD4hep {
     inline SimpleEvent::SimpleEvent() {    }
     /// Default destructor
     inline SimpleEvent::~SimpleEvent() {    }
+
+    /// Default constructor
+    inline Particle::Particle()   {     }
+    /// Copy constructor
+    inline Particle::Particle(const Particle&)   {  NO_CALL   }
+    /// Default destructor
+    inline Particle::~Particle()   {     }
+    /// Remove daughter from set
+    inline void Particle::removeDaughter(int)   {   NO_CALL  }
+
     /// Default constructor
     inline SimpleHit::SimpleHit()   {    }
     /// Default destructor
@@ -74,8 +86,13 @@ namespace DD4hep {
 
 //#pragma link C++ class Position+;
 //#pragma link C++ class Direction+;
+//#pragma link C++ class std::set<int>+;
 #pragma link C++ class DD4hep::Simulation::SimpleRun+;
 #pragma link C++ class DD4hep::Simulation::SimpleEvent+;
+
+#pragma link C++ class DD4hep::Simulation::Particle+;
+#pragma link C++ class std::vector<DD4hep::Simulation::Particle*>+;
+
 #pragma link C++ class DD4hep::Simulation::SimpleHit+;
 #pragma link C++ class std::vector<DD4hep::Simulation::SimpleHit*>+;
 #pragma link C++ class DD4hep::Simulation::SimpleHit::Contribution+;
@@ -87,32 +104,52 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::Simulation::SimpleCalorimeter::Hit+;
 #pragma link C++ class std::vector<DD4hep::Simulation::SimpleCalorimeter::Hit*>+;
 #else
+#include <typeinfo>
+#include "TROOT.h"
+#include "TClass.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
-template <typename T> static T* _fill(SimpleHit* ptr, DDEveHit* target)   {
-  T* s = dynamic_cast<T*>(ptr);
-  if ( s )   {
-    Geometry::Position* p = &s->position;
-    target->x = p->X();
-    target->y = p->Y();
-    target->z = p->Z();
-    target->deposit = s->energyDeposit;
-  }
-  return s;
-}
 
-static void* _convertHitFunc(void* source, DDEveHit* target)  {
-  void* result;
-  SimpleHit* hit = (SimpleHit*)source;
-  if ((result=_fill<SimpleTracker::Hit>(hit,target))) return result;
-  if ((result=_fill<SimpleCalorimeter::Hit>(hit,target))) return result;
-  return 0;
+namespace {
+  template <typename T> T* _fill(SimpleHit* ptr, DDEveHit* target)   {
+    T* s = dynamic_cast<T*>(ptr);
+    if ( s )   {
+      Geometry::Position* p = &s->position;
+      target->x = p->X();
+      target->y = p->Y();
+      target->z = p->Z();
+      target->deposit = s->energyDeposit;
+      return s;
+    }
+    return 0;
+  }
+
+  void* _convertHitFunc(void* source, DDEveHit* target)  {
+    if (source )  {
+      static TClass* cl_calo = gROOT->GetClass(typeid(SimpleCalorimeter::Hit));
+      static TClass* cl_tracker = gROOT->GetClass(typeid(SimpleTracker::Hit));
+      //static TClass* cl_particles = gROOT->GetClass(typeid(Particle));
+
+      void* result = 0;
+      SimpleHit* hit = (SimpleHit*)source;
+      const std::type_info& type = typeid(*hit);
+      TClass* cl = gROOT->GetClass(type);
+      if ( cl == cl_tracker && (result=_fill<SimpleTracker::Hit>(hit,target)) ) return result;
+      if ( cl == cl_calo && (result=_fill<SimpleCalorimeter::Hit>(hit,target)) ) return result;
+    }
+    return 0;
+  }
+  union FCN  {
+    void* v;
+    void* (*f)(void*, DDEveHit*);
+    FCN(void* (*ff)(void*, DDEveHit*)) { f=ff; }
+  };
 }
 
 static void* _convertHit(const char*)  {
-  return (void*)_convertHitFunc;
+  return FCN(_convertHitFunc).v;
 }
 
 #include "DD4hep/Factories.h"

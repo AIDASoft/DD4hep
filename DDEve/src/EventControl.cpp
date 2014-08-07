@@ -117,6 +117,11 @@ void EventControl::OnNewEvent(EventHandler* handler)   {
       cl = cl.substr(idx);
       cl = cl.substr(0,cl.find('*'));
     }
+    else if ( (idx=cl.rfind("::")) != string::npos )  {
+      cl = cl.substr(idx+2);
+      if ( (idx=cl.rfind('*')) != string::npos ) cl = cl.substr(0,idx);
+      if ( (idx=cl.rfind('>')) != string::npos ) cl = cl.substr(0,idx);
+    }
     line.second.first->SetTextColor(kRed);
     line.second.second->SetTextColor(kRed);
     line.second.first->SetText(("Coll.Type: "+cl).c_str());

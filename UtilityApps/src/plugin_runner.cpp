@@ -13,9 +13,9 @@
 //______________________________________________________________________________
 namespace {
   void usage() {
-    cout << "geoPlugin -opt [-opt]                                                   \n"
+    cout << "geoPluginRun -opt [-opt]                                                \n"
       "        -plugin <name>  [REQUIRED]  Plugin to be executed and applied.        \n"
-      "        -input  <file>  [REQUIRED]  Specify input file.                       \n";
+      "        -input  <file>  [OPTIONAL]  Specify geometry input file.              \n";
     print_default_args() << endl;
     exit(EINVAL);
   }
@@ -41,12 +41,18 @@ int main(int argc,char** argv)  {
       usage();
     }
   }
-  if ( arguments.geo_files.empty() || plugin.empty() )
+  if ( plugin.empty() )
     usage();
+
   options.push_back(0);
   LCDD& lcdd = dd4hep_instance();
-  // Load compact files
-  load_compact(lcdd, arguments);
+  // Load compact files if required by plugin
+  if ( !arguments.geo_files.empty() )   {
+    load_compact(lcdd, arguments);
+  }
+  else  {
+    cout << "geoPluginRun: No geometry input supplied. No geometry will be loaded." << endl;
+  }
   // Create volume manager and populate it required
   if ( arguments.volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);
   // Execute plugin

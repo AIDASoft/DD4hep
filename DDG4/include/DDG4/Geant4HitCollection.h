@@ -150,7 +150,8 @@ namespace DD4hep {
       /// Automatic conversion to the desired type
       template <typename TYPE> operator TYPE*() const {
         return (TYPE*) m_data.second->
-	  cast.apply_downCast(ComponentCast::instance<TYPE>(),m_data.first);
+	  cast.apply_dynCast(ComponentCast::instance<TYPE>(),m_data.first);
+	//cast.apply_downCast(ComponentCast::instance<TYPE>(),m_data.first);
       }
     };
 

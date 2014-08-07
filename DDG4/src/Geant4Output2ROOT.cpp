@@ -8,10 +8,13 @@
 //====================================================================
 
 // Framework include files
+#include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4Output2ROOT.h"
+#include "DDG4/Geant4MonteCarloTruth.h"
+#include "DDG4/Geant4Data.h"
 // Geant4 include files
 #include "G4HCofThisEvent.hh"
 
@@ -44,7 +47,7 @@ Geant4Output2ROOT::~Geant4Output2ROOT() {
 }
 
 /// Create/access tree by name
-TTree* Geant4Output2ROOT::section(const std::string& nam) {
+TTree* Geant4Output2ROOT::section(const string& nam) {
   Sections::const_iterator i = m_sections.find(nam);
   if (i == m_sections.end()) {
     TDirectory::TContext context(m_file);
@@ -70,7 +73,7 @@ void Geant4Output2ROOT::beginRun(const G4Run* run) {
 }
 
 /// Fill single EVENT branch entry (Geant4 collection data)
-int Geant4Output2ROOT::fill(const std::string& nam, const ComponentCast& type, void* ptr) {
+int Geant4Output2ROOT::fill(const string& nam, const ComponentCast& type, void* ptr) {
   if (m_file) {
     TBranch* b = 0;
     Branches::const_iterator i = m_branches.find(nam);
@@ -130,13 +133,56 @@ void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
   Geant4OutputAction::commit(ctxt);
 }
 
+/// Callback to store the Geant4 event
+void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
+  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
+  if ( truth )   {
+    typedef Geant4HitWrapper::HitManipulator Manip;
+    typedef Geant4MonteCarloTruth::ParticleMap ParticleMap;
+    Manip* manipulator = Geant4HitWrapper::manipulator<Particle>();
+    const ParticleMap& pm = truth->particles();
+    vector<void*> particles;
+    for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end(); ++i)    {
+      particles.push_back((ParticleMap::mapped_type*)(*i).second);
+    }
+    fill("MCParticles",manipulator->vec_type,&particles);
+  }
+}
+
 /// Callback to store each Geant4 hit collection
 void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection) {
   Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(collection);
-  std::string hc_nam = collection->GetName();
-  std::vector<void*> hits;
+  string hc_nam = collection->GetName();
+  vector<void*> hits;
   if (coll) {
     coll->getHitsUnchecked(hits);
+    size_t nhits = coll->GetSize();
+    Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
+    if ( truth && nhits > 0 )   {
+      try  {
+	for(size_t i=0; i<nhits; ++i)   {
+	  SimpleHit* h = coll->hit(i);
+	  SimpleTracker::Hit* trk_hit = dynamic_cast<SimpleTracker::Hit*>(h);
+	  if ( 0 != trk_hit )   {
+	    SimpleHit::Contribution& t = trk_hit->truth;
+	    int trackID = t.trackID;
+	    t.trackID = truth->particleID(trackID);
+	  }
+	  SimpleCalorimeter::Hit* cal_hit = dynamic_cast<SimpleCalorimeter::Hit*>(h);
+	  if ( 0 != cal_hit )   {
+	    SimpleHit::Contributions& c = cal_hit->truth;
+	    for(SimpleHit::Contributions::iterator j=c.begin(); j!=c.end(); ++j)  {
+	      SimpleHit::Contribution& t = *j;
+	      int trackID = t.trackID;
+	      t.trackID = truth->particleID(trackID);
+	    }
+	  }
+	}
+      }
+      catch(...)   {
+	printout(ERROR,name(),"+++ Exception while saving collection %s.",hc_nam.c_str());
+      }
+    }
     fill(hc_nam, coll->vector_type(), &hits);
   }
 }

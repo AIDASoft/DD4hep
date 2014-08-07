@@ -113,6 +113,19 @@ namespace DD4hep {
 	return pos == h->position ? h : 0;
       }
     };
+    template<typename TYPE> struct CellIDCompare : public Geant4HitCollection::Compare {
+      long long int id;
+      Geant4HitWrapper::HitManipulator* manip;
+      /// Constructor
+      CellIDCompare(long long int i) : id(i), manip(Geant4HitWrapper::HitManipulator::instance<TYPE>())  {      }
+      /// Comparison function
+      virtual void* operator()(const Geant4HitWrapper& w) const {
+	TYPE* h = w;//(const TYPE*)manip->castHit<TYPE>(w);
+	if ( id == h->cellID )
+	  return h;
+	return 0;
+      }
+    };
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4SensitiveAction<SimpleTracker>
@@ -179,13 +192,13 @@ namespace DD4hep {
       Position        pos     = 0.5 * (h.prePos() + h.postPos());
       HitContribution contrib = Hit::extractContribution(step);
       HitCollection*  coll    = collection(m_collectionID);
-      Hit* hit = 0;//coll->find<Hit>(PositionCompare<Hit>(pos));
+      long long int   cell    = cellID(step);
+      Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
       if ( step->GetTotalEnergyDeposit() < 1e-5 ) return true;
       if ( !hit ) {
 	Geant4TouchableHandler handler(step);
-	//hit = new Hit(pos);
 	hit = new Hit(h.prePos());
-	hit->cellID = cellID(step);
+	hit->cellID = cell;
 	coll->add(hit);
 	print("SimpleCalorimeter","%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
 	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),handler.path().c_str());
@@ -195,8 +208,8 @@ namespace DD4hep {
 	}
       }
       else  {
-	print("SimpleCalorimeter","%s> UPDATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f",
-	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z());
+	print("SimpleCalorimeter","%s> UPDATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f id:%016llX cell:%016llX",
+	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),cell,hit->cellID);
       }
       hit->truth.push_back(contrib);
       hit->energyDeposit += contrib.deposit;

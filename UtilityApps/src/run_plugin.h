@@ -51,16 +51,18 @@ namespace {
     return LCDD::getInstance();
   }
 
-  int run_plugin(LCDD& lcdd, const char* name, int argc, char** argv) {
+  long run_plugin(LCDD& lcdd, const char* name, int argc, char** argv) {
     try {
       lcdd.apply(name,argc,argv);
       return 0;
     }
     catch(const exception& e)  {
       cout << e.what() << endl;
+      return EINVAL;
     }
     catch(...)  {
       cout << "UNKNOWN Exception" << endl;
+      return EINVAL;
     }
     ::exit(EINVAL);
     return EINVAL;
@@ -106,7 +108,7 @@ namespace {
       print   = DD4hep::INFO;
     }
     int handle(int& i, int argc, char** argv)    {
-      if ( strncmp(argv[i],"-compact",2)==0 || strncmp(argv[i],"-input",2)==0 )  {
+      if ( strncmp(argv[i],"-compact",5)==0 || strncmp(argv[i],"-input",4)==0 )  {
 	geo_files.push_back(argv[++i]);
 	if ( argc>i+2 && strncmp(argv[i+1],"-build_type",6)==0 )  {
 	  build_types.push_back(argv[i+2]);
@@ -116,13 +118,13 @@ namespace {
 	  build_types.push_back("BUILD_DEFAULT");
 	}
       }
-      else if ( strncmp(argv[i],"-load_only",2)==0 )
+      else if ( strncmp(argv[i],"-load_only",5)==0 )
 	dry_run = true;
-      else if ( strncmp(argv[i],"-print",2)==0 )
+      else if ( strncmp(argv[i],"-print",4)==0 )
 	DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
-      else if ( strncmp(argv[i],"-destroy",2)==0 )
+      else if ( strncmp(argv[i],"-destroy",5)==0 )
 	destroy = true;
-      else if ( strncmp(argv[i],"-volmgr",2)==0 )
+      else if ( strncmp(argv[i],"-volmgr",4)==0 )
 	volmgr = true;
       else 
 	return 0;
@@ -193,7 +195,8 @@ namespace {
     if ( !args.dry_run ) {
       pair<int, char**> a(0,0);
       TRint app(name, &a.first, a.second);
-      run_plugin(lcdd,name,a.first,a.second);
+      long result = run_plugin(lcdd,name,a.first,a.second);
+      if ( result == EINVAL ) usage_default(name);
       app.Run();
     }
     else {

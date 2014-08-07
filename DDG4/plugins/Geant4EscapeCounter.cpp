@@ -9,6 +9,7 @@
 #ifndef DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H
 #define DD4HEP_DDG4_GEANT4ESCAPECOUNTER_H
 
+// Framework include files
 #include "DD4hep/Detector.h"
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4SteppingAction.h"
@@ -23,7 +24,7 @@ namespace DD4hep {
    */
   namespace Simulation {
 
-    /** @class Geant4EscapeCounter Geant4EscapeCounter.h DDG4/Geant4EscapeCounter.h
+    /** Class to measure the energy of escaping tracks of a detector using Geant 4
      *
      * Measure escaping energy....
      *

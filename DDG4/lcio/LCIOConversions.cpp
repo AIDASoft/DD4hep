@@ -73,27 +73,29 @@ namespace DD4hep {
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
 			 pair<VolMgr,Geant4HitCollection*>,
-			 SimpleTracker::Hit>::operator()(const arg_t& args)  const 
-    {
+			 SimpleTracker::Hit>::operator()(const arg_t& args)  const   {
+
       Geant4HitCollection* coll = args.second;
       size_t     nhits = coll->GetSize();
-      SimpleHit* hit   = coll->hit(0);
-      string     dsc   = encoding(args.first, hit->cellID);
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
-      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
       lc_coll->reserve(nhits);
-      for(size_t i=0; i<nhits; ++i)   {
-	const SimpleTracker::Hit* g4_hit = coll->hit(i);
-	double pos[3] = {g4_hit->position.x(), g4_hit->position.y(), g4_hit->position.z()};
-	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
-	lc_hit->setCellID0( (g4_hit->cellID >>    0          ) & 0xFFFFFFFF); 
-	lc_hit->setCellID1( (g4_hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF);
-	lc_hit->setPosition(pos);
-	lc_hit->setEDep(g4_hit->energyDeposit);
-	lc_hit->setTime(g4_hit->truth.time);
-	lc_hit->setMomentum( g4_hit->momentum.x(), g4_hit->momentum.y() , g4_hit->momentum.z() );
-	lc_hit->setPathLength( g4_hit->length);
-	lc_coll->addElement(lc_hit);
+      if ( nhits > 0 )  {
+	SimpleHit* hit   = coll->hit(0);
+	string     dsc   = encoding(args.first, hit->cellID);
+	UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
+	for(size_t i=0; i<nhits; ++i)   {
+	  const SimpleTracker::Hit* g4_hit = coll->hit(i);
+	  double pos[3] = {g4_hit->position.x(), g4_hit->position.y(), g4_hit->position.z()};
+	  lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
+	  lc_hit->setCellID0( (g4_hit->cellID >>    0          ) & 0xFFFFFFFF); 
+	  lc_hit->setCellID1( (g4_hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF);
+	  lc_hit->setPosition(pos);
+	  lc_hit->setEDep(g4_hit->energyDeposit);
+	  lc_hit->setTime(g4_hit->truth.time);
+	  lc_hit->setMomentum( g4_hit->momentum.x(), g4_hit->momentum.y() , g4_hit->momentum.z() );
+	  lc_hit->setPathLength( g4_hit->length);
+	  lc_coll->addElement(lc_hit);
+	}
       }
       return lc_coll;
     }
@@ -111,25 +113,26 @@ namespace DD4hep {
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
 			 pair<VolMgr,Geant4HitCollection*>,
-			 SimpleCalorimeter::Hit>::operator()(const arg_t& args)  const 
-    {
+			 SimpleCalorimeter::Hit>::operator()(const arg_t& args)  const  {
       Geant4HitCollection* coll = args.second;
       size_t     nhits = coll->GetSize();
-      SimpleHit* hit   = coll->hit(0);
-      string     dsc   = encoding(args.first, hit->cellID);
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);	
-      UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
       lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
       lc_coll->reserve(nhits);
-      for(size_t i=0; i<nhits; ++i)   {
-	const SimpleCalorimeter::Hit* g4_hit = coll->hit(i);
-	float pos[3] = {g4_hit->position.x(), g4_hit->position.y(), g4_hit->position.z()};
-	lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
-	lc_hit->setCellID0( ( g4_hit->cellID >>    0          ) & 0xFFFFFFFF ); 
-	lc_hit->setCellID1( ( g4_hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF );
-	lc_hit->setPosition(pos);
-	lc_hit->setEnergy( g4_hit->energyDeposit );
-	lc_coll->addElement(lc_hit);
+      if ( nhits > 0 )   {
+	SimpleHit* hit   = coll->hit(0);
+	string     dsc   = encoding(args.first, hit->cellID);
+	UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
+	for(size_t i=0; i<nhits; ++i)   {
+	  const SimpleCalorimeter::Hit* g4_hit = coll->hit(i);
+	  float pos[3] = {g4_hit->position.x(), g4_hit->position.y(), g4_hit->position.z()};
+	  lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
+	  lc_hit->setCellID0( ( g4_hit->cellID >>    0          ) & 0xFFFFFFFF ); 
+	  lc_hit->setCellID1( ( g4_hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF );
+	  lc_hit->setPosition(pos);
+	  lc_hit->setEnergy( g4_hit->energyDeposit );
+	  lc_coll->addElement(lc_hit);
+	}
       }
       return lc_coll;
     }

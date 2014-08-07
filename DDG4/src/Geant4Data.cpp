@@ -43,7 +43,8 @@ SimpleEvent::~SimpleEvent() {
 
 /// Copy constructor
 Particle::Particle(const Particle& c)
-  : id(c.id), g4Parent(c.g4Parent), parent(c.parent), reason(c.reason), steps(c.steps),
+  : id(c.id), g4Parent(c.g4Parent), parent(c.parent), reason(c.reason), 
+    steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
     vsx(c.vsx), vsy(c.vsy), vsz(c.vsz), 
     vex(c.vex), vey(c.vey), vez(c.vez), 
     psx(c.psx), psy(c.psy), psz(c.psz), 
@@ -57,7 +58,8 @@ Particle::Particle(const Particle& c)
 
 /// Default constructor
 Particle::Particle()
-  : id(0), g4Parent(0), parent(0), reason(0), steps(0),
+  : id(0), g4Parent(0), parent(0), reason(0), 
+    steps(0), secondaries(0), pdgID(0),
     vsx(0.0), vsy(0.0), vsz(0.0), 
     vex(0.0), vey(0.0), vez(0.0), 
     psx(0.0), psy(0.0), psz(0.0), 
@@ -145,9 +147,9 @@ SimpleTracker::Hit& SimpleTracker::Hit::storePoint(G4Step* step, G4StepPoint* pn
   G4ThreeVector mom = pnt->GetMomentum();
 
   truth.trackID = trk->GetTrackID();
-  truth.pdgID = trk->GetDefinition()->GetPDGEncoding();
+  truth.pdgID   = trk->GetDefinition()->GetPDGEncoding();
   truth.deposit = step->GetTotalEnergyDeposit();
-  truth.time = trk->GetGlobalTime();
+  truth.time    = trk->GetGlobalTime();
   position.SetXYZ(pos.x(), pos.y(), pos.z());
   momentum.SetXYZ(mom.x(), mom.y(), mom.z());
   length = 0;
