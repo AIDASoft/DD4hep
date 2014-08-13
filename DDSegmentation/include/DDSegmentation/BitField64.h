@@ -77,6 +77,13 @@ namespace DDSegmentation {
     /** Set a new 64bit value  - bits not used in description are set to 0.
      */
     void  setValue(long64 value ) { _value = ( _joined & value ) ; }
+
+    /** Set a new 64bit value given as high and low 32bit words.
+     */
+    void  setValue(unsigned lowWord, unsigned highWord ) {
+
+      setValue( ( lowWord & 0xffffffffUL ) |  ( ( highWord & 0xffffffffUL ) << 32 ) ) ; 
+    }
     
     /** Operator for setting a new value and accessing the BitField directly */
     BitField64& operator()(long64 val) { setValue( val ) ; return *this ; }
