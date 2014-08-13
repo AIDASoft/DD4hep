@@ -88,7 +88,7 @@ endfunction()
 function(dd4hep_generate_rootmap_apple library)
 
   # for now do the same for apple that is done for the rest
-  dd4hep_generate_rootmap( ${library} )
+  dd4hep_generate_rootmap_notapple( ${library} )
 
 endfunction()
 
