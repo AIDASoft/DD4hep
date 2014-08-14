@@ -1,5 +1,12 @@
+
+=================================
 DD4hep  ----  Release Notes
 =================================
+
+ --------
+| v00-09 |  nineth beta release ...
+ --------   
+
 
 2014/08/07 Markus Frank
 -----------------------
@@ -9,6 +16,41 @@ DD4hep  ----  Release Notes
       hit aggregations.
     - DDEve smaller modifications to support DDG4IO if DD4hep was 
       built with the Geant4 option ON.
+
+
+ --------
+| v00-08 |  eighth beta release ...
+ --------   
+
+ - Some minor fixes:
+    - made compatible with older geant4 versions (9.5)
+    - add Bitflag to store CellID1 in SimCalorimeterHit collections
+    - fix position conversion from Geant4 to ROOT
+    - add cellID determination to SensitiveAction
+    - ...
+
+
+Andre Sailer, 2014-07-17
+------------------------
+  Unify cmake option variables, small cmake corrections
+  Change options _WITH_ to _USE_
+  Print Warning that variables with _WITH_ are deprecated
+  Change Defintions to _USE_ as well
+  Add REQUIRED to find_package geant4 and xercesc if they are turned on
+  Updated documentation
+  Updated ILDExDet example
+
+Christian.Grefe, 2014-07-15
+---------------------------
+  made DDSegmentation optionally a stand-alone package
+  create DDSgementationConfig.cmake when build as part of DD4hep
+
+
+ Markus Frank, 2014-07-02
+ ------------------------
+    - add LCIO conversions from DDSim - sensitive detectors 
+      can now simply instantiate LCIO Sim hits
+
 
 
 2014/06/30 Markus Frank
