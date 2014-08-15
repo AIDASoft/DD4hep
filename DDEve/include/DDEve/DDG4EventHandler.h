@@ -34,6 +34,7 @@ namespace DD4hep {
   class DDG4EventHandler : public EventHandler  {
   public:
     typedef std::map<std::string,std::pair<TBranch*,void*> > Branches;
+    typedef void* (*ParticleAccessor_t)(void*, DDEveParticle*);
     typedef void* (*HitAccessor_t)(void*, DDEveHit*);
   protected:
     /// Reference to data file
@@ -42,8 +43,10 @@ namespace DD4hep {
     Branches m_branches;
     /// File entry number
     Long64_t m_entry;
-    /// 
+    /// Function pointer to interprete hits
     HitAccessor_t m_simhitConverter;
+    /// Function pointer to interprete particles
+    ParticleAccessor_t m_particleConverter;
     /// Data collection map
     TypedEventCollections m_data;
   public:
@@ -58,8 +61,12 @@ namespace DD4hep {
     virtual long numEvents() const;
     /// Access the data source name
     std::string datasourceName() const;
+    /// Access to the collection type by name
+    virtual CollectionType collectionType(const std::string& collection) const;
     /// Call functor on hit collection
     virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor);
+    /// Loop over collection and extract particle data
+    virtual size_t collectionLoop(const std::string& collection, DDEveParticleActor& actor);
     /// Open new data file
     virtual bool Open(const std::string& type, const std::string& file_name);
     /// User overloadable function: Load the next event

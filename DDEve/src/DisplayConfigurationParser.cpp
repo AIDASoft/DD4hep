@@ -36,6 +36,8 @@ namespace DD4hep  {  namespace   {
     class detelement;
     class include;
     class display;
+    class collection;
+    class collection_configs;
   }
 
   typedef DisplayConfiguration::Configurations Configurations;
@@ -49,6 +51,8 @@ namespace DD4hep  {  namespace   {
   template <> void Converter<include>::operator()(xml_h seq)  const;
   template <> void Converter<calodata>::operator()(xml_h e)  const;
   template <> void Converter<calodata_configs>::operator()(xml_h e)  const;
+  template <> void Converter<collection>::operator()(xml_h e)  const;
+  template <> void Converter<collection_configs>::operator()(xml_h e)  const;
   template <> void Converter<detelement>::operator()(xml_h seq)  const;
 }
 
@@ -115,6 +119,21 @@ template <> void Converter<calodata_configs>::operator()(xml_h e)  const  {
   configs->push_back(c);
 }
 
+template <> void Converter<collection_configs>::operator()(xml_h e)  const  {
+  Configurations* configs = (Configurations*)param;
+  DisplayConfiguration::Config c;
+  c.name = e.attr<string>(_U(name));
+  c.type = DisplayConfiguration::COLLECTION;
+  c.data.hits.color     = e.hasAttr(_U(color)) ? e.attr<int>(_U(color)) : 0xBBBBBB;
+  c.data.hits.alpha     = e.hasAttr(_U(alpha)) ? e.attr<float>(_U(alpha)) : -1.0;
+  c.data.hits.emax      = e.hasAttr(u_emax) ? e.attr<float>(u_emax) : 25.0;
+  c.data.hits.towerH    = e.hasAttr(u_towerH) ? e.attr<float>(u_towerH) : 25.0;
+  c.data.hits.threshold = e.hasAttr(_U(threshold)) ? e.attr<float>(_U(threshold)) : 0.0;
+  if ( e.hasAttr(u_hits)   ) c.hits = e.attr<string>(u_hits);
+  if ( e.hasAttr(u_use)    ) c.use = e.attr<string>(u_use);
+  configs->push_back(c);
+}
+
 /** Convert display configuration elements of tag type ddeve/view
  *
  *    <view>
@@ -127,7 +146,7 @@ template <> void Converter<calodata_configs>::operator()(xml_h e)  const  {
  *  @date    01/06/2014
  */
 template <> void Converter<view>::operator()(xml_h e)  const  {
-  DisplayConfiguration* config = (DisplayConfiguration*)param;
+  ViewConfigurations* configs = (ViewConfigurations*)param;
   DisplayConfiguration::ViewConfig c;
   extract(c,e,DisplayConfiguration::VIEW);
   c.type  = e.attr<string>(_U(type));
@@ -139,7 +158,8 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
   xml_coll_t(e,_Unicode(panel)).for_each(Converter<panel>(lcdd,&c.subdetectors));
   xml_coll_t(e,_Unicode(detelement)).for_each(Converter<detelement>(lcdd,&c.subdetectors));
   xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata_configs>(lcdd,&c.subdetectors));
-  config->views.push_back(c);
+  xml_coll_t(e,_Unicode(collection)).for_each(Converter<collection_configs>(lcdd,&c.subdetectors));
+  configs->push_back(c);
 }
 
 /** Convert display configuration elements of tag type ddeve/calodata
@@ -154,7 +174,7 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
  *  @date    01/06/2014
  */
 template <> void Converter<calodata>::operator()(xml_h e)  const  {
-  DisplayConfiguration* config = (DisplayConfiguration*)param;
+  Configurations* configs = (Configurations*)param;
   DisplayConfiguration::Config c;
   c.name    = e.attr<string>(_U(name));
   c.type    = DisplayConfiguration::CALODATA;
@@ -178,7 +198,35 @@ template <> void Converter<calodata>::operator()(xml_h e)  const  {
     if ( e.hasAttr(u_towerH) ) c.data.calodata.towerH = e.attr<float>(u_towerH);
     if ( e.hasAttr(_U(threshold)) ) c.data.calodata.threshold = e.attr<float>(_U(threshold));
   }
-  config->calodata.push_back(c);
+  configs->push_back(c);
+}
+
+/** Convert display configuration elements of tag type ddeve/hits
+ *
+ *    <view>
+ *      <calodata name="TPC" n_eta="5" ..../>
+ *        ...
+ *    </ddeve>
+ *
+ *  @author  M.Frank
+ *  @version 1.0
+ *  @date    01/06/2014
+ */
+template <> void Converter<collection>::operator()(xml_h e)  const  {
+  Configurations* configs = (Configurations*)param;
+  DisplayConfiguration::Config c;
+  c.name = e.attr<string>(_U(name));
+  c.type = DisplayConfiguration::COLLECTION;
+  c.hits = e.attr<string>(u_hits);
+  c.data.hits.size  = e.attr<float>(_U(size));
+  c.data.hits.type  = e.attr<float>(_U(type));
+  c.data.hits.color = e.hasAttr(_U(color))  ? e.attr<int>(_U(color)) : kRed;
+  c.data.hits.alpha = e.hasAttr(_U(alpha))  ? e.attr<float>(_U(alpha)) : 1.0;
+  c.data.hits.width = e.hasAttr(_U(width))  ? e.attr<float>(_U(width)) : 1.0;
+  c.data.hits.emax    = e.hasAttr(u_emax)   ? e.attr<float>(u_emax)    : 25.0;
+  c.data.hits.towerH  = e.hasAttr(u_towerH) ? e.attr<float>(u_towerH)  : 25.0;
+  c.data.hits.threshold = e.hasAttr(_U(threshold)) ? e.attr<float>(_U(threshold)) : 0;
+  configs->push_back(c);
 }
 
 /** Convert display configuration elements of tag type ddeve/include
@@ -231,8 +279,9 @@ template <> void Converter<ddeve>::operator()(xml_h e)  const  {
   /// Now we process all allowed elements within this tag
   xml_coll_t(e,_Unicode(display)).for_each(Converter<display>(lcdd,disp));
   xml_coll_t(e,_Unicode(include)).for_each(Converter<include>(lcdd,disp));
-  xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata>(lcdd,&cfg));
-  xml_coll_t(e,_Unicode(view)).for_each(Converter<view>(lcdd,&cfg));
+  xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata>(lcdd,&cfg.calodata));
+  xml_coll_t(e,_Unicode(collection)).for_each(Converter<collection>(lcdd,&cfg.collections));
+  xml_coll_t(e,_Unicode(view)).for_each(Converter<view>(lcdd,&cfg.views));
   disp->ImportConfiguration(cfg);
 }
 
@@ -262,6 +311,29 @@ static long setup_DDEve(lcdd_t& lcdd, const xml_h& e) {
     add_root_enum(kMagenta);
     add_root_enum(kSpring);
     add_root_enum(kTeal);
+
+    add_root_enum(kDot);
+    add_root_enum(kPlus);
+    add_root_enum(kStar);
+    add_root_enum(kCircle);
+    add_root_enum(kMultiply);
+    add_root_enum(kFullDotSmall);
+    add_root_enum(kFullDotMedium);
+    add_root_enum(kFullDotLarge);
+    add_root_enum(kFullCircle);
+    add_root_enum(kFullSquare);
+    add_root_enum(kFullTriangleUp);
+    add_root_enum(kFullTriangleDown);
+    add_root_enum(kOpenCircle);
+    add_root_enum(kOpenSquare);
+    add_root_enum(kOpenTriangleUp);
+    add_root_enum(kOpenDiamond);
+    add_root_enum(kOpenCross);
+    add_root_enum(kFullStar);
+    add_root_enum(kOpenStar);
+    add_root_enum(kOpenTriangleDown);
+    add_root_enum(kFullDiamond);
+    add_root_enum(kFullCross);
     add_root_enum(TEveProjection::kPT_RPhi);
     add_root_enum(TEveProjection::kPT_RhoZ);
     add_root_enum(TEveProjection::kPT_3D);

@@ -23,7 +23,6 @@ class G4StepPoint;
 #include "DDG4/Geant4Data.h"
 #include "DDEve/DDEveEventData.h"
 
-
 #ifdef __DD4HEP_DDEVE_EXCLUSIVE__
 
 /*
@@ -45,6 +44,8 @@ namespace DD4hep {
     /// Default destructor
     inline SimpleEvent::~SimpleEvent() {    }
 
+    /// Default destructor
+    inline DataExtension::~DataExtension()  {    }
     /// Default constructor
     inline Particle::Particle()   {     }
     /// Copy constructor
@@ -82,7 +83,7 @@ namespace DD4hep {
 }
 
 // CINT configuration
-#if defined(__MAKECINT__)
+#if defined(__MAKECINT__) || defined(__CINT__)
 
 //#pragma link C++ class Position+;
 //#pragma link C++ class Direction+;
@@ -90,6 +91,7 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::Simulation::SimpleRun+;
 #pragma link C++ class DD4hep::Simulation::SimpleEvent+;
 
+#pragma link C++ class DD4hep::Simulation::DataExtension+;
 #pragma link C++ class DD4hep::Simulation::Particle+;
 #pragma link C++ class std::vector<DD4hep::Simulation::Particle*>+;
 
@@ -131,7 +133,6 @@ namespace {
       static TClass* cl_calo = gROOT->GetClass(typeid(SimpleCalorimeter::Hit));
       static TClass* cl_tracker = gROOT->GetClass(typeid(SimpleTracker::Hit));
       //static TClass* cl_particles = gROOT->GetClass(typeid(Particle));
-
       void* result = 0;
       SimpleHit* hit = (SimpleHit*)source;
       const std::type_info& type = typeid(*hit);
@@ -141,20 +142,50 @@ namespace {
     }
     return 0;
   }
+
+  void* _convertParticleFunc(void* source, DDEveParticle* p)  {
+    if (source )  {
+      Particle* s = (Particle*)source;
+      p->id = s->id;
+      p->vsx = s->vsx;
+      p->vsy = s->vsy;
+      p->vsz = s->vsz;
+      p->vex = s->vex;
+      p->vey = s->vey;
+      p->vez = s->vez;
+      p->psx = s->psx;
+      p->psy = s->psy;
+      p->psz = s->psz;
+      p->parent    = s->parent;
+      p->pdgID     = s->pdgID;
+      p->energy    = s->energy;
+      p->time      = s->time;
+      p->daughters = s->daughters;
+      return p;
+    }
+    return 0;
+  }
+
   union FCN  {
     void* v;
     void* (*f)(void*, DDEveHit*);
+    void* (*q)(void*, DDEveParticle*);
     FCN(void* (*ff)(void*, DDEveHit*)) { f=ff; }
+    FCN(void* (*ff)(void*, DDEveParticle*)) { q=ff; }
   };
-}
+  void* _convertHit(const char*)  {
+    return FCN(_convertHitFunc).v;
+  }
+  void* _convertParticle(const char*)  {
+    return FCN(_convertParticleFunc).v;
+  }
 
-static void* _convertHit(const char*)  {
-  return FCN(_convertHitFunc).v;
 }
 
 #include "DD4hep/Factories.h"
 using namespace DD4hep::Geometry;
 DECLARE_CONSTRUCTOR(DDEve_DDG4HitAccess,_convertHit)
+DECLARE_CONSTRUCTOR(DDEve_DDG4ParticleAccess,_convertParticle)
 #endif
 #endif
 

@@ -45,8 +45,12 @@ namespace DD4hep {
     virtual long numEvents() const;
     /// Access the data source name
     virtual std::string datasourceName() const;
+    /// Access to the collection type by name
+    virtual CollectionType collectionType(const std::string& collection) const;
     /// Loop over collection and extract data
     virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor);
+    /// Loop over collection and extract particle data
+    virtual size_t collectionLoop(const std::string& collection, DDEveParticleActor& actor);
     /// Open a new event data file
     virtual bool Open(const std::string& type, const std::string& file_name);
     /// Load the next event

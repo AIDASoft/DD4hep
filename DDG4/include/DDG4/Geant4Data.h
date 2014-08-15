@@ -18,6 +18,7 @@ typedef void G4VProcess;
 typedef void G4ParticleDefinition;
 #endif
 #include <set>
+#include <memory>
 
 /*
  *   DD4hep namespace declaration
@@ -28,6 +29,8 @@ namespace DD4hep {
    *   Simulation namespace declaration
    */
   namespace Simulation {
+
+
     typedef Geometry::Position Position;
     typedef Geometry::Position Direction;
 
@@ -101,6 +104,14 @@ namespace DD4hep {
       virtual ~SimpleEvent();
     };
 
+    class DataExtension  {
+    public:
+      /// Default constructor
+      DataExtension() {}
+      /// Default destructor
+      virtual ~DataExtension();      
+    };
+
     /// Track properties
     enum ParticleProperties {
       G4PARTICLE_CREATED_HIT = 1<<1, 
@@ -111,6 +122,7 @@ namespace DD4hep {
       G4PARTICLE_KEEP_PARENT = 1<<6,
       G4PARTICLE_CREATED_CALORIMETER_HIT = 1<<7,
       G4PARTICLE_CREATED_TRACKER_HIT = 1<<8,
+      G4PARTICLE_KEEP_ALWAYS = 1<<9,
       G4PARTICLE_LAST_NOTHING = 1<<31
     };
 
@@ -120,20 +132,26 @@ namespace DD4hep {
      * @version 1.0
      */
     class Particle {
+    private:
+      /// Copy constructor
+      Particle(const Particle& c);
     public:
       int id, g4Parent, parent, reason, steps, secondaries, pdgID;
       double vsx, vsy, vsz;
       double vex, vey, vez;
       double psx, psy, psz, pex, pey, pez, energy, time;
+      /// The list of daughters of this MC particle
+      std::set<int> daughters;
+      /// User data extension if required
+      std::auto_ptr<DataExtension> extension;  
       const G4VProcess *process;  //!
       const G4ParticleDefinition *definition;  //!
-      std::set<int> daughters;
       /// Default constructor
       Particle();
-      /// Copy constructor
-      Particle(const Particle& c);
       /// Default destructor
       virtual ~Particle();
+      /// Assignment operator
+      Particle& get_data(Particle& c);
       /// Remove daughter from set
       void removeDaughter(int id_daughter);
     };
@@ -149,6 +167,8 @@ namespace DD4hep {
     struct SimpleHit {
       // cellID
       long long int cellID;
+      /// User data extension if required
+      std::auto_ptr<DataExtension> extension;  
 
       /** @class MonteCarloContrib
        */

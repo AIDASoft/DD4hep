@@ -105,7 +105,11 @@ TEveElement* View::ImportEventElement(TEveElement* el, TEveElementList* list)  {
   if ( s )   {
     printf("ERROR: Adding a Scene [%s] to a list. This is BAD and causes crashes!\n",s->GetName());
   }
-  if ( el ) list->AddElement(el);
+  if ( el )   {
+    printout(INFO,"View","ImportElement %s [%s] into list: %s",
+	     Utilities::GetName(el),el->IsA()->GetName(),list->GetName());
+    list->AddElement(el);
+  }
   return el;
 }
 
@@ -232,23 +236,31 @@ void View::ConfigureEventFromGlobal()    {
 }
 
 /// Configure a single view
-void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)    {
+void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
   DetElement world = m_eve->lcdd().world();
   const DetElement::Children& c = world.children();
   DisplayConfiguration::Configurations::const_iterator ic;
-  for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)   {
+  for( ic=config.subdetectors.begin(); ic != config.subdetectors.end(); ++ic)  {
     const DisplayConfiguration::Config& cfg = *ic;
     string nam = cfg.name;
-    if ( nam == "global" ) {
+    if ( nam == "global" )  {
       continue;
     }
-    else if ( cfg.type == DisplayConfiguration::CALODATA )   {
+    else if ( cfg.type == DisplayConfiguration::CALODATA )  {
       continue;
     }
-    else if ( cfg.type == DisplayConfiguration::DETELEMENT )    {
+    else if ( cfg.type == DisplayConfiguration::COLLECTION )  {
+      // Not using the global scene!
+      if ( cfg.data.defaults.show_evt>0 )   {
+	TEveElement* child = m_eve->manager().GetEventScene()->FindChild(nam);
+	printout(INFO,"View","+++     Add collection:%s data:%p scene:%p",nam.c_str(),child,m_eveScene);
+	if ( child ) ImportEvent(child);
+      }
+    }
+    else if ( cfg.type == DisplayConfiguration::DETELEMENT )  {
       // Not using the global scene!
       DetElement::Children::const_iterator i = c.find(nam);
-      if ( i != c.end() && cfg.data.defaults.show_evt>0 )   {
+      if ( i != c.end() && cfg.data.defaults.show_evt>0 )  {
 	SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
 	if ( sd.isValid() )  {
 	  // This should be configurable!
@@ -256,9 +268,7 @@ void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)    {
 	  TEveElement* child = m_eve->manager().GetEventScene()->FindChild(coll);
 	  printout(INFO,"View","+++     Add detector event %s collection:%s data:%p scene:%p",
 		   nam.c_str(),coll,child,m_eveScene);
-	  if ( child )   {
-	    ImportEvent(child);
-	  }
+	  if ( child ) ImportEvent(child);
 	}
       }
     }
@@ -271,7 +281,9 @@ void View::ImportEventTopics()  {
 
 /// Call to import event elements into the main event scene
 void View::ImportEvent(TEveElement* el)  { 
-  if ( m_eveScene ) ImportEventElement(el, m_eveScene);
+  if ( m_eveScene )   {
+    ImportEventElement(el, m_eveScene);
+  }
 }
 
 /// Access/Create a topic by name

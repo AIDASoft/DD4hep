@@ -9,7 +9,7 @@
 
 
 find_program(ROOT_CONFIG_EXECUTABLE root-config
-  PATHS ${ROOTSYS}/bin $ENV{ROOTSYS}/bin)
+  HINTS ${ROOTSYS}/bin $ENV{ROOTSYS}/bin)
 
 if(ROOT_CONFIG_EXECUTABLE)
   execute_process(

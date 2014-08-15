@@ -33,7 +33,7 @@ def run():
   print run1.Property_string, run1.Property_double, run1.Property_int
   run1.enableUI()
   kernel.registerGlobalAction(run1)
-  kernel.runAction().add(run1)
+  kernel.runAction().adopt(run1)
 
   # Configure Event actions
   evt2 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_2')
@@ -49,32 +49,29 @@ def run():
   evt1.Property_string='Hello_1'
   evt1.enableUI()
 
-  kernel.eventAction().add(evt1)
-  kernel.eventAction().add(evt2)
+  kernel.eventAction().adopt(evt1)
+  kernel.eventAction().adopt(evt2)
 
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
   prt.OutputType = 3 # Print both: table and tree
-  kernel.eventAction().add(prt)
+  kernel.eventAction().adopt(prt)
 
-  """
-  mc  = DDG4.Action(kernel,"Geant4MonteCarloRecordManager/MonteCarloRecordManager")
-  kernel.registerGlobalAction(mc)
-  mc.release()
-  """
   # Configure I/O
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   gen = DDG4.GeneratorAction(kernel,"Geant4TestGeneratorAction/Generate")
-  kernel.generatorAction().add(gen)
+  kernel.generatorAction().adopt(gen)
 
   # Setup particle gun
   gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
 
   trk = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
-  kernel.generatorAction().add(trk)
+  kernel.generatorAction().adopt(trk)
   trk.saveProcesses = ['conv','Decay']
   trk.enableUI()
+  user = DDG4.Action(kernel,"Geant4UserParticleHandler/UserParticleHandler")
+  trk.adopt(user)
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
@@ -83,7 +80,7 @@ def run():
   rdr.OutputLevel = DDG4.OutputLevel.INFO
   rdr.Input = "LcioEventReader|test.data"
   rdr.enableUI()
-  kernel.generatorAction().add(rdr)
+  kernel.generatorAction().adopt(rdr)
   """
 
   # Setup global filters fur use in sensntive detectors
@@ -102,13 +99,13 @@ def run():
 
   # First the tracking detectors
   seq,act = simple.setupTracker('SiVertexBarrel')
-  seq.add(f1)
-  #seq.add(f4)
-  act.add(f1)
+  seq.adopt(f1)
+  #seq.adopt(f4)
+  act.adopt(f1)
 
   seq,act = simple.setupTracker('SiVertexEndcap')
-  seq.add(f1)
-  #seq.add(f4)
+  seq.adopt(f1)
+  #seq.adopt(f4)
 
   seq,act = simple.setupTracker('SiTrackerBarrel')
   seq,act = simple.setupTracker('SiTrackerEndcap')
@@ -132,7 +129,7 @@ def run():
   ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
   ph.addPhysicsConstructor('G4OpticalPhysics')
   ph.enableUI()
-  phys.add(ph)
+  phys.adopt(ph)
 
   phys.dump()
 

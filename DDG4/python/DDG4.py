@@ -52,6 +52,7 @@ def _getKernelProperty(self, name):
 
 #---------------------------------------------------------------------------
 def _setKernelProperty(self, name, value):
+  import exceptions
   #print '_setKernelProperty:',name,value
   if Interface.setPropertyKernel(self.get(),name,str(value)):
     return
@@ -87,10 +88,14 @@ def PhysicsList(kernel,nam):         return Interface.createPhysicsList(kernel,n
 #---------------------------------------------------------------------------
 def SensitiveSequence(kernel, nam):  return Interface.createSensDetSequence(kernel,nam)
 #---------------------------------------------------------------------------
-def _adopt(self,action):  self.adopt(action.get())
 def _setup(obj):
-    _import_class('Sim',obj)
-    setattr(getattr(current,obj),'add',_adopt)
+  def _adopt(self,action):  self.__adopt(action.get())
+  _import_class('Sim',obj)
+  o = getattr(current,obj)
+  setattr(o,'__adopt',getattr(o,'adopt'))
+  setattr(o,'adopt',_adopt)
+  setattr(o,'add',_adopt)
+
 #---------------------------------------------------------------------------
 _setup('Geant4RunActionSequence')
 _setup('Geant4EventActionSequence')
@@ -101,11 +106,14 @@ _setup('Geant4StackingActionSequence')
 _setup('Geant4PhysicsListActionSequence')
 _setup('Geant4SensDetActionSequence')
 _setup('Geant4Sensitive')
+_setup('Geant4ParticleHandler')
 _import_class('Sim','Geant4Filter')
 _import_class('Sim','Geant4RunAction')
+_import_class('Sim','Geant4UserParticleHandler')
 
 #---------------------------------------------------------------------------
 def _get(self, name):
+  import exceptions, traceback
   #print '_get:',str(type(self)),name
   a = Interface.toAction(self)
   ret = Interface.getProperty(a,name)
@@ -113,12 +121,16 @@ def _get(self, name):
     return ret.data
   elif hasattr(self.action,name):
     return getattr(self.action,name)
-  elif hasattr(self,name):
-    return getattr(self,name)
-  msg = 'Geant4Action::GetProperty [Unhandled]: Cannot access '+a.name()+'.'+name
+  elif hasattr(a,name):
+    return getattr(a,name)
+  #elif hasattr(self,name):
+  #  return getattr(self,name)
+  #traceback.print_stack()
+  msg = 'Geant4Action::GetProperty [Unhandled]: Cannot access property '+a.name()+'.'+name
   raise exceptions.KeyError(msg)
 
 def _set(self, name, value):
+  import exceptions
   #print '_set:',name,value
   a = Interface.toAction(self)
   if Interface.setProperty(a,name,str(value)):
@@ -142,6 +154,8 @@ _props('TrackingActionHandle')
 _props('SteppingActionHandle')
 _props('StackingActionHandle')
 _props('SensitiveHandle')
+_props('Geant4ParticleHandler')
+_props('Geant4UserParticleHandler')
 
 _props('GeneratorActionSequenceHandle')
 _props('RunActionSequenceHandle')

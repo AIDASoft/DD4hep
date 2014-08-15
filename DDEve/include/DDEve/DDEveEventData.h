@@ -11,6 +11,7 @@
 
 // C/C++ include files
 #include <vector>
+#include <set>
 
 /*
  *   DD4hep namespace declaration
@@ -24,6 +25,8 @@ namespace DD4hep {
    */
   class DDEveHit   {
   public:
+    /// Track/Particle, which produced this hit
+    int particle;
     /// Hit position
     float x,y,z; 
     /// Energy deposit
@@ -31,7 +34,7 @@ namespace DD4hep {
     /// Default constructor
     DDEveHit();
     /// Initializing constructor
-    DDEveHit(float xx, float yy, float zz, float d);
+    DDEveHit(int part, float xx, float yy, float zz, float d);
     /// Copy constructor
     DDEveHit(const DDEveHit& c);
     /// Default destructor
@@ -41,25 +44,28 @@ namespace DD4hep {
   };
   typedef std::vector<DDEveHit> DDEveHits;
 
-  /// Default constructor
-  inline DDEveHit::DDEveHit() : x(0.0), y(0.0), z(0.0), deposit(0.0) {}
-  /// Initializing constructor
-  inline DDEveHit::DDEveHit(float xx, float yy, float zz, float d) : x(xx), y(yy), z(zz), deposit(d) {}
-  /// Copy constructor
-  inline DDEveHit::DDEveHit(const DDEveHit& c) : x(c.x), y(c.y), z(c.z), deposit(c.deposit) {}
-  /// Default destructor
-  inline DDEveHit::~DDEveHit()  {}
-  /// Assignment operator
-  inline DDEveHit& DDEveHit::operator=(const DDEveHit& c)  {
-    if ( this != &c )  {
-      x = c.x;
-      y = c.y;
-      z = c.z;
-      deposit = c.deposit;
-    }
-    return *this;
-  }
-
+  /// Data structure to store the MC particle information 
+  /**
+   * @author  M.Frank
+   * @version 1.0
+   */
+  class DDEveParticle {
+  public:
+    int id, parent, pdgID;
+    double vsx, vsy, vsz;
+    double vex, vey, vez;
+    double psx, psy, psz, energy, time;
+    std::set<int> daughters;
+    /// Default constructor
+    DDEveParticle();
+    /// Copy constructor
+    DDEveParticle(const DDEveParticle& c);
+    /// Default destructor
+    virtual ~DDEveParticle();
+    /// Assignment operator
+    DDEveParticle& operator=(const DDEveParticle& c);
+  };
+  typedef std::vector<DDEveParticle> DDEveParticles;
 } /* End namespace DD4hep   */
 
 

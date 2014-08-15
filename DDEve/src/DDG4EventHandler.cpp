@@ -27,7 +27,8 @@ ClassImp(DDG4EventHandler)
 namespace {
   union FCN  {
     FCN(void* p) { ptr = p; }
-    DDG4EventHandler::HitAccessor_t func;
+    DDG4EventHandler::HitAccessor_t hits;
+    DDG4EventHandler::ParticleAccessor_t particles;
     void* ptr;
   };
 }
@@ -45,7 +46,12 @@ DDG4EventHandler::DDG4EventHandler() : EventHandler(), m_file(0,0), m_entry(-1) 
   if ( 0 == ptr )   {
     throw runtime_error("FATAL: Failed to access function pointer from factory DDEve_DDG4HitAccess");
   }
-  m_simhitConverter = FCN(ptr).func;
+  m_simhitConverter = FCN(ptr).hits;
+  ptr = ROOT::Reflex::PluginService::Create<void*>("DDEve_DDG4ParticleAccess",(const char*)"");
+  if ( 0 == ptr )   {
+    throw runtime_error("FATAL: Failed to access function pointer from factory DDEve_DDG4ParticleAccess");
+  }
+  m_particleConverter = FCN(ptr).particles;
 }
 
 /// Default destructor
@@ -89,6 +95,18 @@ std::string DDG4EventHandler::datasourceName() const   {
   return "UNKNOWN";
 }
 
+/// Access to the collection type by name
+EventHandler::CollectionType DDG4EventHandler::collectionType(const std::string& collection) const {
+  Branches::const_iterator i = m_branches.find(collection);
+  if ( i != m_branches.end() )   {
+    const char* cl = (*i).second.first->GetClassName();
+    if ( ::strstr(cl,"Simulation::SimpleCalorimeter::Hit") ) return CALO_HIT_COLLECTION;
+    else if ( ::strstr(cl,"Simulation::SimpleTracker::Hit") ) return TRACKER_HIT_COLLECTION;
+    else if ( ::strstr(cl,"Simulation::Particle") ) return PARTICLE_COLLECTION;
+  }
+  return NO_COLLECTION;
+}
+
 /// Call functor on hit collection
 size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor)   {
   typedef std::vector<void*> _P;
@@ -101,6 +119,26 @@ size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveHitA
       for(_P::const_iterator i=data->begin(); i!=data->end(); ++i)   {
 	if ( (*m_simhitConverter)(*i,&hit) )    {
 	  actor(hit);
+	}
+      }
+      return data->size();
+    }
+  }
+  return 0;
+}
+
+/// Loop over collection and extract particle data
+size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
+  typedef std::vector<void*> _P;
+  Branches::const_iterator i = m_branches.find(collection);
+  if ( i != m_branches.end() )   {
+    const _P* data = (_P*)(*i).second.second;
+    if ( data )  {
+      DDEveParticle part;
+      actor.setSize(data->size());
+      for(_P::const_iterator i=data->begin(); i!=data->end(); ++i)   {
+	if ( (*m_particleConverter)(*i,&part) )    {
+	  actor(part);
 	}
       }
       return data->size();

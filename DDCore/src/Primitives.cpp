@@ -230,18 +230,26 @@ void* ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) con
   {
     // Now try the up-cast
     r = (*cast)(ptr);
+    if (r)      return r;
 #else
+  void* r = (void*)ptr;
+  if ( to.abi_class )  {
+  bool cast_worked = type.__do_upcast((const class_t*)to.abi_class,&r);
+  if ( cast_worked ) return r;
+  r = (void*)ptr;
+  cast_worked = to.type.__do_upcast((const class_t*)abi_class,&r);
+  if ( cast_worked ) return r;
+#if 0
   const class_t* src_type = (const class_t*)to.abi_class;
   if (src_type) {
     // First try down cast
     void *r = cast_wrap(ptr, src_type, (const class_t*) abi_class, -1);
-    if (r)
-      return r;
+    if ( r ) return r;
     // Now try the up-cast
     r = cast_wrap(ptr, (const class_t*) abi_class, src_type, -1);
+    if (r)      return r;
 #endif
-    if (r)
-      return r;
+#endif
     throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
   }
   throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
@@ -262,14 +270,20 @@ void* ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) co
   }
 #ifdef __APPLE__
   void *r = (*to.cast)(ptr);
+  if (r) return r;
   {
 #else
-  const class_t* src_type = (const class_t*)to.abi_class;
-  if (src_type)    {
-    void *r = cast_wrap(ptr, src_type, (const class_t*)abi_class, -1);
+    if ( to.abi_class )  {
+      // Since we have to cast a 'to' pointer up to the real pointer
+      // no virtual inheritance can be supported!
+      void* r = (void*)ptr;
+      bool cast_worked = type.__do_upcast((const class_t*)to.abi_class,&r);
+      if ( cast_worked ) return r;
+#if 0
+      void *r = cast_wrap(ptr, src_type, (const class_t*)abi_class, -1);
+      if (r) return r;
 #endif
-    if (r)
-      return r;
+#endif
     throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
   }
   throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");

@@ -25,6 +25,7 @@ using namespace DD4hep::Simulation;
 #pragma link C++ class SimpleRun+;
 #pragma link C++ class SimpleEvent+;
 //#pragma link C++ class SimpleEvent::Seeds+;
+#pragma link C++ class DataExtension+;
 #pragma link C++ class SimpleHit+;
 #pragma link C++ class Particle+;
 #pragma link C++ class std::vector<SimpleHit*>+;
@@ -70,6 +71,7 @@ namespace DD4hep {
     ACTIONHANDLE(SteppingAction);
     ACTIONHANDLE(StackingAction);
     ACTIONHANDLE(Sensitive);
+    ACTIONHANDLE(ParticleHandler);
 
     ACTIONHANDLE(GeneratorActionSequence);
     ACTIONHANDLE(RunActionSequence);
@@ -240,6 +242,8 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class Geant4PhysicsListActionSequence;
 #pragma link C++ class Geant4PhysicsList;
 
+#pragma link C++ class Geant4ParticleHandler;
+#pragma link C++ class Geant4UserParticleHandler;
 #pragma link C++ class Geant4Filter;
 #pragma link C++ class Geant4ActionSD;
 #pragma link C++ class Geant4Sensitive;

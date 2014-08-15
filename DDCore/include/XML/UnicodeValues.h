@@ -323,6 +323,7 @@ namespace DD4hep {
     UNICODE (sensor);
     UNICODE (sequence);
     UNICODE (setup);
+    UNICODE (size);
     UNICODE(signed);
     UNICODE (solidref);
     UNICODE (sphere);

@@ -67,8 +67,24 @@ std::string GenericEventHandler::datasourceName() const {
   return current()->datasourceName();
 }
 
+/// Access to the collection type by name
+EventHandler::CollectionType GenericEventHandler::collectionType(const std::string& collection) const   {
+  if ( m_current && m_current->hasEvent() )  {
+    return m_current->collectionType(collection);
+  }
+  return NO_COLLECTION;
+}
+
 /// Loop over collection and extract data
 size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor) {
+  if ( m_current && m_current->hasEvent() )  {
+    return m_current->collectionLoop(collection,actor);
+  }
+  return 0;
+}
+
+/// Loop over collection and extract particle data
+size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionLoop(collection,actor);
   }

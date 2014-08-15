@@ -55,8 +55,12 @@ namespace DD4hep {
     std::string datasourceName() const { return hasFile() ? m_fileName : std::string("UNKNOWN"); }
     /// Access the number of events on the current input data source (-1 if no data source connected)
     virtual long numEvents() const;
+    /// Access to the collection type by name
+    virtual CollectionType collectionType(const std::string& collection) const;
     /// Call functor on hit collection
     virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor);
+    /// Loop over collection and extract particle data
+    virtual size_t collectionLoop(const std::string& collection, DDEveParticleActor& actor);
     /// Open new data file
     virtual bool Open(const std::string& type, const std::string& file_name);
     /// User overloadable function: Load the next event

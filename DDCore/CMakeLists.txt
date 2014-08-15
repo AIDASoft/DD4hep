@@ -11,6 +11,7 @@ file(GLOB plugin_sources src/plugins/*.cpp)
 #---Add Library-------------------------------------------------------------------
 if(DD4HEP_USE_BOOST)
   file(GLOB parser_sources src/parsers/*.cpp )
+  add_definitions(-DDD4HEP_USE_BOOST)
 else()
   file(GLOB parser_sources )
 endif()

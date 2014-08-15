@@ -40,6 +40,7 @@ Calo2DProjection::~Calo2DProjection()  {
 /// Build the projection view and map it to the given slot
 View& Calo2DProjection::Build(TEveWindow* slot)   {
   CreateGeoScene();
+  CreateEventScene();
   CreateRhoPhiProjection().AddAxis();
   AddToGlobalItems(name());
   return Map(slot);
@@ -112,7 +113,8 @@ void Calo2DProjection::ConfigureGeometry(const DisplayConfiguration::ViewConfig&
 }
 
 /// Configure a single event scene view
-void Calo2DProjection::ConfigureEvent(const DisplayConfiguration::ViewConfig& /* config */)  {
+void Calo2DProjection::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
+  this->View::ConfigureEvent(config);
 }
 
 /// Call to import geometry topics

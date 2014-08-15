@@ -56,6 +56,10 @@ static const void* _convertHitFunc(const LCObject* source, DDEveHit* target)  {
   if (c && _fill(c,target)) return c;
   return 0;
 }
+static const void* _convertParticleFunc(const LCObject* source, DDEveParticle* target)  {
+  if ( source && target )  {}
+  return 0;
+}
 
 static void* _create(const char*)  {
   EventHandler* h = new LCIOEventHandler();
@@ -82,6 +86,17 @@ long LCIOEventHandler::numEvents() const   {
   return -1;
 }
 
+/// Access to the collection type by name
+EventHandler::CollectionType LCIOEventHandler::collectionType(const std::string& /* collection */) const {
+  return CALO_HIT_COLLECTION;
+#if 0
+      if ( cl == cl_calo ) return CALO_HIT_COLLECTION;
+      else if ( cl == cl_tracker ) return TRACKER_HIT_COLLECTION;
+      else if ( cl == cl_particles ) return PARTICLE_COLLECTION;
+      else return NO_COLLECTION;
+#endif
+}
+
 /// Call functor on hit collection
 size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor)   {
   typedef std::vector<void*> _P;
@@ -96,6 +111,28 @@ size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitA
 	LCObject* ptr = c->getElementAt(i);
 	if ( _convertHitFunc(ptr,&hit) )    {
 	  actor(hit);
+	}
+      }
+      return n;
+    }
+  }
+  return 0;
+}
+
+/// Loop over collection and extract particle data
+size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
+  typedef std::vector<void*> _P;
+  Branches::const_iterator i = m_branches.find(collection);
+  if ( i != m_branches.end() )   {
+    LCCollection* c = (*i).second;
+    if ( c )  {
+      DDEveParticle part;
+      int n = c->getNumberOfElements();
+      actor.setSize(n);
+      for(int i=0; i<n; ++i)  {
+	LCObject* ptr = c->getElementAt(i);
+	if ( _convertParticleFunc(ptr,&part) )    {
+	  actor(part);
 	}
       }
       return n;

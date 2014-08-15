@@ -88,7 +88,7 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
     ElementList* shape = new ElementList(n->GetName(),n->GetName(),true,true);
     shape->SetUserData(n);
     shape->SetMainTransparency(true);
-    shape->SetMainAlpha(0.5);
+    shape->SetMainAlpha(0.2);
     shape->SetPickable(kTRUE);
     if ( vis.isValid() )  {
       float r,g,b;
@@ -110,7 +110,7 @@ Utilities::createEveShape(int level, int max_level, TEveElement* p, TGeoNode* n,
       shape->SetMainColorRGB(r,g,b);
     }
     shape->SetMainTransparency(true);
-    shape->SetMainAlpha(0.5);
+    shape->SetMainAlpha(0.2);
     shape->SetPickable(kTRUE);
     shape->RefMainTrans().SetFrom(mat);
     shape->SetShape((TGeoShape*)geoShape->Clone());

@@ -41,6 +41,10 @@ SimpleEvent::~SimpleEvent() {
   InstanceCount::decrement(this);
 }
 
+/// Default destructor
+DataExtension::~DataExtension() {
+}
+
 /// Copy constructor
 Particle::Particle(const Particle& c)
   : id(c.id), g4Parent(c.g4Parent), parent(c.parent), reason(c.reason), 
@@ -50,8 +54,8 @@ Particle::Particle(const Particle& c)
     psx(c.psx), psy(c.psy), psz(c.psz), 
     pex(c.pex), pey(c.pey), pez(c.pez), 
     energy(c.energy), time(c.time),
-    process(c.process), definition(c.definition),
-    daughters(c.daughters)
+    daughters(c.daughters), extension(),
+    process(c.process), definition(c.definition)
 {
   InstanceCount::increment(this);
 }
@@ -65,8 +69,7 @@ Particle::Particle()
     psx(0.0), psy(0.0), psz(0.0), 
     pex(0.0), pey(0.0), pez(0.0), 
     energy(0.0), time(0.0),
-    process(0), definition(0),
-    daughters()
+    daughters(), extension(), process(0), definition(0)
 {
   InstanceCount::increment(this);
 }
@@ -74,6 +77,39 @@ Particle::Particle()
 /// Default destructor
 Particle::~Particle()  {
   InstanceCount::decrement(this);
+}
+
+/// Assignment operator
+Particle& Particle::get_data(Particle& c)   {
+  if ( this != &c )  {
+    id = c.id; 
+    g4Parent = c.g4Parent;
+    parent = c.parent;
+    reason = c.reason; 
+    steps = c.steps; 
+    secondaries = c.secondaries;
+    pdgID = c.pdgID;
+    vsx = c.vsx;
+    vsy = c.vsy;
+    vsz = c.vsz; 
+    vex = c.vex;
+    vey = c.vey;
+    vez = c.vez; 
+    psx = c.psx;
+    psy = c.psy;
+    psz = c.psz; 
+    pex = c.pex;
+    pey = c.pey;
+    pez = c.pez; 
+    energy = c.energy;
+    time = c.time;
+    process = c.process; 
+    definition = c.definition;
+    daughters = c.daughters;
+    extension = c.extension;
+    //auto_ptr<DataExtension>(c.extension.release());
+  }
+  return *this;
 }
 
 /// Remove daughter from set
@@ -84,7 +120,7 @@ void Particle::removeDaughter(int id_daughter)  {
 
 /// Default constructor
 SimpleHit::SimpleHit()
-    : cellID(0) {
+    : cellID(0), extension() {
   InstanceCount::increment(this);
 }
 

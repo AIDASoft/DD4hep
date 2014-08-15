@@ -20,6 +20,7 @@ class TH2F;
 #include <vector>
 
 // Forward declarations
+#define MEV_2_GEV 0.001
 
 /*
  *   DD4hep namespace declaration
@@ -27,7 +28,7 @@ class TH2F;
 namespace DD4hep {
 
   class EventConsumer;
-  /// Event data actor base class. Used to extract data from concrete classes.
+  /// Event data actor base class for hits. Used to extract data from concrete classes.
   /** 
    * @author  M.Frank
    * @version 1.0
@@ -38,6 +39,17 @@ namespace DD4hep {
     virtual void setSize(size_t /* num_elements */) {}
   };
 
+  /// Event data actor base class for particles. Used to extract data from concrete classes.
+  /** 
+   * @author  M.Frank
+   * @version 1.0
+   */
+  struct DDEveParticleActor  {
+    virtual ~DDEveParticleActor() {}
+    virtual void operator()(const DDEveParticle&) = 0;
+    virtual void setSize(size_t /* num_elements */) {}
+  };
+
   /// Event handler base class. Interface to all DDEve I/O actions
   /** 
    * @author  M.Frank
@@ -45,6 +57,14 @@ namespace DD4hep {
    */
   class EventHandler   {
   public:
+    enum CollectionType { 
+      NO_COLLECTION=1<<0, 
+      PARTICLE_COLLECTION=1<<1, 
+      TRACK_COLLECTION=1<<2,
+      CALO_HIT_COLLECTION=1<<3,
+      TRACKER_HIT_COLLECTION=1<<4,
+      HIT_COLLECTION=CALO_HIT_COLLECTION|TRACKER_HIT_COLLECTION
+    };
     /// Collection definition: name, size
     typedef std::pair<const char*,size_t> Collection;
     /// Types collection: collections are grouped by type (class name)
@@ -70,8 +90,12 @@ namespace DD4hep {
     virtual long numEvents() const = 0;
     /// Access the data source name
     virtual std::string datasourceName() const = 0;
-    /// Loop over collection and extract data
+    /// Loop over collection and extract hit data
     virtual size_t collectionLoop(const std::string& collection, DDEveHitActor& actor) = 0;
+    /// Loop over collection and extract particle data
+    virtual size_t collectionLoop(const std::string& collection, DDEveParticleActor& actor) = 0;
+    /// Access to the collection type by name
+    virtual CollectionType collectionType(const std::string& collection) const = 0;
     /// Open a new event data file
     virtual bool Open(const std::string& type, const std::string& file_name) = 0;
     /// Load the next event

@@ -100,7 +100,7 @@ namespace DD4hep {
       DOMLocator* loc = domError.getLocation();
       if (loc) {
 	printout(FATAL,"DocumentErrorHandler","+++ Location: Line:%d Column: %d",
-		 loc->getLineNumber(),loc->getColumnNumber());
+		 int(loc->getLineNumber()),int(loc->getColumnNumber()));
       }
       return false;
     }
@@ -115,13 +115,13 @@ namespace DD4hep {
         return;
       string sys(_toString(e.getSystemId()));
       printout(ERROR,"XercesC","+++ Error at file \"%s\", Line %d Column: %d Message:%s",
-	       sys.c_str(), e.getLineNumber(), e.getColumnNumber(), m.c_str());
+	       sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
     void DocumentErrorHandler::fatalError(const SAXParseException& e) {
       string m(_toString(e.getMessage()));
       string sys(_toString(e.getSystemId()));
       printout(FATAL,"XercesC","+++ FATAL Error at file \"%s\", Line %d Column: %d Message:%s",
-	       sys.c_str(), e.getLineNumber(), e.getColumnNumber(), m.c_str());
+	       sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
 
     void dumpTree(xercesc::DOMDocument* doc) {

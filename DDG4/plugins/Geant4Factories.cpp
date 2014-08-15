@@ -43,6 +43,9 @@ DECLARE_GEANT4ACTION(Geant4DummyTruthHandler)
 #include "DDG4/Geant4ParticleHandler.h"
 DECLARE_GEANT4ACTION(Geant4ParticleHandler)
 
+#include "DDG4/Geant4UserParticleHandler.h"
+DECLARE_GEANT4ACTION(Geant4UserParticleHandler)
+
 #include "DDG4/Geant4ParticlePrint.h"
 DECLARE_GEANT4ACTION(Geant4ParticlePrint)
 

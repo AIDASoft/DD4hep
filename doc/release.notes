@@ -3,10 +3,15 @@
 DD4hep  ----  Release Notes
 =================================
 
- --------
-| v00-09 |  nineth beta release ...
- --------   
-
+2014/08/15 Markus Frank
+-----------------------
+    - DDG4 Add possibility for user hook to the particle handler +
+      Data member to store additionbal particle data for the
+      output stage.
+    - Allow to display MC particles in DDEve
+      Add small help file describing how to start DDEve.
+      doc/DDEveManual.pdf
+    - Update CLICSiD Example.
 
 2014/08/07 Markus Frank
 -----------------------

@@ -44,3 +44,38 @@ cmake -DCMAKE_INSTALL_PREFIX=`pwd`/../g4.9.5 \
 #
 make -j 4
 #
+# FCC make
+#
+. /afs/cern.ch/sw/lcg/external/gcc/4.8/x86_64-slc6-gcc48-opt/setup.sh /afs/cern.ch/sw/lcg/external;
+export location=/afs/cern.ch/exp/fcc/sw/0.2
+export PATH=/afs/cern.ch/sw/lcg/contrib/CMake/2.8.9/Linux-i386/bin:${location}/Python/2.7.6/x86_64-slc6-gcc48-dbg/bin:$PATH
+export CONFIG=x86_64-slc6-gcc48-dbg
+export location=/afs/cern.ch/exp/fcc/sw/0.2;
+export BOOST_ROOT_DIR=${location}/Boost/1.55.0_python2.7/${CONFIG};
+export XERCESC_ROOT_DIR=${location}/XercesC/3.1.1p1/${CONFIG};
+export ROOTSYS=${location}/ROOT/5.34.19/${CONFIG};
+Geant4=${location}/Geant4/9.6.p03/${CONFIG};
+ROOTlibs=${location}/ROOT/5.34.19/${CONFIG}/lib;
+XERCESClibs=${location}/XercesC/3.1.1p1/${CONFIG}/lib;
+DD4hepLibs=${location}/DD4hep/v00-09/${CONFIG}/lib;
+CLHEPlibs=${location}/clhep/2.1.4.1/${CONFIG}/lib;
+Geant4libs=${Geant4}/lib64;
+Pythonlibs=${location}/Python/2.7.6/${CONFIG}/lib;
+
+export G4LEDATA=${Geant4}/share/Geant4-9.6.3/data/G4EMLOW6.32;
+export G4LEVELGAMMADATA=${Geant4}/share/Geant4-9.6.3/data/PhotonEvaporation2.3;
+export G4SAIDXSDATA=${Geant4}/share/Geant4-9.6.3/data/G4SAIDDATA1.1;
+export LD_LIBRARY_PATH=${BOOST_ROOT_DIR}/lib:${ROOTSYS}/lib:${XERCESC_ROOT_DIR}/lib:${LD_LIBRARY_PATH}
+#
+cmake \
+-DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_INSTALL_PREFIX=../Install \
+-DDD4HEP_USE_BOOST=ON \
+-DBOOST_ROOT=${BOOST_ROOT_DIR} \
+-DBoost_NO_BOOST_CMAKE=ON \
+-DDD4HEP_USE_XERCESC=ON \
+-DXERCESC_ROOT_DIR=${XERCESC_ROOT_DIR} \
+-DROOTSYS=${ROOTSYS} \
+-DDD4HEP_USE_GEANT4=ON \
+-DCMAKE_PREFIX_PATH=${location}/Geant4/9.6.p03/${CONFIG} \
+../DD4hep/checkout

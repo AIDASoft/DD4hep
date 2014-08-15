@@ -10,14 +10,16 @@
 // Framework include files
 #include "DDEve/View.h"
 #include "DDEve/Display.h"
-#include "DDEve/ElementList.h"
 #include "DDEve/ViewMenu.h"
 #include "DDEve/DD4hepMenu.h"
+#include "DDEve/ElementList.h"
+#include "DDEve/GenericEventHandler.h"
 #include "DDEve/EveShapeContextMenu.h"
 #include "DDEve/EvePgonSetProjectedContextMenu.h"
-#include "DDEve/GenericEventHandler.h"
 #include "DDEve/Utilities.h"
 #include "DDEve/DDEveEventData.h"
+#include "DDEve/HitActors.h"
+#include "DDEve/ParticleActors.h"
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/LCDDData.h"
@@ -36,9 +38,11 @@
 #include "TEveManager.h"
 #include "TEveCaloData.h"
 #include "TEveCalo.h"
-#include "TEvePointSet.h"
-#include "TEveBoxSet.h"
 #include "TEveViewer.h"
+#include "TEveCompound.h"
+#include "TEveBoxSet.h"
+#include "TEvePointSet.h"
+#include "TEveTrackPropagator.h"
 #include "TGeoManager.h"
 
 // C/C++ include files
@@ -48,6 +52,7 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+
 
 ClassImp(Display)
 
@@ -70,23 +75,8 @@ namespace DD4hep {
       //display->LoadXML("file:../DD4hep/examples/CLICSiD/compact/DDEve.xml");
     }
   }
-
-  struct PointsetCreator : public DDEveHitActor  {
-    TEvePointSet* points;
-    int count;
-    PointsetCreator(TEvePointSet* ps) : points(ps), count(0) {}
-    virtual void operator()(const DDEveHit& hit)  
-    {  points->SetPoint(count++, hit.x/10e0, hit.y/10e0, hit.z/10e0); }
-  };
-  struct EtaPhiHistogramActor : public DDEveHitActor  {
-    TH2F* histogram;
-    EtaPhiHistogramActor(TH2F* h) : DDEveHitActor(), histogram(h) {}
-    virtual void operator()(const DDEveHit& hit)   {
-      const Geometry::Position pos(hit.x/10e0,hit.y/10e0,hit.z/10e0);
-      histogram->Fill(pos.Eta(),pos.Phi(),hit.deposit);
-    }
-  };
 }
+
 
 Display::CalodataContext::CalodataContext() 
   : slice(0), calo3D(0), caloViz(0), eveHist(0), config()
@@ -124,7 +114,7 @@ Display::Display(TEveManager* eve)
   m_evtHandler->Subscribe(this);
   m_lcdd->addExtension<Display>(this);
   br->ShowCloseTab(kFALSE);
-  //m_eve->GetViewers()->SwitchColorSet();
+  m_eve->GetViewers()->SwitchColorSet();
   TFile::SetCacheFileDir(".");
   BuildMenus(bar);
   br->SetTabTitle("Global Scene",TRootBrowser::kRight,0);
@@ -210,13 +200,15 @@ void Display::ImportConfiguration(const DisplayConfiguration& config)   {
   DisplayConfiguration::Configurations::const_iterator j;
   for(j=config.calodata.begin(); j!=config.calodata.end(); ++j)  
     m_calodataConfigs[(*j).name] = *j;
+  for(j=config.collections.begin(); j!=config.collections.end(); ++j)  
+    m_collectionsConfigs[(*j).name] = *j;
 }
 
 /// Access to calo data histograms by name as defined in the configuration
 Display::CalodataContext& Display::GetCaloHistogram(const string& nam)   {
   Calodata::iterator i = m_calodata.find(nam);
   if ( i == m_calodata.end() )  {
-    CalodataConfigurations::const_iterator j = m_calodataConfigs.find(nam);
+    DataConfigurations::const_iterator j = m_calodataConfigs.find(nam);
     if ( j != m_calodataConfigs.end() )   {
       CalodataContext ctx;
       ctx.config = (*j).second;
@@ -270,8 +262,8 @@ const Display::ViewConfig* Display::GetViewConfiguration(const string& nam)  con
 }
 
 /// Access a data filter by name. Data filters are used to customize calodatas
-const Display::CalodataConfig* Display::GetCalodataConfiguration(const string& nam)  const   {
-  CalodataConfigurations::const_iterator i = m_calodataConfigs.find(nam);
+const Display::DataConfig* Display::GetCalodataConfiguration(const string& nam)  const   {
+  DataConfigurations::const_iterator i = m_calodataConfigs.find(nam);
   return (i == m_calodataConfigs.end()) ? 0 : &((*i).second);
 }
 
@@ -376,6 +368,7 @@ void Display::OnNewEvent(EventHandler* handler )   {
   typedef EventHandler::TypedEventCollections Types;
   typedef vector<EventHandler::Collection> Collections;
   const Types& types = handler->data();
+  TEveElement* particles = 0;
 
   printout(ERROR,"EventHandler","+++ Display new event.....");
   manager().GetEventScene()->DestroyElements();
@@ -383,12 +376,55 @@ void Display::OnNewEvent(EventHandler* handler )   {
     const Collections& colls = (*i).second;
     for(Collections::const_iterator j=colls.begin(); j!=colls.end(); ++j)   {
       size_t len = (*j).second;
+      const char* nam = (*j).first;
       if ( len > 0 )   {
-	TEvePointSet* ps = new TEvePointSet((*j).first,len);
-	ps->SetMarkerSize(0.2);
-	PointsetCreator cr(ps);
-	handler->collectionLoop((*j).first, cr);
-	ImportEvent(ps);
+	EventHandler::CollectionType typ = handler->collectionType(nam);
+	if ( typ == EventHandler::CALO_HIT_COLLECTION ||
+	     typ == EventHandler::TRACKER_HIT_COLLECTION )  {
+	  const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
+	  if ( i != m_collectionsConfigs.end() )  {
+	    const DataConfig& cfg = (*i).second;
+	    if ( cfg.hits == "PointSet" )  {
+	      PointsetCreator cr(nam,len,cfg);
+	      handler->collectionLoop((*j).first, cr);
+	      ImportEvent(cr.element());
+	    }
+	    else if ( cfg.hits == "BoxSet" )  {
+	      BoxsetCreator cr(nam,len,cfg);
+	      handler->collectionLoop((*j).first, cr);
+	      ImportEvent(cr.element());
+	    }
+	    else if ( cfg.hits == "TowerSet" )  {
+	      TowersetCreator cr(nam,len,cfg);
+	      handler->collectionLoop((*j).first, cr);
+	      ImportEvent(cr.element());
+	    }
+	    else {  // Default is point set
+	      PointsetCreator cr(nam,len);
+	      handler->collectionLoop((*j).first, cr);
+	      ImportEvent(cr.element());
+	    }
+	  }
+	  else  {
+	    PointsetCreator cr(nam,len);
+	    handler->collectionLoop((*j).first, cr);
+	    ImportEvent(cr.element());
+	  }
+	}
+	else if ( typ == EventHandler::PARTICLE_COLLECTION )   {
+	  // We do not have to care about memory leaks here:
+	  // TEveTrackPropagator is reference counted and will be destroyed if the
+	  // last track is gone ie. when we re-initialize the event scene
+
+	  // $$$ Do not know exactly what the field parameters mean
+	  const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
+	  const DataConfig* cfg = (i==m_collectionsConfigs.end()) ? 0 : &((*i).second);
+	  MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
+			       new TEveCompound("MC_Particles","MC_Particles"),cfg);
+	  handler->collectionLoop((*j).first, cr);
+	  cr.close();
+	  particles = cr.particles;
+	}
       }
     }
   }
@@ -403,9 +439,13 @@ void Display::OnNewEvent(EventHandler* handler )   {
     printout(INFO,"FillEtaPhiHistogram","+++ %s: Filled %ld hits from %s....",
 	     ctx.calo3D->GetName(), n, ctx.config.hits.c_str());
   }
+  /// We absolutely want to import the particles as the last elements, otherwise
+  /// they end up under the hits and are close to invisible
+  if ( particles )  {
+    ImportEvent(particles);
+  }
   for(Views::iterator i = m_eveViews.begin(); i != m_eveViews.end(); ++i)
     (*i)->ConfigureEvent();
-
   manager().Redraw3D();
 }
 

@@ -32,6 +32,7 @@ namespace DD4hep {
 
     // Forward declarations
     class Particle;
+    class Geant4UserParticleHandler;
 
     /** Geant4Action to collect the MC particle information.
      *
@@ -49,8 +50,12 @@ namespace DD4hep {
       bool m_printStartTracking;
       /// Property: Steer printout at tracking action end
       bool m_printEndTracking;
+      /// Property: Flag to keep all particles generated
+      bool m_keepAll;
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut;
+      /// User action pointer
+      Geant4UserParticleHandler* m_userHandler;
       /// Local buffer about the 'current' G4Track 
       Particle m_currTrack;
       /// Map with stored MC Particles
@@ -74,6 +79,8 @@ namespace DD4hep {
       Geant4ParticleHandler(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4ParticleHandler();
+      /// Adopt the user particle handler
+      bool adopt(Geant4UserParticleHandler* action);
       /// Event generation action callback
       virtual void operator()(G4Event* event);
       /// User stepping callback

@@ -31,6 +31,13 @@
   <calodata name="SiTrackerEndcap" use="SiTracker" hits="SiTrackerEndcapHits"/>
   <calodata name="SiTrackerForward" use="SiTracker" hits="SiTrackerForwardHits"/>
 
+  <collection name="EcalBarrelHits" hits="PointSet" color="kGreen+3" size="0.3" type="21" towerH="3*MeV" emax="10*GeV"/>
+  <collection name="HcalBarrelHits" hits="PointSet" color="kBlue" size="0.3" type="21" towerH="3*MeV" emax="2*GeV"/>
+  <collection name="SiTrackerForwardHits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
+  <collection name="SiTrackerBarrelHits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
+  <collection name="SiTrackerEndcapHits" hits="PointSet" color="kMagenta" size="0.3" type="20"/>
+  <collection name="MC_Particles" hits="Particles" size="0.6" width="2" type="kCircle"/>
+
   <view name="3D Trackers R-Phi (Global)" type="RhoPhiProjection">
     <detelement name="SiVertexBarrel"    load_geo="-1" alpha="0.5"/>
     <detelement name="SiTrackerBarrel"   load_geo="-1" alpha="0.5"/>
@@ -67,6 +74,7 @@
     <detelement name="HcalPlug"   load_geo="2" alpha="0.5"/>
     <detelement name="HcalBarrel" load_geo="2" alpha="0.5"/>
     <detelement name="HcalEndcap" load_geo="2" alpha="0.5"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
   </view>
 
   <view name="Calo 3D" type="Calo3DProjection">
@@ -74,6 +82,7 @@
     <calodata name="Hcal"/>
     <calodata name="EcalEndcap"/>
     <calodata name="HcalEndcap"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
   </view>
 
   <view name="Calo Lego" type="CaloLego">
@@ -102,6 +111,7 @@
     <calodata name="Muon"/>
     <detelement name="EcalBarrel" load_geo="-1" alpha="0.5"/>
     <detelement name="HcalBarrel" load_geo="-1" alpha="0.5"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
   </view>
 
   <view name="Multi (Global)" type="MultiView">
@@ -114,6 +124,7 @@
     <detelement name="HcalPlug"   load_geo="-1" alpha="0.5"/>
     <detelement name="HcalBarrel" load_geo="-1" alpha="0.5"/>
     <detelement name="HcalEndcap" load_geo="-1" alpha="0.5"/>
+    <collection name="MC_Particles" use="MC_Particles"/>
     <panel name="Silicon Deposits" use="Calo3DProjection"/>
     <panel name="Calo 2D"          use="Calo2DProjection"/>
   </view>

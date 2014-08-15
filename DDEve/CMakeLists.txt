@@ -3,20 +3,28 @@ cmake_minimum_required(VERSION 2.8.0 FATAL_ERROR)
 set( PackageName DDEve )
 
 #---add additional packages here--------------------------------------------------
-if(NOT DD4HEP_BUILD_ALL)
-find_package( DD4hep ) 
+if(DD4HEP_BUILD_ALL)
+  find_package( DD4hep ) 
 endif()
 set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake ) 
 include( DD4hep )
 
 find_package( ROOT REQUIRED )
 #---Includedirs ------------------------------------------------------------------
-include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
-	            ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
-                    ${CMAKE_CURRENT_SOURCE_DIR}/include
+if(DD4HEP_WITH_GEANT4)
+  include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
+    ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
+    ${CMAKE_SOURCE_DIR}/DDG4/include	
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${DD4hep_INCLUDE_DIRS}
     ${ROOT_INCLUDE_DIR} )
-
+else()
+  include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
+    ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${DD4hep_INCLUDE_DIRS}
+    ${ROOT_INCLUDE_DIR} )
+endif()
 #---DD4hepEve library --------------------------------------------------------------
 file(GLOB headers include/DDEve/*.h)
 file(GLOB sources src/*.cpp)
@@ -28,7 +36,7 @@ if(DD4HEP_USE_LCIO)
 endif()
 #---------------------------  Support for the DDG4 data I/O ------------------------
 if(DD4HEP_WITH_GEANT4)
-  root_generate_dictionary( G__DDG4IO ${CMAKE_CURRENT_SOURCE_DIR}/DDEve/DDG4IO.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
+  root_generate_dictionary( G__DDG4IO ${CMAKE_CURRENT_SOURCE_DIR}/DDEve/DDG4IO.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h )
   list(APPEND sources G__DDG4IO.cxx)
 endif()
 #---------------------------  Add DDEve dictionary for interactive ROOT sessions ---

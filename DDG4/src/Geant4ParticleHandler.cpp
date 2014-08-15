@@ -16,6 +16,7 @@
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4SteppingAction.h"
 #include "DDG4/Geant4ParticleHandler.h"
+#include "DDG4/Geant4UserParticleHandler.h"
 
 #include "G4Step.hh"
 #include "G4Track.hh"
@@ -53,7 +54,7 @@ namespace {
 
 /// Standard constructor
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const std::string& nam)
-  : Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth()
+  : Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth(), m_userHandler(0)
 {
   //generatorAction().adopt(this);
   eventAction().callAtBegin(this,&Geant4ParticleHandler::beginEvent);
@@ -62,9 +63,10 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const std::
   trackingAction().callUpFront(this,&Geant4ParticleHandler::begin,CallbackSequence::FRONT);
   steppingAction().call(this,&Geant4ParticleHandler::step);
 
-  declareProperty("printEndTracking",m_printEndTracking = false);
-  declareProperty("printStartTracking",m_printStartTracking = false);
-  declareProperty("saveProcesses",m_processNames);
+  declareProperty("printEndTracking",    m_printEndTracking = false);
+  declareProperty("printStartTracking",  m_printStartTracking = false);
+  declareProperty("keepAllParticles",    m_keepAll = false);
+  declareProperty("saveProcesses",       m_processNames);
   declareProperty("minimalKineticEnergy",m_kinEnergyCut = 100e0*MeV);
   InstanceCount::increment(this);
 }
@@ -72,7 +74,26 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const std::
 /// Default destructor
 Geant4ParticleHandler::~Geant4ParticleHandler()  {
   clear();
+  releasePtr(m_userHandler);
   InstanceCount::decrement(this);
+}
+
+/// Adopt the user particle handler
+bool Geant4ParticleHandler::adopt(Geant4UserParticleHandler* action)    {
+  if ( action )   {
+    if ( !m_userHandler )  {
+      Geant4UserParticleHandler* h = dynamic_cast<Geant4UserParticleHandler*>(action);
+      if ( h )  {
+	m_userHandler = h;
+	m_userHandler->addRef();
+	return true;
+      }
+      except("Cannot add an invalid user particle handler object [Invalid-object-type].", c_name());
+    }
+    except("Cannot add an user particle handler object [Object-exists].", c_name());
+  }
+  except("Cannot add an invalid user particle handler object [NULL-object].", c_name());
+  return false;
 }
 
 /// Clear particle maps
@@ -129,17 +150,26 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
 }
 
 /// Event generation action callback
-void Geant4ParticleHandler::operator()(G4Event*)  {
+void Geant4ParticleHandler::operator()(G4Event* event)  {
   typedef Geant4MonteCarloTruth _MC;
   printout(INFO,name(),"+++ Add EVENT extension of type Geant4ParticleHandler.....");
   context()->event().addExtension((_MC*)this, typeid(_MC), 0);
   clear();
+  /// Call the user particle handler
+  if ( m_userHandler )  {
+    m_userHandler->generate(event, this);
+  }
 }
 
 /// User stepping callback
-void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* /* mgr */)   {
+void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* mgr)   {
   typedef std::vector<const G4Track*> _Sec;
+  Geant4StepHandler h(step);
   ++m_currTrack.steps;
+  const G4ThreeVector& v = h.postPosG4();
+  m_currTrack.vex = v.x();
+  m_currTrack.vey = v.y();
+  m_currTrack.vez = v.z();
   if ( m_currTrack.energy > m_kinEnergyCut )  {
     //
     // Tracks below the energy threshold are NOT stored.
@@ -150,6 +180,10 @@ void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* /* mgr *
     if ( sec->size() > 0 )  {
       PropertyMask(m_currTrack.reason).set(G4PARTICLE_HAS_SECONDARIES);
     }
+  }
+  /// Update of the particle using the user handler
+  if ( m_userHandler )  {
+    m_userHandler->step(step, mgr, m_currTrack);
   }
 }
 
@@ -193,6 +227,13 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
       PropertyMask(m_currTrack.reason).set(G4PARTICLE_KEEP_PROCESS);
     }
   }
+  if ( m_keepAll )  {
+    PropertyMask(m_currTrack.reason).set(G4PARTICLE_KEEP_ALWAYS);    
+  }
+  /// Initial update of the particle using the user handler
+  if ( m_userHandler )  {
+    m_userHandler->begin(track, m_currTrack);
+  }
 }
 
 /// Post-track action callback
@@ -221,16 +262,18 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     //
     // Update vertex end point and final momentum
     G4ThreeVector m = track->GetMomentum();
-    const G4ThreeVector& v = h.vertex();
-    m_currTrack.vex = v.x();
-    m_currTrack.vey = v.y();
-    m_currTrack.vez = v.z();
     m_currTrack.pex = m.x();
     m_currTrack.pey = m.y();
     m_currTrack.pez = m.z();
 
+    /// Final update of the particle using the user handler
+    if ( m_userHandler )  {
+      m_userHandler->begin(track, m_currTrack);
+    }
+
     // Create a new MC particle from the current track information saved in the pre-tracking action
-    Particle* p = m_particleMap[id] = new Particle(m_currTrack);
+    Particle* p = m_particleMap[id] = new Particle();
+    p->get_data(m_currTrack);
     // Add this track to it's parents list of daughters
     ParticleMap::iterator ipar = m_particleMap.find(p->g4Parent);
     if ( ipar != m_particleMap.end() )  {
@@ -259,11 +302,15 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
 }
 
 /// Pre-event action callback
-void Geant4ParticleHandler::beginEvent(const G4Event* )  {
+void Geant4ParticleHandler::beginEvent(const G4Event* event)  {
+  /// Call the user particle handler
+  if ( m_userHandler )  {
+    m_userHandler->begin(event);
+  }
 }
 
 /// Post-event action callback
-void Geant4ParticleHandler::endEvent(const G4Event* )  {
+void Geant4ParticleHandler::endEvent(const G4Event* event)  {
   int count = 0;
   do {
     printout(INFO,name(),"+++ Iteration:%d Tracks:%d Equivalents:%d",++count,m_particleMap.size(),m_equivalentTracks.size());
@@ -289,6 +336,10 @@ void Geant4ParticleHandler::endEvent(const G4Event* )  {
   }
   // Consistency check....
   checkConsistency();
+  /// Call the user particle handler
+  if ( m_userHandler )  {
+    m_userHandler->end(event);
+  }
 }
 
 /// Clean the monte carlo record. Remove all unwanted stuff.
@@ -367,6 +418,10 @@ int Geant4ParticleHandler::recombineParents()  {
 	  parent_part->removeDaughter(id);
 	  parent_part->steps += par->steps;
 	  parent_part->secondaries += par->secondaries;
+	  /// Update of the particle using the user handler
+	  if ( m_userHandler )  {
+	    m_userHandler->combine(*par, *parent_part);
+	  }
 	}
       }
     }
