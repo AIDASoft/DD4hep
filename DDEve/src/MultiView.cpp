@@ -10,7 +10,7 @@
 // Framework include files
 #include "DDEve/MultiView.h"
 #include "DDEve/Factories.h"
-#include "DDEve/ViewConfiguration.h"
+#include "DDEve/DisplayConfiguration.h"
 #include "DD4hep/Plugins.h"
 
 #include <iostream>

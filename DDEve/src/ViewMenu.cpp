@@ -16,7 +16,6 @@
 #include "DDEve/View.h"
 #include "DDEve/ViewMenu.h"
 #include "DDEve/PopupMenu.h"
-#include "DDEve/ViewConfiguration.h"
 
 // ROOT include files
 #include "TEveBrowser.h"

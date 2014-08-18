@@ -11,20 +11,16 @@
 
 // Framework include files
 #include "DDEve/Display.h"
-#include "DDEve/ToolTip.h"
-#include "DDEve/ProjectionView.h"
-#include "DDEve/SplitView.h"
-#include "DDEve/BasicView.h"
 #include "DDEve/EventControl.h"
-#include "DDEve/EmbeddedView.h"
 #include "DDEve/EventHandler.h"
 #include "DDEve/View3D.h"
-#include "DDEve/MultiView.h"
 #include "DDEve/RhoPhiProjection.h"
 #include "DDEve/RhoZProjection.h"
 #include "DDEve/CaloLego.h"
 #include "DDEve/Calo2DProjection.h"
 #include "DDEve/Calo3DProjection.h"
+#include "DDEve/MultiView.h"
+
 #include "DDEve/ContextMenu.h"
 #include "DDEve/ViewMenu.h"
 #include "DDEve/Annotation.h"
@@ -32,8 +28,6 @@
 #include "DDEve/ElementList.h"
 #include "DDEve/EveShapeContextMenu.h"
 #include "DDEve/EvePgonSetProjectedContextMenu.h"
-//#include "DDEve/.h"
-#include "TEveElement.h"
 #include "DDEve/DisplayConfiguration.h"
 
 
@@ -55,23 +49,15 @@ namespace DD4hep {
 
 
 #pragma link C++ class DD4hep::Display;
-#pragma link C++ class DD4hep::ToolTip;
-#pragma link C++ class DD4hep::BasicView;
-#pragma link C++ class DD4hep::SplitView;
 #pragma link C++ class DD4hep::Annotation;
-#pragma link C++ class DD4hep::MultiView;
-#pragma link C++ class DD4hep::ProjectionView;
 #pragma link C++ class DD4hep::ElementList;
-#pragma link C++ class DD4hep::PopupMenu;
 #pragma link C++ class DD4hep::FrameControl;
 #pragma link C++ class DD4hep::EventHandler;
 #pragma link C++ class DD4hep::EventConsumer;
 #pragma link C++ class DD4hep::DDG4EventHandler;
 #pragma link C++ class DD4hep::GenericEventHandler;
 #pragma link C++ class DD4hep::EventControl;
-#pragma link C++ class DD4hep::EmbeddedView;
 
-#pragma link C++ class DD4hep::DD4hepMenu;
 #pragma link C++ class DD4hep::DisplayConfiguration::Config;
 //#pragma link C++ class std::list<DD4hep::DisplayConfiguration::Config>;
 #pragma link C++ class DD4hep::DisplayConfiguration::ViewConfig;
@@ -79,7 +65,6 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::DisplayConfiguration;
 
 #pragma link C++ class DD4hep::View;
-#pragma link C++ class DD4hep::ViewMenu;
 #pragma link C++ class DD4hep::View3D;
 #pragma link C++ class DD4hep::Projection;
 #pragma link C++ class DD4hep::RhoZProjection;
@@ -87,6 +72,11 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::CaloLego;
 #pragma link C++ class DD4hep::Calo2DProjection;
 #pragma link C++ class DD4hep::Calo3DProjection;
+#pragma link C++ class DD4hep::MultiView;
+
+#pragma link C++ class DD4hep::PopupMenu;
+#pragma link C++ class DD4hep::ViewMenu;
+#pragma link C++ class DD4hep::DD4hepMenu;
 #pragma link C++ class DD4hep::ContextMenu;
 #pragma link C++ class DD4hep::ContextMenuHandler;
 #pragma link C++ class DD4hep::EveUserContextMenu;
