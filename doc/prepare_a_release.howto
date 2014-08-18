@@ -1,0 +1,97 @@
+
+####################################################
+#
+#   Short Howto for preparing a new DD4hep release
+#
+#   F.Gaede, DESY
+#   Aug 2014
+####################################################
+
+
+------------------------------------------------------------------------------- 
+1. before preparing a release make sure all components compile on
+    the usual OSs 
+    - additional information is provided by the Nightly Builds run
+      at DESY (currently for SL5, SL6 and Ubuntu 12.04)
+
+------------------------------------------------------------------------------- 
+ 2. ensure the basic functionality: 
+    - build w/  -D BUILD_TESTING=1 
+    - run 
+          make test
+      in the build directory
+
+    - manually run some standard binaries (tevedisplay, tgeoconverter,....)
+
+   =>  note: here we need some more standardaized way of running tests
+       or at least more tests added to CTest/CMakeList.txt
+
+
+------------------------------------------------------------------------------- 
+ 3. prepare the release notes for the next release, i.e. 
+    edit ./doc/release.notes accordingly, 
+    start with the new version number e.g.:
+
+        --------
+       | v00-09 |  nineth beta release ...
+        --------   
+
+
+    - use 'svn -v log | less' to check for all committs since
+      last release tag
+ 
+
+  
+------------------------------------------------------------------------------- 
+ 4. increase the software version (using the same version) in 
+      CMakeList.txt
+      DDSegmentation/CMakeList.txt
+
+     - increase the patch level for patch releases with minor bug fixes only
+       -> the libraries should be compatible with the previous release
+       -> typically this is the case when no header files have been changed, i.e.
+          the class structure/layout is unchanged and no new functions have been added
+          
+     - increase the minor level for most normal releases that add
+       new features and functionality (including bug fixes)
+
+     - increase the major level for releases with 'major' new features
+       or incompatible API, etc.
+
+
+------------------------------------------------------------------------------- 
+ 5. commit your changes to the trunk
+
+     svn ci
+
+        
+------------------------------------------------------------------------------- 
+ 6. create a pre-release branch using the release version 
+    appended with '-pre' or '-preXY' (XY = 01, 02, 03, ....), e.g.  
+
+    svn cp https://svnsrv.desy.de/desy/aidasoft/DD4hep/trunk https://svnsrv.desy.de/desy/aidasoft/DD4hep/branches/v00-09-pre01
+
+
+------------------------------------------------------------------------------- 
+ 7. use the pre-release version for final integration tests and
+    debugging and then  
+    iterate steps 5. and 6. until everything is fine
+
+
+
+------------------------------------------------------------------------------- 
+ 8. make the final release tag from the last pre-release version, e.g. v00-09-pre07 :
+
+    svn mv  https://svnsrv.desy.de/desy/aidasoft/DD4hep/branches/v00-09-pre07  https://svnsrv.desy.de/desy/aidasoft/DD4hep/tags/v00-09
+
+
+
+------------------------------------------------------------------------------- 
+ 9. announce the new release - by sending email to 
+     dd4hep-developers@cern.ch
+
+
+
+------------------------------------------------------------------------------- 
+------------------------------------------------------------------------------- 
+
