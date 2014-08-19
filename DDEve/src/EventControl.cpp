@@ -23,6 +23,7 @@
 #include "TGFileDialog.h"
 
 #include "TTree.h"
+#include <libgen.h>
 
 using namespace std;
 using namespace DD4hep;
