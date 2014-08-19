@@ -106,6 +106,7 @@ add_subdirectory(DDCore)
 add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
 add_subdirectory(DDSense)
+add_subdirectory(DDEve)
 
 if(DD4HEP_USE_GEANT4)
 
