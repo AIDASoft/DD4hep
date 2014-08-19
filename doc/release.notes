@@ -3,6 +3,20 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+ --------
+| v00-10 |  
+ --------   
+
+ Frank Gaede
+------------
+  - fixed version numbers and release notes for release v00-08 and v00-09
+   ( both have the wrong version number for the libraries 0.7 !)
+  - added ./doc/prepare_a_release.howto
+  - added new method to BitField64: setValue(unsigned lowWord, unsigned highWord )
+  - added some simple unit tests for BitField64
+
+
 2014/08/15 Markus Frank
 -----------------------
     - DDG4 Add possibility for user hook to the particle handler +
@@ -12,6 +26,12 @@ DD4hep  ----  Release Notes
       Add small help file describing how to start DDEve.
       doc/DDEveManual.pdf
     - Update CLICSiD Example.
+
+
+ --------
+| v00-09 |  
+ --------   
+
 
 2014/08/07 Markus Frank
 -----------------------
@@ -132,7 +152,7 @@ Christian.Grefe, 2014-07-15
     't': Solid + wireframe view.
     This information is accessible from the help menu of the ROOT OGL widget.
 
- --------   2014/05/28 Markus Frank
+ --------   
 | v00-07 |  seventh beta release ...
  --------   
 
