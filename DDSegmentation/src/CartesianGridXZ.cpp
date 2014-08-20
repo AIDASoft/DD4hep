@@ -1,5 +1,5 @@
 /*
- * CartesianGridXY.cpp
+ * CartesianGridXZ.cpp
  *
  *  Created on: Jun 28, 2013
  *      Author: Christian Grefe, CERN
@@ -18,8 +18,8 @@ using std::vector;
 CartesianGridXZ::CartesianGridXZ(const string& cellEncoding) :
 	CartesianGrid(cellEncoding) {
 	// define type and description
-	_type = "CartesianGridXY";
-	_description = "Cartesian segmentation in the local XY-plane";
+	_type = "CartesianGridXZ";
+	_description = "Cartesian segmentation in the local XZ-plane";
 
 	// register all necessary parameters
 	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
