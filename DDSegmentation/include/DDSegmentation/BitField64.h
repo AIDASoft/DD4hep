@@ -82,7 +82,7 @@ namespace DDSegmentation {
      */
     void  setValue(unsigned lowWord, unsigned highWord ) {
 
-      setValue( ( lowWord & 0xffffffffUL ) |  ( ( highWord & 0xffffffffUL ) << 32 ) ) ; 
+      setValue( ( lowWord & 0xffffffffULL ) |  ( ( highWord & 0xffffffffULL ) << 32 ) ) ; 
     }
     
     /** Operator for setting a new value and accessing the BitField directly */
