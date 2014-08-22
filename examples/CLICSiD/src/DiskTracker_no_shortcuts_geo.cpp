@@ -51,7 +51,6 @@ static Ref_t create_detector(LCDD& lcdd, XML::Element x_det, SensitiveDetector s
     for(xml_coll_t j(x_layer,"slice"); j; ++j, ++s_num)  {
       XML::Element x_slice  = j;
       double thick    = x_slice.attr<double>(Unicode("thickness"));
-      bool   is_sensitive = x_slice.attr<bool>(Unicode("sensitive"));
       string mat_name = x_slice.attr<string>(Unicode("material"));
       Material mat = lcdd.material(mat_name);
       string s_nam = l_nam+_toString(s_num,"_slice%d");
@@ -96,4 +95,4 @@ static Ref_t create_detector(LCDD& lcdd, XML::Element x_det, SensitiveDetector s
   return sdet;
 }
 
-DECLARE_DETELEMENT(DiskTracker_no_shortcuts,create_detector);
+DECLARE_DETELEMENT(DiskTracker_no_shortcuts,create_detector)

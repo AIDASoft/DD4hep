@@ -19,7 +19,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Layering      layering (e);
   xml_det_t     x_det     = e;
   Material      air       = lcdd.air();
-  Material      vacuum    = lcdd.vacuum();
   int           det_id    = x_det.id();
   string        det_name  = x_det.nameStr();
   xml_comp_t    x_staves  = x_det.staves();
@@ -158,4 +157,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(EcalBarrel,create_detector);
+DECLARE_DETELEMENT(EcalBarrel,create_detector)

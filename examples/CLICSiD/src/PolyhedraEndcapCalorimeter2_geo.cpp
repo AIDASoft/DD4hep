@@ -107,4 +107,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(PolyhedraEndcapCalorimeter2,create_detector);
+DECLARE_DETELEMENT(PolyhedraEndcapCalorimeter2,create_detector)

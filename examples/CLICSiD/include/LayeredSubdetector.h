@@ -48,7 +48,7 @@ public:
 		return layerStack->getRadiationLengths(layerIndex, moduleIndex);
 	}
 
-	inline double getMipEnergyLoss(int layerIndex, int moduleIndex = 1) const {
+	inline double getMipEnergyLoss(int /* layerIndex */, int /* moduleIndex */ = 1) const {
 		return 0.;
 	}
 

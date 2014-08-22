@@ -138,7 +138,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	  float                  tile_thickness = tile_xml.dz();
 	  
 	  //Place the tile inside the layer
-	  PlacedVolume tile_plv = layer_vol.placeVolume(tiles.at(tile_number),Position(0,tile_pos_z,0));
+	  // PlacedVolume tile_plv = 
+	    layer_vol.placeVolume(tiles.at(tile_number),Position(0,tile_pos_z,0));
 	  
 	  //Increment the z pos of the tile
 	  tile_pos_z += tile_thickness;
@@ -172,5 +173,5 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return d_det;
 }
 
-DECLARE_DETELEMENT(ORG_HcalBarrel,create_detector);
+DECLARE_DETELEMENT(ORG_HcalBarrel,create_detector)
 

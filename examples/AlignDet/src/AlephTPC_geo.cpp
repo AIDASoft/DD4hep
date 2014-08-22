@@ -14,15 +14,17 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static void printCoordinates(char sector_type, const char* volume, double v[8][2])  {
+static void printCoordinates(char /* sector_type */, const char* /* volume */, double [8][2])  {
+}
 #if 0
+static void printCoordinates(char sector_type, const char* volume, double v[8][2])  {
   cout << "Sector type " << sector_type << " Volume " << volume << endl;
   cout << "Coordinate 1:  x:" << setw(10) << v[0][0] << " y:" << setw(10) << v[0][1] << endl;
   cout << "Coordinate 2:  x:" << setw(10) << v[1][0] << " y:" << setw(10) << v[1][1] << endl;
   cout << "Coordinate 3:  x:" << setw(10) << v[2][0] << " y:" << setw(10) << v[2][1] << endl;
   cout << "Coordinate 4:  x:" << setw(10) << v[3][0] << " y:" << setw(10) << v[3][1] << endl;
-#endif
 }
+#endif
 
 static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   xml_det_t   x_det  = e;
@@ -36,7 +38,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   xml_comp_t  x_gas       = x_det.child(_Unicode(gas));
   xml_comp_t  x_cathode   = x_det.child(_Unicode(cathode));
   
-  Material    gasMat      = lcdd.material(x_gas.materialStr());
   PlacedVolume pv;
 
   struct cylinder_t { double inner, outer, zhalf; };
@@ -75,8 +76,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
 
 #if 0
   // TPC gas chamber envelope
-  Tube    gasTub(gas.inner,gas.outer,gas.zhalf);
-  Volume  gasVol(name+"_chamber",gasTub,gasMat);
+  Material gasMat = lcdd.material(x_gas.materialStr());
+  Tube     gasTub(gas.inner,gas.outer,gas.zhalf);
+  Volume   gasVol(name+"_chamber",gasTub,gasMat);
   gasVol.setVisAttributes(lcdd.visAttributes(x_gas.visStr()));
   //gasVol.setVisAttributes(lcdd.invisible());
   envVol.placeVolume(gasVol);
@@ -95,7 +97,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
 
   double endcap_thickness = 0;
   for(xml_coll_t c(x_sectors,_Unicode(sector)); c; ++c)  {
-    xml_comp_t x_sector = c;
+    //xml_comp_t x_sector = c;
     double thickness = endCapPlane->GetDz();
     for(xml_coll_t l(x_sectors.child(_Unicode(layers)),_Unicode(layer)); l; ++l)  {
       xml_comp_t x_layer = l;
@@ -133,9 +135,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
     const char sector_type = x_sector.typeStr()[0];
     const double rmin0 = x_sector.rmin();
     const double rmax0 = x_sector.rmax();
-    const int  padrows = x_sector.attr<int>(_Unicode(padrows));
-    const int  trgrows = x_sector.attr<int>(_Unicode(trgrows));
-    const int  nwires  = x_sector.attr<int>(_Unicode(numwires));
+    //const int  padrows = x_sector.attr<int>(_Unicode(padrows));
+    //const int  trgrows = x_sector.attr<int>(_Unicode(trgrows));
+    //const int  nwires  = x_sector.attr<int>(_Unicode(numwires));
     const int  num_sectors = sector_type == 'K' ? 6 : 12;
     const double shift     = sector_type == 'K' ? 0 : M_PI/num_sectors;
     const double dphi      = 2*M_PI/double(num_sectors);
@@ -208,10 +210,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
       }
       else   {
 	double overlap = sector_type=='W' ? 20 : -20;
-	double dist = -gap_half;
 	double angle  = M_PI/12.0;
 	double angle1 = std::tan(angle);
-	double v[8][2], dr = 0, droff=0;
+	double v[8][2], dr = 0;
 
 	if ( sector_type == 'W' )  {
 	  rmax += overlap*std::tan(angle/2);
@@ -319,4 +320,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens_det)  {
   return sdet;
 }
 
-DECLARE_SUBDETECTOR(AlephTPC,create_element);
+DECLARE_SUBDETECTOR(AlephTPC,create_element)

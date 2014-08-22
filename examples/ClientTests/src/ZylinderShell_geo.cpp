@@ -18,7 +18,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
   DetElement sdet   (name,x_det.id());
   Assembly   assembly(name+"_assembly");
   Material   mat    (lcdd.material(x_det.materialStr()));
-  double gap = 200;
   PlacedVolume pv;
 
   for(xml_coll_t m(e,_U(module)); m; ++m)  {
@@ -48,4 +47,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
   return sdet;
 }
 
-DECLARE_DETELEMENT(ZylinderShell,create_detector);
+DECLARE_DETELEMENT(ZylinderShell,create_detector)

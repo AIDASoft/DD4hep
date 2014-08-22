@@ -32,4 +32,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(TubeSegment,create_element);
+DECLARE_DETELEMENT(TubeSegment,create_element)

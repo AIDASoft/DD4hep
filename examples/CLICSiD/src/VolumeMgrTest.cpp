@@ -191,4 +191,4 @@ long VolIDTest::run(LCDD& lcdd,int argc,char** argv)    {
 namespace DD4hep {
   using ::VolIDTest;
 }
-DECLARE_APPLY(CLICSiD_VolMgrTest,VolIDTest::run);
+DECLARE_APPLY(CLICSiD_VolMgrTest,VolIDTest::run)

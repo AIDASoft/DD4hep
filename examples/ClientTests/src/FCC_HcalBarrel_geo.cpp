@@ -22,8 +22,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   //XML dimension object: DDCore/XML/XMLDimension.h
   xml_dim_t x_det_dim(x_det.dimensions());
-  double inner_r = x_det_dim.rmin();
-  double outer_r = x_det_dim.rmax();
+  //double inner_r = x_det_dim.rmin();
+  //double outer_r = x_det_dim.rmax();
   Assembly calo_vol(x_det.nameStr()+"_envelope");
   PlacedVolume pv;
 
@@ -147,14 +147,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       cout << "+++ R=" << r << endl;
     }
   }
-  double mod_x_off = outer_r - (outer_r-inner_r)/2.0;
-  double mod_y_off = 0;
+  //double mod_x_off = outer_r - (outer_r-inner_r)/2.0;
+  //double mod_y_off = 0;
   int nphi_bins = x_det_dim.phiBins();
   for(int i=0;i<nphi_bins;i++){
     if(debug) cout << "Layer:" << i << " phi:" << tile_phi << " rotz:" << (tile_phi*i) << endl;
     double phi = tile_phi*i;
-    double pos_x = mod_x_off * cos(phi) - mod_y_off * sin(phi);
-    double pos_y = mod_x_off * sin(phi) + mod_y_off * cos(phi);
+    //double pos_x = mod_x_off * cos(phi) - mod_y_off * sin(phi);
+    //double pos_y = mod_x_off * sin(phi) + mod_y_off * cos(phi);
     Transform3D tr(RotationZYX(phi,0,0),Translation3D(0,0,0));
     PlacedVolume pv = calo_vol.placeVolume(stave_vol,tr);
     pv.addPhysVolID("stave",i+1);
@@ -171,4 +171,5 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return d_det;
 }
 
-DECLARE_DETELEMENT(FCC_HcalBarrel,create_detector);
+DECLARE_DETELEMENT(FCC_HcalBarrel,create_detector)
+

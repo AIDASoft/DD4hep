@@ -41,4 +41,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(PolyconeSupport,create_detector);
+DECLARE_DETELEMENT(PolyconeSupport,create_detector)

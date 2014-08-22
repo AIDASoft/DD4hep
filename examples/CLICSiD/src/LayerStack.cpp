@@ -16,12 +16,13 @@ namespace DD4hep {
 namespace Geometry {
 
 using std::stringstream;
+using namespace DD4hep::Geometry;
 
 LayerStack::LayerStack(const DetElement& det) : det(det) {
 
 }
 
-LayerStack::LayerStack(const LayerStack& layerStack, const DetElement& det) : det(det) {
+LayerStack::LayerStack(const LayerStack& /* layerStack */, const DetElement& det) : det(det) {
 
 }
 
@@ -100,7 +101,7 @@ int PolyhedralCalorimeterLayerStack::getNumberOfLayers() const {
 	return module.children().size();
 }
 
-int PolyhedralCalorimeterLayerStack::getNumberOfModules(int layerIndex) const {
+  int PolyhedralCalorimeterLayerStack::getNumberOfModules(int /* layerIndex */) const {
 	return det.children().size();
 }
 

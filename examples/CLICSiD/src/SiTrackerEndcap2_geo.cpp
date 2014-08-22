@@ -16,7 +16,6 @@ using namespace DD4hep::Geometry;
 
 static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det     = e;
-  Material    air       = lcdd.air();
   Material    vacuum    = lcdd.vacuum();
   int         det_id    = x_det.id();
   string      det_name  = x_det.nameStr();
@@ -112,4 +111,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(SiTrackerEndcap2,create_detector);
+DECLARE_DETELEMENT(SiTrackerEndcap2,create_detector)

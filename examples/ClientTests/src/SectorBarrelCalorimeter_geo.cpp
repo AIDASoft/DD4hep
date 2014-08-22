@@ -48,7 +48,7 @@ static void placeStaves(DetElement&   parent,
 static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   xml_det_t   x_det     = e;
   Layering    layering(x_det);
-  xml_comp_t  staves      = x_det.staves();
+  //xml_comp_t  staves      = x_det.staves();
   xml_dim_t   dim         = x_det.dimensions();
   string      det_name    = x_det.nameStr();
   string      det_type    = x_det.typeStr();
@@ -56,7 +56,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      totalThickness = layering.totalThickness();
   int         totalRepeat = 0;
   int         totalSlices = 0;
-  double      gap         = xml_dim_t(x_det).gap();
+  //double      gap         = xml_dim_t(x_det).gap();
   int         numSides    = dim.numsides();
   double      detZ        = dim.z();
   double      rmin        = dim.rmin();
@@ -92,7 +92,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double half_polyFace = rmin * tan_half;
   
   double innerFaceLen   = sqrt(rmax*rmax - rmin*rmin)+half_polyFace;
-  double outerFaceLen   = (rmin+totalThickness) * tan_external;
+  //double outerFaceLen   = (rmin+totalThickness) * tan_external;
   double staveThickness = totalThickness;
 
 //   Trapezoid staveTrdOuter(innerFaceLen/2,outerFaceLen/2,detZ/2,detZ/2,staveThickness/2);
@@ -102,8 +102,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 //   Trapezoid staveTrdInner(innerFaceLen/2-gap,outerFaceLen/2-gap,detZ/2,detZ/2,staveThickness/2);
 //   Volume    staveInnerVol(det_name+"_inner",staveTrdInner,air);
   
-  double layerOuterAngle = (M_PI-externalAngle)/2;
-  double layerexternalAngle = (M_PI/2 - layerOuterAngle);
+  //double layerOuterAngle = (M_PI-externalAngle)/2;
+  //double layerexternalAngle = (M_PI/2 - layerOuterAngle);
   double layer_pos_z = -(staveThickness / 2);    
   double layer_pos_x = 0; 
   
@@ -198,4 +198,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return sdet;
 }
 
-DECLARE_DETELEMENT(SectorBarrelCalorimeter,create_detector);
+DECLARE_DETELEMENT(SectorBarrelCalorimeter,create_detector)
