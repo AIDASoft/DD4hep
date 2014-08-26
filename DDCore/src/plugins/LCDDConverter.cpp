@@ -945,12 +945,12 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     string type = f->GetTitle();
     field = xml_elt_t(geo.doc, Unicode(type));
     field.setAttr(_U(name), f->GetName());
-    fld = PluginService::Create<TNamed*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
+    fld = PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
     cout << "++ " << (fld.isValid() ? "Converted" : "FAILED    to convert ") << " electromagnetic field:" << f->GetName()
         << " of type " << type << endl;
     if (!fld.isValid()) {
       PluginDebug dbg;
-      PluginService::Create<TNamed*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
+      PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
       throw runtime_error(
           "Failed to locate plugin to convert electromagnetic field:" + string(f->GetName()) + " of type " + type + ". "
               + dbg.missingFactory(type));
