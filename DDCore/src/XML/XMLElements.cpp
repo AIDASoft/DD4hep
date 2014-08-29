@@ -784,14 +784,14 @@ Attribute Handle_t::setAttr(const XmlChar* name, bool val) const {
 /// Generic attribute setter with floating point value
 Attribute Handle_t::setAttr(const XmlChar* name, float val) const {
   char txt[32];
-  ::snprintf(txt, sizeof(txt), "%f", val);
+  ::snprintf(txt, sizeof(txt), "%.8e", val);
   return setAttr(name, Strng_t(txt));
 }
 
 /// Generic attribute setter with double precision floating point value
 Attribute Handle_t::setAttr(const XmlChar* name, double val) const {
   char txt[32];
-  ::snprintf(txt, sizeof(txt), "%f", val);
+  ::snprintf(txt, sizeof(txt), "%.8e", val);
   return setAttr(name, Strng_t(txt));
 }
 

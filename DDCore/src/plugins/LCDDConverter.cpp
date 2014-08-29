@@ -119,15 +119,19 @@ xml_h LCDDConverter::handleElement(const string& /* name */, Atom element) const
   GeometryInfo& geo = data();
   xml_h e = geo.xmlElements[element];
   if (!e) {
+    int Z = element->Z();
+    double A = element->A();
     xml_elt_t atom(geo.doc, _U(atom));
+    // If we got an unphysical material (Z<1 or A<1)
+    // We pretend it is hydrogen and force Z=1 or A=1.00794 g/mole
     geo.doc_materials.append(e = xml_elt_t(geo.doc, _U(element)));
     e.append(atom);
     e.setAttr(_U(name), element->GetName());
     e.setAttr(_U(formula), element->GetName());
-    e.setAttr(_U(Z), element->Z());
+    e.setAttr(_U(Z), Z>0 ? Z : 1);
     atom.setAttr(_U(type), "A");
     atom.setAttr(_U(unit), "g/mol");
-    atom.setAttr(_U(value), element->A() /* *(g/mole) */);
+    atom.setAttr(_U(value), A>0.99 ? A : 1.00794 /* *(g/mole) */);
     geo.xmlElements[element] = e;
   }
   return e;
@@ -141,8 +145,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
     xml_h obj;
     TGeoMaterial* m = medium->GetMaterial();
     double d = m->GetDensity();   //*(gram/cm3);
-    if (d < 1e-25)
-      d = 1e-25;
+    if (d < 1e-10) d = 1e-10;
     mat = xml_elt_t(geo.doc, _U(material));
     mat.setAttr(_U(name), medium->GetName());
     mat.append(obj = xml_elt_t(geo.doc, _U(D)));
@@ -151,9 +154,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
     obj.setAttr(_U(type), "density");
 
     geo.checkMaterial(name, medium);
-    if (name == "B") {
-      cout << "Converting material:" << name << endl;
-    }
+
     if (m->IsMixture()) {
       TGeoMixture *mix = (TGeoMixture*) m;
       const double *wmix = mix->GetWmixt();
