@@ -1,5 +1,5 @@
-#ifndef DDSegmentation_CARTESIANGRIDXY_H_
-#define DDSegmentation_CARTESIANGRIDXY_H_
+#ifndef DDSegmentation_CARTESIANGRIDYZ_H_
+#define DDSegmentation_CARTESIANGRIDYZ_H_
 
 #include "DDSegmentation/CartesianGrid.h"
 
