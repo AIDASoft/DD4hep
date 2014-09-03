@@ -1,0 +1,95 @@
+#ifndef DDSegmentation_CARTESIANGRIDXY_H_
+#define DDSegmentation_CARTESIANGRIDXY_H_
+
+#include "DDSegmentation/CartesianGrid.h"
+
+namespace DD4hep {
+namespace DDSegmentation {
+
+/**
+ * CartesianGridYZ.h
+ *
+ *  @date: Sep 03, 2014
+ *  @author: F.Gaede CERN/Desy
+ *  @version: $Id$
+ *     direkt copy of CartesianGridXY
+ *     by Christian Grefe, CERN
+ */
+class CartesianGridYZ: public CartesianGrid {
+public:
+	/// Default constructor passing the encoding string
+	CartesianGridYZ(const std::string& cellEncoding = "");
+	/// destructor
+	virtual ~CartesianGridYZ();
+
+	/// determine the position based on the cell ID
+	virtual Vector3D position(const CellID& cellID) const;
+	/// determine the cell ID based on the position
+	virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;
+	/// access the grid size in Y
+	double gridSizeY() const {
+		return _gridSizeY;
+	}
+	/// access the grid size in Z
+	double gridSizeZ() const {
+		return _gridSizeZ;
+	}
+	/// access the coordinate offset in Y
+	double offsetY() const {
+		return _offsetY;
+	}
+	/// access the coordinate offset in Z
+	double offsetZ() const {
+		return _offsetZ;
+	}
+	/// access the field name used for Y
+	const std::string& fieldNameY() const {
+		return _yId;
+	}
+	/// access the field name used for Z
+	const std::string& fieldNameZ() const {
+		return _zId;
+	}
+	/// set the grid size in Y
+	void setGridSizeY(double cellSize) {
+		_gridSizeY = cellSize;
+	}
+	/// set the grid size in Z
+	void setGridSizeZ(double cellSize) {
+		_gridSizeZ = cellSize;
+	}
+	/// set the coordinate offset in Y
+	void setOffsetY(double offset) {
+		_offsetY = offset;
+	}
+	/// set the coordinate offset in Z
+	void setOffsetZ(double offset) {
+		_offsetZ = offset;
+	}
+	/// set the field name used for Y
+	void setFieldNameY(const std::string& name) {
+		_yId = name;
+	}
+	/// set the field name used for Z
+	void setFieldNameZ(const std::string& name) {
+		_zId = name;
+	}
+
+protected:
+	/// the grid size in Y
+	double _gridSizeY;
+	/// the coordinate offset in Y
+	double _offsetY;
+	/// the grid size in Z
+	double _gridSizeZ;
+	/// the coordinate offset in Z
+	double _offsetZ;
+	/// the field name used for Y
+	std::string _yId;
+	/// the field name used for Z
+	std::string _zId;
+};
+
+} /* namespace DDSegmentation */
+} /* namespace DD4hep */
+#endif /* DDSegmentation_CARTESIANGRIDXY_H_ */

@@ -262,6 +262,7 @@ template vector<pair<string, int> >::iterator;
 #include "DDSegmentation/CartesianGridXY.h"
 #include "DDSegmentation/CartesianGridXYZ.h"
 #include "DDSegmentation/CartesianGridXZ.h"
+#include "DDSegmentation/CartesianGridYZ.h"
 #include "DDSegmentation/CylindricalSegmentation.h"
 #include "DDSegmentation/ProjectiveCylinder.h"
 #include "DDSegmentation/SegmentationParameter.h"
@@ -289,6 +290,7 @@ typedef DD4hep::DDSegmentation::CellID CellID;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXY+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXYZ+;
 #pragma link C++ class DD4hep::DDSegmentation::CartesianGridXZ+;
+#pragma link C++ class DD4hep::DDSegmentation::CartesianGridYZ+;
 #pragma link C++ class DD4hep::DDSegmentation::CylindricalSegmentation+;
 #pragma link C++ class DD4hep::DDSegmentation::ProjectiveCylinder+;
 #pragma link C++ class DD4hep::DDSegmentation::TiledLayerSegmentation+;
