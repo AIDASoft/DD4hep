@@ -139,6 +139,9 @@ namespace DD4hep {
      * @version 1.0
      */
     class Geant4ParticleHandle {
+    public:
+      typedef ROOT::Math::PxPyPzM4D<double> FourVector;
+      typedef ROOT::Math::Cartesian3D<double> ThreeVector;
     protected:
       /// Particle pointer
       Geant4Particle* particle;      
@@ -172,11 +175,11 @@ namespace DD4hep {
       /// Access to the creator process type name
       std::string processTypeName() const;
       /// Access patricle momentum, energy as 4 vector
-      ROOT::Math::PxPyPzM4D<double> pxPyPzM() const;
+      FourVector pxPyPzM() const;
       /// Access patricle momentum, energy as 4 vector
-      ROOT::Math::Cartesian3D<double> startVertex() const;
+      ThreeVector startVertex() const;
       /// Access patricle momentum, energy as 4 vector
-      ROOT::Math::Cartesian3D<double> endVertex()  const;
+      ThreeVector endVertex()  const;
 
       /// Various output formats:
 

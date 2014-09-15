@@ -92,6 +92,10 @@ DECLARE_GEANT4ACTION(Geant4InteractionMerger)
 DECLARE_GEANT4ACTION(Geant4PrimaryHandler)
 
 //=============================
+#include "DDG4/Geant4PrimaryConverter.h"
+DECLARE_GEANT4ACTION(Geant4PrimaryConverter)
+
+//=============================
 #include "DDG4/Geant4TestActions.h"
 namespace DD4hep {  namespace Simulation   {
     namespace Test {}

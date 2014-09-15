@@ -83,9 +83,6 @@ namespace DD4hep {
       void releaseContextFromClients()  {
 	Geant4Action::ContextUpdate(0)(m_sequence);
       }
-      void releaseContextFromClients2()  {
-	Geant4Action::ContextUpdate(0)(m_sequence);
-      }
       void createClientContext(const G4Run* run)   {
 	Geant4Run* r = new Geant4Run(run);
 	m_activeContext->setRun(r);
@@ -114,6 +111,9 @@ namespace DD4hep {
       }
     };
 
+    class Geant4UserRunAction;
+    class Geant4UserEventAction;
+
     /** @class Geant4UserRunAction
      *
      * Concrete implementation of the Geant4 run action
@@ -122,23 +122,18 @@ namespace DD4hep {
      * @version 1.0
      */
     struct Geant4UserRunAction : public G4UserRunAction, public SequenceHdl<Geant4RunActionSequence> {
+      Geant4UserEventAction* eventAction;
       /// Standard constructor
       Geant4UserRunAction(Geant4Context* context, Geant4RunActionSequence* seq)
-	: Base(context, seq) {
+	: Base(context, seq), eventAction(0)  {
       }
       /// Default destructor
       virtual ~Geant4UserRunAction() {
       }
-      /// begin-of-run callback
-      virtual void BeginOfRunAction(const G4Run* run) {
-	createClientContext(run);
-        m_sequence->begin(run);
-      }
+      /// Begin-of-run callback
+      virtual void BeginOfRunAction(const G4Run* run);
       /// End-of-run callback
-      virtual void EndOfRunAction(const G4Run* run) {
-        m_sequence->end(run);
-	destroyClientContext(run);
-      }
+      virtual void EndOfRunAction(const G4Run* run);
     };
 
     /** @class Geant4UserEventAction
@@ -149,23 +144,18 @@ namespace DD4hep {
      * @version 1.0
      */
     struct Geant4UserEventAction : public G4UserEventAction, public SequenceHdl<Geant4EventActionSequence> {
+      Geant4UserRunAction* runAction;
       /// Standard constructor
       Geant4UserEventAction(Geant4Context* context, Geant4EventActionSequence* seq)
-	: Base(context, seq) {
+	: Base(context, seq), runAction(0)  {
       }
       /// Default destructor
       virtual ~Geant4UserEventAction() {
       }
-      /// begin-of-event callback
-      virtual void BeginOfEventAction(const G4Event* evt) {
-	setContextToClients();
-        m_sequence->begin(evt);
-      }
+      /// Begin-of-event callback
+      virtual void BeginOfEventAction(const G4Event* evt);
       /// End-of-event callback
-      virtual void EndOfEventAction(const G4Event* evt) {
-        m_sequence->end(evt);
-	destroyClientContext(evt);
-      }
+      virtual void EndOfEventAction(const G4Event* evt);
     };
 
     /** @class Geant4UserTrackingAction
@@ -193,7 +183,7 @@ namespace DD4hep {
       virtual void PostUserTrackingAction(const G4Track* trk) {
         m_sequence->end(trk);
 	m_sequence->context()->kernel().setTrackMgr(0);
-	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
+	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -216,13 +206,13 @@ namespace DD4hep {
       virtual void NewStage() {
 	setContextToClients();
         m_sequence->newStage();
-	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
+	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
       }
       /// Preparation callback
       virtual void PrepareNewEvent() {
 	setContextToClients();
         m_sequence->prepare();
-	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
+	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -245,7 +235,7 @@ namespace DD4hep {
       virtual void GeneratePrimaries(G4Event* event) {
 	createClientContext(event);
         (*m_sequence)(event);
-	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
+	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -268,9 +258,38 @@ namespace DD4hep {
       virtual void UserSteppingAction(const G4Step* s) {
 	setContextToClients();
         (*m_sequence)(s, fpSteppingManager);
-	releaseContextFromClients2();	//Let's leave this out for now...Frank has dirty tricks.
+	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
       }
     };
+
+    /// Begin-of-run callback
+    void Geant4UserRunAction::BeginOfRunAction(const G4Run* run) {
+      createClientContext(run);
+      eventAction->setContextToClients();
+      m_sequence->begin(run);
+    }
+
+    /// End-of-run callback
+    void Geant4UserRunAction::EndOfRunAction(const G4Run* run) {
+      m_sequence->end(run);
+      eventAction->releaseContextFromClients();
+      destroyClientContext(run);
+    }
+
+    /// Begin-of-event callback
+    void Geant4UserEventAction::BeginOfEventAction(const G4Event* evt) {
+      runAction->setContextToClients();
+      setContextToClients();
+      m_sequence->begin(evt);
+    }
+
+    /// End-of-event callback
+    void Geant4UserEventAction::EndOfEventAction(const G4Event* evt) {
+      m_sequence->end(evt);
+      runAction->releaseContextFromClients();
+      destroyClientContext(evt);
+    }
+
 
   }
 }
@@ -330,14 +349,14 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   runManager.SetUserAction(gen_action);
 
   // Set the run action sequence. Not optional, since run context is defined/destroyed inside
-  Geant4UserRunAction* run_action = 
-    new Geant4UserRunAction(ctx,kernel.runAction(false));
+  Geant4UserRunAction* run_action = new Geant4UserRunAction(ctx,kernel.runAction(false));
   runManager.SetUserAction(run_action);
 
   // Set the event action sequence. Not optional, since event context is destroyed inside
-  Geant4UserEventAction* evt_action =
-    new Geant4UserEventAction(ctx,kernel.eventAction(false));
+  Geant4UserEventAction* evt_action = new Geant4UserEventAction(ctx,kernel.eventAction(false));
   runManager.SetUserAction(evt_action);
+  run_action->eventAction = evt_action;
+  evt_action->runAction = run_action;
 
   // Set the tracking action sequence
   if (kernel.trackingAction(false)) {

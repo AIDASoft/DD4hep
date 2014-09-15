@@ -10,42 +10,30 @@
 //
 //====================================================================
 // FRamework include files
-#include "DDG4/Geant4Particle.h"
+#include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Data.h"
-#include <vector>
+#include "DDG4Dict.h"
+
+// CINT configuration
+#if defined(__MAKECINT__)
+#pragma link C++ namespace DD4hep::DDSegmentation;
+#pragma link C++ class DD4hep::Simulation::VertexExtension+;
+#pragma link C++ class DD4hep::Simulation::PrimaryExtension+;
+#pragma link C++ class std::auto_ptr<DD4hep::Simulation::VertexExtension>+;
+#pragma link C++ class std::auto_ptr<DD4hep::Simulation::PrimaryExtension>+;
+#pragma link C++ class DD4hep::Simulation::Geant4Vertex+;
+#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Vertex*>+;
+#pragma link C++ class DD4hep::Simulation::Geant4ParticleMap+;
+#pragma link C++ class DD4hep::Simulation::Geant4PrimaryInteraction+;
+#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4PrimaryInteraction*>+;
+#pragma link C++ class DD4hep::Simulation::Geant4PrimaryEvent+;
+
+//#pragma link C++ class ;
+#endif
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
-
-
-// CINT configuration
-#if defined(__MAKECINT__)
-//#pragma link C++ class Position+;
-//#pragma link C++ class Direction+;
-#pragma link C++ class SimpleRun+;
-#pragma link C++ class SimpleEvent+;
-//#pragma link C++ class SimpleEvent::Seeds+;
-#pragma link C++ class DataExtension+;
-#pragma link C++ class ParticleExtension+;
-#pragma link C++ class auto_ptr<DataExtension>+;
-#pragma link C++ class auto_ptr<ParticleExtension>+;
-
-#pragma link C++ class SimpleHit+;
-#pragma link C++ class Geant4Particle+;
-#pragma link C++ class std::vector<SimpleHit*>+;
-#pragma link C++ class SimpleHit::Contribution+;
-#pragma link C++ class SimpleHit::Contributions+;
-#pragma link C++ class SimpleTracker+;
-#pragma link C++ class SimpleTracker::Hit+;
-#pragma link C++ class std::vector<SimpleTracker::Hit*>+;
-#pragma link C++ class SimpleCalorimeter+;
-#pragma link C++ class SimpleCalorimeter::Hit+;
-#pragma link C++ class std::vector<SimpleCalorimeter::Hit*>+;
-#pragma link C++ class std::vector<Geant4Particle*>+;
-
-//#pragma link C++ class ;
-#endif
 
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4DataDump.h"
@@ -255,6 +243,11 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class Geant4Sensitive;
 #pragma link C++ class Geant4SensDetActionSequence;
 #pragma link C++ class Geant4ActionPhase;
+
+// Work around CINT bug: 
+// somehow the symbol Geometry moved into global namespace. Redeclare it here
+namespace Geometry {}
+#pragma link C++ namespace Geometry;
 
 #endif
 

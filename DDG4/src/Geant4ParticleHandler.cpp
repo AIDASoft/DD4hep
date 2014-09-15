@@ -72,11 +72,20 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const strin
   InstanceCount::increment(this);
 }
 
+/// No default constructor
+Geant4ParticleHandler::Geant4ParticleHandler() : Geant4GeneratorAction(0,"") {
+}
+
 /// Default destructor
 Geant4ParticleHandler::~Geant4ParticleHandler()  {
   clear();
   releasePtr(m_userHandler);
   InstanceCount::decrement(this);
+}
+
+/// No assignment operator
+Geant4ParticleHandler& Geant4ParticleHandler::operator=(const Geant4ParticleHandler&) { 
+  return *this; 
 }
 
 /// Adopt the user particle handler

@@ -2,7 +2,7 @@ from DD4hep import *
 
 def loadDDG4():
   from ROOT import gSystem
-  result = gSystem.Load("libDD4hepG4")
+  result = gSystem.Load("libDD4hepG4Plugins")
   if 0 != result:
     raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepG4: '+gSystem.GetErrorStr())
   from ROOT import DD4hep as module
@@ -213,6 +213,7 @@ class Simple:
     phys.enableUI()
     phys.dump()
     return phys
+
   def setupGun(self, name, particle, energy, isotrop=True, multiplicity=1, position=(0.0,0.0,0.0)):
     gun = GeneratorAction(self.kernel,"Geant4ParticleGun/"+name)
     gun.energy   = energy
@@ -222,6 +223,8 @@ class Simple:
     gun.isotrop = isotrop
     gun.enableUI()
     self.kernel.generatorAction().add(gun)
+    return gun
+
   def setupCshUI(self):
     # Configure UI
     ui = Action(self.kernel,"Geant4UIManager/UI")

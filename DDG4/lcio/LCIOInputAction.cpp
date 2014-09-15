@@ -147,6 +147,7 @@ void LCIOInputAction::operator()(G4Event* event)   {
     p->reason       = 0;
     p->usermask     = 0;
     p->pdgID        = mcp->getPDG();
+    p->charge       = int(mcp->getCharge()*3.0);
     p->psx          = mom_scale*mom[0]*GeV;
     p->psy          = mom_scale*mom[1]*GeV;
     p->psz          = mom_scale*mom[2]*GeV;

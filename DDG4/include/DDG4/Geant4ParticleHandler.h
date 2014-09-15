@@ -43,6 +43,16 @@ namespace DD4hep {
      *  @version 1.0
      */
     class Geant4ParticleHandler : public Geant4GeneratorAction, public Geant4MonteCarloTruth  {
+#ifdef __MAKECINT__
+    public:
+#else
+    private:
+#endif
+      /// No default constructor
+      Geant4ParticleHandler();
+      /// No assignment operator
+      Geant4ParticleHandler& operator=(const Geant4ParticleHandler& c);
+
     public:
       typedef std::vector<std::string> Processes;
       struct FindParticleByID {
@@ -113,11 +123,12 @@ namespace DD4hep {
       virtual void begin(const G4Track* track);
       /// Post-track action callback
       virtual void end(const G4Track* track);
-
+#ifndef __MAKECINT__
       /// Access the particle map
       virtual const ParticleMap& particles() const { return m_particleMap; }
       /// Access the map of track equivalents
       virtual const TrackEquivalents& equivalents() const { return m_equivalentTracks; }
+#endif
       /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
       virtual int particleID(int track, bool throw_if_not_found=true) const;
     

@@ -115,6 +115,9 @@ namespace DD4hep {
       /// Helper to register an action sequence
       template <typename C> bool registerSequence(C*& seq, const std::string& name);
 
+#if defined(__CINT__) || defined(__MAKECINT__)
+#endif
+    public:
       /// Standard constructor
       Geant4Kernel(LCDD& lcdd);
     public:

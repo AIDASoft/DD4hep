@@ -140,9 +140,9 @@ namespace DD4hep {
       /// Add a new interaction object to the event
       void add(int id, Geant4PrimaryInteraction* interaction);
       /// Retrieve an interaction by it's ID
-      Interaction* get(int id) const;
+      Geant4PrimaryInteraction* get(int id) const;
       /// Retrieve all intractions
-      std::vector<Interaction*> interactions() const;
+      std::vector<Geant4PrimaryInteraction*> interactions() const;
     };
 
   }    // End namespace Simulation

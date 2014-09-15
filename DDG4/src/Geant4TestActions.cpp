@@ -62,7 +62,7 @@ Geant4TestGeneratorAction::~Geant4TestGeneratorAction() {
 /// Callback to generate primary particles
 void Geant4TestGeneratorAction::operator()(G4Event* evt)  {
   PRINT("%s> calling Geant4TestGeneratorAction(event_id=%d Context: run=%p evt=%p)", 
-	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event());
+	m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
 }
 
 /// Standard constructor with initializing arguments
@@ -91,13 +91,13 @@ void Geant4TestRunAction::end(const G4Run* run) {
 /// begin-of-event callback
 void Geant4TestRunAction::beginEvent(const G4Event* evt) {
   PRINT("%s> calling beginEvent(event_id=%d Context: run=%p evt=%p)", 
-	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event());
+	m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
 }
 
 /// End-of-event callback
 void Geant4TestRunAction::endEvent(const G4Event* evt) {
   PRINT("%s> calling endEvent(event_id=%d Context: run=%p evt=%p)", 
-	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event());
+	m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
 }
 
 /// Standard constructor with initializing arguments
@@ -130,14 +130,14 @@ void Geant4TestEventAction::end(const G4Event* evt) {
 void Geant4TestEventAction::beginRun(const G4Run* run) {
   PRINT("%s> calling beginRun(run_id=%d,num_event=%d Context:%p)",
 	   m_type.c_str(), run->GetRunID(),
-	   run->GetNumberOfEventToBeProcessed(), &context()->run());
+	   run->GetNumberOfEventToBeProcessed(), context()->runPtr());
 }
 
 /// End-of-run callback
 void Geant4TestEventAction::endRun(const G4Run* run) {
   PRINT("%s> calling endRun(run_id=%d, num_event=%d Context:%p)", 
 	   m_type.c_str(), run->GetRunID(),
-	   run->GetNumberOfEvent(), &context()->run());
+	   run->GetNumberOfEvent(), context()->runPtr());
 }
 
 /// Standard constructor with initializing arguments

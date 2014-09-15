@@ -45,13 +45,27 @@ def run():
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio.OutputLevel = Output.ERROR
-  # Setup particle gun
-  #gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
+
+
+  generator_output_level = Output.INFO
 
   gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
 
   """
+  Generation of isotrope tracks using the DDG4 partcle gun:
+  """
+  # Setup particle gun
+  gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
+  gun.OutputLevel = 5 # generator_output_level
+
+  gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryConverter/GunConverter");
+  gen.OutputLevel = 5 # generator_output_level
+  kernel.generatorAction().adopt(gen)
+
+  """
+  Generation of isotrope tracks of a given multiplicity with overlay:
+
   # First particle generator: pi+
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
   gen.particle = 'pi+'
@@ -81,7 +95,8 @@ def run():
   kernel.generatorAction().adopt(gen)
   """
 
-  generator_output_level = Output.INFO
+  """
+  Generation of primary particles from LCIO input files
 
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
@@ -122,6 +137,7 @@ def run():
   gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
   gen.OutputLevel = generator_output_level
   kernel.generatorAction().adopt(gen)
+  """
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")

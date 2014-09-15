@@ -6,11 +6,14 @@
 using namespace std;
 
 string make_str(const char* data)  {
-  cout << "make_str:  '" << (data ? data : "Bad-Pointer") << "'" << endl;
+  if ( !data )   {
+    cout << "make_str:  '" << (data ? data : "Bad-Pointer") << "'" << endl;
+    return string("");
+  }
   return string(data);
 }
 
-void initAClick(const char* command=0)  {
+int initAClick(const char* command=0)  {
   string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
   string g4_base = make_str(gSystem->Getenv("G4INSTALL"));
   string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
@@ -22,13 +25,7 @@ void initAClick(const char* command=0)  {
   gSystem->AddLinkedLibs(libs.c_str());
   cout << "Includes:   " << gSystem->GetIncludePath() << endl;
   cout << "Linked libs:" << gSystem->GetLinkedLibs()  << endl;
-
-  string ddg4_examples = string(getenv("DD4hepINSTALL"))+"/examples/DDG4/examples";
-  string cmd = ".L "+ddg4_examples+"/dictionaries.C+";
-  //gInterpreter->ProcessLine(cmd.c_str());
-  if ( command )   {
-    string cmd = command;
-    cout << "Executing command:" << cmd << endl;
-    gInterpreter->ProcessLine(cmd.c_str());
-  }
+  int ret = gSystem->Load("libDD4hepG4Plugins");
+  return ret;
 }
+
