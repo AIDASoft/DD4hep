@@ -10,12 +10,6 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
                     ${Geant4_INCLUDE_DIRS} )
 
 #---Add Library-------------------------------------------------------------------
-if(DD4HEP_USE_BOOST)
-  FIND_PACKAGE( Boost REQUIRED) 
-  include_directories( ${Boost_INCLUDE_DIR})
-  add_definitions(-DDD4HEP_USE_BOOST)
-endif()
-#---Add Library-------------------------------------------------------------------
 file(GLOB sources src/*.cpp)
 
 if(NOT DD4HEP_USE_XERCESC)
