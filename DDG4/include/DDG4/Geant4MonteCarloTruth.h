@@ -31,7 +31,7 @@ namespace DD4hep {
   namespace Simulation {
 
     // Forward declarations
-    class Particle;
+    class Geant4Particle;
 
     /** @class Geant4MonteCarloTruth Geant4MonteCarloTruth.h DDG4/Geant4MonteCarloTruth.h
      *
@@ -42,6 +42,7 @@ namespace DD4hep {
      */
     class Geant4MonteCarloTruth   {
     public:
+      typedef Geant4Particle           Particle;
       typedef std::map<int,Particle*>  ParticleMap;
       typedef std::map<int,int>        TrackEquivalents;
     protected:

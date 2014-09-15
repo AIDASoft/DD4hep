@@ -68,6 +68,28 @@ DECLARE_GEANT4ACTION(Geant4Output2ROOT)
 DECLARE_GEANT4ACTION(Geant4ParticleGun)
 
 //=============================
+#include "DDG4/Geant4GeneratorActionInit.h"
+DECLARE_GEANT4ACTION(Geant4GeneratorActionInit)
+
+//=============================
+#include "DDG4/Geant4IsotropeGenerator.h"
+DECLARE_GEANT4ACTION(Geant4IsotropeGenerator)
+
+//=============================
+#include "DDG4/Geant4InteractionVertexSmear.h"
+DECLARE_GEANT4ACTION(Geant4InteractionVertexSmear)
+
+//=============================
+#include "DDG4/Geant4InteractionVertexBoost.h"
+DECLARE_GEANT4ACTION(Geant4InteractionVertexBoost)
+
+//=============================
+#include "DDG4/Geant4InteractionMerger.h"
+DECLARE_GEANT4ACTION(Geant4InteractionMerger)
+
+//=============================
+#include "DDG4/Geant4PrimaryHandler.h"
+DECLARE_GEANT4ACTION(Geant4PrimaryHandler)
 
 //=============================
 #include "DDG4/Geant4TestActions.h"

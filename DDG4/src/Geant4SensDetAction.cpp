@@ -217,8 +217,8 @@ Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* context,
   m_needsControl = true;
   context->sensitiveActions().insert(name(), this);
   /// Update the sensitive detector type, so that the proper instance is created
-  Geometry::SensitiveDetector sd = context->lcdd().sensitiveDetector(nam);
-  sd.setType("Geant4SensDet");
+  m_sensitive = context->lcdd().sensitiveDetector(nam);
+  m_sensitive.setType("Geant4SensDet");
   InstanceCount::increment(this);
 }
 
@@ -334,7 +334,7 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_actors(ContextUpdate(context()));
   for (size_t count = 0; count < m_collections.size(); ++count) {
     const std::pair<string, create_t>& cr = m_collections[count];
-    G4VHitsCollection* c = (*cr.second)(name(), cr.first);
+    Geant4HitCollection* c = (*cr.second)(name(), cr.first, m_sensitive);
     int id = m_detector->GetCollectionID(count);
     m_hce->AddHitsCollection(id, c);
   }

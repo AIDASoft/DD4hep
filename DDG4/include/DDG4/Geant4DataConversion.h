@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DD4hep/VolumeManager.h"
+#include "DD4hep/Detector.h"
 #include <typeinfo>
 
 /*
@@ -33,7 +34,12 @@ namespace DD4hep {
       Geant4ConversionHelper();
       /// Default destructor
       virtual ~Geant4ConversionHelper();
+      /// Access to the data encoding using the volume manager and a specified volume id
       static std::string encoding(Geometry::VolumeManager vm, Geometry::VolumeManager::VolumeID vid);
+      /// Access to the hit encoding in this sensitive detector
+      static std::string encoding(Geometry::Handle<Geometry::SensitiveDetectorObject> sd);
+      /// Access to the hit encoding in this readout object
+      static std::string encoding(Geometry::Readout ro);
     };
 
     /** @class Geant4Conversion Geant4DataConversion.h DDG4/Geant4DataConversion.h

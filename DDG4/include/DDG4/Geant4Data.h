@@ -13,10 +13,14 @@
 #ifndef __DD4HEP_DDEVE_EXCLUSIVE__
 #include "DD4hep/Objects.h"
 #include "G4Step.hh"
+class G4PrimaryParticle;
 #else
-typedef void G4VProcess;
-typedef void G4ParticleDefinition;
+typedef void* G4Step;
+typedef void* G4StepPoint;
+typedef void* G4PrimaryParticle;
 #endif
+
+// C/C++ include files
 #include <set>
 #include <memory>
 
@@ -30,9 +34,14 @@ namespace DD4hep {
    */
   namespace Simulation {
 
-
+    // Forward type definitions
     typedef Geometry::Position Position;
     typedef Geometry::Position Direction;
+
+    // Forward declarations
+    class Geant4Particle;
+    class Geant4Vertex;
+    
 
     /** @class HitCompare Geant4Data.h DDG4/Geant4Data.h
      *
@@ -112,59 +121,17 @@ namespace DD4hep {
       virtual ~DataExtension();      
     };
 
-    /// Track properties
-    enum ParticleProperties {
-      G4PARTICLE_CREATED_HIT = 1<<1, 
-      G4PARTICLE_PRIMARY = 1<<2,
-      G4PARTICLE_HAS_SECONDARIES = 1<<3,
-      G4PARTICLE_ABOVE_ENERGY_THRESHOLD = 1<<4,
-      G4PARTICLE_KEEP_PROCESS = 1<<5,
-      G4PARTICLE_KEEP_PARENT = 1<<6,
-      G4PARTICLE_CREATED_CALORIMETER_HIT = 1<<7,
-      G4PARTICLE_CREATED_TRACKER_HIT = 1<<8,
-      G4PARTICLE_KEEP_ALWAYS = 1<<9,
-      G4PARTICLE_LAST_NOTHING = 1<<31
-    };
-
-    /// Data structure to store the MC particle information 
-    /**
-     * @author  M.Frank
-     * @version 1.0
-     */
-    class Particle {
-    private:
-      /// Copy constructor
-      Particle(const Particle& c);
-    public:
-      int id, g4Parent, parent, reason, steps, secondaries, pdgID;
-      double vsx, vsy, vsz;
-      double vex, vey, vez;
-      double psx, psy, psz, pex, pey, pez, energy, time;
-      /// The list of daughters of this MC particle
-      std::set<int> daughters;
-      /// User data extension if required
-      std::auto_ptr<DataExtension> extension;  
-      const G4VProcess *process;  //!
-      const G4ParticleDefinition *definition;  //!
-      /// Default constructor
-      Particle();
-      /// Default destructor
-      virtual ~Particle();
-      /// Assignment operator
-      Particle& get_data(Particle& c);
-      /// Remove daughter from set
-      void removeDaughter(int id_daughter);
-    };
-
-    /** @class SimpleHit Geant4Data.h DDG4/Geant4Data.h
+    /// Base class for geant4 hit structures
+    /*
+     *  Base class for geant4 hit structures created by the
+     *  example sensitive detectors. This is a generic class
+     *  only dealing with the cellID. Users may add an extension 
+     *  object, which normally should not be necessary.
      *
-     * Base class for geant4 hit structures created by the
-     * example sensitive detectors.
-     *
-     * @author  M.Frank
-     * @version 1.0
+     *  @author  M.Frank
+     *  @version 1.0
      */
-    struct SimpleHit {
+    struct Geant4HitData {
       // cellID
       long long int cellID;
       /// User data extension if required
@@ -217,15 +184,15 @@ namespace DD4hep {
       typedef std::vector<MonteCarloContrib> Contributions;
     public:
       /// Default constructor
-      SimpleHit();
+      Geant4HitData();
       /// Default destructor
-      virtual ~SimpleHit();
+      virtual ~Geant4HitData();
       /// Extract the MC contribution for a given hit from the step information
       static Contribution extractContribution(G4Step* step);
     };
 
-    struct SimpleTracker {
-      /** @class SimpleTracker::Hit Geant4Data.h DDG4/Geant4Data.h
+    struct Geant4Tracker {
+      /** @class Geant4Tracker::Hit Geant4Data.h DDG4/Geant4Data.h
        *
        * Geant4 tracker hit class. Tracker hits contain the momentum
        * direction as well as the hit position.
@@ -233,7 +200,7 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      struct Hit : public SimpleHit {
+      struct Hit : public Geant4HitData {
         /// Hit position
         Position position;
         /// Hit direction
@@ -259,8 +226,8 @@ namespace DD4hep {
       };
     };
 
-    struct SimpleCalorimeter {
-      /** @class SimpleCalorimeter::Hit Geant4Data.h DDG4/Geant4Data.h
+    struct Geant4Calorimeter {
+      /** @class Geant4Calorimeter::Hit Geant4Data.h DDG4/Geant4Data.h
        *
        * Geant4 tracker hit class. Calorimeter hits contain the momentum
        * direction as well as the hit position.
@@ -268,7 +235,7 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      struct Hit : public SimpleHit {
+      struct Hit : public Geant4HitData {
       public:
         /// Hit position
         Position position;
@@ -285,6 +252,10 @@ namespace DD4hep {
         virtual ~Hit();
       };
     };
+    typedef Geant4HitData SimpleHit;
+    typedef Geant4Tracker SimpleTracker;
+    typedef Geant4Calorimeter SimpleCalorimeter;
+
   }    // End namespace Simulation
 }      // End namespace DD4hep
 #endif // DD4HEP_GEANT4DATA_H

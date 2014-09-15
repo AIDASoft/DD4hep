@@ -67,61 +67,13 @@ namespace DD4hep {
       static TypeName split(const std::string& type_name, const std::string& delim);
     };
 
-#if 0
-
-    /** @class Geant4UserTrajectory Geant4Action.h DDG4/Geant4Action.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct Geant4UserTrajectory {
-      /// Default constructor
-      Geant4UserTrajectory();
-      /// Standard destructor
-      virtual ~Geant4UserTrajectory();
-      /// accessors
-      virtual int trackID() const = 0;
-      virtual int parentID() const = 0;
-      virtual std::string particleName() const = 0;
-      virtual double charge() const = 0;
-      virtual int pdgID() const = 0;
-      virtual G4ThreeVector momentum() const = 0;
-      virtual int numPoints() const = 0;
-      virtual G4VTrajectoryPoint* point(int i) const = 0;
-    };
-
-    /** @class Geant4Trajectory Geant4Action.h DDG4/Geant4Action.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    struct Geant4Trajectory : public G4VTrajectory {
-      std::auto_ptr<Geant4UserTrajectory> trajectory;
-      /// Default constructor
-      Geant4Trajectory(Geant4UserTrajectory* traj);
-      /// Standard destructor
-      virtual ~Geant4Trajectory();
-      /// Mandatory G4 overloads: Get/Set functions
-      virtual G4int GetTrackID() const {return trajectory->trackID;}
-      virtual G4int GetParentID() const {return trajectory->parentID();}
-      virtual G4String GetParticleName() const {return trajectory->particleName();}
-      /// Mandatory G4 overloads:  Charge is that of G4DynamicParticle
-      virtual G4double GetCharge() const {return trajectory->charge();}
-      /// Mandatory G4 overloads:  Zero will be returned if the particle does not have PDG code.
-      virtual G4int GetPDGEncoding() const {return trajectory->pdgID();}
-      /// Mandatory G4 overloads:  Momentum at the origin of the track in global coordinate system.
-      virtual G4ThreeVector GetInitialMomentum() const {return trajectory->momentum();}
-
-      /// Mandatory G4 overloads:  Returns the number of trajectory points
-      virtual int GetPointEntries() const {return trajectory->numPoints();}
-      virtual G4VTrajectoryPoint* GetPoint(G4int i) const {return trajectory->point(i);}
-    };
-#endif
-
-    /// Default base class for all geant 4 actions and derivates thereof.
+    /// Default base class for all Geant 4 actions and derivates thereof.
     /**
-     * @author  M.Frank
-     * @version 1.0
+     *  This is a utility class supporting properties, output and access to 
+     *  event and run objects through the context.
+     *
+     *  @author  M.Frank
+     *  @version 1.0
      */
     class Geant4Action {
     protected:
@@ -327,39 +279,33 @@ namespace DD4hep {
       void installPropertyMessenger();
 
       /// Support for messages with variable output level using output level
-      void print(const std::string& fmt, ...) const;
-      /// Support for messages with variable output level using output level
-      void print(const std::string& tag, const std::string& fmt, ...) const;
+      void print(const char* fmt, ...) const;
+      /// Support for messages with variable output level using output level-1
+      void printM1(const char* fmt, ...) const;
+      /// Support for messages with variable output level using output level-2
+      void printM2(const char* fmt, ...) const;
+      /// Support for messages with variable output level using output level+1
+      void printP1(const char* fmt, ...) const;
+      /// Support for messages with variable output level using output level+2
+      void printP2(const char* fmt, ...) const;
 
       /// Support of debug messages.
-      void debug(const std::string& fmt, ...) const;
-      /// Support of warning messages.
-      void debug(const std::string& tag, const std::string& fmt, ...) const;
+      void debug(const char* fmt, ...) const;
       /// Support of info messages.
-      void info(const std::string& fmt, ...) const;
+      void info(const char* fmt, ...) const;
       /// Support of warning messages.
-      void info(const std::string& tag, const std::string& fmt, ...) const;
-      /// Support of warning messages.
-      void warning(const std::string& fmt, ...) const;
-      /// Support of warning messages.
-      void warning(const std::string& tag, const std::string& fmt, ...) const;
+      void warning(const char* fmt, ...) const;
       /// Support of error messages.
-      void error(const std::string& fmt, ...) const;
-      /// Support of error messages.
-      void error(const std::string& tag, const std::string& fmt, ...) const;
+      void error(const char* fmt, ...) const;
       /// Action to support error messages.
-      bool error(bool return_value, const std::string& fmt, ...) const;
+      bool error(bool return_value, const char* fmt, ...) const;
       /// Support of fatal messages. Throws exception
-      void fatal(const std::string& fmt, ...) const;
-      /// Support of warning messages.
-      void fatal(const std::string& tag, const std::string& fmt, ...) const;
+      void fatal(const char* fmt, ...) const;
       /// Support of exceptions: Print fatal message and throw runtime_error.
-      void except(const std::string& fmt, ...) const;
-      /// Support of warning messages.
-      void except(const std::string& tag, const std::string& fmt, ...) const;
+      void except(const char* fmt, ...) const;
 
       /// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
-      void abortRun(const std::string& exception, const std::string& fmt, ...) const;
+      void abortRun(const std::string& exception, const char* fmt, ...) const;
 
       /// Access to the main run action sequence from the kernel object
       Geant4RunActionSequence& runAction() const;

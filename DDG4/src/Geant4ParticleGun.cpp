@@ -10,14 +10,14 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
+#include "DDG4/Geant4Context.h"
+#include "DDG4/Geant4Random.h"
 #include "DDG4/Geant4ParticleGun.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
-
-#include "TRandom1.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -30,7 +30,7 @@ using namespace DD4hep::Simulation;
 /// Standard constructor
 Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
   : Geant4GeneratorAction(context, name), m_position(0,0,0), m_direction(1,1,0.3),
-    m_particle(0), m_gun(0), m_rndm(0), m_shotNo(0)
+    m_particle(0), m_gun(0), m_shotNo(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;
@@ -46,8 +46,6 @@ Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
 Geant4ParticleGun::~Geant4ParticleGun() {
   if (m_gun)
     delete m_gun;
-  if ( m_rndm )
-    delete m_rndm;
   InstanceCount::decrement(this);
 }
 
@@ -60,13 +58,13 @@ void Geant4ParticleGun::operator()(G4Event* event) {
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
     m_particle = particleTable->FindParticle(m_particleName);
     if (0 == m_particle) {
-      throw runtime_error("Bad particle type:"+m_particleName+"!");
+      throw runtime_error("Geant4ParticleGun: Bad particle type:"+m_particleName+"!");
     }
   }
   if ( m_isotrop )   {
-    if ( 0 == m_rndm ) m_rndm = new TRandom1();
-    double phi = 2*M_PI*m_rndm->Rndm();
-    double theta = M_PI*m_rndm->Rndm();
+    Geant4Random& rnd = context()->event().random();
+    double phi = 2*M_PI*rnd.rndm();
+    double theta = M_PI*rnd.rndm();
     double x1 = std::sin(theta)*std::cos(phi);
     double x2 = std::sin(theta)*std::sin(phi);
     double x3 = std::cos(theta);
@@ -78,7 +76,7 @@ void Geant4ParticleGun::operator()(G4Event* event) {
       m_direction.SetXYZ(m_direction.X()/r, m_direction.Y()/r, m_direction.Z()/r);
     }
   }
-  print("Geant4ParticleGun","Shoot [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm] dir:(%6.3f %6.3f %6.3f)",
+  print("Shoot [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm] dir:(%6.3f %6.3f %6.3f)",
 	m_shotNo, m_energy/GeV, m_particleName.c_str(), m_position.X(), m_position.Y(), m_position.Z(),
 	m_direction.X(),m_direction.Y(), m_direction.Z());
   m_gun->SetParticleDefinition(m_particle);

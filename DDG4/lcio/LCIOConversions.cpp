@@ -13,11 +13,14 @@
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4DataConversion.h"
+#include "DDG4/Geant4Context.h"
+#include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Data.h"
 
 // LCIO includes
 #include "IMPL/LCCollectionVec.h"
 //
+#include "IMPL/LCEventImpl.h"
 #include "IMPL/ClusterImpl.h"
 #include "IMPL/SimTrackerHitImpl.h"
 #include "IMPL/SimCalorimeterHitImpl.h"
@@ -38,6 +41,7 @@ namespace DD4hep {
   namespace Simulation   {
 
     typedef Geometry::VolumeManager VolMgr;
+    typedef Geometry::IDDescriptor  IDDescriptor;
 
     /// Data conversion interface calling lower level explicit convetrers
     /**
@@ -46,7 +50,7 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,G4VHitsCollection*>,
+			 pair<const Geant4Context*,G4VHitsCollection*>,
 			 Geant4HitCollection>::operator()(const arg_t& args)  const {
       G4VHitsCollection* c = args.second;
       Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(c);
@@ -60,10 +64,10 @@ namespace DD4hep {
 				 "Cannot save the collection entries of:"+c->GetName());
     }
 
-    /// Data conversion interface creating lcio::SimTrackerHitImpl from SimpleTracker::Hit structures
+    /// Data conversion interface creating lcio::SimTrackerHitImpl from Geant4Tracker::Hit structures
     /**
      *  This converter is to be used, when the sensitive detectors create fill collections
-     *  of type Geant4HitCollection with objects of type **SimpleTracker::Hit**.
+     *  of type Geant4HitCollection with objects of type **Geant4Tracker::Hit**.
      *  The original objects are untouched and are automatically when the hosting
      *  Geant4HitCollection object is released.
      *
@@ -72,38 +76,43 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,Geant4HitCollection*>,
-			 SimpleTracker::Hit>::operator()(const arg_t& args)  const   {
+			 pair<const Geant4Context*,Geant4HitCollection*>,
+			 Geant4Tracker::Hit>::operator()(const arg_t& args)  const   {
 
-      Geant4HitCollection* coll = args.second;
-      size_t     nhits = coll->GetSize();
+      Geant4HitCollection* coll  = args.second;
+      size_t               nhits = coll->GetSize();
+      string               dsc   = encoding(coll->sensitiveDetector());
+      Geant4ParticleMap*   pm    = args.first->event().extension<Geant4ParticleMap>();
+      lcio::LCEventImpl*   lc_evt    = args.first->event().extension<lcio::LCEventImpl>();
+      EVENT::LCCollection* lc_part   = lc_evt->getCollection("McParticles");
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
       lc_coll->reserve(nhits);
-      if ( nhits > 0 )  {
-	SimpleHit* hit   = coll->hit(0);
-	string     dsc   = encoding(args.first, hit->cellID);
-	UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
-	for(size_t i=0; i<nhits; ++i)   {
-	  const SimpleTracker::Hit* g4_hit = coll->hit(i);
-	  double pos[3] = {g4_hit->position.x(), g4_hit->position.y(), g4_hit->position.z()};
-	  lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
-	  lc_hit->setCellID0( (g4_hit->cellID >>    0          ) & 0xFFFFFFFF); 
-	  lc_hit->setCellID1( (g4_hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF);
-	  lc_hit->setPosition(pos);
-	  lc_hit->setEDep(g4_hit->energyDeposit);
-	  lc_hit->setTime(g4_hit->truth.time);
-	  lc_hit->setMomentum( g4_hit->momentum.x(), g4_hit->momentum.y() , g4_hit->momentum.z() );
-	  lc_hit->setPathLength( g4_hit->length);
-	  lc_coll->addElement(lc_hit);
-	}
+      for(size_t i=0; i<nhits; ++i)   {
+	const Geant4Tracker::Hit* hit = coll->hit(i);
+	const Geant4Tracker::Hit::Contribution& t = hit->truth;
+	int trackID = pm->particleID(t.trackID);
+	EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
+	double pos[3] = {hit->position.x(), hit->position.y(), hit->position.z()};
+	float  mom[3] = {hit->momentum.x(), hit->momentum.y(), hit->momentum.z()};
+	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
+	lc_hit->setCellID0( (hit->cellID >>    0          ) & 0xFFFFFFFF); 
+	lc_hit->setCellID1( (hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF);
+	lc_hit->setEDep(hit->energyDeposit);
+	lc_hit->setPathLength(hit->length);
+	lc_hit->setTime(hit->truth.time);
+	lc_hit->setMCParticle(lc_mcp);
+	lc_hit->setPosition(pos);
+	lc_hit->setMomentum(mom);
+	lc_coll->addElement(lc_hit);
       }
       return lc_coll;
     }
 
-    /// Data conversion interface creating lcio::SimCalorimeterHitImpl from SimpleCalorimeter::Hit structures
+    /// Data conversion interface creating lcio::SimCalorimeterHitImpl from Geant4Calorimeter::Hit structures
     /**
      *  This converter is to be used, when the sensitive detectors create fill collections
-     *  of type Geant4HitCollection with objects of type **SimpleCalorimeter::Hit**.
+     *  of type Geant4HitCollection with objects of type **Geant4Calorimeter::Hit**.
      *  The original objects are untouched and are automatically when the hosting
      *  Geant4HitCollection object is released.
      *
@@ -112,32 +121,43 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,Geant4HitCollection*>,
-			 SimpleCalorimeter::Hit>::operator()(const arg_t& args)  const  {
+			 pair<const Geant4Context*,Geant4HitCollection*>,
+			 Geant4Calorimeter::Hit>::operator()(const arg_t& args)  const  {
+      typedef Geant4HitData::Contributions Contributions;
       Geant4HitCollection* coll = args.second;
-      size_t     nhits = coll->GetSize();
+      size_t nhits = coll->GetSize();
+      string   dsc = encoding(coll->sensitiveDetector());
+      Geant4ParticleMap*   pm        = args.first->event().extension<Geant4ParticleMap>();
+      lcio::LCEventImpl*   lc_evt    = args.first->event().extension<lcio::LCEventImpl>();
+      EVENT::LCCollection* lc_parts  = lc_evt->getCollection("McParticles");
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);	
+      UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
       lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
       lc_coll->reserve(nhits);
-      if ( nhits > 0 )   {
-	SimpleHit* hit   = coll->hit(0);
-	string     dsc   = encoding(args.first, hit->cellID);
-	UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
-	for(size_t i=0; i<nhits; ++i)   {
-	  const SimpleCalorimeter::Hit* g4_hit = coll->hit(i);
-	  float pos[3] = {g4_hit->position.x(), g4_hit->position.y(), g4_hit->position.z()};
-	  lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
-	  lc_hit->setCellID0( ( g4_hit->cellID >>    0          ) & 0xFFFFFFFF ); 
-	  lc_hit->setCellID1( ( g4_hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF );
-	  lc_hit->setPosition(pos);
-	  lc_hit->setEnergy( g4_hit->energyDeposit );
-	  lc_coll->addElement(lc_hit);
+      for(size_t i=0; i<nhits; ++i)   {
+	const Geant4Calorimeter::Hit* hit = coll->hit(i);
+	float pos[3] = {hit->position.x(), hit->position.y(), hit->position.z()};
+	lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
+	lc_hit->setCellID0(( hit->cellID >>    0       ) & 0xFFFFFFFF); 
+	lc_hit->setCellID1(( hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ???? 
+	lc_hit->setPosition(pos);
+	lc_hit->setEnergy( hit->energyDeposit );
+	lc_coll->addElement(lc_hit);
+	/// Now add the individual track contributions to the LCIO hit structure
+	for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {
+	  const Geant4HitData::Contribution& c = *j;
+	  int trackID = pm->particleID(c.trackID);
+	  EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
+	  lc_hit->addMCParticleContribution(lc_mcp,c.deposit,c.time);
 	}
       }
       return lc_coll;
     }
 
-    template <typename T> lcio::LCCollectionVec* moveEntries(Geant4HitCollection* coll, lcio::LCCollectionVec* lc_coll)  {
+    template <typename T> 
+    lcio::LCCollectionVec* moveEntries(Geant4HitCollection* coll,
+				       lcio::LCCollectionVec* lc_coll)
+    {
       size_t nhits = coll->GetSize();
       lc_coll->reserve(nhits);
       for(size_t i=0; i<nhits; ++i)   {
@@ -165,17 +185,13 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,Geant4HitCollection*>,
-			 lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const 
+			 pair<const Geant4Context*,Geant4HitCollection*>,
+			 lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const
     {
-      Geant4HitCollection* coll = args.second;
-      lcio::SimTrackerHitImpl* hit = coll->hit(0);
-      long long int id1 = hit->getCellID1(), id0=hit->getCellID0();
-      long long int cellID = (((id1<<32)&0xFFFFFFFF00000000)|(id0&0xFFFFFFFF));
-      string dsc = encoding(args.first, cellID);
-      lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
-      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
-      return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc_coll);
+      string    dsc = encoding(args.second->sensitiveDetector());
+      output_t* lc  = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc);
+      return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc);
     }
 
     /// Data conversion interface moving lcio::SimCalorimeterHitImpl objects from a Geant4HitCollection to a LCCollectionVec
@@ -193,15 +209,11 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,Geant4HitCollection*>,
+			 pair<const Geant4Context*,Geant4HitCollection*>,
 			 lcio::SimCalorimeterHitImpl>::operator()(const arg_t& args)  const 
     {
-      Geant4HitCollection* coll = args.second;
-      lcio::SimCalorimeterHitImpl* hit = coll->hit(0);
-      output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
-      long long int id1 = hit->getCellID1(), id0=hit->getCellID0();
-      long long int cellID = (((id1<<32)&0xFFFFFFFF00000000)|(id0&0xFFFFFFFF));
-      string dsc = encoding(args.first, cellID);
+      string    dsc = encoding(args.second->sensitiveDetector());
+      output_t* lc  = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
       UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc);
       lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
       return moveEntries<tag_t>(args.second,lc);
@@ -215,41 +227,26 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec* 
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,Geant4HitCollection*>,
+			 pair<const Geant4Context*,Geant4HitCollection*>,
 			 lcio::ClusterImpl>::operator()(const arg_t& args)  const 
     {
       output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::CLUSTER);
       return moveEntries<tag_t>(args.second,lc);
     }
-    /// Data conversion interface moving lcio::MCParticleImpl objects from a Geant4HitCollection to a LCCollectionVec
-    /** Same comments apply as for the data mover for lcio::SimCalorimeterHitImpl and lcio::SimTrackerHitImpl
-     *
-     *  @author M.Frank
-     *  @version 1.0
-     */
-    template <> lcio::LCCollectionVec* 
-    Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<VolMgr,Geant4HitCollection*>,
-			 lcio::MCParticleImpl>::operator()(const arg_t& args)  const 
-    {
-      output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::MCPARTICLE);
-      return moveEntries<tag_t>(args.second,lc);
-    }
 
-    typedef pair<VolMgr,G4VHitsCollection*> RAW_CONVERSION_ARGS;
-    typedef pair<VolMgr,Geant4HitCollection*> CONVERSION_ARGS;
+    typedef pair<const Geant4Context*,G4VHitsCollection*> RAW_CONVERSION_ARGS;
+    typedef pair<const Geant4Context*,Geant4HitCollection*> CONVERSION_ARGS;
     template class Geant4Conversion<lcio::LCCollectionVec,RAW_CONVERSION_ARGS>;
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,RAW_CONVERSION_ARGS,Geant4HitCollection)
 
     template class Geant4Conversion<lcio::LCCollectionVec,CONVERSION_ARGS>;
     // Hit converters for simple Geant4Data objects
-    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,SimpleTracker::Hit)
-    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,SimpleCalorimeter::Hit)
+    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,Geant4Tracker::Hit)
+    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,Geant4Calorimeter::Hit)
     // Hit converters for standard LCIO objects
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::SimTrackerHitImpl)
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::SimCalorimeterHitImpl)
     DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::ClusterImpl)
-    DECLARE_GEANT4_HITCONVERTER(lcio::LCCollectionVec,CONVERSION_ARGS,lcio::MCParticleImpl)
   }    // End namespace Simulation
 }      // End namespace DD4hep
 

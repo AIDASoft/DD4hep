@@ -26,17 +26,18 @@ Geant4DataDump::~Geant4DataDump()  {
 }
 
 /// Print a single particle to the output logging using the specified print level
-void Geant4DataDump::print(PrintLevel level, const Particle* p)  const  {
+void Geant4DataDump::print(PrintLevel level, Geant4ParticleHandle p)  const  {
   PropertyMask mask(p->reason);
+  int parent = p->parents.empty() ? -1 : *p->parents.begin();
   printout(level, m_tag, "   +++ TrackID: %6d %12d %6d %-7s %3s %5d %6s %8.3g %-4s %-7s %-7s %-3s",
 	   p->id,
 	   p->pdgID,
-	   p->parent,
+	   parent,
 	   yes_no(mask.isSet(G4PARTICLE_PRIMARY)),
 	   yes_no(mask.isSet(G4PARTICLE_HAS_SECONDARIES)),
 	   int(p->daughters.size()),
 	   yes_no(mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD)),
-	   p->energy,
+	   p.energy(),
 	   yes_no(mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT)),
 	   yes_no(mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT)),
 	   yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),

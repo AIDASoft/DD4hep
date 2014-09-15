@@ -28,8 +28,9 @@
 #include "DDG4/Geant4StackingAction.h"
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4PhysicsList.h"
-#include "DDG4/Geant4Kernel.h"
 #include "DDG4/Geant4UIManager.h"
+#include "DDG4/Geant4Kernel.h"
+#include "DDG4/Geant4Random.h"
 
 #include <memory>
 #include <stdexcept>
@@ -46,6 +47,7 @@ namespace DD4hep {
 
     namespace {
       Geant4Context* s_globalContext = 0;
+      Geant4Random*  s_globalRandom = 0;
     }
 
     Geant4Context* ddg4_globalContext()   {
@@ -98,7 +100,7 @@ namespace DD4hep {
 	}
       }
       void createClientContext(const G4Event* evt)   {
-	Geant4Event* e = new Geant4Event(evt);
+	Geant4Event* e = new Geant4Event(evt,s_globalRandom);
 	m_activeContext->setEvent(e);
 	setContextToClients();
       }
@@ -291,6 +293,8 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   Geometry::LCDD& lcdd = kernel.lcdd();
   Geant4Context* ctx = s_globalContext = new Geant4Context(&kernel);
+  // For now do this:
+  /* Geant4Random* rnd = */ s_globalRandom = new Geant4Random();
 
   // Construct the default run manager
   G4RunManager& runManager = kernel.runManager();

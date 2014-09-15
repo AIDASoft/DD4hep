@@ -61,7 +61,7 @@ Geant4TestGeneratorAction::~Geant4TestGeneratorAction() {
 
 /// Callback to generate primary particles
 void Geant4TestGeneratorAction::operator()(G4Event* evt)  {
-  PRINT(name(), "%s> calling Geant4TestGeneratorAction(event_id=%d Context: run=%p evt=%p)", 
+  PRINT("%s> calling Geant4TestGeneratorAction(event_id=%d Context: run=%p evt=%p)", 
 	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event());
 }
 
@@ -78,25 +78,25 @@ Geant4TestRunAction::~Geant4TestRunAction() {
 
 /// begin-of-run callback
 void Geant4TestRunAction::begin(const G4Run* run) {
-  PRINT(name(), "%s> calling begin(run_id=%d,num_event=%d Context:%p)", m_type.c_str(), run->GetRunID(),
+  PRINT("%s> calling begin(run_id=%d,num_event=%d Context:%p)", m_type.c_str(), run->GetRunID(),
 	run->GetNumberOfEventToBeProcessed(), &context()->run());
 }
 
 /// End-of-run callback
 void Geant4TestRunAction::end(const G4Run* run) {
-  PRINT(name(), "%s> calling end(run_id=%d, num_event=%d Context:%p)", 
+  PRINT("%s> calling end(run_id=%d, num_event=%d Context:%p)", 
 	m_type.c_str(), run->GetRunID(), run->GetNumberOfEvent(), &context()->run());
 }
 
 /// begin-of-event callback
 void Geant4TestRunAction::beginEvent(const G4Event* evt) {
-  PRINT(name(), "%s> calling beginEvent(event_id=%d Context: run=%p evt=%p)", 
+  PRINT("%s> calling beginEvent(event_id=%d Context: run=%p evt=%p)", 
 	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event());
 }
 
 /// End-of-event callback
 void Geant4TestRunAction::endEvent(const G4Event* evt) {
-  PRINT(name(), "%s> calling endEvent(event_id=%d Context: run=%p evt=%p)", 
+  PRINT("%s> calling endEvent(event_id=%d Context: run=%p evt=%p)", 
 	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event());
 }
 
@@ -112,7 +112,7 @@ Geant4TestEventAction::~Geant4TestEventAction() {
 }
 /// begin-of-event callback
 void Geant4TestEventAction::begin(const G4Event* evt) {
-  PRINT(name(), "%s> calling begin(event_id=%d Context:  run=%p (%d) evt=%p (%d))", 
+  PRINT("%s> calling begin(event_id=%d Context:  run=%p (%d) evt=%p (%d))", 
 	m_type.c_str(), evt->GetEventID(), 
 	&context()->run(), context()->run().run().GetRunID(),
 	&context()->event(), context()->event().event().GetEventID());
@@ -120,7 +120,7 @@ void Geant4TestEventAction::begin(const G4Event* evt) {
 
 /// End-of-event callback
 void Geant4TestEventAction::end(const G4Event* evt) {
-  PRINT(name(), "%s> calling end(event_id=%d Context:  run=%p (%d) evt=%p (%d))", 
+  PRINT("%s> calling end(event_id=%d Context:  run=%p (%d) evt=%p (%d))", 
 	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event(),
 	&context()->run(), context()->run().run().GetRunID(),
 	&context()->event(), context()->event().event().GetEventID());
@@ -128,14 +128,14 @@ void Geant4TestEventAction::end(const G4Event* evt) {
 
 /// begin-of-run callback
 void Geant4TestEventAction::beginRun(const G4Run* run) {
-  PRINT(name(), "%s> calling beginRun(run_id=%d,num_event=%d Context:%p)",
+  PRINT("%s> calling beginRun(run_id=%d,num_event=%d Context:%p)",
 	   m_type.c_str(), run->GetRunID(),
 	   run->GetNumberOfEventToBeProcessed(), &context()->run());
 }
 
 /// End-of-run callback
 void Geant4TestEventAction::endRun(const G4Run* run) {
-  PRINT(name(), "%s> calling endRun(run_id=%d, num_event=%d Context:%p)", 
+  PRINT("%s> calling endRun(run_id=%d, num_event=%d Context:%p)", 
 	   m_type.c_str(), run->GetRunID(),
 	   run->GetNumberOfEvent(), &context()->run());
 }
@@ -152,7 +152,7 @@ Geant4TestTrackAction::~Geant4TestTrackAction() {
 }
 /// Begin-of-tracking callback
 void Geant4TestTrackAction::begin(const G4Track* trk) {
-  PRINT(name(), "%s> calling begin(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)", 
+  PRINT("%s> calling begin(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)", 
 	m_type.c_str(), trk->GetTrackID(),
 	trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(), 
 	&context()->run(), &context()->event());
@@ -160,7 +160,7 @@ void Geant4TestTrackAction::begin(const G4Track* trk) {
 
 /// End-of-tracking callback
 void Geant4TestTrackAction::end(const G4Track* trk) {
-  PRINT(name(), "%s> calling end(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)", 
+  PRINT("%s> calling end(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)", 
 	m_type.c_str(), trk->GetTrackID(),
 	trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(), 
 	&context()->run(), &context()->event());
@@ -178,7 +178,7 @@ Geant4TestStepAction::~Geant4TestStepAction() {
 }
 /// User stepping callback
 void Geant4TestStepAction::operator()(const G4Step*, G4SteppingManager*) {
-  PRINT(name(), "%s> calling operator()", m_type.c_str());
+  PRINT("%s> calling operator()", m_type.c_str());
 }
 
 /// Standard constructor with initializing arguments
@@ -186,7 +186,7 @@ Geant4TestSensitive::Geant4TestSensitive(Geant4Context* c, const std::string& n,
     : Geant4Sensitive(c, n, det, lcdd), Geant4TestBase(this, "Geant4TestSensitive") {
   InstanceCount::increment(this);
   m_collectionID = defineCollection < TestHit > (n);
-  PRINT(name(), "%s> Collection ID is %d", m_type.c_str(), int(m_collectionID));
+  PRINT("%s> Collection ID is %d", m_type.c_str(), int(m_collectionID));
 }
 
 /// Default destructor
@@ -197,7 +197,7 @@ Geant4TestSensitive::~Geant4TestSensitive() {
 /// Begin-of-tracking callback
 void Geant4TestSensitive::begin(G4HCofThisEvent* hce) {
   Geant4HitCollection* c = collectionByID(m_collectionID);
-  PRINT(name(), "%s> calling begin(num_coll=%d, coll=%s Context: run=%p evt=%p)", 
+  PRINT("%s> calling begin(num_coll=%d, coll=%s Context: run=%p evt=%p)", 
 	   m_type.c_str(), hce->GetNumberOfCollections(),
 	c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
 }
@@ -205,7 +205,7 @@ void Geant4TestSensitive::begin(G4HCofThisEvent* hce) {
 /// End-of-tracking callback
 void Geant4TestSensitive::end(G4HCofThisEvent* hce) {
   Geant4HitCollection* c = collection(m_collectionID);
-  PRINT(name(), "%s> calling end(num_coll=%d, coll=%s Context: run=%p evt=%p)", 
+  PRINT("%s> calling end(num_coll=%d, coll=%s Context: run=%p evt=%p)", 
 	m_type.c_str(), hce->GetNumberOfCollections(),
 	c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
 }
@@ -213,7 +213,7 @@ void Geant4TestSensitive::end(G4HCofThisEvent* hce) {
 /// Method for generating hit(s) using the information of G4Step object.
 bool Geant4TestSensitive::process(G4Step* step, G4TouchableHistory*) {
   Geant4HitCollection* c = collection(m_collectionID);
-  PRINT(name(), "%s> calling process(track=%d, dE=%f, dT=%f len=%f, First,last in Vol=(%c,%c), coll=%s Context: run=%p evt=%p)",
+  PRINT("%s> calling process(track=%d, dE=%f, dT=%f len=%f, First,last in Vol=(%c,%c), coll=%s Context: run=%p evt=%p)",
 	m_type.c_str(), step->GetTrack()->GetTrackID(), 
 	   step->GetTotalEnergyDeposit(), step->GetDeltaTime(),
 	   step->GetStepLength(), step->IsFirstStepInVolume() ? 'Y' : 'N', 

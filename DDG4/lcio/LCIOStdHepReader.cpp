@@ -6,18 +6,18 @@
 //====================================================================
 
 // Framework include files
-#include "EventReader.h"
+#include "LCIOEventReader.h"
 
 /*
  *   DD4hep namespace declaration
  */
 namespace DD4hep   {
   /*
-   *   lcio namespace declaration
+   *   Simulation namespace declaration
    */
-  namespace lcio {
+  namespace Simulation {
 
-    /** @class StdHepReader StdHepReader.h DDG4/StdHepReader.h
+    /** @class LCIOStdHepReader LCIOStdHepReader.h DDG4/LCIOStdHepReader.h
      * 
      * Base class to read StdHep files with lcio
      *
@@ -25,17 +25,17 @@ namespace DD4hep   {
      * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
      * @version 1.0
      */
-    struct StdHepReader : public EventReader  {
+    struct LCIOStdHepReader : public LCIOEventReader  {
     protected:
-      /// Reference to reader object
+      /// Reference to Reader object
       UTIL::LCStdHepRdr* m_reader;
     public:
       /// Initializing constructor
-      StdHepReader(const std::string& nam, int);
+      LCIOStdHepReader(const std::string& nam, int);
       /// Default destructor
-      virtual ~StdHepReader();
+      virtual ~LCIOStdHepReader();
       /// Read an event and return a LCCollectionVec of MCParticles.
-      virtual Particles *readEvent();
+      virtual EVENT::LCCollection *readParticles();
     };
   }     /* End namespace lcio   */
 }       /* End namespace DD4hep */
@@ -44,25 +44,26 @@ namespace DD4hep   {
 #include "lcio.h"
 #include "EVENT/LCIO.h"
 #include "UTIL/LCStdHepRdr.h"
+#include "DD4hep/Primitives.h"
+
+using namespace DD4hep::Simulation;
 
 // Factory entry
-typedef DD4hep::lcio::StdHepReader LcioStdHepReader;
-DECLARE_LCIO_EVENT_READER(LcioStdHepReader)
+DECLARE_LCIO_EVENT_READER(LCIOStdHepReader)
 
 /// Initializing constructor
-DD4hep::lcio::StdHepReader::StdHepReader(const std::string& nam, int) 
-  : EventReader(nam)
+LCIOStdHepReader::LCIOStdHepReader(const std::string& nam, int) 
+  : LCIOEventReader(nam)
 {
   m_reader = new ::lcio::LCStdHepRdr(m_name.c_str());
 }
 
 /// Default destructor
-DD4hep::lcio::StdHepReader::~StdHepReader()    {
-  deletePtr(m_reader);
+LCIOStdHepReader::~LCIOStdHepReader()    {
+  DD4hep::deletePtr(m_reader);
 }
 
 /// Read an event and return a LCCollectionVec of MCParticles.
-DD4hep::lcio::EventReader::Particles *DD4hep::lcio::StdHepReader::readEvent()   {
+EVENT::LCCollection *LCIOStdHepReader::readParticles()   {
   return m_reader->readEvent();
 }
-

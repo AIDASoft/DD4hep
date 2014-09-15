@@ -30,7 +30,7 @@ namespace DD4hep {
   namespace Simulation {
 
     // Forward declarations
-    class Particle;
+    class Geant4Particle;
     class Geant4ParticleHandler;
 
     /** Geant4ParticleHandler user extension action called by the particle handler.
@@ -45,6 +45,8 @@ namespace DD4hep {
      * @version 1.0
      */
     class Geant4UserParticleHandler : public Geant4Action  {
+    public:
+      typedef Geant4Particle Particle;
     public:
       /// Standard constructor
       Geant4UserParticleHandler(Geant4Context* context, const std::string& nam);

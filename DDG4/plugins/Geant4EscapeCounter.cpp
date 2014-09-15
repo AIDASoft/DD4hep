@@ -111,8 +111,9 @@ bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history *
   coll->add(hit);
   mark(h.track);
  
-  print(name(),"+++ Track:%4d  %8.2f MeV [%s] %s Geant4 path:%s",
-	h.trkID(),h.trkEnergy()/MeV,th.name().c_str(),th.creatorName().c_str(),path.c_str());
+  print("+++ Track:%4d  %8.2f MeV [%s] %s Geant4 path:%s",
+	h.trkID(),h.trkEnergy()/MeV,th.name().c_str(),
+	th.creatorName().c_str(),path.c_str());
   // Kill track, so that it does no longer participate in the propagation
   h.track->SetTrackStatus(fStopAndKill);
   return true;

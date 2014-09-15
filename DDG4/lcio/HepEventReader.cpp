@@ -6,7 +6,7 @@
 //====================================================================
 
 // Framework include files
-#include "EventReader.h"
+#include "LCIOEventReader.h"
 
 // C/C++ include files
 #include <fstream>
@@ -18,7 +18,7 @@ namespace DD4hep   {
   /*
    *   lcio namespace declaration
    */
-  namespace lcio {
+  namespace Simulation {
 
     /** @class HepEventReader HepEventReader.h DDG4/HepEventReader.h
      * 
@@ -29,7 +29,7 @@ namespace DD4hep   {
      * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
      * @version 1.0
      */
-    struct HepEventReader : public EventReader  {
+    struct HepEventReader : public LCIOEventReader  {
     protected:
       std::ifstream m_input;
       int m_format;
@@ -39,7 +39,7 @@ namespace DD4hep   {
       /// Default destructor
       virtual ~HepEventReader();
       /// Read an event and return a LCCollectionVec of MCParticles.
-      virtual Particles *readEvent();
+      virtual EVENT::LCCollection *readParticles();
     };
   }     /* End namespace lcio   */
 }       /* End namespace DD4hep */
@@ -51,15 +51,15 @@ namespace DD4hep   {
 #include "lcio.h"
 using namespace IMPL;
 using namespace EVENT;
+using namespace DD4hep::Simulation;
 #define HEPEvt 1
 
 // Factory entry
-typedef DD4hep::lcio::HepEventReader HepEventReader;
 DECLARE_LCIO_EVENT_READER(HepEventReader)
 
 /// Initializing constructor
 HepEventReader::HepEventReader(const std::string& nam, int fmt) 
-: EventReader(nam), m_format(fmt)
+: LCIOEventReader(nam), m_format(fmt)
 {
 }
 
@@ -74,7 +74,7 @@ MCParticleImpl* cast_particle(LCObject* obj)  {
 }
 
 /// Read an event and return a LCCollectionVec of MCParticles.
-HepEventReader::Particles *HepEventReader::readEvent()   {
+EVENT::LCCollection *HepEventReader::readParticles()   {
   static const double c_light = 299.792;// mm/ns
   //
   //  Read the event, check for errors

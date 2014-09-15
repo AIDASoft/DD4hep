@@ -21,6 +21,7 @@ namespace DD4hep { namespace Geometry {
 class G4Step;
 class G4StepPoint;
 #include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4Particle.h"
 #include "DDEve/DDEveEventData.h"
 
 #ifdef __DD4HEP_DDEVE_EXCLUSIVE__
@@ -34,7 +35,7 @@ namespace DD4hep {
    *   Simulation namespace declaration
    */
   namespace Simulation {
-    #define NO_CALL {      throw "This function shoule never ever be called!";    }
+#define NO_CALL {      throw "This function shoule never ever be called!";    }
     /// Default constructor
     inline SimpleRun::SimpleRun() {    }
     /// Default destructor
@@ -46,15 +47,22 @@ namespace DD4hep {
 
     /// Default destructor
     inline DataExtension::~DataExtension()  {    }
-    /// Default constructor
-    inline Particle::Particle()   {     }
-    /// Copy constructor
-    inline Particle::Particle(const Particle&)   {  NO_CALL   }
     /// Default destructor
-    inline Particle::~Particle()   {     }
+    inline DataExtension::~ParticleExtension()  {    }
+    /// Default constructor
+    inline Geant4Particle::Geant4Particle()   {     }
+    /// Copy constructor
+    inline Geant4Particle::Geant4Particle(const Geant4Particle&)   {  NO_CALL   }
+    /// Default destructor
+    inline Geant4Particle::~Geant4Particle()   {     }
     /// Remove daughter from set
-    inline void Particle::removeDaughter(int)   {   NO_CALL  }
-
+    inline void Geant4Particle::removeDaughter(int)   {   NO_CALL  }
+    /// Default destructor
+    inline Geant4PrimaryMap::~Geant4PrimaryMap();
+    /// Default destructor
+    inline Geant4ParticleMap::~Geant4ParticleMap() {     }
+    /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
+    inline int Geant4ParticleMap::particleID(int, bool) const   {   NO_CALL  }
     /// Default constructor
     inline SimpleHit::SimpleHit()   {    }
     /// Default destructor
@@ -92,8 +100,8 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::Simulation::SimpleEvent+;
 
 #pragma link C++ class DD4hep::Simulation::DataExtension+;
-#pragma link C++ class DD4hep::Simulation::Particle+;
-#pragma link C++ class std::vector<DD4hep::Simulation::Particle*>+;
+#pragma link C++ class DD4hep::Simulation::Geant4Particle+;
+#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Particle*>+;
 
 #pragma link C++ class DD4hep::Simulation::SimpleHit+;
 #pragma link C++ class std::vector<DD4hep::Simulation::SimpleHit*>+;
@@ -132,7 +140,7 @@ namespace {
     if (source )  {
       static TClass* cl_calo = gROOT->GetClass(typeid(SimpleCalorimeter::Hit));
       static TClass* cl_tracker = gROOT->GetClass(typeid(SimpleTracker::Hit));
-      //static TClass* cl_particles = gROOT->GetClass(typeid(Particle));
+      //static TClass* cl_particles = gROOT->GetClass(typeid(Geant4Particle));
       void* result = 0;
       SimpleHit* hit = (SimpleHit*)source;
       const std::type_info& type = typeid(*hit);
@@ -145,7 +153,7 @@ namespace {
 
   void* _convertParticleFunc(void* source, DDEveParticle* p)  {
     if (source )  {
-      Particle* s = (Particle*)source;
+      Geant4Particle* s = (Geant4Particle*)source;
       p->id = s->id;
       p->vsx = s->vsx;
       p->vsy = s->vsy;

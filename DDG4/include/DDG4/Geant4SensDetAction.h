@@ -231,7 +231,9 @@ namespace DD4hep {
      */
     class Geant4SensDetActionSequence: public Geant4Action {
     public:
-      typedef G4VHitsCollection* (*create_t)(const std::string&, const std::string&);
+      
+      typedef Geometry::SensitiveDetector SensitiveDetector;
+      typedef Geant4HitCollection* (*create_t)(const std::string&, const std::string&, SensitiveDetector);
       typedef std::vector<std::pair<std::string, create_t> > HitCollections;
 
     protected:
@@ -248,15 +250,18 @@ namespace DD4hep {
       /// The list of sensitive detector objects
       Actors<Geant4Sensitive> m_actors;
       /// The list of sensitive detector filter objects
-      Actors<Geant4Filter> m_filters;
+      Actors<Geant4Filter>    m_filters;
 
       /// Hit collection creators
       HitCollections m_collections;
+      /// Reference to the sensitive detector element
+      SensitiveDetector m_sensitive;
       /// Reference to G4 sensitive detector
       Geant4ActionSD* m_detector;
+
       /// Create a new typed hit collection
-      template <typename TYPE> static G4VHitsCollection* _create(const std::string& det, const std::string& coll) {
-        return new Geant4HitCollection(det, coll, (TYPE*) 0);
+      template <typename TYPE> static Geant4HitCollection* _create(const std::string& det, const std::string& coll, SensitiveDetector sd) {
+        return new Geant4HitCollection(det, coll, sd, (TYPE*) 0);
       }
 
     public:

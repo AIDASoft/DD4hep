@@ -13,7 +13,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4Output2ROOT.h"
-#include "DDG4/Geant4MonteCarloTruth.h"
+#include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Data.h"
 // Geant4 include files
 #include "G4HCofThisEvent.hh"
@@ -135,12 +135,12 @@ void Geant4Output2ROOT::commit(OutputContext<G4Event>& ctxt) {
 
 /// Callback to store the Geant4 event
 void Geant4Output2ROOT::saveEvent(OutputContext<G4Event>& /* ctxt */) {
-  Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
-  if ( truth )   {
+  Geant4ParticleMap* parts = context()->event().extension<Geant4ParticleMap>();
+  if ( parts )   {
     typedef Geant4HitWrapper::HitManipulator Manip;
-    typedef Geant4MonteCarloTruth::ParticleMap ParticleMap;
-    Manip* manipulator = Geant4HitWrapper::manipulator<Particle>();
-    const ParticleMap& pm = truth->particles();
+    typedef Geant4ParticleMap::ParticleMap ParticleMap;
+    Manip* manipulator = Geant4HitWrapper::manipulator<Geant4Particle>();
+    const ParticleMap& pm = parts->particles();
     vector<void*> particles;
     for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end(); ++i)    {
       particles.push_back((ParticleMap::mapped_type*)(*i).second);
@@ -157,7 +157,7 @@ void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
   if (coll) {
     coll->getHitsUnchecked(hits);
     size_t nhits = coll->GetSize();
-    Geant4MonteCarloTruth* truth = context()->event().extension<Geant4MonteCarloTruth>(false);
+    Geant4ParticleMap* truth = context()->event().extension<Geant4ParticleMap>();
     if ( truth && nhits > 0 )   {
       try  {
 	for(size_t i=0; i<nhits; ++i)   {

@@ -36,42 +36,102 @@ def run():
   kernel.runAction().adopt(run1)
 
   # Configure Event actions
-  evt2 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_2')
-  evt2.Property_int    = 123454321
-  evt2.Property_double = 5e15*GeV
-  evt2.Property_string = 'Hello_2 from the python setup'
-  evt2.enableUI()
-  kernel.registerGlobalAction(evt2)
-
-  evt1 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_1')
-  evt1.Property_int=01234
-  evt1.Property_double=1e11
-  evt1.Property_string='Hello_1'
-  evt1.enableUI()
-
-  kernel.eventAction().adopt(evt1)
-  kernel.eventAction().adopt(evt2)
-
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
-  prt.OutputType = 3 # Print both: table and tree
+  prt.OutputLevel = Output.INFO
+  prt.OutputType  = 3 # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_lcio.OutputLevel = Output.ERROR
+  # Setup particle gun
+  #gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
 
-  gen = DDG4.GeneratorAction(kernel,"Geant4TestGeneratorAction/Generate")
+  gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   kernel.generatorAction().adopt(gen)
 
-  # Setup particle gun
-  gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
+  """
+  # First particle generator: pi+
+  gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
+  gen.particle = 'pi+'
+  gen.energy = 100 * GeV
+  gen.multiplicity = 2
+  gen.mask = 1
+  kernel.generatorAction().adopt(gen)
+  # Install vertex smearing for this interaction
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearPi+");
+  gen.mask = 1
+  gen.offset = (20*mm, 10*mm, 10*mm, 0*ns)
+  gen.sigma = (4*mm, 1*mm, 1*mm, 0*ns)
+  kernel.generatorAction().adopt(gen)
 
-  trk = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
-  kernel.generatorAction().adopt(trk)
-  trk.saveProcesses = ['conv','Decay']
-  trk.enableUI()
+  # Second particle generator: e-
+  gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropE-");
+  gen.particle = 'e-'
+  gen.energy = 25 * GeV
+  gen.multiplicity = 3
+  gen.mask = 2
+  kernel.generatorAction().adopt(gen)
+  # Install vertex smearing for this interaction
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearE-");
+  gen.mask = 2
+  gen.offset = (-20*mm, -10*mm, -10*mm, 0*ns)
+  gen.sigma = (12*mm, 8*mm, 8*mm, 0*ns)
+  kernel.generatorAction().adopt(gen)
+  """
+
+  generator_output_level = Output.INFO
+
+  # First particle file reader
+  gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
+  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
+  gen.OutputLevel = generator_output_level
+  gen.Mask = 1
+  gen.MomentumScale = 0.1
+  kernel.generatorAction().adopt(gen)
+  # Install vertex smearing for this interaction
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear1");  
+  gen.OutputLevel = 4 #generator_output_level
+  gen.Mask = 1
+  gen.Offset = (-20*mm, -10*mm, -10*mm, 0*ns)
+  gen.Sigma = (12*mm, 8*mm, 8*mm, 0*ns)
+  kernel.generatorAction().adopt(gen)
+
+  # Second particle file reader
+  gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO2");
+  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_2.stdhep"
+  gen.OutputLevel = generator_output_level
+  gen.Mask = 2
+  gen.MomentumScale = 0.1
+  kernel.generatorAction().adopt(gen)
+  # Install vertex smearing for this interaction
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear2");
+  gen.OutputLevel = generator_output_level
+  gen.Mask = 2
+  gen.Offset = (20*mm, 10*mm, 10*mm, 0*ns)
+  gen.Sigma = (2*mm, 1*mm, 1*mm, 0*ns)
+  kernel.generatorAction().adopt(gen)
+
+  # Merge all existing interaction records
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
+  gen.OutputLevel = generator_output_level
+  kernel.generatorAction().adopt(gen)
+
+  # Finally generate Geant4 primaries
+  gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
+  gen.OutputLevel = generator_output_level
+  kernel.generatorAction().adopt(gen)
+
+  # And handle the simulation particles.
+  part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
+  kernel.generatorAction().adopt(part)
+  #part.SaveProcesses = ['conv','Decay']
+  part.SaveProcesses = ['Decay']
+  part.OutputLevel = generator_output_level
+  part.enableUI()
   user = DDG4.Action(kernel,"Geant4UserParticleHandler/UserParticleHandler")
-  trk.adopt(user)
+  part.adopt(user)
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")

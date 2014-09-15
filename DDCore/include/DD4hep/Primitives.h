@@ -134,6 +134,11 @@ namespace DD4hep {
       delete p;
     p = 0;
   }
+  /// Helper to delete objects from heap and reset the pointer. Saves many many lines of code
+  template <typename T> inline void deleteObject(T* p) {
+    if (0 != p)
+      delete p;
+  }
   /// Helper to delete objects from heap and reset the pointer
   template <typename T> inline void destroyObject(T*& p) {
     deletePtr(p);
@@ -236,7 +241,7 @@ namespace DD4hep {
     void set(const T& m)   {
       mask |= m;
     }
-    bool isSet(const T& m)   {
+    bool isSet(const T& m)  const {
       return (mask&m) == m;
     }
     bool testBit(int bit) const  {

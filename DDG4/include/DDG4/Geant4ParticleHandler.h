@@ -10,7 +10,7 @@
 #define DD4HEP_DDG4_GEANT4PARTICLEHANDLER_H
 
 // Framework include files
-#include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4MonteCarloTruth.h"
 
@@ -32,18 +32,26 @@ namespace DD4hep {
 
     // Forward declarations
     class Particle;
+    class Geant4PrimaryMap;
     class Geant4UserParticleHandler;
 
     /** Geant4Action to collect the MC particle information.
      *
+     *  Extract the relevant particle information during the simulation step.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  @author  M.Frank
+     *  @version 1.0
      */
-    class Geant4ParticleHandler : public Geant4GeneratorAction, public Geant4MonteCarloTruth 
-    {
+    class Geant4ParticleHandler : public Geant4GeneratorAction, public Geant4MonteCarloTruth  {
     public:
       typedef std::vector<std::string> Processes;
+      struct FindParticleByID {
+	int pid;
+      FindParticleByID(int p) : pid(p) {}
+	inline bool operator()(const std::pair<int,Geant4Particle*>& p)  const {
+	  return p.second->id == pid;
+	}
+      };
     protected:
       
       /// Property: Steer printout at tracking action begin
@@ -52,10 +60,17 @@ namespace DD4hep {
       bool m_printEndTracking;
       /// Property: Flag to keep all particles generated
       bool m_keepAll;
+      /// Property: Flag if the handler is executed in standalone mode and hence must manage particles
+      bool m_ownsParticles;
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut;
+
+      /// Global particle identifier. Obtained at the begin of the event.
+      int m_globalParticleID, m_initialParticleID;
       /// User action pointer
       Geant4UserParticleHandler* m_userHandler;
+      /// Primary map
+      Geant4PrimaryMap* m_primaryMap;
       /// Local buffer about the 'current' G4Track 
       Particle m_currTrack;
       /// Map with stored MC Particles
@@ -73,6 +88,11 @@ namespace DD4hep {
       void checkConsistency()  const;
       /// Get proper equivalent track from the particle map according to the given geant4 track ID
       int equivalentTrack(int g4_id) const;
+
+      /// Rebase the simulated tracks, so that they fit to the generator particles
+      void rebaseSimulatedTracks(int base);
+      /// Debugging: Dump Geant4 particle map
+      void dumpMap(const char* tag) const;
 
     public:
       /// Standard constructor

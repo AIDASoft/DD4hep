@@ -21,7 +21,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
-TypeName TypeName::split(const string& type_name, const std::string& delim) {
+TypeName TypeName::split(const string& type_name, const string& delim) {
   size_t idx = type_name.find(delim);
   string typ = type_name, nam = type_name;
   if (idx != string::npos) {
@@ -75,10 +75,8 @@ long Geant4Action::addRef() {
 long Geant4Action::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
-    cout << "Geant4Action: Deleting object " << name() 
-	 << " of type " << typeName(typeid(*this)) 
-	 << " Ptr:" << (void*)this
-	 << endl;
+    print("Geant4Action: Deleting object %s of type %s Pointer:%p",
+	  m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
     delete this;
   }
   return count;
@@ -98,12 +96,12 @@ Geant4Action& Geant4Action::setProperties(PropertyConfigurator& setup) {
 }
 
 /// Check property for existence
-bool Geant4Action::hasProperty(const std::string& name) const    {
+bool Geant4Action::hasProperty(const string& name) const    {
   return m_properties.exists(name);
 }
 
 /// Access single property
-Property& Geant4Action::property(const std::string& name)   {
+Property& Geant4Action::property(const string& name)   {
   return properties()[name];
 }
 
@@ -144,91 +142,94 @@ void Geant4Action::enableUI()   {
 }
 
 /// Support for messages with variable output level using output level
-void Geant4Action::print(const std::string& fmt, ...) const   {
-  if ( outputLevel() >= printLevel() )  {
+void Geant4Action::print(const char* fmt, ...) const   {
+  int level = outputLevel();
+  if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
-    DD4hep::printout((PrintLevel)outputLevel(),m_name, fmt, args);
+    DD4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
     va_end(args);
   }
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::print(const std::string& tag, const std::string& fmt, ...) const  {
-  if ( outputLevel() >= printLevel() )  {
+/// Support for messages with variable output level using output level-1
+void Geant4Action::printM1(const char* fmt, ...) const   {
+  int level = max(outputLevel()-1,(int)VERBOSE);
+  if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);
-    DD4hep::printout((PrintLevel)outputLevel(),tag, fmt, args);
+    DD4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
+    va_end(args);
+  }
+}
+
+/// Support for messages with variable output level using output level-2
+void Geant4Action::printM2(const char* fmt, ...) const   {
+  int level = max(outputLevel()-2,(int)VERBOSE);
+  if ( level >= printLevel() )  {
+    va_list args;
+    va_start(args, fmt);
+    DD4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
+    va_end(args);
+  }
+}
+
+/// Support for messages with variable output level using output level-1
+void Geant4Action::printP1(const char* fmt, ...) const   {
+  int level = min(outputLevel()+1,(int)FATAL);
+  if ( level >= printLevel() )  {
+    va_list args;
+    va_start(args, fmt);
+    DD4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
+    va_end(args);
+  }
+}
+
+/// Support for messages with variable output level using output level-2
+void Geant4Action::printP2(const char* fmt, ...) const   {
+  int level = min(outputLevel()+2,(int)FATAL);
+  if ( level >= printLevel() )  {
+    va_list args;
+    va_start(args, fmt);
+    DD4hep::printout((PrintLevel)level, m_name.c_str(), fmt, args);
     va_end(args);
   }
 }
 
 /// Support of debug messages.
-void Geant4Action::debug(const string& fmt, ...) const {
+void Geant4Action::debug(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::DEBUG, "Geant4Action", fmt, args);
   va_end(args);
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::debug(const std::string& tag, const std::string& fmt, ...) const  {
-  va_list args;
-  va_start(args, fmt);
-  DD4hep::printout(DD4hep::DEBUG, tag, fmt, args);
-  va_end(args);
-}
-
 /// Support of info messages.
-void Geant4Action::info(const string& fmt, ...) const {
+void Geant4Action::info(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::INFO, "Geant4Action", fmt, args);
   va_end(args);
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::info(const std::string& tag, const std::string& fmt, ...) const  {
-  va_list args;
-  va_start(args, fmt);
-  DD4hep::printout(DD4hep::INFO, tag, fmt, args);
-  va_end(args);
-}
-
 /// Support of warning messages.
-void Geant4Action::warning(const string& fmt, ...) const {
+void Geant4Action::warning(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::WARNING, "Geant4Action", fmt, args);
   va_end(args);
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::warning(const std::string& tag, const std::string& fmt, ...) const  {
-  va_list args;
-  va_start(args, fmt);
-  DD4hep::printout(DD4hep::WARNING, tag, fmt, args);
-  va_end(args);
-}
-
 /// Action to support error messages.
-void Geant4Action::error(const string& fmt, ...) const {
+void Geant4Action::error(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::ERROR, "Geant4Action", fmt, args);
   va_end(args);
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::error(const std::string& tag, const std::string& fmt, ...) const  {
-  va_list args;
-  va_start(args, fmt);
-  DD4hep::printout(DD4hep::ERROR, tag, fmt, args);
-  va_end(args);
-}
-
 /// Action to support error messages.
-bool Geant4Action::error(bool return_value, const string& fmt, ...) const {
+bool Geant4Action::error(bool return_value, const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::ERROR, "Geant4Action", fmt, args);
@@ -237,7 +238,7 @@ bool Geant4Action::error(bool return_value, const string& fmt, ...) const {
 }
 
 /// Support of fatal messages. Throws exception if required.
-void Geant4Action::fatal(const string& fmt, ...) const {
+void Geant4Action::fatal(const char* fmt, ...) const {
   string err;
   va_list args;
   va_start(args, fmt);
@@ -245,16 +246,8 @@ void Geant4Action::fatal(const string& fmt, ...) const {
   va_end(args);
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::fatal(const std::string& tag, const std::string& fmt, ...) const  {
-  va_list args;
-  va_start(args, fmt);
-  DD4hep::printout(DD4hep::FATAL, tag, fmt, args);
-  va_end(args);
-}
-
 /// Support of exceptions: Print fatal message and throw runtime_error.
-void Geant4Action::except(const string& fmt, ...) const {
+void Geant4Action::except(const char* fmt, ...) const {
   string err;
   va_list args;
   va_start(args, fmt);
@@ -264,16 +257,8 @@ void Geant4Action::except(const string& fmt, ...) const {
   throw runtime_error(err);
 }
 
-/// Support for messages with variable output level using output level
-void Geant4Action::except(const std::string& tag, const std::string& fmt, ...) const  {
-  va_list args;
-  va_start(args, fmt);
-  DD4hep::printout(DD4hep::FATAL, tag, fmt, args);
-  va_end(args);
-}
-
 /// Abort Geant4 Run by throwing a G4Exception with type RunMustBeAborted
-void Geant4Action::abortRun(const string& exception, const string& fmt, ...) const {
+void Geant4Action::abortRun(const string& exception, const char* fmt, ...) const {
   string desc, typ = typeName(typeid(*this));
   string issuer = name()+" ["+typ+"]";
   va_list args;

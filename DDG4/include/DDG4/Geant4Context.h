@@ -39,6 +39,7 @@ namespace DD4hep {
     class Geant4Run;
     class Geant4Event;
     class Geant4Kernel;
+    class Geant4Random;
     class ContextUpdate;
     class Geant4RunActionSequence;
     class Geant4EventActionSequence;
@@ -110,21 +111,30 @@ namespace DD4hep {
      *  across different events.
      *  Hence: They are only useful to extend data of an event.
      *
+     *  Any random numbers used to process one event should be accessed
+     *  from this location. The framework ensures that the same seeded 
+     *  sequence is used throughout the processing of one single event.
+     *
      *  @author  M.Frank
      *  @version 1.0
      */
     class  Geant4Event : public ObjectExtensions  {
       /// Reference to the original Geant4 event object
       const G4Event* m_event;
+      /// Reference to the main random number generator
+      Geant4Random* m_random;
+
     public:
       /// Intializing constructor
-      Geant4Event(const G4Event* run);
+      Geant4Event(const G4Event* run, Geant4Random* rndm);
       /// Default destructor
       virtual ~Geant4Event();
       /// Access the G4Event directly: Automatic type conversion
       operator const G4Event&() const  {  return *m_event;   }
       /// Access the G4Event directly: Explicit G4Event accessor
       const G4Event& event() const     {  return *m_event;   }
+      /// Access the random number generator
+      Geant4Random& random() const     {  return *m_random;  }
 
       /// Add an extension object to the detector element
       /** Note:

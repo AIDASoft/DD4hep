@@ -29,8 +29,8 @@ Geant4Run::~Geant4Run()   {
 }
 
 /// Intializing constructor
-Geant4Event::Geant4Event(const G4Event* evt) 
-: ObjectExtensions(typeid(Geant4Event)), m_event(evt)  
+Geant4Event::Geant4Event(const G4Event* evt, Geant4Random* rnd) 
+  : ObjectExtensions(typeid(Geant4Event)), m_event(evt), m_random(rnd)
 {
   InstanceCount::increment(this);
 }

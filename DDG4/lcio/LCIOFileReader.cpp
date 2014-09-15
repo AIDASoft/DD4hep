@@ -6,7 +6,7 @@
 //====================================================================
 
 // Framework include files
-#include "EventReader.h"
+#include "LCIOEventReader.h"
 
 /*
  *   DD4hep namespace declaration
@@ -15,7 +15,7 @@ namespace DD4hep   {
   /*
    *   lcio namespace declaration
    */
-  namespace lcio {
+  namespace Simulation {
 
     /** @class LcioEventReader LcioEventReader.h DDG4/LcioEventReader.h
      * 
@@ -25,52 +25,52 @@ namespace DD4hep   {
      * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
      * @version 1.0
      */
-    struct LcioEventReader : public EventReader  {
+    struct LCIOFileReader : public LCIOEventReader  {
     protected:
       /// Reference to reader object
       IO::LCReader* m_reader;
     public:
       /// Initializing constructor
-      LcioEventReader(const std::string& nam, int);
+      LCIOFileReader(const std::string& nam, int);
       /// Default destructor
-      virtual ~LcioEventReader();
+      virtual ~LCIOFileReader();
       /// Read an event and return a LCCollectionVec of MCParticles.
-      virtual Particles *readEvent();
+      virtual EVENT::LCCollection *readParticles();
     };
   }
 }
 
 #include "DD4hep/Printout.h"
+#include "DD4hep/Primitives.h"
 #include "lcio.h"
 #include "EVENT/LCIO.h"
 #include "IO/LCReader.h"
 
 using namespace EVENT;
+using namespace DD4hep::Simulation;
 
 // Factory entry
-typedef DD4hep::lcio::LcioEventReader LcioEventReader;
-DECLARE_LCIO_EVENT_READER(LcioEventReader)
+DECLARE_LCIO_EVENT_READER(LCIOFileReader)
 
 /// Initializing constructor
-LcioEventReader::LcioEventReader(const std::string& nam, int /* arg */) 
-: EventReader(nam)
+LCIOFileReader::LCIOFileReader(const std::string& nam, int /* arg */) 
+: LCIOEventReader(nam)
 {
   m_reader = ::lcio::LCFactory::getInstance()->createLCReader();
-  printout(INFO,"LcioEventReader","Created file reader. Try to open input %s",nam.c_str());
+  printout(INFO,"LCIOFileReader","Created file reader. Try to open input %s",nam.c_str());
   m_reader->open(nam);
 }
 
 /// Default destructor
-LcioEventReader::~LcioEventReader()    {
-  deletePtr(m_reader);
+LCIOFileReader::~LCIOFileReader()    {
+  DD4hep::deletePtr(m_reader);
 }
 
 /// Read an event and return a LCCollectionVec of MCParticles.
-DD4hep::lcio::EventReader::Particles *LcioEventReader::readEvent()   {
+EVENT::LCCollection *LCIOFileReader::readParticles()   {
   ::lcio::LCEvent* evt = m_reader->readNextEvent();
   if ( evt ) {
-    Particles* mcVec = (Particles*)evt->getCollection(LCIO::MCPARTICLE);
-    return mcVec;
+    return evt->getCollection(LCIO::MCPARTICLE);
   }
   return 0;
 }

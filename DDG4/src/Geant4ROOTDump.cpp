@@ -12,6 +12,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/Primitives.h"
 #include "DDG4/Geant4DataDump.h"
+#include "DDG4/Geant4Particle.h"
 
 #include "TInterpreter.h"
 #include "TSystem.h"
@@ -127,7 +128,7 @@ static long dump_root(DD4hep::Geometry::LCDD&, int argc, char** argv) {
 	if ( data.first == cl_particles )  {
 	  Particles* parts = (Particles*)data.second;
 	  dump.print(INFO, (*i).first, parts);
-	  for_each(parts->begin(), parts->end(), DestroyObject<Particle*>());
+	  for_each(parts->begin(), parts->end(), DestroyObject<Geant4Particle*>());
 	}
       }
       for(ENTRIES::const_iterator i=event.begin(); i!=event.end(); ++i)  {
@@ -137,12 +138,12 @@ static long dump_root(DD4hep::Geometry::LCDD&, int argc, char** argv) {
 	else if ( data.first == cl_tracker )   {
 	  TrackerHits* hits = (TrackerHits*)data.second;
 	  dump.print(INFO, (*i).first, hits);
-	  for_each(hits->begin(), hits->end(), DestroyObject<SimpleTracker::Hit*>());
+	  for_each(hits->begin(), hits->end(), DestroyObject<Geant4Tracker::Hit*>());
 	}
 	else if ( data.first == cl_calo )   {
 	  CalorimeterHits* hits = (CalorimeterHits*)data.second;
 	  dump.print(INFO, (*i).first, hits);
-	  for_each(hits->begin(), hits->end(), DestroyObject<SimpleCalorimeter::Hit*>());
+	  for_each(hits->begin(), hits->end(), DestroyObject<Geant4Calorimeter::Hit*>());
 	}
 	if ( data.first ) data.first->Destructor(data.second);
       }

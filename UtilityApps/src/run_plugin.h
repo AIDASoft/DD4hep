@@ -28,7 +28,7 @@ using namespace DD4hep::Geometry;
 //______________________________________________________________________________
 namespace {
 
-  LCDD& dd4hep_instance(const char* name="") {
+  LCDD& dd4hep_instance(const char* /* name */ ="") {
 #if 0
 #include "Reflex/PluginService.h"
     try {

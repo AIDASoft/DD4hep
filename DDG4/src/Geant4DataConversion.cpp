@@ -20,9 +20,21 @@ Geant4ConversionHelper::Geant4ConversionHelper() {
 Geant4ConversionHelper::~Geant4ConversionHelper() {
 }
 
+/// Access to the data encoding using the volume manager and a specified volume id
 std::string Geant4ConversionHelper::encoding(Geometry::VolumeManager vm, Geometry::VolumeManager::VolumeID vid) {
   Geometry::PlacedVolume pv = vm.lookupPlacement(vid);
   Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
-  Geometry::IDDescriptor id = sd.readout().idSpec();
+  return encoding(sd);
+}
+
+/// Access to the hit encoding in this sensitive detector
+std::string Geant4ConversionHelper::encoding(Geometry::Handle<Geometry::SensitiveDetectorObject> sd)   {
+  Geometry::IDDescriptor id = Geometry::SensitiveDetector(sd).readout().idSpec();
+  return id.fieldDescription();
+}
+
+/// Access to the hit encoding in this readout object
+std::string Geant4ConversionHelper::encoding(Geometry::Readout ro)   {
+  Geometry::IDDescriptor id = ro.idSpec();
   return id.fieldDescription();
 }

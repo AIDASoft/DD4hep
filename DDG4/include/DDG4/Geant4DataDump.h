@@ -12,6 +12,7 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4Particle.h"
 
 // C/C++ include files
 #include <vector>
@@ -34,6 +35,7 @@ namespace DD4hep {
      */
     class Geant4DataDump  {
     public:
+      typedef Geant4Particle                       Particle;
       typedef std::vector<Particle*>               Particles;
 
       typedef SimpleTracker::Hit                   TrackerHit;
@@ -53,7 +55,7 @@ namespace DD4hep {
       virtual ~Geant4DataDump();
 
       /// Print a single particle to the output logging using the specified print level
-      void print(PrintLevel level, const Particle* p)  const;
+      void print(PrintLevel level, Geant4ParticleHandle p)  const;
       /// Print the particle container to the output logging using the specified print level
       void print(PrintLevel level, const std::string& container, const Particles* parts);
 

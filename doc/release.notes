@@ -4,6 +4,19 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2014/08/15 Markus Frank
+-----------------------
+  - DDG4: Impreoved LCIO handling for DDG4
+  - DDG4: Input handling:
+    - LCIO input file reading with multiple *independent* inputs
+      to support overlay, multiple interactions, etc.
+    - Primary verex smearing independent for each input
+    - Primary vertex boosts independent for each input
+  - DDG4: Output handling
+    - MC Particle handling
+    - Improved MC truth handling for produced Hits.
+      Still needs revisiting.
+
  --------
 | v00-10 |  
  --------   

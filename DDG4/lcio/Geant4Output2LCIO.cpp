@@ -39,7 +39,6 @@ namespace DD4hep {
      */
     class Geant4Output2LCIO : public Geant4OutputAction  {
     protected:
-      Geometry::VolumeManager m_volMgr;
       lcio::LCWriter*  m_file;
       int              m_runNo;
       
@@ -84,6 +83,8 @@ namespace DD4hep {
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4DataConversion.h"
 #include "DDG4/Geant4Context.h"
+#include "DDG4/Geant4Particle.h"
+#include "DDG4/Geant4Data.h"
 
 //#include "DDG4/Geant4Output2LCIO.h"
 #include "G4Event.hh"
@@ -99,14 +100,13 @@ using namespace DD4hep::Simulation;
 using namespace DD4hep;
 using namespace std;
 
-
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4Output2LCIO)
 
 
 /// Standard constructor
 Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
-: Geant4OutputAction(ctxt,nam), m_volMgr(), m_file(0), m_runNo(0)
+: Geant4OutputAction(ctxt,nam), m_file(0), m_runNo(0)
 {
   InstanceCount::increment(this);
 }
@@ -125,9 +125,6 @@ void Geant4Output2LCIO::beginRun(const G4Run* )  {
   if ( 0 == m_file && !m_output.empty() )   {
     m_file = lcio::LCFactory::getInstance()->createLCWriter();
     m_file->open(m_output,lcio::LCIO::WRITE_NEW);
-    // Get the volume manager here: 
-    // in the constructor the geometry may not yet be built!
-    m_volMgr = context()->lcdd().volumeManager();
   }
 }
 
@@ -159,7 +156,6 @@ void Geant4Output2LCIO::begin(const G4Event* /* event */)  {
   context()->event().addExtension<lcio::LCEventImpl>( e );
 }
 
-
 /// Callback to store the Geant4 event
 void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
@@ -167,19 +163,31 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
   e->setEventNumber(ctxt.context->GetEventID());
   e->setDetectorName(context()->lcdd().header().name());
   e->setRunNumber(m_runNo);
-
+  lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
+  Geant4ParticleMap* part_map = context()->event().extension<Geant4ParticleMap>(false);
+  if ( part_map )   {
+    print("+++ Saving %d LCIO particles....",int(part_map->particleMap.size()));
+    if ( part_map->particleMap.size() > 0 )  {
+      typedef pair<const Geant4Context*,const Geant4ParticleMap*> _Args;
+      typedef Geant4Conversion<lcio::LCCollectionVec,_Args> _C;
+      const _C& cnv = _C::converter(typeid(Geant4ParticleMap));
+      lcio::LCCollectionVec* col = cnv(_Args(context(),part_map));
+      evt->addCollection(col,"McParticles");
+    }
+  }
 }
 
 /// Callback to store each Geant4 hit collection
 void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHitsCollection* collection)  {
   size_t nhits = collection->GetSize();
   std::string hc_nam = collection->GetName();
+  print("+++ Saving LCIO collection %s with %d entries....",hc_nam.c_str(),int(nhits));
   if ( nhits > 0 )   {
-    typedef pair<Geometry::VolumeManager,G4VHitsCollection*> _Args;
+    typedef pair<const Geant4Context*,G4VHitsCollection*> _Args;
     typedef Geant4Conversion<lcio::LCCollectionVec,_Args> _C;
     const _C& cnv = _C::converter(typeid(Geant4HitCollection));
     lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
-    lcio::LCCollectionVec* col = cnv(_Args(m_volMgr,collection));
+    lcio::LCCollectionVec* col = cnv(_Args(context(),collection));
     evt->addCollection(col,hc_nam);
   }
 }
