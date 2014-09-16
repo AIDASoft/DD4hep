@@ -32,10 +32,10 @@ Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* context, const s
 {
   InstanceCount::increment(this);
   m_needsControl = true;
-  declareProperty("particle",      m_particleName = "e-");
-  declareProperty("energy",        m_energy = 50 * MeV);
-  declareProperty("multiplicity",  m_multiplicity = 1);
-  declareProperty("mask",          m_mask = 0);
+  declareProperty("Particle",      m_particleName = "e-");
+  declareProperty("Energy",        m_energy = 50 * MeV);
+  declareProperty("Multiplicity",  m_multiplicity = 1);
+  declareProperty("Mask",          m_mask = 0);
 }
 
 /// Default destructor
@@ -61,6 +61,7 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
   prim->add(m_mask, inter);
 
   Geant4Vertex* vtx = new Geant4Vertex();
+  vtx->mask = m_mask;
   inter->vertices.insert(make_pair(inter->vertices.size(),vtx));
   for(int i=0; i<m_multiplicity; ++i)   {
     double phi = 2*M_PI*rnd.rndm();
@@ -72,11 +73,8 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
 
     Particle* p = new Particle();
     p->id         = inter->nextPID();
-    p->reason    |= G4PARTICLE_PRIMARY;
-    p->status    |= G4PARTICLE_GEN_CREATED;
     p->status    |= G4PARTICLE_GEN_STABLE;
-    p->usermask   = m_mask;
-    p->reason     = G4PARTICLE_PRIMARY;
+    p->mask       = m_mask;
     p->pdgID      = m_particle->GetPDGEncoding();
     p->definition = m_particle;
     p->psx        = x1*momentum;

@@ -14,7 +14,6 @@
 
 // Forward declarations
 class G4ParticleDefinition;
-class G4ParticleGun;
 
 /*
  *   DD4hep namespace declaration
@@ -34,22 +33,23 @@ namespace DD4hep {
      */
     class Geant4ParticleGun: public Geant4GeneratorAction {
     protected:
-      /// Position and shooting direction of the gun
+      /// Property: Position and shooting direction of the gun
       ROOT::Math::XYZVector m_position, m_direction;
+      /// Property: Particle energy
+      double m_energy;
+      /// Property: Particle name
+      std::string m_particleName;
+      /// Property: Desired multiplicity of the particles to be shot
+      int m_multiplicity;
+      /// Property: Interaction mask indentifier
+      int m_mask;
+      /// Property: Isotrope particles?
+      bool m_isotrop;
+
       /// Pointer to geant4 particle definition
       G4ParticleDefinition* m_particle;
-      /// Pointer to the particle gun itself
-      G4ParticleGun* m_gun;
-      /// Particle energy
-      double m_energy;
-      /// Particle name
-      std::string m_particleName;
-      /// Desired multiplicity of the particles to be shot
-      int m_multiplicity;
       /// Shot number in sequence
       int m_shotNo;
-      /// Isotrope particles?
-      bool m_isotrop;
     public:
       /// Standard constructor
       Geant4ParticleGun(Geant4Context* context, const std::string& name);

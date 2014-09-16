@@ -44,6 +44,8 @@ namespace DD4hep {
       typedef std::set<int> Particles;
       /// Reference counter
       int ref;            //! not persistent
+      /// Vertex mask to associate particles from collision
+      int mask;
       /// Vertex data
       double x,y,z,time;
       /// The list of outgoing particles

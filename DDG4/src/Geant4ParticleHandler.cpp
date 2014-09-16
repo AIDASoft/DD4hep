@@ -219,7 +219,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   if ( prim_part )   {
     m_currTrack.id           = prim_part->id;
     m_currTrack.reason       = prim_part->reason|reason;
-    m_currTrack.usermask     = prim_part->usermask;
+    m_currTrack.mask         = prim_part->mask;
     m_currTrack.status       = prim_part->status;
     m_currTrack.spin[0]      = prim_part->spin[0];
     m_currTrack.spin[1]      = prim_part->spin[1];
@@ -235,7 +235,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   else  {
     m_currTrack.id           = m_globalParticleID;
     m_currTrack.reason       = reason;
-    m_currTrack.usermask     = 0;
+    m_currTrack.mask         = 0;
     m_currTrack.status      |= G4PARTICLE_SIM_CREATED;
     m_currTrack.spin[0]      = 0;
     m_currTrack.spin[1]      = 0;
@@ -315,7 +315,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     if ( ipar != m_particleMap.end() )  {
       Particle* p_par = (*ipar).second;
       p_par->daughters.insert(ph->id);
-      ph->usermask |= p_par->usermask;
+      ph->mask |= p_par->mask;
       G4ThreeVector dist(ph->vsx-p_par->vex,ph->vsy-p_par->vey,ph->vsz-p_par->vez);
       if ( dist.r() > 1e-15 )   {
 	// Set flag that the end vertex of the parent is not the start vertex of this track....
@@ -447,7 +447,8 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     p->daughters.clear();
     for(set<int>::iterator id=daughters.begin(); id!=daughters.end(); ++id)
       p->daughters.insert(orgParticles[*id]);             // Requires (1)
-    if ( 0 == (p->status&G4PARTICLE_GEN_HISTORY) )  {
+    //if ( 0 == (p->status&G4PARTICLE_GEN_GENERATOR) )
+      {
       if ( p->g4Parent > 0 )  {
 	p->parents.clear();
 	p->parents.insert(equivalentTrack(p->g4Parent));  // Requires (2)
@@ -576,7 +577,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     }
     // We assume that particles from the generator have consistent parents
     // For all other particles except the primaries, the parent must be contained in the record.
-    if ( !mask.isSet(G4PARTICLE_PRIMARY) && !status.isSet(G4PARTICLE_GEN_HISTORY) )  {
+    if ( !mask.isSet(G4PARTICLE_PRIMARY) && !status.anySet(G4PARTICLE_GEN_GENERATOR) )  {
       int parent_id = equivalentTrack(p->g4Parent);
       bool in_map = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
       bool in_parent_list = p->parents.find(parent_id) != p->parents.end();

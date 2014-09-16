@@ -27,7 +27,7 @@ ParticleExtension::~ParticleExtension() {
 
 /// Copy constructor
 Geant4Particle::Geant4Particle(const Geant4Particle& c)
-  : ref(1), id(c.id), g4Parent(c.g4Parent), reason(c.reason), usermask(c.usermask),
+  : ref(1), id(c.id), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
     steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
     status(c.status), charge(0),
     vsx(c.vsx), vsy(c.vsy), vsz(c.vsz), 
@@ -48,7 +48,7 @@ Geant4Particle::Geant4Particle(const Geant4Particle& c)
 
 /// Default constructor
 Geant4Particle::Geant4Particle()
-  : ref(1), id(0), g4Parent(0), reason(0), usermask(0), 
+  : ref(1), id(0), g4Parent(0), reason(0), mask(0), 
     steps(0), secondaries(0), pdgID(0),
     status(0), charge(0),
     vsx(0.0), vsy(0.0), vsz(0.0), 
@@ -65,7 +65,7 @@ Geant4Particle::Geant4Particle()
 
 /// Constructor with ID initialization
 Geant4Particle::Geant4Particle(int part_id)
-  : ref(1), id(part_id), g4Parent(0), reason(0), usermask(0), 
+  : ref(1), id(part_id), g4Parent(0), reason(0), mask(0), 
     steps(0), secondaries(0), pdgID(0),
     status(0), charge(0),
     vsx(0.0), vsy(0.0), vsz(0.0), 
@@ -99,7 +99,7 @@ Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
     id = c.id; 
     g4Parent    = c.g4Parent;
     reason      = c.reason; 
-    usermask    = c.usermask;
+    mask        = c.mask;
     status      = c.status;
     charge      = c.charge;
     steps       = c.steps; 
@@ -178,8 +178,10 @@ std::string Geant4ParticleHandle::particleType() const   {
 std::string Geant4ParticleHandle::processName() const   {
   if ( particle->process ) return particle->process->GetProcessName();
   else if ( particle->reason&G4PARTICLE_PRIMARY ) return "Primary";
-  else if ( particle->status&G4PARTICLE_GEN_HISTORY ) return "Gen.History";
-  else if ( particle->status&G4PARTICLE_GEN_CREATED ) return "Generator";
+  else if ( particle->status&G4PARTICLE_GEN_EMPTY ) return "Gen.Empty";
+  else if ( particle->status&G4PARTICLE_GEN_STABLE ) return "Gen.Stable";
+  else if ( particle->status&G4PARTICLE_GEN_DECAYED ) return "Gen.Decay";
+  else if ( particle->status&G4PARTICLE_GEN_DOCUMENTATION ) return "Gen.DOC";
   return "???";
 }
 
@@ -240,7 +242,7 @@ void Geant4ParticleHandle::dump2(int level, const std::string& src, const char* 
   else if ( p->parents.size() == 1 ) ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 ) ::snprintf(text,sizeof(text),"/%d..",*(p->parents.begin()));
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s %4d G4:%4d def [%-11s,%8s] reason:%8d "
+	   "+++ %s %4d G4:%4d [%-12s,%8s] reason:%8d "
 	   "E:%+.2e in record:%s  #Par:%3d%-5s #Dau:%3d",
 	   tag, p->id, g4id,
 	   p.particleName().c_str(),

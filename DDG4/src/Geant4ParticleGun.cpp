@@ -12,10 +12,10 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Random.h"
+#include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4ParticleGun.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
-#include "G4ParticleGun.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 
@@ -30,7 +30,7 @@ using namespace DD4hep::Simulation;
 /// Standard constructor
 Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
   : Geant4GeneratorAction(context, name), m_position(0,0,0), m_direction(1,1,0.3),
-    m_particle(0), m_gun(0), m_shotNo(0)
+    m_particle(0), m_shotNo(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;
@@ -40,20 +40,19 @@ Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
   declareProperty("position", m_position);
   declareProperty("direction", m_direction);
   declareProperty("isotrop", m_isotrop = false);
+  declareProperty("Mask", m_mask = 1);
 }
 
 /// Default destructor
 Geant4ParticleGun::~Geant4ParticleGun() {
-  if (m_gun)
-    delete m_gun;
   InstanceCount::decrement(this);
 }
 
 /// Callback to generate primary particles
-void Geant4ParticleGun::operator()(G4Event* event) {
-  if (0 == m_gun) {
-    m_gun = new G4ParticleGun(m_multiplicity);
-  }
+void Geant4ParticleGun::operator()(G4Event* )   {
+  typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+  Geant4Event& evt = context()->event();
+  Geant4PrimaryEvent* prim = evt.extension<Geant4PrimaryEvent>();
   if (0 == m_particle || m_particle->GetParticleName() != m_particleName.c_str()) {
     G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
     m_particle = particleTable->FindParticle(m_particleName);
@@ -77,12 +76,44 @@ void Geant4ParticleGun::operator()(G4Event* event) {
     }
   }
   print("Shoot [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm] dir:(%6.3f %6.3f %6.3f)",
-	m_shotNo, m_energy/GeV, m_particleName.c_str(), m_position.X(), m_position.Y(), m_position.Z(),
+	m_shotNo, m_energy/GeV, m_particleName.c_str(),
+	m_position.X(), m_position.Y(), m_position.Z(),
 	m_direction.X(),m_direction.Y(), m_direction.Z());
-  m_gun->SetParticleDefinition(m_particle);
-  m_gun->SetParticleEnergy(m_energy);
-  m_gun->SetParticleMomentumDirection(G4ThreeVector(m_direction.X(), m_direction.Y(), m_direction.Z()));
-  m_gun->SetParticlePosition(G4ThreeVector(m_position.X(), m_position.Y(), m_position.Z()));
-  m_gun->GeneratePrimaryVertex(event);
+
+  Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
+  Geant4Vertex* vtx = new Geant4Vertex();
+  inter->vertices.insert(make_pair(m_mask,vtx));
+  prim->add(m_mask, inter);
+
+  for(int i=0; i<m_multiplicity; ++i)    {
+    Geant4ParticleHandle p = new Geant4Particle(i);
+    p->reason       = 0;
+    p->pdgID        = m_particle->GetPDGEncoding();
+    p->psx          = m_direction.X()*m_energy;
+    p->psy          = m_direction.Y()*m_energy;
+    p->psz          = m_direction.Z()*m_energy;
+    p->time         = 0;
+    p->properTime   = 0;
+    p->vsx          = m_position.X();
+    p->vsy          = m_position.Y();
+    p->vsz          = m_position.Z();
+    p->vex          = m_position.X();
+    p->vey          = m_position.Y();
+    p->vez          = m_position.Z();
+    p->definition   = m_particle;
+    p->process      = 0;
+    p->spin[0]      = 0;
+    p->spin[1]      = 0;
+    p->spin[2]      = 0;
+    p->colorFlow[0] = 0;
+    p->colorFlow[0] = 0;
+    p->mass         = m_particle->GetPDGMass();
+    p->charge       = m_particle->GetPDGCharge();
+    PropertyMask status(p->status);
+    status.set(G4PARTICLE_GEN_STABLE);
+    vtx->out.insert(p->id);
+    inter->particles.insert(make_pair(p->id,p));
+    p.dump3(outputLevel()-1,name(),"+->");
+  }
   ++m_shotNo;
 }

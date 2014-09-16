@@ -103,6 +103,8 @@ namespace DD4hep {
       int nextPID();
       /// Set the next PID value
       void setNextPID(int value);
+      /// Apply mask to all contained vertices (max. 1) and particles
+      bool applyMask();
     };
 
     /// Class modelling a complete primary event with multiple interactions

@@ -58,15 +58,22 @@ void rebaseVertices(Geant4PrimaryInteraction::VertexMap& vertices, int part_offs
   }
 }
 
-void appendInteraction(Geant4PrimaryInteraction* output, Geant4PrimaryInteraction* input)   {
+/// Append input interaction to global output
+void Geant4InteractionMerger::appendInteraction(Geant4PrimaryInteraction* output, Geant4PrimaryInteraction* input)   {
   Geant4PrimaryInteraction::ParticleMap::iterator ip, ipend;
   for( ip=input->particles.begin(), ipend=input->particles.end(); ip != ipend; ++ip )  {
     Geant4Particle* p = (*ip).second;
     output->particles.insert(make_pair(p->id,p->addRef()));
   }
-  Geant4PrimaryInteraction::VertexMap::iterator iv, ivend;
-  for( iv=input->vertices.begin(), ivend=input->vertices.end(); iv != ivend; ++iv )
-    output->vertices.insert(make_pair(output->vertices.size(),(*iv).second->addRef()));
+  Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
+  for( iv=input->vertices.begin(), ivend=input->vertices.end(); iv != ivend; ++iv )   {
+    ivfnd = output->vertices.find((*iv).second->mask);
+    if ( ivfnd != output->vertices.end() )   {
+      abortRun("Duplicate primary interaction identifier!",
+	       "Cannot handle 2 interactions with identical identifiers!");
+    }
+    output->vertices.insert(make_pair((*iv).second->mask,(*iv).second->addRef()));
+  }
 }
 
 /// Event generation action callback
@@ -76,11 +83,15 @@ void Geant4InteractionMerger::operator()(G4Event* /* event */)  {
   Geant4PrimaryEvent* evt = context()->event().extension<Geant4PrimaryEvent>();
   Interaction* output = context()->event().extension<Interaction>();
   Interactions inter  = evt->interactions();
-  int particle_offset = 0, vertex_offset = 0;
+  int particle_offset = 0;
 
   for(Interactions::const_iterator i=inter.begin(); i != inter.end(); ++i)  {
     Interaction* interaction = *i;
-    vertex_offset = particle_offset;
+    int vertex_offset = particle_offset;
+    if ( !interaction->applyMask() )   {
+      abortRun("Found single interaction with multiple primary vertices!",
+	       "Cannot merge individual interactions with more than one primary!");
+    }
     rebaseParticles(interaction->particles,particle_offset);
     rebaseVertices(interaction->vertices,vertex_offset);
     appendInteraction(output,interaction);

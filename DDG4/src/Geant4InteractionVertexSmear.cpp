@@ -56,7 +56,9 @@ void Geant4InteractionVertexSmear::operator()(G4Event*) {
     double dz = rndm.gauss(m_offset.z(),m_sigma.z());
     double dt = rndm.gauss(m_offset.t(),m_sigma.t());
 
-    print("+++ Smearing primary vertex for interaction type %d by (%+.2e mm, %+.2e mm, %+.2e mm, %+.2e ns)",m_mask,dx,dy,dz,dt);
+    print("+++ Smearing primary vertex for interaction type %d (%d Vertices, %d particles) "
+	  "by (%+.2e mm, %+.2e mm, %+.2e mm, %+.2e ns)",
+	  m_mask,int(inter->vertices.size()),int(inter->particles.size()),dx,dy,dz,dt);
 
     // Now move begin and end-vertex of all primary vertices accordingly
     for(iv=inter->vertices.begin(); iv != inter->vertices.end(); ++iv)  {

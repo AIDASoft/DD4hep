@@ -18,8 +18,12 @@
 
 #include <stdexcept>
 
+using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
+
+typedef Geant4PrimaryInteraction Interaction;
+typedef ReferenceBitMask<int> PropertyMask;
 
 /// Standard constructor
 Geant4PrimaryHandler::Geant4PrimaryHandler(Geant4Context* context, const std::string& nam)
@@ -33,39 +37,108 @@ Geant4PrimaryHandler::~Geant4PrimaryHandler()  {
   InstanceCount::decrement(this);
 }
 
+static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
+  G4PrimaryParticle* g4 = new G4PrimaryParticle(p->pdgID, p->psx, p->psy, p->psz);
+  g4->SetMass(p->mass);
+  return g4;
+}
+
+typedef map<Geant4Particle*,G4PrimaryParticle*> Primaries;
+Primaries getRelevant(set<int>& visited,
+						    map<int,G4PrimaryParticle*>& prim,
+						    Interaction::ParticleMap& pm, 
+						    const Geant4ParticleHandle p)  
+{
+  Primaries res;
+  visited.insert(p->id);
+  PropertyMask status(p->status);
+  if ( status.isSet(G4PARTICLE_GEN_STABLE) )  {
+    if ( prim.find(p->id) == prim.end() )  {
+      G4PrimaryParticle* p4 = createG4Primary(p);
+      prim[p->id] = p4;
+      res.insert(make_pair(p,p4));
+    }
+  }
+  else if ( p->daughters.size() > 0 )  {
+    const Geant4Particle::Particles& dau = p->daughters;
+    int first_daughter = *(dau.begin());
+    Geant4ParticleHandle dp = pm[first_daughter];
+    double me = p->mass / p.energy();
+    //  fix by S.Morozov for real != 0
+    double proper_time = fabs(dp->time-p->time) * me;
+    double proper_time_Precision =  pow(10,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));
+    bool isProperTimeZero = ( proper_time <= proper_time_Precision ) ;
+    // -- remove original --- if (proper_time != 0) {
+    if ( !isProperTimeZero ) {
+      map<int,G4PrimaryParticle*>::iterator ip4 = prim.find(p->id);
+      G4PrimaryParticle* p4 = (ip4 == prim.end()) ? 0 : (*ip4).second;
+      if ( !p4 )  {
+	p4 = createG4Primary(p);
+	p4->SetProperTime(proper_time);
+	prim[p->id] = p4;
+	Primaries daughters;
+	for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
+	  if ( visited.find(*i) == visited.end() )  {
+	    Primaries tmp = getRelevant(visited,prim,pm,pm[*i]);
+	    daughters.insert(tmp.begin(),tmp.end());
+	  }
+	}
+	for(Primaries::iterator i=daughters.begin(); i!=daughters.end(); ++i)
+	  p4->SetDaughter((*i).second);
+      }
+      res.insert(make_pair(p,p4));
+    }
+    else  {
+      for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
+	if ( visited.find(*i) == visited.end() )  {
+	  Primaries tmp = getRelevant(visited,prim,pm,pm[*i]);
+	  res.insert(tmp.begin(),tmp.end());
+	}
+      }
+    }
+  }
+  return res;
+}
+
 /// Event generation action callback
 void Geant4PrimaryHandler::operator()(G4Event* event)  {
-  typedef Geant4PrimaryInteraction Interaction;
   Geant4PrimaryMap* primaries   = context()->event().extension<Geant4PrimaryMap>();
   Interaction*      interaction = context()->event().extension<Interaction>();
   Interaction::ParticleMap& pm  = interaction->particles;
   Interaction::VertexMap&   vm  = interaction->vertices;
-  Interaction::VertexMap::const_iterator iv, ivend;
-  int num_vtx = 0, num_part = 0;
+  map<int,G4PrimaryParticle*> prim;
+  set<int> visited;
 
-  for(iv=vm.begin(), ivend=vm.end(); iv != ivend; ++iv, ++num_vtx, num_part=0)  {
-    Geant4Vertex* v = (*iv).second;
-    G4PrimaryVertex* g4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
-    print("+++++ G4PrimaryVertex %3d  at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]  %d particles",
-	  num_vtx,v->x/mm,v->y/mm,v->z/mm,v->time/ns,int(v->out.size()));
-    // Generate Geant4 primaries coming from this vertex
-    for(Geant4Vertex::Particles::const_iterator j=v->out.begin(); j!=v->out.end(); ++j, ++num_part)  {
-      // Same particle cannot come from 2 vertices! Hence it must ALWAYS be recreated
-      Interaction::ParticleMap::const_iterator ip = pm.find(*j);
-      if ( ip == pm.end() )  { // ERROR. may not happen. Something went wrong in the gathering.
-	const char* text = "+++ Fatal inconsistency in the Geant4PrimaryInteraction record.";
-	printout(ERROR,name(),text);
-	throw std::runtime_error(name()+std::string("  ")+text);
+  Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
+  for(Interaction::VertexMap::const_iterator iend=vm.end(),i=vm.begin(); i!=iend; ++i)  {
+    int num_part = 0;
+    Geant4Vertex* v = (*i).second;
+    G4PrimaryVertex* v4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
+    event->AddPrimaryVertex(v4);
+    print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
+	  v->x/mm,v->y/mm,v->z/mm,v->time/ns);    
+    for(Geant4Vertex::Particles::const_iterator ip=v->out.begin(); ip!=v->out.end(); ++ip)  {
+      Geant4ParticleHandle p = pm[*ip];
+      if ( p->parents.size() == 0 )  {
+	Primaries relevant = getRelevant(visited,prim,pm,p);
+	for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {
+	  Geant4ParticleHandle r = (*j).first;
+	  G4PrimaryParticle* p4 = (*j).second;
+	  PropertyMask reason(r->reason);
+	  reason.set(G4PARTICLE_PRIMARY);
+	  v4->SetPrimary(p4);
+	  printM1("+++ +-> G4Primary[%3d] ID:%3d type:%9d/%-12s "
+		  "Momentum:(%+.2e,%+.2e,%+.2e) [GeV] time:%+.2e [ns] #Par:%3d #Dau:%3d",
+		  num_part,r->id,r->pdgID,r.particleName().c_str(),
+		  r->psx/GeV,r->psy/GeV,r->psz/GeV,r->time/ns,
+		  int(r->parents.size()),int(r->daughters.size()));
+	  ++num_part;
+	}
       }
-      Geant4Particle* p = (*ip).second;
-      G4PrimaryParticle* g4part = new G4PrimaryParticle(p->pdgID,p->psx,p->psy,p->psz);
-      g4part->SetMass(p->mass);
-      g4->SetPrimary(g4part);
-      printM1("+++ +-> G4Primary[%3d] ID:%3d type:%9d Momentum:(%+.2e,%+.2e,%+.2e) [GeV] time:%+.2e [ns] #Par:%3d #Dau:%3d",
-	       num_part,p->id,p->pdgID,p->psx/GeV,p->psy/GeV,p->psz/GeV,p->time/ns,
-	       int(p->parents.size()),int(p->daughters.size()));
-      primaries->primaryMap[g4part] = p->addRef();
     }
-    event->AddPrimaryVertex(g4);
+  }
+  for(map<int,G4PrimaryParticle*>::iterator i=prim.begin(); i!=prim.end(); ++i)  {
+    Geant4ParticleHandle p = pm[(*i).first];
+    primaries->primaryMap[(*i).second] = p->addRef();
   }
 }

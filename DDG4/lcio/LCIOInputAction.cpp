@@ -15,15 +15,24 @@
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Context.h"
 #include "G4ParticleTable.hh"
-#include "G4Event.hh"
 #include "EVENT/MCParticle.h"
 #include "EVENT/LCCollection.h"
-#include "Randomize.hh"
+
+#include "G4Event.hh"
 
 using namespace std;
 using namespace DD4hep::Simulation;
-
 typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+
+namespace {
+  inline int GET_ENTRY(const map<EVENT::MCParticle*,int>& mcparts, EVENT::MCParticle* part)  {
+    map<EVENT::MCParticle*,int>::const_iterator ip=mcparts.find(part);
+    if ( ip == mcparts.end() )  {
+      throw runtime_error("Unknown particle identifier look-up!");
+    }
+    return (*ip).second;
+  }
+}
 
 /// Standard constructor
 LCIOInputAction::LCIOInputAction(Geant4Context* context, const string& name)
@@ -81,36 +90,14 @@ EVENT::LCCollection* LCIOInputAction::readParticles(int which)  {
   return parts;
 }
 
-namespace {
-  inline int GET_ENTRY(const map<EVENT::MCParticle*,int>& mcparts, EVENT::MCParticle* part)  {
-    map<EVENT::MCParticle*,int>::const_iterator ip=mcparts.find(part);
-    if ( ip == mcparts.end() )  {
-      throw runtime_error("Unknown particle identifier look-up!");
-    }
-    return (*ip).second;
-  }
-  struct FindVertex {
-    double x,y,z,t;
-    FindVertex(double xx, double yy, double zz, double tt) { x=xx; y=yy; z=zz; t=tt; }
-    bool operator()(const Geant4Vertex* o)   const  {
-      if ( fabs(o->x - x) > numeric_limits<double>::epsilon() ) return false;
-      if ( fabs(o->y - y) > numeric_limits<double>::epsilon() ) return false;
-      if ( fabs(o->z - z) > numeric_limits<double>::epsilon() ) return false;
-      if ( fabs(o->time - t) > numeric_limits<double>::epsilon() ) return false;
-      return true;
-    }
-  };
-}
-
 /// Callback to generate primary particles
 void LCIOInputAction::operator()(G4Event* event)   {
   Geant4Event& evt = context()->event();
-  Geant4PrimaryEvent* prim = evt.extension<Geant4PrimaryEvent>();
-  Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
-  EVENT::LCCollection* primaries = readParticles(event->GetEventID());
+  Geant4PrimaryEvent*         prim = evt.extension<Geant4PrimaryEvent>();
+  Geant4PrimaryInteraction*   inter = new Geant4PrimaryInteraction();
+  EVENT::LCCollection*        primaries = readParticles(event->GetEventID());
   map<EVENT::MCParticle*,int> mcparts;
-  vector<EVENT::MCParticle*> mcpcoll;
-  vector<Particle*> col;
+  vector<EVENT::MCParticle*>  mcpcoll;
 
   prim->add(m_mask, inter);
   // check if there is at least one particle
@@ -120,21 +107,25 @@ void LCIOInputAction::operator()(G4Event* event)   {
   // check if there is at least one particle
   if ( NHEP == 0 ) return;
 
-  col.resize(NHEP,0);
   mcpcoll.resize(NHEP,0);
   for(int i=0; i<NHEP; ++i ) {
     EVENT::MCParticle* p=dynamic_cast<EVENT::MCParticle*>(primaries->getElementAt(i));
     mcparts[p] = i;
     mcpcoll[i] = p;
-    col[i] = new Particle(i);
   }
 
   print("+++ Particle interaction with %d generator particles ++++++++++++++++++++++++",NHEP);
+  Geant4Vertex* vtx = new Geant4Vertex();
+  vtx->x = 0;
+  vtx->y = 0;
+  vtx->z = 0;
+  vtx->time = 0;
+  inter->vertices.insert(make_pair(m_mask,vtx));
   // build collection of MCParticles
   G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
   for(int i=0; i<NHEP; ++i )   {
     EVENT::MCParticle* mcp = mcpcoll[i];
-    Geant4ParticleHandle p(col[i]);
+    Geant4ParticleHandle p(new Particle(i));
     const double mom_scale = m_momScale;
     const double *mom   = mcp->getMomentum();
     const double *vsx   = mcp->getVertex();
@@ -143,9 +134,6 @@ void LCIOInputAction::operator()(G4Event* event)   {
     const int    *color = mcp->getColorFlow();
     G4ParticleDefinition* def = tab->FindParticle(mcp->getPDG());
     PropertyMask status(p->status);
-
-    p->reason       = 0;
-    p->usermask     = 0;
     p->pdgID        = mcp->getPDG();
     p->charge       = int(mcp->getCharge()*3.0);
     p->psx          = mom_scale*mom[0]*GeV;
@@ -174,7 +162,6 @@ void LCIOInputAction::operator()(G4Event* event)   {
       p->parents.insert(GET_ENTRY(mcparts,par[k]));
 
     int genStatus = mcp->getGeneratorStatus();
-    status.set(G4PARTICLE_GEN_CREATED);
     if ( genStatus == 0 ) status.set(G4PARTICLE_GEN_EMPTY);
     if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
     if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
@@ -187,158 +174,15 @@ void LCIOInputAction::operator()(G4Event* event)   {
     if ( mcp->hasLeftDetector() )             status.set(G4PARTICLE_SIM_LEFT_DETECTOR);
     if ( mcp->isStopped() )                   status.set(G4PARTICLE_SIM_STOPPED);
     if ( mcp->isOverlay() )                   status.set(G4PARTICLE_SIM_OVERLAY);
+    if ( par.size() == 0 )  {
+      if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
+	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+      else
+	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+    }
     inter->particles.insert(make_pair(p->id,p));
     p.dump3(outputLevel()-1,name(),"+->");
   }
-
-  // put initial particles to the vertex
-  vector<Geant4Vertex*> vertices;
-  double time_end = 0.0;
-
-  for( size_t i=0; i< col.size(); i++ )  {
-    Particle* p = col[i];
-    if ( p->time > time_end ) time_end = p->time;
-  }
-
-  // Create Primary Vertex object
-  set<int> missing;
-  for( size_t i=0; i< col.size(); i++ )  {
-    Geant4ParticleHandle p(col[i]);
-    PropertyMask reason(p->reason);
-    PropertyMask status(p->status);
-    bool empty   = status.isSet(G4PARTICLE_GEN_EMPTY);
-    bool stable  = status.isSet(G4PARTICLE_GEN_STABLE);
-    bool decayed = status.isSet(G4PARTICLE_GEN_DECAYED);
-    bool docu    = status.isSet(G4PARTICLE_GEN_DOCUMENTATION);
-
-    if ( docu || empty || decayed )   {
-      status.set(G4PARTICLE_GEN_HISTORY);
-    }
-    else if ( stable )   {
-      missing.insert(i);
-      reason.set(G4PARTICLE_PRIMARY);
-    }
-    else if ( !stable )  {
-      double ene = p.energy();
-      double proper_time = std::fabs((time_end - p->time) * p->mass) / ene;
-      double precision   = std::pow(10E0,-DBL_DIG)*std::max(time_end,p->time)*p->mass/ene;
-      if ( proper_time >= precision )  {
-	p->properTime = proper_time;
-      }
-      reason.set(G4PARTICLE_PRIMARY);
-      missing.insert(i);
-    }
-    else  { // Catchall: will not make it to the primary record.....
-      status.set(G4PARTICLE_GEN_HISTORY);
-    }
-  }
-  set<Geant4Particle*> missing_def;
-  for(set<int>::iterator i=missing.begin(); i != missing.end(); ++i)   {
-    Geant4ParticleHandle p(col[*i]);
-    Geant4Vertex* vtx = 0;
-    PropertyMask reason(p->reason);
-
-    if ( 0 == p->definition ) {
-      missing_def.insert(p);
-      continue;
-    }
-    vector<Geant4Vertex*>::iterator iv=find_if(vertices.begin(),vertices.end(),
-					       FindVertex(p->vsx,p->vsy,p->vsz,p->time));
-    if ( iv == vertices.end() )  {
-      vtx = new Geant4Vertex();
-      vtx->x = p->vsx;
-      vtx->y = p->vsy;
-      vtx->z = p->vsz;
-      vtx->time = p->time;
-      vertices.push_back(vtx);
-      inter->vertices.insert(make_pair(inter->vertices.size(),vtx));
-      vtx->out.insert(*i);
-    }
-    else  {
-      (*iv)->out.insert(*i);
-    }
-  }
-  if ( missing_def.size() > 0 )  {
-    for(set<Geant4Particle*>::const_iterator i=missing_def.begin(); i!= missing_def.end(); ++i)
-      Geant4ParticleHandle(*i).dump1(WARNING,name(),"!!!! Missing definition");
-    //abortRun(issue(event->GetEventID()),"Error creating primary particles.",
-    // "+++ Missing particle definitions for primary particles. Geant4 cannot handle this!");
-  }
-
-#if 0
-  // put initial particles to the vertex
-  for( size_t i=0; i< col.size(); i++ )  {
-    Particle* p = col[i];
-    if ( p->parents.size()==0 )   {
-      set<int> outgoing = relevantParticles(col, p);
-      prim_vtx->out.insert(outgoing.begin(),outgoing.end());
-    }
-  }
-#endif
-}
-
-set<int> LCIOInputAction::relevantParticles(const vector<Particle*>& particles, Geant4ParticleHandle p) const    {
-  set<int> result;
-  PropertyMask mask(p->status);
-  // CASE1: if p is a stable particle: search for it in G4ParticleMap
-  // if it is already there: get G4PrimaryParticle version of p from G4ParticleMap
-  // else: create G4PrimaryParticle version of p and write it to G4ParticleMap
-  // in the end: insert this single G4PrimaryParticle verion of p to the 
-  // relevant particle list and return this "list".
-  if ( mask.isSet(G4PARTICLE_GEN_STABLE) )  {
-    result.insert(p->id);
-    return result;
-  }
-
-  if ( p->daughters.size() > 0 )   {
-    // calculate proper time
-    Particle::Particles::iterator id;
-    int idau = *p->daughters.begin();
-    Particle* dp = particles[idau];
-    double ten = 10;
-    double mass = p->definition->GetPDGMass();
-    double proper_time = std::fabs((dp->time - p->time) * mass) / p.energy();
-    double aPrecision = dp->time * mass / p.energy();
-    double bPrecision =  p->time * mass / p.energy();
-    double proper_time_precision = std::pow(ten,-DBL_DIG)
-      * std::max(std::fabs(aPrecision),std::fabs(bPrecision));
-    bool isProperTimeZero = ( proper_time <= proper_time_precision );
-
-    // CASE2: if p is not stable: get first decay daughter and calculate the proper time of p
-    // if proper time is not zero: particle is "relevant", since it carries vertex information
-    // if p is already in G4ParticleMap: take it
-    // otherwise: create G4PrimaryParticle version of p and write it to G4ParticleMap
-    // now collect all relevant particles of all daughters and setup "relevant mother-
-    // daughter-relations" between relevant decay particles and G4PrimaryParticle version of p
-    // in the end: insert only the G4PrimaryParticle version of p to the
-    // relevant particle list and return this "list". The added particle has now the correct pre-assigned
-    // decay products and (hopefully) the right lifetime.
-    if ( isProperTimeZero == false ) {
-      result.insert(p->id);
-      p->properTime = proper_time;
-      for (id=p->daughters.begin(); id!=p->daughters.end(); ++id)  {
-	int pid = *id;
-	dp = particles[pid];
-	set<int> dau = relevantParticles(particles,dp);
-	result.insert(pid);
-	result.insert(dau.begin(),dau.end());
-      }
-      return result;
-    }
-    // CASE3: if p is not stable AND has zero lifetime: forget about p and retrieve all relevant
-    // decay particles of all daughters of p. In this case this step of recursion is just there for
-    // collecting all relevant decay products of daughters (and return them).
-    for (id=p->daughters.begin(); id!=p->daughters.end(); ++id)  {
-      int pid = *id;
-      dp = particles[pid];
-      set<int> dau = relevantParticles(particles,dp);
-      result.insert(dau.begin(),dau.end());
-    }
-  }
-  // This logic sucks!
-  // - What happens to decayed beauty particles with a displaced vertex, which are stable?
-  // - What happend to anything stable comping NOT from the very primary vertex.....
-  return result;
 }
 
 #include "DDG4/Factories.h"

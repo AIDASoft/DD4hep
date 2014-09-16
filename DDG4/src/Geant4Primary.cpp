@@ -62,6 +62,21 @@ void Geant4PrimaryInteraction::setNextPID(int new_value)   {
   next_particle_identifier = new_value-1;
 }
 
+/// Apply mask to all contained vertices and particles
+bool Geant4PrimaryInteraction::applyMask()   {
+  if ( vertices.size() <= 1 )  {
+    Geant4PrimaryInteraction::ParticleMap::iterator ip, ipend;
+    for( ip=particles.begin(), ipend=particles.end(); ip != ipend; ++ip )
+      (*ip).second->mask = mask;
+    
+    Geant4PrimaryInteraction::VertexMap::iterator iv, ivend;
+    for( iv=vertices.begin(), ivend=vertices.end(); iv != ivend; ++iv )
+      (*iv).second->mask = mask;
+    return true;
+  }
+  return false;
+}
+
 /// Default constructor
 Geant4PrimaryEvent::Geant4PrimaryEvent() 
 {

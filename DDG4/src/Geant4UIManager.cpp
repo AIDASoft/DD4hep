@@ -108,6 +108,6 @@ void Geant4UIManager::start() {
 
 /// Stop and release resources
 void Geant4UIManager::stop() {
-  deletePtr(m_vis);
-  deletePtr(m_ui);
+  // deletePtr(m_vis);
+  //deletePtr(m_ui);
 }

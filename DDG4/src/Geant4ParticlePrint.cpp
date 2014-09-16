@@ -65,6 +65,7 @@ void Geant4ParticlePrint::end(const G4Event* )  {
 void Geant4ParticlePrint::printParticle(const std::string& prefix, Geant4ParticleHandle p) const   {
   char equiv[32];
   PropertyMask mask(p->reason);
+  PropertyMask status(p->status);
   string proc_name = p.processName();
   string proc_type = p.processTypeName();
   int parent_id = p->parents.empty() ? -1 : *(p->parents.begin());
@@ -73,7 +74,7 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, Geant4Particl
   if ( p->parents.end() == p->parents.find(p->g4Parent) )  {
     ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
   }
-  print("+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s]",
+  print("+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c",
 	prefix.c_str(),
 	p->id,
 	p.particleName().c_str(),
@@ -90,7 +91,11 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, Geant4Particl
 	p.numParent(),
 	proc_name.c_str(),
 	p->process ? "/" : "",
-	proc_type.c_str()
+	proc_type.c_str(),
+	status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',
+	status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
+	status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
+	status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
 	);
 }
 

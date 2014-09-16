@@ -22,12 +22,17 @@ namespace DD4hep {
    */
   namespace Simulation {
 
+    // Forward declarations
+    class Geant4PrimaryInteraction;
+
     /** Geant4Action to convert the particle information to Geant4
      *
      *  @author  M.Frank
      *  @version 1.0
      */
     class Geant4InteractionMerger : public Geant4GeneratorAction    {
+      /// Append input interaction to global output
+      void appendInteraction(Geant4PrimaryInteraction* output, Geant4PrimaryInteraction* input);
     public:
       /// Standard constructor
       Geant4InteractionMerger(Geant4Context* context, const std::string& nam);

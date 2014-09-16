@@ -78,8 +78,6 @@ namespace DD4hep  {
       virtual ~LCIOInputAction();
       /// Callback to generate primary particles
       virtual void operator()(G4Event*);
-
-      std::set<int> relevantParticles(const std::vector<Particle*>& particles, Geant4ParticleHandle p) const;
     };
   }     /* End namespace lcio   */
 }       /* End namespace DD4hep */
