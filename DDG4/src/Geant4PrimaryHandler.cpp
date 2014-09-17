@@ -66,7 +66,7 @@ Primaries getRelevant(set<int>& visited,
     double me = p->mass / p.energy();
     //  fix by S.Morozov for real != 0
     double proper_time = fabs(dp->time-p->time) * me;
-    double proper_time_Precision =  pow(10,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));
+    double proper_time_Precision =  pow(10.,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));
     bool isProperTimeZero = ( proper_time <= proper_time_Precision ) ;
     // -- remove original --- if (proper_time != 0) {
     if ( !isProperTimeZero ) {
