@@ -79,13 +79,14 @@ bool Geant4Filter::operator()(const G4Step*) const {
 
 /// Constructor. The detector element is identified by the name
 Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& name, DetElement det, LCDD& lcdd)
-  : Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0), m_lcdd(lcdd), 
-    m_detector(det), m_sensitive(), m_readout(), m_segmentation()
+  : Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0),
+    m_lcdd(lcdd), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
     throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", name.c_str()));
   }
+  declareProperty("HitCreationMode", m_hitCreationMode = SIMPLE_MODE);
   m_sequence  = ctxt->kernel().sensitiveAction(m_detector.name());
   m_sensitive = lcdd.sensitiveDetector(det.name());
   m_readout   = m_sensitive.readout();
@@ -258,8 +259,8 @@ void Geant4SensDetActionSequence::adopt(Geant4Filter* filter) {
 }
 
 /// Initialize the usage of a hit collection. Returns the collection identifier
-size_t Geant4SensDetActionSequence::defineCollection(const std::string& name, create_t func) {
-  m_collections.push_back(make_pair(name, func));
+size_t Geant4SensDetActionSequence::defineCollection(Geant4Sensitive* owner, const std::string& name, create_t func) {
+  m_collections.push_back(make_pair(name, make_pair(owner,func)));
   return m_collections.size() - 1;
 }
 
@@ -333,8 +334,8 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_hce = hce;
   m_actors(ContextUpdate(context()));
   for (size_t count = 0; count < m_collections.size(); ++count) {
-    const std::pair<string, create_t>& cr = m_collections[count];
-    Geant4HitCollection* c = (*cr.second)(name(), cr.first, m_sensitive);
+    const HitCollection& cr = m_collections[count];
+    Geant4HitCollection* c = (*cr.second.second)(name(), cr.first, cr.second.first);
     int id = m_detector->GetCollectionID(count);
     m_hce->AddHitsCollection(id, c);
   }

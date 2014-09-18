@@ -75,16 +75,6 @@ Geant4HitCollection::~Geant4HitCollection() {
   InstanceCount::decrement(this);
 }
 
-/// Set the sensitive detector
-void Geant4HitCollection::setSensitiveDetector(SensitiveDetector detector)   {
-  m_detector = detector;
-}
-
-/// Access the sensitive detector
-Geant4HitCollection::SensitiveDetector Geant4HitCollection::sensitiveDetector() const  {
-  return m_detector;
-}
-
 /// Type information of the object stored
 const ComponentCast& Geant4HitCollection::type() const {
   return m_manipulator->cast;

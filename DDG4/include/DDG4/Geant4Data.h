@@ -10,19 +10,16 @@
 #define DD4HEP_GEANT4DATA_H
 
 // Framework include files
-#ifndef __DD4HEP_DDEVE_EXCLUSIVE__
-#include "DD4hep/Objects.h"
-#include "G4Step.hh"
-class G4PrimaryParticle;
-#else
-typedef void* G4Step;
-typedef void* G4StepPoint;
-typedef void* G4PrimaryParticle;
-#endif
+#include "Math/Vector3D.h"
 
 // C/C++ include files
 #include <set>
 #include <memory>
+#include <vector>
+
+// Forward declarations
+class G4Step;
+class G4StepPoint;
 
 /*
  *   DD4hep namespace declaration
@@ -35,13 +32,8 @@ namespace DD4hep {
   namespace Simulation {
 
     // Forward type definitions
-    typedef Geometry::Position Position;
-    typedef Geometry::Position Direction;
-
-    // Forward declarations
-    class Geant4Particle;
-    class Geant4Vertex;
-    
+    typedef ROOT::Math::XYZVector Position;
+    typedef ROOT::Math::XYZVector Direction;
 
     /** @class HitCompare Geant4Data.h DDG4/Geant4Data.h
      *
@@ -132,7 +124,7 @@ namespace DD4hep {
      *  @version 1.0
      */
     struct Geant4HitData {
-      // cellID
+      /// cellID
       long long int cellID;
       /// User data extension if required
       std::auto_ptr<DataExtension> extension;  
@@ -148,21 +140,33 @@ namespace DD4hep {
         double deposit;
         /// Timestamp when this energy was deposited
         double time;
+	/// Proper position of the hit contribution
+	float  x,y,z;
+
         /// Default constructor
         MonteCarloContrib()
-            : trackID(-1), pdgID(-1), deposit(0.0), time(0.0) {
-        }
-        /// Initializing constructor
-        MonteCarloContrib(int track_id, double dep, double time_stamp)
-            : trackID(track_id), pdgID(-1), deposit(dep), time(time_stamp) {
+	: trackID(-1), pdgID(-1), deposit(0.0), time(0.0), x(0), y(0), z(0) {
         }
         /// Initializing constructor
         MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
-            : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp) {
+	: trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), x(0), y(0), z(0) {
+        }
+        /// Initializing constructor
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, float* pos)
+	: trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+	  x(pos[0]), y(pos[1]), z(pos[2]) 
+	{
+        }
+        /// Initializing constructor
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double* pos)
+	: trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+	  x(pos[0]), y(pos[1]), z(pos[2]) 
+	{
         }
         /// Copy constructor
         MonteCarloContrib(const MonteCarloContrib& c)
-            : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time) {
+	: trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time),
+	  x(c.x), y(c.y), z(c.z) {
         }
 	/// Assignment operator
 	MonteCarloContrib& operator=(const MonteCarloContrib& c)  {
@@ -171,11 +175,15 @@ namespace DD4hep {
 	    pdgID   = c.pdgID;
 	    deposit = c.deposit;
 	    time    = c.time;
+	    x       = c.x;
+	    y       = c.y;
+	    z       = c.z;
 	  }
 	  return *this;
 	}
         /// Clear data content
         void clear() {
+	  x = y = z = 0.0;
           time = deposit = 0.0;
           pdgID = trackID = -1;
         }

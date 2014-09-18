@@ -72,7 +72,6 @@ install(FILES
   python/DD4hep.py 
   python/DDG4.py 
   python/DDG4Dict.C 
-  python/DDG4Dict.h 
   DESTINATION python)
 
 install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay

@@ -172,7 +172,7 @@ void Geant4Output2LCIO::saveEvent(OutputContext<G4Event>& ctxt)  {
       typedef Geant4Conversion<lcio::LCCollectionVec,_Args> _C;
       const _C& cnv = _C::converter(typeid(Geant4ParticleMap));
       lcio::LCCollectionVec* col = cnv(_Args(context(),part_map));
-      evt->addCollection(col,"McParticles");
+      evt->addCollection(col,lcio::LCIO::MCPARTICLE);
     }
   }
 }

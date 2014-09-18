@@ -26,15 +26,13 @@
  */
 namespace DD4hep {
 
-  /// Forward declarations
-  namespace Geometry  {   class SensitiveDetectorObject;   }
-
   /*
    *   Simulation namespace declaration
    */
   namespace Simulation {
 
     // Forward declarations
+    class Geant4Sensitive;
     class Geant4HitCollection;
     class Geant4HitWrapper;
 
@@ -176,8 +174,6 @@ namespace DD4hep {
       typedef std::vector<Geant4HitWrapper>    WrappedHits;
       /// Hit manipulator
       typedef Geant4HitWrapper::HitManipulator Manip;
-      /// Sensitive detector
-      typedef Geometry::Handle<Geometry::SensitiveDetectorObject> SensitiveDetector;
 
       /** @class Compare Geant4HitCollection.h DDG4/Geant4HitCollection.h
        *
@@ -197,7 +193,7 @@ namespace DD4hep {
       /// The collection of hit pointers in the wrapped format
       WrappedHits m_hits;
       /// Handle to the sensitive detector
-      SensitiveDetector m_detector;
+      Geant4Sensitive* m_detector;
       /// The type of the objects in this collection. Set by the constructor
       Manip* m_manipulator;
 
@@ -214,7 +210,7 @@ namespace DD4hep {
     public:
       /// Initializing constructor (C++ version)
       template <typename TYPE>
-      Geant4HitCollection(const std::string& det, const std::string& coll, SensitiveDetector sd)
+      Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd)
 	: G4VHitsCollection(det, coll), m_detector(sd),
 	m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
         newInstance();
@@ -222,7 +218,7 @@ namespace DD4hep {
       }
       /// Initializing constructor
       template <typename TYPE>
-      Geant4HitCollection(const std::string& det, const std::string& coll, SensitiveDetector sd, const TYPE*)
+      Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd, const TYPE*)
 	: G4VHitsCollection(det, coll), m_detector(sd),
 	m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
         newInstance();
@@ -230,16 +226,20 @@ namespace DD4hep {
       }
       /// Default destructor
       virtual ~Geant4HitCollection();
-      /// Set the sensitive detector
-      void setSensitiveDetector(SensitiveDetector detector);
-      /// Access the sensitive detector
-      SensitiveDetector sensitiveDetector() const;
       /// Type information of the object stored
       const ComponentCast& type() const;
       /// Type information of the vector type for extracting data
       const ComponentCast& vector_type() const;
       /// Clear the collection (Deletes all valid references to real hits)
       virtual void clear();
+      /// Set the sensitive detector
+      void setSensitive(Geant4Sensitive* detector)   {
+	m_detector = detector;
+      }
+      /// Access the sensitive detector
+      Geant4Sensitive* sensitive() const   {
+	return m_detector;
+      }
       /// Access individual hits
       virtual G4VHit* GetHit(size_t which) const {
         return (G4VHit*) &m_hits.at(which);

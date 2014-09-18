@@ -13,6 +13,7 @@
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4HitCollection.h"
 #include "DDG4/Geant4DataConversion.h"
+#include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Data.h"
@@ -29,6 +30,22 @@
 #include "UTIL/Operators.h"
 #include "UTIL/ILDConf.h"
 using namespace std;
+
+//==================================================================================
+//
+// SimCalorimeterHit:
+// ------------------
+// LCIO::CHBIT_STEP       If detailed mode set                    | YES if detailed
+// LCIO::CHBIT_LONG:      Position is stored                      | YES
+// LCIO::CHBIT_ID1:       CellID1 is stored                       | YES
+//
+//
+// SimTrackerHit:
+// --------------
+// LCIO::THBIT_ID1:       CellID1 is stored (TrackerHit)          | YES
+// LCIO::THBIT_MOMENTUM:  Momentum is stored                      | YES if detailed
+//
+//==================================================================================
 
 /*
  *   DD4hep namespace declaration
@@ -79,14 +96,22 @@ namespace DD4hep {
 			 pair<const Geant4Context*,Geant4HitCollection*>,
 			 Geant4Tracker::Hit>::operator()(const arg_t& args)  const   {
 
-      Geant4HitCollection* coll  = args.second;
-      size_t               nhits = coll->GetSize();
-      string               dsc   = encoding(coll->sensitiveDetector());
-      Geant4ParticleMap*   pm    = args.first->event().extension<Geant4ParticleMap>();
-      lcio::LCEventImpl*   lc_evt    = args.first->event().extension<lcio::LCEventImpl>();
-      EVENT::LCCollection* lc_part   = lc_evt->getCollection("McParticles");
+      Geant4HitCollection*   coll    = args.second;
+      Geant4Sensitive*       sd      = coll->sensitive();
+      size_t                 nhits   = coll->GetSize();
+      string                 dsc     = encoding(sd->sensitiveDetector());
+      Geant4ParticleMap*     pm      = args.first->event().extension<Geant4ParticleMap>();
+      lcio::LCEventImpl*     lc_evt  = args.first->event().extension<lcio::LCEventImpl>();
+      EVENT::LCCollection*   lc_part = lc_evt->getCollection(lcio::LCIO::MCPARTICLE);
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
       UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
+      int hit_creation_mode = sd->hitCreationMode();
+
+      if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
+	lc_coll->setFlag(UTIL::make_bitset32(LCIO::THBIT_MOMENTUM,LCIO::THBIT_ID1));
+      else
+	lc_coll->setFlag(LCIO::THBIT_ID1);
+
       lc_coll->reserve(nhits);
       for(size_t i=0; i<nhits; ++i)   {
 	const Geant4Tracker::Hit* hit = coll->hit(i);
@@ -94,16 +119,15 @@ namespace DD4hep {
 	int trackID = pm->particleID(t.trackID);
 	EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
 	double pos[3] = {hit->position.x(), hit->position.y(), hit->position.z()};
-	float  mom[3] = {hit->momentum.x(), hit->momentum.y(), hit->momentum.z()};
 	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
-	lc_hit->setCellID0( (hit->cellID >>    0          ) & 0xFFFFFFFF); 
-	lc_hit->setCellID1( (hit->cellID >> sizeof( int ) ) & 0xFFFFFFFF);
+	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
+	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
 	lc_hit->setEDep(hit->energyDeposit);
 	lc_hit->setPathLength(hit->length);
 	lc_hit->setTime(hit->truth.time);
 	lc_hit->setMCParticle(lc_mcp);
 	lc_hit->setPosition(pos);
-	lc_hit->setMomentum(mom);
+	lc_hit->setMomentum(hit->momentum.x(),hit->momentum.y(),hit->momentum.z());
 	lc_coll->addElement(lc_hit);
       }
       return lc_coll;
@@ -124,31 +148,45 @@ namespace DD4hep {
 			 pair<const Geant4Context*,Geant4HitCollection*>,
 			 Geant4Calorimeter::Hit>::operator()(const arg_t& args)  const  {
       typedef Geant4HitData::Contributions Contributions;
-      Geant4HitCollection* coll = args.second;
-      size_t nhits = coll->GetSize();
-      string   dsc = encoding(coll->sensitiveDetector());
-      Geant4ParticleMap*   pm        = args.first->event().extension<Geant4ParticleMap>();
-      lcio::LCEventImpl*   lc_evt    = args.first->event().extension<lcio::LCEventImpl>();
-      EVENT::LCCollection* lc_parts  = lc_evt->getCollection("McParticles");
-      lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);	
+      Geant4HitCollection*   coll     = args.second;
+      Geant4Sensitive*       sd       = coll->sensitive();
+      size_t                 nhits    = coll->GetSize();
+      string                 dsc      = encoding(sd->sensitiveDetector());
+      Geant4ParticleMap*     pm       = args.first->event().extension<Geant4ParticleMap>();
+      lcio::LCEventImpl*     lc_evt   = args.first->event().extension<lcio::LCEventImpl>();
+      EVENT::LCCollection*   lc_parts = lc_evt->getCollection(lcio::LCIO::MCPARTICLE);
+      lcio::LCCollectionVec* lc_coll  = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
       UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc_coll);
-      lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
+      int hit_creation_mode = sd->hitCreationMode();
+
+      if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
+	lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
+      else
+	lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
+
       lc_coll->reserve(nhits);
+      if ( sd->hasProperty("HitCreationMode") )  {
+	hit_creation_mode = sd->property("HitCreationMode").value<int>();
+      }
       for(size_t i=0; i<nhits; ++i)   {
 	const Geant4Calorimeter::Hit* hit = coll->hit(i);
 	float pos[3] = {hit->position.x(), hit->position.y(), hit->position.z()};
 	lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
-	lc_hit->setCellID0(( hit->cellID >>    0       ) & 0xFFFFFFFF); 
-	lc_hit->setCellID1(( hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ???? 
+	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
+	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ???? 
 	lc_hit->setPosition(pos);
-	lc_hit->setEnergy( hit->energyDeposit );
+	///No! Done when adding particle contrbutions: lc_hit->setEnergy( hit->energyDeposit );
 	lc_coll->addElement(lc_hit);
 	/// Now add the individual track contributions to the LCIO hit structure
 	for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {
 	  const Geant4HitData::Contribution& c = *j;
 	  int trackID = pm->particleID(c.trackID);
+	  float pos[] = {c.x, c.y, c.z};
 	  EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
-	  lc_hit->addMCParticleContribution(lc_mcp,c.deposit,c.time);
+	  if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
+	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit, c.time, c.pdgID, pos);
+	  else
+	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit, c.time);
 	}
       }
       return lc_coll;
@@ -188,8 +226,15 @@ namespace DD4hep {
 			 pair<const Geant4Context*,Geant4HitCollection*>,
 			 lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const
     {
-      string    dsc = encoding(args.second->sensitiveDetector());
-      output_t* lc  = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      Geant4Sensitive* sd  = args.second->sensitive();
+      string           dsc = encoding(sd->sensitiveDetector());
+      output_t*        lc  = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
+      int hit_creation_mode = sd->hitCreationMode();
+
+      if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
+	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
+      else
+	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
       UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc);
       return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc);
     }
@@ -212,10 +257,15 @@ namespace DD4hep {
 			 pair<const Geant4Context*,Geant4HitCollection*>,
 			 lcio::SimCalorimeterHitImpl>::operator()(const arg_t& args)  const 
     {
-      string    dsc = encoding(args.second->sensitiveDetector());
-      output_t* lc  = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
-      UTIL::CellIDEncoder<SimCalorimeterHit> decoder(dsc,lc);
-      lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1)); 
+      Geant4Sensitive* sd  = args.second->sensitive();
+      string           dsc = encoding(args.second->sensitive()->sensitiveDetector());
+      output_t*        lc  = new lcio::LCCollectionVec(lcio::LCIO::SIMCALORIMETERHIT);
+      int hit_creation_mode = sd->hitCreationMode();
+
+      if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
+	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
+      else
+	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
       return moveEntries<tag_t>(args.second,lc);
     }
 

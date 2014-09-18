@@ -4,9 +4,14 @@
 //--------------------------------------------------------------------
 //
 //====================================================================
+#ifndef DD4HEP_DDG4_LCIOFILEREADER_H
+#define DD4HEP_DDG4_LCIOFILEREADER_H
 
 // Framework include files
 #include "LCIOEventReader.h"
+
+// Forward declarations
+namespace IO { class LCReader; }
 
 /*
  *   DD4hep namespace declaration
@@ -39,6 +44,7 @@ namespace DD4hep   {
     };
   }
 }
+#endif // DD4HEP_DDG4_LCIOFILEREADER_H
 
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"

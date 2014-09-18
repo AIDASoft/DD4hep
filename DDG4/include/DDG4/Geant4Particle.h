@@ -133,7 +133,8 @@ namespace DD4hep {
       void removeDaughter(int id_daughter);
     };
 
-#ifndef __DD4HEP_DDEVE_EXCLUSIVE__
+#ifndef __DDG4_STANDALONE_DICTIONARIES__
+
     /// Data structure to access MC particle information 
     /**
      * @author  M.Frank

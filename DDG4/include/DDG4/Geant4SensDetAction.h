@@ -88,7 +88,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Sensitive: public Geant4Action {
+    class Geant4Sensitive: public Geant4Action {
+    public:
       typedef Geometry::LCDD LCDD;
       typedef Geometry::Readout Readout;
       typedef Geometry::DetElement DetElement;
@@ -97,6 +98,12 @@ namespace DD4hep {
       typedef Geant4StepHandler StepHandler;
       typedef Geant4HitCollection HitCollection;
 
+      enum HitCreationFlags {  
+	SIMPLE_MODE = 0,
+	MEDIUM_MODE = 1<<0,
+	DETAILED_MODE = 1<<1
+      };	
+
     private:
       /// Reference to G4 sensitive detector
       Geant4ActionSD* m_sensitiveDetector;
@@ -104,6 +111,8 @@ namespace DD4hep {
       Geant4SensDetActionSequence* m_sequence;
 
     protected:
+      /// Property: Hit creation mode. Maybe one of the enum HitCreationFlags
+      int  m_hitCreationMode;
       /// Reference to the detector description object
       LCDD& m_lcdd;
       /// Reference to the detector element describing this sensitive element
@@ -130,6 +139,11 @@ namespace DD4hep {
       /// Access to the sensitive detector object
       void setDetector(Geant4ActionSD* sens_det);
 
+      /// Property access to the hit creation mode
+      int hitCreationMode() const  {
+	return m_hitCreationMode;
+      }
+
       /// G4VSensitiveDetector internals: Access to the detector name
       std::string detectorName() const {
         return detector().name();
@@ -148,6 +162,11 @@ namespace DD4hep {
       /// G4VSensitiveDetector internals: Is the detector active?
       bool isActive() const {
         return detector().isActive();
+      }
+
+      /// Access the DD4hep sensitive detector
+      SensitiveDetector sensitiveDetector() const  {
+	return m_sensitive;
       }
 
       /// Access to the readout geometry of the sensitive detector
@@ -233,8 +252,9 @@ namespace DD4hep {
     public:
       
       typedef Geometry::SensitiveDetector SensitiveDetector;
-      typedef Geant4HitCollection* (*create_t)(const std::string&, const std::string&, SensitiveDetector);
-      typedef std::vector<std::pair<std::string, create_t> > HitCollections;
+      typedef Geant4HitCollection* (*create_t)(const std::string&, const std::string&, Geant4Sensitive*);
+      typedef std::pair<std::string, std::pair<Geant4Sensitive*,create_t> > HitCollection;
+      typedef std::vector<HitCollection> HitCollections;
 
     protected:
       /// Geant4 hit collection context
@@ -260,7 +280,7 @@ namespace DD4hep {
       Geant4ActionSD* m_detector;
 
       /// Create a new typed hit collection
-      template <typename TYPE> static Geant4HitCollection* _create(const std::string& det, const std::string& coll, SensitiveDetector sd) {
+      template <typename TYPE> static Geant4HitCollection* _create(const std::string& det, const std::string& coll, Geant4Sensitive* sd) {
         return new Geant4HitCollection(det, coll, sd, (TYPE*) 0);
       }
 
@@ -275,11 +295,11 @@ namespace DD4hep {
       size_t defineCollections(Geant4ActionSD* sens_det);
 
       /// Initialize the usage of a hit collection. Returns the collection identifier
-      size_t defineCollection(const std::string& name, create_t func);
+      size_t defineCollection(Geant4Sensitive* owner, const std::string& name, create_t func);
 
       /// Define a named collection containing hist of a specified type
-      template <typename TYPE> size_t defineCollection(const std::string& coll_name) {
-        return defineCollection(coll_name, Geant4SensDetActionSequence::_create<TYPE>);
+      template <typename TYPE> size_t defineCollection(Geant4Sensitive* owner, const std::string& coll_name) {
+        return defineCollection(owner, coll_name, Geant4SensDetActionSequence::_create<TYPE>);
       }
 
       /// Access HitCollection container names
@@ -382,7 +402,7 @@ namespace DD4hep {
 
     /// Initialize the usage of a single hit collection. Returns the collection ID
     template <typename TYPE> inline size_t Geant4Sensitive::defineCollection(const std::string& coll_name) {
-      return sequence().defineCollection<TYPE>(coll_name);
+      return sequence().defineCollection<TYPE>(this, coll_name);
     }
 
   }    // End namespace Simulation

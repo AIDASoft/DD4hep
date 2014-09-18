@@ -11,24 +11,26 @@
 //====================================================================
 // FRamework include files
 #include "DDG4/Geant4Primary.h"
-#include "DDG4/Geant4Data.h"
-#include "DDG4Dict.h"
+#include "DDG4/DDG4Dict.h"
 
 // CINT configuration
 #if defined(__MAKECINT__)
 #pragma link C++ namespace DD4hep::DDSegmentation;
+
+/// Geant4 Vertex dictionaries
 #pragma link C++ class DD4hep::Simulation::VertexExtension+;
-#pragma link C++ class DD4hep::Simulation::PrimaryExtension+;
 #pragma link C++ class std::auto_ptr<DD4hep::Simulation::VertexExtension>+;
 #pragma link C++ class std::auto_ptr<DD4hep::Simulation::PrimaryExtension>+;
 #pragma link C++ class DD4hep::Simulation::Geant4Vertex+;
+#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Vertex*>+;
 #pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Vertex*>+;
+
 #pragma link C++ class DD4hep::Simulation::Geant4ParticleMap+;
+#pragma link C++ class DD4hep::Simulation::PrimaryExtension+;
 #pragma link C++ class DD4hep::Simulation::Geant4PrimaryInteraction+;
 #pragma link C++ class std::map<int,DD4hep::Simulation::Geant4PrimaryInteraction*>+;
 #pragma link C++ class DD4hep::Simulation::Geant4PrimaryEvent+;
 
-//#pragma link C++ class ;
 #endif
 
 using namespace std;

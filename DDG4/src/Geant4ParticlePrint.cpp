@@ -12,6 +12,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4ParticlePrint.h"
 #include "DDG4/Geant4Data.h"
+#include <cstring>
 
 using namespace std;
 using namespace DD4hep;

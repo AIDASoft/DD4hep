@@ -47,7 +47,7 @@ set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 #-------------------------------------------------------------
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
-   include
+  include
   ${DD4hep_INCLUDE_DIRS}
   ${ROOT_INCLUDE_DIR}
   )

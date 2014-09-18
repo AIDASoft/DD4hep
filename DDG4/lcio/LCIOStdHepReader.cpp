@@ -4,9 +4,13 @@
 //--------------------------------------------------------------------
 //
 //====================================================================
-
+#ifndef DD4HEP_DDG4_LCIOSTDHEPREADER_H
+#define DD4HEP_DDG4_LCIOSTDHEPREADER_H
 // Framework include files
 #include "LCIOEventReader.h"
+
+// Forward declarations
+namespace UTIL { class LCStdHepRdr; }
 
 /*
  *   DD4hep namespace declaration
@@ -39,7 +43,7 @@ namespace DD4hep   {
     };
   }     /* End namespace lcio   */
 }       /* End namespace DD4hep */
-
+#endif  /* DD4HEP_DDG4_LCIOSTDHEPREADER_H */
 
 #include "lcio.h"
 #include "EVENT/LCIO.h"

@@ -154,8 +154,8 @@ def run():
   part.SaveProcesses = ['Decay']
   part.OutputLevel = 4 # generator_output_level
   part.enableUI()
-  user = DDG4.Action(kernel,"Geant4UserParticleHandler/UserParticleHandler")
-  part.adopt(user)
+  #user = DDG4.Action(kernel,"Geant4UserParticleHandler/UserParticleHandler")
+  #part.adopt(user)
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")

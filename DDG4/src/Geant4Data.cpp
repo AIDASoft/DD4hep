@@ -11,6 +11,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4StepHandler.h"
 
 // Geant4 include files
 #include "G4Step.hh"
@@ -60,11 +61,14 @@ Geant4HitData::~Geant4HitData() {
 
 /// Extract the MC contribution for a given hit from the step information
 Geant4HitData::Contribution Geant4HitData::extractContribution(G4Step* step) {
+  Geant4StepHandler h(step);
   G4Track* trk = step->GetTrack();
-  double energy_deposit =
-      (trk->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) ?
-          trk->GetTotalEnergy() : step->GetTotalEnergyDeposit();
-  Contribution contrib(trk->GetTrackID(), trk->GetDefinition()->GetPDGEncoding(), energy_deposit, trk->GetGlobalTime());
+  double deposit =
+    (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
+  const G4ThreeVector& pre  = h.prePosG4();
+  const G4ThreeVector& post = h.postPosG4();
+  float pos[] = { (pre.x()+post.x())/2.0, (pre.y()+post.y())/2.0, (pre.z()+post.z())/2.0 };
+  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),pos);
   return contrib;
 }
 

@@ -128,16 +128,16 @@ namespace DD4hep {
     };
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ///               Geant4SensitiveAction<SimpleTracker>
+    ///               Geant4SensitiveAction<Geant4Tracker>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     /// Define collections created by this sensitivie action object
-    template <> void Geant4SensitiveAction<SimpleTracker>::defineCollections() {
-      m_collectionID = defineCollection<SimpleTracker::Hit>(m_sensitive.readout().name());
+    template <> void Geant4SensitiveAction<Geant4Tracker>::defineCollections() {
+      m_collectionID = defineCollection<Geant4Tracker::Hit>(m_sensitive.readout().name());
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<SimpleTracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
-      typedef SimpleTracker::Hit Hit;
+    template <> bool Geant4SensitiveAction<Geant4Tracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
+      typedef Geant4Tracker::Hit Hit;
       StepHandler h(step);
       Position prePos    = h.prePos();
       Position postPos   = h.postPos();
@@ -151,7 +151,7 @@ namespace DD4hep {
 	double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
 	direction *= new_len/hit_len;
       }
-      print("SimpleTracker","%s> Add hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f",
+      print("Geant4Tracker","%s> Add hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f",
 	    c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z());
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
       if ( hit )  {
@@ -167,67 +167,67 @@ namespace DD4hep {
 	  hit->cellID        = volumeID( step ) ;
 	  throw runtime_error("Invalid CELL ID for hit!");
 	}
-	print("SimpleTracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+	print("Geant4Tracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
 	      c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
 	      (void*)hit->cellID);
 	Geant4TouchableHandler handler(step);
-	print("SimpleTracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
+	print("Geant4Tracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
 	return true;
       }
       throw runtime_error("new() failed: Cannot allocate hit object");
     }
-    typedef Geant4SensitiveAction<SimpleTracker> Geant4SimpleTrackerAction;
+    typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4SensitiveAction<Calorimeter>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     /// Define collections created by this sensitivie action object
-    template <> void Geant4SensitiveAction<SimpleCalorimeter>::defineCollections() {
-      m_collectionID = defineCollection<SimpleCalorimeter::Hit>(m_sensitive.readout().name());
+    template <> void Geant4SensitiveAction<Geant4Calorimeter>::defineCollections() {
+      m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
     }
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<SimpleCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
-      typedef SimpleCalorimeter::Hit Hit;
-      StepHandler     h(step);
-      Position        pos     = 0.5 * (h.prePos() + h.postPos());
+    template <> bool Geant4SensitiveAction<Geant4Calorimeter>::process(G4Step* step,G4TouchableHistory*) {
+      typedef Geant4Calorimeter::Hit Hit;
+      StepHandler h(step);
       HitContribution contrib = Hit::extractContribution(step);
       HitCollection*  coll    = collection(m_collectionID);
       long long int   cell    = cellID(step);
+
       Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
-      if ( step->GetTotalEnergyDeposit() < 1e-5 ) return true;
-      if ( !hit ) {
+      if ( h.totalEnergy() < numeric_limits<double>::epsilon() )  {
+	return true;
+      }
+      else if ( !hit ) {
 	Geant4TouchableHandler handler(step);
-	hit = new Hit(h.prePos());
+	DDSegmentation::Vector3D pos = m_segmentation.position(cell);
+	Position global = h.localToGlobal(pos);
+	hit = new Hit(global);
 	hit->cellID = cell;
 	coll->add(hit);
-	print("SimpleCalorimeter","%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
-	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),handler.path().c_str());
-	if ( 0 == hit->cellID )  {
+	printM2("Geant4Calorimeter","%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
+		c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
+	if ( 0 == hit->cellID )  { // for debugging only!
 	  hit->cellID = cellID(step);
 	  throw runtime_error("Invalid CELL ID for hit!");
 	}
       }
-      else  {
-	print("SimpleCalorimeter","%s> UPDATE hit with deposit:%7.3f MeV  Pos:%8.2f %8.2f %8.2f id:%016llX cell:%016llX",
-	      c_name(),contrib.deposit,pos.X(),pos.Y(),pos.Z(),cell,hit->cellID);
-      }
       hit->truth.push_back(contrib);
       hit->energyDeposit += contrib.deposit;
-      mark(h.track);
+      mark(step);
       return true;
     }
-    typedef Geant4SensitiveAction<SimpleCalorimeter> Geant4SimpleCalorimeterAction;
+    typedef Geant4SensitiveAction<Geant4Calorimeter> Geant4CalorimeterAction;
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4SensitiveAction<OpticalCalorimeter>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    struct SimpleOpticalCalorimeter {};
+    struct Geant4OpticalCalorimeter {};
     /// Define collections created by this sensitivie action object
-    template <> void Geant4SensitiveAction<SimpleOpticalCalorimeter>::defineCollections() {
-      m_collectionID = defineCollection<SimpleCalorimeter::Hit>(m_sensitive.readout().name());
+    template <> void Geant4SensitiveAction<Geant4OpticalCalorimeter>::defineCollections() {
+      m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
     }
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> bool Geant4SensitiveAction<SimpleOpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+    template <> bool Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
       G4Track * track =  step->GetTrack();
       // check that particle is optical photon:
       if( track->GetDefinition() != G4OpticalPhoton::OpticalPhotonDefinition() )  {
@@ -238,7 +238,7 @@ namespace DD4hep {
 	return false;
       }
       else {
-	typedef SimpleCalorimeter::Hit Hit;
+	typedef Geant4Calorimeter::Hit Hit;
 	StepHandler h(step);
 	HitCollection*  coll    = collection(m_collectionID);
 	HitContribution contrib = Hit::extractContribution(step);
@@ -260,7 +260,7 @@ namespace DD4hep {
       	return true;
       }
     }
-    typedef Geant4SensitiveAction<SimpleOpticalCalorimeter>  Geant4SimpleOpticalCalorimeterAction;
+    typedef Geant4SensitiveAction<Geant4OpticalCalorimeter>  Geant4OpticalCalorimeterAction;
 
 #if 0
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -358,12 +358,21 @@ namespace DD4hep {
     typedef Geant4SensitiveAction<TrackerCombine>  Geant4TrackerCombine;
 #endif
 
+
+    typedef Geant4TrackerAction Geant4SimpleTrackerAction;
+    typedef Geant4CalorimeterAction Geant4SimpleCalorimeterAction;
+    typedef Geant4OpticalCalorimeterAction Geant4SimpleOpticalCalorimeterAction;
   }
 }
 
 using namespace DD4hep::Simulation;
 
 #include "DDG4/Factories.h"
+DECLARE_GEANT4SENSITIVE(Geant4TrackerAction)
+DECLARE_GEANT4SENSITIVE(Geant4CalorimeterAction)
+DECLARE_GEANT4SENSITIVE(Geant4OpticalCalorimeterAction)
+
+// Need these factories for backwards compatibility
 DECLARE_GEANT4SENSITIVE(Geant4SimpleTrackerAction)
 DECLARE_GEANT4SENSITIVE(Geant4SimpleCalorimeterAction)
 DECLARE_GEANT4SENSITIVE(Geant4SimpleOpticalCalorimeterAction)
