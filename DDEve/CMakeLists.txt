@@ -11,7 +11,7 @@ include( DD4hep )
 
 find_package( ROOT REQUIRED )
 #---Includedirs ------------------------------------------------------------------
-if(DD4HEP_WITH_GEANT4)
+if(DD4HEP_USE_GEANT4)
   include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
     ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
     ${CMAKE_SOURCE_DIR}/DDG4/include	
@@ -35,7 +35,7 @@ if(DD4HEP_USE_LCIO)
   list(APPEND sources lcio/LCIOEventHandler.cpp)
 endif()
 #---------------------------  Support for the DDG4 data I/O ------------------------
-if(DD4HEP_WITH_GEANT4)
+if(DD4HEP_USE_GEANT4)
   root_generate_dictionary( G__DDG4IO ${CMAKE_CURRENT_SOURCE_DIR}/DDEve/DDG4IO.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h )
   list(APPEND sources G__DDG4IO.cxx)
 endif()
@@ -48,6 +48,7 @@ target_link_libraries(DD4hepEve DD4hepCore ${ROOT_EVE_LIBRARIES} -lFTGL ${LCIO_L
 SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 
 SET_TARGET_PROPERTIES( DD4hepEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
 #---DD4hepEve rootmap --------------------------------------------------------------
 dd4hep_generate_rootmap(DD4hepEve)
 #---Package installation procedure(s) ----------------------------------------------

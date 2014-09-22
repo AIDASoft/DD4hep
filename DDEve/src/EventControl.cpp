@@ -113,7 +113,7 @@ void EventControl::OnNewEvent(EventHandler* handler)   {
     const Collections& colls = (*i).second;
     Line line = m_lines[cnt++];
     string cl = (*i).first;
-    size_t idx = cl.find("Simple");
+    size_t idx = cl.rfind("Geant4");
     if ( idx != string::npos ) { 
       cl = cl.substr(idx);
       cl = cl.substr(0,cl.find('*'));

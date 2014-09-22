@@ -100,9 +100,13 @@ EventHandler::CollectionType DDG4EventHandler::collectionType(const std::string&
   Branches::const_iterator i = m_branches.find(collection);
   if ( i != m_branches.end() )   {
     const char* cl = (*i).second.first->GetClassName();
-    if ( ::strstr(cl,"Simulation::SimpleCalorimeter::Hit") ) return CALO_HIT_COLLECTION;
-    else if ( ::strstr(cl,"Simulation::SimpleTracker::Hit") ) return TRACKER_HIT_COLLECTION;
-    else if ( ::strstr(cl,"Simulation::Particle") ) return PARTICLE_COLLECTION;
+    if ( ::strstr(cl,"Simulation::Geant4Calorimeter::Hit") )  return CALO_HIT_COLLECTION;
+    else if ( ::strstr(cl,"Simulation::Geant4Tracker::Hit") ) return TRACKER_HIT_COLLECTION;
+    else if ( ::strstr(cl,"Simulation::Geant4Particle") )     return PARTICLE_COLLECTION;
+    // These are OLD types. Eventually remove these lines.....
+    else if ( ::strstr(cl,"Simulation::SimpleCalorimeter::Hit") ) return CALO_HIT_COLLECTION;
+    else if ( ::strstr(cl,"Simulation::SimpleTracker::Hit") )     return TRACKER_HIT_COLLECTION;
+    else if ( ::strstr(cl,"Simulation::Particle") )               return PARTICLE_COLLECTION;
   }
   return NO_COLLECTION;
 }
