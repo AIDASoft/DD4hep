@@ -426,7 +426,7 @@ namespace DD4hep  {
   template <> void Converter<XMLSetup>::operator()(xml_h seq)  const  {
     xml_elt_t compact(seq);
     // First execute the basic setup from the plugins module
-    ROOT::Reflex::PluginService::Create<TNamed*>("geant4_xml_setup",&lcdd,&seq);
+    ROOT::Reflex::PluginService::Create<NamedObject*>("geant4_xml_setup",&lcdd,&seq);
     xml_coll_t(compact,_Unicode(kernel)).for_each(Converter<Kernel>(lcdd,param));
     // Now deal with the new stuff.....
     xml_coll_t(compact,_Unicode(actions) ).for_each(_Unicode(action),Converter<Action>(lcdd,param));
