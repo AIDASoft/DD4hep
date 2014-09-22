@@ -63,7 +63,8 @@ Primaries getRelevant(set<int>& visited,
     const Geant4Particle::Particles& dau = p->daughters;
     int first_daughter = *(dau.begin());
     Geant4ParticleHandle dp = pm[first_daughter];
-    double me = p->mass / p.energy();
+    double en = p.energy();
+    double me = en > std::numeric_limits<double>::epsilon() ? p->mass / en : 0.0;
     //  fix by S.Morozov for real != 0
     double proper_time = fabs(dp->time-p->time) * me;
     double proper_time_Precision =  pow(10.,-DBL_DIG)*me*fmax(fabs(p->time),fabs(dp->time));

@@ -62,7 +62,6 @@ Geant4HitData::~Geant4HitData() {
 /// Extract the MC contribution for a given hit from the step information
 Geant4HitData::Contribution Geant4HitData::extractContribution(G4Step* step) {
   Geant4StepHandler h(step);
-  G4Track* trk = step->GetTrack();
   double deposit =
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre  = h.prePosG4();

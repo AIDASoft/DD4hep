@@ -14,6 +14,8 @@
 #include "DDG4/Geant4Data.h"
 #include <cstring>
 
+#include "G4Event.hh"
+
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
@@ -37,10 +39,11 @@ Geant4ParticlePrint::~Geant4ParticlePrint()  {
 }
 
 /// Print particle table
-void Geant4ParticlePrint::makePrintout() const  {
+void Geant4ParticlePrint::makePrintout(int event_id) const  {
   Geant4ParticleMap* parts = context()->event().extension<Geant4ParticleMap>();
   if ( parts )   {
     const ParticleMap& particles = parts->particles();
+    print("+++ ******** MC Particle Printout for event ID:%d ********",event_id);
     if ( (m_outputType&2) != 0 ) printParticleTree(particles);  // Tree printout....
     if ( (m_outputType&1) != 0 ) printParticles(particles);     // Table printout....
     return;
@@ -49,18 +52,18 @@ void Geant4ParticlePrint::makePrintout() const  {
 }
 
 /// Generation action callback
-void Geant4ParticlePrint::operator()(G4Event* )  {
-  if ( m_printGeneration ) makePrintout();
+void Geant4ParticlePrint::operator()(G4Event* e)  {
+  if ( m_printGeneration ) makePrintout(e->GetEventID());
 }
 
 /// Pre-event action callback
-void Geant4ParticlePrint::begin(const G4Event* )  {
-  if ( m_printBegin ) makePrintout();
+void Geant4ParticlePrint::begin(const G4Event* e)  {
+  if ( m_printBegin ) makePrintout(e->GetEventID());
 }
 
 /// Post-event action callback
-void Geant4ParticlePrint::end(const G4Event* )  {
-  if ( m_printEnd ) makePrintout();
+void Geant4ParticlePrint::end(const G4Event* e)  {
+  if ( m_printEnd ) makePrintout(e->GetEventID());
 }
 
 void Geant4ParticlePrint::printParticle(const std::string& prefix, Geant4ParticleHandle p) const   {

@@ -427,12 +427,14 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     ParticleMap::const_iterator ipar;
     while( (ipar=m_particleMap.find(g4_equiv)) == m_particleMap.end() )  {
       TrackEquivalents::const_iterator iequiv = m_equivalentTracks.find(g4_equiv);
-      if ( iequiv == iend )
+      if ( iequiv == iend )  {
 	break;  // ERROR !! Will be handled by printout below because ipar==end()
+      }
       g4_equiv = (*iequiv).second;
     }
-    if ( ipar != m_particleMap.end() )
+    if ( ipar != m_particleMap.end() )   {
       equivalents[(*i).first] = (*ipar).second->id;  // requires (1) !
+    }
     else
       error("+++ No Equivalent particle for track:%d last known is:%d",(*i).second,g4_equiv);
   }
