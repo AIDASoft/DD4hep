@@ -76,20 +76,36 @@ namespace DD4hep {
 	  const G4ParticleDefinition* def = p->definition;
 	  MYParticleImpl* q = (MYParticleImpl*)new lcio::MCParticleImpl();
 	  q->setPDG(p->pdgID);
-	  q->setMomentum(&p->psx);
-	  q->setVertex(&p->vsx);
-	  q->setEndpoint(&p->vex);
-	  q->setTime(p->time);
-	  q->setMass(p->mass);
+
+	  float ps_fa[3] = { p->psx/GeV, p->psy/GeV, p->psz/GeV } ;  
+	  q->setMomentum( ps_fa );
+
+	  double vs_fa[3] = { p->vsx/mm, p->vsy/mm, p->vsz/mm } ;  
+	  q->setVertex( vs_fa );
+
+	  double ve_fa[3] = { p->vex/mm, p->vey/mm, p->vez/mm } ;  
+	  q->setEndpoint( ve_fa );
+
+	  //q->setMomentum(&p->psx);
+	  //q->setVertex(&p->vsx);
+	  //q->setEndpoint(&p->vex);
+
+
+	  q->setTime(p->time/ns);
+	  q->setMass(p->mass/GeV);
+
+
 	  q->setCharge(def ? def->GetPDGCharge()/3.0 : 0); // Charge(e+) = 1 !
 
 	  // Set generator status
-	  if ( mask.isSet(G4PARTICLE_GEN_EMPTY) ) q->setGeneratorStatus(0);
-	  else if ( mask.isSet(G4PARTICLE_GEN_STABLE) ) q->setGeneratorStatus(1);
+	  //if ( mask.isSet(G4PARTICLE_GEN_EMPTY) ) 
+	  q->setGeneratorStatus(0);
+	  if ( mask.isSet(G4PARTICLE_GEN_STABLE) ) q->setGeneratorStatus(1);
 	  else if ( mask.isSet(G4PARTICLE_GEN_DECAYED) ) q->setGeneratorStatus(2);
 	  else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) q->setGeneratorStatus(3);
 
 	  // Set simulation status
+	  q->setSimulatorStatus( 0 ) ; 
 	  q->setCreatedInSimulation(         mask.isSet(G4PARTICLE_SIM_CREATED) );
 	  q->setBackscatter(                 mask.isSet(G4PARTICLE_SIM_BACKSCATTER) );
 	  q->setVertexIsNotEndpointOfParent( mask.isSet(G4PARTICLE_SIM_PARENT_RADIATED) );
@@ -98,6 +114,10 @@ namespace DD4hep {
 	  q->setHasLeftDetector(             mask.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) );
 	  q->setStopped(                     mask.isSet(G4PARTICLE_SIM_STOPPED) );
 	  q->setOverlay(                     false );
+
+	  //fg: if simstatus !=0 we have to set the generator status to 0:
+	  if( q->getSimulatorStatus() != 0 ) 
+	    q->setGeneratorStatus( 0 )  ;
 
 	  q->setSpin(p->spin);
 	  q->setColorFlow(p->colorFlow);

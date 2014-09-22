@@ -163,9 +163,11 @@ void LCIOInputAction::operator()(G4Event* event)   {
 
     int genStatus = mcp->getGeneratorStatus();
     if ( genStatus == 0 ) status.set(G4PARTICLE_GEN_EMPTY);
-    if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
-    if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
-    if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+    else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
+    else if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
+    else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+    else { std::cout << " #### WARNING - LCIOInputAction : unknown generator status : " << genStatus << " -> ignored ! " << std::endl ; } 
+
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
     if ( mcp->isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);
     if ( mcp->vertexIsNotEndpointOfParent() ) status.set(G4PARTICLE_SIM_PARENT_RADIATED);
