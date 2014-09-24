@@ -69,8 +69,6 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const strin
   declareProperty("KeepAllParticles",    m_keepAll = false);
   declareProperty("SaveProcesses",       m_processNames);
   declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*MeV);
-  declareProperty("Z_trackers",m_zTracker=1e100);
-  declareProperty("R_trackers",m_rTracker=1e100);
   InstanceCount::increment(this);
 }
 
@@ -91,7 +89,7 @@ Geant4ParticleHandler& Geant4ParticleHandler::operator=(const Geant4ParticleHand
 }
 
 /// Adopt the user particle handler
-bool Geant4ParticleHandler::adopt(Geant4UserParticleHandler* action)    {
+bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
   if ( action )   {
     if ( !m_userHandler )  {
       Geant4UserParticleHandler* h = dynamic_cast<Geant4UserParticleHandler*>(action);
@@ -289,11 +287,19 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   int g4_id = h.id();
   int track_reason = m_currTrack.reason;
   PropertyMask mask(m_currTrack.reason);
+  // Update vertex end point and final momentum
+  G4ThreeVector m = track->GetMomentum();
+  const G4ThreeVector& p = track->GetPosition();
+  ph->pex = m.x();
+  ph->pey = m.y();
+  ph->pez = m.z();
+  ph->vex = p.x();
+  ph->vey = p.y();
+  ph->vez = p.z();
 
-  double r_prod = sqrt(ph->vsx*ph->vsx + ph->vsy*ph->vsy);
-  double z_prod = fabs(ph->vsz);
-  if ( r_prod > m_rTracker || z_prod > m_zTracker )  {
-    m_currTrack.reason = 0;
+  /// Final update of the particle using the user handler
+  if ( m_userHandler )  {
+    m_userHandler->end(track, m_currTrack);
   }
 
   // These are candate tracks with a probability to be stored due to their properties:
@@ -304,20 +310,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   // - to be kept due to creator process 
   //
   if ( !mask.isNull() )   {
-    // Update vertex end point and final momentum
-    G4ThreeVector m = track->GetMomentum();
-    const G4ThreeVector& p = track->GetPosition();
-    ph->pex = m.x();
-    ph->pey = m.y();
-    ph->pez = m.z();
-    ph->vex = p.x();
-    ph->vey = p.y();
-    ph->vez = p.z();
     m_equivalentTracks[g4_id] = g4_id;
-    /// Final update of the particle using the user handler
-    if ( m_userHandler )  {
-      m_userHandler->begin(track, m_currTrack);
-    }
     ParticleMap::iterator ip = m_particleMap.find(g4_id);
     if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
       ph.dump2(outputLevel()-1,name(),"Add Primary",h.id(),ip!=m_particleMap.end());
@@ -346,7 +339,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     if ( ip != m_particleMap.end() )
       (*ip).second->reason |= track_reason;
     else
-      ph.dump3(outputLevel()+3,name(),"No real parent present");
+      ph.dump3(outputLevel()+3,name(),"FATAL: No real particle parent present");
   }
 }
 
@@ -482,6 +475,15 @@ int Geant4ParticleHandler::recombineParents()  {
     int g4_id = (*i).first;
     Particle* p = (*i).second;
     set<int>& daughters = p->daughters;
+
+    // Allow the user to force the particle handling either by
+    // or the reason mask with G4PARTICLE_KEEP_USER or
+    // to set the reason mask to NULL in order to drop it.
+    // Note: This may override all other decisions!
+    if ( m_userHandler )  {
+      m_userHandler->keepParticle(*p);
+    }
+
     if ( daughters.size() == 0 )   {
       PropertyMask mask(p->reason);
       int  id             =  p->id;
@@ -495,11 +497,19 @@ int Geant4ParticleHandler::recombineParents()  {
       bool remove_me      = false;
 
       if ( id == break_trackID )   {  // Used for debugging to set break point
-	remove_me      = false;
+	remove_me = false;
       }
 
-      /// Primary particles MUST be kept!
-      if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
+      if ( mask.isSet(G4PARTICLE_KEEP_USER) )  {
+	/// If user decides it must be kept, it MUST be kept!
+	mask.set(G4PARTICLE_KEEP_USER);
+	continue;
+      }
+      else if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
+	/// Primary particles MUST be kept!
+	continue;
+      }
+      else if ( mask.isSet(G4PARTICLE_KEEP_ALWAYS) )   {
 	continue;
       }
       else if ( keep_parent )  {

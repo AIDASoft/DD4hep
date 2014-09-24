@@ -225,16 +225,16 @@ class Simple:
     self.kernel.generatorAction().add(gun)
     return gun
 
-  def setupUI(typ='csh',vis=False,ui=True):
+  def setupUI(self,typ='csh',vis=False,ui=True):
     # Configure UI
-    ui = Action(self.kernel,"Geant4UIManager/UI")
-    ui.HaveVIS = vis
-    ui.HaveUI = ui
-    ui.SessionType = typ
-    self.kernel.registerGlobalAction(ui)
+    ui_action = Action(self.kernel,"Geant4UIManager/UI")
+    ui_action.HaveVIS = vis
+    ui_action.HaveUI = ui
+    ui_action.SessionType = typ
+    self.kernel.registerGlobalAction(ui_action)
 
   def setupCshUI(self,typ='csh',vis=False,ui=True):
-    self.setupUI('csh',vis,ui)
+    self.setupUI(typ='csh',vis=vis,ui=ui)
 
   def setupROOTOutput(self,name,output):
     evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)

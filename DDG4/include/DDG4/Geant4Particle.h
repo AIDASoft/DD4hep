@@ -54,7 +54,8 @@ namespace DD4hep {
       G4PARTICLE_KEEP_PARENT = 1<<6,
       G4PARTICLE_CREATED_CALORIMETER_HIT = 1<<7,
       G4PARTICLE_CREATED_TRACKER_HIT = 1<<8,
-      G4PARTICLE_KEEP_ALWAYS = 1<<9,
+      G4PARTICLE_KEEP_USER = 1<<9,
+      G4PARTICLE_KEEP_ALWAYS = 1<<10,
 
       // Generator status for a given particles: bit 0...3 come from LCIO, rest is internal
       G4PARTICLE_GEN_EMPTY           = 1<<0,  // Empty line

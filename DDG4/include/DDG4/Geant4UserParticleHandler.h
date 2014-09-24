@@ -39,7 +39,7 @@ namespace DD4hep {
      *  Clients may inherit from this class and override the approriate methods
      *  to add additional information in form of a DataExtension object to the Particle.
      *
-     *  The dfault implementation is always empty!
+     *  The default implementation is always empty!
      *
      * @author  M.Frank
      * @version 1.0
@@ -58,13 +58,51 @@ namespace DD4hep {
       virtual void begin(const G4Event* event);
       /// Post-event action callback
       virtual void end(const G4Event* event);
+
       /// User stepping callback
+      /** Allow the user to intercept particle handling in the pre track action.
+       *  The default implementation is empty.
+       *
+       *  Note: The particle passed is a temporary and will be copied if kept.
+       */
       virtual void step(const G4Step* step, G4SteppingManager* mgr, Particle& particle);
-      /// Pre-track action callback
+
+      /// Pre-track action callback.
+      /** Allow the user to intercept particle handling in the pre track action.
+       *  e.g. attach relevant user information.
+       *  The default implementation is empty.
+       *
+       *  Note: The particle passed is a temporary and will be copied if kept.
+       */
       virtual void begin(const G4Track* track, Particle& particle);
+
       /// Post-track action callback
+      /** Allow the user to force the particle handling in the post track action
+       *  set the reason mask to NULL in order to drop the particle.
+       *  The parent's reasoning mask will be or'ed with the particle's mask
+       *  to preserve the MC truth for the hit creation.
+       *  The default implementation is empty.
+       *
+       *  Note: The particle passed is a temporary and will be copied if kept.
+       */
       virtual void end(const G4Track* track, Particle& particle);
+
+      /// Callback to be answered if the particle MUST be kept during recombination step
+      /** Allow the user to force the particle handling either by
+       *  or the reason mask with G4PARTICLE_KEEP_USER or
+       *  to set the reason mask to NULL in order to drop it.
+       *  The default implementation is empty.
+       *
+       *  Note: This may override all other decisions!
+       *        Default implementation is empty.
+       */
+      virtual void keepParticle(Particle& particle);
+
       /// Callback when parent should be combined
+      /** Called before a particle is removed from the final record.
+       *  Relevant particle properties of the parent may be updated.
+       *  The default implementation is empty.
+       */
       virtual void combine(Particle& to_be_deleted, Particle& remaining_parent);
     };
   }    // End namespace Simulation

@@ -75,11 +75,8 @@ namespace DD4hep {
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut;
 
-      double m_zTracker, m_rTracker;
-
-
       /// Global particle identifier. Obtained at the begin of the event.
-      int m_globalParticleID, m_initialParticleID;
+      int m_globalParticleID;
       /// User action pointer
       Geant4UserParticleHandler* m_userHandler;
       /// Primary map
@@ -113,7 +110,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4ParticleHandler();
       /// Adopt the user particle handler
-      bool adopt(Geant4UserParticleHandler* action);
+      bool adopt(Geant4Action* action);
       /// Event generation action callback
       virtual void operator()(G4Event* event);
       /// User stepping callback

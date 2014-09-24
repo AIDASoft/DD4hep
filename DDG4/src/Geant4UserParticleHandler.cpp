@@ -54,3 +54,7 @@ void Geant4UserParticleHandler::end(const G4Track* /* track */, Particle& /* par
 /// Callback when parent should be combined
 void Geant4UserParticleHandler::combine(Particle& /* to_be_deleted */, Particle& /* remaining_parent */)  {
 }
+
+/// Callback to be answered if the particle MUST be kept during recombination step
+void Geant4UserParticleHandler::keepParticle(Particle& /* particle */)   {
+}

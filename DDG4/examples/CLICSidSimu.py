@@ -109,6 +109,7 @@ def run():
   gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
   gen.OutputLevel = 4 # generator_output_level
+  gen.MomentumScale = 0.1
   gen.Mask = 1
   kernel.generatorAction().adopt(gen)
   # Install vertex smearing for this interaction
@@ -153,12 +154,12 @@ def run():
   #part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
   part.MinimalKineticEnergy = 100*MeV
-  part.Z_trackers = 165.70*cm  # EcalEndcap_zmin
-  part.R_trackers = 126.50*cm  # EcalBarrel_rmin
   part.OutputLevel = 5 # generator_output_level
   part.enableUI()
-  #user = DDG4.Action(kernel,"Geant4UserParticleHandler/UserParticleHandler")
-  #part.adopt(user)
+  user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
+  user.TrackingVolume_Zmax = 165.70*cm  # EcalEndcap_zmin
+  user.TrackingVolume_Rmax = 126.50*cm  # EcalBarrel_rmin
+  part.adopt(user)
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
