@@ -10,6 +10,7 @@
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4HitCollection.h"
+#include "DDG4/Geant4Data.h"
 #include "G4Allocator.hh"
 
 using namespace DD4hep;

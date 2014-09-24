@@ -14,6 +14,9 @@
 #include "DDG4/Geant4GeneratorAction.h"
 #include "DDG4/Geant4Particle.h"
 
+// Forward declarations
+class G4Event;
+
 /*
  *   DD4hep namespace declaration
  */
@@ -44,16 +47,18 @@ namespace DD4hep {
       bool m_printEnd;
       /// Property: Flag to indicate output type as part of the generator action
       bool m_printGeneration;
+      /// Property: Flag to indicate output of hit data in tree
+      bool m_printHits;
 
-      void printParticle(const std::string& prefix, Geant4ParticleHandle p) const;
+      void printParticle(const std::string& prefix, const G4Event* e, Geant4ParticleHandle p) const;
       /// Print record of kept particles
-      void printParticles(const ParticleMap& particles) const;
+      void printParticles(const G4Event* e, const ParticleMap& particles) const;
       /// Print tree of kept particles
-      void printParticleTree(const ParticleMap& particles, int level, Geant4ParticleHandle p)  const;
+      void printParticleTree(const G4Event* e, const ParticleMap& particles, int level, Geant4ParticleHandle p)  const;
       /// Print tree of kept particles
-      void printParticleTree(const ParticleMap& particles)  const;
+      void printParticleTree(const G4Event* e, const ParticleMap& particles)  const;
       /// Print particle table
-      void makePrintout(int event_id)  const;
+      void makePrintout(const G4Event* e)  const;
 
 
     public:

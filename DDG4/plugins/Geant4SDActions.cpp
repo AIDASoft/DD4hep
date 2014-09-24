@@ -7,91 +7,13 @@
 //
 //====================================================================
 // Framework include files
-#include "DDG4/Geant4SensDetAction.h"
+#include "DDG4/Geant4SensDetAction.inl"
 #include "DDG4/Geant4Data.h"
 #include "DD4hep/Printout.h"
 
 using namespace std;
 
-/*
- *   DD4hep namespace declaration
- */
-namespace DD4hep {
-
-  /*
-   *   Simulation namespace declaration
-   */
-  namespace Simulation   {
-
-    template <typename T> class Geant4SensitiveAction : public Geant4Sensitive  {
-    protected:
-      /// Collection identifiers
-      size_t m_collectionID;
-    public:
-      typedef SimpleHit::Contribution HitContribution;
-      /// Standard , initializing constructor
-      Geant4SensitiveAction(Geant4Context* context, const string& name, DetElement det, LCDD& lcdd);
-      /// Default destructor
-      virtual ~Geant4SensitiveAction();
-      /// Define collections created by this sensitivie action object
-      virtual void defineCollections() {}
-      /// G4VSensitiveDetector interface: Method invoked at the begining of each event. 
-      virtual void begin(G4HCofThisEvent* hce);
-      /// G4VSensitiveDetector interface: Method invoked at the end of each event. 
-      virtual void end(G4HCofThisEvent* hce);
-      /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
-      virtual bool process(G4Step* step,G4TouchableHistory* history);
-      /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
-      virtual void clear(G4HCofThisEvent* hce);
-    };
-  }
-}
-#include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4TouchableHandler.h"
-
-namespace DD4hep {
-  namespace Simulation   {
-
-    /// Standard , initializing constructor
-    template <typename T> 
-    Geant4SensitiveAction<T>::Geant4SensitiveAction(Geant4Context* context, 
-						    const string& name, 
-						    DetElement det, 
-						    LCDD& lcdd)
-      : Geant4Sensitive(context,name,det,lcdd), m_collectionID(0)
-    {
-      defineCollections();
-      InstanceCount::increment(this);
-    }
-
-    /// Default destructor
-    template <typename T> Geant4SensitiveAction<T>::~Geant4SensitiveAction()  {
-      InstanceCount::decrement(this);
-    }
-
-    /// G4VSensitiveDetector interface: Method invoked at the begining of each event. 
-    template <typename T> void Geant4SensitiveAction<T>::begin(G4HCofThisEvent* hce)  {
-      Geant4Sensitive::begin(hce);
-    }
-
-    /// G4VSensitiveDetector interface: Method invoked at the end of each event. 
-    template <typename T> void Geant4SensitiveAction<T>::end(G4HCofThisEvent* hce)  {
-      Geant4Sensitive::end(hce);
-    }
-
-    /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
-    template <typename T> bool Geant4SensitiveAction<T>::process(G4Step* step,G4TouchableHistory* history)  {
-      return Geant4Sensitive::process(step,history);
-    }
-
-    /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
-    template <typename T> void Geant4SensitiveAction<T>::clear(G4HCofThisEvent* hce)  {
-      Geant4Sensitive::clear(hce);
-    }
-
-  }
-}
-
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4VolumeManager.h"
 #include "DDG4/Geant4Mapping.h"
@@ -102,30 +24,7 @@ namespace DD4hep {
 namespace DD4hep {
   namespace Simulation   {
 
-    template<typename TYPE> struct PositionCompare : public Geant4HitCollection::Compare {
-      const Position& pos;
-      Geant4HitWrapper::HitManipulator* manip;
-      /// Constructor
-      PositionCompare(const Position& p) : pos(p), manip(Geant4HitWrapper::HitManipulator::instance<TYPE>())  {      }
-      /// Comparison function
-      virtual void* operator()(const Geant4HitWrapper& w) const {
-	TYPE* h = w;//(const TYPE*)manip->castHit<TYPE>(w);
-	return pos == h->position ? h : 0;
-      }
-    };
-    template<typename TYPE> struct CellIDCompare : public Geant4HitCollection::Compare {
-      long long int id;
-      Geant4HitWrapper::HitManipulator* manip;
-      /// Constructor
-      CellIDCompare(long long int i) : id(i), manip(Geant4HitWrapper::HitManipulator::instance<TYPE>())  {      }
-      /// Comparison function
-      virtual void* operator()(const Geant4HitWrapper& w) const {
-	TYPE* h = w;//(const TYPE*)manip->castHit<TYPE>(w);
-	if ( id == h->cellID )
-	  return h;
-	return 0;
-      }
-    };
+    typedef Geant4HitData::Contribution HitContribution;
 
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4SensitiveAction<Geant4Tracker>
@@ -243,7 +142,7 @@ namespace DD4hep {
 	HitCollection*  coll    = collection(m_collectionID);
 	HitContribution contrib = Hit::extractContribution(step);
 	Position        pos     = h.prePos();
-	Hit* hit = coll->find<Hit>(PositionCompare<Hit>(pos));
+	Hit* hit = coll->find<Hit>(PositionCompare<Hit,Position>(pos));
 	if ( !hit ) {
 	  hit = new Hit(pos);
 	  hit->cellID = volumeID(step);

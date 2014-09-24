@@ -288,6 +288,51 @@ namespace DD4hep {
       void getHitsUnchecked(std::vector<void*>& result);
     };
 
+
+    /** @class PositionCompare Geant4HitCollection.h DDG4/Geant4HitCollection.h
+     *
+     *  Class for hit matching using the hit position.
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    template<typename TYPE, typename POS> struct PositionCompare : public Geant4HitCollection::Compare {
+      const POS& pos;
+      /// Constructor
+      PositionCompare(const POS& p) : pos(p)  {      }
+      /// Comparison function
+      virtual void* operator()(const Geant4HitWrapper& w) const;
+    };
+
+    template <typename TYPE, typename POS> 
+      void* PositionCompare<TYPE,POS>::operator()(const Geant4HitWrapper& w) const {
+      TYPE* h = w;
+      return pos == h->position ? h : 0;
+    }
+
+    /** @class PositionCompare Geant4HitCollection.h DDG4/Geant4HitCollection.h
+     *
+     *  Class for hit matching using the hit's cell identifier.
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    template<typename TYPE> struct CellIDCompare : public Geant4HitCollection::Compare {
+      long long int id;
+      /// Constructor
+      CellIDCompare(long long int i) : id(i) {      }
+      /// Comparison function.
+      virtual void* operator()(const Geant4HitWrapper& w) const;
+    };
+
+    template <typename TYPE> 
+      void* CellIDCompare<TYPE>::operator()(const Geant4HitWrapper& w) const {
+      TYPE* h = w;
+      if ( id == h->cellID )
+	return h;
+      return 0;
+    }
+
   }    // End namespace Simulation
 }      // End namespace DD4hep
 

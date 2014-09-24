@@ -24,6 +24,7 @@ namespace DD4hep {
    *   Simulation namespace declaration
    */
   namespace Simulation {
+
     /** @class Geant4ParticleGun Geant4ParticleGun.h DDG4/Geant4ParticleGun.h
      *
      * Implementation wrapper of the Geant4 particle gun
@@ -45,6 +46,8 @@ namespace DD4hep {
       int m_mask;
       /// Property: Isotrope particles?
       bool m_isotrop;
+      /// Property: Standalone mode: includes interaction merging and primary generation
+      bool m_standalone;
 
       /// Pointer to geant4 particle definition
       G4ParticleDefinition* m_particle;

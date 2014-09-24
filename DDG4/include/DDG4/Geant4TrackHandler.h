@@ -137,6 +137,9 @@ namespace DD4hep {
       G4VPhysicalVolume* vol() const {
         return track->GetVolume();
       }
+      G4ThreeVector momentum() const  {
+	return track->GetMomentum();
+      }
       /// Next physical volume of the track
       G4VPhysicalVolume* nextVol() const {
         return track->GetNextVolume();

@@ -20,6 +20,7 @@
 
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
+typedef ReferenceBitMask<int> PropertyMask;
 
 /// Default destructor
 ParticleExtension::~ParticleExtension() {
@@ -274,6 +275,45 @@ void Geant4ParticleHandle::dump3(int level, const std::string& src, const char* 
 	   p->daughters.size(),
 	   p->parents.size(),
 	   text);
+}
+
+void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* tag) const  {
+  Geant4ParticleHandle p(*this);
+  char equiv[32];
+  PropertyMask mask(p->reason);
+  PropertyMask status(p->status);
+  std::string proc_name = p.processName();
+  std::string proc_type = p.processTypeName();
+  int parent_id = p->parents.empty() ? -1 : *(p->parents.begin());
+
+  equiv[0] = 0;
+  if ( p->parents.end() == p->parents.find(p->g4Parent) )  {
+    ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
+  }
+  printout((DD4hep::PrintLevel)level,src,
+	   "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c",
+	   tag,
+	   p->id,
+	   p.particleName().c_str(),
+	   parent_id,equiv,
+	   yes_no(mask.isSet(G4PARTICLE_PRIMARY)),
+	   yes_no(mask.isSet(G4PARTICLE_HAS_SECONDARIES)),
+	   int(p->daughters.size()),
+	   yes_no(mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD)),
+	   p.energy(),
+	   yes_no(mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT)),
+	   yes_no(mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT)),
+	   yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),
+	   mask.isSet(G4PARTICLE_KEEP_PARENT) ? "YES" : "",
+	   p.numParent(),
+	   proc_name.c_str(),
+	   p->process ? "/" : "",
+	   proc_type.c_str(),
+	   status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',
+	   status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
+	   status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
+	   status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
+	   );
 }
 
 /// Default destructor

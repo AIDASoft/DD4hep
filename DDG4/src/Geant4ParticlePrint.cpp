@@ -12,6 +12,7 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4ParticlePrint.h"
 #include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4HitCollection.h"
 #include <cstring>
 
 #include "G4Event.hh"
@@ -30,6 +31,7 @@ Geant4ParticlePrint::Geant4ParticlePrint(Geant4Context* context, const std::stri
   declareProperty("PrintBegin",m_printBegin=false);
   declareProperty("PrintEnd",  m_printEnd=true);
   declareProperty("PrintGen",  m_printGeneration=true);
+  declareProperty("PrintHits", m_printHits=false);
   InstanceCount::increment(this);
 }
 
@@ -39,13 +41,13 @@ Geant4ParticlePrint::~Geant4ParticlePrint()  {
 }
 
 /// Print particle table
-void Geant4ParticlePrint::makePrintout(int event_id) const  {
+void Geant4ParticlePrint::makePrintout(const G4Event* e) const  {
   Geant4ParticleMap* parts = context()->event().extension<Geant4ParticleMap>();
   if ( parts )   {
     const ParticleMap& particles = parts->particles();
-    print("+++ ******** MC Particle Printout for event ID:%d ********",event_id);
-    if ( (m_outputType&2) != 0 ) printParticleTree(particles);  // Tree printout....
-    if ( (m_outputType&1) != 0 ) printParticles(particles);     // Table printout....
+    print("+++ ******** MC Particle Printout for event ID:%d ********",e->GetEventID());
+    if ( (m_outputType&2) != 0 ) printParticleTree(e,particles);  // Tree printout....
+    if ( (m_outputType&1) != 0 ) printParticles(0,particles);     // Table printout....
     return;
   }
   except("No Geant4MonteCarloTruth object present in the event structure to access the particle information!", c_name());
@@ -53,20 +55,20 @@ void Geant4ParticlePrint::makePrintout(int event_id) const  {
 
 /// Generation action callback
 void Geant4ParticlePrint::operator()(G4Event* e)  {
-  if ( m_printGeneration ) makePrintout(e->GetEventID());
+  if ( m_printGeneration ) makePrintout(e);
 }
 
 /// Pre-event action callback
 void Geant4ParticlePrint::begin(const G4Event* e)  {
-  if ( m_printBegin ) makePrintout(e->GetEventID());
+  if ( m_printBegin ) makePrintout(e);
 }
 
 /// Post-event action callback
 void Geant4ParticlePrint::end(const G4Event* e)  {
-  if ( m_printEnd ) makePrintout(e->GetEventID());
+  if ( m_printEnd ) makePrintout(e);
 }
 
-void Geant4ParticlePrint::printParticle(const std::string& prefix, Geant4ParticleHandle p) const   {
+void Geant4ParticlePrint::printParticle(const std::string& prefix, const G4Event* e, Geant4ParticleHandle p) const   {
   char equiv[32];
   PropertyMask mask(p->reason);
   PropertyMask status(p->status);
@@ -101,10 +103,45 @@ void Geant4ParticlePrint::printParticle(const std::string& prefix, Geant4Particl
 	status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
 	status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
 	);
+  if ( e && m_printHits )  {
+    Geant4ParticleMap* truth = context()->event().extension<Geant4ParticleMap>();
+    G4HCofThisEvent* hc = e->GetHCofThisEvent();
+    for (int ihc=0, nhc=hc->GetNumberOfCollections(); ihc<nhc; ++ihc)   {
+      G4VHitsCollection* c = hc->GetHC(ihc);
+      Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(c);
+      size_t nhits = coll->GetSize();
+      for(size_t i=0; i<nhits; ++i)   {
+	Geant4HitData* h = coll->hit(i);
+	Geant4Tracker::Hit* trk_hit = dynamic_cast<Geant4Tracker::Hit*>(h);
+	if ( 0 != trk_hit )   {
+	  Geant4HitData::Contribution& t = trk_hit->truth;
+	  int trackID = t.trackID;
+	  int trueID  = truth->particleID(trackID);
+	  if ( trueID == p->id )   {
+	    print("+++ %20s           %s[%d]  (%+.2e,%+.2e,%+.2e)[mm]","",c->GetName().c_str(),i,
+		  trk_hit->position.x(),trk_hit->position.y(),trk_hit->position.z());
+	  }
+	}
+	Geant4Calorimeter::Hit* cal_hit = dynamic_cast<Geant4Calorimeter::Hit*>(h);
+	if ( 0 != cal_hit )   {
+	  Geant4HitData::Contributions& contrib = cal_hit->truth;
+	  for(Geant4HitData::Contributions::iterator j=contrib.begin(); j!=contrib.end(); ++j)  {
+	    Geant4HitData::Contribution& t = *j;
+	    int trackID = t.trackID;
+	    int trueID  = truth->particleID(trackID);
+	    if ( trueID == p->id )   {
+	      print("+++ %20s           %s[%d]  (%+.2e,%+.2e,%+.2e)[mm]","",c->GetName().c_str(),i,
+		    cal_hit->position.x(),cal_hit->position.y(),cal_hit->position.z());
+	    }
+	  }
+	}
+      }
+    }
+  }
 }
 
 /// Print record of kept particles
-void Geant4ParticlePrint::printParticles(const ParticleMap& particles) const  {
+void Geant4ParticlePrint::printParticles(const G4Event* e, const ParticleMap& particles) const  {
   int num_energy = 0;
   int num_parent = 0;
   int num_process = 0;
@@ -119,7 +156,7 @@ void Geant4ParticlePrint::printParticles(const ParticleMap& particles) const  {
   for(ParticleMap::const_iterator i=particles.begin(); i!=particles.end(); ++i)  {
     Geant4ParticleHandle p = (*i).second;
     PropertyMask mask(p->reason);
-    printParticle("MC Particle Track",p);
+    printParticle("MC Particle Track",e, p);
     num_secondaries += int(p->daughters.size());
     if ( mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) ) ++num_energy;
     if ( mask.isSet(G4PARTICLE_PRIMARY) ) ++num_primary;
@@ -136,7 +173,7 @@ void Geant4ParticlePrint::printParticles(const ParticleMap& particles) const  {
 	num_calo_hits,num_tracker_hits,num_process,num_parent);
 }
 
-void Geant4ParticlePrint::printParticleTree(const ParticleMap& particles, int level, Geant4ParticleHandle p)  const  {
+void Geant4ParticlePrint::printParticleTree(const G4Event* e, const ParticleMap& particles, int level, Geant4ParticleHandle p)  const  {
   char txt[32];
   size_t len = sizeof(txt)-1;
   // Ensure we do not overwrite the array
@@ -149,18 +186,18 @@ void Geant4ParticlePrint::printParticleTree(const ParticleMap& particles, int le
   txt[level+6]='+';
   ::memset(txt+level+6+1,'-',len-level-3-6);
 
-  printParticle(txt, p);
+  printParticle(txt, e, p);
   const set<int>& daughters = p->daughters;
   // For all particles, the set of daughters must be contained in the record.
   for(set<int>::const_iterator id=daughters.begin(); id!=daughters.end(); ++id)   {
     int id_dau = *id;
     Geant4ParticleHandle dau = (*particles.find(id_dau)).second;
-    printParticleTree(particles,level+1,dau);
+    printParticleTree(e, particles, level+1, dau);
   }
 }
 
 /// Print tree of kept particles
-void Geant4ParticlePrint::printParticleTree(const ParticleMap& particles)  const  {
+void Geant4ParticlePrint::printParticleTree(const G4Event* e, const ParticleMap& particles)  const  {
   print("+++ MC Particle Parent daughter relationships. [%d particles]",int(particles.size()));
   print("+++ MC Particles %12s #Tracks:%7d %-12s Parent%-7s "
 	"Primary Secondary Energy %-8s Calo Tracker Process/Par  Details",
@@ -168,6 +205,6 @@ void Geant4ParticlePrint::printParticleTree(const ParticleMap& particles)  const
   for(ParticleMap::const_iterator i=particles.begin(); i!=particles.end(); ++i)  {
     Geant4ParticleHandle p = (*i).second;
     PropertyMask mask(p->reason);
-    if ( mask.isSet(G4PARTICLE_PRIMARY) ) printParticleTree(particles,0,p);
+    if ( mask.isSet(G4PARTICLE_PRIMARY) ) printParticleTree(e, particles, 0, p);
   }
 }

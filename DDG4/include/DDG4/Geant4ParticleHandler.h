@@ -75,6 +75,9 @@ namespace DD4hep {
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut;
 
+      double m_zTracker, m_rTracker;
+
+
       /// Global particle identifier. Obtained at the begin of the event.
       int m_globalParticleID, m_initialParticleID;
       /// User action pointer

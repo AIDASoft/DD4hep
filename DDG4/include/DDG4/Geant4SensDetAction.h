@@ -30,6 +30,12 @@ class G4VReadOutGeometry;
  */
 namespace DD4hep {
 
+  // Forward declarations
+  namespace Geometry  {
+    class LCDD;
+    class DetElement;
+  }
+
   /*
    *   Simulation namespace declaration
    */
@@ -404,6 +410,44 @@ namespace DD4hep {
     template <typename TYPE> inline size_t Geant4Sensitive::defineCollection(const std::string& coll_name) {
       return sequence().defineCollection<TYPE>(this, coll_name);
     }
+
+    /** @class Geant4SensitiveAction Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
+     *
+     * Templated implementation to realize sensitive detectors.
+     * Default implementations for all functions are provided in the file
+     * DDG4/Geant4SensDetAction.inl.
+     *
+     * Users may override any of the templated callbacks or the of the virtual functions
+     * of the base class using explicit template specialization.
+     * An example may be found in DDG4/plugins/eant4SDActions.
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    template <typename T> class Geant4SensitiveAction : public Geant4Sensitive  {
+    protected:
+      /// Collection identifier
+      size_t m_collectionID;
+    public:
+      /// Standard , initializing constructor
+      Geant4SensitiveAction(Geant4Context* context, 
+			    const std::string& name, 
+			    Geometry::DetElement det, 
+			    Geometry::LCDD& lcdd);
+      /// Default destructor
+      virtual ~Geant4SensitiveAction();
+      /// Define collections created by this sensitivie action object
+      virtual void defineCollections() {}
+      /// G4VSensitiveDetector interface: Method invoked at the begining of each event. 
+      virtual void begin(G4HCofThisEvent* hce);
+      /// G4VSensitiveDetector interface: Method invoked at the end of each event. 
+      virtual void end(G4HCofThisEvent* hce);
+      /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
+      virtual bool process(G4Step* step,G4TouchableHistory* history);
+      /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
+      virtual void clear(G4HCofThisEvent* hce);
+    };
+
 
   }    // End namespace Simulation
 }      // End namespace DD4hep

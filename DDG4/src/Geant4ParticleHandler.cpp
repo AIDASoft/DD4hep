@@ -69,6 +69,8 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const strin
   declareProperty("KeepAllParticles",    m_keepAll = false);
   declareProperty("SaveProcesses",       m_processNames);
   declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*MeV);
+  declareProperty("Z_trackers",m_zTracker=1e100);
+  declareProperty("R_trackers",m_rTracker=1e100);
   InstanceCount::increment(this);
 }
 
@@ -155,6 +157,7 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
   else if ( !mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT) )  {
     mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
   }
+  //Geant4ParticleHandle(&m_currTrack).dump4(outputLevel(),vol->GetName(),"hit created by particle");
 }
 
 /// Event generation action callback
@@ -172,13 +175,8 @@ void Geant4ParticleHandler::operator()(G4Event* event)  {
 /// User stepping callback
 void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* mgr)   {
   typedef vector<const G4Track*> _Sec;
-  Geant4StepHandler h(step);
   ++m_currTrack.steps;
-  const G4ThreeVector& v = h.postPosG4();
-  m_currTrack.vex = v.x();
-  m_currTrack.vey = v.y();
-  m_currTrack.vez = v.z();
-  if ( h.trkKineEnergy() > m_kinEnergyCut )  {
+  if ( (m_currTrack.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
     //
     // Tracks below the energy threshold are NOT stored.
     // If these tracks produce hits or are selected due to another signature, 
@@ -199,11 +197,12 @@ void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* mgr)   {
 void Geant4ParticleHandler::begin(const G4Track* track)   {
   Geant4TrackHandler h(track);
   double kine = h.kineticEnergy();
-  G4ThreeVector m = track->GetMomentum();
+  G4ThreeVector m = h.momentum();
   const G4ThreeVector& v = h.vertex();
   int reason = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
   G4PrimaryParticle* prim = primary(h.id(),context()->event().event());
   Particle* prim_part = 0;
+
 
 
   if ( prim )   {
@@ -247,12 +246,6 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.definition   = h.trackDef();
     m_currTrack.pdgID        = h.trackDef()->GetPDGEncoding();
     m_currTrack.mass         = h.trackDef()->GetPDGMass();
-    // Once the daughter gets simulated, the parent is already done....
-    ParticleMap::iterator ipar = m_particleMap.find(h.parent());
-    if ( ipar != m_particleMap.end() )  {
-      Particle* p_par = (*ipar).second;
-      m_currTrack.parents.insert(p_par->id);
-    }
     ++m_globalParticleID;
   }
   m_currTrack.steps       = 0;
@@ -292,35 +285,35 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
 /// Post-track action callback
 void Geant4ParticleHandler::end(const G4Track* track)   {
   Geant4TrackHandler h(track);
+  Geant4ParticleHandle ph(&m_currTrack);
   int g4_id = h.id();
+  int track_reason = m_currTrack.reason;
   PropertyMask mask(m_currTrack.reason);
 
+  double r_prod = sqrt(ph->vsx*ph->vsx + ph->vsy*ph->vsy);
+  double z_prod = fabs(ph->vsz);
+  if ( r_prod > m_rTracker || z_prod > m_zTracker )  {
+    m_currTrack.reason = 0;
+  }
+
+  // These are candate tracks with a probability to be stored due to their properties:
+  // - primary particle
+  // - hits created
+  // - secondaries
+  // - above energy threshold
+  // - to be kept due to creator process 
+  //
   if ( !mask.isNull() )   {
-    // These are candate tracks with a probability to be stored due to their properties:
-    // - primary particle
-    // - hits created
-    // - secondaries
-    // - above energy threshold
-    // - to be kept due to creator process 
-    //
     // Update vertex end point and final momentum
-    Geant4ParticleHandle ph(&m_currTrack);
     G4ThreeVector m = track->GetMomentum();
+    const G4ThreeVector& p = track->GetPosition();
     ph->pex = m.x();
     ph->pey = m.y();
     ph->pez = m.z();
+    ph->vex = p.x();
+    ph->vey = p.y();
+    ph->vez = p.z();
     m_equivalentTracks[g4_id] = g4_id;
-    // Add this track to it's parents list of daughters
-    ParticleMap::iterator ipar = m_particleMap.find(ph->g4Parent);
-    if ( ipar != m_particleMap.end() )  {
-      Particle* p_par = (*ipar).second;
-      p_par->daughters.insert(ph->id);
-      ph->mask |= p_par->mask;
-      G4ThreeVector dist(ph->vsx-p_par->vex,ph->vsy-p_par->vey,ph->vsz-p_par->vez);
-      if ( dist.r() > 1e-15 )   {
-	// Set flag that the end vertex of the parent is not the start vertex of this track....
-      }
-    }
     /// Final update of the particle using the user handler
     if ( m_userHandler )  {
       m_userHandler->begin(track, m_currTrack);
@@ -330,15 +323,30 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
       ph.dump2(outputLevel()-1,name(),"Add Primary",h.id(),ip!=m_particleMap.end());
     }
     // Create a new MC particle from the current track information saved in the pre-tracking action
-    Particle* p = ip==m_particleMap.end() ? (m_particleMap[g4_id] = new Particle()) : (*ip).second;
-    p->get_data(m_currTrack);
+    Particle* part = 0;
+    if ( ip==m_particleMap.end() ) part = m_particleMap[g4_id] = new Particle();
+    else part = (*ip).second;
+    part->get_data(m_currTrack);
   }
   else   {
     // These are tracks without any special properties.
     //
     // We will not store them on the record, but have to memorise the 
     // track identifier in order to restore the history for the created hits.
-    m_equivalentTracks[g4_id] = m_currTrack.g4Parent;
+    int pid = m_currTrack.g4Parent;
+    m_equivalentTracks[g4_id] = pid;
+    // Need to find the last stored particle and OR this particle's mask 
+    // with the mask of the last stored particle
+    TrackEquivalents::const_iterator iequiv, iend = m_equivalentTracks.end();
+    ParticleMap::iterator ip;
+    for(ip=m_particleMap.find(pid); ip == m_particleMap.end(); ip=m_particleMap.find(pid))  {
+      if ((iequiv=m_equivalentTracks.find(pid)) == iend) break;  // ERROR
+      pid = (*iequiv).second;
+    }
+    if ( ip != m_particleMap.end() )
+      (*ip).second->reason |= track_reason;
+    else
+      ph.dump3(outputLevel()+3,name(),"No real parent present");
   }
 }
 
@@ -358,8 +366,9 @@ void Geant4ParticleHandler::beginEvent(const G4Event* event)  {
 
 /// Debugging: Dump Geant4 particle map
 void Geant4ParticleHandler::dumpMap(const char* tag)  const  {
-  for(ParticleMap::const_iterator iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)
-    Geant4ParticleHandle((*i).second).dump1(INFO,name(),tag);
+  for(ParticleMap::const_iterator iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
+    Geant4ParticleHandle((*i).second).dump4(INFO,name(),tag);
+  }
 }
 
 /// Post-event action callback
@@ -438,30 +447,27 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     else
       error("+++ No Equivalent particle for track:%d last known is:%d",(*i).second,g4_equiv);
   }
-  m_equivalentTracks = equivalents;
-  equivalents.clear();
 
-  // (3) Update the particle's parents and replace the original Geant4 track with the
+  // (3) Compute the particle's parents and daughters. 
+  //     Replace the original Geant4 track with the
   //     equivalent particle still present in the record.
   for(ParticleMap::const_iterator ipar, iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
     Particle* p = (*i).second;
-    set<int> daughters = p->daughters;
-    p->daughters.clear();
-    for(set<int>::iterator id=daughters.begin(); id!=daughters.end(); ++id)
-      p->daughters.insert(orgParticles[*id]);             // Requires (1)
-    //if ( 0 == (p->status&G4PARTICLE_GEN_GENERATOR) )
-      {
-      if ( p->g4Parent > 0 )  {
-	p->parents.clear();
-	p->parents.insert(equivalentTrack(p->g4Parent));  // Requires (2)
-	ipar = m_particleMap.find(p->g4Parent);
-	if ( ipar != iend )   {
-	  set<int>& dau = (*ipar).second->daughters;
-	  if ( dau.find(p->id) == dau.end() ) dau.insert(p->id);
-	}
+    if ( p->g4Parent > 0 )  {
+      int equiv_id = equivalents[p->g4Parent];
+      if ( (ipar=finalParticles.find(equiv_id)) != finalParticles.end() )  {
+	Particle* q = (*ipar).second;
+	q->daughters.insert(p->id);
+	p->parents.insert(q->id);
+      }
+      else   {
+	error("+++ Inconsistency in particle record: Geant4 parent %d "
+	      "of particle %d (equiv:%d) not in record!",
+	      p->g4Parent,p->id,equiv_id);
       }
     }
   }
+  m_equivalentTracks = equivalents;
   m_particleMap = finalParticles;
 }
 
@@ -537,8 +543,6 @@ int Geant4ParticleHandler::recombineParents()  {
 	if ( ip != m_particleMap.end() )   {
 	  Particle* parent_part = (*ip).second;
 	  PropertyMask(parent_part->reason).set(mask.value());
-	  // Remove track from parent's list of daughters
-	  parent_part->removeDaughter(id);
 	  parent_part->steps += p->steps;
 	  parent_part->secondaries += p->secondaries;
 	  /// Update of the particle using the user handler
@@ -615,7 +619,7 @@ int Geant4ParticleHandler::equivalentTrack(int g4_id)  const  {
   int equiv_id  = g4_id;
   if ( g4_id != 0 )  {
     TrackEquivalents::const_iterator iequiv = m_equivalentTracks.find(equiv_id);
-    return (iequiv == m_equivalentTracks.end()) ? -1 : (*iequiv).second;
+    if ( iequiv != m_equivalentTracks.end() ) return (*iequiv).second;
   }
   return -1;
 }

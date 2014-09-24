@@ -43,8 +43,8 @@ def run():
 
   # Configure I/O
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  evt_lcio.OutputLevel = Output.ERROR
+  #evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  #evt_lcio.OutputLevel = Output.ERROR
 
 
   generator_output_level = Output.INFO
@@ -57,7 +57,7 @@ def run():
   Generation of isotrope tracks using the DDG4 partcle gun:
 
   # Setup particle gun
-  gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=3)
+  gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=1)
   gun.OutputLevel = 5 # generator_output_level
   gun.Mask = 1
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -101,16 +101,15 @@ def run():
   """
   Generation of primary particles from LCIO input files
   """
-
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
-  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
-  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
   gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
+  #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
   gen.OutputLevel = 4 # generator_output_level
   gen.Mask = 1
-  gen.MomentumScale = 0.1
   kernel.generatorAction().adopt(gen)
   # Install vertex smearing for this interaction
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear1");  
@@ -135,6 +134,7 @@ def run():
   gen.Offset = (20*mm, 10*mm, 10*mm, 0*ns)
   gen.Sigma = (2*mm, 1*mm, 1*mm, 0*ns)
   kernel.generatorAction().adopt(gen)
+
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   # Merge all existing interaction records
@@ -152,7 +152,10 @@ def run():
   kernel.generatorAction().adopt(part)
   #part.SaveProcesses = ['conv','Decay']
   part.SaveProcesses = ['Decay']
-  part.OutputLevel = 4 # generator_output_level
+  part.MinimalKineticEnergy = 100*MeV
+  part.Z_trackers = 165.70*cm  # EcalEndcap_zmin
+  part.R_trackers = 126.50*cm  # EcalBarrel_rmin
+  part.OutputLevel = 5 # generator_output_level
   part.enableUI()
   #user = DDG4.Action(kernel,"Geant4UserParticleHandler/UserParticleHandler")
   #part.adopt(user)

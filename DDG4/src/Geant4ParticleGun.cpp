@@ -14,6 +14,7 @@
 #include "DDG4/Geant4Random.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4ParticleGun.h"
+#include "DDG4/Geant4InputHandling.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
 #include "G4ParticleTable.hh"
@@ -41,6 +42,7 @@ Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
   declareProperty("direction", m_direction);
   declareProperty("isotrop", m_isotrop = false);
   declareProperty("Mask", m_mask = 1);
+  declareProperty("Standalone", m_standalone = true);
 }
 
 /// Default destructor
@@ -49,8 +51,12 @@ Geant4ParticleGun::~Geant4ParticleGun() {
 }
 
 /// Callback to generate primary particles
-void Geant4ParticleGun::operator()(G4Event* )   {
+void Geant4ParticleGun::operator()(G4Event* event)   {
   typedef DD4hep::ReferenceBitMask<int> PropertyMask;
+  if ( m_standalone )  {
+    generationInitialization(this,context());
+  }
+
   Geant4Event& evt = context()->event();
   Geant4PrimaryEvent* prim = evt.extension<Geant4PrimaryEvent>();
   if (0 == m_particle || m_particle->GetParticleName() != m_particleName.c_str()) {
@@ -116,4 +122,9 @@ void Geant4ParticleGun::operator()(G4Event* )   {
     p.dump3(outputLevel()-1,name(),"+->");
   }
   ++m_shotNo;
+
+  if ( m_standalone ) {
+    mergeInteractions(this,context());
+    generatePrimaries(this,context(),event);
+  }
 }

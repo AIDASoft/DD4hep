@@ -161,18 +161,18 @@ void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
     if ( truth && nhits > 0 )   {
       try  {
 	for(size_t i=0; i<nhits; ++i)   {
-	  SimpleHit* h = coll->hit(i);
-	  SimpleTracker::Hit* trk_hit = dynamic_cast<SimpleTracker::Hit*>(h);
+	  Geant4HitData* h = coll->hit(i);
+	  Geant4Tracker::Hit* trk_hit = dynamic_cast<Geant4Tracker::Hit*>(h);
 	  if ( 0 != trk_hit )   {
-	    SimpleHit::Contribution& t = trk_hit->truth;
+	    Geant4HitData::Contribution& t = trk_hit->truth;
 	    int trackID = t.trackID;
 	    t.trackID = truth->particleID(trackID);
 	  }
-	  SimpleCalorimeter::Hit* cal_hit = dynamic_cast<SimpleCalorimeter::Hit*>(h);
+	  Geant4Calorimeter::Hit* cal_hit = dynamic_cast<Geant4Calorimeter::Hit*>(h);
 	  if ( 0 != cal_hit )   {
-	    SimpleHit::Contributions& c = cal_hit->truth;
-	    for(SimpleHit::Contributions::iterator j=c.begin(); j!=c.end(); ++j)  {
-	      SimpleHit::Contribution& t = *j;
+	    Geant4HitData::Contributions& c = cal_hit->truth;
+	    for(Geant4HitData::Contributions::iterator j=c.begin(); j!=c.end(); ++j)  {
+	      Geant4HitData::Contribution& t = *j;
 	      int trackID = t.trackID;
 	      t.trackID = truth->particleID(trackID);
 	    }
