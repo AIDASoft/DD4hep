@@ -25,9 +25,7 @@ class G4TouchableHistory;
 class G4VHitsCollection;
 class G4VReadOutGeometry;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
@@ -36,9 +34,7 @@ namespace DD4hep {
     class DetElement;
   }
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
@@ -48,12 +44,13 @@ namespace DD4hep {
     class Geant4SensDetActionSequence;
     class Geant4SensDetSequences;
 
-    /** @class Geant4ActionSD Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
+    /// Interface class to access properties of the underlying Geant4 sensitive detector structure
+    /** 
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4ActionSD: virtual public Geant4Action {
+    class Geant4ActionSD: virtual public Geant4Action {
     protected:
       /// Standard action constructor
       Geant4ActionSD(const std::string& name);
@@ -74,12 +71,13 @@ namespace DD4hep {
       virtual std::string fullPath() const = 0;
     };
 
+    /// Base class to construct filters for Geant4 sensitive detectors
     /** @class Geant4Filter Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Filter: public Geant4Action {
+    class Geant4Filter: public Geant4Action {
     public:
       /// Standard constructor
       Geant4Filter(Geant4Context* context, const std::string& name);
@@ -89,6 +87,7 @@ namespace DD4hep {
       virtual bool operator()(const G4Step* step) const;
     };
 
+    /// The base class for Geant4 sensitive detector actions implemented by users
     /** @class Geant4Sensitive Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
      *
      * @author  M.Frank
@@ -247,6 +246,7 @@ namespace DD4hep {
 
     };
 
+    /// The sequencer to host Geant4 sensitive actions called if particles interact with sensitive elements
     /** @class Geant4SensDetActionSequence Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
      *
      * Concrete implementation of the sensitive detector action sequence
@@ -369,6 +369,7 @@ namespace DD4hep {
       virtual void clear();
     };
 
+    /// Geant4SensDetSequences: class to access groups of sensitive actions
     /** @class Geant4SensDetActionSequences Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
      *
      * Concrete implementation of the sensitive detector action sequence
@@ -411,6 +412,7 @@ namespace DD4hep {
       return sequence().defineCollection<TYPE>(this, coll_name);
     }
 
+    /// Template class to ease the construction of sensitive detectors using particle template specialization
     /** @class Geant4SensitiveAction Geant4SensDetAction.h DDG4/Geant4SensDetAction.h
      *
      * Templated implementation to realize sensitive detectors.

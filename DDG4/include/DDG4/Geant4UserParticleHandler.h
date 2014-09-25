@@ -19,22 +19,19 @@ class G4Track;
 class G4Event;
 class G4SteppingManager;
 
-/*
- *   DD4hep namespace declaration
- */
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4Particle;
     class Geant4ParticleHandler;
 
-    /** Geant4ParticleHandler user extension action called by the particle handler.
-     *
+    /// Geant4ParticleHandler user extension action called by the particle handler.
+    /**
      *  Collect optional MC particle information and attacjh it to the particle object
      *  Clients may inherit from this class and override the approriate methods
      *  to add additional information in form of a DataExtension object to the Particle.

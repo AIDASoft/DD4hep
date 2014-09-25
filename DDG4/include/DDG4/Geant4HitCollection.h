@@ -21,14 +21,10 @@
 #include <typeinfo>
 #include <stdexcept>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
@@ -36,6 +32,7 @@ namespace DD4hep {
     class Geant4HitCollection;
     class Geant4HitWrapper;
 
+    /// Generic wrapper class for hit structures created in Geant4 sensitive detectors
     /** @class Geant4HitWrapper Geant4HitCollection.h DDG4/Geant4HitCollection.h
      *
      *  Default base class for all geant 4 created hits.
@@ -48,11 +45,14 @@ namespace DD4hep {
     class Geant4HitWrapper: public G4VHit {
     private:
     public:
-      struct InvalidHit {
+      /// Helper class to indicate invalid hit wrappers or containers.
+      class InvalidHit {
+      public:
         virtual ~InvalidHit();
       };
 
-      struct HitManipulator {
+      /// Generic type manipulation class for generic hit structures created in Geant4 sensitive detectors
+      class HitManipulator {
       public:
         typedef std::pair<void*, HitManipulator*> Wrapper;
 #ifdef __CINT__
@@ -157,6 +157,7 @@ namespace DD4hep {
       }
     };
 
+    /// Generic hit container class using Geant4HitWrapper objects
     /** @class Geant4HitCollection Geant4HitCollection.h DDG4/Geant4HitCollection.h
      *
      * Opaque hit collection.
@@ -175,6 +176,7 @@ namespace DD4hep {
       /// Hit manipulator
       typedef Geant4HitWrapper::HitManipulator Manip;
 
+      /// Generic class template to compare/select hits in Geant4HitCollection objects
       /** @class Compare Geant4HitCollection.h DDG4/Geant4HitCollection.h
        *
        *  Base class for hit comparisons.
@@ -182,7 +184,8 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      struct Compare {
+      class Compare {
+      public:
 	/// Default destructor
 	virtual ~Compare();
         /// Comparison function
@@ -289,6 +292,7 @@ namespace DD4hep {
     };
 
 
+    /// Specialized hit selector based on the hit's position.
     /** @class PositionCompare Geant4HitCollection.h DDG4/Geant4HitCollection.h
      *
      *  Class for hit matching using the hit position.
@@ -296,7 +300,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    template<typename TYPE, typename POS> struct PositionCompare : public Geant4HitCollection::Compare {
+    template<typename TYPE, typename POS> class PositionCompare : public Geant4HitCollection::Compare {
+    public:
       const POS& pos;
       /// Constructor
       PositionCompare(const POS& p) : pos(p)  {      }
@@ -310,6 +315,7 @@ namespace DD4hep {
       return pos == h->position ? h : 0;
     }
 
+    /// Specialized hit selector based on the hit's cell identifier.
     /** @class PositionCompare Geant4HitCollection.h DDG4/Geant4HitCollection.h
      *
      *  Class for hit matching using the hit's cell identifier.
@@ -317,7 +323,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    template<typename TYPE> struct CellIDCompare : public Geant4HitCollection::Compare {
+    template<typename TYPE> class CellIDCompare : public Geant4HitCollection::Compare {
+    public:
       long long int id;
       /// Constructor
       CellIDCompare(long long int i) : id(i) {      }

@@ -18,19 +18,15 @@ class G4VisManager;
 class G4UImanager;
 class G4UIExecutive;
 
-/*
- *   DD4hep namespace declaration
- */
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Standard UI interface implementation with configuration using property options
     /** @class Geant4UIManager Geant4UIManager.h DDG4/Geant4UIManager.h
-     *
-     *  Standard UI interface implementation
      *
      * @author  M.Frank
      * @version 1.0

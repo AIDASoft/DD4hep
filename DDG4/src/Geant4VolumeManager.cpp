@@ -34,6 +34,7 @@ using namespace std;
 
 namespace {
 
+  /// Helper class to populate the Geant4 volume manager
   struct Populator {
     typedef vector<const TGeoNode*> Chain;
     typedef DD4hep::Geometry::LCDD LCDD;

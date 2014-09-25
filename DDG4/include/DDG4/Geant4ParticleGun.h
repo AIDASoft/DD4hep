@@ -15,19 +15,14 @@
 // Forward declarations
 class G4ParticleDefinition;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Implementation of a particle gun using Geant4Particles.
     /** @class Geant4ParticleGun Geant4ParticleGun.h DDG4/Geant4ParticleGun.h
-     *
-     * Implementation wrapper of the Geant4 particle gun
      *
      * @author  M.Frank
      * @version 1.0

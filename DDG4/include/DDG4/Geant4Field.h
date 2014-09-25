@@ -16,14 +16,10 @@
 #include "G4ElectroMagneticField.hh"
 #include "G4MagneticField.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
@@ -34,7 +30,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4Field : public G4MagneticField {
+    class Geant4Field : public G4MagneticField {
+    protected:
       /// Reference to the detector description field
       Geometry::OverlayedField m_field;
 

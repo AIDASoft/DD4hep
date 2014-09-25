@@ -17,16 +17,13 @@
 // Forward declarations
 class G4Event;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation  {
 
+    /// Basic geant4 event reader class. This interface/base-class must be implemented by concrete readers.
     /** @class Geant4EventReader Geant4EventReader.h DDG4/Geant4EventReader.h
      * 
      * Base class to read input files containing simulation data.
@@ -58,6 +55,7 @@ namespace DD4hep  {
       virtual int readParticles(int event_number, std::vector<Particle*>& particles) = 0;
     };
 
+    /// Generic input action capable of using the Geant4EventReader class.
     /** @class Geant4InputAction Geant4InputAction.h DDG4/Geant4InputAction.h
      *
      * Concrete implementation of the Geant4 generator action base class
@@ -102,7 +100,7 @@ namespace DD4hep  {
 
 #include "DD4hep/Plugins.h"
 namespace {
-  /// Factory to create Geant4 physics constructions
+  /// Factory template to create Geant4 event reader objects
   template <typename P> class Factory<P, DD4hep::Simulation::Geant4EventReader*(std::string)> {  public:
     static void Func(void *ret, void*, const std::vector<void*>& a, void*) 
     { *(DD4hep::Simulation::Geant4EventReader**)ret = (DD4hep::Simulation::Geant4EventReader*)new P(*(std::string*)a[0]);}

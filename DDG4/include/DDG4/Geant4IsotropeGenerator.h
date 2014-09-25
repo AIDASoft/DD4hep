@@ -15,14 +15,10 @@
 // Forward declarations
 class G4ParticleDefinition;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
     /// Generate particles isotrop in space around origine (0,0,0)
     /**

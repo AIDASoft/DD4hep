@@ -20,14 +20,10 @@ class G4Track;
 class G4Event;
 class G4SteppingManager;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
@@ -35,8 +31,8 @@ namespace DD4hep {
     class Geant4PrimaryMap;
     class Geant4UserParticleHandler;
 
-    /** Geant4Action to collect the MC particle information.
-     *
+    /// Geant4Action to collect the MC particle information.
+    /**
      *  Extract the relevant particle information during the simulation step.
      *
      *  @author  M.Frank
@@ -55,9 +51,11 @@ namespace DD4hep {
 
     public:
       typedef std::vector<std::string> Processes;
-      struct FindParticleByID {
+      class FindParticleByID {
+      protected:
 	int pid;
-      FindParticleByID(int p) : pid(p) {}
+      public:
+        FindParticleByID(int p) : pid(p) {}
 	inline bool operator()(const std::pair<int,Geant4Particle*>& p)  const {
 	  return p.second->id == pid;
 	}

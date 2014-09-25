@@ -32,8 +32,11 @@
  *                     easier especializations
  */
 // ============================================================================
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
   // ==========================================================================
+  /// Utility namespace to support boost::spirit
   namespace Utils {
     // ========================================================================
     /** the generic implementation of the printout to the std::ostream

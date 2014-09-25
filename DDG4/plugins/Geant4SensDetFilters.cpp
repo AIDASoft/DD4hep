@@ -12,19 +12,14 @@
 // Forward declarations
 class G4ParticleDefinition;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
-  namespace Simulation   {
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation {
 
-    /** @class ParticleFilter
-     * 
-     * Geant4 sensitive detector filter base class for particle filters
+    /// Geant4 sensitive detector filter base class for particle filters
+    /**
      *
      * @author  M.Frank
      * @version 1.0
@@ -48,9 +43,8 @@ namespace DD4hep {
       bool isGeantino(const G4Track* track) const;
     };
 
-    /** @class ParticleRejectFilter
-     * 
-     * Geant4 sensitive detector filter implementing a particle rejector
+    /// Geant4 sensitive detector filter implementing a particle rejector
+    /**
      *
      * @author  M.Frank
      * @version 1.0
@@ -64,9 +58,8 @@ namespace DD4hep {
       virtual bool operator()(const G4Step* step) const;
     };
 
-    /** @class ParticleSelectFilter
-     * 
-     * Geant4 sensitive detector filter implementing a particle selector
+    /// Geant4 sensitive detector filter implementing a particle selector
+    /** 
      *
      * @author  M.Frank
      * @version 1.0
@@ -80,9 +73,8 @@ namespace DD4hep {
       virtual bool operator()(const G4Step* step) const;
     };
 
-    /** @class GeantinoRejectFilter
-     * 
-     * Geant4 sensitive detector filter implementing a Geantino rejector
+    /// Geant4 sensitive detector filter implementing a Geantino rejector
+    /** 
      *
      * @author  M.Frank
      * @version 1.0
@@ -96,9 +88,8 @@ namespace DD4hep {
       virtual bool operator()(const G4Step* step) const;
     };
 
-    /** @class EnergyDepositMinimumCut
-     * 
-     * Geant4 sensitive detector filter implementing an energy cut.
+    /// Geant4 sensitive detector filter implementing an energy cut.
+    /** 
      *
      * @author  M.Frank
      * @version 1.0

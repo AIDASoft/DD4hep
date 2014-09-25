@@ -6,15 +6,13 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
-#ifndef DD4hep_GEOMETRY_VOLUMES_H
-#define DD4hep_GEOMETRY_VOLUMES_H
+#ifndef DD4HEP_GEOMETRY_VOLUMES_H
+#define DD4HEP_GEOMETRY_VOLUMES_H
 
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/Shapes.h"
 #include "DD4hep/Objects.h"
-//#include "DD4hep/Detector.h"
 
 // C/C++ include files
 #include <map>
@@ -40,14 +38,10 @@ class TGeoExtension : public TObject  {
 };
 #endif
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
@@ -61,8 +55,10 @@ namespace DD4hep {
     class  PlacedVolume;
     class  SensitiveDetector;
 
-    /// Implementation class extending the ROOT placed volume (TGeoNode)
-    /** @class PlacedVolumeExtension Volume.h  DD4hep/lcdd/Volume.h
+    /// Implementation class extending the ROOT placed volume
+    /** 
+     *  For any further documentation please see the following ROOT documentation:
+     *  @see http://root.cern.ch/root/html/TGeoExtension.html 
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -108,13 +104,12 @@ namespace DD4hep {
     };
 
     /// Handle class holding a placed volume (also called physical volume)
-    /** @class PlacedVolume Volume.h  DD4hep/lcdd/Volume.h
-     *
+    /** 
      *   For any further documentation please see the following ROOT documentation:
      *   @see http://root.cern.ch/root/html/TGeoNode.html 
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *   @author  M.Frank
+     *   @version 1.0
      */
     class PlacedVolume : public Handle<TGeoNode> {
     public:
@@ -160,9 +155,11 @@ namespace DD4hep {
     };
 
     /// Implementation class extending the ROOT volume (TGeoVolume)
-    /** @class Volume::Object Volume.h  DD4hep/Volume.h
+    /**
+     *  Internal data structure optional to TGeo data.
      *
-     *  Internal data structure optional to TGeo data
+     *  For any further documentation please see the following ROOT documentation:
+     *  @see http://root.cern.ch/root/html/TGeoExtension.html 
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -200,8 +197,7 @@ namespace DD4hep {
     };
 
     /// Handle class holding a placed volume (also called physical volume)
-    /** @class Volume Volume.h  DD4hep/Volume.h
-     *
+    /**
      *   Handle describing a Volume
      *
      *   For any further documentation please see the following ROOT documentation:
@@ -310,12 +306,15 @@ namespace DD4hep {
       }
     };
 
-    /** @class Assembly Volume.h  DD4hep/lcdd/Volume.h
+    /// Implementation class extending the ROOT assembly volumes (TGeoVolumeAsembly)
+    /** 
+     *  Handle describing a volume assembly. 
      *
-     *  Handle describing a volume assembly
+     *   For any further documentation please see the following ROOT documentation:
+     *   @see http://root.cern.ch/root/html/TGeoVolumeAssembly.html
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *   @author  M.Frank
+     *   @version 1.0
      */
     class Assembly: public Volume {
     public:
@@ -345,5 +344,5 @@ namespace DD4hep {
     };
 
   } /* End namespace Geometry          */
-} /* End namespace DD4hep            */
-#endif    /* DD4hep_GEOMETRY_VOLUMES_H       */
+}   /* End namespace DD4hep            */
+#endif    /* DD4HEP_GEOMETRY_VOLUMES_H       */

@@ -12,9 +12,7 @@
 // C/C++ include files
 #include <string>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
     /// Implementation of a named object

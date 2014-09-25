@@ -35,14 +35,10 @@
 #include <memory>
 #include <stdexcept>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     namespace {
@@ -54,11 +50,12 @@ namespace DD4hep {
       return s_globalContext;
     }
 
-
+    /// Sequence handler implementing common actions to all sequences.
     template <typename T> struct SequenceHdl {
       typedef SequenceHdl<T> Base;
       T* m_sequence;
       Geant4Context* m_activeContext;
+      /// Default constructor
       SequenceHdl()
 	: m_sequence(0), m_activeContext(0) {
       }
@@ -114,9 +111,8 @@ namespace DD4hep {
     class Geant4UserRunAction;
     class Geant4UserEventAction;
 
+    /// Concrete implementation of the Geant4 run action
     /** @class Geant4UserRunAction
-     *
-     * Concrete implementation of the Geant4 run action
      *
      * @author  M.Frank
      * @version 1.0
@@ -136,9 +132,8 @@ namespace DD4hep {
       virtual void EndOfRunAction(const G4Run* run);
     };
 
+    /// Concrete implementation of the Geant4 event action
     /** @class Geant4UserEventAction
-     *
-     * Concrete implementation of the Geant4 event action
      *
      * @author  M.Frank
      * @version 1.0
@@ -158,9 +153,8 @@ namespace DD4hep {
       virtual void EndOfEventAction(const G4Event* evt);
     };
 
+    /// Concrete implementation of the Geant4 tracking action
     /** @class Geant4UserTrackingAction
-     *
-     * Concrete implementation of the Geant4 tracking action
      *
      * @author  M.Frank
      * @version 1.0
@@ -187,9 +181,8 @@ namespace DD4hep {
       }
     };
 
+    /// Concrete implementation of the Geant4 stacking action sequence
     /** @class Geant4UserStackingAction
-     *
-     * Concrete implementation of the Geant4 stacking action sequence
      *
      * @author  M.Frank
      * @version 1.0
@@ -216,9 +209,8 @@ namespace DD4hep {
       }
     };
 
+    /// Concrete implementation of the Geant4 generator action
     /** @class Geant4UserGeneratorAction
-     *
-     * Concrete implementation of the Geant4 generator action
      *
      * @author  M.Frank
      * @version 1.0
@@ -239,9 +231,8 @@ namespace DD4hep {
       }
     };
 
+    /// Concrete implementation of the Geant4 stepping action
     /** @class Geant4UserSteppingAction
-     *
-     * Concrete implementation of the Geant4 stepping action
      *
      * @author  M.Frank
      * @version 1.0

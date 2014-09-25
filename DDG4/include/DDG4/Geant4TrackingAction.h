@@ -16,22 +16,17 @@
 class G4TrackingManager;
 class G4Track;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4TrackInformation;
 
+    /// Default base class for all geant 4 tracking actions used in DDG4.
     /** @class Geant4TrackingAction Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Default base class for all geant 4 tracking actions.
      *
      * @author  M.Frank
      * @version 1.0
@@ -60,9 +55,8 @@ namespace DD4hep {
       virtual void end(const G4Track* track);
     };
 
+    /// Concrete implementation of the Geant4 tracking action sequence
     /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Concrete implementation of the Geant4 tracking action sequence
      *
      * The sequence dispatches the callbacks for each tracking action
      * to all registered Geant4SteppingAction members and all 

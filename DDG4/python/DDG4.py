@@ -58,8 +58,8 @@ def importConstants(lcdd,namespace=None):
   for c in lcdd.constants():
     values[c.first] = c.second.GetTitle()
   evaluator = DD4hep.evaluator()
-  for key,value in values:
-    setattr(ns,key,value)
+  for k in values.keys():
+    setattr(ns,k,values[k])
     #print 'Imported global value:',c.first,'=',c.second.GetTitle(),'into namespace',ns.__name__
 #---------------------------------------------------------------------------
   

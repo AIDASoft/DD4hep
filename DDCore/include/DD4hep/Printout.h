@@ -24,15 +24,14 @@
 /// Forward declarations
 class TNamed;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   class NamedObject;
 
-  /// Forward declarations
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
+    // Forward declarations
     class LCDD;
     class VisAttr;
     class DetElement;

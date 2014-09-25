@@ -22,20 +22,17 @@
 // Forward declarations
 class G4PrimaryParticle;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4Particle;
     class Geant4Vertex;
     
+    /// Base structure to extend primary information with user data
     class PrimaryExtension  {
     public:
       /// Default constructor

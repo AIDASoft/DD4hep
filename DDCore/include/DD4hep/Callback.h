@@ -62,6 +62,8 @@ namespace DD4hep {
     template <typename T> static const T* c_cast(const void* p) {
       return (const T*) p;
     }
+
+    /// Wrapper around a C++ member function pointer
     template <typename T> struct Wrapper {
     public:
       typedef T pmf_t;

@@ -14,11 +14,10 @@
 // C/C++ include files
 #include <algorithm>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  /// Namespace describing generic detector segmentations
   namespace DDSegmentation  {
     class BitField64;
     class BitFieldValue;

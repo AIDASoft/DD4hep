@@ -53,6 +53,8 @@ namespace {
 #define appendChild         LinkEndChild
 #define getOwnerDocument    GetDocument
 #define getDocumentElement  RootElement
+
+/// Union to ease castless object access in TinyXML
 union Xml {
   Xml(const void* ptr) : p(ptr) {}
   const void* p;
@@ -89,6 +91,8 @@ void DD4hep::XML::XmlString::release(char** p) {if(p && *p) {::free(*p); *p=0;}}
 #include "xercesc/dom/DOMNodeList.hpp"
 #include "xercesc/dom/DOM.hpp"
 #define ELEMENT_NODE_TYPE xercesc::DOMNode::ELEMENT_NODE
+
+/// Union to ease castless object access when using XercesC
 union Xml {
   Xml(const void* ptr)
       : p(ptr) {

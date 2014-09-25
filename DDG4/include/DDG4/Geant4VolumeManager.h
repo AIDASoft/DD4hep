@@ -18,26 +18,23 @@
 // Geant4 forward declarations
 class G4VTouchable;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4VolumeManager;
     class Geant4GeometryInfo;
 
+    /// The Geant4VolumeManager to facilitate optimized lookups of cell IDs from touchables.
     /** @class Geant4VolumeManager Geant4VolumeManager.h DDG4/Geant4VolumeManager.h
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4VolumeManager: public Geometry::Handle<Geant4GeometryInfo> {
+    class Geant4VolumeManager: public Geometry::Handle<Geant4GeometryInfo> {
     public:
       // Forward declarations
       typedef Geometry::Handle<Geant4GeometryInfo> Base;

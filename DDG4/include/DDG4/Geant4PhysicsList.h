@@ -19,19 +19,15 @@
 // Forward declarations
 class G4VPhysicsConstructor;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Interface class exposing some of the G4VUserPhysicsList class.
     /** @class Geant4UserPhysics Geant4PhysicsList.h DDG4/Geant4PhysicsList.h
      *
-     * Interface class exposing some of the G4VUserPhysicsList class.
      *
      * @author  M.Frank
      * @version 1.0
@@ -49,9 +45,8 @@ namespace DD4hep {
       virtual void RegisterPhysics(G4VPhysicsConstructor* physics) = 0;
     };
 
+    /// Concrete basic implementation of a Geant4 physics list action
     /** @class Geant4PhysicsList Geant4PhysicsList.h DDG4/Geant4PhysicsList.h
-     *
-     * Concrete basic implementation of the Geant4 event action
      *
      * @author  M.Frank
      * @version 1.0
@@ -59,6 +54,7 @@ namespace DD4hep {
     class Geant4PhysicsList: public Geant4Action {
     public:
 
+      /// Structure describing a G4 process
       /** @class PhysicsConstructor Geant4PhysicsList.h DDG4/Geant4PhysicsList.h
        *
        * Image of a physics constructor holding all stub information to attach
@@ -67,7 +63,8 @@ namespace DD4hep {
        * @author  M.Frank
        * @version 1.0
        */
-      struct Process {
+      class Process {
+      public:
         std::string name;
         int ordAtRestDoIt, ordAlongSteptDoIt, ordPostStepDoIt;
         /// Default constructor
@@ -80,25 +77,35 @@ namespace DD4hep {
       typedef std::vector<Process> ParticleProcesses;
       typedef std::map<std::string, ParticleProcesses> PhysicsProcesses;
 
-      struct ParticleConstructor: public std::string {
+      /// Structure describing a G4 particle constructor
+      class ParticleConstructor: public std::string {
+      public:
+        /// Default constructor
         ParticleConstructor()
             : std::string() {
         }
+	/// Initalizing constructor
         ParticleConstructor(const std::string& s)
             : std::string(s) {
         }
+	/// Default destructor
         ~ParticleConstructor() {
         }
       };
       typedef std::vector<ParticleConstructor> ParticleConstructors;
 
-      struct PhysicsConstructor: public std::string {
+      /// Structure describing a G4 physics constructor
+      class PhysicsConstructor: public std::string {
+      public:
+        /// Default constructor
         PhysicsConstructor()
             : std::string() {
         }
+	/// Initalizing constructor
         PhysicsConstructor(const std::string& s)
             : std::string(s) {
         }
+	/// Default destructor
         ~PhysicsConstructor() {
         }
       };
@@ -165,6 +172,7 @@ namespace DD4hep {
       virtual void constructProcesses(Geant4UserPhysics* physics);
     };
 
+    /// The implementation of the single Geant4 physics list action sequence
     /** @class Geant4PhysicsListActionSequence Geant4Action.h DDG4/Geant4Action.h
      *
      * Concrete implementation of the Geant4 physics list sequence.

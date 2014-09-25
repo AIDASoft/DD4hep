@@ -19,14 +19,10 @@
 // C/C++ include files
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
@@ -34,7 +30,7 @@ namespace DD4hep {
     class ReadoutObject;
 
     /// Handle to the implementation of the readout structure of a subdetector
-    /** @class Readout  Readout.h DD4hep/Readout.h
+    /**
      *
      * @author  M.Frank
      * @version 1.0

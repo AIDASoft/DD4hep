@@ -33,9 +33,8 @@ namespace DD4hep {
     // Forward declarations
     class Geant4Particle;
 
+    /// Default Interface class to handle monte carlo truth records
     /** @class Geant4MonteCarloTruth Geant4MonteCarloTruth.h DDG4/Geant4MonteCarloTruth.h
-     *
-     * Default Interface class to handle monte carlo truth records
      *
      * @author  M.Frank
      * @version 1.0

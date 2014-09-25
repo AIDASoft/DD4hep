@@ -12,18 +12,14 @@
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** Geant4Action to convert the particle information to Geant4
-     *
+    /// Geant4Action to convert the particle information to Geant4
+    /**
      *  @author  M.Frank
      *  @version 1.0
      */

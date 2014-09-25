@@ -17,18 +17,15 @@ class G4Run;
 class G4Event;
 class G4VHitsCollection;
 
-/*
- *   DD4hep namespace declaration
- */
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
-  /*
-   *   Simulation namespace declaration
-   */
+
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Base class to output Geant4 event data to persistent media
     /** @class Geant4OutputAction Geant4OutputAction.h DDG4/Geant4OutputAction.h
-     *
-     * Base class to output Geant4 event data to media
      *
      * @author  M.Frank
      * @version 1.0
@@ -36,7 +33,7 @@ namespace DD4hep {
     class Geant4OutputAction: public Geant4EventAction {
     protected:
       /// Helper class for thread savety
-      template <typename T> struct OutputContext {
+      template <typename T> class OutputContext {
       public:
         const T* context;
         void* userData;

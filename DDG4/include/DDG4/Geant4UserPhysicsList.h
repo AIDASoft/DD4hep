@@ -16,19 +16,14 @@
 #include "DDG4/Geant4PhysicsList.h"
 #include "G4VModularPhysicsList.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Concrete templated implementation of the Geant4 user physics list
     /** @class Geant4UserPhysicsList
-     *
-     * Concrete implementation of the Geant4 user physics list
      *
      * @author  M.Frank
      * @version 1.0

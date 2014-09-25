@@ -15,16 +15,13 @@
 #include "G4UImessenger.hh"
 #include "G4UIdirectory.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Generic implementation to export properties and actions to the Geant4 command prompt.
     /** @class Geant4UIMessenger Geant4UIMessenger.h DDG4/Geant4UIMessenger.h
      *
      * @author  M.Frank

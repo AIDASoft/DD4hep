@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_GEANT4MAPPING_H
-#define DD4HEP_GEANT4MAPPING_H
+#ifndef DD4HEP_DDG4_GEANT4MAPPING_H
+#define DD4HEP_DDG4_GEANT4MAPPING_H
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -15,19 +15,14 @@
 #include "DDG4/Geant4GeometryInfo.h"
 #include "DDG4/Geant4VolumeManager.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Geometry mapping from DD4hep to Geant 4.
     /** @class Geant4Mapping Geant4Mapping.h DDG4/Geant4Mapping.h
-     *
-     * Geometry mapping from DD4hep to Geant 4.
      *
      * @author  M.Frank
      * @version 1.0
@@ -90,4 +85,4 @@ namespace DD4hep {
   }    // End namespace Simulation
 }      // End namespace DD4hep
 
-#endif // DD4HEP_GEANT4MAPPING_H
+#endif // DD4HEP_DDG4_GEANT4MAPPING_H

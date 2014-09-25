@@ -23,14 +23,10 @@
 class G4RunManager;
 class G4UIdirectory;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
@@ -54,9 +50,9 @@ namespace DD4hep {
     class Geant4SensDetActionSequence;
     class Geant4SensDetSequences;
 
+    /// Class, which allows all Geant4Action derivatives to access the DDG4 kernel structures.
     /** @class Invoke Geant4Kernel.h DDG4/Geant4Kernel.h
      *
-     * Default base class for all geant 4 actions and derivates thereof.
      *
      * @author  M.Frank
      * @version 1.0
@@ -120,14 +116,14 @@ namespace DD4hep {
       Geant4Kernel(LCDD& lcdd);
     public:
 
+      /// Embedded helper class to facilitate map access to the phases.
       /** @class PhaseSelector Geant4Kernel.h DDG4/Geant4Kernel.h
-       *
-       * Embedded helper class to facilitate map access to the phases.
        *
        * @author  M.Frank
        * @version 1.0
        */
-      struct PhaseSelector {
+      class PhaseSelector {
+      public:
         /// Reference to embedding object
         Geant4Kernel* m_kernel;
         /// Standard constructor
@@ -312,11 +308,17 @@ namespace DD4hep {
       m_properties.add(nam, val);
       return *this;
     }
- 
-    struct Geant4Exec {
+
+    /// Main executor steering the Geant4 execution
+    class Geant4Exec {
+    public:
+      /// Configure the application
       static int configure(Geant4Kernel& kernel);
+      /// Initialize the application
       static int initialize(Geant4Kernel& kernel);
+      /// Run the application and simulate events
       static int run(Geant4Kernel& kernel);
+      /// Terminate the application
       static int terminate(Geant4Kernel& kernel);
     };
 

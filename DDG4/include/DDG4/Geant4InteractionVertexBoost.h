@@ -15,24 +15,23 @@
 // ROOT include files
 #include "Math/Vector4D.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
-    /// Generate particles isotrop in space around origine (0,0,0)
+
+    /// Action class to boost the primary vertex (and all outgoing particles) of a single interaction
     /**
+     * The vertex smearing is steered by the Lorentz transformation angle.
+     * The interaction to be modified is identified by the interaction's unique mask.
      *
      * @author  M.Frank
      * @version 1.0
      */
     class Geant4InteractionVertexBoost: public Geant4GeneratorAction {
     protected:
-      /// The constant Lorentz transformation angle
+      /// Property: The constant Lorentz transformation angle
       double m_angle;
       /// Property: Unique identifier of the interaction to be modified
       int m_mask;

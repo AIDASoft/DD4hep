@@ -14,6 +14,7 @@
 #ifndef DD4HEP_TGEOUNITS_H
 #define DD4HEP_TGEOUNITS_H
 
+/// Utility namespace to support TGeo units.
 namespace dd4hep {
 
 //

@@ -19,16 +19,14 @@
 #include <string>
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   class Property;
   class BasicGrammar;
   class PropertyGrammar;
 
-
+  /// Heler class to configure properties
   class PropertyConfigurator {
   protected:
     virtual ~PropertyConfigurator();
@@ -37,6 +35,7 @@ namespace DD4hep {
   };
 
 
+  /// Class describing the grammar representation of a given data type
   /** @class PropertyGrammar
    *
    *   @author  M.Frank
@@ -63,8 +62,8 @@ namespace DD4hep {
     virtual bool fromString(void* ptr, const std::string& value) const;
   };
 
-  /** @class Property
-   *
+  /// The property class to assign options to actions.
+  /**
    *   Standard implementation of a property mechanism.
    *   The data conversion mechanism between various properties
    *   uses internally boost::spirit to allow also conversions
@@ -124,8 +123,8 @@ namespace DD4hep {
     template <typename TYPE> void set(const TYPE& value);
   };
 
-  /** @class PropertyValue
-   *
+  /// Concrete template instantiation of a combined property value pair.
+  /**
    *   @author  M.Frank
    *   @date    13.08.2013
    */
@@ -166,8 +165,8 @@ namespace DD4hep {
     }
   };
 
-  /** @class PropertyManager
-   *
+  /// Manager to ease the handling of groups of properties.
+  /**
    *   @author  M.Frank
    *   @date    13.08.2013
    */

@@ -13,9 +13,7 @@
 #include <typeinfo>
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Implementation of an object supporting arbitrary user extensions

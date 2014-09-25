@@ -18,21 +18,16 @@
 #include "XML/XMLElements.h"
 #include <cstdarg>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
-  /*
-   *   XML sub-namespace declaration
-   */
+
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
     class Handle_t;
   }
   class NamedObject;
 
-  /*
-   *   Geometry sub-namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
@@ -40,12 +35,14 @@ namespace DD4hep {
     class SensitiveDetector;
     class DetElement;
 
+    /// Template class with a generic constructor signature
     template <typename T> class ConstructionFactory {
     public:
       static void* create(const char* arg);
     };
 
-    /** @class TranslationFactory Factories.h DDCore/Factories.h
+    /// Template class with a generic signature to apply LCDD plugins
+    /** @class ApplyFactory Factories.h DDCore/Factories.h
      *  Specialized factory to translate objects, which can be retrieved from LCDD
      *  Example: Translate DD4hep geometry to Geant4
      *
@@ -58,8 +55,9 @@ namespace DD4hep {
       static long create(LCDD& lcdd, int argc, char** argv);
     };
 
+    /// Specialized factory to translate objects, which can be retrieved from LCDD
     /** @class TranslationFactory Factories.h DDCore/Factories.h
-     *  Specialized factory to translate objects, which can be retrieved from LCDD
+     *
      *  Example: Translate DD4hep geometry to Geant4
      *
      *  @author  M.Frank
@@ -71,8 +69,8 @@ namespace DD4hep {
       static Ref_t create(LCDD& lcdd);
     };
 
-    /** @class XMLElementFactory Factories.h DDCore/Factories.h
-     *  Create an arbitrary object from it's XML representation.
+    /// Create an arbitrary object from it's XML representation.
+    /**
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -83,8 +81,8 @@ namespace DD4hep {
       static Ref_t create(LCDD& lcdd, XML::Handle_t e);
     };
 
-    /** @class XMLDocumentReaderFactory Factories.h DDCore/Factories.h
-     *  Read an arbitrary XML document and analyze it's content
+    ///  Read an arbitrary XML document and analyze it's content
+    /** 
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -95,8 +93,8 @@ namespace DD4hep {
       static long create(LCDD& lcdd, XML::Handle_t e);
     };
 
-    /** @class XMLConversionFactory Factories.h DDCore/Factories.h
-     *  Read an arbitrary XML document and analyze it's content
+    /// Read an arbitrary XML document and analyze it's content
+    /** 
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -107,9 +105,8 @@ namespace DD4hep {
       static long create(LCDD& lcdd, Ref_t& handle, XML::Handle_t element);
     };
 
-    /** @class DetElementFactory Factories.h DDCore/Factories.h
-     *  Standard factory to create Detector elements from the compact
-     *  XML representation.
+    /// Standard factory to create Detector elements from the compact XML representation.
+    /** 
      *
      *  @author  M.Frank
      *  @version 1.0

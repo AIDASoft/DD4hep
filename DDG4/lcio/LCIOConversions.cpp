@@ -184,7 +184,7 @@ namespace DD4hep {
 	  float pos[] = {c.x, c.y, c.z};
 	  EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
 	  if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit, c.time, c.pdgID, pos);
+	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit, c.time, lc_mcp->getPDG(), pos);
 	  else
 	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit, c.time);
 	}

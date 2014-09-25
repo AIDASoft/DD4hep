@@ -12,14 +12,10 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations;
@@ -30,8 +26,6 @@ namespace DD4hep {
     typedef Geometry::Readout Readout;
     typedef Geometry::DetElement DetElement;
 
-    template <class HIT> struct HitCompare;
-    template <class HIT> struct HitPositionCompare;
     class Geant4StepHandler;
     class Geant4Hit;
     class Geant4TrackerHit;

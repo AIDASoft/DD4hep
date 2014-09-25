@@ -20,18 +20,14 @@
 #include <cmath>
 #include <vector>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   XML namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     /// Implementation class supporting generic Segmentation of sensitive detectors
-    /** @class Segmentation::Object Segmentations.h DD4hep/Segmentations.h
+    /** 
      *
      * @author  M.Frank
      * @version 1.0
@@ -80,7 +76,7 @@ namespace DD4hep {
 
 
     /// Handle class supporting generic Segmentation of sensitive detectors
-    /** @class Segmentation Segmentations.h DD4hep/Segmentations.h
+    /** 
      *
      * @author  M.Frank
      * @version 1.0

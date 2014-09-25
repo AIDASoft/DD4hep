@@ -18,19 +18,16 @@ class G4VPhysicalVolume;
 class G4VTouchable;
 class G4Step;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations;
     class Geant4TouchableHandler;
 
+    /// Helper class to ease the extraction of information from a G4Touchable object.
     /** @class Geant4TouchableHandler Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
      *
      * Tiny helper/utility class to easily access Geant4 touchable information.

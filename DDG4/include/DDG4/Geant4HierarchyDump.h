@@ -26,7 +26,8 @@ namespace DD4hep {
    */
   namespace Simulation {
 
-    struct Geant4HierarchyDump {
+    class Geant4HierarchyDump {
+    public:
       typedef Geometry::LCDD LCDD;
       LCDD& m_lcdd;
 

@@ -15,18 +15,14 @@
 // Forward declaration
 class G4Run;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
-  /*
-   *   Simulation namespace declaration
-   */
+
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Concrete basic implementation of the Geant4 run action base class.
     /** @class Geant4RunAction Geant4RunAction.h DDG4/Geant4RunAction.h
-     *
-     * Concrete basic implementation of the Geant4 run action
      *
      * The Run Action is called once per start and end of a run. 
      * i.e. a series of generated events. These two callbacks
@@ -48,6 +44,7 @@ namespace DD4hep {
       virtual void end(const G4Run* run);
     };
 
+    /// Concrete basic implementation of the Geant4 run action sequencer.
     /** @class Geant4RunActionSequence Geant4RunAction.h DDG4/Geant4RunAction.h
      *
      * Concrete implementation of the Geant4 run action sequence.

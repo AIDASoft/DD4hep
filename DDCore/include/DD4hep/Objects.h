@@ -46,14 +46,10 @@ class TGeoIdentity;
 #define M_PI 3.14159265358979323846
 #endif
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geoemtry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
@@ -241,6 +237,9 @@ namespace DD4hep {
 
     /// Handle class describing an element in the periodic table
     /** 
+     *  For details please see the ROOT TGeo information:
+     *  @see http://root.cern.ch/root/html/TGeoElement.html
+     *
      *  @author  M.Frank
      *  @version 1.0
      */
@@ -267,7 +266,11 @@ namespace DD4hep {
       Atom(const std::string& name, const std::string& formula, int Z, int N, double density);
     };
 
+    /// Handle class describing a material
     /** @class Material Objects.h
+     *
+     *  For details please see the ROOT TGeo information:
+     *  @see http://root.cern.ch/root/html/TGeoMedium.html
      *
      *  @author  M.Frank
      *  @version 1.0
@@ -306,6 +309,7 @@ namespace DD4hep {
       double intLength() const;
     };
 
+    /// Handle class describing visualization attributes
     /** @class VisAttr Objects.h
      *
      *  @author  M.Frank
@@ -383,9 +387,9 @@ namespace DD4hep {
       std::string toString() const;
     };
 
-    /// OBSOLETE: Handle class describing an alignment entry
+    /// Deprecated: Handle class describing an alignment entry
     /**
-     * Class representing an alignment entry
+     * \deprecated{Class representing an alignment entry}
      *
      * @author  M.Frank
      * @version 1.0

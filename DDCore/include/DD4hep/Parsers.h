@@ -59,7 +59,10 @@
  *  @date 2006-05-12
  */
 // ============================================================================
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+  /// Namespace for the AIDA detector for utilities using boost::spirit parsers
   namespace Parsers {
     // ========================================================================
     /** parse the <c>bool</c> value

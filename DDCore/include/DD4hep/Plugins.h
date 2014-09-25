@@ -14,16 +14,13 @@
 #include "Reflex/PluginService.h"
 #endif
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   typedef ROOT::Reflex::PluginService PluginService;
 
   /// Helper to debug plugin manager calls
-  /** @class PluginDebug. PluginDebug.h DD4hep/PluginDebug.h
-   *
+  /** 
    *  Small helper class to adjust the plugin service debug level
    *  for a limited code scope. Automatically back-adjusts the debug
    *  level at object destruction.

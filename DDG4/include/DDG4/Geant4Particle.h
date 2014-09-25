@@ -23,19 +23,16 @@ class G4VProcess;
 #include <map>
 #include <memory>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4Particle;
 
+    /// Base class to extend the basic particle class used by DDG4 with user information
     class ParticleExtension  {
     public:
       /// Default constructor
@@ -136,7 +133,7 @@ namespace DD4hep {
 
 #ifndef __DDG4_STANDALONE_DICTIONARIES__
 
-    /// Data structure to access MC particle information 
+    /// Data structure to access derived MC particle information 
     /**
      * @author  M.Frank
      * @version 1.0

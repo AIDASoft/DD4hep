@@ -12,16 +12,13 @@
 // Framework include files
 #include "DD4hep/Detector.h"
 
+// Forward declarations
 class TGeoHMatrix;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations

@@ -18,40 +18,33 @@
 #include "G4Step.hh"
 #include "G4StepPoint.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations;
-    template <class HIT> struct HitCompare;
-    template <class HIT> struct HitPositionCompare;
     class Geant4Hit;
     class Geant4TrackerHit;
     class Geant4CalorimeterHit;
 
+    /// Deprecated:  Base class for hit comparisons.
     /** @class HitCompare Geant4Hits.h DDG4/Geant4Hits.h
-     *
-     *  Base class for hit comparisons.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    template <class HIT> struct HitCompare {
+    template <class HIT> class HitCompare {
+    public:
       /// Default destructor
       virtual ~HitCompare() {}
       /// Comparison function
       virtual bool operator()(const HIT* h) const = 0;
     };
 
+    /// Deprecated: Seek the hits of an arbitrary collection for the same position.
     /** @class HitPositionCompare Geant4Hits.h DDG4/Geant4Hits.h
-     *
-     * Seek the hits of an arbitrary collection for the same position.
      *
      * @author  M.Frank
      * @version 1.0
@@ -70,6 +63,7 @@ namespace DD4hep {
       }
     };
 
+    /// Deprecated: basic geant4 hit class for deprecated sensitive detectors
     /** @class Geant4Hit Geant4Hits.h DDG4/Geant4Hits.h
      *
      * Geant4 hit base class. Here only the basic
@@ -85,6 +79,7 @@ namespace DD4hep {
       // cellID
       unsigned long cellID;
 
+      /// Deprecated!!!
       struct MonteCarloContrib {
         /// Geant 4 Track identifier
         int trackID;
@@ -137,6 +132,7 @@ namespace DD4hep {
       static Contribution extractContribution(G4Step* step);
     };
 
+    /// Deprecated: Geant4 tracker hit class for deprecated sensitive detectors
     /** @class Geant4TrackerHit Geant4Hits.h DDG4/Geant4Hits.h
      *
      * Geant4 tracker hit class. Tracker hits contain the momentum
@@ -179,9 +175,10 @@ namespace DD4hep {
       void operator delete(void *ptr);
     };
 
+    /// Deprecated: Geant4 calorimeter hit class for deprecated sensitive detectors
     /** @class Geant4CalorimeterHit Geant4Hits.h DDG4/Geant4Hits.h
      *
-     * Geant4 tracker hit class. Calorimeter hits contain the momentum
+     * Geant4 calorimeter hit class. Calorimeter hits contain the momentum
      * direction as well as the hit position.
      *
      * @author  M.Frank

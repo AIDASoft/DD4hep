@@ -20,18 +20,14 @@
 // ROOT include files
 #include "TGeoMatrix.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    /** @class Detectortools  DetectorTools.h DD4hep/Detectortools.h
-     *
+    /// Helper namespace used to answer detector element specific questons
+    /** 
      * @author  M.Frank
      * @version 1.0
      */

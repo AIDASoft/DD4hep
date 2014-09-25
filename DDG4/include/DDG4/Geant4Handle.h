@@ -17,28 +17,23 @@
 #include <string>
 #include <memory>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     /// Forward declarations
     class Geant4Kernel;
     class Geant4Action;
 
+    /// Handle to Geant4 actions with built-in creation mechanism
     /** @class Geant4Handle Geant4Handle.h DDG4/Geant4Handle.h
-     *
-     * Handle to Geant4 actions with built-in creation mechanism
      *
      * @author  M.Frank
      * @version 1.0
      */
-    template <typename TYPE> struct Geant4Handle {
+    template <typename TYPE> class Geant4Handle {
     protected:
       void checked_assign(TYPE* p);
     public:
@@ -66,14 +61,14 @@ namespace DD4hep {
       handled_type* operator->() const;
       Geant4Action* action() const;
     };
+
+    /// Handle to Geant4 actions with built-in creation mechanism
     /** @class Geant4Handle Geant4Handle.h DDG4/Geant4Handle.h
-     *
-     * Handle to Geant4 actions with built-in creation mechanism
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct KernelHandle {
+    class KernelHandle {
     public:
       typedef Geant4Kernel handled_type;
       mutable handled_type* value;

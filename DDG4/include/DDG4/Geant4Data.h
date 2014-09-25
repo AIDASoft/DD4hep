@@ -21,59 +21,25 @@
 class G4Step;
 class G4StepPoint;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward type definitions
     typedef ROOT::Math::XYZVector Position;
     typedef ROOT::Math::XYZVector Direction;
 
-    /** @class HitCompare Geant4Data.h DDG4/Geant4Data.h
-     *
-     *  Base class for hit comparisons.
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    template <class HIT> struct HitCompare {
-      /// Comparison function
-      virtual bool operator()(const HIT* h) const = 0;
-    };
-
-    /** @class HitPositionCompare Geant4Data.h DDG4/Geant4Data.h
-     *
-     * Seek the hits of an arbitrary collection for the same position.
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
-    template <class HIT> struct HitPositionCompare : public HitCompare<HIT> {
-      const Position& pos;
-      /// Constructor
-      HitPositionCompare(const Position& p)
-          : pos(p) {
-      }
-      /// Comparison function
-      virtual bool operator()(const HIT* h) const {
-        return pos == h->position;
-      }
-    };
-
-    /** @class SimpleRun Geant4Data.h DDG4/Geant4Data.h
-     *
+    /// Simple run description structure. Used in the default I/O mechanism.
+    /**
      * Example class to store the run related information.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct SimpleRun {
+    class SimpleRun {
+      public:
       /// Run identifiers
       int runID;
       /// Number of events in this run
@@ -84,14 +50,15 @@ namespace DD4hep {
       virtual ~SimpleRun();
     };
 
-    /** @class SimpleEvent Geant4Data.h DDG4/Geant4Data.h
-     *
+    /// Simple event description structure. Used in the default I/O mechanism.
+    /**
      * Example class to store the event related information.
      *
      * @author  M.Frank
      * @version 1.0
      */
-    struct SimpleEvent {
+    class SimpleEvent {
+      public:
       typedef std::vector<long> Seeds;
       /// Run identifiers
       int runID;
@@ -105,6 +72,7 @@ namespace DD4hep {
       virtual ~SimpleEvent();
     };
 
+    /// Generic user-extendible data extension class.
     class DataExtension  {
     public:
       /// Default constructor
@@ -113,7 +81,7 @@ namespace DD4hep {
       virtual ~DataExtension();      
     };
 
-    /// Base class for geant4 hit structures
+    /// Base class for geant4 hit structures used by the default DDG4 sensitive detector implementations
     /*
      *  Base class for geant4 hit structures created by the
      *  example sensitive detectors. This is a generic class
@@ -123,15 +91,16 @@ namespace DD4hep {
      *  @author  M.Frank
      *  @version 1.0
      */
-    struct Geant4HitData {
+    class Geant4HitData {
+      public:
       /// cellID
       long long int cellID;
       /// User data extension if required
       std::auto_ptr<DataExtension> extension;  
 
-      /** @class MonteCarloContrib
-       */
-      struct MonteCarloContrib {
+      /// Utility class describing the monte carlo contribution of a given particle to a hit.
+      class MonteCarloContrib {
+      public:
         /// Geant 4 Track identifier
         int trackID;
         /// Particle ID from the PDG table
@@ -199,16 +168,19 @@ namespace DD4hep {
       static Contribution extractContribution(G4Step* step);
     };
 
-    struct Geant4Tracker {
-      /** @class Geant4Tracker::Hit Geant4Data.h DDG4/Geant4Data.h
-       *
+    /// Helper class to define structures used by the generic DDG4 tracker sensitive detector
+    class Geant4Tracker {
+    public:
+      /// DDG4 tracker hit class used by the generic DDG4 tracker sensitive detector
+      /**
        * Geant4 tracker hit class. Tracker hits contain the momentum
        * direction as well as the hit position.
        *
        * @author  M.Frank
        * @version 1.0
        */
-      struct Hit : public Geant4HitData {
+      class Hit : public Geant4HitData {
+      public:
         /// Hit position
         Position position;
         /// Hit direction
@@ -234,16 +206,19 @@ namespace DD4hep {
       };
     };
 
-    struct Geant4Calorimeter {
-      /** @class Geant4Calorimeter::Hit Geant4Data.h DDG4/Geant4Data.h
-       *
+    /// Helper class to define structures used by the generic DDG4 calorimeter sensitive detector
+    class Geant4Calorimeter {
+    public:
+
+      /// DDG4 calorimeter hit class used by the generic DDG4 calorimeter sensitive detector
+      /**
        * Geant4 tracker hit class. Calorimeter hits contain the momentum
        * direction as well as the hit position.
        *
        * @author  M.Frank
        * @version 1.0
        */
-      struct Hit : public Geant4HitData {
+      class Hit : public Geant4HitData {
       public:
         /// Hit position
         Position position;
@@ -260,6 +235,8 @@ namespace DD4hep {
         virtual ~Hit();
       };
     };
+
+    /// Backward compatibility definitions
     typedef Geant4HitData SimpleHit;
     typedef Geant4Tracker SimpleTracker;
     typedef Geant4Calorimeter SimpleCalorimeter;
