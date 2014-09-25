@@ -27,7 +27,7 @@ DOXYFILE_ENCODING = UTF-8
 # identify the project. Note that if you do not use Doxywizard you need
 # to put quotes around the project name if it contains spaces.
 
-PROJECT_NAME = dd4hep
+PROJECT_NAME = DD4hep
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
@@ -39,14 +39,14 @@ PROJECT_NUMBER = Rev: @GLOBAL_SVN_REVISION@
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF = 
+PROJECT_BRIEF = "DD4hep - The AIDA detector description toolkit for high energy physics experiments"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO = 
+PROJECT_LOGO = @CMAKE_CURRENT_SOURCE_DIR@/doc/LaTex/DD4hep-AIDA-logo.png
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -649,7 +649,9 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT  = @CMAKE_CURRENT_SOURCE_DIR@/DDCore/src
+INPUT  = @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen/DD4hepMainpage.dox
+INPUT += @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen/DD4hepFigures.dox
+INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDCore/src
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDCore/src/XML
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDCore/include/DD4hep
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDCore/include/XML
@@ -657,6 +659,9 @@ INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDG4/include/DDG4
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDG4/src
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDG4/plugins
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDG4/lcio
+INPUT += @CMAKE_CURRENT_SOURCE_DIR@/Eve/include/DDEve
+INPUT += @CMAKE_CURRENT_SOURCE_DIR@/Eve/src
+INPUT += @CMAKE_CURRENT_SOURCE_DIR@/Eve/lcio
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDSegmentation/src
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDSegmentation/include/DDSegmentation
 INPUT += @CMAKE_CURRENT_SOURCE_DIR@/DDSense/src
@@ -745,7 +750,7 @@ EXAMPLE_RECURSIVE = NO
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH = 
+IMAGE_PATH = @CMAKE_CURRENT_SOURCE_DIR@/doc/LaTex
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -894,13 +899,13 @@ HTML_FILE_EXTENSION = .html
 # have to redo this when upgrading to a newer version of doxygen or when
 # changing the value of configuration settings such as GENERATE_TREEVIEW!
 
-HTML_HEADER = 
+HTML_HEADER = @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen/DD4hepHeader.html
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER = 
+HTML_FOOTER = @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen/DD4hepFooter.html
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -909,7 +914,7 @@ HTML_FOOTER =
 # the style sheet file to the HTML output directory, so don't put your own
 # style sheet in the HTML output directory as well, or it will be erased!
 
-HTML_STYLESHEET = 
+HTML_STYLESHEET = @CMAKE_CURRENT_SOURCE_DIR@/doc/doxygen/DD4hep.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1007,14 +1012,14 @@ DOCSET_PUBLISHER_NAME = Publisher
 # Microsoft HTML help workshop to generate a compiled HTML help file (.chm)
 # of the generated HTML documentation.
 
-GENERATE_HTMLHELP = NO
+GENERATE_HTMLHELP = YES
 
 # If the GENERATE_HTMLHELP tag is set to YES, the CHM_FILE tag can
 # be used to specify the file name of the resulting .chm file. You
 # can add a path in front of the file if the result should not be
 # written to the html output directory.
 
-CHM_FILE = 
+CHM_FILE = DD4hep.chm
 
 # If the GENERATE_HTMLHELP tag is set to YES, the HHC_LOCATION tag can
 # be used to specify the location (absolute path including file name) of
@@ -1607,7 +1612,7 @@ MSCGEN_PATH =
 # inheritance and usage relations if the target is undocumented
 # or is not a class.
 
-HIDE_UNDOC_RELATIONS = YES
+HIDE_UNDOC_RELATIONS = NO
 
 # If you set the HAVE_DOT tag to YES then doxygen will assume the dot tool is
 # available from the path. This tool is part of Graphviz, a graph visualization
@@ -1722,7 +1727,7 @@ DIRECTORY_GRAPH = YES
 # HTML_FILE_EXTENSION to xhtml in order to make the SVG files
 # visible in IE 9+ (other browsers do not have this requirement).
 
-DOT_IMAGE_FORMAT = png
+DOT_IMAGE_FORMAT =
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.
