@@ -15,10 +15,12 @@ from SystemOfUnits import *
 """
 def run():
   kernel = DDG4.Kernel()
+  lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
+  DDG4.importConstants(lcdd)
 
   simple = DDG4.Simple(kernel)
   simple.printDetectors()
@@ -111,6 +113,7 @@ def run():
   gen.OutputLevel = 4 # generator_output_level
   gen.MomentumScale = 0.1
   gen.Mask = 1
+  gen.enableUI()
   kernel.generatorAction().adopt(gen)
   # Install vertex smearing for this interaction
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear1");  
@@ -118,6 +121,7 @@ def run():
   gen.Mask = 1
   gen.Offset = (-20*mm, -10*mm, -10*mm, 0*ns)
   gen.Sigma = (12*mm, 8*mm, 8*mm, 0*ns)
+  gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   # Second particle file reader
@@ -127,6 +131,7 @@ def run():
   gen.OutputLevel = 4 # generator_output_level
   gen.Mask = 2
   gen.MomentumScale = 0.1
+  gen.enableUI()
   kernel.generatorAction().adopt(gen)
   # Install vertex smearing for this interaction
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear2");
@@ -134,6 +139,7 @@ def run():
   gen.Mask = 2
   gen.Offset = (20*mm, 10*mm, 10*mm, 0*ns)
   gen.Sigma = (2*mm, 1*mm, 1*mm, 0*ns)
+  gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -141,11 +147,13 @@ def run():
   # Merge all existing interaction records
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
   gen.OutputLevel = 4 #generator_output_level
+  gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   # Finally generate Geant4 primaries
   gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
   gen.OutputLevel = 4 #generator_output_level
+  gen.enableUI()
   kernel.generatorAction().adopt(gen)
 
   # And handle the simulation particles.
@@ -157,8 +165,9 @@ def run():
   part.OutputLevel = 5 # generator_output_level
   part.enableUI()
   user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
-  user.TrackingVolume_Zmax = 165.70*cm  # EcalEndcap_zmin
-  user.TrackingVolume_Rmax = 126.50*cm  # EcalBarrel_rmin
+  user.TrackingVolume_Zmax = DDG4.EcalEndcap_zmin
+  user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
+  user.enableUI()
   part.adopt(user)
 
   """

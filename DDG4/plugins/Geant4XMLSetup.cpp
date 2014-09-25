@@ -83,6 +83,15 @@ namespace DD4hep  {
     _setProperties(handle,e);
     printout(INFO,"Geant4Setup","+++ Added action %s of type %s",tn.second.c_str(),tn.first.c_str());
     installMessenger(handle);
+
+    if ( action.hasChild(_Unicode(adopt)) )  {
+      xml_comp_t child = action.child(_Unicode(adopt));
+      Geant4Action* user = kernel.globalAction(child.nameStr());
+      Geant4ParticleHandler* ph = dynamic_cast<Geant4ParticleHandler*>(handle.get());
+      if ( ph )  {
+	ph->adopt(user);
+      }
+    }
     return handle;
   }
 

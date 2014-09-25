@@ -31,7 +31,38 @@ Simulation = DD4hep.Simulation
 
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
+LCDD       = Geo.LCDD
 
+#---------------------------------------------------------------------------
+def _constant(self,name):
+  return self.constantAsString(name)
+
+LCDD.globalVal = _constant
+#---------------------------------------------------------------------------
+
+"""
+import DDG4
+l=DDG4.LCDD.getInstance()
+l.addConstant(DDG4.Ref_t(DDG4.NamedObject('AA','10*cm')))
+DDG4.importConstants(l,'sub-name-space')
+"""
+def importConstants(lcdd,namespace=None):
+  scope = current
+  ns = current
+  if namespace is not None and not hasattr(current,namespace):
+    import imp
+    m = imp.new_module('DDG4.'+namespace)
+    setattr(current,namespace,m)
+    ns = m
+  values = {}
+  for c in lcdd.constants():
+    values[c.first] = c.second.GetTitle()
+  evaluator = DD4hep.evaluator()
+  for key,value in values:
+    setattr(ns,key,value)
+    #print 'Imported global value:',c.first,'=',c.second.GetTitle(),'into namespace',ns.__name__
+#---------------------------------------------------------------------------
+  
 def _registerGlobalAction(self,action):
   self.get().registerGlobalAction(Interface.toAction(action))
 def _registerGlobalFilter(self,filter):

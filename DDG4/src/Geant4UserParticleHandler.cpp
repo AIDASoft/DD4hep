@@ -18,6 +18,7 @@ Geant4UserParticleHandler::Geant4UserParticleHandler(Geant4Context* context, con
   : Geant4Action(context,nam)
 {
   InstanceCount::increment(this);
+  m_needsControl = true;
 }
 
 /// Default destructor

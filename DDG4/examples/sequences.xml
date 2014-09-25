@@ -4,22 +4,22 @@
 
 
   <!-- Kernel parameters  
-  --   UI="UI" is default, 
-  --
-  --   Note:
-  --   NumEvents is ignored in interactive sessions, but  used
-  --   in batch mode without ui nor vis.
-  --
-  --   To run batch: set UI=""
+       UI="UI" is default, 
+    
+       Note:
+       NumEvents is ignored in interactive sessions, but  used
+       in batch mode without ui nor vis.
+    
+       To run batch: set UI=""
   -->
   <kernel UI="UI" NumEvents="5"/>  
 
   <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
-  --   object and may be retrieved by there using the action name.
-  --
-  --   Note: registered actions MUST be unique.
-  --   However, not all actions need to registered....
-  --   Only register those, you later need to retrieve by name.
+       object and may be retrieved by there using the action name.
+    
+       Note: registered actions MUST be unique.
+       However, not all actions need to registered....
+       Only register those, you later need to retrieve by name.
   -->
   <actions>
     <action name="Geant4TestRunAction/RunInit">
@@ -34,6 +34,11 @@
 		  Property_double="5e15"
 		  Property_string="Hello_2"/>
     </action>
+    <action name="Geant4TCUserParticleHandler/UserParticleHandler">
+      <properties Control="true"
+		  TrackingVolume_Zmax="165*cm"
+		  TrackingVolume_Rmax="125*cm"/>
+    </action>
 
     <!-- UI handler initializing vis and ui. NAME IS FIXED/COMMON KNOWLEDGE -->
     <action name="Geant4UIManager/UI">
@@ -42,16 +47,14 @@
 		  SetupUI="run.mac"
 		  SessionType="csh"/>
      </action>
-    <!-- void and empty for the time being.... NAME IS FIXED/COMMON KNOWLEDGE -->
-    <action name="Geant4DummyTruthHandler/MonteCarloTruthHandler"/>
   </actions>
 
   <!-- List of known phases.
-  --   Note: Phases can only be attached to the program at very well defined moments,
-  --   which are explained in the documentation.
-  --   These are typically the "standard" moments: BeginRun, EndRun, BeginEvent, etc.
-  --   and the calls after processing the hits of each sensitive detector.
-  --
+       Note: Phases can only be attached to the program at very well defined moments,
+       which are explained in the documentation.
+       These are typically the "standard" moments: BeginRun, EndRun, BeginEvent, etc.
+       and the calls after processing the hits of each sensitive detector.
+    
   -->
   <phases>
     <phase type="RunAction/begin">
@@ -72,13 +75,13 @@
   </phases>
 
   <!-- List of globally known filters. Filters are called by Geant4 before the
-  --   hit processing in the sensitive detectors start. The global filters
-  --   may be shared between many sensitive detectors. Alternatively filters
-  --   may be directly attached to the sensitive detector in question.
-  --   Attributes are directly passed as properties to the filter action.
-  --
-  --   Note: registered global filters MUST be unique.
-  --   However, not all filters need to registered....
+       hit processing in the sensitive detectors start. The global filters
+       may be shared between many sensitive detectors. Alternatively filters
+       may be directly attached to the sensitive detector in question.
+       Attributes are directly passed as properties to the filter action.
+    
+       Note: registered global filters MUST be unique.
+       However, not all filters need to registered....
   -->
   <filters>
     <filter name="GeantinoRejectFilter/GeantinoRejector"/>
@@ -94,10 +97,10 @@
   </filters>
 
   <!-- List of known action sequences.
-  --   Note: Action sequences exist for each of the various geant4 callback,
-  --   which are explained in the documentation, such as EventAction, RunAction, etc
-  --   and the calls after processing the hits of each sensitive detector.
-  --
+       Note: Action sequences exist for each of the various geant4 callback,
+       which are explained in the documentation, such as EventAction, RunAction, etc
+       and the calls after processing the hits of each sensitive detector.
+    
   -->
   <sequences>
     <sequence name="Geant4EventActionSequence/EventAction">
@@ -123,6 +126,12 @@
   	  	    particle="'e-'"
 		    multiplicity="1"
 		    direction="(1,1,1)"/>
+      </action>
+      <action name="Geant4ParticleHandler/ParticleHandler">
+        <properties Control="true"
+		    SaveProcesses="['Decay']"
+  	  	    MinimalKineticEnergy="100*MeV"/>
+	<adopt name="UserParticleHandler"/>
       </action>
     </sequence>
 

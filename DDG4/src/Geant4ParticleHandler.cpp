@@ -57,6 +57,7 @@ namespace {
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const string& nam)
   : Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
 {
+  InstanceCount::increment(this);
   //generatorAction().adopt(this);
   eventAction().callAtBegin(this,&Geant4ParticleHandler::beginEvent);
   eventAction().callAtEnd(this,&Geant4ParticleHandler::endEvent);
@@ -69,7 +70,7 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const strin
   declareProperty("KeepAllParticles",    m_keepAll = false);
   declareProperty("SaveProcesses",       m_processNames);
   declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*MeV);
-  InstanceCount::increment(this);
+  m_needsControl = true;
 }
 
 /// No default constructor

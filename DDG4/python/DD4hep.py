@@ -37,9 +37,11 @@ def loadDD4hep():
 
 # We are nearly there ....
 name_space = __import__(__name__)
-def import_class(ns,nam):  
+def import_namespace_item(ns,nam):  
   scope = getattr(name_space,ns)
-  setattr(name_space,nam,getattr(scope,nam))
+  attr = getattr(scope,nam)
+  setattr(name_space,nam,attr)
+  return attr
 
 def import_root(nam):
   #print 'import ROOT class ',nam,str(name_space)
@@ -73,58 +75,65 @@ OutputLevel = _Levels()
 Core       = DD4hep
 Geo        = DD4hep.Geometry
 Geometry   = DD4hep.Geometry
+
+import_root('XmlTools')
+import_namespace_item('XmlTools','Evaluator')
 #---------------------------------------------------------------------------
-import_class('Core','NamedObject')
-import_class('Core','run_interpreter')
+import_namespace_item('Core','NamedObject')
+import_namespace_item('Core','run_interpreter')
 
 def import_geometry():
-  import_class('Core','setPrintLevel')
-  import_class('Core','printLevel')
-  import_class('Geo','LCDD')
-  import_class('Geo','VolumeManager')
-  import_class('Geo','OverlayedField')
+  import_namespace_item('Core','setPrintLevel')
+  import_namespace_item('Core','printLevel')
+  import_namespace_item('Geo','LCDD')
+  import_namespace_item('Core','evaluator')
+  import_namespace_item('Core','g4Evaluator')
+  
+  import_namespace_item('Geo','VolumeManager')
+  import_namespace_item('Geo','OverlayedField')
+  import_namespace_item('Geo','Ref_t')
 
   #// Objects.h
-  import_class('Geo','Author')
-  import_class('Geo','Header')
-  import_class('Geo','Constant')
-  import_class('Geo','Atom')
-  import_class('Geo','Material')
-  import_class('Geo','VisAttr')
-  import_class('Geo','AlignmentEntry')
-  import_class('Geo','Limit')
-  import_class('Geo','LimitSet')
-  import_class('Geo','Region')
+  import_namespace_item('Geo','Author')
+  import_namespace_item('Geo','Header')
+  import_namespace_item('Geo','Constant')
+  import_namespace_item('Geo','Atom')
+  import_namespace_item('Geo','Material')
+  import_namespace_item('Geo','VisAttr')
+  import_namespace_item('Geo','AlignmentEntry')
+  import_namespace_item('Geo','Limit')
+  import_namespace_item('Geo','LimitSet')
+  import_namespace_item('Geo','Region')
 
   #// Readout.h
-  import_class('Geo','Readout')
-  import_class('Geo','Alignment')
-  import_class('Geo','Conditions')
+  import_namespace_item('Geo','Readout')
+  import_namespace_item('Geo','Alignment')
+  import_namespace_item('Geo','Conditions')
 
   #// DetElement.h
-  import_class('Geo','DetElement')
-  import_class('Geo','SensitiveDetector')
+  import_namespace_item('Geo','DetElement')
+  import_namespace_item('Geo','SensitiveDetector')
 
   #// Volume.h
-  import_class('Geo','Volume')
-  import_class('Geo','PlacedVolume')
+  import_namespace_item('Geo','Volume')
+  import_namespace_item('Geo','PlacedVolume')
 
   #// Shapes.h
-  import_class('Geo','Polycone')
-  import_class('Geo','ConeSegment')
-  import_class('Geo','Box')
-  import_class('Geo','Torus')
-  import_class('Geo','Cone')
-  import_class('Geo','Tube')
-  import_class('Geo','Trap')
-  import_class('Geo','Trapezoid')
-  import_class('Geo','Sphere')
-  import_class('Geo','Paraboloid')
-  import_class('Geo','PolyhedraRegular')
-  import_class('Geo','BooleanSolid')
-  import_class('Geo','SubtractionSolid')
-  import_class('Geo','UnionSolid')
-  import_class('Geo','IntersectionSolid')
+  import_namespace_item('Geo','Polycone')
+  import_namespace_item('Geo','ConeSegment')
+  import_namespace_item('Geo','Box')
+  import_namespace_item('Geo','Torus')
+  import_namespace_item('Geo','Cone')
+  import_namespace_item('Geo','Tube')
+  import_namespace_item('Geo','Trap')
+  import_namespace_item('Geo','Trapezoid')
+  import_namespace_item('Geo','Sphere')
+  import_namespace_item('Geo','Paraboloid')
+  import_namespace_item('Geo','PolyhedraRegular')
+  import_namespace_item('Geo','BooleanSolid')
+  import_namespace_item('Geo','SubtractionSolid')
+  import_namespace_item('Geo','UnionSolid')
+  import_namespace_item('Geo','IntersectionSolid')
 
 
 def import_tgeo():

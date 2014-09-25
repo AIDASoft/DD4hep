@@ -79,6 +79,7 @@ namespace DD4hep {
   }    // End namespace Simulation
 }      // End namespace DD4hep
 
+#include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Handle.h"
 #include "DDG4/Geant4Kernel.h"
 #include "DDG4/Geant4PhysicsList.h"
