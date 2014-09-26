@@ -12,20 +12,14 @@
 // Framework include files
 #include "DDG4/Geant4UserParticleHandler.h"
 
-
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    ///  Rejects to keep particles, which are created outside a tracking cylinder.
     /** Geant4TCUserParticleHandler
-     *
-     *  Rejects to keep particles, which are created outside a tracking cylinder.
      *
      *  TC stands for TrackingCylinder ;-)
      *

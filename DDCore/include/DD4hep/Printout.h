@@ -6,12 +6,10 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
 #ifndef DD4HEP_PRINTOUT_H
 #define DD4HEP_PRINTOUT_H
 
 // Framework include files
-//#include "DD4hep/Handle.h"
 
 // C/C++ include files
 #include <cstdio>
@@ -27,10 +25,12 @@ class TNamed;
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
   class NamedObject;
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
+
     // Forward declarations
     class LCDD;
     class VisAttr;
@@ -141,6 +141,7 @@ namespace DD4hep {
   /// Access the current printer level
   PrintLevel printLevel();
 
+  /// Helper class template to implement ASCII object dumps
   /** @class Printer Conversions.h  DD4hep/compact/Conversions.h
    *
    *  Small helper class to print objects
@@ -169,6 +170,7 @@ namespace DD4hep {
     return os;
   }
 
+  /// Helper class template to implement ASCII dumps of named objects maps
   /** @class PrintMap Conversions.h  DD4hep/compact/Conversions.h
    *
    *  Small helper class to print maps of objects

@@ -17,20 +17,17 @@
 class TGeoVolume;
 class TGeoNode;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    /** @class GeometryTreeDump  GeometryTreeDump.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Geometry to screen dump action
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     struct GeometryTreeDump: public GeoHandler {
       GeometryTreeDump() {

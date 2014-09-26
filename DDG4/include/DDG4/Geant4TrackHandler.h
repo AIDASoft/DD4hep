@@ -26,7 +26,6 @@
 class G4VTouchableHandle;
 class G4VUserTrackInformation;
 
-
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
@@ -37,13 +36,13 @@ namespace DD4hep {
     class Geant4TrackHandler;
 
     /// Helper class to ease the extraction of information from a G4Track object.
-    /** @class Geant4TrackHandler Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
-     *
+    /**
      * Tiny helper/utility class to easily access Geant4 track information.
      * Born by lazyness: Avoid typing millions of statements!
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4TrackHandler {
     public:

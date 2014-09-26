@@ -15,28 +15,23 @@
 // Forward declarations
 class G4Event;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4EventAction Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Concrete basic implementation of the Geant4 event action
-     * 
+    /// Concrete basic implementation of the Geant4 event action
+    /**
      * The EventAction is called for every event.
      * During the callback all particles are created which form the 
      * microscopic kinematic action of the particle collision.
      * This input may either origin directly from an event generator 
      * program or come from file.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4EventAction : public Geant4Action {
     public:
@@ -50,15 +45,15 @@ namespace DD4hep {
       virtual void end(const G4Event* event);
     };
 
-    /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Concrete implementation of the Geant4 event action sequence
+    /// Concrete implementation of the Geant4 event action sequence
+    /** 
      * The sequence dispatches the callbacks at the beginning and the and
      * of an event to all registered Geant4EventAction members and all 
      * registered callbacks.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4EventActionSequence : public Geant4Action {
     protected:

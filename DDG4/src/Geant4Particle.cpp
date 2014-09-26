@@ -211,7 +211,7 @@ void Geant4ParticleHandle::offset(int off)  const   {
     p->parents.insert((*i)+off);
 }
 
-/// Output type 1:+++ <tag>   10 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+1.017927e+03  #Par:  1/4    #Dau:  2
+/// Output type 1:+++ <tag>   10 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+1.017927e+03  \#Par:  1/4    \#Dau:  2
 void Geant4ParticleHandle::dump1(int level, const std::string& src, const char* tag) const   {
   char text[256];
   Geant4ParticleHandle p(*this);
@@ -235,7 +235,7 @@ void Geant4ParticleHandle::dump1(int level, const std::string& src, const char* 
 	   int(p->parents.size()),text);
 }
 
-/// Output type 2:+++ <tag>   20 G4:   7 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+3.304035e+01 in record:YES  #Par:  1/18   #Dau:  0
+/// Output type 2:+++ <tag>   20 G4:   7 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+3.304035e+01 in record:YES  \#Par:  1/18   \#Dau:  0
 void Geant4ParticleHandle::dump2(int level, const std::string& src, const char* tag, int g4id, bool inrec) const   {
   char text[32];
   Geant4ParticleHandle p(*this);
@@ -255,7 +255,7 @@ void Geant4ParticleHandle::dump2(int level, const std::string& src, const char* 
 	   int(p->daughters.size()));
 }
 
-/// Output type 3:+++ <tag> ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] #Par:  0 #Dau:  4
+/// Output type 3:+++ <tag> ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] \#Par:  0 \#Dau:  4
 void Geant4ParticleHandle::dump3(int level, const std::string& src, const char* tag) const  {
   char text[256];
   Geant4ParticleHandle p(*this);

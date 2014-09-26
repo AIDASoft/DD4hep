@@ -26,8 +26,9 @@ namespace DD4hep {
     /// Geant4Action to print MC particle information.
     /**
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ParticlePrint : public Geant4EventAction	{
     public:

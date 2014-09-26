@@ -24,8 +24,9 @@ namespace DD4hep {
     /// Geant4Action to merge several independent interaction to one
     /** Geant4Action to convert the particle information to Geant4
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4InteractionMerger : public Geant4GeneratorAction    {
       /// Append input interaction to global output

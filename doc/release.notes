@@ -4,6 +4,12 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2014/09/26 Markus Frank
+-----------------------
+  - Quite some effort to improve the doxygen documentation.
+    The current revision is can be found at:
+    https://cern.ch/frankm/DD4hep/html/index.html
+
 2014/08/15 Markus Frank
 -----------------------
   - DDG4: Impreoved LCIO handling for DDG4

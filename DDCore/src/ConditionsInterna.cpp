@@ -24,7 +24,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsInterna::ConditionContainer);
 
 /// Initializing constructor
 IOV::IOV(int t) : type(t)  {
-  data[0]=data[1]=data[2]=data[3]=data[4]=0;
+  data[0]=data[1]=data[2]=data[3]=0;
 }
 
 /// Standard Destructor
@@ -34,7 +34,7 @@ IOV::~IOV()  {
 /// Move the data content: 'from' will be reset to NULL
 void IOV::move(IOV& from)   {
   ::memcpy(this,&from,sizeof(IOV));
-  from.data[0]=from.data[1]=from.data[2]=from.data[3]=from.data[4]=0;
+  from.data[0]=from.data[1]=from.data[2]=from.data[3]=0;
   from.type = UNKNOWN_IOV;
 }
 

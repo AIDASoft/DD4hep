@@ -11,25 +11,24 @@
 // C/C++ include files
 #include <fstream>
 
-/*
- *   DD4hep namespace declaration
- */
-namespace DD4hep   {
-  /*
-   *   lcio namespace declaration
-   */
-  namespace Simulation {
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep  {
 
-    /** @class HepEventReader HepEventReader.h DDG4/HepEventReader.h
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation  {
+
+    /// File reader to load StdHep format (ASCII)
+    /**
      * 
      * Class to populate Geant4 primary particles and vertices from a 
-     * file in StdHep format (ASCII)
+     * file in HepEvent format (ASCII)
      *
-     * @author  P.Kostka (main author)
-     * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
-     * @version 1.0
+     *  \author  P.Kostka (main author)
+     *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
-    struct HepEventReader : public LCIOEventReader  {
+    class HepEventReader : public LCIOEventReader  {
     protected:
       std::ifstream m_input;
       int m_format;

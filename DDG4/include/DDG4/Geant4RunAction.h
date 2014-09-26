@@ -22,15 +22,15 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Concrete basic implementation of the Geant4 run action base class.
-    /** @class Geant4RunAction Geant4RunAction.h DDG4/Geant4RunAction.h
-     *
+    /**
      * The Run Action is called once per start and end of a run. 
      * i.e. a series of generated events. These two callbacks
      * allow clients to define run-dependent actions such as statistics
      * summaries etc.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4RunAction: public Geant4Action {
     public:
@@ -45,15 +45,15 @@ namespace DD4hep {
     };
 
     /// Concrete basic implementation of the Geant4 run action sequencer.
-    /** @class Geant4RunActionSequence Geant4RunAction.h DDG4/Geant4RunAction.h
-     *
+    /**
      * Concrete implementation of the Geant4 run action sequence.
      * The sequence dispatches the callbacks at the beginning and the and
      * of a run to all registered Geant4RunAction members and all 
      * registered callbacks.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4RunActionSequence: public Geant4Action {
     protected:

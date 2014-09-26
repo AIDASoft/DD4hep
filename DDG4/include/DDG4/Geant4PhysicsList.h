@@ -26,11 +26,10 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Interface class exposing some of the G4VUserPhysicsList class.
-    /** @class Geant4UserPhysics Geant4PhysicsList.h DDG4/Geant4PhysicsList.h
-     *
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4UserPhysics {
     protected:
@@ -46,22 +45,22 @@ namespace DD4hep {
     };
 
     /// Concrete basic implementation of a Geant4 physics list action
-    /** @class Geant4PhysicsList Geant4PhysicsList.h DDG4/Geant4PhysicsList.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4PhysicsList: public Geant4Action {
     public:
 
       /// Structure describing a G4 process
-      /** @class PhysicsConstructor Geant4PhysicsList.h DDG4/Geant4PhysicsList.h
-       *
+      /**
        * Image of a physics constructor holding all stub information to attach
        * the concrete process contributing to the user physics list.
        *
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Process {
       public:
@@ -95,7 +94,12 @@ namespace DD4hep {
       typedef std::vector<ParticleConstructor> ParticleConstructors;
 
       /// Structure describing a G4 physics constructor
-      class PhysicsConstructor: public std::string {
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
+       class PhysicsConstructor: public std::string {
       public:
         /// Default constructor
         PhysicsConstructor()
@@ -173,13 +177,13 @@ namespace DD4hep {
     };
 
     /// The implementation of the single Geant4 physics list action sequence
-    /** @class Geant4PhysicsListActionSequence Geant4Action.h DDG4/Geant4Action.h
-     *
+    /** 
      * Concrete implementation of the Geant4 physics list sequence.
      * A list to setup the physics content in a modular form
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4PhysicsListActionSequence: public Geant4Action {
     public:

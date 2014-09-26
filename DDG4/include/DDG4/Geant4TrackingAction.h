@@ -26,10 +26,10 @@ namespace DD4hep {
     class Geant4TrackInformation;
 
     /// Default base class for all geant 4 tracking actions used in DDG4.
-    /** @class Geant4TrackingAction Geant4Action.h DDG4/Geant4Action.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4TrackingAction: public Geant4Action {
     public:
@@ -56,14 +56,14 @@ namespace DD4hep {
     };
 
     /// Concrete implementation of the Geant4 tracking action sequence
-    /** @class Geant4EventActionSequence Geant4Action.h DDG4/Geant4Action.h
-     *
+    /**
      * The sequence dispatches the callbacks for each tracking action
      * to all registered Geant4SteppingAction members and all 
      * registered callbacks.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4TrackingActionSequence: public Geant4Action {
     protected:

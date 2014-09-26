@@ -28,13 +28,13 @@ namespace DD4hep {
     class Geant4TouchableHandler;
 
     /// Helper class to ease the extraction of information from a G4Touchable object.
-    /** @class Geant4TouchableHandler Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
-     *
+    /**
      * Tiny helper/utility class to easily access Geant4 touchable information.
      * Born by lazyness: Avoid typing millions of statements!
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4TouchableHandler {
     public:

@@ -13,26 +13,21 @@
 #include "DD4hep/Alignment.h"
 #include "DDAlign/AlignmentCache.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Alignment namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     /// Forward declarations
     class LCDD;
 
 
-    /** @class AlignmentOperator AlignmentOperators.h DDAlign/AlignmentOperators.h
-     *
-     *
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+    /// Base class for alignment functors
+    /**
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
      */
     struct AlignmentOperator  {
       typedef AlignmentStack::StackEntry Entry;
@@ -42,34 +37,47 @@ namespace DD4hep {
       AlignmentCache& cache;
       Nodes& nodes;
     public: 
+      /// Initializing functor constructor
       AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
+      /// Insert alignment entry
       void insert(Alignment alignment)  const;
     };
 
-    /** @class AlignmentSelector AlignmentOperators.h DDAlign/AlignmentOperators.h
-     *
-     *
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+    /// Select alignment operations according to certain criteria
+    /**
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
      */
     struct AlignmentSelector : public AlignmentOperator {
     public: 
       const Entries& entries;
+      /// Initializing functor constructor
       AlignmentSelector(AlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
       ~AlignmentSelector() { }
       const AlignmentSelector& reset()   const { nodes.clear(); return *this; }
+      /// Function callback for cache entries
       void operator()(const AlignmentCache::Cache::value_type& e) const;
+      /// Function callback for entries
       void operator()(Entry* e) const;
     };
 
+    /// Act on selected alignment entries
+    /**
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
+     */
     template <typename T> struct AlignmentActor : public AlignmentOperator {
     public: 
+      /// Initializing functor constructor
       AlignmentActor(AlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
       void init() {}
+      /// Function callback for entries
       void operator()(Nodes::value_type& e) const;
     };
 
+    /// Helper namespace to specialize functionality  \ingroup  DD4HEP_ALIGN
     namespace DDAlign_standard_operations  {
       struct node_print;
       struct node_reset;

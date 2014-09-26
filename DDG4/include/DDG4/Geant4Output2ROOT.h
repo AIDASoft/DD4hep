@@ -16,24 +16,19 @@ class TFile;
 class TTree;
 class TBranch;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   class ComponentCast;
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
-
-    /** @class Geant4Output2ROOT Geant4Output2ROOT.h DDG4/Geant4Output2ROOT.h
-     *
-     * Base class to output Geant4 event data to media
-     *
-     * @author  M.Frank
-     * @version 1.0
+ 
+    /// Class to output Geant4 event data to ROOT files
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Output2ROOT: public Geant4OutputAction {
     protected:

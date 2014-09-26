@@ -12,29 +12,24 @@
 // Framework include files
 #include "DDCond/ConditionsStack.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Conditions namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     /// Forward declarations
     class ConditionsStack;
     class LCDD;
 
-    /** @class ConditionsHandler ConditionsHandler.h DDCond/ConditionsHandler.h
-     *
-     *  Class caching all known conditions operations for one LCDD instance.
+    /// Class caching all known conditions operations for one LCDD instance.
+    /**
      *  Internally the instances are fragmented to subdetectors defined
      *  by the next-to-top level detector elements.
      *
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_CONDITIONS
      */
     class ConditionsHandler  {
       friend class LCDD;

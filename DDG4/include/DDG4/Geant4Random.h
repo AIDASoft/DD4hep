@@ -36,8 +36,9 @@ namespace DD4hep {
      *  if the generation functions will have to become virtual....
      *  Future will tell us.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Random  {
       friend class Geant4Exec;

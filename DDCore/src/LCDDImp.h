@@ -6,7 +6,6 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
 #ifndef DD4hep_LCDDGEOIMP_H
 #define DD4hep_LCDDGEOIMP_H
 
@@ -20,16 +19,13 @@ class TGeoManager;
 // C/C++ include files
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   XML namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
+    /// Concrete implementation class of the LCDD interface
     /** @class LCDDImp   LCDDImp.h  src/LCDDImp.h
      *
      * @author  M.Frank

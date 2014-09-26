@@ -17,7 +17,11 @@
 
 // Unicode tags known to the alignment section
 namespace DD4hep {
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
+
+    // Alignment tags
+
     UNICODE(DetectorAlignment);
     UNICODE(subdetectors);
     UNICODE(subdetector);

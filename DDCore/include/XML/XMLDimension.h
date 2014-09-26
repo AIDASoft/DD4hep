@@ -12,14 +12,10 @@
 // Framework include files
 #include "XML/XMLTags.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   XML namespace declaration
-   */
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
 
     /// XML Handle to xml elements with predefined attribute access
@@ -43,8 +39,9 @@ namespace DD4hep {
      *  Run-time exceptions occur however, if non-exiting attributes
      *  are accessed.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_XML
      */
     struct Dimension: public Element {
       /// Default constructor

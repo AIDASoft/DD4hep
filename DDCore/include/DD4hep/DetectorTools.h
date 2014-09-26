@@ -27,8 +27,9 @@ namespace DD4hep {
     /// Helper namespace used to answer detector element specific questons
     /**
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     namespace DetectorTools {
       typedef std::vector<DetElement>   ElementPath;

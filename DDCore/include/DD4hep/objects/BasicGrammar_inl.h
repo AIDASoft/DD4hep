@@ -31,17 +31,17 @@
 namespace DD4hep { XmlTools::Evaluator& g4Evaluator();  }
 namespace {  static XmlTools::Evaluator& s__eval(DD4hep::g4Evaluator());  }
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class PropertyGrammarCollection
-   *
-   *   @author  M.Frank
-   *   @date    13.08.2013
+  /// Concrete type dependent grammar definition
+  /**
+   *   \author  M.Frank
+   *   \date    13.08.2013
+   *   \ingroup DD4HEP
    */
-  template <typename TYPE> struct Grammar : public BasicGrammar {
+  template <typename TYPE> class Grammar : public BasicGrammar {
+  public:
     /// Standarsd constructor
     Grammar();
     /// Default destructor
@@ -123,6 +123,7 @@ namespace DD4hep {
 #endif
   }
 
+  /// Helper function to parse data type
   static std::string pre_parse_obj(const std::string& in)   {
     std::string res = "";
     res.reserve(1024);

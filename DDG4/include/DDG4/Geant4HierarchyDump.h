@@ -11,9 +11,7 @@
 // Geant 4 include files
 #include "G4VPhysicalVolume.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
@@ -21,11 +19,15 @@ namespace DD4hep {
     class LCDD;
   }
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Helper to dump Geant4 volume hierarchy
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class Geant4HierarchyDump {
     public:
       typedef Geometry::LCDD LCDD;

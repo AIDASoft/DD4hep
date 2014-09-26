@@ -14,23 +14,20 @@
 #include "DD4hep/Fields.h"
 #include <vector>
 
-/*
- *   DD4hep namespace declaration
- */
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geoemtry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     /// Implementation object of a field with constant strength
-    /** @class ConstantField FieldTypes.h
-     *
+    /** 
      *  Generic constant uniform field
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class ConstantField: public CartesianField::Object {
     public:
@@ -46,12 +43,12 @@ namespace DD4hep {
     };
 
     /// Implementation object of a solenoidal magnetic field.
-    /** @class SolenoidField FieldTypes.h DD4hep/FieldTypes.h
-     *
+    /** 
      *  Generic solonoid magnetic field
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class SolenoidField: public CartesianField::Object {
     public:
@@ -70,12 +67,12 @@ namespace DD4hep {
     };
 
     /// Implementation object of a dipole magnetic field.
-    /** @class DipoleField FieldTypes.h DD4hep/FieldTypes.h
-     *
+    /** 
      *  Generic solonoid magnetic field
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class DipoleField: public CartesianField::Object {
     public:

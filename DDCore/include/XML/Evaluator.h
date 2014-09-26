@@ -5,6 +5,7 @@
 #ifndef XMLTOOLS_EVALUATOR_H
 #define XMLTOOLS_EVALUATOR_H
 
+/// Namespace containing XML tools.
 namespace XmlTools {
 
   /// Evaluator of arithmetic expressions with an extendable dictionary.

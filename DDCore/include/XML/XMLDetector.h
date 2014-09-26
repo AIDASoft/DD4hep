@@ -12,14 +12,10 @@
 // Framework include files
 #include "XML/XMLDimension.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   XML namespace declaration
-   */
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
 
     /// XML Handle class extending the XML handle Dimension
@@ -27,8 +23,9 @@ namespace DD4hep {
      *  Helper class to access any field in a xml tag.
      *  Specialized for attributes of a detector sub-element.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup DD4HEP_XML
      */
     struct Component: public Dimension {
       /// Constructor from Handle
@@ -50,8 +47,9 @@ namespace DD4hep {
      *  Helper class to access any field in a xml tag.
      *  Specialized for some of the attributes of a detector element.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup DD4HEP_XML
      */
     struct DetElement: public Dimension {
       /// Constructor from Handle

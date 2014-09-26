@@ -27,6 +27,11 @@ namespace DD4hep {
   class PropertyGrammar;
 
   /// Heler class to configure properties
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
+   */
   class PropertyConfigurator {
   protected:
     virtual ~PropertyConfigurator();
@@ -36,10 +41,10 @@ namespace DD4hep {
 
 
   /// Class describing the grammar representation of a given data type
-  /** @class PropertyGrammar
-   *
-   *   @author  M.Frank
-   *   @date    13.08.2013
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
    */
   class PropertyGrammar {
   protected:
@@ -70,8 +75,9 @@ namespace DD4hep {
    *   between types, which are initially unrelated such as
    *   e.g. vector<int> and list<short>.
    *
-   *   @author  M.Frank
-   *   @date    13.08.2013
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
    */
   class Property {
   protected:
@@ -125,8 +131,9 @@ namespace DD4hep {
 
   /// Concrete template instantiation of a combined property value pair.
   /**
-   *   @author  M.Frank
-   *   @date    13.08.2013
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
    */
   template <class TYPE> class PropertyValue : private Property {
   public:
@@ -167,8 +174,9 @@ namespace DD4hep {
 
   /// Manager to ease the handling of groups of properties.
   /**
-   *   @author  M.Frank
-   *   @date    13.08.2013
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
    */
   class PropertyManager {
   public:

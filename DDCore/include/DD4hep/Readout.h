@@ -31,9 +31,9 @@ namespace DD4hep {
 
     /// Handle to the implementation of the readout structure of a subdetector
     /**
-     *
-     * @author  M.Frank
-     * @version 1.0
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
      */
     struct Readout: public Handle<ReadoutObject> {
     public:

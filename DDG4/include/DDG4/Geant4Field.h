@@ -25,10 +25,11 @@ namespace DD4hep {
     // Forward declarations
     class Geant4Field;
 
-    /** @class Geant4Field Geant4Field.h DDG4/Geant4Field.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Mediator class to allow Geant4 accessing magnetic fields defined in DD4hep
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Field : public G4MagneticField {
     protected:

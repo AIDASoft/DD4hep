@@ -16,12 +16,12 @@
 namespace DD4hep {
 
     /// Implementation of a named object
-    /** @class Container  NamedObject.h DD4hep/NamedObject.h
-     * 
-     *  The data class behind a conditions container handle.
+    /**
+     *  The data class behind named object handles.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class NamedObject {
     public:

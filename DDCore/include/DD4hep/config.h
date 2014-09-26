@@ -19,15 +19,12 @@
 #define DECREMENT_COUNTER 
 #endif
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry sub-namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
+
   } /* End namespace Geometry  */
 } /*   End namespace DD4hep    */
 #endif    /* DD4HEP_CONFIG_H         */

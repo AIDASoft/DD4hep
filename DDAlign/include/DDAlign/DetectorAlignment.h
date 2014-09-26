@@ -15,22 +15,20 @@
 // Forward declarations
 class TGeoHMatrix;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
+    // Forward declarations
     class DetElement;
 
-    /** @class Alignment  Readoutn.h DD4hep/Alignment.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// DetectorAlignment. DetElement Handle supporting alignment operations.
+    /** 
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
      */
     class DetectorAlignment : public DetElement {
     protected:

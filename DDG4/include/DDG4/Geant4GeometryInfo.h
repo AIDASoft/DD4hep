@@ -36,20 +36,22 @@ class G4VPhysicalVolume;
 class G4AssemblyVolume;
 class G4VSensitiveDetector;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4Mapping;
     class Geant4AssemblyVolume;
 
+    /// Helper namespace defining data types for the relation information between geant4 objects and dd4hep objects.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     namespace Geant4GeometryMaps  {
       using Geometry::Atom;
       using Geometry::Material;
@@ -85,7 +87,13 @@ namespace DD4hep {
       std::string placementPath(const Geant4PlacementPath& path, bool reverse=true);
     }
 
-    struct Geant4GeometryInfo : public TNamed, public Geometry::GeoHandlerTypes::GeometryInfo {
+    /// Concreate class holding the relation information between geant4 objects and dd4hep objects.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4GeometryInfo : public TNamed, public Geometry::GeoHandlerTypes::GeometryInfo {
     public:
       Geant4GeometryMaps::ElementMap g4Elements;
       Geant4GeometryMaps::MaterialMap g4Materials;

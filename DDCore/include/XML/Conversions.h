@@ -14,20 +14,19 @@
 #include <iostream>
 #include "DD4hep/LCDD.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  // Forward declarations
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
     struct Handle_t;
   }
 
   /// Basic conversion objects for handling DD4hep XML files.
   /**
-   *  @author   M.Frank
-   *  @version  1.0
+   *  \author   M.Frank
+   *  \version  1.0
+   *  \ingroup DD4HEP_XML
    */
   template <typename T> struct Converter {
     typedef T to_type;

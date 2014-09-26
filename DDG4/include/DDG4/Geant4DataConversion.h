@@ -14,22 +14,20 @@
 #include "DD4hep/Detector.h"
 #include <typeinfo>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4ConversionHelper Geant4DataConversion.h DDG4/Geant4DataConversion.h
-     *
-     *   @author  M.Frank
-     *   @date    13.08.2013
+    /// Helper class for data conversion
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
-    struct Geant4ConversionHelper {
+    class Geant4ConversionHelper {
+    public:
       /// Default constructor
       Geant4ConversionHelper();
       /// Default destructor
@@ -42,12 +40,14 @@ namespace DD4hep {
       static std::string encoding(Geometry::Readout ro);
     };
 
-    /** @class Geant4Conversion Geant4DataConversion.h DDG4/Geant4DataConversion.h
-     *
-     *   @author  M.Frank
-     *   @date    13.08.2013
+    /// Data conversion class
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
-    template <typename OUTPUT, typename ARGS> struct Geant4Conversion : public Geant4ConversionHelper {
+    template <typename OUTPUT, typename ARGS> class Geant4Conversion : public Geant4ConversionHelper {
+    public:
       typedef ARGS arg_t;
       typedef OUTPUT output_t;
       typedef Geant4Conversion<output_t, arg_t> self_t;
@@ -109,13 +109,15 @@ namespace DD4hep {
           typeName(typ));
     }
 
-    /** @class Geant4DataConversion Geant4DataConversion.h DDG4/Geant4DataConversion.h
-     *
-     *   @author  M.Frank
-     *   @date    13.08.2013
+    /// Template class for data conversion. To be specialized by the client.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     template <typename OUTPUT, typename ARGS, typename TAG>
-    struct Geant4DataConversion : public Geant4Conversion<OUTPUT,ARGS> {
+    class Geant4DataConversion : public Geant4Conversion<OUTPUT,ARGS> {
+    public:
       typedef TAG tag_t;
       typedef ARGS arg_t;
       typedef OUTPUT output_t;

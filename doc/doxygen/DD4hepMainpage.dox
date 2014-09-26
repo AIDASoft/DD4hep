@@ -123,7 +123,6 @@ be adequate later in the detector life cycle and
 is likely to be replaced or refined when a more realistic detector 
 with deviations from the ideal would be needed by the experiment.
 
-
 In the compact description the detector is parametrized in minimalistic terms
 with user provided parameters in XML.
 XML is an open format, the DD4hep parsers do not validate against a fix schema
@@ -132,7 +131,6 @@ detectors. This feature minimizes the burden on the end-user while still
 supporting flexibility.
 Such a compact detector descriptions cannot be interpreted in a 
 general manner, therefore so called $Detector$ $Constructors$ are needed.
-
 
 <img src="../doc/LaTex/DD4hep_classes.png" height="400"/>
 <b>Class diagram with the main classes and their relations 
@@ -159,7 +157,6 @@ compiler time, but the code is slightly more technical.
 The other is based on Python fragments, the code is more readable and
 compact but errors are only detected at execution time.
 
-\noindent
 The compact description together with the detector constructors are sufficient
 to build the detector model and to visualize it. If during the lifetime of the
 experiment the detector model changes, the corresponding constructors will 
@@ -202,7 +199,6 @@ Applications may access the full experiment geometry and all connected data
 through a singleton object called $LCDD$, which provides 
 management, bookkeeping and ownership to the model instances.
 
-\noindent
 The geometry is implemented using the ROOT geometry classes, which are used
 directly without unnecessary interfaces to isolate the end-user from the 
 actual ROOT based implementation. There is one exception: 

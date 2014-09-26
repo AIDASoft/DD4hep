@@ -13,33 +13,56 @@
 
 #include <vector>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  struct LayerSlice {
+  /// Class to describe the slice of one layer in a layering stack
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
+   */
+  class LayerSlice {
+  public:
     bool _sensitive;
     double _thickness;
     std::string _material;
-    LayerSlice(bool s, double t, const std::string& m)
-        : _sensitive(s), _thickness(t), _material(m) {
-    }
-    LayerSlice(const LayerSlice& c)
-        : _sensitive(c._sensitive), _thickness(c._thickness), _material(c._material) {
-    }
+    /// Initializing constructor
+    LayerSlice(bool s, double t, const std::string& m);
+    /// Copy constructor
+    LayerSlice(const LayerSlice& c);
+    /// Assignment operator
     LayerSlice& operator=(const LayerSlice& c);
   };
+  
+  /// Initializing constructor
+  inline LayerSlice::LayerSlice(bool s, double t, const std::string& m)
+    : _sensitive(s), _thickness(t), _material(m) {
+  }
+  /// Copy constructor
+  inline LayerSlice::LayerSlice(const LayerSlice& c)
+    : _sensitive(c._sensitive), _thickness(c._thickness), _material(c._material) {
+  }
 
-  struct Layer {
+  /// Class to describe one layer in a layering stack
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
+   */
+  class Layer {
+  public:
     double _thickness;
     double _preOffset;
     std::vector<LayerSlice> _slices;
-    Layer()
-        : _thickness(0.), _preOffset(0.) {
-    }
+
+    /// Default constructor
+    Layer();
+    /// Copy constructor
     Layer(const Layer& c);
+    /// Assignment operator
     Layer& operator=(const Layer& c);
+
     void compute();
     double thickness() const {
       return _thickness;
@@ -52,17 +75,30 @@ namespace DD4hep {
     }
   };
 
-  struct LayerStack {
+  /// Default constructor
+  inline Layer::Layer() : _thickness(0.), _preOffset(0.) {
+  }
+
+
+  /// Class to describe a layering stack
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
+   */
+  class LayerStack {
+  public:
     std::vector<Layer*> _layers;
-    LayerStack() {
-    }
-    LayerStack(const LayerStack& c)
-        : _layers(c._layers) {
-    }
+    /// Default constructor
+    LayerStack();
+    /// Copy constructor
+    LayerStack(const LayerStack& c);
+    /// Default destructor
     ~LayerStack() {
     }
+    /// Assignment operator
     LayerStack& operator=(const LayerStack& c) {
-      _layers = c._layers;
+      if ( &c != this ) _layers = c._layers;
       return *this;
     }
     std::vector<Layer*>& layers() {
@@ -77,33 +113,63 @@ namespace DD4hep {
     }
   };
 
-  struct Layering {
+  /// Default constructor
+  inline LayerStack::LayerStack() {
+  }
+  /// Copy constructor
+  inline LayerStack::LayerStack(const LayerStack& c)
+    : _layers(c._layers) {
+  }
+
+  /// Class to convert a layering object from the compact notation
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
+   */
+  class Layering {
+  public:
     LayerStack _stack;
+    /// Default constructor
     Layering();
+    /// Initializing constructor
     Layering(XML::Element e);
+    /// Default destructor
     virtual ~Layering();
+
     std::vector<Layer*>& layers() {
       return _stack.layers();
     }
     const Layer* layer(size_t which) const;
+
     double totalThickness() const {
       return _stack.totalThickness();
     }
     double singleLayerThickness(XML::Element e) const;
   };
 
-  /*
-   *   XML namespace declaration
-   */
+  /// Namespace containing utilities to parse XML files using XercesC or TinyXML
   namespace XML {
 
-    // Tag and attribute objects. See XMLTags.cpp for the instantiation
-    struct LayeringCnv: public Element {
-      LayeringCnv(Element e)
-          : Element(e) {
-      }
+    /// XML converter for layering objects
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_XML
+     */
+    class LayeringCnv: public Element {
+    public:
+      /// Initializing constructor
+      LayeringCnv(Element e);
+      /// Invoke converter 
       void fromCompact(Layering& layering) const;
     };
+
+         /// Initializing constructor
+    inline LayeringCnv::LayeringCnv(Element e)
+      : Element(e) {
+    }
+ 
   }
 
 } /* End namespace DD4hep   */

@@ -33,6 +33,11 @@ namespace DD4hep {
     class Geant4Particle;
 
     /// Base class to extend the basic particle class used by DDG4 with user information
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class ParticleExtension  {
     public:
       /// Default constructor
@@ -82,8 +87,9 @@ namespace DD4hep {
 
     /// Data structure to store the MC particle information 
     /**
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Particle {
     private:
@@ -135,8 +141,9 @@ namespace DD4hep {
 
     /// Data structure to access derived MC particle information 
     /**
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ParticleHandle {
     public:
@@ -183,11 +190,11 @@ namespace DD4hep {
 
       /// Various output formats:
 
-      /// Output type 1:+++ <tag>   10 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+1.017927e+03  #Par:  1/4    #Dau:  2
+      /// Output type 1:+++ "tag"   10 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+1.017927e+03  \#Par:  1/4    \#Dau:  2
       void dump1(int level, const std::string& src, const char* tag) const;
-      /// Output type 2:+++ <tag>   20 G4:   7 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+3.304035e+01 in record:YES  #Par:  1/18   #Dau:  0
+      /// Output type 2:+++ "tag"   20 G4:   7 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+3.304035e+01 in record:YES  \#Par:  1/18   \#Dau:  0
       void dump2(int level, const std::string& src, const char* tag, int g4id, bool inrec) const;
-      /// Output type 3:+++ <tag> ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] #Par:  0 #Dau:  4
+      /// Output type 3:+++ "tag" ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] \#Par:  0 \#Dau:  4
       void dump3(int level, const std::string& src, const char* tag) const;
       void dump4(int level, const std::string& src, const char* tag) const;
 
@@ -272,8 +279,9 @@ namespace DD4hep {
      *  Note: This object takes OWNERSHIP of the inserted particles!
      *        beware of double deletion of objects!
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ParticleMap  {
     public:

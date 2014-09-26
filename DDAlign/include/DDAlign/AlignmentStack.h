@@ -16,21 +16,17 @@
 // C/C++ include files
 #include <memory>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Alignment namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    /** @class AlignmentStack AlignmentStack.h AlignmentStack.h
-     *
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+    /// Alignment Stack object definition
+    /**
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
      */
     class AlignmentStack  {
     public:
@@ -47,6 +43,12 @@ namespace DD4hep {
 	____LLLAST          = 1<<31
       } Flags;
 
+      /// Stack entry definition
+      /**
+       *  \author   M.Frank
+       *  \version  1.0
+       *  \ingroup  DD4HEP_ALIGN
+       */
       struct StackEntry {
 	/// Reference to the detector element
 	DetElement    detector;

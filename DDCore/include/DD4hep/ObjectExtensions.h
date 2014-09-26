@@ -17,12 +17,12 @@
 namespace DD4hep {
 
   /// Implementation of an object supporting arbitrary user extensions
-  /** @class ObjectExtensions DetectorInterna.h DD4hep/objects/DetectorInterna.h
-   *
+  /**
    *  Usage by inheritance of the client supporting the functionality
    *
-   *  @author  M.Frank
-   *  @version 1.0
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_GEOMETRY
    */
   class ObjectExtensions   {
   public:

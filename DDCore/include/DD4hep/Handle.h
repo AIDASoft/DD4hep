@@ -34,102 +34,153 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
   class NamedObject;
 
-  /*
-   *   Geometry sub-namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
+
+    // Forward declarations
     class LCDD;
 
+    /// String conversions: boolean value to string  \ingroup DD4HEP_GEOMETRY
     std::string _toString(bool value);
+    /// String conversions: integer value to string  \ingroup DD4HEP_GEOMETRY
     std::string _toString(int value);
+    /// String conversions: float value to string  \ingroup DD4HEP_GEOMETRY
     std::string _toString(float value);
+    /// String conversions: double value to string  \ingroup DD4HEP_GEOMETRY
     std::string _toString(double value);
 
+    /// String conversions: string to boolean value  \ingroup DD4HEP_GEOMETRY
     bool _toBool(const std::string& value);
+    /// String conversions: string to integer value  \ingroup DD4HEP_GEOMETRY
     int _toInt(const std::string& value);
+    /// String conversions: string to long integer value  \ingroup DD4HEP_GEOMETRY
     long _toLong(const std::string& value);
+    /// String conversions: string to float value  \ingroup DD4HEP_GEOMETRY
     float _toFloat(const std::string& value);
+    /// String conversions: string to double value  \ingroup DD4HEP_GEOMETRY
     double _toDouble(const std::string& value);
 
+    /// Void helper function to support formalisms  \ingroup DD4HEP_GEOMETRY
     inline bool _toBool(bool value) {
       return value;
     }
+    /// Void helper function to support formalisms  \ingroup DD4HEP_GEOMETRY
     inline int _toInt(int value) {
       return value;
     }
+    /// Void helper function to support formalisms  \ingroup DD4HEP_GEOMETRY
     inline long _toLong(long value) {
       return value;
     }
+    /// Void helper function to support formalisms  \ingroup DD4HEP_GEOMETRY
     inline float _toFloat(float value) {
       return value;
     }
+    /// Void helper function to support formalisms  \ingroup DD4HEP_GEOMETRY
     inline double _toDouble(double value) {
       return value;
     }
 
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <class T> T _multiply(const std::string& left, T right);
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <class T> T _multiply(T left, const std::string& right);
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <class T> T _multiply(const std::string& left, const std::string& right);
 
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> int _multiply<int>(const std::string& left, const std::string& right);
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline int _multiply<int>(int left, const std::string& right) {
       return left * _toInt(right);
     }
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline int _multiply<int>(const std::string& left, int right) {
       return _toInt(left) * right;
     }
 
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> long _multiply<long>(const std::string& left, const std::string& right);
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline long _multiply<long>(long left, const std::string& right) {
       return left * _toLong(right);
     }
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline long _multiply<long>(const std::string& left, long right) {
       return _toLong(left) * right;
     }
 
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> float _multiply<float>(const std::string& left, const std::string& right);
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline float _multiply<float>(float left, const std::string& right) {
       return left * _toFloat(right);
     }
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline float _multiply<float>(const std::string& left, float right) {
       return _toFloat(left) * right;
     }
 
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> double _multiply<double>(const std::string& left, const std::string& right);
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline double _multiply<double>(const std::string& left, double right) {
       return _toDouble(left) * right;
     }
+    /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
     template <> inline double _multiply<double>(double left, const std::string& right) {
       return left * _toDouble(right);
     }
 
+    /// Enter name value pair to the dictionary. \"valye\" must be a numerical expression, which is evaluated  \ingroup DD4HEP_GEOMETRY
     void _toDictionary(const std::string& name, const std::string& value);
 
     long num_object_validations();
     void increment_object_validations();
 
+    /// Access to the magic word, which is protecting some objects against memory corruptions  \ingroup DD4HEP_GEOMETRY
     inline unsigned long long int magic_word() {
       return 0xFEEDAFFEDEADFACEULL;
     }
 
     /// Handle: a templated class like a shared pointer, which allows specialized access to tgeometry objects.
-    /** @class Handle Handle.h
+    /** 
+     * The Handle is the base class to access all objects in DD4hep.
+     * Objects, which consist ONLY of data  are NEVER passed directly.
+     * They are ALWAYS passed using handles. Such handles are 'handy' ;-).
+     * Assignment is to and from different handles is possible using concrete 
+     * type checking.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     * Real benefits can result from sophisticated handle subclasses, which can
+     * implement any desired user functionality with out compromising the 
+     * object's data content. This leads to very flexible implementations,
+     * where the same data may be shared by many handle implementations
+     * providing different functionality to the clients.
+     *
+     * In this sense, is the consequent use of handles to access data nothing
+     * else then the consequent application of component oriented programming
+     * using local objects from the heap.
+     *
+     * Note:
+     * If you cannot live with this approach, it is better you get hands of this
+     * software package, because you will try to consequently fight the framework,
+     * which will frustrate you (and also me).
+     *
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class Handle {
     public:
       typedef T Implementation;
       typedef Handle<Implementation> handle_t;
+      /// Reference to the actual element.
       T* m_element;
       /// Defaulot constructor
       Handle()
@@ -222,30 +273,30 @@ namespace DD4hep {
       /// Assign a new named object. Note: object references must be managed by the user
       void assign(Implementation* n, const std::string& nam, const std::string& title);
     };
-    /// Default Ref_t definition describing named objects
+    /// Default Ref_t definition describing named objects  \ingroup DD4HEP_GEOMETRY
     typedef Handle<NamedObject> Ref_t;
 
-    /// Helper to delete objects from heap and reset the handle
+    /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
     template <typename T> inline void destroyHandle(T& h) {
       deletePtr(h.m_element);
     }
-    /// Helper to delete objects from heap and reset the handle
+    /// Helper to delete objects from heap and reset the handle  \ingroup DD4HEP_GEOMETRY
     template <typename T> inline void releaseHandle(T& h) {
       releasePtr(h.m_element);
     }
-    /// Functor to destroy handles and delete the cached object
+    /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
     template <typename T> struct DestroyHandle {
       void operator()(T p) const {
         destroyHandle(p);
       }
     };
-    /// Functor to destroy handles and delete the cached object
+    /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
     template <typename T> struct ReleaseHandle {
       void operator()(T p) const {
         releaseHandle(p);
       }
     };
-    /// map Functor to destroy handles and delete the cached object
+    /// map Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
     template <typename M> struct DestroyHandles {
       M& object;
       DestroyHandles(M& m)

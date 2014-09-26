@@ -28,11 +28,11 @@ namespace DD4hep {
     class Geant4Action;
 
     /// Handle to Geant4 actions with built-in creation mechanism
-    /** @class Geant4Handle Geant4Handle.h DDG4/Geant4Handle.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+    */
     template <typename TYPE> class Geant4Handle {
     protected:
       void checked_assign(TYPE* p);
@@ -63,10 +63,10 @@ namespace DD4hep {
     };
 
     /// Handle to Geant4 actions with built-in creation mechanism
-    /** @class Geant4Handle Geant4Handle.h DDG4/Geant4Handle.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class KernelHandle {
     public:

@@ -2,12 +2,26 @@
 #include "G4AssemblyVolume.hh"
 #undef private
 
-namespace DD4hep { namespace Simulation {
-    struct Geant4AssemblyVolume : public G4AssemblyVolume {
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation {
+
+    /// Hack! Wrapper around G4AssemblyVolume to access protected members.
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4AssemblyVolume : public G4AssemblyVolume {
+    public:
       std::vector<const TGeoNode*> m_entries;
       typedef std::vector<const TGeoNode*> Chain;
+      /// Default constructor
       Geant4AssemblyVolume() {
       }
+      /// Default destructor
       virtual ~Geant4AssemblyVolume() {
       }
       //std::vector<G4AssemblyTriplet>& triplets()  { return fTriplets; }
@@ -32,4 +46,5 @@ namespace DD4hep { namespace Simulation {
 		   G4int copyNumBase,
 		   G4bool surfCheck );
     };
-  }}
+  }
+}

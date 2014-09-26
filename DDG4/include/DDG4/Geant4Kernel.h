@@ -51,11 +51,10 @@ namespace DD4hep {
     class Geant4SensDetSequences;
 
     /// Class, which allows all Geant4Action derivatives to access the DDG4 kernel structures.
-    /** @class Invoke Geant4Kernel.h DDG4/Geant4Kernel.h
-     *
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Kernel {
     public:

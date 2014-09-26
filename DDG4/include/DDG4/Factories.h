@@ -47,10 +47,12 @@ namespace DD4hep {
     class Geant4UserPhysics;
     class Geant4PhysicsListActionSequence;
 
+    /// Templated factory method to invoke setup action
     template <typename T> class Geant4SetupAction {
     public:
       static long create(Geometry::LCDD& lcdd, const Geant4Converter& cnv, const std::map<std::string, std::string>& attrs);
     };
+    /// Deprecated: Templated factory method to create sensitive detector
     template <typename T> class Geant4SensitiveDetectorFactory {
     public:
       static G4VSensitiveDetector* create(const std::string& name, DD4hep::Geometry::LCDD& lcdd);

@@ -23,24 +23,22 @@
 #include <map>
 #include <typeinfo>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
+    // Forward declarations
     class LCDD;
     class DetElementObject;
     class SensitiveDetectorObject;
 
     /// Handle class to hold the information of a sensitive detector.
     /**
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class SensitiveDetector: public Handle<SensitiveDetectorObject> {
     public:
@@ -165,19 +163,19 @@ namespace DD4hep {
      * subdetectors or sizable parts of a subdetector.
      * A DetElement instance has the means to provide to clients information about
      *
-     * <ul>
-     * <li>  the detector hierarchy by exposing its children.
-     * <li>  its placement within the overall experiment if it represents an 
+     *    -  the detector hierarchy by exposing its children.
+     *    -  its placement within the overall experiment if it represents an 
      *       entire subdetector or its placement with respect to its parent
-     *       if the \tw{DetElement} represents a part of a subdetector.
-     * <li>  information about the \tw{Readout} structure if the object is 
+     *       if the \em DetElement represents a part of a subdetector.
+     *    -  information about the \em Readout structure if the object is 
      *       instrumented and read-out. Otherwise this link is empty.
-     * <li>  information about the environmental conditions etc. (\tw{conditons}).
-     * <li>  alignment information.
-     * </ul>
+     *    -  information about the environmental conditions etc. \em conditons.
+     *    -  alignment information.
+     *    .
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class DetElement: public Handle<DetElementObject>  {
     public:

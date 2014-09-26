@@ -20,6 +20,12 @@
 using namespace std;
 using namespace DD4hep::Simulation;
 
+/// Helper class to manipulate strings
+/** 
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \ingroup DD4HEP_SIMULATION
+ */
 struct FindString {
   const std::string& m_name;
   FindString(const std::string& n)

@@ -12,24 +12,20 @@
 // Forward declarations
 namespace UTIL { class LCStdHepRdr; }
 
-/*
- *   DD4hep namespace declaration
- */
-namespace DD4hep   {
-  /*
-   *   Simulation namespace declaration
-   */
-  namespace Simulation {
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep  {
 
-    /** @class LCIOStdHepReader LCIOStdHepReader.h DDG4/LCIOStdHepReader.h
-     * 
-     * Base class to read StdHep files with lcio
-     *
-     * @author  P.Kostka (main author)
-     * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
-     * @version 1.0
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation  {
+
+    /// Base class to read StdHep files with lcio
+    /**
+     *  \author  P.Kostka (main author)
+     *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
-    struct LCIOStdHepReader : public LCIOEventReader  {
+    class LCIOStdHepReader : public LCIOEventReader  {
     protected:
       /// Reference to Reader object
       UTIL::LCStdHepRdr* m_reader;

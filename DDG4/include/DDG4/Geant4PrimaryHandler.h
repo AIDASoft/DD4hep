@@ -20,8 +20,9 @@ namespace DD4hep {
 
     /// Geant4Action to convert the particle information to Geant4
     /**
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4PrimaryHandler : public Geant4GeneratorAction    {
     public:

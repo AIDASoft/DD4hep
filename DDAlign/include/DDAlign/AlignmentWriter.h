@@ -13,26 +13,21 @@
 #include "XML/XMLElements.h"
 #include "DD4hep/Detector.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geomentry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
     class LCDD;
     class AlignmentCache;
 
-    /** @class AlignmentWriter AlignmentWriter.cpp AlignmentWriter.cpp
-     *
-     * Geometry converter from DD4hep to Geant 4.
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Write aligment data to XML data file
+    /**
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
      */
     class AlignmentWriter  {
     protected:

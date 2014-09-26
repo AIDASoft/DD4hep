@@ -17,14 +17,11 @@
 
 // ROOT include files
 #include "TGeoMatrix.h"
-/*
- *   DD4hep namespace declaration
- */
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
@@ -32,12 +29,12 @@ namespace DD4hep {
     class VolumeManagerContext;
     class VolumeManagerObject;
 
-    /** @class VolumeManagerContext  VolumeManager.h DD4hep/lcdd/VolumeManager.h
+    /// This structure describes the cached data for one placement held by the volume manager
+    /**
      *
-     *  This structure describes the cached data for one placement
-     *
-     * @author  M.Frank
-     * @version 1.0
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_GEOMETRY
      */
     class VolumeManagerContext {
     public:
@@ -69,13 +66,13 @@ namespace DD4hep {
       virtual ~VolumeManagerContext();
     };
 
-    /** @class VolumeManagerObject  VolumeManager.h DD4hep/lcdd/VolumeManager.h
+    /// This structure describes the internal data of the volume manager object
+    /**
      *
-     * This structure describes the internal data of the volume manager object
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_GEOMETRY
+    */
     struct VolumeManagerObject: public NamedObject {
     public:
       typedef IDDescriptor::Field Field;

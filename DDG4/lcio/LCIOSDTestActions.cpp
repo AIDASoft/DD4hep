@@ -22,11 +22,16 @@
 using namespace DD4hep::Simulation;
 using namespace DD4hep;
 
+/// Test namespace.
 namespace  Tests {
 
   // copied from Geant4SDActions.cpp (why is this not a public class ??????)
   
-  /** Simple SensitiveAction class ...
+  /// Deprecated: Simple SensitiveAction class ...
+  /**
+   *  \deprecated
+   *  \author  M.Frank
+   *  \version 1.0
    */
   template <typename T> class Geant4SensitiveAction : public Geant4Sensitive  {
   protected:
@@ -71,10 +76,18 @@ namespace  Tests {
   };
   
 
-  /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  ///               Geant4SensitiveAction<SimpleTracker>
-  /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  struct LcioTestTracker;
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  //               Geant4SensitiveAction<SimpleTracker>
+  // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  /// Deprecated: Simple SensitiveAction class ...
+  /**
+   *  \deprecated
+   *  \author  M.Frank
+   *  \version 1.0
+   */
+  class LcioTestTracker {};
+
   /// Define collections created by this sensitivie action object
   template <> void Geant4SensitiveAction<LcioTestTracker>::defineCollections() {
     m_collectionID = Base::defineCollection<lcio::SimTrackerHitImpl>(m_sensitive.readout().name());

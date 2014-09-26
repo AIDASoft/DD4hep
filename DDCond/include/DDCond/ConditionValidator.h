@@ -12,26 +12,17 @@
 // Framework includes
 #include "DDCond/Condition.h"
 
-using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
-
-//DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionObject);
-
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    /** @class ConditionValidator  ConditionValidator.h DD4hep/ConditionValidator.h
-     * 
-     * @author  M.Frank
-     * @version 1.0
+    /// Conditions validation class.
+    /** 
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_CONDITIONS
      */
     class ConditionValidator  {
     public:

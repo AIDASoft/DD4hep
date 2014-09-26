@@ -13,26 +13,21 @@
 // Forward declarations
 namespace EVENT { class LCCollection;    }
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation  {
 
     // Forward declarations
     class Geant4Particle;
 
-    /** @class EventReader EventReader.h DDG4/EventReader.h
-     * 
-     * Base class to read lcio files.
-     *
-     * @author  P.Kostka (main author)
-     * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
-     * @version 1.0
+    /// Base class to read lcio files.
+    /** 
+     *  \author  P.Kostka (main author)
+     *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class LCIOEventReader  {
 

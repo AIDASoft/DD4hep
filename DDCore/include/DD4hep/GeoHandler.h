@@ -21,16 +21,13 @@ class TGeoMedium;
 class TGeoShape;
 class TGeoNode;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
   class  NamedObject;
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     class  LCDD;
@@ -41,10 +38,10 @@ namespace DD4hep {
     class  VisAttrObject;
 
     /// Defintion of the object types used by generic geometry handlers
-    /** @class GeoHandlerTypes  GeoHandler.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class GeoHandlerTypes {
     public:
@@ -65,6 +62,13 @@ namespace DD4hep {
       typedef std::set<Ref_t>             Fields;
       typedef std::set<TNamed*> ObjectSet;
       typedef LCDD::HandleMap             DefinitionSet;
+
+      /// Data container
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
       class GeometryInfo {
       public:
         SolidSet solids;
@@ -80,16 +84,16 @@ namespace DD4hep {
     };
 
     /// The base class for all DD4hep geometry crawlers
-    /** @class GeoHandler  GeoHandler.h
-     *
+    /**
      *  Geometry crawlers are used for multiple purposes, whenever entire
      *  geometries must be traversed like e.g. to create a new geometry
      *  for simulation etc.
      *  While analysing the geometry, information is collected, which 
      *  may be later processed.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class GeoHandler: public GeoHandlerTypes {
 
@@ -124,6 +128,11 @@ namespace DD4hep {
     };
 
     /// Geometry scanner (handle object)
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+     */
     struct GeoScan {
     protected:
       /// Data holder

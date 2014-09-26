@@ -11,9 +11,7 @@
 #include "DD4hep/Printout.h"
 #include "G4VUserDetectorConstruction.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
@@ -21,12 +19,18 @@ namespace DD4hep {
     class LCDD;
   }
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
+
+    // Forward declarations
     class Geant4Kernel;
 
+    /// Class to create Geant4 detector geometry from TGeo representation in memory
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class Geant4DetectorConstruction : public G4VUserDetectorConstruction {
     public:
       /// Initializing constructor for DDG4

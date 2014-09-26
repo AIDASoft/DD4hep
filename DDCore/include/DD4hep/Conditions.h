@@ -12,22 +12,19 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Grammar definition for type binding
   class BasicGrammar;
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
     class DetElement;
 
+    /// Conditions intrnal namespace
     namespace ConditionsInterna  {
       class ConditionContainer;
       class ConditionObject;
@@ -40,8 +37,10 @@ namespace DD4hep {
      *  Access methods are templated. Once the access is fixed
      *  on the first call, the data type may not be changed anymore.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CONDITIONS
      */
     class Block   {
       /// Access only through the conditions class!
@@ -73,8 +72,10 @@ namespace DD4hep {
      *  This objects allows access to the data block and
      *  the interval of validity for a single condition.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CONDITIONS
      */
     class Condition: public Handle<ConditionsInterna::ConditionObject> {
     public:
@@ -168,10 +169,13 @@ namespace DD4hep {
      *        On deletion the detector element will destroy the container
      *        and all associated entries.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_CONDITIONS
      */
-    struct Conditions : public Handle<ConditionsInterna::ConditionContainer> {
+    class Conditions : public Handle<ConditionsInterna::ConditionContainer> {
+    public:
       /// Standard object type
       typedef ConditionsInterna::ConditionContainer Object;
       /// Local helper definition
@@ -181,9 +185,7 @@ namespace DD4hep {
       typedef std::map<std::string, Condition> Entries;
 
       /// Default constructor
-    Conditions()
-      : Handle<Object>() {
-      }
+      Conditions();
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Conditions(const Conditions& c)
 	: Handle<Object>(c) {
@@ -208,6 +210,9 @@ namespace DD4hep {
       int set(Entry* data);
     };
 
+    /// Default constructor
+    inline Conditions::Conditions() : Handle<Object>() {
+    }
 
   } /* End namespace Geometry               */
 } /* End namespace DD4hep                   */

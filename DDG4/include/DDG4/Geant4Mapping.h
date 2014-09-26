@@ -22,12 +22,12 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Geometry mapping from DD4hep to Geant 4.
-    /** @class Geant4Mapping Geant4Mapping.h DDG4/Geant4Mapping.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
-    struct Geant4Mapping: public Geometry::GeoHandlerTypes {
+    class Geant4Mapping: public Geometry::GeoHandlerTypes {
     public:
       typedef Geometry::LCDD LCDD;
       typedef Geometry::DetElement DetElement;

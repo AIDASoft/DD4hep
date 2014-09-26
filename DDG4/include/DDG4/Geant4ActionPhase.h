@@ -15,14 +15,10 @@
 // C/C++ include files
 #include <vector>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     /*
@@ -40,12 +36,11 @@ namespace DD4hep {
 
      */
 
-    /** @class Invoke Geant4ActionPhase.h DDG4/Geant4ActionPhase.h
-     *
-     * Default base class for all geant 4 actions and derivates thereof.
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Action phase definition. Client callback at various stage of the simulation processing
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ActionPhase : public Geant4Action {
     public:

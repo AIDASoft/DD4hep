@@ -21,22 +21,18 @@
 // Forward declarations
 class TColor;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    /** @class HeaderObject ObjectsInterna.h DD4hep/objects/ObjectsInterna.h
+    /// Concrete object implementation for the Header handle
+    /**
      *
-     *  
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class HeaderObject: public NamedObject {
     public:
@@ -56,12 +52,12 @@ namespace DD4hep {
       HeaderObject& operator=(const HeaderObject&) { return *this; }
     };
 
-    /** @class VisAttrObject ObjectsInterna.h DD4hep/objects/ObjectsInterna.h
+    /// Concrete object implementation of the VisAttr Handle
+    /**
      *
-     *  
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class VisAttrObject: public NamedObject {
     public:
@@ -76,12 +72,12 @@ namespace DD4hep {
       virtual ~VisAttrObject();
     };
 
-    /** @class RegionObject ObjectsInterna.h DD4hep/objects/ObjectsInterna.h
+    /// Concrete object implementation of the Region Handle
+    /**
      *
-     *  
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class RegionObject: public NamedObject {
     public:
@@ -97,12 +93,12 @@ namespace DD4hep {
       virtual ~RegionObject();
     };
 
-    /** @class LimitSetObject ObjectsInterna.h DD4hep/objects/ObjectsInterna.h
+    /// Concrete object implementation of the LimitSet Handle
+    /**
      *
-     *  
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class LimitSetObject: public NamedObject, public std::set<Limit> {
     public:
@@ -112,12 +108,15 @@ namespace DD4hep {
       virtual ~LimitSetObject();
     };
 
-    /** @class Readout::Object  Readout.h DD4hep/Readout.h
+    /// Concrete object implementation of the Readout Handle
+    /**
      *
-     * @author  M.Frank
-     * @version 1.0
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_GEOMETRY
      */
-    struct ReadoutObject: public NamedObject {
+    class ReadoutObject: public NamedObject {
+    public:
       /// Handle to the readout segmentation
       Segmentation segmentation;
       /// Handle to the volume
@@ -130,11 +129,13 @@ namespace DD4hep {
       virtual ~ReadoutObject();
     };
 
-    /** @class IDDescriptor::Object IDDescriptor.h DDCore/IDDescriptor.h
+    /// Concrete object implementation of the IDDescriptorObject Handle
+    /**
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class IDDescriptorObject: public NamedObject, public BitField64 {
     public:

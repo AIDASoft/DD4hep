@@ -18,36 +18,46 @@
 // C/C++ include files
 #include <stdexcept>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Foward declarations
   class NamedObject;
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     /// Data implementation class of the LCDD interface
-    /** @class LCDDData   LCDDData.h  DD4hep/LCDDData.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class LCDDData  {
 
     public:
-      struct InvalidObjectError: public std::runtime_error {
+      /// Specialized exception class
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
+       struct InvalidObjectError: public std::runtime_error {
       InvalidObjectError(const std::string& msg)
 	: std::runtime_error("DD4hep: " + msg) {
         }
       };
 
     protected:
-      struct ObjectHandleMap: public LCDD::HandleMap {
+      /// Implementation of a map of named DD4hep Handles
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
+      class ObjectHandleMap: public LCDD::HandleMap {
+      public:
+	/// Default constructor
         ObjectHandleMap() {
         }
         void append(const Ref_t& e, bool throw_on_doubles = true) {

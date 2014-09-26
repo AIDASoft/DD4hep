@@ -12,22 +12,17 @@
 // Framework include files
 #include "DDG4/Geant4TrackingAction.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4TrackingPreAction Geant4TrackingPreAction.h DDG4/Geant4TrackingPreAction.h
-     *
-     * Default base class for all geant 4 tracking actions.
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Default base class for all geant 4 tracking actions.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4TrackingPreAction: public Geant4TrackingAction {
     public:

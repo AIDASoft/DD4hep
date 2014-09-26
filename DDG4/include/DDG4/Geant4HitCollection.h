@@ -33,14 +33,14 @@ namespace DD4hep {
     class Geant4HitWrapper;
 
     /// Generic wrapper class for hit structures created in Geant4 sensitive detectors
-    /** @class Geant4HitWrapper Geant4HitCollection.h DDG4/Geant4HitCollection.h
-     *
+    /**
      *  Default base class for all geant 4 created hits.
      *  The hit is stored in an opaque way and can be accessed by the
      *  collection.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4HitWrapper: public G4VHit {
     private:
@@ -52,6 +52,11 @@ namespace DD4hep {
       };
 
       /// Generic type manipulation class for generic hit structures created in Geant4 sensitive detectors
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
       class HitManipulator {
       public:
         typedef std::pair<void*, HitManipulator*> Wrapper;
@@ -158,15 +163,15 @@ namespace DD4hep {
     };
 
     /// Generic hit container class using Geant4HitWrapper objects
-    /** @class Geant4HitCollection Geant4HitCollection.h DDG4/Geant4HitCollection.h
-     *
+    /**
      * Opaque hit collection.
      * This hit collection is for good reasons homomorph,
      * Polymorphism without an explicit type would only
      * confuse most users.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4HitCollection: public G4VHitsCollection {
     public:
@@ -177,12 +182,13 @@ namespace DD4hep {
       typedef Geant4HitWrapper::HitManipulator Manip;
 
       /// Generic class template to compare/select hits in Geant4HitCollection objects
-      /** @class Compare Geant4HitCollection.h DDG4/Geant4HitCollection.h
+      /**
        *
        *  Base class for hit comparisons.
        *
-       * @author  M.Frank
-       * @version 1.0
+       * \author  M.Frank
+       * \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Compare {
       public:
@@ -293,12 +299,12 @@ namespace DD4hep {
 
 
     /// Specialized hit selector based on the hit's position.
-    /** @class PositionCompare Geant4HitCollection.h DDG4/Geant4HitCollection.h
-     *
+    /**
      *  Class for hit matching using the hit position.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     template<typename TYPE, typename POS> class PositionCompare : public Geant4HitCollection::Compare {
     public:
@@ -316,12 +322,12 @@ namespace DD4hep {
     }
 
     /// Specialized hit selector based on the hit's cell identifier.
-    /** @class PositionCompare Geant4HitCollection.h DDG4/Geant4HitCollection.h
-     *
+    /**
      *  Class for hit matching using the hit's cell identifier.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     template<typename TYPE> class CellIDCompare : public Geant4HitCollection::Compare {
     public:

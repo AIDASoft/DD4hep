@@ -20,9 +20,7 @@ class G4Event;
 class G4VTrajectory;
 class G4TrackingManager;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
@@ -31,9 +29,7 @@ namespace DD4hep {
     class DetElement;
   }
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     class Geant4Run;
@@ -62,8 +58,9 @@ namespace DD4hep {
      *  across different runs.
      *  Hence: They are only useful to extend data of an run.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class  Geant4Run : public ObjectExtensions  {
       /// Reference to the original Geant4 run object
@@ -115,8 +112,9 @@ namespace DD4hep {
      *  from this location. The framework ensures that the same seeded 
      *  sequence is used throughout the processing of one single event.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class  Geant4Event : public ObjectExtensions  {
       /// Reference to the original Geant4 event object
@@ -157,9 +155,9 @@ namespace DD4hep {
 
     /// Generic context to extend user, run and event information
     /**
-     *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Context  {
     public:

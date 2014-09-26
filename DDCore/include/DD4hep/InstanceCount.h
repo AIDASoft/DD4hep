@@ -13,18 +13,16 @@
 #include <typeinfo>
 #include <string>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Helper to support object counting when debugging memory leaks
-  /** @class InstanceCount InstanceCount.h StorageSvc/InstanceCount.h
-   *
+  /**
    * Small class to enable object construction/destruction tracing
    *
-   * @author  Markus Frank
-   * @version 1.0
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
    */
   struct InstanceCount {
   public:
@@ -35,12 +33,12 @@ namespace DD4hep {
     };
 
     /// Internal class to could object constructions and destructions
-    /** @class Counter
-     *
+    /**
      * Small class to enable object construction/destruction tracing.
      *
-     * @author  Markus Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP
      */
     class Counter {
     private:

@@ -17,9 +17,13 @@
 
 /* Setup XML parsing for the use of Apache Xerces-C and TiXml
  *
- * @author M.Frank
  */
+
+
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
     class XmlElement;
     class XmlDocument;

@@ -27,8 +27,9 @@ namespace DD4hep {
      * the corresponding errors. The interaction to be modified is identified by the
      * interaction's unique mask.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4InteractionVertexSmear: public Geant4GeneratorAction {
     protected:

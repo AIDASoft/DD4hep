@@ -22,15 +22,16 @@ namespace DD4hep {
   namespace XML {
 
     // Forward declarations
-    struct DocumentErrorHandler;
+    class DocumentErrorHandler;
 
     /// Class supporting to read and parse XML documents.
     /** 
      *  Wrapper object around the document parser.
      *  Supports both, XercesC and TiXml.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup DD4HEP_XML
      */
     class DocumentHandler {
     protected:

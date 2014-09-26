@@ -3,16 +3,32 @@
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  /// Namespace for the DD4hep event display specializations
   namespace DDEve  {
+
+    /// SimulationHit definition
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP_EVE
+     */
     class SimulationHit   {
     public:
       Position position;
       float deposit;
+      /// Default constructor
       SimulationHit() : deposit(0.0) {}
+      /// Standard initializing constructor
       SimulationHit(const Position& p, float d) : position(p), deposit(d) {}
+      /// Copy constructor
       SimulationHit(const SimulationHit& c) : position(c.position), deposit(c.deposit) {}
+      /// Standard Destructor
       ~SimulationHit()  {}
+      /// Assignment operator
       SimulationHit& operator=(const SimulationHit& c)  {
 	if ( this != &c )  {
 	  position = c.position;
@@ -24,6 +40,7 @@ namespace DD4hep {
   }
 }
 
+/// Hit conversion function  \ingroup DD4HEP_EVE
 static void* _convertHitCollection(const char* source)  {
   typedef DD4hep::DDEve::SimulationHit SimulationHit;
   const std::vector<SimpleHit*>* c = (std::vector<SimpleHit*>*)source;

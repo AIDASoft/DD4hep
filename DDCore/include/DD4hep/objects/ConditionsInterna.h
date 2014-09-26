@@ -14,25 +14,21 @@
 #include "DD4hep/BasicGrammar.h"
 #include "DD4hep/NamedObject.h"
 
+// C/C++ include files
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
     class DetElement;
     class Condition;
 
-    /*
-     *   Conditions internal namespace declaration
-     *   Internally defined datastructures are not presented to the
+    ///   Conditions internal namespace declaration
+    /**  Internally defined datastructures are not presented to the
      *   user directly, but are used by dedicated views.
      *
      */
@@ -42,13 +38,12 @@ namespace DD4hep {
       class Entry;
       class IOV;
 
-      /** @class IOV  ConditionsInterna.h DD4hep/ConditionsInterna.h
+      /// Class describing the interval of validty
+      /**
        * 
-       *  Class describing the interval of validty
-       *
-       *
-       * @author  M.Frank
-       * @version 1.0
+       * \author  M.Frank
+       * \version 1.0
+       * \ingroup DD4HEP_GEOMETRY
        */
       class IOV   {
 	friend class Condition;
@@ -72,12 +67,12 @@ namespace DD4hep {
 	std::string str();
       };
 
-      /** @class Block  ConditionsInterna.h DD4hep/ConditionsInterna.h
-       * 
-       *  Class describing an opaque conditions data block
+      /// Class describing an opaque conditions data block
+      /**
        *
-       * @author  M.Frank
-       * @version 1.0
+       * \author  M.Frank
+       * \version 1.0
+       * \ingroup DD4HEP_GEOMETRY
        */
       class BlockData : public Block   {
 	friend class Condition;
@@ -114,12 +109,12 @@ namespace DD4hep {
 	void assign(const void* ptr,const std::type_info& typ);
       };
 
-      /** @class Entry  ConditionsInterna.h DD4hep/ConditionsInterna.h
-       * 
-       *  The intermediate conditions data
+      /// The intermediate conditions data
+      /**
        *
-       * @author  M.Frank
-       * @version 1.0
+       * \author  M.Frank
+       * \version 1.0
+       * \ingroup DD4HEP_GEOMETRY
        */
       class Entry : public NamedObject  {
       public:
@@ -143,12 +138,12 @@ namespace DD4hep {
 	Entry& operator=(const Entry& c);
       };
 
-      /** @class Object  ConditionsInterna.h DD4hep/ConditionsInterna.h
-       * 
-       *  The data class behind a conditions handle.
+      /// The data class behind a conditions handle.
+      /**
        *
-       * @author  M.Frank
-       * @version 1.0
+       * \author  M.Frank
+       * \version 1.0
+       * \ingroup DD4HEP_GEOMETRY
        */
       class ConditionObject : public NamedObject {
       public:
@@ -174,12 +169,12 @@ namespace DD4hep {
 	ConditionObject& move(ConditionObject& from);
       };
 
-      /** @class Container  ConditionsInterna.h DD4hep/ConditionsInterna.h
-       * 
-       *  The data class behind a conditions container handle.
+      /// The data class behind a conditions container handle.
+      /**
        *
-       * @author  M.Frank
-       * @version 1.0
+       * \author  M.Frank
+       * \version 1.0
+       * \ingroup DD4HEP_GEOMETRY
        */
       class ConditionContainer : public NamedObject {
       public:

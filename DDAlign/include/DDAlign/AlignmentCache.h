@@ -13,14 +13,10 @@
 #include "DD4hep/Alignment.h"
 #include "DDAlign/AlignmentStack.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Alignment namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     /// Forward declarations
@@ -29,15 +25,14 @@ namespace DD4hep {
     class AlignmentStack;
     class LCDD;
 
-    /** @class AlignmentCache AlignmentCache.h AlignmentCache.h
-     *
-     *  Class caching all known alignment operations for one LCDD instance.
+    /// Class caching all known alignment operations for one LCDD instance.
+    /** 
      *  Internally the instances are fragmented to subdetectors defined
      *  by the next-to-top level detector elements.
      *
-     *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_ALIGN
      */
     class AlignmentCache  {
       friend class LCDD;

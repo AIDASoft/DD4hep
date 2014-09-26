@@ -26,9 +26,10 @@ namespace DD4hep {
 
     typedef Geant4HitData::Contribution HitContribution;
 
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ///               Geant4SensitiveAction<Geant4Tracker>
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //               Geant4SensitiveAction<Geant4Tracker>
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4Tracker>::defineCollections() {
       m_collectionID = defineCollection<Geant4Tracker::Hit>(m_sensitive.readout().name());
@@ -77,9 +78,10 @@ namespace DD4hep {
     }
     typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
 
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ///               Geant4SensitiveAction<Calorimeter>
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //               Geant4SensitiveAction<Calorimeter>
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4Calorimeter>::defineCollections() {
       m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
@@ -117,10 +119,18 @@ namespace DD4hep {
     }
     typedef Geant4SensitiveAction<Geant4Calorimeter> Geant4CalorimeterAction;
 
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ///               Geant4SensitiveAction<OpticalCalorimeter>
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //               Geant4SensitiveAction<OpticalCalorimeter>
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    /// Helper class to define properti4es of optical calorimeters. UNTESTED
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     struct Geant4OpticalCalorimeter {};
+
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4OpticalCalorimeter>::defineCollections() {
       m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());

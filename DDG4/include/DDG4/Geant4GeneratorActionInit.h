@@ -16,17 +16,14 @@
 class G4Event;
 class G4Run;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** Geant4Action to collect the MC particle information.
+    /// Initialize the Geant4Event objects to host generator and MC truth related information
+    /** Geant4 actions to collect the MC particle information.
      *
      *  This action should register all event extension required for the further 
      *  processing. We want to avoid that every client has to check if a given 
@@ -45,8 +42,9 @@ namespace DD4hep {
      *     This map has directly the correct particle offsets, so that the merging of
      *     Geant4PrimaryInteraction particles and the simulation particles is easy....
      *    
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4GeneratorActionInit : public Geant4GeneratorAction    {
     protected:

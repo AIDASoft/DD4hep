@@ -16,22 +16,17 @@
 class G4SteppingManager;
 class G4Step;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4SteppingAction Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Concrete implementation of the Geant4 stepping action sequence
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Concrete implementation of the Geant4 stepping action sequence
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4SteppingAction: public Geant4Action {
     public:
@@ -43,16 +38,15 @@ namespace DD4hep {
       virtual void operator()(const G4Step* step, G4SteppingManager* mgr);
     };
 
-    /** @class Geant4SteppingActionSequence Geant4Action.h DDG4/Geant4Action.h
-     *
-     * Concrete implementation of the Geant4 stepping action sequence
-     *
+    /// Concrete implementation of the Geant4 stepping action sequence
+    /**
      * The sequence dispatches the callbacks for each stepping action
      * to all registered Geant4SteppingAction members and all 
      * registered callbacks.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4SteppingActionSequence: public Geant4Action {
     protected:

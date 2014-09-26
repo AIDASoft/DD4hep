@@ -33,6 +33,11 @@ namespace DD4hep {
     class Geant4Vertex;
     
     /// Base structure to extend primary information with user data
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class PrimaryExtension  {
     public:
       /// Default constructor
@@ -46,8 +51,9 @@ namespace DD4hep {
      *  This data structure is added to the Geant4Event data extensions
      *  by the Geant4GenerationInit action.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4PrimaryMap  {
     public:
@@ -63,8 +69,9 @@ namespace DD4hep {
 
     /// Class modelling a single interaction with multiple primary vertices and particles
     /*
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4PrimaryInteraction   {
     private:
@@ -108,8 +115,9 @@ namespace DD4hep {
     /*
      *  Multiple interactions allow a simple handling of overlay events
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4PrimaryEvent   {
     private:

@@ -28,16 +28,13 @@ typedef DD4hep::XML::Document xml_doc_t;
 typedef DD4hep::XML::Strng_t Unicode;
 typedef DD4hep::Geometry::LCDD lcdd_t;
 
-/*
- *   DD4hep namespace declaration
- */
+ /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry sub-namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
-    /// std::string conversion of XML strings (e.g. Unicode for Xerces-C)
+
+  /// std::string conversion of XML strings (e.g. Unicode for Xerces-C)
     static inline std::string _toString(const DD4hep::XML::XmlChar* value) {
       return XML::_toString(value);
     }

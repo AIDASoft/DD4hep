@@ -25,10 +25,10 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Base class to output Geant4 event data to persistent media
-    /** @class Geant4OutputAction Geant4OutputAction.h DDG4/Geant4OutputAction.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4OutputAction: public Geant4EventAction {
     protected:

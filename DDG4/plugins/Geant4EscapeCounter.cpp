@@ -14,22 +14,19 @@
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4SteppingAction.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Class to measure the energy of escaping tracks
     /** Class to measure the energy of escaping tracks of a detector using Geant 4
-     *
      * Measure escaping energy....
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4EscapeCounter : /* virtual public Geant4SteppingAction, virtual */ public Geant4Sensitive {
       /// Collection identifiers

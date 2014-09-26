@@ -31,7 +31,7 @@ namespace DD4hep {
     class VolumeManagerObject;
 
     /// Class to support the retrieval of detector elements and volumes given a valid identifier
-    /** @class VolumeManager  VolumeManager.h DD4hep/lcdd/VolumeManager.h
+    /**
      *
      *  The VolumeManager manages the repository of sensitive physical
      *  volumes (placements). These volumes can then be accessed together with
@@ -58,8 +58,9 @@ namespace DD4hep {
      *  handle is destroyed once no other references are present.
      *  [call DestroyHandle(VolumeManager)]
      *
-     * @author  M.Frank
-     * @version 1.0
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
      */
     struct VolumeManager: public Handle<VolumeManagerObject> {
     public:

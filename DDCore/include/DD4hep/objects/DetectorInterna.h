@@ -20,24 +20,23 @@
 #include "DD4hep/ObjectExtensions.h"
 #include "TGeoMatrix.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     class LCDD;
     class DetElementObject;
     class SensitiveDetectorObject;
 
-    /** @class SensitiveDetectorObject DetectorInterna.h DD4hep/objects/DetectorInterna.h
+    /// Data class with properties of sensitive detectors
+    /**
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *
+     *  \ingroup DD4HEP DD4HEP_GEOMETRY
      */
     class SensitiveDetectorObject: public NamedObject, public ObjectExtensions {
     public:
@@ -58,10 +57,13 @@ namespace DD4hep {
       virtual ~SensitiveDetectorObject();
     };
 
-    /** @class DetElementObject DetectorInterna.h DD4hep/objects/DetectorInterna.h
+    /// Data class with properties of a detector element
+    /**
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *
+     *  \ingroup DD4HEP DD4HEP_GEOMETRY
      */
     class DetElementObject: public NamedObject, public ObjectExtensions {
     public:
@@ -97,8 +99,8 @@ namespace DD4hep {
       PlacedVolume idealPlace;
       /// The subdetector placement corresponding to the actual detector element's volume
       PlacedVolume placement;
-      /** The cached VolumeID of this subdetector element
-       *  Please note:
+      /// The cached VolumeID of this subdetector element
+      /**  Please note:
        *  These values are set when populating the volume manager.
        *  There are restrictions: e.g. only sensitive subdetectors are present.
        */
@@ -112,7 +114,7 @@ namespace DD4hep {
       /// Placeholder for structure with update callbacks
       UpdateCallbacks updateCalls;
 
-      /**@info: Additional information set externally to facilitate the processing of event data */
+      //@{ Additional information set externally to facilitate the processing of event data */
       /// Basic detector element alignment entry
       Alignment alignment;
       /// Basic detector element alignment entry containing the survey data
@@ -123,16 +125,16 @@ namespace DD4hep {
       std::vector<Alignment> volume_surveys;
       /// The detector elements condition entry
       Conditions conditions;
-
-      /**@info: Cached information of the detector element  */
+      //@}
+      //@{ Cached information of the detector element
       /// Intermediate buffer to store the transformation to the world coordination system
       TGeoHMatrix worldTrafo;
       /// Intermediate buffer to store the transformation to the parent detector element
       TGeoHMatrix parentTrafo;
       /// Intermediate buffer for the transformation to an arbitrary DetElement
       TGeoHMatrix* referenceTrafo;
-
-      /**@info: Public methods to ease the usage of the data. */
+      //@}
+      //@{ Public methods to ease the usage of the data. */
       /// Initializing constructor
       DetElementObject(const std::string& nam, int ident);
       /// Default constructor
@@ -141,7 +143,7 @@ namespace DD4hep {
       virtual ~DetElementObject();
       /// Deep object copy to replicate DetElement trees e.g. for reflection
       virtual DetElementObject* clone(int new_id, int flag) const;
-
+      //@}
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation();
       /// Create cached matrix to transform to parent coordinates

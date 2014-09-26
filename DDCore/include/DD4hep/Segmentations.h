@@ -28,9 +28,9 @@ namespace DD4hep {
 
     /// Implementation class supporting generic Segmentation of sensitive detectors
     /** 
-     *
-     * @author  M.Frank
-     * @version 1.0
+     * \author  M.Frank
+     * \version 1.0
+     * \ingroup DD4HEP_GEOMETRY
      */
     class SegmentationObject : public DDSegmentation::Segmentation {
     public:
@@ -78,8 +78,9 @@ namespace DD4hep {
     /// Handle class supporting generic Segmentation of sensitive detectors
     /** 
      *
-     * @author  M.Frank
-     * @version 1.0
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
      */
     struct Segmentation: public Handle<SegmentationObject> {
     public:

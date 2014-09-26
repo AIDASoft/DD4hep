@@ -12,16 +12,13 @@
 #ifndef DDG4_GEANT4CONFIG_H
 #define DDG4_GEANT4CONFIG_H
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    // Forward declarations
     template <typename TYPE> class Geant4Handle;
     class Geant4Kernel;
     class Geant4Action;
@@ -45,9 +42,7 @@ namespace DD4hep {
     class Geant4PhysicsListActionSequence;
     class Geant4SensDetActionSequence;
 
-    /*
-     *   Simulation setup namespace declaration
-     */
+    /// Convenience namespace to ease the setupup of DDG4 applications
     namespace Setup {
       // Basics
       typedef Geant4Kernel Kernel;

@@ -7,118 +7,132 @@
 //
 //====================================================================
 // Framework include files
-#include "DD4hep/Handle.h"
+#include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
-#include "XML/Conversions.h"
-#include "XML/XMLElements.h"
 #include "DD4hep/DetFactoryHelper.h"
-#include "DDG4/Factories.h"
-#include "DDG4/Geant4Converter.h"
+#include "XML/Conversions.h"
 #include "DDG4/Geant4Config.h"
 
-using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
-typedef DD4hep::Geometry::LCDD lcdd_t;
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
 
-namespace DD4hep  {
-
-  struct XMLSetup;
-  struct ActionSequence;
+  // Forward declarations
+  class ActionSequence;
+  using namespace std;
   using namespace DD4hep::Simulation;
   using namespace DD4hep::Simulation::Setup;
 
-  template <typename TYPE, typename PTR> TYPE* _action(PTR* in)  {
-    return dynamic_cast<TYPE*>(in);
-  }
-  template <typename T> static void installMessenger(const T& handle)  {
-    handle->installMessengers();
-  }
+  typedef DD4hep::Geometry::LCDD lcdd_t;
+  typedef DD4hep::Geometry::DetElement DetElement;
 
-  template <typename T> static void _setAttributes(const T& handle, xml_h& e)  {
-    XML::Handle_t props(e);
-    // Now we set the object properties
-    vector<XML::Attribute> attrs = props.attributes();
-    for(vector<XML::Attribute>::iterator i=attrs.begin(); i!=attrs.end(); ++i)   {
-      XML::Attribute a = *i;
-      handle[XML::_toString(props.attr_name(a))].str(props.attr<string>(a));
-    }
-  }
-  template <typename T> static void _setProperties(const T& handle, xml_h& e)  {
-    xml_comp_t action(e);
-    // Now we set the object properties
-    XML::Handle_t  props = action.child(_Unicode(properties),false);
-    if ( props )  {
-      _setAttributes(handle, props);
-    }
-    if ( action.hasAttr(_Unicode(Control)) )   {
-      handle["Control"].str(props.attr<string>(_Unicode(Control)));      
-    }
-  }
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation {
 
-  static Action _convertSensitive(LCDD& lcdd, xml_h e, const string& detector)  {
-    xml_comp_t action(e);
-    Kernel& kernel = Kernel::access(lcdd);
-    TypeName tn = TypeName::split(action.attr<string>(_U(name)));
-    // Create the object using the factory method
-    Sensitive handle(kernel,action.attr<string>(_U(name)),detector);
-    _setProperties(Action(handle.get()),e);
-    for(xml_coll_t f(e,_Unicode(filter)); f; ++f)  {
-      string nam = f.attr<string>(_U(name));
-      Filter filter(kernel.globalFilter(nam,false));
-      handle->adopt(filter);
+    // Forward declarations
+    class XMLSetup;
+
+    /// Action cast
+    template <typename TYPE, typename PTR> TYPE* _action(PTR* in)  {
+      return dynamic_cast<TYPE*>(in);
     }
-    installMessenger(handle);
-    printout(INFO,"Geant4Setup","+++ Added sensitive element %s of type %s",
-	     tn.second.c_str(),tn.first.c_str());
-    return Action(handle);
-  }
 
-  static Action _convertAction(LCDD& lcdd, xml_h e)  {
-    xml_comp_t action(e);
-    Kernel& kernel = Kernel::access(lcdd);
-    TypeName tn = TypeName::split(action.attr<string>(_U(name)));
-    // Create the object using the factory method
-    Action handle(kernel,action.attr<string>(_U(name)));
-    _setProperties(handle,e);
-    printout(INFO,"Geant4Setup","+++ Added action %s of type %s",tn.second.c_str(),tn.first.c_str());
-    installMessenger(handle);
+    /// Install Geant4 mesenger to action objects
+    template <typename T> static void installMessenger(const T& handle)  {
+      handle->installMessengers();
+    }
 
-    if ( action.hasChild(_Unicode(adopt)) )  {
-      xml_comp_t child = action.child(_Unicode(adopt));
-      Geant4Action* user = kernel.globalAction(child.nameStr());
-      Geant4ParticleHandler* ph = dynamic_cast<Geant4ParticleHandler*>(handle.get());
-      if ( ph )  {
-	ph->adopt(user);
+    /// Set the properties of a Geant4 Action object from XML object attributes
+    template <typename T> static void _setAttributes(const T& handle, xml_h& e)  {
+      XML::Handle_t props(e);
+      // Now we set the object properties
+      vector<XML::Attribute> attrs = props.attributes();
+      for(vector<XML::Attribute>::iterator i=attrs.begin(); i!=attrs.end(); ++i)   {
+	XML::Attribute a = *i;
+	handle[XML::_toString(props.attr_name(a))].str(props.attr<string>(a));
       }
     }
-    return handle;
-  }
 
-  enum { SENSITIVE, ACTION, FILTER };
-  Action _createAction(LCDD& lcdd, xml_h a, const std::string& seqType, int what)  {
-    string   nam = a.attr<string>(_U(name));
-    TypeName typ    = TypeName::split(nam);
-    Kernel&  kernel = Kernel::access(lcdd);
-    Action action((what==FILTER) ? (Geant4Action*)kernel.globalFilter(typ.second,false)
-		  : (what==ACTION) ? kernel.globalAction(typ.second,false)
-		  ///  : (what==FILTER) ? kernel.globalAction(typ.second,false)
-		  : 0);
-    // Create the object using the factory method
-    if ( !action )  {
-      action = (what == SENSITIVE) ? Action(_convertSensitive(lcdd, a, seqType))
-	: (what==ACTION) ? _convertAction(lcdd, a)
-	: (what==FILTER) ? _convertAction(lcdd, a)
-	: Action();
+    /// Set the properties of a Geant4 Action object from <properties/> XML subsection
+    template <typename T> static void _setProperties(const T& handle, xml_h& e)  {
+      xml_comp_t action(e);
+      // Now we set the object properties
+      XML::Handle_t  props = action.child(_Unicode(properties),false);
+      if ( props )  {
+	_setAttributes(handle, props);
+      }
+      if ( action.hasAttr(_Unicode(Control)) )   {
+	handle["Control"].str(props.attr<string>(_Unicode(Control)));      
+      }
+    }
+
+    /// Create/Configure Geant4 sensitive action object from XML
+    static Action _convertSensitive(lcdd_t& lcdd, xml_h e, const string& detector)  {
+      xml_comp_t action(e);
+      Kernel& kernel = Kernel::access(lcdd);
+      TypeName tn = TypeName::split(action.attr<string>(_U(name)));
+      // Create the object using the factory method
+      Sensitive handle(kernel,action.attr<string>(_U(name)),detector);
+      _setProperties(Action(handle.get()),e);
+      for(xml_coll_t f(e,_Unicode(filter)); f; ++f)  {
+	string nam = f.attr<string>(_U(name));
+	Filter filter(kernel.globalFilter(nam,false));
+	handle->adopt(filter);
+      }
+      installMessenger(handle);
+      printout(INFO,"Geant4Setup","+++ Added sensitive element %s of type %s",
+	       tn.second.c_str(),tn.first.c_str());
+      return Action(handle);
+    }
+
+    /// Create/Configure Action object from XML
+    static Action _convertAction(lcdd_t& lcdd, xml_h e)  {
+      xml_comp_t action(e);
+      Kernel& kernel = Kernel::access(lcdd);
+      TypeName tn = TypeName::split(action.attr<string>(_U(name)));
+      // Create the object using the factory method
+      Action handle(kernel,action.attr<string>(_U(name)));
+      _setProperties(handle,e);
+      printout(INFO,"Geant4Setup","+++ Added action %s of type %s",tn.second.c_str(),tn.first.c_str());
+      installMessenger(handle);
+
+      if ( action.hasChild(_Unicode(adopt)) )  {
+	xml_comp_t child = action.child(_Unicode(adopt));
+	Geant4Action* user = kernel.globalAction(child.nameStr());
+	Geant4ParticleHandler* ph = dynamic_cast<Geant4ParticleHandler*>(handle.get());
+	if ( ph )  {
+	  ph->adopt(user);
+	}
+      }
+      return handle;
+    }
+
+    enum { SENSITIVE, ACTION, FILTER };
+    /// Create/Configure Action object from XML
+    Action _createAction(lcdd_t& lcdd, xml_h a, const string& seqType, int what)  {
+      string   nam = a.attr<string>(_U(name));
+      TypeName typ    = TypeName::split(nam);
+      Kernel&  kernel = Kernel::access(lcdd);
+      Action action((what==FILTER) ? (Geant4Action*)kernel.globalFilter(typ.second,false)
+		    : (what==ACTION) ? kernel.globalAction(typ.second,false)
+		    ///  : (what==FILTER) ? kernel.globalAction(typ.second,false)
+		    : 0);
+      // Create the object using the factory method
       if ( !action )  {
-	throw runtime_error(format("Geant4ActionSequence","DDG4: The action '%s'"
-				   " cannot be created. [Action-Missing]",nam.c_str()));
+	action = (what == SENSITIVE) ? Action(_convertSensitive(lcdd, a, seqType))
+	  : (what==ACTION) ? _convertAction(lcdd, a)
+	  : (what==FILTER) ? _convertAction(lcdd, a)
+	  : Action();
+	if ( !action )  {
+	  throw runtime_error(format("Geant4ActionSequence","DDG4: The action '%s'"
+				     " cannot be created. [Action-Missing]",nam.c_str()));
+	}
       }
+      return action;
     }
-    return action;
   }
 
-  /** Convert Geant4Action objects
+  /// Convert Geant4Action objects
+  /**
    *  <actions>
    *    <action name="Geant4PostTrackingAction/PostTrackAction"
    *      <properties 
@@ -132,8 +146,8 @@ namespace DD4hep  {
     Kernel::access(lcdd).registerGlobalAction(a);
   }
 
-  /** Convert Sensitive detector filters
-   *
+  /// Convert Sensitive detector filters
+  /**
    *  Note: Filters are Geant4Actions and - if global - may also receive properties!
    *
    *  <filters>
@@ -148,7 +162,8 @@ namespace DD4hep  {
     Kernel::access(lcdd).registerGlobalFilter(a);
   }
 
-  /** Convert Geant4Phase objects
+  /// Convert Geant4Phase objects
+  /**
    *  <phases>
    *    <phase name="Geant4PostTrackingPhase/PostTrackPhase"
    *      <properties 
@@ -245,7 +260,8 @@ namespace DD4hep  {
     }
   }
 
-  /** Convert Action sequences into objects
+  /// Convert Action sequences into objects
+  /**
    *  <sequences>
    *    <sequence name="Geant4EventActionSequence/EventAction"
    *      <member name="" type="Geant4TrackerEventMonitor/TrackerEvtAction"/>
@@ -333,7 +349,8 @@ namespace DD4hep  {
     }
   }
 
-  /** Convert PhysicsList objects
+  /// Create/Configure PhysicsList objects
+  /**
    *  <physicslist>
    *    <processes>
    *      <particle name="'e-'">
@@ -361,7 +378,8 @@ namespace DD4hep  {
     }
   }
 
-  /** Convert PhysicsList objects: Particle constructors
+  /// Create/Configure PhysicsList objects: Particle constructors
+  /**
    *  <physicslist>
    *    <particles>
    *      <construct name="G4Electron"/>
@@ -380,7 +398,8 @@ namespace DD4hep  {
     printout(INFO,"Geant4Setup","+++ ParticleConstructor: Add Geant4 particle constructor '%s'",n.c_str());
   }
 
-  /** Convert PhysicsList objects: Physics constructors
+  /// Create/Configure PhysicsList objects: Physics constructors
+  /**
    *  <physicslist>
    *    <physics>
    *      <construct name="G4EmStandardPhysics"/>
@@ -396,8 +415,8 @@ namespace DD4hep  {
     printout(INFO,"Geant4Setup","+++ PhysicsConstructor: Add Geant4 physics constructor '%s'",n.c_str());
   }
 
-
-  /** Convert PhysicsList objects: Predefined Geant4 Physics lists
+  /// Create/Configure PhysicsList extension objects: Predefined Geant4 Physics lists
+  /**
    *  <physicslist>
    *    <list name="TQGSP_FTFP_BERT_95"/>
    *  </physicslist>
@@ -411,6 +430,7 @@ namespace DD4hep  {
     printout(INFO,"Geant4Setup","+++ PhysicsListExtension: Set predefined Geant4 physics list to '%s'",ext.c_str());
   }
 
+  /// Create/Configure PhysicsList objects: Predefined Geant4 Physics lists
   template <> void Converter<PhysicsList>::operator()(xml_h e)  const  {
     string name = e.attr<string>(_U(name));
     Kernel& kernel = Kernel::access(lcdd);
@@ -423,6 +443,7 @@ namespace DD4hep  {
     kernel.physicsList().adopt(handle);
   }
 
+  /// Create/Configure Geant4Kernel objects
   template <> void Converter<Kernel>::operator()(xml_h e) const {
     Kernel& kernel = Kernel::access(lcdd);
     xml_comp_t k(e);
@@ -432,6 +453,7 @@ namespace DD4hep  {
       kernel.property("UI").str(k.attr<string>(_Unicode(UI)));
   }
 
+  /// Main entry point to configure Geant4 with XML
   template <> void Converter<XMLSetup>::operator()(xml_h seq)  const  {
     xml_elt_t compact(seq);
     // First execute the basic setup from the plugins module
@@ -453,8 +475,11 @@ namespace DD4hep  {
     xml_coll_t(compact,_Unicode(physicslist)).for_each(Converter<PhysicsList>(lcdd,param));
   }
 }
+
+/// Factory method
 static long setup_Geant4(lcdd_t& lcdd, const xml_h& element) {
-  (Converter<XMLSetup>(lcdd))(element);
+  (DD4hep::Converter<DD4hep::Simulation::XMLSetup>(lcdd))(element);
   return 1;
 }
+// Factory declaration
 DECLARE_XML_DOC_READER(geant4_setup,setup_Geant4)

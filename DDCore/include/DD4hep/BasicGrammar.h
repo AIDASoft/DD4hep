@@ -13,15 +13,15 @@
 #include <string>
 #include <typeinfo>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Base class describing string evaluation to C++ objects using boost::spirit
   /** 
-   *   @author  M.Frank
-   *   @date    13.08.2013
+   *   \author  M.Frank
+   *   \version 1.0
+   *   \date    13.08.2013
+   *   \ingroup DD4HEP
    */
   class BasicGrammar {
   public:

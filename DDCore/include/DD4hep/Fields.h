@@ -18,14 +18,10 @@
 #include <vector>
 #include <map>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geoemtry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
@@ -40,9 +36,10 @@ namespace DD4hep {
      *  The actual behaviour is solely implemented in the underlying object
      *  class.
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     */
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+    */
     class CartesianField: public Ref_t {
     public:
       enum FieldType {
@@ -52,6 +49,11 @@ namespace DD4hep {
       typedef std::map<std::string, PropertyValues> Properties;
 
       /// Internal data class shared by all handles of a given type
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
       class Object: public NamedObject {
       public:
         /// Field type
@@ -122,8 +124,9 @@ namespace DD4hep {
      *  The actual behaviour is solely implemented in the underlying object
      *  class.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class OverlayedField: public Ref_t {
     public:
@@ -133,6 +136,12 @@ namespace DD4hep {
       typedef std::map<std::string, std::string> PropertyValues;
       typedef std::map<std::string, PropertyValues> Properties;
 
+      /// Internal data class shared by all handles
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
       class Object: public NamedObject {
       public:
         int type;

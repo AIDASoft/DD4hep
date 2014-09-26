@@ -65,8 +65,9 @@ namespace DD4hep {
 
     /// Handle class describing an author identity
     /** 
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Author: public Ref_t {
     public:
@@ -108,8 +109,9 @@ namespace DD4hep {
     /**
      *  Description of the geometry header. Containes useful auxiliary information.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Header: public Handle<HeaderObject> {
     public:
@@ -170,8 +172,9 @@ namespace DD4hep {
      *  Constant objects are parsed by the expression evaluator and
      *  are subsequently available for expression evaluation.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Constant: public Ref_t {
     public:
@@ -217,31 +220,32 @@ namespace DD4hep {
      *  This is  sometimes referred to as the Euler 321 sequence.
      *  It has not to be confused with the typical Goldstein definition of the Euler Angles
      *  (Z-X-Z or 313 sequence) which is used by the ROOT::Math::EulerAngles class.
-     *  @see http://root.cern.ch/root/html/ROOT__Math__RotationZYX.html
+     *  \see http://root.cern.ch/root/html/ROOT__Math__RotationZYX.html
      */
     typedef ROOT::Math::RotationZYX RotationZYX;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__RotationZ.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationZ.html */
     typedef ROOT::Math::RotationZ RotationZ;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__RotationY.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationY.html */
     typedef ROOT::Math::RotationY RotationY;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__RotationX.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationX.html */
     typedef ROOT::Math::RotationX RotationX;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__Rotation3D.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__Rotation3D.html */
     typedef ROOT::Math::Rotation3D Rotation3D;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__EulerAngels.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__EulerAngels.html */
     typedef ROOT::Math::EulerAngles EulerAngles;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__Transform3D.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__Transform3D.html */
     typedef ROOT::Math::Transform3D Transform3D;
-    /**  @see http://root.cern.ch/root/html/ROOT__Math__Translations3D.html */
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__Translations3D.html */
     typedef ROOT::Math::Translation3D Translation3D;
 
     /// Handle class describing an element in the periodic table
     /** 
      *  For details please see the ROOT TGeo information:
-     *  @see http://root.cern.ch/root/html/TGeoElement.html
+     *  \see http://root.cern.ch/root/html/TGeoElement.html
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Atom: public Handle<TGeoElement> {
     public:
@@ -270,10 +274,11 @@ namespace DD4hep {
     /** @class Material Objects.h
      *
      *  For details please see the ROOT TGeo information:
-     *  @see http://root.cern.ch/root/html/TGeoMedium.html
+     *  \see http://root.cern.ch/root/html/TGeoMedium.html
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Material: public Handle<TGeoMedium> {
     public:
@@ -312,8 +317,9 @@ namespace DD4hep {
     /// Handle class describing visualization attributes
     /** @class VisAttr Objects.h
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class VisAttr: public Handle<VisAttrObject> {
     public:
@@ -414,8 +420,9 @@ namespace DD4hep {
 
     /// Small object describing a limit structure acting on a particle type
     /** 
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Limit {
     public:
@@ -444,8 +451,9 @@ namespace DD4hep {
 
     /// Handle class describing a set of limits as they are used for simulation
     /**
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class LimitSet: public Handle<LimitSetObject> {
     public:
@@ -479,8 +487,9 @@ namespace DD4hep {
 
     /// Handle class describing a region as used in simulation
     /**
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class Region: public Handle<RegionObject> {
     public:

@@ -15,9 +15,11 @@
 #define UNICODE(x)  extern const Tag_t Unicode_##x 
 #endif
 
-// Unicode tags known to the conditions section
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
+    /// Namespace of conditions unicode tags
     namespace Conditions  {
       UNICODE(conditions);
       UNICODE(detelements);

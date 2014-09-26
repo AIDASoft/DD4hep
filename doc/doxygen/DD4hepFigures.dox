@@ -1,5 +1,5 @@
 
-// Nothing serious
+/// Nothing serious
 namespace DoxygenFigures {
 
 /// Dummy header to just include figures used in Doxygen to ensure the files are copied to the output

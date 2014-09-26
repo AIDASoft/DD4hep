@@ -28,16 +28,14 @@
 // Forward declarations
 class TGeoManager;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Foward declarations
   class NamedObject;
 
-  /** @enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
-   * Detector description build types.
+  /// Detector description build types.
+  /** enum LCDDBuildType LCDD.h  DD4hep/LCDD.h
    * The corresponding flag is ONLY valid while parsing the
    * compact description. If no eometry, ie. at all other times
    * the accessor to the flag returns BUILD_NONE.
@@ -46,14 +44,11 @@ namespace DD4hep {
     BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY
   };
 
-  /*
-   *   Geometry namespace declaration
-   */
+   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-    /// The main interface to the DD4hep detector description package
-    /** @class LCDD LCDD.h  DD4hep/LCDD.h
-     *
+   /// The main interface to the DD4hep detector description package
+    /**
      *  Note: The usage of the factory method:
      *
      *      static LCDD& getInstance(void);
@@ -62,11 +57,13 @@ namespace DD4hep {
      *
      *  You should rather use the plugin mechanism to create a new instance.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     class LCDD {
     public:
+      /// Type definition of a map of named handles
       typedef std::map<std::string, Handle<NamedObject> > HandleMap;
       typedef std::map<std::string, std::string> PropertyValues;
       typedef std::map<std::string, PropertyValues> Properties;

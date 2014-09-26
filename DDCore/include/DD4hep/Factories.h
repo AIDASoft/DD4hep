@@ -36,19 +36,26 @@ namespace DD4hep {
     class DetElement;
 
     /// Template class with a generic constructor signature
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
+     */
     template <typename T> class ConstructionFactory {
     public:
       static void* create(const char* arg);
     };
 
     /// Template class with a generic signature to apply LCDD plugins
-    /** @class ApplyFactory Factories.h DDCore/Factories.h
+    /**
      *  Specialized factory to translate objects, which can be retrieved from LCDD
      *  Example: Translate DD4hep geometry to Geant4
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class ApplyFactory {
     public:
@@ -56,13 +63,13 @@ namespace DD4hep {
     };
 
     /// Specialized factory to translate objects, which can be retrieved from LCDD
-    /** @class TranslationFactory Factories.h DDCore/Factories.h
-     *
+    /**
      *  Example: Translate DD4hep geometry to Geant4
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class TranslationFactory {
     public:
@@ -72,9 +79,10 @@ namespace DD4hep {
     /// Create an arbitrary object from it's XML representation.
     /**
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class XMLElementFactory {
     public:
@@ -84,9 +92,10 @@ namespace DD4hep {
     ///  Read an arbitrary XML document and analyze it's content
     /** 
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class XMLDocumentReaderFactory {
     public:
@@ -96,9 +105,10 @@ namespace DD4hep {
     /// Read an arbitrary XML document and analyze it's content
     /** 
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class XMLConversionFactory {
     public:
@@ -108,9 +118,10 @@ namespace DD4hep {
     /// Standard factory to create Detector elements from the compact XML representation.
     /** 
      *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    2012/07/31
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \date    2012/07/31
+     *  \ingroup DD4HEP_GEOMETRY
      */
     template <typename T> class DetElementFactory {
     public:

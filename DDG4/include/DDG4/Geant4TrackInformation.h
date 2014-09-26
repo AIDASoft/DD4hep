@@ -12,17 +12,14 @@
 // Framework include files
 #include "G4VUserTrackInformation.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4TrackInformation Geant4Action.h DDG4/Geant4Action.h
+    /// Unused.
+    /** 
      *
      * @author  M.Frank
      * @version 1.0

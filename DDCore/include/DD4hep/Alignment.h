@@ -14,16 +14,13 @@
 #include "DD4hep/Volumes.h"
 #include "TGeoPhysicalNode.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geometry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
+    // Forward declarations
     class DetElement;
 
     /// Main handle class to hold a TGeo alignment object of type TGeoPhysicalNode
@@ -31,8 +28,10 @@ namespace DD4hep {
      *  See the ROOT documentation about the TGeoPhysicalNode for further details:
      *  @see http://root.cern.ch/root/html/TGeoPhysicalNode.html 
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+     *  \ingroup DD4HEP_ALIGN
      */
     class Alignment: public Handle<TGeoPhysicalNode> {
     public:

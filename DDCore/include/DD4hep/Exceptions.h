@@ -14,15 +14,14 @@
 #include <typeinfo>
 #include <stdexcept>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Exception class to signal operations on unrelated classes
   /**
-   *   @author  M.Frank
-   *   @date    13.08.2013
+   *   \author  M.Frank
+   *   \date    13.08.2013
+   *   \ingroup DD4HEP
    */
   struct unrelated_type_error : public std::runtime_error {
     static std::string msg(const std::type_info& typ1, const std::type_info& typ2, const std::string& text);
@@ -33,8 +32,9 @@ namespace DD4hep {
 
   /// Exception class to signal operations on unrelated types of values
   /**
-   *   @author  M.Frank
-   *   @date    13.08.2013
+   *   \author  M.Frank
+   *   \date    13.08.2013
+   *   \ingroup DD4HEP
    */
   struct unrelated_value_error : public std::runtime_error {
     static std::string msg(const std::type_info& typ, const std::string& text);

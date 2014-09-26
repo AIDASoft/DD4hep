@@ -18,23 +18,29 @@
 #include "G4Event.hh"
 #include "G4Run.hh"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
-  namespace Simulation   {
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation {
 
     Geant4Context* ddg4_globalContext();
 
-    template <typename T> struct RefCountedSequence  {
+    /// Private helper to support sequence reference counting
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    template <typename T> class RefCountedSequence  {
+    public:
       typedef RefCountedSequence<T> Base;
       T* m_sequence;
+      /// Default constructor
       RefCountedSequence() : m_sequence(0) {                 }
+      /// Initializing constructor
       RefCountedSequence(T* seq)           {   _aquire(seq); }
+      /// Default destructor
       virtual ~RefCountedSequence()        { _release();     }
       void _aquire(T* s)  {
 	InstanceCount::increment(this);
@@ -47,11 +53,18 @@ namespace DD4hep {
       }
     };
 
-    struct Geant4SensDet : virtual public G4VSensitiveDetector, 
-			   virtual public G4VSDFilter,
-			   virtual public Geant4ActionSD,
-			   virtual public RefCountedSequence<Geant4SensDetActionSequence>
+    /// Concrete implementation of the G4VSensitiveDetector calling the registered sequence object
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4SensDet : virtual public G4VSensitiveDetector, 
+			  virtual public G4VSDFilter,
+			  virtual public Geant4ActionSD,
+			  virtual public RefCountedSequence<Geant4SensDetActionSequence>
     {
+    public:
       /// Constructor. The detector element is identified by the name
       Geant4SensDet(const std::string& nam, Geometry::LCDD& lcdd)
 	: G4VSensitiveDetector(nam), G4VSDFilter(nam), 

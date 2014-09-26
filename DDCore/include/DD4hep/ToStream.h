@@ -47,8 +47,8 @@ namespace DD4hep {
     template <class TYPE>
     std::ostream& toStream(const TYPE& obj, std::ostream& s);
     // ========================================================================
-    /** the helper function to print the sequence
-     *  @param first (INPUT)  begin-iterator for the sequence
+    /// the helper function to print the sequence
+    /** @param first (INPUT)  begin-iterator for the sequence
      *  @param last  (INPUT)  end-iterator for the sequence
      *  @param s     (UPDATE) the stream itself
      *  @param open  (INPUT)  "open"-symbol
@@ -66,8 +66,8 @@ namespace DD4hep {
         const std::string& close,                 //               closing
         const std::string& delim);                //             delimiter
     // ========================================================================
-    /** the printtout of the strings.
-     *  the string is printed a'la Python using the quotes
+    /// the printtout of the strings.
+    /** the string is printed a'la Python using the quotes
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
      *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-05-12
@@ -81,31 +81,31 @@ namespace DD4hep {
       }
       return s;
     }
-    /** the printout of boolean values "a'la Python"
-     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+    /// the printout of boolean values "a'la Python"
+    /** @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-09-09
      */
     inline std::ostream& toStream(const bool obj, std::ostream& s) {
       return s << (obj ? "True" : "False");
     }
-    /** the printout of float values with the reasonable precision
-     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+    /// the printout of float values with the reasonable precision
+    /** @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-09-09
      */
     inline std::ostream& toStream(const float obj, std::ostream& s, const int prec = 6) {
       const int p = s.precision();
       return s << std::setprecision(prec) << obj << std::setprecision(p);
     }
-    /** the printout of double values with the reasonable precision
-     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+    /// the printout of double values with the reasonable precision
+    /** @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-09-09
      */
     inline std::ostream& toStream(const double obj, std::ostream& s, const int prec = 8) {
       const int p = s.precision();
       return s << std::setprecision(prec) << obj << std::setprecision(p);
     }
-    /** the printout of long double values with the reasonable precision
-     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+    /// the printout of long double values with the reasonable precision
+    /** @author Vanya BELYAEV ibelyaev@physics.syr.edu
      *  @date 2006-09-09
      */
     inline std::ostream& toStream(const long double obj, std::ostream& s, const int prec = 10) {

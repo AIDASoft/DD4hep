@@ -35,8 +35,9 @@ namespace DD4hep {
     /**
      *  Extract the relevant particle information during the simulation step.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ParticleHandler : public Geant4GeneratorAction, public Geant4MonteCarloTruth  {
 #ifdef __MAKECINT__
@@ -51,6 +52,12 @@ namespace DD4hep {
 
     public:
       typedef std::vector<std::string> Processes;
+      /// Functor to select particles from a integer map by the identifier.
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
       class FindParticleByID {
       protected:
 	int pid;

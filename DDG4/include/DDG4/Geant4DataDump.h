@@ -17,21 +17,17 @@
 // C/C++ include files
 #include <vector>
 
-
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** Class to dump the records of the intrinsic Geant4 event model.
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Class to dump the records of the intrinsic Geant4 event model.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4DataDump  {
     public:

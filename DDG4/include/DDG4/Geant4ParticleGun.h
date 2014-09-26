@@ -22,11 +22,11 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Implementation of a particle gun using Geant4Particles.
-    /** @class Geant4ParticleGun Geant4ParticleGun.h DDG4/Geant4ParticleGun.h
-     *
-     * @author  M.Frank
-     * @version 1.0
-     */
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+    */
     class Geant4ParticleGun: public Geant4GeneratorAction {
     protected:
       /// Property: Position and shooting direction of the gun

@@ -30,19 +30,16 @@ class G4UIdirectory;
 #include <string>
 #include <cstdarg>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4UIMessenger;
 
+    /// Cast operator
     template <typename TO, typename FROM> TO fast_cast(FROM from) {
 #ifdef USE_FASTCAST
       return static_cast<TO>(from);
@@ -51,7 +48,15 @@ namespace DD4hep {
 #endif
     }
 
-    struct TypeName : public std::pair<std::string, std::string> {
+    /// Helper class to handle strings of the format "type/name"
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class TypeName : public std::pair<std::string, std::string> {
+    public:
+      /// Default constructor
       TypeName()
           : std::pair<std::string, std::string>() {
       }
@@ -72,8 +77,9 @@ namespace DD4hep {
      *  This is a utility class supporting properties, output and access to 
      *  event and run objects through the context.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Action {
     protected:
@@ -97,9 +103,10 @@ namespace DD4hep {
       //    as it is used in SequenceHdl::setContextToClients()  
     public:
       /// Functor to update the context of a Geant4Action object
-      /**
-       * @author  M.Frank
-       * @version 1.0
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class ContextUpdate  {
       public:
@@ -114,11 +121,13 @@ namespace DD4hep {
     protected:
 
       /// Actor class to manipulate action groups
-      /**
-       * @author  M.Frank
-       * @version 1.0
+      /** 
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
-      template <typename T> struct Actors {
+      template <typename T> class Actors {
+      public:
         typedef typename std::vector<T*> _V;
         _V m_v;
         Actors() {

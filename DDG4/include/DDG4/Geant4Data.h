@@ -35,8 +35,9 @@ namespace DD4hep {
     /**
      * Example class to store the run related information.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class SimpleRun {
       public:
@@ -54,8 +55,9 @@ namespace DD4hep {
     /**
      * Example class to store the event related information.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class SimpleEvent {
       public:
@@ -73,6 +75,11 @@ namespace DD4hep {
     };
 
     /// Generic user-extendible data extension class.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class DataExtension  {
     public:
       /// Default constructor
@@ -88,8 +95,9 @@ namespace DD4hep {
      *  only dealing with the cellID. Users may add an extension 
      *  object, which normally should not be necessary.
      *
-     *  @author  M.Frank
-     *  @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4HitData {
       public:
@@ -99,6 +107,11 @@ namespace DD4hep {
       std::auto_ptr<DataExtension> extension;  
 
       /// Utility class describing the monte carlo contribution of a given particle to a hit.
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+       */
       class MonteCarloContrib {
       public:
         /// Geant 4 Track identifier
@@ -169,6 +182,11 @@ namespace DD4hep {
     };
 
     /// Helper class to define structures used by the generic DDG4 tracker sensitive detector
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class Geant4Tracker {
     public:
       /// DDG4 tracker hit class used by the generic DDG4 tracker sensitive detector
@@ -176,8 +194,9 @@ namespace DD4hep {
        * Geant4 tracker hit class. Tracker hits contain the momentum
        * direction as well as the hit position.
        *
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Hit : public Geant4HitData {
       public:
@@ -207,6 +226,11 @@ namespace DD4hep {
     };
 
     /// Helper class to define structures used by the generic DDG4 calorimeter sensitive detector
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     class Geant4Calorimeter {
     public:
 
@@ -215,8 +239,9 @@ namespace DD4hep {
        * Geant4 tracker hit class. Calorimeter hits contain the momentum
        * direction as well as the hit position.
        *
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Hit : public Geant4HitData {
       public:

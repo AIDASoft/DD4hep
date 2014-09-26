@@ -40,8 +40,8 @@ namespace DD4hep  {
     class Geant4Particle;
     class LCIOEventReader;
 
-    /** @class InputAction Geant4GeneratorAction.h DDG4/Geant4GeneratorAction.h
-     *
+    /// Input action reading LCIO files
+    /** 
      * Concrete implementation of the Geant4 generator action base class
      * populating Geant4 primaries from LCIO and HepStd files.
      *

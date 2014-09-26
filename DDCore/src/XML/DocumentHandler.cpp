@@ -34,9 +34,14 @@ using namespace DD4hep::XML;
 #include "xercesc/sax/ErrorHandler.hpp"
 using namespace xercesc;
 
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  /// Namespace containing utilities to parse XML files using XercesC or TinyXML
   namespace XML {
+
     namespace {
+      /// Helper function to create a XercesC pareser
       XercesDOMParser* make_parser(xercesc::ErrorHandler* err_handler = 0) {
         XercesDOMParser* parser = new XercesDOMParser;
         parser->setValidationScheme(XercesDOMParser::Val_Auto);
@@ -49,6 +54,7 @@ namespace DD4hep {
         return parser;
       }
 
+      /// Helper function to parse a DOM document using an instance of the XercesC pareser
       Document parse_document(const void* bytes, size_t length, xercesc::ErrorHandler* err_handler) {
         auto_ptr<XercesDOMParser> parser(make_parser(err_handler));
         MemBufInputSource src((const XMLByte*) bytes, length, "memory");
@@ -60,7 +66,10 @@ namespace DD4hep {
         return (XmlDocument*) doc;
       }
     }
-    struct DocumentErrorHandler: public ErrorHandler, public DOMErrorHandler {
+
+    /// XML-DOM ERror handler class for the XercesC document parser.
+    class DocumentErrorHandler: public ErrorHandler, public DOMErrorHandler {
+    public:
       /// Constructor
       DocumentErrorHandler() {
       }
@@ -78,8 +87,11 @@ namespace DD4hep {
       void error(const SAXParseException& e);
       /// Fatal error handler
       void fatalError(const SAXParseException& e);
+      /// Dom Error handler callback
       virtual bool handleError(const DOMError& domError);
     };
+
+    /// Dom Error handler callback
     bool DocumentErrorHandler::handleError(const DOMError& domError) {
       string err = "DOM UNKNOWN: ";
       switch (domError.getSeverity()) {
@@ -104,6 +116,7 @@ namespace DD4hep {
       }
       return false;
     }
+    /// Error handler
     void DocumentErrorHandler::error(const SAXParseException& e) {
       string m(_toString(e.getMessage()));
       if (m.find("The values for attribute 'name' must be names or name tokens") != string::npos
@@ -117,6 +130,7 @@ namespace DD4hep {
       printout(ERROR,"XercesC","+++ Error at file \"%s\", Line %d Column: %d Message:%s",
 	       sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
+    /// Fatal error handler
     void DocumentErrorHandler::fatalError(const SAXParseException& e) {
       string m(_toString(e.getMessage()));
       string sys(_toString(e.getSystemId()));
@@ -124,6 +138,7 @@ namespace DD4hep {
 	       sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
 
+    /// Dump DOM tree using XercesC handles
     void dumpTree(xercesc::DOMDocument* doc) {
       DOMImplementation *imp = DOMImplementationRegistry::getDOMImplementation(Strng_t("LS"));
       XMLFormatTarget *tar = new StdOutFormatTarget();
@@ -225,8 +240,14 @@ int DocumentHandler::output(Document doc, const string& fname) const {
 #endif
 #include <sys/stat.h>
 
-namespace DD4hep {namespace XML {
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+  /// Namespace containing utilities to parse XML files using XercesC or TinyXML
+  namespace XML {
+
+    /// XML-DOM ERror handler class for the TinyXML document parser (Compatibility class)
     struct DocumentErrorHandler {};
+
     union Xml {
       Xml(void* ptr) : p(ptr) {}
       Xml(const void* ptr) : cp(ptr) {}

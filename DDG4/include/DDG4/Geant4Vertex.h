@@ -13,19 +13,16 @@
 #include <set>
 #include <memory>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
     // Forward declarations
     class Geant4Vertex;
 
+    /// Base class to extend the basic vertex class used by DDG4 with user information
     class VertexExtension  {
     public:
       /// Default constructor

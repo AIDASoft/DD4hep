@@ -13,22 +13,17 @@
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4Mapping.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4Converter Geant4Converter.h DDG4/Geant4Converter.h
-     *
-     * Geometry converter from DD4hep to Geant 4.
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Geometry converter from DD4hep to Geant 4.
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Converter : public Geometry::GeoHandler, public Geant4Mapping {
     public:
@@ -84,6 +79,7 @@ namespace DD4hep {
 
       /// Print the geometry type SensitiveDetector
       virtual void* printSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
+
       /// Print Geant4 placement
       virtual void* printPlacement(const std::string& name, const TGeoNode* node) const;
     };

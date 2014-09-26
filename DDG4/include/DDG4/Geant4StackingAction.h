@@ -19,10 +19,10 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Concrete implementation of the Geant4 stacking action base class
-    /** @class Geant4StackingAction Geant4Action.h DDG4/Geant4Action.h
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4StackingAction: public Geant4Action {
     public:
@@ -39,14 +39,14 @@ namespace DD4hep {
     };
 
     /// Concrete implementation of the Geant4 stacking action sequence
-    /** @class Geant4StackingActionSequence Geant4Action.h DDG4/Geant4Action.h
-     *
+    /**
      * The sequence dispatches the callbacks for each stepping action
      * to all registered Geant4StackingAction members and all 
      * registered callbacks.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4StackingActionSequence: public Geant4Action {
     protected:

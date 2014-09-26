@@ -12,9 +12,6 @@
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
 
-// ROOT include files
-#include "Math/Vector4D.h"
-
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
@@ -26,8 +23,9 @@ namespace DD4hep {
      * The vertex smearing is steered by the Lorentz transformation angle.
      * The interaction to be modified is identified by the interaction's unique mask.
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4InteractionVertexBoost: public Geant4GeneratorAction {
     protected:

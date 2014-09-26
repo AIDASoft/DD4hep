@@ -27,25 +27,20 @@ class TGeoMedium;
 class TGeoNode;
 class TGeoMatrix;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Geomentry namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
     class SensitiveDetectorObject;
 
-    /** @class LCDDConverter LCDDConverter.h XML/LCDDConverter.h
-     *
-     * Geometry converter from DD4hep to Geant 4.
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Geometry converter from DD4hep to Geant 4 in LCDD format.
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
      */
     struct LCDDConverter: public GeoHandler {
       typedef XML::XmlElement XmlElement;
@@ -61,6 +56,12 @@ namespace DD4hep {
       typedef std::map<const TGeoShape*,  XmlElement*> SolidMap;
       typedef std::map<OverlayedField,    XmlElement*> FieldMap;
       typedef std::map<const TGeoMatrix*, XmlElement*> TrafoMap;
+      /// Data structure of the geometry converter from DD4hep to Geant 4 in LCDD format.
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_GEOMETRY
+       */
       struct GeometryInfo: public GeoHandler::GeometryInfo {
         ElementMap xmlElements;
         MaterialMap xmlMaterials;

@@ -29,13 +29,14 @@ namespace DD4hep {
     class Geant4StepHandler;
 
     /// Helper class to ease the extraction of information from a G4Step object.
-    /** @class Geant4StepHandler Geant4SensitiveDetector.h DDG4/Geant4SensitiveDetector.h
+    /**
      *
      * Tiny helper/utility class to easily access Geant4 step information.
      * Born by lazyness: Avoid typing millions of statements!
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4StepHandler {
     public:

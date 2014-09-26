@@ -27,13 +27,14 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Convenience namespace to separate test classes from the DDG4 simulation toolkit
     namespace Test {
 
       /// Common base class for test action
       /** 
-       *
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Geant4TestBase {
       protected:
@@ -50,8 +51,9 @@ namespace DD4hep {
 
       /// Example generator action doing nothing, but print
       /**
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Geant4TestGeneratorAction: public Geant4GeneratorAction, public Geant4TestBase {
       public:
@@ -65,8 +67,9 @@ namespace DD4hep {
 
       /// Example run action doing nothing, but print
       /**
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Geant4TestRunAction: public Geant4RunAction, public Geant4TestBase {
       public:
@@ -86,8 +89,9 @@ namespace DD4hep {
 
       /// Example event action doing nothing, but print
       /**
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Geant4TestEventAction: public Geant4EventAction, public Geant4TestBase {
       public:
@@ -107,8 +111,10 @@ namespace DD4hep {
 
       /// Example tracking action doing nothing, but print
       /**
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
+
        */
       class Geant4TestTrackAction: public Geant4TrackingAction, public Geant4TestBase {
       public:
@@ -124,8 +130,9 @@ namespace DD4hep {
 
       /// Example stepping action doing nothing, but print
       /**
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Geant4TestStepAction: public Geant4SteppingAction, public Geant4TestBase {
       public:
@@ -139,8 +146,9 @@ namespace DD4hep {
 
       /// Example sensitve detector action doing nothing, but print
       /**
-       * @author  M.Frank
-       * @version 1.0
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_SIMULATION
        */
       class Geant4TestSensitive: public Geant4Sensitive, public Geant4TestBase {
       protected:

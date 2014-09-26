@@ -9,22 +9,17 @@
 #ifndef DD4HEP_DDG4_GEANT4CALL_H
 #define DD4HEP_DDG4_GEANT4CALL_H
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /*
-   *   Simulation namespace declaration
-   */
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /** @class Geant4Call Geant4Call.h DDG4/Geant4Call.h
-     *
-     * Callback interface class with argument
-     *
-     * @author  M.Frank
-     * @version 1.0
+    /// Callback interface class with argument
+    /** 
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class  Geant4Call   {
     public:

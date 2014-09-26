@@ -24,13 +24,13 @@ namespace DD4hep  {
   namespace Simulation  {
 
     /// Basic geant4 event reader class. This interface/base-class must be implemented by concrete readers.
-    /** @class Geant4EventReader Geant4EventReader.h DDG4/Geant4EventReader.h
-     * 
+    /** 
      * Base class to read input files containing simulation data.
      *
-     * @author  P.Kostka (main author)
-     * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
-     * @version 1.0
+     *  \author  P.Kostka (main author)
+     *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4EventReader  {
 
@@ -56,14 +56,14 @@ namespace DD4hep  {
     };
 
     /// Generic input action capable of using the Geant4EventReader class.
-    /** @class Geant4InputAction Geant4InputAction.h DDG4/Geant4InputAction.h
-     *
+    /** 
      * Concrete implementation of the Geant4 generator action base class
      * populating Geant4 primaries from Geant4 and HepStd files.
      *
-     * @author  P.Kostka (main author)
-     * @author  M.Frank  (code reshuffeling into new DDG4 scheme)
-     * @version 1.0
+     *  \author  P.Kostka (main author)
+     *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4InputAction : public Geant4GeneratorAction {
 

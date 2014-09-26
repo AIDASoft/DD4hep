@@ -12,29 +12,24 @@
 // Framework include files
 #include "DD4hep/Primitives.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   namespace XML { class Handle_t; }
 
-  /*
-   *   Conditions namespace declaration
-   */
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
     // Forward declarations
     class LCDD;
     class ConditionsHandler;
 
-    /** @class ConditionsTransaction
-     *
-     *  Manage conditions transaction to the handler for a given LCDD instance
-     *
-     *  @author  M.Frank
-     *  @version 1.0
-     *  @date    01/04/2014
+    /// Manage conditions transaction to the handler for a given LCDD instance
+    /** 
+     *  \date     01/04/2014
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup  DD4HEP_CONDITIONS
      */
     struct ConditionsTransaction {
       /// Internal flag to remember transaction contexts
