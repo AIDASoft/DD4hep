@@ -9,7 +9,9 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
+#include "DDG4/Geant4ParticleHandler.h"
 #include "DDG4/Geant4UserParticleHandler.h"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 using namespace DD4hep::Simulation;
 
@@ -18,6 +20,7 @@ Geant4UserParticleHandler::Geant4UserParticleHandler(Geant4Context* context, con
   : Geant4Action(context,nam)
 {
   InstanceCount::increment(this);
+  declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*CLHEP::MeV);
   m_needsControl = true;
 }
 
@@ -57,5 +60,6 @@ void Geant4UserParticleHandler::combine(Particle& /* to_be_deleted */, Particle&
 }
 
 /// Callback to be answered if the particle MUST be kept during recombination step
-void Geant4UserParticleHandler::keepParticle(Particle& /* particle */)   {
+bool Geant4UserParticleHandler::keepParticle(Particle& particle)   {
+  return Geant4ParticleHandler::defaultKeepParticle(particle);
 }

@@ -79,16 +79,13 @@ Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* context,
 
 /// Post-track action callback
 void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  {
-
-
   double r_prod = sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
   double z_prod = fabs(p.vsz);
   bool starts_in_trk_vol = ( r_prod <= m_rTracker && z_prod <= m_zTracker )  ;
 
   // created in tracking volume but below energy cut
-  if( starts_in_trk_vol && ! (p.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD)  ){
-    
-    p.reason = 0 ;
+  if( starts_in_trk_vol && ! (p.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
+    p.reason = 0;
     return;
   }
 
@@ -98,12 +95,10 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
 
   // created and ended in calo
   if( !starts_in_trk_vol && !ends_in_trk_vol ){
-    
     p.reason = 0;
     return ;
   }
   
   //fg: backscatter ??
   // if( !starts_in_trk_vol &&  ends_in_trk_vol ){  keep ?  } 
-
 }

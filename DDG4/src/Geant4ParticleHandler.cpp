@@ -202,8 +202,6 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   G4PrimaryParticle* prim = primary(h.id(),context()->event().event());
   Particle* prim_part = 0;
 
-
-
   if ( prim )   {
     Geant4PrimaryMap::Primaries::const_iterator iprim = m_primaryMap->primaryMap.find(prim);
     if ( iprim == m_primaryMap->primaryMap.end() )  {
@@ -437,9 +435,20 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
     if ( ipar != m_particleMap.end() )   {
       equivalents[(*i).first] = (*ipar).second->id;  // requires (1) !
+      Particle* p = (*ipar).second;
+      const G4ParticleDefinition* def = p->definition;
+      int pdg = int(fabs(def->GetPDGEncoding())+0.1);
+      if ( pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
+	error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
+      }
+      pdg = int(fabs(p->pdgID)+0.1);
+      if ( pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
+	error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
+      }
     }
-    else
+    else   {
       error("+++ No Equivalent particle for track:%d last known is:%d",(*i).second,g4_equiv);
+    }
   }
 
   // (3) Compute the particle's parents and daughters. 
@@ -465,101 +474,101 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
   m_particleMap = finalParticles;
 }
 
+/// Default callback to be answered if the particle should be kept if NO user handler is installed
+bool Geant4ParticleHandler::defaultKeepParticle(Particle& particle)   {
+  PropertyMask mask(particle.reason);
+  bool secondaries    =  mask.isSet(G4PARTICLE_HAS_SECONDARIES);
+  bool tracker_track  =  mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT);
+  bool calo_track     =  mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT);
+  bool hits_produced  =  mask.isSet(G4PARTICLE_CREATED_HIT);
+  bool low_energy     = !mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
+
+  /// Remove this track if it has not created a hit and the energy is below threshold
+  if ( mask.isNull() || (secondaries && low_energy && !hits_produced) )  {
+    return true;
+  }
+  /// Remove this track if the energy is below threshold. Reassign hits to parent.
+  else if ( !hits_produced && low_energy )  {
+    return true;
+  }
+  /// Remove this track if the origine is in the calorimeter. Reassign hits to parent.
+  else if ( !tracker_track && calo_track && low_energy )  {
+    return true;
+  }
+  else  {
+    //printout(INFO,name(),"+++ Track: %d should be kept for no obvious reason....",id);
+  }
+  return false;
+}
+
 /// Clean the monte carlo record. Remove all unwanted stuff.
 /// This is the core of the object executed at the end of each event action.
 int Geant4ParticleHandler::recombineParents()  {
-  int break_trackID = 38;
   set<int> remove;
+
   /// Need to start from BACK, to clean first the latest produced stuff.
-  /// Otherwise the daughter list of the earlier produced tracks would not be empty!
   for(ParticleMap::reverse_iterator i=m_particleMap.rbegin(); i!=m_particleMap.rend(); ++i)  {    
-    int g4_id = (*i).first;
     Particle* p = (*i).second;
-    set<int>& daughters = p->daughters;
+    PropertyMask mask(p->reason);
+    bool remove_me = false;
 
     // Allow the user to force the particle handling either by
     // or the reason mask with G4PARTICLE_KEEP_USER or
     // to set the reason mask to NULL in order to drop it.
+    //
+    // If the mask entry is set to G4PARTICLE_FORCE_KILL
+    // or is set to NULL, the particle is ALWAYS removed
+    //
     // Note: This may override all other decisions!
-    if ( m_userHandler )  {
-      m_userHandler->keepParticle(*p);
+    remove_me = m_userHandler ? m_userHandler->keepParticle(*p) : defaultKeepParticle(*p);
+
+    // Now look at the property mask of the particle
+    if ( mask.isNull() || mask.isSet(G4PARTICLE_FORCE_KILL) )  {
+      remove_me = true;
+    }
+    else if ( mask.isSet(G4PARTICLE_KEEP_USER) )  {
+      /// If user decides it must be kept, it MUST be kept!
+      mask.set(G4PARTICLE_KEEP_USER);
+      continue;
+    }
+    else if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
+      /// Primary particles MUST be kept!
+      continue;
+    }
+    else if ( mask.isSet(G4PARTICLE_KEEP_ALWAYS) )   {
+      continue;
+    }
+    else if ( mask.isSet(G4PARTICLE_KEEP_PARENT) )  {
+      //continue;
+    }
+    else if ( mask.isSet(G4PARTICLE_KEEP_PROCESS) )  {
+      ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
+      if ( ip != m_particleMap.end() )   {
+	Particle* parent_part = (*ip).second;
+	PropertyMask parent_mask(parent_part->reason);
+	if ( parent_mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )   {
+	  parent_mask.set(G4PARTICLE_KEEP_PARENT);
+	  continue;
+	}
+      }
+      // Low energy stuff. Remove it. Reassign to parent.
+      //remove_me = true;
     }
 
-    if ( daughters.size() == 0 )   {
-      PropertyMask mask(p->reason);
-      int  id             =  p->id;
-      bool secondaries    =  mask.isSet(G4PARTICLE_HAS_SECONDARIES);
-      bool tracker_track  =  mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT);
-      bool calo_track     =  mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT);
-      bool hits_produced  =  mask.isSet(G4PARTICLE_CREATED_HIT);
-      bool low_energy     = !mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
-      bool keep_process   =  mask.isSet(G4PARTICLE_KEEP_PROCESS);
-      bool keep_parent    =  mask.isSet(G4PARTICLE_KEEP_PARENT);
-      bool remove_me      = false;
-
-      if ( id == break_trackID )   {  // Used for debugging to set break point
-	remove_me = false;
-      }
-
-      if ( mask.isSet(G4PARTICLE_KEEP_USER) )  {
-	/// If user decides it must be kept, it MUST be kept!
-	mask.set(G4PARTICLE_KEEP_USER);
-	continue;
-      }
-      else if ( mask.isSet(G4PARTICLE_PRIMARY) )   {
-	/// Primary particles MUST be kept!
-	continue;
-      }
-      else if ( mask.isSet(G4PARTICLE_KEEP_ALWAYS) )   {
-	continue;
-      }
-      else if ( keep_parent )  {
-	//continue;
-      }
-      else if ( keep_process )  {
-	ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
-	if ( ip != m_particleMap.end() )   {
-	  Particle* parent_part = (*ip).second;
-	  PropertyMask parent_mask(parent_part->reason);
-	  if ( parent_mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )   {
-	    parent_mask.set(G4PARTICLE_KEEP_PARENT);
-	    continue;
-	  }
-	}
-	// Low energy stuff. Remove it. Reassign to parent.
-	//remove_me = true;
-      }
-
-      /// Remove this track if it has not created a hit and the energy is below threshold
-      if ( mask.isNull() || (secondaries && low_energy && !hits_produced) )  {
-	remove_me = true;
-      }
-      /// Remove this track if the energy is below threshold. Reassign hits to parent.
-      else if ( !hits_produced && low_energy )  {
-	remove_me = true;
-      }
-      /// Remove this track if the origine is in the calorimeter. Reassign hits to parent.
-      else if ( !tracker_track && calo_track && low_energy )  {
-	remove_me = true;
-      }
-      else  {
-	//printout(INFO,name(),"+++ Track: %d should be kept for no obvious reason....",id);
-      }
-
-      /// Remove this track from the list and also do the cleanup in the parent's children list
-      if ( remove_me )  {
-	ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
-	remove.insert(g4_id);
-	m_equivalentTracks[g4_id] = p->g4Parent;
-	if ( ip != m_particleMap.end() )   {
-	  Particle* parent_part = (*ip).second;
-	  PropertyMask(parent_part->reason).set(mask.value());
-	  parent_part->steps += p->steps;
-	  parent_part->secondaries += p->secondaries;
-	  /// Update of the particle using the user handler
-	  if ( m_userHandler )  {
-	    m_userHandler->combine(*p, *parent_part);
-	  }
+    /// Remove this track from the list and also do the cleanup in the parent's children list
+    if ( remove_me )  {
+      int g4_id = (*i).first;
+      ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
+      remove.insert(g4_id);
+      m_equivalentTracks[g4_id] = p->g4Parent;
+      if ( ip != m_particleMap.end() )   {
+	Particle* parent_part = (*ip).second;
+	PropertyMask(parent_part->reason).set(mask.value());
+	parent_part->steps += p->steps;
+	parent_part->secondaries += p->secondaries;
+	/// Update of the particle using the user handler
+	if ( m_userHandler )  {
+	  m_userHandler->combine(*p, *parent_part);
 	}
       }
     }
@@ -595,12 +604,17 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     // We assume that particles from the generator have consistent parents
     // For all other particles except the primaries, the parent must be contained in the record.
     if ( !mask.isSet(G4PARTICLE_PRIMARY) && !status.anySet(G4PARTICLE_GEN_GENERATOR) )  {
-      int parent_id = equivalentTrack(p->g4Parent);
-      bool in_map = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
-      bool in_parent_list = p->parents.find(parent_id) != p->parents.end();
-      char parent_list[1024];
-      parent_list[0] = 0;
+      TrackEquivalents::const_iterator eq_it = m_equivalentTracks.find(p->g4Parent);
+      bool in_map = false, in_parent_list = false;
+      int parent_id = -1;
+      if ( eq_it != m_equivalentTracks.end() )   {
+	parent_id = (*eq_it).second;
+	in_map = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
+	in_parent_list = p->parents.find(parent_id) != p->parents.end();
+      }
       if ( !in_map || !in_parent_list )  {
+	char parent_list[1024];
+	parent_list[0] = 0;
 	++num_errors;
 	for(set<int>::const_iterator ip=p->parents.begin(); ip!=p->parents.end();++ip)
 	  ::snprintf(parent_list+strlen(parent_list),sizeof(parent_list)-strlen(parent_list),"%d ",*ip);
@@ -610,32 +624,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     }
   }
 
-  /// No we have to check the consistency of the map of equivalent tracks used to assign the
-  /// proper MC particle to the created hits
-  for(TrackEquivalents::const_iterator i=m_equivalentTracks.begin(), iend=m_equivalentTracks.end(); i!=iend; ++i)  {
-    int g4_id    = (*i).first;
-    int equiv_id = equivalentTrack(g4_id);
-    if ( equiv_id < 0 )  {
-      ++num_errors;
-    }
-  }
-
   if ( num_errors > 0 )  {
     except("+++ Consistency check failed. Found %d problems.",num_errors);
   }
-}
-
-/// Get proper equivalent track from the particle map according to the given geant4 track ID
-int Geant4ParticleHandler::equivalentTrack(int g4_id)  const  {
-  int equiv_id  = g4_id;
-  if ( g4_id != 0 )  {
-    TrackEquivalents::const_iterator iequiv = m_equivalentTracks.find(equiv_id);
-    if ( iequiv != m_equivalentTracks.end() ) return (*iequiv).second;
-  }
-  return -1;
-}
-
-/// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
-int Geant4ParticleHandler::particleID(int track, bool) const    {
-  return equivalentTrack(track);
 }

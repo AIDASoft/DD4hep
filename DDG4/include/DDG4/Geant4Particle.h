@@ -58,6 +58,7 @@ namespace DD4hep {
       G4PARTICLE_CREATED_TRACKER_HIT = 1<<8,
       G4PARTICLE_KEEP_USER = 1<<9,
       G4PARTICLE_KEEP_ALWAYS = 1<<10,
+      G4PARTICLE_FORCE_KILL = 1<<11,
 
       // Generator status for a given particles: bit 0...3 come from LCIO, rest is internal
       G4PARTICLE_GEN_EMPTY           = 1<<0,  // Empty line

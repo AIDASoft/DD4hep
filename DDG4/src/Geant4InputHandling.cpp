@@ -312,6 +312,10 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
 		  v->x/mm,v->y/mm,v->z/mm,v->time/ns);    
     for(Geant4Vertex::Particles::const_iterator ip=v->out.begin(); ip!=v->out.end(); ++ip)  {
       Geant4ParticleHandle p = pm[*ip];
+      if ( p->daughters.size() > 0 )  {
+	PropertyMask mask(p->reason);
+	mask.set(G4PARTICLE_HAS_SECONDARIES);
+      }
       if ( p->parents.size() == 0 )  {
 	Primaries relevant = getRelevant(visited,prim,pm,p);
 	for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {

@@ -44,6 +44,11 @@ namespace DD4hep {
     class Geant4UserParticleHandler : public Geant4Action  {
     public:
       typedef Geant4Particle Particle;
+
+    protected:
+      /// Property: Energy cut below which particles are not collected, but assigned to the parent
+      double m_kinEnergyCut;
+
     public:
       /// Standard constructor
       Geant4UserParticleHandler(Geant4Context* context, const std::string& nam);
@@ -90,10 +95,18 @@ namespace DD4hep {
        *  to set the reason mask to NULL in order to drop it.
        *  The default implementation is empty.
        *
+       *  If the reason mask entry is set to G4PARTICLE_FORCE_KILL
+       *  or is set to NULL, the particle is ALWAYS removed
+       *
+       *  The default implementation calls
+       *  Geant4ParticleHandler::defaultKeepParticle(particle)
+       *  Please have a look therein if it suffices your needs!
+       *
        *  Note: This may override all other decisions!
        *        Default implementation is empty.
+       *  
        */
-      virtual void keepParticle(Particle& particle);
+      virtual bool keepParticle(Particle& particle);
 
       /// Callback when parent should be combined
       /** Called before a particle is removed from the final record.

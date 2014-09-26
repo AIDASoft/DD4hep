@@ -45,8 +45,8 @@ def run():
 
   # Configure I/O
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  #evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  #evt_lcio.OutputLevel = Output.ERROR
+  evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_lcio.OutputLevel = Output.ERROR
 
 
   generator_output_level = Output.INFO
