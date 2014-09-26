@@ -95,7 +95,7 @@ namespace DD4hep {
 	  q->setMass(p->mass/GeV);
 
 
-	  q->setCharge(def ? def->GetPDGCharge()/3.0 : 0); // Charge(e+) = 1 !
+	  q->setCharge(def ? def->GetPDGCharge() : 0); // Charge(e+) = 1 !
 
 	  // Set generator status
 	  //if ( mask.isSet(G4PARTICLE_GEN_EMPTY) ) 
