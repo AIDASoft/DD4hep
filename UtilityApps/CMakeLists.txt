@@ -18,8 +18,16 @@ target_link_libraries(geoConverter DD4hepCore)
 add_executable(geoPluginRun src/plugin_runner.cpp)
 target_link_libraries(geoPluginRun DD4hepCore)
 #-----------------------------------------------------------------------------------
-add_executable( print_materials src/print_materials.cc)
+add_executable( print_materials src/print_materials.cpp)
 target_link_libraries(print_materials DD4hepCore DD4hepRec)
+#-----------------------------------------------------------------------------------
+
+if(DD4HEP_USE_GEANT4)
+  include_directories( ${CMAKE_SOURCE_DIR}/DDG4/include ) 
+
+  add_executable( dd_sim src/ddsim.cpp)
+  target_link_libraries(dd_sim DD4hepCore DD4hepG4)
+endif()
 #-----------------------------------------------------------------------------------
 
 
@@ -36,7 +44,7 @@ target_link_libraries( teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES} DD4hepRec ${
 
 #--- install target-------------------------------------
 
-install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials
+install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials dd_sim
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
