@@ -96,7 +96,7 @@ The following main requirements influenced the design of the toolkit:
     the toolkit.
 .
 
-<img src="../doc/LaTex/DD4hep_big_picture.png" height="400"/>
+<img src="../LaTex/DD4hep_big_picture.png" height="400"/>
 <b>The components of the DD4hep detector geometry toolkit.</b>
 
 \section DESIGN Toolkit Design
@@ -132,7 +132,7 @@ supporting flexibility.
 Such a compact detector descriptions cannot be interpreted in a 
 general manner, therefore so called $Detector$ $Constructors$ are needed.
 
-<img src="../doc/LaTex/DD4hep_classes.png" height="400"/>
+<img src="../LaTex/DD4hep_classes.png" height="400"/>
 <b>Class diagram with the main classes and their relations 
              for the Generic Detector Description Model. The implementing
              ROOT classes are shown in brackets.
@@ -167,7 +167,7 @@ description toolkit, this library may in the future also adopt
 generic designs of detector components created by end users e.g. during the design 
 phase of future experiments.
 
-<img src="../doc/LaTex/DD4hep_compact_xml.png" height="250"/>
+<img src="../LaTex/DD4hep_compact_xml.png" height="250"/>
 
 <b>An example sniplett of the compact detector description. The 
              example shows the description of a 2 layered silicon vertex 
@@ -212,16 +212,16 @@ notation to end-users building custom $Detector$ $Constructors$.
 
 Here you can find the manuals:
 
-- The basic <A href="../doc/DD4hepManual.pdf">DD4hep manual</A>.
-- The <A href="../doc/DDG4Manual.pdf">DDG4 manual</A> to invoke the simulation toolkit Geant4 taking advantage of
+- The basic <A href="../DD4hepManual.pdf">DD4hep manual</A>.
+- The <A href="../DDG4Manual.pdf">DDG4 manual</A> to invoke the simulation toolkit Geant4 taking advantage of
   detector descriptions implemented in DD4hep.
 - The DDAlign manual. A Geometry alignment toolkit to handle geometrical imperfections.
 - The DDCond manual to handle detector conditions for DD4hep based deytector descriptions.
   (Under construction though).
-- The <A href="../doc/DDEveManual.pdf">DDEve manual</A> to visualize DD4hep geometries.
+- The <A href="../DDEveManual.pdf">DDEve manual</A> to visualize DD4hep geometries.
   (Under construction though).
-- <A href="../doc/DD4hep_Diagrams.pdf">UML diagrams</A> from the design phase
-- <A href="../doc/DD4hep_Tutorial.pdf">Tutorial</A>. Relatively old...
+- <A href="../DD4hep_Diagrams.pdf">UML diagrams</A> from the design phase
+- <A href="../DD4hep_Tutorial.pdf">Tutorial</A>. Relatively old...
 - <A href="http://cds.cern.ch/record/1473120/files/AIDA-D2_3.pdf">Design document</A>
 - <A href="https://sft.its.cern.ch/jira/browse/DDFORHEP">DD4hep bug tracker</A>
 .
