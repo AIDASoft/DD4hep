@@ -68,7 +68,7 @@ namespace DD4hep {
       @author  F.Gaede, DESY
       @version $Id$
   */
-  gear::GearMgr* createGearMgr( const Geometry::LCDD& lcdd ) ;
+  gear::GearMgr* createGearMgr( Geometry::LCDD& lcdd , const std::string& pluginName="GearForILD" ) ;
 
 }
 

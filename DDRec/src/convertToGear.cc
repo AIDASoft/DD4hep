@@ -26,21 +26,26 @@ using namespace dd4hep ;
 
 int main(int argc, char** argv ){
     
-  if( argc < 2 ) {
-    std::cout << " usage: convertToGear compact.xml [gear_file.xml]" << std::endl ;
+  if( argc < 3 ) {
+    std::cout << " usage: convertToGear plugin compact.xml [gear_file.xml]" << std::endl 
+	      << "  plugin: name of a plugin with a signature \"long int (LCDD*, int, char**)\" \n " 
+	      << "  or \"default\" " << std::endl ; 
+    
     exit(1) ;
   }
 
-  std::string inFile =  argv[1] ;
+  std::string pluginName =  argv[1] ;
 
-  std::string outFile = ( argc>2  ?  argv[2]  : ""  ) ;
+  std::string inFile =  argv[2] ;
+
+  std::string outFile = ( argc>3  ?  argv[3]  : ""  ) ;
 
   LCDD& lcdd = LCDD::getInstance();
 
   lcdd.fromCompact( inFile );
 
-  gear::GearMgr* gearMgr = createGearMgr( lcdd ) ;
-
+  gear::GearMgr* gearMgr = ( pluginName == "default" ) ?  createGearMgr( lcdd )  :   createGearMgr( lcdd , pluginName )  ;
+ 
   //----------------------------------------------------------------------------------
 
   // std::cout << "  ***************************** GEAR parameters **************************************** " << std::endl ;
@@ -56,6 +61,7 @@ int main(int argc, char** argv ){
   }
     
   gear::GearXML::createXMLFile ( gearMgr, outFile ) ;
+ 
 
   std::cout << "  ************************************************************** " << std::endl ;
   std::cout << "   created gear file : " << outFile << std::endl ;

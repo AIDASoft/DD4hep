@@ -3,6 +3,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/Fields.h"
+#include "DD4hep/Plugins.h"
 
 // ROOT
 //#include "TGeoManager.h"
@@ -24,12 +25,14 @@ namespace DD4hep{
   using namespace Geometry ;
 
 
-  gear::GearMgr* createGearMgr( const Geometry::LCDD& lcdd ){
+  gear::GearMgr* createGearMgr( Geometry::LCDD& lcdd , const std::string& pluginName ){
 
+    int argc(0); char** argv = 0 ;
 
+    lcdd.apply( pluginName.c_str() , argc, argv) ;
+    
     DetElement world = lcdd.world() ;
-
-
+    
     gear::GearMgrImpl* gearMgr = new gear::GearMgrImpl() ;
 
     gearMgr->setDetectorName(  lcdd.header().name() ) ; 
@@ -45,7 +48,7 @@ namespace DD4hep{
 
     DetElement::Children chMap = world.children() ;
 
-    // --- get all DetElements and their children into on vector
+    // --- get all DetElements and their children into one vector
     //     ( expect gear parameters to be only at top two levels )
     
     for ( DetElement::Children::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
@@ -75,7 +78,7 @@ namespace DD4hep{
 
       } catch( std::exception& e) {
       
-	std::cout << "  ***  " << e.what() << std::endl ;
+	//	std::cout << "  ***  subdetector " << dets[i].name() << " : " <<  e.what() << std::endl ;
 
 	continue ; // with next DetElement
       }
