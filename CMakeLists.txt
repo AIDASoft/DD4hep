@@ -63,6 +63,8 @@ include_directories( SYSTEM ${ROOT_INCLUDE_DIR} )
 include(DD4hep_XML_setup)
 
 if(DD4HEP_USE_GEANT4)
+  set( DD4HEP_USE_BOOST On)
+  message( STATUS " *** finding BOOST .... " )
   find_package( Boost REQUIRED ) 
   include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
   add_definitions( -DDD4HEP_USE_BOOST )
