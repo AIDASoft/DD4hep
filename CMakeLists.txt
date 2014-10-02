@@ -31,7 +31,7 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
 option(DD4HEP_USE_GEANT4 "Enable the simulation part based on Geant4" OFF)
-option(DD4HEP_USE_BOOST "build with boost - needed only if built with Geant4" OFF)
+#option(DD4HEP_USE_BOOST "build with boost - needed only if built with Geant4" OFF)
 option(DD4HEP_USE_GEAR "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO "Build lcio extensions" OFF)
 
@@ -62,7 +62,7 @@ include_directories( SYSTEM ${ROOT_INCLUDE_DIR} )
 ##checks for xercesc or not and sets up the include_directories
 include(DD4hep_XML_setup)
 
-if(DD4HEP_USE_BOOST)
+if(DD4HEP_USE_GEANT4)
   find_package( Boost REQUIRED ) 
   include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
   add_definitions( -DDD4HEP_USE_BOOST )
