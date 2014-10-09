@@ -1,3 +1,18 @@
+// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
+//====================================================================
+//  AIDA Detector description implementation
+//--------------------------------------------------------------------
+//
+//  Author     : M.Frank
+//
+//  ROOT interpreted macro to test world to local and local to world
+//  transformations using 2 simple boxes.
+//
+//  usage: $> root.exe <path>/BoxTrafos.C
+//
+//
+//====================================================================
+
 namespace {
   struct Loader {  Loader() { gSystem->Load("libDD4hepCore"); }  } _load;
 }
