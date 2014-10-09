@@ -12,7 +12,6 @@
 // ROOT include files
 #ifndef __CINT__
 #include "Reflex/PluginService.h"
-#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -39,4 +38,6 @@ namespace DD4hep {
   };
 
 } /* End namespace DD4hep    */
+#endif
+
 #endif    /* DD4HEP_PLUGINS_H        */

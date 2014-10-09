@@ -131,7 +131,7 @@ const TGeoHMatrix& DetElementObject::worldTransformation() {
     PlacementPath nodes;
     flag |= HAVE_WORLD_TRAFO;
     DetectorTools::placementPath(this, nodes);
-    DetectorTools::placementTrafo(nodes,true,worldTrafo);
+    DetectorTools::placementTrafo(nodes,false,worldTrafo);
   }
   return worldTrafo;
 }
@@ -142,7 +142,7 @@ const TGeoHMatrix& DetElementObject::parentTransformation() {
     PlacementPath nodes;
     flag |= HAVE_PARENT_TRAFO;
     DetectorTools::placementPath(DetElement(parent), this, nodes);
-    DetectorTools::placementTrafo(nodes,true,parentTrafo);
+    DetectorTools::placementTrafo(nodes,false,parentTrafo);
   }
   return parentTrafo;
 }
@@ -158,12 +158,12 @@ const TGeoHMatrix& DetElementObject::referenceTransformation() {
     else if ( DetectorTools::isParentElement(ref,self) ) {
       PlacementPath nodes;
       DetectorTools::placementPath(ref,self,nodes);
-      DetectorTools::placementTrafo(nodes,true,referenceTrafo);
+      DetectorTools::placementTrafo(nodes,false,referenceTrafo);
     }
     else if ( DetectorTools::isParentElement(self,ref) ) {
       PlacementPath nodes;
       DetectorTools::placementPath(self,ref,nodes);
-      DetectorTools::placementTrafo(nodes,true,referenceTrafo);
+      DetectorTools::placementTrafo(nodes,false,referenceTrafo);
     }
     else  {
       throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) + 
@@ -199,7 +199,7 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   if ( have_world_tr && print )  worldTrafo.Print();
 
   if ( (flag&HAVE_PARENT_TRAFO) )  {
-    DetectorTools::placementTrafo(par_path,true,parentTrafo);
+    DetectorTools::placementTrafo(par_path,false,parentTrafo);
   }
 
   /// Compute world transformations
@@ -213,7 +213,7 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
     // Else re-compute the transformation to the world.
     PlacementPath world_nodes;
     DetectorTools::placementPath(this, world_nodes);
-    DetectorTools::placementTrafo(world_nodes,true,worldTrafo);
+    DetectorTools::placementTrafo(world_nodes,false,worldTrafo);
     flag |= HAVE_WORLD_TRAFO;
   }
 

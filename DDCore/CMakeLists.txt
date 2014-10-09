@@ -23,6 +23,7 @@ list(APPEND headers ${DDSegmentation_INCLUDE_DIRS}/DDSegmentation/Segmentation.h
 list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHelper.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Plugins.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/IoStreams.h
   )
 root_generate_dictionary( G__DD4hep ${headers} ${internal_headers} LINKDEF include/ROOT/LinkDef.h)
 list(APPEND sources G__DD4hep.cxx)
