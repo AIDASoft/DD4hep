@@ -194,7 +194,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
 
       q->setTime(p->time/ns);
       q->setMass(p->mass/GeV);
-      q->setCharge(def ? def->GetPDGCharge()/3.0 : 0); // Charge(e+) = 1 !
+      q->setCharge(def ? def->GetPDGCharge() : 0); // Charge(e+) = 1 !
 
       // Set generator status
       q->setGeneratorStatus(0);
