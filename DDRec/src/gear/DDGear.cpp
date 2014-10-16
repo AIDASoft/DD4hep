@@ -99,10 +99,10 @@ namespace DD4hep{
       else if( gearH->name() == "LcalParameters" )       { gearMgr->setLcalParameters      ( dynamic_cast<gear::CalorimeterParameters* >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "LHcalParameters" )      { gearMgr->setLHcalParameters     ( dynamic_cast<gear::CalorimeterParameters* >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "BeamCalParameters" )    { gearMgr->setBeamCalParameters   ( dynamic_cast<gear::CalorimeterParameters* >( gearH->takeGearObject() ) ) ; }
-      else if( gearH->name() == "VXDParameters" )        { gearMgr->setVXDParameters       ( dynamic_cast<gear::ZPlanarParameters*     >( gearH->takeGearObject() ) ) ; }
+      else if( gearH->name() == "ZPlanarParameters" )    { gearMgr->setVXDParameters       ( dynamic_cast<gear::ZPlanarParameters*     >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "FTDParameters" )        { gearMgr->setFTDParameters       ( dynamic_cast<gear::FTDParameters*         >( gearH->takeGearObject() ) ) ; }
-      else if( gearH->name() == "SITParameters" )        { gearMgr->setSITParameters       ( dynamic_cast<gear::ZPlanarParameters*     >( gearH->takeGearObject() ) ) ; }
-      else if( gearH->name() == "SETParameters" )        { gearMgr->setSETParameters       ( dynamic_cast<gear::ZPlanarParameters*     >( gearH->takeGearObject() ) ) ; }
+      else if( gearH->name() == "ZPlanarParameters" )    { gearMgr->setSITParameters       ( dynamic_cast<gear::ZPlanarParameters*     >( gearH->takeGearObject() ) ) ; }
+      else if( gearH->name() == "ZPlanarParameters" )    { gearMgr->setSETParameters       ( dynamic_cast<gear::ZPlanarParameters*     >( gearH->takeGearObject() ) ) ; }
       else if( gearH->name() == "SiPlanesParameters" )   { gearMgr->setSiPlanesParameters  ( dynamic_cast<gear::SiPlanesParameters*    >( gearH->takeGearObject() ) ) ; }  
       else  { 
 
