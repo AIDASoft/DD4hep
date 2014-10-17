@@ -298,6 +298,8 @@ namespace DD4hep {
       Geant4ParticleMap() {}
       /// Default destructor
       virtual ~Geant4ParticleMap();
+      /// Dump content
+      void dump()  const;
       /// Clear particle maps
       void clear();
       /// Adopt particle maps

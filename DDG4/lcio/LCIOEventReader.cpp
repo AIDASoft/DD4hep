@@ -64,7 +64,8 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
   else if ( m_numEvent == event_number )
     ret = readParticles(event_number,&primaries);
   else
-    ret = EVENT_READER_NO_DIRECT;
+    ret = readParticles(event_number,&primaries);
+    //ret = EVENT_READER_NO_DIRECT;
 
   ++m_numEvent;
   if ( ret != EVENT_READER_OK ) return ret;

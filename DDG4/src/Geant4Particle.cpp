@@ -17,6 +17,7 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4VProcess.hh"
+#include <iostream>
 
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
@@ -328,6 +329,38 @@ void Geant4ParticleMap::clear()    {
   equivalentTracks.clear();
 }
 
+/// Dump content
+void Geant4ParticleMap::dump()  const  {
+  int cnt;
+  char text[64];
+  using namespace std;
+  const Geant4ParticleMap* m = this;
+
+  cnt = 0;
+  cout << "Particle map:" << endl;
+  for(Geant4ParticleMap::ParticleMap::const_iterator i=m->particleMap.begin(); i!=m->particleMap.end();++i)  {
+    ::snprintf(text,sizeof(text)," [%-4d:%p]",(*i).second->id,(void*)(*i).second);
+    cout << text;
+    if ( ++cnt == 8 ) {
+      cout << endl;
+      cnt = 0;
+    }
+  }
+  cout << endl;
+
+  cnt = 0;
+  cout << "Equivalents:" << endl;
+  for(Geant4ParticleMap::TrackEquivalents::const_iterator i=m->equivalentTracks.begin(); i!=m->equivalentTracks.end();++i)  {
+    ::snprintf(text,sizeof(text)," [%-5d : %-5d]",(*i).first,(*i).second);
+    cout << text;
+    if ( ++cnt == 8 ) {
+      cout << endl;
+      cnt = 0;
+    }
+  }
+  cout << endl;
+}
+
 /// Adopt particle maps
 void Geant4ParticleMap::adopt(ParticleMap& pm, TrackEquivalents& equiv)    {
   clear();
@@ -335,6 +368,7 @@ void Geant4ParticleMap::adopt(ParticleMap& pm, TrackEquivalents& equiv)    {
   equivalentTracks = equiv;
   pm.clear();
   equiv.clear();
+  //dumpMap(this);
 }
 
 /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)

@@ -46,11 +46,14 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
 /// Move to the indicated event number.
 Geant4EventReader::EventReaderStatus 
 Geant4EventReader::moveToEvent(int event_number)   {
-  if ( m_currEvent == event_number-1 )  {
+  if ( event_number >= INT_MIN )   {
+    return EVENT_READER_OK;  // Logic below does not work as expected.
+  }                          // This shortcuts it!
+  if ( m_currEvent == event_number )  {
     return EVENT_READER_OK;
   }
   else if ( hasDirectAccess() )   {
-    m_currEvent = event_number-1;
+    m_currEvent = event_number;
     return EVENT_READER_OK;
   }
   else if ( event_number<m_currEvent )   {
@@ -59,7 +62,7 @@ Geant4EventReader::moveToEvent(int event_number)   {
   else  {
     for(int i=m_currEvent; i<event_number;++i)
       skipEvent();
-    m_currEvent = event_number-1;
+    m_currEvent = event_number;
     return EVENT_READER_OK;
   }
   return EVENT_READER_ERROR;

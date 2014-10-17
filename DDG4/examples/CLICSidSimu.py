@@ -44,10 +44,10 @@ def run():
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
-  evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio.OutputLevel = Output.ERROR
 
+  evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   generator_output_level = Output.INFO
 
@@ -110,7 +110,8 @@ def run():
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
-  gen.Input = "LCIOFileReader|/home/frankm/SW/data/bbbb_3TeV.slcio"
+  gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_mu-_5GeV.slcio"
+  #gen.Input = "LCIOFileReader|/home/frankm/SW/data/bbbb_3TeV.slcio"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
   gen.OutputLevel = 4 # generator_output_level
