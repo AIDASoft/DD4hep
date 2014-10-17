@@ -57,8 +57,8 @@ namespace DD4hep{
       ZPlanarData* vxd = vxdDE.extension<ZPlanarData>() ;
       
       //      ZPlanarParametersImpl (int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength)
-      int type =  gear::ZPlanarParameters::CMOS ;
-      gear::ZPlanarParametersImpl* gearVXD = new gear::ZPlanarParametersImpl( type, vxd->rInnerShell/dd4hep::mm,  vxd->rOuterShell/dd4hep::mm,
+      int vxdType =  gear::ZPlanarParameters::CMOS ;
+      gear::ZPlanarParametersImpl* gearVXD = new gear::ZPlanarParametersImpl( vxdType, vxd->rInnerShell/dd4hep::mm,  vxd->rOuterShell/dd4hep::mm,
 									      vxd->zHalfShell/dd4hep::mm , vxd->gapShell/dd4hep::mm , 0.  ) ;
       
       for(unsigned i=0,n=vxd->layers.size() ; i<n; ++i){
@@ -72,8 +72,77 @@ namespace DD4hep{
 	
       }
       
-     vxdDE.addExtension< GearHandle >( new GearHandle( gearVXD, "ZPlanarParameters" ) ) ;
+     vxdDE.addExtension< GearHandle >( new GearHandle( gearVXD, "VXDParameters" ) ) ;
 
+      //========= SIT ==============================================================================
+      
+      DetElement sitDE = lcdd.detector("SIT") ;
+      
+      ZPlanarData* sit = sitDE.extension<ZPlanarData>() ;
+      
+      //      ZPlanarParametersImpl (int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength)
+      int sitType =  gear::ZPlanarParameters::CCD ;
+      gear::ZPlanarParametersImpl* gearSIT = new gear::ZPlanarParametersImpl( sitType, sit->rInnerShell/dd4hep::mm,  sit->rOuterShell/dd4hep::mm,
+									      sit->zHalfShell/dd4hep::mm , sit->gapShell/dd4hep::mm , 0.  ) ;
+      std::vector<int> n_sensors_per_ladder ;
+
+     for(unsigned i=0,n=sit->layers.size() ; i<n; ++i){
+	
+	const DDRec::ZPlanarData::LayerLayout& l = sit->layers[i] ;
+	
+	// FIXME set rad lengths to 0 -> need to get from DD4hep ....
+	gearSIT->addLayer( l.ladderNumber, l.phi0, 
+			   l.distanceSupport/dd4hep::mm,   l.offsetSupport/dd4hep::mm,   l. thicknessSupport/dd4hep::mm,   l.zHalfSupport/dd4hep::mm,   l.widthSupport/dd4hep::mm,   0. , 
+			   l.distanceSensitive/dd4hep::mm, l.offsetSensitive/dd4hep::mm, l. thicknessSensitive/dd4hep::mm, l.zHalfSensitive/dd4hep::mm, l.widthSensitive/dd4hep::mm, 0. )  ;
+	
+
+	n_sensors_per_ladder.push_back( l.sensorsPerLadder);
+     }
+     
+      gearSIT->setDoubleVal("strip_width_mm"  , sit->widthStrip / dd4hep::mm ) ;
+      gearSIT->setDoubleVal("strip_length_mm" , sit->lengthStrip/ dd4hep::mm ) ;
+      gearSIT->setDoubleVal("strip_pitch_mm"  , sit->pitchStrip / dd4hep::mm ) ;
+      gearSIT->setDoubleVal("strip_angle_deg" , sit->angleStrip / dd4hep::deg ) ;
+
+      
+      gearSIT->setIntVals("n_sensors_per_ladder",n_sensors_per_ladder);
+
+      sitDE.addExtension< GearHandle >( new GearHandle( gearSIT, "SITParameters" ) ) ;
+     //============================================================================================
+
+      DetElement setDE = lcdd.detector("SET") ;
+      
+      ZPlanarData* set = setDE.extension<ZPlanarData>() ;
+      
+      //      ZPlanarParametersImpl (int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength)
+      int setType =  gear::ZPlanarParameters::CCD ;
+      gear::ZPlanarParametersImpl* gearSET = new gear::ZPlanarParametersImpl( setType, set->rInnerShell/dd4hep::mm,  set->rOuterShell/dd4hep::mm,
+									      set->zHalfShell/dd4hep::mm , set->gapShell/dd4hep::mm , 0.  ) ;
+      //      std::vector<int> n_sensors_per_ladder ;
+      n_sensors_per_ladder.clear() ;
+
+     for(unsigned i=0,n=set->layers.size() ; i<n; ++i){
+	
+	const DDRec::ZPlanarData::LayerLayout& l = set->layers[i] ;
+	
+	// FIXME set rad lengths to 0 -> need to get from DD4hep ....
+	gearSET->addLayer( l.ladderNumber, l.phi0, 
+			   l.distanceSupport/dd4hep::mm,   l.offsetSupport/dd4hep::mm,   l. thicknessSupport/dd4hep::mm,   l.zHalfSupport/dd4hep::mm,   l.widthSupport/dd4hep::mm,   0. , 
+			   l.distanceSensitive/dd4hep::mm, l.offsetSensitive/dd4hep::mm, l. thicknessSensitive/dd4hep::mm, l.zHalfSensitive/dd4hep::mm, l.widthSensitive/dd4hep::mm, 0. )  ;
+	
+
+	n_sensors_per_ladder.push_back( l.sensorsPerLadder);
+     }
+     
+      gearSET->setDoubleVal("strip_width_mm"  , set->widthStrip / dd4hep::mm ) ;
+      gearSET->setDoubleVal("strip_length_mm" , set->lengthStrip/ dd4hep::mm ) ;
+      gearSET->setDoubleVal("strip_pitch_mm"  , set->pitchStrip / dd4hep::mm ) ;
+      gearSET->setDoubleVal("strip_angle_deg" , set->angleStrip / dd4hep::deg ) ;
+
+      
+      gearSET->setIntVals("n_sensors_per_ladder",n_sensors_per_ladder);
+
+      setDE.addExtension< GearHandle >( new GearHandle( gearSET, "SETParameters" ) ) ;
      //============================================================================================
 
       // --- LCDD::apply() expects return code 1 if all went well ! ----
