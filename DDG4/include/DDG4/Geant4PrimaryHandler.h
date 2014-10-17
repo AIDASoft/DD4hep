@@ -19,7 +19,10 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Geant4Action to convert the particle information to Geant4
-    /**
+    /** Convert the primary interaction (object \tt{Geant4PrimaryInteraction} object 
+     *  attached to the \tt{Geant4Event} event context) and pass the result
+     *  to Geant4 for simulation.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION

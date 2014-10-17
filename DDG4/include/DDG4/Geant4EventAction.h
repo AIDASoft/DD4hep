@@ -24,10 +24,17 @@ namespace DD4hep {
     /// Concrete basic implementation of the Geant4 event action
     /**
      * The EventAction is called for every event.
-     * During the callback all particles are created which form the 
-     * microscopic kinematic action of the particle collision.
-     * This input may either origin directly from an event generator 
-     * program or come from file.
+     *
+     * This class is the base class for all user actions, which have
+     * to hook into the begin- and end-of-event actions.
+     * Typical use cases are the collection/computation of event
+     * related properties.
+     *
+     * Examples of this functionality may include for example:
+     * - Reset variables summing event related information in the
+     *   begin-event callback.
+     * - Monitoring activities such as filling histograms
+     *   from hits collected during the end-event action.
      *
      *  \author  M.Frank
      *  \version 1.0

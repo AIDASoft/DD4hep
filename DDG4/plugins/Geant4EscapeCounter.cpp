@@ -74,8 +74,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4EscapeCounter::Geant4EscapeCounter(Geant4Context* context, const string& nam, DetElement det, LCDD& lcdd)
-  //    : Geant4SteppingAction(context, nam) 
-  : Geant4Sensitive(context, nam, det, lcdd) 
+: Geant4Sensitive(context, nam, det, lcdd) 
 {
   string coll_name = name()+"Hits";
   m_needsControl = true;
@@ -91,8 +90,6 @@ Geant4EscapeCounter::~Geant4EscapeCounter() {
 
 /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
 bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history */)   {
-  typedef SimpleHit::Contribution HitContribution;
-  typedef vector<string> _V;
   Geant4StepHandler h(step);
   Geant4TrackHandler th(h.track);
   Geant4TouchableHandler handler(step);

@@ -23,6 +23,21 @@ namespace DD4hep {
 
     /// Implementation of a particle gun using Geant4Particles.
     /** 
+     *  The {\tt{Geant4ParticleGun}} is a tool to shoot a number of
+     *  particles with identical properties into a given region of the
+     *  detector to be simulated.
+     *
+     *  The particle gun is a input source like any other and participates 
+     *  in the general input stage merging process like any other input 
+     *  e.g. from file. Hence, there may be several particle guns present
+     *  each generating it's own primary vertex. Use the mask property to
+     *  ensure each gun generates it's own, well identified primary vertex.
+     *
+     *  There is one 'user lazyness' support though:
+     *  If there is only one particle gun in use, the property 'Standalone', 
+     *  which by default is set to true invokes the interaction merging and he 
+     *  Geant4 primary generation directly.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION

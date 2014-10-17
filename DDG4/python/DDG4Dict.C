@@ -39,6 +39,7 @@ using namespace DD4hep::Simulation;
 
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4DataDump.h"
+#include "DDG4/Geant4InputAction.h"
 #include <iostream>
 
 namespace DD4hep {
@@ -188,6 +189,8 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 // CINT configuration for DDG4
 #if defined(__MAKECINT__)
 #pragma link C++ class PropertyResult;
+#pragma link C++ class Geant4InputAction::Particles;
+#pragma link C++ class auto_ptr<Geant4InputAction::Particles>;
 
 #pragma link C++ class ActionHandle;
 #pragma link C++ class FilterHandle;
@@ -234,6 +237,8 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 
 #pragma link C++ class Geant4GeneratorActionSequence;
 #pragma link C++ class Geant4GeneratorAction;
+#pragma link C++ class Geant4InputAction;
+#pragma link C++ class Geant4EventReader;
 
 #pragma link C++ class Geant4PhysicsListActionSequence;
 #pragma link C++ class Geant4PhysicsList;

@@ -31,7 +31,7 @@ namespace DD4hep {
     /// Helper class to ease the extraction of information from a G4Step object.
     /**
      *
-     * Tiny helper/utility class to easily access Geant4 step information.
+     * Helper/utility class to easily access Geant4 step information.
      * Born by lazyness: Avoid typing millions of statements!
      *
      *  \author  M.Frank

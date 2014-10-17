@@ -99,7 +99,6 @@ EventHandler::CollectionType LCIOEventHandler::collectionType(const std::string&
 
 /// Call functor on hit collection
 size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor)   {
-  typedef std::vector<void*> _P;
   Branches::const_iterator i = m_branches.find(collection);
   if ( i != m_branches.end() )   {
     LCCollection* c = (*i).second;
@@ -121,7 +120,6 @@ size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitA
 
 /// Loop over collection and extract particle data
 size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
-  typedef std::vector<void*> _P;
   Branches::const_iterator i = m_branches.find(collection);
   if ( i != m_branches.end() )   {
     LCCollection* c = (*i).second;

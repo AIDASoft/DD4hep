@@ -122,14 +122,14 @@ void BoxsetCreator::operator()(const DDEveHit& hit)   {
   float s2Y =  0.5*(scale(0)*std::cos(phi)+scale(2)*std::sin(phi));
   float s1Z =  scale(1)/2.0;
   float s2Z = s1Z;
-  float coords[24]= { p.X()+s1X, p.Y()+s1Y, p.Z()-s1Z,
-		      p.X()+s1X, p.Y()+s1Y, p.Z()+s1Z,
-		      p.X()-s2X, p.Y()-s2Y, p.Z()+s2Z,
-		      p.X()-s2X, p.Y()-s2Y, p.Z()-s2Z,
-		      p.X()+s2X, p.Y()+s2Y, p.Z()-s2Z,
-		      p.X()+s2X, p.Y()+s2Y, p.Z()+s2Z,
-		      p.X()-s1X, p.Y()-s1Y, p.Z()+s1Z,
-		      p.X()-s1X, p.Y()-s1Y, p.Z()-s1Z};
+  float coords[24]= { float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()-s1Z),
+		      float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()+s1Z),
+		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()+s2Z),
+		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()-s2Z),
+		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()-s2Z),
+		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()+s2Z),
+		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()+s1Z),
+		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()-s1Z) };
   ++count;
   deposit += hit.deposit*MEV_2_GEV;
   boxset->AddBox(coords);
@@ -149,14 +149,14 @@ void TowersetCreator::operator()(const DDEveHit& hit)   {
   float s1Z =  scale(1)/2.0;
   float s2Z = s1Z;
   p = TVector3(hit.x*MM_2_CM-s1X, hit.y*MM_2_CM-s1Y, hit.z*MM_2_CM-s1Z);
-  float coords[24]= { p.X()+s1X, p.Y()+s1Y, p.Z()-s1Z,
-		      p.X()+s1X, p.Y()+s1Y, p.Z()+s1Z,
-		      p.X()-s2X, p.Y()-s2Y, p.Z()+s2Z,
-		      p.X()-s2X, p.Y()-s2Y, p.Z()-s2Z,
-		      p.X()+s2X, p.Y()+s2Y, p.Z()-s2Z,
-		      p.X()+s2X, p.Y()+s2Y, p.Z()+s2Z,
-		      p.X()-s1X, p.Y()-s1Y, p.Z()+s1Z,
-		      p.X()-s1X, p.Y()-s1Y, p.Z()-s1Z};
+  float coords[24]= { float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()-s1Z),
+		      float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()+s1Z),
+		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()+s2Z),
+		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()-s2Z),
+		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()-s2Z),
+		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()+s2Z),
+		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()+s1Z),
+		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()-s1Z) };
   ++count;
   deposit += hit.deposit*MEV_2_GEV;
   boxset->AddBox(coords);

@@ -280,8 +280,6 @@ namespace DD4hep {
       runAction->releaseContextFromClients();
       destroyClientContext(evt);
     }
-
-
   }
 }
 
@@ -315,7 +313,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
 	     "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
   }
   // Get the detector constructed
-  Geant4DetectorConstruction* detector = new Geant4DetectorConstruction(kernel);
+  Geant4DetectorConstruction* detector = Geant4DetectorConstruction::instance(kernel);
 
   runManager.SetUserInitialization(detector);
   G4VUserPhysicsList* physics = 0;

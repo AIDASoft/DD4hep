@@ -36,9 +36,9 @@ namespace DD4hep {
      *  -- Geant4PrimaryInteraction containing the track/vertex information to create 
      *     the primary particles for Geant4. This record is build from the Geant4PrimaryEvent
      *     information.
-     *  -- Geant4PrimaryMap a map of the GEant4Particles converted to G4PrimaryParticles
+     *  -- Geant4PrimaryMap a map of the Geant4Particles converted to G4PrimaryParticles
      *     to ease particle handling later.
-     *  -- Geant4ParticleMap the map of partcles created during the event simulation.
+     *  -- Geant4ParticleMap the map of particles created during the event simulation.
      *     This map has directly the correct particle offsets, so that the merging of
      *     Geant4PrimaryInteraction particles and the simulation particles is easy....
      *    

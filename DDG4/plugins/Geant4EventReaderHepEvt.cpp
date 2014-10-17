@@ -20,25 +20,26 @@ namespace DD4hep {
     /// Class to populate Geant4 primaries from StdHep files.
     /** 
      * Class to populate Geant4 primary particles and vertices from a 
-     * file in StdHep format (ASCII)
+     * file in HEPEvt format (ASCII)
      *
      *  \author  P.Kostka (main author)
      *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4HepEventReader : public Geant4EventReader  {
+    class Geant4EventReaderHepEvt : public Geant4EventReader  {
+
     protected:
       std::ifstream m_input;
-      int m_format;
+      int           m_format;
 
     public:
       /// Initializing constructor
-      Geant4HepEventReader(const std::string& nam);
+      Geant4EventReaderHepEvt(const std::string& nam, int format);
       /// Default destructor
-      virtual ~Geant4HepEventReader();
+      virtual ~Geant4EventReaderHepEvt();
       /// Read an event and fill a vector of MCParticles.
-      virtual int readParticles(int event_number, std::vector<Particle*>& particles);
+      virtual EventReaderStatus readParticles(int event_number, std::vector<Particle*>& particles);
     };
   }     /* End namespace Simulation   */
 }       /* End namespace DD4hep       */
@@ -49,38 +50,72 @@ namespace DD4hep {
 //--------------------------------------------------------------------
 //
 //====================================================================
-// #include "DDG4/Geant4HepEventReader"
+// #include "DDG4/Geant4EventReaderHepEvt"
 
+#include "DDG4/Factories.h"
+#include "DD4hep/Printout.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
 
 #include <cerrno>
 
+using namespace std;
 using namespace CLHEP;
 using namespace DD4hep::Simulation;
 typedef DD4hep::ReferenceBitMask<int> PropertyMask;
 
-#define HEPEvt 1
+#define HEPEvtShort 1
+#define HEPEvtLong 2
+namespace {
+  class Geant4EventReaderHepEvtShort : public Geant4EventReaderHepEvt  {
+  public:
+    /// Initializing constructor
+    Geant4EventReaderHepEvtShort(const string& nam) : Geant4EventReaderHepEvt(nam,HEPEvtShort) {}
+    /// Default destructor
+    virtual ~Geant4EventReaderHepEvtShort() {}
+  };
+  class Geant4EventReaderHepEvtLong : public Geant4EventReaderHepEvt  {
+  public:
+    /// Initializing constructor
+    Geant4EventReaderHepEvtLong(const string& nam) : Geant4EventReaderHepEvt(nam,HEPEvtLong) {}
+    /// Default destructor
+    virtual ~Geant4EventReaderHepEvtLong() {}
+  };
+}
 
 // Factory entry
-DECLARE_GEANT4_EVENT_READER(Geant4HepEventReader)
+DECLARE_GEANT4_EVENT_READER(Geant4EventReaderHepEvtShort)
+// Factory entry
+DECLARE_GEANT4_EVENT_READER(Geant4EventReaderHepEvtLong)
+
 
 /// Initializing constructor
-Geant4HepEventReader::Geant4HepEventReader(const std::string& nam)
-: Geant4EventReader(nam), m_input(), m_format(HEPEvt)
+Geant4EventReaderHepEvt::Geant4EventReaderHepEvt(const string& nam, int format)
+: Geant4EventReader(nam), m_input(), m_format(format)
 {
-  // Need to set format from input specification!!!
-
   // Now open the input file:
+  m_input.open(nam.c_str(),ifstream::in);
+  if ( !m_input.good() )   {
+    string err = "+++ Geant4EventReaderHepEvt: Failed to open input stream:"+nam+
+      " Error:"+string(strerror(errno));
+    throw runtime_error(err);
+  }
 }
 
 /// Default destructor
-Geant4HepEventReader::~Geant4HepEventReader()    {
+Geant4EventReaderHepEvt::~Geant4EventReaderHepEvt()    {
   m_input.close();
 }
 
 /// Read an event and fill a vector of MCParticles.
-int Geant4HepEventReader::readParticles(int /* event_number */, std::vector<Particle*>& particles)   {
+Geant4EventReader::EventReaderStatus 
+Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>& particles)   {
+
+  // First check the input file status
+  if ( !m_input.good() || m_input.eof() )   {
+    return EVENT_READER_IO_ERROR;
+  }
+
   //static const double c_light = 299.792;// mm/ns
   //
   //  Read the event, check for errors
@@ -91,7 +126,7 @@ int Geant4HepEventReader::readParticles(int /* event_number */, std::vector<Part
     //
     // End of File :: ??? Exception ???
     //   -> FG:   EOF is not an exception as it happens for every file at the end !
-    return EIO;
+    return EVENT_READER_IO_ERROR;
   }
   //
   //  Loop over particles
@@ -111,11 +146,11 @@ int Geant4HepEventReader::readParticles(int /* event_number */, std::vector<Part
   double VHEP3; // z vertex position in mm
   double VHEP4; // production time in mm/c
  
-  std::vector<int> daughter1;
-  std::vector<int> daughter2;
+  vector<int> daughter1;
+  vector<int> daughter2;
  
   for( int IHEP=0; IHEP<NHEP; IHEP++ )    {
-    if ( m_format == HEPEvt)
+    if ( m_format == HEPEvtShort )
       m_input >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2
 	      >> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5;
     else
@@ -128,7 +163,7 @@ int Geant4HepEventReader::readParticles(int /* event_number */, std::vector<Part
 	      >> VHEP4;
  
     if(m_input.eof())
-      return EIO;
+      return EVENT_READER_IO_ERROR;
     //
     //  Create a MCParticle and fill it from stdhep info
     Particle* p = new Particle(IHEP);
@@ -236,6 +271,6 @@ int Geant4HepEventReader::readParticles(int /* event_number */, std::vector<Part
       if ( !part.findParent(mcp) ) part.addParent(mcp);
     }
   }  // End second loop over particles
-  return 0;
+  return EVENT_READER_OK;
 }
 

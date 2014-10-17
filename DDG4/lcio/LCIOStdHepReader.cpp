@@ -6,11 +6,11 @@
 //====================================================================
 #ifndef DD4HEP_DDG4_LCIOSTDHEPREADER_H
 #define DD4HEP_DDG4_LCIOSTDHEPREADER_H
+
 // Framework include files
 #include "LCIOEventReader.h"
-
-// Forward declarations
-namespace UTIL { class LCStdHepRdr; }
+// LCIO include files
+#include "UTIL/LCStdHepRdr.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
@@ -31,31 +31,27 @@ namespace DD4hep  {
       UTIL::LCStdHepRdr* m_reader;
     public:
       /// Initializing constructor
-      LCIOStdHepReader(const std::string& nam, int);
+      LCIOStdHepReader(const std::string& nam);
       /// Default destructor
       virtual ~LCIOStdHepReader();
-      /// Read an event and return a LCCollectionVec of MCParticles.
-      virtual EVENT::LCCollection *readParticles();
+      /// Read an event and fill a vector of MCParticles.
+      virtual EventReaderStatus readParticles(int event_number, EVENT::LCCollection** particles);
     };
   }     /* End namespace lcio   */
 }       /* End namespace DD4hep */
 #endif  /* DD4HEP_DDG4_LCIOSTDHEPREADER_H */
 
-#include "lcio.h"
-#include "EVENT/LCIO.h"
-#include "UTIL/LCStdHepRdr.h"
-#include "DD4hep/Primitives.h"
+#include "DDG4/Factories.h"
+// Factory entry
+DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOStdHepReader)
 
 using namespace DD4hep::Simulation;
 
-// Factory entry
-DECLARE_LCIO_EVENT_READER(LCIOStdHepReader)
-
 /// Initializing constructor
-LCIOStdHepReader::LCIOStdHepReader(const std::string& nam, int) 
+LCIOStdHepReader::LCIOStdHepReader(const std::string& nam) 
   : LCIOEventReader(nam)
 {
-  m_reader = new ::lcio::LCStdHepRdr(m_name.c_str());
+  m_reader = new UTIL::LCStdHepRdr(m_name.c_str());
 }
 
 /// Default destructor
@@ -63,7 +59,10 @@ LCIOStdHepReader::~LCIOStdHepReader()    {
   DD4hep::deletePtr(m_reader);
 }
 
-/// Read an event and return a LCCollectionVec of MCParticles.
-EVENT::LCCollection *LCIOStdHepReader::readParticles()   {
-  return m_reader->readEvent();
+/// Read an event and fill a vector of MCParticles.
+Geant4EventReader::EventReaderStatus
+LCIOStdHepReader::readParticles(int /*event_number */, EVENT::LCCollection** particles)  {
+  *particles = m_reader->readEvent();
+  if ( 0 == *particles ) return EVENT_READER_ERROR;
+  return EVENT_READER_OK;
 }

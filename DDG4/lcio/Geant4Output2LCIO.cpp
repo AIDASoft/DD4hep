@@ -183,7 +183,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       MCParticleImpl* q = new lcio::MCParticleImpl();
       q->setPDG(p->pdgID);
 
-      float ps_fa[3] = { p->psx/GeV, p->psy/GeV, p->psz/GeV } ;  
+      float ps_fa[3] = {float(p->psx/GeV),float(p->psy/GeV),float(p->psz/GeV)};
       q->setMomentum( ps_fa );
 
       double vs_fa[3] = { p->vsx/mm, p->vsy/mm, p->vsz/mm } ;  

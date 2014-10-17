@@ -889,8 +889,8 @@ static unsigned int adler32(unsigned int adler, const XmlChar* xml_buff, size_t 
 /// Checksum (sub-)tree of a xml document/tree
 typedef unsigned int (fcn_t)(unsigned int, const XmlChar*, size_t);
 unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
-  typedef std::map<std::string, std::string> StringMap;
 #ifdef DD4HEP_USE_TINYXML
+  typedef std::map<std::string, std::string> StringMap;
   TiXmlNode* n = Xml(m_node).n;
   if ( n ) {
     if ( 0 == fcn ) fcn = adler32;

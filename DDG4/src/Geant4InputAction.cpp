@@ -9,11 +9,10 @@
 //====================================================================
 
 // Framework include files
-#include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "DDG4/Geant4InputAction.h"
+#include "DD4hep/Plugins.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Context.h"
+#include "DDG4/Geant4InputAction.h"
 
 #include "G4Event.hh"
 
@@ -23,12 +22,47 @@ typedef DD4hep::ReferenceBitMask<int> PropertyMask;
 
 /// Initializing constructor
 Geant4EventReader::Geant4EventReader(const std::string& nam) 
-  : m_name(nam), m_directAccess(false)
+: m_name(nam), m_directAccess(false), m_currEvent(0)
 {
 }
 
 /// Default destructor
 Geant4EventReader::~Geant4EventReader()   {
+}
+
+/// Skip event. To be implemented for sequential sources
+Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  { 
+  if ( hasDirectAccess() )   {
+    ++m_currEvent;
+    return EVENT_READER_OK;
+  }
+  std::vector<Particle*> particles;
+  ++m_currEvent;
+  EventReaderStatus sc = readParticles(m_currEvent,particles);
+  for_each(particles.begin(),particles.end(),deleteObject<Particle>);
+  return sc;
+}
+
+/// Move to the indicated event number.
+Geant4EventReader::EventReaderStatus 
+Geant4EventReader::moveToEvent(int event_number)   {
+  if ( m_currEvent == event_number-1 )  {
+    return EVENT_READER_OK;
+  }
+  else if ( hasDirectAccess() )   {
+    m_currEvent = event_number-1;
+    return EVENT_READER_OK;
+  }
+  else if ( event_number<m_currEvent )   {
+    return EVENT_READER_ERROR;
+  }
+  else  {
+    for(int i=m_currEvent; i<event_number;++i)
+      skipEvent();
+    m_currEvent = event_number-1;
+    return EVENT_READER_OK;
+  }
+  return EVENT_READER_ERROR;
 }
 
 /// Standard constructor
@@ -65,22 +99,29 @@ int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& par
     try  {
       m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
       if ( 0 == m_reader )   {
+	PluginDebug dbg();
+	m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
 	abortRun(issue(evid)+"Error creating reader plugin.",
 		 "Failed to create file reader of type %s. Cannot open dataset %s",
 		 tn.first.c_str(),tn.second.c_str());
-	return 0;
+	return Geant4EventReader::EVENT_READER_NO_FACTORY;
       }
     }
     catch(const exception& e)  {
       err = e.what();
     }
     if ( !err.empty() )  {
-      abortRun(issue(evid)+err,"Error when reading file %s",m_input.c_str());
-      return 0;
+      abortRun(issue(evid)+err,"Error when creating reader for file %s",m_input.c_str());
+      return Geant4EventReader::EVENT_READER_NO_FACTORY;
     }
   }
-  int status = m_reader->readParticles(evid,particles);
-  if ( 0 != status )  {
+  int status = m_reader->moveToEvent(evid);
+  if ( Geant4EventReader::EVENT_READER_OK != status )  {
+    abortRun(issue(evid)+"Error when moving to event - may be end of file.",
+	     "Error when reading file %s",m_input.c_str());
+   }
+  status = m_reader->readParticles(evid,particles);
+  if ( Geant4EventReader::EVENT_READER_OK != status )  {
     abortRun(issue(evid)+"Error when reading file - may be end of file.",
 	     "Error when reading file %s",m_input.c_str());
   }
@@ -95,7 +136,7 @@ void Geant4InputAction::operator()(G4Event* event)   {
   Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
 
   int result = readParticles(event->GetEventID(),primaries);
-  if ( result != 0 )   {    // handle I/O error, but how?
+  if ( result != Geant4EventReader::EVENT_READER_OK )   {    // handle I/O error, but how?
     return;
   }
   prim->add(m_mask, inter);

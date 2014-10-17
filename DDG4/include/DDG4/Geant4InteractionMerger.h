@@ -22,7 +22,10 @@ namespace DD4hep {
     class Geant4PrimaryInteraction;
 
     /// Geant4Action to merge several independent interaction to one
-    /** Geant4Action to convert the particle information to Geant4
+    /** Merge all interactions created by each \tt{Geant4InputAction} into one single
+     *  record. The input records are taken from the item \tt{Geant4PrimaryEvent}
+     *  and are merged into the \tt{Geant4PrimaryInteraction} object attached to the
+     *  \tt{Geant4Event} event context.
      *
      *  \author  M.Frank
      *  \version 1.0

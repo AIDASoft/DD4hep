@@ -197,7 +197,6 @@ long long int Geant4Sensitive::volumeID(G4Step* s) {
 /// Returns the cellID(volumeID+local coordinate encoding) of the sensitive volume corresponding to the step
 long long int Geant4Sensitive::cellID(G4Step* s) {
   StepHandler h(s);
-  typedef DDSegmentation::Vector3D _V;
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
   VolumeID volID = volMgr.volumeID(h.preTouchable());
   if ( m_segmentation.isValid() )  {
@@ -219,6 +218,7 @@ Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* context,
   context->sensitiveActions().insert(name(), this);
   /// Update the sensitive detector type, so that the proper instance is created
   m_sensitive = context->lcdd().sensitiveDetector(nam);
+  m_sensitiveType = m_sensitive.type();
   m_sensitive.setType("Geant4SensDet");
   InstanceCount::increment(this);
 }

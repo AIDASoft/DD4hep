@@ -75,7 +75,7 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
   TEveGeoTopNode* tn = new TEveGeoTopNode(mgr, mgr->GetTopNode());
   tn->SetVisLevel(4);
 
-  EvNavHandler *fh = new EvNavHandler;
+  /* EvNavHandler *fh = */ new EvNavHandler;
 
   // // ---- try to set transparency - does not seem to work ...
   // TGeoNode* node1 = gGeoManager->GetTopNode();

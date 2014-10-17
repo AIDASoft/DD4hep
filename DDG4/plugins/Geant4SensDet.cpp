@@ -64,6 +64,9 @@ namespace DD4hep {
 			  virtual public Geant4ActionSD,
 			  virtual public RefCountedSequence<Geant4SensDetActionSequence>
     {
+    protected:
+      /// Access to the geant4 sensitive detector handle
+      SensitiveDetector m_sensitive;
     public:
       /// Constructor. The detector element is identified by the name
       Geant4SensDet(const std::string& nam, Geometry::LCDD& lcdd)
@@ -71,6 +74,7 @@ namespace DD4hep {
 	  Geant4Action(0,nam), Geant4ActionSD(nam), Base()
       {
 	Geant4Kernel& kernel = Geant4Kernel::access(lcdd);
+	m_sensitive = lcdd.sensitiveDetector(nam);
 	m_context = Geant4Context(&kernel);
 	m_outputLevel = kernel.getOutputLevel(nam);
 	_aquire(kernel.sensitiveAction(nam));
@@ -98,6 +102,12 @@ namespace DD4hep {
       /// Access to the readout geometry of the sensitive detector
       virtual G4VReadOutGeometry* readoutGeometry() const
       {  return this->G4VSensitiveDetector::GetROgeometry();            }
+      /// Access to the LCDD sensitive detector handle
+      virtual SensitiveDetector sensitiveDetector() const
+      {  return m_sensitive;                                            }
+      /// Access to the sensitive type of the detector
+      virtual const std::string& sensitiveType() const
+      {  return m_sequence->sensitiveType();                            }
       /// Callback if the sequence should be accepted or filtered off
       virtual G4bool Accept(const G4Step* step) const
       {  return m_sequence->accept(step);                               }

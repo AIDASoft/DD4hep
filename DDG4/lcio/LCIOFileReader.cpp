@@ -32,30 +32,27 @@ namespace DD4hep  {
       IO::LCReader* m_reader;
     public:
       /// Initializing constructor
-      LCIOFileReader(const std::string& nam, int);
+      LCIOFileReader(const std::string& nam);
       /// Default destructor
       virtual ~LCIOFileReader();
-      /// Read an event and return a LCCollectionVec of MCParticles.
-      virtual EVENT::LCCollection *readParticles();
+      /// Read an event and fill a vector of MCParticles.
+      virtual EventReaderStatus readParticles(int event_number, EVENT::LCCollection** particles);
     };
   }
 }
 #endif // DD4HEP_DDG4_LCIOFILEREADER_H
 
 #include "DD4hep/Printout.h"
-#include "DD4hep/Primitives.h"
-#include "lcio.h"
-#include "EVENT/LCIO.h"
-#include "IO/LCReader.h"
+#include "DDG4/Factories.h"
+#include "UTIL/ILDConf.h"
 
-using namespace EVENT;
 using namespace DD4hep::Simulation;
 
 // Factory entry
-DECLARE_LCIO_EVENT_READER(LCIOFileReader)
+DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOFileReader)
 
 /// Initializing constructor
-LCIOFileReader::LCIOFileReader(const std::string& nam, int /* arg */) 
+DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam) 
 : LCIOEventReader(nam)
 {
   m_reader = ::lcio::LCFactory::getInstance()->createLCReader();
@@ -64,16 +61,18 @@ LCIOFileReader::LCIOFileReader(const std::string& nam, int /* arg */)
 }
 
 /// Default destructor
-LCIOFileReader::~LCIOFileReader()    {
+DD4hep::Simulation::LCIOFileReader::~LCIOFileReader()    {
   DD4hep::deletePtr(m_reader);
 }
 
-/// Read an event and return a LCCollectionVec of MCParticles.
-EVENT::LCCollection *LCIOFileReader::readParticles()   {
+/// Read an event and fill a vector of MCParticles.
+Geant4EventReader::EventReaderStatus
+DD4hep::Simulation::LCIOFileReader::readParticles(int /*event_number */, EVENT::LCCollection** particles)  {
   ::lcio::LCEvent* evt = m_reader->readNextEvent();
   if ( evt ) {
-    return evt->getCollection(LCIO::MCPARTICLE);
+    *particles = evt->getCollection(LCIO::MCPARTICLE);
+    if ( *particles ) return EVENT_READER_OK;
   }
-  return 0;
+  return EVENT_READER_ERROR;
 }
 

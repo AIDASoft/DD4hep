@@ -33,6 +33,23 @@ namespace DD4hep {
     /**
      *  Extract the relevant particle information during the simulation step.
      *
+     *  This procedure works as follows:
+     *  -- At the beginning of the event generation the object registers itself as 
+     *    Monte-Carlo truth handler to the event context.
+     *  -- At the begin of each track action a particle candidate is created and filled
+     *     with all properties known at this time.
+     *  -- At each stepping action a flag is set if the step produced secondaries.
+     *  -- Sensitive detectors call the MC truth handler if a hit was created.
+     *    This fact is remembered.
+     *  -- At the end of the tracking action a first decision is taken if the candidate is to be 
+     *    kept for the final record.
+     *  -- At the end of the event action finally all particles are reduced to the 
+     *    final record. This logic can be overridden by a user handler to be attached.
+     *  .
+     *  Any of these actions may be intercepted by a {\tt{Geant4UserParticleHandler}}
+     *  attached to the particle handler.
+     *  See class {\tt{Geant4UserParticleHandler}} for details.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION

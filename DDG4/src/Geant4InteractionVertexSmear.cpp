@@ -39,8 +39,6 @@ Geant4InteractionVertexSmear::~Geant4InteractionVertexSmear() {
 /// Callback to generate primary particles
 void Geant4InteractionVertexSmear::operator()(G4Event*) {
   typedef Geant4PrimaryEvent::Interaction Interaction;
-  typedef Geant4Particle Particle;
-  typedef Geant4Particle Vertex;
   Geant4Random& rndm = context()->event().random();
   Geant4PrimaryEvent* evt = context()->event().extension<Geant4PrimaryEvent>();
   Interaction* inter = evt->get(m_mask);

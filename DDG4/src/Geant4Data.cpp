@@ -66,7 +66,7 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(G4Step* step) {
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
   const G4ThreeVector& pre  = h.prePosG4();
   const G4ThreeVector& post = h.postPosG4();
-  float pos[] = { (pre.x()+post.x())/2.0, (pre.y()+post.y())/2.0, (pre.z()+post.z())/2.0 };
+  float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
   Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),pos);
   return contrib;
 }

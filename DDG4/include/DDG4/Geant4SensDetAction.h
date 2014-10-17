@@ -32,6 +32,7 @@ namespace DD4hep {
   namespace Geometry  {
     class LCDD;
     class DetElement;
+    class SensitiveDetector;
   }
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
@@ -57,6 +58,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4ActionSD();
     public:
+      /// Definition: Sensitive detector type
+      typedef Geometry::SensitiveDetector SensitiveDetector;
+
       /// Initialize the usage of a hit collection. Returns the collection identifier
       virtual size_t defineCollection(const std::string& name) = 0;
       /// Access to the readout geometry of the sensitive detector
@@ -65,10 +69,14 @@ namespace DD4hep {
       virtual G4int GetCollectionID(G4int i) = 0;
       /// Is the detector active?
       virtual bool isActive() const = 0;
+      /// Access to the LCDD sensitive detector handle
+      virtual SensitiveDetector sensitiveDetector() const = 0;
       /// G4VSensitiveDetector internals: Access to the detector path name
       virtual std::string path() const = 0;
       /// G4VSensitiveDetector internals: Access to the detector path name
       virtual std::string fullPath() const = 0;
+      /// Access to the sensitive type of the detector
+      virtual const std::string& sensitiveType() const = 0;
     };
 
     /// Base class to construct filters for Geant4 sensitive detectors
@@ -99,7 +107,9 @@ namespace DD4hep {
       typedef Geometry::Readout Readout;
       typedef Geometry::DetElement DetElement;
       typedef Geometry::Segmentation Segmentation;
+      /// Definition: Sensitive detector type
       typedef Geometry::SensitiveDetector SensitiveDetector;
+
       typedef Geant4StepHandler StepHandler;
       typedef Geant4HitCollection HitCollection;
 
@@ -284,7 +294,8 @@ namespace DD4hep {
       SensitiveDetector m_sensitive;
       /// Reference to G4 sensitive detector
       Geant4ActionSD* m_detector;
-
+      /// The true sensitive type of the detector
+      std::string m_sensitiveType;
       /// Create a new typed hit collection
       template <typename TYPE> static Geant4HitCollection* _create(const std::string& det, const std::string& coll, Geant4Sensitive* sd) {
         return new Geant4HitCollection(det, coll, sd, (TYPE*) 0);
@@ -296,6 +307,11 @@ namespace DD4hep {
 
       /// Default destructor
       virtual ~Geant4SensDetActionSequence();
+
+      /// Access to the sensitive type of the detector
+      virtual const std::string& sensitiveType() const   {
+	return m_sensitiveType;
+      }
 
       /// Called at construction time of the sensitive detector to declare all hit collections
       size_t defineCollections(Geant4ActionSD* sens_det);

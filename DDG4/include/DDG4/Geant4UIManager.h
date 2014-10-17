@@ -26,10 +26,15 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Standard UI interface implementation with configuration using property options
-    /** @class Geant4UIManager Geant4UIManager.h DDG4/Geant4UIManager.h
+    /** The {\tt{Geant4UIManager}} is a component attached to the {\tt{Geant4Kernel}} object. 
      *
-     * @author  M.Frank
-     * @version 1.0
+     *  All properties of all {\tt{Geant4Action}} instances may be exported to 
+     *  Geant4 messengers and {\em{may}} hence be accessible directly from the Geant4 
+     *  prompt. To export properties from any action, call the {\tt{enableUI()}}
+     *  method of the action.
+     *
+     * \author  M.Frank
+     * \version 1.0
      */
     class Geant4UIManager : public Geant4Action, virtual public Geant4Call   {
     protected:

@@ -13,6 +13,7 @@
 #include "DDG4/Geant4StepHandler.h"
 #include "DDG4/Geant4TrackHandler.h"
 #include "DDG4/Geant4EventAction.h"
+#include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4SteppingAction.h"
 #include "DDG4/Geant4ParticleHandler.h"
@@ -148,14 +149,18 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
   PropertyMask mask(m_currTrack.reason);
   mask.set(G4PARTICLE_CREATED_HIT);
   /// Check if the track origines from the calorimeter. 
-  // If yes, flag it, because it is a candidate fro removal.
-  G4VPhysicalVolume* vol = track->GetVolume();
-  if ( strstr(vol->GetName().c_str(),"cal") )  { // just for test!
+  // If yes, flag it, because it is a candidate for removal.
+  G4LogicalVolume*       vol = track->GetVolume()->GetLogicalVolume();
+  G4VSensitiveDetector*   g4 = vol->GetSensitiveDetector();
+  Geant4ActionSD* sd = dynamic_cast<Geant4ActionSD*>(g4);
+  string typ = sd ? sd->sensitiveType() : string();
+  if ( typ == "calorimeter" )
     mask.set(G4PARTICLE_CREATED_CALORIMETER_HIT);
-  }
-  else if ( !mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT) )  {
+  else if ( typ == "tracker" )
     mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
-  }
+  else // Assume by default "tracker"
+    mask.set(G4PARTICLE_CREATED_TRACKER_HIT);
+
   //Geant4ParticleHandle(&m_currTrack).dump4(outputLevel(),vol->GetName(),"hit created by particle");
 }
 

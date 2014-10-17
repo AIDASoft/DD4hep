@@ -29,6 +29,7 @@
 //
 #include "UTIL/Operators.h"
 #include "UTIL/ILDConf.h"
+
 using namespace std;
 
 //==================================================================================
@@ -170,7 +171,7 @@ namespace DD4hep {
       }
       for(size_t i=0; i<nhits; ++i)   {
 	const Geant4Calorimeter::Hit* hit = coll->hit(i);
-	float pos[3] = {hit->position.x(), hit->position.y(), hit->position.z()};
+	float pos[3] = {float(hit->position.x()), float(hit->position.y()), float(hit->position.z())};
 	lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
 	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
 	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ???? 
