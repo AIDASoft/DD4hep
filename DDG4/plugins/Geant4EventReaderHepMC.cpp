@@ -101,39 +101,39 @@ namespace DD4hep {
 
       class EventStream {
       public:
+	typedef std::map<int,Geant4Vertex*> Vertices;
+	typedef std::map<int,Geant4Particle*> Particles;
+
 	istream& instream;
+
 	// io information
 	string key;
 	double mom_unit, pos_unit;
 	int    io_type;
-	float xsection, xsection_err;
-	//WeightContainer weights;
-	typedef std::map<int,Geant4Vertex*> Vertices;
+
+	float  xsection, xsection_err;
+	EventHeader header;
 	Vertices m_vertices;
-	typedef std::map<int,Geant4Particle*> Particles;
 	Particles m_particles;
 
-	EventHeader header;
 
 	EventStream(istream& in) : instream(in), io_type(0)
 	{ use_default_units();                       }
+	/// Check if data stream is in proper state and has data
+	bool ok()  const;
+	Geant4Vertex* vertex(int i);
 	Particles& particles() { return m_particles; }
 	Vertices&  vertices()  { return m_vertices;  }
-	void add_vertex(int id, Geant4Vertex* v)
-	{ m_vertices.insert(make_pair(id,v));        }
-	void add_particle(Geant4Particle* p);
 	void set_io(int typ, const string& k) 
 	{ io_type = typ;    key = k;                 }
 	void use_default_units()  
-	{ mom_unit = MeV; pos_unit = mm;             }
-	Geant4Vertex* vertex(int i);
-	void fix_particles();
+	{ mom_unit = MeV;   pos_unit = mm;           }
 	bool read();
 	void clear();
       };
 
       char get_input(istream& is, istringstream& iline);
-      int find_event_end(istream & is);
+      int read_until_event_end(istream & is);
       int read_weight_names(EventStream &, istringstream& iline);
       int read_particle(EventStream &info, istringstream& iline, Geant4Particle * p);
       int read_vertex(EventStream &info, istream& is, istringstream & iline);
@@ -142,6 +142,8 @@ namespace DD4hep {
       int read_units(EventStream &info, istringstream & input);
       int read_heavy_ion(EventStream &, istringstream & input);
       int read_pdf(EventStream &, istringstream & input);
+      Geant4Vertex* vertex(EventStream& info, int i);
+      void fix_particles(EventStream &info);
     }
   }
 }
@@ -166,22 +168,14 @@ Geant4EventReaderHepMC::~Geant4EventReaderHepMC()    {
   m_events = 0;
   m_input.close();
 }
-namespace DD4hep{
-  template <typename M> ReferenceObjects<typename M::value_type> __reference2nd(M&) {
-    return ReferenceObjects<typename M::value_type>();
-  }
-}
+
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReaderHepMC::EventReaderStatus
 Geant4EventReaderHepMC::readParticles(int /* ev_id */, Particles& output) {
-  // make sure the stream is good
-  if ( m_input.eof() || m_input.fail() )  {
-    cerr << "streaming input: end of stream found setting badbit." << endl;
-    m_input.clear(ios::badbit); 
+  if ( !m_events->ok() )  {
     return EVENT_READER_IO_ERROR;
   }
-
-  if ( m_events->read() )  {
+  else if ( m_events->read() )  {
     EventStream::Particles& p = m_events->particles();
     output.reserve(p.size());
     transform(p.begin(),p.end(),back_inserter(output),reference2nd(p));
@@ -202,15 +196,16 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */, Particles& output) {
   return EVENT_READER_IO_ERROR;
 }
 
-
-void HepMC::EventStream::fix_particles()  {
+void HepMC::fix_particles(EventStream& info)  {
+  EventStream::Particles& parts = info.particles();
+  EventStream::Vertices& verts = info.vertices();
   EventStream::Particles::iterator i;
   std::set<int>::const_iterator id, ip;
-  for(i=m_particles.begin(); i != m_particles.end(); ++i)  {
+  for(i=parts.begin(); i != parts.end(); ++i)  {
     Geant4ParticleHandle p((*i).second);
     int end_vtx_id = p->secondaries;
     p->secondaries = 0;
-    Geant4Vertex* v = vertex(end_vtx_id);
+    Geant4Vertex* v = vertex(info,end_vtx_id);
     if ( v )   {
       p->vex = v->x;
       p->vey = v->y;
@@ -221,15 +216,20 @@ void HepMC::EventStream::fix_particles()  {
     }
   }
   EventStream::Vertices::iterator j;
-  for(j=m_vertices.begin(); j != m_vertices.end(); ++j)  {
+  for(j=verts.begin(); j != verts.end(); ++j)  {
     Geant4Vertex* v = (*j).second;
     for (id=v->in.begin(); id!=v->in.end();++id)  {
       for (ip=v->out.begin(); ip!=v->out.end();++ip)   {
-	EventStream::Particles::iterator ipp = m_particles.find(*ip);
+	EventStream::Particles::iterator ipp = parts.find(*ip);
 	(*ipp).second->parents.insert(*id);
       }
     }
   }
+}
+
+Geant4Vertex* HepMC::vertex(EventStream& info, int i)   {
+  EventStream::Vertices::iterator it=info.vertices().find(i);
+  return (it==info.vertices().end()) ? 0 : (*it).second;
 }
 
 char HepMC::get_input(istream& is, istringstream& iline)  {
@@ -251,7 +251,7 @@ char HepMC::get_input(istream& is, istringstream& iline)  {
   return iline ? value : -1;
 }
 
-int HepMC::find_event_end(istream & is) {
+int HepMC::read_until_event_end(istream & is) {
   string line;
   while ( is ) { 
     char val = is.peek();
@@ -281,7 +281,7 @@ int HepMC::read_weight_names(EventStream&, istringstream&)   {
       cout << "debug: attempting to read past the end of the named weight line " << endl;
       cout << "debug: We should never get here" << endl;
       cout << "debug: Looking for the end of this event" << endl;
-      find_event_end(is);
+      read_until_event_end(is);
     }
     i2 = line.find("\"",i1+1);
     name = line.substr(i1+1,i2-i1-1);
@@ -297,63 +297,73 @@ int HepMC::read_weight_names(EventStream&, istringstream&)   {
   return 1;
 }
 
-int HepMC::read_particle(EventStream &info, istringstream& iline, Geant4Particle * p)   {
+int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle * p)   {
   float ene = 0., theta = 0., phi = 0;
   int   size = 0;
 
   // check that the input stream is still OK after reading item
-  iline >> p->id >> p->pdgID >> p->psx >> p->psy >> p->psz >> ene;
-  if ( !iline ) 
+  input >> p->id >> p->pdgID >> p->psx >> p->psy >> p->psz >> ene;
+  p->psx /= info.mom_unit;
+  p->psy /= info.mom_unit;
+  p->psz /= info.mom_unit;
+  ene /= info.mom_unit;
+  if ( !input ) 
     return 0;
-  else if( info.io_type != ascii )
-    iline >> p->mass;
-  else 
+  else if ( info.io_type != ascii )  {
+    input >> p->mass;
+    p->mass /= info.mom_unit;
+  }
+  else   {
     p->mass = sqrt(fabs(ene*ene - p->psx*p->psx + p->psy*p->psy + p->psz*p->psz));
-
+  }
   // Reuse here the secondaries to store the end-vertex ID
-  iline >> p->status >> theta >> phi >> p->secondaries >> size;
-  if(!iline) 
+  input >> p->status >> theta >> phi >> p->secondaries >> size;
+  if(!input) 
     return 0;
 
   // read flow patterns if any exist
   for (int i = 0; i < size; ++i ) {
-    iline >> p->colorFlow[0] >> p->colorFlow[1];
-    if(!iline) return 0;
+    input >> p->colorFlow[0] >> p->colorFlow[1];
+    if(!input) return 0;
   }
   return 1;
 }
 
-int HepMC::read_vertex(EventStream &info, istream& is, istringstream & iline)    {
+int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)    {
   int id=0, dummy=0, num_orphans_in=0, num_particles_out=0, weights_size=0;
   vector<float> weights;
   Geant4Vertex* v = new Geant4Vertex();
   Geant4Particle* p;
 
-  iline >> id >> dummy >> v->x >> v->y >> v->z >> v->time 
+  input >> id >> dummy >> v->x >> v->y >> v->z >> v->time 
 	>> num_orphans_in >> num_particles_out >> weights_size;
-  if(!iline) 
+  if(!input) 
     return 0;
+  v->x /= info.pos_unit;
+  v->y /= info.pos_unit;
+  v->z /= info.pos_unit;
   weights.resize(weights_size);
   for (int i1 = 0; i1 < weights_size; ++i1) {
-    iline >> weights[i1];
-    if(!iline)
+    input >> weights[i1];
+    if(!input)
       return 0;
   }
-  info.add_vertex(id,v);
+  info.vertices().insert(make_pair(id,v));
   //cout << "Add Vertex:" << id << endl;
 
   for(char value = is.peek(); value=='P'; value=is.peek())  {
-    value = get_input(is,iline);
-    if( !iline || value < 0 )
+    value = get_input(is,input);
+    if( !input || value < 0 )
       return 0;
 
-    read_particle(info, iline,p = new Geant4Particle());
-    if(!iline)   {
+    read_particle(info, input,p = new Geant4Particle());
+    if(!input)   {
       cerr << "Failed to read particle!" << endl;
       delete p;
       return 0;
     }
-    info.add_particle(p);
+    p->id = info.particles().size();
+    info.particles().insert(make_pair(p->id,p));
     p->pex = p->psx;
     p->pey = p->psy;
     p->pez = p->psz;
@@ -502,14 +512,14 @@ int HepMC::read_pdf(EventStream &, istringstream & input)  {
   return input.fail() ? 0 : 1;
 }
 
-void HepMC::EventStream::add_particle(Geant4Particle* p)   {
-  p->id = m_particles.size();
-  m_particles.insert(make_pair(p->id,p));
-}
-
-Geant4Vertex* HepMC::EventStream::vertex(int i)   {
-  Vertices::iterator it=m_vertices.find(i);
-  return (it==m_vertices.end()) ? 0 : (*it).second;
+/// Check if data stream is in proper state and has data
+bool HepMC::EventStream::ok()  const   {
+  // make sure the stream is good
+  if ( instream.eof() || instream.fail() )  {
+    instream.clear(ios::badbit);
+    return false;
+  }
+  return true;
 }
 
 void HepMC::EventStream::clear()   {
@@ -519,20 +529,21 @@ void HepMC::EventStream::clear()   {
 
 bool HepMC::EventStream::read()   {
   EventStream& info = *this;
-
-  // OK - now ready to start reading the event, so set the header flag
-  // The flag will be set to false when we reach the end of the header
-  m_particles.clear();
-  m_vertices.clear();
-
   bool event_read = false;
+
+  releaseObjects(vertices())();
+  releaseObjects(particles())();
+
   while( instream.good() ) {
     char value = instream.peek();
-    if ( value == 'E' && event_read ) break;
-    else if ( event_read ) break;
-    else if ( instream.eof() ) return false;
-
     istringstream input_line;
+
+    if      ( value == 'E' && event_read ) break;
+    else if ( instream.eof() ) return false;
+    else if ( value=='#' || ::isspace(value) )  {
+      get_input(instream,input_line);
+      continue;
+    }
     value = get_input(instream,input_line);
 
     // On failure switch to end
@@ -576,6 +587,9 @@ bool HepMC::EventStream::read()   {
 	     << "MALFORMED INPUT" << endl;
 	instream.clear(ios::badbit); 
 	return false;
+      }
+      else if ( iotype != 0 )  {
+	break;
       }
       continue;
     }      
@@ -622,11 +636,11 @@ bool HepMC::EventStream::read()   {
     printout(WARNING,"HepMC::EventStream","+++ Skip event with ID: %d",this->header.id);
     releaseObjects(vertices())();
     releaseObjects(particles())();
-    find_event_end(instream);
+    read_until_event_end(instream);
     event_read = false;
     if ( instream.eof() ) return false;
   }
-  this->fix_particles();
+  fix_particles(info);
   releaseObjects(vertices())();
   return true;
 }

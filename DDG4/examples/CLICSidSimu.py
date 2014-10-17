@@ -108,8 +108,11 @@ def run():
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
-  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
+  gen.Input = "LCIOFileReader|/home/frankm/SW/data/bbbb_3TeV.slcio"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
+  #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
   gen.OutputLevel = 4 # generator_output_level
   gen.MomentumScale = 0.1
   gen.Mask = 1
@@ -123,7 +126,7 @@ def run():
   gen.Sigma = (12*mm, 8*mm, 8*mm, 0*ns)
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
-
+  """
   # Second particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO2");
   gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_2.stdhep"
@@ -141,7 +144,7 @@ def run():
   gen.Sigma = (2*mm, 1*mm, 1*mm, 0*ns)
   gen.enableUI()
   kernel.generatorAction().adopt(gen)
-
+  """
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   # Merge all existing interaction records

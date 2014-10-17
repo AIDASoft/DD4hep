@@ -67,9 +67,7 @@ namespace DD4hep {
 #include "G4VProcess.hh"
 
 using namespace std;
-using namespace CLHEP;
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
@@ -90,7 +88,7 @@ Geant4EscapeCounter::~Geant4EscapeCounter() {
 
 /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
 bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history */)   {
-  Geant4StepHandler h(step);
+  Geant4StepHandler  h(step);
   Geant4TrackHandler th(h.track);
   Geant4TouchableHandler handler(step);
   string   path       = handler.path();
@@ -106,7 +104,7 @@ bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history *
   mark(h.track);
  
   print("+++ Track:%4d  %8.2f MeV [%s] %s Geant4 path:%s",
-	h.trkID(),h.trkEnergy()/MeV,th.name().c_str(),
+	h.trkID(),h.trkEnergy()/CLHEP::MeV,th.name().c_str(),
 	th.creatorName().c_str(),path.c_str());
   // Kill track, so that it does no longer participate in the propagation
   h.track->SetTrackStatus(fStopAndKill);
