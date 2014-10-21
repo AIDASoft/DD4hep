@@ -431,9 +431,9 @@ namespace DD4hep {
       
 
       //=========== compute and cache world transform for surface ==========
-
+      
       const TGeoHMatrix& wm = _det.worldTransformation() ;
-
+      
 #if 0 // debug
       wm.Print() ;
       for( std::list<PlacedVolume>::iterator it= pVList.begin(), n = pVList.end() ; it != n ; ++it ){
@@ -445,7 +445,9 @@ namespace DD4hep {
 #endif
 
       // need to get the inverse transformation ( see Detector.cpp )
-      std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm.Inverse() ) ) ;
+      // std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm.Inverse() ) ) ;
+      // has been fixed now, no need to get the inverse anymore:
+      std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm ) ) ;
 
       //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
       // DetElements world transform
@@ -455,7 +457,7 @@ namespace DD4hep {
       	TGeoMatrix* m = pv->GetMatrix();
       	// std::cout << "  +++ matrix for placed volume : " << std::endl ;
       	// m->Print() ;
-	//      	wtI->MultiplyLeft( m );
+	//wtI->MultiplyLeft( m );
 
       	wtI->Multiply( m );
       }
