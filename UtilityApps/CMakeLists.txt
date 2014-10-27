@@ -27,6 +27,7 @@ if(DD4HEP_USE_GEANT4)
 
   add_executable( dd_sim src/ddsim.cpp)
   target_link_libraries(dd_sim DD4hepCore DD4hepG4)
+  install(TARGETS dd_sim RUNTIME DESTINATION bin )
 endif()
 #-----------------------------------------------------------------------------------
 
@@ -44,7 +45,7 @@ target_link_libraries( teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES} DD4hepRec ${
 
 #--- install target-------------------------------------
 
-install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials dd_sim
+install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
