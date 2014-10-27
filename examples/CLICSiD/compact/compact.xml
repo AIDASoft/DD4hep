@@ -563,7 +563,7 @@
             </layer>
         </detector>
         
-        <detector id="5" name="SiTrackerForward" type="SiTrackerEndcap2" readout="SiTrackerForwardHits">    
+        <detector id="5" name="SiTrackerForward" type="SiTrackerEndcap2" readout="SiTrackerForwardHits" reflect="true">    
             <comment>Forward Tracker inside Vertex Support Barrel</comment>
             <module name="SiTrackerForwardModule1">
                 <trd x1="ForwardTracker_rmin1 * tan(pi/(ForwardTrackerModules-0.1))" x2="ForwardTracker_rmax * sin(pi/(ForwardTrackerModules-0.1))" z="(ForwardTracker_rmax - ForwardTracker_rmin1) / 2" />
@@ -1275,10 +1275,10 @@
         </detector>
         <detector name="SiTrackerEndcapSupport2Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="Rohacell31"/>
-            <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919" />
-            <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218" />
-            <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535" />
-            <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834" />
+            <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919*mm" />
+            <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218*mm" />
+            <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535*mm" />
+            <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834*mm" />
         </detector>
         <detector name="SiTrackerEndcapSupport3Reflect" type="PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
             <material name="CarbonFiber"/>

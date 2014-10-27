@@ -24,7 +24,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
     xml_comp_t dim(c);
     rmin.push_back(dim.rmin());
     rmax.push_back(dim.rmax());
-    z.push_back(dim.z()/2);
+    z.push_back(dim.z()); //Dropped division by 2 in z. Half length not needed
   }
   if ( num < 2 )  {
     throw runtime_error("PolyCone["+name+"]> Not enough Z planes. minimum is 2!");
