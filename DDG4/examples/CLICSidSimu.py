@@ -110,12 +110,13 @@ def run():
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
-  gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_mu-_5GeV.slcio"
+  #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_mu-_5GeV.slcio"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/bbbb_3TeV.slcio"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
-  #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
+  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
+  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
   gen.OutputLevel = 4 # generator_output_level
-  gen.MomentumScale = 0.1
+  gen.MomentumScale = 1.0
   gen.Mask = 1
   gen.enableUI()
   kernel.generatorAction().adopt(gen)

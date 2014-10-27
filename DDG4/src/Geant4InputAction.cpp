@@ -159,9 +159,10 @@ void Geant4InputAction::operator()(G4Event* event)   {
     Geant4ParticleHandle p(primaries[i]);
     const double mom_scale = m_momScale;
     PropertyMask status(p->status);
-    p->psx          = mom_scale*p->psx;
-    p->psy          = mom_scale*p->psy;
-    p->psz          = mom_scale*p->psz;
+    p->psx  = mom_scale*p->psx;
+    p->psy  = mom_scale*p->psy;
+    p->psz  = mom_scale*p->psz;
+
     if ( p->parents.size() == 0 )  {
       if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
 	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
@@ -169,6 +170,6 @@ void Geant4InputAction::operator()(G4Event* event)   {
 	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     }
     inter->particles.insert(make_pair(p->id,p));
-    p.dump3(outputLevel()-1,name(),"+->");
+    p.dumpWithVertex(outputLevel()-1,name(),"+->");
   }
 }

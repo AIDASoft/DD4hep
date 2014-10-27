@@ -218,12 +218,30 @@ void HepMC::fix_particles(EventStream& info)  {
   EventStream::Vertices::iterator j;
   for(j=verts.begin(); j != verts.end(); ++j)  {
     Geant4Vertex* v = (*j).second;
-    for (id=v->in.begin(); id!=v->in.end();++id)  {
-      for (ip=v->out.begin(); ip!=v->out.end();++ip)   {
-	EventStream::Particles::iterator ipp = parts.find(*ip);
-	(*ipp).second->parents.insert(*id);
+    for (ip=v->out.begin(); ip!=v->out.end();++ip)   {
+      EventStream::Particles::iterator ipp = parts.find(*ip);
+      Geant4Particle* p = (*ipp).second;
+      for (id=v->in.begin(); id!=v->in.end();++id)  {
+	p->parents.insert(*id);
       }
     }
+  }
+  /// Particles originating from the beam (=no parents) must be
+  /// be stripped off their parents and the status set to G4PARTICLE_GEN_DECAYED!
+  vector<Geant4Particle*> beam;
+  for(i=parts.begin(); i != parts.end(); ++i)  {
+    Geant4ParticleHandle p((*i).second);
+    if ( p->parents.size() == 0 )  {
+      for(id=p->daughters.begin(); id!=p->daughters.end();++id)  {
+	Geant4Particle *pp = parts[*id];
+	beam.push_back(pp);
+      }
+    }
+  }
+  for(vector<Geant4Particle*>::iterator i=beam.begin(); i!=beam.end();++i)  {
+    cout << "Clear parents of " << (*i)->id << endl;
+    (*i)->parents.clear();
+    (*i)->status = G4PARTICLE_GEN_DECAYED;
   }
 }
 
@@ -299,27 +317,40 @@ int HepMC::read_weight_names(EventStream&, istringstream&)   {
 
 int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle * p)   {
   float ene = 0., theta = 0., phi = 0;
-  int   size = 0;
+  int   size = 0, stat=0;
+  PropertyMask status(p->status);
 
   // check that the input stream is still OK after reading item
   input >> p->id >> p->pdgID >> p->psx >> p->psy >> p->psz >> ene;
-  p->psx /= info.mom_unit;
-  p->psy /= info.mom_unit;
-  p->psz /= info.mom_unit;
-  ene /= info.mom_unit;
+  p->id = info.particles().size();
+  p->psx *= info.mom_unit;
+  p->psy *= info.mom_unit;
+  p->psz *= info.mom_unit;
+  ene *= info.mom_unit;
   if ( !input ) 
     return 0;
   else if ( info.io_type != ascii )  {
     input >> p->mass;
-    p->mass /= info.mom_unit;
+    p->mass *= info.mom_unit;
   }
   else   {
     p->mass = sqrt(fabs(ene*ene - p->psx*p->psx + p->psy*p->psy + p->psz*p->psz));
   }
   // Reuse here the secondaries to store the end-vertex ID
-  input >> p->status >> theta >> phi >> p->secondaries >> size;
+  input >> stat >> theta >> phi >> p->secondaries >> size;
   if(!input) 
     return 0;
+
+  //
+  //  Generator status
+  //  Simulator status 0 until simulator acts on it
+  status.clear();
+  if ( stat == 0 )      status.set(G4PARTICLE_GEN_EMPTY);
+  else if ( stat == 0x1 ) status.set(G4PARTICLE_GEN_STABLE); 
+  else if ( stat == 0x2 ) status.set(G4PARTICLE_GEN_DECAYED);
+  else if ( stat == 0x3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+  else if ( stat == 0x4 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+  else if ( stat == 0xB ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
 
   // read flow patterns if any exist
   for (int i = 0; i < size; ++i ) {
@@ -339,9 +370,9 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
 	>> num_orphans_in >> num_particles_out >> weights_size;
   if(!input) 
     return 0;
-  v->x /= info.pos_unit;
-  v->y /= info.pos_unit;
-  v->z /= info.pos_unit;
+  v->x *= info.pos_unit;
+  v->y *= info.pos_unit;
+  v->z *= info.pos_unit;
   weights.resize(weights_size);
   for (int i1 = 0; i1 < weights_size; ++i1) {
     input >> weights[i1];
@@ -362,16 +393,15 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
       delete p;
       return 0;
     }
-    p->id = info.particles().size();
     info.particles().insert(make_pair(p->id,p));
     p->pex = p->psx;
     p->pey = p->psy;
     p->pez = p->psz;
     if ( --num_orphans_in >= 0 )   {
+      v->in.insert(p->id);
       p->vex = v->x;
       p->vey = v->y;
       p->vez = v->z;
-      v->in.insert(p->id);
       //cout << "Add INGOING  Particle:" << p->id << endl;
     }
     else if ( num_particles_out >= 0 )   {

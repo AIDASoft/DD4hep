@@ -8,7 +8,7 @@
 //====================================================================
 
 // Framework includes
-#include "DD4hep/IoStreams.h"
+#include "DDG4/IoStreams.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

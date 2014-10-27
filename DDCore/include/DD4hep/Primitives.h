@@ -300,6 +300,9 @@ namespace DD4hep {
     void clear(const T& m)   {
       mask &= ~m;
     }
+    void clear()   {
+      mask = 0;
+    }
     bool isSet(const T& m)  const {
       return (mask&m) == m;
     }

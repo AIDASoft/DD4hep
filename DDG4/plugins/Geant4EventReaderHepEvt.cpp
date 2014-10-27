@@ -192,10 +192,11 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
     //  Generator status
     //  Simulator status 0 until simulator acts on it
     p->status = 0;
-    if ( ISTHEP == 0 ) status.set(G4PARTICLE_GEN_EMPTY);
-    if ( ISTHEP == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
-    if ( ISTHEP == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
-    if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+    if ( ISTHEP == 0 )      status.set(G4PARTICLE_GEN_EMPTY);
+    else if ( ISTHEP == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
+    else if ( ISTHEP == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
+    else if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
+    else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
     //
     //  Creation time (note the units [1/c_light])
     // (No information in HEPEvt files)

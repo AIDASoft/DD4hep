@@ -119,7 +119,7 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
     status.set(G4PARTICLE_GEN_STABLE);
     vtx->out.insert(p->id);
     inter->particles.insert(make_pair(p->id,p));
-    p.dump3(outputLevel()-1,name(),"+->");
+    p.dumpWithVertex(outputLevel()-1,name(),"+->");
   }
   ++m_shotNo;
 

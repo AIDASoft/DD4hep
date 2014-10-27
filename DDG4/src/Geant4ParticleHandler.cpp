@@ -343,7 +343,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
     if ( ip != m_particleMap.end() )
       (*ip).second->reason |= track_reason;
     else
-      ph.dump3(outputLevel()+3,name(),"FATAL: No real particle parent present");
+      ph.dumpWithVertex(outputLevel()+3,name(),"FATAL: No real particle parent present");
   }
 }
 
@@ -594,7 +594,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
 
   /// First check the consistency of the particle map itself
   for(ParticleMap::const_iterator j, i=m_particleMap.begin(); i!=m_particleMap.end(); ++i)  {
-    Particle* p = (*i).second;
+    Geant4ParticleHandle p((*i).second);
     PropertyMask mask(p->reason);
     PropertyMask status(p->status);
     set<int>& daughters = p->daughters;
@@ -621,6 +621,7 @@ void Geant4ParticleHandler::checkConsistency()  const   {
 	char parent_list[1024];
 	parent_list[0] = 0;
 	++num_errors;
+	p.dumpWithMomentum(ERROR,name(),"INCONSISTENCY");
 	for(set<int>::const_iterator ip=p->parents.begin(); ip!=p->parents.end();++ip)
 	  ::snprintf(parent_list+strlen(parent_list),sizeof(parent_list)-strlen(parent_list),"%d ",*ip);
 	error("+++ Particle:%d Parent %d (G4id:%d)  In record:%s In parent list:%s [%s]",

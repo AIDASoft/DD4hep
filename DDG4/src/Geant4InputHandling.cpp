@@ -301,6 +301,7 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
   Interaction::VertexMap&   vm  = interaction->vertices;
   map<int,G4PrimaryParticle*> prim;
   set<int> visited;
+  char text[64];
 
   Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
   for(Interaction::VertexMap::const_iterator iend=vm.end(),i=vm.begin(); i!=iend; ++i)  {
@@ -324,11 +325,8 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
 	  PropertyMask reason(r->reason);
 	  reason.set(G4PARTICLE_PRIMARY);
 	  v4->SetPrimary(p4);
-	  caller->printM1("+++ +-> G4Primary[%3d] ID:%3d type:%9d/%-12s "
-			  "Momentum:(%+.2e,%+.2e,%+.2e) [GeV] time:%+.2e [ns] #Par:%3d #Dau:%3d",
-			  num_part,r->id,r->pdgID,r.particleName().c_str(),
-			  r->psx/GeV,r->psy/GeV,r->psz/GeV,r->time/ns,
-			  int(r->parents.size()),int(r->daughters.size()));
+	  ::snprintf(text,sizeof(text),"+-> G4Primary[%3d]",num_part);
+	  r.dumpWithMomentum(caller->outputLevel()-1,caller->name(),text);
 	  ++num_part;
 	}
       }
