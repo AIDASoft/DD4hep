@@ -6,7 +6,7 @@
 //====================================================================
 
 // Framework include files
-#include "DD4hep/IoStreams.h"
+#include "DDG4/IoStreams.h"
 #include "DDG4/Geant4InputAction.h"
 
 // C/C++ include files
