@@ -8,6 +8,7 @@
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
+#include "gearimpl/FTDParametersImpl.h"
 
 #include <iostream>
 
@@ -144,6 +145,52 @@ namespace DD4hep{
 
       setDE.addExtension< GearHandle >( new GearHandle( gearSET, "SETParameters" ) ) ;
      //============================================================================================
+
+      DetElement ftdDE = lcdd.detector("FTD") ;
+      
+      ZDiskPetalsData* ftd = ftdDE.extension<ZDiskPetalsData>() ;
+      
+      gear::FTDParametersImpl* gearFTD = new gear::FTDParametersImpl();
+      
+      for(unsigned i=0,n=ftd->layers.size() ; i<n; ++i){
+	
+	const DDRec::ZDiskPetalsData::LayerLayout& l = ftd->layers[i] ;
+	
+
+	bool isDoubleSided  = l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::DoubleSided ] ;
+	int  sensorType   = ( l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::Pixel ] ?
+			      gear::FTDParameters::PIXEL :  gear::FTDParameters::STRIP ) ;
+
+	double zoffset = fabs( l.zOffsetSupport ) ;
+	double signoffset =  l.zOffsetSupport > 0  ?  1. : -1 ;
+	
+	gearFTD->addLayer( l.petalNumber, l.sensorsPerPetal, 
+			   isDoubleSided, sensorType, 
+			   l.petalHalfAngle, l.phi0, l.alphaPetal, 
+			   l.zPosition/dd4hep::mm, zoffset/dd4hep::mm, signoffset,
+			   l.distanceSupport/dd4hep::mm, l.thicknessSupport/dd4hep::mm,
+			   l.widthInnerSupport/dd4hep::mm, l.widthOuterSupport/dd4hep::mm,
+			   l.lengthSupport/dd4hep::mm, 
+			   0.,
+			   l.distanceSensitive/dd4hep::mm, l.thicknessSensitive/dd4hep::mm,
+			   l.widthInnerSensitive/dd4hep::mm, l.widthOuterSensitive/dd4hep::mm,
+			   l.lengthSensitive/dd4hep::mm, 
+			   0. ) ;
+	
+
+	// FIXME set rad lengths to 0 -> need to get from DD4hep ....
+      }
+     
+      gearFTD->setDoubleVal("strip_width_mm"  , ftd->widthStrip / dd4hep::mm ) ;
+      gearFTD->setDoubleVal("strip_length_mm" , ftd->lengthStrip/ dd4hep::mm ) ;
+      gearFTD->setDoubleVal("strip_pitch_mm"  , ftd->pitchStrip / dd4hep::mm ) ;
+      gearFTD->setDoubleVal("strip_angle_deg" , ftd->angleStrip / dd4hep::deg ) ;
+
+     
+      ftdDE.addExtension< GearHandle >( new GearHandle( gearFTD, "FTDParameters" ) ) ;
+     //============================================================================================
+
+
 
       // --- LCDD::apply() expects return code 1 if all went well ! ----
       return 1;
