@@ -7,24 +7,30 @@
 //
 //====================================================================
 // Framework include files
-#include "XML/XMLDimension.h"
+#include "XML/XMLChildValue.h"
 
 using namespace std;
 using namespace DD4hep::XML;
 
-#define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Unicode_##name); }
+#define childValue(name,type)   m_element.child(Unicode_##name).attr<type>(Unicode_value)
+
+#define childValueDefault(name,type,def)  \
+  Handle_t __h = m_element.child(Unicode_##name,false);	     \
+  if ( __h.ptr() && __h.hasAttr(Unicode_value) ) return __h.attr < type > (Unicode_value); \
+  return def;
+
+#define XML_ATTR_ACCESSOR(type,name)  type ChildValue::name() const { return childValue(name,type); }
 #define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)			\
-  type Dimension::name(type default_val) const {                       \
-    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);	\
-    return val ? dressing(val) : default_val; }
+  type ChildValue::name(type default_val) const {                       \
+    Handle_t __h = m_element.child(Unicode_##name,false);	        \
+    if ( __h.ptr() )  {                                                 \
+      const XmlChar* val = __h.attr_value_nothrow(Unicode_value);	\
+      return val ? dressing(val) : default_val; }                       \
+    return default_val; }
 
-#define XML_ATTR_ACCESSOR_DOUBLE(name)	 XML_ATTR_ACCESSOR_DEFAULT(name,double,_toDouble)
-#define XML_ATTR_ACCESSOR_INT(name)	 XML_ATTR_ACCESSOR_DEFAULT(name,int,_toInt)
-#define XML_ATTR_ACCESSOR_BOOL(name)	 XML_ATTR_ACCESSOR_DEFAULT(name,bool,_toBool)
-
-#define XML_CHILD_ACCESSOR_XML_DIM(name)	                        \
-  Dimension Dimension::name(bool throw_if_not_present) const {          \
-    return m_element.child(Unicode_##name,throw_if_not_present); }
+#define XML_ATTR_ACCESSOR_DOUBLE(name) XML_ATTR_ACCESSOR_DEFAULT(name,double,_toDouble)
+#define XML_ATTR_ACCESSOR_INT(name)    XML_ATTR_ACCESSOR_DEFAULT(name,int,_toInt)
+#define XML_ATTR_ACCESSOR_BOOL(name)   XML_ATTR_ACCESSOR_DEFAULT(name,bool,_toBool)
 
 XML_ATTR_ACCESSOR(int, id)
 XML_ATTR_ACCESSOR_INT(id)
@@ -162,51 +168,44 @@ XML_ATTR_ACCESSOR(double,)
 XML_ATTR_ACCESSOR(double,)
 #endif
 
-XML_CHILD_ACCESSOR_XML_DIM(dimensions)
-XML_CHILD_ACCESSOR_XML_DIM(position)
-XML_CHILD_ACCESSOR_XML_DIM(rotation)
-XML_CHILD_ACCESSOR_XML_DIM(trd)
-XML_CHILD_ACCESSOR_XML_DIM(tubs)
-XML_CHILD_ACCESSOR_XML_DIM(staves)
-XML_CHILD_ACCESSOR_XML_DIM(beampipe)
 
-string Dimension::padType() const {
-  return m_element.attr < string > (_U(pads));
+string ChildValue::padType() const {
+  return childValue(pads,string);
 }
 
-string Dimension::nameStr() const {
-  return m_element.attr < string > (_U(name));
+string ChildValue::nameStr() const {
+  return childValue(name,string);
 }
 
-string Dimension::refStr() const {
-  return m_element.attr < string > (_U(ref));
+string ChildValue::refStr() const {
+  return childValue(ref,string);
 }
 
-string Dimension::typeStr() const {
-  return m_element.attr < string > (_U(type));
+string ChildValue::typeStr() const {
+  return childValue(type,string);
 }
 
 /// Access "value" attribute as STL string
-std::string Dimension::valueStr() const   {
-  return m_element.attr < string > (_U(value));
+std::string ChildValue::valueStr() const   {
+  return childValue(value,string);
 }
 
-string Dimension::regionStr() const {
-  return m_element.hasAttr(_U(region)) ? m_element.attr < string > (_U(region)) : string();
+string ChildValue::regionStr() const {
+  childValueDefault(region,string,string());
 }
 
-string Dimension::limitsStr() const {
-  return m_element.hasAttr(_U(limits)) ? m_element.attr < string > (_U(limits)) : string();
+string ChildValue::limitsStr() const {
+  childValueDefault(limits,string,string());
 }
 
-string Dimension::visStr() const {
-  return m_element.hasAttr(_U(vis)) ? m_element.attr < string > (_U(vis)) : string();
+string ChildValue::visStr() const {
+  childValueDefault(vis,string,string());
 }
 
-string Dimension::readoutStr() const {
-  return m_element.hasAttr(_U(readout)) ? m_element.attr < string > (_U(readout)) : string();
+string ChildValue::readoutStr() const {
+  childValueDefault(readout,string,string());
 }
 
-string Dimension::moduleStr() const {
-  return m_element.hasAttr(_U(module)) ? m_element.attr < string > (_U(module)) : string();
+string ChildValue::moduleStr() const {
+  childValueDefault(module,string,string());
 }

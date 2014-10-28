@@ -10,6 +10,7 @@
 #define DD4hep_DETECTOR_DETFACTORYHELPER_H
 
 #include "XML/XMLDetector.h"
+#include "XML/XMLChildValue.h"
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/DD4hepUnits.h"
@@ -24,6 +25,7 @@ typedef DD4hep::XML::RefElement xml_ref_t;
 typedef DD4hep::XML::DetElement xml_det_t;
 typedef DD4hep::XML::Component xml_comp_t;
 typedef DD4hep::XML::Dimension xml_dim_t;
+typedef DD4hep::XML::ChildValue xml_val_t;
 typedef DD4hep::XML::Document xml_doc_t;
 typedef DD4hep::XML::Strng_t Unicode;
 typedef DD4hep::Geometry::LCDD lcdd_t;

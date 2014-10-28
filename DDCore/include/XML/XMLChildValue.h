@@ -6,8 +6,8 @@
 //  Author     : M.Frank
 //
 //====================================================================
-#ifndef DD4HEP_XMLDIMENSION_H
-#define DD4HEP_XMLDIMENSION_H
+#ifndef DD4HEP_XMLCHILDVALUE_H
+#define DD4HEP_XMLCHILDVALUE_H
 
 // Framework include files
 #include "XML/XMLTags.h"
@@ -18,42 +18,50 @@ namespace DD4hep {
   /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
 
-    /// XML Handle to xml elements with predefined attribute access
+    /// XML Handle to xml elements with predefined child access
     /**
      *  Helper class to access any field in a xml tag in a
      *  very easy way.
-     *  - You may assign any xml handle to a dimension object
-     *  - Any attribute of this xml element may then be accessed
-     *    by it's natural way. All possible attribute names are
-     *    reflected by the Dimension object's member functions.
-     *  - If an attribute is requested and not present, a exception
+     *  - You may assign any xml handle to a childvalue object
+     *  - Any child with the name and the value attribute set may then be accessed
+     *    by it's natural way. All possible child names are
+     *    reflected by the object's member functions.
+     *
+     *    IMPORTANT NOTE:
+     *    to be understood, the child elements MUST have structure like:
+     *    <inner_r value="76*cm" ....other attributes...../>
+     *    Other attributes may e.g. be a comment describing the variable.
+     *    The 'other attributes' are ignored. The 'value' attribute
+     *    is mandatory.
+     *
+     *  - If an child is requested and not present, a exception
      *    is thrown.
      *  - Functions, which accept a default value do NOT throw
-     *    an exception if the attribute is not present. These
+     *    an exception if the child is not present. These
      *    rather return the default value.
      *  - If a often used function is not present - the
      *    implementation thereof is simple.
      *
      *  Such helper classes may be defined locally by any user
      *  since XML element handles may easily be transferred.
-     *  Run-time exceptions occur however, if non-exiting attributes
+     *  Run-time exceptions occur however, if non-exiting child elements
      *  are accessed.
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_XML
      */
-    struct Dimension: public Element {
+    struct ChildValue: public Element {
       /// Default constructor
-      Dimension()
+      ChildValue()
           : Element(Handle_t(0)) {
       }
       /// Constructor from Handle
-      Dimension(Handle_t e)
+      ChildValue(Handle_t e)
           : Element(e) {
       }
       /// Constructor from Element
-      Dimension(const Element& e)
+      ChildValue(const Element& e)
           : Element(e) {
       }
 
@@ -323,21 +331,6 @@ namespace DD4hep {
       /// Access attribute values: show_daughters
       bool show_daughters() const;
 
-      /// Access child element with tag "dimensions" as Dimension object
-      Dimension dimensions(bool throw_if_not_present = true) const;
-      /// Child access: position
-      Dimension position(bool throw_if_not_present = true) const;
-      /// Child access: rotation
-      Dimension rotation(bool throw_if_not_present = true) const;
-      /// Child access: trd
-      Dimension trd(bool throw_if_not_present = true) const;
-      /// Child access: tubs
-      Dimension tubs(bool throw_if_not_present = true) const;
-      /// Child access: staves
-      Dimension staves(bool throw_if_not_present = true) const;
-      /// Child access: beampipe
-      Dimension beampipe(bool throw_if_not_present = true) const;
-
       /// Access "name" attribute as STL string
       std::string nameStr() const;
       /// Access "ref" attribute as a string
@@ -359,4 +352,4 @@ namespace DD4hep {
     };
   } /* End namespace XML       */
 } /* End namespace DD4hep    */
-#endif    /* DD4HEP_XMLDIMENSION_H   */
+#endif    /* DD4HEP_XMLCHILDVALUE_H   */
