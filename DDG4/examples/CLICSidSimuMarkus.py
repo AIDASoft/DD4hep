@@ -56,8 +56,18 @@ def run():
 
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
-  Generation of isotrope tracks of a given multiplicity with overlay:
+  Generation of isotrope tracks using the DDG4 partcle gun:
+
+  # Setup particle gun
+  gun = simple.setupGun('Gun','pi-',energy=10*GeV,isotrop=True,multiplicity=1)
+  gun.OutputLevel = 5 # generator_output_level
+  gun.Mask = 1
+  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   """
+
+  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  """
+  Generation of isotrope tracks of a given multiplicity with overlay:
 
   # First particle generator: pi+
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
@@ -87,6 +97,57 @@ def run():
   gen.Sigma = (12*mm, 8*mm, 8*mm, 0*ns)
   kernel.generatorAction().adopt(gen)
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  """
+
+  #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
+  """
+  Generation of primary particles from LCIO input files
+  """
+  # First particle file reader
+  gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
+  #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
+  #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_mu-_5GeV.slcio"
+  #gen.Input = "LCIOFileReader|/home/frankm/SW/data/bbbb_3TeV.slcio"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
+  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
+  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
+  gen.OutputLevel = 4 # generator_output_level
+  gen.MomentumScale = 1.0
+  gen.Mask = 1
+  gen.enableUI()
+  kernel.generatorAction().adopt(gen)
+  # Install vertex smearing for this interaction
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear1");  
+  gen.OutputLevel = 4 #generator_output_level
+  gen.Mask = 1
+  gen.Offset = (-20*mm, -10*mm, -10*mm, 0*ns)
+  gen.Sigma = (12*mm, 8*mm, 8*mm, 0*ns)
+  gen.enableUI()
+  kernel.generatorAction().adopt(gen)
+  """
+  # Second particle file reader
+  gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO2");
+  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_2.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbnn_3TeV_01.stdhep"
+  gen.OutputLevel = 4 # generator_output_level
+  gen.Mask = 2
+  gen.MomentumScale = 0.1
+  gen.enableUI()
+  kernel.generatorAction().adopt(gen)
+  # Install vertex smearing for this interaction
+  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/Smear2");
+  gen.OutputLevel = generator_output_level
+  gen.Mask = 2
+  gen.Offset = (20*mm, 10*mm, 10*mm, 0*ns)
+  gen.Sigma = (2*mm, 1*mm, 1*mm, 0*ns)
+  gen.enableUI()
+  kernel.generatorAction().adopt(gen)
+  """
+  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
   # Merge all existing interaction records
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
@@ -113,6 +174,16 @@ def run():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
+
+  """
+  rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
+  rdr.zSpread = 0.0
+  rdr.lorentzAngle = 0.0
+  rdr.OutputLevel = DDG4.OutputLevel.INFO
+  rdr.Input = "LcioEventReader|test.data"
+  rdr.enableUI()
+  kernel.generatorAction().adopt(rdr)
+  """
 
   # Setup global filters fur use in sensntive detectors
   f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')

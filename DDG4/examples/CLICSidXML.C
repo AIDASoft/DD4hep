@@ -12,7 +12,7 @@
 //  Usage:
 //  $> root.exe
 //  root[0] .x <installation-directory>/examples/DDG4/examples/initAClick.C
-//  root[1] .L <installation-directory>/examples/DDG4/examples/CLICSidAClick.C+
+//  root[1] .L <installation-directory>/examples/DDG4/examples/CLICSidXML.C+
 //  root[2] CLICSidAClick()
 //
 //
@@ -39,6 +39,12 @@ void setupG4_XML()  {
   kernel.terminate();
 }
 
-void xmlAClick()  {
+#if defined(G__DICTIONARY) || defined(__CINT__) || defined(__MAKECINT__) // Cint script
+int CLICSidXML()
+#else
+int main(int, char**)                              // Main program if linked standalone
+#endif
+{
   setupG4_XML();
+  return 1;
 }

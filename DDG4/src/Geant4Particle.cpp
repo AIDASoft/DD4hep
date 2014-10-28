@@ -391,7 +391,7 @@ void Geant4ParticleMap::adopt(ParticleMap& pm, TrackEquivalents& equiv)    {
   equivalentTracks = equiv;
   pm.clear();
   equiv.clear();
-  //dumpMap(this);
+  //dump();
 }
 
 /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
@@ -400,5 +400,6 @@ int Geant4ParticleMap::particleID(int g4_id, bool) const   {
   if ( iequiv != equivalentTracks.end() ) return (*iequiv).second;
   printout(ERROR,"Geant4ParticleMap","+++ No Equivalent particle for track:%d."
 	   " Monte Carlo truth record looks broken!",g4_id);
+  dump();
   return -1;
 }

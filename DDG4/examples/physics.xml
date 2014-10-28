@@ -2,11 +2,11 @@
 <geant4_setup>
 
   <!-- Definition of the physics list.
-  --
-  --   Ordering values:
-  --   	ordInActive = -1,	// ordering parameter to indicate InActive DoIt
-  --   	ordDefault = 1000,	// default ordering parameter
-  --   	ordLast    = 9999 	// ordering parameter to indicate the last DoIt
+   
+       Ordering values:
+     	ordInActive = -1,	// ordering parameter to indicate InActive DoIt
+       	ordDefault = 1000,	// default ordering parameter
+       	ordLast    = 9999 	// ordering parameter to indicate the last DoIt
   -->
 
   <sequences>

@@ -44,7 +44,7 @@
     <action name="Geant4UIManager/UI">
       <properties HaveVIS="0"
 		  HaveUI="1"
-		  SetupUI="run.mac"
+		  SetupUI=""
 		  SessionType="csh"/>
      </action>
   </actions>
@@ -112,11 +112,13 @@
 		    Property_string="'Hello_1'"/>
       </action>
       <action name="UserEvent_2"/>
-      <action name="Geant4Output2ROOT/RootOutput">
-	<properties Control="true" Output="simple.root"/>
-      </action>
+<!--
       <action name="Geant4Output2LCIO/LCIOOutput">
 	<properties Control="true" Output="simple_lcio"/>
+      </action>
+-->
+      <action name="Geant4Output2ROOT/RootOutput">
+	<properties Control="true" Output="simple.root"/>
       </action>
     </sequence>
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">

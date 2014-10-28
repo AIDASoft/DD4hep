@@ -1,3 +1,24 @@
+// $Id: Geant4Data.h 513 2013-04-05 14:31:53Z gaede $
+//====================================================================
+//  AIDA Detector description implementation
+//--------------------------------------------------------------------
+//
+//  Run Geant4 using DDG4 from root prompt with test objects for
+//  Run/Event/Sensitive actions.
+//
+//  The Geant4 setup is programmed as a root script.
+//
+//  Usage:
+//  $> root.exe
+//  root[0] .x <installation-directory>/examples/DDG4/examples/initAClick.C
+//  root[1] .L <installation-directory>/examples/DDG4/examples/CLICSidAClick.C+
+//  root[2] CLICSidAClick()
+//
+//
+//  Author     : M.Frank
+//
+//====================================================================
+
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4TestActions.h"
 
