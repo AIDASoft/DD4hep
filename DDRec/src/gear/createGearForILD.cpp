@@ -192,6 +192,40 @@ namespace DD4hep{
 
      
       ftdDE.addExtension< GearHandle >( new GearHandle( gearFTD, "FTDParameters" ) ) ;
+
+    //============================================================================================
+
+      DetElement tubeDE = lcdd.detector("Tube") ;
+      
+      ConicalSupportData* tube = tubeDE.extension<ConicalSupportData>() ;
+      
+      gear::GearParametersImpl* gearTUBE = new gear::GearParametersImpl();
+      
+      tube->isSymmetricInZ = true ;
+
+      unsigned n = tube->sections.size() ;
+      
+      std::vector<double> rInner(n) ;
+      std::vector<double> rOuter(n) ;
+      std::vector<double> zStart(n) ;
+
+      for(unsigned i=0 ; i<n ; ++i){
+	
+	const ConicalSupportData::Section& s = tube->sections[i] ;
+	
+	rInner[i] = s.rInner/ dd4hep::mm  ; 
+	rOuter[i] = s.rOuter/ dd4hep::mm  ; 
+	zStart[i] = s.zPos  / dd4hep::mm  ; 
+
+	// FIXME set rad lengths to 0 -> need to get from DD4hep ....
+      }
+     
+      gearTUBE->setDoubleVals("RInner" , rInner ) ;
+      gearTUBE->setDoubleVals("ROuter" , rOuter ) ;
+      gearTUBE->setDoubleVals("Z"      , zStart ) ;
+
+     
+      tubeDE.addExtension< GearHandle >( new GearHandle( gearTUBE, "BeamPipe" ) ) ;
      //============================================================================================
 
 

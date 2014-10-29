@@ -121,26 +121,6 @@ namespace DD4hep {
 
       std::vector<LayerLayout> layers ;
 
-      /*
-	DDRec::ZPlanarData::LayerLayout thisLayer ;
-	thisLayer.sensorsPerLadder =
-	thisLayer.lengthSensor =
-	
-	thisLayer.distanceSupport  = 
-	thisLayer.offsetSupport    =
-	thisLayer.thicknessSupport =
-	thisLayer.zHalfSupport     =
-	thisLayer.widthSupport     =
-	
-	thisLayer.distanceSensitive  = 
-	thisLayer.offsetSensitive    =
-	thisLayer.thicknessSensitive =
-	thisLayer.zHalfSensitive     =
-	thisLayer.widthSensitive     =
-	
-	thisLayer.ladderNumber = 
-	thisLayer.phi0 =  
-      */
     } ;
     typedef StructExtension<ZPlanarStruct> ZPlanarData ;
 
@@ -240,6 +220,39 @@ namespace DD4hep {
     typedef StructExtension<ZDiskPetalsStruct> ZDiskPetalsData ;
 
 
+    /** Simple data structure defining a support
+     *  structure built from consecutive conical
+     *  sections. Could be used for example to 
+     *  describe the central beam pipe as needed
+     *  for track reconstruction.
+     * 
+     * @author F.Gaede, CERN/DESY
+     * @date Oct, 29 2014
+     * @version $Id: $
+     */
+    struct ConicalSupportStruct{
+
+      /// if true the sections are repeated at negative z
+      bool isSymmetricInZ ;
+
+      struct Section{
+	/// inner r at start of section
+	double rInner ;
+	/// outer r at start of section
+	double rOuter ;
+	/// z position at start of section
+	double zPos ;
+      } ;
+
+      /** The consecutive sections of the structure.
+       *  The end of one sections is defined by the start
+       *  the next.
+       */
+      std::vector<Section> sections ;	
+
+    } ;
+
+    typedef StructExtension<ConicalSupportStruct> ConicalSupportData ;
 
 
   } /* namespace DDRec */
