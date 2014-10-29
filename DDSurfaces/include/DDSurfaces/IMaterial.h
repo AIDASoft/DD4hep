@@ -23,11 +23,11 @@ namespace DDSurfaces {
     /// material name
     virtual std::string name() const =0 ;
 
-    /// averaged proton number
-    virtual double Z() const =0 ;
-    
     /// averaged atomic number
     virtual double A() const =0 ;
+
+    /// averaged proton number
+    virtual double Z() const =0 ;
     
     /// density - units ?
     virtual double density() const =0 ;
@@ -43,7 +43,7 @@ namespace DDSurfaces {
  /// dump IMaterial operator 
   inline std::ostream& operator<<( std::ostream& os , const IMaterial& m ) {
 
-    os << "  " << m.name() << ", Z: " << m.Z() << ", A: " << m.A() << ", densitiy: " << m.density() << ", radiationLength: " <<  m.radiationLength() 
+    os << "  " << m.name() << ", A: " << m.A()  << ", Z: " << m.Z() << ", density: " << m.density() << ", radiationLength: " <<  m.radiationLength() 
        << ", interactionLength: " << m.interactionLength() ;
 
     return os ;

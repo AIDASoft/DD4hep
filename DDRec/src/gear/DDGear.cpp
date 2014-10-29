@@ -109,6 +109,15 @@ namespace DD4hep{
 	gearMgr->setGearParameters( gearH->name() , gearH->takeGearObject() ) ; 
       }  
 
+
+      /// register any materials assigned to the handle:
+
+      for( unsigned j=0, M=gearH->materials().size() ; j<M ; ++j) {
+
+	gearMgr->registerSimpleMaterial(  &gearH->materials()[j]  ) ;
+      }
+
+
     }
     std::cout << std::endl ;
 

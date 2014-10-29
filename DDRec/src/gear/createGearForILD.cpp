@@ -4,6 +4,9 @@
 
 #include "DDRec/DetectorData.h"
 #include "DDRec/DDGear.h"
+#include "DDRec/MaterialManager.h"
+#include "DDSurfaces/Vector3D.h"
+
 
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
@@ -17,6 +20,7 @@ namespace DD4hep{
     
     using namespace Geometry ;
     //    using namespace gear ;
+    using DDSurfaces::Vector3D ;
 
     /** Plugin that creates Gear objects for DetElements and attaches them 
      *  as extensions. Called from DDGear::createGearMgr().
@@ -68,12 +72,39 @@ namespace DD4hep{
 	
 	// FIXME set rad lengths to 0 -> need to get from DD4hep ....
 	gearVXD->addLayer( l.ladderNumber, l.phi0, 
-			   l.distanceSupport/dd4hep::mm,   l.offsetSupport/dd4hep::mm,   l. thicknessSupport/dd4hep::mm,   l.zHalfSupport/dd4hep::mm,   l.widthSupport/dd4hep::mm,   0. , 
-			   l.distanceSensitive/dd4hep::mm, l.offsetSensitive/dd4hep::mm, l. thicknessSensitive/dd4hep::mm, l.zHalfSensitive/dd4hep::mm, l.widthSensitive/dd4hep::mm, 0. )  ;
+			   l.distanceSupport/dd4hep::mm,   l.offsetSupport/dd4hep::mm,   l.thicknessSupport/dd4hep::mm,   l.zHalfSupport/dd4hep::mm,   l.widthSupport/dd4hep::mm,   0. , 
+			   l.distanceSensitive/dd4hep::mm, l.offsetSensitive/dd4hep::mm, l.thicknessSensitive/dd4hep::mm, l.zHalfSensitive/dd4hep::mm, l.widthSensitive/dd4hep::mm, 0. )  ;
 	
       }
       
-     vxdDE.addExtension< GearHandle >( new GearHandle( gearVXD, "VXDParameters" ) ) ;
+      GearHandle* handle = new GearHandle( gearVXD, "VXDParameters" )  ;
+       
+      // quick hack for now: add the one material that is needed by KalDet :  
+      //      handle->addMaterial( "VXDSupportMaterial", 2.075865162e+01, 1.039383117e+01, 2.765900000e+02, 1.014262421e+03, 3.341388059e+03)  ; 
+
+      // -------- better: get right averaged material from first ladder:  ------------------
+      MaterialManager matMgr ;
+      
+      const DDRec::ZPlanarData::LayerLayout& l = vxd->layers[0] ;
+
+      Vector3D a( l.distanceSupport                      , l.phi0 , 0. ,  Vector3D::cylindrical ) ;
+      Vector3D b( l.distanceSupport + l.thicknessSupport , l.phi0 , 0. ,  Vector3D::cylindrical ) ;
+      
+      const MaterialVec& materials = matMgr.materialsBetween( a , b  ) ;
+
+      MaterialData mat = ( materials.size() > 1  ? matMgr.createAveragedMaterial( materials ) : materials[0].first  ) ;
+      
+      // std::cout << " ####### found materials between points : " << a << " and " << b << " : " ;
+      // for( unsigned i=0,n=materials.size();i<n;++i){
+      // 	std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
+      // }
+      // std::cout << std::endl ;
+      // std::cout << "   averaged material : " << mat << std::endl ;
+
+      handle->addMaterial( "VXDSupportMaterial", mat.A(), mat.Z() , mat.density()/(dd4hep::kg/(dd4hep::g*dd4hep::m3)) , mat.radiationLength()/dd4hep::mm , mat.interactionLength()/dd4hep::mm )  ; 
+
+
+      vxdDE.addExtension< GearHandle >( handle ) ;
 
       //========= SIT ==============================================================================
       
