@@ -158,8 +158,12 @@ namespace DD4hep{
 	
 
 	bool isDoubleSided  = l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::DoubleSided ] ;
-	int  sensorType   = ( l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::Pixel ] ?
-			      gear::FTDParameters::PIXEL :  gear::FTDParameters::STRIP ) ;
+ 
+    // avoid 'undefined reference' at link time ( if built w/o optimization ):
+    static const int PIXEL = gear::FTDParameters::PIXEL ;
+    static const int STRIP = gear::FTDParameters::STRIP ;
+    int  sensorType   = ( l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::Pixel ] ? PIXEL : STRIP ) ;
+//			      gear::FTDParameters::PIXEL :  gear::FTDParameters::STRIP ) ;
 
 	double zoffset = fabs( l.zOffsetSupport ) ;
 	double signoffset =  l.zOffsetSupport > 0  ?  1. : -1 ;
