@@ -112,9 +112,9 @@ def run():
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_mu-_5GeV.slcio"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/bbbb_3TeV.slcio"
-  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
-  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
-  gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
+  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
+  #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
+  #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
   gen.OutputLevel = 4 # generator_output_level
   gen.MomentumScale = 1.0
   gen.Mask = 1
@@ -201,12 +201,12 @@ def run():
 
   # First the tracking detectors
   seq,act = simple.setupTracker('SiVertexBarrel')
-  seq.adopt(f1)
+  #seq.adopt(f1)
   #seq.adopt(f4)
-  act.adopt(f1)
+  #act.adopt(f1)
 
   seq,act = simple.setupTracker('SiVertexEndcap')
-  seq.adopt(f1)
+  #seq.adopt(f1)
   #seq.adopt(f4)
 
   seq,act = simple.setupTracker('SiTrackerBarrel')
@@ -225,14 +225,6 @@ def run():
 
   # Now build the physics list:
   phys = simple.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-  ph.addParticleConstructor('G4BosonConstructor')
-  ph.addParticleConstructor('G4LeptonConstructor')
-  ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
-  ph.addPhysicsConstructor('G4OpticalPhysics')
-  ph.enableUI()
-  phys.adopt(ph)
-
   phys.dump()
 
   kernel.configure()

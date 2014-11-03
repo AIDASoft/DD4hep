@@ -27,6 +27,7 @@ static double eval_tanh (double a)           { return std::tanh(a); }
 static double eval_exp  (double a)           { return std::exp(a); } 
 static double eval_log  (double a)           { return std::log(a); } 
 static double eval_log10(double a)           { return std::log10(a); } 
+static double eval_double(double a)          { return a;              } 
 static double eval_int  (double a)           { return (double)int(a); } 
 static double eval_nint (double a)           { return std::floor(a); } 
 static double eval_floor(double a)           { return std::floor(a); } 
@@ -54,6 +55,7 @@ void Evaluator::setStdMath() {
   //   S E T   S T A N D A R D   F U N C T I O N S
 
   setFunction("floor", eval_floor);
+  setFunction("double",eval_double);
   setFunction("int",   eval_int);
   setFunction("nint",  eval_nint);
   setFunction("abs",   eval_abs);

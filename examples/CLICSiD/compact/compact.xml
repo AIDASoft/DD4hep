@@ -28,10 +28,12 @@
         <constant name="CaloSides" value="12"/>
         <constant name="MuonSides" value="8"/>
         
+        <constant name="EcalBarrel_rmin" value="126.50*cm + world_side - world_side"/>
         <constant name="EcalBarrel_rmin" value="126.50*cm"/>
         <constant name="EcalBarrel_zmax" value="176.50*cm"/>
         <constant name="EcalEndcap_rmin" value="21.0*cm"/>
-        <constant name="EcalEndcap_rmax" value="(EcalBarrel_rmin - 1.5*cm) / (cos(pi/CaloSides))"/> <!-- Correction from going from inner circle to outer circle -->
+	<!-- Correction from going from inner circle to outer circle -->
+        <constant name="EcalEndcap_rmax" value="(EcalBarrel_rmin - 1.5*cm) / (cos(pi/CaloSides))"/> 
         <constant name="EcalEndcap_zmin" value="165.70*cm"/>
         
         <constant name="HcalBarrel_rmin" value="141.90*cm"/>
@@ -39,7 +41,8 @@
         <constant name="HcalBarrel_layer_thickness" value="1.0*cm + 0.65*cm"/>
         <constant name="HcalEndcap_zmin" value="EcalBarrel_zmax + 4.0*cm"/> <!-- Gap for cables -->
         <constant name="HcalEndcap_rmin" value="50.0*cm"/>
-        <constant name="HcalEndcap_rmax" value="(HcalBarrel_rmin + HcalBarrel_layers * HcalBarrel_layer_thickness) / (cos(pi/CaloSides))"/> <!-- Correction from going from inner circle to outer circle -->
+	<!-- Correction from going from inner circle to outer circle -->
+        <constant name="HcalEndcap_rmax" value="(HcalBarrel_rmin + HcalBarrel_layers * HcalBarrel_layer_thickness) / (cos(pi/CaloSides))"/>
         <constant name="HcalEndcap_layers" value="60"/>
         <constant name="HcalEndcap_layer_thickness" value="2.0*cm + 0.65*cm"/>
         <constant name="HcalEndcap_zmax" value="HcalEndcap_zmin + HcalEndcap_layers * HcalEndcap_layer_thickness"/>
@@ -71,7 +74,8 @@
         <constant name="MuonBarrel_layer_thickness" value="10.0*cm + 4.0*cm"/>
         <constant name="MuonEndcap_zmin" value="MuonBarrel_zmax + 10.0*cm"/> <!-- Space for cables etc. -->
         <constant name="MuonEndcap_rmin" value="69.0*cm"/> <!-- Space for QD0 and anti-solenoid-->
-        <constant name="MuonEndcap_rmax" value="(MuonBarrel_rmin + 57.0*cm + MuonBarrel_layers * MuonBarrel_layer_thickness) / (cos(pi/MuonSides))"/> <!-- Correction from going from inner circle to outer circle -->
+	<!-- Correction from going from inner circle to outer circle -->
+        <constant name="MuonEndcap_rmax" value="(MuonBarrel_rmin + 57.0*cm + MuonBarrel_layers * MuonBarrel_layer_thickness) / (cos(pi/MuonSides))"/> 
         <constant name="MuonEndcap_layers" value="18"/>
         <constant name="MuonEndcap_layer_thickness" value="10.0*cm + 4.0*cm"/>
         <constant name="MuonEndcap_zmax" value="MuonEndcap_zmin + MuonEndcap_layers * MuonEndcap_layer_thickness"/>
@@ -1534,12 +1538,22 @@
             <id>system:8,layer:8,barrel:3,layer:8,slice:5,x:32:-16,y:-16</id>
         </readout>
     </readouts>
+
     <fields>
         <field name="GlobalSolenoid" type="solenoid" 
           inner_field="5.0*tesla"
           outer_field="-1.5*tesla" 
           zmax="SolenoidCoilOuterZ"
           outer_radius="SolenoidalFieldRadius">
+        </field>
+
+        <field name="GlobalDipole" type="DipoleMagnet" 
+          rmax="50*cm"
+          zmin="0*cm"
+          zmax="50*cm">
+	  <dipole_coeff>1.0*tesla</dipole_coeff>
+	  <dipole_coeff>0.1*tesla/pow(cm,1)</dipole_coeff>
+	  <dipole_coeff>0.01*tesla/pow(cm,2)</dipole_coeff>
         </field>
     </fields>
 </lccdd>

@@ -41,12 +41,9 @@ LCDD.globalVal = _constant
 #---------------------------------------------------------------------------
 
 """
-import DDG4
-l=DDG4.LCDD.getInstance()
-l.addConstant(DDG4.Ref_t(DDG4.NamedObject('AA','10*cm')))
-DDG4.importConstants(l,'sub-name-space')
+  Import the LCDD constants into the DDG4 namespace
 """
-def importConstants(lcdd,namespace=None):
+def importConstants(lcdd,namespace=None,debug=False):
   scope = current
   ns = current
   if namespace is not None and not hasattr(current,namespace):
@@ -54,15 +51,35 @@ def importConstants(lcdd,namespace=None):
     m = imp.new_module('DDG4.'+namespace)
     setattr(current,namespace,m)
     ns = m
-  values = {}
-  for c in lcdd.constants():
-    values[c.first] = c.second.GetTitle()
-  evaluator = DD4hep.evaluator()
-  for k in values.keys():
-    setattr(ns,k,values[k])
-    #print 'Imported global value:',c.first,'=',c.second.GetTitle(),'into namespace',ns.__name__
-#---------------------------------------------------------------------------
-  
+  evaluator = DD4hep.g4Evaluator()
+  cnt = 0
+  num = 0
+  todo = {}
+  for c in lcdd.constants(): todo[c.first] = c.second.GetTitle().replace('(int)','')
+  while len(todo) and cnt<100:
+    cnt = cnt + 1
+    if cnt == 100:
+      print '%s %d out of %d %s "%s": [%s]\n+++ %s'\
+          %('+++ FAILED to import',
+            len(todo),len(todo)+num,
+            'global values into namespace',
+            ns.__name__,'Try to cintinue anyway',100*'=',)
+    for k,v in todo.items():
+      if not hasattr(ns,k):
+        val = evaluator.evaluate(v)
+        status = evaluator.status()
+        if status == 0:
+          evaluator.setVariable(k,val)
+          setattr(ns,k,val)
+          if debug: print 'Imported global value:',k,'=',val,'into namespace',ns.__name__
+          del todo[k]
+          num = num + 1
+        elif cnt == 100:
+          print 'FAILED to import:',k,'=',v
+  if cnt<100:
+    print '+++ Imported %d global values to namespace:%s'%(num,ns.__name__,)
+
+#---------------------------------------------------------------------------  
 def _registerGlobalAction(self,action):
   self.get().registerGlobalAction(Interface.toAction(action))
 def _registerGlobalFilter(self,filter):

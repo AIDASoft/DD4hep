@@ -269,7 +269,7 @@ void Geant4ParticleHandle::dumpWithVertex(int level, const std::string& src, con
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s ID:%3d %-12s status:%08X typ:%9d Vtx:(%+.2e,%+.2e,%+.2e)[mm] "
+	   "+++ %s ID:%3d %-12s status:%08X PDG:%6d Vtx:(%+.2e,%+.2e,%+.2e)[mm] "
 	   "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
 	   tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
 	   p->vsx/mm,p->vsy/mm,p->vsz/mm,p->time/ns,
@@ -292,10 +292,33 @@ void Geant4ParticleHandle::dumpWithMomentum(int level, const std::string& src, c
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s ID:%3d %-12s status:%08X typ:%9d Mom:(%+.2e,%+.2e,%+.2e)[mm] "
+	   "+++%s ID:%3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
 	   "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
 	   tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
 	   p->psx/MeV,p->psy/MeV,p->psz/MeV,p->time/ns,
+	   int(p->daughters.size()),
+	   int(p->parents.size()),
+	   text);
+}
+
+/// Output type 3:+++ <tag> ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] \#Par:  0 \#Dau:  4
+void Geant4ParticleHandle::dumpWithMomentumAndVertex(int level, const std::string& src, const char* tag) const  {
+  char text[256];
+  Geant4ParticleHandle p(*this);
+  text[0]=0;
+  if ( p->parents.size() == 1 ) 
+    ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
+  else if ( p->parents.size() >  1 )   {
+    text[0]='/';text[1]=0;
+    for(std::set<int>::const_iterator i=p->parents.begin(); i!=p->parents.end(); ++i)
+      ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
+  }
+  printout((DD4hep::PrintLevel)level,src,
+	   "+++%s %3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
+	   "Vtx:(%+.2e,%+.2e,%+.2e)[mm] #Dau:%3d #Par:%1d%-6s",
+	   tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
+	   p->psx/MeV,p->psy/MeV,p->psz/MeV,
+	   p->vsx/mm,p->vsy/mm,p->vsz/mm,
 	   int(p->daughters.size()),
 	   int(p->parents.size()),
 	   text);

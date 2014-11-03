@@ -198,6 +198,7 @@ namespace DD4hep {
       /// Output type 3:+++ "tag" ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] \#Par:  0 \#Dau:  4
       void dumpWithVertex(int level, const std::string& src, const char* tag) const;
       void dumpWithMomentum(int level, const std::string& src, const char* tag) const;
+      void dumpWithMomentumAndVertex(int level, const std::string& src, const char* tag) const;
       void dump4(int level, const std::string& src, const char* tag) const;
 
       /// Handlers

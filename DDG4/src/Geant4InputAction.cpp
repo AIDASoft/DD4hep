@@ -170,6 +170,6 @@ void Geant4InputAction::operator()(G4Event* event)   {
 	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     }
     inter->particles.insert(make_pair(p->id,p));
-    p.dumpWithVertex(outputLevel()-1,name(),"+->");
+    p.dumpWithMomentumAndVertex(outputLevel()-1,name(),"->");
   }
 }

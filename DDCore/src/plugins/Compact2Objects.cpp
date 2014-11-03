@@ -10,6 +10,7 @@
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/IDDescriptor.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
@@ -138,7 +139,9 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
   xml_comp_t c(e);
   CartesianField obj;
   DipoleField* ptr = new DipoleField();
-  double val, lunit = c.attr<double>(_U(lunit)), funit = c.attr<double>(_U(funit));
+  double val;
+  double lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
+  double funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
 
   if (c.hasAttr(_U(zmin)))
     ptr->zmin = _multiply<double>(c.attr < string > (_U(zmin)), lunit);
@@ -148,7 +151,7 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
     ptr->rmax = _multiply<double>(c.attr < string > (_U(rmax)), lunit);
   for (xml_coll_t coll(c, _U(dipole_coeff)); coll; ++coll) {
     val = funit / pow(lunit, (int) ptr->coefficents.size());
-    val = _multiply<double>(coll.value(), val);
+    val = _multiply<double>(coll.text(), val);
     ptr->coefficents.push_back(val);
   }
   obj.assign(ptr, c.nameStr(), c.typeStr());

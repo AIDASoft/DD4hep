@@ -51,6 +51,7 @@ void SolenoidField::fieldComponents(const double* pos, double* field) {
 /// Initializing constructor
 DipoleField::DipoleField()
     : zmax(INFINITY), zmin(-INFINITY), rmax(INFINITY) {
+  type = CartesianField::MAGNETIC;
 }
 
 /// Call to access the field components at a given location

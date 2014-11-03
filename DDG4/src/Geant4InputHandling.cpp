@@ -325,7 +325,7 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
 	  PropertyMask reason(r->reason);
 	  reason.set(G4PARTICLE_PRIMARY);
 	  v4->SetPrimary(p4);
-	  ::snprintf(text,sizeof(text),"+-> G4Primary[%3d]",num_part);
+	  ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);
 	  r.dumpWithMomentum(caller->outputLevel()-1,caller->name(),text);
 	  ++num_part;
 	}

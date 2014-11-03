@@ -239,7 +239,7 @@ void HepMC::fix_particles(EventStream& info)  {
     }
   }
   for(vector<Geant4Particle*>::iterator i=beam.begin(); i!=beam.end();++i)  {
-    cout << "Clear parents of " << (*i)->id << endl;
+    //cout << "Clear parents of " << (*i)->id << endl;
     (*i)->parents.clear();
     (*i)->status = G4PARTICLE_GEN_DECAYED;
   }
@@ -264,6 +264,7 @@ char HepMC::get_input(istream& is, istringstream& iline)  {
     is.clear(ios::badbit); 
     return -1;
   }
+  iline.clear();
   iline.str(line);
   if ( line.length()>0 && line[1] == ' ' ) iline >> firstc;
   return iline ? value : -1;
@@ -490,8 +491,8 @@ int HepMC::read_heavy_ion(EventStream &, istringstream & input)  {
   float impact = 0., plane = 0., xcen = 0., inel = 0.; 
   input >> nh >> np >> nt >> nc >> neut >> prot >> nw >> nwn >> nwnw;
   input >> impact >> plane >> xcen >> inel;
-  cerr << "Reading heavy ion, but igoring data!" << endl;
   /*
+    cerr << "Reading heavy ion, but igoring data!" << endl;
     ion->set_Ncoll_hard(nh);
     ion->set_Npart_proj(np);
     ion->set_Npart_targ(nt);
@@ -527,8 +528,8 @@ int HepMC::read_pdf(EventStream &, istringstream & input)  {
   if( !input.eof() )  {
     input >> pdf_id1 >> pdf_id2;
   }
-  cerr << "Reading pdf, but igoring data!" << endl;
   /*
+  cerr << "Reading pdf, but igoring data!" << endl;
     pdf->set_id1( id1 );
     pdf->set_id2( id2 );
     pdf->set_pdf_id1( pdf_id1 );
@@ -560,16 +561,26 @@ void HepMC::EventStream::clear()   {
 bool HepMC::EventStream::read()   {
   EventStream& info = *this;
   bool event_read = false;
+  static int num_evt = 0;
+  int num_line = 0, num_line_accepted = 0;
 
   releaseObjects(vertices())();
   releaseObjects(particles())();
 
+  ++num_evt;
+  if ( num_evt == 998 )  {
+    cout << "Hallo";
+  }
   while( instream.good() ) {
     char value = instream.peek();
     istringstream input_line;
-
-    if      ( value == 'E' && event_read ) break;
-    else if ( instream.eof() ) return false;
+    ++num_line;
+    if      ( value == 'E' && event_read )
+      break;
+    else if ( instream.eof() && event_read )
+      goto Done;
+    else if ( instream.eof() )
+      return false;
     else if ( value=='#' || ::isspace(value) )  {
       get_input(instream,input_line);
       continue;
@@ -580,6 +591,7 @@ bool HepMC::EventStream::read()   {
     if( !input_line || value < 0 )
       goto Skip;
 
+    ++num_line_accepted;
     switch( value )   {
     case 'H':  {
       int iotype = 0;
@@ -670,6 +682,7 @@ bool HepMC::EventStream::read()   {
     event_read = false;
     if ( instream.eof() ) return false;
   }
+ Done:
   fix_particles(info);
   releaseObjects(vertices())();
   return true;
