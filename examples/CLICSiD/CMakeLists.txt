@@ -31,13 +31,13 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-find_package( DD4hep ) 
+find_package( DD4hep )
 
 set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake ) 
 include( DD4hep )
 
-find_package( ROOT REQUIRED )
-#find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
+#find_package( ROOT REQUIRED )
+find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 #-------------------------------------------------------------
@@ -64,10 +64,10 @@ endif()
 
 add_library(${PackageName} SHARED ${sources})
 
-#add_executable(CalorimeterReco CalorimeterReco.cpp)
+add_executable(CalorimeterReco CalorimeterReco.cpp)
 
 target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-#target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES}  ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
+target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
 
