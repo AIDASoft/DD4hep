@@ -123,7 +123,7 @@ namespace DD4hep {
 	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
 	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
 	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
-	lc_hit->setEDep(hit->energyDeposit);
+	lc_hit->setEDep(hit->energyDeposit/GeV);
 	lc_hit->setPathLength(hit->length);
 	lc_hit->setTime(hit->truth.time);
 	lc_hit->setMCParticle(lc_mcp);
