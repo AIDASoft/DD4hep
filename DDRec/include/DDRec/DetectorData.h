@@ -20,8 +20,8 @@ namespace DD4hep {
       StructExtension() : T()  { } 
       StructExtension(const StructExtension<T>& t) : T(t) {} 
       StructExtension(const T& t) : T(t) {} 
-      StructExtension(const Geometry::DetElement& d) : T()  {}
-      StructExtension(const StructExtension<T>& t, const Geometry::DetElement& d) : T(t) {}
+      StructExtension(const Geometry::DetElement&) : T()  {}
+      StructExtension(const StructExtension<T>& t, const Geometry::DetElement&) : T(t) {}
     };
 
     /** Simple data structure with key parameters for
@@ -253,6 +253,60 @@ namespace DD4hep {
     } ;
 
     typedef StructExtension<ConicalSupportStruct> ConicalSupportData ;
+
+
+
+    /** Simple data structure defining a 
+     *  layered calorimeter layout for
+     *  reconstruction. 
+     * 
+     * @author F.Gaede, CERN/DESY
+     * @date Nov, 05 2014
+     * @version $Id: $
+     */
+    struct LayeredCalorimeterStruct{
+      
+      /// enum for encoding the sensor type in typeFlags
+      enum LayoutType{
+	BarrelLayout=0,
+	EndcapLayout
+      };
+
+      /// type of layout: BarrelLayout or EndcapLayout
+      LayoutType layoutType ;
+
+      /// extent of the calorimeter in the r-z-plane [ rmin, rmax, zmin, zmax ] in mm.
+      double extent[4] ;
+
+      /** the order of the rotational symmetry:
+       *  8 for an octagonal barrel calorimeter
+       *  2 for an endcap calorimeter
+       *  1 for a standalone prototype
+       *  0 for an idealized cylindrical calorimeter.
+       */
+      int symmetry ;
+
+      /// azimuthal angle of the first module in barrel layout
+      double  phi0  ;
+
+      struct Layer {
+	/// distance from Origin (or the z-axis)
+	double distance;
+	/// total thickness of the layer
+	double thickness ;
+	/// thickness of the absorber part of the layer
+	double absorberThickness ;
+	/// cell size along the first axis where first is either along the beam (BarrelLayout) or up (EndcapLayout) or the direction closest to that. 
+	double cellSize0 ;
+	/// second cell size, perpendicular to the first direction cellSize0 and the depth of the layers. 
+	double cellSize1 ;
+      } ;   
+
+      std::vector<Layer> layers ;	
+    } ;
+
+    typedef StructExtension<LayeredCalorimeterStruct> LayeredCalorimeterData ;
+
 
 
   } /* namespace DDRec */

@@ -12,6 +12,7 @@
 #include "gearimpl/FixedPadSizeDiskLayout.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
 #include "gearimpl/FTDParametersImpl.h"
+#include "gearimpl/CalorimeterParametersImpl.h"
 
 #include <iostream>
 
@@ -118,7 +119,7 @@ namespace DD4hep{
 									      sit->zHalfShell/dd4hep::mm , sit->gapShell/dd4hep::mm , 0.  ) ;
       std::vector<int> n_sensors_per_ladder ;
 
-     for(unsigned i=0,n=sit->layers.size() ; i<n; ++i){
+      for(unsigned i=0,n=sit->layers.size() ; i<n; ++i){
 	
 	const DDRec::ZPlanarData::LayerLayout& l = sit->layers[i] ;
 	
@@ -129,7 +130,7 @@ namespace DD4hep{
 	
 
 	n_sensors_per_ladder.push_back( l.sensorsPerLadder);
-     }
+      }
      
       gearSIT->setDoubleVal("strip_width_mm"  , sit->widthStrip / dd4hep::mm ) ;
       gearSIT->setDoubleVal("strip_length_mm" , sit->lengthStrip/ dd4hep::mm ) ;
@@ -140,7 +141,7 @@ namespace DD4hep{
       gearSIT->setIntVals("n_sensors_per_ladder",n_sensors_per_ladder);
 
       sitDE.addExtension< GearHandle >( new GearHandle( gearSIT, "SITParameters" ) ) ;
-     //============================================================================================
+      //============================================================================================
 
       DetElement setDE = lcdd.detector("SET") ;
       
@@ -153,7 +154,7 @@ namespace DD4hep{
       //      std::vector<int> n_sensors_per_ladder ;
       n_sensors_per_ladder.clear() ;
 
-     for(unsigned i=0,n=set->layers.size() ; i<n; ++i){
+      for(unsigned i=0,n=set->layers.size() ; i<n; ++i){
 	
 	const DDRec::ZPlanarData::LayerLayout& l = set->layers[i] ;
 	
@@ -164,7 +165,7 @@ namespace DD4hep{
 	
 
 	n_sensors_per_ladder.push_back( l.sensorsPerLadder);
-     }
+      }
      
       gearSET->setDoubleVal("strip_width_mm"  , set->widthStrip / dd4hep::mm ) ;
       gearSET->setDoubleVal("strip_length_mm" , set->lengthStrip/ dd4hep::mm ) ;
@@ -175,7 +176,7 @@ namespace DD4hep{
       gearSET->setIntVals("n_sensors_per_ladder",n_sensors_per_ladder);
 
       setDE.addExtension< GearHandle >( new GearHandle( gearSET, "SETParameters" ) ) ;
-     //============================================================================================
+      //============================================================================================
 
       DetElement ftdDE = lcdd.detector("FTD") ;
       
@@ -190,11 +191,11 @@ namespace DD4hep{
 
 	bool isDoubleSided  = l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::DoubleSided ] ;
  
-    // avoid 'undefined reference' at link time ( if built w/o optimization ):
-    static const int PIXEL = gear::FTDParameters::PIXEL ;
-    static const int STRIP = gear::FTDParameters::STRIP ;
-    int  sensorType   = ( l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::Pixel ] ? PIXEL : STRIP ) ;
-//			      gear::FTDParameters::PIXEL :  gear::FTDParameters::STRIP ) ;
+	// avoid 'undefined reference' at link time ( if built w/o optimization ):
+	static const int PIXEL = gear::FTDParameters::PIXEL ;
+	static const int STRIP = gear::FTDParameters::STRIP ;
+	int  sensorType   = ( l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::Pixel ] ? PIXEL : STRIP ) ;
+	//			      gear::FTDParameters::PIXEL :  gear::FTDParameters::STRIP ) ;
 
 	double zoffset = fabs( l.zOffsetSupport ) ;
 	double signoffset =  l.zOffsetSupport > 0  ?  1. : -1 ;
@@ -224,7 +225,7 @@ namespace DD4hep{
      
       ftdDE.addExtension< GearHandle >( new GearHandle( gearFTD, "FTDParameters" ) ) ;
 
-    //============================================================================================
+      //============================================================================================
 
       DetElement tubeDE = lcdd.detector("Tube") ;
       
@@ -257,7 +258,37 @@ namespace DD4hep{
 
      
       tubeDE.addExtension< GearHandle >( new GearHandle( gearTUBE, "BeamPipe" ) ) ;
-     //============================================================================================
+
+      //========= CALO ==============================================================================
+      DetElement caloDE = lcdd.detector("HcalBarrel") ;
+      
+      LayeredCalorimeterData* calo = caloDE.extension<LayeredCalorimeterData>() ;
+      
+
+      gear::CalorimeterParametersImpl* gearCalo = 
+	( calo->layoutType == LayeredCalorimeterData::BarrelLayout  ?
+	  new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm, calo->extent[3]/dd4hep::mm, calo->symmetry, calo->phi0 )  :
+	  //CalorimeterParametersImpl (double rMin, double zMax, int symOrder=8, double phi0=0.0) - C'tor for a cylindrical (octagonal) BARREL calorimeter.
+	  new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm,  calo->extent[1]/dd4hep::mm,  calo->extent[2]/dd4hep::mm, calo->symmetry, calo->phi0 )   ) ;
+      //CalorimeterParametersImpl (double rMin, double rMax, double zMin, int symOrder=2, double phi0=0.0) - C'tor for a cylindrical (octagonal) ENDCAP calorimeter. 
+	  
+      for( unsigned i=0, nL = calo->layers.size() ; i <nL ; ++i ){
+
+	LayeredCalorimeterData::Layer& l = calo->layers[i] ;
+
+	if( i == 0 ) {
+	  gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, l.thickness/dd4hep::mm , l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	}else{
+	  gearCalo->layerLayout().addLayer(                             l.thickness/dd4hep::mm , l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	}
+
+
+      }
+
+      
+      caloDE.addExtension< GearHandle >( new GearHandle( gearCalo, "HcalBarrelParameters" ) ) ;
+      
+      //============================================================================================
 
 
 
