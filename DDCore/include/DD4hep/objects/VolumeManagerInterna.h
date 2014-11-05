@@ -73,7 +73,7 @@ namespace DD4hep {
      * \version 1.0
      * \ingroup DD4HEP_GEOMETRY
     */
-    struct VolumeManagerObject: public NamedObject {
+    class VolumeManagerObject: public NamedObject {
     public:
       typedef IDDescriptor::Field Field;
       typedef VolumeManager::Managers Managers;

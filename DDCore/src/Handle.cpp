@@ -169,7 +169,7 @@ namespace DD4hep {
     template <> const char* Handle<_Segmentation>::name() const {
       return this->m_element ? this->m_element->name().c_str() : "";
     }
-    template struct DD4hep::Geometry::Handle<_Segmentation>;
+    template class DD4hep::Geometry::Handle<_Segmentation>;
   }
 }
 

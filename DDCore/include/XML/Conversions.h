@@ -19,7 +19,7 @@ namespace DD4hep {
 
   /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
-    struct Handle_t;
+    class Handle_t;
   }
 
   /// Basic conversion objects for handling DD4hep XML files.

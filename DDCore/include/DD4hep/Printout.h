@@ -36,7 +36,7 @@ namespace DD4hep {
     class VisAttr;
     class DetElement;
     class PlacedVolume;
-    template <typename T> struct Handle;
+    template <typename T> class Handle;
     typedef Handle<NamedObject> Ref_t;
   }
 

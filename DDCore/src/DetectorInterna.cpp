@@ -240,7 +240,7 @@ void DetElementObject::removeAtUpdate(unsigned int type, void* pointer)   {
 /// Trigger update callbacks
 void DetElementObject::update(unsigned int tags, void* param)   {
   DetElement det(this);
-  const void* args[3] = { (void*)tags, this, param };
+  const void* args[3] = { (void*)((unsigned long)tags), this, param };
   if ( (tags&DetElement::PLACEMENT_CHANGED)==DetElement::PLACEMENT_CHANGED &&
        (tags&DetElement::PLACEMENT_HIGHEST)==DetElement::PLACEMENT_HIGHEST )  {
     printout(INFO,"DetElement","+++ Need to update chaches and child caches of %s",
