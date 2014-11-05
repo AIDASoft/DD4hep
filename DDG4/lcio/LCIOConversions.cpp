@@ -105,7 +105,7 @@ namespace DD4hep {
       lcio::LCEventImpl*     lc_evt  = args.first->event().extension<lcio::LCEventImpl>();
       EVENT::LCCollection*   lc_part = lc_evt->getCollection(lcio::LCIO::MCPARTICLE);
       lcio::LCCollectionVec* lc_coll = new lcio::LCCollectionVec(lcio::LCIO::SIMTRACKERHIT);
-      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);  
+      UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc_coll);
       int hit_creation_mode = sd->hitCreationMode();
 
       if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
