@@ -7,7 +7,7 @@
         author="Christian Grefe"
         url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
         status="development"
-        version="$Id$">
+        version="$Id: compact.xml 1368 2014-11-03 20:15:27Z markus.frank@cern.ch $">
         <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
     </info>
 
@@ -1545,6 +1545,23 @@
           outer_field="-1.5*tesla" 
           zmax="SolenoidCoilOuterZ"
           outer_radius="SolenoidalFieldRadius">
+        </field>
+        <field name="GlobalDipole" type="DipoleMagnet" 
+          rmax="50*cm"
+          zmin="0*cm"
+          zmax="50*cm">
+	  <dipole_coeff>1.0*tesla</dipole_coeff>
+	  <dipole_coeff>0.1*tesla/pow(cm,1)</dipole_coeff>
+	  <dipole_coeff>0.01*tesla/pow(cm,2)</dipole_coeff>
+        </field>
+        <field name="GlobalMultipole" type="MultipoleMagnet" Z="50*cm">
+	  <position x="30*cm" y="20*cm" z="40*cm"/>
+	  <rotation x="1" y="0" z="0"/>
+	  <coefficient coefficient="1.0*tesla" skew="0.1*tesla"/>
+	  <coefficient coefficient="2.0*tesla/cm" skew="0.2*tesla/cm"/>
+	  <coefficient coefficient="3.0*tesla/cm" skew="0.3*tesla/cm/cm"/>
+	  <coefficient coefficient="4.0*tesla/cm" skew="0.4*tesla/cm/cm/cm"/>
+	  <shape type="Box" dx="5*cm" dy="10*cm" dz="20*cm"/>
         </field>
     </fields>
 </lccdd>

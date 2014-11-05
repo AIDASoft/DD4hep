@@ -139,9 +139,9 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
   xml_comp_t c(e);
   CartesianField obj;
   DipoleField* ptr = new DipoleField();
-  double val;
   double lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
   double funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
+  double val, mult = funit;
 
   if (c.hasAttr(_U(zmin)))
     ptr->zmin = _multiply<double>(c.attr < string > (_U(zmin)), lunit);
@@ -149,15 +149,57 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
     ptr->zmax = _multiply<double>(c.attr < string > (_U(zmax)), lunit);
   if (c.hasAttr(_U(rmax)))
     ptr->rmax = _multiply<double>(c.attr < string > (_U(rmax)), lunit);
-  for (xml_coll_t coll(c, _U(dipole_coeff)); coll; ++coll) {
-    val = funit / pow(lunit, (int) ptr->coefficents.size());
-    val = _multiply<double>(coll.text(), val);
+  for (xml_coll_t coll(c, _U(dipole_coeff)); coll; ++coll, mult /= lunit) {
+    val = _multiply<double>(coll.text(), mult);
     ptr->coefficents.push_back(val);
   }
   obj.assign(ptr, c.nameStr(), c.typeStr());
   return obj;
 }
 DECLARE_XMLELEMENT(DipoleMagnet,create_DipoleField)
+
+static Ref_t create_MultipoleField(lcdd_t& lcdd, xml_h e) {
+  xml_dim_t c(e), child;
+  CartesianField obj;
+  MultipoleField* ptr = new MultipoleField();
+  double lunit = c.hasAttr(_U(lunit)) ? c.attr<double>(_U(lunit)) : 1.0;
+  double funit = c.hasAttr(_U(funit)) ? c.attr<double>(_U(funit)) : 1.0;
+  double val, mult = funit, bz = 0.0;
+  RotationZYX rot;
+  Position pos;
+
+  if (c.hasAttr(_U(Z))) bz = c.Z() * funit;
+  if ((child = c.child(_U(position), false))) {   // Position is not mandatory!
+    pos.SetXYZ(child.x(), child.y(), child.z());
+  }
+  if ((child = c.child(_U(rotation), false))) {   // Rotation is not mandatory
+    rot.SetComponents(child.z(), child.y(), child.x());
+  }
+  if ((child = c.child(_U(shape), false))) {      // Shape is not mandatory
+    string type = child.typeStr();
+    string fac  = type + "__shape_constructor";
+    xml_h  solid_elt = child;
+    Solid solid = Ref_t(PluginService::Create<NamedObject*>(fac, &lcdd, &solid_elt));
+    if ( !solid.isValid() )  {
+      PluginDebug dbg;
+      PluginService::Create<NamedObject*>(type, &lcdd, &solid_elt);
+      throw_print("Failed to create solid of type " + type + ". " + dbg.missingFactory(type));
+    }
+    ptr->volume = solid;
+  }
+  ptr->B_z = bz;
+  ptr->transform = Transform3D(rot,pos).Inverse();
+  for (xml_coll_t coll(c, _U(coefficient)); coll; ++coll, mult /= lunit) {
+    xml_dim_t coeff = coll;
+    val = coeff.coefficient(0.0) * mult;
+    ptr->coefficents.push_back(val);
+    val = coeff.skew(0.0) * mult;
+    ptr->skews.push_back(val);
+  }
+  obj.assign(ptr, c.nameStr(), c.typeStr());
+  return obj;
+}
+DECLARE_XMLELEMENT(MultipoleMagnet,create_MultipoleField)
 
 static long create_Compact(lcdd_t& lcdd, xml_h element) {
   Converter < Compact > converter(lcdd);

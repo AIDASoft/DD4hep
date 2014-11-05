@@ -119,16 +119,16 @@ namespace DD4hep {
 	const Geant4Tracker::Hit::Contribution& t = hit->truth;
 	int trackID = pm->particleID(t.trackID);
 	EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
-	double pos[3] = {hit->position.x(), hit->position.y(), hit->position.z()};
-	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;  
-	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
+	double pos[3] = {hit->position.x()/mm, hit->position.y()/mm, hit->position.z()/mm};
+	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;
+	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
 	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
 	lc_hit->setEDep(hit->energyDeposit/GeV);
-	lc_hit->setPathLength(hit->length);
-	lc_hit->setTime(hit->truth.time);
+	lc_hit->setPathLength(hit->length/mm);
+	lc_hit->setTime(hit->truth.time/ns);
 	lc_hit->setMCParticle(lc_mcp);
 	lc_hit->setPosition(pos);
-	lc_hit->setMomentum(hit->momentum.x(),hit->momentum.y(),hit->momentum.z());
+	lc_hit->setMomentum(hit->momentum.x()/GeV,hit->momentum.y()/GeV,hit->momentum.z()/GeV);
 	lc_coll->addElement(lc_hit);
       }
       return lc_coll;
@@ -171,7 +171,7 @@ namespace DD4hep {
       }
       for(size_t i=0; i<nhits; ++i)   {
 	const Geant4Calorimeter::Hit* hit = coll->hit(i);
-	float pos[3] = {float(hit->position.x()), float(hit->position.y()), float(hit->position.z())};
+	float pos[3] = {float(hit->position.x()/mm), float(hit->position.y()/mm), float(hit->position.z()/mm)};
 	lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
 	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
 	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ???? 
@@ -182,12 +182,12 @@ namespace DD4hep {
 	for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {
 	  const Geant4HitData::Contribution& c = *j;
 	  int trackID = pm->particleID(c.trackID);
-	  float pos[] = {c.x, c.y, c.z};
+	  float pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
 	  EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
 	  if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time, lc_mcp->getPDG(), pos);
+	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, lc_mcp->getPDG(), pos);
 	  else
-	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time);
+	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns);
 	}
       }
       return lc_coll;

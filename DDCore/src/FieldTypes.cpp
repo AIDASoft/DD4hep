@@ -21,6 +21,7 @@ using namespace DD4hep::Geometry;
 DD4HEP_INSTANTIATE_HANDLE(ConstantField);
 DD4HEP_INSTANTIATE_HANDLE(SolenoidField);
 DD4HEP_INSTANTIATE_HANDLE(DipoleField);
+DD4HEP_INSTANTIATE_HANDLE(MultipoleField);
 
 /// Call to access the field components at a given location
 void ConstantField::fieldComponents(const double* /* pos */, double* field) {
@@ -73,5 +74,46 @@ void DipoleField::fieldComponents(const double* pos, double* field) {
       bx = -bx;
     // Add Bx to the input field.
     field[0] += bx;
+  }
+}
+
+/// Initializing constructor
+MultipoleField::MultipoleField() : coefficents(), skews(), volume(), transform(), B_z(0.0)  {
+  type = CartesianField::MAGNETIC;
+}
+
+/// Call to access the field components at a given location
+void MultipoleField::fieldComponents(const double* pos, double* field) {
+  Transform3D::Point p = transform * Transform3D::Point(pos[0],pos[1],pos[2]);
+  //const Transform3D::Point::CoordinateType& c = p.Coordinates();
+  double x=p.X(), y=p.Y(), z=p.Z();
+  double coord[3] = {x,y,z};
+  if ( 0 == volume.ptr() || volume->Contains(coord) )  {
+    double bx = 0.0;
+    double by = 0.0;
+    double xy = x*y;
+    double x2 = x*x;
+    double y2 = y*y;
+    switch(coefficents.size())  {
+    case 4:      // Ocupole momentum
+      by +=  coefficents[3] * (x2*x - 3.0*x*y2) + skews[3]*(y2*y - 3.0*x*y2);
+      bx +=  coefficents[3] * (3.0*x2*y - y2*y) + skews[3]*(x2*x - 3.0*x*y2);
+    case 3:      // Sextupole momentum:
+      by += -coefficents[2] * (x2 - y2) + skews[2] * 2.0 * xy;
+      bx +=  coefficents[2] * 2.0 * xy + skews[2] * (x2 - y2);
+    case 2:      // Quadrupole momentum:
+      bx += coefficents[1] * x - skews[1]*y;
+      by += coefficents[1] * y + skews[1]*x;
+    case 1:      // Dipole momentum:
+      bx += skews[0];
+      by += coefficents[0];
+    case 0:      // Nothing, but still valid
+      break;
+    default:     // Error condition
+      throw runtime_error("Invalid multipole field definition!");
+    }
+    field[0] += bx;
+    field[1] += by;
+    field[2] += B_z;
   }
 }

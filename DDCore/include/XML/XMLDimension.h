@@ -69,23 +69,49 @@ namespace DD4hep {
 
       /// Access rotation constants: angle
       double angle() const;
-      /// Access rotation constants: angle
+      /// Access rotation constants: alpha
       double alpha() const;
+      /// Access rotation constants: alpha
+      double alpha(double default_value) const;
+      /// Access rotation constants: alpha1
+      double alpha1() const;
+      /// Access rotation constants: alpha1
+      double alpha1(double default_value) const;
+      /// Access rotation constants: alpha2
+      double alpha2() const;
+      /// Access rotation constants: alpha2
+      double alpha2(double default_value) const;
       /// Access rotation constants: angle
       double beta() const;
       /// Access rotation constants: angle
+      double beta(double default_value) const;
+      /// Access rotation constants: angle
       double gamma() const;
+      /// Access rotation constants: angle
+      double gamma(double default_value) const;
       /// Access rotation constants: angle
       double delta() const;
       /// Access rotation constants: angle
+      double delta(double default_value) const;
+      /// Access rotation constants: angle
       double epsilon() const;
+      /// Access rotation constants: angle
+      double epsilon(double default_value) const;
       /// Access rotation constants: theta
       double theta() const;
+      /// Access rotation constants: theta
+      double theta(double default_value) const;
+      /// Access rotation constants: deltatheta
+      double deltatheta() const;
+      /// Access rotation constants: deltatheta
+      double deltatheta(double default_value) const;
       /// Access rotation constants: thetaBins
       int thetaBins() const;
 
       /// Access rotation constants: phi
       double phi() const;
+      /// Access rotation constants: phi
+      double phi(double default_value) const;
       /// Access rotation constants: phiBins
       int phiBins() const;
       /// Access rotation constants: phi0
@@ -98,11 +124,15 @@ namespace DD4hep {
       double phi1(double default_value) const;
       /// Access rotation constants: psi
       double psi() const;
+      /// Access rotation constants: psi
+      double psi(double default_value) const;
 
       /// Access Tube parameters: zhalf
       double zhalf() const;
       /// Access Tube parameters: deltaphi
       double deltaphi() const;
+      /// Access Tube parameters: deltaphi
+      double deltaphi(double default_value) const;
 
       /// Access parameters: b
       double b() const;
@@ -119,26 +149,44 @@ namespace DD4hep {
       double r(double default_value) const;
       /// Access parameters: R
       double R() const;
+      /// Access parameters: R
+      double R(double default_value) const;
       /// Access parameters: dr
       double dr() const;
-      /// Access parameters: r0
-      double r0() const;
       /// Access parameters: dr, if not present returns default
       double dr(double default_value) const;
+      /// Access parameters: r0
+      double r0() const;
+      /// Access parameters: r0
+      double r0(double default_value) const;
       /// Access min/max parameters: rmin
       double rmin() const;
+      /// Access min/max parameters: rmin
+      double rmin(double default_val) const;
       /// Access min/max parameters: rmax
       double rmax() const;
+      /// Access min/max parameters: rmax
+      double rmax(double default_val) const;
       /// Access min/max parameters: rmin1
       double rmin1() const;
+      /// Access min/max parameters: rmin1
+      double rmin1(double default_val) const;
       /// Access min/max parameters: rmax1
       double rmax1() const;
+      /// Access min/max parameters: rmax1
+      double rmax1(double default_val) const;
       /// Access min/max parameters: rmin2
       double rmin2() const;
+      /// Access min/max parameters: rmin2
+      double rmin2(double default_val) const;
       /// Access min/max parameters: rmax2
       double rmax2() const;
+      /// Access min/max parameters: rmax2
+      double rmax2(double default_val) const;
       /// Access parameters: radius
       double radius() const;
+      /// Access parameters: radius
+      double radius(double default_val) const;
       /// Access attribute values: outer_radius
       double outer_radius() const;
       /// Access attribute values: outer_r
@@ -154,12 +202,28 @@ namespace DD4hep {
       double x(double default_val) const;
       /// Access parameters: X
       double X() const;
+      /// Access parameters: X
+      double X(double default_val) const;
       /// Access parameters: x0
       double x0() const;
+      /// Access parameters: x0
+      double x0(double default_val) const;
       /// Access parameters: x1
       double x1() const;
+      /// Access parameters: x1
+      double x1(double default_val) const;
       /// Access parameters: x2
       double x2() const;
+      /// Access parameters: x2
+      double x2(double default_val) const;
+      /// Access parameters: x3
+      double x3() const;
+      /// Access parameters: x3
+      double x3(double default_val) const;
+      /// Access parameters: x4
+      double x4() const;
+      /// Access parameters: x4
+      double x4(double default_val) const;
       /// Access parameters: dx
       double dx() const;
       /// Access parameters: dx, if not present returns default
@@ -167,11 +231,19 @@ namespace DD4hep {
       /// Access min/max parameters: xmax
       double xmin() const;
       /// Access min/max parameters: xmax
+      double xmin(double default_value) const;
+      /// Access min/max parameters: xmax
       double xmax() const;
+      /// Access min/max parameters: xmax
+      double xmax(double default_value) const;
       /// Access min/max parameters: x_offset
       double x_offset() const;
+      /// Access min/max parameters: x_offset
+      double x_offset(double default_value) const;
       /// Access min/max parameters: dim_x
       double dim_x() const;
+      /// Access min/max parameters: dim_x
+      double dim_x(double default_value) const;
 
       /// Access parameters: y
       double y() const;
@@ -179,12 +251,20 @@ namespace DD4hep {
       double y(double default_val) const;
       /// Access parameters: Y
       double Y() const;
+      /// Access parameters: Y
+      double Y(double default_val) const;
       /// Access parameters: y0
       double y0() const;
+      /// Access parameters: y0
+      double y0(double default_value) const;
       /// Access parameters: y1
       double y1() const;
+      /// Access parameters: y1
+      double y1(double default_value) const;
       /// Access parameters: y2
       double y2() const;
+      /// Access parameters: y2
+      double y2(double default_value) const;
       /// Access parameters: dy
       double dy() const;
       /// Access parameters: dz, if not present returns default
@@ -192,11 +272,19 @@ namespace DD4hep {
       /// Access min/max parameters: ymax
       double ymin() const;
       /// Access min/max parameters: ymax
+      double ymin(double default_value) const;
+      /// Access min/max parameters: ymax
       double ymax() const;
+      /// Access min/max parameters: ymax
+      double ymax(double default_value) const;
       /// Access min/max parameters: y_offset
       double y_offset() const;
+      /// Access min/max parameters: y_offset
+      double y_offset(double default_value) const;
       /// Access min/max parameters: dim_y
       double dim_y() const;
+      /// Access min/max parameters: dim_y
+      double dim_y(double default_value) const;
 
       /// Access parameters: z
       double z() const;
@@ -204,12 +292,20 @@ namespace DD4hep {
       double z(double default_val) const;
       /// Access parameters: Z
       double Z() const;
+      /// Access parameters: Z
+      double Z(double default_val) const;
       /// Access parameters: z0
       double z0() const;
+      /// Access parameters: z0
+      double z0(double default_val) const;
       /// Access parameters: z1
       double z1() const;
+      /// Access parameters: z1
+      double z1(double default_val) const;
       /// Access parameters: z2
       double z2() const;
+      /// Access parameters: z2
+      double z2(double default_val) const;
       /// Access parameters: dz
       double dz() const;
       /// Access parameters: dz, if not present returns default
@@ -217,15 +313,23 @@ namespace DD4hep {
       /// Access min/max parameters: zmax
       double zmin() const;
       /// Access min/max parameters: zmax
+      double zmin(double default_value) const;
+      /// Access min/max parameters: zmax
       double zmax() const;
+      /// Access min/max parameters: zmax
+      double zmax(double default_value) const;
       /// Access attribute values: outer_z
       double outer_z() const;
       /// Access attribute values: inner_z
       double inner_z() const;
       /// Access min/max parameters: z_offset
       double z_offset() const;
+      /// Access min/max parameters: z_offset
+      double z_offset(double default_value) const;
       /// Access min/max parameters: dim_z
       double dim_z() const;
+      /// Access min/max parameters: dim_z
+      double dim_z(double default_value) const;
 
       /// Access attribute values: length
       double length() const;
@@ -254,6 +358,16 @@ namespace DD4hep {
       double crossing_angle() const;
       /// Access attribute values: repeat
       int repeat() const;
+
+      /// Access attribute values: coefficient
+      double coefficient() const;
+      /// Access attribute values: coefficient
+      double coefficient(double default_value) const;
+
+      /// Access attribute values: skew
+      double skew() const;
+      /// Access attribute values: skew
+      double skew(double default_value) const;
 
       /// Access attribute values: outgoing_r
       double outgoing_r() const;
@@ -311,8 +425,12 @@ namespace DD4hep {
 
       /// Access attribute values: start
       double start() const;
+      /// Access attribute values: start
+      double start(double default_value) const;
       /// Access attribute values: end
       double end() const;
+      /// Access attribute values: end
+      double end(double default_value) const;
       /// Access attribute values: inner_field
       double inner_field() const;
       /// Access attribute values: outer_field

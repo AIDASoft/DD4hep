@@ -668,6 +668,16 @@ namespace DD4hep {
       bool operator!() const {
         return 0 == m_element.ptr();
       }
+      /// Assignment operator
+      Element& operator=(const Element& c)  {
+	m_element = c.m_element;
+	return *this;
+      }
+      /// Assignment operator
+      Element& operator=(Handle_t handle)  {
+	m_element = handle;
+	return *this;
+      }
       /// Automatic conversion to DOM element handle
       operator Handle_t() const {
         return m_element;
