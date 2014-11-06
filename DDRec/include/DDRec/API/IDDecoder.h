@@ -24,6 +24,11 @@ namespace DDRec {
 typedef DDSegmentation::CellID CellID;
 typedef DDSegmentation::VolumeID VolumeID;
 
+/**
+ * Combines functionality of the VolumeManager and Segmentation classes to provide a
+ * high level interface for position to cell ID and cell ID to position conversions
+ * and related information.
+ */
 class IDDecoder {
 public:
 	/**

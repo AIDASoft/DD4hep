@@ -20,11 +20,13 @@ namespace DDRec {
 
 class LayeredSubdetector: public virtual Geometry::DetElement, public LayeringExtension {
 public:
+	/// Default constructor
 	LayeredSubdetector(const Geometry::DetElement& det) :
 			Geometry::DetElement(det) {
 		getLayeringExtension();
 	}
 
+	/// Destructor
 	virtual ~LayeredSubdetector() {
 		// does not own the extension!
 	}
@@ -108,6 +110,7 @@ protected:
 	LayeringExtension* _layering;
 
 private:
+	/// Helper method to retrieve the extension
 	void getLayeringExtension() {
 		_layering = this->isValid() ? this->extension<LayeringExtension>() : 0;
 		if (not _layering) {
