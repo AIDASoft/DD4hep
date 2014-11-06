@@ -10,10 +10,12 @@
 #include "XML/Layering.h"
 
 #include "DDRec/Extensions/LayeringExtensionImpl.h"
+#include "DDRec/Extensions/SubdetectorExtensionImpl.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+using namespace DD4hep::DDRec;
 
 static void placeStaves(DetElement& parent, DetElement& stave, double rmin, int numsides, double total_thickness,
 		Volume envelopeVolume, double innerAngle, Volume sectVolume) {
@@ -88,7 +90,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
 	double layer_dim_x = innerFaceLen / 2 - gap * 2;
 	int layer_num = 1;
 
-	DDRec::LayeringExtensionImpl* layeringExtension = new DDRec::LayeringExtensionImpl();
+	LayeringExtensionImpl* layeringExtension = new LayeringExtensionImpl();
 	Position layerNormal(0,0,1);
 
 	// Set envelope volume attributes.
@@ -171,7 +173,14 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
 	env_phv.addPhysVolID("barrel", 0);
 	sdet.setPlacement(env_phv);
 
-	sdet.addExtension<DDRec::LayeringExtension>(layeringExtension);
+	SubdetectorExtensionImpl* subdetExt = new SubdetectorExtensionImpl(sdet);
+	subdetExt->setIsBarrel(true);
+	subdetExt->setNSides(numSides);
+	subdetExt->setRMin(rmin);
+	subdetExt->setRMax(rmin + totalThickness);
+
+	sdet.addExtension<SubdetectorExtension>(subdetExt);
+	sdet.addExtension<LayeringExtension>(layeringExtension);
 	return sdet;
 }
 
