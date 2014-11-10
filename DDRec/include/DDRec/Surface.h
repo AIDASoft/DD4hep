@@ -199,6 +199,12 @@ namespace DD4hep {
     //======================================================================================================
 
 
+    struct VolSurfaceList ;
+    /** Helper function for accessing the list assigned to a DetElement - attaches
+     * empty list if needed.
+     */
+    VolSurfaceList* volSurfaceList( Geometry::DetElement& det ) ;
+
     /** std::list of VolSurfaces that takes ownership.
      * @author F.Gaede, DESY
      * @date Apr, 6 2014
@@ -210,36 +216,37 @@ namespace DD4hep {
 
       // required c'tor for extension mechanism
       VolSurfaceList(Geometry::DetElement& det){
-	// det.addExtension<VolSurfaceList>( this ) ;
+
+	VolSurfaceList* sL = volSurfaceList( det ) ; 
+
+	std::copy( this->end() , sL->begin() , sL->end() ) ;
       }
 
 
       // required c'tor for extension mechanism
       VolSurfaceList(const VolSurfaceList& vsl, Geometry::DetElement& det ){
 	
-	//fixme: this causes a seg fault ...
+	// std::cout << "  VolSurfaceList(const VolSurfaceList& vsl, Geometry::DetElement& det )   -  vsl.size() " <<  vsl.size() 
+	// 	  << " own size: " << this->size() << "   detelem : "  ;
+	// if( det.isValid() ) 
+	//   std::cout  << det.name() << std::endl ; //<< " path : " << det.placementPath() << std::endl ;
+	// else
+	//   std::cout  << " INVALID " << std::endl ;
 
-	// VolSurfaceList* nL = new VolSurfaceList ;
-	// nL->insert( nL->end() , vsl.begin() , vsl.end() ) ;
-	// det.addExtension<VolSurfaceList>( nL ) ;
+	
+	this->insert( this->end() , vsl.begin() , vsl.end() ) ;
       }
     
       virtual ~VolSurfaceList(){
-      
-	// delete all surfaces attached to this volume
-	// fixme: causes seg fault if same surfaces attached to more than one list
-	//         -> how do we deal with this ?
-	// for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
-	//   delete (*i).ptr() ;
-	// }
-      
+
+      	// delete all surfaces attached to this volume
+	for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
+	  i->clear() ;
+	}
+	
       }
     } ;
   
-    /** Helper function for accessing the list assigned to a DetElement - attaches
-     * empty list if needed.
-     */
-    VolSurfaceList* volSurfaceList( Geometry::DetElement& det ) ;
 
     //======================================================================================================
 

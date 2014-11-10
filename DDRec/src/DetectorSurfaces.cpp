@@ -31,7 +31,7 @@ namespace DD4hep {
 	_sL = det.addExtension<SurfaceList >(  new SurfaceList( true )  ) ; 
       }
 
-      if( ! vsL->empty() ) {
+      if( ! vsL->empty() && _sL->empty() ) {  // only fill surfaces for this DetElement once
 	
 	// std::cout <<  "     detector  " << det.name() << " id: " << det.id() << " has " <<  vsL->size() << " surfaces "  << std::endl ;
 	

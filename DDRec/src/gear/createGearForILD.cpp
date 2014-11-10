@@ -5,8 +5,9 @@
 #include "DDRec/DetectorData.h"
 #include "DDRec/DDGear.h"
 #include "DDRec/MaterialManager.h"
-#include "DDSurfaces/Vector3D.h"
+#include "DDRec/API/Calorimeter.h"
 
+#include "DDSurfaces/Vector3D.h"
 
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
@@ -260,11 +261,15 @@ namespace DD4hep{
       tubeDE.addExtension< GearHandle >( new GearHandle( gearTUBE, "BeamPipe" ) ) ;
 
       //========= CALO ==============================================================================
+
+      //**********************************************************
+      //*  test gear interface w/ LayeredCalorimeterData extension
+      //**********************************************************
+
       DetElement caloDE = lcdd.detector("HcalBarrel") ;
       
       LayeredCalorimeterData* calo = caloDE.extension<LayeredCalorimeterData>() ;
       
-
       gear::CalorimeterParametersImpl* gearCalo = 
 	( calo->layoutType == LayeredCalorimeterData::BarrelLayout  ?
 	  new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm, calo->extent[3]/dd4hep::mm, calo->symmetry, calo->phi0 )  :
@@ -285,9 +290,38 @@ namespace DD4hep{
 
       }
 
-      
       caloDE.addExtension< GearHandle >( new GearHandle( gearCalo, "HcalBarrelParameters" ) ) ;
       
+      //**********************************************************
+      //*  test gear interface w/ LayeredExtensionImpl extension
+      //**********************************************************
+      
+      DetElement calo2DE = lcdd.detector("EcalBarrel") ;
+      
+      Calorimeter calo2( calo2DE ) ;
+      
+      gear::CalorimeterParametersImpl* gearCalo2 = 
+	( calo2.isBarrel()  ?
+	  new gear::CalorimeterParametersImpl(  calo2.getRMin()/dd4hep::mm,                             calo2.getZMax()/dd4hep::mm, calo2.getNSides(),  0. )  :    // fixme: phi 0  is not defined ??
+	  new gear::CalorimeterParametersImpl(  calo2.getRMin()/dd4hep::mm, calo2.getRMax()/dd4hep::mm, calo2.getZMin()/dd4hep::mm, calo2.getNSides(),  0. ) 
+	  ) ;
+
+      for( unsigned i=0, nL = calo2.numberOfLayers() ; i <nL ; ++i ){
+	    
+	if( i == 0 ) {
+	  gearCalo2->layerLayout().positionLayer( calo2.getRMin()/dd4hep::mm, calo2.thickness(i)/dd4hep::mm ,  0. /dd4hep::mm,   0. /dd4hep::mm, calo2.absorberThickness(i)/dd4hep::mm ) ;
+
+	}else{                                                                                        //     fixme:   cell sizes  not in API !? 
+
+	  gearCalo2->layerLayout().addLayer(                                  calo2.thickness(i)/dd4hep::mm ,  0. /dd4hep::mm,   0. /dd4hep::mm, calo2.absorberThickness(i)/dd4hep::mm ) ;
+	}
+
+
+      }
+
+      calo2DE.addExtension< GearHandle >( new GearHandle( gearCalo2, "EcalBarrelParameters" ) ) ;
+
+
       //============================================================================================
 
 
