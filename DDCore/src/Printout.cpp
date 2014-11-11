@@ -67,7 +67,7 @@ int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fm
 int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
-    va_start(args, fmt);
+    va_start(args, &fmt);
     printout(severity, src, fmt.c_str(), args);
     va_end(args);
   }
@@ -83,7 +83,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fm
 int DD4hep::printout(PrintLevel severity, const std::string& src, const std::string& fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
-    va_start(args, fmt);
+    va_start(args, &fmt);
     printout(severity, src.c_str(), fmt.c_str(), args);
     va_end(args);
   }
@@ -144,7 +144,7 @@ int DD4hep::printout(PrintLevel severity, const std::string& src, const std::str
  */
 std::string DD4hep::format(const std::string& src, const std::string& fmt, ...) {
   va_list args;
-  va_start(args, fmt);
+  va_start(args, &fmt);
   std::string str = format(src, fmt, args);
   va_end(args);
   return str;

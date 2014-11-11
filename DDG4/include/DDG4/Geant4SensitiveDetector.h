@@ -39,14 +39,14 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4SensitiveDetector : public G4VSensitiveDetector  {
-      public:      
+    class Geant4SensitiveDetector : public G4VSensitiveDetector  {
+    public:      
       typedef Geometry::SensitiveDetector  SensitiveDetector;
       typedef G4THitsCollection<Geant4Hit> HitCollection;
       typedef Geant4Hit::Contribution      HitContribution;
       typedef Geant4StepHandler            StepHandler;
 
-      protected:
+    protected:
 
       /// Reference to the detector description object
       LCDD&             m_lcdd;
@@ -66,7 +66,7 @@ namespace DD4hep {
       /// Dump Step information (careful: very verbose)
       void dumpStep(G4Step* step,G4TouchableHistory* history);
 
-      public:
+    public:
 
       /// Constructor. The sensitive detector element is identified by the detector name
       Geant4SensitiveDetector(const std::string& name, LCDD& lcdd);

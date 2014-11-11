@@ -223,6 +223,7 @@ namespace {
     }
   };
 
+#if 0  // warning: unused function 'handleName' [-Wunused-function]
   void handleName(const TGeoNode* n) {
     TGeoVolume* v = n->GetVolume();
     TGeoMedium* m = v->GetMedium();
@@ -231,6 +232,7 @@ namespace {
     printout(DEBUG, "G4", "TGeoNode:'%s' Vol:'%s' Shape:'%s' Medium:'%s'", n->GetName(), v->GetName(), s->GetName(),
         m->GetName());
   }
+  #endif 
 
   class G4UserRegionInformation : public G4VUserRegionInformation {
   public:

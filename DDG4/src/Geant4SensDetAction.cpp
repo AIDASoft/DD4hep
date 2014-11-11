@@ -348,11 +348,11 @@ void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
   m_actors(ContextUpdate());
-  m_hce = 0;
+  // G4HCofThisEvent must be availible until end-event. m_hce = 0;
 }
 
 /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
-/** Hits collections created but not beibg set to G4HCofThisEvent
+/** Hits collections created but not being set to G4HCofThisEvent
  *  at the event should be deleted.
  *  Collection(s) which have already set to G4HCofThisEvent
  *  will be deleted automatically.

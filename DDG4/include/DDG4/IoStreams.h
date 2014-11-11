@@ -102,7 +102,8 @@ namespace DD4hep {
    *  \ingroup DD4HEP
    *  \see http://www.boost.org/libs/iostreams for further documentation.
    */
-  template <typename T=int> struct dd4hep_file_source : private dd4hep_file<T> {
+  template <typename T=int> class dd4hep_file_source : private dd4hep_file<T> {
+  public:
     typedef dd4hep_file<T> descriptor;
     struct category : boost::iostreams::input_seekable, 
 		      boost::iostreams::device_tag,

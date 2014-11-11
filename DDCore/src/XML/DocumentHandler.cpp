@@ -53,7 +53,7 @@ namespace DD4hep {
         parser->setDoSchema(true);
         return parser;
       }
-
+#if 0  // warning: unused function 'parse_document' [-Wunused-function]
       /// Helper function to parse a DOM document using an instance of the XercesC pareser
       Document parse_document(const void* bytes, size_t length, xercesc::ErrorHandler* err_handler) {
         auto_ptr<XercesDOMParser> parser(make_parser(err_handler));
@@ -65,6 +65,7 @@ namespace DD4hep {
         doc->setStrictErrorChecking(true);
         return (XmlDocument*) doc;
       }
+#endif
     }
 
     /// XML-DOM ERror handler class for the XercesC document parser.

@@ -443,9 +443,13 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     template <typename T> class Geant4SensitiveAction : public Geant4Sensitive  {
+    public:
+      typedef T UserData;
     protected:
       /// Collection identifier
-      size_t m_collectionID;
+      size_t   m_collectionID;
+      /// User data block
+      UserData m_userData;
     public:
       /// Standard , initializing constructor
       Geant4SensitiveAction(Geant4Context* context, 
@@ -454,6 +458,10 @@ namespace DD4hep {
 			    Geometry::LCDD& lcdd);
       /// Default destructor
       virtual ~Geant4SensitiveAction();
+      /// Initialization overload for specialization
+      void initialize();
+      /// Finalization overload for specialization
+      void finalize();
       /// Define collections created by this sensitivie action object
       virtual void defineCollections() {}
       /// G4VSensitiveDetector interface: Method invoked at the begining of each event. 

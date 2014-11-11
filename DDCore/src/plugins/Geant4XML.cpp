@@ -12,9 +12,9 @@
 namespace DD4hep {
   struct Geant4;
   namespace Geometry {
-    struct GdmlFile;
-    struct Property;
-    struct SensitiveDetector;
+    class GdmlFile;
+    class Property;
+    class SensitiveDetector;
   }
 }
 using namespace DD4hep;

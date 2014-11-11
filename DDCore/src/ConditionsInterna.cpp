@@ -50,7 +50,7 @@ std::string IOV::str()  {
 }
 
 /// Standard initializing constructor
-BlockData::BlockData() : Block(), destruct(0), type(0)   {
+BlockData::BlockData() : Block(), destruct(0), copy(0), type(0)   {
 }
 
 /// Standard Destructor
@@ -65,9 +65,18 @@ BlockData::~BlockData()   {
 
 /// Move the data content: 'from' will be reset to NULL
 void BlockData::move(BlockData& from)   {
-  ::memcpy(this,&from,sizeof(BlockData));
-  ::memset(&from,0,sizeof(BlockData));
+  pointer = from.pointer;
+  grammar = from.grammar;
+  ::memcpy(data,from.data,sizeof(data));
+  destruct = from.destruct;
+  copy = from.copy;
+  type = from.type;
+  ::memset(from.data,0,sizeof(data));
   from.type = PLAIN_DATA;
+  from.destruct = 0;
+  from.copy = 0;
+  from.pointer = 0;
+  from.grammar = 0;
 }
 
 /// Set data value

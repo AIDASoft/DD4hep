@@ -56,7 +56,7 @@ namespace DD4hep {
       template <typename Q, typename R, typename T>
       void addCall(const std::string& name, const std::string& description, Q* p, R (T::*f)()) {
         CallbackSequence::checkTypes(typeid(Q), typeid(T), dynamic_cast<T*>(p));
-        addCall(Callback(p).make(f));
+        addCall(name, description, Callback(p).make(f));
       }
       /// Export all properties to the Geant4 UI
       void exportProperties(PropertyManager& mgr);

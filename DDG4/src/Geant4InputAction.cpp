@@ -102,7 +102,7 @@ int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& par
     try  {
       m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
       if ( 0 == m_reader )   {
-	PluginDebug dbg();
+	PluginDebug dbg;
 	m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
 	abortRun(issue(evid)+"Error creating reader plugin.",
 		 "Failed to create file reader of type %s. Cannot open dataset %s",

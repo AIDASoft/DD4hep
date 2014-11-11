@@ -51,7 +51,8 @@ namespace DD4hep {
     }
 
     /// Sequence handler implementing common actions to all sequences.
-    template <typename T> struct SequenceHdl {
+    template <typename T> class SequenceHdl {
+    public:
       typedef SequenceHdl<T> Base;
       T* m_sequence;
       Geant4Context* m_activeContext;
@@ -117,7 +118,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserRunAction : public G4UserRunAction, public SequenceHdl<Geant4RunActionSequence> {
+    class Geant4UserRunAction : public G4UserRunAction, public SequenceHdl<Geant4RunActionSequence> {
+    public:
       Geant4UserEventAction* eventAction;
       /// Standard constructor
       Geant4UserRunAction(Geant4Context* context, Geant4RunActionSequence* seq)
@@ -138,7 +140,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserEventAction : public G4UserEventAction, public SequenceHdl<Geant4EventActionSequence> {
+    class Geant4UserEventAction : public G4UserEventAction, public SequenceHdl<Geant4EventActionSequence> {
+    public:
       Geant4UserRunAction* runAction;
       /// Standard constructor
       Geant4UserEventAction(Geant4Context* context, Geant4EventActionSequence* seq)
@@ -159,7 +162,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserTrackingAction : public G4UserTrackingAction, public SequenceHdl<Geant4TrackingActionSequence> {
+    class Geant4UserTrackingAction : public G4UserTrackingAction, public SequenceHdl<Geant4TrackingActionSequence> {
+    public:
       /// Standard constructor
       Geant4UserTrackingAction(Geant4Context* context, Geant4TrackingActionSequence* seq)
 	: Base(context, seq) {
@@ -187,7 +191,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserStackingAction : public G4UserStackingAction, public SequenceHdl<Geant4StackingActionSequence> {
+    class Geant4UserStackingAction : public G4UserStackingAction, public SequenceHdl<Geant4StackingActionSequence> {
+    public:
       /// Standard constructor
       Geant4UserStackingAction(Geant4Context* context, Geant4StackingActionSequence* seq)
 	: Base(context, seq) {
@@ -215,7 +220,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserGeneratorAction : public G4VUserPrimaryGeneratorAction, public SequenceHdl<Geant4GeneratorActionSequence> {
+    class Geant4UserGeneratorAction : public G4VUserPrimaryGeneratorAction, public SequenceHdl<Geant4GeneratorActionSequence> {
+    public:
       /// Standard constructor
       Geant4UserGeneratorAction(Geant4Context* context, Geant4GeneratorActionSequence* seq)
 	: G4VUserPrimaryGeneratorAction(), Base(context, seq) {
@@ -237,7 +243,8 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4UserSteppingAction : public G4UserSteppingAction, public SequenceHdl<Geant4SteppingActionSequence> {
+    class Geant4UserSteppingAction : public G4UserSteppingAction, public SequenceHdl<Geant4SteppingActionSequence> {
+    public:
       /// Standard constructor
       Geant4UserSteppingAction(Geant4Context* context, Geant4SteppingActionSequence* seq)
 	: Base(context, seq) {

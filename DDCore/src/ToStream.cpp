@@ -24,7 +24,7 @@ namespace {
 using namespace std;
 //==============================================================================
 namespace DD4hep {  namespace Parsers {
-    template <typename T> T evaluate_string(const string& value)   {
+    template <typename T> T evaluate_string(const string& /* value */)   {
       throw "Bad undefined call";
     }
 

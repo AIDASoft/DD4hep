@@ -24,11 +24,15 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    struct Geant4TrackInformation : public G4VUserTrackInformation {
+    class Geant4TrackInformation : public G4VUserTrackInformation {
+    public:
       enum {
         STORE = 1 << 0, LAST = 1 << 31
       };
+    protected:
       int m_flags;
+
+    public:
       /// Default constructor
       Geant4TrackInformation();
       /// Standard destructor

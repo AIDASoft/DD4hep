@@ -24,13 +24,23 @@ namespace DD4hep {
 						    Geometry::LCDD& lcdd)
       : Geant4Sensitive(context,name,det,lcdd), m_collectionID(0)
     {
+      initialize();
       defineCollections();
       InstanceCount::increment(this);
     }
 
     /// Default destructor
     template <typename T> Geant4SensitiveAction<T>::~Geant4SensitiveAction()  {
+      finalize();
       InstanceCount::decrement(this);
+    }
+
+    /// Initialization overload for specialization
+    template <typename T> void Geant4SensitiveAction<T>::initialize()    {
+    }
+
+    /// Finalization overload for specialization
+    template <typename T> void Geant4SensitiveAction<T>::finalize()    {
     }
 
     /// G4VSensitiveDetector interface: Method invoked at the begining of each event. 

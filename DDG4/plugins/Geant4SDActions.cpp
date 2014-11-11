@@ -15,6 +15,7 @@ using namespace std;
 
 #include "DDG4/Geant4TouchableHandler.h"
 #include "DDG4/Geant4StepHandler.h"
+#include "DDG4/Geant4EventAction.h"
 #include "DDG4/Geant4VolumeManager.h"
 #include "DDG4/Geant4Mapping.h"
 #include "G4OpticalPhoton.hh"
@@ -171,102 +172,152 @@ namespace DD4hep {
     }
     typedef Geant4SensitiveAction<Geant4OpticalCalorimeter>  Geant4OpticalCalorimeterAction;
 
-#if 0
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     ///               Geant4SensitiveAction<TrackerCombine>
     /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     struct TrackerCombine {
-      Geant4TrackerHit  pre;
-      Geant4TrackerHit  post;
+      typedef Geant4Tracker::Hit Hit;
+      typedef Geant4HitCollection HitCollection;
+      Hit  pre;
+      Hit  post;
+      Geant4Sensitive*  sensitive;
       G4Track*          track;
       double            e_cut;
       int               current;
-      TrackerCombine() : pre(), post(), track(0), e_cut(0.0), current(-1)  {
+      int               combined;
+      
+      TrackerCombine() : pre(), post(), sensitive(0), track(0), e_cut(0.0), current(-1), combined(0)  {
       }
+
       void start(G4Step* step, G4StepPoint* point)   {
 	pre.storePoint(step,point);
 	current = pre.truth.trackID;
 	track = step->GetTrack();
+	sensitive->mark(track);
 	post = pre;
+	combined = 0;
       }
+
       void update(G4Step* step) {
 	post.storePoint(step,step->GetPostStepPoint());
 	pre.truth.deposit += post.truth.deposit;
+	++combined;
       }
-      void clear()   {
-	pre.truth.clear();
+
+      void clear()  {
+	post.clear();
+	pre.clear();
 	current = -1;
+	combined = 0;
 	track = 0;
       }
-      Geant4TrackerHit* extractHit(Geant4SensitiveDetector::HitCollection* c)   {
+
+      bool mustSaveTrack(const G4Track* tr)  const   {
+	return track && current != tr->GetTrackID();
+      }
+
+      Hit* extractHit(HitCollection* collection)   {
 	if ( current == -1 || !track ) {
-	  return 0;
-	}
-	else if ( pre.truth.deposit <= e_cut && !Geant4Hit::isGeantino(track) ) {
-	  clear();
 	  return 0;
 	}
 	Position pos = 0.5 * (pre.position + post.position);
 	Momentum mom = 0.5 * (pre.momentum + post.momentum);
 	double path_len = (post.position - pre.position).R();
-	Geant4TrackerHit* hit = new Geant4TrackerHit(pre.truth.trackID,
-						     pre.truth.pdgID,
-						     pre.truth.deposit,
-						     pre.truth.time);
+	Hit* hit = new Hit(pre.truth.trackID,
+			   pre.truth.pdgID,
+			   pre.truth.deposit,
+			   pre.truth.time);
 	hit->position = pos;
 	hit->momentum = mom;
 	hit->length = path_len;
+	collection->add(hit);
+	sensitive->printM2("+++ TrackID:%6d [%s] CREATE hit combination with %2d deposit(s):"
+			   " %e MeV  Pos:%8.2f %8.2f %8.2f",
+			   pre.truth.trackID,sensitive->c_name(),combined,pre.truth.deposit/MeV,
+			   pos.X()/mm,pos.Y()/mm,pos.Z()/mm);
 	clear();
-	c->insert(hit);
-	mark(h.track);
 	return hit;
       }
-    };
 
-    /// Method invoked at the begining of each event. 
-    template <> void Geant4SensitiveAction<TrackerCombine>::Initialize(G4HCofThisEvent* HCE) {
-      userData.e_cut = m_sensitive.energyCutoff();
-      this->Geant4SensitiveDetector::Initialize(HCE);
-    }
 
-    /// Method for generating hit(s) using the information of G4Step object.
-    template <> void Geant4SensitiveAction<TrackerCombine>::clear() {
-      userData.clear();
-      this->Geant4SensitiveDetector::clear();
-    }
+      /// Method for generating hit(s) using the information of G4Step object.
+      G4bool process(G4Step* step, G4TouchableHistory* ) {
+	Geant4StepHandler h(step);
+	void *prePV = h.volume(h.pre), *postPV = h.volume(h.post);
 
-    /// Method for generating hit(s) using the information of G4Step object.
-    template <> G4bool Geant4SensitiveAction<TrackerCombine>::ProcessHits(G4Step* step,G4TouchableHistory* ) {
-      StepHandler h(step);
-      bool return_code = false;
+	Geant4HitCollection* coll = sensitive->collection(0);
+	/// If we are handling a new track, then store the content of the previous one.
+	if ( mustSaveTrack(h.track) )  {
+	  extractHit(coll);
+	}
+	/// There must be something in.
+	if ( h.deposit()/keV <= 0 )  {
+	  return false;
+	}
+	/// We can now start collecting the deposits of the next hit.
+	if ( 0 == track )  {
+	  start(step, h.pre);
+	}
 
-      if ( !userData.track || userData.current != h.track->GetTrackID() ) {
-	return_code = userData.extractHit(collection(0)) != 0;
-	userData.start(step, h.pre);
-      }
+	// ....update .....
+        update(step);
 
-      // ....update .....
-      userData.update(step);
-
-      void *prePV = h.volume(h.pre), *postPV = h.volume(h.post);
-      if ( prePV != postPV ) {
-	void* postSD = h.sd(h.post);
-	return_code = userData.extractHit(collection(0)) != 0;
-	if ( 0 != postSD )   {
-	  void* preSD = h.sd(h.pre);
-	  if ( preSD == postSD ) {
-	    userData.start(step,h.post);
+	if ( prePV != postPV ) {
+	  void* postSD = h.sd(h.post);
+	  extractHit(coll);
+	  if ( 0 != postSD )   {
+	    void* preSD = h.sd(h.pre);
+	    if ( preSD == postSD ) {
+	      start(step,h.post);
+	    }
 	  }
 	}
+	else if ( track->GetTrackStatus() == fStopAndKill ) {
+	  extractHit(coll);
+	}
+	return true;
       }
-      else if ( userData.track->GetTrackStatus() == fStopAndKill ) {
-	return_code = userData.extractHit(collection(0)) != 0;
-      }
-      return return_code;
-    }
-    typedef Geant4SensitiveAction<TrackerCombine>  Geant4TrackerCombine;
-#endif
 
+      /// Post-event action callback
+      void endEvent(const G4Event* /* event */)   {
+	// We need to add the possibly last added hit to the collection here.
+	// otherwise the last hit would be assigned to the next event and the 
+	// MC truth would be screwed.
+	//
+	// Alternatively the 'update' method would become rather CPU consuming,
+	// beacuse the extract action would have to be recalculated over and over.
+	if ( track )   {
+	  Geant4HitCollection* coll = sensitive->collection(0);
+	  extractHit(coll);
+	}
+      }
+
+    };
+
+    /// Initialization overload for specialization
+    template <> void Geant4SensitiveAction<TrackerCombine>::initialize() {
+      eventAction().callAtEnd(&m_userData,&TrackerCombine::endEvent);
+      m_userData.e_cut = m_sensitive.energyCutoff();
+      m_userData.sensitive = this;
+    }
+
+    /// Define collections created by this sensitivie action object
+    template <> void Geant4SensitiveAction<TrackerCombine>::defineCollections() {
+      m_collectionID = defineCollection<Geant4Tracker::Hit>(m_sensitive.readout().name());
+    }
+
+    /// Method for generating hit(s) using the information of G4Step object.
+    template <> void Geant4SensitiveAction<TrackerCombine>::clear(G4HCofThisEvent*) {
+      m_userData.clear();
+    }
+
+    /// Method for generating hit(s) using the information of G4Step object.
+    template <> G4bool 
+    Geant4SensitiveAction<TrackerCombine>::process(G4Step* step, G4TouchableHistory* history) {
+      return m_userData.process(step, history);
+    }
+
+    typedef Geant4SensitiveAction<TrackerCombine>  Geant4TrackerCombineAction;
 
     typedef Geant4TrackerAction Geant4SimpleTrackerAction;
     typedef Geant4CalorimeterAction Geant4SimpleCalorimeterAction;
@@ -278,6 +329,7 @@ using namespace DD4hep::Simulation;
 
 #include "DDG4/Factories.h"
 DECLARE_GEANT4SENSITIVE(Geant4TrackerAction)
+DECLARE_GEANT4SENSITIVE(Geant4TrackerCombineAction)
 DECLARE_GEANT4SENSITIVE(Geant4CalorimeterAction)
 DECLARE_GEANT4SENSITIVE(Geant4OpticalCalorimeterAction)
 

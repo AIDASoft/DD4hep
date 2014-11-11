@@ -22,7 +22,7 @@ def run():
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(lcdd)
 
-  simple = DDG4.Simple(kernel)
+  simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
   simple.printDetectors()
   # Configure UI
   simple.setupCshUI()

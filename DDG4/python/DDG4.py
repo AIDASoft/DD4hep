@@ -225,20 +225,25 @@ I am sick of typing the same over and over again.
 
 """
 class Simple:
-  def __init__(self, kernel,calo='Geant4SimpleCalorimeterAction',tracker='Geant4SimpleTrackerAction'):
+  def __init__(self, kernel,calo='Geant4CalorimeterAction',tracker='Geant4SimpleTrackerAction'):
     kernel.UI = "UI"
     kernel.printProperties()
     self.kernel = kernel
     self.calo = calo
     self.tracker = tracker
+    self.sensitive_types = {}
+    self.sensitive_types['tracker'] = self.tracker
+    self.sensitive_types['calorimeter'] = self.calo
   def printDetectors(self):
     lcdd = self.kernel.lcdd()
     print '+++  List of sensitive detectors:'
-    for i in lcdd.detectors(): 
+    for i in lcdd.detectors():
       o = DetElement(i.second)
       sd = lcdd.sensitiveDetector(o.name())
       if sd.isValid():
-        print '+++  %-32s type:%s'%(o.name(), sd.type(), )
+        typ = sd.type()
+        sdtyp = self.sensitive_types[typ]
+        print '+++  %-32s type:%-12s  --> Sensitive type: %s'%(o.name(), typ, sdtyp,)
 
   def setupDetector(self,name,sensitive_type):
     seq = SensitiveSequence(self.kernel,'Geant4SensDetActionSequence/'+name)
@@ -291,6 +296,7 @@ class Simple:
     evt_root.enableUI()
     self.kernel.eventAction().add(evt_root)
     return evt_root
+
   def setupLCIOOutput(self,name,output):
     evt_lcio = EventAction(self.kernel,'Geant4Output2LCIO/'+name)
     evt_lcio.Control = True
