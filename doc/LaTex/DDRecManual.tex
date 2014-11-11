@@ -1,0 +1,173 @@
+%=============================================================================
+\documentclass[10pt,a4paper]{article}
+%
+\input{DD4hep-setup.tex}
+%
+\pagestyle{fancyplain}{\fancyfoot[C]{\sffamily{DDRec User Manual}}}
+%
+\usepackage{amsmath}
+\begin{document}   
+%
+\mytitle{
+DDRec
+}{
+Reconstruction Interface for the \\
+\vspace{0.5cm}
+DD4hep Geometry Description \\
+\vspace{0.5cm}
+Toolkit
+\vspace{2cm}
+}{
+%M.Frank%\textsuperscript{1},
+F.Gaede%\textsuperscript{2},
+%C.Grefe\textsuperscript{1},
+%P.Mato\textsuperscript{1}
+
+%{\textsuperscript{1} 
+{CERN, 1211 Geneva 23, Switzerland}
+
+%{\textsuperscript{2} 
+{Desy, 22607 Hamburg, Germany}
+}
+%
+%
+%==  Abstract  ===============================================================
+\pagestyle{plain}
+\pagenumbering{Roman}
+\setcounter{page}{1}
+\begin{abstract}
+%=============================================================================
+
+\noindent
+\normalsize
+The reconstruction of particle tracks and clusters in an High Energy Physics detector
+requires information about the geometrical and material properties of the various 
+tracking and calorimeter subdetectors.
+In general, a higher level view on the detector geometry is needed than for the purpose
+of simulating the detailed detector response with tools such as Geant4\cite{bib:geant4}.
+This higher level view typically involves the abstraction of detector layers, the corresponding
+measurment surfaces, accumulation of dead material along a path and conversion between cellIDs and 
+positions.
+While in principle it is of course possible to extract this information from the detailed 
+detector geometry model used for simulation, doing so would tightly couple the reconstruction
+code to the specific implementation of the simulation model. 
+\DDR provides a generalized API for reconstruction that can be used to decouple the details of 
+the \DDH\cite{bib:DD4hep} detector geometry model from the reconstruction algorithms.
+ 
+\end{abstract}
+
+\vspace{8cm}
+
+\begin{center}
+{\large{\bf{
+\begin{tabular} {| l | l | l |}
+\hline
+\multicolumn{3}{| c |}{} \\[0.2cm]
+\multicolumn{3}{| c |}{Document History} \\[0.2cm]
+\multicolumn{3}{| c |}{} \\[0.2cm]
+\hline
+                 &      &        \\
+Document         &      &        \\
+version          & Date & Author \\[0.2cm] \hline
+                 &      &        \\
+1.0              & 11/11/2014 & Frank Gaede CERN/DESY  \\
+                 &      &        \\        \hline 
+\end{tabular}
+}}}
+\end{center}
+
+\clearpage
+%
+%
+%==  TOC  ====================================================================
+\tableofcontents
+\clearpage
+%
+%
+%=============================================================================
+% Manual
+%=============================================================================
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+%=============================================================================
+\section{Introduction}
+\label{sec:ddrec-manual-introduction}
+%=============================================================================
+\noindent
+This manual introduces the \DDR package which is part of \DDH and provides the 
+high level view on the HEP detector geometry that is needed during reconstruction and 
+analysis. 
+In the detailed simulation of the response of a typical High Energy Physics detector
+very little information is needed in principle on the actual structure of the material
+distribution in the detector. This becomes obvious if one considers the fact that
+the Geant4 program is also used in medical applications where the human body 
+is approximated by a voxelised phantom.
+During the reconstruction of particle trajectories and calorimeter clusters, in particular 
+in the phase of pattern recognition, one typically regards the detector in an abstract
+structure of measurement surfaces or volumes that generally follow a layering structure.
+\DDR provides an API that provides this information for reconstruction algorithms, thereby
+decoupling the details of the actual simulation model used from the reconstruction code.
+\noindent
+The \DDR API provides the following functionality:
+
+\begin{itemize}\itemcompact
+\item description of measurement surfaces with coordinate systems for 
+  track finding and fitting
+\item description of non-active surfaces with material properties in
+  order to take efffects of multiple scattering and energy loss
+  into account
+\item conversion of cellIDs assigned to simulated tracker and calorimeter hits
+  to positions of readout cells and vice versa
+\item access to a list of materials between any two points inside the world
+  volume of the detector
+\item average material properties between two points
+\item computation of radiation and interaction lenghts for detector layers, modules
+  or arbitrary sections through the detector
+\item ...
+\end{itemize}
+
+\noindent
+In this manual we describe the different classes in \DDR and how they can be used
+in the construction of the detector geometry and at reconstruction. 
+
+%=============================================================================
+\section{Surfaces}
+\label{sec:ddrec-manual-surfaces}
+%=============================================================================
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[height=180mm] {DDRec_surface_classes.png}
+    \caption{Class diagram with the main classes describing detector
+      surfaces and their relations.}
+    \label{fig:ddrec_surfaces_classes}
+  \end{center}
+\end{figure}
+\vspace{-0.1cm}
+
+%=============================================================================
+\subsection{namespace DDSurfacess}
+\label{subsec:ddrec-ddsurfaces}
+%=============================================================================
+
+
+
+\newpage
+%=============================================================================
+\begin{thebibliography}{9}
+\bibitem{bib:DD4hep} M. Frank et al, "DD4hep: A Detector Description Toolkit 
+                for High Energy Physics Experiments",
+                International Conference on Computing in High Energy and Nuclear Physics  
+                (CHEP 2013), \\
+                Amsterdam, Netherlands, 2013, proceedings.
+
+\bibitem{bib:ROOT-tgeo} R.Brun, A.Gheata, M.Gheata, "The ROOT geometry package",\\
+                    Nuclear Instruments and Methods {\bf{A}} 502 (2003) 676-680.
+\bibitem{bib:geant4}  S. Agostinelli et al., 
+                   "Geant4 - A Simulation Toolkit", \\
+                    Nuclear Instruments and Methods {\bf{A}} 506 (2003) 250-303.
+
+\end{thebibliography}
+%=============================================================================
+\end{document}
