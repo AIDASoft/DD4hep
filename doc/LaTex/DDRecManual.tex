@@ -128,28 +128,423 @@ The \DDR API provides the following functionality:
 \end{itemize}
 
 \noindent
-In this manual we describe the different classes in \DDR and how they can be used
-in the construction of the detector geometry and at reconstruction. 
+In this manual we describe the different classes in \DDR and how they should be
+used in the detector geometry constructors as well as in the reconstruction
+code. 
+
+\subsection*{Doxygen code documentation}
+Please also refer to the code documentation that is created with doxygen for more
+details on the classes and their members. This documentation can be build with:
+
+\begin{unnumberedcode} 
+   cmake -D INSTALL_DOC=ON ${path_to_dd4hep_source}
+   make install
+\end{unnumberedcode}
+
+\noindent
+and will then be available at
+\begin{unnumberedcode} 
+   ${DD4hepINSTALL}/doc/html/index.html
+\end{unnumberedcode}
 
 %=============================================================================
 \section{Surfaces}
 \label{sec:ddrec-manual-surfaces}
 %=============================================================================
+For fitting the trajectories of charged particle tracks one generally needs to know 
+the measurement surfaces on which the hits where deposited. Additionally the material 
+properties along the trajectory need to be known in order to correct for effects
+from multiple scattering and energy loss. 
+\DDR provides an abstract interface for surfaces and materials in the namespace
+{\em DDSurfaces} and a concrete implementation, described below, in the namespace
+{\em DDRec}. This is done in order to separate interface and implementation and allow
+other software tools, e.g. tracking packages to just use the interface.
+ 
+%=============================================================================
+\subsection{namespace DDSurfaces}
+\label{subsec:ddrec-ddsurfaces}
+%=============================================================================
+The basic concept of surfaces in \DDR is expressed with the two main interfaces
+{\em ISurface} and {\em IMaterial}. They are shown together with helper classes in
+the {\em DDSurfaces} in figure:\ref{fig:ddrec_ddsurfaces_classes}
+and are briefly described in the following.
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=180mm] {DDRec_surface_classes.png}
+    \includegraphics[width=120mm] {DDRec_ISurface_classes.png}
+    \caption{Classes in namespace DDSurfaces: abstract interfaces {\em ISurface, IMaterial, ICylinder}
+      and helper classes {\em Vector3D, ISurface::Vector2D, SurfaceType}. }
+    \label{fig:ddrec_ddsurfaces_classes}
+  \end{center}
+\end{figure}
+
+\noindent{\em \bf ISurface}: Defines the surface by means of an origin, a normal vector n and two, 
+typically orthogonal, direction vectors u and v, where all of the vectors n,u,v might depend 
+on the actual position on (or close to) the surface. In order to describe material properties
+two thicknesses are assigned to the surface - one in direction of the normal vector (outerThickness) 
+and one in the opposite direction (innerThickness). There are two materials assigned to these
+thicknesses, where these materials could be averaged along the normal and thickness.
+The method {\em isIndideBounds} allows in principle to implement arbitrary bounds for the surface.
+Two methods allow the conversion between global 3d coordinates (on the surface) and local 2d coordinates 
+in the coordinate system of the surface.
+ 
+\noindent
+{\em \bf IMaterial}: Interface to describe the relevant material properties: atomic number and weight, 
+density and radiation- and interaction lengths. These can be real materials or averaged materials along
+a given direction and lenght (thickness assigned to the surface).
+
+\noindent
+{\em \bf ICylinder}: Simple interface for cylindrical surfaces adding the cyliner radius to a surface
+through multiple inheritance.
+
+\noindent
+{\em \bf ISurface::Vector2D} Helper struct inside ISurface for 2d vectors with coordinates u and v.
+
+\noindent
+{\em \bf Vector3D}: Generic 3d vector class with cartesian coordinates x,y,z that allows initialization
+from other 3d vector implementations or using cylindircal or spherical coordinates. Provides acces to
+quantities often needed, such as magnitude, transversal component, representation in non-cartesian
+coordinates.
+
+\noindent
+{\em \bf SurfaceType}: Helper class using an {\em std::bitfield<32>} to encode the 
+following properties of the surface: {\em isCylinder, isPlane, isSensitive, isHelper} (dead material),
+{\em isParallelToZ, isOrthogonalToZ, isInvisible, isMeasurement1D}.
+
+%=============================================================================
+\subsection{Surface implementation}
+\label{subsec:ddrec-ddsurfaces}
+%=============================================================================
+\DDR provides classes that implement the interface defined in {\em DDSurfaces}.
+The main classes for implementing {\em ISurface} are shown in 
+figure \ref{fig:ddrec_surfaces_classes}.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=100mm] {DDRec_surface_classes.png}
     \caption{Class diagram with the main classes describing detector
       surfaces and their relations.}
     \label{fig:ddrec_surfaces_classes}
   \end{center}
 \end{figure}
-\vspace{-0.1cm}
+
+\noindent
+The implementation of the surfaces in \DDR is done in two parallel hierarchies 
+of implementation classes. The first hierarchy is based on the {\em VolSurface}
+class which connects a surface with its surrounding volume.
+This volume then provide the boundaries of the surface and gives access to 
+the local to global coordinate transformations inside the coordinate system
+of the volume. There are currently two concrete implementations: 
+{\em VolCylinder} and {\em VolPlane} that can be used in the detector construction
+code as described in\ref{subsec:ddrec-surfaces-constructors}.
+The second hierarchy is the actual implementation of the surface concept in \DDR
+to be used by reconstruction code as described in \ref{subsec:ddrec-surfaces-reconstruction}.
+It uses the extension and views concept described in the main \DDH manual\cite{bib:DD4hepManual}.
+The {\em Surface} class has a {\em VolSurface} object and a {\em DetElement} and 
+uses these to establish the local to global coordinate transforms, the surface boundaries
+and the material properties. The materials on both sides of the surface are
+the averaged materials along the direction of the normal with the given thicknesses.
+It is thus possible to also take material effects into account for materials
+that lay outside of the actual volume the surface is attached to.
+This is in particular useful for compound materials that consist of a larger number
+of thin slices.
 
 %=============================================================================
-\subsection{namespace DDSurfacess}
-\label{subsec:ddrec-ddsurfaces}
+\subsection{Using surfaces in geometry constructors}
+\label{subsec:ddrec-surfaces-constructors}
 %=============================================================================
+The surfaces that should be available in the reconstruction code, 
+have to be assigned to their corresponding volume and detector element by the 
+user in the detector geometry construction code. 
+This is done by specifying the coordinate system
+and orientation of the surface inside the volume with vectors o,n,u and v 
+and then instantiating one of the two types {\em VolCylinder} or {\em VolPlane} for a 
+given volume.
+After the placement of the corresponding DetElement, the surface is added to the
+list of surfaces for this DetElement.
+
+\noindent
+This is demonstrated in the  following example code:
+
+\begin{code}
+  #include "DDRec/Surface.h"
+  //...
+  // base vectors for surfaces:
+  DDSurfaces::Vector3D o(0,0,0) ;
+  DDSurfaces::Vector3D u(1,0,0) ;
+  DDSurfaces::Vector3D v(0,1,0) ;
+  DDSurfaces::Vector3D n(0,0,1) ;
+
+  // --- loop over layers ----
+  // ...
+
+    Box  box( dimX/2, dimY/2, dimZ/2 ) ;
+    Volume vol( volumeName, lcdd.material( x_layer.materialStr() )) ;
+
+    DetElement layerDetElement( parentDetElement , "layer"+_toString(i,"_%02d") , det_id ) ;
+
+    // add a measurement surface to the layer for every sensitive slice:
+
+    DDRec::VolPlane surf( vol , 
+                          DDSurfaces::SurfaceType(DDSurfaces::SurfaceType::Sensitive),
+                          dimZ, dimZ, 
+                          u, v, n , o ) ; 
+
+    // place the layer
+    PlacedVolume pv = parentVol.placeVolume(  vol, layerPlacement );
+
+    layerDetElement.setPlacement( pv ) ;
+
+    DDRec::volSurfaceList( layerDetElement )->push_back( surf ) ;
+
+  // --- end loop over layers ----
+
+\end{code}
+In this example a planar ({\em VolPlane}) measurement ({\em SurfaceType(Sensitive)})
+surface is attached to the box volume of a detector layer.
+The thickness of the surface corresponds to that of the box and is given by its half length in z
+( Vector3D n(0,0,1) runs along z). Thus the surface is completely contained in 
+the box and no averaging of materials will be done, unless additional volumes
+are placed inside the box at a later stage. 
+The origin of the coordinate system of the surface coinsides with that of the box
+({\em Vector3D o(0,0,0); })
+and the two measurememnt directions u,v run along the x and y axis of the box
+respectively.
+
+\noindent
+The following code snipped shows the creation of a cylindrical surface attached
+to a tube volume for the inner field cage of a tpc. The radius of the cylindrical
+surface is given by the transversal component of the origin vector {\em ocyl}.
+The volume {\em innerWallVol} is filled with air and will be later populated
+with slices of a compound material, thus the material properties will be
+averaged along the thickness of the tube.
+
+\begin{code}
+  //...
+  Tube innerWallSolid(rInner ,rInner + dr_InnerWall ,dz_Wall / 2.0 ) ;
+
+  Volume innerWallVol( "TPCInnerWallVol", innerWallSolid, materialAir ) ; 
+
+  pv = tpc_motherLog.placeVolume( innerWallVol ) ;
+
+  Vector3D ocyl(  rInner + 0.5*dr_InnerWall , 0. , 0. ) ;
+
+  VolCylinder surfI( innerWallVol , 
+                     SurfaceType( SurfaceType::Helper ) ,
+                     0.5*dr_InnerWall, 0.5*dr_InnerWall, 
+                     ocyl ) ;
+
+  volSurfaceList( tpc )->push_back(  surfI ) ;
+  //...
+\end{code}
+
+
+
+
+%=============================================================================
+\subsection{Using surfaces in reconstruction code}
+\label{subsec:ddrec-surfaces-reconstruction}
+%=============================================================================
+Accessing and using the surfaces in reconstruction code is very easy. 
+There are two possibilities to access the surfaces:
+\begin{itemize}
+\item use the {\em DetectorSurfaces} view class to get a list of 
+ all surfaces that have been assigned to a particular {\em DetElement}
+ object.
+\item or use the {\em SurfaceManager} class to get a list of all
+ surfaces of a given {\em DetElement} and all its daughters.
+\end{itemize}
+
+\noindent
+The following code snippet uses the {\em SurfaceManager}, initialized
+with the world  {\em DetElement}, to get a list of all surfaces 
+defined for a given detector model.
+The surfaces are then printed to {\em std::cout} and filled 
+into a map, using the surfaces ID as a key.
+For sensitive surfaces, attached to sensitive volumes, the ID
+will be that of the sensitve volume and thus such a map provides
+a very easy lookup from the hitID to its corresponding measurement
+surface.
+
+\begin{code}
+  // ...
+
+  LCDD& lcdd = LCDD::getInstance();
+
+  lcdd.fromCompact( inFile );
+
+  DetElement world = lcdd.world() ;
+
+  // create a list of all surfaces in the detector:
+  SurfaceManager surfMan(  world ) ;
+
+  const SurfaceList& sL = surfMan.surfaceList() ;
+
+  // map of surfaces
+  std::map< long64, Surface* > surfMap ;
+
+  for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
+    
+    Surface* surf =  *it ;
+    
+    std::cout << " ------------------------- " 
+      	      << " surface: "  << *surf         << std::endl
+      	      << " ------------------------- "  << std::endl ;
+    
+    surfMap[ surf->id() ] = surf ;
+  }
+
+\end{code}
+
+\noindent
+And similarily this code uses the {\em DetectorSurfaces} class to just access the surfaces 
+for a particular detector element:
+
+\begin{code}
+  // ...
+
+  DetElement ladderDE = lcdd.detector("VXD_layer02_ladder42") ;
+
+  // create surfaces
+  DetectorSurfaces ds( ladderDE ) ;
+
+  const SurfaceList& detSL = ds.surfaceList() ;
+
+  for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
+    
+    Surface* surf =  *it ;
+    
+    std::cout << " ------------------------- " 
+      	      << " surface: "  << *surf         << std::endl
+      	      << " ------------------------- "  << std::endl ;
+  }
+\end{code}
+
+%=============================================================================
+\subsection{Visualizing detector surfaces}
+\label{subsec:ddrec-surfaces-visualization}
+%=============================================================================
+
+The detector surfaces and the vectors defining their coordinate system can be
+visualized with the program {\em teveDisplay} that is part of \DDH. In a future
+version of \DDH this visualization might be included in \DDE.
+Currently a full 3d view of the detector surfaces as well as a $\rho-\phi$-view
+and a $\rho$-z view are available. See figure~\ref{fig:ddrec_surfaces_visualization}.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=0.48\hsize]{DDRec_rhoz_surfaces.png} \includegraphics[width=0.48\hsize]{DDRec_inner_tracking_surfaces.png}
+    \caption{Example of surface visualization. Left: $\rho$-z view of the tracking surfaces in the ILD detector, Right: 3D view of the 
+    surfaces in the inner tracking detectors in ILD.}
+    \label{fig:ddrec_surfaces_visualization}
+  \end{center}
+\end{figure}
+ 
+
+
+%=============================================================================
+\section{Materials}
+\label{sec:ddrec-manual-materials}
+%=============================================================================
+The surfaces claseses described above provide a way that allows to
+augment a detector geometry description with a high level view on the detector
+that should be sufficient for most reconstruction tasks, such as pattern
+recognition, track fitting and calorimeter reconstruction as in a particle 
+flow algorithm. However they require that care has been taken to assign all
+relevant surfaces with corresponding thicknesses to the volumes and detector
+elements. For cases where this is not possible or where other reconstruction
+geometries should be instantiated, \DDR provides the possibility to acces
+the materials at any given point in the world volume of the detector or 
+to retrieve a list of materials along a straight line between any two points.
+
+\noindent
+This is done with the class {\em MaterialManager}, which also allows to
+create an averaged material for a list of materials ({\em MaterialVector}).
+The usage of this class is simple and best demonstrated with an example:
+
+\begin{code}
+
+  LCDD& lcdd = LCDD::getInstance();
+
+  lcdd.fromCompact( inFile );
+
+  Vector3D p0( x0, y0, z0 ) ;
+  Vector3D p1( x1, y1, z1 ) ;
+
+  MaterialManager matMgr ;
+
+  const MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
+	
+  std::cout  << std::endl  
+             << " #######  materials between the two  points : " 
+             << p0 << "*cm  and " << p1 << "*cm :  "  
+             << std::endl ;
+
+  double sum_x0 = 0 ;
+  double sum_lambda = 0 ;
+  double path_length = 0 ;
+  for( unsigned i=0,n=materials.size();i<n;++i){
+
+    Material mat =  materials[i].first  ;
+    double length = materials[i].second  ;
+
+    double nx0 = length / mat.radLength()  ;
+    sum_x0 += nx0 ;
+
+    double nLambda = length / mat.intLength()  ;
+    sum_lambda += nLambda ;
+
+    path_length += length ;
+
+    std::cout << "      "               << mat 
+              << " thickness: "         << length 
+              << " path_length:"        << path_length
+              << " integrated_X0: "     << sum_x0 
+              << " integrated_lambda: " << sum_lambda 
+              <<  std::endl ;
+  }
+
+\end{code}
+
+\noindent
+Creation of an averaged material:
+
+\begin{code}
+  // ...
+  const MaterialVec& materials = matMgr.materialsBetween( p0 , p1  ) ;
+	
+  const MaterialData& avMat = matMgr.createAveragedMaterial( materials ) ;
+
+  std::cout << " averaged Material : " << " Z: " << avMat.Z() << " A: " << avMat.A() 
+            << " densitiy: "           << avMat.density()
+            << " radiationLength: "    << avMat.radiationLength() 
+            << " interactionLength: "  << avMat.interactionLength()  
+            << std::endl ;
+\end{code}
+
+\noindent
+There is a utility program {\em print\_materials} that can be used to debug detector
+geometries:
+
+\begin{verbatim}
+ $ print_materials
+ usage: print_materials compact.xml x0 y0 z0 x1 y1 z1
+        -> prints the materials on a straight line between the two given points ( unit is cm)
+\end{verbatim}
+
+
+\noindent
+{\bf Note: accessing the materials using the {\em MaterialManager} is a rather
+costly operation and should only be done at the initialization phase 
+of a reconstruction program for caching material properties !}
+
+
+
+%=============================================================================
+\section{Detectors}
+\label{sec:ddrec-manual-detectors}
+%=============================================================================
+To be done ...
 
 
 
@@ -161,9 +556,14 @@ in the construction of the detector geometry and at reconstruction.
                 International Conference on Computing in High Energy and Nuclear Physics  
                 (CHEP 2013), \\
                 Amsterdam, Netherlands, 2013, proceedings.
+                
+\bibitem{bib:DD4hepManual} M. Frank et al, "DD4hep: A Detector Description Toolkit 
+                for High Energy Physics Experiments", Users manual (DD4hepManual.pdf).
+                
 
 \bibitem{bib:ROOT-tgeo} R.Brun, A.Gheata, M.Gheata, "The ROOT geometry package",\\
                     Nuclear Instruments and Methods {\bf{A}} 502 (2003) 676-680.
+
 \bibitem{bib:geant4}  S. Agostinelli et al., 
                    "Geant4 - A Simulation Toolkit", \\
                     Nuclear Instruments and Methods {\bf{A}} 506 (2003) 250-303.
