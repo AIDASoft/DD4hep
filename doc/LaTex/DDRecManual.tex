@@ -46,7 +46,7 @@ tracking and calorimeter subdetectors.
 In general, a higher level view on the detector geometry is needed than for the purpose
 of simulating the detailed detector response with tools such as Geant4\cite{bib:geant4}.
 This higher level view typically involves the abstraction of detector layers, the corresponding
-measurment surfaces, accumulation of dead material along a path and conversion between cellIDs and 
+measurement surfaces, accumulation of dead material along a path and conversion between cellIDs and 
 positions.
 While in principle it is of course possible to extract this information from the detailed 
 detector geometry model used for simulation, doing so would tightly couple the reconstruction
@@ -104,9 +104,9 @@ distribution in the detector. This becomes obvious if one considers the fact tha
 the Geant4 program is also used in medical applications where the human body 
 is approximated by a voxelised phantom.
 During the reconstruction of particle trajectories and calorimeter clusters, in particular 
-in the phase of pattern recognition, one typically regards the detector in an abstract
+in the phase of pattern recognition, one typically regards the detector as an abstract
 structure of measurement surfaces or volumes that generally follow a layering structure.
-\DDR provides an API that provides this information for reconstruction algorithms, thereby
+\DDR contains an API that provides this information for reconstruction algorithms, thereby
 decoupling the details of the actual simulation model used from the reconstruction code.
 \noindent
 The \DDR API provides the following functionality:
@@ -115,7 +115,7 @@ The \DDR API provides the following functionality:
 \item description of measurement surfaces with coordinate systems for 
   track finding and fitting
 \item description of non-active surfaces with material properties in
-  order to take efffects of multiple scattering and energy loss
+  order to take effects of multiple scattering and energy loss
   into account
 \item conversion of cellIDs assigned to simulated tracker and calorimeter hits
   to positions of readout cells and vice versa
@@ -123,7 +123,7 @@ The \DDR API provides the following functionality:
   volume of the detector
 \item access to the materials at any given point or along a straight line between two points
 \item averaged material properties for a list of materials
-\item computation of radiation and interaction lenghts for detector layers, modules
+\item computation of radiation and interaction lengths for detector layers, modules
   or arbitrary sections through the detector
 \end{itemize}
 
@@ -184,14 +184,14 @@ on the actual position on (or close to) the surface. In order to describe materi
 two thicknesses are assigned to the surface - one in direction of the normal vector (outerThickness) 
 and one in the opposite direction (innerThickness). There are two materials assigned to these
 thicknesses, where these materials could be averaged along the normal and thickness.
-The method {\em isIndideBounds} allows in principle to implement arbitrary bounds for the surface.
+The method {\em isInsideBounds} allows in principle to implement arbitrary bounds for the surface.
 Two methods allow the conversion between global 3d coordinates (on the surface) and local 2d coordinates 
 in the coordinate system of the surface.
  
 \noindent
 {\em \bf IMaterial}: Interface to describe the relevant material properties: atomic number and weight, 
 density and radiation- and interaction lengths. These can be real materials or averaged materials along
-a given direction and lenght (thickness assigned to the surface).
+a given direction and length (thickness assigned to the surface).
 
 \noindent
 {\em \bf ICylinder}: Simple interface for cylindrical surfaces adding the cyliner radius to a surface
@@ -446,14 +446,14 @@ and a $\rho$-z view are available. See figure~\ref{fig:ddrec_surfaces_visualizat
 \section{Materials}
 \label{sec:ddrec-manual-materials}
 %=============================================================================
-The surfaces claseses described above provide a way that allows to
+The surfaces classes described above provide a way that allows to
 augment a detector geometry description with a high level view on the detector
 that should be sufficient for most reconstruction tasks, such as pattern
 recognition, track fitting and calorimeter reconstruction as in a particle 
 flow algorithm. However they require that care has been taken to assign all
 relevant surfaces with corresponding thicknesses to the volumes and detector
 elements. For cases where this is not possible or where other reconstruction
-geometries should be instantiated, \DDR provides the possibility to acces
+geometries should be instantiated, \DDR provides the possibility to access
 the materials at any given point in the world volume of the detector or 
 to retrieve a list of materials along a straight line between any two points.
 
