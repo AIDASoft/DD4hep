@@ -27,8 +27,6 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
 ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-
-
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 find_package( DD4hep )
@@ -42,40 +40,9 @@ set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 
 #-------------------------------------------------------------
 # add additional packages here
-
-
 #-------------------------------------------------------------
 
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
-  include
-  ${DD4hep_INCLUDE_DIRS}
-  ${ROOT_INCLUDE_DIR}
-  )
-
-file(GLOB sources src/*.cpp )
-file(GLOB headers include/*.h)
-
 include(DD4hep_XML_setup)
-
-if(DD4HEP_USE_PYROOT)
-  ROOT_GENERATE_DICTIONARY(G__CLICSiD ${headers} LINKDEF include/ROOT/LinkDef.h)
-  list(APPEND sources G__CLICSiD.cxx)
-endif()
-
-add_library(${PackageName} SHARED ${sources})
-
-add_executable(CalorimeterReco CalorimeterReco.cpp)
-
-target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-target_link_libraries(CalorimeterReco ${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-
-#---Rootmap generation--------------------------------------------------------------
-
-if(APPLE)
-  dd4hep_generate_rootmap_apple(${PackageName} )
-else()
-  dd4hep_generate_rootmap(${PackageName} )
-endif()
 
 #---Testing-------------------------------------------------------------------------
 if(BUILD_TESTING)
@@ -87,7 +54,6 @@ configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}
 INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
   DESTINATION bin )
 
-
 #---- configure run environment ---------------
 configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
@@ -97,11 +63,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
 
 
 #--- install target-------------------------------------
-
-install(TARGETS ${PackageName}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
 install(DIRECTORY compact
   DESTINATION examples/${PackageName}
   PATTERN ".svn" EXCLUDE )
