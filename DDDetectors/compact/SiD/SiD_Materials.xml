@@ -1,0 +1,58 @@
+<lccdd>
+  <materials>
+    <material name="TungstenDens23">
+      <D value="17.7" unit="g/cm3"/>
+      <fraction n="0.925" ref="W"/>
+      <fraction n="0.066" ref="Ni"/>
+      <fraction n="0.009" ref="Fe"/>
+    </material>
+    <material name="TungstenDens24">
+      <D value="17.8" unit="g/cm3"/>
+      <fraction n="0.93" ref="W"/>
+      <fraction n="0.061" ref="Ni"/>
+      <fraction n="0.009" ref="Fe"/>
+    </material>
+    <material name="TungstenDens25">
+      <D value="18.2" unit="g/cm3"/>
+      <fraction n="0.950" ref="W"/>
+      <fraction n="0.044" ref="Ni"/>
+      <fraction n="0.006" ref="Fe"/>
+    </material>
+    <material name="CarbonFiber_25percent">
+      <D type="density" value="0.375" unit="g/cm3"/>
+      <fraction n="1.0" ref="CarbonFiber"/>
+    </material>
+    <material name="CarbonFiber_15percent">
+      <D type="density" value="0.225" unit="g/cm3"/>
+      <fraction n="1.0" ref="CarbonFiber"/>
+    </material>
+    <material name="Rohacell31_50percent">
+      <D type="density" value="0.016" unit="g/cm3"/>
+      <fraction n="1.0" ref="Rohacell31"/>
+    </material>
+    <material name="Rohacell31_15percent">
+      <D type="density" value="0.0048" unit="g/cm3"/>
+      <fraction n="1.0" ref="Rohacell31"/>
+    </material>
+    <material name="BoratedPolyethylene5">
+      <D value="0.93" unit="g/cm3"/>
+      <fraction n="0.612" ref="C"/>
+      <fraction n="0.222" ref="O"/>
+      <fraction n="0.116" ref="H"/>
+      <fraction n="0.050" ref="B"/>
+    </material>
+    <material name="SiliconCarbide">
+      <D value="3.1" unit="g/cm3"/>
+      <composite n="1" ref="Si"/>
+      <composite n="1" ref="C"/>
+    </material> 
+    <material name="SiliconCarbide_6percent">
+      <D value="0.186" unit="g/cm3"/>
+      <fraction n="1.0" ref="SiliconCarbide"/>
+    </material>
+    <material name="Graphite">
+      <D value="1.7" unit="g/cm3"/>
+      <composite n="1" ref="C"/>
+    </material>      
+  </materials>
+</lccdd>

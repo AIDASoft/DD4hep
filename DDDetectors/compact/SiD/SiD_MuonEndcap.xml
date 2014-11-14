@@ -1,0 +1,33 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the muon endcap calorimeter detector             -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<detectors>
+  <detector id="MuonEndcap_ID" name="MuonEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="MuonEndcapHits" reflect="true" vis="MuonEndcapVis" calorimeterType="MUON_ENDCAP">
+
+    <comment>Muon Calorimeter Endcaps</comment>
+
+    <dimensions numsides="(int) MuonSides" zmin="MuonEndcap_zmin" rmin="MuonEndcap_rmin" rmax="MuonEndcap_rmax" />
+    <layer repeat="(int) MuonEndcap_layers" vis="MuonEndcapLayerVis">
+      <slice material="Iron" thickness="10.0*cm"  vis="MuonEndcapAbsorberVis"/>
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes"  vis="MuonEndcapSensorVis"/>
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes"  vis="MuonEndcapSensorVis"/>
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Air" thickness="1.0*cm" />
+    </layer>
+  </detector>
+</detectors>

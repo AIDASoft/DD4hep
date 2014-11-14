@@ -1,0 +1,205 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the complete SiD beampipe                        -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!--    Contained are the required                                          -->
+<!--      ++ global constants used uniquely by this module                  -->
+<!--      ++ visualization attributes                                       -->
+<!--      ++ the definition of the readout structure and the                -->
+<!--         readout segmentation (if necessary)                            -->
+<!--      ++ the include statements for the sensitive detectors and         -->
+<!--         the corresponding support structure(s)                         -->
+<!--                                                                        -->
+<!--                                                                        -->
+<!--   @author  M.Frank                                                     -->
+<!--   @date    14/11/2014                                                  -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<lccdd>
+  <!--  Definition of global dictionary constants          -->
+  <define>
+  </define>
+
+  <!--  Definition of the used visualization attributes    -->
+  <display>
+    <vis name="BeamPipeVis" r="0.0" g="0.99" b="0.0" showDaughters="false" visible="true"/>
+  </display>
+
+  <detectors>
+    <comment>Beampipe</comment> 
+
+    <detector name="Beampipe" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
+
+      <comment>Central Be Beampipe</comment>
+
+      <material name="Beryllium"/>
+      <zplane rmin="CentralBeamPipe_rmin" rmax="CentralBeamPipe_rmax" z="-CentralBeamPipe_zmax"/>
+      <zplane rmin="CentralBeamPipe_rmin" rmax="CentralBeamPipe_rmax" z="CentralBeamPipe_zmax" />
+    </detector>
+
+    <detector name="SteelConeZbackward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
+      <material name="Iron"/>            
+      <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
+	      rmax="BeamPipe_rmax"
+	      z="-tracking_region_zmax" /> 
+      <zplane rmin="CentralBeamPipe_rmin"
+	      rmax="(BeamPipe_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
+	      z="-BeamPipe_zmin" />
+      <zplane rmin="CentralBeamPipe_rmin"
+	      rmax="CentralBeamPipe_rmax"
+	      z="-CentralBeamPipe_zmax"/>
+    </detector>
+
+    <detector name="SteelConeZbackward2" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="BeamPipeVis">
+      <material name="Iron"/>            
+      <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
+	      rmax="BeamPipe_rmax"
+	      z="-(tracking_region_zmax + 0.01*cm)" /> 
+      <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
+	      rmax="BeamPipe_rmax"
+	      z="- BeamPipe_zmax" />
+      <zplane rmin="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      rmax="BeamPipe_rmax"
+	      z="- (LumiCal_zmin - 2*BeamPipe_endThickness)" />
+      <zplane rmin="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      rmax="LumiCal_rmin - BeamPipe_endThickness"
+	      z="- (LumiCal_zmin - BeamPipe_endThickness)" />
+      <zplane rmin="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      rmax="LumiCal_rmin - BeamPipe_endThickness"
+	      z="- (ForwardMask_zmin - BeamPipe_endThickness)" />
+    </detector>
+
+    <detector name="SteelConeZforward" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="BeamPipeVis">
+      <material name="Iron"/>
+      <zplane rmin="CentralBeamPipe_rmin"
+	      rmax="CentralBeamPipe_rmax"
+	      z="CentralBeamPipe_zmax"/>            
+      <zplane rmin="CentralBeamPipe_rmin"
+	      rmax="(BeamPipe_zmin - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax"
+	      z="BeamPipe_zmin" /> 
+      <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
+	      rmax="BeamPipe_rmax"
+	      z="tracking_region_zmax" />
+    </detector>
+
+    <detector name="SteelConeZforward2" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="BeamPipeVis">
+      <material name="Iron"/>            
+      <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
+	      rmax="BeamPipe_rmax"
+	      z="tracking_region_zmax + 0.01*cm" /> 
+      <zplane rmin="BeamPipe_rmax - BeamPipe_thickness"
+	      rmax="BeamPipe_rmax"
+	      z="BeamPipe_zmax" />
+      <zplane rmin="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      rmax="BeamPipe_rmax"
+	      z="LumiCal_zmin - 2*BeamPipe_endThickness" />
+      <zplane rmin="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      rmax="LumiCal_rmin - BeamPipe_endThickness"
+	      z="LumiCal_zmin - BeamPipe_endThickness" />
+      <zplane rmin="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      rmax="LumiCal_rmin - BeamPipe_endThickness"
+	      z="ForwardMask_zmin - BeamPipe_endThickness" />
+    </detector>
+
+    <detector name="NorthIncomingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+      <material name="Iron" />
+      <tubs rmin="IncomingBP_radius - IncomingBP_thickness" rmax="IncomingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
+      <position x="-((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="(ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
+      <rotation x="0.0" y="CrossingAngle/2.0/rad" z="0.0" />
+    </detector>
+
+
+    <detector name="SouthIncomingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+      <material name="Iron" />
+      <tubs rmin="IncomingBP_radius - IncomingBP_thickness" rmax="IncomingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
+      <position x="-((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="- (ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
+      <rotation x="0.0" y="-CrossingAngle/2.0/rad" z="0.0" />
+    </detector>
+
+    <detector name="NorthOutgoingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+      <material name="Iron" />
+      <tubs rmin="OutgoingBP_radius - OutgoingBP_thickness" rmax="OutgoingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
+      <position x="((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="(ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
+      <rotation x="0.0" y="-CrossingAngle/2.0/rad" z="0.0" />
+    </detector>
+
+    <detector name="SouthOutgoingBeampipe" type="DD4hep_TubeSegment" vis="BeamPipeVis">
+      <material name="Iron" />
+      <tubs rmin="OutgoingBP_radius - OutgoingBP_thickness" rmax="OutgoingBP_radius" zhalf="(MuonEndcap_zmax - ForwardMask_zmin)/2.0" />
+      <position x="((ForwardMask_zmin + MuonEndcap_zmax)/2.0*tan(CrossingAngle/rad)/2.0)" y="0" z="- (ForwardMask_zmin + MuonEndcap_zmax)/2.0" />
+      <rotation x="0.0" y="CrossingAngle/2.0/rad" z="0.0" />
+    </detector>
+
+    <!-- Beam pipe liner is not needed, use thicker conical steel pipe instead
+	 <detector name="BeamPipeLiner" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
+	 <comment>BeamPipe Liner to shield bremsstrahlung photons</comment>
+	 <material name="Titanium"/>
+	 <zplane rmin="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness" rmax="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness" z="-tracking_region_zmax" />
+	 <zplane rmin="CentralBeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness" rmax="CentralBeamPipe_rmax - BeamPipe_thickness"  z="-(CentralBeamPipe_zmax + 0.01*cm)"/>
+	 <zplane rmin="CentralBeamPipe_rmin - BeamPipeLiner_thickness" rmax="CentralBeamPipe_rmin" z="-CentralBeamPipe_zmax"  />
+	 <zplane rmin="CentralBeamPipe_rmin - BeamPipeLiner_thickness" rmax="CentralBeamPipe_rmin" z="CentralBeamPipe_zmax" />
+	 <zplane rmin="CentralBeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness" rmax="CentralBeamPipe_rmax - BeamPipe_thickness" z="CentralBeamPipe_zmax + 0.01*cm" />
+	 <zplane rmin="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness" rmax="(tracking_region_zmax - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax - BeamPipe_thickness" z="tracking_region_zmax" />
+	 </detector>
+    -->
+
+    <detector name="BeamPipeVacuum" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="InvisibleNoDaughters">
+
+      <comment>Vacuum inside beampipe</comment>
+
+      <material name="Vacuum"/>
+      <zplane rmin="0.*cm"
+	      rmax="BeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness"
+	      z="-tracking_region_zmax" />
+      <zplane rmin="0.*cm"
+	      rmax="CentralBeamPipe_rmin - BeamPipeLiner_thickness"
+	      z="-BeamPipe_zmin"  />
+      <zplane rmin="0.*cm"
+	      rmax="CentralBeamPipe_rmin - BeamPipeLiner_thickness"
+	      z="BeamPipe_zmin" />
+      <zplane rmin="0.*cm"
+	      rmax="BeamPipe_rmax - BeamPipe_thickness - BeamPipeLiner_thickness"
+	      z="tracking_region_zmax" />
+    </detector>
+
+    <detector name="ForwardVacuum" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="InvisibleNoDaughters">
+      <material name="Vacuum"/>
+      <zplane rmin="0.*cm"
+	      rmax="BeamPipe_rmax - BeamPipe_thickness"
+	      z="tracking_region_zmax + 0.01*cm" /> 
+      <zplane rmin="0.*cm"
+	      rmax="BeamPipe_rmax - BeamPipe_thickness"
+	      z="BeamPipe_zmax" />
+      <zplane rmin="0.*cm"
+	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      z="LumiCal_zmin - 2*BeamPipe_endThickness" />
+      <zplane rmin="0.*cm"
+	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      z="LumiCal_zmin - BeamPipe_endThickness" />
+      <zplane rmin="0.*cm"
+	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      z="ForwardMask_zmin - BeamPipe_endThickness" />
+    </detector> 
+
+    <detector name="BackwardVacuum" type="DD4hep_PolyconeSupport" insideTrackingVolume="false" vis="InvisibleNoDaughters">
+      <material name="Vacuum"/>
+      <zplane rmin="0.*cm"
+	      rmax="BeamPipe_rmax - BeamPipe_thickness"
+	      z="- (tracking_region_zmax + 0.01*cm)" /> 
+      <zplane rmin="0.*cm"
+	      rmax="BeamPipe_rmax - BeamPipe_thickness"
+	      z="- BeamPipe_zmax" />
+      <zplane rmin="0.*cm"
+	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      z="- (LumiCal_zmin - 2*BeamPipe_endThickness)" />
+      <zplane rmin="0.*cm"
+	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      z="- (LumiCal_zmin - BeamPipe_endThickness)" />
+      <zplane rmin="0.*cm"
+	      rmax="LumiCal_rmin - 2*BeamPipe_endThickness"
+	      z="- (ForwardMask_zmin - BeamPipe_endThickness)" />
+    </detector>
+  </detectors>
+</lccdd>

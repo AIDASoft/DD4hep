@@ -1,0 +1,38 @@
+<!-- ==================================================================== -->
+<!--                                                                      -->
+<!--    XML description of the silicon forward tracking detector          -->
+<!--    of the SiD linear collider detector design.                       -->
+<!--                                                                      -->
+<!-- ==================================================================== -->
+
+<detectors>
+  <detector id="ForwardTracker_ID" name="SiTrackerForward" type="DD4hep_SiTrackerEndcap2" readout="SiTrackerForwardHits">    
+
+    <comment>Forward Tracker inside Vertex Support Barrel</comment>
+
+    <module name="SiTrackerForwardModule1">
+      <trd x1="ForwardTracker_rmin1 * tan(pi/(ForwardTrackerModules-0.1))" x2="ForwardTracker_rmax * sin(pi/(ForwardTrackerModules-0.1))" z="(ForwardTracker_rmax - ForwardTracker_rmin1) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
+      <module_component thickness="0.013*cm"   material="Carbon" />
+    </module>
+    <module name="SiTrackerForwardModule2">
+      <trd x1="ForwardTracker_rmin2 * tan(pi/(ForwardTrackerModules-0.1))" x2="ForwardTracker_rmax * sin(pi/(ForwardTrackerModules-0.1))" z="(ForwardTracker_rmax - ForwardTracker_rmin2) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
+      <module_component thickness="0.013*cm"   material="Carbon" />
+    </module>
+    <module name="SiTrackerForwardModule3">
+      <trd x1="ForwardTracker_rmin3 * tan(pi/(ForwardTrackerModules-0.1))" x2="ForwardTracker_rmax * sin(pi/(ForwardTrackerModules-0.1))" z="(ForwardTracker_rmax - ForwardTracker_rmin3) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true" />
+      <module_component thickness="0.013*cm"   material="Carbon" />
+    </module>
+    <layer id="1">
+      <ring r="(ForwardTracker_rmax + ForwardTracker_rmin1) / 2" zstart="ForwardTracker_z1" nmodules="(int) ForwardTrackerModules" dz="0.011*mm" module="SiTrackerForwardModule1"/>
+    </layer>
+    <layer id="2">
+      <ring r="(ForwardTracker_rmax + ForwardTracker_rmin2) / 2" zstart="ForwardTracker_z2" nmodules="(int) ForwardTrackerModules" dz="0.011*mm" module="SiTrackerForwardModule2"/>
+    </layer>
+    <layer id="3">
+      <ring r="(ForwardTracker_rmax + ForwardTracker_rmin3) / 2" zstart="ForwardTracker_z3" nmodules="(int) ForwardTrackerModules" dz="0.011*mm" module="SiTrackerForwardModule3"/>
+    </layer>
+  </detector>
+</detectors>

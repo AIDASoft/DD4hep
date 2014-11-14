@@ -1,0 +1,37 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the electromagnetic calorimeter endcap detector  -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<detectors>
+  <detector id="EcalEndcap_ID" name="EcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
+
+    <comment>Electromagnetic Calorimeter Endcaps</comment>
+
+    <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
+    <layer repeat="1">
+      <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+      <slice material = "Copper"  thickness = "0.005*cm" />
+      <slice material = "Kapton"  thickness = "0.030*cm" />
+      <slice material = "Air"     thickness = "0.033*cm" />
+    </layer>       
+    <layer repeat="20">
+      <slice material = "TungstenDens24" thickness = "0.25*cm" />
+      <slice material = "Air"     thickness = "0.025*cm" />
+      <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+      <slice material = "Copper"  thickness = "0.005*cm" />
+      <slice material = "Kapton"  thickness = "0.030*cm" />
+      <slice material = "Air"     thickness = "0.033*cm" />
+    </layer>
+    <layer repeat="10">
+      <slice material = "TungstenDens24" thickness = "0.5*cm" />
+      <slice material = "Air"     thickness = "0.025*cm" />
+      <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
+      <slice material = "Copper"  thickness = "0.005*cm" />
+      <slice material = "Kapton"  thickness = "0.030*cm" />
+      <slice material = "Air"     thickness = "0.033*cm" />
+    </layer>
+  </detector>
+</detectors>

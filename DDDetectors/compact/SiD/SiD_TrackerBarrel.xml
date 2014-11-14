@@ -1,0 +1,189 @@
+<!-- ==================================================================== -->
+<!--                                                                      -->
+<!--    XML description of the Silicon tracker barrel detector            -->
+<!--    of the SiD linear collider detector design.                       -->
+<!--                                                                      -->
+<!-- ==================================================================== -->
+
+<detectors>
+  <detector id="SiTrackerBarrel_ID" name="SiTrackerBarrel" type="DD4hep_SiTrackerBarrel" readout="SiTrackerBarrelHits">
+
+    <comment>Silicon Outer Tracker Barrel</comment>
+
+    <module name="SiTrackerModule_Layer1" vis="SiTrackerModuleVis">                
+      <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
+	<position z="-0.14*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="-0.122*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+	<position z="-0.024*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+	<position z="0.07475*cm" />
+      </module_component>
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="0.0915*cm" />
+      </module_component>                
+      <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
+	<position z="0.1145*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
+	<position z="0.12974*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0038*cm" material="Kapton" sensitive="false">
+	<position z="0.1375*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00038*cm" material="Copper" sensitive="false">
+	<position z="0.146*cm"/>
+      </module_component>                
+    </module>
+    <module name="SiTrackerModule_Layer2" vis="SiTrackerModuleVis">                
+      <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
+	<position z="-0.14*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="-0.122*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+	<position z="-0.024*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+	<position z="0.07475*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="0.0915*cm" />
+      </module_component>                
+      <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
+	<position z="0.1145*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
+	<position z="0.12974*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0051*cm" material="Kapton" sensitive="false">
+	<position z="0.1375*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00052*cm" material="Copper" sensitive="false">
+	<position z="0.146*cm"/>
+      </module_component>                
+    </module>
+    <module name="SiTrackerModule_Layer3" vis="SiTrackerModuleVis">                
+      <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
+	<position z="-0.14*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="-0.122*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+	<position z="-0.024*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+	<position z="0.07475*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="0.0915*cm" />
+      </module_component>                
+      <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
+	<position z="0.1145*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
+	<position z="0.12974*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0064*cm" material="Kapton" sensitive="false">
+	<position z="0.1375*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00065*cm" material="Copper" sensitive="false">
+	<position z="0.146*cm"/>
+      </module_component>                
+    </module>
+    <module name="SiTrackerModule_Layer4" vis="SiTrackerModuleVis">                
+      <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
+	<position z="-0.14*cm" />
+      </module_component>               
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="-0.122*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+	<position z="-0.024*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+	<position z="0.07475*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="0.0915*cm" />
+      </module_component>                
+      <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
+	<position z="0.1145*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
+	<position z="0.12974*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0078*cm" material="Kapton" sensitive="false">
+	<position z="0.1375*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00079*cm" material="Copper" sensitive="false">
+	<position z="0.146*cm"/>
+      </module_component>                
+    </module>
+    <module name="SiTrackerModule_Layer5" vis="SiTrackerModuleVis">                
+      <module_envelope width="97.79*mm" length="97.79*mm" thickness="0.3*cm"/>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.02*cm" material="PEEK" sensitive="false">
+	<position z="-0.14*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="-0.122*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.18*cm" material="Rohacell31_50D" sensitive="false">
+	<position z="-0.024*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0175*cm" material="Epoxy" sensitive="false">
+	<position z="0.07475*cm" />
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.016*cm" material="CarbonFiber_50D" sensitive="false">
+	<position z="0.0915*cm" />
+      </module_component>                
+      <module_component width="92.031*mm" length="92.031*mm" thickness="0.03*cm" material="Silicon" sensitive="true">
+	<position z="0.1145*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00048*cm" material="Silicon" sensitive="false">
+	<position z="0.12974*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.0091*cm" material="Kapton" sensitive="false">
+	<position z="0.1375*cm"/>
+      </module_component>                
+      <module_component width="97.79*mm" length="97.79*mm" thickness="0.00093*cm" material="Copper" sensitive="false">
+	<position z="0.146*cm"/>
+      </module_component>                
+    </module>
+    <layer module="SiTrackerModule_Layer1" id="1" vis="SiTrackerLayerVis">
+      <barrel_envelope inner_r="215.075*mm" outer_r="245.0*mm" z_length="578 * 2*mm"/>
+      <rphi_layout phi_tilt="0.17506*rad" nphi="20" phi0="0." rc="(216.355 + 5.0)*mm" dr="0.0"/>
+      <z_layout dr="4.0*mm" z0="512.128*mm" nz="13"/>
+    </layer>                
+    <layer module="SiTrackerModule_Layer2" id="2" vis="SiTrackerLayerVis">
+      <barrel_envelope inner_r="465.075*mm" outer_r="501.0*mm" z_length="749.8 * 2*mm"/>
+      <rphi_layout phi_tilt="0.12217*rad" nphi="38" phi0="0.087*rad" rc="(466.355 + 5.0)*mm" dr="0.0"/>
+      <z_layout dr="4.0*mm" z0="690.605*mm" nz="17"/>
+    </layer>
+    <layer module="SiTrackerModule_Layer3" id="3" vis="SiTrackerLayerVis">
+      <barrel_envelope inner_r="715.075*mm" outer_r="756.0*mm" z_length="1013.9 * 2*mm"/>
+      <rphi_layout phi_tilt="0.11493*rad" nphi="58" phi0="0.058*rad" rc="(716.355 + 5.0)*mm" dr="0.0"/>
+      <z_layout dr="4.0*mm" z0="954.625*mm" nz="23"/>
+    </layer>            
+    <layer module="SiTrackerModule_Layer4" id="4" vis="SiTrackerLayerVis">
+      <barrel_envelope inner_r="965.075*mm" outer_r="1012.0*mm" z_length="1272.3 * 2*mm"/>
+      <rphi_layout phi_tilt="0.11502*rad" nphi="80" phi0="0.0436*rad" rc="(966.355 + 5.0)*mm" dr="0.0"/>
+      <z_layout dr="4.0*mm" z0="1213.073*mm" nz="29"/>
+    </layer>                        
+    <layer module="SiTrackerModule_Layer5" id="5" vis="SiTrackerLayerVis">
+      <barrel_envelope inner_r="1215.075*mm" outer_r="1263.0*mm" z_length="1535.7 * 2*mm"/>
+      <rphi_layout phi_tilt="0.11467*rad" nphi="102" phi0="0.01745*rad" rc="(1216.355 + 5.0)*mm" dr="0.0"/>
+      <z_layout dr="4.0*mm" z0="1476.497*mm" nz="35"/>
+    </layer>
+  </detector>
+</detectors>

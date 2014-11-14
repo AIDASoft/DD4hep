@@ -1,0 +1,82 @@
+<!-- ==================================================================== -->
+<!--                                                                      -->
+<!--    XML description of the Silicon tracker endcap detector            -->
+<!--    of the SiD linear collider detector design.                       -->
+<!--                                                                      -->
+<!-- ==================================================================== -->
+
+<detectors>
+  <detector id="SiTrackerEndcap_ID" name="SiTrackerEndcap" type="DD4hep_SiTrackerEndcap2" readout="SiTrackerEndcapHits" reflect="true">
+
+    <comment>Silicon Outer Tracker Endcaps</comment>
+
+    <module name="Module1" vis="SiTrackerModuleVis">
+      <trd x1="36.112*mm" x2="46.635*mm" z="100.114/2*mm" />
+      <module_component thickness="0.00052*cm"   material="Copper" />
+      <module_component thickness="0.0051*cm"   material="Kapton" />
+      <module_component thickness="0.00048*cm" material="Silicon" />
+      <module_component thickness="0.03*cm"   material="Silicon" sensitive="true" />
+      <module_component thickness="0.016*cm" material="CarbonFiber_50D" />
+      <module_component thickness="0.18*cm" material="Rohacell31_50D" />
+      <module_component thickness="0.016*cm" material="CarbonFiber_50D" />
+      <module_component thickness="0.0175*cm" material="Epoxy" />
+      <module_component thickness="0.03*cm"   material="Silicon" sensitive="true" />
+      <module_component thickness="0.00048*cm" material="Silicon" />
+      <module_component thickness="0.0051*cm"   material="Kapton" />
+      <module_component thickness="0.00052*cm"   material="Copper" />
+    </module> 
+    <module name="Module2" vis="SiTrackerModuleVis">
+      <trd x1="45.245*mm" x2="54.680*mm" z="89.773/2*mm" />
+      <module_component thickness="0.00079*cm"   material="Copper" />
+      <module_component thickness="0.0078*cm"   material="Kapton" />
+      <module_component thickness="0.00048*cm" material="Silicon" />
+      <module_component thickness="0.03*cm"   material="Silicon" sensitive="true" />
+      <module_component thickness="0.016*cm" material="CarbonFiber_50D" />
+      <module_component thickness="0.18*cm" material="Rohacell31_50D" />
+      <module_component thickness="0.016*cm" material="CarbonFiber_50D" />
+      <module_component thickness="0.0175*cm" material="Epoxy" />
+      <module_component thickness="0.03*cm"   material="Silicon" sensitive="true" />
+      <module_component thickness="0.00048*cm" material="Silicon" />
+      <module_component thickness="0.0078*cm"   material="Kapton" />
+      <module_component thickness="0.00079*cm"   material="Copper" />
+    </module>
+    <layer id="1">
+      <ring r="256.716*mm" zstart="(787.105+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+      <ring r="353.991*mm" zstart="(778.776+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+      <ring r="449.180*mm" zstart="(770.544+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+    </layer>
+    <layer id="2">
+      <ring r="256.716*mm" zstart="(1073.293+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+      <ring r="353.991*mm" zstart="(1064.966+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+      <ring r="449.180*mm" zstart="(1056.734+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+      <ring r="538.520*mm" zstart="(1048.466+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module2"/>
+      <ring r="625.654*mm" zstart="(1041.067+1.75)*mm" nmodules="48" dz="1.75*mm" module="Module2"/>
+      <ring r="703.666*mm" zstart="(1033.725+1.75)*mm" nmodules="54" dz="1.75*mm" module="Module2" phi0="pi/54"/>
+    </layer>
+    <layer id="3">
+      <ring r="256.716*mm" zstart="(1353.786+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+      <ring r="353.991*mm" zstart="(1345.457+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+      <ring r="449.180*mm" zstart="(1337.225+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+      <ring r="538.520*mm" zstart="(1328.957+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module2"/>
+      <ring r="625.654*mm" zstart="(1321.558+1.75)*mm" nmodules="48" dz="1.75*mm" module="Module2"/>
+      <ring r="703.666*mm" zstart="(1314.217+1.75)*mm" nmodules="54" dz="1.75*mm" module="Module2" phi0="pi/54"/>
+      <ring r="793.448*mm" zstart="(1306.828+1.75)*mm" nmodules="58" dz="1.75*mm" module="Module2" phi0="pi/58"/>
+      <ring r="874.239*mm" zstart="(1299.486+1.75)*mm" nmodules="64" dz="1.75*mm" module="Module2"/>
+      <ring r="958.364*mm" zstart="(1292.189+1.75)*mm" nmodules="68" dz="1.75*mm" module="Module2"/>
+    </layer>
+    <layer id="4">
+      <ring r="256.716*mm" zstart="(1639.164+1.75)*mm" nmodules="24" dz="1.75*mm" module="Module1"/>
+      <ring r="353.991*mm" zstart="(1630.835+1.75)*mm" nmodules="32" dz="1.75*mm" module="Module1"/>
+      <ring r="449.180*mm" zstart="(1622.603+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module1"/>
+      <ring r="538.520*mm" zstart="(1614.335+1.75)*mm" nmodules="40" dz="1.75*mm" module="Module2"/>
+      <ring r="625.654*mm" zstart="(1606.936+1.75)*mm" nmodules="48" dz="1.75*mm" module="Module2"/>
+      <ring r="703.666*mm" zstart="(1599.595+1.75)*mm" nmodules="54" dz="1.75*mm" module="Module2" phi0="pi/54"/>
+      <ring r="793.448*mm" zstart="(1592.206+1.75)*mm" nmodules="58" dz="1.75*mm" module="Module2" phi0="pi/58"/>
+      <ring r="874.239*mm" zstart="(1584.864+1.75)*mm" nmodules="64" dz="1.75*mm" module="Module2"/>
+      <ring r="958.364*mm" zstart="(1577.567+1.75)*mm" nmodules="68" dz="1.75*mm" module="Module2"/>
+      <ring r="1040.970*mm" zstart="(1570.222+1.75)*mm" nmodules="72" dz="1.75*mm" module="Module2"/>
+      <ring r="1124.167*mm" zstart="(1562.916+1.75)*mm" nmodules="78" dz="1.75*mm" module="Module2" phi0="pi/78"/>
+      <ring r="1206.937*mm" zstart="(1555.647+1.75)*mm" nmodules="84" dz="1.75*mm" module="Module2"/>
+    </layer>
+  </detector>
+</detectors>

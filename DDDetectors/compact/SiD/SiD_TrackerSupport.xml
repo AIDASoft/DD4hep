@@ -1,0 +1,240 @@
+<!-- ==================================================================== -->
+<!--                                                                      -->
+<!--    XML description of the Silicon vertex barrel detector             -->
+<!--    of the SiD linear collider detector design.                       -->
+<!--                                                                      -->
+<!-- ==================================================================== -->
+
+<detectors>
+
+  <comment>Outer Tracker Supports and Readout</comment>
+
+  <detector name="TrackerBarrelSupports" type="DD4hep_MultiLayerTracker" reflect="true">
+
+    <comment>Barrels</comment>
+
+    <layer id="1" inner_r="206.0*mm" outer_z="577.328*mm">
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+      <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+    </layer>
+    <layer id="2" inner_r="456.0*mm" outer_z="749.781*mm">
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+      <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+    </layer>
+    <layer id="3" inner_r="706.0*mm" outer_z="1013.802*mm">
+      <slice material= "CarbonFiber" thickness = "0.05*cm" />
+      <slice material= "Rohacell31_15percent" thickness="0.8075*cm" />
+      <slice material= "CarbonFiber" thickness="0.05*cm" />
+    </layer>
+    <layer id="4" inner_r="956.0*mm" outer_z="1272.251*mm">
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+      <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+    </layer>
+    <layer id="5" inner_r="1206.0*mm" outer_z="1535.676*mm">
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+      <slice material="Rohacell31_15percent" thickness="0.8075*cm" />
+      <slice material="CarbonFiber" thickness="0.05*cm" />
+    </layer>
+  </detector>
+
+  <comment>Dished endcap disks</comment>
+
+  <detector name="SiTrackerEndcapSupport1" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="510.448*mm" rmax="510.448*mm" z="(750.417-0.001)*mm" />
+    <zplane rmin="504.711*mm" rmax="510.448*mm" z="(750.919-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(777.034-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(777.535-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport2" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="510.448*mm" rmax="510.448*mm" z="750.919*mm" />
+    <zplane rmin="438.449*mm" rmax="510.448*mm" z="757.218*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="777.535*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="783.834*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport3" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="510.448*mm" rmax="510.448*mm" z="(757.218+0.001)*mm" />
+    <zplane rmin="504.711*mm" rmax="510.448*mm" z="(757.720+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(783.834+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(784.336+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport4" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="763.796*mm" rmax="763.796*mm" z="(1014.437-0.001)*mm" />
+    <zplane rmin="758.059*mm" rmax="763.796*mm" z="(1014.939-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1063.219-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1063.721-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport5" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="763.796*mm" rmax="763.796*mm" z="1014.939*mm" />
+    <zplane rmin="691.797*mm" rmax="763.796*mm" z="1021.238*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="1063.721*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="1070.020*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport6" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="763.796*mm" rmax="763.796*mm" z="(1021.238+0.001)*mm" />
+    <zplane rmin="758.059*mm" rmax="763.796*mm" z="(1021.740+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1070.020+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1070.522+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport7" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(1272.885-0.001)*mm" />
+    <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(1273.387-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1343.711-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1344.213-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport8" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="1273.387*mm" />
+    <zplane rmin="943.753*mm" rmax="1015.748*mm" z="1279.686*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="1344.213*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="1350.512*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport9" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(1279.686+0.001)*mm" />
+    <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(1280.188+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1350.512+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1351.014+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport10" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(1536.560-0.001)*mm" />
+    <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(1537.062-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1629.089-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1629.591-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport11" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="1537.062*mm" />
+    <zplane rmin="1191.810*mm" rmax="1263.808*mm" z="1543.361*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="1629.591*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="1635.890*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport12" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(1543.361+0.001)*mm" />
+    <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(1543.863+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(1635.890+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(1636.392+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport1Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="510.448*mm" rmax="510.448*mm" z="(-750.417+0.001)*mm" />
+    <zplane rmin="504.711*mm" rmax="510.448*mm" z="(-750.919+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-777.034+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-777.535+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport2Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919*mm" />
+    <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport3Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="510.448*mm" rmax="510.448*mm" z="(-757.218-0.001)*mm" />
+    <zplane rmin="504.711*mm" rmax="510.448*mm" z="(-757.720-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-783.834-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-784.336-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport4Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="763.796*mm" rmax="763.796*mm" z="(-1014.437+0.001)*mm" />
+    <zplane rmin="758.059*mm" rmax="763.796*mm" z="(-1014.939+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1063.219+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1063.721+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport5Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="763.796*mm" rmax="763.796*mm" z="-1014.939*mm" />
+    <zplane rmin="691.797*mm" rmax="763.796*mm" z="-1021.238*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1063.721*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1070.020*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport6Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="763.796*mm" rmax="763.796*mm" z="(-1021.238-0.001)*mm" />
+    <zplane rmin="758.059*mm" rmax="763.796*mm" z="(-1021.740-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1070.020-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1070.522-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport7Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(-1272.885+0.001)*mm" />
+    <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(-1273.387+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1343.711+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1344.213+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport8Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="-1273.387*mm" />
+    <zplane rmin="943.753*mm" rmax="1015.748*mm" z="-1279.686*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1344.213*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1350.512*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport9Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1015.748*mm" rmax="1015.748*mm" z="(-1279.686-0.001)*mm" />
+    <zplane rmin="1010.011*mm" rmax="1015.748*mm" z="(-1280.188-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1350.512-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1351.014-0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport10Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(-1536.560+0.001)*mm" />
+    <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(-1537.062+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1629.089+0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1629.591+0.001)*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport11Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="Rohacell31"/>
+    <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="-1537.062*mm" />
+    <zplane rmin="1191.810*mm" rmax="1263.808*mm" z="-1543.361*mm" />
+    <zplane rmin="206.234*mm" rmax="278.187*mm" z="-1629.591*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="-1635.890*mm" />
+  </detector>
+  <detector name="SiTrackerEndcapSupport12Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
+    <material name="CarbonFiber"/>
+    <zplane rmin="1263.808*mm" rmax="1263.808*mm" z="(-1543.361-0.001)*mm" />
+    <zplane rmin="1258.071*mm" rmax="1263.808*mm" z="(-1543.863-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="211.970*mm" z="(-1635.890-0.001)*mm" />
+    <zplane rmin="206.234*mm" rmax="206.234*mm" z="(-1636.392-0.001)*mm" />
+  </detector>        
+
+  <detector name="TrackerReadout" type="DD4hep_DiskTracker" reflect="true" vis="GreenVis">
+
+    <comment>Readouts</comment>
+
+    <layer id="1" inner_r="25.7*cm" inner_z="590.402*mm" outer_r="45.6*cm">
+      <slice material="G10" thickness="0.057*cm" />
+      <slice material="Copper" thickness="0.0038*cm" />
+    </layer>
+    <layer id="2" inner_r="51.0*cm" inner_z="762.854*mm" outer_r="70.6*cm">
+      <slice material = "G10" thickness="0.102*cm" />
+      <slice material = "Copper" thickness="0.0068*cm" />
+    </layer>
+    <layer id="3" inner_r="76.3*cm" inner_z="1026.874*mm" outer_r="95.6*cm">
+      <slice material="G10" thickness="0.108*cm" />
+      <slice material="Copper" thickness="0.0072*cm" />
+    </layer>
+    <layer id="4" inner_r="101.3*cm" inner_z="1285.322*mm" outer_r="120.6*cm">
+      <slice material="G10" thickness="0.186*cm" />
+      <slice material="Copper" thickness="0.0124*cm" />
+    </layer>
+    <layer id="5" inner_r= "101.3*cm" inner_z="1610.0*mm" outer_r="120.6*cm">
+      <slice material="G10" thickness="0.246*cm" />
+      <slice material="Copper" thickness="0.0164*cm" />
+    </layer>
+  </detector>
+
+</detectors>

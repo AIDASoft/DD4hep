@@ -1,0 +1,47 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the complete vertex detector                     -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!--    Contained are the required                                          -->
+<!--      ++ global constants used uniquely by this module                  -->
+<!--      ++ visualization attributes                                       -->
+<!--      ++ the definition of the readout structure and the                -->
+<!--         readout segmentation (if necessary)                            -->
+<!--      ++ the include statements for the sensitive detectors and         -->
+<!--         the corresponding support structure(s)                         -->
+<!--                                                                        -->
+<!--                                                                        -->
+<!--   @author  M.Frank                                                     -->
+<!--   @date    14/11/2014                                                  -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<lccdd>
+  <!--  Definition of global dictionary constants          -->
+  <define>
+  </define>
+
+  <!--  Definition of the used visualization attributes    -->
+  <display>
+    <vis name="SiVertexModuleVis"    alpha="1.0" r="1" g="1"    b="0.6" drawingStyle="wireframe" showDaughters="true"  visible="true"/>
+    <vis name="SiVertexSensitiveVis" alpha="1.0" r="1" g="0.2"  b="0.2" drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="SiVertexPassiveVis"   alpha="1.0" r="0" g="0.2"  b="1"   drawingStyle="solid"     showDaughters="true"  visible="true"/>
+    <vis name="SiVertexLayerVis"     alpha="1.0" r="1" g="0.75" b="0"                            showDaughters="false" visible="true"/>
+  </display>
+
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="SiVertexBarrelHits">
+      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:24</id>
+    </readout>
+    <readout name="SiVertexEndcapHits">
+      <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:26</id>
+    </readout>
+  </readouts>
+  
+  <!--  Includes for sensitives and support                -->
+  <include ref="SiD_VertexBarrel.xml"/>
+  <include ref="SiD_VertexEndcap.xml"/>
+  <include ref="SiD_VertexSupport.xml"/>
+</lccdd>

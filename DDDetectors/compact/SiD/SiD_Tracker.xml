@@ -1,0 +1,51 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the complete SiD tracker detector                -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!--    Contained are the required                                          -->
+<!--      ++ global constants used uniquely by this module                  -->
+<!--      ++ visualization attributes                                       -->
+<!--      ++ the definition of the readout structure and the                -->
+<!--         readout segmentation (if necessary)                            -->
+<!--      ++ the include statements for the sensitive detectors and         -->
+<!--         the corresponding support structure(s)                         -->
+<!--                                                                        -->
+<!--                                                                        -->
+<!--   @author  M.Frank                                                     -->
+<!--   @date    14/11/2014                                                  -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<lccdd>
+  <!--  Definition of global dictionary constants          -->
+  <define>
+  </define>
+
+  <!--  Definition of the used visualization attributes    -->
+  <display>
+    <vis name="SiTrackerLayerVis"   alpha="1.0" r="1.0" g="1.0" b="0.6" showDaughters="true" visible="true"/>
+    <vis name="SiTrackerModuleVis"  alpha="0.1" r="0.0" g="1.0" b="0.6" showDaughters="false" visible="true"/>
+    <vis name="SiTrackerForwardVis" alpha="1.0" r="0.8" g="0.1" b="0.1" showDaughters="false" visible="true"/>
+  </display>
+
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="SiTrackerEndcapHits">
+      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
+    </readout>        
+    <readout name="SiTrackerBarrelHits">
+      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
+    </readout>
+    <readout name="SiTrackerForwardHits">
+      <id>system:8,barrel:3,layer:4,wedge:6,module:6,sensor:1,side:32:-2,strip:28</id>
+    </readout>
+  </readouts>
+  
+  <!--  Includes for sensitives and support                -->
+  <include ref="SiD_TrackerEndcap.xml"/>
+  <include ref="SiD_TrackerBarrel.xml"/>
+  <include ref="SiD_TrackerForward.xml"/>
+  <include ref="SiD_TrackerSupport.xml"/>
+
+</lccdd>

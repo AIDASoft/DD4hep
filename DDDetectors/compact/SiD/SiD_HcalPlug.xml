@@ -1,0 +1,34 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the hadronic calorimeter okug detector (HCAL)    -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<detectors>
+  <detector id="HcalPlug_ID" name="HcalPlug" type="DD4hep_PolyhedraEndcapCalorimeter2" readout="HcalPlugHits" vis="MuonEndcapVis">
+
+    <comment>Hadron Calorimeter Plug</comment>
+
+    <dimensions numsides="(int) CaloSides" zmin="SolenoidCoilOuterZ" rmin="MuonEndcap_rmin" rmax="HcalEndcap_rmax" />
+    <layer repeat="1" vis="MuonEndcapLayerVis">
+      <slice material="Iron" thickness="15.0*cm"  vis="MuonEndcapAbsorberVis"/>
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes"  vis="MuonEndcapSensorVis"/>
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes"  vis="MuonEndcapSensorVis"/>
+      <slice material="PyrexGlass" thickness="0.2*cm" />
+      <slice material="Air" thickness="0.35*cm" />
+      <slice material="Aluminum" thickness="0.1*cm" />
+      <slice material="Air" thickness="1.0*cm" />
+      <slice material="Iron" thickness="9.0*cm"  vis="MuonEndcapAbsorberVis"/>
+    </layer>
+  </detector>
+</detectors>

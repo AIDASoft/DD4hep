@@ -1,0 +1,56 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the complete SiD tracker detector                -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!--    Contained are the required                                          -->
+<!--      ++ global constants used uniquely by this module                  -->
+<!--      ++ visualization attributes                                       -->
+<!--      ++ the definition of the readout structure and the                -->
+<!--         readout segmentation (if necessary)                            -->
+<!--      ++ the include statements for the sensitive detectors and         -->
+<!--         the corresponding support structure(s)                         -->
+<!--                                                                        -->
+<!--                                                                        -->
+<!--   @author  M.Frank                                                     -->
+<!--   @date    14/11/2014                                                  -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<lccdd>
+  <!--  Definition of global dictionary constants          -->
+  <define>
+  </define>
+
+  <!--  Definition of the used visualization attributes    -->
+  <display>
+    <vis name="HcalBarrelVis"          alpha="1" r="1"    g="1"    b="0.1" showDaughters="true" visible="true"/>
+    <vis name="HcalBarrelStavesVis"    alpha="1" r="1"    g="0"    b="0.3" showDaughters="true" visible="true"/>
+    <vis name="HcalBarrelLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="true" visible="true"/>
+    <vis name="HcalBarrelSensorVis"    alpha="1" r="1"    g="1"    b="0.7" showDaughters="true" visible="true"/>
+
+    <vis name="HcalEndcapVis"          alpha="1" r="1"    g="1"    b="0.1" showDaughters="false" visible="true"/>
+    <vis name="HcalEndcapLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="false" visible="true"/>
+  </display>
+  
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="HcalBarrelHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+      <id>system:8,barrel:3,module:6,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+    <readout name="HcalEndcapHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+      <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+    <readout name="HcalPlugHits">
+      <segmentation type="CartesianGridXY" grid_size_x="3.0*cm" grid_size_y="3.0*cm" />
+      <id>system:8,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+
+  <!--  Includes for sensitives and support                -->
+  <include ref="SiD_HcalBarrel.xml"/>
+  <include ref="SiD_HcalEndcap.xml"/>
+
+</lccdd>

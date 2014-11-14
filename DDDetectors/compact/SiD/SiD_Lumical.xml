@@ -1,0 +1,76 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the complete SiD tracker detector                -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!--    Contained are the required                                          -->
+<!--      ++ global constants used uniquely by this module                  -->
+<!--      ++ visualization attributes                                       -->
+<!--      ++ the definition of the readout structure and the                -->
+<!--         readout segmentation (if necessary)                            -->
+<!--      ++ the include statements for the sensitive detectors and         -->
+<!--         the corresponding support structure(s)                         -->
+<!--                                                                        -->
+<!--                                                                        -->
+<!--   @author  M.Frank                                                     -->
+<!--   @date    14/11/2014                                                  -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<lccdd>
+  <!--  Definition of global dictionary constants          -->
+  <define>
+  </define>
+
+  <!--  Definition of the used visualization attributes    -->
+  <display>
+    <vis name="LumiCalVis" alpha="1" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+  </display>
+
+  <!--  Definition of the readout segmentation/definition  -->
+  <readouts>
+    <readout name="LumiCalHits">
+      <segmentation type="CartesianGridXY" grid_size_x="0.35*cm" grid_size_y="0.35*cm" />
+      <id>system:8,barrel:3,layer:8,slice:8,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+  
+  <!--  Includes for sensitives and support                -->
+  <detectors>
+    <detector id="13" name="LumiCal" reflect="true" type="DD4hep_CylindricalEndcapCalorimeter" readout="LumiCalHits" vis="LumiCalVis" calorimeterType="LUMI">
+
+      <comment>Luminosity Calorimeter</comment>
+
+      <dimensions inner_r = "LumiCal_rmin" inner_z = "LumiCal_zmin" outer_r = "LumiCal_rmax" />
+      <layer repeat="20" >
+	<slice material = "TungstenDens24" thickness = "0.271*cm" />
+	<slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" />
+	<slice material = "Copper"  thickness = "0.005*cm" />
+	<slice material = "Kapton"  thickness = "0.030*cm" />
+	<slice material = "Air"     thickness = "0.033*cm" />
+      </layer>
+      <layer repeat="15" >
+	<slice material = "TungstenDens24" thickness = "0.543*cm" />
+	<slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" />
+	<slice material = "Copper"  thickness = "0.005*cm" />
+	<slice material = "Kapton"  thickness = "0.030*cm" />
+	<slice material = "Air"     thickness = "0.033*cm" />
+      </layer>
+    </detector>
+
+    <detector name="LumiReadout_Forward" type="DD4hep_PolyconeSupport" vis="LumiCalVis">
+      <comment>Readout for Luminosity Calorimeter</comment>
+      <material name="G10"/>
+      <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="LumiCal_zmin"/>
+      <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="LumiCal_zmin+LumiCal_thickness"/>
+    </detector>
+    
+    <detector name="LumiReadout_Backward" type="DD4hep_PolyconeSupport" vis="LumiCalVis">
+      <comment>Readout for Luminosity Calorimeter</comment>
+      <material name="G10"/>
+      <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="-LumiCal_zmin"/>
+      <zplane rmin="LumiCal_rmax" rmax="LumiCalElectronics_rmax" z="-(LumiCal_zmin+LumiCal_thickness)"/>
+    </detector>
+    
+  </detectors>
+</lccdd>

@@ -1,0 +1,82 @@
+<!-- ==================================================================== -->
+<!--                                                                      -->
+<!--    XML description of the Silicon vertex barrel detector             -->
+<!--    of the SiD linear collider detector design.                       -->
+<!--                                                                      -->
+<!--    External definitions used:                                        -->
+<!--    ++++++++++++++++++++++++++                                        -->
+<!--                                                                      -->
+<!--    Required parameters:                                              -->
+<!--      VertexBarrel_ID          Subdetector identifier                 -->
+<!--      VertexBarrel_zmax        Max. dimension in Z                    -->
+<!--      VertexBarrel_r1          Radius of first module layer           -->
+<!--      VertexBarrel_r2          Radius of 2nd.  module layer           -->
+<!--      VertexBarrel_r3          Radius of 3rd.  module layer           -->
+<!--      VertexBarrel_r4          Radius of 4th.  module layer           -->
+<!--      VertexBarrel_r5          Radius of 5th.  module layer           -->
+<!--    NOTE:                                                             -->
+<!--      The driver supports any number of layers.                       -->
+<!--      Only this design has 5 layers!                                  -->
+<!--                                                                      -->
+<!--    Readout definition:                                               -->
+<!--      SiVertexBarrelHits                                              -->
+<!--                                                                      -->
+<!--    Visualization definitions:                                        -->
+<!--      SiVertexModuleVis                                               -->
+<!--      SiVertexLayerVis                                                -->
+<!--      SiVertexPassiveVis                                              -->
+<!--      SiVertexSensitiveVis                                            -->
+<!--                                                                      -->
+<!-- ==================================================================== -->
+
+<detectors>
+  <detector id="VertexBarrel_ID" name="SiVertexBarrel" type="DD4hep_SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
+
+    <comment>Vertex Detector Barrel</comment>
+
+    <module name="VtxBarrelModuleInner" vis="SiVertexModuleVis">
+      <module_envelope width="10.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
+      <module_component width="7.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
+	<position z="-0.12*mm"/>
+      </module_component>
+      <module_component width="9.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
+	<position z="0.225*mm"/>
+      </module_component>
+    </module>
+    <module name="VtxBarrelModuleOuter" vis="SiVertexModuleVis">
+      <module_envelope width="14.0*mm" length="(VertexBarrel_zmax - 0.1*cm) * 2" thickness="0.6*mm"/>
+      <module_component width="11.6*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.0130*cm" material="Carbon" sensitive="false" vis="SiVertexPassiveVis">
+	<position z="-0.12*mm"/>
+      </module_component>
+      <module_component width="13.8*mm" length="(VertexBarrel_zmax - 0.15*cm) * 2" thickness="0.005*cm" material="Silicon" sensitive="true" vis="SiVertexSensitiveVis">
+	<position z="0.210*mm"/>
+      </module_component>
+    </module>
+    <layer module="VtxBarrelModuleInner" id="1" vis="SiVertexLayerVis">
+      <barrel_envelope inner_r="VertexBarrel_r1 - 0.2*cm" outer_r="VertexBarrel_r1 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
+      <rphi_layout phi_tilt="0.0*rad" nphi="18" phi0="0.2618*rad" rc="VertexBarrel_r1" dr="-1.15*mm"/>
+      <z_layout dr="0.0*mm" z0="0.0*mm" nz="1"/>
+    </layer>
+    <layer module="VtxBarrelModuleOuter" id="2" vis="SiVertexLayerVis">
+      <barrel_envelope inner_r="VertexBarrel_r2 - 0.2*cm" outer_r="VertexBarrel_r2 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
+      <rphi_layout phi_tilt="0.0*rad" nphi="18" phi0="0.2618*rad" rc="VertexBarrel_r2" dr="-1.13*mm"/>
+      <z_layout dr="0.0*mm" z0="0.0*mm" nz="1"/>
+    </layer>
+    <layer module="VtxBarrelModuleOuter" id="3" vis="SiVertexLayerVis">
+      <barrel_envelope inner_r="VertexBarrel_r3 - 0.2*cm" outer_r="VertexBarrel_r3 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
+      <rphi_layout phi_tilt="0.0*rad" nphi="24" phi0="0.0*rad" rc="VertexBarrel_r3" dr="-0.89*mm"/>
+      <z_layout dr="0.0*mm" z0="0.0*mm" nz="1"/>
+    </layer>
+    <layer module="VtxBarrelModuleOuter" id="4" vis="SiVertexLayerVis">
+      <barrel_envelope inner_r="VertexBarrel_r4 - 0.2*cm" outer_r="VertexBarrel_r4 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
+      <rphi_layout phi_tilt="0.0*rad" nphi="30" phi0="0.1309*rad" rc="VertexBarrel_r4" dr="0.81*mm"/>
+      <z_layout dr="0.0*mm" z0="0.0*mm" nz="1"/>
+    </layer>
+    <layer module="VtxBarrelModuleOuter" id="5" vis="SiVertexLayerVis">
+      <barrel_envelope inner_r="VertexBarrel_r5 - 0.2*cm" outer_r="VertexBarrel_r5 + 0.2*cm" z_length="VertexBarrel_zmax * 2"/>
+      <rphi_layout phi_tilt="0.0*rad" nphi="36" phi0="0.0*rad" rc="VertexBarrel_r5" dr="0.77*mm"/>
+      <z_layout dr="0.0*mm" z0="0.0*mm" nz="1"/>
+    </layer>
+  </detector>
+
+</detectors>

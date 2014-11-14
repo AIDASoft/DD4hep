@@ -1,0 +1,21 @@
+<!-- ====================================================================== -->
+<!--                                                                        -->
+<!--    XML description of the hadronic calorimeter barrel detector (HCAL)  -->
+<!--    of the SiD linear collider detector design.                         -->
+<!--                                                                        -->
+<!-- ====================================================================== -->
+
+<detectors>
+  <detector id="HcalBarrel_ID" name="HcalBarrel" type="DD4hep_PolyhedraBarrelCalorimeter2" readout="HcalBarrelHits" vis="HcalBarrelVis" calorimeterType="HAD_BARREL" gap="0.*cm" material="Steel235">
+
+    <comment>Hadron Calorimeter Barrel</comment>
+
+    <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="EcalBarrel_zmax*2"/>
+    <staves vis="HcalBarrelStavesVis"/>
+    <layer repeat="(int) HcalBarrel_layers">
+      <slice material = "TungstenDens24" thickness = "1.00*cm" />
+      <slice material = "Polystyrene" thickness = "0.50*cm" sensitive = "yes" limits="cal_limits" vis="HcalBarrelSensorVis"/>       
+      <slice material = "Air" thickness = "0.15*cm" />
+    </layer>
+  </detector>
+</detectors>

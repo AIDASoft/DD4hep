@@ -1,0 +1,75 @@
+<!-- ==================================================================== -->
+<!--                                                                      -->
+<!--    XML description of the Silicon vertex endcap detector             -->
+<!--    of the SiD linear collider detector design.                       -->
+<!--                                                                      -->
+<!--    External definitions used:                                        -->
+<!--    ++++++++++++++++++++++++++                                        -->
+<!--                                                                      -->
+<!--    Required parameters:                                              -->
+<!--      VertexEndcap_ID          Subdetector identifier                 -->
+<!--      VertexEndcapModules      # of modules in the endcap             -->
+<!--      VertexEndcap_rmax        Max. dimension in R                    -->
+<!--      VertexEndcap_rmin1       Radius of first module                 -->
+<!--      VertexEndcap_rmin2       Radius of 2nd.  module                 -->
+<!--      VertexEndcap_rmin3       Radius of 3rd.  module                 -->
+<!--      VertexEndcap_rmin4       Radius of 4th.  module                 -->
+<!--      VertexEndcap_rmin5       Radius of 5th.  module                 -->
+<!--      VertexEndcap_z1          Starting point of the first layer in Z -->
+<!--      VertexEndcap_z2          Starting point of the 2nd.  layer in Z -->
+<!--      VertexEndcap_z3          Starting point of the 3rd.  layer in Z -->
+<!--      VertexEndcap_z4          Starting point of the 4th.  layer in Z -->
+<!--    NOTE:                                                             -->
+<!--      The driver supports any number of layers.                       -->
+<!--      Only this design has 5 layers!                                  -->
+<!--                                                                      -->
+<!--    Readout definition:                                               -->
+<!--      SiVertexEndcapHits                                              -->
+<!--                                                                      -->
+<!--    Visualization definitions:                                        -->
+<!--      SiVertexModuleVis                                               -->
+<!--      SiVertexLayerVis                                                -->
+<!--      SiVertexPassiveVis                                              -->
+<!--      SiVertexSensitiveVis                                            -->
+<!--                                                                      -->
+<!-- ==================================================================== -->
+
+<detectors>
+
+  <comment>Vertex Detector Endcaps</comment>
+
+  <detector id="2" name="SiVertexEndcap" type="DD4hep_SiTrackerEndcap2" readout="SiVertexEndcapHits" reflect="true">    
+    <module name="SiVertexEndcapModule1">
+      <trd x1="VertexEndcap_rmin1 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin1) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+      <module_component thickness="0.013*cm" material="Carbon" vis="SiVertexPassiveVis" />
+    </module>
+    <module name="SiVertexEndcapModule2">
+      <trd x1="VertexEndcap_rmin2 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin2) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+      <module_component thickness="0.013*cm" material="Carbon" vis="SiVertexPassiveVis" />
+    </module>
+    <module name="SiVertexEndcapModule3">
+      <trd x1="VertexEndcap_rmin3 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin3) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+      <module_component thickness="0.013*cm" material="Carbon" vis="SiVertexPassiveVis" />
+    </module>
+    <module name="SiVertexEndcapModule4">
+      <trd x1="VertexEndcap_rmin4 * tan(pi/(VertexEndcapModules-0.1))" x2="VertexEndcap_rmax * sin(pi/(VertexEndcapModules-0.1*cm))" z="(VertexEndcap_rmax - VertexEndcap_rmin4) / 2" />
+      <module_component thickness="0.005*cm" material="Silicon" sensitive="true"  vis="SiVertexSensitiveVis"/>
+      <module_component thickness="0.013*cm" material="Carbon"  vis="SiVertexPassiveVis"/>
+    </module>
+    <layer id="1"  vis="SiVertexLayerVis">
+      <ring r="(VertexEndcap_rmax + VertexEndcap_rmin1) / 2" zstart="VertexEndcap_z1" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule1"/>
+    </layer>
+    <layer id="2"  vis="SiVertexLayerVis">
+      <ring r="(VertexEndcap_rmax + VertexEndcap_rmin2) / 2" zstart="VertexEndcap_z2" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule2"/>
+    </layer>
+    <layer id="3"  vis="SiVertexLayerVis">
+      <ring r="(VertexEndcap_rmax + VertexEndcap_rmin3) / 2" zstart="VertexEndcap_z3" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule3"/>
+    </layer>
+    <layer id="4"  vis="SiVertexLayerVis">
+      <ring r="(VertexEndcap_rmax + VertexEndcap_rmin4) / 2" zstart="VertexEndcap_z4" nmodules="(int) VertexEndcapModules" dz="0.011*cm" module="SiVertexEndcapModule4"/>
+    </layer>
+  </detector> 
+</detectors>
