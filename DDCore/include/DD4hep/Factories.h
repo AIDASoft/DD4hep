@@ -243,13 +243,15 @@ namespace {
   using DD4hep::Geometry::xml_document_##name;\
   PLUGINSVC_FACTORY_WITH_ID(xml_document_##name,std::string(#name "_XML_reader"),long(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
 
-#define DECLARE_XML_PROCESSOR(name,func) \
-  namespace DD4hep { namespace Geometry { struct det_element_##name {};	\
-  template <> DD4hep::Geometry::Ref_t DetElementFactory< DD4hep::Geometry::det_element_##name >::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e,DD4hep::Geometry::Ref_t h){return func(l,e,h);}}} \
-  using DD4hep::Geometry::det_element_##name;\
+#define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)				                             \
+  namespace DD4hep { namespace Geometry { struct det_element_##name {};	                                             \
+      template <> DD4hep::Geometry::Ref_t DetElementFactory< DD4hep::Geometry::det_element_##name >::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e,DD4hep::Geometry::Ref_t h){ if (deprecated) warning_deprecated_xml_factory(#name); return func(l,e,h);}}  } \
+  using DD4hep::Geometry::det_element_##name;				                                             \
   PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
-#define DECLARE_SUBDETECTOR(name,func) DECLARE_XML_PROCESSOR(name,func)
-#define DECLARE_DETELEMENT(name,func)  DECLARE_XML_PROCESSOR(name,func)
+#define DECLARE_XML_PROCESSOR(name,func) DECLARE_XML_PROCESSOR_BASIC(name,func,0)
+#define DECLARE_SUBDETECTOR(name,func) DECLARE_XML_PROCESSOR_BASIC(name,func,0)
+#define DECLARE_DETELEMENT(name,func)  DECLARE_XML_PROCESSOR_BASIC(name,func,0)
+#define DECLARE_DEPRECATED_DETELEMENT(name,func)  DECLARE_XML_PROCESSOR_BASIC(name,func,1)
 
 #endif // DD4HEP_FACTORIES_H

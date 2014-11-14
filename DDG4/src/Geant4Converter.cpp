@@ -341,7 +341,10 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         }
       }
       else {
-        mat = new G4Material(name, m->GetZ(), m->GetA(), density, state, m->GetTemperature(), m->GetPressure());
+	double z = m->GetZ(), a = m->GetA();
+	if ( z < 1.0000001 ) z = 1.0;
+	if ( a < 0.5000001 ) a = 1.0;
+        mat = new G4Material(name, z, a, density, state, m->GetTemperature(), m->GetPressure());
       }
       stringstream str;
       str << (*mat);

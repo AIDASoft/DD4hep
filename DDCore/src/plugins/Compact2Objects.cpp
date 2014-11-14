@@ -494,9 +494,9 @@ template <> void Converter<Region>::operator()(xml_h e) const {
 /** Specialized converter for compact readout objects.
  *
  * <readout name="HcalBarrelHits">
- *  <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
- *  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
- *  </readout>
+ *   <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+ *   <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+ * </readout>
  */
 template <> void Converter<Readout>::operator()(xml_h e) const {
   xml_h id = e.child(_U(id));
@@ -505,6 +505,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   Readout ro(name);
   Ref_t idSpec;
 
+  printout(DEBUG, "Compact", "++ Creating readout structure: %s.",ro.name());
   if (seg) {   // Segmentation is not mandatory!
     string type = seg.attr<string>(_U(type));
     Segmentation segment(type, name);
@@ -539,7 +540,6 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     ro.setIDDescriptor(idSpec);
     lcdd.addIDSpecification(idSpec);
   }
-  printout(DEBUG, "Compact", "++ Registered readout structure: %s.",ro.name());
   lcdd.addReadout(ro);
 }
 
@@ -796,7 +796,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
   string tag = node.tag();
-  if ( tag == "lcdd" )  
+  if ( tag == "lccdd" )  
     Converter < Compact > (this->lcdd)(node);
   else if ( tag == "define" )
     xml_coll_t(node, _U(constant)).for_each(Converter < Constant > (this->lcdd));
@@ -812,7 +812,6 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   char text[32];
   xml_elt_t compact(element);
   xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter < GdmlFile > (lcdd));
-  xml_coll_t(compact, _U(include)).for_each(Converter < DetElementInclude > (this->lcdd));
 
   if (element.hasChild(_U(info)))
     (Converter < Header > (lcdd))(xml_h(compact.child(_U(info))));
@@ -832,6 +831,8 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(detectors)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   printout(DEBUG, "Compact", "++ Converting detector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(detector), Converter < DetElement > (lcdd));
+  xml_coll_t(compact, _U(include)).for_each(Converter < DetElementInclude > (this->lcdd));
+
   xml_coll_t(compact, _U(includes)).for_each(_U(alignment), Converter < AlignmentFile > (lcdd));
   xml_coll_t(compact, _U(includes)).for_each(_U(xml), Converter < XMLFile > (lcdd));
   xml_coll_t(compact, _U(alignments)).for_each(_U(alignment), Converter < AlignmentEntry > (lcdd));

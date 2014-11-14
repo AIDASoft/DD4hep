@@ -11,6 +11,7 @@
 #include "DD4hep/Handle.inl"
 #include "XML/Evaluator.h"
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 #include <cstdio>
 
@@ -153,6 +154,15 @@ namespace DD4hep {
     }
     void increment_object_validations() {
       ++s_numVerifies;
+    }
+    void warning_deprecated_xml_factory(const char* name)   {
+      const char* edge = "++++++++++++++++++++++++++++++++++++++++++";
+      size_t len = ::strlen(name);
+      cerr << edge << edge << edge << endl;
+      cerr << "++  The usage of the factory: \"" << name << "\" is DEPRECATED due to naming conventions." 
+	   << setw(53-len) << right << "++" << endl;
+      cerr << "++  Please use \"DD4hep_" << name << "\" instead." << setw(93-len) << right << "++" << endl;
+      cerr << edge << edge << edge << endl;
     }
   }
 }

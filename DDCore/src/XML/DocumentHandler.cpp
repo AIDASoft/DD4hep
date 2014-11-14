@@ -177,12 +177,12 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname) const {
 }
 
 Document DocumentHandler::load(const string& fname) const {
-  printout(INFO,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
+  printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   XMLURL xerurl = (const XMLCh*) Strng_t(fname);
   string path = _toString(xerurl.getPath());
   string proto = _toString(xerurl.getProtocolName());
   auto_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
-  printout(INFO,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
+  printout(DEBUG,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
   try {
     parser->parse(path.c_str());
   }

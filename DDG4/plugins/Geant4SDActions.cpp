@@ -124,7 +124,7 @@ namespace DD4hep {
     //               Geant4SensitiveAction<OpticalCalorimeter>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    /// Helper class to define properti4es of optical calorimeters. UNTESTED
+    /// Helper class to define properties of optical calorimeters. UNTESTED
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -172,9 +172,16 @@ namespace DD4hep {
     }
     typedef Geant4SensitiveAction<Geant4OpticalCalorimeter>  Geant4OpticalCalorimeterAction;
 
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    ///               Geant4SensitiveAction<TrackerCombine>
-    /// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
+    /**
+     *  Geant4SensitiveAction<TrackerCombine>
+     *
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
     struct TrackerCombine {
       typedef Geant4Tracker::Hit Hit;
       typedef Geant4HitCollection HitCollection;
@@ -189,6 +196,7 @@ namespace DD4hep {
       TrackerCombine() : pre(), post(), sensitive(0), track(0), e_cut(0.0), current(-1), combined(0)  {
       }
 
+      /// Start a new hit
       void start(G4Step* step, G4StepPoint* point)   {
 	pre.storePoint(step,point);
 	current = pre.truth.trackID;
@@ -198,12 +206,14 @@ namespace DD4hep {
 	combined = 0;
       }
 
+      /// Update energy and track information during hit info accumulation
       void update(G4Step* step) {
 	post.storePoint(step,step->GetPostStepPoint());
 	pre.truth.deposit += post.truth.deposit;
 	++combined;
       }
 
+      /// Clear collected information and restart for new hit
       void clear()  {
 	post.clear();
 	pre.clear();
@@ -216,6 +226,7 @@ namespace DD4hep {
 	return track && current != tr->GetTrackID();
       }
 
+      /// Extract hit information and add the created hit to the collection
       Hit* extractHit(HitCollection* collection)   {
 	if ( current == -1 || !track ) {
 	  return 0;
@@ -291,7 +302,6 @@ namespace DD4hep {
 	  extractHit(coll);
 	}
       }
-
     };
 
     /// Initialization overload for specialization

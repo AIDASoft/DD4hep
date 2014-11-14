@@ -75,11 +75,11 @@ void LCDDLoad::processXML(const XML::Handle_t& base, const string& xmlfile) {
 void LCDDLoad::processXMLElement(const std::string& xmlfile, const XML::Handle_t& xml_root) {
   string tag = xml_root.tag();
   string type = tag + "_XML_reader";
-  long result = PluginService::Create<long>(type, m_lcdd, &xml_root);
+  XML::Handle_t handle = xml_root;
+  long result = PluginService::Create<long>(type, m_lcdd, &handle);
   if (0 == result) {
     PluginDebug dbg;
-    XML::Handle_t handle = xml_root;
-    result = PluginService::Create<long>(type, m_lcdd, &handle);
+    result = PluginService::Create<long>(type, m_lcdd, &xml_root);
     if ( 0 == result )  {
       throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
 			  " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));

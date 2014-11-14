@@ -143,6 +143,9 @@ namespace DD4hep {
 
     long num_object_validations();
     void increment_object_validations();
+    /// Function tp print warning about deprecated factory usage. Used by Plugin mechanism.
+    void warning_deprecated_xml_factory(const char* name);
+
 
     /// Access to the magic word, which is protecting some objects against memory corruptions  \ingroup DD4HEP_GEOMETRY
     inline unsigned long long int magic_word() {
