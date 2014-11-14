@@ -175,9 +175,6 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
 
 	SubdetectorExtensionImpl* subdetExt = new SubdetectorExtensionImpl(sdet);
 	subdetExt->setIsBarrel(true);
-	subdetExt->setNSides(numSides);
-	subdetExt->setRMin(rmin);
-	subdetExt->setRMax(rmin + totalThickness);
 
 	sdet.addExtension<SubdetectorExtension>(subdetExt);
 	sdet.addExtension<LayeringExtension>(layeringExtension);
