@@ -30,7 +30,7 @@ public:
 private:
 	static std::string createMsg(const std::string& msg, const DDSegmentation::CellID& cellID) {
 		std::stringstream s;
-		s << msg;
+		s << "Invalid cell ID: " << msg;
 		if (cellID)
 			s << " (" << cellID << ")";
 		return s.str();
@@ -45,7 +45,7 @@ public:
 private:
 	static std::string createMsg(const std::string& msg, const Geometry::Position& position) {
 		std::stringstream s;
-		s << msg << " " << position;
+		s << "Invalid position: " << msg << " " << position;
 		return s.str();
 	}
 };
@@ -58,7 +58,7 @@ public:
 private:
 	static std::string createMsg(const std::string& msg, const Geometry::DetElement& det) {
 		std::stringstream s;
-		s << msg;
+		s << "Invalid detector element: " << msg;
 		if (det.isValid())
 			s << " (" <<det.name() << ")";
 		return s.str();

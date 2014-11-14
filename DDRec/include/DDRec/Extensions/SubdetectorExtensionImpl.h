@@ -84,7 +84,9 @@ public:
 protected:
 	Geometry::DetElement det;
 	bool _isBarrel;
+	bool _setIsBarrel;
 	bool _isEndcap;
+	bool _setIsEndcap;
 	double _rMin;
 	bool _setRMin;
 	double _rMax;

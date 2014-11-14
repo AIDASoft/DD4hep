@@ -6,6 +6,8 @@
  */
 
 #include "DDRec/API/IDDecoder.h"
+#include "DDRec/API/Exceptions.h"
+
 #include "DD4hep/LCDD.h"
 #include "DD4hep/VolumeManager.h"
 
@@ -22,36 +24,19 @@ using Geometry::VolumeManager;
 using Geometry::Volume;
 using std::set;
 
-/**
- * Default constructor using the name of the corresponding readout collection
- */
-IDDecoder::IDDecoder(const std::string& collectionName) {
+IDDecoder& IDDecoder::getInstance() {
+	static IDDecoder idd;
+	return idd;
+}
+
+/// Default constructor
+IDDecoder::IDDecoder() {
 	LCDD& lcdd = LCDD::getInstance();
-	_readout = lcdd.readout(collectionName);
 	_volumeManager = lcdd.volumeManager();
 	if (not _volumeManager.isValid()) {
 		_volumeManager = VolumeManager(lcdd, "volman", lcdd.world(), Readout(), VolumeManager::TREE);
 	}
-	_tgeoMgr = Geometry::LCDD::getInstance().world().volume()->GetGeoManager();
-}
-
-/**
- * Default constructor using a readout object
- */
-IDDecoder::IDDecoder(const Readout& readout) {
-	LCDD& lcdd = LCDD::getInstance();
-	_readout = readout;
-	_volumeManager = lcdd.volumeManager();
-	if (not _volumeManager.isValid()) {
-		_volumeManager = VolumeManager(lcdd, "volman", lcdd.world(), Readout(), VolumeManager::TREE);
-	}
-	_tgeoMgr = Geometry::LCDD::getInstance().world().volume()->GetGeoManager();
-}
-
-/**
- * Destructor
- */
-IDDecoder::~IDDecoder() {
+	_tgeoMgr = lcdd.world().volume()->GetGeoManager();
 }
 
 /**
@@ -63,10 +48,11 @@ CellID IDDecoder::cellIDFromLocal(const Position& local, const VolumeID volumeID
 	local.GetCoordinates(l);
 	// FIXME: direct lookup of transformations seems to be broken
 	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(volumeID);
-	const TGeoMatrix& localToGlobal = this->detectorElement(volumeID).worldTransformation();
+	DetElement det = this->detectorElement(volumeID);
+	const TGeoMatrix& localToGlobal = det.worldTransformation();
 	localToGlobal.LocalToMaster(l, g);
 	Position global(g[0], g[1], g[2]);
-	return _readout.segmentation().cellID(local, global, volumeID);
+	return this->findReadout(det).segmentation().cellID(local, global, volumeID);
 }
 
 /**
@@ -79,10 +65,11 @@ CellID IDDecoder::cellID(const Position& global) const {
 	global.GetCoordinates(g);
 	// FIXME: direct lookup of transformations seems to be broken
 	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(volID);
-	const TGeoMatrix& localToGlobal = this->detectorElement(volID).worldTransformation();
+	DetElement det = this->detectorElement(volID);
+	const TGeoMatrix& localToGlobal = det.worldTransformation();
 	localToGlobal.MasterToLocal(g, l);
 	Position local(l[0], l[1], l[2]);
-	return _readout.segmentation().cellID(local, global, volID);
+	return this->findReadout(det).segmentation().cellID(local, global, volID);
 }
 
 /**
@@ -91,11 +78,12 @@ CellID IDDecoder::cellID(const Position& global) const {
 Position IDDecoder::position(const CellID& cellID) const {
 	double l[3];
 	double g[3];
-	Position local = _readout.segmentation().position(cellID);
+	DetElement det = this->detectorElement(cellID);
+	Position local = this->findReadout(det).segmentation().position(cellID);
 	local.GetCoordinates(l);
 	// FIXME: direct lookup of transformations seems to be broken
 	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cellID);
-	const TGeoMatrix& localToGlobal = this->detectorElement(cellID).worldTransformation();
+	const TGeoMatrix& localToGlobal = det.worldTransformation();
 	localToGlobal.LocalToMaster(l, g);
 	return Position(g[0], g[1], g[2]);
 }
@@ -104,21 +92,23 @@ Position IDDecoder::position(const CellID& cellID) const {
  * Returns the local position from a given cell ID
  */
 Position IDDecoder::localPosition(const CellID& cellID) const {
-	return _readout.segmentation().position(cellID);
+	DetElement det = this->detectorElement(cellID);
+	return this->findReadout(det).segmentation().position(cellID);
 }
 
 /*
  * Returns the volume ID of a given cell ID
  */
 VolumeID IDDecoder::volumeID(const CellID& cellID) const {
-	return _readout.segmentation()->volumeID(cellID);
+	DetElement det = this->detectorElement(cellID);
+	return this->findReadout(det).segmentation()->volumeID(cellID);
 }
 
 /*
  * Returns the volume ID of a given global position
  */
 VolumeID IDDecoder::volumeID(const Position& position) const {
-	DetElement det = detectorElement(position);
+	DetElement det = this->detectorElement(position);
 	return det.volumeID();
 }
 
@@ -161,17 +151,33 @@ DetElement IDDecoder::detectorElement(const CellID& cellID) const {
  * Returns the closest detector element in the hierarchy for a given global position
  */
 DetElement IDDecoder::detectorElement(const Position& position) const {
-	Geometry::DetElement world = Geometry::LCDD::getInstance().world();
-	Geometry::DetElement det = getClosestDaughter(world, position);
-	// Fixme: check if this is valid, otherwise throw exception
+	DetElement world = Geometry::LCDD::getInstance().world();
+	DetElement det = getClosestDaughter(world, position);
+	if (not det.isValid()) {
+		throw invalid_position("DD4hep::DDRec::IDDecoder::detectorElement", position);
+	}
+	std::cout << det.name() << std::endl;
 	return det;
+}
+
+/// Access to the Readout object for a given cell ID
+Geometry::Readout IDDecoder::readout(const CellID& cellID) const {
+	DetElement det = this->detectorElement(cellID);
+	return this->findReadout(det);
+}
+
+/// Access to the Readout object for a given global position
+Geometry::Readout IDDecoder::readout(const Geometry::Position& global) const {
+	DetElement det = this->detectorElement(global);
+	return this->findReadout(det);
 }
 
 /*
  * Calculates the neighbours of the given cell ID and adds them to the list of neighbours
  */
 void IDDecoder::neighbours(const CellID& cellID, set<CellID>& neighbours) const {
-	_readout.segmentation()->neighbours(cellID, neighbours);
+	DetElement det = this->detectorElement(cellID);
+	this->findReadout(det).segmentation()->neighbours(cellID, neighbours);
 }
 
 /*
@@ -179,13 +185,58 @@ void IDDecoder::neighbours(const CellID& cellID, set<CellID>& neighbours) const 
  */
 bool IDDecoder::areNeighbours(const CellID& cellID, const CellID& otherCellID) const {
 	set<CellID> neighbours;
-	_readout.segmentation()->neighbours(cellID, neighbours);
+	DetElement det = this->detectorElement(cellID);
+	this->findReadout(det).segmentation()->neighbours(cellID, neighbours);
 	return neighbours.count(otherCellID) != 0;
 }
 
-Geometry::DetElement IDDecoder::getClosestDaughter(const Geometry::DetElement& det,
-		const Geometry::Position& position) {
-	Geometry::DetElement result;
+/// Access to the barrel-endcap flag
+IDDecoder::BarrelEndcapFlag IDDecoder::barrelEndcapFlag(const CellID& cellID) const {
+	Readout r = this->readout(cellID);
+	return BarrelEndcapFlag(r.idSpec().field(this->barrelIdentifier())->value(cellID));
+}
+
+/// Access to the layer index
+long int IDDecoder::layerIndex(const CellID& cellID) const {
+	Readout r = this->readout(cellID);
+	return r.idSpec().field(this->layerIdentifier())->value(cellID);
+}
+
+/// Access to the system index
+long int IDDecoder::systemIndex(const CellID& cellID) const {
+	Readout r = this->readout(cellID);
+	return r.idSpec().field(this->systemIdentifier())->value(cellID);
+}
+
+// helper method to find the corresponding Readout object to a DetElement
+Readout IDDecoder::findReadout(const Geometry::DetElement& det) const {
+
+	// first check if top level is a sensitive detector
+	if (det.volume().isValid() and det.volume().isSensitive()) {
+		Geometry::SensitiveDetector sd = det.volume().sensitiveDetector();
+		if (sd.isValid() and sd.readout().isValid()) {
+			return sd.readout();
+		}
+	}
+
+	// check all children recursively for the first valid Readout object
+	const DetElement::Children& children = det.children();
+	DetElement::Children::const_iterator it = children.begin();
+	while (it != children.end()) {
+		Readout r = findReadout(it->second);
+		if (r.isValid()) {
+			return r;
+		}
+		++it;
+	}
+
+	// neither this or any daughter is sensitive
+	return Readout();
+}
+
+// helper method to get the closest daughter DetElement to the position starting from the given DetElement
+DetElement IDDecoder::getClosestDaughter(const DetElement& det, const Position& position) {
+	DetElement result;
 
 	// check if we have a shape and see if we are inside
 	if (det.volume().isValid() and det.volume().solid().isValid()) {
@@ -196,14 +247,14 @@ Geometry::DetElement IDDecoder::getClosestDaughter(const Geometry::DetElement& d
 			result = det;
 		} else {
 			// assuming that any daughter shape would be inside this shape
-			return Geometry::DetElement();
+			return DetElement();
 		}
 	}
 
 	const DetElement::Children& children = det.children();
 	DetElement::Children::const_iterator it = children.begin();
 	while (it != children.end()) {
-		Geometry::DetElement daughterDet = getClosestDaughter(it->second, position);
+		DetElement daughterDet = getClosestDaughter(it->second, position);
 		if (daughterDet.isValid()) {
 			result = daughterDet;
 			break;

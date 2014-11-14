@@ -6,6 +6,7 @@
  */
 
 #include "DDRec/Extensions/SubdetectorExtensionImpl.h"
+#include "DDRec/API/IDDecoder.h"
 
 #include "DD4hep/LCDD.h"
 
@@ -23,8 +24,12 @@ SubdetectorExtensionImpl::SubdetectorExtensionImpl(const Geometry::DetElement& d
 /// Copy constructor
 SubdetectorExtensionImpl::SubdetectorExtensionImpl(const SubdetectorExtensionImpl& e, const Geometry::DetElement& d) {
 	this->det = d;
-	this->setIsBarrel(e.isBarrel());
-	this->setIsEndcap(e.isEndcap());
+	if (e._setIsBarrel) {
+		this->setIsBarrel(e.isBarrel());
+	}
+	if (e._setIsEndcap) {
+		this->setIsEndcap(e.isEndcap());
+	}
 	if (e._setRMin) {
 		this->setRMin(e.getRMin());
 	}
@@ -49,14 +54,20 @@ SubdetectorExtensionImpl::~SubdetectorExtensionImpl() {
 
 /// Is this a barrel detector
 bool SubdetectorExtensionImpl::isBarrel() const {
-	/// Fixme: could use IDDecoder to figure this out
-	return _isBarrel;
+	if (_setIsBarrel) {
+		return _isBarrel;
+	}
+	IDDecoder& id = IDDecoder::getInstance();
+	return id.barrelEndcapFlag(det.volumeID()).isBarrel();
 }
 
 /// Is this an endcap detector
 bool SubdetectorExtensionImpl::isEndcap() const {
-	/// Fixme: could use IDDecoder to figure this out
-	return _isEndcap;
+	if (_setIsEndcap) {
+		return _isEndcap;
+	}
+	IDDecoder& id = IDDecoder::getInstance();
+	return id.barrelEndcapFlag(det.volumeID()).isEndcap();
 }
 
 /// Access to the inner radius
@@ -66,9 +77,19 @@ double SubdetectorExtensionImpl::getRMin() const {
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
 		Geometry::Solid solid = det.volume().solid();
-		Geometry::Tube tube(solid);
-		if (tube.isValid()) {
-			return tube->GetRmin();
+		try {
+			Geometry::Tube tube(solid);
+			if (tube.isValid()) {
+				return tube->GetRmin();
+			}
+		} catch (std::runtime_error& e) {
+		}
+		try {
+			Geometry::PolyhedraRegular polyhedra(solid);
+			if (polyhedra.isValid()) {
+				return polyhedra->GetRmin()[0];
+			}
+		} catch (std::runtime_error& e) {
 		}
 	}
 	return 0.;
@@ -81,9 +102,19 @@ double SubdetectorExtensionImpl::getRMax() const {
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
 		Geometry::Solid solid = det.volume().solid();
-		Geometry::Tube tube(solid);
-		if (tube.isValid()) {
-			return tube->GetRmax();
+		try {
+			Geometry::Tube tube(solid);
+			if (tube.isValid()) {
+				return tube->GetRmin();
+			}
+		} catch (std::runtime_error& e) {
+		}
+		try {
+			Geometry::PolyhedraRegular polyhedra(solid);
+			if (polyhedra.isValid()) {
+				return polyhedra->GetRmax()[0];
+			}
+		} catch (std::runtime_error& e) {
 		}
 	}
 	return 0.;
@@ -98,7 +129,10 @@ double SubdetectorExtensionImpl::getZMin() const {
 		Geometry::Solid solid = det.volume().solid();
 		Geometry::Box box(solid);
 		if (box.isValid()) {
-			return box->GetDZ();
+			Geometry::Position local(0.,0.,-box->GetDZ()/2.);
+			Geometry::Position global;
+			det.localToWorld(local, global);
+			return global.z();
 		}
 	}
 	return 0.;
@@ -113,7 +147,10 @@ double SubdetectorExtensionImpl::getZMax() const {
 		Geometry::Solid solid = det.volume().solid();
 		Geometry::Box box(solid);
 		if (box.isValid()) {
-			return box->GetDZ();
+			Geometry::Position local(0.,0.,box->GetDZ()/2.);
+			Geometry::Position global;
+			det.localToWorld(local, global);
+			return global.z();
 		}
 	}
 	return 0.;
@@ -129,9 +166,13 @@ int SubdetectorExtensionImpl::getNSides() const {
 	}
 	if (det.isValid() and det.volume().isValid() and det.volume().solid().isValid()) {
 		Geometry::Solid solid = det.volume().solid();
-		Geometry::PolyhedraRegular polyhedra(solid);
-		if (polyhedra.isValid()) {
-			return polyhedra->GetNedges();
+		try {
+			Geometry::PolyhedraRegular polyhedra(solid);
+			if (polyhedra.isValid()) {
+				return polyhedra->GetNedges();
+			}
+		} catch (std::runtime_error& e) {
+
 		}
 	}
 	return 0;
@@ -184,7 +225,9 @@ void SubdetectorExtensionImpl::setNSides(int value) {
 
 void SubdetectorExtensionImpl::resetAll() {
 	_isBarrel = false;
+	_setIsBarrel = false;
 	_isEndcap = false;
+	_setIsEndcap = false;
 	_rMin = 0.;
 	_setRMin = false;
 	_rMax = 0.;
