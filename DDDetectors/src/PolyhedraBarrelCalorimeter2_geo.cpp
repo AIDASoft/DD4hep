@@ -178,4 +178,5 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
 	return sdet;
 }
 
-DECLARE_DETELEMENT(PolyhedraBarrelCalorimeter2, create_detector)
+DECLARE_DETELEMENT(DD4hep_PolyhedraBarrelCalorimeter2, create_detector)
+DECLARE_DEPRECATED_DETELEMENT(PolyhedraBarrelCalorimeter2,create_detector)
