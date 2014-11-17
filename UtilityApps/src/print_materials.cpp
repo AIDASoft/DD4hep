@@ -27,7 +27,8 @@ int main(int argc, char** argv ){
     
   if( argc != 8 ) {
     std::cout << " usage: print_materials compact.xml x0 y0 z0 x1 y1 z1 " << std::endl 
-	      << "        -> prints the materials on a straight line between the two given points ( unit is cm) "  ;
+	      << "        -> prints the materials on a straight line between the two given points ( unit is cm) "  
+	      << std::endl ;
     exit(1) ;
   }
   
