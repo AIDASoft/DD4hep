@@ -510,11 +510,9 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
  * </readout>
  */
 template <> void Converter<Readout>::operator()(xml_h e) const {
-  xml_h id = e.child(_U(id));
   xml_h seg = e.child(_U(segmentation), false);
   string name = e.attr<string>(_U(name));
   Readout ro(name);
-  Ref_t idSpec;
 
   printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
   if (seg) {   // Segmentation is not mandatory!
@@ -544,9 +542,10 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     }
     ro.setSegmentation(segment);
   }
+  xml_h id = e.child(_U(id));
   if (id) {
     //  <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
-    idSpec = IDDescriptor(id.text());
+    Ref_t idSpec = IDDescriptor(id.text());
     idSpec->SetName(ro.name());
     ro.setIDDescriptor(idSpec);
     lcdd.addIDSpecification(idSpec);
@@ -734,15 +733,6 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
   string name = element.attr<string>(_U(name));
   string name_match = ":" + name + ":";
   string type_match = ":" + type + ":";
-
-  // Allow to define readout  structures in the local element
-  xml_coll_t(element, _U(readout)).for_each(Converter < Readout > (this->lcdd));
-  // Allow to define region   structures in the local element
-  xml_coll_t(element, _U(region)).for_each(Converter < Region > (this->lcdd));
-  // Allow to define limitset structures in the local element
-  xml_coll_t(element, _U(limitset)).for_each(Converter < LimitSet > (this->lcdd));
-  // Allow to define visualization definitions in the local element
-  xml_coll_t(element,_U(vis)).for_each(Converter < VisAttr > (this->lcdd));
 
   if (req_dets && !strstr(req_dets, name_match.c_str()))
     return;
