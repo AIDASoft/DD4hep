@@ -780,8 +780,8 @@ xml_h LCDDConverter::handleRegion(const std::string& /* name */, Region region) 
     geo.doc_regions.append(reg = xml_elt_t(geo.doc, _U(region)));
     reg.setAttr(_U(name), region.name());
     reg.setAttr(_U(cut), region.cut());
-    reg.setAttr(_U(eunit), region.energyUnit());
-    reg.setAttr(_U(lunit), region.lengthUnit());
+    reg.setAttr(_U(eunit), "GeV");  // TGeo has energy in GeV
+    reg.setAttr(_U(lunit), "cm");   // TGeo has lengths in cm
     reg.setAttr(_U(store_secondaries), region.storeSecondaries());
     geo.xmlRegions[region] = reg;
   }

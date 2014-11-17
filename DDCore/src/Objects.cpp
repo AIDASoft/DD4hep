@@ -428,8 +428,6 @@ Region::Region(const string& name) {
   p->magic = magic_word();
   p->store_secondaries = false;
   p->threshold = 10.0;
-  p->lunit = "mm";
-  p->eunit = "MeV";
   p->cut = 10.0;
 }
 
@@ -445,16 +443,6 @@ Region& Region::setThreshold(double value) {
 
 Region& Region::setCut(double value) {
   object<Object>().cut = value;
-  return *this;
-}
-
-Region& Region::setLengthUnit(const string& unit) {
-  object<Object>().lunit = unit;
-  return *this;
-}
-
-Region& Region::setEnergyUnit(const string& unit) {
-  object<Object>().eunit = unit;
   return *this;
 }
 
@@ -476,16 +464,6 @@ double Region::threshold() const {
 /// Access secondaries flag
 bool Region::storeSecondaries() const {
   return object<Object>().store_secondaries;
-}
-
-/// Access the length unit
-const std::string& Region::lengthUnit() const {
-  return object<Object>().lunit;
-}
-
-/// Access the energy unit
-const std::string& Region::energyUnit() const {
-  return object<Object>().eunit;
 }
 
 #undef setAttr

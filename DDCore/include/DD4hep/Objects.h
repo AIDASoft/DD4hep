@@ -520,8 +520,6 @@ namespace DD4hep {
       Region& setStoreSecondaries(bool value);
       Region& setThreshold(double value);
       Region& setCut(double value);
-      Region& setLengthUnit(const std::string& unit);
-      Region& setEnergyUnit(const std::string& unit);
       /// Access references to user limits
       std::vector<std::string>& limits() const;
 
@@ -531,10 +529,6 @@ namespace DD4hep {
       double threshold() const;
       /// Access secondaries flag
       bool storeSecondaries() const;
-      /// Access the length unit
-      const std::string& lengthUnit() const;
-      /// Access the energy unit
-      const std::string& energyUnit() const;
     };
 
   } /* End namespace Geometry           */

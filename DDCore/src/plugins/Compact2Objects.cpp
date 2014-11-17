@@ -296,7 +296,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     cout << "degree " << XML::_toDouble(_Unicode(degree)) << endl;
 #endif
     //throw 1;
-    printout(DEBUG, "Compact", "++ Creating material %s", matname);
+    printout(DEBUG, "Compact", "++ Converting material %s", matname);
     mat = mix = new TGeoMixture(matname, composites.size(), dens_val);
     mat->SetRadLen(radlen_val, intlen_val);
     size_t ifrac = 0;
@@ -310,7 +310,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
 	fraction *= comp_elt->A();
       else
-        throw_print("Compact2Objects[ERROR]: Creating material:" + mname + " Element missing: " + nam);
+        throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
       composite_fractions_total += fraction;
       composite_fractions.push_back(fraction);
     }
@@ -330,7 +330,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
         mix->AddElement(comp_elt, fraction);
       else
-        throw_print("Compact2Objects[ERROR]: Creating material:" + mname + " Element missing: " + nam);
+        throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
     }
     // Update estimated density if not provided.
     if ( has_density )   {
@@ -410,6 +410,8 @@ template <> void Converter<VisAttr>::operator()(xml_h e) const {
   float r = e.hasAttr(_U(r)) ? e.attr<float>(_U(r)) : 1.0f;
   float g = e.hasAttr(_U(g)) ? e.attr<float>(_U(g)) : 1.0f;
   float b = e.hasAttr(_U(b)) ? e.attr<float>(_U(b)) : 1.0f;
+
+  printout(DEBUG, "Compact", "++ Converting VisAttr  structure: %s.",attr.name());
   attr.setColor(r, g, b);
   if (e.hasAttr(_U(alpha)))
     attr.setAlpha(e.attr<float>(_U(alpha)));
@@ -476,16 +478,25 @@ template <> void Converter<AlignmentEntry>::operator()(xml_h e) const {
 /** Specialized converter for compact region objects.
  *
  */
-template <> void Converter<Region>::operator()(xml_h e) const {
-  Region region(e.attr<string>(_U(name)));
+template <> void Converter<Region>::operator()(xml_h elt) const {
+  xml_dim_t  e = elt;
+  Region     region(e.nameStr());
   vector<string>&limits = region.limits();
-  string ene = e.attr<string>(_U(eunit)), len = e.attr<string>(_U(lunit));
+  xml_attr_t cut = elt.attr_nothrow(_U(cut));
+  xml_attr_t threshold = elt.attr_nothrow(_U(threshold));
+  xml_attr_t store_secondaries = elt.attr_nothrow(_U(store_secondaries));
+  double ene = e.eunit(1.0), len = e.lunit(1.0);
 
-  region.setEnergyUnit(ene);
-  region.setLengthUnit(len);
-  region.setCut(_multiply<double>(e.attr<string>(_U(cut)), len));
-  region.setThreshold(_multiply<double>(e.attr<string>(_U(threshold)), ene));
-  region.setStoreSecondaries(e.attr<bool>(_U(store_secondaries)));
+  printout(DEBUG, "Compact", "++ Converting region   structure: %s.",region.name());
+  if ( cut )  {
+    region.setCut(elt.attr<double>(cut)*len);
+  }
+  if ( threshold )  {
+    region.setThreshold(elt.attr<double>(threshold)*ene);
+  }
+  if ( store_secondaries )  {
+    region.setStoreSecondaries(elt.attr<bool>(store_secondaries));
+  }
   for (xml_coll_t user_limits(e, _U(limitsetref)); user_limits; ++user_limits)
     limits.push_back(user_limits.attr<string>(_U(name)));
   lcdd.addRegion(region);
@@ -505,7 +516,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
   Readout ro(name);
   Ref_t idSpec;
 
-  printout(DEBUG, "Compact", "++ Creating readout structure: %s.",ro.name());
+  printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
   if (seg) {   // Segmentation is not mandatory!
     string type = seg.attr<string>(_U(type));
     Segmentation segment(type, name);
@@ -551,6 +562,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
  */
 template <> void Converter<LimitSet>::operator()(xml_h e) const {
   LimitSet ls(e.attr<string>(_U(name)));
+  printout(DEBUG, "Compact", "++ Converting LimitSet structure: %s.",ls.name());
   for (xml_coll_t c(e, _U(limit)); c; ++c) {
     Limit limit;
     limit.particles = c.attr<string>(_U(particles));
@@ -722,6 +734,16 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
   string name = element.attr<string>(_U(name));
   string name_match = ":" + name + ":";
   string type_match = ":" + type + ":";
+
+  // Allow to define readout  structures in the local element
+  xml_coll_t(element, _U(readout)).for_each(Converter < Readout > (this->lcdd));
+  // Allow to define region   structures in the local element
+  xml_coll_t(element, _U(region)).for_each(Converter < Region > (this->lcdd));
+  // Allow to define limitset structures in the local element
+  xml_coll_t(element, _U(limitset)).for_each(Converter < LimitSet > (this->lcdd));
+  // Allow to define visualization definitions in the local element
+  xml_coll_t(element,_U(vis)).for_each(Converter < VisAttr > (this->lcdd));
+
   if (req_dets && !strstr(req_dets, name_match.c_str()))
     return;
   if (req_typs && !strstr(req_typs, type_match.c_str()))
@@ -800,6 +822,12 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
     Converter < Compact > (this->lcdd)(node);
   else if ( tag == "define" )
     xml_coll_t(node, _U(constant)).for_each(Converter < Constant > (this->lcdd));
+  else if ( tag == "readouts" )
+    xml_coll_t(node, _U(readout)).for_each(Converter < Readout > (this->lcdd));
+  else if ( tag == "regions" )
+    xml_coll_t(node, _U(region)).for_each(Converter < Region > (this->lcdd));
+  else if ( tag == "limitsets" )
+    xml_coll_t(node, _U(limitset)).for_each(Converter < LimitSet > (this->lcdd));
   else if ( tag == "display" )
     xml_coll_t(node,_U(vis)).for_each(Converter < VisAttr > (this->lcdd));
   else if ( tag == "detector" )  
@@ -825,8 +853,10 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(limits)).for_each(_U(limitset), Converter < LimitSet > (lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   xml_coll_t(compact, _U(display)).for_each(_U(vis), Converter < VisAttr > (lcdd));
-  printout(DEBUG, "Compact", "++ Converting readout structures...");
+  printout(DEBUG, "Compact", "++ Converting readout  structures...");
   xml_coll_t(compact, _U(readouts)).for_each(_U(readout), Converter < Readout > (lcdd));
+  printout(DEBUG, "Compact", "++ Converting region   structures...");
+  xml_coll_t(compact, _U(regions)).for_each(_U(region), Converter < Region > (lcdd));
   printout(DEBUG, "Compact", "++ Converting included files with subdetector structures...");
   xml_coll_t(compact, _U(detectors)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
   printout(DEBUG, "Compact", "++ Converting detector structures...");

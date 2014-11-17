@@ -441,6 +441,24 @@ namespace DD4hep {
       /// Access attribute values: show_daughters
       bool show_daughters() const;
 
+      /// Access min/max parameters: cut
+      double cut() const;
+      /// Access min/max parameters: cut
+      double cut(double default_value) const;
+      /// Access min/max parameters: threshold
+      double threshold() const;
+      /// Access min/max parameters: threshold
+      double threshold(double default_value) const;
+      /// Access min/max parameters: eunit
+      double eunit() const;
+      /// Access min/max parameters: eunit
+      double eunit(double default_value) const;
+      /// Access min/max parameters: lunit
+      double lunit() const;
+      /// Access min/max parameters: lunit
+      double lunit(double default_value) const;
+      
+
       /// Access child element with tag "dimensions" as Dimension object
       Dimension dimensions(bool throw_if_not_present = true) const;
       /// Child access: position
