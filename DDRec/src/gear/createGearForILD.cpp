@@ -296,30 +296,30 @@ namespace DD4hep{
       //*  test gear interface w/ LayeredExtensionImpl extension
       //**********************************************************
       
-      DetElement calo2DE = lcdd.detector("EcalBarrel") ;
+      // DetElement calo2DE = lcdd.detector("EcalBarrel") ;
       
-      Calorimeter calo2( calo2DE ) ;
+      // Calorimeter calo2( calo2DE ) ;
       
-      gear::CalorimeterParametersImpl* gearCalo2 = 
-	( calo2.isBarrel()  ?
-	  new gear::CalorimeterParametersImpl(  calo2.getRMin()/dd4hep::mm,                             calo2.getZMax()/dd4hep::mm, calo2.getNSides(),  0. )  :    // fixme: phi 0  is not defined ??
-	  new gear::CalorimeterParametersImpl(  calo2.getRMin()/dd4hep::mm, calo2.getRMax()/dd4hep::mm, calo2.getZMin()/dd4hep::mm, calo2.getNSides(),  0. ) 
-	  ) ;
+      // gear::CalorimeterParametersImpl* gearCalo2 = 
+      // 	( calo2.isBarrel()  ?
+      // 	  new gear::CalorimeterParametersImpl(  calo2.getRMin()/dd4hep::mm,                             calo2.getZMax()/dd4hep::mm, calo2.getNSides(),  0. )  :    // fixme: phi 0  is not defined ??
+      // 	  new gear::CalorimeterParametersImpl(  calo2.getRMin()/dd4hep::mm, calo2.getRMax()/dd4hep::mm, calo2.getZMin()/dd4hep::mm, calo2.getNSides(),  0. ) 
+      // 	  ) ;
 
-      for( unsigned i=0, nL = calo2.numberOfLayers() ; i <nL ; ++i ){
+      // for( unsigned i=0, nL = calo2.numberOfLayers() ; i <nL ; ++i ){
 	    
-	if( i == 0 ) {
-	  gearCalo2->layerLayout().positionLayer( calo2.getRMin()/dd4hep::mm, calo2.thickness(i)/dd4hep::mm ,  0. /dd4hep::mm,   0. /dd4hep::mm, calo2.absorberThickness(i)/dd4hep::mm ) ;
+      // 	if( i == 0 ) {
+      // 	  gearCalo2->layerLayout().positionLayer( calo2.getRMin()/dd4hep::mm, calo2.thickness(i)/dd4hep::mm ,  0. /dd4hep::mm,   0. /dd4hep::mm, calo2.absorberThickness(i)/dd4hep::mm ) ;
 
-	}else{                                                                                        //     fixme:   cell sizes  not in API !? 
+      // 	}else{                                                                                        //     fixme:   cell sizes  not in API !? 
 
-	  gearCalo2->layerLayout().addLayer(                                  calo2.thickness(i)/dd4hep::mm ,  0. /dd4hep::mm,   0. /dd4hep::mm, calo2.absorberThickness(i)/dd4hep::mm ) ;
-	}
+      // 	  gearCalo2->layerLayout().addLayer(                                  calo2.thickness(i)/dd4hep::mm ,  0. /dd4hep::mm,   0. /dd4hep::mm, calo2.absorberThickness(i)/dd4hep::mm ) ;
+      // 	}
 
 
-      }
+      // }
 
-      calo2DE.addExtension< GearHandle >( new GearHandle( gearCalo2, "EcalBarrelParameters" ) ) ;
+      // calo2DE.addExtension< GearHandle >( new GearHandle( gearCalo2, "EcalBarrelParameters" ) ) ;
 
 
       //============================================================================================
