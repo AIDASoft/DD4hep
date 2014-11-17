@@ -1320,10 +1320,10 @@
     </detector>
     <detector name="SiTrackerEndcapSupport2Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="Rohacell31"/>
-      <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919" />
-      <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218" />
-      <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535" />
-      <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834" />
+      <zplane rmin="510.448*mm" rmax="510.448*mm" z="-750.919*mm" />
+      <zplane rmin="438.449*mm" rmax="510.448*mm" z="-757.218*mm" />
+      <zplane rmin="206.234*mm" rmax="278.187*mm" z="-777.535*mm" />
+      <zplane rmin="206.234*mm" rmax="206.234*mm" z="-783.834*mm" />
     </detector>
     <detector name="SiTrackerEndcapSupport3Reflect" type="DD4hep_PolyconeSupport" insideTrackingVolume="true" vis="SupportVis">
       <material name="CarbonFiber"/>
