@@ -108,11 +108,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       // Loop over the number of modules in z.
       for (int j = 0; j < nz; j++)	  {
 	// Module PhysicalVolume.
-// 	Transform3D tr(RotationZYX(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
-    
-    //NOTE (Nikiforos, 26/08 Rotations needed to be fixed so that component1 (silicon) is on the outside      
-    Transform3D tr(RotationZYX(0,((M_PI/2)-phic-phi_tilt),-M_PI/2),Position(x,y,module_z));
-          
+	// 	Transform3D tr(RotationZYX(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
+	//NOTE (Nikiforos, 26/08 Rotations needed to be fixed so that component1 (silicon) is on the outside
+	Transform3D tr(RotationZYX(0,((M_PI/2)-phic-phi_tilt),-M_PI/2),Position(x,y,module_z));
 	pv = lay_vol.placeVolume(m_env,tr);
 	pv.addPhysVolID("module", module++);
 	// Adjust the x and y coordinates of the module.
@@ -137,6 +135,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     m_elt.setAttributes(lcdd,lay_vol,x_layer.regionStr(),x_layer.limitsStr(),x_layer.visStr());
     m_elt.setPlacement(pv);
   }
+  sdet.setAttributes(lcdd,assembly,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   pv = lcdd.pickMotherVolume(sdet).placeVolume(assembly);
   pv.addPhysVolID("system", det_id);      // Set the subdetector system ID.
   pv.addPhysVolID("barrel", 0);           // Flag this as a barrel subdetector.
