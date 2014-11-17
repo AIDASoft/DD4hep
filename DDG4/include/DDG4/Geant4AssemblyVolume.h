@@ -18,7 +18,7 @@ namespace DD4hep {
     public:
       std::vector<const TGeoNode*> m_entries;
       typedef std::vector<const TGeoNode*> Chain;
-      /// Default constructor
+      /// Default constructor with initialization
       Geant4AssemblyVolume() {
       }
       /// Default destructor

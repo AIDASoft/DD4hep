@@ -19,6 +19,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement   vxd(name, x_det.typeStr(), x_det.id());
   PlacedVolume pv;
 
+  assembly.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
   for(xml_coll_t c(e,_U(layer)); c; ++c)  {
     xml_comp_t  x_layer  (c);
     xml_comp_t  x_support (x_layer.child(_U(support)));
@@ -58,15 +59,15 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       
     sens.setType("tracker");
 
-    layer_assembly.setVisAttributes(lcdd.invisible());
+    layer_assembly.setAttributes(lcdd,x_layer.regionStr(),x_layer.limitsStr(),"invisible");
     pv = assembly.placeVolume(layer_assembly).addPhysVolID("layer",layer_id);  
     layerDE.setPlacement( pv ) ;
 
-    laddervol.setVisAttributes(lcdd.invisible());
-    suppvol.setVisAttributes(x_support.visStr());
+    laddervol.setAttributes(lcdd,x_ladder.regionStr(),x_ladder.limitsStr(),"invisible");
+    suppvol.setAttributes(lcdd,x_support.regionStr(),x_support.limitsStr(),x_support.visStr());
 
     sensvol.setSensitiveDetector(sens);
-    sensvol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_layer.visStr());
+    sensvol.setAttributes(lcdd,x_ladder.regionStr(),x_ladder.limitsStr(),x_layer.visStr());
 
     laddervol.placeVolume(sensvol,senspos);
     laddervol.placeVolume(suppvol,supppos);

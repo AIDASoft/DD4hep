@@ -34,25 +34,6 @@ def run():
   ui.HaveUI = True
   ui.SessionType = 'csh'
   kernel.registerGlobalAction(ui)
-  
-
-  # Configure Run actions
-  run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
-  run1.Property_int    = 12345
-  run1.Property_double = -5e15*keV
-  run1.Property_string = 'Startrun: Hello_2'
-  print run1.Property_string, run1.Property_double, run1.Property_int
-  run1.enableUI()
-  kernel.registerGlobalAction(run1)
-  kernel.runAction().add(run1)
-
-  evt1 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_1')
-  evt1.Property_int=01234
-  evt1.Property_double=1e11
-  evt1.Property_string='Hello_1'
-  evt1.enableUI()
-
-  kernel.eventAction().add(evt1)
 
   # Configure I/O
   evt_root = DDG4.EventAction(kernel,'Geant4Output2ROOT/RootOutput')
@@ -70,39 +51,18 @@ def run():
   gun.enableUI()
   kernel.generatorAction().add(gun)
 
-  # Setup global filters fur use in sensntive detectors
-  f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
-  f4 = DDG4.Filter(kernel,'EnergyDepositMinimumCut')
-  f4.Cut = 0.1*MeV
-  f4.enableUI()
-  kernel.registerGlobalFilter(f1)
-  kernel.registerGlobalFilter(f4)
-
   # First the tracking detectors
   seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/VXD')
   act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/VXDHandler','VXD')
-  seq.add(act)
-  seq.add(f1)
-  seq.add(f4)
-  act.add(f1)
 
   # Now build the physics list:
   phys = kernel.physicsList()
-  phys.extends = 'FTFP_BERT'
-  #phys.transportation = True
-  phys.decays  = True
+  phys.extends = 'QGSP_BERT'
   phys.enableUI()
-
-  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-  ph.addParticleConstructor('G4BosonConstructor')
-  ph.addParticleConstructor('G4LeptonConstructor')
-  ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
-  ph.addPhysicsConstructor('G4OpticalPhysics')
-  ph.enableUI()
-  phys.add(ph)
 
   phys.dump()
 
+  DDG4.setPrintLevel(DDG4.OutputLevel.DEBUG)
   kernel.configure()
   kernel.initialize()
   kernel.run()

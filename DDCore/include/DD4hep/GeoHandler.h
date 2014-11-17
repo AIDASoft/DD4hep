@@ -98,10 +98,11 @@ namespace DD4hep {
     class GeoHandler: public GeoHandlerTypes {
 
     protected:
+      bool  m_propagateRegions;
       Data* m_data;
 
       /// Internal helper to collect geometry information from traversal
-      GeoHandler& i_collect(const TGeoNode* node, int level);
+      GeoHandler& i_collect(const TGeoNode* node, int level, Region rg, LimitSet ls);
 
     private:
       /// Never call Copy constructor
@@ -119,6 +120,8 @@ namespace DD4hep {
       GeoHandler(Data* ptr);
       /// Default destructor
       virtual ~GeoHandler();
+      /// Propagate regions. Returns the previous value
+      bool setPropagateRegions(bool value);
       /// Collect geometry information from traversal
       GeoHandler& collect(DetElement top);
       /// Collect geometry information from traversal with aggregated information
@@ -140,6 +143,8 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       GeoScan(DetElement e);
+      /// Initializing constructor
+      GeoScan(DetElement e, bool propagateRegions);
       /// Default destructor
       virtual ~GeoScan();
       /// Work callback

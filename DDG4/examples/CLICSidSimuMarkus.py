@@ -21,7 +21,6 @@ def run():
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(lcdd)
-
   simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
   simple.printDetectors()
   # Configure UI

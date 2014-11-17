@@ -42,13 +42,13 @@ namespace {
 }
 
 /// Default constructor
-GeoHandler::GeoHandler() {
+GeoHandler::GeoHandler() : m_propagateRegions(false)  {
   m_data = new Data();
 }
 
 /// Initializing constructor
 GeoHandler::GeoHandler(Data* ptr)
-    : m_data(ptr) {
+  : m_propagateRegions(false), m_data(ptr) {
 }
 
 /// Default destructor
@@ -64,14 +64,21 @@ GeoHandler::Data* GeoHandler::release() {
   return d;
 }
 
+/// Propagate regions. Returns the previous value
+bool GeoHandler::setPropagateRegions(bool value)   {
+  bool old = m_propagateRegions;
+  m_propagateRegions = value;
+  return old;
+}
+
 GeoHandler& GeoHandler::collect(DetElement element) {
   m_data->clear();
-  return i_collect(element.placement().ptr(), 0);
+  return i_collect(element.placement().ptr(), 0, Region(), LimitSet());
 }
 
 GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   m_data->clear();
-  i_collect(element.placement().ptr(), 0);
+  i_collect(element.placement().ptr(), 0, Region(), LimitSet());
   for (Data::const_reverse_iterator i = m_data->rbegin(); i != m_data->rend(); ++i) {
     const Data::mapped_type& v = (*i).second;
     for (Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
@@ -106,16 +113,30 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   return *this;
 }
 
-GeoHandler& GeoHandler::i_collect(const TGeoNode* current, int level) {
+GeoHandler& GeoHandler::i_collect(const TGeoNode* current, int level, Region rg, LimitSet ls) {
   TGeoVolume* volume = current->GetVolume();
   TObjArray* nodes = volume->GetNodes();
   int num_children = nodes ? nodes->GetEntriesFast() : 0;
+  Volume vol(volume);
+  Region   region = vol.region();
+  LimitSet limits = vol.limitSet();
 
+  if ( m_propagateRegions )  {
+    if ( !region.isValid() && rg.isValid() )   {
+      region = rg;
+      vol.setRegion(region);
+    }
+    if ( !limits.isValid() && ls.isValid() )  {
+      limits = ls;
+      vol.setLimitSet(limits);
+    }
+  }
   (*m_data)[level].insert(current);
+  //printf("GeoHandler: collect level:%d %s\n",level,current->GetName());
   if (num_children > 0) {
     for (int i = 0; i < num_children; ++i) {
       TGeoNode* node = (TGeoNode*) nodes->At(i);
-      i_collect(node, level + 1);
+      i_collect(node, level + 1, region, limits);
     }
   }
   return *this;
@@ -124,6 +145,13 @@ GeoHandler& GeoHandler::i_collect(const TGeoNode* current, int level) {
 /// Initializing constructor
 GeoScan::GeoScan(DetElement e) {
   m_data = GeoHandler().collect(e).release();
+}
+
+/// Initializing constructor
+GeoScan::GeoScan(DetElement e, bool propagate) {
+  GeoHandler h;
+  h.setPropagateRegions(propagate);
+  m_data = h.collect(e).release();
 }
 
 /// Default destructor

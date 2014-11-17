@@ -827,7 +827,10 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
 }
 
 template <> void Converter<Compact>::operator()(xml_h element) const {
+  static int num_calls = 0;
   char text[32];
+
+  ++num_calls;
   xml_elt_t compact(element);
   xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter < GdmlFile > (lcdd));
 
@@ -860,7 +863,9 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter < SensitiveDetector > (lcdd));
   ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
   lcdd.addConstant(Constant("compact_checksum", text));
-  lcdd.endDocument();
+  if ( --num_calls == 0 )  {
+    lcdd.endDocument();
+  }
 }
 
 #ifdef _WIN32

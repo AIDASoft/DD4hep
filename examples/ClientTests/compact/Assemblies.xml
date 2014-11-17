@@ -1,90 +1,126 @@
 <lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
-    xmlns:xs="http://www.w3.org/2001/XMLSchema" 
-    xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
-    <info name="Assemblies_v01"
+  <info name="Assemblies_v01"
         title="Assembly Detector Toy model"
         author="M.Frank"
         url="http://ilcsoft.desy.de"
         status="development"
         version="$Id: ILDEx.xml 676 2013-08-06 11:12:53Z gaede $">
-        <comment>The compact format for the ILD Detector - toy model </comment>        
-    </info>
+    <comment>The compact format for the ILD Detector - toy model </comment>        
+  </info>
   
-    <includes>
-        <gdmlFile  ref="elements.xml"/>
-        <gdmlFile  ref="materials.xml"/>
-    </includes>
+  <includes>
+    <gdmlFile  ref="elements.xml"/>
+    <gdmlFile  ref="materials.xml"/>
+  </includes>
   
-    <define>
-        <constant name="world_side"             value="10*m"/>
-        <constant name="world_x"                value="world_side/2"/>
-        <constant name="world_y"                value="world_side/2"/>
-        <constant name="world_z"                value="world_side/2"/>        
-        <constant name="CrossingAngle"          value="0.014*rad"/>
-        
-        <constant name="VXD_inner_radius"       value="15*mm"/>
-        <constant name="VXD_outer_radius"       value="80*mm"/>
-	<constant name="VXD_zhalf"              value="130*mm"/>
-	<constant name="TPC_zhalf"              value="2500*mm"/>
-        <constant name="Hcal_outer_radius"      value="3395.46*mm"/> 
-        <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
-        <constant name="SolenoidalFieldRadius"  value="Hcal_outer_radius + 10.0*mm"/>
-    </define>
+  <define>
+    <constant name="world_side"             value="10*m"/>
+    <constant name="world_x"                value="world_side/2"/>
+    <constant name="world_y"                value="world_side/2"/>
+    <constant name="world_z"                value="world_side/2"/>        
+    <constant name="CrossingAngle"          value="0.014*rad"/>
+    
+    <constant name="VXD_inner_radius"       value="15*mm"/>
+    <constant name="VXD_outer_radius"       value="80*mm"/>
+    <constant name="VXD_zhalf"              value="130*mm"/>
+    <constant name="TPC_zhalf"              value="2500*mm"/>
+    <constant name="Hcal_outer_radius"      value="3395.46*mm"/> 
+    <constant name="SolenoidCoilOuterZ"     value="TPC_zhalf + 0.3*m"/>
+    <constant name="SolenoidalFieldRadius"  value="Hcal_outer_radius + 10.0*mm"/>
+  </define>
 
-    <limits>
-        <limitset name="Tracker_limits">
-            <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
-        </limitset>
-    </limits>
+  <limits>
+    <limitset name="Tracker_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+    <limitset name="VXD_RegionLimitSet">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="time_max" particles="*" value="5.0" unit="ns" />
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+  <regions>
+    <region name="VXD_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_LAYER_0_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_LADDER_0_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_SUPPORT_0_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_Layer_1_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_Layer_2_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_Layer_3_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_Layer_4_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+    <region name="VXD_Layer_5_Region" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="VXD_RegionLimitSet"/>
+    </region>
+  </regions>
 
-    <display>
-      <vis name="VXDVis"        alpha="1.0" r="0.9" g=".1"  b=".1"   showDaughters="true"  visible="true"/>
-      <vis name="VXDLayerVis"   alpha="1.0" r="0" g="1"  b="0"   showDaughters="true"  visible="true"/>
-      <vis name="VXDSupportVis" alpha="1" r="0" g="1" b="0" showDaughters="true" visible="true"/>
-    </display>
+  <display>
+    <vis name="VXDVis"        alpha="1.0" r="0.9" g=".1"  b=".1"   showDaughters="true"  visible="true"/>
+    <vis name="VXDLayerVis"   alpha="1.0" r="0" g="1"  b="0"   showDaughters="true"  visible="true"/>
+    <vis name="VXDSupportVis" alpha="1" r="0" g="1" b="0" showDaughters="true" visible="true"/>
+  </display>
 
-    <detectors>
-        <comment>Trackers</comment>
+  <detectors>
+    <comment>Trackers</comment>
 
-        <detector name="VXD" type="VXD_Assembly" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
-           <tubs rmin="VXD_inner_radius" rmax="VXD_outer_radius" zhalf="VXD_zhalf"/>
-          <layer id="0"  vis="VXDLayerVis" phi0="-1.570796327e+00">
-            <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
-         </layer>
-          <layer id="1"  vis="VXDLayerVis" phi0="-1.570796327e+00">
-            <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="65*mm" radius="18*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
-          </layer>
-          <layer id="2"  vis="VXDLayerVis" phi0="-1.570796327e+00">
-            <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="3.695000000e+01*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
-          </layer>
-          <layer id="3"  vis="VXDLayerVis" phi0="-1.570796327e+00">
-            <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="39*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
-          </layer>
-          <layer id="4"  vis="VXDLayerVis" phi0="-1.570796327e+00">
-            <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="5.795000000e+01*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
-          </layer>
-          <layer id="5"  vis="VXDLayerVis" phi0="-1.570796327e+00">
-            <support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-            <ladder  zhalf="125*mm" radius="60*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
-          </layer>
-        </detector>
-   </detectors>
+    <detector name="VXD" type="VXD_Assembly" vis="VXDVis" id="1" readout="VXDCollection" insideTrackingVolume="true" region="VXD_Region" limits="VXD_RegionLimitSet">
+      <tubs rmin="VXD_inner_radius" rmax="VXD_outer_radius" zhalf="VXD_zhalf"/>
+      <layer id="0"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_LAYER_0_Region">
+	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis" region="VXD_SUPPORT_0_Region"/>
+	<ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10" region="VXD_LADDER_0_Region"/>
+      </layer>
+      <layer id="1"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_1_Region">
+	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
+	<ladder  zhalf="65*mm" radius="18*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
+      </layer>
+      <layer id="2"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_2_Region">
+	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
+	<ladder  zhalf="125*mm" radius="3.695000000e+01*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
+      </layer>
+      <layer id="3"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_3_Region">
+	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
+	<ladder  zhalf="125*mm" radius="39*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
+      </layer>
+      <layer id="4"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_4_Region">
+	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
+	<ladder  zhalf="125*mm" radius="5.795000000e+01*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
+      </layer>
+      <layer id="5"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_5_Region">
+	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
+	<ladder  zhalf="125*mm" radius="60*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
+      </layer>
+    </detector>
+  </detectors>
 
-    <readouts>
-        <readout name="VXDCollection">
-            <id>system:5,layer:10,module:10,sensor:3,side:2</id>
-        </readout>
-    </readouts>
- <fields>
-        <field type="solenoid" name="GlobalSolenoid" inner_field="3.5*tesla"
-               outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
-               inner_radius="SolenoidalFieldRadius"
-               outer_radius="world_side" />
- </fields> 
+  <readouts>
+    <readout name="VXDCollection">
+      <id>system:5,layer:10,module:10,sensor:3,side:2</id>
+    </readout>
+  </readouts>
+  <fields>
+    <field type="solenoid" name="GlobalSolenoid" inner_field="3.5*tesla"
+	   outer_field="-1.5*tesla" zmax="SolenoidCoilOuterZ"
+	   inner_radius="SolenoidalFieldRadius"
+	   outer_radius="world_side" />
+  </fields> 
 </lccdd>

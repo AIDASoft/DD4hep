@@ -538,7 +538,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       region = info.g4Regions[reg];
       if (!region) {
         throw runtime_error("G4Cnv::volume[" + name + "]:    + FATAL Failed to "
-            "access Geant4 region.");
+			    "access Geant4 region.");
       }
     }
     PrintLevel lvl = m_outputLevel; //string(det.name())=="SiTrackerBarrel" ? WARNING : m_outputLevel;
@@ -570,7 +570,7 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     }
     if (sd) {
       printout(m_outputLevel, "Geant4Converter", "++ Volume:    + %s <> %s Solid:%s Mat:%s SD:%s", name.c_str(), vol->GetName().c_str(),
-          solid->GetName().c_str(), medium->GetName().c_str(), sd->GetName().c_str());
+	       solid->GetName().c_str(), medium->GetName().c_str(), sd->GetName().c_str());
     }
     info.g4Volumes[v] = vol;
     printout(m_outputLevel, "Geant4Converter", "++ Volume     + %s converted: %p ---> G4: %p", n.c_str(), v, vol);
@@ -598,17 +598,17 @@ void* Geant4Converter::collectVolume(const string& /* name */, const TGeoVolume*
 
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* node) const {
-  TGeoVolume* vol = node->GetVolume();
-  if ( vol->IsA() != TGeoVolumeAssembly::Class() )    {
+  TGeoVolume* mot_vol = node->GetVolume();
+  if ( mot_vol->IsA() != TGeoVolumeAssembly::Class() )    {
     return 0;
   }
   Geant4GeometryInfo& info = data();
   Geant4AssemblyVolume* g4 = info.g4AssemblyVolumes[node];
+
   if ( !g4 )  {
     g4 = new Geant4AssemblyVolume();
-    TGeoVolume* mot_vol = node->GetVolume();
-    for(Int_t i=0; i < vol->GetNdaughters(); ++i)   {
-      TGeoNode*   d = vol->GetNode(i);
+    for(Int_t i=0; i < mot_vol->GetNdaughters(); ++i)   {
+      TGeoNode*   d = mot_vol->GetNode(i);
       TGeoVolume* dau_vol = d->GetVolume();
       TGeoMatrix* tr = d->GetMatrix();
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
@@ -988,7 +988,6 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   m_data->clear();
   collect(top, geo);
   m_checkOverlaps = false;
-
   // We do not have to handle defines etc.
   // All positions and the like are not really named.
   // Hence, start creating the G4 objects for materials, solids and log volumes.
@@ -997,6 +996,7 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   mat = m_lcdd.material("Silicon");
   handleMaterial(mat.name(), mat);
 
+  //m_outputLevel = WARNING;
   //setPrintLevel(VERBOSE);
 
   handle(this, geo.volumes, &Geant4Converter::collectVolume);
