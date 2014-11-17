@@ -200,7 +200,7 @@ void Geant4Action::printP2(const char* fmt, ...) const   {
 void Geant4Action::debug(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::DEBUG, "Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::DEBUG, m_name, fmt, args);
   va_end(args);
 }
 
@@ -208,7 +208,7 @@ void Geant4Action::debug(const char* fmt, ...) const {
 void Geant4Action::info(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::INFO, "Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::INFO, m_name, fmt, args);
   va_end(args);
 }
 
@@ -216,7 +216,7 @@ void Geant4Action::info(const char* fmt, ...) const {
 void Geant4Action::warning(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::WARNING, "Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::WARNING, m_name, fmt, args);
   va_end(args);
 }
 
@@ -224,7 +224,7 @@ void Geant4Action::warning(const char* fmt, ...) const {
 void Geant4Action::error(const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::ERROR, "Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::ERROR, m_name, fmt, args);
   va_end(args);
 }
 
@@ -232,7 +232,7 @@ void Geant4Action::error(const char* fmt, ...) const {
 bool Geant4Action::error(bool return_value, const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::ERROR, "Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::ERROR, m_name, fmt, args);
   va_end(args);
   return return_value;
 }
@@ -242,7 +242,7 @@ void Geant4Action::fatal(const char* fmt, ...) const {
   string err;
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::FATAL, "Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::FATAL, m_name, fmt, args);
   va_end(args);
 }
 
@@ -251,8 +251,8 @@ void Geant4Action::except(const char* fmt, ...) const {
   string err;
   va_list args;
   va_start(args, fmt);
-  DD4hep::printout(DD4hep::FATAL, "Geant4Action", fmt, args);
-  err = DD4hep::format("Geant4Action", fmt, args);
+  DD4hep::printout(DD4hep::FATAL, m_name, fmt, args);
+  err = DD4hep::format(m_name, fmt, args);
   va_end(args);
   throw runtime_error(err);
 }

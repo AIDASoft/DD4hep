@@ -167,7 +167,7 @@ void Geant4ParticleHandler::mark(const G4Track* track)   {
 /// Event generation action callback
 void Geant4ParticleHandler::operator()(G4Event* event)  {
   typedef Geant4MonteCarloTruth _MC;
-  info("+++ Event:%d Add EVENT extension of type Geant4ParticleHandler.....",event->GetEventID());
+  debug("+++ Event:%d Add EVENT extension of type Geant4ParticleHandler.....",event->GetEventID());
   context()->event().addExtension((_MC*)this, typeid(_MC), 0);
   clear();
   /// Call the user particle handler
@@ -374,13 +374,13 @@ void Geant4ParticleHandler::endEvent(const G4Event* event)  {
   int level = outputLevel();
   do {
     if ( level <= VERBOSE ) dumpMap("Particle");
-    print("+++ Iteration:%d Tracks:%d Equivalents:%d",++count,m_particleMap.size(),m_equivalentTracks.size());
+    debug("+++ Iteration:%d Tracks:%d Equivalents:%d",++count,m_particleMap.size(),m_equivalentTracks.size());
   } while( recombineParents() > 0 );
 
   if ( level <= VERBOSE ) dumpMap("Recombined");
   // Rebase the simulated tracks, so that they fit to the generator particles
   rebaseSimulatedTracks(0);
-  if ( level <= DEBUG ) dumpMap("Rebased");
+  if ( level <= VERBOSE ) dumpMap("Rebased");
   // Consistency check....
   checkConsistency();
   /// Call the user particle handler

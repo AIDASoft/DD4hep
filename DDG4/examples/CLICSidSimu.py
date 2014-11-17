@@ -18,7 +18,7 @@ def run():
   lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml")
+  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(lcdd)
 
@@ -58,7 +58,6 @@ def run():
   """
   Generation of isotrope tracks of a given multiplicity with overlay:
   """
-
   # First particle generator: pi+
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
   gen.Particle = 'pi+'

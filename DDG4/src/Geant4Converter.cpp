@@ -11,6 +11,7 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/DD4hepUnits.h"
 #include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/objects/DetectorInterna.h"
 
@@ -77,6 +78,7 @@
 #include "G4ElectroMagneticField.hh"
 #include "G4FieldManager.hh"
 #include "G4ReflectionFactory.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 #include <iostream>
 #include <iomanip>
@@ -724,13 +726,13 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
     g4 = new G4Region(r.name());
     // set production cut
     G4ProductionCuts* cuts = new G4ProductionCuts();
-    cuts->SetProductionCut(r.cut());
+    cuts->SetProductionCut(r.cut()*CLHEP::MeV/dd4hep::MeV);
     g4->SetProductionCuts(cuts);
 
     // create region info with storeSecondaries flag
     G4UserRegionInformation* info = new G4UserRegionInformation();
     info->region = r;
-    info->threshold = r.threshold();
+    info->threshold = r.threshold()*CLHEP::MeV/dd4hep::MeV;
     info->storeSecondaries = r.storeSecondaries();
     g4->SetUserInformation(info);
 
@@ -769,13 +771,13 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
     for (LimitSet::Object::const_iterator i = limits.begin(); i != limits.end(); ++i) {
       const Limit& l = *i;
       if (l.name == "step_length_max")
-        g4->SetMaxAllowedStep(l.value);
+        g4->SetMaxAllowedStep(l.value*CLHEP::mm/dd4hep::mm);
       else if (l.name == "track_length_max")
-        g4->SetMaxAllowedStep(l.value);
+        g4->SetMaxAllowedStep(l.value*CLHEP::mm/dd4hep::mm);
       else if (l.name == "time_max")
-        g4->SetUserMaxTime(l.value);
+        g4->SetUserMaxTime(l.value*CLHEP::ns/dd4hep::ns);
       else if (l.name == "ekin_min")
-        g4->SetUserMinEkine(l.value);
+        g4->SetUserMinEkine(l.value*CLHEP::MeV/dd4hep::MeV);
       else if (l.name == "range_min")
         g4->SetUserMinRange(l.value);
       else

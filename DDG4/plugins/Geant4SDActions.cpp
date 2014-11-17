@@ -183,25 +183,22 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     struct TrackerCombine {
-      typedef Geant4Tracker::Hit Hit;
       typedef Geant4HitCollection HitCollection;
-      Hit  pre;
-      Hit  post;
+      Geant4Tracker::Hit  pre, post;
       Geant4Sensitive*  sensitive;
-      G4Track*          track;
       double            e_cut;
       int               current;
       int               combined;
       
-      TrackerCombine() : pre(), post(), sensitive(0), track(0), e_cut(0.0), current(-1), combined(0)  {
+      TrackerCombine() : pre(), post(), sensitive(0), e_cut(0.0), current(-1), combined(0)  {
       }
 
       /// Start a new hit
       void start(G4Step* step, G4StepPoint* point)   {
 	pre.storePoint(step,point);
+	pre.truth.deposit = 0.0;
 	current = pre.truth.trackID;
-	track = step->GetTrack();
-	sensitive->mark(track);
+	sensitive->mark(step->GetTrack());
 	post = pre;
 	combined = 0;
       }
@@ -219,25 +216,24 @@ namespace DD4hep {
 	pre.clear();
 	current = -1;
 	combined = 0;
-	track = 0;
       }
 
       bool mustSaveTrack(const G4Track* tr)  const   {
-	return track && current != tr->GetTrackID();
+	return current > 0 && current != tr->GetTrackID();
       }
 
       /// Extract hit information and add the created hit to the collection
-      Hit* extractHit(HitCollection* collection)   {
-	if ( current == -1 || !track ) {
-	  return 0;
+      void extractHit(Geant4HitCollection* collection)   {
+	if ( current == -1 ) {
+	  return;
 	}
 	Position pos = 0.5 * (pre.position + post.position);
 	Momentum mom = 0.5 * (pre.momentum + post.momentum);
 	double path_len = (post.position - pre.position).R();
-	Hit* hit = new Hit(pre.truth.trackID,
-			   pre.truth.pdgID,
-			   pre.truth.deposit,
-			   pre.truth.time);
+	Geant4Tracker::Hit* hit = new Geant4Tracker::Hit(pre.truth.trackID,
+							 pre.truth.pdgID,
+							 pre.truth.deposit,
+							 pre.truth.time);
 	hit->position = pos;
 	hit->momentum = mom;
 	hit->length = path_len;
@@ -247,7 +243,6 @@ namespace DD4hep {
 			   pre.truth.trackID,sensitive->c_name(),combined,pre.truth.deposit/MeV,
 			   pos.X()/mm,pos.Y()/mm,pos.Z()/mm);
 	clear();
-	return hit;
       }
 
 
@@ -265,13 +260,12 @@ namespace DD4hep {
 	if ( h.deposit()/keV <= 0 )  {
 	  return false;
 	}
-	/// We can now start collecting the deposits of the next hit.
-	if ( 0 == track )  {
+	/// Initialize the deposits of the next hit.
+	if ( current < 0 )  {
 	  start(step, h.pre);
 	}
-
-	// ....update .....
-        update(step);
+	/// ....update .....
+	update(step);
 
 	if ( prePV != postPV ) {
 	  void* postSD = h.sd(h.post);
@@ -283,7 +277,7 @@ namespace DD4hep {
 	    }
 	  }
 	}
-	else if ( track->GetTrackStatus() == fStopAndKill ) {
+	else if ( h.track->GetTrackStatus() == fStopAndKill ) {
 	  extractHit(coll);
 	}
 	return true;
@@ -297,7 +291,7 @@ namespace DD4hep {
 	//
 	// Alternatively the 'update' method would become rather CPU consuming,
 	// beacuse the extract action would have to be recalculated over and over.
-	if ( track )   {
+	if ( current > 0 )   {
 	  Geant4HitCollection* coll = sensitive->collection(0);
 	  extractHit(coll);
 	}
