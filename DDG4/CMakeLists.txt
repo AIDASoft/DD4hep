@@ -58,6 +58,9 @@ target_link_libraries(g4gdmlDisplay DD4hepG4 DD4hepCore)
 #-----------------------------------------------------------------------------------
 add_executable(g4FromXML g4FromXML.cpp)
 target_link_libraries(g4FromXML DD4hepG4 DD4hepCore)
+#-----------------------------------------------------------------------------------
+add_executable( dd_sim ddsim.cpp)
+target_link_libraries(dd_sim DD4hepCore DD4hepG4)
 
 #--- install target-------------------------------------
 install(DIRECTORY include/DDG4
@@ -75,7 +78,7 @@ install(FILES
   python/SystemOfUnits.py
   DESTINATION python)
 
-install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay
+install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay dd_sim
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )

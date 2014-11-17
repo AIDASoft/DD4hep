@@ -22,16 +22,6 @@ add_executable( print_materials src/print_materials.cpp)
 target_link_libraries(print_materials DD4hepCore DD4hepRec)
 #-----------------------------------------------------------------------------------
 
-if(DD4HEP_USE_GEANT4)
-  include_directories( ${CMAKE_SOURCE_DIR}/DDG4/include ) 
-
-  add_executable( dd_sim src/ddsim.cpp)
-  target_link_libraries(dd_sim DD4hepCore DD4hepG4)
-  install(TARGETS dd_sim RUNTIME DESTINATION bin )
-endif()
-#-----------------------------------------------------------------------------------
-
-
 
 root_generate_dictionary( G__teve src/EvNavHandler.h LINKDEF src/LinkDef.h)
 if(DD4HEP_USE_LCIO)
