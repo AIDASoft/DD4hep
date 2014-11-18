@@ -225,7 +225,7 @@ namespace {
     VolumeManager m_volManager;
     DetElement m_world;
     ShapePatcher(VolumeManager m, DetElement e)
-      : GeoScan(e,true), m_volManager(m), m_world(e) {
+      : GeoScan(e), m_volManager(m), m_world(e) {
     }
     void patchShapes() {
       GeoHandler::Data& data = *m_data;

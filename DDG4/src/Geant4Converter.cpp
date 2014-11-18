@@ -257,6 +257,7 @@ namespace {
 Geant4Converter::Geant4Converter(LCDD& lcdd)
     : Geant4Mapping(lcdd), m_checkOverlaps(true) {
   this->Geant4Mapping::init();
+  m_propagateRegions = true;
   m_outputLevel = PrintLevel(printLevel() - 1);
 }
 
@@ -264,6 +265,7 @@ Geant4Converter::Geant4Converter(LCDD& lcdd)
 Geant4Converter::Geant4Converter(LCDD& lcdd, PrintLevel level)
     : Geant4Mapping(lcdd), m_checkOverlaps(true) {
   this->Geant4Mapping::init();
+  m_propagateRegions = true;
   m_outputLevel = level;
 }
 
