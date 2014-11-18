@@ -184,7 +184,19 @@
     <limitset name="cal_limits">
       <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
     </limitset>
+    <limitset name="SiTrackerBarrelRegionLimitSet">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="time_max" particles="*" value="5.0" unit="ns" />
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+    </limitset>
   </limits>
+  <regions>
+    <region name="SiTrackerBarrelRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="SiTrackerBarrelRegionLimitSet"/>
+    </region>
+  </regions>
 
 
   <comment>Common Generic visualization attributes</comment>
@@ -206,17 +218,18 @@
   <comment>Calorimeters</comment>
   <include ref="SiD/SiD_Ecal.xml"/>
   <include ref="SiD/SiD_Hcal.xml"/>
+  <include ref="SiD/SiD_HcalPlug.xml"/>
   <include ref="SiD/SiD_Muon.xml"/>
   <include ref="SiD/SiD_Lumical.xml"/>
   <include ref="SiD/SiD_Beamcal.xml"/>
 
-  <comment>Dead material and supports</comment>
-  <include ref="SiD/SiD_Solenoid.xml"/>
-  <include ref="SiD/SiD_Shields.xml"/>
-
   <comment>Beampipe</comment>
   <include ref="SiD/SiD_Beampipe.xml"/>
   
+  <comment>Dead material, supports and magnet</comment>
+  <include ref="SiD/SiD_Shields.xml"/>
+  <include ref="SiD/SiD_Solenoid.xml"/>
+
   <fields>
     <field name="GlobalSolenoid" type="solenoid" 
 	   inner_field="5.0*tesla"

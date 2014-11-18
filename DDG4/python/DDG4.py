@@ -229,17 +229,17 @@ class Simple:
     kernel.UI = "UI"
     kernel.printProperties()
     self.kernel = kernel
+    self.lcdd = self.kernel.lcdd()
     self.calo = calo
     self.tracker = tracker
     self.sensitive_types = {}
     self.sensitive_types['tracker'] = self.tracker
     self.sensitive_types['calorimeter'] = self.calo
   def printDetectors(self):
-    lcdd = self.kernel.lcdd()
     print '+++  List of sensitive detectors:'
-    for i in lcdd.detectors():
+    for i in self.lcdd.detectors():
       o = DetElement(i.second)
-      sd = lcdd.sensitiveDetector(o.name())
+      sd = self.lcdd.sensitiveDetector(o.name())
       if sd.isValid():
         typ = sd.type()
         sdtyp = self.sensitive_types[typ]
@@ -252,10 +252,14 @@ class Simple:
     return (seq,act)
 
   def setupCalorimeter(self,name,type=None):
+    sd = self.lcdd.sensitiveDetector(name)
+    sd.setType('calorimeter')
     if type is None: type = self.calo
     return self.setupDetector(name,type)
 
   def setupTracker(self,name,type=None):
+    sd = self.lcdd.sensitiveDetector(name)
+    sd.setType('tracker')
     if type is None: type = self.tracker
     return self.setupDetector(name,type)
 
