@@ -68,7 +68,7 @@ namespace DD4hep {
    
     /// dump Material operator 
     inline std::ostream& operator<<( std::ostream& os , const Material& m ) {
-      os << "  " << m.name() << " Z: " << m.Z() << " A: " << m.A() << " densitiy: " << m.density() 
+      os << "  " << m.name() << " Z: " << m.Z() << " A: " << m.A() << " density: " << m.density() 
 	 << " radiationLength: "  <<  m.radLength() 
 	 << " interactionLength: " << m.intLength() ;
       return os ;
