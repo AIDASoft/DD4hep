@@ -55,7 +55,8 @@ def importConstants(lcdd,namespace=None,debug=False):
   cnt = 0
   num = 0
   todo = {}
-  for c in lcdd.constants(): todo[c.first] = c.second.GetTitle().replace('(int)','')
+  for c in lcdd.constants(): 
+    todo[c.first] = c.second.GetTitle().replace('(int)','')
   while len(todo) and cnt<100:
     cnt = cnt + 1
     if cnt == 100:
@@ -63,7 +64,12 @@ def importConstants(lcdd,namespace=None,debug=False):
           %('+++ FAILED to import',
             len(todo),len(todo)+num,
             'global values into namespace',
-            ns.__name__,'Try to cintinue anyway',100*'=',)
+            ns.__name__,'Try to continue anyway',100*'=',)
+      for k,v in todo.items():
+        if not hasattr(ns,k):
+          print '+++ FAILED to import: "'+k+'" = "'+str(v)+'"'
+      print '+++ %s'%(100*'=',)
+
     for k,v in todo.items():
       if not hasattr(ns,k):
         val = evaluator.evaluate(v)
@@ -71,11 +77,9 @@ def importConstants(lcdd,namespace=None,debug=False):
         if status == 0:
           evaluator.setVariable(k,val)
           setattr(ns,k,val)
-          if debug: print 'Imported global value:',k,'=',val,'into namespace',ns.__name__
+          if debug: print 'Imported global value: "'+k+'" = "'+str(val)+'" into namespace',ns.__name__
           del todo[k]
           num = num + 1
-        elif cnt == 100:
-          print 'FAILED to import:',k,'=',v
   if cnt<100:
     print '+++ Imported %d global values to namespace:%s'%(num,ns.__name__,)
 
