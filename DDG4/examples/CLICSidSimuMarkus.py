@@ -20,7 +20,7 @@ def run():
   example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
-  DDG4.importConstants(lcdd)
+  DDG4.importConstants(lcdd,debug=False)
   simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
   simple.printDetectors()
   # Configure UI
@@ -65,6 +65,7 @@ def run():
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
   gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
+  gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
 
   gen.OutputLevel = generator_output_level
   gen.MomentumScale = 1.0

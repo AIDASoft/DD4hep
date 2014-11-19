@@ -78,6 +78,11 @@ install(FILES
   python/SystemOfUnits.py
   DESTINATION python)
 
+install(FILES
+  python/checkOverlaps.py
+  python/checkGeometry.py
+  DESTINATION python)
+
 install(TARGETS DD4hepG4 DD4hepG4Plugins DD4hepG4Legacy g4gdmlDisplay dd_sim
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
