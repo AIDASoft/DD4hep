@@ -133,6 +133,10 @@ namespace DD4hep {
       double deltaphi() const;
       /// Access Tube parameters: deltaphi
       double deltaphi(double default_value) const;
+      /// Access rotation constants: startphi
+      double startphi() const;
+      /// Access rotation constants: startphi
+      double startphi(double default_value) const;
 
       /// Access parameters: b
       double b() const;

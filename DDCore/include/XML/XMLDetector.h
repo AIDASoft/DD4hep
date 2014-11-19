@@ -15,6 +15,9 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
+  class NamedObject;
+
   /// Namespace for the AIDA detector description toolkit supporting XML utilities 
   namespace XML {
 
@@ -40,6 +43,8 @@ namespace DD4hep {
       bool isSensitive() const;
       /// Access material attribute as STL string
       std::string materialStr() const;
+      /// Create a shape using the plugin mechanism from an XML element
+      NamedObject* createShape() const;
     };
 
     /// XML Handle class extending the XML handle Dimension

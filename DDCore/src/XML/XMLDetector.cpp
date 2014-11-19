@@ -8,9 +8,13 @@
 //====================================================================
 // Framework include files
 #include "XML/XMLDetector.h"
+#include "DD4hep/Plugins.h"
+#include "DD4hep/LCDD.h"
 
 using namespace std;
 using namespace DD4hep::XML;
+
+namespace Geometry { class LCDD; }
 
 string Component::materialStr() const {
   return m_element.attr < string > (_U(material));
@@ -20,6 +24,22 @@ bool Component::isSensitive() const {
   char val = m_element.hasAttr(_U(sensitive)) ? m_element.attr < string > (_U(sensitive))[0] : 'f';
   val = ::toupper(val);
   return val == 'T' || val == 'Y';
+}
+
+DD4hep::NamedObject* Component::createShape() const {
+  using namespace DD4hep::Geometry;
+  Dimension child(m_element);
+  string type = child.typeStr();
+  string fac  = type + "__shape_constructor";
+  Handle_t solid_elt = m_element;
+  LCDD* lcdd = 0;
+  NamedObject* solid = PluginService::Create<NamedObject*>(fac, lcdd, &solid_elt);
+  if ( !solid )  {
+    PluginDebug dbg;
+    PluginService::Create<NamedObject*>(type, lcdd, &solid_elt);
+    throw runtime_error("Failed to create solid of type " + type + ". " + dbg.missingFactory(type));
+  }
+  return solid;
 }
 
 int DetElement::id() const {

@@ -26,7 +26,7 @@ static Ref_t create_Polycone(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
   int num = 0;
   vector<double> rmin,rmax,z;
-  double start = e.start(0e0), deltaphi = e.deltaphi(2*M_PI);
+  double start = e.startphi(0e0), deltaphi = e.deltaphi(2*M_PI);
   for(xml_coll_t c(e,_U(zplane)); c; ++c, ++num)  {
     xml_comp_t plane(c);
     rmin.push_back(plane.rmin());
@@ -42,13 +42,13 @@ DECLARE_XMLELEMENT(Polycone__shape_constructor,create_Polycone)
 
 static Ref_t create_ConeSegment(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
-  return ConeSegment(e.rmin(0.0),e.rmax(),e.z(0.0),e.start(0.0),e.deltaphi(2*M_PI));
+  return ConeSegment(e.rmin(0.0),e.rmax(),e.z(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
 }
 DECLARE_XMLELEMENT(ConeSegment__shape_constructor,create_ConeSegment)
 
 static Ref_t create_Tube(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
-  return Tube(e.rmin(0.0),e.rmax(),e.z(0.0),e.start(0.0),e.deltaphi(2*M_PI));
+  return Tube(e.rmin(0.0),e.rmax(),e.z(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
 }
 DECLARE_XMLELEMENT(Tube__shape_constructor,create_Tube)
 

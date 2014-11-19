@@ -122,7 +122,11 @@ namespace DD4hep {
      *  with field components in Cartesian coordinates.
      *
      *  The actual behaviour is solely implemented in the underlying object
-     *  class.
+     *  classes. The overlay field is the sum of several magnetic of electric 
+     *  field components.
+     *
+     *  The resulting field vectors are computed by the vector addition 
+     *  of the individual components.
      *
      *  \author  M.Frank
      *  \version 1.0
