@@ -17,6 +17,9 @@
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4VProcess.hh"
+#include "G4ChargedGeantino.hh"
+#include "G4Geantino.hh"
+
 #include <iostream>
 
 using namespace DD4hep;
@@ -29,16 +32,16 @@ ParticleExtension::~ParticleExtension() {
 
 /// Copy constructor
 Geant4Particle::Geant4Particle(const Geant4Particle& c)
-  : ref(1), id(c.id), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
-    steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
-    status(c.status), charge(0),
-    vsx(c.vsx), vsy(c.vsy), vsz(c.vsz), 
-    vex(c.vex), vey(c.vey), vez(c.vez), 
-    psx(c.psx), psy(c.psy), psz(c.psz), 
-    pex(c.pex), pey(c.pey), pez(c.pez), 
-    mass(c.mass), time(c.time), properTime(c.properTime),
-    parents(c.parents), daughters(c.daughters), extension(),
-    process(c.process), definition(c.definition)
+: ref(1), id(c.id), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
+  steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
+  status(c.status), charge(0),
+  vsx(c.vsx), vsy(c.vsy), vsz(c.vsz), 
+  vex(c.vex), vey(c.vey), vez(c.vez), 
+  psx(c.psx), psy(c.psy), psz(c.psz), 
+  pex(c.pex), pey(c.pey), pez(c.pez), 
+  mass(c.mass), time(c.time), properTime(c.properTime),
+  parents(c.parents), daughters(c.daughters), extension(),
+  process(c.process)//, definition(c.definition)
 {
   InstanceCount::increment(this);
   spin[0] = c.spin[0];
@@ -58,7 +61,7 @@ Geant4Particle::Geant4Particle()
     psx(0.0), psy(0.0), psz(0.0), 
     pex(0.0), pey(0.0), pez(0.0), 
     mass(0.0), time(0.0), properTime(0.0),
-    daughters(), extension(), process(0), definition(0)
+  daughters(), extension(), process(0)//, definition(0)
 {
   InstanceCount::increment(this);
   spin[0] = spin[1] = spin[2] = 0;
@@ -75,7 +78,7 @@ Geant4Particle::Geant4Particle(int part_id)
     psx(0.0), psy(0.0), psz(0.0), 
     pex(0.0), pey(0.0), pez(0.0), 
     mass(0.0), time(0.0), properTime(0.0),
-    daughters(), extension(), process(0), definition(0)
+  daughters(), extension(), process(0)//, definition(0)
 {
   InstanceCount::increment(this);
   spin[0] = spin[1] = spin[2] = 0;
@@ -123,7 +126,7 @@ Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
     time        = c.time;
     properTime  = c.properTime;
     process     = c.process; 
-    definition  = c.definition;
+    //definition  = c.definition;
     daughters   = c.daughters;
     parents     = c.parents;
     extension   = c.extension;
@@ -138,13 +141,23 @@ void Geant4Particle::removeDaughter(int id_daughter)  {
   if ( j != daughters.end() ) daughters.erase(j);
 }
 
-/// Access to the Geant4 particle name
-std::string Geant4ParticleHandle::particleName() const   {
-  if ( particle->definition ) return particle->definition->GetParticleName();
+/// Access the Geant4 particle definition object (expensive!)
+const G4ParticleDefinition* Geant4ParticleHandle::definition() const   {
   G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* def = tab->FindParticle(particle->pdgID);
+  if ( 0 == def && 0 == particle->pdgID )   {
+    if ( fabs(particle->charge) < 0.001 ) 
+      return G4Geantino::Definition();
+    return G4ChargedGeantino::Definition();
+  }
+  return def;
+}
+
+/// Access to the Geant4 particle name
+std::string Geant4ParticleHandle::particleName() const   {
+  const G4ParticleDefinition* def = definition();
   if ( def )   {
-    particle->definition = def;
+    //particle->definition = def;
     return def->GetParticleName();
   }
 #if 0
@@ -159,11 +172,9 @@ std::string Geant4ParticleHandle::particleName() const   {
 
 /// Access to the Geant4 particle type
 std::string Geant4ParticleHandle::particleType() const   {
-  if ( particle->definition ) return particle->definition->GetParticleType();
-  G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
-  G4ParticleDefinition* def = tab->FindParticle(particle->pdgID);
+  const G4ParticleDefinition* def = definition();
   if ( def )   {
-    particle->definition = def;
+    //particle->definition = def;
     return def->GetParticleType();
   }
 #if 0

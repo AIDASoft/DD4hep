@@ -229,7 +229,6 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.colorFlow[1] = prim_part->colorFlow[1];
     m_currTrack.parents      = prim_part->parents;
     m_currTrack.daughters    = prim_part->daughters;
-    m_currTrack.definition   = prim_part->definition;
     m_currTrack.pdgID        = prim_part->pdgID;
     m_currTrack.mass         = prim_part->mass;
   }
@@ -245,7 +244,6 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.colorFlow[1] = 0;
     m_currTrack.parents.clear();
     m_currTrack.daughters.clear();    
-    m_currTrack.definition   = h.trackDef();
     m_currTrack.pdgID        = h.trackDef()->GetPDGEncoding();
     m_currTrack.mass         = h.trackDef()->GetPDGMass();
     ++m_globalParticleID;
@@ -440,14 +438,14 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
     if ( ipar != m_particleMap.end() )   {
       equivalents[(*i).first] = (*ipar).second->id;  // requires (1) !
-      Particle* p = (*ipar).second;
-      const G4ParticleDefinition* def = p->definition;
+      Geant4ParticleHandle p = (*ipar).second;
+      const G4ParticleDefinition* def = p.definition();
       int pdg = int(fabs(def->GetPDGEncoding())+0.1);
-      if ( pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
+      if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
 	error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
       }
       pdg = int(fabs(p->pdgID)+0.1);
-      if ( pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
+      if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
 	error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
       }
     }

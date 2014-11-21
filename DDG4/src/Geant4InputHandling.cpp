@@ -168,13 +168,13 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
 
     // Now move begin and end-vertex of all primary and generator particles accordingly
     for(ip=inter->particles.begin(); ip != inter->particles.end(); ++ip)  {
-      Geant4Particle* p = (*ip).second;
+      Geant4ParticleHandle p = (*ip).second;
       double t = gamma * p->time + betagamma * p->vsx / c_light;
       double x = gamma * p->vsx + betagamma * c_light * p->time;
       double y = p->vsx;
       double z = p->vsz;
 
-      double m  = p->definition->GetPDGMass();
+      double m  = p.definition()->GetPDGMass();
       double e2 = SQR(p->psx)+SQR(p->psy)+SQR(p->psz)+SQR(m);
       double px = betagamma * std::sqrt(e2) + gamma * p->psx;
       double py = p->psy;
@@ -224,7 +224,15 @@ int DD4hep::Simulation::smearInteraction(const Geant4Action* /* caller */,
 }
 
 static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
-  G4PrimaryParticle* g4 = new G4PrimaryParticle(p->pdgID, p->psx, p->psy, p->psz);
+  G4PrimaryParticle* g4 = 0;
+  if ( 0 != p->pdgID )   {
+    g4 = new G4PrimaryParticle(p->pdgID, p->psx, p->psy, p->psz);
+  }
+  else   {
+    const G4ParticleDefinition* def = p.definition();
+    g4 = new G4PrimaryParticle(def, p->psx, p->psy, p->psz);
+    g4->SetCharge(p.charge());
+  }
   g4->SetMass(p->mass);
   return g4;
 }

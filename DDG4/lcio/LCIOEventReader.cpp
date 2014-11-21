@@ -91,9 +91,11 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
     const double *vex   = mcp->getEndpoint();
     const float  *spin  = mcp->getSpin();
     const int    *color = mcp->getColorFlow();
-    G4ParticleDefinition* def = tab->FindParticle(mcp->getPDG());
+    int     pdg   = mcp->getPDG();
+    //if ( 0 == pdg ) pdg = 211;
+    const G4ParticleDefinition* def = tab->FindParticle(pdg);
     PropertyMask status(p->status);
-    p->pdgID        = mcp->getPDG();
+    p->pdgID        = pdg;//mcp->getPDG();
     p->charge       = int(mcp->getCharge()*3.0);
     p->psx          = mom[0]*GeV;
     p->psy          = mom[1]*GeV;
@@ -106,7 +108,7 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
     p->vex          = vex[0]*mm;
     p->vey          = vex[1]*mm;
     p->vez          = vex[2]*mm;
-    p->definition   = def;
+    //p->definition   = def;
     p->process      = 0;
     p->spin[0]      = spin[0];
     p->spin[1]      = spin[1];

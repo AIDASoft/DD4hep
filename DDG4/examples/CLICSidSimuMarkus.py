@@ -41,11 +41,12 @@ def run():
   generator_output_level = Output.DEBUG
 
   # Configure I/O
-  evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-  evt_lcio.OutputLevel = generator_output_level
-  evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  ##evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  ##evt_lcio.OutputLevel = generator_output_level
+  ##evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
+  gen.OutputLevel = generator_output_level
   kernel.generatorAction().adopt(gen)
 
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -65,7 +66,7 @@ def run():
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
   gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
-  gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
+  #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
 
   gen.OutputLevel = generator_output_level
   gen.MomentumScale = 1.0
@@ -132,6 +133,11 @@ def run():
 
   # Now build the physics list:
   phys = simple.setupPhysics('QGSP_BERT')
+  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
+  ph.addParticleConstructor('G4Geantino')
+  ph.addParticleConstructor('G4BosonConstructor')
+  ph.enableUI()
+  phys.adopt(ph)
   phys.dump()
 
   kernel.configure()

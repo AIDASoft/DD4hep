@@ -76,7 +76,7 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
     p->status    |= G4PARTICLE_GEN_STABLE;
     p->mask       = m_mask;
     p->pdgID      = m_particle->GetPDGEncoding();
-    p->definition = m_particle;
+    //p->definition = m_particle;
     p->psx        = x1*momentum;
     p->psy        = x2*momentum;
     p->psz        = x3*momentum;

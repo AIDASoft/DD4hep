@@ -177,9 +177,9 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
     // First create the particles
     for(ParticleMap::const_iterator i=pm.begin(); i!=pm.end();++i, ++cnt)   {
       int id = (*i).first;
-      const Geant4Particle* p = (*i).second;
+      const Geant4ParticleHandle p = (*i).second;
       PropertyMask mask(p->status);
-      const G4ParticleDefinition* def = p->definition;
+      const G4ParticleDefinition* def = p.definition();
       MCParticleImpl* q = new lcio::MCParticleImpl();
       q->setPDG(p->pdgID);
 

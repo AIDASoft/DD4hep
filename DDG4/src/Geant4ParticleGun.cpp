@@ -106,8 +106,8 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
     p->vex          = m_position.X();
     p->vey          = m_position.Y();
     p->vez          = m_position.Z();
-    p->definition   = m_particle;
-    p->process      = 0;
+    //p->definition   = m_particle;
+    //p->process      = 0;
     p->spin[0]      = 0;
     p->spin[1]      = 0;
     p->spin[2]      = 0;

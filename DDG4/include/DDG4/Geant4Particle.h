@@ -118,7 +118,7 @@ namespace DD4hep {
       /// User data extension if required
       std::auto_ptr<ParticleExtension> extension;  
       const G4VProcess *process;  //! not persistent
-      const G4ParticleDefinition *definition;  //! not persistent
+      //const G4ParticleDefinition *definition;  //! not persistent
       /// Default constructor
       Geant4Particle();
       /// Constructor with ID initialization
@@ -173,7 +173,13 @@ namespace DD4hep {
       /// Scalar particle energy
       double energy() const;
       /// Scalar particle momentum
-      double momentum() const   {  return sqrt(momentum2()); }
+      double momentum() const   {  return sqrt(momentum2());       }
+      /// Geant4 charge of the particle
+      double charge()  const    { return double(particle->charge); }
+      /// Geant4 mass of the particle
+      double mass() const       { return particle->mass;           }
+      /// Geant4 time of the particle
+      double time() const       { return particle->time;           }
       /// Access to the Geant4 particle name
       std::string particleName() const;
       /// Access to the Geant4 particle type
@@ -188,6 +194,8 @@ namespace DD4hep {
       ThreeVector startVertex() const;
       /// Access patricle momentum, energy as 4 vector
       ThreeVector endVertex()  const;
+      /// Access the Geant4 particle definition object (expensive!)
+      const G4ParticleDefinition *definition() const;
 
       /// Various output formats:
 
