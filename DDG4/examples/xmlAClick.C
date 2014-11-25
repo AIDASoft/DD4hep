@@ -25,12 +25,12 @@
 using namespace DD4hep::Simulation::Setup;
 
 void setupG4_XML()  {
-  std::string prefix = "file:../DD4hep.trunk";
+  std::string prefix = "file:../DD4hep";
   Kernel& kernel = Kernel::instance(Kernel::LCDD::getInstance());
-  kernel.loadGeometry((prefix+"/DDExamples/CLICSiD/compact/compact.xml").c_str());
-  kernel.loadXML((prefix+"/DDG4/examples/DDG4_field.xml").c_str());
-  kernel.loadXML((prefix+"/DDG4/examples/sequences.xml").c_str());
-  kernel.loadXML((prefix+"/DDG4/examples/physics.xml").c_str());
+  kernel.loadGeometry((prefix+"/examples/CLICSiD/compact/compact.xml").c_str());
+  kernel.loadXML((prefix+"/examples/DDG4/examples/DDG4_field.xml").c_str());
+  kernel.loadXML((prefix+"/examples/DDG4/examples/sequences.xml").c_str());
+  kernel.loadXML((prefix+"/examples/DDG4/examples/physics.xml").c_str());
   kernel.property("UI") = "UI";
   kernel.configure();
   kernel.initialize();

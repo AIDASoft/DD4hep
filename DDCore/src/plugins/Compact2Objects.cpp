@@ -646,7 +646,7 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
       lcdd.field().properties() = prp;
     }
   }
-  printout(ALWAYS, "Compact", "++ Converted field: Successfully %s field %s [%s]", msg.c_str(), name.c_str(), type.c_str());
+  printout(INFO, "Compact", "++ Converted field: Successfully %s field %s [%s]", msg.c_str(), name.c_str(), type.c_str());
 }
 
 /** Update sensitive detectors from group tags.

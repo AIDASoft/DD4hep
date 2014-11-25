@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<lcdd xmlns:lcdd="http://www.lcsim.org/schemas/lcdd/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema-instance" xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/lcdd/1.0/lcdd.xsd">
+
+  <!--
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+      ++++   Linear collider detector description LCDD in C++  ++++
+      ++++   DD4hep Detector description generator.            ++++
+      ++++                                                     ++++
+      ++++   Parser: Apache Xerces-C DOM Parser                ++++
+      ++++                                                     ++++
+      ++++                              M.Frank CERN/LHCb      ++++
+      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  -->
+
+  <header>
+    <detector name="SiliconBlock"/>
+    <generator checksum="0" file="http://www.cern.ch/lhcb" name="LCDDConverter" version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $"/>
+    <author name="Markus Frank"/>
+    <comment>Alignment test with 2 simple boxes</comment>
+  </header>
+
+  <iddict>
+    <idspec length="0" name="SiliconUpperHits">
+      <idfield label="system" length="8" signed="false" start="0"/>
+    </idspec>
+    <idspec length="0" name="SiliconDownHits">
+      <idfield label="system" length="8" signed="false" start="0"/>
+    </idspec>
+  </iddict>
+
+  <sensitive_detectors>
+    <tracker ecut="0.00000000e+00" eunit="MeV" hits_collection="SiliconUpperHits" name="SiliconBlockUpper" verbose="0">
+      <idspecref ref="SiliconUpperHits"/>
+    </tracker>
+    <tracker ecut="0.00000000e+00" eunit="MeV" hits_collection="SiliconDownHits" name="SiliconBlockDown" verbose="0">
+      <idspecref ref="SiliconDownHits"/>
+    </tracker>
+  </sensitive_detectors>
+
+  <limits>
+    <limitset name="SiRegionLimitSet">
+      <limit name="track_length_max" particles="*" unit="mm" value="1.00000000e-01"/>
+      <limit name="step_length_max" particles="*" unit="mm" value="5.00000000e-01"/>
+    </limitset>
+  </limits>
+
+  <regions>
+    <region cut="1.00000000e-04" eunit="GeV" lunit="cm" name="SiRegion" store_secondaries="false"/>
+  </regions>
+
+  <display>
+    <vis drawing_style="solid" line_style="unbroken" name="VisibleGreen" show_daughters="true" visible="true">
+      <color B="0.00000000e+00" G="1.00000000e+00" R="0.00000000e+00" alpha="1.00000000e+00"/>
+    </vis>
+    <vis drawing_style="solid" line_style="unbroken" name="VisibleRed" show_daughters="true" visible="true">
+      <color B="0.00000000e+00" G="0.00000000e+00" R="1.00000000e+00" alpha="1.00000001e-01"/>
+    </vis>
+  </display>
+
+  <gdml>
+    <define>
+      <position name="SiliconBlockUpper_vol_0_0xa70d1c0_pos" unit="mm" x="4.00000000e+01" y="0.00000000e+00" z="0.00000000e+00"/>
+      <rotation name="identity_rot" unit="rad" x="0" y="0" z="0"/>
+      <position name="SiliconBlockDown_vol_1_0xa70d9e0_pos" unit="mm" x="-4.00000000e+01" y="0.00000000e+00" z="0.00000000e+00"/>
+    </define>
+    <materials>
+      <element Z="7" formula="N" name="N">
+        <atom type="A" unit="g/mol" value="1.40067400e+01"/>
+      </element>
+      <element Z="8" formula="O" name="O">
+        <atom type="A" unit="g/mol" value="1.59994000e+01"/>
+      </element>
+      <element Z="18" formula="AR" name="AR">
+        <atom type="A" unit="g/mol" value="3.99480000e+01"/>
+      </element>
+      <material name="Air">
+        <D type="density" unit="g/cm3" value="1.20000000e-03"/>
+        <fraction n="7.54000000e-01" ref="N"/>
+        <fraction n="2.34000000e-01" ref="O"/>
+        <fraction n="1.20000000e-02" ref="AR"/>
+      </material>
+      <element Z="14" formula="SI" name="SI">
+        <atom type="A" unit="g/mol" value="2.80855000e+01"/>
+      </element>
+      <material name="Silicon">
+        <D type="density" unit="g/cm3" value="2.33000000e+00"/>
+        <fraction n="1.00000000e+00" ref="SI"/>
+      </material>
+    </materials>
+    <solids>
+      <box lunit="mm" name="world_volume_shape" x="6.00000000e+04" y="6.00000000e+04" z="6.00000000e+04"/>
+      <box lunit="mm" name="SiliconBlockUpper_vol_shape" x="4.00000000e+01" y="4.00000000e+02" z="4.00000000e+02"/>
+      <box lunit="mm" name="SiliconBlockDown_vol_shape" x="4.00000000e+01" y="4.00000000e+02" z="4.00000000e+02"/>
+    </solids>
+    <structure>
+      <volume name="SiliconBlockUpper_vol">
+        <materialref ref="Silicon"/>
+        <solidref ref="SiliconBlockUpper_vol_shape"/>
+        <sdref ref="SiliconBlockUpper"/>
+        <regionref ref="SiRegion"/>
+        <limitsetref ref="SiRegionLimitSet"/>
+        <visref ref="VisibleGreen"/>
+      </volume>
+      <volume name="SiliconBlockDown_vol">
+        <materialref ref="Silicon"/>
+        <solidref ref="SiliconBlockDown_vol_shape"/>
+        <sdref ref="SiliconBlockDown"/>
+        <regionref ref="SiRegion"/>
+        <limitsetref ref="SiRegionLimitSet"/>
+        <visref ref="VisibleRed"/>
+      </volume>
+      <volume name="world_volume">
+        <materialref ref="Air"/>
+        <solidref ref="world_volume_shape"/>
+        <physvol>
+          <volumeref ref="SiliconBlockUpper_vol"/>
+          <positionref ref="SiliconBlockUpper_vol_0_0xa70d1c0_pos"/>
+          <rotationref ref="identity_rot"/>
+          <physvolid field_name="system" value="1"/>
+        </physvol>
+        <physvol>
+          <volumeref ref="SiliconBlockDown_vol"/>
+          <positionref ref="SiliconBlockDown_vol_1_0xa70d9e0_pos"/>
+          <rotationref ref="identity_rot"/>
+          <physvolid field_name="system" value="2"/>
+        </physvol>
+      </volume>
+    </structure>
+    <setup name="Default" version="1.0">
+      <world ref="world_volume"/>
+    </setup>
+  </gdml>
+
+  <fields>
+    <solenoid funit="tesla" inner_field="5.00000000e+00" inner_radius="3.00000000e+03" lunit="mm" name="GlobalSolenoid" outer_field="-1.50000000e+00" outer_radius="3.00000000e+04" zmax="2.00000000e+02" zmin="-2.00000000e+02"/>
+  </fields>
+
+</lcdd>

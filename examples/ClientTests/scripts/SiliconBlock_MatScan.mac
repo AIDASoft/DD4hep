@@ -1,0 +1,5 @@
+/control/matScan/region SiRegion
+/control/matScan/theta 1 0 0    
+/control/matScan/phi 360 0 359  
+/control/matScan/scan           
+exit

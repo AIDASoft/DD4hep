@@ -24,6 +24,7 @@ namespace DD4hep {
 
   typedef DD4hep::Geometry::LCDD lcdd_t;
   typedef DD4hep::Geometry::DetElement DetElement;
+  typedef DD4hep::Geometry::SensitiveDetector SensitiveDetector;
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
@@ -284,7 +285,16 @@ namespace DD4hep {
     Kernel& kernel = Kernel::access(lcdd);
 
     if ( seq.hasAttr(_U(sd)) )   {
-      seqNam  = seq.attr<string>(_U(type))+"/"+seq.attr<string>(_U(sd));
+      string sd_nam = seq.attr<string>(_U(sd));
+      SensitiveDetector sensitive = lcdd.sensitiveDetector(sd_nam);
+      seqNam  = seq.attr<string>(_U(type))+"/"+sd_nam;
+      if ( !sensitive.isValid() )  {
+	printout(ALWAYS,"Geant4Setup","+++ ActionSequence %s is defined, "
+		 "but no sensitive detector present.",seqNam.c_str());
+	printout(ALWAYS,"Geant4Setup","+++ ---> Sequence for detector %s IGNORED on popular request!",
+		 sd_nam.c_str());
+	return;
+      }
       seqType = TypeName::split(seqNam);
       sdSeq   = SensitiveSeq(kernel,seqNam);
       what    = SENSITIVE;

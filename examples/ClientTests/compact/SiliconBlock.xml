@@ -32,15 +32,28 @@
     <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
   </display>
 
+  <limits>
+    <limitset name="SiRegionLimitSet">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="1.0" unit="mm" />
+    </limitset>
+  </limits>
+
+  <regions>
+    <region name="SiRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="SiRegionLimitSet"/>
+    </region>
+  </regions>
+
   <detectors>
-    <detector id="1" name="SiliconBlockUpper" type="DD4hep_BoxSegment" readout="SiliconUpperHits" vis="VisibleGreen" sensitive="true">
+    <detector id="1" name="SiliconBlockUpper" type="DD4hep_BoxSegment" readout="SiliconUpperHits" vis="VisibleGreen" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
       <material name="Silicon"/>
       <sensitive type="tracker"/>
       <box      x="20*mm" y="20*cm" z="20*cm"/>
       <position x="4*cm"  y="0"  z="0"/>
       <rotation x="0"     y="0"     z="0"/>
     </detector>
-    <detector id="2" name="SiliconBlockDown" type="DD4hep_BoxSegment" readout="SiliconDownHits" vis="VisibleRed" sensitive="true">
+    <detector id="2" name="SiliconBlockDown" type="DD4hep_BoxSegment" readout="SiliconDownHits" vis="VisibleRed" sensitive="true" region="SiRegion" limits="SiRegionLimitSet">
       <material name="Silicon"/>
       <sensitive type="tracker"/>
       <box      x="20*mm" y="20*cm" z="20*cm"/>

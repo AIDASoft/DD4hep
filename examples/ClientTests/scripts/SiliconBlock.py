@@ -1,6 +1,6 @@
 #
 #
-import os, time, DDG4
+import os, sys, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
@@ -24,7 +24,10 @@ def run():
   simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
   simple.printDetectors()
   # Configure UI
-  simple.setupCshUI()
+  if len(sys.argv)>1:
+    simple.setupCshUI(macro=sys.argv[1])
+  else:
+    simple.setupCshUI()
 
   # Configure Event actions
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
