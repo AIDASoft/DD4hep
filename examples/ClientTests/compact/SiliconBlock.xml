@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+ 
+  <info name="SiliconBlock"
+	title="Test with 2 simple silicon boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="../../../DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="../../../DDDetectors/compact/materials.xml"/>
+  </includes>
+
+  <define>
+    <constant name="world_size" value="30*m"/>
+    <constant name="world_x" value="world_size"/>
+    <constant name="world_y" value="world_size"/>
+    <constant name="world_z" value="world_size"/>
+  </define>
+
+  <display>
+    <vis name="Invisible" showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithChildren" showDaughters="true" visible="false"/>
+    <vis name="VisibleRed"  r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="VisibleBlue" r="0.0" g="0.0" b="1.0" showDaughters="false" visible="true"/>
+    <vis name="VisibleGreen" alpha="1.0" r="0.0" g="1.0" b="0.0" drawingStyle="solid" lineStyle="solid" showDaughters="true" visible="true"/>
+  </display>
+
+  <detectors>
+    <detector id="1" name="SiliconBlockUpper" type="DD4hep_BoxSegment" readout="SiliconUpperHits" vis="VisibleGreen" sensitive="true">
+      <material name="Silicon"/>
+      <sensitive type="tracker"/>
+      <box      x="20*mm" y="20*cm" z="20*cm"/>
+      <position x="4*cm"  y="0"  z="0"/>
+      <rotation x="0"     y="0"     z="0"/>
+    </detector>
+    <detector id="2" name="SiliconBlockDown" type="DD4hep_BoxSegment" readout="SiliconDownHits" vis="VisibleRed" sensitive="true">
+      <material name="Silicon"/>
+      <sensitive type="tracker"/>
+      <box      x="20*mm" y="20*cm" z="20*cm"/>
+      <position x="-4*cm" y="0"     z="0"/>
+      <rotation x="0"     y="0"     z="0"/>
+    </detector>
+  </detectors>
+  
+  <readouts>
+    <readout name="SiliconUpperHits">
+      <id>system:8</id>
+    </readout>
+    <readout name="SiliconDownHits">
+      <id>system:8</id>
+    </readout>
+  </readouts>
+
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="2*m"
+	   outer_radius="3*m">
+    </field>
+  </fields>
+
+</lccdd>

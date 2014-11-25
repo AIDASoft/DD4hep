@@ -12,9 +12,8 @@
   </info>
 
   <includes>
-    <gdmlFile  ref="elements.xml"/>
-    <gdmlFile  ref="materials.xml"/>
-    <pyBuilder ref="../drivers"/>
+    <gdmlFile  ref="../../../DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="../../../DDDetectors/compact/materials.xml"/>
   </includes>
   
   <define>

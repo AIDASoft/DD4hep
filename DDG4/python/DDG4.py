@@ -312,3 +312,31 @@ class Simple:
     evt_lcio.enableUI()
     self.kernel.eventAction().add(evt_lcio)
     return evt_lcio
+
+  def buildInputStage(self, generator_input_modules, output_level=None):
+    ga = self.kernel.generatorAction()
+    gen = GeneratorAction(self.kernel,"Geant4GeneratorActionInit/GenerationInit")
+    if output_level is not None:
+      gen.OutputLevel = output_level
+    ga.adopt(gen)
+
+    for gen in generator_input_modules:
+      gen.enableUI()
+      if output_level is not None:
+        gen.OutputLevel = output_level
+      ga.adopt(gen)
+
+    # Merge all existing interaction records
+    gen = GeneratorAction(self.kernel,"Geant4InteractionMerger/InteractionMerger")
+    gen.enableUI()
+    if output_level is not None:
+      gen.OutputLevel = output_level
+    ga.adopt(gen)
+
+    # Finally generate Geant4 primaries
+    gen = GeneratorAction(self.kernel,"Geant4PrimaryHandler/PrimaryHandler")
+    gen.enableUI()
+    if output_level is not None:
+      gen.OutputLevel = output_level
+    ga.adopt(gen)
+    return self

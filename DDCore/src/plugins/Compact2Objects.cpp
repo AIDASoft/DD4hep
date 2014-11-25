@@ -150,7 +150,13 @@ static Ref_t create_DipoleField(lcdd_t& /* lcdd */, xml_h e) {
   if (c.hasAttr(_U(rmax)))
     ptr->rmax = _multiply<double>(c.attr < string > (_U(rmax)), lunit);
   for (xml_coll_t coll(c, _U(dipole_coeff)); coll; ++coll, mult /= lunit) {
-    val = _multiply<double>(coll.text(), mult);
+    xml_dim_t coeff = coll;
+    if ( coeff.hasAttr(_U(value)) )
+      val = coll.attr<double>(_U(value)) * mult;
+    else if ( coeff.hasAttr(_U(coefficient)) )
+      val = coeff.coefficient() * mult;
+    else
+      val = _multiply<double>(coll.text(), mult);
     ptr->coefficents.push_back(val);
   }
   obj.assign(ptr, c.nameStr(), c.typeStr());
@@ -191,7 +197,10 @@ static Ref_t create_MultipoleField(lcdd_t& lcdd, xml_h e) {
   ptr->transform = Transform3D(rot,pos).Inverse();
   for (xml_coll_t coll(c, _U(coefficient)); coll; ++coll, mult /= lunit) {
     xml_dim_t coeff = coll;
-    val = coeff.coefficient(0.0) * mult;
+    if ( coll.hasAttr(_U(value)) )
+      val = coll.attr<double>(_U(value)) * mult;
+    else
+      val = coeff.coefficient(0.0) * mult;
     ptr->coefficents.push_back(val);
     val = coeff.skew(0.0) * mult;
     ptr->skews.push_back(val);

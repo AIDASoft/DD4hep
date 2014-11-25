@@ -227,13 +227,13 @@ namespace DD4hep {
 	if ( current == -1 ) {
 	  return;
 	}
+	double deposit = pre.truth.deposit, time = pre.truth.time;
 	Position pos = 0.5 * (pre.position + post.position);
 	Momentum mom = 0.5 * (pre.momentum + post.momentum);
 	double path_len = (post.position - pre.position).R();
 	Geant4Tracker::Hit* hit = new Geant4Tracker::Hit(pre.truth.trackID,
 							 pre.truth.pdgID,
-							 pre.truth.deposit,
-							 pre.truth.time);
+							 deposit,time);
 	hit->position = pos;
 	hit->momentum = mom;
 	hit->length = path_len;

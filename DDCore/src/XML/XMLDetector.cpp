@@ -46,6 +46,12 @@ int DetElement::id() const {
   return m_element.hasAttr(_U(id)) ? m_element.attr<int>(_U(id)) : -1;
 }
 
+bool DetElement::isSensitive() const {
+  char val = m_element.hasAttr(_U(sensitive)) ? m_element.attr < string > (_U(sensitive))[0] : 'f';
+  val = ::toupper(val);
+  return val == 'T' || val == 'Y';
+}
+
 string DetElement::materialStr() const {
   Handle_t h = m_element.child(_U(material));
   if (h && h.hasAttr(_U(name))) {

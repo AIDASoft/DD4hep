@@ -39,10 +39,10 @@ namespace DD4hep {
       Component(const Element& e)
           : Dimension(e) {
       }
-      /// Check if component is sensitive
-      bool isSensitive() const;
       /// Access material attribute as STL string
       std::string materialStr() const;
+      /// Check if component is sensitive
+      bool isSensitive() const;
       /// Create a shape using the plugin mechanism from an XML element
       NamedObject* createShape() const;
     };
@@ -70,6 +70,8 @@ namespace DD4hep {
       int id() const;
       /// Access material attribute as STL string. If not present empty return empty string
       std::string materialStr() const;
+      /// Check if xml detector element is sensitive
+      bool isSensitive() const;
       /// Check if element describes a tracking detector
       bool isTracker() const;
       /// Check if element describes a calorimetric detector
