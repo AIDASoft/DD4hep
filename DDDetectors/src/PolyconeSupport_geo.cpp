@@ -12,7 +12,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
+static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t sens)  {
   xml_det_t  x_det = e;
   string     name  = x_det.nameStr();
   DetElement sdet (name,x_det.id());
@@ -30,10 +30,20 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)  {
     throw runtime_error("PolyCone["+name+"]> Not enough Z planes. minimum is 2!");
   }
   Polycone   cone  (0,2*M_PI,rmin,rmax,z);
-  Volume     volume(name, cone, mat);
-  volume.setVisAttributes(lcdd, x_det.visStr());
-  PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(volume);
+  Volume     det_vol(name, cone, mat);
+  PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(det_vol);
+
   sdet.setPlacement(pv);
+  det_vol.setVisAttributes(lcdd, x_det.visStr());
+  det_vol.setLimitSet(lcdd, x_det.limitsStr());
+  det_vol.setRegion(lcdd, x_det.regionStr());
+  if ( x_det.isSensitive() )   {
+    SensitiveDetector sd = sens;
+    xml_dim_t sd_typ = x_det.child(_U(sensitive));
+    det_vol.setSensitiveDetector(sens);
+    sd.setType(sd_typ.typeStr());
+  }
+
   if ( x_det.hasAttr(_U(id)) )  {
     int det_id = x_det.id();
     pv.addPhysVolID("system",det_id);

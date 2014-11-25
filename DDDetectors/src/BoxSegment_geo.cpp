@@ -12,7 +12,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t sens)  {
   xml_det_t   x_det = e;
   string      name  = x_det.nameStr();
   xml_comp_t  box    (x_det.child(_U(box)));
@@ -23,9 +23,20 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   Volume      det_vol(name+"_vol",Box(box.x(),box.y(),box.z()), mat);
   Volume      mother = lcdd.pickMotherVolume(det);
   Transform3D transform(Rotation3D(RotationZYX(rot.z(),rot.y(),rot.x())),Position(pos.x(),pos.y(),pos.z()));
-  det_vol.setVisAttributes(lcdd, x_det.visStr());
   PlacedVolume phv = mother.placeVolume(det_vol,transform);
-  phv.addPhysVolID("id",x_det.id());
+
+  det_vol.setVisAttributes(lcdd, x_det.visStr());
+  det_vol.setLimitSet(lcdd, x_det.limitsStr());
+  det_vol.setRegion(lcdd, x_det.regionStr());
+  if ( x_det.isSensitive() )   {
+    SensitiveDetector sd = sens;
+    xml_dim_t sd_typ = x_det.child(_U(sensitive));
+    det_vol.setSensitiveDetector(sens);
+    sd.setType(sd_typ.typeStr());
+  }
+  if ( x_det.hasAttr(_U(id)) )  {
+    phv.addPhysVolID("system",x_det.id());
+  }
   det.setPlacement(phv);
   return det;
 }
