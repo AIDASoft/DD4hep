@@ -271,7 +271,7 @@
 
 
   <detectors>
-<!--
+
     <comment>Trackers</comment> 
     <detector id="1" name="SiVertexBarrel" type="DD4hep_SiTrackerBarrel" readout="SiVertexBarrelHits" insideTrackingVolume="true">
       <comment>Vertex Detector Barrel</comment>
@@ -663,7 +663,7 @@
 	<slice material = "Air"     thickness = "0.033*cm" />
       </layer>
     </detector>
--->
+
     <detector id="7" name="EcalEndcap" type="DD4hep_PolyhedraEndcapCalorimeter2" reflect="true" readout="EcalEndcapHits" vis="EcalEndcapVis" calorimeterType="EM_ENDCAP">
       <comment>EM Calorimeter Endcaps</comment>
       <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
