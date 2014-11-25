@@ -14,7 +14,6 @@
   <includes>
     <gdmlFile  ref="elements.xml"/>
     <gdmlFile  ref="materials.xml"/>
-    <pyBuilder ref="../drivers"/>
   </includes>
   
   <define>
