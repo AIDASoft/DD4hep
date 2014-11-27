@@ -91,6 +91,9 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
   inter->vertices.insert(make_pair(m_mask,vtx));
   prim->add(m_mask, inter);
 
+  vtx->x = m_position.X();
+  vtx->y = m_position.Y();
+  vtx->z = m_position.Z();
   for(int i=0; i<m_multiplicity; ++i)    {
     Geant4ParticleHandle p = new Geant4Particle(i);
     p->reason       = 0;
@@ -100,12 +103,12 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
     p->psz          = m_direction.Z()*m_energy;
     p->time         = 0;
     p->properTime   = 0;
-    p->vsx          = m_position.X();
-    p->vsy          = m_position.Y();
-    p->vsz          = m_position.Z();
-    p->vex          = m_position.X();
-    p->vey          = m_position.Y();
-    p->vez          = m_position.Z();
+    p->vsx          = vtx->x;
+    p->vsy          = vtx->y;
+    p->vsz          = vtx->z;
+    p->vex          = vtx->x;
+    p->vey          = vtx->y;
+    p->vez          = vtx->z;
     //p->definition   = m_particle;
     //p->process      = 0;
     p->spin[0]      = 0;

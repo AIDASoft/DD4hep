@@ -109,6 +109,11 @@ namespace DD4hep {
     std::string _toString(float d, const char* fmt = "%f");
     /// Format double procision float number (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
     std::string _toString(double d, const char* fmt = "%f");
+    /// Format void pointer (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    std::string _ptrToString(const void* p, const char* fmt = "%p");
+    /// Format void pointer (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    template <typename T> std::string _toString(const T* p, const char* fmt = "%p")   
+      {      return _ptrToString((void*)p,fmt);       }
 
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
     void _toDictionary(const XmlChar* name, const XmlChar* value);

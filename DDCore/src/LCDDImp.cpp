@@ -229,6 +229,7 @@ namespace {
     }
     void patchShapes() {
       GeoHandler::Data& data = *m_data;
+      char text[32];
       string nam;
       printout(INFO,"LCDD","+++ Patching names of anonymous shapes....");
       for (GeoHandler::Data::const_reverse_iterator i = data.rbegin(); i != data.rend(); ++i) {
@@ -238,20 +239,21 @@ namespace {
           TGeoVolume* v = n->GetVolume();
           TGeoShape* s = v->GetShape();
           const char* sn = s->GetName();
+	  ::snprintf(text,sizeof(text),"_shape_%p",(void*)s);
           if (0 == sn || 0 == ::strlen(sn)) {
             nam = v->GetName();
-            nam += "_shape";
+            nam += text;
             s->SetName(nam.c_str());
           }
           else if (0 == ::strcmp(sn, s->IsA()->GetName())) {
             nam = v->GetName();
-            nam += "_shape";
+            nam += text;
             s->SetName(nam.c_str());
           }
           else {
             nam = sn;
             if (nam.find("_shape") == string::npos)
-              nam += "_shape";
+              nam += text;
             s->SetName(nam.c_str());
           }
           if (s->IsA() == TGeoCompositeShape::Class()) {

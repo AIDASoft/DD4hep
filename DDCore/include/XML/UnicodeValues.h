@@ -33,6 +33,8 @@ namespace DD4hep {
     UNICODE (alpha3);
     UNICODE (alpha4);
     UNICODE (arb8);
+    UNICODE (arg);
+    UNICODE (argument);
     UNICODE (assembly);
     UNICODE (atom);
     UNICODE (attributes);
@@ -264,6 +266,8 @@ namespace DD4hep {
     UNICODE (phi_size_max);
     UNICODE (physvol);
     UNICODE (physvolid);
+    UNICODE (plugin);
+    UNICODE (plugins);
     UNICODE (polyhedra);
     UNICODE (polycone);
     UNICODE (position);

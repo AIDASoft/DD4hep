@@ -57,7 +57,6 @@ namespace  {
     void print(DetElement e, PlacedVolume pv, const VolIDs& child_ids)  const;
     /// Action routine to execute the test
     static long run(LCDD& lcdd,int argc,char** argv);
-    void dumpPathes(DetElement e, PlacedVolume pv)  const;
   };
 }
 
@@ -129,6 +128,7 @@ long GeometryWalk::run(LCDD& lcdd,int argc,char** argv)    {
   }
   return 1;
 }
+
 
 namespace DD4hep {
   namespace Geometry {

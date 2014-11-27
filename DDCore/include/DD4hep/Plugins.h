@@ -24,8 +24,9 @@ namespace DD4hep {
    *  for a limited code scope. Automatically back-adjusts the debug
    *  level at object destruction.
    *
-   *  @author  M.Frank
-   *  @version 1.0
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
    */
   struct PluginDebug {
     int m_debug;

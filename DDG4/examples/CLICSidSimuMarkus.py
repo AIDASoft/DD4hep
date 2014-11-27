@@ -18,7 +18,7 @@ def run():
   lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
+  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
   kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(lcdd,debug=False)
   simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
@@ -43,7 +43,7 @@ def run():
   # Configure I/O
   ##evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   ##evt_lcio.OutputLevel = generator_output_level
-  ##evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   gen.OutputLevel = generator_output_level
@@ -111,7 +111,7 @@ def run():
   kernel.generatorAction().adopt(rdr)
   """
 
-  seq,act = simple.setupTracker('SiTrackerBarrel')
+  seq,act = simple.setupTracker('SiVertexBarrel')
   """
   # First the tracking detectors
   seq,act = simple.setupTracker('SiVertexBarrel')

@@ -66,7 +66,7 @@ namespace DD4hep {
 	mark(h.track);
 	if ( 0 == hit->cellID )  {
 	  hit->cellID        = volumeID( step ) ;
-	  throw runtime_error("Invalid CELL ID for hit!");
+	  except("+++ Invalid CELL ID for hit!");
 	}
 	print("Geant4Tracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
 	      c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
@@ -75,7 +75,8 @@ namespace DD4hep {
 	print("Geant4Tracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
 	return true;
       }
-      throw runtime_error("new() failed: Cannot allocate hit object");
+      except("new() failed: Cannot allocate hit object");
+      return false;
     }
     typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
 
@@ -110,7 +111,7 @@ namespace DD4hep {
 		c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
 	if ( 0 == hit->cellID )  { // for debugging only!
 	  hit->cellID = cellID(step);
-	  throw runtime_error("Invalid CELL ID for hit!");
+	  except("+++ Invalid CELL ID for hit!");
 	}
       }
       hit->truth.push_back(contrib);
@@ -160,7 +161,7 @@ namespace DD4hep {
 	  coll->add(hit);
 	  if ( 0 == hit->cellID )  {
 	    hit->cellID = volumeID(step);
-	    throw runtime_error("Invalid CELL ID for hit!");
+	    except("+++ Invalid CELL ID for hit!");
 	  }
 	}
 	hit->energyDeposit += contrib.deposit;
@@ -189,8 +190,9 @@ namespace DD4hep {
       double            e_cut;
       int               current;
       int               combined;
+      long long int     cell;
       
-      TrackerCombine() : pre(), post(), sensitive(0), e_cut(0.0), current(-1), combined(0)  {
+      TrackerCombine() : pre(), post(), sensitive(0), e_cut(0.0), current(-1), combined(0), cell(0)  {
       }
 
       /// Start a new hit
@@ -201,12 +203,20 @@ namespace DD4hep {
 	sensitive->mark(step->GetTrack());
 	post = pre;
 	combined = 0;
+	cell = 0;
       }
 
       /// Update energy and track information during hit info accumulation
       void update(G4Step* step) {
 	post.storePoint(step,step->GetPostStepPoint());
 	pre.truth.deposit += post.truth.deposit;
+	if ( 0 == cell )   {
+	  cell = sensitive->cellID(step);
+	  if ( 0 == cell )  {
+	    cell = sensitive->volumeID(step) ;
+	    sensitive->except("+++ Invalid CELL ID for hit!");
+	  }
+	}
 	++combined;
       }
 
@@ -216,6 +226,7 @@ namespace DD4hep {
 	pre.clear();
 	current = -1;
 	combined = 0;
+	cell = 0;
       }
 
       bool mustSaveTrack(const G4Track* tr)  const   {
@@ -236,7 +247,8 @@ namespace DD4hep {
 							 deposit,time);
 	hit->position = pos;
 	hit->momentum = mom;
-	hit->length = path_len;
+	hit->length   = path_len;
+	hit->cellID   = cell;
 	collection->add(hit);
 	sensitive->printM2("+++ TrackID:%6d [%s] CREATE hit combination with %2d deposit(s):"
 			   " %e MeV  Pos:%8.2f %8.2f %8.2f",

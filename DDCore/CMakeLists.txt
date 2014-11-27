@@ -24,6 +24,7 @@ list(REMOVE_ITEM headers ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/DetFactoryHe
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Factories.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/Plugins.h
   ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/IoStreams.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/DD4hep/SurfaceInstaller.h
   )
 root_generate_dictionary( G__DD4hep ${headers} ${internal_headers} LINKDEF include/ROOT/LinkDef.h)
 list(APPEND sources G__DD4hep.cxx)

@@ -12,6 +12,7 @@ find_package( ROOT REQUIRED COMPONENTS Geom Reflex )
 #---Includedirs---------------------------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 	            ${CMAKE_SOURCE_DIR}/DDRec/include	
+	            ${CMAKE_SOURCE_DIR}/DDSurfaces/include	
 	            ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
                     ${ROOT_INCLUDE_DIR} )
 #

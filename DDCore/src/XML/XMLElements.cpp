@@ -229,6 +229,11 @@ string DD4hep::XML::_toString(double v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
+/// Format pointer to string with atrbitrary format
+string DD4hep::XML::_ptrToString(const void* v, const char* fmt) {
+  return __to_string(v, fmt);
+}
+
 int DD4hep::XML::_toInt(const XmlChar* value) {
   if (value) {
     string s = _toString(value);

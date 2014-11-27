@@ -600,18 +600,18 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
 }
 
 /// Dump logical volume in GDML format to output stream
-xml_h LCDDConverter::handleVolume(const string& name, Volume volume) const {
+xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const {
   GeometryInfo& geo = data();
   xml_h vol = geo.xmlVolumes[volume];
   if (!vol) {
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
-    string n = v->GetName();
+    string n = v->GetName()+_toString(v,"_%p");
     TGeoMedium* m = v->GetMedium();
     TGeoShape* s = v->GetShape();
     xml_ref_t sol = handleSolid(s->GetName(), s);
 
-    geo.checkVolume(name, volume);
+    geo.checkVolume(n, volume);
     if (v->IsAssembly()) {
       vol = xml_elt_t(geo.doc, _U(assembly));
       vol.setAttr(_U(name), n);
@@ -707,10 +707,11 @@ void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* vo
   }
 }
 
-void LCDDConverter::checkVolumes(const string& name, Volume v) const {
-  NameSet::const_iterator i = m_checkNames.find(name);
+void LCDDConverter::checkVolumes(const string& /* name */, Volume v) const {
+  string n = v.name()+_toString(v.ptr(),"_%p");
+  NameSet::const_iterator i = m_checkNames.find(n);
   if (i != m_checkNames.end()) {
-    cout << "checkVolumes: Volume " << name << " ";
+    cout << "checkVolumes: Volume " << n << " ";
     if (is_volume(v.ptr()))     {
       SensitiveDetector s = v.sensitiveDetector();
       VisAttr vis = v.visAttributes();
@@ -724,7 +725,7 @@ void LCDDConverter::checkVolumes(const string& name, Volume v) const {
     cout << "has duplicate entries." << endl;
     return;
   }
-  m_checkNames.insert(name);
+  m_checkNames.insert(n);
 }
 
 /// Dump volume placement in GDML format to output stream

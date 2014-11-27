@@ -122,29 +122,32 @@ void DD4hep::Geometry::_toDictionary(const string& name, const string& value) {
   eval.setVariable(n.c_str(), result);
 }
 
+template <typename T> static inline string __to_string(T value, const char* fmt) {
+  char text[128];
+  ::snprintf(text, sizeof(text), fmt, value);
+  return text;
+}
+
 string DD4hep::Geometry::_toString(bool value) {
-  char text[32];
-  ::snprintf(text, sizeof(text), "%s", value ? "true" : "false");
-  return text;
+  return value ? "true" : "false";
 }
 
-string DD4hep::Geometry::_toString(int value) {
-  char text[32];
-  ::snprintf(text, sizeof(text), "%d", value);
-  return text;
+string DD4hep::Geometry::_toString(int value, const char* fmt) {
+  return __to_string(value, fmt);
 }
 
-string DD4hep::Geometry::_toString(float value) {
-  char text[32];
-  ::snprintf(text, sizeof(text), "%f", value);
-  return text;
+string DD4hep::Geometry::_toString(float value, const char* fmt) {
+  return __to_string(value, fmt);
 }
 
-string DD4hep::Geometry::_toString(double value) {
-  char text[32];
-  ::snprintf(text, sizeof(text), "%f", value);
-  return text;
+string DD4hep::Geometry::_toString(double value, const char* fmt) {
+  return __to_string(value, fmt);
 }
+
+string DD4hep::Geometry::_ptrToString(const void* value, const char* fmt) {
+  return __to_string(value, fmt);
+}
+
 namespace DD4hep {
   namespace Geometry {
     static long s_numVerifies = 0;

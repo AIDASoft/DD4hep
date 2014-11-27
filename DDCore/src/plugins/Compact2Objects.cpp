@@ -35,6 +35,7 @@ using namespace DD4hep::Geometry;
 
 namespace DD4hep {
   namespace Geometry {
+    struct Plugin;
     struct Compact;
     struct Includes;
     struct GdmlFile;
@@ -43,6 +44,7 @@ namespace DD4hep {
     struct AlignmentFile;
     struct DetElementInclude {};
   }
+  template <> void Converter<Plugin>::operator()(xml_h e) const;
   template <> void Converter<Constant>::operator()(xml_h e) const;
   template <> void Converter<Material>::operator()(xml_h e) const;
   template <> void Converter<Atom>::operator()(xml_h e) const;
@@ -217,6 +219,28 @@ static long create_Compact(lcdd_t& lcdd, xml_h element) {
 }
 DECLARE_XML_DOC_READER(lccdd,create_Compact)
 
+/** Convert/execute plugin objects from the xml (plugins)
+ *
+ *
+ */
+template <> void Converter<Plugin>::operator()(xml_h e) const {
+  xml_comp_t plugin(e);
+  vector<char*> argv;
+  vector<string> arguments;
+  string name = plugin.nameStr();
+  for (xml_coll_t coll(e, _U(arg)); coll; ++coll) {
+    string val = coll.attr<string>(_U(value));
+    arguments.push_back(val);
+  }
+  for (xml_coll_t coll(e, _U(argument)); coll; ++coll) {
+    string val = coll.attr<string>(_U(value));
+    arguments.push_back(val);
+  }
+  for(std::vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
+    argv.push_back(&((*i)[0]));
+  lcdd.apply(name.c_str(),int(argv.size()), &argv[0]);
+}
+
 /** Convert compact constant objects (defines)
  *
  *
@@ -228,7 +252,6 @@ template <> void Converter<Constant>::operator()(xml_h e) const {
   _toDictionary(obj->GetName(), obj->GetTitle());
   lcdd.addConstant(cons);
 }
-
 /** Convert compact constant objects (defines)
  *
  *
@@ -870,6 +893,7 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(alignments)).for_each(_U(alignment), Converter < AlignmentEntry > (lcdd));
   xml_coll_t(compact, _U(fields)).for_each(_U(field), Converter < CartesianField > (lcdd));
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter < SensitiveDetector > (lcdd));
+  xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter < Plugin > (lcdd));
   ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
   lcdd.addConstant(Constant("compact_checksum", text));
   if ( --num_calls == 0 )  {

@@ -49,11 +49,16 @@ namespace DD4hep {
     /// String conversions: boolean value to string  \ingroup DD4HEP_GEOMETRY
     std::string _toString(bool value);
     /// String conversions: integer value to string  \ingroup DD4HEP_GEOMETRY
-    std::string _toString(int value);
+    std::string _toString(int value, const char* fmt = "%d");
     /// String conversions: float value to string  \ingroup DD4HEP_GEOMETRY
-    std::string _toString(float value);
+    std::string _toString(float value, const char* fmt = "%f");
     /// String conversions: double value to string  \ingroup DD4HEP_GEOMETRY
-    std::string _toString(double value);
+    std::string _toString(double value, const char* fmt = "%f");
+    /// Pointer to text conversion
+    std::string _ptrToString(const void* p, const char* fmt = "%p");
+    /// Format any pointer (64 bits) to string  \ingroup DD4HEP_XML
+    template <typename T> std::string _toString(const T* p, const char* fmt = "%p")   
+      {      return _ptrToString((void*)p, fmt);       }
 
     /// String conversions: string to boolean value  \ingroup DD4HEP_GEOMETRY
     bool _toBool(const std::string& value);
