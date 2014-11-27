@@ -34,20 +34,16 @@ def run():
 
   # Configure Event actions
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
-  prt.OutputLevel = Output.DEBUG
+  prt.OutputLevel = Output.WARNING
   prt.OutputType  = 3 # Print both: table and tree
   kernel.eventAction().adopt(prt)
 
-  generator_output_level = Output.DEBUG
+  generator_output_level = Output.WARNING
 
   # Configure I/O
   ##evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   ##evt_lcio.OutputLevel = generator_output_level
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
-
-  gen = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
-  gen.OutputLevel = generator_output_level
-  kernel.generatorAction().adopt(gen)
 
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
@@ -67,25 +63,12 @@ def run():
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
   gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
   #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
-
-  gen.OutputLevel = generator_output_level
   gen.MomentumScale = 1.0
   gen.Mask = 1
-  gen.enableUI()
-  kernel.generatorAction().adopt(gen)
+  simple.buildInputStage([gen],output_level=generator_output_level)
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-  # Merge all existing interaction records
-  gen = DDG4.GeneratorAction(kernel,"Geant4InteractionMerger/InteractionMerger")
-  gen.OutputLevel = generator_output_level
-  gen.enableUI()
-  kernel.generatorAction().adopt(gen)
-
-  # Finally generate Geant4 primaries
-  gen = DDG4.GeneratorAction(kernel,"Geant4PrimaryHandler/PrimaryHandler")
-  gen.OutputLevel = generator_output_level
-  gen.enableUI()
-  kernel.generatorAction().adopt(gen)
+  #gen = simple.setupGun("Gun",particle='pi+',energy=20*GeV,position=(0.15*mm,0.12*mm,50*cm))
+  #gen.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -111,7 +94,7 @@ def run():
   kernel.generatorAction().adopt(rdr)
   """
 
-  seq,act = simple.setupTracker('SiVertexBarrel')
+  seq,act = simple.setupTracker('SiTrackerBarrel')
   """
   # First the tracking detectors
   seq,act = simple.setupTracker('SiVertexBarrel')

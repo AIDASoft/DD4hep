@@ -31,6 +31,7 @@ using namespace std;
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* context, const string& nam)
     : Geant4OutputAction(context, nam), m_file(0), m_tree(0) {
   declareProperty("Section", m_section = "EVENT");
+  declareProperty("HandleMCTruth", m_handleMCTruth = true);
   InstanceCount::increment(this);
 }
 
@@ -158,7 +159,7 @@ void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
     coll->getHitsUnchecked(hits);
     size_t nhits = coll->GetSize();
     Geant4ParticleMap* truth = context()->event().extension<Geant4ParticleMap>();
-    if ( truth && nhits > 0 )   {
+    if ( m_handleMCTruth && truth && nhits > 0 )   {
       try  {
 	for(size_t i=0; i<nhits; ++i)   {
 	  Geant4HitData* h = coll->hit(i);

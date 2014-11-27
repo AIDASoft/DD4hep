@@ -229,16 +229,26 @@ I am sick of typing the same over and over again.
 
 """
 class Simple:
-  def __init__(self, kernel,calo='Geant4CalorimeterAction',tracker='Geant4SimpleTrackerAction'):
+  def __init__(self, kernel=None,calo='Geant4CalorimeterAction',tracker='Geant4SimpleTrackerAction'):
     kernel.UI = "UI"
     kernel.printProperties()
     self.kernel = kernel
+    if kernel is None:
+      self.kernel = Kernel()
     self.lcdd = self.kernel.lcdd()
     self.calo = calo
     self.tracker = tracker
     self.sensitive_types = {}
     self.sensitive_types['tracker'] = self.tracker
     self.sensitive_types['calorimeter'] = self.calo
+
+  def execute(self):
+    self.kernel.configure()
+    self.kernel.initialize()
+    self.kernel.run()
+    self.kernel.terminate()
+    return self
+
   def printDetectors(self):
     print '+++  List of sensitive detectors:'
     for i in self.lcdd.detectors():
@@ -246,7 +256,9 @@ class Simple:
       sd = self.lcdd.sensitiveDetector(o.name())
       if sd.isValid():
         typ = sd.type()
-        sdtyp = self.sensitive_types[typ]
+        sdtyp = 'Unknown'
+        if self.sensitive_types.has_key(typ):
+          sdtyp = self.sensitive_types[typ]
         print '+++  %-32s type:%-12s  --> Sensitive type: %s'%(o.name(), typ, sdtyp,)
 
   def setupDetector(self,name,sensitive_type):
@@ -299,8 +311,9 @@ class Simple:
   def setupCshUI(self,typ='csh',vis=False,ui=True,macro=None):
     self.setupUI(typ='csh',vis=vis,ui=ui,macro=macro)
 
-  def setupROOTOutput(self,name,output):
+  def setupROOTOutput(self,name,output,mc_truth=True):
     evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)
+    evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
     evt_root.Output = output+'.root'
     evt_root.enableUI()
@@ -342,3 +355,5 @@ class Simple:
       gen.OutputLevel = output_level
     ga.adopt(gen)
     return self
+
+Geant4 = Simple
