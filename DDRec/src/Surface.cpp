@@ -38,12 +38,14 @@ namespace DD4hep {
 				 _th_i( 0. ),
 				 _th_o( 0. ),
 				 _innerMat( MaterialData() ),
-				 _outerMat( MaterialData() ) {
+				 _outerMat( MaterialData() ),
+				 _vol()
+    {
     }
   
   
     SurfaceData::SurfaceData( SurfaceType type , double thickness_inner ,double thickness_outer, 
-		 Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o ) :  _type(type ) ,
+			      Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o, Volume vol ) :  _type(type ) ,
 								     _u( u ) ,
 								     _v( v ) ,
 								     _n( n ) ,
@@ -51,7 +53,9 @@ namespace DD4hep {
 								     _th_i( thickness_inner ),
 								     _th_o( thickness_outer ),  
 								     _innerMat( MaterialData() ),
-								     _outerMat( MaterialData() ) {
+								     _outerMat( MaterialData() ),
+								     _vol(vol)
+    {
     }
   
   
@@ -60,9 +64,7 @@ namespace DD4hep {
     VolSurface::VolSurface( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
  			    Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o ) :  
       
-      Geometry::Handle< SurfaceData >( new SurfaceData( type, thickness_inner ,thickness_outer, u,v,n,o) ) ,
-      
-      _vol( vol ) {
+      Geometry::Handle< SurfaceData >( new SurfaceData(type, thickness_inner ,thickness_outer, u,v,n,o, vol) )  {
     }      
     
 
@@ -238,7 +240,7 @@ namespace DD4hep {
 
 	list = det.extension< VolSurfaceList >() ;
 
-      } catch( std::runtime_error e){ 
+      } catch(const std::runtime_error& e){ 
 	
 	list = det.addExtension<VolSurfaceList >(  new VolSurfaceList ) ; 
       }
@@ -421,8 +423,9 @@ namespace DD4hep {
       Volume theVol = _volSurf.volume() ;
       
       if( ! findVolume(  pv, theVol , pVList ) ){
-	     std::stringstream sst ; sst << " ***** ERROR: Volume " << theVol.name() << " not found for DetElement " << _det.name()  << " with surface "  ;
-	     throw std::runtime_error( sst.str() ) ;
+	theVol = _volSurf.volume() ;
+	std::stringstream sst ; sst << " ***** ERROR: Volume " << theVol.name() << " not found for DetElement " << _det.name()  << " with surface "  ;
+	throw std::runtime_error( sst.str() ) ;
       } 
 
       // std::cout << " **** Surface::initialize() # placements for surface = " << pVList.size() 
@@ -831,3 +834,8 @@ namespace DD4hep {
 
   } // namespace
 } // namespace
+
+
+#include "DD4hep/Handle.inl"
+typedef DD4hep::DDRec::SurfaceData SurfaceData;
+DD4HEP_INSTANTIATE_HANDLE_UNNAMED(SurfaceData);

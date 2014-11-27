@@ -73,14 +73,16 @@ namespace DD4hep {
       double _th_i ;
       double _th_o ;
       SurfaceMaterial _innerMat ;
-      SurfaceMaterial _outerMat ;
+      SurfaceMaterial _outerMat ;    
+      Geometry::Volume _vol ;
     
       /// default c'tor.
       SurfaceData();
     
       /// Standard c'tor for initialization.
       SurfaceData( SurfaceType type, double thickness_inner ,double thickness_outer, 
-		   Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o )  ;
+		   Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o, 
+		   Geometry::Volume vol /*= Geometry::Volume() */);
     
       /// Default destructor
       virtual ~SurfaceData() {} 
@@ -96,6 +98,7 @@ namespace DD4hep {
 	_th_o = c._th_o ;
 	_innerMat = c._innerMat ;
 	_outerMat = c._innerMat ;
+	_vol = c._vol;
       }
     } ;
   
@@ -109,8 +112,6 @@ namespace DD4hep {
     class VolSurface : public Geometry::Handle< SurfaceData > , public ISurface {
     
     protected:
-    
-      Geometry::Volume _vol ;
     
       /// setter for daughter classes
       virtual void setU(const Vector3D& u) { object<SurfaceData>()._u = u  ; }
@@ -128,13 +129,26 @@ namespace DD4hep {
 
       ///default c'tor
       VolSurface() { }
-     
+
+      /// Constructor to be used with an existing object
+      VolSurface(SurfaceData* p)
+          : Geometry::Handle< SurfaceData >(p) {
+      }
+     /// Constructor to be used with an existing object
+      VolSurface(const VolSurface& e)
+	: Geometry::Handle< SurfaceData >(e)  {
+      }
+
+      /// Constructor to be used with an existing object
+      template <typename Q> VolSurface(const Handle<Q>& e)
+          : Geometry::Handle< SurfaceData >(e) {
+      }
+
       /// Standrad c'tor for initialization.
       VolSurface( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
 		  Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) ;      
-    
       /// the volume to which this surface is attached.
-      Geometry::Volume volume() const { return _vol ; }
+      Geometry::Volume volume() const { return ptr()->_vol; }
 
       /// The id of this surface - always 0 for VolSurfaces
       virtual long64 id() const  { return 0 ; } 
@@ -261,6 +275,16 @@ namespace DD4hep {
       
       ///default c'tor
       VolPlane() : VolSurface() { }
+
+      /// Constructor to be used with an existing object
+      VolPlane(SurfaceData* p)
+	: VolSurface(p) {
+      }
+
+      /// Constructor to be used with an existing object
+      template <typename Q> VolPlane(const Handle<Q>& e)
+	: VolSurface(e) {
+      }
 
       /// copy c'tor
       VolPlane(const VolSurface& vs ) : VolSurface( vs ) { }
