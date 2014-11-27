@@ -111,7 +111,7 @@ namespace DDSurfaces {
   
   public:
     /// enum for defining the bits used to decode the properties
-    enum{
+    enum SurfaceTypes {
       Cylinder = 0,
       Plane,
       Sensitive,
