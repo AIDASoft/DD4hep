@@ -64,13 +64,13 @@ else()
 endif()
 
 
-#---- build with Boost ?
-if(@DD4HEP_USE_BOOST@)
-  set( DD4HEP_USE_BOOST True )
-  find_package( Boost REQUIRED )
-  include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
-  add_definitions( -DDD4HEP_USE_BOOST )
-endif()
+##---- build with Boost ?
+#if(@DD4HEP_USE_BOOST@)
+#  set( DD4HEP_USE_BOOST True )
+#  find_package( Boost REQUIRED )
+#  include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
+#  add_definitions( -DDD4HEP_USE_BOOST )
+#endif()
 
 
 #---- build with xercesc or tinyxml ?
