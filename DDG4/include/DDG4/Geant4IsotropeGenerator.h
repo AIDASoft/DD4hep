@@ -11,6 +11,7 @@
 
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
+#include "Math/Vector3D.h"
 
 // Forward declarations
 class G4ParticleDefinition;
@@ -28,12 +29,14 @@ namespace DD4hep {
      */
     class Geant4IsotropeGenerator: public Geant4GeneratorAction {
     protected:
+      /// Property: Position and shooting direction of the gun
+      ROOT::Math::XYZVector m_position;
+      /// Property: Particle name
+      std::string m_particleName;
       /// Pointer to geant4 particle definition
       G4ParticleDefinition* m_particle;
       /// Property: Particle energy
       double m_energy;
-      /// Property: Particle name
-      std::string m_particleName;
       /// Property: Desired multiplicity of the particles to be shot
       int m_multiplicity;
       /// Property: User mask passed to all particles in the generated interaction

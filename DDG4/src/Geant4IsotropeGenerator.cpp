@@ -28,7 +28,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* context, const string& name)
-  : Geant4GeneratorAction(context, name), m_particle(0)
+  : Geant4GeneratorAction(context, name), m_position(0,0,0), m_particle(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;
@@ -36,6 +36,7 @@ Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* context, const s
   declareProperty("Energy",        m_energy = 50 * MeV);
   declareProperty("Multiplicity",  m_multiplicity = 1);
   declareProperty("Mask",          m_mask = 0);
+  declareProperty("Position",      m_position);
 }
 
 /// Default destructor
@@ -62,6 +63,9 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
 
   Geant4Vertex* vtx = new Geant4Vertex();
   vtx->mask = m_mask;
+  vtx->x = m_position.X();
+  vtx->y = m_position.Y();
+  vtx->z = m_position.Z();
   inter->vertices.insert(make_pair(inter->vertices.size(),vtx));
   for(int i=0; i<m_multiplicity; ++i)   {
     double phi = 2*M_PI*rnd.rndm();
@@ -81,6 +85,12 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
     p->psy        = x2*momentum;
     p->psz        = x3*momentum;
     p->mass       = m_particle->GetPDGMass();
+    p->vsx        = vtx->x;
+    p->vsy        = vtx->y;
+    p->vsz        = vtx->z;
+    p->vex        = vtx->x;
+    p->vey        = vtx->y;
+    p->vez        = vtx->z;
     inter->particles.insert(make_pair(p->id,p));
     vtx->out.insert(p->id);
     printout(INFO,name(),"Particle [%d] %s %.3f GeV direction:(%6.3f %6.3f %6.3f)",
