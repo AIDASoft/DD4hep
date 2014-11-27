@@ -37,6 +37,7 @@ int setupG4_CINT()  {
   EventAction evt_root(kernel,"Geant4Output2ROOT/RootOutput");
   evt_root["Control"] = true;
   evt_root["Output"]  = (const char*)text;
+  evt_root["HandleMCTruth"] = false;
   evt_root->enableUI();
   kernel.eventAction().adopt(evt_root);
 
