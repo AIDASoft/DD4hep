@@ -11,11 +11,11 @@
     <comment>Hadron Calorimeter Barrel</comment>
 
     <dimensions numsides="(int) CaloSides" rmin="HcalBarrel_rmin" z="EcalBarrel_zmax*2"/>
-    <staves vis="HcalBarrelStavesVis"/>
-    <layer repeat="(int) HcalBarrel_layers">
-      <slice material = "TungstenDens24" thickness = "1.00*cm" />
-      <slice material = "Polystyrene" thickness = "0.50*cm" sensitive = "yes" limits="cal_limits" vis="HcalBarrelSensorVis"/>       
-      <slice material = "Air" thickness = "0.15*cm" />
+    <staves vis="HcalStavesVis"/>
+    <layer repeat="(int)HcalBarrel_layers">
+      <slice material="TungstenDens24" thickness="1.00*cm" vis="HcalAbsorberVis"/>
+      <slice material="Polystyrene" thickness="0.50*cm" sensitive="yes" limits="cal_limits" vis="HcalSensorVis"/>
+      <slice material="Air" thickness="0.15*cm" vis="InvisibleNoDaughters"/>
     </layer>
   </detector>
 </detectors>

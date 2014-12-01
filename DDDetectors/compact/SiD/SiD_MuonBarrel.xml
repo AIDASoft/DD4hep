@@ -11,80 +11,80 @@
     <comment>Muon Calorimeter Barrel</comment>
 
     <dimensions numsides="(int) MuonSides" rmin="MuonBarrel_rmin" z="MuonBarrel_zmax * 2"/>
-    <staves vis="MuonBarrelStavesVis"/>
+    <staves vis="MuonStavesVis"/>
 
-    <layer repeat="1" vis="MuonBarrelLayerVis">
+    <layer repeat="1" vis="MuonLayerVis">
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="1.0*cm" />
-      <slice material="Iron" thickness="5.0*cm" vis="MuonBarrelAbsorberVis"/>
+      <slice material="Iron" thickness="5.0*cm" vis="MuonAbsorberVis"/>
     </layer>
-    <layer repeat="1" vis="MuonBarrelLayerVis">
+    <layer repeat="1" vis="MuonLayerVis">
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="1.0*cm" />
-      <slice material="Iron" thickness="20.0*cm" vis="MuonBarrelAbsorberVis"/>
+      <slice material="Iron" thickness="20.0*cm" vis="MuonAbsorberVis"/>
     </layer>
-    <layer repeat="(int) MuonBarrel_layers" vis="MuonBarrelLayerVis">
+    <layer repeat="(int) MuonBarrel_layers" vis="MuonLayerVis">
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="1.0*cm" />
-      <slice material="Iron" thickness="10.0*cm" vis="MuonBarrelAbsorberVis"/>
+      <slice material="Iron" thickness="10.0*cm" vis="MuonAbsorberVis"/>
     </layer>
 
-    <layer repeat="1" vis="MuonBarrelLayerVis">
+    <layer repeat="1" vis="MuonLayerVis">
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="PyrexGlass" thickness="0.2*cm" />
-      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonBarrelSensorVis"/>
+      <slice material="RPCGasDefault" thickness="0.2*cm" sensitive="yes" vis="MuonSensorVis"/>
       <slice material="PyrexGlass" thickness="0.2*cm" />
       <slice material="Air" thickness="0.35*cm" />
       <slice material="Aluminum" thickness="0.1*cm" />
       <slice material="Air" thickness="1.0*cm" />
-      <slice material="Iron" thickness="20.0*cm" vis="MuonBarrelAbsorberVis"/>
+      <slice material="Iron" thickness="20.0*cm" vis="MuonAbsorberVis"/>
     </layer>
   </detector>
 </detectors>

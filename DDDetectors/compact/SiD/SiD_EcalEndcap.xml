@@ -12,26 +12,26 @@
 
     <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
     <layer repeat="1">
-      <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
-      <slice material = "Copper"  thickness = "0.005*cm" />
-      <slice material = "Kapton"  thickness = "0.030*cm" />
-      <slice material = "Air"     thickness = "0.033*cm" />
+      <slice material = "Silicon" thickness = "0.032*cm" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
+      <slice material = "Copper"  thickness = "0.005*cm" vis="EcalAbsorberVis"/>
+      <slice material = "Kapton"  thickness = "0.030*cm" vis="EcalAbsorberVis"/>
+      <slice material = "Air"     thickness = "0.033*cm" vis="InvisibleNoDaughters"/>
     </layer>       
     <layer repeat="20">
       <slice material = "TungstenDens24" thickness = "0.25*cm" />
-      <slice material = "Air"     thickness = "0.025*cm" />
-      <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
-      <slice material = "Copper"  thickness = "0.005*cm" />
-      <slice material = "Kapton"  thickness = "0.030*cm" />
-      <slice material = "Air"     thickness = "0.033*cm" />
+      <slice material = "Air"     thickness = "0.025*cm" vis="InvisibleNoDaughters"/>
+      <slice material = "Silicon" thickness = "0.032*cm" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
+      <slice material = "Copper"  thickness = "0.005*cm" vis="EcalAbsorberVis"/>
+      <slice material = "Kapton"  thickness = "0.030*cm" vis="EcalAbsorberVis"/>
+      <slice material = "Air"     thickness = "0.033*cm" vis="InvisibleNoDaughters"/>
     </layer>
     <layer repeat="10">
       <slice material = "TungstenDens24" thickness = "0.5*cm" />
-      <slice material = "Air"     thickness = "0.025*cm" />
-      <slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" limits="cal_limits" />
-      <slice material = "Copper"  thickness = "0.005*cm" />
-      <slice material = "Kapton"  thickness = "0.030*cm" />
-      <slice material = "Air"     thickness = "0.033*cm" />
+      <slice material = "Air"     thickness = "0.025*cm" vis="InvisibleNoDaughters"/>
+      <slice material = "Silicon" thickness = "0.032*cm" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
+      <slice material = "Copper"  thickness = "0.005*cm" vis="EcalAbsorberVis"/>
+      <slice material = "Kapton"  thickness = "0.030*cm" vis="EcalAbsorberVis"/>
+      <slice material = "Air"     thickness = "0.033*cm" vis="InvisibleNoDaughters"/>
     </layer>
   </detector>
 </detectors>

@@ -7,11 +7,13 @@
 //
 //====================================================================
 // Framework include files
-#define  DD4HEP_USE_SURFACEINSTALL_HELPER  DD4hep_SiTrackerEndcap_Surfaces
+#define  DD4HEP_USE_SURFACEINSTALL_HELPER  DD4hep_SiTrackerEndcapSurfacePlugin
 #include "DD4hep/SurfaceInstaller.h"
 
-void Installer::install(DetElement component, PlacedVolume pv)   {
-  Volume comp_vol = pv.volume();
+/// Install measurement surfaces
+template <typename UserData> 
+void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
+   Volume comp_vol = pv.volume();
   if ( comp_vol.isSensitive() )  {  
     Volume mod_vol = parentVolume(component);
     DD4hep::Geometry::Trapezoid comp_shape(comp_vol.solid()), mod_shape(mod_vol.solid());

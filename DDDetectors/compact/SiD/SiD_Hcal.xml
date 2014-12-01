@@ -24,10 +24,11 @@
 
   <!--  Definition of the used visualization attributes    -->
   <display>
-    <vis name="HcalBarrelVis"          alpha="1" r="1"    g="1"    b="0.1" showDaughters="true" visible="true"/>
-    <vis name="HcalBarrelStavesVis"    alpha="1" r="1"    g="0"    b="0.3" showDaughters="true" visible="true"/>
-    <vis name="HcalBarrelLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="true" visible="true"/>
-    <vis name="HcalBarrelSensorVis"    alpha="1" r="1"    g="1"    b="0.7" showDaughters="true" visible="true"/>
+    <vis name="HcalBarrelVis"    alpha="1" r="0.0"  g="0.3"  b="0.8" showDaughters="true" visible="true"/>
+    <vis name="HcalStavesVis"    alpha="1" r="0.0"  g="0.0"  b="0.1" showDaughters="true" visible="false"/>
+    <vis name="HcalLayerVis"     alpha="1" r="0.0"  g="0.5"  b="1.0" showDaughters="true" visible="false"/>
+    <vis name="HcalSensorVis"    alpha="1" r="1.0"  g="0.0"  b="0.2" showDaughters="true" visible="true"/>
+    <vis name="HcalAbsorberVis"  alpha="1" r="0.4"  g="0.4"  b="0.6" showDaughters="true" visible="true"/>
 
     <vis name="HcalEndcapVis"          alpha="1" r="1"    g="1"    b="0.1" showDaughters="false" visible="true"/>
     <vis name="HcalEndcapLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="false" visible="true"/>
@@ -52,5 +53,4 @@
   <!--  Includes for sensitives and support                -->
   <include ref="SiD_HcalBarrel.xml"/>
   <include ref="SiD_HcalEndcap.xml"/>
-
 </lccdd>

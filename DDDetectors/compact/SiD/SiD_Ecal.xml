@@ -24,10 +24,14 @@
 
   <!--  Definition of the used visualization attributes    -->
   <display>
-    <vis name="EcalBarrelVis"       alpha="1.0" r="0" g="0" b="0.3" showDaughters="true" visible="true"/>
-    <vis name="EcalBarrelStaveVis"  alpha="1.0" r="1" g="0.9" b="0.5" showDaughters="false" visible="true"/>
+    <vis name="EcalBarrelVis"       alpha="1.0" r="1.0"  g="1.0"  b="0.0"  showDaughters="true" visible="false"/>
+    <vis name="EcalStaveVis"        alpha="1.0" r="0.0"  g="0.0"  b="1.0"  showDaughters="true" visible="true"/>
+    <vis name="EcalLayerVis"        alpha="1.0" r="0.8"  g="0.8"  b="0.0"  showDaughters="true" visible="true"/>
 
-    <vis name="EcalEndcapVis"       alpha="1" r="0.77" g="0.74" b="0.86" showDaughters="false" visible="true"/>
+    <vis name="EcalSensitiveVis"    alpha="1.0" r="0.7"  g="0.3"  b="0.0"  showDaughters="false" visible="true"/>
+    <vis name="EcalAbsorberVis"     alpha="1.0" r="0.4"  g="0.4"  b="0.0"  showDaughters="false" visible="true"/>
+
+    <vis name="EcalEndcapVis"       alpha="1.0" r="0.77" g="0.74" b="0.86" showDaughters="false" visible="true"/>
   </display>
 
   <!--  Definition of the readout segmentation/definition  -->
@@ -45,5 +49,6 @@
   <!--  Includes for sensitives and support                -->
   <include ref="SiD_EcalBarrel.xml"/>
   <include ref="SiD_EcalEndcap.xml"/>
-
+<!--
+-->
 </lccdd>

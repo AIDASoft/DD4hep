@@ -7,11 +7,12 @@
 //
 //====================================================================
 // Framework include files
-#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_SiTrackerBarrel_Surfaces
+#define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_SiTrackerBarrelSurfacePlugin
 #include "DD4hep/SurfaceInstaller.h"
 
-/// Install volume information. Default implementation only prints!
-void Installer::install(DetElement component, PlacedVolume pv)   {
+/// Install measurement surfaces
+template <typename UserData> 
+void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
   Volume comp_vol = pv.volume();
   if ( comp_vol.isSensitive() )  {  
     Volume mod_vol  = parentVolume(component);

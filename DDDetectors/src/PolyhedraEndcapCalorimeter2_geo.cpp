@@ -26,7 +26,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   double      zmin      = dim.zmin();
   Layering    layering(x_det);
   double      totalThickness = layering.totalThickness();
-  Volume      envelopeVol(det_name+"_envelope",PolyhedraRegular(numsides,rmin,rmax,totalThickness),air);
+  Volume      envelopeVol("envelope",PolyhedraRegular(numsides,rmin,rmax,totalThickness),air);
     
   int l_num = 1;
   int layerType   = 0;
@@ -37,7 +37,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
     xml_comp_t       x_layer  = c;
     double           l_thick  = layering.layer(l_num-1)->thickness();
-    string           l_name   = det_name + _toString(layerType,"_layer%d");
+    string           l_name   = _toString(layerType,"layer%d");
     int              l_repeat = x_layer.repeat();
     Volume           l_vol(l_name,PolyhedraRegular(numsides,rmin,rmax,l_thick),air);
       
@@ -45,7 +45,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double sliceZ = -l_thick/2;
     for(xml_coll_t s(x_layer,_U(slice)); s; ++s)  {
       xml_comp_t x_slice = s;
-      string     s_name  = l_name + _toString(s_num,"_slice%d");
+      string     s_name  = _toString(s_num,"slice%d");
       double     s_thick = x_slice.thickness();
       Material   s_mat   = lcdd.material(x_slice.materialStr());
       Volume     s_vol(s_name,PolyhedraRegular(numsides,rmin,rmax,s_thick),s_mat);
@@ -77,7 +77,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   Volume motherVol = lcdd.pickMotherVolume(sdet);
   // Reflect it.
   if ( reflect )  {
-    Assembly assembly(det_name+"_assembly");
+    Assembly assembly(det_name);
     PlacedVolume pv = motherVol.placeVolume(assembly);
     pv.addPhysVolID("system", det_id);
     sdet.setPlacement(pv);

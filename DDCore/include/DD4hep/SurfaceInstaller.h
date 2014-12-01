@@ -61,7 +61,8 @@ namespace DD4hep  {
     DetElement    m_det;
     /// Map of surface instances keyed by the logical volume
     Surfaces      m_surfaces;
-
+    /// Flag to inhibit useless further scans
+    bool          m_stopScanning;
     /// Scan through tree of detector elements
     void scan(DetElement de);
 
@@ -70,8 +71,14 @@ namespace DD4hep  {
     SurfaceInstaller(LCDD& lcdd, const std::string& det_name);
     /// Default destructor
     virtual ~SurfaceInstaller() {}
+    /// Set flag to stop scanning volumes and detector elements
+    void stopScanning()   {  m_stopScanning = true;   }
     /// Indicate error message and throw exception
     void invalidInstaller(const std::string& msg) const;
+    /// Shortcut to access the parent detectorelement's volume
+    Volume parentVolume(DetElement component)  const;
+    /// Shortcut to access the translation vector of a given component
+    const double* placementTranslation(DetElement component)  const;
     /// Scan through tree of detector elements
     void scan();
     /// Install volume information. Default implementation only prints!
@@ -100,7 +107,7 @@ namespace DD4hep  {
 }   // End namespace DD4hep
 
 
-#ifdef DD4HEP_USE_SURFACEINSTALL_HELPER
+#if defined(DD4HEP_USE_SURFACEINSTALL_HELPER)
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorData.h"
@@ -125,12 +132,13 @@ namespace {
    *  \version 1.0
    *  \ingroup DD4HEP
    */
-  class Installer : public DD4hep::SurfaceInstaller {
+  template <typename UserData> class Installer : public DD4hep::SurfaceInstaller {
   public:
     typedef DD4hep::DDRec::Vector3D     Vector3D;
     typedef DD4hep::DDRec::VolSurface   VolSurface;
     typedef DD4hep::DDRec::VolPlane     VolPlane;
     typedef DDSurfaces::SurfaceType     Type;
+    UserData data;
   public:
     /// Initializing constructor
     Installer(LCDD& lcdd, const std::string& nam) : DD4hep::SurfaceInstaller(lcdd, nam) {}
@@ -139,41 +147,43 @@ namespace {
     /// Install volume information. Default implementation only prints!
     virtual void install(DetElement component, PlacedVolume pv);
     /// Try to handle surface using the surface cache
-    bool handleUsingCache(DetElement comp, Volume vol)  const  {
-      Surfaces::const_iterator is = m_surfaces.find(vol.ptr());
-      if ( is != m_surfaces.end() )  {
-	VolSurface surf((*is).second);
-	DD4hep::DDRec::volSurfaceList(comp)->push_back(surf);
-	return true;
-      }
-      return false;
-    }
-    Volume parentVolume(DetElement component)  const  {
-      DetElement module = component.parent();
-      if ( module.isValid() )   {
-	return module.placement().volume();
-      }
-      return Volume();
-    }
-    const double* placementTranslation(DetElement component)  const  {
-      TGeoMatrix* mat = component.placement()->GetMatrix();
-      const double* trans = mat->GetTranslation();
-      return trans;
-    }
-    void addSurface(DetElement component, const DD4hep::DDRec::VolSurface& surf)   {
-      m_surfaces.insert(std::make_pair(surf.volume().ptr(),surf.ptr()));
-      DD4hep::DDRec::volSurfaceList(component)->push_back(surf);
-    }
+    bool handleUsingCache(DetElement comp, Volume vol)  const;
+    /// Add a new surface to the surface manager and the local cache
+    void addSurface(DetElement component, const DD4hep::DDRec::VolSurface& surf);
     template <typename T> bool checkShape(const T& shape) const   {
       if ( shape.isValid() ) return true;
       invalidInstaller("Shape is not of the required type:"+DD4hep::typeName(typeid(T)));
      return false;
     }
   };
+
+  /// Handle surface installation using cached surfaces.
+  template <typename UserData> 
+    bool Installer<UserData>::handleUsingCache(DetElement comp, Volume vol)  const  {
+    Surfaces::const_iterator is = m_surfaces.find(vol.ptr());
+    if ( is != m_surfaces.end() )  {
+      VolSurface surf((*is).second);
+      DD4hep::DDRec::volSurfaceList(comp)->push_back(surf);
+      return true;
+    }
+    return false;
+  }
+
+  /// Add a new surface to the surface manager and the local cache
+  template <typename UserData> 
+    void Installer<UserData>::addSurface(DetElement component, const DD4hep::DDRec::VolSurface& surf)   {
+    m_surfaces.insert(std::make_pair(surf.volume().ptr(),surf.ptr()));
+    DD4hep::DDRec::volSurfaceList(component)->push_back(surf);
+  }
+
 }
+#ifndef SURFACEINSTALLER_DATA
+typedef void* SURFACEINSTALLER_DATA;
+#endif
 
-DECLARE_SURFACE_INSTALLER(DD4HEP_USE_SURFACEINSTALL_HELPER,Installer)
+typedef Installer<SURFACEINSTALLER_DATA> InstallerClass;
+DECLARE_SURFACE_INSTALLER(DD4HEP_USE_SURFACEINSTALL_HELPER,InstallerClass)
 
-#endif /* DD4HEP_USE_SURFACEINSTALL_HELPER */
+#endif /* defined(DD4HEP_USE_SURFACEINSTALL_HELPER) */
 
 #endif /* DD4HEP_DDREC_SURFACEINSTALLER_H */

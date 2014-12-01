@@ -45,6 +45,22 @@ void SurfaceInstaller::invalidInstaller(const std::string& msg)   const  {
   throw std::runtime_error("+++ Failed to install Surfaces to detector "+string(det));
 }
 
+/// Shortcut to access the parent detectorelement's volume
+Volume SurfaceInstaller::parentVolume(DetElement component)  const  {
+  DetElement module = component.parent();
+  if ( module.isValid() )   {
+    return module.placement().volume();
+  }
+  return Volume();
+}
+
+/// Shortcut to access the translation vector of a given component
+const double* SurfaceInstaller::placementTranslation(DetElement component)  const  {
+  TGeoMatrix* mat = component.placement()->GetMatrix();
+  const double* trans = mat->GetTranslation();
+  return trans;
+}
+
 /// Printout volume information
 void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
   if ( pv.volume().isSensitive() )  {
@@ -89,7 +105,7 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
 void SurfaceInstaller::scan(DetElement e)  {
   const _C& children = e.children();  
   install(e,e.placement());
-  for (_C::const_iterator i=children.begin(); i!=children.end(); ++i)
+  for (_C::const_iterator i=children.begin(); !m_stopScanning && i!=children.end(); ++i)
     scan((*i).second);
 }
 

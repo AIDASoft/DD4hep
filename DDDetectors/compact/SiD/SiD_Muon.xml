@@ -25,10 +25,10 @@
   <!--  Definition of the used visualization attributes    -->
   <display>
     <vis name="MuonBarrelVis"          alpha="1" r="1"    g="0.4"  b="0.62" showDaughters="true" visible="true"/>
-    <vis name="MuonBarrelStavesVis"    alpha="1" r="0"    g="0.7"  b="0.3" showDaughters="true" visible="true"/>
-    <vis name="MuonBarrelLayerVis"     alpha="1" r="0"    g="1"    b="0.3" showDaughters="true" visible="true"/>
-    <vis name="MuonBarrelSensorVis"    alpha="1" r="0.54" g="0.4"  b="0.41" visible="true"/>
-    <vis name="MuonBarrelAbsorberVis"  alpha="1" r="0.28" g="0.4"  b="0.62" visible="true"/>        
+    <vis name="MuonStavesVis"    alpha="1" r="0"    g="0.7"  b="0.3" showDaughters="true" visible="true"/>
+    <vis name="MuonLayerVis"     alpha="1" r="0"    g="1"    b="0.3" showDaughters="true" visible="true"/>
+    <vis name="MuonSensorVis"    alpha="1" r="0.54" g="0.4"  b="0.41" visible="true"/>
+    <vis name="MuonAbsorberVis"  alpha="1" r="0.28" g="0.4"  b="0.62" visible="true"/>        
 
     <vis name="MuonEndcapVis"          alpha="1" r="1"    g="0.4"  b="0.62" showDaughters="true" visible="true"/>
     <vis name="MuonEndcapLayerVis"     alpha="1" r="0"    g="1"    b="0.3"  showDaughters="true" visible="true"/>

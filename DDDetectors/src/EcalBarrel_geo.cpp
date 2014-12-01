@@ -33,7 +33,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement    sdet      (det_name,det_id);
   Volume        motherVol = lcdd.pickMotherVolume(sdet);
   PolyhedraRegular hedra  (nsides,inner_r,inner_r+totThick+tolerance*2e0,x_dim.z());
-  Volume        envelope  (det_name+"_envelope",hedra,air);
+  Volume        envelope  (det_name,hedra,air);
   PlacedVolume  env_phv   = motherVol.placeVolume(envelope,RotationZYX(0,0,M_PI/nsides));
 
   env_phv.addPhysVolID("system",det_id);
@@ -58,7 +58,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 		trd_y2, //
 		trd_z); // Thickness, in Y for top stave, when rotated.
 
-  Volume mod_vol(det_name+"_module",trd,air);
+  Volume mod_vol("stave",trd,air);
 
   sens.setType("calorimeter");
   { // =====  buildBarrelStave(lcdd, sens, module_volume) =====
@@ -85,7 +85,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 	Position   l_pos(0,0,l_pos_z+l_thickness/2);      // Position of the layer.
 	Box        l_box(l_dim_x*2-tolerance,stave_z*2-tolerance,l_thickness-tolerance);
-	Volume     l_vol(det_name+"_"+l_name,l_box,air);
+	Volume     l_vol(l_name,l_box,air);
 	DetElement layer(stave_det, l_name, det_id);
 
 	// Loop over the sublayers or slices for this layer.
@@ -93,10 +93,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 	double s_pos_z = -(l_thickness / 2);
 	for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
 	  xml_comp_t x_slice = si;
-	  string     s_name  =  _toString(s_num,"slice%d");
+	  string     s_name  = _toString(s_num,"slice%d");
 	  double     s_thick = x_slice.thickness();
 	  Box        s_box(l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
-	  Volume     s_vol(det_name+"_"+l_name+"_"+s_name,s_box,lcdd.material(x_slice.materialStr()));
+	  Volume     s_vol(s_name,s_box,lcdd.material(x_slice.materialStr()));
           DetElement slice(layer,s_name,det_id);
 
           if ( x_slice.isSensitive() ) {
@@ -129,7 +129,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   }
 
   // Set stave visualization.
-  if (x_staves)   {
+  if ( x_staves )   {
     mod_vol.setVisAttributes(lcdd.visAttributes(x_staves.visStr()));
   }
   // Phi start for a stave.
