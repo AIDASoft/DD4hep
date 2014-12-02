@@ -140,7 +140,7 @@ namespace DD4hep {
       }
 
       /// Constructor to be used with an existing object
-      template <typename Q> VolSurface(const Handle<Q>& e)
+      template <typename Q> VolSurface(const Geometry::Handle<Q>& e)
           : Geometry::Handle< SurfaceData >(e) {
       }
 
@@ -282,7 +282,7 @@ namespace DD4hep {
       }
 
       /// Constructor to be used with an existing object
-      template <typename Q> VolPlane(const Handle<Q>& e)
+      template <typename Q> VolPlane(const Geometry::Handle<Q>& e)
 	: VolSurface(e) {
       }
 
