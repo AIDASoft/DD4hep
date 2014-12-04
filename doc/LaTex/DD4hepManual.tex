@@ -15,15 +15,6 @@ A Detector Description Toolkit\\
 for High Energy Physics\\
 \vspace{0.3cm}
 Experiments
-}{
-M.Frank%\textsuperscript{1},
-%F.Gaede\textsuperscript{2},
-%C.Grefe\textsuperscript{1},
-%P.Mato\textsuperscript{1}
-
-%{\textsuperscript{1} 
-{CERN, 1211 Geneva 23, Switzerland}
-%{\textsuperscript{2} Desy, 22607 Hamburg, Germany}
 }
 %
 %
@@ -69,6 +60,11 @@ version          & Date & Author \\[0.2cm] \hline
 \pagenumbering{arabic}
 \setcounter{page}{1}
 \input{DD4hep-Overview.tex}
+
+\noindent
+The alignment support will be subject to a separate development line of the
+\DDhep toolkit, called \DDA and hence will be discussed in another 
+manual~\cite{bib:DDAlign}.
 %
 \newpage
 %=============================================================================
@@ -88,11 +84,12 @@ The clients of the detector description are the algorithms residing in the
 event processing framework that need this information in order to perform 
 their job (reconstruction, simulation, etc.). 
 The detector description provided by \DDhep is a framework for developers 
-to provide the specific detector information to algorithms.
+to provide the specific detector information to software algorithms, which 
+process data from particle collisions.
 
 \noindent
 In the following sections an overview is given over the various independent
-elements of DD4hep followed by the discussion of an example which leads to 
+elements of \DDhep followed by the discussion of an example which leads to 
 the description of a detector when combining these elements.
 This includes a discussion of the features of the \DDhep detector description
 and of its structure. 
@@ -126,8 +123,8 @@ to ROOT's TGeom classes.
 \noindent
 Supported platforms for DD4hep are the CERN Linux operating systems:
 \begin{itemize}
-\item \tw{Scientic Linux CERN 6}
-\item \tw{Scientic Linux CERN 7} - once approved.
+\item \tw{Scientic} \tw{Linux} \tw{CERN} \tw{6}
+\item \tw{Scientic} \tw{Linux} \tw{CERN} \tw{7} - once approved.
 \end{itemize}
 Support for any other platform will well be taken into account, but can only
 be actively supported by users who submit the necessary patches.
@@ -137,15 +134,18 @@ be actively supported by users who submit the necessary patches.
 \label{sec:dd4hep-user-manual-prerequisites}
 %=============================================================================
 \noindent
-DD4hep depends on a number of âexternalâ packages. 
+DD4hep depends on a number of $external$ packages. 
 The user will need to install these in his/her 
 system before building and running the examples
 \begin{itemize}\itemcompact
 \item Mandatory are recent \tw{CMake} (version 2.8 or higher) and 
-\item \tw{ROOT} (version 5.34 or higher) installations.
+\item \tw{ROOT} (version 5.34 or higher) installations.~\footnote{Please 
+not, that due to the removal of the Reflex plugin mechanism from ROOT 6,
+version 6 of ROOT is currently not supported. This deficiency will be waved 
+in the future.}
 \item If the \tw{Xerces-C} is used to parse compact descriptions and 
         installation of {Xerces-C} will be required.
-\item To build \DDG it is useful to have an installation of the Boost
+\item To build \DDG it is mandatory to have an installation of the Boost
     header files.
 \item To build and run the simulation examples \tw{Geant4} will be required. 
 \end{itemize}
@@ -316,29 +316,35 @@ data conversions to the underlying object in form of the raw pointer,
 a reference etc. The template handle class:
 
 \begin{code}
-template <typename T> struct Handle  {
-  typedef T Implementation;
-  typedef Handle<Implementation> handle_t;
-  T* m_element;
-  Handle() : m_element(0)                  {                                     }
-  Handle(T* e) : m_element(e)              {                                     }
-  Handle(const Handle<T>& e) : m_element(e.m_element) {                          }
-  template<typename Q> Handle(Q* e)
-  : m_element((T*)e)                       { verifyObject();                     }
-  template<typename Q> Handle(const Handle<Q>& e) 
-  : m_element((T*)e.m_element)             { verifyObject();                     }
-  Handle<T>& operator=(const Handle<T>& e) { m_element=e.m_element; return *this;}
-  bool isValid() const                     { return 0 != m_element;              }
-  bool operator!() const                   { return 0 == m_element;              }
-  void clear()                             { m_element = 0;                      }
-  T* operator->() const                    { return  m_element;                  }
-  operator T& ()  const                    { return *m_element;                  }
-  T& operator*()  const                    { return *m_element;                  }
-  T* ptr() const                           { return  m_element;                  }
-  template <typename Q> Q* _ptr() const    { return  (Q*)m_element;              }
-  template <typename Q> Q*  data() const   { return  (Q*)m_element;              }
-  template <typename Q> Q&  object() const { return *(Q*)m_element;              }
-  const char* name() const;
+template <typename T> class Handle  {
+public:
+      // Type definitions and class specific abbreviations and forward declarations
+      typedef T Implementation;
+      typedef Handle<Implementation> handle_t;
+public:
+      // Single and only data member: pointer to the underlying object  
+      T* m_element;
+
+public:
+      Handle() : m_element(0)                  {                                     }
+      Handle(T* e) : m_element(e)              {                                     }
+      Handle(const Handle<T>& e) : m_element(e.m_element) {                          }
+      template<typename Q> Handle(Q* e)
+      : m_element((T*)e)                       { verifyObject();                     }
+      template<typename Q> Handle(const Handle<Q>& e) 
+      : m_element((T*)e.m_element)             { verifyObject();                     }
+      Handle<T>& operator=(const Handle<T>& e) { m_element=e.m_element; return *this;}
+      bool isValid() const                     { return 0 != m_element;              }
+      bool operator!() const                   { return 0 == m_element;              }
+      void clear()                             { m_element = 0;                      }
+      T* operator->() const                    { return  m_element;                  }
+      operator T& ()  const                    { return *m_element;                  }
+      T& operator*()  const                    { return *m_element;                  }
+      T* ptr() const                           { return  m_element;                  }
+      template <typename Q> Q* _ptr() const    { return  (Q*)m_element;              }
+      template <typename Q> Q*  data() const   { return  (Q*)m_element;              }
+      template <typename Q> Q&  object() const { return *(Q*)m_element;              }
+      const char* name() const;
 };
 \end{code}
 
@@ -1166,6 +1172,75 @@ have constructors as shown here for the UnionSolid:
   UnionSolid(const Solid& shape1, const Solid& shape2, const Transform3D& pos);
 \end{code}
 
+\paragraph{Shape factories} Sometimes it is useful to create shapes in an "abstract" way
+e.g. to define areas in the detector. To create such shapes a factory method was implemented,
+which allows to create a valid shape handle given a valid XML element providing the 
+required attributes. The factory methods are invoked using from XML elements of the following form:
+\begin{unnumberedcode}
+  <some_element type="shape-type" .... args ....>
+\end{unnumberedcode}
+The shape is then constructed using the XML component object:
+\begin{unnumberedcode}
+#include "DD4hep/DetFactoryHelper.h"
+
+  xml_h e = <shape-element>;
+  Box box = xml_comp_t(e).createShape();
+  if ( !box.isValid() ) { ...handle error ... }
+\end{unnumberedcode}
+The required arguments for the various shapes are then:
+\begin{itemize}
+\item For a Box:
+\vspace{-0.2cm}
+\begin{unnumberedcode}
+  <some_element type="Box" x="x-value" y="y-value" z="z-value"/>
+\end{unnumberedcode}
+fulfiling a constructor of the type: $Box(dim.dx(),~dim.dy(),~dim.dz())$.
+
+\item For a Polycone:
+\vspace{-0.2cm}
+\begin{unnumberedcode}
+  <some_element type="Polycone" start="start-phi-value" deltaphi="delta-phi-value">
+    <zplane z="z-value" rmin="rmin-value" rmax="rmax-value"/>
+    <zplane z="z-value" rmin="rmin-value" rmax="rmax-value"/>
+    .... any number of Z-planes ....
+    <zplane z="z-value" rmin="rmin-value" rmax="rmax-value"/>
+  </some_element>
+\end{unnumberedcode}
+
+\item For a ConeSegment the following constructor must be fulfilled:\\
+  $ ConeSegment(e.rmin(0.0),~e.rmax(),~e.z(0.0),~e.startphi(0.0),~e.deltaphi(2*M\_PI))$,\\
+where the above default values for the XML attributes $rmin, z, startphi$ and 
+$deltaphi$ are used if not explicitly stated in the XML element $e$.
+
+\item For a Tube the constructor is:\\
+  $ Tube(e.rmin(0.0),~e.rmax(),~e.z(0.0),~e.startphi(0.0),~e.deltaphi(2*M\_PI))$.
+
+\item For a Cone the constructor is:\\
+  $double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();$\\
+  $ Cone(e.z(0.0),~rmi1,rma1,~e.rmin2(rmi1),~e.rmax2(rma1))$.
+
+\item For a Trap the constructor is:\\
+  if $dz$ is specified: $ Trap(e.dz(),~e.dy(),~e.dx(),_toDouble(_Unicode(pLTX)))$
+  Otherwise: \\
+  $ Trap(e.z(0.0),~e.theta(),~e.phi(0),~e.y1(),~e.x1(),~e.x2(),~e.alpha(),
+                    e.y2(),~e.x3(),~e.x4(),~e.alpha2())$.
+
+\item For a Trapezoid the constructor is:\\
+  $ Trapezoid(e.x1(),~e.x2(),~e.y1(),~e.y2(),~e.z(0.0))$.
+
+\item For a Torus the constructor is:\\
+  $ Torus(e.r(),~e.rmin(),~e.rmax(),~e.phi(M\_PI),~e.deltaphi(2.*M\_PI))$.
+
+\item For a Sphere the constructor is:\\
+  $ Sphere(e.rmin(),~e.rmax(),~e.deltatheta(M\_PI),~e.phi(0e0),e.deltaphi(2.*M\_PI))$.
+
+\item For a Paraboloid the constructor is:\\
+  $ Paraboloid(e.rmin(0.0),~e.rmax(),~e.dz())$.
+
+\item For a PolyhedraRegular the constructor is:\\
+  $ PolyhedraRegular(e.numsides(),~e.rmin(),~e.rmax(),~e.dz())$.
+
+\end{itemize}
 
 \newpage
 %=============================================================================
@@ -1496,6 +1571,162 @@ toolkit, but an independent package call
 \tw{DDSegmentation}~\cite{bib:DDSegmentations}. Though the usage is an 
 integral part of DD4hep.
 
+\subsubsection{Volume Manager}
+%=============================================================================
+\noindent
+The \tw{VolumeManager} is a tool to seek a lookup table of placements of 
+sensitive volumes and their corresponding unique volume identifier, the 
+\tw{cellID}. The volume manager analyzes - once the geometry is closed -
+the hierarchical tree and stores the various placements in the hierarchy 
+with respect to their identifiers. In other words the the tree is 
+reused volumes shown e.g. in Figure~\ref{fig:dd4hep-hierarchies} is 
+degenerated  according to the full pathes of the various volumes. This 
+use case is very common to reconstruction and analysis applications
+whenever a given raw-data (aka "hit") element must be related to its
+geometrical location.
+
+\noindent
+Figure~\ref{fig:dd4hep-user-manual-volmgr} shows the design diagram of this component:
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=170mm] {DD4hep-volmgr.png}
+    \caption{Extensions may be attached to common Detector Elements which 
+             extend the functionality of the common DetElement 
+             class and support e.g. caching of precomputed values.}
+    \label{fig:dd4hep-user-manual-volmgr}
+  \end{center}
+\end{figure}
+
+\noindent
+To optimize the access of complex subdetector structures, is the volume-identifier
+map split and the volumes of each each subdetector is stored in a separate map.
+This optimization however is transparent to clients. The following code extract
+from the header files lists the main client routines to extract volume information
+given a known cellID:
+\begin{code}
+  /// Lookup the context, which belongs to a registered physical volume.
+  Context* lookupContext(VolumeID volume_id) const;
+  /// Lookup a physical (placed) volume identified by its 64 bit hit ID
+  PlacedVolume lookupPlacement(VolumeID volume_id) const;
+  /// Lookup a top level subdetector detector element 
+  /// according to a contained 64 bit hit ID
+  DetElement lookupDetector(VolumeID volume_id) const;
+  /// Lookup the closest subdetector detector element in the hierarchy 
+  /// according to a contained 64 bit hit ID
+  DetElement lookupDetElement(VolumeID volume_id) const;
+  /// Access the transformation of a physical volume to the world coordinate system
+  const TGeoMatrix& worldTransformation(VolumeID volume_id) const;
+\end{code}
+
+%=============================================================================
+\subsubsection{Static Electric and Magnetic Fields}
+\label{sec:dd4hep-manual-static-fields}
+
+\noindent
+The generic field is described by a structure of any field type (electric or magnetic)
+with field components in Cartesian coordinates.
+The overlay field is the sum of several magnetic of electric field components
+and the resulting field vectors are computed by the vector addition 
+of the individual components. The available components are described in the following.
+If necessary new field implementations may be added at any time: they are 
+instantiated when necessary by the factory mechanism.
+Fields are described in the compact model within the {\tt{<fields>}} tags the 
+following examople shows:
+\begin{code}
+  <fields>
+    <field name="MyMagnet" type="solenoid"  .... />
+  </fields>
+\end{code}
+The actual components are defined one by one within the {\tt{<field>}} tags.
+
+\paragraph{Constant Electric or Magnetic Fields} are defined as follows:
+\begin{code}
+  <field  name="MyMagnet" type="ConstantField" field="electric">
+    <strength x="x-val" y="y-val" z="z-val"/>
+  </field>
+\end{code}
+The {\tw{field}} attribute accepts take the values {\tw{[electric,magnetic]}}
+depending on it's nature.
+
+\paragraph{Magnetic Dipoles} are defined as follows:
+\begin{code}
+  <field name="MyMagnet" type="DipoleMagnet"
+         rmax="50*cm"
+         zmin="0*cm"
+         zmax="50*cm">
+         <dipole_coeff>1.0*tesla</dipole_coeff>
+         <dipole_coeff>0.1*tesla/pow(cm,1)</dipole_coeff>
+         <dipole_coeff>0.01*tesla/pow(cm,2)</dipole_coeff>
+  </field>
+\end{code}
+
+\paragraph{Magnetic Multipole Fields} are developed according to their 
+approximation using the multipole coefficients.
+The dipole is assumed to be horizontal as it is used for bending beams in large colliders
+ie. the dipole field lines are vertical.
+
+The different momenta are given by:  $ B_y + i  B_x $\footnote{
+See for detailed documentation about multipoles:\\
+http://cas.web.cern.ch/cas/Belgium-2009/Lectures/PDFs/Wolski-1.pdf \\
+http://cas.web.cern.ch/cas/Bulgaria-2010/Talks-web/Brandt-1-web.pdf \\
+https://en.wikipedia.org/wiki/Multipole\_magnet
+}, where:
+\begin{align*}
+        & & B_y + i B_x &=& C_n (x + iy)^{n-1}                         \\
+B_{sum} &=& B_y + i B_x &=& \Sigma_{n=1..m} (b_n + ia_n) (x + iy)^{n-1}\\
+\end{align*}
+With $C_n$ being the complex multipole coefficients,
+$b_n$ the "normal multipole coefficients" and $a_n$ the "skew multipole coefficients".
+The maximal momentum used is the octopole momentum. The lower four momenta are used
+to describe the magnetic field:
+\begin{itemize}\itemcompact
+\item Dipole (n=1):
+    \begin{align*}
+        B_y &=& b_1                                       \\
+        B_x &=& a_1                                       \\
+        B_z &=& constant                                  \\
+    \end{align*}
+\item Quadrupole (n=2):
+    \begin{align*}
+        B_y &=& b_2 x - a_2 y                             \\
+        B_x &=& b_2 y + a_2 x                             \\
+    \end{align*}
+\item Sextupole (n=3):
+    \begin{align*}
+        B_y + i B_x &=& (b_3 +ia_3) (x^2 + 2ixy - y^2)    \\
+        B_y         &=& b_3 x^2 - b_3 y^2 - 2 a_3 xy      \\
+        B_x         &=& a_3 x^2 - a_3 y^2 + 2 b_3 xy      \\
+    \end{align*}
+
+\item Octopole (n=4):
+    \begin{align*}
+        B_y + i B_x &=& (b_4 +ia_4) (x^3 + 3ix^2y - 3xy^2 -iy^3)  \\
+        B_y &=& b_4 x^3 - 3 b_4 x y^2 - 3 a_4 x^2 y + a_4 y^3     \\
+        B_x &=& 3 b_4 x^2 y + b_4 y^3 + a_4 x^3 - 3 a_4 x y^2     \\
+    \end{align*}
+\end{itemize}
+The defined field components only apply within the shape 'volume'.
+If 'volume' is an invalid shape (ie. not defined), then the field
+components are valied throughout the 'universe'.
+
+\noindent
+The magnetic multipoles are defined as follows:
+\begin{code}
+  <field name="MyMagnet" type="MultipoleMagnet">
+         <position x="0" y="0" z="0"/>
+         <rotation x="pi" y="0" z="0"/>
+         <shape type="shape-constructor-type" .... args .... >
+         <coeffizient coefficient="coeff(n=1)" skew="skew(n=1)"/>
+           .... maximum of 4 coefficients ....
+         <coeffizient coefficient="coeff(n=4)" skew="skew(n=4)"/>
+  </field>
+\end{code}
+The shape defines the geometrical coverage of the multipole 
+field in the origin (See section~\ref{dd4hep-basic-shapes} for details). 
+This shape may then be transformed to
+the required location in the detector area using the position 
+and the rotation elements, which define this transformation.
+
 \newpage
 %=============================================================================
 \subsection{Detector Constructors}
@@ -1709,54 +1940,9 @@ DECLARE_DETELEMENT(CylindricalEndcapCalorimeter,create_detector);
     at construction time.}
 \end{tabular}
 
+\newpage
 %=============================================================================
-\subsection{Tools}
-\subsubsection{Volume Manager}
-%=============================================================================
-\noindent
-The \tw{VolumeManager} is a tool to seek a lookup table of placements of 
-sensitive volumes and their corresponding unique volume identifier, the 
-\tw{cellID}. The volume manager analyzes - once the geometry is closed -
-the hierarchical tree and stores the various placements in the hierarchy 
-with respect to their identifiers. In other words the the tree is 
-reused volumes shown e.g. in Figure~\ref{fig:dd4hep-hierarchies} is 
-degenerated  according to the full pathes of the various volumes. This 
-use case is very common to reconstruction and analysis applications
-whenever a given raw-data (aka "hit") element must be related to its
-geometrical location.
-
-\noindent
-Figure~\ref{fig:dd4hep-user-manual-volmgr} shows the design diagram of this component:
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=170mm] {DD4hep-volmgr.png}
-    \caption{Extensions may be attached to common Detector Elements which 
-             extend the functionality of the common DetElement 
-             class and support e.g. caching of precomputed values.}
-    \label{fig:dd4hep-user-manual-volmgr}
-  \end{center}
-\end{figure}
-
-\noindent
-To optimize the access of complex subdetector structures, is the volume-identifier
-map split and the volumes of each each subdetector is stored in a separate map.
-This optimization however is transparent to clients. The following code extract
-from the header files lists the main client routines to extract volume information
-given a known cellID:
-\begin{code}
-  /// Lookup the context, which belongs to a registered physical volume.
-  Context* lookupContext(VolumeID volume_id) const;
-  /// Lookup a physical (placed) volume identified by its 64 bit hit ID
-  PlacedVolume lookupPlacement(VolumeID volume_id) const;
-  /// Lookup a top level subdetector detector element 
-  /// according to a contained 64 bit hit ID
-  DetElement lookupDetector(VolumeID volume_id) const;
-  /// Lookup the closest subdetector detector element in the hierarchy 
-  /// according to a contained 64 bit hit ID
-  DetElement lookupDetElement(VolumeID volume_id) const;
-  /// Access the transformation of a physical volume to the world coordinate system
-  const TGeoMatrix& worldTransformation(VolumeID volume_id) const;
-\end{code}
+\subsection{Tools and Utilities}
 
 %=============================================================================
 \subsubsection{Geometry Visualization}
@@ -1790,10 +1976,21 @@ The command to create the display is part of the DD4hep release:
 \begin{code}
 $> geoDisplay -compact <path to the XML file containing the detector description>
 
-
-geoDisplay -opt [-opt]                                                  
-        -compact       <file>       Specify the compact geometry file         
-                     [REQUIRED]     At least one compact geo file is required!
+ DD4hepGeometryDisplay -opt [-opt]                                                  
+        -compact       <file>       Specify the compact geometry file              
+                     [REQUIRED]     At least one compact geo file is required!     
+        -build_type <number/string> Specify the build type                         
+                     [OPTIONAL]     MUST come immediately after the -compact input.
+                                    Default for each file is: BUILD_DEFAULT [=1]   
+                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]
+        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         
+                                    before exiting the application                 
+        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       
+                                    check the volume ids for duplicates etc.       
+        -print      <number/string> Specify output level. Default: INFO(=3)        
+                     [OPTIONAL]     Allowed values: VERBOSE(=1), DEBUG(=2),        
+                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    
+                                    The lower the level, the more printout...      
         -load_only   [OPTIONAL]     Dry-run to only load geometry without     
                                     starting the dispay.                      
 \end{code}
@@ -1829,9 +2026,137 @@ Both conversions are supported in \DDhep with the geoConverter application:
 \end{code}
 
 %=============================================================================
+\subsubsection{Overlap checking}
+\label{sec:dd4hep-manual-overlap-checking}
+%=============================================================================
+\noindent
+Overlap checks are an important tool to verify the consistency of the 
+implemented geometrical design. As in the real world, where overlaps are 
+impossible, also simulated geometries may not have overlaps. In simulation
+overlaps tend to create particle reflections possibly leading to infinite
+loops.
+\begin{code}
+    python <install>/DD4hep/bin/checkOverlaps.py --help
+    Usage: checkOverlaps.py [options]
+
+    Check TGeo geometries for overlaps.
+
+    Options:
+      -h, --help                        show this help message and exit
+      -c <FILE>, --compact=<FILE>       Define LCCDD style compact xml input
+      -p <boolean>, --print=<boolean>   Print overlap information to standard output
+                                        (default:True)
+      -q, --quiet                       Do not print (disable --print)
+      -t <double number>, --tolerance=<double number>
+                                        Overlap checking tolerance. Unit is in [mm].
+                                        (default:0.1 mm)
+      -o <string>, --option=<string>    Overlap checking option ('' or 's')
+\end{code}
+
+%=============================================================================
+\subsubsection{Geometry checking}
+\label{sec:dd4hep-manual-geometry-checking}
+%=============================================================================
+\noindent
+Perform extensive geometry checks. For details and up to date information 
+please refer to the ROOT documentation of the class {\tt{TGeoManager}}:
+\begin{itemize}\itemcompact
+\item Member function {\tgeoO{TGeoManager.html}{TGeoManager:CheckGeometry}{TGeoManager::CheckGeometry}} and 
+\item Member function {\tgeoO{TGeoManager.html}{TGeoManager:CheckGeometryFull}{TGeoManager::CheckGeometryFull}}
+\end{itemize}
+
+\begin{code}
+    python <install>DD4hep/bin/checkGeometry.py --help
+    Usage: checkGeometry.py [options]
+
+    TGeo Geometry checking.
+
+    Options:
+      -h, --help                            show this help message and exit
+      -c <FILE>, --compact=<FILE>           Define LCCDD style compact xml input
+      -f <boolean>, --full=<boolean>        Full geometry checking
+      -n <integer>, --ntracks=<integer>     Number of tracks [requires 'full']
+      -x <double>, --vx=<double>            X-position of track origine vertex [requires 'full']
+      -y <double>, --vy=<double>            Y-position of track origine vertex [requires 'full']
+      -z <double>, --vz=<double>            Z-position of track origine vertex [requires 'full']
+      -o <string>, --option=<string>        Geometry checking option default:ob
+\end{code}
+
+The full geometry check performs the \tgeoO{TGeoManager.html}{TGeoManager:CheckGeometryFull}
+{following actions}:
+\begin{itemize}\itemcompact
+\item if option contains 'o': Optional overlap checkings (by sampling and by mesh).
+\item if option contains 'b': Optional boundary crossing check + timing per volume.
+
+\item{\bf{STAGE 1:}} extensive overlap checking by sampling per volume. Stdout need to be
+  checked by user to get report, then TGeoVolume::CheckOverlaps(0.01, "s") can
+  be called for the suspicious volumes.
+\item{\bf{STAGE 2:}} normal overlap checking using the shapes mesh - fills the list of
+  overlaps.
+\item{\bf{STAGE 3:}} shooting NTRACKS rays from vertex (vx,vy,vz) 
+   and counting the total number of
+  crossings per volume (rays propagated from boundary to boundary until
+  geometry exit). Timing computed and results stored in a histogram.
+\item{\bf{STAGE 4:}} shooting 1 mil. random rays inside EACH volume and calling
+  FindNextBoundary() + Safety() for each call. The timing is normalized by the
+  number of crossings computed at stage 2 and presented as percentage.
+  One can get a picture on which are the most "burned" volumes during
+  transportation from geometry point of view. Another plot of the timing per
+  volume vs. number of daughters is produced.
+\end{itemize}
+
+%=============================================================================
+\subsubsection{Directional Material Scans}
+\label{sec:dd4hep-manual-directional-material-scans}
+%=============================================================================
+\noindent
+Print the materials on a straight line between the two given points:
+\begin{code}
+materialScan
+ usage: print_materials compact.xml x0 y0 z0 x1 y1 z1 
+        -> prints the materials on a straight line between the two given points ( unit is cm) 
+\end{code}
+$materialScan$ uses the python bindings provided by Geant4 and may be not 
+always availible. Alternatively the command $print\_materials$ may be used, 
+which does not use the python binding, but produces less pretty output.
+
+%=============================================================================
+\subsubsection{Plugin Test Program}
+\label{sec:dd4hep-manual-plugin-test}
+%=============================================================================
+\noindent
+The plugin tester loads a given geometry and the executes a plugin
+defined at the command line. The main purpose of this program is to quickly 
+invoke new detector plugins while developing. The arguments for this 
+program are:
+\begin{code}
+    geoPluginRun -opt [-opt]                                                
+    
+        -plugin <name>  [REQUIRED]  Plugin to be executed and applied.        
+        -input  <file>  [OPTIONAL]  Specify geometry input file.              
+        -build_type <number/string> Specify the build type                         
+                     [OPTIONAL]     MUST come immediately after the -compact input.
+                                    Default for each file is: BUILD_DEFAULT [=1]   
+                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]
+        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         
+                                    before exiting the application                 
+        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       
+                                    check the volume ids for duplicates etc.       
+        -print      <number/string> Specify output level. Default: INFO(=3)        
+                     [OPTIONAL]     Allowed values: VERBOSE(=1), DEBUG(=2),        
+                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    
+                                    The lower the level, the more printout...      
+
+
+\end{code}
+
+%=============================================================================
 \newpage
 \begin{thebibliography}{9}
 \input{DD4hep-bibliography.tex}
+\bibitem{bib:DDAlign} M.Frank,
+                   "DDAlign User Manual: 
+                   Alignment Support for the DD4hep Geometry Description Toolkit".
 \bibitem{bib:DDSegmentations} C.Grefe et al.,
                    "The DDSegmentation package", 
                    Non existing documentation to be written.

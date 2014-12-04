@@ -219,7 +219,7 @@ In later section the configuration and the combination of these components
 forming a functional simulation application is presented.
 
 %=============================================================================
-\subsection{The Application Core Object: \tts{Geant4Kernel}}
+\subsection{The Application Core Object: Geant4Kernel}
 \label{sec:ddg4-user-manual-implementation-geant4kernel}
 %=============================================================================
 
@@ -228,17 +228,30 @@ The kernel object is the central context of a \DDG simulation application and
 gives all clients access to the user hooks (see Figure~\ref{fig:ddg4-geant4-kernel}).
 All Geant4 callback structures are exposed so that clients can easily 
 objects implementing the required interface or register callbacks with the 
-correct signature.
+correct signature. Each of these action sequences is connected to an instance
+of a geant4 provided callback structure as it is shown in 
+Figure~\ref{fig:ddg4-g4runmanager-anatomy}.
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[height=80mm] {DDG4-Geant4Kernel.png}
-    \caption{The sensitive detector design.}
+    \includegraphics[height=65mm] {DDG4-Geant4Kernel.png}
+    \caption{The main application object gives access to all sequencing actions
+    in a \DDG4 application. Sequence actions are only container of user actions
+    calling one user action after the other. Optionally single callbacks may 
+    be registered to a user action.}
     \label{fig:ddg4-geant4-kernel}
   \end{center}
 \end{figure}
 
 %=============================================================================
-\subsection{The Base Class of DDG4 Actions: \tts{Geant4Action}}
+\subsection{Action Sequences}
+\label{sec:ddg4-user-manual-implementation-geant4action-sequences}
+%=============================================================================
+
+\noindent
+As shown in 
+
+%=============================================================================
+\subsection{The Base Class of DDG4 Actions: Geant4Action}
 \label{sec:ddg4-user-manual-implementation-geant4action-base}
 %=============================================================================
 
@@ -306,6 +319,31 @@ of any base or sub-class.
 \subsection{Geant4 Action Sequences}
 \label{sec:ddg4-user-manual-implementation-geant4action-sequences}
 %=============================================================================
+
+\noindent
+All Geant4 user hooks are realized as action sequences. As shown in 
+Figure~\ref{fig:ddg4-geant4-kernel} these sequences are accessible to the user,
+who may attach specialized actions to the different action sequences. This 
+allows a flexible handing of specialized user actions e.g. to dynamically
+add monitoring actions filling histograms or to implement alternative hit 
+creation mechanism in a sensitive detector for detailed detector studies.
+Figure~\ref{fig:ddg4-implementation-sequence-calls} shows the schematic
+call structure of an example {\tt{Geant4TrackingActionSequence}}:\\
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=150mm] {DDG4-TrackingActionCalls.png}
+    \caption{The design of the tracking action sequence. Specialized 
+               tracking action objects inherit from the \tts{Geant4TrackingAction}
+               object and must be attached to the sequence.}
+    \label{fig:ddg4-implementation-sequence-calls}
+  \end{center}
+\end{figure}
+
+\noindent
+Geant4 calls the function from the virtual interface (\tw{G4UserTrackingAction}), 
+which is realised by the \tw{Geant4UserTrackingAction} with the single purpose to
+propagate the call to the action sequence, which then calls all registered clients
+of type \tw{Geant4TrackingAction}.
 
 \noindent
 The main action sequences have a fixed name. These are
@@ -402,6 +440,8 @@ template <typename Q, typename T> void callAtBegin(Q* p, void (T::*f)(const G4Tr
 /// Register Post-track action callback
 template <typename Q, typename T> void callAtEnd(Q* p, void (T::*f)(const G4Track*));
 \end{unnumberedcode}
+Figure~\ref{fig:ddg4-implementation-tracking-action} show as an example 
+the design (class-diagram) of the \tts{Geant4TrackingAction}.
 
 
 \item The \bold{SteppingAction} attached to the \tts{G4UserSteppingAction}, implemented 
@@ -447,20 +487,7 @@ template <typename T> void callAtPrepare(T* p, void (T::*f)());
 \noindent
 All sequence types support the method \tts{void adopt(T* member\_reference)}
 to add the members. Once adopted, the sequence takes ownership and manages
-the member. The design of the sequences is very similar. 
-Figure~\ref{fig:ddg4-implementation-tracking-action} show as an example 
-the design of the \tts{Geant4TrackingAction}.
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[height=110mm] {DDG4-Sensitive-detector.png}
-    \caption{The sensitive detector design. The actual energy deposits are 
-        collected in user defined subclasses of the \tts{Geant4Sensitive}.
-        Here, as an example possible actions called \tts{TrackerHitCollector},
-        \tts{TrackerDetailedHitCollector} and \tts{TrackerHitMonitor} are shown.}
-    \label{fig:ddg4-implementation-sensitive-detector}
-  \end{center}
-\end{figure}
+the member. The design of all sequences is very similar. 
 
 %=============================================================================
 \subsection{Sensitive Detectors}
@@ -470,9 +497,23 @@ the design of the \tts{Geant4TrackingAction}.
 \noindent
 Sensitive detectors are associated by the detector designers to all active 
 materials, which would produce a signal which can be read out. In Geant4 this concept
-is realized by using a base class \tts{G4VSensitiveDetector}, which receives 
+is realized by using a base class \tts{G4VSensitiveDetector}.
+The mandate of a sensitive detector is the construction of hit objects 
+using information from steps along a particle track. 
+The \tts{G4VSensitiveDetector} receives 
 a callback at the begin and the end of the event processing and at each step
 inside the active material whenever an energy deposition occurred.
+
+\begin{figure}[t]
+  \begin{center}
+    \includegraphics[height=110mm] {DDG4-Sensitive-detector.png}
+    \caption{The sensitive detector design. The actual energy deposits are 
+        collected in user defined subclasses of the \tts{Geant4Sensitive}.
+        Here, as an example possible actions called \tts{TrackerHitCollector},
+        \tts{TrackerDetailedHitCollector} and \tts{TrackerHitMonitor} are shown.}
+    \label{fig:ddg4-implementation-sensitive-detector}
+  \end{center}
+\end{figure}
 
 \noindent
 The sensitive actions do not necessarily deal only the collection of energy 
@@ -522,11 +563,123 @@ to receive callbacks using the methods:
   /// Register clear callback
   template <typename T> void callAtClear(T* p, void (T::*f)(G4HCofThisEvent*));
 \end{unnumberedcode}
+Please refer to the Geant4 Applications manual from the Geant4 web page for 
+further details about the concept of sensitive detectors.
+
+%=============================================================================
+\subsubsection{Helpers of Sensitive Detectors: The Geant4VolumeManager}
+\label{sec:ddg4-user-manual-geant4volumemanager}%=============================================================================
+
+\noindent
+Sooner or later, when a hit is created in a sensitive placed volume, the
+hit must be associated with this volume. For this purpose \DDhep provides 
+the concept of the \tw{VolumeManager}, which identifies placed volumes uniquely 
+by a 64-bit identifier, the $CellID$. This mechanism allows to quickly
+retrieve a given volume given the hit data containing the $CellID$.
+The $CellID$ is a very compressed representation for any element in the 
+hierarchy of placed volumes to the sensitive volume in question.
+
+\noindent 
+During the simulation the reverse mechanism must be applied: Geant4 provides
+the hierarchy of \tw{G4PhysicalVolumes} to the hit location and the local coordinates
+of the hit within the sensitive volume. Hence to determine the volume identifier
+is essential to store hits so that they can be later accessed and processed efficiently.
+This mechanism is provided by the \tw{Geant4VolumeManager}. Clients typically do not
+interact with this object, any access necessary is provided by the
+\tw{Geant4Sensitive} action:
+\begin{unnumberedcode}
+  /// Method for generating hit(s) using the information of G4Step object.
+  bool MySensitiveAction:process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
+    ...
+    Hit* hit = new Hit();
+    // *** Retrieve the cellID  ***
+    hit->cellID = cellID(step);
+    ...
+  }
+\end{unnumberedcode}
+The call is realized using a member function provided by the 
+\tw{Geant4Sensitive} action:
+\begin{unnumberedcode}
+  /// Returns the cellID of the sensitive volume corresponding to the step
+  /** The CellID is the VolumeID + the local coordinates of the sensitive area.
+   *  Calculated by combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
+   *  from the current sensitive volume to the world volume
+   */
+  long long int cellID(G4Step* step);
+\end{unnumberedcode}
+
+\noindent
+\bold{Note:}\\
+The \tw{Geant4VolumeManager} functionality is not for free! It requires that
+
+
+\noindent
+-- match geant4 volume with TGeo volume
+
+%=============================================================================
+\subsubsection{DDG4 Intrinsic Sensitive Detectors}
+%=============================================================================
+\noindent
+Currently there are two generic sensitive detectors implemented in DDG4:
+\begin{itemize}\itemcompact
+\item The \tw{Geant4TrackerAction}, which may be used to handle tracking devices.
+  This sensitive detector produces one hit for every energy deposition of Geant4
+  i.e. for every callback to 
+\begin{unnumberedcode}
+  /// Method for generating hit(s) using the information of G4Step object.
+  virtual bool process(G4Step* step, G4TouchableHistory* history);
+\end{unnumberedcode}
+  See the implementation file 
+  \detdesc{html/_geant4_s_d_actions_8cpp_source.html}{DDG4/plugins/Geant4SDAction.cpp}
+  for details. The produced hits are of type 
+  \detdesc{html/_geant4_data_8h_source.html}{Geant4Tracker::Hit}.
+
+\item The \tw{Geant4CalorimeterAction}, which may be used to handle 
+  generic calorimeter like devices.
+  This sensitive detector produces at most one hit for every cell in the calorimeter.
+  If several tracks contribute to the energy deposit of this cell, the contributions
+  are added up.
+  See the implementation file 
+  \detdesc{html/_geant4_s_d_actions_8cpp_source.html}{DDG4/plugins/Geant4SDAction.cpp}
+  for details. The produced hits are of type 
+  \detdesc{html/_geant4_data_8h_source.html}{Geant4Calorimeter::Hit}.
+  propagate the MC truth information with respect to each track kept in the 
+  particle record.
+\end{itemize}
+
+\noindent
+Both sensitive detectors use the \tw{Geant4VolumeManager} discussed in 
+section~\ref{sec:ddg4-user-manual-geant4volumemanager} to identify the sensitive elements.
+
+\noindent
+\bold{PLEASE NOTE:}\\
+The above palette of generic sensitive detectors only contains two very
+often used implementations. We hope, that this palette over time grows from
+external contributions of other generic sensitive detectors. We would be happy 
+to extend this palette with other generic implementations. One example would
+be the handling of the simulation response for optical detectors like RICH-Cerenkov
+detectors.
 
 %=============================================================================
 \subsubsection{Sensitive Detector Filters}
 \label{sec:ddg4-implementation-sensitive-detector-filters}
 %=============================================================================
+
+\noindent
+The concept of filters allows to build more flexible sensitive detectors by
+restricting the hit processing of a given instance of a sensitive action.
+
+\begin{itemize}\itemcompact
+\item Examples would be to demand a given particle type before a sensitive action is 
+invoked: a sensitive action dealing with optical photons (RICH detectors, etc),
+would e.g. not be interested in energy depositions of other particles.
+A filter object restricting the particle type to optical photons would 
+be appropriate.
+\item Another example would be to implement a special action instance, which would
+be only called if the filter requires a minimum energy deposit.
+\end{itemize}
+There are plenty of possible applications, hence we would like 
+to introduce this feature here.
 
 \noindent
 Filters are called by Geant4 before the
@@ -535,19 +688,44 @@ may be shared between many sensitive detectors. Alternatively filters
 may be directly attached to the sensitive detector in question.
 Attributes are directly passed as properties to the filter action.
 
+\noindent
+Technically do \tw{Geant4Filter} objects inherit from the base class
+\tw{Geant4Filter} (see Figure~\ref{fig:ddg4-implementation-sensitive-detector-filters}.
+Any filter inherits from the common base class \tw{Geant4Filter}, then 
+several specializations may be configured like filters to select/reject 
+particles, to specify the minimal energy deposit to be processed etc.
+A sensitive detector is called if the filter callback with the signature
+returns a true result:
+\begin{unnumberedcode}
+  /// Filter action. Return true if hits should be processed
+  virtual bool operator()(const G4Step* step) const;
+\end{unnumberedcode}
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[height=65mm] {DDG4-SensitiveFilterClasses.png}
+    \caption{The sensitive detector filters design. The shown class
+        diagram is actually implemented.}
+    \label{fig:ddg4-implementation-sensitive-detector-filters}
+  \end{center}
+\end{figure}
+
 \newpage
+
 %=============================================================================
 \subsection{The Geant4 Physics List}
 \label{sec:ddg4-implementation-physics-list}
 %=============================================================================
 \noindent 
-Geant4 provides the base class \tts{G4VUserPhysicsList}. Any user defined
-physics list must provide this interface. DDG4 provides such an interface
+Geant4 provides the base class \tts{G4VUserPhysicsList}, which allows users
+to implement customized physics according to the studies to be made.
+Any user defined physics list must provide this interface. DDG4 provides such an interface
 through the ROOT plugin mechanism using the class \tts{G4VModularPhysicsList}.
 The flexibility of \DDG allows for several possibilities to setup the Geant4
-physics list.
+physics list. Instead of explicitly coding the physics list, \DDG foresees the
+usage of the plugin mechanism to instantiate the necessary calls to Geant4 in a
+sequence of actions:
 \begin{itemize}
-\item The \bold{physics list} may be configured as a sequence of type 
+\item The \bold{physics list} is realized as a sequence of actions of type 
     \detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_physics_list_action_sequence.html}
     {\tts{Geant4PhysicsListActionSequence}}.
     Members of the \detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_physics_list_action_sequence.html}
@@ -584,15 +762,19 @@ physics list.
 \noindent
 The basic implementation of the \tts{Geant4PhysicsList} supports the usage of various
 \begin{itemize}\itemcompact
-\item \detdesc{}{particle constructors}, such as single particle constructors like   
+\item \detdesc{html/_geant4_particles_8cpp_source.html}{particle constructors}, 
+    such as single particle constructors like   
     \tts{G4Gamma} or \tts{G4Proton}, or whole particle groups like
     \tts{G4BosonConstructor} or \tts{G4IonConstrutor},
-\item \detdesc{}{physics process constructors}, such as e.g. \tts{G4GammaConversion},
+\item \detdesc{html/_geant4_processes_8cpp_source.html}{physics process constructors}, 
+    such as e.g. \tts{G4GammaConversion},
     \tts{G4PhotoElectricEffect} or\\ \tts{G4ComptonScattering}, 
-\item \detdesc{}{physics constructors} combining particles and the corresponding 
+\item \detdesc{html/_geant4_physics_constructors_8cpp_source.html}{physics constructors} 
+    combining particles and the corresponding 
     interactions, such as\\ e.g. \tts{G4OpticalPhysics},
     \tts{HadronPhysicsLHEP} or \tts{G4HadronElasticPhysics} and
-\item \detdesc{}{predefined Geant4 physics lists}, such as \tts{FTFP\_BERT},
+\item \detdesc{html/_geant4_particles_8cpp_source.html}{predefined Geant4 physics lists}, 
+    such as \tts{FTFP\_BERT},
     \tts{CHIPS} or \tts{QGSP\_INCLXX}. This option is triggered by the 
     content of the string property "extends" of the \tts{Geant4Kernel::physicsList()} action.
 \end{itemize}
@@ -624,7 +806,7 @@ where \tts{My\_Very\_Own\_Physics\_Constructor} represents a sub-class of
 %=============================================================================
 
 \noindent
-The support of interactive in Geant4 is absolutely mandatory to debug detector
+The support of interactivity in Geant4 is mandatory to debug detector
 setups in small steps. The Geant4 toolkit did provide for this reason 
 a machinery of UI commands.
 \begin{figure}[h]
@@ -660,43 +842,45 @@ Idle> ls
 Control for all named Geant4 actions
 
  Sub-directories : 
-   /ddg4/EventAction/   Control hierarchy for Geant4 action:EventAction
+   /ddg4/RunInit/   Control hierarchy for Geant4 action:RunInit
    /ddg4/RunAction/   Control hierarchy for Geant4 action:RunAction
-   /ddg4/Gun/   Control hierarchy for Geant4 action:Gun
+   /ddg4/EventAction/   Control hierarchy for Geant4 action:EventAction
    /ddg4/GeneratorAction/   Control hierarchy for Geant4 action:GeneratorAction
-   /ddg4/PhysicsList/   Control hierarchy for Geant4 action:PhysicsList
-Idle> ls Gun            
-...
-Control hierarchy for Geant4 action:Gun
-
- Sub-directories : 
+   /ddg4/LCIO1/   Control hierarchy for Geant4 action:LCIO1
+   /ddg4/Smear1/   Control hierarchy for Geant4 action:Smear1
+   /ddg4/PrimaryHandler/   Control hierarchy for Geant4 action:PrimaryHandler
+   /ddg4/TrackingAction/   Control hierarchy for Geant4 action:TrackingAction
+   /ddg4/SteppingAction/   Control hierarchy for Geant4 action:SteppingAction
+   /ddg4/ParticleHandler/   Control hierarchy for Geant4 action:ParticleHandler
+   /ddg4/UserParticleHandler/   Control hierarchy for Geant4 action:UserParticleHandler
+   ...
+Idle> ls Smear1
+Command directory path : /ddg4/Smear1/
+ ...
  Commands : 
-   show * Show all properties of Geant4 component:Gun
-...
-   particle * Property item of type std::string
-   pos_x * Property item of type double
-   pos_y * Property item of type double
-   pos_z * Property item of type double
-Idle> Gun/show
-...
-PropertyManager: Property multiplicity = 1
-PropertyManager: Property name = 'Gun'
-PropertyManager: Property particle = 'e-'
-PropertyManager: Property pos_x = 0
-PropertyManager: Property pos_y = 0
-PropertyManager: Property pos_z = 0
+   show * Show all properties of Geant4 component:Smear1
+   Control * Property item of type bool
+   Mask * Property item of type int
+   Name * Property item of type std::string
+   Offset * Property item of type ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
+   OutputLevel * Property item of type int
+   Sigma * Property item of type ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> >
+   name * Property item of type std::string
+Idle> Smear1/show
+PropertyManager: Property Control = True
+PropertyManager: Property Mask = 1
+PropertyManager: Property Name = 'Smear1'
+PropertyManager: Property Offset = ( -20 , -10 , -10 , 0 )
+PropertyManager: Property OutputLevel = 4
+PropertyManager: Property Sigma = ( 12 , 8 , 8 , 0 )
+PropertyManager: Property name = 'Smear1'
 
-Idle> Gun/pos_z 1.0   
-Geant4UIMessenger: +++ Gun> Setting new property value pos_z = 1.0.
-Idle> Gun/pos_y 1.0
-Geant4UIMessenger: +++ Gun> Setting new property value pos_y = 1.0.
-Idle> Gun/pos_x 1.0
-Geant4UIMessenger: +++ Gun> Setting new property value pos_x = 1.0.
-Idle> Gun/show
+Idle> Smear1/Offset (200*mm, -3*mm, 15*mm, 10*ns)
+Geant4UIMessenger: +++ Smear1> Setting property value Offset = (200*mm, -3*mm, 15*mm, 10*ns)  
+                               native:( 200 , -3 , 15 , 10 ).
+Idle> Smear1/show                                
 ...
-PropertyManager: Property pos_x = 1
-PropertyManager: Property pos_y = 1
-PropertyManager: Property pos_z = 1
+PropertyManager: Property Offset = ( 200 , -3 , 15 , 10 )
 
 \end{unnumberedcode}
 
@@ -717,8 +901,8 @@ using
 \item by creating a setup script using \tts{python} and 
 	\tts{ROOT}'s reflection mechanism exposed by \tts{PyROOT}.
 \end{itemize}
-The follwing subsection describe these different mechanism.
-
+The follwing subsection describe these different mechanism. An attempt was made 
+to match the naming conventions of all approaches where possible.
 
 %=============================================================================
 \subsection{Setting up DDG4 using XML}
@@ -804,10 +988,11 @@ An example code snippet is shown below in Figure~\ref{fig:ddg4-setup-xml-physics
 \label{fig:ddg4-setup-xml-physicslist}
 \end{figure}
 
-
-To trigger a call to a
 \begin{itemize}\itemcompact
-\item \bold{particle constructors} (line 7-14), use the \tts{<particles>} section 
+\item To base all these constructs on an already existing predefined Geant4 physics list
+    use the \tts{<extends>} tag with the attribute containing the name of the physics list
+    as shown in line 4.
+\item To trigger a call to a \bold{particle constructors} (line 7-14), use the \tts{<particles>} section 
     and define the Geant4 particle constructor to be called by name. To trigger a call to
 \item \bold{physics process constructors}, as shown in line 19-30, 
     Define for each particle matching the name pattern (regular expression!) and the 
@@ -816,11 +1001,7 @@ To trigger a call to a
     \tts{G4ProcessManager::AddProcess(process,ordAtRestDoIt, ordAlongSteptDoIt,ordPostStepDoIt);}
     The processes themself are created using the ROOT plugin mechanism.
     To trigger a call to
-\item \bold{physics constructors}, as shown in line 34-35, use the \tts{<physics>} section
-    and 
-\item to base all these constructs on an already existing predefined Geant4 physics list
-    use the \tts{<extends>} tag with the attribute containing the name of the physics list
-    as shown in line 4.
+\item \bold{physics constructors}, as shown in line 34-35, use the \tts{<physics>} section.
 \end{itemize}
 If only a predefined physics list is used, which probably already satisfies very many use cases,
 all these section collapse to:
@@ -1421,6 +1602,155 @@ if __name__ == "__main__":
 
 \newpage
 %=============================================================================
+\subsection{A Simple Example}
+\label{sec:ddg4-implementation-simple-example}
+%=============================================================================
+\noindent
+Bla-bal.
+
+\newpage
+%=============================================================================
+\section{Higher Level Components}
+\label{sec:ddg4-implementation-higher-level-components}
+%=============================================================================
+\noindent
+Layered components, which base on the general framework implement higher 
+level functionality such as the handling of Monte-Carlo truth associations
+between simulated energy deposits and the corresponding particles or the
+generic handling of input to the simulation.
+
+\noindent
+To generalize such common behavior it is mandatory that the participating
+components collaborate and understand the data components the commonly access.
+The data model is shown in Figure~\ref{fig:ddg4-event-data-model}.
+\begin{figure}[t]
+  \begin{center}
+    \includegraphics[width=120mm] {DDG4_event_data_model.png}
+    \caption{The DDG4 event data model.}
+    \label{fig:ddg4-event-data-model}
+  \end{center}
+\end{figure}
+
+\noindent
+Please note, that this data model  is by no means to be made persistent 
+and used for physics user analysis. This model is optimized to support
+the simulation process and the necessary user actions to handle MC truth,
+to easily and relatively fast look up and modify parent-daughter 
+relationships etc. This choice is based on the assumption, that the 
+additional overhead to convert particles at the input/output 
+stage is small compared to the actual resource consumption of Geant4
+to simulate the proper detector response.
+On the other hand this choice has numerous advantages:
+\begin{itemize}\itemcompact
+\item Accepting the fact to convert input records allows to adapt 
+  DDG4 in a simple and flexible manner to any input format. Currently 
+  supported is the input from raw {\tw{LCIO}} files, {\tw{StdHep}} 
+  records using {\tw{LCIO}} and {\tw{ASCII}} files using the 
+  {\tw{HEPEvt}} format.
+\item Similarly as for the input stage, also the output format 
+  can be freely chosen by the clients.
+\item No assumptions was made concerning the structure to store 
+  information from energy deposits. Any information extract produced
+  by the sensitive actions can be adapted provided at the output
+  stage the proper conversion mechanism is present. The sensitive 
+  detectors provided by DDG4 are {\bf{optional only and by no means mandatory}}.
+  User defined classes may be provided at any time. Appropriate tools
+  to extract MC truth information is provided at the output stage.
+\item The modular approach of the action sequences described 
+  in~\ref{sec:ddg4-user-manual-implementation-geant4action-sequences}
+  allows to easily extend the generation sequence to handle multiple 
+  simultaneous interactions, event overlay or spillover response 
+  very easily~\footnote{The handling of spillover is only possible 
+  if during the digitization step the correct signal shape corresponding
+  to the shift of signal creation is taken into account.}
+\end{itemize}
+
+\noindent
+In section~\ref{sec:ddg4-implementation-input-handling} the generic mechanism
+of input data handling is described. \\
+In section~\ref{sec:ddg4-implementation-particle-handling} the MC truth 
+handling is discussed. \\
+In section~\ref{sec:ddg4-implementation-output-handling} we describe the 
+output mechanism.
+\newpage
+
+%=============================================================================
+\subsection{Input Data Handling}
+\label{sec:ddg4-implementation-input-handling}
+%=============================================================================
+\begin{figure}[t]
+  \begin{center}
+    \includegraphics[width=160mm] {DDG4_input_stage.png}
+    \caption{The generic handling of input sources to DDG4.}
+    \label{fig:ddg4-input-stage}
+  \end{center}
+\end{figure}
+
+\noindent
+Input handling has several stages and uses several modules:
+\begin{itemize}\itemcompact
+\item First the data structures \tw{Geant4PrimaryEvent}, 
+    \tw{Geant4PrimaryInteraction} and \tw{Geant4\-Primary}\-\tw{Map} are initialized 
+    by the action \tw{Geant4GenerationActionInit} 
+    and attached to the {\tw{Geant4Event}} structure.
+\item The initialization is then followed by any number of input modules.
+  Typically each input module add one interaction. Each interaction has a 
+  unique identifier, which is propagated later to all particles. Hence all
+  primary particles can later be unambiguously be correlated to one of the 
+  initial interactions. 
+  Each instance of a \tw{Geant4InputAction} creates and fills a separate instance
+  of a \tw{Geant4PrimaryInteraction}.
+  In section~\ref{sec:ddg4-implementation-geant4inputaction} the functionality and
+  extensions are discussed in more detail.
+\item All individual primary interactions are then merged to only single record
+  using the \tw{Geant4}\-\tw{Interaction}\-\tw{Merger} component.
+  This components fills the \tw{Geant4PrimaryInteraction} registered to the
+  \tw{Geant4Event}, which serves as input record for the next component,
+\item the \tw{Geant4PrimaryHandler}. The primary handler creates the proper 
+  \tw{G4PrimaryParticle} and \tw{G4PrimaryVertex} objects passed to \tw{Geant4}.
+  After this step all event related user interaction with Geant4 has completed,
+  and the detector simulation may commence.
+\end{itemize}
+All modules used are subclasses of the {\tw{Geant4}\-\tw{Generator}\-\tw{Action}} and must be
+added to the \tw{Geant4}\-\tw{Generator}\-\tw{Action}\-\tw{Sequence} as described 
+in~\ref{sec:ddg4-user-manual-implementation-geant4action-sequences}.
+\newpage
+
+%=============================================================================
+\subsection{Anatomy of the Input Action}
+\label{sec:ddg4-implementation-geant4inputaction}
+%=============================================================================
+
+\newpage
+One input action fills one primary interaction.
+\tw{Geant4InputAction} instances may be followed by decorators, which 
+allow to to smear primary vertex (\tw{Geant4InteractionVertexSmear}) or
+to boost the primary vertex \tw{Geant4InteractionVertexBoost} and all 
+related particles/vertices.
+
+
+Please note, that a possible reduction of particles in
+the output record may break this unambiguous relationship between 
+"hits" and particles.
+......
+
+%=============================================================================
+\subsection{Monte-Carlo Truth Handling}
+\label{sec:ddg4-implementation-particle-handling}
+%=============================================================================
+
+\newpage
+......
+
+%=============================================================================
+\section{Output Data Handling}
+\label{sec:ddg4-implementation-output-handling}
+%=============================================================================
+
+\newpage
+......
+
+%=============================================================================
 \section{Existing DDG4 components}
 %=============================================================================
 \noindent
@@ -1441,6 +1771,7 @@ All components defer from the basic type \tts{Geant4Action}. This means
 table below:
 
 \vspace{0.5cm}
+\noindent
 \begin{tabular}{ l l p{9cm} }
 \hline
 Component Properties: &  & \tts{default} \\
@@ -1476,11 +1807,455 @@ components.
 \end{center}
 \clearpage
 
-
 %=============================================================================
-\subsection{Physics Lists}
+\subsection{Generic Action Modules}
 %=============================================================================
 \noindent
+%=============================================================================
+\subsubsection{Geant4UIManager}
+%=============================================================================
+\noindent
+The {\tt{Geant4UIManager}} handles interactivity aspects between Geant4,
+its command handlers (ie. terminal) and the various components the actions
+interact.
+
+\noindent
+The {\tt{Geant4UIManager}} is a component attached to the {\tt{Geant4Kernel}}
+object. All properties of all {\tt{Geant4Action}} instances may be exported to 
+Geant4 messengers and {\em{may}} hence be accessible directly from the Geant4 
+prompt. To export properties from any action, call the {\tt{enableUI()}}
+method of the action.
+\noindent
+The callback signature is: void operator()(G4Event* event)
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4}                                    \\
+\bold{File name}       & \tts{DDG4/src/Geant4.cpp}                       \\
+\bold{Type}            & \tts{Geant4Action}                              \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\hline
+\bold{SessionType} (string)  & Session type (csh, tcsh, etc.             \\
+\bold{SetupUI} (string)   & Name of the UI macro file                    \\
+\bold{SetupVIS} (string)  & Name of the visualization macro file         \\
+\bold{HaveVIS} (bool)     & Flag to instantiate Vis manager 
+                            (def:false, unless VisSetup set)              \\
+\bold{HaveUI} (bool)      & Flag to instantiate UI (default=true)        \\
+\end{tabular}
+
+
+%=============================================================================
+\subsection{Predfined Geant4 Physics List Objects}
+%=============================================================================
+\noindent
+The physics list may be defined entirely data driven using the factory mechanism
+using a variety of predefined objects:
+\noindent
+\begin{itemize}\itemcompact
+\item Inventory of predefined physics lists, which may be inherited:\\
+\detdesc{html/_geant4_physics_lists_8cpp_source.html}
+{DDG4/plugins/Geant4PhysiscsLists.cpp}
+\item Inventory of predefined physics constructors, which may be instantiated:\\
+\detdesc{html/_geant4_physics_constructors_8cpp_source.html}
+{DDG4/plugins/Geant4PhysicsConstructors.cpp}
+\item Inventory of predefined process constructors, which may be instantiated:\\
+\detdesc{html/_geant4_processes_8cpp_source.html}
+{DDG4/plugins/Geant4Processes.cpp}
+\item Inventory of predefined particle constructors, which may be instantiated:\\
+\detdesc{html/_geant4_particles_8cpp_source.html}
+{DDG4/plugins/Geant4Particles.cpp}
+\end{itemize}
+\newpage
+
+%=============================================================================
+\subsection{Geant4 Generation Action Modules}
+%=============================================================================
+\noindent
+Here we discuss modules, which are instrinsically part of DDG4 and may be
+attached to the {\tt{Geant4GeneratorActionSequence}}.
+
+%=============================================================================
+\subsubsection{Base class: Geant4GeneratorAction}
+%=============================================================================
+\noindent
+The \tw{Geant4GeneratorAction} is called for every event.
+During the callback all particles are created which form the 
+microscopic kinematic action of the particle collision.
+This input may either origin directly from an event generator program
+or come from file.
+
+\noindent
+The callback signature is: void operator()(G4Event* event)
+\noindent
+See also:
+\detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_generator_action.html}
+{\tts{Geant4EventAction}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4GeneratorAction}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4GeneratorAction.cpp}        \\
+\bold{Type}            & \tts{Geant4Action, Geant4GeneratorAction}       \\
+\hline
+\bold{Component Properties:}   & defaults apply                          \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4GeneratorActionSequence}
+%=============================================================================
+\noindent
+The sequence dispatches the callbacks at the beginning 
+of an event to all registered \tw{Geant4GeneratorAction} members and all 
+registered callbacks.
+
+\noindent
+See also:
+\noindent
+The {\tt{Geant4GeneratorActionSequence}} is directly steered by the single
+instance of the {\tt{G4VUserPrimaryGeneratorAction}}, the Geant4 provided user hook,
+which is private.\\
+See also:
+\detdesc{html/struct_d_d4hep_1_1_simulation_1_1_geant4_user_generator_action.html}
+{\tts{Geant4UserGeneratorAction}} and
+\detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_generator_action_sequence.html}
+{\tts{Geant4GeneratorActionSequence}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4Geant4GeneratorActionSequence}       \\
+\bold{File name}       & \tts{DDG4/src/Geant4GeneratorAction.cpp}        \\
+\bold{Type}            & \tts{Geant4Action}                              \\
+\hline
+\bold{Component Properties:}   & defaults apply                          \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4GeneratorActionInit}
+%=============================================================================
+\noindent
+Initialize the Geant4Event objects to host generator and MC truth related information
+Geant4 actions to collect the MC particle information.
+This action should register all event extension required for the further 
+processing. We want to avoid that every client has to check if a given 
+object is present or not and than later install the required data structures.
+
+\noindent
+These by default are extensions of type:
+\begin{itemize}\itemcompact
+\item \tw{Geant4PrimaryEvent} with multiple interaction sections, one for each interaction
+    This is the MAIN and ONLY information to feed Geant4
+\item \tw{Geant4PrimaryInteraction} containing the track/vertex information to create 
+    the primary particles for Geant4. This record is build from the \tw{Geant4PrimaryEvent}
+    information.
+\item \tw{Geant4PrimaryMap} a map of the \tw{Geant4Particles} converted to 
+    \tw{G4PrimaryParticles} to ease particle handling later.
+\item \tw{Geant4ParticleMap} the map of particles created during the event simulation.
+    This map has directly the correct particle offsets, so that the merging of
+    \tw{Geant4PrimaryInteraction} particles and the simulation particles is easy....
+\end{itemize}
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4Geant4GeneratorActionInit}           \\
+\bold{File name}       & \tts{DDG4/src/Geant4GeneratorActionInit.cpp}    \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Angle} (double)  & Lorentz-Angle of boost                          \\
+\bold{Mask}  (double)  & Interaction identifier                          \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionVertexBoost}
+%=============================================================================
+\noindent
+Boost the primary vertex and all particles outgoing the primary interaction.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4InteractionVertexBoost}              \\
+\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                    \\
+\bold{Mask}  (double)  & \tts{Interaction identifier}                    \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionVertexBoost}
+%=============================================================================
+\noindent
+Boost the primary vertex and all particles outgoing the primary interaction.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4InteractionVertexBoost}              \\
+\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                    \\
+\bold{Mask}  (double)  & \tts{Interaction identifier}                    \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionVertexBoost}
+%=============================================================================
+\noindent
+Boost the primary vertex and all particles outgoing the primary interaction.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4InteractionVertexBoost}              \\
+\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Offset} (PxPyPzEVector) & \tts{Smearing offset}                    \\
+\bold{Mask}   (PxPyPzEVector) & \tts{Sigma on offset}                    \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionMerger}
+%=============================================================================
+\noindent
+Merge all interactions created by each {\tt{Geant4InputAction}} into one single
+record. The input records are taken from the item {\tt{Geant4PrimaryEvent}}
+and are merged into the {\tt{Geant4PrimaryInteraction}} object attached to the
+{\tt{Geant4Event}} event context.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4InteractionMerger}                   \\
+\bold{File name}       & \tts{DDG4/src/Geant4InteractionMerger.cpp}      \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4PrimaryHandler}
+%=============================================================================
+\noindent
+Convert the primary interaction (object {\tt{Geant4PrimaryInteraction}} object 
+attached to the {\tt{Geant4Event}} event context) and pass the result
+to Geant4 for simulation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4PrimaryHandler}                      \\
+\bold{File name}       & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4ParticleGun}
+%=============================================================================
+\noindent
+Implementation of a particle gun using Geant4Particles.
+
+\noindent
+The {\tt{Geant4ParticleGun}} is a tool to shoot a number of
+particles with identical properties into a given region of the
+detector to be simulated.
+
+\noindent
+The particle gun is a input source like any other and participates 
+in the general input stage merging process like any other input 
+e.g. from file. Hence, there may be several particle guns present
+each generating it's own primary vertex. Use the mask property to
+ensure each gun generates it's own, well identified primary vertex.
+
+\noindent
+There is one 'user lazyness' support though:
+If there is only one particle gun in use, the property 'Standalone', 
+which by default is set to true invokes the interaction merging and he 
+Geant4 primary generation directly.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4PrimaryHandler}                      \\
+\bold{File name}       & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+Component Properties:     & default                                         \\
+\bold{particle} (string) & Particle type to be shot \\
+\bold{energy} (double)   & Particle energy in $MeV$ \\
+\bold{position} (XYZVector)  & Pole position of the generated particles in $mm$\\
+\bold{direction} (XYZVector) & Momentum direction of the generated particles\\
+\bold{isotrop} (bool)        & Isotrp particle directions in space. \\
+\bold{Mask} (int.bitmask)    & Interaction identifier \\
+\bold{Standalone} (bool)     & Setup for standalone execution \\ 
+                              & including interaction merging etc. \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4ParticleHandler}
+%=============================================================================
+\noindent
+Extract the relevant particle information during the simulation step.
+
+\noindent
+This procedure works as follows:
+\begin{itemize}\itemcompact
+\item At the beginning of the event generation the object registers itself as 
+    Monte-Carlo truth handler to the event context.
+\item At the begin of each track action a particle candidate is created and filled
+    with all properties known at this time.
+\item At each stepping action a flag is set if the step produced secondaries.
+\item Sensitive detectors call the MC truth handler if a hit was created.
+    This fact is remembered.
+\item At the end of the tracking action a first decision is taken if the candidate is to be 
+    kept for the final record.
+\item At the end of the event action finally all particles are reduced to the 
+    final record. This logic can be overridden by a user handler to be attached.
+\end{itemize}
+\noindent
+Any of these actions may be intercepted by a {\tt{Geant4UserParticleHandler}}
+attached to the particle handler.
+See class {\tt{Geant4UserParticleHandler}} for details.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{9cm} }
+\hline
+\bold{Class name}      & \tts{Geant4ParticleHandler}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4ParticleHandler.cpp}        \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{KeepAllParticles} (bool)    & Flag to keep entire particle record without any reduction.
+                            This may result in a huge output record.      \\
+\bold{SaveProcesses} (vector(string)) & Array of Geant4 process names, 
+                            which products and parent should NOT be reduced.\\
+\bold{MinimalKineticEnergy} (double) & Minimal energy below which particles should be
+                            ignored unless other criteria 
+                            (Process, created hits, etc) apply.\\
+\hline
+\end{tabular}
+\newpage
+
+%=============================================================================
+\subsection{Geant4 Event Action Modules}
+%=============================================================================
+\noindent
+
+%=============================================================================
+\subsubsection{Base class: Geant4EventAction}
+%=============================================================================
+\noindent
+The EventAction is called for every event.
+
+\noindent
+This class is the base class for all user actions, which have
+to hook into the begin- and end-of-event actions.
+Typical use cases are the collection/computation of event
+related properties.
+
+\noindent
+Examples of this functionality may include for example:
+\begin{itemize}\itemcompact
+\item Reset variables summing event related information in the
+  begin-event callback.
+\item Monitoring activities such as filling histograms
+  from hits collected during the end-event action.
+\end{itemize}
+See also:
+\detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_event_action.html}
+{\tts{Geant4EventAction}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4EventAction}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4EventAction.cpp}        \\
+\bold{Type}            & \tts{Geant4EventAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                        \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4EventActionSequence}
+%=============================================================================
+\noindent
+
+\noindent
+The {\tt{Geant4EventActionSequence}} is directly steered by the single
+instance of the {\tt{G4UserEventAction}}, the Geant4 provided user hook,
+which is private.\\
+See also:
+\detdesc{html/struct_d_d4hep_1_1_simulation_1_1_geant4_user_event_action.html}
+{\tts{Geant4UserEventAction}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4EventAction}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4EventAction.cpp}        \\
+\bold{Type}            & \tts{Geant4EventAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                      \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4ParticlePrint}
+%=============================================================================
+\noindent
+Geant4Action to print MC particle information.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4ParticlePrint}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4ParticlePrint.cpp}        \\
+\bold{Type}            & \tts{Geant4EventAction}                       \\
+\hline
+\bold{Component Properties:}   & defaults apply                        \\
+\bold{OutputType} (bool)       & Flag to steer output type.            \\
+                                & 1: Print table of particles.          \\
+                                & 2: Print table of particles.          \\
+                                & 3: Print table and tree of particles. \\
+\bold{PrintHits} & Print associated hits to every particle (big output!)\\
+\hline
+\end{tabular}
+\newpage
 
 
 %=============================================================================
@@ -1489,61 +2264,58 @@ components.
 \noindent
 
 %=============================================================================
-\subsubsection{Geant4SimpleTracker}
+\subsubsection{Geant4TrackerAction}
 %=============================================================================
 \noindent
 Simple sensitive detector for tracking detectors. These trackers create one
 single hit collection. The created hits may be written out with the output
-modules of type "Simple" described in 
-Section~\ref{sec:ddg4-components-IO-ROOT-simple} 
-and~\ref{sec:ddg4-components-IO-ROOT-simple}. Here the basic specifications:
+modules described in Section~\ref{sec:ddg4-components-IO-ROOT-simple} 
+and~\ref{sec:ddg4-components-IO-LCIO-simple}. \\
+The basic specifications are:
 
 \vspace{0.5cm}
+\noindent
 \begin{tabular}{ l p{10cm} }
 \hline
 Basics: & \\
 \hline
-\bold{Class name}      & \tts{Geant4SensitiveAction<SimpleTracker>}  \\
+\bold{Class name}      & \tts{Geant4SensitiveAction<Geant4Tracker>}  \\
 \bold{File name}       & \tts{DDG4/plugins/Geant4SDActions.cpp}      \\
-\bold{Hit collection}  & \tts{<detector name>}                       \\
-\bold{Hit class}       & \tts{SimpleTracker::Hit}                    \\
+\bold{Hit collection}  & \tts{Name of the readout object}            \\
+\bold{Hit class}       & \tts{Geant4Tracker::Hit}                    \\
 \bold{File name}       & \tts{DDG4/include/Geant4Data.h}             \\
 \hline
-Component Properties:  & \tts{default} \\
+\bold{Component Properties:}   & defaults apply                       \\
 \hline
 \end{tabular}
 
 %=============================================================================
-\subsubsection{Geant4SimpleCalorimeter}
+\subsubsection{Geant4CalorimeterAction}
 %=============================================================================
 \noindent
 Simple sensitive detector for calorimeters. The sensitive detector creates one
 single hit collection. The created hits may be written out with the output
-modules of type "Simple" described in 
-Section~\ref{sec:ddg4-components-IO-ROOT-simple} 
-and~\ref{sec:ddg4-components-IO-ROOT-simple}. Here the basic specifications:
+modules described in Section~\ref{sec:ddg4-components-IO-ROOT-simple} 
+and~\ref{sec:ddg4-components-IO-LCIO-simple}. \\
+The basic specifications are:
 
 \vspace{0.5cm}
+\noindent
 \begin{tabular}{ l p{10cm} }
 \hline
 Basics: & \\
 \hline
-\bold{Class name}      & \tts{Geant4SensitiveAction<SimpleCalorimeter>}  \\
+\bold{Class name}      & \tts{Geant4SensitiveAction<Geant4Calorimeter>}  \\
 \bold{File name}       & \tts{DDG4/plugins/Geant4SDActions.cpp}      \\
-\bold{Hit collection}  & \tts{<detector name>}                       \\
-\bold{Hit class}       & \tts{SimpleCalorimeter::Hit}                \\
+\bold{Hit collection}  & \tts{Name of the readout object}            \\
+\bold{Hit class}       & \tts{Geant4Calorimeter::Hit}                \\
 \bold{File name}       & \tts{DDG4/include/Geant4Data.h}             \\
 \hline
-Component Properties:  & \tts{default} \\
+\bold{Component Properties:}   & defaults apply                       \\
 \hline
 \end{tabular}
 
-
-%=============================================================================
-\subsubsection{Geant4SimpleOpticalCalorimeter}
-%=============================================================================
-\noindent
-
+\newpage
 
 %=============================================================================
 \subsection{I/O Components}
