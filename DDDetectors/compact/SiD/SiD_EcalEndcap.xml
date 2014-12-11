@@ -11,13 +11,13 @@
     <comment>Electromagnetic Calorimeter Endcaps</comment>
 
     <dimensions numsides="(int) CaloSides" zmin="EcalEndcap_zmin" rmin="EcalEndcap_rmin" rmax="EcalEndcap_rmax" />
-    <layer repeat="1">
+    <layer repeat="1" vis="EcalLayerVis">
       <slice material = "Silicon" thickness = "0.032*cm" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
       <slice material = "Copper"  thickness = "0.005*cm" vis="EcalAbsorberVis"/>
       <slice material = "Kapton"  thickness = "0.030*cm" vis="EcalAbsorberVis"/>
       <slice material = "Air"     thickness = "0.033*cm" vis="InvisibleNoDaughters"/>
     </layer>       
-    <layer repeat="20">
+    <layer repeat="20" vis="EcalLayerVis">
       <slice material = "TungstenDens24" thickness = "0.25*cm" />
       <slice material = "Air"     thickness = "0.025*cm" vis="InvisibleNoDaughters"/>
       <slice material = "Silicon" thickness = "0.032*cm" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
@@ -25,7 +25,7 @@
       <slice material = "Kapton"  thickness = "0.030*cm" vis="EcalAbsorberVis"/>
       <slice material = "Air"     thickness = "0.033*cm" vis="InvisibleNoDaughters"/>
     </layer>
-    <layer repeat="10">
+    <layer repeat="10" vis="EcalLayerVis">
       <slice material = "TungstenDens24" thickness = "0.5*cm" />
       <slice material = "Air"     thickness = "0.025*cm" vis="InvisibleNoDaughters"/>
       <slice material = "Silicon" thickness = "0.032*cm" sensitive="yes" limits="cal_limits" vis="EcalSensitiveVis"/>
