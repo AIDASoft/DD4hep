@@ -30,6 +30,7 @@ typedef DD4hep::ReferenceBitMask<int> PropertyMask;
 namespace DD4hep{namespace Simulation{typedef Geant4InputAction LCIOInputAction;}}
 DECLARE_GEANT4ACTION(LCIOInputAction)
 
+
 namespace {
   inline int GET_ENTRY(const map<EVENT::MCParticle*,int>& mcparts, EVENT::MCParticle* part)  {
     map<EVENT::MCParticle*,int>::const_iterator ip=mcparts.find(part);
@@ -76,13 +77,12 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
 
   mcpcoll.resize(NHEP,0);
   for(int i=0; i<NHEP; ++i ) {
-    EVENT::MCParticle* p=dynamic_cast<EVENT::MCParticle*>(primaries->getElementAt(i));
+    EVENT::MCParticle* p = dynamic_cast<EVENT::MCParticle*>(primaries->getElementAt(i));
     mcparts[p] = i;
     mcpcoll[i] = p;
   }
 
   // build collection of MCParticles
-  G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
   for(int i=0; i<NHEP; ++i )   {
     EVENT::MCParticle* mcp = mcpcoll[i];
     Geant4ParticleHandle p(new Particle(i));
@@ -91,11 +91,9 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
     const double *vex   = mcp->getEndpoint();
     const float  *spin  = mcp->getSpin();
     const int    *color = mcp->getColorFlow();
-    int     pdg   = mcp->getPDG();
-    //if ( 0 == pdg ) pdg = 211;
-    const G4ParticleDefinition* def = tab->FindParticle(pdg);
+    const int     pdg   = mcp->getPDG();
     PropertyMask status(p->status);
-    p->pdgID        = pdg;//mcp->getPDG();
+    p->pdgID        = pdg;
     p->charge       = int(mcp->getCharge()*3.0);
     p->psx          = mom[0]*GeV;
     p->psy          = mom[1]*GeV;
@@ -108,7 +106,6 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
     p->vex          = vex[0]*mm;
     p->vey          = vex[1]*mm;
     p->vez          = vex[2]*mm;
-    //p->definition   = def;
     p->process      = 0;
     p->spin[0]      = spin[0];
     p->spin[1]      = spin[1];

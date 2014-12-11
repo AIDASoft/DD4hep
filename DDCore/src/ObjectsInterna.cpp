@@ -46,7 +46,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(ConstantObject);
 /// Standard constructor
 ConstantObject::ConstantObject(const string& nam, const string& val, const string& typ)
   : NamedObject(nam.c_str(), val.c_str()) {
-  m_type = typ;
+  dataType = typ;
   InstanceCount::increment(this);
 }
 

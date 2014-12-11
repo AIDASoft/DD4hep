@@ -1,0 +1,325 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="clic_sid_cdr"
+        title="CLIC Silicon Detector CDR"
+        author="Christian Grefe"
+        url="https://twiki.cern.ch/twiki/bin/view/CLIC/ClicSidCdr"
+        status="development"
+        version="$Id: compact.xml 1374 2014-11-05 10:49:55Z markus.frank@cern.ch $">
+    <comment>The compact format for the CLIC Silicon Detector used for the conceptual design report</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile  ref="${materials_dir}/elements.xml"/>
+    <gdmlFile  ref="${materials_dir}/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="materials_dir" value="." type="string"/>;
+    <constant name="SiD_dir" value="./SiD" type="string"/>;
+    <constant name="world_side" value="30000*mm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+    
+    <constant name="CrossingAngle" value="0.020*rad"/>
+    
+    <constant name="CaloSides" value="12"/>
+    <constant name="MuonSides" value="8"/>
+    
+    <constant name="EcalBarrel_ID" value="6"/>
+    <constant name="EcalBarrel_rmin" value="126.50*cm + world_side - world_side"/>
+    <constant name="EcalBarrel_rmin" value="126.50*cm"/>
+    <constant name="EcalBarrel_zmax" value="176.50*cm"/>
+
+    <constant name="EcalEndcap_ID" value="7"/>
+    <constant name="EcalEndcap_rmin" value="21.0*cm"/>
+    <!-- Correction from going from inner circle to outer circle -->
+    <constant name="EcalEndcap_rmax" value="(EcalBarrel_rmin - 1.5*cm) / (cos(pi/CaloSides))"/> 
+    <constant name="EcalEndcap_zmin" value="165.70*cm"/>
+    
+    <constant name="HcalBarrel_ID" value="8"/>
+    <constant name="HcalBarrel_rmin" value="141.90*cm"/>
+    <constant name="HcalBarrel_layers" value="(int) 75"/>
+    <constant name="HcalBarrel_layer_thickness" value="1.0*cm + 0.65*cm"/>
+
+    <constant name="HcalEndcap_ID" value="9"/>
+    <constant name="HcalEndcap_zmin" value="EcalBarrel_zmax + 4.0*cm"/> <!-- Gap for cables -->
+    <constant name="HcalEndcap_rmin" value="50.0*cm"/>
+    <!-- Correction from going from inner circle to outer circle -->
+    <constant name="HcalEndcap_rmax" value="(HcalBarrel_rmin + HcalBarrel_layers * HcalBarrel_layer_thickness) / (cos(pi/CaloSides))"/>
+    <constant name="HcalEndcap_layers" value="60"/>
+    <constant name="HcalEndcap_layer_thickness" value="2.0*cm + 0.65*cm"/>
+    <constant name="HcalEndcap_zmax" value="HcalEndcap_zmin + HcalEndcap_layers * HcalEndcap_layer_thickness"/>
+
+    <constant name="HcalPlug_ID" value="10"/>
+
+    
+    <constant name="tracking_region_radius" value="EcalBarrel_rmin - 1.0*mm"/>
+    <constant name="tracking_region_zmax" value="EcalEndcap_zmin - 1.0*mm"/>
+    <constant name="VXD_CF_sensor" value="0.026*cm"/>
+    <constant name="VXD_CF_support" value="0.05*cm"/>
+    
+    <constant name="SolenoidBarrelInnerRadius" value="HcalEndcap_rmax + 2.0*cm"/>
+    <constant name="SolenoidCoilOuterZ" value="HcalEndcap_zmax"/> <!-- Aligned with HCAL endcap -->
+    <constant name="SolenoidBarrelInnerCryostatThickness" value="3.0*cm"/>
+    <constant name="SolenoidBarrelInnerAirgapThickness" value="11.0*cm"/>
+    <constant name="SolenoidBarrelAlConductorThickness" value="38.4*cm"/>
+    <constant name="SolenoidBarrelQuenchbackThickness" value="5.0*cm"/>
+    <constant name="SolenoidBarrelOuterAirgapThickness" value="18.7*cm"/>
+    <constant name="SolenoidBarrelOuterCryostatThickness" value="4.0*cm"/>
+    <constant name="SolenoidEndcapCryostatThickness" value="6.0*cm"/>
+    <constant name="SolenoidEndcapAirgapThickness" value="12.0*cm"/>
+    <constant name="SolenoidBarrelOuterZ" value="SolenoidCoilOuterZ+SolenoidEndcapAirgapThickness"/>
+    <constant name="SolenoidBarrelConductorInnerRadius" value="SolenoidBarrelInnerRadius + SolenoidBarrelInnerCryostatThickness + SolenoidBarrelInnerAirgapThickness"/>
+    <constant name="SolenoidBarrelOuterCryostatInnerRadius" value="SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness + SolenoidBarrelQuenchbackThickness"/>
+    <constant name="SolenoidBarrelOuterRadius" value="SolenoidBarrelOuterCryostatInnerRadius + SolenoidBarrelOuterAirgapThickness + SolenoidBarrelOuterCryostatThickness"/>
+    <constant name="SolenoidalFieldRadius" value="(SolenoidBarrelConductorInnerRadius + SolenoidBarrelAlConductorThickness / 2.0)"/>
+    
+
+    <constant name="MuonBarrel_ID" value="11"/>
+    <constant name="MuonBarrel_rmin" value="SolenoidBarrelOuterRadius + 1.0*cm"/>
+    <constant name="MuonBarrel_zmax" value="SolenoidBarrelOuterZ + SolenoidEndcapCryostatThickness"/>
+    <constant name="MuonBarrel_layers" value="15"/>
+    <constant name="MuonBarrel_layer_thickness" value="10.0*cm + 4.0*cm"/>
+
+    <constant name="MuonEndcap_ID" value="12"/>
+    <constant name="MuonEndcap_zmin" value="MuonBarrel_zmax + 10.0*cm"/> <!-- Space for cables etc. -->
+    <constant name="MuonEndcap_rmin" value="69.0*cm"/> <!-- Space for QD0 and anti-solenoid-->
+    <!-- Correction from going from inner circle to outer circle -->
+    <constant name="MuonEndcap_rmax" value="(MuonBarrel_rmin + 57.0*cm + MuonBarrel_layers*MuonBarrel_layer_thickness) / (cos(pi/MuonSides))"/> 
+    <constant name="MuonEndcap_layers" value="18"/>
+    <constant name="MuonEndcap_layer_thickness" value="10.0*cm + 4.0*cm"/>
+    <constant name="MuonEndcap_zmax" value="MuonEndcap_zmin + MuonEndcap_layers * MuonEndcap_layer_thickness"/>
+    
+    <constant name="LumiCal_rmin" value="6.4*cm"/>
+    <constant name="LumiCal_rmax" value="EcalEndcap_rmin + 3.0*cm"/>
+    <constant name="LumiCal_zmin" value="HcalEndcap_zmin"/>
+    <constant name="LumiCal_thickness" value="20*0.371*cm + 15*0.643*cm"/>
+    <constant name="LumiCal_zmax" value="LumiCal_zmin + LumiCal_thickness"/>
+    <constant name="LumiCalElectronics_rmax" value="LumiCal_rmax+5.0*cm"/>
+    
+    <constant name="SupportTube_thickness" value="1.0*cm"/>
+    <constant name="ForwardVacuumValve_thickness" value="36.0*cm"/>
+    <constant name="ForwardShielding_thickness" value="5.0*cm"/>
+    <constant name="ForwardMask_thickness" value="10.0*cm"/>
+    <constant name="ForwardMask_zmin" value="LumiCal_zmax + ForwardShielding_thickness + ForwardVacuumValve_thickness"/>
+    
+    <constant name="VertexSupport_r1" value="16.87*cm"/>
+    <constant name="VertexSupport_r2" value="18.42*cm"/>
+    <constant name="VertexSupport_zmax" value="89.48*cm"/>
+    
+
+    <constant name="VertexBarrel_ID" value="1"/>
+    <constant name="VertexBarrel_zmax" value="10.0*cm"/>
+    <constant name="VertexBarrel_r1" value="2.7*cm"/>
+    <constant name="VertexBarrel_r2" value="3.8*cm"/>
+    <constant name="VertexBarrel_r3" value="5.1*cm"/>
+    <constant name="VertexBarrel_r4" value="6.4*cm"/>
+    <constant name="VertexBarrel_r5" value="7.7*cm"/>
+
+    
+    <constant name="CentralBeamPipe_zmax" value="23.0*cm"/>
+    <constant name="CentralBeamPipe_rmax" value="VertexBarrel_r1 - 0.2*cm"/>
+    <constant name="CentralBeamPipe_thickness" value="CentralBeamPipe_rmax * 0.02"/> <!-- 1% of the diameter -->
+    <constant name="CentralBeamPipe_rmin" value="CentralBeamPipe_rmax - CentralBeamPipe_thickness"/>
+    <constant name="BeamPipe_thickness" value="0.4*cm"/>
+    <constant name="BeamPipe_endThickness" value="0.1*cm"/>
+    <constant name="BeamPipe_zmax" value="LumiCal_zmin - 0.5*cm"/>
+    <constant name="BeamPipe_rmax" value="19.0*cm"/>
+    <constant name="BeamPipe_rmin" value="BeamPipe_rmax - BeamPipe_thickness"/>
+    <constant name="bp_cone_slope" value="(BeamPipe_rmax-CentralBeamPipe_rmax)/(tracking_region_zmax-CentralBeamPipe_zmax)"/>
+    <constant name="BeamPipe_zmin" value="CentralBeamPipe_zmax + (BeamPipe_thickness - CentralBeamPipe_thickness)/bp_cone_slope"/>
+    <constant name="BeamPipeLiner_thickness" value="0.0*cm"/>
+
+    <constant name="VertexEndcap_ID" value="2"/>
+    <constant name="VertexEndcap_rmax" value="11.5*cm"/>
+    <constant name="VertexEndcap_z1" value="12.0*cm"/>
+    <constant name="VertexEndcap_z2" value="16.0*cm"/>
+    <constant name="VertexEndcap_z3" value="20.0*cm"/>
+    <constant name="VertexEndcap_z4" value="24.0*cm"/>
+    <constant name="VertexEndcap_offset" value="0.2*cm"/>
+    <constant name="VertexEndcapModules" value="16"/>
+    <constant name="VertexEndcap_rmin1" value="CentralBeamPipe_rmax + VertexEndcap_offset"/>
+    <constant name="VertexEndcap_rmin2" value="CentralBeamPipe_rmax + VertexEndcap_offset"/>
+    <constant name="VertexEndcap_rmin3" value="CentralBeamPipe_rmax + VertexEndcap_offset"/>
+    <constant name="VertexEndcap_rmin4" value="(VertexEndcap_z4 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + VertexEndcap_offset"/>
+    
+    <constant name="SiTrackerBarrel_ID" value="3"/>
+    <constant name="SiTrackerEndcap_ID" value="4"/>
+
+    <constant name="ForwardTracker_ID" value="5"/>
+    <constant name="ForwardTrackerModules" value="16"/>
+    <constant name="ForwardTracker_rmax" value="16.87*cm"/>
+    <constant name="ForwardTracker_z1" value="28.0*cm"/>
+    <constant name="ForwardTracker_z2" value="50.0*cm"/>
+    <constant name="ForwardTracker_z3" value="83.0*cm"/>
+    <constant name="ForwardTracker_offset" value="0.2*cm"/>
+    <constant name="ForwardTracker_rmin1" value="(ForwardTracker_z1 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + ForwardTracker_offset"/>
+    <constant name="ForwardTracker_rmin2" value="(ForwardTracker_z2 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + ForwardTracker_offset"/>
+    <constant name="ForwardTracker_rmin3" value="(ForwardTracker_z3 - CentralBeamPipe_zmax)*bp_cone_slope + CentralBeamPipe_rmax + ForwardTracker_offset"/>
+    
+    <constant name="VertexService_zmin" value="ForwardTracker_z1 + 1.0*cm"/>
+    <constant name="VertexService_zmax" value="VertexService_zmin + 2.0*cm"/>
+    <constant name="VertexServiceThickness" value="0.3*cm"/>
+    <constant name="VertexCableThickness" value="0.005*cm"/>
+    
+    <constant name="BeamCal_rmax" value="13.0*cm"/>
+    <constant name="BeamCal_zmin" value="ForwardMask_zmin + ForwardMask_thickness"/>
+
+    <constant name="IncomingBP_radius" value="0.25*cm"/>
+    <constant name="IncomingBP_thickness" value="0.05*cm"/>
+    <constant name="OutgoingBP_radius" value="tan(CrossingAngle/2/rad)*BeamCal_zmin"/>
+    <constant name="OutgoingBP_thickness" value="0.1*cm"/>    
+
+    <constant name="BeamCal_crossingAngle" value="CrossingAngle"/>    
+    <constant name="BeamCal_outgoing_r" value="OutgoingBP_radius + 0.05*cm"/>    
+    <constant name="BeamCal_incoming_r" value="IncomingBP_radius + 0.05*cm"/>    
+
+  </define>
+
+
+  <limits>
+    <limitset name="cal_limits">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+    </limitset>
+    <limitset name="SiTrackerBarrelRegionLimitSet">
+      <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="track_length_max" particles="*" value="5.0" unit="mm" />
+      <limit name="time_max" particles="*" value="5.0" unit="ns" />
+      <limit name="ekin_min" particles="*" value="0.01" unit="MeV" />
+      <limit name="range_min" particles="*" value="5.0" unit="mm" />
+    </limitset>
+  </limits>
+  <regions>
+    <region name="SiTrackerBarrelRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001">
+      <limitsetref name="SiTrackerBarrelRegionLimitSet"/>
+    </region>
+  </regions>
+
+
+  <comment>Common Generic visualization attributes</comment>
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="GreenVis"   alpha="1" r="0.0" g="1.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="RedVis"     alpha="1" r="1.0" g="0.0" b="0.0" showDaughters="true" visible="true"/>
+    <vis name="BlueVis"    alpha="1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+  </display>
+
+  <comment>Additional design specific material definitions</comment>
+  <include ref="${SiD_dir}/SiD_Materials.xml"/>
+<!--
+  <display>
+    <vis name="SiTrackerLayerVis"   alpha="1.0" r="1.0" g="1.0" b="0.6" showDaughters="true" visible="true"/>
+    <vis name="SiTrackerModuleVis"  alpha="0.1" r="0.0" g="1.0" b="0.6" showDaughters="false" visible="true"/>
+    <vis name="SiTrackerForwardVis" alpha="1.0" r="0.8" g="0.1" b="0.1" showDaughters="false" visible="true"/>
+  </display>
+
+  <readouts>
+    <readout name="SiTrackerBarrelHits">
+      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
+    </readout>
+  </readouts>
+-->  
+  <!--  Includes for sensitives and support                -->
+  <!-- include ref="SiD/SiD_TrackerBarrel.xml" -->
+
+  <comment>Tracking detectors</comment>
+   <include ref="${SiD_dir}/SiD_Tracker.xml"/>
+   <plugins>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
+      <argument value="SiTrackerBarrel"/>
+    </plugin>
+  </plugins>
+
+<!--
+
+  <include ref="SiD/SiD_Ecal.xml"/>
+  <plugins>
+    <plugin name="TestSurfaces"><argument value="EcalEndcap"/></plugin>
+    <plugin name="DD4hep_PolyhedraEndcapCalorimeterSurfacePlugin"><argument value="EcalEndcap"/></plugin>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="EcalBarrel"/></plugin>
+  </plugins>
+
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
+      <argument value="SiTrackerBarrel"/>
+    </plugin>
+    <plugin name="TestSurfaces"><argument value="SiTrackerBarrel"/></plugin>
+
+    <plugin name="TestSurfaces">                       <argument value="EcalEndcap"/></plugin>
+    <plugin name="DD4hep_SiTrackerEndcapSurfacePlugin"><argument value="EcalEndcap"/></plugin>
+
+    <plugin name="SubdetectorExtensionPlugin">         <argument value="EcalEndcap"/></plugin>
+    <plugin name="LayeringExtensionPlugin">            <argument value="EcalEndcap"/></plugin>
+
+  <include ref="SiD/SiD_Ecal.xml"/>
+    <plugin name="TestSurfaces">                       <argument value="EcalBarrel"/></plugin>
+    <plugin name="SubdetectorExtensionPlugin">         <argument value="EcalBarrel"/></plugin>
+    <plugin name="LayeringExtensionPlugin">            <argument value="EcalBarrel"/></plugin>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="EcalBarrel"/></plugin>
+
+  <include ref="SiD/SiD_HcalBarrel.xml"/>
+    <plugin name="TestSurfaces">                       <argument value="HcalBarrel"/></plugin>
+    <plugin name="SubdetectorExtensionPlugin">         <argument value="HcalBarrel"/></plugin>
+    <plugin name="LayeringExtensionPlugin">            <argument value="HcalBarrel"/></plugin>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="HcalBarrel"/></plugin>
+
+  <include ref="SiD/SiD_Muon.xml"/>
+  <plugins>
+    <plugin name="SubdetectorExtensionPlugin">         <argument value="MuonBarrel"/></plugin>
+    <plugin name="LayeringExtensionPlugin">            <argument value="MuonBarrel"/></plugin>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="MuonBarrel"/></plugin>
+  </plugins>
+-->
+<!--
+  <plugins>
+    <plugin name="TestSurfaces">
+      <argument value="SiTrackerEndcap"/>
+    </plugin>
+  </plugins>
+
+  <include ref="SiD/SiD_Tracker.xml"/>
+  <plugins>
+    <plugin name="DD4hep_SiTrackerEndcapSurfacePlugin">
+      <argument value="SiTrackerEndcap"/>
+    </plugin>
+  </plugins>
+  <plugins>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
+      <argument value="SiTrackerBarrel"/>
+    </plugin>
+  </plugins>
+  <include ref="SiD/SiD_TrackerEndcap.xml"/>
+  <include ref="SiD/SiD_TrackerBarrel.xml"/>
+-->
+<!--
+  <include ref="SiD/SiD_Vertex.xml"/>
+
+  <comment>Calorimeters</comment>
+  <include ref="SiD/SiD_Ecal.xml"/>
+  <include ref="SiD/SiD_Hcal.xml"/>
+  <include ref="SiD/SiD_HcalPlug.xml"/>
+  <include ref="SiD/SiD_Muon.xml"/>
+  <include ref="SiD/SiD_Lumical.xml"/>
+  <include ref="SiD/SiD_Beamcal.xml"/>
+
+  <comment>Dead material and supports</comment>
+  <include ref="SiD/SiD_Solenoid.xml"/>
+  <include ref="SiD/SiD_Shields.xml"/>
+
+  <comment>Beampipe</comment>
+  <include ref="SiD/SiD_Beampipe.xml"/>
+  
+  <fields>
+    <field name="GlobalSolenoid" type="solenoid" 
+	   inner_field="5.0*tesla"
+	   outer_field="-1.5*tesla" 
+	   zmax="SolenoidCoilOuterZ"
+	   outer_radius="SolenoidalFieldRadius">
+    </field>
+  </fields>
+-->
+</lccdd>

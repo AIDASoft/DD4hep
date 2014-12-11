@@ -78,18 +78,21 @@ def run():
   kernel.generatorAction().add(rdr)
   """
 
-  # Setup global filters fur use in sensntive detectors
+  # Setup global filters fur use in sensintive detectors
   f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
+  kernel.registerGlobalFilter(f1)
+
   f2 = DDG4.Filter(kernel,'ParticleRejectFilter/OpticalPhotonRejector')
   f2.particle = 'opticalphoton'
+  kernel.registerGlobalFilter(f2)
+
   f3 = DDG4.Filter(kernel,'ParticleSelectFilter/OpticalPhotonSelector') 
   f3.particle = 'opticalphoton'
+  kernel.registerGlobalFilter(f3)
+
   f4 = DDG4.Filter(kernel,'EnergyDepositMinimumCut')
   f4.Cut = 10*MeV
   f4.enableUI()
-  kernel.registerGlobalFilter(f1)
-  kernel.registerGlobalFilter(f2)
-  kernel.registerGlobalFilter(f3)
   kernel.registerGlobalFilter(f4)
 
   # First the tracking detectors

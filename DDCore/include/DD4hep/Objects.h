@@ -202,7 +202,7 @@ namespace DD4hep {
       /// Constructor to be used when creating a new DOM tree
       Constant(const std::string& name, const std::string& val, const std::string& typ="number");
       /// Access the constant
-      std::string type() const;
+      std::string dataType() const;
       /// String representation of this object
       std::string toString() const;
     };

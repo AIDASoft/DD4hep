@@ -221,6 +221,7 @@ Here you can find the manuals:
 - The <A href="../DDEveManual.pdf">DDEve manual</A> to visualize DD4hep geometries.
   (Under construction though).
 - <A href="../DD4hep_Diagrams.pdf">UML diagrams</A> from the design phase
+- <A href="../refman.pdf">Doxygen Manual</A> in pdf format
 - <A href="../DD4hep_Tutorial.pdf">Tutorial</A>. Relatively old...
 - <A href="http://cds.cern.ch/record/1473120/files/AIDA-D2_3.pdf">Design document</A>
 - <A href="https://sft.its.cern.ch/jira/browse/DDFORHEP">DD4hep bug tracker</A>

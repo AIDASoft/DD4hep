@@ -55,8 +55,12 @@ def importConstants(lcdd,namespace=None,debug=False):
   cnt = 0
   num = 0
   todo = {}
-  for c in lcdd.constants(): 
-    todo[c.first] = c.second.GetTitle().replace('(int)','')
+  strings = {}
+  for c in lcdd.constants():
+    if c.second.dataType != 'string':
+      strings[c.first] = c.second.GetTitle()
+    else:
+      todo[c.first] = c.second.GetTitle().replace('(int)','')
   while len(todo) and cnt<100:
     cnt = cnt + 1
     if cnt == 100:
@@ -264,6 +268,8 @@ class Simple:
   def setupDetector(self,name,sensitive_type):
     seq = SensitiveSequence(self.kernel,'Geant4SensDetActionSequence/'+name)
     act = SensitiveAction(self.kernel,sensitive_type+'/'+name+'Handler',name)
+    seq.enableUI()
+    act.enableUI()
     seq.add(act)
     return (seq,act)
 

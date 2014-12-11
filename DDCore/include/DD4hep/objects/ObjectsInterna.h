@@ -62,7 +62,7 @@ namespace DD4hep {
     class ConstantObject: public NamedObject {
     public:
       /// Constant type
-      std::string m_type;
+      std::string dataType;
       /// Standard constructor
       ConstantObject(const std::string& nam, const std::string& val, const std::string& typ);
       /// Default destructor

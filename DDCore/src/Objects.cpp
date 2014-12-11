@@ -142,9 +142,9 @@ Constant::Constant(const string& name) {
 }
 
 /// Access the constant
-string Constant::type() const   {
+string Constant::dataType() const   {
   if ( isValid() )  {
-    return m_element->type;
+    return m_element->dataType;
   }
   throw runtime_error("DD4hep: Attempt to access internals from invalid Constant handle!");
 }
@@ -153,7 +153,7 @@ string Constant::type() const   {
 string Constant::toString() const {
   stringstream os;
   os << m_element->GetName() << "  \"" << m_element->GetTitle() << "\"  ";
-  if ( m_element->m_type == "string" ) os << "Value:" << m_element->GetTitle();
+  if ( m_element->dataType == "string" ) os << "Value:" << m_element->GetTitle();
   else os << "Value:" << _toDouble(m_element->GetTitle());
   return os.str();
 }
