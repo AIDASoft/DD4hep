@@ -14,17 +14,17 @@
 #include "DDEve/View.h"
 #include "DDEve/DisplayConfiguration.h"
 
+// Forward declarations
 class TEveWindowPack;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class MultiView  MultiView.h DDEve/MultiView.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// class MultiView  MultiView.h DDEve/MultiView.h
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class MultiView : public View  {
   public:

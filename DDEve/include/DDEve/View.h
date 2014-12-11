@@ -26,19 +26,18 @@
 class TEveManager;
 class TEveElementList;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
   class Display;
   class EventHandler;
 
-  /** @class View  View.h DDEve/View.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// class View  View.h DDEve/View.h
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class View   {
   public:

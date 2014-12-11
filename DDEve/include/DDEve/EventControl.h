@@ -13,19 +13,21 @@
 #include "DDEve/FrameControl.h"
 #include "DDEve/GenericEventHandler.h"
 
+// Forward declarations
 class TGPictureButton;
 class TGLabel;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  // Forward declarations
   class Display;
 
-  /** @class EventControl  EventControl.h DDEve/EventControl.h
+  /** EventControl  EventControl.h DDEve/EventControl.h
    *
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class EventControl : public FrameControl, public EventConsumer  {
     enum { NUM_DATA_LINES = 40 };

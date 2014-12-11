@@ -21,15 +21,14 @@ class TTree;
 class TFile;
 class TBranch;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class DDG4EventHandler  DDG4EventHandler.h DDEve/DDG4EventHandler.h
+  /** Event I/O handler class for the DD4hep event display
    *
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class DDG4EventHandler : public EventHandler  {
   public:

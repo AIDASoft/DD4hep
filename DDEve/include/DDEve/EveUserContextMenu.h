@@ -15,18 +15,17 @@
 // Forward declarations
 class TEveManager;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
   class Display;
 
-  /** @class EveUserContextMenu  EveUserContextMenu.h DDEve/EveUserContextMenu.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// class EveUserContextMenu  EveUserContextMenu.h DDEve/EveUserContextMenu.h
+  /*
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class EveUserContextMenu  {
   protected:

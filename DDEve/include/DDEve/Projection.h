@@ -17,15 +17,14 @@
 #include <TEveProjectionManager.h>
 #include <TEveProjectionAxes.h>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class Projection  Projection.h DDEve/Projection.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// class Projection  Projection.h DDEve/Projection.h
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class Projection : public View  {
   protected:

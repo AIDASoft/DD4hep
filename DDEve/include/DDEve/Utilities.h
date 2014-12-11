@@ -17,9 +17,7 @@
 #include "TEveElement.h"
 #include "TNamed.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   namespace Utilities {

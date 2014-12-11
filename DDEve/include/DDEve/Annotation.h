@@ -16,17 +16,16 @@
 class TEveViewer;
 class TGLOvlSelectRecord;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Class to add annotations to eve viewers
   /** 
    * Implements slightly larger text size and one line constructor
    *
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class Annotation : public TGLAnnotation   {
   public:

@@ -12,15 +12,14 @@
 // ROOT include files
 #include "DDEve/EveUserContextMenu.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class EveShapeContextMenu  EveShapeContextMenu.h DDEve/EveShapeContextMenu.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// class EveShapeContextMenu  EveShapeContextMenu.h DDEve/EveShapeContextMenu.h
+  /*
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class EveShapeContextMenu : public EveUserContextMenu {
   protected:

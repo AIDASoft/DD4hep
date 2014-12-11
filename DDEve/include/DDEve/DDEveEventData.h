@@ -13,15 +13,14 @@
 #include <vector>
 #include <set>
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// DDEve event classes: Basic hit
   /** 
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class DDEveHit   {
   public:
@@ -46,8 +45,9 @@ namespace DD4hep {
 
   /// Data structure to store the MC particle information 
   /**
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class DDEveParticle {
   public:

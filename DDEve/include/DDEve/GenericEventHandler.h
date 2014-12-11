@@ -14,15 +14,14 @@
 
 // Forward declarations
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Event handler base class. Interface to all DDEve I/O actions
   /** 
-   * @author  M.Frank
-   * @version 1.0
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class GenericEventHandler : public EventHandler  {
   protected:

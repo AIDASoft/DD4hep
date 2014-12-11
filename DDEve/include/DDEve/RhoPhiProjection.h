@@ -13,15 +13,14 @@
 // Framework include files
 #include "DDEve/Projection.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class RhoPhiProjection  RhoPhiProjection.h DDEve/RhoPhiProjection.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// class RhoPhiProjection  RhoPhiProjection.h DDEve/RhoPhiProjection.h
+  /*
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_EVE
    */
   class  RhoPhiProjection : public Projection   {
   public:

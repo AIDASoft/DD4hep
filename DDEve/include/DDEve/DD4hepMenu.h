@@ -17,19 +17,18 @@
 class TGMenuBar;
 class TGMenuEntry;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
   class View;
   class EventControl;
 
-  /** @class DD4hepMenu  DD4hepMenu.h DDEve/DD4hepMenu.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// DD4hep Menu for the ROOT browser
+  /*
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class DD4hepMenu : public PopupMenu {
   public:

@@ -14,19 +14,19 @@
 #include "DDEve/View.h"
 #include "DDEve/Display.h"
 
+// Forward declarations
 class TH2F;
 class TEveCalo3D;
 class TEveCaloDataHist;
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class Calo3DProjection  Calo3DProjection.h DDEve/Calo3DProjection.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// 3D projection for calorimeters
+  /*
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class  Calo3DProjection : public View   {
   public:

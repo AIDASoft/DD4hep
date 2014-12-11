@@ -17,18 +17,17 @@
 // ROOT include files
 #include "TEveElement.h"
 
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /** @class ElementList  ElementList.h DDEve/ElementList.h
-   *
+  /// Local implementation with overrides of the TEveElementList
+  /*
    *  I do not want to override the TEveElementList context menu....
    *  Hence a new class is needed.
    *  
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class ElementList : public TEveElementList  {
   public:
@@ -46,10 +45,11 @@ namespace DD4hep {
     ClassDef(ElementList,0);
   };
 
-  /** @class ElementListContextMenu  ElementListContextMenu.h DDEve/ElementListContextMenu.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// DDEve context menu class
+  /*
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class ElementListContextMenu : public EveUserContextMenu  {
   protected:

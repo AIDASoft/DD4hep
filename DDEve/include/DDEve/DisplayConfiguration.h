@@ -18,19 +18,17 @@
 #include <list>
 #include <map>
 
-
-/*
- *   DD4hep namespace declaration
- */
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   // Forward declarations
   class Display;
 
-  /** @class DisplayConfiguration  DisplayConfiguration.h DDEve/DisplayConfiguration.h
-   *
-   * @author  M.Frank
-   * @version 1.0
+  /// DisplayConfiguration  DisplayConfiguration.h DDEve/DisplayConfiguration.h
+  /*
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   class  DisplayConfiguration   {
   protected:

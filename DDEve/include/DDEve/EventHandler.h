@@ -27,11 +27,14 @@ class TH2F;
  */
 namespace DD4hep {
 
+  // Forward declarations
   class EventConsumer;
+  
   /// Event data actor base class for hits. Used to extract data from concrete classes.
   /** 
-   * @author  M.Frank
-   * @version 1.0
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP_EVE
    */
   struct DDEveHitActor  {
     virtual ~DDEveHitActor() {}
