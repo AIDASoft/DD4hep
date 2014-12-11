@@ -14,6 +14,7 @@
 #include "DD4hep/Handle.h"
 #include "DD4hep/NamedObject.h"
 
+// Forward declarations
 class TMap;
 class TGeoElement;
 class TGeoMaterial;
@@ -23,6 +24,8 @@ class TGeoRotation;
 class TGeoTranslation;
 class TGeoPhysicalNode;
 class TGeoIdentity;
+
+// ROOT include files
 #include "TGeoPhysicalNode.h"
 #include "Math/Vector3D.h"
 #include "Math/Transform3D.h"
@@ -57,13 +60,14 @@ namespace DD4hep {
     class IDDescriptor;
     class VisAttrObject;
     class HeaderObject;
+    class ConstantObject;
     class RegionObject;
     class LimitSetObject;
 
     /** Access to identity transformation  */
     TGeoIdentity* identityTransform();
 
-    /// Handle class describing an author identity
+    /// Handle class describing an author entity
     /** 
      *  \author  M.Frank
      *  \version 1.0
@@ -176,27 +180,29 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
      */
-    class Constant: public Ref_t {
+    class Constant: public Handle<ConstantObject> {
     public:
       /// Definition of the implementation type
-      typedef NamedObject Object;
+      typedef ConstantObject Object;
       /// Default constructor
       Constant()
-          : Ref_t() {
+          : Handle<ConstantObject> () {
       }
       /// Constructorto be used for assignment from a handle
       Constant(const Constant& e)
-          : Ref_t(e) {
+          : Handle<ConstantObject> (e) {
       }
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q>
       Constant(const Handle<Q>& e)
-          : Ref_t(e) {
+          : Handle<ConstantObject> (e) {
       }
       /// Constructor to be used when creating a new DOM tree
       Constant(const std::string& name);
       /// Constructor to be used when creating a new DOM tree
-      Constant(const std::string& name, const std::string& val);
+      Constant(const std::string& name, const std::string& val, const std::string& typ="number");
+      /// Access the constant
+      std::string type() const;
       /// String representation of this object
       std::string toString() const;
     };

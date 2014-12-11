@@ -18,6 +18,13 @@ namespace DD4hep {
 
   /// Base class describing string evaluation to C++ objects using boost::spirit
   /** 
+   *   Grammar object handle the boost::spirit conversion between strings and numeric
+   *   values/objects. Numeric objects could be atomic (int, long, float, double, etc)
+   *   or complex (vector<int>, vector<float>...). This way e.g. a vector<int> may 
+   *   be converted into a list<double>. The conversion though requires an intermediate
+   *   string representation. For this reason the conversion mechanism is relatively 
+   *   slow and hence should not be used inside number-crunching algorithms.
+   *
    *   \author  M.Frank
    *   \version 1.0
    *   \date    13.08.2013

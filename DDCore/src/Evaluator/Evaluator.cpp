@@ -16,7 +16,7 @@
 
 //---------------------------------------------------------------------------
 struct Item {
-  enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION } what;
+  enum { UNKNOWN, VARIABLE, EXPRESSION, FUNCTION, STRING } what;
   double variable;
   string expression;
   void   *function;
@@ -663,6 +663,44 @@ void Evaluator::print_error() const {
   default:
     return;
   }
+}
+
+//---------------------------------------------------------------------------
+void Evaluator::setEnviron(const char* name, const char* value)  {
+  Struct* s = (Struct *)p;
+  string prefix = "${";
+  string item_name = prefix + string(name) + string("}");
+  dic_type::iterator iter = (s->theDictionary).find(item_name);
+  Item item;
+  item.what = Item::STRING;
+  item.expression = value;
+  item.function = 0;
+  item.variable = 0;
+  //std::cout << " ++++++++++++++++++++++++++++ Saving env:" << name << " = " << value << std::endl;
+  if (iter != (s->theDictionary).end()) {
+    iter->second = item;
+    if (item_name == name) {
+      s->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
+    }else{
+      s->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
+    }
+  }else{
+    (s->theDictionary)[item_name] = item;
+    s->theStatus = EVAL::OK;
+  }
+}
+//---------------------------------------------------------------------------
+const char* Evaluator::getEnviron(const char* name)  {
+  Struct* s = (Struct *)p;
+  string item_name = name;
+  //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
+  dic_type::iterator iter = (s->theDictionary).find(item_name);
+  if (iter == (s->theDictionary).end()) {
+    s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
+    return 0;
+  }
+  s->theStatus = EVAL::OK;
+  return iter->second.expression.c_str();
 }
 
 //---------------------------------------------------------------------------

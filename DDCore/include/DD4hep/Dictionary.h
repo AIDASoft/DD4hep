@@ -110,22 +110,29 @@ template class DD4hep::Geometry::Handle<TNamed>;
 // Objects.h
 #pragma link C++ class DD4hep::Geometry::Author+;
 #pragma link C++ class vector<DD4hep::Geometry::Author>+;
+
 #pragma link C++ class DD4hep::Geometry::Header+;
 #pragma link C++ class DD4hep::Geometry::HeaderObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::HeaderObject>+;
 
 #pragma link C++ class DD4hep::Geometry::Constant+;
+#pragma link C++ class DD4hep::Geometry::ConstantObject+;
+#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConstantObject>+;
 #pragma link C++ class vector<DD4hep::Geometry::Constant>+;
+
 #pragma link C++ class DD4hep::Geometry::Atom+;
 #pragma link C++ class vector<DD4hep::Geometry::Atom>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoElement>+;
+
 #pragma link C++ class DD4hep::Geometry::Material+;
 #pragma link C++ class vector<DD4hep::Geometry::Material>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoMedium>+;
+
 #pragma link C++ class DD4hep::Geometry::VisAttr+;
 #pragma link C++ class vector<DD4hep::Geometry::VisAttr>+;
 #pragma link C++ class DD4hep::Geometry::VisAttrObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::VisAttrObject>+;
+
 #pragma link C++ class DD4hep::Geometry::AlignmentEntry+;
 #pragma link C++ class DD4hep::Geometry::Limit+;
 #pragma link C++ class set<DD4hep::Geometry::Limit>+;

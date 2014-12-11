@@ -92,6 +92,20 @@ namespace XmlTools {
     void print_error() const;
 
     /**
+     * Adds to the dictionary a string constant
+     *
+     * @param name name of the variable.
+     * @param value value assigned to the variable.
+     */
+    void setEnviron(const char* name, const char* value);
+    /**
+     * Lookup the dictionary for a string constant
+     *
+     * @param name name of the variable.
+     * @param value value assigned to the variable.
+     */
+    const char* getEnviron(const char* name);
+    /**
      * Adds to the dictionary a variable with given value.
      * If a variable with such a name already exist in the dictionary,
      * then status will be set to WARNING_EXISTING_VARIABLE.

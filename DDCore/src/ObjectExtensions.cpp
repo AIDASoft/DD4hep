@@ -15,19 +15,18 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace std;
 using namespace DD4hep;
 
 namespace {
   static int s_extensionID = 0;
-  ObjectExtensions::ExtensionMap* extensionContainer(const type_info& typ) {
-    static map<const type_info*, ObjectExtensions::ExtensionMap> s_map;
+  ObjectExtensions::ExtensionMap* extensionContainer(const std::type_info& typ) {
+    static std::map<const std::type_info*, ObjectExtensions::ExtensionMap> s_map;
     return &s_map[&typ];
   }
 }
 
 /// Default constructor
-ObjectExtensions::ObjectExtensions(const type_info& parent_type)    {
+ObjectExtensions::ObjectExtensions(const std::type_info& parent_type)    {
   extensionMap = extensionContainer(parent_type);
   InstanceCount::increment(this);
 }
@@ -57,7 +56,7 @@ void ObjectExtensions::clear(bool destroy) {
 /// Copy object extensions from another object
 void ObjectExtensions::copyFrom(const Extensions& ext, void* arg)  {
   for (Extensions::const_iterator i = ext.begin(); i != ext.end(); ++i) {
-    const type_info* info = (*i).first;
+    const std::type_info* info = (*i).first;
     ExtensionMap::const_iterator j = extensionMap->find(info);
     const Entry& e = (*j).second;
     extensions[info] = (*(e.copy))((*i).second, arg);
@@ -65,12 +64,12 @@ void ObjectExtensions::copyFrom(const Extensions& ext, void* arg)  {
 }
 
 /// Add an extension object to the detector element
-void* ObjectExtensions::addExtension(void* ptr, const type_info& info, destruct_t dtor)  {
+void* ObjectExtensions::addExtension(void* ptr, const std::type_info& info, destruct_t dtor)  {
   return addExtension(ptr, info, 0, dtor);
 }
 
 /// Add an extension object to the detector element
-void* ObjectExtensions::addExtension(void* ptr, const type_info& info, copy_t ctor, destruct_t dtor)  {
+void* ObjectExtensions::addExtension(void* ptr, const std::type_info& info, copy_t ctor, destruct_t dtor)  {
   Extensions::iterator j = extensions.find(&info);
   if (j == extensions.end()) {
     ExtensionMap::iterator i = extensionMap->find(&info);
@@ -84,7 +83,7 @@ void* ObjectExtensions::addExtension(void* ptr, const type_info& info, copy_t ct
     }
     return extensions[&info] = ptr;
   }
-  throw runtime_error("DD4hep: addExtension: Object already has an extension of type:" + typeName(info) + ".");
+  throw std::runtime_error("DD4hep: addExtension: Object already has an extension of type:" + typeName(info) + ".");
 }
 
 /// Remove an existing extension object from the instance
@@ -103,26 +102,26 @@ void* ObjectExtensions::removeExtension(const std::type_info& info, bool destroy
     extensions.erase(j);
     return ptr;
   }
-  throw runtime_error("DD4hep: removeExtension: The object of type " + typeName(info) + " is not present.");
+  throw std::runtime_error("DD4hep: removeExtension: The object of type " + typeName(info) + " is not present.");
 }
 
 /// Access an existing extension object from the detector element
-void* ObjectExtensions::extension(const type_info& info) const {
+void* ObjectExtensions::extension(const std::type_info& info) const {
   Extensions::const_iterator j = extensions.find(&info);
   if (j != extensions.end()) {
     return (*j).second;
   }
-  throw runtime_error("DD4hep: extension: Object has no extension of type:" + typeName(info) + ".");
+  throw std::runtime_error("DD4hep: extension: Object has no extension of type:" + typeName(info) + ".");
 }
 
 /// Access an existing extension object from the detector element
-void* ObjectExtensions::extension(const type_info& info, bool alert) const {
+void* ObjectExtensions::extension(const std::type_info& info, bool alert) const {
   Extensions::const_iterator j = extensions.find(&info);
   if (j != extensions.end()) {
     return (*j).second;
   }
   else if ( !alert ) 
     return 0;
-  throw runtime_error("DD4hep: extension: Object has no extension of type:" + typeName(info) + ".");
+  throw std::runtime_error("DD4hep: extension: Object has no extension of type:" + typeName(info) + ".");
 }
 

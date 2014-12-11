@@ -29,6 +29,10 @@ namespace DD4hep {
 // Static storage
 namespace {
   XmlTools::Evaluator& eval(DD4hep::evaluator());
+  string _checkEnviron(const string& env)  {
+    string r = getEnviron(env);
+    return r.empty() ? env : r;
+  }
 }
 
 // Shortcuts
@@ -81,8 +85,8 @@ namespace {
   }
 }
 XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c) {return c ? ::strdup(c) : 0;}
-XmlChar* DD4hep::XML::XmlString::transcode(const char* c) {return c ? ::strdup(c) : 0;}
-void DD4hep::XML::XmlString::release(char** p) {if(p && *p) {::free(*p); *p=0;}}
+XmlChar* DD4hep::XML::XmlString::transcode(const char* c)    {return c ? ::strdup(c) : 0;}
+void DD4hep::XML::XmlString::release(char** p) {if(p && *p)  {::free(*p); *p=0;}}
 
 #else
 #include "xercesc/util/XMLString.hpp"
@@ -156,10 +160,14 @@ namespace {
     return 0;
   }
 }
+
 string DD4hep::XML::_toString(const XmlChar *toTranscode) {
   char *buff = XmlString::transcode(toTranscode);
   string tmp(buff == 0 ? "" : buff);
   XmlString::release(&buff);
+  if ( tmp.length()<3 ) return tmp;
+  if ( !(tmp[0] == '$' && tmp[1] == '{') ) return tmp;
+  tmp = _checkEnviron(tmp);
   return tmp;
 }
 #endif
@@ -191,12 +199,16 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
 
 /// Do-nothing version. Present for completeness and argument interchangeability
 std::string DD4hep::XML::_toString(const char* s) {
-  return string(s ? s : "");
+  if ( !s || *s == 0 ) return "";
+  else if ( !(*s == '$' && *(s+1) == '{') ) return s;
+  return _checkEnviron(s);
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
 std::string DD4hep::XML::_toString(const std::string& s) {
-  return s;
+  if ( s.length() < 3 || s[0] != '$' ) return s;
+  else if ( !(s[0] == '$' && s[1] == '{') ) return s;
+  return _checkEnviron(s);
 }
 
 /// Format unsigned long integer to string with atrbitrary format
@@ -312,6 +324,7 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, T value)   {
   const XmlChar* item_value = item;
   _toDictionary(name, item_value);
 }
+
 #ifndef DD4HEP_USE_TINYXML
 template void DD4hep::XML::_toDictionary(const XmlChar* name, const char* value);
 #endif
@@ -324,6 +337,28 @@ template void DD4hep::XML::_toDictionary(const XmlChar* name, long value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, short value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, float value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, double value);
+
+/// Evaluate string constant using environment stored in the evaluator
+string DD4hep::XML::getEnviron(const string& env)   {
+  size_t id1 = env.find("${");
+  size_t id2 = env.rfind("}");
+  if ( id1 == string::npos || id2 == string::npos )   {
+    return "";
+  }
+  else  {
+    string v = env.substr(0,id2+1);
+    const char* ret = eval.getEnviron(v.c_str());
+    if (eval.status() != XmlTools::Evaluator::OK) {
+      cerr << env << ": ";
+      eval.print_error();
+      throw runtime_error("DD4hep: Severe error during environment lookup of " + env);
+    }
+    v = env.substr(0,id1);
+    v += ret;
+    v += env.substr(id2+1);
+    return v;
+  }
+}
 
 template <typename B>
 static inline string i_add(const string& a, B b) {

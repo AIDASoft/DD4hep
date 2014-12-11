@@ -64,7 +64,7 @@ long DD4hep::Geometry::_toLong(const string& value) {
 }
 
 bool DD4hep::Geometry::_toBool(const string& value) {
-  return value == "true";
+  return value == "true" || value == "yes";
 }
 
 float DD4hep::Geometry::_toFloat(const string& value) {
@@ -104,22 +104,33 @@ template <> double DD4hep::Geometry::_multiply<double>(const string& left, const
 }
 
 void DD4hep::Geometry::_toDictionary(const string& name, const string& value) {
-  string n = name, v = value;
-  size_t idx = v.find("(int)");
-  if (idx != string::npos)
-    v.erase(idx, 5);
-  idx = v.find("(float)");
-  if (idx != string::npos)
-    v.erase(idx, 7);
-  while (v[0] == ' ')
-    v.erase(0, 1);
-  double result = eval.evaluate(v.c_str());
-  if (eval.status() != XmlTools::Evaluator::OK) {
-    cerr << value << ": ";
-    eval.print_error();
-    throw runtime_error("DD4hep: Severe error during expression evaluation " + name + "=" + value);
+  _toDictionary(name, value, "number");
+}
+
+/// Enter name value pair to the dictionary.  \ingroup DD4HEP_GEOMETRY
+void DD4hep::Geometry::_toDictionary(const std::string& name, const std::string& value, const std::string& typ)   {
+  if ( typ == "string" )  {
+    eval.setEnviron(name.c_str(),value.c_str());
+    return;
   }
-  eval.setVariable(n.c_str(), result);
+  else  {
+    string n = name, v = value;
+    size_t idx = v.find("(int)");
+    if (idx != string::npos)
+      v.erase(idx, 5);
+    idx = v.find("(float)");
+    if (idx != string::npos)
+      v.erase(idx, 7);
+    while (v[0] == ' ')
+      v.erase(0, 1);
+    double result = eval.evaluate(v.c_str());
+    if (eval.status() != XmlTools::Evaluator::OK) {
+      cerr << value << ": ";
+      eval.print_error();
+      throw runtime_error("DD4hep: Severe error during expression evaluation " + name + "=" + value);
+    }
+    eval.setVariable(n.c_str(), result);
+  }
 }
 
 template <typename T> static inline string __to_string(T value, const char* fmt) {

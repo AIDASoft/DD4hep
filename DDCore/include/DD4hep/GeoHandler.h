@@ -136,7 +136,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
      */
-    struct GeoScan {
+    class GeoScan {
     protected:
       /// Data holder
       GeoHandler::Data* m_data;

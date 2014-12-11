@@ -25,14 +25,11 @@ using   abi::__dynamic_cast;
 #endif
 #endif
 
-using namespace std;
-using namespace DD4hep;
-
 static const std::string __typeinfoName(const std::type_info& tinfo) {
   const char* class_name = tinfo.name();
   std::string result;
 #ifdef WIN32
-  size_t off = 0;
+  std::size_t off = 0;
   if ( ::strncmp(class_name, "class ", 6) == 0 ) {
     // The returned name is prefixed with "class "
     off = 6;
@@ -135,7 +132,7 @@ static const std::string __typeinfoName(const std::type_info& tinfo) {
   }
   else {
     char buff[16 * 1024];
-    size_t len = sizeof(buff);
+    std::size_t len = sizeof(buff);
     int status = 0;
     result = __cxxabiv1::__cxa_demangle(class_name, buff, &len, &status);
   }
@@ -146,27 +143,27 @@ static const std::string __typeinfoName(const std::type_info& tinfo) {
   return result;
 }
 
-string DD4hep::typeName(const type_info& typ) {
+std::string DD4hep::typeName(const std::type_info& typ) {
   return __typeinfoName(typ);
 }
 
-void DD4hep::invalidHandleError(const type_info& type)   {
-  throw runtime_error("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
+void DD4hep::invalidHandleError(const std::type_info& type)   {
+  throw std::runtime_error("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
 }
 
-void DD4hep::invalidHandleAssignmentError(const type_info& from, const type_info& to)  {
-  string msg = "Wrong assingment from ";
+void DD4hep::invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to)  {
+  std::string msg = "Wrong assingment from ";
   msg += typeName(from);
   msg += " to ";
   msg += typeName(to);
   msg += " not possible!!";
-  throw runtime_error(msg);
+  throw std::runtime_error(msg);
 }
 
 /// Throw exception when handles are check for validity
 void DD4hep::notImplemented(const std::string& msg)   {
-  string m = "The requested feature " + msg + " is not implemented!";
-  throw runtime_error(m);
+  std::string m = "The requested feature " + msg + " is not implemented!";
+  throw std::runtime_error(m);
 }
 
 void DD4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text) {
@@ -176,7 +173,7 @@ void DD4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ
 }
 
 /// Initializing Constructor
-ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
+DD4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
   : type(t), destroy(d), cast(c) {
 #ifdef __APPLE__
   abi_class = 0;
@@ -189,7 +186,7 @@ ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
 }
 
 /// Defautl destructor
-ComponentCast::~ComponentCast() {
+DD4hep::ComponentCast::~ComponentCast() {
 }
 
 #if 0
@@ -218,7 +215,7 @@ static inline void* cast_wrap(const void* p,
 #endif
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const {
+void* DD4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const {
   if (&to == this) {
     return (void*) ptr;
   }
@@ -256,7 +253,7 @@ void* ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) con
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const {
+void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const {
   if (&to == this) {
     return (void*) ptr;
   }
@@ -264,7 +261,7 @@ void* ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) cons
 }
 
 /// Apply cast using typeinfo instead of dynamic_cast
-void* ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const {
+void* DD4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const {
   if (&to == this) {
     return (void*) ptr;
   }

@@ -16,6 +16,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  // Forward declarations
   typedef ROOT::Reflex::PluginService PluginService;
 
   /// Helper to debug plugin manager calls
@@ -38,7 +39,7 @@ namespace DD4hep {
     std::string missingFactory(const std::string& name) const;
   };
 
-} /* End namespace DD4hep    */
-#endif
+} /* End namespace DD4hep      */
 
-#endif    /* DD4HEP_PLUGINS_H        */
+#endif    /* __CINT__          */
+#endif    /* DD4HEP_PLUGINS_H  */

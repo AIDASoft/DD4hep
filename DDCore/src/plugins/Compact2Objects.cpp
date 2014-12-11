@@ -247,10 +247,12 @@ template <> void Converter<Plugin>::operator()(xml_h e) const {
  */
 template <> void Converter<Constant>::operator()(xml_h e) const {
   xml_ref_t constant(e);
-  NamedObject* obj = new NamedObject(constant.attr < string > (_U(name)).c_str(), constant.attr < string > (_U(value)).c_str());
-  Ref_t cons(obj);
-  _toDictionary(obj->GetName(), obj->GetTitle());
-  lcdd.addConstant(cons);
+  string nam = constant.attr < string > (_U(name));
+  string val = constant.attr < string > (_U(value));
+  string typ = constant.hasAttr(_U(type)) ? constant.attr<string>(_U(type)) : "number";
+  Constant c(nam, val, typ);
+  _toDictionary(nam, val, typ);
+  lcdd.addConstant(c);
 }
 /** Convert compact constant objects (defines)
  *
@@ -864,13 +866,14 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 
   ++num_calls;
   xml_elt_t compact(element);
+
+  xml_coll_t(compact, _U(define)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
+  xml_coll_t(compact, _U(define)).for_each(_U(constant), Converter < Constant > (lcdd));
   xml_coll_t(compact, _U(includes)).for_each(_U(gdmlFile), Converter < GdmlFile > (lcdd));
 
   if (element.hasChild(_U(info)))
     (Converter < Header > (lcdd))(xml_h(compact.child(_U(info))));
 
-  xml_coll_t(compact, _U(define)).for_each(_U(include), Converter < DetElementInclude > (lcdd));
-  xml_coll_t(compact, _U(define)).for_each(_U(constant), Converter < Constant > (lcdd));
   xml_coll_t(compact, _U(materials)).for_each(_U(element), Converter < Atom > (lcdd));
   xml_coll_t(compact, _U(materials)).for_each(_U(material), Converter < Material > (lcdd));
   xml_coll_t(compact, _U(properties)).for_each(_U(attributes), Converter < Property > (lcdd));

@@ -37,6 +37,9 @@ namespace DD4hep {
 
     // Forward declarations
 
+    /// Pretty print of solid attributes
+    std::string toStringSolid(const TGeoShape* shape, int precision=2);
+
     ///  Base class for Solid (shape) objects
     /**
      *   Generic handle holding an object of base TGeoShape.
@@ -88,6 +91,11 @@ namespace DD4hep {
       /// Overloaded operator -> to access underlying object
       T* operator->() const {
         return this->m_element;
+      }
+
+      /// Conversion to string for pretty print
+      std::string toString(int precision=2) const   {
+	return toStringSolid(this->m_element,precision);
       }
     };
     typedef Solid_type<TGeoShape> Solid;

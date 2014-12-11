@@ -42,7 +42,8 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
      */
-    struct LCDDConverter: public GeoHandler {
+    class LCDDConverter: public GeoHandler {
+    public:
       typedef XML::XmlElement XmlElement;
       typedef std::map<Atom,              XmlElement*> ElementMap;
       typedef std::map<Material,          XmlElement*> MaterialMap;
@@ -62,7 +63,8 @@ namespace DD4hep {
        *  \version 1.0
        *  \ingroup DD4HEP_GEOMETRY
        */
-      struct GeometryInfo: public GeoHandler::GeometryInfo {
+      class GeometryInfo: public GeoHandler::GeometryInfo {
+      public:
         ElementMap xmlElements;
         MaterialMap xmlMaterials;
         SolidMap xmlSolids;

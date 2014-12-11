@@ -167,7 +167,8 @@ DocumentHandler::~DocumentHandler() {
 static string uri(Handle_t base, const XMLCh* fname)   {
   xercesc::DOMElement* e = (xercesc::DOMElement*) base.ptr();
   xercesc::XMLURL base_url(e->getBaseURI());
-  xercesc::XMLURL ref_url(base_url, fname);
+  string bbb = _toString(fname);
+  xercesc::XMLURL ref_url(base_url, Strng_t(bbb));
   return _toString(ref_url.getURLText());
 }
 
@@ -176,7 +177,7 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname) const {
   return load(path);
 }
 
-Document DocumentHandler::load(const string& fname) const {
+Document DocumentHandler::load(const std::string& fname) const {
   printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   XMLURL xerurl = (const XMLCh*) Strng_t(fname);
   string path = _toString(xerurl.getPath());
@@ -307,7 +308,7 @@ Document DocumentHandler::load(Handle_t base, const XmlChar* fname) const {
   return load(fname);
 }
 
-Document DocumentHandler::load(const string& fname) const {
+Document DocumentHandler::load(const std::string& fname) const {
   printout(INFO,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   TiXmlDocument* doc = new TiXmlDocument(_clean_fname(fname).c_str());
   bool result = false;

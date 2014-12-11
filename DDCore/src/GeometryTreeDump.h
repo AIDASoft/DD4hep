@@ -29,7 +29,8 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
      */
-    struct GeometryTreeDump: public GeoHandler {
+    class GeometryTreeDump: public GeoHandler {
+    public:
       GeometryTreeDump() {
       }
       /// Standard destructor

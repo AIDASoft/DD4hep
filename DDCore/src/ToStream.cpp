@@ -21,28 +21,27 @@ namespace {
   XmlTools::Evaluator& eval(DD4hep::g4Evaluator());
 }
 
-using namespace std;
 //==============================================================================
 namespace DD4hep {  namespace Parsers {
-    template <typename T> T evaluate_string(const string& /* value */)   {
+    template <typename T> T evaluate_string(const std::string& /* value */)   {
       throw "Bad undefined call";
     }
 
-    template <> double evaluate_string<double>(const string& value)   {
+    template <> double evaluate_string<double>(const std::string& value)   {
       double result = eval.evaluate(value.c_str());
       if (eval.status() != XmlTools::Evaluator::OK) {
-	cerr << value << ": ";
+	std::cerr << value << ": ";
 	eval.print_error();
-	throw runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
+	throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
       }
       return result;
     }
-    template <> float evaluate_string<float>(const string& value)   {
+    template <> float evaluate_string<float>(const std::string& value)   {
       double result = eval.evaluate(value.c_str());
       if (eval.status() != XmlTools::Evaluator::OK) {
-	cerr << value << ": ";
+	std::cerr << value << ": ";
 	eval.print_error();
-	throw runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
+	throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
       }
       return (float) result;
     }
@@ -51,7 +50,7 @@ namespace DD4hep {  namespace Parsers {
 
 // ============================================================================
 // print XYZ-point
-ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZPoint&  obj, ostream& s)  {
+std::ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZPoint&  obj, std::ostream& s)  {
   s << "( ";
   toStream(obj.X () , s );
   s << " , ";
@@ -63,7 +62,7 @@ ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZPoint&  obj, ostream& s)  
 }
 // ============================================================================
 // print XYZ-vector
-ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZVector& obj, ostream& s)  {
+std::ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZVector& obj, std::ostream& s)  {
   s << "( ";
   toStream(obj.X () , s );
   s << " , ";
@@ -75,7 +74,7 @@ ostream& DD4hep::Utils::toStream(const ROOT::Math::XYZVector& obj, ostream& s)  
 }
 // ============================================================================
 // print LorentzVector
-ostream& DD4hep::Utils::toStream(const ROOT::Math::PxPyPzEVector& obj, ostream& s){
+std::ostream& DD4hep::Utils::toStream(const ROOT::Math::PxPyPzEVector& obj, std::ostream& s){
   s << "( ";
   toStream(obj.Px () , s , 12 );
   s << " , ";

@@ -15,7 +15,9 @@
 #include <stdexcept>
 
 // ROOT includes
+#include "TClass.h"
 #include "TGeoShape.h"
+#include "TGeoHype.h"
 #include "TGeoPcon.h"
 #include "TGeoPgon.h"
 #include "TGeoTube.h"
@@ -32,6 +34,111 @@
 
 using namespace std;
 using namespace DD4hep::Geometry;
+
+/// Pretty print of solid attributes
+std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precision)   {
+  stringstream log;
+
+  if ( !shape )  {
+    return "[Invalid shape]";
+  }
+
+  TClass* cl = shape->IsA();
+  int prec = log.precision();
+  log.setf(ios::fixed,ios::floatfield);
+  log << setprecision(precision);
+  log << cl->GetName();
+  if ( cl == TGeoBBox::Class() )   {
+    TGeoBBox* s = (TGeoBBox*) shape;
+    log << " x:" << s->GetDX() 
+	<< " y:" << s->GetDY()
+	<< " z:" << s->GetDZ();
+  }
+  else if (cl == TGeoTube::Class()) {
+    const TGeoTube* s = (const TGeoTube*) shape;
+    log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax() << " dz:" << s->GetDz();
+  }
+  else if (cl == TGeoTubeSeg::Class()) {
+    const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
+    log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax() << " dz:" << s->GetDz() 
+	<< " Phi1:" << s->GetPhi1() << " Phi2:" << s->GetPhi2();
+  }
+  else if (cl == TGeoTrd1::Class()) {
+    const TGeoTrd1* s = (const TGeoTrd1*) shape;
+    log << " x1:" << s->GetDx1() << " x2:" << s->GetDx2() << " y:" << s->GetDy() << " z:" << s->GetDz();
+  }
+  else if (cl == TGeoTrd2::Class()) {
+    const TGeoTrd2* s = (const TGeoTrd2*) shape;
+    log << " x1:" << s->GetDx1() << " x2:" << s->GetDx2() 
+	<< " y1:" << s->GetDy1() << " y2:" << s->GetDy2() << " z:" << s->GetDz();
+  }
+  else if (cl == TGeoHype::Class()) {
+    const TGeoHype* s = (const TGeoHype*) shape;
+    log << " rmin:" << s->GetRmin() << " rmax:"  << s->GetRmax() << " dz:" << s->GetDz() 
+	<< " StIn:" << s->GetStIn() << " StOut:" << s->GetStOut();
+  }
+  else if (cl == TGeoPgon::Class()) {
+    const TGeoPgon* s = (const TGeoPgon*) shape;
+    log << " Phi1:"   << s->GetPhi1()   << " dPhi:" << s->GetDphi() 
+	<< " NEdges:" << s->GetNedges() << " Nz:" << s->GetNz();
+    for(int i=0, n=s->GetNz(); i<n; ++i)  {
+      log << " i=" << i << " z:" << s->GetZ(i) 
+	  << " r:[" << s->GetRmin(i) << "," << s->GetRmax(i) << "]";
+    }
+  }
+  else if (cl == TGeoPcon::Class()) {
+    const TGeoPcon* s = (const TGeoPcon*) shape;
+    log << " Phi1:" << s->GetPhi1() << " dPhi:" << s->GetDphi() << " Nz:" << s->GetNz();
+    for(int i=0, n=s->GetNz(); i<n; ++i)  {
+      log << " i=" << i << " z:" << s->GetZ(i) 
+	  << " r:[" << s->GetRmin(i) << "," << s->GetRmax(i) << "]";
+    }
+  }
+  else if (cl == TGeoConeSeg::Class()) {
+    const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
+    log << " rmin1:" << s->GetRmin1() << " rmax1:" << s->GetRmax1()
+	<< " rmin2:" << s->GetRmin2() << " rmax2:" << s->GetRmax2()
+	<< " dz:"    << s->GetDz() 
+	<< " Phi1:"  << s->GetPhi1() << " Phi2:" << s->GetPhi2();
+  }
+  else if (cl == TGeoParaboloid::Class()) {
+    const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
+    log << " dz:" << s->GetDz() << " RLo:" << s->GetRlo() << " Rhi:" << s->GetRhi();
+  }
+  else if (cl == TGeoSphere::Class()) {
+    const TGeoSphere* s = (const TGeoSphere*) shape;
+    log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax()
+	<< " Phi1:" << s->GetPhi1() << " Phi2:" << s->GetPhi2()
+	<< " Theta1:" << s->GetTheta1() << " Theta2:" << s->GetTheta2();
+  }
+  else if (cl == TGeoTorus::Class()) {
+    const TGeoTorus* s = (const TGeoTorus*) shape;
+    log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax() << " r:" << s->GetR()
+	<< " Phi1:" << s->GetPhi1() << " dPhi:" << s->GetDphi();
+  }
+  else if (cl == TGeoTrap::Class()) {
+    const TGeoTrap* s = (const TGeoTrap*) shape;
+    log << " dz:" << s->GetDz() << " Theta:" << s->GetTheta() << " Phi:" << s->GetPhi()
+	<< " H1:" << s->GetH1() << " Bl1:"   << s->GetBl1()   << " Tl1:" << s->GetTl1() << " Alpha1:" << s->GetAlpha1()
+	<< " H2:" << s->GetH2() << " Bl2:"   << s->GetBl2()   << " Tl2:" << s->GetTl2() << " Alpha2:" << s->GetAlpha2();
+  }
+  else if (shape->IsA() == TGeoCompositeShape::Class()) {
+    const TGeoCompositeShape* s = (const TGeoCompositeShape*) shape;
+    const TGeoBoolNode* boolean = s->GetBoolNode();
+    const TGeoShape* left = boolean->GetLeftShape();
+    const TGeoShape* right = boolean->GetRightShape();
+    TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
+    if (oper == TGeoBoolNode::kGeoSubtraction)
+      log << "Subtraction: ";
+    else if (oper == TGeoBoolNode::kGeoUnion)
+      log << "Union: ";
+    else if (oper == TGeoBoolNode::kGeoIntersection)
+      log << "Intersection: ";
+    log << " Left:" << toStringSolid(left) << " Right:" << toStringSolid(right);
+  }
+  log << setprecision(prec);
+  return log.str();
+}
 
 template <typename T> void Solid_type<T>::_setDimensions(double* param) {
   this->ptr()->SetDimensions(param);

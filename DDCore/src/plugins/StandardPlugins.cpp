@@ -259,3 +259,6 @@ static long exec_SimpleGDMLWriter(LCDD& lcdd, int argc, char** argv) {
 
 DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
 
+#include "DD4hep/SurfaceInstaller.h"
+typedef SurfaceInstaller TestSurfacesPlugin;
+DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)

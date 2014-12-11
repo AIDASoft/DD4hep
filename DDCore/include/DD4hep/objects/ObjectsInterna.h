@@ -52,6 +52,28 @@ namespace DD4hep {
       HeaderObject& operator=(const HeaderObject&) { return *this; }
     };
 
+    /// Concrete object implementation for the Constant handle
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_GEOMETRY
+     */
+    class ConstantObject: public NamedObject {
+    public:
+      /// Constant type
+      std::string m_type;
+      /// Standard constructor
+      ConstantObject(const std::string& nam, const std::string& val, const std::string& typ);
+      /// Default destructor
+      virtual ~ConstantObject();
+    private:
+      /// Private copy constructor
+      ConstantObject(const ConstantObject&) : NamedObject() {}
+      /// Private assignment operator
+      ConstantObject& operator=(const ConstantObject&) { return *this; }
+    };
+
     /// Concrete object implementation of the VisAttr Handle
     /**
      *

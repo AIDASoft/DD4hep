@@ -82,7 +82,7 @@ namespace DD4hep {
      *   \version 1.0
      *   \ingroup DD4HEP_GEOMETRY
      */
-    struct Segmentation: public Handle<SegmentationObject> {
+    class Segmentation: public Handle<SegmentationObject> {
     public:
       typedef SegmentationObject Object;
       typedef DDSegmentation::Segmentation BaseSegmentation;

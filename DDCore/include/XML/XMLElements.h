@@ -124,6 +124,8 @@ namespace DD4hep {
     void _toDictionary(const XmlChar* name, float  value);
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
     void _toDictionary(const XmlChar* name, double value);
+    /// Helper function to lookup environment from the expression evaluator
+    std::string getEnviron(const std::string& env);
 
     /// Conversion function from raw unicode string to bool  \ingroup DD4HEP_XML
     bool _toBool(const XmlChar* value);

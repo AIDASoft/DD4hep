@@ -22,7 +22,7 @@
 #include "Math/Vector4D.h"
 
 // ============================================================================
-/** @file DD4hepKernel/ToStream.h
+/** @file DD4hep/ToStream.h
  *  implemenattiono fvarioud functions for streaming.
  *  this functionality is essenital for usag eof varuodu types as property for
  *  the various DD4hep components

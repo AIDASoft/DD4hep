@@ -6,11 +6,13 @@
 //  Author     : M.Frank
 //
 //====================================================================
+#include "DD4hep/Shapes.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/SurfaceInstaller.h"
 
 // C/C++ include files
 #include <stdexcept>
+// ROOT includes
 #include "TClass.h"
 
 using namespace std;
@@ -79,26 +81,30 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
     printout(INFO,m_det.name(),log.str());
     log.str("");
     log << "       " << " Matrices[" <<  all_nodes.size()  << "]: ";
-    log << pv->GetVolume()->GetShape()->IsA()->GetName() << " ";
     for(PlacementPath::const_reverse_iterator i=all_nodes.rbegin(); i!=all_nodes.rend(); ++i)  {
-      log << (void*)((*i)->GetMatrix()) << "  ";
-      if ( i+1 == all_nodes.rend() ) log << "( -> " << (*i)->GetName() << ")";
+      PlacedVolume placed = *i;
+      log << (void*)(placed->GetMatrix()) << " ";
+      if ( placed->GetUserExtension() )  {
+	const PlacedVolume::VolIDs& vid = placed.volIDs();
+	for(PlacedVolume::VolIDs::const_iterator j=vid.begin(); j!=vid.end(); ++j)  {
+	  log << (*j).first << ":" << (*j).second << " ";
+	}
+      }
+      log << " ";
+      if ( i+1 == all_nodes.rend() ) log << "( -> " << placed->GetName() << ")";
     }
     // Get the module element:
-    TClass* cl = pv->GetVolume()->GetShape()->IsA();
     printout(INFO,m_det.name(),log.str());
     log.str("");
+    Volume vol = pv.volume();
     log << "       "
-	<< " Sensitive:" << (pv.volume().isSensitive() ? "YES" : "NO ") 
-	<< " Shape: " << cl->GetName();
-    TGeoBBox* box = (TGeoBBox*)pv.volume()->GetShape();
-    if ( cl == TGeoBBox::Class() )   {
-      log << " ["  << (void*)box << "]"
-	  << " x:" << box->GetDX() 
-	  << " y:" << box->GetDY()
-	  << " z:" << box->GetDZ();
-    }
+	<< " Sensitive:   " << (vol.isSensitive() ? "YES" : "NO ") 
+	<< " Volume: " << (void*)vol.ptr() << " "
+	<< " Shape: "  << vol.solid().toString();
+    printout(INFO,m_det.name(),log.str());
+    return;
   }
+  cout << component.name() << ": " << pv.name() << endl;
 }
 
 /// Scan through tree of volume placements
@@ -114,5 +120,3 @@ void SurfaceInstaller::scan()  {
   scan(m_det);
 }
 
-typedef DD4hep::SurfaceInstaller TestSurfacesPlugin;
-DECLARE_SURFACE_INSTALLER(TestSurfaces,TestSurfacesPlugin)
