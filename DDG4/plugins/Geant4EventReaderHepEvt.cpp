@@ -52,11 +52,13 @@ namespace DD4hep {
 //====================================================================
 // #include "DDG4/Geant4EventReaderHepEvt"
 
+// Framework include files
 #include "DDG4/Factories.h"
 #include "DD4hep/Printout.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
 
+// C/C++ include files
 #include <cerrno>
 
 using namespace std;
@@ -65,7 +67,9 @@ using namespace DD4hep::Simulation;
 typedef DD4hep::ReferenceBitMask<int> PropertyMask;
 
 #define HEPEvtShort 1
-#define HEPEvtLong 2
+#define HEPEvtLong  2
+
+// Local declarations in anaonymous namespace
 namespace {
   class Geant4EventReaderHepEvtShort : public Geant4EventReaderHepEvt  {
   public:

@@ -24,7 +24,9 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 typedef DD4hep::Geometry::LCDD lcdd_t;
 
+/// Local declaration in anonymous namespace
 namespace {
+
   struct Geant4FieldSetup;
   struct Geant4SetupPropertyMap {
     const map<string,string>& vals;

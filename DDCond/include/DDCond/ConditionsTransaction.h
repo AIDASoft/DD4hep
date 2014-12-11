@@ -31,7 +31,9 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup  DD4HEP_CONDITIONS
      */
-    struct ConditionsTransaction {
+    class ConditionsTransaction {
+    public:
+
       /// Internal flag to remember transaction contexts
       bool flag;
       /// Reference to the current LCDD instance

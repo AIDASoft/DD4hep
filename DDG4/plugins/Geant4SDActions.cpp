@@ -22,7 +22,10 @@ using namespace std;
 #include "G4VProcess.hh"
 
 
+/// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation   {
 
     typedef Geant4HitData::Contribution HitContribution;
@@ -229,6 +232,7 @@ namespace DD4hep {
 	cell = 0;
       }
 
+      /// Helper function to decide if the hit has to be extracted and saved in the collection
       bool mustSaveTrack(const G4Track* tr)  const   {
 	return current > 0 && current != tr->GetTrackID();
       }

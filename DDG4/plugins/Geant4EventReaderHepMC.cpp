@@ -56,12 +56,14 @@ namespace DD4hep {
 //====================================================================
 // #include "DDG4/Geant4EventReaderHepMC"
 
+// Framework include files
 #include "DDG4/Factories.h"
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4Primary.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 #include "CLHEP/Units/PhysicalConstants.h"
 
+// C/C++ include files
 #include <cerrno>
 #include <algorithm>
 
