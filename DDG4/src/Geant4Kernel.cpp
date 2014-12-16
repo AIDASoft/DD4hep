@@ -179,22 +179,23 @@ void Geant4Kernel::loadGeometry(const std::string& compact_file) {
 void Geant4Kernel::loadXML(const char* fname) {
   const char* args[] = { fname, 0 };
   m_lcdd.apply("DD4hepXMLLoader", 1, (char**) args);
-  //return *this;
 }
 
 void Geant4Kernel::configure() {
   Geant4Exec::configure(*this);
-  //return *this;
 }
 
 void Geant4Kernel::initialize() {
   Geant4Exec::initialize(*this);
-  //return *this;
 }
 
 void Geant4Kernel::run() {
   Geant4Exec::run(*this);
-  //return *this;
+}
+
+void Geant4Kernel::runEvents(int num_events) {
+  m_numEvent = num_events;
+  Geant4Exec::run(*this);
 }
 
 void Geant4Kernel::terminate() {

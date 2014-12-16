@@ -20,8 +20,19 @@
 using namespace DD4hep::Simulation;
 
 /// Default constructor. Takes the step's pre-touchable
+Geant4TouchableHandler::Geant4TouchableHandler(const G4Step* step, bool use_post_step_point)  {
+  const G4StepPoint* p = use_post_step_point ? step->GetPostStepPoint() : step->GetPreStepPoint();
+  touchable = p->GetTouchable();
+}
+
+/// Default constructor. Takes the step's pre-touchable
 Geant4TouchableHandler::Geant4TouchableHandler(const G4Step* step)  {
   touchable = step->GetPreStepPoint()->GetTouchable();
+}
+
+/// Touchable history depth
+int Geant4TouchableHandler::depth() const   {
+  return touchable->GetHistoryDepth();
 }
 
 /// Helper: Generate placement path from touchable object

@@ -1,4 +1,4 @@
-// $Id: Geant4Field.cpp 513 2013-04-05 14:31:53Z gaede $
+// $Id: $
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
@@ -12,6 +12,7 @@
 #include "DDG4/Geant4SensDetAction.h"
 #endif
 #include "DD4hep/InstanceCount.h"
+#include "DDG4/Geant4Data.h"
 
 namespace DD4hep {
   namespace Simulation   {
@@ -63,5 +64,13 @@ namespace DD4hep {
       Geant4Sensitive::clear(hce);
     }
 
+    // Forward declarations
+    typedef Geant4HitData::Contribution HitContribution;
   }
 }
+
+
+#include "DD4hep/Printout.h"
+#include "DDG4/Geant4TouchableHandler.h"
+#include "DDG4/Geant4StepHandler.h"
+#include "DDG4/Geant4VolumeManager.h"

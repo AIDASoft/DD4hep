@@ -101,7 +101,7 @@ namespace DD4hep {
     /// Default destructor
     inline  Geant4HitData::~Geant4HitData()  {    }
     /// Extract the MC contribution for a given hit from the step information
-    inline Geant4HitData::Contribution Geant4HitData::extractContribution(G4Step*) { return Contribution(); }
+    inline Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step*) { return Contribution(); }
     /// Default constructor
     inline Geant4Tracker::Hit::Hit()   {    }
     /// Initializing constructor
@@ -113,7 +113,7 @@ namespace DD4hep {
     /// Clear hit content
     inline Geant4Tracker::Hit& Geant4Tracker::Hit::clear()    { return *this; }
     /// Store Geant4 point and step information into tracker hit structure.
-    inline Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(G4Step*, G4StepPoint*)  { return *this;}
+    inline Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step*, const G4StepPoint*)  { return *this;}
     /// Default constructor
     inline Geant4Calorimeter::Hit::Hit()   {    }
     /// Initializing constructor

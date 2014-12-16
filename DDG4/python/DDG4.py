@@ -57,7 +57,7 @@ def importConstants(lcdd,namespace=None,debug=False):
   todo = {}
   strings = {}
   for c in lcdd.constants():
-    if c.second.dataType != 'string':
+    if c.second.dataType == 'string':
       strings[c.first] = c.second.GetTitle()
     else:
       todo[c.first] = c.second.GetTitle().replace('(int)','')
@@ -240,11 +240,9 @@ class Simple:
     if kernel is None:
       self.kernel = Kernel()
     self.lcdd = self.kernel.lcdd()
-    self.calo = calo
-    self.tracker = tracker
     self.sensitive_types = {}
-    self.sensitive_types['tracker'] = self.tracker
-    self.sensitive_types['calorimeter'] = self.calo
+    self.sensitive_types['tracker'] = tracker
+    self.sensitive_types['calorimeter'] = calo
 
   def execute(self):
     self.kernel.configure()
@@ -276,13 +274,13 @@ class Simple:
   def setupCalorimeter(self,name,type=None):
     sd = self.lcdd.sensitiveDetector(name)
     sd.setType('calorimeter')
-    if type is None: type = self.calo
+    if type is None: type = self.sensitive_types['calorimeter']
     return self.setupDetector(name,type)
 
   def setupTracker(self,name,type=None):
     sd = self.lcdd.sensitiveDetector(name)
     sd.setType('tracker')
-    if type is None: type = self.tracker
+    if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type)
 
   def setupPhysics(self,name):

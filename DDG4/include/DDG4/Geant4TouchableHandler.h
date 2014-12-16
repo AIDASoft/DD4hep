@@ -40,20 +40,23 @@ namespace DD4hep {
     public:
       
       typedef std::vector<const G4VPhysicalVolume*> Geant4PlacementPath;
-
+      /// Data member of the helper objects
       const G4VTouchable* touchable;
 
       /// Default constructor.
       Geant4TouchableHandler(const G4VTouchable* t) : touchable(t) {}
       /// Default constructor. Takes the step's pre-touchable
       Geant4TouchableHandler(const G4Step* step);
+      /// Default constructor. Takes the step's pre-touchable
+      Geant4TouchableHandler(const G4Step* step, bool use_post_step_point);
 
       /// Helper: Generate placement path from touchable object
       Geant4PlacementPath placementPath(bool exception=false) const;
 
       /// Helper: Access the placement path of a Geant4 touchable object as a string
       std::string path()  const;
-
+      /// Touchable history depth
+      int depth() const;
     };
 
   }    // End namespace Simulation

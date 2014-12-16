@@ -330,18 +330,22 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
       }
       if (m->IsMixture()) {
         double A_total = 0.0;
+        double W_total = 0.0;
         TGeoMixture* mix = (TGeoMixture*) m;
         int nElements = mix->GetNelements();
         mat = new G4Material(name, density, nElements, state, m->GetTemperature(), m->GetPressure());
-        for (int i = 0; i < nElements; ++i)
+        for (int i = 0; i < nElements; ++i)  {
           A_total += (mix->GetAmixt())[i];
+          W_total += (mix->GetWmixt())[i];
+	}
         for (int i = 0; i < nElements; ++i) {
           TGeoElement* e = mix->GetElement(i);
           G4Element* g4e = (G4Element*) handleElement(e->GetName(), Atom(e));
           if (!g4e) {
             printout(ERROR, "Material", "Missing component %s for material %s.", e->GetName(), mix->GetName());
           }
-          mat->AddElement(g4e, (mix->GetAmixt())[i] / A_total);
+          //mat->AddElement(g4e, (mix->GetAmixt())[i] / A_total);
+          mat->AddElement(g4e, (mix->GetWmixt())[i] / W_total);
         }
       }
       else {

@@ -1,4 +1,4 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
+// $Id: $
 //====================================================================
 //  AIDA Detector description implementation
 //--------------------------------------------------------------------
@@ -289,11 +289,18 @@ namespace DD4hep {
       }
       /// Construct detector geometry using lcdd plugin
       void loadGeometry(const std::string& compact_file);
-      /// Run the simulation
+
+      /// Run the simulation: Configure Geant4
       void configure();
+      /// Run the simulation: Initialize Geant4
       void initialize();
+      /// Run the simulation: Simulate the number of events given by the property "NumEvents"
       void run();
+      /// Run the simulation: Simulate the number of events "num_events" and modify the property "NumEvents"
+      void runEvents(int num_events);
+      /// Run the simulation: Terminate Geant4
       void terminate();
+      /// Load XML file 
       void loadXML(const char* fname);
     };
     /// Declare property

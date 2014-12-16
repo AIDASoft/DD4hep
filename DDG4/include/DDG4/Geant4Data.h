@@ -178,7 +178,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4HitData();
       /// Extract the MC contribution for a given hit from the step information
-      static Contribution extractContribution(G4Step* step);
+      static Contribution extractContribution(const G4Step* step);
     };
 
     /// Helper class to define structures used by the generic DDG4 tracker sensitive detector
@@ -221,7 +221,7 @@ namespace DD4hep {
         /// Clear hit content
         Hit& clear();
         /// Store Geant4 point and step information into tracker hit structure.
-        Hit& storePoint(G4Step* step, G4StepPoint* point);
+        Hit& storePoint(const G4Step* step, const G4StepPoint* point);
       };
     };
 

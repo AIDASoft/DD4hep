@@ -48,7 +48,7 @@ def run():
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of primary particles from LCIO input files
-  """
+
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
@@ -67,8 +67,11 @@ def run():
   gen.Mask = 1
   simple.buildInputStage([gen],output_level=generator_output_level)
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  #gen = simple.setupGun("Gun",particle='pi+',energy=20*GeV,position=(0.15*mm,0.12*mm,50*cm))
-  #gen.OutputLevel = generator_output_level
+  """
+  gen = simple.setupGun("Gun",particle='geantino',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
+  gen.isotrop = False
+  gen.direction = (1,0,0)
+  gen.OutputLevel = generator_output_level
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -112,7 +115,11 @@ def run():
   seq,act = simple.setupCalorimeter('MuonEndcap')
   seq,act = simple.setupCalorimeter('LumiCal')
   seq,act = simple.setupCalorimeter('BeamCal')
+
   """
+
+  scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
+  kernel.steppingAction().adopt(scan)
 
   # Now build the physics list:
   phys = simple.setupPhysics('QGSP_BERT')
@@ -128,6 +135,7 @@ def run():
 
   #DDG4.setPrintLevel(Output.DEBUG)
   kernel.run()
+  print 'End of run. Terminating .......'
   kernel.terminate()
 
 if __name__ == "__main__":

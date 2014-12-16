@@ -60,7 +60,7 @@ Geant4HitData::~Geant4HitData() {
 }
 
 /// Extract the MC contribution for a given hit from the step information
-Geant4HitData::Contribution Geant4HitData::extractContribution(G4Step* step) {
+Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* step) {
   Geant4StepHandler h(step);
   double deposit =
     (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
@@ -109,7 +109,7 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::clear() {
 }
 
 /// Store Geant4 point and step information into tracker hit structure.
-Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(G4Step* step, G4StepPoint* pnt) {
+Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step* step, const G4StepPoint* pnt) {
   G4Track* trk = step->GetTrack();
   G4ThreeVector pos = pnt->GetPosition();
   G4ThreeVector mom = pnt->GetMomentum();

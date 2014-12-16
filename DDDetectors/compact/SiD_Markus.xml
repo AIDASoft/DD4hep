@@ -228,16 +228,16 @@
   <!-- include ref="SiD/SiD_TrackerBarrel.xml" -->
 
   <comment>Tracking detectors</comment>
-   <include ref="${SiD_dir}/SiD_Tracker.xml"/>
+  <include ref="${SiD_dir}/SiD_Tracker.xml"/>
+
+  <include ref="SiD/SiD_Ecal.xml"/>
+<!--
    <plugins>
     <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
       <argument value="SiTrackerBarrel"/>
     </plugin>
   </plugins>
 
-<!--
-
-  <include ref="SiD/SiD_Ecal.xml"/>
   <plugins>
     <plugin name="TestSurfaces"><argument value="EcalEndcap"/></plugin>
     <plugin name="DD4hep_PolyhedraEndcapCalorimeterSurfacePlugin"><argument value="EcalEndcap"/></plugin>
