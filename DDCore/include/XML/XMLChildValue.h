@@ -15,7 +15,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
 
     /// XML Handle to xml elements with predefined child access
@@ -53,16 +53,16 @@ namespace DD4hep {
      */
     struct ChildValue: public Element {
       /// Default constructor
-      ChildValue()
-          : Element(Handle_t(0)) {
+    ChildValue()
+      : Element(Handle_t(0)) {
       }
       /// Constructor from Handle
-      ChildValue(Handle_t e)
-          : Element(e) {
+    ChildValue(Handle_t e)
+      : Element(e) {
       }
       /// Constructor from Element
-      ChildValue(const Element& e)
-          : Element(e) {
+    ChildValue(const Element& e)
+      : Element(e) {
       }
 
       /// Access parameters: id

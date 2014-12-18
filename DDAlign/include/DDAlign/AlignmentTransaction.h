@@ -38,7 +38,7 @@ namespace DD4hep {
       LCDD& lcdd;
       /// Reference to the alignment cache
       AlignmentCache* m_cache;
-      
+
       /// Default constructor
       AlignmentTransaction(LCDD& l, const XML::Handle_t& e);
       /// Default destructor

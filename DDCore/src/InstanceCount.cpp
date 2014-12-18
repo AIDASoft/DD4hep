@@ -92,33 +92,33 @@ InstanceCount::Counter* InstanceCount::getCounter(const std::string& typ) {
 
 /// Increment count according to string information
 void InstanceCount::increment(const std::string& typ) {
-  if ( s_global ) 
+  if ( s_global )
     getCounter(typ)->increment();
-  else 
+  else
     on_exit_destructors();
 }
 
 /// Decrement count according to string information
 void InstanceCount::decrement(const std::string& typ) {
-  if ( s_global ) 
+  if ( s_global )
     getCounter(typ)->decrement();
-  else 
+  else
     on_exit_destructors();
 }
 
 /// Increment count according to type information
 void InstanceCount::increment(const std::type_info& typ) {
-  if ( s_global ) 
+  if ( s_global )
     getCounter(typ)->increment();
-  else 
+  else
     on_exit_destructors();
 }
 
 /// Decrement count according to type information
 void InstanceCount::decrement(const std::type_info& typ) {
-  if ( s_global ) 
+  if ( s_global )
     getCounter(typ)->decrement();
-  else 
+  else
     on_exit_destructors();
 }
 
@@ -134,10 +134,10 @@ void InstanceCount::dump(int typ) {
       std::cout << "|   Total  |  Max | Leaking |      Type identifier                      |" << std::endl;
       std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
       for (i = s_strCounts->begin(); i != s_strCounts->end(); ++i) {
-        std::cout << "|" << std::setw(10) << (*i).second->total() 
-		  << "|" << std::setw(6) << (*i).second->maximum()
-		  << "|" << std::setw(9) << (*i).second->value() 
-		  << "|" << (*i).first << std::endl;
+        std::cout << "|" << std::setw(10) << (*i).second->total()
+                  << "|" << std::setw(6) << (*i).second->maximum()
+                  << "|" << std::setw(9) << (*i).second->value()
+                  << "|" << (*i).first << std::endl;
       }
       need_footer = true;
     }
@@ -151,10 +151,10 @@ void InstanceCount::dump(int typ) {
       std::cout << "|   Total  |  Max | Leaking |      Type identifier                      |" << std::endl;
       std::cout << "+----------+------+---------+-------------------------------------------+" << std::endl;
       for (i = s_typCounts->begin(); i != s_typCounts->end(); ++i) {
-        std::cout << "|" << std::setw(10) << (*i).second->total() 
-		  << "|" << std::setw(6) << (*i).second->maximum()
-		  << "|" << std::setw(9) << (*i).second->value() 
-		  << "|" << typeName(*((*i).first)) << std::endl;
+        std::cout << "|" << std::setw(10) << (*i).second->total()
+                  << "|" << std::setw(6) << (*i).second->maximum()
+                  << "|" << std::setw(9) << (*i).second->value()
+                  << "|" << typeName(*((*i).first)) << std::endl;
       }
       need_footer = true;
     }

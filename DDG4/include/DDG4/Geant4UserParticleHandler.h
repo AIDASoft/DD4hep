@@ -104,7 +104,7 @@ namespace DD4hep {
        *
        *  Note: This may override all other decisions!
        *        Default implementation is empty.
-       *  
+       *
        */
       virtual bool keepParticle(Particle& particle);
 

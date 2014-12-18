@@ -27,7 +27,7 @@ namespace DD4hep  {
     typedef SkipperGrammar<IteratorT> Skipper;
     // ========================================================================
     template<typename ResultT> inline int
-    parse_(ResultT& result, const std::string& input){
+      parse_(ResultT& result, const std::string& input){
       Skipper skipper;
       typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();
@@ -35,7 +35,7 @@ namespace DD4hep  {
     }
     //=========================================================================
     template<> inline int
-    parse_(std::string& result, const std::string& input){
+      parse_(std::string& result, const std::string& input){
       Skipper skipper;
       Grammar_<IteratorT, std::string, Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();

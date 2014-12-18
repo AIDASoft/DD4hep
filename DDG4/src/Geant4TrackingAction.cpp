@@ -29,7 +29,7 @@ class G4TouchableHistory;
 
 /// Standard constructor
 Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* context, const std::string& name)
-    : Geant4Action(context, name) {
+: Geant4Action(context, name) {
   m_needsControl = true;
   InstanceCount::increment(this);
 }
@@ -73,7 +73,7 @@ void Geant4TrackingActionSequence::end(const G4Track* track) {
 
 /// Standard constructor
 Geant4TrackingAction::Geant4TrackingAction(Geant4Context* context, const std::string& name)
-    : Geant4Action(context, name) {
+: Geant4Action(context, name) {
   InstanceCount::increment(this);
 }
 

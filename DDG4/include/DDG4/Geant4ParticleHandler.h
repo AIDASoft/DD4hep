@@ -34,16 +34,16 @@ namespace DD4hep {
      *  Extract the relevant particle information during the simulation step.
      *
      *  This procedure works as follows:
-     *  -- At the beginning of the event generation the object registers itself as 
+     *  -- At the beginning of the event generation the object registers itself as
      *    Monte-Carlo truth handler to the event context.
      *  -- At the begin of each track action a particle candidate is created and filled
      *     with all properties known at this time.
      *  -- At each stepping action a flag is set if the step produced secondaries.
      *  -- Sensitive detectors call the MC truth handler if a hit was created.
      *    This fact is remembered.
-     *  -- At the end of the tracking action a first decision is taken if the candidate is to be 
+     *  -- At the end of the tracking action a first decision is taken if the candidate is to be
      *    kept for the final record.
-     *  -- At the end of the event action finally all particles are reduced to the 
+     *  -- At the end of the event action finally all particles are reduced to the
      *    final record. This logic can be overridden by a user handler to be attached.
      *  .
      *  Any of these actions may be intercepted by a {\tt{Geant4UserParticleHandler}}
@@ -73,7 +73,7 @@ namespace DD4hep {
       typedef std::vector<std::string> Processes;
 
     protected:
-      
+
       /// Property: Steer printout at tracking action begin
       bool m_printStartTracking;
       /// Property: Steer printout at tracking action end
@@ -91,7 +91,7 @@ namespace DD4hep {
       Geant4UserParticleHandler* m_userHandler;
       /// Primary map
       Geant4PrimaryMap* m_primaryMap;
-      /// Local buffer about the 'current' G4Track 
+      /// Local buffer about the 'current' G4Track
       Particle m_currTrack;
       /// Map with stored MC Particles
       ParticleMap m_particleMap;
@@ -131,7 +131,7 @@ namespace DD4hep {
       virtual void begin(const G4Track* track);
       /// Post-track action callback
       virtual void end(const G4Track* track);
-    
+
       /// Mark a Geant4 track to be kept for later MC truth analysis. Default flag: CREATED_HIT
       virtual void mark(const G4Track* track);
       /// Store a track

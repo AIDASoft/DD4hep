@@ -35,12 +35,12 @@ namespace DD4hep {
     /// Deprecated: Example G4VSensitiveDetector implementation.
     /**  \deprecated
      * Deprecated class. Not supported by the DDG4 kernel.
-     * 
+     *
      * @author  M.Frank
      * @version 1.0
      */
     class Geant4SensitiveDetector : public G4VSensitiveDetector  {
-    public:      
+    public:
       typedef Geometry::SensitiveDetector  SensitiveDetector;
       typedef G4THitsCollection<Geant4Hit> HitCollection;
       typedef Geant4Hit::Contribution      HitContribution;
@@ -101,13 +101,13 @@ namespace DD4hep {
       //  from the current sensitive volume to the world volume
       long long getVolumeID(G4Step* step ) ;
 
-      /** G4VSensitiveDetector interface: Method invoked at the begining of each event. 
+      /** G4VSensitiveDetector interface: Method invoked at the begining of each event.
        *  The hits collection(s) created by this sensitive detector must
        *  be set to the G4HCofThisEvent object at one of these two methods.
        */
       virtual void Initialize(G4HCofThisEvent* HCE);
 
-      /// G4VSensitiveDetector interface: Method invoked at the end of each event. 
+      /// G4VSensitiveDetector interface: Method invoked at the end of each event.
       virtual void EndOfEvent(G4HCofThisEvent* HCE);
 
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
@@ -117,9 +117,9 @@ namespace DD4hep {
       virtual G4bool process(G4Step* step,G4TouchableHistory* history);
 
       /// G4VSensitiveDetector interface: Method invoked if the event was aborted.
-      /** Hits collections created but not beibg set to G4HCofThisEvent 
+      /** Hits collections created but not beibg set to G4HCofThisEvent
        *  at the event should be deleted.
-       *  Collection(s) which have already set to G4HCofThisEvent 
+       *  Collection(s) which have already set to G4HCofThisEvent
        *  will be deleted automatically.
        */
       virtual void clear();
@@ -135,26 +135,26 @@ namespace DD4hep {
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
       Geant4GenericSD(const std::string& name, LCDD& lcdd);
-      
+
       /// Initialize the sensitive detector for the usage of a single hit collection
       virtual bool defineCollection(const std::string& coll_name);
 
       /// Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* history);
 
-      /** Method invoked at the begining of each event. 
+      /** Method invoked at the begining of each event.
        *  The hits collection(s) created by this sensitive detector must
        *  be set to the G4HCofThisEvent object at one of these two methods.
        */
       virtual void Initialize(G4HCofThisEvent* HCE);
 
-      /// Method invoked at the end of each event. 
+      /// Method invoked at the end of each event.
       virtual void EndOfEvent(G4HCofThisEvent* HCE);
 
       ///  This method is invoked if the event abortion is occured.
-      /** Hits collections created but not beibg set to G4HCofThisEvent 
+      /** Hits collections created but not beibg set to G4HCofThisEvent
        *  at the event should be deleted.
-       *  Collection(s) which have already set to G4HCofThisEvent 
+       *  Collection(s) which have already set to G4HCofThisEvent
        *  will be deleted automatically.
        */
       virtual void clear();

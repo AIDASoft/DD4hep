@@ -24,7 +24,7 @@ using namespace std;
 
 /// Initializing constructor
 Geant4UIManager::Geant4UIManager(Geant4Context* context, const std::string& name)
-  : Geant4Action(context,name), m_vis(0), m_ui(0)
+: Geant4Action(context,name), m_vis(0), m_ui(0)
 {
   declareProperty("SetupUI", m_uiSetup="");
   declareProperty("SetupVIS", m_visSetup="");
@@ -51,7 +51,7 @@ G4UIExecutive* Geant4UIManager::startUI()   {
   G4UIExecutive* ui = 0;
   const char* args[] = {"DDG4","",""};
   printout(INFO,"Geant4UIManager","+++ Starting G4UIExecutive '%s' of type %s....",
-	   args[0], m_sessionType.c_str());
+           args[0], m_sessionType.c_str());
 
 #if (G4VERSION_NUMBER >= 960)
   ui = new G4UIExecutive(1,(char**)args,m_sessionType.c_str());

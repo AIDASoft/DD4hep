@@ -22,7 +22,7 @@ using namespace DD4hep::Geometry;
 typedef DetElement::Children _C;
 
 /// Initializing constructor
-SurfaceInstaller::SurfaceInstaller(LCDD& lcdd, const std::string& det_name) 
+SurfaceInstaller::SurfaceInstaller(LCDD& lcdd, const std::string& det_name)
   : m_lcdd(lcdd), m_det()
 {
   string n = det_name[0] == '-' ? det_name.substr(1) : det_name;
@@ -85,10 +85,10 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
       PlacedVolume placed = *i;
       log << (void*)(placed->GetMatrix()) << " ";
       if ( placed->GetUserExtension() )  {
-	const PlacedVolume::VolIDs& vid = placed.volIDs();
-	for(PlacedVolume::VolIDs::const_iterator j=vid.begin(); j!=vid.end(); ++j)  {
-	  log << (*j).first << ":" << (*j).second << " ";
-	}
+        const PlacedVolume::VolIDs& vid = placed.volIDs();
+        for(PlacedVolume::VolIDs::const_iterator j=vid.begin(); j!=vid.end(); ++j)  {
+          log << (*j).first << ":" << (*j).second << " ";
+        }
       }
       log << " ";
       if ( i+1 == all_nodes.rend() ) log << "( -> " << placed->GetName() << ")";
@@ -98,9 +98,9 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
     log.str("");
     Volume vol = pv.volume();
     log << "       "
-	<< " Sensitive:   " << (vol.isSensitive() ? "YES" : "NO ") 
-	<< " Volume: " << (void*)vol.ptr() << " "
-	<< " Shape: "  << vol.solid().toString();
+        << " Sensitive:   " << (vol.isSensitive() ? "YES" : "NO ")
+        << " Volume: " << (void*)vol.ptr() << " "
+        << " Shape: "  << vol.solid().toString();
     printout(INFO,m_det.name(),log.str());
     return;
   }
@@ -109,7 +109,7 @@ void SurfaceInstaller::install(DetElement component, PlacedVolume pv)   {
 
 /// Scan through tree of volume placements
 void SurfaceInstaller::scan(DetElement e)  {
-  const _C& children = e.children();  
+  const _C& children = e.children();
   install(e,e.placement());
   for (_C::const_iterator i=children.begin(); !m_stopScanning && i!=children.end(); ++i)
     scan((*i).second);

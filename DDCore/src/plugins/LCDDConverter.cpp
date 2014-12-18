@@ -78,8 +78,8 @@ namespace {
       c = 0;
     }
     XYZRotation rr(a, b, c);
-    cout << " X:" << a << " " << rr.X() << " Y:" << b << " " << rr.Y() << " Z:" << c << " " << rr.Z() 
-	 << " lx:" << r[0] << " ly:" << r[4] << " lz:" << r[8] << endl;
+    cout << " X:" << a << " " << rr.X() << " Y:" << b << " " << rr.Y() << " Z:" << c << " " << rr.Z()
+         << " lx:" << r[0] << " ly:" << r[4] << " lz:" << r[8] << endl;
     return XYZRotation(a, b, c);
   }
 #endif
@@ -105,7 +105,7 @@ void LCDDConverter::GeometryInfo::check(const string& name, const TNamed* n, map
 
 /// Initializing Constructor
 LCDDConverter::LCDDConverter(LCDD& lcdd)
-    : m_lcdd(lcdd), m_dataPtr(0) {
+  : m_lcdd(lcdd), m_dataPtr(0) {
 }
 
 LCDDConverter::~LCDDConverter() {
@@ -475,11 +475,11 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       }
 
       if ( oper == TGeoBoolNode::kGeoSubtraction )
-      solid = xml_elt_t(geo.doc,_U(subtraction));
+        solid = xml_elt_t(geo.doc,_U(subtraction));
       else if ( oper == TGeoBoolNode::kGeoUnion )
-      solid = xml_elt_t(geo.doc,_U(union));
+        solid = xml_elt_t(geo.doc,_U(union));
       else if ( oper == TGeoBoolNode::kGeoIntersection )
-      solid = xml_elt_t(geo.doc,_U(intersection));
+        solid = xml_elt_t(geo.doc,_U(intersection));
 
       xml_h obj;
       geo.doc_solids.append(solid);
@@ -750,8 +750,8 @@ xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const
       ::snprintf(text, sizeof(text), "_%p_rot", (void*)node.ptr());
       place.setRef(_U(positionref), pos.name());
       if ( m->IsRotation() )  {
-	xml_ref_t rot = handleRotation(name + text, m);
-	place.setRef(_U(rotationref), rot.name());
+        xml_ref_t rot = handleRotation(name + text, m);
+        place.setRef(_U(rotationref), rot.name());
       }
     }
     if (geo.doc_root.tag() != "gdml") {
@@ -823,20 +823,20 @@ xml_h LCDDConverter::handleSegmentation(Segmentation seg) const {
       const _P::value_type& v = *i;
       if (v->name() == "lunit") {
         string val = v->value() == _toDouble("mm") ? "mm" : v->value() == _toDouble("cm") ? "cm" :
-                     v->value() == _toDouble("m") ? "m" : v->value() == _toDouble("micron") ? "micron" :
-                     v->value() == _toDouble("nanometer") ? "namometer" : "??";
+          v->value() == _toDouble("m") ? "m" : v->value() == _toDouble("micron") ? "micron" :
+          v->value() == _toDouble("nanometer") ? "namometer" : "??";
         xml.setAttr(Unicode(v->name()), Unicode(val));
         continue;
       }
       // translate from TGeo units to Geant4 units if necessary
       if (v->unitType() == DDSegmentation::SegmentationParameter::LengthUnit) {
-    	  double value = _toDouble(v->value()) * CM_2_MM;
-    	  xml.setAttr(Unicode(v->name()), value);
+        double value = _toDouble(v->value()) * CM_2_MM;
+        xml.setAttr(Unicode(v->name()), value);
       } else if (v->unitType() == DDSegmentation::SegmentationParameter::AngleUnit) {
-    	  double value = _toDouble(v->value()) * DEGREE_2_RAD;
-    	  xml.setAttr(Unicode(v->name()), value);
+        double value = _toDouble(v->value()) * DEGREE_2_RAD;
+        xml.setAttr(Unicode(v->name()), value);
       } else {
-    	  xml.setAttr(Unicode(v->name()), v->value());
+        xml.setAttr(Unicode(v->name()), v->value());
       }
     }
   }
@@ -949,13 +949,13 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     field.setAttr(_U(name), f->GetName());
     fld = PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
     cout << "++ " << (fld.isValid() ? "Converted" : "FAILED    to convert ") << " electromagnetic field:" << f->GetName()
-        << " of type " << type << endl;
+         << " of type " << type << endl;
     if (!fld.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
       throw runtime_error(
-          "Failed to locate plugin to convert electromagnetic field:" + string(f->GetName()) + " of type " + type + ". "
-              + dbg.missingFactory(type));
+                          "Failed to locate plugin to convert electromagnetic field:" + string(f->GetName()) + " of type " + type + ". "
+                          + dbg.missingFactory(type));
     }
     geo.doc_fields.append(field);
   }
@@ -994,9 +994,9 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp) const {
       PluginDebug dbg;
       result = PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
       if (0 == result) {
-	throw runtime_error("Failed to locate plugin to interprete files of type"
-			    " \"" + tag + "\" - no factory:" + type + ". " + 
-			    dbg.missingFactory(tag));
+        throw runtime_error("Failed to locate plugin to interprete files of type"
+                            " \"" + tag + "\" - no factory:" + type + ". " +
+                            dbg.missingFactory(tag));
       }
     }
     result = *(long*) result;
@@ -1054,22 +1054,22 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
 
   cout << "++ ==> Converting in memory detector description to GDML format..." << endl;
   const char* comment = "\n"
-      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-      "      ++++   Linear collider detector description GDML in C++  ++++\n"
-      "      ++++   DD4hep Detector description generator.            ++++\n"
-      "      ++++                                                     ++++\n"
-      "      ++++   Parser:"
-  XML_IMPLEMENTATION_TYPE
-  "                ++++\n"
-      "      ++++                                                     ++++\n"
-      "      ++++                              M.Frank CERN/LHCb      ++++\n"
-      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   Linear collider detector description GDML in C++  ++++\n"
+    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
   geo.doc = docH.create("gdml", comment);
   geo.doc_root = geo.doc.root();
   geo.doc_root.setAttr(Unicode("xmlns:xs"), "http://www.w3.org/2001/XMLSchema-instance");
   geo.doc_root.setAttr(Unicode("xs:noNamespaceSchemaLocation"),
-      "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd");
+                       "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd");
   // geo.doc = docH.create("gdml_simple_extension",comment);
   // geo.doc_root.setAttr(Unicode("xmlns:gdml_simple_extension"),"http://www.example.org");
   // geo.doc_root.setAttr(Unicode("xs:noNamespaceSchemaLocation"),
@@ -1087,7 +1087,7 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
 #if 0
   const LCDD::HandleMap& mat = lcdd.materials();
   for(LCDD::HandleMap::const_iterator i=mat.begin(); i!=mat.end(); ++i)
-  geo.materials.insert(dynamic_cast<TGeoMedium*>((*i).second.ptr()));
+    geo.materials.insert(dynamic_cast<TGeoMedium*>((*i).second.ptr()));
 #endif
 
   // Start creating the objects for materials, solids and log volumes.
@@ -1119,16 +1119,16 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
   collect(top, geo);
   cout << "++ ==> Dump visualisation attributes from in memory detector description..." << endl;
   const char comment[] = "\n"
-      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-      "      ++++   Linear collider detector description LCDD in C++  ++++\n"
-      "      ++++   DD4hep Detector description generator.            ++++\n"
-      "      ++++                                                     ++++\n"
-      "      ++++   Parser:"
-  XML_IMPLEMENTATION_TYPE
-  "                ++++\n"
-      "      ++++                                                     ++++\n"
-      "      ++++                              M.Frank CERN/LHCb      ++++\n"
-      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   Linear collider detector description LCDD in C++  ++++\n"
+    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
   xml_elt_t elt(0);
   geo.doc = docH.create("visualization", comment);
@@ -1153,16 +1153,16 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   m_data->clear();
   collect(top, geo);
   const char comment[] = "\n"
-      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-      "      ++++   Linear collider detector description LCDD in C++  ++++\n"
-      "      ++++   DD4hep Detector description generator.            ++++\n"
-      "      ++++                                                     ++++\n"
-      "      ++++   Parser:"
-  XML_IMPLEMENTATION_TYPE
-  "                ++++\n"
-      "      ++++                                                     ++++\n"
-      "      ++++                              M.Frank CERN/LHCb      ++++\n"
-      "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+    "      ++++   Linear collider detector description LCDD in C++  ++++\n"
+    "      ++++   DD4hep Detector description generator.            ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++   Parser:"
+    XML_IMPLEMENTATION_TYPE
+    "                ++++\n"
+    "      ++++                                                     ++++\n"
+    "      ++++                              M.Frank CERN/LHCb      ++++\n"
+    "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
   xml_elt_t elt(0);
   geo.doc = docH.create("lcdd", comment);
@@ -1235,8 +1235,8 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
 
 /// Helper constructor
 LCDDConverter::GeometryInfo::GeometryInfo()
-    : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), doc_limits(0), doc_regions(0), doc_display(0), doc_gdml(
-        0), doc_fields(0), doc_define(0), doc_materials(0), doc_solids(0), doc_structure(0), doc_setup(0) {
+  : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), doc_limits(0), doc_regions(0), doc_display(0), doc_gdml(
+                                                                                                                                 0), doc_fields(0), doc_define(0), doc_materials(0), doc_solids(0), doc_structure(0), doc_setup(0) {
 }
 
 static long dump_output(xml_doc_t doc, int argc, char** argv) {
@@ -1275,9 +1275,9 @@ static long create_visASCII(LCDD& lcdd, int /* argc */, char** argv) {
     xml_comp_t vis = (*vis_map.find(ref.refStr())).second;
     xml_comp_t col = vis.child(_U(color));
     os << "vol:" << vol.nameStr() << sep << "vis:" << vis.nameStr() << sep << "visible:" << vis.visible() << sep << "r:"
-        << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep << "alpha:" << col.alpha() << sep << "line_style:"
-        << vis.attr < string > (_U(line_style)) << sep << "drawing_style:" << vis.attr < string
-        > (_U(drawing_style)) << sep << "show_daughters:" << vis.show_daughters() << sep << endl;
+       << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep << "alpha:" << col.alpha() << sep << "line_style:"
+       << vis.attr < string > (_U(line_style)) << sep << "drawing_style:" << vis.attr < string
+      > (_U(drawing_style)) << sep << "show_daughters:" << vis.show_daughters() << sep << endl;
   }
   os.close();
   return 1;

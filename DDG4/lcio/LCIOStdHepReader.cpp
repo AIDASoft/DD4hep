@@ -48,7 +48,7 @@ DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOStdHepReader)
 using namespace DD4hep::Simulation;
 
 /// Initializing constructor
-LCIOStdHepReader::LCIOStdHepReader(const std::string& nam) 
+LCIOStdHepReader::LCIOStdHepReader(const std::string& nam)
   : LCIOEventReader(nam)
 {
   m_reader = new UTIL::LCStdHepRdr(m_name.c_str());

@@ -39,8 +39,8 @@ bool Geant4Hit::isGeantino(G4Track* track) {
 Geant4Hit::Contribution Geant4Hit::extractContribution(G4Step* step) {
   G4Track* trk = step->GetTrack();
   double energy_deposit =
-      (trk->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) ?
-          trk->GetTotalEnergy() : step->GetTotalEnergyDeposit();
+    (trk->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()) ?
+    trk->GetTotalEnergy() : step->GetTotalEnergyDeposit();
   Contribution contrib(trk->GetTrackID(), trk->GetDefinition()->GetPDGEncoding(), energy_deposit, trk->GetGlobalTime());
   return contrib;
 }
@@ -49,12 +49,12 @@ static G4Allocator<Geant4TrackerHit> TrackerHitAllocator;
 
 /// Default constructor
 Geant4TrackerHit::Geant4TrackerHit()
-  : Geant4Hit(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
+: Geant4Hit(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
 }
 
 /// Standard initializing constructor
 Geant4TrackerHit::Geant4TrackerHit(int track_id, int pdg_id, double deposit, double time_stamp)
-    : Geant4Hit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
+: Geant4Hit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
 }
 
 /// Assignment operator
@@ -110,7 +110,7 @@ static G4Allocator<Geant4CalorimeterHit> CalorimeterHitAllocator;
 
 /// Standard constructor
 Geant4CalorimeterHit::Geant4CalorimeterHit(const Position& pos)
-    : Geant4Hit(), position(pos), truth(), energyDeposit(0) {
+: Geant4Hit(), position(pos), truth(), energyDeposit(0) {
 }
 
 /// Geant4 required object allocator

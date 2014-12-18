@@ -30,11 +30,11 @@ namespace DD4hep {
       ~SimulationHit()  {}
       /// Assignment operator
       SimulationHit& operator=(const SimulationHit& c)  {
-	if ( this != &c )  {
-	  position = c.position;
-	  deposit = c.deposit;
-	}
-	return *this;
+        if ( this != &c )  {
+          position = c.position;
+          deposit = c.deposit;
+        }
+        return *this;
       }
     };
   }
@@ -49,13 +49,13 @@ static void* _convertHitCollection(const char* source)  {
     for(std::vector<SimpleHit*>::const_iterator k=c->begin(); k!=c->end(); ++k)   {
       SimpleTracker::Hit* trh = dynamic_cast<SimpleTracker::Hit*>(*k);
       if ( trh )   {
-	pv->push_back(SimulationHit(trh->position, trh->energyDeposit));
-	continue;
+        pv->push_back(SimulationHit(trh->position, trh->energyDeposit));
+        continue;
       }
       SimpleCalorimeter::Hit* cah = dynamic_cast<SimpleCalorimeter::Hit*>(*k);
       if ( cah )   {
-	pv->push_back(SimulationHit(cah->position, cah->energyDeposit));
-	continue;
+        pv->push_back(SimulationHit(cah->position, cah->energyDeposit));
+        continue;
       }
     }
   }

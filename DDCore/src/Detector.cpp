@@ -121,7 +121,7 @@ Alignment DetElement::surveyAlignment() const  {
   return access()->survey;
 }
 
-/// Access to the conditions information 
+/// Access to the conditions information
 Conditions DetElement::conditions() const  {
   return access()->conditions;
 }
@@ -231,7 +231,7 @@ DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& name, const 
 }
 
 DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume, const string& region, const string& limits,
-    const string& vis) {
+                                      const string& vis) {
   return setRegion(lcdd, region, volume).setLimitSet(lcdd, limits, volume).setVisAttributes(lcdd, vis, volume);
 }
 
@@ -318,11 +318,11 @@ bool DetElement::referenceToLocal(const Position& global, Position& local) const
 /// Constructor
 SensitiveDetector::SensitiveDetector(const string& name, const string& type) {
   /*
-   <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
-   <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
-   <idspecref ref="EcalEndcapHits"/>
-   </calorimeter>
-   */
+    <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
+    <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
+    <idspecref ref="EcalEndcapHits"/>
+    </calorimeter>
+  */
   assign(new Object(name), name, type);
   object<Object>().ecut = 0e0;
   object<Object>().verbose = 0;

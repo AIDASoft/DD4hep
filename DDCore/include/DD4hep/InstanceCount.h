@@ -50,12 +50,12 @@ namespace DD4hep {
       counter_t m_max;
     public:
       /// Default constructor
-      Counter()
-	: m_count(0), m_tot(0), m_max(0) {
+    Counter()
+      : m_count(0), m_tot(0), m_max(0) {
       }
       /// Copy constructor
-      Counter(const Counter& c)
-	: m_count(c.m_count), m_tot(c.m_tot), m_max(c.m_max) {
+    Counter(const Counter& c)
+      : m_count(c.m_count), m_tot(c.m_tot), m_max(c.m_max) {
       }
       /// Destructor
       ~Counter() {
@@ -64,7 +64,7 @@ namespace DD4hep {
       void increment() {
         ++m_count;
         ++m_tot;
-	m_max = std::max(m_max,m_count);
+        m_max = std::max(m_max,m_count);
       }
       /// Decrement counter
       void decrement() {

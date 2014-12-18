@@ -28,10 +28,10 @@ namespace DD4hep {
       /// Default constructor
       VertexExtension() {}
       /// Default destructor
-      virtual ~VertexExtension();      
+      virtual ~VertexExtension();
     };
 
-    /// Data structure to store the MC vertex information 
+    /// Data structure to store the MC vertex information
     /**
      * @author  M.Frank
      * @version 1.0
@@ -50,7 +50,7 @@ namespace DD4hep {
       /// The list of incoming particles
       Particles in;
       /// User data extension if required
-      std::auto_ptr<VertexExtension> extension;  
+      std::auto_ptr<VertexExtension> extension;
 
       /// Default constructor
       Geant4Vertex();

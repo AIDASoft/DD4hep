@@ -23,8 +23,8 @@ NamedObject::NamedObject()  {
 }
 
 /// Initializing constructor
-NamedObject::NamedObject(const char* nam, const char* typ) 
-  : name(nam ? nam : ""), type(typ ? typ : "") 
+NamedObject::NamedObject(const char* nam, const char* typ)
+  : name(nam ? nam : ""), type(typ ? typ : "")
 {
 }
 

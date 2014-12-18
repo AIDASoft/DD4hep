@@ -60,13 +60,13 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
   vector<EVENT::MCParticle*>  mcpcoll;
   EventReaderStatus ret = EVENT_READER_OK;
 
-  if ( hasDirectAccess() )  
+  if ( hasDirectAccess() )
     ret = readParticles(event_number,&primaries);
   else if ( m_numEvent == event_number )
     ret = readParticles(event_number,&primaries);
   else
     ret = readParticles(event_number,&primaries);
-    //ret = EVENT_READER_NO_DIRECT;
+  //ret = EVENT_READER_NO_DIRECT;
 
   ++m_numEvent;
   if ( ret != EVENT_READER_OK ) return ret;
@@ -121,12 +121,12 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
 
     int genStatus = mcp->getGeneratorStatus();
     if ( genStatus == 0 ) status.set(G4PARTICLE_GEN_EMPTY);
-    else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
+    else if ( genStatus == 1 ) status.set(G4PARTICLE_GEN_STABLE);
     else if ( genStatus == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
     else if ( genStatus == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
-    else { 
-      cout << " #### WARNING - LCIOInputAction : unknown generator status : " 
-	   << genStatus << " -> ignored ! " << endl;
+    else {
+      cout << " #### WARNING - LCIOInputAction : unknown generator status : "
+           << genStatus << " -> ignored ! " << endl;
     }
     if ( mcp->isCreatedInSimulation() )       status.set(G4PARTICLE_SIM_CREATED);
     if ( mcp->isBackscatter() )               status.set(G4PARTICLE_SIM_BACKSCATTER);

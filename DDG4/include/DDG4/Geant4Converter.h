@@ -20,7 +20,7 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Geometry converter from DD4hep to Geant 4.
-    /** 
+    /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION

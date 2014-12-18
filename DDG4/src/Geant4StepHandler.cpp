@@ -17,7 +17,7 @@ using namespace DD4hep::Simulation;
 /// Returns the step status in form of a string
 const char* Geant4StepHandler::stepStatus(G4StepStatus status) {
   switch (status) {
-  // Step reached the world boundary
+    // Step reached the world boundary
   case fWorldBoundary:
     return "WorldBoundary";
     // Step defined by a geometry boundary

@@ -53,9 +53,9 @@ namespace DD4hep {
     };
 
     /// Concrete implementation of the Geant4 event action sequence
-    /** 
+    /**
      * The sequence dispatches the callbacks at the beginning and the and
-     * of an event to all registered Geant4EventAction members and all 
+     * of an event to all registered Geant4EventAction members and all
      * registered callbacks.
      *
      *  \author  M.Frank
@@ -79,17 +79,17 @@ namespace DD4hep {
       virtual ~Geant4EventActionSequence();
       /// Register begin-of-event callback
       template <typename Q, typename T>
-      void callAtBegin(Q* p, void (T::*f)(const G4Event*)) {
+        void callAtBegin(Q* p, void (T::*f)(const G4Event*)) {
         m_begin.add(p, f);
       }
       /// Register end-of-event callback
       template <typename Q, typename T>
-      void callAtEnd(Q* p, void (T::*f)(const G4Event*)) {
+        void callAtEnd(Q* p, void (T::*f)(const G4Event*)) {
         m_end.add(p, f);
       }
       /// Register event-cleanup callback (after end-of-event callback -- unordered)
       template <typename Q, typename T>
-      void callAtFinal(Q* p, void (T::*f)(const G4Event*)) {
+        void callAtFinal(Q* p, void (T::*f)(const G4Event*)) {
         m_final.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

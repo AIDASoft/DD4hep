@@ -19,7 +19,7 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Unused.
-    /** 
+    /**
      *
      * @author  M.Frank
      * @version 1.0

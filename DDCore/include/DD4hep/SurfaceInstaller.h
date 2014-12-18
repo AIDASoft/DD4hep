@@ -19,7 +19,7 @@
 #include <algorithm>
 
 /// Namespace for the tracking surfaces of the AIDA detector description toolkit
-namespace DDSurfaces  {  
+namespace DDSurfaces  {
   /// Class describing the surface types
   class SurfaceType;
 }
@@ -28,7 +28,7 @@ namespace DDSurfaces  {
 namespace DD4hep  {
 
   /// Namespace for the reconstruction part of the AIDA detector description toolkit
-  namespace DDRec  {  
+  namespace DDRec  {
     /// Class describing surface data
     class SurfaceData;
   }
@@ -89,19 +89,19 @@ namespace DD4hep  {
 
   /// Action routine to execute the test
   template <typename T> inline long SurfaceInstaller::run(Geometry::LCDD& lcdd,int argc,char** argv)
-  {
-    for(; argc>0; --argc)   {
-      std::string name = argv[argc-1];
-      T installer(lcdd,name);
-      installer.scan();
+    {
+      for(; argc>0; --argc)   {
+        std::string name = argv[argc-1];
+        T installer(lcdd,name);
+        installer.scan();
+      }
+      return 1;
     }
-    return 1;
-  }
 
-#define DECLARE_SURFACE_INSTALLER(name,class)		\
-  namespace DD4hep { \
+#define DECLARE_SURFACE_INSTALLER(name,class)                           \
+  namespace DD4hep {                                                    \
     template long SurfaceInstaller::run< class >(Geometry::LCDD& lcdd,int argc,char** argv); \
-  } \
+  }                                                                     \
   DECLARE_APPLY(name,SurfaceInstaller::run< class >)
 
 }   // End namespace DD4hep
@@ -112,7 +112,7 @@ namespace DD4hep  {
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorData.h"
 
-/** If you want to save yourself some typing when creating surface installers, 
+/** If you want to save yourself some typing when creating surface installers,
  *  set the compile macro DD4HEP_USE_SURFACEINSTALL_HELPER LOCALLY !
  *  This will then enable the code below and the only thing you will have to
  *  type is the installer member function to create a measurement surface for
@@ -141,7 +141,7 @@ namespace {
     UserData data;
   public:
     /// Initializing constructor
-    Installer(LCDD& lcdd, const std::string& nam) : DD4hep::SurfaceInstaller(lcdd, nam) {}
+  Installer(LCDD& lcdd, const std::string& nam) : DD4hep::SurfaceInstaller(lcdd, nam) {}
     /// Default destructor
     virtual ~Installer() {}
     /// Install volume information. Default implementation only prints!
@@ -153,12 +153,12 @@ namespace {
     template <typename T> bool checkShape(const T& shape) const   {
       if ( shape.isValid() ) return true;
       invalidInstaller("Shape is not of the required type:"+DD4hep::typeName(typeid(T)));
-     return false;
+      return false;
     }
   };
 
   /// Handle surface installation using cached surfaces.
-  template <typename UserData> 
+  template <typename UserData>
     bool Installer<UserData>::handleUsingCache(DetElement comp, Volume vol)  const  {
     Surfaces::const_iterator is = m_surfaces.find(vol.ptr());
     if ( is != m_surfaces.end() )  {
@@ -170,7 +170,7 @@ namespace {
   }
 
   /// Add a new surface to the surface manager and the local cache
-  template <typename UserData> 
+  template <typename UserData>
     void Installer<UserData>::addSurface(DetElement component, const DD4hep::DDRec::VolSurface& surf)   {
     m_surfaces.insert(std::make_pair(surf.volume().ptr(),surf.ptr()));
     DD4hep::DDRec::volSurfaceList(component)->push_back(surf);

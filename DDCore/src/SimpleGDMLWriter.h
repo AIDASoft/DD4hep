@@ -34,8 +34,8 @@ namespace DD4hep {
       /// Reference to output stream
       std::ostream& m_output;
 
-      SimpleGDMLWriter(std::ostream& os)
-          : m_output(os) {
+    SimpleGDMLWriter(std::ostream& os)
+      : m_output(os) {
       }
       /// Standard destructor
       virtual ~SimpleGDMLWriter() {

@@ -27,7 +27,7 @@ namespace DD4hep {
   namespace Geometry {
 
     /// Implementation class supporting generic Segmentation of sensitive detectors
-    /** 
+    /**
      * \author  M.Frank
      * \version 1.0
      * \ingroup DD4HEP_GEOMETRY
@@ -76,7 +76,7 @@ namespace DD4hep {
 
 
     /// Handle class supporting generic Segmentation of sensitive detectors
-    /** 
+    /**
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -93,28 +93,28 @@ namespace DD4hep {
       /// Initializing constructor creating a new object of the given DDSegmentation type
       Segmentation(const std::string& type, const std::string& name);
       /// Default constructor
-      Segmentation()
-          : Handle<Implementation>() {
+    Segmentation()
+      : Handle<Implementation>() {
       }
       /// Copy Constructor from object
-      Segmentation(const Segmentation& e)
-          : Handle<Object>(e) {
+    Segmentation(const Segmentation& e)
+      : Handle<Object>(e) {
       }
 #ifndef __CINT__
       /// Copy Constructor from handle
-      Segmentation(const Handle<SegmentationObject>& e)
-          : Handle<Object>(e) {
+    Segmentation(const Handle<SegmentationObject>& e)
+      : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Segmentation(const Handle<Q>& e)
-          : Handle<Implementation>(e) {
+        : Handle<Implementation>(e) {
       }
       /// Assignment operator
       Segmentation& operator=(const Segmentation& seg)  {
-	if ( &seg == this ) return *this;
-	m_element = seg.m_element;
-	return *this;
+        if ( &seg == this ) return *this;
+        m_element = seg.m_element;
+        return *this;
       }
       /// Access flag for hit positioning
       bool useForHitPosition() const;

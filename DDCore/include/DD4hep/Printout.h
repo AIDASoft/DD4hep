@@ -157,15 +157,15 @@ namespace DD4hep {
     /// Optional text prefix when formatting the output
     std::string prefix;
     /// Initializing constructor of the functor
-    Printer(const Geometry::LCDD* l, std::ostream& stream, const std::string& p = "")
-        : lcdd(l), os(stream), prefix(p) {
-    }
+  Printer(const Geometry::LCDD* l, std::ostream& stream, const std::string& p = "")
+  : lcdd(l), os(stream), prefix(p) {
+  }
     /// Callback operator to be specialized depending on the element type
     void operator()(const T& value) const;
   };
 
   template <typename T> inline std::ostream& print(const T& object, std::ostream& os = std::cout,
-      const std::string& indent = "") {
+                                                   const std::string& indent = "") {
     Printer<T>(0, os, indent)(object);
     return os;
   }
@@ -191,9 +191,9 @@ namespace DD4hep {
     /// Reference to the container data of the map.
     cont_type& cont;
     /// Initializing constructor of the functor
-    PrintMap(const Geometry::LCDD* l, std::ostream& stream, cont_type& c, const std::string& t = "")
-        : lcdd(l), os(stream), text(t), cont(c) {
-    }
+  PrintMap(const Geometry::LCDD* l, std::ostream& stream, cont_type& c, const std::string& t = "")
+  : lcdd(l), os(stream), text(t), cont(c) {
+  }
     /// Callback operator to be specialized depending on the element type
     void operator()() const;
   };

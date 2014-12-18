@@ -17,7 +17,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4UserParticleHandler::Geant4UserParticleHandler(Geant4Context* context, const std::string& nam)
-  : Geant4Action(context,nam)
+: Geant4Action(context,nam)
 {
   InstanceCount::increment(this);
   declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*CLHEP::MeV);

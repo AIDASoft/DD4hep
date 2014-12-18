@@ -32,19 +32,19 @@ namespace DD4hep {
       /// Structure to hold the information of one simulation step.
       class StepInfo {
       public:
-	/// Pre-step and Post-step position
-	Position pre, post;
-	/// Reference to the logical volue
-	const G4LogicalVolume* volume;
+        /// Pre-step and Post-step position
+        Position pre, post;
+        /// Reference to the logical volue
+        const G4LogicalVolume* volume;
 
-	/// Initializing constructor
-	StepInfo(const Position& pre, const Position& post, const G4LogicalVolume* volume);
-	/// Copy constructor
-	StepInfo(const StepInfo& c);
-	/// Default destructor
-	~StepInfo() {}
-	/// Assignment operator
-	StepInfo& operator=(const StepInfo& c);
+        /// Initializing constructor
+        StepInfo(const Position& pre, const Position& post, const G4LogicalVolume* volume);
+        /// Copy constructor
+        StepInfo(const StepInfo& c);
+        /// Default destructor
+        ~StepInfo() {}
+        /// Assignment operator
+        StepInfo& operator=(const StepInfo& c);
       };
       typedef std::vector<StepInfo*> Steps;
 
@@ -119,7 +119,7 @@ Geant4MaterialScanner::StepInfo& Geant4MaterialScanner::StepInfo::operator=(cons
 
 /// Standard constructor
 Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* context, const string& name)
-: Geant4SteppingAction(context,name) 
+: Geant4SteppingAction(context,name)
 {
   m_needsControl = true;
   eventAction().callAtBegin(this,&Geant4MaterialScanner::beginEvent);
@@ -175,7 +175,7 @@ void Geant4MaterialScanner::end(const G4Track* track) {
     const Position& post = m_steps[m_steps.size()-1]->post;
 
     ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm]  TrackID:%d: \n%s",
-	     line,pre.X()/cm,pre.Y()/cm,pre.Z()/cm,post.X()/cm,post.Y()/cm,post.Z()/cm,track->GetTrackID(),line);
+             line,pre.X()/cm,pre.Y()/cm,pre.Z()/cm,post.X()/cm,post.Y()/cm,post.Z()/cm,track->GetTrackID(),line);
     ::printf(" |     \\   %-11s        Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
     ::printf(" | Num. \\  %-11s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
     ::printf(" | Layer \\ %-11s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
@@ -198,16 +198,16 @@ void Geant4MaterialScanner::end(const G4Track* track) {
       const char* fmt = radLen >= 1e5 ? fmt2 : fmt1;
       const double* fractions = m->GetFractionVector();
       for(size_t i=0; i<m->GetNumberOfElements(); ++i)  {
-	Zeff += fractions[i]*(m->GetElement(i)->GetZ());
-	Aeff += fractions[i]*(m->GetElement(i)->GetA())/gram;
+        Zeff += fractions[i]*(m->GetElement(i)->GetZ());
+        Aeff += fractions[i]*(m->GetElement(i)->GetA())/gram;
       }
       m_sumX0     += nx0;
       m_sumLambda += nLambda;
       m_sumPath   += length;
       ::printf(fmt,count,m->GetName().c_str(),
-	       Zeff, Aeff, density, radLen, intLen, length,
-	       m_sumPath,m_sumX0,m_sumLambda,
-	       postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm);
+               Zeff, Aeff, density, radLen, intLen, length,
+               m_sumPath,m_sumX0,m_sumLambda,
+               postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm);
       //cout << *m << endl;
     }
     for_each(m_steps.begin(),m_steps.end(),DestroyObject<StepInfo*>());

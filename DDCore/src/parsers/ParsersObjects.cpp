@@ -5,7 +5,7 @@
 #include "DD4hep/ToStream.h"
 
 using namespace std;
-namespace ROOT { 
+namespace ROOT {
   namespace Math {
     static bool operator<(const XYZPoint& a, const XYZPoint& b)  {
       if ( a.X() < b.X() ) return true;
@@ -29,7 +29,7 @@ namespace ROOT {
   }
 }
 // ============================================================================
-namespace DD4hep { 
+namespace DD4hep {
   namespace Parsers {
     // ==========================================================================
     template<typename T1, typename T2> inline int
@@ -38,7 +38,7 @@ namespace DD4hep {
       typename Grammar_<IteratorT,ROOT::Math::PositionVector3D<T1,T2>,Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();
       if (qi::phrase_parse( iter, end, g, skipper, result)){
-	return 1;
+        return 1;
       }
       return 0;
     }

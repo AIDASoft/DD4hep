@@ -67,23 +67,23 @@ namespace DD4hep {
 }      // End namespace DD4hep
 
 // Instantiate single property
-#define DD4HEP_DEFINE_PROPERTY_TYPE(x)			\
-  template x Property::value() const;				\
-  template void Property::value(x& value) const;		\
-  template void Property::set(const x& value);			\
-  template Property& Property::operator=(const x& value);	\
+#define DD4HEP_DEFINE_PROPERTY_TYPE(x)                          \
+  template x Property::value() const;                           \
+  template void Property::value(x& value) const;                \
+  template void Property::set(const x& value);                  \
+  template Property& Property::operator=(const x& value);       \
   template void Property::make(x& value)
 
 // Instantiate single property with support for STL containers
-#define DD4HEP_DEFINE_PROPERTY_CONT(x)		\
-  DD4HEP_DEFINE_PROPERTY_TYPE(x);			\
-  DD4HEP_DEFINE_PROPERTY_TYPE(std::vector<x>);	\
-  DD4HEP_DEFINE_PROPERTY_TYPE(std::list<x>);	\
+#define DD4HEP_DEFINE_PROPERTY_CONT(x)          \
+  DD4HEP_DEFINE_PROPERTY_TYPE(x);               \
+  DD4HEP_DEFINE_PROPERTY_TYPE(std::vector<x>);  \
+  DD4HEP_DEFINE_PROPERTY_TYPE(std::list<x>);    \
   DD4HEP_DEFINE_PROPERTY_TYPE(std::set<x>)
 
 // Instantiate single property with support for STL containers + same for unsigned
-#define DD4HEP_DEFINE_PROPERTY_U_CONT(x)	\
-  DD4HEP_DEFINE_PROPERTY_CONT(x);		\
+#define DD4HEP_DEFINE_PROPERTY_U_CONT(x)        \
+  DD4HEP_DEFINE_PROPERTY_CONT(x);               \
   DD4HEP_DEFINE_PROPERTY_CONT(unsigned x)
 
 #endif // DD4HEP_DDG4_COMPONENTPROPERTIES_INL_H

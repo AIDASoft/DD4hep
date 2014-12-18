@@ -76,7 +76,7 @@ namespace DD4hep {
       }
       /// Destructor
       virtual ~DocumentErrorHandler()  {
-	printout(DEBUG,"DocumentErrorHandler","+++ Destructing the XercesC DOM-XML document error handler....");
+        printout(DEBUG,"DocumentErrorHandler","+++ Destructing the XercesC DOM-XML document error handler....");
       }
       /// Reset errors (Noop)
       void resetErrors() {
@@ -109,11 +109,11 @@ namespace DD4hep {
         return false;
       }
       printout(FATAL,"DocumentErrorHandler", "+++ %s %s: %s", err.c_str(),
-	       _toString(domError.getType()).c_str(),_toString(domError.getMessage()).c_str());
+               _toString(domError.getType()).c_str(),_toString(domError.getMessage()).c_str());
       DOMLocator* loc = domError.getLocation();
       if (loc) {
-	printout(FATAL,"DocumentErrorHandler","+++ Location: Line:%d Column: %d",
-		 int(loc->getLineNumber()),int(loc->getColumnNumber()));
+        printout(FATAL,"DocumentErrorHandler","+++ Location: Line:%d Column: %d",
+                 int(loc->getLineNumber()),int(loc->getColumnNumber()));
       }
       return false;
     }
@@ -129,14 +129,14 @@ namespace DD4hep {
         return;
       string sys(_toString(e.getSystemId()));
       printout(ERROR,"XercesC","+++ Error at file \"%s\", Line %d Column: %d Message:%s",
-	       sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
+               sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
     /// Fatal error handler
     void DocumentErrorHandler::fatalError(const SAXParseException& e) {
       string m(_toString(e.getMessage()));
       string sys(_toString(e.getSystemId()));
       printout(FATAL,"XercesC","+++ FATAL Error at file \"%s\", Line %d Column: %d Message:%s",
-	       sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
+               sys.c_str(), int(e.getLineNumber()), int(e.getColumnNumber()), m.c_str());
     }
 
     /// Dump DOM tree using XercesC handles
@@ -156,7 +156,7 @@ namespace DD4hep {
 
 /// Default constructor of a document handler using XercesC
 DocumentHandler::DocumentHandler()
-    : m_errHdlr(new DocumentErrorHandler()) {
+  : m_errHdlr(new DocumentErrorHandler()) {
 }
 
 /// Default destructor of a document handler using XercesC
@@ -302,9 +302,9 @@ Document DocumentHandler::load(Handle_t base, const XmlChar* fname) const {
     fn += _clean_fname(fname);
   }
   if ( ::stat(fn.c_str(),&st)==0 )
-  return load(fn);
+    return load(fn);
   else if ( ::stat(clean.c_str(),&st)==0 )
-  return load(clean);
+    return load(clean);
   return load(fname);
 }
 
@@ -316,9 +316,9 @@ Document DocumentHandler::load(const std::string& fname) const {
     result = doc->LoadFile();
     if ( !result ) {
       if ( doc->Error() ) {
-	printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
-	printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
-		 doc->Value(), doc->ErrorRow(), doc->ErrorCol());
+        printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
+        printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
+                 doc->Value(), doc->ErrorRow(), doc->ErrorCol());
         throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
       }
       throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TinyXML.");
@@ -345,7 +345,7 @@ Document DocumentHandler::parse(const char* doc_string, size_t /* length */) con
     if ( doc->Error() ) {
       printout(FATAL,"DocumentHandler","+++ Error (TinyXML) while parsing XML document:%s",doc->ErrorDesc());
       printout(FATAL,"DocumentHandler","+++ Document:%s Location Line:%d Column:%d",
-	       doc->Value(), doc->ErrorRow(), doc->ErrorCol());
+               doc->Value(), doc->ErrorRow(), doc->ErrorCol());
       throw runtime_error(string("DD4hep: ")+doc->ErrorDesc());
     }
     throw runtime_error("DD4hep: Unknown error whaile parsing XML document with TiXml.");

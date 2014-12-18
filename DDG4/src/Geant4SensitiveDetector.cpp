@@ -31,7 +31,7 @@ using namespace DD4hep::Simulation;
 
 /// Constructor. The detector element is identified by the name
 Geant4SensitiveDetector::Geant4SensitiveDetector(const string& name, LCDD& lcdd)
-    : G4VSensitiveDetector(name), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
+: G4VSensitiveDetector(name), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
   m_sensitive = lcdd.sensitiveDetector(name);
   m_detector = lcdd.detector(name);
   m_readout = m_sensitive.readout();
@@ -45,7 +45,7 @@ Geant4SensitiveDetector::~Geant4SensitiveDetector() {
 bool Geant4SensitiveDetector::defineCollection(const string& coll_name) {
   if (coll_name.empty()) {
     throw runtime_error(
-        "Geant4SensitiveDetector: No collection defined for " + name() + " of type " + string(m_sensitive.type()));
+                        "Geant4SensitiveDetector: No collection defined for " + name() + " of type " + string(m_sensitive.type()));
   }
   collectionName.insert(coll_name);
   return true;
@@ -151,10 +151,10 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   Momentum mom = step.postMom();
 
   printout(INFO, "G4Step", "  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f", long(step.track), pos1.X(),
-      pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
+           pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
   printout(INFO, "G4Step", "                pre-Vol: %s  Status:%s", step.preVolume()->GetName().c_str(), step.preStepStatus());
   printout(INFO, "G4Step", "                post-Vol:%s  Status:%s", step.postVolume()->GetName().c_str(),
-      step.postStepStatus());
+           step.postStepStatus());
 
   const G4VPhysicalVolume* pv = step.volume(step.post);
 

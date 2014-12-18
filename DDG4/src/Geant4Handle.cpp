@@ -36,35 +36,35 @@ template <typename TYPE> static inline TYPE* checked_value(TYPE* p) {
     return p;
   }
   throw runtime_error(
-      format("Geant4Handle", "Attempt to access an invalid object of type:%s!", typeName(typeid(TYPE)).c_str()));
+                      format("Geant4Handle", "Attempt to access an invalid object of type:%s!", typeName(typeid(TYPE)).c_str()));
 }
 
 template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle()
-    : value(0) {
+  : value(0) {
 }
 
 template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(TYPE* typ)
-    : value(typ) {
+: value(typ) {
   if (value)
     value->addRef();
 }
 
 template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(const Geant4Handle<TYPE>& handle)
-    : value(0) {
+  : value(0) {
   value = handle.get();
   if (value)
     value->addRef();
 }
 
 template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, const string& type_name)
-    : value(0) {
+  : value(0) {
   TypeName typ = TypeName::split(type_name);
   Geant4Context ctxt(&kernel);
   Geant4Action* object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
   if (!object && typ.first == typ.second) {
     typ.first = typeName(typeid(TYPE));
     printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Object factory for %s not found. Try out %s", typ.second.c_str(),
-	     typ.first.c_str());
+             typ.first.c_str());
     object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
     if (!object) {
       size_t idx = typ.first.rfind(':');
@@ -81,14 +81,14 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, 
       return;
     }
     throw runtime_error(
-        format("Geant4Handle", "Failed to convert object of type %s to handle of type %s!", type_name.c_str(),
-            typeName(typeid(TYPE)).c_str()));
+                        format("Geant4Handle", "Failed to convert object of type %s to handle of type %s!", type_name.c_str(),
+                               typeName(typeid(TYPE)).c_str()));
   }
   throw runtime_error(format("Geant4Handle", "Failed to create object of type %s!", type_name.c_str()));
 }
 
 template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, const char* type_name_char)
-    : value(0) {
+  : value(0) {
   string type_name = type_name_char;
   TypeName typ = TypeName::split(type_name);
   Geant4Context ctxt(&kernel);
@@ -96,7 +96,7 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, 
   if (!object && typ.first == typ.second) {
     typ.first = typeName(typeid(TYPE));
     printout(DEBUG, "Geant4Handle<Geant4Sensitive>", "Object factory for %s not found. Try out %s", typ.second.c_str(),
-        typ.first.c_str());
+             typ.first.c_str());
     object = PluginService::Create<Geant4Action*>(typ.first, &ctxt, typ.second);
     if (!object) {
       size_t idx = typ.first.rfind(':');
@@ -113,8 +113,8 @@ template <typename TYPE> Geant4Handle<TYPE>::Geant4Handle(Geant4Kernel& kernel, 
       return;
     }
     throw runtime_error(
-        format("Geant4Handle", "Failed to convert object of type %s to handle of type %s!", type_name.c_str(),
-            typeName(typeid(TYPE)).c_str()));
+                        format("Geant4Handle", "Failed to convert object of type %s to handle of type %s!", type_name.c_str(),
+                               typeName(typeid(TYPE)).c_str()));
   }
   throw runtime_error(format("Geant4Handle", "Failed to create object of type %s!", type_name.c_str()));
 }
@@ -194,7 +194,7 @@ namespace DD4hep {
     }
 
     template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(Geant4Kernel& kernel, const string& type_name,
-        const string& detector) {
+                                                            const string& detector) {
       try {
         Geant4Context ctxt(&kernel);
         TypeName typ = TypeName::split(type_name);
@@ -213,8 +213,8 @@ namespace DD4hep {
         printout(ERROR, "Geant4Handle<Geant4Sensitive>", "Exception: Unknown exception");
       }
       throw runtime_error(
-          format("Geant4Handle<Geant4Sensitive>", "Failed to create sensitive object of type %s for detector %s!",
-              type_name.c_str(), detector.c_str()));
+                          format("Geant4Handle<Geant4Sensitive>", "Failed to create sensitive object of type %s for detector %s!",
+                                 type_name.c_str(), detector.c_str()));
     }
   }
 }

@@ -32,19 +32,19 @@ namespace DD4hep {
 
     /// Boost particles of one interaction identified by its mask
     int boostInteraction(const Geant4Action* caller,
-			 Geant4PrimaryEvent::Interaction* inter,
-			 double alpha);
+                         Geant4PrimaryEvent::Interaction* inter,
+                         double alpha);
 
     /// Smear the primary vertex of an interaction
     int smearInteraction(const Geant4Action* caller,
-			 Geant4PrimaryEvent::Interaction* inter,
-			 double dx, double dy, double dz, double dt);
+                         Geant4PrimaryEvent::Interaction* inter,
+                         double dx, double dy, double dz, double dt);
 
 
     /// Generate all primary vertices corresponding to the merged interaction
     int generatePrimaries(const Geant4Action* caller,
-			  const Geant4Context* context,
-			  G4Event* event);
+                          const Geant4Context* context,
+                          G4Event* event);
 
   }    // End namespace Simulation
 }      // End namespace DD4hep

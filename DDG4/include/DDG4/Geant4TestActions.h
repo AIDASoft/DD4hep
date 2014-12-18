@@ -31,7 +31,7 @@ namespace DD4hep {
     namespace Test {
 
       /// Common base class for test action
-      /** 
+      /**
        *  \author  M.Frank
        *  \version 1.0
        *  \ingroup DD4HEP_SIMULATION
@@ -61,8 +61,8 @@ namespace DD4hep {
         Geant4TestGeneratorAction(Geant4Context* c, const std::string& n);
         /// Default destructor
         virtual ~Geant4TestGeneratorAction();
-	/// Callback to generate primary particles
-	virtual void operator()(G4Event*);
+        /// Callback to generate primary particles
+        virtual void operator()(G4Event*);
       };
 
       /// Example run action doing nothing, but print

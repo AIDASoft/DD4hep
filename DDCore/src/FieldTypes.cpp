@@ -32,15 +32,15 @@ void ConstantField::fieldComponents(const double* /* pos */, double* field) {
 
 /// Initializing constructor
 SolenoidField::SolenoidField()
-    : innerField(0), outerField(0), minZ(-INFINITY), maxZ(INFINITY), innerRadius(0), outerRadius(INFINITY) {
+  : innerField(0), outerField(0), minZ(-INFINITY), maxZ(INFINITY), innerRadius(0), outerRadius(INFINITY) {
   type = CartesianField::MAGNETIC;
 }
 
 /// Call to access the field components at a given location
 void SolenoidField::fieldComponents(const double* pos, double* field) {
   double z = pos[2] ;
-//  std::cout << " field z=" << z << " maxZ=" << maxZ << " minZ = " << minZ << std::endl ;
-  if( z > minZ && z < maxZ ){ 
+  //  std::cout << " field z=" << z << " maxZ=" << maxZ << " minZ = " << minZ << std::endl ;
+  if( z > minZ && z < maxZ ){
     double radius = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
     if (radius < innerRadius)
       field[2] += innerField;
@@ -51,7 +51,7 @@ void SolenoidField::fieldComponents(const double* pos, double* field) {
 
 /// Initializing constructor
 DipoleField::DipoleField()
-    : zmax(INFINITY), zmin(-INFINITY), rmax(INFINITY) {
+  : zmax(INFINITY), zmin(-INFINITY), rmax(INFINITY) {
   type = CartesianField::MAGNETIC;
 }
 

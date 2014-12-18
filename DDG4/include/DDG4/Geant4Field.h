@@ -38,8 +38,8 @@ namespace DD4hep {
 
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4Field(Geometry::OverlayedField field)
-          : m_field(field) {
+    Geant4Field(Geometry::OverlayedField field)
+      : m_field(field) {
       }
       /// Standard destructor
       virtual ~Geant4Field() {

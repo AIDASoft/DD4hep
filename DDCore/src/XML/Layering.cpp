@@ -29,7 +29,7 @@ LayerSlice& LayerSlice::operator=(const LayerSlice& c) {
 }
 
 Layer::Layer(const Layer& c)
-    : _thickness(c._thickness), _preOffset(c._preOffset), _slices(c._slices) {
+  : _thickness(c._thickness), _preOffset(c._preOffset), _slices(c._slices) {
 }
 
 Layer& Layer::operator=(const Layer& c) {
@@ -51,15 +51,15 @@ double LayerStack::sectionThickness(size_t is, size_t ie) const {
   double thick = 0.;
   if (is > ie)
     throw runtime_error(
-        "LayerStack::sectionThickness: First index (" + _toString(is) + ") must be <= second index (" + _toString(ie) + ")!");
+                        "LayerStack::sectionThickness: First index (" + _toString(is) + ") must be <= second index (" + _toString(ie) + ")!");
   else if (is > _layers.size())
     throw runtime_error(
-        "LayerStack::sectionThickness: First index (" + _toString(is) + ") out of range. #layers=" + _toString(_layers.size())
-            + ").");
+                        "LayerStack::sectionThickness: First index (" + _toString(is) + ") out of range. #layers=" + _toString(_layers.size())
+                        + ").");
   else if (ie > _layers.size())
     throw runtime_error(
-        "LayerStack::sectionThickness: Second index (" + _toString(is) + ") out of range. #layers=" + _toString(_layers.size())
-            + ").");
+                        "LayerStack::sectionThickness: Second index (" + _toString(is) + ") out of range. #layers=" + _toString(_layers.size())
+                        + ").");
   for (size_t i = is; i <= ie; ++i)
     thick += _layers[i]->thicknessWithPreOffset();
   return thick;

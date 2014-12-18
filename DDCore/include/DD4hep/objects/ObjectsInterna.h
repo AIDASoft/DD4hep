@@ -47,7 +47,7 @@ namespace DD4hep {
       virtual ~HeaderObject();
     private:
       /// Private copy constructor
-      HeaderObject(const HeaderObject&) : NamedObject() {}
+    HeaderObject(const HeaderObject&) : NamedObject() {}
       /// Private assignment operator
       HeaderObject& operator=(const HeaderObject&) { return *this; }
     };
@@ -69,7 +69,7 @@ namespace DD4hep {
       virtual ~ConstantObject();
     private:
       /// Private copy constructor
-      ConstantObject(const ConstantObject&) : NamedObject() {}
+    ConstantObject(const ConstantObject&) : NamedObject() {}
       /// Private assignment operator
       ConstantObject& operator=(const ConstantObject&) { return *this; }
     };
@@ -175,7 +175,7 @@ namespace DD4hep {
 #ifndef __CINT__
       /// Access to the field container of the BitField64
       const std::vector<BitFieldValue*> fields() const {
-	return _fields;
+        return _fields;
       }
 #endif
     };

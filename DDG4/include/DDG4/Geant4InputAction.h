@@ -25,7 +25,7 @@ namespace DD4hep  {
   namespace Simulation  {
 
     /// Basic geant4 event reader class. This interface/base-class must be implemented by concrete readers.
-    /** 
+    /**
      * Base class to read input files containing simulation data.
      *
      *  \author  P.Kostka (main author)
@@ -39,13 +39,13 @@ namespace DD4hep  {
       typedef Geant4Particle Particle;
       typedef std::vector<Particle*> Particles;
       /// Status codes of the event reader object. Anything with NOT low-bit set is an error.
-      enum EventReaderStatus { 
-	EVENT_READER_ERROR=0,
-	EVENT_READER_OK=1,
-	EVENT_READER_NO_DIRECT=2,
-	EVENT_READER_NO_PRIMARIES=4,
-	EVENT_READER_NO_FACTORY=6,
-	EVENT_READER_IO_ERROR=8
+      enum EventReaderStatus {
+        EVENT_READER_ERROR=0,
+        EVENT_READER_OK=1,
+        EVENT_READER_NO_DIRECT=2,
+        EVENT_READER_NO_PRIMARIES=4,
+        EVENT_READER_NO_FACTORY=6,
+        EVENT_READER_IO_ERROR=8
       };
     protected:
       /// File name to be opened and read
@@ -64,24 +64,24 @@ namespace DD4hep  {
       /// Flag if direct event access (by event sequence number) is supported (Default: false)
       bool hasDirectAccess() const  {  return m_directAccess; }
       /// Move to the indicated event number.
-      /** For pure sequential access, the default implementation 
+      /** For pure sequential access, the default implementation
        *  will skip events one by one.
        *  For technologies supporting direct event access the default
        *  implementation will be empty.
        *
-       *  @return 
+       *  @return
        */
       virtual EventReaderStatus moveToEvent(int event_number);
       /// Skip event. To be implemented for sequential sources
       virtual EventReaderStatus skipEvent();
       /// Read an event and fill a vector of MCParticles.
-      /** The additional argument 
+      /** The additional argument
        */
       virtual EventReaderStatus readParticles(int event_number, Particles& particles) = 0;
     };
 
     /// Generic input action capable of using the Geant4EventReader class.
-    /** 
+    /**
      * Concrete implementation of the Geant4 generator action base class
      * populating Geant4 primaries from Geant4 and HepStd files.
      *

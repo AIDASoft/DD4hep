@@ -16,7 +16,7 @@ using namespace ROOT::Reflex;
 
 /// Default constructor
 PluginDebug::PluginDebug(int dbg)
-    : m_debug(0) {
+  : m_debug(0) {
   m_debug = PluginService::Debug();
   PluginService::SetDebug(dbg);
 }

@@ -43,12 +43,12 @@ namespace DD4hep {
       /// Default constructor
       ParticleExtension() {}
       /// Default destructor
-      virtual ~ParticleExtension();      
+      virtual ~ParticleExtension();
     };
 
     /// Track properties
     enum Geant4ParticleProperties {
-      G4PARTICLE_CREATED_HIT = 1<<1, 
+      G4PARTICLE_CREATED_HIT = 1<<1,
       G4PARTICLE_PRIMARY = 1<<2,
       G4PARTICLE_HAS_SECONDARIES = 1<<3,
       G4PARTICLE_ABOVE_ENERGY_THRESHOLD = 1<<4,
@@ -68,7 +68,7 @@ namespace DD4hep {
 
       G4PARTICLE_GEN_GENERATOR       =        // Particle comes from generator
       (  G4PARTICLE_GEN_EMPTY+G4PARTICLE_GEN_STABLE+
-	 G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION  ),
+         G4PARTICLE_GEN_DECAYED+G4PARTICLE_GEN_DOCUMENTATION  ),
       G4PARTICLE_GEN_STATUS          = 0x3FF, // Mask for generator status (bit 0...9)
 
       // Simulation status of a given particle
@@ -86,7 +86,7 @@ namespace DD4hep {
 
 
 
-    /// Data structure to store the MC particle information 
+    /// Data structure to store the MC particle information
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -116,7 +116,7 @@ namespace DD4hep {
       Particles daughters;
 
       /// User data extension if required
-      std::auto_ptr<ParticleExtension> extension;  
+      std::auto_ptr<ParticleExtension> extension;
       const G4VProcess *process;  //! not persistent
       //const G4ParticleDefinition *definition;  //! not persistent
       /// Default constructor
@@ -127,8 +127,8 @@ namespace DD4hep {
       virtual ~Geant4Particle();
       /// Increase reference count
       Geant4Particle* addRef()  {
-	++ref; 
-	return this;
+        ++ref;
+        return this;
       }
       /// Decrease reference count. Deletes object if NULL
       void release();
@@ -140,7 +140,7 @@ namespace DD4hep {
 
 #ifndef __DDG4_STANDALONE_DICTIONARIES__
 
-    /// Data structure to access derived MC particle information 
+    /// Data structure to access derived MC particle information
     /**
      *  \author  M.Frank
      *  \version 1.0
@@ -152,7 +152,7 @@ namespace DD4hep {
       typedef ROOT::Math::Cartesian3D<double> ThreeVector;
     protected:
       /// Particle pointer
-      Geant4Particle* particle;      
+      Geant4Particle* particle;
     public:
       /// Default constructor
       Geant4ParticleHandle(Geant4Particle* part);
@@ -230,7 +230,7 @@ namespace DD4hep {
       return particle;
     }
     /// Assignment operator
-    inline Geant4ParticleHandle& Geant4ParticleHandle::operator=(Geant4Particle* part) { 
+    inline Geant4ParticleHandle& Geant4ParticleHandle::operator=(Geant4Particle* part) {
       particle = part;
       return *this;
     }
@@ -270,7 +270,7 @@ namespace DD4hep {
       ROOT::Math::PxPyPzM4D<double> v(p->psx,p->psy,p->psz,p->mass);
       return v.E();
     }
-    
+
     /// Scalar particle momentum squared
     inline double Geant4ParticleHandle::momentum2() const  {
       const Geant4Particle* p = particle;
@@ -286,7 +286,7 @@ namespace DD4hep {
      *  - At the end of the handling of the MC truth are particles to be kept
      *    are inserted if the required modules are activated such as the
      *    Geant4ParticleHandler.
-     * 
+     *
      *  Note: This object takes OWNERSHIP of the inserted particles!
      *        beware of double deletion of objects!
      *

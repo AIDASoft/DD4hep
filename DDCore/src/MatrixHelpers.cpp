@@ -77,17 +77,17 @@ DD4hep::Geometry::Transform3D DD4hep::Geometry::_transform(const TGeoMatrix* mat
   if ( matrix->IsRotation() )  {
     const Double_t* r = matrix->GetRotationMatrix();
     return Transform3D(r[0],r[1],r[2],t[0]*MM_2_CM,
-		       r[3],r[4],r[5],t[1]*MM_2_CM,
-		       r[6],r[7],r[8],t[2]*MM_2_CM);
+                       r[3],r[4],r[5],t[1]*MM_2_CM,
+                       r[6],r[7],r[8],t[2]*MM_2_CM);
 #if 0
     return Transform3D(r[0],r[3],r[6],t[0]*MM_2_CM,
-		       r[1],r[4],r[7],t[1]*MM_2_CM,
-		       r[2],r[5],r[8],t[2]*MM_2_CM);
+                       r[1],r[4],r[7],t[1]*MM_2_CM,
+                       r[2],r[5],r[8],t[2]*MM_2_CM);
 #endif
   }
   return Transform3D(0e0,0e0,0e0,t[0]*MM_2_CM,
-		     0e0,0e0,0e0,t[1]*MM_2_CM,
-		     0e0,0e0,0e0,t[2]*MM_2_CM);
+                     0e0,0e0,0e0,t[1]*MM_2_CM,
+                     0e0,0e0,0e0,t[2]*MM_2_CM);
 }
 
 DD4hep::Geometry::XYZAngles DD4hep::Geometry::_XYZangles(const TGeoMatrix* m) {

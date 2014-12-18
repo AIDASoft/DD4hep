@@ -76,7 +76,7 @@ static unsigned long m_flags = ~0x0UL;
 
 /// Initializing Constructor
 Geant4HierarchyDump::Geant4HierarchyDump(LCDD& lcdd)
-    : m_lcdd(lcdd) {
+: m_lcdd(lcdd) {
 }
 
 /// Standard destructor
@@ -96,7 +96,7 @@ void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)
 
   m_flags &= ~G4DUMP_SOLID;
   printout(INFO, "Geant4Hierarchy", "%s -> Placement:%s LV:%s Material:%s Solid:%s # of Daughters:%d", indent.c_str(),
-      _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()), _T(sol->GetName()), ndau);
+           _T(v->GetName()), _T(lv->GetName()), _T(mat->GetName()), _T(sol->GetName()), ndau);
 
   if (sd && (m_flags & G4DUMP_SOLID)) {
     str.str("");
@@ -114,7 +114,7 @@ void Geant4HierarchyDump::dump(const string& indent, const G4VPhysicalVolume* v)
   }
   if (sd && (m_flags & G4DUMP_SENSDET)) {
     printout(INFO, "Geant4Hierarchy", "%s    Sens.det:%p %s path:%s Active:%-3s #Coll:%d", indent.c_str(), sd,
-	     _T(sd->GetName()), _T(sd->GetFullPathName()), yes_no(sd->isActive()), sd->GetNumberOfCollections());
+             _T(sd->GetName()), _T(sd->GetFullPathName()), yes_no(sd->isActive()), sd->GetNumberOfCollections());
   }
   if (ul && (m_flags & G4DUMP_LIMITS)) {
     printout(INFO, "Geant4Hierarchy", "%s    Limits:%s ", indent.c_str(), _T(ul->GetType()));

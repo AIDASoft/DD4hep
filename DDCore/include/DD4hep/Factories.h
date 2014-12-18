@@ -90,7 +90,7 @@ namespace DD4hep {
     };
 
     ///  Read an arbitrary XML document and analyze it's content
-    /** 
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -103,7 +103,7 @@ namespace DD4hep {
     };
 
     /// Read an arbitrary XML document and analyze it's content
-    /** 
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -116,7 +116,7 @@ namespace DD4hep {
     };
 
     /// Standard factory to create Detector elements from the compact XML representation.
-    /** 
+    /**
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -200,53 +200,53 @@ namespace {
   };
 }
 
-#define DECLARE_DETELEMENT_FACTORY(x) \
+#define DECLARE_DETELEMENT_FACTORY(x)                                   \
   PLUGINSVC_FACTORY(x,DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
-#define DECLARE_NAMESPACE_DETELEMENT_FACTORY(n,x)  using n::x; \
+#define DECLARE_NAMESPACE_DETELEMENT_FACTORY(n,x)  using n::x;          \
   PLUGINSVC_FACTORY(x,DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
-#define DECLARE_NAMED_APPLY_FACTORY(n,x)  using n::x;\
+#define DECLARE_NAMED_APPLY_FACTORY(n,x)  using n::x;                   \
   PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),long(DD4hep::Geometry::LCDD*,int, char**))
-#define DECLARE_NAMED_TRANSLATION_FACTORY(n,x)  using n::x;\
+#define DECLARE_NAMED_TRANSLATION_FACTORY(n,x)  using n::x;             \
   PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*))
-#define DECLARE_NAMED_XMLELEMENT_FACTORY(n,x)  using n::x;\
+#define DECLARE_NAMED_XMLELEMENT_FACTORY(n,x)  using n::x;              \
   PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
-#define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)  using n::x;\
+#define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)  using n::x;              \
   PLUGINSVC_FACTORY_WITH_ID(x,std::string(#x),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
-#define DECLARE_APPLY(name,func) \
-  namespace DD4hep { namespace Geometry { namespace { struct name {}; }            \
-  template <> long ApplyFactory<name>::create(DD4hep::Geometry::LCDD& l,int n,char** a) {return func(l,n,a);} }} \
-  using DD4hep::Geometry::name;\
+#define DECLARE_APPLY(name,func)                                        \
+  namespace DD4hep { namespace Geometry { namespace { struct name {}; } \
+      template <> long ApplyFactory<name>::create(DD4hep::Geometry::LCDD& l,int n,char** a) {return func(l,n,a);} }} \
+  using DD4hep::Geometry::name;                                         \
   DECLARE_NAMED_APPLY_FACTORY(DD4hep::Geometry,name)
 
-#define DECLARE_CONSTRUCTOR(name,func) \
+#define DECLARE_CONSTRUCTOR(name,func)                                  \
   namespace DD4hep { namespace Geometry { namespace { struct name {}; } \
-  template <> void* ConstructionFactory<name>::create(const char* n) { return func(n);}}} \
+      template <> void* ConstructionFactory<name>::create(const char* n) { return func(n);}}} \
   PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),void*(const char*))
 
-#define DECLARE_TRANSLATION(name,func)                                                  \
-  namespace DD4hep { namespace Geometry { namespace { struct name {}; }                 \
-  template <> DD4hep::Geometry::Ref_t TranslationFactory<name>::create(DD4hep::Geometry::LCDD& l) {return func(l);} }} \
-  using DD4hep::Geometry::name;\
+#define DECLARE_TRANSLATION(name,func)                                  \
+  namespace DD4hep { namespace Geometry { namespace { struct name {}; } \
+      template <> DD4hep::Geometry::Ref_t TranslationFactory<name>::create(DD4hep::Geometry::LCDD& l) {return func(l);} }} \
+  using DD4hep::Geometry::name;                                         \
   DECLARE_NAMED_TRANSLATION_FACTORY(DD4hep::Geometry,name)
 
-#define DECLARE_XMLELEMENT(name,func) \
-  namespace DD4hep { namespace Geometry { namespace { struct xml_element_##name {}; }   \
-  template <> DD4hep::Geometry::Ref_t XMLElementFactory<DD4hep::Geometry::xml_element_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }}\
-  using DD4hep::Geometry::xml_element_##name;\
+#define DECLARE_XMLELEMENT(name,func)                                   \
+  namespace DD4hep { namespace Geometry { namespace { struct xml_element_##name {}; } \
+      template <> DD4hep::Geometry::Ref_t XMLElementFactory<DD4hep::Geometry::xml_element_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }} \
+  using DD4hep::Geometry::xml_element_##name;                           \
   PLUGINSVC_FACTORY_WITH_ID(xml_element_##name,std::string(#name),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
 
-#define DECLARE_XML_DOC_READER(name,func) \
-  namespace DD4hep { namespace Geometry { namespace { struct xml_document_##name {}; }  \
-  template <> long XMLDocumentReaderFactory<DD4hep::Geometry::xml_document_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }}\
-  using DD4hep::Geometry::xml_document_##name;\
+#define DECLARE_XML_DOC_READER(name,func)                               \
+  namespace DD4hep { namespace Geometry { namespace { struct xml_document_##name {}; } \
+      template <> long XMLDocumentReaderFactory<DD4hep::Geometry::xml_document_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }} \
+  using DD4hep::Geometry::xml_document_##name;                          \
   PLUGINSVC_FACTORY_WITH_ID(xml_document_##name,std::string(#name "_XML_reader"),long(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*))
 
-#define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)				                             \
-  namespace DD4hep { namespace Geometry { struct det_element_##name {};	                                             \
+#define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)               \
+  namespace DD4hep { namespace Geometry { struct det_element_##name {}; \
       template <> DD4hep::Geometry::Ref_t DetElementFactory< DD4hep::Geometry::det_element_##name >::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e,DD4hep::Geometry::Ref_t h){ if (deprecated) warning_deprecated_xml_factory(#name); return func(l,e,h);}}  } \
-  using DD4hep::Geometry::det_element_##name;				                                             \
+  using DD4hep::Geometry::det_element_##name;                           \
   PLUGINSVC_FACTORY_WITH_ID(det_element_##name,std::string(#name),DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*))
 
 #define DECLARE_XML_PROCESSOR(name,func) DECLARE_XML_PROCESSOR_BASIC(name,func,0)

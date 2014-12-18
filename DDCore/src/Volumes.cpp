@@ -41,22 +41,22 @@ namespace DD4hep {
       TGeoExtension* m_extension;
       DDExtension() : m_extension(0) {}
       DDExtension(const DDExtension& c) : m_extension(0) {
-	if ( c.m_extension ) m_extension = c.m_extension->Grab();
+        if ( c.m_extension ) m_extension = c.m_extension->Grab();
       }
       virtual ~DDExtension() {
-	if ( m_extension ) m_extension->Release();
+        if ( m_extension ) m_extension->Release();
       }
       DDExtension& operator=(const DDExtension& c) {
-	if ( this != &c ) SetUserExtension(c.GetUserExtension());
-	return *this;
+        if ( this != &c ) SetUserExtension(c.GetUserExtension());
+        return *this;
       }
       void SetUserExtension(TGeoExtension *ext)  {
-	if (m_extension) m_extension->Release();
-	m_extension = 0;
-	if (ext) m_extension = ext->Grab();
+        if (m_extension) m_extension->Release();
+        m_extension = 0;
+        if (ext) m_extension = ext->Grab();
       }
       TGeoExtension* GetUserExtension() const  {
-	return m_extension;
+        return m_extension;
       }
     };
     struct DD_TGeoNodeMatrix : public TGeoNodeMatrix, public DDExtension  {
@@ -64,11 +64,11 @@ namespace DD4hep {
       DD_TGeoNodeMatrix& operator=(const DD_TGeoNodeMatrix&) { return *this; }
     public:
       DD_TGeoNodeMatrix(const TGeoVolume* v, const TGeoMatrix* m)
-	: TGeoNodeMatrix(v, m), DDExtension() {
+        : TGeoNodeMatrix(v, m), DDExtension() {
         INCREMENT_COUNTER;
       }
       DD_TGeoNodeMatrix(const DD_TGeoNodeMatrix& c)
-	: TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), DDExtension(c) {
+      : TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), DDExtension(c) {
         INCREMENT_COUNTER;
       }
       virtual ~DD_TGeoNodeMatrix() {
@@ -128,7 +128,7 @@ namespace DD4hep {
         if (this->T::fFinder) {
           // volume already divided.
           this->T::Error("AddNode", "Cannot add node %s_%i into divided volume %s", vol->GetName(), copy_no,
-              this->T::GetName());
+                         this->T::GetName());
           return;
         }
 
@@ -145,18 +145,18 @@ namespace DD4hep {
     };
 
     template <> _VolWrap<TGeoVolume>::_VolWrap(const char* name) : TGeoVolume(name,0,0), DDExtension() {
-        INCREMENT_COUNTER;
-      }
+      INCREMENT_COUNTER;
+    }
 
     struct TGeoVolumeValue : public _VolWrap<TGeoVolume> {
       TGeoVolumeValue(const char* name, TGeoShape* s, TGeoMedium* m) : _VolWrap<TGeoVolume>(name) {
-	SetShape(s);
-	SetMedium(m);
+        SetShape(s);
+        SetMedium(m);
       }
       virtual ~TGeoVolumeValue() {      }
       TGeoVolume *_copyVol(TGeoShape *newshape) const {
         TGeoVolumeValue *vol = new TGeoVolumeValue(this->TGeoVolume::GetName(),newshape,fMedium);
-	if ( m_extension ) vol->m_extension = m_extension->Grab();
+        if ( m_extension ) vol->m_extension = m_extension->Grab();
         //vol->copy(*this);
         return vol;
       }
@@ -224,7 +224,7 @@ namespace DD4hep {
       }
       TGeoVolume *CloneVolume() const {
         TGeoVolumeAssemblyValue *vol = new TGeoVolumeAssemblyValue(this->TGeoVolume::GetName());
-	if ( m_extension ) vol->m_extension = m_extension->Grab();
+        if ( m_extension ) vol->m_extension = m_extension->Grab();
         Int_t i;
         // copy other attributes
         Int_t nbits = 8 * sizeof(UInt_t);
@@ -308,7 +308,7 @@ PlacedVolumeExtension::PlacedVolumeExtension()
 
 /// Copy constructor
 PlacedVolumeExtension::PlacedVolumeExtension(const PlacedVolumeExtension& c)
-    : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs) {
+  : TGeoExtension(), magic(c.magic), refCount(0), volIDs(c.volIDs) {
   INCREMENT_COUNTER;
 }
 
@@ -334,7 +334,7 @@ void PlacedVolumeExtension::Release() const  {
 }
 
 /// Lookup volume ID
-vector<PlacedVolumeExtension::VolID>::const_iterator 
+vector<PlacedVolumeExtension::VolID>::const_iterator
 PlacedVolumeExtension::VolIDs::find(const string& name) const {
   for (Base::const_iterator i = this->Base::begin(); i != this->Base::end(); ++i)
     if (name == (*i).first)
@@ -343,7 +343,7 @@ PlacedVolumeExtension::VolIDs::find(const string& name) const {
 }
 
 /// Insert a new value into the volume ID container
-std::pair<vector<PlacedVolumeExtension::VolID>::iterator, bool> 
+std::pair<vector<PlacedVolumeExtension::VolID>::iterator, bool>
 PlacedVolumeExtension::VolIDs::insert(const string& name, int value) {
   Base::iterator i = this->Base::begin();
   for (; i != this->Base::end(); ++i)
@@ -432,7 +432,7 @@ TGeoExtension* VolumeExtension::Grab()  {
   VolumeExtension* ext = const_cast<VolumeExtension*>(this);
   ++ext->refCount;
 #ifdef ___print_vols
-  if ( ext->sens_det.isValid() ) 
+  if ( ext->sens_det.isValid() )
     cout << "Volume grabbed with valid sensitive detector....." << endl;
   else
     cout << "Volume grabbed....." << endl;
@@ -500,8 +500,8 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   if ( shape->IsA() == TGeoShapeAssembly::Class() )  {
     TGeoShapeAssembly* as = (TGeoShapeAssembly*)shape;
     if ( std::fabs(as->GetDX()) < numeric_limits<double>::epsilon() &&
-	 std::fabs(as->GetDY()) < numeric_limits<double>::epsilon() &&
-	 std::fabs(as->GetDZ()) < numeric_limits<double>::epsilon() )  {
+         std::fabs(as->GetDY()) < numeric_limits<double>::epsilon() &&
+         std::fabs(as->GetDZ()) < numeric_limits<double>::epsilon() )  {
       as->NeedsBBoxRecompute();
       as->ComputeBBox();
     }
@@ -572,15 +572,15 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     //m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
     m_element->SetVisDaughters(vis->showDaughters ? kTRUE : kFALSE);
     printout(DEBUG,"setVisAttributes",
-	     "Set color %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
-	     int(vis->color),
-	     c ? int(255*c->GetRed()) : 0xFF,
-	     c ? int(255*c->GetGreen()) : 0xFF,
-	     c ? int(255*c->GetBlue()) : 0xFF,
-	     draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
-	     line_style == VisAttr::SOLID ? "Solid" : "Dashed",
-	     name()
-	     );
+             "Set color %3d [%02X,%02X,%02X] DrawingStyle:%9s LineStyle:%6s for volume %s",
+             int(vis->color),
+             c ? int(255*c->GetRed()) : 0xFF,
+             c ? int(255*c->GetGreen()) : 0xFF,
+             c ? int(255*c->GetBlue()) : 0xFF,
+             draw_style == VisAttr::SOLID ? "Solid" : "Wireframe",
+             line_style == VisAttr::SOLID ? "Solid" : "Dashed",
+             name()
+             );
     m_element->SetLineWidth(10);
     m_element->SetLineColor(dark);
     if (draw_style == VisAttr::SOLID) {
@@ -604,20 +604,20 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 
 
     /*
-    m_element->SetVisibility(kTRUE);
-    m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
-    m_element->SetVisDaughters(kTRUE);
-    printout(INFO,"setVisAttributes","Set Line color for volume %s",name());
-    m_element->SetLineColor(bright);
-    m_element->SetFillColor(bright);
-    m_element->SetFillStyle(1001);   // Root: solid
-    if (line_style == VisAttr::SOLID)
+      m_element->SetVisibility(kTRUE);
+      m_element->SetAttBit(TGeoAtt::kVisContainers, kTRUE);
+      m_element->SetVisDaughters(kTRUE);
+      printout(INFO,"setVisAttributes","Set Line color for volume %s",name());
+      m_element->SetLineColor(bright);
+      m_element->SetFillColor(bright);
+      m_element->SetFillStyle(1001);   // Root: solid
+      if (line_style == VisAttr::SOLID)
       m_element->SetFillStyle(1);
-    else if (line_style == VisAttr::DASHED)
+      else if (line_style == VisAttr::DASHED)
       m_element->SetFillStyle(2);
-    else
+      else
       m_element->SetFillStyle(line_style);
-    m_element->SetLineWidth(10);
+      m_element->SetLineWidth(10);
     */
   }
   Volume::Object* o = _userExtension(*this);
@@ -633,16 +633,16 @@ const Volume& Volume::setVisAttributes(const LCDD& lcdd, const string& name) con
   }
   else {
     /*
-     string tag = this->name();
-     if ( ::strstr(tag.c_str(),"_slice") )       // Slices turned off by default
-     setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
-     else if ( ::strstr(tag.c_str(),"_layer") )  // Layers turned off, but daughters possibly visible
-     setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
-     else if ( ::strstr(tag.c_str(),"_module") ) // Tracker modules similar to layers
-     setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
-     else if ( ::strstr(tag.c_str(),"_module_component") ) // Tracker modules similar to layers
-     setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
-     */
+      string tag = this->name();
+      if ( ::strstr(tag.c_str(),"_slice") )       // Slices turned off by default
+      setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
+      else if ( ::strstr(tag.c_str(),"_layer") )  // Layers turned off, but daughters possibly visible
+      setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
+      else if ( ::strstr(tag.c_str(),"_module") ) // Tracker modules similar to layers
+      setVisAttributes(lcdd.visAttributes("InvisibleWithDaughters"));
+      else if ( ::strstr(tag.c_str(),"_module_component") ) // Tracker modules similar to layers
+      setVisAttributes(lcdd.visAttributes("InvisibleNoDaughters"));
+    */
   }
   return *this;
 }

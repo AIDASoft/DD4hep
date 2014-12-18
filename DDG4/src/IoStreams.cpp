@@ -51,15 +51,15 @@ namespace DD4hep {
     : m_handle(0), m_flag(close_handle) {open(fn,mode); }
 
   /// Specialization for standard file descriptor files according to the posix standard
-  template<> std::streamsize dd4hep_file<int>::read(char_type* s, std::streamsize n) 
+  template<> std::streamsize dd4hep_file<int>::read(char_type* s, std::streamsize n)
   {      return ::read(m_handle,s,n);                   }
 
   /// Specialization for standard file descriptor files according to the posix standard
-  template<> std::streamsize dd4hep_file<int>::write(const char_type* s, std::streamsize n)  
+  template<> std::streamsize dd4hep_file<int>::write(const char_type* s, std::streamsize n)
   {      return ::write(m_handle,s,n);                  }
 
   /// Specialization for standard file descriptor files according to the posix standard
-  template<> std::streampos dd4hep_file<int>::seek(stream_offset off, BOOST_IOS::seekdir way) 
+  template<> std::streampos dd4hep_file<int>::seek(stream_offset off, BOOST_IOS::seekdir way)
   {      return ::lseek(m_handle,off,way);              }
 
   /// Specialization for standard file descriptor files according to the posix standard
@@ -89,11 +89,11 @@ namespace DD4hep {
 #define _p(x) ((MyTFile*)x)
 
   /// Specialization for the usage of TFile structures
-  template<> dd4hep_file<TFile*>::dd4hep_file(handle_type fd, dd4hep_file_flags flags) 
+  template<> dd4hep_file<TFile*>::dd4hep_file(handle_type fd, dd4hep_file_flags flags)
     : m_handle(fd), m_flag(flags)    {                                }
 
   /// Specialization for the usage of TFile structures
-  template<> dd4hep_file<TFile*>::dd4hep_file(const char* fname, BOOST_IOS::openmode mode) 
+  template<> dd4hep_file<TFile*>::dd4hep_file(const char* fname, BOOST_IOS::openmode mode)
     : m_handle(0), m_flag(close_handle)  { open(fname,mode);          }
 
   /// Specialization for the usage of TFile structures
@@ -102,23 +102,23 @@ namespace DD4hep {
       Long64_t nb1 = m_handle->GetBytesRead();
       Bool_t res = _p(m_handle)->ReadBuffer(s,nb1,n);
       if ( res )  {
-	Long64_t nb2 = m_handle->GetBytesRead();
-	return nb2-nb1;
+        Long64_t nb2 = m_handle->GetBytesRead();
+        return nb2-nb1;
       }
     }
     return -1;
   }
 
   /// Specialization for the usage of TFile structures
-  template<> std::streamsize dd4hep_file<TFile*>::write(const char_type* s, std::streamsize n)  
+  template<> std::streamsize dd4hep_file<TFile*>::write(const char_type* s, std::streamsize n)
   { return m_handle ? _p(m_handle)->SysWrite(m_handle->GetFd(),s,n) : -1;      }
 
   /// Specialization for the usage of TFile structures
-  template<> std::streampos dd4hep_file<TFile*>::seek(stream_offset off, BOOST_IOS::seekdir way) 
+  template<> std::streampos dd4hep_file<TFile*>::seek(stream_offset off, BOOST_IOS::seekdir way)
   { return m_handle ? _p(m_handle)->SysSeek(m_handle->GetFd(),off,way) : -1;   }
 
   /// Specialization for the usage of TFile structures
-  template<> void dd4hep_file<TFile*>::close()  
+  template<> void dd4hep_file<TFile*>::close()
   { if ( m_handle )  { m_handle->Close(); delete m_handle; m_handle=0; }       }
 
 }

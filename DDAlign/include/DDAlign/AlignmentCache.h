@@ -26,7 +26,7 @@ namespace DD4hep {
     class LCDD;
 
     /// Class caching all known alignment operations for one LCDD instance.
-    /** 
+    /**
      *  Internally the instances are fragmented to subdetectors defined
      *  by the next-to-top level detector elements.
      *
@@ -78,7 +78,7 @@ namespace DD4hep {
       static void install(LCDD& lcdd);
       /// Unregister and delete a tree instance
       static void uninstall(LCDD& lcdd);
-      
+
       /// Add reference count
       int addRef();
       /// Release object. If reference count goes to NULL, automatic deletion is triggered.

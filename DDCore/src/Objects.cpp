@@ -203,7 +203,7 @@ double  Material::density() const {
   }
   throw runtime_error("DD4hep: Attempt to access density from invalid material handle!");
 }
- 
+
 /// Access the radiation length of the underlying material
 double Material::radLength() const {
   Handle < TGeoMedium > val(*this);
@@ -341,8 +341,8 @@ string VisAttr::toString() const {
   TColor* col = gROOT->GetColor(obj->color);
   char text[256];
   ::snprintf(text, sizeof(text), "%-20s RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s", ptr()->GetName(),
-      col->AsHexString(), obj->color, col->GetAlpha(), int(obj->drawingStyle), int(obj->lineStyle),
-	     yes_no(obj->showDaughters), yes_no(obj->visible));
+             col->AsHexString(), obj->color, col->GetAlpha(), int(obj->drawingStyle), int(obj->lineStyle),
+             yes_no(obj->showDaughters), yes_no(obj->visible));
   return text;
 }
 
@@ -495,7 +495,7 @@ struct IDSpec : public Ref_t {
 };
 
 IDSpec::IDSpec(LCDD& lcdd, const string& name, const IDDescriptor& dsc)
-: RefElement(doc,Tag_idspec,name)
+  : RefElement(doc,Tag_idspec,name)
 {
   const IDDescriptor::FieldIDs& f = dsc.ids();
   const IDDescriptor::FieldMap& m = dsc.fields();

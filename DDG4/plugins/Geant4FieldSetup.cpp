@@ -54,7 +54,7 @@ static long setup_fields(lcdd_t& lcdd, const DD4hep::Simulation::Geant4Converter
   G4FieldManager*          fieldMgr = 0;
   G4TransportationManager* tr = 0;
   G4PropagatorInField*     propagator = 0;
-  G4ChordFinder*           chordFinder = 0;  
+  G4ChordFinder*           chordFinder = 0;
 
   lcdd_t::PropertyValues::const_iterator iV;
 

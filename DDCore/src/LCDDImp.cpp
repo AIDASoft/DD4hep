@@ -50,7 +50,7 @@ namespace {
   struct TypePreserve {
     LCDDBuildType& m_t;
     TypePreserve(LCDDBuildType& t)
-        : m_t(t) {
+    : m_t(t) {
     }
     ~TypePreserve() {
       m_t = BUILD_NONE;
@@ -64,17 +64,17 @@ void lcdd_unexpected(){
     throw ;
   }catch( std::exception& e){
     std::cout << "\n"
-              << "**************************************************** \n" 
+              << "**************************************************** \n"
               << "*  A runtime error has occured :                     \n"
               << "*    " << e.what()   << std::endl
-              << "*  the program will have to be terminated - sorry.   \n" 
+              << "*  the program will have to be terminated - sorry.   \n"
               << "**************************************************** \n"
               << std::endl ;
 
     std::set_unexpected( std::unexpected ) ;
     std::set_terminate( std::terminate ) ;
-   // this provokes ROOT seg fault and stack trace (comment out to avoid it)
-   exit(1) ;
+    // this provokes ROOT seg fault and stack trace (comment out to avoid it)
+    exit(1) ;
   }
 }
 
@@ -212,7 +212,7 @@ Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, boo
   if (do_throw) {
     int cnt = 0;
     cout << "GetRefChild: Failed to find child with name: " << name
-	 << " Map contains " << e.size() << " elements." << endl;
+         << " Map contains " << e.size() << " elements." << endl;
     for(i=e.begin(); i!=e.end(); ++i)
       cout << "   " << cnt << "  " << (*i).first << endl;
     throw runtime_error("Cannot find a child with the reference name:" + name);
@@ -239,7 +239,7 @@ namespace {
           TGeoVolume* v = n->GetVolume();
           TGeoShape* s = v->GetShape();
           const char* sn = s->GetName();
-	  ::snprintf(text,sizeof(text),"_shape_%p",(void*)s);
+          ::snprintf(text,sizeof(text),"_shape_%p",(void*)s);
           if (0 == sn || 0 == ::strlen(sn)) {
             nam = v->GetName();
             nam += text;
@@ -310,8 +310,8 @@ void LCDDImp::init() {
   if (!m_world.isValid()) {
     TGeoManager* mgr = m_manager;
     Box worldSolid("world_x", "world_y", "world_z");
-    printout(INFO,"LCDD"," *********** created World volume with size : %7.0f %7.0f %7.0f", 
-	     worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
+    printout(INFO,"LCDD"," *********** created World volume with size : %7.0f %7.0f %7.0f",
+             worldSolid->GetDX(), worldSolid->GetDY(), worldSolid->GetDZ());
 
     m_materialAir = material("Air");
     m_materialVacuum = material("Vacuum");
@@ -376,8 +376,8 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv) {
       PluginDebug dbg;
       result = PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
       if ( 0 == result )  {
-	throw runtime_error("DD4hep: apply-plugin: Failed to locate plugin " + 
-			    fac + ". " + dbg.missingFactory(fac));
+        throw runtime_error("DD4hep: apply-plugin: Failed to locate plugin " +
+                            fac + ". " + dbg.missingFactory(fac));
       }
     }
     result = *(long*) result;

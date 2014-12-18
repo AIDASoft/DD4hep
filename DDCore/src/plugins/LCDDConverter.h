@@ -107,7 +107,7 @@ namespace DD4hep {
         xml_doc_t doc;
         xml_h identity_rot, identity_pos;
         xml_elt_t doc_root, doc_header, doc_idDict, doc_detectors, doc_limits, doc_regions, doc_display, doc_gdml, doc_fields,
-            doc_define, doc_materials, doc_solids, doc_structure, doc_setup;
+          doc_define, doc_materials, doc_solids, doc_structure, doc_setup;
         GeometryInfo();
       };
       typedef std::set<std::string> NameSet;

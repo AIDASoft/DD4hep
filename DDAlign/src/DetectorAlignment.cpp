@@ -33,24 +33,24 @@ namespace {
       printout(INFO,"Alignment","DELTA matrix of %s",n->GetName());
       transform->Print();
       /*
-      printout(INFO,"Alignment","OLD matrix of %s",n->GetName());
-      mm->Print();
+        printout(INFO,"Alignment","OLD matrix of %s",n->GetName());
+        mm->Print();
       */
       transform->MultiplyLeft(mm); // orig * delta
       n->Align(transform, 0, check, overlap);
       /*
-	printout(INFO,"Alignment","Apply new relative matrix  mother to daughter:");
-	transform->Print();
-	transform->MultiplyLeft(mm); // orig * delta
-	printout(INFO,"Alignment","With deltas %s ....",n->GetName());
-	transform->Print();
-	n->Align(transform, 0, check, overlap);
-	printout(INFO,"Alignment","NEW matrix of %s",n->GetName());
-	n->GetNode()->GetMatrix()->Print();
+        printout(INFO,"Alignment","Apply new relative matrix  mother to daughter:");
+        transform->Print();
+        transform->MultiplyLeft(mm); // orig * delta
+        printout(INFO,"Alignment","With deltas %s ....",n->GetName());
+        transform->Print();
+        n->Align(transform, 0, check, overlap);
+        printout(INFO,"Alignment","NEW matrix of %s",n->GetName());
+        n->GetNode()->GetMatrix()->Print();
 
-	Position local, global = a.toGlobal(local);
-	cout << "Local:" << local << " Global: " << global 
-	     << " and back:" << a.globalToLocal(global) << endl;
+        Position local, global = a.toGlobal(local);
+        cout << "Local:" << local << " Global: " << global
+        << " and back:" << a.globalToLocal(global) << endl;
       */
       return Alignment(n);
     }
@@ -76,15 +76,15 @@ namespace {
     PlacementPath::const_reverse_iterator j=nodes.rbegin();
     ElementPath::const_reverse_iterator   k=det_nodes.rbegin();
     for(; j!=nodes.rend(); ++j, ++level)  {
-      //cout << "(" << level << ") " << (void*)((*j).ptr()) 
-      //	   << " " << string((*j)->GetName()) << " ";
+      //cout << "(" << level << ") " << (void*)((*j).ptr())
+      //           << " " << string((*j)->GetName()) << " ";
       if ( ::strcmp((*j).ptr()->GetName(),(*k).placement().ptr()->GetName()) )  {
-	//cout << "[DE]";
-	elements.push_back(make_pair(level,*k));
-	++k;
+        //cout << "[DE]";
+        elements.push_back(make_pair(level,*k));
+        ++k;
       }
       else  {
-	//elements.push_back(make_pair(level,DetElement()));
+        //elements.push_back(make_pair(level,DetElement()));
       }
       //cout << " ";
     }

@@ -29,7 +29,7 @@ using namespace std;
 
 /// Standard constructor
 Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* context, const string& nam)
-    : Geant4OutputAction(context, nam), m_file(0), m_tree(0) {
+: Geant4OutputAction(context, nam), m_file(0), m_tree(0) {
   declareProperty("Section", m_section = "EVENT");
   declareProperty("HandleMCTruth", m_handleMCTruth = true);
   InstanceCount::increment(this);
@@ -161,27 +161,27 @@ void Geant4Output2ROOT::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
     Geant4ParticleMap* truth = context()->event().extension<Geant4ParticleMap>();
     if ( m_handleMCTruth && truth && nhits > 0 )   {
       try  {
-	for(size_t i=0; i<nhits; ++i)   {
-	  Geant4HitData* h = coll->hit(i);
-	  Geant4Tracker::Hit* trk_hit = dynamic_cast<Geant4Tracker::Hit*>(h);
-	  if ( 0 != trk_hit )   {
-	    Geant4HitData::Contribution& t = trk_hit->truth;
-	    int trackID = t.trackID;
-	    t.trackID = truth->particleID(trackID);
-	  }
-	  Geant4Calorimeter::Hit* cal_hit = dynamic_cast<Geant4Calorimeter::Hit*>(h);
-	  if ( 0 != cal_hit )   {
-	    Geant4HitData::Contributions& c = cal_hit->truth;
-	    for(Geant4HitData::Contributions::iterator j=c.begin(); j!=c.end(); ++j)  {
-	      Geant4HitData::Contribution& t = *j;
-	      int trackID = t.trackID;
-	      t.trackID = truth->particleID(trackID);
-	    }
-	  }
-	}
+        for(size_t i=0; i<nhits; ++i)   {
+          Geant4HitData* h = coll->hit(i);
+          Geant4Tracker::Hit* trk_hit = dynamic_cast<Geant4Tracker::Hit*>(h);
+          if ( 0 != trk_hit )   {
+            Geant4HitData::Contribution& t = trk_hit->truth;
+            int trackID = t.trackID;
+            t.trackID = truth->particleID(trackID);
+          }
+          Geant4Calorimeter::Hit* cal_hit = dynamic_cast<Geant4Calorimeter::Hit*>(h);
+          if ( 0 != cal_hit )   {
+            Geant4HitData::Contributions& c = cal_hit->truth;
+            for(Geant4HitData::Contributions::iterator j=c.begin(); j!=c.end(); ++j)  {
+              Geant4HitData::Contribution& t = *j;
+              int trackID = t.trackID;
+              t.trackID = truth->particleID(trackID);
+            }
+          }
+        }
       }
       catch(...)   {
-	printout(ERROR,name(),"+++ Exception while saving collection %s.",hc_nam.c_str());
+        printout(ERROR,name(),"+++ Exception while saving collection %s.",hc_nam.c_str());
       }
     }
     fill(hc_nam, coll->vector_type(), &hits);

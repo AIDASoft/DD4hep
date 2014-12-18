@@ -48,8 +48,8 @@ namespace DD4hep {
       // Now we set the object properties
       vector<XML::Attribute> attrs = props.attributes();
       for(vector<XML::Attribute>::iterator i=attrs.begin(); i!=attrs.end(); ++i)   {
-	XML::Attribute a = *i;
-	handle[XML::_toString(props.attr_name(a))].str(props.attr<string>(a));
+        XML::Attribute a = *i;
+        handle[XML::_toString(props.attr_name(a))].str(props.attr<string>(a));
       }
     }
 
@@ -59,10 +59,10 @@ namespace DD4hep {
       // Now we set the object properties
       XML::Handle_t  props = action.child(_Unicode(properties),false);
       if ( props )  {
-	_setAttributes(handle, props);
+        _setAttributes(handle, props);
       }
       if ( action.hasAttr(_Unicode(Control)) )   {
-	handle["Control"].str(props.attr<string>(_Unicode(Control)));      
+        handle["Control"].str(props.attr<string>(_Unicode(Control)));
       }
     }
 
@@ -75,13 +75,13 @@ namespace DD4hep {
       Sensitive handle(kernel,action.attr<string>(_U(name)),detector);
       _setProperties(Action(handle.get()),e);
       for(xml_coll_t f(e,_Unicode(filter)); f; ++f)  {
-	string nam = f.attr<string>(_U(name));
-	Filter filter(kernel.globalFilter(nam,false));
-	handle->adopt(filter);
+        string nam = f.attr<string>(_U(name));
+        Filter filter(kernel.globalFilter(nam,false));
+        handle->adopt(filter);
       }
       installMessenger(handle);
       printout(INFO,"Geant4Setup","+++ Added sensitive element %s of type %s",
-	       tn.second.c_str(),tn.first.c_str());
+               tn.second.c_str(),tn.first.c_str());
       return Action(handle);
     }
 
@@ -97,12 +97,12 @@ namespace DD4hep {
       installMessenger(handle);
 
       if ( action.hasChild(_Unicode(adopt)) )  {
-	xml_comp_t child = action.child(_Unicode(adopt));
-	Geant4Action* user = kernel.globalAction(child.nameStr());
-	Geant4ParticleHandler* ph = dynamic_cast<Geant4ParticleHandler*>(handle.get());
-	if ( ph )  {
-	  ph->adopt(user);
-	}
+        xml_comp_t child = action.child(_Unicode(adopt));
+        Geant4Action* user = kernel.globalAction(child.nameStr());
+        Geant4ParticleHandler* ph = dynamic_cast<Geant4ParticleHandler*>(handle.get());
+        if ( ph )  {
+          ph->adopt(user);
+        }
       }
       return handle;
     }
@@ -114,19 +114,19 @@ namespace DD4hep {
       TypeName typ    = TypeName::split(nam);
       Kernel&  kernel = Kernel::access(lcdd);
       Action action((what==FILTER) ? (Geant4Action*)kernel.globalFilter(typ.second,false)
-		    : (what==ACTION) ? kernel.globalAction(typ.second,false)
-		    ///  : (what==FILTER) ? kernel.globalAction(typ.second,false)
-		    : 0);
+                    : (what==ACTION) ? kernel.globalAction(typ.second,false)
+                    ///  : (what==FILTER) ? kernel.globalAction(typ.second,false)
+                    : 0);
       // Create the object using the factory method
       if ( !action )  {
-	action = (what == SENSITIVE) ? Action(_convertSensitive(lcdd, a, seqType))
-	  : (what==ACTION) ? _convertAction(lcdd, a)
-	  : (what==FILTER) ? _convertAction(lcdd, a)
-	  : Action();
-	if ( !action )  {
-	  throw runtime_error(format("Geant4ActionSequence","DDG4: The action '%s'"
-				     " cannot be created. [Action-Missing]",nam.c_str()));
-	}
+        action = (what == SENSITIVE) ? Action(_convertSensitive(lcdd, a, seqType))
+          : (what==ACTION) ? _convertAction(lcdd, a)
+          : (what==FILTER) ? _convertAction(lcdd, a)
+          : Action();
+        if ( !action )  {
+          throw runtime_error(format("Geant4ActionSequence","DDG4: The action '%s'"
+                                     " cannot be created. [Action-Missing]",nam.c_str()));
+        }
       }
       return action;
     }
@@ -136,7 +136,7 @@ namespace DD4hep {
   /**
    *  <actions>
    *    <action name="Geant4PostTrackingAction/PostTrackAction"
-   *      <properties 
+   *      <properties
    *         NAME1="Value1"
    *         NAME2="Value2" />
    *    </action>
@@ -167,7 +167,7 @@ namespace DD4hep {
   /**
    *  <phases>
    *    <phase name="Geant4PostTrackingPhase/PostTrackPhase"
-   *      <properties 
+   *      <properties
    *         NAME1="Value1"
    *         NAME2="Value2" />
    *    </phase>
@@ -230,34 +230,34 @@ namespace DD4hep {
       TypeName tn = TypeName::split(nam);
       DetElement det = lcdd.detector(tn.first);
       if ( !det.isValid() )   {
-	throw runtime_error(format("Phase","DDG4: The phase '%s' of type SensitiveSeq"
-				   " cannot be attached to a non-existing detector"
-				   " [Detector-Missing]",nam.c_str()));
+        throw runtime_error(format("Phase","DDG4: The phase '%s' of type SensitiveSeq"
+                                   " cannot be attached to a non-existing detector"
+                                   " [Detector-Missing]",nam.c_str()));
       }
 
       Geometry::SensitiveDetector sd = lcdd.sensitiveDetector(tn.first);
       if ( !sd.isValid() )  {
-	throw runtime_error(format("Phase","DDG4: The phase '%s' of type SensitiveSeq"
-				   " cannot be attached to a non-existing sensitive detector"
-				   " [Sensitive-Missing]",nam.c_str()));
+        throw runtime_error(format("Phase","DDG4: The phase '%s' of type SensitiveSeq"
+                                   " cannot be attached to a non-existing sensitive detector"
+                                   " [Sensitive-Missing]",nam.c_str()));
       }
       SensitiveSeq sdSeq = SensitiveSeq(kernel,tn.first);
       if ( tn.second == "begin" )
-	sdSeq->callAtBegin((p=kernel.addPhase<G4HCofThisEvent*>(tn.second)).get(),
-			   &PH::call<G4HCofThisEvent*>);
+        sdSeq->callAtBegin((p=kernel.addPhase<G4HCofThisEvent*>(tn.second)).get(),
+                           &PH::call<G4HCofThisEvent*>);
       else if ( tn.second == "end" )
-	sdSeq->callAtEnd((p=kernel.addPhase<G4HCofThisEvent*>(tn.second)).get(),
-			 &PH::call<G4HCofThisEvent*>);
+        sdSeq->callAtEnd((p=kernel.addPhase<G4HCofThisEvent*>(tn.second)).get(),
+                         &PH::call<G4HCofThisEvent*>);
       else if ( tn.second == "clear" )
-	sdSeq->callAtClear((p=kernel.addPhase<G4HCofThisEvent*>(tn.second)).get(),
-			   &PH::call<G4HCofThisEvent*>);
+        sdSeq->callAtClear((p=kernel.addPhase<G4HCofThisEvent*>(tn.second)).get(),
+                           &PH::call<G4HCofThisEvent*>);
       else if ( tn.second == "process" )
-	sdSeq->callAtProcess((p=kernel.addPhase<G4Step*>(tn.second)).get(),
-			     &PH::call<G4Step*,G4TouchableHistory*>);
-      else 
-	throw runtime_error(format("Phase","DDG4: The phase '%s' of type SensitiveSeq"
-				   " cannot be attached to the call '%s'."
-				   " [Callback-Missing]",tn.first.c_str(), tn.second.c_str()));
+        sdSeq->callAtProcess((p=kernel.addPhase<G4Step*>(tn.second)).get(),
+                             &PH::call<G4Step*,G4TouchableHistory*>);
+      else
+        throw runtime_error(format("Phase","DDG4: The phase '%s' of type SensitiveSeq"
+                                   " cannot be attached to the call '%s'."
+                                   " [Callback-Missing]",tn.first.c_str(), tn.second.c_str()));
     }
   }
 
@@ -269,7 +269,7 @@ namespace DD4hep {
    *    </sequence>
    *    <sequence name="Geant4SensdetActionSequence/SiVertexBarrel"
    *      <member type="Geant4TrackerSensitiveMonitor/TrackerHitMonitor">
-   *        <properties 
+   *        <properties
    *           NAME1="Value1"
    *           NAME2="Value2" />
    *      </member>
@@ -289,11 +289,11 @@ namespace DD4hep {
       SensitiveDetector sensitive = lcdd.sensitiveDetector(sd_nam);
       seqNam  = seq.attr<string>(_U(type))+"/"+sd_nam;
       if ( !sensitive.isValid() )  {
-	printout(ALWAYS,"Geant4Setup","+++ ActionSequence %s is defined, "
-		 "but no sensitive detector present.",seqNam.c_str());
-	printout(ALWAYS,"Geant4Setup","+++ ---> Sequence for detector %s IGNORED on popular request!",
-		 sd_nam.c_str());
-	return;
+        printout(ALWAYS,"Geant4Setup","+++ ActionSequence %s is defined, "
+                 "but no sensitive detector present.",seqNam.c_str());
+        printout(ALWAYS,"Geant4Setup","+++ ---> Sequence for detector %s IGNORED on popular request!",
+                 sd_nam.c_str());
+        return;
       }
       seqType = TypeName::split(seqNam);
       sdSeq   = SensitiveSeq(kernel,seqNam);
@@ -304,7 +304,7 @@ namespace DD4hep {
       seqType = TypeName::split(seqNam);
     }
     printout(INFO,"Geant4Setup","+++ ActionSequence %s of type %s added.",
-	     seqType.second.c_str(),seqType.first.c_str());
+             seqType.second.c_str(),seqType.first.c_str());
 
     if ( seqType.second == "PhysicsList" )  {
       PhysicsActionSeq pl(&kernel.physicsList());
@@ -318,43 +318,43 @@ namespace DD4hep {
       string   nam = a.attr<string>(_U(name));
       Action action(_createAction(lcdd,a,seqType.second,what));
       if ( seqType.second == "RunAction" )
-	kernel.runAction().adopt(_action<RunAction::handled_type>(action.get()));
+        kernel.runAction().adopt(_action<RunAction::handled_type>(action.get()));
       else if ( seqType.second == "EventAction" )
-	kernel.eventAction().adopt(_action<EventAction::handled_type>(action.get()));
+        kernel.eventAction().adopt(_action<EventAction::handled_type>(action.get()));
       else if ( seqType.second == "GeneratorAction" )
-	kernel.generatorAction().adopt(_action<GenAction::handled_type>(action.get()));
+        kernel.generatorAction().adopt(_action<GenAction::handled_type>(action.get()));
       else if ( seqType.second == "TrackingAction" )
-	kernel.trackingAction().adopt(_action<TrackAction::handled_type>(action.get()));
+        kernel.trackingAction().adopt(_action<TrackAction::handled_type>(action.get()));
       else if ( seqType.second == "StackingAction" )
-	kernel.stackingAction().adopt(_action<StackAction::handled_type>(action.get()));
+        kernel.stackingAction().adopt(_action<StackAction::handled_type>(action.get()));
       else if ( seqType.second == "SteppingAction" )
-	kernel.steppingAction().adopt(_action<StepAction::handled_type>(action.get()));
+        kernel.steppingAction().adopt(_action<StepAction::handled_type>(action.get()));
       else if ( seqType.second == "PhysicsList" )
-	kernel.physicsList().adopt(_action<PhysicsList::handled_type>(action.get()));
+        kernel.physicsList().adopt(_action<PhysicsList::handled_type>(action.get()));
       else if ( sdSeq.get() )
-	sdSeq->adopt(_action<Sensitive::handled_type>(action.get()));
+        sdSeq->adopt(_action<Sensitive::handled_type>(action.get()));
       else   {
-	throw runtime_error(format("ActionSequence","DDG4: The action '%s'"
-				   " cannot be attached to any sequence '%s'."
-				   " [Sequence-Missing]",nam.c_str(), seqNam.c_str()));	
+        throw runtime_error(format("ActionSequence","DDG4: The action '%s'"
+                                   " cannot be attached to any sequence '%s'."
+                                   " [Sequence-Missing]",nam.c_str(), seqNam.c_str()));
       }
       printout(INFO,"Geant4Setup","+++ ActionSequence %s added filter object:%s",
-	       seqType.second.c_str(),action->name().c_str());
+               seqType.second.c_str(),action->name().c_str());
     }
     if ( what == SENSITIVE )  {
       for(xml_coll_t a(seq,_Unicode(filter)); a; ++a)  {
-	string   nam = a.attr<string>(_U(name));
-	Action action(_createAction(lcdd,a,"",FILTER));
-	installMessenger(action);
-	printout(INFO,"Geant4Setup","+++ ActionSequence %s added filter object:%s",
-		 seqType.second.c_str(),action->name().c_str());
-	if ( sdSeq.get() )
-	  sdSeq->adopt(_action<Filter::handled_type>(action.get()));
-	else   {
-	  throw runtime_error(format("ActionSequence","DDG4: The action '%s'"
-				     " cannot be attached to any sequence '%s'."
-				     " [Sequence-Missing]",nam.c_str(), seqNam.c_str()));	
-	}
+        string   nam = a.attr<string>(_U(name));
+        Action action(_createAction(lcdd,a,"",FILTER));
+        installMessenger(action);
+        printout(INFO,"Geant4Setup","+++ ActionSequence %s added filter object:%s",
+                 seqType.second.c_str(),action->name().c_str());
+        if ( sdSeq.get() )
+          sdSeq->adopt(_action<Filter::handled_type>(action.get()));
+        else   {
+          throw runtime_error(format("ActionSequence","DDG4: The action '%s'"
+                                     " cannot be attached to any sequence '%s'."
+                                     " [Sequence-Missing]",nam.c_str(), seqNam.c_str()));
+        }
       }
     }
   }
@@ -364,7 +364,7 @@ namespace DD4hep {
    *  <physicslist>
    *    <processes>
    *      <particle name="'e-'">
-   *  	    <process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+   *        <process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
    *        <process name="G4eIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
    *      </particle>
    *    </processes>
@@ -373,7 +373,7 @@ namespace DD4hep {
   template <> void Converter<Geant4PhysicsList::ParticleProcesses>::operator()(xml_h e) const {
     xml_comp_t part(e);
     string part_name = part.nameStr();
-    Geant4PhysicsList::ParticleProcesses& procs = 
+    Geant4PhysicsList::ParticleProcesses& procs =
       _object<Geant4PhysicsList>().processes(part_name);
     for(xml_coll_t q(part,_Unicode(process)); q; ++q)  {
       xml_comp_t proc(q);
@@ -384,7 +384,7 @@ namespace DD4hep {
       p.ordPostStepDoIt   = proc.attr<int>(_Unicode(ordPostStepDoIt));
       procs.push_back(p);
       printout(INFO,"Geant4Setup","+++ Converter<ParticleProcesses: Particle:%s add process %s %d %d %d",
-	       part_name.c_str(),p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
+               part_name.c_str(),p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
     }
   }
 
@@ -457,9 +457,9 @@ namespace DD4hep {
   template <> void Converter<Kernel>::operator()(xml_h e) const {
     Kernel& kernel = Kernel::access(lcdd);
     xml_comp_t k(e);
-    if ( k.hasAttr(_Unicode(NumEvents)) )  
+    if ( k.hasAttr(_Unicode(NumEvents)) )
       kernel.property("NumEvents").str(k.attr<string>(_Unicode(NumEvents)));
-    if ( k.hasAttr(_Unicode(UI)) )  
+    if ( k.hasAttr(_Unicode(UI)) )
       kernel.property("UI").str(k.attr<string>(_Unicode(UI)));
   }
 
@@ -470,7 +470,7 @@ namespace DD4hep {
     long result = ROOT::Reflex::PluginService::Create<long>("geant4_XML_reader",&lcdd,&seq);
     if ( 0 == result )  {
       throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
-			  " \"" + seq.tag() + "\" - no factory of type geant4_XML_reader.");
+                          " \"" + seq.tag() + "\" - no factory of type geant4_XML_reader.");
     }
     result = *(long*) result;
     if (result != 1) {

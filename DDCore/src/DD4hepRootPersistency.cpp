@@ -27,8 +27,8 @@ int DD4hepRootPersistency::save(DD4hep::Geometry::LCDD& lcdd, const char* fname,
     int nBytes = persist->Write(instance);
     f->Close();
     DD4hep::printout(DD4hep::ALWAYS,"DD4hepRootPersistency",
-		     "+++ Wrote %d Bytes of geometry data '%s' to '%s'.",
-		     nBytes, instance, fname);
+                     "+++ Wrote %d Bytes of geometry data '%s' to '%s'.",
+                     nBytes, instance, fname);
     delete f;
     delete persist;
     return nBytes;
@@ -49,8 +49,8 @@ int DD4hepRootPersistency::load(DD4hep::Geometry::LCDD& lcdd, const char* fname,
       return 1;
     }
     DD4hep::printout(DD4hep::ERROR,"DD4hepRootPersistency",
-		     "+++ Cannot Cannot load instance '%s' from file '%s'.",
-		     instance, fname);
+                     "+++ Cannot Cannot load instance '%s' from file '%s'.",
+                     instance, fname);
     f->ls();
     delete f;
     return 0;

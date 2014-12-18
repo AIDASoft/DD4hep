@@ -17,7 +17,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4InteractionVertexBoost::Geant4InteractionVertexBoost(Geant4Context* context, const std::string& name)
-  : Geant4GeneratorAction(context, name)
+: Geant4GeneratorAction(context, name)
 {
   InstanceCount::increment(this);
   declareProperty("Angle", m_angle = 0);
@@ -32,7 +32,7 @@ Geant4InteractionVertexBoost::~Geant4InteractionVertexBoost() {
 
 /// Callback to generate primary particles
 void Geant4InteractionVertexBoost::operator()(G4Event*) {
-  Geant4PrimaryEvent::Interaction* inter = 
+  Geant4PrimaryEvent::Interaction* inter =
     context()->event().extension<Geant4PrimaryEvent>()->get(m_mask);
   if ( inter )  {
     boostInteraction(this, inter, m_angle);

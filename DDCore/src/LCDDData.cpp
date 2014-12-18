@@ -24,8 +24,8 @@ using namespace std;
 
 /// Default constructor
 LCDDData::LCDDData()
-  : m_manager(0), m_world(), m_trackers(), m_worldVol(), 
-    m_trackingVol(), m_field("global"), 
+  : m_manager(0), m_world(), m_trackers(), m_worldVol(),
+    m_trackingVol(), m_field("global"),
     m_extensions(typeid(LCDDData)), m_volManager()
 {
   InstanceCount::increment(this);
@@ -62,7 +62,7 @@ void LCDDData::destroyData(bool destroy_mgr)   {
   m_materialVacuum.clear();
   m_materialAir.clear();
 
-  if ( destroy_mgr ) 
+  if ( destroy_mgr )
     deletePtr(m_manager);
   else  {
     gGeoManager = m_manager;

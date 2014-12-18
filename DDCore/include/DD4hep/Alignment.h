@@ -26,7 +26,7 @@ namespace DD4hep {
     /// Main handle class to hold a TGeo alignment object of type TGeoPhysicalNode
     /**
      *  See the ROOT documentation about the TGeoPhysicalNode for further details:
-     *  @see http://root.cern.ch/root/html/TGeoPhysicalNode.html 
+     *  @see http://root.cern.ch/root/html/TGeoPhysicalNode.html
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -38,14 +38,14 @@ namespace DD4hep {
       /// Default constructor
       Alignment();
       /// Default constructor
-      Alignment(TGeoPhysicalNode* p) 
-	: Handle<TGeoPhysicalNode>(p)  {
+    Alignment(TGeoPhysicalNode* p)
+      : Handle<TGeoPhysicalNode>(p)  {
       }
       /// Copy constructor
       Alignment(const Alignment& c);
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Alignment(const Handle<Q>& e)
-          : Handle<TGeoPhysicalNode>(e) {
+        : Handle<TGeoPhysicalNode>(e) {
       }
       /// Initializing constructor
       Alignment(const std::string& path);

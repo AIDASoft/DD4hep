@@ -1,7 +1,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
 
     extern const Tag_t Unicode_NULL;

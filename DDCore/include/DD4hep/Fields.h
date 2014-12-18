@@ -39,7 +39,7 @@ namespace DD4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_GEOMETRY
-    */
+     */
     class CartesianField: public Ref_t {
     public:
       enum FieldType {
@@ -69,18 +69,18 @@ namespace DD4hep {
       };
 
       /// Default constructor
-      CartesianField()
-          : Ref_t() {
+    CartesianField()
+      : Ref_t() {
       }
 
       /// Constructor to be used when reading the already parsed DOM tree
-      CartesianField(const CartesianField& e)
-          : Ref_t(e) {
+    CartesianField(const CartesianField& e)
+      : Ref_t(e) {
       }
 
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> CartesianField(const Handle<Q>& e)
-          : Ref_t(e) {
+        : Ref_t(e) {
       }
 
       /// Assignment operator
@@ -122,10 +122,10 @@ namespace DD4hep {
      *  with field components in Cartesian coordinates.
      *
      *  The actual behaviour is solely implemented in the underlying object
-     *  classes. The overlay field is the sum of several magnetic of electric 
+     *  classes. The overlay field is the sum of several magnetic of electric
      *  field components.
      *
-     *  The resulting field vectors are computed by the vector addition 
+     *  The resulting field vectors are computed by the vector addition
      *  of the individual components.
      *
      *  \author  M.Frank
@@ -149,7 +149,7 @@ namespace DD4hep {
       class Object: public NamedObject {
       public:
         int type;
-	DD4hep::Geometry::CartesianField electric;
+        DD4hep::Geometry::CartesianField electric;
         DD4hep::Geometry::CartesianField magnetic;
         std::vector<DD4hep::Geometry::CartesianField> electric_components;
         std::vector<DD4hep::Geometry::CartesianField> magnetic_components;
@@ -162,14 +162,14 @@ namespace DD4hep {
       };
 
       /// Default constructor
-      OverlayedField()
-          : Ref_t() {
+    OverlayedField()
+      : Ref_t() {
       }
 
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q>
-      OverlayedField(const Handle<Q>& e)
-          : Ref_t(e) {
+        OverlayedField(const Handle<Q>& e)
+        : Ref_t(e) {
       }
 
       /// Object constructor

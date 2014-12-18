@@ -86,8 +86,8 @@ void BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), voi
     grammar  = g;
     destruct = dtor;
     copy     = ctor;
-    (len > sizeof(data)) 
-      ? (pointer=::operator new(len),type=ALLOC_DATA) 
+    (len > sizeof(data))
+      ? (pointer=::operator new(len),type=ALLOC_DATA)
       : (pointer=data,type=PLAIN_DATA);
     return;
   }
@@ -103,7 +103,7 @@ void BlockData::assign(const void* ptr, const type_info& typ)  {
     throw runtime_error("Conditions data block is unbound. Cannot copy data.");
   }
   else if ( grammar->type() != typ )  {
-    throw runtime_error("bad binding");    
+    throw runtime_error("bad binding");
   }
   (*copy)(pointer,ptr);
 }
@@ -133,8 +133,8 @@ ConditionObject& ConditionObject::move(ConditionObject& c)   {
 }
 
 /// Initializing constructor
-Entry::Entry(const DetElement& det, const string& nam, 
-	     const string& typ, const string& valid) 
+Entry::Entry(const DetElement& det, const string& nam,
+             const string& typ, const string& valid)
   : NamedObject(nam), detector(det), type(typ), value(), validity(valid)
 {
   InstanceCount::increment(this);

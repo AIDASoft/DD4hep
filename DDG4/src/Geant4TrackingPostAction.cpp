@@ -21,7 +21,7 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Helper class to manipulate strings
-/** 
+/**
  *  \author  M.Frank
  *  \version 1.0
  *  \ingroup DD4HEP_SIMULATION
@@ -29,7 +29,7 @@ using namespace DD4hep::Simulation;
 struct FindString {
   const std::string& m_name;
   FindString(const std::string& n)
-      : m_name(n) {
+    : m_name(n) {
   }
   bool operator()(const std::string& n) const {
     return m_name == n;
@@ -42,7 +42,7 @@ struct FindString {
 
 /// Standard constructor
 Geant4TrackingPostAction::Geant4TrackingPostAction(Geant4Context* context, const std::string& name)
-    : Geant4TrackingAction(context, name) {
+: Geant4TrackingAction(context, name) {
   InstanceCount::increment(this);
   declareProperty("IgnoredProcesses",  m_ignoredProcs);
   declareProperty("RequiredProcesses", m_requiredProcs);

@@ -60,30 +60,30 @@ namespace DD4hep {
       /// Initializing constructor. The tree will automatically be built if possible
       Geant4VolumeManager(Geometry::LCDD& lcdd, Geant4GeometryInfo* info);
       /// Default constructor
-      Geant4VolumeManager()
-          : Base(), m_isValid(false) {
+    Geant4VolumeManager()
+      : Base(), m_isValid(false) {
       }
       /// Constructor to be used when reading the already parsed object
-      Geant4VolumeManager(const Base& e)
-          : Base(e), m_isValid(false) {
+    Geant4VolumeManager(const Base& e)
+      : Base(e), m_isValid(false) {
       }
       /// Constructor to be used when reading the already parsed object
-      Geant4VolumeManager(const Geant4VolumeManager& e)
-          : Base(e), m_isValid(false) {
+    Geant4VolumeManager(const Geant4VolumeManager& e)
+      : Base(e), m_isValid(false) {
       }
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Geant4VolumeManager(const Geometry::Handle<Q>& e)
-          : Base(e), m_isValid(false) {
+        : Base(e), m_isValid(false) {
       }
       /// Assignment operator
       Geant4VolumeManager& operator=(const Geant4VolumeManager& c)  {
-	if ( this != &c ) {
-	  m_element = c.m_element;
-	  m_isValid = c.m_isValid;
-	}
-	return *this;
+        if ( this != &c ) {
+          m_element = c.m_element;
+          m_isValid = c.m_isValid;
+        }
+        return *this;
       }
-      
+
       /// Helper: Generate placement path from touchable object
       PlacementPath placementPath(const G4VTouchable* touchable, bool exception = true) const;
       /// Access CELLID by placement path

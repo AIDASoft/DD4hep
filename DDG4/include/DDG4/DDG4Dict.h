@@ -3,7 +3,7 @@
 //  AIDA Detector description implementation
 //--------------------------------------------------------------------
 //
-//  Define the ROOT dictionaries for all data classes to be saved 
+//  Define the ROOT dictionaries for all data classes to be saved
 //  which are created by the DDG4 examples.
 //
 //  Author     : M.Frank
@@ -15,7 +15,7 @@
 // FRamework include files
 #include "DDG4/Geant4Data.h"
 #include "DDG4/Geant4Particle.h"
-namespace DD4hep { 
+namespace DD4hep {
   namespace DDSegmentation { }
   namespace Simulation { }
   namespace Geometry   { }

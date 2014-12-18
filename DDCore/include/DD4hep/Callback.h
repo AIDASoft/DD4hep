@@ -19,13 +19,13 @@
  */
 namespace DD4hep {
 
-  
+
   /// Definition of the generic callback structure for member functions
   /**
-   *  The callback structure allows to wrap any member function with up to 
-   *  3 arguments into an abstract objects, which could later be called 
+   *  The callback structure allows to wrap any member function with up to
+   *  3 arguments into an abstract objects, which could later be called
    *  using the argument list. The pointer to the hosting objects is stored
-   *  in the callback object. The callback objects in this sense behaves 
+   *  in the callback object. The callback objects in this sense behaves
    *  very similar to a static function.
    *
    *  \author  M.Frank
@@ -47,18 +47,18 @@ namespace DD4hep {
     mfunc_t func;
 
     /// Default constructor
-    Callback()
-        : par(0), call(0) {
+  Callback()
+    : par(0), call(0) {
       func.first = func.second = 0;
     }
     /// Constructor with object initialization
-    Callback(void* p)
-        : par(p), call(0) {
+  Callback(void* p)
+    : par(p), call(0) {
       func.first = func.second = 0;
     }
     /// Initializing constructor
-    Callback(void* p, void* mf, func_t c)
-        : par(p), call(c) {
+  Callback(void* p, void* mf, func_t c)
+    : par(p), call(c) {
       func = *(mfunc_t*) mf;
     }
     /// Check validity of the callback object
@@ -72,7 +72,7 @@ namespace DD4hep {
     /// Template cast function used internally by the wrapper for type conversion to the object's type
     template <typename T> static T* cast(void* p) {
       return (T*) p;
-    }    
+    }
     /// Template const cast function used internally by the wrapper for type conversion to the object's type
     template <typename T> static const T* c_cast(const void* p) {
       return (const T*) p;
@@ -266,7 +266,7 @@ namespace DD4hep {
     }
     /// Callback setup function for Callbacks with const member functions with explicit return type taking 3 arguments
     template <typename R, typename T, typename A0, typename A1, typename A2> const Callback& make(
-        R (T::*pmf)(A0, A1, A2) const) {
+                                                                                                  R (T::*pmf)(A0, A1, A2) const) {
       typedef R (T::*pfunc_t)(A0, A1, A2);
       typedef Wrapper<pfunc_t> _W;
       struct _Wrapper : public _W {
@@ -338,9 +338,9 @@ namespace DD4hep {
     CallbackSequence() {
     }
     /// Copy constructor
-    CallbackSequence(const CallbackSequence& c)
-        : callbacks(c.callbacks) {
-    }
+  CallbackSequence(const CallbackSequence& c)
+  : callbacks(c.callbacks) {
+  }
     /// Assignment operator
     CallbackSequence& operator=(const CallbackSequence& c)  {
       if ( this != & c ) callbacks = c.callbacks;
@@ -350,9 +350,9 @@ namespace DD4hep {
     //template <typename TYPE, typename R, typename OBJECT>
     //  CallbackSequence(const std::vector<TYPE*>& objects, R (TYPE::value_type::*pmf)())  {
     //}
-    bool empty() const {
-      return callbacks.empty();
-    }
+      bool empty() const {
+        return callbacks.empty();
+      }
     /// Clear the sequence and remove all callbacks
     void clear() {
       callbacks.clear();
@@ -360,9 +360,9 @@ namespace DD4hep {
     /// Generically Add a new callback to the sequence depending on the location arguments
     void add(const Callback& cb,Location where) {
       if ( where == CallbackSequence::FRONT )
-	callbacks.insert(callbacks.begin(),cb);
-      else 
-	callbacks.insert(callbacks.end(),cb);
+        callbacks.insert(callbacks.begin(),cb);
+      else
+        callbacks.insert(callbacks.end(),cb);
     }
     /// Execution overload for callbacks with no arguments
     void operator()() const;
@@ -404,25 +404,25 @@ namespace DD4hep {
     /** Callback setup for callbacks with 1 argument  */
     /// Add a new callback to a member function with explicit return type and 1 argument
     template <typename TYPE, typename R, typename OBJECT, typename A>
-    void add(TYPE* pointer, R (OBJECT::*pmf)(A),Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, R (OBJECT::*pmf)(A),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
     /// Add a new callback to a void member function and 1 argument
     template <typename TYPE, typename OBJECT, typename A>
-    void add(TYPE* pointer, void (OBJECT::*pmf)(A),Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, void (OBJECT::*pmf)(A),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
     /// Add a new callback to a const member function with explicit return type and 1 argument
     template <typename TYPE, typename R, typename OBJECT, typename A>
-    void add(TYPE* pointer, R (OBJECT::*pmf)(A) const,Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, R (OBJECT::*pmf)(A) const,Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
     /// Add a new callback to a const void member function and 1 argument
     template <typename TYPE, typename OBJECT, typename A>
-    void add(TYPE* pointer, void (OBJECT::*pmf)(A) const,Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, void (OBJECT::*pmf)(A) const,Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
@@ -431,25 +431,25 @@ namespace DD4hep {
     /** Callback setup for callbacks with 2 arguments  */
     /// Add a new callback to a member function with explicit return type and 2 arguments
     template <typename TYPE, typename R, typename OBJECT, typename A1, typename A2>
-    void add(TYPE* pointer, R (OBJECT::*pmf)(A1, A2),Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, R (OBJECT::*pmf)(A1, A2),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
     /// Add a new callback to a const member function with explicit return type and 2 arguments
     template <typename TYPE, typename R, typename OBJECT, typename A1, typename A2>
-    void add(TYPE* pointer, R (OBJECT::*pmf)(A1, A2) const,Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, R (OBJECT::*pmf)(A1, A2) const,Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
     /// Add a new callback to a void member function with 2 arguments
     template <typename TYPE, typename OBJECT, typename A1, typename A2>
-    void add(TYPE* pointer, void (OBJECT::*pmf)(A1, A2),Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, void (OBJECT::*pmf)(A1, A2),Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
     /// Add a new callback to a const void member function with 2 arguments
     template <typename TYPE, typename OBJECT, typename A1, typename A2>
-    void add(TYPE* pointer, void (OBJECT::*pmf)(A1, A2) const,Location where=CallbackSequence::END) {
+      void add(TYPE* pointer, void (OBJECT::*pmf)(A1, A2) const,Location where=CallbackSequence::END) {
       checkTypes(typeid(TYPE), typeid(OBJECT), dynamic_cast<OBJECT*>(pointer));
       add(Callback(pointer).make(pmf),where);
     }
@@ -465,7 +465,7 @@ namespace DD4hep {
   }
   /// Execution overload for callbacks with 1 argument
   template <typename A0> inline
-  void CallbackSequence::operator()(A0 a0) const {
+    void CallbackSequence::operator()(A0 a0) const {
     if (!callbacks.empty()) {
       const void* args[1] = { a0 };
       for (Callbacks::const_iterator i = callbacks.begin(); i != callbacks.end(); ++i)
@@ -474,7 +474,7 @@ namespace DD4hep {
   }
   /// Execution overload for callbacks with 2 arguments
   template <typename A0, typename A1> inline
-  void CallbackSequence::operator()(A0 a0, A1 a1) const {
+    void CallbackSequence::operator()(A0 a0, A1 a1) const {
     if (!callbacks.empty()) {
       const void* args[2] = { a0, a1 };
       for (Callbacks::const_iterator i = callbacks.begin(); i != callbacks.end(); ++i)
@@ -483,7 +483,7 @@ namespace DD4hep {
   }
   /// Execution overload for callbacks with 3 arguments
   template <typename A0, typename A1, typename A2> inline
-  void CallbackSequence::operator()(A0 a0, A1 a1, A2 a2) const {
+    void CallbackSequence::operator()(A0 a0, A1 a1, A2 a2) const {
     if (!callbacks.empty()) {
       const void* args[3] = { a0, a1, a2 };
       for (Callbacks::const_iterator i = callbacks.begin(); i != callbacks.end(); ++i)

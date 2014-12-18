@@ -21,7 +21,7 @@ using namespace DD4hep::Simulation;
 typedef DD4hep::ReferenceBitMask<int> PropertyMask;
 
 /// Initializing constructor
-Geant4EventReader::Geant4EventReader(const std::string& nam) 
+Geant4EventReader::Geant4EventReader(const std::string& nam)
 : m_name(nam), m_directAccess(false), m_currEvent(0)
 {
 }
@@ -31,7 +31,7 @@ Geant4EventReader::~Geant4EventReader()   {
 }
 
 /// Skip event. To be implemented for sequential sources
-Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  { 
+Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
   if ( hasDirectAccess() )   {
     ++m_currEvent;
     return EVENT_READER_OK;
@@ -44,7 +44,7 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
 }
 
 /// Move to the indicated event number.
-Geant4EventReader::EventReaderStatus 
+Geant4EventReader::EventReaderStatus
 Geant4EventReader::moveToEvent(int event_number)   {
   if ( event_number >= INT_MIN )   {
     return EVENT_READER_OK;  // Logic below does not work as expected.
@@ -70,7 +70,7 @@ Geant4EventReader::moveToEvent(int event_number)   {
 
 /// Standard constructor
 Geant4InputAction::Geant4InputAction(Geant4Context* context, const string& name)
-  : Geant4GeneratorAction(context,name), m_reader(0)
+: Geant4GeneratorAction(context,name), m_reader(0)
 {
   declareProperty("Input",          m_input);
   declareProperty("Sync",           m_firstEvent=0);
@@ -102,12 +102,12 @@ int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& par
     try  {
       m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
       if ( 0 == m_reader )   {
-	PluginDebug dbg;
-	m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
-	abortRun(issue(evid)+"Error creating reader plugin.",
-		 "Failed to create file reader of type %s. Cannot open dataset %s",
-		 tn.first.c_str(),tn.second.c_str());
-	return Geant4EventReader::EVENT_READER_NO_FACTORY;
+        PluginDebug dbg;
+        m_reader = PluginService::Create<Geant4EventReader*>(tn.first,tn.second);
+        abortRun(issue(evid)+"Error creating reader plugin.",
+                 "Failed to create file reader of type %s. Cannot open dataset %s",
+                 tn.first.c_str(),tn.second.c_str());
+        return Geant4EventReader::EVENT_READER_NO_FACTORY;
       }
     }
     catch(const exception& e)  {
@@ -121,12 +121,12 @@ int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& par
   int status = m_reader->moveToEvent(evid);
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
     abortRun(issue(evid)+"Error when moving to event - may be end of file.",
-	     "Error when reading file %s",m_input.c_str());
-   }
+             "Error when reading file %s",m_input.c_str());
+  }
   status = m_reader->readParticles(evid,particles);
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
     abortRun(issue(evid)+"Error when reading file - may be end of file.",
-	     "Error when reading file %s",m_input.c_str());
+             "Error when reading file %s",m_input.c_str());
   }
   return status;
 }
@@ -147,7 +147,7 @@ void Geant4InputAction::operator()(G4Event* event)   {
   if ( primaries.empty() ) return;
 
   print("+++ Particle interaction with %d generator particles ++++++++++++++++++++++++",
-	int(primaries.size()));
+        int(primaries.size()));
   Geant4Vertex* vtx = new Geant4Vertex();
   vtx->x = 0;
   vtx->y = 0;
@@ -165,9 +165,9 @@ void Geant4InputAction::operator()(G4Event* event)   {
 
     if ( p->parents.size() == 0 )  {
       if ( status.isSet(G4PARTICLE_GEN_EMPTY) || status.isSet(G4PARTICLE_GEN_DOCUMENTATION) )
-	vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
+        vtx->in.insert(p->id);  // Beam particles and primary quarks etc.
       else
-	vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
+        vtx->out.insert(p->id); // Stuff, to be given to Geant4 together with daughters
     }
     inter->particles.insert(make_pair(p->id,p));
     p.dumpWithMomentumAndVertex(outputLevel()-1,name(),"->");

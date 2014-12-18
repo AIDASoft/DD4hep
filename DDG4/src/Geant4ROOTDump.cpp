@@ -28,7 +28,7 @@ typedef Geant4DataDump::Particles Particles;
 typedef Geant4DataDump::TrackerHits TrackerHits;
 typedef Geant4DataDump::CalorimeterHits CalorimeterHits;
 
-static long usage()   {    
+static long usage()   {
   printout(FATAL,"Geant4ROOTDump","usage: Geant4ROOTDump -opt (app-opts) --opt=value (plugin-opts)");
   printout(FATAL,"Geant4ROOTDump","       app-opts: ");
   printout(FATAL,"Geant4ROOTDump","       -print INFO      Print container summaries only.");
@@ -42,7 +42,7 @@ static long usage()   {
 }
 
 static pair<TClass*,void*> load(TBranch* branch, int entry)   {
-  TClass* cl = gROOT->GetClass(branch->GetClassName(),kTRUE); 
+  TClass* cl = gROOT->GetClass(branch->GetClassName(),kTRUE);
   if ( !cl )   {
     return pair<TClass*,void*>(0,0);
   }
@@ -74,13 +74,13 @@ static long dump_root(DD4hep::Geometry::LCDD&, int argc, char** argv) {
       string p1 = a.substr(0,idx);
       string p2 = a.substr(idx+1);
       if ( strncmp(p1.c_str(),"input",3)==0 )  {
-	input = p2;
+        input = p2;
       }
       if ( strncmp(p1.c_str(),"entry",5)==0 )  {
-	if ( 1 != ::sscanf(p2.c_str(),"%d",&entry) )  {
-	  printout(FATAL,tag,"+++ Argument %s is not properly formatted. must be --entry=<number>.",argv[j]);
-	  return usage();
-	}
+        if ( 1 != ::sscanf(p2.c_str(),"%d",&entry) )  {
+          printout(FATAL,tag,"+++ Argument %s is not properly formatted. must be --entry=<number>.",argv[j]);
+          return usage();
+        }
       }
       continue;
     }
@@ -118,40 +118,40 @@ static long dump_root(DD4hep::Geometry::LCDD&, int argc, char** argv) {
 
       // First suck in all data
       for (Int_t i=0;i<nbranches;i++)  {
-	TBranch* branch = (TBranch*)branches->UncheckedAt(i);
-	pair<TClass*,void*> data = load(branch,ievt);
-	if ( data.first ) event[branch->GetName()] = data;
+        TBranch* branch = (TBranch*)branches->UncheckedAt(i);
+        pair<TClass*,void*> data = load(branch,ievt);
+        if ( data.first ) event[branch->GetName()] = data;
       }
       // Now dump the stuff
       for(ENTRIES::const_iterator i=event.begin(); i!=event.end(); ++i)  {
-	pair<TClass*,void*> data = (*i).second;
-	if ( data.first == cl_particles )  {
-	  Particles* parts = (Particles*)data.second;
-	  dump.print(INFO, (*i).first, parts);
-	  for_each(parts->begin(), parts->end(), DestroyObject<Geant4Particle*>());
-	}
+        pair<TClass*,void*> data = (*i).second;
+        if ( data.first == cl_particles )  {
+          Particles* parts = (Particles*)data.second;
+          dump.print(INFO, (*i).first, parts);
+          for_each(parts->begin(), parts->end(), DestroyObject<Geant4Particle*>());
+        }
       }
       for(ENTRIES::const_iterator i=event.begin(); i!=event.end(); ++i)  {
-	pair<TClass*,void*> data = (*i).second;
-	if ( data.first == cl_particles )  {
-	}
-	else if ( data.first == cl_tracker )   {
-	  TrackerHits* hits = (TrackerHits*)data.second;
-	  dump.print(INFO, (*i).first, hits);
-	  for_each(hits->begin(), hits->end(), DestroyObject<Geant4Tracker::Hit*>());
-	}
-	else if ( data.first == cl_calo )   {
-	  CalorimeterHits* hits = (CalorimeterHits*)data.second;
-	  dump.print(INFO, (*i).first, hits);
-	  for_each(hits->begin(), hits->end(), DestroyObject<Geant4Calorimeter::Hit*>());
-	}
-	if ( data.first ) data.first->Destructor(data.second);
+        pair<TClass*,void*> data = (*i).second;
+        if ( data.first == cl_particles )  {
+        }
+        else if ( data.first == cl_tracker )   {
+          TrackerHits* hits = (TrackerHits*)data.second;
+          dump.print(INFO, (*i).first, hits);
+          for_each(hits->begin(), hits->end(), DestroyObject<Geant4Tracker::Hit*>());
+        }
+        else if ( data.first == cl_calo )   {
+          CalorimeterHits* hits = (CalorimeterHits*)data.second;
+          dump.print(INFO, (*i).first, hits);
+          for_each(hits->begin(), hits->end(), DestroyObject<Geant4Calorimeter::Hit*>());
+        }
+        if ( data.first ) data.first->Destructor(data.second);
       }
     }
     delete f;
   }
   else   {
-    printout(FATAL,tag,"+++ FAILED to open input file:%s",input.c_str());    
+    printout(FATAL,tag,"+++ FAILED to open input file:%s",input.c_str());
     return usage();
   }
   return 1;

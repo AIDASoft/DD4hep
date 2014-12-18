@@ -30,18 +30,18 @@ namespace DD4hep {  namespace Parsers {
     template <> double evaluate_string<double>(const std::string& value)   {
       double result = eval.evaluate(value.c_str());
       if (eval.status() != XmlTools::Evaluator::OK) {
-	std::cerr << value << ": ";
-	eval.print_error();
-	throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
+        std::cerr << value << ": ";
+        eval.print_error();
+        throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
       }
       return result;
     }
     template <> float evaluate_string<float>(const std::string& value)   {
       double result = eval.evaluate(value.c_str());
       if (eval.status() != XmlTools::Evaluator::OK) {
-	std::cerr << value << ": ";
-	eval.print_error();
-	throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
+        std::cerr << value << ": ";
+        eval.print_error();
+        throw std::runtime_error("DD4hep::Properties: Severe error during expression evaluation of " + value);
       }
       return (float) result;
     }

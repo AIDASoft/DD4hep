@@ -29,8 +29,8 @@ Geant4Run::~Geant4Run()   {
 }
 
 /// Intializing constructor
-Geant4Event::Geant4Event(const G4Event* evt, Geant4Random* rnd) 
-  : ObjectExtensions(typeid(Geant4Event)), m_event(evt), m_random(rnd)
+Geant4Event::Geant4Event(const G4Event* evt, Geant4Random* rnd)
+: ObjectExtensions(typeid(Geant4Event)), m_event(evt), m_random(rnd)
 {
   InstanceCount::increment(this);
 }
@@ -42,7 +42,7 @@ Geant4Event::~Geant4Event()  {
 
 /// Default constructor
 Geant4Context::Geant4Context(Geant4Kernel* kernel)
-  : m_kernel(kernel), m_run(0), m_event(0) {
+: m_kernel(kernel), m_run(0), m_event(0) {
   InstanceCount::increment(this);
 }
 

@@ -174,7 +174,7 @@ void DD4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ
 
 /// Initializing Constructor
 DD4hep::ComponentCast::ComponentCast(const std::type_info& t, destroy_t d, cast_t c)
-  : type(t), destroy(d), cast(c) {
+: type(t), destroy(d), cast(c) {
 #ifdef __APPLE__
   abi_class = 0;
 #else
@@ -199,16 +199,16 @@ DD4hep::ComponentCast::~ComponentCast() {
 //   -3: src_type is a multiple public non-virtual base of dst_type
 extern "C" void*
 __dynamic_cast(const void* __src_ptr,// Starting object.
-	       const abi::__class_type_info* __src_type,// Static type of object.
-	       const abi::__class_type_info* __dst_type,// Desired target type.
-	       ptrdiff_t __src2dst);// How src and dst are related.
+               const abi::__class_type_info* __src_type,// Static type of object.
+               const abi::__class_type_info* __dst_type,// Desired target type.
+               ptrdiff_t __src2dst);// How src and dst are related.
 #endif
 
 #ifndef __APPLE__
 static inline void* cast_wrap(const void* p,
-			      const abi::__class_type_info* src,
-			      const abi::__class_type_info* dst,
-			      ptrdiff_t src2dst)
+                              const abi::__class_type_info* src,
+                              const abi::__class_type_info* dst,
+                              ptrdiff_t src2dst)
 {
   return abi::__dynamic_cast(p,src,dst,src2dst);
 }
@@ -222,67 +222,67 @@ void* DD4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* 
 #ifdef __APPLE__
   // First try down cast
   void *r = (*to.cast)(ptr);
-  if (r) 
+  if (r)
     return r;
   {
     // Now try the up-cast
     r = (*cast)(ptr);
     if (r)      return r;
 #else
-  void* r = (void*)ptr;
-  if ( to.abi_class )  {
-  bool cast_worked = type.__do_upcast((const class_t*)to.abi_class,&r);
-  if ( cast_worked ) return r;
-  r = (void*)ptr;
-  cast_worked = to.type.__do_upcast((const class_t*)abi_class,&r);
-  if ( cast_worked ) return r;
-#if 0
-  const class_t* src_type = (const class_t*)to.abi_class;
-  if (src_type) {
-    // First try down cast
-    void *r = cast_wrap(ptr, src_type, (const class_t*) abi_class, -1);
-    if ( r ) return r;
-    // Now try the up-cast
-    r = cast_wrap(ptr, (const class_t*) abi_class, src_type, -1);
-    if (r)      return r;
-#endif
-#endif
-    throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
-  }
-  throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
-}
-
-/// Apply cast using typeinfo instead of dynamic_cast
-void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const {
-  if (&to == this) {
-    return (void*) ptr;
-  }
-  return apply_dynCast(to, ptr);
-}
-
-/// Apply cast using typeinfo instead of dynamic_cast
-void* DD4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const {
-  if (&to == this) {
-    return (void*) ptr;
-  }
-#ifdef __APPLE__
-  void *r = (*to.cast)(ptr);
-  if (r) return r;
-  {
-#else
+    void* r = (void*)ptr;
     if ( to.abi_class )  {
-      // Since we have to cast a 'to' pointer up to the real pointer
-      // no virtual inheritance can be supported!
-      void* r = (void*)ptr;
       bool cast_worked = type.__do_upcast((const class_t*)to.abi_class,&r);
       if ( cast_worked ) return r;
+      r = (void*)ptr;
+      cast_worked = to.type.__do_upcast((const class_t*)abi_class,&r);
+      if ( cast_worked ) return r;
 #if 0
-      void *r = cast_wrap(ptr, src_type, (const class_t*)abi_class, -1);
+      const class_t* src_type = (const class_t*)to.abi_class;
+      if (src_type) {
+        // First try down cast
+        void *r = cast_wrap(ptr, src_type, (const class_t*) abi_class, -1);
+        if ( r ) return r;
+        // Now try the up-cast
+        r = cast_wrap(ptr, (const class_t*) abi_class, src_type, -1);
+        if (r)      return r;
+#endif
+#endif
+        throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
+      }
+      throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
+    }
+
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const {
+      if (&to == this) {
+        return (void*) ptr;
+      }
+      return apply_dynCast(to, ptr);
+    }
+
+    /// Apply cast using typeinfo instead of dynamic_cast
+    void* DD4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const {
+      if (&to == this) {
+        return (void*) ptr;
+      }
+#ifdef __APPLE__
+      void *r = (*to.cast)(ptr);
       if (r) return r;
+      {
+#else
+        if ( to.abi_class )  {
+          // Since we have to cast a 'to' pointer up to the real pointer
+          // no virtual inheritance can be supported!
+          void* r = (void*)ptr;
+          bool cast_worked = type.__do_upcast((const class_t*)to.abi_class,&r);
+          if ( cast_worked ) return r;
+#if 0
+          void *r = cast_wrap(ptr, src_type, (const class_t*)abi_class, -1);
+          if (r) return r;
 #endif
 #endif
-    throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
-  }
-  throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
-}
+          throw unrelated_type_error(type, to.type, "Failed to apply abi dynamic cast operation!");
+        }
+        throw unrelated_type_error(type, to.type, "Target type is not an abi class type!");
+      }
 

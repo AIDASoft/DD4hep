@@ -37,7 +37,7 @@ namespace {
 
 /// Standard constructor
 Geant4TestBase::Geant4TestBase(Geant4Action* a, const std::string& typ)
-    : m_type(typ) {
+: m_type(typ) {
   a->declareProperty("Property_int", m_value1 = 0);
   a->declareProperty("Property_double", m_value2 = 0e0);
   a->declareProperty("Property_string", m_value3);
@@ -50,7 +50,7 @@ Geant4TestBase::~Geant4TestBase() {
 
 /// Standard constructor with initializing arguments
 Geant4TestGeneratorAction::Geant4TestGeneratorAction(Geant4Context* c, const std::string& n)
-  : Geant4GeneratorAction(c, n), Geant4TestBase(this, "Geant4TestGeneratorAction") {
+: Geant4GeneratorAction(c, n), Geant4TestBase(this, "Geant4TestGeneratorAction") {
   InstanceCount::increment(this);
 }
 
@@ -61,13 +61,13 @@ Geant4TestGeneratorAction::~Geant4TestGeneratorAction() {
 
 /// Callback to generate primary particles
 void Geant4TestGeneratorAction::operator()(G4Event* evt)  {
-  PRINT("%s> calling Geant4TestGeneratorAction(event_id=%d Context: run=%p evt=%p)", 
-	m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
+  PRINT("%s> calling Geant4TestGeneratorAction(event_id=%d Context: run=%p evt=%p)",
+        m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
 }
 
 /// Standard constructor with initializing arguments
 Geant4TestRunAction::Geant4TestRunAction(Geant4Context* c, const std::string& n)
-  : Geant4RunAction(c, n), Geant4TestBase(this, "Geant4TestRunAction") {
+: Geant4RunAction(c, n), Geant4TestBase(this, "Geant4TestRunAction") {
   InstanceCount::increment(this);
 }
 
@@ -79,30 +79,30 @@ Geant4TestRunAction::~Geant4TestRunAction() {
 /// begin-of-run callback
 void Geant4TestRunAction::begin(const G4Run* run) {
   PRINT("%s> calling begin(run_id=%d,num_event=%d Context:%p)", m_type.c_str(), run->GetRunID(),
-	run->GetNumberOfEventToBeProcessed(), &context()->run());
+        run->GetNumberOfEventToBeProcessed(), &context()->run());
 }
 
 /// End-of-run callback
 void Geant4TestRunAction::end(const G4Run* run) {
-  PRINT("%s> calling end(run_id=%d, num_event=%d Context:%p)", 
-	m_type.c_str(), run->GetRunID(), run->GetNumberOfEvent(), &context()->run());
+  PRINT("%s> calling end(run_id=%d, num_event=%d Context:%p)",
+        m_type.c_str(), run->GetRunID(), run->GetNumberOfEvent(), &context()->run());
 }
 
 /// begin-of-event callback
 void Geant4TestRunAction::beginEvent(const G4Event* evt) {
-  PRINT("%s> calling beginEvent(event_id=%d Context: run=%p evt=%p)", 
-	m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
+  PRINT("%s> calling beginEvent(event_id=%d Context: run=%p evt=%p)",
+        m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
 }
 
 /// End-of-event callback
 void Geant4TestRunAction::endEvent(const G4Event* evt) {
-  PRINT("%s> calling endEvent(event_id=%d Context: run=%p evt=%p)", 
-	m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
+  PRINT("%s> calling endEvent(event_id=%d Context: run=%p evt=%p)",
+        m_type.c_str(), evt->GetEventID(), context()->runPtr(), context()->eventPtr());
 }
 
 /// Standard constructor with initializing arguments
 Geant4TestEventAction::Geant4TestEventAction(Geant4Context* c, const std::string& n)
-    : Geant4EventAction(c, n), Geant4TestBase(this, "Geant4TestEventAction") {
+: Geant4EventAction(c, n), Geant4TestBase(this, "Geant4TestEventAction") {
   InstanceCount::increment(this);
 }
 
@@ -112,37 +112,37 @@ Geant4TestEventAction::~Geant4TestEventAction() {
 }
 /// begin-of-event callback
 void Geant4TestEventAction::begin(const G4Event* evt) {
-  PRINT("%s> calling begin(event_id=%d Context:  run=%p (%d) evt=%p (%d))", 
-	m_type.c_str(), evt->GetEventID(), 
-	&context()->run(), context()->run().run().GetRunID(),
-	&context()->event(), context()->event().event().GetEventID());
+  PRINT("%s> calling begin(event_id=%d Context:  run=%p (%d) evt=%p (%d))",
+        m_type.c_str(), evt->GetEventID(),
+        &context()->run(), context()->run().run().GetRunID(),
+        &context()->event(), context()->event().event().GetEventID());
 }
 
 /// End-of-event callback
 void Geant4TestEventAction::end(const G4Event* evt) {
-  PRINT("%s> calling end(event_id=%d Context:  run=%p (%d) evt=%p (%d))", 
-	m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event(),
-	&context()->run(), context()->run().run().GetRunID(),
-	&context()->event(), context()->event().event().GetEventID());
+  PRINT("%s> calling end(event_id=%d Context:  run=%p (%d) evt=%p (%d))",
+        m_type.c_str(), evt->GetEventID(), &context()->run(), &context()->event(),
+        &context()->run(), context()->run().run().GetRunID(),
+        &context()->event(), context()->event().event().GetEventID());
 }
 
 /// begin-of-run callback
 void Geant4TestEventAction::beginRun(const G4Run* run) {
   PRINT("%s> calling beginRun(run_id=%d,num_event=%d Context:%p)",
-	   m_type.c_str(), run->GetRunID(),
-	   run->GetNumberOfEventToBeProcessed(), context()->runPtr());
+        m_type.c_str(), run->GetRunID(),
+        run->GetNumberOfEventToBeProcessed(), context()->runPtr());
 }
 
 /// End-of-run callback
 void Geant4TestEventAction::endRun(const G4Run* run) {
-  PRINT("%s> calling endRun(run_id=%d, num_event=%d Context:%p)", 
-	   m_type.c_str(), run->GetRunID(),
-	   run->GetNumberOfEvent(), context()->runPtr());
+  PRINT("%s> calling endRun(run_id=%d, num_event=%d Context:%p)",
+        m_type.c_str(), run->GetRunID(),
+        run->GetNumberOfEvent(), context()->runPtr());
 }
 
 /// Standard constructor with initializing arguments
 Geant4TestTrackAction::Geant4TestTrackAction(Geant4Context* c, const std::string& n)
-    : Geant4TrackingAction(c, n), Geant4TestBase(this, "Geant4TestTrackAction") {
+: Geant4TrackingAction(c, n), Geant4TestBase(this, "Geant4TestTrackAction") {
   InstanceCount::increment(this);
 }
 
@@ -152,23 +152,23 @@ Geant4TestTrackAction::~Geant4TestTrackAction() {
 }
 /// Begin-of-tracking callback
 void Geant4TestTrackAction::begin(const G4Track* trk) {
-  PRINT("%s> calling begin(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)", 
-	m_type.c_str(), trk->GetTrackID(),
-	trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(), 
-	&context()->run(), &context()->event());
+  PRINT("%s> calling begin(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)",
+        m_type.c_str(), trk->GetTrackID(),
+        trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(),
+        &context()->run(), &context()->event());
 }
 
 /// End-of-tracking callback
 void Geant4TestTrackAction::end(const G4Track* trk) {
-  PRINT("%s> calling end(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)", 
-	m_type.c_str(), trk->GetTrackID(),
-	trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(), 
-	&context()->run(), &context()->event());
+  PRINT("%s> calling end(track=%d, parent=%d, position=(%f,%f,%f) Context: run=%p evt=%p)",
+        m_type.c_str(), trk->GetTrackID(),
+        trk->GetParentID(), trk->GetPosition().x(), trk->GetPosition().y(), trk->GetPosition().z(),
+        &context()->run(), &context()->event());
 }
 
 /// Standard constructor with initializing arguments
 Geant4TestStepAction::Geant4TestStepAction(Geant4Context* c, const std::string& n)
-    : Geant4SteppingAction(c, n), Geant4TestBase(this, "Geant4TestStepAction") {
+: Geant4SteppingAction(c, n), Geant4TestBase(this, "Geant4TestStepAction") {
   InstanceCount::increment(this);
 }
 
@@ -183,7 +183,7 @@ void Geant4TestStepAction::operator()(const G4Step*, G4SteppingManager*) {
 
 /// Standard constructor with initializing arguments
 Geant4TestSensitive::Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, LCDD& lcdd)
-    : Geant4Sensitive(c, n, det, lcdd), Geant4TestBase(this, "Geant4TestSensitive") {
+: Geant4Sensitive(c, n, det, lcdd), Geant4TestBase(this, "Geant4TestSensitive") {
   InstanceCount::increment(this);
   m_collectionID = defineCollection < TestHit > (n);
   PRINT("%s> Collection ID is %d", m_type.c_str(), int(m_collectionID));
@@ -197,27 +197,27 @@ Geant4TestSensitive::~Geant4TestSensitive() {
 /// Begin-of-tracking callback
 void Geant4TestSensitive::begin(G4HCofThisEvent* hce) {
   Geant4HitCollection* c = collectionByID(m_collectionID);
-  PRINT("%s> calling begin(num_coll=%d, coll=%s Context: run=%p evt=%p)", 
-	   m_type.c_str(), hce->GetNumberOfCollections(),
-	c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
+  PRINT("%s> calling begin(num_coll=%d, coll=%s Context: run=%p evt=%p)",
+        m_type.c_str(), hce->GetNumberOfCollections(),
+        c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
 }
 
 /// End-of-tracking callback
 void Geant4TestSensitive::end(G4HCofThisEvent* hce) {
   Geant4HitCollection* c = collection(m_collectionID);
-  PRINT("%s> calling end(num_coll=%d, coll=%s Context: run=%p evt=%p)", 
-	m_type.c_str(), hce->GetNumberOfCollections(),
-	c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
+  PRINT("%s> calling end(num_coll=%d, coll=%s Context: run=%p evt=%p)",
+        m_type.c_str(), hce->GetNumberOfCollections(),
+        c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
 }
 
 /// Method for generating hit(s) using the information of G4Step object.
 bool Geant4TestSensitive::process(G4Step* step, G4TouchableHistory*) {
   Geant4HitCollection* c = collection(m_collectionID);
   PRINT("%s> calling process(track=%d, dE=%f, dT=%f len=%f, First,last in Vol=(%c,%c), coll=%s Context: run=%p evt=%p)",
-	m_type.c_str(), step->GetTrack()->GetTrackID(), 
-	   step->GetTotalEnergyDeposit(), step->GetDeltaTime(),
-	   step->GetStepLength(), step->IsFirstStepInVolume() ? 'Y' : 'N', 
-	   step->IsLastStepInVolume() ? 'Y' : 'N',
-	c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
+        m_type.c_str(), step->GetTrack()->GetTrackID(),
+        step->GetTotalEnergyDeposit(), step->GetDeltaTime(),
+        step->GetStepLength(), step->IsFirstStepInVolume() ? 'Y' : 'N',
+        step->IsLastStepInVolume() ? 'Y' : 'N',
+        c ? c->GetName().c_str() : "None", &context()->run(), &context()->event());
   return true;
 }

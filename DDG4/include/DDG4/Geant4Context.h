@@ -45,8 +45,8 @@ namespace DD4hep {
     class Geant4GeneratorActionSequence;
     class Geant4SensDetSequences;
 
-    ///  User run context for DDG4 
-    /** 
+    ///  User run context for DDG4
+    /**
      *  The context is accessible from the Geant4Context pointer,
      *  which is present in every Geant4Action.
      *  The run context is only valid however, if there is actually
@@ -82,20 +82,20 @@ namespace DD4hep {
        *  set 'dtor' to ObjectExtensions::_noDelete or 0.
        */
       void* addExtension(void* ptr, const std::type_info& info, destruct_t dtor)    {
-	return ObjectExtensions::addExtension(ptr,info,dtor);
+        return ObjectExtensions::addExtension(ptr,info,dtor);
       }
       /// Add user extension object. Ownership is transferred!
-      template <typename T> T* addExtension(T* ptr, bool take_ownership=true) 	{ 
-	destruct_t dt = ObjectExtensions::_delete<T>;
-	return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
+      template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
+        destruct_t dt = ObjectExtensions::_delete<T>;
+        return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
-      template <typename T> T* extension(bool alert=true) { 
-	return (T*)ObjectExtensions::extension(typeid(T),alert); 
+      template <typename T> T* extension(bool alert=true) {
+        return (T*)ObjectExtensions::extension(typeid(T),alert);
       }
     };
 
-    ///  User event context for DDG4 
+    ///  User event context for DDG4
     /**
      *  The context is accessible from the Geant4Context pointer,
      *  which is present in every Geant4Action.
@@ -109,7 +109,7 @@ namespace DD4hep {
      *  Hence: They are only useful to extend data of an event.
      *
      *  Any random numbers used to process one event should be accessed
-     *  from this location. The framework ensures that the same seeded 
+     *  from this location. The framework ensures that the same seeded
      *  sequence is used throughout the processing of one single event.
      *
      *  \author  M.Frank
@@ -140,16 +140,16 @@ namespace DD4hep {
        *  set 'dtor' to ObjectExtensions::_noDelete or 0.
        */
       void* addExtension(void* ptr, const std::type_info& info, destruct_t dtor)    {
-	return ObjectExtensions::addExtension(ptr,info,dtor);
+        return ObjectExtensions::addExtension(ptr,info,dtor);
       }
       /// Add user extension object. Ownership is transferred and object deleted at the end of the event.
-      template <typename T> T* addExtension(T* ptr, bool take_ownership=true) 	{
-	destruct_t dt = ObjectExtensions::_delete<T>;
-	return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
+      template <typename T> T* addExtension(T* ptr, bool take_ownership=true)   {
+        destruct_t dt = ObjectExtensions::_delete<T>;
+        return (T*)ObjectExtensions::addExtension(ptr,typeid(T),take_ownership ? dt : 0);
       }
       /// Access to type safe extension object. Exception is thrown if the object is invalid
-      template <typename T> T* extension(bool alert=true) { 
-	return (T*)ObjectExtensions::extension(typeid(T),alert); 
+      template <typename T> T* extension(bool alert=true) {
+        return (T*)ObjectExtensions::extension(typeid(T),alert);
       }
     };
 
@@ -176,7 +176,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4Context();
       /// Set the geant4 run reference
-      void setRun(Geant4Run* new_run);      
+      void setRun(Geant4Run* new_run);
       /// Access the geant4 run -- valid only between BeginRun() and EndRun()!
       Geant4Run& run()  const;
       /// Access the geant4 run by ptr. Must be checked by clients!

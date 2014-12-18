@@ -23,21 +23,21 @@ namespace DD4hep {
 
     /*
 
-     Geant4Phase,  G4EventGenerator    --> G4VUserPrimaryGeneratorAction::GeneratePrimaries
-     Geant4Begin,  G4Run               --> G4UserRunAction::BeginOfRunAction
-     Geant4End,    G4Run               --> G4UserRunAction::EndOfRunAction
-     Geant4Begin,  G4Event             --> G4UserEventAction::BeginOfEventAction
-     Geant4End,    G4Event             --> G4UserEventAction::EndOfEventAction
-     Geant4Begin,  G4Track             --> G4UserTrackingAction::PreUserTrackingAction
-     Geant4End,    G4Track             --> G4UserTrackingAction::PostUserTrackingAction
-     Geant4Phase,  G4Step              --> G4UserSteppingAction::UserSteppingAction
-     Geant4Begin,  G4TrackStack        --> G4UserStackingAction::NewStage
-     Geant4End,    G4TrackStack        --> G4UserStackingAction::PrepareNewEvent
+      Geant4Phase,  G4EventGenerator    --> G4VUserPrimaryGeneratorAction::GeneratePrimaries
+      Geant4Begin,  G4Run               --> G4UserRunAction::BeginOfRunAction
+      Geant4End,    G4Run               --> G4UserRunAction::EndOfRunAction
+      Geant4Begin,  G4Event             --> G4UserEventAction::BeginOfEventAction
+      Geant4End,    G4Event             --> G4UserEventAction::EndOfEventAction
+      Geant4Begin,  G4Track             --> G4UserTrackingAction::PreUserTrackingAction
+      Geant4End,    G4Track             --> G4UserTrackingAction::PostUserTrackingAction
+      Geant4Phase,  G4Step              --> G4UserSteppingAction::UserSteppingAction
+      Geant4Begin,  G4TrackStack        --> G4UserStackingAction::NewStage
+      Geant4End,    G4TrackStack        --> G4UserStackingAction::PrepareNewEvent
 
-     */
+    */
 
     /// Action phase definition. Client callback at various stage of the simulation processing
-    /** 
+    /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -54,7 +54,7 @@ namespace DD4hep {
     public:
       /// Standard constructor
       Geant4ActionPhase(Geant4Context* context, const std::string& name, const std::type_info& arg_type0,
-          const std::type_info& arg_type1, const std::type_info& arg_type2);
+                        const std::type_info& arg_type1, const std::type_info& arg_type2);
       /// Default destructor
       virtual ~Geant4ActionPhase();
       /// Access phase members
@@ -73,7 +73,7 @@ namespace DD4hep {
       virtual bool remove(Callback callback);
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename R>
-      bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg)) {
+        bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
           //member->addRef();
@@ -83,7 +83,7 @@ namespace DD4hep {
       }
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename A1, typename R>
-      bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
+        bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A1), *m_argTypes[1], "Invalid ARG1 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
@@ -94,7 +94,7 @@ namespace DD4hep {
       }
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename A1, typename A2, typename R>
-      bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
+        bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A1), *m_argTypes[1], "Invalid ARG1 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A2), *m_argTypes[2], "Invalid ARG2 type. Failed to add phase callback.");

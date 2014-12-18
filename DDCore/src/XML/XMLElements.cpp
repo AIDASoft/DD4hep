@@ -77,7 +77,7 @@ namespace {
   size_t node_count(XmlElement* elt, const Tag_t& t) {
     size_t cnt = 0;
     TiXmlElement* e = Xml(elt).e;
-    if ( t.str()=="*" ) 
+    if ( t.str()=="*" )
       for(e=e->FirstChildElement();e; e=e->NextSiblingElement()) ++cnt;
     else
       for(e=e->FirstChildElement(t.str());e; e=e->NextSiblingElement(t.str())) ++cnt;
@@ -99,7 +99,7 @@ void DD4hep::XML::XmlString::release(char** p) {if(p && *p)  {::free(*p); *p=0;}
 /// Union to ease castless object access when using XercesC
 union Xml {
   Xml(const void* ptr)
-      : p(ptr) {
+  : p(ptr) {
   }
   const void* p;
   xercesc::DOMNode* n;
@@ -133,12 +133,12 @@ namespace {
       const string& tag = t;
       xercesc::DOMElement *ee = Xml(e).e;
       if ( ee )  {
-	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
-	  if ( elt->getParentNode() == ee )   {
-	    string child_tag = _toString(elt->getTagName());
-	    if ( tag == "*" || child_tag == tag ) ++cnt;
-	  }
-	}
+        for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
+          if ( elt->getParentNode() == ee )   {
+            string child_tag = _toString(elt->getTagName());
+            if ( tag == "*" || child_tag == tag ) ++cnt;
+          }
+        }
       }
     }
     return cnt;
@@ -148,13 +148,13 @@ namespace {
       const string& tag = t;
       xercesc::DOMElement* ee = Xml(e).e;
       if ( ee )  {
-	for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
-	  if ( elt->getParentNode() == ee )   {
-	    if ( tag == "*" ) return _XE(elt);
-	    string child_tag = _toString(elt->getTagName());
-	    if ( child_tag == tag ) return _XE(elt);
-	  }
-	}
+        for(xercesc::DOMElement* elt=ee->getFirstElementChild(); elt; elt=elt->getNextElementSibling()) {
+          if ( elt->getParentNode() == ee )   {
+            if ( tag == "*" ) return _XE(elt);
+            string child_tag = _toString(elt->getTagName());
+            if ( child_tag == tag ) return _XE(elt);
+          }
+        }
       }
     }
     return 0;
@@ -180,8 +180,8 @@ namespace {
     return Xml(a).a->getValue();
   }
 #if 0
-int node_type(XmlNode* n) {return Xml(n).n->getNodeType();}
-int node_type(Handle_t n) {return Xml(n.ptr()).n->getNodeType();}
+  int node_type(XmlNode* n) {return Xml(n).n->getNodeType();}
+  int node_type(Handle_t n) {return Xml(n.ptr()).n->getNodeType();}
 #endif
 }
 
@@ -318,7 +318,7 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, const XmlChar* value) {
   eval.setVariable(n.c_str(), result);
 }
 
-template <typename T> 
+template <typename T>
 void DD4hep::XML::_toDictionary(const XmlChar* name, T value)   {
   Strng_t item = _toString(value);
   const XmlChar* item_value = item;
@@ -526,7 +526,7 @@ XmlElement* NodeList::reset() {
 /// Advance to next element
 XmlElement* NodeList::next() const {
 #ifdef DD4HEP_USE_TINYXML
-  if ( m_tag.str()=="*" ) 
+  if ( m_tag.str()=="*" )
     return m_ptr =_XE(m_ptr ? _E(m_ptr)->NextSiblingElement() : 0);
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->NextSiblingElement(m_tag.str()) : 0);
 #else
@@ -543,7 +543,7 @@ XmlElement* NodeList::next() const {
 /// Go back to previous element
 XmlElement* NodeList::previous() const {
 #ifdef DD4HEP_USE_TINYXML
-  if ( m_tag.str()=="*" ) 
+  if ( m_tag.str()=="*" )
     return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement() : 0);
   return m_ptr = _XE(m_ptr ? _E(m_ptr)->PreviousSiblingElement(m_tag) : 0);
 #else
@@ -620,7 +620,7 @@ vector<Attribute> Handle_t::attributes() const {
   if (m_node) {
 #ifdef DD4HEP_USE_TINYXML
     for(TiXmlAttribute* a=_E(m_node)->FirstAttribute(); a; a=a->Next())
-    attrs.push_back(Attribute(a));
+      attrs.push_back(Attribute(a));
 #else
     xercesc::DOMNamedNodeMap* l = _E(m_node)->getAttributes();
     for (XmlSize_t i = 0, n = l->getLength(); i < n; ++i) {
@@ -692,7 +692,7 @@ Handle_t Handle_t::remove(Handle_t node) const {
 void Handle_t::removeChildren(const XmlChar* tag) const {
 #ifdef DD4HEP_USE_TINYXML
   for(TiXmlNode* n=_E(m_node)->FirstChildElement(tag);n;n=_E(m_node)->FirstChildElement(tag))
-  n->RemoveChild(n);
+    n->RemoveChild(n);
 #else
   xercesc::DOMElement* e = _E(m_node);
   xercesc::DOMNodeList* l = e->getElementsByTagName(tag);
@@ -757,7 +757,7 @@ void Handle_t::setAttrs(Handle_t elt) const {
   removeAttrs();
   TiXmlElement* e = Xml(elt).e;
   for(TiXmlAttribute* a=e->FirstAttribute(); a; a=a->Next())
-  e->SetAttribute(a->Name(),a->Value());
+    e->SetAttribute(a->Name(),a->Value());
 }
 #else
 void Handle_t::setAttrs(Handle_t /* elt */) const {
@@ -935,30 +935,30 @@ unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
   if ( n ) {
     if ( 0 == fcn ) fcn = adler32;
     switch (n->Type()) {
-      case TiXmlNode::ELEMENT: {
-        map<string,string> m;
-        TiXmlElement* e = n->ToElement();
-        TiXmlAttribute* p=e->FirstAttribute();
-        for(; p; p=p->Next()) m.insert(make_pair(p->Name(),p->Value()));
-        param = (*fcn)(param,e->Value(),::strlen(e->Value()));
-        for(StringMap::const_iterator i=m.begin();i!=m.end();++i) {
-          param = (*fcn)(param,(*i).first.c_str(),(*i).first.length());
-          param = (*fcn)(param,(*i).second.c_str(),(*i).second.length());
-        }
-        break;
+    case TiXmlNode::ELEMENT: {
+      map<string,string> m;
+      TiXmlElement* e = n->ToElement();
+      TiXmlAttribute* p=e->FirstAttribute();
+      for(; p; p=p->Next()) m.insert(make_pair(p->Name(),p->Value()));
+      param = (*fcn)(param,e->Value(),::strlen(e->Value()));
+      for(StringMap::const_iterator i=m.begin();i!=m.end();++i) {
+        param = (*fcn)(param,(*i).first.c_str(),(*i).first.length());
+        param = (*fcn)(param,(*i).second.c_str(),(*i).second.length());
       }
-      case TiXmlNode::TEXT:
+      break;
+    }
+    case TiXmlNode::TEXT:
       param = (*fcn)(param,n->ToText()->Value(),::strlen(n->ToText()->Value()));
       break;
-      case TiXmlNode::UNKNOWN:
-      case TiXmlNode::COMMENT:
-      case TiXmlNode::DOCUMENT:
-      case TiXmlNode::DECLARATION:
-      default:
+    case TiXmlNode::UNKNOWN:
+    case TiXmlNode::COMMENT:
+    case TiXmlNode::DOCUMENT:
+    case TiXmlNode::DECLARATION:
+    default:
       break;
     }
     for(TiXmlNode* c=n->FirstChild(); c; c=c->NextSibling())
-    param = Handle_t((XmlElement*)c->ToElement()).checksum(param,fcn);
+      param = Handle_t((XmlElement*)c->ToElement()).checksum(param,fcn);
   }
 #else
   if ( 0 == fcn ) fcn = adler32;
@@ -999,7 +999,7 @@ DocumentHolder::~DocumentHolder() {
 
 /// Constructor from DOM document entity
 Element::Element(const Document& document, const XmlChar* type)
-    : m_element(Xml(document.createElt(type)).xe) {
+  : m_element(Xml(document.createElt(type)).xe) {
 }
 
 /// Access the hosting document handle of this DOM element
@@ -1058,19 +1058,19 @@ void Element::addComment(const char* text) const {
 
 /// Initializing constructor to create a new XMLElement and add it to the document.
 RefElement::RefElement(const Document& document, const XmlChar* type, const XmlChar* name)
-    : Element(document, type) {
+  : Element(document, type) {
   m_name = name ? setAttr(_U(name), name) : 0;
 }
 
 /// Construction from existing object handle
 RefElement::RefElement(const Handle_t& e)
-    : Element(e) {
+  : Element(e) {
   m_name = m_element ? getAttr(_U(name)) : 0;
 }
 
 /// Copy constructor
 RefElement::RefElement(const RefElement& e)
-    : Element(e), m_name(e.m_name) {
+  : Element(e), m_name(e.m_name) {
 }
 
 /// Assignment operator
@@ -1097,19 +1097,19 @@ void RefElement::setName(const XmlChar* new_name) {
 
 #ifndef DD4HEP_USE_TINYXML
 Collection_t::Collection_t(Handle_t element, const XmlChar* tag)
-    : m_children(element, tag) {
+  : m_children(element, tag) {
   m_node = m_children.reset();
 }
 #endif
 
 Collection_t::Collection_t(Handle_t element, const char* tag)
-    : m_children(element, Strng_t(tag)) {
+  : m_children(element, Strng_t(tag)) {
   m_node = m_children.reset();
 }
 
 /// Constructor over XmlElements in a node list
 Collection_t::Collection_t(NodeList node_list)
-    : m_children(node_list) {
+  : m_children(node_list) {
   m_node = m_children.reset();
 }
 

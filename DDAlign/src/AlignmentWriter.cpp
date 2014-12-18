@@ -75,7 +75,7 @@ void AlignmentWriter::addNode(XML::Element elt, Alignment a)  const   {
   //mat.Print();
   if ( fabs(t[0]) > numeric_limits<double>::epsilon() ||
        fabs(t[1]) > numeric_limits<double>::epsilon() ||
-       fabs(t[2]) > numeric_limits<double>::epsilon() )	{
+       fabs(t[2]) > numeric_limits<double>::epsilon() ) {
     XML::Element e = XML::Element(elt.document(),_U(position));
     e.setAttr(_U(x),t[0]);
     e.setAttr(_U(y),t[1]);
@@ -85,9 +85,9 @@ void AlignmentWriter::addNode(XML::Element elt, Alignment a)  const   {
   if ( mat.IsRotation() )  {
     XYZAngles rot = _XYZangles(&mat);
     if ( fabs(rot.X()) > numeric_limits<double>::epsilon() ||
-	 fabs(rot.Y()) > numeric_limits<double>::epsilon() ||
-	 fabs(rot.Z()) > numeric_limits<double>::epsilon() )	{
-	
+         fabs(rot.Y()) > numeric_limits<double>::epsilon() ||
+         fabs(rot.Z()) > numeric_limits<double>::epsilon() )    {
+
       XML::Element e = XML::Element(elt.document(),_U(rotation));
       // Don't know why the angles have the wrong sign....
       rot *= -1;
@@ -109,7 +109,7 @@ XML::Element AlignmentWriter::scan(XML::Document doc, DetElement element)  const
     for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)   {
       XML::Element daughter = scan(doc, (*i).second);
       if ( daughter )   {
-	(elt ? (elt) : (elt=createElement(doc,element))).append(daughter);
+        (elt ? (elt) : (elt=createElement(doc,element))).append(daughter);
       }
     }
   }
@@ -159,18 +159,18 @@ static long create_alignment_file(LCDD& lcdd, int argc, char** argv)   {
       else if ( strncmp(argv[i]+1,"-transactions",5)==0 )
         enable_transactions = true;
       else
-	throw runtime_error("AlignmentWriter: Invalid argument:"+string(argv[i]));
+        throw runtime_error("AlignmentWriter: Invalid argument:"+string(argv[i]));
     }
   }
   printout(ALWAYS,"AlignmentWriter",
-	   "++++ Writing DD4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
-	   path.c_str(), output.c_str());
+           "++++ Writing DD4hep alignment constants of the \"%s\" DetElement tree to file \"%s\"",
+           path.c_str(), output.c_str());
   top = DetectorTools::findDaughterElement(lcdd.world(),path);
   if ( top.isValid() )   {
     AlignmentWriter wr(lcdd);
     return wr.write(wr.dump(top,enable_transactions), output);
   }
-  throw runtime_error("AlignmentWriter: Invalid top level element name:"+path);  
+  throw runtime_error("AlignmentWriter: Invalid top level element name:"+path);
 }
 
 DECLARE_APPLY(DDAlignmentWriter, create_alignment_file)

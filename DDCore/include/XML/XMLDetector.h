@@ -18,7 +18,7 @@ namespace DD4hep {
   // Forward declarations
   class NamedObject;
 
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
 
     /// XML Handle class extending the XML handle Dimension
@@ -32,12 +32,12 @@ namespace DD4hep {
      */
     struct Component: public Dimension {
       /// Constructor from Handle
-      Component(Handle_t e)
-          : Dimension(e) {
+    Component(Handle_t e)
+      : Dimension(e) {
       }
       /// Constructor from Element
-      Component(const Element& e)
-          : Dimension(e) {
+    Component(const Element& e)
+      : Dimension(e) {
       }
       /// Access material attribute as STL string
       std::string materialStr() const;
@@ -58,8 +58,8 @@ namespace DD4hep {
      */
     struct DetElement: public Dimension {
       /// Constructor from Handle
-      DetElement(Handle_t e)
-          : Dimension(e) {
+    DetElement(Handle_t e)
+      : Dimension(e) {
       }
       /// Access underlying XML handle object
       Handle_t handle() const {

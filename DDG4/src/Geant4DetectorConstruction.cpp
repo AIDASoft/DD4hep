@@ -35,7 +35,7 @@ Geant4DetectorConstruction* Geant4DetectorConstruction::instance(Geant4Kernel& k
 
 /// Initializing constructor for other clients
 Geant4DetectorConstruction::Geant4DetectorConstruction(Geometry::LCDD& lcdd)
-  : Geant4Action(0,"DetectorConstruction"), m_lcdd(lcdd), m_world(0) 
+: Geant4Action(0,"DetectorConstruction"), m_lcdd(lcdd), m_world(0)
 {
   m_outputLevel = PrintLevel(printLevel()-1);
   s_instance = this;
@@ -43,7 +43,7 @@ Geant4DetectorConstruction::Geant4DetectorConstruction(Geometry::LCDD& lcdd)
 
 /// Initializing constructor for DDG4
 Geant4DetectorConstruction::Geant4DetectorConstruction(Geant4Kernel& kernel)
-  : Geant4Action(0,"DetectorConstruction"), m_lcdd(kernel.lcdd()), m_world(0)
+: Geant4Action(0,"DetectorConstruction"), m_lcdd(kernel.lcdd()), m_world(0)
 {
   m_outputLevel = kernel.getOutputLevel("Geant4Converter");
   s_instance = this;

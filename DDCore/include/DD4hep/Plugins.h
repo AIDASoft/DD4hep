@@ -20,7 +20,7 @@ namespace DD4hep {
   typedef ROOT::Reflex::PluginService PluginService;
 
   /// Helper to debug plugin manager calls
-  /** 
+  /**
    *  Small helper class to adjust the plugin service debug level
    *  for a limited code scope. Automatically back-adjusts the debug
    *  level at object destruction.

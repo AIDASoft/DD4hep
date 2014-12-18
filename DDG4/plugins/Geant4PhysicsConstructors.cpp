@@ -32,7 +32,7 @@
 //
 // ======================================================================
 
-// EM physics 
+// EM physics
 #include "G4EmStandardPhysics_option1.hh"
 DECLARE_GEANT4_PHYSICS(G4EmStandardPhysics_option1)
 #include "G4EmStandardPhysics_option2.hh"
@@ -51,10 +51,10 @@ DECLARE_GEANT4_PHYSICS(G4EmLivermorePhysics)
 DECLARE_GEANT4_PHYSICS(G4IonBinaryCascadePhysics)
 
 #ifdef GEANT4_9_6
- #include "G4IonINCLXXPhysics.hh"
- DECLARE_GEANT4_PHYSICS(G4IonINCLXXPhysics)
- #include "G4IonLHEPPhysics.hh"
- DECLARE_GEANT4_PHYSICS(G4IonLHEPPhysics)
+#include "G4IonINCLXXPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4IonINCLXXPhysics)
+#include "G4IonLHEPPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4IonLHEPPhysics)
 #endif
 
 #include "G4IonPhysics.hh"

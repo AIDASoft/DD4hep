@@ -49,8 +49,8 @@ AlignmentCache::~AlignmentCache()   {
   releaseObjects(m_detectors)();
   m_cache.clear();
   printout(INFO,"AlignmentCache",
-	   "Destroy cache for subdetector %s [%d section(s), %d entrie(s)]",
-	   m_sdPath.c_str(),nsect,nentries);
+           "Destroy cache for subdetector %s [%d section(s), %d entrie(s)]",
+           m_sdPath.c_str(),nsect,nentries);
 }
 
 /// Add reference count
@@ -73,7 +73,7 @@ bool AlignmentCache::insert(Alignment alignment)  {
   unsigned int index = hash32(pn->GetName()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
   printout(ALWAYS,"AlignmentCache","Section: %s adding entry: %s",
-	   name().c_str(),alignment->GetName());
+           name().c_str(),alignment->GetName());
   if ( i == m_cache.end() )   {
     m_cache[index] = pn;
     return true;
@@ -124,7 +124,7 @@ Alignment AlignmentCache::get(const string& path_name) const   {
   return Alignment(0);
 }
 
-/// Return all entries matching a given path. 
+/// Return all entries matching a given path.
 vector<Alignment> AlignmentCache::matches(const string& match, bool exclude_exact) const   {
   vector<Alignment> result;
   AlignmentCache* c = section(match);
@@ -135,8 +135,8 @@ vector<Alignment> AlignmentCache::matches(const string& match, bool exclude_exac
       const Cache::value_type& v = *i;
       const char* n = v.second->GetName();
       if ( 0 == ::strncmp(n,match.c_str(),len) )   {
-	if ( exclude_exact && len == ::strlen(n) ) continue;
-	result.push_back(Alignment(v.second));
+        if ( exclude_exact && len == ::strlen(n) ) continue;
+        result.push_back(Alignment(v.second));
       }
     }
   }
@@ -169,7 +169,7 @@ void AlignmentCache::closeTransaction()   {
     return;
   }
   printout(WARNING,"Alignment<alignment>",
-	   "Request to close a non-existing alignmant transaction.");
+           "Request to close a non-existing alignmant transaction.");
 }
 
 /// Create and install a new instance tree

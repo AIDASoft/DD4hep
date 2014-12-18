@@ -57,4 +57,4 @@ namespace DD4hep {
   }    // End namespace XML
 }      // End namespace DD4hep
 #endif // DD4HEP_DDALIGN_ALIGNMENTWRITER_H
- 
+

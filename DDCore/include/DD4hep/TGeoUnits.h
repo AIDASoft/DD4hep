@@ -1,5 +1,5 @@
 // OSOLETE
-// use DD4hepUnits and dd4hep:: instead 
+// use DD4hepUnits and dd4hep:: instead
 
 #ifndef DD4HEP_TGEOUNITS_H
 #define DD4HEP_TGEOUNITS_H

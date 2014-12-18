@@ -35,10 +35,10 @@ Geant4Particle::Geant4Particle(const Geant4Particle& c)
 : ref(1), id(c.id), g4Parent(c.g4Parent), reason(c.reason), mask(c.mask),
   steps(c.steps), secondaries(c.secondaries), pdgID(c.pdgID),
   status(c.status), charge(0),
-  vsx(c.vsx), vsy(c.vsy), vsz(c.vsz), 
-  vex(c.vex), vey(c.vey), vez(c.vez), 
-  psx(c.psx), psy(c.psy), psz(c.psz), 
-  pex(c.pex), pey(c.pey), pez(c.pez), 
+  vsx(c.vsx), vsy(c.vsy), vsz(c.vsz),
+  vex(c.vex), vey(c.vey), vez(c.vez),
+  psx(c.psx), psy(c.psy), psz(c.psz),
+  pex(c.pex), pey(c.pey), pez(c.pez),
   mass(c.mass), time(c.time), properTime(c.properTime),
   parents(c.parents), daughters(c.daughters), extension(),
   process(c.process)//, definition(c.definition)
@@ -53,14 +53,14 @@ Geant4Particle::Geant4Particle(const Geant4Particle& c)
 
 /// Default constructor
 Geant4Particle::Geant4Particle()
-  : ref(1), id(0), g4Parent(0), reason(0), mask(0), 
-    steps(0), secondaries(0), pdgID(0),
-    status(0), charge(0),
-    vsx(0.0), vsy(0.0), vsz(0.0), 
-    vex(0.0), vey(0.0), vez(0.0), 
-    psx(0.0), psy(0.0), psz(0.0), 
-    pex(0.0), pey(0.0), pez(0.0), 
-    mass(0.0), time(0.0), properTime(0.0),
+: ref(1), id(0), g4Parent(0), reason(0), mask(0),
+  steps(0), secondaries(0), pdgID(0),
+  status(0), charge(0),
+  vsx(0.0), vsy(0.0), vsz(0.0),
+  vex(0.0), vey(0.0), vez(0.0),
+  psx(0.0), psy(0.0), psz(0.0),
+  pex(0.0), pey(0.0), pez(0.0),
+  mass(0.0), time(0.0), properTime(0.0),
   daughters(), extension(), process(0)//, definition(0)
 {
   InstanceCount::increment(this);
@@ -70,14 +70,14 @@ Geant4Particle::Geant4Particle()
 
 /// Constructor with ID initialization
 Geant4Particle::Geant4Particle(int part_id)
-  : ref(1), id(part_id), g4Parent(0), reason(0), mask(0), 
-    steps(0), secondaries(0), pdgID(0),
-    status(0), charge(0),
-    vsx(0.0), vsy(0.0), vsz(0.0), 
-    vex(0.0), vey(0.0), vez(0.0), 
-    psx(0.0), psy(0.0), psz(0.0), 
-    pex(0.0), pey(0.0), pez(0.0), 
-    mass(0.0), time(0.0), properTime(0.0),
+: ref(1), id(part_id), g4Parent(0), reason(0), mask(0),
+  steps(0), secondaries(0), pdgID(0),
+  status(0), charge(0),
+  vsx(0.0), vsy(0.0), vsz(0.0),
+  vex(0.0), vey(0.0), vez(0.0),
+  psx(0.0), psy(0.0), psz(0.0),
+  pex(0.0), pey(0.0), pez(0.0),
+  mass(0.0), time(0.0), properTime(0.0),
   daughters(), extension(), process(0)//, definition(0)
 {
   InstanceCount::increment(this);
@@ -101,31 +101,31 @@ void Geant4Particle::release()  {
 /// Assignment operator
 Geant4Particle& Geant4Particle::get_data(Geant4Particle& c)   {
   if ( this != &c )  {
-    id = c.id; 
+    id = c.id;
     g4Parent    = c.g4Parent;
-    reason      = c.reason; 
+    reason      = c.reason;
     mask        = c.mask;
     status      = c.status;
     charge      = c.charge;
-    steps       = c.steps; 
+    steps       = c.steps;
     secondaries = c.secondaries;
     pdgID       = c.pdgID;
     vsx         = c.vsx;
     vsy         = c.vsy;
-    vsz         = c.vsz; 
+    vsz         = c.vsz;
     vex         = c.vex;
     vey         = c.vey;
-    vez         = c.vez; 
+    vez         = c.vez;
     psx         = c.psx;
     psy         = c.psy;
-    psz         = c.psz; 
+    psz         = c.psz;
     pex         = c.pex;
     pey         = c.pey;
-    pez         = c.pez; 
+    pez         = c.pez;
     mass        = c.mass;
     time        = c.time;
     properTime  = c.properTime;
-    process     = c.process; 
+    process     = c.process;
     //definition  = c.definition;
     daughters   = c.daughters;
     parents     = c.parents;
@@ -146,7 +146,7 @@ const G4ParticleDefinition* Geant4ParticleHandle::definition() const   {
   G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* def = tab->FindParticle(particle->pdgID);
   if ( 0 == def && 0 == particle->pdgID )   {
-    if ( fabs(particle->charge) < 0.001 ) 
+    if ( fabs(particle->charge) < 0.001 )
       return G4Geantino::Definition();
     return G4ChargedGeantino::Definition();
   }
@@ -228,7 +228,7 @@ void Geant4ParticleHandle::dump1(int level, const std::string& src, const char* 
   char text[256];
   Geant4ParticleHandle p(*this);
   text[0]=0;
-  if ( p->parents.size() == 1 ) 
+  if ( p->parents.size() == 1 )
     ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 )   {
     text[0]='/';text[1]=0;
@@ -236,15 +236,15 @@ void Geant4ParticleHandle::dump1(int level, const std::string& src, const char* 
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s %4d def [%-11s,%8s] reason:%8d E:%+.2e %3s #Dau:%3d #Par:%3d%-5s",
-	   tag, p->id, 
-	   p.particleName().c_str(),
-	   p.particleType().c_str(),
-	   p->reason,
-	   p.energy(),
-	   p->g4Parent>0 ? "Sim" : "Gen",
-	   int(p->daughters.size()),
-	   int(p->parents.size()),text);
+           "+++ %s %4d def [%-11s,%8s] reason:%8d E:%+.2e %3s #Dau:%3d #Par:%3d%-5s",
+           tag, p->id,
+           p.particleName().c_str(),
+           p.particleType().c_str(),
+           p->reason,
+           p.energy(),
+           p->g4Parent>0 ? "Sim" : "Gen",
+           int(p->daughters.size()),
+           int(p->parents.size()),text);
 }
 
 /// Output type 2:+++ <tag>   20 G4:   7 def:0xde4eaa8 [gamma     ,   gamma] reason:      20 E:+3.304035e+01 in record:YES  \#Par:  1/18   \#Dau:  0
@@ -255,16 +255,16 @@ void Geant4ParticleHandle::dump2(int level, const std::string& src, const char* 
   else if ( p->parents.size() == 1 ) ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 ) ::snprintf(text,sizeof(text),"/%d..",*(p->parents.begin()));
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s %4d G4:%4d [%-12s,%8s] reason:%8d "
-	   "E:%+.2e in record:%s  #Par:%3d%-5s #Dau:%3d",
-	   tag, p->id, g4id,
-	   p.particleName().c_str(),
-	   p.particleType().c_str(),
-	   p->reason,
-	   p.energy(),
-	   yes_no(inrec),
-	   int(p->parents.size()),text,
-	   int(p->daughters.size()));
+           "+++ %s %4d G4:%4d [%-12s,%8s] reason:%8d "
+           "E:%+.2e in record:%s  #Par:%3d%-5s #Dau:%3d",
+           tag, p->id, g4id,
+           p.particleName().c_str(),
+           p.particleType().c_str(),
+           p->reason,
+           p.energy(),
+           yes_no(inrec),
+           int(p->parents.size()),text,
+           int(p->daughters.size()));
 }
 
 /// Output type 3:+++ <tag> ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] \#Par:  0 \#Dau:  4
@@ -272,7 +272,7 @@ void Geant4ParticleHandle::dumpWithVertex(int level, const std::string& src, con
   char text[256];
   Geant4ParticleHandle p(*this);
   text[0]=0;
-  if ( p->parents.size() == 1 ) 
+  if ( p->parents.size() == 1 )
     ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 )   {
     text[0]='/';text[1]=0;
@@ -280,13 +280,13 @@ void Geant4ParticleHandle::dumpWithVertex(int level, const std::string& src, con
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s ID:%3d %-12s status:%08X PDG:%6d Vtx:(%+.2e,%+.2e,%+.2e)[mm] "
-	   "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
-	   tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
-	   p->vsx/mm,p->vsy/mm,p->vsz/mm,p->time/ns,
-	   p->daughters.size(),
-	   p->parents.size(),
-	   text);
+           "+++ %s ID:%3d %-12s status:%08X PDG:%6d Vtx:(%+.2e,%+.2e,%+.2e)[mm] "
+           "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
+           tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
+           p->vsx/mm,p->vsy/mm,p->vsz/mm,p->time/ns,
+           p->daughters.size(),
+           p->parents.size(),
+           text);
 }
 
 
@@ -295,7 +295,7 @@ void Geant4ParticleHandle::dumpWithMomentum(int level, const std::string& src, c
   char text[256];
   Geant4ParticleHandle p(*this);
   text[0]=0;
-  if ( p->parents.size() == 1 ) 
+  if ( p->parents.size() == 1 )
     ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 )   {
     text[0]='/';text[1]=0;
@@ -303,13 +303,13 @@ void Geant4ParticleHandle::dumpWithMomentum(int level, const std::string& src, c
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++%s ID:%3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
-	   "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
-	   tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
-	   p->psx/MeV,p->psy/MeV,p->psz/MeV,p->time/ns,
-	   int(p->daughters.size()),
-	   int(p->parents.size()),
-	   text);
+           "+++%s ID:%3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
+           "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
+           tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
+           p->psx/MeV,p->psy/MeV,p->psz/MeV,p->time/ns,
+           int(p->daughters.size()),
+           int(p->parents.size()),
+           text);
 }
 
 /// Output type 3:+++ <tag> ID:  0 e-           status:00000014 type:       11 Vertex:(+0.00e+00,+0.00e+00,+0.00e+00) [mm] time: +0.00e+00 [ns] \#Par:  0 \#Dau:  4
@@ -317,7 +317,7 @@ void Geant4ParticleHandle::dumpWithMomentumAndVertex(int level, const std::strin
   char text[256];
   Geant4ParticleHandle p(*this);
   text[0]=0;
-  if ( p->parents.size() == 1 ) 
+  if ( p->parents.size() == 1 )
     ::snprintf(text,sizeof(text),"/%d",*(p->parents.begin()));
   else if ( p->parents.size() >  1 )   {
     text[0]='/';text[1]=0;
@@ -325,14 +325,14 @@ void Geant4ParticleHandle::dumpWithMomentumAndVertex(int level, const std::strin
       ::snprintf(text+strlen(text),sizeof(text)-strlen(text),"%d ",*i);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++%s %3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
-	   "Vtx:(%+.2e,%+.2e,%+.2e)[mm] #Dau:%3d #Par:%1d%-6s",
-	   tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
-	   p->psx/MeV,p->psy/MeV,p->psz/MeV,
-	   p->vsx/mm,p->vsy/mm,p->vsz/mm,
-	   int(p->daughters.size()),
-	   int(p->parents.size()),
-	   text);
+           "+++%s %3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
+           "Vtx:(%+.2e,%+.2e,%+.2e)[mm] #Dau:%3d #Par:%1d%-6s",
+           tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
+           p->psx/MeV,p->psy/MeV,p->psz/MeV,
+           p->vsx/mm,p->vsy/mm,p->vsz/mm,
+           int(p->daughters.size()),
+           int(p->parents.size()),
+           text);
 }
 
 void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* tag) const  {
@@ -349,29 +349,29 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
     ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
   }
   printout((DD4hep::PrintLevel)level,src,
-	   "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c",
-	   tag,
-	   p->id,
-	   p.particleName().c_str(),
-	   parent_id,equiv,
-	   yes_no(mask.isSet(G4PARTICLE_PRIMARY)),
-	   yes_no(mask.isSet(G4PARTICLE_HAS_SECONDARIES)),
-	   int(p->daughters.size()),
-	   yes_no(mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD)),
-	   p.energy(),
-	   yes_no(mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT)),
-	   yes_no(mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT)),
-	   yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),
-	   mask.isSet(G4PARTICLE_KEEP_PARENT) ? "YES" : "",
-	   p.numParent(),
-	   proc_name.c_str(),
-	   p->process ? "/" : "",
-	   proc_type.c_str(),
-	   status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',
-	   status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
-	   status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
-	   status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
-	   );
+           "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c",
+           tag,
+           p->id,
+           p.particleName().c_str(),
+           parent_id,equiv,
+           yes_no(mask.isSet(G4PARTICLE_PRIMARY)),
+           yes_no(mask.isSet(G4PARTICLE_HAS_SECONDARIES)),
+           int(p->daughters.size()),
+           yes_no(mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD)),
+           p.energy(),
+           yes_no(mask.isSet(G4PARTICLE_CREATED_CALORIMETER_HIT)),
+           yes_no(mask.isSet(G4PARTICLE_CREATED_TRACKER_HIT)),
+           yes_no(mask.isSet(G4PARTICLE_KEEP_PROCESS)),
+           mask.isSet(G4PARTICLE_KEEP_PARENT) ? "YES" : "",
+           p.numParent(),
+           proc_name.c_str(),
+           p->process ? "/" : "",
+           proc_type.c_str(),
+           status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',
+           status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
+           status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
+           status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
+           );
 }
 
 /// Default destructor
@@ -433,7 +433,7 @@ int Geant4ParticleMap::particleID(int g4_id, bool) const   {
   TrackEquivalents::const_iterator iequiv = equivalentTracks.find(g4_id);
   if ( iequiv != equivalentTracks.end() ) return (*iequiv).second;
   printout(ERROR,"Geant4ParticleMap","+++ No Equivalent particle for track:%d."
-	   " Monte Carlo truth record looks broken!",g4_id);
+           " Monte Carlo truth record looks broken!",g4_id);
   dump();
   return -1;
 }

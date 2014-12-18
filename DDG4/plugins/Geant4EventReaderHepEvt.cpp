@@ -18,8 +18,8 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Class to populate Geant4 primaries from StdHep files.
-    /** 
-     * Class to populate Geant4 primary particles and vertices from a 
+    /**
+     * Class to populate Geant4 primary particles and vertices from a
      * file in HEPEvt format (ASCII)
      *
      *  \author  P.Kostka (main author)
@@ -112,7 +112,7 @@ Geant4EventReaderHepEvt::~Geant4EventReaderHepEvt()    {
 }
 
 /// Read an event and fill a vector of MCParticles.
-Geant4EventReader::EventReaderStatus 
+Geant4EventReader::EventReaderStatus
 Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>& particles)   {
 
   // First check the input file status
@@ -149,23 +149,23 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
   double VHEP2; // y vertex position in mm
   double VHEP3; // z vertex position in mm
   double VHEP4; // production time in mm/c
- 
+
   vector<int> daughter1;
   vector<int> daughter2;
- 
+
   for( int IHEP=0; IHEP<NHEP; IHEP++ )    {
     if ( m_format == HEPEvtShort )
       m_input >> ISTHEP >> IDHEP >> JDAHEP1 >> JDAHEP2
-	      >> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5;
+              >> PHEP1 >> PHEP2 >> PHEP3 >> PHEP5;
     else
-      m_input >> ISTHEP >> IDHEP 
-	      >> JMOHEP1 >> JMOHEP2
-	      >> JDAHEP1 >> JDAHEP2
-	      >> PHEP1 >> PHEP2 >> PHEP3 
-	      >> PHEP4 >> PHEP5
-	      >> VHEP1 >> VHEP2 >> VHEP3
-	      >> VHEP4;
- 
+      m_input >> ISTHEP >> IDHEP
+              >> JMOHEP1 >> JMOHEP2
+              >> JDAHEP1 >> JDAHEP2
+              >> PHEP1 >> PHEP2 >> PHEP3
+              >> PHEP4 >> PHEP5
+              >> VHEP1 >> VHEP2 >> VHEP3
+              >> VHEP4;
+
     if(m_input.eof())
       return EVENT_READER_IO_ERROR;
     //
@@ -184,7 +184,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
     //  Mass
     p->mass = PHEP5*GeV;
     //
-    //  Vertex 
+    //  Vertex
     // (missing information in HEPEvt files)
     p->vsx = 0.0;
     p->vsy = 0.0;
@@ -197,7 +197,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
     //  Simulator status 0 until simulator acts on it
     p->status = 0;
     if ( ISTHEP == 0 )      status.set(G4PARTICLE_GEN_EMPTY);
-    else if ( ISTHEP == 1 ) status.set(G4PARTICLE_GEN_STABLE); 
+    else if ( ISTHEP == 1 ) status.set(G4PARTICLE_GEN_STABLE);
     else if ( ISTHEP == 2 ) status.set(G4PARTICLE_GEN_DECAYED);
     else if ( ISTHEP == 3 ) status.set(G4PARTICLE_GEN_DOCUMENTATION);
     else                    status.set(G4PARTICLE_GEN_DOCUMENTATION);
@@ -218,7 +218,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
 
   //
   //  Now make a second loop over the particles, checking the daughter
-  //  information. This is not always consistent with parent 
+  //  information. This is not always consistent with parent
   //  information, and this utility assumes all parents listed are
   //  parents and all daughters listed are daughters
   //
@@ -227,10 +227,10 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
       Particle* m_part;
       ParticleHandler(Particle* p) : m_part(p) {}
       void addParent(const Particle* p)  {
-	m_part->parents.insert(p->id);
+        m_part->parents.insert(p->id);
       }
       Particle* findParent(const Particle* p)  {
-	return m_part->parents.find(p->id)==m_part->parents.end() ? 0 : m_part;
+        return m_part->parents.find(p->id)==m_part->parents.end() ? 0 : m_part;
       }
     };
 
@@ -241,30 +241,30 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
     //
     //  Get the daughter information, discarding extra information
     //  sometimes stored in daughter variables.
-    // 
+    //
     int fd = daughter1[IHEP] - 1;
     int ld = daughter2[IHEP] - 1;
- 
+
     //
-    //  As with the parents, look for range, 2 discreet or 1 discreet 
+    //  As with the parents, look for range, 2 discreet or 1 discreet
     //  daughter.
     if( (fd > -1) && (ld > -1) )  {
       if(ld >= fd)   {
-	for(int id=fd;id<ld+1;id++)   {
-	  //
-	  //  Get the daughter, and see if it already lists this particle as
-	  //  a parent. If not, add this particle as a parent
-	  //
-	  ParticleHandler part(particles[id]);
-	  if ( !part.findParent(mcp) ) part.addParent(mcp);
-	}
+        for(int id=fd;id<ld+1;id++)   {
+          //
+          //  Get the daughter, and see if it already lists this particle as
+          //  a parent. If not, add this particle as a parent
+          //
+          ParticleHandler part(particles[id]);
+          if ( !part.findParent(mcp) ) part.addParent(mcp);
+        }
       }
       else  {   //  Same logic, discrete cases
-	ParticleHandler part_fd(particles[fd]);
-	if ( !part_fd.findParent(mcp) ) part_fd.addParent(mcp);
+        ParticleHandler part_fd(particles[fd]);
+        if ( !part_fd.findParent(mcp) ) part_fd.addParent(mcp);
 
-	ParticleHandler part_ld(particles[ld]);
-	if ( !part_ld.findParent(mcp) ) part_ld.addParent(mcp);
+        ParticleHandler part_ld(particles[ld]);
+        if ( !part_ld.findParent(mcp) ) part_ld.addParent(mcp);
       }
     }
     else if(fd > -1)      {

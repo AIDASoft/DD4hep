@@ -13,19 +13,19 @@ using namespace std;
 using namespace DD4hep::XML;
 
 #define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Unicode_##name); }
-#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)			\
-  type Dimension::name(type default_val) const {                       \
-    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);	\
+#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)                   \
+  type Dimension::name(type default_val) const {                        \
+    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);  \
     return val ? dressing(val) : default_val; }
 
-#define XML_ATTR_ACCESSOR_DOUBLE(name) \
-  XML_ATTR_ACCESSOR(double,name)       \
+#define XML_ATTR_ACCESSOR_DOUBLE(name)                  \
+  XML_ATTR_ACCESSOR(double,name)                        \
   XML_ATTR_ACCESSOR_DEFAULT(name,double,_toDouble)
 
-#define XML_ATTR_ACCESSOR_INT(name)	 XML_ATTR_ACCESSOR_DEFAULT(name,int,_toInt)
-#define XML_ATTR_ACCESSOR_BOOL(name)	 XML_ATTR_ACCESSOR_DEFAULT(name,bool,_toBool)
+#define XML_ATTR_ACCESSOR_INT(name)      XML_ATTR_ACCESSOR_DEFAULT(name,int,_toInt)
+#define XML_ATTR_ACCESSOR_BOOL(name)     XML_ATTR_ACCESSOR_DEFAULT(name,bool,_toBool)
 
-#define XML_CHILD_ACCESSOR_XML_DIM(name)	                        \
+#define XML_CHILD_ACCESSOR_XML_DIM(name)                                \
   Dimension Dimension::name(bool throw_if_not_present) const {          \
     return m_element.child(Unicode_##name,throw_if_not_present); }
 

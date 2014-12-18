@@ -34,7 +34,7 @@ namespace DD4hep {
     /// Assignment operator
     LayerSlice& operator=(const LayerSlice& c);
   };
-  
+
   /// Initializing constructor
   inline LayerSlice::LayerSlice(bool s, double t, const std::string& m)
     : _sensitive(s), _thickness(t), _material(m) {
@@ -161,15 +161,15 @@ namespace DD4hep {
     public:
       /// Initializing constructor
       LayeringCnv(Element e);
-      /// Invoke converter 
+      /// Invoke converter
       void fromCompact(Layering& layering) const;
     };
 
-         /// Initializing constructor
+    /// Initializing constructor
     inline LayeringCnv::LayeringCnv(Element e)
       : Element(e) {
     }
- 
+
   }
 
 } /* End namespace DD4hep   */

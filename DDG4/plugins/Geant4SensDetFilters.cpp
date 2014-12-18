@@ -31,7 +31,7 @@ namespace DD4hep {
       /// Corresponding geant4 particle definiton
       mutable G4ParticleDefinition* m_definition;
     public:
-      /// Constructor. 
+      /// Constructor.
       ParticleFilter(Geant4Context* context, const std::string& name);
       /// Standard destructor
       virtual ~ParticleFilter();
@@ -50,7 +50,7 @@ namespace DD4hep {
      * @version 1.0
      */
     struct ParticleRejectFilter : public ParticleFilter  {
-      /// Constructor. 
+      /// Constructor.
       ParticleRejectFilter(Geant4Context* c, const std::string& n);
       /// Standard destructor
       virtual ~ParticleRejectFilter();
@@ -59,13 +59,13 @@ namespace DD4hep {
     };
 
     /// Geant4 sensitive detector filter implementing a particle selector
-    /** 
+    /**
      *
      * @author  M.Frank
      * @version 1.0
      */
     struct ParticleSelectFilter : public ParticleFilter  {
-      /// Constructor. 
+      /// Constructor.
       ParticleSelectFilter(Geant4Context* c, const std::string& n);
       /// Standard destructor
       virtual ~ParticleSelectFilter();
@@ -74,13 +74,13 @@ namespace DD4hep {
     };
 
     /// Geant4 sensitive detector filter implementing a Geantino rejector
-    /** 
+    /**
      *
      * @author  M.Frank
      * @version 1.0
      */
     struct GeantinoRejectFilter : public ParticleFilter  {
-      /// Constructor. 
+      /// Constructor.
       GeantinoRejectFilter(Geant4Context* c, const std::string& n);
       /// Standard destructor
       virtual ~GeantinoRejectFilter();
@@ -89,7 +89,7 @@ namespace DD4hep {
     };
 
     /// Geant4 sensitive detector filter implementing an energy cut.
-    /** 
+    /**
      *
      * @author  M.Frank
      * @version 1.0
@@ -98,7 +98,7 @@ namespace DD4hep {
       /// Energy cut value
       double m_energyCut;
     public:
-      /// Constructor. 
+      /// Constructor.
       EnergyDepositMinimumCut(Geant4Context* c, const std::string& n);
       /// Standard destructor
       virtual ~EnergyDepositMinimumCut();
@@ -113,7 +113,7 @@ namespace DD4hep {
 #include "DDG4/Factories.h"
 
 // Geant4 include files
-#include "G4ParticleTable.hh"  
+#include "G4ParticleTable.hh"
 #include "G4ChargedGeantino.hh"
 #include "G4Geantino.hh"
 #include "G4Track.hh"
@@ -126,12 +126,12 @@ using namespace std;
 //DECLARE_GEANT4ACTION()
 DECLARE_GEANT4ACTION(GeantinoRejectFilter)
 DECLARE_GEANT4ACTION(ParticleRejectFilter)
-DECLARE_GEANT4ACTION(ParticleSelectFilter)
-DECLARE_GEANT4ACTION(EnergyDepositMinimumCut)
+  DECLARE_GEANT4ACTION(ParticleSelectFilter)
+  DECLARE_GEANT4ACTION(EnergyDepositMinimumCut)
 
-/// Constructor. 
-ParticleFilter::ParticleFilter(Geant4Context* context, const std::string& name)
-: Geant4Filter(context,name), m_definition(0)
+/// Constructor.
+  ParticleFilter::ParticleFilter(Geant4Context* context, const std::string& name)
+  : Geant4Filter(context,name), m_definition(0)
 {
   declareProperty("particle",m_particle);
   InstanceCount::increment(this);
@@ -171,9 +171,9 @@ bool ParticleFilter::isGeantino(const G4Track* track) const   {
   return false;
 }
 
-/// Constructor. 
+/// Constructor.
 GeantinoRejectFilter::GeantinoRejectFilter(Geant4Context* c, const std::string& n)
-: ParticleFilter(c,n) {
+  : ParticleFilter(c,n) {
   InstanceCount::increment(this);
 }
 
@@ -187,9 +187,9 @@ bool GeantinoRejectFilter::operator()(const G4Step* step) const   {
   return !isGeantino(step->GetTrack());
 }
 
-/// Constructor. 
+/// Constructor.
 ParticleRejectFilter::ParticleRejectFilter(Geant4Context* c, const std::string& n)
-: ParticleFilter(c,n) {
+  : ParticleFilter(c,n) {
   InstanceCount::increment(this);
 }
 
@@ -203,8 +203,8 @@ bool ParticleRejectFilter::operator()(const G4Step* step) const   {
   return isSameType(step->GetTrack());
 }
 
-/// Constructor. 
-ParticleSelectFilter::ParticleSelectFilter(Geant4Context* c, const std::string& n) 
+/// Constructor.
+ParticleSelectFilter::ParticleSelectFilter(Geant4Context* c, const std::string& n)
   : ParticleFilter(c,n) {
   InstanceCount::increment(this);
 }
@@ -219,8 +219,8 @@ bool ParticleSelectFilter::operator()(const G4Step* step) const   {
   return !isSameType(step->GetTrack());
 }
 
-/// Constructor. 
-EnergyDepositMinimumCut::EnergyDepositMinimumCut(Geant4Context* c, const std::string& n) 
+/// Constructor.
+EnergyDepositMinimumCut::EnergyDepositMinimumCut(Geant4Context* c, const std::string& n)
   : Geant4Filter(c,n) {
   InstanceCount::increment(this);
   declareProperty("Cut",m_energyCut=0.0);

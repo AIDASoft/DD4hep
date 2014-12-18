@@ -37,9 +37,9 @@ namespace DD4hep {
       typedef std::map<std::string,std::pair<TGeoPhysicalNode*,Entry*> > Nodes;
       AlignmentCache& cache;
       Nodes& nodes;
-    public: 
+    public:
       /// Initializing functor constructor
-      AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
+    AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
       /// Insert alignment entry
       void insert(Alignment alignment)  const;
     };
@@ -51,10 +51,10 @@ namespace DD4hep {
      *  \ingroup  DD4HEP_ALIGN
      */
     class AlignmentSelector : public AlignmentOperator {
-    public: 
+    public:
       const Entries& entries;
       /// Initializing functor constructor
-      AlignmentSelector(AlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
+    AlignmentSelector(AlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
       ~AlignmentSelector() { }
       const AlignmentSelector& reset()   const { nodes.clear(); return *this; }
       /// Function callback for cache entries
@@ -70,9 +70,9 @@ namespace DD4hep {
      *  \ingroup  DD4HEP_ALIGN
      */
     template <typename T> class AlignmentActor : public AlignmentOperator {
-    public: 
+    public:
       /// Initializing functor constructor
-      AlignmentActor(AlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
+    AlignmentActor(AlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
       void init() {}
       /// Function callback for entries
       void operator()(Nodes::value_type& e) const;

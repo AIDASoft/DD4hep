@@ -71,7 +71,7 @@ DECLARE_GEANT4ACTION(Geant4TCUserParticleHandler)
 
 /// Standard constructor
 Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* context, const std::string& nam)
-: Geant4UserParticleHandler(context,nam) 
+: Geant4UserParticleHandler(context,nam)
 {
   declareProperty("TrackingVolume_Zmax",m_zTracker=1e100);
   declareProperty("TrackingVolume_Rmax",m_rTracker=1e100);
@@ -98,7 +98,7 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
     p.reason = 0;
     return ;
   }
-  
+
   //fg: backscatter ??
-  // if( !starts_in_trk_vol &&  ends_in_trk_vol ){  keep ?  } 
+  // if( !starts_in_trk_vol &&  ends_in_trk_vol ){  keep ?  }
 }

@@ -70,11 +70,11 @@ Geant4UserPhysics::~Geant4UserPhysics() {
 
 /// Default constructor
 Geant4PhysicsList::Process::Process()
-    : ordAtRestDoIt(-1), ordAlongSteptDoIt(-1), ordPostStepDoIt(-1) {
+: ordAtRestDoIt(-1), ordAlongSteptDoIt(-1), ordPostStepDoIt(-1) {
 }
 /// Copy constructor
 Geant4PhysicsList::Process::Process(const Process& p)
-    : name(p.name), ordAtRestDoIt(p.ordAtRestDoIt), ordAlongSteptDoIt(p.ordAlongSteptDoIt), ordPostStepDoIt(p.ordPostStepDoIt) {
+: name(p.name), ordAtRestDoIt(p.ordAtRestDoIt), ordAlongSteptDoIt(p.ordAlongSteptDoIt), ordPostStepDoIt(p.ordPostStepDoIt) {
 }
 
 /// Assignment operator
@@ -90,7 +90,7 @@ Geant4PhysicsList::Process& Geant4PhysicsList::Process::operator=(const Process&
 
 /// Standard constructor
 Geant4PhysicsList::Geant4PhysicsList(Geant4Context* context, const string& nam)
-    : Geant4Action(context, nam) {
+: Geant4Action(context, nam) {
   InstanceCount::increment(this);
 }
 
@@ -118,7 +118,7 @@ void Geant4PhysicsList::dump()    {
     for (ParticleProcesses::const_iterator ip = procs.begin(); ip != procs.end(); ++ip) {
       const Process& p = (*ip);
       printout(ALWAYS,name(),"+++        Process    %s  ordAtRestDoIt=%d ordAlongSteptDoIt=%d ordPostStepDoIt=%d",
-	       p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
+               p.name.c_str(),p.ordAtRestDoIt,p.ordAlongSteptDoIt,p.ordPostStepDoIt);
     }
   }
 }
@@ -129,11 +129,11 @@ void Geant4PhysicsList::addParticleConstructor(const std::string& part_name)   {
 }
 
 /// Add particle process by name with arguments
-void Geant4PhysicsList::addParticleProcess(const std::string& part_name, 
-					   const std::string& proc_name,
-					   int ordAtRestDoIt,
-					   int ordAlongSteptDoIt,
-					   int ordPostStepDoIt)
+void Geant4PhysicsList::addParticleProcess(const std::string& part_name,
+                                           const std::string& proc_name,
+                                           int ordAtRestDoIt,
+                                           int ordAlongSteptDoIt,
+                                           int ordPostStepDoIt)
 {
   Process p;
   p.name = proc_name;
@@ -181,7 +181,7 @@ void Geant4PhysicsList::constructPhysics(Geant4UserPhysics* physics) {
     G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor);
     if (!p) {
       throw runtime_error(format("Geant4PhysicsList", "Failed to create the physics entities "
-          "for the G4VPhysicsConstructor '%s'", ctor.c_str()));
+                                 "for the G4VPhysicsConstructor '%s'", ctor.c_str()));
     }
     physics->RegisterPhysics(p);
     printout(INFO, "Geant4PhysicsList", "%s> registered Geant4 physics %s", name().c_str(), ctor.c_str());
@@ -216,7 +216,7 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics) {
     _findDef(part_name, defs);
     if (defs.empty()) {
       throw runtime_error(format("Geant4PhysicsList", "Particle:%s "
-          "Cannot find the corresponding entry in the particle table.", part_name.c_str()));
+                                 "Cannot find the corresponding entry in the particle table.", part_name.c_str()));
     }
     for (vector<G4ParticleDefinition*>::const_iterator id = defs.begin(); id != defs.end(); ++id) {
       G4ParticleDefinition* particle = *id;
@@ -226,12 +226,12 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics) {
         G4VProcess* g4 = PluginService::Create<G4VProcess*>(p.name);
         if (!g4) {   // Error no factory for this process
           throw runtime_error(format("Geant4PhysicsList", "Particle:%s -> [%s] "
-              "Cannot create physics process %s", part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str()));
+                                     "Cannot create physics process %s", part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str()));
         }
         mgr->AddProcess(g4, p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
         printout(INFO, "Geant4PhysicsList", "Particle:%s -> [%s] "
-            "added process %s with flags (%d,%d,%d)", part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str(),
-            p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
+                 "added process %s with flags (%d,%d,%d)", part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str(),
+                 p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
       }
     }
   }
@@ -239,7 +239,7 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics) {
 
 /// Standard constructor
 Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* context, const string& nam)
-    : Geant4Action(context, nam), m_transportation(false), m_decays(false) {
+: Geant4Action(context, nam), m_transportation(false), m_decays(false) {
   declareProperty("transportation", m_transportation);
   declareProperty("extends", m_extends);
   declareProperty("decays", m_decays);

@@ -59,7 +59,7 @@ Property::Property()
 
 /// Copy constructor
 Property::Property(const Property& property)
-    : m_par(property.m_par), m_hdl(property.m_hdl) {
+  : m_par(property.m_par), m_hdl(property.m_hdl) {
 }
 
 /// Assignment operator

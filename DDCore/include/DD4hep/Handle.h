@@ -57,7 +57,7 @@ namespace DD4hep {
     /// Pointer to text conversion
     std::string _ptrToString(const void* p, const char* fmt = "%p");
     /// Format any pointer (64 bits) to string  \ingroup DD4HEP_XML
-    template <typename T> std::string _toString(const T* p, const char* fmt = "%p")   
+    template <typename T> std::string _toString(const T* p, const char* fmt = "%p")
       {      return _ptrToString((void*)p, fmt);       }
 
     /// String conversions: string to boolean value  \ingroup DD4HEP_GEOMETRY
@@ -160,15 +160,15 @@ namespace DD4hep {
     }
 
     /// Handle: a templated class like a shared pointer, which allows specialized access to tgeometry objects.
-    /** 
+    /**
      * The Handle is the base class to access all objects in DD4hep.
      * Objects, which consist ONLY of data  are NEVER passed directly.
      * They are ALWAYS passed using handles. Such handles are 'handy' ;-).
-     * Assignment is to and from different handles is possible using concrete 
+     * Assignment is to and from different handles is possible using concrete
      * type checking.
      *
      * Real benefits can result from sophisticated handle subclasses, which can
-     * implement any desired user functionality with out compromising the 
+     * implement any desired user functionality with out compromising the
      * object's data content. This leads to very flexible implementations,
      * where the same data may be shared by many handle implementations
      * providing different functionality to the clients.
@@ -197,25 +197,25 @@ namespace DD4hep {
       /// Single and only data member: Reference to the actual element.
       T* m_element;
       /// Defaulot constructor
-      Handle()
-          : m_element(0) {
+    Handle()
+      : m_element(0) {
       }
       /// Initializing constructor from pointer
-      Handle(T* e)
-          : m_element(e) {
+    Handle(T* e)
+      : m_element(e) {
       }
       /// Copy constructor
-      Handle(const Handle<T>& e)
-          : m_element(e.m_element) {
+    Handle(const Handle<T>& e)
+      : m_element(e.m_element) {
       }
       /// Initializing constructor from unrelated pointer with type checking
       template <typename Q> Handle(Q* e)
-          : m_element((T*) e) {
+        : m_element((T*) e) {
         verifyObject();
       }
       /// Initializing constructor from unrelated handle with type checking
       template <typename Q> Handle(const Handle<Q>& e)
-          : m_element((T*) e.m_element) {
+        : m_element((T*) e.m_element) {
         verifyObject();
       }
       /// Assignment operator
@@ -246,7 +246,7 @@ namespace DD4hep {
       /// Release the object held by the handle
       Handle<T>& clear() {
         m_element = 0;
-	return *this;
+        return *this;
       }
       /// Access the held object using the -> operator
       T* operator->() const {
@@ -316,8 +316,8 @@ namespace DD4hep {
     template <typename M> class DestroyHandles {
     public:
       M& object;
-      DestroyHandles(M& m)
-          : object(m) {
+    DestroyHandles(M& m)
+      : object(m) {
       }
       ~DestroyHandles() {
         object.clear();

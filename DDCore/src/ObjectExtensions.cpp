@@ -94,9 +94,9 @@ void* ObjectExtensions::removeExtension(const std::type_info& info, bool destroy
     if ( destroy )  {
       ExtensionMap::iterator i = extensionMap->find(&info);
       if (i != extensionMap->end()) {
-	Entry& e = (*i).second;
-	(*e.destruct)((*j).second);
-	ptr = 0;
+        Entry& e = (*i).second;
+        (*e.destruct)((*j).second);
+        ptr = 0;
       }
     }
     extensions.erase(j);
@@ -120,7 +120,7 @@ void* ObjectExtensions::extension(const std::type_info& info, bool alert) const 
   if (j != extensions.end()) {
     return (*j).second;
   }
-  else if ( !alert ) 
+  else if ( !alert )
     return 0;
   throw std::runtime_error("DD4hep: extension: Object has no extension of type:" + typeName(info) + ".");
 }

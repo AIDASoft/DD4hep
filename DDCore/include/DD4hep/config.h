@@ -15,8 +15,8 @@
 #define INCREMENT_COUNTER InstanceCount::increment(this)
 #define DECREMENT_COUNTER InstanceCount::decrement(this)
 #else
-#define INCREMENT_COUNTER 
-#define DECREMENT_COUNTER 
+#define INCREMENT_COUNTER
+#define DECREMENT_COUNTER
 #endif
 
 /// Namespace for the AIDA detector description toolkit

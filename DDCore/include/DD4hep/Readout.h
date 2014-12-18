@@ -41,30 +41,30 @@ namespace DD4hep {
       typedef ReadoutObject Object;
     public:
       /// Default constructor
-      Readout()
-          : Handle<Object>() {
+    Readout()
+      : Handle<Object>() {
       }
       /// Copy Constructor from object
-      Readout(const Readout& e)
-          : Handle<Object>(e) {
+    Readout(const Readout& e)
+      : Handle<Object>(e) {
       }
 #ifndef __CINT__
       /// Copy Constructor from handle
-      Readout(const Handle<ReadoutObject>& e)
-          : Handle<Object>(e) {
+    Readout(const Handle<ReadoutObject>& e)
+      : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Readout(const Handle<Q>& e)
-          : Handle<Object>(e) {
+        : Handle<Object>(e) {
       }
       /// Initializing constructor
       Readout(const std::string& name);
       /// Assignment operator
       Readout& operator=(const Readout& ro)  {
-	if ( &ro == this ) return *this;
-	m_element = ro.m_element;
-	return *this;
+        if ( &ro == this ) return *this;
+        m_element = ro.m_element;
+        return *this;
       }
       /// Assign IDDescription to readout structure
       void setIDDescriptor(const Ref_t& spec) const;

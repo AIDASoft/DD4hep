@@ -30,7 +30,7 @@ typedef DetectorTools::PlacementPath PlacementPath;
 namespace  {
   /** @class GeometryWalk
    *
-   *  Test the volume manager by scanning the sensitive 
+   *  Test the volume manager by scanning the sensitive
    *  volumes of one or several subdetectors.
    *
    *  @author  M.Frank
@@ -99,7 +99,7 @@ void GeometryWalk::print(DetElement e, PlacedVolume pv, const VolIDs& /* child_i
 
 /// Walk through tree of volume placements
 void GeometryWalk::walk(DetElement e, VolIDs ids)  const   {
-  const _C& children = e.children();  
+  const _C& children = e.children();
   PlacedVolume pv = e.placement();
   VolIDs child_ids(ids);
   print(e,pv,ids);
@@ -115,11 +115,11 @@ long GeometryWalk::run(LCDD& lcdd,int argc,char** argv)    {
   for(int i=1; i<argc;++i)  {
     string name = argv[i]+1;
     if ( name == "all" || name == "All" || name == "ALL" )  {
-      const _C& children = lcdd.world().children();  
+      const _C& children = lcdd.world().children();
       for (_C::const_iterator i=children.begin(); i!=children.end(); ++i)  {
-	DetElement sdet = (*i).second;
-	cout << "++ Processing subdetector: " << sdet.name() << endl;
-	GeometryWalk test(lcdd,sdet);
+        DetElement sdet = (*i).second;
+        cout << "++ Processing subdetector: " << sdet.name() << endl;
+        GeometryWalk test(lcdd,sdet);
       }
       return 1;
     }

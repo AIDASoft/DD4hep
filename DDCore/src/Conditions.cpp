@@ -150,7 +150,7 @@ Condition& Condition::rebind()    {
   o->data.fromString(o->value);
   o->iov.fromString(o->validity);
   printout(INFO,"Condition","+++ condition:%s : %s rebinding value:%s",
-	   detector().path().c_str(), name().c_str(), o->value.c_str());
+           detector().path().c_str(), name().c_str(), o->value.c_str());
   return *this;
 }
 
@@ -195,9 +195,9 @@ int Conditions::set(Entry* cond)   {
       o = data<Object>();
       Entries::iterator i = o->entries.find(cond->name);
       if ( i != o->entries.end() )  {
-	(*i).second.replace(cond);
-	c = (*i).second;
-	status = 2;
+        (*i).second.replace(cond);
+        c = (*i).second;
+        status = 2;
       }
     }
     else  {
@@ -210,8 +210,8 @@ int Conditions::set(Entry* cond)   {
       o->entries.insert(make_pair(cond->name,c));
     }
     printout(INFO,"Conditions","+++ %s condition:%s : %s value:%s",
-	     (status==1) ? "Added NEW" : "Replaced existing",
-	     c.detector().path().c_str(), c.name().c_str(), c->value.c_str());
+             (status==1) ? "Added NEW" : "Replaced existing",
+             c.detector().path().c_str(), c.name().c_str(), c->value.c_str());
     delete cond;
   }
   return status;

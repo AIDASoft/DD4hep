@@ -42,9 +42,9 @@ namespace DD4hep {
        *  \version 1.0
        *  \ingroup DD4HEP_GEOMETRY
        */
-       struct InvalidObjectError: public std::runtime_error {
+      struct InvalidObjectError: public std::runtime_error {
       InvalidObjectError(const std::string& msg)
-	: std::runtime_error("DD4hep: " + msg) {
+        : std::runtime_error("DD4hep: " + msg) {
         }
       };
 
@@ -57,7 +57,7 @@ namespace DD4hep {
        */
       class ObjectHandleMap: public LCDD::HandleMap {
       public:
-	/// Default constructor
+        /// Default constructor
         ObjectHandleMap() {
         }
         void append(const Ref_t& e, bool throw_on_doubles = true) {

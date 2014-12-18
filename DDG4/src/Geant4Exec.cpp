@@ -58,54 +58,54 @@ namespace DD4hep {
       Geant4Context* m_activeContext;
       /// Default constructor
       SequenceHdl()
-	: m_sequence(0), m_activeContext(0) {
+        : m_sequence(0), m_activeContext(0) {
       }
       SequenceHdl(Geant4Context* context, T* seq) : m_sequence(0), m_activeContext(context)  {
-	_aquire(seq);
+        _aquire(seq);
       }
       virtual ~SequenceHdl() {
-	_release();
+        _release();
       }
       void _aquire(T* s) {
-	InstanceCount::increment(this);
-	m_sequence = s;
-	m_sequence->addRef();
+        InstanceCount::increment(this);
+        m_sequence = s;
+        m_sequence->addRef();
       }
       void _release() {
-	releasePtr(m_sequence);
-	InstanceCount::decrement(this);
+        releasePtr(m_sequence);
+        InstanceCount::decrement(this);
       }
       void setContextToClients()   {
-	(Geant4Action::ContextUpdate(m_activeContext))(m_sequence);
+        (Geant4Action::ContextUpdate(m_activeContext))(m_sequence);
       }
       void releaseContextFromClients()  {
-	Geant4Action::ContextUpdate(0)(m_sequence);
+        Geant4Action::ContextUpdate(0)(m_sequence);
       }
       void createClientContext(const G4Run* run)   {
-	Geant4Run* r = new Geant4Run(run);
-	m_activeContext->setRun(r);
-	setContextToClients();
+        Geant4Run* r = new Geant4Run(run);
+        m_activeContext->setRun(r);
+        setContextToClients();
       }
       void destroyClientContext(const G4Run*)   {
-	Geant4Run* r = m_activeContext->runPtr();
-	releaseContextFromClients();
-	if ( r )  {
-	  m_activeContext->setRun(0);
-	  deletePtr(r);
-	}
+        Geant4Run* r = m_activeContext->runPtr();
+        releaseContextFromClients();
+        if ( r )  {
+          m_activeContext->setRun(0);
+          deletePtr(r);
+        }
       }
       void createClientContext(const G4Event* evt)   {
-	Geant4Event* e = new Geant4Event(evt,s_globalRandom);
-	m_activeContext->setEvent(e);
-	setContextToClients();
+        Geant4Event* e = new Geant4Event(evt,s_globalRandom);
+        m_activeContext->setEvent(e);
+        setContextToClients();
       }
       void destroyClientContext(const G4Event*)   {
-	Geant4Event* e = m_activeContext->eventPtr();
-	releaseContextFromClients();
-	if ( e )  {
-	  m_activeContext->setEvent(0);
-	  deletePtr(e);
-	}
+        Geant4Event* e = m_activeContext->eventPtr();
+        releaseContextFromClients();
+        if ( e )  {
+          m_activeContext->setEvent(0);
+          deletePtr(e);
+        }
       }
     };
 
@@ -123,7 +123,7 @@ namespace DD4hep {
       Geant4UserEventAction* eventAction;
       /// Standard constructor
       Geant4UserRunAction(Geant4Context* context, Geant4RunActionSequence* seq)
-	: Base(context, seq), eventAction(0)  {
+        : Base(context, seq), eventAction(0)  {
       }
       /// Default destructor
       virtual ~Geant4UserRunAction() {
@@ -145,7 +145,7 @@ namespace DD4hep {
       Geant4UserRunAction* runAction;
       /// Standard constructor
       Geant4UserEventAction(Geant4Context* context, Geant4EventActionSequence* seq)
-	: Base(context, seq), runAction(0)  {
+        : Base(context, seq), runAction(0)  {
       }
       /// Default destructor
       virtual ~Geant4UserEventAction() {
@@ -166,22 +166,22 @@ namespace DD4hep {
     public:
       /// Standard constructor
       Geant4UserTrackingAction(Geant4Context* context, Geant4TrackingActionSequence* seq)
-	: Base(context, seq) {
+        : Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserTrackingAction() {
       }
       /// Pre-track action callback
       virtual void PreUserTrackingAction(const G4Track* trk) {
-	setContextToClients();
-	m_sequence->context()->kernel().setTrackMgr(fpTrackingManager);
+        setContextToClients();
+        m_sequence->context()->kernel().setTrackMgr(fpTrackingManager);
         m_sequence->begin(trk);
       }
       /// Post-track action callback
       virtual void PostUserTrackingAction(const G4Track* trk) {
         m_sequence->end(trk);
-	m_sequence->context()->kernel().setTrackMgr(0);
-	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
+        m_sequence->context()->kernel().setTrackMgr(0);
+        releaseContextFromClients();    //Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -195,22 +195,22 @@ namespace DD4hep {
     public:
       /// Standard constructor
       Geant4UserStackingAction(Geant4Context* context, Geant4StackingActionSequence* seq)
-	: Base(context, seq) {
+        : Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserStackingAction() {
       }
       /// New-stage callback
       virtual void NewStage() {
-	setContextToClients();
+        setContextToClients();
         m_sequence->newStage();
-	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
+        releaseContextFromClients();    //Let's leave this out for now...Frank has dirty tricks.
       }
       /// Preparation callback
       virtual void PrepareNewEvent() {
-	setContextToClients();
+        setContextToClients();
         m_sequence->prepare();
-	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
+        releaseContextFromClients();    //Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -224,16 +224,16 @@ namespace DD4hep {
     public:
       /// Standard constructor
       Geant4UserGeneratorAction(Geant4Context* context, Geant4GeneratorActionSequence* seq)
-	: G4VUserPrimaryGeneratorAction(), Base(context, seq) {
+        : G4VUserPrimaryGeneratorAction(), Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserGeneratorAction() {
       }
       /// Generate primary particles
       virtual void GeneratePrimaries(G4Event* event) {
-	createClientContext(event);
+        createClientContext(event);
         (*m_sequence)(event);
-	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
+        releaseContextFromClients();    //Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -247,16 +247,16 @@ namespace DD4hep {
     public:
       /// Standard constructor
       Geant4UserSteppingAction(Geant4Context* context, Geant4SteppingActionSequence* seq)
-	: Base(context, seq) {
+        : Base(context, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserSteppingAction() {
       }
       /// User stepping callback
       virtual void UserSteppingAction(const G4Step* s) {
-	setContextToClients();
+        setContextToClients();
         (*m_sequence)(s, fpSteppingManager);
-	releaseContextFromClients();	//Let's leave this out for now...Frank has dirty tricks.
+        releaseContextFromClients();    //Let's leave this out for now...Frank has dirty tricks.
       }
     };
 
@@ -317,7 +317,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   // Check if the geometry was loaded
   if (lcdd.detectors().size() <= 1) {
     printout(WARNING, "Geant4Exec", "+++ Only %d subdetectors present. "
-	     "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
+             "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
   }
   // Get the detector constructed
   Geant4DetectorConstruction* detector = Geant4DetectorConstruction::instance(kernel);
@@ -340,7 +340,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   }
   runManager.SetUserInitialization(physics);
   // Set user generator action sequence. Not optional, since event context is defined inside
-  Geant4UserGeneratorAction* gen_action = 
+  Geant4UserGeneratorAction* gen_action =
     new Geant4UserGeneratorAction(ctx,kernel.generatorAction(false));
   runManager.SetUserAction(gen_action);
 
@@ -392,8 +392,8 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
     if ( ui )  {
       Geant4Call* c = dynamic_cast<Geant4Call*>(ui);
       if ( c )  {
-	(*c)(0);
-	return 1;
+        (*c)(0);
+        return 1;
       }
       ui->except("++ Geant4Exec: Failed to start UI interface.");
     }

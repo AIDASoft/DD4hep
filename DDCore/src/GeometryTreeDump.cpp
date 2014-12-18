@@ -104,46 +104,46 @@ void* GeometryTreeDump::handleSolid(const string& name, const TGeoShape* shape) 
     if (shape->IsA() == TGeoBBox::Class()) {
       const TGeoBBox* s = (const TGeoBBox*) shape;
       m_output << "\t\t<box name=\"" << name << "_shape\" x=\"" << s->GetDX() << "\" y=\"" << s->GetDY() << "\" z=\""
-          << s->GetDZ() << "\" lunit=\"cm\"/>" << endl;
+               << s->GetDZ() << "\" lunit=\"cm\"/>" << endl;
     }
     else if (shape->IsA() == TGeoTube::Class()) {
       const TGeoTube* s = (const TGeoTube*) shape;
       m_output << "\t\t<tube name=\"" << name << "_shape\" rmin=\"" << s->GetRmin() << "\" rmax=\"" << s->GetRmax() << "\" z=\""
-          << s->GetDz() << "\" startphi=\"0.0\" deltaphi=\"360.0\" aunit=\"deg\" lunit=\"cm\"/>" << endl;
+               << s->GetDz() << "\" startphi=\"0.0\" deltaphi=\"360.0\" aunit=\"deg\" lunit=\"cm\"/>" << endl;
     }
     else if (shape->IsA() == TGeoTubeSeg::Class()) {
       const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
       m_output << "\t\t<tube name=\"" << name << "_shape\" rmin=\"" << s->GetRmin() << "\" rmax=\"" << s->GetRmax() << "\" z=\""
-          << s->GetDz() << "\" startphi=\"" << s->GetPhi1() << "\" deltaphi=\"" << s->GetPhi2()
-          << "\" aunit=\"deg\" lunit=\"cm\"/>" << endl;
+               << s->GetDz() << "\" startphi=\"" << s->GetPhi1() << "\" deltaphi=\"" << s->GetPhi2()
+               << "\" aunit=\"deg\" lunit=\"cm\"/>" << endl;
     }
     else if (shape->IsA() == TGeoTrd1::Class()) {
       const TGeoTrd1* s = (const TGeoTrd1*) shape;
       m_output << "\t\t<tube name=\"" << name << "_shape\" x1=\"" << s->GetDx1() << "\" x2=\"" << s->GetDx2() << "\" y1=\""
-          << s->GetDy() << "\" y2=\"" << s->GetDy() << "\" z=\"" << s->GetDz() << "\" lunit=\"cm\"/>" << endl;
+               << s->GetDy() << "\" y2=\"" << s->GetDy() << "\" z=\"" << s->GetDz() << "\" lunit=\"cm\"/>" << endl;
     }
     else if (shape->IsA() == TGeoTrd2::Class()) {
       const TGeoTrd2* s = (const TGeoTrd2*) shape;
       m_output << "\t\t<tube name=\"" << name << "_shape\" x1=\"" << s->GetDx1() << "\" x2=\"" << s->GetDx2() << "\" y1=\""
-          << s->GetDy1() << "\" y2=\"" << s->GetDy2() << "\" z=\"" << s->GetDz() << "\" lunit=\"cm\"/>" << endl;
+               << s->GetDy1() << "\" y2=\"" << s->GetDy2() << "\" z=\"" << s->GetDz() << "\" lunit=\"cm\"/>" << endl;
     }
     else if (shape->IsA() == TGeoPgon::Class()) {
       const TGeoPgon* s = (const TGeoPgon*) shape;
       m_output << "\t\t<polyhedra name=\"" << name << "_shape\" startphi=\"" << s->GetPhi1() << "\" deltaphi=\"" << s->GetDphi()
-          << "\" numsides=\"" << s->GetNedges() << "\" aunit=\"deg\" lunit=\"cm\">" << endl;
+               << "\" numsides=\"" << s->GetNedges() << "\" aunit=\"deg\" lunit=\"cm\">" << endl;
       for (int i = 0; i < s->GetNz(); ++i) {
         m_output << "\t\t\t<zplane z=\"" << s->GetZ(i) << "\" rmin=\"" << s->GetRmin(i) << "\" rmax=\"" << s->GetRmax(i)
-            << "\" lunit=\"cm\"/>" << endl;
+                 << "\" lunit=\"cm\"/>" << endl;
       }
       m_output << "\t\t</polyhedra>" << endl;
     }
     else if (shape->IsA() == TGeoPcon::Class()) {
       const TGeoPcon* s = (const TGeoPcon*) shape;
       m_output << "\t\t<polycone name=\"" << name << "_shape\" startphi=\"" << s->GetPhi1() << "\" deltaphi=\"" << s->GetDphi()
-          << "\" aunit=\"deg\" lunit=\"cm\">" << endl;
+               << "\" aunit=\"deg\" lunit=\"cm\">" << endl;
       for (int i = 0; i < s->GetNz(); ++i) {
         m_output << "\t\t\t<zplane z=\"" << s->GetZ(i) << "\" rmin=\"" << s->GetRmin(i) << "\" rmax=\"" << s->GetRmax(i)
-            << "\" lunit=\"cm\"/>" << endl;
+                 << "\" lunit=\"cm\"/>" << endl;
       }
       m_output << "\t\t</polycone>" << endl;
     }
@@ -235,7 +235,7 @@ void GeometryTreeDump::handleDefines(const LCDD::HandleMap& defs) const {
   m_output << "\t<define>" << endl;
   for (LCDD::HandleMap::const_iterator i = defs.begin(); i != defs.end(); ++i)
     m_output << "\t\t<constant name=\"" << (*i).second->name << "\" value=\"" << (*i).second->type << "\" />"
-        << endl;
+             << endl;
   m_output << "\t</define>" << endl;
 }
 

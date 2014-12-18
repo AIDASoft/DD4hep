@@ -14,7 +14,7 @@ using namespace DD4hep::Simulation;
 
 /// Default constructor
 Geant4TrackInformation::Geant4TrackInformation()
-    : G4VUserTrackInformation(), m_flags(0) {
+: G4VUserTrackInformation(), m_flags(0) {
 }
 
 /// Standard destructor

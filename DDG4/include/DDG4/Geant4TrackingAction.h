@@ -58,7 +58,7 @@ namespace DD4hep {
     /// Concrete implementation of the Geant4 tracking action sequence
     /**
      * The sequence dispatches the callbacks for each tracking action
-     * to all registered Geant4SteppingAction members and all 
+     * to all registered Geant4SteppingAction members and all
      * registered callbacks.
      *
      *  \author  M.Frank
@@ -83,27 +83,27 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4TrackingActionSequence();
       /// Register Pre-track action callback before anything else
-      template <typename Q, typename T> 
-	void callUpFront(Q* p, void (T::*f)(const G4Track*), 
-			 CallbackSequence::Location where=CallbackSequence::END) {
+      template <typename Q, typename T>
+        void callUpFront(Q* p, void (T::*f)(const G4Track*),
+                         CallbackSequence::Location where=CallbackSequence::END) {
         m_front.add(p, f, where);
       }
       /// Register Pre-track action callback
-      template <typename Q, typename T> 
-	void callAtBegin(Q* p, void (T::*f)(const G4Track*), 
-			 CallbackSequence::Location where=CallbackSequence::END) {
+      template <typename Q, typename T>
+        void callAtBegin(Q* p, void (T::*f)(const G4Track*),
+                         CallbackSequence::Location where=CallbackSequence::END) {
         m_begin.add(p, f, where);
       }
       /// Register Post-track action callback
-      template <typename Q, typename T> 
-	void callAtEnd(Q* p, void (T::*f)(const G4Track*), 
-		       CallbackSequence::Location where=CallbackSequence::END) {
+      template <typename Q, typename T>
+        void callAtEnd(Q* p, void (T::*f)(const G4Track*),
+                       CallbackSequence::Location where=CallbackSequence::END) {
         m_end.add(p, f, where);
       }
       /// Register Post-track action callback
-      template <typename Q, typename T> 
-	void callAtFinal(Q* p, void (T::*f)(const G4Track*), 
-			 CallbackSequence::Location where=CallbackSequence::END) {
+      template <typename Q, typename T>
+        void callAtFinal(Q* p, void (T::*f)(const G4Track*),
+                         CallbackSequence::Location where=CallbackSequence::END) {
         m_final.add(p, f, where);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

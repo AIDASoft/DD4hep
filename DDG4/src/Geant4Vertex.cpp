@@ -21,14 +21,14 @@ VertexExtension::~VertexExtension() {
 
 /// Copy constructor
 Geant4Vertex::Geant4Vertex(const Geant4Vertex& c)
-  : ref(1), mask(c.mask), x(c.x), y(c.y), z(c.z), time(c.time), out(c.out), in(c.in)
+: ref(1), mask(c.mask), x(c.x), y(c.y), z(c.z), time(c.time), out(c.out), in(c.in)
 {
   InstanceCount::increment(this);
 }
 
 /// Default constructor
 Geant4Vertex::Geant4Vertex()
-  : ref(1), mask(0), x(0), y(0), z(0), time(0)
+: ref(1), mask(0), x(0), y(0), z(0), time(0)
 {
   InstanceCount::increment(this);
 }

@@ -57,14 +57,14 @@ namespace DD4hep {
     class TypeName : public std::pair<std::string, std::string> {
     public:
       /// Default constructor
-      TypeName()
-          : std::pair<std::string, std::string>() {
+    TypeName()
+      : std::pair<std::string, std::string>() {
       }
-      TypeName(const std::pair<std::string, std::string>& c)
-          : std::pair<std::string, std::string>(c) {
+    TypeName(const std::pair<std::string, std::string>& c)
+      : std::pair<std::string, std::string>(c) {
       }
-      TypeName(const std::string& typ, const std::string& nam)
-          : std::pair<std::string, std::string>(typ, nam) {
+    TypeName(const std::string& typ, const std::string& nam)
+      : std::pair<std::string, std::string>(typ, nam) {
       }
       /// Split string pair according to default delimiter ('/')
       static TypeName split(const std::string& type_name);
@@ -74,7 +74,7 @@ namespace DD4hep {
 
     /// Default base class for all Geant 4 actions and derivates thereof.
     /**
-     *  This is a utility class supporting properties, output and access to 
+     *  This is a utility class supporting properties, output and access to
      *  event and run objects through the context.
      *
      *  \author  M.Frank
@@ -100,28 +100,28 @@ namespace DD4hep {
       long m_refCount;
 
       //fg: ContextUpdate needs to be public for the clang compiler
-      //    as it is used in SequenceHdl::setContextToClients()  
+      //    as it is used in SequenceHdl::setContextToClients()
     public:
       /// Functor to update the context of a Geant4Action object
-      /** 
+      /**
        *  \author  M.Frank
        *  \version 1.0
        *  \ingroup DD4HEP_SIMULATION
        */
       class ContextUpdate  {
       public:
-	/// reference to the context;
-	const Geant4Context* context;
-	/// Constructor
-        ContextUpdate(const Geant4Context* c=0) : context(c)  {}
-	/// Callback
-	void operator()(Geant4Action* action)  const;
+        /// reference to the context;
+        const Geant4Context* context;
+        /// Constructor
+      ContextUpdate(const Geant4Context* c=0) : context(c)  {}
+        /// Callback
+        void operator()(Geant4Action* action)  const;
       };
       friend class ContextUpdate;
     protected:
 
       /// Actor class to manipulate action groups
-      /** 
+      /**
        *  \author  M.Frank
        *  \version 1.0
        *  \ingroup DD4HEP_SIMULATION
@@ -152,16 +152,16 @@ namespace DD4hep {
         _V* operator->() {
           return &m_v;
         }
-	typename _V::iterator begin() { return m_v.begin(); }
-	typename _V::iterator end()   { return m_v.end();   }
-	typename _V::const_iterator begin() const  { return m_v.begin(); }
-	typename _V::const_iterator end()   const  { return m_v.end();   }
+        typename _V::iterator begin() { return m_v.begin(); }
+        typename _V::iterator end()   { return m_v.end();   }
+        typename _V::const_iterator begin() const  { return m_v.begin(); }
+        typename _V::const_iterator end()   const  { return m_v.end();   }
         /// Context updates
         void operator()(const ContextUpdate& context) {
           if (m_v.empty())
             return;
           for (typename _V::iterator i = m_v.begin(); i != m_v.end(); ++i)
-	    context(*i);
+            context(*i);
         }
         /// NON-CONST actions
         template <typename R, typename Q> void operator()(R (Q::*pmf)()) {
@@ -196,7 +196,7 @@ namespace DD4hep {
             ((*i)->*pmf)(a0);
         }
         template <typename R, typename Q, typename A0, typename A1> void operator()(R (Q::*pmf)(A0, A1) const, A0 a0,
-            A1 a1) const {
+                                                                                    A1 a1) const {
           if (m_v.empty())
             return;
           for (typename _V::const_iterator i = m_v.begin(); i != m_v.end(); ++i)
@@ -261,7 +261,7 @@ namespace DD4hep {
       }
       /// Access the output level
       PrintLevel outputLevel() const  {
-	return (PrintLevel)m_outputLevel;
+        return (PrintLevel)m_outputLevel;
       }
       /// Set the output level; returns previous value
       PrintLevel setOutputLevel(PrintLevel new_level);

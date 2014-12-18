@@ -25,18 +25,18 @@ PrimaryExtension::~PrimaryExtension() {
 
 /// Default destructor
 Geant4PrimaryMap::~Geant4PrimaryMap()   {
-  releaseObjects(primaryMap)();  
+  releaseObjects(primaryMap)();
 }
 
 /// Default constructor
 Geant4PrimaryInteraction::Geant4PrimaryInteraction()
-  : mask(0), next_particle_identifier(-1)
+: mask(0), next_particle_identifier(-1)
 {
 }
 
 /// Copy constructor
 Geant4PrimaryInteraction::Geant4PrimaryInteraction(const Geant4PrimaryInteraction&)
-  : mask(0), next_particle_identifier(-1)
+: mask(0), next_particle_identifier(-1)
 {
 }
 
@@ -68,7 +68,7 @@ bool Geant4PrimaryInteraction::applyMask()   {
     Geant4PrimaryInteraction::ParticleMap::iterator ip, ipend;
     for( ip=particles.begin(), ipend=particles.end(); ip != ipend; ++ip )
       (*ip).second->mask = mask;
-    
+
     Geant4PrimaryInteraction::VertexMap::iterator iv, ivend;
     for( iv=vertices.begin(), ivend=vertices.end(); iv != ivend; ++iv )
       (*iv).second->mask = mask;
@@ -78,7 +78,7 @@ bool Geant4PrimaryInteraction::applyMask()   {
 }
 
 /// Default constructor
-Geant4PrimaryEvent::Geant4PrimaryEvent() 
+Geant4PrimaryEvent::Geant4PrimaryEvent()
 {
 }
 
@@ -109,7 +109,7 @@ void Geant4PrimaryEvent::add(int id, Geant4PrimaryInteraction* interaction)   {
     }
     char text[132];
     ::snprintf(text,sizeof(text),"Geant4PrimaryEvent: Interaction with ID '%d' "
-	       "exists and cannot be added twice!",id);
+               "exists and cannot be added twice!",id);
     throw std::runtime_error(text);
   }
   throw std::runtime_error("Geant4PrimaryEvent: CANNOT add invalid Interaction!");

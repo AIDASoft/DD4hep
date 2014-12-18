@@ -1,5 +1,5 @@
 //====================================================================
-//  DDSim - LC simulation based on DD4hep 
+//  DDSim - LC simulation based on DD4hep
 //--------------------------------------------------------------------
 //  F.Gaede, DESY
 //====================================================================
@@ -26,7 +26,7 @@ using namespace DD4hep;
 namespace  Tests {
 
   // copied from Geant4SDActions.cpp (why is this not a public class ??????)
-  
+
   /// Deprecated: Simple SensitiveAction class ...
   /**
    *  \deprecated
@@ -40,7 +40,7 @@ namespace  Tests {
     size_t m_collectionID;
 
     // properties:
-    bool _detailedHitsStoring ; 
+    bool _detailedHitsStoring ;
 
   public:
     //    typedef SimpleHit::Contribution HitContribution;
@@ -74,7 +74,7 @@ namespace  Tests {
       Base::clear(hce);
     }
   };
-  
+
 
   // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   //               Geant4SensitiveAction<SimpleTracker>
@@ -92,17 +92,17 @@ namespace  Tests {
   template <> void Geant4SensitiveAction<LcioTestTracker>::defineCollections() {
     m_collectionID = Base::defineCollection<lcio::SimTrackerHitImpl>(m_sensitive.readout().name());
   }
-  
+
   /// Method for generating hit(s) using the information of G4Step object.
   template <> bool Geant4SensitiveAction<LcioTestTracker>::process(G4Step* step,G4TouchableHistory* /*hist*/ ) {
     StepHandler h(step);
-    
+
     Position prePos    = h.prePos();
     Position postPos   = h.postPos();
     Position direction = postPos - prePos;
     Position position  = mean_direction(prePos,postPos);
     double   hit_len   = direction.R();
-    
+
     if (hit_len > 0) {
       double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
       direction *= new_len/hit_len;
@@ -110,10 +110,10 @@ namespace  Tests {
 
     lcio::SimTrackerHitImpl* hit = new lcio::SimTrackerHitImpl;
     //    (h.track->GetTrackID(),
-     // h.track->GetDefinition()->GetPDGEncoding(),
-     // step->GetTotalEnergyDeposit(),
-     // h.track->GetGlobalTime());
-    
+    // h.track->GetDefinition()->GetPDGEncoding(),
+    // step->GetTotalEnergyDeposit(),
+    // h.track->GetGlobalTime());
+
     // HitContribution contrib = Hit::extractContribution(step);
 
     VolumeID cellID = volumeID( step ) ;
@@ -121,7 +121,7 @@ namespace  Tests {
     hit->setCellID1( ( cellID >> 32 ) & 0xffffffff   ) ;
 
     printout(INFO,"LcioTestTracker","%s> Add hit with deposit:%f  Pos:%f %f %f - cellID0: 0x%x cellID1: 0x%x",
-	     c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z() , hit->getCellID0() ,hit->getCellID1() );
+             c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z() , hit->getCellID0() ,hit->getCellID1() );
 
     double pos[3] = {position.x(), position.y(), position.z()};
     hit->setPosition( pos  ) ;
@@ -134,7 +134,7 @@ namespace  Tests {
     return hit != 0;
   }
 
-  typedef Geant4SensitiveAction<LcioTestTracker> LcioTestTrackerAction;    
+  typedef Geant4SensitiveAction<LcioTestTracker> LcioTestTrackerAction;
 } // namespace
 
 #include "DDG4/Factories.h"

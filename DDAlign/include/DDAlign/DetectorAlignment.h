@@ -25,7 +25,7 @@ namespace DD4hep {
     class DetElement;
 
     /// DetectorAlignment. DetElement Handle supporting alignment operations.
-    /** 
+    /**
      *  \author   M.Frank
      *  \version  1.0
      *  \ingroup  DD4HEP_ALIGN

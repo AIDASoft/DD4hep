@@ -31,7 +31,7 @@ namespace DD4hep {
     // Forward declarations
     class Geant4Particle;
     class Geant4Vertex;
-    
+
     /// Base structure to extend primary information with user data
     /**
      *  \author  M.Frank
@@ -43,7 +43,7 @@ namespace DD4hep {
       /// Default constructor
       PrimaryExtension() {}
       /// Default destructor
-      virtual ~PrimaryExtension();      
+      virtual ~PrimaryExtension();
     };
 
     /// Data structure to map primaries to particles.
@@ -65,7 +65,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4PrimaryMap();
     };
-    
+
 
     /// Class modelling a single interaction with multiple primary vertices and particles
     /*

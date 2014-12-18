@@ -34,8 +34,8 @@ namespace DD4hep {
       Geant4PhysicsListActionSequence* m_sequence;
     public:
       /// Standard constructor
-      Geant4UserPhysicsList(Geant4PhysicsListActionSequence* seq, int verbose)
-          : Geant4UserPhysics(), BASE_IMP(verbose), m_sequence(seq) {
+    Geant4UserPhysicsList(Geant4PhysicsListActionSequence* seq, int verbose)
+      : Geant4UserPhysics(), BASE_IMP(verbose), m_sequence(seq) {
         if (m_sequence)
           m_sequence->addRef();
         InstanceCount::increment(this);

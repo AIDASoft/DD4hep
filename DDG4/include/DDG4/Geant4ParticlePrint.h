@@ -30,7 +30,7 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4ParticlePrint : public Geant4EventAction	{
+    class Geant4ParticlePrint : public Geant4EventAction        {
     public:
       typedef Geant4ParticleMap::Particle Particle;
       typedef Geant4ParticleMap::ParticleMap ParticleMap;
@@ -69,7 +69,7 @@ namespace DD4hep {
       virtual void end(const G4Event* event);
       /// Generation action callback
       virtual void operator()(G4Event* event);
-      
+
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

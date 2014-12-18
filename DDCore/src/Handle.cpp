@@ -173,8 +173,8 @@ namespace DD4hep {
       const char* edge = "++++++++++++++++++++++++++++++++++++++++++";
       size_t len = ::strlen(name);
       cerr << edge << edge << edge << endl;
-      cerr << "++  The usage of the factory: \"" << name << "\" is DEPRECATED due to naming conventions." 
-	   << setw(53-len) << right << "++" << endl;
+      cerr << "++  The usage of the factory: \"" << name << "\" is DEPRECATED due to naming conventions."
+           << setw(53-len) << right << "++" << endl;
       cerr << "++  Please use \"DD4hep_" << name << "\" instead." << setw(93-len) << right << "++" << endl;
       cerr << edge << edge << edge << endl;
     }

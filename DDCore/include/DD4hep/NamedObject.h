@@ -15,53 +15,53 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-    /// Implementation of a named object
-    /**
-     *  The data class behind named object handles.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
-     */
-    class NamedObject {
-    public:
-      /// The object name
-      std::string name;
-      /// The object type
-      std::string type;
+  /// Implementation of a named object
+  /**
+   *  The data class behind named object handles.
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_GEOMETRY
+   */
+  class NamedObject {
+  public:
+    /// The object name
+    std::string name;
+    /// The object type
+    std::string type;
 
-      /// Standard constructor
-      NamedObject();
-      /// Initializing constructor
-      NamedObject(const char* nam, const char* typ="");
-      /// Initializing constructor
-      NamedObject(const std::string& nam);
-      /// Initializing constructor
-      NamedObject(const std::string& nam, const std::string& typ);
-      /// Copy constructor
-      NamedObject(const NamedObject& c);
-      /// Default destructor
-      virtual ~NamedObject();
-      /// Assignment operator
-      NamedObject& operator=(const NamedObject& c);
+    /// Standard constructor
+    NamedObject();
+    /// Initializing constructor
+    NamedObject(const char* nam, const char* typ="");
+    /// Initializing constructor
+    NamedObject(const std::string& nam);
+    /// Initializing constructor
+    NamedObject(const std::string& nam, const std::string& typ);
+    /// Copy constructor
+    NamedObject(const NamedObject& c);
+    /// Default destructor
+    virtual ~NamedObject();
+    /// Assignment operator
+    NamedObject& operator=(const NamedObject& c);
 
-      /// Access name
-      const char* GetName()  const  {
-	return name.c_str();
-      }
-      /// Set name (used by Handle)
-      void SetName(const char* nam)  {
-	name = nam;
-      }
-      /// Set Title (used by Handle)
-      void SetTitle(const char* tit)  {
-	type = tit;
-      }
-      /// Get name (used by Handle)
-      const char* GetTitle() const  {
-	return type.c_str();
-      }
-    };
+    /// Access name
+    const char* GetName()  const  {
+      return name.c_str();
+    }
+    /// Set name (used by Handle)
+    void SetName(const char* nam)  {
+      name = nam;
+    }
+    /// Set Title (used by Handle)
+    void SetTitle(const char* tit)  {
+      type = tit;
+    }
+    /// Get name (used by Handle)
+    const char* GetTitle() const  {
+      return type.c_str();
+    }
+  };
 
 } /* End namespace DD4hep                   */
 #endif    /*  DD4HEP_GEOMETRY_INTERNAL_NAMEDOBJECT_H   */

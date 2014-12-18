@@ -68,8 +68,8 @@ namespace DD4hep {
       typedef VolumeID VolIdentifier;
       // Creation flags
       enum PopulateFlags {
-        NONE = 0, 
-	TREE = 1 << 1,   // Build 1 level DetElement hierarchy while populating
+        NONE = 0,
+        TREE = 1 << 1,   // Build 1 level DetElement hierarchy while populating
         ONE = 1 << 2,    // Populate all daughter volumes into one big lookup-container
         // This flag may be in parallel with 'TREE'
         LAST
@@ -92,37 +92,37 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      VolumeManager()
-          : Handle<VolumeManagerObject>() {
+    VolumeManager()
+      : Handle<VolumeManagerObject>() {
       }
       /// Constructor to be used when reading the already parsed object
-      VolumeManager(const VolumeManager& e)
-          : Handle<VolumeManagerObject>(e) {
+    VolumeManager(const VolumeManager& e)
+      : Handle<VolumeManagerObject>(e) {
       }
 #ifndef __CINT__
       /// Constructor to be used when reading the already parsed object
-      VolumeManager(const Handle<VolumeManagerObject>& e)
-          : Handle<VolumeManagerObject>(e) {
+    VolumeManager(const Handle<VolumeManagerObject>& e)
+      : Handle<VolumeManagerObject>(e) {
       }
 #endif
       /// Constructor to be used when reading the already parsed object
       template <typename Q> VolumeManager(const Handle<Q>& e)
-          : Handle<VolumeManagerObject>(e) {
+        : Handle<VolumeManagerObject>(e) {
       }
       /** Initializing constructor. The tree will automatically be built if the detelement is valid
        *  Please see enum PopulateFlags for further info.
        *  No action whatsoever is performed here, if the detector element is not valid.
        */
       VolumeManager(LCDD& lcdd, const std::string& name, DetElement world = DetElement(), Readout ro = Readout(), int flags =
-          NONE);
+                    NONE);
       /// Initializing constructor for subdetector volume managers.
       VolumeManager(DetElement subdetector, Readout ro);
 
       /// Assignment operator
       VolumeManager& operator=(const VolumeManager& m)  {
-	if ( this != &m ) m_element = m.m_element;
-	return *this;
-      }      
+        if ( this != &m ) m_element = m.m_element;
+        return *this;
+      }
       /// Add a new Volume manager section according to a new subdetector
       VolumeManager addSubdetector(DetElement detector, Readout ro);
       /// Access the volume manager by cell id

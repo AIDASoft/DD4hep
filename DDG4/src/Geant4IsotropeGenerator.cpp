@@ -28,7 +28,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* context, const string& name)
-  : Geant4GeneratorAction(context, name), m_position(0,0,0), m_particle(0)
+: Geant4GeneratorAction(context, name), m_position(0,0,0), m_particle(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;
@@ -94,7 +94,7 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
     inter->particles.insert(make_pair(p->id,p));
     vtx->out.insert(p->id);
     printout(INFO,name(),"Particle [%d] %s %.3f GeV direction:(%6.3f %6.3f %6.3f)",
-	     p->id, m_particleName.c_str(), momentum/GeV, x1, x2, x3);
+             p->id, m_particleName.c_str(), momentum/GeV, x1, x2, x3);
 
   }
 }

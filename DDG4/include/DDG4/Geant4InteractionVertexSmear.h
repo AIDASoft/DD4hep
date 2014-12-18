@@ -36,7 +36,7 @@ namespace DD4hep {
       /// Property: The constant smearing offset
       ROOT::Math::PxPyPzEVector m_offset;
       /// Property: The gaussian sigmas to the offset
-      ROOT::Math::PxPyPzEVector m_sigma;      
+      ROOT::Math::PxPyPzEVector m_sigma;
       /// Property: Unique identifier of the interaction created
       int m_mask;
     public:

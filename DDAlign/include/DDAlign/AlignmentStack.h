@@ -34,13 +34,13 @@ namespace DD4hep {
       friend class std::auto_ptr<AlignmentStack>;
 
       enum {
-	OVERLAP_DEFINED     = 1<<0,
-	MATRIX_DEFINED      = 1<<1,
-	CHECKOVL_DEFINED    = 1<<2,
-	CHECKOVL_VALUE      = 1<<3,
-	RESET_VALUE         = 1<<4,
-	RESET_CHILDREN      = 1<<5,
-	____LLLAST          = 1<<31
+        OVERLAP_DEFINED     = 1<<0,
+        MATRIX_DEFINED      = 1<<1,
+        CHECKOVL_DEFINED    = 1<<2,
+        CHECKOVL_VALUE      = 1<<3,
+        RESET_VALUE         = 1<<4,
+        RESET_CHILDREN      = 1<<5,
+        ____LLLAST          = 1<<31
       } Flags;
 
       /// Stack entry definition
@@ -50,64 +50,64 @@ namespace DD4hep {
        *  \ingroup  DD4HEP_ALIGN
        */
       struct StackEntry {
-	/// Reference to the detector element
-	DetElement    detector;
-	/// 3-D Transformation matrix for the volume
-	Transform3D   transform;
-	/// Path to the misaligned volume
-	std::string   path;
-	/// Parameter for overlap checking
-	double        overlap;
-	/// Flag containing various encodings
-	int           flag;
+        /// Reference to the detector element
+        DetElement    detector;
+        /// 3-D Transformation matrix for the volume
+        Transform3D   transform;
+        /// Path to the misaligned volume
+        std::string   path;
+        /// Parameter for overlap checking
+        double        overlap;
+        /// Flag containing various encodings
+        int           flag;
 
-	/// Fully initializing constructor
+        /// Fully initializing constructor
         StackEntry(const DetElement& p, const std::string& placement, const Transform3D& t, double ov, int flg);
-	/// Constructor with partial initialization
-	StackEntry(DetElement element, bool rst=true, bool rst_children=true);
-	/// Constructor with partial initialization
-	StackEntry(DetElement element, const Transform3D& trafo, bool rst=true, bool rst_children=true);
-	/// Constructor with partial initialization
-	StackEntry(DetElement element, const Position& translation, bool rst=true, bool rst_children=true);
-	/// Constructor with partial initialization
-	StackEntry(DetElement element, const RotationZYX& rot, bool rst=true, bool rst_children=true);
-	/// Constructor with partial initialization
-	StackEntry(DetElement element, const Position& translation, const RotationZYX& rot, bool rst=true, bool rst_children=true);
-	/// Copy constructor
-	StackEntry(const StackEntry& e);
-	/// Default destructor
-	virtual ~StackEntry();
+        /// Constructor with partial initialization
+        StackEntry(DetElement element, bool rst=true, bool rst_children=true);
+        /// Constructor with partial initialization
+        StackEntry(DetElement element, const Transform3D& trafo, bool rst=true, bool rst_children=true);
+        /// Constructor with partial initialization
+        StackEntry(DetElement element, const Position& translation, bool rst=true, bool rst_children=true);
+        /// Constructor with partial initialization
+        StackEntry(DetElement element, const RotationZYX& rot, bool rst=true, bool rst_children=true);
+        /// Constructor with partial initialization
+        StackEntry(DetElement element, const Position& translation, const RotationZYX& rot, bool rst=true, bool rst_children=true);
+        /// Copy constructor
+        StackEntry(const StackEntry& e);
+        /// Default destructor
+        virtual ~StackEntry();
 
-	/// Assignment operator
-	StackEntry& operator=(const StackEntry& e);
+        /// Assignment operator
+        StackEntry& operator=(const StackEntry& e);
 
-	/// Check a given flag
-	bool checkFlag(int mask) const {  return (flag&mask) == mask; }
-	/// Check if the overlap flag checking is enabled
-	bool overlapDefined() const    {  return checkFlag(OVERLAP_DEFINED); }
-	/// Check if the overlap flag checking is enabled
-	bool checkOverlap() const      {  return checkFlag(CHECKOVL_DEFINED); }
-	/// Check if the overalp value is present
-	bool overlapValue() const      {  return checkFlag(CHECKOVL_VALUE); }
-	/// Check if this alignment entry has a non unitary transformation matrix
-	bool hasMatrix() const         {  return checkFlag(MATRIX_DEFINED); }
-	/// Check flag if the node location should be reset
-	bool needsReset() const        {  return checkFlag(RESET_VALUE); }
-	/// Check flag if the node location and all children should be reset
-	bool resetChildren() const     {  return checkFlag(RESET_CHILDREN); }
+        /// Check a given flag
+        bool checkFlag(int mask) const {  return (flag&mask) == mask; }
+        /// Check if the overlap flag checking is enabled
+        bool overlapDefined() const    {  return checkFlag(OVERLAP_DEFINED); }
+        /// Check if the overlap flag checking is enabled
+        bool checkOverlap() const      {  return checkFlag(CHECKOVL_DEFINED); }
+        /// Check if the overalp value is present
+        bool overlapValue() const      {  return checkFlag(CHECKOVL_VALUE); }
+        /// Check if this alignment entry has a non unitary transformation matrix
+        bool hasMatrix() const         {  return checkFlag(MATRIX_DEFINED); }
+        /// Check flag if the node location should be reset
+        bool needsReset() const        {  return checkFlag(RESET_VALUE); }
+        /// Check flag if the node location and all children should be reset
+        bool resetChildren() const     {  return checkFlag(RESET_CHILDREN); }
 
-	/// Attach transformation object
-	StackEntry& setTransformation(const Transform3D& trafo);
-	/// Instruct entry to ignore the transformation
-	StackEntry& clearTransformation();
-	/// Set flag to reset the entry to it's ideal geometrical position
-	StackEntry& setReset(bool new_value=true);
-	/// Set flag to reset the entry's children to their ideal geometrical position
-	StackEntry& setResetChildren(bool new_value=true);
-	/// Set flag to check overlaps
-	StackEntry& setOverlapCheck(bool new_value=true);
-	/// Set the precision for the overlap check (otherwise the default is 0.001 cm)
-	StackEntry& setOverlapPrecision(double precision=0.001);
+        /// Attach transformation object
+        StackEntry& setTransformation(const Transform3D& trafo);
+        /// Instruct entry to ignore the transformation
+        StackEntry& clearTransformation();
+        /// Set flag to reset the entry to it's ideal geometrical position
+        StackEntry& setReset(bool new_value=true);
+        /// Set flag to reset the entry's children to their ideal geometrical position
+        StackEntry& setResetChildren(bool new_value=true);
+        /// Set flag to check overlaps
+        StackEntry& setOverlapCheck(bool new_value=true);
+        /// Set the precision for the overlap check (otherwise the default is 0.001 cm)
+        StackEntry& setOverlapPrecision(double precision=0.001);
       };
       typedef std::map<std::string, StackEntry*> Stack;
 
@@ -117,13 +117,13 @@ namespace DD4hep {
 
       /// Default constructor
       AlignmentStack();
-      /// Default destructor. Careful with this one: 
+      /// Default destructor. Careful with this one:
       virtual ~AlignmentStack();
 
     public:
 
       /// Static client accessor
-      static AlignmentStack& get(); 
+      static AlignmentStack& get();
       /// Create an alignment stack instance. The creation of a second instance will be refused.
       static void create();
       /// Check existence of alignment stack

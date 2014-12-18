@@ -9,7 +9,7 @@ namespace DD4hep {
   namespace Simulation {
 
     /// Hack! Wrapper around G4AssemblyVolume to access protected members.
-    /** 
+    /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -26,25 +26,25 @@ namespace DD4hep {
       }
       //std::vector<G4AssemblyTriplet>& triplets()  { return fTriplets; }
       long placeVolume(const TGeoNode* n, G4LogicalVolume* pPlacedVolume, G4Transform3D& transformation) {
-	size_t id = fTriplets.size();
-	m_entries.push_back(n);
-	this->AddPlacedVolume(pPlacedVolume, transformation);
-	return (long)id;
+        size_t id = fTriplets.size();
+        m_entries.push_back(n);
+        this->AddPlacedVolume(pPlacedVolume, transformation);
+        return (long)id;
       }
       long placeAssembly(const TGeoNode* n, Geant4AssemblyVolume* pPlacedVolume, G4Transform3D& transformation) {
-	size_t id = fTriplets.size();
-	m_entries.push_back(n);
-	this->AddPlacedAssembly(pPlacedVolume, transformation);
-	return (long)id;
+        size_t id = fTriplets.size();
+        m_entries.push_back(n);
+        this->AddPlacedAssembly(pPlacedVolume, transformation);
+        return (long)id;
       }
       void imprint(Geant4GeometryInfo& info,
-		   const TGeoNode* n,
-		   Chain chain, 
-		   Geant4AssemblyVolume* pAssembly,
-		   G4LogicalVolume*  pMotherLV,
-		   G4Transform3D&    transformation,
-		   G4int copyNumBase,
-		   G4bool surfCheck );
+                   const TGeoNode* n,
+                   Chain chain,
+                   Geant4AssemblyVolume* pAssembly,
+                   G4LogicalVolume*  pMotherLV,
+                   G4Transform3D&    transformation,
+                   G4int copyNumBase,
+                   G4bool surfCheck );
     };
   }
 }

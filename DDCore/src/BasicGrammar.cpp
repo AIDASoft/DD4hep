@@ -27,7 +27,7 @@ DD4hep::BasicGrammar::~BasicGrammar()   {
 void DD4hep::BasicGrammar::invalidConversion(const std::string& value, const std::type_info& to) {
   std::string to_name = typeName(to);
   throw unrelated_value_error(to,
-      "The Property data conversion of '" + value + "' to type " + to_name + " is not defined.");
+                              "The Property data conversion of '" + value + "' to type " + to_name + " is not defined.");
 }
 
 /// Error callback on invalid conversion
@@ -35,5 +35,5 @@ void DD4hep::BasicGrammar::invalidConversion(const std::type_info& from, const s
   std::string to_name = typeName(to);
   std::string from_name = typeName(from);
   throw unrelated_type_error(from, to,
-      "The Property data conversion from type " + from_name + " to " + to_name + " is not implemented.");
+                             "The Property data conversion from type " + from_name + " to " + to_name + " is not implemented.");
 }

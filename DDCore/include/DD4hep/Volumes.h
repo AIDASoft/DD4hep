@@ -29,7 +29,7 @@
 // Older ROOT version
 #define DD4HEP_EMULATE_TGEOEXTENSIONS
 class TGeoExtension : public TObject  {
- public:  
+ public:
   virtual ~TGeoExtension() {}
   /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
   virtual TGeoExtension *Grab() = 0;
@@ -56,9 +56,9 @@ namespace DD4hep {
     class  SensitiveDetector;
 
     /// Implementation class extending the ROOT placed volume
-    /** 
+    /**
      *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoExtension.html 
+     *   \see http://root.cern.ch/root/html/TGeoExtension.html
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -76,7 +76,7 @@ namespace DD4hep {
       class VolIDs: public std::vector<VolID> {
       public:
         typedef std::vector<VolID> Base;
-        VolIDs() : std::vector<VolID>() {
+      VolIDs() : std::vector<VolID>() {
         }
         ~VolIDs() {
         }
@@ -97,9 +97,9 @@ namespace DD4hep {
       virtual ~PlacedVolumeExtension();
       /// Assignment operator
       PlacedVolumeExtension& operator=(const PlacedVolumeExtension& c) {
-	magic = c.magic;
-	volIDs = c.volIDs;
-	return *this;
+        magic = c.magic;
+        volIDs = c.volIDs;
+        return *this;
       }
       /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
       virtual TGeoExtension *Grab();
@@ -110,9 +110,9 @@ namespace DD4hep {
     };
 
     /// Handle class holding a placed volume (also called physical volume)
-    /** 
+    /**
      *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoNode.html 
+     *   \see http://root.cern.ch/root/html/TGeoNode.html
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -125,20 +125,20 @@ namespace DD4hep {
       typedef Object::VolID  VolID;
 
       /// Constructor to be used when reading the already parsed DOM tree
-      PlacedVolume(const TGeoNode* e)
-          : Handle<TGeoNode>(e) {
+    PlacedVolume(const TGeoNode* e)
+      : Handle<TGeoNode>(e) {
       }
       /// Default constructor
-      PlacedVolume()
-          : Handle<TGeoNode>() {
+    PlacedVolume()
+      : Handle<TGeoNode>() {
       }
       /// Copy assignment
-      PlacedVolume(const PlacedVolume& e)
-          : Handle<TGeoNode>(e) {
+    PlacedVolume(const PlacedVolume& e)
+      : Handle<TGeoNode>(e) {
       }
       /// Copy assignment from other handle type
       template <typename T> PlacedVolume(const Handle<T>& e)
-          : Handle<TGeoNode>(e) {
+        : Handle<TGeoNode>(e) {
       }
       /// Assignment operator (must match copy constructor)
       PlacedVolume& operator=(const PlacedVolume& v) {
@@ -166,7 +166,7 @@ namespace DD4hep {
      *   Internal data structure optional to TGeo data.
      *
      *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoExtension.html 
+     *   \see http://root.cern.ch/root/html/TGeoExtension.html
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -189,12 +189,12 @@ namespace DD4hep {
       virtual ~VolumeExtension();
       /// Copy the object
       void copy(const VolumeExtension& c) {
-	magic = c.magic;
-	region = c.region;
-	limits = c.limits;
-	vis = c.vis;
-	sens_det = c.sens_det;
-	referenced = c.referenced;
+        magic = c.magic;
+        region = c.region;
+        limits = c.limits;
+        vis = c.vis;
+        sens_det = c.sens_det;
+        referenced = c.referenced;
       }
       /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
       virtual TGeoExtension *Grab();
@@ -209,7 +209,7 @@ namespace DD4hep {
      *   Handle describing a Volume
      *
      *   For any further documentation please see the following ROOT documentation:
-     *   \see http://root.cern.ch/root/html/TGeoVolume.html 
+     *   \see http://root.cern.ch/root/html/TGeoVolume.html
      *
      *   \author  M.Frank
      *   \version 1.0
@@ -223,23 +223,23 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      Volume()
-          : Base(0) {
+    Volume()
+      : Base(0) {
       }
 
       /// Copy from handle
-      Volume(const TGeoVolume* v)
-          : Base(v) {
+    Volume(const TGeoVolume* v)
+      : Base(v) {
       }
 
       /// Copy from handle
-      Volume(const Volume& v)
-          : Base(v) {
+    Volume(const Volume& v)
+      : Base(v) {
       }
 
       /// Copy from arbitrary Element
       template <typename T> Volume(const Handle<T>& v)
-          : Base(v) {
+        : Base(v) {
       }
 
       /// Constructor to be used when creating a new geometry tree.
@@ -269,7 +269,7 @@ namespace DD4hep {
 
       /// Attach attributes to the volume
       const Volume& setAttributes(const LCDD& lcdd, const std::string& region, const std::string& limits,
-          const std::string& vis) const;
+                                  const std::string& vis) const;
 
       /// Set the regional attributes to the volume. Note: If the name string is empty, the action is ignored.
       const Volume& setRegion(const LCDD& lcdd, const std::string& name) const;
@@ -316,8 +316,8 @@ namespace DD4hep {
     };
 
     /// Implementation class extending the ROOT assembly volumes (TGeoVolumeAsembly)
-    /** 
-     *  Handle describing a volume assembly. 
+    /**
+     *  Handle describing a volume assembly.
      *
      *   For any further documentation please see the following ROOT documentation:
      *   \see http://root.cern.ch/root/html/TGeoVolumeAssembly.html
@@ -329,18 +329,18 @@ namespace DD4hep {
     class Assembly: public Volume {
     public:
       /// Default constructor
-      Assembly()
-          : Volume() {
+    Assembly()
+      : Volume() {
       }
 
       /// Copy from handle
-      Assembly(const Assembly& v)
-          : Volume(v) {
+    Assembly(const Assembly& v)
+      : Volume(v) {
       }
 
       /// Copy from arbitrary Element
       template <typename T> Assembly(const Handle<T>& v)
-          : Volume(v) {
+        : Volume(v) {
       }
 
       /// Constructor to be used when creating a new geometry tree.

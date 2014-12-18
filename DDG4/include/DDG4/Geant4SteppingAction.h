@@ -41,7 +41,7 @@ namespace DD4hep {
     /// Concrete implementation of the Geant4 stepping action sequence
     /**
      * The sequence dispatches the callbacks for each stepping action
-     * to all registered Geant4SteppingAction members and all 
+     * to all registered Geant4SteppingAction members and all
      * registered callbacks.
      *
      *  \author  M.Frank
@@ -62,7 +62,7 @@ namespace DD4hep {
       virtual ~Geant4SteppingActionSequence();
       /// Register stepping action callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
-      void call(Q* p, void (T::*f)(const G4Step*, G4SteppingManager*)) {
+        void call(Q* p, void (T::*f)(const G4Step*, G4SteppingManager*)) {
         m_calls.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

@@ -14,17 +14,17 @@ using namespace DD4hep::XML;
 
 #define childValue(name,type)   m_element.child(Unicode_##name).attr<type>(Unicode_value)
 
-#define childValueDefault(name,type,def)  \
-  Handle_t __h = m_element.child(Unicode_##name,false);	     \
+#define childValueDefault(name,type,def)                                \
+  Handle_t __h = m_element.child(Unicode_##name,false);                 \
   if ( __h.ptr() && __h.hasAttr(Unicode_value) ) return __h.attr < type > (Unicode_value); \
   return def;
 
 #define XML_ATTR_ACCESSOR(type,name)  type ChildValue::name() const { return childValue(name,type); }
-#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)			\
+#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)                   \
   type ChildValue::name(type default_val) const {                       \
-    Handle_t __h = m_element.child(Unicode_##name,false);	        \
+    Handle_t __h = m_element.child(Unicode_##name,false);               \
     if ( __h.ptr() )  {                                                 \
-      const XmlChar* val = __h.attr_value_nothrow(Unicode_value);	\
+      const XmlChar* val = __h.attr_value_nothrow(Unicode_value);       \
       return val ? dressing(val) : default_val; }                       \
     return default_val; }
 

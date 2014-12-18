@@ -94,7 +94,7 @@ namespace DD4hep {
     Property(const Property& p);
     /// User constructor
     template <typename TYPE> Property(TYPE& val)
-        : m_par(0), m_hdl(0) {
+      : m_par(0), m_hdl(0) {
       make(val);
     }
     /// Property type name
@@ -138,8 +138,8 @@ namespace DD4hep {
   template <class TYPE> class PropertyValue : private Property {
   public:
     TYPE data;
-    PropertyValue()
-        : Property(data) {
+  PropertyValue()
+    : Property(data) {
     }
     /// Assignment operator
     PropertyValue& operator=(const TYPE& val) {

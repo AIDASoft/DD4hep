@@ -88,7 +88,7 @@ namespace DD4hep {
      *  Geometry crawlers are used for multiple purposes, whenever entire
      *  geometries must be traversed like e.g. to create a new geometry
      *  for simulation etc.
-     *  While analysing the geometry, information is collected, which 
+     *  While analysing the geometry, information is collected, which
      *  may be later processed.
      *
      *  \author  M.Frank

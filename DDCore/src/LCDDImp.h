@@ -41,7 +41,7 @@ namespace DD4hep {
 
     public:
 
-      /// Local method (no interface): Load volume manager. 
+      /// Local method (no interface): Load volume manager.
       void imp_loadVolumeManager();
 
       /// VolumeManager m_volManager;

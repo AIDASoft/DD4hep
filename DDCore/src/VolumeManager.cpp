@@ -35,7 +35,7 @@ namespace {
     set<VolumeID> m_entries;
     /// Default constructor
     Populator(LCDD& lcdd, VolumeManager vm)
-        : m_lcdd(lcdd), m_volManager(vm) {
+      : m_lcdd(lcdd), m_volManager(vm) {
     }
 
     /// Populate the Volume manager
@@ -81,24 +81,24 @@ namespace {
         chain.push_back(node);
         VolIDs pv_ids = pv.volIDs();
         ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
-	bool got_readout = false;
+        bool got_readout = false;
         if (vol.isSensitive()) {
           sd = vol.sensitiveDetector();
           Readout ro = sd.readout();
           if (ro.isValid()) {
-	    got_readout = true;
+            got_readout = true;
             add_entry(sd, parent, e, node, ids, chain);
             ++count;
           }
           else {
-            printout(WARNING, "VolumeManager", 
-		     "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
-		     parent.name(), pv.volume().name(), sd.ptr());
+            printout(WARNING, "VolumeManager",
+                     "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
+                     parent.name(), pv.volume().name(), sd.ptr());
           }
         }
         for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
           TGeoNode* daughter = node->GetDaughter(idau);
-	  PlacedVolume placement(daughter);
+          PlacedVolume placement(daughter);
           if ( placement.data() ) {
             size_t cnt;
             PlacedVolume pv_dau = Ref_t(daughter);
@@ -115,25 +115,25 @@ namespace {
             }
             count += cnt;
           }
-	  else  {
-	    throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+
-				" [Internal error -- bad detector constructor]");
-	  }
+          else  {
+            throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+
+                                " [Internal error -- bad detector constructor]");
+          }
         }
-	if ( sd.isValid() )   {
-	  // We recuperate volumes from lower levels by reusing the subdetector
-	  // This only works if there is exactly one sensitive detector per subdetector!
-	  // I hate this, but I could not talk Frank out of this!  M.F.
+        if ( sd.isValid() )   {
+          // We recuperate volumes from lower levels by reusing the subdetector
+          // This only works if there is exactly one sensitive detector per subdetector!
+          // I hate this, but I could not talk Frank out of this!  M.F.
           Readout ro = sd.readout();
           if (ro.isValid()) {
-	    IDDescriptor iddesc = ro.idSpec();
-	    pair<VolumeID, VolumeID> det_encoding = encoding(iddesc,ids);
-	    printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
-		     got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
-		     (void*)det_encoding.first, (void*)det_encoding.second);
-	    e.object<DetElement::Object>().volumeID = det_encoding.first;
-	  }
-	}
+            IDDescriptor iddesc = ro.idSpec();
+            pair<VolumeID, VolumeID> det_encoding = encoding(iddesc,ids);
+            printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
+                     got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
+                     (void*)det_encoding.first, (void*)det_encoding.second);
+            e.object<DetElement::Object>().volumeID = det_encoding.first;
+          }
+        }
         chain.pop_back();
       }
       return count;
@@ -180,8 +180,8 @@ namespace {
       }
     }
 
-    void print_node(SensitiveDetector sd, DetElement /* parent */, DetElement e, 
-		    const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */) 
+    void print_node(SensitiveDetector sd, DetElement /* parent */, DetElement e,
+                    const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */)
     {
       static int s_count = 0;
       Readout ro = sd.readout();
@@ -208,7 +208,7 @@ namespace {
       log.str("");
       log << s_count << ": " << e.name() << " Detector GeoNodes:";
       for(vector<const TGeoNode*>::const_iterator j=nodes.begin(); j!=nodes.end();++j)
-      log << (void*)(*j) << " ";
+        log << (void*)(*j) << " ";
       printout(DEBUG,"VolumeManager",log.str().c_str());
 #endif
     }
@@ -247,17 +247,17 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
       // First check all pre-conditions
       if (!ro.isValid()) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
-            "valid readout descriptor are allowed. [Invalid DetElement:" + det_name + "]");
+                            "valid readout descriptor are allowed. [Invalid DetElement:" + det_name + "]");
       }
       PlacedVolume pv = detector.placement();
       if (!pv.isValid()) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
-            "valid placement are allowed. [Invalid DetElement:" + det_name + "]");
+                            "valid placement are allowed. [Invalid DetElement:" + det_name + "]");
       }
       VolIDs::Base::const_iterator vit = pv.volIDs().find("system");
       if (vit == pv.volIDs().end()) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with "
-            "valid placement VolIDs are allowed. [Invalid DetElement:" + det_name + "]");
+                            "valid placement VolIDs are allowed. [Invalid DetElement:" + det_name + "]");
       }
 
       i = o.subdetectors.insert(make_pair(detector, VolumeManager(detector,ro))).first;
@@ -266,7 +266,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
       IDDescriptor::Field field = ro.idSpec().field(id.first);
       if (!field) {
         throw runtime_error(
-            "DD4hep: VolumeManager::addSubdetector: IdDescriptor of " + string(detector.name()) + " has no field " + id.first);
+                            "DD4hep: VolumeManager::addSubdetector: IdDescriptor of " + string(detector.name()) + " has no field " + id.first);
       }
       Object& mo = m._data();
       mo.top = o.top;
@@ -276,12 +276,12 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
       mo.detMask = mo.sysID;
       o.managers[mo.sysID] = m;
       detector.callAtUpdate(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,
-			    &mo,&Object::update);
+                            &mo,&Object::update);
     }
     return (*i).second;
   }
   throw runtime_error("DD4hep: VolumeManager::addSubdetector: "
-      "Failed to add subdetector section. [Invalid Manager Handle]");
+                      "Failed to add subdetector section. [Invalid Manager Handle]");
 }
 
 /// Access the volume manager by cell id
@@ -324,8 +324,8 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
 #if 0
   if ( (context->identifier&context->mask) != context->identifier ) {
     err << "Bad context mask:" << (void*)context->mask << " id:" << (void*)context->identifier
-    << " pv:" << pv.name() << " Sensitive:"
-    << yes_no(pv.volume().isSensitive()) << endl;
+        << " pv:" << pv.name() << " Sensitive:"
+        << yes_no(pv.volume().isSensitive()) << endl;
     goto Fail;
   }
 #endif
@@ -337,11 +337,11 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
     printout(VERBOSE, "VolumeManager", err.str().c_str());
     return true;
   }
-  err << "+++ Attempt to register duplicate volID " << (void*) context->identifier 
-      << " Mask:" << (void*) context->mask 
-      << " to detector " << o.detector.name() 
-      << " ptr:" << (void*) pv.ptr() 
-      << " Name:" << pv.name() 
+  err << "+++ Attempt to register duplicate volID " << (void*) context->identifier
+      << " Mask:" << (void*) context->mask
+      << " to detector " << o.detector.name()
+      << " ptr:" << (void*) pv.ptr()
+      << " Name:" << pv.name()
       << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
@@ -353,17 +353,17 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
   err.str("");
   context = (*i).second;
   pv = context->placement;
-  err << " !!!!!               +++ Clashing volID " << (void*) context->identifier 
-      << " Mask:" << (void*) context->mask 
-      << " to detector " << o.detector.name() 
-      << " ptr:" << (void*) pv.ptr() 
-      << " Name:" << pv.name() 
+  err << " !!!!!               +++ Clashing volID " << (void*) context->identifier
+      << " Mask:" << (void*) context->mask
+      << " to detector " << o.detector.name()
+      << " ptr:" << (void*) pv.ptr()
+      << " Name:" << pv.name()
       << " Sensitive:" << yes_no(pv.volume().isSensitive()) << endl;
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
 
   goto Fail;
-  Fail: {
+ Fail: {
     err << " !!!!!                      ++++ VolIDS ";
     const VolIDs::Base& ids = context->volID;
     for (VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
@@ -409,7 +409,7 @@ bool VolumeManager::adoptPlacement(Context* context) {
   }
   err << "Failed to add new physical volume [Invalid Manager Handle]";
   goto Fail;
-  Fail: throw runtime_error("DD4hep: " + err.str());
+ Fail: throw runtime_error("DD4hep: " + err.str());
   return false;
 }
 
@@ -475,15 +475,15 @@ std::ostream& DD4hep::Geometry::operator<<(std::ostream& os, const VolumeManager
   //bool isSdet = (o.flags & VolumeManager::TREE) == VolumeManager::TREE && top != &o;
   string prefix(isTop ? "" : "++  ");
   os << prefix << (isTop ? "TOP Level " : "Secondary ") << "Volume manager:" << &o << " " << o.detector.name() << " IDD:"
-      << o.id.toString() << " SysID:" << (void*) o.sysID << " " << o.managers.size() << " subsections " << o.volumes.size()
-      << " placements ";
+     << o.id.toString() << " SysID:" << (void*) o.sysID << " " << o.managers.size() << " subsections " << o.volumes.size()
+     << " placements ";
   if (!(o.managers.empty() && o.volumes.empty()))
     os << endl;
   for (VolumeManager::Volumes::const_iterator i = o.volumes.begin(); i != o.volumes.end(); ++i) {
     const VolumeManager::Context* c = (*i).second;
     PlacedVolume pv = c->placement;
     os << prefix << "PV:" << setw(32) << left << pv.name() << " id:" << setw(18) << left << (void*) c->identifier << " mask:"
-        << setw(18) << left << (void*) c->mask << endl;
+       << setw(18) << left << (void*) c->mask << endl;
   }
   for (VolumeManager::Managers::const_iterator i = o.managers.begin(); i != o.managers.end(); ++i)
     os << prefix << (*i).second << endl;

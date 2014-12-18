@@ -30,8 +30,8 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
-  : Geant4GeneratorAction(context, name), m_position(0,0,0), m_direction(1,1,0.3),
-    m_particle(0), m_shotNo(0)
+: Geant4GeneratorAction(context, name), m_position(0,0,0), m_direction(1,1,0.3),
+  m_particle(0), m_shotNo(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;
@@ -82,9 +82,9 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
     }
   }
   print("Shoot [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm] dir:(%6.3f %6.3f %6.3f)",
-	m_shotNo, m_energy/GeV, m_particleName.c_str(),
-	m_position.X(), m_position.Y(), m_position.Z(),
-	m_direction.X(),m_direction.Y(), m_direction.Z());
+        m_shotNo, m_energy/GeV, m_particleName.c_str(),
+        m_position.X(), m_position.Y(), m_position.Z(),
+        m_direction.X(),m_direction.Y(), m_direction.Z());
 
   Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
   Geant4Vertex* vtx = new Geant4Vertex();

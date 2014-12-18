@@ -39,7 +39,7 @@ namespace DD4hep {
       cout << " ";
     const Double_t* tr = mat->GetTranslation();
     cout << "         matrix:|" << mat->GetName() << "|" << mat->IsTranslation() << mat->IsRotation() << mat->IsScale()
-        << " tr:x=" << tr[0] << " y=" << tr[1] << " z=" << tr[2];
+         << " tr:x=" << tr[0] << " y=" << tr[1] << " z=" << tr[2];
     if (mat->IsRotation()) {
       Double_t theta, phi, psi;
       TGeoRotation rot(*mat);

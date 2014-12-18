@@ -26,7 +26,7 @@ using namespace DD4hep::Geometry;
 namespace  {
   /** @class VolIDTest
    *
-   *  Test the volume manager by scanning the sensitive 
+   *  Test the volume manager by scanning the sensitive
    *  volumes of one or several subdetectors.
    *
    *  @author  M.Frank
@@ -71,8 +71,8 @@ VolIDTest::VolIDTest(LCDD& lcdd, DetElement sdet, size_t depth) : m_det(sdet) {
   }
   if ( !lcdd.sensitiveDetector(m_det.name()).isValid() )   {
     stringstream err;
-    err << "The sensitive detector of subdetector " << m_det.name() 
-	<< " is not known to the geometry.";
+    err << "The sensitive detector of subdetector " << m_det.name()
+        << " is not known to the geometry.";
     printout(INFO,"VolIDTest",err.str().c_str());
     throw runtime_error(err.str());
   }
@@ -92,19 +92,19 @@ void VolIDTest::checkVolume(DetElement e, PlacedVolume pv, const VolIDs& child_i
     PlacedVolume det_place = m_mgr.lookupPlacement(vid);
     if ( pv.ptr() != det_place.ptr() )   {
       err << "Wrong placement "
-	  << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
-	  << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
-	  << " vid:" << (void*)vid;
+          << " got "        << det_place.name() << " (" << (void*)det_place.ptr() << ")"
+          << " instead of " << pv.name()        << " (" << (void*)pv.ptr()        << ") "
+          << " vid:" << (void*)vid;
     }
     else if ( det_elem.ptr() != e.ptr() )   {
-      err << "Wrong associated detector element vid="  << (void*)vid 
-	  << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
-	  << " instead of " << e.path()        << " (" << (void*)e.ptr()        << ")"
-	  << " vid:" << (void*)vid;
+      err << "Wrong associated detector element vid="  << (void*)vid
+          << " got "        << det_elem.path() << " (" << (void*)det_elem.ptr() << ") "
+          << " instead of " << e.path()        << " (" << (void*)e.ptr()        << ")"
+          << " vid:" << (void*)vid;
     }
     else if ( det.ptr() != m_det.ptr() )   {
       err << "Wrong associated detector "
-	  << " vid:" << (void*)vid;
+          << " vid:" << (void*)vid;
     }
   }
   catch(const exception& ex) {
@@ -140,7 +140,7 @@ void VolIDTest::walkVolume(DetElement e, PlacedVolume pv, VolIDs ids, size_t dep
       child_ids.insert(child_ids.end(),place.volIDs().begin(),place.volIDs().end());
       bool is_sensitive = place.volume().isSensitive();
       if ( is_sensitive )  {
-	checkVolume(e,place,child_ids);
+        checkVolume(e,place,child_ids);
       }
       walkVolume(e,place,child_ids,depth+1,mx_depth);
     }
@@ -151,7 +151,7 @@ void VolIDTest::walkVolume(DetElement e, PlacedVolume pv, VolIDs ids, size_t dep
 void VolIDTest::walk(DetElement e, VolIDs ids, size_t depth, size_t mx_depth)  const   {
   if ( depth <= mx_depth )  {
     DetElement::Children::const_iterator i;
-    const DetElement::Children& children = e.children();  
+    const DetElement::Children& children = e.children();
     PlacedVolume pv = e.placement();
     VolIDs child_ids(ids);
     bool is_sensitive = pv.volume().isSensitive();
@@ -174,11 +174,11 @@ long VolIDTest::run(LCDD& lcdd,int argc,char** argv)    {
   for(int i=1; i<argc;++i)  {
     string name = argv[i]+1;
     if ( name == "all" || name == "All" || name == "ALL" )  {
-      const DetElement::Children& children = lcdd.world().children();  
+      const DetElement::Children& children = lcdd.world().children();
       for (DetElement::Children::const_iterator i=children.begin(); i!=children.end(); ++i)  {
-	DetElement sdet = (*i).second;
-	cout << "++ Processing subdetector: " << sdet.name() << endl;
-	VolIDTest test(lcdd,sdet,99);
+        DetElement sdet = (*i).second;
+        cout << "++ Processing subdetector: " << sdet.name() << endl;
+        VolIDTest test(lcdd,sdet,99);
       }
       return 1;
     }

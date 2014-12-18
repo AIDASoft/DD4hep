@@ -54,7 +54,7 @@ namespace DD4hep {
       void addCall(const std::string& name, const std::string& description, const Callback& cb);
       /// Add any callback (without parameters to the messenger
       template <typename Q, typename R, typename T>
-      void addCall(const std::string& name, const std::string& description, Q* p, R (T::*f)()) {
+        void addCall(const std::string& name, const std::string& description, Q* p, R (T::*f)()) {
         CallbackSequence::checkTypes(typeid(Q), typeid(T), dynamic_cast<T*>(p));
         addCall(name, description, Callback(p).make(f));
       }

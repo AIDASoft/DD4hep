@@ -5,14 +5,14 @@
 #include "XML/Evaluator.h"
 
 #include <iostream>
-#include <cmath>	// for pow()
+#include <cmath>        // for pow()
 #include "stack.src"
 #include "string.src"
 #include "hash_map.src"
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#include <stdlib.h>	// for strtod()
+#include <stdlib.h>     // for strtod()
 
 //---------------------------------------------------------------------------
 struct Item {
@@ -54,21 +54,21 @@ namespace {
     FCN(double (*f)(double,double,double)) { f3 = f; }
     FCN(double (*f)(double,double,double,double)) { f4 = f; }
     FCN(double (*f)(double,double,double,double,double)) { f5 = f; }
-  }; 
+  };
 }
 
 //---------------------------------------------------------------------------
 #define EVAL XmlTools::Evaluator
 
-#define REMOVE_BLANKS \
-for(pointer=name;;pointer++) if (!isspace(*pointer)) break; \
-for(n=strlen(pointer);n>0;n--) if (!isspace(*(pointer+n-1))) break
+#define REMOVE_BLANKS                                                   \
+  for(pointer=name;;pointer++) if (!isspace(*pointer)) break;           \
+  for(n=strlen(pointer);n>0;n--) if (!isspace(*(pointer+n-1))) break
 
-#define SKIP_BLANKS                      \
-for(;;pointer++) {                       \
-  c = (pointer > end) ? '\0' : *pointer; \
-  if (!isspace(c)) break;                \
-}
+#define SKIP_BLANKS                             \
+  for(;;pointer++) {                            \
+    c = (pointer > end) ? '\0' : *pointer;      \
+    if (!isspace(c)) break;                     \
+  }
 
 #define EVAL_EXIT(STATUS,POSITION) endp = POSITION; return STATUS
 #define MAX_N_PAR 5
@@ -81,13 +81,13 @@ enum { ENDL, LBRA, OR, AND, EQ, NE, GE, GT, LE, LT,
 static int engine(pchar, pchar, double &, pchar &, const dic_type &);
 
 static int variable(const string & name, double & result,
-		    const dic_type & dictionary)
+                    const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
  * Name: variable                                    Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
- * Function: Finds value of the variable.                              * 
+ * Function: Finds value of the variable.                              *
  *           This function is used by operand().                       *
  *                                                                     *
  * Parameters:                                                         *
@@ -118,13 +118,13 @@ static int variable(const string & name, double & result,
 }
 
 static int function(const string & name, stack<double> & par,
-		    double & result, const dic_type & dictionary) 
+                    double & result, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
  * Name: function                                    Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
- * Function: Finds value of the function.                              * 
+ * Function: Finds value of the function.                              *
  *           This function is used by operand().                       *
  *                                                                     *
  * Parameters:                                                         *
@@ -150,36 +150,36 @@ static int function(const string & name, stack<double> & par,
   switch (npar) {
   case 0:
     result = (*fcn.f0)();
-    break;  
+    break;
   case 1:
     result = (*fcn.f1)(pp[0]);
-    break;  
+    break;
   case 2:
     result = (*fcn.f2)(pp[1], pp[0]);
-    break;  
+    break;
   case 3:
     result = (*fcn.f3)(pp[2],pp[1],pp[0]);
-    break;  
+    break;
   case 4:
     result = (*fcn.f4)(pp[3],pp[2],pp[1],pp[0]);
-    break;  
+    break;
   case 5:
     result = (*fcn.f5)(pp[4],pp[3],pp[2],pp[1],pp[0]);
-    break;  
+    break;
   }
   return (errno == 0) ? EVAL::OK : EVAL::ERROR_CALCULATION_ERROR;
 }
 
 static int operand(pchar begin, pchar end, double & result,
-		   pchar & endp, const dic_type & dictionary) 
+                   pchar & endp, const dic_type & dictionary)
 /***********************************************************************
  *                                                                     *
  * Name: operand                                     Date:    03.10.00 *
  * Author: Evgeni Chernyaev                          Revised:          *
  *                                                                     *
- * Function: Finds value of the operand. The operand can be either     * 
- *           a number or a variable or a function.                     *  
- *           This function is used by engine().                        * 
+ * Function: Finds value of the operand. The operand can be either     *
+ *           a number or a variable or a function.                     *
+ *           This function is used by engine().                        *
  *                                                                     *
  * Parameters:                                                         *
  *   begin  - pointer to the first character of the operand.           *
@@ -197,11 +197,11 @@ static int operand(pchar begin, pchar end, double & result,
   //   G E T   N U M B E R
 
   if (!isalpha(*pointer)) {
-	errno = 0;
+    errno = 0;
 #ifdef _WIN32
-	if ( pointer[0] == '0' && pointer < end && (pointer[1] == 'x' || pointer[1] == 'X') )
+    if ( pointer[0] == '0' && pointer < end && (pointer[1] == 'x' || pointer[1] == 'X') )
       result = strtol(pointer, (char **)(&pointer), 0);
-	else
+    else
 #endif
       result = strtod(pointer, (char **)(&pointer));
     if (errno == 0) {
@@ -234,7 +234,7 @@ static int operand(pchar begin, pchar end, double & result,
 
   //   G E T   F U N C T I O N
 
-  stack<pchar>  pos;                // position stack 
+  stack<pchar>  pos;                // position stack
   stack<double> par;                // parameter stack
   double        value;
   pchar         par_begin = pointer+1, par_end;
@@ -242,42 +242,42 @@ static int operand(pchar begin, pchar end, double & result,
   for(;;pointer++) {
     c = (pointer > end) ? '\0' : *pointer;
     switch (c) {
-    case '\0':  
-      EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pos.top() ); 
+    case '\0':
+      EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pos.top() );
     case '(':
       pos.push(pointer); break;
     case ',':
       if (pos.size() == 1) {
-	par_end = pointer-1;
-	EVAL_STATUS = engine(par_begin, par_end, value, par_end, dictionary);
-	if (EVAL_STATUS == EVAL::WARNING_BLANK_STRING)
-	  { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
-	if (EVAL_STATUS != EVAL::OK)
-	  { EVAL_EXIT( EVAL_STATUS, par_end ); }
-	par.push(value);
-	par_begin = pointer + 1;
+        par_end = pointer-1;
+        EVAL_STATUS = engine(par_begin, par_end, value, par_end, dictionary);
+        if (EVAL_STATUS == EVAL::WARNING_BLANK_STRING)
+          { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
+        if (EVAL_STATUS != EVAL::OK)
+          { EVAL_EXIT( EVAL_STATUS, par_end ); }
+        par.push(value);
+        par_begin = pointer + 1;
       }
       break;
     case ')':
       if (pos.size() > 1) {
-	pos.pop();
-	break;
+        pos.pop();
+        break;
       }else{
-	par_end = pointer-1;
-	EVAL_STATUS = engine(par_begin, par_end, value, par_end, dictionary);
-	switch (EVAL_STATUS) {
-	case EVAL::OK:
-	  par.push(value);
-	  break;
-	case EVAL::WARNING_BLANK_STRING:
-	  if (par.size() != 0)
-	    { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
-	  break;
-	default:
-	  EVAL_EXIT( EVAL_STATUS, par_end );
-	}
-	EVAL_STATUS = function(name, par, result, dictionary);
-	EVAL_EXIT( EVAL_STATUS, (EVAL_STATUS == EVAL::OK) ? pointer : begin);
+        par_end = pointer-1;
+        EVAL_STATUS = engine(par_begin, par_end, value, par_end, dictionary);
+        switch (EVAL_STATUS) {
+        case EVAL::OK:
+          par.push(value);
+          break;
+        case EVAL::WARNING_BLANK_STRING:
+          if (par.size() != 0)
+            { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
+          break;
+        default:
+          EVAL_EXIT( EVAL_STATUS, par_end );
+        }
+        EVAL_STATUS = function(name, par, result, dictionary);
+        EVAL_EXIT( EVAL_STATUS, (EVAL_STATUS == EVAL::OK) ? pointer : begin);
       }
     }
   }
@@ -290,7 +290,7 @@ static int operand(pchar begin, pchar end, double & result,
  *                                                                     *
  * Function: Executes basic arithmetic operations on values in the top *
  *           of the stack. Result is placed back into the stack.       *
- *           This function is used by engine().                        * 
+ *           This function is used by engine().                        *
  *                                                                     *
  * Parameters:                                                         *
  *   op  - code of the operation.                                      *
@@ -366,7 +366,7 @@ static int maker(int op, stack<double> & val)
  *                                                                     *
  ***********************************************************************/
 static int engine(pchar begin, pchar end, double & result,
-		  pchar & endp, const dic_type & dictionary)
+                  pchar & endp, const dic_type & dictionary)
 {
   static const int SyntaxTable[17][17] = {
     //E  (  || && == != >= >  <= <  +  -  *  /  ^  )  V - current token
@@ -429,25 +429,25 @@ static int engine(pchar begin, pchar end, double & result,
     case '(':  iCur = LBRA; break;
     case '|':
       if (*(pointer+1) == '|') {
-	pointer++; iCur = OR; break;
+        pointer++; iCur = OR; break;
       }else{
         EVAL_EXIT( EVAL::ERROR_UNEXPECTED_SYMBOL, pointer );
       }
     case '&':
       if (*(pointer+1) == '&') {
-	pointer++; iCur = AND; break;
+        pointer++; iCur = AND; break;
       }else{
         EVAL_EXIT( EVAL::ERROR_UNEXPECTED_SYMBOL, pointer );
       }
     case '=':
       if (*(pointer+1) == '=') {
-	pointer++; iCur = EQ; break;
+        pointer++; iCur = EQ; break;
       }else{
         EVAL_EXIT( EVAL::ERROR_UNEXPECTED_SYMBOL, pointer );
       }
     case '!':
       if (*(pointer+1) == '=') {
-	pointer++; iCur = NE; break;
+        pointer++; iCur = NE; break;
       }else{
         EVAL_EXIT( EVAL::ERROR_UNEXPECTED_SYMBOL, pointer );
       }
@@ -497,35 +497,35 @@ static int engine(pchar begin, pchar end, double & result,
       if (op.size() == 0) { EVAL_EXIT( EVAL::ERROR_SYNTAX_ERROR, pointer ); }
       iTop = op.top();
       switch (ActionTable[iTop][iCur]) {
-      case -1:                           // syntax error 
-	if (op.size() > 1) pointer = pos.top();
-	EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pointer );
+      case -1:                           // syntax error
+        if (op.size() > 1) pointer = pos.top();
+        EVAL_EXIT( EVAL::ERROR_UNPAIRED_PARENTHESIS, pointer );
       case 0:                            // last operation (assignment)
         if (val.size() == 1) {
-	  result = val.top();
-	  EVAL_EXIT( EVAL::OK, pointer );
-	}else{
-	  EVAL_EXIT( EVAL::ERROR_SYNTAX_ERROR, pointer );
-	}
+          result = val.top();
+          EVAL_EXIT( EVAL::OK, pointer );
+        }else{
+          EVAL_EXIT( EVAL::ERROR_SYNTAX_ERROR, pointer );
+        }
       case 1:                           // push current operator in stack
-	op.push(iCur); pos.push(pointer);
-	break;
+        op.push(iCur); pos.push(pointer);
+        break;
       case 2:                           // execute top operator
         EVAL_STATUS = maker(iTop, val); // put current operator in stack
         if (EVAL_STATUS != EVAL::OK) {
-	  EVAL_EXIT( EVAL_STATUS, pos.top() );
-	}
-	op.top() = iCur; pos.top() = pointer;
-	break;
+          EVAL_EXIT( EVAL_STATUS, pos.top() );
+        }
+        op.top() = iCur; pos.top() = pointer;
+        break;
       case 3:                           // delete '(' from stack
         op.pop(); pos.pop();
-	break;
-      case 4: default:                  // execute top operator and 
+        break;
+      case 4: default:                  // execute top operator and
         EVAL_STATUS = maker(iTop, val); // delete it from stack
-        if (EVAL_STATUS != EVAL::OK) {  // repete with the same iCur 
-	  EVAL_EXIT( EVAL_STATUS, pos.top() );
-	}
-	op.pop(); pos.pop();
+        if (EVAL_STATUS != EVAL::OK) {  // repete with the same iCur
+          EVAL_EXIT( EVAL_STATUS, pos.top() );
+        }
+        op.pop(); pos.pop();
         continue;
       }
       break;
@@ -535,7 +535,7 @@ static int engine(pchar begin, pchar end, double & result,
 
 //---------------------------------------------------------------------------
 static void setItem(const char * prefix, const char * name,
-		    const Item & item, Struct * s) {
+                    const Item & item, Struct * s) {
 
   if (name == 0 || *name == '\0') {
     s->theStatus = EVAL::ERROR_NOT_A_NAME;
@@ -546,8 +546,8 @@ static void setItem(const char * prefix, const char * name,
 
   const char * pointer; int n; REMOVE_BLANKS;
 
-  //   C H E C K   N A M E 
- 
+  //   C H E C K   N A M E
+
   if (n == 0) {
     s->theStatus = EVAL::ERROR_NOT_A_NAME;
     return;
@@ -575,222 +575,222 @@ static void setItem(const char * prefix, const char * name,
     (s->theDictionary)[item_name] = item;
     s->theStatus = EVAL::OK;
   }
-} 
-		    
+}
+
 //---------------------------------------------------------------------------
 namespace XmlTools {
 
-//---------------------------------------------------------------------------
-Evaluator::Evaluator() {
-  Struct * s = new Struct();
-  p = (void *) s;
-  s->theExpression = 0;
-  s->thePosition   = 0;
-  s->theStatus     = OK;
-  s->theResult     = 0.0;
-}
-
-//---------------------------------------------------------------------------
-Evaluator::~Evaluator() {
-  Struct * s = (Struct *)(p);
-  if (s->theExpression != 0) {
-    delete[] s->theExpression;
+  //---------------------------------------------------------------------------
+  Evaluator::Evaluator() {
+    Struct * s = new Struct();
+    p = (void *) s;
     s->theExpression = 0;
+    s->thePosition   = 0;
+    s->theStatus     = OK;
+    s->theResult     = 0.0;
   }
-  delete (Struct *)(p);
-}
 
-//---------------------------------------------------------------------------
-double Evaluator::evaluate(const char * expression) {
-  Struct * s = (Struct *)(p);
-  if (s->theExpression != 0) { delete[] s->theExpression; }
-  s->theExpression = 0;
-  s->thePosition   = 0;
-  s->theStatus     = WARNING_BLANK_STRING;
-  s->theResult     = 0.0;
-  if (expression != 0) {
-    s->theExpression = new char[strlen(expression)+1];
-    strcpy(s->theExpression, expression);
-    s->theStatus = engine(s->theExpression,
-			  s->theExpression+strlen(expression)-1,
-			  s->theResult,
-			  s->thePosition,
-			  s->theDictionary);
-  }
-  return s->theResult;
-}
-
-//---------------------------------------------------------------------------
-int Evaluator::status() const {
-  return ((Struct *)(p))->theStatus;
-}
-
-//---------------------------------------------------------------------------
-int Evaluator::error_position() const {
-  return ((Struct *)(p))->thePosition - ((Struct *)(p))->theExpression;
-}
-
-//---------------------------------------------------------------------------
-void Evaluator::print_error() const {
-  char prefix[] = "Evaluator : ";
-  Struct * s = (Struct *) p;
-  switch (s->theStatus) {
-  case ERROR_NOT_A_NAME:
-    std::cerr << prefix << "invalid name"         << std::endl;
-    return;
-  case ERROR_SYNTAX_ERROR:
-    std::cerr << prefix << "systax error"         << std::endl;
-    return;
-  case ERROR_UNPAIRED_PARENTHESIS:
-    std::cerr << prefix << "unpaired parenthesis" << std::endl;
-    return;
-  case ERROR_UNEXPECTED_SYMBOL:
-    std::cerr << prefix << "unexpected symbol"    << std::endl;
-    return;
-  case ERROR_UNKNOWN_VARIABLE:
-    std::cerr << prefix << "unknown variable"     << std::endl;
-    return;
-  case ERROR_UNKNOWN_FUNCTION:
-    std::cerr << prefix << "unknown function"     << std::endl;
-    return;
-  case ERROR_EMPTY_PARAMETER: 
-    std::cerr << prefix << "empty parameter in function call"
-		 << std::endl;
-    return;
-  case ERROR_CALCULATION_ERROR:
-    std::cerr << prefix << "calculation error"    << std::endl;
-    return;
-  default:
-    return;
-  }
-}
-
-//---------------------------------------------------------------------------
-void Evaluator::setEnviron(const char* name, const char* value)  {
-  Struct* s = (Struct *)p;
-  string prefix = "${";
-  string item_name = prefix + string(name) + string("}");
-  dic_type::iterator iter = (s->theDictionary).find(item_name);
-  Item item;
-  item.what = Item::STRING;
-  item.expression = value;
-  item.function = 0;
-  item.variable = 0;
-  //std::cout << " ++++++++++++++++++++++++++++ Saving env:" << name << " = " << value << std::endl;
-  if (iter != (s->theDictionary).end()) {
-    iter->second = item;
-    if (item_name == name) {
-      s->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
-    }else{
-      s->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
+  //---------------------------------------------------------------------------
+  Evaluator::~Evaluator() {
+    Struct * s = (Struct *)(p);
+    if (s->theExpression != 0) {
+      delete[] s->theExpression;
+      s->theExpression = 0;
     }
-  }else{
-    (s->theDictionary)[item_name] = item;
+    delete (Struct *)(p);
+  }
+
+  //---------------------------------------------------------------------------
+  double Evaluator::evaluate(const char * expression) {
+    Struct * s = (Struct *)(p);
+    if (s->theExpression != 0) { delete[] s->theExpression; }
+    s->theExpression = 0;
+    s->thePosition   = 0;
+    s->theStatus     = WARNING_BLANK_STRING;
+    s->theResult     = 0.0;
+    if (expression != 0) {
+      s->theExpression = new char[strlen(expression)+1];
+      strcpy(s->theExpression, expression);
+      s->theStatus = engine(s->theExpression,
+                            s->theExpression+strlen(expression)-1,
+                            s->theResult,
+                            s->thePosition,
+                            s->theDictionary);
+    }
+    return s->theResult;
+  }
+
+  //---------------------------------------------------------------------------
+  int Evaluator::status() const {
+    return ((Struct *)(p))->theStatus;
+  }
+
+  //---------------------------------------------------------------------------
+  int Evaluator::error_position() const {
+    return ((Struct *)(p))->thePosition - ((Struct *)(p))->theExpression;
+  }
+
+  //---------------------------------------------------------------------------
+  void Evaluator::print_error() const {
+    char prefix[] = "Evaluator : ";
+    Struct * s = (Struct *) p;
+    switch (s->theStatus) {
+    case ERROR_NOT_A_NAME:
+      std::cerr << prefix << "invalid name"         << std::endl;
+      return;
+    case ERROR_SYNTAX_ERROR:
+      std::cerr << prefix << "systax error"         << std::endl;
+      return;
+    case ERROR_UNPAIRED_PARENTHESIS:
+      std::cerr << prefix << "unpaired parenthesis" << std::endl;
+      return;
+    case ERROR_UNEXPECTED_SYMBOL:
+      std::cerr << prefix << "unexpected symbol"    << std::endl;
+      return;
+    case ERROR_UNKNOWN_VARIABLE:
+      std::cerr << prefix << "unknown variable"     << std::endl;
+      return;
+    case ERROR_UNKNOWN_FUNCTION:
+      std::cerr << prefix << "unknown function"     << std::endl;
+      return;
+    case ERROR_EMPTY_PARAMETER:
+      std::cerr << prefix << "empty parameter in function call"
+                << std::endl;
+      return;
+    case ERROR_CALCULATION_ERROR:
+      std::cerr << prefix << "calculation error"    << std::endl;
+      return;
+    default:
+      return;
+    }
+  }
+
+  //---------------------------------------------------------------------------
+  void Evaluator::setEnviron(const char* name, const char* value)  {
+    Struct* s = (Struct *)p;
+    string prefix = "${";
+    string item_name = prefix + string(name) + string("}");
+    dic_type::iterator iter = (s->theDictionary).find(item_name);
+    Item item;
+    item.what = Item::STRING;
+    item.expression = value;
+    item.function = 0;
+    item.variable = 0;
+    //std::cout << " ++++++++++++++++++++++++++++ Saving env:" << name << " = " << value << std::endl;
+    if (iter != (s->theDictionary).end()) {
+      iter->second = item;
+      if (item_name == name) {
+        s->theStatus = EVAL::WARNING_EXISTING_VARIABLE;
+      }else{
+        s->theStatus = EVAL::WARNING_EXISTING_FUNCTION;
+      }
+    }else{
+      (s->theDictionary)[item_name] = item;
+      s->theStatus = EVAL::OK;
+    }
+  }
+  //---------------------------------------------------------------------------
+  const char* Evaluator::getEnviron(const char* name)  {
+    Struct* s = (Struct *)p;
+    string item_name = name;
+    //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
+    dic_type::iterator iter = (s->theDictionary).find(item_name);
+    if (iter == (s->theDictionary).end()) {
+      s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
+      return 0;
+    }
     s->theStatus = EVAL::OK;
+    return iter->second.expression.c_str();
   }
-}
-//---------------------------------------------------------------------------
-const char* Evaluator::getEnviron(const char* name)  {
-  Struct* s = (Struct *)p;
-  string item_name = name;
-  //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
-  dic_type::iterator iter = (s->theDictionary).find(item_name);
-  if (iter == (s->theDictionary).end()) {
-    s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
-    return 0;
+
+  //---------------------------------------------------------------------------
+  void Evaluator::setVariable(const char * name, double value)
+  { setItem("", name, Item(value), (Struct *)p); }
+
+  void Evaluator::setVariable(const char * name, const char * expression)
+  { setItem("", name, Item(expression), (Struct *)p); }
+
+  //---------------------------------------------------------------------------
+  void Evaluator::setFunction(const char * name,double (*fun)())   {
+    FCN fcn(fun);
+    setItem("0", name, Item(fcn.ptr), (Struct *)p);
   }
-  s->theStatus = EVAL::OK;
-  return iter->second.expression.c_str();
-}
 
-//---------------------------------------------------------------------------
-void Evaluator::setVariable(const char * name, double value)
-{ setItem("", name, Item(value), (Struct *)p); }
+  void Evaluator::setFunction(const char * name,double (*fun)(double))   {
+    FCN fcn(fun);
+    setItem("1", name, Item(fcn.ptr), (Struct *)p);
+  }
 
-void Evaluator::setVariable(const char * name, const char * expression)
-{ setItem("", name, Item(expression), (Struct *)p); }
+  void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
+    FCN fcn(fun);
+    setItem("2", name, Item(fcn.ptr), (Struct *)p);
+  }
 
-//---------------------------------------------------------------------------
-void Evaluator::setFunction(const char * name,double (*fun)())   { 
-  FCN fcn(fun);
-  setItem("0", name, Item(fcn.ptr), (Struct *)p); 
-}
+  void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
+    FCN fcn(fun);
+    setItem("3", name, Item(fcn.ptr), (Struct *)p);
+  }
 
-void Evaluator::setFunction(const char * name,double (*fun)(double))   { 
-  FCN fcn(fun);
-  setItem("1", name, Item(fcn.ptr), (Struct *)p); 
-}
+  void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
+    FCN fcn(fun);
+    setItem("4", name, Item(fcn.ptr), (Struct *)p);
+  }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
-  FCN fcn(fun);
-  setItem("2", name, Item(fcn.ptr), (Struct *)p); 
-}
+  void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
+    FCN fcn(fun);
+    setItem("5", name, Item(fcn.ptr), (Struct *)p);
+  }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
-  FCN fcn(fun);
-  setItem("3", name, Item(fcn.ptr), (Struct *)p); 
-}
+  //---------------------------------------------------------------------------
+  bool Evaluator::findVariable(const char * name) const {
+    if (name == 0 || *name == '\0') return false;
+    const char * pointer; int n; REMOVE_BLANKS;
+    if (n == 0) return false;
+    Struct * s = (Struct *)(p);
+    return
+      ((s->theDictionary).find(string(pointer,n)) == (s->theDictionary).end()) ?
+      false : true;
+  }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
-  FCN fcn(fun);
-  setItem("4", name, Item(fcn.ptr), (Struct *)p); 
-}
+  //---------------------------------------------------------------------------
+  bool Evaluator::findFunction(const char * name, int npar) const {
+    if (name == 0 || *name == '\0')    return false;
+    if (npar < 0  || npar > MAX_N_PAR) return false;
+    const char * pointer; int n; REMOVE_BLANKS;
+    if (n == 0) return false;
+    Struct * s = (Struct *)(p);
+    return ((s->theDictionary).find(sss[npar]+string(pointer,n)) ==
+            (s->theDictionary).end()) ? false : true;
+  }
 
-void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
-  FCN fcn(fun);
-  setItem("5", name, Item(fcn.ptr), (Struct *)p); 
-}
+  //---------------------------------------------------------------------------
+  void Evaluator::removeVariable(const char * name) {
+    if (name == 0 || *name == '\0') return;
+    const char * pointer; int n; REMOVE_BLANKS;
+    if (n == 0) return;
+    Struct * s = (Struct *)(p);
+    (s->theDictionary).erase(string(pointer,n));
+  }
 
-//---------------------------------------------------------------------------
-bool Evaluator::findVariable(const char * name) const {
-  if (name == 0 || *name == '\0') return false;
-  const char * pointer; int n; REMOVE_BLANKS;
-  if (n == 0) return false;
-  Struct * s = (Struct *)(p);
-  return
-    ((s->theDictionary).find(string(pointer,n)) == (s->theDictionary).end()) ?
-    false : true;
-}
+  //---------------------------------------------------------------------------
+  void Evaluator::removeFunction(const char * name, int npar) {
+    if (name == 0 || *name == '\0')    return;
+    if (npar < 0  || npar > MAX_N_PAR) return;
+    const char * pointer; int n; REMOVE_BLANKS;
+    if (n == 0) return;
+    Struct * s = (Struct *)(p);
+    (s->theDictionary).erase(sss[npar]+string(pointer,n));
+  }
 
-//---------------------------------------------------------------------------
-bool Evaluator::findFunction(const char * name, int npar) const {
-  if (name == 0 || *name == '\0')    return false;
-  if (npar < 0  || npar > MAX_N_PAR) return false;
-  const char * pointer; int n; REMOVE_BLANKS;
-  if (n == 0) return false;
-  Struct * s = (Struct *)(p);
-  return ((s->theDictionary).find(sss[npar]+string(pointer,n)) ==
-	  (s->theDictionary).end()) ? false : true;
-}
+  //---------------------------------------------------------------------------
+  void Evaluator::clear() {
+    Struct * s = (Struct *) p;
+    s->theDictionary.clear();
+    s->theExpression = 0;
+    s->thePosition   = 0;
+    s->theStatus     = OK;
+    s->theResult     = 0.0;
+  }
 
-//---------------------------------------------------------------------------
-void Evaluator::removeVariable(const char * name) {
-  if (name == 0 || *name == '\0') return;
-  const char * pointer; int n; REMOVE_BLANKS;
-  if (n == 0) return;
-  Struct * s = (Struct *)(p);
-  (s->theDictionary).erase(string(pointer,n));
-}
-
-//---------------------------------------------------------------------------
-void Evaluator::removeFunction(const char * name, int npar) {
-  if (name == 0 || *name == '\0')    return;
-  if (npar < 0  || npar > MAX_N_PAR) return;
-  const char * pointer; int n; REMOVE_BLANKS;
-  if (n == 0) return;
-  Struct * s = (Struct *)(p);
-  (s->theDictionary).erase(sss[npar]+string(pointer,n));
-}
-
-//---------------------------------------------------------------------------
-void Evaluator::clear() {
-  Struct * s = (Struct *) p;
-  s->theDictionary.clear();
-  s->theExpression = 0;
-  s->thePosition   = 0;
-  s->theStatus     = OK;
-  s->theResult     = 0.0;
-}
-
-//---------------------------------------------------------------------------
+  //---------------------------------------------------------------------------
 } // namespace XmlTools

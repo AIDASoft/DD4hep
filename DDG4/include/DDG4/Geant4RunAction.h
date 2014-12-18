@@ -23,7 +23,7 @@ namespace DD4hep {
 
     /// Concrete basic implementation of the Geant4 run action base class.
     /**
-     * The Run Action is called once per start and end of a run. 
+     * The Run Action is called once per start and end of a run.
      * i.e. a series of generated events. These two callbacks
      * allow clients to define run-dependent actions such as statistics
      * summaries etc.
@@ -48,7 +48,7 @@ namespace DD4hep {
     /**
      * Concrete implementation of the Geant4 run action sequence.
      * The sequence dispatches the callbacks at the beginning and the and
-     * of a run to all registered Geant4RunAction members and all 
+     * of a run to all registered Geant4RunAction members and all
      * registered callbacks.
      *
      *  \author  M.Frank
@@ -70,12 +70,12 @@ namespace DD4hep {
       virtual ~Geant4RunActionSequence();
       /// Register begin-of-run callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
-      void callAtBegin(Q* p, void (T::*f)(const G4Run*)) {
+        void callAtBegin(Q* p, void (T::*f)(const G4Run*)) {
         m_begin.add(p, f);
       }
       /// Register end-of-run callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
-      void callAtEnd(Q* p, void (T::*f)(const G4Run*)) {
+        void callAtEnd(Q* p, void (T::*f)(const G4Run*)) {
         m_end.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

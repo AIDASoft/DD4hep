@@ -44,8 +44,8 @@ namespace DD4hep {
       G4StepPoint* pre;
       G4StepPoint* post;
       G4Track* track;
-      Geant4StepHandler(const G4Step* s)
-          : step(s) {
+    Geant4StepHandler(const G4Step* s)
+      : step(s) {
         pre = s->GetPreStepPoint();
         post = s->GetPostStepPoint();
         track = s->GetTrack();
@@ -64,7 +64,7 @@ namespace DD4hep {
       const char* postStepStatus() const;
       /// Returns total energy deposit
       double totalEnergy() const  {
-	return step->GetTotalEnergyDeposit();
+        return step->GetTotalEnergyDeposit();
       }
       /// Returns the pre-step position
       Position prePos() const {
@@ -87,21 +87,21 @@ namespace DD4hep {
       /// Average position vector of the step.
       Position avgPosition() const  {
         const G4ThreeVector& p1 = pre->GetPosition();
-	const G4ThreeVector& p2 = post->GetPosition();
-	G4ThreeVector r = 0.5*(p2+p1);
-	return Position(r.x(),r.y(),r.z());
+        const G4ThreeVector& p2 = post->GetPosition();
+        G4ThreeVector r = 0.5*(p2+p1);
+        return Position(r.x(),r.y(),r.z());
       }
       /// Direction calculated from the post- and pre-position ofthe step
       Position direction()  const  {
         const G4ThreeVector& p1 = pre->GetPosition();
-	const G4ThreeVector& p2 = post->GetPosition();
-	G4ThreeVector r = (p2-p1);
-	double len = r.r();
-	if ( len > 1e-15 )  {
-	  r /= len;
-	  return Position(r.x(),r.y(),r.z());
-	}
-	return Position();
+        const G4ThreeVector& p2 = post->GetPosition();
+        G4ThreeVector r = (p2-p1);
+        double len = r.r();
+        if ( len > 1e-15 )  {
+          r /= len;
+          return Position(r.x(),r.y(),r.z());
+        }
+        return Position();
       }
       Momentum preMom() const {
         const G4ThreeVector& p = pre->GetMomentum();
@@ -116,19 +116,19 @@ namespace DD4hep {
         return Momentum(p.x(), p.y(), p.z());
       }
       double deposit() const  {
-	return step->GetTotalEnergyDeposit();
+        return step->GetTotalEnergyDeposit();
       }
       int trkID() const  {
-	return track->GetTrackID();
+        return track->GetTrackID();
       }
       double trkTime() const  {
-	return track->GetGlobalTime();
+        return track->GetGlobalTime();
       }
       double trkEnergy() const  {
-	return track->GetTotalEnergy();
+        return track->GetTotalEnergy();
       }
       double trkKineEnergy() const  {
-	return track->GetKineticEnergy();
+        return track->GetKineticEnergy();
       }
       const G4VTouchable* preTouchable() const {
         return pre->GetTouchable();
@@ -180,15 +180,15 @@ namespace DD4hep {
         return sd(post);
       }
       bool firstInVolume() const  {
-	return step->IsFirstStepInVolume();
+        return step->IsFirstStepInVolume();
       }
       bool lastInVolume() const  {
-	return step->IsLastStepInVolume();
+        return step->IsLastStepInVolume();
       }
-      /// Coordinate transformation to global coordinates. 
+      /// Coordinate transformation to global coordinates.
       /** Note: Positions are in units of MM! */
       Position localToGlobal(const Position& local)  const;
-      /// Coordinate transformation to global coordinates. 
+      /// Coordinate transformation to global coordinates.
       /** Note: DDSegmentation points are units in CM! Conversion done inside! */
       Position localToGlobal(const DDSegmentation::Vector3D& local)  const;
       /// Coordinate transformation to global coordinates in MM

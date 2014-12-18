@@ -44,10 +44,10 @@ namespace {
     for(int i=0, ni=evt.GetNumberOfPrimaryVertex(); i<ni; ++i)  {
       G4PrimaryVertex* v = evt.GetPrimaryVertex(i);
       for(int j=0, nj=v->GetNumberOfParticle(); j<nj; ++j)  {
-	G4PrimaryParticle* p = v->GetPrimary(j);
-	if ( id == p->GetTrackID() )   {
-	  return p;
-	}
+        G4PrimaryParticle* p = v->GetPrimary(j);
+        if ( id == p->GetTrackID() )   {
+          return p;
+        }
       }
     }
     return 0;
@@ -56,7 +56,7 @@ namespace {
 
 /// Standard constructor
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const string& nam)
-  : Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
+: Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
 {
   InstanceCount::increment(this);
   //generatorAction().adopt(this);
@@ -86,8 +86,8 @@ Geant4ParticleHandler::~Geant4ParticleHandler()  {
 }
 
 /// No assignment operator
-Geant4ParticleHandler& Geant4ParticleHandler::operator=(const Geant4ParticleHandler&) { 
-  return *this; 
+Geant4ParticleHandler& Geant4ParticleHandler::operator=(const Geant4ParticleHandler&) {
+  return *this;
 }
 
 /// Adopt the user particle handler
@@ -96,9 +96,9 @@ bool Geant4ParticleHandler::adopt(Geant4Action* action)    {
     if ( !m_userHandler )  {
       Geant4UserParticleHandler* h = dynamic_cast<Geant4UserParticleHandler*>(action);
       if ( h )  {
-	m_userHandler = h;
-	m_userHandler->addRef();
-	return true;
+        m_userHandler = h;
+        m_userHandler->addRef();
+        return true;
       }
       except("Cannot add an invalid user particle handler object [Invalid-object-type].", c_name());
     }
@@ -148,7 +148,7 @@ void Geant4ParticleHandler::mark(const G4Step* step)   {
 void Geant4ParticleHandler::mark(const G4Track* track)   {
   PropertyMask mask(m_currTrack.reason);
   mask.set(G4PARTICLE_CREATED_HIT);
-  /// Check if the track origines from the calorimeter. 
+  /// Check if the track origines from the calorimeter.
   // If yes, flag it, because it is a candidate for removal.
   G4LogicalVolume*       vol = track->GetVolume()->GetLogicalVolume();
   G4VSensitiveDetector*   g4 = vol->GetSensitiveDetector();
@@ -183,7 +183,7 @@ void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* mgr)   {
   if ( (m_currTrack.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
     //
     // Tracks below the energy threshold are NOT stored.
-    // If these tracks produce hits or are selected due to another signature, 
+    // If these tracks produce hits or are selected due to another signature,
     // this criterium will anyhow take precedence.
     //
     const _Sec* sec=step->GetSecondaryInCurrentStep();
@@ -243,7 +243,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.colorFlow[0] = 0;
     m_currTrack.colorFlow[1] = 0;
     m_currTrack.parents.clear();
-    m_currTrack.daughters.clear();    
+    m_currTrack.daughters.clear();
     m_currTrack.pdgID        = h.trackDef()->GetPDGEncoding();
     m_currTrack.mass         = h.trackDef()->GetPDGMass();
     ++m_globalParticleID;
@@ -273,7 +273,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     }
   }
   if ( m_keepAll )  {
-    PropertyMask(m_currTrack.reason).set(G4PARTICLE_KEEP_ALWAYS);    
+    PropertyMask(m_currTrack.reason).set(G4PARTICLE_KEEP_ALWAYS);
   }
 
   /// Initial update of the particle using the user handler
@@ -309,7 +309,7 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   // - hits created
   // - secondaries
   // - above energy threshold
-  // - to be kept due to creator process 
+  // - to be kept due to creator process
   //
   if ( !mask.isNull() )   {
     m_equivalentTracks[g4_id] = g4_id;
@@ -326,11 +326,11 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   else   {
     // These are tracks without any special properties.
     //
-    // We will not store them on the record, but have to memorise the 
+    // We will not store them on the record, but have to memorise the
     // track identifier in order to restore the history for the created hits.
     int pid = m_currTrack.g4Parent;
     m_equivalentTracks[g4_id] = pid;
-    // Need to find the last stored particle and OR this particle's mask 
+    // Need to find the last stored particle and OR this particle's mask
     // with the mask of the last stored particle
     TrackEquivalents::const_iterator iequiv, iend = m_equivalentTracks.end();
     ParticleMap::iterator ip;
@@ -432,7 +432,7 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     while( (ipar=m_particleMap.find(g4_equiv)) == m_particleMap.end() )  {
       TrackEquivalents::const_iterator iequiv = m_equivalentTracks.find(g4_equiv);
       if ( iequiv == iend )  {
-	break;  // ERROR !! Will be handled by printout below because ipar==end()
+        break;  // ERROR !! Will be handled by printout below because ipar==end()
       }
       g4_equiv = (*iequiv).second;
     }
@@ -442,11 +442,11 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
       const G4ParticleDefinition* def = p.definition();
       int pdg = int(fabs(def->GetPDGEncoding())+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
-	error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
+        error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
       }
       pdg = int(fabs(p->pdgID)+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
-	error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
+        error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
       }
     }
     else   {
@@ -454,7 +454,7 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
   }
 
-  // (3) Compute the particle's parents and daughters. 
+  // (3) Compute the particle's parents and daughters.
   //     Replace the original Geant4 track with the
   //     equivalent particle still present in the record.
   for(ParticleMap::const_iterator ipar, iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
@@ -462,14 +462,14 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     if ( p->g4Parent > 0 )  {
       int equiv_id = equivalents[p->g4Parent];
       if ( (ipar=finalParticles.find(equiv_id)) != finalParticles.end() )  {
-	Particle* q = (*ipar).second;
-	q->daughters.insert(p->id);
-	p->parents.insert(q->id);
+        Particle* q = (*ipar).second;
+        q->daughters.insert(p->id);
+        p->parents.insert(q->id);
       }
       else   {
-	error("+++ Inconsistency in particle record: Geant4 parent %d "
-	      "of particle %d (equiv:%d) not in record!",
-	      p->g4Parent,p->id,equiv_id);
+        error("+++ Inconsistency in particle record: Geant4 parent %d "
+              "of particle %d (equiv:%d) not in record!",
+              p->g4Parent,p->id,equiv_id);
       }
     }
   }
@@ -510,7 +510,7 @@ int Geant4ParticleHandler::recombineParents()  {
   set<int> remove;
 
   /// Need to start from BACK, to clean first the latest produced stuff.
-  for(ParticleMap::reverse_iterator i=m_particleMap.rbegin(); i!=m_particleMap.rend(); ++i)  {    
+  for(ParticleMap::reverse_iterator i=m_particleMap.rbegin(); i!=m_particleMap.rend(); ++i)  {
     Particle* p = (*i).second;
     PropertyMask mask(p->reason);
     bool remove_me = false;
@@ -547,12 +547,12 @@ int Geant4ParticleHandler::recombineParents()  {
     else if ( mask.isSet(G4PARTICLE_KEEP_PROCESS) )  {
       ParticleMap::iterator ip = m_particleMap.find(p->g4Parent);
       if ( ip != m_particleMap.end() )   {
-	Particle* parent_part = (*ip).second;
-	PropertyMask parent_mask(parent_part->reason);
-	if ( parent_mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )   {
-	  parent_mask.set(G4PARTICLE_KEEP_PARENT);
-	  continue;
-	}
+        Particle* parent_part = (*ip).second;
+        PropertyMask parent_mask(parent_part->reason);
+        if ( parent_mask.isSet(G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )   {
+          parent_mask.set(G4PARTICLE_KEEP_PARENT);
+          continue;
+        }
       }
       // Low energy stuff. Remove it. Reassign to parent.
       //remove_me = true;
@@ -565,14 +565,14 @@ int Geant4ParticleHandler::recombineParents()  {
       remove.insert(g4_id);
       m_equivalentTracks[g4_id] = p->g4Parent;
       if ( ip != m_particleMap.end() )   {
-	Particle* parent_part = (*ip).second;
-	PropertyMask(parent_part->reason).set(mask.value());
-	parent_part->steps += p->steps;
-	parent_part->secondaries += p->secondaries;
-	/// Update of the particle using the user handler
-	if ( m_userHandler )  {
-	  m_userHandler->combine(*p, *parent_part);
-	}
+        Particle* parent_part = (*ip).second;
+        PropertyMask(parent_part->reason).set(mask.value());
+        parent_part->steps += p->steps;
+        parent_part->secondaries += p->secondaries;
+        /// Update of the particle using the user handler
+        if ( m_userHandler )  {
+          m_userHandler->combine(*p, *parent_part);
+        }
       }
     }
   }
@@ -600,8 +600,8 @@ void Geant4ParticleHandler::checkConsistency()  const   {
     for(set<int>::const_iterator id=daughters.begin(); id!=daughters.end(); ++id)   {
       int id_dau = *id;
       if ( (j=m_particleMap.find(id_dau)) == m_particleMap.end() )   {
-	++num_errors;
-	error("+++ Particle:%d Daughter %d is not in particle map!",p->id,id_dau);
+        ++num_errors;
+        error("+++ Particle:%d Daughter %d is not in particle map!",p->id,id_dau);
       }
     }
     // We assume that particles from the generator have consistent parents
@@ -611,19 +611,19 @@ void Geant4ParticleHandler::checkConsistency()  const   {
       bool in_map = false, in_parent_list = false;
       int parent_id = -1;
       if ( eq_it != m_equivalentTracks.end() )   {
-	parent_id = (*eq_it).second;
-	in_map = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
-	in_parent_list = p->parents.find(parent_id) != p->parents.end();
+        parent_id = (*eq_it).second;
+        in_map = (j=m_particleMap.find(parent_id)) != m_particleMap.end();
+        in_parent_list = p->parents.find(parent_id) != p->parents.end();
       }
       if ( !in_map || !in_parent_list )  {
-	char parent_list[1024];
-	parent_list[0] = 0;
-	++num_errors;
-	p.dumpWithMomentum(ERROR,name(),"INCONSISTENCY");
-	for(set<int>::const_iterator ip=p->parents.begin(); ip!=p->parents.end();++ip)
-	  ::snprintf(parent_list+strlen(parent_list),sizeof(parent_list)-strlen(parent_list),"%d ",*ip);
-	error("+++ Particle:%d Parent %d (G4id:%d)  In record:%s In parent list:%s [%s]",
-		 p->id,parent_id,p->g4Parent,yes_no(in_map),yes_no(in_parent_list),parent_list);
+        char parent_list[1024];
+        parent_list[0] = 0;
+        ++num_errors;
+        p.dumpWithMomentum(ERROR,name(),"INCONSISTENCY");
+        for(set<int>::const_iterator ip=p->parents.begin(); ip!=p->parents.end();++ip)
+          ::snprintf(parent_list+strlen(parent_list),sizeof(parent_list)-strlen(parent_list),"%d ",*ip);
+        error("+++ Particle:%d Parent %d (G4id:%d)  In record:%s In parent list:%s [%s]",
+              p->id,parent_id,p->g4Parent,yes_no(in_map),yes_no(in_parent_list),parent_list);
       }
     }
   }

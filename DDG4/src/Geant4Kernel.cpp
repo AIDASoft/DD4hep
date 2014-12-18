@@ -38,12 +38,12 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4Kernel::PhaseSelector::PhaseSelector(Geant4Kernel* kernel)
-    : m_kernel(kernel) {
+: m_kernel(kernel) {
 }
 
 /// Copy constructor
 Geant4Kernel::PhaseSelector::PhaseSelector(const PhaseSelector& c)
-    : m_kernel(c.m_kernel) {
+: m_kernel(c.m_kernel) {
 }
 
 /// Assignment operator
@@ -65,9 +65,9 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd)
-    : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0), 
-      m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0), 
-      m_physicsList(0), m_lcdd(lcdd), phase(this) {
+: m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
+  m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0),
+  m_physicsList(0), m_lcdd(lcdd), phase(this) {
 #if 0
   registerSequence(m_runAction, "RunAction");
   registerSequence(m_eventAction, "EventAction");
@@ -137,7 +137,7 @@ Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
   Geant4Kernel* kernel = lcdd.extension<Geant4Kernel>();
   if (!kernel) {
     throw runtime_error(format("Geant4Kernel", "DDG4: The LCDD object has no registered "
-        "extension of type Geant4Kernel [No-Extension]"));
+                               "extension of type Geant4Kernel [No-Extension]"));
   }
   return *kernel;
 }
@@ -238,14 +238,14 @@ Geant4Kernel& Geant4Kernel::registerGlobalAction(Geant4Action* action) {
       action->addRef();
       m_globalActions[nam] = action;
       printout(INFO,"Geant4Kernel","++ Registered global action %s of type %s",
-	       nam.c_str(),typeName(typeid(*action)).c_str());
+               nam.c_str(),typeName(typeid(*action)).c_str());
       return *this;
     }
     throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is already globally "
-        "registered. [Action-Already-Registered]", nam.c_str()));
+                               "registered. [Action-Already-Registered]", nam.c_str()));
   }
   throw runtime_error(format("Geant4Kernel", "DDG4: Attempt to globally register an invalid "
-      "action. [Action-Invalid]"));
+                             "action. [Action-Invalid]"));
 }
 
 /// Retrieve action from repository
@@ -254,7 +254,7 @@ Geant4Action* Geant4Kernel::globalAction(const std::string& action_name, bool th
   if (i == m_globalActions.end()) {
     if (throw_if_not_present) {
       throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' is not globally "
-          "registered. [Action-Missing]", action_name.c_str()));
+                                 "registered. [Action-Missing]", action_name.c_str()));
     }
     return 0;
   }
@@ -276,10 +276,10 @@ Geant4Kernel& Geant4Kernel::registerGlobalFilter(Geant4Action* filter) {
       return *this;
     }
     throw runtime_error(format("Geant4Kernel", "DDG4: The filter '%s' is already globally "
-        "registered. [Filter-Already-Registered]", nam.c_str()));
+                               "registered. [Filter-Already-Registered]", nam.c_str()));
   }
   throw runtime_error(format("Geant4Kernel", "DDG4: Attempt to globally register an invalid "
-      "filter. [Filter-Invalid]"));
+                             "filter. [Filter-Invalid]"));
 }
 
 /// Retrieve filter from repository
@@ -288,7 +288,7 @@ Geant4Action* Geant4Kernel::globalFilter(const std::string& filter_name, bool th
   if (i == m_globalFilters.end()) {
     if (throw_if_not_present) {
       throw runtime_error(format("Geant4Kernel", "DDG4: The filter '%s' is not already globally "
-          "registered. [Filter-Missing]", filter_name.c_str()));
+                                 "registered. [Filter-Missing]", filter_name.c_str()));
     }
     return 0;
   }
@@ -302,12 +302,12 @@ Geant4ActionPhase* Geant4Kernel::getPhase(const std::string& nam) {
     return (*i).second;
   }
   throw runtime_error(format("Geant4Kernel", "DDG4: The Geant4 action phase '%s' "
-      "does not exist. [No-Entry]", nam.c_str()));
+                             "does not exist. [No-Entry]", nam.c_str()));
 }
 
 /// Add a new phase
 Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_info& arg0, const type_info& arg1,
-    const type_info& arg2, bool throw_on_exist) {
+                                          const type_info& arg2, bool throw_on_exist) {
   Phases::const_iterator i = m_phases.find(nam);
   if (i == m_phases.end()) {
     Geant4Context ctxt(this);
@@ -317,7 +317,7 @@ Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_inf
   }
   else if (throw_on_exist) {
     throw runtime_error(format("Geant4Kernel", "DDG4: The Geant4 action phase %s "
-        "already exists. [Already-Exists]", nam.c_str()));
+                               "already exists. [Already-Exists]", nam.c_str()));
   }
   return (*i).second;
 }

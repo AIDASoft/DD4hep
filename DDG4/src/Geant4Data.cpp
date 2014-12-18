@@ -24,7 +24,7 @@ using namespace DD4hep::Simulation;
 
 /// Default constructor
 SimpleRun::SimpleRun()
-    : runID(-1), numEvents(0) {
+  : runID(-1), numEvents(0) {
   InstanceCount::increment(this);
 }
 
@@ -35,7 +35,7 @@ SimpleRun::~SimpleRun() {
 
 /// Default constructor
 SimpleEvent::SimpleEvent()
-    : runID(-1), eventID(-1) {
+  : runID(-1), eventID(-1) {
   InstanceCount::increment(this);
 }
 
@@ -50,7 +50,7 @@ DataExtension::~DataExtension() {
 
 /// Default constructor
 Geant4HitData::Geant4HitData()
-    : cellID(0), extension() {
+: cellID(0), extension() {
   InstanceCount::increment(this);
 }
 
@@ -73,13 +73,13 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
 
 /// Default constructor
 Geant4Tracker::Hit::Hit()
-  : Geant4HitData(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
+: Geant4HitData(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
   InstanceCount::increment(this);
 }
 
 /// Standard initializing constructor
 Geant4Tracker::Hit::Hit(int track_id, int pdg_id, double deposit, double time_stamp)
-  : Geant4HitData(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
+: Geant4HitData(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
   InstanceCount::increment(this);
 }
 
@@ -126,13 +126,13 @@ Geant4Tracker::Hit& Geant4Tracker::Hit::storePoint(const G4Step* step, const G4S
 
 /// Default constructor (for ROOT)
 Geant4Calorimeter::Hit::Hit()
-    : Geant4HitData(), position(), truth(), energyDeposit(0) {
+: Geant4HitData(), position(), truth(), energyDeposit(0) {
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
 Geant4Calorimeter::Hit::Hit(const Position& pos)
-    : Geant4HitData(), position(pos), truth(), energyDeposit(0) {
+: Geant4HitData(), position(pos), truth(), energyDeposit(0) {
   InstanceCount::increment(this);
 }
 

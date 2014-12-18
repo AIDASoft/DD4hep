@@ -88,8 +88,8 @@ bool DetElement::isCalorimeter() const {
 
 bool DetElement::isInsideTrackingVolume() const {
   if (m_element && hasAttr(_U(insideTrackingVolume)) )
-  return attr<bool>(_U(insideTrackingVolume));
+    return attr<bool>(_U(insideTrackingVolume));
   else if ( isTracker() )
-  return true;
+    return true;
   return false;
 }

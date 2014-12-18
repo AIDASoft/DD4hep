@@ -48,7 +48,7 @@ namespace DD4hep {
   XmlTools::Evaluator& g4Evaluator()   {
     static XmlTools::Evaluator* e = 0;
     if ( !e )   {
-      static XmlTools::Evaluator ev;      
+      static XmlTools::Evaluator ev;
       _init(ev);
       _g4Units(ev);
       e = &ev;

@@ -35,7 +35,7 @@ string Geant4GeometryMaps::placementPath(const Geant4PlacementPath& path, bool r
 
 /// Default constructor
 Geant4GeometryInfo::Geant4GeometryInfo()
-  : TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), valid(false) {
+: TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), valid(false) {
 }
 
 /// Default destructor

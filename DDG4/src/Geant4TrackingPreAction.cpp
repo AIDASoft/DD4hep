@@ -17,7 +17,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4TrackingPreAction::Geant4TrackingPreAction(Geant4Context* context, const std::string& name)
-    : Geant4TrackingAction(context, name) {
+: Geant4TrackingAction(context, name) {
   InstanceCount::increment(this);
 }
 

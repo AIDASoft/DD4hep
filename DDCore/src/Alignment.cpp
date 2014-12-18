@@ -32,24 +32,24 @@ namespace  {
       transform->MultiplyLeft(mm); // orig * delta
       n->Align(transform, 0, check, overlap);
       /*
-	printout(INFO,"Alignment","OLD matrix....");
-	mm->Print();
-	printout(INFO,"Alignment","Apply new relative matrix  mother to daughter:");
-	transform->Print();
-	transform->MultiplyLeft(mm); // orig * delta
-	printout(INFO,"Alignment","With deltas....");
-	transform->Print();
-	n->Align(transform, 0, check, overlap);
-	printout(INFO,"Alignment","NEW matrix....");
-	n->GetNode()->GetMatrix()->Print();	
+        printout(INFO,"Alignment","OLD matrix....");
+        mm->Print();
+        printout(INFO,"Alignment","Apply new relative matrix  mother to daughter:");
+        transform->Print();
+        transform->MultiplyLeft(mm); // orig * delta
+        printout(INFO,"Alignment","With deltas....");
+        transform->Print();
+        n->Align(transform, 0, check, overlap);
+        printout(INFO,"Alignment","NEW matrix....");
+        n->GetNode()->GetMatrix()->Print();
       */
       /*
        */
       printout(INFO,"Alignment","NEW matrix....");
       n->GetNode()->GetMatrix()->Print();
       Position local, global = a.toGlobal(local);
-      cout << "Local:" << local << " Global: " << global 
-	   << " and back:" << a.globalToLocal(global) << endl;
+      cout << "Local:" << local << " Global: " << global
+           << " and back:" << a.globalToLocal(global) << endl;
 
       return 1;
     }
@@ -105,7 +105,7 @@ PlacedVolume Alignment::nodePlacement(int level)   const   {
   PlacedVolume pv = PlacedVolume(ptr()->GetNode(level));
   if ( pv.isValid() ) return pv;
   throw runtime_error("DD4hep: The object chain of "+string(placement().name())+
-		      " is too short. [Invalid index]");
+                      " is too short. [Invalid index]");
 }
 
 /// Access the placement of the mother of this node
@@ -118,7 +118,7 @@ PlacedVolume Alignment::motherPlacement(int level_up)   const    {
   throw runtime_error("DD4hep: This object "+string(placement().name())+" has not enough mothers. [Invalid index]");
 }
 
-/// Access the currently applied alignment/placement matrix 
+/// Access the currently applied alignment/placement matrix
 Transform3D Alignment::toGlobal(int level) const   {
   CheckHandle verify_handle(*this);
   return _transform(ptr()->GetMatrix(level));
@@ -142,13 +142,13 @@ Position Alignment::globalToLocal(const Position& globalPoint, int level) const 
   return result;
 }
 
-/// Access the currently applied alignment/placement matrix 
+/// Access the currently applied alignment/placement matrix
 Transform3D Alignment::toMother(int level) const   {
   CheckHandle verify_handle(*this);
   return _transform(ptr()->GetNode(level)->GetMatrix());
 }
 
-/// Access the currently applied alignment/placement matrix 
+/// Access the currently applied alignment/placement matrix
 Transform3D Alignment::nominal() const   {
   CheckHandle verify_handle(*this);
   return _transform(ptr()->GetOriginalMatrix());

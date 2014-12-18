@@ -32,7 +32,7 @@ namespace DD4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
-    */
+     */
     template <typename TYPE> class Geant4Handle {
     protected:
       void checked_assign(TYPE* p);
@@ -42,7 +42,7 @@ namespace DD4hep {
       explicit Geant4Handle();
       Geant4Handle(handled_type* typ);
       template <typename T> Geant4Handle(T* typ)
-          : value(0) {
+        : value(0) {
         checked_assign(dynamic_cast<handled_type*>(typ));
       }
       Geant4Handle(const Geant4Handle& handle);
@@ -63,7 +63,7 @@ namespace DD4hep {
     };
 
     /// Handle to Geant4 actions with built-in creation mechanism
-    /** 
+    /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION

@@ -50,7 +50,7 @@ namespace {
 
     /// Default constructor
     Populator(LCDD& lcdd, Geant4GeometryInfo& g)
-        : m_lcdd(lcdd), m_geo(g) {
+      : m_lcdd(lcdd), m_geo(g) {
     }
 
     /// Populate the Volume manager
@@ -64,7 +64,7 @@ namespace {
           SensitiveDetector sd;
           PlacedVolume::VolIDs ids;
           m_entries.clear();
-	  chain.push_back(m_lcdd.world().placement().ptr());
+          chain.push_back(m_lcdd.world().placement().ptr());
           scanPhysicalVolume(pv.ptr(), ids, sd, chain);
           continue;
         }
@@ -87,14 +87,14 @@ namespace {
         }
         else {
           printout(WARNING, "Geant4VolumeManager",
-              "populate: Strange constellation volume %s is sensitive, but has no readout! sd:%p", pv.volume().name(),
-              sd.ptr());
+                   "populate: Strange constellation volume %s is sensitive, but has no readout! sd:%p", pv.volume().name(),
+                   sd.ptr());
         }
       }
       for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
         TGeoNode* daughter = node->GetDaughter(idau);
-	PlacedVolume placement(daughter);
-	if ( placement.data() ) {
+        PlacedVolume placement(daughter);
+        if ( placement.data() ) {
           scanPhysicalVolume(daughter, ids, sd, chain);
         }
       }
@@ -113,69 +113,69 @@ namespace {
       PrintLevel print_action = VERBOSE;
       PrintLevel print_chain = VERBOSE;
       PrintLevel print_res = VERBOSE;
-      
+
       printout(print_action,"Geant4VolumeManager","+++ Add path:%s vid:%016X",
-	       DetectorTools::placementPath(nodes,false).c_str(),code);
+               DetectorTools::placementPath(nodes,false).c_str(),code);
 
       if (i == m_entries.end()) {
         path.reserve(nodes.size());
         for (Chain::const_reverse_iterator k = nodes.rbegin(), kend=nodes.rend(); k != kend; ++k) {
           node = *(k);
           PlacementMap::const_iterator g4pit = m_geo.g4Placements.find(node);
-	  if (g4pit != m_geo.g4Placements.end()) {
+          if (g4pit != m_geo.g4Placements.end()) {
             path.push_back((*g4pit).second);
-	    printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s [%s]",
-		     node->GetName(), (*g4pit).second->GetName().c_str());
-	    continue;
+            printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s [%s]",
+                     node->GetName(), (*g4pit).second->GetName().c_str());
+            continue;
           }
-	  control.insert(control.begin(),node);
-	  vol = Volume(node->GetVolume());
-	  VolumeImprintMap::const_iterator iVolImp = m_geo.g4VolumeImprints.find(vol);
-	  if ( iVolImp != m_geo.g4VolumeImprints.end() )   {
-	    const Imprints& imprints = (*iVolImp).second;
-	    //size_t len = kend-k;
-	    for(Imprints::const_iterator iImp=imprints.begin(); iImp != imprints.end(); ++iImp)  {
-	      const VolumeChain& c = (*iImp).first;
-	      if ( c.size() <= control.size() && control == c )   {
-		path.push_back((*iImp).second);
-		printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s %s -> %s",
-			 node->GetName(), DetectorTools::placementPath(c,false).c_str(),
-			 (*iImp).second->GetName().c_str());
-		control.clear();
-		break;
-	      }
-	    }
-	  }
-	}
-	if ( control.empty() )   {
-	  printout(print_res, "Geant4VolumeManager", "+++     Volume  IDs:%s",
-		   DetectorTools::toString(ro.idSpec(),ids,code).c_str());
-	  path.erase(path.begin()+path.size()-1);
-	  printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
-		   (void*)code, placementPath(path).c_str());
-	  if (m_geo.g4Paths.find(path) == m_geo.g4Paths.end()) {
-	    m_geo.g4Paths[path] = code;
-	    m_entries.insert(make_pair(code,path));
-	    return;
-	  }
-	  printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s %s",
-		   " [THIS SHOULD NEVER HAPPEN]",placementPath(path).c_str());
-	  goto Err;
-	}
-	printout(INFO, "Geant4VolumeManager", "Control block has still %d entries:%s",
-		 int(control.size()),DetectorTools::placementPath(control,true).c_str());
-	goto Err;
+          control.insert(control.begin(),node);
+          vol = Volume(node->GetVolume());
+          VolumeImprintMap::const_iterator iVolImp = m_geo.g4VolumeImprints.find(vol);
+          if ( iVolImp != m_geo.g4VolumeImprints.end() )   {
+            const Imprints& imprints = (*iVolImp).second;
+            //size_t len = kend-k;
+            for(Imprints::const_iterator iImp=imprints.begin(); iImp != imprints.end(); ++iImp)  {
+              const VolumeChain& c = (*iImp).first;
+              if ( c.size() <= control.size() && control == c )   {
+                path.push_back((*iImp).second);
+                printout(print_chain, "Geant4VolumeManager", "+++     Chain: Node OK: %s %s -> %s",
+                         node->GetName(), DetectorTools::placementPath(c,false).c_str(),
+                         (*iImp).second->GetName().c_str());
+                control.clear();
+                break;
+              }
+            }
+          }
+        }
+        if ( control.empty() )   {
+          printout(print_res, "Geant4VolumeManager", "+++     Volume  IDs:%s",
+                   DetectorTools::toString(ro.idSpec(),ids,code).c_str());
+          path.erase(path.begin()+path.size()-1);
+          printout(print_res, "Geant4VolumeManager", "+++     Map %016X to Geant4 Path:%s",
+                   (void*)code, placementPath(path).c_str());
+          if (m_geo.g4Paths.find(path) == m_geo.g4Paths.end()) {
+            m_geo.g4Paths[path] = code;
+            m_entries.insert(make_pair(code,path));
+            return;
+          }
+          printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Geant4 path!!!! %s %s",
+                   " [THIS SHOULD NEVER HAPPEN]",placementPath(path).c_str());
+          goto Err;
+        }
+        printout(INFO, "Geant4VolumeManager", "Control block has still %d entries:%s",
+                 int(control.size()),DetectorTools::placementPath(control,true).c_str());
+        goto Err;
       }
       printout(ERROR, "Geant4VolumeManager", "populate: Severe error: Duplicated Volume entry: %X"
-	       " [THIS SHOULD NEVER HAPPEN]", code);
+               " [THIS SHOULD NEVER HAPPEN]", code);
 
     Err:
-      if ( i != m_entries.end() ) 
-	printout(ERROR,"Geant4VolumeManager"," Known G4 path: %s",placementPath((*i).second).c_str());
+      if ( i != m_entries.end() )
+        printout(ERROR,"Geant4VolumeManager"," Known G4 path: %s",placementPath((*i).second).c_str());
       if ( !path.empty() )
-	printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s",placementPath(path).c_str());
+        printout(ERROR,"Geant4VolumeManager"," New   G4 path: %s",placementPath(path).c_str());
       if ( !nodes.empty() )
-	printout(ERROR,"Geant4VolumeManager","     TGeo path: %s",DetectorTools::placementPath(nodes,false).c_str());
+        printout(ERROR,"Geant4VolumeManager","     TGeo path: %s",DetectorTools::placementPath(nodes,false).c_str());
       printout(ERROR,"Geant4VolumeManager",  " Offend.VolIDs: %s",DetectorTools::toString(ro.idSpec(),ids,code).c_str());
       throw runtime_error("Failed to populate Geant4 volume manager!");
     }
@@ -184,7 +184,7 @@ namespace {
 
 /// Initializing constructor. The tree will automatically be built if possible
 Geant4VolumeManager::Geant4VolumeManager(LCDD& lcdd, Geant4GeometryInfo* info)
-    : Base(info), m_isValid(false) {
+: Base(info), m_isValid(false) {
   if (info && info->valid && info->g4Paths.empty()) {
     Populator p(lcdd, *info);
     p.populate(lcdd.world());
@@ -226,8 +226,8 @@ VolumeID Geant4VolumeManager::volumeID(const PlacementPath& path) const {
     else if (!path[0]->GetLogicalVolume()->GetSensitiveDetector())
       return Insensitive;
   }
-  printout(INFO, "Geant4VolumeManager","+++   Bad volume Geant4 Path: %s", 
-	   Geant4GeometryMaps::placementPath(path).c_str());
+  printout(INFO, "Geant4VolumeManager","+++   Bad volume Geant4 Path: %s",
+           Geant4GeometryMaps::placementPath(path).c_str());
   return NonExisting;
 }
 
@@ -248,18 +248,18 @@ void Geant4VolumeManager::volumeDescriptor(const PlacementPath& path, VolIDDescr
       VolumeID vid = (*i).second;
       G4LogicalVolume* lvol = path[0]->GetLogicalVolume();
       if (lvol->GetSensitiveDetector()) {
-	const G4VPhysicalVolume* node = path[0];
-	const PlacementMap& m = ptr()->g4Placements;
-	for (PlacementMap::const_iterator i = m.begin(); i != m.end(); ++i) {
-	  if ((*i).second == node)  {
-	    PlacedVolume pv = (*i).first;
-	    Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
-	    Geometry::IDDescriptor dsc = sd.readout().idSpec();
-	    vol_desc.first = vid;
-	    dsc.decodeFields(vid, vol_desc.second);
-	    return;
-	  }
-	}
+        const G4VPhysicalVolume* node = path[0];
+        const PlacementMap& m = ptr()->g4Placements;
+        for (PlacementMap::const_iterator i = m.begin(); i != m.end(); ++i) {
+          if ((*i).second == node)  {
+            PlacedVolume pv = (*i).first;
+            Geometry::SensitiveDetector sd = pv.volume().sensitiveDetector();
+            Geometry::IDDescriptor dsc = sd.readout().idSpec();
+            vol_desc.first = vid;
+            dsc.decodeFields(vid, vol_desc.second);
+            return;
+          }
+        }
       }
       vol_desc.first = Insensitive;
       return;

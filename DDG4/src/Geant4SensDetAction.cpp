@@ -35,16 +35,16 @@ namespace {
     G4VSensitiveDetector* sd = mgr->FindSensitiveDetector(name);
     if (0 == sd) {
       throw runtime_error(format("Geant4Sensitive", "DDG4: You requested to configure actions "
-          "for the sensitive detector %s,\nDDG4: which is not known to Geant4. "
-          "Are you sure you already converted the geometry?", name.c_str()));
+                                 "for the sensitive detector %s,\nDDG4: which is not known to Geant4. "
+                                 "Are you sure you already converted the geometry?", name.c_str()));
     }
     Geant4ActionSD* action_sd = dynamic_cast<Geant4ActionSD*>(sd);
     if (0 == action_sd) {
       throw runtime_error(
-          format("Geant4Sensitive", "DDG4: You may only configure actions "
-              "for sensitive detectors of type Geant4ActionSD.\n"
-              "DDG4: The sensitive detector of %s is of type %s, which is incompatible.", name.c_str(),
-              typeName(typeid(*sd)).c_str()));
+                          format("Geant4Sensitive", "DDG4: You may only configure actions "
+                                 "for sensitive detectors of type Geant4ActionSD.\n"
+                                 "DDG4: The sensitive detector of %s is of type %s, which is incompatible.", name.c_str(),
+                                 typeName(typeid(*sd)).c_str()));
     }
     return action_sd;
   }
@@ -52,7 +52,7 @@ namespace {
 
 /// Standard action constructor
 Geant4ActionSD::Geant4ActionSD(const std::string& name)
-    : Geant4Action(0, name) {
+: Geant4Action(0, name) {
   InstanceCount::increment(this);
 }
 
@@ -63,7 +63,7 @@ Geant4ActionSD::~Geant4ActionSD() {
 
 /// Standard constructor
 Geant4Filter::Geant4Filter(Geant4Context* context, const std::string& name)
-    : Geant4Action(context, name) {
+: Geant4Action(context, name) {
   InstanceCount::increment(this);
 }
 
@@ -79,8 +79,8 @@ bool Geant4Filter::operator()(const G4Step*) const {
 
 /// Constructor. The detector element is identified by the name
 Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& name, DetElement det, LCDD& lcdd)
-  : Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0),
-    m_lcdd(lcdd), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
+: Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0),
+  m_lcdd(lcdd), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
@@ -134,7 +134,7 @@ Geant4ActionSD& Geant4Sensitive::detector() const {
   //m_sensitiveDetector = _getSensitiveDetector(m_detector.name());
   //if (  m_sensitiveDetector ) return *m_sensitiveDetector;
   throw runtime_error(format("Geant4Sensitive", "DDG4: The sensitive detector for action %s "
-      "was not properly configured.", name().c_str()));
+                             "was not properly configured.", name().c_str()));
 }
 
 /// Access to the hosting sequence
@@ -212,7 +212,7 @@ long long int Geant4Sensitive::cellID(G4Step* s) {
 
 /// Standard constructor
 Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* context, const string& nam)
-  : Geant4Action(context, nam), m_hce(0)
+: Geant4Action(context, nam), m_hce(0)
 {
   m_needsControl = true;
   context->sensitiveActions().insert(name(), this);
@@ -399,7 +399,7 @@ void Geant4SensDetSequences::insert(const string& name, Geant4SensDetActionSeque
     return;
   }
   throw runtime_error(format("Geant4SensDetSequences", "Attempt to add invalid sensitive "
-      "sequence with name:%s", name.c_str()));
+                             "sequence with name:%s", name.c_str()));
 }
 
 /// Clear the sequence list

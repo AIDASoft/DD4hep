@@ -29,7 +29,7 @@ namespace {
 
 /// Default constructor
 CartesianField::Object::Object()
-    : NamedObject(), type(UNKNOWN) {
+  : NamedObject(), type(UNKNOWN) {
   InstanceCount::increment(this);
 }
 
@@ -54,8 +54,8 @@ CartesianField::Properties& CartesianField::properties() const {
 }
 
 /// Returns the 3 field components (x, y, z).
-void CartesianField::value(const Position& pos, Direction& field) const  { 
-  value(pos,(double*)&field); 
+void CartesianField::value(const Position& pos, Direction& field) const  {
+  value(pos,(double*)&field);
 }
 
 /// Returns the 3 field components (x, y, z).
@@ -70,7 +70,7 @@ void CartesianField::value(const double* pos, double* val) const {
 
 /// Default constructor
 OverlayedField::Object::Object()
-    : type(0), electric(), magnetic() {
+  : type(0), electric(), magnetic() {
   InstanceCount::increment(this);
 }
 
@@ -81,7 +81,7 @@ OverlayedField::Object::~Object() {
 
 /// Object constructor
 OverlayedField::OverlayedField(const string& name)
-    : Ref_t() {
+  : Ref_t() {
   assign(new Object(), name, "overlay_field");
 }
 

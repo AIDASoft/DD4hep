@@ -15,7 +15,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
 
     /// XML Handle to xml elements with predefined attribute access
@@ -45,16 +45,16 @@ namespace DD4hep {
      */
     struct Dimension: public Element {
       /// Default constructor
-      Dimension()
-          : Element(Handle_t(0)) {
+    Dimension()
+      : Element(Handle_t(0)) {
       }
       /// Constructor from Handle
-      Dimension(Handle_t e)
-          : Element(e) {
+    Dimension(Handle_t e)
+      : Element(e) {
       }
       /// Constructor from Element
-      Dimension(const Element& e)
-          : Element(e) {
+    Dimension(const Element& e)
+      : Element(e) {
       }
 
       /// Access parameters: id
@@ -461,7 +461,7 @@ namespace DD4hep {
       double lunit() const;
       /// Access min/max parameters: lunit
       double lunit(double default_value) const;
-      
+
 
       /// Access child element with tag "dimensions" as Dimension object
       Dimension dimensions(bool throw_if_not_present = true) const;

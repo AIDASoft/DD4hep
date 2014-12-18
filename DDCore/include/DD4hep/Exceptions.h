@@ -25,8 +25,8 @@ namespace DD4hep {
    */
   struct unrelated_type_error : public std::runtime_error {
     static std::string msg(const std::type_info& typ1, const std::type_info& typ2, const std::string& text);
-    unrelated_type_error(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "")
-        : std::runtime_error(msg(typ1, typ2, text)) {
+  unrelated_type_error(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "")
+    : std::runtime_error(msg(typ1, typ2, text)) {
     }
   };
 
@@ -38,8 +38,8 @@ namespace DD4hep {
    */
   struct unrelated_value_error : public std::runtime_error {
     static std::string msg(const std::type_info& typ, const std::string& text);
-    unrelated_value_error(const std::type_info& typ, const std::string& text = "")
-        : std::runtime_error(msg(typ, text)) {
+  unrelated_value_error(const std::type_info& typ, const std::string& text = "")
+    : std::runtime_error(msg(typ, text)) {
     }
   };
 

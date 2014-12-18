@@ -25,7 +25,7 @@ namespace DD4hep {
     class DocumentErrorHandler;
 
     /// Class supporting to read and parse XML documents.
-    /** 
+    /**
      *  Wrapper object around the document parser.
      *  Supports both, XercesC and TiXml.
      *

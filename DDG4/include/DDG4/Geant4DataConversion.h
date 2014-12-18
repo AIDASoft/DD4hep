@@ -41,7 +41,7 @@ namespace DD4hep {
     };
 
     /// Data conversion class
-    /** 
+    /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -77,37 +77,37 @@ namespace DD4hep {
   namespace Simulation {
 
     template <typename OUTPUT,typename ARGS>
-    Geant4Conversion<OUTPUT,ARGS>::Geant4Conversion()
-    : Geant4ConversionHelper()
-    {
-    }
+      Geant4Conversion<OUTPUT,ARGS>::Geant4Conversion()
+      : Geant4ConversionHelper()
+      {
+      }
 
     template <typename OUTPUT,typename ARGS>
-    Geant4Conversion<OUTPUT,ARGS>::~Geant4Conversion()
-    {
-    }
+      Geant4Conversion<OUTPUT,ARGS>::~Geant4Conversion()
+      {
+      }
 
     template <typename OUTPUT,typename ARGS>
-    typename Geant4Conversion<OUTPUT,ARGS>::Converters&
-    Geant4Conversion<OUTPUT,ARGS>::conversions()
-    {
-      static Converters m;
-      return m;
-    }
+      typename Geant4Conversion<OUTPUT,ARGS>::Converters&
+      Geant4Conversion<OUTPUT,ARGS>::conversions()
+      {
+        static Converters m;
+        return m;
+      }
 
     template <typename OUTPUT, typename ARGS>
-    const Geant4Conversion<OUTPUT,ARGS>&
-    Geant4Conversion<OUTPUT,ARGS>::converter(const std::type_info& typ)
-    {
-      typename Converters::const_iterator i = conversions().find(&typ);
-      if ( i != conversions().end() ) {
-        return *((*i).second);
+      const Geant4Conversion<OUTPUT,ARGS>&
+      Geant4Conversion<OUTPUT,ARGS>::converter(const std::type_info& typ)
+      {
+        typename Converters::const_iterator i = conversions().find(&typ);
+        if ( i != conversions().end() ) {
+          return *((*i).second);
+        }
+        throw std::runtime_error(typeName(typeid(self_t))+
+                                 ": No appropriate LCIO_OUTPUT conversion "
+                                 "mechanism known for tag:"+
+                                 typeName(typ));
       }
-      throw std::runtime_error(typeName(typeid(self_t))+
-          ": No appropriate LCIO_OUTPUT conversion "
-          "mechanism known for tag:"+
-          typeName(typ));
-    }
 
     /// Template class for data conversion. To be specialized by the client.
     /**
@@ -116,17 +116,17 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     template <typename OUTPUT, typename ARGS, typename TAG>
-    class Geant4DataConversion : public Geant4Conversion<OUTPUT,ARGS> {
+      class Geant4DataConversion : public Geant4Conversion<OUTPUT,ARGS> {
     public:
       typedef TAG tag_t;
       typedef ARGS arg_t;
       typedef OUTPUT output_t;
       typedef Geant4Conversion<output_t,arg_t> self_t;
-      Geant4DataConversion(void*) : Geant4Conversion<OUTPUT,ARGS>()
-      {
-        this->self_t::conversions().insert(make_pair(&typeid(TAG),this));
-        //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
-      }
+    Geant4DataConversion(void*) : Geant4Conversion<OUTPUT,ARGS>()
+        {
+          this->self_t::conversions().insert(make_pair(&typeid(TAG),this));
+          //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
+        }
       virtual OUTPUT* operator()(const ARGS& args) const;
     };
 
@@ -134,7 +134,7 @@ namespace DD4hep {
 }      // End namespace DD4hep
 
 #define GEANT4_CNAME(a,b) a ## _instance_ ## b
-#define DECLARE_GEANT4_DATACONVERTER(output_type,args_type,tag,serial)	\
+#define DECLARE_GEANT4_DATACONVERTER(output_type,args_type,tag,serial)  \
   DD4hep::Simulation::Geant4DataConversion<output_type,args_type,tag> GEANT4_CNAME(s_g4_data_cnv,serial) (0);
 
 #define DECLARE_GEANT4_HITCONVERTER(output_type,args_type,tag) DECLARE_GEANT4_DATACONVERTER(output_type,args_type,tag,__LINE__)

@@ -50,9 +50,9 @@ std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precisio
   log << cl->GetName();
   if ( cl == TGeoBBox::Class() )   {
     TGeoBBox* s = (TGeoBBox*) shape;
-    log << " x:" << s->GetDX() 
-	<< " y:" << s->GetDY()
-	<< " z:" << s->GetDZ();
+    log << " x:" << s->GetDX()
+        << " y:" << s->GetDY()
+        << " z:" << s->GetDZ();
   }
   else if (cl == TGeoTube::Class()) {
     const TGeoTube* s = (const TGeoTube*) shape;
@@ -60,8 +60,8 @@ std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precisio
   }
   else if (cl == TGeoTubeSeg::Class()) {
     const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
-    log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax() << " dz:" << s->GetDz() 
-	<< " Phi1:" << s->GetPhi1() << " Phi2:" << s->GetPhi2();
+    log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax() << " dz:" << s->GetDz()
+        << " Phi1:" << s->GetPhi1() << " Phi2:" << s->GetPhi2();
   }
   else if (cl == TGeoTrd1::Class()) {
     const TGeoTrd1* s = (const TGeoTrd1*) shape;
@@ -69,37 +69,37 @@ std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precisio
   }
   else if (cl == TGeoTrd2::Class()) {
     const TGeoTrd2* s = (const TGeoTrd2*) shape;
-    log << " x1:" << s->GetDx1() << " x2:" << s->GetDx2() 
-	<< " y1:" << s->GetDy1() << " y2:" << s->GetDy2() << " z:" << s->GetDz();
+    log << " x1:" << s->GetDx1() << " x2:" << s->GetDx2()
+        << " y1:" << s->GetDy1() << " y2:" << s->GetDy2() << " z:" << s->GetDz();
   }
   else if (cl == TGeoHype::Class()) {
     const TGeoHype* s = (const TGeoHype*) shape;
-    log << " rmin:" << s->GetRmin() << " rmax:"  << s->GetRmax() << " dz:" << s->GetDz() 
-	<< " StIn:" << s->GetStIn() << " StOut:" << s->GetStOut();
+    log << " rmin:" << s->GetRmin() << " rmax:"  << s->GetRmax() << " dz:" << s->GetDz()
+        << " StIn:" << s->GetStIn() << " StOut:" << s->GetStOut();
   }
   else if (cl == TGeoPgon::Class()) {
     const TGeoPgon* s = (const TGeoPgon*) shape;
-    log << " Phi1:"   << s->GetPhi1()   << " dPhi:" << s->GetDphi() 
-	<< " NEdges:" << s->GetNedges() << " Nz:" << s->GetNz();
+    log << " Phi1:"   << s->GetPhi1()   << " dPhi:" << s->GetDphi()
+        << " NEdges:" << s->GetNedges() << " Nz:" << s->GetNz();
     for(int i=0, n=s->GetNz(); i<n; ++i)  {
-      log << " i=" << i << " z:" << s->GetZ(i) 
-	  << " r:[" << s->GetRmin(i) << "," << s->GetRmax(i) << "]";
+      log << " i=" << i << " z:" << s->GetZ(i)
+          << " r:[" << s->GetRmin(i) << "," << s->GetRmax(i) << "]";
     }
   }
   else if (cl == TGeoPcon::Class()) {
     const TGeoPcon* s = (const TGeoPcon*) shape;
     log << " Phi1:" << s->GetPhi1() << " dPhi:" << s->GetDphi() << " Nz:" << s->GetNz();
     for(int i=0, n=s->GetNz(); i<n; ++i)  {
-      log << " i=" << i << " z:" << s->GetZ(i) 
-	  << " r:[" << s->GetRmin(i) << "," << s->GetRmax(i) << "]";
+      log << " i=" << i << " z:" << s->GetZ(i)
+          << " r:[" << s->GetRmin(i) << "," << s->GetRmax(i) << "]";
     }
   }
   else if (cl == TGeoConeSeg::Class()) {
     const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
     log << " rmin1:" << s->GetRmin1() << " rmax1:" << s->GetRmax1()
-	<< " rmin2:" << s->GetRmin2() << " rmax2:" << s->GetRmax2()
-	<< " dz:"    << s->GetDz() 
-	<< " Phi1:"  << s->GetPhi1() << " Phi2:" << s->GetPhi2();
+        << " rmin2:" << s->GetRmin2() << " rmax2:" << s->GetRmax2()
+        << " dz:"    << s->GetDz()
+        << " Phi1:"  << s->GetPhi1() << " Phi2:" << s->GetPhi2();
   }
   else if (cl == TGeoParaboloid::Class()) {
     const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
@@ -108,19 +108,19 @@ std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precisio
   else if (cl == TGeoSphere::Class()) {
     const TGeoSphere* s = (const TGeoSphere*) shape;
     log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax()
-	<< " Phi1:" << s->GetPhi1() << " Phi2:" << s->GetPhi2()
-	<< " Theta1:" << s->GetTheta1() << " Theta2:" << s->GetTheta2();
+        << " Phi1:" << s->GetPhi1() << " Phi2:" << s->GetPhi2()
+        << " Theta1:" << s->GetTheta1() << " Theta2:" << s->GetTheta2();
   }
   else if (cl == TGeoTorus::Class()) {
     const TGeoTorus* s = (const TGeoTorus*) shape;
     log << " rmin:" << s->GetRmin() << " rmax:" << s->GetRmax() << " r:" << s->GetR()
-	<< " Phi1:" << s->GetPhi1() << " dPhi:" << s->GetDphi();
+        << " Phi1:" << s->GetPhi1() << " dPhi:" << s->GetDphi();
   }
   else if (cl == TGeoTrap::Class()) {
     const TGeoTrap* s = (const TGeoTrap*) shape;
     log << " dz:" << s->GetDz() << " Theta:" << s->GetTheta() << " Phi:" << s->GetPhi()
-	<< " H1:" << s->GetH1() << " Bl1:"   << s->GetBl1()   << " Tl1:" << s->GetTl1() << " Alpha1:" << s->GetAlpha1()
-	<< " H2:" << s->GetH2() << " Bl2:"   << s->GetBl2()   << " Tl2:" << s->GetTl2() << " Alpha2:" << s->GetAlpha2();
+        << " H1:" << s->GetH1() << " Bl1:"   << s->GetBl1()   << " Tl1:" << s->GetTl1() << " Alpha1:" << s->GetAlpha1()
+        << " H2:" << s->GetH2() << " Bl2:"   << s->GetBl2()   << " Tl2:" << s->GetTl2() << " Alpha2:" << s->GetAlpha2();
   }
   else if (shape->IsA() == TGeoCompositeShape::Class()) {
     const TGeoCompositeShape* s = (const TGeoCompositeShape*) shape;
@@ -191,7 +191,7 @@ Polycone::Polycone(double start, double delta) {
 
 /// Constructor to be used when creating a new polycone object. Add at the same time all Z planes
 Polycone::Polycone(double start, double delta, const vector<double>& rmin, const vector<double>& rmax,
-    const vector<double>& z) {
+                   const vector<double>& z) {
   vector<double> params;
   if (rmin.size() < 2) {
     throw runtime_error("DD4hep: PolyCone::addZPlanes> Not enough Z planes. minimum is 2!");
@@ -234,12 +234,12 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 /// Constructor to be used when creating a new cone segment object
 ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
   _assign(
-      new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/dd4hep::deg, phi2/dd4hep::deg), "", "cone_segment", true);
+          new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/dd4hep::deg, phi2/dd4hep::deg), "", "cone_segment", true);
 }
 
 /// Set the cone segment dimensions
 ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1,
-    double phi2) {
+                                        double phi2) {
   double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1/dd4hep::deg, phi2/dd4hep::deg };
   _setDimensions(params);
   return *this;
@@ -272,8 +272,8 @@ Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, do
 }
 
 /// Constructor to create a new anonymous object with attribute initialization
-Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z)   { 
-  make(x1,x2,y1,y2,z);  
+Trapezoid::Trapezoid(double x1, double x2, double y1, double y2, double z)   {
+  make(x1,x2,y1,y2,z);
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
@@ -308,7 +308,7 @@ Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, doubl
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
   double params[] = { rmin, rmax, theta, delta_theta/dd4hep::deg, phi/dd4hep::deg,
-      delta_phi/dd4hep::deg };
+                      delta_phi/dd4hep::deg };
   _setDimensions(params);
   return *this;
 }
@@ -327,7 +327,7 @@ Torus& Torus::setDimensions(double r, double rmin, double rmax, double phi, doub
 
 /// Constructor to be used when creating a new anonymous object with attribute initialization
 Trap::Trap(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2, double x3, double x4,
-    double alpha2) {
+           double alpha2) {
   _assign(new TGeoTrap(z, theta, phi, y1, x1, x2, alpha1/dd4hep::deg, y2, x3, x4, alpha2/dd4hep::deg), "", "trap", true);
 }
 
@@ -345,7 +345,7 @@ void Trap::make(double pz, double py, double px, double pLTX) {
 
 /// Set the trap dimensions
 Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2,
-    double x3, double x4, double alpha2) {
+                          double x3, double x4, double alpha2) {
   double params[] = { z, theta, phi, y1, x1, x2, alpha1/dd4hep::deg, y2, x3, x4, alpha2/dd4hep::deg };
   _setDimensions(params);
   return *this;
@@ -353,7 +353,7 @@ Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double 
 
 /// Helper function to create holy hedron
 void PolyhedraRegular::_create(const string& name, int nsides, double rmin, double rmax, double zpos, double zneg, double start,
-    double delta) {
+                               double delta) {
   if (rmin < 0e0 || rmin > rmax)
     throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmin:<" + _toString(rmin) + "> is invalid!");
   else if (rmax < 0e0)

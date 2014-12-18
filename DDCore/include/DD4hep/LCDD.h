@@ -44,10 +44,10 @@ namespace DD4hep {
     BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY
   };
 
-   /// Namespace for the geometry part of the AIDA detector description toolkit
+  /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
-   /// The main interface to the DD4hep detector description package
+    /// The main interface to the DD4hep detector description package
     /**
      *  Note: The usage of the factory method:
      *

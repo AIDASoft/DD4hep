@@ -255,7 +255,7 @@ namespace XmlTools {
      * @endcode
      */
     void setSystemOfUnits(double meter = 1.0, double kilogram = 1.0, double second = 1.0, double ampere = 1.0, double kelvin =
-			  1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
+                          1.0, double mole = 1.0, double candela = 1.0, double radians = 1.0 );
 
   private:
     void * p;                                 // private data

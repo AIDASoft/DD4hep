@@ -37,8 +37,8 @@ namespace DD4hep {
       public:
         const T* context;
         void* userData;
-        OutputContext(const T* c)
-            : context(c), userData(0) {
+      OutputContext(const T* c)
+        : context(c), userData(0) {
         }
         template <typename U> U* data() const {
           return (U*) userData;

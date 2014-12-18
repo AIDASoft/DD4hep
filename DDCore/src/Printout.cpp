@@ -224,7 +224,7 @@ namespace DD4hep {
 
   template <> void Printer<RotationZYX>::operator()(const RotationZYX& val) const {
     printout(INFO, "Printer", "%s ++ ZYXRotation: phi: %7.3 rad theta: %7.3 rad psi: %7.3 rad", prefix.c_str(), val.Phi(),
-        val.Theta(), val.Psi());
+             val.Theta(), val.Psi());
   }
 
   template <> void Printer<Position>::operator()(const Position& val) const {
@@ -237,7 +237,7 @@ namespace DD4hep {
     val->TNamed::Print();
     for (set<Limit>::const_iterator i = o.begin(); i != o.end(); ++i) {
       os << "++    Limit:" << (*i).name << " " << (*i).particles << " [" << (*i).unit << "] " << (*i).content << " "
-          << (*i).value << endl;
+         << (*i).value << endl;
     }
   }
 
@@ -251,8 +251,8 @@ namespace DD4hep {
       bool env = plc.isValid();
       bool mat = plc.isValid();
       ::snprintf(text, sizeof(text), "ID:%-3d Combine Hits:%3s Material:%s Envelope:%s VisAttr:%s", sd.id(),
-          yes_no(sd.combineHits()), mat ? plc.material().name() : yes_no(mat),
-          env ? plc.motherVol()->GetName() : yes_no(env), yes_no(vis));
+                 yes_no(sd.combineHits()), mat ? plc.material().name() : yes_no(mat),
+                 env ? plc.motherVol()->GetName() : yes_no(env), yes_no(vis));
       os << prefix << "+= DetElement: " << val.name() << " " << val.type() << endl;
       os << prefix << "|               " << text << endl;
 
@@ -262,9 +262,9 @@ namespace DD4hep {
         TColor* col = gROOT->GetColor(v->color);
         char text[256];
         ::snprintf(text, sizeof(text), " RGB:%-8s [%d] %7.2f  Style:%d %d ShowDaughters:%3s Visible:%3s", col->AsHexString(),
-		   v->color, col->GetAlpha(), int(v->drawingStyle), 
-		   int(v->lineStyle), yes_no(v->showDaughters),
-		   yes_no(v->visible));
+                   v->color, col->GetAlpha(), int(v->drawingStyle),
+                   int(v->lineStyle), yes_no(v->showDaughters),
+                   yes_no(v->visible));
         os << prefix << "|               VisAttr:  " << setw(32) << left << attr.name() << text << endl;
       }
       if (plc.isValid()) {
@@ -272,7 +272,7 @@ namespace DD4hep {
         Solid s = vol.solid();
         Material m = vol.material();
         ::snprintf(text, sizeof(text), "Volume:%s Shape:%s Material:%s", vol->GetName(), s.isValid() ? s.name() : "Unknonw",
-            m.isValid() ? m->GetName() : "Unknown");
+                   m.isValid() ? m->GetName() : "Unknown");
         os << prefix << "+-------------  " << text << endl;
       }
       const DetElement::Children& ch = sd.children();

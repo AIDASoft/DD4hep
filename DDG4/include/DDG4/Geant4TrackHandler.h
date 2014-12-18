@@ -51,23 +51,23 @@ namespace DD4hep {
       /// Reference to the track object
       const G4Track* track;
       /// Initializing constructor
-      Geant4TrackHandler(const G4Track* t)
-          : track(t) {
-	/// Should test here if the track pointer is valid to avoind any later trouble
-	if ( 0 == t )  {
-	  throw std::runtime_error("Geant4TrackHandler: NULL pointer passed to constructor!");
-	}
+    Geant4TrackHandler(const G4Track* t)
+      : track(t) {
+        /// Should test here if the track pointer is valid to avoind any later trouble
+        if ( 0 == t )  {
+          throw std::runtime_error("Geant4TrackHandler: NULL pointer passed to constructor!");
+        }
       }
       const char* statusName() const    {
-	switch( track->GetTrackStatus() )  {
-	case fAlive:                    return "Alive";
-	case fStopButAlive:             return "StopButAlive";
-	case fStopAndKill:              return "StopAndKill";
-	case fKillTrackAndSecondaries:  return "KillTrackAndSecondaries";
-	case fSuspend:                  return "Suspend";
-	case fPostponeToNextEvent:      return "PostponeToNextEvent";
-	default:                        return "UNKNOWN";
-	}
+        switch( track->GetTrackStatus() )  {
+        case fAlive:                    return "Alive";
+        case fStopButAlive:             return "StopButAlive";
+        case fStopAndKill:              return "StopAndKill";
+        case fKillTrackAndSecondaries:  return "KillTrackAndSecondaries";
+        case fSuspend:                  return "Suspend";
+        case fPostponeToNextEvent:      return "PostponeToNextEvent";
+        default:                        return "UNKNOWN";
+        }
       }
 
       /// Conversion to G4Track
@@ -76,11 +76,11 @@ namespace DD4hep {
       }
       /// Track's identifier
       int id() const  {
-	return track->GetTrackID();
+        return track->GetTrackID();
       }
       /// Track's parent identifier
       int parent()  const  {
-	return track->GetParentID();
+        return track->GetParentID();
       }
       /// Track's particle definition
       G4ParticleDefinition* trackDef() const {
@@ -88,11 +88,11 @@ namespace DD4hep {
       }
       /// Track's particle name
       const std::string& name()  const  {
-	return trackDef()->GetParticleName();
+        return trackDef()->GetParticleName();
       }
       /// Track's particle type
       const std::string& type()  const  {
-	return trackDef()->GetParticleType();
+        return trackDef()->GetParticleType();
       }
       /// Track's position
       const G4ThreeVector& position() const {
@@ -102,13 +102,13 @@ namespace DD4hep {
       const G4ThreeVector& vertex() const {
         return track->GetVertexPosition();
       }
-      /// Track global time 
+      /// Track global time
       double globalTime() const  {
-	return track->GetGlobalTime();
+        return track->GetGlobalTime();
       }
-      /// Track proper time 
+      /// Track proper time
       double properTime() const  {
-	return track->GetProperTime();
+        return track->GetProperTime();
       }
       /// Track's energy
       double energy() const {
@@ -135,7 +135,7 @@ namespace DD4hep {
         return track->GetVolume();
       }
       G4ThreeVector momentum() const  {
-	return track->GetMomentum();
+        return track->GetMomentum();
       }
       /// Next physical volume of the track
       G4VPhysicalVolume* nextVol() const {
@@ -159,9 +159,9 @@ namespace DD4hep {
       }
       /// Physical process of the track generation
       const std::string creatorName() const {
-	const G4VProcess* p = creatorProcess();
+        const G4VProcess* p = creatorProcess();
         if ( p ) return p->GetProcessName();
-	return "";
+        return "";
       }
       /// User information block
       Info* userInfo() const {

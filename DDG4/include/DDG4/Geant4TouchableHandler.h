@@ -38,13 +38,13 @@ namespace DD4hep {
      */
     class Geant4TouchableHandler {
     public:
-      
+
       typedef std::vector<const G4VPhysicalVolume*> Geant4PlacementPath;
       /// Data member of the helper objects
       const G4VTouchable* touchable;
 
       /// Default constructor.
-      Geant4TouchableHandler(const G4VTouchable* t) : touchable(t) {}
+    Geant4TouchableHandler(const G4VTouchable* t) : touchable(t) {}
       /// Default constructor. Takes the step's pre-touchable
       Geant4TouchableHandler(const G4Step* step);
       /// Default constructor. Takes the step's pre-touchable

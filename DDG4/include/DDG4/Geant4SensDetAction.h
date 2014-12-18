@@ -46,7 +46,7 @@ namespace DD4hep {
     class Geant4SensDetSequences;
 
     /// Interface class to access properties of the underlying Geant4 sensitive detector structure
-    /** 
+    /**
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -113,11 +113,11 @@ namespace DD4hep {
       typedef Geant4StepHandler StepHandler;
       typedef Geant4HitCollection HitCollection;
 
-      enum HitCreationFlags {  
-	SIMPLE_MODE = 0,
-	MEDIUM_MODE = 1<<0,
-	DETAILED_MODE = 1<<1
-      };	
+      enum HitCreationFlags {
+        SIMPLE_MODE = 0,
+        MEDIUM_MODE = 1<<0,
+        DETAILED_MODE = 1<<1
+      };
 
     private:
       /// Reference to G4 sensitive detector
@@ -156,7 +156,7 @@ namespace DD4hep {
 
       /// Property access to the hit creation mode
       int hitCreationMode() const  {
-	return m_hitCreationMode;
+        return m_hitCreationMode;
       }
 
       /// G4VSensitiveDetector internals: Access to the detector name
@@ -181,7 +181,7 @@ namespace DD4hep {
 
       /// Access the DD4hep sensitive detector
       SensitiveDetector sensitiveDetector() const  {
-	return m_sensitive;
+        return m_sensitive;
       }
 
       /// Access to the readout geometry of the sensitive detector
@@ -266,7 +266,7 @@ namespace DD4hep {
      */
     class Geant4SensDetActionSequence: public Geant4Action {
     public:
-      
+
       typedef Geometry::SensitiveDetector SensitiveDetector;
       typedef Geant4HitCollection* (*create_t)(const std::string&, const std::string&, Geant4Sensitive*);
       typedef std::pair<std::string, std::pair<Geant4Sensitive*,create_t> > HitCollection;
@@ -310,7 +310,7 @@ namespace DD4hep {
 
       /// Access to the sensitive type of the detector
       virtual const std::string& sensitiveType() const   {
-	return m_sensitiveType;
+        return m_sensitiveType;
       }
 
       /// Called at construction time of the sensitive detector to declare all hit collections
@@ -452,10 +452,10 @@ namespace DD4hep {
       UserData m_userData;
     public:
       /// Standard , initializing constructor
-      Geant4SensitiveAction(Geant4Context* context, 
-			    const std::string& name, 
-			    Geometry::DetElement det, 
-			    Geometry::LCDD& lcdd);
+      Geant4SensitiveAction(Geant4Context* context,
+                            const std::string& name,
+                            Geometry::DetElement det,
+                            Geometry::LCDD& lcdd);
       /// Default destructor
       virtual ~Geant4SensitiveAction();
       /// Initialization overload for specialization
@@ -464,9 +464,9 @@ namespace DD4hep {
       void finalize();
       /// Define collections created by this sensitivie action object
       virtual void defineCollections() {}
-      /// G4VSensitiveDetector interface: Method invoked at the begining of each event. 
+      /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
       virtual void begin(G4HCofThisEvent* hce);
-      /// G4VSensitiveDetector interface: Method invoked at the end of each event. 
+      /// G4VSensitiveDetector interface: Method invoked at the end of each event.
       virtual void end(G4HCofThisEvent* hce);
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the G4Step object.
       virtual bool process(G4Step* step,G4TouchableHistory* history);

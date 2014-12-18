@@ -83,7 +83,7 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
   XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
   string tag = node.tag();
-  if ( tag == "plugin" )  
+  if ( tag == "plugin" )
     Converter<plugin>(lcdd,param)(node);
   else if ( tag == "plugins" )
     Converter<plugins>(lcdd,param)(node);

@@ -52,7 +52,7 @@ using namespace DD4hep::Simulation;
 DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOFileReader)
 
 /// Initializing constructor
-DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam) 
+DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam)
 : LCIOEventReader(nam)
 {
   m_reader = ::lcio::LCFactory::getInstance()->createLCReader();

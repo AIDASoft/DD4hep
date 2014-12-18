@@ -17,7 +17,7 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /// Namespace for the AIDA detector description toolkit supporting XML utilities 
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
   namespace XML {
     class Handle_t;
   }
@@ -36,13 +36,13 @@ namespace DD4hep {
     /// Reference to optional user defined parameter
     user_param param;
     /// Initializing constructor of the functor
-    Converter(Geometry::LCDD& l)
-        : lcdd(l), param(0) {
-    }
+  Converter(Geometry::LCDD& l)
+  : lcdd(l), param(0) {
+  }
     /// Initializing constructor of the functor with initialization of the user parameter
-    Converter(Geometry::LCDD& l, user_param p)
-        : lcdd(l), param(p) {
-    }
+  Converter(Geometry::LCDD& l, user_param p)
+  : lcdd(l), param(p) {
+  }
     /// Callback operator to be specialized depending on the element type
     void operator()(XML::Handle_t xml) const;
     /// Typed access to the user parameter (unchecked)

@@ -28,7 +28,7 @@ namespace DD4hep {
   namespace Simulation {
 
     class Geant4ParticleMap;
-    
+
     /// Base class to output Geant4 event data to media
     /**
      *  \author  M.Frank
@@ -39,7 +39,7 @@ namespace DD4hep {
     protected:
       lcio::LCWriter*  m_file;
       int              m_runNo;
-      
+
       /// Data conversion interface for MC particles to LCIO format
       lcio::LCCollectionVec* saveParticles(Geant4ParticleMap* particles);
     public:
@@ -157,7 +157,7 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
 void Geant4Output2LCIO::begin(const G4Event* /* event */)  {
   lcio::LCEventImpl* e  = new lcio::LCEventImpl;
   //fg: here the event context takes ownership and
-  //    deletes the event in the end 
+  //    deletes the event in the end
   context()->event().addExtension<lcio::LCEventImpl>( e );
 }
 
@@ -186,10 +186,10 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       float ps_fa[3] = {float(p->psx/GeV),float(p->psy/GeV),float(p->psz/GeV)};
       q->setMomentum( ps_fa );
 
-      double vs_fa[3] = { p->vsx/mm, p->vsy/mm, p->vsz/mm } ;  
+      double vs_fa[3] = { p->vsx/mm, p->vsy/mm, p->vsz/mm } ;
       q->setVertex( vs_fa );
 
-      double ve_fa[3] = { p->vex/mm, p->vey/mm, p->vez/mm } ;  
+      double ve_fa[3] = { p->vex/mm, p->vey/mm, p->vez/mm } ;
       q->setEndpoint( ve_fa );
 
       q->setTime(p->time/ns);
@@ -203,7 +203,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) q->setGeneratorStatus(3);
 
       // Set simulation status
-      q->setSimulatorStatus( 0 ) ; 
+      q->setSimulatorStatus( 0 ) ;
       q->setCreatedInSimulation(         mask.isSet(G4PARTICLE_SIM_CREATED) );
       q->setBackscatter(                 mask.isSet(G4PARTICLE_SIM_BACKSCATTER) );
       q->setVertexIsNotEndpointOfParent( mask.isSet(G4PARTICLE_SIM_PARENT_RADIATED) );
@@ -214,8 +214,8 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       q->setOverlay(                     false );
 
       //fg: if simstatus !=0 we have to set the generator status to 0:
-      if( q->getSimulatorStatus() != 0 ) 
-	q->setGeneratorStatus( 0 )  ;
+      if( q->getSimulatorStatus() != 0 )
+        q->setGeneratorStatus( 0 )  ;
 
       q->setSpin(p->spin);
       q->setColorFlow(p->colorFlow);
@@ -233,25 +233,25 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       MCParticleImpl* q = p_lcio[i];
       const Geant4Particle::Particles& dau = p->daughters;
       for(Geant4Particle::Particles::const_iterator j=dau.begin(); j!=dau.end(); ++j)  {
-	int idau = *j;
-	if ( (k=p_ids.find(idau)) == p_ids.end() )  {  // Error!!!
-	  printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
-	  continue;
-	}
-	int iqdau = (*k).second;
-	MCParticleImpl* qdau = p_lcio[iqdau];
-	qdau->addParent(q);
+        int idau = *j;
+        if ( (k=p_ids.find(idau)) == p_ids.end() )  {  // Error!!!
+          printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find daughter with ID:%d",p->id,idau);
+          continue;
+        }
+        int iqdau = (*k).second;
+        MCParticleImpl* qdau = p_lcio[iqdau];
+        qdau->addParent(q);
       }
       const Geant4Particle::Particles& par = p->parents;
       for(Geant4Particle::Particles::const_iterator j=par.begin(); j!=par.end(); ++j)  {
-	int ipar = *j; // A parent ID iof -1 means NO parent, because a base of 0 is perfectly leagal!
-	if ( ipar>=0 && (k=p_ids.find(ipar)) == p_ids.end() )  {  // Error!!!
-	  printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
-	  continue;
-	}
-	int iqpar = (*k).second;
-	MCParticleImpl* qpar = p_lcio[iqpar];
-	q->addParent(qpar);
+        int ipar = *j; // A parent ID iof -1 means NO parent, because a base of 0 is perfectly leagal!
+        if ( ipar>=0 && (k=p_ids.find(ipar)) == p_ids.end() )  {  // Error!!!
+          printout(FATAL,"Geant4Conversion","+++ Particle %d: FAILED to find parent with ID:%d",p->id,ipar);
+          continue;
+        }
+        int iqpar = (*k).second;
+        MCParticleImpl* qpar = p_lcio[iqpar];
+        q->addParent(qpar);
       }
     }
   }

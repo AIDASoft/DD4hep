@@ -22,7 +22,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4InteractionVertexSmear::Geant4InteractionVertexSmear(Geant4Context* context, const std::string& name)
-  : Geant4GeneratorAction(context, name)
+: Geant4GeneratorAction(context, name)
 {
   InstanceCount::increment(this);
   declareProperty("Offset", m_offset);
@@ -49,8 +49,8 @@ void Geant4InteractionVertexSmear::operator()(G4Event*) {
     double dz = rndm.gauss(m_offset.z(),m_sigma.z());
     double dt = rndm.gauss(m_offset.t(),m_sigma.t());
     print("+++ Smearing primary vertex for interaction type %d (%d Vertices, %d particles) "
-	  "by (%+.2e mm, %+.2e mm, %+.2e mm, %+.2e ns)",
-	  m_mask,int(inter->vertices.size()),int(inter->particles.size()),dx,dy,dz,dt);
+          "by (%+.2e mm, %+.2e mm, %+.2e mm, %+.2e ns)",
+          m_mask,int(inter->vertices.size()),int(inter->particles.size()),dx,dy,dz,dt);
     smearInteraction(this,inter,dx,dy,dz,dt);
   }
   else  {

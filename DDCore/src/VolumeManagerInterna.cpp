@@ -18,7 +18,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(VolumeManagerObject);
 
 /// Default constructor
 VolumeManagerContext::VolumeManagerContext()
-    : identifier(0), mask(~0x0ULL) {
+  : identifier(0), mask(~0x0ULL) {
 }
 
 /// Default destructor
@@ -45,13 +45,13 @@ VolumeManagerObject::~VolumeManagerObject() {
 void VolumeManagerObject::update(unsigned long tags, DetElement& det, void* param)   {
   if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
     printout(DEBUG,"VolumeManager","+++ Conditions update %s param:%p",det.path().c_str(),param);
-  if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  
+  if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )
     printout(DEBUG,"VolumeManager","+++ Alignment update %s param:%p",det.path().c_str(),param);
 
   for(Volumes::iterator i=volumes.begin(); i != volumes.end(); ++i)  {
     Context* c = (*i).second;
     printout(DEBUG,"VolumeManager","+++ Alignment update %s",c->placement.name());
-    
+
   }
 }
 

@@ -29,7 +29,7 @@ namespace {
     const std::string& path;
     G4UImessenger* msg;
     InstallProperties(Geant4UIMessenger::Commands& c, const std::string& p, G4UImessenger* m)
-        : cmds(c), path(p), msg(m) {
+      : cmds(c), path(p), msg(m) {
     }
     void operator()(const pair<string, Property>& o) {
       string n = path + o.first;
@@ -42,7 +42,7 @@ namespace {
 }
 
 Geant4UIMessenger::Geant4UIMessenger(const string& name, const string& path)
-    : G4UImessenger(), m_directory(0), m_properties(0), m_name(name), m_path(path) {
+: G4UImessenger(), m_directory(0), m_properties(0), m_name(name), m_path(path) {
   m_directory = new G4UIdirectory(path.c_str());
   printout(INFO, "Geant4UIMessenger", "+++ %s> Install Geant4 control directory:%s", name.c_str(), path.c_str());
   m_directory->SetGuidance(("Control hierarchy for Geant4 action:" + name).c_str());
@@ -65,8 +65,8 @@ void Geant4UIMessenger::addCall(const std::string& name, const std::string& desc
 void Geant4UIMessenger::exportProperties(PropertyManager& mgr) {
   InstallProperties installer(m_propertyCmd, m_path, this);
   m_properties = &mgr;
-  addCall("show", "Show all properties of Geant4 component:" + m_name, 
-	  Callback(m_properties).make(&PropertyManager::dump));
+  addCall("show", "Show all properties of Geant4 component:" + m_name,
+          Callback(m_properties).make(&PropertyManager::dump));
   m_properties->for_each(installer);
 }
 
@@ -77,8 +77,8 @@ G4String Geant4UIMessenger::GetCurrentValue(G4UIcommand * c) {
     const string& n = (*i).second;
     return (*m_properties)[n].str();
   }
-  printout(INFO, "Geant4UIMessenger", 
-	   "+++ %s> Failed to access property value.", m_name.c_str());
+  printout(INFO, "Geant4UIMessenger",
+           "+++ %s> Failed to access property value.", m_name.c_str());
   return "";
 }
 
@@ -90,14 +90,14 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
     if (!v.empty()) {
       Property& p = (*m_properties)[n];
       p.str(v);
-      printout(INFO, "Geant4UIMessenger", 
-	       "+++ %s> Setting property value %s = %s  native:%s.", 
-	       m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
+      printout(INFO, "Geant4UIMessenger",
+               "+++ %s> Setting property value %s = %s  native:%s.",
+               m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
     }
     else {
       string value = (*m_properties)[n].str();
       printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
-	       m_name.c_str(), n.c_str(), value.c_str());
+               m_name.c_str(), n.c_str(), value.c_str());
     }
     return;
   }

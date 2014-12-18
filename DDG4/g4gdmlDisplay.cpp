@@ -55,9 +55,9 @@ int main(int argc, char** argv)   {
     if ( argv[i][0]=='-' )     {
       string nam = argv[i]+1;
       if ( strncmp(nam.c_str(),"gdml",4) == 0 )
-	gdml = get_arg(argc,argv,++i);
-      else if ( strncmp(nam.c_str(),"guisetup",3) == 0 ) 
-	setup = get_arg(argc,argv,++i);
+        gdml = get_arg(argc,argv,++i);
+      else if ( strncmp(nam.c_str(),"guisetup",3) == 0 )
+        setup = get_arg(argc,argv,++i);
     }
   }
   if ( gdml.empty() || setup.empty() )  {
@@ -78,7 +78,7 @@ int main(int argc, char** argv)   {
   //
   // Get the pointer to the User Interface manager
   G4UImanager* uiman = G4UImanager::GetUIpointer();
-  G4UIExecutive* ui = new G4UIExecutive(1,(char**)args);  
+  G4UIExecutive* ui = new G4UIExecutive(1,(char**)args);
   uiman->ApplyCommand("/control/execute "+setup);
   ui->SessionStart();
   // end ...

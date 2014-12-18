@@ -44,7 +44,7 @@ static LCDDBuildType build_type(const char* value)   {
     return BUILD_DISPLAY;
   throw runtime_error(string("Invalid build type value: ")+value);
 }
- 
+
 static void* create_lcdd_instance(const char* /* name */) {
   return &LCDD::getInstance();
 }
@@ -74,7 +74,7 @@ static long load_compact(LCDD& lcdd, int argc, char** argv) {
     if ( argc > 1 )  {
       type = build_type(argv[1]);
       printout(INFO,"CompactLoader","+++ Processing compact file: %s with flag %s",
-	       input.c_str(), argv[1]);
+               input.c_str(), argv[1]);
       lcdd.fromCompact(input,type);
       return 1;
     }
@@ -93,7 +93,7 @@ static long load_xml(LCDD& lcdd, int argc, char** argv) {
     if ( argc > 1 )  {
       type = build_type(argv[1]);
       printout(INFO,"XMLLoader","+++ Processing XML file: %s with flag %s",
-	       input.c_str(), argv[1]);
+               input.c_str(), argv[1]);
       lcdd.fromXML(input,type);
       return 1;
     }
@@ -116,7 +116,7 @@ static long load_volmgr(LCDD& lcdd, int, char**) {
   }
   catch (const exception& e) {
     throw runtime_error(string(e.what()) + "\n"
-			"DD4hep: while programming VolumeManager. Are your volIDs correct?");
+                        "DD4hep: while programming VolumeManager. Are your volIDs correct?");
   }
   catch (...) {
     throw runtime_error("UNKNOWN exception while programming VolumeManager. Are your volIDs correct?");
@@ -166,7 +166,7 @@ static long dump_volume_tree(LCDD& lcdd, int , char** ) {
     }
     else  {
       ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
-		 level+1,2*level+1,(void*)ideal,(void*)aligned);
+                 level+1,2*level+1,(void*)ideal,(void*)aligned);
     }
     printout(INFO,"+++",fmt,"",aligned->GetName());
     TGeoVolume* volume = ideal->GetVolume();

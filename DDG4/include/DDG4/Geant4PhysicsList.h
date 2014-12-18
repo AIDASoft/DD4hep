@@ -80,14 +80,14 @@ namespace DD4hep {
       class ParticleConstructor: public std::string {
       public:
         /// Default constructor
-        ParticleConstructor()
-            : std::string() {
+      ParticleConstructor()
+        : std::string() {
         }
-	/// Initalizing constructor
-        ParticleConstructor(const std::string& s)
-            : std::string(s) {
+        /// Initalizing constructor
+      ParticleConstructor(const std::string& s)
+        : std::string(s) {
         }
-	/// Default destructor
+        /// Default destructor
         ~ParticleConstructor() {
         }
       };
@@ -99,17 +99,17 @@ namespace DD4hep {
        *  \version 1.0
        *  \ingroup DD4HEP_SIMULATION
        */
-       class PhysicsConstructor: public std::string {
+      class PhysicsConstructor: public std::string {
       public:
         /// Default constructor
-        PhysicsConstructor()
-            : std::string() {
+      PhysicsConstructor()
+        : std::string() {
         }
-	/// Initalizing constructor
-        PhysicsConstructor(const std::string& s)
-            : std::string(s) {
+        /// Initalizing constructor
+      PhysicsConstructor(const std::string& s)
+        : std::string(s) {
         }
-	/// Default destructor
+        /// Default destructor
         ~PhysicsConstructor() {
         }
       };
@@ -161,7 +161,7 @@ namespace DD4hep {
       void addParticleConstructor(const std::string& part_name);
       /// Add particle process by name with arguments
       void addParticleProcess(const std::string& part_name, const std::string& proc_name,
-			      int ordAtRestDoIt,int ordAlongSteptDoIt,int ordPostStepDoIt);
+                              int ordAtRestDoIt,int ordAlongSteptDoIt,int ordPostStepDoIt);
       /// Add PhysicsConstructor by name
       void addPhysicsConstructor(const std::string& physics_name);
 
@@ -177,7 +177,7 @@ namespace DD4hep {
     };
 
     /// The implementation of the single Geant4 physics list action sequence
-    /** 
+    /**
      * Concrete implementation of the Geant4 physics list sequence.
      * A list to setup the physics content in a modular form
      *
@@ -225,12 +225,12 @@ namespace DD4hep {
       }
       /// Register process construction callback
       template <typename Q, typename T>
-      void constructProcess(Q* p, void (T::*f)(Geant4UserPhysics*)) {
+        void constructProcess(Q* p, void (T::*f)(Geant4UserPhysics*)) {
         m_process.add(p, f);
       }
       /// Register particle construction callback
       template <typename Q, typename T>
-      void constructParticle(Q* p, void (T::*f)(Geant4UserPhysics*)) {
+        void constructParticle(Q* p, void (T::*f)(Geant4UserPhysics*)) {
         m_particle.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

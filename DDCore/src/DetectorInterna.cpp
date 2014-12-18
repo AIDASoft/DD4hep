@@ -29,7 +29,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(SensitiveDetectorObject);
 
 /// Default constructor
 SensitiveDetectorObject::SensitiveDetectorObject()
-  : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()), 
+  : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()),
     verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
   printout(VERBOSE,"SensitiveDetectorObject","+++ Created new anonymous SensitiveDetectorObject()");
   InstanceCount::increment(this);
@@ -37,7 +37,7 @@ SensitiveDetectorObject::SensitiveDetectorObject()
 
 /// Initializing constructor
 SensitiveDetectorObject::SensitiveDetectorObject(const std::string& nam)
-  : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()), 
+  : NamedObject(), ObjectExtensions(typeid(SensitiveDetectorObject)), magic(magic_word()),
     verbose(0), combineHits(0), ecut(0.0), readout(), region(), limits(), hitsCollection() {
   SetName(nam.c_str());
   printout(VERBOSE,"SensitiveDetectorObject","+++ Created new SensitiveDetectorObject('%s')",nam.c_str());
@@ -55,10 +55,10 @@ SensitiveDetectorObject::~SensitiveDetectorObject() {
 
 /// Default constructor
 DetElementObject::DetElementObject()
-  : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()), 
+  : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(0), combineHits(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
-    alignment(), volume_alignments(), conditions(), 
+    alignment(), volume_alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
   printout(VERBOSE,"DetElementObject","+++ Created new anonymous DetElementObject()");
   InstanceCount::increment(this);
@@ -66,10 +66,10 @@ DetElementObject::DetElementObject()
 
 /// Initializing constructor
 DetElementObject::DetElementObject(const std::string& nam, int ident)
-  : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()), 
+  : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(ident), combineHits(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
-    alignment(), volume_alignments(), conditions(), 
+    alignment(), volume_alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
   SetName(nam.c_str());
   printout(VERBOSE,"DetElementObject","+++ Created new DetElementObject('%s', %d)",nam.c_str(),id);
@@ -118,8 +118,8 @@ DetElementObject* DetElementObject::clone(int new_id, int flag) const {
       child._data().parent = obj;
     }
     else {
-      throw runtime_error("DD4hep: DetElement::copy: Element " + string(child.name()) + 
-			  " is already present [Double-Insert]");
+      throw runtime_error("DD4hep: DetElement::copy: Element " + string(child.name()) +
+                          " is already present [Double-Insert]");
     }
   }
   return obj;
@@ -166,8 +166,8 @@ const TGeoHMatrix& DetElementObject::referenceTransformation() {
       DetectorTools::placementTrafo(nodes,false,referenceTrafo);
     }
     else  {
-      throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) + 
-			  " to reference element " + string(ref.name()) + " present!");
+      throw runtime_error("DD4hep: referenceTransformation: No path from " + string(self.name()) +
+                          " to reference element " + string(ref.name()) + " present!");
     }
   }
   return *referenceTrafo;
@@ -190,9 +190,9 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   }
   //print = (idealPlace.ptr() != node.ptr());
   printout((idealPlace.ptr() != node.ptr()) ? INFO : DEBUG,
-	   "DetElement","+++ Invalidate chache of %s -> %s Placement:%p --> %p %s", 
-	   det.path().c_str(), DetectorTools::placementPath(par_path).c_str(),
-	   placement.ptr(), node.ptr(), (placement.ptr() == node.ptr()) ? "" : "[UPDATE]");
+           "DetElement","+++ Invalidate chache of %s -> %s Placement:%p --> %p %s",
+           det.path().c_str(), DetectorTools::placementPath(par_path).c_str(),
+           placement.ptr(), node.ptr(), (placement.ptr() == node.ptr()) ? "" : "[UPDATE]");
 
   placement = node;
 
@@ -244,7 +244,7 @@ void DetElementObject::update(unsigned int tags, void* param)   {
   if ( (tags&DetElement::PLACEMENT_CHANGED)==DetElement::PLACEMENT_CHANGED &&
        (tags&DetElement::PLACEMENT_HIGHEST)==DetElement::PLACEMENT_HIGHEST )  {
     printout(INFO,"DetElement","+++ Need to update chaches and child caches of %s",
-	     det.path().c_str());
+             det.path().c_str());
     DetElement par = det.parent();
     TGeoHMatrix* parent_world_trafo = 0;
     if ( par.isValid() && (par->flag&HAVE_PARENT_TRAFO) )  {

@@ -23,7 +23,7 @@ namespace DD4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
- 
+
     /// Class to output Geant4 event data to ROOT files
     /**
      *  \author  M.Frank

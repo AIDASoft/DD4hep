@@ -18,7 +18,7 @@ using namespace std;
 
 /// Initializing Constructor
 Geant4Mapping::Geant4Mapping(LCDD& lcdd)
-    : m_lcdd(lcdd), m_dataPtr(0) {
+: m_lcdd(lcdd), m_dataPtr(0) {
 }
 
 /// Standard destructor

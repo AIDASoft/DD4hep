@@ -68,18 +68,18 @@ namespace DD4hep {
      */
     template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<const Geant4Context*,G4VHitsCollection*>,
-			 Geant4HitCollection>::operator()(const arg_t& args)  const {
+                         pair<const Geant4Context*,G4VHitsCollection*>,
+                         Geant4HitCollection>::operator()(const arg_t& args)  const {
       G4VHitsCollection* c = args.second;
       Geant4HitCollection* coll = dynamic_cast<Geant4HitCollection*>(c);
       if ( coll )  {
-	typedef pair<arg_t::first_type,Geant4HitCollection*> _A;
-	typedef Geant4Conversion<output_t,_A> _C;
-	const _C& cnv= _C::converter(coll->type().type);
-	return cnv(_A(args.first,coll));
+        typedef pair<arg_t::first_type,Geant4HitCollection*> _A;
+        typedef Geant4Conversion<output_t,_A> _C;
+        const _C& cnv= _C::converter(coll->type().type);
+        return cnv(_A(args.first,coll));
       }
       throw unrelated_type_error(typeid(Geant4HitCollection),typeid(*c),
-				 "Cannot save the collection entries of:"+c->GetName());
+                                 "Cannot save the collection entries of:"+c->GetName());
     }
 
     /// Data conversion interface creating lcio::SimTrackerHitImpl from Geant4Tracker::Hit structures
@@ -92,10 +92,10 @@ namespace DD4hep {
      *  @author M.Frank
      *  @version 1.0
      */
-    template <> lcio::LCCollectionVec* 
+    template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<const Geant4Context*,Geant4HitCollection*>,
-			 Geant4Tracker::Hit>::operator()(const arg_t& args)  const   {
+                         pair<const Geant4Context*,Geant4HitCollection*>,
+                         Geant4Tracker::Hit>::operator()(const arg_t& args)  const   {
 
       Geant4HitCollection*   coll    = args.second;
       Geant4Sensitive*       sd      = coll->sensitive();
@@ -109,27 +109,27 @@ namespace DD4hep {
       int hit_creation_mode = sd->hitCreationMode();
 
       if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	lc_coll->setFlag(UTIL::make_bitset32(LCIO::THBIT_MOMENTUM,LCIO::THBIT_ID1));
+        lc_coll->setFlag(UTIL::make_bitset32(LCIO::THBIT_MOMENTUM,LCIO::THBIT_ID1));
       else
-	lc_coll->setFlag(LCIO::THBIT_ID1);
+        lc_coll->setFlag(LCIO::THBIT_ID1);
 
       lc_coll->reserve(nhits);
       for(size_t i=0; i<nhits; ++i)   {
-	const Geant4Tracker::Hit* hit = coll->hit(i);
-	const Geant4Tracker::Hit::Contribution& t = hit->truth;
-	int trackID = pm->particleID(t.trackID);
-	EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
-	double pos[3] = {hit->position.x()/mm, hit->position.y()/mm, hit->position.z()/mm};
-	lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;
-	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
-	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
-	lc_hit->setEDep(hit->energyDeposit/GeV);
-	lc_hit->setPathLength(hit->length/mm);
-	lc_hit->setTime(hit->truth.time/ns);
-	lc_hit->setMCParticle(lc_mcp);
-	lc_hit->setPosition(pos);
-	lc_hit->setMomentum(hit->momentum.x()/GeV,hit->momentum.y()/GeV,hit->momentum.z()/GeV);
-	lc_coll->addElement(lc_hit);
+        const Geant4Tracker::Hit* hit = coll->hit(i);
+        const Geant4Tracker::Hit::Contribution& t = hit->truth;
+        int trackID = pm->particleID(t.trackID);
+        EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
+        double pos[3] = {hit->position.x()/mm, hit->position.y()/mm, hit->position.z()/mm};
+        lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;
+        lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
+        lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
+        lc_hit->setEDep(hit->energyDeposit/GeV);
+        lc_hit->setPathLength(hit->length/mm);
+        lc_hit->setTime(hit->truth.time/ns);
+        lc_hit->setMCParticle(lc_mcp);
+        lc_hit->setPosition(pos);
+        lc_hit->setMomentum(hit->momentum.x()/GeV,hit->momentum.y()/GeV,hit->momentum.z()/GeV);
+        lc_coll->addElement(lc_hit);
       }
       return lc_coll;
     }
@@ -144,10 +144,10 @@ namespace DD4hep {
      *  @author M.Frank
      *  @version 1.0
      */
-    template <> lcio::LCCollectionVec* 
+    template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<const Geant4Context*,Geant4HitCollection*>,
-			 Geant4Calorimeter::Hit>::operator()(const arg_t& args)  const  {
+                         pair<const Geant4Context*,Geant4HitCollection*>,
+                         Geant4Calorimeter::Hit>::operator()(const arg_t& args)  const  {
       typedef Geant4HitData::Contributions Contributions;
       Geant4HitCollection*   coll     = args.second;
       Geant4Sensitive*       sd       = coll->sensitive();
@@ -161,49 +161,49 @@ namespace DD4hep {
       int hit_creation_mode = sd->hitCreationMode();
 
       if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
+        lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
       else
-	lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
+        lc_coll->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
 
       lc_coll->reserve(nhits);
       if ( sd->hasProperty("HitCreationMode") )  {
-	hit_creation_mode = sd->property("HitCreationMode").value<int>();
+        hit_creation_mode = sd->property("HitCreationMode").value<int>();
       }
       for(size_t i=0; i<nhits; ++i)   {
-	const Geant4Calorimeter::Hit* hit = coll->hit(i);
-	float pos[3] = {float(hit->position.x()/mm), float(hit->position.y()/mm), float(hit->position.z()/mm)};
-	lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
-	lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF); 
-	lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ???? 
-	lc_hit->setPosition(pos);
-	///No! Done when adding particle contrbutions: lc_hit->setEnergy( hit->energyDeposit );
-	lc_coll->addElement(lc_hit);
-	/// Now add the individual track contributions to the LCIO hit structure
-	for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {
-	  const Geant4HitData::Contribution& c = *j;
-	  int trackID = pm->particleID(c.trackID);
-	  float pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
-	  EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
-	  if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, lc_mcp->getPDG(), pos);
-	  else
-	    lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns);
-	}
+        const Geant4Calorimeter::Hit* hit = coll->hit(i);
+        float pos[3] = {float(hit->position.x()/mm), float(hit->position.y()/mm), float(hit->position.z()/mm)};
+        lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
+        lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
+        lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ????
+        lc_hit->setPosition(pos);
+        ///No! Done when adding particle contrbutions: lc_hit->setEnergy( hit->energyDeposit );
+        lc_coll->addElement(lc_hit);
+        /// Now add the individual track contributions to the LCIO hit structure
+        for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {
+          const Geant4HitData::Contribution& c = *j;
+          int trackID = pm->particleID(c.trackID);
+          float pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
+          EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
+          if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, lc_mcp->getPDG(), pos);
+          else
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns);
+        }
       }
       return lc_coll;
     }
 
-    template <typename T> 
+    template <typename T>
     lcio::LCCollectionVec* moveEntries(Geant4HitCollection* coll,
-				       lcio::LCCollectionVec* lc_coll)
+                                       lcio::LCCollectionVec* lc_coll)
     {
       size_t nhits = coll->GetSize();
       lc_coll->reserve(nhits);
       for(size_t i=0; i<nhits; ++i)   {
-	Geant4HitWrapper& wrap = coll->hit(i);
+        Geant4HitWrapper& wrap = coll->hit(i);
         T* lc_hit = wrap;
-	wrap.release();  // Now we have ownership!
-	lc_coll->addElement(lc_hit);
+        wrap.release();  // Now we have ownership!
+        lc_coll->addElement(lc_hit);
       }
       coll->clear(); // Since the collection now only contains NULL pointers, better clear it!
       return lc_coll;
@@ -222,10 +222,10 @@ namespace DD4hep {
      *  @author M.Frank
      *  @version 1.0
      */
-    template <> lcio::LCCollectionVec* 
+    template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<const Geant4Context*,Geant4HitCollection*>,
-			 lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const
+                         pair<const Geant4Context*,Geant4HitCollection*>,
+                         lcio::SimTrackerHitImpl>::operator()(const arg_t& args)  const
     {
       Geant4Sensitive* sd  = args.second->sensitive();
       string           dsc = encoding(sd->sensitiveDetector());
@@ -233,9 +233,9 @@ namespace DD4hep {
       int hit_creation_mode = sd->hitCreationMode();
 
       if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
+        lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
       else
-	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
+        lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
       UTIL::CellIDEncoder<SimTrackerHit> decoder(dsc,lc);
       return moveEntries<lcio::SimTrackerHitImpl>(args.second,lc);
     }
@@ -253,10 +253,10 @@ namespace DD4hep {
      *  @author M.Frank
      *  @version 1.0
      */
-    template <> lcio::LCCollectionVec* 
+    template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<const Geant4Context*,Geant4HitCollection*>,
-			 lcio::SimCalorimeterHitImpl>::operator()(const arg_t& args)  const 
+                         pair<const Geant4Context*,Geant4HitCollection*>,
+                         lcio::SimCalorimeterHitImpl>::operator()(const arg_t& args)  const
     {
       Geant4Sensitive* sd  = args.second->sensitive();
       string           dsc = encoding(args.second->sensitive()->sensitiveDetector());
@@ -264,9 +264,9 @@ namespace DD4hep {
       int hit_creation_mode = sd->hitCreationMode();
 
       if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
+        lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_STEP,LCIO::CHBIT_ID1));
       else
-	lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
+        lc->setFlag(UTIL::make_bitset32(LCIO::CHBIT_LONG,LCIO::CHBIT_ID1));
       return moveEntries<tag_t>(args.second,lc);
     }
 
@@ -276,10 +276,10 @@ namespace DD4hep {
      *  @author M.Frank
      *  @version 1.0
      */
-    template <> lcio::LCCollectionVec* 
+    template <> lcio::LCCollectionVec*
     Geant4DataConversion<lcio::LCCollectionVec,
-			 pair<const Geant4Context*,Geant4HitCollection*>,
-			 lcio::ClusterImpl>::operator()(const arg_t& args)  const 
+                         pair<const Geant4Context*,Geant4HitCollection*>,
+                         lcio::ClusterImpl>::operator()(const arg_t& args)  const
     {
       output_t* lc = new lcio::LCCollectionVec(lcio::LCIO::CLUSTER);
       return moveEntries<tag_t>(args.second,lc);

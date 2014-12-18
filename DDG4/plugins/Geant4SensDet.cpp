@@ -43,13 +43,13 @@ namespace DD4hep {
       /// Default destructor
       virtual ~RefCountedSequence()        { _release();     }
       void _aquire(T* s)  {
-	InstanceCount::increment(this);
-	m_sequence = s;
-	m_sequence->addRef();
+        InstanceCount::increment(this);
+        m_sequence = s;
+        m_sequence->addRef();
       }
       void _release()  {
-	releasePtr(m_sequence);
-	InstanceCount::decrement(this);
+        releasePtr(m_sequence);
+        InstanceCount::decrement(this);
       }
     };
 
@@ -59,10 +59,10 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4SensDet : virtual public G4VSensitiveDetector, 
-			  virtual public G4VSDFilter,
-			  virtual public Geant4ActionSD,
-			  virtual public RefCountedSequence<Geant4SensDetActionSequence>
+    class Geant4SensDet : virtual public G4VSensitiveDetector,
+                          virtual public G4VSDFilter,
+                          virtual public Geant4ActionSD,
+                          virtual public RefCountedSequence<Geant4SensDetActionSequence>
     {
     protected:
       /// Access to the geant4 sensitive detector handle
@@ -70,16 +70,16 @@ namespace DD4hep {
     public:
       /// Constructor. The detector element is identified by the name
       Geant4SensDet(const std::string& nam, Geometry::LCDD& lcdd)
-	: G4VSensitiveDetector(nam), G4VSDFilter(nam), 
-	  Geant4Action(0,nam), Geant4ActionSD(nam), Base()
+        : G4VSensitiveDetector(nam), G4VSDFilter(nam),
+          Geant4Action(0,nam), Geant4ActionSD(nam), Base()
       {
-	Geant4Kernel& kernel = Geant4Kernel::access(lcdd);
-	m_sensitive = lcdd.sensitiveDetector(nam);
-	m_context = Geant4Context(&kernel);
-	m_outputLevel = kernel.getOutputLevel(nam);
-	_aquire(kernel.sensitiveAction(nam));
-	m_sequence->defineCollections(this);
-	this->G4VSensitiveDetector::SetFilter(this);
+        Geant4Kernel& kernel = Geant4Kernel::access(lcdd);
+        m_sensitive = lcdd.sensitiveDetector(nam);
+        m_context = Geant4Context(&kernel);
+        m_outputLevel = kernel.getOutputLevel(nam);
+        _aquire(kernel.sensitiveAction(nam));
+        m_sequence->defineCollections(this);
+        this->G4VSensitiveDetector::SetFilter(this);
       }
 
       /// Destructor
@@ -96,7 +96,7 @@ namespace DD4hep {
       /// Is the detector active?
       virtual bool isActive() const
       {  return this->G4VSensitiveDetector::isActive();                 }
-      /// This is a utility method which returns the hits collection ID 
+      /// This is a utility method which returns the hits collection ID
       virtual G4int GetCollectionID(G4int i)
       {  return this->G4VSensitiveDetector::GetCollectionID(i);         }
       /// Access to the readout geometry of the sensitive detector
@@ -111,25 +111,25 @@ namespace DD4hep {
       /// Callback if the sequence should be accepted or filtered off
       virtual G4bool Accept(const G4Step* step) const
       {  return m_sequence->accept(step);                               }
-      /// Method invoked at the begining of each event. 
+      /// Method invoked at the begining of each event.
       virtual void Initialize(G4HCofThisEvent* hce)      {
-	m_context.setRun(&ddg4_globalContext()->run());
-	m_context.setEvent(&ddg4_globalContext()->event());
-	(Geant4Action::ContextUpdate(&m_context))(m_sequence);
-	m_sequence->begin(hce);
+        m_context.setRun(&ddg4_globalContext()->run());
+        m_context.setEvent(&ddg4_globalContext()->event());
+        (Geant4Action::ContextUpdate(&m_context))(m_sequence);
+        m_sequence->begin(hce);
 #if 0
-	const G4Event& evt = context()->event();
-	error(name(), "%s> calling Initialize(event_id=%d Context: run=%p (%d) evt=%p (%d))", 
-	      GetName().c_str(), evt.GetEventID(), 
-	      &context()->run(), context()->run().run().GetRunID(),
-	      &context()->event(), context()->event().event().GetEventID());
+        const G4Event& evt = context()->event();
+        error(name(), "%s> calling Initialize(event_id=%d Context: run=%p (%d) evt=%p (%d))",
+              GetName().c_str(), evt.GetEventID(),
+              &context()->run(), context()->run().run().GetRunID(),
+              &context()->event(), context()->event().event().GetEventID());
 #endif
       }
-      /// Method invoked at the end of each event. 
+      /// Method invoked at the end of each event.
       virtual void EndOfEvent(G4HCofThisEvent* hce)      {
-	m_sequence->end(hce);
-	m_context.setEvent(0);
-	(Geant4Action::ContextUpdate(&m_context))(m_sequence);
+        m_sequence->end(hce);
+        m_context.setEvent(0);
+        (Geant4Action::ContextUpdate(&m_context))(m_sequence);
       }
       /// Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* hist)
@@ -139,11 +139,11 @@ namespace DD4hep {
       {  m_sequence->clear();                                           }
       /// Initialize the usage of a hit collection. Returns the collection identifier
       virtual size_t defineCollection(const std::string& coll)  {
-	if ( coll.empty() ) {
-	  except("Geant4Sensitive: No collection defined for %s [Invalid name]",c_name());
-	}
-	collectionName.push_back(coll);
-	return collectionName.size()-1;
+        if ( coll.empty() ) {
+          except("Geant4Sensitive: No collection defined for %s [Invalid name]",c_name());
+        }
+        collectionName.push_back(coll);
+        return collectionName.size()-1;
       }
 
     };

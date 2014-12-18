@@ -194,8 +194,8 @@ namespace DD4hep {
         pre.truth.deposit = 0.0;
         current = pre.truth.trackID;
         sensitive->mark(step->GetTrack());
-	mean_pos.SetXYZ(0,0,0);
-	mean_time = 0;
+        mean_pos.SetXYZ(0,0,0);
+        mean_time = 0;
         post = pre;
         combined = 0;
         cell = 0;
@@ -205,10 +205,10 @@ namespace DD4hep {
       void update(G4Step* step) {
         post.storePoint(step,step->GetPostStepPoint());
         pre.truth.deposit += post.truth.deposit;
-	mean_pos.SetX(mean_pos.x()+post.position.x()*post.truth.deposit);
-	mean_pos.SetY(mean_pos.y()+post.position.y()*post.truth.deposit);
-	mean_pos.SetZ(mean_pos.z()+post.position.z()*post.truth.deposit);
-	mean_time += post.truth.time*post.truth.deposit;
+        mean_pos.SetX(mean_pos.x()+post.position.x()*post.truth.deposit);
+        mean_pos.SetY(mean_pos.y()+post.position.y()*post.truth.deposit);
+        mean_pos.SetZ(mean_pos.z()+post.position.z()*post.truth.deposit);
+        mean_time += post.truth.time*post.truth.deposit;
         if ( 0 == cell )   {
           cell = sensitive->cellID(step);
           if ( 0 == cell )  {
@@ -221,8 +221,8 @@ namespace DD4hep {
 
       /// Clear collected information and restart for new hit
       void clear()  {
-	mean_pos.SetXYZ(0,0,0);
-	mean_time = 0;
+        mean_pos.SetXYZ(0,0,0);
+        mean_time = 0;
         post.clear();
         pre.clear();
         current = -1;
@@ -300,7 +300,7 @@ namespace DD4hep {
       /// Post-event action callback
       void endEvent(const G4Event* /* event */)   {
         // We need to add the possibly last added hit to the collection here.
-        // otherwise the last hit would be assigned to the next event and the 
+        // otherwise the last hit would be assigned to the next event and the
         // MC truth would be screwed.
         //
         // Alternatively the 'update' method would become rather CPU consuming,
@@ -330,7 +330,7 @@ namespace DD4hep {
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> G4bool 
+    template <> G4bool
     Geant4SensitiveAction<TrackerCombine>::process(G4Step* step, G4TouchableHistory* history) {
       return m_userData.process(step, history);
     }

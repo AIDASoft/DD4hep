@@ -40,7 +40,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class SimpleRun {
-      public:
+    public:
       /// Run identifiers
       int runID;
       /// Number of events in this run
@@ -60,7 +60,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class SimpleEvent {
-      public:
+    public:
       typedef std::vector<long> Seeds;
       /// Run identifiers
       int runID;
@@ -85,14 +85,14 @@ namespace DD4hep {
       /// Default constructor
       DataExtension() {}
       /// Default destructor
-      virtual ~DataExtension();      
+      virtual ~DataExtension();
     };
 
     /// Base class for geant4 hit structures used by the default DDG4 sensitive detector implementations
     /*
      *  Base class for geant4 hit structures created by the
      *  example sensitive detectors. This is a generic class
-     *  only dealing with the cellID. Users may add an extension 
+     *  only dealing with the cellID. Users may add an extension
      *  object, which normally should not be necessary.
      *
      *  \author  M.Frank
@@ -100,11 +100,11 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4HitData {
-      public:
+    public:
       /// cellID
       long long int cellID;
       /// User data extension if required
-      std::auto_ptr<DataExtension> extension;  
+      std::auto_ptr<DataExtension> extension;
 
       /// Utility class describing the monte carlo contribution of a given particle to a hit.
       /**
@@ -122,50 +122,50 @@ namespace DD4hep {
         double deposit;
         /// Timestamp when this energy was deposited
         double time;
-	/// Proper position of the hit contribution
-	float  x,y,z;
+        /// Proper position of the hit contribution
+        float  x,y,z;
 
         /// Default constructor
-        MonteCarloContrib()
-	: trackID(-1), pdgID(-1), deposit(0.0), time(0.0), x(0), y(0), z(0) {
+      MonteCarloContrib()
+        : trackID(-1), pdgID(-1), deposit(0.0), time(0.0), x(0), y(0), z(0) {
         }
         /// Initializing constructor
-        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
-	: trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), x(0), y(0), z(0) {
+      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
+        : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), x(0), y(0), z(0) {
         }
         /// Initializing constructor
-        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, float* pos)
-	: trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
-	  x(pos[0]), y(pos[1]), z(pos[2]) 
-	{
-        }
+      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, float* pos)
+        : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+          x(pos[0]), y(pos[1]), z(pos[2])
+          {
+          }
         /// Initializing constructor
-        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double* pos)
-	: trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
-	  x(pos[0]), y(pos[1]), z(pos[2]) 
-	{
-        }
+      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double* pos)
+        : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+          x(pos[0]), y(pos[1]), z(pos[2])
+          {
+          }
         /// Copy constructor
-        MonteCarloContrib(const MonteCarloContrib& c)
-	: trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time),
-	  x(c.x), y(c.y), z(c.z) {
+      MonteCarloContrib(const MonteCarloContrib& c)
+        : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time),
+          x(c.x), y(c.y), z(c.z) {
         }
-	/// Assignment operator
-	MonteCarloContrib& operator=(const MonteCarloContrib& c)  {
-	  if ( this != &c )  {
-	    trackID = c.trackID;
-	    pdgID   = c.pdgID;
-	    deposit = c.deposit;
-	    time    = c.time;
-	    x       = c.x;
-	    y       = c.y;
-	    z       = c.z;
-	  }
-	  return *this;
-	}
+        /// Assignment operator
+        MonteCarloContrib& operator=(const MonteCarloContrib& c)  {
+          if ( this != &c )  {
+            trackID = c.trackID;
+            pdgID   = c.pdgID;
+            deposit = c.deposit;
+            time    = c.time;
+            x       = c.x;
+            y       = c.y;
+            z       = c.z;
+          }
+          return *this;
+        }
         /// Clear data content
         void clear() {
-	  x = y = z = 0.0;
+          x = y = z = 0.0;
           time = deposit = 0.0;
           pdgID = trackID = -1;
         }

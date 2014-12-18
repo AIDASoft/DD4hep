@@ -95,7 +95,7 @@ static Ref_t create_SolenoidField(lcdd_t& lcdd, xml_h e) {
 
   if (!has_inner_radius && !has_outer_radius) {
     throw_print("Compact2Objects[ERROR]: For a solenoidal field at least one of the "
-        " xml attributes inner_radius of outer_radius MUST be set.");
+                " xml attributes inner_radius of outer_radius MUST be set.");
   }
   CartesianField obj;
   SolenoidField* ptr = new SolenoidField();
@@ -340,9 +340,9 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       std::string nam = composites.attr<string>(_U(ref));
       double fraction = composites.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
-	fraction *= comp_mat->GetA();
+        fraction *= comp_mat->GetA();
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
-	fraction *= comp_elt->A();
+        fraction *= comp_elt->A();
       else
         throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
       composite_fractions_total += fraction;
@@ -383,7 +383,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
       printout(WARNING, "Compact", "++ Material: %s with NO density. "
-          "Set density to %7.3 g/cm**3", matname, dens);
+               "Set density to %7.3 g/cm**3", matname, dens);
       mix->SetDensity(dens);
     }
   }
@@ -423,7 +423,7 @@ template <> void Converter<Atom>::operator()(xml_h e) const {
   if (!element) {
     xml_ref_t atom(elem.child(_U(atom)));
     tab->AddElement(elem.attr<string>(_U(name)).c_str(), elem.attr<string>(_U(formula)).c_str(), elem.attr<int>(_U(Z)),
-        atom.attr<int>(_U(value)));
+                    atom.attr<int>(_U(value)));
     element = tab->FindElement(eltname.c_str());
     if (!element) {
       throw_print("Failed to properly insert the Element:" + eltname + " into the element table!");
@@ -558,20 +558,20 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
       Segmentation::Parameters::iterator it;
       for (it = parameters.begin(); it != parameters.end(); ++it) {
         Segmentation::Parameter p = *it;
-    	if (seg.hasAttr(Unicode(p->name()))) {
-    	  string pType = p->type();
-    	  if (pType.compare("int") == 0) {
-	    p->setValue(_toString(seg.attr<int>(Unicode(p->name()))));
-    	  } else if (pType.compare("float") == 0) {
-	    p->setValue(_toString(seg.attr<float>(Unicode(p->name()))));
-    	  } else if (pType.compare("double") == 0) {
-	    p->setValue(_toString(seg.attr<double>(Unicode(p->name()))));
-      	  } else {
-	    p->setValue(seg.attr<string>(Unicode(p->name())));
-      	  }
+        if (seg.hasAttr(Unicode(p->name()))) {
+          string pType = p->type();
+          if (pType.compare("int") == 0) {
+            p->setValue(_toString(seg.attr<int>(Unicode(p->name()))));
+          } else if (pType.compare("float") == 0) {
+            p->setValue(_toString(seg.attr<float>(Unicode(p->name()))));
+          } else if (pType.compare("double") == 0) {
+            p->setValue(_toString(seg.attr<double>(Unicode(p->name()))));
+          } else {
+            p->setValue(seg.attr<string>(Unicode(p->name())));
+          }
         } else if (not p->isOptional()) {
-    	  throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
-    	}
+          throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
+        }
       }
     }
     ro.setSegmentation(segment);
@@ -736,7 +736,7 @@ template <> void Converter<SensitiveDetector>::operator()(xml_h element) const {
       sd.setEnergyCutoff(element.attr<double>(ecut));
     }
     printout(DEBUG, "Compact", "SensitiveDetector-update: %-18s %-24s Hits:%-24s Cutoff:%f7.3f", sd.name(),
-        (" [" + sd.type() + "]").c_str(), sd.hitsCollection().c_str(), sd.energyCutoff());
+             (" [" + sd.type() + "]").c_str(), sd.hitsCollection().c_str(), sd.energyCutoff());
     xml_attr_t sequence = element.attr_nothrow(_U(sequence));
     if (sequence) {
     }
@@ -795,8 +795,8 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       setChildTitles(make_pair(name, det));
     }
     printout(det.isValid() ? INFO : ERROR, "Compact", "%s subdetector:%s of type %s %s",
-        (det.isValid() ? "++ Converted" : "FAILED    "), name.c_str(), type.c_str(),
-        (sd.isValid() ? ("[" + sd.type() + "]").c_str() : ""));
+             (det.isValid() ? "++ Converted" : "FAILED    "), name.c_str(), type.c_str(),
+             (sd.isValid() ? ("[" + sd.type() + "]").c_str() : ""));
 
     if (!det.isValid()) {
       PluginDebug dbg;
@@ -842,7 +842,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
   XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
   string tag = node.tag();
-  if ( tag == "lccdd" )  
+  if ( tag == "lccdd" )
     Converter < Compact > (this->lcdd)(node);
   else if ( tag == "define" )
     xml_coll_t(node, _U(constant)).for_each(Converter < Constant > (this->lcdd));
@@ -854,7 +854,7 @@ template <> void Converter<DetElementInclude>::operator()(xml_h element) const {
     xml_coll_t(node, _U(limitset)).for_each(Converter < LimitSet > (this->lcdd));
   else if ( tag == "display" )
     xml_coll_t(node,_U(vis)).for_each(Converter < VisAttr > (this->lcdd));
-  else if ( tag == "detector" )  
+  else if ( tag == "detector" )
     Converter < DetElement > (this->lcdd)(node);
   else if ( tag == "detectors" )
     xml_coll_t(node,_U(detector)).for_each(Converter < DetElement > (this->lcdd));

@@ -27,7 +27,7 @@ namespace DD4hep {
   namespace Geometry {
 
     /// Helper namespace used to answer detector element specific questons
-    /** 
+    /**
      * @author  M.Frank
      * @version 1.0
      */
@@ -64,7 +64,7 @@ bool DetectorTools::isParentElement(DetElement parent, DetElement child)   {
       if ( par.ptr() == parent.ptr() ) return true;
     }
   }
-  throw runtime_error("Search for parent detector element with invalid handles not allowed."); 
+  throw runtime_error("Search for parent detector element with invalid handles not allowed.");
 }
 
 /// Find Child of PlacedVolume and assemble on the fly the path of PlacedVolumes
@@ -74,7 +74,7 @@ bool DetectorTools::findChild(PlacedVolume parent, PlacedVolume child, Placement
     if ( parent.ptr() == child.ptr() ) {
       path.push_back(child);
       return true;
-    }    
+    }
     TIter next(parent->GetVolume()->GetNodes());
     // Now check next layer children
     for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
@@ -89,7 +89,7 @@ bool DetectorTools::findChild(PlacedVolume parent, PlacedVolume child, Placement
       PlacementPath sub_path;
       bool res = findChild(daughter, child, sub_path);
       if (res) {
-	path.insert(path.end(), sub_path.begin(), sub_path.end());
+        path.insert(path.end(), sub_path.begin(), sub_path.end());
         path.push_back(daughter);
         return res;
       }
@@ -105,7 +105,7 @@ static bool findChildByName(PlacedVolume parent, PlacedVolume child, DetectorToo
     if ( 0 == ::strcmp(parent.ptr()->GetName(),child.ptr()->GetName()) ) {
       path.push_back(child);
       return true;
-    }    
+    }
     TIter next(parent->GetVolume()->GetNodes());
     // Now check next layer children
     for (TGeoNode *daughter = (TGeoNode*) next(); daughter; daughter = (TGeoNode*) next()) {
@@ -120,7 +120,7 @@ static bool findChildByName(PlacedVolume parent, PlacedVolume child, DetectorToo
       DetectorTools::PlacementPath sub_path;
       bool res = findChildByName(daughter, child, sub_path);
       if (res) {
-	path.insert(path.end(), sub_path.begin(), sub_path.end());
+        path.insert(path.end(), sub_path.begin(), sub_path.end());
         path.push_back(daughter);
         return res;
       }
@@ -147,8 +147,8 @@ void DetectorTools::elementPath(DetElement parent, DetElement child, ElementPath
     for(DetElement par = child; par.isValid(); par = par.parent())  {
       elements.push_back(par);
       if ( par.ptr() == parent.ptr() )  {
-	detectors = elements;
-	return;
+        detectors = elements;
+        return;
       }
     }
     throw runtime_error(string("The detector element ")+parent.name()+string(" is no parent of ")+child.name());
@@ -182,8 +182,8 @@ void DetectorTools::elementPath(DetElement element, PlacementPath& det_nodes) {
 std::string DetectorTools::elementPath(const PlacementPath& nodes, bool reverse)   {
   string s = "";
   if ( reverse )  {
-  for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-    s += "/" + string((*i).name());
+    for(PlacementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+      s += "/" + string((*i).name());
   }
   else  {
     for(PlacementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
@@ -196,8 +196,8 @@ std::string DetectorTools::elementPath(const PlacementPath& nodes, bool reverse)
 std::string DetectorTools::elementPath(const ElementPath& nodes, bool reverse)  {
   string s = "";
   if ( reverse )  {
-  for(ElementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
-    s += "/" + string((*i)->GetName());
+    for(ElementPath::const_reverse_iterator i=nodes.rbegin();i!=nodes.rend();++i)
+      s += "/" + string((*i)->GetName());
   }
   else  {
     for(ElementPath::const_iterator i=nodes.begin();i!=nodes.end();++i)
@@ -252,8 +252,8 @@ DetElement DetectorTools::topElement(DetElement child)   {
 static void DetectorTools::makePlacementPath(PlacementPath det_nodes, PlacementPath& all_nodes)   {
   for (size_t i = 0, n = det_nodes.size(); i < n-1; ++i)   {
     if (!findChildByName(det_nodes[i + 1], det_nodes[i], all_nodes))   {
-      throw runtime_error("DD4hep: DetElement cannot determine placement path of " 
-			  + string(det_nodes[i].name()) + " [internal error]");
+      throw runtime_error("DD4hep: DetElement cannot determine placement path of "
+                          + string(det_nodes[i].name()) + " [internal error]");
     }
   }
   if ( det_nodes.size() > 0 )   {
@@ -354,7 +354,7 @@ PlacedVolume DetectorTools::findNode(PlacedVolume top_place, const std::string& 
   if ( name == top->GetName() ) {
     if (ind2>=length-1) return top;
     ind1 = ind2;
-  } 
+  }
   else  {
     return 0;
   }
@@ -369,9 +369,9 @@ PlacedVolume DetectorTools::findNode(PlacedVolume top_place, const std::string& 
     vol = node->GetVolume();
     name = spath(ind1+1, ind2-ind1-1);
     node = vol->GetNode(name.Data());
-    if (!node) 
+    if (!node)
       return 0;
-    else if (ind2>=length-1) 
+    else if (ind2>=length-1)
       return node;
     ind1 = ind2;
   }

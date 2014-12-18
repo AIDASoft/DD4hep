@@ -26,7 +26,7 @@ using namespace std;
 
 namespace {
   void collectSolid(GeoHandler::GeometryInfo& geo, const string& name, const string& node, TGeoShape* shape,
-      TGeoMatrix* matrix) {
+                    TGeoMatrix* matrix) {
     if (0 == ::strncmp(shape->GetName(), "TGeo", 4)) {
       shape->SetName(name.c_str());
     }

@@ -33,7 +33,7 @@ namespace DD4hep {
     /// Class to create Geant4 detector geometry from TGeo representation in memory
     /**
      *  On demand (ie. when calling "Construct") the DD4hep geometry is converted
-     *  to Geant4 with all volumes, assemblies, shapes, materials etc. 
+     *  to Geant4 with all volumes, assemblies, shapes, materials etc.
      *  The actuak work is performed by the Geant4Converter class called by this method.
      *
      *  \author  M.Frank

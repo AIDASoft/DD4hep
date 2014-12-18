@@ -23,7 +23,7 @@ Geant4HitWrapper::InvalidHit::~InvalidHit() {
 
 /// Initializing Constructor
 Geant4HitWrapper::HitManipulator::HitManipulator(const ComponentCast& c, const ComponentCast& v)
-    : cast(c), vec_type(v) {
+: cast(c), vec_type(v) {
   InstanceCount::increment(this);
 }
 

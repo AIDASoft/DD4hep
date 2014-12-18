@@ -61,7 +61,7 @@ DECLARE_XMLELEMENT(Cone__shape_constructor,create_Cone)
 
 static Ref_t create_Trap(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
-  if ( e.hasAttr(_U(dz)) ) 
+  if ( e.hasAttr(_U(dz)) )
     return Trap(e.dz(),e.dy(),e.dx(),_toDouble(_Unicode(pLTX)));
   return Trap(e.z(0.0),e.theta(),e.phi(0),e.y1(),e.x1(),e.x2(),e.alpha(),e.y2(),e.x3(),e.x4(),e.alpha2());
 }

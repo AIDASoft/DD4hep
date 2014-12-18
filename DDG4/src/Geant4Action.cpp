@@ -50,8 +50,8 @@ void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
 
 /// Standard constructor
 Geant4Action::Geant4Action(Geant4Context* context, const string& nam)
-    : m_context(0), 
-      m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
+: m_context(0),
+  m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
   InstanceCount::increment(this);
   if ( context ) m_context = *context;
   m_outputLevel = context ? context->kernel().getOutputLevel(nam) : (printLevel()-1);
@@ -76,7 +76,7 @@ long Geant4Action::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
     print("Geant4Action: Deleting object %s of type %s Pointer:%p",
-	  m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
+          m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
     delete this;
   }
   return count;
@@ -266,7 +266,7 @@ void Geant4Action::abortRun(const string& exception, const char* fmt, ...) const
   desc = DD4hep::format("*** Geant4Action:", fmt, args);
   va_end(args);
   G4Exception(issuer.c_str(),exception.c_str(),RunMustBeAborted,desc.c_str());
-  //throw runtime_error(issuer+"> "+desc);  
+  //throw runtime_error(issuer+"> "+desc);
 }
 
 /// Access to the main run action sequence from the kernel object

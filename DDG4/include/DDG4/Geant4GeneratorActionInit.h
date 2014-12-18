@@ -25,15 +25,15 @@ namespace DD4hep {
     /// Initialize the Geant4Event objects to host generator and MC truth related information
     /** Geant4 actions to collect the MC particle information.
      *
-     *  This action should register all event extension required for the further 
-     *  processing. We want to avoid that every client has to check if a given 
+     *  This action should register all event extension required for the further
+     *  processing. We want to avoid that every client has to check if a given
      *  object is present or not and than later install the required data structures.
-     * 
+     *
      *  These by default are extensions of type:
      *  -- Geant4PrimaryEvent with multiple interaction sections, one for each interaction
      *     This is the MAIN and ONLY information to feed Geant4
      *
-     *  -- Geant4PrimaryInteraction containing the track/vertex information to create 
+     *  -- Geant4PrimaryInteraction containing the track/vertex information to create
      *     the primary particles for Geant4. This record is build from the Geant4PrimaryEvent
      *     information.
      *  -- Geant4PrimaryMap a map of the Geant4Particles converted to G4PrimaryParticles
@@ -41,7 +41,7 @@ namespace DD4hep {
      *  -- Geant4ParticleMap the map of particles created during the event simulation.
      *     This map has directly the correct particle offsets, so that the merging of
      *     Geant4PrimaryInteraction particles and the simulation particles is easy....
-     *    
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION

@@ -28,11 +28,11 @@ namespace DD4hep {
     unsigned int hash = 0;
     const char* k = key;
     for (; *k; k++) {
-      hash += *k; 
-      hash += (hash << 10); 
+      hash += *k;
+      hash += (hash << 10);
       hash ^= (hash >> 6);
     }
-    hash += (hash << 3); 
+    hash += (hash << 3);
     hash ^= (hash >> 11); hash += (hash << 15);
     return hash;
   }
@@ -56,7 +56,7 @@ namespace DD4hep {
   /** @class ComponentCast Primitives.h DD4hep/Primitives.h
    *
    *  It is mandatory that the pointers referred do actually
-   *  support the asked functionalty. 
+   *  support the asked functionalty.
    *  Miracles also I cannot do.....
    *
    *   @author  M.Frank
@@ -84,7 +84,7 @@ namespace DD4hep {
   public:
     template <typename TYPE> static void _destroy(void* p)  {
       TYPE* q = (TYPE*)p;
-      if (q)	delete q;
+      if (q)    delete q;
     }
     template <typename TYPE> static void* _cast(const void* p)  {
       TYPE* q = (TYPE*)p;
@@ -171,7 +171,7 @@ namespace DD4hep {
     const result_t& operator()(const arg_t &p) const { return p.first; }
   };
   /// Generator to create Operator to select key values of a map
-  template <typename T> Select1st<typename T::value_type> select1st(const T&) 
+  template <typename T> Select1st<typename T::value_type> select1st(const T&)
     { return Select1st<typename T::value_type>(); }
 
 
@@ -179,8 +179,8 @@ namespace DD4hep {
   template <typename M> class DestroyObjects {
   public:
     M& object;
-    DestroyObjects(M& m)
-        : object(m) {
+  DestroyObjects(M& m)
+    : object(m) {
     }
     ~DestroyObjects() {
       object.clear();
@@ -203,8 +203,8 @@ namespace DD4hep {
   template <typename M> class DestroyFirst {
   public:
     M& object;
-    DestroyFirst(M& m)
-        : object(m) {
+  DestroyFirst(M& m)
+    : object(m) {
     }
     ~DestroyFirst() {
       object.clear();
@@ -241,8 +241,8 @@ namespace DD4hep {
   template <typename M> class ReleaseObjects {
   public:
     M& object;
-    ReleaseObjects(M& m)
-        : object(m) {
+  ReleaseObjects(M& m)
+    : object(m) {
     }
     ~ReleaseObjects() {
       object.clear();
@@ -322,8 +322,8 @@ namespace DD4hep {
       T m = T(1)<<bit;
       return isSet(m);
     }
-    bool isNull() const { 
-      return mask == 0; 
+    bool isNull() const {
+      return mask == 0;
     }
   };
   /// Standard constructor
@@ -334,7 +334,7 @@ namespace DD4hep {
    */
   namespace Geometry {
 
-  // Put here global basic type defintiions derived from primitive types of the Geometry namespace
+    // Put here global basic type defintiions derived from primitive types of the Geometry namespace
 
   }// End namespace Geometry
 }      // End namespace DD4hep

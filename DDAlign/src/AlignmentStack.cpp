@@ -57,7 +57,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const Transform3D& tr
 
 /// Constructor with partial initialization
 AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& translation, bool rst, bool rst_children)
-: detector(element), transform(translation), overlap(0.001), flag(0)
+  : detector(element), transform(translation), overlap(0.001), flag(0)
 {
   InstanceCount::increment(this);
   flag |= MATRIX_DEFINED;
@@ -68,7 +68,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& trans
 
 /// Constructor with partial initialization
 AlignmentStack::StackEntry::StackEntry(DetElement element, const RotationZYX& rot, bool rst, bool rst_children)
-: detector(element), transform(rot), overlap(0.001), flag(0)
+  : detector(element), transform(rot), overlap(0.001), flag(0)
 {
   InstanceCount::increment(this);
   flag |= MATRIX_DEFINED;
@@ -78,7 +78,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const RotationZYX& ro
 }
 
 /// Constructor with partial initialization
-AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& translation, const RotationZYX& rot, bool rst, bool rst_children) 
+AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& translation, const RotationZYX& rot, bool rst, bool rst_children)
   : detector(element), transform(rot,translation), overlap(0.001), flag(0)
 {
   InstanceCount::increment(this);
@@ -90,7 +90,7 @@ AlignmentStack::StackEntry::StackEntry(DetElement element, const Position& trans
 
 /// Copy constructor
 AlignmentStack::StackEntry::StackEntry(const StackEntry& e)
-: detector(e.detector), transform(e.transform), path(e.path), overlap(e.overlap), flag(e.flag)
+  : detector(e.detector), transform(e.transform), path(e.path), overlap(e.overlap), flag(e.flag)
 {
   InstanceCount::increment(this);
 }
@@ -217,7 +217,7 @@ bool AlignmentStack::add(auto_ptr<StackEntry>& entry)  {
 
       // Need to make some checks BEFORE insertion
       if ( !entry->detector.isValid() )   {
-	throw runtime_error("AlignmentStack> Invalid alignment entry [No such detector]");
+        throw runtime_error("AlignmentStack> Invalid alignment entry [No such detector]");
       }
       printout(INFO,"AlignmentStack","Add node:%s",entry->path.c_str());
       m_stack.insert(make_pair(entry->path,entry.get()));
@@ -225,7 +225,7 @@ bool AlignmentStack::add(auto_ptr<StackEntry>& entry)  {
       return true;
     }
     throw runtime_error("AlignmentStack> The entry with path "+entry->path+
-			" cannot be re-aligned twice in one transaction.");
+                        " cannot be re-aligned twice in one transaction.");
   }
   throw runtime_error("AlignmentStack> Attempt to apply an invalid alignment entry.");
 }
@@ -239,7 +239,7 @@ auto_ptr<AlignmentStack::StackEntry> AlignmentStack::pop()   {
     return auto_ptr<StackEntry>(e);
   }
   throw runtime_error("AlignmentStack> Alignment stack is empty. "
-		      "Cannot pop entries - check size first!");
+                      "Cannot pop entries - check size first!");
 }
 
 /// Get all pathes to be aligned

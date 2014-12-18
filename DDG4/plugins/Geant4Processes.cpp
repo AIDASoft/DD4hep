@@ -24,8 +24,8 @@
 //  <physicslist name="Geant4PhysicsList/MyPhysics.0">
 //    <processes>
 //      <particle name="e[+-]" cut="1*mm">
-//	  <process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
-//	  <process name="G4eIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
+//        <process name="G4eMultipleScattering" ordAtRestDoIt="-1" ordAlongSteptDoIt="1" ordPostStepDoIt="1"/>
+//        <process name="G4eIonisation"         ordAtRestDoIt="-1" ordAlongSteptDoIt="2" ordPostStepDoIt="2"/>
 //      </particle>
 //    </processes>
 //  </physicslist>
@@ -45,7 +45,7 @@ DECLARE_GEANT4_PROCESS(G4RayleighScattering)
 #include "G4GammaConversionToMuons.hh"
 DECLARE_GEANT4_PROCESS(G4GammaConversionToMuons)
 
-// Electron/positron processes 
+// Electron/positron processes
 #include "G4eIonisation.hh"
 DECLARE_GEANT4_PROCESS(G4eIonisation)
 #include "G4eBremsstrahlung.hh"
@@ -59,7 +59,7 @@ DECLARE_GEANT4_PROCESS(G4AnnihiToMuPair)
 #include "G4eeToHadrons.hh"
 DECLARE_GEANT4_PROCESS(G4eeToHadrons)
 
-// Muon processes 
+// Muon processes
 #include "G4MuIonisation.hh"
 DECLARE_GEANT4_PROCESS(G4MuIonisation)
 #include "G4MuBremsstrahlung.hh"
@@ -69,7 +69,7 @@ DECLARE_GEANT4_PROCESS(G4MuPairProduction)
 #include "G4MuMultipleScattering.hh"
 DECLARE_GEANT4_PROCESS(G4MuMultipleScattering)
 
-// Hadron/ion processes 
+// Hadron/ion processes
 #include "G4hIonisation.hh"
 DECLARE_GEANT4_PROCESS(G4hIonisation)
 #include "G4ionIonisation.hh"
@@ -89,7 +89,7 @@ DECLARE_GEANT4_PROCESS(G4hPairProduction)
 #include "G4CoulombScattering.hh"
 DECLARE_GEANT4_PROCESS(G4CoulombScattering)
 
-// Processes for simulation of polarized electron and gamma beams 
+// Processes for simulation of polarized electron and gamma beams
 #include "G4PolarizedCompton.hh"
 DECLARE_GEANT4_PROCESS(G4PolarizedCompton)
 #include "G4PolarizedGammaConversion.hh"
@@ -103,7 +103,7 @@ DECLARE_GEANT4_PROCESS(G4ePolarizedIonisation)
 #include "G4eplusPolarizedAnnihilation.hh"
 DECLARE_GEANT4_PROCESS(G4eplusPolarizedAnnihilation)
 
-// Processes for simulation of X-rays and optical protons production by charged particles 
+// Processes for simulation of X-rays and optical protons production by charged particles
 #include "G4SynchrotronRadiation.hh"
 DECLARE_GEANT4_PROCESS(G4SynchrotronRadiation)
 #include "G4TransitionRadiation.hh"

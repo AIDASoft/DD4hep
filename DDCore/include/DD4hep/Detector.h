@@ -85,8 +85,8 @@ namespace DD4hep {
 
       /// Templated constructor for handle conversions
       template <typename Q>
-	SensitiveDetector(const Handle<Q>& e)
-	: RefObject(e) {
+        SensitiveDetector(const Handle<Q>& e)
+        : RefObject(e) {
       }
 
       /// Constructor for a new sensitive detector element
@@ -159,15 +159,15 @@ namespace DD4hep {
 
     /// Handle class describing a detector element
     /**
-     * Detector elements (class DetElement are entities which represent 
+     * Detector elements (class DetElement are entities which represent
      * subdetectors or sizable parts of a subdetector.
      * A DetElement instance has the means to provide to clients information about
      *
      *    -  the detector hierarchy by exposing its children.
-     *    -  its placement within the overall experiment if it represents an 
+     *    -  its placement within the overall experiment if it represents an
      *       entire subdetector or its placement with respect to its parent
      *       if the \em DetElement represents a part of a subdetector.
-     *    -  information about the \em Readout structure if the object is 
+     *    -  information about the \em Readout structure if the object is
      *       instrumented and read-out. Otherwise this link is empty.
      *    -  information about the environmental conditions etc. \em conditons.
      *    -  alignment information.
@@ -197,14 +197,14 @@ namespace DD4hep {
         COPY_NONE = 0, COPY_PLACEMENT = 1 << 0, COPY_PARENT = 1 << 1, COPY_ALIGNMENT = 1 << 2, LAST
       };
 
-      enum UpdateParam { 
-	CONDITIONS_CHANGED = 1<<0,
-	PLACEMENT_CHANGED  = 1<<1,
-	SOMETHING_CHANGED  = 1<<2,
-	PLACEMENT_ELEMENT  = 1<<20,
-	PLACEMENT_HIGHEST  = 1<<21,
-	PLACEMENT_DETECTOR = 1<<22,
-	PLACEMENT_NONE
+      enum UpdateParam {
+        CONDITIONS_CHANGED = 1<<0,
+        PLACEMENT_CHANGED  = 1<<1,
+        SOMETHING_CHANGED  = 1<<2,
+        PLACEMENT_ELEMENT  = 1<<20,
+        PLACEMENT_HIGHEST  = 1<<21,
+        PLACEMENT_DETECTOR = 1<<22,
+        PLACEMENT_NONE
       };
 
       /// Internal assert function to check conditions
@@ -245,7 +245,7 @@ namespace DD4hep {
 
       /// Templated constructor for handle conversions
       template <typename Q> DetElement(const Handle<Q>& e)
-	: RefObject(e) {
+        : RefObject(e) {
       }
 
       /// Constructor to copy handle
@@ -255,7 +255,7 @@ namespace DD4hep {
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
-      DetElement(const Ref_t& e)
+    DetElement(const Ref_t& e)
       : RefObject(e) {
       }
 #endif
@@ -297,7 +297,7 @@ namespace DD4hep {
 
       /// Extend the detector element with an arbitrary structure accessible by the type
       template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) const {
-	CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
+        CallbackSequence::checkTypes(typeid(IFACE), typeid(CONCRETE), dynamic_cast<IFACE*>(c));
         return (IFACE*) i_addExtension(dynamic_cast<IFACE*>(c), typeid(IFACE), _copy<CONCRETE>, _delete<IFACE>);
       }
       /// Access extension element by the type
@@ -305,12 +305,12 @@ namespace DD4hep {
         return (IFACE*) i_extension(typeid(IFACE));
       }
       /// Extend the detector element with an arbitrary callback
-      template <typename Q, typename T> 
-	void callAtUpdate(unsigned int type, Q* pointer, 
-			  void (T::*pmf)(unsigned long typ, DetElement& det, void* opt_par)) const
+      template <typename Q, typename T>
+        void callAtUpdate(unsigned int type, Q* pointer,
+                          void (T::*pmf)(unsigned long typ, DetElement& det, void* opt_par)) const
       {
-	CallbackSequence::checkTypes(typeid(T), typeid(Q), dynamic_cast<T*>(pointer));
-	i_addUpdateCall(type, Callback(pointer).make(pmf));
+        CallbackSequence::checkTypes(typeid(T), typeid(Q), dynamic_cast<T*>(pointer));
+        i_addUpdateCall(type, Callback(pointer).make(pmf));
       }
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer) const;
@@ -336,7 +336,7 @@ namespace DD4hep {
 
       /// Set all attributes in one go
       DetElement& setAttributes(const LCDD& lcdd, const Volume& volume, const std::string& region, const std::string& limits,
-				const std::string& vis);
+                                const std::string& vis);
 
       /// Set Visualization attributes to the detector element
       DetElement& setVisAttributes(const LCDD& lcdd, const std::string& name, const Volume& volume);
@@ -368,7 +368,7 @@ namespace DD4hep {
       Alignment alignment() const;
       /// Access to the survey alignment information
       Alignment surveyAlignment() const;
-      /// Access to the conditions information 
+      /// Access to the conditions information
       Conditions conditions() const;
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
@@ -380,7 +380,7 @@ namespace DD4hep {
       const TGeoHMatrix& parentTransformation() const;
       /// Create cached matrix to transform to reference coordinates
       const TGeoHMatrix& referenceTransformation() const;
- 
+
       /// Transformation from local coordinates of the placed volume to the world system
       bool localToWorld(const Position& local, Position& global) const;
       /// Transformation from local coordinates of the placed volume to the parent system
