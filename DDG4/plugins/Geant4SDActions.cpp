@@ -43,31 +43,25 @@ namespace DD4hep {
         double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
         direction *= new_len/hit_len;
       }
-      print("Geant4Tracker","%s> Add hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f",
-            c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z());
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
-      if ( hit )  {
-        HitContribution contrib = Hit::extractContribution(step);
-        hit->cellID        = cellID(step);
-        hit->energyDeposit = contrib.deposit;
-        hit->position      = position;
-        hit->momentum      = direction;
-        hit->length        = hit_len;
-        collection(m_collectionID)->add(hit);
-        mark(h.track);
-        if ( 0 == hit->cellID )  {
-          hit->cellID        = volumeID( step ) ;
-          except("+++ Invalid CELL ID for hit!");
-        }
-        print("Geant4Tracker","%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-              c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
-              (void*)hit->cellID);
-        Geant4TouchableHandler handler(step);
-        print("Geant4Tracker","%s>     Geant4 path:%s",c_name(),handler.path().c_str());
-        return true;
+      HitContribution contrib = Hit::extractContribution(step);
+      hit->cellID        = cellID(step);
+      hit->energyDeposit = contrib.deposit;
+      hit->position      = position;
+      hit->momentum      = direction;
+      hit->length        = hit_len;
+      collection(m_collectionID)->add(hit);
+      mark(h.track);
+      if ( 0 == hit->cellID )  {
+	hit->cellID        = volumeID( step ) ;
+	except("+++ Invalid CELL ID for hit!");
       }
-      except("new() failed: Cannot allocate hit object");
-      return false;
+      print("%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+	    c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
+	    (void*)hit->cellID);
+      Geant4TouchableHandler handler(step);
+      print("%s>     Geant4 path:%s",c_name(),handler.path().c_str());
+      return true;
     }
     typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
 
@@ -98,7 +92,7 @@ namespace DD4hep {
         hit = new Hit(global);
         hit->cellID = cell;
         coll->add(hit);
-        printM2("Geant4Calorimeter","%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
+        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
                 c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
         if ( 0 == hit->cellID )  { // for debugging only!
           hit->cellID = cellID(step);

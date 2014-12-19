@@ -428,6 +428,11 @@ void Geant4ParticleMap::adopt(ParticleMap& pm, TrackEquivalents& equiv)    {
   //dump();
 }
 
+/// Check if the particle map was ever filled (ie. some particle handler was present)
+  bool Geant4ParticleMap::isValid() const   {
+  return !equivalentTracks.empty();
+}
+
 /// Access the equivalent track id (shortcut to the usage of TrackEquivalents)
 int Geant4ParticleMap::particleID(int g4_id, bool) const   {
   TrackEquivalents::const_iterator iequiv = equivalentTracks.find(g4_id);

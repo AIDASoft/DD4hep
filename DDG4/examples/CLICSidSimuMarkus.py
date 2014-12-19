@@ -48,11 +48,12 @@ def run():
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of primary particles from LCIO input files
+  """
 
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
-  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
+  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
@@ -61,7 +62,7 @@ def run():
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
-  gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
+  #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
   #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
   gen.MomentumScale = 1.0
   gen.Mask = 1
@@ -72,7 +73,8 @@ def run():
   gen.isotrop = False
   gen.direction = (1,0,0)
   gen.OutputLevel = generator_output_level
-
+  """
+  """
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
   kernel.generatorAction().adopt(part)
@@ -86,7 +88,7 @@ def run():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
-
+  """
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
   rdr.zSpread = 0.0
@@ -97,8 +99,8 @@ def run():
   kernel.generatorAction().adopt(rdr)
   """
 
-  seq,act = simple.setupTracker('SiTrackerBarrel')
-  """
+  #seq,act = simple.setupTracker('SiTrackerBarrel')
+
   # First the tracking detectors
   seq,act = simple.setupTracker('SiVertexBarrel')
   seq,act = simple.setupTracker('SiVertexEndcap')
@@ -115,11 +117,11 @@ def run():
   seq,act = simple.setupCalorimeter('MuonEndcap')
   seq,act = simple.setupCalorimeter('LumiCal')
   seq,act = simple.setupCalorimeter('BeamCal')
-
   """
-
   scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
   kernel.steppingAction().adopt(scan)
+  """
+
 
   # Now build the physics list:
   phys = simple.setupPhysics('QGSP_BERT')

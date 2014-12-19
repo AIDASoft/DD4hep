@@ -308,6 +308,8 @@ namespace DD4hep {
       Geant4ParticleMap() {}
       /// Default destructor
       virtual ~Geant4ParticleMap();
+      /// Check if the particle map was ever filled (ie. some particle handler was present)
+      bool isValid() const;
       /// Dump content
       void dump()  const;
       /// Clear particle maps

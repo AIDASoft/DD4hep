@@ -24,6 +24,9 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    // Forward declarations
+    class Geant4ParticleMap;
+
     /// Base class to output Geant4 event data to persistent media
     /**
      *  \author  M.Frank
@@ -47,7 +50,8 @@ namespace DD4hep {
 
       /// Property: output destination
       std::string m_output;
-
+      /// Reference to MC truth object
+      Geant4ParticleMap* m_truth;
     public:
       /// Standard constructor
       Geant4OutputAction(Geant4Context* c, const std::string& nam);

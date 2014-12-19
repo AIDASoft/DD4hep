@@ -10,6 +10,7 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
+#include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4RunAction.h"
 #include "DDG4/Geant4OutputAction.h"
 
@@ -23,7 +24,7 @@ using namespace std;
 
 /// Standard constructor
 Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
-: Geant4EventAction(ctxt, nam)
+: Geant4EventAction(ctxt, nam), m_truth(0)
 {
   InstanceCount::increment(this);
   declareProperty("Output", m_output);
@@ -46,12 +47,23 @@ void Geant4OutputAction::end(const G4Event* evt) {
   G4HCofThisEvent* hce = evt->GetHCofThisEvent();
   if ( hce )  {
     int nCol = hce->GetNumberOfCollections();
-    saveEvent(ctxt);
-    for (int i = 0; i < nCol; ++i) {
-      G4VHitsCollection* hc = hce->GetHC(i);
-      saveCollection(ctxt, hc);
+    try  {
+      m_truth = context()->event().extension<Geant4ParticleMap>(false);
+      if ( m_truth && !m_truth->isValid() )  {
+	m_truth = 0;
+	printout(WARNING,name(),"+++ [Event:%d] No valid MC truth info present. "
+		 "Is a Particle handler installed ?",evt->GetEventID());
+      }
+      saveEvent(ctxt);
+      for (int i = 0; i < nCol; ++i) {
+	G4VHitsCollection* hc = hce->GetHC(i);
+	saveCollection(ctxt, hc);
+      }
+      commit(ctxt);
     }
-    commit(ctxt);
+    catch(...)   {
+    }
+    m_truth = 0;
     return;
   }
   printout(WARNING,"Geant4OutputAction",
