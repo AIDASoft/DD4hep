@@ -17,6 +17,7 @@
 #include <vector>
 #include <cstdio>
 #include <memory>
+#include <cerrno>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -34,6 +35,15 @@ typedef DD4hep::Simulation::Geant4Particle Geant4Particle;
 namespace {
   static const char* line = "+-------------------------------------------------------------+";
   static bool have_geometry = false;
+
+  int usage()  {
+    printf("\ndumpDDG4 -opt [-opt]                                                                   \n"
+	   "    -compact <compact-geometry>   Supply geometry file to check hits with volume manager.\n"
+	   "    -input   <root-file>          File generated with DDG4                               \n"
+	   "    -event   <event-number>       Specify event to be dumped. Default: ALL.              \n"
+	   "\n\n");
+    return EINVAL;
+  }
 
   int printHits(const string& container, vector<Geant4Tracker::Hit*>* hits)   {
     typedef vector<Geant4Tracker::Hit*> _H;
@@ -155,6 +165,7 @@ int dumpDDG4(const char* fname, int event_num)  {
   TFile* data = TFile::Open(fname);
   if ( !data || data->IsZombie() )   {
     printf("+  File seems to not exist. Exiting\n");
+    usage();
     return -1;
   }
   TTree* tree = (TTree*)data->Get("EVENT");
@@ -219,6 +230,9 @@ int main(int argc, char** argv)  {                            // Main program if
       else if ( strncmp(argv[i],"-event",2) == 0 )
 	event_num = ::atol(argv[++i]);
     }
+  }
+  if ( !fname )  {
+    return usage();
   }
   return dumpDDG4(fname,event_num);
 }
