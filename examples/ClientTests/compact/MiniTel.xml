@@ -76,7 +76,7 @@
     </detector>
 
 
-    <detector name="MyLHCBdetector6" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="6"  sensitive="true" readout="MyLHCBdetector7Hits">
+    <detector name="MyLHCBdetector6" type="MiniTelPixel" material="Silicon" vis="DetVis" id ="6"  sensitive="true" readout="MyLHCBdetector6Hits">
 
       <dimensions z="1*mm" y="10*cm" x="10*cm" />
       <position z="50*mm" y="0*cm" x="0*cm" />
@@ -119,43 +119,43 @@
   <readouts>
     <readout name="MyLHCBdetector1Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-     <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector2Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector3Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector4Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector5Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector6Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector7Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector8Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector9Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
     <readout name="MyLHCBdetector10Hits">
       <segmentation type="CartesianGridXY" grid_size_x="6*mm" grid_size_y="6*mm" />
-      <id>system:6,x:32:-16,y:-16</id>
+      <id>system:6,x:12:-6,y:24:-6</id>
     </readout>
   </readouts>
 
@@ -168,4 +168,4 @@
     </field>
   </fields>
 
-  </lccdd>
+</lccdd>

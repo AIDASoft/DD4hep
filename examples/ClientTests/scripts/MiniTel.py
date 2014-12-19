@@ -25,7 +25,7 @@ def run():
   simple.setupCshUI()
 
   # Configure I/O
-  evt_root = simple.setupROOTOutput('RootOutput','MiniTel_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=False)
+  evt_root = simple.setupROOTOutput('RootOutput','MiniTel_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=True)
   # Setup particle gun
   simple.setupGun("Gun",particle='pi-',energy=100*GeV,multiplicity=1)
   # Now the calorimeters
@@ -39,6 +39,7 @@ def run():
   seq,act = simple.setupTracker('MyLHCBdetector7')
   seq,act = simple.setupTracker('MyLHCBdetector8')
   seq,act = simple.setupTracker('MyLHCBdetector9')
+  seq,act = simple.setupTracker('MyLHCBdetector10')
 
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
