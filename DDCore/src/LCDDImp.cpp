@@ -73,7 +73,7 @@ namespace {
       std::set_unexpected( std::unexpected ) ;
       std::set_terminate( std::terminate ) ;
       // this provokes ROOT seg fault and stack trace (comment out to avoid it)
-      ::_exit(1) ;
+      exit(1) ;
     }
   }
 }
