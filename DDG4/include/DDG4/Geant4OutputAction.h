@@ -48,8 +48,10 @@ namespace DD4hep {
         }
       };
 
-      /// Property: output destination
+      /// Property: "Output" output destination
       std::string m_output;
+      /// Property: "HandleErrorsAsFatal" Handle errors as fatal and rethrow eventual exceptions
+      bool        m_errorFatal;
       /// Reference to MC truth object
       Geant4ParticleMap* m_truth;
     public:

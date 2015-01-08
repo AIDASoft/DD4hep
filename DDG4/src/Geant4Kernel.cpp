@@ -190,7 +190,15 @@ void Geant4Kernel::initialize() {
 }
 
 void Geant4Kernel::run() {
-  Geant4Exec::run(*this);
+  try  {
+    Geant4Exec::run(*this);
+  }
+  catch(const exception& e)   {
+    printout(FATAL,"Geant4Kernel","+++ Exception while simulating:%s",e.what());
+  }
+  catch(...)   {
+    printout(FATAL,"Geant4Kernel","+++ UNKNOWN exception while simulating.");
+  }
 }
 
 void Geant4Kernel::runEvents(int num_events) {

@@ -66,10 +66,10 @@ int main(int argc, char** argv)   {
 
   for( unsigned i=0,n=materials.size();i<n;++i){
     TGeoMaterial* mat =  materials[i].first->GetMaterial();
-    double length = materials[i].second ;
-    double nx0 = length / mat->GetRadLen() ;
+    double length = materials[i].second;
+    double nx0 = length / mat->GetRadLen();
     sum_x0 += nx0;
-    double nLambda = length / mat->GetIntLen() ;
+    double nLambda = length / mat->GetIntLen();
     sum_lambda += nLambda;
     path_length += length;
     end = path_length * direction;
@@ -77,6 +77,7 @@ int main(int argc, char** argv)   {
     ::printf(fmt, i+1, mat->GetName(), mat->GetZ(), mat->GetA(),
 	     mat->GetDensity(), mat->GetRadLen(), mat->GetIntLen(), 
 	     length, path_length, sum_x0, sum_lambda, end[0], end[1], end[2]);
+    //mat->Print();
   }
   printf("%s",line);
   const MaterialData& avg = matMgr.createAveragedMaterial(materials);

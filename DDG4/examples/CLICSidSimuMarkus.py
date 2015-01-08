@@ -41,7 +41,7 @@ def run():
   generator_output_level = Output.WARNING
 
   # Configure I/O
-  ##evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   ##evt_lcio.OutputLevel = generator_output_level
   evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
@@ -53,7 +53,7 @@ def run():
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
-  gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
+  #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/qq_gen_128_999.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/smuonLR_PointK_3TeV_BS_noBkg_run0001.stdhep"
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/bbbb_3TeV.stdhep"
   #gen.Input = "LCIOFileReader|/home/frankm/SW/data/mcparticles_pi-_5GeV.slcio"
@@ -62,7 +62,7 @@ def run():
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/FCC-eh.stdhep"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/data.hepmc.txt"
   #gen.Input = "Geant4EventReaderHepMC|/home/frankm/SW/data/sherpa-2.1.1_zjets.hepmc2g"
-  #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
+  gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/muons.slcio"
   #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
   gen.MomentumScale = 1.0
   gen.Mask = 1
@@ -73,7 +73,6 @@ def run():
   gen.isotrop = False
   gen.direction = (1,0,0)
   gen.OutputLevel = generator_output_level
-  """
   """
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -88,6 +87,7 @@ def run():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
+  """
   """
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
