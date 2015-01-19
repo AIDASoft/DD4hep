@@ -224,6 +224,23 @@ _props('SensDetActionSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
 
+
+
+class Iter():
+  def Iterator(self): 
+    ''' Fix for map iteration on macos '''
+    n = self.m.size()
+    it = self.m.begin()
+    for i in range(0,n):
+      yield it
+      it.__preinc__()
+  def __init__(self,m):
+    self.m = m
+  def __iter__(self):
+    return self.Iterator()
+
+
+
 """
 Helper object to perform stuff, which occurs very often.
 I am sick of typing the same over and over again.
@@ -252,8 +269,8 @@ class Simple:
     return self
 
   def printDetectors(self):
-    print '+++  List of sensitive detectors:'
-    for i in self.lcdd.detectors():
+    print '+++  List of detectors:'
+    for i in Iter( self.lcdd.detectors() ):
       o = DetElement(i.second)
       sd = self.lcdd.sensitiveDetector(o.name())
       if sd.isValid():
