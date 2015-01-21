@@ -226,18 +226,18 @@ _props('Geant4PhysicsListActionSequence')
 
 
 
-class Iter():
-  def Iterator(self): 
-    ''' Fix for map iteration on macos '''
-    n = self.m.size()
-    it = self.m.begin()
-    for i in range(0,n):
-      yield it
-      it.__preinc__()
-  def __init__(self,m):
-    self.m = m
-  def __iter__(self):
-    return self.Iterator()
+#class Iter():
+#  def Iterator(self): 
+#    ''' Fix for map iteration on macos '''
+#    n = self.m.size()
+#    it = self.m.begin()
+#    for i in range(0,n):
+#      yield it
+#      it.__preinc__()
+#  def __init__(self,m):
+#    self.m = m
+#  def __iter__(self):
+#    return self.Iterator()
 
 
 
@@ -270,7 +270,7 @@ class Simple:
 
   def printDetectors(self):
     print '+++  List of detectors:'
-    for i in Iter( self.lcdd.detectors() ):
+    for i in self.lcdd.detectors():
       o = DetElement(i.second)
       sd = self.lcdd.sensitiveDetector(o.name())
       if sd.isValid():

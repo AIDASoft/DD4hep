@@ -45,6 +45,11 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::Simulation::Geant4Particle+;
 #pragma link C++ class std::vector<DD4hep::Simulation::Geant4Particle*>+;
 #pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Particle*>+;
+#pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::iterator;
+#pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::const_iterator;
+#pragma link C++ function operator==( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
+#pragma link C++ function operator!=( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
+
 
 /// Dictionaires for basic Hit data structures
 #pragma link C++ class DD4hep::Simulation::Geant4HitData+;
