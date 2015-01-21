@@ -28,7 +28,8 @@ void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
       double outer_thickness = half_module_thickness + sensitive_z_position;
       double inner_thickness = half_module_thickness - sensitive_z_position;
       //Surface is placed at the center of the volume, no need to shift origin
-      Vector3D u(1.,0.,0.), v(0.,1.,0.), n(0.,0.,1.), o(0.,0.,0.);
+      //Make sure u,v,n form a right-handed coordinate system, v along the final z
+      Vector3D u(-1.,0.,0.), v(0.,-1.,0.), n(0.,0.,1.), o(0.,0.,0.);
 
       VolPlane surf(comp_vol,Type(Type::Sensitive,Type::Measurement1D),
 		    inner_thickness, outer_thickness, u, v, n, o);
