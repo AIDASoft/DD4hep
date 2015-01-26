@@ -9,6 +9,9 @@
 #include "DDG4/Factories.h"
 using namespace DD4hep::Simulation;
 
+#include "DDG4/Geant4ActionPhase.h"
+DECLARE_GEANT4ACTION(Geant4PhaseAction)
+
 #include "DDG4/Geant4RunAction.h"
 DECLARE_GEANT4ACTION(Geant4RunActionSequence)
 

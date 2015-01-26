@@ -212,6 +212,10 @@ namespace DD4hep {
 
       /// Access phase by name
       Geant4ActionPhase* getPhase(const std::string& name);
+
+      /// Add a new phase to the phase
+      virtual Geant4ActionPhase* addSimplePhase(const std::string& name, bool throw_on_exist);
+
       /// Add a new phase to the phase
       virtual Geant4ActionPhase* addPhase(const std::string& name, const std::type_info& arg1, const std::type_info& arg2,
           const std::type_info& arg3, bool throw_on_exist);
@@ -233,6 +237,9 @@ namespace DD4hep {
       virtual bool removePhase(const std::string& name);
       /// Destroy all phases. To be called only at shutdown.
       virtual void destroyPhases();
+
+      /// Execute phase action if it exists
+      virtual bool executePhase(const std::string& name, const void** args)  const;
 
       /// Access generator action sequence
       Geant4GeneratorActionSequence* generatorAction(bool create);

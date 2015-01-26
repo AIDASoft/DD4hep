@@ -59,6 +59,7 @@ namespace DD4hep {
 
     ACTIONHANDLE(Filter);
     ACTIONHANDLE(Action);
+    ACTIONHANDLE(PhaseAction);
     ACTIONHANDLE(RunAction);
     ACTIONHANDLE(EventAction);
     ACTIONHANDLE(GeneratorAction);
@@ -97,6 +98,8 @@ namespace DD4hep {
       { return cr<ActionHandle,Setup::Action>(kernel,name_type);                            }
       static FilterHandle createFilter(KernelHandle& kernel, const string& name_type)
       { return cr<FilterHandle,Setup::Filter>(kernel,name_type);                            }
+      static PhaseActionHandle createPhaseAction(KernelHandle& kernel, const string& name_type)   
+      { return cr<PhaseActionHandle,Setup::PhaseAction>(kernel,name_type);                  }
       static PhysicsListHandle createPhysicsList(KernelHandle& kernel, const string& name_type)
       { return cr<PhysicsListHandle,Setup::PhysicsList>(kernel,name_type);                  }
       static RunActionHandle createRunAction(KernelHandle& kernel, const string& name_type)
@@ -118,6 +121,7 @@ namespace DD4hep {
 
       static Geant4Action* toAction(Geant4Filter* f)                   { return f;          }
       static Geant4Action* toAction(Geant4Action* f)                   { return f;          }
+      static Geant4Action* toAction(Geant4PhaseAction* f)              { return f;          }
       static Geant4Action* toAction(Geant4Sensitive* f)                { return f;          }
       static Geant4Action* toAction(Geant4PhysicsList* f)              { return f;          }
       static Geant4Action* toAction(Geant4RunAction* f)                { return f;          }
@@ -137,6 +141,7 @@ namespace DD4hep {
 
       static Geant4Action* toAction(FilterHandle f)                    { return f.action;   }
       static Geant4Action* toAction(ActionHandle f)                    { return f.action;   }
+      static Geant4Action* toAction(PhaseActionHandle f)               { return f.action;   }
       static Geant4Action* toAction(SensitiveHandle f)                 { return f.action;   }
       static Geant4Action* toAction(PhysicsListHandle f)               { return f.action;   }
       static Geant4Action* toAction(RunActionHandle f)                 { return f.action;   }
@@ -195,6 +200,7 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class ActionHandle;
 #pragma link C++ class FilterHandle;
 #pragma link C++ class RunActionHandle;
+#pragma link C++ class PhaseActionHandle;
 #pragma link C++ class GeneratorActionHandle;
 #pragma link C++ class EventActionHandle;
 #pragma link C++ class PhysicsListHandle;
@@ -249,7 +255,11 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #pragma link C++ class Geant4ActionSD;
 #pragma link C++ class Geant4Sensitive;
 #pragma link C++ class Geant4SensDetActionSequence;
+
 #pragma link C++ class Geant4ActionPhase;
+#pragma link C++ class Geant4PhaseAction;
+#pragma link C++ class Callback;
+#pragma link C++ class Callback::mfunc_t;
 
 // Work around CINT bug: 
 // somehow the symbol Geometry moved into global namespace. Redeclare it here

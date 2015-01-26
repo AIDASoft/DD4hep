@@ -21,8 +21,26 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /*
+    /// Generic action for Geant4 phases
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4PhaseAction : public Geant4Action {
+    public:
+      /// Standard constructor
+      Geant4PhaseAction(Geant4Context* context, const std::string& name);
+      /// Default destructor
+      virtual ~Geant4PhaseAction();
+      /// Callback to generate primary particles
+      virtual void operator()();
+      /// Create bound callback to operator()()
+      virtual Callback callback();
+    };
 
+    /*
       Geant4Phase,  G4EventGenerator    --> G4VUserPrimaryGeneratorAction::GeneratePrimaries
       Geant4Begin,  G4Run               --> G4UserRunAction::BeginOfRunAction
       Geant4End,    G4Run               --> G4UserRunAction::EndOfRunAction
@@ -44,7 +62,7 @@ namespace DD4hep {
      */
     class Geant4ActionPhase : public Geant4Action {
     public:
-      typedef std::vector<Callback> Members;
+      typedef std::vector<std::pair<Geant4Action*, Callback> > Members;
     protected:
       /// Phase members (actions) being called for a particular phase
       Members m_members;
@@ -68,16 +86,15 @@ namespace DD4hep {
       /// Execute all members in the phase context
       void execute(void* argument);
       /// Add a new member to the phase
-      virtual bool add(Callback callback);
+      virtual bool add(Geant4Action* action, Callback callback);
       /// Remove an existing member from the phase. If not existing returns false
-      virtual bool remove(Callback callback);
+      virtual bool remove(Geant4Action* action, Callback callback);
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename R>
         bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
-          //member->addRef();
-          return add(Callback(member).make(callback));
+          return add(member,Callback(member).make(callback));
         }
         throw unrelated_type_error(typeid(TYPE), typeid(IF_TYPE), "Failed to add phase callback.");
       }
@@ -87,8 +104,7 @@ namespace DD4hep {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A1), *m_argTypes[1], "Invalid ARG1 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
-          //member->addRef();
-          return add(Callback(member).make(callback));
+          return add(member,Callback(member).make(callback));
         }
         throw unrelated_type_error(typeid(TYPE), typeid(IF_TYPE), "Failed to add phase callback.");
       }
@@ -100,18 +116,18 @@ namespace DD4hep {
         typeinfoCheck(typeid(A2), *m_argTypes[2], "Invalid ARG2 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
           //member->addRef();
-          return add(Callback(member).make(callback));
+          return add(member,Callback(member).make(callback));
         }
         throw unrelated_type_error(typeid(TYPE), typeid(IF_TYPE), "Failed to add phase callback.");
       }
       /// Remove all member callbacks from the phase. If not existing returns false
       template <typename TYPE, typename PMF> bool remove(TYPE* member) {
-        return remove(Callback(member));
+        return remove(member,Callback(member));
       }
       /// Remove an existing member callback from the phase. If not existing returns false
       template <typename TYPE, typename PMF> bool remove(TYPE* member, PMF callback) {
         Callback cb(member);
-        return remove(cb.make(callback));
+        return remove(member,cb.make(callback));
       }
       /// Create action to execute phase members
       void call();

@@ -15,6 +15,24 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
+Geant4PhaseAction::Geant4PhaseAction(Geant4Context* context, const std::string& name)
+: Geant4Action(context,name)
+{
+}
+
+/// Default destructor
+Geant4PhaseAction::~Geant4PhaseAction()   {
+}
+
+/// Callback to generate primary particles
+void Geant4PhaseAction::operator()() {
+}
+
+DD4hep::Callback Geant4PhaseAction::callback()    {
+  return Callback(this).make(&Geant4PhaseAction::operator());
+}
+
+/// Standard constructor
 Geant4ActionPhase::Geant4ActionPhase(Geant4Context* context, const string& nam, const type_info& arg_type0,
                                      const type_info& arg_type1, const type_info& arg_type2)
 : Geant4Action(context, nam) {
@@ -26,21 +44,25 @@ Geant4ActionPhase::Geant4ActionPhase(Geant4Context* context, const string& nam, 
 
 /// Default destructor
 Geant4ActionPhase::~Geant4ActionPhase() {
+  for (Members::iterator i = m_members.begin(); i != m_members.end(); ++i)
+    (*i).first->release();
   m_members.clear();
   InstanceCount::decrement(this);
 }
 
 /// Add a new member to the phase
-bool Geant4ActionPhase::add(Callback callback) {
-  m_members.push_back(callback);
+bool Geant4ActionPhase::add(Geant4Action* action, Callback callback) {
+  action->addRef();
+  m_members.push_back(make_pair(action,callback));
   return true;
 }
 
 /// Remove an existing member from the phase. If not existing returns false
-bool Geant4ActionPhase::remove(Callback callback) {
-  if (callback.func.first) {
-    Members::iterator i = find(m_members.begin(), m_members.end(), callback);
+bool Geant4ActionPhase::remove(Geant4Action* action, Callback callback) {
+  if (action && callback.func.first) {
+    Members::iterator i = find(m_members.begin(), m_members.end(), make_pair(action,callback));
     if (i != m_members.end()) {
+      (*i).first->release();
       m_members.erase(i);
       return true;
     }
@@ -48,7 +70,8 @@ bool Geant4ActionPhase::remove(Callback callback) {
   }
   size_t len = m_members.size();
   for (Members::iterator i = m_members.begin(); i != m_members.end(); ++i) {
-    if ((*i).par == callback.par) {
+    if ( (*i).first == action && (*i).second.par == callback.par) {
+      (*i).first->release();
       m_members.erase(i);
       i = m_members.begin();
     }
@@ -59,7 +82,7 @@ bool Geant4ActionPhase::remove(Callback callback) {
 /// Execute all members in the phase context
 void Geant4ActionPhase::execute(void* argument) {
   for (Members::iterator i = m_members.begin(); i != m_members.end(); ++i) {
-    (*i).execute((const void**) &argument);
+    (*i).second.execute((const void**) &argument);
   }
 }
 

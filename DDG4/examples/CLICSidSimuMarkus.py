@@ -12,6 +12,28 @@ from SystemOfUnits import *
    @author  M.Frank
    @version 1.0
 
+import os, time, DDG4
+from DDG4 import OutputLevel as Output
+from SystemOfUnits import *
+
+kernel = DDG4.Kernel()
+lcdd = kernel.lcdd()
+install_dir = os.environ['DD4hepINSTALL']
+example_dir = install_dir+'/examples/DDG4/examples';
+kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
+kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
+DDG4.importConstants(lcdd,debug=False)
+geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
+geant4.printDetectors()
+# Configure UI
+geant4.setupCshUI()
+
+a = DDG4.PhaseAction(kernel,'Geant4FieldPhaseAction/Geant4FieldPhaseAction_1')
+kernel.phase('configure').add(a)
+
+kernel.configure()
+
+
 """
 def run():
   kernel = DDG4.Kernel()
@@ -19,12 +41,29 @@ def run():
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
-  kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
+  ##kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(lcdd,debug=False)
-  simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
-  simple.printDetectors()
+  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
+  geant4.printDetectors()
   # Configure UI
-  simple.setupCshUI()
+  geant4.setupCshUI()
+
+  field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
+  field.stepper            = "HelixSimpleRunge"
+  field.equation           = "Mag_UsualEqRhs"
+  field.eps_min            = 5e-05*mm
+  field.eps_max            = 0.001*mm
+  field.min_chord_step     = 0.01*mm
+  field.delta_chord        = 0.25*mm
+  field.delta_intersection = 1e-05*mm
+  field.delta_one_step     = 0.001*mm
+  print '+++++> ',field.name,'-> stepper  = ',field.stepper
+  print '+++++> ',field.name,'-> equation = ',field.equation
+  print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
+  print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
+  print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
+
+
 
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
@@ -41,15 +80,15 @@ def run():
   generator_output_level = Output.WARNING
 
   # Configure I/O
-  evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   ##evt_lcio.OutputLevel = generator_output_level
-  evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of primary particles from LCIO input files
   """
-
+  """
   # First particle file reader
   gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1");
   #gen.Input = "LCIOStdHepReader|/home/frankm/SW/data/e2e2nn_gen_1343_1.stdhep"
@@ -66,13 +105,14 @@ def run():
   #gen.Input = "LCIOFileReader|/afs/cern.ch/user/n/nikiforo/public/Markus/geantinos.slcio"
   gen.MomentumScale = 1.0
   gen.Mask = 1
-  simple.buildInputStage([gen],output_level=generator_output_level)
-  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  geant4.buildInputStage([gen],output_level=generator_output_level)
   """
-  gen = simple.setupGun("Gun",particle='geantino',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
+  #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  gen = geant4.setupGun("Gun",particle='geantino',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
   gen.isotrop = False
   gen.direction = (1,0,0)
   gen.OutputLevel = generator_output_level
+
   """
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -88,7 +128,7 @@ def run():
   user.enableUI()
   part.adopt(user)
   """
-  """
+
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
   rdr.zSpread = 0.0
@@ -99,24 +139,26 @@ def run():
   kernel.generatorAction().adopt(rdr)
   """
 
-  #seq,act = simple.setupTracker('SiTrackerBarrel')
+  """
+  #seq,act = geant4.setupTracker('SiTrackerBarrel')
 
   # First the tracking detectors
-  seq,act = simple.setupTracker('SiVertexBarrel')
-  seq,act = simple.setupTracker('SiVertexEndcap')
-  seq,act = simple.setupTracker('SiTrackerBarrel')
-  seq,act = simple.setupTracker('SiTrackerEndcap')
-  seq,act = simple.setupTracker('SiTrackerForward')
+  seq,act = geant4.setupTracker('SiVertexBarrel')
+  seq,act = geant4.setupTracker('SiVertexEndcap')
+  seq,act = geant4.setupTracker('SiTrackerBarrel')
+  seq,act = geant4.setupTracker('SiTrackerEndcap')
+  seq,act = geant4.setupTracker('SiTrackerForward')
   # Now the calorimeters
-  seq,act = simple.setupCalorimeter('EcalBarrel')
-  seq,act = simple.setupCalorimeter('EcalEndcap')
-  seq,act = simple.setupCalorimeter('HcalBarrel')
-  seq,act = simple.setupCalorimeter('HcalEndcap')
-  seq,act = simple.setupCalorimeter('HcalPlug')
-  seq,act = simple.setupCalorimeter('MuonBarrel')
-  seq,act = simple.setupCalorimeter('MuonEndcap')
-  seq,act = simple.setupCalorimeter('LumiCal')
-  seq,act = simple.setupCalorimeter('BeamCal')
+  seq,act = geant4.setupCalorimeter('EcalBarrel')
+  seq,act = geant4.setupCalorimeter('EcalEndcap')
+  seq,act = geant4.setupCalorimeter('HcalBarrel')
+  seq,act = geant4.setupCalorimeter('HcalEndcap')
+  seq,act = geant4.setupCalorimeter('HcalPlug')
+  seq,act = geant4.setupCalorimeter('MuonBarrel')
+  seq,act = geant4.setupCalorimeter('MuonEndcap')
+  seq,act = geant4.setupCalorimeter('LumiCal')
+  seq,act = geant4.setupCalorimeter('BeamCal')
+  """
   """
   scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
   kernel.steppingAction().adopt(scan)
@@ -124,7 +166,7 @@ def run():
 
 
   # Now build the physics list:
-  phys = simple.setupPhysics('QGSP_BERT')
+  phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
   ph.addParticleConstructor('G4Geantino')
   ph.addParticleConstructor('G4BosonConstructor')

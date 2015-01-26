@@ -19,13 +19,29 @@ def run():
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
-  kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
   DDG4.importConstants(lcdd)
 
   simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
   simple.printDetectors()
   # Configure UI
   simple.setupCshUI()
+
+  # Configure G4 magnetic field tracking
+  field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
+  field.stepper            = "HelixSimpleRunge"
+  field.equation           = "Mag_UsualEqRhs"
+  field.eps_min            = 5e-05 * mm
+  field.eps_max            = 0.001 * mm
+  field.min_chord_step     = 0.01 * mm
+  field.delta_chord        = 0.25 * mm
+  field.delta_intersection = 1e-05 * mm
+  field.delta_one_step     = 0.001 * mm
+  print '+++++> ',field.name,'-> stepper  = ',field.stepper
+  print '+++++> ',field.name,'-> equation = ',field.equation
+  print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
+  print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
+  print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
+
 
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')

@@ -115,11 +115,16 @@ def _setKernelProperty(self, name, value):
   msg = 'Geant4Kernel::SetProperty [Unhandled]: Cannot set Kernel.'+name+' = '+str(value)
   raise exceptions.KeyError(msg)
 
+#---------------------------------------------------------------------------
+def _kernel_phase(self,name):        return self.addSimplePhase(name,False)
+#---------------------------------------------------------------------------
+Kernel.phase = _kernel_phase
 Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
 
+#---------------------------------------------------------------------------
 ActionHandle                = Sim.ActionHandle
 #---------------------------------------------------------------------------
 def SensitiveAction(kernel,nam,det): return Interface.createSensitive(kernel,nam,det)
@@ -127,6 +132,8 @@ def SensitiveAction(kernel,nam,det): return Interface.createSensitive(kernel,nam
 def Action(kernel,nam):              return Interface.createAction(kernel,nam)
 #---------------------------------------------------------------------------
 def Filter(kernel,nam):              return Interface.createFilter(kernel,nam)
+#---------------------------------------------------------------------------
+def PhaseAction(kernel,nam):         return Interface.createPhaseAction(kernel,nam)
 #---------------------------------------------------------------------------
 def RunAction(kernel,nam):           return Interface.createRunAction(kernel,nam)
 #---------------------------------------------------------------------------
@@ -152,7 +159,15 @@ def _setup(obj):
   setattr(o,'adopt',_adopt)
   setattr(o,'add',_adopt)
 
+def _setup_callback(obj):
+  def _adopt(self,action):  self.__adopt(action.get(),action.callback())
+  _import_class('Sim',obj)
+  o = getattr(current,obj)
+  setattr(o,'__adopt',getattr(o,'add'))
+  setattr(o,'add',_adopt)
+
 #---------------------------------------------------------------------------
+_setup_callback('Geant4ActionPhase')
 _setup('Geant4RunActionSequence')
 _setup('Geant4EventActionSequence')
 _setup('Geant4GeneratorActionSequence')
@@ -165,6 +180,7 @@ _setup('Geant4Sensitive')
 _setup('Geant4ParticleHandler')
 _import_class('Sim','Geant4Filter')
 _import_class('Sim','Geant4RunAction')
+_import_class('Sim','Geant4PhaseAction')
 _import_class('Sim','Geant4UserParticleHandler')
 
 #---------------------------------------------------------------------------
@@ -202,6 +218,7 @@ def _props(obj):
 
 _props('FilterHandle')
 _props('ActionHandle')
+_props('PhaseActionHandle')
 _props('RunActionHandle')
 _props('EventActionHandle')
 _props('GeneratorActionHandle')
@@ -224,29 +241,12 @@ _props('SensDetActionSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
 
-
-
-#class Iter():
-#  def Iterator(self): 
-#    ''' Fix for map iteration on macos '''
-#    n = self.m.size()
-#    it = self.m.begin()
-#    for i in range(0,n):
-#      yield it
-#      it.__preinc__()
-#  def __init__(self,m):
-#    self.m = m
-#  def __iter__(self):
-#    return self.Iterator()
-
-
-
 """
 Helper object to perform stuff, which occurs very often.
 I am sick of typing the same over and over again.
 
-@author  M.Frank
-@version 1.0
+\author  M.Frank
+\version 1.0
 
 """
 class Simple:
@@ -261,6 +261,61 @@ class Simple:
     self.sensitive_types['tracker'] = tracker
     self.sensitive_types['calorimeter'] = calo
 
+  def addPhaseAction(self,phase_name,factory_specification,ui=True):
+    action = PhaseAction(self.kernel,factory_specification)
+    self.kernel.phase('configure').add(action)
+    if ui: action.enableUI()
+    return action
+
+  """
+  Add a new phase action to the 'configure' step.
+  Called at the beginning of Geant4Exec::configure.
+  The factory specification is the typical string "<factory_name>/<instance name>".
+  If no instance name is specified it defaults to the factory name.
+
+  \author  M.Frank
+  """
+  def addConfig(self, factory_specification):
+    return self.addPhaseAction('configure',factory_specification)
+
+  """
+  Add a new phase action to the 'initialize' step.
+  Called at the beginning of Geant4Exec::initialize.
+  The factory specification is the typical string "<factory_name>/<instance name>".
+  If no instance name is specified it defaults to the factory name.
+
+  \author  M.Frank
+  """
+  def addInit(self, factory_specification):
+    return self.addPhaseAction('initialize',factory_specification)
+
+  """
+  Add a new phase action to the 'start' step.
+  Called at the beginning of Geant4Exec::run.
+  The factory specification is the typical string "<factory_name>/<instance name>".
+  If no instance name is specified it defaults to the factory name.
+
+  \author  M.Frank
+  """
+  def addStart(self, factory_specification):
+    return self.addPhaseAction('start',factory_specification)
+
+  """
+  Add a new phase action to the 'stop' step.
+  Called at the end of Geant4Exec::run.
+  The factory specification is the typical string "<factory_name>/<instance name>".
+  If no instance name is specified it defaults to the factory name.
+
+  \author  M.Frank
+  """
+  def addStop(self, factory_specification):
+    return self.addPhaseAction('stop',factory_specification)
+
+  """
+  Execute the geant 4 program with all steps.
+
+  \author  M.Frank
+  """
   def execute(self):
     self.kernel.configure()
     self.kernel.initialize()
@@ -269,7 +324,7 @@ class Simple:
     return self
 
   def printDetectors(self):
-    print '+++  List of detectors:'
+    print '+++  List of sensitive detectors:'
     for i in self.lcdd.detectors():
       o = DetElement(i.second)
       sd = self.lcdd.sensitiveDetector(o.name())

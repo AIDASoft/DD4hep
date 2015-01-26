@@ -23,6 +23,7 @@ namespace DD4hep {
     class Geant4Kernel;
     class Geant4Action;
     class Geant4Filter;
+    class Geant4PhaseAction;
     class Geant4RunAction;
     class Geant4EventAction;
     class Geant4TrackingAction;
@@ -50,6 +51,7 @@ namespace DD4hep {
       // Actions
       typedef Geant4Handle<Geant4Action> Action;
       typedef Geant4Handle<Geant4Filter> Filter;
+      typedef Geant4Handle<Geant4PhaseAction> PhaseAction;
       typedef Geant4Handle<Geant4GeneratorAction> GenAction;
       typedef Geant4Handle<Geant4RunAction> RunAction;
       typedef Geant4Handle<Geant4EventAction> EventAction;

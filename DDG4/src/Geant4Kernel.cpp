@@ -303,6 +303,16 @@ Geant4Action* Geant4Kernel::globalFilter(const std::string& filter_name, bool th
   return (*i).second;
 }
 
+/// Execute phase action if it exists
+bool Geant4Kernel::executePhase(const std::string& nam, const void** arguments)  const   {
+  Phases::const_iterator i = m_phases.find(nam);
+  if (i != m_phases.end())   {
+    (*i).second->execute(arguments);
+    return true;
+  }
+  return false;
+}
+
 /// Access phase by name
 Geant4ActionPhase* Geant4Kernel::getPhase(const std::string& nam) {
   Phases::const_iterator i = m_phases.find(nam);
@@ -311,6 +321,11 @@ Geant4ActionPhase* Geant4Kernel::getPhase(const std::string& nam) {
   }
   throw runtime_error(format("Geant4Kernel", "DDG4: The Geant4 action phase '%s' "
                              "does not exist. [No-Entry]", nam.c_str()));
+}
+
+/// Add a new phase to the phase
+Geant4ActionPhase* Geant4Kernel::addSimplePhase(const std::string& name, bool throw_on_exist)   {
+  return addPhase(name,typeid(void),typeid(void),typeid(void),throw_on_exist);
 }
 
 /// Add a new phase

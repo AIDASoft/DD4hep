@@ -223,6 +223,7 @@ template class Geant4Handle<Geant4Action> ;
 template class Geant4Handle<Geant4Filter> ;
 template class Geant4Handle<Geant4Sensitive> ;
 template class Geant4Handle<Geant4ActionPhase> ;
+template class Geant4Handle<Geant4PhaseAction> ;
 template class Geant4Handle<Geant4GeneratorAction> ;
 template class Geant4Handle<Geant4RunAction> ;
 template class Geant4Handle<Geant4EventAction> ;

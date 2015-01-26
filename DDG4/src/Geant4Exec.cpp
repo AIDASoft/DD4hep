@@ -75,6 +75,13 @@ namespace DD4hep {
         releasePtr(m_sequence);
         InstanceCount::decrement(this);
       }
+      Geant4Context* context() const  {  
+	return m_activeContext;
+      }
+      Geant4Kernel& kernel()  const  {
+	return context()->kernel();
+      }
+
       void setContextToClients()   {
         (Geant4Action::ContextUpdate(m_activeContext))(m_sequence);
       }
@@ -263,6 +270,7 @@ namespace DD4hep {
     /// Begin-of-run callback
     void Geant4UserRunAction::BeginOfRunAction(const G4Run* run) {
       createClientContext(run);
+      kernel().executePhase("begin-run",(const void**)&run);
       eventAction->setContextToClients();
       m_sequence->begin(run);
     }
@@ -270,6 +278,7 @@ namespace DD4hep {
     /// End-of-run callback
     void Geant4UserRunAction::EndOfRunAction(const G4Run* run) {
       m_sequence->end(run);
+      kernel().executePhase("end-run",(const void**)&run);
       eventAction->releaseContextFromClients();
       destroyClientContext(run);
     }
@@ -278,6 +287,7 @@ namespace DD4hep {
     void Geant4UserEventAction::BeginOfEventAction(const G4Event* evt) {
       runAction->setContextToClients();
       setContextToClients();
+      kernel().executePhase("begin-event",(const void**)&evt);
       m_sequence->begin(evt);
     }
 
@@ -285,6 +295,7 @@ namespace DD4hep {
     void Geant4UserEventAction::EndOfEventAction(const G4Event* evt) {
       m_sequence->end(evt);
       runAction->releaseContextFromClients();
+      kernel().executePhase("end-event",(const void**)&evt);
       destroyClientContext(evt);
     }
   }
@@ -310,6 +321,8 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   Geant4Context* ctx = s_globalContext = new Geant4Context(&kernel);
   // For now do this:
   /* Geant4Random* rnd = */ s_globalRandom = new Geant4Random();
+
+  kernel.executePhase("configure",0);
 
   // Construct the default run manager
   G4RunManager& runManager = kernel.runManager();
@@ -379,6 +392,7 @@ int Geant4Exec::initialize(Geant4Kernel& kernel) {
   //
   // Initialize G4 engine
   //
+  kernel.executePhase("initialize",0);
   runManager.Initialize();
   return 1;
 }
@@ -387,12 +401,15 @@ int Geant4Exec::initialize(Geant4Kernel& kernel) {
 int Geant4Exec::run(Geant4Kernel& kernel) {
   Property& p = kernel.property("UI");
   string value = p.value<string>();
+
+  kernel.executePhase("start",0);
   if ( !value.empty() )  {
     Geant4Action* ui = kernel.globalAction(value);
     if ( ui )  {
       Geant4Call* c = dynamic_cast<Geant4Call*>(ui);
       if ( c )  {
         (*c)(0);
+	kernel.executePhase("stop",0);
         return 1;
       }
       ui->except("++ Geant4Exec: Failed to start UI interface.");
@@ -401,11 +418,13 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
   }
   long nevt = kernel.property("NumEvents").value<long>();
   kernel.runManager().BeamOn(nevt);
+  kernel.executePhase("stop",0);
   return 1;
 }
 
 /// Run the simulation
-int Geant4Exec::terminate(Geant4Kernel&) {
+int Geant4Exec::terminate(Geant4Kernel& kernel) {
+  kernel.executePhase("terminate",0);
   deletePtr(s_globalContext);
   return 1;
 }
