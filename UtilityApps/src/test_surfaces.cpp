@@ -68,7 +68,7 @@ int main(int argc, char** argv ){
   }
 
   //---------------------------------------------------------------------
-  //    open lcio file (created with ILDExSimu)
+  //    open lcio file with SimTrackerHits
   //---------------------------------------------------------------------
 
   std::string lcioFileName = argv[2] ;
@@ -78,35 +78,28 @@ int main(int argc, char** argv ){
 
   LCEvent* evt = 0 ;
 
-  UTIL::BitField64 idDecoder( ILDCellID0::encoder_string ) ;
-
-
-  std::vector< std::string > colNames ;
-  colNames.push_back( "VXDCollection" ) ;
-  colNames.push_back( "SITCollection" ) ;
-  colNames.push_back( "SETCollection" ) ;
-  colNames.push_back( "FTDCollection" ) ;
-  colNames.push_back( "TPCCollection" ) ;
 
   while( ( evt = rdr->readNextEvent() ) != 0 ){
 
+    const std::vector< std::string >& colNames = *evt->getCollectionNames() ;
 
     for(unsigned icol=0, ncol = colNames.size() ; icol < ncol ; ++icol ){
 
-      
-      LCCollection* col = 0 ; 
-      try{ 
+      LCCollection* col =  evt->getCollection( colNames[ icol ] ) ;
 
-	col = evt->getCollection( colNames[ icol ] ) ;
+      std::string typeName = col->getTypeName() ;
 
-      }catch(lcio::DataNotAvailableException&e){
-
-	std::cout << " --- collection  : " << colNames[ icol ] << " not in event ... " << std::endl ;
+      if( typeName != lcio::LCIO::SIMTRACKERHIT ) 
 	continue ;
-      }
+
+      std::cout << "  -- testing collection : " <<  colNames[ icol ] << std::endl ;
+
+      std::string cellIDEcoding = col->getParameters().getStringVal("CellIDEncoding") ;
+      
+      UTIL::BitField64 idDecoder( cellIDEcoding ) ;
+
       int nHit = col->getNumberOfElements() ;
       
-
       for(int i=0 ; i< nHit ; ++i){
 	
 	SimTrackerHit* sHit = (SimTrackerHit*) col->getElementAt(i) ;
@@ -119,7 +112,7 @@ int main(int argc, char** argv ){
 	Surface* surf = surfMap[ id ] ;
 	
 	std::stringstream sst ;
-	sst << " surface found for id : " << std::hex << id << std::dec  ;
+	sst << " surface found for id : " << std::hex << id  << std::dec  <<  "  "  << idDecoder.valueString() << std ::endl ;
 	
 	
 	// ===== test that we have a surface with the correct ID for every hit ======================
@@ -148,7 +141,7 @@ int main(int argc, char** argv ){
 	  if( ! isInside ) {
 
 	    std::cout << " found surface " <<  *surf << std::endl
-		      << " id : " << idDecoder 
+		      << " id : " << idDecoder.valueString() 
 		      << " point : " << point 
 		      << " is inside : " <<  isInside
 		      << " distance from surface : " << dist/dd4hep::mm << std::endl 
@@ -166,7 +159,7 @@ int main(int argc, char** argv ){
 	  if( ! isInside ) {
 
 	    std::cout << " found surface " <<  *surf << std::endl
-		      << " id : " << idDecoder 
+		      << " id : " << idDecoder.valueString() 
 		      << " point : " << point 
 		      << " is inside : " <<  isInside
 		      << " distance from surface : " << dist/dd4hep::mm << std::endl 

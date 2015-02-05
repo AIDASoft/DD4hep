@@ -4,7 +4,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
                      ${ROOT_INCLUDE_DIR}
                      ${CMAKE_SOURCE_DIR}/DDSegmentation/include
                      ${CMAKE_SOURCE_DIR}/DDSurfaces/include
-                     ${CMAKE_SOURCE_DIR}/DDRec/include )
+                     ${CMAKE_SOURCE_DIR}/DDRec/include  
+		     ${CMAKE_SOURCE_DIR}/DDTest/include )
 
 
 
@@ -31,6 +32,9 @@ if(DD4HEP_USE_LCIO)
   find_package(LCIO REQUIRED)
   include_directories( ${LCIO_INCLUDE_DIRS} )
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_lcio.cpp)
+
+  add_executable(test_surfaces src/test_surfaces.cpp )
+  target_link_libraries(test_surfaces DD4hepCore DD4hepRec ${LCIO_LIBRARIES} )
 else()
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_dummy.cpp)
 endif()
@@ -38,9 +42,17 @@ target_link_libraries( teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES} DD4hepRec ${
 
 #--- install target-------------------------------------
 
-install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials materialScan
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
+if(DD4HEP_USE_LCIO)
+  install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials materialScan test_surfaces
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    )
+else()
+  install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials materialScan
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    )
+endif()
+
 # to do: add corresponding uninstall...
 #-------------------------------------------------------
