@@ -1,6 +1,0 @@
-- Length units are different between TGeo and G4. 
-  The conversion VGM takes care of it but the detector constructor drivers should create the TGeo geometry in unit of cm which is not the case today.
-- DetectorElement should be associated to one and only one volume placement
-- Overlap problems between 'tracking_volume' and TPC. We need to rethink the need for the tracking volume
-- Workout sensitive volumes
-- DetectorElement sould associated to assembies if they do not provide an emvelop shape.
