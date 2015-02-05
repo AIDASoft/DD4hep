@@ -3,6 +3,82 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-11 |  
+ --------   
+ 
+ changes in sub packages:
+ -----------------------
+
+ - DDDetectors
+   - new Package containing generic DD4hep detector palette (MF)
+
+
+ - DDRec (FG)
+   - added simple data structs in DDRec/DetectorData.h
+     providing interface needed for GEAR:
+   - added plugin for creating GEAR file for ILD
+   - Extended IDDecoder to give access to layer, system and barrel/endcap information. (CG)
+     IDDecoder is now independent of Readout object, instead it finds the correct
+     readout based on the cellID / position
+
+
+ - DDG4 (MF)
+   - Fix Geant4 Primary input conversion
+   - Fix LCCollectionVec for LCIO output
+   - fixed units for MCParticle output (FG)
+   - fixed generator status: set to 0 if (FG)
+     particle created in simulation
+   - Add cylindrical tracking volume to particle handler
+   - More modular user particle handling with example Geant4TCUserParticleHandler
+   - fixed charge (don't devide by three) (FG)
+   - fixed logic for writing out MCParticles: (FG)
+      - don't write particles created in calo
+        unless scattered back into tracker)
+      - don't write particles created in tracker
+        if below MinimalKineticEnergy ( Geant4ParticleHandler)
+   - Added HepMC ascii reader
+   - added simply main program 'dd_sim' to run  (FG)
+     a DDG4 based simulation with xml configuration files
+   - change TrackerCombine SD to use energy weighted positions
+   - added utility to dump generated files: scripts/dumpDDG4.C
+   - fixed dictionaries for map iteration on MacOS in python (FG)
+     -> added operators ==/!= for map<>::iterator
+   - added component to allow the setup of the magnetic field tracking in Geant4 from python
+
+
+
+ - DDCore (MF)
+   - fixed LCDD el-mag. field converter 
+   - add generic surface installers 
+   - allow for string constants in lcdd define section
+
+ - DDSegmentation (FG) :
+   - fixed compiler warning w/ left shift count >= width of type 
+   - fixed wrong type string "CartesianGridXY"
+   - added CartesianGridYZ
+   - Implementation of a Polar R-phi segmentation  (MP)
+
+ - examples 
+   - add new test MiniTel(escope) to ClientTests (MF)
+ 
+ - CMake:
+  - made DD4HEP_USE_BOOST an option flag (FG)
+  - added DD4hepG4 library dependence to DDEve (MF)
+  - disable dot -> have simpler (and faster) inheritance graphs w/ Doxygen
+  - fixed missing search field in Doxygen doc (FG)
+  - include boost automatically if build with Geant4
+
+ 
+ - Documentation
+   - improved Doxygen documentation (MF)
+   - added manual for DDRec (FG)
+   - new version of the DD4hep manual (MF)
+   - fixed code formating with emacs style:
+     ./doc/format_code.sh
+
+ - plus many small bug fixes  (use svn log for details )
+
 
 2014/09/26 Markus Frank
 -----------------------
