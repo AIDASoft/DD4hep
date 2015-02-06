@@ -86,6 +86,24 @@ DD4hep  ----  Release Notes
     The current revision is can be found at:
     https://cern.ch/frankm/DD4hep/html/index.html
 
+2014/02/06 Markus Frank
+-----------------------
+  - DDDetectors: Add example surface plugin with arguments.
+    -- example code: DDDetectors/src/SurfaceExamplePlugin.cpp
+    -- compact:
+       <plugin name="DD4hep_SurfaceExamplePlugin">
+          <argument value="SiTrackerBarrel"/>
+          <argument value="aa=1*mm"/>
+          <argument value="bb=2*cm"/>
+          <argument value="cc=3*m"/>
+       </plugin>
+    -- output:
+    SurfaceExamplePlugin: argument[0] = SiTrackerBarrel value = -1
+    SurfaceExamplePlugin: argument[1] = aa=1*mm value = 0.1
+    SurfaceExamplePlugin: argument[2] = bb=2*cm value = 2
+    SurfaceExamplePlugin: argument[3] = cc=3*m value = 300
+
+
 2014/08/15 Markus Frank
 -----------------------
   - DDG4: Impreoved LCIO handling for DDG4

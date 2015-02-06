@@ -22,18 +22,23 @@ using namespace DD4hep::Geometry;
 typedef DetElement::Children _C;
 
 /// Initializing constructor
-SurfaceInstaller::SurfaceInstaller(LCDD& lcdd, const std::string& det_name)
+SurfaceInstaller::SurfaceInstaller(LCDD& lcdd, int argc, char** argv)
   : m_lcdd(lcdd), m_det()
 {
-  string n = det_name[0] == '-' ? det_name.substr(1) : det_name;
-  m_det = lcdd.detector(n);
-  if ( !m_det.isValid() )   {
-    stringstream err;
-    err << "The subdetector " << det_name << " is not known to the geometry.";
-    printout(INFO,"SurfaceInstaller",err.str().c_str());
-    throw runtime_error(err.str());
+  if ( argc > 0 )  {
+    string det_name = argv[0];
+    string n = det_name[0] == '-' ? det_name.substr(1) : det_name;
+    m_det = lcdd.detector(n);
+    if ( !m_det.isValid() )   {
+      stringstream err;
+      err << "The subdetector " << det_name << " is not known to the geometry.";
+      printout(INFO,"SurfaceInstaller",err.str().c_str());
+      throw runtime_error(err.str());
+    }
+    printout(INFO,m_det.name(),"+++ Processing SurfaceInstaller for subdetector: '%s'",m_det.name());
+    return;
   }
-  printout(INFO,m_det.name(),"+++ Processing SurfaceInstaller for subdetector: '%s'",m_det.name());
+  throw runtime_error("The plugin takes at least one argument. No argument supplied");
 }
 
 /// Indicate error message and throw exception

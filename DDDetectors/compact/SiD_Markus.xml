@@ -226,17 +226,24 @@
 -->  
   <!--  Includes for sensitives and support                -->
   <!-- include ref="SiD/SiD_TrackerBarrel.xml" -->
-
+<!--
+-->
   <comment>Tracking detectors</comment>
   <include ref="${SiD_dir}/SiD_Tracker.xml"/>
-
   <include ref="SiD/SiD_Ecal.xml"/>
-<!--
+
    <plugins>
     <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
       <argument value="SiTrackerBarrel"/>
     </plugin>
+    <plugin name="DD4hep_SurfaceExamplePlugin">
+      <argument value="SiTrackerBarrel"/>
+      <argument value="aa=1*mm"/>
+      <argument value="bb=2*cm"/>
+      <argument value="cc=3*m"/>
+    </plugin>
   </plugins>
+<!--
 
   <plugins>
     <plugin name="TestSurfaces"><argument value="EcalEndcap"/></plugin>
@@ -297,6 +304,7 @@
 -->
 <!--
   <include ref="SiD/SiD_Vertex.xml"/>
+  <include ref="SiD/SiD_Tracker.xml"/>
 
   <comment>Calorimeters</comment>
   <include ref="SiD/SiD_Ecal.xml"/>
@@ -322,4 +330,5 @@
     </field>
   </fields>
 -->
+
 </lccdd>
