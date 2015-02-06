@@ -33,6 +33,20 @@ include( DD4hep )
 find_package( ROOT REQUIRED )
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 #-------------------------------------------------------------
+# add additional packages here
+#-------------------------------------------------------------
+
+#---Testing-------------------------------------------------------------------------
+if(BUILD_TESTING)
+  include(CTest)
+  enable_testing()
+endif(BUILD_TESTING)
+
+configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
+INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
+  DESTINATION bin )
+
+#-------------------------------------------------------------
 include_directories( ${CMAKE_SOURCE_DIR}/include
   include
   ${DD4hep_INCLUDE_DIRS}
@@ -44,7 +58,7 @@ include(DD4hep_XML_setup)
 
 add_library(${PackageName} SHARED ${sources})
 
-target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} )
+target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
 
 #---Rootmap generation--------------------------------------------------------------
 if(APPLE)
@@ -52,6 +66,7 @@ if(APPLE)
 else()
   dd4hep_generate_rootmap(${PackageName} )
 endif()
+
 #---- configure run environment ---------------
 configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 

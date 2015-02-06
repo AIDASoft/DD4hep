@@ -25,6 +25,8 @@ endif(BUILD_TESTING)
 # (un)comment as needed
 #
  	
+add_subdirectory(AlignDet)
+
 add_subdirectory(CLICSiD)
  	
 add_subdirectory(ClientTests)
