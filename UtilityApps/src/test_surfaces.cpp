@@ -52,7 +52,7 @@ int main(int argc, char** argv ){
   const SurfaceList& sL = surfMan.surfaceList() ;
 
   // map of surfaces
-  std::map< long64, Surface* > surfMap ;
+  std::map< DD4hep::long64, Surface* > surfMap ;
 
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
     
@@ -104,7 +104,7 @@ int main(int argc, char** argv ){
 	
 	SimTrackerHit* sHit = (SimTrackerHit*) col->getElementAt(i) ;
 	
-	long64 id = sHit->getCellID0() ;
+	DD4hep::long64 id = sHit->getCellID0() ;
 	
 	idDecoder.setValue( id ) ;
 	//      std::cout << " simhit with cellid : " << idDecoder << std::endl ;
