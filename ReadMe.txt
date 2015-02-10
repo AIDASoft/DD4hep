@@ -30,7 +30,7 @@ to Geant4. The Geant4 installation needs to be located using the variable -DGean
 
 - examples
 
-  Contains different detector examples (CLICSiD, ILDExDet, ILDExSimu) together with example applications to illustrate
+  Contains different detector examples (CLICSiD, AlignDet, ClientTests) together with example applications to illustrate
 the their usage for simulation, reconstruction and visualization with an emphasis to minimize software
 dependencies. For instance, the simulation application example will require to compiler and link 
 against Geant4 but not the reconstruction application.
@@ -211,14 +211,6 @@ or build all examples in one go:
 
   make install ; make test
  
-  or: 
-  ctest -V -R converter
-  ctest -V -R sim
-  ctest -V -R noviceN04
+  ...
 
 
-9) run SLIC simulation on lccd file created with DD4Hep:
-
-
-# make sure slic is in the path and then:
-slic -g ./ILD_toy.lcdd -o ILD_toy.slcio -x -m ../DD4hep/DDExamples/ILDExSimu/run1.mac

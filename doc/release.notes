@@ -12,7 +12,8 @@ DD4hep  ----  Release Notes
 
  - DDDetectors
    - new Package containing generic DD4hep detector palette (MF)
-
+   - added 'dimension' argument to DD4hep_SiTrackerBarrelSurfacePlugin (FG)
+     to handle pixel and strip detectors 
 
  - DDRec (FG)
    - added simple data structs in DDRec/DetectorData.h
@@ -52,6 +53,7 @@ DD4hep  ----  Release Notes
    - fixed LCDD el-mag. field converter 
    - add generic surface installers 
    - allow for string constants in lcdd define section
+   - added arguments for surface plugins
 
  - DDSegmentation (FG) :
    - fixed compiler warning w/ left shift count >= width of type 
@@ -61,6 +63,8 @@ DD4hep  ----  Release Notes
 
  - examples 
    - add new test MiniTel(escope) to ClientTests (MF)
+   - moved old obsolete examples to attic
+
  
  - CMake:
   - made DD4HEP_USE_BOOST an option flag (FG)
@@ -76,6 +80,15 @@ DD4hep  ----  Release Notes
    - new version of the DD4hep manual (MF)
    - fixed code formating with emacs style:
      ./doc/format_code.sh
+
+ - removed subpackages ( moved to https://svnsrv.desy.de/public/aidasoft/DD4hep/attic ):
+      DDExamples_obs/
+      DDSense/
+      examples/ILDExDet/
+      examples/ILDExSimu/
+      examples/firstExample/
+      examples/noviceN04/
+
 
  - plus many small bug fixes  (use svn log for details )
 
