@@ -212,9 +212,9 @@ int main(int argc, char** argv ){
       std::cout << " ** yn = " << yn << std::endl ;
 
 
-    Vector3D yv = surfT.v( y ) ;
+    Vector3D yv = surfT.u( y ) ;
     dummy = yv.isEqual( Vector3D( -1. , 0. , 0 ) ) ;
-    test( dummy , true , "  v at (0.,radius,42) is  Vector3D( -1. , 0. , 0 ) " ) ; 
+    test( dummy , true , "  u at (0.,radius,42) is  Vector3D( -1. , 0. , 0 ) " ) ; 
     if( ! dummy ) 
       std::cout << " ** yv = " << yv << std::endl ;
 
@@ -227,8 +227,8 @@ int main(int argc, char** argv ){
 
     // std::cout << " --- local coordinates of " << pointC << " : (" << lpC[0] << "," << lpC[1] << ")" << std::endl ;
 
-    test(  STR( lpC[0] ) == STR( 34.3 ) , true , " local u coordinate is 34.4 "  ) ;  
-    test(  STR( lpC[1] ) == STR( -42.7 ) , true , " local v coordinate is -42.7 "  ) ;  
+    test(  STR( lpC[0] ) == STR( -42.7 ) , true , " local u coordinate is -42.7 "  ) ;  
+    test(  STR( lpC[1] ) == STR( 34.3 ) , true  , " local v coordinate is 34.4 "  ) ;  
 
     Vector3D pointPrimeC = surfT.localToGlobal( lpC ) ;
 

@@ -191,6 +191,18 @@ namespace DD4hep {
       virtual double outerThickness() const { return object<SurfaceData>()._th_o ; }
 
 
+      /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
+       *  this can be used to speed up the computation of inSideBounds.
+       */
+      double length_along_u() const ;
+
+      /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
+       *  this can be used to speed up the computation of inSideBounds.
+       */
+      double length_along_v() const ;
+
+
+
       // need default implementations for putting it in list....
       
       /** Distance to surface */
@@ -329,20 +341,11 @@ namespace DD4hep {
       VolCylinder(const VolSurface& vs ) : VolSurface( vs ) { }
       
       /** The standard constructor. The origin vector points to the origin of the coordinate system on the cylinder,
-       *  its rho defining the radius of the cylinder. The measurement direction u is set to be (0,0,1), the normal is
-       *  chosen to be parallel to the origin vector and v = n X u. 
+       *  its rho defining the radius of the cylinder. The measurement direction v is set to be (0,0,1), the normal is
+       *  chosen to be parallel to the origin vector and u = n X v. 
        */
       VolCylinder( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D origin ) ;
 
-
-      //fg: for now we don't allow to set u and v for cylinders 
-      // VolCylinder( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
-      // 		Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) :	
-      // 	VolSurface( vol, type, thickness_inner, thickness_outer, u,v,n,o ) {
-      // 	object<SurfaceData>()._type.setProperty( SurfaceType::Plane    , false ) ;
-      // 	object<SurfaceData>()._type.setProperty( SurfaceType::Cylinder , true ) ;
-      // }      
-      
 
       /** First direction of measurement U - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
@@ -462,6 +465,9 @@ namespace DD4hep {
       /// Checks if the given point lies within the surface
       virtual bool insideBounds(const Vector3D& point, double epsilon=1.e-4) const ;
 
+      /** Get Origin of local coordinate system of the associated volume */
+      virtual Vector3D volumeOrigin() const  ; 
+
       //---------------------------------------------------
       /** Get vertices constraining the surface for drawing ( might not be exact boundaries) -
        *  at most nMax points are returned.
@@ -517,6 +523,7 @@ namespace DD4hep {
       virtual double radius() const {
 	return _volSurf.origin().rho() ;
       }
+
     } ;
 
     //======================================================================================================
