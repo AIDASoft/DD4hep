@@ -23,7 +23,7 @@ typedef DetElement::Children _C;
 
 /// Initializing constructor
 SurfaceInstaller::SurfaceInstaller(LCDD& lcdd, int argc, char** argv)
-  : m_lcdd(lcdd), m_det()
+  : m_lcdd(lcdd), m_det(), m_stopScanning(false)
 {
   if ( argc > 0 )  {
     string det_name = argv[0];

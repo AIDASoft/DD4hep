@@ -235,6 +235,7 @@
    <plugins>
     <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
       <argument value="SiTrackerBarrel"/>
+      <argument value="dimension=1"/>
     </plugin>
     <plugin name="DD4hep_SurfaceExamplePlugin">
       <argument value="SiTrackerBarrel"/>
