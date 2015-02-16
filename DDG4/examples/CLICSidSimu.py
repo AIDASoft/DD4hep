@@ -21,14 +21,14 @@ def run():
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
   DDG4.importConstants(lcdd)
 
-  simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
-  simple.printDetectors()
+  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
+  geant4.printDetectors()
   # Configure UI
-  simple.setupCshUI()
+  geant4.setupCshUI()
 
   # Configure G4 magnetic field tracking
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-  field.stepper            = "HelixSimpleRunge"
+  field.stepper            = "HelixGeant4Runge"
   field.equation           = "Mag_UsualEqRhs"
   field.eps_min            = 5e-05 * mm
   field.eps_max            = 0.001 * mm
@@ -60,10 +60,10 @@ def run():
   kernel.eventAction().adopt(prt)
 
   # Configure I/O
-  evt_lcio = simple.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   evt_lcio.OutputLevel = Output.ERROR
 
-  evt_root = simple.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   generator_output_level = Output.INFO
 
@@ -144,31 +144,31 @@ def run():
   kernel.registerGlobalFilter(f4)
 
   # First the tracking detectors
-  seq,act = simple.setupTracker('SiVertexBarrel')
+  seq,act = geant4.setupTracker('SiVertexBarrel')
   seq.adopt(f1)
   #seq.adopt(f4)
   act.adopt(f1)
 
-  seq,act = simple.setupTracker('SiVertexEndcap')
+  seq,act = geant4.setupTracker('SiVertexEndcap')
   seq.adopt(f1)
   #seq.adopt(f4)
 
-  seq,act = simple.setupTracker('SiTrackerBarrel')
-  seq,act = simple.setupTracker('SiTrackerEndcap')
-  seq,act = simple.setupTracker('SiTrackerForward')
+  seq,act = geant4.setupTracker('SiTrackerBarrel')
+  seq,act = geant4.setupTracker('SiTrackerEndcap')
+  seq,act = geant4.setupTracker('SiTrackerForward')
   # Now the calorimeters
-  seq,act = simple.setupCalorimeter('EcalBarrel')
-  seq,act = simple.setupCalorimeter('EcalEndcap')
-  seq,act = simple.setupCalorimeter('HcalBarrel')
-  seq,act = simple.setupCalorimeter('HcalEndcap')
-  seq,act = simple.setupCalorimeter('HcalPlug')
-  seq,act = simple.setupCalorimeter('MuonBarrel')
-  seq,act = simple.setupCalorimeter('MuonEndcap')
-  seq,act = simple.setupCalorimeter('LumiCal')
-  seq,act = simple.setupCalorimeter('BeamCal')
+  seq,act = geant4.setupCalorimeter('EcalBarrel')
+  seq,act = geant4.setupCalorimeter('EcalEndcap')
+  seq,act = geant4.setupCalorimeter('HcalBarrel')
+  seq,act = geant4.setupCalorimeter('HcalEndcap')
+  seq,act = geant4.setupCalorimeter('HcalPlug')
+  seq,act = geant4.setupCalorimeter('MuonBarrel')
+  seq,act = geant4.setupCalorimeter('MuonEndcap')
+  seq,act = geant4.setupCalorimeter('LumiCal')
+  seq,act = geant4.setupCalorimeter('BeamCal')
 
   # Now build the physics list:
-  phys = simple.setupPhysics('QGSP_BERT')
+  phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
   ph.addParticleConstructor('G4BosonConstructor')
   ph.addParticleConstructor('G4LeptonConstructor')
