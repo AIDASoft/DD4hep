@@ -138,8 +138,18 @@ namespace DD4hep {
       /// Access rotation constants: startphi
       double startphi(double default_value) const;
 
+      /// Access parameters: a
+      double a() const;
+      /// Access parameters: a
+      double a(double default_value) const;
       /// Access parameters: b
       double b() const;
+      /// Access parameters: b
+      double b(double default_value) const;
+      /// Access parameters: c
+      double c() const;
+      /// Access parameters: c
+      double c(double default_value) const;
       /// Access parameters: B
       double B() const;
       /// Access parameters: g
@@ -326,6 +336,10 @@ namespace DD4hep {
       double outer_z() const;
       /// Access attribute values: inner_z
       double inner_z() const;
+      /// Access attribute values: outer_stereo
+      double outer_stereo() const;
+      /// Access attribute values: inner_stereo
+      double inner_stereo() const;
       /// Access min/max parameters: z_offset
       double z_offset() const;
       /// Access min/max parameters: z_offset

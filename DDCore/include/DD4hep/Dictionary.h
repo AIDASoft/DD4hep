@@ -219,62 +219,58 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoShape>+;
 
 #pragma link C++ class DD4hep::Geometry::Polycone+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoPcon>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoPcon>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoPcon>+;
 
 #pragma link C++ class DD4hep::Geometry::ConeSegment+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoConeSeg>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoConeSeg>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoConeSeg>+;
 
 #pragma link C++ class DD4hep::Geometry::Box+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoBBox>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoBBox>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoBBox>+;
 
 #pragma link C++ class DD4hep::Geometry::Torus+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTorus>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTorus>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoTorus>+;
 
 #pragma link C++ class DD4hep::Geometry::Cone+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoCone>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoCone>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoCone>+;
 
 #pragma link C++ class DD4hep::Geometry::Tube+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTubeSeg>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTubeSeg>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoTubeSeg>+;
 
+#pragma link C++ class DD4hep::Geometry::EllipticalTube+;
+#pragma link C++ class DD4hep::Geometry::Solid_type<TGeoEltu>+;
+#pragma link C++ class DD4hep::Geometry::Handle<TGeoEltu>+;
+
 #pragma link C++ class DD4hep::Geometry::Trap+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTrap>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTrap>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoTrap>+;
 
 #pragma link C++ class DD4hep::Geometry::Trapezoid+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTrd2>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTrd2>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoTrd2>+;
 
 #pragma link C++ class DD4hep::Geometry::Sphere+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoSphere>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoSphere>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoSphere>+;
 
 #pragma link C++ class DD4hep::Geometry::Paraboloid+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoParaboloid>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoParaboloid>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoParaboloid>+;
 
+#pragma link C++ class DD4hep::Geometry::Hyperboloid+;
+#pragma link C++ class DD4hep::Geometry::Solid_type<TGeoHype>+;
+#pragma link C++ class DD4hep::Geometry::Handle<TGeoHype>+;
+
 #pragma link C++ class DD4hep::Geometry::PolyhedraRegular+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoPgon>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoPgon>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoPgon>+;
 
 #pragma link C++ class DD4hep::Geometry::BooleanSolid+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoCompositeShape>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoCompositeShape>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoCompositeShape>+;
 

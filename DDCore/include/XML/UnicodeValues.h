@@ -175,6 +175,7 @@ namespace DD4hep {
     UNICODE (inner_field);
     UNICODE (inner_r);
     UNICODE (inner_radius);
+    UNICODE (inner_stereo);
     UNICODE (inner_z);
     UNICODE (insideTrackingVolume);
     UNICODE (intersection);
@@ -245,6 +246,7 @@ namespace DD4hep {
     UNICODE (outer_field);
     UNICODE (outer_r);
     UNICODE (outer_radius);
+    UNICODE (outer_stereo);
     UNICODE (outer_z);
     UNICODE (outgoing_r);
     UNICODE (outst);

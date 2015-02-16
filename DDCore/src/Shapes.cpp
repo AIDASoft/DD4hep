@@ -21,6 +21,7 @@
 #include "TGeoPcon.h"
 #include "TGeoPgon.h"
 #include "TGeoTube.h"
+#include "TGeoEltu.h"
 #include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
 #include "TGeoArb8.h"
@@ -261,6 +262,19 @@ Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, d
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
+void EllipticalTube::make(const string& name, double a, double b, double dz) {
+  _assign(new TGeoEltu(), name, "elliptic_tube", true);
+  setDimensions(a, b, dz);
+}
+
+/// Set the tube dimensions
+EllipticalTube& EllipticalTube::setDimensions(double a, double b, double dz) {
+  double params[] = { a, b, dz };
+  _setDimensions(params);
+  return *this;
+}
+
+/// Constructor to be used when creating a new object with attribute initialization
 void Cone::make(const string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2) {
   _assign(new TGeoCone(z, rmin1, rmax1, rmin2, rmax2 ), name, "cone", true);
 }
@@ -296,6 +310,18 @@ Paraboloid::Paraboloid(double r_low, double r_high, double delta_z) {
 /// Set the Paraboloid dimensions
 Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_z) {
   double params[] = { r_low, r_high, delta_z  };
+  _setDimensions(params);
+  return *this;
+}
+
+/// Constructor to create a new anonymous object with attribute initialization
+Hyperboloid::Hyperboloid(double rin, double stin, double rout, double stout, double dz) {
+  _assign(new TGeoHype(rin, stin, rout, stout, dz), "", "hyperboloid", true);
+}
+
+/// Set the Hyperboloid dimensions
+Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, double stout, double dz)  {
+  double params[] = { rin, stin/dd4hep::deg, rout, stout/dd4hep::deg, dz};
   _setDimensions(params);
   return *this;
 }
@@ -486,6 +512,8 @@ INSTANTIATE(TGeoSphere);
 INSTANTIATE(TGeoTorus);
 INSTANTIATE(TGeoTube);
 INSTANTIATE(TGeoTubeSeg);
+INSTANTIATE(TGeoEltu);
+INSTANTIATE(TGeoHype);
 INSTANTIATE(TGeoTrap);
 INSTANTIATE(TGeoTrd1);
 INSTANTIATE(TGeoTrd2);

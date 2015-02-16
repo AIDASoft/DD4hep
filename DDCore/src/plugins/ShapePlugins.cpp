@@ -52,6 +52,12 @@ static Ref_t create_Tube(lcdd_t&, xml_h element)   {
 }
 DECLARE_XMLELEMENT(Tube__shape_constructor,create_Tube)
 
+static Ref_t create_EllipticalTube(lcdd_t&, xml_h element)   {
+  xml_dim_t e(element);
+  return EllipticalTube(e.a(),e.b(),e.dz());
+}
+DECLARE_XMLELEMENT(EllipticalTube__shape_constructor,create_EllipticalTube)
+
 static Ref_t create_Cone(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
   double rmi1 = e.rmin1(0.0), rma1 = e.rmax1();
@@ -90,6 +96,12 @@ static Ref_t create_Paraboloid(lcdd_t&, xml_h element)   {
   return Paraboloid(e.rmin(0.0),e.rmax(),e.dz());
 }
 DECLARE_XMLELEMENT(Paraboloid__shape_constructor,create_Paraboloid)
+
+static Ref_t create_Hyperboloid(lcdd_t&, xml_h element)   {
+  xml_dim_t e(element);
+  return Hyperboloid(e.rmin(), e.inner_stereo(), e.rmax(), e.outer_stereo(), e.dz());
+}
+DECLARE_XMLELEMENT(Hyperboloid__shape_constructor,create_Hyperboloid)
 
 static Ref_t create_PolyhedraRegular(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);

@@ -28,6 +28,7 @@
 #include "TGeoCone.h"
 #include "TGeoHype.h"
 #include "TGeoPcon.h"
+#include "TGeoEltu.h"
 #include "TGeoPgon.h"
 #include "TGeoSphere.h"
 #include "TGeoTorus.h"
@@ -64,6 +65,8 @@
 #include "G4Polyhedra.hh"
 #include "G4UnionSolid.hh"
 #include "G4Paraboloid.hh"
+#include "G4Ellipsoid.hh"
+#include "G4EllipticalTube.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4IntersectionSolid.hh"
 #include "G4Region.hh"
@@ -389,6 +392,10 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = new G4Tubs(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetDz() * CM_2_MM,
                          s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
     }
+    else if (shape->IsA() == TGeoEltu::Class()) {
+      const TGeoEltu* s = (const TGeoEltu*) shape;
+      solid = new G4EllipticalTube(name,s->GetA() * CM_2_MM, s->GetB() * CM_2_MM, s->GetDz() * CM_2_MM);
+    }
     else if (shape->IsA() == TGeoTrd1::Class()) {
       const TGeoTrd1* s = (const TGeoTrd1*) shape;
       solid = new G4Trd(name, s->GetDx1() * CM_2_MM, s->GetDx2() * CM_2_MM, s->GetDy() * CM_2_MM, s->GetDy() * CM_2_MM,
@@ -434,10 +441,21 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       solid = new G4Cons(name, s->GetRmin1() * CM_2_MM, s->GetRmax1() * CM_2_MM, s->GetRmin2() * CM_2_MM,
                          s->GetRmax2() * CM_2_MM, s->GetDz() * CM_2_MM, s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
     }
+    else if (shape->IsA() == TGeoHype::Class()) {
+      const TGeoHype* s = (const TGeoHype*) shape;
+      solid = new G4Hype(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetStIn() * DEGREE_2_RAD, 
+			 s->GetStOut() * DEGREE_2_RAD, s->GetDz() * CM_2_MM);
+    }
     else if (shape->IsA() == TGeoParaboloid::Class()) {
       const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
       solid = new G4Paraboloid(name, s->GetDz() * CM_2_MM, s->GetRlo() * CM_2_MM, s->GetRhi() * CM_2_MM);
     }
+#if 0  /* Not existent */
+    else if (shape->IsA() == TGeoEllisoid::Class()) {
+      const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
+      solid = new G4Paraboloid(name, s->GetDz() * CM_2_MM, s->GetRlo() * CM_2_MM, s->GetRhi() * CM_2_MM);
+    }
+#endif
     else if (shape->IsA() == TGeoSphere::Class()) {
       const TGeoSphere* s = (const TGeoSphere*) shape;
       solid = new G4Sphere(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetPhi1() * DEGREE_2_RAD,

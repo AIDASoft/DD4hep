@@ -26,6 +26,8 @@
 #include "TGeoArb8.h"
 #include "TGeoTrd2.h"
 #include "TGeoTube.h"
+#include "TGeoEltu.h"
+#include "TGeoHype.h"
 #include "TGeoTorus.h"
 #include "TGeoCompositeShape.h"
 
@@ -302,6 +304,43 @@ namespace DD4hep {
       Tube& setDimensions(double rmin, double rmax, double z, double startPhi=0.0, double deltaPhi=2*M_PI);
     };
 
+    /// Class describing a elliptical tube shape of a section of a tube
+    /**
+     *   TGeoEltu - cylindrical tube class. It takes 3 parameters :
+     *            Semi axis of ellipsis in x and y and half-length dz.
+     *
+     *   For any further documentation please see the following ROOT documentation:
+     *   \see http://root.cern.ch/root/html/TGeoElTu.html
+     *
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
+     */
+    class EllipticalTube: public Solid_type<TGeoEltu> {
+    protected:
+      /// Internal helper method to support object construction
+      void make(const std::string& name, double a, double b, double dz);
+
+    public:
+      /// Constructor to be used with an existing object
+      template <typename Q> EllipticalTube(const Q* p) : Solid_type<TGeoEltu>(p) {   }
+
+      /// Constructor to assign an object
+      template <typename Q> EllipticalTube(const Handle<Q>& e) : Solid_type<TGeoEltu>(e) {   }
+
+      /// Constructor to create a new anonymous tube object with attribute initialization
+      EllipticalTube(double a, double b, double dz) {  make("", a, b, dz);  }
+
+      /// Constructor to create a new anonymous tube object with attribute initialization
+      template <typename A, typename B, typename DZ>
+        EllipticalTube(const A& a, const B& b, const DZ& dz)  {
+        make("", _toDouble(a), _toDouble(b), _toDouble(dz));
+      }
+
+      /// Set the tube dimensions
+      EllipticalTube& setDimensions(double a, double b, double dz);
+    };
+
     /// Class describing a cone shape
     /**
      *   For any further documentation please see the following ROOT documentation:
@@ -403,14 +442,10 @@ namespace DD4hep {
 
     public:
       /// Constructor to be used with an existing object
-      template <typename Q> Trapezoid(const Q* p)
-        : Solid_type<TGeoTrd2>(p) {
-      }
+      template <typename Q> Trapezoid(const Q* p) : Solid_type<TGeoTrd2>(p) {   }
 
       /// Constructor to be used when passing an already created object
-    Trapezoid(const Trapezoid& e)
-      : Solid_type<TGeoTrd2>(e) {
-      }
+     Trapezoid(const Trapezoid& e) : Solid_type<TGeoTrd2>(e) {      }
 
       /// Constructor to be used when passing an already created object
       template <typename Q> Trapezoid(const Handle<Q>& e)
@@ -524,7 +559,7 @@ namespace DD4hep {
       }
 
       /// Constructor to be used when passing an already created object
-    Paraboloid(const Paraboloid& e)
+      Paraboloid(const Paraboloid& e)
       : Solid_type<TGeoParaboloid>(e) {
       }
 
@@ -538,6 +573,34 @@ namespace DD4hep {
 
       /// Set the Paraboloid dimensions
       Paraboloid& setDimensions(double r_low, double r_high, double delta_z);
+    };
+
+    /// Class describing a Hyperboloid shape
+    /**
+     *   For any further documentation please see the following ROOT documentation:
+     *   \see http://root.cern.ch/root/html/TGeoHype.html
+     *
+     *
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
+     */
+    class Hyperboloid: public Solid_type<TGeoHype> {
+    public:
+      /// Constructor to be used with an existing object
+      template <typename Q> Hyperboloid(const Q* p) : Solid_type<TGeoHype>(p) {  }
+
+      /// Constructor to be used when passing an already created object
+      Hyperboloid(const Hyperboloid& e) : Solid_type<TGeoHype>(e) {   }
+
+      /// Constructor to be used when passing an already created object
+      template <typename Q> Hyperboloid(const Handle<Q>& e) : Solid_type<TGeoHype>(e) {   }
+
+      /// Constructor to create a new anonymous object with attribute initialization
+      Hyperboloid(double rin, double stin, double rout, double stout, double dz);
+
+      /// Set the Hyperboloid dimensions
+      Hyperboloid& setDimensions(double rin, double stin, double rout, double stout, double dz);
     };
 
     /// Class describing a regular polyhedron shape
