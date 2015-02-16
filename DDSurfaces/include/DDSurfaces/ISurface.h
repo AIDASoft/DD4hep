@@ -96,6 +96,7 @@ namespace DDSurfaces {
     /// Destructor
     virtual ~ICylinder() {}
     virtual double radius() const=0 ;
+    virtual Vector3D center() const=0 ;
   };
   
   //==============================================================================================

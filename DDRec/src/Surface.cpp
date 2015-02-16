@@ -17,19 +17,23 @@ namespace DD4hep {
  
     using namespace Geometry ;
 
-    //--------------------------------------------------------
 
-    // /** Copy c'tor - copies handle */
-    // SurfaceMaterial::SurfaceMaterial( Geometry::Material m ) : Geometry::Material( m ) {} 
+    //======================================================================================================
     
-    // SurfaceMaterial::SurfaceMaterial( const SurfaceMaterial& sm )  : Geometry::Material( sm ) {
-    //   //      (*this).Geometry::Material::m_element =  sm.Geometry::Material::m_element  ; 
-    // }
-    // SurfaceMaterial:: ~SurfaceMaterial() {} 
-
-    //--------------------------------------------------------
-
-
+#if !use_materialdata
+   
+    std::string SurfaceMaterial::name() const { return Geometry::Material::name() ; }
+    double SurfaceMaterial::Z() const {  return Geometry::Material::Z() ; } 
+    double SurfaceMaterial::A() const { return Geometry::Material::A() ; } 
+    double SurfaceMaterial::density() const {  return Geometry::Material::density() ; }
+    double SurfaceMaterial::radiationLength() const { return Geometry::Material::radLength() ; } 
+    double SurfaceMaterial::interactionLength() const  { return Geometry::Material::intLength() ; }
+    
+#endif    
+    //======================================================================================================
+    
+    
+    
     SurfaceData::SurfaceData() : _type( SurfaceType() ) ,
 				 _u( Vector3D() ) ,
 				 _v( Vector3D()  ) ,
@@ -46,20 +50,21 @@ namespace DD4hep {
   
     SurfaceData::SurfaceData( SurfaceType type , double thickness_inner ,double thickness_outer, 
 			      Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o, Volume vol ) :  _type(type ) ,
-								     _u( u ) ,
-								     _v( v ) ,
-								     _n( n ) ,
-								     _o( o ),
-								     _th_i( thickness_inner ),
-								     _th_o( thickness_outer ),  
-								     _innerMat( MaterialData() ),
-								     _outerMat( MaterialData() ),
-								     _vol(vol)
+											      _u( u ) ,
+											      _v( v ) ,
+											      _n( n ) ,
+											      _o( o ),
+											      _th_i( thickness_inner ),
+											      _th_o( thickness_outer ),  
+											      _innerMat( MaterialData() ),
+											      _outerMat( MaterialData() ),
+											      _vol(vol)
     {
     }
   
   
-    
+    //======================================================================================================
+  
 
     VolSurface::VolSurface( Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
  			    Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o ) :  
@@ -67,6 +72,18 @@ namespace DD4hep {
       Geometry::Handle< SurfaceData >( new SurfaceData(type, thickness_inner ,thickness_outer, u,v,n,o, vol) )  {
     }      
     
+
+    void VolSurface::setU(const Vector3D& u) { object<SurfaceData>()._u = u  ; }
+    void VolSurface::setV(const Vector3D& v) { object<SurfaceData>()._v = v ; }
+    void VolSurface::setNormal(const Vector3D& n) { object<SurfaceData>()._n = n ; }
+    
+    long64 VolSurface::id() const  { return 0 ; } 
+
+    const SurfaceType& VolSurface::type() const { return object<SurfaceData>()._type ; }
+    Vector3D VolSurface::u( const Vector3D& point ) const {  point.x() ; return object<SurfaceData>()._u ; }
+    Vector3D VolSurface::v(const Vector3D& point  ) const { point.x() ;  return object<SurfaceData>()._v ; }
+    Vector3D VolSurface::normal(const Vector3D& point ) const {  point.x() ; return object<SurfaceData>()._n ; }
+    const Vector3D& VolSurface::origin() const { return object<SurfaceData>()._o ;}
 
     ISurface::Vector2D VolSurface::globalToLocal( const Vector3D& point) const {
 
@@ -90,6 +107,12 @@ namespace DD4hep {
 
       return g ;
     }
+
+    const IMaterial&  VolSurface::innerMaterial() const{  return  object<SurfaceData>()._innerMat ;  }
+    const IMaterial&  VolSurface::outerMaterial() const { return  object<SurfaceData>()._outerMat  ; }
+    double VolSurface::innerThickness() const { return object<SurfaceData>()._th_i ; }
+    double VolSurface::outerThickness() const { return object<SurfaceData>()._th_o ; }
+    
 
     double VolSurface::length_along_u() const {
       
@@ -118,8 +141,13 @@ namespace DD4hep {
     }
     
 
+    double VolSurface::distance(const Vector3D& point ) const  {  point.x() ; return 1.e99 ; }
+    
+    bool VolSurface::insideBounds(const Vector3D& point, double epsilon) const {  
+      point.x() ; (void) epsilon ; return false ; 
+    }
 
-
+    //======================================================================================================
 
 
     /** Distance to surface */
@@ -142,11 +170,11 @@ namespace DD4hep {
  		<< " isInShape : " << inShape << std::endl ;
 	
       return dist < epsilon && inShape ;
- #else
+#else
 	
       //fixme: older versions of ROOT (~<5.34.10 ) take a non const pointer as argument - therefore use a const cast here for the time being ...
       return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( const_cast<double*> (point.const_array() )  ) ; 
- #endif
+#endif
  
     }
 
@@ -176,7 +204,7 @@ namespace DD4hep {
       object<SurfaceData>()._type.checkParallelToZ( *this ) ;
 
       object<SurfaceData>()._type.checkOrthogonalToZ( *this ) ;
-     }      
+    }      
 
 
     Vector3D VolCylinder::v( const Vector3D& point  ) const { 
@@ -198,7 +226,7 @@ namespace DD4hep {
 
       // normal is just given by phi of the point 
       return Vector3D( 1. , point.phi() , 0. , Vector3D::cylindrical ) ;
-     }
+    }
 
 
 
@@ -241,14 +269,14 @@ namespace DD4hep {
       
       bool inShapeT = volume()->GetShape()->Contains( const_cast<double*> ( point.const_array() ) ) ;
       
-				      std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << distR 
-						<< " origin = " << origin() 
-						<< " isInShape : " << inShapeT << std::endl ;
+      std::cout << " ** Surface::insideBound( " << point << " ) - distance = " << distR 
+		<< " origin = " << origin() 
+		<< " isInShape : " << inShapeT << std::endl ;
       
-				      return distR < epsilon && inShapeT ;
+      return distR < epsilon && inShapeT ;
 #else
       
-				      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( const_cast<double*> (point.const_array())  ) ; 
+      return ( std::abs ( distance( point ) ) < epsilon )  &&  volume()->GetShape()->Contains( const_cast<double*> (point.const_array())  ) ; 
 
 #endif
     }
@@ -258,6 +286,28 @@ namespace DD4hep {
 
     //================================================================================================================
 
+
+    VolSurfaceList::~VolSurfaceList(){
+      
+      // delete all surfaces attached to this volume
+      for( VolSurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
+	i->clear() ;
+      }
+      
+    }
+    //=======================================================
+
+    SurfaceList::~SurfaceList(){
+      
+      if( _isOwner ) {
+	// delete all surfaces attached to this volume
+	for( SurfaceList::iterator i=begin(), n=end() ; i !=n ; ++i ) {
+	  delete (*i) ;
+	}
+      }
+    }
+
+    //================================================================================================================
 
     VolSurfaceList* volSurfaceList( DetElement& det ) {
 
@@ -284,13 +334,13 @@ namespace DD4hep {
 
       volList.push_back( pv ) ;
       
-    //   unsigned count = volList.size() ;
-    //   for(unsigned i=0 ; i < count ; ++i) {
-    //   	std::cout << " **" ;
-    //   }
-    //   std::cout << " searching for volume: " << theVol.name() << " " << std::hex << theVol.ptr() << "  <-> pv.volume : "  << pv.name() << " " <<  pv.volume().ptr() 
-    //    		<< " pv.volume().ptr() == theVol.ptr() " <<  (pv.volume().ptr() == theVol.ptr() )
-    //    		<< std::endl ;
+      //   unsigned count = volList.size() ;
+      //   for(unsigned i=0 ; i < count ; ++i) {
+      //   	std::cout << " **" ;
+      //   }
+      //   std::cout << " searching for volume: " << theVol.name() << " " << std::hex << theVol.ptr() << "  <-> pv.volume : "  << pv.name() << " " <<  pv.volume().ptr() 
+      //    		<< " pv.volume().ptr() == theVol.ptr() " <<  (pv.volume().ptr() == theVol.ptr() )
+      //    		<< std::endl ;
       
 
       if( pv.volume().ptr() == theVol.ptr() ) { 
@@ -343,6 +393,7 @@ namespace DD4hep {
       }
     } 
 
+    //======================================================================================================================
 
     Surface::Surface( Geometry::DetElement det, VolSurface volSurf ) : _det( det) , _volSurf( volSurf ), 
 								       _wtM(0) , _id( 0) , _type( _volSurf.type() )  {
@@ -350,7 +401,19 @@ namespace DD4hep {
       initialize() ;
     }      
  
+    long64 Surface::id() const { return _id ; }
 
+    const SurfaceType& Surface::type() const { return _type ; }
+
+    Vector3D Surface::u( const Vector3D& point ) const { point.x() ; return _u ; }
+    Vector3D Surface::v(const Vector3D& point ) const {  point.x() ; return _v ; }
+    Vector3D Surface::normal(const Vector3D& point ) const {  point.x() ; return _n ; }
+    const Vector3D& Surface::origin() const { return _o ;}
+    double Surface::innerThickness() const { return _volSurf.innerThickness() ; }
+    double Surface::outerThickness() const { return _volSurf.outerThickness() ; }
+
+
+    /** Thickness of outer material */
     
     const IMaterial& Surface::innerMaterial() const {
       
@@ -403,7 +466,7 @@ namespace DD4hep {
 
     ISurface::Vector2D Surface::globalToLocal( const Vector3D& point) const {
 
-    Vector3D p = point - origin() ;
+      Vector3D p = point - origin() ;
 
       // create new orthogonal unit vectors
       // FIXME: these vectors should be cached really ... 
@@ -480,10 +543,10 @@ namespace DD4hep {
 #if 0 // debug
       wm.Print() ;
       for( std::list<PlacedVolume>::iterator it= pVList.begin(), n = pVList.end() ; it != n ; ++it ){
-      PlacedVolume pv = *it ;
-      TGeoMatrix* m = pv->GetMatrix();
-      std::cout << "  +++ matrix for placed volume : " << std::endl ;
-      m->Print() ;
+	PlacedVolume pv = *it ;
+	TGeoMatrix* m = pv->GetMatrix();
+	std::cout << "  +++ matrix for placed volume : " << std::endl ;
+	m->Print() ;
       }
 #endif
 
@@ -533,11 +596,11 @@ namespace DD4hep {
       _n.fill( na ) ;
       _o.fill( oa ) ;
 
-       // std::cout << " --- local and global surface vectors : ------- " << std::endl 
-       // 			<< "    u : " << _volSurf.u()       << "  -  " << _u << std::endl 
-       // 			<< "    v : " << _volSurf.v()       << "  -  " << _v << std::endl 
-       // 			<< "    n : " << _volSurf.normal()  << "  -  " << _n << std::endl 
-       // 			<< "    o : " << _volSurf.origin()  << "  -  " << _o << std::endl ;
+      // std::cout << " --- local and global surface vectors : ------- " << std::endl 
+      // 			<< "    u : " << _volSurf.u()       << "  -  " << _u << std::endl 
+      // 			<< "    v : " << _volSurf.v()       << "  -  " << _v << std::endl 
+      // 			<< "    n : " << _volSurf.normal()  << "  -  " << _n << std::endl 
+      // 			<< "    o : " << _volSurf.origin()  << "  -  " << _o << std::endl ;
       
 
       //  =========== check parallel and orthogonal to Z ===================
@@ -547,7 +610,7 @@ namespace DD4hep {
       _type.checkOrthogonalToZ( *this ) ;
     
       
-     //======== set the unique surface ID from the DetElement ( and placements below ? )
+      //======== set the unique surface ID from the DetElement ( and placements below ? )
 
       // just use the DetElement ID for now ...
       _id = _det.volumeID() ;
@@ -866,6 +929,10 @@ namespace DD4hep {
 
       return p ;
     }
+
+    double CylinderSurface::radius() const {	return _volSurf.origin().rho() ;  }
+
+    Vector3D CylinderSurface::center() const {	return volumeOrigin() ;  }
 
     //================================================================================================================
 
