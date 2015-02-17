@@ -31,4 +31,6 @@ add_subdirectory(CLICSiD)
  	
 add_subdirectory(ClientTests)
 
+add_subdirectory(SimpleDetector)
+
 

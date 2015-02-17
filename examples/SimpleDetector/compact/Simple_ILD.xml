@@ -1,0 +1,127 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0"
+   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+    <info name="Simple_ILD"
+       title="ILD Detector like example detector model"
+       author="F. Gaede"
+       url="http://ilcsoft.desy.de"
+       status="development"
+       version="$Id: $">
+        <comment>
+           A very simple ILD like detector
+           so far only VXD and (pixel) SIT ...
+	</comment>        
+    </info>
+ 
+    <includes>
+        <gdmlFile  ref="elements.xml"/>
+        <gdmlFile  ref="materials.xml"/>
+    </includes>
+ 
+    <define>
+        <constant name="world_side"             value="10*m"/>
+        <constant name="world_x"                value="world_side/2"/>
+        <constant name="world_y"                value="world_side/2"/>
+        <constant name="world_z"                value="world_side/2"/>        
+
+        <constant name="tracker_region_rmax" value="2.0*m"/>
+        <constant name="tracker_region_zmax"   value="2.0*m"/>
+
+	<constant name="SolenoidField_zMax" value="4.0*m"/>
+	<constant name="SolenoidField_outer_radius" value="4.0*m"/>
+
+	<constant name="BField_nominal" value="3.5*tesla"/>
+
+    </define>
+
+    <materials>
+        <material name="Graphite">
+                <D value="1.7" unit="g/cm3"/>
+                <composite n="1" ref="C"/>
+        </material>      
+    </materials>
+ 
+    <limits>
+      <limitset name="Tracker_limits">
+        <limit name="step_length_max" particles="*" value="5.0" unit="mm" />
+      </limitset>
+    </limits>
+    
+    <display>
+      <vis name="VXDLayerVis"   alpha="1.0" r="0.5" g=".5"  b=".5"   showDaughters="true"  visible="true"/>
+      <vis name="VXDSupportVis" alpha="1.0" r="0.0" g="1.0" b="0.0"  showDaughters="true"  visible="true"/>
+      <vis name="SITSupportVis" alpha="1.0" r="0.0" g="0.3" b="0.7"  showDaughters="true"  visible="true"/>
+      <vis name="SITLayerVis"   alpha="1.0" r="0.0" g="0.7" b="0.3"  showDaughters="true"  visible="true"/>
+    </display>
+
+    <detectors>
+      <comment>Trackers</comment>
+      
+      <detector name="VXD" type="ZPlanarTracker" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
+
+        <layer nLadders="10" phi0="-1.570796327e+00*rad" id="0">
+          <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.150000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
+          <sensitive distance="1.595000000e+01*mm" thickness="5.000000000e-02*mm" width="1.100000000e+01*mm" length="6.250000000e+01*mm" offset="-3.156041308e+00*mm" material="G4_Si"/>
+        </layer>
+        <layer nLadders="10" phi0="-1.570796327e+00*rad" id="1">
+          <ladder distance="1.700000000e+01*mm" thickness="1.000000000e+00*mm" width="1.150000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
+          <sensitive distance="1.800000000e+01*mm" thickness="5.000000000e-02*mm" width="1.100000000e+01*mm" length="6.250000000e+01*mm" offset="-3.156041308e+00*mm" material="G4_Si"/>
+        </layer>
+        <layer nLadders="11" phi0="-1.570796327e+00*rad" id="2">
+          <ladder distance="3.700000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-3.502631742e+00*mm"    material="CarbonFiber" />
+          <sensitive distance="3.695000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-3.252631742e+00*mm" material="G4_Si"/>
+        </layer>
+        <layer nLadders="11" phi0="-1.570796327e+00*rad" id="3">
+          <ladder distance="3.800000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-3.502631742e+00*mm"    material="CarbonFiber" />
+          <sensitive distance="3.900000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-3.252631742e+00*mm" material="G4_Si"/>
+        </layer>
+        <layer nLadders="17" phi0="-1.570796327e+00*rad" id="4">
+          <ladder distance="5.800000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-5.128151357e+00*mm"    material="CarbonFiber" />
+          <sensitive distance="5.795000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-4.878151357e+00*mm" material="G4_Si"/>
+        </layer>
+        <layer nLadders="17" phi0="-1.570796327e+00*rad" id="5">
+          <ladder distance="5.900000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-5.128151357e+00*mm"    material="CarbonFiber" />
+          <sensitive distance="6.000000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-4.878151357e+00*mm" material="G4_Si"/>
+        </layer>
+      </detector>
+
+      <detector name="SIT" type="ZPlanarTracker" vis="SITVis" id="1" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
+        <layer nLadders="10" phi0="0.000000000e+00" id="0">
+          <ladder distance="1.531000000e+02*mm" thickness="1.000000000e+00*mm" width="9.916044311e+01*mm" length="3.680000000e+02*mm" offset="0.000000000e+00*mm"  material="CarbonFiber" /> 
+          <sensitive distance="1.529000000e+02*mm" thickness="2.000000000e-01*mm" width="9.916044311e+01*mm" length="3.680000000e+02*mm" offset="0.000000000e+00*mm" material="G4_Si"/>
+        </layer>
+        <!-- <layer nLadders="10" phi0="0.000000000e+00" id="1"> -->
+        <!--   <ladder distance="1.544000000e+02*mm" thickness="1.000000000e+00*mm" width="1.001352022e+02*mm" length="3.680000000e+02*mm" offset="0.000000000e+00*mm" material="CarbonFiber" /> -->
+        <!--   <sensitive distance="1.554000000e+02*mm" thickness="2.000000000e-01*mm" width="1.001352022e+02*mm" length="3.680000000e+02*mm" offset="0.000000000e+00*mm" material="G4_Si"/> -->
+        <!-- </layer> -->
+        <layer nLadders="19" phi0="0.000000000e+00" id="1">
+          <ladder distance="3.001000000e+02*mm" thickness="1.000000000e+00*mm" width="9.988891763e+01*mm" length="6.440000000e+02*mm" offset="0.000000000e+00*mm" material="CarbonFiber" />
+          <sensitive distance="2.999000000e+02*mm" thickness="2.000000000e-01*mm" width="9.988891763e+01*mm" length="6.440000000e+02*mm" offset="0.000000000e+00*mm" material="G4_Si"/>
+        </layer>
+        <!-- <layer nLadders="19" phi0="0.000000000e+00" id="3"> -->
+        <!--   <ladder distance="3.014000000e+02*mm" thickness="1.000000000e+00*mm" width="1.003895291e+02*mm" length="6.440000000e+02*mm" offset="0.000000000e+00*mm" material="CarbonFiber" /> -->
+        <!--   <sensitive distance="3.024000000e+02*mm" thickness="2.000000000e-01*mm" width="1.003895291e+02*mm" length="6.440000000e+02*mm" offset="0.000000000e+00*mm" material="G4_Si"/> -->
+        <!-- </layer> -->
+      </detector>
+
+   </detectors>
+
+    <readouts>
+        <readout name="VXDCollection">
+            <id>system:5,side:2,layer:9,module:8,sensor:8</id>
+        </readout>
+        <readout name="SITCollection">
+            <id>system:5,side:2,layer:9,module:8,sensor:8</id>
+        </readout>
+    </readouts>
+
+
+ <fields>
+   <field type="solenoid" name="GlobalSolenoid" inner_field="BField_nominal"
+	  outer_field="-1.5*tesla" zmax="SolenoidField_zMax"
+	  inner_radius="SolenoidField_outer_radius"
+	  outer_radius="world_side" />
+ </fields> 
+
+</lccdd>
