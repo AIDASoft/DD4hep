@@ -22,6 +22,13 @@ DD4hep  ----  Release Notes
    - Extended IDDecoder to give access to layer, system and barrel/endcap information. (CG)
      IDDecoder is now independent of Readout object, instead it finds the correct
      readout based on the cellID / position
+   - fixed surface implementations: removed inline virtual functions
+   - added methods:
+     VolSurface::length_along_u()
+     VolSurface::length_along_v()
+     Surface::volumeOrigin()
+     CylinderSurface::center()
+     ICylinder::center()  
 
 
  - DDG4 (MF)
@@ -64,7 +71,9 @@ DD4hep  ----  Release Notes
  - examples 
    - add new test MiniTel(escope) to ClientTests (MF)
    - moved old obsolete examples to attic
-
+   - add new example: LHeD_tracker (MF) 
+   - add new example: SimpleDetector (FG)
+      (ILD like VXD and SIT )
  
  - CMake:
   - made DD4HEP_USE_BOOST an option flag (FG)
