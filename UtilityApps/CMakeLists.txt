@@ -51,7 +51,7 @@ if(DD4HEP_USE_LCIO)
     LIBRARY DESTINATION lib
     )
 else()
-  install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials materialScand umpdetector
+  install(TARGETS geoDisplay geoConverter geoPluginRun teveDisplay print_materials materialScan dumpdetector
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     )
