@@ -50,6 +50,7 @@ namespace DD4hep {
     UNICODE (box);
 
     UNICODE (c);
+    UNICODE (distance);
     UNICODE (C);
     UNICODE (calorimeter);
     UNICODE (cartesian_grid_xy);

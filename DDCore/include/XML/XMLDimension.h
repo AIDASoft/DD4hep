@@ -150,6 +150,8 @@ namespace DD4hep {
       double c() const;
       /// Access parameters: c
       double c(double default_value) const;
+      ///Access parameters: distance
+      double distance() const;
       /// Access parameters: B
       double B() const;
       /// Access parameters: g

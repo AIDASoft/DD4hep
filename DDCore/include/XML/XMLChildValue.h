@@ -147,6 +147,8 @@ namespace DD4hep {
       double rmax2() const;
       /// Access parameters: radius
       double radius() const;
+      /// Access attribute values: distance
+      double distance() const;
       /// Access attribute values: outer_radius
       double outer_radius() const;
       /// Access attribute values: outer_r
