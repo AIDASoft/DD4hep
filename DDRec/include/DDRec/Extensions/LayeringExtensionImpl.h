@@ -31,19 +31,19 @@ public:
 	LayeringExtensionImpl();
 
 	/// Copy constructor
-	LayeringExtensionImpl(const LayeringExtensionImpl& e, const Geometry::DetElement& d) {};
+          LayeringExtensionImpl(const LayeringExtensionImpl& /*e*/, const Geometry::DetElement& /*d*/) {};
 
-	/// Destructor
-	virtual ~LayeringExtensionImpl();
+	 /// Destructor
+	 virtual ~LayeringExtensionImpl();
 
-	/// Access to the total number of layers
-	virtual int numberOfLayers() const;
+	 /// Access to the total number of layers
+	 virtual int numberOfLayers() const;
 
-	/// Access to the total number of sensors in a given layer index
-	virtual int numberOfSensors(int layerIndex) const;
+	 /// Access to the total number of sensors in a given layer index
+	 virtual int numberOfSensors(int layerIndex) const;
 
-	/// Access to the layer DetElement for the given index
-	virtual Geometry::DetElement layer(int layerIndex) const;
+	 /// Access to the layer DetElement for the given index
+	 virtual Geometry::DetElement layer(int layerIndex) const;
 
 	/// Access to the sensitive DetElements of a given layer index
 	virtual const std::vector<Geometry::DetElement>& sensors(int layerIndex) const;

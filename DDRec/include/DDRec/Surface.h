@@ -251,7 +251,7 @@ namespace DD4hep {
 
 
       // required c'tor for extension mechanism
-      VolSurfaceList(const VolSurfaceList& vsl, Geometry::DetElement& det ){
+      VolSurfaceList(const VolSurfaceList& vsl, Geometry::DetElement& /*det*/ ){
 	
 	this->insert( this->end() , vsl.begin() , vsl.end() ) ;
       }

@@ -12,8 +12,8 @@
   </info>
 
   <includes>
-    <gdmlFile  ref="${materials_dir}/elements.xml"/>
-    <gdmlFile  ref="${materials_dir}/materials.xml"/>
+    <gdmlFile  ref="./elements.xml"/>
+    <gdmlFile  ref="./materials.xml"/>
   </includes>
   
   <define>
@@ -210,7 +210,7 @@
   </display>
 
   <comment>Additional design specific material definitions</comment>
-  <include ref="${SiD_dir}/SiD_Materials.xml"/>
+  <include ref="./SiD/SiD_Materials.xml"/>
 <!--
   <display>
     <vis name="SiTrackerLayerVis"   alpha="1.0" r="1.0" g="1.0" b="0.6" showDaughters="true" visible="true"/>
@@ -229,8 +229,8 @@
 <!--
 -->
   <comment>Tracking detectors</comment>
-  <include ref="${SiD_dir}/SiD_Tracker.xml"/>
-  <include ref="SiD/SiD_Ecal.xml"/>
+  <include ref="./SiD/SiD_Tracker.xml"/>
+  <include ref="./SiD/SiD_Ecal.xml"/>
 
    <plugins>
     <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
