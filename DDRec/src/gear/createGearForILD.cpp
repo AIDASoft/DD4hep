@@ -35,7 +35,7 @@ namespace DD4hep{
      *  @version $Id: $
      */
     
-    static long createGearForILD(LCDD& lcdd, int argc, char** argv) {
+    static long createGearForILD(LCDD& lcdd, int /*argc*/, char** /*argv*/) {
       
       std::cout << " **** running plugin createGearForILD ! " <<  std::endl ;
       

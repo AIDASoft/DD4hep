@@ -34,6 +34,7 @@ option(DD4HEP_USE_GEANT4 "Enable the simulation part based on Geant4" OFF)
 #option(DD4HEP_USE_BOOST "build with boost - needed only if built with Geant4" OFF)
 option(DD4HEP_USE_GEAR "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO "Build lcio extensions" OFF)
+option(BUILD_TESTING "Enable and build tests" ON)
 
 #For backward compatibility for now
 IF( DEFINED DD4HEP_WITH_GEANT4 )

@@ -69,8 +69,8 @@ namespace DD4hep {
 
 
     /** dummy implementation of required c'tors to allow using the extension mechanism */
-    GearHandle(const Geometry::DetElement& d) : _gObj(0) {}
-    GearHandle(const GearHandle& c,const Geometry::DetElement& det) : _gObj(0)  {}
+    GearHandle(const Geometry::DetElement& /*d*/) : _gObj(0) {}
+    GearHandle(const GearHandle& /*c*/,const Geometry::DetElement& /*det*/) : _gObj(0)  {}
   } ;
   
 
