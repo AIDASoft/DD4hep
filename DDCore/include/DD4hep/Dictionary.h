@@ -65,13 +65,14 @@ template class map< string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::NamedObject>+;
 #pragma link C++ class pair<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
 #pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
-//#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::*+;
 #pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator;
-//#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::const_iterator;
-//#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::reverse_iterator;
+#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::const_iterator;
+
+#ifdef R__MACOSX
+// We only need these declarations for the clang compiler
 #pragma link C++ function operator==( const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
 #pragma link C++ function operator!=( const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
-
+#endif
 
 #pragma link C++ class DD4hep::ObjectExtensions+;
 template class DD4hep::Geometry::Handle<TNamed>;
@@ -186,9 +187,12 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class map<string,DD4hep::Geometry::DetElement>+;
 #pragma link C++ class map<string,DD4hep::Geometry::DetElement>::iterator;
 #pragma link C++ class map<string,DD4hep::Geometry::DetElement>::const_iterator;
+
+#ifdef R__MACOSX
+// We only need these declarations for the clang compiler
 #pragma link C++ function operator==( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& ); 
 #pragma link C++ function operator!=( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& ); 
-
+#endif
 
 #pragma link C++ class DD4hep::Geometry::SensitiveDetector+;
 #pragma link C++ class DD4hep::Geometry::SensitiveDetectorObject+;
@@ -282,15 +286,23 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class map<string, string>+;
 #pragma link C++ class map<string, string>::iterator;
 #pragma link C++ class map<string, string>::const_iterator;
+
+#ifdef R__MACOSX
+// We only need these declarations for the clang compiler
 #pragma link C++ function operator==( const map<string, string>::iterator&, const map<string, string>::iterator& );
 #pragma link C++ function operator!=( const map<string, string>::iterator&, const map<string, string>::iterator& );
+#endif
 
 #pragma link C++ class pair<string, map<string, string> >+;
 #pragma link C++ class map<string, map<string, string> >+;
 #pragma link C++ class map<string, map<string,string>>::iterator;
 #pragma link C++ class map<string, map<string,string>>::const_iterator;
+
+#ifdef R__MACOSX
+// We only need these declarations for the clang compiler
 #pragma link C++ function operator==( const map<string, map<string,string>>::iterator&, const map<string, map<string,string>>::iterator& );
 #pragma link C++ function operator!=( const map<string, map<string,string>>::iterator&, const map<string, map<string,string>>::iterator& );
+#endif
 
 #pragma link C++ class DD4hep::Geometry::LCDD+;
 
