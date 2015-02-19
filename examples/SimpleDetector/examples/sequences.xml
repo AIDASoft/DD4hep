@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<geant4_setup>
+
+
+
+  <!-- Kernel parameters  
+       UI="UI" is default, 
+       
+       Note:
+       NumEvents is ignored in interactive sessions, but  used
+       in batch mode without ui nor vis.
+       
+       To run batch: set UI=""
+  -->
+  <!--kernel UI="UI" NumEvents="1"/-->  
+
+  <kernel UI="" NumEvents="10" />  
+
+  <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
+       object and may be retrieved by there using the action name.
+       
+       Note: registered actions MUST be unique.
+       However, not all actions need to registered....
+       Only register those, you later need to retrieve by name.
+  -->
+  <actions>
+    <!-- UI handler initializing vis and ui. NAME IS FIXED/COMMON KNOWLEDGE -->
+    <action name="Geant4UIManager/UI">
+      <properties HaveVIS="1"
+		  HaveUI="1"
+		  SetupUI="vis.mac"
+		  SessionType="Qt"/>
+    </action>
+
+    <!-- <action name="Geant4UIManager/UI"> -->
+    <!--   <properties HaveVIS="0" -->
+    <!-- 		  HaveUI="1" -->
+    <!-- 		  SetupUI="run.mac" -->
+    <!-- 		  SessionType="csh"/> -->
+    <!--  </action> -->
+
+
+    <action name="Geant4TCUserParticleHandler/UserParticleHandler">
+      <properties  Control="true"
+		   OutputLevel="4"
+		   TrackingVolume_Zmax = "2350*mm"
+		   TrackingVolume_Rmax = "1808*mm"
+		   />
+    </action>
+
+    <!-- void and empty for the time being.... NAME IS FIXED/COMMON KNOWLEDGE -->
+  </actions>
+
+  <!-- List of known phases.
+       Note: Phases can only be attached to the program at very well defined moments,
+       which are explained in the documentation.
+       These are typically the "standard" moments: BeginRun, EndRun, BeginEvent, etc.
+       and the calls after processing the hits of each sensitive detector.
+       
+  -->
+  <phases>
+    <phase type="RunAction/begin">
+      <action name="RunInit"/>
+      <action name="Geant4TestRunAction/UserRunInit">
+	<properties Property_int="1234"
+		    Property_double="5e15"
+		    Property_string="'Hello_2'"/>
+      </action>
+    </phase>
+  </phases>
+
+  <!-- List of globally known filters. Filters are called by Geant4 before the
+       hit processing in the sensitive detectors start. The global filters
+       may be shared between many sensitive detectors. Alternatively filters
+       may be directly attached to the sensitive detector in question.
+       Attributes are directly passed as properties to the filter action.
+       
+       Note: registered global filters MUST be unique.
+       However, not all filters need to registered....
+  -->
+  <filters>
+    <filter name="GeantinoRejectFilter/GeantinoRejector"/>
+    <filter name="ParticleRejectFilter/OpticalPhotonRejector">
+      <properties particle="opticalphoton"/>
+    </filter>
+    <filter name="ParticleSelectFilter/OpticalPhotonSelector">
+      <properties particle="opticalphoton"/>
+    </filter>
+    <filter name="EnergyDepositMinimumCut/SiTracker">
+      <properties Cut="1.*keV"/>
+    </filter>
+    <filter name="EnergyDepositMinimumCut/HCal">
+      <properties Cut="10*keV"/>
+    </filter>
+  </filters>
+
+  <!-- List of known action sequences.
+       Note: Action sequences exist for each of the various geant4 callback,
+       which are explained in the documentation, such as EventAction, RunAction, etc
+       and the calls after processing the hits of each sensitive detector.
+       
+  -->
+  <sequences>
+    <sequence name="Geant4EventActionSequence/EventAction">
+      
+      <action name="Geant4Output2ROOT/RootOutput">
+	<properties Control="true" Output="simple.root"/>
+      </action>
+
+      <!-- ******** USE THIS TO CREATE AN LCIO FILE *********** --> 
+      <!-- <action name="Geant4Output2LCIO/LCIOOutput"> -->
+      <!-- 	<properties Output="simple_lcio"/> -->
+      <!-- </action> -->
+
+    </sequence>
+
+    <!-- </sequence> -->
+
+    <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
+      
+      <action name="Geant4ParticleGun/Gun">
+        <properties Control="true"
+		    energy="5*GeV"
+		    particle="'e-'"
+		    multiplicity="1"
+		    direction="(1,1,1)"/>
+      </action>
+
+
+      <!-- <action name="Geant4GeneratorActionInit/GenerationInit"/> -->
+      
+      <!-- <action name="LCIOInputAction/LCIO1"> -->
+      <!--   <properties Input="LCIOStdHepReader|/Users/gaede/ILDConfig/trunk/StandardConfig/current/bbudsc_3evt.stdhep" -->
+      <!-- 		    OutputLevel="4" -->
+      <!-- 		    Mask="1" -->
+      <!-- 		    MomentumScale="1."/> -->
+      <!-- </action> -->
+      
+      <!--   <properties Input="LCIOStdHepReader|/data/ilcsoft/data/E500-TDR_ws.P2f_z_l.Gwhizard-1_95.eR.pL.I250108.001.stdhep" -->
+      
+      <!-- <action name="LCIOInputAction/LCIO1"> -->
+      <!--   <properties Input="LCIOFileReader|mcparticles.slcio" -->
+      <!-- 	OutputLevel="4" -->
+      <!-- 	Mask="1" -->
+      <!-- 	MomentumScale="1."/> -->
+      <!-- </action> -->
+      
+      <!-- <action name="Geant4InteractionVertexSmear/Smear1"> -->
+      <!--   <properties OutputLevel="4" -->
+      <!-- 		    Mask="1" -->
+      <!-- 		    Offset="(-20*mm, -10*mm, -10*mm, 0*ns)" -->
+      <!-- 		    Sigma="(12*mm, 8*mm, 8*mm, 0*ns)"/> -->
+      <!-- </action> -->
+      
+      <!-- <action name="Geant4InteractionMerger/InteractionMerger"> -->
+      <!--   <properties OutputLevel="4"/> -->
+      <!-- </action> -->
+      
+      <action name="Geant4PrimaryHandler/PrimaryHandler">
+        <properties OutputLevel="4"/>
+      </action>
+      
+      <action name="Geant4ParticleHandler/ParticleHandler">
+        <properties Control="true"
+      		    SaveProcesses="['Decay']"
+      	  	    MinimalKineticEnergy="1*MeV"/>
+      	<adopt name="UserParticleHandler"/>
+      </action>
+
+    </sequence>
+
+
+    <sequence sd="VXD" type="Geant4SensDetActionSequence">
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut/SiTracker"/>
+      <!-- <action name="Geant4TrackerCombineAction/VTX"/> -->
+      <action name="Geant4TrackerAction/VXD"/>
+    </sequence>
+
+    <sequence sd="SIT" type="Geant4SensDetActionSequence">
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut/SiTracker"/>
+      <!-- <action name="Geant4TrackerCombineAction/SIT"/> -->
+      <action name="Geant4TrackerAction/SIT"/>
+    </sequence>
+    
+
+    <!-- <sequence sd="HcalBarrel" type="Geant4SensDetActionSequence"> -->
+    <!--   <action name="Geant4CalorimeterAction/HcalBarrelRegCollection"/>  -->
+    <!-- </sequence> -->
+    
+  </sequences>
+</geant4_setup>
