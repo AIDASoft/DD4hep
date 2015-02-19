@@ -21,7 +21,11 @@ option(BUILD_TESTING "Enable and build tests" ON)
 if(BUILD_TESTING)
 include(CTest)
 enable_testing()
+
+set(BUILDNAME "${CMAKE_SYSTEM}-${CMAKE_CXX_COMPILER}-${CMAKE_BUILD_TYPE}" CACHE STRING "set build string for cdash")
+
 endif(BUILD_TESTING)
+
 #----------------------------------------------------------------------------------
 #
 # (un)comment as needed
