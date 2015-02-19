@@ -113,3 +113,12 @@ ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh
   geoConverter -compact2vis -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output Simple_ILD.vis )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [0-9]?[0-9][0-9]+ volumes" )
+
+
+SET( test_name "test_simulation_simple" )
+ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
+  dd_sim ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml  ${CMAKE_CURRENT_SOURCE_DIR}/examples/sequences.xml )
+#----- here we simply require that at least 100 volumes have been converted
+SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "Event 9 Begin event action")
+
+
