@@ -12,8 +12,8 @@
   </info>
 
   <includes>
-    <gdmlFile  ref="../../../DDDetectors/compact/elements.xml"/>
-    <gdmlFile  ref="../../../DDDetectors/compact/materials.xml"/>
+    <gdmlFile  ref="./DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="./DDDetectors/compact/materials.xml"/>
   </includes>
   
   <define>
