@@ -15,6 +15,8 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
  	
 project(DD4hepExample)
  	
+option(BUILD_TESTING "Enable and build tests" ON)
+
 #---Testing-------------------------------------------------------------------------
 if(BUILD_TESTING)
 include(CTest)
