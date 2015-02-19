@@ -6,7 +6,7 @@
 ##   INCLUDE(CTest)
 set(CTEST_PROJECT_NAME "DD4hepExamples")
 set(CTEST_NIGHTLY_START_TIME "01:00:00 UTC")
-
+set(JOB_BUILDNAME_SUFFIX ${CMAKE_BUILD_TYPE} )
 set(CTEST_DROP_METHOD "http")
 set(CTEST_DROP_SITE "aidasoft.desy.de")
 set(CTEST_DROP_LOCATION "/CDash/submit.php?project=DD4hepExamples")
