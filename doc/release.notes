@@ -98,6 +98,7 @@ DD4hep  ----  Release Notes
       examples/firstExample/
       examples/noviceN04/
 
+ - enabled testing in nightly builds with cmake, ctest and cdash (FG)
 
  - plus many small bug fixes  (use svn log for details )
 

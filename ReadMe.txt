@@ -110,16 +110,6 @@ To build and run the simulation examples Geant4 will be required.
      or
   source ./bin/thisdd4hep.csh
 
-4.2) Running a first basic example
------------------------------------
- A simple 'Hello World' example can be found in examples/firstexample:
- cd examples/firstexample
- mkdir build
- cmake -DDD4hep_DIR=../../ ../
- make -j
- ./bin/Test_execute ../compact/Sensor_Test.xml
-
- A simple box should be shown now.  	
 
 
 5) Testing
@@ -145,6 +135,16 @@ To build and run the simulation examples Geant4 will be required.
   cd build 
   ctest -V -R units
   # runs only test_units
+
+ - running nightly builds and tests with cdash:
+
+  make NightlyStart
+  make NightlyConfigure
+  make NightlyBuild
+  make install
+  make NightlyTest
+  make NightlySubmit
+
 
 6) Extending
 ------------
@@ -180,7 +180,7 @@ on the cmake command line - replace 'cmake ..' below with, e.g:
 - then building the examples should be very straight forward. e.g:
    (check for additional instructions in example subdirectory)
 
-  cd ./examples/ILDExDet/
+  cd ./examples/SimpleDetector/
   mkdir build ; cd build 
   cmake ..
   make -j install
@@ -194,16 +194,16 @@ or build all examples in one go:
  
 
 - before running the example, initialize the environment:
-  . ./bin/thisILDExDet.sh 
+  . ./bin/thisSimpleDetector.sh 
 
 
 - then you can for example display the ILD detector (toy model):
 
-  geoDisplay ../compact/ILDEx.xml
+  geoDisplay ../compact/Simple_ILD.xml
 
 - or convert the compact to an lcdd file:
 
-  geoConverter -compact2lcdd -input file:../compact/ILDEx.xml -output ILD_toy.lcdd
+  geoConverter -compact2lcdd -input file:../compact/Simple_ILD.xml -output Simple_ILD.lcdd
 
 
 - running example tests:
