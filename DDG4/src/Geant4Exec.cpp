@@ -6,6 +6,9 @@
 //  Author     : M.Frank
 //
 //====================================================================
+
+#include <G4Version.hh>
+
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/InstanceCount.h"
@@ -15,7 +18,9 @@
 #include "G4UserTrackingAction.hh"
 #include "G4UserStackingAction.hh"
 #include "G4UserSteppingAction.hh"
+#if G4VERSION_NUMBER < 1000
 #include "G4UserReactionAction.hh"
+#endif
 #include "G4VUserPhysicsList.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"
