@@ -1,4 +1,4 @@
-import os, time, DDG4
+import os, time, DDG4, sys
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
@@ -23,6 +23,8 @@ def run():
   simple = DDG4.Simple(kernel)
   simple.printDetectors()
   simple.setupCshUI()
+  if len(sys.argv) >= 2 and sys.argv[1] =="batch":
+    kernel.UI = ''
 
   # Configure I/O
   evt_root = simple.setupROOTOutput('RootOutput','MiniTel_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=True)
