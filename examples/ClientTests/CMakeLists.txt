@@ -104,8 +104,11 @@ foreach (file Assemblies BoxTrafos FCC_HcalBarrel IronCylinder LheD_tracker Magn
 
 endforeach()
 
-SET( test_name "${PackageName}_sim_MiniTel" )
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh"
-  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MiniTel.py batch)
-#----- here we simply require that at least 1 volume have been converted
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+
+foreach(script MiniTel LheD_tracker )
+  SET( test_name "${PackageName}_sim_${script}" )
+  ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh"
+    python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch)
+  #----- here we simply require that at least 1 volume have been converted
+  SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+endforeach(script)
