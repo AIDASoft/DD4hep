@@ -7,6 +7,8 @@
 //
 //====================================================================
 
+#include <G4Version.hh>
+
 // Framework include files
 #include "DDG4/Factories.h"
 
@@ -203,8 +205,15 @@ DECLARE_GEANT4_PARTICLE(G4BMesonZero)
 DECLARE_GEANT4_PARTICLE(G4AntiKaonZero)
 #include "G4EtaPrime.hh"
 DECLARE_GEANT4_PARTICLE(G4EtaPrime)
+
+#if G4VERSION_NUMBER >= 1000
+#include "G4Upsilon.hh"
+DECLARE_GEANT4_PARTICLE(G4Upsilon)
+#else
 #include "G4Upsiron.hh"
 DECLARE_GEANT4_PARTICLE(G4Upsiron)
+#endif
+
 #include "G4AntiBMesonZero.hh"
 DECLARE_GEANT4_PARTICLE(G4AntiBMesonZero)
 #include "G4JPsi.hh"
