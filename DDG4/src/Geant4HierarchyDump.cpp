@@ -7,6 +7,8 @@
 //
 //====================================================================
 
+#include <G4Version.hh>
+
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
@@ -20,7 +22,9 @@
 // Geant4 include files
 #include "G4Element.hh"
 #include "G4SDManager.hh"
+#if G4VERSION_NUMBER < 1000
 #include "G4Assembly.hh"
+#endif
 #include "G4AssemblyVolume.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"
