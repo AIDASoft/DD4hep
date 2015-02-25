@@ -122,8 +122,12 @@ DECLARE_GEANT4_PROCESS(G4BraggIonGasModel)
 DECLARE_GEANT4_PROCESS(G4BetheBlochIonGasModel)
 #include "G4WentzelVIModel.hh"
 DECLARE_GEANT4_PROCESS(G4WentzelVIModel)
+
+#if G4VERSION_NUMBER < 1000
 #include "G4UrbanMscModel93.hh"
 DECLARE_GEANT4_PROCESS(G4UrbanMscModel93)
+#endif
+
 #include "G4hImpactIonisation.hh"
 DECLARE_GEANT4_PROCESS(G4hImpactIonisation)
 
