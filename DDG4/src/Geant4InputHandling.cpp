@@ -156,8 +156,8 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
     // Now move begin and end-vertex of all primary vertices accordingly
     for(iv=inter->vertices.begin(); iv != inter->vertices.end(); ++iv)  {
       Geant4Vertex* v = (*iv).second;
-      double t = gamma * v->time + betagamma * v->x / c_light;
-      double x = gamma * v->x + betagamma * c_light * v->time;
+      double t = gamma * v->time + betagamma * v->x / CLHEP::c_light;
+      double x = gamma * v->x + betagamma * CLHEP::c_light * v->time;
       double y = v->y;
       double z = v->z;
       v->x = x;
@@ -169,8 +169,8 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
     // Now move begin and end-vertex of all primary and generator particles accordingly
     for(ip=inter->particles.begin(); ip != inter->particles.end(); ++ip)  {
       Geant4ParticleHandle p = (*ip).second;
-      double t = gamma * p->time + betagamma * p->vsx / c_light;
-      double x = gamma * p->vsx + betagamma * c_light * p->time;
+      double t = gamma * p->time + betagamma * p->vsx / CLHEP::c_light;
+      double x = gamma * p->vsx + betagamma * CLHEP::c_light * p->time;
       double y = p->vsx;
       double z = p->vsz;
 
@@ -318,7 +318,7 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
     G4PrimaryVertex* v4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
     event->AddPrimaryVertex(v4);
     caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
-                  v->x/mm,v->y/mm,v->z/mm,v->time/ns);
+                  v->x/CLHEP::mm,v->y/CLHEP::mm,v->z/CLHEP::mm,v->time/CLHEP::ns);
     for(Geant4Vertex::Particles::const_iterator ip=v->out.begin(); ip!=v->out.end(); ++ip)  {
       Geant4ParticleHandle p = pm[*ip];
       if ( p->daughters.size() > 0 )  {

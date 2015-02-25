@@ -70,7 +70,7 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const strin
   declareProperty("PrintStartTracking",  m_printStartTracking = false);
   declareProperty("KeepAllParticles",    m_keepAll = false);
   declareProperty("SaveProcesses",       m_processNames);
-  declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*MeV);
+  declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*CLHEP::MeV);
   m_needsControl = true;
 }
 

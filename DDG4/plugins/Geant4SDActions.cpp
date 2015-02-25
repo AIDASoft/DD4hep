@@ -248,8 +248,8 @@ namespace DD4hep {
         collection->add(hit);
         sensitive->printM2("+++ TrackID:%6d [%s] CREATE hit combination with %2d deposit(s):"
                            " %e MeV  Pos:%8.2f %8.2f %8.2f",
-                           pre.truth.trackID,sensitive->c_name(),combined,pre.truth.deposit/MeV,
-                           pos.X()/mm,pos.Y()/mm,pos.Z()/mm);
+                           pre.truth.trackID,sensitive->c_name(),combined,pre.truth.deposit/CLHEP::MeV,
+                           pos.X()/CLHEP::mm,pos.Y()/CLHEP::mm,pos.Z()/CLHEP::mm);
         clear();
       }
 
@@ -265,7 +265,7 @@ namespace DD4hep {
           extractHit(coll);
         }
         /// There must be something in.
-        if ( h.deposit()/keV <= 0 )  {
+        if ( h.deposit()/CLHEP::keV <= 0 )  {
           return false;
         }
         /// Initialize the deposits of the next hit.

@@ -36,7 +36,7 @@ Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
   InstanceCount::increment(this);
   m_needsControl = true;
   declareProperty("particle", m_particleName = "e-");
-  declareProperty("energy", m_energy = 50 * MeV);
+  declareProperty("energy", m_energy = 50 * CLHEP::MeV);
   declareProperty("multiplicity", m_multiplicity = 1);
   declareProperty("position", m_position);
   declareProperty("direction", m_direction);
@@ -82,7 +82,7 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
     }
   }
   print("Shoot [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm] dir:(%6.3f %6.3f %6.3f)",
-        m_shotNo, m_energy/GeV, m_particleName.c_str(),
+        m_shotNo, m_energy/CLHEP::GeV, m_particleName.c_str(),
         m_position.X(), m_position.Y(), m_position.Z(),
         m_direction.X(),m_direction.Y(), m_direction.Z());
 

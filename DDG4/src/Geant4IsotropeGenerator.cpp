@@ -33,7 +33,7 @@ Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* context, const s
   InstanceCount::increment(this);
   m_needsControl = true;
   declareProperty("Particle",      m_particleName = "e-");
-  declareProperty("Energy",        m_energy = 50 * MeV);
+  declareProperty("Energy",        m_energy = 50 * CLHEP::MeV);
   declareProperty("Multiplicity",  m_multiplicity = 1);
   declareProperty("Mask",          m_mask = 0);
   declareProperty("Position",      m_position);
@@ -94,7 +94,7 @@ void Geant4IsotropeGenerator::operator()(G4Event*) {
     inter->particles.insert(make_pair(p->id,p));
     vtx->out.insert(p->id);
     printout(INFO,name(),"Particle [%d] %s %.3f GeV direction:(%6.3f %6.3f %6.3f)",
-             p->id, m_particleName.c_str(), momentum/GeV, x1, x2, x3);
+             p->id, m_particleName.c_str(), momentum/CLHEP::GeV, x1, x2, x3);
 
   }
 }

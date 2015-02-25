@@ -141,7 +141,7 @@ namespace {
 Geant4FieldTrackingSetup::Geant4FieldTrackingSetup() : eq_typ(), stepper_typ() {
   eps_min            = -1.0;
   eps_max            = -1.0;
-  min_chord_step     =  1.0e-2 *mm;
+  min_chord_step     =  1.0e-2 *CLHEP::mm;
   delta_chord        = -1.0;
   delta_one_step     = -1.0;
   delta_intersection = -1.0;
