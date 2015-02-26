@@ -1,6 +1,6 @@
 #
 #
-import os, time, DDG4
+import os, time, DDG4, sys
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
@@ -18,7 +18,7 @@ def run():
   lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
   example_dir = install_dir+'/examples/DDG4/examples';
-  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/LHeD_tracker.xml")
+  kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/LheD_tracker.xml")
 
   DDG4.importConstants(lcdd,debug=False)
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
@@ -28,7 +28,8 @@ def run():
   geant4.setupCshUI()
   #simple.setupCshUI('csh',True,True)
   #simple.setupCshUI('csh',True,True,'vis.mac')
-
+  if len(sys.argv) >= 2 and sys.argv[1] =="batch":
+    kernel.UI = ''
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
   field.stepper            = "HelixSimpleRunge"
   field.equation           = "Mag_UsualEqRhs"

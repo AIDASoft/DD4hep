@@ -9,8 +9,8 @@ LHeD_tracker
 ------------
 by Ercan Pilicier
 Detector constructors:  LheD_tracker_BeamPipe_geo.cpp  LheD_tracker_SiVertexBarrel_geo.cpp
-Xompact XML:            compact/LHeD_tracker.xml
-Script:                 scripts/LHeD_tracker.py
+Compact XML:            compact/LheD_tracker.xml
+Script:                 scripts/LheD_tracker.py
 
 Example of the LHeC vertex detector and the beampipe using elliptical tubes.
 (TGeoEltu).
