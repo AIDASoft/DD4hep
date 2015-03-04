@@ -96,7 +96,7 @@ int main(int argc, char** argv ){
 
     Vector3D point = o + 34.3 * u - 42.7 * v ; 
 
-    ISurface::Vector2D lp = surf.globalToLocal( point ) ;
+    Vector2D lp = surf.globalToLocal( point ) ;
     //    std::cout << " --- local coordinates of " << point << " : (" << lp[0] << "," << lp[1] << ")" << std::endl ;
     test(  STR( lp[0] ) == STR( 34.3 ) , true , " local u coordinate is 34.4 "  ) ;  
     test(  STR( lp[1] ) == STR( -42.7 ) , true , " local v coordinate is -42.7 "  ) ;  
@@ -223,7 +223,7 @@ int main(int argc, char** argv ){
     
     Vector3D pointC( radius , -42.7/radius , 34.3  , Vector3D::cylindrical  )  ;
     
-    ISurface::Vector2D lpC = surfT.globalToLocal( pointC ) ;
+    Vector2D lpC = surfT.globalToLocal( pointC ) ;
 
     // std::cout << " --- local coordinates of " << pointC << " : (" << lpC[0] << "," << lpC[1] << ")" << std::endl ;
 

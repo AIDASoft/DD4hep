@@ -85,7 +85,7 @@ namespace DD4hep {
     Vector3D VolSurface::normal(const Vector3D& point ) const {  point.x() ; return object<SurfaceData>()._n ; }
     const Vector3D& VolSurface::origin() const { return object<SurfaceData>()._o ;}
 
-    ISurface::Vector2D VolSurface::globalToLocal( const Vector3D& point) const {
+    Vector2D VolSurface::globalToLocal( const Vector3D& point) const {
 
       Vector3D p = point - origin() ;
 
@@ -98,10 +98,10 @@ namespace DD4hep {
       double uup = u() * uprime ;
       double vvp = v() * vprime ;
       
-      return  ISurface::Vector2D(   p*uprime / uup ,  p*vprime / vvp ) ;
+      return  Vector2D(   p*uprime / uup ,  p*vprime / vvp ) ;
     }
     
-    Vector3D VolSurface::localToGlobal( const ISurface::Vector2D& point) const {
+    Vector3D VolSurface::localToGlobal( const Vector2D& point) const {
 
       Vector3D g = origin() + point[0] * u() + point[1] * v() ;
 
@@ -231,7 +231,7 @@ namespace DD4hep {
 
 
 
-    ISurface::Vector2D VolCylinder::globalToLocal( const Vector3D& point) const {
+    Vector2D VolCylinder::globalToLocal( const Vector3D& point) const {
       
       // cylinder is parallel to v here so u is Z and v is r *Phi
       double phi = point.phi() - origin().phi() ;
@@ -239,11 +239,11 @@ namespace DD4hep {
       while( phi < -M_PI ) phi += 2.*M_PI ;
       while( phi >  M_PI ) phi -= 2.*M_PI ;
  
-      return  ISurface::Vector2D( origin().rho() * phi, point.z() - origin().z() ) ;
+      return  Vector2D( origin().rho() * phi, point.z() - origin().z() ) ;
     }
     
     
-    Vector3D VolCylinder::localToGlobal( const ISurface::Vector2D& point) const {
+    Vector3D VolCylinder::localToGlobal( const Vector2D& point) const {
 
       double z = point.v() + origin().z() ;
       double phi = point.u() / origin().rho() + origin().phi() ;
@@ -464,7 +464,7 @@ namespace DD4hep {
     }          
 
 
-    ISurface::Vector2D Surface::globalToLocal( const Vector3D& point) const {
+    Vector2D Surface::globalToLocal( const Vector3D& point) const {
 
       Vector3D p = point - origin() ;
 
@@ -477,11 +477,11 @@ namespace DD4hep {
       double uup = u() * uprime ;
       double vvp = v() * vprime ;
       
-      return  ISurface::Vector2D(   p*uprime / uup ,  p*vprime / vvp ) ;
+      return  Vector2D(   p*uprime / uup ,  p*vprime / vvp ) ;
     }
     
     
-    Vector3D Surface::localToGlobal( const ISurface::Vector2D& point) const {
+    Vector3D Surface::localToGlobal( const Vector2D& point) const {
 
       Vector3D g = origin() + point[0] * u() + point[1] * v() ;
       return g ;
@@ -912,7 +912,7 @@ namespace DD4hep {
       return n ; 
     }
 
-    ISurface::Vector2D CylinderSurface::globalToLocal( const Vector3D& point) const {
+    Vector2D CylinderSurface::globalToLocal( const Vector3D& point) const {
       
       Vector3D lp , n ;
       _wtM->MasterToLocal( point , lp.array() ) ;
@@ -921,7 +921,7 @@ namespace DD4hep {
     }
     
     
-    Vector3D CylinderSurface::localToGlobal( const ISurface::Vector2D& point) const {
+    Vector3D CylinderSurface::localToGlobal( const Vector2D& point) const {
 
       Vector3D lp =  VolCylinder(_volSurf).localToGlobal( point ) ;
       Vector3D p ;

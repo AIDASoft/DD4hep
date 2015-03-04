@@ -1,7 +1,9 @@
 #ifndef DDSurfaces_ISurface_H
 #define DDSurfaces_ISurface_H
 
+
 #include "DDSurfaces/IMaterial.h"
+#include "DDSurfaces/Vector2D.h"
 #include "DDSurfaces/Vector3D.h"
 
 #include <bitset>
@@ -25,18 +27,6 @@ namespace DDSurfaces {
   class ISurface {
     
   public:
-
-    /** Helper class for 2d vectors */
-    struct Vector2D{
-      double _u,_v ;
-      Vector2D() : _u(0.),_v(0.) {}
-      Vector2D(double u, double v ) : _u(u),_v(v) {}
-      double operator[](unsigned i) const { return i==0 ? _u : _v ; }  
-      double u() const { return _u ; } 
-      double v() const { return _v ; } 
-    };
-
-
     /// Destructor
     virtual ~ISurface() {}
     
