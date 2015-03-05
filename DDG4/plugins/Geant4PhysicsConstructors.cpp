@@ -53,41 +53,28 @@ DECLARE_GEANT4_PHYSICS(G4IonBinaryCascadePhysics)
 #ifdef GEANT4_9_6
 #include "G4IonINCLXXPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4IonINCLXXPhysics)
+
+#if G4VERSION_NUMBER < 1000
 #include "G4IonLHEPPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4IonLHEPPhysics)
+#endif
+
 #endif
 
 #include "G4IonPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4IonPhysics)
 #include "G4IonQMDPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4IonQMDPhysics)
+
+#if G4VERSION_NUMBER < 1000
 #include "G4LHEPStoppingPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4LHEPStoppingPhysics)
 #include "G4QStoppingPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4QStoppingPhysics)
-#include "G4HadronElasticPhysics.hh"
-DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysics)
-#include "G4HadronDElasticPhysics.hh"
-DECLARE_GEANT4_PHYSICS(G4HadronDElasticPhysics)
-#include "G4HadronElasticPhysicsHP.hh"
-DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsHP)
-#include "G4HadronElasticPhysicsLEND.hh"
-DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsLEND)
 #include "G4HadronElasticPhysicsLHEP.hh"
 DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsLHEP)
-#include "G4HadronElasticPhysicsXS.hh"
-DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsXS)
-#include "G4HadronHElasticPhysics.hh"
-DECLARE_GEANT4_PHYSICS(G4HadronHElasticPhysics)
 #include "G4HadronQElasticPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4HadronQElasticPhysics)
-#include "G4NeutronTrackingCut.hh"
-DECLARE_GEANT4_PHYSICS(G4NeutronTrackingCut)
-
-// Optical physics
-#include "G4OpticalPhysics.hh"
-DECLARE_GEANT4_PHYSICS(G4OpticalPhysics)
-
 #include "G4QAtomicPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4QAtomicPhysics)
 #include "G4QCaptureAtRestPhysics.hh"
@@ -102,9 +89,6 @@ DECLARE_GEANT4_PHYSICS(G4QNeutrinoPhysics)
 DECLARE_GEANT4_PHYSICS(G4QStoppingPhysics)
 #include "G4QIonPhysics.hh"
 DECLARE_GEANT4_PHYSICS(G4QIonPhysics)
-#include "G4RadioactiveDecayPhysics.hh"
-DECLARE_GEANT4_PHYSICS(G4RadioactiveDecayPhysics)
-
 // LHEP hadrons
 #include "HadronPhysicsLHEP.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsLHEP)
@@ -125,7 +109,35 @@ DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_FTFP_BERT)
 #include "HadronPhysicsFTFP_BERT.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsFTFP_BERT)
 
+#endif
+
+#include "G4HadronElasticPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysics)
+#include "G4HadronDElasticPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4HadronDElasticPhysics)
+#include "G4HadronElasticPhysicsHP.hh"
+DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsHP)
+#include "G4HadronElasticPhysicsLEND.hh"
+DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsLEND)
+#include "G4HadronElasticPhysicsXS.hh"
+DECLARE_GEANT4_PHYSICS(G4HadronElasticPhysicsXS)
+#include "G4HadronHElasticPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4HadronHElasticPhysics)
+#include "G4NeutronTrackingCut.hh"
+DECLARE_GEANT4_PHYSICS(G4NeutronTrackingCut)
+
+// Optical physics
+#include "G4OpticalPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4OpticalPhysics)
+
+#include "G4RadioactiveDecayPhysics.hh"
+DECLARE_GEANT4_PHYSICS(G4RadioactiveDecayPhysics)
+
+
+
 #ifdef GEANT4_9_6
+
+#if G4VERSION_NUMBER < 1000
 #include "HadronPhysicsQGSP_INCLXX.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_INCLXX)
 #include "HadronPhysicsFTFP_BERT.hh"
@@ -137,6 +149,10 @@ DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_BERT_95)
 #include "HadronPhysicsQGSP_FTFP_BERT_95.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_FTFP_BERT_95)
 #endif
+
+#endif
+
+#if G4VERSION_NUMBER < 1000
 
 #include "HadronPhysicsCHIPS.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsCHIPS)
@@ -172,6 +188,7 @@ DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_BIC_HP)
 DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP_FTFP_BERT)
 #include "HadronPhysicsQGSP.hh"
 DECLARE_GEANT4_PHYSICS(HadronPhysicsQGSP)
+#endif
 
 #if 0
 #include ".hh"

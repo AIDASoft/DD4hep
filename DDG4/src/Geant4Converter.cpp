@@ -294,7 +294,7 @@ void* Geant4Converter::handleElement(const string& name, const Atom element) con
         }
       }
       else {
-        g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A() * (g / mole));
+        g4e = new G4Element(element->GetTitle(), name, element->Z(), element->A() * (CLHEP::g / CLHEP::mole));
       }
       stringstream str;
       str << (*g4e);
@@ -313,7 +313,7 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
     if (!mat) {
       TGeoMaterial* m = medium->GetMaterial();
       G4State state = kStateUndefined;
-      double density = m->GetDensity() * (gram / cm3);
+      double density = m->GetDensity() * (CLHEP::gram / CLHEP::cm3);
       if (density < 1e-25)
         density = 1e-25;
       switch (m->GetState()) {

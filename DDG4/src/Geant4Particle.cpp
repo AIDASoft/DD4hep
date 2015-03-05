@@ -283,7 +283,7 @@ void Geant4ParticleHandle::dumpWithVertex(int level, const std::string& src, con
            "+++ %s ID:%3d %-12s status:%08X PDG:%6d Vtx:(%+.2e,%+.2e,%+.2e)[mm] "
            "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
            tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
-           p->vsx/mm,p->vsy/mm,p->vsz/mm,p->time/ns,
+           p->vsx/CLHEP::mm,p->vsy/CLHEP::mm,p->vsz/CLHEP::mm,p->time/CLHEP::ns,
            p->daughters.size(),
            p->parents.size(),
            text);
@@ -306,7 +306,7 @@ void Geant4ParticleHandle::dumpWithMomentum(int level, const std::string& src, c
            "+++%s ID:%3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
            "time: %+.2e [ns] #Dau:%3d #Par:%1d%-6s",
            tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
-           p->psx/MeV,p->psy/MeV,p->psz/MeV,p->time/ns,
+           p->psx/CLHEP::MeV,p->psy/CLHEP::MeV,p->psz/CLHEP::MeV,p->time/CLHEP::ns,
            int(p->daughters.size()),
            int(p->parents.size()),
            text);
@@ -328,8 +328,8 @@ void Geant4ParticleHandle::dumpWithMomentumAndVertex(int level, const std::strin
            "+++%s %3d %-12s stat:%08X PDG:%6d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
            "Vtx:(%+.2e,%+.2e,%+.2e)[mm] #Dau:%3d #Par:%1d%-6s",
            tag,p->id,p.particleName().c_str(),p->status,p->pdgID,
-           p->psx/MeV,p->psy/MeV,p->psz/MeV,
-           p->vsx/mm,p->vsy/mm,p->vsz/mm,
+           p->psx/CLHEP::MeV,p->psy/CLHEP::MeV,p->psz/CLHEP::MeV,
+           p->vsx/CLHEP::mm,p->vsy/CLHEP::mm,p->vsz/CLHEP::mm,
            int(p->daughters.size()),
            int(p->parents.size()),
            text);

@@ -30,6 +30,8 @@
 #include "UTIL/Operators.h"
 #include "UTIL/ILDConf.h"
 
+#include <G4SystemOfUnits.hh>
+
 using namespace std;
 
 //==================================================================================
@@ -119,16 +121,16 @@ namespace DD4hep {
         const Geant4Tracker::Hit::Contribution& t = hit->truth;
         int trackID = pm->particleID(t.trackID);
         EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
-        double pos[3] = {hit->position.x()/mm, hit->position.y()/mm, hit->position.z()/mm};
+        double pos[3] = {hit->position.x()/CLHEP::mm, hit->position.y()/CLHEP::mm, hit->position.z()/CLHEP::mm};
         lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;
         lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
         lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
-        lc_hit->setEDep(hit->energyDeposit/GeV);
-        lc_hit->setPathLength(hit->length/mm);
-        lc_hit->setTime(hit->truth.time/ns);
+        lc_hit->setEDep(hit->energyDeposit/CLHEP::GeV);
+        lc_hit->setPathLength(hit->length/CLHEP::mm);
+        lc_hit->setTime(hit->truth.time/CLHEP::ns);
         lc_hit->setMCParticle(lc_mcp);
         lc_hit->setPosition(pos);
-        lc_hit->setMomentum(hit->momentum.x()/GeV,hit->momentum.y()/GeV,hit->momentum.z()/GeV);
+        lc_hit->setMomentum(hit->momentum.x()/CLHEP::GeV,hit->momentum.y()/CLHEP::GeV,hit->momentum.z()/CLHEP::GeV);
         lc_coll->addElement(lc_hit);
       }
       return lc_coll;

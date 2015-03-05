@@ -183,17 +183,17 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       MCParticleImpl* q = new lcio::MCParticleImpl();
       q->setPDG(p->pdgID);
 
-      float ps_fa[3] = {float(p->psx/GeV),float(p->psy/GeV),float(p->psz/GeV)};
+      float ps_fa[3] = {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)};
       q->setMomentum( ps_fa );
 
-      double vs_fa[3] = { p->vsx/mm, p->vsy/mm, p->vsz/mm } ;
+      double vs_fa[3] = { p->vsx/CLHEP::mm, p->vsy/CLHEP::mm, p->vsz/CLHEP::mm } ;
       q->setVertex( vs_fa );
 
-      double ve_fa[3] = { p->vex/mm, p->vey/mm, p->vez/mm } ;
+      double ve_fa[3] = { p->vex/CLHEP::mm, p->vey/CLHEP::mm, p->vez/CLHEP::mm } ;
       q->setEndpoint( ve_fa );
 
-      q->setTime(p->time/ns);
-      q->setMass(p->mass/GeV);
+      q->setTime(p->time/CLHEP::ns);
+      q->setMass(p->mass/CLHEP::GeV);
       q->setCharge(def ? def->GetPDGCharge() : 0); // Charge(e+) = 1 !
 
       // Set generator status
