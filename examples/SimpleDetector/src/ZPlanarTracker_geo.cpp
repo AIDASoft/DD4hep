@@ -11,6 +11,8 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 #include "DDRec/Surface.h"
+#include "DDRec/DetectorData.h"
+
 
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -31,6 +33,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   PlacedVolume pv;
   
+  DDRec::ZPlanarData*  zPlanarData = new DDRec::ZPlanarData ;
+
   //=========  loop over layer elements in xml  ======================================
 
   for(xml_coll_t c(e, _U(layer) ); c; ++c)  {
@@ -85,6 +89,30 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
 
     //-----------------------------------
+    //  store the data in an extension to be used for reconstruction 
+    DDRec::ZPlanarData::LayerLayout thisLayer ;
+
+    thisLayer.sensorsPerLadder =  1 ; // for now only one planar sensor
+    thisLayer.lengthSensor     =  2. * sens_zhalf ;
+    
+    thisLayer.distanceSupport  = supp_distance ;
+    thisLayer.offsetSupport    = supp_offset ;
+    thisLayer.thicknessSupport = supp_thickness ;
+    thisLayer.zHalfSupport     = supp_zhalf ;
+    thisLayer.widthSupport     = supp_width ;      
+    
+    thisLayer.distanceSensitive  = sens_distance ;  
+    thisLayer.offsetSensitive    = sens_offset ;	  
+    thisLayer.thicknessSensitive = sens_thickness ; 
+    thisLayer.zHalfSensitive     = sens_zhalf ;	  
+    thisLayer.widthSensitive     = sens_width ;     
+    
+    thisLayer.ladderNumber =  nLadders ;
+    thisLayer.phi0         =  phi0 ;
+    
+    zPlanarData->layers.push_back( thisLayer ) ;
+    //-----------------------------------
+
 
     Material supp_mat     = lcdd.material( supp_matS ) ;
     Material sens_mat     = lcdd.material( sens_matS ) ;
@@ -170,6 +198,9 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   }
 
+
+  tracker.addExtension< DDRec::ZPlanarData >( zPlanarData ) ;
+  
   Volume mother =  lcdd.pickMotherVolume( tracker ) ;
 
   pv = mother.placeVolume(assembly);

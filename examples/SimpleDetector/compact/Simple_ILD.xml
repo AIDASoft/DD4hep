@@ -86,7 +86,7 @@
         </layer>
       </detector>
 
-      <detector name="SIT" type="ZPlanarTracker" vis="SITVis" id="1" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
+      <detector name="SIT" type="ZPlanarTracker" vis="SITVis" id="2" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
         <layer nLadders="10" phi0="0.000000000e+00" id="0">
           <ladder distance="1.531000000e+02*mm" thickness="1.000000000e+00*mm" width="9.916044311e+01*mm" length="3.680000000e+02*mm" offset="0.000000000e+00*mm"  material="CarbonFiber" /> 
           <sensitive distance="1.529000000e+02*mm" thickness="2.000000000e-01*mm" width="9.916044311e+01*mm" length="3.680000000e+02*mm" offset="0.000000000e+00*mm" material="G4_Si"/>

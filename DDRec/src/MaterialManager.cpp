@@ -114,6 +114,13 @@ namespace DD4hep {
 	  node1=node2;
 	}
 	
+
+	//fg: protect against empty list:
+	if( _mV.empty() ){
+	  _mV.push_back( std::make_pair( Material( node1->GetMedium() ), totDist  )  ) ; 
+	}
+
+
 	_tgeoMgr->ClearTracks();
 	_tgeoMgr->CleanGarbage();
 	
