@@ -30,7 +30,7 @@ DDTest test = DDTest( "surfaces" ) ;
 //=============================================================================
 
 int main(int argc, char** argv ){
-#if 0  
+
   if( argc < 3 ) {
     std::cout << " usage: test_surfaces compact.xml lcio_file.slcio" << std::endl ;
     exit(1) ;
@@ -188,7 +188,6 @@ int main(int argc, char** argv ){
     
     
   }
-#endif  
   return 0;
 }
 
