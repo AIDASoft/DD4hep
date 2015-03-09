@@ -76,7 +76,7 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
 
   Geant4Vertex* vtx = new Geant4Vertex();
   int multiplicity = m_multiplicity;
-  ROOT::Math::XYZVector position = m_position;
+  ROOT::Math::XYZVector unit_direction, direction, position = m_position;
   getVertexPosition(position);
   getParticleMultiplicity(multiplicity);
   vtx->mask = m_mask;
@@ -86,18 +86,18 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
   inter->vertices.insert(make_pair(inter->vertices.size(),vtx));
   for(int i=0; i<m_multiplicity; ++i)   {
     double momentum = m_energy;
-    ROOT::Math::XYZVector direction = m_direction;
-    getParticleDirection(i, direction, momentum);
-
     Particle* p = new Particle();
+    direction = m_direction;
+    getParticleDirection(i, direction, momentum);
+    unit_direction = direction.unit();
     p->id         = inter->nextPID();
     p->status    |= G4PARTICLE_GEN_STABLE;
     p->mask       = m_mask;
     p->pdgID      = m_particle->GetPDGEncoding();
 
-    p->psx        = direction.X()*momentum;
-    p->psy        = direction.Y()*momentum;
-    p->psz        = direction.Z()*momentum;
+    p->psx        = unit_direction.X()*momentum;
+    p->psy        = unit_direction.Y()*momentum;
+    p->psz        = unit_direction.Z()*momentum;
     p->mass       = m_particle->GetPDGMass();
     p->vsx        = vtx->x;
     p->vsy        = vtx->y;
