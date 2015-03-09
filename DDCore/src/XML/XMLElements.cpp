@@ -682,7 +682,7 @@ Handle_t Handle_t::remove(Handle_t node) const {
     msg += "Element [" + tag() + "] has no child of type '" + node.tag() + "'";
   else if (node)
     msg += "Element [INVALID]. Cannot remove child of type: '" + node.tag() + "'";
-  else if (node)
+  else if (!node)
     msg += "Element [INVALID]. Cannot remove [INVALID] child. Big Shit!!!!";
 
   throw runtime_error(msg);
@@ -901,13 +901,12 @@ static unsigned int adler32(unsigned int adler, const XmlChar* xml_buff, size_t 
   unsigned int s1 = adler & 0xffff;
   unsigned int s2 = (adler >> 16) & 0xffff;
   const char* buf = (const char*)xml_buff;
-  int k;
 
   if (buf == NULL)
     return 1;
 
   while (len > 0) {
-    k = len < NMAX ? (int) len : NMAX;
+    int k = len < NMAX ? (int) len : NMAX;
     len -= k;
     while (k >= 16) {
       DO16(buf);

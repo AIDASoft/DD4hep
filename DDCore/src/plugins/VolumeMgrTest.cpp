@@ -135,7 +135,6 @@ void VolIDTest::walkVolume(DetElement e, PlacedVolume pv, VolIDs ids, size_t dep
       TGeoNode* node = (TGeoNode*)nodes->At(i);
       PlacedVolume place(node);
       VolIDs child_ids(ids);
-      stringstream err, log;
 
       child_ids.insert(child_ids.end(),place.volIDs().begin(),place.volIDs().end());
       bool is_sensitive = place.volume().isSensitive();

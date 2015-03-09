@@ -40,6 +40,8 @@ LCDDData::~LCDDData() {
 /// Clear data content: releases all allocated resources
 void LCDDData::destroyData(bool destroy_mgr)   {
   m_extensions.clear();
+  m_motherVolumes.clear();
+
   destroyHandle(m_world);
   destroyHandle(m_field);
   destroyHandle(m_header);
@@ -74,6 +76,7 @@ void LCDDData::destroyData(bool destroy_mgr)   {
 /// Clear data content: releases all allocated resources
 void LCDDData::clearData()   {
   m_extensions.clear(false);
+  m_motherVolumes.clear();
   m_world.clear();
   m_field.clear();
   m_header.clear();
@@ -100,6 +103,7 @@ void LCDDData::clearData()   {
 /// Adopt all data from source structure
 void LCDDData::adoptData(LCDDData& source)   {
   m_extensions = source.m_extensions;
+  m_motherVolumes = source.m_motherVolumes;
   m_world = source.m_world;
   m_field = source.m_field;
   m_header = source.m_header;

@@ -111,6 +111,7 @@ namespace DD4hep {
 #include <limits>
 
 using namespace std;
+using namespace CLHEP;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 typedef DD4hep::Geometry::LCDD lcdd_t;
@@ -155,8 +156,8 @@ Geant4FieldTrackingSetup::~Geant4FieldTrackingSetup()   {
 int Geant4FieldTrackingSetup::execute(Geometry::LCDD& lcdd)   {
   Geometry::OverlayedField fld  = lcdd.field();
   G4MagneticField*         mag_field    = new Simulation::Geant4Field(fld);
-  G4Mag_EqRhs*             mag_equation = ROOT::Reflex::PluginService::Create<G4Mag_EqRhs*>(eq_typ,mag_field);
-  G4MagIntegratorStepper*  fld_stepper  = ROOT::Reflex::PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_equation);
+  G4Mag_EqRhs*             mag_equation = PluginService::Create<G4Mag_EqRhs*>(eq_typ,mag_field);
+  G4MagIntegratorStepper*  fld_stepper  = PluginService::Create<G4MagIntegratorStepper*>(stepper_typ,mag_equation);
   G4ChordFinder*           chordFinder  = new G4ChordFinder(mag_field,min_chord_step,fld_stepper);
   G4TransportationManager* transportMgr = G4TransportationManager::GetTransportationManager();
   G4PropagatorInField*     propagator   = transportMgr->GetPropagatorInField();
@@ -223,4 +224,3 @@ void Geant4FieldTrackingSetupAction::operator()()   {
 
 DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields)
 DECLARE_GEANT4ACTION(Geant4FieldTrackingSetupAction)
-

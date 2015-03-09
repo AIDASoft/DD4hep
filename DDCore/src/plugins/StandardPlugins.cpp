@@ -159,25 +159,27 @@ DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
  *  @date    01/04/2014
  */
 static long dump_volume_tree(LCDD& lcdd, int , char** ) {
-  struct Actor { static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
-    char fmt[256];
-    if ( ideal == aligned )  {
-      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
+  struct Actor {
+    static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
+      char fmt[256];
+      if ( ideal == aligned )  {
+	::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
+      }
+      else  {
+	::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
+		   level+1,2*level+1,(void*)ideal,(void*)aligned);
+      }
+      printout(INFO,"+++",fmt,"",aligned->GetName());
+      TGeoVolume* volume = ideal->GetVolume();
+      for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
+	TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
+	const char* daughter_name    = ideal_daughter->GetName();
+	TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
+	dump(ideal_daughter,aligned_daughter,level+1);
+      }
+      return 1;
     }
-    else  {
-      ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
-                 level+1,2*level+1,(void*)ideal,(void*)aligned);
-    }
-    printout(INFO,"+++",fmt,"",aligned->GetName());
-    TGeoVolume* volume = ideal->GetVolume();
-    for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
-      TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
-      const char* daughter_name    = ideal_daughter->GetName();
-      TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
-      Actor::dump(ideal_daughter,aligned_daughter,level+1);
-    }
-    return 1;
-  }};
+  };
   string place = lcdd.world().placementPath();
   DetectorTools::PlacementPath path;
   DetectorTools::placementPath(lcdd.world(), path);
@@ -194,17 +196,19 @@ DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
  *  @date    01/04/2014
  */
 static long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
-  struct Actor { static long dump(DetElement de,int level, bool sensitive_only) {
-    const DetElement::Children& c = de.children();
-    char fmt[64];
-    if ( !sensitive_only || 0 != de.volumeID() )  {
-      ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-      printout(INFO,"+++",fmt,"",de.placementPath().c_str(),int(c.size()),(void*)de.volumeID());
+  struct Actor {
+    static long dump(DetElement de,int level, bool sensitive_only) {
+      const DetElement::Children& c = de.children();
+      if ( !sensitive_only || 0 != de.volumeID() )  {
+	char fmt[64];
+	::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+	printout(INFO,"+++",fmt,"",de.placementPath().c_str(),int(c.size()),(void*)de.volumeID());
+      }
+      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
+	dump((*i).second,level+1,sensitive_only);
+      return 1;
     }
-    for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-      Actor::dump((*i).second,level+1,sensitive_only);
-    return 1;
-  }};
+  };
   bool sensitive_only = false;
   for(int i=0; i<argc; ++i)  {
     if ( ::strcmp(argv[i],"--sensitive")==0 ) { sensitive_only = true; }
@@ -220,16 +224,18 @@ DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree)
  *  @date    01/04/2014
  */
 static long detelement_cache(LCDD& lcdd, int , char** ) {
-  struct Actor {  static long cache(DetElement de) {
-    const DetElement::Children& c = de.children();
-    de.worldTransformation();
-    de.parentTransformation();
-    de.placementPath();
-    de.path();
-    for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-      Actor::cache((*i).second);
-    return 1;
-  }};
+  struct Actor {
+    static long cache(DetElement de) {
+      const DetElement::Children& c = de.children();
+      de.worldTransformation();
+      de.parentTransformation();
+      de.placementPath();
+      de.path();
+      for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
+	cache((*i).second);
+      return 1;
+    }
+  };
   return Actor::cache(lcdd.world());
 }
 DECLARE_APPLY(DD4hepDetElementCache,detelement_cache)

@@ -11,10 +11,19 @@
 
 // Framework include files
 #include "DD4hep/DetFactoryHelper.h"
+#include "TGeoShapeAssembly.h"
 
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
+
+#if 0
+static Ref_t create_Assembly(lcdd_t&, xml_h e)   {
+  xml_dim_t dim(e);
+  return Ref_t(new TGeoShapeAssembly());
+}
+DECLARE_XMLELEMENT(Assembly__shape_constructor,create_Assembly)
+#endif
 
 static Ref_t create_Box(lcdd_t&, xml_h e)   {
   xml_dim_t dim(e);
@@ -42,13 +51,13 @@ DECLARE_XMLELEMENT(Polycone__shape_constructor,create_Polycone)
 
 static Ref_t create_ConeSegment(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
-  return ConeSegment(e.rmin(0.0),e.rmax(),e.z(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
+  return ConeSegment(e.rmin(0.0),e.rmax(),e.dz(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
 }
 DECLARE_XMLELEMENT(ConeSegment__shape_constructor,create_ConeSegment)
 
 static Ref_t create_Tube(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
-  return Tube(e.rmin(0.0),e.rmax(),e.z(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
+  return Tube(e.rmin(0.0),e.rmax(),e.dz(0.0),e.startphi(0.0),e.deltaphi(2*M_PI));
 }
 DECLARE_XMLELEMENT(Tube__shape_constructor,create_Tube)
 

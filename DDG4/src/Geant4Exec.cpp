@@ -18,9 +18,6 @@
 #include "G4UserTrackingAction.hh"
 #include "G4UserStackingAction.hh"
 #include "G4UserSteppingAction.hh"
-#if G4VERSION_NUMBER < 1000
-#include "G4UserReactionAction.hh"
-#endif
 #include "G4VUserPhysicsList.hh"
 #include "G4VModularPhysicsList.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"
@@ -333,9 +330,9 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   G4RunManager& runManager = kernel.runManager();
 
   // Check if the geometry was loaded
-  if (lcdd.detectors().size() <= 1) {
+  if (lcdd.sensitiveDetectors().size() <= 1) {
     printout(WARNING, "Geant4Exec", "+++ Only %d subdetectors present. "
-             "You sure you loaded the geometry properly?",int(lcdd.detectors().size()));
+             "You sure you loaded the geometry properly?",int(lcdd.sensitiveDetectors().size()));
   }
   // Get the detector constructed
   Geant4DetectorConstruction* detector = Geant4DetectorConstruction::instance(kernel);

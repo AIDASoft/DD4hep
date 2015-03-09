@@ -259,7 +259,7 @@ static void dumpStructure(PlacedVolume pv, int level) {
   ::printf(fmt, level, "", "  ->path:", _path.c_str());
   if (num_children > 0) {
     for (int i = 0; i < num_children; ++i) {
-      TGeoNode* node = (TGeoNode*) nodes->At(i);
+      TGeoNode* node = static_cast<TGeoNode*>(nodes->At(i));
       dumpStructure(PlacedVolume(node), level + 1);
     }
   }

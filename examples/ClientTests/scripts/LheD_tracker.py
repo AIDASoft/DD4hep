@@ -16,8 +16,8 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   lcdd = kernel.lcdd()
+  
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/LheD_tracker.xml")
 
   DDG4.importConstants(lcdd,debug=False)
@@ -26,8 +26,8 @@ def run():
 
   # Configure UI
   geant4.setupCshUI()
-  #simple.setupCshUI('csh',True,True)
-  #simple.setupCshUI('csh',True,True,'vis.mac')
+  ##geant4.setupCshUI('csh',True,True)
+  ##geant4.setupCshUI('csh',True,True,'vis.mac')
   if len(sys.argv) >= 2 and sys.argv[1] =="batch":
     kernel.UI = ''
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
@@ -58,39 +58,18 @@ def run():
   kernel.eventAction().adopt(prt)
 
   generator_output_level = Output.WARNING
-  evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+
+  # Configure I/O
+  ##evt_lcio = geant4.setupLCIOOutput('LcioOutput','LHeD_tracker_'+time.strftime('%Y-%m-%d_%H-%M'))
+  ##evt_lcio.OutputLevel = generator_output_level
+  evt_root = geant4.setupROOTOutput('RootOutput','LHeD_tracker_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   gen = geant4.setupGun("Gun",particle='geantino',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
   gen.isotrop = False
   gen.direction = (1,0,0)
   gen.OutputLevel = generator_output_level
 
-
-  """
-  #seq,act = geant4.setupTracker('SiTrackerBarrel')
-
-  # First the tracking detectors
-  seq,act = geant4.setupTracker('SiVertexBarrel')
-  seq,act = geant4.setupTracker('SiVertexEndcap')
-  seq,act = geant4.setupTracker('SiTrackerBarrel')
-  seq,act = geant4.setupTracker('SiTrackerEndcap')
-  seq,act = geant4.setupTracker('SiTrackerForward')
-  # Now the calorimeters
-  seq,act = geant4.setupCalorimeter('EcalBarrel')
-  seq,act = geant4.setupCalorimeter('EcalEndcap')
-  seq,act = geant4.setupCalorimeter('HcalBarrel')
-  seq,act = geant4.setupCalorimeter('HcalEndcap')
-  seq,act = geant4.setupCalorimeter('HcalPlug')
-  seq,act = geant4.setupCalorimeter('MuonBarrel')
-  seq,act = geant4.setupCalorimeter('MuonEndcap')
-  seq,act = geant4.setupCalorimeter('LumiCal')
-  seq,act = geant4.setupCalorimeter('BeamCal')
-  """
-  """
-  scan = DDG4.SteppingAction(kernel,'Geant4MaterialScanner/MaterialScan')
-  kernel.steppingAction().adopt(scan)
-  """
-
+  #seq,act = geant4.setupTracker('SiVertexBarrel')
 
   # Now build the physics list:
   phys = geant4.setupPhysics('QGSP_BERT')

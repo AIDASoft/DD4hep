@@ -11,6 +11,7 @@
 #include "DDEve/GenericEventHandler.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/Factories.h"
+#include "DD4hep/Plugins.h"
 #include <stdexcept>
 
 /// ROOT include files
@@ -93,7 +94,6 @@ size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveP
 
 /// Open a new event data file
 bool GenericEventHandler::Open(const string& file_type, const string& file_name)   {
-  typedef ROOT::Reflex::PluginService _P;
   size_t idx = file_name.find("lcio");
   string err;
   m_hasFile = false;
@@ -101,10 +101,10 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
   try  {
     deletePtr(m_current);
     if ( idx != string::npos )   {
-      m_current = (EventHandler*)_P::Create<void*>("DDEve_LCIOEventHandler",(const char*)0);
+      m_current = (EventHandler*)PluginService::Create<void*>("DDEve_LCIOEventHandler",(const char*)0);
     }
     else if ( (idx=file_name.find("root")) != string::npos )   {
-      m_current = (EventHandler*)_P::Create<void*>("DDEve_DDG4EventHandler",(const char*)0);
+      m_current = (EventHandler*)PluginService::Create<void*>("DDEve_DDG4EventHandler",(const char*)0);
     }
     if ( m_current )   {
       if ( m_current->Open(file_type, file_name) )   {

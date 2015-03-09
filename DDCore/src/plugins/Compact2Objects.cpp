@@ -17,7 +17,7 @@
 #include "DD4hep/objects/DetectorInterna.h"
 
 #include "XML/DocumentHandler.h"
-#include "XML/Conversions.h"
+#include "XML/Utilities.h"
 
 // Root/TGeo include files
 #include "TGeoManager.h"
@@ -185,15 +185,7 @@ static Ref_t create_MultipoleField(lcdd_t& lcdd, xml_h e) {
   }
   if ((child = c.child(_U(shape), false))) {      // Shape is not mandatory
     string type = child.typeStr();
-    string fac  = type + "__shape_constructor";
-    xml_h  solid_elt = child;
-    Solid solid = Ref_t(PluginService::Create<NamedObject*>(fac, &lcdd, &solid_elt));
-    if ( !solid.isValid() )  {
-      PluginDebug dbg;
-      PluginService::Create<NamedObject*>(type, &lcdd, &solid_elt);
-      throw_print("Failed to create solid of type " + type + ". " + dbg.missingFactory(type));
-    }
-    ptr->volume = solid;
+    ptr->volume = XML::createShape(lcdd, type, child);
   }
   ptr->B_z = bz;
   ptr->transform = Transform3D(rot,pos).Inverse();
@@ -295,18 +287,18 @@ template <> void Converter<Material>::operator()(xml_h e) const {
   TGeoMixture* mix = dynamic_cast<TGeoMixture*>(mat);
   xml_coll_t fractions(m, _U(fraction));
   xml_coll_t composites(m, _U(composite));
-  bool has_density = true;
 
   if (0 == mat) {
     TGeoMaterial* comp_mat;
     TGeoElement* comp_elt;
-    xml_h radlen = m.child(_U(RL), false);
-    xml_h intlen = m.child(_U(NIL), false);
-    xml_h density = m.child(_U(D), false);
-    double radlen_val = radlen.ptr() ? radlen.attr<double>(_U(value)) : 0.0;
-    double intlen_val = intlen.ptr() ? intlen.attr<double>(_U(value)) : 0.0;
-    double dens_val   = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
-    double dens_unit  = 1.0;
+    xml_h  radlen      = m.child(_U(RL), false);
+    xml_h  intlen      = m.child(_U(NIL), false);
+    xml_h  density     = m.child(_U(D), false);
+    double radlen_val  = radlen.ptr()  ? radlen.attr<double>(_U(value)) : 0.0;
+    double intlen_val  = intlen.ptr()  ? intlen.attr<double>(_U(value)) : 0.0;
+    double dens_val    = density.ptr() ? density.attr<double>(_U(value)) : 0.0;
+    double dens_unit   = 1.0;
+    bool   has_density = true;
     if ( 0 == mat && !density.ptr() ) {
       has_density = false;
     }
@@ -344,7 +336,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
         fraction *= comp_elt->A();
       else
-        throw_print("Compact2Objects[ERROR]: Converting material:" + mname + " Element missing: " + nam);
+	except("Compact2Objects","Converting material: %s Element missing: %s",mname.c_str(),nam.c_str());
       composite_fractions_total += fraction;
       composite_fractions.push_back(fraction);
     }
@@ -777,9 +769,26 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
   if (ign_typs && strstr(ign_typs, type_match.c_str()))
     return;
   try {
-    xml_attr_t attr_ro = element.attr_nothrow(_U(readout));
+    xml_attr_t attr_par = element.attr_nothrow(_U(parent));
+    if (attr_par) {
+      // We have here a nested detector. If the mother volume is not yet registered
+      // it must be done here, so that the detector constructor gets the correct answer from
+      // the call to LCDD::pickMotherVolume(DetElement).
+      string par_name = element.attr<string>(attr_par);
+      DetElement parent_detector = lcdd.detector(par_name);
+      if ( !parent_detector.isValid() )  {
+	except("Compact","Failed to access valid parent detector of %s",name.c_str());
+      }
+      Volume parent_volume = parent_detector.placement().volume();
+      if ( !parent_volume.isValid() )   {
+	except("Compact","Failed to access valid parent volume of %s from %s",
+	       name.c_str(), par_name.c_str());
+      }
+      lcdd.declareMotherVolume(name, parent_volume);
+    }
+    xml_attr_t attr_ro  = element.attr_nothrow(_U(readout));
     SensitiveDetector sd;
-    if (attr_ro) {
+    if (attr_ro)   {
       Readout ro = lcdd.readout(element.attr<string>(attr_ro));
       if (!ro.isValid()) {
         throw runtime_error("No Readout structure present for detector:" + name);

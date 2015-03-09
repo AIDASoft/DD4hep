@@ -3,6 +3,13 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2015/03/09 Markus Frank
+-----------------------
+  - Finalize move to geant4 version 10, started by A.Sailer
+  - Add non-isotrop particle generator in DDG4 (request P.Kostka)
+  - Isolate ROOT plugin manager as start to move to ROOT 6
+
  --------
 | v00-11 |  
  --------   

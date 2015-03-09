@@ -74,6 +74,7 @@ namespace DD4hep {
 
     UNICODE (d);
     UNICODE (D);
+    UNICODE (daughter);
     UNICODE (define);
     UNICODE (delta);
     UNICODE (deltaphi);
@@ -224,6 +225,7 @@ namespace DD4hep {
     UNICODE (modulePosX);
     UNICODE (modulePosY);
     UNICODE (moduleWidth);
+    UNICODE (mother);
 
     UNICODE (n);
     UNICODE (N);
@@ -260,6 +262,7 @@ namespace DD4hep {
     UNICODE (paraboloid);
     UNICODE (param);
     UNICODE (params);
+    UNICODE (parent);
     UNICODE (particles);
     UNICODE (phi);
     UNICODE (phi0);

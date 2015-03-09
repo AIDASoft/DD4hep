@@ -22,6 +22,7 @@
 
 #include <iostream>
 
+using namespace CLHEP;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 typedef ReferenceBitMask<int> PropertyMask;

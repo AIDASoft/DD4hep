@@ -1,0 +1,62 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="Nested_Detectors_test"
+        title="Test for nested detector descriptions"
+        author="Markus Frank"
+        url="None"
+        status="development"
+        version="$Id: compact.xml 1374 2014-11-05 10:49:55Z markus.frank@cern.ch $">
+    <comment>Test for nested detector descriptions</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile ref="${DDDetectors_dir}/elements.xml"/>
+    <gdmlFile ref="${DDDetectors_dir}/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="DDDetectors_dir" value="../../../DDDetectors/compact" type="string"/>;
+    <constant name="SiD_dir" value="${DDDetectors_dir}/SiD" type="string"/>;
+    <constant name="world_side" value="30000*mm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+
+    <constant name="VertexBarrel_ID" value="1"/>
+    <constant name="VertexBarrel_zmax" value="10.0*cm"/>
+    <constant name="VertexBarrel_r1" value="2.7*cm"/>
+    <constant name="VertexBarrel_r2" value="3.8*cm"/>
+    <constant name="VertexBarrel_r3" value="5.1*cm"/>
+    <constant name="VertexBarrel_r4" value="6.4*cm"/>
+    <constant name="VertexBarrel_r5" value="7.7*cm"/>
+
+    <constant name="SiTrackerBarrel_ID" value="3"/>
+  </define>
+
+  <limits><limitset name="SiTrackerBarrelRegionLimitSet"/></limits>
+  <regions><region name="SiTrackerBarrelRegion" eunit="MeV" lunit="mm" cut="0.001" threshold="0.001"/></regions>
+
+  <comment>Common Generic visualization attributes</comment>
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="BlueVis" alpha="1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+  </display>
+
+  <comment>Tracking detectors</comment>
+  <detectors>
+    <detector id="99" name="SiTrackers" type="DD4hep_SubdetectorAssembly" vis="BlueVis">
+      <comment>Silicon Tracker Assembly</comment>
+      <composite name="SiTrackerBarrel"/>
+      <composite name="SiVertexBarrel"/>
+    </detector>
+  </detectors>
+
+  <include ref="${SiD_dir}/SiD_TrackerConfig.xml"/>
+  <include ref="${SiD_dir}/SiD_TrackerBarrel.xml"/>
+
+  <include ref="${SiD_dir}/SiD_VertexConfig.xml"/>
+  <include ref="${SiD_dir}/SiD_VertexBarrel.xml"/>
+</lccdd>

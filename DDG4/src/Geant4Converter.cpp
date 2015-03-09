@@ -91,6 +91,7 @@ using namespace DD4hep::Simulation;
 using namespace DD4hep::Simulation::Geant4GeometryMaps;
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
+using namespace CLHEP;
 using namespace std;
 
 #include "DDG4/Geant4AssemblyVolume.h"
@@ -827,7 +828,7 @@ void* Geant4Converter::handleSensitive(SensitiveDetector sens_det, const set<con
       g4 = PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
       if (!g4) {
         PluginDebug dbg;
-        g4 = ROOT::Reflex::PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
+        g4 = PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
         if ( !g4 )  {
           throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
                               "create Geant4 sensitive detector factory " + name + " of type " + type + ".");
@@ -894,7 +895,7 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
     const LCDD::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;
     string tag = type + "_Geant4_action";
-    long result = ROOT::Reflex::PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
+    long result = PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
     if (0 == result) {
       throw runtime_error("Failed to locate plugin to interprete files of type"
                           " \"" + tag + "\" - no factory:" + type);

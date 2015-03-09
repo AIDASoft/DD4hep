@@ -42,12 +42,12 @@ DECLARE_CONSTRUCTOR(DDEve_DDG4EventHandler,_create)
 
 /// Standard constructor
 DDG4EventHandler::DDG4EventHandler() : EventHandler(), m_file(0,0), m_entry(-1) {
-  void* ptr = ROOT::Reflex::PluginService::Create<void*>("DDEve_DDG4HitAccess",(const char*)"");
+  void* ptr = PluginService::Create<void*>("DDEve_DDG4HitAccess",(const char*)"");
   if ( 0 == ptr )   {
     throw runtime_error("FATAL: Failed to access function pointer from factory DDEve_DDG4HitAccess");
   }
   m_simhitConverter = FCN(ptr).hits;
-  ptr = ROOT::Reflex::PluginService::Create<void*>("DDEve_DDG4ParticleAccess",(const char*)"");
+  ptr = PluginService::Create<void*>("DDEve_DDG4ParticleAccess",(const char*)"");
   if ( 0 == ptr )   {
     throw runtime_error("FATAL: Failed to access function pointer from factory DDEve_DDG4ParticleAccess");
   }

@@ -467,7 +467,7 @@ namespace DD4hep {
   template <> void Converter<XMLSetup>::operator()(xml_h seq)  const  {
     xml_elt_t compact(seq);
     // First execute the basic setup from the plugins module
-    long result = ROOT::Reflex::PluginService::Create<long>("geant4_XML_reader",&lcdd,&seq);
+    long result = PluginService::Create<long>("geant4_XML_reader",&lcdd,&seq);
     if ( 0 == result )  {
       throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
                           " \"" + seq.tag() + "\" - no factory of type geant4_XML_reader.");

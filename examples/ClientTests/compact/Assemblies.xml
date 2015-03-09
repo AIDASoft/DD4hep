@@ -87,27 +87,27 @@
       <tubs rmin="VXD_inner_radius" rmax="VXD_outer_radius" zhalf="VXD_zhalf"/>
       <layer id="0"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_LAYER_0_Region">
 	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis" region="VXD_SUPPORT_0_Region"/>
-	<ladder  zhalf="65*mm" radius="1.595000000e+01*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10" region="VXD_LADDER_0_Region"/>
+	<ladder  zhalf="65*mm" radius="1.595e+01*mm"  width="1.1e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10" region="VXD_LADDER_0_Region"/>
       </layer>
       <layer id="1"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_1_Region">
 	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-	<ladder  zhalf="65*mm" radius="18*mm"  width="1.100000000e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
+	<ladder  zhalf="65*mm" radius="18*mm"  width="1.1e+01*mm" offset="-1.874869853e+00*mm" thickness="0.05*mm" material="Silicon" number="10"/>
       </layer>
       <layer id="2"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_2_Region">
 	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-	<ladder  zhalf="125*mm" radius="3.695000000e+01*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
+	<ladder  zhalf="125*mm" radius="3.695e+01*mm"  width="2.2e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
       </layer>
       <layer id="3"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_3_Region">
 	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-	<ladder  zhalf="125*mm" radius="39*mm"  width="2.200000000e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
+	<ladder  zhalf="125*mm" radius="39*mm"  width="2.2e+01*mm" offset="-1.837940563e+00*mm" thickness="0.05*mm" material="Silicon" number="11"/>
       </layer>
       <layer id="4"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_4_Region">
 	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-	<ladder  zhalf="125*mm" radius="5.795000000e+01*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
+	<ladder  zhalf="125*mm" radius="5.795e+01*mm"  width="2.2e+01*mm" offset="-2.6367444e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
       </layer>
       <layer id="5"  vis="VXDLayerVis" phi0="-1.570796327e+00" region="VXD_Layer_5_Region">
 	<support thickness=".1*mm" material="Carbon" vis="VXDSupportVis"/>
-	<ladder  zhalf="125*mm" radius="60*mm"  width="2.200000000e+01*mm" offset="-2.636744400e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
+	<ladder  zhalf="125*mm" radius="60*mm"  width="2.2e+01*mm" offset="-2.6367444e+00*mm" thickness="0.05*mm" material="Silicon" number="17"/>
       </layer>
     </detector>
   </detectors>

@@ -204,7 +204,7 @@ void AlignmentCache::apply(AlignmentStack& stack)    {
   typedef map<DetElement,vector<Entry*> > sd_entries_t;
   TGeoManager& mgr = m_lcdd.manager();
   DetElementUpdates detelt_updates;
-  sd_entries_t all, highest;
+  sd_entries_t all;
 
   while(stack.size() > 0)    {
     Entry* e = stack.pop().release();

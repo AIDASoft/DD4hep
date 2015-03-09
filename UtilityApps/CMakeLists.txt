@@ -38,6 +38,7 @@ if(DD4HEP_USE_LCIO)
 
   add_executable(test_surfaces src/test_surfaces.cpp )
   target_link_libraries(test_surfaces DD4hepCore DD4hepRec ${LCIO_LIBRARIES} )
+
 else()
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_dummy.cpp)
 endif()

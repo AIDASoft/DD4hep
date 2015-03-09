@@ -93,6 +93,8 @@ namespace DD4hep {
       ObjectHandleMap m_display;
       ObjectHandleMap m_fields;
 
+      ObjectHandleMap m_motherVolumes;
+
       // GDML fields
       ObjectHandleMap m_define;
 

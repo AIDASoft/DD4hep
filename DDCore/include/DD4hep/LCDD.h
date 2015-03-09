@@ -132,6 +132,16 @@ namespace DD4hep {
       /// Accessor to the map of ID specifications
       virtual const HandleMap& idSpecifications() const = 0;
 
+      /// Register new mother volume using the detector name.
+      /** Volumes must be registered/declared PRIOR to be picked up!
+       *  The method throws an exception if another volume was already declared for this subdetector
+       *  The method throws an exception if the volume to be registered is invalid.
+       */
+      virtual void   declareMotherVolume(const std::string& detector_name, const Volume& vol) = 0;
+      /// Access mother volume by detector element
+      /** The method uses the detector element's name for volume identification. 
+       *  Unregistered detectors are hosted by the world volume.
+       */
       virtual Volume pickMotherVolume(const DetElement& sd) const = 0;
 
       /// Typed access to constants: access string values

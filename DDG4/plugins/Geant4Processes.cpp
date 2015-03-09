@@ -138,7 +138,103 @@ DECLARE_GEANT4_PROCESS(G4hImpactIonisation)
 //#include "G4IonInverseIonisation.hh"
 //DECLARE_GEANT4_PROCESS(G4IonInverseIonisation)
 
+// ==================================================================================
+#if G4VERSION_NUMBER>=960 and G4VERSION_NUMBER<1000
+#include "G4UrbanMscModel93.hh"
+DECLARE_GEANT4_PROCESS(G4UrbanMscModel93)
+// ==================================================================================
+#elif G4VERSION_NUMBER>=1000
+
+// Stuff commented cannot be instantiated!!
+
+#include "G4AdjointBremsstrahlungModel.hh"
+DECLARE_GEANT4_PROCESS(G4AdjointBremsstrahlungModel)
+#include "G4AdjointComptonModel.hh"
+DECLARE_GEANT4_PROCESS(G4AdjointComptonModel)
+#include "G4AdjointeIonisationModel.hh"
+DECLARE_GEANT4_PROCESS(G4AdjointeIonisationModel)
+#include "G4AdjointIonIonisationModel.hh"
+DECLARE_GEANT4_PROCESS(G4AdjointIonIonisationModel)
+#include "G4AdjointPhotoElectricModel.hh"
+DECLARE_GEANT4_PROCESS(G4AdjointPhotoElectricModel)
+#include "G4BetheBlochModel.hh"
+DECLARE_GEANT4_PROCESS(G4BetheBlochModel)
+#include "G4BetheBlochNoDeltaModel.hh"
+DECLARE_GEANT4_PROCESS(G4BetheBlochNoDeltaModel)
+#include "G4BetheHeitlerModel.hh"
+DECLARE_GEANT4_PROCESS(G4BetheHeitlerModel)
+#include "G4BoldyshevTripletModel.hh"
+DECLARE_GEANT4_PROCESS(G4BoldyshevTripletModel)
+#include "G4BraggIonModel.hh"
+DECLARE_GEANT4_PROCESS(G4BraggIonModel)
+#include "G4BraggModel.hh"
+DECLARE_GEANT4_PROCESS(G4BraggModel)
+#include "G4BraggNoDeltaModel.hh"
+DECLARE_GEANT4_PROCESS(G4BraggNoDeltaModel)
+#include "G4ChipsElasticModel.hh"
+DECLARE_GEANT4_PROCESS(G4ChipsElasticModel)
+#include "G4DNABornExcitationModel.hh"
+DECLARE_GEANT4_PROCESS(G4DNABornExcitationModel)
+#include "G4eBremParametrizedModel.hh"
+DECLARE_GEANT4_PROCESS(G4eBremParametrizedModel)
+#include "G4eBremsstrahlungRelModel.hh"
+DECLARE_GEANT4_PROCESS(G4eBremsstrahlungRelModel)
+#include "G4ecpssrBaseKxsModel.hh"
+DECLARE_GEANT4_PROCESS(G4ecpssrBaseKxsModel)
+#include "G4ecpssrBaseLixsModel.hh"
+DECLARE_GEANT4_PROCESS(G4ecpssrBaseLixsModel)
+#include "G4ecpssrFormFactorKxsModel.hh"
+DECLARE_GEANT4_PROCESS(G4ecpssrFormFactorKxsModel)
+//#include "G4ee2KChargedModel.hh"
+//DECLARE_GEANT4_PROCESS(G4ee2KChargedModel)
+//#include "G4ee2KNeutralModel.hh"
+//DECLARE_GEANT4_PROCESS(G4ee2KNeutralModel)
+//#include "G4eeTo3PiModel.hh"
+//DECLARE_GEANT4_PROCESS(G4eeTo3PiModel)
+//#include "G4eeToHadronsModel.hh"
+//DECLARE_GEANT4_PROCESS(G4eeToHadronsModel)
+#include "G4ecpssrFormFactorLixsModel.hh"
+DECLARE_GEANT4_PROCESS(G4ecpssrFormFactorLixsModel)
+#include "G4ecpssrFormFactorMixsModel.hh"
+DECLARE_GEANT4_PROCESS(G4ecpssrFormFactorMixsModel)
+#include "G4EmMultiModel.hh"
+DECLARE_GEANT4_PROCESS(G4EmMultiModel)
+#include "G4ePolarizedBremsstrahlungModel.hh"
+DECLARE_GEANT4_PROCESS(G4ePolarizedBremsstrahlungModel)
+#include "G4FTFModel.hh"
+DECLARE_GEANT4_PROCESS(G4FTFModel)
+#include "G4GoudsmitSaundersonMscModel.hh"
+DECLARE_GEANT4_PROCESS(G4GoudsmitSaundersonMscModel)
+#include "G4hBremsstrahlungModel.hh"
+DECLARE_GEANT4_PROCESS(G4hBremsstrahlungModel)
+#include "G4hCoulombScatteringModel.hh"
+DECLARE_GEANT4_PROCESS(G4hCoulombScatteringModel)
+//#include "G4hNuclearStoppingModel.hh"
+//DECLARE_GEANT4_PROCESS(G4hNuclearStoppingModel)
+#include "G4hPairProductionModel.hh"
+DECLARE_GEANT4_PROCESS(G4hPairProductionModel)
+//#include "G4hParametrisedLossModel.hh"
+//DECLARE_GEANT4_PROCESS(G4hParametrisedLossModel)
+#include "G4ICRU49NuclearStoppingModel.hh"
+DECLARE_GEANT4_PROCESS(G4ICRU49NuclearStoppingModel)
+#include "G4ICRU73NoDeltaModel.hh"
+DECLARE_GEANT4_PROCESS(G4ICRU73NoDeltaModel)
+#include "G4ICRU73QOModel.hh"
+DECLARE_GEANT4_PROCESS(G4ICRU73QOModel)
+//#include "G4INCLIClusteringModel.hh"
+//DECLARE_GEANT4_PROCESS(G4INCLIClusteringModel)
+//#include "G4INCLIPropagationModel.hh"
+//DECLARE_GEANT4_PROCESS(G4INCLIPropagationModel)
+//#include "G4INCLStandardPropagationModel.hh"
+//DECLARE_GEANT4_PROCESS(G4INCLStandardPropagationModel)
+//#include "G4IonChuFluctuationModel.hh"
+//DECLARE_GEANT4_PROCESS(G4IonChuFluctuationModel)
+
+#endif
+
+
 #if 0
 #include ".hh"
 DECLARE_GEANT4_PROCESS()
 #endif
+

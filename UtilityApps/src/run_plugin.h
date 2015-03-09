@@ -30,10 +30,10 @@ namespace {
 
   LCDD& dd4hep_instance(const char* /* name */ ="") {
 #if 0
-#include "Reflex/PluginService.h"
+#include "DD4hep/PluginService.h"
     try {
       union { void* p; LCDD* l; } v;
-      v.p = ROOT::Reflex::PluginService::Create<void*>("LCDD_constructor",name);
+      v.p = ::DD4hep::PluginService::Create<void*>("LCDD_constructor",name);
       if ( v.p )  {
 	return *v.l;
       }

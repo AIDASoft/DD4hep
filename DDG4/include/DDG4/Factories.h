@@ -69,6 +69,7 @@ namespace {
   typedef std::string STR;
   typedef const std::vector<void*>& ARGS;
 
+  template <typename P, typename S> class Factory;
   template <typename P> class Factory<P, long(LCDD*, const DS::Geant4Converter*, const std::map<STR, STR>*)> {
   public:
     typedef DS::Geant4Converter cnv_t;
@@ -173,57 +174,52 @@ namespace {
   namespace DD4hep { namespace Simulation { struct external_geant4_sd_##name {}; \
       template <> G4VSensitiveDetector* Geant4SensitiveDetectorFactory< external_geant4_sd_##name >::create(const std::string& n,DD4hep::Geometry::LCDD& l) { return func(n,l); } \
     }}  using DD4hep::Simulation::external_geant4_sd_##name;            \
-  PLUGINSVC_FACTORY_WITH_ID(external_geant4_sd_##name,std::string(#name),G4VSensitiveDetector*(std::string,DD4hep::Geometry::LCDD*))
+  DD4HEP_PLUGINSVC_FACTORY(external_geant4_sd_##name,name,G4VSensitiveDetector*(std::string,DD4hep::Geometry::LCDD*),__LINE__)
 
 /// Plugin definition to create Geant4 sensitive detectors
 #define DECLARE_GEANT4SENSITIVEDETECTOR(name) namespace DD4hep { namespace Simulation { struct geant4_sd_##name {}; \
       template <> G4VSensitiveDetector* Geant4SensitiveDetectorFactory< geant4_sd_##name >::create(const std::string& n,DD4hep::Geometry::LCDD& l) { return new name(n,l); } \
     }}  using DD4hep::Simulation::geant4_sd_##name;                     \
-  PLUGINSVC_FACTORY_WITH_ID(geant4_sd_##name,std::string(#name),G4VSensitiveDetector*(std::string,DD4hep::Geometry::LCDD*))
-#if 0     /* Equivalent:  */
-#define DECLARE_GEANT4SENSITIVEDETECTOR(name)                           \
-  namespace DD4hep { namespace Simulation {  static G4VSensitiveDetector* __sd_create__##name(const std::string& n,DD4hep::Geometry::LCDD& p) {  return new name(n,p); } }} \
-  DECLARE_EXTERNAL_GEANT4SENSITIVEDETECTOR(name,DD4hep::Simulation::__sd_create__##name)
-#endif
+  DD4HEP_PLUGINSVC_FACTORY(geant4_sd_##name,name,G4VSensitiveDetector*(std::string,DD4hep::Geometry::LCDD*),__LINE__)
 
 #define DECLARE_GEANT4SENSITIVE_NS(ns,name) using ns::name;             \
-  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4Sensitive*(DD4hep::Simulation::Geant4Context*,std::string,DD4hep::Geometry::DetElement*,DD4hep::Geometry::LCDD*))
+  DD4HEP_PLUGINSVC_FACTORY(name,name,DD4hep::Simulation::Geant4Sensitive*(DD4hep::Simulation::Geant4Context*,std::string,DD4hep::Geometry::DetElement*,DD4hep::Geometry::LCDD*),__LINE__)
 #define DECLARE_GEANT4SENSITIVE(name) DECLARE_GEANT4SENSITIVE_NS(DD4hep::Simulation,name)
 
 /// Plugin defintion to create Geant4Action objects
 #define DECLARE_GEANT4ACTION_NS(ns,name) using ns::name;                \
-  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4Action*(DD4hep::Simulation::Geant4Context*,std::string))
+  DD4HEP_PLUGINSVC_FACTORY(name,name,DD4hep::Simulation::Geant4Action*(DD4hep::Simulation::Geant4Context*,std::string),__LINE__)
 /// Plugin defintion to create Geant4Action objects
-#define DECLARE_GEANT4ACTION(name)  DECLARE_GEANT4ACTION_NS(DD4hep::Simulation,name)
+#define DECLARE_GEANT4ACTION(name)      DECLARE_GEANT4ACTION_NS(DD4hep::Simulation,name)
 
 /// Plugin definition to create Geant4 stepper objects
-#define DECLARE_GEANT4_STEPPER(name)    PLUGINSVC_FACTORY_WITH_ID(G4##name,std::string(#name),G4MagIntegratorStepper*(G4EquationOfMotion*))
-#define DECLARE_GEANT4_MAGSTEPPER(name) PLUGINSVC_FACTORY_WITH_ID(G4##name,std::string(#name),G4MagIntegratorStepper*(G4Mag_EqRhs*))
+#define DECLARE_GEANT4_STEPPER(name)    DD4HEP_PLUGINSVC_FACTORY(G4##name,name,G4MagIntegratorStepper*(G4EquationOfMotion*),__LINE__)
+#define DECLARE_GEANT4_MAGSTEPPER(name) DD4HEP_PLUGINSVC_FACTORY(G4##name,name,G4MagIntegratorStepper*(G4Mag_EqRhs*),__LINE__)
 /// Plugin definition to create Geant4 equations of motion for magnetic fields
-#define DECLARE_GEANT4_MAGMOTION(name) PLUGINSVC_FACTORY_WITH_ID(G4##name,std::string(#name),G4Mag_EqRhs*(G4MagneticField*))
+#define DECLARE_GEANT4_MAGMOTION(name)  DD4HEP_PLUGINSVC_FACTORY(G4##name,name,G4Mag_EqRhs*(G4MagneticField*),__LINE__)
 /// Plugin definition to create Geant4 physics processes (G4VProcess)
-#define DECLARE_GEANT4_PROCESS(name) PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),G4VProcess*())
+#define DECLARE_GEANT4_PROCESS(name)    DD4HEP_PLUGINSVC_FACTORY(name,name,G4VProcess*(),__LINE__)
 /// Plugin definition to create Geant4 physics constructors (G4VPhysicsConstructor)
-#define DECLARE_GEANT4_PHYSICS(name) PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),G4VPhysicsConstructor*())
+#define DECLARE_GEANT4_PHYSICS(name)    DD4HEP_PLUGINSVC_FACTORY(name,name,G4VPhysicsConstructor*(),__LINE__)
 /// Plugin definition to force particle constructors for GEANT4 (G4ParticleDefinition)
-#define DECLARE_GEANT4_PARTICLE(name) PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),G4ParticleDefinition*())
+#define DECLARE_GEANT4_PARTICLE(name)   DD4HEP_PLUGINSVC_FACTORY(name,name,G4ParticleDefinition*(),__LINE__)
 /// Plugin definition to force particle constructors for GEANT4 (G4XXXXConstructor)
-#define DECLARE_GEANT4_PARTICLEGROUP(name) PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),long())
+#define DECLARE_GEANT4_PARTICLEGROUP(name) DD4HEP_PLUGINSVC_FACTORY(name,name,long(),__LINE__)
 /// Plugin definition to force geant4 physics constructs such as FTFP_BERT (from source/physics_lists/) etc
 #define DECLARE_GEANT4_PHYSICS_LIST(name)  typedef DD4hep::Simulation::Geant4UserPhysicsList< name > G4_physics_list_##name; \
-  PLUGINSVC_FACTORY_WITH_ID(G4_physics_list_##name,std::string(#name),G4VUserPhysicsList*(DD4hep::Simulation::Geant4PhysicsListActionSequence*,int))
+  DD4HEP_PLUGINSVC_FACTORY(G4_physics_list_##name,name,G4VUserPhysicsList*(DD4hep::Simulation::Geant4PhysicsListActionSequence*,int),__LINE__)
 
 #define DECLARE_GEANT4_SETUP(name,func)                                 \
   namespace DD4hep { namespace Simulation { struct xml_g4_setup_##name {}; \
-      template <> long Geant4SetupAction<DD4hep::Simulation::xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Simulation::Geant4Converter& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
-  PLUGINSVC_FACTORY_WITH_ID(xml_g4_setup_##name,std::string(#name "_Geant4_action"),long(DD4hep::Geometry::LCDD*,const DD4hep::Simulation::Geant4Converter*,const std::map<std::string,std::string>*))
+    template <> long Geant4SetupAction<DD4hep::Simulation::xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Simulation::Geant4Converter& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
+  DD4HEP_PLUGINSVC_FACTORY(xml_g4_setup_##name,name "_Geant4_action",long(DD4hep::Geometry::LCDD*,const DD4hep::Simulation::Geant4Converter*,const std::map<std::string,std::string>*),__LINE__)
 
 /// Plugin defintion to create event reader objects
 #define DECLARE_GEANT4_EVENT_READER(name)                               \
-  PLUGINSVC_FACTORY_WITH_ID(name,std::string(#name),DD4hep::Simulation::Geant4EventReader*(std::string))
+  DD4HEP_PLUGINSVC_FACTORY(name,name,DD4hep::Simulation::Geant4EventReader*(std::string),__LINE__)
 
 /// Plugin defintion to create event reader objects
 #define DECLARE_GEANT4_EVENT_READER_NS(ns,name) typedef ns::name __##name##__; \
-  PLUGINSVC_FACTORY_WITH_ID(__##name##__,std::string(#name),DD4hep::Simulation::Geant4EventReader*(std::string))
+  DD4HEP_PLUGINSVC_FACTORY(__##name##__,name,DD4hep::Simulation::Geant4EventReader*(std::string),__LINE__)
 
 #endif // DDG4_FACTORIES_H

@@ -76,6 +76,7 @@ DECLARE_GEANT4ACTION(Geant4GeneratorActionInit)
 
 //=============================
 #include "DDG4/Geant4IsotropeGenerator.h"
+DECLARE_GEANT4ACTION(Geant4ParticleGenerator)
 DECLARE_GEANT4ACTION(Geant4IsotropeGenerator)
 
 //=============================

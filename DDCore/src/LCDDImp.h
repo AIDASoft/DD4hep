@@ -76,12 +76,19 @@ namespace DD4hep {
 
       /// Add an extension object to the LCDD instance
       virtual void* addUserExtension(void* ptr, const std::type_info& info, void (*destruct)(void*));
+
       /// Remove an existing extension object from the LCDD instance. If not destroyed, the instance is returned
       virtual void* removeUserExtension(const std::type_info& info, bool destroy=true);
+
       /// Access an existing extension object from the LCDD instance
       virtual void* userExtension(const std::type_info& info, bool alert=true) const;
 
       virtual Handle<TObject> getRefChild(const HandleMap& e, const std::string& name, bool throw_if_not = true) const;
+
+      /// Register new mother volume using the detector name.
+      virtual void   declareMotherVolume(const std::string& detector_name, const Volume& vol);
+
+      /// Access mother volume by detector element
       virtual Volume pickMotherVolume(const DetElement& sd) const;
 
       /// Access the geometry manager of this instance
@@ -139,8 +146,10 @@ namespace DD4hep {
 
       /// Typed access to constants: access string values
       virtual std::string constantAsString(const std::string& name) const;
+
       /// Typed access to constants: long values
       virtual long constantAsLong(const std::string& name) const;
+
       /// Typed access to constants: double values
       virtual double constantAsDouble(const std::string& name) const;
 

@@ -73,7 +73,7 @@ namespace {
       return DetElement();
     }
     /// Scan a single physical volume and look for sensitive elements below
-    size_t scanPhysicalVolume(DetElement parent, DetElement e, PlacedVolume pv, VolIDs ids, SensitiveDetector& sd,Chain& chain) {
+    size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, VolIDs ids, SensitiveDetector& sd, Chain& chain) {
       TGeoNode* node = pv.ptr();
       size_t count = 0;
       if (node) {
@@ -82,10 +82,10 @@ namespace {
         VolIDs pv_ids = pv.volIDs();
         ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
         bool got_readout = false;
-        if (vol.isSensitive()) {
+        if (vol.isSensitive())  {
           sd = vol.sensitiveDetector();
           Readout ro = sd.readout();
-          if (ro.isValid()) {
+	  if ( sd.isValid() && ro.isValid() )   {
             got_readout = true;
             add_entry(sd, parent, e, node, ids, chain);
             ++count;
@@ -153,19 +153,21 @@ namespace {
     void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, const TGeoNode* n, const VolIDs& ids, Chain& nodes) {
       Readout ro = sd.readout();
       IDDescriptor iddesc = ro.idSpec();
-      VolumeManager section = m_volManager.addSubdetector(parent, ro);
       pair<VolumeID, VolumeID> code = encoding(iddesc, ids);
 
       if (m_entries.find(code.first) == m_entries.end()) {
+	string        sd_name      = sd.name();
+	DetElement    sub_detector = m_lcdd.detector(sd_name);
+	VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
         // This is the block, we effectively have to save for each physical volume with a VolID
         VolumeManager::Context* context = new VolumeManager::Context;
         context->identifier = code.first;
-        context->mask = code.second;
-        context->detector = parent;
-        context->placement = PlacedVolume(n);
-        context->element = e;
-        context->volID = ids;
-        context->path = nodes;
+        context->mask       = code.second;
+        context->detector   = parent;
+        context->placement  = PlacedVolume(n);
+        context->element    = e;
+        context->volID      = ids;
+        context->path       = nodes;
         for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
           TGeoMatrix* m = nodes[i - 1]->GetMatrix();
           context->toWorld.MultiplyLeft(m);
@@ -180,7 +182,7 @@ namespace {
       }
     }
 
-    void print_node(SensitiveDetector sd, DetElement /* parent */, DetElement e,
+    void print_node(SensitiveDetector sd, DetElement parent, DetElement e,
                     const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */)
     {
       static int s_count = 0;
@@ -194,7 +196,7 @@ namespace {
       //if ( !sensitive ) return;
       ++s_count;
       stringstream log;
-      log << s_count << ": " << e.name() << " de:" << e.ptr() << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
+      log << s_count << ": " << parent.name() << ": " << e.name() << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
           << (void*) volume_id << " : ";
       for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
         const PlacedVolume::VolID& id = (*i);
@@ -241,6 +243,10 @@ VolumeManager::VolumeManager(DetElement subdetector, Readout ro)  {
 VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
   if (isValid()) {
     Object& o = _data();
+    if (!detector.isValid()) {
+      throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only valid subdetectors "
+			  "are allowed. [Invalid DetElement]");
+    }
     Detectors::const_iterator i = o.subdetectors.find(detector);
     if (i == o.subdetectors.end()) {
       string det_name = detector.name();

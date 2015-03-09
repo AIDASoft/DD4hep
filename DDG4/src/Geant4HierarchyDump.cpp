@@ -10,11 +10,10 @@
 #include <G4Version.hh>
 
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4HierarchyDump.h"
-
-#include "Reflex/PluginService.h"
 
 #include "G4VisAttributes.hh"
 #include "G4ProductionCuts.hh"
@@ -22,9 +21,7 @@
 // Geant4 include files
 #include "G4Element.hh"
 #include "G4SDManager.hh"
-#if G4VERSION_NUMBER < 1000
-#include "G4Assembly.hh"
-#endif
+
 #include "G4AssemblyVolume.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"

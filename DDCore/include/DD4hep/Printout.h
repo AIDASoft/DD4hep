@@ -115,12 +115,49 @@ namespace DD4hep {
    */
   int printout(PrintLevel severity, const char* src, const std::string& fmt, va_list& args);
 
+  /** Calls the display action with ERROR and throws an std::runtime_error exception
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @return Status code indicating success or failure
+   */
+  void except(const std::string& src, const std::string& fmt, ...);
+
+  /** Calls the display action with ERROR and throws an std::runtime_error exception
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @return Status code indicating success or failure
+   */
+  void except(const char* src, const char* fmt, ...);
+
+  /** Calls the display action with ERROR and throws an std::runtime_error exception
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+   *  @return Status code indicating success or failure
+   */
+  void except(const std::string& src, const std::string& fmt, va_list& args);
+
+  /** Calls the display action with ERROR and throws an std::runtime_error exception
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+   *  @return Status code indicating success or failure
+   */
+  void except(const char* src, const char* fmt, va_list& args);
+
   /** Build formatted string
    *  @arg src        [string,read-only]   Information source (component, etc.)
    *  @arg fmt        [string,read-only]   Format string for ellipsis args
    *  @return Status code indicating success or failure
    */
   std::string format(const std::string& src, const std::string& fmt, ...);
+
+  /** Build exception string
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @return Status code indicating success or failure
+   */
+  std::string format(const char* src, const char* fmt, ...);
 
   /** Build formatted string
    *  @arg src        [string,read-only]   Information source (component, etc.)
@@ -129,6 +166,14 @@ namespace DD4hep {
    *  @return Status code indicating success or failure
    */
   std::string format(const std::string& src, const std::string& fmt, va_list& args);
+
+  /** Build exception string and throw std::runtime_error
+   *  @arg src        [string,read-only]   Information source (component, etc.)
+   *  @arg fmt        [string,read-only]   Format string for ellipsis args
+   *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+   *  @return Status code indicating success or failure
+   */
+  std::string format(const char* src, const char* fmt, va_list& args);
 
   /// Customize printer function
   void setPrinter(void* print_arg, output_function_t fcn);

@@ -135,7 +135,7 @@ LCDDImp::LCDDImp() : LCDDData(), LCDDLoad(this), m_buildType(BUILD_NONE)
 /// Standard destructor
 LCDDImp::~LCDDImp() {
   if ( m_manager == gGeoManager ) gGeoManager = 0;
-  destroyData();
+  destroyData(false);
   InstanceCount::decrement(this);
 }
 
@@ -160,14 +160,55 @@ void* LCDDImp::userExtension(const std::type_info& info, bool alert) const {
   return m_extensions.extension(info,alert);
 }
 
-Volume LCDDImp::pickMotherVolume(const DetElement&) const {     // throw if not existing
-  return m_worldVol;
+/// Register new mother volume using the detector name.
+void LCDDImp::declareMotherVolume(const std::string& detector_name, const Volume& vol)  {
+  if ( !detector_name.empty() )  {
+    if ( vol.isValid() )  {
+      HandleMap::const_iterator i = m_motherVolumes.find(detector_name);
+      if (i == m_motherVolumes.end())   {
+	m_motherVolumes.insert(make_pair(detector_name,vol));
+	return;
+      }
+      throw runtime_error("LCDD: A mother volume to the detector "+detector_name+" was already registered.");
+    }
+    throw runtime_error("LCDD: Attempt to register invalid mother volume for detector:"+detector_name+" [Invalid-Handle].");
+  }
+  throw runtime_error("LCDD: Attempt to register mother volume to invalid detector [Invalid-detector-name].");
 }
 
-LCDD& LCDDImp::addDetector(const Ref_t& x) {
-  m_detectors.append(x);
-  m_world.add(DetElement(x));
-  return *this;
+/// Access mother volume by detector element
+Volume LCDDImp::pickMotherVolume(const DetElement& de) const {
+  if ( de.isValid() )   {
+    string de_name = de.name();
+    HandleMap::const_iterator i = m_motherVolumes.find(de_name);
+    if (i == m_motherVolumes.end())   {
+      return m_worldVol;
+    }
+    return (*i).second;
+  }
+  throw runtime_error("LCDD: Attempt access mother volume of invalid detector [Invalid-handle]");
+}
+
+LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
+  DetElement detector(ref_det);
+  m_detectors.append(ref_det);
+  Volume volume = detector.placement()->GetMotherVolume();
+  if ( volume == m_worldVol )  {
+    printout(DEBUG,"LCDD","Added detector %s to the world instance.",detector.name());
+    m_world.add(detector);
+    return *this;
+  }
+  // The detector's placement must be one of the existing detectors
+  for(HandleMap::iterator i = m_detectors.begin(); i!=m_detectors.end(); ++i)  {
+    DetElement parent((*i).second);
+    Volume vol = parent.placement().volume();
+    if ( vol == volume )  {
+      printout(INFO,"LCDD","Added detector %s to the parent:%s.",detector.name(),parent.name());
+      parent.add(detector);
+      return *this;
+    }
+  }
+  throw runtime_error("LCDD: The detector" + string(detector.name()) + " has no known parent.");
 }
 
 /// Typed access to constants: access string values

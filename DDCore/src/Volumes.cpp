@@ -204,9 +204,8 @@ namespace DD4hep {
         // if volume is divided, copy finder
         vol->SetFinder(fFinder);
         // copy voxels
-        TGeoVoxelFinder *voxels = 0;
         if (fVoxels) {
-          voxels = new TGeoVoxelFinder(vol);
+          TGeoVoxelFinder *voxels = new TGeoVoxelFinder(vol);
           vol->SetVoxelFinder(voxels);
         }
         // copy option, uid
@@ -243,9 +242,8 @@ namespace DD4hep {
         vol->MakeCopyNodes(this);
         ((TGeoShapeAssembly*) vol->GetShape())->NeedsBBoxRecompute();
         // copy voxels
-        TGeoVoxelFinder *voxels = 0;
         if (fVoxels) {
-          voxels = new TGeoVoxelFinder(vol);
+          TGeoVoxelFinder *voxels = new TGeoVoxelFinder(vol);
           vol->SetVoxelFinder(voxels);
         }
         // copy option, uid
@@ -507,7 +505,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
     }
   }
   parent->AddNode(daughter, id, transform);
-  geo_node_t* n = (geo_node_t*)parent->GetNode(id);
+  geo_node_t* n = static_cast<geo_node_t*>(parent->GetNode(id));
   n->geo_node_t::SetUserExtension(new PlacedVolume::Object());
   return PlacedVolume(n);
 }

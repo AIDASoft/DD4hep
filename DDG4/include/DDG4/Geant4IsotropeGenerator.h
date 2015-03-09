@@ -10,11 +10,7 @@
 #define DD4HEP_DDG4_GEANT4ISOTROPEGENERATOR_H
 
 // Framework include files
-#include "DDG4/Geant4GeneratorAction.h"
-#include "Math/Vector3D.h"
-
-// Forward declarations
-class G4ParticleDefinition;
+#include "DDG4/Geant4ParticleGenerator.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -27,27 +23,19 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4IsotropeGenerator: public Geant4GeneratorAction {
+    class Geant4IsotropeGenerator: public Geant4ParticleGenerator {
     protected:
-      /// Property: Position and shooting direction of the gun
-      ROOT::Math::XYZVector m_position;
-      /// Property: Particle name
-      std::string m_particleName;
-      /// Pointer to geant4 particle definition
-      G4ParticleDefinition* m_particle;
-      /// Property: Particle energy
-      double m_energy;
-      /// Property: Desired multiplicity of the particles to be shot
-      int m_multiplicity;
-      /// Property: User mask passed to all particles in the generated interaction
-      int m_mask;
+      /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
+      /** Use this function to implement isotrop guns, multiple guns etc. 
+	  User must return a UNIT vector, which gets scaled with momentum.
+       */
+      virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
+
     public:
       /// Standard constructor
       Geant4IsotropeGenerator(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4IsotropeGenerator();
-      /// Callback to generate primary particles
-      virtual void operator()(G4Event* event);
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep

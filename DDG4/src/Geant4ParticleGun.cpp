@@ -25,6 +25,8 @@
 #include <limits>
 #include <cmath>
 
+using CLHEP::MeV;
+using CLHEP::GeV;
 using namespace std;
 using namespace DD4hep::Simulation;
 

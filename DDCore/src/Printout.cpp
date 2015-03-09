@@ -14,6 +14,8 @@
 #include <cstdarg>
 #include <stdexcept>
 
+using namespace std;
+
 static size_t _the_printer(void*, DD4hep::PrintLevel, const char* src, const char* text) {
   size_t len = ::fputs(src, stdout);
   len += fputs(": ", stdout);
@@ -48,7 +50,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, ...)
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fmt, ...) {
+int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, fmt);
@@ -64,7 +66,7 @@ int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fm
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fmt, ...) {
+int DD4hep::printout(PrintLevel severity, const char* src, const string& fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, &fmt);
@@ -80,7 +82,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fm
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const std::string& src, const std::string& fmt, ...) {
+int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, ...) {
   if (severity >= print_lvl) {
     va_list args;
     va_start(args, &fmt);
@@ -113,7 +115,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_l
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fmt, va_list& args) {
+int DD4hep::printout(PrintLevel severity, const string& src, const char* fmt, va_list& args) {
   return printout(severity, src.c_str(), fmt, args);
 }
 
@@ -123,7 +125,7 @@ int DD4hep::printout(PrintLevel severity, const std::string& src, const char* fm
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fmt, va_list& args) {
+int DD4hep::printout(PrintLevel severity, const char* src, const string& fmt, va_list& args) {
   return printout(severity, src, fmt.c_str(), args);
 }
 
@@ -133,19 +135,88 @@ int DD4hep::printout(PrintLevel severity, const char* src, const std::string& fm
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-int DD4hep::printout(PrintLevel severity, const std::string& src, const std::string& fmt, va_list& args) {
+int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, va_list& args) {
   return printout(severity, src.c_str(), fmt.c_str(), args);
 }
 
-/** Build exception string and throw std::runtime_error
+/** Calls the display action with ERROR and throws an std::runtime_error exception
  *  @arg src        [string,read-only]   Information source (component, etc.)
  *  @arg fmt        [string,read-only]   Format string for ellipsis args
  *  @return Status code indicating success or failure
  */
-std::string DD4hep::format(const std::string& src, const std::string& fmt, ...) {
+void DD4hep::except(const string& src, const string& fmt, ...) {
   va_list args;
   va_start(args, &fmt);
-  std::string str = format(src, fmt, args);
+  string msg = format(src.c_str(), fmt.c_str(), args);
+  printout(ERROR, src.c_str(), fmt.c_str(), args);
+  va_end(args);
+  throw runtime_error(msg.c_str());
+}
+
+/** Calls the display action with ERROR and throws an std::runtime_error exception
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+void DD4hep::except(const char* src, const char* fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  string msg = format(src, fmt, args);
+  printout(ERROR, src, fmt, args);
+  va_end(args);
+  throw runtime_error(msg.c_str());
+}
+
+/** Calls the display action with ERROR and throws an std::runtime_error exception
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+ *  @return Status code indicating success or failure
+ */
+void DD4hep::except(const string& src, const string& fmt, va_list& args) {
+  string msg = format(src.c_str(), fmt.c_str(), args);
+  printout(ERROR, src.c_str(), fmt.c_str(), args);
+  // No return. Must call va_end here!
+  va_end(args);
+  throw runtime_error(msg.c_str());
+}
+
+/** Calls the display action with ERROR and throws an std::runtime_error exception
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+ *  @return Status code indicating success or failure
+ */
+void DD4hep::except(const char* src, const char* fmt, va_list& args) {
+  string msg = format(src, fmt, args);
+  printout(ERROR, src, fmt, args);
+  // No return. Must call va_end here!
+  va_end(args);
+  throw runtime_error(msg.c_str());
+}
+
+/** Build exception string
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+string DD4hep::format(const string& src, const string& fmt, ...) {
+  va_list args;
+  va_start(args, &fmt);
+  string str = format(src, fmt, args);
+  va_end(args);
+  return str;
+}
+
+/** Build exception string
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @return Status code indicating success or failure
+ */
+string DD4hep::format(const char* src, const char* fmt, ...) {
+  va_list args;
+  va_start(args, fmt);
+  string str = format(src, fmt, args);
   va_end(args);
   return str;
 }
@@ -156,11 +227,21 @@ std::string DD4hep::format(const std::string& src, const std::string& fmt, ...) 
  *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
  *  @return Status code indicating success or failure
  */
-std::string DD4hep::format(const std::string& src, const std::string& fmt, va_list& args) {
+string DD4hep::format(const string& src, const string& fmt, va_list& args) {
+  return format(src.c_str(), fmt.c_str(), args);
+}
+
+/** Build exception string and throw std::runtime_error
+ *  @arg src        [string,read-only]   Information source (component, etc.)
+ *  @arg fmt        [string,read-only]   Format string for ellipsis args
+ *  @arg args       [ap_list,read-only]  List with variable number of arguments to fill format string.
+ *  @return Status code indicating success or failure
+ */
+string DD4hep::format(const char* src, const char* fmt, va_list& args) {
   char str[4096];
-  size_t len = ::snprintf(str, sizeof(str), "%s: ", src.c_str());
-  ::vsnprintf(str + len, sizeof(str) - len, fmt.c_str(), args);
-  return std::string(str);
+  size_t len = ::snprintf(str, sizeof(str), "%s: ", src);
+  ::vsnprintf(str + len, sizeof(str) - len, fmt, args);
+  return string(str);
 }
 
 /// Set new print level. Returns the old print level
