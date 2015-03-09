@@ -43,33 +43,40 @@ namespace DD4hep  {
   R PluginService::Create(const std::string& name, A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)  
   { return ROOT::Reflex::PluginService::Create<R>(name, a0, a1, a2, a3, a4, a5); }
 
-
   namespace plugin_signatures_namespace {
+    namespace {
+      template <typename T> union FuncPtr {
+        FuncPtr(T t) { fcn = t; }
+        void* ptr;
+        T fcn;
+      };
+      template <typename T> FuncPtr<T> __func(T t) { return FuncPtr<T>(t); }
+    }
 
-    template <typename R> R instantiate_creator ()  
-    { return PluginService::Create<R>(std::string("")); }
+    template <typename R> void* instantiate_creator ()  
+    { return __func(PluginService::Create<R>).ptr; }
     
-    template <typename R, typename A0> R instantiate_creator ( A0 a0)  
-    { return PluginService::Create<R>(std::string(""),a0); }
+    template <typename R, typename A0> void* instantiate_creator(A0)  
+    { return __func(PluginService::Create<R,A0>).ptr; }
 
-    template <typename R, typename A0, typename A1> R instantiate_creator ( A0 a0, A1 a1)  
-    { return PluginService::Create<R>(std::string(""), a0, a1); }
+    template <typename R, typename A0, typename A1> void* instantiate_creator(A0,A1)  
+    { return __func(PluginService::Create<R,A0,A1>).ptr; }
 
     template <typename R, typename A0, typename A1, typename A2>
-      R instantiate_creator ( A0 a0, A1 a1, A2 a2)  
-    { return PluginService::Create<R>(std::string(""), a0, a1, a2); }
+      void* instantiate_creator(A0,A1,A2)  
+    { return __func(PluginService::Create<R,A0,A1,A2>).ptr; }
 
     template <typename R, typename A0, typename A1, typename A2, typename A3>
-      R instantiate_creator ( A0 a0, A1 a1, A2 a2, A3 a3)  
-    { return PluginService::Create<R>(std::string(""), a0, a1, a2, a3); }
+      void* instantiate_creator(A0,A1,A2,A3)  
+    { return __func(PluginService::Create<R,A0,A1,A2,A3>).ptr; }
 
     template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4>
-      R instantiate_creator ( A0 a0, A1 a1, A2 a2, A3 a3, A4 a4)  
-    { return PluginService::Create<R>(std::string(""), a0, a1, a2, a3, a4); }
+      void* instantiate_creator(A0 a0,A1,A2,A3,A4)  
+    { return __func(PluginService::Create<R,A0,A1,A2,A3,A4>).ptr; }
 
     template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
-      R instantiate_creator ( A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)  
-    { return PluginService::Create<R>(std::string(""), a0, a1, a2, a3, a4, a5); }
+      void* instantiate_creator(A0,A1,A2,A3,A4,A5)  
+    { return __func(PluginService::Create<R,A0,A1,A2,A3,A4,A5>).ptr; }
 
     namespace  {
       template <typename SIGNATURE> static void reflex_plugin(const std::string& name, DD4hep::PluginService::stub_t stub)  {
@@ -90,7 +97,7 @@ namespace DD4hep  {
 #define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(R, ARGS) namespace DD4hep {		\
   template <> void PluginRegistry< R ARGS >::add(const char* n, DD4hep::PluginService::stub_t f) \
   {   plugin_signatures_namespace::reflex_plugin< R ARGS >(n,f);   } \
-  namespace plugin_signatures_namespace { template R instantiate_creator<R> ARGS ; }}
+  namespace plugin_signatures_namespace { template void* instantiate_creator<R> ARGS ; }}
 
 #endif  // DD4HEP_PLUGINS_ROOT5_INL
 
