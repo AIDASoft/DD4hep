@@ -9,15 +9,15 @@
 #ifndef DD4HEP_PLUGINS_ROOT5_INL
 #define DD4HEP_PLUGINS_ROOT5_INL
 
-#include "DD4hep/Printout.h"
-#include "Reflex/PluginService.h"
-#include "Reflex/Reflex.h"
-#include "Reflex/Builder/ReflexBuilder.h"
 #include <set>
 #include <map>
 #include <list>
 #include <vector>
 
+#include "DD4hep/Printout.h"
+#include "Reflex/PluginService.h"
+#include "Reflex/Reflex.h"
+#include "Reflex/Builder/ReflexBuilder.h"
 
 /// The DD4hep namespace declaration
 namespace DD4hep  {
