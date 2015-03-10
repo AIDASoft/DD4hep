@@ -10,7 +10,7 @@
 #define DD4HEP_DDEVE_FACTORIES_H
 
 #ifndef __CINT__
-#include "Reflex/PluginService.h"
+#include "DD4hep/Plugins.h"
 #endif
 #include "DDEve/View.h"
 #include "DDEve/Display.h"
@@ -32,6 +32,9 @@ namespace DD4hep {
 
 namespace {
 
+  /// Base factory template
+  template <typename P, typename S> class Factory;
+
   template <typename P> class Factory<P, DD4hep::View*(DD4hep::Display* dis, const char*)> {
   public:
     static void Func(void *ret, void*, const std::vector<void*>& arg, void*) {
@@ -40,6 +43,6 @@ namespace {
   };
 }
 
-#define DECLARE_VIEW_FACTORY(x) PLUGINSVC_FACTORY(x,DD4hep::View*(DD4hep::Display*, const char*))
+#define DECLARE_VIEW_FACTORY(x) DD4HEP_PLUGINSVC_FACTORY(x,x,DD4hep::View*(DD4hep::Display*, const char*),__LINE__)
 
 #endif // DD4HEP_DDEVE_FACTORIES_H

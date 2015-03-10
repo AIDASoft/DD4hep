@@ -129,7 +129,9 @@ namespace DD4hep {
 }
 
 namespace {
+  /// Base factory template
   template <typename P, typename S> class Factory;
+
   template <typename P> class Factory<P, void*(const char*)> {
   public:
     static void Func(void *ret, void*, const std::vector<void*>& arg, void*) {
