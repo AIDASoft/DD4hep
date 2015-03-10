@@ -9,17 +9,25 @@
 #ifndef DD4HEP_PLUGINS_ROOT5_INL
 #define DD4HEP_PLUGINS_ROOT5_INL
 
-#include <set>
-#include <map>
-#include <list>
-#include <vector>
 #include "DD4hep/Printout.h"
 #include "Reflex/PluginService.h"
 #include "Reflex/Reflex.h"
 #include "Reflex/Builder/ReflexBuilder.h"
+#include <set>
+#include <map>
+#include <list>
+#include <vector>
 
+
+/// The DD4hep namespace declaration
 namespace DD4hep  {
 
+  /** Declaration and implementation of all templated Create methods.
+    * Concrete instances must be created using the instantiators below.
+    *
+    * \author M.Frank
+    * \date   10/03/2015
+    */
   template <typename R> R PluginService::Create(const std::string& name)  
   { return ROOT::Reflex::PluginService::Create<R>(name); }
 
@@ -46,16 +54,40 @@ namespace DD4hep  {
   R PluginService::Create(const std::string& name, A0 a0, A1 a1, A2 a2, A3 a3, A4 a4, A5 a5)  
   { return ROOT::Reflex::PluginService::Create<R>(name, a0, a1, a2, a3, a4, a5); }
 
+
+  /** Internal namespace -- should under no circumstances be used directly.
+    * The named namespace is necessary to trick the linker. Entries in an anonymous 
+    * namespace would be oiptimized away.....
+    *
+    * \author M.Frank
+    * \date   10/03/2015
+    */
   namespace plugin_signatures_namespace {
+
     namespace {
+
+    /// Helper to convert function pointer to void pointer.
+    /**
+      * \author M.Frank
+      * \date   10/03/2015
+      */
       template <typename T> union FuncPtr {
         FuncPtr(T t) { fcn = t; }
         void* ptr;
         T fcn;
       };
+      /// Helper to convert function pointer to helper union
       template <typename T> FuncPtr<T> __func(T t) { return FuncPtr<T>(t); }
     }
 
+    /// Defined required creator functions to instantiate the "Create" signatures.
+    /** The Create signatures are instantiated from a macro only containing 
+      * the arguments. Otherwise these functions are 
+      * pretty useless.
+      *
+      * \author M.Frank
+      * \date   10/03/2015
+      */
     template <typename R> void* instantiate_creator ()  
     { return __func(PluginService::Create<R>).ptr; }
     
