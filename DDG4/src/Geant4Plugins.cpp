@@ -6,7 +6,6 @@
 //  Author     : M.Frank
 //
 //====================================================================
-
 #include "DD4hep/Plugins.inl"
 #include "DDG4/Factories.h"
 #include "DDG4/Geant4SensDetAction.h"

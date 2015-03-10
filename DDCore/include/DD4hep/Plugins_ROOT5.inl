@@ -14,7 +14,9 @@
 #include <list>
 #include <vector>
 
-#define   Reflex_CollectionProxy 1
+#ifdef __APPLE__
+#define Reflex_CollectionProxy 1
+#endif
 
 #include "DD4hep/Printout.h"
 #include "Reflex/PluginService.h"
