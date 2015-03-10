@@ -393,7 +393,8 @@
     </material>
     <material name="CarbonFiber" state="solid">
       <MEE unit="eV" value="70.7270877537631"/>
-      <D unit="g/cm3" value="1.46666666666667"/>
+      <D unit="g/cm3" value="1.46666666666667"/> 
+      <!-- debug <D unit="g/cm3" value="1.4*1.46666666666667"/> -->
       <fraction n="0.794091986922138" ref="C"/>
       <fraction n="0.058408571165309" ref="H"/>
       <fraction n="0.147499441912553" ref="O"/>
