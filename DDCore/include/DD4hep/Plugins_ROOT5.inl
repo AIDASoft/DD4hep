@@ -14,6 +14,8 @@
 #include <list>
 #include <vector>
 
+#define   Reflex_CollectionProxy 1
+
 #include "DD4hep/Printout.h"
 #include "Reflex/PluginService.h"
 #include "Reflex/Reflex.h"
