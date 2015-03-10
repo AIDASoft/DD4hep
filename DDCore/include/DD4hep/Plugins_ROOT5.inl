@@ -9,7 +9,10 @@
 #ifndef DD4HEP_PLUGINS_ROOT5_INL
 #define DD4HEP_PLUGINS_ROOT5_INL
 
-
+#include <set>
+#include <map>
+#include <list>
+#include <vector>
 #include "DD4hep/Printout.h"
 #include "Reflex/PluginService.h"
 #include "Reflex/Reflex.h"
@@ -71,7 +74,7 @@ namespace DD4hep  {
     { return __func(PluginService::Create<R,A0,A1,A2,A3>).ptr; }
 
     template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4>
-      void* instantiate_creator(A0 a0,A1,A2,A3,A4)  
+      void* instantiate_creator(A0,A1,A2,A3,A4)  
     { return __func(PluginService::Create<R,A0,A1,A2,A3,A4>).ptr; }
 
     template <typename R, typename A0, typename A1, typename A2, typename A3, typename A4, typename A5>
