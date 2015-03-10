@@ -890,7 +890,7 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
     }
   }
   for (map<string, string>::const_iterator i = processors.begin(); i != processors.end(); ++i) {
-    const Geant4Converter* ptr = this;
+    const Geometry::GeoHandler* ptr = this;
     string nam = (*i).second;
     const LCDD::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;

@@ -180,7 +180,7 @@ int Geant4FieldTrackingSetup::execute(Geometry::LCDD& lcdd)   {
   return 1;
 }
 
-static long setup_fields(lcdd_t& lcdd, const DD4hep::Simulation::Geant4Converter& /* cnv */, const map<string,string>& vals) {
+static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cnv */, const map<string,string>& vals) {
   struct XMLFieldTrackingSetup : public Geant4FieldTrackingSetup {
     XMLFieldTrackingSetup(const map<string,string>& vals) : Geant4FieldTrackingSetup() {
       Geant4SetupPropertyMap pm(vals);

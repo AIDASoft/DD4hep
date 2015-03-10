@@ -34,6 +34,7 @@ class G4VProcess;
 
 namespace DD4hep {
   namespace Geometry {
+    class GeoHandler;
     class DetElement;
     class LCDD;
   }
@@ -49,7 +50,7 @@ namespace DD4hep {
     /// Templated factory method to invoke setup action
     template <typename T> class Geant4SetupAction {
     public:
-      static long create(Geometry::LCDD& lcdd, const Geant4Converter& cnv, const std::map<std::string, std::string>& attrs);
+      static long create(Geometry::LCDD& lcdd, const Geometry::GeoHandler& cnv, const std::map<std::string, std::string>& attrs);
     };
     /// Deprecated: Templated factory method to create sensitive detector
     template <typename T> class Geant4SensitiveDetectorFactory {
@@ -63,6 +64,7 @@ namespace {
   namespace DS = DD4hep::Simulation;
 
   typedef DD4hep::Geometry::LCDD LCDD;
+  typedef DD4hep::Geometry::GeoHandler GeoHandler;
   typedef DD4hep::Geometry::DetElement DE;
   typedef DS::Geant4Action GA;
   typedef DS::Geant4Context CT;
@@ -70,9 +72,9 @@ namespace {
   typedef const std::vector<void*>& ARGS;
 
   template <typename P, typename S> class Factory;
-  template <typename P> class Factory<P, long(LCDD*, const DS::Geant4Converter*, const std::map<STR, STR>*)> {
+  template <typename P> class Factory<P, long(LCDD*, const GeoHandler*, const std::map<STR, STR>*)> {
   public:
-    typedef DS::Geant4Converter cnv_t;
+    typedef GeoHandler cnv_t;
     typedef std::map<STR, STR> attrs_t;
     static void Func(void *ret, void*, ARGS arg, void*) {
       long r = DS::Geant4SetupAction<P>::create(*(LCDD*) arg[0], *(cnv_t*) arg[1], *(attrs_t*) arg[2]);
@@ -211,8 +213,8 @@ namespace {
 
 #define DECLARE_GEANT4_SETUP(name,func)                                 \
   namespace DD4hep { namespace Simulation { struct xml_g4_setup_##name {}; \
-    template <> long Geant4SetupAction<DD4hep::Simulation::xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Simulation::Geant4Converter& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
-  DD4HEP_PLUGINSVC_FACTORY(xml_g4_setup_##name,name "_Geant4_action",long(DD4hep::Geometry::LCDD*,const DD4hep::Simulation::Geant4Converter*,const std::map<std::string,std::string>*),__LINE__)
+	template <> long Geant4SetupAction<DD4hep::Simulation::xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Geometry::GeoHandler& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
+  DD4HEP_PLUGINSVC_FACTORY(xml_g4_setup_##name,name "_Geant4_action",long(DD4hep::Geometry::LCDD*,const DD4hep::Geometry::GeoHandler*,const std::map<std::string,std::string>*),__LINE__)
 
 /// Plugin defintion to create event reader objects
 #define DECLARE_GEANT4_EVENT_READER(name)                               \

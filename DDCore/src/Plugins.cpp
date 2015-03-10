@@ -9,6 +9,7 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Handle.h"
 #include "DD4hep/Plugins.inl"
+#include "DD4hep/GeoHandler.h"
 #include "XML/XMLElements.h"
 
 using namespace std;
@@ -83,6 +84,7 @@ DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*,XML::Handle_t*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*,XML::Handle_t const*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, int, char**))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, const Geometry::GeoHandler*, const std::map<std::string,std::string>*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, ())
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (const char*))
 
