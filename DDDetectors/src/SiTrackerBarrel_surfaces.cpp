@@ -22,22 +22,15 @@ namespace{
     for(int i=0; i<argc; ++i)  {
       double value = -1;
       char* ptr = ::strchr(argv[i],'=');
-      
       if ( ptr )  {
 	std::string name( argv[i] , ptr ) ;
-
 	value = DD4hep::Geometry::_toDouble(++ptr);
-
 	if( name=="dimension" ) data.dimension = value ; 
-
 	std::cout << "DD4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
 		  << " = " << value << std::endl;
       }
     }
-  }
-  
-  
-  
+  }  
   
   /// Install measurement surfaces
   template <typename UserData> 
@@ -67,9 +60,7 @@ namespace{
 	} else if( data.dimension != 2 ) {
 	  throw std::runtime_error("**** DD4hep_SiTrackerBarrelSurfacePlugin: no or wrong 'dimension' argument given - has to be 1 or 2") ;
 	}
-
 	VolPlane surf(comp_vol, type, inner_thickness, outer_thickness, u, v, n, o);
-
 	addSurface(component,surf);
       }
     }

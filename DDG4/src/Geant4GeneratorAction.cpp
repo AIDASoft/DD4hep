@@ -16,8 +16,8 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4GeneratorAction::Geant4GeneratorAction(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4GeneratorAction::Geant4GeneratorAction(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -27,8 +27,8 @@ Geant4GeneratorAction::~Geant4GeneratorAction() {
 }
 
 /// Standard constructor
-Geant4GeneratorActionSequence::Geant4GeneratorActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4GeneratorActionSequence::Geant4GeneratorActionSequence(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
 }

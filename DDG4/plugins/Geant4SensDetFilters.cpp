@@ -130,8 +130,8 @@ DECLARE_GEANT4ACTION(ParticleRejectFilter)
   DECLARE_GEANT4ACTION(EnergyDepositMinimumCut)
 
 /// Constructor.
-  ParticleFilter::ParticleFilter(Geant4Context* context, const std::string& name)
-  : Geant4Filter(context,name), m_definition(0)
+  ParticleFilter::ParticleFilter(Geant4Context* ctxt, const std::string& nam)
+  : Geant4Filter(ctxt,nam), m_definition(0)
 {
   declareProperty("particle",m_particle);
   InstanceCount::increment(this);

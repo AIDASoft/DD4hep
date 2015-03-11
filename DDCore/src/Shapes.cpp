@@ -159,13 +159,13 @@ template <typename T> const char* Solid_type<T>::name() const {
   return this->ptr()->GetName();
 }
 
-void Box::make(const string& name, double x, double y, double z) {
-  _assign(new TGeoBBox(x, y, z), name, "box", true);
+void Box::make(double x_val, double y_val, double z_val) {
+  _assign(new TGeoBBox(x_val, y_val, z_val), "", "box", true);
 }
 
 /// Set the box dimensionsy
-Box& Box::setDimensions(double x, double y, double z) {
-  double params[] = { x, y, z};
+Box& Box::setDimensions(double x_val, double y_val, double z_val) {
+  double params[] = { x_val, y_val, z_val};
   _setDimensions(params);
   return *this;
 }
@@ -262,8 +262,8 @@ Tube& Tube::setDimensions(double rmin, double rmax, double z, double startPhi, d
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void EllipticalTube::make(const string& name, double a, double b, double dz) {
-  _assign(new TGeoEltu(), name, "elliptic_tube", true);
+void EllipticalTube::make(double a, double b, double dz) {
+  _assign(new TGeoEltu(), "", "elliptic_tube", true);
   setDimensions(a, b, dz);
 }
 
@@ -275,8 +275,8 @@ EllipticalTube& EllipticalTube::setDimensions(double a, double b, double dz) {
 }
 
 /// Constructor to be used when creating a new object with attribute initialization
-void Cone::make(const string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2) {
-  _assign(new TGeoCone(z, rmin1, rmax1, rmin2, rmax2 ), name, "cone", true);
+void Cone::make(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
+  _assign(new TGeoCone(z, rmin1, rmax1, rmin2, rmax2 ), "", "cone", true);
 }
 
 Cone& Cone::setDimensions(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
@@ -378,30 +378,30 @@ Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double 
 }
 
 /// Helper function to create holy hedron
-void PolyhedraRegular::_create(const string& name, int nsides, double rmin, double rmax, double zpos, double zneg, double start,
+void PolyhedraRegular::_create(int nsides, double rmin, double rmax, double zpos, double zneg, double start,
                                double delta) {
   if (rmin < 0e0 || rmin > rmax)
     throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmin:<" + _toString(rmin) + "> is invalid!");
   else if (rmax < 0e0)
     throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmax:<" + _toString(rmax) + "> is invalid!");
-  _assign(new TGeoPgon(), name, "polyhedra", false);
+  _assign(new TGeoPgon(), "", "polyhedra", false);
   double params[] = { start, delta, double(nsides), 2e0, zpos, rmin, rmax, zneg, rmin, rmax };
   _setDimensions(&params[0]);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zlen) {
-  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 360.);
+  _create(nsides, rmin, rmax, zlen / 2, -zlen / 2, 0, 360.);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double phistart, double rmin, double rmax, double zlen) {
-  _create("", nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart/dd4hep::deg, 360.);
+  _create(nsides, rmin, rmax, zlen / 2, -zlen / 2, phistart/dd4hep::deg, 360.);
 }
 
 /// Constructor to be used when creating a new object
 PolyhedraRegular::PolyhedraRegular(int nsides, double rmin, double rmax, double zplanes[2]) {
-  _create("", nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 360.);
+  _create(nsides, rmin, rmax, zplanes[0], zplanes[1], 0, 360.);
 }
 
 /// Creator method

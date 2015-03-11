@@ -28,8 +28,8 @@ using namespace DD4hep;
 using namespace std;
 
 /// Standard constructor
-Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* context, const string& nam)
-: Geant4OutputAction(context, nam), m_file(0), m_tree(0) {
+Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* ctxt, const string& nam)
+: Geant4OutputAction(ctxt, nam), m_file(0), m_tree(0) {
   declareProperty("Section", m_section = "EVENT");
   declareProperty("HandleMCTruth", m_handleMCTruth = true);
   InstanceCount::increment(this);
@@ -39,7 +39,7 @@ Geant4Output2ROOT::Geant4Output2ROOT(Geant4Context* context, const string& nam)
 Geant4Output2ROOT::~Geant4Output2ROOT() {
   InstanceCount::decrement(this);
   if (m_file) {
-    TDirectory::TContext context(m_file);
+    TDirectory::TContext ctxt(m_file);
     m_tree->Write();
     m_file->Close();
     m_tree = 0;
@@ -51,7 +51,7 @@ Geant4Output2ROOT::~Geant4Output2ROOT() {
 TTree* Geant4Output2ROOT::section(const string& nam) {
   Sections::const_iterator i = m_sections.find(nam);
   if (i == m_sections.end()) {
-    TDirectory::TContext context(m_file);
+    TDirectory::TContext ctxt(m_file);
     TTree* t = new TTree(nam.c_str(), ("Geant4 " + nam + " information").c_str());
     m_sections.insert(make_pair(nam, t));
     return t;
@@ -62,7 +62,7 @@ TTree* Geant4Output2ROOT::section(const string& nam) {
 /// Callback to store the Geant4 run information
 void Geant4Output2ROOT::beginRun(const G4Run* run) {
   if (!m_file && !m_output.empty()) {
-    TDirectory::TContext context(TDirectory::CurrentDirectory());
+    TDirectory::TContext ctxt(TDirectory::CurrentDirectory());
     m_file = TFile::Open(m_output.c_str(), "RECREATE", "DD4hep Simulation data");
     if (m_file->IsZombie()) {
       deletePtr (m_file);

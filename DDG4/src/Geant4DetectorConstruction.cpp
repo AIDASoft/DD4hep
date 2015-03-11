@@ -58,9 +58,9 @@ G4VPhysicalVolume* Geant4DetectorConstruction::Construct() {
   Geant4Mapping& g4map = Geant4Mapping::instance();
   Geometry::DetElement world = m_lcdd.world();
   Geant4Converter conv(m_lcdd, m_outputLevel);
-  Geant4GeometryInfo* info = conv.create(world).detach();
-  g4map.attach(info);
-  m_world = info->world();
+  Geant4GeometryInfo* geo_info = conv.create(world).detach();
+  g4map.attach(geo_info);
+  m_world = geo_info->world();
   m_lcdd.apply("DD4hepVolumeManager", 0, 0);
   // Create Geant4 volume manager
   g4map.volumeManager();

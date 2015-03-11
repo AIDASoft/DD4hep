@@ -46,6 +46,9 @@ namespace DD4hep {
        */
       virtual void end(const G4Track* track, Particle& particle);
 
+      /// Post-event action callback: avoid warning (...) was hidden [-Woverloaded-virtual]
+      virtual void end(const G4Event* event);
+
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep
@@ -70,8 +73,8 @@ using namespace DD4hep::Simulation;
 DECLARE_GEANT4ACTION(Geant4TCUserParticleHandler)
 
 /// Standard constructor
-Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* context, const std::string& nam)
-: Geant4UserParticleHandler(context,nam)
+Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* ctxt, const std::string& nam)
+: Geant4UserParticleHandler(ctxt,nam)
 {
   declareProperty("TrackingVolume_Zmax",m_zTracker=1e100);
   declareProperty("TrackingVolume_Rmax",m_rTracker=1e100);
@@ -102,3 +105,9 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   //fg: backscatter ??
   // if( !starts_in_trk_vol &&  ends_in_trk_vol ){  keep ?  }
 }
+
+/// Post-event action callback
+void Geant4TCUserParticleHandler::end(const G4Event* /* event */)   {
+
+}
+

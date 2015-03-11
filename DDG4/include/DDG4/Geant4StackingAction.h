@@ -27,7 +27,7 @@ namespace DD4hep {
     class Geant4StackingAction: public Geant4Action {
     public:
       /// Standard constructor
-      Geant4StackingAction(Geant4Context* context, const std::string& name);
+      Geant4StackingAction(Geant4Context* ctxt, const std::string& name);
       /// Default destructor
       virtual ~Geant4StackingAction();
       /// New-stage callback
@@ -58,7 +58,7 @@ namespace DD4hep {
       Actors<Geant4StackingAction> m_actors;
     public:
       /// Standard constructor
-      Geant4StackingActionSequence(Geant4Context* context, const std::string& name);
+      Geant4StackingActionSequence(Geant4Context* ctxt, const std::string& name);
       /// Default destructor
       virtual ~Geant4StackingActionSequence();
       /// Register begin-of-event callback. Types Q and T must be polymorph!

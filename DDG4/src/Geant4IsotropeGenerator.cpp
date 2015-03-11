@@ -17,8 +17,8 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* context, const string& name)
-: Geant4ParticleGenerator(context, name)
+Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* ctxt, const string& nam)
+: Geant4ParticleGenerator(ctxt, nam)
 {
   InstanceCount::increment(this);
 }

@@ -200,7 +200,7 @@ template <> void Converter<volume>::operator()(xml_h e) const {
   if ( check       ) flags |= AlignmentStack::CHECKOVL_DEFINED;
   if ( check_val   ) flags |= AlignmentStack::CHECKOVL_VALUE;
 
-  auto_ptr<StackEntry> entry(new StackEntry(elt->first,placementPath,trafo.second,ovl,flags));
+  dd4hep_ptr<StackEntry> entry(new StackEntry(elt->first,placementPath,trafo.second,ovl,flags));
   AlignmentStack::insert(entry);
   pair<DetElement,string> vol_param(elt->first,subpath);
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param));
@@ -258,7 +258,7 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
            placementPath.c_str(),
            yes_no(trafo.first), yes_no(reset), yes_no(reset_dau));
 
-  auto_ptr<StackEntry> entry(new StackEntry(elt,placementPath,trafo.second,ovl,flags));
+  dd4hep_ptr<StackEntry> entry(new StackEntry(elt,placementPath,trafo.second,ovl,flags));
   AlignmentStack::insert(entry);
 
   pair<DetElement,string> vol_param(elt,"");

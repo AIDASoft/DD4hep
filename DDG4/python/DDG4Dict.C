@@ -19,8 +19,8 @@
 
 /// Geant4 Vertex dictionaries
 #pragma link C++ class DD4hep::Simulation::VertexExtension+;
-#pragma link C++ class std::auto_ptr<DD4hep::Simulation::VertexExtension>+;
-#pragma link C++ class std::auto_ptr<DD4hep::Simulation::PrimaryExtension>+;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::VertexExtension>+;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::PrimaryExtension>+;
 #pragma link C++ class DD4hep::Simulation::Geant4Vertex+;
 #pragma link C++ class std::vector<DD4hep::Simulation::Geant4Vertex*>+;
 #pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Vertex*>+;
@@ -193,9 +193,17 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #include "DD4hep/objects/DetectorInterna.h"
 // CINT configuration for DDG4
 #if defined(__MAKECINT__)
+namespace {
+  struct bla {
+    dd4hep_ptr<Geant4InputAction::Particles>  __m1;
+    dd4hep_ptr<ParticleExtension>  __m2;
+    dd4hep_ptr<DataExtension>  __m3;
+  };
+}
 #pragma link C++ class PropertyResult;
 #pragma link C++ class Geant4InputAction::Particles;
-#pragma link C++ class auto_ptr<Geant4InputAction::Particles>;
+#pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>;
+#pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>::base_t;
 
 #pragma link C++ class ActionHandle;
 #pragma link C++ class FilterHandle;

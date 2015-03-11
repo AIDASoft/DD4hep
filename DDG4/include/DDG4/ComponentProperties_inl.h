@@ -34,11 +34,11 @@ namespace DD4hep {
   }
 
   /// Set value of this property
-  template <typename TYPE> void Property::set(const TYPE& value) {
+  template <typename TYPE> void Property::set(const TYPE& val) {
     const PropertyGrammar& g = grammar();
     if (g.type() == typeid(TYPE))
-      *(TYPE*) m_par = value;
-    else if (!g.fromString(m_par, BasicGrammar::instance< TYPE >().str(&value)))
+      *(TYPE*) m_par = val;
+    else if (!g.fromString(m_par, BasicGrammar::instance< TYPE >().str(&val)))
       PropertyGrammar::invalidConversion(typeid(TYPE), g.type());
   }
 
@@ -49,11 +49,11 @@ namespace DD4hep {
   }
 
   /// Retrieve value from stack (large values e.g. vectors etc.)
-  template <typename TYPE> void Property::value(TYPE& value) const {
+  template <typename TYPE> void Property::value(TYPE& val) const {
     const PropertyGrammar& g = grammar();
     if (g.type() == typeid(TYPE))
-      value = *(TYPE*) m_par;
-    else if (!BasicGrammar::instance< TYPE >().fromString(&value, this->str()))
+      val = *(TYPE*) m_par;
+    else if (!BasicGrammar::instance< TYPE >().fromString(&val, this->str()))
       PropertyGrammar::invalidConversion(g.type(), typeid(TYPE));
   }
 

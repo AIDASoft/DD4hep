@@ -8,9 +8,9 @@
 //====================================================================
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Handle.h"
+#include "DD4hep/Memory.h"
 #include <iostream>
 #include <iomanip>
-#include <memory>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -25,8 +25,8 @@ namespace {
   typedef std::map<const std::type_info*, COUNT*> TypeCounter;
   typedef std::map<const std::string*, COUNT*> StringCounter;
   static bool s_trace_instances = ::getenv("DD4HEP_TRACE") != 0;
-  static std::auto_ptr<TypeCounter> s_typCounts(new TypeCounter());
-  static std::auto_ptr<StringCounter> s_strCounts(new StringCounter());
+  static dd4hep_ptr<TypeCounter> s_typCounts(new TypeCounter());
+  static dd4hep_ptr<StringCounter> s_strCounts(new StringCounter());
   static InstanceCount::Counter s_nullCount;
   static InstanceCount::Counter s_thisCount;
   static InstanceCount s_counter;

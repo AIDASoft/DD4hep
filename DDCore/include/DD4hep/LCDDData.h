@@ -48,7 +48,6 @@ namespace DD4hep {
         }
       };
 
-    protected:
       /// Implementation of a map of named DD4hep Handles
       /**
        *  \author  M.Frank
@@ -81,6 +80,7 @@ namespace DD4hep {
         }
       };
 
+    protected:
       TGeoManager* m_manager;
       ObjectHandleMap m_readouts;
       ObjectHandleMap m_idDict;

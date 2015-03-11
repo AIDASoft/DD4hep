@@ -67,8 +67,8 @@ namespace DD4hep {  namespace Simulation {
     template <> class Geant4GenericSD<OpticalCalorimeter> : public Geant4GenericSD<Calorimeter>  {
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
-      Geant4GenericSD(const string& name, LCDD& lcdd)
-        : Geant4GenericSD<Calorimeter>(name,lcdd) {          }
+      Geant4GenericSD(const string& nam, LCDD& lcdd_ref)
+        : Geant4GenericSD<Calorimeter>(nam,lcdd_ref) {          }
 
       /// Initialize the sensitive detector for the usage of a single hit collection
       bool defineCollection(const string& coll_name) {

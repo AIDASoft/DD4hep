@@ -51,8 +51,8 @@ namespace {
 }
 
 /// Standard action constructor
-Geant4ActionSD::Geant4ActionSD(const std::string& name)
-: Geant4Action(0, name) {
+Geant4ActionSD::Geant4ActionSD(const std::string& nam)
+: Geant4Action(0, nam) {
   InstanceCount::increment(this);
 }
 
@@ -62,8 +62,8 @@ Geant4ActionSD::~Geant4ActionSD() {
 }
 
 /// Standard constructor
-Geant4Filter::Geant4Filter(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4Filter::Geant4Filter(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -78,17 +78,17 @@ bool Geant4Filter::operator()(const G4Step*) const {
 }
 
 /// Constructor. The detector element is identified by the name
-Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& name, DetElement det, LCDD& lcdd)
-: Geant4Action(ctxt, name), m_sensitiveDetector(0), m_sequence(0),
-  m_lcdd(lcdd), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
+Geant4Sensitive::Geant4Sensitive(Geant4Context* ctxt, const string& nam, DetElement det, LCDD& lcdd_ref)
+: Geant4Action(ctxt, nam), m_sensitiveDetector(0), m_sequence(0),
+  m_lcdd(lcdd_ref), m_detector(det), m_sensitive(), m_readout(), m_segmentation()
 {
   InstanceCount::increment(this);
   if (!det.isValid()) {
-    throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", name.c_str()));
+    throw runtime_error(format("Geant4Sensitive", "DDG4: Detector elemnt for %s is invalid.", nam.c_str()));
   }
   declareProperty("HitCreationMode", m_hitCreationMode = SIMPLE_MODE);
-  m_sequence  = ctxt->kernel().sensitiveAction(m_detector.name());
-  m_sensitive = lcdd.sensitiveDetector(det.name());
+  m_sequence  = context()->kernel().sensitiveAction(m_detector.name());
+  m_sensitive = lcdd_ref.sensitiveDetector(det.name());
   m_readout   = m_sensitive.readout();
   m_segmentation = m_readout.segmentation();
 }
@@ -204,20 +204,20 @@ long long int Geant4Sensitive::cellID(G4Step* s) {
     G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
     Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
     Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
-    VolumeID cellID = m_segmentation.cellID(loc,glob,volID);
-    return cellID;
+    VolumeID cID = m_segmentation.cellID(loc,glob,volID);
+    return cID;
   }
   return volID;
 }
 
 /// Standard constructor
-Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* context, const string& nam)
-: Geant4Action(context, nam), m_hce(0)
+Geant4SensDetActionSequence::Geant4SensDetActionSequence(Geant4Context* ctxt, const string& nam)
+: Geant4Action(ctxt, nam), m_hce(0)
 {
   m_needsControl = true;
-  context->sensitiveActions().insert(name(), this);
+  context()->sensitiveActions().insert(name(), this);
   /// Update the sensitive detector type, so that the proper instance is created
-  m_sensitive = context->lcdd().sensitiveDetector(nam);
+  m_sensitive = context()->lcdd().sensitiveDetector(nam);
   m_sensitiveType = m_sensitive.type();
   m_sensitive.setType("Geant4SensDet");
   InstanceCount::increment(this);
@@ -259,8 +259,8 @@ void Geant4SensDetActionSequence::adopt(Geant4Filter* filter) {
 }
 
 /// Initialize the usage of a hit collection. Returns the collection identifier
-size_t Geant4SensDetActionSequence::defineCollection(Geant4Sensitive* owner, const std::string& name, create_t func) {
-  m_collections.push_back(make_pair(name, make_pair(owner,func)));
+size_t Geant4SensDetActionSequence::defineCollection(Geant4Sensitive* owner, const std::string& collection_name, create_t func) {
+  m_collections.push_back(make_pair(collection_name, make_pair(owner,func)));
   return m_collections.size() - 1;
 }
 

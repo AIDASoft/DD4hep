@@ -10,6 +10,7 @@
 #define DD4HEP_GEANT4PRIMARY_H
 
 // Framework include files
+#include "DD4hep/Memory.h"
 #include "DDG4/Geant4Vertex.h"
 #include "DDG4/Geant4Particle.h"
 
@@ -81,11 +82,11 @@ namespace DD4hep {
       Geant4PrimaryInteraction& operator=(const Geant4PrimaryInteraction& c);
 
     public:
-      typedef Geant4Particle                  Particle;
-      typedef Geant4Vertex                    Vertex;
-      typedef std::map<int,Particle*>         ParticleMap;
-      typedef std::map<int,Vertex*>           VertexMap;
-      typedef std::auto_ptr<PrimaryExtension> ExtensionHandle;
+      typedef Geant4Particle                    Particle;
+      typedef Geant4Vertex                      Vertex;
+      typedef std::map<int,Particle*>           ParticleMap;
+      typedef std::map<int,Vertex*>             VertexMap;
+      typedef dd4hep_ptr<PrimaryExtension>      ExtensionHandle;
 
       /// The map of primary vertices for the particles.
       VertexMap       vertices;
@@ -127,9 +128,9 @@ namespace DD4hep {
       Geant4PrimaryEvent& operator=(const Geant4PrimaryEvent& c);
 
     public:
-      typedef Geant4PrimaryInteraction        Interaction;
-      typedef std::map<int,Interaction*>      Interactions;
-      typedef std::auto_ptr<PrimaryExtension> ExtensionHandle;
+      typedef Geant4PrimaryInteraction     Interaction;
+      typedef std::map<int,Interaction*>   Interactions;
+      typedef dd4hep_ptr<PrimaryExtension> ExtensionHandle;
 
     protected:
       /// Set of primary interactions

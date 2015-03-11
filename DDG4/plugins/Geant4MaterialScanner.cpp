@@ -118,8 +118,8 @@ Geant4MaterialScanner::StepInfo& Geant4MaterialScanner::StepInfo::operator=(cons
 }
 
 /// Standard constructor
-Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* context, const string& name)
-: Geant4SteppingAction(context,name)
+Geant4MaterialScanner::Geant4MaterialScanner(Geant4Context* ctxt, const string& nam)
+: Geant4SteppingAction(ctxt,nam)
 {
   m_needsControl = true;
   eventAction().callAtBegin(this,&Geant4MaterialScanner::beginEvent);
@@ -197,9 +197,9 @@ void Geant4MaterialScanner::end(const G4Track* track) {
       double Zeff    = 0.0;
       const char* fmt = radLen >= 1e5 ? fmt2 : fmt1;
       const double* fractions = m->GetFractionVector();
-      for(size_t i=0; i<m->GetNumberOfElements(); ++i)  {
-        Zeff += fractions[i]*(m->GetElement(i)->GetZ());
-        Aeff += fractions[i]*(m->GetElement(i)->GetA())/gram;
+      for(size_t j=0; j<m->GetNumberOfElements(); ++j)  {
+        Zeff += fractions[j]*(m->GetElement(j)->GetZ());
+        Aeff += fractions[j]*(m->GetElement(j)->GetA())/gram;
       }
       m_sumX0     += nx0;
       m_sumLambda += nLambda;

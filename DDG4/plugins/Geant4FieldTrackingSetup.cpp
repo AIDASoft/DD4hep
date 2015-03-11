@@ -200,8 +200,8 @@ static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cn
 }
 
 /// Standard constructor
-Geant4FieldTrackingSetupAction::Geant4FieldTrackingSetupAction(Geant4Context* context, const std::string& nam)
-: Geant4PhaseAction(context,nam), Geant4FieldTrackingSetup()
+Geant4FieldTrackingSetupAction::Geant4FieldTrackingSetupAction(Geant4Context* ctxt, const std::string& nam)
+: Geant4PhaseAction(ctxt,nam), Geant4FieldTrackingSetup()
 {
   declareProperty("equation",           eq_typ);
   declareProperty("stepper",            stepper_typ);

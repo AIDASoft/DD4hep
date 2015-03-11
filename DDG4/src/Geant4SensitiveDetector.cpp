@@ -30,10 +30,10 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
 /// Constructor. The detector element is identified by the name
-Geant4SensitiveDetector::Geant4SensitiveDetector(const string& name, LCDD& lcdd)
-: G4VSensitiveDetector(name), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
-  m_sensitive = lcdd.sensitiveDetector(name);
-  m_detector = lcdd.detector(name);
+Geant4SensitiveDetector::Geant4SensitiveDetector(const string& nam, LCDD& lcdd)
+: G4VSensitiveDetector(nam), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
+  m_sensitive = lcdd.sensitiveDetector(nam);
+  m_detector = lcdd.detector(nam);
   m_readout = m_sensitive.readout();
 }
 

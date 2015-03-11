@@ -15,8 +15,8 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4PhaseAction::Geant4PhaseAction(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name)
+Geant4PhaseAction::Geant4PhaseAction(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt,nam)
 {
 }
 
@@ -33,9 +33,9 @@ DD4hep::Callback Geant4PhaseAction::callback()    {
 }
 
 /// Standard constructor
-Geant4ActionPhase::Geant4ActionPhase(Geant4Context* context, const string& nam, const type_info& arg_type0,
+Geant4ActionPhase::Geant4ActionPhase(Geant4Context* ctxt, const string& nam, const type_info& arg_type0,
                                      const type_info& arg_type1, const type_info& arg_type2)
-: Geant4Action(context, nam) {
+: Geant4Action(ctxt, nam) {
   m_argTypes[0] = &arg_type0;
   m_argTypes[1] = &arg_type1;
   m_argTypes[2] = &arg_type2;

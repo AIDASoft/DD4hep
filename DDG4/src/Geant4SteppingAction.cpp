@@ -13,8 +13,8 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4SteppingAction::Geant4SteppingAction(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4SteppingAction::Geant4SteppingAction(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -28,8 +28,8 @@ void Geant4SteppingAction::operator()(const G4Step*, G4SteppingManager*) {
 }
 
 /// Standard constructor
-Geant4SteppingActionSequence::Geant4SteppingActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4SteppingActionSequence::Geant4SteppingActionSequence(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
 }

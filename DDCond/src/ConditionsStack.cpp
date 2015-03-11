@@ -17,13 +17,13 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static auto_ptr<ConditionsStack>& _stack()  {
-  static auto_ptr<ConditionsStack> s;
+static dd4hep_ptr<ConditionsStack>& _stack()  {
+  static dd4hep_ptr<ConditionsStack> s;
   return s;
 }
-static auto_ptr<ConditionsStack>& _stack(ConditionsStack* obj)  {
-  auto_ptr<ConditionsStack>& s = _stack();
-  s = auto_ptr<ConditionsStack>(obj);
+static dd4hep_ptr<ConditionsStack>& _stack(ConditionsStack* obj)  {
+  dd4hep_ptr<ConditionsStack>& s = _stack();
+  s = dd4hep_ptr<ConditionsStack>(obj);
   return s;
 }
 
@@ -67,12 +67,12 @@ void ConditionsStack::release()    {
 }
 
 /// Retrieve an conditions entry of the current stack
-auto_ptr<ConditionsStack::Entry> ConditionsStack::pop()   {
+dd4hep_ptr<ConditionsStack::Entry> ConditionsStack::pop()   {
   Stack::iterator i = m_stack.begin();
   if ( i != m_stack.end() )   {
     Entry* e = (*i).second;
     m_stack.erase(i);
-    return auto_ptr<Entry>(e);
+    return dd4hep_ptr<Entry>(e);
   }
   throw runtime_error("ConditionsStack> pop: Conditions stack is empty. Check size first!");
 }
@@ -87,7 +87,7 @@ vector<const ConditionsStack::Entry*> ConditionsStack::entries() const    {
 }
 
 /// Push new entry into the stack
-void ConditionsStack::insert(auto_ptr<Entry>& data)   {
+void ConditionsStack::insert(dd4hep_ptr<Entry>& data)   {
   if ( data.get() && !data->name.empty() )  {
     DetElement det = data->detector;
     // Need to make some checks BEFORE insertion

@@ -56,7 +56,7 @@ namespace DD4hep {
 #if 0  // warning: unused function 'parse_document' [-Wunused-function]
       /// Helper function to parse a DOM document using an instance of the XercesC pareser
       Document parse_document(const void* bytes, size_t length, xercesc::ErrorHandler* err_handler) {
-        auto_ptr<XercesDOMParser> parser(make_parser(err_handler));
+        dd4hep_ptr<XercesDOMParser> parser(make_parser(err_handler));
         MemBufInputSource src((const XMLByte*) bytes, length, "memory");
         parser->setValidationSchemaFullChecking(true);
         parser->parse(src);
@@ -182,7 +182,7 @@ Document DocumentHandler::load(const std::string& fname) const {
   XMLURL xerurl = (const XMLCh*) Strng_t(fname);
   string path = _toString(xerurl.getPath());
   string proto = _toString(xerurl.getProtocolName());
-  auto_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
+  dd4hep_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
   printout(DEBUG,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
   try {
     parser->parse(path.c_str());
@@ -203,7 +203,7 @@ Document DocumentHandler::load(const std::string& fname) const {
 
 /// Parse a standalong XML string into a document.
 Document DocumentHandler::parse(const char* bytes, size_t length) const {
-  auto_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
+  dd4hep_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
   MemBufInputSource src((const XMLByte*) bytes, length, "memory");
   parser->setValidationSchemaFullChecking(true);
   parser->parse(src);

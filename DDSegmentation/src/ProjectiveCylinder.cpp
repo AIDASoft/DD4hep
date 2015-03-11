@@ -45,7 +45,7 @@ Vector3D ProjectiveCylinder::position(const long64& cellID) const {
 }
 
 /// determine the cell ID based on the position
-CellID ProjectiveCylinder::cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const {
+  CellID ProjectiveCylinder::cellID(const Vector3D& /* localPosition */, const Vector3D& globalPosition, const VolumeID& volumeID) const {
 	_decoder->setValue(volumeID);
 	double theta = thetaFromXYZ(globalPosition);
 	double phi = phiFromXYZ(globalPosition);
@@ -55,12 +55,12 @@ CellID ProjectiveCylinder::cellID(const Vector3D& localPosition, const Vector3D&
 }
 
 /// determine the polar angle theta based on the cell ID
-double ProjectiveCylinder::theta(const long64& cellID) const {
+  double ProjectiveCylinder::theta(const long64& /* cellID */) const {
 	int thetaIndex = (*_decoder)[_thetaID].value();
 	return M_PI * ((double) thetaIndex + 0.5) / (double) _thetaBins;
 }
 /// determine the azimuthal angle phi based on the cell ID
-double ProjectiveCylinder::phi(const long64& cellID) const {
+  double ProjectiveCylinder::phi(const long64& /* cellID */) const {
 	int phiIndex = (*_decoder)[_phiID].value();
 	return 2. * M_PI * ((double) phiIndex + 0.5) / (double) _phiBins;
 }

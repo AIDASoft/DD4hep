@@ -58,22 +58,22 @@ Vector3D positionFromRPhiZ(double r, double phi, double z) {
 }
 
 /// calculates the radius in xyz from cylindrical coordinates
-double magFromRPhiZ(double r, double phi, double z) {
+double magFromRPhiZ(double r, double /* phi */, double z) {
 	return std::sqrt(r * r + z * z);
 }
 
 /// calculates x from cylindrical coordinates
-double xFromRPhiZ(double r, double phi, double z) {
+double xFromRPhiZ(double r, double phi, double /* z */) {
 	return r * std::cos(phi);
 }
 
 /// calculates y from cylindrical coordinates
-double yFromRPhiZ(double r, double phi, double z) {
+double yFromRPhiZ(double r, double phi, double /* z */) {
 	return r * std::sin(phi);
 }
 
 /// calculates the polar angle theta from cylindrical coordinates
-double thetaFromRPhiZ(double r, double phi, double z) {
+double thetaFromRPhiZ(double r, double /* phi */, double z) {
 	return r * std::atan(z / r);
 }
 

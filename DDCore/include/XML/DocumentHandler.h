@@ -11,9 +11,7 @@
 
 // Framework include files
 #include "XML/XMLElements.h"
-
-// C/C++ include files
-#include <memory>
+#include "DD4hep/Memory.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -36,7 +34,8 @@ namespace DD4hep {
     class DocumentHandler {
     protected:
       /// Reference to the error handler object
-      std::auto_ptr<DocumentErrorHandler> m_errHdlr;
+      dd4hep_ptr<DocumentErrorHandler> m_errHdlr;
+
     public:
       /// Default constructor
       DocumentHandler();

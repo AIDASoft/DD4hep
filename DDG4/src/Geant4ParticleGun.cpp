@@ -31,8 +31,8 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4ParticleGun::Geant4ParticleGun(Geant4Context* context, const string& name)
-: Geant4GeneratorAction(context, name), m_position(0,0,0), m_direction(1,1,0.3),
+Geant4ParticleGun::Geant4ParticleGun(Geant4Context* ctxt, const string& nam)
+: Geant4GeneratorAction(ctxt,nam), m_position(0,0,0), m_direction(1,1,0.3),
   m_particle(0), m_shotNo(0)
 {
   InstanceCount::increment(this);

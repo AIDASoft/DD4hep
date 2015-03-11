@@ -125,7 +125,8 @@ namespace DD4hep  {
         ROOT::Reflex::FunctionBuilder func(sig, fname.c_str(), stub, 0, "", ROOT::Reflex::PUBLIC);
         func.AddProperty("name", name).AddProperty("id", name);
 	if ( PluginService::debug() )  {
-          printout(INFO,"PluginService","+++ Declared factory for id %s with signature %s.",fname.c_str(),sig.Name().c_str());
+	  std::string sig_name = sig.Name();
+          printout(INFO,"PluginService","+++ Declared factory for id %s with signature %s.",fname.c_str(),sig_name.c_str());
         }
       }
     }

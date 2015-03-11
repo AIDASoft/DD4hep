@@ -80,9 +80,8 @@ namespace DDSegmentation {
 
     /** Set a new 64bit value given as high and low 32bit words.
      */
-    void  setValue(unsigned lowWord, unsigned highWord ) {
-
-      setValue( ( lowWord & 0xffffffffULL ) |  ( ( highWord & 0xffffffffULL ) << 32 ) ) ; 
+    void  setValue(unsigned low_Word, unsigned high_Word ) {
+      setValue( ( low_Word & 0xffffffffULL ) |  ( ( high_Word & 0xffffffffULL ) << 32 ) ) ; 
     }
     
     /** Operator for setting a new value and accessing the BitField directly */
@@ -94,14 +93,14 @@ namespace DDSegmentation {
 
     /** Acces to field through index 
      */
-    BitFieldValue& operator[](size_t index) { 
-      return *_fields.at( index )  ; 
+    BitFieldValue& operator[](size_t idx) { 
+      return *_fields.at( idx )  ; 
     }
     
     /** Const acces to field through index 
      */
-    const BitFieldValue& operator[](size_t index) const { 
-      return *_fields.at( index )  ; 
+    const BitFieldValue& operator[](size_t idx) const { 
+      return *_fields.at( idx )  ; 
     }
 
     /** Highest bit used in fields [0-63]

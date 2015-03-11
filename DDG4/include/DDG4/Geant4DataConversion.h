@@ -91,8 +91,8 @@ namespace DD4hep {
       typename Geant4Conversion<OUTPUT,ARGS>::Converters&
       Geant4Conversion<OUTPUT,ARGS>::conversions()
       {
-        static Converters m;
-        return m;
+        static Converters s_converter;
+        return s_converter;
       }
 
     template <typename OUTPUT, typename ARGS>

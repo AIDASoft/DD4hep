@@ -7,7 +7,11 @@
 #-----------------------------------------------------------------------------------
 #
 #---Find ROOT-----------------------------------------------------------------------
-find_package( ROOT REQUIRED COMPONENTS Geom Reflex )
+find_package( ROOT REQUIRED COMPONENTS Geom )
+#---Find and configure DD4hep basics------------------------------------------------
+include(DD4hep)
+#---Find and configure Xerces-------------------------------------------------------
+include(DD4hep_XML_setup)
 #
 #---Includedirs---------------------------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
@@ -15,13 +19,11 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 	            ${CMAKE_SOURCE_DIR}/DDSurfaces/include	
 	            ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
                     ${ROOT_INCLUDE_DIR} )
-#
 #---Add Library---------------------------------------------------------------------
 file(GLOB sources src/*.cpp )
-include(DD4hep_XML_setup)
 
 add_library( DD4hepDetectors SHARED ${sources})
-target_link_libraries( DD4hepDetectors DD4hepCore DD4hepRec ${ROOT_LIBRARIES} Reflex )
+target_link_libraries( DD4hepDetectors DD4hepCore DD4hepRec ${ROOT_LIBRARIES} )
 #
 #---Rootmap generation--------------------------------------------------------------
 dd4hep_generate_rootmap( DD4hepDetectors )

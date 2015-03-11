@@ -258,16 +258,16 @@ namespace {
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter(LCDD& lcdd)
-: Geant4Mapping(lcdd), m_checkOverlaps(true) {
+Geant4Converter::Geant4Converter(LCDD& lcdd_ref)
+: Geant4Mapping(lcdd_ref), m_checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
   m_outputLevel = PrintLevel(printLevel() - 1);
 }
 
 /// Initializing Constructor
-Geant4Converter::Geant4Converter(LCDD& lcdd, PrintLevel level)
-: Geant4Mapping(lcdd), m_checkOverlaps(true) {
+Geant4Converter::Geant4Converter(LCDD& lcdd_ref, PrintLevel level)
+: Geant4Mapping(lcdd_ref), m_checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
   m_outputLevel = level;
@@ -890,12 +890,12 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
     }
   }
   for (map<string, string>::const_iterator i = processors.begin(); i != processors.end(); ++i) {
-    const Geometry::GeoHandler* ptr = this;
+    const Geometry::GeoHandler* hdlr = this;
     string nam = (*i).second;
     const LCDD::PropertyValues& vals = prp[nam];
     string type = vals.find("type")->second;
     string tag = type + "_Geant4_action";
-    long result = PluginService::Create<long>(tag, &m_lcdd, ptr, &vals);
+    long result = PluginService::Create<long>(tag, &m_lcdd, hdlr, &vals);
     if (0 == result) {
       throw runtime_error("Failed to locate plugin to interprete files of type"
                           " \"" + tag + "\" - no factory:" + type);

@@ -40,8 +40,8 @@ typedef long long int VolumeID;
 /// Simple container for a physics vector
 struct Vector3D {
 	/// Default constructor
-	Vector3D(double x = 0., double y = 0., double z = 0.) :
-			X(x), Y(y), Z(z) {
+	Vector3D(double x_val = 0., double y_val = 0., double z_val = 0.) :
+			X(x_val), Y(y_val), Z(z_val) {
 	}
 	/// Constructor using a foreign vector class. Requires methods x(), y() and z()
 	template<typename T> Vector3D(const T& v) {
@@ -119,25 +119,20 @@ protected:
 	Segmentation(BitField64* decoder);
 
 	/// Add a parameter to this segmentation. Used by derived classes to define their parameters
-	template<typename TYPE> void registerParameter(const std::string& name, const std::string& description,
-			TYPE& parameter, const TYPE& defaultValue, UnitType unitType = SegmentationParameter::NoUnit,
-			bool isOptional = false) {
-		_parameters[name] = new TypedSegmentationParameter<TYPE>(name, description, parameter, defaultValue, unitType,
-				isOptional);
+	template<typename TYPE> void registerParameter(const std::string& nam, const std::string& desc,
+			TYPE& param, const TYPE& defaultVal, UnitType unitTyp = SegmentationParameter::NoUnit,
+			bool isOpt = false) {
+		_parameters[nam] = new TypedSegmentationParameter<TYPE>(nam,desc,param,defaultVal,unitTyp,isOpt);
 	}
 	/// Add a cell identifier to this segmentation. Used by derived classes to define their required identifiers
-	void registerIdentifier(const std::string& name, const std::string& description, std::string& identifier,
-			const std::string& defaultValue);
+	void registerIdentifier(const std::string& nam, const std::string& desc, std::string& ident,
+			const std::string& defaultVal);
 
 	/// Helper method to convert a bin number to a 1D position
 	static double binToPosition(CellID bin, double cellSize, double offset = 0.);
 	/// Helper method to convert a 1D position to a cell ID
 	static int positionToBin(double position, double cellSize, double offset = 0.);
 
-	/// The cell ID encoder and decoder
-	mutable BitField64* _decoder;
-	/// Keeps track of the decoder ownership
-	bool _ownsDecoder;
 	/// The segmentation name
 	std::string _name;
 	/// The segmentation type
@@ -148,6 +143,10 @@ protected:
 	std::map<std::string, Parameter> _parameters;
 	/// The indices used for the encoding
 	std::map<std::string, StringParameter> _indexIdentifiers;
+	/// The cell ID encoder and decoder
+	mutable BitField64* _decoder;
+	/// Keeps track of the decoder ownership
+	bool _ownsDecoder;
 
 private:
 	/// No copy constructor allowed

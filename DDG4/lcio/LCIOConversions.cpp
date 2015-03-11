@@ -184,10 +184,10 @@ namespace DD4hep {
         for(Contributions::const_iterator j=hit->truth.begin(); j!=hit->truth.end(); ++j)   {
           const Geant4HitData::Contribution& c = *j;
           int trackID = pm->particleID(c.trackID);
-          float pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
+          float contrib_pos[] = {float(c.x/mm), float(c.y/mm), float(c.z/mm)};
           EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_parts->getElementAt(trackID);
           if ( hit_creation_mode == Geant4Sensitive::DETAILED_MODE )
-            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, lc_mcp->getPDG(), pos);
+            lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns, lc_mcp->getPDG(), contrib_pos);
           else
             lc_hit->addMCParticleContribution(lc_mcp, c.deposit/GeV, c.time/ns);
         }

@@ -21,8 +21,8 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4InteractionVertexSmear::Geant4InteractionVertexSmear(Geant4Context* context, const std::string& name)
-: Geant4GeneratorAction(context, name)
+Geant4InteractionVertexSmear::Geant4InteractionVertexSmear(Geant4Context* ctxt, const std::string& nam)
+: Geant4GeneratorAction(ctxt, nam)
 {
   InstanceCount::increment(this);
   declareProperty("Offset", m_offset);

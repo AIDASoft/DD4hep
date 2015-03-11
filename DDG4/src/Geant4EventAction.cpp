@@ -17,8 +17,8 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4EventAction::Geant4EventAction(Geant4Context* context, const string& nam)
-: Geant4Action(context, nam) {
+Geant4EventAction::Geant4EventAction(Geant4Context* ctxt, const string& nam)
+: Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -36,8 +36,8 @@ void Geant4EventAction::end(const G4Event*) {
 }
 
 /// Standard constructor
-Geant4EventActionSequence::Geant4EventActionSequence(Geant4Context* context, const string& name)
-: Geant4Action(context, name) {
+Geant4EventActionSequence::Geant4EventActionSequence(Geant4Context* ctxt, const string& nam)
+: Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
 }

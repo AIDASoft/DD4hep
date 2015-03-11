@@ -17,8 +17,8 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
 /// Intializing constructor
-Geant4Run::Geant4Run(const G4Run* run)
-: ObjectExtensions(typeid(Geant4Run)), m_run(run)
+Geant4Run::Geant4Run(const G4Run* run_pointer)
+: ObjectExtensions(typeid(Geant4Run)), m_run(run_pointer)
 {
   InstanceCount::increment(this);
 }
@@ -41,8 +41,8 @@ Geant4Event::~Geant4Event()  {
 }
 
 /// Default constructor
-Geant4Context::Geant4Context(Geant4Kernel* kernel)
-: m_kernel(kernel), m_run(0), m_event(0) {
+Geant4Context::Geant4Context(Geant4Kernel* kernel_pointer)
+: m_kernel(kernel_pointer), m_run(0), m_event(0) {
   InstanceCount::increment(this);
 }
 

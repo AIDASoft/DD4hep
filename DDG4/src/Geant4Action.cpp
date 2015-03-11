@@ -49,12 +49,12 @@ void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
 }
 
 /// Standard constructor
-Geant4Action::Geant4Action(Geant4Context* context, const string& nam)
+Geant4Action::Geant4Action(Geant4Context* ctxt, const string& nam)
 : m_context(0),
   m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
   InstanceCount::increment(this);
-  if ( context ) m_context = *context;
-  m_outputLevel = context ? context->kernel().getOutputLevel(nam) : (printLevel()-1);
+  if ( ctxt ) m_context = *ctxt;
+  m_outputLevel = ctxt ? ctxt->kernel().getOutputLevel(nam) : (printLevel()-1);
   declareProperty("Name", m_name);
   declareProperty("name", m_name);
   declareProperty("OutputLevel", m_outputLevel);
@@ -96,13 +96,13 @@ Geant4Action& Geant4Action::setProperties(PropertyConfigurator& setup) {
 }
 
 /// Check property for existence
-bool Geant4Action::hasProperty(const string& name) const    {
-  return m_properties.exists(name);
+bool Geant4Action::hasProperty(const string& nam) const    {
+  return m_properties.exists(nam);
 }
 
 /// Access single property
-Property& Geant4Action::property(const string& name)   {
-  return properties()[name];
+Property& Geant4Action::property(const string& nam)   {
+  return properties()[nam];
 }
 
 /// Install all control messenger if wanted

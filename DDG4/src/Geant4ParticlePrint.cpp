@@ -24,8 +24,8 @@ using namespace DD4hep::Simulation;
 typedef ReferenceBitMask<const int> PropertyMask;
 
 /// Standard constructor
-Geant4ParticlePrint::Geant4ParticlePrint(Geant4Context* context, const std::string& nam)
-: Geant4EventAction(context,nam)
+Geant4ParticlePrint::Geant4ParticlePrint(Geant4Context* ctxt, const std::string& nam)
+: Geant4EventAction(ctxt,nam)
 {
   declareProperty("OutputType",m_outputType=3);
   declareProperty("PrintBegin",m_printBegin=false);

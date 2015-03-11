@@ -15,8 +15,8 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4InteractionMerger::Geant4InteractionMerger(Geant4Context* context, const std::string& nam)
-: Geant4GeneratorAction(context,nam)
+Geant4InteractionMerger::Geant4InteractionMerger(Geant4Context* ctxt, const std::string& nam)
+: Geant4GeneratorAction(ctxt,nam)
 {
   InstanceCount::increment(this);
 }

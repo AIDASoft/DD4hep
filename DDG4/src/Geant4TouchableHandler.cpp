@@ -37,20 +37,20 @@ int Geant4TouchableHandler::depth() const   {
 
 /// Helper: Generate placement path from touchable object
 Geant4TouchableHandler::Geant4PlacementPath Geant4TouchableHandler::placementPath(bool exception) const {
-  Geant4PlacementPath path;
+  Geant4PlacementPath path_val;
   if ( touchable )   {
     int i, n=touchable->GetHistoryDepth();
-    path.reserve(n);
+    path_val.reserve(n);
     for (i=0; i < n; ++i) {
       G4VPhysicalVolume* pv = touchable->GetVolume(i);
-      path.push_back(pv);
+      path_val.push_back(pv);
     }
-    return path;
+    return path_val;
   }
   if ( exception )   {
     throw std::runtime_error("Attempt to access invalid G4 touchable object.");
   }
-  return path;
+  return path_val;
 }
 
 /// Helper: Access the placement path of a Geant4 touchable object as a string

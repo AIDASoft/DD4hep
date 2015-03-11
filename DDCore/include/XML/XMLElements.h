@@ -475,48 +475,48 @@ namespace DD4hep {
 #define INLINE inline
     typedef const XmlChar* cpXmlChar;
 
-    template <> INLINE Attribute Handle_t::attr<Attribute>(const XmlChar* tag) const {
-      return attr_ptr(tag);
+    template <> INLINE Attribute Handle_t::attr<Attribute>(const XmlChar* tag_value) const {
+      return attr_ptr(tag_value);
     }
 
-    template <> INLINE cpXmlChar Handle_t::attr<cpXmlChar>(const XmlChar* tag) const {
-      return attr_value(tag);
+    template <> INLINE cpXmlChar Handle_t::attr<cpXmlChar>(const XmlChar* tag_value) const {
+      return attr_value(tag_value);
     }
 
-    template <> INLINE bool Handle_t::attr<bool>(const XmlChar* tag) const {
-      return _toBool(attr_value(tag));
+    template <> INLINE bool Handle_t::attr<bool>(const XmlChar* tag_value) const {
+      return _toBool(attr_value(tag_value));
     }
 
-    template <> INLINE int Handle_t::attr<int>(const XmlChar* tag) const {
-      return _toInt(attr_value(tag));
+    template <> INLINE int Handle_t::attr<int>(const XmlChar* tag_value) const {
+      return _toInt(attr_value(tag_value));
     }
 
-    template <> INLINE float Handle_t::attr<float>(const XmlChar* tag) const {
-      return _toFloat(attr_value(tag));
+    template <> INLINE float Handle_t::attr<float>(const XmlChar* tag_value) const {
+      return _toFloat(attr_value(tag_value));
     }
 
-    template <> INLINE double Handle_t::attr<double>(const XmlChar* tag) const {
-      return _toDouble(attr_value(tag));
+    template <> INLINE double Handle_t::attr<double>(const XmlChar* tag_value) const {
+      return _toDouble(attr_value(tag_value));
     }
 
-    template <> INLINE std::string Handle_t::attr<std::string>(const XmlChar* tag) const {
-      return _toString(attr_value(tag));
+    template <> INLINE std::string Handle_t::attr<std::string>(const XmlChar* tag_value) const {
+      return _toString(attr_value(tag_value));
     }
 #if 0
-    template<> INLINE bool Handle_t::attr<bool>(const Attribute tag) const
-      { return _toBool(attr_value(tag));}
+    template<> INLINE bool Handle_t::attr<bool>(const Attribute tag_value) const
+      { return _toBool(attr_value(tag_value));}
 
-    template<> INLINE int Handle_t::attr<int>(const Attribute tag) const
-      { return _toInt(attr_value(tag));}
+    template<> INLINE int Handle_t::attr<int>(const Attribute tag_value) const
+      { return _toInt(attr_value(tag_value));}
 
-    template<> INLINE float Handle_t::attr<float>(const Attribute tag) const
-      { return _toFloat(attr_value(tag));}
+    template<> INLINE float Handle_t::attr<float>(const Attribute tag_value) const
+      { return _toFloat(attr_value(tag_value));}
 
-    template<> INLINE double Handle_t::attr<double>(const Attribute tag) const
-      { return _toDouble(attr_value(tag));}
+    template<> INLINE double Handle_t::attr<double>(const Attribute tag_value) const
+      { return _toDouble(attr_value(tag_value));}
 
-    template<> INLINE std::string Handle_t::attr<std::string>(const Attribute tag) const
-      { return _toString(attr_value(tag));}
+    template<> INLINE std::string Handle_t::attr<std::string>(const Attribute tag_value) const
+      { return _toString(attr_value(tag_value));}
 #endif
 
     /// Class to support the access to collections of XmlNodes (or XmlElements)
@@ -718,8 +718,8 @@ namespace DD4hep {
         return m_element.hasAttr(name);
       }
       /// Access attribute with implicit return type conversion
-      template <class T> T attr(const XmlChar* tag) const {
-        return m_element.attr<T>(tag);
+      template <class T> T attr(const XmlChar* tag_value) const {
+        return m_element.attr<T>(tag_value);
       }
 #ifndef __TIXML__
       /// Access typed attribute value by it's name
@@ -728,16 +728,16 @@ namespace DD4hep {
       }
 #endif
       /// Access attribute name (throws exception if not present)
-      const XmlChar* attr_name(const Attribute attr) const {
-        return m_element.attr_name(attr);
+      const XmlChar* attr_name(const Attribute a) const {
+        return m_element.attr_name(a);
       }
       /// Access attribute value by the attribute  (throws exception if not present)
-      const XmlChar* attr_value(const Attribute attr) const {
-        return m_element.attr_value(attr);
+      const XmlChar* attr_value(const Attribute a) const {
+        return m_element.attr_value(a);
       }
       /// Access the number of children of this DOM element with a given tag name
-      size_t numChildren(const XmlChar* tag, bool exc = true) const {
-        return m_element.numChildren(tag, exc);
+      size_t numChildren(const XmlChar* tag_value, bool exc = true) const {
+        return m_element.numChildren(tag_value, exc);
       }
       /// Remove own attributes and copy all attributes from handle 'e'
       void setAttrs(Handle_t e) const {
@@ -769,16 +769,16 @@ namespace DD4hep {
       /// Check if a child with the required tag exists - if not create it and add it to the current node
       Handle_t setChild(const XmlChar* tag) const;
       /// Access child by tag name. Thow an exception if required in case the child is not present
-      Handle_t child(const Strng_t& tag, bool except = true) const {
-        return m_element.child(tag, except);
+      Handle_t child(const Strng_t& tag_value, bool except = true) const {
+        return m_element.child(tag_value, except);
       }
       /// Remove a child node identified by its handle
       Handle_t remove(Handle_t node) const {
         return m_element.remove(node);
       }
       /// Check the existence of a child with a given tag name
-      bool hasChild(const XmlChar* tag) const {
-        return m_element.hasChild(tag);
+      bool hasChild(const XmlChar* tag_value) const {
+        return m_element.hasChild(tag_value);
       }
       /// Set the reference attribute to the node (adds attribute ref="ref-name")
       Attribute setRef(const XmlChar* tag, const XmlChar* refname) const;

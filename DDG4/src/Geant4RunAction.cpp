@@ -16,8 +16,8 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4RunAction::Geant4RunAction(Geant4Context* context, const std::string& nam)
-: Geant4Action(context, nam) {
+Geant4RunAction::Geant4RunAction(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -35,8 +35,8 @@ void Geant4RunAction::end(const G4Run*) {
 }
 
 /// Standard constructor
-Geant4RunActionSequence::Geant4RunActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4RunActionSequence::Geant4RunActionSequence(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
 }

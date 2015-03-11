@@ -46,7 +46,7 @@ Vector3D CartesianGridXZ::position(const CellID& cellID) const {
 }
 
 /// determine the cell ID based on the position
-CellID CartesianGridXZ::cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const {
+  CellID CartesianGridXZ::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& volumeID) const {
 	_decoder->setValue(volumeID);
 	(*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
 	(*_decoder)[_zId] = positionToBin(localPosition.Z, _gridSizeZ, _offsetZ);

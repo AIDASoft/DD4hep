@@ -93,8 +93,8 @@ namespace DD4hep {
           obj.first = 0;
         }
         template <typename TYPE> static HitManipulator* instance() {
-          static HitManipulator m(ComponentCast::instance<TYPE>(), ComponentCast::instance<std::vector<TYPE*> >());
-          return &m;
+          static HitManipulator hm(ComponentCast::instance<TYPE>(), ComponentCast::instance<std::vector<TYPE*> >());
+          return &hm;
         }
       };
 
@@ -266,8 +266,8 @@ namespace DD4hep {
         return m_hits.at(which);
       }
       /// Add a new hit with a check, that the hit is of the same type
-      template <typename TYPE> void add(TYPE* hit) {
-        Geant4HitWrapper w(m_manipulator->castHit(hit));
+      template <typename TYPE> void add(TYPE* hit_pointer) {
+        Geant4HitWrapper w(m_manipulator->castHit(hit_pointer));
         m_hits.push_back(w);
       }
       /// Find hits in a collection by comparison of attributes

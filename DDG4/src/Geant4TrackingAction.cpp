@@ -28,8 +28,8 @@ class G4Step;
 class G4TouchableHistory;
 
 /// Standard constructor
-Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
 }
@@ -72,8 +72,8 @@ void Geant4TrackingActionSequence::end(const G4Track* track) {
 }
 
 /// Standard constructor
-Geant4TrackingAction::Geant4TrackingAction(Geant4Context* context, const std::string& name)
-: Geant4Action(context, name) {
+Geant4TrackingAction::Geant4TrackingAction(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -132,10 +132,10 @@ bool Geant4TrackingAction::storeChildren() const {
 }
 
 /// Mark a single child of the track to be stored
-bool Geant4TrackingAction::storeChild(Geant4TrackInformation* info) const {
-  if (0 != info) {
-    if (!info->storeTrack()) {
-      info->storeTrack(true);
+bool Geant4TrackingAction::storeChild(Geant4TrackInformation* track_info) const {
+  if (0 != track_info) {
+    if (!track_info->storeTrack()) {
+      track_info->storeTrack(true);
     }
     return true;
   }

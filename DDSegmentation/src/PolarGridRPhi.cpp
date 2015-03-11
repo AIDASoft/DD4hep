@@ -47,7 +47,7 @@ Vector3D PolarGridRPhi::position(const CellID& cellID) const {
 }
 
 /// determine the cell ID based on the position
-CellID PolarGridRPhi::cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const {
+  CellID PolarGridRPhi::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& volumeID) const {
 	_decoder->setValue(volumeID);
 	double phi = atan2(localPosition.Y,localPosition.X);
 	double R = sqrt( localPosition.X * localPosition.X + localPosition.Y * localPosition.Y );

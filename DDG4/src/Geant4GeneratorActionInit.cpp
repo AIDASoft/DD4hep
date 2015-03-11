@@ -19,12 +19,12 @@
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4GeneratorActionInit::Geant4GeneratorActionInit(Geant4Context* context, const std::string& nam)
-: Geant4GeneratorAction(context,nam), m_run(0), m_evtTotal(0), m_evtRun(0)
+Geant4GeneratorActionInit::Geant4GeneratorActionInit(Geant4Context* ctxt, const std::string& nam)
+: Geant4GeneratorAction(ctxt,nam), m_run(0), m_evtTotal(0), m_evtRun(0)
 {
   InstanceCount::increment(this);
-  context->kernel().runAction().callAtEnd(this,&Geant4GeneratorActionInit::end);
-  context->kernel().runAction().callAtBegin(this,&Geant4GeneratorActionInit::begin);
+  context()->kernel().runAction().callAtEnd(this,&Geant4GeneratorActionInit::end);
+  context()->kernel().runAction().callAtBegin(this,&Geant4GeneratorActionInit::begin);
 }
 
 /// Default destructor

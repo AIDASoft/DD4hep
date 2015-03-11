@@ -45,8 +45,8 @@ namespace  Tests {
   public:
     //    typedef SimpleHit::Contribution HitContribution;
     // Standard , initializing constructor
-    Geant4SensitiveAction(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd)
-      : Geant4Sensitive(context,name,det,lcdd), m_collectionID(0) {
+    Geant4SensitiveAction(Geant4Context* ctxt, const std::string& nam, DetElement det, LCDD& lcdd_ref)
+      : Geant4Sensitive(ctxt,nam,det,lcdd_ref), m_collectionID(0) {
       declareProperty("detailedHitsStoring", _detailedHitsStoring ) ;
       defineCollections();
       InstanceCount::increment(this);
@@ -116,9 +116,9 @@ namespace  Tests {
 
     // HitContribution contrib = Hit::extractContribution(step);
 
-    VolumeID cellID = volumeID( step ) ;
-    hit->setCellID0( cellID & 0xffffffff   ) ;
-    hit->setCellID1( ( cellID >> 32 ) & 0xffffffff   ) ;
+    VolumeID cell = volumeID( step ) ;
+    hit->setCellID0( cell & 0xffffffff   ) ;
+    hit->setCellID1( ( cell >> 32 ) & 0xffffffff   ) ;
 
     printout(INFO,"LcioTestTracker","%s> Add hit with deposit:%f  Pos:%f %f %f - cellID0: 0x%x cellID1: 0x%x",
              c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z() , hit->getCellID0() ,hit->getCellID1() );

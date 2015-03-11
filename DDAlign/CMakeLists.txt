@@ -21,7 +21,6 @@ add_library(DD4hepAlign SHARED ${sources})
 target_link_libraries(DD4hepAlign DD4hepCore ${ROOT_LIBRARIES})
 #
 #
-SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)
 else()

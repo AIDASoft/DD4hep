@@ -81,8 +81,8 @@ namespace DD4hep {
       /// Helper to check a condition (for debugging)
       void check(bool condition, const std::string& msg) const;
       /// Access attribute by type
-      template <typename T> T attr(const XmlChar* tag) const {
-        return m_element.attr < T > (tag);
+      template <typename T> T attr(const XmlChar* tag_value) const {
+        return m_element.attr < T > (tag_value);
       }
     };
   }

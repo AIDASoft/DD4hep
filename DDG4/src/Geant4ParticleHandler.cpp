@@ -56,8 +56,8 @@ namespace {
 }
 
 /// Standard constructor
-Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* context, const string& nam)
-: Geant4GeneratorAction(context,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
+Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& nam)
+: Geant4GeneratorAction(ctxt,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
 {
   InstanceCount::increment(this);
   //generatorAction().adopt(this);
@@ -128,18 +128,18 @@ void Geant4ParticleHandler::mark(const G4Track* track, int reason)   {
 }
 
 /// Store a track produced in a step to be kept for later MC truth analysis
-void Geant4ParticleHandler::mark(const G4Step* step, int reason)   {
-  if ( step )  {
-    mark(step->GetTrack(),reason);
+void Geant4ParticleHandler::mark(const G4Step* step_value, int reason)   {
+  if ( step_value )  {
+    mark(step_value->GetTrack(),reason);
     return;
   }
   except("Cannot mark the G4Track if the step-pointer is invalid!", c_name());
 }
 
 /// Mark a Geant4 track of the step to be kept for later MC truth analysis
-void Geant4ParticleHandler::mark(const G4Step* step)   {
-  if ( step )  {
-    mark(step->GetTrack());
+void Geant4ParticleHandler::mark(const G4Step* step_value)   {
+  if ( step_value )  {
+    mark(step_value->GetTrack());
     return;
   }
   except("Cannot mark the G4Track if the step-pointer is invalid!", c_name());
@@ -178,7 +178,7 @@ void Geant4ParticleHandler::operator()(G4Event* event)  {
 }
 
 /// User stepping callback
-void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* mgr)   {
+void Geant4ParticleHandler::step(const G4Step* step_value, G4SteppingManager* mgr)   {
   typedef vector<const G4Track*> _Sec;
   ++m_currTrack.steps;
   if ( (m_currTrack.reason&G4PARTICLE_ABOVE_ENERGY_THRESHOLD) )  {
@@ -187,14 +187,14 @@ void Geant4ParticleHandler::step(const G4Step* step, G4SteppingManager* mgr)   {
     // If these tracks produce hits or are selected due to another signature,
     // this criterium will anyhow take precedence.
     //
-    const _Sec* sec=step->GetSecondaryInCurrentStep();
+    const _Sec* sec=step_value->GetSecondaryInCurrentStep();
     if ( sec->size() > 0 )  {
       PropertyMask(m_currTrack.reason).set(G4PARTICLE_HAS_SECONDARIES);
     }
   }
   /// Update of the particle using the user handler
   if ( m_userHandler )  {
-    m_userHandler->step(step, mgr, m_currTrack);
+    m_userHandler->step(step_value, mgr, m_currTrack);
   }
 }
 
@@ -427,38 +427,38 @@ void Geant4ParticleHandler::rebaseSimulatedTracks(int )   {
     }
   }
   // (2) Re-evaluate the corresponding geant4 track equivalents using the new mapping
-  for(TrackEquivalents::iterator i=m_equivalentTracks.begin(),iend=m_equivalentTracks.end(); i!=iend; ++i)  {
-    int g4_equiv = (*i).first;
-    ParticleMap::const_iterator ipar;
+  for(TrackEquivalents::iterator ie=m_equivalentTracks.begin(),ie_end=m_equivalentTracks.end(); ie!=ie_end; ++ie)  {
+    int g4_equiv = (*ie).first;
     while( (ipar=m_particleMap.find(g4_equiv)) == m_particleMap.end() )  {
       TrackEquivalents::const_iterator iequiv = m_equivalentTracks.find(g4_equiv);
-      if ( iequiv == iend )  {
+      if ( iequiv == ie_end )  {
         break;  // ERROR !! Will be handled by printout below because ipar==end()
       }
       g4_equiv = (*iequiv).second;
     }
+    TrackEquivalents::mapped_type equiv = (*ie).second;
     if ( ipar != m_particleMap.end() )   {
-      equivalents[(*i).first] = (*ipar).second->id;  // requires (1) !
+      equivalents[(*ie).first] = (*ipar).second->id;  // requires (1) !
       Geant4ParticleHandle p = (*ipar).second;
       const G4ParticleDefinition* def = p.definition();
       int pdg = int(fabs(def->GetPDGEncoding())+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
-        error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
+        error("+++ ERROR: Geant4 particle for track:%d last known is:%d -- is gluon or quark!",equiv,g4_equiv);
       }
       pdg = int(fabs(p->pdgID)+0.1);
       if ( pdg != 0 && pdg<36 && !(pdg > 10 && pdg < 17) && pdg != 22 )  {
-        error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",(*i).second,g4_equiv);
+        error("+++ ERROR(2): Geant4 particle for track:%d last known is:%d -- is gluon or quark!",equiv,g4_equiv);
       }
     }
     else   {
-      error("+++ No Equivalent particle for track:%d last known is:%d",(*i).second,g4_equiv);
+      error("+++ No Equivalent particle for track:%d last known is:%d",equiv,g4_equiv);
     }
   }
 
   // (3) Compute the particle's parents and daughters.
   //     Replace the original Geant4 track with the
   //     equivalent particle still present in the record.
-  for(ParticleMap::const_iterator ipar, iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
+  for(iend=m_particleMap.end(), i=m_particleMap.begin(); i!=iend; ++i)  {
     Particle* p = (*i).second;
     if ( p->g4Parent > 0 )  {
       int equiv_id = equivalents[p->g4Parent];

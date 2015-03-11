@@ -37,19 +37,24 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::Simulation::SimpleEvent+;
 #pragma link C++ class DD4hep::Simulation::DataExtension+;
 
-#pragma link C++ class std::auto_ptr<DD4hep::Simulation::DataExtension>+;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>+;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>::base_t+;
 
 /// Dictionaires for Geant4 particles
 #pragma link C++ class DD4hep::Simulation::ParticleExtension+;
-#pragma link C++ class std::auto_ptr<DD4hep::Simulation::ParticleExtension>+;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>+;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>::base_t+;
 #pragma link C++ class DD4hep::Simulation::Geant4Particle+;
 #pragma link C++ class std::vector<DD4hep::Simulation::Geant4Particle*>+;
 #pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Particle*>+;
 #pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::iterator;
 #pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::const_iterator;
+
+#ifdef R__MACOSX
+// We only need these declarations for the clang compiler
 #pragma link C++ function operator==( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
 #pragma link C++ function operator!=( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
-
+#endif
 
 /// Dictionaires for basic Hit data structures
 #pragma link C++ class DD4hep::Simulation::Geant4HitData+;

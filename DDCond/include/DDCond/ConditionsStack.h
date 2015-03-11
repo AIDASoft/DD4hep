@@ -11,9 +11,7 @@
 
 // Framework include files
 #include "DD4hep/Detector.h"
-
-// C/C++ include files
-#include <memory>
+#include "DD4hep/Memory.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -34,7 +32,7 @@ namespace DD4hep {
      */
     class ConditionsStack {
     public:
-      friend class std::auto_ptr<ConditionsStack>;
+      friend class dd4hep_ptr<ConditionsStack>;
 
       typedef ConditionsInterna::Entry Entry;
       typedef std::map<std::string,Entry*> Stack;
@@ -56,13 +54,13 @@ namespace DD4hep {
       /// Check existence of conditions stack
       static bool exists();
       /// Push new entry into the stack
-      void insert(std::auto_ptr<Entry>& data);
+      void insert(dd4hep_ptr<Entry>& data);
       /// Clear data content and remove the slignment stack
       void release();
       /// Access size of the conditions stack
       size_t size() const  {  return m_stack.size(); }
        /// Retrieve an conditions entry of the current stack
-      std::auto_ptr<Entry> pop();
+      dd4hep_ptr<Entry> pop();
       /// Get all path entries to be aligned. Note: transient!
       std::vector<const Entry*> entries() const;
     };

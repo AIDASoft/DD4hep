@@ -17,8 +17,8 @@ using namespace DD4hep::Geometry;
 using namespace std;
 
 /// Initializing Constructor
-Geant4Mapping::Geant4Mapping(LCDD& lcdd)
-: m_lcdd(lcdd), m_dataPtr(0) {
+Geant4Mapping::Geant4Mapping(LCDD& lcdd_ref)
+: m_lcdd(lcdd_ref), m_dataPtr(0) {
 }
 
 /// Standard destructor
@@ -58,8 +58,8 @@ Geant4GeometryInfo* Geant4Mapping::detach() {
 }
 
 /// Set a new data block
-void Geant4Mapping::attach(Geant4GeometryInfo* data) {
-  m_dataPtr = data;
+void Geant4Mapping::attach(Geant4GeometryInfo* data_ptr) {
+  m_dataPtr = data_ptr;
 }
 
 /// Access the volume manager

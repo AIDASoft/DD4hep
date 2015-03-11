@@ -108,7 +108,7 @@ Vector3D TiledLayerSegmentation::position(const CellID& cellID) const {
 	return Vector3D(localX, localY, 0.);
 }
 /// determine the cell ID based on the position
-CellID TiledLayerSegmentation::cellID(const Vector3D& localPosition, const Vector3D& globalPosition,
+  CellID TiledLayerSegmentation::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */,
 		const VolumeID& volumeID) const {
 	_decoder->setValue(volumeID);
 	int layerIndex = (*_decoder)[_identifierLayer];
@@ -123,13 +123,13 @@ CellID TiledLayerSegmentation::cellID(const Vector3D& localPosition, const Vecto
 }
 
 /// helper method to calculate optimal cell size based on total size
-double TiledLayerSegmentation::calculateOptimalCellSize(double nominalCellSize, double totalSize) {
+  double TiledLayerSegmentation::calculateOptimalCellSize(double /* nominalCellSize */, double /* totalSize */) {
 	// TODO: implement algorithm to calculate optimal cell size
 	return 1.;
 }
 
 /// helper method to calculate offset of bin 0 based on the total size
-double TiledLayerSegmentation::calculateOffset(double cellSize, double totalSize) {
+double TiledLayerSegmentation::calculateOffset(double /* cellSize */, double /* totalSize */) {
 	// TODO: implement algorithm to calculate placement of bin 0
 	return 0.;
 }

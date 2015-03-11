@@ -617,7 +617,7 @@ template <> void Converter<Property>::operator()(xml_h e) const {
     prp.insert(make_pair(name, LCDD::PropertyValues()));
   }
   for (vector<xml_attr_t>::iterator i = a.begin(); i != a.end(); ++i) {
-    pair < string, string > val(xml_tag_t(e.attr_name(*i)), e.attr<string>(*i));
+    pair < string, string > val(xml_tag_t(e.attr_name(*i)).str(), e.attr<string>(*i));
     prp[name].insert(val);
   }
 }
@@ -656,7 +656,7 @@ template <> void Converter<CartesianField>::operator()(xml_h e) const {
       prp.insert(make_pair(props_name, CartesianField::PropertyValues()));
     }
     for (vector<xml_attr_t>::iterator i = a.begin(); i != a.end(); ++i) {
-      pair < string, string > val(xml_tag_t(c.attr_name(*i)), c.attr<string>(*i));
+      pair < string, string > val(xml_tag_t(c.attr_name(*i)).str(), c.attr<string>(*i));
       prp[props_name].insert(val);
     }
     if (c.hasAttr(_U(global)) && c.attr<bool>(_U(global))) {

@@ -33,21 +33,21 @@ if(DD4HEP_USE_PYROOT)
   add_definitions(-DDD4HEP_USE_PYROOT)
   set(libraries  ${libraries} PyROOT)
 endif()
+if(NOT DD4HEP_NO_REFLEX)
+  set(libraries  ${libraries} Reflex)
+endif()
 
 add_library(DD4hepCore SHARED ${sources} ${parser_sources} )
 
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom Reflex ${libraries})
+target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
 
 ## generates rootmap and installs the library
 add_dd4hep_plugin(DD4hepPlugins SHARED ${plugin_sources})
-target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom Reflex ${libraries})
+target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom ${libraries})
 
-SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 SET_TARGET_PROPERTIES( DD4hepCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-
 #--- install target-------------------------------------
-
 install(DIRECTORY include/DD4hep  include/XML
   DESTINATION include
   PATTERN ".svn" EXCLUDE )

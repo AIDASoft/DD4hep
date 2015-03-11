@@ -69,8 +69,8 @@ Geant4EventReader::moveToEvent(int event_number)   {
 }
 
 /// Standard constructor
-Geant4InputAction::Geant4InputAction(Geant4Context* context, const string& name)
-: Geant4GeneratorAction(context,name), m_reader(0)
+Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
+: Geant4GeneratorAction(ctxt,nam), m_reader(0)
 {
   declareProperty("Input",          m_input);
   declareProperty("Sync",           m_firstEvent=0);

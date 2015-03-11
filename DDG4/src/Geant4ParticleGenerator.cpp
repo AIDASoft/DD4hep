@@ -28,8 +28,8 @@ using namespace std;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* context, const string& name)
-  : Geant4GeneratorAction(context, name), m_direction(0,1,0), m_position(0,0,0), m_particle(0)
+Geant4ParticleGenerator::Geant4ParticleGenerator(Geant4Context* ctxt, const string& nam)
+  : Geant4GeneratorAction(ctxt, nam), m_direction(0,1,0), m_position(0,0,0), m_particle(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;

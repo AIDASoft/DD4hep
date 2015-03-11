@@ -23,8 +23,8 @@ using namespace DD4hep::Simulation;
 using namespace std;
 
 /// Initializing constructor
-Geant4UIManager::Geant4UIManager(Geant4Context* context, const std::string& name)
-: Geant4Action(context,name), m_vis(0), m_ui(0)
+Geant4UIManager::Geant4UIManager(Geant4Context* ctxt, const std::string& nam)
+: Geant4Action(ctxt,nam), m_vis(0), m_ui(0)
 {
   declareProperty("SetupUI", m_uiSetup="");
   declareProperty("SetupVIS", m_visSetup="");

@@ -36,7 +36,7 @@ namespace  {
 
 
 /// Install volume information. Default implementation only prints!
-template <typename T> void Installer<T>::install(DetElement de, PlacedVolume pv) {
+template <typename T> void Installer<T>::install(DetElement de, PlacedVolume /* pv */) {
   if ( ::strstr(de.name(),"layer") != 0 )   {
     if ( !data.parent.isValid() )  {
       data.det = m_det;

@@ -178,9 +178,9 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */, Particles& output) {
     return EVENT_READER_IO_ERROR;
   }
   else if ( m_events->read() )  {
-    EventStream::Particles& p = m_events->particles();
-    output.reserve(p.size());
-    transform(p.begin(),p.end(),back_inserter(output),reference2nd(p));
+    EventStream::Particles& parts = m_events->particles();
+    output.reserve(parts.size());
+    transform(parts.begin(),parts.end(),back_inserter(output),reference2nd(parts));
     m_events->clear();
     for(Particles::const_iterator k=output.begin(); k != output.end(); ++k) {
       Geant4ParticleHandle p(*k);
@@ -240,10 +240,10 @@ void HepMC::fix_particles(EventStream& info)  {
       }
     }
   }
-  for(vector<Geant4Particle*>::iterator i=beam.begin(); i!=beam.end();++i)  {
-    //cout << "Clear parents of " << (*i)->id << endl;
-    (*i)->parents.clear();
-    (*i)->status = G4PARTICLE_GEN_DECAYED;
+  for(vector<Geant4Particle*>::iterator ipp=beam.begin(); ipp!=beam.end();++ipp)  {
+    //cout << "Clear parents of " << (*ipp)->id << endl;
+    (*ipp)->parents.clear();
+    (*ipp)->status = G4PARTICLE_GEN_DECAYED;
   }
 }
 
@@ -597,33 +597,33 @@ bool HepMC::EventStream::read()   {
     switch( value )   {
     case 'H':  {
       int iotype = 0;
-      string key;
-      input_line >> key;
+      string key_value;
+      input_line >> key_value;
       // search for event listing key before first event only.
-      key = key.substr(0,key.find('\r'));
-      if ( key == "H" && (this->io_type == gen || this->io_type == extascii) ) {
+      key_value = key_value.substr(0,key_value.find('\r'));
+      if ( key_value == "H" && (this->io_type == gen || this->io_type == extascii) ) {
         read_heavy_ion(info, input_line);
         break;
       }
-      else if( key == "HepMC::IO_GenEvent-START_EVENT_LISTING" )
-        this->set_io(gen,key);
-      else if( key == "HepMC::IO_Ascii-START_EVENT_LISTING" )
-        this->set_io(ascii,key);
-      else if( key == "HepMC::IO_ExtendedAscii-START_EVENT_LISTING" )
-        this->set_io(extascii,key);
-      else if( key == "HepMC::IO_Ascii-START_PARTICLE_DATA" )
-        this->set_io(ascii_pdt,key);
-      else if( key == "HepMC::IO_ExtendedAscii-START_PARTICLE_DATA" )
-        this->set_io(extascii_pdt,key);
-      else if( key == "HepMC::IO_GenEvent-END_EVENT_LISTING" )
+      else if( key_value == "HepMC::IO_GenEvent-START_EVENT_LISTING" )
+        this->set_io(gen,key_value);
+      else if( key_value == "HepMC::IO_Ascii-START_EVENT_LISTING" )
+        this->set_io(ascii,key_value);
+      else if( key_value == "HepMC::IO_ExtendedAscii-START_EVENT_LISTING" )
+        this->set_io(extascii,key_value);
+      else if( key_value == "HepMC::IO_Ascii-START_PARTICLE_DATA" )
+        this->set_io(ascii_pdt,key_value);
+      else if( key_value == "HepMC::IO_ExtendedAscii-START_PARTICLE_DATA" )
+        this->set_io(extascii_pdt,key_value);
+      else if( key_value == "HepMC::IO_GenEvent-END_EVENT_LISTING" )
         iotype = gen;
-      else if( key == "HepMC::IO_Ascii-END_EVENT_LISTING" )
+      else if( key_value == "HepMC::IO_Ascii-END_EVENT_LISTING" )
         iotype = ascii;
-      else if( key == "HepMC::IO_ExtendedAscii-END_EVENT_LISTING" )
+      else if( key_value == "HepMC::IO_ExtendedAscii-END_EVENT_LISTING" )
         iotype = extascii;
-      else if( key == "HepMC::IO_Ascii-END_PARTICLE_DATA" )
+      else if( key_value == "HepMC::IO_Ascii-END_PARTICLE_DATA" )
         iotype = ascii_pdt;
-      else if( key == "HepMC::IO_ExtendedAscii-END_PARTICLE_DATA" )
+      else if( key_value == "HepMC::IO_ExtendedAscii-END_PARTICLE_DATA" )
         iotype = extascii_pdt;
 
       if( iotype != 0 && this->io_type != iotype )  {

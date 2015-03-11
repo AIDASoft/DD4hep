@@ -1,6 +1,8 @@
 #---Find Geant4-------------------------------------------------------------------
 find_package(Geant4 REQUIRED gdml ui_all vis_all)
 INCLUDE(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs
+#---DD4hep functions and macros -------------------------------------------------------
+include( DD4hep )
 #---Includedirs-------------------------------------------------------------------
 include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 	            ${CMAKE_SOURCE_DIR}/DDSegmentation/include	
@@ -15,17 +17,16 @@ file(GLOB sources src/*.cpp)
 if(NOT DD4HEP_USE_XERCESC)
   list(REMOVE_ITEM sources ${CMAKE_CURRENT_SOURCE_DIR}/src/Geant4XML.cpp)
 endif()
-SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 #
 add_library(DD4hepG4 SHARED ${sources})
-target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepG4 DD4hepCore ${ROOT_LIBRARIES} ${Geant4_LIBRARIES})
 SET_TARGET_PROPERTIES( DD4hepG4 PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 #-----------------------------------------------------------------------------------
 # No rootmap for link libraries!
 #---------------------------  Legacy libraries (for Frank) -------------------------
 file(GLOB legacy_sources legacy/*.cpp)
 add_library(DD4hepG4Legacy SHARED ${legacy_sources})
-target_link_libraries(DD4hepG4Legacy DD4hepCore DD4hepG4 ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepG4Legacy DD4hepCore DD4hepG4 ${ROOT_LIBRARIES} ${Geant4_LIBRARIES})
 
 SET_TARGET_PROPERTIES(DD4hepG4Legacy PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 dd4hep_generate_rootmap(DD4hepG4Legacy)
@@ -36,7 +37,7 @@ root_generate_dictionary( G__DDG4 ${CMAKE_CURRENT_SOURCE_DIR}/python/DDG4Dict.C 
 file(GLOB plugins_sources plugins/*.cpp)
 list(APPEND plugins_sources G__DDG4.cxx)
 add_library(DD4hepG4Plugins SHARED ${plugins_sources})
-target_link_libraries(DD4hepG4Plugins DD4hepCore DD4hepG4 ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+target_link_libraries(DD4hepG4Plugins DD4hepCore DD4hepG4 ${ROOT_LIBRARIES} ${Geant4_LIBRARIES})
 
 SET_TARGET_PROPERTIES(DD4hepG4Plugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 dd4hep_generate_rootmap(DD4hepG4Plugins)
@@ -47,7 +48,7 @@ if(DD4HEP_USE_LCIO)
   include_directories(  ${LCIO_INCLUDE_DIRS} )
   file(GLOB lcio_sources lcio/*.cpp)
   add_library(DD4hepG4LCIO SHARED ${lcio_sources})
-  target_link_libraries(DD4hepG4LCIO DD4hepCore DD4hepG4 ${Geant4_LIBRARIES} ${LCIO_LIBRARIES} ${ROOT_LIBRARIES} Reflex EG)
+  target_link_libraries(DD4hepG4LCIO DD4hepCore DD4hepG4 ${Geant4_LIBRARIES} ${LCIO_LIBRARIES} ${ROOT_LIBRARIES} EG)
   SET_TARGET_PROPERTIES(DD4hepG4LCIO PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
   dd4hep_generate_rootmap(DD4hepG4LCIO)
 endif()

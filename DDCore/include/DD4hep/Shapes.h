@@ -115,7 +115,7 @@ namespace DD4hep {
     class Box: public Solid_type<TGeoBBox> {
     protected:
       /// Internal helper method to support object construction
-      void make(const std::string& name, double x, double y, double z);
+      void make(double x_val, double y_val, double z_val);
 
     public:
       /// Constructor to be used with an existing object
@@ -129,18 +129,18 @@ namespace DD4hep {
       }
 
       /// Constructor to create an anonymous new box object (retrieves name from volume)
-      Box(double x, double y, double z) {
-        make("", x, y, z);
+      Box(double x_val, double y_val, double z_val) {
+        make(x_val, y_val, z_val);
       }
 
       /// Constructor to create an anonymous new box object (retrieves name from volume)
       template <typename X, typename Y, typename Z>
-        Box(const X& x, const Y& y, const Z& z) {
-        make("", _toDouble(x), _toDouble(y), _toDouble(z));
+        Box(const X& x_val, const Y& y_val, const Z& z_val) {
+        make(_toDouble(x_val), _toDouble(y_val), _toDouble(z_val));
       }
 
       /// Set the box dimensions
-      Box& setDimensions(double x, double y, double z);
+      Box& setDimensions(double x_val, double y_val, double z_val);
 
       /// Access half "length" of the box
       double x() const;
@@ -257,7 +257,7 @@ namespace DD4hep {
     class Tube: public Solid_type< /*TGeoTubeSeg */MyConeSeg> {
     protected:
       /// Internal helper method to support object construction
-      void make(const std::string& name, double rmin, double rmax, double z, double startPhi, double deltaPhi);
+      void make(const std::string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi);
 
     public:
       /// Constructor to be used with an existing object
@@ -285,13 +285,13 @@ namespace DD4hep {
       }
 
       /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-      Tube(const std::string& name, double rmin, double rmax, double z) {
-        make(name, rmin, rmax, z, 0, 2*M_PI);
+      Tube(const std::string& nam, double rmin, double rmax, double z) {
+        make(nam, rmin, rmax, z, 0, 2*M_PI);
       }
 
       /// Legacy: Constructor to create a new identifiable tube object with attribute initialization
-      Tube(const std::string& name, double rmin, double rmax, double z, double deltaPhi) {
-        make(name, rmin, rmax, z, 0, deltaPhi);
+      Tube(const std::string& nam, double rmin, double rmax, double z, double deltaPhi) {
+        make(nam, rmin, rmax, z, 0, deltaPhi);
       }
 
       /// Constructor to create a new anonymous tube object with attribute initialization
@@ -319,7 +319,7 @@ namespace DD4hep {
     class EllipticalTube: public Solid_type<TGeoEltu> {
     protected:
       /// Internal helper method to support object construction
-      void make(const std::string& name, double a, double b, double dz);
+      void make(double a, double b, double dz);
 
     public:
       /// Constructor to be used with an existing object
@@ -329,12 +329,12 @@ namespace DD4hep {
       template <typename Q> EllipticalTube(const Handle<Q>& e) : Solid_type<TGeoEltu>(e) {   }
 
       /// Constructor to create a new anonymous tube object with attribute initialization
-      EllipticalTube(double a, double b, double dz) {  make("", a, b, dz);  }
+      EllipticalTube(double a, double b, double dz) {  make(a, b, dz);  }
 
       /// Constructor to create a new anonymous tube object with attribute initialization
       template <typename A, typename B, typename DZ>
         EllipticalTube(const A& a, const B& b, const DZ& dz)  {
-        make("", _toDouble(a), _toDouble(b), _toDouble(dz));
+        make(_toDouble(a), _toDouble(b), _toDouble(dz));
       }
 
       /// Set the tube dimensions
@@ -353,7 +353,7 @@ namespace DD4hep {
     class Cone: public Solid_type<TGeoCone> {
     protected:
       /// Internal helper method to support object construction
-      void make(const std::string& name, double z, double rmin1, double rmax1, double rmin2, double rmax2);
+      void make(double z, double rmin1, double rmax1, double rmin2, double rmax2);
 
     public:
       /// Constructor to be used with an existing object
@@ -368,12 +368,12 @@ namespace DD4hep {
 
       /// Constructor to create a new anonymous object with attribute initialization
       Cone(double z, double rmin1, double rmax1, double rmin2, double rmax2) {
-        make("", z, rmin1, rmax1, rmin2, rmax2);
+        make(z, rmin1, rmax1, rmin2, rmax2);
       }
 
       template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
         Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2) {
-        make("", _toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2));
+        make(_toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2));
       }
 
       /// Set the box dimensions
@@ -524,7 +524,7 @@ namespace DD4hep {
       }
 
       /// Constructor to be used when passing an already created object
-    Sphere(const Sphere& e)
+      Sphere(const Sphere& e)
       : Solid_type<TGeoSphere>(e) {
       }
 
@@ -615,8 +615,7 @@ namespace DD4hep {
     class PolyhedraRegular: public Solid_type<TGeoPgon> {
     protected:
       /// Helper function to create the polyhedron
-      void _create(const std::string& name, int nsides, double rmin, double rmax, double zpos, double zneg, double start,
-                   double delta);
+      void _create(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta);
     public:
       /// Constructor to be used with an existing object
       template <typename Q> PolyhedraRegular(const Q* p)
@@ -624,7 +623,7 @@ namespace DD4hep {
       }
 
       /// Constructor to be used when passing an already created object
-    PolyhedraRegular(const PolyhedraRegular& e)
+      PolyhedraRegular(const PolyhedraRegular& e)
       : Solid_type<TGeoPgon>(e) {
       }
 

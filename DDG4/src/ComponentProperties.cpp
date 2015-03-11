@@ -184,9 +184,9 @@ const Property& PropertyManager::operator[](const string& name) const {
 }
 
 /// Add a new property
-void PropertyManager::add(const string& name, const Property& property) {
+void PropertyManager::add(const string& name, const Property& prop) {
   verifyNonExistence(name);
-  m_properties.insert(make_pair(name, property));
+  m_properties.insert(make_pair(name, prop));
 }
 
 /// Bulk set of all properties

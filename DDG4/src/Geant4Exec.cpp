@@ -62,7 +62,7 @@ namespace DD4hep {
       SequenceHdl()
         : m_sequence(0), m_activeContext(0) {
       }
-      SequenceHdl(Geant4Context* context, T* seq) : m_sequence(0), m_activeContext(context)  {
+      SequenceHdl(Geant4Context* ctxt, T* seq) : m_sequence(0), m_activeContext(ctxt)  {
         _aquire(seq);
       }
       virtual ~SequenceHdl() {
@@ -131,8 +131,8 @@ namespace DD4hep {
     public:
       Geant4UserEventAction* eventAction;
       /// Standard constructor
-      Geant4UserRunAction(Geant4Context* context, Geant4RunActionSequence* seq)
-        : Base(context, seq), eventAction(0)  {
+      Geant4UserRunAction(Geant4Context* ctxt, Geant4RunActionSequence* seq)
+        : Base(ctxt, seq), eventAction(0)  {
       }
       /// Default destructor
       virtual ~Geant4UserRunAction() {
@@ -153,8 +153,8 @@ namespace DD4hep {
     public:
       Geant4UserRunAction* runAction;
       /// Standard constructor
-      Geant4UserEventAction(Geant4Context* context, Geant4EventActionSequence* seq)
-        : Base(context, seq), runAction(0)  {
+      Geant4UserEventAction(Geant4Context* ctxt, Geant4EventActionSequence* seq)
+        : Base(ctxt, seq), runAction(0)  {
       }
       /// Default destructor
       virtual ~Geant4UserEventAction() {
@@ -174,8 +174,8 @@ namespace DD4hep {
     class Geant4UserTrackingAction : public G4UserTrackingAction, public SequenceHdl<Geant4TrackingActionSequence> {
     public:
       /// Standard constructor
-      Geant4UserTrackingAction(Geant4Context* context, Geant4TrackingActionSequence* seq)
-        : Base(context, seq) {
+      Geant4UserTrackingAction(Geant4Context* ctxt, Geant4TrackingActionSequence* seq)
+        : Base(ctxt, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserTrackingAction() {
@@ -203,8 +203,8 @@ namespace DD4hep {
     class Geant4UserStackingAction : public G4UserStackingAction, public SequenceHdl<Geant4StackingActionSequence> {
     public:
       /// Standard constructor
-      Geant4UserStackingAction(Geant4Context* context, Geant4StackingActionSequence* seq)
-        : Base(context, seq) {
+      Geant4UserStackingAction(Geant4Context* ctxt, Geant4StackingActionSequence* seq)
+        : Base(ctxt, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserStackingAction() {
@@ -232,8 +232,8 @@ namespace DD4hep {
     class Geant4UserGeneratorAction : public G4VUserPrimaryGeneratorAction, public SequenceHdl<Geant4GeneratorActionSequence> {
     public:
       /// Standard constructor
-      Geant4UserGeneratorAction(Geant4Context* context, Geant4GeneratorActionSequence* seq)
-        : G4VUserPrimaryGeneratorAction(), Base(context, seq) {
+      Geant4UserGeneratorAction(Geant4Context* ctxt, Geant4GeneratorActionSequence* seq)
+        : G4VUserPrimaryGeneratorAction(), Base(ctxt, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserGeneratorAction() {
@@ -255,8 +255,8 @@ namespace DD4hep {
     class Geant4UserSteppingAction : public G4UserSteppingAction, public SequenceHdl<Geant4SteppingActionSequence> {
     public:
       /// Standard constructor
-      Geant4UserSteppingAction(Geant4Context* context, Geant4SteppingActionSequence* seq)
-        : Base(context, seq) {
+      Geant4UserSteppingAction(Geant4Context* ctxt, Geant4SteppingActionSequence* seq)
+        : Base(ctxt, seq) {
       }
       /// Default destructor
       virtual ~Geant4UserSteppingAction() {

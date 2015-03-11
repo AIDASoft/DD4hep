@@ -55,19 +55,19 @@ Geant4Kernel::PhaseSelector& Geant4Kernel::PhaseSelector::operator=(const PhaseS
 }
 
 /// Phase access to the map
-Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& name) const {
-  Geant4ActionPhase* phase = m_kernel->getPhase(name);
+Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& nam) const {
+  Geant4ActionPhase* phase = m_kernel->getPhase(nam);
   if (phase) {
     return *phase;
   }
-  throw runtime_error(format("Geant4Kernel", "Attempt to access the nonexisting phase '%s'", name.c_str()));
+  throw runtime_error(format("Geant4Kernel", "Attempt to access the nonexisting phase '%s'", nam.c_str()));
 }
 
 /// Standard constructor
-Geant4Kernel::Geant4Kernel(LCDD& lcdd)
+Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
 : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
   m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0),
-  m_physicsList(0), m_lcdd(lcdd), phase(this) {
+  m_physicsList(0), m_lcdd(lcdd_ref), phase(this) {
 #if 0
   registerSequence(m_runAction, "RunAction");
   registerSequence(m_eventAction, "EventAction");

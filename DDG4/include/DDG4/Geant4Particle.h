@@ -10,6 +10,7 @@
 #define DD4HEP_GEANT4PARTICLE_H
 
 // Framework include files
+#include "DD4hep/Memory.h"
 
 // ROOT includes
 #include "Math/Vector4D.h"
@@ -21,7 +22,6 @@ class G4VProcess;
 // C/C++ include files
 #include <set>
 #include <map>
-#include <memory>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -116,7 +116,7 @@ namespace DD4hep {
       Particles daughters;
 
       /// User data extension if required
-      std::auto_ptr<ParticleExtension> extension;
+      dd4hep_ptr<ParticleExtension> extension;
       const G4VProcess *process;  //! not persistent
       //const G4ParticleDefinition *definition;  //! not persistent
       /// Default constructor

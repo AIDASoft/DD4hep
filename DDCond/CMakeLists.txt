@@ -21,8 +21,6 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 file(GLOB sources src/*.cpp)
 add_library(DD4hepCond SHARED ${sources})
 target_link_libraries(DD4hepCond DD4hepCore ${ROOT_LIBRARIES})
-SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
-
 
 if(DD4HEP_USE_XERCESC)
   add_definitions(-DDD4HEP_USE_XERCESC)

@@ -13,8 +13,8 @@
 #include "DDG4/Geant4SensitiveDetector.h"
 
 /// Constructor. The sensitive detector element is identified by the detector name
-template <class SD> DD4hep::Simulation::Geant4GenericSD<SD>::Geant4GenericSD(const std::string& name, LCDD& lcdd)
-: Geant4SensitiveDetector(name, lcdd) {
+template <class SD> DD4hep::Simulation::Geant4GenericSD<SD>::Geant4GenericSD(const std::string& nam, LCDD& lcdd_ref)
+: Geant4SensitiveDetector(nam, lcdd_ref) {
   defineCollection(m_sensitive.hitsCollection());
 }
 

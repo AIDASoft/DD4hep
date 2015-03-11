@@ -44,7 +44,7 @@ namespace DD4hep {
       lcio::LCCollectionVec* saveParticles(Geant4ParticleMap* particles);
     public:
       /// Standard constructor
-      Geant4Output2LCIO(Geant4Context* context, const std::string& nam);
+      Geant4Output2LCIO(Geant4Context* ctxt, const std::string& nam);
       /// Default destructor
       virtual ~Geant4Output2LCIO();
       /// Callback to store the Geant4 run information

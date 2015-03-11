@@ -34,7 +34,7 @@ namespace DD4hep {
       std::vector<std::string> m_detectorNames;
     public:
       /// Standard constructor
-      Geant4EscapeCounter(Geant4Context* context, const std::string& name, DetElement det, LCDD& lcdd);
+      Geant4EscapeCounter(Geant4Context* ctxt, const std::string& name, DetElement det, LCDD& lcdd);
       /// Default destructor
       virtual ~Geant4EscapeCounter();
       /// G4VSensitiveDetector interface: Method for generating hit(s) using the information of G4Step object.
@@ -71,8 +71,8 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
 /// Standard constructor
-Geant4EscapeCounter::Geant4EscapeCounter(Geant4Context* context, const string& nam, DetElement det, LCDD& lcdd)
-: Geant4Sensitive(context, nam, det, lcdd)
+Geant4EscapeCounter::Geant4EscapeCounter(Geant4Context* ctxt, const string& nam, DetElement det, LCDD& lcdd_ref)
+: Geant4Sensitive(ctxt, nam, det, lcdd_ref)
 {
   string coll_name = name()+"Hits";
   m_needsControl = true;
@@ -91,7 +91,7 @@ bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history *
   Geant4StepHandler  h(step);
   Geant4TrackHandler th(h.track);
   Geant4TouchableHandler handler(step);
-  string   path       = handler.path();
+  string   hdlr_path  = handler.path();
   Position prePos     = h.prePos();
   HitCollection* coll = collection(m_collectionID);
   SimpleTracker::Hit* hit = new SimpleTracker::Hit(th.id(),th.pdgID(),h.deposit(),th.time());
@@ -105,7 +105,7 @@ bool Geant4EscapeCounter::process(G4Step* step, G4TouchableHistory* /* history *
 
   print("+++ Track:%4d  %8.2f MeV [%s] %s Geant4 path:%s",
         h.trkID(),h.trkEnergy()/CLHEP::MeV,th.name().c_str(),
-        th.creatorName().c_str(),path.c_str());
+        th.creatorName().c_str(),hdlr_path.c_str());
   // Kill track, so that it does no longer participate in the propagation
   h.track->SetTrackStatus(fStopAndKill);
   return true;

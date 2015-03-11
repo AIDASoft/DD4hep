@@ -24,7 +24,7 @@ void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
     else if ( !handleUsingCache(component,comp_vol) )  {
       const double* trans = placementTranslation(component);
       double half_mod_thickness  = mod_shape->GetDy1();
-      double half_comp_thickness = comp_shape->GetDy1();
+      //double half_comp_thickness = comp_shape->GetDy1();
       double si_position         = trans[1];
       double outer_thickness = half_mod_thickness + si_position;
       double inner_thickness = half_mod_thickness - si_position;

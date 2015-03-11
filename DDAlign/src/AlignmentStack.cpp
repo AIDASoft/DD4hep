@@ -17,13 +17,13 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static auto_ptr<AlignmentStack>& _stack()  {
-  static auto_ptr<AlignmentStack> s;
+static dd4hep_ptr<AlignmentStack>& _stack()  {
+  static dd4hep_ptr<AlignmentStack> s;
   return s;
 }
-static auto_ptr<AlignmentStack>& _stack(AlignmentStack* obj)  {
-  auto_ptr<AlignmentStack>& s = _stack();
-  s = auto_ptr<AlignmentStack>(obj);
+static dd4hep_ptr<AlignmentStack>& _stack(AlignmentStack* obj)  {
+  dd4hep_ptr<AlignmentStack>& s = _stack();
+  s = dd4hep_ptr<AlignmentStack>(obj);
   return s;
 }
 
@@ -196,7 +196,7 @@ void AlignmentStack::release()    {
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentStack::insert(const string& full_path, auto_ptr<StackEntry>& entry)  {
+bool AlignmentStack::insert(const string& full_path, dd4hep_ptr<StackEntry>& entry)  {
   if ( entry.get() && !full_path.empty() )  {
     entry->path = full_path;
     return get().add(entry);
@@ -205,12 +205,12 @@ bool AlignmentStack::insert(const string& full_path, auto_ptr<StackEntry>& entry
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentStack::insert(auto_ptr<StackEntry>& entry)  {
+bool AlignmentStack::insert(dd4hep_ptr<StackEntry>& entry)  {
   return get().add(entry);
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentStack::add(auto_ptr<StackEntry>& entry)  {
+bool AlignmentStack::add(dd4hep_ptr<StackEntry>& entry)  {
   if ( entry.get() && !entry->path.empty() )  {
     Stack::const_iterator i = m_stack.find(entry->path);
     if ( i == m_stack.end() )   {
@@ -231,12 +231,12 @@ bool AlignmentStack::add(auto_ptr<StackEntry>& entry)  {
 }
 
 /// Retrieve an alignment entry of the current stack
-auto_ptr<AlignmentStack::StackEntry> AlignmentStack::pop()   {
+dd4hep_ptr<AlignmentStack::StackEntry> AlignmentStack::pop()   {
   Stack::iterator i = m_stack.begin();
   if ( i != m_stack.end() )   {
     StackEntry* e = (*i).second;
     m_stack.erase(i);
-    return auto_ptr<StackEntry>(e);
+    return dd4hep_ptr<StackEntry>(e);
   }
   throw runtime_error("AlignmentStack> Alignment stack is empty. "
                       "Cannot pop entries - check size first!");
