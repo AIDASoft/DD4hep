@@ -1,3 +1,10 @@
+
+#---------------------------------------------------------------------------------------------------
+##SET( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wno-long-long")
+SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+
+add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
+
 #---------------------------------------------------------------------------------------------------
 # add_dd4hep_plugin ( libraryName )
 #

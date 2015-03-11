@@ -7,8 +7,6 @@ include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
                      ${CMAKE_SOURCE_DIR}/DDRec/include  
 		     ${CMAKE_SOURCE_DIR}/DDTest/include )
 
-
-
 #-----------------------------------------------------------------------------------
 add_executable(geoDisplay src/display.cpp)
 target_link_libraries(geoDisplay DD4hepCore )

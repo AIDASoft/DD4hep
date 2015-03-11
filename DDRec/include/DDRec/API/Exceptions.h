@@ -17,7 +17,7 @@
 
 #include <stdexcept>
 #include <string>
-#include <strstream>
+#include <sstream>
 
 namespace DD4hep {
 namespace DDRec {

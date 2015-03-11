@@ -1,12 +1,12 @@
 #include "DDRec/Surface.h"
 #include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/Memory.h"
 
 #include "DDRec/MaterialManager.h"
 
 #include <cmath>
 #include <memory>
 #include <exception>
-#include <memory> 
 
 #include "TGeoMatrix.h"
 #include "TGeoShape.h"
@@ -553,7 +553,7 @@ namespace DD4hep {
       // need to get the inverse transformation ( see Detector.cpp )
       // std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm.Inverse() ) ) ;
       // has been fixed now, no need to get the inverse anymore:
-      std::auto_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm ) ) ;
+      dd4hep_ptr<TGeoHMatrix> wtI( new TGeoHMatrix( wm ) ) ;
 
       //---- if the volSurface is not in the DetElement's volume, we need to mutliply the path to the volume to the
       // DetElements world transform
@@ -571,7 +571,7 @@ namespace DD4hep {
       //      std::cout << "  +++ new world transform matrix  : " << std::endl ;
 
 #if 0 //fixme: which convention to use here - the correct should be wtI, however it is the inverse of what is stored in DetElement ???
-      std::auto_ptr<TGeoHMatrix> wt( new TGeoHMatrix( wtI->Inverse() ) ) ;
+      dd4hep_ptr<TGeoHMatrix> wt( new TGeoHMatrix( wtI->Inverse() ) ) ;
       wt->Print() ;
       // cache the world transform for the surface
       _wtM = wt.release()  ;

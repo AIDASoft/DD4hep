@@ -101,7 +101,7 @@ function(root_generate_dictionary dictionary)
   #---call rootcint------------------------------------------
   add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
                      COMMAND echo ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx 
-                                          -c ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
+                                          -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
                      COMMAND ${ROOTCINT_EXECUTABLE} -f  ${dictionary}.cxx 
                                           -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
                      DEPENDS ${headerfiles} ${linkdefs})

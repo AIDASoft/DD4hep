@@ -45,7 +45,6 @@ list(APPEND sources G__DDEve.cxx)
 
 add_library(DD4hepEve SHARED ${sources})
 target_link_libraries(DD4hepEve DD4hepCore DD4hepG4 ${ROOT_EVE_LIBRARIES} -lFTGL ${LCIO_LIBRARIES} )
-SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 
 SET_TARGET_PROPERTIES( DD4hepEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 

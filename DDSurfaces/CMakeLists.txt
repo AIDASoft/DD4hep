@@ -31,7 +31,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 #add_library(${PackageName} SHARED ${sources} )
 
-#SET(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
 #SET_TARGET_PROPERTIES( ${PackageName} PROPERTIES VERSION ${DDSurfaces_VERSION} SOVERSION ${DDSurfaces_SOVERSION})
 
 #--- install target-------------------------------------
