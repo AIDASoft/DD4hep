@@ -42,7 +42,7 @@ TGeoVolume* gdml_root(const char* sys_name) {
   string       vis_file  = system+".vis.csv";
   ifstream     in(vis_file.c_str());
   TGDMLParse   parse;
-
+  gDebug = 2;
   cout << "++ Processing gdml file:" << gdml_file << endl;
 
   TGeoVolume* top_vol = parse.GDMLReadFile(gdml_file.c_str());
@@ -153,7 +153,7 @@ TGeoVolume* gdml_root(const char* sys_name) {
     }
     if ( debug_processing ) cout << debug.str() << endl;
   }
-  cout << "++ Closing geometry and starting display...." << endl;
+  cout << "++ Closing geometry and starting display.... Top volume:" << (void*)top_vol << endl;
   geo->SetTopVolume(top_vol);
   geo->CloseGeometry();
   geo->SetVisLevel(4);

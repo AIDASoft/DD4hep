@@ -40,6 +40,8 @@
 #include "TGeoTrd1.h"
 #include "TGeoTrd2.h"
 #include "TGeoTube.h"
+#include "TGeoScaledShape.h"
+//#include "TGeoEllipsoid.h"
 
 #include "TGeoNode.h"
 #include "TClass.h"
@@ -93,6 +95,16 @@ namespace {
   bool is_placement(PlacedVolume node)  {
     PlacedVolume v = Ref_t(node);
     return v.data() != 0;
+  }
+
+  string genName(const string& n)  {  return n; }
+  string genName(const string& n, const void* ptr)  {
+    string nn = genName(n);
+    char text[32];
+    ::snprintf(text,sizeof(text),"%p",ptr);
+    nn += "_";
+    nn += text;
+    return nn;
   }
 }
 
@@ -220,247 +232,247 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
   else {
     xml_h solid(0);
     xml_h zplane(0);
+    TClass* isa = shape->IsA();
+    string shape_name = shape->GetName(); //genName(shape->GetName(),shape);
     geo.checkShape(name, shape);
-    if (shape->IsA() == TGeoBBox::Class()) {
+    if (isa == TGeoBBox::Class()) {
       const TGeoBBox* s = (const TGeoBBox*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(box)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(x), 2 * s->GetDX() * CM_2_MM);
-      solid.setAttr(_U(y), 2 * s->GetDY() * CM_2_MM);
-      solid.setAttr(_U(z), 2 * s->GetDZ() * CM_2_MM);
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(x), 2 * s->GetDX());
+      solid.setAttr(_U(y), 2 * s->GetDY());
+      solid.setAttr(_U(z), 2 * s->GetDZ());
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoTube::Class()) {
+    else if (isa == TGeoTube::Class()) {
       const TGeoTube* s = (const TGeoTube*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(tube)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rmin), s->GetRmin() * CM_2_MM);
-      solid.setAttr(_U(rmax), s->GetRmax() * CM_2_MM);
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(rmin), s->GetRmin());
+      solid.setAttr(_U(rmax), s->GetRmax());
+      solid.setAttr(_U(z), 2 * s->GetDz());
       solid.setAttr(_U(startphi), 0e0);
-      solid.setAttr(_U(deltaphi), 2 * M_PI);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(deltaphi), 360.0);
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoEltu::Class()) {
+    else if (isa == TGeoTubeSeg::Class()) {
+      const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(tube)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(rmin), s->GetRmin());
+      solid.setAttr(_U(rmax), s->GetRmax());
+      solid.setAttr(_U(z), 2 * s->GetDz());   // Full zlen in GDML, half zlen in TGeo
+      solid.setAttr(_U(startphi), s->GetPhi1());
+      solid.setAttr(_U(deltaphi), s->GetPhi2());
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
+    }
+    else if (isa == TGeoEltu::Class()) {
       const TGeoEltu* s = (const TGeoEltu*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(eltube)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(dx), s->GetA() * CM_2_MM);
-      solid.setAttr(_U(dy), s->GetB() * CM_2_MM);
-      solid.setAttr(_U(dz), s->GetDz() * CM_2_MM);
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(dx), s->GetA());
+      solid.setAttr(_U(dy), s->GetB());
+      solid.setAttr(_U(dz), s->GetDz());
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoTubeSeg::Class()) {
-      const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(tube)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rmin), s->GetRmin() * CM_2_MM);
-      solid.setAttr(_U(rmax), s->GetRmax() * CM_2_MM);
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);   // Full zlen in GDML, half zlen in TGeo
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), s->GetPhi2() * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+    else if (isa == TGeoTrd1::Class()) {
+      const TGeoTrd1* s = (const TGeoTrd1*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(trd)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(x1), 2 * s->GetDx1());
+      solid.setAttr(_U(x2), 2 * s->GetDx2());
+      solid.setAttr(_U(y1), 2 * s->GetDy());
+      solid.setAttr(_U(y2), 2 * s->GetDy());
+      solid.setAttr(_U(z),  2 * s->GetDz());   // Full zlen in GDML, half zlen in TGeo
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoTubeSeg::Class()) {
-      const TGeoTubeSeg* s = (const TGeoTubeSeg*) shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(tube)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rmin), s->GetRmin() * CM_2_MM);
-      solid.setAttr(_U(rmax), s->GetRmax() * CM_2_MM);
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);   // Full zlen in GDML, half zlen in TGeo
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), s->GetPhi2() * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
-    }
-    else if (shape->IsA() == TGeoHype::Class()) {
-      const TGeoHype* s = (const TGeoHype*) shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(hype)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rmin), 2 * s->GetRmin() * CM_2_MM);
-      solid.setAttr(_U(rmax), 2 * s->GetRmax() * CM_2_MM);
-      solid.setAttr(_U(outst), 2 * s->GetStOut() * CM_2_MM);
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);   // Full zlen in GDML, half zlen in TGeo
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
-    }
-    else if (shape->IsA() == TGeoTrd2::Class()) {
+    else if (isa == TGeoTrd2::Class()) {
       const TGeoTrd2* s = (const TGeoTrd2*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(trd)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(x1), 2 * s->GetDx1() * CM_2_MM);
-      solid.setAttr(_U(x2), 2 * s->GetDx2() * CM_2_MM);
-      solid.setAttr(_U(y1), 2 * s->GetDy1() * CM_2_MM);
-      solid.setAttr(_U(y2), 2 * s->GetDy2() * CM_2_MM);
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);   // Full zlen in GDML, half zlen in TGeo
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(x1), 2 * s->GetDx1());
+      solid.setAttr(_U(x2), 2 * s->GetDx2());
+      solid.setAttr(_U(y1), 2 * s->GetDy1());
+      solid.setAttr(_U(y2), 2 * s->GetDy2());
+      solid.setAttr(_U(z),  2 * s->GetDz());   // Full zlen in GDML, half zlen in TGeo
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoTrap::Class()) {
-      const TGeoTrap* s = (const TGeoTrap*) shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(trap)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);   // Full zlen in GDML, half zlen in TGeo
-      solid.setAttr(_U(x1), 2 * s->GetBl1() * CM_2_MM);
-      solid.setAttr(_U(x2), 2 * s->GetTl1() * CM_2_MM);
-      solid.setAttr(_U(x3), 2 * s->GetBl2() * CM_2_MM);
-      solid.setAttr(_U(x4), 2 * s->GetTl2() * CM_2_MM);
-      solid.setAttr(_U(y1), 2 * s->GetH1() * CM_2_MM);
-      solid.setAttr(_U(y2), 2 * s->GetH2() * CM_2_MM);
-      solid.setAttr(_U(alpha1), s->GetAlpha1() * DEGREE_2_RAD);
-      solid.setAttr(_U(alpha2), s->GetAlpha2() * DEGREE_2_RAD);
-      solid.setAttr(_U(theta), s->GetTheta() * DEGREE_2_RAD);
-      solid.setAttr(_U(phi), s->GetPhi() * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+    else if (isa == TGeoHype::Class()) {
+      const TGeoHype* s = (const TGeoHype*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(hype)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(rmin),  s->GetRmin());
+      solid.setAttr(_U(rmax),  s->GetRmax());
+      solid.setAttr(Unicode("inst"),  s->GetStIn());
+      solid.setAttr(_U(outst), s->GetStOut());
+      solid.setAttr(_U(z),     s->GetDz());   // Full zlen in GDML, half zlen in TGeo
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoPara::Class()) {
-      const TGeoPara* s = (const TGeoPara*) shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(para)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(x), s->GetX() * CM_2_MM);
-      solid.setAttr(_U(y), s->GetY() * CM_2_MM);
-      solid.setAttr(_U(z), s->GetZ() * CM_2_MM);
-      solid.setAttr(_U(alpha), s->GetAlpha() * DEGREE_2_RAD);
-      solid.setAttr(_U(theta), s->GetTheta() * DEGREE_2_RAD);
-      solid.setAttr(_U(phi), s->GetPhi() * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
-    }
-    else if (shape->IsA() == TGeoPgon::Class()) {
+    else if (isa == TGeoPgon::Class()) {
       const TGeoPgon* s = (const TGeoPgon*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(polyhedra)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), s->GetDphi() * DEGREE_2_RAD);
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(startphi), s->GetPhi1());
+      solid.setAttr(_U(deltaphi), s->GetDphi());
       solid.setAttr(_U(numsides), s->GetNedges());
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm"); 
       for (Int_t i = 0; i < s->GetNz(); ++i) {
         zplane = xml_elt_t(geo.doc, _U(zplane));
-        zplane.setAttr(_U(rmin), s->GetRmin(i) * CM_2_MM);
-        zplane.setAttr(_U(rmax), s->GetRmax(i) * CM_2_MM);
-        zplane.setAttr(_U(z), s->GetZ(i) * CM_2_MM);
+        zplane.setAttr(_U(z), s->GetZ(i));
+        zplane.setAttr(_U(rmin), s->GetRmin(i));
+        zplane.setAttr(_U(rmax), s->GetRmax(i));
         solid.append(zplane);
       }
-    }
-    else if (shape->IsA() == TGeoPcon::Class()) {
+   }
+    else if (isa == TGeoPcon::Class()) {
       const TGeoPcon* s = (const TGeoPcon*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(polycone)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), s->GetDphi() * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(startphi), s->GetPhi1());
+      solid.setAttr(_U(deltaphi), s->GetDphi());
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm"); 
       for (Int_t i = 0; i < s->GetNz(); ++i) {
         zplane = xml_elt_t(geo.doc, _U(zplane));
-        zplane.setAttr(_U(rmin), s->GetRmin(i) * CM_2_MM);
-        zplane.setAttr(_U(rmax), s->GetRmax(i) * CM_2_MM);
-        zplane.setAttr(_U(z), s->GetZ(i) * CM_2_MM);
+        zplane.setAttr(_U(z), s->GetZ(i));
+        zplane.setAttr(_U(rmin), s->GetRmin(i));
+        zplane.setAttr(_U(rmax), s->GetRmax(i));
         solid.append(zplane);
       }
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoConeSeg::Class()) {
-      const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
-      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(polycone)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), (s->GetPhi2() - s->GetPhi1()) * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
-      zplane = xml_elt_t(geo.doc, _U(zplane));
-      zplane.setAttr(_U(rmin), s->GetRmin1() * CM_2_MM);
-      zplane.setAttr(_U(rmax), s->GetRmax1() * CM_2_MM);
-      zplane.setAttr(_U(z), -s->GetDz() * CM_2_MM);
-      solid.append(zplane);
-      zplane = xml_elt_t(geo.doc, _U(zplane));
-      zplane.setAttr(_U(rmin), s->GetRmin2() * CM_2_MM);
-      zplane.setAttr(_U(rmax), s->GetRmax2() * CM_2_MM);
-      zplane.setAttr(_U(z), s->GetDz() * CM_2_MM);
-      solid.append(zplane);
-#if 0
-      solid.setAttr(_U(z), 2*s->GetDz()*CM_2_MM);
-      solid.setAttr(_U(rmin1), s->GetRmin1()*CM_2_MM);
-      solid.setAttr(_U(rmin2), s->GetRmin2()*CM_2_MM);
-      solid.setAttr(_U(rmax1), s->GetRmax1()*CM_2_MM);
-      solid.setAttr(_U(rmax2), s->GetRmax2()*CM_2_MM);
-#endif
-    }
-    else if (shape->IsA() == TGeoCone::Class()) {
+    else if (isa == TGeoCone::Class()) {
       const TGeoCone* s = (const TGeoCone*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(cone)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(z), 2 * s->GetDz() * CM_2_MM);
-      solid.setAttr(_U(rmin1), s->GetRmin1() * CM_2_MM);
-      solid.setAttr(_U(rmax1), s->GetRmax1() * CM_2_MM);
-      solid.setAttr(_U(rmin2), s->GetRmin2() * CM_2_MM);
-      solid.setAttr(_U(rmax2), s->GetRmax2() * CM_2_MM);
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(z),     2 * s->GetDz());
+      solid.setAttr(_U(rmin1), s->GetRmin1());
+      solid.setAttr(_U(rmax1), s->GetRmax1());
+      solid.setAttr(_U(rmin2), s->GetRmin2());
+      solid.setAttr(_U(rmax2), s->GetRmax2());
       solid.setAttr(_U(startphi), 0e0);
-      solid.setAttr(_U(deltaphi), 2 * M_PI);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(deltaphi), 360.0);
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoParaboloid::Class()) {
+    else if (isa == TGeoConeSeg::Class()) {
+      const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(cone)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(z), 2*s->GetDz());
+      solid.setAttr(_U(rmin1), s->GetRmin1());
+      solid.setAttr(_U(rmin2), s->GetRmin2());
+      solid.setAttr(_U(rmax1), s->GetRmax1());
+      solid.setAttr(_U(rmax2), s->GetRmax2());
+      solid.setAttr(_U(startphi), s->GetPhi1());
+      solid.setAttr(_U(deltaphi), s->GetPhi2() - s->GetPhi1());
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
+    }
+    else if (isa == TGeoParaboloid::Class()) {
       const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(paraboloid)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rlo), s->GetRlo() * CM_2_MM);
-      solid.setAttr(_U(rhi), s->GetRhi() * CM_2_MM);
-      solid.setAttr(_U(dz), s->GetDz() * CM_2_MM);
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(rlo), s->GetRlo());
+      solid.setAttr(_U(rhi), s->GetRhi());
+      solid.setAttr(_U(dz),  s->GetDz());
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoSphere::Class()) {
+#if 0
+    else if (isa == TGeoEllipsoid::Class()) {
+      const TGeoEllipsoid* s = (const TGeoEllipsoid*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(ellipsoid)));
+      solid.setAttr(_U(lunit), "cm");
+    }
+#endif
+    else if (isa == TGeoSphere::Class()) {
       const TGeoSphere* s = (const TGeoSphere*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(sphere)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rmin), s->GetRmin() * CM_2_MM);
-      solid.setAttr(_U(rmax), s->GetRmax() * CM_2_MM);
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), (s->GetPhi2() - s->GetPhi1()) * DEGREE_2_RAD);
-      solid.setAttr(_U(starttheta), s->GetTheta1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltatheta), (s->GetTheta2() - s->GetTheta1()) * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(rmin),        s->GetRmin());
+      solid.setAttr(_U(rmax),        s->GetRmax());
+      solid.setAttr(_U(startphi),    s->GetPhi1());
+      solid.setAttr(_U(deltaphi),   (s->GetPhi2() - s->GetPhi1()));
+      solid.setAttr(_U(starttheta),  s->GetTheta1());
+      solid.setAttr(_U(deltatheta), (s->GetTheta2() - s->GetTheta1()));
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoTorus::Class()) {
+    else if (isa == TGeoTorus::Class()) {
       const TGeoTorus* s = (const TGeoTorus*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(torus)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(rtor), s->GetR() * CM_2_MM);
-      solid.setAttr(_U(rmin), s->GetRmin() * CM_2_MM);
-      solid.setAttr(_U(rmax), s->GetRmax() * CM_2_MM);
-      solid.setAttr(_U(startphi), s->GetPhi1() * DEGREE_2_RAD);
-      solid.setAttr(_U(deltaphi), s->GetDphi() * DEGREE_2_RAD);
-      solid.setAttr(_U(aunit), "rad");
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(rtor),     s->GetR());
+      solid.setAttr(_U(rmin),     s->GetRmin());
+      solid.setAttr(_U(rmax),     s->GetRmax());
+      solid.setAttr(_U(startphi), s->GetPhi1());
+      solid.setAttr(_U(deltaphi), s->GetDphi());
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoArb8::Class()) {
+    else if (isa == TGeoTrap::Class()) {
+      const TGeoTrap* s = (const TGeoTrap*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(trap)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(z),  2 * s->GetDz());   // Full zlen in GDML, half zlen in TGeo
+      solid.setAttr(_U(x1), 2 * s->GetBl1());
+      solid.setAttr(_U(x2), 2 * s->GetTl1());
+      solid.setAttr(_U(x3), 2 * s->GetBl2());
+      solid.setAttr(_U(x4), 2 * s->GetTl2());
+      solid.setAttr(_U(y1), 2 * s->GetH1());
+      solid.setAttr(_U(y2), 2 * s->GetH2());
+      solid.setAttr(_U(alpha1), s->GetAlpha1());
+      solid.setAttr(_U(alpha2), s->GetAlpha2());
+      solid.setAttr(_U(theta),  s->GetTheta());
+      solid.setAttr(_U(phi),    s->GetPhi());
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
+    }
+    else if (isa == TGeoPara::Class()) {
+      const TGeoPara* s = (const TGeoPara*) shape;
+      geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(para)));
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(x), s->GetX());
+      solid.setAttr(_U(y), s->GetY());
+      solid.setAttr(_U(z), s->GetZ());
+      solid.setAttr(_U(alpha), s->GetAlpha());
+      solid.setAttr(_U(theta), s->GetTheta());
+      solid.setAttr(_U(phi),   s->GetPhi());
+      solid.setAttr(_U(aunit), "deg");
+      solid.setAttr(_U(lunit), "cm");
+    }
+    else if (isa == TGeoArb8::Class()) {
       TGeoArb8* s = (TGeoArb8*) shape;
       const double* vtx = s->GetVertices();
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(arb8)));
-      solid.setAttr(_U(name), Unicode(name));
-      solid.setAttr(_U(v1x), vtx[0] * CM_2_MM);
-      solid.setAttr(_U(v1y), vtx[1] * CM_2_MM);
-      solid.setAttr(_U(v2x), vtx[2] * CM_2_MM);
-      solid.setAttr(_U(v2y), vtx[3] * CM_2_MM);
-      solid.setAttr(_U(v3x), vtx[4] * CM_2_MM);
-      solid.setAttr(_U(v3y), vtx[5] * CM_2_MM);
-      solid.setAttr(_U(v4x), vtx[6] * CM_2_MM);
-      solid.setAttr(_U(v4y), vtx[7] * CM_2_MM);
-      solid.setAttr(_U(v5x), vtx[8] * CM_2_MM);
-      solid.setAttr(_U(v5y), vtx[9] * CM_2_MM);
-      solid.setAttr(_U(v6x), vtx[10] * CM_2_MM);
-      solid.setAttr(_U(v6y), vtx[11] * CM_2_MM);
-      solid.setAttr(_U(v7x), vtx[12] * CM_2_MM);
-      solid.setAttr(_U(v7y), vtx[13] * CM_2_MM);
-      solid.setAttr(_U(v8x), vtx[14] * CM_2_MM);
-      solid.setAttr(_U(v8y), vtx[15] * CM_2_MM);
-      solid.setAttr(_U(dz), s->GetDz() * CM_2_MM);
-      solid.setAttr(_U(lunit), "mm");
+      solid.setAttr(_U(name), Unicode(shape_name));
+      solid.setAttr(_U(v1x), vtx[0]);
+      solid.setAttr(_U(v1y), vtx[1]);
+      solid.setAttr(_U(v2x), vtx[2]);
+      solid.setAttr(_U(v2y), vtx[3]);
+      solid.setAttr(_U(v3x), vtx[4]);
+      solid.setAttr(_U(v3y), vtx[5]);
+      solid.setAttr(_U(v4x), vtx[6]);
+      solid.setAttr(_U(v4y), vtx[7]);
+      solid.setAttr(_U(v5x), vtx[8]);
+      solid.setAttr(_U(v5y), vtx[9]);
+      solid.setAttr(_U(v6x), vtx[10]);
+      solid.setAttr(_U(v6y), vtx[11]);
+      solid.setAttr(_U(v7x), vtx[12]);
+      solid.setAttr(_U(v7y), vtx[13]);
+      solid.setAttr(_U(v8x), vtx[14]);
+      solid.setAttr(_U(v8y), vtx[15]);
+      solid.setAttr(_U(dz),  s->GetDz());
+      solid.setAttr(_U(lunit), "cm");
     }
-    else if (shape->IsA() == TGeoCompositeShape::Class()) {
-      char text[32];
+    else if (isa == TGeoCompositeShape::Class() ||
+	     isa == TGeoUnion::Class() ||
+	     isa == TGeoIntersection::Class() ||
+	     isa == TGeoSubtraction::Class() )  {
       const TGeoCompositeShape* s = (const TGeoCompositeShape*) shape;
       const TGeoBoolNode* boolean = s->GetBoolNode();
       TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
@@ -468,14 +480,44 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       TGeoMatrix* lm = boolean->GetLeftMatrix();
       TGeoShape* ls = boolean->GetLeftShape();
       TGeoShape* rs = boolean->GetRightShape();
-      xml_h left = handleSolid(ls->GetName(), ls);
-      xml_h right = handleSolid(rs->GetName(), rs);
+      xml_h left    = handleSolid(ls->GetName(), ls);
+      xml_h right   = handleSolid(rs->GetName(), rs);
       xml_h first(0), second(0);
       if (!left) {
         throw runtime_error("G4Converter: No left LCDD Solid present for composite shape:" + name);
       }
       if (!right) {
         throw runtime_error("G4Converter: No right LCDD Solid present for composite shape:" + name);
+      }
+
+      //specific case!
+      //Ellipsoid tag preparing
+      //if left == TGeoScaledShape AND right  == TGeoBBox
+      //   AND if TGeoScaledShape->GetShape == TGeoSphere
+      if (strcmp(ls->ClassName(), "TGeoScaledShape") == 0 &&
+	  strcmp(rs->ClassName(), "TGeoBBox") == 0) {
+	if (strcmp(((TGeoScaledShape *)ls)->GetShape()->ClassName(), "TGeoSphere") == 0) {
+	  if (oper == TGeoBoolNode::kGeoIntersection) {
+	    TGeoScaledShape* lls = (TGeoScaledShape *)ls;
+	    TGeoBBox* rrs = (TGeoBBox*)rs;
+	    solid = xml_elt_t(geo.doc,Unicode("ellipsoid"));
+	    solid.setAttr(_U(name), Unicode(shape_name));
+	    double sx = lls->GetScale()->GetScale()[0];
+	    double sy = lls->GetScale()->GetScale()[1];
+	    double radius = ((TGeoSphere *)lls->GetShape())->GetRmax();
+	    double dz = rrs->GetDZ();
+	    double zorig = rrs->GetOrigin()[2];
+	    double zcut2 = dz + zorig;
+	    double zcut1 = 2 * zorig - zcut2;
+	    solid.setAttr(Unicode("ax"),sx * radius);
+	    solid.setAttr(Unicode("by"),sy * radius);
+	    solid.setAttr(Unicode("cz"),radius);
+	    solid.setAttr(Unicode("zcut1"),zcut1);
+	    solid.setAttr(Unicode("zcut2"),zcut2);
+	    solid.setAttr(_U(lunit), "cm");
+	    return data().xmlSolids[shape] = solid;
+	  }
+	}
       }
 
       if ( oper == TGeoBoolNode::kGeoSubtraction )
@@ -486,24 +528,29 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         solid = xml_elt_t(geo.doc,_U(intersection));
 
       xml_h obj;
+      string lnam = left.attr<string>(_U(name));
+      string rnam = right.attr<string>(_U(name));
+
       geo.doc_solids.append(solid);
       solid.append(first = xml_elt_t(geo.doc, _U(first)));
-      solid.setAttr(_U(name), Unicode(name));
-      first.setAttr(_U(ref), ls->GetName());
+      solid.setAttr(_U(name), Unicode(shape_name));
+      first.setAttr(_U(ref),  lnam);
       const double *tr = lm->GetTranslation();
 
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
         first.append(obj = xml_elt_t(geo.doc, _U(firstposition)));
-        obj.setAttr(_U(x), tr[0] * CM_2_MM);
-        obj.setAttr(_U(y), tr[1] * CM_2_MM);
-        obj.setAttr(_U(z), tr[2] * CM_2_MM);
+	obj.setAttr(_U(name), name+"_"+lnam+"_pos");
+        obj.setAttr(_U(x), tr[0]);
+        obj.setAttr(_U(y), tr[1]);
+        obj.setAttr(_U(z), tr[2]);
+	obj.setAttr(_U(unit), "cm");
       }
       if (lm->IsRotation()) {
         TGeoMatrix& linv = lm->Inverse();
         XYZRotation rot = getXYZangles(linv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
           first.append(obj = xml_elt_t(geo.doc, _U(firstrotation)));
-          obj.setAttr(_U(name), name);
+	  obj.setAttr(_U(name), name+"_"+lnam+"_rot");
           obj.setAttr(_U(x), rot.X());
           obj.setAttr(_U(y), rot.Y());
           obj.setAttr(_U(z), rot.Z());
@@ -512,19 +559,16 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       }
       tr = rm->GetTranslation();
       solid.append(second = xml_elt_t(geo.doc, _U(second)));
-      second.setAttr(_U(ref), rs->GetName());
-      ::snprintf(text, sizeof(text), "_%p_", (void*)rm);
-      string rnam = rs->GetName();
-      rnam += text;
+      second.setAttr(_U(ref), rnam);
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
-        xml_ref_t pos = handlePosition(rnam + "pos", rm);
+        xml_ref_t pos = handlePosition(rnam+"_pos", rm);
         solid.setRef(_U(positionref), pos.name());
       }
       if (rm->IsRotation()) {
         TGeoMatrix& rinv = rm->Inverse();
         XYZRotation rot = getXYZangles(rinv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
-          xml_ref_t xml_rot = handleRotation(rnam + "rot", &rinv);
+          xml_ref_t xml_rot = handleRotation(rnam+"_rot", &rinv);
           solid.setRef(_U(rotationref), xml_rot.name());
         }
       }
@@ -544,13 +588,14 @@ xml_h LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix* t
   if (!pos) {
     const double* tr = trafo->GetTranslation();
     if (tr[0] != 0.0 || tr[1] != 0.0 || tr[2] != 0.0) {
-      geo.checkPosition(name, trafo);
+      string gen_name = genName(name,trafo);
+      geo.checkPosition(gen_name, trafo);
       geo.doc_define.append(pos = xml_elt_t(geo.doc, _U(position)));
-      pos.setAttr(_U(name), name);
-      pos.setAttr(_U(x), tr[0] * CM_2_MM);
-      pos.setAttr(_U(y), tr[1] * CM_2_MM);
-      pos.setAttr(_U(z), tr[2] * CM_2_MM);
-      pos.setAttr(_U(unit), "mm");
+      pos.setAttr(_U(name), gen_name);
+      pos.setAttr(_U(x), tr[0]);
+      pos.setAttr(_U(y), tr[1]);
+      pos.setAttr(_U(z), tr[2]);
+      pos.setAttr(_U(unit), "cm");
     }
     else if (geo.identity_pos) {
       pos = geo.identity_pos;
@@ -561,7 +606,7 @@ xml_h LCDDConverter::handlePosition(const std::string& name, const TGeoMatrix* t
       geo.identity_pos.setAttr(_U(x), 0);
       geo.identity_pos.setAttr(_U(y), 0);
       geo.identity_pos.setAttr(_U(z), 0);
-      geo.identity_pos.setAttr(_U(unit), "mm");
+      geo.identity_pos.setAttr(_U(unit), "cm");
       pos = geo.identity_pos;
       geo.checkPosition("identity_pos", 0);
     }
@@ -577,9 +622,10 @@ xml_h LCDDConverter::handleRotation(const std::string& name, const TGeoMatrix* t
   if (!rot) {
     XYZRotation r = getXYZangles(trafo->GetRotationMatrix());
     if (!(r.X() == 0.0 && r.Y() == 0.0 && r.Z() == 0.0)) {
-      geo.checkRotation(name, trafo);
+      string gen_name = genName(name,trafo);
+      geo.checkRotation(gen_name, trafo);
       geo.doc_define.append(rot = xml_elt_t(geo.doc, _U(rotation)));
-      rot.setAttr(_U(name), name);
+      rot.setAttr(_U(name), gen_name);
       rot.setAttr(_U(x), r.X());
       rot.setAttr(_U(y), r.Y());
       rot.setAttr(_U(z), r.Z());
@@ -610,9 +656,9 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
   if (!vol) {
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
-    string n = v->GetName()+_toString(v,"_%p");
+    string  n = genName(v->GetName(),v);
     TGeoMedium* m = v->GetMedium();
-    TGeoShape* s = v->GetShape();
+    TGeoShape*  s = v->GetShape();
     xml_ref_t sol = handleSolid(s->GetName(), s);
 
     geo.checkVolume(n, volume);
@@ -629,7 +675,7 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
       vol = xml_elt_t(geo.doc, _U(volume));
       vol.setAttr(_U(name), n);
       if (m) {
-        string mat_name = m->GetName();
+        string    mat_name = m->GetName();
         xml_ref_t med = handleMaterial(mat_name, Material(m));
         vol.setRef(_U(materialref), med.name());
       }
@@ -750,13 +796,10 @@ xml_h LCDDConverter::handlePlacement(const string& name,PlacedVolume node) const
     }
     place.setRef(_U(volumeref), vol.name());
     if (m) {
-      char text[32];
-      ::snprintf(text, sizeof(text), "_%p_pos", (void*)node.ptr());
-      xml_ref_t pos = handlePosition(name + text, m);
-      ::snprintf(text, sizeof(text), "_%p_rot", (void*)node.ptr());
+      xml_ref_t pos = handlePosition(name+"_pos", m);
       place.setRef(_U(positionref), pos.name());
       if ( m->IsRotation() )  {
-        xml_ref_t rot = handleRotation(name + text, m);
+        xml_ref_t rot = handleRotation(name+"_rot", m);
         place.setRef(_U(rotationref), rot.name());
       }
     }
@@ -1084,13 +1127,14 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   // geo.doc_root.setAttr(Unicode("xmlns:gdml_simple_extension"),"http://www.example.org");
   // geo.doc_root.setAttr(Unicode("xs:noNamespaceSchemaLocation"),
   //     "http://service-spi.web.cern.ch/service-spi/app/releases/GDML/schema/gdml.xsd");
+  Volume world_vol = lcdd.worldVolume();
   geo.doc_root.append(geo.doc_define = xml_elt_t(geo.doc, _U(define)));
   geo.doc_root.append(geo.doc_materials = xml_elt_t(geo.doc, _U(materials)));
   geo.doc_root.append(geo.doc_solids = xml_elt_t(geo.doc, _U(solids)));
   geo.doc_root.append(geo.doc_structure = xml_elt_t(geo.doc, _U(structure)));
   geo.doc_root.append(geo.doc_setup = xml_elt_t(geo.doc, _U(setup)));
-  geo.doc_setup.setRef(_U(world), lcdd.worldVolume().name());
-  geo.doc_setup.setAttr(_U(name), Unicode("Default"));
+  geo.doc_setup.setRef(_U(world), genName(world_vol.name(),world_vol.ptr()));
+  geo.doc_setup.setAttr(_U(name), Unicode("default"));
   geo.doc_setup.setAttr(_U(version), Unicode("1.0"));
 
   // Ensure that all required materials are present in the LCDD material table
@@ -1175,6 +1219,7 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n  ";
   XML::DocumentHandler docH;
   xml_elt_t elt(0);
+  Volume world_vol = lcdd.worldVolume();
   geo.doc = docH.create("lcdd", comment);
   geo.doc_root = geo.doc.root();
   geo.doc_root.setAttr(Unicode("xmlns:lcdd"), "http://www.lcsim.org/schemas/lcdd/1.0");
@@ -1195,8 +1240,8 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   geo.doc_gdml.append(geo.doc_solids = xml_elt_t(geo.doc, _U(solids)));
   geo.doc_gdml.append(geo.doc_structure = xml_elt_t(geo.doc, _U(structure)));
   geo.doc_gdml.append(geo.doc_setup = xml_elt_t(geo.doc, _U(setup)));
-  geo.doc_setup.setRef(_U(world), lcdd.worldVolume().name());
-  geo.doc_setup.setAttr(_U(name), Unicode("Default"));
+  geo.doc_setup.setRef(_U(world), genName(world_vol.name(),world_vol.ptr()));
+  geo.doc_setup.setAttr(_U(name), Unicode("default"));
   geo.doc_setup.setAttr(_U(version), Unicode("1.0"));
 
   // Ensure that all required materials are present in the LCDD material table

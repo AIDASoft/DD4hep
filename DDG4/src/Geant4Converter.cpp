@@ -41,6 +41,7 @@
 #include "TGeoParaboloid.h"
 #include "TGeoCompositeShape.h"
 #include "TGeoShapeAssembly.h"
+#include "TGeoScaledShape.h"
 #include "TGeoManager.h"
 #include "TClass.h"
 #include "TMath.h"
@@ -437,15 +438,15 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       }
       solid = new G4Polycone(name, phi_start, phi_total, s->GetNz(), &z[0], &rmin[0], &rmax[0]);
     }
+    else if (shape->IsA() == TGeoCone::Class()) {
+      const TGeoCone* s = (const TGeoCone*) shape;
+      solid = new G4Cons(name, s->GetRmin1() * CM_2_MM, s->GetRmax1() * CM_2_MM, s->GetRmin2() * CM_2_MM,
+                         s->GetRmax2() * CM_2_MM, s->GetDz() * CM_2_MM, 0.0, 2.*M_PI);
+    }
     else if (shape->IsA() == TGeoConeSeg::Class()) {
       const TGeoConeSeg* s = (const TGeoConeSeg*) shape;
       solid = new G4Cons(name, s->GetRmin1() * CM_2_MM, s->GetRmax1() * CM_2_MM, s->GetRmin2() * CM_2_MM,
                          s->GetRmax2() * CM_2_MM, s->GetDz() * CM_2_MM, s->GetPhi1() * DEGREE_2_RAD, (s->GetPhi2()-s->GetPhi1()) * DEGREE_2_RAD);
-    }
-    else if (shape->IsA() == TGeoHype::Class()) {
-      const TGeoHype* s = (const TGeoHype*) shape;
-      solid = new G4Hype(name, s->GetRmin() * CM_2_MM, s->GetRmax() * CM_2_MM, s->GetStIn() * DEGREE_2_RAD, 
-			 s->GetStOut() * DEGREE_2_RAD, s->GetDz() * CM_2_MM);
     }
     else if (shape->IsA() == TGeoParaboloid::Class()) {
       const TGeoParaboloid* s = (const TGeoParaboloid*) shape;
@@ -486,6 +487,37 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       }
       if (!right) {
         throw runtime_error("G4Converter: No right Geant4 Solid present for composite shape:" + name);
+      }
+
+      //specific case!
+      //Ellipsoid tag preparing
+      //if left == TGeoScaledShape AND right  == TGeoBBox
+      //   AND if TGeoScaledShape->GetShape == TGeoSphere
+      TGeoShape* ls = boolean->GetLeftShape();
+      TGeoShape* rs = boolean->GetRightShape();
+      if (strcmp(ls->ClassName(), "TGeoScaledShape") == 0 &&
+	  strcmp(rs->ClassName(), "TGeoBBox") == 0) {
+	if (strcmp(((TGeoScaledShape *)ls)->GetShape()->ClassName(), "TGeoSphere") == 0) {
+	  if (oper == TGeoBoolNode::kGeoIntersection) {
+	    TGeoScaledShape* lls = (TGeoScaledShape *)ls;
+	    TGeoBBox* rrs = (TGeoBBox*)rs;
+	    double sx = lls->GetScale()->GetScale()[0];
+	    double sy = lls->GetScale()->GetScale()[1];
+	    double radius = ((TGeoSphere *)lls->GetShape())->GetRmax();
+	    double dz = rrs->GetDZ();
+	    double zorig = rrs->GetOrigin()[2];
+	    double zcut2 = dz + zorig;
+	    double zcut1 = 2 * zorig - zcut2;
+	    solid = new G4Ellipsoid(name,
+				    sx * radius * CM_2_MM,
+				    sy * radius * CM_2_MM,
+				    radius * CM_2_MM,
+				    zcut1 * CM_2_MM,
+				    zcut2 * CM_2_MM);
+	    data().g4Solids[shape] = solid;
+	    return solid;
+	  }
+	}
       }
 
       if (m->IsRotation()) {
