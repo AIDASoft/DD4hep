@@ -50,16 +50,16 @@ ViewMenu::~ViewMenu()  {
 /// Add the menu to the menu bar
 void ViewMenu::Build(TGMenuBar* bar, int hints)    {
   pair<string,string>* p = 0;
-  PopupMenu* menu = this;
-  menu->AddEntry("3&D View", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__View3D","3D"));
-  menu->AddEntry("Rho-&Z Projection", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__RhoZProjection","Rho-Z"));
-  menu->AddEntry("Rho-&Phi Projection",this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__RhoPhiProjection","Rho-Phi"));
+  PopupMenu* view_menu = this;
+  view_menu->AddEntry("3&D View", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__View3D","3D"));
+  view_menu->AddEntry("Rho-&Z Projection", this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__RhoZProjection","Rho-Z"));
+  view_menu->AddEntry("Rho-&Phi Projection",this, &ViewMenu::CreateView, p=new pair<string,string>("DD4hep__RhoPhiProjection","Rho-Phi"));
   const Display::ViewConfigurations& vc = m_display->viewConfigurations();
   for(Display::ViewConfigurations::const_iterator i=vc.begin(); i!=vc.end(); ++i)  {
     const Display::ViewConfig& v = (*i).second;
-    menu->AddEntry(v.name.c_str(), this, &ViewMenu::CreateView,p=new pair<string,string>("DD4hep__"+v.type,v.name));
+    view_menu->AddEntry(v.name.c_str(), this, &ViewMenu::CreateView,p=new pair<string,string>("DD4hep__"+v.type,v.name));
   }
-  bar->AddPopup(m_title.c_str(),*menu, new TGLayoutHints(hints, 0, 4, 0, 0));
+  bar->AddPopup(m_title.c_str(),*view_menu, new TGLayoutHints(hints, 0, 4, 0, 0));
 }
 
 /// Create a new generic view

@@ -31,7 +31,7 @@ static void _build(Display* display, View* v, TEveWindowSlot* slot)  {
 }
 
 /// Initializing constructor
-MultiView::MultiView(Display* eve, const string& name) : View(eve, name)
+MultiView::MultiView(Display* eve, const string& nam) : View(eve, nam)
 {
 }
 

@@ -141,7 +141,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       
       // Place the same layer around the beam axis phiBins times
       Transform3D tr(RotationZYX(M_PI*0.5,M_PI*0.5,0),Translation3D(r,0,layer_pos_z));
-      PlacedVolume pv = stave_vol.placeVolume(layer_vol,tr);
+      pv = stave_vol.placeVolume(layer_vol,tr);
       pv.addPhysVolID("layer",layer_num);
       r += dr;
       cout << "+++ R=" << r << endl;
@@ -156,7 +156,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     //double pos_x = mod_x_off * cos(phi) - mod_y_off * sin(phi);
     //double pos_y = mod_x_off * sin(phi) + mod_y_off * cos(phi);
     Transform3D tr(RotationZYX(phi,0,0),Translation3D(0,0,0));
-    PlacedVolume pv = calo_vol.placeVolume(stave_vol,tr);
+    pv = calo_vol.placeVolume(stave_vol,tr);
     pv.addPhysVolID("stave",i+1);
   }
 

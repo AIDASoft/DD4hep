@@ -80,8 +80,8 @@ GeoHandler& GeoHandler::collect(DetElement element, GeometryInfo& info) {
   m_data->clear();
   i_collect(element.placement().ptr(), 0, Region(), LimitSet());
   for (Data::const_reverse_iterator i = m_data->rbegin(); i != m_data->rend(); ++i) {
-    const Data::mapped_type& v = (*i).second;
-    for (Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
+    const Data::mapped_type& mapped = (*i).second;
+    for (Data::mapped_type::const_iterator j = mapped.begin(); j != mapped.end(); ++j) {
       const TGeoNode* n = *j;
       TGeoVolume* v = n->GetVolume();
       if (v) {

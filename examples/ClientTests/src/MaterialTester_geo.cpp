@@ -17,8 +17,8 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector /* sens */)  {
-  xml_det_t    x_det = e;
+static Ref_t create_element(LCDD& lcdd, xml_h xml_det, SensitiveDetector /* sens */)  {
+  xml_det_t    x_det = xml_det;
   string       det_name = x_det.nameStr();
   Assembly     assembly(det_name+"_assembly");
   DetElement   det(det_name,x_det.typeStr(), x_det.id());

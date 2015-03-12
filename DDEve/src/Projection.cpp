@@ -23,8 +23,8 @@ using namespace std;
 using namespace DD4hep;
 
 /// Initializing constructor
-Projection::Projection(Display* eve, const string& name)
-  : View(eve, name), m_projMgr(0), m_axis(0)
+Projection::Projection(Display* eve, const string& nam)
+  : View(eve, nam), m_projMgr(0), m_axis(0)
 {
 }
 

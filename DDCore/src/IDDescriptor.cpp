@@ -98,10 +98,10 @@ size_t IDDescriptor::fieldID(const string& field_name) const {
 }
 
 /// Encode a set of volume identifiers (corresponding to this description of course!) to a volumeID.
-VolumeID IDDescriptor::encode(const std::vector<VolID>& ids) const {
+VolumeID IDDescriptor::encode(const std::vector<VolID>& id_vector) const {
   typedef std::vector<VolID> VolIds;
   VolumeID id = 0;
-  for (VolIds::const_iterator i = ids.begin(); i != ids.end(); ++i) {
+  for (VolIds::const_iterator i = id_vector.begin(); i != id_vector.end(); ++i) {
     Field f = field((*i).first);
     VolumeID vid = (*i).second;
     vid = vid << f->offset();
@@ -111,12 +111,12 @@ VolumeID IDDescriptor::encode(const std::vector<VolID>& ids) const {
 }
 
 /// Decode volume IDs and return filled descriptor with all fields
-void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& fields) {
-  fields.clear();
+void IDDescriptor::decodeFields(VolumeID vid, VolIDFields& flds) {
+  flds.clear();
   if (isValid()) {
     const vector<BitFieldValue*>& v = ptr()->fields();
     for (vector<BitFieldValue*>::const_iterator i = v.begin(); i != v.end(); ++i)
-      fields.push_back(VolIDField(*i, (*i)->value(vid)));
+      flds.push_back(VolIDField(*i, (*i)->value(vid)));
     return;
   }
   throw runtime_error("DD4hep: Attempt to access an invalid IDDescriptor object.");

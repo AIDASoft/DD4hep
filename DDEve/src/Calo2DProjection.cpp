@@ -26,8 +26,8 @@ ClassImp(Calo2DProjection)
 DECLARE_VIEW_FACTORY(Calo2DProjection)
 
 /// Initializing constructor
-Calo2DProjection::Calo2DProjection(Display* eve, const std::string& name)
-: Projection(eve, name)
+Calo2DProjection::Calo2DProjection(Display* eve, const std::string& nam)
+: Projection(eve, nam)
 {
   InstanceCount::increment(this);
 }

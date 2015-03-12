@@ -105,9 +105,9 @@ void LayeringCnv::fromCompact(Layering& layering) const {
 }
 
 double Layering::singleLayerThickness(XML::Element e) const {
-  Component layer = e;
+  Component lay = e;
   double thickness = 0e0;
-  for (Collection_t s(layer, _U(slice)); s; ++s) {
+  for (Collection_t s(lay, _U(slice)); s; ++s) {
     Component slice = s;
     thickness += slice.thickness();
   }

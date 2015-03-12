@@ -32,8 +32,8 @@ static inline typename T::const_iterator find(const T& c,const string& s)  {
 }
 
 /// Initializing constructor
-View::View(Display* eve, const string& name)
-  : m_eve(eve), m_view(0), m_geoScene(0), m_eveScene(0), m_global(0), m_name(name), m_showGlobal(false)
+View::View(Display* eve, const string& nam)
+  : m_eve(eve), m_view(0), m_geoScene(0), m_eveScene(0), m_global(0), m_name(nam), m_showGlobal(false)
 {
   m_config = m_eve->GetViewConfiguration(m_name);
   InstanceCount::increment(this);
@@ -287,11 +287,11 @@ void View::ImportEvent(TEveElement* el)  {
 }
 
 /// Access/Create a topic by name
-TEveElementList& View::GetGeoTopic(const string& name)    {
-  Topics::iterator i=m_geoTopics.find(name);
+TEveElementList& View::GetGeoTopic(const string& nam)    {
+  Topics::iterator i=m_geoTopics.find(nam);
   if ( i == m_geoTopics.end() )  {
-    TEveElementList* topic = new ElementList(name.c_str(), name.c_str(), true, true);
-    m_geoTopics[name] = topic;
+    TEveElementList* topic = new ElementList(nam.c_str(), nam.c_str(), true, true);
+    m_geoTopics[nam] = topic;
     return *topic;
   }
   return *((*i).second);
@@ -308,9 +308,9 @@ View& View::CreateScenes()  {
 /// Create the event scene
 View& View::CreateEventScene()   {
   if ( 0 == m_eveScene ) {
-    string name = m_name+" - Event Data";
+    string nam  = m_name+" - Event Data";
     string tool = m_name+" - Scene holding projected event-data for the view.";
-    m_eveScene = m_eve->manager().SpawnNewScene(name.c_str(), tool.c_str());
+    m_eveScene = m_eve->manager().SpawnNewScene(nam.c_str(), tool.c_str());
   }
   return *this;
 }
@@ -318,9 +318,9 @@ View& View::CreateEventScene()   {
 /// Create the geometry scene
 View& View::CreateGeoScene()  {
   if ( 0 == m_geoScene )   {
-    string name = m_name+" - Geometry";
+    string nam  = m_name+" - Geometry";
     string tool = m_name+" - Scene holding projected geometry for the view.";
-    m_geoScene = m_eve->manager().SpawnNewScene(name.c_str(), tool.c_str());
+    m_geoScene = m_eve->manager().SpawnNewScene(nam.c_str(), tool.c_str());
   }
   return *this;
 }

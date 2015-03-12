@@ -90,7 +90,7 @@ DetElementObject::~DetElementObject() {
 }
 
 /// Deep object copy to replicate DetElement trees e.g. for reflection
-DetElementObject* DetElementObject::clone(int new_id, int flag) const {
+DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   DetElementObject* obj = new DetElementObject();
   obj->id = new_id;
   obj->flag = 0;
@@ -98,7 +98,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flag) const {
   obj->alignment = Alignment();
   obj->conditions = Conditions();
   obj->parent = DetElement();
-  if ( (flag & DetElement::COPY_PLACEMENT) == DetElement::COPY_PLACEMENT )  {
+  if ( (flg & DetElement::COPY_PLACEMENT) == DetElement::COPY_PLACEMENT )  {
     obj->placement  = placement;
     obj->idealPlace = idealPlace;
     obj->placementPath = placementPath;
@@ -228,9 +228,9 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
 }
 
 /// Remove callback from object
-void DetElementObject::removeAtUpdate(unsigned int type, void* pointer)   {
+void DetElementObject::removeAtUpdate(unsigned int typ, void* pointer)   {
   for(UpdateCallbacks::iterator i=updateCalls.begin(); i != updateCalls.end(); ++i)  {
-    if ( (type&((*i).second)) == type && (*i).first.par == pointer )  {
+    if ( (typ&((*i).second)) == typ && (*i).first.par == pointer )  {
       updateCalls.erase(i);
       return;
     }

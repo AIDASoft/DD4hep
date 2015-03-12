@@ -79,8 +79,8 @@ int main(int argc,char** argv)  {
   LCDD& lcdd = dd4hep_instance();
   // Load compact files
   for(size_t i=0; i<geo_files.size(); ++i)  {
-    const char* argv[] = {geo_files[i], 0};
-    run_plugin(lcdd,"DD4hepCompactLoader",1,(char**)argv);
+    const char* plugin_argv[] = {geo_files[i], 0};
+    run_plugin(lcdd,"DD4hepCompactLoader",1,(char**)plugin_argv);
   }
   // Create volume manager and populate it required
   if ( volmgr  ) run_plugin(lcdd,"DD4hepVolumeManager",0,0);

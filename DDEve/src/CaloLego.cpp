@@ -31,8 +31,8 @@ ClassImp(CaloLego)
 DECLARE_VIEW_FACTORY(CaloLego)
 
 /// Initializing constructor
-CaloLego::CaloLego(Display* eve, const std::string& name)
-: View(eve, name)
+CaloLego::CaloLego(Display* eve, const std::string& nam)
+: View(eve, nam)
 {
   InstanceCount::increment(this);
 }

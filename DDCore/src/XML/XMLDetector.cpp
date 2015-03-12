@@ -28,16 +28,16 @@ bool Component::isSensitive() const {
 
 DD4hep::NamedObject* Component::createShape() const {
   using namespace DD4hep::Geometry;
-  Dimension child(m_element);
-  string type = child.typeStr();
-  string fac  = type + "__shape_constructor";
+  Dimension child_dim(m_element);
+  string typ = child_dim.typeStr();
+  string fac = typ + "__shape_constructor";
   Handle_t solid_elt = m_element;
   LCDD* lcdd = 0;
   NamedObject* solid = PluginService::Create<NamedObject*>(fac, lcdd, &solid_elt);
   if ( !solid )  {
     PluginDebug dbg;
-    PluginService::Create<NamedObject*>(type, lcdd, &solid_elt);
-    throw runtime_error("Failed to create solid of type " + type + ". " + dbg.missingFactory(type));
+    PluginService::Create<NamedObject*>(typ, lcdd, &solid_elt);
+    throw runtime_error("Failed to create solid of type " + typ + ". " + dbg.missingFactory(typ));
   }
   return solid;
 }
@@ -68,8 +68,8 @@ void DetElement::check(bool condition, const string& msg) const {
 
 bool DetElement::isTracker() const {
   if (m_element) {
-    string type = attr < string > (_U(type));
-    if (type.find("Tracker") != string::npos && hasAttr(_U(readout))) {
+    string typ = attr < string > (_U(type));
+    if (typ.find("Tracker") != string::npos && hasAttr(_U(readout))) {
       return true;
     }
   }
@@ -78,8 +78,8 @@ bool DetElement::isTracker() const {
 
 bool DetElement::isCalorimeter() const {
   if (m_element) {
-    string type = attr < string > (_U(type));
-    if (type.find("Calorimeter") != string::npos && hasAttr(_U(readout))) {
+    string typ = attr < string > (_U(type));
+    if (typ.find("Calorimeter") != string::npos && hasAttr(_U(readout))) {
       return true;
     }
   }

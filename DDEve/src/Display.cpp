@@ -372,8 +372,8 @@ void Display::OnNewEvent(EventHandler* handler )   {
 
   printout(ERROR,"EventHandler","+++ Display new event.....");
   manager().GetEventScene()->DestroyElements();
-  for(Types::const_iterator i=types.begin(); i!=types.end(); ++i)  {
-    const Collections& colls = (*i).second;
+  for(Types::const_iterator ityp=types.begin(); ityp!=types.end(); ++ityp)  {
+    const Collections& colls = (*ityp).second;
     for(Collections::const_iterator j=colls.begin(); j!=colls.end(); ++j)   {
       size_t len = (*j).second;
       const char* nam = (*j).first;

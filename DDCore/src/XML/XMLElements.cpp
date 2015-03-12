@@ -508,8 +508,8 @@ NodeList::NodeList(const NodeList& copy)
 }
 
 /// Initializing constructor
-NodeList::NodeList(XmlElement* node, const XmlChar* tag)
-  : m_tag(tag), m_node(node), m_ptr(0)
+NodeList::NodeList(XmlElement* node, const XmlChar* tag_value)
+  : m_tag(tag_value), m_node(node), m_ptr(0)
 {
   reset();
 }
@@ -605,13 +605,13 @@ Handle_t Handle_t::parent() const {
 }
 
 /// Access attribute pointer by the attribute's unicode name (no exception thrown if not present)
-Attribute Handle_t::attr_nothrow(const XmlChar* tag) const {
-  return attribute_node(m_node, tag);
+Attribute Handle_t::attr_nothrow(const XmlChar* tag_value) const {
+  return attribute_node(m_node, tag_value);
 }
 
 /// Check for the existence of a named attribute
-bool Handle_t::hasAttr(const XmlChar* tag) const {
-  return m_node && 0 != _E(m_node)->getAttributeNode(tag);
+bool Handle_t::hasAttr(const XmlChar* tag_value) const {
+  return m_node && 0 != _E(m_node)->getAttributeNode(tag_value);
 }
 
 /// Retrieve a collection of all attributes of this DOM element
@@ -659,8 +659,8 @@ Handle_t Handle_t::child(const XmlChar* t, bool throw_exception) const {
   throw runtime_error(msg);
 }
 
-NodeList Handle_t::children(const XmlChar* tag) const {
-  return NodeList(m_node, tag);
+NodeList Handle_t::children(const XmlChar* tag_value) const {
+  return NodeList(m_node, tag_value);
 }
 
 /// Append a DOM element to the current node
@@ -689,51 +689,51 @@ Handle_t Handle_t::remove(Handle_t node) const {
 }
 
 /// Remove children with a given tag name from the DOM node
-void Handle_t::removeChildren(const XmlChar* tag) const {
+void Handle_t::removeChildren(const XmlChar* tag_value) const {
 #ifdef DD4HEP_USE_TINYXML
-  for(TiXmlNode* n=_E(m_node)->FirstChildElement(tag);n;n=_E(m_node)->FirstChildElement(tag))
+  for(TiXmlNode* n=_E(m_node)->FirstChildElement(tag_value);n;n=_E(m_node)->FirstChildElement(tag_value))
     n->RemoveChild(n);
 #else
   xercesc::DOMElement* e = _E(m_node);
-  xercesc::DOMNodeList* l = e->getElementsByTagName(tag);
+  xercesc::DOMNodeList* l = e->getElementsByTagName(tag_value);
   for (XmlSize_t i = 0, n = l->getLength(); i < n; ++i)
     e->removeChild(l->item(i));
 #endif
 }
 
-bool Handle_t::hasChild(const XmlChar* tag) const {
-  return node_first(m_node, tag) != 0;
+bool Handle_t::hasChild(const XmlChar* tag_value) const {
+  return node_first(m_node, tag_value) != 0;
 }
 
 /// Set the element's value
-void Handle_t::setValue(const XmlChar* text) const {
-  _N(m_node)->setNodeValue(text);
+void Handle_t::setValue(const XmlChar* text_value) const {
+  _N(m_node)->setNodeValue(text_value);
 }
 
 /// Set the element's value
-void Handle_t::setValue(const string& text) const {
+void Handle_t::setValue(const string& text_value) const {
 #ifdef DD4HEP_USE_TINYXML
-  _N(m_node)->setNodeValue(text.c_str());
+  _N(m_node)->setNodeValue(text_value.c_str());
 #else
-  _N(m_node)->setNodeValue(Strng_t(text));
+  _N(m_node)->setNodeValue(Strng_t(text_value));
 #endif
 }
 
 /// Set the element's text
-void Handle_t::setText(const XmlChar* text) const {
+void Handle_t::setText(const XmlChar* text_value) const {
 #ifdef DD4HEP_USE_TINYXML
-  _N(m_node)->LinkEndChild(new TiXmlText(text));
+  _N(m_node)->LinkEndChild(new TiXmlText(text_value));
 #else
-  _N(m_node)->setTextContent(text);
+  _N(m_node)->setTextContent(text_value);
 #endif
 }
 
 /// Set the element's text
-void Handle_t::setText(const string& text) const {
+void Handle_t::setText(const string& text_value) const {
 #ifdef DD4HEP_USE_TINYXML
-  _N(m_node)->LinkEndChild(new TiXmlText(text.c_str()));
+  _N(m_node)->LinkEndChild(new TiXmlText(text_value.c_str()));
 #else
-  _N(m_node)->setTextContent(Strng_t(text));
+  _N(m_node)->setTextContent(Strng_t(text_value));
 #endif
 }
 
@@ -796,26 +796,26 @@ const XmlChar* Handle_t::attr_name(const Attribute a) const {
 }
 
 /// Access attribute value by the attribute's unicode name (throws exception if not present)
-const XmlChar* Handle_t::attr_value(const XmlChar* attr) const {
-  return attribute_value(attr_ptr(attr));
+const XmlChar* Handle_t::attr_value(const XmlChar* attr_tag) const {
+  return attribute_value(attr_ptr(attr_tag));
 }
 
 /// Access attribute value by the attribute  (throws exception if not present)
-const XmlChar* Handle_t::attr_value(const Attribute attr) const {
-  return attribute_value(attr);
+const XmlChar* Handle_t::attr_value(const Attribute attr_val) const {
+  return attribute_value(attr_val);
 }
 
 /// Access attribute value by the attribute's unicode name (no exception thrown if not present)
-const XmlChar* Handle_t::attr_value_nothrow(const XmlChar* attr) const {
-  Attribute a = attr_nothrow(attr);
+const XmlChar* Handle_t::attr_value_nothrow(const XmlChar* attr_tag) const {
+  Attribute a = attr_nothrow(attr_tag);
   return a ? attribute_value(a) : 0;
 }
 
 /// Generic attribute setter with integer value
-Attribute Handle_t::setAttr(const XmlChar* name, int val) const {
+Attribute Handle_t::setAttr(const XmlChar* nam, int val) const {
   char txt[32];
   ::snprintf(txt, sizeof(txt), "%d", val);
-  return setAttr(name, Strng_t(txt));
+  return setAttr(nam, Strng_t(txt));
 }
 
 /// Generic attribute setter with boolen value
@@ -851,40 +851,40 @@ Attribute Handle_t::setAttr(const XmlChar* name, const char* v) const {
 #endif
 
 /// Generic attribute setter with XmlAttr value
-Attribute Handle_t::setAttr(const XmlChar* name, const Attribute v) const {
-  return v ? setAttr(name, attribute_value(v)) : 0;
+Attribute Handle_t::setAttr(const XmlChar* nam, const Attribute v) const {
+  return v ? setAttr(nam, attribute_value(v)) : 0;
 }
 
 /// Generic attribute setter with unicode value
-Attribute Handle_t::setAttr(const XmlChar* name, const XmlChar* value) const {
+Attribute Handle_t::setAttr(const XmlChar* nam, const XmlChar* val) const {
 #ifdef DD4HEP_USE_TINYXML
   TiXmlElement* e = Xml(m_node).e;
-  e->SetAttribute(name,value);
-  return Attribute(e->AttributeNode(name));
+  e->SetAttribute(nam,val);
+  return Attribute(e->AttributeNode(nam));
 #else
   xercesc::DOMElement* e = _E(m_node);
-  xercesc::DOMAttr* a = e->getAttributeNode(name);
+  xercesc::DOMAttr* a = e->getAttributeNode(nam);
   if (!a) {
-    a = e->getOwnerDocument()->createAttribute(name);
+    a = e->getOwnerDocument()->createAttribute(nam);
     e->setAttributeNode(a);
   }
-  a->setValue(value);
+  a->setValue(val);
   return Attribute(a);
 #endif
 }
 
 /// Add reference child as a new child node. The obj must have the "name" attribute!
-Handle_t Handle_t::setRef(const XmlChar* tag, const XmlChar* ref_name) {
+Handle_t Handle_t::setRef(const XmlChar* tag_value, const XmlChar* ref_name) {
   Element me(*this);
-  Element ref(me.document(), tag);
+  Element ref(me.document(), tag_value);
   ref.setAttr(Unicode_ref, ref_name);
   me.append(ref);
   return ref;
 }
 
 /// Add reference child as a new child node. The obj must have the "name" attribute!
-Handle_t Handle_t::setRef(const XmlChar* tag, const string& ref_name) {
-  return setRef(tag, Strng_t(ref_name).ptr());
+Handle_t Handle_t::setRef(const XmlChar* tag_value, const string& ref_name) {
+  return setRef(tag_value, Strng_t(ref_name).ptr());
 }
 
 /// Checksum (sub-)tree of a xml document/tree
@@ -968,11 +968,11 @@ unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
 }
 
 /// Create DOM element
-Handle_t Document::createElt(const XmlChar* tag) const {
+Handle_t Document::createElt(const XmlChar* tag_value) const {
 #ifdef DD4HEP_USE_TINYXML
-  return _XE(new TiXmlElement(tag));
+  return _XE(new TiXmlElement(tag_value));
 #else
-  return _XE(_D(m_doc)->createElement(tag));
+  return _XE(_D(m_doc)->createElement(tag_value));
 #endif
 }
 
@@ -997,8 +997,8 @@ DocumentHolder::~DocumentHolder() {
 }
 
 /// Constructor from DOM document entity
-Element::Element(const Document& document, const XmlChar* type)
-  : m_element(Xml(document.createElt(type)).xe) {
+Element::Element(const Document& doc, const XmlChar* type)
+  : m_element(Xml(doc.createElt(type)).xe) {
 }
 
 /// Access the hosting document handle of this DOM element
@@ -1019,23 +1019,23 @@ Attribute Element::getAttr(const XmlChar* name) const {
 }
 
 /// Set the reference attribute to the node (adds attribute ref="ref-name")
-Attribute Element::setRef(const XmlChar* tag, const XmlChar* ref_name) const {
-  return setChild(tag).setAttr(Unicode_ref, ref_name);
+Attribute Element::setRef(const XmlChar* tag_value, const XmlChar* ref_name) const {
+  return setChild(tag_value).setAttr(Unicode_ref, ref_name);
 }
 
 /// Set the reference attribute to the node (adds attribute ref="ref-name")
-Attribute Element::setRef(const XmlChar* tag, const string& ref_name) const {
-  return setRef(tag, Strng_t(ref_name).ptr());
+Attribute Element::setRef(const XmlChar* tag_value, const string& ref_name) const {
+  return setRef(tag_value, Strng_t(ref_name).ptr());
 }
 
 /// Access the value of the reference attribute of the node (attribute ref="ref-name")
-const XmlChar* Element::getRef(const XmlChar* tag) const {
-  return child(tag).attr < cpXmlChar > (Unicode_ref);
+const XmlChar* Element::getRef(const XmlChar* tag_value) const {
+  return child(tag_value).attr < cpXmlChar > (Unicode_ref);
 }
 
 /// Add a new child to the DOM node
-Handle_t Element::addChild(const XmlChar* tag) const {
-  Handle_t e = document().createElt(tag);
+Handle_t Element::addChild(const XmlChar* tag_value) const {
+  Handle_t e = document().createElt(tag_value);
   m_element.append(e);
   return e;
 }
@@ -1047,18 +1047,18 @@ Handle_t Element::setChild(const XmlChar* t) const {
 }
 
 /// Add comment node to the element
-void Element::addComment(const char* text) const {
+void Element::addComment(const char* text_value) const {
 #ifdef DD4HEP_USE_TINYXML
-  _N(m_element)->appendChild(new TiXmlComment(text));
+  _N(m_element)->appendChild(new TiXmlComment(text_value));
 #else
-  _N(m_element)->appendChild(_D(document().m_doc)->createComment(Strng_t(text)));
+  _N(m_element)->appendChild(_D(document().m_doc)->createComment(Strng_t(text_value)));
 #endif
 }
 
 /// Initializing constructor to create a new XMLElement and add it to the document.
-RefElement::RefElement(const Document& document, const XmlChar* type, const XmlChar* name)
-  : Element(document, type) {
-  m_name = name ? setAttr(_U(name), name) : 0;
+RefElement::RefElement(const Document& doc, const XmlChar* typ, const XmlChar* nam)
+  : Element(doc, typ) {
+  m_name = nam ? setAttr(_U(name), nam) : 0;
 }
 
 /// Construction from existing object handle
@@ -1095,14 +1095,14 @@ void RefElement::setName(const XmlChar* new_name) {
 }
 
 #ifndef DD4HEP_USE_TINYXML
-Collection_t::Collection_t(Handle_t element, const XmlChar* tag)
-  : m_children(element, tag) {
+Collection_t::Collection_t(Handle_t element, const XmlChar* tag_value)
+  : m_children(element, tag_value) {
   m_node = m_children.reset();
 }
 #endif
 
-Collection_t::Collection_t(Handle_t element, const char* tag)
-  : m_children(element, Strng_t(tag)) {
+Collection_t::Collection_t(Handle_t element, const char* tag_value)
+  : m_children(element, Strng_t(tag_value)) {
   m_node = m_children.reset();
 }
 

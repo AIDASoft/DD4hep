@@ -116,16 +116,16 @@ size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveHitA
   typedef std::vector<void*> _P;
   Branches::const_iterator i = m_branches.find(collection);
   if ( i != m_branches.end() )   {
-    const _P* data = (_P*)(*i).second.second;
-    if ( data )  {
+    const _P* data_ptr = (_P*)(*i).second.second;
+    if ( data_ptr )  {
       DDEveHit hit;
-      actor.setSize(data->size());
-      for(_P::const_iterator i=data->begin(); i!=data->end(); ++i)   {
-	if ( (*m_simhitConverter)(*i,&hit) )    {
+      actor.setSize(data_ptr->size());
+      for(_P::const_iterator j=data_ptr->begin(); j!=data_ptr->end(); ++j)   {
+	if ( (*m_simhitConverter)(*j,&hit) )    {
 	  actor(hit);
 	}
       }
-      return data->size();
+      return data_ptr->size();
     }
   }
   return 0;
@@ -136,16 +136,16 @@ size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEvePart
   typedef std::vector<void*> _P;
   Branches::const_iterator i = m_branches.find(collection);
   if ( i != m_branches.end() )   {
-    const _P* data = (_P*)(*i).second.second;
-    if ( data )  {
+    const _P* data_ptr = (_P*)(*i).second.second;
+    if ( data_ptr )  {
       DDEveParticle part;
-      actor.setSize(data->size());
-      for(_P::const_iterator i=data->begin(); i!=data->end(); ++i)   {
-	if ( (*m_particleConverter)(*i,&part) )    {
+      actor.setSize(data_ptr->size());
+      for(_P::const_iterator j=data_ptr->begin(); j!=data_ptr->end(); ++j)   {
+	if ( (*m_particleConverter)(*j,&part) )    {
 	  actor(part);
 	}
       }
-      return data->size();
+      return data_ptr->size();
     }
   }
   return 0;
@@ -170,8 +170,8 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
       printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Read %d bytes of event data for entry:%d",nbytes,event_number);
       for(Branches::const_iterator i=m_branches.begin(); i != m_branches.end(); ++i)  {
 	TBranch* b = (*i).second.first;
-	std::vector<void*>* data = *(std::vector<void*>**)b->GetAddress();
-	m_data[b->GetClassName()].push_back(make_pair(b->GetName(),data->size()));
+	std::vector<void*>* ptr_data = *(std::vector<void*>**)b->GetAddress();
+	m_data[b->GetClassName()].push_back(make_pair(b->GetName(),ptr_data->size()));
       }
       m_hasEvent = true;
       return nbytes;

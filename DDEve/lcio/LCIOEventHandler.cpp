@@ -99,9 +99,9 @@ EventHandler::CollectionType LCIOEventHandler::collectionType(const std::string&
 
 /// Call functor on hit collection
 size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor)   {
-  Branches::const_iterator i = m_branches.find(collection);
-  if ( i != m_branches.end() )   {
-    LCCollection* c = (*i).second;
+  Branches::const_iterator ibr = m_branches.find(collection);
+  if ( ibr != m_branches.end() )   {
+    LCCollection* c = (*ibr).second;
     if ( c )  {
       DDEveHit hit;
       int n = c->getNumberOfElements();
@@ -120,9 +120,9 @@ size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitA
 
 /// Loop over collection and extract particle data
 size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
-  Branches::const_iterator i = m_branches.find(collection);
-  if ( i != m_branches.end() )   {
-    LCCollection* c = (*i).second;
+  Branches::const_iterator ibr = m_branches.find(collection);
+  if ( ibr != m_branches.end() )   {
+    LCCollection* c = (*ibr).second;
     if ( c )  {
       DDEveParticle part;
       int n = c->getNumberOfElements();

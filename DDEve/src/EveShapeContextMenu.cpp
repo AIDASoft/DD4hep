@@ -29,8 +29,8 @@ EveShapeContextMenu& EveShapeContextMenu::install(Display* m)   {
 }
 
 /// Initializing constructor
-EveShapeContextMenu::EveShapeContextMenu(Display* display)
-  : EveUserContextMenu(display)
+EveShapeContextMenu::EveShapeContextMenu(Display* disp)
+  : EveUserContextMenu(disp)
 {
   InstallGeometryContextMenu(TEveGeoShape::Class());
 }

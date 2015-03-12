@@ -17,7 +17,7 @@ ClassImp(View3D)
 DECLARE_VIEW_FACTORY(View3D)
 
 /// Initializing constructor
-View3D::View3D(Display* eve, const std::string& name) : View(eve, name)
+View3D::View3D(Display* eve, const std::string& nam) : View(eve, nam)
 {
 }
 

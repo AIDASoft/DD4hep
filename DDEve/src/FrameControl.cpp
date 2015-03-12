@@ -24,8 +24,8 @@ using namespace DD4hep;
 ClassImp(FrameControl)
 
 /// Standard constructor
-FrameControl::FrameControl(TGClient* client, const std::string& name, unsigned int width, unsigned int height) 
-: TGMainFrame(client->GetRoot(), width, height), m_client(client), m_frame(0)
+FrameControl::FrameControl(TGClient* cl, const std::string& name, unsigned int width, unsigned int height) 
+: TGMainFrame(cl->GetRoot(), width, height), m_client(cl), m_frame(0)
 {
   SetWindowName(name.c_str());
   SetCleanup(kDeepCleanup);

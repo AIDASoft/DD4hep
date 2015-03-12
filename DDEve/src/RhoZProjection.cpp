@@ -18,8 +18,8 @@ ClassImp(RhoZProjection)
 DECLARE_VIEW_FACTORY(RhoZProjection)
 
 /// Initializing constructor
-RhoZProjection::RhoZProjection(Display* eve, const std::string& name)
-  : Projection(eve, name)
+RhoZProjection::RhoZProjection(Display* eve, const std::string& nam)
+  : Projection(eve, nam)
 {
 }
 

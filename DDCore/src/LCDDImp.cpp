@@ -190,12 +190,12 @@ Volume LCDDImp::pickMotherVolume(const DetElement& de) const {
 }
 
 LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
-  DetElement detector(ref_det);
+  DetElement det_element(ref_det);
   m_detectors.append(ref_det);
-  Volume volume = detector.placement()->GetMotherVolume();
+  Volume volume = det_element.placement()->GetMotherVolume();
   if ( volume == m_worldVol )  {
-    printout(DEBUG,"LCDD","Added detector %s to the world instance.",detector.name());
-    m_world.add(detector);
+    printout(DEBUG,"LCDD","Added detector %s to the world instance.",det_element.name());
+    m_world.add(det_element);
     return *this;
   }
   // The detector's placement must be one of the existing detectors
@@ -203,12 +203,12 @@ LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
     DetElement parent((*i).second);
     Volume vol = parent.placement().volume();
     if ( vol == volume )  {
-      printout(INFO,"LCDD","Added detector %s to the parent:%s.",detector.name(),parent.name());
-      parent.add(detector);
+      printout(INFO,"LCDD","Added detector %s to the parent:%s.",det_element.name(),parent.name());
+      parent.add(det_element);
       return *this;
     }
   }
-  throw runtime_error("LCDD: The detector" + string(detector.name()) + " has no known parent.");
+  throw runtime_error("LCDD: The detector" + string(det_element.name()) + " has no known parent.");
 }
 
 /// Typed access to constants: access string values
@@ -277,17 +277,17 @@ namespace {
         const GeoHandler::Data::mapped_type& v = (*i).second;
         for (GeoHandler::Data::mapped_type::const_iterator j = v.begin(); j != v.end(); ++j) {
           const TGeoNode* n = *j;
-          TGeoVolume* v = n->GetVolume();
-          TGeoShape* s = v->GetShape();
-          const char* sn = s->GetName();
+          TGeoVolume* vol = n->GetVolume();
+          TGeoShape*  s   = vol->GetShape();
+          const char* sn  = s->GetName();
           ::snprintf(text,sizeof(text),"_shape_%p",(void*)s);
           if (0 == sn || 0 == ::strlen(sn)) {
-            nam = v->GetName();
+            nam = vol->GetName();
             nam += text;
             s->SetName(nam.c_str());
           }
           else if (0 == ::strcmp(sn, s->IsA()->GetName())) {
-            nam = v->GetName();
+            nam = vol->GetName();
             nam += text;
             s->SetName(nam.c_str());
           }
@@ -357,9 +357,9 @@ void LCDDImp::init() {
     m_materialAir = material("Air");
     m_materialVacuum = material("Vacuum");
 
-    Volume world("world_volume", worldSolid, m_materialAir);
+    Volume world_vol("world_volume", worldSolid, m_materialAir);
     m_world = TopDetElement("world");
-    m_worldVol = world;
+    m_worldVol = world_vol;
     // Set the world volume to invisible.
     VisAttr worldVis("WorldVis");
     worldVis.setAlpha(1.0);

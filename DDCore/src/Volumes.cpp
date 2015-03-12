@@ -369,9 +369,9 @@ PlacedVolume::Object* PlacedVolume::data() const   {
 }
 
 /// Add identifier
-PlacedVolume& PlacedVolume::addPhysVolID(const string& name, int value) {
+PlacedVolume& PlacedVolume::addPhysVolID(const string& nam, int value) {
   Object* obj = _data(*this);
-  obj->volIDs.push_back(VolID(name, value));
+  obj->volIDs.push_back(VolID(nam, value));
   return *this;
 }
 
@@ -467,13 +467,13 @@ Volume::Object* _data(const Volume& v, bool throw_exception = true) {
 }
 
 /// Constructor to be used when creating a new geometry tree.
-Volume::Volume(const string& name) {
-  m_element = _createTGeoVolume(name,0,0);
+Volume::Volume(const string& nam) {
+  m_element = _createTGeoVolume(nam,0,0);
 }
 
 /// Constructor to be used when creating a new geometry tree. Also sets materuial and solid attributes
-Volume::Volume(const string& name, const Solid& s, const Material& m) {
-  m_element = _createTGeoVolume(name,s.ptr(),m.ptr());
+Volume::Volume(const string& nam, const Solid& s, const Material& m) {
+  m_element = _createTGeoVolume(nam,s.ptr(),m.ptr());
 }
 
 /// Check if placement is properly instrumented
@@ -624,9 +624,9 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
 }
 
 /// Set Visualization attributes to the volume
-const Volume& Volume::setVisAttributes(const LCDD& lcdd, const string& name) const {
-  if (!name.empty()) {
-    VisAttr attr = lcdd.visAttributes(name);
+const Volume& Volume::setVisAttributes(const LCDD& lcdd, const string& nam) const {
+  if (!nam.empty()) {
+    VisAttr attr = lcdd.visAttributes(nam);
     setVisAttributes(attr);
   }
   else {
@@ -664,8 +664,8 @@ VisAttr Volume::visAttributes() const {
 }
 
 /// Set the volume's solid shape
-const Volume& Volume::setSolid(const Solid& solid) const {
-  m_element->SetShape(solid);
+const Volume& Volume::setSolid(const Solid& s) const {
+  m_element->SetShape(s);
   return *this;
 }
 
@@ -675,9 +675,9 @@ Solid Volume::solid() const {
 }
 
 /// Set the regional attributes to the volume
-const Volume& Volume::setRegion(const LCDD& lcdd, const string& name) const {
-  if (!name.empty()) {
-    return setRegion(lcdd.region(name));
+const Volume& Volume::setRegion(const LCDD& lcdd, const string& nam) const {
+  if (!nam.empty()) {
+    return setRegion(lcdd.region(nam));
   }
   return *this;
 }
@@ -694,9 +694,9 @@ Region Volume::region() const {
 }
 
 /// Set the limits to the volume
-const Volume& Volume::setLimitSet(const LCDD& lcdd, const string& name) const {
-  if (!name.empty()) {
-    return setLimitSet(lcdd.limitSet(name));
+const Volume& Volume::setLimitSet(const LCDD& lcdd, const string& nam) const {
+  if (!nam.empty()) {
+    return setLimitSet(lcdd.limitSet(nam));
   }
   return *this;
 }
@@ -731,7 +731,7 @@ bool Volume::isSensitive() const {
 }
 
 /// Constructor to be used when creating a new geometry tree.
-Assembly::Assembly(const string& name) {
-  m_element = _createTGeoVolumeAssembly(name);
+Assembly::Assembly(const string& nam) {
+  m_element = _createTGeoVolumeAssembly(nam);
 }
 

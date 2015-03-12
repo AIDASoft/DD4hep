@@ -170,8 +170,8 @@ void VolIDTest::walk(DetElement e, VolIDs ids, size_t depth, size_t mx_depth)  c
 /// Action routine to execute the test
 long VolIDTest::run(LCDD& lcdd,int argc,char** argv)    {
   cout << "++ Processing plugin...CLICSid_VolMgrTest..." << endl;
-  for(int i=1; i<argc;++i)  {
-    string name = argv[i]+1;
+  for(int iarg=1; iarg<argc;++iarg)  {
+    string name = argv[iarg]+1;
     if ( name == "all" || name == "All" || name == "ALL" )  {
       const DetElement::Children& children = lcdd.world().children();
       for (DetElement::Children::const_iterator i=children.begin(); i!=children.end(); ++i)  {

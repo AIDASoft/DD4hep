@@ -16,33 +16,33 @@ using namespace std;
 using namespace DD4hep::Geometry;
 
 /// Clone constructor
-DetElement::DetElement(Object* data, const string& name, const string& type)
-  : RefObject(data) {
-  this->assign(data, name, type);
+DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
+  : RefObject(det_data) {
+  this->assign(det_data, det_name, det_type);
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(const string& name, const string& type, int id) {
-  assign(new Object(name,id), name, type);
-  ptr()->id = id;
+DetElement::DetElement(const string& det_name, const string& det_type, int det_id) {
+  assign(new Object(det_name,det_id), det_name, det_type);
+  ptr()->id = det_id;
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(const string& name, int id) {
-  assign(new Object(name,id), name, "");
-  ptr()->id = id;
+DetElement::DetElement(const string& det_name, int det_id) {
+  assign(new Object(det_name,det_id), det_name, "");
+  ptr()->id = det_id;
 }
 
 /// Constructor for a new subdetector element
-DetElement::DetElement(DetElement parent, const string& name, int id) {
-  assign(new Object(name,id), name, parent.type());
-  ptr()->id = id;
-  parent.add(*this);
+DetElement::DetElement(DetElement det_parent, const string& det_name, int det_id) {
+  assign(new Object(det_name,det_id), det_name, det_parent.type());
+  ptr()->id = det_id;
+  det_parent.add(*this);
 }
 
 /// Add an extension object to the detector element
-void* DetElement::i_addExtension(void* ptr, const type_info& info, copy_t ctor, destruct_t dtor) const {
-  return access()->addExtension(ptr, info, ObjectExtensions::copy_t(ctor), dtor);
+void* DetElement::i_addExtension(void* ext_ptr, const type_info& info, copy_t ctor, destruct_t dtor) const {
+  return access()->addExtension(ext_ptr, info, ObjectExtensions::copy_t(ctor), dtor);
 }
 
 /// Access an existing extension object from the detector element
@@ -56,8 +56,8 @@ void DetElement::i_addUpdateCall(unsigned int callback_type, const Callback& cal
 }
 
 /// Remove callback from object
-void DetElement::removeAtUpdate(unsigned int type, void* pointer)  const {
-  access()->removeAtUpdate(type,pointer);
+void DetElement::removeAtUpdate(unsigned int typ, void* pointer)  const {
+  access()->removeAtUpdate(typ,pointer);
 }
 
 /// Access to the full path to the placed object
@@ -131,10 +131,10 @@ const DetElement::Children& DetElement::children() const {
 }
 
 /// Access to individual children by name
-DetElement DetElement::child(const string& name) const {
+DetElement DetElement::child(const string& child_name) const {
   if (isValid()) {
     const Children& c = ptr()->children;
-    Children::const_iterator i = c.find(name);
+    Children::const_iterator i = c.find(child_name);
     return i == c.end() ? DetElement() : (*i).second;
   }
   return DetElement();
@@ -186,12 +186,12 @@ PlacedVolume DetElement::placement() const {
 }
 
 /// Set the physical volumes of the detector element
-DetElement& DetElement::setPlacement(const PlacedVolume& placement) {
-  if (placement.isValid()) {
+DetElement& DetElement::setPlacement(const PlacedVolume& pv) {
+  if (pv.isValid()) {
     Object* o = access();
-    o->placement = placement;
+    o->placement = pv;
     if ( !o->idealPlace.isValid() )  {
-      o->idealPlace = placement;
+      o->idealPlace = pv;
     }
     return *this;
   }
@@ -211,28 +211,28 @@ Volume DetElement::volume() const {
   return access()->placement.volume();
 }
 
-DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& name, const Volume& volume) {
-  volume.setVisAttributes(lcdd, name);
+DetElement& DetElement::setVisAttributes(const LCDD& lcdd, const string& nam, const Volume& vol) {
+  vol.setVisAttributes(lcdd, nam);
   return *this;
 }
 
-DetElement& DetElement::setRegion(const LCDD& lcdd, const string& name, const Volume& volume) {
-  if (!name.empty()) {
-    volume.setRegion(lcdd.region(name));
+DetElement& DetElement::setRegion(const LCDD& lcdd, const string& nam, const Volume& vol) {
+  if (!nam.empty()) {
+    vol.setRegion(lcdd.region(nam));
   }
   return *this;
 }
 
-DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& name, const Volume& volume) {
-  if (!name.empty()) {
-    volume.setLimitSet(lcdd.limitSet(name));
+DetElement& DetElement::setLimitSet(const LCDD& lcdd, const string& nam, const Volume& vol) {
+  if (!nam.empty()) {
+    vol.setLimitSet(lcdd.limitSet(nam));
   }
   return *this;
 }
 
-DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& volume, const string& region, const string& limits,
+DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& vol, const string& region, const string& limits,
                                       const string& vis) {
-  return setRegion(lcdd, region, volume).setLimitSet(lcdd, limits, volume).setVisAttributes(lcdd, vis, volume);
+  return setRegion(lcdd, region, vol).setLimitSet(lcdd, limits, vol).setVisAttributes(lcdd, vis, vol);
 }
 
 /// Set detector element for reference transformations. Will delete existing reference trafo.
@@ -316,14 +316,14 @@ bool DetElement::referenceToLocal(const Position& global, Position& local) const
 }
 
 /// Constructor
-SensitiveDetector::SensitiveDetector(const string& name, const string& type) {
+SensitiveDetector::SensitiveDetector(const string& nam, const string& typ) {
   /*
     <calorimeter ecut="0" eunit="MeV" hits_collection="EcalEndcapHits" name="EcalEndcap" verbose="0">
     <global_grid_xy grid_size_x="3.5" grid_size_y="3.5"/>
     <idspecref ref="EcalEndcapHits"/>
     </calorimeter>
   */
-  assign(new Object(name), name, type);
+  assign(new Object(nam), nam, typ);
   object<Object>().ecut = 0e0;
   object<Object>().verbose = 0;
 }
@@ -408,8 +408,8 @@ Region SensitiveDetector::region() const {
 }
 
 /// Set the limits to the sensitive detector
-SensitiveDetector& SensitiveDetector::setLimitSet(LimitSet limits) {
-  access()->limits = limits;
+SensitiveDetector& SensitiveDetector::setLimitSet(LimitSet ls) {
+  access()->limits = ls;
   return *this;
 }
 
@@ -419,8 +419,8 @@ LimitSet SensitiveDetector::limits() const {
 }
 
 /// Add an extension object to the detector element
-void* SensitiveDetector::i_addExtension(void* ptr, const type_info& info, destruct_t dtor)  {
-  return access()->addExtension(ptr, info, dtor);
+void* SensitiveDetector::i_addExtension(void* ext_ptr, const type_info& info, destruct_t dtor)  {
+  return access()->addExtension(ext_ptr, info, dtor);
 }
 
 /// Access an existing extension object from the detector element

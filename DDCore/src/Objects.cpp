@@ -56,9 +56,9 @@ void Author::setAuthorEmail(const std::string& addr) {
 }
 
 /// Constructor to be used when creating a new DOM tree
-Header::Header(const string& author, const string& url) {
-  Object* ptr = new Object();
-  assign(ptr, author, url);
+Header::Header(const string& author_name, const string& descr_url) {
+  Object* obj_ptr = new Object();
+  assign(obj_ptr, author_name, descr_url);
 }
 
 /// Accessor to object name
@@ -137,8 +137,8 @@ Constant::Constant(const string& nam, const string& val, const string& typ) {
 }
 
 /// Constructor to be used when creating a new DOM tree
-Constant::Constant(const string& name) {
-  m_element = new Object(name.c_str(), "", "number");
+Constant::Constant(const string& nam) {
+  m_element = new Object(nam.c_str(), "", "number");
 }
 
 /// Access the constant
@@ -159,12 +159,12 @@ string Constant::toString() const {
 }
 
 /// Constructor to be used when creating a new DOM tree
-Atom::Atom(const string& name, const string& formula, int Z, int N, double density) {
+Atom::Atom(const string& nam, const string& formula, int Z, int N, double density) {
   TGeoElementTable* t = TGeoElement::GetElementTable();
-  TGeoElement* e = t->FindElement(name.c_str());
+  TGeoElement* e = t->FindElement(nam.c_str());
   if (!e) {
-    t->AddElement(name.c_str(), formula.c_str(), Z, N, density);
-    e = t->FindElement(name.c_str());
+    t->AddElement(nam.c_str(), formula.c_str(), Z, N, density);
+    e = t->FindElement(nam.c_str());
   }
   m_element = e;
 }
@@ -236,10 +236,10 @@ string Material::toString() const {
   return os.str();
 }
 
-/// Constructor to be used when creating a new DOM tree
-VisAttr::VisAttr(const string& name) {
+/// Constructor to be used when creating a new entity
+VisAttr::VisAttr(const string& nam) {
   Object* obj = new Object();
-  assign(obj, name, "vis");
+  assign(obj, nam, "vis");
   obj->color = 2;
   setLineStyle (SOLID);
   setDrawingStyle(SOLID);
@@ -247,10 +247,10 @@ VisAttr::VisAttr(const string& name) {
   setAlpha(0.1f);
 }
 
-/// Constructor to be used when creating a new DOM tree
-VisAttr::VisAttr(const char* name) {
+/// Constructor to be used when creating a new entity
+VisAttr::VisAttr(const char* nam) {
   Object* obj = new Object();
-  assign(obj, name, "vis");
+  assign(obj, nam, "vis");
   obj->color = 2;
   setLineStyle (SOLID);
   setDrawingStyle(SOLID);
@@ -415,8 +415,8 @@ string Limit::toString() const {
 }
 
 /// Constructor to be used when creating a new DOM tree
-LimitSet::LimitSet(const string& name) {
-  assign(new Object(), name, "limitset");
+LimitSet::LimitSet(const string& nam) {
+  assign(new Object(), nam, "limitset");
 }
 
 /// Add new limit. Returns true if the new limit was added, false if it already existed.
@@ -432,9 +432,9 @@ const set<Limit>& LimitSet::limits() const {
 }
 
 /// Constructor to be used when creating a new DOM tree
-Region::Region(const string& name) {
+Region::Region(const string& nam) {
   Object* p = new Object();
-  assign(p, name, "region");
+  assign(p, nam, "region");
   p->magic = magic_word();
   p->store_secondaries = false;
   p->threshold = 10.0;

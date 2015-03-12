@@ -18,8 +18,8 @@ ClassImp(Calo3DProjection)
 DECLARE_VIEW_FACTORY(Calo3DProjection)
 
 /// Initializing constructor
-Calo3DProjection::Calo3DProjection(Display* eve, const std::string& name)
-: View(eve, name)
+Calo3DProjection::Calo3DProjection(Display* eve, const std::string& nam)
+: View(eve, nam)
 {
   InstanceCount::increment(this);
 }

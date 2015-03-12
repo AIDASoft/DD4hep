@@ -219,43 +219,43 @@ namespace {
 
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(LCDD& lcdd, const string& nam, DetElement elt, Readout ro, int flags) {
-  Object* ptr = new Object();
-  assign(ptr, nam, "VolumeManager");
+  Object* obj_ptr = new Object();
+  assign(obj_ptr, nam, "VolumeManager");
   if (elt.isValid()) {
     Populator p(lcdd, *this);
-    ptr->detector = elt;
-    ptr->id = ro.isValid() ? ro.idSpec() : IDDescriptor();
-    ptr->top = ptr;
-    ptr->flags = flags;
+    obj_ptr->detector = elt;
+    obj_ptr->id = ro.isValid() ? ro.idSpec() : IDDescriptor();
+    obj_ptr->top = obj_ptr;
+    obj_ptr->flags = flags;
     p.populate(elt);
   }
 }
 
 /// Initializing constructor to create a new object
-VolumeManager::VolumeManager(DetElement subdetector, Readout ro)  {
-  Object* ptr = new Object();
-  ptr->detector = subdetector;
-  ptr->id = ro.isValid() ? ro.idSpec() : IDDescriptor();
-  assign(ptr, subdetector.name(), "VolumeManager");
+VolumeManager::VolumeManager(DetElement sub_detector, Readout ro)  {
+  Object* obj_ptr = new Object();
+  obj_ptr->detector = sub_detector;
+  obj_ptr->id = ro.isValid() ? ro.idSpec() : IDDescriptor();
+  assign(obj_ptr, sub_detector.name(), "VolumeManager");
 }
 
 /// Add a new Volume manager section according to a new subdetector
-VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
+VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
   if (isValid()) {
     Object& o = _data();
-    if (!detector.isValid()) {
+    if (!det.isValid()) {
       throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only valid subdetectors "
 			  "are allowed. [Invalid DetElement]");
     }
-    Detectors::const_iterator i = o.subdetectors.find(detector);
+    Detectors::const_iterator i = o.subdetectors.find(det);
     if (i == o.subdetectors.end()) {
-      string det_name = detector.name();
+      string det_name = det.name();
       // First check all pre-conditions
       if (!ro.isValid()) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
                             "valid readout descriptor are allowed. [Invalid DetElement:" + det_name + "]");
       }
-      PlacedVolume pv = detector.placement();
+      PlacedVolume pv = det.placement();
       if (!pv.isValid()) {
         throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only subdetectors with a "
                             "valid placement are allowed. [Invalid DetElement:" + det_name + "]");
@@ -266,13 +266,13 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
                             "valid placement VolIDs are allowed. [Invalid DetElement:" + det_name + "]");
       }
 
-      i = o.subdetectors.insert(make_pair(detector, VolumeManager(detector,ro))).first;
+      i = o.subdetectors.insert(make_pair(det, VolumeManager(det,ro))).first;
       const PlacedVolume::VolID& id = (*vit);
       VolumeManager m = (*i).second;
       IDDescriptor::Field field = ro.idSpec().field(id.first);
       if (!field) {
         throw runtime_error(
-                            "DD4hep: VolumeManager::addSubdetector: IdDescriptor of " + string(detector.name()) + " has no field " + id.first);
+                            "DD4hep: VolumeManager::addSubdetector: IdDescriptor of " + string(det.name()) + " has no field " + id.first);
       }
       Object& mo = m._data();
       mo.top = o.top;
@@ -281,7 +281,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement detector, Readout ro) {
       mo.sysID = id.second;
       mo.detMask = mo.sysID;
       o.managers[mo.sysID] = m;
-      detector.callAtUpdate(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,
+      det.callAtUpdate(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,
                             &mo,&Object::update);
     }
     return (*i).second;
@@ -352,8 +352,8 @@ bool VolumeManager::adoptPlacement(VolumeID /* sys_id */, Context* context) {
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");
   err << " !!!!!                      ++++ VolIDS ";
-  const VolIDs::Base& ids = context->volID;
-  for (VolIDs::Base::const_iterator vit = ids.begin(); vit != ids.end(); ++vit)
+  const VolIDs::Base& id_vector = context->volID;
+  for (VolIDs::Base::const_iterator vit = id_vector.begin(); vit != id_vector.end(); ++vit)
     err << (*vit).first << "=" << (*vit).second << "; ";
   printout(ERROR, "VolumeManager", "%s", err.str().c_str());
   err.str("");

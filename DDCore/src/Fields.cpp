@@ -80,9 +80,9 @@ OverlayedField::Object::~Object() {
 }
 
 /// Object constructor
-OverlayedField::OverlayedField(const string& name)
+OverlayedField::OverlayedField(const string& nam)
   : Ref_t() {
-  assign(new Object(), name, "overlay_field");
+  assign(new Object(), nam, "overlay_field");
 }
 
 /// Access to properties container

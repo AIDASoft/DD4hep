@@ -17,8 +17,8 @@ ClassImp(RhoPhiProjection)
 DECLARE_VIEW_FACTORY(RhoPhiProjection)
 
 /// Initializing constructor
-RhoPhiProjection::RhoPhiProjection(Display* eve, const std::string& name)
-  : Projection(eve, name)
+RhoPhiProjection::RhoPhiProjection(Display* eve, const std::string& nam)
+  : Projection(eve, nam)
 {
 }
 

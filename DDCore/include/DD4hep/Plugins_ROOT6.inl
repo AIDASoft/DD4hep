@@ -110,6 +110,11 @@ namespace DD4hep  {
       template <typename SIGNATURE> static void reflex_plugin(const std::string& name, DD4hep::PluginService::stub_t /* stub */)  {
 	if ( PluginService::debug() )  {
 	  std::string sig_name = "?????";
+/*
+	  sig_name = "long (*)(const char*, Object*)";
+	  plugin->register(name, sig_name, stub);
+DD4hep::PluginService::Create<R>(name,a0,a1);
+*/
           printout(INFO,"PluginService","+++ Declared factory for id %s with signature %s.",name.c_str(),sig_name.c_str());
         }
       }
@@ -119,9 +124,9 @@ namespace DD4hep  {
 
 
 
-#define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(R, ARGS) namespace DD4hep {		\
+#define DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(R, ARGS) namespace DD4hep {		                 \
   template <> void PluginRegistry< R ARGS >::add(const char* n, DD4hep::PluginService::stub_t f) \
-  {   plugin_signatures_namespace::reflex_plugin< R ARGS >(n,f);   } \
+  {   plugin_signatures_namespace::reflex_plugin< R ARGS >(n,f);   }                             \
   namespace plugin_signatures_namespace { template void* instantiate_creator<R> ARGS ; }}
 
 #endif  // DD4HEP_PLUGINS_ROOT6_INL

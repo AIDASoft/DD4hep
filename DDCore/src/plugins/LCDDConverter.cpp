@@ -365,7 +365,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       solid.setAttr(_U(deltaphi), (s->GetPhi2() - s->GetPhi1()) * DEGREE_2_RAD);
       solid.setAttr(_U(aunit), "rad");
       solid.setAttr(_U(lunit), "mm");
-      xml_elt_t zplane = xml_elt_t(geo.doc, _U(zplane));
+      zplane = xml_elt_t(geo.doc, _U(zplane));
       zplane.setAttr(_U(rmin), s->GetRmin1() * CM_2_MM);
       zplane.setAttr(_U(rmax), s->GetRmax1() * CM_2_MM);
       zplane.setAttr(_U(z), -s->GetDz() * CM_2_MM);
@@ -520,8 +520,8 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         TGeoMatrix& rinv = rm->Inverse();
         XYZRotation rot = getXYZangles(rinv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
-          xml_ref_t rot = handleRotation(rnam + "rot", &rinv);
-          solid.setRef(_U(rotationref), rot.name());
+          xml_ref_t xml_rot = handleRotation(rnam + "rot", &rinv);
+          solid.setRef(_U(rotationref), xml_rot.name());
         }
       }
     }
@@ -635,7 +635,7 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
     geo.xmlVolumes[v] = vol;
     const TObjArray* dau = ((TGeoVolume*) v)->GetNodes();
     if (dau && dau->GetEntries() > 0) {
-      for (Int_t i = 0, n = dau->GetEntries(); i < n; ++i) {
+      for (Int_t i = 0, n_dau = dau->GetEntries(); i < n_dau; ++i) {
         TGeoNode* node = (TGeoNode*) dau->At(i);
         handlePlacement(node->GetName(), node);
       }
@@ -646,20 +646,20 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
       VisAttr vis = _v.visAttributes();
       SensitiveDetector det = _v.sensitiveDetector();
       if (det.isValid()) {
-        xml_ref_t data = handleSensitive(det.name(), det);
-        vol.setRef(_U(sdref), data.name());
+        xml_ref_t xml_data = handleSensitive(det.name(), det);
+        vol.setRef(_U(sdref), xml_data.name());
       }
       if (reg.isValid()) {
-        xml_ref_t data = handleRegion(reg.name(), reg);
-        vol.setRef(_U(regionref), data.name());
+        xml_ref_t xml_data = handleRegion(reg.name(), reg);
+        vol.setRef(_U(regionref), xml_data.name());
       }
       if (lim.isValid()) {
-        xml_ref_t data = handleLimitSet(lim.name(), lim);
-        vol.setRef(_U(limitsetref), data.name());
+        xml_ref_t xml_data = handleLimitSet(lim.name(), lim);
+        vol.setRef(_U(limitsetref), xml_data.name());
       }
       if (vis.isValid()) {
-        xml_ref_t data = handleVis(vis.name(), vis);
-        vol.setRef(_U(visref), data.name());
+        xml_ref_t xml_data = handleVis(vis.name(), vis);
+        vol.setRef(_U(visref), xml_data.name());
       }
     }
   }
@@ -678,8 +678,8 @@ xml_h LCDDConverter::handleVolumeVis(const string& /* name */, const TGeoVolume*
       if (vis.isValid()) {
         geo.doc_structure.append(vol = xml_elt_t(geo.doc, _U(volume)));
         vol.setAttr(_U(name), v->GetName());
-        xml_ref_t data = handleVis(vis.name(), vis);
-        vol.setRef(_U(visref), data.name());
+        xml_ref_t xml_data = handleVis(vis.name(), vis);
+        vol.setRef(_U(visref), xml_data.name());
         geo.xmlVolumes[v] = vol;
       }
     }

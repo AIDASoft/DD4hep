@@ -56,9 +56,9 @@ void VolumeManagerObject::update(unsigned long tags, DetElement& det, void* para
 }
 
 /// Search the locally cached volumes for a matching ID
-VolumeManager::Context* VolumeManagerObject::search(const VolumeID& id) const {
+VolumeManager::Context* VolumeManagerObject::search(const VolumeID& vol_id) const {
   Context* context = 0;
-  VolumeID volume_id(id);
+  VolumeID volume_id(vol_id);
   volume_id &= detMask;
   Volumes::const_iterator i = volumes.find(volume_id);
   if (i != volumes.end())  {
