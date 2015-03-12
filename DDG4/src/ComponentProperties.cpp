@@ -205,7 +205,20 @@ void PropertyManager::dump() const {
   }
 }
 
-#include "DDG4/ComponentProperties_inl.h"
+namespace DD4hep { 
+  namespace Parsers {
+    int parse(Property& result, const std::string& input) {
+      result.str(input); 
+      return 1;
+    }
+  }
+  namespace Utils {
+    std::ostream& toStream(const Property& result, std::ostream& os) {
+      return os << result.str();
+    }
+  }
+}
+
 #include <vector>
 #include <list>
 #include <set>
@@ -214,8 +227,9 @@ void PropertyManager::dump() const {
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
-#include "DD4hep/objects/BasicGrammar_inl.h"
 
+#include "DD4hep/objects/BasicGrammar_inl.h"
+#include "DDG4/ComponentProperties_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
 
 namespace DD4hep {
