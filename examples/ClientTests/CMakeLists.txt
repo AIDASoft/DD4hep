@@ -96,7 +96,7 @@ foreach (file Assemblies BoxTrafos FCC_HcalBarrel IronCylinder LheD_tracker Magn
 
     SET( test_name "${PackageName}_converter_simple_${type}_${file}" )
     ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh"
-      geoConverter -compact2${type} -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/${file}.xml -output ${file}_out.${type} )
+      geoConverter -compact2${type} -input $ENV{DD4hepINSTALL}/examples/ClientTests/compact/${file}.xml -output ${file}_out.${type} )
     #----- here we simply require that at least 1 volume have been converted
     SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9]* volumes" )
 
