@@ -35,6 +35,10 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   
   DDRec::ZPlanarData*  zPlanarData = new DDRec::ZPlanarData ;
 
+
+  double minRadius = 1e99 ;
+  double minZhalf = 1e99 ;
+
   //=========  loop over layer elements in xml  ======================================
 
   for(xml_coll_t c(e, _U(layer) ); c; ++c)  {
@@ -87,6 +91,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     
     double phi0           = x_layer.phi0() ;
 
+
+    if( sens_distance < minRadius ) minRadius = sens_distance ;
+    if( supp_distance < minRadius ) minRadius = supp_distance ;
+    if( sens_zhalf < minZhalf ) minZhalf = sens_zhalf ;
+    if( supp_zhalf < minZhalf ) minZhalf = supp_zhalf ;
 
     //-----------------------------------
     //  store the data in an extension to be used for reconstruction 
@@ -190,6 +199,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
     }
     
+
     //    tracker.setVisAttributes(lcdd, x_det.visStr(),laddervol);
     
 
@@ -197,6 +207,28 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     layer_assembly->GetShape()->ComputeBBox() ;
 
   }
+
+#if 0  //-------- add an inscribing cylinder of air for tracking purposes -----------------
+       //  this screw up the geometry and the material scan does not work anymore !!!!!?????
+
+  double tube_thick =  1.0 * dd4hep::mm ;
+  double inner_r    =  minRadius - 1.1 * tube_thick ;
+  double outer_r    =  inner_r + tube_thick ;
+  double z_half     =  minZhalf ; 
+  
+  Tube   tubeSolid (inner_r, outer_r, z_half ) ;
+  Volume tube_vol( name+"_inner_cylinder_air", tubeSolid ,  lcdd.material("Air") ) ;
+  
+  assembly.placeVolume( tube_vol , Transform3D() ) ;
+  
+  Vector3D ocyl(  inner_r + 0.5*tube_thick , 0. , 0. ) ;
+  
+  VolCylinder cylSurf( tube_vol , SurfaceType( SurfaceType::Helper ) , 0.5*tube_thick  , 0.5*tube_thick , ocyl ) ;
+  
+  volSurfaceList( tracker )->push_back( cylSurf ) ;
+  
+#endif //----------------------------------------------------------------------------------
+
 
 
   tracker.addExtension< DDRec::ZPlanarData >( zPlanarData ) ;

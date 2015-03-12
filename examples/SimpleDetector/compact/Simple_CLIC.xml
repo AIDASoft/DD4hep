@@ -58,55 +58,60 @@
     <detectors>
       <comment>Trackers</comment>
       
-      <detector name="VXD" type="ZPlanarTracker" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
+      <detector name="AirTube" type="AirTube" vis="VXDVis" id="42" insideTrackingVolume="true">
+      	<dimensions rmin="10.*mm" rmax="11.*mm" zhalf="6.250000000e+01*mm"/>
+      </detector>
 
+      <detector name="VXD" type="ZPlanarTracker" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
         <layer nLadders="10" phi0="-1.570796327e+00*rad" id="0">
-          <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.150000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
+          <!-- <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.050000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="Lead" /> -->
+          <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.050000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
           <sensitive distance="1.595000000e+01*mm" thickness="5.000000000e-02*mm" width="1.100000000e+01*mm" length="6.250000000e+01*mm" offset="-3.156041308e+00*mm" material="G4_Si"/>
         </layer>
         <layer nLadders="10" phi0="-1.570796327e+00*rad" id="1">
-          <ladder distance="1.700000000e+01*mm" thickness="1.000000000e+00*mm" width="1.150000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
+          <!-- <ladder distance="1.700000000e+01*mm" thickness="1.000000000e+00*mm" width="1.0500000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="Lead" /> -->
+          <ladder distance="1.700000000e+01*mm" thickness="1.000000000e+00*mm" width="1.0500000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
           <sensitive distance="1.800000000e+01*mm" thickness="5.000000000e-02*mm" width="1.100000000e+01*mm" length="6.250000000e+01*mm" offset="-3.156041308e+00*mm" material="G4_Si"/>
         </layer>
         <layer nLadders="11" phi0="-1.570796327e+00*rad" id="2">
-          <ladder distance="3.700000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-3.502631742e+00*mm"    material="CarbonFiber" />
+          <ladder distance="3.700000000e+01*mm" thickness="1.000000000e+00*mm" width="2.150000000e+01*mm" length="1.250000000e+02*mm" offset="-3.502631742e+00*mm"    material="CarbonFiber" />
           <sensitive distance="3.695000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-3.252631742e+00*mm" material="G4_Si"/>
         </layer>
         <layer nLadders="11" phi0="-1.570796327e+00*rad" id="3">
-          <ladder distance="3.800000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-3.502631742e+00*mm"    material="CarbonFiber" />
+          <ladder distance="3.800000000e+01*mm" thickness="1.000000000e+00*mm" width="2.150000000e+01*mm" length="1.250000000e+02*mm" offset="-3.502631742e+00*mm"    material="CarbonFiber" />
           <sensitive distance="3.900000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-3.252631742e+00*mm" material="G4_Si"/>
         </layer>
         <layer nLadders="17" phi0="-1.570796327e+00*rad" id="4">
-          <ladder distance="5.800000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-5.128151357e+00*mm"    material="CarbonFiber" />
+          <ladder distance="5.800000000e+01*mm" thickness="1.000000000e+00*mm" width="2.150000000e+01*mm" length="1.250000000e+02*mm" offset="-5.128151357e+00*mm"    material="CarbonFiber" />
           <sensitive distance="5.795000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-4.878151357e+00*mm" material="G4_Si"/>
         </layer>
         <layer nLadders="17" phi0="-1.570796327e+00*rad" id="5">
-          <ladder distance="5.900000000e+01*mm" thickness="1.000000000e+00*mm" width="2.250000000e+01*mm" length="1.250000000e+02*mm" offset="-5.128151357e+00*mm"    material="CarbonFiber" />
+          <ladder distance="5.900000000e+01*mm" thickness="1.000000000e+00*mm" width="2.150000000e+01*mm" length="1.250000000e+02*mm" offset="-5.128151357e+00*mm"    material="CarbonFiber" />
           <sensitive distance="6.000000000e+01*mm" thickness="5.000000000e-02*mm" width="2.200000000e+01*mm" length="1.250000000e+02*mm" offset="-4.878151357e+00*mm" material="G4_Si"/>
         </layer>
       </detector>
 
       <detector name="SIT" type="ZPlanarTracker" vis="SITVis" id="2" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
-	<layer nLadders="14" phi0="0.0" id="0">
-	  <ladder distance="228.975*mm" thickness="1.0*mm" width="104.524099097*mm" length="430.0*mm" offset="0.0*mm" material="CarbonFiber" />
-	  <sensitive distance="229.975*mm" thickness="0.05*mm" width="104.980586046*mm" length="430.0*mm" offset="0.0*mm" material="G4_Si"/>
-	</layer>
-	<layer nLadders="33" phi0="0.0" id="1">
-	  <ladder distance="533.975*mm" thickness="1.0*mm" width="101.976860567*mm" length="742.0*mm" offset="0.0*mm" material="CarbonFiber" />
-	  <sensitive distance="534.975*mm" thickness="0.05*mm" width="102.167837412*mm" length="742.0*mm" offset="0.0*mm" material="G4_Si"/>
-	</layer>
-	<layer nLadders="52" phi0="0.0" id="2">
-	  <ladder distance="838.975*mm" thickness="1.0*mm" width="101.497276026*mm" length="1053.0*mm" offset="0.0*mm" material="CarbonFiber" />
-	  <sensitive distance="839.975*mm" thickness="0.05*mm" width="101.618253738*mm" length="1053.0*mm" offset="0.0*mm" material="G4_Si"/>
-	</layer>
-	<layer nLadders="71" phi0="0.0" id="3">
-	  <ladder distance="1143.975*mm" thickness="1.0*mm" width="101.302838172*mm" length="1365.0*mm" offset="0.0*mm" material="CarbonFiber" />
-	  <sensitive distance="1144.975*mm" thickness="0.05*mm" width="101.391391539*mm" length="1365.0*mm" offset="0.0*mm" material="G4_Si"/>
-	</layer>
-	<layer nLadders="91" phi0="0.0" id="4">
-	  <ladder distance="1448.975*mm" thickness="1.0*mm" width="100.085681927*mm" length="1676.0*mm" offset="0.0*mm" material="CarbonFiber" />
-	  <sensitive distance="1449.975*mm" thickness="0.05*mm" width="100.154755363*mm" length="1676.0*mm" offset="0.0*mm" material="G4_Si"/>
-	</layer>
+      	<layer nLadders="14" phi0="0.0" id="0">
+      	  <ladder distance="228.975*mm" thickness="1.0*mm" width="104.524099097*mm" length="430.0*mm" offset="0.0*mm" material="CarbonFiber" />
+      	  <sensitive distance="229.975*mm" thickness="0.05*mm" width="104.980586046*mm" length="430.0*mm" offset="0.0*mm" material="G4_Si"/>
+      	</layer>
+      	<layer nLadders="33" phi0="0.0" id="1">
+      	  <ladder distance="533.975*mm" thickness="1.0*mm" width="101.976860567*mm" length="742.0*mm" offset="0.0*mm" material="CarbonFiber" />
+      	  <sensitive distance="534.975*mm" thickness="0.05*mm" width="102.167837412*mm" length="742.0*mm" offset="0.0*mm" material="G4_Si"/>
+      	</layer>
+      	<layer nLadders="52" phi0="0.0" id="2">
+      	  <ladder distance="838.975*mm" thickness="1.0*mm" width="101.497276026*mm" length="1053.0*mm" offset="0.0*mm" material="CarbonFiber" />
+      	  <sensitive distance="839.975*mm" thickness="0.05*mm" width="101.618253738*mm" length="1053.0*mm" offset="0.0*mm" material="G4_Si"/>
+      	</layer>
+      	<layer nLadders="71" phi0="0.0" id="3">
+      	  <ladder distance="1143.975*mm" thickness="1.0*mm" width="101.302838172*mm" length="1365.0*mm" offset="0.0*mm" material="CarbonFiber" />
+      	  <sensitive distance="1144.975*mm" thickness="0.05*mm" width="101.391391539*mm" length="1365.0*mm" offset="0.0*mm" material="G4_Si"/>
+      	</layer>
+      	<layer nLadders="91" phi0="0.0" id="4">
+      	  <ladder distance="1448.975*mm" thickness="1.0*mm" width="100.085681927*mm" length="1676.0*mm" offset="0.0*mm" material="CarbonFiber" />
+      	  <sensitive distance="1449.975*mm" thickness="0.05*mm" width="100.154755363*mm" length="1676.0*mm" offset="0.0*mm" material="G4_Si"/>
+      	</layer>
       </detector>
 
    </detectors>
