@@ -214,7 +214,7 @@ namespace {
 #define DECLARE_GEANT4_SETUP(name,func)                                 \
   namespace DD4hep { namespace Simulation { struct xml_g4_setup_##name {}; \
 	template <> long Geant4SetupAction<DD4hep::Simulation::xml_g4_setup_##name>::create(LCDD& l,const DD4hep::Geometry::GeoHandler& e, const std::map<std::string,std::string>& a) {return func(l,e,a);} }} \
-  DD4HEP_PLUGINSVC_FACTORY(xml_g4_setup_##name,name "_Geant4_action",long(DD4hep::Geometry::LCDD*,const DD4hep::Geometry::GeoHandler*,const std::map<std::string,std::string>*),__LINE__)
+  DD4HEP_PLUGINSVC_FACTORY(xml_g4_setup_##name,name##_Geant4_action,long(DD4hep::Geometry::LCDD*,const DD4hep::Geometry::GeoHandler*,const std::map<std::string,std::string>*),__LINE__)
 
 /// Plugin defintion to create event reader objects
 #define DECLARE_GEANT4_EVENT_READER(name)                               \
