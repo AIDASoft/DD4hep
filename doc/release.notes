@@ -4,6 +4,11 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2015/03/12 Markus Frank
+-----------------------
+  - Add support for ellipsoids in gdml/lcdd and geant4 conversion.
+  - Allow to include files with environment variables from compact notation.
+
 2015/03/09 Markus Frank
 -----------------------
   - Finalize move to geant4 version 10, started by A.Sailer
