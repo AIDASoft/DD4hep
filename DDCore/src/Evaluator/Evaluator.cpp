@@ -695,12 +695,21 @@ namespace XmlTools {
     string item_name = name;
     //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
     dic_type::iterator iter = (s->theDictionary).find(item_name);
-    if (iter == (s->theDictionary).end()) {
-      s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
-      return 0;
+    if (iter != (s->theDictionary).end()) {
+      s->theStatus = EVAL::OK;
+      return iter->second.expression.c_str();
     }
-    s->theStatus = EVAL::OK;
-    return iter->second.expression.c_str();
+    if ( ::strlen(item_name.c_str()) > 3 )  {
+      // Need to remove braces from ${xxxx} for call to getenv()
+      string env_name(name+2,::strlen(name)-3);
+      const char* env_str = ::getenv(env_name.c_str());
+      if ( 0 != env_str )    {
+	s->theStatus = EVAL::OK;
+	return env_str;
+      }
+    }
+    s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;
+    return 0;
   }
 
   //---------------------------------------------------------------------------

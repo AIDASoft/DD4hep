@@ -156,7 +156,7 @@ Geant4EventReaderHepMC::Geant4EventReaderHepMC(const string& nam)
 {
   // Now open the input file:
   m_input.open(nam.c_str(),BOOST_IOS::in|BOOST_IOS::binary);
-  if ( m_input < 0 )   {
+  if ( m_input.is_open() )   {
     string err = "+++ Geant4EventReaderHepMC: Failed to open input stream:"+nam+
       " Error:"+string(strerror(errno));
     throw runtime_error(err);
