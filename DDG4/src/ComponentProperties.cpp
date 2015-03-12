@@ -214,8 +214,19 @@ void PropertyManager::dump() const {
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Math/Vector4D.h"
+#include "DD4hep/objects/BasicGrammar_inl.h"
+
+DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
 
 namespace DD4hep {
+
+  //DD4HEP_DEFINE_PROPERTY_TYPE(Property);
+  template Property Property::value() const;
+  template void Property::value(Property& value) const;
+  template void Property::set(const Property& value);
+  template void Property::make(Property& value);
+
+
   DD4HEP_DEFINE_PROPERTY_U_CONT(char);
   DD4HEP_DEFINE_PROPERTY_U_CONT(short);
   DD4HEP_DEFINE_PROPERTY_U_CONT(int);

@@ -31,6 +31,10 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
+namespace DD4hep {
+  namespace Simulation {
+
+
 template <typename TYPE> static inline TYPE* checked_value(TYPE* p) {
   if (p) {
     return p;
@@ -182,8 +186,8 @@ template <typename TYPE> Geant4Handle<TYPE>& Geant4Handle<TYPE>::operator=(TYPE*
   return *this;
 }
 
-namespace DD4hep {
-  namespace Simulation {
+//namespace DD4hep {
+//  namespace Simulation {
 
     KernelHandle::KernelHandle()  {
       value = &Geant4Kernel::instance(Geometry::LCDD::getInstance());
@@ -216,8 +220,7 @@ namespace DD4hep {
                           format("Geant4Handle<Geant4Sensitive>", "Failed to create sensitive object of type %s for detector %s!",
                                  type_name.c_str(), detector.c_str()));
     }
-  }
-}
+  
 
 template class Geant4Handle<Geant4Action> ;
 template class Geant4Handle<Geant4Filter> ;
@@ -240,3 +243,5 @@ template class Geant4Handle<Geant4TrackingActionSequence> ;
 template class Geant4Handle<Geant4SteppingActionSequence> ;
 template class Geant4Handle<Geant4StackingActionSequence> ;
 template class Geant4Handle<Geant4SensDetActionSequence> ;
+  }
+}
