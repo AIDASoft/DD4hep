@@ -16,10 +16,26 @@
 
 using namespace std;
 
-static size_t _the_printer(void*, DD4hep::PrintLevel, const char* src, const char* text) {
-  size_t len = ::fputs(src, stdout);
-  len += fputs(": ", stdout);
-  len += fputs(text, stdout);
+static size_t _the_printer(void*, DD4hep::PrintLevel lvl, const char* src, const char* text) {
+  const char* p_lvl = "?????";
+  if ( lvl> DD4hep::ALWAYS ) lvl = DD4hep::ALWAYS;
+  if ( lvl< DD4hep::NOLOG  ) lvl = DD4hep::NOLOG;
+  switch(lvl)   {
+  case DD4hep::NOLOG:     p_lvl = "NOLOG"; break;
+  case DD4hep::VERBOSE:   p_lvl = "VERB "; break;
+  case DD4hep::DEBUG:     p_lvl = "DEBUG"; break;
+  case DD4hep::INFO:      p_lvl = "INFO "; break;
+  case DD4hep::WARNING:   p_lvl = "WARN "; break;
+  case DD4hep::ERROR:     p_lvl = "ERROR"; break;
+  case DD4hep::FATAL:     p_lvl = "FATAL"; break;
+  case DD4hep::ALWAYS:    p_lvl = "     "; break;
+  default:                                 break;
+  }
+
+  size_t len = ::fprintf(stdout, "%-16s %5s %s",src,p_lvl,text);
+  // size_t len = ::fputs(src, stdout);
+  // len += fputs(": ", stdout);
+  // len += fputs(text, stdout);
   ::fflush(stdout);
   return len;
 }

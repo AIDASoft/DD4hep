@@ -9,6 +9,7 @@
 
 // Framework includes
 #include "DD4hep/Plugins.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/FieldTypes.h"
 #include "DD4hep/Segmentations.h"
@@ -45,6 +46,7 @@
 #include "TMath.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <iomanip>
 
 using namespace DD4hep::Geometry;
@@ -179,9 +181,11 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
         obj.setAttr(_U(ref), elt->GetName());
       }
     }
-    else {
+    else if ( name != "dummy" )   {  
+      // Do not exactly know where dummy comes from,
+      // but it causes havoc in Geant4 later
       TGeoElement *elt = m->GetElement(0);
-      cout << "Converting non mixing material:" << name << endl;
+      printout(INFO,"++ Converting non mixing material: %s",name.c_str());
       xml_elt_t atom(geo.doc, _U(atom));
       handleElement(elt->GetName(), Atom(elt));
       mat.append(atom);
@@ -703,7 +707,7 @@ void LCDDConverter::collectVolume(const string& /* name */, const TGeoVolume* vo
       geo.sensitives.insert(det);
   }
   else {
-    cout << "LCDDConverter::collectVolume: Skip volume:" << volume->GetName() << endl;
+    printout(WARNING,"LCDDConverter","++ CollectVolume: Skip volume: %s",volume->GetName());
   }
 }
 
@@ -711,18 +715,20 @@ void LCDDConverter::checkVolumes(const string& /* name */, Volume v) const {
   string n = v.name()+_toString(v.ptr(),"_%p");
   NameSet::const_iterator i = m_checkNames.find(n);
   if (i != m_checkNames.end()) {
-    cout << "checkVolumes: Volume " << n << " ";
+    stringstream str;
+    str << "++ CheckVolumes: Volume " << n << " ";
     if (is_volume(v.ptr()))     {
       SensitiveDetector s = v.sensitiveDetector();
       VisAttr vis = v.visAttributes();
       if (s.isValid()) {
-        cout << "of " << s.name() << " ";
+        str << "of " << s.name() << " ";
       }
       else if (vis.isValid()) {
-        cout << "with VisAttrs " << vis.name() << " ";
+        str << "with VisAttrs " << vis.name() << " ";
       }
     }
-    cout << "has duplicate entries." << endl;
+    str << "has duplicate entries." << endl;
+    printout(ERROR,"LCDDConverter",str.str().c_str());
     return;
   }
   m_checkNames.insert(n);
@@ -948,8 +954,8 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     field = xml_elt_t(geo.doc, Unicode(type));
     field.setAttr(_U(name), f->GetName());
     fld = PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
-    cout << "++ " << (fld.isValid() ? "Converted" : "FAILED    to convert ") << " electromagnetic field:" << f->GetName()
-         << " of type " << type << endl;
+    printout(ALWAYS,"LCDDConverter","++ %s electromagnetic field:%s of type %s",
+	     (fld.isValid() ? "Converted" : "FAILED    to convert "), f->GetName(), type.c_str());
     if (!fld.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
@@ -1003,7 +1009,7 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp) const {
     if (result != 1) {
       throw runtime_error("Failed to invoke the plugin " + tag + " of type " + type);
     }
-    cout << "+++++ Executed Successfully LCDD setup module *" << type << "* ." << endl;
+    printout(INFO,"","+++ Executed Successfully LCDD setup module %s.",type.c_str());
   }
 }
 
@@ -1011,18 +1017,22 @@ void LCDDConverter::handleProperties(LCDD::Properties& prp) const {
 void LCDDConverter::handleHeader() const {
   GeometryInfo& geo = data();
   Header hdr = m_lcdd.header();
-  xml_h obj;
-  geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(detector)));
-  obj.setAttr(_U(name), hdr.name());
-  geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(generator)));
-  obj.setAttr(_U(name), "LCDDConverter");
-  obj.setAttr(_U(version), hdr.version());
-  obj.setAttr(_U(file), hdr.url());
-  obj.setAttr(_U(checksum), Unicode(m_lcdd.constantAsString("compact_checksum")));
-  geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(author)));
-  obj.setAttr(_U(name), hdr.author());
-  geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(comment)));
-  obj.setText(hdr.comment());
+  if ( hdr.isValid() )  {
+    xml_h obj;
+    geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(detector)));
+    obj.setAttr(_U(name), hdr.name());
+    geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(generator)));
+    obj.setAttr(_U(name), "LCDDConverter");
+    obj.setAttr(_U(version), hdr.version());
+    obj.setAttr(_U(file), hdr.url());
+    obj.setAttr(_U(checksum), Unicode(m_lcdd.constantAsString("compact_checksum")));
+    geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(author)));
+    obj.setAttr(_U(name), hdr.author());
+    geo.doc_header.append(obj = xml_elt_t(geo.doc, _U(comment)));
+    obj.setText(hdr.comment());
+    return;
+  }
+  printout(WARNING,"LCDDConverter","+++ No LCDD header information availible from the geometry description.");
 }
 
 template <typename O, typename C, typename F> void handle(const O* o, const C& c, F pmf) {
@@ -1052,7 +1062,7 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
   m_data->clear();
   collect(top, geo);
 
-  cout << "++ ==> Converting in memory detector description to GDML format..." << endl;
+  printout(ALWAYS,"LCDDConverter","++ ==> Converting in memory detector description to GDML format...");
   const char* comment = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description GDML in C++  ++++\n"
@@ -1092,16 +1102,16 @@ xml_doc_t LCDDConverter::createGDML(DetElement top) {
 
   // Start creating the objects for materials, solids and log volumes.
   handle(this, geo.materials, &LCDDConverter::handleMaterial);
-  cout << "++ Handled " << geo.materials.size() << " materials." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld materials.",geo.materials.size());
 
   handle(this, geo.volumes, &LCDDConverter::collectVolume);
-  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Collected %ld volumes.",geo.volumes.size());
 
   handle(this, geo.solids, &LCDDConverter::handleSolid);
-  cout << "++ Handled " << geo.solids.size() << " solids." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld solids.",geo.solids.size());
 
   handle(this, geo.volumes, &LCDDConverter::handleVolume);
-  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld volumes.",geo.volumes.size());
 
   m_checkNames.clear();
   handle(this, geo.volumes, &LCDDConverter::checkVolumes);
@@ -1117,7 +1127,7 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
   m_data->clear();
   collect(top, geo);
-  cout << "++ ==> Dump visualisation attributes from in memory detector description..." << endl;
+  printout(ALWAYS,"LCDDConverter","++ ==> Dump visualisation attributes from in memory detector description...");
   const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description LCDD in C++  ++++\n"
@@ -1138,7 +1148,7 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
 
   handle(this, geo.volumes, &LCDDConverter::collectVolume);
   handle(this, geo.volumes, &LCDDConverter::handleVolumeVis);
-  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld volumes.",geo.volumes.size());
   return geo.doc;
 }
 
@@ -1194,35 +1204,35 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   for (LCDD::HandleMap::const_iterator i = fld.begin(); i != fld.end(); ++i)
     geo.fields.insert((*i).second);
 
-  cout << "++ ==> Converting in memory detector description to LCDD format..." << endl;
+  printout(ALWAYS,"LCDDConverter","++ ==> Converting in memory detector description to LCDD format...");
   handleHeader();
   // Start creating the objects for materials, solids and log volumes.
   handle(this, geo.materials, &LCDDConverter::handleMaterial);
-  cout << "++ Handled " << geo.materials.size() << " materials." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld materials.",geo.materials.size());
 
   handle(this, geo.volumes, &LCDDConverter::collectVolume);
-  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Collected %ld volumes.",geo.volumes.size());
 
   handle(this, geo.solids, &LCDDConverter::handleSolid);
-  cout << "++ Handled " << geo.solids.size() << " solids." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld solids.",geo.solids.size());
 
   handle(this, geo.vis, &LCDDConverter::handleVis);
-  cout << "++ Handled " << geo.solids.size() << " visualization attributes." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld visualization attributes.",geo.vis.size());
 
   handle(this, geo.sensitives, &LCDDConverter::handleSensitive);
-  cout << "++ Handled " << geo.sensitives.size() << " sensitive detectors." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld sensitive detectors.",geo.sensitives.size());
 
   handle(this, geo.limits, &LCDDConverter::handleLimitSet);
-  cout << "++ Handled " << geo.limits.size() << " limit sets." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld limit sets.",geo.limits.size());
 
   handle(this, geo.regions, &LCDDConverter::handleRegion);
-  cout << "++ Handled " << geo.regions.size() << " regions." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld regions.",geo.regions.size());
 
   handle(this, geo.volumes, &LCDDConverter::handleVolume);
-  cout << "++ Handled " << geo.volumes.size() << " volumes." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld volumes.",geo.volumes.size());
 
   handle(this, geo.fields, &LCDDConverter::handleField);
-  cout << "++ Handled " << geo.fields.size() << " fields." << endl;
+  printout(ALWAYS,"LCDDConverter","++ Handled %ld fields.",geo.fields.size());
 
   m_checkNames.clear();
   handle(this, geo.volumes, &LCDDConverter::checkVolumes);

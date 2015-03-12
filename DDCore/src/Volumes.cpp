@@ -646,11 +646,11 @@ const Volume& Volume::setVisAttributes(const LCDD& lcdd, const string& nam) cons
 }
 
 /// Attach attributes to the volume
-const Volume& Volume::setAttributes(const LCDD& lcdd, const string& region, const string& limits, const string& vis) const {
-  if (!region.empty())
-    setRegion(lcdd.region(region));
-  if (!limits.empty())
-    setLimitSet(lcdd.limitSet(limits));
+const Volume& Volume::setAttributes(const LCDD& lcdd, const string& rg, const string& ls, const string& vis) const {
+  if (!rg.empty())
+    setRegion(lcdd.region(rg));
+  if (!ls.empty())
+    setLimitSet(lcdd.limitSet(ls));
   setVisAttributes(lcdd, vis);
   return *this;
 }
