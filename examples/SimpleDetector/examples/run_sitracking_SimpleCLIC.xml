@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<!--##########################################
+    #                                        #
+    #     Example steering file for marlin   #
+    #                                        #
+    ##########################################-->
+
+
+<marlin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ilcsoft.desy.de/marlin/marlin.xsd">
+ <execute>
+   <processor name="MyAIDAProcessor"/>
+   
+   <processor name="MySplitCollectionByLayer" />
+   
+   <!-- ========== track digitization and tracking  === -->
+   <processor name="VXDPlanarDigiProcessor"/>
+   <processor name="SITPlanarDigiProcessor"/>
+
+   <processor name="MySiliconTracking_MarlinTrk"/>
+
+   <processor name="MyExtrToTracker"/>
+   
+   <processor name="MyLCIOOutputProcessor"/>  
+
+ </execute>
+
+ <global>
+  <parameter name="LCIOInputFiles"> simjob.slcio </parameter>
+  <!-- limit the number of processed records (run+evt): -->  
+  <parameter name="MaxRecordNumber" value="0" />  
+  <parameter name="SkipNEvents" value="0" />  
+  <parameter name="SupressCheck" value="false" />  
+  <parameter name="GearXMLFile" value="gear_Simple_CLIC.xml"/>
+  <parameter name="DD4hepXMLFile" value="/Users/gaede/DD4hep/trunk/examples/SimpleDetector/compact/Simple_CLIC.xml"/>
+
+  <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT"> MESSAGE DEBUG0 </parameter> 
+  <parameter name="RandomSeed" value="1234567890" />
+  <!-- optionally limit the collections that are read from the input file: -->  
+  <!--parameter name="LCIOReadCollectionNames">MCParticle PandoraPFOs</parameter-->
+ </global>
+
+
+ <processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
+  <!--   standard output: full reconstruction keep all collections -->
+  <parameter name="LCIOOutputFile" type="string" >
+       sitracks_outputfile.slcio
+  </parameter>
+  <parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>
+  <!--parameter name="SplitFileSizekB" type="int" value="1992294"/-->
+ </processor>
+
+
+  <processor name="MySplitCollectionByLayer" type="SplitCollectionByLayer">
+    <!--split a hit collection based on the layer number of the hits -->
+    <!--Name of the input collection with hits-->
+    <parameter name="InputCollection" type="string">FTDCollection </parameter>
+    <!--Name of the output collection with start and end layer number-->
+    <parameter name="OutputCollections" type="StringVec">FTD_PIXELCollection 0 1 FTD_STRIPCollection 2 6  </parameter>
+    <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
+    <!-- <parameter name="Verbosity" type="string">DEBUG </parameter> -->
+  </processor>
+
+ <processor name="VXDPlanarDigiProcessor" type="DDPlanarDigiProcessor">
+  <!--ID of Sub-Detector from UTIL/ILDConf.h from lcio. Either for VXD, SIT or SET-->
+  <parameter name="Sub_Detector_ID" type="int">1 </parameter>
+  <!--PlanarDigiProcessor creates TrackerHits from SimTrackerHits, smearing them according to the input parameters.-->
+   <!--whether hits are 1D strip hits-->
+   <parameter name="IsStrip" type="bool">false </parameter>
+   <!--resolution in direction of u-->
+   <parameter name="ResolutionU" type="float"> 0.0028 0.006 0.004 0.004 0.004 0.004 </parameter>
+   <!--resolution in direction of v-->
+   <parameter name="ResolutionV" type="float"> 0.0028 0.006 0.004 0.004 0.004 0.004  </parameter>
+   <!--Name of the Input SimTrackerHit collection-->
+   <parameter name="SimTrackHitCollectionName" type="string" lcioInType="SimTrackerHit">VXDCollection </parameter>
+   <!--Name of TrackerHit SimTrackHit relation collection-->
+   <parameter name="SimTrkHitRelCollection" type="string" lcioOutType="LCRelation">VXDTrackerHitRelations </parameter>
+   <!--Name of the TrackerHit output collection-->
+   <parameter name="TrackerHitCollectionName" type="string" lcioOutType="TrackerHitPlane">VXDTrackerHits </parameter>
+   <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
+   <!--parameter name="Verbosity" type="string">DEBUG </parameter-->
+ </processor>
+ 
+
+ <processor name="SITPlanarDigiProcessor" type="DDPlanarDigiProcessor">
+   <!--PlanarDigiProcessor creates TrackerHits from SimTrackerHits, smearing them according to the input parameters.-->
+  <!--ID of Sub-Detector from UTIL/ILDConf.h from lcio. Either for VXD, SIT or SET-->
+  <parameter name="Sub_Detector_ID" type="int">2 </parameter>
+  <!--whether hits are 1D strip hits-->
+  <parameter name="IsStrip" type="bool"> true </parameter>
+   <!--resolution in direction of u-->
+   <parameter name="ResolutionU" type="float">0.007 </parameter>
+   <!--resolution in direction of v-->
+   <parameter name="ResolutionV" type="float">0.00 </parameter>
+   <!--Name of the Input SimTrackerHit collection-->
+   <parameter name="SimTrackHitCollectionName" type="string" lcioInType="SimTrackerHit">SITCollection </parameter>
+   <!--Name of TrackerHit SimTrackHit relation collection-->
+   <parameter name="SimTrkHitRelCollection" type="string" lcioOutType="LCRelation">SITTrackerHitRelations </parameter>
+   <!--Name of the TrackerHit output collection-->
+   <parameter name="TrackerHitCollectionName" type="string" lcioOutType="TrackerHitPlane">SITTrackerHits </parameter>
+   <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
+   <!--parameter name="Verbosity" type="string">DEBUG </parameter-->
+ </processor>
+
+
+ <processor name="MySiliconTracking_MarlinTrk" type="SiliconTracking_MarlinTrk">
+ <!--Pattern recognition in silicon trackers-->
+   <!--Name of the track fitting system to be used (KalTest, DDKalTest, aidaTT, ... )-->
+  <parameter name="TrackSystemName" type="string">DDKalTest </parameter>
+  <!--Angle Cut For Merging-->
+  <parameter name="AngleCutForMerging" type="float">0.1 </parameter>
+  <!--Check for Delta rays hits in hit-to-track assignment-->
+  <parameter name="CheckForDelta" type="int">1 </parameter>
+  <!--Chi2 Fit Cut-->
+  <parameter name="Chi2FitCut" type="float">120 </parameter>
+  <!--Chi2 Prefit Cut-->
+  <parameter name="Chi2PrefitCut" type="float">1e+10 </parameter>
+  <!--Chi2WRphiQuartet-->
+  <parameter name="Chi2WRphiQuartet" type="float">1 </parameter>
+  <!--Chi2WRphiSeptet-->
+  <parameter name="Chi2WRphiSeptet" type="float">1 </parameter>
+  <!--Chi2WRphiTriplet-->
+  <parameter name="Chi2WRphiTriplet" type="float">1 </parameter>
+  <!--Chi2WZQuartet-->
+  <parameter name="Chi2WZQuartet" type="float">0.5 </parameter>
+  <!--Chi2WZSeptet-->
+  <parameter name="Chi2WZSeptet" type="float">0.5 </parameter>
+  <!--Chi2WZTriplet-->
+  <parameter name="Chi2WZTriplet" type="float">0.5 </parameter>
+  <!--cut on D0 for tracks-->
+  <parameter name="CutOnD0" type="float">100 </parameter>
+  <!--cut on Pt-->
+  <parameter name="CutOnPt" type="float">0.05 </parameter>
+  <!--cut on Z0 for tracks-->
+  <parameter name="CutOnZ0" type="float">100 </parameter>
+  <!--Use Energy Loss in Fit-->
+  <parameter name="EnergyLossOn" type="bool"> true </parameter>
+  <!--FTD Pixel Hit Collection Name-->
+  <parameter name="FTDPixelHitCollectionName" type="string" lcioInType="TrackerHitPlane"> FTDPixelTrackerHits </parameter>
+  <!--FTD FTDSpacePoint Collection Name-->
+  <parameter name="FTDSpacePointCollection" type="string" lcioInType="TrackerHit"> FTDSpacePoints </parameter>
+  <!--Fast attachment-->
+  <parameter name="FastAttachment" type="int">0 </parameter>
+  <!--Value used for the initial d0 variance of the trackfit-->
+  <parameter name="InitialTrackErrorD0" type="float">1e+06 </parameter>
+  <!--Value used for the initial omega variance of the trackfit-->
+  <parameter name="InitialTrackErrorOmega" type="float">0.0001 </parameter>
+  <!--Value used for the initial phi0 variance of the trackfit-->
+  <parameter name="InitialTrackErrorPhi0" type="float">100 </parameter>
+  <!--Value used for the initial tanL variance of the trackfit-->
+  <parameter name="InitialTrackErrorTanL" type="float">100 </parameter>
+  <!--Value used for the initial z0 variance of the trackfit-->
+  <parameter name="InitialTrackErrorZ0" type="float">1e+06 </parameter>
+  <!--Combinations of Hits in Layers-->
+  <parameter name="LayerCombinations" type="IntVec"> 
+    8 6 5  8 6 4  8 6 3  8 6 2
+    8 5 3  8 5 2  8 4 3  8 4 2
+    6 5 3  6 5 2  6 4 3  6 4 2
+    6 3 1  6 3 0  6 2 1  6 2 0
+    5 3 1  5 3 0  5 2 1  5 2 0
+    4 3 1  4 3 0  4 2 1  4 2 0
+  </parameter>
+  <!--Combinations of Hits in FTD-->
+  <parameter name="LayerCombinationsFTD" type="IntVec"> 
+    13 11  9    13 11 8    13 10 9    13 10 8
+    12 11  9    12 11 8    12 10 9    12 10 8
+    11  9  7    11  9 6    11  8 7    11  8 6 
+    10  9  7    10  9 6    10  8 7    10  8 6
+    9  7  5     9  7 4     9  6 5     9  6 4
+    8  7  5     8  7 4     8  6 5     8  6 4
+    7  5  3     7  5 2     7  4 3     7  4 2
+    6  5  3     6  5 2     6  4 3     6  4 2
+    5  3  1     5  3 0     5  2 1     5  2 0
+    4  3  1     4  3 0     4  2 1     4  2 0
+  </parameter>
+  <!--Maximum Chi-squared value allowed when assigning a hit to a track-->
+  <parameter name="MaxChi2PerHit" type="double">100 </parameter>
+  <!--Maximal number of hits allowed in one theta-phi sector in VXD/SIT and FTD-->
+  <parameter name="MaxHitsPerSector" type="int">100 </parameter>
+  <!--MinDistCutAttach-->
+  <parameter name="MinDistCutAttach" type="float">2.5 </parameter>
+  <!--Minimal distance of track hit to the delta electron hit-->
+  <parameter name="MinDistToDelta" type="float">0.25 </parameter>
+  <!--MinLayerToAttach-->
+  <parameter name="MinLayerToAttach" type="int">-1 </parameter>
+  <!--minimal hits-->
+  <parameter name="MinimalHits" type="int">3 </parameter>
+  <!--Use MultipleScattering in Fit-->
+  <parameter name="MultipleScatteringOn" type="bool">true </parameter>
+  <!--Number of divisions in Phi-->
+  <parameter name="NDivisionsInPhi" type="int"> 80 </parameter>
+  <!--Number of divisions in Phi for FTD-->
+  <parameter name="NDivisionsInPhiFTD" type="int"> 30 </parameter>
+  <!--Number of divisions in Theta-->
+  <parameter name="NDivisionsInTheta" type="int"> 80 </parameter>
+  <!--Maximal number of hits for which a track with n hits is better than one with n-1hits. (defaut 5)-->
+  <parameter name="NHitsChi2" type="int">5 </parameter>
+  <!--Run MarlinTrk Diagnostics. MarlinTrk must be compiled with MARLINTRK_DIAGNOSTICS_ON defined-->
+  <parameter name="RunMarlinTrkDiagnostics" type="bool">false </parameter>
+  <!--SIT Hit Collection Name-->
+  <parameter name="SITHitCollectionName" type="string" lcioInType="TrackerHit"> XXXXSITTrackerHits SITSpacePoints </parameter>
+  <!--Silicon track Collection Name-->
+  <parameter name="SiTrackCollectionName" type="string" lcioOutType="Track">  SiTracks MarlinTrkTracks </parameter>
+ <!--Smooth All Mesurement Sites in Fit-->
+  <parameter name="SmoothOn" type="bool"> false </parameter>
+  <!--Use SIT-->
+  <parameter name="UseSIT" type="int">1 </parameter>
+  <!--UseEventDisplay-->
+  <parameter name="UseEventDisplay" type="bool"> false </parameter>
+  <!--VTX Hit Collection Name-->
+  <parameter name="VTXHitCollectionName" type="string" lcioInType="TrackerHitPlane">VXDTrackerHits </parameter>
+  <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
+  <!--parameter name="Verbosity" type="string">DEBUG </parameter-->
+</processor>
+
+  <processor name="MyExtrToTracker" type="ExtrToTracker">
+  <!--processor name="MyExtrToTracker" type="DDExtrToSITSimple"-->
+
+     <!--perform a final refit of the extrapolated track-->
+    <parameter name="PerformFinalRefit" type="bool">false </parameter>
+    <!--ExtrToSIT refits an input track collection (TPC or VXD), and used IMarlinTrk tools to propagate it to SIT-->
+    <!--Name of the input track collection-->
+    <parameter name="InputTrackCollectionName" type="string" lcioInType="Track">SiTracks </parameter>
+    <!--Name of the MCParticle-Track Relations collection for input tracks-->
+    <!-- <parameter name="InputTrackRelCollection" type="string" lcioInType="LCRelation">TruthTracksMCP </parameter> -->
+    <!--Name of the output track collection-->
+    <parameter name="OutputTrackCollectionName" type="string" lcioOutType="Track">ExtrapolatedTracks </parameter>
+    <!--Name of the MCParticle-Track Relations collection for output tracks-->
+    <parameter name="OutputTrackRelCollection" type="string" lcioOutType="LCRelation">ExtrapolatedTracksRelation </parameter>
+    <!--Which layer should the seed be propagated to-->
+    <parameter name="PropagateToLayer" type="int">4 </parameter>
+    <parameter name="Max_Chi2_Incr" type="double">1000. </parameter>
+    <!--Name of the lcrelation collections, that link the TrackerHits to their SimTrackerHits.-->
+    <parameter name="TrackerHitsRelInputCollections" type="StringVec" lcioInType="LCRelation">VXDTrackerHitRelations SITTrackerHitRelations  </parameter>
+    <!--Name of the SITTrackerHit collection-->
+    <parameter name="digitisedSITHits" type="string" lcioInType="TrackerHitPlane">SITTrackerHits </parameter>
+    <!--Name of the VTXTrackerHit collection-->
+    <parameter name="digitisedVXDHits" type="string" lcioInType="TrackerHitPlane">VXDTrackerHits </parameter>
+    <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
+    <parameter name="Verbosity" type="string">MESSAGE </parameter>
+</processor>
+
+ <processor name="MyAIDAProcessor" type="AIDAProcessor">
+ <!--Processor that handles AIDA files. Creates on directory per processor.  Processors only need to create and fill the histograms, clouds and tuples. Needs to be the first ActiveProcessor-->
+  <!-- compression of output file 0: false >0: true (default) -->
+  <parameter name="Compress" type="int" value="1"/>
+  <!-- filename without extension-->
+  <parameter name="FileName" type="string" value="bbudsc_3evt_stdreco"/>
+  <!-- type of output file xml (default) or root ( only OpenScientist)-->
+  <parameter name="FileType" type="string" value="root "/>
+</processor>
+
+</marlin>

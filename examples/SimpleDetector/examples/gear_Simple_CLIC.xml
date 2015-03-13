@@ -1,0 +1,71 @@
+<gear>
+    <global detectorName="Simple_CLIC" />
+    <!--Gear XML file automatically created with GearXML::createXMLFile ....-->
+    <BField type="ConstantBField" x="6.940990173e-297" y="1.976262583e-310" z="3.500000000e+00" />
+    <detectors>
+        <detector name="VXD" geartype="ZPlanarParameters">
+            <type technology="CMOS" />
+            <shell halfLength="0.000000000e+00" gap="0.000000000e+00" innerRadius="0.000000000e+00" outerRadius="0.000000000e+00" radLength="0.000000000e+00" />
+            <layers>
+                <layer nLadders="10" phi0="-1.570796327e+00">
+                    <ladder distance="1.600000000e+01" thickness="1.000000000e+00" width="1.150000000e+01" length="6.250000000e+01" offset="-3.406041308e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="1.595000000e+01" thickness="5.000000000e-02" width="1.100000000e+01" length="6.250000000e+01" offset="-3.156041308e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="10" phi0="-1.570796327e+00">
+                    <ladder distance="1.700000000e+01" thickness="1.000000000e+00" width="1.150000000e+01" length="6.250000000e+01" offset="-3.406041308e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="1.800000000e+01" thickness="5.000000000e-02" width="1.100000000e+01" length="6.250000000e+01" offset="-3.156041308e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="11" phi0="-1.570796327e+00">
+                    <ladder distance="3.700000000e+01" thickness="1.000000000e+00" width="2.250000000e+01" length="1.250000000e+02" offset="-3.502631742e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="3.695000000e+01" thickness="5.000000000e-02" width="2.200000000e+01" length="1.250000000e+02" offset="-3.252631742e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="11" phi0="-1.570796327e+00">
+                    <ladder distance="3.800000000e+01" thickness="1.000000000e+00" width="2.250000000e+01" length="1.250000000e+02" offset="-3.502631742e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="3.900000000e+01" thickness="5.000000000e-02" width="2.200000000e+01" length="1.250000000e+02" offset="-3.252631742e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="17" phi0="-1.570796327e+00">
+                    <ladder distance="5.800000000e+01" thickness="1.000000000e+00" width="2.250000000e+01" length="1.250000000e+02" offset="-5.128151357e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="5.795000000e+01" thickness="5.000000000e-02" width="2.200000000e+01" length="1.250000000e+02" offset="-4.878151357e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="17" phi0="-1.570796327e+00">
+                    <ladder distance="5.900000000e+01" thickness="1.000000000e+00" width="2.250000000e+01" length="1.250000000e+02" offset="-5.128151357e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="6.000000000e+01" thickness="5.000000000e-02" width="2.200000000e+01" length="1.250000000e+02" offset="-4.878151357e+00" radLength="0.000000000e+00" />
+                </layer>
+            </layers>
+        </detector>
+        <detector name="SIT" geartype="ZPlanarParameters">
+            <type technology="CCD" />
+            <shell halfLength="0.000000000e+00" gap="0.000000000e+00" innerRadius="0.000000000e+00" outerRadius="0.000000000e+00" radLength="0.000000000e+00" />
+            <layers>
+                <layer nLadders="14" phi0="0.000000000e+00">
+                    <ladder distance="2.289750000e+02" thickness="1.000000000e+00" width="1.045240991e+02" length="4.300000000e+02" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="2.299750000e+02" thickness="5.000000000e-02" width="1.049805860e+02" length="4.300000000e+02" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="33" phi0="0.000000000e+00">
+                    <ladder distance="5.339750000e+02" thickness="1.000000000e+00" width="1.019768606e+02" length="7.420000000e+02" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="5.349750000e+02" thickness="5.000000000e-02" width="1.021678374e+02" length="7.420000000e+02" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="52" phi0="0.000000000e+00">
+                    <ladder distance="8.389750000e+02" thickness="1.000000000e+00" width="1.014972760e+02" length="1.053000000e+03" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="8.399750000e+02" thickness="5.000000000e-02" width="1.016182537e+02" length="1.053000000e+03" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="71" phi0="0.000000000e+00">
+                    <ladder distance="1.143975000e+03" thickness="1.000000000e+00" width="1.013028382e+02" length="1.365000000e+03" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="1.144975000e+03" thickness="5.000000000e-02" width="1.013913915e+02" length="1.365000000e+03" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                </layer>
+                <layer nLadders="91" phi0="0.000000000e+00">
+                    <ladder distance="1.448975000e+03" thickness="1.000000000e+00" width="1.000856819e+02" length="1.676000000e+03" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                    <sensitive distance="1.449975000e+03" thickness="5.000000000e-02" width="1.001547554e+02" length="1.676000000e+03" offset="0.000000000e+00" radLength="0.000000000e+00" />
+                </layer>
+            </layers>
+            <parameter name="strip_angle_deg" type="double" value="0.000000000e+00" />
+            <parameter name="strip_length_mm" type="double" value="0.000000000e+00" />
+            <parameter name="strip_pitch_mm" type="double" value="0.000000000e+00" />
+            <parameter name="strip_width_mm" type="double" value="0.000000000e+00" />
+            <parameter name="n_sensors_per_ladder" type="IntVec" value="1 1 1 1 1" />
+        </detector>
+    </detectors>
+    <materials>
+        <material name="VXDSupportMaterial" A="1.195637553e+01" Z="6.002956028e+00" density="1.466666667e+03" radLength="2.881919679e+02" intLength="5.468271343e+02" />
+    </materials>
+</gear>
