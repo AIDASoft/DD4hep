@@ -118,6 +118,10 @@ namespace DD4hep {
       double phi0() const;
       /// Access parameters: phi0, if not present returns default
       double phi0(double default_value) const;
+      /// Access rotation constants: phi0_offset
+      double phi0_offset() const;
+      /// Access parameters: phi0_offset, if not present returns default
+      double phi0_offset(double default_value) const;
       /// Access rotation constants: phi1
       double phi1() const;
       /// Access parameters: phi1, if not present returns default
@@ -430,6 +434,13 @@ namespace DD4hep {
 
       /// Access attribute values: numsides
       int numsides() const;
+      /// Access attribute values: nsides
+      int nsides() const;
+      /// Access attribute values: nsides_inner
+      int nsides_inner() const;
+      /// Access attribute values: nsides_outer
+      int nsides_outer() const;
+
 
       /// Access attribute values: phi_tilt
       double phi_tilt() const;

@@ -239,6 +239,9 @@ namespace DD4hep {
     UNICODE (ntheta);
     UNICODE (number);
     UNICODE (numsides);
+    UNICODE (nsides);
+    UNICODE (nsides_inner);
+    UNICODE (nsides_outer);
     UNICODE (nz);
 
     UNICODE (o);
@@ -266,6 +269,7 @@ namespace DD4hep {
     UNICODE (particles);
     UNICODE (phi);
     UNICODE (phi0);
+    UNICODE (phi0_offset);
     UNICODE (phi1);
     UNICODE (phi_tilt);
     UNICODE (phiBins);
