@@ -12,7 +12,7 @@
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorData.h"
-
+#include <exception>
 
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
@@ -38,6 +38,13 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   double minRadius = 1e99 ;
   double minZhalf = 1e99 ;
+
+
+  bool isStripDetector = false ;
+  try {
+    isStripDetector = x_det.attr<bool>( "isStripDetector" ) ;
+
+  } catch(std::runtime_error ){}
 
   //=========  loop over layer elements in xml  ======================================
 
@@ -146,7 +153,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double inner_thickness = ( sens_distance > supp_distance ?  ( sens_distance - supp_distance ) + sens_thickness/2  : sens_thickness/2 ) ;
     double outer_thickness = ( sens_distance > supp_distance ?    sens_thickness/2  :  ( supp_distance - sens_distance ) + supp_thickness - sens_thickness/2   ) ;
     
-    VolPlane surf( sens_vol , SurfaceType(SurfaceType::Sensitive) , inner_thickness , outer_thickness , u,v,n ) ; //,o ) ;
+    SurfaceType type( SurfaceType::Sensitive ) ;
+
+    if( isStripDetector ) 
+      type.setProperty( SurfaceType::Measurement1D , true ) ;
+
+    VolPlane surf( sens_vol , type , inner_thickness , outer_thickness , u,v,n ) ; //,o ) ;
 
     //--------------------------------------------
      

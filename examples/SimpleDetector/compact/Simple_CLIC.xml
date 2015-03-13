@@ -64,12 +64,10 @@
 
       <detector name="VXD" type="ZPlanarTracker" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
         <layer nLadders="10" phi0="-1.570796327e+00*rad" id="0">
-          <!-- <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.050000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="Lead" /> -->
           <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.050000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
           <sensitive distance="1.595000000e+01*mm" thickness="5.000000000e-02*mm" width="1.100000000e+01*mm" length="6.250000000e+01*mm" offset="-3.156041308e+00*mm" material="G4_Si"/>
         </layer>
         <layer nLadders="10" phi0="-1.570796327e+00*rad" id="1">
-          <!-- <ladder distance="1.700000000e+01*mm" thickness="1.000000000e+00*mm" width="1.0500000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="Lead" /> -->
           <ladder distance="1.700000000e+01*mm" thickness="1.000000000e+00*mm" width="1.0500000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
           <sensitive distance="1.800000000e+01*mm" thickness="5.000000000e-02*mm" width="1.100000000e+01*mm" length="6.250000000e+01*mm" offset="-3.156041308e+00*mm" material="G4_Si"/>
         </layer>
@@ -91,7 +89,7 @@
         </layer>
       </detector>
 
-      <detector name="SIT" type="ZPlanarTracker" vis="SITVis" id="2" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true">
+      <detector name="SIT" type="ZPlanarTracker" vis="SITVis" id="2" limits="Tracker_limits" readout="SITCollection" insideTrackingVolume="true" isStripDetector="true" >
       	<layer nLadders="14" phi0="0.0" id="0">
       	  <ladder distance="228.975*mm" thickness="1.0*mm" width="104.524099097*mm" length="430.0*mm" offset="0.0*mm" material="CarbonFiber" />
       	  <sensitive distance="229.975*mm" thickness="0.05*mm" width="104.980586046*mm" length="430.0*mm" offset="0.0*mm" material="G4_Si"/>
