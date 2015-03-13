@@ -33,6 +33,16 @@ namespace DD4hep {
      *  prompt. To export properties from any action, call the {\tt{enableUI()}}
      *  method of the action.
      *
+     *  Please note: 
+     *
+     *  Any type of commands may be put together, but the overall execution order
+     *  is as follows:
+     *  1) Execution of the visualization setup (Property: SetupVIS)
+     *  2) Execution of the user interface setup (Property: SetupUI)
+     *  3) Execution of the macro file list (Property: Macros)
+     *  4) Execution of the command list (Property: Commands)
+     *
+     *
      * \author  M.Frank
      * \version 1.0
      */
@@ -44,6 +54,12 @@ namespace DD4hep {
       std::string m_uiSetup;
       /// Property: Name of the visualization macro file
       std::string m_visSetup;
+      /// Property: Array of macro files to be chained
+      std::vector<std::string> m_commands;
+      /// Property: Array of commands to be chained
+      std::vector<std::string> m_macros;
+      /// Property: New prompt if the user wants to change it. (Default is do nothing)
+      std::string m_prompt;
       /// Property: Flag to instantiate Vis manager (default=false, unless m_visSetup set)
       bool        m_haveVis;
       /// Property: Flag to instantiate UI (default=true)

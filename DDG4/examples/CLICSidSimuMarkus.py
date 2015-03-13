@@ -46,7 +46,7 @@ def run():
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI
-  geant4.setupCshUI()
+  geant4.setupCshUI(macro='run.mac',ui=None)
 
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
   field.stepper            = "HelixSimpleRunge"

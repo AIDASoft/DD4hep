@@ -242,11 +242,16 @@ _props('SensDetActionSequenceHandle')
 _props('Geant4PhysicsListActionSequence')
 
 """
-Helper object to perform stuff, which occurs very often.
-I am sick of typing the same over and over again.
+   Helper object to perform stuff, which occurs very often.
+   I am sick of typing the same over and over again.
+   Hence, I grouped often used python fragments to this small
+   class to re-usage.
 
-\author  M.Frank
-\version 1.0
+   Long live laziness!
+
+
+   \author  M.Frank
+   \version 1.0
 
 """
 class Simple:
@@ -261,6 +266,37 @@ class Simple:
     self.sensitive_types['tracker'] = tracker
     self.sensitive_types['calorimeter'] = calo
 
+  """
+     Configure the Geant4 command executive
+
+     \author  M.Frank
+  """
+  def setupUI(self,typ='csh',vis=False,ui=True,macro=None):
+    # Configure UI
+    ui_action = Action(self.kernel,"Geant4UIManager/UI")
+    if vis:      ui_action.HaveVIS = True
+    else:        ui_action.HaveVIS = False
+    if ui:       ui_action.HaveUI  = True
+    else:        ui_action.HaveUI  = False
+    ui_action.SessionType = typ
+    if macro:
+      ui_action.SetupUI = macro
+    self.kernel.registerGlobalAction(ui_action)
+    return ui_action
+
+  """
+     Configure the Geant4 command executive with a csh like command prompt
+
+     \author  M.Frank
+  """
+  def setupCshUI(self,typ='csh',vis=False,ui=True,macro=None):
+    return self.setupUI(typ='csh',vis=vis,ui=ui,macro=macro)
+
+  """
+     Add a new phase action to an arbitrary step.
+
+     \author  M.Frank
+  """
   def addPhaseAction(self,phase_name,factory_specification,ui=True):
     action = PhaseAction(self.kernel,factory_specification)
     self.kernel.phase('configure').add(action)
@@ -268,53 +304,53 @@ class Simple:
     return action
 
   """
-  Add a new phase action to the 'configure' step.
-  Called at the beginning of Geant4Exec::configure.
-  The factory specification is the typical string "<factory_name>/<instance name>".
-  If no instance name is specified it defaults to the factory name.
+     Add a new phase action to the 'configure' step.
+     Called at the beginning of Geant4Exec::configure.
+     The factory specification is the typical string "<factory_name>/<instance name>".
+     If no instance name is specified it defaults to the factory name.
 
-  \author  M.Frank
+     \author  M.Frank
   """
   def addConfig(self, factory_specification):
     return self.addPhaseAction('configure',factory_specification)
 
   """
-  Add a new phase action to the 'initialize' step.
-  Called at the beginning of Geant4Exec::initialize.
-  The factory specification is the typical string "<factory_name>/<instance name>".
-  If no instance name is specified it defaults to the factory name.
+     Add a new phase action to the 'initialize' step.
+     Called at the beginning of Geant4Exec::initialize.
+     The factory specification is the typical string "<factory_name>/<instance name>".
+     If no instance name is specified it defaults to the factory name.
 
-  \author  M.Frank
+     \author  M.Frank
   """
   def addInit(self, factory_specification):
     return self.addPhaseAction('initialize',factory_specification)
 
   """
-  Add a new phase action to the 'start' step.
-  Called at the beginning of Geant4Exec::run.
-  The factory specification is the typical string "<factory_name>/<instance name>".
-  If no instance name is specified it defaults to the factory name.
+     Add a new phase action to the 'start' step.
+     Called at the beginning of Geant4Exec::run.
+     The factory specification is the typical string "<factory_name>/<instance name>".
+     If no instance name is specified it defaults to the factory name.
 
-  \author  M.Frank
+     \author  M.Frank
   """
   def addStart(self, factory_specification):
     return self.addPhaseAction('start',factory_specification)
 
   """
-  Add a new phase action to the 'stop' step.
-  Called at the end of Geant4Exec::run.
-  The factory specification is the typical string "<factory_name>/<instance name>".
-  If no instance name is specified it defaults to the factory name.
+     Add a new phase action to the 'stop' step.
+     Called at the end of Geant4Exec::run.
+     The factory specification is the typical string "<factory_name>/<instance name>".
+     If no instance name is specified it defaults to the factory name.
 
-  \author  M.Frank
+     \author  M.Frank
   """
   def addStop(self, factory_specification):
     return self.addPhaseAction('stop',factory_specification)
 
   """
-  Execute the geant 4 program with all steps.
+     Execute the Geant 4 program with all steps.
 
-  \author  M.Frank
+     \author  M.Frank
   """
   def execute(self):
     self.kernel.configure()
@@ -374,19 +410,11 @@ class Simple:
     self.kernel.generatorAction().add(gun)
     return gun
 
-  def setupUI(self,typ='csh',vis=False,ui=True,macro=None):
-    # Configure UI
-    ui_action = Action(self.kernel,"Geant4UIManager/UI")
-    ui_action.HaveVIS = vis
-    ui_action.HaveUI = ui
-    ui_action.SessionType = typ
-    if macro is not None:
-      ui_action.SetupUI = macro
-    self.kernel.registerGlobalAction(ui_action)
+  """
+     Configure ROOT output for the simulated events
 
-  def setupCshUI(self,typ='csh',vis=False,ui=True,macro=None):
-    self.setupUI(typ='csh',vis=vis,ui=ui,macro=macro)
-
+     \author  M.Frank
+  """
   def setupROOTOutput(self,name,output,mc_truth=True):
     evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)
     evt_root.HandleMCTruth = mc_truth
@@ -396,6 +424,11 @@ class Simple:
     self.kernel.eventAction().add(evt_root)
     return evt_root
 
+  """
+     Configure LCIO output for the simulated events
+
+     \author  M.Frank
+  """
   def setupLCIOOutput(self,name,output):
     evt_lcio = EventAction(self.kernel,'Geant4Output2LCIO/'+name)
     evt_lcio.Control = True
@@ -404,13 +437,28 @@ class Simple:
     self.kernel.eventAction().add(evt_lcio)
     return evt_lcio
 
-  def buildInputStage(self, generator_input_modules, output_level=None):
+  """
+     Generic build of the input stage with multiple input modules.
+
+     Actions executed are:
+     1) Register Generation initialization action
+     2) Append all modules to build the complete input record
+        These modules are readers/particle sources, boosters and/or smearing actions.
+     3) Merge all existing interaction records
+     4) Add the MC truth handler
+
+     \author  M.Frank
+  """
+  def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
     ga = self.kernel.generatorAction()
+    # Register Generation initialization action
     gen = GeneratorAction(self.kernel,"Geant4GeneratorActionInit/GenerationInit")
     if output_level is not None:
       gen.OutputLevel = output_level
     ga.adopt(gen)
 
+    # Now append all modules to build the complete input record
+    # These modules are readers/particle sources, boosters and/or smearing actions
     for gen in generator_input_modules:
       gen.enableUI()
       if output_level is not None:
@@ -425,11 +473,13 @@ class Simple:
     ga.adopt(gen)
 
     # Finally generate Geant4 primaries
-    gen = GeneratorAction(self.kernel,"Geant4PrimaryHandler/PrimaryHandler")
-    gen.enableUI()
-    if output_level is not None:
-      gen.OutputLevel = output_level
-    ga.adopt(gen)
+    if have_mctruth:
+      gen = GeneratorAction(self.kernel,"Geant4PrimaryHandler/PrimaryHandler")
+      gen.enableUI()
+      if output_level is not None:
+        gen.OutputLevel = output_level
+      ga.adopt(gen)
+    # Puuuhh! All done.
     return self
 
 Geant4 = Simple
