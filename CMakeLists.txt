@@ -118,7 +118,7 @@ add_subdirectory(DDDetectors)
 if(DD4HEP_USE_GEANT4)
 
   #--- create a geant4 variables for the thisdd4hep.sh script
-  find_package( Geant4 REQUIRED  gdml ui_all vis_all)
+  find_package( Geant4 9.6 REQUIRED  gdml ui_all vis_all)
 
   include(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs
 

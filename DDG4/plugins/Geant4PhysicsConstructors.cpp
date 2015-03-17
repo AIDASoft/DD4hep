@@ -36,5 +36,5 @@
   #include "Geant4.10.PhysicsConstructors.h"
 // ==================================================================================
 #else
-  #pragma error "Unsupported Geant4 version "
+  #error "Unsupported Geant4 version "
 #endif  /*  G4VERSION_NUMBER>=1000  */
