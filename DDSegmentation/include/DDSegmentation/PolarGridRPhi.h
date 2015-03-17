@@ -75,17 +75,17 @@ public:
 	}
 
 protected:
-	/// the grid size in X
+	/// the grid size in R
 	double _gridSizeR;
-	/// the coordinate offset in X
+	/// the coordinate offset in R
 	double _offsetR;
-	/// the grid size in Y
+	/// the grid size in Phi
 	double _gridSizePhi;
-	/// the coordinate offset in Y
+	/// the coordinate offset in Phi
 	double _offsetPhi;
-	/// the field name used for X
+	/// the field name used for R
 	std::string _rId;
-	/// the field name used for Y
+	/// the field name used for Phi
 	std::string _phiId;
 };
 
