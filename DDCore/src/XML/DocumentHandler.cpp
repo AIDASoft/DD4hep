@@ -268,8 +268,10 @@ namespace DD4hep {
 
 namespace {
   static string _clean_fname(const string& s) {
-    if ( strncmp(s.c_str(),"file:",5)==0 ) return s.substr(5);
-    return s;
+    std::string const& temp = getEnviron(s);
+    std::string temp2 = temp.empty() ? s : temp;
+    if ( strncmp(temp2.c_str(),"file:",5)==0 ) return temp2.substr(5);
+    return temp2;
   }
 }
 
