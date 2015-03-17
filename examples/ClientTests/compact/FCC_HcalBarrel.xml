@@ -4,8 +4,8 @@
     xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
 
     <includes>
-        <gdmlFile  ref="../../../DDDetectors/compact/elements.xml"/>
-        <gdmlFile  ref="../../../DDDetectors/compact/materials.xml"/>
+        <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+        <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
     </includes>
 
     <define>

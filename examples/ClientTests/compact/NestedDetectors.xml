@@ -17,7 +17,7 @@
   </includes>
   
   <define>
-    <constant name="DDDetectors_dir" value="../../../DDDetectors/compact" type="string"/>;
+    <constant name="DDDetectors_dir" value="${DD4hepINSTALL}/DDDetectors/compact" type="string"/>;
     <constant name="SiD_dir" value="${DDDetectors_dir}/SiD" type="string"/>;
     <constant name="world_side" value="30000*mm"/>
     <constant name="world_x" value="world_side"/>

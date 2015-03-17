@@ -12,8 +12,8 @@
   </info>
 
   <includes>
-    <gdmlFile  ref="../../../DDDetectors/compact/elements.xml"/>
-    <gdmlFile  ref="../../../DDDetectors/compact/materials.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
   </includes>
 
   <define>
@@ -25,7 +25,7 @@
   </define>
 
   <detectors>
-    <include ref="../../../DDDetectors/compact/SiD.xml"/>
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/SiD.xml"/>
   </detectors>
 
   <fields>
