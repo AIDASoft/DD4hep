@@ -20,7 +20,7 @@ PolarGridRPhi2::PolarGridRPhi2(const string& cellEncoding) :
 	_description = "Polar RPhi segmentation in the local XY-plane";
 
 	// register all necessary parameters
-	registerParameter("grid_r_values", "Vector or R values", _gridRValues, std::vector<double>(), SegmentationParameter::NoUnit, true);
+	registerParameter("grid_r_values", "Vector or R values", _gridRValues, std::vector<double>(), SegmentationParameter::LengthUnit, true);
 	registerParameter("grid_size_phi", "Cell size in Phi", _gridSizePhi, 1., SegmentationParameter::AngleUnit);
 	registerParameter("offset_r", "Cell offset in R", _offsetR, 0., SegmentationParameter::LengthUnit, true);
 	registerParameter("offset_phi", "Cell offset in Phi", _offsetPhi, 0., SegmentationParameter::AngleUnit, true);
