@@ -90,7 +90,7 @@ install(DIRECTORY scripts
 #-------------------------------------------------------
 
 
-foreach (file Assemblies BoxTrafos FCC_HcalBarrel IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock )
+foreach (file Assemblies BoxTrafos FCC_HcalBarrel IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedDetectors )
 
   foreach( type lcdd gdml vis )
 
