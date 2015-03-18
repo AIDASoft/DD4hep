@@ -21,6 +21,7 @@ namespace DD4hep {
 
     /// Create a solid shape using the plugin mechanism from the attributes of the XML element
     Geometry::Solid createShape(Geometry::LCDD& lcdd, const std::string& shape_type, XML::Element element);
+    Geometry::Volume createVolume(Geometry::LCDD& lcdd, const std::string& volume_type, XML::Element element);
 
   }  /* End namespace XML              */
 }    /* End namespace DD4hep           */

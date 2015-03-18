@@ -29,3 +29,19 @@ DD4hep::XML::createShape(Geometry::LCDD& lcdd, const std::string& shape_type, XM
   }
   return solid;
 }
+
+
+/// Create a solid shape using the plugin mechanism from the attributes of the XML element
+Geometry::Volume
+DD4hep::XML::createVolume(Geometry::LCDD& lcdd, const std::string& volume_type, XML::Element element)   {
+  string fac  = volume_type + "_volume";
+  XML::Handle_t volume_elt = element;
+  Geometry::Volume volume = Geometry::Ref_t(PluginService::Create<TGeoVolume*>(fac, &lcdd, &volume_elt));
+  if ( !volume.isValid() )  {
+    PluginDebug dbg;
+    PluginService::Create<NamedObject*>(volume_type, &lcdd, &volume_elt);
+    except("XML::createVolume","Failed to create volume of type %s [%s]", 
+	   volume_type.c_str(),dbg.missingFactory(fac).c_str());
+  }
+  return volume;
+}
