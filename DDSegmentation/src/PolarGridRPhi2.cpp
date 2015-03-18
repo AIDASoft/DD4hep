@@ -1,8 +1,8 @@
 /*
  * PolarGridRPhi2.cpp
  *
- *  Created on: Sept 16, 2014
- *      Author: Marko Petric
+ *  Created on: March 17, 2015
+ *      Author: Marko Petric, Andre Sailer
  */
 
 #include "DDSegmentation/PolarGridRPhi2.h"
@@ -35,8 +35,9 @@ PolarGridRPhi2::~PolarGridRPhi2() {
 Vector3D PolarGridRPhi2::position(const CellID& cellID) const {
 	_decoder->setValue(cellID);
 	Vector3D position;
-	double R = binToPosition((*_decoder)[_rId].value(), _gridRValues[0], _offsetR);
-	double phi = binToPosition((*_decoder)[_phiId].value(), _gridPhiValues[0], _offsetPhi);
+	const int rBin = (*_decoder)[_rId].value();
+	double R = binToPosition(rBin, _gridRValues, _offsetR);
+	double phi = binToPosition((*_decoder)[_phiId].value(), _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
 	
 	position.X = R * cos(phi);
 	position.Y = R * sin(phi);
@@ -50,8 +51,9 @@ Vector3D PolarGridRPhi2::position(const CellID& cellID) const {
 	double phi = atan2(localPosition.Y,localPosition.X);
 	double R = sqrt( localPosition.X * localPosition.X + localPosition.Y * localPosition.Y );
 
-	(*_decoder)[_rId] = positionToBin(R, _gridRValues[0], _offsetR);
-	(*_decoder)[_phiId] = positionToBin(phi, _gridPhiValues[0], _offsetPhi);
+	const int rBin = positionToBin(R, _gridRValues, _offsetR);
+	(*_decoder)[_rId] = rBin;
+	(*_decoder)[_phiId] = positionToBin(phi, _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
 	return _decoder->getValue();
 }
 
