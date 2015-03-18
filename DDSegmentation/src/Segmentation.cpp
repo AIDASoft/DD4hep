@@ -11,6 +11,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <cmath>
+#include <algorithm>
 
 namespace DD4hep {
 namespace DDSegmentation {
@@ -142,6 +143,33 @@ int Segmentation::positionToBin(double position, double cellSize, double offset)
 		throw runtime_error("Invalid cell size: 0.0");
 	}
 	return int(floor((position + 0.5 * cellSize - offset) / cellSize));
+}
+
+/// Helper method to convert a bin number to a 1D position given a vector of binBoundaries
+double Segmentation::binToPosition(CellID bin, std::vector<double> const& cellBoundaries, double offset) {
+  return (cellBoundaries[bin+1] + cellBoundaries[bin])*0.5 + offset;
+}
+/// Helper method to convert a 1D position to a cell ID given a vector of binBoundaries
+int Segmentation::positionToBin(double position, std::vector<double> const& cellBoundaries, double offset) {
+
+  // include the lower edge to the segmentation
+  if(fabs(position - cellBoundaries.front()) < 1e-12) return 0;
+
+  // include the upper edge of the last bin to the segmentation
+  if(fabs(position - cellBoundaries.back())  < 1e-12) return int(cellBoundaries.size()-2);
+
+  // hits outside cannot be treated
+  if(position < cellBoundaries.front()) throw std::runtime_error("Hit Position is outside of segmentation");
+  if(position > cellBoundaries.back() ) throw std::runtime_error("Hit Position is outside of segmentation");
+
+
+  std::vector<double>::const_iterator bin = std::upper_bound(cellBoundaries.begin(),
+							     cellBoundaries.end(),
+							     position-offset);
+
+  // need to reduce found bin by one, because upper_bound works that way, lower_bound would not help
+  return bin - cellBoundaries.begin() - 1 ;
+
 }
 
 } /* namespace DDSegmentation */

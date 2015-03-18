@@ -133,6 +133,11 @@ protected:
 	/// Helper method to convert a 1D position to a cell ID
 	static int positionToBin(double position, double cellSize, double offset = 0.);
 
+	/// Helper method to convert a bin number to a 1D position given a vector of binBoundaries
+        static double binToPosition(CellID bin, std::vector<double> const& cellBoundaries, double offset = 0.);
+	/// Helper method to convert a 1D position to a cell ID given a vector of binBoundaries
+	static int positionToBin(double position, std::vector<double> const& cellBoundaries, double offset = 0.);
+
 	/// The segmentation name
 	std::string _name;
 	/// The segmentation type
