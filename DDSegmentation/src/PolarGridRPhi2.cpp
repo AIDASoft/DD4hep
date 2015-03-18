@@ -10,10 +10,8 @@
 namespace DD4hep {
 namespace DDSegmentation {
 
-using std::string;
-
 /// default constructor using an encoding string
-PolarGridRPhi2::PolarGridRPhi2(const string& cellEncoding) :
+PolarGridRPhi2::PolarGridRPhi2(const std::string& cellEncoding) :
 		PolarGrid(cellEncoding) {
 	// define type and description
 	_type = "PolarGridRPhi2";

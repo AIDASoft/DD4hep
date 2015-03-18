@@ -9,7 +9,7 @@
 #define DDSegmentation_PolarGridRPhi2_H_
 
 #include "DDSegmentation/PolarGrid.h"
-#include <math.h>
+#include <cmath>
 #include <vector>
 
 namespace DD4hep {
