@@ -20,6 +20,11 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   DetElement sdet(det_name, x_det.id());
   Volume     vol;
 
+  bool useRot = false ;
+  bool usePos = false ; 
+  Position    pos ;
+  RotationZYX rot ;
+
   if ( x_det.hasChild(_U(shape)) )  {
     xml_comp_t x_shape = x_det.child(_U(shape));
     string     type  = x_shape.typeStr();
@@ -27,6 +32,15 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
     Material   mat   = lcdd.material(x_shape.materialStr());
     printout(DEBUG,det_name,"+++ Creating detector assembly with shape of type:%s",type.c_str());
     vol = Volume(det_name,solid,mat);
+    
+    if( x_shape.hasChild( _U(position) ) ) {
+      usePos = true ;
+      pos = Position(   x_shape.position().x() , x_shape.position().y(),   x_shape.position().z()    ) ;
+    }
+    if( x_shape.hasChild( _U(rotation) ) ) {
+      useRot = true ;
+      rot = RotationZYX(   x_shape.rotation().x() , x_shape.rotation().y(),   x_shape.rotation().z()    ) ;
+    }
   }
   else  {
     printout(DEBUG,det_name,"+++ Creating detector assembly without shape");
@@ -40,7 +54,27 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   }
 
   vol.setAttributes(lcdd,x_det.regionStr(),x_det.limitsStr(),x_det.visStr());
-  PlacedVolume pv = lcdd.pickMotherVolume(sdet).placeVolume(vol);
+
+  Volume mother = lcdd.pickMotherVolume(sdet) ;
+  PlacedVolume pv ;
+
+  if( useRot && usePos ){
+
+    pv =  mother.placeVolume( vol , Transform3D( rot, pos )  ) ;
+
+  } else if( useRot ){
+
+    pv =  mother.placeVolume( vol , rot  ) ;
+
+  } else if( usePos ){
+
+    pv =  mother.placeVolume( vol , pos  ) ;
+
+  } else {
+
+    pv = mother.placeVolume( vol );
+  }
+
   sdet.setPlacement(pv);
   return sdet;
 }

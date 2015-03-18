@@ -173,19 +173,6 @@ namespace {
     }
   };
 
-  template <typename P> class Factory<P, TGeoVolume*(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*)> {
-  public:
-    typedef DD4hep::Geometry::LCDD LCDD;
-    typedef DD4hep::XML::Handle_t xml_h;
-    typedef DD4hep::Geometry::Ref_t Ref_t;
-    static void Func(void *retaddr, void*, const std::vector<void*>& arg, void*) {
-      LCDD* lcdd = (LCDD*) arg[0];
-      xml_h* elt = (xml_h*) arg[1];
-      Ref_t handle = DD4hep::Geometry::XMLElementFactory<P>::create(*lcdd, *elt);
-      *(void**) retaddr = handle.ptr();
-    }
-  };
-
   template <typename P> class Factory<P, long(DD4hep::Geometry::LCDD*, DD4hep::XML::Handle_t*)> {
   public:
     typedef DD4hep::Geometry::LCDD LCDD;
@@ -226,14 +213,6 @@ namespace {
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)                           \
   DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*,DD4hep::Geometry::Ref_t*),__LINE__)
 
-
-#define DECLARE_VOLUME_FACTORY(x)					\
-  DD4HEP_PLUGINSVC_FACTORY(x,x,TGeoVolume*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*),__LINE__)
-#define DECLARE_NAMED_VOLUME_FACTORY(n,x)                           \
-  DD4HEP_PLUGINSVC_FACTORY(n::x,x,TGeoVolume*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*),__LINE__)
-
-
-
 #define DECLARE_APPLY(name,func)                                        \
   namespace DD4hep { namespace Geometry { namespace { struct name {}; } \
       template <> long ApplyFactory<name>::create(DD4hep::Geometry::LCDD& l,int n,char** a) {return func(l,n,a);} }} \
@@ -255,15 +234,6 @@ namespace {
       template <> DD4hep::Geometry::Ref_t XMLElementFactory<DD4hep::Geometry::xml_element_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }} \
   using DD4hep::Geometry::xml_element_##name;                           \
   DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,DD4hep::NamedObject*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*),__LINE__)
-
-#define DECLARE_XMLVOLUME(name,func)                                   \
-  namespace DD4hep { namespace Geometry { namespace { struct xml_element_##name {}; } \
-      template <> DD4hep::Geometry::Ref_t XMLElementFactory<DD4hep::Geometry::xml_element_##name>::create(DD4hep::Geometry::LCDD& l,DD4hep::XML::Handle_t e) {return func(l,e);} }} \
-  using DD4hep::Geometry::xml_element_##name;                           \
-  DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,TGeoVolume*(DD4hep::Geometry::LCDD*,DD4hep::XML::Handle_t*),__LINE__)
-
-
-
 
 #define DECLARE_XML_DOC_READER(name,func)                               \
   namespace DD4hep { namespace Geometry { namespace { struct xml_document_##name {}; } \
