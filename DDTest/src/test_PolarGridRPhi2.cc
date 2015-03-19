@@ -112,9 +112,9 @@ int main() {
 
       DD4hep::DDSegmentation::CellID cid = seg.cellID(locPos, globPos, volID);
 
-      const unsigned long long phiShifted(pB << phiBitOffset);
-      const unsigned long long rShifted  (rB << rBitOffset);
-      const unsigned long long expectedID(rShifted + phiShifted);
+      const long long phiShifted(pB << phiBitOffset);
+      const long long rShifted  (rB << rBitOffset);
+      const long long expectedID(rShifted + phiShifted);
 
       test( expectedID , cid , " Test get ID From Position" );
 
