@@ -96,7 +96,7 @@ DECLARE_XMLELEMENT(Torus__shape_constructor,create_Torus)
 
 static Ref_t create_Sphere(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
-  return Sphere(e.rmin(),e.rmax(),e.deltatheta(M_PI),e.phi(0e0),e.deltaphi(2.*M_PI));
+  return Sphere(e.rmin(),e.rmax(),e.theta(0e0),e.deltatheta(M_PI),e.phi(0e0),e.deltaphi(2.*M_PI));
 }
 DECLARE_XMLELEMENT(Sphere__shape_constructor,create_Sphere)
 

@@ -328,7 +328,7 @@ Hyperboloid& Hyperboloid::setDimensions(double rin, double stin, double rout, do
 
 /// Constructor to be used when creating a new object with attribute initialization
 Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  _assign(new TGeoSphere(rmin, rmax, theta, delta_theta/dd4hep::deg, phi/dd4hep::deg, delta_phi/dd4hep::deg), "", "sphere", true);
+  _assign(new TGeoSphere(rmin, rmax, theta/dd4hep::deg, delta_theta/dd4hep::deg, phi/dd4hep::deg, delta_phi/dd4hep::deg), "", "sphere", true);
 }
 
 /// Set the Sphere dimensions
