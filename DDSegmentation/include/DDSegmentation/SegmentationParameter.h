@@ -18,6 +18,18 @@
 namespace DD4hep {
 namespace DDSegmentation {
 
+
+/// Helper method to split string into tokens
+inline std::vector<std::string> splitString(const std::string& s, char delimiter = ' ') {
+	std::vector<std::string> elements;
+	std::stringstream ss(s);
+	std::string item;
+	while (std::getline(ss, item, delimiter)) {
+		elements.push_back(item);
+	}
+	return elements;
+}
+
 /// Helper class to extract type names
 template<typename TYPE> struct TypeName {
 	static const char* name() {
@@ -269,16 +281,6 @@ protected:
 	std::vector<TYPE>& _value;
 	std::vector<TYPE> _defaultValue;
 
-	/// Helper method to split string into tokens
-	std::vector<std::string> splitString(const std::string& s, char delimiter = ' ') {
-		std::vector<std::string> elements;
-		std::stringstream ss(s);
-		std::string item;
-		while (std::getline(ss, item, delimiter)) {
-			elements.push_back(item);
-		}
-		return elements;
-	}
 };
 
 } /* namespace DDSegmentation */
