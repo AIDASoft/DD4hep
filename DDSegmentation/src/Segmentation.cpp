@@ -159,8 +159,20 @@ int Segmentation::positionToBin(double position, std::vector<double> const& cell
   if(fabs(position - cellBoundaries.back())  < 1e-12) return int(cellBoundaries.size()-2);
 
   // hits outside cannot be treated
-  if(position < cellBoundaries.front()) throw std::runtime_error("Hit Position is outside of segmentation");
-  if(position > cellBoundaries.back() ) throw std::runtime_error("Hit Position is outside of segmentation");
+  if(position < cellBoundaries.front()) {
+    std::stringstream err;
+    err << "Hit Position (" << position << ") is below the acceptance"
+	<< "(" << cellBoundaries.front() << ")"
+	<< "of the segmentation";
+    throw std::runtime_error(err.str());
+  }
+  if(position > cellBoundaries.back() ) {
+    std::stringstream err;
+    err << "Hit Position (" << position << ") is above the acceptance"
+	<< "(" << cellBoundaries.back() << ")"
+	<< "of the segmentation";
+    throw std::runtime_error(err.str());
+  }
 
 
   std::vector<double>::const_iterator bin = std::upper_bound(cellBoundaries.begin(),
