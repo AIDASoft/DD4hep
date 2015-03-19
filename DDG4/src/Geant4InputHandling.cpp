@@ -186,9 +186,9 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
       p->vsz = z;
       p->time = t;
 
-      p->psx += px;
-      p->psy += py;
-      p->psz += pz;
+      p->psx = px;
+      p->psy = py;
+      p->psz = pz;
     }
   }
   return 1;
