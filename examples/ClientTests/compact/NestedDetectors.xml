@@ -43,11 +43,14 @@
     <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
     <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
     <vis name="BlueVis" alpha="1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+    <vis name="BlueVisTrans" alpha="0.1" r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
   </display>
 
   <comment>Tracking detectors</comment>
   <detectors>
-    <detector id="99" name="SiTrackers" type="DD4hep_SubdetectorAssembly" vis="BlueVis">
+    <detector id="99" name="SiTrackers" type="DD4hep_SubdetectorAssembly" vis="BlueVisTrans">
+      <shape name="SiTrackersEnv" type="Tube" rmin="0*mm" rmax="2500*mm" dz="2200*mm" material="Air">
+      </shape>
       <comment>Silicon Tracker Assembly</comment>
       <composite name="SiTrackerBarrel"/>
       <composite name="SiVertexBarrel"/>
