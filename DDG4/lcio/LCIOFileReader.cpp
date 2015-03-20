@@ -55,9 +55,10 @@ DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOFileReader)
 DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam)
 : LCIOEventReader(nam)
 {
-  m_reader = ::lcio::LCFactory::getInstance()->createLCReader();
+  m_reader = ::lcio::LCFactory::getInstance()->createLCReader(LCReader::directAccess);
   printout(INFO,"LCIOFileReader","Created file reader. Try to open input %s",nam.c_str());
   m_reader->open(nam);
+  m_directAccess = true;
 }
 
 /// Default destructor
@@ -67,8 +68,8 @@ DD4hep::Simulation::LCIOFileReader::~LCIOFileReader()    {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-DD4hep::Simulation::LCIOFileReader::readParticleCollection(int /*event_number */, EVENT::LCCollection** particles)  {
-  ::lcio::LCEvent* evt = m_reader->readNextEvent();
+DD4hep::Simulation::LCIOFileReader::readParticleCollection(int event_number, EVENT::LCCollection** particles)  {
+  ::lcio::LCEvent* evt = m_reader->readEvent(/*runNumber*/ 0, event_number);
   if ( evt ) {
     *particles = evt->getCollection(LCIO::MCPARTICLE);
     if ( *particles ) return EVENT_READER_OK;
