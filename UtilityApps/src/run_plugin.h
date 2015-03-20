@@ -73,7 +73,7 @@ namespace {
       "        -build_type <number/string> Specify the build type                         \n"
       "                     [OPTIONAL]     MUST come immediately after the -compact input.\n"
       "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
-      "                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2] or BUILD_DISPLAY [=3]\n"
+      "                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2], BUILD_DISPLAY [=3] or BUILD_ENVELOPE [=4]\n"
       "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         \n"
       "                                    before exiting the application                 \n"
       "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       \n"

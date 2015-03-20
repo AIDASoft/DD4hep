@@ -70,9 +70,14 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
   TGeoManager* mgr = &lcdd.manager();
   TEveManager::Create();
 
+  // mgr->SetVisOption(1) ;
+  // mgr->SetVisLevel(4) ;
+  
   //  gEve->fGeometries->Add(new TObjString("DefaultGeometry"),mgr);
 
   TEveGeoTopNode* tn = new TEveGeoTopNode(mgr, mgr->GetTopNode());
+  // option 0 in TEve seems to correspond to option 1 in TGeo ( used in geoDisplay ...)
+  tn->SetVisOption(0) ;
   tn->SetVisLevel(4);
 
   /* EvNavHandler *fh = */ new EvNavHandler;

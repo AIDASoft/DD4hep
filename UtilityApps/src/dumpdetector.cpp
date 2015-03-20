@@ -69,11 +69,22 @@ int main(int argc, char** argv ){
 
     DetElement de = (*it) ;
     
+    DetElement mother = de.parent() ;
+    unsigned parentCount = 0 ;
+    while( mother.isValid() ) {
+      mother = mother.parent() ;
+      ++parentCount ;
+    } 
+
     SurfaceManager surfMan( de ) ;
 
     const SurfaceList& sL = surfMan.surfaceList() ;
 
-    std::cout << "DetElement: " << de.name() << "[ path: "<< de.placementPath ()  <<  "] \t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
+    std::cout << "DetElement: " ;
+    
+    for(unsigned i=0 ; i < parentCount ; ++i ) std::cout << "\t" ;
+
+    std::cout << de.name() << "[ path: "<< de.placementPath ()  <<  "] \t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
 
     // for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
     //   Surface* surf =  *it ;
