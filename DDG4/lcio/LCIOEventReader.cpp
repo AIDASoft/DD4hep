@@ -60,12 +60,7 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
   vector<EVENT::MCParticle*>  mcpcoll;
   EventReaderStatus ret = EVENT_READER_OK;
 
-  if ( hasDirectAccess() )
-    ret = readParticleCollection(event_number,&primaries);
-  else if ( m_numEvent == event_number )
-    ret = readParticleCollection(event_number,&primaries);
-  else
-    ret = readParticleCollection(event_number,&primaries);
+  ret = readParticleCollection(event_number,&primaries);
   //ret = EVENT_READER_NO_DIRECT;
 
   ++m_numEvent;
