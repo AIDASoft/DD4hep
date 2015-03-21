@@ -123,8 +123,8 @@ namespace DD4hep {
         EVENT::MCParticle* lc_mcp = (EVENT::MCParticle*)lc_part->getElementAt(trackID);
         double pos[3] = {hit->position.x()/CLHEP::mm, hit->position.y()/CLHEP::mm, hit->position.z()/CLHEP::mm};
         lcio::SimTrackerHitImpl* lc_hit = new lcio::SimTrackerHitImpl;
-        lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
-        lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF);
+        lc_hit->setCellID0((hit->cellID >>    0         ) & 0xFFFFFFFF);
+        lc_hit->setCellID1((hit->cellID >> sizeof(int)*8) & 0xFFFFFFFF);
         lc_hit->setEDep(hit->energyDeposit/CLHEP::GeV);
         lc_hit->setPathLength(hit->length/CLHEP::mm);
         lc_hit->setTime(hit->truth.time/CLHEP::ns);
@@ -175,8 +175,8 @@ namespace DD4hep {
         const Geant4Calorimeter::Hit* hit = coll->hit(i);
         float pos[3] = {float(hit->position.x()/mm), float(hit->position.y()/mm), float(hit->position.z()/mm)};
         lcio::SimCalorimeterHitImpl*  lc_hit = new lcio::SimCalorimeterHitImpl;
-        lc_hit->setCellID0((hit->cellID >>    0       ) & 0xFFFFFFFF);
-        lc_hit->setCellID1((hit->cellID >> sizeof(int)) & 0xFFFFFFFF); // ????
+        lc_hit->setCellID0((hit->cellID >>    0         ) & 0xFFFFFFFF);
+        lc_hit->setCellID1((hit->cellID >> sizeof(int)*8) & 0xFFFFFFFF); // ????
         lc_hit->setPosition(pos);
         ///No! Done when adding particle contrbutions: lc_hit->setEnergy( hit->energyDeposit );
         lc_coll->addElement(lc_hit);
