@@ -132,3 +132,91 @@ static Ref_t create_EightPointSolid(lcdd_t&, xml_h element)   {
 }
 DECLARE_XMLELEMENT(EightPointSolid__shape_constructor,create_EightPointSolid)
 
+
+
+/** Plugin function for creating a boolean solid from an xml element <shape type=\"BooleanShape\"/>. 
+ *  Expects exactly two child elements <shape/> and a string attribute 'operation', which is one of
+ *  'subtraction', 'union' or 'intersection'. Optionally <position/> and/or <rotation/> can be specified.
+ *  More complex boolean solids can be created by nesting the xml elements accordingly.
+ *
+ * @date 03/2015
+ * @author F.Gaede, CERN/DESY
+ */
+static Ref_t create_BooleanShape(lcdd_t&, xml_h element)   {
+
+  xml_det_t e(element);
+
+  // get the two shape elements
+  xml_coll_t c( e ,_U(shape)) ;
+  xml_comp_t x_shape1( c ) ;
+  ++c ;
+  xml_comp_t x_shape2( c ) ;
+  
+  // and create solids
+  Solid solid1( xml_comp_t( x_shape1 ).createShape()) ;
+  Solid solid2( xml_comp_t( x_shape2 ).createShape())  ;
+
+
+  std::string op = e.attr<std::string>( DD4hep::XML::Strng_t("operation") ) ;
+  std::transform( op.begin(), op.end(), op.begin(), ::tolower);
+  
+  Solid resultSolid ;
+
+  bool useRot(false), usePos(false) ; 
+  Position    pos ;
+  RotationZYX rot ;
+
+  if( e.hasChild( _U(position) ) ) {
+    usePos = true ;
+    xml_comp_t x_pos = e.position();
+    pos = Position( x_pos.x(),x_pos.y(),x_pos.z() );  
+  }
+  if( e.hasChild( _U(rotation) ) ) {
+    useRot = true ;
+    xml_comp_t  x_rot = e.rotation();
+    rot = RotationZYX( x_rot.z(),x_rot.y(),x_rot.x() ) ;
+  }
+
+  if( op == "subtraction" ) {
+
+    if( useRot && usePos )
+      resultSolid = SubtractionSolid( solid1 , solid2 , Transform3D( rot, pos )  );
+    else if( useRot) 
+      resultSolid = SubtractionSolid( solid1 , solid2 , rot );
+    else if( usePos) 
+      resultSolid = SubtractionSolid( solid1 , solid2 , pos );
+    else
+      resultSolid = SubtractionSolid( solid1 , solid2 ) ;
+  }
+  else if( op == "union" ) {
+
+    if( useRot && usePos )
+      resultSolid = UnionSolid( solid1 , solid2 , Transform3D( rot, pos )  );
+    else if( useRot) 
+      resultSolid = UnionSolid( solid1 , solid2 , rot );
+    else if( usePos) 
+      resultSolid = UnionSolid( solid1 , solid2 , pos );
+    else
+      resultSolid = UnionSolid( solid1 , solid2 ) ;
+  }
+  else if( op == "intersection" ) {
+
+    if( useRot && usePos )
+      resultSolid = IntersectionSolid( solid1 , solid2 , Transform3D( rot, pos )  );
+    else if( useRot) 
+      resultSolid = IntersectionSolid( solid1 , solid2 , rot );
+    else if( usePos) 
+      resultSolid = IntersectionSolid( solid1 , solid2 , pos );
+    else
+      resultSolid = IntersectionSolid( solid1 , solid2 ) ;
+
+  } else{
+
+    throw std::runtime_error(std::string(" create_BooleanShape - unknown operation given: ") + op + 
+			     std::string(" - needs to be one of 'subtraction','union' or 'intersection' ") ) ;  
+  }
+
+
+  return resultSolid ;
+}
+DECLARE_XMLELEMENT(BooleanShape__shape_constructor,create_BooleanShape)
