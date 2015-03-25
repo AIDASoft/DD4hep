@@ -1,7 +1,9 @@
-
 #---------------------------------------------------------------------------------------------------
-##SET( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wno-long-long")
-SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+if(DD4HEP_USE_CXX11)
+  SET( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wno-long-long -Wdeprecated -Wformat-security -Wshadow")
+else()
+  SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+endif()
 
 add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
 
