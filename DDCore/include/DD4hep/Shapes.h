@@ -534,8 +534,7 @@ namespace DD4hep {
       }
 
       /// Constructor to create a new anonymous object with attribute initialization
-      Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0,
-             double delta_phi = 2. * M_PI);
+      Sphere(double rmin, double rmax, double theta = 0., double delta_theta = M_PI, double phi = 0.0, double delta_phi = 2. * M_PI);
 
       /// Set the Sphere dimensions
       Sphere& setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi);

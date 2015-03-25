@@ -250,7 +250,7 @@ ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, d
 void Tube::make(const string& nam, double rmin, double rmax, double z, double startPhi, double deltaPhi) {
   //_assign(new TGeoTubeSeg(rmin,rmax,z,startPhi/dd4hep::deg,deltaPhi/dd4hep::deg),name,"tube",true);
   _assign(new MyConeSeg(), nam, "tube", true);
-  setDimensions(rmin, rmax, z, startPhi, deltaPhi);
+  setDimensions(rmin, rmax, z, startPhi/dd4hep::deg, deltaPhi/dd4hep::deg);
 }
 
 /// Set the tube dimensions
@@ -316,7 +316,7 @@ Paraboloid& Paraboloid::setDimensions(double r_low, double r_high, double delta_
 
 /// Constructor to create a new anonymous object with attribute initialization
 Hyperboloid::Hyperboloid(double rin, double stin, double rout, double stout, double dz) {
-  _assign(new TGeoHype(rin, stin, rout, stout, dz), "", "hyperboloid", true);
+  _assign(new TGeoHype(rin, stin/dd4hep::deg, rout, stout/dd4hep::deg, dz), "", "hyperboloid", true);
 }
 
 /// Set the Hyperboloid dimensions
@@ -333,8 +333,7 @@ Sphere::Sphere(double rmin, double rmax, double theta, double delta_theta, doubl
 
 /// Set the Sphere dimensions
 Sphere& Sphere::setDimensions(double rmin, double rmax, double theta, double delta_theta, double phi, double delta_phi) {
-  double params[] = { rmin, rmax, theta, delta_theta/dd4hep::deg, phi/dd4hep::deg,
-                      delta_phi/dd4hep::deg };
+  double params[] = { rmin, rmax, theta, delta_theta/dd4hep::deg, phi/dd4hep::deg, delta_phi/dd4hep::deg };
   _setDimensions(params);
   return *this;
 }
@@ -378,8 +377,7 @@ Trap& Trap::setDimensions(double z, double theta, double phi, double y1, double 
 }
 
 /// Helper function to create holy hedron
-void PolyhedraRegular::_create(int nsides, double rmin, double rmax, double zpos, double zneg, double start,
-                               double delta) {
+void PolyhedraRegular::_create(int nsides, double rmin, double rmax, double zpos, double zneg, double start, double delta) {
   if (rmin < 0e0 || rmin > rmax)
     throw runtime_error("DD4hep: PolyhedraRegular: Illegal argument rmin:<" + _toString(rmin) + "> is invalid!");
   else if (rmax < 0e0)
