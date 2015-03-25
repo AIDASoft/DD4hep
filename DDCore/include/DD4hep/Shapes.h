@@ -29,6 +29,7 @@
 #include "TGeoEltu.h"
 #include "TGeoHype.h"
 #include "TGeoTorus.h"
+#include "TGeoHalfSpace.h"
 #include "TGeoCompositeShape.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -150,6 +151,38 @@ namespace DD4hep {
 
       /// Access half "depth" of the box
       double z() const;
+    };
+
+    /// Class describing half-space
+    /**
+     *   For any further documentation please see the following ROOT documentation:
+     *   \see http://root.cern.ch/root/html/TGeoHalfSpace.html
+     *
+     *
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
+     */
+    class HalfSpace: public Solid_type<TGeoHalfSpace> {
+    protected:
+      /// Internal helper method to support object construction
+      void make(const double* const point, const double* const normal);
+
+    public:
+      /// Constructor to be used with an existing object
+      template <typename Q> HalfSpace(const Q* p)
+        : Solid_type<TGeoHalfSpace>(p) {
+      }
+
+      /// Constructor to be used with an existing object
+      template <typename Q> HalfSpace(const Handle<Q>& e)
+        : Solid_type<TGeoHalfSpace>(e) {
+      }
+
+      /// Constructor to create an new halfspace object from a point on a plane and the plane normal
+      HalfSpace(const double* const point, const double* const normal) {
+        make(point,normal);
+      }
     };
 
     /// Class describing a Polycone shape

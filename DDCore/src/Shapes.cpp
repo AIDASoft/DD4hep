@@ -30,6 +30,7 @@
 #include "TGeoSphere.h"
 #include "TGeoTorus.h"
 #include "TGeoMatrix.h"
+#include "TGeoHalfSpace.h"
 #include "TGeoBoolNode.h"
 #include "TGeoCompositeShape.h"
 
@@ -54,6 +55,11 @@ std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precisio
     log << " x:" << s->GetDX()
         << " y:" << s->GetDY()
         << " z:" << s->GetDZ();
+  }
+  else if (cl == TGeoHalfSpace::Class()) {
+    TGeoHalfSpace* s = (TGeoHalfSpace*)(const_cast<TGeoShape*>(shape));
+    log << " Point:  (" << s->GetPoint()[0] << ", " << s->GetPoint()[1] << ", " << s->GetPoint()[2] << ") " 
+	<< " Normal: (" << s->GetNorm()[0]  << ", " << s->GetNorm()[1]  << ", " << s->GetNorm()[2]  << ") ";
   }
   else if (cl == TGeoTube::Class()) {
     const TGeoTube* s = (const TGeoTube*) shape;
@@ -183,6 +189,11 @@ double Box::y() const {
 /// Access half "depth" of the box
 double Box::z() const {
   return this->ptr()->GetDZ();
+}
+
+/// Internal helper method to support object construction
+void HalfSpace::make(const double* const point, const double* const normal)   {
+  _assign(new TGeoHalfSpace("",(Double_t*)point, (Double_t*)normal), "", "halfspace",true);
 }
 
 /// Constructor to be used when creating a new object
@@ -501,6 +512,7 @@ IntersectionSolid::IntersectionSolid(const Solid& shape1, const Solid& shape2, c
 
 INSTANTIATE(TGeoShape);
 INSTANTIATE(TGeoBBox);
+INSTANTIATE(TGeoHalfSpace);
 INSTANTIATE(TGeoCone);
 INSTANTIATE(TGeoConeSeg);
 INSTANTIATE(TGeoParaboloid);

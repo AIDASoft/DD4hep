@@ -17,19 +17,27 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-#if 0
 static Ref_t create_Assembly(lcdd_t&, xml_h e)   {
   xml_dim_t dim(e);
   return Ref_t(new TGeoShapeAssembly());
 }
 DECLARE_XMLELEMENT(Assembly__shape_constructor,create_Assembly)
-#endif
 
 static Ref_t create_Box(lcdd_t&, xml_h e)   {
   xml_dim_t dim(e);
   return Box(dim.dx(),dim.dy(),dim.dz());
 }
 DECLARE_XMLELEMENT(Box__shape_constructor,create_Box)
+
+static Ref_t create_HalfSpace(lcdd_t&, xml_h e)   {
+  xml_dim_t dim(e);
+  xml_dim_t point  = e.child(_U(point));
+  xml_dim_t normal = e.child(_U(normal));
+  double p[3] = { point.x(),  point.y(),  point.z()};
+  double n[3] = { normal.x(), normal.y(), normal.z()};
+  return HalfSpace(p, n);
+}
+DECLARE_XMLELEMENT(HalfSpace__shape_constructor,create_HalfSpace)
 
 static Ref_t create_Polycone(lcdd_t&, xml_h element)   {
   xml_dim_t e(element);
