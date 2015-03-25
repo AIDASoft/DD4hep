@@ -233,6 +233,7 @@ namespace DD4hep {
     UNICODE (name);
     UNICODE (nmodules);
     UNICODE (nModules);
+    UNICODE (normal);
     UNICODE (nonprojective_cylinder);
     UNICODE (nPads);
     UNICODE (nphi);
@@ -278,6 +279,7 @@ namespace DD4hep {
     UNICODE (physvolid);
     UNICODE (plugin);
     UNICODE (plugins);
+    UNICODE (point);
     UNICODE (polyhedra);
     UNICODE (polycone);
     UNICODE (position);

@@ -249,6 +249,12 @@ namespace DD4hep {
     Tag_t(const std::string& s)
       : Strng_t(s), m_str(s) {
       }
+      /// Constructor from STL string with registration.
+      /// ONLY to be used for static global entries to protect against duplicated static memory.
+    Tag_t(const std::string& v, const std::string& s, void (*register_func)(const std::string&, Tag_t*))
+      : Strng_t(s), m_str(s) {
+	register_func(v, this);
+      }
       /// Destructor
       ~Tag_t() {
       }
