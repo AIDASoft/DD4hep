@@ -562,9 +562,9 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
 	    // need to put things back to a string, because we can only set segmentation values via string
 	    std::stringstream theValueString;
 	    std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(theString);
-	    for (std::vector<std::string>::const_iterator it = elements.begin(); it != elements.end(); ++it) {
-	      if (it->empty()) continue;
-	      double theDouble = DD4hep::Geometry::_toDouble((*it));
+	    for (std::vector<std::string>::const_iterator j = elements.begin(); j != elements.end(); ++j) {
+	      if ((*j).empty()) continue;
+	      double theDouble = DD4hep::Geometry::_toDouble((*j));
 	      theValueString << " " << theDouble;
 	    }
 	    printout(DEBUG, "Compact", "++ Converted this string structure: %s.", theValueString.str().c_str());

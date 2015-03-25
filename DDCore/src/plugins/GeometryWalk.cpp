@@ -112,8 +112,8 @@ void GeometryWalk::walk(DetElement e, VolIDs ids)  const   {
 /// Action routine to execute the test
 long GeometryWalk::run(LCDD& lcdd,int argc,char** argv)    {
   cout << "++ Processing plugin....GeometryWalker.." << endl;
-  for(int i=1; i<argc;++i)  {
-    string name = argv[i]+1;
+  for(int in=1; in < argc; ++in)  {
+    string name = argv[in]+1;
     if ( name == "all" || name == "All" || name == "ALL" )  {
       const _C& children = lcdd.world().children();
       for (_C::const_iterator i=children.begin(); i!=children.end(); ++i)  {
