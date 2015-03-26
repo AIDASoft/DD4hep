@@ -68,6 +68,7 @@ TEveStraightLineSet* getSurfaceVectors( ) ;
 static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
 
   TGeoManager* mgr = &lcdd.manager();
+  mgr->SetNsegments(100); // Increase the visualization resolution.
   TEveManager::Create();
 
   // mgr->SetVisOption(1) ;
