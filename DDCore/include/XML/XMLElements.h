@@ -98,17 +98,17 @@ namespace DD4hep {
     /// Do-nothing version. Present for completeness and argument interchangeability  \ingroup DD4HEP_XML
     std::string _toString(const std::string& s);
     /// Format unsigned long integer to string with arbitrary format  \ingroup DD4HEP_XML
-    std::string _toString(unsigned long i, const char* fmt = "%ul");
+    std::string _toString(unsigned long i, const char* fmt = "%lu");
     /// Format unsigned integer (32 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(unsigned int i, const char* fmt = "%u");
     /// Format signed integer (32 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(int i, const char* fmt = "%d");
     /// Format signed long integer to string with arbitrary format  \ingroup DD4HEP_XML
-    std::string _toString(long i, const char* fmt = "%fd");
+    std::string _toString(long i, const char* fmt = "%ld");
     /// Format single procision float number (32 bits) to string with arbitrary format  \ingroup DD4HEP_XML
-    std::string _toString(float d, const char* fmt = "%30.30f");
+    std::string _toString(float d, const char* fmt = "%.17e");
     /// Format double procision float number (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML
-    std::string _toString(double d, const char* fmt = "%30.30f");
+    std::string _toString(double d, const char* fmt = "%.17e");
     /// Format void pointer (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _ptrToString(const void* p, const char* fmt = "%p");
     /// Format void pointer (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML

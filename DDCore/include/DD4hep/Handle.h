@@ -51,9 +51,9 @@ namespace DD4hep {
     /// String conversions: integer value to string  \ingroup DD4HEP_GEOMETRY
     std::string _toString(int value, const char* fmt = "%d");
     /// String conversions: float value to string  \ingroup DD4HEP_GEOMETRY
-    std::string _toString(float value, const char* fmt = "%30.30f");
+    std::string _toString(float value, const char* fmt = "%.17e");
     /// String conversions: double value to string  \ingroup DD4HEP_GEOMETRY
-    std::string _toString(double value, const char* fmt = "%30.30f");
+    std::string _toString(double value, const char* fmt = "%.17e");
     /// Pointer to text conversion
     std::string _ptrToString(const void* p, const char* fmt = "%p");
     /// Format any pointer (64 bits) to string  \ingroup DD4HEP_XML
