@@ -97,21 +97,21 @@ namespace DD4hep {
     std::string _toString(const char* s);
     /// Do-nothing version. Present for completeness and argument interchangeability  \ingroup DD4HEP_XML
     std::string _toString(const std::string& s);
-    /// Format unsigned long integer to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format unsigned long integer to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(unsigned long i, const char* fmt = "%ul");
-    /// Format unsigned integer (32 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format unsigned integer (32 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(unsigned int i, const char* fmt = "%u");
-    /// Format signed integer (32 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format signed integer (32 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(int i, const char* fmt = "%d");
-    /// Format signed long integer to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format signed long integer to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(long i, const char* fmt = "%fd");
-    /// Format single procision float number (32 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format single procision float number (32 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(float d, const char* fmt = "%30.30f");
-    /// Format double procision float number (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format double procision float number (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _toString(double d, const char* fmt = "%30.30f");
-    /// Format void pointer (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format void pointer (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     std::string _ptrToString(const void* p, const char* fmt = "%p");
-    /// Format void pointer (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
+    /// Format void pointer (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     template <typename T> std::string _toString(const T* p, const char* fmt = "%p")
       {      return _ptrToString((void*)p,fmt);       }
 

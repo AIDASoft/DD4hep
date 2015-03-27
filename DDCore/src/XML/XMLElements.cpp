@@ -211,37 +211,37 @@ std::string DD4hep::XML::_toString(const std::string& s) {
   return _checkEnviron(s);
 }
 
-/// Format unsigned long integer to string with atrbitrary format
+/// Format unsigned long integer to string with arbitrary format
 string DD4hep::XML::_toString(unsigned long v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-/// Format unsigned integer (32 bits) to string with atrbitrary format
+/// Format unsigned integer (32 bits) to string with arbitrary format
 string DD4hep::XML::_toString(unsigned int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-/// Format signed integer (32 bits) to string with atrbitrary format
+/// Format signed integer (32 bits) to string with arbitrary format
 string DD4hep::XML::_toString(int v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-/// Format signed long integer to string with atrbitrary format
+/// Format signed long integer to string with arbitrary format
 string DD4hep::XML::_toString(long v, const char* fmt)   {
   return __to_string(v, fmt);
 }
 
-/// Format single procision float number (32 bits) to string with atrbitrary format
+/// Format single procision float number (32 bits) to string with arbitrary format
 string DD4hep::XML::_toString(float v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-/// Format double procision float number (64 bits) to string with atrbitrary format
+/// Format double procision float number (64 bits) to string with arbitrary format
 string DD4hep::XML::_toString(double v, const char* fmt) {
   return __to_string(v, fmt);
 }
 
-/// Format pointer to string with atrbitrary format
+/// Format pointer to string with arbitrary format
 string DD4hep::XML::_ptrToString(const void* v, const char* fmt) {
   return __to_string(v, fmt);
 }
