@@ -106,9 +106,9 @@ namespace DD4hep {
     /// Format signed long integer to string with atrbitrary format  \ingroup DD4HEP_XML
     std::string _toString(long i, const char* fmt = "%fd");
     /// Format single procision float number (32 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
-    std::string _toString(float d, const char* fmt = "%f");
+    std::string _toString(float d, const char* fmt = "%30.30f");
     /// Format double procision float number (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
-    std::string _toString(double d, const char* fmt = "%f");
+    std::string _toString(double d, const char* fmt = "%30.30f");
     /// Format void pointer (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
     std::string _ptrToString(const void* p, const char* fmt = "%p");
     /// Format void pointer (64 bits) to string with atrbitrary format  \ingroup DD4HEP_XML
