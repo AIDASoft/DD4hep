@@ -553,24 +553,35 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
         if (seg.hasAttr(Unicode(p->name()))) {
           string pType = p->type();
           if (pType.compare("int") == 0) {
-            p->setValue(_toString(seg.attr<int>(Unicode(p->name()))));
+
+	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< int > ParInt;
+	    static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(Unicode(p->name())));
+
           } else if (pType.compare("float") == 0) {
-            p->setValue(_toString(seg.attr<float>(Unicode(p->name()))));
+
+	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< float > ParFloat;
+	    static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(Unicode(p->name())));
+
           } else if (pType.compare("doublevec") == 0) {
-	    std::string theString = seg.attr<string>(Unicode(p->name()));
-	    printout(DEBUG, "Compact", "++ Converting this string structure: %s.", theString.c_str());
-	    // need to put things back to a string, because we can only set segmentation values via string
-	    std::stringstream theValueString;
-	    std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(theString);
+
+	    std::vector<double> valueVector;
+	    std::string parameterString = seg.attr<string>(Unicode(p->name()));
+	    printout(DEBUG, "Compact", "++ Converting this string structure: %s.", parameterString.c_str());
+
+	    std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(parameterString);
 	    for (std::vector<std::string>::const_iterator j = elements.begin(); j != elements.end(); ++j) {
 	      if ((*j).empty()) continue;
-	      double theDouble = DD4hep::Geometry::_toDouble((*j));
-	      theValueString << " " << theDouble;
+	      valueVector.push_back(DD4hep::Geometry::_toDouble((*j)));
 	    }
-	    printout(DEBUG, "Compact", "++ Converted this string structure: %s.", theValueString.str().c_str());
-	    p->setValue(theValueString.str());
+
+	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< std::vector<double> > ParDouVec;
+	    static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
+
           } else if (pType.compare("double") == 0) {
-            p->setValue(_toString(seg.attr<double>(Unicode(p->name()))));
+
+	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< double > ParDouble;
+	    static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(Unicode(p->name())));
+
           } else {
             p->setValue(seg.attr<string>(Unicode(p->name())));
           }
