@@ -141,7 +141,7 @@ double Segmentation::binToPosition(long64 bin, double cellSize, double offset) {
 
 /// Helper method to convert a 1D position to a cell ID
 int Segmentation::positionToBin(double position, double cellSize, double offset) {
-	if (cellSize == 0.) {
+	if (cellSize <= 1e-10) {
 		throw runtime_error("Invalid cell size: 0.0");
 	}
 	return int(floor((position + 0.5 * cellSize - offset) / cellSize));
