@@ -20,8 +20,8 @@ PolarGridRPhi2::PolarGridRPhi2(const std::string& cellEncoding) :
 	// register all necessary parameters
 	registerParameter("grid_r_values", "Vector of R values", _gridRValues, std::vector<double>(), SegmentationParameter::LengthUnit, true);
 	registerParameter("grid_phi_values", "Cell size in Phi", _gridPhiValues, std::vector<double>(), SegmentationParameter::AngleUnit);
-	registerParameter("offset_r", "Cell offset in R", _offsetR, 0., SegmentationParameter::LengthUnit, true);
-	registerParameter("offset_phi", "Cell offset in Phi", _offsetPhi, 0., SegmentationParameter::AngleUnit, true);
+	registerParameter("offset_r", "Cell offset in R", _offsetR, double(0.), SegmentationParameter::LengthUnit, true);
+	registerParameter("offset_phi", "Cell offset in Phi", _offsetPhi, double(0.), SegmentationParameter::AngleUnit, true);
 	registerIdentifier("identifier_r", "Cell ID identifier for R", _rId, "r");
 	registerIdentifier("identifier_phi", "Cell ID identifier for Phi", _phiId, "phi");
 }
