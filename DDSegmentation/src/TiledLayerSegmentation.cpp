@@ -17,11 +17,10 @@ namespace DDSegmentation {
 
 using std::find;
 using std::runtime_error;
-using std::string;
 using std::stringstream;
 using std::vector;
 
-TiledLayerSegmentation::TiledLayerSegmentation(const string& cellEncoding) :
+TiledLayerSegmentation::TiledLayerSegmentation(const std::string& cellEncoding) :
 		Segmentation(cellEncoding) {
 	_type = "TiledLayerSegmentation";
 	_description = "Cartesian segmentation using optimal tiling depending on the layer dimensions";
@@ -31,7 +30,7 @@ TiledLayerSegmentation::TiledLayerSegmentation(const string& cellEncoding) :
 	registerParameter("grid_size_y", "Default cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);
 	registerIdentifier("identifier_x", "Cell encoding identifier for X", _identifierX, "x");
 	registerIdentifier("identifier_y", "Cell encoding identifier for Y", _identifierY, "y");
-	registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, string("layer"),
+	registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, std::string("layer"),
 			SegmentationParameter::NoUnit, true);
 	registerParameter("layer_identifiers", "List of valid layer identifiers", _layerIndices, vector<int>(),
 			SegmentationParameter::NoUnit, true);

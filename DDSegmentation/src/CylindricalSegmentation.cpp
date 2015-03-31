@@ -7,13 +7,11 @@
 
 #include "DDSegmentation/CylindricalSegmentation.h"
 
-using std::string;
-
 namespace DD4hep {
 namespace DDSegmentation {
 
 /// default constructor using an encoding string
-CylindricalSegmentation::CylindricalSegmentation(const string& cellEncoding) :
+CylindricalSegmentation::CylindricalSegmentation(const std::string& cellEncoding) :
 		Segmentation(cellEncoding) {
 }
 

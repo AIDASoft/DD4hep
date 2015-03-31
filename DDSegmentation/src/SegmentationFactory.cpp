@@ -12,10 +12,9 @@ namespace DDSegmentation {
 
 using std::map;
 using std::vector;
-using std::string;
 
 /// Default constructor. Takes the class name as argument and takes care of registration with the factory
-SegmentationCreatorBase::SegmentationCreatorBase(const string& name) {
+SegmentationCreatorBase::SegmentationCreatorBase(const std::string& name) {
 	SegmentationFactory::instance()->registerSegmentation(name, this);
 }
 
@@ -31,8 +30,8 @@ SegmentationFactory* SegmentationFactory::instance() {
 }
 
 /// Create a new segmentation object with the given type name. Returns NULL if type name is unknown.
-Segmentation* SegmentationFactory::create(const string& name, const string& identifier) const {
-	map<string, SegmentationCreatorBase*>::const_iterator it;
+Segmentation* SegmentationFactory::create(const std::string& name, const std::string& identifier) const {
+	map<std::string, SegmentationCreatorBase*>::const_iterator it;
 	it = _segmentations.find(name);
 	if (it != _segmentations.end()) {
 		return it->second->create(identifier);
@@ -41,9 +40,9 @@ Segmentation* SegmentationFactory::create(const string& name, const string& iden
 }
 
 /// Access to the list of registered segmentations
-vector<string> SegmentationFactory::registeredSegmentations() const {
-	vector<string> segmentationNames;
-	map<string, SegmentationCreatorBase*>::const_iterator it;
+vector<std::string> SegmentationFactory::registeredSegmentations() const {
+	vector<std::string> segmentationNames;
+	map<std::string, SegmentationCreatorBase*>::const_iterator it;
 	for (it = _segmentations.begin(); it != _segmentations.end(); ++ it) {
 		segmentationNames.push_back(it->first);
 	}
@@ -51,7 +50,7 @@ vector<string> SegmentationFactory::registeredSegmentations() const {
 }
 
 /// Registers a new SegmentationCreator with the factory
-void SegmentationFactory::registerSegmentation(const string& name, SegmentationCreatorBase* creator) {
+void SegmentationFactory::registerSegmentation(const std::string& name, SegmentationCreatorBase* creator) {
 	_segmentations[name] = creator;
 }
 

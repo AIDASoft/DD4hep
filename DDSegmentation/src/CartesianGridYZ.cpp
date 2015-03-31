@@ -11,10 +11,8 @@
 namespace DD4hep {
 namespace DDSegmentation {
 
-using std::string;
-
 /// default constructor using an encoding string
-CartesianGridYZ::CartesianGridYZ(const string& cellEncoding) :
+CartesianGridYZ::CartesianGridYZ(const std::string& cellEncoding) :
 		CartesianGrid(cellEncoding) {
 	// define type and description
 	_type = "CartesianGridYZ";

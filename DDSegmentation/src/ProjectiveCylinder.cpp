@@ -14,12 +14,11 @@
 namespace DD4hep {
 namespace DDSegmentation {
 
-using std::string;
 using Util::thetaFromXYZ;
 using Util::phiFromXYZ;
 
 /// default constructor using an encoding string
-ProjectiveCylinder::ProjectiveCylinder(const string& cellEncoding) :
+ProjectiveCylinder::ProjectiveCylinder(const std::string& cellEncoding) :
 	CylindricalSegmentation(cellEncoding) {
 	// define type and description
 	_type = "ProjectiveCylinder";
