@@ -24,7 +24,8 @@ namespace DD4hep {
 
 
     /** Create an envelope volume that is placed into the world volume ( the parent volume of sdet) from an xml
-     *  element <envelope/> with child nodes <shape/> and optionally <position/> and <rotation/>.
+     *  element <envelope/> with child nodes <shape/> and optionally <position/> and <rotation/>. For special cases
+     *  no volume but an assembly can be created with <shape type="Assembly"/>.
      *  Example: <br>
      *  <p>
      *  <envelope vis="ILD_ECALVis">
@@ -32,6 +33,7 @@ namespace DD4hep {
      *	         dz="2.*TPC_Ecal_Hcal_barrel_halfZ"  material = "Air" />
      *    <rotation x="0*deg" y="0*deg" z="90*deg-180*deg/8"/>
      * </envelope>
+     * </p>
      * 
      *  @author S.Lu DESY, F. Gaede CERN/DESY 
      *  @version $Id:$

@@ -44,9 +44,7 @@ Geometry::Volume DD4hep::XML::createPlacedEnvelope( DD4hep::Geometry::LCDD& lcdd
   xml_comp_t    x_env     =  x_det.child( DD4hep::XML::Strng_t("envelope") ) ;
   xml_comp_t    x_shape   =  x_env.child( _U(shape) ); 
   
-  Material      env_mat   = lcdd.material( x_shape.materialStr() );
   
-
   bool useRot = false ;
   bool usePos = false ; 
   Position    pos ;
@@ -63,19 +61,30 @@ Geometry::Volume DD4hep::XML::createPlacedEnvelope( DD4hep::Geometry::LCDD& lcdd
     rot = RotationZYX( env_rot.z(),env_rot.y(),env_rot.x() ) ;
   }
 
+  Volume  envelope  ;
 
-  // ---- create a shape from the specified xml element --------
-  Box  env_solid = xml_comp_t( x_shape ).createShape();
-  
-  if( !env_solid.isValid() ){
+  if(  x_shape.typeStr() == "Assembly" ){
+
+    envelope = Assembly( det_name+"_assembly" ) ;
+
+  } else { 
+    // ---- create a shape from the specified xml element --------
+    Box  env_solid = xml_comp_t( x_shape ).createShape();
     
-    throw std::runtime_error( std::string(" Cannot create envelope volume : ") + x_shape.typeStr() + 
-			      std::string(" for detector " ) + det_name ) ;
+    if( !env_solid.isValid() ){
+      
+      throw std::runtime_error( std::string(" Cannot create envelope volume : ") + x_shape.typeStr() + 
+				std::string(" for detector " ) + det_name ) ;
+    }
+
+    Material      env_mat   = lcdd.material( x_shape.materialStr() );
+  
+    envelope = Volume( det_name+"_envelope", env_solid, env_mat );
   }
-  
-  Volume        envelope  ( det_name+"_envelope", env_solid, env_mat );
-  
+
+
   PlacedVolume  env_pv  ; 
+
 
   Volume        mother = lcdd.pickMotherVolume(sdet);
 
