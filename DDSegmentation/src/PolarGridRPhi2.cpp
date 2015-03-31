@@ -38,6 +38,10 @@ Vector3D PolarGridRPhi2::position(const CellID& cellID) const {
 	const int rBin = (*_decoder)[_rId].value();
 	double R = binToPosition(rBin, _gridRValues, _offsetR);
 	double phi = binToPosition((*_decoder)[_phiId].value(), _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
+
+	if ( phi < _offsetPhi) {
+	  phi += 2*M_PI;
+	}
 	
 	position.X = R * cos(phi);
 	position.Y = R * sin(phi);
@@ -53,7 +57,13 @@ Vector3D PolarGridRPhi2::position(const CellID& cellID) const {
 
 	const int rBin = positionToBin(R, _gridRValues, _offsetR);
 	(*_decoder)[_rId] = rBin;
-	(*_decoder)[_phiId] = positionToBin(phi, _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
+
+	if ( phi < _offsetPhi) {
+	  phi += 2*M_PI;
+	}
+	const int pBin = positionToBin(phi, _gridPhiValues[rBin], _offsetPhi+_gridPhiValues[rBin]*0.5);
+	(*_decoder)[_phiId] = pBin;
+
 	return _decoder->getValue();
 }
 
