@@ -25,9 +25,9 @@ public:
 	/// determine the cell ID based on the position
 	virtual CellID cellID(const Vector3D& localPosition, const Vector3D& globalPosition, const VolumeID& volumeID) const;
 	/// determine the polar angle theta based on the cell ID
-	double theta(const long64& cellID) const;
+	double theta(const CellID& cellID) const;
 	/// determine the azimuthal angle phi based on the cell ID
-	double phi(const long64& cellID) const;
+	double phi(const CellID& cellID) const;
 	/// access the number of bins in theta
 	int thetaBins() const {
 		return _thetaBins;
@@ -79,9 +79,9 @@ public:
 
 protected:
 	/// the number of bins in theta
-	double _thetaBins;
+	int _thetaBins;
 	/// the number of bins in phi
-	double _phiBins;
+	int _phiBins;
 	/// the coordinate offset in theta
 	double _offsetTheta;
 	/// the coordinate offset in phi
@@ -90,6 +90,12 @@ protected:
 	std::string _thetaID;
 	/// the field name used for phi
 	std::string _phiID;
+
+	/// determine the polar angle theta based on the current cell ID
+	double theta() const;
+	/// determine the azimuthal angle phi based on the current cell ID
+	double phi() const;
+
 };
 
 } /* namespace DDSegmentation */
