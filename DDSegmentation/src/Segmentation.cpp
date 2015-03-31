@@ -12,6 +12,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <algorithm>
+#include <iomanip>
 
 namespace DD4hep {
 namespace DDSegmentation {
@@ -152,24 +153,26 @@ double Segmentation::binToPosition(CellID bin, std::vector<double> const& cellBo
 /// Helper method to convert a 1D position to a cell ID given a vector of binBoundaries
 int Segmentation::positionToBin(double position, std::vector<double> const& cellBoundaries, double offset) {
 
-  // include the lower edge to the segmentation
-  if(fabs(position - cellBoundaries.front()) < 1e-12) return 0;
+  // include the lower edge to the segmentation, deal with numerical issues
+  if(fabs(position/cellBoundaries.front()-1.0) < 3e-12) return 0;
 
-  // include the upper edge of the last bin to the segmentation
-  if(fabs(position - cellBoundaries.back())  < 1e-12) return int(cellBoundaries.size()-2);
+  // include the upper edge of the last bin to the segmentation, deal with numerical issues
+  if(fabs(position/cellBoundaries.back()-1.0)  < 3e-12) return int(cellBoundaries.size()-2);
 
   // hits outside cannot be treated
   if(position < cellBoundaries.front()) {
     std::stringstream err;
+    err << std::setprecision(20) << std::scientific;
     err << "Hit Position (" << position << ") is below the acceptance"
-	<< "(" << cellBoundaries.front() << ")"
+	<< " (" << cellBoundaries.front() << ") "
 	<< "of the segmentation";
     throw std::runtime_error(err.str());
   }
   if(position > cellBoundaries.back() ) {
     std::stringstream err;
+    err << std::setprecision(20) << std::scientific;
     err << "Hit Position (" << position << ") is above the acceptance"
-	<< "(" << cellBoundaries.back() << ")"
+	<< " (" << cellBoundaries.back() << ") "
 	<< "of the segmentation";
     throw std::runtime_error(err.str());
   }
