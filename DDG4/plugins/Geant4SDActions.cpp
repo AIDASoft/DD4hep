@@ -81,7 +81,26 @@ namespace DD4hep {
       StepHandler h(step);
       HitContribution contrib = Hit::extractContribution(step);
       HitCollection*  coll    = collection(m_collectionID);
-      long long int   cell    = cellID(step);
+      long long int cell;
+      try {
+	cell = cellID(step);
+      } catch(std::runtime_error &e) {
+	std::stringstream out;
+	out << std::setprecision(20) << std::scientific;
+	out << "ERROR: " << e.what()  << std::endl;
+	out << "Position: "
+	    << "Pre (" << std::setw(24) << step->GetPreStepPoint()->GetPosition() << ") "
+	    << "Post (" << std::setw(24) << step->GetPostStepPoint()->GetPosition() << ") "
+	    << std::endl;
+	out << "Momentum: "
+	    << " Pre (" <<std::setw(24) << step->GetPreStepPoint() ->GetMomentum()  << ") "
+	    << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
+	    << std::endl;
+
+	std::cout << out;
+
+	return true;
+      }
 
       Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
       if ( h.totalEnergy() < std::numeric_limits<double>::epsilon() )  {
