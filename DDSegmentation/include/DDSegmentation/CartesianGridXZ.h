@@ -65,12 +65,12 @@ public:
 		_offsetZ = offset;
 	}
 	/// set the field name used for X
-	void setFieldNameX(const std::string& name) {
-		_xId = name;
+	void setFieldNameX(const std::string& fieldName) {
+		_xId = fieldName;
 	}
 	/// set the field name used for Y
-	void setFieldNameZ(const std::string& name) {
-		_zId = name;
+	void setFieldNameZ(const std::string& fieldName) {
+		_zId = fieldName;
 	}
 
 protected:

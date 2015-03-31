@@ -95,8 +95,8 @@ TiledLayerSegmentation::LayerDimensions TiledLayerSegmentation::layerDimensions(
 }
 
 /// determine the position based on the cell ID
-Vector3D TiledLayerSegmentation::position(const CellID& cellID) const {
-	_decoder->setValue(cellID);
+Vector3D TiledLayerSegmentation::position(const CellID& cID) const {
+	_decoder->setValue(cID);
 	int layerIndex = (*_decoder)[_identifierLayer];
 	double cellSizeX = layerGridSizeX(layerIndex);
 	double cellSizeY = layerGridSizeY(layerIndex);
@@ -109,8 +109,8 @@ Vector3D TiledLayerSegmentation::position(const CellID& cellID) const {
 }
 /// determine the cell ID based on the position
   CellID TiledLayerSegmentation::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */,
-		const VolumeID& volumeID) const {
-	_decoder->setValue(volumeID);
+		const VolumeID& vID) const {
+	_decoder->setValue(vID);
 	int layerIndex = (*_decoder)[_identifierLayer];
 	double cellSizeX = layerGridSizeX(layerIndex);
 	double cellSizeY = layerGridSizeY(layerIndex);

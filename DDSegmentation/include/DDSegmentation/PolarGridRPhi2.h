@@ -51,12 +51,12 @@ public:
 		return _phiId;
 	}
 	/// set the grid Boundaries in R
-	void setGridRValues(double cellSize, int position) {
-		_gridRValues[position] = cellSize;
+	void setGridRValues(double cellSize, int rID) {
+		_gridRValues[rID] = cellSize;
 	}
 	/// set the grid size in Phi
-        void setGridSizePhi(double cellSize, int position) {
-		_gridPhiValues[position] = cellSize;
+        void setGridSizePhi(double cellSize, int phiID) {
+		_gridPhiValues[phiID] = cellSize;
 	}
 
         /// set the grid boundaries for R
@@ -78,12 +78,12 @@ public:
 		_offsetPhi = offset;
 	}
 	/// set the field name used for X
-	void setFieldNameR(const std::string& name) {
-		_rId = name;
+	void setFieldNameR(const std::string& fieldName) {
+		_rId = fieldName;
 	}
 	/// set the field name used for Y
-	void setFieldNamePhi(const std::string& name) {
-		_phiId = name;
+	void setFieldNamePhi(const std::string& fieldName) {
+		_phiId = fieldName;
 	}
 
 protected:

@@ -34,21 +34,21 @@ PolarGridRPhi::~PolarGridRPhi() {
 }
 
 /// determine the position based on the cell ID
-Vector3D PolarGridRPhi::position(const CellID& cellID) const {
-	_decoder->setValue(cellID);
-	Vector3D position;
+Vector3D PolarGridRPhi::position(const CellID& cID) const {
+	_decoder->setValue(cID);
+	Vector3D cellPosition;
 	double R = binToPosition((*_decoder)[_rId].value(), _gridSizeR, _offsetR);
 	double phi = binToPosition((*_decoder)[_phiId].value(), _gridSizePhi, _offsetPhi);
 	
-	position.X = R * cos(phi);
-	position.Y = R * sin(phi);
+	cellPosition.X = R * cos(phi);
+	cellPosition.Y = R * sin(phi);
  	
-	return position;
+	return cellPosition;
 }
 
 /// determine the cell ID based on the position
-  CellID PolarGridRPhi::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& volumeID) const {
-	_decoder->setValue(volumeID);
+  CellID PolarGridRPhi::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
+	_decoder->setValue(vID);
 	double phi = atan2(localPosition.Y,localPosition.X);
 	double R = sqrt( localPosition.X * localPosition.X + localPosition.Y * localPosition.Y );
 

@@ -21,8 +21,8 @@ class TiledLayerSegmentation: public Segmentation {
 public:
 	/// Helper class to store x and y dimensions of a layer
 	struct LayerDimensions {
-		LayerDimensions(double x = 1., double y = 1.) :
-			x(x), y(y) {}
+		LayerDimensions(double _x = 1., double _y = 1.) :
+			x(_x), y(_y) {}
 		double x, y;
 	};
 
@@ -77,16 +77,16 @@ public:
 	}
 
 	/// set the encoding field name used for X
-	void setIdentifierX(const std::string& name) {
-		_identifierX = name;
+	void setIdentifierX(const std::string& fieldName) {
+		_identifierX = fieldName;
 	}
 	/// set the encoding field name used for Y
-	void setIdentifierY(const std::string& name) {
-		_identifierY = name;
+	void setIdentifierY(const std::string& fieldName) {
+		_identifierY = fieldName;
 	}
 	/// set the encoding field name used for layer
-	void setIdentifierLayer(const std::string& name) {
-		_identifierLayer = name;
+	void setIdentifierLayer(const std::string& fieldName) {
+		_identifierLayer = fieldName;
 	}
 
 	/// set the dimensions of the given layer

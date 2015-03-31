@@ -31,18 +31,18 @@ CartesianGridXYZ::~CartesianGridXYZ() {
 }
 
 /// determine the position based on the cell ID
-Vector3D CartesianGridXYZ::position(const CellID& cellID) const {
-	_decoder->setValue(cellID);
-	Vector3D position;
-	position.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
-	position.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY);
-	position.Z = binToPosition((*_decoder)[_zId].value(), _gridSizeZ, _offsetZ);
-	return position;
+Vector3D CartesianGridXYZ::position(const CellID& cID) const {
+	_decoder->setValue(cID);
+	Vector3D cellPosition;
+	cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
+	cellPosition.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY);
+	cellPosition.Z = binToPosition((*_decoder)[_zId].value(), _gridSizeZ, _offsetZ);
+	return cellPosition;
 }
 
 /// determine the cell ID based on the position
-  CellID CartesianGridXYZ::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& volumeID) const {
-	_decoder->setValue(volumeID);
+  CellID CartesianGridXYZ::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
+	_decoder->setValue(vID);
 	(*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
 	(*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY);
 	(*_decoder)[_zId] = positionToBin(localPosition.Z, _gridSizeZ, _offsetZ);
