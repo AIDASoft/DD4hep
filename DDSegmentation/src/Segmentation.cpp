@@ -86,7 +86,8 @@ void Segmentation::neighbours(const CellID& cID, std::set<CellID>& cellNeighbour
 
 /// Set the underlying decoder
 void Segmentation::setDecoder(BitField64* newDecoder) {
-	if (_ownsDecoder and _decoder != 0) {
+	if ( _decoder == newDecoder ) return; //self assignment
+	if (_ownsDecoder) {
 		delete _decoder;
 	}
 	_decoder = newDecoder;
