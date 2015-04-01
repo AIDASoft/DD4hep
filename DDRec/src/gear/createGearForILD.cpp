@@ -192,7 +192,7 @@ namespace DD4hep{
 	gearSET->setDoubleVal("strip_length_mm" , set->lengthStrip/ dd4hep::mm ) ;
 	gearSET->setDoubleVal("strip_pitch_mm"  , set->pitchStrip / dd4hep::mm ) ;
 	gearSET->setDoubleVal("strip_angle_deg" , set->angleStrip / dd4hep::deg ) ;
-	
+
 	
 	gearSET->setIntVals("n_sensors_per_ladder",n_sensors_per_ladder);
 	
@@ -300,41 +300,71 @@ namespace DD4hep{
       //========= CALO ==============================================================================
 
       //**********************************************************
-      //*  test gear interface w/ LayeredCalorimeterData extension
+      //*  gear interface w/ LayeredCalorimeterData extension
       //**********************************************************
 
-      try {
-
-	DetElement caloDE = lcdd.detector("HcalBarrel") ;
-	
-	LayeredCalorimeterData* calo = caloDE.extension<LayeredCalorimeterData>() ;
+      std::map< std::string, std::string > caloMap ;
+      caloMap["HcalBarrel"] = "HcalBarrelParameters"  ; 
+      caloMap["EcalBarrel"] = "EcalBarrelParameters" ;
+      caloMap["EcalEndcap"] = "EcalEndcapParameters" ;
+      caloMap["EcalPlug"]   = "EcalPlugParameters" ;
+      caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
+      caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
+      caloMap["YokePlug"]   = "YokePlugParameters" ;
+      caloMap["HcalBarrel"] = "HcalBarrelParameters" ;
+      caloMap["HcalEndcap"] = "HcalEndcapParameters" ;
+      caloMap["HcalRing"]   = "HcalRingParameters" ;
+      caloMap["Lcal"]	    = "LcalParameters" ;
+      caloMap["LHcal"]	    = "LHcalParameters" ;
+      caloMap["BeamCal"]    = "BeamCalParameters" ;
       
-	gear::CalorimeterParametersImpl* gearCalo = 
-	  ( calo->layoutType == LayeredCalorimeterData::BarrelLayout  ?
-	    new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm, calo->extent[3]/dd4hep::mm, calo->symmetry, calo->phi0 )  :
-	    //CalorimeterParametersImpl (double rMin, double zMax, int symOrder=8, double phi0=0.0) - C'tor for a cylindrical (octagonal) BARREL calorimeter.
-	    new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm,  calo->extent[1]/dd4hep::mm,  calo->extent[2]/dd4hep::mm, calo->symmetry, calo->phi0 )   ) ;
-	//CalorimeterParametersImpl (double rMin, double rMax, double zMin, int symOrder=2, double phi0=0.0) - C'tor for a cylindrical (octagonal) ENDCAP calorimeter. 
+      for(  std::map< std::string, std::string >::const_iterator it = caloMap.begin() ; it != caloMap.end() ; ++it ){
+
+      
+
+	try {
+
+	  DetElement caloDE = lcdd.detector( it->first ) ;
 	
-	for( unsigned i=0, nL = calo->layers.size() ; i <nL ; ++i ){
+	  LayeredCalorimeterData* calo = caloDE.extension<LayeredCalorimeterData>() ;
 	  
-	  LayeredCalorimeterData::Layer& l = calo->layers[i] ;
+	  gear::CalorimeterParametersImpl* gearCalo = 
+	    ( calo->layoutType == LayeredCalorimeterData::BarrelLayout  ?
+	      new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm, calo->extent[3]/dd4hep::mm, calo->inner_symmetry, calo->phi0 )  :
+	      //CalorimeterParametersImpl (double rMin, double zMax, int symOrder=8, double phi0=0.0) - C'tor for a cylindrical (octagonal) BARREL calorimeter.
+	      new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm,  calo->extent[1]/dd4hep::mm,  calo->extent[2]/dd4hep::mm, calo->outer_symmetry, calo->phi0 )   ) ;
+	  //CalorimeterParametersImpl (double rMin, double rMax, double zMin, int symOrder=2, double phi0=0.0) - C'tor for a cylindrical (octagonal) ENDCAP calorimeter. 
 	  
-	  if( i == 0 ) {
-	    gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, l.thickness/dd4hep::mm , l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
-	  }else{
-	    gearCalo->layerLayout().addLayer(                             l.thickness/dd4hep::mm , l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	  for( unsigned i=0, nL = calo->layers.size() ; i <nL ; ++i ){
+	    
+	    LayeredCalorimeterData::Layer& l = calo->layers[i] ;
+	    
+	    if( i == 0 ) {
+	      gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, l.thickness/dd4hep::mm , 
+						     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	    }else{
+	      gearCalo->layerLayout().addLayer(                             l.thickness/dd4hep::mm , 
+									    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	    }
+	    
 	  }
-	  
-	  
-	}
 	
-	caloDE.addExtension< GearHandle >( new GearHandle( gearCalo, "HcalBarrelParameters" ) ) ;
-      
+	  if( it->first == "HcalBarrel" ){
+	    // additional parameters needed by MarlinPandora
+	    gearCalo->setIntVal("Hcal_outer_polygon_order"   , calo->outer_symmetry  ) ;
+	    gearCalo->setDoubleVal("Hcal_outer_polygon_phi0" ,  calo->phi0 ) ;
+	  }
+		  
 
-      } catch( std::runtime_error& e ){  
-	std::cerr << " >>>> " << e.what() << std::endl ;
-      } 
+
+	  caloDE.addExtension< GearHandle >( new GearHandle( gearCalo, it->second ) ) ;
+
+	} catch( std::runtime_error& e ){  
+	  std::cerr << " >>>> " << e.what() << std::endl ;
+	} 
+
+      } // calo loop 
+
 
 
       //**********************************************************

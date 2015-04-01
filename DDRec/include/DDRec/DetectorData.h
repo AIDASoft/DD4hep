@@ -256,8 +256,7 @@ namespace DD4hep {
 
 
 
-    /** Simple data structure defining a 
-     *  layered calorimeter layout for
+    /** Simple data structure defining a layered calorimeter layout for
      *  reconstruction. 
      * 
      * @author F.Gaede, CERN/DESY
@@ -278,13 +277,21 @@ namespace DD4hep {
       /// extent of the calorimeter in the r-z-plane [ rmin, rmax, zmin, zmax ] in mm.
       double extent[4] ;
 
-      /** the order of the rotational symmetry:
+      /** the order of the rotational symmetry at the outside:
        *  8 for an octagonal barrel calorimeter
        *  2 for an endcap calorimeter
        *  1 for a standalone prototype
        *  0 for an idealized cylindrical calorimeter.
        */
-      int symmetry ;
+      int outer_symmetry ;
+
+      /** the order of the rotational symmetry at the inside:
+       *  8 for an octagonal barrel calorimeter
+       *  2 for an endcap calorimeter
+       *  1 for a standalone prototype
+       *  0 for an idealized cylindrical calorimeter.
+       */
+      int inner_symmetry ;
 
       /// azimuthal angle of the first module in barrel layout
       double  phi0  ;
