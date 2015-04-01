@@ -82,8 +82,8 @@ Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* ctxt, co
 
 /// Post-track action callback
 void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  {
-  double r_prod = sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
-  double z_prod = fabs(p.vsz);
+  double r_prod = std::sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
+  double z_prod = std::fabs(p.vsz);
   bool starts_in_trk_vol = ( r_prod <= m_rTracker && z_prod <= m_zTracker )  ;
 
   // created in tracking volume but below energy cut
@@ -92,8 +92,8 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
     return;
   }
 
-  double r_end  = sqrt(p.vex*p.vex + p.vey*p.vey);
-  double z_end  = fabs(p.vez);
+  double r_end  = std::sqrt(p.vex*p.vex + p.vey*p.vey);
+  double z_end  = std::fabs(p.vez);
   bool ends_in_trk_vol =  ( r_end <= m_rTracker && z_end <= m_zTracker ) ;
 
   // created and ended in calo

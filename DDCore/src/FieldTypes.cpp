@@ -41,7 +41,7 @@ void SolenoidField::fieldComponents(const double* pos, double* field) {
   double z = pos[2] ;
   //  std::cout << " field z=" << z << " maxZ=" << maxZ << " minZ = " << minZ << std::endl ;
   if( z > minZ && z < maxZ ){
-    double radius = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
+    double radius = std::sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
     if (radius < innerRadius)
       field[2] += innerField;
     else if (radius < outerRadius)
@@ -57,7 +57,7 @@ DipoleField::DipoleField()
 
 /// Call to access the field components at a given location
 void DipoleField::fieldComponents(const double* pos, double* field) {
-  double z = pos[2], r = sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
+  double z = pos[2], r = std::sqrt(pos[0] * pos[0] + pos[1] * pos[1]);
   // Check if z coordinate is within dipole z bounds.
   if (z > zmin && z < zmax && r < rmax) {
     // Apply all coefficients to this z coordinate.

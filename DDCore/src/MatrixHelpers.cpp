@@ -95,7 +95,7 @@ DD4hep::Geometry::XYZAngles DD4hep::Geometry::_XYZangles(const TGeoMatrix* m) {
 }
 
 DD4hep::Geometry::XYZAngles DD4hep::Geometry::_XYZangles(const double* r) {
-  Double_t cosb = sqrt(r[0]*r[0] + r[1]*r[1]);
+  Double_t cosb = std::sqrt(r[0]*r[0] + r[1]*r[1]);
   if (cosb > 0.00001) {
     return XYZAngles(atan2(r[5], r[8]), atan2(-r[2], cosb), atan2(r[1], r[0]));
   }

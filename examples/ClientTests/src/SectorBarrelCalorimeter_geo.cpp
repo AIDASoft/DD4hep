@@ -91,7 +91,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   
   double half_polyFace = rmin * tan_half;
   
-  double innerFaceLen   = sqrt(rmax*rmax - rmin*rmin)+half_polyFace;
+  double innerFaceLen   = std::sqrt(rmax*rmax - rmin*rmin)+half_polyFace;
   //double outerFaceLen   = (rmin+totalThickness) * tan_external;
   double staveThickness = totalThickness;
 
@@ -171,7 +171,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       layerR += layer_thickness;
       // Increment the layer X dimension.
       layer_pos_x = (layerR-rmin)/tan_external;
-      layer_dim_x =  (sqrt(rmax*rmax - layerR*layerR)+half_polyFace - layer_pos_x)/2.0;
+      layer_dim_x =  (std::sqrt(rmax*rmax - layerR*layerR)+half_polyFace - layer_pos_x)/2.0;
       cout<<"Rmin: "<< rmin<<" Rmax: "<<rmax<<" half_polyFace: "<<half_polyFace<<" Layer " <<layer_num<<" layerR: "<<layerR<<" layer_dim_x:" <<layer_dim_x<<endl;
       // Increment the layer Z position.
       layer_pos_z += layer_thickness / 2;

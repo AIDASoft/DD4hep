@@ -337,7 +337,7 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
     p->mass *= info.mom_unit;
   }
   else   {
-    p->mass = sqrt(fabs(ene*ene - p->psx*p->psx + p->psy*p->psy + p->psz*p->psz));
+    p->mass = std::sqrt(fabs(ene*ene - (p->psx*p->psx + p->psy*p->psy + p->psz*p->psz)));
   }
   // Reuse here the secondaries to store the end-vertex ID
   input >> stat >> theta >> phi >> p->secondaries >> size;

@@ -1,0 +1,6 @@
+rm -rf build;mkdir build;cd build
+
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/home/frankm/SW/DD4hep_head_dbg.root_v5.34.25.g4_10.01/DD4hep -DCMAKE_MODULE_PATH=:/home/frankm/SW/DD4hep_head_dbg.root_v5.34.25.g4_10.01/DD4hep -DDD4hep_INCLUDE_DIRS=/home/frankm/SW/DD4hep_head_dbg.root_v5.34.25.g4_10.01/DD4hep/include -DD4hep_DIR=/home/frankm/SW/DD4hep_head_dbg.root_v5.34.25.g4_10.01/DD4hep -DD4hep_ROOT=/home/frankm/SW/DD4hep_head_dbg.root_v5.34.25.g4_10.01/DD4hep -DDD4HEP_USE_XERCESC=ON -DXERCESC_ROOT_DIR=/home/frankm/SW/xercesc -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DLCIO_DIR=/home/frankm/SW/lcio/v02-04-03 -DGeant4_ROOT=/home/frankm/SW/g4_10.01_dbg -DDD4HEP_USE_GEANT4=ON -DDD4HEP_USE_PYROOT=OFF -DBUILD_TESTING=ON ..
+  
+
+make -j 5

@@ -173,7 +173,7 @@ namespace DD4hep {
       /// Scalar particle energy
       double energy() const;
       /// Scalar particle momentum
-      double momentum() const   {  return sqrt(momentum2());       }
+      double momentum() const   {  return std::sqrt(momentum2());  }
       /// Geant4 charge of the particle
       double charge()  const    { return double(particle->charge); }
       /// Geant4 mass of the particle
