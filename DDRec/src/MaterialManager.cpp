@@ -24,7 +24,7 @@ namespace DD4hep {
     
     const MaterialVec&MaterialManager:: materialsBetween(const DDSurfaces::Vector3D& p0, const DDSurfaces::Vector3D& p1 , double epsilon) {
       
-      if( ( p0 != _p0 ) && ( p1 != _p1 ) ) {
+      if( ( p0 != _p0 ) || ( p1 != _p1 ) ) {
 	
 	//---------------------------------------	
 	_mV.clear() ;
@@ -32,7 +32,7 @@ namespace DD4hep {
 	//
 	// algorithm copied from TGeoGearDistanceProperties.cc (A.Munnich):
 	// 
-
+	
 	double startpoint[3], endpoint[3], direction[3];
 	double L=0;
 	for(unsigned int i=0; i<3; i++) {
@@ -45,45 +45,57 @@ namespace DD4hep {
 	
 	//normalize direction
 	for(unsigned int i=0; i<3; i++)
-	  direction[i]=direction[i]/sqrt(L);
+	  direction[i]=direction[i]/totDist;
 	
-	_tgeoMgr->AddTrack(0,12);
+	_tgeoMgr->AddTrack(0, 12 ) ; // electron neutrino
+
 	TGeoNode *node1 = _tgeoMgr->InitTrack(startpoint, direction);
+
 	//check if there is a node at startpoint
 	if(!node1)
 	  throw std::runtime_error("No geometry node found at given location. Either there is no node placed here or position is outside of top volume.");
 	
 	while ( !_tgeoMgr->IsOutside() )  {
-	  TGeoNode *node2;
-	  TVirtualGeoTrack *track; 
-	  node2 = _tgeoMgr->FindNextBoundaryAndStep(500, 1) ;
 	  
-	  if(!node2 || _tgeoMgr->IsOutside())
+	  // TGeoNode *node2;
+	  // TVirtualGeoTrack *track; 
+	  
+	  // step to (and over) the next Boundary
+	  TGeoNode * node2 = _tgeoMgr->FindNextBoundaryAndStep( 500, 1) ;
+	  
+	  if( !node2 || _tgeoMgr->IsOutside() )
 	    break;
 	  
-	  const double *position =(double*) _tgeoMgr->GetCurrentPoint();
-	  const double *previouspos =(double*) _tgeoMgr->GetLastPoint();
-	  double length=_tgeoMgr->GetStep();
-	  track = _tgeoMgr->GetLastTrack();
+	  const double *position    =  _tgeoMgr->GetCurrentPoint();
+	  const double *previouspos =  _tgeoMgr->GetLastPoint();
+	  
+	  double length = _tgeoMgr->GetStep();
+
+	  TVirtualGeoTrack *track = _tgeoMgr->GetLastTrack();
+
 	  //protection against infinitive loop in root which should not happen, but well it does...
 	  //work around until solution within root can be found when the step gets very small e.g. 1e-10
 	  //and the next boundary is never reached
-	  
-	  if(length<MINSTEP) {
-
-	    _tgeoMgr->SetCurrentPoint(position[0]+MINSTEP*direction[0], position[1]+MINSTEP*direction[1], position[2]+MINSTEP*direction[2]);
-	    length=_tgeoMgr->GetStep();
-	    node2 = _tgeoMgr->FindNextBoundaryAndStep(500, 1) ;
+ 	  
+#if 1   //fg: is this still needed ?
+	  if( length < MINSTEP ) {
 	    
-	    //fg: need to update positions as well !?
-	    position = (const double*) _tgeoMgr->GetCurrentPoint();
-	    previouspos = (const double*) _tgeoMgr->GetLastPoint();
+	    _tgeoMgr->SetCurrentPoint( position[0] + MINSTEP * direction[0], 
+				       position[1] + MINSTEP * direction[1], 
+				       position[2] + MINSTEP * direction[2] );
+	    
+	    length = _tgeoMgr->GetStep();
+	    node2  = _tgeoMgr->FindNextBoundaryAndStep(500, 1) ;
+	    
+	    position    = _tgeoMgr->GetCurrentPoint();
+	    previouspos = _tgeoMgr->GetLastPoint();
 	  }
-	  
+#endif 	  
 	  //	printf( " --  step length :  %1.8e %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   %1.8e   - %s \n" , length ,
 	  //		position[0], position[1], position[2], previouspos[0], previouspos[1], previouspos[2] , node1->GetMedium()->GetMaterial()->GetName() ) ;
 	  
 	  DDSurfaces::Vector3D posV( position ) ;
+	  
 	  double currDistance = ( posV - p0 ).r() ;
 	  
 	  // //if the next boundary is further than end point
@@ -92,12 +104,12 @@ namespace DD4hep {
 	  
 	  //if we travelled too far:
 	  if( currDistance > totDist  ) {
-
-	    length=sqrt(pow(endpoint[0]-previouspos[0],2)
-			+pow(endpoint[1]-previouspos[1],2)
-			+pow(endpoint[2]-previouspos[2],2));
 	    
-	    track->AddPoint(endpoint[0], endpoint[1], endpoint[2], 0.);
+	    length = sqrt( pow(endpoint[0]-previouspos[0],2) + 
+			   pow(endpoint[1]-previouspos[1],2) +
+			   pow(endpoint[2]-previouspos[2],2)   );
+	    
+	    track->AddPoint( endpoint[0], endpoint[1], endpoint[2], 0. );
 	    
 	    
 	    if( length > epsilon ) 
@@ -106,12 +118,12 @@ namespace DD4hep {
 	    break;
 	  }
 	  
-	  track->AddPoint(position[0], position[1], position[2], 0.);
+	  track->AddPoint( position[0], position[1], position[2], 0.);
 	  
 	  if( length > epsilon ) 
 	    _mV.push_back( std::make_pair( Material( node1->GetMedium() ), length  )  ) ; 
 	  
-	  node1=node2;
+	  node1 = node2 ;
 	}
 	
 
@@ -122,6 +134,7 @@ namespace DD4hep {
 
 
 	_tgeoMgr->ClearTracks();
+
 	_tgeoMgr->CleanGarbage();
 	
 	//---------------------------------------	
