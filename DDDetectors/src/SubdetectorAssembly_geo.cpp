@@ -25,6 +25,16 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   Position    pos;
   RotationZYX rot;
 
+  usePos = x_det.hasChild(_U(position));
+  useRot = x_det.hasChild(_U(rotation));
+  if( usePos ) {
+    pos = Position(x_det.position().x(), x_det.position().y(), x_det.position().z());
+  }
+  if( useRot ) {
+    rot = RotationZYX(x_det.rotation().x(), x_det.rotation().y(), x_det.rotation().z());
+  }
+
+
   if ( x_det.hasChild(_U(shape)) )  {
     xml_comp_t x_shape = x_det.child(_U(shape));
     string     type  = x_shape.typeStr();
@@ -33,14 +43,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
     printout(DEBUG,det_name,"+++ Creating detector assembly with shape of type:%s",type.c_str());
     vol = Volume(det_name,solid,mat);
 
-    usePos = x_shape.hasChild(_U(position));
-    useRot = x_shape.hasChild(_U(rotation));
-    if( usePos ) {
-      pos = Position(x_shape.position().x(), x_shape.position().y(), x_shape.position().z());
-    }
-    if( useRot ) {
-      rot = RotationZYX(x_shape.rotation().x(), x_shape.rotation().y(), x_shape.rotation().z());
-    }
+
   }
   else  {
     printout(DEBUG,det_name,"+++ Creating detector assembly without shape");
