@@ -15,6 +15,33 @@
 namespace DD4hep {
 namespace DDSegmentation {
 
+
+  /** A segmentation for arbitrary sizes in R and R-dependent sizes in Phi<br>
+   *  Note: Counting of phi-ids starts at the offset. There are no negative phi-IDs<br>
+   * The grid_r_values give the boundaries of the bin, the grid_phi_values give the size of the bin for each radial bin
+   * see also PolarGridRPhi2::setGridRValues and PolarGridRPhi2::setGridPhiValues<br>
+   * Example:<br>
+   @verbatim
+    <segmentation type="PolarGridRPhi2"
+                  grid_r_values="3.2*cm 3.7*cm 4.9*cm 5.5*cm<br/>
+                                 6.*cm 7.*cm 7.5*cm 8.7*cm<br/>
+                                 9.5*cm 10.*cm 11.*cm 11.8*cm<br/>
+                                 12.*cm 13.*cm 14.*cm 15.0*cm"
+                  grid_phi_values="360/(4*8)*degree 360/(5*8)*degree
+                                   360/(6*8)*degree 360/(6*8)*degree
+                                   360/(7*8)*degree 360/(8*8)*degree
+                                   360/(9*8)*degree 360/(9*8)*degree
+                                   360/(10*8)*degree 360/(11*8)*degree
+                                   360/(12*8)*degree 360/(12*8)*degree
+                                   360/(13*8)*degree 360/(14*8)*degree
+                                   360/(15*8)*degree"
+                  offset_phi="-180.0*degree"
+                     />
+    <id>system:8,barrel:3,layer:8,slice:5,r:32:16,phi:16</id>
+   @endverbatim
+   *    @version $Id$
+   *    @date  2015-03
+   */
 class PolarGridRPhi2: public PolarGrid {
 public:
 	/// Default constructor passing the encoding string
@@ -59,11 +86,14 @@ public:
 		_gridPhiValues[phiID] = cellSize;
 	}
 
-        /// set the grid boundaries for R
+	/// set the grid boundaries for R
+	/// @param rValues The boundaries of the segments in radius, the first value is the lower boundary of the first bin, the highest value is the upper boundary of the last bin
         void setGridRValues(std::vector<double> const& rValues) {
 	  _gridRValues = std::vector<double>(rValues);
 	}
 
+	/// set the grid size in Phi for each bin in R
+	/// @param phiValues The size in phi for each bin in R, this vector is one smaller than the vector for PolarGridRPhi2::setGridRValues
         void setGridPhiValues(std::vector<double> const& phiValues) {
 	  _gridPhiValues = std::vector<double>(phiValues);
 	}
