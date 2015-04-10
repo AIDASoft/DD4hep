@@ -102,7 +102,6 @@ namespace XmlTools {
      * Lookup the dictionary for a string constant
      *
      * @param name name of the variable.
-     * @param value value assigned to the variable.
      */
     const char* getEnviron(const char* name);
     /**

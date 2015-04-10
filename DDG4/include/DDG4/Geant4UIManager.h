@@ -37,10 +37,10 @@ namespace DD4hep {
      *
      *  Any type of commands may be put together, but the overall execution order
      *  is as follows:
-     *  1) Execution of the visualization setup (Property: SetupVIS)
-     *  2) Execution of the user interface setup (Property: SetupUI)
-     *  3) Execution of the macro file list (Property: Macros)
-     *  4) Execution of the command list (Property: Commands)
+     *  1. Execution of the visualization setup (Property: SetupVIS)
+     *  2. Execution of the user interface setup (Property: SetupUI)
+     *  3. Execution of the macro file list (Property: Macros)
+     *  4. Execution of the command list (Property: Commands)
      *
      *
      * \author  M.Frank

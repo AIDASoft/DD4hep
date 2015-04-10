@@ -53,7 +53,7 @@ namespace DD4hep {
       }
     }
 
-    /// Set the properties of a Geant4 Action object from <properties/> XML subsection
+    /// Set the properties of a Geant4 Action object from \<properties/\> XML subsection
     template <typename T> static void _setProperties(const T& handle, xml_h& e)  {
       xml_comp_t action(e);
       // Now we set the object properties

@@ -23,18 +23,17 @@ namespace DD4hep {
     Geometry::Solid createShape(Geometry::LCDD& lcdd, const std::string& shape_type, XML::Element element);
 
 
-    /** Create an envelope volume that is placed into the world volume ( the parent volume of sdet) from an xml
-     *  element <envelope/> with child nodes <shape/> and optionally <position/> and <rotation/>. For special cases
-     *  no volume but an assembly can be created with <shape type="Assembly"/>.
+    /** Create an envelope volume that is placed into the world volume (the parent volume of sdet) from an xml
+     *  element \<envelope/\> with child nodes \<shape/\> and optionally \<position/\> and \<rotation/\>. For special cases
+     *  no volume but an assembly can be created with \<shape type="Assembly"/\>.
      *  Example: <br>
-     *  <p>
-     *  <envelope vis="ILD_ECALVis">
-     *    <shape type="PolyhedraRegular" numsides="8"  rmin="TPC_outer_radius+Ecal_Tpc_gap" rmax="Ecal_outer_radius"  
-     *	         dz="2.*TPC_Ecal_Hcal_barrel_halfZ"  material = "Air" />
-     *    <rotation x="0*deg" y="0*deg" z="90*deg-180*deg/8"/>
-     * </envelope>
-     * </p>
-     * 
+     @verbatim
+     <envelope vis="ILD_ECALVis">
+        <shape type="PolyhedraRegular" numsides="8"  rmin="TPC_outer_radius+Ecal_Tpc_gap" rmax="Ecal_outer_radius"
+	        dz="2.*TPC_Ecal_Hcal_barrel_halfZ"  material = "Air" />
+        <rotation x="0*deg" y="0*deg" z="90*deg-180*deg/8"/>
+     </envelope>
+     @endverbatim
      *  @author S.Lu DESY, F. Gaede CERN/DESY 
      *  @version $Id:$
      */
