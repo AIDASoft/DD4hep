@@ -10,7 +10,7 @@
 //====================================================================
 #include "DD4hep/Factories.h"
 #include "DD4hep/LCDD.h"
-#include "DDRec/SurfaceManager.h"
+#include "DDRec/SurfaceHelper.h"
 
 #include "EvNavHandler.h"
 #include "MultiView.h"
@@ -150,7 +150,7 @@ TEveStraightLineSet* getSurfaceVectors() {
   DetElement world = lcdd.world() ;
 
   // create a list of all surfaces in the detector:
-  SurfaceManager surfMan(  world ) ;
+  SurfaceHelper surfMan(  world ) ;
 
   const SurfaceList& sL = surfMan.surfaceList() ;
 
@@ -191,7 +191,7 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
   DetElement world = lcdd.world() ;
 
   // create a list of all surfaces in the detector:
-  SurfaceManager surfMan(  world ) ;
+  SurfaceHelper surfMan(  world ) ;
 
   const SurfaceList& sL = surfMan.surfaceList() ;
 

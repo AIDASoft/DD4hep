@@ -2,7 +2,7 @@
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorSurfaces.h"
-#include "DDRec/SurfaceManager.h"
+#include "DDRec/SurfaceHelper.h"
 #include "DD4hep/DDTest.h"
 
 #include "DD4hep/DD4hepUnits.h"
@@ -47,7 +47,7 @@ int main(int argc, char** argv ){
 
 
   // create a list of all surfaces in the detector:
-  SurfaceManager surfMan(  world ) ;
+  SurfaceHelper surfMan(  world ) ;
 
   const SurfaceList& sL = surfMan.surfaceList() ;
 

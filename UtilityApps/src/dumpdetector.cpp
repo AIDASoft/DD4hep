@@ -13,7 +13,7 @@
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorSurfaces.h"
-#include "DDRec/SurfaceManager.h"
+#include "DDRec/SurfaceHelper.h"
 
 #include <list>
 
@@ -41,6 +41,20 @@ int main(int argc, char** argv ){
   lcdd.fromCompact( inFile );
 
   DetElement world = lcdd.world() ;
+
+
+  DD4hep::Geometry::LCDD::HandleMap sensDet = lcdd.sensitiveDetectors() ;
+
+
+  std::cout << "############################################################################### "  << std::endl  
+	    << "     sensitive detectors:     " << std::endl ;
+
+  for( DD4hep::Geometry::LCDD::HandleMap::const_iterator it = sensDet.begin() ; it != sensDet.end() ; ++it ){
+
+    SensitiveDetector sDet = it->second ;
+    std::cout << "     " << it->first << " : type = " << sDet.type() << std::endl ;
+  }
+
 
   std::cout << "############################################################################### "  << std::endl  << std::endl  ;
 	
@@ -76,7 +90,7 @@ int main(int argc, char** argv ){
       ++parentCount ;
     } 
 
-    SurfaceManager surfMan( de ) ;
+    SurfaceHelper surfMan( de ) ;
 
     const SurfaceList& sL = surfMan.surfaceList() ;
 
@@ -84,7 +98,7 @@ int main(int argc, char** argv ){
     
     for(unsigned i=0 ; i < parentCount ; ++i ) std::cout << "\t" ;
 
-    std::cout << de.name() << "[ path: "<< de.placementPath ()  <<  "] \t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
+    std::cout << de.name() << "[ path: "<< de.placementPath ()  <<  "] (id: " << de.id() << ") - sens type : " << lcdd.sensitiveDetector( de.name() ).type() << "\t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
 
     // for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
     //   Surface* surf =  *it ;
