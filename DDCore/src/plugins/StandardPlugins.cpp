@@ -33,7 +33,7 @@ static LCDDBuildType build_type(const char* value)   {
   else if ( strcmp(value,"BUILD_SIMU")==0 )
     return BUILD_SIMU;
   else if ( strcmp(value,"1")==0 )
-    return BUILD_DEFAULT;
+    return BUILD_SIMU;
   else if ( strcmp(value,"BUILD_RECO")==0 )
     return BUILD_RECO;
   else if ( strcmp(value,"2")==0 )
@@ -45,7 +45,7 @@ static LCDDBuildType build_type(const char* value)   {
   else if ( strcmp(value,"BUILD_ENVELOPE")==0 )
     return BUILD_ENVELOPE;
   else if ( strcmp(value,"4")==0 )
-    return BUILD_DISPLAY;
+    return BUILD_ENVELOPE;
   throw runtime_error(string("Invalid build type value: ")+value);
 }
 
