@@ -28,23 +28,26 @@ endif()
 #---DD4hepEve library --------------------------------------------------------------
 file(GLOB headers include/DDEve/*.h)
 file(GLOB sources src/*.cpp)
+set( eve_link_libraries DD4hepCore ${ROOT_EVE_LIBRARIES} -lFTGL )
 #---------------------------  Support for the LCIO data I/O ------------------------
 if(DD4HEP_USE_LCIO)
   find_package(LCIO REQUIRED)
   include_directories( ${LCIO_INCLUDE_DIRS} )
   list(APPEND sources lcio/LCIOEventHandler.cpp)
+  list(APPEND eve_link_libraries ${LCIO_LIBRARIES} )
 endif()
 #---------------------------  Support for the DDG4 data I/O ------------------------
 if(DD4HEP_USE_GEANT4)
   root_generate_dictionary( G__DDG4IO ${CMAKE_CURRENT_SOURCE_DIR}/DDEve/DDG4IO.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h )
   list(APPEND sources G__DDG4IO.cxx)
+  list(APPEND eve_link_libraries DD4hepG4 )
 endif()
 #---------------------------  Add DDEve dictionary for interactive ROOT sessions ---
 root_generate_dictionary( G__DDEve ${headers} LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
 list(APPEND sources G__DDEve.cxx)
 
 add_library(DD4hepEve SHARED ${sources})
-target_link_libraries(DD4hepEve DD4hepCore DD4hepG4 ${ROOT_EVE_LIBRARIES} -lFTGL ${LCIO_LIBRARIES} )
+target_link_libraries(DD4hepEve ${eve_link_libraries} )
 
 SET_TARGET_PROPERTIES( DD4hepEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
