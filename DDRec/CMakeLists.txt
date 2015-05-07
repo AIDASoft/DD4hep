@@ -17,7 +17,7 @@ if(DD4HEP_USE_GEAR)
 
   include_directories(  ${GEAR_INCLUDE_DIRS} )
 
-  set(sources ${sources} src/gear/DDGear.cpp src/gear/createGearForILD.cpp)
+  set(sources ${sources} src/gear/DDGear.cpp src/gear/createGearForILD.cpp src/gear/createGearForCLIC.cpp)
 
   add_definitions("-D DD4HEP_USE_GEAR")
 
