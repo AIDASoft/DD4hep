@@ -25,7 +25,7 @@ else()
     ${DD4hep_INCLUDE_DIRS}
     ${ROOT_INCLUDE_DIR} )
 endif()
-#---DD4hepEve library --------------------------------------------------------------
+#---DDEve library --------------------------------------------------------------
 file(GLOB headers include/DDEve/*.h)
 file(GLOB sources src/*.cpp)
 set( eve_link_libraries DDCore ${ROOT_EVE_LIBRARIES} -lFTGL )
@@ -46,13 +46,13 @@ endif()
 root_generate_dictionary( G__DDEve ${headers} LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
 list(APPEND sources G__DDEve.cxx)
 
-add_library(DD4hepEve SHARED ${sources})
-target_link_libraries(DD4hepEve ${eve_link_libraries} )
+add_library(DDEve SHARED ${sources})
+target_link_libraries(DDEve ${eve_link_libraries})
 
-SET_TARGET_PROPERTIES( DD4hepEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+SET_TARGET_PROPERTIES(DDEve PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
-#---DD4hepEve rootmap --------------------------------------------------------------
-dd4hep_generate_rootmap(DD4hepEve)
+#---DDEve rootmap --------------------------------------------------------------
+dd4hep_generate_rootmap(DDEve)
 #---Package installation procedure(s) ----------------------------------------------
 install(DIRECTORY include/DDEve
   DESTINATION include
@@ -62,7 +62,7 @@ install(DIRECTORY ${PackageName}
   DESTINATION examples
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepEve
+install(TARGETS DDEve
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
