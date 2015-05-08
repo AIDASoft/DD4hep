@@ -15,10 +15,10 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
     ${DD4hep_INCLUDE_DIRS}
     ${ROOT_INCLUDE_DIR} )
 
-#---DD4hepAlign library --------------------------------------------------------------
+#---DDAlign library --------------------------------------------------------------
 file(GLOB sources src/*.cpp)
-add_library(DD4hepAlign SHARED ${sources})
-target_link_libraries(DD4hepAlign DDCore ${ROOT_LIBRARIES})
+add_library(DDAlign SHARED ${sources})
+target_link_libraries(DDAlign DDCore ${ROOT_LIBRARIES})
 #
 #
 if(DD4HEP_USE_XERCESC)
@@ -26,16 +26,16 @@ if(DD4HEP_USE_XERCESC)
 else()
   add_definitions(-DDD4HEP_USE_TINYXML)
 endif()
-SET_TARGET_PROPERTIES( DD4hepAlign PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+SET_TARGET_PROPERTIES( DDAlign PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 #
-#---DD4hepAlign rootmap --------------------------------------------------------------
-dd4hep_generate_rootmap(DD4hepAlign)
+#---DDAlign rootmap --------------------------------------------------------------
+dd4hep_generate_rootmap(DDAlign)
 #
 install(DIRECTORY include/DDAlign
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepAlign
+install(TARGETS DDAlign
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
