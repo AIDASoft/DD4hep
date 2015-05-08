@@ -18,13 +18,13 @@ add_executable(geoPluginRun src/plugin_runner.cpp)
 target_link_libraries(geoPluginRun DD4hepCore)
 #-----------------------------------------------------------------------------------
 add_executable( print_materials src/print_materials.cpp)
-target_link_libraries(print_materials DD4hepCore DD4hepRec)
+target_link_libraries(print_materials DD4hepCore DDRec)
 #-----------------------------------------------------------------------------------
 add_executable( materialScan src/materialScan.cpp)
-target_link_libraries(materialScan DD4hepCore DD4hepRec)
+target_link_libraries(materialScan DD4hepCore DDRec)
 #-----------------------------------------------------------------------------------
 add_executable( dumpdetector  src/dumpdetector.cpp)
-target_link_libraries(dumpdetector DD4hepCore DD4hepRec)
+target_link_libraries(dumpdetector DD4hepCore DDRec)
 #-----------------------------------------------------------------------------------
 
 
@@ -35,11 +35,11 @@ if(DD4HEP_USE_LCIO)
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_lcio.cpp)
 
   add_executable(test_surfaces src/test_surfaces.cpp )
-  target_link_libraries(test_surfaces DD4hepCore DD4hepRec ${LCIO_LIBRARIES} )
+  target_link_libraries(test_surfaces DD4hepCore DDRec ${LCIO_LIBRARIES} )
 else()
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_dummy.cpp)
 endif()
-target_link_libraries( teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES} DD4hepRec ${LCIO_LIBRARIES} ) 
+target_link_libraries( teveDisplay DD4hepCore ${ROOT_EVE_LIBRARIES} DDRec ${LCIO_LIBRARIES} )
 
 #--- install target-------------------------------------
 
