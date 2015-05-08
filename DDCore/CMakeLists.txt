@@ -41,10 +41,10 @@ add_library(DDCore SHARED ${sources} ${parser_sources} )
 target_link_libraries(DDCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
 
 ## generates rootmap and installs the library
-add_dd4hep_plugin(DD4hepPlugins SHARED ${plugin_sources})
-target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDCore Geom ${libraries})
+add_dd4hep_plugin(DDCorePlugins SHARED ${plugin_sources})
+target_link_libraries(DDCorePlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDCore Geom ${libraries})
 
-SET_TARGET_PROPERTIES( DDCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+SET_TARGET_PROPERTIES( DDCore DDCorePlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 #--- install target-------------------------------------
 install(DIRECTORY include/DD4hep  include/XML
