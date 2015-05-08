@@ -15,9 +15,9 @@ if(DD4HEP_USE_GEANT4)
 endif() 
 
 if(DD4HEP_USE_GEANT4)
-  link_libraries(DD4hepG4 DD4hepCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+  link_libraries(DD4hepG4 DDCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 else()
-  link_libraries(DD4hepCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+  link_libraries(DDCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
 endif()
 
 #--------------------------------------------------

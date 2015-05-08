@@ -18,7 +18,7 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 #---DD4hepAlign library --------------------------------------------------------------
 file(GLOB sources src/*.cpp)
 add_library(DD4hepAlign SHARED ${sources})
-target_link_libraries(DD4hepAlign DD4hepCore ${ROOT_LIBRARIES})
+target_link_libraries(DD4hepAlign DDCore ${ROOT_LIBRARIES})
 #
 #
 if(DD4HEP_USE_XERCESC)

@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${ROOT_INCLUDE_DIR} ${DDSegmentation_INCLUDE_DIRS} )
-
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${DDSegmentation_INCLUDE_DIRS})
 
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
 file(GLOB plugin_sources src/plugins/*.cpp)
@@ -13,7 +12,7 @@ if(DD4HEP_USE_BOOST)
   file(GLOB parser_sources src/parsers/*.cpp )
   add_definitions(-DDD4HEP_USE_BOOST)
 else()
-  file(GLOB parser_sources )
+  file(GLOB parser_sources)
 endif()
 
 file(GLOB headers include/DD4hep/*.h)
@@ -37,22 +36,22 @@ if(NOT DD4HEP_NO_REFLEX)
   set(libraries  ${libraries} Reflex)
 endif()
 
-add_library(DD4hepCore SHARED ${sources} ${parser_sources} )
+add_library(DDCore SHARED ${sources} ${parser_sources} )
 
-target_link_libraries(DD4hepCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
+target_link_libraries(DDCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
 
 ## generates rootmap and installs the library
 add_dd4hep_plugin(DD4hepPlugins SHARED ${plugin_sources})
-target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DD4hepCore Geom ${libraries})
+target_link_libraries(DD4hepPlugins ${ROOT_LIBRARIES} ${XML_LIBRARIES} DDCore Geom ${libraries})
 
-SET_TARGET_PROPERTIES( DD4hepCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+SET_TARGET_PROPERTIES( DDCore DD4hepPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
 #--- install target-------------------------------------
 install(DIRECTORY include/DD4hep  include/XML
   DESTINATION include
   PATTERN ".svn" EXCLUDE )
 
-install(TARGETS DD4hepCore
+install(TARGETS DDCore
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )

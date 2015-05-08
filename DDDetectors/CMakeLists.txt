@@ -23,7 +23,7 @@ include_directories(${CMAKE_SOURCE_DIR}/DDCore/include
 file(GLOB sources src/*.cpp )
 
 add_library( DD4hepDetectors SHARED ${sources})
-target_link_libraries( DD4hepDetectors DD4hepCore DDRec ${ROOT_LIBRARIES} )
+target_link_libraries( DD4hepDetectors DDCore DDRec ${ROOT_LIBRARIES} )
 #
 #---Rootmap generation--------------------------------------------------------------
 dd4hep_generate_rootmap( DD4hepDetectors )

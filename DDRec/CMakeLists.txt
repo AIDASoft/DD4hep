@@ -9,7 +9,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 
 file(GLOB sources src/*.cpp)
 
-set(rec_link_libraries DD4hepCore ${DDSegmentation_LIBRARIES} ${ROOT_LIBRARIES} Geom Reflex)
+set(rec_link_libraries DDCore ${DDSegmentation_LIBRARIES} ${ROOT_LIBRARIES} Geom Reflex)
 
 #---------------------------  GEAR wrappers for backward compatibility  -----------
 if(DD4HEP_USE_GEAR)

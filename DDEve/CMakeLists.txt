@@ -28,7 +28,7 @@ endif()
 #---DD4hepEve library --------------------------------------------------------------
 file(GLOB headers include/DDEve/*.h)
 file(GLOB sources src/*.cpp)
-set( eve_link_libraries DD4hepCore ${ROOT_EVE_LIBRARIES} -lFTGL )
+set( eve_link_libraries DDCore ${ROOT_EVE_LIBRARIES} -lFTGL )
 #---------------------------  Support for the LCIO data I/O ------------------------
 if(DD4HEP_USE_LCIO)
   find_package(LCIO REQUIRED)
