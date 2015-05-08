@@ -14,10 +14,10 @@ if(DD4HEP_USE_GEANT4)
   include_directories( ${CMAKE_SOURCE_DIR}/DDG4/include )
 endif() 
 
+SET(test_link_libraries DDCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex )
+
 if(DD4HEP_USE_GEANT4)
-  link_libraries(DD4hepG4 DDCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
-else()
-  link_libraries(DDCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex ${Geant4_LIBRARIES})
+  list(APPEND test_link_libraries DDG4 ${Geant4_LIBRARIES})
 endif()
 
 #--------------------------------------------------
@@ -25,12 +25,14 @@ endif()
 
 SET( test_name "test_example" )
 ADD_EXECUTABLE(${test_name} ./src/${test_name}.cc )
+TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" ${EXECUTABLE_OUTPUT_PATH}/${test_name} )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
 
 SET( test_name "test_units" )
 ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
+TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" 
   ${EXECUTABLE_OUTPUT_PATH}/${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
@@ -38,6 +40,7 @@ SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FA
 
 SET( test_name "test_surface" )
 ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
+TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" 
   ${EXECUTABLE_OUTPUT_PATH}/${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
@@ -45,6 +48,7 @@ SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FA
 
 SET( test_name "test_bitfield64" )
 ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
+TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" 
   ${EXECUTABLE_OUTPUT_PATH}/${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
@@ -52,6 +56,7 @@ SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FA
 
 SET( test_name "test_PolarGridRPhi2" )
 ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
+TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
   ${EXECUTABLE_OUTPUT_PATH}/${test_name}  )
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )

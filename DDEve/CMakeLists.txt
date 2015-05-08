@@ -40,7 +40,7 @@ endif()
 if(DD4HEP_USE_GEANT4)
   root_generate_dictionary( G__DDG4IO ${CMAKE_CURRENT_SOURCE_DIR}/DDEve/DDG4IO.C LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h )
   list(APPEND sources G__DDG4IO.cxx)
-  list(APPEND eve_link_libraries DD4hepG4 )
+  list(APPEND eve_link_libraries DDG4 )
 endif()
 #---------------------------  Add DDEve dictionary for interactive ROOT sessions ---
 root_generate_dictionary( G__DDEve ${headers} LINKDEF ${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h)
