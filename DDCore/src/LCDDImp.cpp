@@ -245,6 +245,71 @@ Material LCDDImp::material(const string& name) const {
   throw runtime_error("Cannot find a material the reference name:" + name);
 }
 
+/// Internal helper to map detector types once the geometry is closed
+void LCDDImp::mapDetectorTypes()  {
+  for(HandleMap::const_iterator i=m_detectors.begin(); i!=m_detectors.end(); ++i)   {
+    DetElement det((*i).second);
+    if ( det.parent().isValid() )  { // Exclude 'world'
+      HandleMap::const_iterator j=m_sensitive.find(det.name());
+      if ( j != m_sensitive.end() )  {
+	SensitiveDetector sd((*j).second);
+	m_detectorTypes[sd.type()].push_back(det);
+      }
+      else if ( det.type() == "compound" )  {
+	m_detectorTypes[det.type()].push_back(det);      
+      }
+      else  {
+	m_detectorTypes["passive"].push_back(det);      
+      }
+    }
+  }
+}
+
+/// Access the availible detector types
+vector<string> LCDDImp::detectorTypes() const  {
+  if ( m_manager->IsClosed() ) {
+    vector<string> v;
+    for(DetectorTypeMap::const_iterator i=m_detectorTypes.begin(); i!=m_detectorTypes.end(); ++i)  
+      v.push_back((*i).first);
+    return v;
+  }
+  throw runtime_error("detectorTypes: Call only available once the geometry is closed!");
+}
+
+/// Access a set of subdetectors according to the sensitive type.
+const vector<DetElement>& LCDDImp::detectors(const string& type)  {
+  if ( m_manager->IsClosed() ) {
+    DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
+    if ( i != m_detectorTypes.end() ) return (*i).second;
+    throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
+  }
+  throw runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
+}
+
+/// Access a set of subdetectors according to several sensitive types.
+vector<DetElement> LCDDImp::detectors(const string& type1,
+				      const string& type2,
+				      const string& type3,
+				      const string& type4,
+				      const string& type5 )  {
+  if ( m_manager->IsClosed() ) {
+    vector<DetElement> v;
+    DetectorTypeMap::const_iterator i, end=m_detectorTypes.end();
+    if ( !type1.empty() && (i=m_detectorTypes.find(type1)) != end )
+      v.insert(v.end(),(*i).second.begin(),(*i).second.end());
+    if ( !type2.empty() && (i=m_detectorTypes.find(type2)) != end )
+      v.insert(v.end(),(*i).second.begin(),(*i).second.end());
+    if ( !type3.empty() && (i=m_detectorTypes.find(type3)) != end )
+      v.insert(v.end(),(*i).second.begin(),(*i).second.end());
+    if ( !type4.empty() && (i=m_detectorTypes.find(type4)) != end )
+      v.insert(v.end(),(*i).second.begin(),(*i).second.end());
+    if ( !type5.empty() && (i=m_detectorTypes.find(type5)) != end ) 
+      v.insert(v.end(),(*i).second.begin(),(*i).second.end());
+    return v;
+  }
+  throw runtime_error("detectors("+type1+","+type2+",...): Detectors can only selected by type once the geometry is closed!");
+}
+
 Handle<TObject> LCDDImp::getRefChild(const HandleMap& e, const string& name, bool do_throw) const {
   HandleMap::const_iterator i = e.find(name);
   if (i != e.end()) {
@@ -344,6 +409,7 @@ void LCDDImp::endDocument() {
     mgr->CloseGeometry();
     ShapePatcher patcher(m_volManager, m_world);
     patcher.patchShapes();
+    mapDetectorTypes();
   }
 }
 

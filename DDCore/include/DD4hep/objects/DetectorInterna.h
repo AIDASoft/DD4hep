@@ -67,11 +67,13 @@ namespace DD4hep {
      */
     class DetElementObject: public NamedObject, public ObjectExtensions {
     public:
-      typedef DetElement::destruct_t destruct_t;
-      typedef DetElement::copy_t copy_t;
+      // Type definitions.
+      // The full namespace declaration is required by cint....
+      typedef /* DD4hep::Geometry:: */  DetElement::destruct_t destruct_t;
+      typedef /* DD4hep::Geometry:: */  DetElement::copy_t copy_t;
 
-      typedef DetElement::Children Children;
-      typedef DetElement::Extensions Extensions;
+      typedef /* DD4hep::Geometry:: */  DetElement::Children Children;
+      typedef /* DD4hep::Geometry:: */  DetElement::Extensions Extensions;
       typedef std::pair<Callback,unsigned long> UpdateCall;
       typedef std::vector<UpdateCall> UpdateCallbacks;
 

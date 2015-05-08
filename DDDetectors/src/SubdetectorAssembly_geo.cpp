@@ -25,6 +25,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   Position    pos;
   RotationZYX rot;
 
+  sdet.setType("compound");
   usePos = x_det.hasChild(_U(position));
   useRot = x_det.hasChild(_U(rotation));
   if( usePos ) {
@@ -34,7 +35,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
     rot = RotationZYX(x_det.rotation().x(), x_det.rotation().y(), x_det.rotation().z());
   }
 
-
   if ( x_det.hasChild(_U(shape)) )  {
     xml_comp_t x_shape = x_det.child(_U(shape));
     string     type  = x_shape.typeStr();
@@ -42,8 +42,6 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
     Material   mat   = lcdd.material(x_shape.materialStr());
     printout(DEBUG,det_name,"+++ Creating detector assembly with shape of type:%s",type.c_str());
     vol = Volume(det_name,solid,mat);
-
-
   }
   else  {
     printout(DEBUG,det_name,"+++ Creating detector assembly without shape");

@@ -32,6 +32,11 @@ namespace DD4hep {
      * @version 1.0
      */
     class LCDDImp: public LCDD, public LCDDData, public LCDDLoad  {
+    protected:
+      /// Cached map with detector types:
+      typedef std::map<std::string, std::vector<DetElement> > DetectorTypeMap;
+      DetectorTypeMap m_detectorTypes;
+
     private:
       /// Disable copy constructor
       LCDDImp(const LCDDImp&);
@@ -39,6 +44,8 @@ namespace DD4hep {
       /// Disable assignment operator
       LCDDImp& operator=(const LCDDImp&);
 
+      /// Internal helper to map detector types once the geometry is closed
+      void mapDetectorTypes();
     public:
 
       /// Local method (no interface): Load volume manager.
@@ -237,6 +244,25 @@ namespace DD4hep {
       virtual const HandleMap& idSpecifications() const {
         return m_idDict;
       }
+
+      /// Access a set of subdetectors according to the sensitive type.
+      /**
+	 Please note:
+	 - The sensitive type of a detector is set in the 'detector constructor'.
+	 - Not sensitive detector structures have the name 'passive'
+	 - Compounds (ie. nested detectors) are of type 'compound'
+       */
+      virtual const std::vector<DetElement>& detectors(const std::string& type);
+
+      /// Access a set of subdetectors according to several sensitive types.
+      virtual std::vector<DetElement> detectors(const std::string& type1,
+						const std::string& type2,
+						const std::string& type3="",
+						const std::string& type4="",
+						const std::string& type5="" );
+
+      /// Access the availible detector types
+      virtual std::vector<std::string> detectorTypes() const;
 
 #define __R  return *this
       /// Add a new constant to the detector description

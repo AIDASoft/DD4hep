@@ -199,14 +199,27 @@ DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
+template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
   struct Actor {
     static long dump(DetElement de,int level, bool sensitive_only) {
       const DetElement::Children& c = de.children();
       if ( !sensitive_only || 0 != de.volumeID() )  {
+	int value = flag;
 	char fmt[64];
-	::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-	printout(INFO,"+++",fmt,"",de.placementPath().c_str(),int(c.size()),(void*)de.volumeID());
+	switch(value)  {
+	case 0:
+	  ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+	  printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
+	  break;
+	case 1:
+	  ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+	  printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
+	  ::sprintf(fmt,"%03d %%-%ds Placement: %%s",level+1,2*level+3);
+	  printout(INFO,"+++",fmt,"",de.placementPath().c_str());
+	  break;
+	default:
+	  break;
+	}
       }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
 	dump((*i).second,level+1,sensitive_only);
@@ -219,7 +232,8 @@ static long dump_detelement_tree(LCDD& lcdd, int argc, char** argv) {
   }
   return Actor::dump(lcdd.world(),0,sensitive_only);
 }
-DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree)
+DECLARE_APPLY(DD4hepDetectorDump,dump_detelement_tree<0>)
+DECLARE_APPLY(DD4hepDetectorVolumeDump,dump_detelement_tree<1>)
 
 /** Basic entry point to print out the volume hierarchy
  *
@@ -266,8 +280,26 @@ static long exec_SimpleGDMLWriter(LCDD& lcdd, int argc, char** argv) {
   }
   return 1;
 }
-
 DECLARE_APPLY(DD4hepSimpleGDMLWriter,exec_SimpleGDMLWriter)
+
+/** Basic entry point to print out detector type map
+ *
+ *  @author  M.Frank
+ *  @version 1.0
+ *  @date    01/04/2014
+ */
+static long detectortype_cache(LCDD& lcdd, int , char** ) {
+  vector<string> v = lcdd.detectorTypes();
+  printout(INFO,"DetectorTypes","Detector type dump:  %ld types:",long(v.size()));
+  for(vector<string>::const_iterator i=v.begin(); i!=v.end(); ++i)   {
+    const vector<DetElement>& vv=lcdd.detectors(*i);
+    printout(INFO,"DetectorTypes","\t --> %ld %s detectors:",long(vv.size()),(*i).c_str());
+    for(vector<DetElement>::const_iterator j=vv.begin(); j!=vv.end(); ++j)
+      printout(INFO,"DetectorTypes","\t\t %-16s --> %s  [%s]",(*i).c_str(),(*j).name(),(*j).type().c_str());
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hepDetectorTypes,detectortype_cache)
 
 #include "DD4hep/SurfaceInstaller.h"
 typedef SurfaceInstaller TestSurfacesPlugin;

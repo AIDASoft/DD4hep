@@ -24,6 +24,7 @@
 
 // C/C++ include files
 #include <map>
+#include <vector>
 
 // Forward declarations
 class TGeoManager;
@@ -64,7 +65,8 @@ namespace DD4hep {
     class LCDD {
     public:
       /// Type definition of a map of named handles
-      typedef std::map<std::string, Handle<NamedObject> > HandleMap;
+      typedef Handle<NamedObject> NamedHandle;
+      typedef std::map<std::string, NamedHandle > HandleMap;
       typedef std::map<std::string, std::string> PropertyValues;
       typedef std::map<std::string, PropertyValues> Properties;
 
@@ -131,6 +133,30 @@ namespace DD4hep {
       virtual const HandleMap& fields() const = 0;
       /// Accessor to the map of ID specifications
       virtual const HandleMap& idSpecifications() const = 0;
+
+      #ifndef __MAKECINT__
+      /** Access to predefined caches of subdetectors according to the sensitive type */
+      /// Access a set of subdetectors according to the sensitive type.
+      /**
+	 Please note:
+	 - The sensitive type of a detector is set in the 'detector constructor'.
+	 - Not sensitive detector structures have the name 'passive'
+	 - Compounds (ie. nested detectors) are of type 'compound'
+       */
+      virtual const std::vector<DetElement>& detectors(const std::string& type) = 0;
+
+      /// Access a set of subdetectors according to several sensitive types.
+      virtual std::vector<DetElement> detectors(const std::string& type1,
+						const std::string& type2,
+						const std::string& type3="",
+						const std::string& type4="",
+						const std::string& type5="" ) = 0;
+
+      /// Access the availible detector types
+      virtual std::vector<std::string> detectorTypes() const = 0;
+      #endif
+
+      /** Miscaneleous accessors to the detexctor description  */
 
       /// Register new mother volume using the detector name.
       /** Volumes must be registered/declared PRIOR to be picked up!

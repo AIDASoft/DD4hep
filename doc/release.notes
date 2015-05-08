@@ -4,6 +4,15 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2015/05/09 Markus Frank
+-----------------------
+  - Allow to access detectors by type from lcdd.
+	 - The sensitive type of a detector is set in the 'detector constructor'.
+	 - Not sensitive detector structures have the name 'passive'
+	 - Compounds (ie. nested detectors) are of type 'compound'
+  - Dump detector types using plugin:
+         geoPluginRun -plugin DD4hepDetectorTypes -input <compact-file>
+
 2015/03/12 Markus Frank
 -----------------------
   - Add support for ellipsoids in gdml/lcdd and geant4 conversion.
