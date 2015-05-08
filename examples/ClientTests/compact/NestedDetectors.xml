@@ -33,6 +33,10 @@
     <constant name="VertexBarrel_r5" value="7.7*cm"/>
 
     <constant name="SiTrackerBarrel_ID" value="3"/>
+
+    <constant name="tracker_region_rmax" value="world_side"/>
+    <constant name="tracker_region_zmax" value="world_side"/>
+
   </define>
 
   <limits><limitset name="SiTrackerBarrelRegionLimitSet"/></limits>
