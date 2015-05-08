@@ -41,7 +41,7 @@ target_link_libraries(DDRec ${rec_link_libraries})
 # Add the DDRecPlugin, as there are currently only gear plugins, we need to check if we want to create the plugin
 if( plugin_sources )
   add_dd4hep_plugin(DDRecPlugins SHARED ${plugin_sources})
-  target_link_libraries(DDRecPlugins ${rec_link_libraries})
+  target_link_libraries(DDRecPlugins ${rec_link_libraries} DDRec)
 endif()
 
 
