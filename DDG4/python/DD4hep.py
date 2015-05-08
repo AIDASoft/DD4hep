@@ -6,7 +6,7 @@ def compileAClick(dictionary,g4=True):
   import os.path
   dd4hep = os.environ['DD4hepINSTALL']
   inc    = ' -I'+os.environ['ROOTSYS']+'/include -I'+dd4hep+'/include '
-  lib    = ' -L'+dd4hep+'/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation '
+  lib    = ' -L'+dd4hep+'/lib -lDDCore -lDDG4 -lDDSegmentation '
   if g4:
     geant4 = os.environ['G4INSTALL']
     inc    = inc + ' -I'+geant4+'/include/Geant4 -Wno-shadow -g -O0 '
@@ -29,9 +29,9 @@ def loadDD4hep():
   sys.path.append(os.environ['ROOTSYS']+os.sep+'lib')
   import ROOT
   from ROOT import gSystem
-  result = gSystem.Load("libDD4hepCore")
+  result = gSystem.Load("libDDCore")
   if 0 != result:
-    raise Exception('DDG4.py: Failed to load the Geant4 library libDD4hepCore: '+gSystem.GetErrorStr())
+    raise Exception('DDG4.py: Failed to load the Geant4 library libDDCore: '+gSystem.GetErrorStr())
   from ROOT import DD4hep as module
   return module
 

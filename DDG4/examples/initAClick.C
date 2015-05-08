@@ -19,13 +19,13 @@ int initAClick(const char* command=0)  {
   string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
   string inc     = " -I"+dd4hep+"/include -I"+g4_base+"/include/Geant4 -Wno-shadow -g -O0";
   string libs = (" -L"+rootsys+"/lib");
-  libs += " -lCore -lCint -lMathCore -L"+dd4hep+"/lib -lDD4hepCore -lDD4hepG4 -lDDSegmentation";
+  libs += " -lCore -lCint -lMathCore -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
   libs += (" -L"+g4_base+"/lib -L"+g4_base+"/lib64 -lG4event -lG4tracking -lG4particles");
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   cout << "Includes:   " << gSystem->GetIncludePath() << endl;
   cout << "Linked libs:" << gSystem->GetLinkedLibs()  << endl;
-  int ret = gSystem->Load("libDD4hepG4Plugins");
+  int ret = gSystem->Load("libDDG4Plugins");
   return ret;
 }
 

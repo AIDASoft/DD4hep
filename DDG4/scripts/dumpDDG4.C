@@ -209,7 +209,7 @@ int dumpDDG4(const char* fname, int event_num)  {
 int dumpddg4_load_geometry(const char* fname)   {
   if ( !have_geometry )  {
     have_geometry = true;
-    gSystem->Load("libDD4hepG4Plugins");
+    gSystem->Load("libDDG4Plugins");
     LCDD& lcdd = LCDD::getInstance();
     lcdd.fromXML(fname);
     lcdd.apply("DD4hepVolumeManager",0,(char**)0);

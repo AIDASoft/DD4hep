@@ -14,7 +14,7 @@
 //====================================================================
 
 namespace {
-  struct Loader {  Loader() { gSystem->Load("libDD4hepCore"); }  } _load;
+  struct Loader {  Loader() { gSystem->Load("libDDCore"); }  } _load;
 }
 
 using namespace DD4hep::Geometry;
@@ -52,7 +52,7 @@ int BoxTrafos()  {
   xml += "/examples/ClientTests/compact/BoxTrafos.xml";
   const char* argv[] = {xml.c_str(), "BUILD_DEFAULT", 0};
 
-  gSystem->Load("libDD4hepCore");
+  gSystem->Load("libDDCore");
   LCDD& lcdd = LCDD::getInstance();
   lcdd.apply("DD4hepCompactLoader",2,(char**)argv);
   lcdd.apply("DD4hepGeometryDisplay",0,0);
