@@ -2,6 +2,7 @@
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorSurfaces.h"
+#include "DDRec/SurfaceManager.h"
 #include "DDRec/SurfaceHelper.h"
 #include "DD4hep/DDTest.h"
 
@@ -43,17 +44,17 @@ int main(int argc, char** argv ){
   lcdd.fromCompact( inFile );
 
 
+#if 0
+   // create a list of all surfaces in the detector:
   DetElement world = lcdd.world() ;
-
-
-  // create a list of all surfaces in the detector:
+  
   SurfaceHelper surfMan(  world ) ;
-
+  
   const SurfaceList& sL = surfMan.surfaceList() ;
-
+  
   // map of surfaces
   std::map< DD4hep::long64, Surface* > surfMap ;
-
+  
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
     
     Surface* surf =  *it ;
@@ -64,8 +65,13 @@ int main(int argc, char** argv ){
     
     
     surfMap[ surf->id() ] = surf ;
-
   }
+#else  
+
+  SurfaceManager surfMan = *lcdd.extension< SurfaceManager >() ;
+  const SurfaceMap& surfMap = *surfMan.map( "world" ) ;
+
+#endif
 
   //---------------------------------------------------------------------
   //    open lcio file with SimTrackerHits
@@ -109,7 +115,12 @@ int main(int argc, char** argv ){
 	idDecoder.setValue( id ) ;
 	//      std::cout << " simhit with cellid : " << idDecoder << std::endl ;
 	
+#if 0
 	Surface* surf = surfMap[ id ] ;
+#else
+	SurfaceMap::const_iterator si = surfMap.find( id )  ;
+	Surface* surf = ( si != surfMap.end()  ?  si->second  : 0 )   ;
+#endif
 	
 	std::stringstream sst ;
 	sst << " surface found for id : " << std::hex << id  << std::dec  <<  "  "  << idDecoder.valueString() << std ::endl ;
