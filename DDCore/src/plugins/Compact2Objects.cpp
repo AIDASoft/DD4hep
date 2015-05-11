@@ -929,12 +929,12 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
   xml_coll_t(compact, _U(alignments)).for_each(_U(alignment), Converter < AlignmentEntry > (lcdd));
   xml_coll_t(compact, _U(fields)).for_each(_U(field), Converter < CartesianField > (lcdd));
   xml_coll_t(compact, _U(sensitive_detectors)).for_each(_U(sd), Converter < SensitiveDetector > (lcdd));
-  xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter < Plugin > (lcdd));
   ::snprintf(text, sizeof(text), "%u", xml_h(element).checksum(0));
   lcdd.addConstant(Constant("compact_checksum", text));
   if ( --num_calls == 0 )  {
     lcdd.endDocument();
   }
+  xml_coll_t(compact, _U(plugins)).for_each(_U(plugin), Converter < Plugin > (lcdd));
 }
 
 #ifdef _WIN32
