@@ -42,6 +42,7 @@ target_link_libraries(DDRec ${rec_link_libraries})
 if( plugin_sources )
   add_dd4hep_plugin(DDRecPlugins SHARED ${plugin_sources})
   target_link_libraries(DDRecPlugins ${rec_link_libraries} DDRec)
+  SET_TARGET_PROPERTIES(DDRecPlugins PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 endif()
 
 

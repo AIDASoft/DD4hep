@@ -24,6 +24,8 @@ file(GLOB sources src/*.cpp )
 
 add_dd4hep_plugin( DDDetectors SHARED ${sources})
 target_link_libraries( DDDetectors DDCore DDRec ${ROOT_LIBRARIES} )
+SET_TARGET_PROPERTIES(DDDetectors PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
+
 
 #
 #--- install target-----------------------------------------------------------------
