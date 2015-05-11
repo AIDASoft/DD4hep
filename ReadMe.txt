@@ -101,8 +101,8 @@ To build and run the simulation examples Geant4 will be required.
  - examples for building a 'complete' DD4hep:
     cmake -D DD4HEP_USE_GEANT4=1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On ..
     (if geant4 was built with external CLHEP, add:   -D CLHEP_DIR=_path_to_CLHEP )
-    cmake -D DD4HEP_USE_GEANT4=1 -DGeant4_DIR=/data/ilcsoft/geant4/9.6.p01/lib/Geant4-9.6.1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On -D CLHEP_DIR=/data/ilcsoft/HEAD/CLHEP/2.1.3.1 ..
-
+    
+    cmake -D DD4HEP_USE_GEANT4=1 -DGeant4_DIR=/data/ilcsoft/geant4/10.01.p01/lib/Geant4-10.1.1 -DDD4HEP_USE_BOOST=ON -DDD4HEP_USE_LCIO=ON -DBOOST_ROOT=/data/ilcsoft/boost/1.55.0 -DBUILD_TESTING=On -D CLHEP_DIR=/data/ilcsoft/HEAD/CLHEP/2.2.0.4 ..
 
 - Setup the environment for running 
   
