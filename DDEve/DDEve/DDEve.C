@@ -14,7 +14,7 @@ void DDEve(const char* xmlConfig=0)  {
   }
   ::snprintf(text,sizeof(text)," -I%s/include -D__DD4HEP_DDEVE_EXCLUSIVE__ -Wno-shadow -g -O0",dd4hep);
   gSystem->AddIncludePath(text);
-  Long_t result =  = gSystem->Load("libDD4hepEve");
+  Long_t result =  = gSystem->Load("libDDEve");
   if ( 0 != result )  {
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Error("DDEve","+++ Your DD4hep installation seems incomplete. FAILED to load the library 'libDD4hepEve'!      +++");
