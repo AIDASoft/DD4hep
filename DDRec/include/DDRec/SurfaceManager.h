@@ -6,14 +6,20 @@
 namespace DD4hep {
   namespace DDRec {
 
-    /** Surface manager class that allows to access all surfaces
-     *  assigned to a DetElement and all its daughters.
-     *
+    /// typedef for surface maps, keyed by the cellID 
+    typedef std::map< unsigned long, DD4hep::DDRec::Surface*> SurfaceMap ;
+
+    /** Surface manager class that holds maps of surfaces for all known 
+     *  sensitive detector types and  individual sub detectors. 
+     *  Maps can be retrieved via detector name.
+     * 
      * @author F.Gaede, DESY
-     * @date Apr, 11 2014
+     * @date May, 11 2015
      * @version $Id$
      */
     class SurfaceManager {
+
+      typedef std::map< std::string,  SurfaceMap > SurfaceMapsMap ;
 
     public:
 
@@ -21,18 +27,19 @@ namespace DD4hep {
       
       ~SurfaceManager();
       
-      /** Get the list of all surfaces added to this DetElement and all its daughters -
-       *  instantiate SurfaceManager with lcdd.world() to get all surfaces.
+      /** Get the maps of all surfaces associated to the given detector or
+       *  type of detectors, e.g. map("tracker") returns a map with all surfaces
+       *  assigned to tracking detectors. Returns 0 if no map exists.
        */
-      //      const SurfaceList& surfaceList() { return _sL ; }
+      const SurfaceMap* map( const std::string name ) const ;
 
     protected :
-      // SurfaceList  _sL ;
-      // const Geometry::DetElement& _det ;
 
-      // /// initializes surfaces from VolSurfaces assigned to this DetElement in detector construction
-      // void initialize() ;
 
+      /// initialize all known surface maps
+      void initialize() ;
+
+      SurfaceMapsMap _map ;
     };
 
   } /* namespace DDRec */
