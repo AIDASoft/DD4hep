@@ -4,6 +4,15 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2015/05/11 Andre Sailer
+-----------------------
+  - CMake updates:
+         - Split libraries into components: use find_package(DD4hep COMPONENTS <component> [...] )
+           to find the components you need.
+         - At the moment there are these components are sensible to link against: DDRec, DDG4, DDEve, DDSegmentation
+	 - To link against the librarie use either DD4hep_COMPONENT_LIBRARIES or DD4hep_<COMPONENT>_LIBRARY,
+	   where <COMPONENT> needs to be replaced by the UPPER case name of the component
+
 2015/05/09 Markus Frank
 -----------------------
   - Allow to access detectors by type from lcdd.

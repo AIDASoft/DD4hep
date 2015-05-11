@@ -34,7 +34,7 @@ endfunction()
 # calls all the function/includes/configurations that are needed to be done to create dd4hep plugins
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_instantiate_package PackageName )
-  MESSAGE (STATUS "instantiating the dd4hep package ${PackageName}" )
+  MESSAGE (STATUS "Instantiating the DD4hep package ${PackageName}" )
 
   IF ( NOT ${DD4hep_FOUND} )
     MESSAGE ( FATAL "DD4HEP was not found" )

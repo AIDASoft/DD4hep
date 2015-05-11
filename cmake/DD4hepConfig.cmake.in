@@ -50,18 +50,29 @@ INCLUDE( ${DD4hep_ROOT}/cmake/DD4hepMacros.cmake )
 # additional components are set by cmake in variable PKG_FIND_COMPONENTS
 # first argument should be the package name
 if(@DD4HEP_USE_GEANT4@)
-  CHECK_PACKAGE_LIBS(DD4hep DDCore DDSegmentation DDRec DDG4)
-
   #--- if geant 4 was built with CLHEP we need to export this to client packages
   if( @GEANT4_USE_CLHEP@)
     set(GEANT4_USE_CLHEP  1 ) 
   endif()
 
-  set( Geant4_DIR @Geant4_DIR@)
+  set(Geant4_DIR @Geant4_DIR@)
 
-else()
-  CHECK_PACKAGE_LIBS(DD4hep DDCore DDSegmentation DDRec)
 endif()
+
+CHECK_PACKAGE_LIBS(DD4hep DDCore)
+
+IF(DD4hep_FIND_COMPONENTS)
+  MESSAGE( STATUS "Looking for these Components ${DD4hep_FIND_COMPONENTS}" )
+
+  FOREACH(comp ${DD4hep_FIND_COMPONENTS})
+    #CHECK_PACKAGE_LIBS is looking for components too, just need to check if they were found, if requested
+    STRING( TOUPPER ${comp} _ulibname )
+    if(NOT DD4hep_${_ulibname}_FOUND)
+      MESSAGE(FATAL_ERROR "Did not find required component: ${comp}")
+    ENDIF()
+  ENDFOREACH()
+ENDIF()
+
 
 
 ##---- build with Boost ?
