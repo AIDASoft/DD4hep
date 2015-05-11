@@ -2,6 +2,7 @@
 #define DDRec_SurfaceManager_H_
 
 #include "DDRec/Surface.h"
+#include <string>
 
 namespace DD4hep {
   namespace DDRec {
@@ -33,6 +34,10 @@ namespace DD4hep {
        */
       const SurfaceMap* map( const std::string name ) const ;
 
+      
+      ///create a string with all available maps and their size (number of surfaces)
+      std::string toString() const ;
+      
     protected :
 
 

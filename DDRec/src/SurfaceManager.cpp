@@ -1,10 +1,9 @@
 #include "DDRec/SurfaceManager.h"
 
 #include "DDRec/SurfaceHelper.h"
-//#include "DDRec/DetectorSurfaces.h"
-//#include "DD4hep/Detector.h"
 #include "DD4hep/LCDD.h"
-//#include "DD4hep/VolumeManager.h"
+
+#include <sstream>
 
 namespace DD4hep {
   
@@ -39,7 +38,7 @@ namespace DD4hep {
       
       LCDD& lcdd = LCDD::getInstance();
 
-      std::vector<std::string> types = lcdd.detectorTypes() ;
+      const std::vector<std::string>& types = lcdd.detectorTypes() ;
 
       for(unsigned i=0,N=types.size();i<N;++i){
 
@@ -56,11 +55,14 @@ namespace DD4hep {
 	  for( SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
 	    Surface* surf =  *it ;
 	    
-	    // enter surface into map for detector type
-	    _map[ types[i] ].insert( std::make_pair(   surf->id() , surf )  ) ;
-
 	    // enter surface into map for this detector
-	    _map[ name ].insert( std::make_pair(   surf->id() , surf )  ) ;
+	    _map[ name ].insert( std::make_pair( surf->id(), surf )  ) ;
+
+	    // enter surface into map for detector type
+	    _map[ types[i] ].insert( std::make_pair( surf->id(), surf )  ) ;
+
+	    // enter surface into world map 
+	    _map[ "world" ].insert( std::make_pair( surf->id(), surf )  ) ;
 
 	  }
 	}
@@ -68,7 +70,20 @@ namespace DD4hep {
 
     }
 
+    std::string SurfaceManager::toString() const {
+      
+      std::stringstream sstr ;
+       
+      sstr << "--------  SurfaceManager contains the following maps : --------- " << std::endl ;
+ 
+      for( SurfaceMapsMap::const_iterator mi = _map.begin() ; mi != _map.end() ; ++mi ) {
+	
+	sstr << "  key: " <<  mi->first << " \t number of surfaces : " << mi->second.size() << std::endl ; 
+      }
+      sstr << "---------------------------------------------------------------- " << std::endl ;
 
+      return sstr.str() ;
+    }
 
 
   } // namespace
