@@ -8,6 +8,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include
 		    ${CMAKE_SOURCE_DIR}/DDCore/include)
 
 file(GLOB sources src/*.cpp)
+file(GLOB plugin_sources src/plugins/*.cpp)
 
 set(rec_link_libraries DDCore ${DDSegmentation_LIBRARIES} ${ROOT_LIBRARIES} Geom Reflex)
 
