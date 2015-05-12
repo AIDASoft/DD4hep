@@ -52,6 +52,9 @@ namespace DD4hep {
 	  
 	  const SurfaceList& detSL = surfH.surfaceList() ;
   
+	  // add an empty map for this detector in case there are no surfaces attached 
+	  _map.insert(  std::make_pair( name , SurfaceMap() ) )  ;
+
 	  for( SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
 	    Surface* surf =  *it ;
 	    
