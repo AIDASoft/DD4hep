@@ -4,6 +4,12 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2015/05/13 Markus Frank
+-----------------------
+  - Fix bug in DDG4, which forced DDG4 to exit if a property from the Geant4 prompt could
+    not be set. No an error message is printed and the prompt is returned to the user.
+    (Bug submitted by A. Sailer)
+
 2015/05/11 Andre Sailer
 -----------------------
   - CMake updates:

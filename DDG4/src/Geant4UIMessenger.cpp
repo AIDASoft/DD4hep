@@ -87,25 +87,48 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
   Commands::iterator i = m_propertyCmd.find(c);
   if (m_properties && i != m_propertyCmd.end()) {
     const string& n = (*i).second;
-    if (!v.empty()) {
-      Property& p = (*m_properties)[n];
-      p.str(v);
-      printout(INFO, "Geant4UIMessenger",
-               "+++ %s> Setting property value %s = %s  native:%s.",
-               m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
+    try  {
+      if (!v.empty()) {
+	Property& p = (*m_properties)[n];
+	p.str(v);
+	printout(INFO, "Geant4UIMessenger",
+		 "+++ %s> Setting property value %s = %s  native:%s.",
+		 m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
+      }
+      else {
+	string value = (*m_properties)[n].str();
+	printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
+		 m_name.c_str(), n.c_str(), value.c_str());
+      }
     }
-    else {
-      string value = (*m_properties)[n].str();
-      printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
-               m_name.c_str(), n.c_str(), value.c_str());
+    catch(const exception& e)   {
+      printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to change property %s = '%s'.",
+	       m_name.c_str(), n.c_str(), v.c_str());
+      printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s", m_name.c_str(), e.what());
+    }
+    catch(...)   {
+      printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to change property %s = '%s'.",
+	       m_name.c_str(), n.c_str(), v.c_str());
     }
     return;
   }
-  Actions::iterator j = m_actionCmd.find(c);
-  if (j != m_actionCmd.end()) {
-    (*j).second.execute(0);
-    return;
+  else  {
+    Actions::iterator j = m_actionCmd.find(c);
+    if (j != m_actionCmd.end()) {
+      try  {
+	(*j).second.execute(0);
+      }
+      catch(const exception& e)   {
+	printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to exec action '%s' [%s].",
+		 m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
+	printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s",e.what());
+      }
+      catch(...)   {
+	printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to exec action '%s' [%s].",
+		 m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
+      }
+      return;
+    }
   }
   printout(INFO, "Geant4UIMessenger", "+++ %s> Unknown command callback!", m_name.c_str());
 }
-
