@@ -50,6 +50,10 @@
 
 #include "TGeoShape.h"
 
+
+#include "TGLScenePad.h"
+
+
 using namespace DD4hep ;
 using namespace DDRec ;
 using namespace Geometry ;
@@ -114,6 +118,9 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
   v->SetGuideState(TGLUtil::kAxesEdge, kTRUE, kFALSE, 0);
   v->RefreshPadEditor(v);
   //  v->CurrentCamera().RotateRad(-1.2, 0.5);
+
+  gEve->GetGlobalScene()->GetGLScene()->SetSelectable(kFALSE);
+
 
   MultiView::instance()->ImportGeomRPhi( surfaces );
   MultiView::instance()->ImportGeomRhoZ( surfaces ) ;
