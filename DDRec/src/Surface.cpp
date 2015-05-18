@@ -925,7 +925,7 @@ namespace DD4hep {
 
       Vector3D lp =  VolCylinder(_volSurf).localToGlobal( point ) ;
       Vector3D p ;
-      _wtM->LocalToMasterVect( lp , p.array() ) ;
+      _wtM->LocalToMaster( lp , p.array() ) ;
 
       return p ;
     }
