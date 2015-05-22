@@ -123,6 +123,9 @@
         </readout>
     </readouts>
 
+    <plugins>
+        <plugin name="InstallSurfaceManager"/>
+    </plugins>
 
  <fields>
    <field type="solenoid" name="GlobalSolenoid" inner_field="BField_nominal"

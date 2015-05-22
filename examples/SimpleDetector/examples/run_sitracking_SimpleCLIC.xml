@@ -9,6 +9,8 @@
 <marlin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ilcsoft.desy.de/marlin/marlin.xsd">
  <execute>
    <processor name="MyAIDAProcessor"/>
+   <processor name="InitDD4hep"/>
+
    
    <processor name="MySplitCollectionByLayer" />
    
@@ -20,6 +22,8 @@
 
    <processor name="MyExtrToTracker"/>
    
+   <processor name="MyRefitProcessor" />
+
    <processor name="MyLCIOOutputProcessor"/>  
 
  </execute>
@@ -39,6 +43,12 @@
   <!--parameter name="LCIOReadCollectionNames">MCParticle PandoraPFOs</parameter-->
  </global>
 
+
+ <processor name="InitDD4hep" type="InitializeDD4hep">
+ <!--InitializeDD4hep reads a compact xml file and initializes the DD4hep::LCDD object-->
+  <!--Name of the DD4hep compact xml file to load-->
+  <parameter name="DD4hepXMLFile" type="string">Simple_ClIC.xml </parameter>
+</processor>
 
  <processor name="MyLCIOOutputProcessor" type="LCIOOutputProcessor">
   <!--   standard output: full reconstruction keep all collections -->
@@ -61,8 +71,9 @@
   </processor>
 
  <processor name="VXDPlanarDigiProcessor" type="DDPlanarDigiProcessor">
-  <!--ID of Sub-Detector from UTIL/ILDConf.h from lcio. Either for VXD, SIT or SET-->
-  <parameter name="Sub_Detector_ID" type="int">1 </parameter>
+
+  <parameter name="SubDetectorName" type="string"> VXD </parameter>
+
   <!--PlanarDigiProcessor creates TrackerHits from SimTrackerHits, smearing them according to the input parameters.-->
    <!--whether hits are 1D strip hits-->
    <parameter name="IsStrip" type="bool">false </parameter>
@@ -83,8 +94,9 @@
 
  <processor name="SITPlanarDigiProcessor" type="DDPlanarDigiProcessor">
    <!--PlanarDigiProcessor creates TrackerHits from SimTrackerHits, smearing them according to the input parameters.-->
-  <!--ID of Sub-Detector from UTIL/ILDConf.h from lcio. Either for VXD, SIT or SET-->
-  <parameter name="Sub_Detector_ID" type="int">2 </parameter>
+
+  <parameter name="SubDetectorName" type="string"> SIT </parameter>
+
   <!--whether hits are 1D strip hits-->
   <parameter name="IsStrip" type="bool"> true </parameter>
    <!--resolution in direction of u-->
@@ -238,6 +250,49 @@
     <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
     <parameter name="Verbosity" type="string">MESSAGE </parameter>
 </processor>
+
+ <processor name="MyRefitProcessor" type="RefitProcessor">
+ <!--RefitProcessor refits an input track collection, producing a new collection of tracks.-->
+
+  <!--Fit direction: -1: backward [default], +1: forward-->
+  <parameter name="FitDirection" type="int"> 1 </parameter>
+
+  <!--TrackState to use for initialization of the fit: -1: refit from hits [default], 1: AtIP, 2: AtFirstHit, 3: AtLastHit, 4:AtCalo-->
+  <parameter name="InitialTrackState" type="int"> 1 </parameter>
+
+  <!--Use Energy Loss in Fit-->
+  <parameter name="EnergyLossOn" type="bool"> true </parameter>
+  <!--Value used for the initial d0 variance of the trackfit-->
+  <parameter name="InitialTrackErrorD0" type="float">1e+06 </parameter>
+  <!--Value used for the initial omega variance of the trackfit-->
+  <parameter name="InitialTrackErrorOmega" type="float"> 0.0001</parameter>
+  <!--Value used for the initial phi0 variance of the trackfit-->
+  <parameter name="InitialTrackErrorPhi0" type="float">100 </parameter>
+  <!--Value used for the initial tanL variance of the trackfit-->
+  <parameter name="InitialTrackErrorTanL" type="float">100 </parameter>
+  <!--Value used for the initial z0 variance of the trackfit-->
+  <parameter name="InitialTrackErrorZ0" type="float"> 1e+06 </parameter>
+  <!--Name of the input track collection-->
+  <parameter name="InputTrackCollectionName" type="string" lcioInType="Track">ExtrapolatedTracks SiTracks </parameter>
+  <!--Name of the MCParticle-Track Relations collection for input tracks-->
+  <parameter name="InputTrackRelCollection" type="string" lcioInType="LCRelation">XXX </parameter>
+  <!--Maximum Chi-squared value allowed when assigning a hit to a track-->
+  <parameter name="MaxChi2PerHit" type="float">1000 </parameter>
+  <!--Use MultipleScattering in Fit-->
+  <parameter name="MultipleScatteringOn" type="bool"> true </parameter>
+  <!--Name of the output track collection-->
+  <parameter name="OutputTrackCollectionName" type="string" lcioOutType="Track">RefittedTracks </parameter>
+  <!--Name of the MCParticle-Track Relations collection for output tracks-->
+  <parameter name="OutputTrackRelCollection" type="string" lcioOutType="LCRelation"> XXX </parameter>
+  <!--Smooth All Mesurement Sites in Fit-->
+  <parameter name="SmoothOn" type="bool"> true </parameter>
+  <!--Name of the track fitting system to be used (KalTest, DDKalTest, aidaTT, ... )-->
+  <parameter name="TrackSystemName" type="string"> DDKalTest </parameter>
+  <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
+  <!-- <parameter name="Verbosity" type="string">DEBUG0 </parameter> -->
+</processor>
+
+
 
  <processor name="MyAIDAProcessor" type="AIDAProcessor">
  <!--Processor that handles AIDA files. Creates on directory per processor.  Processors only need to create and fill the histograms, clouds and tuples. Needs to be the first ActiveProcessor-->
