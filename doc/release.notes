@@ -3,6 +3,11 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015/05/22 Nikiforos Nikiforou
+-----------------------
+  - Fixed bug in DDG4/lcio/LCIOConversions.cpp, which stored only the PDG of the primary particle 
+    in multiple particle contributions in SimCalorimeterHits instead of both the primary and secondary PDGs.
+
 
 2015/05/13 Markus Frank
 -----------------------

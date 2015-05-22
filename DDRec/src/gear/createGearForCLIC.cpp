@@ -39,34 +39,11 @@ namespace DD4hep{
       
       std::cout << " **** running plugin createGearForCLIC ! " <<  std::endl ;
       
-
-      //========= TPC ==============================================================================
-      try{
-
-	DetElement tpcDE = lcdd.detector("TPC") ;
-	
-	FixedPadSizeTPCData* tpc = tpcDE.extension<FixedPadSizeTPCData>() ;
-	
-	gear::TPCParametersImpl* gearTPC = new gear::TPCParametersImpl( tpc->driftLength /dd4hep::mm , gear::PadRowLayout2D::POLAR ) ;
-	
-	gearTPC->setPadLayout( new gear::FixedPadSizeDiskLayout( tpc->rMinReadout/dd4hep::mm , tpc->rMaxReadout/dd4hep::mm, tpc->padHeight/dd4hep::mm,
-								 tpc->padWidth/dd4hep::mm , tpc->maxRow, tpc->padGap /dd4hep::mm  ) ) ;
-	
-	gearTPC->setDoubleVal("tpcInnerRadius", tpc->rMin/dd4hep::mm  )  ; // inner r of support tube
-	gearTPC->setDoubleVal("tpcOuterRadius", tpc->rMax/dd4hep::mm  )  ; // outer radius of TPC
-	gearTPC->setDoubleVal("tpcInnerWallThickness", tpc->innerWallThickness/dd4hep::mm  )  ;   // thickness of inner shell
-	gearTPC->setDoubleVal("tpcOuterWallThickness", tpc->outerWallThickness/dd4hep::mm  )  ;   // thickness of outer shell
-	
-	tpcDE.addExtension< GearHandle >( new GearHandle( gearTPC, "TPCParameters" ) ) ;
-
-      } catch( std::runtime_error& e ){  
-	std::cerr << " >>>> " << e.what() << std::endl ;
-      } 
-
+   
       //========= VXD ==============================================================================
       
       try{
-	DetElement vxdDE = lcdd.detector("Vertex") ;
+	DetElement vxdDE = lcdd.detector("VertexBarrel") ;
 	
 	ZPlanarData* vxd = vxdDE.extension<ZPlanarData>() ;
 	
@@ -75,8 +52,10 @@ namespace DD4hep{
 	gear::ZPlanarParametersImpl* gearVXD = new gear::ZPlanarParametersImpl( vxdType, vxd->rInnerShell/dd4hep::mm,  vxd->rOuterShell/dd4hep::mm,
 										vxd->zHalfShell/dd4hep::mm , vxd->gapShell/dd4hep::mm , 0.  ) ;
 	
+//   std::cout<<"Got "<<vxd->layers.size()<<" layers."<<std::endl;
 	for(unsigned i=0,n=vxd->layers.size() ; i<n; ++i){
-	  
+//     std::cout<<"Working on layer "<<i<<" for a total of "<<n<<" layers."<<std::endl;
+    
 	  const DDRec::ZPlanarData::LayerLayout& l = vxd->layers[i] ;
 	  
 	  // FIXME set rad lengths to 0 -> need to get from DD4hep ....
@@ -86,6 +65,8 @@ namespace DD4hep{
 	
 	}
 	
+	std::cout<<"Added layers"<<std::endl;
+  
 	GearHandle* handle = new GearHandle( gearVXD, "VXDParameters" )  ;
 	
 	// quick hack for now: add the one material that is needed by KalDet :  
@@ -101,14 +82,15 @@ namespace DD4hep{
 	
 	const MaterialVec& materials = matMgr.materialsBetween( a , b  ) ;
 	
+  std::cout<<"Calculating material average."<<std::endl;
 	MaterialData mat = ( materials.size() > 1  ? matMgr.createAveragedMaterial( materials ) : materials[0].first  ) ;
 	
-	// std::cout << " ####### found materials between points : " << a << " and " << b << " : " ;
-	// for( unsigned i=0,n=materials.size();i<n;++i){
-	// 	std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
-	// }
-	// std::cout << std::endl ;
-	// std::cout << "   averaged material : " << mat << std::endl ;
+	std::cout << " ####### found materials between points : " << a << " and " << b << " : " ;
+	for( unsigned i=0,n=materials.size();i<n;++i){
+		std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
+	}
+	std::cout << std::endl ;
+	std::cout << "   averaged material : " << mat << std::endl ;
 	
 	handle->addMaterial( "VXDSupportMaterial", mat.A(), mat.Z() , mat.density()/(dd4hep::kg/(dd4hep::g*dd4hep::m3)) , mat.radiationLength()/dd4hep::mm , mat.interactionLength()/dd4hep::mm )  ; 
 	
@@ -120,7 +102,7 @@ namespace DD4hep{
       } 
 
       //========= SIT ==============================================================================
-      
+ /*     
       try{ 
 
 	DetElement sitDE = lcdd.detector("SIT") ;
@@ -295,7 +277,7 @@ namespace DD4hep{
       
       } catch( std::runtime_error& e ){  
 	std::cerr << " >>>> " << e.what() << std::endl ;
-      } 
+      } */
 
       //========= CALO ==============================================================================
 
@@ -305,18 +287,18 @@ namespace DD4hep{
 
       std::map< std::string, std::string > caloMap ;
       caloMap["HCalBarrel"] = "HcalBarrelParameters"  ; 
-      caloMap["ECalBarrel"] = "EcalBarrelParameters" ;
-      caloMap["ECalEndcap"] = "EcalEndcapParameters" ;
-      caloMap["ECalPlug"]   = "EcalPlugParameters" ;
-      caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
-      caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
-      caloMap["YokePlug"]   = "YokePlugParameters" ;
-      caloMap["HCalBarrel"] = "HcalBarrelParameters" ;
+//       caloMap["ECalBarrel"] = "EcalBarrelParameters" ;
+//       caloMap["ECalEndcap"] = "EcalEndcapParameters" ;
+//       caloMap["ECalPlug"]   = "EcalPlugParameters" ;
+//       caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
+//       caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
+//       caloMap["YokePlug"]   = "YokePlugParameters" ;
+//       caloMap["HCalBarrel"] = "HcalBarrelParameters" ;
       caloMap["HCalEndcap"] = "HcalEndcapParameters" ;
-      caloMap["HCalRing"]   = "HcalRingParameters" ;
-      caloMap["LCal"]	    = "LcalParameters" ;
-      caloMap["LHCal"]	    = "LHcalParameters" ;
-      caloMap["BeamCal"]    = "BeamCalParameters" ;
+//       caloMap["HCalRing"]   = "HcalRingParameters" ;
+//       caloMap["LCal"]	    = "LcalParameters" ;
+//       caloMap["LHCal"]	    = "LHcalParameters" ;
+//       caloMap["BeamCal"]    = "BeamCalParameters" ;
       
       for(  std::map< std::string, std::string >::const_iterator it = caloMap.begin() ; it != caloMap.end() ; ++it ){
 
