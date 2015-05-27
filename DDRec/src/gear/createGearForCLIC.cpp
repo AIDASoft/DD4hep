@@ -70,29 +70,29 @@ namespace DD4hep{
 	GearHandle* handle = new GearHandle( gearVXD, "VXDParameters" )  ;
 	
 	// quick hack for now: add the one material that is needed by KalDet :  
-	//      handle->addMaterial( "VXDSupportMaterial", 2.075865162e+01, 1.039383117e+01, 2.765900000e+02, 1.014262421e+03, 3.341388059e+03)  ; 
+	     handle->addMaterial( "VXDSupportMaterial", 2.075865162e+01, 1.039383117e+01, 2.765900000e+02, 1.014262421e+03, 3.341388059e+03)  ; 
 	
 	// -------- better: get right averaged material from first ladder:  ------------------
-	MaterialManager matMgr ;
-      
-	const DDRec::ZPlanarData::LayerLayout& l = vxd->layers[0] ;
-	
-	Vector3D a( l.distanceSupport                      , l.phi0 , 0. ,  Vector3D::cylindrical ) ;
-	Vector3D b( l.distanceSupport + l.thicknessSupport , l.phi0 , 0. ,  Vector3D::cylindrical ) ;
-	
-	const MaterialVec& materials = matMgr.materialsBetween( a , b  ) ;
-	
-  std::cout<<"Calculating material average."<<std::endl;
-	MaterialData mat = ( materials.size() > 1  ? matMgr.createAveragedMaterial( materials ) : materials[0].first  ) ;
-	
-	std::cout << " ####### found materials between points : " << a << " and " << b << " : " ;
-	for( unsigned i=0,n=materials.size();i<n;++i){
-		std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
-	}
-	std::cout << std::endl ;
-	std::cout << "   averaged material : " << mat << std::endl ;
-	
-	handle->addMaterial( "VXDSupportMaterial", mat.A(), mat.Z() , mat.density()/(dd4hep::kg/(dd4hep::g*dd4hep::m3)) , mat.radiationLength()/dd4hep::mm , mat.interactionLength()/dd4hep::mm )  ; 
+// 	MaterialManager matMgr ;
+//       
+// 	const DDRec::ZPlanarData::LayerLayout& l = vxd->layers[0] ;
+// 	
+// 	Vector3D a( l.distanceSupport                      , l.phi0 , 0. ,  Vector3D::cylindrical ) ;
+// 	Vector3D b( l.distanceSupport + l.thicknessSupport , l.phi0 , 0. ,  Vector3D::cylindrical ) ;
+// 	
+// 	const MaterialVec& materials = matMgr.materialsBetween( a , b  ) ;
+// 	
+//   std::cout<<"Calculating material average."<<std::endl;
+// 	MaterialData mat = ( materials.size() > 1  ? matMgr.createAveragedMaterial( materials ) : materials[0].first  ) ;
+// 	
+// 	std::cout << " ####### found materials between points : " << a << " and " << b << " : " ;
+// 	for( unsigned i=0,n=materials.size();i<n;++i){
+// 		std::cout <<  materials[i].first.name() << "[" <<   materials[i].second << "], " ;
+// 	}
+// 	std::cout << std::endl ;
+// 	std::cout << "   averaged material : " << mat << std::endl ;
+// 	
+// 	handle->addMaterial( "VXDSupportMaterial", mat.A(), mat.Z() , mat.density()/(dd4hep::kg/(dd4hep::g*dd4hep::m3)) , mat.radiationLength()/dd4hep::mm , mat.interactionLength()/dd4hep::mm )  ; 
 	
 	
 	vxdDE.addExtension< GearHandle >( handle ) ;
@@ -102,10 +102,10 @@ namespace DD4hep{
       } 
 
       //========= SIT ==============================================================================
- /*     
+     
       try{ 
 
-	DetElement sitDE = lcdd.detector("SIT") ;
+        DetElement sitDE = lcdd.detector("InnerTrackerBarrel") ;
 	
 	ZPlanarData* sit = sitDE.extension<ZPlanarData>() ;
 	
@@ -146,7 +146,7 @@ namespace DD4hep{
 
       try {
 
-	DetElement setDE = lcdd.detector("InnerTracker") ;
+	DetElement setDE = lcdd.detector("OuterTrackerBarrel") ;
 	
 	ZPlanarData* set = setDE.extension<ZPlanarData>() ;
 	
@@ -277,7 +277,7 @@ namespace DD4hep{
       
       } catch( std::runtime_error& e ){  
 	std::cerr << " >>>> " << e.what() << std::endl ;
-      } */
+      }
 
       //========= CALO ==============================================================================
 
