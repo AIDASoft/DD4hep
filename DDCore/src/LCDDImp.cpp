@@ -279,9 +279,12 @@ vector<string> LCDDImp::detectorTypes() const  {
 /// Access a set of subdetectors according to the sensitive type.
 const vector<DetElement>& LCDDImp::detectors(const string& type)  {
   if ( m_manager->IsClosed() ) {
-    DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
-    if ( i != m_detectorTypes.end() ) return (*i).second;
-    throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
+    // DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
+    // if ( i != m_detectorTypes.end() ) return (*i).second;
+    // throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
+
+    // return empty vector instead of exception
+    return m_detectorTypes[ type ] ;
   }
   throw runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
 }
