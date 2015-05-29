@@ -3,6 +3,33 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-12 |  
+ --------   
+
+F.Gaede
+-------
+   - added SurfaceManager class that holds maps of surfaces for 
+     "world","tracker","calorimeter","passive" and all individual subdetectors
+      - to be used in reconstruction code where a lookup from cellID
+        to corresponding surface is needed
+      - needs plugin "InstallSurfaceManager" to be in the compact file
+      - access via:  
+        SurfaceManager surfMan = *lcdd.extension< SurfaceManager >() ;
+        const SurfaceMap& surfMap = *surfMan.map( "world" ) ;
+   - renamed old SurfaceManager to SurfaceHelper
+
+   - added method: Geometry::Volume createPlacedEnvelope()
+     - to be used in all LC detector drivers to create a placed envelope volume
+       rest of the detector is then instantiate in this volume
+
+  - added BooleanShape plugin for creating generic boolean
+    shapes (subtraction, union or intersection )
+      - to be used for envelope definition in xml
+
+   - added new build_type: BUILD_ENVELOPE 
+      - can be used to visulize envelopes only (geoDisplay, teveDisplay,...)
+
 2015/05/22 Nikiforos Nikiforou
 -----------------------
   - Fixed bug in DDG4/lcio/LCIOConversions.cpp, which stored only the PDG of the primary particle 
