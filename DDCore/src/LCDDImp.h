@@ -108,11 +108,11 @@ namespace DD4hep {
       }
       /// Return handle to material describing air
       virtual Material air() const {
-        return m_materialVacuum;
+        return m_materialAir;
       }
       /// Return handle to material describing vacuum
       virtual Material vacuum() const {
-        return m_materialAir;
+        return m_materialVacuum;
       }
       /// Return handle to "invisible" visualization attributes
       virtual VisAttr invisible() const {
