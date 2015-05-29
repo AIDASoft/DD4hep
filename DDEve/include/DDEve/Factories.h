@@ -43,6 +43,6 @@ namespace {
   };
 }
 
-#define DECLARE_VIEW_FACTORY(x) DD4HEP_PLUGINSVC_FACTORY(x,x,DD4hep::View*(DD4hep::Display*, const char*),__LINE__)
+#define DECLARE_VIEW_FACTORY(x) DD4HEP_PLUGINSVC_FACTORY(x,DD4hep_DDEve_##x,DD4hep::View*(DD4hep::Display*, const char*),__LINE__)
 
 #endif // DD4HEP_DDEVE_FACTORIES_H

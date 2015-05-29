@@ -72,7 +72,7 @@ View& MultiView::Build(TEveWindow* slot)   {
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {
-    v = PluginService::Create<View*>("DD4hep__RhoZProjection",m_eve,(m_name+" - RhoZ View").c_str());
+    v = PluginService::Create<View*>("DD4hep_DDEve_RhoZProjection",m_eve,(m_name+" - RhoZ View").c_str());
   }
   (new_slot = pack->NewSlot())->MakeCurrent();
   _build(m_eve,v,new_slot);
@@ -84,7 +84,7 @@ View& MultiView::Build(TEveWindow* slot)   {
     v = PluginService::Create<View*>(typ.c_str(),m_eve,cfg.name.c_str());
   }
   else  {
-    v = PluginService::Create<View*>("DD4hep__RhoPhiProjection",m_eve,(m_name+" - RPhi View").c_str());
+    v = PluginService::Create<View*>("DD4hep_DDEve_RhoPhiProjection",m_eve,(m_name+" - RPhi View").c_str());
   }
   (new_slot = pack->NewSlot())->MakeCurrent();
   _build(m_eve,v,new_slot);
