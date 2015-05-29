@@ -524,11 +524,11 @@ Christian.Grefe, 2014-07-15
     the Geant4 prompt. For the test hit classes and the simple sensitive 
     detector a ROOT I/O plugin was provided.
   - DDG4: Split into several libraries:
-     -- libDD4hepG4.so pure    link library without any plugins
-     -- libDD4hepG4Legacy.so   'Old' plugins. The old stuff at some point
+     -- libDDG4.so pure    link library without any plugins
+     -- libDDG4Legacy.so   'Old' plugins. The old stuff at some point
                                will have to disappear.
-     -- libDD4hepG4Plugins.so  New framework plugins
-     -- libDD4hepG4LCIO.so     LCIO output plugin for new framework
+     -- libDDG4Plugins.so  New framework plugins
+     -- libDDG4LCIO.so     LCIO output plugin for new framework
 
 2013/11/03    Markus Frank
 --------------------------
