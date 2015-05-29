@@ -75,7 +75,7 @@ long Geant4Action::addRef() {
 long Geant4Action::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
-    print("Geant4Action: Deleting object %s of type %s Pointer:%p",
+    printM1("Geant4Action: Deleting object %s of type %s Pointer:%p",
           m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
     delete this;
   }
