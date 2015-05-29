@@ -42,7 +42,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
   bool isStripDetector = false ;
   try {
-    isStripDetector = x_det.attr<bool>( "isStripDetector" ) ;
+    isStripDetector = x_det.attr<bool>( _Unicode("isStripDetector") ) ;
 
   } catch(std::runtime_error ){}
 
@@ -57,7 +57,7 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     xml_comp_t x_ladder(  x_layer.child( _U(ladder)  ));
     
     int layer_id = x_layer.id();
-    int nLadders = x_layer.attr<double>( "nLadders" ) ;
+    int nLadders = x_layer.attr<double>(  _Unicode("nLadders") ) ;
 
     double dphi = 2.*M_PI / double(nLadders);
 
