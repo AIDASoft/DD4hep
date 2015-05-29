@@ -211,11 +211,11 @@
   <!--SIT Hit Collection Name-->
   <parameter name="SITHitCollectionName" type="string" lcioInType="TrackerHit"> XXXXSITTrackerHits SITSpacePoints </parameter>
   <!--Silicon track Collection Name-->
-  <parameter name="SiTrackCollectionName" type="string" lcioOutType="Track">  SiTracks MarlinTrkTracks </parameter>
+  <parameter name="SiTrackCollectionName" type="string" lcioOutType="Track">  SiTracks </parameter>
  <!--Smooth All Mesurement Sites in Fit-->
   <parameter name="SmoothOn" type="bool"> false </parameter>
   <!--Use SIT-->
-  <parameter name="UseSIT" type="int">1 </parameter>
+  <parameter name="UseSIT" type="int">0 </parameter>
   <!--UseEventDisplay-->
   <parameter name="UseEventDisplay" type="bool"> false </parameter>
   <!--VTX Hit Collection Name-->

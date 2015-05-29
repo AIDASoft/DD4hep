@@ -31,7 +31,7 @@
 	<constant name="SolenoidField_zMax" value="4.0*m"/>
 	<constant name="SolenoidField_outer_radius" value="4.0*m"/>
 
-	<constant name="BField_nominal" value="3.5*tesla"/>
+	<constant name="BField_nominal" value="4.0*tesla"/>
 
     </define>
 

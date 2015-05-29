@@ -58,7 +58,11 @@
     <detectors>
       <comment>Trackers</comment>
       
-      <detector name="VXD" type="ZPlanarTracker" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
+       <detector name="AirTube" type="AirTube" vis="VXDVis" id="42" insideTrackingVolume="true">
+      	<dimensions rmin="10.*mm" rmax="11.*mm" zhalf="6.250000000e+01*mm"/>
+      </detector>
+
+     <detector name="VXD" type="ZPlanarTracker" vis="VXDVis" id="1" limits="Tracker_limits" readout="VXDCollection" insideTrackingVolume="true">
 
         <layer nLadders="10" phi0="-1.570796327e+00*rad" id="0">
           <ladder distance="1.600000000e+01*mm" thickness="1.000000000e+00*mm" width="1.150000000e+01*mm" length="6.250000000e+01*mm" offset="-3.406041308e+00*mm"    material="CarbonFiber" />
