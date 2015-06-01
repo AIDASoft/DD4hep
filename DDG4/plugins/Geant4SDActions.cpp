@@ -180,6 +180,69 @@ namespace DD4hep {
     typedef Geant4SensitiveAction<Geant4OpticalCalorimeter>  Geant4OpticalCalorimeterAction;
 
 
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //               Geant4SensitiveAction<ScintillatorCalorimeter>
+    //               For scintillator with Geant4 BirksLaw effect
+    // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    struct Geant4ScintillatorCalorimeter {};
+
+    /// Define collections created by this sensitivie action object
+    template <> void Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::defineCollections() {
+      m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
+    }
+    /// Method for generating hit(s) using the information of G4Step object.
+    template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
+      typedef Geant4Calorimeter::Hit Hit;
+      StepHandler h(step);
+      HitContribution contrib = Hit::extractContribution(step,true);
+      HitCollection*  coll    = collection(m_collectionID);
+      long long int cell;
+      try {
+	cell = cellID(step);
+      } catch(std::runtime_error &e) {
+	std::stringstream out;
+	out << std::setprecision(20) << std::scientific;
+	out << "ERROR: " << e.what()  << std::endl;
+	out << "Position: "
+	    << "Pre (" << std::setw(24) << step->GetPreStepPoint()->GetPosition() << ") "
+	    << "Post (" << std::setw(24) << step->GetPostStepPoint()->GetPosition() << ") "
+	    << std::endl;
+	out << "Momentum: "
+	    << " Pre (" <<std::setw(24) << step->GetPreStepPoint() ->GetMomentum()  << ") "
+	    << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
+	    << std::endl;
+
+	std::cout << out;
+
+	return true;
+      }
+
+      Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
+      if ( h.totalEnergy() < std::numeric_limits<double>::epsilon() )  {
+        return true;
+      }
+      else if ( !hit ) {
+        Geant4TouchableHandler handler(step);
+        DDSegmentation::Vector3D pos = m_segmentation.position(cell);
+        Position global = h.localToGlobal(pos);
+        hit = new Hit(global);
+        hit->cellID = cell;
+        coll->add(hit);
+        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
+                c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
+        if ( 0 == hit->cellID )  { // for debugging only!
+          hit->cellID = cellID(step);
+          except("+++ Invalid CELL ID for hit!");
+        }
+      }
+      hit->truth.push_back(contrib);
+      hit->energyDeposit += contrib.deposit;
+      mark(step);
+      return true;
+    }
+    typedef Geant4SensitiveAction<Geant4ScintillatorCalorimeter> Geant4ScintillatorCalorimeterAction;
+
     /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
     /**
      *  Geant4SensitiveAction<TrackerCombine>
@@ -365,6 +428,7 @@ DECLARE_GEANT4SENSITIVE(Geant4TrackerAction)
 DECLARE_GEANT4SENSITIVE(Geant4TrackerCombineAction)
 DECLARE_GEANT4SENSITIVE(Geant4CalorimeterAction)
 DECLARE_GEANT4SENSITIVE(Geant4OpticalCalorimeterAction)
+DECLARE_GEANT4SENSITIVE(Geant4ScintillatorCalorimeterAction)
 
 // Need these factories for backwards compatibility
 DECLARE_GEANT4SENSITIVE(Geant4SimpleTrackerAction)
