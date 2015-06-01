@@ -70,6 +70,18 @@ Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* ste
   Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),pos);
   return contrib;
 }
+/// Extract the MC contribution for a given hit from the step information with BirksLaw effect option
+Geant4HitData::Contribution Geant4HitData::extractContribution(const G4Step* step, bool ApplyBirksLaw) {
+  Geant4StepHandler h(step);
+  if ( ApplyBirksLaw == true ) h.doApplyBirksLaw();
+  double deposit =
+    (h.trackDef() == G4OpticalPhoton::OpticalPhotonDefinition()) ? h.trkEnergy() : h.totalEnergy();
+  const G4ThreeVector& pre  = h.prePosG4();
+  const G4ThreeVector& post = h.postPosG4();
+  float pos[] = {float((pre.x()+post.x())/2.0),float((pre.y()+post.y())/2.0),float((pre.z()+post.z())/2.0) };
+  Contribution contrib(h.trkID(),h.trkPdgID(),deposit,h.trkTime(),pos);
+  return contrib;
+}
 
 /// Default constructor
 Geant4Tracker::Hit::Hit()

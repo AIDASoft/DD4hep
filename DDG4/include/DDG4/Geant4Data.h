@@ -179,6 +179,8 @@ namespace DD4hep {
       virtual ~Geant4HitData();
       /// Extract the MC contribution for a given hit from the step information
       static Contribution extractContribution(const G4Step* step);
+      /// Extract the MC contribution for a given hit from the step information with BirksLaw option
+      static Contribution extractContribution(const G4Step* step, bool ApplyBirksLaw);
     };
 
     /// Helper class to define structures used by the generic DDG4 tracker sensitive detector
