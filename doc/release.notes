@@ -7,6 +7,14 @@ DD4hep  ----  Release Notes
 | v00-12 |  
  --------   
 
+S.Lu:
+-----
+  - Added a switch for BirksLaw to Geant4StepHandler. 
+    For backward compatable, by default, do not apply BirksLaw, and apply BirksLaw with call 'doApplyBirksLaw()'.
+    added optional Geant4ScintillatorCalorimeterAction
+  - Added one 'Geant4ScintillatorCalorimeterAction' into DDG4 plugins Geant4SDActions for  scintillator to take 
+    Geant4 BirksLaw effect as sensitive detector active layer.
+
 F.Gaede
 -------
    - added SurfaceManager class that holds maps of surfaces for 
