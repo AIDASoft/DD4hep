@@ -9,6 +9,8 @@
 
 #include "DDSurfaces/Vector3D.h"
 
+#include "DDSegmentation/Segmentation.h"
+
 #include "gearimpl/TPCParametersImpl.h"
 #include "gearimpl/FixedPadSizeDiskLayout.h"
 #include "gearimpl/ZPlanarParametersImpl.h"
@@ -39,7 +41,14 @@ namespace DD4hep{
       
       std::cout << " **** running plugin createGearForILD ! " <<  std::endl ;
       
-
+      
+      // ===========================================================================================
+      // global parameters:
+      
+      double crossing_angle(0.) ;
+      try{ crossing_angle = lcdd.constant<double>("ILC_Main_Crossing_Angle") ; } catch(std::runtime_error&e) {std::cerr << " >>>> " << e.what() << std::endl ;} 
+      
+      
       //========= TPC ==============================================================================
       try{
 
@@ -371,14 +380,51 @@ namespace DD4hep{
 	
 	  if( it->first == "HcalBarrel" ){
 	    // additional parameters needed by MarlinPandora
-	    gearCalo->setIntVal("Hcal_outer_polygon_order"   , calo->outer_symmetry  ) ;
+	    gearCalo->setIntVal("Hcal_outer_polygon_order"   ,  calo->outer_symmetry  ) ;
 	    gearCalo->setDoubleVal("Hcal_outer_polygon_phi0" ,  calo->phi0 ) ;
 	  }
 		  
+	  if( it->first == "BeamCal" ){
 
+	    try{
+	      // additional parameters needed by BCalReco
+	      
+	      SensitiveDetector sD = lcdd.sensitiveDetector( it->first   )   ;
+	      Readout readOut = sD.readout() ;
+	      Segmentation seg = readOut.segmentation() ;
+	      
+	      //	    DDSegmentation::DoubleVecParameter rPar =  dynamic_cast<DDSegmentation::DoubleVecParameter>( seg.segmentation()->parameter("grid_r_values"));
+	      DDSegmentation::DoubleVecParameter pPar =  dynamic_cast<DDSegmentation::DoubleVecParameter>( seg.segmentation()->parameter("grid_phi_values"));
+	      DDSegmentation::DoubleParameter    oPPar=  dynamic_cast<DDSegmentation::DoubleParameter>(    seg.segmentation()->parameter("offset_phi"));
+	      
+
+	      //offset_phi="-180*degree+(360*degree-BCal_SpanningPhi)*0.5"
+	      double offsetPhi   = oPPar->typedValue() ;
+	      double spanningPhi = 360.*dd4hep::deg - 2.*( offsetPhi + 180.*dd4hep::deg ) ;  
+
+	      gearCalo->setDoubleVals( "phi_segmentation"     , pPar->typedValue()  );
+	      gearCalo->setDoubleVal(  "cylinder_starting_phi", offsetPhi  );
+	      gearCalo->setDoubleVal(  "cylinder_spanning_phi", spanningPhi );
+	      gearCalo->setDoubleVal(  "beam_crossing_angle"  , crossing_angle );
+
+	      //fixme: don't know how to get these parameters at this stage ...
+	      //       probably need a named parameter object at every DetElement  ....
+	      gearCalo->setDoubleVal(  "dead_area_outer_r"       ,   0 );
+	      gearCalo->setDoubleVal(  "pairsMonitorZ"           ,   0. );
+	      gearCalo->setDoubleVal(  "FIXME_dead_area_outer_r" ,  -1. );
+	      gearCalo->setDoubleVal(  "FIXME_pairsMonitorZ"     ,  -1. );
+	    
+	    } catch( std::runtime_error& e ){  
+	      std::cerr << " >>>> BeamCal: " << e.what() << std::endl ;
+	    }
+	  }
+
+	  if( it->first == "Lcal" ||  it->first == "LHcal" ){
+	    gearCalo->setDoubleVal(  "beam_crossing_angle"  , crossing_angle );
+	  }
 
 	  caloDE.addExtension< GearHandle >( new GearHandle( gearCalo, it->second ) ) ;
-
+	  
 	} catch( std::runtime_error& e ){  
 	  std::cerr << " >>>> " << e.what() << std::endl ;
 	} 
