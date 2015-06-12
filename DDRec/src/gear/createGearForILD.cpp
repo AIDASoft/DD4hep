@@ -260,6 +260,26 @@ namespace DD4hep{
       //============================================================================================
 
       try {
+	
+	DetElement coilDE = lcdd.detector("Coil") ;
+	
+	gear::GearParametersImpl* gearCOIL = new gear::GearParametersImpl();
+	
+	Tube coilTube = Tube( coilDE.volume().solid() )  ;
+	
+	gearCOIL->setDoubleVal("Coil_cryostat_outer_radius" , coilTube->GetRmin() ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_inner_radius" , coilTube->GetRmax() ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_half_z"       , coilTube->GetDZ() ) ;
+	
+	coilDE.addExtension< GearHandle >( new GearHandle( gearCOIL, "Coil" ) ) ;
+      
+      } catch( std::runtime_error& e ){  
+	std::cerr << " >>>> " << e.what() << std::endl ;
+      } 
+
+      //============================================================================================
+
+      try {
 
 	DetElement tubeDE = lcdd.detector("Tube") ;
 	
