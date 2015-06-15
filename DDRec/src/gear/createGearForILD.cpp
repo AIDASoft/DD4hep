@@ -280,7 +280,7 @@ namespace DD4hep{
 	gearCOIL->setDoubleVal("Coil_cryostat_inner_radius" , coilTube->GetRmax() ) ;
 	gearCOIL->setDoubleVal("Coil_cryostat_half_z"       , coilTube->GetDZ() ) ;
 	
-	coilDE.addExtension< GearHandle >( new GearHandle( gearCOIL, "Coil" ) ) ;
+	coilDE.addExtension< GearHandle >( new GearHandle( gearCOIL, "CoilParameters" ) ) ;
       
       } catch( std::runtime_error& e ){  
 	std::cerr << " >>>> " << e.what() << std::endl ;
