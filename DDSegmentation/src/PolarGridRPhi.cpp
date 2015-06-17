@@ -55,6 +55,19 @@ Vector3D PolarGridRPhi::position(const CellID& cID) const {
 	return _decoder->getValue();
 }
 
+std::vector<double> PolarGridRPhi::cellDimensions(const CellID& cID) const {
+  _decoder->setValue(cID);
+  const double rPhiSize = binToPosition((*_decoder)[_rId].value(), _gridSizeR, _offsetR)*_gridSizePhi;
+#ifdef DD4HEP_USE_CXX11
+  return {_gridSizeR, rPhiSize};
+#else
+  std::vector<double> cellDims(2,0.0);
+  cellDims[0] = _gridSizeR;
+  cellDims[1] = rPhiSize;
+  return cellDims;
+#endif
+}
+
 REGISTER_SEGMENTATION(PolarGridRPhi)
 
 } /* namespace DDSegmentation */

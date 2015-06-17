@@ -73,6 +73,16 @@ public:
 	void setFieldNamePhi(const std::string& fieldName) {
 		_phiId = fieldName;
 	}
+	/** \brief Returns a vector<double> of the cellDimensions of the given cell ID
+	    in natural order of dimensions: dr, r*dPhi
+
+	    Returns a vector of the cellDimensions of the given cell ID
+	    \param cID cellID
+	    \return std::vector<double> size 2:
+	    -# size in r
+	    -# size of r*dPhi at the radial centre of the pad
+	*/
+	virtual std::vector<double> cellDimensions(const CellID& cID) const;
 
 protected:
 	/// the grid size in R
