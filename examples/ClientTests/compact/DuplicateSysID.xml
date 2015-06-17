@@ -1,0 +1,57 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+  
+  <info name="alignment_boxes"
+	title="Alignment test with 2 simple boxes"
+	author="Markus Frank"
+	url="http://www.cern.ch/lhcb"
+	status="development"
+	version="$Id: compact.xml 513 2013-04-05 14:31:53Z gaede $">
+    <comment>Alignment test with 2 simple boxes</comment>        
+  </info>
+  
+  <includes>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/elements.xml"/>
+    <gdmlFile  ref="${DD4hepINSTALL}/DDDetectors/compact/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="world_side" value="30000"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+  </define>
+
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+  </display>
+
+  <detectors>
+    <comment>Boxes</comment>
+    <detector id="3" name="B3" type="DD4hep_BoxSegment" readout="SiliconHits" sensitive="true">
+      <comment>Vertical box</comment>
+      <material name="Steel235"/>
+      <sensitive type="calo"/>
+      <box      x="10"  y="20"   z="30"/>
+      <position x="-10" y="30"   z="10"/>
+      <rotation x="0"   y="0"    z="0"/>
+    </detector>
+    <detector id="3" name="B4" type="DD4hep_BoxSegment" readout="SiliconHits" sensitive="true">
+      <comment>Vertical box</comment>
+      <material name="Steel235"/>
+      <sensitive type="calo"/>
+      <box      x="10"  y="20"   z="30"/>
+      <position x="0"   y="0"    z="0"/>
+      <rotation x="0"   y="0"    z="0"/>
+    </detector>
+  </detectors>
+
+  <readouts>
+    <readout name="SiliconHits">
+      <id>system:8</id>
+    </readout>
+  </readouts>
+</lccdd>
+

@@ -10,6 +10,7 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
+#include "DD4hep/LCDDHelper.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/objects/VolumeManagerInterna.h"
 #include "LCDDImp.h"
@@ -191,6 +192,19 @@ Volume LCDDImp::pickMotherVolume(const DetElement& de) const {
 
 LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
   DetElement det_element(ref_det);
+  LCDDHelper helper(this);
+  DetElement existing_det = helper.detectorByID(det_element.id());
+
+  if ( existing_det.isValid() )   {
+    SensitiveDetector sd = helper.sensitiveDetector(existing_det);
+    if ( sd.isValid() )   {
+      stringstream str;
+      str << "LCDD: The sensitive sub-detectors " << det_element.name() << " and "
+	  << existing_det.name() << " have the identical ID:" << det_element.id() << ".";
+      printout(ERROR,"LCDD",str.str());
+      throw runtime_error(str.str());
+    }
+  }
   m_detectors.append(ref_det);
   Volume volume = det_element.placement()->GetMotherVolume();
   if ( volume == m_worldVol )  {
@@ -208,25 +222,53 @@ LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
       return *this;
     }
   }
-  throw runtime_error("LCDD: The detector" + string(det_element.name()) + " has no known parent.");
+  throw runtime_error("LCDD: The detector " + string(det_element.name()) + " has no known parent.");
+}
+
+/// Add a new constant by named reference to the detector description
+LCDD& LCDDImp::addConstant(const Ref_t& x) {
+  if ( strcmp(x.name(),"LCDD_InhibitConstants") == 0 )   {
+    const char* title = x->GetTitle();
+    char c = ::toupper(title[0]);
+    m_inhibitConstants = (c=='Y' || c=='T' || c=='1');
+  }
+  m_define.append(x, false);
+  return *this;
+}
+
+/// Retrieve a constant by it's name from the detector description
+Constant LCDDImp::constant(const std::string& name) const {
+  if ( !m_inhibitConstants )   {
+    return getRefChild(m_define, name);
+  }
+  throw runtime_error("LCDD:constant("+name+"): Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: access string values
 string LCDDImp::constantAsString(const string& name) const {
-  Ref_t c = constant(name);
-  if (c.isValid())
-    return c->GetTitle();
-  throw runtime_error("LCDD: The constant " + name + " is not known to the system.");
+  if ( !m_inhibitConstants )   {
+    Ref_t c = constant(name);
+    if (c.isValid())
+      return c->GetTitle();
+    throw runtime_error("LCDD:constantAsString: The constant " + name + " is not known to the system.");
+  }
+  throw runtime_error("LCDD:constantAsString("+name+"):: Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: long values
 long LCDDImp::constantAsLong(const string& name) const {
-  return _toLong(constantAsString(name));
+  if ( !m_inhibitConstants )   {
+    return _toLong(constantAsString(name));
+  }
+  throw runtime_error("LCDD:constantAsLong("+name+"): Access to global constants is inhibited.");
 }
 
 /// Typed access to constants: double values
 double LCDDImp::constantAsDouble(const string& name) const {
-  return _toDouble(constantAsString(name));
+  if ( !m_inhibitConstants )   {
+    return _toDouble(constantAsString(name));
+  }
+  throw runtime_error("LCDD:constantAsDouble("+name+"): Access to global constants is inhibited.");
 }
 
 /// Add a field component by named reference to the detector description

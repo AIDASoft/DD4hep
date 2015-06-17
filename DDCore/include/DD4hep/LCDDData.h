@@ -116,6 +116,9 @@ namespace DD4hep {
       /// Volume manager reference
       VolumeManager m_volManager;
 
+      /// Flag to inhibit the access to global constants. Value set by constants section 'LCDD_InhibitConstants'
+      bool m_inhibitConstants;
+
     protected:
       /// Default constructor
       LCDDData();

@@ -26,7 +26,8 @@ using namespace std;
 LCDDData::LCDDData()
   : m_manager(0), m_world(), m_trackers(), m_worldVol(),
     m_trackingVol(), m_field("global"),
-    m_extensions(typeid(LCDDData)), m_volManager()
+    m_extensions(typeid(LCDDData)), m_volManager(),
+    m_inhibitConstants(false)
 {
   InstanceCount::increment(this);
 }
@@ -63,7 +64,7 @@ void LCDDData::destroyData(bool destroy_mgr)   {
   m_invisibleVis.clear();
   m_materialVacuum.clear();
   m_materialAir.clear();
-
+  m_inhibitConstants = false;
   if ( destroy_mgr )
     deletePtr(m_manager);
   else  {
@@ -98,10 +99,12 @@ void LCDDData::clearData()   {
   m_materialAir.clear();
   m_volManager.clear();
   m_manager = 0;
+  m_inhibitConstants = false;
 }
 
 /// Adopt all data from source structure
 void LCDDData::adoptData(LCDDData& source)   {
+  m_inhibitConstants = source.m_inhibitConstants;
   m_extensions = source.m_extensions;
   m_motherVolumes = source.m_motherVolumes;
   m_world = source.m_world;

@@ -3,6 +3,25 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2015/06/17 Markus Frank
+-----------------------
+  - Add possibility to block access to constants by name from LCDD.
+    Functionality enabled by a constant named "LCDD_InhibitConstants" with value "1", "True", "Yes".
+    Test: geoDisplay -compact file:../DD4hep.trunk/examples/ClientTests/compact/InhibitConstants.xml 
+
+  - Add LCDDHelper handle object to easily access the sensitive detector object of a detector
+    using either the subdetector name or the detector element (or one of its children).
+    See: DD4hep/LCDDHelper.h
+    Test: geoPluginRun -input file:../DD4hep.trunk/examples/CLICSiD/compact/compact.xml \
+                       -plugin CLICSiD_LCDDHelperTest  \
+            optional:  -<detector-name (default:SiVertexEndcap)>  [Note the '-'!!!]
+
+  - Check when adding new sub-detector detector elements if a given one already exists.
+    if yes: exception.
+    Test: geoDisplay -compact file:../DD4hep.trunk/examples/ClientTests/compact/DuplicateSysID.xml
+
+
  --------
 | v00-12 |  
  --------   

@@ -161,9 +161,8 @@ namespace DD4hep {
       virtual double constantAsDouble(const std::string& name) const;
 
       /// Retrieve a constant by it's name from the detector description
-      virtual Constant constant(const std::string& name) const {
-        return getRefChild(m_define, name);
-      }
+      virtual Constant constant(const std::string& name) const;
+
       /// Retrieve a limitset by it's name from the detector description
       virtual LimitSet limitSet(const std::string& name) const {
         return getRefChild(m_limits, name);
@@ -307,10 +306,8 @@ namespace DD4hep {
       }
 
       /// Add a new constant by named reference to the detector description
-      virtual LCDD& addConstant(const Ref_t& x) {
-        m_define.append(x, false);
-        __R;
-      }
+      virtual LCDD& addConstant(const Ref_t& x);
+
       /// Add a new limit set by named reference to the detector description
       virtual LCDD& addLimitSet(const Ref_t& x) {
         m_limits.append(x);

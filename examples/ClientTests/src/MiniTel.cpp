@@ -38,7 +38,6 @@ static Ref_t create_detector(LCDD &lcdd, xml_h e, SensitiveDetector sens)  {
   string det_type = x_det.typeStr();	//det_type is the type of the xml-detelement
   Assembly assembly (det_name);
   int detectors_id = x_det.id();
-
   string visualisation = x_det.visStr();
 
 
@@ -112,6 +111,8 @@ static Ref_t create_detector(LCDD &lcdd, xml_h e, SensitiveDetector sens)  {
     m_volume.setSensitiveDetector(sens);
   }
   sdet.setPlacement(pv);
+  // Support additional test if LCDD_InhibitConstants is set to TRUE
+  lcdd.constant<double>("world_side");
   return sdet;
 }
 DECLARE_DETELEMENT(MiniTelPixel,create_detector)
