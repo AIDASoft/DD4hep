@@ -45,9 +45,11 @@ namespace  {
       LCDDHelper h(&lcdd);
       const char* nam = argc>1 ? argv[1]+1 : "SiVertexEndcap";
       printSD(h,nam);
-      DetElement de = lcdd.detector(nam);
-      walkSD(h,de);
+      walkSD(h,lcdd.detector(nam));
     }
+    /// Default destructor
+    virtual ~LCDDHelperTest() {}
+
     void walkSD(LCDDHelper h, DetElement de)  const {
       printSD(h,de);
       for(DetElement::Children::const_iterator i=de.children().begin(); i!=de.children().end(); ++i)  {
@@ -68,8 +70,6 @@ namespace  {
 	       sd.ptr() ? sd.name() : "????");
 
     }
-    /// Default destructor
-    virtual ~LCDDHelperTest() {}
     /// Action routine to execute the test
     static long run(LCDD& lcdd,int argc,char** argv)   {
       LCDDHelperTest test(lcdd,argc,argv);
