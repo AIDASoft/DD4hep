@@ -47,6 +47,18 @@ Vector3D CartesianGridXYZ::position(const CellID& cID) const {
 	return _decoder->getValue();
 }
 
+std::vector<double> CartesianGridXYZ::cellDimensions(const CellID&) const {
+#ifdef DD4HEP_USE_CXX11
+  return {_gridSizeX, _gridSizeY, _gridSizeZ};
+#else
+  std::vector<double> cellDimensions(3,0.0);
+  cellDimensions[0] = _gridSizeX;
+  cellDimensions[1] = _gridSizeY;
+  cellDimensions[2] = _gridSizeZ;
+  return cellDimensions;
+#endif
+}
+
 REGISTER_SEGMENTATION(CartesianGridXYZ)
 
 } /* namespace DDSegmentation */

@@ -7,6 +7,11 @@ DD4hep  ----  Release Notes
 | v00-12 |  
  --------   
 
+A. Sailer
+-----
+  - DDSegmentation: Added function cellDimension which returns the dimension of any given cell
+
+
 S.Lu:
 -----
   - Added a switch for BirksLaw to Geant4StepHandler. 

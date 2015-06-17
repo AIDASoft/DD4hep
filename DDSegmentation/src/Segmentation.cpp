@@ -188,5 +188,11 @@ int Segmentation::positionToBin(double position, std::vector<double> const& cell
 
 }
 
+std::vector<double> Segmentation::cellDimensions(const CellID&) const {
+  std::stringstream errorMessage;
+  errorMessage << __func__ << " is not implemented for " << _type;
+  throw std::logic_error(errorMessage.str());
+}
+
 } /* namespace DDSegmentation */
 } /* namespace DD4hep */

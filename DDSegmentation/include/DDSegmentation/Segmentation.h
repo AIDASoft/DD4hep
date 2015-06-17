@@ -111,6 +111,13 @@ public:
 	virtual Parameters parameters() const;
 	/// Set all parameters from an existing set of parameters
 	virtual void setParameters(const Parameters& parameters);
+	/** \brief Returns a vector<double> of the cellDimensions of the given cell ID
+	    in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+
+	    \param cellID cellID of the cell for which parameters are returned
+	    \return vector<double> in natural order of dimensions, e.g., dx/dy/dz, or dr/r*dPhi
+	*/
+	virtual std::vector<double> cellDimensions(const CellID& cellID) const;
 
 protected:
 	/// Default constructor used by derived classes passing the encoding string
