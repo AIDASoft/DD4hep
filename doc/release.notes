@@ -4,6 +4,10 @@ DD4hep  ----  Release Notes
 =================================
 
 
+ --------
+| v00-12 |  
+ --------   
+
 2015/06/17 Markus Frank
 -----------------------
   - Add possibility to block access to constants by name from LCDD.
@@ -21,10 +25,6 @@ DD4hep  ----  Release Notes
     if yes: exception.
     Test: geoDisplay -compact file:../DD4hep.trunk/examples/ClientTests/compact/DuplicateSysID.xml
 
-
- --------
-| v00-12 |  
- --------   
 
 A. Sailer
 -----
