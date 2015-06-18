@@ -371,16 +371,20 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
 
   input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
         >> num_orphans_in >> num_particles_out >> weights_size;
-  if(!input)
+  if(!input) {
+    delete v;
     return 0;
+  }
   v->x *= info.pos_unit;
   v->y *= info.pos_unit;
   v->z *= info.pos_unit;
   weights.resize(weights_size);
   for (int i1 = 0; i1 < weights_size; ++i1) {
     input >> weights[i1];
-    if(!input)
+    if(!input) {
+      delete v;
       return 0;
+    }
   }
   info.vertices().insert(make_pair(id,v));
   //cout << "Add Vertex:" << id << endl;
