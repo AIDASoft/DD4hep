@@ -136,12 +136,13 @@ void Geant4InputAction::operator()(G4Event* event)   {
   vector<Particle*>         primaries;
   Geant4Event&              evt = context()->event();
   Geant4PrimaryEvent*       prim = evt.extension<Geant4PrimaryEvent>();
-  Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
 
   int result = readParticles(event->GetEventID(),primaries);
   if ( result != Geant4EventReader::EVENT_READER_OK )   {    // handle I/O error, but how?
     return;
   }
+
+  Geant4PrimaryInteraction* inter = new Geant4PrimaryInteraction();
   prim->add(m_mask, inter);
   // check if there is at least one particle
   if ( primaries.empty() ) return;
