@@ -8,6 +8,7 @@ DD4hep  ----  Release Notes
 | v00-12 |  
  --------   
 
+
 2015/06/17 Markus Frank
 -----------------------
   - Add possibility to block access to constants by name from LCDD.
