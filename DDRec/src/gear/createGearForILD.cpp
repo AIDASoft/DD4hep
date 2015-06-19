@@ -276,9 +276,9 @@ namespace DD4hep{
 	
 	Tube coilTube = Tube( coilDE.volume().solid() )  ;
 	
-	gearCOIL->setDoubleVal("Coil_cryostat_outer_radius" , coilTube->GetRmin() ) ;
-	gearCOIL->setDoubleVal("Coil_cryostat_inner_radius" , coilTube->GetRmax() ) ;
-	gearCOIL->setDoubleVal("Coil_cryostat_half_z"       , coilTube->GetDZ() ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_outer_radius" , coilTube->GetRmin()/ dd4hep::mm ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_inner_radius" , coilTube->GetRmax()/ dd4hep::mm ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_half_z"       , coilTube->GetDZ()/ dd4hep::mm ) ;
 	
 	coilDE.addExtension< GearHandle >( new GearHandle( gearCOIL, "CoilParameters" ) ) ;
       

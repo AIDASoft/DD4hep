@@ -240,7 +240,26 @@ namespace DD4hep{
       } 
 
       //============================================================================================
+      
+      try {
+	
+	DetElement coilDE = lcdd.detector("Solenoid") ;
+	
+	gear::GearParametersImpl* gearCOIL = new gear::GearParametersImpl();
+	
+	Tube coilTube = Tube( coilDE.volume().solid() )  ;
+	
+	gearCOIL->setDoubleVal("Coil_cryostat_outer_radius" , coilTube->GetRmin()/ dd4hep::mm ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_inner_radius" , coilTube->GetRmax()/ dd4hep::mm ) ;
+	gearCOIL->setDoubleVal("Coil_cryostat_half_z"       , coilTube->GetDZ()/ dd4hep::mm ) ;
+	
+	coilDE.addExtension< GearHandle >( new GearHandle( gearCOIL, "CoilParameters" ) ) ;
+	
+      } catch( std::runtime_error& e ){  
+	std::cerr << " >>>> " << e.what() << std::endl ;
+      } 
 
+      //============================================================================================
       try {
 
 	DetElement tubeDE = lcdd.detector("Tube") ;
@@ -289,13 +308,13 @@ namespace DD4hep{
       caloMap["HCalBarrel"] = "HcalBarrelParameters"  ; 
       caloMap["ECalBarrel"] = "EcalBarrelParameters" ;
       caloMap["ECalEndcap"] = "EcalEndcapParameters" ;
-//       caloMap["ECalPlug"]   = "EcalPlugParameters" ;
+      caloMap["ECalPlug"]   = "EcalPlugParameters" ;
       caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
       caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
-//       caloMap["YokePlug"]   = "YokePlugParameters" ;
+      caloMap["YokePlug"]   = "YokePlugParameters" ;
       caloMap["HCalBarrel"] = "HcalBarrelParameters" ;
       caloMap["HCalEndcap"] = "HcalEndcapParameters" ;
-//       caloMap["HCalRing"]   = "HcalRingParameters" ;
+      caloMap["HCalRing"]   = "HcalRingParameters" ;
       caloMap["LumiCal"]	    = "LcalParameters" ;
 //       caloMap["LHCal"]	    = "LHcalParameters" ;
       caloMap["BeamCal"]    = "BeamCalParameters" ;
