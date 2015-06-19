@@ -290,15 +290,15 @@ namespace DD4hep{
       caloMap["ECalBarrel"] = "EcalBarrelParameters" ;
       caloMap["ECalEndcap"] = "EcalEndcapParameters" ;
 //       caloMap["ECalPlug"]   = "EcalPlugParameters" ;
-//       caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
-//       caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
+      caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
+      caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
 //       caloMap["YokePlug"]   = "YokePlugParameters" ;
-//       caloMap["HCalBarrel"] = "HcalBarrelParameters" ;
+      caloMap["HCalBarrel"] = "HcalBarrelParameters" ;
       caloMap["HCalEndcap"] = "HcalEndcapParameters" ;
 //       caloMap["HCalRing"]   = "HcalRingParameters" ;
-//       caloMap["LCal"]	    = "LcalParameters" ;
+      caloMap["LumiCal"]	    = "LcalParameters" ;
 //       caloMap["LHCal"]	    = "LHcalParameters" ;
-//       caloMap["BeamCal"]    = "BeamCalParameters" ;
+      caloMap["BeamCal"]    = "BeamCalParameters" ;
       
       for(  std::map< std::string, std::string >::const_iterator it = caloMap.begin() ; it != caloMap.end() ; ++it ){
 
