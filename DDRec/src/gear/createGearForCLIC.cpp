@@ -287,8 +287,8 @@ namespace DD4hep{
 
       std::map< std::string, std::string > caloMap ;
       caloMap["HCalBarrel"] = "HcalBarrelParameters"  ; 
-//       caloMap["ECalBarrel"] = "EcalBarrelParameters" ;
-//       caloMap["ECalEndcap"] = "EcalEndcapParameters" ;
+      caloMap["ECalBarrel"] = "EcalBarrelParameters" ;
+      caloMap["ECalEndcap"] = "EcalEndcapParameters" ;
 //       caloMap["ECalPlug"]   = "EcalPlugParameters" ;
 //       caloMap["YokeBarrel"] = "YokeBarrelParameters" ;
 //       caloMap["YokeEndcap"] = "YokeEndcapParameters" ;
@@ -343,6 +343,7 @@ namespace DD4hep{
 
 	} catch( std::runtime_error& e ){  
 	  std::cerr << " >>>> " << e.what() << std::endl ;
+    
 	} 
 
       } // calo loop 

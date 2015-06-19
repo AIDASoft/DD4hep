@@ -3,6 +3,8 @@
 
 #include <bitset>
 
+#include "DD4hep/Detector.h"
+
 namespace DD4hep {
   namespace DDRec {
     
