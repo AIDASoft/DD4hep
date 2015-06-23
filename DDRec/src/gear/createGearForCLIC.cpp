@@ -111,8 +111,10 @@ namespace DD4hep{
 	
 	//      ZPlanarParametersImpl (int type, double shellInnerRadius, double shellOuterRadius, double shellHalfLength, double shellGap, double shellRadLength)
 	int sitType =  gear::ZPlanarParameters::CCD ;
+  
 	gear::ZPlanarParametersImpl* gearSIT = new gear::ZPlanarParametersImpl( sitType, sit->rInnerShell/dd4hep::mm,  sit->rOuterShell/dd4hep::mm,
 										sit->zHalfShell/dd4hep::mm , sit->gapShell/dd4hep::mm , 0.  ) ;
+                    
 	std::vector<int> n_sensors_per_ladder ;
 	
 	for(unsigned i=0,n=sit->layers.size() ; i<n; ++i){
@@ -188,53 +190,60 @@ namespace DD4hep{
 
       try {
 
-	DetElement ftdDE = lcdd.detector("FTD") ;
+	DetElement iteDE = lcdd.detector("InnerTrackerEndcap") ;
 	
-	ZDiskPetalsData* ftd = ftdDE.extension<ZDiskPetalsData>() ;
+	ZDiskPetalsData* iteData = iteDE.extension<ZDiskPetalsData>() ;
 	
-	gear::FTDParametersImpl* gearFTD = new gear::FTDParametersImpl();
+  gear::GearParametersImpl* gearFTD = new gear::GearParametersImpl();
+  
+  std::vector<double> thicknesses;
+  std::vector<double> innerRadii;
+  std::vector<double> outerRadii;
+  std::vector<double> zPositions;
+  
 	
-	for(unsigned i=0,n=ftd->layers.size() ; i<n; ++i){
-	  
-	  const DDRec::ZDiskPetalsData::LayerLayout& l = ftd->layers[i] ;
-	  
-	  
-	  bool isDoubleSided  = l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::DoubleSided ] ;
-	  
-	  // avoid 'undefined reference' at link time ( if built w/o optimization ):
-	  static const int PIXEL = gear::FTDParameters::PIXEL ;
-	  static const int STRIP = gear::FTDParameters::STRIP ;
-	  int  sensorType   = ( l.typeFlags[ DDRec::ZDiskPetalsStruct::SensorType::Pixel ] ? PIXEL : STRIP ) ;
-	  //			      gear::FTDParameters::PIXEL :  gear::FTDParameters::STRIP ) ;
-	  
-	  double zoffset = fabs( l.zOffsetSupport ) ;
-	  double signoffset =  l.zOffsetSupport > 0  ?  1. : -1 ;
-	  
-	  gearFTD->addLayer( l.petalNumber, l.sensorsPerPetal, 
-			     isDoubleSided, sensorType, 
-			     l.petalHalfAngle, l.phi0, l.alphaPetal, 
-			     l.zPosition/dd4hep::mm, zoffset/dd4hep::mm, signoffset,
-			     l.distanceSupport/dd4hep::mm, l.thicknessSupport/dd4hep::mm,
-			     l.widthInnerSupport/dd4hep::mm, l.widthOuterSupport/dd4hep::mm,
-			     l.lengthSupport/dd4hep::mm, 
-			     0.,
-			     l.distanceSensitive/dd4hep::mm, l.thicknessSensitive/dd4hep::mm,
-			     l.widthInnerSensitive/dd4hep::mm, l.widthOuterSensitive/dd4hep::mm,
-			     l.lengthSensitive/dd4hep::mm, 
-			     0. ) ;
-	  
-	  
-	  // FIXME set rad lengths to 0 -> need to get from DD4hep ....
+	for(unsigned i=0,n=iteData->layers.size() ; i<n; ++i){
+    
+    const DDRec::ZDiskPetalsData::LayerLayout& l = iteData->layers[i] ;
+    
+    thicknesses.push_back(l.thicknessSupport/ dd4hep::mm);
+    innerRadii.push_back( l.distanceSensitive/ dd4hep::mm);
+    outerRadii.push_back( (l.distanceSensitive + l.lengthSensitive)/ dd4hep::mm);
+    zPositions.push_back( l.zPosition/ dd4hep::mm);
+    
+
+
 	}
 	
-	gearFTD->setDoubleVal("strip_width_mm"  , ftd->widthStrip / dd4hep::mm ) ;
-	gearFTD->setDoubleVal("strip_length_mm" , ftd->lengthStrip/ dd4hep::mm ) ;
-	gearFTD->setDoubleVal("strip_pitch_mm"  , ftd->pitchStrip / dd4hep::mm ) ;
-	gearFTD->setDoubleVal("strip_angle_deg" , ftd->angleStrip / dd4hep::deg ) ;
 	
+	//Append OuterTracker
+	DetElement oteDE = lcdd.detector("OuterTrackerEndcap") ;
+  ZDiskPetalsData* oteData = oteDE.extension<ZDiskPetalsData>() ;
+   
+  
+  for(unsigned i=0,n=oteData->layers.size() ; i<n; ++i){
+    
+    const DDRec::ZDiskPetalsData::LayerLayout& l = oteData->layers[i] ;
+    
+    thicknesses.push_back(l.thicknessSupport/ dd4hep::mm);
+    innerRadii.push_back( l.distanceSensitive/ dd4hep::mm);
+    outerRadii.push_back( (l.distanceSensitive + l.lengthSensitive)/ dd4hep::mm);
+    zPositions.push_back( l.zPosition/ dd4hep::mm);
+    
+    
+    
+  }
 	
-	ftdDE.addExtension< GearHandle >( new GearHandle( gearFTD, "FTDParameters" ) ) ;
 
+	gearFTD->setDoubleVals("FTDDiskSupportThickness"  ,  thicknesses) ;
+  gearFTD->setDoubleVals("FTDInnerRadius" , innerRadii) ;
+  gearFTD->setDoubleVals("FTDOuterRadius"  , outerRadii ) ;
+  gearFTD->setDoubleVals("FTDZCoordinate" ,zPositions) ;
+  
+  //attach gear handle to inner tracker
+  iteDE.addExtension< GearHandle >( new GearHandle( gearFTD, "FTD" ) ) ;
+  
+  
       } catch( std::runtime_error& e ){  
 	std::cerr << " >>>> " << e.what() << std::endl ;
       } 
