@@ -13,9 +13,9 @@ export PATH=$PATH:@CMAKE_INSTALL_PREFIX@/bin
 
 if [ @USE_DYLD@ ]
 then
-    export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
+    export DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$DYLD_LIBRARY_PATH
 else
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:@CMAKE_INSTALL_PREFIX@/lib
+    export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
 fi
 
 
@@ -28,9 +28,9 @@ do
     if [ @USE_DYLD@ ]
     then
 	# echo "  ### 	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp} "
-	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp}
+	export DYLD_LIBRARY_PATH=${lp}:$DYLD_LIBRARY_PATH
     else
 	# echo "  ### 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp} "
-	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp}
+	export LD_LIBRARY_PATH=${lp}:$LD_LIBRARY_PATH
     fi
 done
