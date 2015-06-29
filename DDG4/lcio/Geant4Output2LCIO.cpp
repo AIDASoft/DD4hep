@@ -281,12 +281,10 @@ void Geant4Output2LCIO::saveCollection(OutputContext<G4Event>& /* ctxt */, G4VHi
   size_t nhits = collection->GetSize();
   std::string hc_nam = collection->GetName();
   print("+++ Saving LCIO collection %s with %d entries....",hc_nam.c_str(),int(nhits));
-  if ( nhits > 0 )   {
-    typedef pair<const Geant4Context*,G4VHitsCollection*> _Args;
-    typedef Geant4Conversion<lcio::LCCollectionVec,_Args> _C;
-    const _C& cnv = _C::converter(typeid(Geant4HitCollection));
-    lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
-    lcio::LCCollectionVec* col = cnv(_Args(context(),collection));
-    evt->addCollection(col,hc_nam);
-  }
+  typedef pair<const Geant4Context*,G4VHitsCollection*> _Args;
+  typedef Geant4Conversion<lcio::LCCollectionVec,_Args> _C;
+  const _C& cnv = _C::converter(typeid(Geant4HitCollection));
+  lcio::LCEventImpl* evt = context()->event().extension<lcio::LCEventImpl>();
+  lcio::LCCollectionVec* col = cnv(_Args(context(),collection));
+  evt->addCollection(col,hc_nam);
 }
