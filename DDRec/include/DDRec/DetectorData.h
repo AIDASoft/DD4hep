@@ -295,14 +295,19 @@ namespace DD4hep {
        */
       int inner_symmetry ;
 
-      /// inner azimuthal angle of the first module in barrel layout
+      /** Angle of the experimental hall floor with the inner face closest to it
+       *  inner_phi0=0 corresponds to a face parallel to the floor
+       */
       double  inner_phi0  ;
       
-      /// outer azimuthal angle of the first module in barrel layout
+      /** Angle of the experimental hall floor with the outer face closest to it
+       *  outer_phi0=0 corresponds to a face parallel to the floor
+       */      
       double  outer_phi0  ;
       
-      /// azimuthal angle of the first module in barrel layout
-      /// DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD
+      /** Azimuthal angle of the first module in barrel layout
+       *  DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD
+       */
       double  phi0  ;
       
       /// Gap between modules(eg. stave gap) in the phi-direction
