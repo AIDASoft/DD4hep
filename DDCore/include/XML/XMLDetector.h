@@ -43,6 +43,10 @@ namespace DD4hep {
       std::string materialStr() const;
       /// Check if component is sensitive
       bool isSensitive() const;
+      
+      /// Check if component is a radiator (absorber)
+      bool isRadiator() const;
+      
       /// Create a shape using the plugin mechanism from an XML element
       NamedObject* createShape() const;
     };

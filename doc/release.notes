@@ -3,7 +3,22 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015/07/02 Nikiforos Nikiforou
+------------------------------
 
+ - Added isRadiator() helper function in DDCore/XML/XMLDetector.h/cpp 
+   Mirroring functionality of isSensitive() and used in geometry drivers
+   e.g. to calculate total absorber thickness
+
+ - Extended LayeredCalorimeterStruct in DDRec/DetectorData.h to include 
+   additional parameters required by Pandora:
+   	      inner_phi0 (e.g. alignment for inner symmetry)
+	      outer_phi0 (e.g  aligment for outer symmetry)
+	      NOTE: phi0 still remains but is deprecated
+	      gap0 (e.g stave gap along r-phi)  
+	      gap1 (e.g middle stave gap along z)
+	      gap2 (reserved for future use)
+	      
  --------
 | v00-12 |  
  --------   

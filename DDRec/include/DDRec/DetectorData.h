@@ -295,8 +295,25 @@ namespace DD4hep {
        */
       int inner_symmetry ;
 
+      /// inner azimuthal angle of the first module in barrel layout
+      double  inner_phi0  ;
+      
+      /// outer azimuthal angle of the first module in barrel layout
+      double  outer_phi0  ;
+      
       /// azimuthal angle of the first module in barrel layout
+      /// DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD
       double  phi0  ;
+      
+      /// Gap between modules(eg. stave gap) in the phi-direction
+      double gap0;
+      
+      /// Gap between modules(eg. middle stave gap) in the z-direction
+      double gap1;
+      
+      /// Gap between modules(reserved for future use) e.g in the r-direction
+      double gap2;
+      
 
       struct Layer {
 	/// distance from Origin (or the z-axis)

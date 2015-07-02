@@ -26,6 +26,12 @@ bool Component::isSensitive() const {
   return val == 'T' || val == 'Y';
 }
 
+bool Component::isRadiator() const {
+  char val = m_element.hasAttr(_U(radiator)) ? m_element.attr < string > (_U(radiator))[0] : 'f';
+  val = ::toupper(val);
+  return val == 'T' || val == 'Y';
+}
+
 DD4hep::NamedObject* Component::createShape() const {
   using namespace DD4hep::Geometry;
   Dimension child_dim(m_element);
