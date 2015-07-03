@@ -3,21 +3,44 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-13 |  
+ --------   
+
+
+2015-07-03 F.Gaede
+------------------
+  - updated doxygen for detector DDRec::DetectorData structs and usage in convertToGear
+
+
 2015/07/02 Nikiforos Nikiforou
 ------------------------------
 
- - Added isRadiator() helper function in DDCore/XML/XMLDetector.h/cpp 
-   Mirroring functionality of isSensitive() and used in geometry drivers
-   e.g. to calculate total absorber thickness
+    - Added isRadiator() helper function in DDCore/XML/XMLDetector.h/cpp 
+      Mirroring functionality of isSensitive() and used in geometry drivers
+      e.g. to calculate total absorber thickness
+   
+    - Extended LayeredCalorimeterStruct in DDRec/DetectorData.h to include 
+      additional parameters required by Pandora:
+      	      inner_phi0 (e.g. alignment for inner symmetry)
+   	      outer_phi0 (e.g  aligment for outer symmetry)
+   	      NOTE: phi0 still remains but is deprecated
+   	      gap0 (e.g stave gap along r-phi)  
+   	      gap1 (e.g middle stave gap along z)
+   	      gap2 (reserved for future use)
+   
 
- - Extended LayeredCalorimeterStruct in DDRec/DetectorData.h to include 
-   additional parameters required by Pandora:
-   	      inner_phi0 (e.g. alignment for inner symmetry)
-	      outer_phi0 (e.g  aligment for outer symmetry)
-	      NOTE: phi0 still remains but is deprecated
-	      gap0 (e.g stave gap along r-phi)  
-	      gap1 (e.g middle stave gap along z)
-	      gap2 (reserved for future use)
+
+ 2015-06-29 A.Sailer
+---------------------
+  - always store lcio collections, even if they are empty in Geant4Output2LCIO (DDG4/ddsim)
+
+
+2015-06-29 F.Gaede
+------------------
+  - changed env scripts to prepend to library pathes (DD4hep and dependant packages)
+     -> using a newer lcgeo version than the one provided in ilcsoft can simply
+        be done w/ source ./bin/thislcgeo.sh 
 	      
  --------
 | v00-12 |  
