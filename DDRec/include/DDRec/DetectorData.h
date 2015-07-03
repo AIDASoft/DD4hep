@@ -28,7 +28,7 @@ namespace DD4hep {
 
     /** Simple data structure with key parameters for
      *  reconstruction of a cylindrical TPC with a pad plane that
-     *  is symmetrically populated with one size pads.
+     *  is symmetrically populated with fixed sized pads.
      *  ( Can be used to instantiate a gear::TPCParameter object
      *    with a FixedPadSizeDiskLayout )
      * 
@@ -37,17 +37,29 @@ namespace DD4hep {
      * @version $Id: $
      */
     struct FixedPadSizeTPCStruct{
+      /// half length of the TPC 
       double zHalf ;
+      /// inner radius of the TPC
       double rMin ;
+      /// outer radius of the TPC
       double rMax ;
+      /// driftLength in z (half length of active volume)
       double driftLength ;
+      /// inner r of active volume
       double rMinReadout ;
+      /// outer r of active volume
       double rMaxReadout ;
+      /// thickness of the inner wall (field cage)
       double innerWallThickness ;
+      /// thickness of the outer wall (field cage)
       double outerWallThickness ;
+      /// pad height of readout rows
       double padHeight ;
+      /// fixed pad width ( at middle of row)
       double padWidth ;
+      /// maximum number of rows
       double maxRow ;
+      /// gap between pads
       double padGap ;
     };
     typedef StructExtension<FixedPadSizeTPCStruct> FixedPadSizeTPCData ;
@@ -259,7 +271,8 @@ namespace DD4hep {
 
 
     /** Simple data structure defining a layered calorimeter layout for
-     *  reconstruction. 
+     *  reconstruction. The implicit assumption is that the shape
+     *  of the calorimter in the x-y-plane is a regular polygon.
      * 
      * @author F.Gaede, CERN/DESY
      * @date Nov, 05 2014
@@ -279,31 +292,30 @@ namespace DD4hep {
       /// extent of the calorimeter in the r-z-plane [ rmin, rmax, zmin, zmax ] in mm.
       double extent[4] ;
 
-      /** the order of the rotational symmetry at the outside:
-       *  8 for an octagonal barrel calorimeter
-       *  2 for an endcap calorimeter
-       *  1 for a standalone prototype
-       *  0 for an idealized cylindrical calorimeter.
+      /** the order of the rotational symmetry at the outside, e.g.
+       *  8 for an octagonal barrel calorimeter.
        */
       int outer_symmetry ;
 
-      /** the order of the rotational symmetry at the inside:
-       *  8 for an octagonal barrel calorimeter
-       *  2 for an endcap calorimeter
-       *  1 for a standalone prototype
-       *  0 for an idealized cylindrical calorimeter.
+      /** the order of the rotational symmetry at the inside, e.g.
+       *  4 for an endcap with a rectangular cout out at the inside.
        */
       int inner_symmetry ;
 
-      /** Angle of the experimental hall floor with the inner face closest to it
-       *  inner_phi0=0 corresponds to a face parallel to the floor
+      /** Angle between the normal to the first outer face of the 
+       *  calorimeter and the x-axis, where the first face is defined
+       *  to be the one with the smallest positve angle.
+       *  Example:
+       *  outer_phi0=0 corresponds to the first face beeing vertical and 
+       *  thus the bottom face being parallel to the floor for a 
+       *  symmetry that is a multiple of 4.
+       */      
+      double  outer_phi0  ;
+
+      /** Same as outer_phi for the first inner face.
        */
       double  inner_phi0  ;
       
-      /** Angle of the experimental hall floor with the outer face closest to it
-       *  outer_phi0=0 corresponds to a face parallel to the floor
-       */      
-      double  outer_phi0  ;
       
       /** Azimuthal angle of the first module in barrel layout
        *  DEPRECATED! PLEASE POPULATE INNER/OUTER PHI0 INSTEAD

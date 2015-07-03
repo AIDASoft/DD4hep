@@ -29,7 +29,7 @@ int main(int argc, char** argv ){
   if( argc < 3 ) {
     std::cout << " usage: convertToGear plugin compact.xml [gear_file.xml]" << std::endl 
 	      << "  plugin: name of a plugin with a signature \"long int (LCDD*, int, char**)\" \n " 
-	      << "  or \"default\" " << std::endl ; 
+	      << "  e.g. GearForILD (same as 'default'), GearForCLIC, ..." << std::endl ; 
     
     exit(1) ;
   }
