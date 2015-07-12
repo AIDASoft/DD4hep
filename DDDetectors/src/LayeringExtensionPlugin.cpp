@@ -1,11 +1,21 @@
-// $Id: SiTrackerBarrel_geo.cpp 1360 2014-10-27 16:32:06Z Nikiforos.Nikiforou@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector plugin
+// 
+//==========================================================================
+
 #include <map>
 #include "DDRec/Extensions/LayeringExtensionImpl.h"
 using namespace DD4hep::DDRec;
@@ -21,11 +31,11 @@ namespace  {
       LayeringExtensionImpl* e = new LayeringExtensionImpl();
       det.addExtension<LayeringExtension>(e);
       for(std::map<int,DetElement>::const_iterator i=layers.begin(); i!=layers.end();++i)   {
-	DetElement de = (*i).second;
-	e->setLayer(de.id(), de, Position(0,0,1));
-	std::cout << " Add layer:" << de.name() 
-		  << " ID: " << de.id() 
-		  << " Parent:" << de.parent().name() << std::endl;
+        DetElement de = (*i).second;
+        e->setLayer(de.id(), de, Position(0,0,1));
+        std::cout << " Add layer:" << de.name() 
+                  << " ID: " << de.id() 
+                  << " Parent:" << de.parent().name() << std::endl;
       }
     }
   };

@@ -1,11 +1,20 @@
-// $Id: SiTrackerBarrel_geo.cpp 1360 2014-10-27 16:32:06Z Nikiforos.Nikiforou@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector constructor
+// 
+//==========================================================================
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/Printout.h"
 
@@ -67,7 +76,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       if ( x_comp.isSensitive() ) {
         pv.addPhysVolID(_U(sensor),sensor_number++);
         c_vol.setSensitiveDetector(sens);
-	sensitives[m_nam].push_back(pv);
+        sensitives[m_nam].push_back(pv);
       }
     }
   }
@@ -112,8 +121,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
       // Loop over the number of modules in z.
       for (int j = 0; j < nz; j++)          {
-	string module_name = _toString(module,"module%d");
-	DetElement mod_elt(lay_elt,module_name,module);
+        string module_name = _toString(module,"module%d");
+        DetElement mod_elt(lay_elt,module_name,module);
         // Module PhysicalVolume.
         //         Transform3D tr(RotationZYX(0,-((M_PI/2)-phic-phi_tilt),M_PI/2),Position(x,y,module_z));
         //NOTE (Nikiforos, 26/08 Rotations needed to be fixed so that component1 (silicon) is on the outside
@@ -121,15 +130,15 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 
         pv = lay_vol.placeVolume(m_env,tr);
         pv.addPhysVolID("module", module);
-	mod_elt.setPlacement(pv);
-	for(size_t ic=0; ic<sensVols.size(); ++ic)  {
-	  PlacedVolume sens_pv = sensVols[ic];
-	  DetElement comp_elt(mod_elt,sens_pv.volume().name(),module);
-	  comp_elt.setPlacement(sens_pv);
-	}
+        mod_elt.setPlacement(pv);
+        for(size_t ic=0; ic<sensVols.size(); ++ic)  {
+          PlacedVolume sens_pv = sensVols[ic];
+          DetElement comp_elt(mod_elt,sens_pv.volume().name(),module);
+          comp_elt.setPlacement(sens_pv);
+        }
 
-	/// Increase counters etc.
-	module++;
+        /// Increase counters etc.
+        module++;
         // Adjust the x and y coordinates of the module.
         x += dx;
         y += dy;

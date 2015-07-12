@@ -1,11 +1,20 @@
-// $Id: ForwardDetector_geo.cpp 1306 2014-08-22 12:29:38Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector constructor
+// 
+//==========================================================================
 #include "XML/Layering.h"
 #include "DD4hep/DetFactoryHelper.h"
 
@@ -103,45 +112,45 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double slicePosZ = -layerThickness / 2;
       double sliceDisplZ = 0;
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l)  {
-	xml_comp_t x_slice = l;
-	string slice_nam = _toString(sliceCount,"slice%d");
-	/** Get slice parameters. */
-	double sliceThickness = x_slice.thickness();
-	Material slice_mat = lcdd.material(x_slice.materialStr());
+        xml_comp_t x_slice = l;
+        string slice_nam = _toString(sliceCount,"slice%d");
+        /** Get slice parameters. */
+        double sliceThickness = x_slice.thickness();
+        Material slice_mat = lcdd.material(x_slice.materialStr());
 
-	// Go to mid of this slice.
-	sliceDisplZ += sliceThickness / 2;
-	slicePosZ   += sliceThickness / 2;
+        // Go to mid of this slice.
+        sliceDisplZ += sliceThickness / 2;
+        slicePosZ   += sliceThickness / 2;
 
-	// Slice's basic tube.
-	Tube sliceTube(rmin,rmax,sliceThickness);
-	DetElement slice(layer,slice_nam,sdet.id());
-	double sliceGlobalZ = zinner + (layerDisplZ - layerThickness / 2) + sliceDisplZ;
-	double slicePosX    = std::tan(xangleHalf) * sliceGlobalZ;
+        // Slice's basic tube.
+        Tube sliceTube(rmin,rmax,sliceThickness);
+        DetElement slice(layer,slice_nam,sdet.id());
+        double sliceGlobalZ = zinner + (layerDisplZ - layerThickness / 2) + sliceDisplZ;
+        double slicePosX    = std::tan(xangleHalf) * sliceGlobalZ;
 
-	// First slice subtraction solid.
-	SubtractionSolid sliceSubtraction1(sliceTube,beamInTube,Transform3D(beamInRot,Position(slicePosX,0,0)));
-	// Second slice subtraction solid.
-	SubtractionSolid sliceSubtraction2(sliceSubtraction1,beamOutTube,Transform3D(beamOutRot,Position(-slicePosX,0,0))); 
-	// Slice LV.
-	Volume sliceVol(det_name+"_"+layer_nam+"_"+slice_nam, sliceSubtraction2, slice_mat);
+        // First slice subtraction solid.
+        SubtractionSolid sliceSubtraction1(sliceTube,beamInTube,Transform3D(beamInRot,Position(slicePosX,0,0)));
+        // Second slice subtraction solid.
+        SubtractionSolid sliceSubtraction2(sliceSubtraction1,beamOutTube,Transform3D(beamOutRot,Position(-slicePosX,0,0))); 
+        // Slice LV.
+        Volume sliceVol(det_name+"_"+layer_nam+"_"+slice_nam, sliceSubtraction2, slice_mat);
 
-	if ( x_slice.isSensitive() ) {
-	  sens.setType("calorimeter");
-	  sliceVol.setSensitiveDetector(sens);
-	}
-	// Set attributes of slice
-	slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
+        if ( x_slice.isSensitive() ) {
+          sens.setType("calorimeter");
+          sliceVol.setSensitiveDetector(sens);
+        }
+        // Set attributes of slice
+        slice.setAttributes(lcdd, sliceVol, x_slice.regionStr(), x_slice.limitsStr(), x_slice.visStr());
 
-	// Place volume in layer
-	PlacedVolume pv = layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ));
-	pv.addPhysVolID("slice",sliceCount);
-	slice.setPlacement(pv);
+        // Place volume in layer
+        PlacedVolume pv = layerVol.placeVolume(sliceVol,Position(0,0,slicePosZ));
+        pv.addPhysVolID("slice",sliceCount);
+        slice.setPlacement(pv);
 
-	// Start of next slice.
-	sliceDisplZ += sliceThickness / 2;
-	slicePosZ   += sliceThickness / 2;
-	++sliceCount;
+        // Start of next slice.
+        sliceDisplZ += sliceThickness / 2;
+        slicePosZ   += sliceThickness / 2;
+        ++sliceCount;
       }
       // Set attributes of slice
       layer.setAttributes(lcdd, layerVol, x_layer.regionStr(), x_layer.limitsStr(), x_layer.visStr());

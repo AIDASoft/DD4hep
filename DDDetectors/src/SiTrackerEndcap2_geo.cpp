@@ -1,12 +1,20 @@
-// $Id: SiTrackerEndcap2_geo.cpp 1306 2014-08-22 12:29:38Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector constructor
+// 
+//==========================================================================
 #include "DD4hep/DetFactoryHelper.h"
 #include <map>
 
@@ -60,11 +68,11 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       c_vol.setVisAttributes(lcdd.visAttributes(c.visStr()));
       pv = m_volume.placeVolume(c_vol,Position(0,posY+c_thick/2,0));
       if ( c.isSensitive() ) {
-	sdet.check(n_sensor > 2,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");
-	pv.addPhysVolID("sensor",n_sensor);
-	c_vol.setSensitiveDetector(sens);
-	sensitives[m_nam].push_back(pv);
-	++n_sensor;
+        sdet.check(n_sensor > 2,"SiTrackerEndcap2::fromCompact: "+c_name+" Max of 2 modules allowed!");
+        pv.addPhysVolID("sensor",n_sensor);
+        c_vol.setSensitiveDetector(sens);
+        sensitives[m_nam].push_back(pv);
+        ++n_sensor;
       }
       posY += c_thick;
     }
@@ -89,33 +97,33 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Placements& sensVols = sensitives[m_nam];
 
       for(int k=0; k<nmodules; ++k) {
-	string m_base = _toString(l_id,"layer%d") + _toString(mod_num,"_module%d");
-	double x = -r*std::cos(phi);
-	double y = -r*std::sin(phi);
-	DetElement module(sdet,m_base+"_pos",det_id);
-	pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart+dz)));
-	pv.addPhysVolID("barrel",1).addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
-	module.setPlacement(pv);
-	for(size_t ic=0; ic<sensVols.size(); ++ic)  {
-	  PlacedVolume sens_pv = sensVols[ic];
-	  DetElement comp_elt(module,sens_pv.volume().name(),mod_num);
-	  comp_elt.setPlacement(sens_pv);
-	}
+        string m_base = _toString(l_id,"layer%d") + _toString(mod_num,"_module%d");
+        double x = -r*std::cos(phi);
+        double y = -r*std::sin(phi);
+        DetElement module(sdet,m_base+"_pos",det_id);
+        pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(0,-M_PI/2-phi,-M_PI/2),Position(x,y,zstart+dz)));
+        pv.addPhysVolID("barrel",1).addPhysVolID("layer", l_id).addPhysVolID("module",mod_num);
+        module.setPlacement(pv);
+        for(size_t ic=0; ic<sensVols.size(); ++ic)  {
+          PlacedVolume sens_pv = sensVols[ic];
+          DetElement comp_elt(module,sens_pv.volume().name(),mod_num);
+          comp_elt.setPlacement(sens_pv);
+        }
 
-	if ( reflect ) {
-	  pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(M_PI,-M_PI/2-phi,-M_PI/2),Position(x,y,-zstart-dz)));
-	  pv.addPhysVolID("barrel",2).addPhysVolID("layer",l_id).addPhysVolID("module",mod_num);
-	  DetElement r_module(sdet,m_base+"_neg",det_id);
-	  r_module.setPlacement(pv);
-	  for(size_t ic=0; ic<sensVols.size(); ++ic)  {
-	    PlacedVolume sens_pv = sensVols[ic];
-	    DetElement comp_elt(r_module,sens_pv.volume().name(),mod_num);
-	    comp_elt.setPlacement(sens_pv);
-	  }
-	}
-	dz   = -dz;
-	phi += iphi;
-	++mod_num;
+        if ( reflect ) {
+          pv = assembly.placeVolume(m_vol,Transform3D(RotationZYX(M_PI,-M_PI/2-phi,-M_PI/2),Position(x,y,-zstart-dz)));
+          pv.addPhysVolID("barrel",2).addPhysVolID("layer",l_id).addPhysVolID("module",mod_num);
+          DetElement r_module(sdet,m_base+"_neg",det_id);
+          r_module.setPlacement(pv);
+          for(size_t ic=0; ic<sensVols.size(); ++ic)  {
+            PlacedVolume sens_pv = sensVols[ic];
+            DetElement comp_elt(r_module,sens_pv.volume().name(),mod_num);
+            comp_elt.setPlacement(sens_pv);
+          }
+        }
+        dz   = -dz;
+        phi += iphi;
+        ++mod_num;
       }
     }
   }

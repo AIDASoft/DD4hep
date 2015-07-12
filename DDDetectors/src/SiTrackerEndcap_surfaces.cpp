@@ -1,11 +1,20 @@
-// $Id: $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector constructor
+// 
+//==========================================================================
 // Framework include files
 #define  DD4HEP_USE_SURFACEINSTALL_HELPER  DD4hep_SiTrackerEndcapSurfacePlugin
 #include "DD4hep/SurfaceInstaller.h"
@@ -31,7 +40,7 @@ void Installer<UserData>::install(DetElement component, PlacedVolume pv)   {
       Vector3D u(0.,0.,-1.), v(-1.,0.,0.), n(0.,-1.,0.), o(0.,0.,0.);
 
       VolPlane surf(comp_vol,Type(Type::Sensitive,Type::Measurement1D),
-		    inner_thickness, outer_thickness, u, v, n, o);
+                    inner_thickness, outer_thickness, u, v, n, o);
       addSurface(component,surf);
     }
   }

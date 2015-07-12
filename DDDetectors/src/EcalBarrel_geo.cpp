@@ -1,14 +1,22 @@
-// $Id: EcalBarrel_geo.cpp 1306 2014-08-22 12:29:38Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector constructor
+// 
+//==========================================================================
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/Layering.h"
-#include "TGeoTrd2.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -53,10 +61,10 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
 		
   // Create the trapezoid for the stave.
   Trapezoid trd(trd_x1, // Outer side, i.e. the "short" X side.
-		trd_x2, // Inner side, i.e. the "long"  X side.
-		trd_y1, // Corresponds to subdetector (or module) Z.
-		trd_y2, //
-		trd_z); // Thickness, in Y for top stave, when rotated.
+                trd_x2, // Inner side, i.e. the "long"  X side.
+                trd_y1, // Corresponds to subdetector (or module) Z.
+                trd_y2, //
+                trd_z); // Thickness, in Y for top stave, when rotated.
 
   Volume mod_vol("stave",trd,air);
 
@@ -78,30 +86,30 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       int repeat = x_layer.repeat();
       // Loop over number of repeats for this layer.
       for (int j=0; j<repeat; j++)    {
-	string l_name = _toString(l_num,"layer%d");
-	double l_thickness = layering.layer(l_num-1)->thickness();  // Layer's thickness.
-	double xcut = (l_thickness / tan_beta);                     // X dimension for this layer.
-	l_dim_x -= xcut/2;
+        string l_name = _toString(l_num,"layer%d");
+        double l_thickness = layering.layer(l_num-1)->thickness();  // Layer's thickness.
+        double xcut = (l_thickness / tan_beta);                     // X dimension for this layer.
+        l_dim_x -= xcut/2;
 
-	Position   l_pos(0,0,l_pos_z+l_thickness/2);      // Position of the layer.
-	Box        l_box(l_dim_x*2-tolerance,stave_z*2-tolerance,l_thickness-tolerance);
-	Volume     l_vol(l_name,l_box,air);
-	DetElement layer(stave_det, l_name, det_id);
+        Position   l_pos(0,0,l_pos_z+l_thickness/2);      // Position of the layer.
+        Box        l_box(l_dim_x*2-tolerance,stave_z*2-tolerance,l_thickness-tolerance);
+        Volume     l_vol(l_name,l_box,air);
+        DetElement layer(stave_det, l_name, det_id);
 
-	// Loop over the sublayers or slices for this layer.
-	int s_num = 1;
-	double s_pos_z = -(l_thickness / 2);
-	for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
-	  xml_comp_t x_slice = si;
-	  string     s_name  = _toString(s_num,"slice%d");
-	  double     s_thick = x_slice.thickness();
-	  Box        s_box(l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
-	  Volume     s_vol(s_name,s_box,lcdd.material(x_slice.materialStr()));
+        // Loop over the sublayers or slices for this layer.
+        int s_num = 1;
+        double s_pos_z = -(l_thickness / 2);
+        for(xml_coll_t si(x_layer,_U(slice)); si; ++si)  {
+          xml_comp_t x_slice = si;
+          string     s_name  = _toString(s_num,"slice%d");
+          double     s_thick = x_slice.thickness();
+          Box        s_box(l_dim_x*2-tolerance,stave_z*2-tolerance,s_thick-tolerance);
+          Volume     s_vol(s_name,s_box,lcdd.material(x_slice.materialStr()));
           DetElement slice(layer,s_name,det_id);
 
           if ( x_slice.isSensitive() ) {
-	    s_vol.setSensitiveDetector(sens);
-	  }
+            s_vol.setSensitiveDetector(sens);
+          }
           slice.setAttributes(lcdd,s_vol,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
 
           // Slice placement.

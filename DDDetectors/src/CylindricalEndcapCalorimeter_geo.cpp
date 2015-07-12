@@ -1,11 +1,20 @@
-// $Id: CylindricalEndcapCalorimeter_geo.cpp 1306 2014-08-22 12:29:38Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+//
+// Specialized generic detector constructor
+// 
+//==========================================================================
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/Layering.h"
 
@@ -41,20 +50,20 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Volume     layer_vol(layer_name,Tube(rmin,rmax,layerWidth),air);
 
       for(xml_coll_t l(x_layer,_U(slice)); l; ++l, ++m)  {
-	xml_comp_t x_slice = l;
-	double     w = x_slice.thickness();
-	string     slice_name = layer_name + _toString(m+1,"slice%d");
-	Material   slice_mat  = lcdd.material(x_slice.materialStr());
-	Volume     slice_vol (slice_name,Tube(rmin,rmax,w),slice_mat);
+        xml_comp_t x_slice = l;
+        double     w = x_slice.thickness();
+        string     slice_name = layer_name + _toString(m+1,"slice%d");
+        Material   slice_mat  = lcdd.material(x_slice.materialStr());
+        Volume     slice_vol (slice_name,Tube(rmin,rmax,w),slice_mat);
 
-	if ( x_slice.isSensitive() )  {
-	  sens.setType("calorimeter");
-	  slice_vol.setSensitiveDetector(sens);
-	}
-	slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
-	pv = layer_vol.placeVolume(slice_vol,Position(0,0,z-zlayer-layerWidth/2+w/2));
-	pv.addPhysVolID("slice",m+1);
-	z += w;
+        if ( x_slice.isSensitive() )  {
+          sens.setType("calorimeter");
+          slice_vol.setSensitiveDetector(sens);
+        }
+        slice_vol.setAttributes(lcdd,x_slice.regionStr(),x_slice.limitsStr(),x_slice.visStr());
+        pv = layer_vol.placeVolume(slice_vol,Position(0,0,z-zlayer-layerWidth/2+w/2));
+        pv.addPhysVolID("slice",m+1);
+        z += w;
       }
       layer_vol.setVisAttributes(lcdd,x_layer.visStr());
 
