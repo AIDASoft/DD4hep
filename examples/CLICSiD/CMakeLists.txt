@@ -35,8 +35,8 @@ set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake )
 include( DD4hep )
 
 #find_package( ROOT REQUIRED )
-find_package( ROOT REQUIRED COMPONENTS Geom Reflex)
-set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
+find_package( ROOT REQUIRED COMPONENTS Geom)
+set( ROOT_COMPONENT_LIBRARIES Geom)
 
 #-------------------------------------------------------------
 # add additional packages here

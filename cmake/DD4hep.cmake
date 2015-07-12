@@ -74,7 +74,11 @@ function(dd4hep_generate_rootmap_notapple library)
   endif()
 
   find_package(ROOT QUIET)
+if(DD4HEP_NO_REFLEX)
+  set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
+else()
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
+endif()
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
 
