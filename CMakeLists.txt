@@ -101,11 +101,16 @@ ENDIF()
 
 #---Packages------------------------------------------------------------------------
 
+
+
 ##------ don't allow to use a pre-built DDSegmentation  ----------------------------
 #find_package( DDSegmentation QUIET )
 #if( NOT DDSegmentation_FOUND ) 
 #  add_subdirectory(DDSegmentation)
 #endif()
+if(DD4HEP_NO_REFLEX)
+  add_subdirectory(GaudiPluginService)
+endif()
 
 add_subdirectory(DDSegmentation)
 add_subdirectory(DDCore)

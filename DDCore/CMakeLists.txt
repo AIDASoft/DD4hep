@@ -16,7 +16,7 @@ project(DDCore)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
   ${DDSegmentation_INCLUDE_DIRS} 
-  ${DDPluginManager_INCLUDE_DIRS})
+  ${GaudiPluginService_INCLUDE_DIRS})
 
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
 file(GLOB plugin_sources src/plugins/*.cpp)
@@ -49,7 +49,7 @@ endif()
 
 add_library(DDCore SHARED ${sources} ${parser_sources} )
 
-target_link_libraries(DDCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDPluginManager_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
+target_link_libraries(DDCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${GaudiPluginService_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
 
 ## generates rootmap and installs the library
 add_dd4hep_plugin(DDCorePlugins SHARED ${plugin_sources})

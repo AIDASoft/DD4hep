@@ -47,6 +47,13 @@ if(ROOT_CONFIG_EXECUTABLE)
 endif()
 
 set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lGenVector)     
+#
+#  No Relex library present for ROOT 6
+#
+if(NOT DD4HEP_NO_REFLEX)
+  set(ROOT_LIBRARIES  ${ROOT_LIBRARIES} -lReflex)
+endif()
+
 set(ROOT_EVE_LIBRARIES ${ROOT_EVE_LIBRARIES} )     
 
 # handle the QUIETLY and REQUIRED arguments and set ROOT_FOUND to TRUE if
