@@ -12,6 +12,7 @@
 //
 //==========================================================================
 
+#ifndef DD4HEP_DDG4_GEANT4SETUP_H
 #define DD4HEP_DDG4_GEANT4SETUP_H
 
 // Framework include files
