@@ -2,7 +2,7 @@
  *
  *  @date: Sep 03, 2014
  *  @author: F.Gaede CERN/Desy
- *  @version: $Id$
+ *  @version: $Id: $
  *     direkt copy of CartesianGridXY
  *     by Christian Grefe, CERN
  */

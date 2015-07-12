@@ -3,7 +3,7 @@
 #define DD4HEP_DDG4_GEANT4ACTION_H
 
 // Framework include files
-// $Id$
+// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------

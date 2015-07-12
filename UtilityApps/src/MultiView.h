@@ -1,4 +1,4 @@
-// $Id$
+// $Id: $
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -35,7 +35,7 @@
  * Should be used in compiled mode.
  * 
  * @author F.Gaede, DESY (modified original version from Matevz Tadel)
- * @version "$Id:$"
+ * @version "$Id: $"
  */
 
 class MultiView {
