@@ -1,10 +1,17 @@
-// $Id: Geant4Data.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Define the ROOT dictionaries for all data classes to be saved 
-//  which are created by the DDG4 examples.
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//====================================================================
+//
+// Define the ROOT dictionaries for all data classes to be saved 
+// which are created by the DDG4 examples.
 //
 //  Author     : M.Frank
 //
@@ -13,25 +20,6 @@
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/DDG4Dict.h"
 
-// CINT configuration
-#if defined(__MAKECINT__)
-#pragma link C++ namespace DD4hep::DDSegmentation;
-
-/// Geant4 Vertex dictionaries
-#pragma link C++ class DD4hep::Simulation::VertexExtension+;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::VertexExtension>+;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::PrimaryExtension>+;
-#pragma link C++ class DD4hep::Simulation::Geant4Vertex+;
-#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Vertex*>+;
-#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Vertex*>+;
-
-#pragma link C++ class DD4hep::Simulation::Geant4ParticleMap+;
-#pragma link C++ class DD4hep::Simulation::PrimaryExtension+;
-#pragma link C++ class DD4hep::Simulation::Geant4PrimaryInteraction+;
-#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4PrimaryInteraction*>+;
-#pragma link C++ class DD4hep::Simulation::Geant4PrimaryEvent+;
-
-#endif
 
 using namespace std;
 using namespace DD4hep;
@@ -191,8 +179,27 @@ namespace DD4hep {
 typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 
 #include "DD4hep/objects/DetectorInterna.h"
-// CINT configuration for DDG4
+
+// CINT configuration
 #if defined(__MAKECINT__)
+#pragma link C++ namespace DDSegmentation;
+
+/// Geant4 Vertex dictionaries
+#pragma link C++ class Simulation::VertexExtension+;
+#pragma link C++ class Simulation::Geant4Vertex+;
+#pragma link C++ class std::vector<Simulation::Geant4Vertex*>+;
+#pragma link C++ class std::map<int,Simulation::Geant4Vertex*>+;
+
+#pragma link C++ class Simulation::Geant4ParticleMap+;
+#pragma link C++ class Simulation::PrimaryExtension+;
+#pragma link C++ class Simulation::Geant4PrimaryInteraction+;
+#pragma link C++ class std::map<int,Simulation::Geant4PrimaryInteraction*>+;
+#pragma link C++ class Simulation::Geant4PrimaryEvent+;
+
+#pragma link C++ class PropertyResult;
+#pragma link C++ class Geant4InputAction::Particles;
+
+#if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 namespace {
   struct bla {
     dd4hep_ptr<Geant4InputAction::Particles>  __m1;
@@ -200,10 +207,11 @@ namespace {
     dd4hep_ptr<DataExtension>  __m3;
   };
 }
-#pragma link C++ class PropertyResult;
-#pragma link C++ class Geant4InputAction::Particles;
+#pragma link C++ class dd4hep_ptr<Simulation::VertexExtension>+;
+#pragma link C++ class dd4hep_ptr<Simulation::PrimaryExtension>+;
 #pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>;
 #pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>::base_t;
+#endif
 
 #pragma link C++ class ActionHandle;
 #pragma link C++ class FilterHandle;

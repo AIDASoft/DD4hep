@@ -1,11 +1,16 @@
-// $Id: TubeSegment_geo.cpp 633 2013-06-21 13:50:50Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -53,21 +58,21 @@ namespace  {
     void walkSD(LCDDHelper h, DetElement de)  const {
       printSD(h,de);
       for(DetElement::Children::const_iterator i=de.children().begin(); i!=de.children().end(); ++i)  {
-	DetElement child = (*i).second;
-	printSD(h,child);
-	if ( child.children().size() > 0 ) walkSD(h,child);
+        DetElement child = (*i).second;
+        printSD(h,child);
+        if ( child.children().size() > 0 ) walkSD(h,child);
       }
     }
     void printSD(LCDDHelper h, DetElement de)  const {
       SensitiveDetector sd = h.sensitiveDetector(de);
       printout(INFO,"LCDDHelperTest","Sensitive detector[%s]: %p  --> %s",de.path().c_str(),(void*)sd.ptr(),
-	       sd.ptr() ? sd.name() : "????");
+               sd.ptr() ? sd.name() : "????");
 
     }
     void printSD(LCDDHelper h, const char* nam)  const {
       SensitiveDetector sd = h.sensitiveDetector(nam);
       printout(INFO,"LCDDHelperTest","Sensitive detector[%s]: %p  --> %s",nam,(void*)sd.ptr(),
-	       sd.ptr() ? sd.name() : "????");
+               sd.ptr() ? sd.name() : "????");
 
     }
     /// Action routine to execute the test

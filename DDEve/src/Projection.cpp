@@ -1,12 +1,17 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
-//  Original Author: Matevz Tadel 2009 (MultiView.C)
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DDEve/Projection.h"
@@ -53,8 +58,8 @@ TEveElement* Projection::ImportElement(TEveElement* el, TEveElementList* list)  
   }
   TEveElement* e = m_projMgr->ImportElements(el, list);
   printout(INFO,"Projection","ImportElement %s [%s] into list: %s Projectable:%s [%p]",
-	   Utilities::GetName(el),el->IsA()->GetName(),list->GetName(),
-	   dynamic_cast<TEveProjectable*>(list) ? "true" : "false", e);
+           Utilities::GetName(el),el->IsA()->GetName(),list->GetName(),
+           dynamic_cast<TEveProjectable*>(list) ? "true" : "false", e);
 
   unprojected->AddElement(el);
   if ( list != m_geoScene && list != m_eveScene )   {

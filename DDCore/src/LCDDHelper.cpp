@@ -1,11 +1,16 @@
-// $Id: Handle.h 1679 2015-03-27 15:24:39Z /DC=ch/DC=cern/OU=Organic Units/OU=Users/CN=sailer/CN=683529/CN=Andre Sailer $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #include "DD4hep/LCDDHelper.h"
 
@@ -25,12 +30,12 @@ SensitiveDetector LCDDHelper::sensitiveDetector(DetElement detector) const    {
     if ( par.ptr() != ptr()->world().ptr() )  {
       PlacedVolume pv = par.placement();
       if ( pv.isValid() )   {
-	const PlacedVolume::VolIDs& ids = pv.volIDs();
-	for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end();++i)  {
-	  if ( (*i).first == "system" )   {
-	    return sensitiveDetector(par.name());
-	  }
-	}
+        const PlacedVolume::VolIDs& ids = pv.volIDs();
+        for(PlacedVolume::VolIDs::const_iterator i=ids.begin(); i!=ids.end();++i)  {
+          if ( (*i).first == "system" )   {
+            return sensitiveDetector(par.name());
+          }
+        }
       }
     }
   }

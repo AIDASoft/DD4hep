@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDEve/ParticleActors.h"
@@ -108,9 +113,9 @@ void MCParticleCreator::operator()(const DDEveParticle& p)  {
     TDatabasePDG* db = TDatabasePDG::Instance();
     TParticlePDG* def = db->GetParticle(p.pdgID);
     TParticle part(p.pdgID,
-		   0,0,0,0,0,
-		   p.psx*MEV_2_GEV, p.psy*MEV_2_GEV, p.psz*MEV_2_GEV, p.energy*MEV_2_GEV,
-		   p.vsx*MM_2_CM, p.vsy*MM_2_CM, p.vsz*MM_2_CM, p.time);
+                   0,0,0,0,0,
+                   p.psx*MEV_2_GEV, p.psy*MEV_2_GEV, p.psz*MEV_2_GEV, p.energy*MEV_2_GEV,
+                   p.vsx*MM_2_CM, p.vsy*MM_2_CM, p.vsz*MM_2_CM, p.time);
   
     TEveTrack* t = new TEveTrack(&part,p.id,propagator);
 
@@ -122,18 +127,18 @@ void MCParticleCreator::operator()(const DDEveParticle& p)  {
     t->AddPathMark(TEvePathMark(TEvePathMark::kDecay,end,momentum));
     t->SetLineWidth(lineWidth);
     t->SetTitle(Form("MCParticle: Track ID=%d Parent:%d\n"
-		     "Type:%s Charge=%.3f Time:%.3f ns\n"
-		     "Start(Vx, Vy, Vz, t) = (%.3f, %.3f, %.3f) [cm]\n"
-		     "End  (Vx, Vy, Vz, t) = (%.3f, %.3f, %.3f) [cm]\n"
-		     "Length:%.3f [cm]\n"
-		     "(Px, Py, Pz, E) = (%.3f, %.3f, %.3f, %.3f) [GeV]",
-		     p.id, p.parent,
-		     def ? def->GetName() : "Unknown",
-		     def ? def->Charge() : 0.0, p.time,
-		     p.vsx*MM_2_CM, p.vsy*MM_2_CM, p.vsz*MM_2_CM,
-		     p.vex*MM_2_CM, p.vey*MM_2_CM, p.vez*MM_2_CM,
-		     dir.R(),
-		     p.psx*MEV_2_GEV, p.psy*MEV_2_GEV, p.psz*MEV_2_GEV, p.energy*MEV_2_GEV));
+                     "Type:%s Charge=%.3f Time:%.3f ns\n"
+                     "Start(Vx, Vy, Vz, t) = (%.3f, %.3f, %.3f) [cm]\n"
+                     "End  (Vx, Vy, Vz, t) = (%.3f, %.3f, %.3f) [cm]\n"
+                     "Length:%.3f [cm]\n"
+                     "(Px, Py, Pz, E) = (%.3f, %.3f, %.3f, %.3f) [GeV]",
+                     p.id, p.parent,
+                     def ? def->GetName() : "Unknown",
+                     def ? def->Charge() : 0.0, p.time,
+                     p.vsx*MM_2_CM, p.vsy*MM_2_CM, p.vsz*MM_2_CM,
+                     p.vex*MM_2_CM, p.vey*MM_2_CM, p.vez*MM_2_CM,
+                     dir.R(),
+                     p.psx*MEV_2_GEV, p.psy*MEV_2_GEV, p.psz*MEV_2_GEV, p.energy*MEV_2_GEV));
 
     // Add element to collection
     int pdg = abs(p.pdgID);

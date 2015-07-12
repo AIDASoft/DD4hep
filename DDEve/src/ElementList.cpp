@@ -1,11 +1,17 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DDEve/EveUserContextMenu.h"
@@ -29,7 +35,7 @@ ElementList::ElementList()  : TEveElementList()  {
 
 /// Initializing constructor
 ElementList::ElementList(const std::string& name, const std::string& title, bool doCol, bool doTrans)
-: TEveElementList(name.c_str(), title.c_str(), doCol, doTrans)  {
+  : TEveElementList(name.c_str(), title.c_str(), doCol, doTrans)  {
   InstanceCount::increment(this);
 }
 

@@ -1,11 +1,16 @@
-// $Id: $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDG4_GEANT4KERNEL_H
 #define DD4HEP_DDG4_GEANT4KERNEL_H
 
@@ -129,8 +134,8 @@ namespace DD4hep {
         PhaseSelector(Geant4Kernel* kernel);
         /// Copy constructor
         PhaseSelector(const PhaseSelector& c);
-	/// Assignment operator
-	PhaseSelector& operator=(const PhaseSelector& c);
+        /// Assignment operator
+        PhaseSelector& operator=(const PhaseSelector& c);
         /// Phase access to the map
         Geant4ActionPhase& operator[](const std::string& name) const;
       } phase;
@@ -162,11 +167,11 @@ namespace DD4hep {
       }
       /// Access the tracking manager
       G4TrackingManager* trackMgr() const  {
-	return m_trackMgr;
+        return m_trackMgr;
       }
       /// Access the tracking manager
       void setTrackMgr(G4TrackingManager* mgr)  {
-	m_trackMgr = mgr;
+        m_trackMgr = mgr;
       }
       /// Access to the Geant4 run manager
       G4RunManager& runManager();
@@ -184,7 +189,7 @@ namespace DD4hep {
       Property& property(const std::string& name);
       /// Access the output level
       PrintLevel outputLevel() const  {
-	return (PrintLevel)m_outputLevel;
+        return (PrintLevel)m_outputLevel;
       }
       /// Set the global output level of the kernel object; returns previous value
       PrintLevel setOutputLevel(PrintLevel new_level);
@@ -218,7 +223,7 @@ namespace DD4hep {
 
       /// Add a new phase to the phase
       virtual Geant4ActionPhase* addPhase(const std::string& name, const std::type_info& arg1, const std::type_info& arg2,
-          const std::type_info& arg3, bool throw_on_exist);
+                                          const std::type_info& arg3, bool throw_on_exist);
       /// Add a new phase to the phase
       template <typename A0> Geant4ActionPhase* addPhase(const std::string& name, bool throw_on_exist = true) {
         return addPhase(name, typeid(A0), typeid(void), typeid(void), throw_on_exist);

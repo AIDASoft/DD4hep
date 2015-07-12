@@ -1,11 +1,16 @@
-// $Id: XMLStack.h 889 2013-11-14 15:55:39Z markus.frank@cern.ch $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -97,14 +102,14 @@ void ConditionsStack::insert(dd4hep_ptr<Entry>& data)   {
     string    path = det.path()+'!'+data->name;
     Stack::const_iterator i = m_stack.find(path);
     printout(DEBUG,"ConditionsStack","+++ %s  name:%s type:%s value:%s  Validity:%s",
-	     det.path().c_str(), data->name.c_str(), data->type.c_str(), 
-	     data->value.c_str(), data->validity.c_str());
+             det.path().c_str(), data->name.c_str(), data->type.c_str(), 
+             data->value.c_str(), data->validity.c_str());
     if ( i == m_stack.end() )   {
       m_stack.insert(make_pair(path,data.release()));
       return;
     }
     throw runtime_error("ConditionsStack> The data with path "+path+
-			" cannot be set twice in one transaction. [Intended inhibit]");
+                        " cannot be set twice in one transaction. [Intended inhibit]");
   }
   throw runtime_error("ConditionsStack> Attempt to apply an invalid conditions data.");
 }

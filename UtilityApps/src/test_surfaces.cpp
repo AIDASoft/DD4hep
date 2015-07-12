@@ -1,3 +1,16 @@
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 
 #include "DDRec/Surface.h"
@@ -45,7 +58,7 @@ int main(int argc, char** argv ){
 
 
 #if 0
-   // create a list of all surfaces in the detector:
+  // create a list of all surfaces in the detector:
   DetElement world = lcdd.world() ;
   
   SurfaceHelper surfMan(  world ) ;
@@ -96,7 +109,7 @@ int main(int argc, char** argv ){
       std::string typeName = col->getTypeName() ;
 
       if( typeName != lcio::LCIO::SIMTRACKERHIT ) 
-	continue ;
+        continue ;
 
       std::cout << "  -- testing collection : " <<  colNames[ icol ] << std::endl ;
 
@@ -108,90 +121,90 @@ int main(int argc, char** argv ){
       
       for(int i=0 ; i< nHit ; ++i){
 	
-	SimTrackerHit* sHit = (SimTrackerHit*) col->getElementAt(i) ;
+        SimTrackerHit* sHit = (SimTrackerHit*) col->getElementAt(i) ;
 	
-	DD4hep::long64 id = sHit->getCellID0() ;
+        DD4hep::long64 id = sHit->getCellID0() ;
 	
-	idDecoder.setValue( id ) ;
-	//      std::cout << " simhit with cellid : " << idDecoder << std::endl ;
+        idDecoder.setValue( id ) ;
+        //      std::cout << " simhit with cellid : " << idDecoder << std::endl ;
 	
 #if 0
-	Surface* surf = surfMap[ id ] ;
+        Surface* surf = surfMap[ id ] ;
 #else
-	SurfaceMap::const_iterator si = surfMap.find( id )  ;
-	Surface* surf = ( si != surfMap.end()  ?  si->second  : 0 )   ;
+        SurfaceMap::const_iterator si = surfMap.find( id )  ;
+        Surface* surf = ( si != surfMap.end()  ?  si->second  : 0 )   ;
 #endif
 	
-	std::stringstream sst ;
-	sst << " surface found for id : " << std::hex << id  << std::dec  <<  "  "  << idDecoder.valueString() << std ::endl ;
+        std::stringstream sst ;
+        sst << " surface found for id : " << std::hex << id  << std::dec  <<  "  "  << idDecoder.valueString() << std ::endl ;
 	
 	
-	// ===== test that we have a surface with the correct ID for every hit ======================
+        // ===== test that we have a surface with the correct ID for every hit ======================
 	
-	test( surf != 0 , true , sst.str() ) ; 
+        test( surf != 0 , true , sst.str() ) ; 
 	
 
-	if( surf != 0 ){
+        if( surf != 0 ){
 	  
-	  //  std::cout << " found surface " <<  *surf << std::endl ;
+          //  std::cout << " found surface " <<  *surf << std::endl ;
 
-	  Vector3D point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
+          Vector3D point( sHit->getPosition()[0]* dd4hep::mm , sHit->getPosition()[1]* dd4hep::mm ,  sHit->getPosition()[2]* dd4hep::mm ) ;
 	  
-	  double dist = surf->distance( point ) ;
+          double dist = surf->distance( point ) ;
 	  
-	  bool isInside = surf->insideBounds( point )  ;
+          bool isInside = surf->insideBounds( point )  ;
 	  
 	  
-	  sst.str("") ;
-	  sst << " point " << point << " is on surface " ;
+          sst.str("") ;
+          sst << " point " << point << " is on surface " ;
 	  
-	  // ====== test that hit points are inside their surface ================================
+          // ====== test that hit points are inside their surface ================================
 	  
-	  test( isInside , true , sst.str() ) ;
+          test( isInside , true , sst.str() ) ;
 	  
-	  if( ! isInside ) {
+          if( ! isInside ) {
 
-	    std::cout << " found surface " <<  *surf << std::endl
-		      << " id : " << idDecoder.valueString() 
-		      << " point : " << point 
-		      << " is inside : " <<  isInside
-		      << " distance from surface : " << dist/dd4hep::mm << std::endl 
-		      << std::endl ;
-	  }
+            std::cout << " found surface " <<  *surf << std::endl
+                      << " id : " << idDecoder.valueString() 
+                      << " point : " << point 
+                      << " is inside : " <<  isInside
+                      << " distance from surface : " << dist/dd4hep::mm << std::endl 
+                      << std::endl ;
+          }
 
-	  // ====== test that slightly moved hit points are inside their surface ================================
+          // ====== test that slightly moved hit points are inside their surface ================================
 	  
-	  Vector3D point2 = point + 1e-5 * surf->normal() ;
-	  sst.str("") ;
-	  sst << " point2 " << point2 << " is on surface " ;
-	  isInside = surf->insideBounds( point2 )  ;
-	  test( isInside , true , sst.str() ) ;
+          Vector3D point2 = point + 1e-5 * surf->normal() ;
+          sst.str("") ;
+          sst << " point2 " << point2 << " is on surface " ;
+          isInside = surf->insideBounds( point2 )  ;
+          test( isInside , true , sst.str() ) ;
 	  
-	  if( ! isInside ) {
+          if( ! isInside ) {
 
-	    std::cout << " found surface " <<  *surf << std::endl
-		      << " id : " << idDecoder.valueString() 
-		      << " point : " << point 
-		      << " is inside : " <<  isInside
-		      << " distance from surface : " << dist/dd4hep::mm << std::endl 
-		      << std::endl ;
+            std::cout << " found surface " <<  *surf << std::endl
+                      << " id : " << idDecoder.valueString() 
+                      << " point : " << point 
+                      << " is inside : " <<  isInside
+                      << " distance from surface : " << dist/dd4hep::mm << std::endl 
+                      << std::endl ;
 
-	  }
+          }
 
-	  // ====== test that moved hit points are outside their surface ================================
+          // ====== test that moved hit points are outside their surface ================================
 	  
-	  Vector3D point3 = point + 1e-3 * surf->normal() ;
-	  sst.str("") ;
-	  sst << " point3 " << point3 << " is not on surface " ;
-	  isInside = surf->insideBounds( point3)  ;
-	  test( isInside , false , sst.str() ) ;
+          Vector3D point3 = point + 1e-3 * surf->normal() ;
+          sst.str("") ;
+          sst << " point3 " << point3 << " is not on surface " ;
+          isInside = surf->insideBounds( point3)  ;
+          test( isInside , false , sst.str() ) ;
 	  
 	  
 	  
-	} else {
+        } else {
 	  
-	  std::cout << "ERROR:   no surface found for id: " << idDecoder << std::endl ;
-	}
+          std::cout << "ERROR:   no surface found for id: " << idDecoder << std::endl ;
+        }
 	
       }
       

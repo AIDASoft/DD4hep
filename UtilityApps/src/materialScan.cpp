@@ -1,7 +1,14 @@
-// $Id:$
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 //
 //  Simple program to print all the materials in a detector on
 //  a straight line between two given points
@@ -9,8 +16,11 @@
 //  Author     : F.Gaede, DESY
 //  Author     : M.Frank, CERN
 //
-//====================================================================
+//==========================================================================
+
 #include "TError.h"
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DDRec/MaterialManager.h"
@@ -27,8 +37,8 @@ int main(int argc, char** argv)   {
     }
     static void usage()  {
       std::cout << " usage: materialScan compact.xml x0 y0 z0 x1 y1 z1 " << std::endl 
-		<< "        -> prints the materials on a straight line between the two given points ( unit is cm) "  
-		<< std::endl;
+                << "        -> prints the materials on a straight line between the two given points ( unit is cm) "  
+                << std::endl;
       exit(1);
     }
   } _handler;
@@ -58,7 +68,7 @@ int main(int argc, char** argv)   {
   const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
 
   ::printf("%s + Material scan between: x_0 = (%7.2f,%7.2f,%7.2f) [cm] and x_1 = (%7.2f,%7.2f,%7.2f) [cm] : \n%s",
-	   line,p0[0],p0[1],p0[2],p1[0],p1[1],p1[2],line);
+           line,p0[0],p0[1],p0[2],p1[0],p1[1],p1[2],line);
   ::printf(" |     \\   %-11s        Atomic                 Radiation   Interaction               Path   Integrated  Integrated    Material\n","Material");
   ::printf(" | Num. \\  %-11s   Number/Z   Mass/A  Density    Length       Length    Thickness   Length      X0        Lambda      Endpoint  \n","Name");
   ::printf(" | Layer \\ %-11s            [g/mole]  [g/cm3]     [cm]        [cm]          [cm]      [cm]     [cm]        [cm]     (     cm,     cm,     cm)\n","");
@@ -75,8 +85,8 @@ int main(int argc, char** argv)   {
     end = path_length * direction;
     const char* fmt = mat->GetRadLen() >= 1e5 ? fmt2 : fmt1;
     ::printf(fmt, i+1, mat->GetName(), mat->GetZ(), mat->GetA(),
-	     mat->GetDensity(), mat->GetRadLen(), mat->GetIntLen(), 
-	     length, path_length, sum_x0, sum_lambda, end[0], end[1], end[2]);
+             mat->GetDensity(), mat->GetRadLen(), mat->GetIntLen(), 
+             length, path_length, sum_x0, sum_lambda, end[0], end[1], end[2]);
     //mat->Print();
   }
   printf("%s",line);
@@ -84,11 +94,11 @@ int main(int argc, char** argv)   {
   const char* fmt = avg.radiationLength() >= 1e5 ? fmt2 : fmt1;
   end = path_length * direction;
   ::printf(fmt,0,"Average Material",avg.Z(),avg.A(),avg.density(), 
-	   avg.radiationLength(), avg.interactionLength(),
-	   path_length, path_length, 
-	   path_length/avg.radiationLength(), 
-	   path_length/avg.interactionLength(),
-	   end[0], end[1], end[2]);
+           avg.radiationLength(), avg.interactionLength(),
+           path_length, path_length, 
+           path_length/avg.radiationLength(), 
+           path_length/avg.interactionLength(),
+           end[0], end[1], end[2]);
   printf("%s",line);
   return 0;
 }

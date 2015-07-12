@@ -1,12 +1,18 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
-//  Original Author: Matevz Tadel 2009 (MultiView.C)
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+// Original Author: Matevz Tadel 2009 (MultiView.C)
+//
+//==========================================================================
+
 // Framework include files
 #include "DDEve/View.h"
 #include "DDEve/Display.h"
@@ -107,7 +113,7 @@ TEveElement* View::ImportEventElement(TEveElement* el, TEveElementList* list)  {
   }
   if ( el )   {
     printout(INFO,"View","ImportElement %s [%s] into list: %s",
-	     Utilities::GetName(el),el->IsA()->GetName(),list->GetName());
+             Utilities::GetName(el),el->IsA()->GetName(),list->GetName());
     list->AddElement(el);
   }
   return el;
@@ -177,18 +183,18 @@ void View::ConfigureGeometry(const DisplayConfiguration::ViewConfig& config)    
     else if ( cfg.type == DisplayConfiguration::DETELEMENT )    {
       DetElement::Children::const_iterator i = c.find(nam);
       if ( i != c.end() )   {
-	DetElement de = (*i).second;
-	SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
-	TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
-	pair<bool,TEveElement*> e(false,0);
-	if ( cfg.data.defaults.load_geo > 0 )       // Create a new instance
-	  e = CreateGeometry(de,cfg);               // with the given number of levels
-	else if ( cfg.data.defaults.load_geo < 0 )  // Use the global geometry instance
-	  e = GetGlobalGeometry(de,cfg);            // with the given number of levels
-	if ( e.first && e.second )   {
-	  ImportGeo(topic,e.second);
-	}
-	dets += nam + "(Geo)  ";
+        DetElement de = (*i).second;
+        SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
+        TEveElementList& topic = GetGeoTopic(sd.isValid() ? "Sensitive" : "Structure");
+        pair<bool,TEveElement*> e(false,0);
+        if ( cfg.data.defaults.load_geo > 0 )       // Create a new instance
+          e = CreateGeometry(de,cfg);               // with the given number of levels
+        else if ( cfg.data.defaults.load_geo < 0 )  // Use the global geometry instance
+          e = GetGlobalGeometry(de,cfg);            // with the given number of levels
+        if ( e.first && e.second )   {
+          ImportGeo(topic,e.second);
+        }
+        dets += nam + "(Geo)  ";
       }
     }
   }
@@ -252,24 +258,24 @@ void View::ConfigureEvent(const DisplayConfiguration::ViewConfig& config)  {
     else if ( cfg.type == DisplayConfiguration::COLLECTION )  {
       // Not using the global scene!
       if ( cfg.data.defaults.show_evt>0 )   {
-	TEveElement* child = m_eve->manager().GetEventScene()->FindChild(nam);
-	printout(INFO,"View","+++     Add collection:%s data:%p scene:%p",nam.c_str(),child,m_eveScene);
-	if ( child ) ImportEvent(child);
+        TEveElement* child = m_eve->manager().GetEventScene()->FindChild(nam);
+        printout(INFO,"View","+++     Add collection:%s data:%p scene:%p",nam.c_str(),child,m_eveScene);
+        if ( child ) ImportEvent(child);
       }
     }
     else if ( cfg.type == DisplayConfiguration::DETELEMENT )  {
       // Not using the global scene!
       DetElement::Children::const_iterator i = c.find(nam);
       if ( i != c.end() && cfg.data.defaults.show_evt>0 )  {
-	SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
-	if ( sd.isValid() )  {
-	  // This should be configurable!
-	  const char* coll = sd.readout().name();
-	  TEveElement* child = m_eve->manager().GetEventScene()->FindChild(coll);
-	  printout(INFO,"View","+++     Add detector event %s collection:%s data:%p scene:%p",
-		   nam.c_str(),coll,child,m_eveScene);
-	  if ( child ) ImportEvent(child);
-	}
+        SensitiveDetector sd = m_eve->lcdd().sensitiveDetector(nam);
+        if ( sd.isValid() )  {
+          // This should be configurable!
+          const char* coll = sd.readout().name();
+          TEveElement* child = m_eve->manager().GetEventScene()->FindChild(coll);
+          printout(INFO,"View","+++     Add detector event %s collection:%s data:%p scene:%p",
+                   nam.c_str(),coll,child,m_eveScene);
+          if ( child ) ImportEvent(child);
+        }
       }
     }
   }

@@ -1,3 +1,14 @@
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 #include "TEveManager.h"
 #include "TEveStraightLineSet.h"
 #include "TEvePointSet.h"
@@ -60,10 +71,10 @@ void next_event(){
     }catch(lcio::IOException& e) {
       
       std::cout << " ------------------------------------------------------------------------------------------------ "     << std::endl
-		<<  "*** file " << lcioFileName << " does not exist - can't read LCIO events  !                       "     << std::endl
-		<<  "    will display detector geometry only. Link LCIO file to " << lcioFileName << " to display events ! "<< std::endl
-		<< " -------------------------------------------------------------------------------------------------"  	
-		<< std::endl ;
+                <<  "*** file " << lcioFileName << " does not exist - can't read LCIO events  !                       "     << std::endl
+                <<  "    will display detector geometry only. Link LCIO file to " << lcioFileName << " to display events ! "<< std::endl
+                << " -------------------------------------------------------------------------------------------------"  	
+                << std::endl ;
       
       return ;
     }
@@ -94,19 +105,19 @@ void next_event(){
 
       if( col->getTypeName() == LCIO::SIMTRACKERHIT ){   
 	  
-	MultiView::instance()->ImportEvent(  createPointSet<EVENT::SimTrackerHit>( col , colNames[ icol ]  , kMagenta+2 , 1 , 4  ) ) ; 
+        MultiView::instance()->ImportEvent(  createPointSet<EVENT::SimTrackerHit>( col , colNames[ icol ]  , kMagenta+2 , 1 , 4  ) ) ; 
       }
       else if( col->getTypeName() == LCIO::SIMCALORIMETERHIT ){   
 	  
-	MultiView::instance()->ImportEvent(  createPointSet<EVENT::SimCalorimeterHit>( col , colNames[ icol ]  , kMagenta+4 , 1 , 4  ) ) ; 
+        MultiView::instance()->ImportEvent(  createPointSet<EVENT::SimCalorimeterHit>( col , colNames[ icol ]  , kMagenta+4 , 1 , 4  ) ) ; 
       }
       else if( col->getTypeName() == LCIO::TRACKERHIT ){   
 	  
-	MultiView::instance()->ImportEvent(  createPointSet<EVENT::TrackerHit>( col , colNames[ icol ]  , kBlue+2 , 1 , 4  ) ) ; 
+        MultiView::instance()->ImportEvent(  createPointSet<EVENT::TrackerHit>( col , colNames[ icol ]  , kBlue+2 , 1 , 4  ) ) ; 
       }
       else if( col->getTypeName() == LCIO::CALORIMETERHIT ){   
 	  
-	MultiView::instance()->ImportEvent(  createPointSet<EVENT::CalorimeterHit>( col , colNames[ icol ]  , kBlue+4 , 1 , 4  ) ) ; 
+        MultiView::instance()->ImportEvent(  createPointSet<EVENT::CalorimeterHit>( col , colNames[ icol ]  , kBlue+4 , 1 , 4  ) ) ; 
       }
 	
     }

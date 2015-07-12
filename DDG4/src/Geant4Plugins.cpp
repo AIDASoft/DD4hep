@@ -1,11 +1,18 @@
-// $Id: Readout.cpp 590 2013-06-03 17:02:43Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/Plugins.inl"
 #include "DDG4/Factories.h"
 #include "DDG4/Geant4SensDetAction.h"
@@ -13,6 +20,7 @@
 #include "DDG4/Geant4InputAction.h"
 #include "DDG4/Geant4Converter.h"
 
+// Geant4 include files
 #include "G4VSensitiveDetector.hh"
 #include "G4MagIntegratorStepper.hh"
 #include "G4EquationOfMotion.hh"
@@ -24,7 +32,9 @@
 #include "G4VUserPhysicsList.hh"
 
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(G4VSensitiveDetector*, (std::string,DD4hep::Geometry::LCDD*))
-DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(DD4hep::Simulation::Geant4Sensitive*, (DD4hep::Simulation::Geant4Context*,std::string,DD4hep::Geometry::DetElement*,DD4hep::Geometry::LCDD*))
+DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(DD4hep::Simulation::Geant4Sensitive*, (DD4hep::Simulation::Geant4Context*,
+                                                                        std::string,DD4hep::Geometry::DetElement*,
+                                                                        DD4hep::Geometry::LCDD*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(DD4hep::Simulation::Geant4Action*, (DD4hep::Simulation::Geant4Context*,std::string))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(G4MagIntegratorStepper*, (G4EquationOfMotion*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(G4MagIntegratorStepper*, (G4Mag_EqRhs*))

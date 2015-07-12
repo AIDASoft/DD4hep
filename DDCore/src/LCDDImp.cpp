@@ -1,12 +1,18 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
+// Framework include files
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/GeoHandler.h"
@@ -51,7 +57,7 @@ namespace {
   struct TypePreserve {
     LCDDBuildType& m_t;
     TypePreserve(LCDDBuildType& t)
-    : m_t(t) {
+      : m_t(t) {
     }
     ~TypePreserve() {
       m_t = BUILD_NONE;
@@ -64,12 +70,12 @@ namespace {
       throw;
     }  catch( std::exception& e){
       std::cout << "\n"
-		<< "**************************************************** \n"
-		<< "*  A runtime error has occured :                     \n"
-		<< "*    " << e.what()   << std::endl
-		<< "*  the program will have to be terminated - sorry.   \n"
-		<< "**************************************************** \n"
-		<< std::endl ;
+                << "**************************************************** \n"
+                << "*  A runtime error has occured :                     \n"
+                << "*    " << e.what()   << std::endl
+                << "*  the program will have to be terminated - sorry.   \n"
+                << "**************************************************** \n"
+                << std::endl ;
 
       std::set_unexpected( std::unexpected ) ;
       std::set_terminate( std::terminate ) ;
@@ -167,8 +173,8 @@ void LCDDImp::declareMotherVolume(const std::string& detector_name, const Volume
     if ( vol.isValid() )  {
       HandleMap::const_iterator i = m_motherVolumes.find(detector_name);
       if (i == m_motherVolumes.end())   {
-	m_motherVolumes.insert(make_pair(detector_name,vol));
-	return;
+        m_motherVolumes.insert(make_pair(detector_name,vol));
+        return;
       }
       throw runtime_error("LCDD: A mother volume to the detector "+detector_name+" was already registered.");
     }
@@ -200,7 +206,7 @@ LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
     if ( sd.isValid() )   {
       stringstream str;
       str << "LCDD: The sensitive sub-detectors " << det_element.name() << " and "
-	  << existing_det.name() << " have the identical ID:" << det_element.id() << ".";
+          << existing_det.name() << " have the identical ID:" << det_element.id() << ".";
       printout(ERROR,"LCDD",str.str());
       throw runtime_error(str.str());
     }
@@ -294,14 +300,14 @@ void LCDDImp::mapDetectorTypes()  {
     if ( det.parent().isValid() )  { // Exclude 'world'
       HandleMap::const_iterator j=m_sensitive.find(det.name());
       if ( j != m_sensitive.end() )  {
-	SensitiveDetector sd((*j).second);
-	m_detectorTypes[sd.type()].push_back(det);
+        SensitiveDetector sd((*j).second);
+        m_detectorTypes[sd.type()].push_back(det);
       }
       else if ( det.type() == "compound" )  {
-	m_detectorTypes[det.type()].push_back(det);      
+        m_detectorTypes[det.type()].push_back(det);      
       }
       else  {
-	m_detectorTypes["passive"].push_back(det);      
+        m_detectorTypes["passive"].push_back(det);      
       }
     }
   }
@@ -333,10 +339,10 @@ const vector<DetElement>& LCDDImp::detectors(const string& type)  {
 
 /// Access a set of subdetectors according to several sensitive types.
 vector<DetElement> LCDDImp::detectors(const string& type1,
-				      const string& type2,
-				      const string& type3,
-				      const string& type4,
-				      const string& type5 )  {
+                                      const string& type2,
+                                      const string& type3,
+                                      const string& type4,
+                                      const string& type5 )  {
   if ( m_manager->IsClosed() ) {
     vector<DetElement> v;
     DetectorTypeMap::const_iterator i, end=m_detectorTypes.end();

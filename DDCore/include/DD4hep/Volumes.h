@@ -1,11 +1,17 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_GEOMETRY_VOLUMES_H
 #define DD4HEP_GEOMETRY_VOLUMES_H
 
@@ -29,7 +35,7 @@
 // Older ROOT version
 #define DD4HEP_EMULATE_TGEOEXTENSIONS
 class TGeoExtension : public TObject  {
- public:
+public:
   virtual ~TGeoExtension() {}
   /// TGeoExtension overload: Method called whenever requiring a pointer to the extension
   virtual TGeoExtension *Grab() = 0;
@@ -76,7 +82,7 @@ namespace DD4hep {
       class VolIDs: public std::vector<VolID> {
       public:
         typedef std::vector<VolID> Base;
-      VolIDs() : std::vector<VolID>() {
+        VolIDs() : std::vector<VolID>() {
         }
         ~VolIDs() {
         }
@@ -125,16 +131,16 @@ namespace DD4hep {
       typedef Object::VolID  VolID;
 
       /// Constructor to be used when reading the already parsed DOM tree
-    PlacedVolume(const TGeoNode* e)
-      : Handle<TGeoNode>(e) {
+      PlacedVolume(const TGeoNode* e)
+        : Handle<TGeoNode>(e) {
       }
       /// Default constructor
-    PlacedVolume()
-      : Handle<TGeoNode>() {
+      PlacedVolume()
+        : Handle<TGeoNode>() {
       }
       /// Copy assignment
-    PlacedVolume(const PlacedVolume& e)
-      : Handle<TGeoNode>(e) {
+      PlacedVolume(const PlacedVolume& e)
+        : Handle<TGeoNode>(e) {
       }
       /// Copy assignment from other handle type
       template <typename T> PlacedVolume(const Handle<T>& e)
@@ -223,18 +229,18 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-    Volume()
-      : Base(0) {
+      Volume()
+        : Base(0) {
       }
 
       /// Copy from handle
-    Volume(const TGeoVolume* v)
-      : Base(v) {
+      Volume(const TGeoVolume* v)
+        : Base(v) {
       }
 
       /// Copy from handle
-    Volume(const Volume& v)
-      : Base(v) {
+      Volume(const Volume& v)
+        : Base(v) {
       }
 
       /// Copy from arbitrary Element
@@ -329,13 +335,13 @@ namespace DD4hep {
     class Assembly: public Volume {
     public:
       /// Default constructor
-    Assembly()
-      : Volume() {
+      Assembly()
+        : Volume() {
       }
 
       /// Copy from handle
-    Assembly(const Assembly& v)
-      : Volume(v) {
+      Assembly(const Assembly& v)
+        : Volume(v) {
       }
 
       /// Copy from arbitrary Element

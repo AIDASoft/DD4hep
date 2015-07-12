@@ -1,12 +1,18 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-#include <algorithm>
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Context.h"
@@ -16,6 +22,9 @@
 
 // Geant4 include files
 #include "G4UIdirectory.hh"
+
+// C/C++ include files
+#include <algorithm>
 
 using namespace std;
 using namespace DD4hep;
@@ -50,8 +59,8 @@ void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
 
 /// Standard constructor
 Geant4Action::Geant4Action(Geant4Context* ctxt, const string& nam)
-: m_context(0),
-  m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
+  : m_context(0),
+    m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
   InstanceCount::increment(this);
   if ( ctxt ) m_context = *ctxt;
   m_outputLevel = ctxt ? ctxt->kernel().getOutputLevel(nam) : (printLevel()-1);
@@ -76,7 +85,7 @@ long Geant4Action::release() {
   long count = --m_refCount;
   if (m_refCount <= 0) {
     printM1("Geant4Action: Deleting object %s of type %s Pointer:%p",
-          m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
+            m_name.c_str(),typeName(typeid(*this)).c_str(),(void*)this);
     delete this;
   }
   return count;

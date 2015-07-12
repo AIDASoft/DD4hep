@@ -1,11 +1,17 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GRAMMAR_INL_H
 #define DD4HEP_DDG4_GRAMMAR_INL_H
 
@@ -91,8 +97,8 @@ namespace DD4hep {
     if ( !sc ) sc = evaluate(&temp,string_val);
 #if 0
     std::cout << "Sc=" << sc << "  Converting value: " << string_val 
-	      << " to type " << typeid(TYPE).name() 
-	      << std::endl;
+              << " to type " << typeid(TYPE).name() 
+              << std::endl;
 #endif
     if ( sc )   {
       *(TYPE*)ptr = temp;
@@ -100,8 +106,8 @@ namespace DD4hep {
     }
 #ifndef DD4HEP_USE_BOOST
     throw std::runtime_error("This version of DD4HEP is not compiled to use boost::spirit.\n"
-			     "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
-			     "and BOOST_INCLUDE_DIR=<boost include path>");
+                             "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
+                             "and BOOST_INCLUDE_DIR=<boost include path>");
 #else
     BasicGrammar::invalidConversion(string_val, typeid(TYPE));
     return false;
@@ -118,8 +124,8 @@ namespace DD4hep {
     if (ptr) {
     }
     throw std::runtime_error("This version of DD4HEP is not compiled to use boost::spirit.\n"
-			     "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
-			     "and BOOST_INCLUDE_DIR=<boost include path>");
+                             "To enable elaborated property handling set DD4HEP_USE_BOOST=ON\n"
+                             "and BOOST_INCLUDE_DIR=<boost include path>");
 #endif
   }
 
@@ -130,21 +136,21 @@ namespace DD4hep {
     for(const char* c = in.c_str(); *c; ++c)   {
       switch(*c)  {
       case '\'':
-	return "Bad object representation";
+        return "Bad object representation";
       case ',':
-	res += "','";
-	break;
+        res += "','";
+        break;
       case '(':
       case '[':
-	res += "['";
-	break;
+        res += "['";
+        break;
       case ')':
       case ']':
-	res += "']";
-	break;
+        res += "']";
+        break;
       default:
-	res += *c;
-	break;
+        res += *c;
+        break;
       }
     }
     //cout << "Pre-parsed:" << res << endl;
@@ -157,7 +163,7 @@ namespace DD4hep {
     TYPE val;
     for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
       if ( !g.fromString(&val,*i) )
-	return 0;
+        return 0;
       p->push_back(val);
     }
     return 1;
@@ -169,7 +175,7 @@ namespace DD4hep {
     TYPE val;
     for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
       if ( !g.fromString(&val,*i) )
-	return 0;
+        return 0;
       p->push_back(val);
     }
     return 1;
@@ -181,7 +187,7 @@ namespace DD4hep {
     TYPE val;
     for(std::vector<std::string>::const_iterator i=temp.begin(); i != temp.end(); ++i)  {
       if ( !g.fromString(&val,*i) )
-	return 0;
+        return 0;
       p->insert(val);
     }
     return 1;
@@ -200,13 +206,13 @@ namespace DD4hep {
       std::string temp_str = pre_parse_obj(str);
       sc = Parsers::parse(temp,temp_str);
       if ( sc )   {
-	*p = temp;
-	return 1;
+        *p = temp;
+        return 1;
       }
       buff.clear();
       sc = Parsers::parse(buff,temp_str);
       if ( sc )  {
-	return fill_data(p,buff);
+        return fill_data(p,buff);
       }
     }
 #else
@@ -239,29 +245,29 @@ namespace DD4hep {
   
 }      // End namespace DD4hep
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)  namespace DD4hep { \
-  template<> const BasicGrammar& BasicGrammar::instance<x>()  { static Grammar<x> s; return s;}}
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)  namespace DD4hep {        \
+                                                template<> const BasicGrammar& BasicGrammar::instance<x>()  { static Grammar<x> s; return s;}}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)  namespace DD4hep {  \
-  template<> int Grammar<x >::evaluate(void* p, const std::string& v) const { return func ((x*)p,v); }}
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)  namespace DD4hep {   \
+                                                     template<> int Grammar<x >::evaluate(void* p, const std::string& v) const { return func ((x*)p,v); }}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)                   \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                         \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)    \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)          \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)         \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container)  \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,eval_container)    \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)        \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                   \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container) \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,eval_container)   \
   DD4HEP_DEFINE_PARSER_GRAMMAR(std::set<x>,eval_container)
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func)      \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container)  \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func)     \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                   \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container) \
   DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,eval_container)
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)                 \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_item)               \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)            \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_item)          \
   DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(unsigned x,eval_item)
 
 #endif  /* DD4HEP_DDG4_GRAMMAR_INL_H */

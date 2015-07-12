@@ -1,13 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Standard plugins necessary for nearly everything.
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//  Author     : M.Frank
+// Author     : M.Frank
 //
-//====================================================================
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -167,19 +170,19 @@ static long dump_volume_tree(LCDD& lcdd, int , char** ) {
     static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
       char fmt[256];
       if ( ideal == aligned )  {
-	::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
+        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
       }
       else  {
-	::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
-		   level+1,2*level+1,(void*)ideal,(void*)aligned);
+        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
+                   level+1,2*level+1,(void*)ideal,(void*)aligned);
       }
       printout(INFO,"+++",fmt,"",aligned->GetName());
       TGeoVolume* volume = ideal->GetVolume();
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
-	TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
-	const char* daughter_name    = ideal_daughter->GetName();
-	TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
-	dump(ideal_daughter,aligned_daughter,level+1);
+        TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
+        const char* daughter_name    = ideal_daughter->GetName();
+        TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
+        dump(ideal_daughter,aligned_daughter,level+1);
       }
       return 1;
     }
@@ -204,25 +207,25 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
     static long dump(DetElement de,int level, bool sensitive_only) {
       const DetElement::Children& c = de.children();
       if ( !sensitive_only || 0 != de.volumeID() )  {
-	int value = flag;
-	char fmt[64];
-	switch(value)  {
-	case 0:
-	  ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-	  printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
-	  break;
-	case 1:
-	  ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-	  printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
-	  ::sprintf(fmt,"%03d %%-%ds Placement: %%s",level+1,2*level+3);
-	  printout(INFO,"+++",fmt,"",de.placementPath().c_str());
-	  break;
-	default:
-	  break;
-	}
+        int value = flag;
+        char fmt[64];
+        switch(value)  {
+        case 0:
+          ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+          printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
+          break;
+        case 1:
+          ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+          printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
+          ::sprintf(fmt,"%03d %%-%ds Placement: %%s",level+1,2*level+3);
+          printout(INFO,"+++",fmt,"",de.placementPath().c_str());
+          break;
+        default:
+          break;
+        }
       }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-	dump((*i).second,level+1,sensitive_only);
+        dump((*i).second,level+1,sensitive_only);
       return 1;
     }
   };
@@ -250,7 +253,7 @@ static long detelement_cache(LCDD& lcdd, int , char** ) {
       de.placementPath();
       de.path();
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)
-	cache((*i).second);
+        cache((*i).second);
       return 1;
     }
   };

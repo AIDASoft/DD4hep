@@ -1,14 +1,21 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "SimpleGDMLWriter.h"
+
 // ROOT includes
 #include "TROOT.h"
 #include "TColor.h"
@@ -28,6 +35,8 @@
 #include "TGeoCompositeShape.h"
 #include "TClass.h"
 #include "TMath.h"
+
+// C/C++ include files
 #include <iostream>
 
 using namespace DD4hep::Geometry;

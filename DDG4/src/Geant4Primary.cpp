@@ -1,11 +1,16 @@
-// $Id: Geant4Hits.cpp 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/Primitives.h"
@@ -30,13 +35,13 @@ Geant4PrimaryMap::~Geant4PrimaryMap()   {
 
 /// Default constructor
 Geant4PrimaryInteraction::Geant4PrimaryInteraction()
-: mask(0), next_particle_identifier(-1)
+  : mask(0), next_particle_identifier(-1)
 {
 }
 
 /// Copy constructor
 Geant4PrimaryInteraction::Geant4PrimaryInteraction(const Geant4PrimaryInteraction&)
-: mask(0), next_particle_identifier(-1)
+  : mask(0), next_particle_identifier(-1)
 {
 }
 

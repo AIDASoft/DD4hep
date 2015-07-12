@@ -1,3 +1,15 @@
+# $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+#==========================================================================
+#  AIDA Detector description implementation for LCD
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
+
 #---Find Geant4-------------------------------------------------------------------
 find_package(Geant4 REQUIRED gdml ui_all vis_all)
 INCLUDE(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs

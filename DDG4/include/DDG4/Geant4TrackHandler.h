@@ -1,11 +1,16 @@
-// $Id: Geant4TrackHandler.h 683 2013-08-08 16:18:20Z markus.frank $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDG4_GEANT4TRACKHANDLER_H
 #define DD4HEP_DDG4_GEANT4TRACKHANDLER_H
 
@@ -51,8 +56,8 @@ namespace DD4hep {
       /// Reference to the track object
       const G4Track* track;
       /// Initializing constructor
-    Geant4TrackHandler(const G4Track* t)
-      : track(t) {
+      Geant4TrackHandler(const G4Track* t)
+        : track(t) {
         /// Should test here if the track pointer is valid to avoind any later trouble
         if ( 0 == t )  {
           throw std::runtime_error("Geant4TrackHandler: NULL pointer passed to constructor!");

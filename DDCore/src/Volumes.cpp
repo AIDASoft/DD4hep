@@ -1,12 +1,18 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
@@ -68,7 +74,7 @@ namespace DD4hep {
         INCREMENT_COUNTER;
       }
       DD_TGeoNodeMatrix(const DD_TGeoNodeMatrix& c)
-      : TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), DDExtension(c) {
+        : TGeoNodeMatrix(c.GetVolume(), c.GetMatrix()), DDExtension(c) {
         INCREMENT_COUNTER;
       }
       virtual ~DD_TGeoNodeMatrix() {
@@ -412,7 +418,7 @@ ClassImp(VolumeExtension)
 
 /// Default constructor
 VolumeExtension::VolumeExtension()
-  : TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0) {
+: TGeoExtension(), magic(0), refCount(0), region(), limits(), vis(), sens_det(), referenced(0) {
   INCREMENT_COUNTER;
 }
 

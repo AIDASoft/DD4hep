@@ -1,7 +1,16 @@
-// $Id: ToStream.h,v 1.8 2008/10/30 23:38:46 marcocle Exp $
-// ============================================================================
-// CVS tag $Name:  $, version $Revision: 1.8 $
-// ============================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEPPROPERTYPARSERS_PARSERVALUETOSTREAM_H
 #define DD4HEPPROPERTYPARSERS_PARSERVALUETOSTREAM_H 1
 // ============================================================================
@@ -45,7 +54,7 @@ namespace DD4hep {
      *  @date 2006-05-12
      */
     template <class TYPE>
-      std::ostream& toStream(const TYPE& obj, std::ostream& s);
+    std::ostream& toStream(const TYPE& obj, std::ostream& s);
     // ========================================================================
     /// the helper function to print the sequence
     /** @param first (INPUT)  begin-iterator for the sequence
@@ -59,12 +68,12 @@ namespace DD4hep {
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-      inline std::ostream& toStream(ITERATOR first, // begin of the sequence
-                                    ITERATOR last,                            //   end of the sequence
-                                    std::ostream& s,                          //            the stream
-                                    const std::string& open,                  //               opening
-                                    const std::string& close,                 //               closing
-                                    const std::string& delim);                //             delimiter
+    inline std::ostream& toStream(ITERATOR first, // begin of the sequence
+                                  ITERATOR last,                            //   end of the sequence
+                                  std::ostream& s,                          //            the stream
+                                  const std::string& open,                  //               opening
+                                  const std::string& close,                 //               closing
+                                  const std::string& delim);                //             delimiter
     // ========================================================================
     /// the printtout of the strings.
     /** the string is printed a'la Python using the quotes
@@ -121,7 +130,7 @@ namespace DD4hep {
      *  @date 2006-05-12
      */
     template <class KTYPE, class VTYPE>
-      inline std::ostream& toStream(const std::pair<KTYPE, VTYPE>& obj, std::ostream& s) {
+    inline std::ostream& toStream(const std::pair<KTYPE, VTYPE>& obj, std::ostream& s) {
       s << "( ";
       toStream(obj.first, s);
       s << " , ";
@@ -136,7 +145,7 @@ namespace DD4hep {
      *  @date 2006-05-12
      */
     template <class TYPE, class ALLOCATOR>
-      inline std::ostream& toStream(const std::vector<TYPE, ALLOCATOR>& obj, std::ostream& s) {
+    inline std::ostream& toStream(const std::vector<TYPE, ALLOCATOR>& obj, std::ostream& s) {
       return toStream(obj.begin(), obj.end(), s, "[ ", " ]", " , ");
     }
     // ========================================================================
@@ -147,7 +156,7 @@ namespace DD4hep {
      *  @date 2007-04-08
      */
     template <class TYPE, class ALLOCATOR>
-      inline std::ostream& toStream(const std::list<TYPE, ALLOCATOR>& obj, std::ostream& s) {
+    inline std::ostream& toStream(const std::list<TYPE, ALLOCATOR>& obj, std::ostream& s) {
       return toStream(obj.begin(), obj.end(), s, "[ ", " ]", " , ");
     }
     // ========================================================================
@@ -158,7 +167,7 @@ namespace DD4hep {
      *  @date 2006-05-12
      */
     template <class TYPE, class CMP, class ALLOCATOR>
-      inline std::ostream& toStream(const std::set<TYPE, CMP, ALLOCATOR>& obj, std::ostream& s) {
+    inline std::ostream& toStream(const std::set<TYPE, CMP, ALLOCATOR>& obj, std::ostream& s) {
       return toStream(obj.begin(), obj.end(), s, "[ ", " ]", " , ");
     }
     // ========================================================================
@@ -170,7 +179,7 @@ namespace DD4hep {
      *  @date 2006-05-12
      */
     template <class KTYPE, class VTYPE, class CMP, class ALLOCATOR>
-      inline std::ostream& toStream(const std::map<KTYPE, VTYPE, CMP, ALLOCATOR>& obj, std::ostream& s) {
+    inline std::ostream& toStream(const std::map<KTYPE, VTYPE, CMP, ALLOCATOR>& obj, std::ostream& s) {
       s << "{ ";
       for (typename std::map<KTYPE, VTYPE, CMP, ALLOCATOR>::const_iterator cur = obj.begin(); obj.end() != cur; ++cur) {
         if (obj.begin() != cur) {
@@ -189,7 +198,7 @@ namespace DD4hep {
      *  @date 2009-10-05
      */
     template <class TYPE, unsigned int N>
-      std::ostream& toStream(TYPE (&obj)[N], std::ostream& s) {
+    std::ostream& toStream(TYPE (&obj)[N], std::ostream& s) {
       return toStream(obj, obj + N, s, "( ", " )", " , ");
     }
     // ========================================================================
@@ -198,7 +207,7 @@ namespace DD4hep {
      *  @date 2009-10-05
      */
     template <class TYPE, unsigned int N>
-      std::ostream& toStream(const TYPE (&obj)[N], std::ostream& s) {
+    std::ostream& toStream(const TYPE (&obj)[N], std::ostream& s) {
       return toStream(obj, obj + N, s, "( ", " )", " , ");
     }
     // ========================================================================
@@ -207,7 +216,7 @@ namespace DD4hep {
      *  @date 2009-10-05
      */
     template <unsigned int N>
-      std::ostream& toStream(char (&obj)[N], std::ostream& s) {
+    std::ostream& toStream(char (&obj)[N], std::ostream& s) {
       return toStream(std::string(obj, obj + N), s);
     }
     // ========================================================================
@@ -216,7 +225,7 @@ namespace DD4hep {
      *  @date 2009-10-05
      */
     template <unsigned int N>
-      std::ostream& toStream(const char (&obj)[N], std::ostream& s) {
+    std::ostream& toStream(const char (&obj)[N], std::ostream& s) {
       return toStream(std::string(obj, obj + N), s);
     }
     // ========================================================================
@@ -234,7 +243,7 @@ namespace DD4hep {
      *  @date 2006-05-12
      */
     template <class TYPE>
-      inline std::ostream& toStream(const TYPE& obj, std::ostream& s) {
+    inline std::ostream& toStream(const TYPE& obj, std::ostream& s) {
       return s << obj;
     }
     // ========================================================================
@@ -250,24 +259,24 @@ namespace DD4hep {
      *  @date 2009-09-15
      */
     template <class ITERATOR>
-      inline std::ostream& toStream(ITERATOR first,     // begin of the sequence
-                                    ITERATOR last,                                //   end of the sequence
-                                    std::ostream& s,                              //            the stream
-                                    const std::string& open,                      //               opening
-                                    const std::string& close,                     //               closing
-                                    const std::string& delim)                     //             delimiter
-      {
-        s << open;
-        for (ITERATOR curr = first; curr != last; ++curr) {
-          if (first != curr) {
-            s << delim;
-          }
-          toStream(*curr, s);
+    inline std::ostream& toStream(ITERATOR first,     // begin of the sequence
+                                  ITERATOR last,                                //   end of the sequence
+                                  std::ostream& s,                              //            the stream
+                                  const std::string& open,                      //               opening
+                                  const std::string& close,                     //               closing
+                                  const std::string& delim)                     //             delimiter
+    {
+      s << open;
+      for (ITERATOR curr = first; curr != last; ++curr) {
+        if (first != curr) {
+          s << delim;
         }
-        s << close;
-        //
-        return s;
+        toStream(*curr, s);
       }
+      s << close;
+      //
+      return s;
+    }
     // ========================================================================
     /** the generic implementation of the type conversion to the string
      *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
@@ -277,7 +286,7 @@ namespace DD4hep {
      *  @todo need to be compared with boost::lexical_cast
      */
     template <class TYPE>
-      inline std::string toString(const TYPE& obj) {
+    inline std::string toString(const TYPE& obj) {
       std::ostringstream s;
       std::ios::fmtflags orig_flags = s.flags();
       s.setf(std::ios::showpoint);   // to display correctly floats

@@ -1,11 +1,18 @@
-// $Id: Readout.cpp 590 2013-06-03 17:02:43Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Handle.h"
 #include "DD4hep/Plugins.inl"
@@ -55,17 +62,27 @@ string PluginDebug::missingFactory(const string& name) const {
   return msg;
 }
 
+/// Dummy functions of the plugin service
+void* PluginService::getCreator(const std::string&, const std::type_info&)  {  return 0;   }
+void  PluginService::addFactory(const std::string&, void*, const std::type_info&, const std::type_info&)  {}
+
 #else   // ROOT 6
+#include "DD4hep/Printout.h"
+#define private public
+#include "Gaudi/PluginService.h"
 
 // Do not know yet what code to really put in there.....at least it presevers the interfaces and links
 
 /// Default constructor
-PluginDebug::PluginDebug(int)
+PluginDebug::PluginDebug(int dbg)
   : m_debug(0) {
+  m_debug = Gaudi::PluginService::Debug();
+  Gaudi::PluginService::SetDebug(dbg);
 }
 
 /// Default destructor
 PluginDebug::~PluginDebug() {
+  Gaudi::PluginService::SetDebug(m_debug);
 }
 
 /// Helper to check factory existence
@@ -75,6 +92,21 @@ string PluginDebug::missingFactory(const string& name) const {
   return msg;
 }
 
+void* PluginService::getCreator(const std::string& id, const std::type_info& info)  {
+  return Gaudi::PluginService::Details::getCreator(id, info.name());
+}
+
+void PluginService::addFactory(const std::string& id, stub_t stub,
+                               const std::type_info&  signature_type,
+                               const std::type_info&  return_type)
+{
+  using namespace Gaudi::PluginService::Details;
+  if ( PluginService::debug() )  {
+    printout(INFO,"PluginService","+++ Declared factory[%s] with signature %s type:%s.",
+             id.c_str(),signature_type.name(),return_type.name());
+  }
+  Registry::instance().add(id,stub,signature_type.name(),return_type.name(),id);
+}
 #endif
 
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(NamedObject*, (Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*))
@@ -87,5 +119,4 @@ DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, const Geometry::GeoHandler*, const std::map<std::string,std::string>*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, ())
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (const char*))
-
 

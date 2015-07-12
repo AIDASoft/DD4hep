@@ -1,12 +1,18 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Volumes.h"
@@ -17,7 +23,6 @@
 
 #include "DDG4/Geant4Field.h"
 #include "DDG4/Geant4Converter.h"
-#include "DDG4/Factories.h"
 #include "DDG4/Geant4SensitiveDetector.h"
 
 // ROOT includes
@@ -84,6 +89,7 @@
 #include "G4ReflectionFactory.hh"
 #include "CLHEP/Units/SystemOfUnits.h"
 
+// C/C++ include files
 #include <iostream>
 #include <iomanip>
 #include <sstream>

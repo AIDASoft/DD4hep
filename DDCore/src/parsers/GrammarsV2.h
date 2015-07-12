@@ -1,4 +1,16 @@
-// ============================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEPKERNEL_GRAMMARSV2_H
 #define DD4HEPKERNEL_GRAMMARSV2_H 1
 #ifdef __GNUC__
@@ -53,61 +65,61 @@ namespace DD4hep {  namespace Parsers {
     typedef enc::space_type DefaultSkipper;
     //==============================================================================
     template <typename Iterator, typename T,  typename Skipper, class Enable=void>
-      struct Grammar_ {
-        /* READ THIS IF YOUR COMPILE BREAKS ON THE FOLLOWING LINE
-         *
-         * To users: You have to ask developers to implement parser for your type T
-         * To developer: You have to implement and register Grammar for type T
-         *
-         */
-        BOOST_MPL_ASSERT_MSG(false, GRAMMAR_FOR_TYPE_DOES_NOT_EXISTS, (T));
-      };
+    struct Grammar_ {
+      /* READ THIS IF YOUR COMPILE BREAKS ON THE FOLLOWING LINE
+       *
+       * To users: You have to ask developers to implement parser for your type T
+       * To developer: You have to implement and register Grammar for type T
+       *
+       */
+      BOOST_MPL_ASSERT_MSG(false, GRAMMAR_FOR_TYPE_DOES_NOT_EXISTS, (T));
+    };
 
-#define REGISTER_GRAMMAR(ResultType, GrammarName)       \
-    template <typename Iterator, typename Skipper>      \
-      struct Grammar_<Iterator, ResultType, Skipper>    \
-      {                                                 \
-        typedef GrammarName<Iterator, Skipper> Grammar; \
-      }
+#define REGISTER_GRAMMAR(ResultType, GrammarName)     \
+    template <typename Iterator, typename Skipper>    \
+    struct Grammar_<Iterator, ResultType, Skipper>    \
+    {                                                 \
+      typedef GrammarName<Iterator, Skipper> Grammar; \
+    }
     //==============================================================================
     template< typename Iterator> struct SkipperGrammar  : qi::grammar<Iterator>
-      {
+    {
       SkipperGrammar() : SkipperGrammar::base_type(comments) {
-          comments = enc::space | rep::confix("/*", "*/")[*(qi::char_ - "*/")]
-            |
-            rep::confix("//", (sp::eol | sp::eoi))[*(qi::char_ - (sp::eol|sp::eoi))];
-        }
-        qi::rule<Iterator> comments;
-      };
+        comments = enc::space | rep::confix("/*", "*/")[*(qi::char_ - "*/")]
+          |
+          rep::confix("//", (sp::eol | sp::eoi))[*(qi::char_ - (sp::eol|sp::eoi))];
+      }
+      qi::rule<Iterator> comments;
+    };
     //==============================================================================
     template< typename Iterator, typename Skipper>
-      struct StringGrammar : qi::grammar<Iterator, std::string(), qi::locals<char>,Skipper>
-      {
-        //------------------------------------------------------------------------------
-        typedef std::string ResultT;
-        //------------------------------------------------------------------------------
+    struct StringGrammar : qi::grammar<Iterator, std::string(), qi::locals<char>,Skipper>
+    {
+      //------------------------------------------------------------------------------
+      typedef std::string ResultT;
+      //------------------------------------------------------------------------------
       StringGrammar() : StringGrammar::base_type( str ) {
-          begin_quote   = enc::char_("\"'");
-          quote     = enc::char_(qi::_r1);
+        begin_quote   = enc::char_("\"'");
+        quote     = enc::char_(qi::_r1);
 
-          str = qi::lexeme[begin_quote[qi::_a = qi::_1]
-                           > *( (enc::char_('\\') >> quote(qi::_a))[qi::_val += qi::_a]
-                                | (enc::char_[qi::_val += qi::_1] - quote(qi::_a))) >
-                           quote(qi::_a)]
-            ;
-        }
-        //------------------------------------------------------------------------------
-        qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
-        qi::rule<Iterator, char()> begin_quote;
-        qi::rule<Iterator, void(char)> quote;
-        //------------------------------------------------------------------------------
-      };
+        str = qi::lexeme[begin_quote[qi::_a = qi::_1]
+                         > *( (enc::char_('\\') >> quote(qi::_a))[qi::_val += qi::_a]
+                              | (enc::char_[qi::_val += qi::_1] - quote(qi::_a))) >
+                         quote(qi::_a)]
+          ;
+      }
+      //------------------------------------------------------------------------------
+      qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
+      qi::rule<Iterator, char()> begin_quote;
+      qi::rule<Iterator, void(char)> quote;
+      //------------------------------------------------------------------------------
+    };
     REGISTER_GRAMMAR(std::string, StringGrammar);
     //==============================================================================
     template< typename Iterator, typename Skipper>
-      struct CharGrammar : qi::grammar<Iterator, char(), Skipper>  {
+    struct CharGrammar : qi::grammar<Iterator, char(), Skipper>  {
       typedef char ResultT;
-    CharGrammar() : CharGrammar::base_type( ch ) {
+      CharGrammar() : CharGrammar::base_type( ch ) {
         ch = qi::int_parser<char>()
           |
           '\'' >> (qi::char_-'\'') >> '\'';
@@ -117,23 +129,23 @@ namespace DD4hep {  namespace Parsers {
     REGISTER_GRAMMAR(char, CharGrammar);
     //==============================================================================
     template< typename Iterator, typename Skipper>
-      struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper>
-      {
-        typedef bool ResultT;
+    struct BoolGrammar : qi::grammar<Iterator, bool(), Skipper>
+    {
+      typedef bool ResultT;
       BoolGrammar() : BoolGrammar::base_type( boolean_literal ) {
-          boolean_literal =
-            (qi::lit("true") | "True" | "TRUE" | "1")[qi::_val=true]
-            |
-            (qi::lit("false") | "False" | "FALSE" | "0")[qi::_val=false];
-        }
-        qi::rule<Iterator, bool(), Skipper> boolean_literal;
-      };
+        boolean_literal =
+          (qi::lit("true") | "True" | "TRUE" | "1")[qi::_val=true]
+          |
+          (qi::lit("false") | "False" | "FALSE" | "0")[qi::_val=false];
+      }
+      qi::rule<Iterator, bool(), Skipper> boolean_literal;
+    };
     REGISTER_GRAMMAR(bool, BoolGrammar);
     //==============================================================================
     template< typename Iterator, typename RT , typename Skipper>
-      struct IntGrammar : qi::grammar<Iterator, RT(), Skipper>      {
+    struct IntGrammar : qi::grammar<Iterator, RT(), Skipper>      {
       typedef RT ResultT;
-    IntGrammar() : IntGrammar::base_type( integer ) {
+      IntGrammar() : IntGrammar::base_type( integer ) {
         integer = qi::int_parser<RT>()[qi::_val = qi::_1]
           >> -qi::no_case[qi::char_('L')];
       }
@@ -143,16 +155,16 @@ namespace DD4hep {  namespace Parsers {
     // Register IntGrammar:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T, typename Skipper>
-      struct Grammar_<Iterator, T,  Skipper,
-      typename boost::enable_if<boost::is_integral<T> >::type>
-        {
-          typedef IntGrammar<Iterator, T, Skipper> Grammar;
-        };
+    struct Grammar_<Iterator, T,  Skipper,
+                    typename boost::enable_if<boost::is_integral<T> >::type>
+    {
+      typedef IntGrammar<Iterator, T, Skipper> Grammar;
+    };
     //==============================================================================
     template< typename Iterator, typename RT, typename Skipper>
-      struct RealGrammar : qi::grammar<Iterator, RT(), Skipper>  {
+    struct RealGrammar : qi::grammar<Iterator, RT(), Skipper>  {
       typedef RT ResultT;
-    RealGrammar() : RealGrammar::base_type(real) {
+      RealGrammar() : RealGrammar::base_type(real) {
         real = qi::real_parser<RT>();
       }
       qi::rule<Iterator, RT(), Skipper> real;
@@ -161,77 +173,77 @@ namespace DD4hep {  namespace Parsers {
     // Register RealGrammar:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T, typename Skipper >
-      struct Grammar_<Iterator, T, Skipper,
-      typename boost::enable_if<boost::is_floating_point<T> >::type >   {
+    struct Grammar_<Iterator, T, Skipper,
+                    typename boost::enable_if<boost::is_floating_point<T> >::type >   {
       typedef RealGrammar<Iterator, T, Skipper> Grammar;
     };
     //==============================================================================
     template< typename Iterator, typename VectorT, typename Skipper>
-      struct VectorGrammar : qi::grammar<Iterator, VectorT(), qi::locals<char>,Skipper>
-      {
-        //------------------------------------------------------------------------------
-        typedef VectorT ResultT;
-        //------------------------------------------------------------------------------
+    struct VectorGrammar : qi::grammar<Iterator, VectorT(), qi::locals<char>,Skipper>
+    {
+      //------------------------------------------------------------------------------
+      typedef VectorT ResultT;
+      //------------------------------------------------------------------------------
       VectorGrammar() : VectorGrammar::base_type(vec) {
-          begin = enc::char_('[')[qi::_val=']'] | enc::char_('{')[qi::_val='}']
-            | enc::char_('(')[qi::_val=')'];
-          end = enc::char_(qi::_r1);
-          list = elementGrammar % ',';
-          vec = begin[qi::_a = qi::_1] >> -list[qi::_val=qi::_1] >> end(qi::_a);
-        }
-        // ----------------------------------------------------------------------------
-        typename
-          Grammar_<Iterator, typename VectorT::value_type, Skipper>::Grammar
-          elementGrammar;
-        qi::rule<Iterator, char()> begin;
-        qi::rule<Iterator, void(char)> end;
+        begin = enc::char_('[')[qi::_val=']'] | enc::char_('{')[qi::_val='}']
+          | enc::char_('(')[qi::_val=')'];
+        end = enc::char_(qi::_r1);
+        list = elementGrammar % ',';
+        vec = begin[qi::_a = qi::_1] >> -list[qi::_val=qi::_1] >> end(qi::_a);
+      }
+      // ----------------------------------------------------------------------------
+      typename
+      Grammar_<Iterator, typename VectorT::value_type, Skipper>::Grammar
+      elementGrammar;
+      qi::rule<Iterator, char()> begin;
+      qi::rule<Iterator, void(char)> end;
 
-        qi::rule<Iterator, ResultT(), qi::locals<char>,Skipper> vec;
-        qi::rule<Iterator, ResultT(), Skipper> list;
-        // ----------------------------------------------------------------------------
-      };
+      qi::rule<Iterator, ResultT(), qi::locals<char>,Skipper> vec;
+      qi::rule<Iterator, ResultT(), Skipper> list;
+      // ----------------------------------------------------------------------------
+    };
     // ----------------------------------------------------------------------------
     // Register VectorGrammar for std::vector:
     // ----------------------------------------------------------------------------
     template <typename Iterator,typename InnerT,typename AllocatorT,typename Skipper>
-      struct Grammar_<Iterator, std::vector<InnerT, AllocatorT>, Skipper >    {
+    struct Grammar_<Iterator, std::vector<InnerT, AllocatorT>, Skipper >    {
       typedef
-        VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>,Skipper>
-        Grammar;
+      VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>,Skipper>
+      Grammar;
     };
     // ----------------------------------------------------------------------------
     // Register VectorGrammar for std::list:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename InnerT, typename AllocatorT,typename Skipper>
-      struct Grammar_<Iterator, std::list<InnerT, AllocatorT>, Skipper >      {
+    struct Grammar_<Iterator, std::list<InnerT, AllocatorT>, Skipper >      {
       typedef
-        VectorGrammar<Iterator, std::list<InnerT, AllocatorT>,Skipper>
-        Grammar;
+      VectorGrammar<Iterator, std::list<InnerT, AllocatorT>,Skipper>
+      Grammar;
     };
     // ----------------------------------------------------------------------------
     // Register VectorGrammar for std::set:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename InnerT, typename CompareT,typename AllocatorT, typename Skipper>
-      struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper >      {
+    struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper >      {
       typedef
-        VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>,Skipper>
-        Grammar;
+      VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>,Skipper>
+      Grammar;
     };
 
     //==============================================================================
     template< typename Iterator, typename PairT, typename Skipper>
-      struct PairGrammar :
-      qi::grammar<Iterator,PairT(), qi::locals<char>, Skipper> {
+    struct PairGrammar :
+    qi::grammar<Iterator,PairT(), qi::locals<char>, Skipper> {
       //------------------------------------------------------------------------------
       typedef PairT ResultT;
       typedef typename PairT::first_type first_type;
       typedef typename PairT::second_type second_type;
       //------------------------------------------------------------------------------
-    PairGrammar() : PairGrammar::base_type(pair) {
+      PairGrammar() : PairGrammar::base_type(pair) {
         init(",");
       }
 
-    PairGrammar(const std::string& delimeter) : PairGrammar::base_type(pair) {
+      PairGrammar(const std::string& delimeter) : PairGrammar::base_type(pair) {
         init(delimeter);
       }
       //------------------------------------------------------------------------------
@@ -247,10 +259,10 @@ namespace DD4hep {  namespace Parsers {
       }
       // ----------------------------------------------------------------------------
       typename
-        Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar key;
+      Grammar_<Iterator, typename PairT::first_type, Skipper>::Grammar key;
       typename
-        Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar
-        value;
+      Grammar_<Iterator, typename PairT::second_type, Skipper>::Grammar
+      value;
       qi::rule<Iterator, char()> begin;
       qi::rule<Iterator, void(char)> end;
       qi::rule<Iterator, ResultT(), qi::locals<char>, Skipper> pair;
@@ -262,14 +274,14 @@ namespace DD4hep {  namespace Parsers {
     // Register PairGrammar:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename KeyT, typename ValueT,
-      typename Skipper>
-      struct Grammar_<Iterator, std::pair<KeyT, ValueT>, Skipper >
-      {
-        typedef PairGrammar<Iterator, std::pair<KeyT, ValueT>, Skipper> Grammar;
-      };
+              typename Skipper>
+    struct Grammar_<Iterator, std::pair<KeyT, ValueT>, Skipper >
+    {
+      typedef PairGrammar<Iterator, std::pair<KeyT, ValueT>, Skipper> Grammar;
+    };
     // ============================================================================
     template< typename Iterator, typename MapT, typename Skipper>
-      struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>      {
+    struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>      {
       //------------------------------------------------------------------------------
       typedef MapT ResultT;
       typedef typename MapT::key_type KeyT;
@@ -282,9 +294,9 @@ namespace DD4hep {  namespace Parsers {
       struct tag_mapped{};
       struct Operations   {
         template <typename A, typename B = boost::fusion::unused_type,
-          typename C = boost::fusion::unused_type,
-          typename D = boost::fusion::unused_type>
-          struct result { typedef void type; };
+                  typename C = boost::fusion::unused_type,
+                  typename D = boost::fusion::unused_type>
+        struct result { typedef void type; };
         //----------------------------------------------------------------------
         void operator()(ResultT& res, const VectorPairT& vec) const{
           for(typename VectorPairT::const_iterator cur = vec.begin();
@@ -301,7 +313,7 @@ namespace DD4hep {  namespace Parsers {
         //----------------------------------------------------------------------
       };
       //------------------------------------------------------------------------------
-    MapGrammar() : MapGrammar::base_type(map) {
+      MapGrammar() : MapGrammar::base_type(map) {
         pair = key[op(qi::_val,qi::_1, tag_key())] > (qi::lit(':') | '=')  >
           value[op(qi::_val,qi::_1, tag_mapped())];
         list = -(pair % enc::char_(','));
@@ -310,9 +322,9 @@ namespace DD4hep {  namespace Parsers {
       }
       // ----------------------------------------------------------------------------
       typename
-        Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar key;
+      Grammar_<Iterator, typename MapT::key_type, Skipper>::Grammar key;
       typename
-        Grammar_<Iterator, typename MapT::mapped_type, Skipper>::Grammar value;
+      Grammar_<Iterator, typename MapT::mapped_type, Skipper>::Grammar value;
       qi::rule<Iterator, PairT(), Skipper> pair;
       qi::rule<Iterator, VectorPairT(), Skipper> list;
       qi::rule<Iterator, ResultT(), Skipper> map;
@@ -323,24 +335,24 @@ namespace DD4hep {  namespace Parsers {
     // Register MapGrammar for std::map:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename KeyT, typename ValueT,
-      typename KeyCompareT, typename AllocatorT, typename Skipper>
-      struct Grammar_<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>,
-      Skipper > {
+              typename KeyCompareT, typename AllocatorT, typename Skipper>
+    struct Grammar_<Iterator, std::map<KeyT, ValueT, KeyCompareT, AllocatorT>,
+                    Skipper > {
       typedef MapGrammar<Iterator,
-        std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> Grammar;
+                         std::map<KeyT, ValueT, KeyCompareT, AllocatorT>, Skipper> Grammar;
     };
 
     // ============================================================================
     template< typename Iterator, typename Skipper>
-      struct KeyValueGrammar :
-      qi::grammar<Iterator, std::pair<std::string, std::string>(), Skipper> {
+    struct KeyValueGrammar :
+    qi::grammar<Iterator, std::pair<std::string, std::string>(), Skipper> {
       //------------------------------------------------------------------------------
       typedef std::pair<std::string, std::string> ResultT;
       //------------------------------------------------------------------------------
       struct first {};
       struct second {};
 
-    KeyValueGrammar() : KeyValueGrammar::base_type(pair) {
+      KeyValueGrammar() : KeyValueGrammar::base_type(pair) {
         //------------------------------------------------------------------------------
         pair =  gstring >> ":" >> +enc::char_;
       }
@@ -354,15 +366,15 @@ namespace DD4hep {  namespace Parsers {
 
     // ============================================================================
     template< typename Iterator, typename PointT, typename Skipper>
-      struct Pnt3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
+    struct Pnt3DGrammar : qi::grammar<Iterator, PointT(), Skipper> {
       typedef PointT ResultT;
       typedef std::string Scalar;
       // ----------------------------------------------------------------------------
       struct Operations {
         template <typename A, typename B = boost::fusion::unused_type,
-          typename C = boost::fusion::unused_type,
-          typename D = boost::fusion::unused_type>
-          struct result { typedef void type; };
+                  typename C = boost::fusion::unused_type,
+                  typename D = boost::fusion::unused_type>
+        struct result { typedef void type; };
         void operator()(ResultT& res, const Scalar& value,const char xyz) const{
           typename PointT::Scalar val = evaluate_string<typename PointT::Scalar>(value);
           switch(xyz)  {
@@ -374,7 +386,7 @@ namespace DD4hep {  namespace Parsers {
         }
       }; //  Operations
       // ----------------------------------------------------------------------------
-    Pnt3DGrammar() : Pnt3DGrammar::base_type(point) {
+      Pnt3DGrammar() : Pnt3DGrammar::base_type(point) {
         point = list | ('(' >> list >> ')') | ('[' >> list >> ']');
         list = -(enc::no_case[qi::lit("x") | qi::lit("px")]  >> ':')
           >> scalar[op(qi::_val,qi::_1,'x')] >>
@@ -393,27 +405,27 @@ namespace DD4hep {  namespace Parsers {
     // Register Pnt3DGrammar for ROOT::Math::PositionVector3D:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T1, typename T2, typename Skipper>
-      struct Grammar_<Iterator, ROOT::Math::PositionVector3D<T1,T2>, Skipper>{
+    struct Grammar_<Iterator, ROOT::Math::PositionVector3D<T1,T2>, Skipper>{
       typedef Pnt3DGrammar<Iterator, ROOT::Math::PositionVector3D<T1,T2>, Skipper> Grammar;
     };
     // ----------------------------------------------------------------------------
     // Register Pnt3DGrammar for ROOT::Math::DisplacementVector3D:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T1, typename T2, typename Skipper>
-      struct Grammar_<Iterator, ROOT::Math::DisplacementVector3D<T1,T2>, Skipper>{
+    struct Grammar_<Iterator, ROOT::Math::DisplacementVector3D<T1,T2>, Skipper>{
       typedef Pnt3DGrammar<Iterator,ROOT::Math::DisplacementVector3D<T1,T2>, Skipper> Grammar;
     };
     // ============================================================================
     template< typename Iterator, typename PointT, typename Skipper>
-      struct Pnt4DGrammar : qi::grammar<Iterator, PointT(), Skipper>   {
+    struct Pnt4DGrammar : qi::grammar<Iterator, PointT(), Skipper>   {
       typedef PointT ResultT;
       typedef std::string ScalarT;
       //-----------------------------------------------------------------------------
       struct Operations {
         template <typename A, typename B = boost::fusion::unused_type,
-          typename C = boost::fusion::unused_type,
-          typename D = boost::fusion::unused_type>
-          struct result { typedef void type; };
+                  typename C = boost::fusion::unused_type,
+                  typename D = boost::fusion::unused_type>
+        struct result { typedef void type; };
 
         void operator()(ResultT& res, const ScalarT& value,const char xyz) const{
           typename PointT::Scalar val = evaluate_string<typename PointT::Scalar>(value);
@@ -432,7 +444,7 @@ namespace DD4hep {  namespace Parsers {
         }
       }; //   Operations
       // ----------------------------------------------------------------------------
-    Pnt4DGrammar() : Pnt4DGrammar::base_type(point4d) {
+      Pnt4DGrammar() : Pnt4DGrammar::base_type(point4d) {
         point4d = list4d | ('(' >> list4d >> ')') | ('[' >> list4d >> ']');
         list4d = (point3d[op(qi::_val,qi::_1)] >> enc::char_(";,")
                   >> e[op(qi::_val, qi::_1, 'e')])
@@ -462,7 +474,7 @@ namespace DD4hep {  namespace Parsers {
     // Register Pnt4DGrammar for ROOT::Math::LorentzVector:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename T1, typename Skipper>
-      struct Grammar_<Iterator, ROOT::Math::LorentzVector<T1>, Skipper >   {
+    struct Grammar_<Iterator, ROOT::Math::LorentzVector<T1>, Skipper >   {
       typedef Pnt4DGrammar<Iterator, ROOT::Math::LorentzVector<T1>, Skipper> Grammar;
     };
     // ============================================================================

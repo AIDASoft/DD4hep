@@ -1,11 +1,17 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GEANT4FIELD_H
 #define DD4HEP_DDG4_GEANT4FIELD_H
 
@@ -38,8 +44,8 @@ namespace DD4hep {
 
     public:
       /// Constructor. The sensitive detector element is identified by the detector name
-    Geant4Field(Geometry::OverlayedField field)
-      : m_field(field) {
+      Geant4Field(Geometry::OverlayedField field)
+        : m_field(field) {
       }
       /// Standard destructor
       virtual ~Geant4Field() {

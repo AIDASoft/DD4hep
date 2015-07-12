@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDEve/View.h"
@@ -66,11 +71,11 @@ namespace DD4hep {
     }
     else   {
       display->MessageBox(INFO,"No DDEve setup given.\nYou need to choose now.....\n"
-			  "If you need an example, open\n\n"
-			  "examples/CLIDSid/eve/DDEve.xml\n"
-			  "and the corresponding event data\n"
-			  "examples/CLIDSid/eve/CLICSiD_Events.root\n\n\n",
-			  "Need to choos setup file");
+                          "If you need an example, open\n\n"
+                          "examples/CLIDSid/eve/DDEve.xml\n"
+                          "and the corresponding event data\n"
+                          "examples/CLIDSid/eve/CLICSiD_Events.root\n\n\n",
+                          "Need to choos setup file");
       display->ChooseGeometry();
       //display->LoadXML("file:../DD4hep/examples/CLICSiD/compact/DDEve.xml");
     }
@@ -215,37 +220,37 @@ Display::CalodataContext& Display::GetCaloHistogram(const string& nam)   {
       string use = ctx.config.use;
       string hits = ctx.config.hits;
       if ( use.empty() )  {
-	const char* n = nam.c_str();
-	const DisplayConfiguration::Calodata& cd = (*j).second.data.calodata;
-	TH2F* h = new TH2F(n,n,cd.n_eta, cd.eta_min, cd.eta_max, cd.n_phi, cd.phi_min, cd.phi_max);
-	h->SetTitle(hits.c_str());
-	ctx.eveHist = new TEveCaloDataHist();
-	ctx.slice = ctx.eveHist->GetNSlices();
-	ctx.eveHist->AddHistogram(h);
-	ctx.eveHist->RefSliceInfo(0).Setup(n,cd.threshold,cd.color,101);
-	ctx.eveHist->GetEtaBins()->SetTitleFont(120);
-	ctx.eveHist->GetEtaBins()->SetTitle("h");
-	ctx.eveHist->GetPhiBins()->SetTitleFont(120);
-	ctx.eveHist->GetPhiBins()->SetTitle("f");
-	ctx.eveHist->IncDenyDestroy();
+        const char* n = nam.c_str();
+        const DisplayConfiguration::Calodata& cd = (*j).second.data.calodata;
+        TH2F* h = new TH2F(n,n,cd.n_eta, cd.eta_min, cd.eta_max, cd.n_phi, cd.phi_min, cd.phi_max);
+        h->SetTitle(hits.c_str());
+        ctx.eveHist = new TEveCaloDataHist();
+        ctx.slice = ctx.eveHist->GetNSlices();
+        ctx.eveHist->AddHistogram(h);
+        ctx.eveHist->RefSliceInfo(0).Setup(n,cd.threshold,cd.color,101);
+        ctx.eveHist->GetEtaBins()->SetTitleFont(120);
+        ctx.eveHist->GetEtaBins()->SetTitle("h");
+        ctx.eveHist->GetPhiBins()->SetTitleFont(120);
+        ctx.eveHist->GetPhiBins()->SetTitle("f");
+        ctx.eveHist->IncDenyDestroy();
 
-	ctx.calo3D = new TEveCalo3D(ctx.eveHist);
-	ctx.calo3D->SetName(n);
-	ctx.calo3D->SetBarrelRadius(cd.rmin);
-	ctx.calo3D->SetEndCapPos(cd.dz);
-	ctx.calo3D->SetAutoRange(kTRUE);
-	ctx.calo3D->SetMaxTowerH(cd.towerH);
-	ImportGeo(ctx.calo3D);
-	EtaPhiHistogramActor actor(h);
-	eventHandler().collectionLoop(hits,actor);
-	ctx.eveHist->DataChanged();
+        ctx.calo3D = new TEveCalo3D(ctx.eveHist);
+        ctx.calo3D->SetName(n);
+        ctx.calo3D->SetBarrelRadius(cd.rmin);
+        ctx.calo3D->SetEndCapPos(cd.dz);
+        ctx.calo3D->SetAutoRange(kTRUE);
+        ctx.calo3D->SetMaxTowerH(cd.towerH);
+        ImportGeo(ctx.calo3D);
+        EtaPhiHistogramActor actor(h);
+        eventHandler().collectionLoop(hits,actor);
+        ctx.eveHist->DataChanged();
       }
       else   {
-	CalodataContext c = GetCaloHistogram(use);
-	ctx = c;
-	ctx.config.use = use;
-	ctx.config.hits = hits;
-	ctx.config.name = nam;
+        CalodataContext c = GetCaloHistogram(use);
+        ctx = c;
+        ctx.config.use = use;
+        ctx.config.hits = hits;
+        ctx.config.name = nam;
       }
       i = m_calodata.insert(make_pair(nam,ctx)).first;
       return (*i).second;      
@@ -297,7 +302,7 @@ void Display::MessageBox(PrintLevel level, const string& text, const string& tit
   else if ( level == FATAL )
     pic = client().GetPicture((path+"interrupt.xpm").c_str());
   new TGMsgBox(gClient->GetRoot(),0,title.c_str(),text.c_str(),pic,
-	       kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
+               kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
 }
 
 /// Popup XML file chooser. returns chosen file name; empty on cancel
@@ -378,53 +383,53 @@ void Display::OnNewEvent(EventHandler* handler )   {
       size_t len = (*j).second;
       const char* nam = (*j).first;
       if ( len > 0 )   {
-	EventHandler::CollectionType typ = handler->collectionType(nam);
-	if ( typ == EventHandler::CALO_HIT_COLLECTION ||
-	     typ == EventHandler::TRACKER_HIT_COLLECTION )  {
-	  const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
-	  if ( i != m_collectionsConfigs.end() )  {
-	    const DataConfig& cfg = (*i).second;
-	    if ( cfg.hits == "PointSet" )  {
-	      PointsetCreator cr(nam,len,cfg);
-	      handler->collectionLoop((*j).first, cr);
-	      ImportEvent(cr.element());
-	    }
-	    else if ( cfg.hits == "BoxSet" )  {
-	      BoxsetCreator cr(nam,len,cfg);
-	      handler->collectionLoop((*j).first, cr);
-	      ImportEvent(cr.element());
-	    }
-	    else if ( cfg.hits == "TowerSet" )  {
-	      TowersetCreator cr(nam,len,cfg);
-	      handler->collectionLoop((*j).first, cr);
-	      ImportEvent(cr.element());
-	    }
-	    else {  // Default is point set
-	      PointsetCreator cr(nam,len);
-	      handler->collectionLoop((*j).first, cr);
-	      ImportEvent(cr.element());
-	    }
-	  }
-	  else  {
-	    PointsetCreator cr(nam,len);
-	    handler->collectionLoop((*j).first, cr);
-	    ImportEvent(cr.element());
-	  }
-	}
-	else if ( typ == EventHandler::PARTICLE_COLLECTION )   {
-	  // We do not have to care about memory leaks here:
-	  // TEveTrackPropagator is reference counted and will be destroyed if the
-	  // last track is gone ie. when we re-initialize the event scene
+        EventHandler::CollectionType typ = handler->collectionType(nam);
+        if ( typ == EventHandler::CALO_HIT_COLLECTION ||
+             typ == EventHandler::TRACKER_HIT_COLLECTION )  {
+          const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
+          if ( i != m_collectionsConfigs.end() )  {
+            const DataConfig& cfg = (*i).second;
+            if ( cfg.hits == "PointSet" )  {
+              PointsetCreator cr(nam,len,cfg);
+              handler->collectionLoop((*j).first, cr);
+              ImportEvent(cr.element());
+            }
+            else if ( cfg.hits == "BoxSet" )  {
+              BoxsetCreator cr(nam,len,cfg);
+              handler->collectionLoop((*j).first, cr);
+              ImportEvent(cr.element());
+            }
+            else if ( cfg.hits == "TowerSet" )  {
+              TowersetCreator cr(nam,len,cfg);
+              handler->collectionLoop((*j).first, cr);
+              ImportEvent(cr.element());
+            }
+            else {  // Default is point set
+              PointsetCreator cr(nam,len);
+              handler->collectionLoop((*j).first, cr);
+              ImportEvent(cr.element());
+            }
+          }
+          else  {
+            PointsetCreator cr(nam,len);
+            handler->collectionLoop((*j).first, cr);
+            ImportEvent(cr.element());
+          }
+        }
+        else if ( typ == EventHandler::PARTICLE_COLLECTION )   {
+          // We do not have to care about memory leaks here:
+          // TEveTrackPropagator is reference counted and will be destroyed if the
+          // last track is gone ie. when we re-initialize the event scene
 
-	  // $$$ Do not know exactly what the field parameters mean
-	  const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
-	  const DataConfig* cfg = (i==m_collectionsConfigs.end()) ? 0 : &((*i).second);
-	  MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
-			       new TEveCompound("MC_Particles","MC_Particles"),cfg);
-	  handler->collectionLoop((*j).first, cr);
-	  cr.close();
-	  particles = cr.particles;
-	}
+          // $$$ Do not know exactly what the field parameters mean
+          const DataConfigurations::const_iterator i=m_collectionsConfigs.find(nam);
+          const DataConfig* cfg = (i==m_collectionsConfigs.end()) ? 0 : &((*i).second);
+          MCParticleCreator cr(new TEveTrackPropagator("","",new TEveMagFieldDuo(350, -3.5, 2.0)),
+                               new TEveCompound("MC_Particles","MC_Particles"),cfg);
+          handler->collectionLoop((*j).first, cr);
+          cr.close();
+          particles = cr.particles;
+        }
       }
     }
   }
@@ -437,7 +442,7 @@ void Display::OnNewEvent(EventHandler* handler )   {
     size_t n = eventHandler().collectionLoop(ctx.config.hits, actor);
     ctx.eveHist->DataChanged();
     printout(INFO,"FillEtaPhiHistogram","+++ %s: Filled %ld hits from %s....",
-	     ctx.calo3D->GetName(), n, ctx.config.hits.c_str());
+             ctx.calo3D->GetName(), n, ctx.config.hits.c_str());
   }
   /// We absolutely want to import the particles as the last elements, otherwise
   /// they end up under the hits and are close to invisible
@@ -534,48 +539,48 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
       const DetElement::Children& c = world.children();
       
       printout(INFO,"Display","+++ Load children of %s to %d levels", 
-	       world.placement().name(), levels);
+               world.placement().name(), levels);
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-	DetElement de = (*i).second;
-	SensitiveDetector sd = m_lcdd->sensitiveDetector(de.name());
-	TEveElementList& parent = sd.isValid() ? sens : struc;
-	pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
-	if ( e.second && e.first )  {
-	  parent.AddElement(e.second);
-	}
+        DetElement de = (*i).second;
+        SensitiveDetector sd = m_lcdd->sensitiveDetector(de.name());
+        TEveElementList& parent = sd.isValid() ? sens : struc;
+        pair<bool,TEveElement*> e = Utilities::LoadDetElement(de,levels,&parent);
+        if ( e.second && e.first )  {
+          parent.AddElement(e.second);
+        }
       }
     }
     else    {
       TGeoNode* n = (TGeoNode*)start->GetUserData();
       printout(INFO,"Display","+++ Load children of %s to %d levels",Utilities::GetName(start),levels);
       if ( 0 != n )   {
-	TGeoHMatrix mat;
-	const char* node_name = n->GetName();
-	int level = Utilities::findNodeWithMatrix(lcdd().world().placement().ptr(),n,&mat);
-	if ( level > 0 )   {
-	  pair<bool,TEveElement*> e(false,0);
-	  const DetElement::Children& c = world.children();
-	  for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
-	    DetElement de = (*i).second;
-	    if ( de.placement().ptr() == n )  {
-	      e = Utilities::createEveShape(0, levels, start, n, mat, de.name());
-	      break;
-	    }
-	  }
-	  if ( !e.first && !e.second )  {
-	    e = Utilities::createEveShape(0, levels, start, n, mat, node_name);
-	  }
-	  if ( e.first )  { // newly created
-	    start->AddElement(e.second);
-	  }
-	  printout(INFO,"Display","+++ Import geometry node %s with %d levels.",node_name, levels);
-	}
-	else   {
-	  printout(INFO,"Display","+++ FAILED to import geometry node %s with %d levels.",node_name, levels);
-	}
+        TGeoHMatrix mat;
+        const char* node_name = n->GetName();
+        int level = Utilities::findNodeWithMatrix(lcdd().world().placement().ptr(),n,&mat);
+        if ( level > 0 )   {
+          pair<bool,TEveElement*> e(false,0);
+          const DetElement::Children& c = world.children();
+          for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
+            DetElement de = (*i).second;
+            if ( de.placement().ptr() == n )  {
+              e = Utilities::createEveShape(0, levels, start, n, mat, de.name());
+              break;
+            }
+          }
+          if ( !e.first && !e.second )  {
+            e = Utilities::createEveShape(0, levels, start, n, mat, node_name);
+          }
+          if ( e.first )  { // newly created
+            start->AddElement(e.second);
+          }
+          printout(INFO,"Display","+++ Import geometry node %s with %d levels.",node_name, levels);
+        }
+        else   {
+          printout(INFO,"Display","+++ FAILED to import geometry node %s with %d levels.",node_name, levels);
+        }
       }
       else  {
-	LoadGeoChildren(0,levels,false);
+        LoadGeoChildren(0,levels,false);
       }
     }
   }
@@ -587,7 +592,7 @@ void Display::LoadGeoChildren(TEveElement* start, int levels, bool redraw)  {
 /// Make a set of nodes starting from a top element (in-)visible with a given depth
 void Display::MakeNodesVisible(TEveElement* e, bool visible, int level)   {
   printout(INFO,"Display","+++ %s element %s with a depth of %d.",
-	   visible ? "Show" : "Hide",Utilities::GetName(e),level);
+           visible ? "Show" : "Hide",Utilities::GetName(e),level);
   Utilities::MakeNodesVisible(e, visible, level);
   manager().Redraw3D();
 }

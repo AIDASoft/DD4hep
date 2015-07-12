@@ -1,14 +1,21 @@
-// $Id: Conversions.h 1479 2014-12-18 16:00:45Z markus.frank@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4hep_XML_XMLUTILITIES_H
 #define DD4hep_XML_XMLUTILITIES_H
 
+// Framework include files
 #include "XML/Conversions.h"
 #include "XML/XMLElements.h"
 #include "DD4hep/LCDD.h"
@@ -29,16 +36,16 @@ namespace DD4hep {
      *  Example: <br>
      @verbatim
      <envelope vis="ILD_ECALVis">
-        <shape type="PolyhedraRegular" numsides="8"  rmin="TPC_outer_radius+Ecal_Tpc_gap" rmax="Ecal_outer_radius"
-	        dz="2.*TPC_Ecal_Hcal_barrel_halfZ"  material = "Air" />
-        <rotation x="0*deg" y="0*deg" z="90*deg-180*deg/8"/>
+     <shape type="PolyhedraRegular" numsides="8"  rmin="TPC_outer_radius+Ecal_Tpc_gap" rmax="Ecal_outer_radius"
+     dz="2.*TPC_Ecal_Hcal_barrel_halfZ"  material = "Air" />
+     <rotation x="0*deg" y="0*deg" z="90*deg-180*deg/8"/>
      </envelope>
      @endverbatim
      *  @author S.Lu DESY, F. Gaede CERN/DESY 
      *  @version $Id:$
      */
     Geometry::Volume createPlacedEnvelope( DD4hep::Geometry::LCDD& lcdd, DD4hep::XML::Handle_t e , 
-					   DD4hep::Geometry::DetElement sdet ) ;
+                                           DD4hep::Geometry::DetElement sdet ) ;
     
   }  /* End namespace XML              */
 }    /* End namespace DD4hep           */

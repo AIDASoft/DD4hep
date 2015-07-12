@@ -1,17 +1,24 @@
-// $Id:$
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 //  Simple program to print all the materials in a detector on
 //  a straight line between two given points
 // 
 //  Author     : F.Gaede, DESY
 //
-//====================================================================
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/DD4hepUnits.h"
-
 #include "DDRec/MaterialManager.h"
 
 using namespace std ;
@@ -27,8 +34,8 @@ int main(int argc, char** argv ){
     
   if( argc != 8 ) {
     std::cout << " usage: print_materials compact.xml x0 y0 z0 x1 y1 z1 " << std::endl 
-	      << "        -> prints the materials on a straight line between the two given points ( unit is cm) "  
-	      << std::endl ;
+              << "        -> prints the materials on a straight line between the two given points ( unit is cm) "  
+              << std::endl ;
     exit(1) ;
   }
   
@@ -83,8 +90,8 @@ int main(int argc, char** argv ){
   const MaterialData& avMat = matMgr.createAveragedMaterial( materials ) ;
 
   std::cout << "     averaged Material : " << " Z: " << avMat.Z() << " A: " << avMat.A() << " densitiy: " << avMat.density()
-	    << " radiationLength: " <<  avMat.radiationLength() 
-	    << " interactionLength: " << avMat.interactionLength()  << std::endl << std::endl  ;
+            << " radiationLength: " <<  avMat.radiationLength() 
+            << " interactionLength: " << avMat.interactionLength()  << std::endl << std::endl  ;
   
 
   std::cout << "     Total length : "  << path_length / dd4hep::mm << " mm "  << std::endl  ;

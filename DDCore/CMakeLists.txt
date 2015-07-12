@@ -1,8 +1,22 @@
+# $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+#==========================================================================
+#  AIDA Detector description implementation for LCD
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
+
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 project(DDCore)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include ${DDSegmentation_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include 
+  ${DDSegmentation_INCLUDE_DIRS} 
+  ${DDPluginManager_INCLUDE_DIRS})
 
 file(GLOB sources src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp)
 file(GLOB plugin_sources src/plugins/*.cpp)
@@ -32,13 +46,10 @@ if(DD4HEP_USE_PYROOT)
   add_definitions(-DDD4HEP_USE_PYROOT)
   set(libraries  ${libraries} PyROOT)
 endif()
-if(NOT DD4HEP_NO_REFLEX)
-  set(libraries  ${libraries} Reflex)
-endif()
 
 add_library(DDCore SHARED ${sources} ${parser_sources} )
 
-target_link_libraries(DDCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
+target_link_libraries(DDCore ${ROOT_LIBRARIES} ${XML_LIBRARIES} ${DDPluginManager_LIBRARIES} ${DDSegmentation_LIBRARIES} Geom ${libraries})
 
 ## generates rootmap and installs the library
 add_dd4hep_plugin(DDCorePlugins SHARED ${plugin_sources})

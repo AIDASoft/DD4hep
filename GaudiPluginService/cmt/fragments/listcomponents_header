@@ -1,0 +1,22 @@
+##
+componentslistfile = ${LIBNAME}.components
+COMPONENTSLIST_DIR = ../$(tag)
+fulllibname = lib${LIBNAME}.$(shlibsuffix)
+
+${CONSTITUENT} :: ${COMPONENTSLIST_DIR}/$(componentslistfile)
+	@:
+
+${COMPONENTSLIST_DIR}/$(componentslistfile) :: $(bin)$(fulllibname)
+	@echo 'Generating componentslist file for $(fulllibname)'
+	cd ../$(tag);$(listcomponents_cmd) --output ${COMPONENTSLIST_DIR}/$(componentslistfile) $(fulllibname)
+
+install :: ${CONSTITUENT}install
+${CONSTITUENT}install :: ${CONSTITUENT}
+
+uninstall :: ${CONSTITUENT}uninstall
+${CONSTITUENT}uninstall :: ${CONSTITUENT}clean
+
+${CONSTITUENT}clean ::
+	@echo 'Deleting $(componentslistfile)'
+	@rm -f ${COMPONENTSLIST_DIR}/$(componentslistfile)
+

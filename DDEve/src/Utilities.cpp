@@ -1,3 +1,18 @@
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/Objects.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Volumes.h"
@@ -161,8 +176,8 @@ int Utilities::findNodeWithMatrix(TGeoNode* p, TGeoNode* n, TGeoHMatrix* mat, st
     int level = findNodeWithMatrix(daughter,n,daughter_matrix,sub_path ? &spath : 0);
     if ( level>0 )  {
       if ( sub_path )  {
-	*sub_path += "/";
-	*sub_path += spath;
+        *sub_path += "/";
+        *sub_path += spath;
       }
       if ( mat ) *mat = *daughter_matrix;
       return level+1;
@@ -182,7 +197,7 @@ std::pair<bool,TEveElement*> Utilities::LoadDetElement(Geometry::DetElement de,i
       std::pair<bool,TEveElement*> e = createEveShape(0, levels, parent, n, *matrix, de.name());
       TEveElementList* list = dynamic_cast<TEveElementList*>(e.second);
       if ( list )  {
-	list->SetName(de.name());
+        list->SetName(de.name());
       }
       return e;
     }

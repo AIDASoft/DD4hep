@@ -1,11 +1,16 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDG4_GEANT4ACTIONPHASE_H
 #define DD4HEP_DDG4_GEANT4ACTIONPHASE_H
 
@@ -91,7 +96,7 @@ namespace DD4hep {
       virtual bool remove(Geant4Action* action, Callback callback);
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename R>
-        bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg)) {
+      bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
           return add(member,Callback(member).make(callback));
@@ -100,7 +105,7 @@ namespace DD4hep {
       }
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename A1, typename R>
-        bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
+      bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A1), *m_argTypes[1], "Invalid ARG1 type. Failed to add phase callback.");
         if (dynamic_cast<IF_TYPE*>(member)) {
@@ -110,7 +115,7 @@ namespace DD4hep {
       }
       /// Add a new member to the phase
       template <typename TYPE, typename IF_TYPE, typename A0, typename A1, typename A2, typename R>
-        bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
+      bool add(TYPE* member, R (IF_TYPE::*callback)(A0 arg0, A1 arg1)) {
         typeinfoCheck(typeid(A0), *m_argTypes[0], "Invalid ARG0 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A1), *m_argTypes[1], "Invalid ARG1 type. Failed to add phase callback.");
         typeinfoCheck(typeid(A2), *m_argTypes[2], "Invalid ARG2 type. Failed to add phase callback.");

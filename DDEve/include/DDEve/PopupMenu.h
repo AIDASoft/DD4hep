@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDEVE_POPUPMENU_H
 #define DD4HEP_DDEVE_POPUPMENU_H
 
@@ -61,7 +66,7 @@ namespace DD4hep {
     virtual int AddEntry(const char* name, Callback cb, void* ud=0, const TGPicture* p=0, TGMenuEntry* before=0);
     /// Add a new popup menu entry with a callback
     template <typename T>
-      int AddEntry(const char* name, T* ptr, void (T::*pmf)(TGMenuEntry*, void*), void* ud=0, const TGPicture* p=0, TGMenuEntry* before=0)  {
+    int AddEntry(const char* name, T* ptr, void (T::*pmf)(TGMenuEntry*, void*), void* ud=0, const TGPicture* p=0, TGMenuEntry* before=0)  {
       return AddEntry(name, Callback(ptr).make(pmf), ud, p, before);
     }
     /// Check menu entry

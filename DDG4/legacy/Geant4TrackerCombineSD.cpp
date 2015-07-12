@@ -1,11 +1,16 @@
-// $Id: Geant4TrackerCombineSD.cpp 796 2013-10-03 19:19:39Z markus.frank@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDG4/Geant4SensitiveDetector_inline.h"
@@ -110,4 +115,4 @@ namespace DD4hep {  namespace Simulation {
     typedef Geant4GenericSD<TrackerCombine>  Geant4TrackerCombine;
   }}    // End namespace DD4hep::Simulation
 
-DECLARE_GEANT4SENSITIVEDETECTOR(Geant4TrackerCombine)
+DECLARE_GEANT4SENSITIVEDETECTOR_NS(DD4hep::Simulation,Geant4TrackerCombine)

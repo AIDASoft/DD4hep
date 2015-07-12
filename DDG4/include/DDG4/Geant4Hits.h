@@ -1,11 +1,17 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_GEANT4HITS_H
 #define DD4HEP_GEANT4HITS_H
 
@@ -52,8 +58,8 @@ namespace DD4hep {
     template <class HIT> struct HitPositionCompare: public HitCompare<HIT> {
       const Position& pos;
       /// Constructor
-    HitPositionCompare(const Position& p)
-      : pos(p) {
+      HitPositionCompare(const Position& p)
+        : pos(p) {
       }
       /// Default destructor
       virtual ~HitPositionCompare() {}
@@ -89,18 +95,18 @@ namespace DD4hep {
         double deposit;
         /// Timestamp when this energy was deposited
         double time;
-      MonteCarloContrib()
-      : trackID(-1), pdgID(-1), deposit(0.0), time(0.0) {
-      }
-      MonteCarloContrib(int track_id, double dep, double time_stamp)
-      : trackID(track_id), pdgID(-1), deposit(dep), time(time_stamp) {
-      }
-      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
-      : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp) {
-      }
-      MonteCarloContrib(const MonteCarloContrib& c)
-      : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time) {
-      }
+        MonteCarloContrib()
+          : trackID(-1), pdgID(-1), deposit(0.0), time(0.0) {
+        }
+        MonteCarloContrib(int track_id, double dep, double time_stamp)
+          : trackID(track_id), pdgID(-1), deposit(dep), time(time_stamp) {
+        }
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp) {
+        }
+        MonteCarloContrib(const MonteCarloContrib& c)
+          : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time) {
+        }
         /// Assignment operator
         MonteCarloContrib& operator=(const MonteCarloContrib& c)  {
           if ( this != &c )  {
@@ -111,17 +117,17 @@ namespace DD4hep {
           }
           return *this;
         }
-          void clear() {
-            time = deposit = 0.0;
-            pdgID = trackID = -1;
-          }
+        void clear() {
+          time = deposit = 0.0;
+          pdgID = trackID = -1;
+        }
       };
       typedef MonteCarloContrib Contribution;
       typedef std::vector<MonteCarloContrib> Contributions;
 
     public:
       /// Standard constructor
-    Geant4Hit() : cellID(0) {
+      Geant4Hit() : cellID(0) {
       }
       /// Default destructor
       virtual ~Geant4Hit() {

@@ -1,11 +1,16 @@
-// $Id: SiTrackerBarrel_geo.cpp 1360 2014-10-27 16:32:06Z Nikiforos.Nikiforou@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDREC_SURFACEINSTALLER_H
 #define DD4HEP_DDREC_SURFACEINSTALLER_H 1
 
@@ -164,13 +169,13 @@ namespace {
   template <typename UserData>
   Installer<UserData>::Installer(LCDD& lcdd, int argc, char** argv)
     : DD4hep::SurfaceInstaller(lcdd, argc, argv) 
-    {
-      handle_arguments(argc, argv);
-    }
+  {
+    handle_arguments(argc, argv);
+  }
 
   /// Handle surface installation using cached surfaces.
   template <typename UserData>
-    bool Installer<UserData>::handleUsingCache(DetElement comp, Volume vol)  const  {
+  bool Installer<UserData>::handleUsingCache(DetElement comp, Volume vol)  const  {
     Surfaces::const_iterator is = m_surfaces.find(vol.ptr());
     if ( is != m_surfaces.end() )  {
       VolSurface surf((*is).second);
@@ -182,7 +187,7 @@ namespace {
 
   /// Add a new surface to the surface manager and the local cache
   template <typename UserData>
-    void Installer<UserData>::addSurface(DetElement component, const DD4hep::DDRec::VolSurface& surf)   {
+  void Installer<UserData>::addSurface(DetElement component, const DD4hep::DDRec::VolSurface& surf)   {
     m_surfaces.insert(std::make_pair(surf.volume().ptr(),surf.ptr()));
     DD4hep::DDRec::volSurfaceList(component)->push_back(surf);
   }

@@ -1,11 +1,17 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_XMLDETECTOR_H
 #define DD4HEP_XMLDETECTOR_H
 
@@ -32,12 +38,12 @@ namespace DD4hep {
      */
     struct Component: public Dimension {
       /// Constructor from Handle
-    Component(Handle_t e)
-      : Dimension(e) {
+      Component(Handle_t e)
+        : Dimension(e) {
       }
       /// Constructor from Element
-    Component(const Element& e)
-      : Dimension(e) {
+      Component(const Element& e)
+        : Dimension(e) {
       }
       /// Access material attribute as STL string
       std::string materialStr() const;
@@ -62,8 +68,8 @@ namespace DD4hep {
      */
     struct DetElement: public Dimension {
       /// Constructor from Handle
-    DetElement(Handle_t e)
-      : Dimension(e) {
+      DetElement(Handle_t e)
+        : Dimension(e) {
       }
       /// Access underlying XML handle object
       Handle_t handle() const {

@@ -1,3 +1,15 @@
+# $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+#==========================================================================
+#  AIDA Detector description implementation for LCD
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
+
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 
 include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include 
@@ -9,22 +21,22 @@ include_directories( ${CMAKE_SOURCE_DIR}/DDCore/include
 
 #-----------------------------------------------------------------------------------
 add_executable(geoDisplay src/display.cpp)
-target_link_libraries(geoDisplay DDCore )
+target_link_libraries(geoDisplay DDCore ${ROOT_LIBRARIES})
 #-----------------------------------------------------------------------------------
 add_executable(geoConverter src/converter.cpp)
-target_link_libraries(geoConverter DDCore)
+target_link_libraries(geoConverter DDCore ${ROOT_LIBRARIES})
 #-----------------------------------------------------------------------------------
 add_executable(geoPluginRun src/plugin_runner.cpp)
-target_link_libraries(geoPluginRun DDCore)
+target_link_libraries(geoPluginRun DDCore ${ROOT_LIBRARIES})
 #-----------------------------------------------------------------------------------
 add_executable( print_materials src/print_materials.cpp)
-target_link_libraries(print_materials DDCore DDRec)
+target_link_libraries(print_materials DDCore DDRec ${ROOT_LIBRARIES})
 #-----------------------------------------------------------------------------------
 add_executable( materialScan src/materialScan.cpp)
-target_link_libraries(materialScan DDCore DDRec)
+target_link_libraries(materialScan DDCore DDRec ${ROOT_LIBRARIES})
 #-----------------------------------------------------------------------------------
 add_executable( dumpdetector  src/dumpdetector.cpp)
-target_link_libraries(dumpdetector DDCore DDRec)
+target_link_libraries(dumpdetector DDCore DDRec ${ROOT_LIBRARIES})
 #-----------------------------------------------------------------------------------
 
 
@@ -35,7 +47,7 @@ if(DD4HEP_USE_LCIO)
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_lcio.cpp)
 
   add_executable(test_surfaces src/test_surfaces.cpp )
-  target_link_libraries(test_surfaces DDCore DDRec ${LCIO_LIBRARIES} )
+  target_link_libraries(test_surfaces DDCore DDRec ${LCIO_LIBRARIES}  ${ROOT_LIBRARIES})
 else()
   add_executable(teveDisplay src/teve_display.cpp G__teve.cxx src/next_event_dummy.cpp)
 endif()

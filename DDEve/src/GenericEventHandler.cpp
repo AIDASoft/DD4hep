@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDEve/GenericEventHandler.h"
@@ -108,9 +113,9 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
     }
     if ( m_current )   {
       if ( m_current->Open(file_type, file_name) )   {
-	m_hasFile = true;
-	NotifySubscribers(&EventConsumer::OnFileOpen);
-	return true;
+        m_hasFile = true;
+        NotifySubscribers(&EventConsumer::OnFileOpen);
+        return true;
       }
       err = "+++ Failed to open the data file:"+file_name;
       deletePtr(m_current);   
@@ -126,7 +131,7 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
   string path = TString::Format("%s/icons/stop_t.xpm", gSystem->Getenv("ROOTSYS")).Data();
   const TGPicture* pic = gClient->GetPicture(path.c_str());
   new TGMsgBox(gClient->GetRoot(),0,"Failed to open event data",err.c_str(),pic,
-	       kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
+               kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
   return false;
 }
 
@@ -136,9 +141,9 @@ bool GenericEventHandler::NextEvent()   {
   try {
     if ( m_hasFile )   {
       if ( current()->NextEvent() > 0 )   {
-	m_hasEvent = true;
-	NotifySubscribers(&EventConsumer::OnNewEvent);
-	return 1;
+        m_hasEvent = true;
+        NotifySubscribers(&EventConsumer::OnNewEvent);
+        return 1;
       }
     }
     throw runtime_error("+++ EventHandler::readEvent: No file open!");
@@ -149,7 +154,7 @@ bool GenericEventHandler::NextEvent()   {
       "while reading a new event:\n" + string(e.what()) + "\n\n";
     const TGPicture* pic = gClient->GetPicture(path.c_str());
     new TGMsgBox(gClient->GetRoot(),0,"Failed to read event", err.c_str(),pic,
-		 kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
+                 kMBDismiss,0,kVerticalFrame,kTextLeft|kTextCenterY);
   }
   return -1;
 }

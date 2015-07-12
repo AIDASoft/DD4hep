@@ -1,11 +1,16 @@
-// $Id: Primitives.h 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DD4HEP_IOSTREAMS_H
 #define DD4HEP_DD4HEP_IOSTREAMS_H
 
@@ -60,7 +65,7 @@ namespace DD4hep {
     struct  category : boost::iostreams::seekable_device_tag, boost::iostreams::closable_tag { };
 
     // Default constructor
-  dd4hep_file() : m_handle(0) {   }
+    dd4hep_file() : m_handle(0) {   }
     // Constructors taking file desciptors
     dd4hep_file(handle_type fd, dd4hep_file_flags);
     // Constructors taking file desciptors
@@ -104,48 +109,48 @@ namespace DD4hep {
    */
   template <typename T=int> class dd4hep_file_source : private dd4hep_file<T> {
   public:
-  typedef dd4hep_file<T> descriptor;
-  struct category : boost::iostreams::input_seekable,
-  boost::iostreams::device_tag,
-  boost::iostreams::closable_tag      { };
-  typedef typename descriptor::handle_type handle_type;
-  typedef typename descriptor::char_type   char_type;
-  using descriptor::is_open;
-  using descriptor::close;
-  using descriptor::read;
-  using descriptor::seek;
-  using descriptor::handle;
+    typedef dd4hep_file<T> descriptor;
+    struct category : boost::iostreams::input_seekable,
+                      boost::iostreams::device_tag,
+                      boost::iostreams::closable_tag      { };
+    typedef typename descriptor::handle_type handle_type;
+    typedef typename descriptor::char_type   char_type;
+    using descriptor::is_open;
+    using descriptor::close;
+    using descriptor::read;
+    using descriptor::seek;
+    using descriptor::handle;
 
-  /// Default Constructor
-  dd4hep_file_source() : descriptor() {  }
+    /// Default Constructor
+    dd4hep_file_source() : descriptor() {  }
 
-  /// Copy constructor
-  dd4hep_file_source(const dd4hep_file_source<T>& other)
-  : descriptor(other)      {                     }
+    /// Copy constructor
+    dd4hep_file_source(const dd4hep_file_source<T>& other)
+      : descriptor(other)      {                     }
 
-  /// Constructors taking file desciptors
-  explicit dd4hep_file_source(handle_type h, dd4hep_file_flags flags)
-  : descriptor(h,flags)  {                       }
+    /// Constructors taking file desciptors
+    explicit dd4hep_file_source(handle_type h, dd4hep_file_flags flags)
+      : descriptor(h,flags)  {                       }
 
-  /// Constructors taking file desciptors
-  explicit dd4hep_file_source(const char* name, BOOST_IOS::openmode mode = BOOST_IOS::in)
-  : descriptor(name,mode) {                      }
+    /// Constructors taking file desciptors
+    explicit dd4hep_file_source(const char* name, BOOST_IOS::openmode mode = BOOST_IOS::in)
+      : descriptor(name,mode) {                      }
 
-  /// open overload taking file desciptors
-  void open(handle_type h, dd4hep_file_flags flags)
-  {     this->descriptor::open(h, flags);              }
+    /// open overload taking file desciptors
+    void open(handle_type h, dd4hep_file_flags flags)
+    {     this->descriptor::open(h, flags);              }
 
-  /// open overload taking C-style string
-  void open(const char* path, BOOST_IOS::openmode mode = BOOST_IOS::in)
-  {     this->descriptor::open(path,mode);             }
+    /// open overload taking C-style string
+    void open(const char* path, BOOST_IOS::openmode mode = BOOST_IOS::in)
+    {     this->descriptor::open(path,mode);             }
 
-  /// open overload taking a std::string
-  void open(const std::string& path, BOOST_IOS::openmode mode = BOOST_IOS::in)
-  {     open(path.c_str(), mode);                                 }
+    /// open overload taking a std::string
+    void open(const std::string& path, BOOST_IOS::openmode mode = BOOST_IOS::in)
+    {     open(path.c_str(), mode);                                 }
 
-  /// open overload taking a Boost.Filesystem path
-  template<typename Path> void open(const Path& path, BOOST_IOS::openmode mode = BOOST_IOS::in)
-  {     open(detail_path(path), mode);                           }
+    /// open overload taking a Boost.Filesystem path
+    template<typename Path> void open(const Path& path, BOOST_IOS::openmode mode = BOOST_IOS::in)
+    {     open(detail_path(path), mode);                           }
   };
 
   /// DD4hep file sink extension to boost::iostreams
@@ -167,12 +172,12 @@ namespace DD4hep {
    *  \see http://www.boost.org/libs/iostreams for further documentation.
    */
   template <typename T>
-    class  dd4hep_file_sink : private dd4hep_file<T> {
+  class  dd4hep_file_sink : private dd4hep_file<T> {
   public:
     typedef dd4hep_file<T> descriptor;
     struct category : boost::iostreams::output_seekable,
-      boost::iostreams::device_tag,
-      boost::iostreams::closable_tag  { };
+                      boost::iostreams::device_tag,
+                      boost::iostreams::closable_tag  { };
     typedef typename descriptor::handle_type handle_type;
     typedef typename descriptor::char_type   char_type;
     using descriptor::is_open;
@@ -185,8 +190,8 @@ namespace DD4hep {
     dd4hep_file_sink()  {                        }
 
     /// Copy constructor
-  dd4hep_file_sink(const dd4hep_file_sink<T>& other)
-    : descriptor(other) {                     }
+    dd4hep_file_sink(const dd4hep_file_sink<T>& other)
+      : descriptor(other) {                     }
 
     /// Constructors taking file desciptors
     explicit dd4hep_file_sink(handle_type fd, dd4hep_file_flags flags)
@@ -202,7 +207,7 @@ namespace DD4hep {
 
     /// Constructor taking a Boost.Filesystem path
     template<typename Path>
-      explicit dd4hep_file_sink(const Path& path, BOOST_IOS::openmode mode = BOOST_IOS::out )
+    explicit dd4hep_file_sink(const Path& path, BOOST_IOS::openmode mode = BOOST_IOS::out )
       : descriptor(detail_path(path), mode)  { }
 
     /// open overloads taking file descriptors
@@ -219,7 +224,7 @@ namespace DD4hep {
 
     /// open overload taking a Boost.Filesystem path
     template<typename Path> void open(const Path& path, BOOST_IOS::openmode mode = BOOST_IOS::out )
-      {  open(detail_path(path), mode);                     }
+    {  open(detail_path(path), mode);                     }
   };
 }   // End namespace boost
 #endif // DD4HEP_DD4HEP_IOSTREAMs_H

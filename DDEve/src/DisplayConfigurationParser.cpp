@@ -1,12 +1,17 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
-//  Original Author: Matevz Tadel 2009 (MultiView.C)
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/LCDDLoad.h"
@@ -154,7 +159,7 @@ template <> void Converter<view>::operator()(xml_h e)  const  {
   c.show_sensitive = e.hasAttr(_U(sensitive)) ? e.attr<bool>(_U(sensitive)) : true;
   c.name  = e.attr<string>(_U(name));
   printout(INFO,"DisplayConfiguration","+++ View: %s sensitive:%d structure:%d.",
-	   c.name.c_str(), c.show_sensitive, c.show_structure);
+           c.name.c_str(), c.show_sensitive, c.show_structure);
   xml_coll_t(e,_Unicode(panel)).for_each(Converter<panel>(lcdd,&c.subdetectors));
   xml_coll_t(e,_Unicode(detelement)).for_each(Converter<detelement>(lcdd,&c.subdetectors));
   xml_coll_t(e,_Unicode(calodata)).for_each(Converter<calodata_configs>(lcdd,&c.subdetectors));

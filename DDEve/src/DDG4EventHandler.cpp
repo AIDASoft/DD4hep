@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDEve/DDG4EventHandler.h"
@@ -121,9 +126,9 @@ size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEveHitA
       DDEveHit hit;
       actor.setSize(data_ptr->size());
       for(_P::const_iterator j=data_ptr->begin(); j!=data_ptr->end(); ++j)   {
-	if ( (*m_simhitConverter)(*j,&hit) )    {
-	  actor(hit);
-	}
+        if ( (*m_simhitConverter)(*j,&hit) )    {
+          actor(hit);
+        }
       }
       return data_ptr->size();
     }
@@ -141,9 +146,9 @@ size_t DDG4EventHandler::collectionLoop(const std::string& collection, DDEvePart
       DDEveParticle part;
       actor.setSize(data_ptr->size());
       for(_P::const_iterator j=data_ptr->begin(); j!=data_ptr->end(); ++j)   {
-	if ( (*m_particleConverter)(*j,&part) )    {
-	  actor(part);
-	}
+        if ( (*m_particleConverter)(*j,&part) )    {
+          actor(part);
+        }
       }
       return data_ptr->size();
     }
@@ -169,9 +174,9 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
     if ( nbytes >= 0 )   {
       printout(ERROR,"DDG4EventHandler","+++ ReadEvent: Read %d bytes of event data for entry:%d",nbytes,event_number);
       for(Branches::const_iterator i=m_branches.begin(); i != m_branches.end(); ++i)  {
-	TBranch* b = (*i).second.first;
-	std::vector<void*>* ptr_data = *(std::vector<void*>**)b->GetAddress();
-	m_data[b->GetClassName()].push_back(make_pair(b->GetName(),ptr_data->size()));
+        TBranch* b = (*i).second.first;
+        std::vector<void*>* ptr_data = *(std::vector<void*>**)b->GetAddress();
+        m_data[b->GetClassName()].push_back(make_pair(b->GetName(),ptr_data->size()));
       }
       m_hasEvent = true;
       return nbytes;
@@ -198,15 +203,15 @@ bool DDG4EventHandler::Open(const std::string&, const std::string& name)   {
       m_entry = -1;
       m_branches.clear();
       for(Int_t i=0; i<br->GetSize(); ++i)  {
-	TBranch* b = (TBranch*)br->At(i);
-	if ( !b ) continue;
-	m_branches[b->GetName()] = make_pair(b,(void*)0);
-	printout(INFO,"DDG4EventHandler::open","+++ Branch %s has %ld entries.",b->GetName(),b->GetEntries());
+        TBranch* b = (TBranch*)br->At(i);
+        if ( !b ) continue;
+        m_branches[b->GetName()] = make_pair(b,(void*)0);
+        printout(INFO,"DDG4EventHandler::open","+++ Branch %s has %ld entries.",b->GetName(),b->GetEntries());
       }
       for(Int_t i=0; i<br->GetSize(); ++i)  {
-	TBranch* b = (TBranch*)br->At(i);
-	if ( !b ) continue;
-	b->SetAddress(&m_branches[b->GetName()].second);
+        TBranch* b = (TBranch*)br->At(i);
+        if ( !b ) continue;
+        b->SetAddress(&m_branches[b->GetName()].second);
       }
       m_hasFile = true;
       return true;

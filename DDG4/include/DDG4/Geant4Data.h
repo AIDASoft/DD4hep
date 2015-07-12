@@ -1,11 +1,17 @@
-// $Id: Geant4Data.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_GEANT4DATA_H
 #define DD4HEP_GEANT4DATA_H
 
@@ -126,29 +132,29 @@ namespace DD4hep {
         float  x,y,z;
 
         /// Default constructor
-      MonteCarloContrib()
-        : trackID(-1), pdgID(-1), deposit(0.0), time(0.0), x(0), y(0), z(0) {
+        MonteCarloContrib()
+          : trackID(-1), pdgID(-1), deposit(0.0), time(0.0), x(0), y(0), z(0) {
         }
         /// Initializing constructor
-      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
-        : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), x(0), y(0), z(0) {
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp), x(0), y(0), z(0) {
         }
         /// Initializing constructor
-      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, float* pos)
-        : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
-          x(pos[0]), y(pos[1]), z(pos[2])
-          {
-          }
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, float* pos)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+            x(pos[0]), y(pos[1]), z(pos[2])
+        {
+        }
         /// Initializing constructor
-      MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double* pos)
-        : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
-          x(pos[0]), y(pos[1]), z(pos[2])
-          {
-          }
+        MonteCarloContrib(int track_id, int pdg, double dep, double time_stamp, double* pos)
+          : trackID(track_id), pdgID(pdg), deposit(dep), time(time_stamp),
+            x(pos[0]), y(pos[1]), z(pos[2])
+        {
+        }
         /// Copy constructor
-      MonteCarloContrib(const MonteCarloContrib& c)
-        : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time),
-          x(c.x), y(c.y), z(c.z) {
+        MonteCarloContrib(const MonteCarloContrib& c)
+          : trackID(c.trackID), pdgID(c.pdgID), deposit(c.deposit), time(c.time),
+            x(c.x), y(c.y), z(c.z) {
         }
         /// Assignment operator
         MonteCarloContrib& operator=(const MonteCarloContrib& c)  {

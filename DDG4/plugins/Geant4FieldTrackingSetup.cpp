@@ -1,11 +1,17 @@
-// $Id: Geant4Setup.cpp 578 2013-05-17 22:33:09Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H
 #define DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H 1
 
@@ -88,14 +94,20 @@ namespace DD4hep {
 #endif // DD4HEP_DDG4_GEANT4FIELDTRACKINGSETUP_H
 
 
-// $Id: Geant4Setup.cpp 578 2013-05-17 22:33:09Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/Handle.h"
 #include "DD4hep/Fields.h"
@@ -201,7 +213,7 @@ static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cn
 
 /// Standard constructor
 Geant4FieldTrackingSetupAction::Geant4FieldTrackingSetupAction(Geant4Context* ctxt, const std::string& nam)
-: Geant4PhaseAction(ctxt,nam), Geant4FieldTrackingSetup()
+  : Geant4PhaseAction(ctxt,nam), Geant4FieldTrackingSetup()
 {
   declareProperty("equation",           eq_typ);
   declareProperty("stepper",            stepper_typ);
@@ -217,9 +229,9 @@ Geant4FieldTrackingSetupAction::Geant4FieldTrackingSetupAction(Geant4Context* ct
 void Geant4FieldTrackingSetupAction::operator()()   {
   execute(context()->lcdd());
   print("Geant4 magnetic field tracking configured. G4MagIntegratorStepper:%s G4Mag_EqRhs:%s "
-	"Epsilon:[min:%f mm max:%f mm] Delta:[chord:%f 1-step:%f intersect:%f]",
-	stepper_typ.c_str(),eq_typ.c_str(),eps_min, eps_max,
-	delta_chord,delta_one_step,delta_intersection);
+        "Epsilon:[min:%f mm max:%f mm] Delta:[chord:%f 1-step:%f intersect:%f]",
+        stepper_typ.c_str(),eq_typ.c_str(),eps_min, eps_max,
+        delta_chord,delta_one_step,delta_intersection);
 }
 
 DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields)

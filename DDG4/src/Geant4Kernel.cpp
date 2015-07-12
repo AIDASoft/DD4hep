@@ -1,11 +1,16 @@
-// $Id: Geant4Kernel.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -38,12 +43,12 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4Kernel::PhaseSelector::PhaseSelector(Geant4Kernel* kernel)
-: m_kernel(kernel) {
+  : m_kernel(kernel) {
 }
 
 /// Copy constructor
 Geant4Kernel::PhaseSelector::PhaseSelector(const PhaseSelector& c)
-: m_kernel(c.m_kernel) {
+  : m_kernel(c.m_kernel) {
 }
 
 /// Assignment operator
@@ -65,9 +70,9 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
-: m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
-  m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0),
-  m_physicsList(0), m_lcdd(lcdd_ref), phase(this) {
+  : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
+    m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0),
+    m_physicsList(0), m_lcdd(lcdd_ref), phase(this) {
 #if 0
   registerSequence(m_runAction, "RunAction");
   registerSequence(m_eventAction, "EventAction");

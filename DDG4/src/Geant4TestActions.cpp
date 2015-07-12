@@ -1,11 +1,16 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//=========================================================================
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -37,7 +42,7 @@ namespace {
 
 /// Standard constructor
 Geant4TestBase::Geant4TestBase(Geant4Action* a, const std::string& typ)
-: m_type(typ) {
+  : m_type(typ) {
   a->declareProperty("Property_int", m_value1 = 0);
   a->declareProperty("Property_double", m_value2 = 0e0);
   a->declareProperty("Property_string", m_value3);
@@ -50,7 +55,7 @@ Geant4TestBase::~Geant4TestBase() {
 
 /// Standard constructor with initializing arguments
 Geant4TestGeneratorAction::Geant4TestGeneratorAction(Geant4Context* c, const std::string& n)
-: Geant4GeneratorAction(c, n), Geant4TestBase(this, "Geant4TestGeneratorAction") {
+  : Geant4GeneratorAction(c, n), Geant4TestBase(this, "Geant4TestGeneratorAction") {
   InstanceCount::increment(this);
 }
 
@@ -67,7 +72,7 @@ void Geant4TestGeneratorAction::operator()(G4Event* evt)  {
 
 /// Standard constructor with initializing arguments
 Geant4TestRunAction::Geant4TestRunAction(Geant4Context* c, const std::string& n)
-: Geant4RunAction(c, n), Geant4TestBase(this, "Geant4TestRunAction") {
+  : Geant4RunAction(c, n), Geant4TestBase(this, "Geant4TestRunAction") {
   InstanceCount::increment(this);
 }
 
@@ -102,7 +107,7 @@ void Geant4TestRunAction::endEvent(const G4Event* evt) {
 
 /// Standard constructor with initializing arguments
 Geant4TestEventAction::Geant4TestEventAction(Geant4Context* c, const std::string& n)
-: Geant4EventAction(c, n), Geant4TestBase(this, "Geant4TestEventAction") {
+  : Geant4EventAction(c, n), Geant4TestBase(this, "Geant4TestEventAction") {
   InstanceCount::increment(this);
 }
 
@@ -142,7 +147,7 @@ void Geant4TestEventAction::endRun(const G4Run* run) {
 
 /// Standard constructor with initializing arguments
 Geant4TestTrackAction::Geant4TestTrackAction(Geant4Context* c, const std::string& n)
-: Geant4TrackingAction(c, n), Geant4TestBase(this, "Geant4TestTrackAction") {
+  : Geant4TrackingAction(c, n), Geant4TestBase(this, "Geant4TestTrackAction") {
   InstanceCount::increment(this);
 }
 
@@ -168,7 +173,7 @@ void Geant4TestTrackAction::end(const G4Track* trk) {
 
 /// Standard constructor with initializing arguments
 Geant4TestStepAction::Geant4TestStepAction(Geant4Context* c, const std::string& n)
-: Geant4SteppingAction(c, n), Geant4TestBase(this, "Geant4TestStepAction") {
+  : Geant4SteppingAction(c, n), Geant4TestBase(this, "Geant4TestStepAction") {
   InstanceCount::increment(this);
 }
 
@@ -183,7 +188,7 @@ void Geant4TestStepAction::operator()(const G4Step*, G4SteppingManager*) {
 
 /// Standard constructor with initializing arguments
 Geant4TestSensitive::Geant4TestSensitive(Geant4Context* c, const std::string& n, DetElement det, LCDD& lcdd)
-: Geant4Sensitive(c, n, det, lcdd), Geant4TestBase(this, "Geant4TestSensitive") {
+  : Geant4Sensitive(c, n, det, lcdd), Geant4TestBase(this, "Geant4TestSensitive") {
   InstanceCount::increment(this);
   m_collectionID = defineCollection < TestHit > (n);
   PRINT("%s> Collection ID is %d", m_type.c_str(), int(m_collectionID));

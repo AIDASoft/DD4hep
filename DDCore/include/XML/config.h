@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_XML_CONFIG_H
 #define DD4HEP_XML_CONFIG_H
 
@@ -13,6 +18,7 @@
 #define  __TIXML__
 #endif
 
+// C/C++ include files
 #include <cstdlib>
 
 /* Setup XML parsing for the use of Apache Xerces-C and TiXml

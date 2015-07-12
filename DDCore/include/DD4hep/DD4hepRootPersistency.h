@@ -1,12 +1,16 @@
 // $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DD4HEPROOTPERSISTENCY_H
 #define DD4HEP_DD4HEPROOTPERSISTENCY_H
 
@@ -15,9 +19,9 @@
 
 /// Helper class to support ROOT persistency of LCDD objects
 class DD4hepRootPersistency : public TNamed, public DD4hep::Geometry::LCDDData  {
- public:
+public:
   /// Default constructor
- DD4hepRootPersistency() : TNamed() {}
+  DD4hepRootPersistency() : TNamed() {}
   /// Default destructor
   virtual ~DD4hepRootPersistency() {}
 

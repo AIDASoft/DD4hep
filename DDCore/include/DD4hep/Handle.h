@@ -1,12 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_ELEMENTS_H
 #define DD4HEP_ELEMENTS_H
 #include "DD4hep/config.h"
@@ -58,7 +62,7 @@ namespace DD4hep {
     std::string _ptrToString(const void* p, const char* fmt = "%p");
     /// Format any pointer (64 bits) to string  \ingroup DD4HEP_XML
     template <typename T> std::string _toString(const T* p, const char* fmt = "%p")
-      {      return _ptrToString((void*)p, fmt);       }
+    {      return _ptrToString((void*)p, fmt);       }
 
     /// String conversions: string to boolean value  \ingroup DD4HEP_GEOMETRY
     bool _toBool(const std::string& value);
@@ -197,16 +201,16 @@ namespace DD4hep {
       /// Single and only data member: Reference to the actual element.
       T* m_element;
       /// Defaulot constructor
-    Handle()
-      : m_element(0) {
+      Handle()
+        : m_element(0) {
       }
       /// Initializing constructor from pointer
-    Handle(T* e)
-      : m_element(e) {
+      Handle(T* e)
+        : m_element(e) {
       }
       /// Copy constructor
-    Handle(const Handle<T>& e)
-      : m_element(e.m_element) {
+      Handle(const Handle<T>& e)
+        : m_element(e.m_element) {
       }
       /// Initializing constructor from unrelated pointer with type checking
       template <typename Q> Handle(Q* e)
@@ -316,8 +320,8 @@ namespace DD4hep {
     template <typename M> class DestroyHandles {
     public:
       M& object;
-    DestroyHandles(M& m)
-      : object(m) {
+      DestroyHandles(M& m)
+        : object(m) {
       }
       ~DestroyHandles() {
         object.clear();

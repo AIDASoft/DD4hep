@@ -1,18 +1,28 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DDG4/Geant4DetectorConstruction.h"
 #include "DDG4/Geant4HierarchyDump.h"
 #include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4Kernel.h"
 #include "DD4hep/LCDD.h"
+
 #include "TGeoManager.h"
 #include "G4PVPlacement.hh"
+
+// C/C++ include files
 #include <iostream>
 
 #ifdef GEANT4_HAS_GDML
@@ -35,7 +45,7 @@ Geant4DetectorConstruction* Geant4DetectorConstruction::instance(Geant4Kernel& k
 
 /// Initializing constructor for other clients
 Geant4DetectorConstruction::Geant4DetectorConstruction(Geometry::LCDD& lcdd)
-: Geant4Action(0,"DetectorConstruction"), m_lcdd(lcdd), m_world(0)
+  : Geant4Action(0,"DetectorConstruction"), m_lcdd(lcdd), m_world(0)
 {
   m_outputLevel = PrintLevel(printLevel()-1);
   s_instance = this;
@@ -43,7 +53,7 @@ Geant4DetectorConstruction::Geant4DetectorConstruction(Geometry::LCDD& lcdd)
 
 /// Initializing constructor for DDG4
 Geant4DetectorConstruction::Geant4DetectorConstruction(Geant4Kernel& kernel)
-: Geant4Action(0,"DetectorConstruction"), m_lcdd(kernel.lcdd()), m_world(0)
+  : Geant4Action(0,"DetectorConstruction"), m_lcdd(kernel.lcdd()), m_world(0)
 {
   m_outputLevel = kernel.getOutputLevel("Geant4Converter");
   s_instance = this;

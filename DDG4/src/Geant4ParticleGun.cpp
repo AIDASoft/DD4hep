@@ -1,11 +1,16 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -17,6 +22,7 @@
 #include "DDG4/Geant4InputHandling.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
+// Geant4 include files
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 
@@ -32,8 +38,8 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4ParticleGun::Geant4ParticleGun(Geant4Context* ctxt, const string& nam)
-: Geant4GeneratorAction(ctxt,nam), m_position(0,0,0), m_direction(1,1,0.3),
-  m_particle(0), m_shotNo(0)
+  : Geant4GeneratorAction(ctxt,nam), m_position(0,0,0), m_direction(1,1,0.3),
+    m_particle(0), m_shotNo(0)
 {
   InstanceCount::increment(this);
   m_needsControl = true;

@@ -1,11 +1,16 @@
-// $Id: Readout.h 951 2013-12-16 23:37:56Z Christian.Grefe@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -29,28 +34,28 @@ namespace {
       Condition c((*i).second);
       string type = c.type();
       printout(INFO,test,"           %s Condition[%s]: %s [%s] Validity:%s",
-	       c.detector().path().c_str(), type.c_str(), c.name().c_str(), 
-	       c.value().c_str(), c.validity().c_str());
+               c.detector().path().c_str(), type.c_str(), c.name().c_str(), 
+               c.value().c_str(), c.validity().c_str());
 
       if ( type == "alignment" )  {
-	c.bind<string>();
+        c.bind<string>();
       }
       else if ( type == "temperature" )  {
-	c.bind<double>();
-	printout(INFO,test,"                %s : double value:%g ",
-		 c.name().c_str(), c.get<double>());
+        c.bind<double>();
+        printout(INFO,test,"                %s : double value:%g ",
+                 c.name().c_str(), c.get<double>());
       }
       else if ( type == "pressure" )  {
-	c.bind<double>();
-	printout(INFO,test,"                %s : double value:%g [%g hPa]",
-		 c.name().c_str(), c.get<double>(),
-		 _multiply(c.get<double>(),"1.0/hPa"));
+        c.bind<double>();
+        printout(INFO,test,"                %s : double value:%g [%g hPa]",
+                 c.name().c_str(), c.get<double>(),
+                 _multiply(c.get<double>(),"1.0/hPa"));
       }
       else if ( type == "whatever" )  {
-	c.bind<vector<double> >();
-	const vector<double>& v = c.get<vector<double> >();
-	printout(INFO,test,"                %s : vector<double> size:%d = %s",
-		 c.name().c_str(), int(v.size()), c.block().str().c_str());
+        c.bind<vector<double> >();
+        const vector<double>& v = c.get<vector<double> >();
+        printout(INFO,test,"                %s : vector<double> size:%d = %s",
+                 c.name().c_str(), int(v.size()), c.block().str().c_str());
       }
       printout(INFO,test,  "                Type: %s",typeName(c.typeInfo()).c_str());
     }
@@ -87,9 +92,9 @@ namespace {
   struct Callee  {
     void call(unsigned long tags, DetElement& det, void* param)    {
       if ( DetElement::CONDITIONS_CHANGED == (tags&DetElement::CONDITIONS_CHANGED) )
-	printout(INFO,"Callee","+++ Conditions update %s param:%p",det.path().c_str(),param);
+        printout(INFO,"Callee","+++ Conditions update %s param:%p",det.path().c_str(),param);
       if ( DetElement::PLACEMENT_CHANGED == (tags&DetElement::PLACEMENT_CHANGED) )  
-	printout(INFO,"Callee","+++ Alignment update %s param:%p",det.path().c_str(),param);
+        printout(INFO,"Callee","+++ Alignment update %s param:%p",det.path().c_str(),param);
     }
   };
 

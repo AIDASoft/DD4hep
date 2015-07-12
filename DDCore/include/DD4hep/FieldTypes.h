@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #ifndef DD4HEP_GEOMETRY_FIELDTYPES_H
 #define DD4HEP_GEOMETRY_FIELDTYPES_H
@@ -36,8 +41,8 @@ namespace DD4hep {
       Direction direction;
     public:
       /// Initializing constructor
-    ConstantField()
-      : direction() {
+      ConstantField()
+        : direction() {
       }
       /// Call to access the field components at a given location
       virtual void fieldComponents(const double* /* pos */, double* field);

@@ -1,12 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_GEOMETRY_FIELDS_H
 #define DD4HEP_GEOMETRY_FIELDS_H
 
@@ -69,13 +73,13 @@ namespace DD4hep {
       };
 
       /// Default constructor
-    CartesianField()
-      : Ref_t() {
+      CartesianField()
+        : Ref_t() {
       }
 
       /// Constructor to be used when reading the already parsed DOM tree
-    CartesianField(const CartesianField& e)
-      : Ref_t(e) {
+      CartesianField(const CartesianField& e)
+        : Ref_t(e) {
       }
 
       /// Constructor to be used when reading the already parsed DOM tree
@@ -162,13 +166,13 @@ namespace DD4hep {
       };
 
       /// Default constructor
-    OverlayedField()
-      : Ref_t() {
+      OverlayedField()
+        : Ref_t() {
       }
 
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q>
-        OverlayedField(const Handle<Q>& e)
+      OverlayedField(const Handle<Q>& e)
         : Ref_t(e) {
       }
 

@@ -1,11 +1,17 @@
-// $Id: Geant4Field.cpp 875 2013-11-04 16:15:14Z markus.frank@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GEANT4CONVERSION_H
 #define DD4HEP_DDG4_GEANT4CONVERSION_H
 
@@ -77,37 +83,37 @@ namespace DD4hep {
   namespace Simulation {
 
     template <typename OUTPUT,typename ARGS>
-      Geant4Conversion<OUTPUT,ARGS>::Geant4Conversion()
+    Geant4Conversion<OUTPUT,ARGS>::Geant4Conversion()
       : Geant4ConversionHelper()
-      {
-      }
+    {
+    }
 
     template <typename OUTPUT,typename ARGS>
-      Geant4Conversion<OUTPUT,ARGS>::~Geant4Conversion()
-      {
-      }
+    Geant4Conversion<OUTPUT,ARGS>::~Geant4Conversion()
+    {
+    }
 
     template <typename OUTPUT,typename ARGS>
-      typename Geant4Conversion<OUTPUT,ARGS>::Converters&
-      Geant4Conversion<OUTPUT,ARGS>::conversions()
-      {
-        static Converters s_converter;
-        return s_converter;
-      }
+    typename Geant4Conversion<OUTPUT,ARGS>::Converters&
+    Geant4Conversion<OUTPUT,ARGS>::conversions()
+    {
+      static Converters s_converter;
+      return s_converter;
+    }
 
     template <typename OUTPUT, typename ARGS>
-      const Geant4Conversion<OUTPUT,ARGS>&
-      Geant4Conversion<OUTPUT,ARGS>::converter(const std::type_info& typ)
-      {
-        typename Converters::const_iterator i = conversions().find(&typ);
-        if ( i != conversions().end() ) {
-          return *((*i).second);
-        }
-        throw std::runtime_error(typeName(typeid(self_t))+
-                                 ": No appropriate LCIO_OUTPUT conversion "
-                                 "mechanism known for tag:"+
-                                 typeName(typ));
+    const Geant4Conversion<OUTPUT,ARGS>&
+    Geant4Conversion<OUTPUT,ARGS>::converter(const std::type_info& typ)
+    {
+      typename Converters::const_iterator i = conversions().find(&typ);
+      if ( i != conversions().end() ) {
+        return *((*i).second);
       }
+      throw std::runtime_error(typeName(typeid(self_t))+
+                               ": No appropriate LCIO_OUTPUT conversion "
+                               "mechanism known for tag:"+
+                               typeName(typ));
+    }
 
     /// Template class for data conversion. To be specialized by the client.
     /**
@@ -116,17 +122,17 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     template <typename OUTPUT, typename ARGS, typename TAG>
-      class Geant4DataConversion : public Geant4Conversion<OUTPUT,ARGS> {
+    class Geant4DataConversion : public Geant4Conversion<OUTPUT,ARGS> {
     public:
       typedef TAG tag_t;
       typedef ARGS arg_t;
       typedef OUTPUT output_t;
       typedef Geant4Conversion<output_t,arg_t> self_t;
-    Geant4DataConversion(void*) : Geant4Conversion<OUTPUT,ARGS>()
-        {
-          this->self_t::conversions().insert(make_pair(&typeid(TAG),this));
-          //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
-        }
+      Geant4DataConversion(void*) : Geant4Conversion<OUTPUT,ARGS>()
+      {
+        this->self_t::conversions().insert(make_pair(&typeid(TAG),this));
+        //std::cout << "Registered " << typeName(typeid(*this)) << std::endl;
+      }
       virtual OUTPUT* operator()(const ARGS& args) const;
     };
 

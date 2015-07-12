@@ -1,11 +1,17 @@
-// $Id: Primitives.h 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DD4HEP_PRIMITIVES_H
 #define DD4HEP_DD4HEP_PRIMITIVES_H
 
@@ -160,7 +166,7 @@ namespace DD4hep {
   };
   /// Generator to create Operator to select value elements of a map
   template <typename T> Select2nd<typename T::value_type> select2nd(const T&)
-    { return Select2nd<typename T::value_type>(); }
+  { return Select2nd<typename T::value_type>(); }
 
   /// Operator to select the first element of a pair
   template <typename T> class Select1st  {
@@ -172,15 +178,15 @@ namespace DD4hep {
   };
   /// Generator to create Operator to select key values of a map
   template <typename T> Select1st<typename T::value_type> select1st(const T&)
-    { return Select1st<typename T::value_type>(); }
+  { return Select1st<typename T::value_type>(); }
 
 
   /// map Functor to delete objects from heap
   template <typename M> class DestroyObjects {
   public:
     M& object;
-  DestroyObjects(M& m)
-    : object(m) {
+    DestroyObjects(M& m)
+      : object(m) {
     }
     ~DestroyObjects() {
       object.clear();
@@ -203,8 +209,8 @@ namespace DD4hep {
   template <typename M> class DestroyFirst {
   public:
     M& object;
-  DestroyFirst(M& m)
-    : object(m) {
+    DestroyFirst(M& m)
+      : object(m) {
     }
     ~DestroyFirst() {
       object.clear();
@@ -241,8 +247,8 @@ namespace DD4hep {
   template <typename M> class ReleaseObjects {
   public:
     M& object;
-  ReleaseObjects(M& m)
-    : object(m) {
+    ReleaseObjects(M& m)
+      : object(m) {
     }
     ~ReleaseObjects() {
       object.clear();

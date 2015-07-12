@@ -1,11 +1,17 @@
-// $Id:$
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DDG4/Geant4SensDetAction.inl"
 #include "DDG4/Geant4EventAction.h"
@@ -55,12 +61,12 @@ namespace DD4hep {
       collection(m_collectionID)->add(hit);
       mark(h.track);
       if ( 0 == hit->cellID )  {
-	hit->cellID        = volumeID( step ) ;
-	except("+++ Invalid CELL ID for hit!");
+        hit->cellID        = volumeID( step ) ;
+        except("+++ Invalid CELL ID for hit!");
       }
       print("%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-	    c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
-	    (void*)hit->cellID);
+            c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
+            (void*)hit->cellID);
       Geant4TouchableHandler handler(step);
       print("%s>     Geant4 path:%s",c_name(),handler.path().c_str());
       return true;
@@ -83,23 +89,23 @@ namespace DD4hep {
       HitCollection*  coll    = collection(m_collectionID);
       long long int cell;
       try {
-	cell = cellID(step);
+        cell = cellID(step);
       } catch(std::runtime_error &e) {
-	std::stringstream out;
-	out << std::setprecision(20) << std::scientific;
-	out << "ERROR: " << e.what()  << std::endl;
-	out << "Position: "
-	    << "Pre (" << std::setw(24) << step->GetPreStepPoint()->GetPosition() << ") "
-	    << "Post (" << std::setw(24) << step->GetPostStepPoint()->GetPosition() << ") "
-	    << std::endl;
-	out << "Momentum: "
-	    << " Pre (" <<std::setw(24) << step->GetPreStepPoint() ->GetMomentum()  << ") "
-	    << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
-	    << std::endl;
+        std::stringstream out;
+        out << std::setprecision(20) << std::scientific;
+        out << "ERROR: " << e.what()  << std::endl;
+        out << "Position: "
+            << "Pre (" << std::setw(24) << step->GetPreStepPoint()->GetPosition() << ") "
+            << "Post (" << std::setw(24) << step->GetPostStepPoint()->GetPosition() << ") "
+            << std::endl;
+        out << "Momentum: "
+            << " Pre (" <<std::setw(24) << step->GetPreStepPoint() ->GetMomentum()  << ") "
+            << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
+            << std::endl;
 
-	std::cout << out.str();
+        std::cout << out.str();
 
-	return true;
+        return true;
       }
 
       Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
@@ -199,23 +205,23 @@ namespace DD4hep {
       HitCollection*  coll    = collection(m_collectionID);
       long long int cell;
       try {
-	cell = cellID(step);
+        cell = cellID(step);
       } catch(std::runtime_error &e) {
-	std::stringstream out;
-	out << std::setprecision(20) << std::scientific;
-	out << "ERROR: " << e.what()  << std::endl;
-	out << "Position: "
-	    << "Pre (" << std::setw(24) << step->GetPreStepPoint()->GetPosition() << ") "
-	    << "Post (" << std::setw(24) << step->GetPostStepPoint()->GetPosition() << ") "
-	    << std::endl;
-	out << "Momentum: "
-	    << " Pre (" <<std::setw(24) << step->GetPreStepPoint() ->GetMomentum()  << ") "
-	    << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
-	    << std::endl;
+        std::stringstream out;
+        out << std::setprecision(20) << std::scientific;
+        out << "ERROR: " << e.what()  << std::endl;
+        out << "Position: "
+            << "Pre (" << std::setw(24) << step->GetPreStepPoint()->GetPosition() << ") "
+            << "Post (" << std::setw(24) << step->GetPostStepPoint()->GetPosition() << ") "
+            << std::endl;
+        out << "Momentum: "
+            << " Pre (" <<std::setw(24) << step->GetPreStepPoint() ->GetMomentum()  << ") "
+            << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
+            << std::endl;
 
-	std::cout << out;
+        std::cout << out;
 
-	return true;
+        return true;
       }
 
       Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));

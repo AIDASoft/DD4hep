@@ -1,11 +1,17 @@
-// $Id: XMLElements.cpp 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "XML/XMLDimension.h"
 
@@ -18,15 +24,15 @@ using namespace DD4hep::XML;
     const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);  \
     return val ? dressing(val) : default_val; }
 
-#define XML_ATTR_ACCESSOR_DOUBLE(name)                  \
-  XML_ATTR_ACCESSOR(double,name)                        \
+#define XML_ATTR_ACCESSOR_DOUBLE(name)              \
+  XML_ATTR_ACCESSOR(double,name)                    \
   XML_ATTR_ACCESSOR_DEFAULT(name,double,_toDouble)
 
 #define XML_ATTR_ACCESSOR_INT(name)      XML_ATTR_ACCESSOR_DEFAULT(name,int,_toInt)
 #define XML_ATTR_ACCESSOR_BOOL(name)     XML_ATTR_ACCESSOR_DEFAULT(name,bool,_toBool)
 
-#define XML_CHILD_ACCESSOR_XML_DIM(name)                                \
-  Dimension Dimension::name(bool throw_if_not_present) const {          \
+#define XML_CHILD_ACCESSOR_XML_DIM(name)                            \
+  Dimension Dimension::name(bool throw_if_not_present) const {      \
     return m_element.child(Unicode_##name,throw_if_not_present); }
 
 XML_ATTR_ACCESSOR(int, id)
@@ -38,7 +44,7 @@ XML_ATTR_ACCESSOR_DOUBLE(X)
 XML_ATTR_ACCESSOR_DOUBLE(dx)
 
 XML_ATTR_ACCESSOR_DOUBLE(x0)
-XML_ATTR_ACCESSOR_DOUBLE(x1)
+  XML_ATTR_ACCESSOR_DOUBLE(x1)
 XML_ATTR_ACCESSOR_DOUBLE(x2)
 XML_ATTR_ACCESSOR_DOUBLE(x3)
 XML_ATTR_ACCESSOR_DOUBLE(x4)

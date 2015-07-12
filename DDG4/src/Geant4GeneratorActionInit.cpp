@@ -1,11 +1,17 @@
-// $Id: Geant4Field.cpp 888 2013-11-14 15:54:56Z markus.frank@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
@@ -20,7 +26,7 @@ using namespace DD4hep::Simulation;
 
 /// Standard constructor
 Geant4GeneratorActionInit::Geant4GeneratorActionInit(Geant4Context* ctxt, const std::string& nam)
-: Geant4GeneratorAction(ctxt,nam), m_run(0), m_evtTotal(0), m_evtRun(0)
+  : Geant4GeneratorAction(ctxt,nam), m_run(0), m_evtTotal(0), m_evtRun(0)
 {
   InstanceCount::increment(this);
   context()->kernel().runAction().callAtEnd(this,&Geant4GeneratorActionInit::end);

@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework includes
 #include "DD4hep/DetFactoryHelper.h"
@@ -336,7 +341,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       else if (0 != (comp_elt = table->FindElement(nam.c_str())))
         fraction *= comp_elt->A();
       else
-	except("Compact2Objects","Converting material: %s Element missing: %s",mname.c_str(),nam.c_str());
+        except("Compact2Objects","Converting material: %s Element missing: %s",mname.c_str(),nam.c_str());
       composite_fractions_total += fraction;
       composite_fractions.push_back(fraction);
     }
@@ -554,33 +559,33 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
           string pType = p->type();
           if (pType.compare("int") == 0) {
 
-	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< int > ParInt;
-	    static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(Unicode(p->name())));
+            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< int > ParInt;
+            static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(Unicode(p->name())));
 
           } else if (pType.compare("float") == 0) {
 
-	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< float > ParFloat;
-	    static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(Unicode(p->name())));
+            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< float > ParFloat;
+            static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(Unicode(p->name())));
 
           } else if (pType.compare("doublevec") == 0) {
 
-	    std::vector<double> valueVector;
-	    std::string parameterString = seg.attr<string>(Unicode(p->name()));
-	    printout(DEBUG, "Compact", "++ Converting this string structure: %s.", parameterString.c_str());
+            std::vector<double> valueVector;
+            std::string parameterString = seg.attr<string>(Unicode(p->name()));
+            printout(DEBUG, "Compact", "++ Converting this string structure: %s.", parameterString.c_str());
 
-	    std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(parameterString);
-	    for (std::vector<std::string>::const_iterator j = elements.begin(); j != elements.end(); ++j) {
-	      if ((*j).empty()) continue;
-	      valueVector.push_back(DD4hep::Geometry::_toDouble((*j)));
-	    }
+            std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(parameterString);
+            for (std::vector<std::string>::const_iterator j = elements.begin(); j != elements.end(); ++j) {
+              if ((*j).empty()) continue;
+              valueVector.push_back(DD4hep::Geometry::_toDouble((*j)));
+            }
 
-	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< std::vector<double> > ParDouVec;
-	    static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
+            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< std::vector<double> > ParDouVec;
+            static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
 
           } else if (pType.compare("double") == 0) {
 
-	    typedef DD4hep::DDSegmentation::TypedSegmentationParameter< double > ParDouble;
-	    static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(Unicode(p->name())));
+            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< double > ParDouble;
+            static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(Unicode(p->name())));
 
           } else {
             p->setValue(seg.attr<string>(Unicode(p->name())));
@@ -801,12 +806,12 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
       string par_name = element.attr<string>(attr_par);
       DetElement parent_detector = lcdd.detector(par_name);
       if ( !parent_detector.isValid() )  {
-	except("Compact","Failed to access valid parent detector of %s",name.c_str());
+        except("Compact","Failed to access valid parent detector of %s",name.c_str());
       }
       Volume parent_volume = parent_detector.placement().volume();
       if ( !parent_volume.isValid() )   {
-	except("Compact","Failed to access valid parent volume of %s from %s",
-	       name.c_str(), par_name.c_str());
+        except("Compact","Failed to access valid parent volume of %s from %s",
+               name.c_str(), par_name.c_str());
       }
       lcdd.declareMotherVolume(name, parent_volume);
     }

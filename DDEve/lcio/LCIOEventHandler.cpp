@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "LCIOEventHandler.h"
@@ -90,10 +95,10 @@ long LCIOEventHandler::numEvents() const   {
 EventHandler::CollectionType LCIOEventHandler::collectionType(const std::string& /* collection */) const {
   return CALO_HIT_COLLECTION;
 #if 0
-      if ( cl == cl_calo ) return CALO_HIT_COLLECTION;
-      else if ( cl == cl_tracker ) return TRACKER_HIT_COLLECTION;
-      else if ( cl == cl_particles ) return PARTICLE_COLLECTION;
-      else return NO_COLLECTION;
+  if ( cl == cl_calo ) return CALO_HIT_COLLECTION;
+  else if ( cl == cl_tracker ) return TRACKER_HIT_COLLECTION;
+  else if ( cl == cl_particles ) return PARTICLE_COLLECTION;
+  else return NO_COLLECTION;
 #endif
 }
 
@@ -107,10 +112,10 @@ size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEveHitA
       int n = c->getNumberOfElements();
       actor.setSize(n);
       for(int i=0; i<n; ++i)  {
-	LCObject* ptr = c->getElementAt(i);
-	if ( _convertHitFunc(ptr,&hit) )    {
-	  actor(hit);
-	}
+        LCObject* ptr = c->getElementAt(i);
+        if ( _convertHitFunc(ptr,&hit) )    {
+          actor(hit);
+        }
       }
       return n;
     }
@@ -128,10 +133,10 @@ size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEvePart
       int n = c->getNumberOfElements();
       actor.setSize(n);
       for(int i=0; i<n; ++i)  {
-	LCObject* ptr = c->getElementAt(i);
-	if ( _convertParticleFunc(ptr,&part) )    {
-	  actor(part);
-	}
+        LCObject* ptr = c->getElementAt(i);
+        if ( _convertParticleFunc(ptr,&part) )    {
+          actor(part);
+        }
       }
       return n;
     }
@@ -163,9 +168,9 @@ bool LCIOEventHandler::NextEvent()   {
     if ( m_event )   {
       const std::vector<std::string>* collnames = m_event->getCollectionNames();
       for( std::vector< std::string >::const_iterator i = collnames->begin(); i != collnames->end(); i++){
-	LCCollection* c = m_event->getCollection(*i);
-	m_data[c->getTypeName()].push_back(make_pair((*i).c_str(),c->getNumberOfElements()));
-	m_branches[*i] = c;
+        LCCollection* c = m_event->getCollection(*i);
+        m_data[c->getTypeName()].push_back(make_pair((*i).c_str(),c->getNumberOfElements()));
+        m_branches[*i] = c;
       }
       m_hasEvent = true;
       return 1;
@@ -178,11 +183,11 @@ bool LCIOEventHandler::NextEvent()   {
 /// Load the previous event
 bool LCIOEventHandler::PreviousEvent()   {
   throw runtime_error("+++ This version of the LCIO reader can only access files sequentially!\n"
-		      "+++ Access to the previous event is not supported.");
+                      "+++ Access to the previous event is not supported.");
 }
 
 /// Goto a specified event in the file
 bool LCIOEventHandler::GotoEvent(long /* event_number */)   {
   throw runtime_error("+++ This version of the LCIO reader can only access files sequentially!\n"
-		      "+++ Random access is not supported.");
+                      "+++ Random access is not supported.");
 }

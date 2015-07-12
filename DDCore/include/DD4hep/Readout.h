@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #ifndef DD4hep_GEOMETRY_READOUT_H
 #define DD4hep_GEOMETRY_READOUT_H
@@ -41,17 +46,17 @@ namespace DD4hep {
       typedef ReadoutObject Object;
     public:
       /// Default constructor
-    Readout()
-      : Handle<Object>() {
+      Readout()
+        : Handle<Object>() {
       }
       /// Copy Constructor from object
-    Readout(const Readout& e)
-      : Handle<Object>(e) {
+      Readout(const Readout& e)
+        : Handle<Object>(e) {
       }
 #ifndef __CINT__
       /// Copy Constructor from handle
-    Readout(const Handle<ReadoutObject>& e)
-      : Handle<Object>(e) {
+      Readout(const Handle<ReadoutObject>& e)
+        : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used when reading the already parsed object

@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #ifndef DD4HEP_GEOMETRY_SOLIDS_H
 #define DD4HEP_GEOMETRY_SOLIDS_H
@@ -64,18 +69,18 @@ namespace DD4hep {
     public:
 
       /// Default constructor for uninitialized object
-    Solid_type()
-      : Handle<T>() {
+      Solid_type()
+        : Handle<T>() {
       }
 
       /// Direct assignment using the implementation pointer
-    Solid_type(T* p)
-      : Handle<T>(p) {
+      Solid_type(T* p)
+        : Handle<T>(p) {
       }
 
       /// Constructor to be used when passing an already created object
-    Solid_type(const Handle<T>& e)
-      : Handle<T>(e) {
+      Solid_type(const Handle<T>& e)
+        : Handle<T>(e) {
       }
 
       /// Constructor to be used when passing an already created object: need to check pointers
@@ -136,7 +141,7 @@ namespace DD4hep {
 
       /// Constructor to create an anonymous new box object (retrieves name from volume)
       template <typename X, typename Y, typename Z>
-        Box(const X& x_val, const Y& y_val, const Z& z_val) {
+      Box(const X& x_val, const Y& y_val, const Z& z_val) {
         make(_toDouble(x_val), _toDouble(y_val), _toDouble(z_val));
       }
 
@@ -262,8 +267,8 @@ namespace DD4hep {
     /// Intermediate class to overcome drawing probles with the TGeoTubeSeg
     class MyConeSeg: public TGeoConeSeg {
     public:
-    MyConeSeg()
-      : TGeoConeSeg() {
+      MyConeSeg()
+        : TGeoConeSeg() {
       }
       virtual ~MyConeSeg() {
       }
@@ -329,7 +334,7 @@ namespace DD4hep {
 
       /// Constructor to create a new anonymous tube object with attribute initialization
       template <typename RMIN, typename RMAX, typename Z, typename DELTAPHI>
-        Tube(const RMIN& rmin, const RMAX& rmax, const Z& z, const DELTAPHI& deltaPhi) {
+      Tube(const RMIN& rmin, const RMAX& rmax, const Z& z, const DELTAPHI& deltaPhi) {
         make("", _toDouble(rmin), _toDouble(rmax), _toDouble(z), 0, _toDouble(deltaPhi));
       }
 
@@ -366,7 +371,7 @@ namespace DD4hep {
 
       /// Constructor to create a new anonymous tube object with attribute initialization
       template <typename A, typename B, typename DZ>
-        EllipticalTube(const A& a, const B& b, const DZ& dz)  {
+      EllipticalTube(const A& a, const B& b, const DZ& dz)  {
         make(_toDouble(a), _toDouble(b), _toDouble(dz));
       }
 
@@ -405,7 +410,7 @@ namespace DD4hep {
       }
 
       template <typename Z, typename RMIN1, typename RMAX1, typename RMIN2, typename RMAX2>
-        Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2) {
+      Cone(const Z& z, const RMIN1& rmin1, const RMAX1& rmax1, const RMIN2& rmin2, const RMAX2& rmax2) {
         make(_toDouble(z), _toDouble(rmin1), _toDouble(rmax1), _toDouble(rmin2), _toDouble(rmax2));
       }
 
@@ -434,8 +439,8 @@ namespace DD4hep {
       }
 
       /// Constructor to be used when passing an already created object
-    Trap(const Trap& e)
-      : Solid_type<TGeoTrap>(e) {
+      Trap(const Trap& e)
+        : Solid_type<TGeoTrap>(e) {
       }
       /// Constructor to be used when passing an already created object
       template <typename Q> Trap(const Handle<Q>& e)
@@ -478,7 +483,7 @@ namespace DD4hep {
       template <typename Q> Trapezoid(const Q* p) : Solid_type<TGeoTrd2>(p) {   }
 
       /// Constructor to be used when passing an already created object
-     Trapezoid(const Trapezoid& e) : Solid_type<TGeoTrd2>(e) {      }
+      Trapezoid(const Trapezoid& e) : Solid_type<TGeoTrd2>(e) {      }
 
       /// Constructor to be used when passing an already created object
       template <typename Q> Trapezoid(const Handle<Q>& e)
@@ -490,7 +495,7 @@ namespace DD4hep {
 
       /// Constructor to create a new anonymous object with attribute initialization
       template <typename X1,typename X2,typename Y1,typename Y2,typename Z>
-        Trapezoid(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
+      Trapezoid(X1 x1, X2 x2, Y1 y1, Y2 y2, Z z)
       { make(_toDouble(x1),_toDouble(x2),_toDouble(y1),_toDouble(y2),_toDouble(z)); }
 
       /// Set the Trapezoid dimensions
@@ -517,8 +522,8 @@ namespace DD4hep {
       }
 
       /// Constructor to be used when passing an already created object
-    Torus(const Torus& e)
-      : Solid_type<TGeoTorus>(e) {
+      Torus(const Torus& e)
+        : Solid_type<TGeoTorus>(e) {
       }
 
       /// Constructor to be used when passing an already created object
@@ -528,12 +533,12 @@ namespace DD4hep {
 
       /// Constructor to create a new anonymous object with attribute initialization
       template<typename R, typename RMIN, typename RMAX, typename PHI, typename DELTA_PHI>
-        Torus(R r, RMIN rmin, RMAX rmax, PHI phi=M_PI, DELTA_PHI delta_phi = 2.*M_PI)
+      Torus(R r, RMIN rmin, RMAX rmax, PHI phi=M_PI, DELTA_PHI delta_phi = 2.*M_PI)
       {   make(_toDouble(r),_toDouble(rmin),_toDouble(rmax),_toDouble(phi),_toDouble(delta_phi));  }
 
       /// Constructor to create a new anonymous object with attribute initialization
       Torus(double r, double rmin, double rmax, double phi=M_PI, double delta_phi = 2.*M_PI)
-        {   make(r,rmin,rmax,phi,delta_phi);  }
+      {   make(r,rmin,rmax,phi,delta_phi);  }
 
       /// Set the Torus dimensions
       Torus& setDimensions(double r, double rmin, double rmax, double phi, double delta_phi);
@@ -558,7 +563,7 @@ namespace DD4hep {
 
       /// Constructor to be used when passing an already created object
       Sphere(const Sphere& e)
-      : Solid_type<TGeoSphere>(e) {
+        : Solid_type<TGeoSphere>(e) {
       }
 
       /// Constructor to be used when passing an already created object
@@ -592,7 +597,7 @@ namespace DD4hep {
 
       /// Constructor to be used when passing an already created object
       Paraboloid(const Paraboloid& e)
-      : Solid_type<TGeoParaboloid>(e) {
+        : Solid_type<TGeoParaboloid>(e) {
       }
 
       /// Constructor to be used when passing an already created object
@@ -656,12 +661,12 @@ namespace DD4hep {
 
       /// Constructor to be used when passing an already created object
       PolyhedraRegular(const PolyhedraRegular& e)
-      : Solid_type<TGeoPgon>(e) {
+        : Solid_type<TGeoPgon>(e) {
       }
 
       /// Constructor to be used when passing an already created object
       template <typename Q>
-        PolyhedraRegular(const Handle<Q>& e)
+      PolyhedraRegular(const Handle<Q>& e)
         : Solid_type<TGeoPgon>(e) {
       }
 
@@ -694,8 +699,8 @@ namespace DD4hep {
       }
 
       /// Constructor to be used when passing an already created object
-    EightPointSolid(const EightPointSolid& e)
-      : Solid_type<TGeoArb8>(e) {
+      EightPointSolid(const EightPointSolid& e)
+        : Solid_type<TGeoArb8>(e) {
       }
 
       /// Constructor to be used when passing an already created object
@@ -719,14 +724,14 @@ namespace DD4hep {
     class BooleanSolid: public Solid_type<TGeoCompositeShape> {
     protected:
       /// Constructor to be used when passing an already created object
-    BooleanSolid()
-      : Solid_type<TGeoCompositeShape>() {
+      BooleanSolid()
+        : Solid_type<TGeoCompositeShape>() {
       }
 
     public:
       /// Constructor to be used when passing an already created object
       template <typename Q>
-        BooleanSolid(const Handle<Q>& e)
+      BooleanSolid(const Handle<Q>& e)
         : Solid_type<TGeoCompositeShape>(e) {
       }
     };
@@ -744,12 +749,12 @@ namespace DD4hep {
     class SubtractionSolid: public BooleanSolid {
     public:
       /// Default constructor
-    SubtractionSolid()
-      : BooleanSolid() {
+      SubtractionSolid()
+        : BooleanSolid() {
       }
       /// Constructor to be used when passing an already created object
-    SubtractionSolid(const SubtractionSolid& e)
-      : BooleanSolid(e) {
+      SubtractionSolid(const SubtractionSolid& e)
+        : BooleanSolid(e) {
       }
       /// Constructor to be used when passing an already created object
       template <typename Q> SubtractionSolid(const Handle<Q>& e)
@@ -780,12 +785,12 @@ namespace DD4hep {
     class UnionSolid: public BooleanSolid {
     public:
       /// Default constructor
-    UnionSolid()
-      : BooleanSolid() {
+      UnionSolid()
+        : BooleanSolid() {
       }
       /// Constructor to be used when passing an already created object
-    UnionSolid(const UnionSolid& e)
-      : BooleanSolid(e) {
+      UnionSolid(const UnionSolid& e)
+        : BooleanSolid(e) {
       }
       /// Constructor to be used when passing an already created object
       template <typename Q> UnionSolid(const Handle<Q>& e)
@@ -816,12 +821,12 @@ namespace DD4hep {
     class IntersectionSolid: public BooleanSolid {
     public:
       /// Default constructor
-    IntersectionSolid()
-      : BooleanSolid() {
+      IntersectionSolid()
+        : BooleanSolid() {
       }
       /// Constructor to be used when passing an already created object
-    IntersectionSolid(const IntersectionSolid& e)
-      : BooleanSolid(e) {
+      IntersectionSolid(const IntersectionSolid& e)
+        : BooleanSolid(e) {
       }
       /// Constructor to be used when passing an already created object
       template <typename Q> IntersectionSolid(const Handle<Q>& e)

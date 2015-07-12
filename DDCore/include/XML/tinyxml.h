@@ -130,7 +130,7 @@ struct TiXmlCursor {
    @sa TiXmlNode::Accept()
 */
 class TiXmlVisitor {
- public:
+public:
   virtual ~TiXmlVisitor() {
   }
 
@@ -209,9 +209,9 @@ class TiXmlBase {
   friend class TiXmlElement;
   friend class TiXmlDocument;
 
- public:
- TiXmlBase()
-   : userData(0) {
+public:
+  TiXmlBase()
+    : userData(0) {
   }
   virtual ~TiXmlBase() {
   }
@@ -305,7 +305,7 @@ class TiXmlBase {
     TIXML_ERROR_STRING_COUNT
   };
 
- protected:
+protected:
 
   static const char* SkipWhiteSpace(const char*, TiXmlEncoding encoding);
   inline static bool IsWhiteSpace(char c) {
@@ -405,7 +405,7 @@ class TiXmlBase {
   }
   static void ConvertUTF32ToUTF8(unsigned long input, char* output, int* length);
 
- private:
+private:
   TiXmlBase(const TiXmlBase&);                          // not implemented.
   void operator=(const TiXmlBase& base);   // not allowed.
 
@@ -432,7 +432,7 @@ class TiXmlNode: public TiXmlBase {
   friend class TiXmlDocument;
   friend class TiXmlElement;
 
- public:
+public:
 #ifdef TIXML_USE_STL
 
   /** An input stream operator, for every class. Tolerant of newlines and
@@ -836,7 +836,7 @@ class TiXmlNode: public TiXmlBase {
   */
   virtual bool Accept(TiXmlVisitor* visitor) const = 0;
 
- protected:
+protected:
   TiXmlNode(NodeType _type);
 
   // Copy to the allocated object. Shared functionality between Clone, Copy constructor,
@@ -862,7 +862,7 @@ class TiXmlNode: public TiXmlBase {
   TiXmlNode* prev;
   TiXmlNode* next;
 
- private:
+private:
   TiXmlNode(const TiXmlNode&);                          // not implemented.
   void operator=(const TiXmlNode& base);   // not allowed.
 };
@@ -877,10 +877,10 @@ class TiXmlNode: public TiXmlBase {
 class TiXmlAttribute: public TiXmlBase {
   friend class TiXmlAttributeSet;
 
- public:
+public:
   /// Construct an empty attribute.
- TiXmlAttribute()
-   : TiXmlBase() {
+  TiXmlAttribute()
+    : TiXmlBase() {
     document = 0;
     prev = next = 0;
   }
@@ -995,7 +995,7 @@ class TiXmlAttribute: public TiXmlBase {
     document = doc;
   }
 
- private:
+private:
   TiXmlAttribute(const TiXmlAttribute&);                                // not implemented.
   void operator=(const TiXmlAttribute& base);   // not allowed.
 
@@ -1018,7 +1018,7 @@ class TiXmlAttribute: public TiXmlBase {
         - it demonstrates some independence from the (typical) doubly linked list.
 */
 class TiXmlAttributeSet {
- public:
+public:
   TiXmlAttributeSet();
   ~TiXmlAttributeSet();
 
@@ -1050,7 +1050,7 @@ class TiXmlAttributeSet {
 
 #endif
 
- private:
+private:
   //*ME:        Because of hidden/disabled copy-construktor in TiXmlAttribute (sentinel-element),
   //*ME:        this class must be also use a hidden/disabled copy-constructor !!!
   TiXmlAttributeSet(const TiXmlAttributeSet&);   // not allowed
@@ -1064,7 +1064,7 @@ class TiXmlAttributeSet {
     Elements also contain an arbitrary number of attributes.
 */
 class TiXmlElement: public TiXmlNode {
- public:
+public:
   /// Construct an element.
   TiXmlElement(const char * in_value);
 
@@ -1255,7 +1255,7 @@ class TiXmlElement: public TiXmlNode {
    */
   virtual bool Accept(TiXmlVisitor* visitor) const;
 
- protected:
+protected:
 
   void CopyTo(TiXmlElement* target) const;
   void ClearThis();   // like clear, but initializes 'this' object as well
@@ -1270,7 +1270,7 @@ class TiXmlElement: public TiXmlNode {
   */
   const char* ReadValue(const char* in, TiXmlParsingData* prevData, TiXmlEncoding encoding);
 
- private:
+private:
 
   TiXmlAttributeSet attributeSet;
 };
@@ -1278,14 +1278,14 @@ class TiXmlElement: public TiXmlNode {
 /**     An XML comment.
  */
 class TiXmlComment: public TiXmlNode {
- public:
+public:
   /// Constructs an empty comment.
- TiXmlComment()
-   : TiXmlNode(TiXmlNode::COMMENT) {
+  TiXmlComment()
+    : TiXmlNode(TiXmlNode::COMMENT) {
   }
   /// Construct a comment from text.
- TiXmlComment(const char* _value)
-   : TiXmlNode(TiXmlNode::COMMENT) {
+  TiXmlComment(const char* _value)
+    : TiXmlNode(TiXmlNode::COMMENT) {
     SetValue(_value);
   }
   TiXmlComment(const TiXmlComment&);
@@ -1315,7 +1315,7 @@ class TiXmlComment: public TiXmlNode {
    */
   virtual bool Accept(TiXmlVisitor* visitor) const;
 
- protected:
+protected:
   void CopyTo(TiXmlComment* target) const;
 
   // used to be public
@@ -1324,7 +1324,7 @@ class TiXmlComment: public TiXmlNode {
 #endif
   //    virtual void StreamOut( TIXML_OSTREAM * out ) const;
 
- private:
+private:
 
 };
 
@@ -1335,13 +1335,13 @@ class TiXmlComment: public TiXmlNode {
 */
 class TiXmlText: public TiXmlNode {
   friend class TiXmlElement;
- public:
+public:
   /** Constructor for text element. By default, it is treated as
       normal, encoded text. If you want it be output as a CDATA text
       element, set the parameter _cdata to 'true'
   */
- TiXmlText(const char * initValue)
-   : TiXmlNode(TiXmlNode::TEXT) {
+  TiXmlText(const char * initValue)
+    : TiXmlNode(TiXmlNode::TEXT) {
     SetValue(initValue);
     cdata = false;
   }
@@ -1350,15 +1350,15 @@ class TiXmlText: public TiXmlNode {
 
 #ifdef TIXML_USE_STL
   /// Constructor.
- TiXmlText(const std::string& initValue)
-   : TiXmlNode(TiXmlNode::TEXT) {
+  TiXmlText(const std::string& initValue)
+    : TiXmlNode(TiXmlNode::TEXT) {
     SetValue(initValue);
     cdata = false;
   }
 #endif
 
- TiXmlText(const TiXmlText& copy)
-   : TiXmlNode(TiXmlNode::TEXT) {
+  TiXmlText(const TiXmlText& copy)
+    : TiXmlNode(TiXmlNode::TEXT) {
     copy.CopyTo(this);
   }
   void operator=(const TiXmlText& base) {
@@ -1390,7 +1390,7 @@ class TiXmlText: public TiXmlNode {
    */
   virtual bool Accept(TiXmlVisitor* content) const;
 
- protected:
+protected:
   ///  [internal use] Creates a new Element and returns it.
   virtual TiXmlNode* Clone() const;
   void CopyTo(TiXmlText* target) const;
@@ -1401,7 +1401,7 @@ class TiXmlText: public TiXmlNode {
   virtual void StreamIn(std::istream * in, TIXML_STRING * tag);
 #endif
 
- private:
+private:
   bool cdata;                   // true if this should be input and output as a CDATA style text element
 };
 
@@ -1419,10 +1419,10 @@ class TiXmlText: public TiXmlNode {
     because there can only be at most 3 and they are always the same.
 */
 class TiXmlDeclaration: public TiXmlNode {
- public:
+public:
   /// Construct an empty declaration.
- TiXmlDeclaration()
-   : TiXmlNode(TiXmlNode::DECLARATION) {
+  TiXmlDeclaration()
+    : TiXmlNode(TiXmlNode::DECLARATION) {
   }
 
 #ifdef TIXML_USE_STL
@@ -1473,14 +1473,14 @@ class TiXmlDeclaration: public TiXmlNode {
    */
   virtual bool Accept(TiXmlVisitor* visitor) const;
 
- protected:
+protected:
   void CopyTo(TiXmlDeclaration* target) const;
   // used to be public
 #ifdef TIXML_USE_STL
   virtual void StreamIn(std::istream * in, TIXML_STRING * tag);
 #endif
 
- private:
+private:
 
   TIXML_STRING version;TIXML_STRING encoding;TIXML_STRING standalone;
 };
@@ -1493,15 +1493,15 @@ class TiXmlDeclaration: public TiXmlNode {
     DTD tags get thrown into TiXmlUnknowns.
 */
 class TiXmlUnknown: public TiXmlNode {
- public:
- TiXmlUnknown()
-   : TiXmlNode(TiXmlNode::UNKNOWN) {
+public:
+  TiXmlUnknown()
+    : TiXmlNode(TiXmlNode::UNKNOWN) {
   }
   virtual ~TiXmlUnknown() {
   }
 
- TiXmlUnknown(const TiXmlUnknown& copy)
-   : TiXmlNode(TiXmlNode::UNKNOWN) {
+  TiXmlUnknown(const TiXmlUnknown& copy)
+    : TiXmlNode(TiXmlNode::UNKNOWN) {
     copy.CopyTo(this);
   }
   void operator=(const TiXmlUnknown& copy) {
@@ -1526,14 +1526,14 @@ class TiXmlUnknown: public TiXmlNode {
    */
   virtual bool Accept(TiXmlVisitor* content) const;
 
- protected:
+protected:
   void CopyTo(TiXmlUnknown* target) const;
 
 #ifdef TIXML_USE_STL
   virtual void StreamIn(std::istream * in, TIXML_STRING * tag);
 #endif
 
- private:
+private:
 
 };
 
@@ -1542,7 +1542,7 @@ class TiXmlUnknown: public TiXmlNode {
     The 'value' of a document node is the xml file name.
 */
 class TiXmlDocument: public TiXmlNode {
- public:
+public:
   /// Create an empty document, that has no name.
   TiXmlDocument();
   /// Create a document with a name. The name of the document is also the filename of the xml.
@@ -1715,14 +1715,14 @@ class TiXmlDocument: public TiXmlNode {
    */
   virtual bool Accept(TiXmlVisitor* content) const;
 
- protected:
+protected:
   // [internal use]
   virtual TiXmlNode* Clone() const;
 #ifdef TIXML_USE_STL
   virtual void StreamIn(std::istream * in, TIXML_STRING * tag);
 #endif
 
- private:
+private:
   void CopyTo(TiXmlDocument* target) const;
 
   bool error;
@@ -1813,7 +1813,7 @@ class TiXmlDocument: public TiXmlNode {
    @endverbatim
 */
 class TiXmlHandle {
- public:
+public:
   /// Create a handle from any node (at any depth of the tree.) This can be a null pointer.
   TiXmlHandle(TiXmlNode* _node) {
     this->node = _node;
@@ -1917,7 +1917,7 @@ class TiXmlHandle {
     return ToUnknown();
   }
 
- private:
+private:
   TiXmlNode* node;
 };
 
@@ -1941,9 +1941,9 @@ class TiXmlHandle {
     @endverbatim
 */
 class TiXmlPrinter: public TiXmlVisitor {
- public:
- TiXmlPrinter()
-   : depth(0), simpleTextPrint(false), buffer(), indent("    "), lineBreak("\n") {
+public:
+  TiXmlPrinter()
+    : depth(0), simpleTextPrint(false), buffer(), indent("    "), lineBreak("\n") {
   }
 
   virtual bool VisitEnter(const TiXmlDocument& doc);
@@ -2002,7 +2002,7 @@ class TiXmlPrinter: public TiXmlVisitor {
   }
 #endif
 
- private:
+private:
   void DoIndent() {
     for (int i = 0; i < depth; ++i)
       buffer += indent;

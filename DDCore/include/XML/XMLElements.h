@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_XMLELEMENTS_H
 #define DD4HEP_XMLELEMENTS_H
 
@@ -73,9 +78,9 @@ namespace DD4hep {
     class XmlException {
     public:
       std::string msg;
-    XmlException() : msg() {}
-    XmlException(const std::string& m) : msg(m) {}
-    XmlException(const XmlException& e) : msg(e.msg) {}
+      XmlException() : msg() {}
+      XmlException(const std::string& m) : msg(m) {}
+      XmlException(const XmlException& e) : msg(e.msg) {}
       virtual ~XmlException() {}
       XmlException& operator=(const XmlException& c) {
         if ( &c != this ) msg = c.msg;
@@ -113,7 +118,7 @@ namespace DD4hep {
     std::string _ptrToString(const void* p, const char* fmt = "%p");
     /// Format void pointer (64 bits) to string with arbitrary format  \ingroup DD4HEP_XML
     template <typename T> std::string _toString(const T* p, const char* fmt = "%p")
-      {      return _ptrToString((void*)p,fmt);       }
+    {      return _ptrToString((void*)p,fmt);       }
 
     /// Helper function to populate the evaluator dictionary  \ingroup DD4HEP_XML
     void _toDictionary(const XmlChar* name, const XmlChar* value);
@@ -233,27 +238,27 @@ namespace DD4hep {
       std::string m_str;
 #ifndef __TIXML__
       /// Constructor from normal ASCII string
-    Tag_t(const char* s)
-      : Strng_t(s), m_str(s) {
+      Tag_t(const char* s)
+        : Strng_t(s), m_str(s) {
       }
 #endif
       /// Constructor from unicode string
-    Tag_t(const XmlChar* s)
-      : Strng_t(s), m_str(_toString(s)) {
+      Tag_t(const XmlChar* s)
+        : Strng_t(s), m_str(_toString(s)) {
       }
       /// Constructor from internal XML string
-    Tag_t(const Strng_t& s)
-      : Strng_t(s), m_str(_toString(s)) {
+      Tag_t(const Strng_t& s)
+        : Strng_t(s), m_str(_toString(s)) {
       }
       /// Constructor from STL string
-    Tag_t(const std::string& s)
-      : Strng_t(s), m_str(s) {
+      Tag_t(const std::string& s)
+        : Strng_t(s), m_str(s) {
       }
       /// Constructor from STL string with registration.
       /// ONLY to be used for static global entries to protect against duplicated static memory.
-    Tag_t(const std::string& v, const std::string& s, void (*register_func)(const std::string&, Tag_t*))
-      : Strng_t(s), m_str(s) {
-	register_func(v, this);
+      Tag_t(const std::string& v, const std::string& s, void (*register_func)(const std::string&, Tag_t*))
+        : Strng_t(s), m_str(s) {
+        register_func(v, this);
       }
       /// Destructor
       ~Tag_t() {
@@ -349,8 +354,8 @@ namespace DD4hep {
       mutable Elt_t m_node;
 
       /// Initializing constructor
-    Handle_t(Elt_t e = 0)
-      : m_node(e) {
+      Handle_t(Elt_t e = 0)
+        : m_node(e) {
       }
       /// Direct access to the XmlElement using the operator->
       Elt_t operator->() const {
@@ -510,19 +515,19 @@ namespace DD4hep {
     }
 #if 0
     template<> INLINE bool Handle_t::attr<bool>(const Attribute tag_value) const
-      { return _toBool(attr_value(tag_value));}
+    { return _toBool(attr_value(tag_value));}
 
     template<> INLINE int Handle_t::attr<int>(const Attribute tag_value) const
-      { return _toInt(attr_value(tag_value));}
+    { return _toInt(attr_value(tag_value));}
 
     template<> INLINE float Handle_t::attr<float>(const Attribute tag_value) const
-      { return _toFloat(attr_value(tag_value));}
+    { return _toFloat(attr_value(tag_value));}
 
     template<> INLINE double Handle_t::attr<double>(const Attribute tag_value) const
-      { return _toDouble(attr_value(tag_value));}
+    { return _toDouble(attr_value(tag_value));}
 
     template<> INLINE std::string Handle_t::attr<std::string>(const Attribute tag_value) const
-      { return _toString(attr_value(tag_value));}
+    { return _toString(attr_value(tag_value));}
 #endif
 
     /// Class to support the access to collections of XmlNodes (or XmlElements)
@@ -598,8 +603,8 @@ namespace DD4hep {
       DOC m_doc;
 
       /// Constructor
-    Document(DOC d)
-      : m_doc(d) {
+      Document(DOC d)
+        : m_doc(d) {
       }
       /// Auto-conversion to DOM document
       operator DOC() const {
@@ -637,8 +642,8 @@ namespace DD4hep {
     class DocumentHolder : public Document {
     public:
       /// Constructor
-    DocumentHolder(DOC d)
-      : Document(d) {
+      DocumentHolder(DOC d)
+        : Document(d) {
       }
       /// Standard destructor - releases the document
       virtual ~DocumentHolder();
@@ -665,8 +670,8 @@ namespace DD4hep {
       Handle_t m_element;
 
       /// Constructor from XmlElement handle
-    Element(const Handle_t& e)
-      : m_element(e) {
+      Element(const Handle_t& e)
+        : m_element(e) {
       }
       /// Constructor from DOM document entity
       Element(const Document& document, const XmlChar* type);
@@ -761,7 +766,7 @@ namespace DD4hep {
       Attribute getAttr(const XmlChar* name) const;
       /// Set single attribute
       template <class T>
-        Attribute setAttr(const XmlChar* nam, const T& val) const {
+      Attribute setAttr(const XmlChar* nam, const T& val) const {
         return m_element.setAttr(nam, val);
       }
       /// Set element value

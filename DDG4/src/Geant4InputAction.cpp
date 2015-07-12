@@ -1,7 +1,12 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 // @author  P.Kostka (main author)
 // @author  M.Frank  (code reshuffeling into new DDG4 scheme)
@@ -22,7 +27,7 @@ typedef DD4hep::ReferenceBitMask<int> PropertyMask;
 
 /// Initializing constructor
 Geant4EventReader::Geant4EventReader(const std::string& nam)
-: m_name(nam), m_directAccess(false), m_currEvent(0)
+  : m_name(nam), m_directAccess(false), m_currEvent(0)
 {
 }
 
@@ -70,7 +75,7 @@ Geant4EventReader::moveToEvent(int event_number)   {
 
 /// Standard constructor
 Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
-: Geant4GeneratorAction(ctxt,nam), m_reader(0)
+  : Geant4GeneratorAction(ctxt,nam), m_reader(0)
 {
   declareProperty("Input",          m_input);
   declareProperty("Sync",           m_firstEvent=0);

@@ -1,16 +1,24 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #ifndef DD4hep_LAYERING_H
 #define DD4hep_LAYERING_H
+
+// Framework include files
 #include "XML/XMLElements.h"
 
+// C/C++ include files
 #include <vector>
 
 /// Namespace for the AIDA detector description toolkit

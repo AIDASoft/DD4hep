@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework includes
 #include "DD4hep/Plugins.h"
@@ -327,7 +332,7 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
         zplane.setAttr(_U(rmax), s->GetRmax(i));
         solid.append(zplane);
       }
-   }
+    }
     else if (isa == TGeoPcon::Class()) {
       const TGeoPcon* s = (const TGeoPcon*) shape;
       geo.doc_solids.append(solid = xml_elt_t(geo.doc, _U(polycone)));
@@ -470,9 +475,9 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       solid.setAttr(_U(lunit), "cm");
     }
     else if (isa == TGeoCompositeShape::Class() ||
-	     isa == TGeoUnion::Class() ||
-	     isa == TGeoIntersection::Class() ||
-	     isa == TGeoSubtraction::Class() )  {
+             isa == TGeoUnion::Class() ||
+             isa == TGeoIntersection::Class() ||
+             isa == TGeoSubtraction::Class() )  {
       const TGeoCompositeShape* s = (const TGeoCompositeShape*) shape;
       const TGeoBoolNode* boolean = s->GetBoolNode();
       TGeoBoolNode::EGeoBoolType oper = boolean->GetBooleanOperator();
@@ -495,29 +500,29 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
       //if left == TGeoScaledShape AND right  == TGeoBBox
       //   AND if TGeoScaledShape->GetShape == TGeoSphere
       if (strcmp(ls->ClassName(), "TGeoScaledShape") == 0 &&
-	  strcmp(rs->ClassName(), "TGeoBBox") == 0) {
-	if (strcmp(((TGeoScaledShape *)ls)->GetShape()->ClassName(), "TGeoSphere") == 0) {
-	  if (oper == TGeoBoolNode::kGeoIntersection) {
-	    TGeoScaledShape* lls = (TGeoScaledShape *)ls;
-	    TGeoBBox* rrs = (TGeoBBox*)rs;
-	    solid = xml_elt_t(geo.doc,Unicode("ellipsoid"));
-	    solid.setAttr(_U(name), Unicode(shape_name));
-	    double sx = lls->GetScale()->GetScale()[0];
-	    double sy = lls->GetScale()->GetScale()[1];
-	    double radius = ((TGeoSphere *)lls->GetShape())->GetRmax();
-	    double dz = rrs->GetDZ();
-	    double zorig = rrs->GetOrigin()[2];
-	    double zcut2 = dz + zorig;
-	    double zcut1 = 2 * zorig - zcut2;
-	    solid.setAttr(Unicode("ax"),sx * radius);
-	    solid.setAttr(Unicode("by"),sy * radius);
-	    solid.setAttr(Unicode("cz"),radius);
-	    solid.setAttr(Unicode("zcut1"),zcut1);
-	    solid.setAttr(Unicode("zcut2"),zcut2);
-	    solid.setAttr(_U(lunit), "cm");
-	    return data().xmlSolids[shape] = solid;
-	  }
-	}
+          strcmp(rs->ClassName(), "TGeoBBox") == 0) {
+        if (strcmp(((TGeoScaledShape *)ls)->GetShape()->ClassName(), "TGeoSphere") == 0) {
+          if (oper == TGeoBoolNode::kGeoIntersection) {
+            TGeoScaledShape* lls = (TGeoScaledShape *)ls;
+            TGeoBBox* rrs = (TGeoBBox*)rs;
+            solid = xml_elt_t(geo.doc,Unicode("ellipsoid"));
+            solid.setAttr(_U(name), Unicode(shape_name));
+            double sx = lls->GetScale()->GetScale()[0];
+            double sy = lls->GetScale()->GetScale()[1];
+            double radius = ((TGeoSphere *)lls->GetShape())->GetRmax();
+            double dz = rrs->GetDZ();
+            double zorig = rrs->GetOrigin()[2];
+            double zcut2 = dz + zorig;
+            double zcut1 = 2 * zorig - zcut2;
+            solid.setAttr(Unicode("ax"),sx * radius);
+            solid.setAttr(Unicode("by"),sy * radius);
+            solid.setAttr(Unicode("cz"),radius);
+            solid.setAttr(Unicode("zcut1"),zcut1);
+            solid.setAttr(Unicode("zcut2"),zcut2);
+            solid.setAttr(_U(lunit), "cm");
+            return data().xmlSolids[shape] = solid;
+          }
+        }
       }
 
       if ( oper == TGeoBoolNode::kGeoSubtraction )
@@ -539,18 +544,18 @@ xml_h LCDDConverter::handleSolid(const string& name, const TGeoShape* shape) con
 
       if ((tr[0] != 0.0) || (tr[1] != 0.0) || (tr[2] != 0.0)) {
         first.append(obj = xml_elt_t(geo.doc, _U(firstposition)));
-	obj.setAttr(_U(name), name+"_"+lnam+"_pos");
+        obj.setAttr(_U(name), name+"_"+lnam+"_pos");
         obj.setAttr(_U(x), tr[0]);
         obj.setAttr(_U(y), tr[1]);
         obj.setAttr(_U(z), tr[2]);
-	obj.setAttr(_U(unit), "cm");
+        obj.setAttr(_U(unit), "cm");
       }
       if (lm->IsRotation()) {
         TGeoMatrix& linv = lm->Inverse();
         XYZRotation rot = getXYZangles(linv.GetRotationMatrix());
         if ((rot.X() != 0.0) || (rot.Y() != 0.0) || (rot.Z() != 0.0)) {
           first.append(obj = xml_elt_t(geo.doc, _U(firstrotation)));
-	  obj.setAttr(_U(name), name+"_"+lnam+"_rot");
+          obj.setAttr(_U(name), name+"_"+lnam+"_rot");
           obj.setAttr(_U(x), rot.X());
           obj.setAttr(_U(y), rot.Y());
           obj.setAttr(_U(z), rot.Z());
@@ -998,7 +1003,7 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     field.setAttr(_U(name), f->GetName());
     fld = PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
     printout(ALWAYS,"LCDDConverter","++ %s electromagnetic field:%s of type %s",
-	     (fld.isValid() ? "Converted" : "FAILED    to convert "), f->GetName(), type.c_str());
+             (fld.isValid() ? "Converted" : "FAILED    to convert "), f->GetName(), type.c_str());
     if (!fld.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
@@ -1332,7 +1337,7 @@ static long create_visASCII(LCDD& lcdd, int /* argc */, char** argv) {
     os << "vol:" << vol.nameStr() << sep << "vis:" << vis.nameStr() << sep << "visible:" << vis.visible() << sep << "r:"
        << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep << "alpha:" << col.alpha() << sep << "line_style:"
        << vis.attr < string > (_U(line_style)) << sep << "drawing_style:" << vis.attr < string
-      > (_U(drawing_style)) << sep << "show_daughters:" << vis.show_daughters() << sep << endl;
+                                                                                        > (_U(drawing_style)) << sep << "show_daughters:" << vis.show_daughters() << sep << endl;
   }
   os.close();
   return 1;

@@ -1,0 +1,151 @@
+!-----------------------------------------------------------------------------
+! Package     : GaudiPluginService
+! Responsible : Marco Clemencic
+! Purpose     : Provide a generic plugin service.
+! Commit Id   : 6d000098f7da11c89cbbbfa26aaa43c277f6d903
+!-----------------------------------------------------------------------------
+
+========================== GaudiPluginService v2r2 ===========================
+! 2014-07-04 - Marco Clemencic
+ - Improved Doxygen documentation.
+
+========================== GaudiPluginService v2r1 ===========================
+! 2014-10-28 - Marco Clemencic
+ - Demangle factory types in warning messages.
+
+========================== GaudiPluginService v2r0 ===========================
+! 2014-09-30 - David Quarrie
+ - do not hide C++11 constructs from Reflex for ATLAS (different version of
+   GCCXML)
+
+! 2014-05-07 - Sebastien Binet
+ - leverage C++11 variadic templates for the factories.
+ - internally, also use l-value references and std::forward
+ - hide the C++11 constructs from Reflex as GCC-XML parser predates C++11
+
+========================== GaudiPluginService v1r2 ===========================
+! 2014-05-12 - Marco Clemencic
+ - Fixed listcomponents command lines tests (CMake only).
+
+========================== GaudiPluginService v1r1 ===========================
+
+! 2014-05-19 - Charles Leggett
+ - add HAVE_GAUDI_PLUGINSVC tag for cmt requirements
+
+! 2014-05-09 - Charles Leggett
+ - add macro HAVE_GAUDI_PLUGINSVC so external packages can see if it's available
+
+! 2014-05-09 - Marco Clemencic
+ - Improved command line of listcomponents: now it accepts --output and --help.
+ - Modified the listcomponents CMT document to use --output instead of output
+   redirection. Fixes bug #104455
+
+========================== GaudiPluginService v1r0 ===========================
+! 2014-02-03 - Marco Clemencic
+ - Added support for Reflex names for components, enabled with the compile flag
+   -DGAUDI_REFLEX_COMPONENT_ALIASES.
+
+! 2014-01-10 - Marco Clemencic
+ - Fixed error handling in listcomponents.cpp: exit with a failure status code
+   if there is an error loading a library.
+
+! 2013-12-19 - Marco Clemencic
+ - Minor fix to CMake configuration.
+
+! 2013-08-28 - Sebastien Binet
+ - Added (C++) tests for optional metadata (properties).
+ - Added docstrings to the python interface.
+
+! 2013-08-27 - Marco Clemencic
+ - Fixed symbol visibility.
+
+! 2013-08-23 - Marco Clemencic
+ - Updated the CMT configuration.
+
+! 2013-08-23 - Sebastien Binet
+ - Added optional metadata (properties) to the factories.
+ - Added a Python module to query the list of factories (based on ctypes).
+
+! 2013-07-26 - Marco Clemencic
+ - Ported new GaudiPluginService to CMT.
+
+! 2013-07-25 - Marco Clemencic
+ - Removed the extra level of indirection and simplified the support for
+   private/protected constructors.
+
+! 2013-07-25 - Marco Clemencic
+ - Added an extra level of indirection (a creator class) to allow components
+   with protected/private constructors.
+
+! 2013-07-24 - Marco Clemencic
+ - Do not use the type name in the helper local class created by the DECLARE_*
+   macros: it's not really needed and it allows the use of namespaces and
+   templates in the parameter passed to DECLARE_*.
+
+! 2013-07-24 - Marco Clemencic
+ - Added some tests.
+
+! 2013-07-23 - Marco Clemencic
+ - Added thread safety (with locks) if compiled with C++11.
+
+! 2013-07-23 - Marco Clemencic
+ - Changes the dlopen flags from (RTLD_LAZY | RTLD_LOCAL) to
+   (RTLD_LAZY | RTLD_GLOBAL) to avoid problems with Python binary modules
+   imported through the Python C/C++ API.
+   The Python binary modules may not be linked to the Python library, so they
+   need that the Python symbols are visible globally.
+
+! 2013-07-19 - Marco Clemencic
+ - Added instructions for the Plugin Service in a README.md file.
+
+! 2013-07-18 - Marco Clemencic
+ - Modified the symbol resolution policy when loading a component library,
+   using RTLD_LAZY instead of RTLD_NOW.
+   It allows loading of component libraries with unresolved symbols, but it is
+   consistent with the old behavior.
+
+! 2013-07-18 - Marco Clemencic
+ - Added the macros DECLARE_COMPONENT and DECLARE_COMPONENT_WITH_ID to simplify
+   the declaration of component classes when the factory is declared as the
+   typedef Factory in a base class.
+   In the example below the declaration becomes:
+
+       #include "MyDerivedComponent.h"
+       DECLARE_COMPONENT(MyDerivedComponent)
+
+! 2013-07-18 - Marco Clemencic
+ - Fixed a problem when the DECLARE_* macros are called from within a namespace.
+
+! 2013-07-17 - Marco Clemencic
+ - First complete implementation of a ROOT/Reflex-free Plugin Service for
+   Gaudi. The typical use is:
+
+   - headers
+
+     #include <Gaudi/PluginService.h>
+
+     class IMyInterface { ... };
+
+     class MyBaseComponent: virtual public IMyInterface {
+     public:
+       typedef Gaudi::PluginService::Factory1<IMyInterface*,
+                                              const std::string&>
+                                              Factory;
+       MyBaseComponent(const std::string&);
+       ...
+     };
+
+     class MyDerivedComponent: public MyBaseComponent {
+       ...
+     };
+
+   - sources
+
+     #include "MyDerivedComponent.h"
+     DECLARE_FACTORY(MyDerivedComponent, MyBaseComponent::Factory)
+
+   - to instantiate
+
+     #include "MyBaseComponent.h"
+     IMyInterface* ptr =
+         MyBaseComponent::Factory::create("MyDerivedComponent", "argument");

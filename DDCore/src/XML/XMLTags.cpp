@@ -1,20 +1,29 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-#include <stdexcept>
-#include <iostream>
-#include <map>
+// Author     : M.Frank
+//
+//==========================================================================
 
+// Framework include files
 #include "XML/XMLElements.h"
 #ifndef __TIXML__
 #include "xercesc/util/XMLString.hpp"
 #include "xercesc/util/PlatformUtils.hpp"
 #endif
+
+// C/C++ include files
+#include <stdexcept>
+#include <iostream>
+#include <map>
+
 
 namespace {
   struct __Init {
@@ -29,7 +38,7 @@ namespace {
         std::string xml_err = xercesc::XMLString::transcode(e.getMessage());
         std::string err = "xercesc::XMLPlatformUtils: Xerces-c error in initialization:"+xml_err;
         std::cout << err << std::endl;
-	throw std::runtime_error(err);
+        throw std::runtime_error(err);
       }
 #endif
     }
@@ -42,13 +51,13 @@ namespace {
   };
   __Init  __In__;
   void __Init::register_tag(const std::string& name, DD4hep::XML::Tag_t* tag)  {
-      Inventory_t::const_iterator i = __In__.m_inventory.find(name);
-      if ( i !=  __In__.m_inventory.end() )  {
-	std::string err = "XMLTags: Failed to register XML tag: "+name+". [Tag already exists]";
-	std::cout << err << std::endl;
-	throw std::runtime_error(err);
-      }
-      __In__.m_inventory[name] = tag;
+    Inventory_t::const_iterator i = __In__.m_inventory.find(name);
+    if ( i !=  __In__.m_inventory.end() )  {
+      std::string err = "XMLTags: Failed to register XML tag: "+name+". [Tag already exists]";
+      std::cout << err << std::endl;
+      throw std::runtime_error(err);
+    }
+    __In__.m_inventory[name] = tag;
   }
 }
 

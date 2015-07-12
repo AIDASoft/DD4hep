@@ -1,11 +1,17 @@
-// $Id: Detector.h 1087 2014-04-09 12:25:51Z markus.frank@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_GEOMETRY_OBJECTSINTERNA_H
 #define DD4HEP_GEOMETRY_OBJECTSINTERNA_H
 
@@ -47,7 +53,7 @@ namespace DD4hep {
       virtual ~HeaderObject();
     private:
       /// Private copy constructor
-    HeaderObject(const HeaderObject&) : NamedObject() {}
+      HeaderObject(const HeaderObject&) : NamedObject() {}
       /// Private assignment operator
       HeaderObject& operator=(const HeaderObject&) { return *this; }
     };
@@ -69,7 +75,7 @@ namespace DD4hep {
       virtual ~ConstantObject();
     private:
       /// Private copy constructor
-    ConstantObject(const ConstantObject&) : NamedObject() {}
+      ConstantObject(const ConstantObject&) : NamedObject() {}
       /// Private assignment operator
       ConstantObject& operator=(const ConstantObject&) { return *this; }
     };

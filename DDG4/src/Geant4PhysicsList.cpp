@@ -1,11 +1,16 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDG4/Geant4PhysicsList.h"
@@ -14,6 +19,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
 
+// Geant4 include files
 #include "G4VPhysicsConstructor.hh"
 #include "G4ParticleTable.hh"
 #include "G4ProcessManager.hh"
@@ -70,11 +76,11 @@ Geant4UserPhysics::~Geant4UserPhysics() {
 
 /// Default constructor
 Geant4PhysicsList::Process::Process()
-: ordAtRestDoIt(-1), ordAlongSteptDoIt(-1), ordPostStepDoIt(-1) {
+  : ordAtRestDoIt(-1), ordAlongSteptDoIt(-1), ordPostStepDoIt(-1) {
 }
 /// Copy constructor
 Geant4PhysicsList::Process::Process(const Process& p)
-: name(p.name), ordAtRestDoIt(p.ordAtRestDoIt), ordAlongSteptDoIt(p.ordAlongSteptDoIt), ordPostStepDoIt(p.ordPostStepDoIt) {
+  : name(p.name), ordAtRestDoIt(p.ordAtRestDoIt), ordAlongSteptDoIt(p.ordAlongSteptDoIt), ordPostStepDoIt(p.ordPostStepDoIt) {
 }
 
 /// Assignment operator
@@ -90,7 +96,7 @@ Geant4PhysicsList::Process& Geant4PhysicsList::Process::operator=(const Process&
 
 /// Standard constructor
 Geant4PhysicsList::Geant4PhysicsList(Geant4Context* ctxt, const string& nam)
-: Geant4Action(ctxt, nam) {
+  : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
 
@@ -239,7 +245,7 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics_pointer) {
 
 /// Standard constructor
 Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* ctxt, const string& nam)
-: Geant4Action(ctxt, nam), m_transportation(false), m_decays(false) {
+  : Geant4Action(ctxt, nam), m_transportation(false), m_decays(false) {
   declareProperty("transportation", m_transportation);
   declareProperty("extends", m_extends);
   declareProperty("decays", m_decays);

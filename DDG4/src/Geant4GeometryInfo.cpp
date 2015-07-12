@@ -1,11 +1,16 @@
-// $Id: Geant4Mapping.cpp 588 2013-06-03 11:41:35Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "G4VPhysicalVolume.hh"
@@ -35,7 +40,7 @@ string Geant4GeometryMaps::placementPath(const Geant4PlacementPath& path, bool r
 
 /// Default constructor
 Geant4GeometryInfo::Geant4GeometryInfo()
-: TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), valid(false) {
+  : TNamed("Geant4GeometryInfo", "Geant4GeometryInfo"), m_world(0), valid(false) {
 }
 
 /// Default destructor

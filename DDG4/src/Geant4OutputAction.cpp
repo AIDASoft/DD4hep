@@ -1,11 +1,16 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -24,7 +29,7 @@ using namespace std;
 
 /// Standard constructor
 Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
-: Geant4EventAction(ctxt, nam), m_truth(0)
+  : Geant4EventAction(ctxt, nam), m_truth(0)
 {
   InstanceCount::increment(this);
   declareProperty("Output", m_output);
@@ -51,37 +56,37 @@ void Geant4OutputAction::end(const G4Event* evt) {
     try  {
       m_truth = context()->event().extension<Geant4ParticleMap>(false);
       if ( m_truth && !m_truth->isValid() )  {
-	m_truth = 0;
-	printout(WARNING,name(),"+++ [Event:%d] No valid MC truth info present. "
-		 "Is a Particle handler installed ?",evt->GetEventID());
+        m_truth = 0;
+        printout(WARNING,name(),"+++ [Event:%d] No valid MC truth info present. "
+                 "Is a Particle handler installed ?",evt->GetEventID());
       }
       try  {
-	saveEvent(ctxt);
-	for (int i = 0; i < nCol; ++i) {
-	  G4VHitsCollection* hc = hce->GetHC(i);
-	  saveCollection(ctxt, hc);
-	}
+        saveEvent(ctxt);
+        for (int i = 0; i < nCol; ++i) {
+          G4VHitsCollection* hc = hce->GetHC(i);
+          saveCollection(ctxt, hc);
+        }
       }
       catch(const exception& e)   {
-	printout(ERROR,name(),"+++ [Event:%d] Exception while saving event:%s",
-		 evt->GetEventID(),e.what());
-	if ( m_errorFatal ) throw;
+        printout(ERROR,name(),"+++ [Event:%d] Exception while saving event:%s",
+                 evt->GetEventID(),e.what());
+        if ( m_errorFatal ) throw;
       }
       catch(...)   {
-	printout(ERROR,name(),"+++ [Event:%d] UNKNWON Exception while saving event",
-		 evt->GetEventID());
-	if ( m_errorFatal ) throw;
+        printout(ERROR,name(),"+++ [Event:%d] UNKNWON Exception while saving event",
+                 evt->GetEventID());
+        if ( m_errorFatal ) throw;
       }
       commit(ctxt);
     }
     catch(const exception& e)   {
       printout(ERROR,name(),"+++ [Event:%d] Exception while saving event:%s",
-	       evt->GetEventID(),e.what());
+               evt->GetEventID(),e.what());
       if ( m_errorFatal ) throw;
     }
     catch(...)   {
       printout(ERROR,name(),"+++ [Event:%d] UNKNWON Exception while saving event",
-	       evt->GetEventID());
+               evt->GetEventID());
       if ( m_errorFatal ) throw;
     }
     m_truth = 0;

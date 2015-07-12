@@ -1,11 +1,17 @@
-// $Id: Geant4Steppers.cpp 566 2013-05-15 08:30:34Z gaede $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DDG4/Factories.h"
 
@@ -19,10 +25,10 @@
 
 DECLARE_GEANT4_STEPPER(ImplicitEuler)
 DECLARE_GEANT4_STEPPER(ExplicitEuler)
-  DECLARE_GEANT4_STEPPER(SimpleRunge)
-  DECLARE_GEANT4_STEPPER(SimpleHeum)
-  DECLARE_GEANT4_MAGSTEPPER(ConstRK4)
-  DECLARE_GEANT4_STEPPER(ClassicalRK4)
+DECLARE_GEANT4_STEPPER(SimpleRunge)
+DECLARE_GEANT4_STEPPER(SimpleHeum)
+DECLARE_GEANT4_MAGSTEPPER(ConstRK4)
+DECLARE_GEANT4_STEPPER(ClassicalRK4)
 
 
 // Geant 4 include files
@@ -32,11 +38,11 @@ DECLARE_GEANT4_STEPPER(ExplicitEuler)
 #include "G4HelixSimpleRunge.hh"
 #include "G4HelixHeum.hh"
 
-  DECLARE_GEANT4_MAGSTEPPER(HelixImplicitEuler)
-  DECLARE_GEANT4_MAGSTEPPER(HelixExplicitEuler)
-  DECLARE_GEANT4_MAGSTEPPER(HelixMixedStepper)
-  DECLARE_GEANT4_MAGSTEPPER(HelixSimpleRunge)
-  DECLARE_GEANT4_MAGSTEPPER(HelixHeum)
+DECLARE_GEANT4_MAGSTEPPER(HelixImplicitEuler)
+DECLARE_GEANT4_MAGSTEPPER(HelixExplicitEuler)
+DECLARE_GEANT4_MAGSTEPPER(HelixMixedStepper)
+DECLARE_GEANT4_MAGSTEPPER(HelixSimpleRunge)
+DECLARE_GEANT4_MAGSTEPPER(HelixHeum)
 
 
 // Geant 4 include files
@@ -46,7 +52,7 @@ DECLARE_GEANT4_STEPPER(ExplicitEuler)
 #include "G4KM_OpticalEqRhs.hh"
 #include "G4KM_NucleonEqRhs.hh"
 //Virtual: DECLARE_GEANT4_MAGMOTION(Mag_EqRhs);
-  DECLARE_GEANT4_MAGMOTION(Mag_SpinEqRhs)
-  DECLARE_GEANT4_MAGMOTION(Mag_UsualEqRhs)
+DECLARE_GEANT4_MAGMOTION(Mag_SpinEqRhs)
+DECLARE_GEANT4_MAGMOTION(Mag_UsualEqRhs)
 //DECLARE_GEANT4_MAGMOTION(KM_OpticalEqRhs);
 //DECLARE_GEANT4_MAGMOTION(KM_NucleonEqRhs);

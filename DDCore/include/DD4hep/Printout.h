@@ -1,11 +1,16 @@
 // $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_PRINTOUT_H
 #define DD4HEP_PRINTOUT_H
 
@@ -202,9 +207,9 @@ namespace DD4hep {
     /// Optional text prefix when formatting the output
     std::string prefix;
     /// Initializing constructor of the functor
-  Printer(const Geometry::LCDD* l, std::ostream& stream, const std::string& p = "")
-  : lcdd(l), os(stream), prefix(p) {
-  }
+    Printer(const Geometry::LCDD* l, std::ostream& stream, const std::string& p = "")
+      : lcdd(l), os(stream), prefix(p) {
+    }
     /// Callback operator to be specialized depending on the element type
     void operator()(const T& value) const;
   };
@@ -236,9 +241,9 @@ namespace DD4hep {
     /// Reference to the container data of the map.
     cont_type& cont;
     /// Initializing constructor of the functor
-  PrintMap(const Geometry::LCDD* l, std::ostream& stream, cont_type& c, const std::string& t = "")
-  : lcdd(l), os(stream), text(t), cont(c) {
-  }
+    PrintMap(const Geometry::LCDD* l, std::ostream& stream, cont_type& c, const std::string& t = "")
+      : lcdd(l), os(stream), text(t), cont(c) {
+    }
     /// Callback operator to be specialized depending on the element type
     void operator()() const;
   };

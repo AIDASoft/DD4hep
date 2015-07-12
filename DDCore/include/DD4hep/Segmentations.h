@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_GEOMETRY_SEGMENTATIONS_H
 #define DD4HEP_GEOMETRY_SEGMENTATIONS_H
 
@@ -93,17 +98,17 @@ namespace DD4hep {
       /// Initializing constructor creating a new object of the given DDSegmentation type
       Segmentation(const std::string& type, const std::string& name);
       /// Default constructor
-    Segmentation()
-      : Handle<Implementation>() {
+      Segmentation()
+        : Handle<Implementation>() {
       }
       /// Copy Constructor from object
-    Segmentation(const Segmentation& e)
-      : Handle<Object>(e) {
+      Segmentation(const Segmentation& e)
+        : Handle<Object>(e) {
       }
 #ifndef __CINT__
       /// Copy Constructor from handle
-    Segmentation(const Handle<SegmentationObject>& e)
-      : Handle<Object>(e) {
+      Segmentation(const Handle<SegmentationObject>& e)
+        : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used when reading the already parsed object

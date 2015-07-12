@@ -1,19 +1,30 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_SIMPLEGDMLWRITER_H
 #define DD4HEP_SIMPLEGDMLWRITER_H
 
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/GeoHandler.h"
+
+// C/C++ include files
 #include <set>
 #include <map>
 #include <vector>
+
+// Forward declarations
 class TGeoVolume;
 class TGeoNode;
 
@@ -34,8 +45,8 @@ namespace DD4hep {
       /// Reference to output stream
       std::ostream& m_output;
 
-    SimpleGDMLWriter(std::ostream& os)
-      : m_output(os) {
+      SimpleGDMLWriter(std::ostream& os)
+        : m_output(os) {
       }
       /// Standard destructor
       virtual ~SimpleGDMLWriter() {

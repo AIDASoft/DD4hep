@@ -1,11 +1,16 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDG4_GEANT4HITCOLLECTION_H
 #define DD4HEP_DDG4_GEANT4HITCOLLECTION_H
 
@@ -105,18 +110,18 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-    Geant4HitWrapper() : G4VHit() {
+      Geant4HitWrapper() : G4VHit() {
         m_data.second = manipulator<InvalidHit>();
         m_data.first = 0;
       }
       /// Copy constructor
-    Geant4HitWrapper(const Geant4HitWrapper& v) : G4VHit() {
+      Geant4HitWrapper(const Geant4HitWrapper& v) : G4VHit() {
         m_data = v.m_data;
         v.m_data.first = 0;
         //v.release();
       }
       /// Copy constructor
-    Geant4HitWrapper(const Wrapper& v) : G4VHit()  {
+      Geant4HitWrapper(const Wrapper& v) : G4VHit()  {
         m_data = v;
       }
       /// Default destructor
@@ -219,17 +224,17 @@ namespace DD4hep {
     public:
       /// Initializing constructor (C++ version)
       template <typename TYPE>
-        Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd)
+      Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd)
         : G4VHitsCollection(det, coll), m_detector(sd),
-        m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
+          m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
         newInstance();
         m_hits.reserve(200);
       }
       /// Initializing constructor
       template <typename TYPE>
-        Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd, const TYPE*)
+      Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd, const TYPE*)
         : G4VHitsCollection(det, coll), m_detector(sd),
-        m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
+          m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
         newInstance();
         m_hits.reserve(200);
       }
@@ -310,13 +315,13 @@ namespace DD4hep {
     public:
       const POS& pos;
       /// Constructor
-    PositionCompare(const POS& p) : pos(p)  {      }
+      PositionCompare(const POS& p) : pos(p)  {      }
       /// Comparison function
       virtual void* operator()(const Geant4HitWrapper& w) const;
     };
 
     template <typename TYPE, typename POS>
-      void* PositionCompare<TYPE,POS>::operator()(const Geant4HitWrapper& w) const {
+    void* PositionCompare<TYPE,POS>::operator()(const Geant4HitWrapper& w) const {
       TYPE* h = w;
       return pos == h->position ? h : 0;
     }
@@ -333,13 +338,13 @@ namespace DD4hep {
     public:
       long long int id;
       /// Constructor
-    CellIDCompare(long long int i) : id(i) {      }
+      CellIDCompare(long long int i) : id(i) {      }
       /// Comparison function.
       virtual void* operator()(const Geant4HitWrapper& w) const;
     };
 
     template <typename TYPE>
-      void* CellIDCompare<TYPE>::operator()(const Geant4HitWrapper& w) const {
+    void* CellIDCompare<TYPE>::operator()(const Geant4HitWrapper& w) const {
       TYPE* h = w;
       if ( id == h->cellID )
         return h;

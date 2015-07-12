@@ -1,16 +1,25 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-#include <algorithm>
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Kernel.h"
+
+// C/C++ include files
+#include <algorithm>
 
 using namespace std;
 using namespace DD4hep;
@@ -18,7 +27,7 @@ using namespace DD4hep::Simulation;
 
 /// Intializing constructor
 Geant4Run::Geant4Run(const G4Run* run_pointer)
-: ObjectExtensions(typeid(Geant4Run)), m_run(run_pointer)
+  : ObjectExtensions(typeid(Geant4Run)), m_run(run_pointer)
 {
   InstanceCount::increment(this);
 }
@@ -30,7 +39,7 @@ Geant4Run::~Geant4Run()   {
 
 /// Intializing constructor
 Geant4Event::Geant4Event(const G4Event* evt, Geant4Random* rnd)
-: ObjectExtensions(typeid(Geant4Event)), m_event(evt), m_random(rnd)
+  : ObjectExtensions(typeid(Geant4Event)), m_event(evt), m_random(rnd)
 {
   InstanceCount::increment(this);
 }
@@ -42,7 +51,7 @@ Geant4Event::~Geant4Event()  {
 
 /// Default constructor
 Geant4Context::Geant4Context(Geant4Kernel* kernel_pointer)
-: m_kernel(kernel_pointer), m_run(0), m_event(0) {
+  : m_kernel(kernel_pointer), m_run(0), m_event(0) {
   InstanceCount::increment(this);
 }
 

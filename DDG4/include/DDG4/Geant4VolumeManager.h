@@ -1,11 +1,16 @@
-// $Id: Geant4VolumeManager.h 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDG4_GEANT4VOLUMEMANAGER_H
 #define DD4HEP_DDG4_GEANT4VOLUMEMANAGER_H
 
@@ -60,16 +65,16 @@ namespace DD4hep {
       /// Initializing constructor. The tree will automatically be built if possible
       Geant4VolumeManager(Geometry::LCDD& lcdd, Geant4GeometryInfo* info);
       /// Default constructor
-    Geant4VolumeManager()
-      : Base(), m_isValid(false) {
+      Geant4VolumeManager()
+        : Base(), m_isValid(false) {
       }
       /// Constructor to be used when reading the already parsed object
-    Geant4VolumeManager(const Base& e)
-      : Base(e), m_isValid(false) {
+      Geant4VolumeManager(const Base& e)
+        : Base(e), m_isValid(false) {
       }
       /// Constructor to be used when reading the already parsed object
-    Geant4VolumeManager(const Geant4VolumeManager& e)
-      : Base(e), m_isValid(false) {
+      Geant4VolumeManager(const Geant4VolumeManager& e)
+        : Base(e), m_isValid(false) {
       }
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Geant4VolumeManager(const Geometry::Handle<Q>& e)

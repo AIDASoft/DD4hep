@@ -1,13 +1,18 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Generic ROOT based geometry display program
-// 
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "run_plugin.h"
 
 //______________________________________________________________________________
@@ -29,7 +34,7 @@ namespace {
       "                                    before exiting the application            \n"
       "        -volmgr         [OPTIONAL]  Load and populate phys.volume manager to  \n"
       "                                    check the volume ids for duplicates etc.  \n"
-	 << endl;
+         << endl;
     exit(EINVAL);
   }
 }
@@ -49,15 +54,15 @@ int main(int argc,char** argv)  {
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
       if ( strncmp(argv[i],"-compact2lcdd",12)==0 )
-	compact2lcdd = true;
+        compact2lcdd = true;
       else if ( strncmp(argv[i],"-compact2gdml",12)==0 )
-	compact2gdml = true;
+        compact2gdml = true;
       else if ( strncmp(argv[i],"-compact2pandora",12)==0 )
-	compact2pand = true;
+        compact2pand = true;
       else if ( strncmp(argv[i],"-compact2vis",12)==0 )
-	compact2vis = true;
+        compact2vis = true;
       else if ( strncmp(argv[i],"-input",2)==0 )
-	geo_files.push_back(argv[++i]);
+        geo_files.push_back(argv[++i]);
       else if ( strncmp(argv[i],"-output",2)==0 )
         output = ++i;
       else if ( strncmp(argv[i],"-ascii",5)==0 )
@@ -67,7 +72,7 @@ int main(int argc,char** argv)  {
       else if ( strncmp(argv[i],"-volmgr",2)==0 )
         volmgr = true;
       else
-	usage();
+        usage();
     }
     else {
       usage();

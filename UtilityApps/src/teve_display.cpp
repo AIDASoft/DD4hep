@@ -1,13 +1,18 @@
-// $Id: display.cpp 590 2013-06-03 17:02:43Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Generic ROOT based geometry display program
-// 
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/Factories.h"
 #include "DD4hep/LCDD.h"
 #include "DDRec/SurfaceHelper.h"
@@ -223,7 +228,7 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
       //      std::cout << " **** drawSurfaces() : draw line for surface " <<   lines[i].first << " - " <<  lines[i].second  << std::endl ;
 
       ls->AddLine( lines[i].first.x(),  lines[i].first.y(),  lines[i].first.z(), 
-		   lines[i].second.x(), lines[i].second.y(), lines[i].second.z() ) ;
+                   lines[i].second.x(), lines[i].second.y(), lines[i].second.z() ) ;
     }
     
     ls->SetLineColor( col ) ;
@@ -240,41 +245,41 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
 
 void make_gui() {
 
-   // Create minimal GUI for event navigation.
+  // Create minimal GUI for event navigation.
 
-   TEveBrowser* browser = gEve->GetBrowser();
-   browser->StartEmbedding(TRootBrowser::kLeft);
+  TEveBrowser* browser = gEve->GetBrowser();
+  browser->StartEmbedding(TRootBrowser::kLeft);
 
-   TGMainFrame* frmMain = new TGMainFrame(gClient->GetRoot(), 1000, 600);
-   frmMain->SetWindowName("DD4hep GUI");
-   frmMain->SetCleanup(kDeepCleanup);
+  TGMainFrame* frmMain = new TGMainFrame(gClient->GetRoot(), 1000, 600);
+  frmMain->SetWindowName("DD4hep GUI");
+  frmMain->SetCleanup(kDeepCleanup);
 
-   TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);
-   {
+  TGHorizontalFrame* hf = new TGHorizontalFrame(frmMain);
+  {
       
-      TString icondir( Form("%s/icons/", gSystem->Getenv("ROOTSYS")) );
-      TGPictureButton* b = 0;
-      EvNavHandler    *fh = new EvNavHandler;
+    TString icondir( Form("%s/icons/", gSystem->Getenv("ROOTSYS")) );
+    TGPictureButton* b = 0;
+    EvNavHandler    *fh = new EvNavHandler;
 
-      b = new TGPictureButton(hf, gClient->GetPicture(icondir+"GoBack.gif"));
-      b->SetEnabled(kFALSE);
-      b->SetToolTipText("Go to previous event - not supported.");
-      hf->AddFrame(b);
-      b->Connect("Clicked()", "EvNavHandler", fh, "Bck()");
+    b = new TGPictureButton(hf, gClient->GetPicture(icondir+"GoBack.gif"));
+    b->SetEnabled(kFALSE);
+    b->SetToolTipText("Go to previous event - not supported.");
+    hf->AddFrame(b);
+    b->Connect("Clicked()", "EvNavHandler", fh, "Bck()");
 
-      b = new TGPictureButton(hf, gClient->GetPicture(icondir+"GoForward.gif"));
-      b->SetToolTipText("Generate new event.");
-      hf->AddFrame(b);
-      b->Connect("Clicked()", "EvNavHandler", fh, "Fwd()");
-   }
-   frmMain->AddFrame(hf);
+    b = new TGPictureButton(hf, gClient->GetPicture(icondir+"GoForward.gif"));
+    b->SetToolTipText("Generate new event.");
+    hf->AddFrame(b);
+    b->Connect("Clicked()", "EvNavHandler", fh, "Fwd()");
+  }
+  frmMain->AddFrame(hf);
 
-   frmMain->MapSubwindows();
-   frmMain->Resize();
-   frmMain->MapWindow();
+  frmMain->MapSubwindows();
+  frmMain->Resize();
+  frmMain->MapWindow();
 
-   browser->StopEmbedding();
-   browser->SetTabTitle("Event Control", 0);
+  browser->StopEmbedding();
+  browser->SetTabTitle("Event Control", 0);
 }
 //=====================================================================================
 

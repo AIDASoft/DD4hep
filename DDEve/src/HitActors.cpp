@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDEve/HitActors.h"
@@ -55,10 +60,10 @@ TEveElement* PointsetCreator::element() const   {
 PointsetCreator::~PointsetCreator()   {
   if ( pointset )  {
     pointset->SetTitle(Form("Hit collection:\n"
-			  "Container%s\n"
-			  "with %d hits\n"
-			  "total deposit:%.3f GeV",
-			  pointset->GetName(), count, deposit));
+                            "Container%s\n"
+                            "with %d hits\n"
+                            "total deposit:%.3f GeV",
+                            pointset->GetName(), count, deposit));
   }
 }
 
@@ -97,10 +102,10 @@ BoxsetCreator::BoxsetCreator(const std::string& collection, size_t /*length */)
 BoxsetCreator::~BoxsetCreator()  {
   if ( boxset )  {
     boxset->SetTitle(Form("Hit collection:\n"
-			  "Container%s\n"
-			  "with %d hits\n"
-			  "total deposit:%.3f GeV",
-			  boxset->GetName(), count, deposit));
+                          "Container%s\n"
+                          "with %d hits\n"
+                          "total deposit:%.3f GeV",
+                          boxset->GetName(), count, deposit));
   }
 }
 
@@ -123,13 +128,13 @@ void BoxsetCreator::operator()(const DDEveHit& hit)   {
   float s1Z =  scale(1)/2.0;
   float s2Z = s1Z;
   float coords[24]= { float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()-s1Z),
-		      float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()+s1Z),
-		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()+s2Z),
-		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()-s2Z),
-		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()-s2Z),
-		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()+s2Z),
-		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()+s1Z),
-		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()-s1Z) };
+                      float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()+s1Z),
+                      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()+s2Z),
+                      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()-s2Z),
+                      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()-s2Z),
+                      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()+s2Z),
+                      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()+s1Z),
+                      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()-s1Z) };
   ++count;
   deposit += hit.deposit*MEV_2_GEV;
   boxset->AddBox(coords);
@@ -150,13 +155,13 @@ void TowersetCreator::operator()(const DDEveHit& hit)   {
   float s2Z = s1Z;
   p = TVector3(hit.x*MM_2_CM-s1X, hit.y*MM_2_CM-s1Y, hit.z*MM_2_CM-s1Z);
   float coords[24]= { float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()-s1Z),
-		      float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()+s1Z),
-		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()+s2Z),
-		      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()-s2Z),
-		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()-s2Z),
-		      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()+s2Z),
-		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()+s1Z),
-		      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()-s1Z) };
+                      float(p.X()+s1X), float(p.Y()+s1Y), float(p.Z()+s1Z),
+                      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()+s2Z),
+                      float(p.X()-s2X), float(p.Y()-s2Y), float(p.Z()-s2Z),
+                      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()-s2Z),
+                      float(p.X()+s2X), float(p.Y()+s2Y), float(p.Z()+s2Z),
+                      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()+s1Z),
+                      float(p.X()-s1X), float(p.Y()-s1Y), float(p.Z()-s1Z) };
   ++count;
   deposit += hit.deposit*MEV_2_GEV;
   boxset->AddBox(coords);

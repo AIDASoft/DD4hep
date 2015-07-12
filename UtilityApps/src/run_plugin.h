@@ -1,13 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Generic ROOT based geometry display program
-// 
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/LCDD.h"
@@ -35,7 +38,7 @@ namespace {
       union { void* p; LCDD* l; } v;
       v.p = ::DD4hep::PluginService::Create<void*>("LCDD_constructor",name);
       if ( v.p )  {
-	return *v.l;
+        return *v.l;
       }
       throw runtime_error("Failed to locate plugin to create LCDD instance");
     }
@@ -92,7 +95,7 @@ namespace {
     print_default_args() <<
       "        -load_only   [OPTIONAL]     Dry-run to only load geometry without     \n"
       "                                    starting the dispay.                      \n"
-			 << endl;
+                         << endl;
     exit(EINVAL);
   }
 
@@ -109,53 +112,53 @@ namespace {
     }
     int handle(int& i, int argc, char** argv)    {
       if ( strncmp(argv[i],"-compact",5)==0 || strncmp(argv[i],"-input",4)==0 )  {
-	geo_files.push_back(argv[++i]);
-	if ( argc>i+2 && strncmp(argv[i+1],"-build_type",6)==0 )  {
-	  build_types.push_back(argv[i+2]);
-	  i += 2;
-	}
-	else  {
-	  build_types.push_back("BUILD_DEFAULT");
-	}
+        geo_files.push_back(argv[++i]);
+        if ( argc>i+2 && strncmp(argv[i+1],"-build_type",6)==0 )  {
+          build_types.push_back(argv[i+2]);
+          i += 2;
+        }
+        else  {
+          build_types.push_back("BUILD_DEFAULT");
+        }
       }
       else if ( strncmp(argv[i],"-load_only",5)==0 )
-	dry_run = true;
+        dry_run = true;
       else if ( strncmp(argv[i],"-print",4)==0 )
-	DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
+        DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
       else if ( strncmp(argv[i],"-destroy",5)==0 )
-	destroy = true;
+        destroy = true;
       else if ( strncmp(argv[i],"-volmgr",4)==0 )
-	volmgr = true;
+        volmgr = true;
       else 
-	return 0;
+        return 0;
       return 1;
     }
     int decodePrintLevel(const std::string& val)   {
       switch(::toupper(val[0]))  {
       case '1':
       case 'V':
-	return DD4hep::VERBOSE;
+        return DD4hep::VERBOSE;
       case '2':
       case 'D':
-	return DD4hep::DEBUG;
+        return DD4hep::DEBUG;
       case '3':
       case 'I':
-	return DD4hep::INFO;
+        return DD4hep::INFO;
       case '4':
       case 'W':
-	return DD4hep::WARNING;
+        return DD4hep::WARNING;
       case '5':
       case 'E':
-	return DD4hep::ERROR;
+        return DD4hep::ERROR;
       case '6':
       case 'F':
-	return DD4hep::FATAL;
+        return DD4hep::FATAL;
       case '7':
       case 'A':
-	return DD4hep::FATAL;
+        return DD4hep::FATAL;
       default:
-	cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << endl;
-	throw std::runtime_error("Invalid printLevel:"+val);
+        cout << "Unknown print level supplied:'" << val << "'. Argument ignored." << endl;
+        throw std::runtime_error("Invalid printLevel:"+val);
       }
     }
   };
@@ -172,14 +175,14 @@ namespace {
     Args args;
     for(int i=1; i<argc;++i) {
       if ( argv[i][0]=='-' ) {
-	if ( args.handle(i,argc,argv) )
-	  continue;
-	else
-	  usage_default(name);
+        if ( args.handle(i,argc,argv) )
+          continue;
+        else
+          usage_default(name);
       }
       else {  // This is the default
-	args.geo_files.push_back(argv[i]);
-	args.build_types.push_back("BUILD_DEFAULT");
+        args.geo_files.push_back(argv[i]);
+        args.build_types.push_back("BUILD_DEFAULT");
       }
     }
     if ( args.geo_files.empty() )

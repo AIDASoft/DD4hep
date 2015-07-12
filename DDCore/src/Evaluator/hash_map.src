@@ -121,11 +121,11 @@ public:
     for (size_type i=0; i<max_size; i++) {
       Entry* n = tmp[i];
       while(n) {
-	Entry* p = n;
-	n = p->next;
-	size_type ii = hash(p->data.first) % s;
-	p->next = table[ii];
-	table[ii] = p;
+        Entry* p = n;
+        n = p->next;
+        size_type ii = hash(p->data.first) % s;
+        p->next = table[ii];
+        table[ii] = p;
       }
     }
     max_size = s;
@@ -166,9 +166,9 @@ public:
     Entry** pp = &table[i];
     for (p=p->next; p; p=p->next) {
       if (eq(key,p->data.first)) {
-	*pp = p->next; delete p; cur_size--; return 1;
+        *pp = p->next; delete p; cur_size--; return 1;
       }else{
-	pp = &(p->next);
+        pp = &(p->next);
       }
     }
     return 0;
@@ -178,9 +178,9 @@ public:
   void clear() {
     for(size_type i=0; i<max_size; i++) {
       for (Entry* p=table[i]; p;) {
-	Entry* pp = p; p = p->next; delete pp;
+        Entry* pp = p; p = p->next; delete pp;
       }
-    table[i] = 0;
+      table[i] = 0;
     }
     cur_size = 0;
   }
@@ -194,9 +194,9 @@ public:
     std::cout << endl;
     for(size_type i=0; i<max_size; i++) {
       for (Entry* p=table[i]; p; p=p->next) {
-	std::cout
-	  << '"' << p->data.first << '"' << " " << p->data.second
-	  << std::endl;
+        std::cout
+          << '"' << p->data.first << '"' << " " << p->data.second
+          << std::endl;
       }
     }
   }

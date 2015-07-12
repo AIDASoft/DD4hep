@@ -60,8 +60,8 @@ namespace {
 //---------------------------------------------------------------------------
 #define EVAL XmlTools::Evaluator
 
-#define REMOVE_BLANKS                                                   \
-  for(pointer=name;;pointer++) if (!isspace(*pointer)) break;           \
+#define REMOVE_BLANKS                                                 \
+  for(pointer=name;;pointer++) if (!isspace(*pointer)) break;         \
   for(n=strlen(pointer);n>0;n--) if (!isspace(*(pointer+n-1))) break
 
 #define SKIP_BLANKS                             \
@@ -251,9 +251,9 @@ static int operand(pchar begin, pchar end, double & result,
         par_end = pointer-1;
         EVAL_STATUS = engine(par_begin, par_end, value, par_end, dictionary);
         if (EVAL_STATUS == EVAL::WARNING_BLANK_STRING)
-          { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
+        { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
         if (EVAL_STATUS != EVAL::OK)
-          { EVAL_EXIT( EVAL_STATUS, par_end ); }
+        { EVAL_EXIT( EVAL_STATUS, par_end ); }
         par.push(value);
         par_begin = pointer + 1;
       }
@@ -271,7 +271,7 @@ static int operand(pchar begin, pchar end, double & result,
           break;
         case EVAL::WARNING_BLANK_STRING:
           if (par.size() != 0)
-            { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
+          { EVAL_EXIT( EVAL::ERROR_EMPTY_PARAMETER, --par_end ); }
           break;
         default:
           EVAL_EXIT( EVAL_STATUS, par_end );
@@ -704,8 +704,8 @@ namespace XmlTools {
       string env_name(name+2,::strlen(name)-3);
       const char* env_str = ::getenv(env_name.c_str());
       if ( 0 != env_str )    {
-	s->theStatus = EVAL::OK;
-	return env_str;
+        s->theStatus = EVAL::OK;
+        return env_str;
       }
     }
     s->theStatus = EVAL::ERROR_UNKNOWN_VARIABLE;

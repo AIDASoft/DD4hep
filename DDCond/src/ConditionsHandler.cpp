@@ -1,11 +1,17 @@
-// $Id: Geant4Setup.cpp 578 2013-05-17 22:33:09Z markus.frank $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
@@ -71,7 +77,7 @@ void ConditionsHandler::closeTransaction()   {
     return;
   }
   printout(WARNING,"Conditions<conditions>",
-	   "Request to close a non-existing conditons transaction.");
+           "Request to close a non-existing conditons transaction.");
 }
 
 /// Create and install a new instance tree
@@ -105,8 +111,8 @@ void ConditionsHandler::apply(ConditionsStack& stack)    {
     DetElement det = data->detector;
     /// Do something!
     printout(DEBUG,"ConditionsHandler","+++ %s  name:%s type:%s value:%s  Validity:%s",
-	     det.path().c_str(), data->name.c_str(), data->type.c_str(), 
-	     data->value.c_str(), data->validity.c_str());
+             det.path().c_str(), data->name.c_str(), data->type.c_str(), 
+             data->value.c_str(), data->validity.c_str());
     det.conditions().set(data);
     updates.insert(det);
   }

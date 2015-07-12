@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDEVE_CONTEXTMENU_H
 #define DD4HEP_DDEVE_CONTEXTMENU_H
 
@@ -75,7 +80,7 @@ namespace DD4hep {
     ContextMenu& AddSeparator();
     /// Add a user item to the menu
     template <typename Q,typename T> 
-      ContextMenu& Add(const std::string& title, Q* ptr, void (T::*pmf)(TObject*, void* ud), void* ud=0)   {
+    ContextMenu& Add(const std::string& title, Q* ptr, void (T::*pmf)(TObject*, void* ud), void* ud=0)   {
       return Add(title, Callback(ptr).make(pmf), ud);
     }
     /// Root implementation macro

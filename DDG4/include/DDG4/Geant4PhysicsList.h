@@ -1,11 +1,17 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GEANT4PHYSICSLIST_H
 #define DD4HEP_DDG4_GEANT4PHYSICSLIST_H
 
@@ -80,12 +86,12 @@ namespace DD4hep {
       class ParticleConstructor: public std::string {
       public:
         /// Default constructor
-      ParticleConstructor()
-        : std::string() {
+        ParticleConstructor()
+          : std::string() {
         }
         /// Initalizing constructor
-      ParticleConstructor(const std::string& s)
-        : std::string(s) {
+        ParticleConstructor(const std::string& s)
+          : std::string(s) {
         }
         /// Default destructor
         ~ParticleConstructor() {
@@ -102,12 +108,12 @@ namespace DD4hep {
       class PhysicsConstructor: public std::string {
       public:
         /// Default constructor
-      PhysicsConstructor()
-        : std::string() {
+        PhysicsConstructor()
+          : std::string() {
         }
         /// Initalizing constructor
-      PhysicsConstructor(const std::string& s)
-        : std::string(s) {
+        PhysicsConstructor(const std::string& s)
+          : std::string(s) {
         }
         /// Default destructor
         ~PhysicsConstructor() {
@@ -225,12 +231,12 @@ namespace DD4hep {
       }
       /// Register process construction callback
       template <typename Q, typename T>
-        void constructProcess(Q* p, void (T::*f)(Geant4UserPhysics*)) {
+      void constructProcess(Q* p, void (T::*f)(Geant4UserPhysics*)) {
         m_process.add(p, f);
       }
       /// Register particle construction callback
       template <typename Q, typename T>
-        void constructParticle(Q* p, void (T::*f)(Geant4UserPhysics*)) {
+      void constructParticle(Q* p, void (T::*f)(Geant4UserPhysics*)) {
         m_particle.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

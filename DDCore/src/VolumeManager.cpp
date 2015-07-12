@@ -1,11 +1,17 @@
-// $Id: VolumeManager.cpp 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
@@ -85,7 +91,7 @@ namespace {
         if (vol.isSensitive())  {
           sd = vol.sensitiveDetector();
           Readout ro = sd.readout();
-	  if ( sd.isValid() && ro.isValid() )   {
+          if ( sd.isValid() && ro.isValid() )   {
             got_readout = true;
             add_entry(sd, parent, e, node, ids, chain);
             ++count;
@@ -156,9 +162,9 @@ namespace {
       pair<VolumeID, VolumeID> code = encoding(iddesc, ids);
 
       if (m_entries.find(code.first) == m_entries.end()) {
-	string        sd_name      = sd.name();
-	DetElement    sub_detector = m_lcdd.detector(sd_name);
-	VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
+        string        sd_name      = sd.name();
+        DetElement    sub_detector = m_lcdd.detector(sd_name);
+        VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
         // This is the block, we effectively have to save for each physical volume with a VolID
         VolumeManager::Context* context = new VolumeManager::Context;
         context->identifier = code.first;
@@ -245,7 +251,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
     Object& o = _data();
     if (!det.isValid()) {
       throw runtime_error("DD4hep: VolumeManager::addSubdetector: Only valid subdetectors "
-			  "are allowed. [Invalid DetElement]");
+                          "are allowed. [Invalid DetElement]");
     }
     Detectors::const_iterator i = o.subdetectors.find(det);
     if (i == o.subdetectors.end()) {
@@ -282,7 +288,7 @@ VolumeManager VolumeManager::addSubdetector(DetElement det, Readout ro) {
       mo.detMask = mo.sysID;
       o.managers[mo.sysID] = m;
       det.callAtUpdate(DetElement::PLACEMENT_CHANGED|DetElement::PLACEMENT_DETECTOR,
-                            &mo,&Object::update);
+                       &mo,&Object::update);
     }
     return (*i).second;
   }

@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #ifndef DD4HEP_GEOMETRY_OBJECTS_H
 #define DD4HEP_GEOMETRY_OBJECTS_H
@@ -78,16 +83,16 @@ namespace DD4hep {
       /// Definition of the implementation type
       typedef NamedObject Object;
       /// Default constructor
-    Author()
-      : Ref_t() {
+      Author()
+        : Ref_t() {
       }
       /// Constructorto be used for assignment from a handle
-    Author(const Author& e)
-      : Ref_t(e) {
+      Author(const Author& e)
+        : Ref_t(e) {
       }
       /// Constructor to be used when assigning already valid handle
       template <typename Q>
-        Author(const Handle<Q>& e)
+      Author(const Handle<Q>& e)
         : Ref_t(e) {
       }
       /// Constructor to be used when creating a new object
@@ -121,12 +126,12 @@ namespace DD4hep {
     public:
       typedef HeaderObject Object;
       /// Default constructor
-    Header()
-      : Handle<HeaderObject>() {
+      Header()
+        : Handle<HeaderObject>() {
       }
       /// Constructorto be used for assignment from a handle
-    Header(const Header& e)
-      : Handle<HeaderObject>(e) {
+      Header(const Header& e)
+        : Handle<HeaderObject>(e) {
       }
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q> Header(const Handle<Q>& e)
@@ -185,16 +190,16 @@ namespace DD4hep {
       /// Definition of the implementation type
       typedef ConstantObject Object;
       /// Default constructor
-    Constant()
-      : Handle<ConstantObject> () {
+      Constant()
+        : Handle<ConstantObject> () {
       }
       /// Constructorto be used for assignment from a handle
-    Constant(const Constant& e)
-      : Handle<ConstantObject> (e) {
+      Constant(const Constant& e)
+        : Handle<ConstantObject> (e) {
       }
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q>
-        Constant(const Handle<Q>& e)
+      Constant(const Handle<Q>& e)
         : Handle<ConstantObject> (e) {
       }
       /// Constructor to be used when creating a new DOM tree
@@ -258,18 +263,18 @@ namespace DD4hep {
       /// Definition of the implementation type
       typedef TGeoElement Object;
       /// Default constructor
-    Atom()
-      : Handle<Object>() {
+      Atom()
+        : Handle<Object>() {
       }
 #ifndef __CINT__
       /// Constructorto be used for assignment from a handle
-    Atom(const Handle<Object>& e)
-      : Handle<Object>(e) {
+      Atom(const Handle<Object>& e)
+        : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used when creating from a object handle
       template <typename Q>
-        Atom(const Handle<Q>& e)
+      Atom(const Handle<Q>& e)
         : Handle<Object>(e) {
       }
       /// Constructor to be used when reading the already parsed DOM tree
@@ -292,18 +297,18 @@ namespace DD4hep {
       typedef TGeoMedium Object;
 
       /// Default constructor
-    Material()
-      : Handle<Object>() {
+      Material()
+        : Handle<Object>() {
       }
 #ifndef __CINT__
       /// Constructorto be used for assignment from material handle
-    Material(const Handle<Object>& e)
-      : Handle<Object>(e) {
+      Material(const Handle<Object>& e)
+        : Handle<Object>(e) {
       }
 #endif
       /// Constructorto be used for assignment from object handle
       template <typename Q>
-        Material(const Handle<Q>& e)
+      Material(const Handle<Q>& e)
         : Handle<Object>(e) {
       }
       /// proton number of the underlying material
@@ -334,22 +339,22 @@ namespace DD4hep {
       };
       typedef VisAttrObject Object;
       /// Default constructor
-    VisAttr()
-      : Handle<Object>() {
+      VisAttr()
+        : Handle<Object>() {
       }
       /// Copy constructor for handle
-    VisAttr(const VisAttr& e)
-      : Handle<Object>(e) {
+      VisAttr(const VisAttr& e)
+        : Handle<Object>(e) {
       }
 #ifndef __CINT__
       /// Copy constructor for handle
-    VisAttr(const Handle<Object>& e)
-      : Handle<Object>(e) {
+      VisAttr(const Handle<Object>& e)
+        : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used for assignment from object handle
       template <typename Q>
-        VisAttr(const Handle<Q>& e)
+      VisAttr(const Handle<Q>& e)
         : Handle<Object>(e) {
       }
       /// Constructor to be used when creating a new registered visualization object
@@ -411,7 +416,7 @@ namespace DD4hep {
       typedef Handle<TGeoPhysicalNode> Base;
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q>
-        AlignmentEntry(const Handle<Q>& h)
+      AlignmentEntry(const Handle<Q>& h)
         : Base(h) {
       }
       /// Constructor to be used when creating a new aligment entry
@@ -438,12 +443,12 @@ namespace DD4hep {
       std::string content;
       double value;
       /// Default constructor
-    Limit()
-      : particles(), name(), unit(), content(), value(0.0) {
+      Limit()
+        : particles(), name(), unit(), content(), value(0.0) {
       }
       /// Copy constructor
-    Limit(const Limit& c)
-      : particles(c.particles), name(c.name), unit(c.unit), content(c.content), value(c.value) {
+      Limit(const Limit& c)
+        : particles(c.particles), name(c.name), unit(c.unit), content(c.content), value(c.value) {
       }
       /// Assignment operator
       Limit& operator=(const Limit& c);
@@ -465,22 +470,22 @@ namespace DD4hep {
     public:
       typedef LimitSetObject Object;
       /// Constructor to be used when reading the already parsed DOM tree
-    LimitSet()
-      : Handle<LimitSetObject>() {
+      LimitSet()
+        : Handle<LimitSetObject>() {
       }
       /// Copy constructor for handle
-    LimitSet(const LimitSet& e)
-      : Handle<LimitSetObject>(e) {
+      LimitSet(const LimitSet& e)
+        : Handle<LimitSetObject>(e) {
       }
 #ifndef __CINT__
       /// Copy constructor for handle
-    LimitSet(const Handle<LimitSetObject>& e)
-      : Handle<LimitSetObject>(e) {
+      LimitSet(const Handle<LimitSetObject>& e)
+        : Handle<LimitSetObject>(e) {
       }
 #endif
       /// Constructor to be used when reading the already parsed DOM tree
       template <typename Q>
-        LimitSet(const Handle<Q>& e)
+      LimitSet(const Handle<Q>& e)
         : Handle<LimitSetObject>(e) {
       }
       /// Constructor to be used when creating a new object
@@ -502,22 +507,22 @@ namespace DD4hep {
       /// Implemeting class
       typedef RegionObject Object;
       /// Default constructor
-    Region()
-      : Handle<Object>() {
+      Region()
+        : Handle<Object>() {
       }
       /// Copy Constructor
-    Region(const Region& e)
-      : Handle<Object>(e) {
+      Region(const Region& e)
+        : Handle<Object>(e) {
       }
 #ifndef __CINT__
       /// Copy Constructor
-    Region(const Handle<RegionObject>& e)
-      : Handle<Object>(e) {
+      Region(const Handle<RegionObject>& e)
+        : Handle<Object>(e) {
       }
 #endif
       /// Constructor to be used when assigning handle
       template <typename Q>
-        Region(const Handle<Q>& e)
+      Region(const Handle<Q>& e)
         : Handle<Object>(e) {
       }
       /// Constructor to be used when creating a new object

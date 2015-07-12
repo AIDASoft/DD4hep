@@ -3,6 +3,30 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+
+2015-07-11n M.Frank
+-------------------
+*** Important ***
+  Before updating, backup your existing and working checkout. Though I was running 
+  the basic tests, there may be unchecked corners of the software.
+
+Notes:
+  - Backwards compatibility mode for the usage of ROOT 5 and ROOT 6 alternatively.
+  - For ROOT 6 the Gaudi PluginService is used and added to the distribution.
+  - DD4hep is distributed with a licence. See $DD4hepINSTALL/LICENSE for details.
+  - In the doc area the $DD4hepINSTALL/doc/CREDITS file everybode should add her/his 
+    name, if contributed significantly.
+  - Unfortunately this meant to add/change the headers of all files and give a 
+    pointer to the licence file. If I accidentally changed the author name, please
+    chagne it back.
+
+  - The plugin factory declaration statements were changed to accomodate both
+    ROOT 5 and ROOT 6 and to keep the number of 'ifdef' statements at a minimum.
+
+  - TODO: Properly change the cmake scripts to accomodate for ROOT 6 and the 
+    automatic switch when building DD4hep. 
+
  --------
 | v00-13 |  
  --------   

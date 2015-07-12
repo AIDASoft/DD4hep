@@ -1,11 +1,16 @@
-// $Id: Geant4Setup.cpp 578 2013-05-17 22:33:09Z markus.frank $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H
 #define DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H
 
@@ -39,7 +44,7 @@ namespace DD4hep {
       Nodes& nodes;
     public:
       /// Initializing functor constructor
-    AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
+      AlignmentOperator(AlignmentCache& c, Nodes& n) : cache(c), nodes(n) {}
       /// Insert alignment entry
       void insert(Alignment alignment)  const;
     };
@@ -54,7 +59,7 @@ namespace DD4hep {
     public:
       const Entries& entries;
       /// Initializing functor constructor
-    AlignmentSelector(AlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
+      AlignmentSelector(AlignmentCache& c, Nodes& n, const Entries& e) : AlignmentOperator(c,n), entries(e) {}
       ~AlignmentSelector() { }
       const AlignmentSelector& reset()   const { nodes.clear(); return *this; }
       /// Function callback for cache entries
@@ -72,7 +77,7 @@ namespace DD4hep {
     template <typename T> class AlignmentActor : public AlignmentOperator {
     public:
       /// Initializing functor constructor
-    AlignmentActor(AlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
+      AlignmentActor(AlignmentCache& c, Nodes& n) : AlignmentOperator(c,n) { init(); }
       void init() {}
       /// Function callback for entries
       void operator()(Nodes::value_type& e) const;

@@ -1,0 +1,36 @@
+package GaudiPluginService
+version v2r2
+author "Marco Clemencic"
+
+private
+# genconfuser.py cannot be used in GaudiPluginService
+# Note: the tag must be set before including GaudiPolicy
+apply_tag skip_genconfuser
+end_private
+
+use GaudiPolicy *
+
+apply_pattern install_more_includes more=Gaudi
+
+library GaudiPluginService -no_static  PluginService.cpp capi_pluginservice.cpp
+apply_pattern linker_library library=GaudiPluginService
+
+apply_pattern install_python_modules
+
+application listcomponents listcomponents.cpp
+macro_append listcomponents_dependencies " GaudiPluginService "
+# This seems to be needed on Ubuntu, but not on SLC6.
+macro_append listcomponentslinkopts " -ldl "
+
+macro listcomponents_cmd listcomponents.exe
+make_fragment listcomponents -header=listcomponents_header
+
+# FIXME: we need to be able to determine if PluginSvc is available globally
+macro_append pp_cppflags " -DHAVE_GAUDI_PLUGINSVC "
+macro_append pp_cflags   " -DHAVE_GAUDI_PLUGINSVC "
+apply_tag HAVE_GAUDI_PLUGINSVC
+
+private
+macro_append pp_cppflags " -DGaudiPluginService_EXPORTS "
+macro_append pp_cppflags " -DGAUDI_REFLEX_COMPONENT_ALIASES "
+end_private

@@ -1,17 +1,24 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4hep_COMPACT_CONVERSION_H
 #define DD4hep_COMPACT_CONVERSION_H
 
 // C/C++ include files
 #include <map>
 #include <iostream>
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -36,13 +43,13 @@ namespace DD4hep {
     /// Reference to optional user defined parameter
     user_param param;
     /// Initializing constructor of the functor
-  Converter(Geometry::LCDD& l)
-  : lcdd(l), param(0) {
-  }
+    Converter(Geometry::LCDD& l)
+      : lcdd(l), param(0) {
+    }
     /// Initializing constructor of the functor with initialization of the user parameter
-  Converter(Geometry::LCDD& l, user_param p)
-  : lcdd(l), param(p) {
-  }
+    Converter(Geometry::LCDD& l, user_param p)
+      : lcdd(l), param(p) {
+    }
     /// Callback operator to be specialized depending on the element type
     void operator()(XML::Handle_t xml) const;
     /// Typed access to the user parameter (unchecked)

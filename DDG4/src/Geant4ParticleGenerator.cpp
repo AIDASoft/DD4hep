@@ -15,6 +15,7 @@
 #include "DDG4/Geant4ParticleGenerator.h"
 #include "CLHEP/Units/SystemOfUnits.h"
 
+// Geant4 include files
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
 

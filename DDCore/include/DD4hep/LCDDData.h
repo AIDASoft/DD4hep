@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #ifndef DD4HEP_DDCORE_LCDDDATA_H
 #define DD4HEP_DDCORE_LCDDDATA_H
@@ -43,8 +48,8 @@ namespace DD4hep {
        *  \ingroup DD4HEP_GEOMETRY
        */
       struct InvalidObjectError: public std::runtime_error {
-      InvalidObjectError(const std::string& msg)
-        : std::runtime_error("DD4hep: " + msg) {
+        InvalidObjectError(const std::string& msg)
+          : std::runtime_error("DD4hep: " + msg) {
         }
       };
 

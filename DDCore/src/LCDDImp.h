@@ -1,11 +1,17 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4hep_LCDDGEOIMP_H
 #define DD4hep_LCDDGEOIMP_H
 
@@ -246,19 +252,19 @@ namespace DD4hep {
 
       /// Access a set of subdetectors according to the sensitive type.
       /**
-	 Please note:
-	 - The sensitive type of a detector is set in the 'detector constructor'.
-	 - Not sensitive detector structures have the name 'passive'
-	 - Compounds (ie. nested detectors) are of type 'compound'
-       */
+         Please note:
+         - The sensitive type of a detector is set in the 'detector constructor'.
+         - Not sensitive detector structures have the name 'passive'
+         - Compounds (ie. nested detectors) are of type 'compound'
+      */
       virtual const std::vector<DetElement>& detectors(const std::string& type);
 
       /// Access a set of subdetectors according to several sensitive types.
       virtual std::vector<DetElement> detectors(const std::string& type1,
-						const std::string& type2,
-						const std::string& type3="",
-						const std::string& type4="",
-						const std::string& type5="" );
+                                                const std::string& type2,
+                                                const std::string& type3="",
+                                                const std::string& type4="",
+                                                const std::string& type5="" );
 
       /// Access the availible detector types
       virtual std::vector<std::string> detectorTypes() const;

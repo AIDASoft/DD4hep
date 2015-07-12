@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDG4/Geant4Hits.h"
@@ -49,12 +54,12 @@ static G4Allocator<Geant4TrackerHit> TrackerHitAllocator;
 
 /// Default constructor
 Geant4TrackerHit::Geant4TrackerHit()
-: Geant4Hit(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
+  : Geant4Hit(), position(), momentum(), length(0.0), truth(), energyDeposit(0.0) {
 }
 
 /// Standard initializing constructor
 Geant4TrackerHit::Geant4TrackerHit(int track_id, int pdg_id, double deposit, double time_stamp)
-: Geant4Hit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
+  : Geant4Hit(), position(), momentum(), length(0.0), truth(track_id, pdg_id, deposit, time_stamp), energyDeposit(deposit) {
 }
 
 /// Assignment operator
@@ -110,7 +115,7 @@ static G4Allocator<Geant4CalorimeterHit> CalorimeterHitAllocator;
 
 /// Standard constructor
 Geant4CalorimeterHit::Geant4CalorimeterHit(const Position& pos)
-: Geant4Hit(), position(pos), truth(), energyDeposit(0) {
+  : Geant4Hit(), position(pos), truth(), energyDeposit(0) {
 }
 
 /// Geant4 required object allocator

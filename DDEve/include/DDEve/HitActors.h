@@ -1,11 +1,16 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_DDEVE_HITHANDLERS_H
 #define DD4HEP_DDEVE_HITHANDLERS_H
 
@@ -37,7 +42,7 @@ namespace DD4hep {
   };
 
   /// Fill a 3D pointset from a hit collection.
-   /*
+  /*
    *  \author  M.Frank
    *  \version 1.0
    *  \ingroup DD4HEP_EVE
@@ -88,11 +93,11 @@ namespace DD4hep {
    */
   struct TowersetCreator : public BoxsetCreator  {
     /// Standard initializing constructor
-  TowersetCreator(const std::string& collection, size_t length) 
-    : BoxsetCreator(collection,length) {}
+    TowersetCreator(const std::string& collection, size_t length) 
+      : BoxsetCreator(collection,length) {}
     /// Standard initializing constructor
-  TowersetCreator(const std::string& collection, size_t length, const DisplayConfiguration::Config& cfg)
-    : BoxsetCreator(collection, length, cfg) {}
+    TowersetCreator(const std::string& collection, size_t length, const DisplayConfiguration::Config& cfg)
+      : BoxsetCreator(collection, length, cfg) {}
     /// Standard destructor
     virtual ~TowersetCreator() {}
     /// Action callback of this functor: 

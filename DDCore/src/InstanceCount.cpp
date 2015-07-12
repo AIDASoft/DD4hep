@@ -1,14 +1,22 @@
-// $Id: IDDescriptor.cpp 570 2013-05-17 07:47:11Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Handle.h"
 #include "DD4hep/Memory.h"
+// C/C++ include files
 #include <iostream>
 #include <iomanip>
 #include <cstdio>

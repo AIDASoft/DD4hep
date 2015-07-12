@@ -1,4 +1,14 @@
-// ============================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 #ifndef DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H
 #define DD4HEPPROPERTYPARSERS_PARSERSGENERATOR_H 1
 // ============================================================================
@@ -27,7 +37,7 @@ namespace DD4hep  {
     typedef SkipperGrammar<IteratorT> Skipper;
     // ========================================================================
     template<typename ResultT> inline int
-      parse_(ResultT& result, const std::string& input){
+    parse_(ResultT& result, const std::string& input){
       Skipper skipper;
       typename Grammar_<IteratorT, ResultT, Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();
@@ -35,7 +45,7 @@ namespace DD4hep  {
     }
     //=========================================================================
     template<> inline int
-      parse_(std::string& result, const std::string& input){
+    parse_(std::string& result, const std::string& input){
       Skipper skipper;
       Grammar_<IteratorT, std::string, Skipper>::Grammar g;
       IteratorT iter = input.begin(), end = input.end();

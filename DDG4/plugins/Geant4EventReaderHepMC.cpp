@@ -1,9 +1,16 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//====================================================================
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDG4/IoStreams.h"
@@ -152,7 +159,7 @@ namespace DD4hep {
 
 /// Initializing constructor
 Geant4EventReaderHepMC::Geant4EventReaderHepMC(const string& nam)
-: Geant4EventReader(nam), m_input(), m_events(0)
+  : Geant4EventReader(nam), m_input(), m_events(0)
 {
   // Now open the input file:
   m_input.open(nam.c_str(),BOOST_IOS::in|BOOST_IOS::binary);

@@ -1,11 +1,17 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GEANT4RUNACTION_H
 #define DD4HEP_DDG4_GEANT4RUNACTION_H
 
@@ -70,12 +76,12 @@ namespace DD4hep {
       virtual ~Geant4RunActionSequence();
       /// Register begin-of-run callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
-        void callAtBegin(Q* p, void (T::*f)(const G4Run*)) {
+      void callAtBegin(Q* p, void (T::*f)(const G4Run*)) {
         m_begin.add(p, f);
       }
       /// Register end-of-run callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
-        void callAtEnd(Q* p, void (T::*f)(const G4Run*)) {
+      void callAtEnd(Q* p, void (T::*f)(const G4Run*)) {
         m_end.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.

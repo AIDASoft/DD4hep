@@ -1,13 +1,18 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Generic ROOT based geometry display program
-// 
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
+// Framework include files
 #include "run_plugin.h"
 
 //______________________________________________________________________________
@@ -31,11 +36,11 @@ int main(int argc,char** argv)  {
   for(int i=1; i<argc;++i) {
     if ( argv[i][0]=='-' ) {
       if ( arguments.handle(i,argc,argv) )
-	continue;
+        continue;
       else if ( strncmp(argv[i],"-plugin",2)==0 )
         plugin = argv[++i];
       else
-	options.push_back(argv[i]);
+        options.push_back(argv[i]);
     }
     else {
       usage();

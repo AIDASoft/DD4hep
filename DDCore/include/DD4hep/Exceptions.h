@@ -1,11 +1,17 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDCORE_EXCEPTIONS_H
 #define DD4HEP_DDCORE_EXCEPTIONS_H
 
@@ -25,8 +31,8 @@ namespace DD4hep {
    */
   struct unrelated_type_error : public std::runtime_error {
     static std::string msg(const std::type_info& typ1, const std::type_info& typ2, const std::string& text);
-  unrelated_type_error(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "")
-    : std::runtime_error(msg(typ1, typ2, text)) {
+    unrelated_type_error(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "")
+      : std::runtime_error(msg(typ1, typ2, text)) {
     }
   };
 
@@ -38,8 +44,8 @@ namespace DD4hep {
    */
   struct unrelated_value_error : public std::runtime_error {
     static std::string msg(const std::type_info& typ, const std::string& text);
-  unrelated_value_error(const std::type_info& typ, const std::string& text = "")
-    : std::runtime_error(msg(typ, text)) {
+    unrelated_value_error(const std::type_info& typ, const std::string& text = "")
+      : std::runtime_error(msg(typ, text)) {
     }
   };
 

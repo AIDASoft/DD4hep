@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DDG4/Geant4SensitiveDetector.h"
@@ -14,9 +19,11 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
 
+// Geant4 include files
 #include "G4Step.hh"
 #include "G4PVPlacement.hh"
 
+// ROOT include files
 #include "TGeoNode.h"
 
 #define DEBUG 0
@@ -31,7 +38,7 @@ using namespace DD4hep::Simulation;
 
 /// Constructor. The detector element is identified by the name
 Geant4SensitiveDetector::Geant4SensitiveDetector(const string& nam, LCDD& lcdd)
-: G4VSensitiveDetector(nam), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
+  : G4VSensitiveDetector(nam), m_lcdd(lcdd), m_detector(), m_sensitive(), m_readout(), m_hce(0) {
   m_sensitive = lcdd.sensitiveDetector(nam);
   m_detector = lcdd.detector(nam);
   m_readout = m_sensitive.readout();
@@ -44,8 +51,7 @@ Geant4SensitiveDetector::~Geant4SensitiveDetector() {
 /// Initialize the sensitive detector for the usage of a single hit collection
 bool Geant4SensitiveDetector::defineCollection(const string& coll_name) {
   if (coll_name.empty()) {
-    throw runtime_error(
-                        "Geant4SensitiveDetector: No collection defined for " + name() + " of type " + string(m_sensitive.type()));
+    throw runtime_error("Geant4SensitiveDetector: No collection defined for "+name()+" of type "+string(m_sensitive.type()));
   }
   collectionName.insert(coll_name);
   return true;
@@ -111,7 +117,8 @@ G4bool Geant4SensitiveDetector::process(G4Step* step, G4TouchableHistory* hist) 
     }
   }
 #if DEBUG
-  std::cout << " *** too small energy deposit : " << step->GetTotalEnergyDeposit() << " < " << ene_cut << "    at " << step->GetPreStepPoint()->GetPosition() << std::endl;
+  std::cout << " *** too small energy deposit : " << step->GetTotalEnergyDeposit() 
+            << " < " << ene_cut << "    at " << step->GetPreStepPoint()->GetPosition() << std::endl;
 #endif
   return false;
 }
@@ -150,10 +157,13 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
   Position pos2 = step.postPos();
   Momentum mom = step.postMom();
 
-  printout(INFO, "G4Step", "  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f", long(step.track), pos1.X(),
+  printout(INFO, "G4Step", "  Track:%08ld Pos:(%8f %8f %8f) -> (%f %f %f)  Mom:%7.0f %7.0f %7.0f", 
+           long(step.track), pos1.X(),
            pos1.Y(), pos1.Z(), pos2.X(), pos2.Y(), pos2.Z(), mom.X(), mom.Y(), mom.Z());
-  printout(INFO, "G4Step", "                pre-Vol: %s  Status:%s", step.preVolume()->GetName().c_str(), step.preStepStatus());
-  printout(INFO, "G4Step", "                post-Vol:%s  Status:%s", step.postVolume()->GetName().c_str(),
+  printout(INFO, "G4Step", "                pre-Vol: %s  Status:%s", 
+           step.preVolume()->GetName().c_str(), step.preStepStatus());
+  printout(INFO, "G4Step", "                post-Vol:%s  Status:%s", 
+           step.postVolume()->GetName().c_str(),
            step.postStepStatus());
 
   const G4VPhysicalVolume* pv = step.volume(step.post);
@@ -205,56 +215,8 @@ long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep) {
       str << (*i).first->name() << "=" << (*i).second << " ";
     }
     ::printf("                 -->  CellID: %X [%X] -> %s\n",id,dsc.first,str.str().c_str());
-
   }
-
 #endif
-
   return id;
-
-  //   // old way of lookup ----------- does not work for assemblies ....
-
-  // //------------ get the cellID description string -----------------------------------
-
-  //  Geometry::PlacedVolume place  = mapping.placement( g4v ) ;
-
-  //  if( ! place.isValid() || ! place.volume().isSensitive() )  {
-  //    G4cout << " **** Error in Geant4SensitiveDetector::getVolumeID:  invalid first sensitive volume in buildHits is not sensitive !!! " << std::endl ;
-  //  }
-  //  Geometry::Volume            vol    = place.volume();
-  //  Geometry::SensitiveDetector sd     = vol.sensitiveDetector();
-  //  Geometry::Readout           ro     = sd.readout();
-
-  //  std::string  idDescStr =  ro.idSpec().fieldDescription() ;
-  //  BitField64 bf( idDescStr ) ;
-
-  //  //------------ now fill the cellID from the volIDs of the complete path -----------------------------------
-
-  //  const G4NavigationHistory* hist = aStep->GetPreStepPoint()->GetTouchableHandle()->GetHistory() ;
-  //  int depth =  hist->GetDepth() ;
-  //  //const G4VPhysicalVolume*  g4v = hist->GetVolume( depth ) ;
-
-  //  for(int i=depth ; i>0 ; --i ) {
-
-  //    g4v = hist->GetVolume(i) ;
-  //    Geometry::PlacedVolume place  = mapping.placement( g4v ) ;
-
-  //    if( ! place.isValid() ) {
-  //      G4cout << " **** WARNING in Geant4SensitiveDetector::getVolumeID: ingnoring invalid PlacedVolume for : " <<  g4v->GetName() << std::endl ;
-  //      continue ;
-  //    }
-
-  //    // G4cout << "---  VolIDs : " << std::endl ;
-  //    Geometry::PlacedVolume::VolIDs ids = place.volIDs() ;
-
-  //    for( Geometry::PlacedVolume::VolIDs::const_iterator it = ids.begin() ; it != ids.end() ; ++it ){
-
-  //      //  G4cout << "--- " << it->first << " -- " << it->second << std::
-  //      bf[  it->first ] = it->second  ;
-  //    }
-  //  }
-
-  //  return bf.getValue()  ;
-
 }
 

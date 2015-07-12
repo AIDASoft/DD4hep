@@ -1,12 +1,19 @@
-// $Id: Geant4Data.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
 //
 //  Define the ROOT dictionaries for all data classes to be saved
 //  which are created by the DDG4 examples.
-//
-//  Author     : M.Frank
 //
 //====================================================================
 #ifndef DD4HEP_DDG4_DDG4DICT_H

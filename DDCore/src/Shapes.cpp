@@ -1,16 +1,24 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 #define _USE_MATH_DEFINES
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/DD4hepUnits.h"
+
 // C/C++ include files
 #include <stdexcept>
 
@@ -59,7 +67,7 @@ std::string DD4hep::Geometry::toStringSolid(const TGeoShape* shape, int precisio
   else if (cl == TGeoHalfSpace::Class()) {
     TGeoHalfSpace* s = (TGeoHalfSpace*)(const_cast<TGeoShape*>(shape));
     log << " Point:  (" << s->GetPoint()[0] << ", " << s->GetPoint()[1] << ", " << s->GetPoint()[2] << ") " 
-	<< " Normal: (" << s->GetNorm()[0]  << ", " << s->GetNorm()[1]  << ", " << s->GetNorm()[2]  << ") ";
+        << " Normal: (" << s->GetNorm()[0]  << ", " << s->GetNorm()[1]  << ", " << s->GetNorm()[2]  << ") ";
   }
   else if (cl == TGeoTube::Class()) {
     const TGeoTube* s = (const TGeoTube*) shape;

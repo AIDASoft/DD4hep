@@ -1,13 +1,22 @@
-// $Id:$
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+//==========================================================================
 //
 //  Simple program to dump the complete DetElement hierarchy
 // 
 //  Author     : F.Gaede, CERN/DESY
 //  Date       : 07 Nov 2014
-//====================================================================
+//==========================================================================
+
+// Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/DD4hepUnits.h"
 
@@ -15,6 +24,7 @@
 #include "DDRec/DetectorSurfaces.h"
 #include "DDRec/SurfaceHelper.h"
 
+// C/C++ include files
 #include <list>
 
 
@@ -47,7 +57,7 @@ int main(int argc, char** argv ){
 
 
   std::cout << "############################################################################### "  << std::endl  
-	    << "     sensitive detectors:     " << std::endl ;
+            << "     sensitive detectors:     " << std::endl ;
 
   for( DD4hep::Geometry::LCDD::HandleMap::const_iterator it = sensDet.begin() ; it != sensDet.end() ; ++it ){
 
@@ -65,14 +75,14 @@ int main(int argc, char** argv ){
   std::list< DetElement > gdaugs ; 
   daugs.push_back( world ) ;
   while( ! daugs.empty() ) {
-      for( std::list< DetElement >::iterator li=daugs.begin() ; li != daugs.end() ; ++li ){
-        DetElement dau = *li ;
-        DetElement::Children chMap = dau.children() ;
-        for ( DetElement::Children::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
-        	DetElement de = (*it).second ;
-        	gdaugs.push_back( de ) ;
-        }  
-      }
+    for( std::list< DetElement >::iterator li=daugs.begin() ; li != daugs.end() ; ++li ){
+      DetElement dau = *li ;
+      DetElement::Children chMap = dau.children() ;
+      for ( DetElement::Children::const_iterator it=chMap.begin() ; it != chMap.end() ; ++it ){
+        DetElement de = (*it).second ;
+        gdaugs.push_back( de ) ;
+      }  
+    }
     dets.splice( dets.end() , daugs ) ;
     daugs.splice( daugs.end() , gdaugs ) ;
   }

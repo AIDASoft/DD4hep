@@ -1,12 +1,16 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
-
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4hep_IDDESCRIPTOR_H
 #define DD4hep_IDDESCRIPTOR_H
 
@@ -49,8 +53,8 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-    IDDescriptor()
-      : Handle<Object>() {
+      IDDescriptor()
+        : Handle<Object>() {
       }
       /// Constructor to be used when reading the already parsed object
       template <typename Q> IDDescriptor(const Handle<Q>& e)

@@ -1,11 +1,16 @@
-// $Id: Geant4Hits.cpp 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -21,14 +26,14 @@ VertexExtension::~VertexExtension() {
 
 /// Copy constructor
 Geant4Vertex::Geant4Vertex(const Geant4Vertex& c)
-: ref(1), mask(c.mask), x(c.x), y(c.y), z(c.z), time(c.time), out(c.out), in(c.in)
+  : ref(1), mask(c.mask), x(c.x), y(c.y), z(c.z), time(c.time), out(c.out), in(c.in)
 {
   InstanceCount::increment(this);
 }
 
 /// Default constructor
 Geant4Vertex::Geant4Vertex()
-: ref(1), mask(0), x(0), y(0), z(0), time(0)
+  : ref(1), mask(0), x(0), y(0), z(0), time(0)
 {
   InstanceCount::increment(this);
 }

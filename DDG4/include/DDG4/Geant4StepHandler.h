@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_GEANT4STEPHANDLER_H
 #define DD4HEP_GEANT4STEPHANDLER_H
 
@@ -46,12 +51,12 @@ namespace DD4hep {
       G4StepPoint* post;
       G4Track* track;
       bool applyBirksLaw;
-    Geant4StepHandler(const G4Step* s)
-      : step(s) {
+      Geant4StepHandler(const G4Step* s)
+        : step(s) {
         pre = s->GetPreStepPoint();
         post = s->GetPostStepPoint();
         track = s->GetTrack();
-	applyBirksLaw = false;
+        applyBirksLaw = false;
       }
       G4ParticleDefinition* trackDef() const {
         return track->GetDefinition();
@@ -67,10 +72,10 @@ namespace DD4hep {
       const char* postStepStatus() const;
       /// Returns total energy deposit
       double totalEnergy() const  {
-	if(applyBirksLaw == true)
-	  return BirkAttenuation(step);
-	else
-	  return step->GetTotalEnergyDeposit();
+        if(applyBirksLaw == true)
+          return BirkAttenuation(step);
+        else
+          return step->GetTotalEnergyDeposit();
       }
       /// Returns the pre-step position
       Position prePos() const {
@@ -204,28 +209,28 @@ namespace DD4hep {
       /// Apply BirksLaw
       double BirkAttenuation(const G4Step* aStep) const
       {
-	double energyDeposition = aStep->GetTotalEnergyDeposit();
-	double length = aStep->GetStepLength();
-	double niel   = aStep->GetNonIonizingEnergyDeposit();
-	const G4Track* track = aStep->GetTrack();
-	const G4ParticleDefinition* particle = track->GetDefinition();
-	const G4MaterialCutsCouple* couple = track->GetMaterialCutsCouple();
+        double energyDeposition = aStep->GetTotalEnergyDeposit();
+        double length = aStep->GetStepLength();
+        double niel   = aStep->GetNonIonizingEnergyDeposit();
+        const G4Track* trk = aStep->GetTrack();
+        const G4ParticleDefinition* particle = trk->GetDefinition();
+        const G4MaterialCutsCouple* couple = trk->GetMaterialCutsCouple();
 #if G4VERSION_NUMBER >= 1001
-	G4EmSaturation* emSaturation = new G4EmSaturation(0);
+        G4EmSaturation* emSaturation = new G4EmSaturation(0);
 #else
-	G4EmSaturation* emSaturation = new G4EmSaturation();
+        G4EmSaturation* emSaturation = new G4EmSaturation();
 #endif
-	double engyVis = emSaturation->VisibleEnergyDeposition(particle,
-							       couple,
-							       length,
-							       energyDeposition,
-							       niel);
-	delete emSaturation; 
-	return engyVis;
+        double engyVis = emSaturation->VisibleEnergyDeposition(particle,
+                                                               couple,
+                                                               length,
+                                                               energyDeposition,
+                                                               niel);
+        delete emSaturation; 
+        return engyVis;
       }
       /// Set applyBirksLaw to ture
       void doApplyBirksLaw(void) {
-	applyBirksLaw = true;
+        applyBirksLaw = true;
       }
     };
 

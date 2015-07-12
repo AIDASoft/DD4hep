@@ -1,11 +1,17 @@
-// $Id: Geant4Field.cpp 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "DDG4/Geant4SensDetAction.h"
 
@@ -126,12 +132,12 @@ using namespace std;
 //DECLARE_GEANT4ACTION()
 DECLARE_GEANT4ACTION(GeantinoRejectFilter)
 DECLARE_GEANT4ACTION(ParticleRejectFilter)
-  DECLARE_GEANT4ACTION(ParticleSelectFilter)
-  DECLARE_GEANT4ACTION(EnergyDepositMinimumCut)
+DECLARE_GEANT4ACTION(ParticleSelectFilter)
+DECLARE_GEANT4ACTION(EnergyDepositMinimumCut)
 
 /// Constructor.
-  ParticleFilter::ParticleFilter(Geant4Context* ctxt, const std::string& nam)
-  : Geant4Filter(ctxt,nam), m_definition(0)
+ParticleFilter::ParticleFilter(Geant4Context* ctxt, const std::string& nam)
+: Geant4Filter(ctxt,nam), m_definition(0)
 {
   declareProperty("particle",m_particle);
   InstanceCount::increment(this);

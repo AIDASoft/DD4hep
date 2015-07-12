@@ -66,7 +66,7 @@
 */
 class TiXmlString
 {
- public :
+public :
   // The size type used
   typedef size_t size_type;
 
@@ -76,66 +76,66 @@ class TiXmlString
 
   // TiXmlString empty constructor
   TiXmlString () : rep_(&nullrep_)
-    {
-    }
+  {
+  }
 
   // TiXmlString copy constructor
   TiXmlString ( const TiXmlString & copy) : rep_(0)
-    {
-      init(copy.length());
-      memcpy(start(), copy.data(), length());
-    }
+  {
+    init(copy.length());
+    memcpy(start(), copy.data(), length());
+  }
 
   // TiXmlString constructor, based on a string
   TIXML_EXPLICIT TiXmlString ( const char * copy) : rep_(0)
-    {
-      init( static_cast<size_type>( strlen(copy) ));
-      memcpy(start(), copy, length());
-    }
+  {
+    init( static_cast<size_type>( strlen(copy) ));
+    memcpy(start(), copy, length());
+  }
 
   // TiXmlString constructor, based on a string
   TIXML_EXPLICIT TiXmlString ( const char * str, size_type len) : rep_(0)
-    {
-      init(len);
-      memcpy(start(), str, len);
-    }
+  {
+    init(len);
+    memcpy(start(), str, len);
+  }
 
   // TiXmlString destructor
   ~TiXmlString ()
-    {
-      quit();
-    }
+  {
+    quit();
+  }
 
   // = operator
   TiXmlString& operator = (const char * copy)
-    {
-      return assign( copy, (size_type)strlen(copy));
-    }
+  {
+    return assign( copy, (size_type)strlen(copy));
+  }
 
   // = operator
   TiXmlString& operator = (const TiXmlString & copy)
-    {
-      return assign(copy.start(), copy.length());
-    }
+  {
+    return assign(copy.start(), copy.length());
+  }
 
 
   // += operator. Maps to append
   TiXmlString& operator += (const char * suffix)
-    {
-      return append(suffix, static_cast<size_type>( strlen(suffix) ));
-    }
+  {
+    return append(suffix, static_cast<size_type>( strlen(suffix) ));
+  }
 
   // += operator. Maps to append
   TiXmlString& operator += (char single)
-    {
-      return append(&single, 1);
-    }
+  {
+    return append(&single, 1);
+  }
 
   // += operator. Maps to append
   TiXmlString& operator += (const TiXmlString & suffix)
-    {
-      return append(suffix.data(), suffix.length());
-    }
+  {
+    return append(suffix.data(), suffix.length());
+  }
 
 
   // Convert a TiXmlString into a null-terminated char *
@@ -183,9 +183,9 @@ class TiXmlString
     if (offset >= length()) return npos;
 
     for (const char* p = c_str() + offset; *p != '\0'; ++p)
-      {
-        if (*p == tofind) return static_cast< size_type >( p - c_str() );
-      }
+    {
+      if (*p == tofind) return static_cast< size_type >( p - c_str() );
+    }
     return npos;
   }
 
@@ -215,7 +215,7 @@ class TiXmlString
     other.rep_ = r;
   }
 
- private:
+private:
 
   void init(size_type sz) { init(sz, sz); }
   void set_size(size_type sz) { rep_->str[ rep_->size = sz ] = '\0'; }
@@ -231,33 +231,33 @@ class TiXmlString
   void init(size_type sz, size_type cap)
   {
     if (cap)
-      {
-        // Lee: the original form:
-        //      rep_ = static_cast<Rep*>(operator new(sizeof(Rep) + cap));
-        // doesn't work in some cases of new being overloaded. Switching
-        // to the normal allocation, although use an 'int' for systems
-        // that are overly picky about structure alignment.
-        const size_type bytesNeeded = sizeof(Rep) + cap;
-        const size_type intsNeeded = ( bytesNeeded + sizeof(int) - 1 ) / sizeof( int );
-        rep_ = reinterpret_cast<Rep*>( new int[ intsNeeded ] );
+    {
+      // Lee: the original form:
+      //      rep_ = static_cast<Rep*>(operator new(sizeof(Rep) + cap));
+      // doesn't work in some cases of new being overloaded. Switching
+      // to the normal allocation, although use an 'int' for systems
+      // that are overly picky about structure alignment.
+      const size_type bytesNeeded = sizeof(Rep) + cap;
+      const size_type intsNeeded = ( bytesNeeded + sizeof(int) - 1 ) / sizeof( int );
+      rep_ = reinterpret_cast<Rep*>( new int[ intsNeeded ] );
 
-        rep_->str[ rep_->size = sz ] = '\0';
-        rep_->capacity = cap;
-      }
+      rep_->str[ rep_->size = sz ] = '\0';
+      rep_->capacity = cap;
+    }
     else
-      {
-        rep_ = &nullrep_;
-      }
+    {
+      rep_ = &nullrep_;
+    }
   }
 
   void quit()
   {
     if (rep_ != &nullrep_)
-      {
-        // The rep_ is really an array of ints. (see the allocator, above).
-        // Cast it back before delete, so the compiler won't incorrectly call destructors.
-        delete [] ( reinterpret_cast<int*>( rep_ ) );
-      }
+    {
+      // The rep_ is really an array of ints. (see the allocator, above).
+      // Cast it back before delete, so the compiler won't incorrectly call destructors.
+      delete [] ( reinterpret_cast<int*>( rep_ ) );
+    }
   }
 
   Rep * rep_;
@@ -269,7 +269,7 @@ class TiXmlString
 inline bool operator == (const TiXmlString & a, const TiXmlString & b)
 {
   return    ( a.length() == b.length() )                                // optimization on some platforms
-  && ( strcmp(a.c_str(), b.c_str()) == 0 );     // actual compare
+    && ( strcmp(a.c_str(), b.c_str()) == 0 );     // actual compare
 }
 inline bool operator < (const TiXmlString & a, const TiXmlString & b)
 {
@@ -297,21 +297,21 @@ TiXmlString operator + (const char* a, const TiXmlString & b);
 */
 class TiXmlOutStream : public TiXmlString
 {
- public :
+public :
 
   // TiXmlOutStream << operator.
   TiXmlOutStream & operator << (const TiXmlString & in)
-    {
-      *this += in;
-      return *this;
-    }
+  {
+    *this += in;
+    return *this;
+  }
 
   // TiXmlOutStream << operator.
   TiXmlOutStream & operator << (const char * in)
-    {
-      *this += in;
-      return *this;
-    }
+  {
+    *this += in;
+    return *this;
+  }
 
 } ;
 

@@ -1,11 +1,17 @@
-// $Id: Geant4Hits.h 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DDG4_GEANT4ISOTROPEGENERATOR_H
 #define DD4HEP_DDG4_GEANT4ISOTROPEGENERATOR_H
 
@@ -27,8 +33,8 @@ namespace DD4hep {
     protected:
       /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
       /** Use this function to implement isotrop guns, multiple guns etc. 
-	  User must return a UNIT vector, which gets scaled with momentum.
-       */
+          User must return a UNIT vector, which gets scaled with momentum.
+      */
       virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
 
     public:

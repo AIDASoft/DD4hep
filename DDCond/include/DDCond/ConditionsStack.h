@@ -1,11 +1,16 @@
-// $Id: XMLStack.h 889 2013-11-14 15:55:39Z markus.frank@cern.ch $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4HEP_CONDITIONS_CONDITIONSSTACK_H
 #define DD4HEP_CONDITIONS_CONDITIONSSTACK_H
 
@@ -59,7 +64,7 @@ namespace DD4hep {
       void release();
       /// Access size of the conditions stack
       size_t size() const  {  return m_stack.size(); }
-       /// Retrieve an conditions entry of the current stack
+      /// Retrieve an conditions entry of the current stack
       dd4hep_ptr<Entry> pop();
       /// Get all path entries to be aligned. Note: transient!
       std::vector<const Entry*> entries() const;

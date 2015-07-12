@@ -1,12 +1,17 @@
-// $Id: LCDD.h 1117 2014-04-25 08:07:22Z markus.frank@cern.ch $
-//====================================================================
+// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //  Author     : M.Frank
 //  Original Author: Matevz Tadel 2009 (MultiView.C)
 //
-//====================================================================
+//==========================================================================
 #ifndef DD4HEP_DDEVE_DISPLAYCONFIGURATION_H
 #define DD4HEP_DDEVE_DISPLAYCONFIGURATION_H
 
@@ -35,10 +40,10 @@ namespace DD4hep {
     Display* m_display;
   public:
     enum { CALODATA=1<<1, 
-	   DETELEMENT=1<<2, 
-	   VIEW=1<<3, 
-	   PANEL=1<<4,
-	   COLLECTION=1<<5
+           DETELEMENT=1<<2, 
+           VIEW=1<<3, 
+           PANEL=1<<4,
+           COLLECTION=1<<5
     };
     struct Defaults {
       char load_geo;
@@ -70,12 +75,12 @@ namespace DD4hep {
     class Config  {
     public:
       union Values  {
-	double vals[20];
-	Defaults defaults;
-	Calo3D calo3d;
-	Calodata calodata;
-	Panel pane;
-	Hits hits;
+        double vals[20];
+        Defaults defaults;
+        Calo3D calo3d;
+        Calodata calodata;
+        Panel pane;
+        Hits hits;
       } data;
       std::string name;
       std::string hits;

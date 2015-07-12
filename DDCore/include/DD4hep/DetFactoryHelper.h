@@ -1,11 +1,16 @@
 // $Id$
-//====================================================================
-//  AIDA Detector description
-//--------------------------------------------------------------------
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 #ifndef DD4hep_DETECTOR_DETFACTORYHELPER_H
 #define DD4hep_DETECTOR_DETFACTORYHELPER_H
 

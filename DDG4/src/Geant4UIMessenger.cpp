@@ -1,11 +1,16 @@
-// $Id: Geant4Converter.cpp 603 2013-06-13 21:15:14Z markus.frank $
-//====================================================================
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
 
 // Framework include files
 #include "DD4hep/Printout.h"
@@ -42,7 +47,7 @@ namespace {
 }
 
 Geant4UIMessenger::Geant4UIMessenger(const string& name, const string& path)
-: G4UImessenger(), m_directory(0), m_properties(0), m_name(name), m_path(path) {
+  : G4UImessenger(), m_directory(0), m_properties(0), m_name(name), m_path(path) {
   m_directory = new G4UIdirectory(path.c_str());
   printout(INFO, "Geant4UIMessenger", "+++ %s> Install Geant4 control directory:%s", name.c_str(), path.c_str());
   m_directory->SetGuidance(("Control hierarchy for Geant4 action:" + name).c_str());
@@ -89,26 +94,26 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
     const string& n = (*i).second;
     try  {
       if (!v.empty()) {
-	Property& p = (*m_properties)[n];
-	p.str(v);
-	printout(INFO, "Geant4UIMessenger",
-		 "+++ %s> Setting property value %s = %s  native:%s.",
-		 m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
+        Property& p = (*m_properties)[n];
+        p.str(v);
+        printout(INFO, "Geant4UIMessenger",
+                 "+++ %s> Setting property value %s = %s  native:%s.",
+                 m_name.c_str(), n.c_str(), v.c_str(), p.str().c_str());
       }
       else {
-	string value = (*m_properties)[n].str();
-	printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
-		 m_name.c_str(), n.c_str(), value.c_str());
+        string value = (*m_properties)[n].str();
+        printout(INFO, "Geant4UIMessenger", "+++ %s> Unchanged property value %s = %s.",
+                 m_name.c_str(), n.c_str(), value.c_str());
       }
     }
     catch(const exception& e)   {
       printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to change property %s = '%s'.",
-	       m_name.c_str(), n.c_str(), v.c_str());
+               m_name.c_str(), n.c_str(), v.c_str());
       printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s", m_name.c_str(), e.what());
     }
     catch(...)   {
       printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to change property %s = '%s'.",
-	       m_name.c_str(), n.c_str(), v.c_str());
+               m_name.c_str(), n.c_str(), v.c_str());
     }
     return;
   }
@@ -116,16 +121,16 @@ void Geant4UIMessenger::SetNewValue(G4UIcommand *c, G4String v) {
     Actions::iterator j = m_actionCmd.find(c);
     if (j != m_actionCmd.end()) {
       try  {
-	(*j).second.execute(0);
+        (*j).second.execute(0);
       }
       catch(const exception& e)   {
-	printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to exec action '%s' [%s].",
-		 m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
-	printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s",e.what());
+        printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: Failed to exec action '%s' [%s].",
+                 m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
+        printout(INFO, "Geant4UIMessenger", "+++ %s> Exception: %s",e.what());
       }
       catch(...)   {
-	printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to exec action '%s' [%s].",
-		 m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
+        printout(INFO, "Geant4UIMessenger", "+++ %s> UNKNOWN Exception: Failed to exec action '%s' [%s].",
+                 m_name.c_str(), c->GetCommandName().c_str(), c->GetCommandPath().c_str());
       }
       return;
     }

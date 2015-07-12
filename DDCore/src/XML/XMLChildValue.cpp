@@ -1,11 +1,17 @@
-// $Id: XMLElements.cpp 513 2013-04-05 14:31:53Z gaede $
-//====================================================================
-//  AIDA Detector description implementation
-//--------------------------------------------------------------------
+// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 // Framework include files
 #include "XML/XMLChildValue.h"
 
@@ -20,12 +26,12 @@ using namespace DD4hep::XML;
   return def;
 
 #define XML_ATTR_ACCESSOR(type,name)  type ChildValue::name() const { return childValue(name,type); }
-#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)                   \
-  type ChildValue::name(type default_val) const {                       \
-    Handle_t __h = m_element.child(Unicode_##name,false);               \
-    if ( __h.ptr() )  {                                                 \
-      const XmlChar* val = __h.attr_value_nothrow(Unicode_value);       \
-      return val ? dressing(val) : default_val; }                       \
+#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)             \
+  type ChildValue::name(type default_val) const {                 \
+    Handle_t __h = m_element.child(Unicode_##name,false);         \
+    if ( __h.ptr() )  {                                           \
+      const XmlChar* val = __h.attr_value_nothrow(Unicode_value); \
+      return val ? dressing(val) : default_val; }                 \
     return default_val; }
 
 #define XML_ATTR_ACCESSOR_DOUBLE(name) XML_ATTR_ACCESSOR_DEFAULT(name,double,_toDouble)

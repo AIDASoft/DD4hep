@@ -1,11 +1,17 @@
 // $Id$
-//====================================================================
+//==========================================================================
 //  AIDA Detector description implementation for LCD
-//--------------------------------------------------------------------
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// All rights reserved.
 //
-//  Author     : M.Frank
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
-//====================================================================
+// Author     : M.Frank
+//
+//==========================================================================
+
 #ifndef DD4HEP_DETECTOR_H
 #define DD4HEP_DETECTOR_H
 
@@ -64,28 +70,28 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-    SensitiveDetector()
-      : RefObject() {
+      SensitiveDetector()
+        : RefObject() {
       }
 
       /// Constructor to copy handled object
-    SensitiveDetector(Object* obj_pointer)
-      : RefObject(obj_pointer) {
+      SensitiveDetector(Object* obj_pointer)
+        : RefObject(obj_pointer) {
       }
 
       /// Copy from named handle
-    SensitiveDetector(const RefObject& sd)
-      : RefObject(sd) {
+      SensitiveDetector(const RefObject& sd)
+        : RefObject(sd) {
       }
 
       /// Copy from handle
-    SensitiveDetector(const SensitiveDetector& sd)
-      : RefObject(sd) {
+      SensitiveDetector(const SensitiveDetector& sd)
+        : RefObject(sd) {
       }
 
       /// Templated constructor for handle conversions
       template <typename Q>
-        SensitiveDetector(const Handle<Q>& e)
+      SensitiveDetector(const Handle<Q>& e)
         : RefObject(e) {
       }
 
@@ -231,13 +237,13 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-    DetElement()
-      : RefObject() {
+      DetElement()
+        : RefObject() {
       }
 
       /// Constructor to hold handled object
-    DetElement(Object* object_ptr)
-      : RefObject(object_ptr) {
+      DetElement(Object* object_ptr)
+        : RefObject(object_ptr) {
       }
 
       /// Clone constructor
@@ -249,14 +255,14 @@ namespace DD4hep {
       }
 
       /// Constructor to copy handle
-    DetElement(const DetElement& e)
-      : RefObject(e) {
+      DetElement(const DetElement& e)
+        : RefObject(e) {
       }
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
-    DetElement(const Ref_t& e)
-      : RefObject(e) {
+      DetElement(const Ref_t& e)
+        : RefObject(e) {
       }
 #endif
       /// Constructor for a new subdetector element
@@ -306,8 +312,8 @@ namespace DD4hep {
       }
       /// Extend the detector element with an arbitrary callback
       template <typename Q, typename T>
-        void callAtUpdate(unsigned int typ, Q* pointer,
-                          void (T::*pmf)(unsigned long typ, DetElement& det, void* opt_par)) const
+      void callAtUpdate(unsigned int typ, Q* pointer,
+                        void (T::*pmf)(unsigned long typ, DetElement& det, void* opt_par)) const
       {
         CallbackSequence::checkTypes(typeid(T), typeid(Q), dynamic_cast<T*>(pointer));
         i_addUpdateCall(typ, Callback(pointer).make(pmf));
