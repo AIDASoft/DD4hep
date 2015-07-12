@@ -27,6 +27,8 @@ Notes:
   - TODO: Properly change the cmake scripts to accomodate for ROOT 6 and the 
     automatic switch when building DD4hep. 
 
+    For reference reasons: this commits is revision 1812 + 1813 (DDDetectors)
+
  --------
 | v00-13 |  
  --------   
