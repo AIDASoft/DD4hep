@@ -2,7 +2,7 @@
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
-// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
 //
 // For the licensing terms see $DD4hepINSTALL/LICENSE.

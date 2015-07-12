@@ -1,8 +1,8 @@
-// $Id: run_plugin.h 1663 2015-03-20 13:54:53Z gaede $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
-// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
 //
 // For the licensing terms see $DD4hepINSTALL/LICENSE.

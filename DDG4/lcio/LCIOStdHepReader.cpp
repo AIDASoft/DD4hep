@@ -1,8 +1,8 @@
-// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
-// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
 //
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
@@ -49,11 +49,11 @@ namespace DD4hep  {
 }       /* End namespace DD4hep */
 #endif  /* DD4HEP_DDG4_LCIOSTDHEPREADER_H */
 
-// $Id: Handle.h 570 2013-05-17 07:47:11Z markus.frank $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
-// Copyright (C) Organisation européenne pour la Recherche nucléaire (CERN)
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
 // All rights reserved.
 //
 // For the licensing terms see $DD4hepINSTALL/LICENSE.
