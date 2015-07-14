@@ -520,7 +520,7 @@ namespace DD4hep {
      * @date Apr, 10 2014
      * @version $Id$
      */
-    class SurfaceList : public std::list< Surface* > {
+    class SurfaceList : public std::list< ISurface* > {
     
     protected:
       bool _isOwner ;
@@ -530,7 +530,7 @@ namespace DD4hep {
       SurfaceList(bool isOwner=false ) : _isOwner( isOwner )  {}
 
       /// copy c'tor
-      SurfaceList(const SurfaceList& other ) : std::list< Surface* >( other ), _isOwner( false ){}
+      SurfaceList(const SurfaceList& other ) : std::list< ISurface* >( other ), _isOwner( false ){}
 
       /// required c'tor for extension mechanism
       SurfaceList(const Geometry::DetElement& ){

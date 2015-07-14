@@ -8,6 +8,7 @@
 namespace DD4hep {
   
   using namespace Geometry ;
+  using namespace DDSurfaces ;
 
   namespace DDRec {
     
@@ -56,7 +57,7 @@ namespace DD4hep {
 	  _map.insert(  std::make_pair( name , SurfaceMap() ) )  ;
 
 	  for( SurfaceList::const_iterator it = detSL.begin() ; it != detSL.end() ; ++it ){
-	    Surface* surf =  *it ;
+	    ISurface* surf =  *it ;
 	    
 	    // enter surface into map for this detector
 	    _map[ name ].insert( std::make_pair( surf->id(), surf )  ) ;

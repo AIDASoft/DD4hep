@@ -211,7 +211,10 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
 
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
 
-    Surface* surf = *it ;
+    Surface* surf = dynamic_cast< Surface*> ( *it ) ;
+
+    if( ! surf ) 
+      continue ;
 
     if( ! ( surf->type().isVisible() && ( surf->type().isSimilar( type ) ) ) ) 
       continue ;

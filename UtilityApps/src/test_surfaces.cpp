@@ -132,7 +132,8 @@ int main(int argc, char** argv ){
         Surface* surf = surfMap[ id ] ;
 #else
         SurfaceMap::const_iterator si = surfMap.find( id )  ;
-        Surface* surf = ( si != surfMap.end()  ?  si->second  : 0 )   ;
+	//        Surface* surf = dynamic_cast<Surface*> ( ( si != surfMap.end()  ?  si->second  : 0 )   ) ; 
+        ISurface* surf = ( si != surfMap.end()  ?  si->second  : 0 )  ; 
 #endif
 	
         std::stringstream sst ;
