@@ -195,12 +195,12 @@ namespace DD4hep {
       /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      double length_along_u() const ;
+      virtual double length_along_u() const ;
 
       /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
-      double length_along_v() const ;
+      virtual double length_along_v() const ;
 
 
 
@@ -454,6 +454,16 @@ namespace DD4hep {
 
       /** Get Origin of local coordinate system of the associated volume */
       virtual Vector3D volumeOrigin() const  ; 
+
+     /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
+       *  this can be used to speed up the computation of inSideBounds.
+       */
+      virtual double length_along_u() const ;
+
+      /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
+       *  this can be used to speed up the computation of inSideBounds.
+       */
+      virtual double length_along_v() const ;
 
       //---------------------------------------------------
       /** Get vertices constraining the surface for drawing ( might not be exact boundaries) -

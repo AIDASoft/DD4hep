@@ -72,6 +72,16 @@ namespace DDSurfaces {
     /** Distance to surface */
     virtual double distance(const Vector3D& point ) const =0 ;
     
+    /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
+     *  this can be used to speed up the computation of inSideBounds.
+     */
+    virtual double length_along_u() const=0 ;
+    
+    /** The length of the surface along direction v at the origin. For 'regular' boundaries, like rectangles, 
+     *  this can be used to speed up the computation of inSideBounds.
+     */
+    virtual double length_along_v() const=0 ;
+
   } ;
   
   //==============================================================================================

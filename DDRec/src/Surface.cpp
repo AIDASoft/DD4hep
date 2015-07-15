@@ -411,7 +411,8 @@ namespace DD4hep {
     const Vector3D& Surface::origin() const { return _o ;}
     double Surface::innerThickness() const { return _volSurf.innerThickness() ; }
     double Surface::outerThickness() const { return _volSurf.outerThickness() ; }
-
+    double Surface::length_along_u() const { return _volSurf.length_along_u() ; }
+    double Surface::length_along_v() const { return _volSurf.length_along_v() ; }
 
     /** Thickness of outer material */
     
