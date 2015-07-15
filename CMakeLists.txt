@@ -31,10 +31,24 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC" OFF)
 option(DD4HEP_USE_PYROOT "Enable 'Detector Builders' based on PyROOT" OFF)  # does not work (compile error)
 option(DD4HEP_USE_GEANT4 "Enable the simulation part based on Geant4" OFF)
-#option(DD4HEP_USE_BOOST "build with boost - needed only if built with Geant4" OFF)
 option(DD4HEP_USE_GEAR "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO "Build lcio extensions" OFF)
 option(BUILD_TESTING "Enable and build tests" ON)
+option(DD4HEP_USE_CXX11 "Build DD4hep using c++11" OFF)
+
+
+#---------------------------------------------------------------------------------------------------
+#fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
+if(DD4HEP_USE_CXX11)
+  SET( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wno-long-long -Wdeprecated -Wformat-security -Wshadow")
+  ADD_DEFINITIONs(-DDD4HEP_USE_CXX11)
+else()
+  SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wno-long-long")
+endif()
+
+add_definitions(-DBOOST_SPIRIT_USE_PHOENIX_V3)
+
+#-----------------------------------------------------------------------------------------------------
 
 #For backward compatibility for now
 IF( DEFINED DD4HEP_WITH_GEANT4 )
