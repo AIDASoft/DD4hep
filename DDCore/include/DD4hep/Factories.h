@@ -194,7 +194,7 @@ namespace {
 
 #define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)  DD4HEP_OPEN_PLUGIN(DD4hep,det_element_##name) {\
     template <> Geometry::Ref_t DetElementFactory< det_element_##name >::create(lcdd_t& l,xml_h e,ref_t h) \
-    { if (deprecated) warning_deprecated_xml_factory(#name); return func(l,e,h);} \
+    { if (deprecated) Geometry::warning_deprecated_xml_factory(#name); return func(l,e,h);} \
     DD4HEP_PLUGINSVC_FACTORY(det_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__)  }
 
 #define DECLARE_XML_PROCESSOR(name,func)          DECLARE_XML_PROCESSOR_BASIC(name,func,0)
