@@ -7,7 +7,7 @@ project(DD4hep)
 #  Use the same version numbers in DDSegmentaion/CmakeLists.txt
 #
 SET( DD4hep_VERSION_MAJOR 0 )
-SET( DD4hep_VERSION_MINOR 13 )
+SET( DD4hep_VERSION_MINOR 14 )
 SET( DD4hep_VERSION_PATCH 0 )
 
 SET( DD4hep_VERSION "${DD4hep_VERSION_MAJOR}.${DD4hep_VERSION_MINOR}" )

@@ -3,10 +3,23 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-14 |  
+ --------   
 
+
+A.Sailer 
+ - Add missing scope to /DD4hep/Factories.h, to not force everyone to use using namespace
+
+F.Gaede: 2015-07-15
+ - changed type in SurfaceList and SurfaceMap from Surface to ISurface
+ - added methods length_along_u/v() to ISurface
+ - moved setting of CMAKE_CXX_FLAGS (if DD4HEP_USE_CXX11) from DD4hep.cmake to CMakeLists.txt
 
 2015-07-11n M.Frank
 -------------------
+  -  added starter docs DD4hepStartersGuide.pdf
+
 *** Important ***
   Before updating, backup your existing and working checkout. Though I was running 
   the basic tests, there may be unchecked corners of the software.
