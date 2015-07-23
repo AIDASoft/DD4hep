@@ -190,6 +190,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       int id = (*i).first;
       const Geant4ParticleHandle p = (*i).second;
       PropertyMask mask(p->status);
+      //      std::cout << " ********** mcp status : 0x" << std::hex << p->status << ", mask.isSet(G4PARTICLE_GEN_STABLE) x" << std::dec << mask.isSet(G4PARTICLE_GEN_STABLE)  <<std::endl ;
       const G4ParticleDefinition* def = p.definition();
       MCParticleImpl* q = new lcio::MCParticleImpl();
       q->setPDG(p->pdgID);
@@ -212,6 +213,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       if ( mask.isSet(G4PARTICLE_GEN_STABLE) ) q->setGeneratorStatus(1);
       else if ( mask.isSet(G4PARTICLE_GEN_DECAYED) ) q->setGeneratorStatus(2);
       else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) q->setGeneratorStatus(3);
+      //      std::cout << " ********** mcp genstatus : " << q->getGeneratorStatus() << std::endl ;
 
       // Set simulation status
       q->setCreatedInSimulation(         mask.isSet(G4PARTICLE_SIM_CREATED) );
@@ -224,7 +226,7 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       q->setOverlay(                     false );
 
       //fg: if simstatus !=0 we have to set the generator status to 0:
-      if( q->getSimulatorStatus() != 0 )
+      if( q->isCreatedInSimulation() )
         q->setGeneratorStatus( 0 )  ;
 
       q->setSpin(p->spin);
