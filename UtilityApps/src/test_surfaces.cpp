@@ -174,23 +174,25 @@ int main(int argc, char** argv ){
           }
 
           // ====== test that slightly moved hit points are inside their surface ================================
-	  
-          Vector3D point2 = point + 1e-5 * surf->normal() ;
-          sst.str("") ;
-          sst << " point2 " << point2 << " is on surface " ;
-          isInside = surf->insideBounds( point2 )  ;
-          test( isInside , true , sst.str() ) ;
-	  
-          if( ! isInside ) {
 
-            std::cout << " found surface " <<  *surf << std::endl
-                      << " id : " << idDecoder.valueString() 
-                      << " point : " << point 
-                      << " is inside : " <<  isInside
-                      << " distance from surface : " << dist/dd4hep::mm << std::endl 
-                      << std::endl ;
+	  // this test does not make too much sense, depending on the position of the surface within the volume
+	  
+          // Vector3D point2 = point + 1e-5 * surf->normal() ;
+          // sst.str("") ;
+          // sst << " point2 " << point2 << " is on surface " ;
+          // isInside = surf->insideBounds( point2 )  ;
+          // test( isInside , true , sst.str() ) ;
+	  
+          // if( ! isInside ) {
 
-          }
+          //   std::cout << " found surface " <<  *surf << std::endl
+          //             << " id : " << idDecoder.valueString() 
+          //             << " point : " << point 
+          //             << " is inside : " <<  isInside
+          //             << " distance from surface : " << dist/dd4hep::mm << std::endl 
+          //             << std::endl ;
+
+          // }
 
           // ====== test that moved hit points are outside their surface ================================
 	  
