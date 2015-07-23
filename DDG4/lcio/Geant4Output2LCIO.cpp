@@ -214,7 +214,6 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       else if ( mask.isSet(G4PARTICLE_GEN_DOCUMENTATION) ) q->setGeneratorStatus(3);
 
       // Set simulation status
-      q->setSimulatorStatus( 0 ) ;
       q->setCreatedInSimulation(         mask.isSet(G4PARTICLE_SIM_CREATED) );
       q->setBackscatter(                 mask.isSet(G4PARTICLE_SIM_BACKSCATTER) );
       q->setVertexIsNotEndpointOfParent( mask.isSet(G4PARTICLE_SIM_PARENT_RADIATED) );
