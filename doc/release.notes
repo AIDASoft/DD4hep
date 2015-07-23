@@ -6,7 +6,9 @@ DD4hep  ----  Release Notes
  --------
 | v00-14 |  
  --------   
-
+F.Gaede
+ - fixed writing of generator status for lcio::MCParticle
+   in Geant4Output2LCIO.cpp
 
 A.Sailer 
  - Add missing scope to /DD4hep/Factories.h, to not force everyone to use using namespace
