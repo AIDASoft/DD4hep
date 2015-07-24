@@ -102,13 +102,18 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
   bool ends_in_trk_vol =  ( r_end <= m_rTracker && z_end <= m_zTracker ) ;
 
   // created and ended in calo
-  if( !starts_in_trk_vol && !ends_in_trk_vol ){
-    p.reason = 0;
-    return ;
+  if( !starts_in_trk_vol ) {
+    
+    if( !ends_in_trk_vol ){  
+      p.reason = 0;
+    }
+    //fg: dont keep backscatter that did not create a tracker hit
+    else if( !( p.reason & G4PARTICLE_CREATED_TRACKER_HIT  ) )
+      p.reason = 0;
   }
+  
+  return ;
 
-  //fg: backscatter ??
-  // if( !starts_in_trk_vol &&  ends_in_trk_vol ){  keep ?  }
 }
 
 /// Post-event action callback
