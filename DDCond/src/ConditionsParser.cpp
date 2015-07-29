@@ -68,12 +68,11 @@ DetElement _getDetector(void* param, xml_h e)  {
 }
 
 /// Helper: Extract the string value from the xml element 
-dd4hep_ptr<Entry> _getStackEntry(void* param, xml_h element)  {
+Entry* _createStackEntry(void* param, xml_h element)  {
   xml_comp_t e(element);
   DetElement elt = _getDetector(param, element);
   string name = e.hasAttr(_U(name)) ? e.nameStr() : e.tag();
-  dd4hep_ptr<Entry> result(new Entry(elt,name,e.tag(),_getValidity(element)));
-  return result;
+  return new Entry(elt,name,e.tag(),_getValidity(element));
 }
 
 /** Convert arbitrary conditon objects containing standard tags
@@ -125,7 +124,7 @@ template <> void Converter<arbitrary>::operator()(xml_h e) const {
   else if ( tag == "detelements" )
     xml_coll_t(e,_U(star)).for_each(Converter<conditions>(lcdd,param));
   else  {
-    dd4hep_ptr<Entry> val(_getStackEntry(param,e));
+    dd4hep_ptr<Entry> val(_createStackEntry(param,e));
     val->value = elt.hasAttr(_U(value)) ? elt.valueStr() : e.text();
     ConditionsStack::get().insert(val);
   }

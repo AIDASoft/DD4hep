@@ -13,13 +13,12 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-SET( DD4hep_ROOT "@CMAKE_INSTALL_PREFIX@" )
+SET( DD4hep_DIR "@CMAKE_INSTALL_PREFIX@" )
 SET( DD4hep_VERSION "@DD4hep_VERSION@" )
 
-INCLUDE( ${DD4hep_ROOT}/cmake/DD4hep.cmake )
+INCLUDE( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_ROOT}/cmake/  )
-
+set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake/  )
 
 # ---------- include dirs -----------------------------------------------------
 # do not store find results in cache
@@ -27,9 +26,9 @@ SET( DD4hep_INCLUDE_DIRS DD4hep_INCLUDE_DIRS-NOTFOUND )
 MARK_AS_ADVANCED( DD4hep_INCLUDE_DIRS )
 
 FIND_PATH( DD4hep_INCLUDE_DIRS
-	NAMES DD4hep/Detector.h
-	PATHS ${DD4hep_ROOT}/include
-	NO_DEFAULT_PATH
+  NAMES DD4hep/Detector.h
+  PATHS ${DD4hep_DIR}/include
+  NO_DEFAULT_PATH
 )
 
 # ---------- default build type  --------------------------------------------------------
@@ -39,12 +38,11 @@ endif()
 
 # ---------- libraries --------------------------------------------------------
 # do not store find results in cache
-SET( DD4hep_LIBRARY_DIRS ${DD4hep_ROOT}/lib )
+SET( DD4hep_LIBRARY_DIRS ${DD4hep_DIR}/lib )
 SET( DD4hep_LIBRARIES DD4hep_LIBRARIES-NOTFOUND )
 MARK_AS_ADVANCED( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
 
-
-INCLUDE( ${DD4hep_ROOT}/cmake/DD4hepMacros.cmake )
+INCLUDE( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
 
 # only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
 # additional components are set by cmake in variable PKG_FIND_COMPONENTS
@@ -54,9 +52,7 @@ if(@DD4HEP_USE_GEANT4@)
   if( @GEANT4_USE_CLHEP@)
     set(GEANT4_USE_CLHEP  1 ) 
   endif()
-
   set(Geant4_DIR @Geant4_DIR@)
-
 endif()
 
 CHECK_PACKAGE_LIBS(DD4hep DDCore)
@@ -73,22 +69,11 @@ IF(DD4hep_FIND_COMPONENTS)
   ENDFOREACH()
 ENDIF()
 
-
-
-##---- build with Boost ?
-#if(@DD4HEP_USE_BOOST@)
-#  set( DD4HEP_USE_BOOST True )
-#  find_package( Boost REQUIRED )
-#  include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
-#  add_definitions( -DDD4HEP_USE_BOOST )
-#endif()
-
-
 #---- build with xercesc or tinyxml ?
 if( @DD4HEP_USE_XERCESC@ )
   set( DD4HEP_USE_XERCESC True )
 endif()
-INCLUDE( ${DD4hep_ROOT}/cmake/DD4hep_XML_setup.cmake )
+INCLUDE( ${DD4hep_DIR}/cmake/DD4hep_XML_setup.cmake )
 
 #----- APPLE ? -------
 
@@ -98,7 +83,6 @@ MARK_AS_ADVANCED( USE_DYLD )
 # ---------- final checking ---------------------------------------------------
 INCLUDE( FindPackageHandleStandardArgs )
 # set DD4HEP_FOUND to TRUE if all listed variables are TRUE and not empty
-FIND_PACKAGE_HANDLE_STANDARD_ARGS( DD4hep DEFAULT_MSG DD4hep_ROOT DD4hep_INCLUDE_DIRS DD4hep_LIBRARIES )
+FIND_PACKAGE_HANDLE_STANDARD_ARGS( DD4hep DEFAULT_MSG DD4hep_DIR DD4hep_INCLUDE_DIRS DD4hep_LIBRARIES )
 
 SET( DD4hep_FOUND ${DD4HEP_FOUND} )
-

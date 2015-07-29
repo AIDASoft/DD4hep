@@ -1,114 +1,46 @@
+# $Id: $
+#==========================================================================
+#  AIDA Detector description implementation for LCD
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
-#---------------------------
-set( PackageName ClientTests )
-#---------------------------
-project(${PackageName})
+include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-# project version
-SET( ${PackageName}_VERSION_MAJOR 0 )
-SET( ${PackageName}_VERSION_MINOR 0 )
-SET( ${PackageName}_VERSION_PATCH 1 )
+#-----------------------------------------------------------------------------------
+dd4hep_configure_output()
+dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
+  USES         [ROOT   REQUIRED COMPONENTS Geom] 
+               [DD4hep REQUIRED COMPONENTS DDCore]
+  OPTIONAL     XERCESC
+  INCLUDE_DIRS include )
+#-----------------------------------------------------------------------------------
+dd4hep_add_plugin( ClientTests SOURCES src/*.cpp  )
+dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTests )
+#-----------------------------------------------------------------------------------
+dd4hep_configure_scripts( ClientTests DEFAULT_SETUP )
 
-SET( ${PackageName}_VERSION "${${PackageName}_VERSION_MAJOR}.${${PackageName}_VERSION_MINOR}" )
-SET( ${PackageName}_SOVERSION "${${PackageName}_VERSION_MAJOR}.${${PackageName}_VERSION_MINOR}" )
-
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${CMAKE_SOURCE_DIR}/cmake ) 
-set(LIBRARY_OUTPUT_PATH    ${PROJECT_BINARY_DIR}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-
-#------------- set the default installation directory to be the source directory
-IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-  SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH  
-    "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..." 
-    FORCE )
-  MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
-ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-find_package( DD4hep REQUIRED)
-
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake ) 
-include( DD4hep )
-
-find_package( ROOT REQUIRED )
-set( ROOT_COMPONENT_LIBRARIES Geom)
-#-------------------------------------------------------------
-# add additional packages here
-#-------------------------------------------------------------
-
-#---Testing-------------------------------------------------------------------------
-if(BUILD_TESTING)
-  include(CTest)
-  enable_testing()
-endif(BUILD_TESTING)
-
-configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
-INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
-  DESTINATION bin )
-
-#-------------------------------------------------------------
-include_directories( ${CMAKE_SOURCE_DIR}/include
-  include
-  ${DD4hep_INCLUDE_DIRS}
-  ${ROOT_INCLUDE_DIR}
- )
-
-file(GLOB sources src/*.cpp )
-include(DD4hep_XML_setup)
-
-add_library(${PackageName} SHARED ${sources})
-
-target_link_libraries(${PackageName} ${DD4hep_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_COMPONENT_LIBRARIES} )
-
-#---Rootmap generation--------------------------------------------------------------
-if(APPLE)
-  dd4hep_generate_rootmap_apple(${PackageName} )
-else()
-  dd4hep_generate_rootmap(${PackageName} )
-endif()
-
-#---- configure run environment ---------------
-configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
-  DESTINATION bin
-  )
-#--- install target-------------------------------------
-install(TARGETS ${PackageName}
-  RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib
-  )
-install(DIRECTORY compact
-  DESTINATION examples/${PackageName}
-  PATTERN ".svn" EXCLUDE )
-
-install(DIRECTORY scripts
-  DESTINATION examples/${PackageName}
-  PATTERN ".svn" EXCLUDE )
-
-# to do: add corresponding uninstall...
-#-------------------------------------------------------
-
-
-foreach (file Assemblies BoxTrafos FCC_HcalBarrel IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedDetectors )
-
+#***  Testing  *********************************************************************
+dd4hep_enable_tests()
+#-----------------------------------------------------------------------------------
+foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedDetectors )
   foreach( type lcdd gdml vis )
-
-    SET( test_name "${PackageName}_converter_simple_${type}_${file}" )
-    ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh"
-      geoConverter -compact2${type} -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/${file}.xml -output ${file}_out.${type} )
-    #----- here we simply require that at least 1 volume have been converted
-    SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [1-9][0-9]* volumes" )
-
+    dd4hep_add_test_reg( ClientTests_converter_simple_${type}_${test}
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  geoConverter -compact2${type} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml -output file:${test}.${type}
+      REGEX_PASS " Handled [1-9][0-9]* volumes" )
   endforeach(type)
-
 endforeach()
-
-
+#
 foreach(script MiniTel LheD_tracker )
-  SET( test_name "${PackageName}_sim_${script}" )
-  ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh"
-    python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch)
-  #----- here we simply require that at least 1 volume have been converted
-  SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION  "Exception;EXCEPTION;ERROR;Error" )
+  dd4hep_add_test_reg( ClientTests_sim_${script}
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch
+      REGEX_PASS NONE
+      REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
 endforeach(script)

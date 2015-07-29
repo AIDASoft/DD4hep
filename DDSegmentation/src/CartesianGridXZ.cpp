@@ -53,13 +53,13 @@ Vector3D CartesianGridXZ::position(const CellID& cID) const {
 }
 
 std::vector<double> CartesianGridXZ::cellDimensions(const CellID&) const {
-#ifdef DD4HEP_USE_CXX11
+#if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeZ};
 #else
-  std::vector<double> cellDimensions(2,0.0);
-  cellDimensions[0] = _gridSizeX;
-  cellDimensions[1] = _gridSizeZ;
-  return cellDimensions;
+  std::vector<double> cellDims(2,0.0);
+  cellDims[0] = _gridSizeX;
+  cellDims[1] = _gridSizeZ;
+  return cellDims;
 #endif
 }
 

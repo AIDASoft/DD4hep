@@ -7,9 +7,7 @@
 #   with all following arguments
 #
 
-
 #----- initialize environment for this package - including DD4hep 
-
 source @CMAKE_INSTALL_PREFIX@/bin/this@PackageName@.sh
 
 #----- parse command line - first argument is the 
@@ -25,5 +23,5 @@ done
 
 #echo " #### LD_LIBRARY_PATH = :  ${LD_LIBRARY_PATH}" 
 
-echo " ### running test :  '" ${command} ${theargs} "'"
+echo " ### running test :  '${command} ${theargs}'"
 ${command} ${theargs}

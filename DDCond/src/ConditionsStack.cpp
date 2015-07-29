@@ -28,7 +28,8 @@ static dd4hep_ptr<ConditionsStack>& _stack()  {
 }
 static dd4hep_ptr<ConditionsStack>& _stack(ConditionsStack* obj)  {
   dd4hep_ptr<ConditionsStack>& s = _stack();
-  s = dd4hep_ptr<ConditionsStack>(obj);
+  dd4hep_ptr<ConditionsStack>  n(obj);
+  s = n;
   return s;
 }
 
@@ -75,16 +76,16 @@ void ConditionsStack::release()    {
 dd4hep_ptr<ConditionsStack::Entry> ConditionsStack::pop()   {
   Stack::iterator i = m_stack.begin();
   if ( i != m_stack.end() )   {
-    Entry* e = (*i).second;
+    dd4hep_ptr<ConditionsStack::Entry> e((*i).second);
     m_stack.erase(i);
-    return dd4hep_ptr<Entry>(e);
+    return e;
   }
   throw runtime_error("ConditionsStack> pop: Conditions stack is empty. Check size first!");
 }
 
 /// Get all pathes to be aligned
 vector<const ConditionsStack::Entry*> ConditionsStack::entries() const    {
-  vector<const Entry*> result;
+  vector<const ConditionsStack::Entry*> result;
   result.reserve(m_stack.size());
   for(Stack::const_iterator i=m_stack.begin(); i != m_stack.end(); ++i)
     result.push_back((*i).second);

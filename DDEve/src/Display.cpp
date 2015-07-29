@@ -450,7 +450,7 @@ void Display::OnNewEvent(EventHandler* handler )   {
     ImportEvent(particles);
   }
   for(Views::iterator i = m_eveViews.begin(); i != m_eveViews.end(); ++i)
-    (*i)->ConfigureEvent();
+    (*i)->ConfigureEventFromInfo();
   manager().Redraw3D();
 }
 

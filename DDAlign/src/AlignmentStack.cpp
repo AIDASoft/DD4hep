@@ -29,7 +29,8 @@ static dd4hep_ptr<AlignmentStack>& _stack()  {
 }
 static dd4hep_ptr<AlignmentStack>& _stack(AlignmentStack* obj)  {
   dd4hep_ptr<AlignmentStack>& s = _stack();
-  s = dd4hep_ptr<AlignmentStack>(obj);
+  dd4hep_ptr<AlignmentStack>  n(obj);
+  s = n;
   return s;
 }
 
@@ -244,9 +245,9 @@ bool AlignmentStack::add(dd4hep_ptr<StackEntry>& entry)  {
 dd4hep_ptr<AlignmentStack::StackEntry> AlignmentStack::pop()   {
   Stack::iterator i = m_stack.begin();
   if ( i != m_stack.end() )   {
-    StackEntry* e = (*i).second;
+    dd4hep_ptr<StackEntry> e((*i).second);
     m_stack.erase(i);
-    return dd4hep_ptr<StackEntry>(e);
+    return e;
   }
   throw runtime_error("AlignmentStack> Alignment stack is empty. "
                       "Cannot pop entries - check size first!");

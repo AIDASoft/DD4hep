@@ -3,6 +3,16 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2015-07-25 M.Frank
+------------------
+  - DDSegmentation: Remove several 'shadow' warnings.
+
+  - New build system for the DD4hep core, which greatly simplyfies the cmake files
+    for the various sub-packages. 
+    Tested with Andre's build script doc/CompileAllOptionPermutations.sh.
+    (GEAR usage not tested though)
+
  --------
 | v00-14 |  
  --------   
@@ -18,7 +28,7 @@ F.Gaede: 2015-07-15
  - added methods length_along_u/v() to ISurface
  - moved setting of CMAKE_CXX_FLAGS (if DD4HEP_USE_CXX11) from DD4hep.cmake to CMakeLists.txt
 
-2015-07-11n M.Frank
+2015-07-11 M.Frank
 -------------------
   -  added starter docs DD4hepStartersGuide.pdf
 

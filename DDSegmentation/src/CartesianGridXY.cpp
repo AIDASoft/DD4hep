@@ -49,7 +49,7 @@ Vector3D CartesianGridXY::position(const CellID& cID) const {
 }
 
 std::vector<double> CartesianGridXY::cellDimensions(const CellID&) const {
-#ifdef DD4HEP_USE_CXX11
+#if __cplusplus >= 201103L
   return {_gridSizeX, _gridSizeY};
 #else
   std::vector<double> cellDims(2,0.0);

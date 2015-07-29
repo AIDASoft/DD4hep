@@ -30,8 +30,8 @@ DECLARE_VIEW_FACTORY(MultiView)
 static void _build(Display* display, View* v, TEveWindowSlot* slot)  {
   v->Build(slot);
   display->RegisterEvents(v);
-  v->ConfigureGeometry();
-  v->ConfigureEvent();
+  v->ConfigureGeometryFromInfo();
+  v->ConfigureEventFromInfo();
   v->Initialize();
 }
 

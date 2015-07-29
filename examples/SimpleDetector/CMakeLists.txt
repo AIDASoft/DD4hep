@@ -1,3 +1,14 @@
+# $Id: $
+#==========================================================================
+#  AIDA Detector description implementation for LCD
+#--------------------------------------------------------------------------
+# Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#==========================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 #---------------------------
 set( PackageName SimpleDetector )
@@ -27,14 +38,13 @@ ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
 find_package( DD4hep REQUIRED COMPONENTS DDRec )
 
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_ROOT}/cmake ) 
+set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${DD4hep_DIR}/cmake ) 
 include( DD4hep )
 
 find_package( ROOT REQUIRED )
 set( ROOT_COMPONENT_LIBRARIES Geom Reflex)
 #-------------------------------------------------------------
 # add additional packages here
-#-------------------------------------------------------------
 
 #---Testing-------------------------------------------------------------------------
 if(BUILD_TESTING)
@@ -42,7 +52,7 @@ if(BUILD_TESTING)
   enable_testing()
 endif(BUILD_TESTING)
 
-configure_file( ${DD4hep_ROOT}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
+configure_file( ${DD4hep_DIR}/cmake/run_test_package.sh run_test_${PackageName}.sh @ONLY)
 INSTALL(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run_test_${PackageName}.sh
   DESTINATION bin )
 
@@ -68,7 +78,7 @@ else()
 endif()
 
 #---- configure run environment ---------------
-configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
   DESTINATION bin
@@ -98,26 +108,26 @@ install(DIRECTORY compact
 
 SET( test_name "test_converter_simple_lcdd" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  geoConverter -compact2lcdd -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output Simple_ILD.lcdd )
+  geoConverter -compact2lcdd -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output file:Simple_ILD.lcdd )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [0-9]?[0-9][0-9]+ volumes" )
 
 SET( test_name "test_converter_simple_gdml" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  geoConverter -compact2gdml -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output Simple_ILD.gdml )
+  geoConverter -compact2gdml -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output file:Simple_ILD.gdml )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [0-9]?[0-9][0-9]+ volumes" )
 
 SET( test_name "test_converter_simple_vis" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  geoConverter -compact2vis -input ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output Simple_ILD.vis )
+  geoConverter -compact2vis -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output file:Simple_ILD.vis )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  " Handled [0-9]?[0-9][0-9]+ volumes" )
 
 
 SET( test_name "test_simulation_simple" )
 ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test_${PackageName}.sh" 
-  dd_sim ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml  ${CMAKE_CURRENT_SOURCE_DIR}/examples/sequences.xml )
+  dd_sim file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml  file:${CMAKE_CURRENT_SOURCE_DIR}/examples/sequences.xml )
 #----- here we simply require that at least 100 volumes have been converted
 SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION  "Event 9 Begin event action")
 

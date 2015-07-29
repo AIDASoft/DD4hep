@@ -1,4 +1,46 @@
+#=================================================================================
+#  $Id: $
+#
+#  AIDA Detector description implementation for LCD
+#---------------------------------------------------------------------------------
+# Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#=================================================================================
 
+#---------------------------------------------------------------------------------------------------
+if ( DD4hep_DIR )
+  set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake ) 
+endif()
+if(CMAKE_INSTALL_PREFIX)
+  set ( CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX} )
+endif()
+
+#---------------------------------------------------------------------------------------------------
+#  Need this fix, since the cmake name is Geant4 and on GEANT4
+if(DD4HEP_USE_GEANT4)
+  set ( DD4HEP_USE_BOOST ON )    # Boost is required !
+endif()
+#---------------------------------------------------------------------------------------------------
+if(DD4HEP_USE_BOOST)
+  if ( "${Boost_INCLUDE_DIRS}" STREQUAL "" )
+    find_package( Boost REQUIRED ) 
+    ##include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
+  endif()
+  add_definitions( -DDD4HEP_USE_BOOST )
+  add_definitions( -DBOOST_SPIRIT_USE_PHOENIX_V3 )
+endif()
+# Main functional include file
+include ( DD4hepBuild )
+include ( DD4hep_XML_setup )
+
+##---------------------------------------------------------------------------------------------------
+##
+##  OLDER STUFF: To be kept for backwards compatibility ....
+##
 #---------------------------------------------------------------------------------------------------
 # add_dd4hep_plugin ( libraryName )
 #
@@ -15,10 +57,7 @@ function( add_dd4hep_plugin libraryName )
     dd4hep_generate_rootmap( ${libraryName} )
   endif()
 
-  install( TARGETS ${libraryName}
-    LIBRARY DESTINATION lib
-    )
-
+  install( TARGETS ${libraryName} LIBRARY DESTINATION lib )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
@@ -35,7 +74,7 @@ function ( dd4hep_instantiate_package PackageName )
   INCLUDE( DD4hepMacros )
 
   #---- configure run environment ---------------
-  configure_file( ${DD4hep_ROOT}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
+  configure_file( ${DD4hep_DIR}/cmake/thisdd4hep_package.sh.in  this${PackageName}.sh @ONLY)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/this${PackageName}.sh
     DESTINATION bin
@@ -43,8 +82,6 @@ function ( dd4hep_instantiate_package PackageName )
 
 
 endfunction()
-
-
 #---------------------------------------------------------------------------------------------------
 # dd4hep_generate_rootmap(library)
 #
@@ -57,13 +94,11 @@ function(dd4hep_generate_rootmap library)
     dd4hep_generate_rootmap_notapple( ${library} )
   endif()
 endfunction()
-
+#---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap_notapple library)
-
-  if ( NOT DD4hep_ROOT )
-    SET ( DD4hep_ROOT ${CMAKE_SOURCE_DIR} )
+  if ( NOT DD4hep_DIR )
+    SET ( DD4hep_DIR ${CMAKE_SOURCE_DIR} )
   endif()
-
   find_package(ROOT QUIET)
 if(DD4HEP_NO_REFLEX)
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
@@ -76,7 +111,7 @@ endif()
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
-                             -P ${DD4hep_ROOT}/cmake/MakeRootMap.cmake
+                             -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake
                      DEPENDS ${library})
 
   add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
@@ -85,22 +120,13 @@ endif()
     DESTINATION lib
   )
 endfunction()
-
-
-
 #
 #
+#---------------------------------------------------------------------------------------------------
 function(dd4hep_generate_rootmap_apple library)
-
   # for now do the same for apple that is done for the rest
   dd4hep_generate_rootmap_notapple( ${library} )
-
 endfunction()
-
-
-
-
-
 #---------------------------------------------------------------------------------------------------
 # dd4hep_install_library(library)
 #

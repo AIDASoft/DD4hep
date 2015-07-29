@@ -1,89 +1,29 @@
+#=================================================================================
+#  $Id: $
+#
+#  AIDA Detector description implementation for LCD
+#---------------------------------------------------------------------------------
+# Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+# All rights reserved.
+#
+# For the licensing terms see $DD4hepINSTALL/LICENSE.
+# For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+#
+#=================================================================================
+dd4hep_package(    DDTest
+  USES             DDCore DDRec
+  OPTIONAL         DDG4
+  INCLUDE_DIRS     include
+  INSTALL_INCLUDES include )
 
-#--------------------------------------------------
+dd4hep_add_test_reg ( test_example             BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
+dd4hep_add_test_reg ( test_units               BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
+  EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
+dd4hep_add_test_reg ( test_surface             BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
+  EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
+dd4hep_add_test_reg ( test_bitfield64          BUILD_EXEC REGEX_FAIL "TEST_FAILED"
+  EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
 
-include_directories( 
-  ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_SOURCE_DIR}/DDCore/include
-  ${CMAKE_SOURCE_DIR}/DDSegmentation/include
-  ${CMAKE_SOURCE_DIR}/DDSurfaces/include
-  ${CMAKE_SOURCE_DIR}/DDRec/include
-  ${CMAKE_SOURCE_DIR}/include
-  ${ROOT_INCLUDE_DIR}
-  )
-if(DD4HEP_USE_GEANT4)
-  include_directories( ${CMAKE_SOURCE_DIR}/DDG4/include )
-endif() 
-
-SET(test_link_libraries DDCore DDRec DDSegmentation ${ROOT_LIBRARIES} Reflex )
-
-if(DD4HEP_USE_GEANT4)
-  list(APPEND test_link_libraries DDG4 ${Geant4_LIBRARIES})
-endif()
-
-#--------------------------------------------------
-#ADD_TEST( t_init source "${CMAKE_CURRENT_WORK_DIR}/thisdd4hep.sh" )
-
-SET( test_name "test_example" )
-ADD_EXECUTABLE(${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" ${EXECUTABLE_OUTPUT_PATH}/${test_name} )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-SET( test_name "test_units" )
-ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" 
-  ${EXECUTABLE_OUTPUT_PATH}/${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-SET( test_name "test_surface" )
-ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" 
-  ${EXECUTABLE_OUTPUT_PATH}/${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-SET( test_name "test_bitfield64" )
-ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh" 
-  ${EXECUTABLE_OUTPUT_PATH}/${test_name} ${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-SET( test_name "test_PolarGridRPhi2" )
-ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-  ${EXECUTABLE_OUTPUT_PATH}/${test_name}  )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-
-SET( test_name "test_cellDimensions" )
-ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-  ${EXECUTABLE_OUTPUT_PATH}/${test_name}  )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-
-SET( test_name "test_cellDimensionsRPhi2" )
-ADD_EXECUTABLE( ${test_name} ./src/${test_name}.cc )
-TARGET_LINK_LIBRARIES(${test_name} ${test_link_libraries})
-ADD_TEST( t_${test_name} "${CMAKE_INSTALL_PREFIX}/bin/run_test.sh"
-  ${EXECUTABLE_OUTPUT_PATH}/${test_name}  )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "TEST_PASSED" )
-SET_TESTS_PROPERTIES( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "TEST_FAILED" )
-
-#--------------------------------------------------
-
-
-install(FILES ./include/DD4hep/DDTest.h
-  DESTINATION include/DD4hep
-  )
-
+dd4hep_add_test_reg ( test_PolarGridRPhi2      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
+dd4hep_add_test_reg ( test_cellDimensions      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
+dd4hep_add_test_reg ( test_cellDimensionsRPhi2 BUILD_EXEC REGEX_FAIL "TEST_FAILED" )

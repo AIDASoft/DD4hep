@@ -51,7 +51,7 @@ ElementList::~ElementList()  {
 }
 
 /// Clone object
-TEveElement* ElementList::CloneElement()   {
+TEveElementList* ElementList::CloneElement() const  {
   return new ElementList(*this);
 }
 

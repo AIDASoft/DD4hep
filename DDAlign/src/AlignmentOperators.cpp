@@ -36,8 +36,8 @@ void AlignmentSelector::operator()(Entries::value_type e)  const {
   nodes.insert(make_pair(e->path,make_pair(pn,e)));
 }
 
-void AlignmentSelector::operator()(const Cache::value_type& e)  const {
-  TGeoPhysicalNode* pn = e.second;
+void AlignmentSelector::operator()(const Cache::value_type& entry)  const {
+  TGeoPhysicalNode* pn = entry.second;
   for(Entries::const_iterator j=entries.begin(); j != entries.end(); ++j)   {
     Entries::value_type e = (*j);
     if ( e->needsReset() || e->hasMatrix() )  {

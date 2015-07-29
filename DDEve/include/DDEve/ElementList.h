@@ -43,8 +43,8 @@ namespace DD4hep {
     ElementList(const ElementList& l);
     /// Default destructor
     virtual ~ElementList();
-    /// Clone object
-    TEveElement* CloneElement();
+    /// Clone object: Overload from TEveElementList
+    virtual TEveElementList* CloneElement()  const;
     /// Root implementation macro
     ClassDef(ElementList,0);
   };

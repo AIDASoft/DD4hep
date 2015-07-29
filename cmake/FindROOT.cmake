@@ -38,32 +38,49 @@ if(ROOT_CONFIG_EXECUTABLE)
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
   set(ROOT_LIBRARY_DIR ${ROOTSYS}/lib)
-
-  set(ROOT_ROOT ${ROOTSYS})
+  set(ROOT_VERSION     ${ROOT_VERSION})
+  set(ROOT_ROOT        ${ROOTSYS})
 
   # Make variables changeble to the advanced user
   mark_as_advanced(ROOT_CONFIG_EXECUTABLE)
-
 endif()
 
-set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lGenVector)     
-#
-#  No Relex library present for ROOT 6
-#
-if(NOT DD4HEP_NO_REFLEX)
-  set(ROOT_LIBRARIES  ${ROOT_LIBRARIES} -lReflex)
-endif()
+###set(ROOT_LIBRARIES    ${ROOT_LIBRARIES} -lGenVector)     
 
-set(ROOT_EVE_LIBRARIES ${ROOT_EVE_LIBRARIES} )     
+set(ROOT_EVE_LIBRARIES ${ROOT_EVE_LIBRARIES} )
 
 # handle the QUIETLY and REQUIRED arguments and set ROOT_FOUND to TRUE if
 # all listed variables are TRUE
-INCLUDE(FindPackageHandleStandardArgs)
+INCLUDE ( FindPackageHandleStandardArgs )
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ROOTSYS ROOT_INCLUDE_DIR)
 mark_as_advanced(ROOT_FOUND ROOT_INCLUDE_DIR)
 
-include(CMakeParseArguments)
+include ( CMakeParseArguments)
 find_program(ROOTCINT_EXECUTABLE rootcint PATHS ${ROOTSYS}/bin $ENV{ROOTSYS}/bin)
+
+if(NOT ROOT_VERSION_STRING)
+  file(STRINGS ${ROOT_INCLUDE_DIR}/RVersion.h _RVersion REGEX "define *ROOT_RELEASE ")
+  string(REGEX MATCH "\"(([0-9]+)\\.([0-9]+)/([0-9]+)([a-z]*|-rc[0-9]+))\"" _RVersion ${_RVersion})
+  set(ROOT_VERSION_STRING ${CMAKE_MATCH_1} CACHE INTERNAL "Version of ROOT")
+  set(ROOT_VERSION_MAJOR  ${CMAKE_MATCH_2} CACHE INTERNAL "Major version of ROOT")
+  set(ROOT_VERSION_MINOR  ${CMAKE_MATCH_3} CACHE INTERNAL "Minor version of ROOT")
+  set(ROOT_VERSION_PATCH  ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of ROOT")
+endif()
+##message(WARNING "ROOT ${ROOT_VERSION_MAJOR} ${ROOT_VERSION_MINOR} ${ROOT_VERSION_PATCH}")
+IF ( ${ROOT_VERSION_MAJOR} LESS 6 )
+  set ( ROOT_LIBRARIES ${ROOT_LIBRARIES} -lReflex )
+ENDIF()
+IF(ROOT_FIND_COMPONENTS)
+  MESSAGE( STATUS "ROOT: Looking for Components: ${ROOT_FIND_COMPONENTS}" )
+  FOREACH(comp ${ROOT_FIND_COMPONENTS})
+    if ( "${comp}" STREQUAL "TEve" )
+      set(ROOT_LIBRARIES ${ROOT_LIBRARIES} ${ROOT_EVE_LIBRARIES} )
+    else()
+      set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -l${comp} )
+    endif()
+  ENDFOREACH()
+ENDIF()
+
 
 #----------------------------------------------------------------------------
 # function root_generate_dictionary( dictionary   
@@ -106,11 +123,12 @@ function(root_generate_dictionary dictionary)
     endif()
   endforeach()
   #---call rootcint------------------------------------------
+  message(STATUS "ROOT Dictionary output: ${dictionary}.cxx ${dictionary}.h")
   add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
                      COMMAND echo ${ROOTCINT_EXECUTABLE} -cint -f  ${dictionary}.cxx 
-                                          -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
+                                          -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs}
                      COMMAND ${ROOTCINT_EXECUTABLE} -f  ${dictionary}.cxx 
-                                          -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs} 
+                                          -c -p ${ARG_OPTIONS} ${includedirs} ${headerfiles} ${linkdefs}
                      DEPENDS ${headerfiles} ${linkdefs})
 endfunction()
 

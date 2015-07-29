@@ -13,6 +13,7 @@
 //==========================================================================
 
 // Framework include files
+#include "Exceptions.h"
 #include "IMPL/LCCollectionVec.h"
 #include "IMPL/SimTrackerHitImpl.h"
 #include "IMPL/SimCalorimeterHitImpl.h"

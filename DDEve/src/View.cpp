@@ -137,7 +137,7 @@ View::CreateGeometry(DetElement de, const DisplayConfiguration::Config& cfg)   {
 }
 
 /// Configure a view using the view's name and a proper ViewConfiguration if present
-void View::ConfigureGeometry()     {
+void View::ConfigureGeometryFromInfo()     {
   printout(INFO,"View","+++ Configure Geometry for view %s Config=%p.",c_name(),m_config);
   (m_config) ? ConfigureGeometry(*m_config) : ConfigureGeometryFromGlobal();
   ImportGeoTopics(name());
@@ -228,7 +228,7 @@ void View::ImportGeo(TEveElement* el)  {
 }
 
 /// Configure the adding of event data 
-void View::ConfigureEvent()    {
+void View::ConfigureEventFromInfo()    {
   printout(INFO,"View","+++ Import event data into view %s Config=%p.",c_name(),m_config);
   (m_config) ? ConfigureEvent(*m_config) : ConfigureEventFromGlobal();
   ImportEventTopics();

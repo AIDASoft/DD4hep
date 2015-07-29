@@ -39,27 +39,28 @@ namespace DD4hep  {
   public:
     typedef std::unique_ptr<T> base_t;
 #else
-      : public std::auto_ptr<T>  {
+    : public std::auto_ptr<T>  {
     public:
-        typedef std::auto_ptr<T> base_t;
-        void swap(base_t& c) {
-          this->base_t::operator=(base_t(c.release()));
-        }
+      typedef std::auto_ptr<T> base_t;
+      void swap(base_t& c) {
+	this->base_t::operator=(base_t(c.release()));
+      }
 #endif
-        /// Default Constructor.
-        dd4hep_ptr() : base_t() {}
-        /// Constructor from pointer
-        dd4hep_ptr(T* p) : base_t(p) {}
-        /// Constructor from copy
-        dd4hep_ptr(base_t& c) : base_t(c) {}
-        /// Assignment operator
-        dd4hep_ptr& operator=(base_t& c) {
-          if ( this != &c )  {
-            this->swap(c);
-          }
-          return *this;
-        }
-      };
+    public:
+      /// Default Constructor.
+    dd4hep_ptr() : base_t() {}
+      /// Constructor from pointer
+    dd4hep_ptr(T* p) : base_t(p) {}
+      /// Constructor from copy
+    dd4hep_ptr(base_t& c) : base_t(c) {}
+      /// Assignment operator
+      dd4hep_ptr& operator=(base_t& c) {
+	if ( this != &c )  {
+	  this->swap(c);
+	}
+	return *this;
+      }
+    };
   }
 
 #endif  // DD4HEP_MEMORY_H

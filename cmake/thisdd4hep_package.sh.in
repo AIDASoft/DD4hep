@@ -7,7 +7,7 @@
 #################################################################################
 
 
-source @DD4hep_ROOT@/bin/thisdd4hep.sh
+source @DD4hep_DIR@/bin/thisdd4hep.sh
 
 export PATH=$PATH:@CMAKE_INSTALL_PREFIX@/bin
 
@@ -20,17 +20,17 @@ fi
 
 
 # -- need to extend dynamic search path for all external libraries:
-
-for lp in @External_LIBRARY_DIRS@
-do
-
-
-    if [ @USE_DYLD@ ]
-    then
-	# echo "  ### 	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp} "
-	export DYLD_LIBRARY_PATH=${lp}:$DYLD_LIBRARY_PATH
-    else
-	# echo "  ### 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp} "
-	export LD_LIBRARY_PATH=${lp}:$LD_LIBRARY_PATH
-    fi
-done
+if [ @External_LIBRARY_DIRS@ ]
+then
+    for lp in @External_LIBRARY_DIRS@
+    do
+	if [ @USE_DYLD@ ]
+	then
+	    # echo "  ### 	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp} "
+	    export DYLD_LIBRARY_PATH=${lp}:$DYLD_LIBRARY_PATH
+	else
+	    # echo "  ### 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp} "
+	    export LD_LIBRARY_PATH=${lp}:$LD_LIBRARY_PATH
+	fi
+    done
+fi;

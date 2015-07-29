@@ -110,7 +110,7 @@ namespace DD4hep {
     virtual View& CreateGeoScene();
 
     /// Configure a view with geo info. Used configuration if present.
-    virtual void ConfigureGeometry();
+    virtual void ConfigureGeometryFromInfo();
     /// Configure a single geometry view by default from the global geometry scene with all subdetectors
     virtual void ConfigureGeometryFromGlobal();
     /// Configure a single geometry view
@@ -143,7 +143,7 @@ namespace DD4hep {
     /// Create the event scene
     virtual View& CreateEventScene();
     /// Configure a view with event info. Used configuration if present.
-    virtual void ConfigureEvent();
+    virtual void ConfigureEventFromInfo();
     /// Configure an event view by default from the global event scene
     virtual void ConfigureEventFromGlobal();
     /// Configure a single event scene view

@@ -102,8 +102,8 @@ void ViewMenu::BuildView(View* v)  const  {
   TEveWindowSlot *slot = TEveWindow::CreateWindowInTab(right);
   v->Build(slot);
   m_display->RegisterEvents(v);
-  v->ConfigureGeometry();
-  v->ConfigureEvent();
+  v->ConfigureGeometryFromInfo();
+  v->ConfigureEventFromInfo();
   v->Initialize();
   right->SetTab(right->GetNumberOfTabs()-1);
 }

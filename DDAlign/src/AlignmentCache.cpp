@@ -194,11 +194,11 @@ void AlignmentCache::uninstall(LCDD& lcdd)   {
 }
 
 /// Retrieve branch cache by name. If not present it will be created
-AlignmentCache* AlignmentCache::subdetectorAlignments(const string& name)    {
-  SubdetectorAlignments::const_iterator i = m_detectors.find(name);
+AlignmentCache* AlignmentCache::subdetectorAlignments(const string& nam)    {
+  SubdetectorAlignments::const_iterator i = m_detectors.find(nam);
   if ( i == m_detectors.end() )   {
-    AlignmentCache* ptr = new AlignmentCache(m_lcdd,name,false);
-    m_detectors.insert(make_pair(name,ptr));
+    AlignmentCache* ptr = new AlignmentCache(m_lcdd,nam,false);
+    m_detectors.insert(make_pair(nam,ptr));
     return ptr;
   }
   return (*i).second;
@@ -260,9 +260,7 @@ void AlignmentCache::apply(AlignmentStack& stack)    {
 /// Apply a vector of SD entries of ordered alignments to the geometry structure
 void AlignmentCache::apply(const vector<Entry*>& changes)   {
   typedef map<string,pair<TGeoPhysicalNode*,Entry*> > Nodes;
-  typedef vector<Entry*> Changes;
   Nodes nodes;
-
   AlignmentSelector selector(*this,nodes,changes);
   for_each(m_cache.begin(),m_cache.end(),selector.reset());
   for_each(nodes.begin(),nodes.end(),AlignmentActor<node_print>(*this,nodes));
