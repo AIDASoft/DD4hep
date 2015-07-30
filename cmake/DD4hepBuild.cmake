@@ -415,11 +415,9 @@ function( dd4hep_unpack_package_opts name opt )
   set ( nam_pkg  )
   set ( req_pkg  )
   set ( typ_pkg  )
-  set ( com_pkg  )
+  set ( com_pkg )
   set ( comp_pkg )
-  set ( src_pkg  )
   set ( srcs_pkg )
-  set ( def_pkg  )
   set ( defs_pkg )
   if ( "${opt}" MATCHES "\\[" )
     string ( REGEX REPLACE "\\[;" "" opt "${opt}" )
@@ -431,23 +429,28 @@ function( dd4hep_unpack_package_opts name opt )
     foreach( e ${all_opt} )
       if( "${nam_pkg}" STREQUAL "")
         set ( nam_pkg ${e} )
+        unset ( act_pkg )
       elseif ( "${e}" STREQUAL "REQUIRED")
         set ( req_pkg ${e} )
+        unset ( act_pkg )
       elseif ( "${e}" STREQUAL "INTERNAL")
         set ( typ_pkg ${e} )
+        unset ( act_pkg )
       elseif ( "${e}" STREQUAL "EXTERNAL")
         set ( typ_pkg ${e} )
+        unset ( act_pkg )
       elseif ( "${com_pkg}" STREQUAL "" AND "${e}" STREQUAL "COMPONENTS")
         set ( com_pkg ${e} )
+        set ( act_pkg ${e} )
       elseif ( "${src_pkg}" STREQUAL "" AND "${e}" STREQUAL "SOURCES")
-        set ( src_pkg ${e} )
+        set ( act_pkg ${e} )
       elseif ( "${def_pkg}" STREQUAL "" AND "${e}" STREQUAL "DEFINITIONS")
-        set ( def_pkg ${e} )
-      elseif ( "${src_pkg}" STREQUAL "" )
+        set ( act_pkg ${e} )
+      elseif ( "${act_pkg}" STREQUAL "COMPONENTS" )
         set ( comp_pkg ${comp_pkg} ${e} )
-      elseif ( NOT "${src_pkg}" STREQUAL "" )
+      elseif ( "${act_pkg}" STREQUAL "SOURCES" )
         set ( srcs_pkg ${srcs_pkg} ${e} )
-      elseif ( NOT "${def_pkg}" STREQUAL "" )
+      elseif ( "${act_pkg}" STREQUAL "DEFINITIONS" )
         set ( defs_pkg ${defs_pkg} ${e} )
       endif()
     endforeach()
@@ -603,7 +606,7 @@ function( dd4hep_use_package print_prefix inName outName )
       set ( src ${use} )
     endif()
     if ( NOT "${pkg_found}" STREQUAL "ON" )
-      message ( STATUS "|    ${print_prefix}  ...optional: Skip optional ${src} [Not defined]" )
+      message ( STATUS "|    ${print_prefix}  ...optional: Skip optional ${src} [${use} Not defined]" )
       unset ( use )
     endif()
     set ( used_uses ${used_uses} ${use} )
@@ -658,6 +661,21 @@ function( dd4hep_use_package print_prefix inName outName )
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
+#
+#  \author  M.Frank
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
+function ( dd4hep_package_properties name upper enabled )
+  get_property(n DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
+  string ( TOUPPER "${n}" N )
+  get_property(e GLOBAL PROPERTY DD4HEP_USE_${N} )
+  set ( ${name} ${n} PARENT_SCOPE )
+  set ( ${upper} ${N} PARENT_SCOPE )
+  set ( ${enabled} ${e} PARENT_SCOPE )
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
 #  dd4hep_package
 #
 #  Arguments
@@ -678,69 +696,88 @@ function( dd4hep_package packageName )
   cmake_parse_arguments(ARG "" "LIBRARY;MAJOR;MINOR;PATCH" "USES;OPTIONAL;LINK_LIBRARIES;INCLUDE_DIRS;INSTALL_INCLUDES" ${ARGN})
   set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME ${packageName} )
   string ( TOUPPER "${packageName}" PKG_NAME )
-  dd4hep_set_version ( ${packageName} MAJOR ${ARG_MAJOR} MINOR ${ARG_MINOR} PATCH ${ARG_PATCH} )
-  dd4hep_to_parent_scope ( ${packageName}_VERSION_MAJOR )
-  dd4hep_to_parent_scope ( ${packageName}_VERSION_MINOR )
-  dd4hep_to_parent_scope ( ${packageName}_VERSION_PATCH )
-  dd4hep_to_parent_scope ( ${packageName}_VERSION )
-  dd4hep_to_parent_scope ( ${packageName}_SOVERSION )
-  set ( vsn "Version: ( ${${packageName}_VERSION_MAJOR}.${${packageName}_VERSION_MINOR}.${${packageName}_VERSION_PATCH} )" )
-  message(STATUS "+------------------------------------------- <<<< PACKAGE ${packageName} >>>> ${vsn}" )
 
-  dd4hep_use_package ( "Package[${packageName}]" PACKAGE PACKAGE 
-    USES     ${ARG_USES} 
-    OPTIONAL ${ARG_OPTIONAL} )
-  if ( "${PACKAGE_MISSING}" STREQUAL "" )
-    #
-    #
-    #
-    #dd4hep_configure_output ( OUTPUT "${ARG_OUTPUT}" INSTALL "${ARG_INSTALL}" )
-    #
-    #
-    set (used_incs  ${PACKAGE_INCLUDE_DIRS} )
-    set (used_libs  ${PACKAGE_LINK_LIBRARIES} )
-    #
-    #  Define the include directories including dependent packages
-    #
-    list(APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/include )
-    foreach( inc ${ARG_INCLUDE_DIRS} )
-      list( APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
-    endforeach()
-    #
-    #  Build the list of link libraries required to build the package library and plugins etc.
-    #
-    dd4hep_make_unique_list ( used_libs VALUES ${used_libs} ${ARG_LINK_LIBRARIES} )
-    dd4hep_make_unique_list ( used_incs VALUES ${used_incs} )
-    #
-    #  Save the variables in the context of the current source directory (ie. THIS package)
-    #
-    set ( use "ON" )
-    set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS   ${used_incs} )
-    set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_LINK_LIBRARIES ${used_libs} )
+  set ( missing_uses )
+  foreach ( use ${ARG_USES} )
+    dd4hep_unpack_package_opts( TEST ${use} )
+    dd4hep_find_package( ${TEST_NAME} pkg_found )
+    if ( "${pkg_found}" STREQUAL "OFF" )
+      set ( missing_uses ${missing_uses} ${TEST_NAME} )
+    endif()
+  endforeach()
 
-    set_property ( GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES    ${used_libs} )
-    set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME}   ${use} )
-    set_property ( GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS ${used_incs} )
-    set_property ( GLOBAL PROPERTY ${PKG_NAME}_USES         ${PACKAGE_USES} )
-    #
-    #  Add package to 'internal' package list
-    #
-    get_property ( all_packages GLOBAL PROPERTY DD4HEP_ALL_PACKAGES )
-    set ( all_packages ${PKG_NAME} ${all_packages} )
-    set_property ( GLOBAL PROPERTY DD4HEP_ALL_PACKAGES ${all_packages} )
-    get_property ( use GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} )
-    #
-    #  Some debugging:
-    #
-    dd4hep_debug ( "Property:  DD4HEP_USE_${PKG_NAME}=${use}" )
-    dd4hep_debug ( "Used Libs: ${used_libs}" )
-    dd4hep_debug ( "Used Incs: ${used_incs}" )
-    #
-    #  Define the installation pathes of the headers.
-    #
-    dd4hep_install_dir ( ${ARG_INSTALL_INCLUDES} DESTINATION include )
+  if ( NOT "${missing_uses}" STREQUAL "" )
+    message(STATUS "!!!!!!!!!!!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    message(STATUS "!!!!!!!!!!!! PACKAGE ${packageName} / ${PKG_NAME} SKIPPED! Missing dependency: ${missing_uses}"     )
+    message(STATUS "!!!!!!!!!!!! ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    set ( use "OFF" )
+    set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} ${use} )
   else()
-    message (FATAL_ERROR "Missing package dependencies: ${PACKAGE_MISSING}" )
+    dd4hep_set_version ( ${packageName} MAJOR ${ARG_MAJOR} MINOR ${ARG_MINOR} PATCH ${ARG_PATCH} )
+    dd4hep_to_parent_scope ( ${packageName}_VERSION_MAJOR )
+    dd4hep_to_parent_scope ( ${packageName}_VERSION_MINOR )
+    dd4hep_to_parent_scope ( ${packageName}_VERSION_PATCH )
+    dd4hep_to_parent_scope ( ${packageName}_VERSION )
+    dd4hep_to_parent_scope ( ${packageName}_SOVERSION )
+    set ( vsn "Version: ( ${${packageName}_VERSION_MAJOR}.${${packageName}_VERSION_MINOR}.${${packageName}_VERSION_PATCH} )" )
+    message(STATUS "+------------------------------------------- <<<< PACKAGE ${packageName} >>>> ${vsn}" )
+
+    dd4hep_use_package ( "Package[${packageName}]" PACKAGE PACKAGE 
+      USES     ${ARG_USES} 
+      OPTIONAL ${ARG_OPTIONAL} )
+
+    if ( "${PACKAGE_MISSING}" STREQUAL "" )
+      #
+      #
+      #
+      #dd4hep_configure_output ( OUTPUT "${ARG_OUTPUT}" INSTALL "${ARG_INSTALL}" )
+      #
+      #
+      set (used_incs  ${PACKAGE_INCLUDE_DIRS} )
+      set (used_libs  ${PACKAGE_LINK_LIBRARIES} )
+      #
+      #  Define the include directories including dependent packages
+      #
+      list(APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/include )
+      foreach( inc ${ARG_INCLUDE_DIRS} )
+        list( APPEND used_incs ${CMAKE_CURRENT_SOURCE_DIR}/${inc} )
+      endforeach()
+      #
+      #  Build the list of link libraries required to build the package library and plugins etc.
+      #
+      dd4hep_make_unique_list ( used_libs VALUES ${used_libs} ${ARG_LINK_LIBRARIES} )
+      dd4hep_make_unique_list ( used_incs VALUES ${used_incs} )
+      #
+      #  Save the variables in the context of the current source directory (ie. THIS package)
+      #
+      set ( use "ON" )
+      set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS   ${used_incs} )
+      set_property ( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_LINK_LIBRARIES ${used_libs} )
+
+      set_property ( GLOBAL PROPERTY ${PKG_NAME}_LIBRARIES    ${used_libs} )
+      set_property ( GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME}   ${use} )
+      set_property ( GLOBAL PROPERTY ${PKG_NAME}_INCLUDE_DIRS ${used_incs} )
+      set_property ( GLOBAL PROPERTY ${PKG_NAME}_USES         ${PACKAGE_USES} )
+      #
+      #  Add package to 'internal' package list
+      #
+      get_property ( all_packages GLOBAL PROPERTY DD4HEP_ALL_PACKAGES )
+      set ( all_packages ${PKG_NAME} ${all_packages} )
+      set_property ( GLOBAL PROPERTY DD4HEP_ALL_PACKAGES ${all_packages} )
+      get_property ( use GLOBAL PROPERTY DD4HEP_USE_${PKG_NAME} )
+      #
+      #  Some debugging:
+      #
+      dd4hep_debug ( "Property:  DD4HEP_USE_${PKG_NAME}=${use}" )
+      dd4hep_debug ( "Used Libs: ${used_libs}" )
+      dd4hep_debug ( "Used Incs: ${used_incs}" )
+      #
+      #  Define the installation pathes of the headers.
+      #
+      dd4hep_install_dir ( ${ARG_INSTALL_INCLUDES} DESTINATION include )
+    else()
+      message (FATAL_ERROR "Missing package dependencies: ${PACKAGE_MISSING}" )
+    endif()
   endif()
   #
 endfunction()
@@ -768,72 +805,76 @@ endfunction()
 #
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_add_library binary building )
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
   cmake_parse_arguments ( ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;PRINT" ${ARGN} )
-  dd4hep_debug( "+------------------------------------------- <<<< LIBRARY ${pkg}:${binary} >>>> Version: ${${pkg}_VERSION}" )
-
+  dd4hep_package_properties( pkg PKG_NAME enabled )
   set ( tag "Library[${pkg}] -> ${binary}" )
   if ( NOT "${ARG_PRINT}" STREQUAL "" )
     set ( tag ${ARG_PRINT} )
   endif()
-  set ( building_binary "OFF" )
 
-  if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
-    dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
-  endif()
-
-  if ( NOT "${optional_missing}" STREQUAL "" )
-    message( STATUS "|++> ${tag} (optional) skipped. Missing dependency: ${optional_missing}" )
+  if ( "${enabled}" STREQUAL "OFF" )
+    message( STATUS "!!!!!!!!!!!! ${tag} DISBALED -- package is not built!" )
   else()
-    dd4hep_use_package( "${tag}" PACKAGE LOCAL 
-      USES     ${ARG_USES} ${optional_uses}
-      OPTIONAL ${ARG_OPTIONAL} )
+    dd4hep_debug( "+------------------------------------------- <<<< LIBRARY ${pkg}:${binary} >>>> Version: ${${pkg}_VERSION}" )
+    set ( building_binary "OFF" )
 
-    if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
-      message( STATUS "|++> ${tag} skipped. Missing dependency: ${missing}" )
+    if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
+      dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
     endif()
-    set (pkg_incs ${LOCAL_INCLUDE_DIRS} )
-    set (pkg_libs ${LOCAL_LINK_LIBRARIES} )
-    #
-    dd4hep_make_unique_list( pkg_incs VALUES ${pkg_incs} ${ARG_INCLUDE_DIRS} )
-    #
-    dd4hep_make_unique_list( pkg_libs VALUES ${pkg_libs} ${ARG_LINK_LIBRARIES} )
-    #
-    dd4hep_make_unique_list( pkg_defs VALUES ${COMPILE_DEFINITIONS} ${ARG_DEFINITIONS} )
-    #
-    file ( GLOB   sources ${ARG_SOURCES} )
-    list ( APPEND sources ${optional_sources} )
-    if ( NOT "${ARG_GENERATED}" STREQUAL "" )
-      #
-      # root-cint produces warnings of type 'unused-function' disable them on generated files
-      foreach ( f in  ${ARG_GENERATED} )
-        set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function )
-      endforeach()
-      list ( APPEND sources ${ARG_GENERATED} )
-    endif()
-    #
-    #
-    if ( NOT "${sources}" STREQUAL "" )
-      dd4hep_make_unique_list ( sources  VALUES ${sources} )
-      dd4hep_debug( "${tag} ${sources}")
-      #
-      include_directories ( ${pkg_incs} )
-      add_definitions ( ${pkg_defs} )
-      #
-      add_library ( ${binary} SHARED ${sources} )
-      target_link_libraries ( ${binary} ${pkg_libs} )
-      if ( "${${pkg}_VERSION}" STREQUAL "" OR "${${pkg}_SOVERSION}" STREQUAL "" )
-        message(FATAL_ERROR " BAD Package versions: VERSION[${pkg}_VERSION] ${${pkg}_VERSION} SOVERSION[${pkg}_SOVERSION] ${${pkg}_SOVERSION} " )
-      endif()
-      ##message(STATUS "set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})")
-      set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})
-      #
-      install ( TARGETS ${binary}  
-	LIBRARY DESTINATION lib 
-	RUNTIME DESTINATION bin)
-      set ( building_binary "ON" )
+
+    if ( NOT "${optional_missing}" STREQUAL "" )
+      message( STATUS "|++> ${tag} (optional) skipped. Missing dependency: ${optional_missing}" )
     else()
-      message( STATUS "|++> ${tag} Skipped. No sources to be compiled [Use constraint]" )
+      dd4hep_use_package( "${tag}" PACKAGE LOCAL 
+        USES     ${ARG_USES} ${optional_uses}
+        OPTIONAL ${ARG_OPTIONAL} )
+
+      if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
+        message( STATUS "|++> ${tag} skipped. Missing dependency: ${missing}" )
+      endif()
+      set (pkg_incs ${LOCAL_INCLUDE_DIRS} )
+      set (pkg_libs ${LOCAL_LINK_LIBRARIES} )
+      #
+      dd4hep_make_unique_list( pkg_incs VALUES ${pkg_incs} ${ARG_INCLUDE_DIRS} )
+      #
+      dd4hep_make_unique_list( pkg_libs VALUES ${pkg_libs} ${ARG_LINK_LIBRARIES} )
+      #
+      dd4hep_make_unique_list( pkg_defs VALUES ${COMPILE_DEFINITIONS} ${ARG_DEFINITIONS} )
+      #
+      file ( GLOB   sources ${ARG_SOURCES} )
+      list ( APPEND sources ${optional_sources} )
+      if ( NOT "${ARG_GENERATED}" STREQUAL "" )
+        #
+        # root-cint produces warnings of type 'unused-function' disable them on generated files
+        foreach ( f in  ${ARG_GENERATED} )
+          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function )
+        endforeach()
+        list ( APPEND sources ${ARG_GENERATED} )
+      endif()
+      #
+      #
+      if ( NOT "${sources}" STREQUAL "" )
+        dd4hep_make_unique_list ( sources  VALUES ${sources} )
+        dd4hep_debug( "${tag} ${sources}")
+        #
+        include_directories ( ${pkg_incs} )
+        add_definitions ( ${pkg_defs} )
+        #
+        add_library ( ${binary} SHARED ${sources} )
+        target_link_libraries ( ${binary} ${pkg_libs} )
+        if ( "${${pkg}_VERSION}" STREQUAL "" OR "${${pkg}_SOVERSION}" STREQUAL "" )
+          message(FATAL_ERROR " BAD Package versions: VERSION[${pkg}_VERSION] ${${pkg}_VERSION} SOVERSION[${pkg}_SOVERSION] ${${pkg}_SOVERSION} " )
+        endif()
+        ##message(STATUS "set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})")
+        set_target_properties ( ${binary} PROPERTIES VERSION ${${pkg}_VERSION} SOVERSION ${${pkg}_SOVERSION})
+        #
+        install ( TARGETS ${binary}  
+	  LIBRARY DESTINATION lib 
+	  RUNTIME DESTINATION bin)
+        set ( building_binary "ON" )
+      else()
+        message( STATUS "|++> ${tag} Skipped. No sources to be compiled [Use constraint]" )
+      endif()
     endif()
   endif()
   set ( ${building} ${building_binary} PARENT_SCOPE )
@@ -853,18 +894,22 @@ endfunction(dd4hep_add_library)
 #
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_add_package_library library )
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
-  string ( TOUPPER "${pkg}" PKG )
-  dd4hep_add_library( ${library} building ${ARGN} PRINT "Package library[${pkg}] -> ${library}" )
-  if ( "${building}" STREQUAL "ON" )
-    get_property(pkg_libs GLOBAL PROPERTY PROPERTY ${PKG}_LIBRARIES )
-    dd4hep_make_unique_list ( pkg_libs VALUES ${pkg_libs} ${library} )
-    set_property(GLOBAL PROPERTY ${PKG}_LIBRARIES ${pkg_libs} )
-    # Test and print if correct
-    get_property(pkg_libs GLOBAL PROPERTY PROPERTY ${PKG}_LIBRARIES )
-    dd4hep_debug ( "add_package_library -> ${library} ${PKG}_LIBRARIES:${pkg_libs}" )
+  dd4hep_package_properties( pkg PKG enabled )
+  set ( tag "Package library[${pkg}] -> ${library}" )
+  if ( "${enabled}" STREQUAL "OFF" )
+    message( STATUS "!!!!!!!!!!!! ${tag} DISBALED -- package is not built!" )
   else()
-    message( FATAL_ERROR "|++> Package library[${pkg}] -> ${binary} Cannot be built! This is an ERROR condition." )    
+    dd4hep_add_library( ${library} building ${ARGN} PRINT ${tag} )
+    if ( "${building}" STREQUAL "ON" )
+      get_property(pkg_libs GLOBAL PROPERTY PROPERTY ${PKG}_LIBRARIES )
+      dd4hep_make_unique_list ( pkg_libs VALUES ${pkg_libs} ${library} )
+      set_property(GLOBAL PROPERTY ${PKG}_LIBRARIES ${pkg_libs} )
+      # Test and print if correct
+      get_property(pkg_libs GLOBAL PROPERTY PROPERTY ${PKG}_LIBRARIES )
+      dd4hep_debug ( "add_package_library -> ${library} ${PKG}_LIBRARIES:${pkg_libs}" )
+    else()
+      message( FATAL_ERROR "|++> Package library[${pkg}] -> ${binary} Cannot be built! This is an ERROR condition." )    
+    endif()
   endif()
 endfunction(dd4hep_add_package_library)
 
@@ -892,23 +937,27 @@ endfunction(dd4hep_add_package_library)
 #
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_add_plugin binary )
-  cmake_parse_arguments(ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS" ${ARGN})
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
-  string ( TOUPPER "${pkg}" PKG )
-  get_property(pkg_lib  GLOBAL PROPERTY ${PKG}_LIBRARIES )
-  dd4hep_add_library( ${binary} building
-    PRINT          "Plugin[${pkg}] -> ${binary}"
-    SOURCES        ${ARG_SOURCES}
-    GENERATED      ${ARG_GENERATED}
-    LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${pkg_lib}
-    INCLUDE_DIRS   ${ARG_INCLUDE_DIRS} 
-    USES           ${ARG_USES}
-    OPTIONAL       "${ARG_OPTIONAL}"
-    DEFINITIONS    ${ARG_DEFINITIONS} )
-  #
-  # Generate ROOTMAP if the plugin will be built:
-  if ( "${building}" STREQUAL "ON" )
-    dd4hep_generate_rootmap( ${binary} )
+  dd4hep_package_properties( pkg PKG enabled )
+  set ( tag "Plugin[${pkg}] -> ${binary}" )
+  if ( "${enabled}" STREQUAL "OFF" )
+    message( STATUS "!!!!!!!!!!!! ${tag} DISBALED -- package is not built!" )
+  else()
+    cmake_parse_arguments(ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS" ${ARGN})
+    get_property(pkg_lib  GLOBAL PROPERTY ${PKG}_LIBRARIES )
+    dd4hep_add_library( ${binary} building
+      PRINT          ${tag}
+      SOURCES        ${ARG_SOURCES}
+      GENERATED      ${ARG_GENERATED}
+      LINK_LIBRARIES ${ARG_LINK_LIBRARIES} ${pkg_lib}
+      INCLUDE_DIRS   ${ARG_INCLUDE_DIRS} 
+      USES           ${ARG_USES}
+      OPTIONAL       "${ARG_OPTIONAL}"
+      DEFINITIONS    ${ARG_DEFINITIONS} )
+    #
+    # Generate ROOTMAP if the plugin will be built:
+    if ( "${building}" STREQUAL "ON" )
+      dd4hep_generate_rootmap( ${binary} )
+    endif()
   endif()
 endfunction(dd4hep_add_plugin)
 
@@ -935,61 +984,59 @@ endfunction(dd4hep_add_plugin)
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_add_executable binary )
-  cmake_parse_arguments ( ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL" ${ARGN})
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
-  dd4hep_debug( "+------------------------------------------- <<<< EXECUTABLE ${pkg}:${binary} >>>> Version: ${${pkg}_VERSION}" )
+  dd4hep_package_properties( pkg PKG enabled )
   set ( tag "Executable[${pkg}] -> ${binary}" )
-
-  if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
-    dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
-  endif()
-  #
-  if ( NOT "${optional_missing}" STREQUAL "" )
-    message( STATUS "|++> ${tag} SKIPPED. Missing optional dependencies: ${optional_missing}" )
+  if ( "${enabled}" STREQUAL "OFF" )
+    message( STATUS "!!!!!!!!!!!! ${tag} DISBALED -- package is not built!" )
   else()
-    set ( uses ${ARG_USES} ${optional_uses} )
-    dd4hep_use_package ( ${tag} PACKAGE LOCAL 
-      USES     "${uses}"
-      OPTIONAL "${ARG_OPTIONAL}" )
-    if ( "${LOCAL_MISSING}" STREQUAL "" )
-      dd4hep_debug ( "${tag} Executable uses:     ${ARG_USES} -- ${uses}" )
-      dd4hep_debug ( "${tag} Executable optional: ${ARG_OPTIONAL}" )
-      #
-      get_property ( pkg_library GLOBAL PROPERTY ${pkg}_LIBRARIES )
-      message (STATUS "${tag}  ---> package ${pkg}_LIBRARIES libraries  ${pkg_library} " )
-  
-      string ( TOUPPER "${pkg}" PKG )
-      get_property ( pkg_library GLOBAL PROPERTY ${PKG}_LIBRARIES )
-      message (STATUS "${tag}  ---> package ${PKG}_LIBRARIES libraries  ${pkg_library} " )
-      #
-      #  Sources may also be supplied without argument tag:
-      #
-      if( "${ARG_SOURCES}" STREQUAL "")
-	set ( ARG_SOURCES ${ARG_UNPARSED_ARGUMENTS} )
-      endif()
-      set ( sources ${GENERATED} ${ARG_SOURCES} ${optional_sources} )
-      #
-      if( NOT "${ARG_SOURCES}" STREQUAL "")
-	set (incs ${LOCAL_INCLUDE_DIRS} )
-	set (libs ${pkg_library} ${LOCAL_LINK_LIBRARIES} ${ARG_LINK_LIBRARIES} )
-	dd4hep_make_unique_list ( libs    VALUES ${libs} )
-	dd4hep_make_unique_list ( sources VALUES ${sources} )
-	#
-	dd4hep_debug ( "${tag} Libs:${libs}" )
-	include_directories( ${ARG_INCLUDE_DIRS} ${incs} )
-	add_executable( ${binary} ${sources} )
-	target_link_libraries( ${binary} ${libs} )
-	#
-	#  Install the binary to the destination directory
-	#
-	install(TARGETS ${binary} 
-	  LIBRARY DESTINATION lib 
-	  RUNTIME DESTINATION bin )
-      else()
-	message( STATUS "|++> ${tag} SKIPPED. No sources to build [Use constraint]" )
-      endif()
+    cmake_parse_arguments ( ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL" ${ARGN})
+    dd4hep_debug( "+------------------------------------------- <<<< EXECUTABLE ${pkg}:${binary} >>>> Version: ${${pkg}_VERSION}" )
+    if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
+      dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
+    endif()
+    #
+    if ( NOT "${optional_missing}" STREQUAL "" )
+      message( STATUS "|++> ${tag} SKIPPED. Missing optional dependencies: ${optional_missing}" )
     else()
-      message( FATAL_ERROR "|++> ${tag} SKIPPED. Missing dependencies: ${LOCAL_MISSING}" )
+      set ( uses ${ARG_USES} ${optional_uses} )
+      dd4hep_use_package ( ${tag} PACKAGE LOCAL 
+        USES     "${uses}"
+        OPTIONAL "${ARG_OPTIONAL}" )
+      if ( "${LOCAL_MISSING}" STREQUAL "" )
+        dd4hep_debug ( "${tag} Executable uses:     ${ARG_USES} -- ${uses}" )
+        dd4hep_debug ( "${tag} Executable optional: ${ARG_OPTIONAL}" )
+        #
+        get_property ( pkg_library GLOBAL PROPERTY ${PKG}_LIBRARIES )
+        #
+        #  Sources may also be supplied without argument tag:
+        #
+        if( "${ARG_SOURCES}" STREQUAL "")
+	  set ( ARG_SOURCES ${ARG_UNPARSED_ARGUMENTS} )
+        endif()
+        set ( sources ${GENERATED} ${ARG_SOURCES} ${optional_sources} )
+        #
+        if( NOT "${ARG_SOURCES}" STREQUAL "")
+	  set (incs ${LOCAL_INCLUDE_DIRS} )
+	  set (libs ${pkg_library} ${LOCAL_LINK_LIBRARIES} ${ARG_LINK_LIBRARIES} )
+	  dd4hep_make_unique_list ( libs    VALUES ${libs} )
+	  dd4hep_make_unique_list ( sources VALUES ${sources} )
+	  #
+	  dd4hep_debug ( "${tag} Libs:${libs}" )
+	  include_directories( ${ARG_INCLUDE_DIRS} ${incs} )
+	  add_executable( ${binary} ${sources} )
+	  target_link_libraries( ${binary} ${libs} )
+	  #
+	  #  Install the binary to the destination directory
+	  #
+	  install(TARGETS ${binary} 
+	    LIBRARY DESTINATION lib 
+	    RUNTIME DESTINATION bin )
+        else()
+	  message( STATUS "|++> ${tag} SKIPPED. No sources to build [Use constraint]" )
+        endif()
+      else()
+        message( FATAL_ERROR "|++> ${tag} SKIPPED. Missing dependencies: ${LOCAL_MISSING}" )
+      endif()
     endif()
   endif()
 endfunction(dd4hep_add_executable)
@@ -1003,53 +1050,57 @@ endfunction(dd4hep_add_executable)
 #
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_add_dictionary dictionary )
-  cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS" ${ARGN} )
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
+  dd4hep_package_properties( pkg PKG enabled )
   set ( tag "Dictionary[${pkg}] -> ${dictionary}" )
-  message( STATUS "|++> ${tag} Building dictionary ..." ) 
-  if("${ARG_LINKDEF}" STREQUAL "")
-    set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
+  if ( "${enabled}" STREQUAL "OFF" )
+    message( STATUS "!!!!!!!!!!!! ${tag} DISBALED -- package is not built!" )
+  else()
+    cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS" ${ARGN} )
+    message( STATUS "|++> ${tag} Building dictionary ..." ) 
+    if("${ARG_LINKDEF}" STREQUAL "")
+      set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
+    endif()
+    #
+    file( GLOB headers ${ARG_SOURCES} )
+    file( GLOB excl_headers ${ARG_EXCLUDE} )
+    foreach( f ${excl_headers} )
+      list( REMOVE_ITEM headers ${f} )
+      message( STATUS "|++        exclude: ${f}" )
+    endforeach()
+    #
+    get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
+    get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
+    get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
+    #
+    set ( inc_dirs -I${CMAKE_CURRENT_SOURCE_DIR}/include )
+    foreach ( inc ${incs} )
+      file ( GLOB inc ${inc} )
+      set ( inc_dirs ${inc_dirs} -I${inc} )
+    endforeach()
+    #
+    file ( GLOB linkdefs ${ARG_LINKDEF} )
+    #
+    set ( comp_defs )
+    foreach ( def ${defs} )
+      set ( comp_defs ${comp_defs} -D${def} )
+    endforeach()
+    #
+    dd4hep_make_unique_list ( sources   VALUES ${headers} )
+    dd4hep_make_unique_list ( linkdefs  VALUES ${linkdefs} )
+    dd4hep_make_unique_list ( inc_dirs  VALUES ${inc_dirs} )
+    dd4hep_make_unique_list ( comp_defs VALUES ${comp_defs} )
+    #
+    dd4hep_debug ( "${tag}  Linkdef: '${linkdefs}'" ) 
+    dd4hep_debug ( "${tag}  Compile: '${comp_defs};${inc_dirs}'" ) 
+    dd4hep_debug ( "${tag}  Files:   '${headers}'" ) 
+    dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
+    dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
+    #
+    add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
+      COMMAND ${ROOTCINT_EXECUTABLE} -f  ${dictionary}.cxx 
+      -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
+      DEPENDS ${headers} ${linkdefs} )
   endif()
-  #
-  file( GLOB headers ${ARG_SOURCES} )
-  file( GLOB excl_headers ${ARG_EXCLUDE} )
-  foreach( f ${excl_headers} )
-    list( REMOVE_ITEM headers ${f} )
-    message( STATUS "|++        exclude: ${f}" )
-  endforeach()
-  #
-  get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
-  get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
-  get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
-  #
-  set ( inc_dirs -I${CMAKE_CURRENT_SOURCE_DIR}/include )
-  foreach ( inc ${incs} )
-    file ( GLOB inc ${inc} )
-    set ( inc_dirs ${inc_dirs} -I${inc} )
-  endforeach()
-  #
-  file ( GLOB linkdefs ${ARG_LINKDEF} )
-  #
-  set ( comp_defs )
-  foreach ( def ${defs} )
-    set ( comp_defs ${comp_defs} -D${def} )
-  endforeach()
-  #
-  dd4hep_make_unique_list ( sources   VALUES ${headers} )
-  dd4hep_make_unique_list ( linkdefs  VALUES ${linkdefs} )
-  dd4hep_make_unique_list ( inc_dirs  VALUES ${inc_dirs} )
-  dd4hep_make_unique_list ( comp_defs VALUES ${comp_defs} )
-  #
-  dd4hep_debug ( "${tag}  Linkdef: '${linkdefs}'" ) 
-  dd4hep_debug ( "${tag}  Compile: '${comp_defs};${inc_dirs}'" ) 
-  dd4hep_debug ( "${tag}  Files:   '${headers}'" ) 
-  dd4hep_debug ( "${tag}  Unparsed:'${ARG_UNPARSED_ARGUMENTS}'" ) 
-  dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
-  #
-  add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
-    COMMAND ${ROOTCINT_EXECUTABLE} -f  ${dictionary}.cxx 
-            -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
-    DEPENDS ${headers} ${linkdefs} )
 endfunction()
 
 
@@ -1125,39 +1176,55 @@ endmacro( dd4hep_enable_tests )
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_add_test_reg test_name )
-  cmake_parse_arguments(ARG "BUILD_EXEC" "OUTPUT" "COMMAND;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED" ${ARGN} )
-  if ( ${ARG_BUILD_EXEC} )
-    #message(STATUS "Building executable:  ${test_name} SOURCES src/${test_name}.cc")
-    dd4hep_add_executable ( ${test_name} SOURCES src/${test_name}.cc )
-  endif()
+  cmake_parse_arguments(ARG "BUILD_EXEC" "OUTPUT" "COMMAND;EXEC_ARGS;REGEX_PASS;REGEX_PASSED;REGEX_FAIL;REGEX_FAILED;REQUIRES" ${ARGN} )
+  set ( missing )
+  set ( use_test 1 )
+  #foreach(opt ${ARG_REQUIRES} )
+  #  dd4hep_unpack_package_opts ( USE ${opt} )
+  #  dd4hep_find_package( ${USE_NAME} pkg_found 
+  #    ARGS ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} 
+  #    TYPE ${USE_TYPE} )
+  #  if ( "${pkg_found}" STREQUAL "OFF" )
+  #    set( missing ${missing} ${USE_NAME} )
+  #    unset ( use_test )
+  #  endif()
+  #endforeach()
+  if ( "${use_test}" STREQUAL "" )
+    message( STATUS "*** Will not build/execute test ${test_name}. Missing dependencies: ${missing} ")
+  else()
+    if ( ${ARG_BUILD_EXEC} )
+      #message(STATUS "Building executable:  ${test_name} SOURCES src/${test_name}.cc")
+      dd4hep_add_executable ( ${test_name} SOURCES src/${test_name}.cc )
+    endif()
 
-  set ( cmd ${ARG_COMMAND} )
-  if ( "${cmd}" STREQUAL "" )
-    set ( cmd ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${test_name} )
-  endif()
+    set ( cmd ${ARG_COMMAND} )
+    if ( "${cmd}" STREQUAL "" )
+      set ( cmd ${CMAKE_INSTALL_PREFIX}/bin/run_test.sh ${test_name} )
+    endif()
 
-  set ( passed ${ARG_REGEX_PASS} ${ARG_REGEX_PASSED} )
-  if ( "${passed}" STREQUAL "NONE" )
-    unset ( passed )
-  elseif ( "${passed}" STREQUAL "" )
-    set ( passed "TEST_PASSED" )
-  endif()
+    set ( passed ${ARG_REGEX_PASS} ${ARG_REGEX_PASSED} )
+    if ( "${passed}" STREQUAL "NONE" )
+      unset ( passed )
+    elseif ( "${passed}" STREQUAL "" )
+      set ( passed "TEST_PASSED" )
+    endif()
 
-  set ( failed ${ARG_REGEX_FAIL} ${ARG_REGEX_FAILED} )
-  if ( "${failed}" STREQUAL "NONE" )
-    unset ( failed )
-  endif()
-  set ( output ${ARG_OUTPUT} )
+    set ( failed ${ARG_REGEX_FAIL} ${ARG_REGEX_FAILED} )
+    if ( "${failed}" STREQUAL "NONE" )
+      unset ( failed )
+    endif()
+    set ( output ${ARG_OUTPUT} )
 
-  set ( args ${ARG_EXEC_ARGS} )
-  if ( "${args}" STREQUAL "" )
-    set ( args ${test_name} )
-  endif()
-  add_test(NAME t_${test_name} COMMAND ${cmd} ${output} ${args} ${output} )
-  if ( NOT "${passed}" STREQUAL "" )
-    set_tests_properties( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "${passed}" )
-  endif()
-  if ( NOT "${failed}" STREQUAL "" )
-    set_tests_properties( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "${failed}" )
+    set ( args ${ARG_EXEC_ARGS} )
+    if ( "${args}" STREQUAL "" )
+      set ( args ${test_name} )
+    endif()
+    add_test(NAME t_${test_name} COMMAND ${cmd} ${output} ${args} ${output} )
+    if ( NOT "${passed}" STREQUAL "" )
+      set_tests_properties( t_${test_name} PROPERTIES PASS_REGULAR_EXPRESSION "${passed}" )
+    endif()
+    if ( NOT "${failed}" STREQUAL "" )
+      set_tests_properties( t_${test_name} PROPERTIES FAIL_REGULAR_EXPRESSION "${failed}" )
+    endif()
   endif()
 endfunction()

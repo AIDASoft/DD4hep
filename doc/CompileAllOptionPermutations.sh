@@ -5,57 +5,78 @@ INSTALL_XERCESC=/home/frankm/SW/xercesc;
 export ROOTSYS=/home/frankm/SW/root_v5.34.25_dbg;
 . ${ROOTSYS}/bin/thisroot.sh;
 #
+LINE="==================================================================================================="
 #
+make_output()
+{
+    echo "${LINE}";
+    echo "${LINE}";
+    echo "=============================== `pwd` ";
+    echo "${LINE}";
+    echo "${LINE}";
+    if test -n "${1}"; then 
+        echo " +++++ ${1}";
+    fi;
+    if test -n "${2}"; then 
+        echo " +++++ ${2}";
+    fi;
+}
+
 make_opt()
 {
     if test "$1" = "ON"; then
-	echo $*;
-    else
-	echo ${1};
+        arg="${2}=${1}";shift;shift;
+	echo ${arg} $*;
+        #else
+        #	echo ${1};
     fi;
 }
-LINE="==================================================================================================="
+
+make_build()
+{
+    echo ${CMD};
+    eval ${CMD};
+    if [ $? -ne  0 ]; then
+        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed CMAKE command:"
+        echo ${CMD};
+	exit 1
+    fi
+    make -j 5 install;
+    if [ $? -ne  0 ]; then
+        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD:"
+        echo ${CMD};
+	exit 1
+    fi;
+    make test;
+    if [ $? -ne  0 ]; then
+        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed TESTS:"
+        echo ${CMD};
+	#exit 1
+    fi;
+}
+
 for DOGEANT4 in OFF ON; do
     for DOXERCESC in OFF ON; do
 	for DOGEAR in OFF; do
 	    for DOLCIO in OFF ON; do
 		folder=build_Xer${DOXERCESC}_Geant${DOGEANT4}_Gear${DOGEAR}_Lcio${DOLCIO}
-		mkdir ${dir_name}/$folder
-		cd ${dir_name}/$folder
-		echo "${LINE}";
-		echo "${LINE}";
-		echo "=============================== ${folder} ";
-		echo "${LINE}";
-		echo "${LINE}";
+                WORK_DIR=${dir_name}/${folder};
+		mkdir -p ${WORK_DIR}/EX;
+		cd ${WORK_DIR};
+                make_output;
                 #-DDD4HEP_DEBUG_CMAKE=ON \
-		CMD="cd ${dir_name}/$folder ; cmake -D DD4HEP_USE_XERCESC=${DOXERCESC} \
-		    -DDD4HEP_USE_GEANT4=`make_opt ${DOGEANT4} -DGeant4_DIR=${INSTALL_G4}`\
-		    -DDD4HEP_USE_LCIO=`make_opt ${DOLCIO} -DLCIO_DIR=${INSTALL_LCIO}` \
-		    -DBoost_NO_BOOST_CMAKE=ON \
-		    -DDD4HEP_USE_XERCESC=`make_opt ${DOXERCESC} -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-		    ../../../DD4hep.trunk/checkout;";
-                echo ${CMD};
-                eval ${CMD};
-		if [ $? -ne  0 ]; then
-		    echo "DANGER WILL ROBINSON DANGER!"
-		    echo "${LINE}";
-		    echo "=============================== ${folder} ";
-		    echo "${LINE}";
-                    echo "++++ Failed CMAKE command:"
-                    echo ${CMD};
-		    exit 1
-		fi
-		make -j5
-		if [ $? -ne  0 ]; then
-		    echo "DANGER WILL ROBINSON DANGER!"
-		    echo "${LINE}";
-		    echo "=============================== ${folder} ";
-		    echo "${LINE}";
-                    echo "++++ Failed BUILD:"
-                    echo ${CMD};
-		    exit 1
-		fi
-		cd ..
+                DD4hep_DIR=`pwd`/DD4hep;
+                OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
+		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
+		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
+                    -DCMAKE_INSTALL_PREFIX=${DD4hep_DIR}";
+		CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ../../../DD4hep.trunk/checkout;";
+                make_build;
+   		CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} \
+		    ../../../../DD4hep.trunk/checkout/examples;";
+                make_build;
+                #
+		cd ../..;
 	    done
 	done
     done

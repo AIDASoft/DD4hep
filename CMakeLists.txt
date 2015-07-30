@@ -53,30 +53,8 @@ ENDIF()
 ##checks for xercesc or not and sets up the include_directories
 include(DD4hep_XML_setup)
 
-#if(DD4HEP_USE_GEANT4)
-#  set( DD4HEP_USE_BOOST ON)
-#  message( STATUS " *** finding BOOST .... " )
-#  find_package( Boost REQUIRED ) 
-#  include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
-#  add_definitions( -DDD4HEP_USE_BOOST )
-#endif()
-
-#if(DD4HEP_USE_LCIO)
-#  find_package( LCIO REQUIRED )
-#  include_directories( SYSTEM ${LCIO_INCLUDE_DIRS} )
-#endif()
-
-
 #---Packages------------------------------------------------------------------------
-
-##------ don't allow to use a pre-built DDSegmentation  ----------------------------
-#find_package( DDSegmentation QUIET )
-#if( NOT DDSegmentation_FOUND ) 
-#  add_subdirectory(DDSegmentation)
-#endif()
-
 add_subdirectory(DDSegmentation)
-
 add_subdirectory(DDCore)
 add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
@@ -114,11 +92,11 @@ if(DD4HEP_USE_GEANT4)
   endif()
 
   set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
-  set(Geant4_LIBRARIES ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
-  #------- now configure DDG4 -------
-  add_subdirectory(DDG4)
-
+  set(Geant4_LIBRARIES    ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
 endif()
+
+#------- now configure DDG4 -------
+add_subdirectory(DDG4)
 
 add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
