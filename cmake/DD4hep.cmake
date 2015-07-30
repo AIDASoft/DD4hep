@@ -26,7 +26,7 @@ if(DD4HEP_USE_GEANT4)
 endif()
 #---------------------------------------------------------------------------------------------------
 if(DD4HEP_USE_BOOST)
-  message(FATAL_ERROR "Boost is required   ${DD4HEP_USE_BOOST}")
+  #message(FATAL_ERROR "Boost is required   ${DD4HEP_USE_BOOST}")
   if ( "${Boost_INCLUDE_DIRS}" STREQUAL "" )
     find_package( Boost REQUIRED ) 
     ##include_directories( SYSTEM ${Boost_INCLUDE_DIRS} )
