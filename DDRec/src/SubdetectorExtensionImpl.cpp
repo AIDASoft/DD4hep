@@ -16,9 +16,9 @@ namespace DDRec {
 using Geometry::DetElement;
 
 /// Constructor using a top level DetElement
-SubdetectorExtensionImpl::SubdetectorExtensionImpl(const Geometry::DetElement& det) {
+SubdetectorExtensionImpl::SubdetectorExtensionImpl(const Geometry::DetElement& det_elt) {
 	this->resetAll();
-	this->det = det;
+	this->det = det_elt;
 }
 
 /// Copy constructor
@@ -179,8 +179,8 @@ int SubdetectorExtensionImpl::getNSides() const {
 }
 
 /// Sets the top level detector element used to determine shape information
-void SubdetectorExtensionImpl::setDetectorElement(const Geometry::DetElement& det) {
-	this->det = det;
+void SubdetectorExtensionImpl::setDetectorElement(const Geometry::DetElement& det_elt) {
+	this->det = det_elt;
 }
 
 /// Sets the isBarrel flag

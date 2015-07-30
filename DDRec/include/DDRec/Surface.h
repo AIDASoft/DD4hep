@@ -31,9 +31,9 @@ namespace DD4hep {
     struct SurfaceMaterial : public virtual Geometry::Material ,  public IMaterial{
     
       /** Copy c'tor - copies handle */
-      SurfaceMaterial( Geometry::Material m )  : Geometry::Material( m ) {}  
+      SurfaceMaterial( Geometry::Material mat )  : Geometry::Material( mat ) {}  
     
-      SurfaceMaterial( const SurfaceMaterial& sm ) : Geometry::Material( sm ) {}  
+      SurfaceMaterial( const SurfaceMaterial& smat ) : Geometry::Material( smat ) {}  
     
       virtual ~SurfaceMaterial() {}
     
@@ -82,24 +82,24 @@ namespace DD4hep {
     
       /// Standard c'tor for initialization.
       SurfaceData( SurfaceType type, double thickness_inner ,double thickness_outer, 
-		   Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o, 
-		   Geometry::Volume vol /*= Geometry::Volume() */);
+                   Vector3D u ,Vector3D v ,Vector3D n ,Vector3D o, 
+                   Geometry::Volume vol /*= Geometry::Volume() */);
     
       /// Default destructor
       virtual ~SurfaceData() {} 
     
       /// Copy the from object
       void copy(const SurfaceData& c) {
-	_type = c._type ;
-	_u = c._u ;
-	_v = c._v ;
-	_n = c._n ;
-	_o = c._o;
-	_th_i = c._th_i ;
-	_th_o = c._th_o ;
-	_innerMat = c._innerMat ;
-	_outerMat = c._innerMat ;
-	_vol = c._vol;
+        _type = c._type ;
+        _u = c._u ;
+        _v = c._v ;
+        _n = c._n ;
+        _o = c._o;
+        _th_i = c._th_i ;
+        _th_o = c._th_o ;
+        _innerMat = c._innerMat ;
+        _outerMat = c._innerMat ;
+        _vol = c._vol;
       }
     } ;
   
@@ -132,21 +132,21 @@ namespace DD4hep {
 
       /// Constructor to be used with an existing object
       VolSurface(SurfaceData* p)
-	: Geometry::Handle< SurfaceData >(p) {
+        : Geometry::Handle< SurfaceData >(p) {
       }
       /// Constructor to be used with an existing object
-      VolSurface(const VolSurface& e)
-	: Geometry::Handle< SurfaceData >(e)  {
+      VolSurface(const VolSurface& vsurf)
+        : Geometry::Handle< SurfaceData >(vsurf)  {
       }
 
       /// Constructor to be used with an existing object
       template <typename Q> VolSurface(const Geometry::Handle<Q>& e)
-	: Geometry::Handle< SurfaceData >(e) {
+        : Geometry::Handle< SurfaceData >(e) {
       }
 
       /// Standrad c'tor for initialization.
       VolSurface( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
-		  Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) ;      
+                  Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) ;      
 
       /// the volume to which this surface is attached.
       Geometry::Volume volume() const { return ptr()->_vol; }
@@ -244,16 +244,16 @@ namespace DD4hep {
       // required c'tor for extension mechanism
       VolSurfaceList(Geometry::DetElement& det){
 
-	VolSurfaceList* sL = volSurfaceList( det ) ; 
+        VolSurfaceList* sL = volSurfaceList( det ) ; 
 
-	std::copy( this->end() , sL->begin() , sL->end() ) ;
+        std::copy( this->end() , sL->begin() , sL->end() ) ;
       }
 
 
       // required c'tor for extension mechanism
       VolSurfaceList(const VolSurfaceList& vsl, Geometry::DetElement& /*det*/ ){
 	
-	this->insert( this->end() , vsl.begin() , vsl.end() ) ;
+        this->insert( this->end() , vsl.begin() , vsl.end() ) ;
       }
     
       virtual ~VolSurfaceList() ;
@@ -277,27 +277,27 @@ namespace DD4hep {
 
       /// Constructor to be used with an existing object
       VolPlane(SurfaceData* p)
-	: VolSurface(p) {
+        : VolSurface(p) {
       }
 
       /// Constructor to be used with an existing object
       template <typename Q> VolPlane(const Geometry::Handle<Q>& e)
-	: VolSurface(e) {
+        : VolSurface(e) {
       }
 
       /// copy c'tor
       VolPlane(const VolSurface& vs ) : VolSurface( vs ) { }
       
       /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
-      VolPlane( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, 
-		Vector3D u ,Vector3D v ,Vector3D n , Vector3D o = Vector3D(0.,0.,0.) ) :
+      VolPlane( Geometry::Volume vol, SurfaceType typ, double thickness_inner ,double thickness_outer, 
+                Vector3D u_val ,Vector3D v_val ,Vector3D n_val , Vector3D o_val = Vector3D(0.,0.,0.) ) :
 	
-	VolSurface( vol, type, thickness_inner, thickness_outer, u,v,n,o ) {
+        VolSurface( vol, typ, thickness_inner, thickness_outer, u_val,v_val,n_val,o_val ) {
 
-	object<SurfaceData>()._type.setProperty( SurfaceType::Plane    , true ) ;
-	object<SurfaceData>()._type.setProperty( SurfaceType::Cylinder , false ) ;
-	object<SurfaceData>()._type.checkParallelToZ( *this ) ;
-	object<SurfaceData>()._type.checkOrthogonalToZ( *this ) ;
+        object<SurfaceData>()._type.setProperty( SurfaceType::Plane    , true ) ;
+        object<SurfaceData>()._type.setProperty( SurfaceType::Cylinder , false ) ;
+        object<SurfaceData>()._type.checkParallelToZ( *this ) ;
+        object<SurfaceData>()._type.checkOrthogonalToZ( *this ) ;
 
       }      
       
@@ -455,7 +455,7 @@ namespace DD4hep {
       /** Get Origin of local coordinate system of the associated volume */
       virtual Vector3D volumeOrigin() const  ; 
 
-     /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
+      /** The length of the surface along direction u at the origin. For 'regular' boundaries, like rectangles, 
        *  this can be used to speed up the computation of inSideBounds.
        */
       virtual double length_along_u() const ;
@@ -544,11 +544,11 @@ namespace DD4hep {
 
       /// required c'tor for extension mechanism
       SurfaceList(const Geometry::DetElement& ){
-	// anything to do here  ?
+        // anything to do here  ?
       }
       /// required c'tor for extension mechanism
       SurfaceList(const SurfaceList& ,const Geometry::DetElement& ){
-	// anything to do here  ?
+        // anything to do here  ?
       }
     
       /// d'tor deletes all owned surfaces

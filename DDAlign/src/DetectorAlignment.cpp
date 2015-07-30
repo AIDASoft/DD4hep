@@ -127,62 +127,63 @@ const vector<Alignment>& DetectorAlignment::volumeAlignments() const   {
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation only)
-Alignment DetectorAlignment::align(const Position& pos, bool check, double overlap) {
-  return align(_transform(pos),check,overlap);
+Alignment DetectorAlignment::align(const Position& pos, bool chk, double overlap) {
+  return align(_transform(pos),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (rotation only)
-Alignment DetectorAlignment::align(const RotationZYX& rot, bool check, double overlap) {
-  return align(_transform(rot),check,overlap);
+Alignment DetectorAlignment::align(const RotationZYX& rot, bool chk, double overlap) {
+  return align(_transform(rot),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
-Alignment DetectorAlignment::align(const Position& pos, const RotationZYX& rot, bool check, double overlap) {
-  return align(_transform(pos,rot),check,overlap);
+Alignment DetectorAlignment::align(const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
+  return align(_transform(pos,rot),chk,overlap);
 }
 
 /// Align the physical node according to a generic Transform3D
-Alignment DetectorAlignment::align(const Transform3D& transform, bool check, double overlap)  {
-  return align(_transform(transform),check,overlap);
+Alignment DetectorAlignment::align(const Transform3D& transform, bool chk, double overlap)  {
+  return align(_transform(transform),chk,overlap);
 }
 
 /// Align the physical node according to a generic TGeo matrix
-Alignment DetectorAlignment::align(TGeoHMatrix* matrix, bool check, double overlap)  {
-  return _align(_alignment(*this),matrix,check,overlap);
+Alignment DetectorAlignment::align(TGeoHMatrix* matrix, bool chk, double overlap)  {
+  return _align(_alignment(*this),matrix,chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation only)
-Alignment DetectorAlignment::align(const string& path, const Position& pos, bool check, double overlap) {
-  return align(path,_transform(pos),check,overlap);
+Alignment DetectorAlignment::align(const string& elt_path, const Position& pos, bool chk, double overlap) {
+  return align(elt_path,_transform(pos),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (rotation only)
-Alignment DetectorAlignment::align(const string& path, const RotationZYX& rot, bool check, double overlap) {
-  return align(path,_transform(rot),check,overlap);
+Alignment DetectorAlignment::align(const string& elt_path, const RotationZYX& rot, bool chk, double overlap) {
+  return align(elt_path,_transform(rot),chk,overlap);
 }
 
 /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
-Alignment DetectorAlignment::align(const string& path, const Position& pos, const RotationZYX& rot, bool check, double overlap) {
-  return align(path,_transform(pos,rot),check,overlap);
+Alignment 
+DetectorAlignment::align(const string& elt_path, const Position& pos, const RotationZYX& rot, bool chk, double overlap) {
+  return align(elt_path,_transform(pos,rot),chk,overlap);
 }
 
 /// Align the physical node according to a generic Transform3D
-Alignment DetectorAlignment::align(const string& path, const Transform3D& transform, bool check, double overlap)  {
-  return align(path,_transform(transform),check,overlap);
+Alignment DetectorAlignment::align(const string& elt_path, const Transform3D& transform, bool chk, double overlap)  {
+  return align(elt_path,_transform(transform),chk,overlap);
 }
 
 /// Align the physical node according to a generic TGeo matrix
-Alignment DetectorAlignment::align(const string& path, TGeoHMatrix* matrix, bool check, double overlap)  {
-  if ( path.empty() )
-    return _align(_alignment(*this),matrix,check,overlap);
-  else if ( path == placementPath() )
-    return _align(_alignment(*this),matrix,check,overlap);
-  else if ( path[0] == '/' )   {
-    Alignment a(path);
+Alignment DetectorAlignment::align(const string& elt_path, TGeoHMatrix* matrix, bool chk, double overlap)  {
+  if ( elt_path.empty() )
+    return _align(_alignment(*this),matrix,chk,overlap);
+  else if ( elt_path == placementPath() )
+    return _align(_alignment(*this),matrix,chk,overlap);
+  else if ( elt_path[0] == '/' )   {
+    Alignment a(elt_path);
     volumeAlignments().push_back(a);
-    return _align(a,matrix,check,overlap);
+    return _align(a,matrix,chk,overlap);
   }
-  Alignment a(placementPath()+'/'+path);
+  Alignment a(placementPath()+'/'+elt_path);
   volumeAlignments().push_back(a);
-  return _align(a,matrix,check,overlap);
+  return _align(a,matrix,chk,overlap);
 }

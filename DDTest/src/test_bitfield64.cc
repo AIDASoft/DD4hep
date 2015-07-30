@@ -16,7 +16,7 @@ DDTest test = DDTest( "bitfield64" ) ;
 
 //=============================================================================
 
-int main(int argc, char** argv ){
+int main(int /* argc */, char** /* argv */ ){
     
   try{
     

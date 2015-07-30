@@ -42,17 +42,17 @@ IDDecoder::IDDecoder() {
 /**
  * Returns the cell ID from the local position in the given volume ID.
  */
-CellID IDDecoder::cellIDFromLocal(const Position& local, const VolumeID volumeID) const {
+CellID IDDecoder::cellIDFromLocal(const Position& local, const VolumeID volID) const {
 	double l[3];
 	double g[3];
 	local.GetCoordinates(l);
 	// FIXME: direct lookup of transformations seems to be broken
-	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(volumeID);
-	DetElement det = this->detectorElement(volumeID);
+	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(volID);
+	DetElement det = this->detectorElement(volID);
 	const TGeoMatrix& localToGlobal = det.worldTransformation();
 	localToGlobal.LocalToMaster(l, g);
 	Position global(g[0], g[1], g[2]);
-	return this->findReadout(det).segmentation().cellID(local, global, volumeID);
+	return this->findReadout(det).segmentation().cellID(local, global, volID);
 }
 
 /**
@@ -75,14 +75,14 @@ CellID IDDecoder::cellID(const Position& global) const {
 /**
  * Returns the global position from a given cell ID
  */
-Position IDDecoder::position(const CellID& cellID) const {
+Position IDDecoder::position(const CellID& cell) const {
 	double l[3];
 	double g[3];
-	DetElement det = this->detectorElement(cellID);
-	Position local = this->findReadout(det).segmentation().position(cellID);
+	DetElement det = this->detectorElement(cell);
+	Position local = this->findReadout(det).segmentation().position(cell);
 	local.GetCoordinates(l);
 	// FIXME: direct lookup of transformations seems to be broken
-	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cellID);
+	//const TGeoMatrix& localToGlobal = _volumeManager.worldTransformation(cell);
 	const TGeoMatrix& localToGlobal = det.worldTransformation();
 	localToGlobal.LocalToMaster(l, g);
 	return Position(g[0], g[1], g[2]);
@@ -91,78 +91,78 @@ Position IDDecoder::position(const CellID& cellID) const {
 /*
  * Returns the local position from a given cell ID
  */
-Position IDDecoder::localPosition(const CellID& cellID) const {
-	DetElement det = this->detectorElement(cellID);
-	return this->findReadout(det).segmentation().position(cellID);
+Position IDDecoder::localPosition(const CellID& cell) const {
+	DetElement det = this->detectorElement(cell);
+	return this->findReadout(det).segmentation().position(cell);
 }
 
 /*
  * Returns the volume ID of a given cell ID
  */
-VolumeID IDDecoder::volumeID(const CellID& cellID) const {
-	DetElement det = this->detectorElement(cellID);
-	return this->findReadout(det).segmentation()->volumeID(cellID);
+VolumeID IDDecoder::volumeID(const CellID& cell) const {
+	DetElement det = this->detectorElement(cell);
+	return this->findReadout(det).segmentation()->volumeID(cell);
 }
 
 /*
  * Returns the volume ID of a given global position
  */
-VolumeID IDDecoder::volumeID(const Position& position) const {
-	DetElement det = this->detectorElement(position);
+VolumeID IDDecoder::volumeID(const Position& pos) const {
+	DetElement det = this->detectorElement(pos);
 	return det.volumeID();
 }
 
 /*
  * Returns the placement for a given cell ID
  */
-PlacedVolume IDDecoder::placement(const CellID& cellID) const {
-	return _volumeManager.lookupPlacement(cellID);
+PlacedVolume IDDecoder::placement(const CellID& cell) const {
+	return _volumeManager.lookupPlacement(cell);
 }
 
 /*
  * Returns the placement for a given global position
  */
-PlacedVolume IDDecoder::placement(const Position& position) const {
-	return placement(volumeID(position));
+PlacedVolume IDDecoder::placement(const Position& pos) const {
+	return placement(volumeID(pos));
 }
 
 /*
  * Returns the subdetector for a given cell ID
  */
-DetElement IDDecoder::subDetector(const CellID& cellID) const {
-	return _volumeManager.lookupDetector(cellID);
+DetElement IDDecoder::subDetector(const CellID& cell) const {
+	return _volumeManager.lookupDetector(cell);
 }
 
 /*
  * Returns the subdetector for a given global position
  */
-DetElement IDDecoder::subDetector(const Position& position) const {
-	return subDetector(volumeID(position));
+DetElement IDDecoder::subDetector(const Position& pos) const {
+	return subDetector(volumeID(pos));
 }
 
 /*
  * Returns the closest detector element in the hierarchy for a given cell ID
  */
-DetElement IDDecoder::detectorElement(const CellID& cellID) const {
-	return _volumeManager.lookupDetElement(cellID);
+DetElement IDDecoder::detectorElement(const CellID& cell) const {
+	return _volumeManager.lookupDetElement(cell);
 }
 
 /*
  * Returns the closest detector element in the hierarchy for a given global position
  */
-DetElement IDDecoder::detectorElement(const Position& position) const {
+DetElement IDDecoder::detectorElement(const Position& pos) const {
 	DetElement world = Geometry::LCDD::getInstance().world();
-	DetElement det = getClosestDaughter(world, position);
+	DetElement det = getClosestDaughter(world, pos);
 	if (not det.isValid()) {
-		throw invalid_position("DD4hep::DDRec::IDDecoder::detectorElement", position);
+		throw invalid_position("DD4hep::DDRec::IDDecoder::detectorElement", pos);
 	}
 	std::cout << det.name() << std::endl;
 	return det;
 }
 
 /// Access to the Readout object for a given cell ID
-Geometry::Readout IDDecoder::readout(const CellID& cellID) const {
-	DetElement det = this->detectorElement(cellID);
+Geometry::Readout IDDecoder::readout(const CellID& cell) const {
+	DetElement det = this->detectorElement(cell);
 	return this->findReadout(det);
 }
 
@@ -175,37 +175,37 @@ Geometry::Readout IDDecoder::readout(const Geometry::Position& global) const {
 /*
  * Calculates the neighbours of the given cell ID and adds them to the list of neighbours
  */
-void IDDecoder::neighbours(const CellID& cellID, set<CellID>& neighbours) const {
-	DetElement det = this->detectorElement(cellID);
-	this->findReadout(det).segmentation()->neighbours(cellID, neighbours);
+void IDDecoder::neighbours(const CellID& cell, set<CellID>& neighbour_cells) const {
+	DetElement det = this->detectorElement(cell);
+	this->findReadout(det).segmentation()->neighbours(cell, neighbour_cells);
 }
 
 /*
  * Checks if the given cell IDs are neighbours
  */
-bool IDDecoder::areNeighbours(const CellID& cellID, const CellID& otherCellID) const {
-	set<CellID> neighbours;
-	DetElement det = this->detectorElement(cellID);
-	this->findReadout(det).segmentation()->neighbours(cellID, neighbours);
-	return neighbours.count(otherCellID) != 0;
+bool IDDecoder::areNeighbours(const CellID& cell, const CellID& otherCellID) const {
+	set<CellID> neighbour_cells;
+	DetElement det = this->detectorElement(cell);
+	this->findReadout(det).segmentation()->neighbours(cell, neighbour_cells);
+	return neighbour_cells.count(otherCellID) != 0;
 }
 
 /// Access to the barrel-endcap flag
-IDDecoder::BarrelEndcapFlag IDDecoder::barrelEndcapFlag(const CellID& cellID) const {
-	Readout r = this->readout(cellID);
-	return BarrelEndcapFlag(r.idSpec().field(this->barrelIdentifier())->value(cellID));
+IDDecoder::BarrelEndcapFlag IDDecoder::barrelEndcapFlag(const CellID& cell) const {
+	Readout r = this->readout(cell);
+	return BarrelEndcapFlag(r.idSpec().field(this->barrelIdentifier())->value(cell));
 }
 
 /// Access to the layer index
-long int IDDecoder::layerIndex(const CellID& cellID) const {
-	Readout r = this->readout(cellID);
-	return r.idSpec().field(this->layerIdentifier())->value(cellID);
+long int IDDecoder::layerIndex(const CellID& cell) const {
+	Readout r = this->readout(cell);
+	return r.idSpec().field(this->layerIdentifier())->value(cell);
 }
 
 /// Access to the system index
-long int IDDecoder::systemIndex(const CellID& cellID) const {
-	Readout r = this->readout(cellID);
-	return r.idSpec().field(this->systemIdentifier())->value(cellID);
+long int IDDecoder::systemIndex(const CellID& cell) const {
+	Readout r = this->readout(cell);
+	return r.idSpec().field(this->systemIdentifier())->value(cell);
 }
 
 // helper method to find the corresponding Readout object to a DetElement

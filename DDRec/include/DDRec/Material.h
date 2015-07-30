@@ -32,73 +32,74 @@ namespace DD4hep {
       /** Instantiate from Geometry::Material - default initialization if handle is not valid */
       MaterialData( Geometry::Material m ) : 
 
-	_name("unknown"),
-	_Z( -1. ),
-	_A( 0. ),
-	_rho( 0. ),
-	_x0( 0. ),
-	_lambda( 0.)  {
+        _name("unknown"),
+        _Z( -1. ),
+        _A( 0. ),
+        _rho( 0. ),
+        _x0( 0. ),
+        _lambda( 0.)  {
 
-	if( m.isValid() ) {
+        if( m.isValid() ) {
 
-	  _name= m.name() ;
-	  _Z = m.Z() ;
-	  _A = m.A() ;
-	  _rho = m.density() ;
-	  _x0 = m.radLength() ;
-	  _lambda = m.intLength() ;
+          _name= m.name() ;
+          _Z = m.Z() ;
+          _A = m.A() ;
+          _rho = m.density() ;
+          _x0 = m.radLength() ;
+          _lambda = m.intLength() ;
 
-	}
-     }
+        }
+      }
       
       /** Default c'tor .*/
       MaterialData()  : _name("unknown"),
-			_Z( -1. ),
-			_A( 0. ),
-			_rho( 0. ),
-			_x0( 0. ),
-			_lambda( 0.) {}
+                        _Z( -1. ),
+                        _A( 0. ),
+                        _rho( 0. ),
+                        _x0( 0. ),
+                        _lambda( 0.) {}
 
       /** C'tor setting all attributes .*/
-      MaterialData( const std::string& name, double Z, double A, double density, double radLength, double intLength )  : _name( name ),
-															 _Z( Z ),
-															 _A( A ),
-															 _rho( density ),
-															 _x0( radLength ),
-															 _lambda(  intLength ) {}
+      MaterialData( const std::string& nam, double Z_val, double A_val, double density_val, double radLength, double intLength )
+        : _name( nam ),
+          _Z( Z_val ),
+          _A( A_val ),
+          _rho( density_val ),
+          _x0( radLength ),
+          _lambda(  intLength ) {}
       
       /** Copy c'tor .*/
       MaterialData( const MaterialData& m )  : _name( m.name() ),
-					       _Z( m.Z() ),
-					       _A( m.A() ),
-					       _rho( m.density() ),
-					       _x0( m.radiationLength() ),
-					       _lambda( m.interactionLength() ) {}
+                                               _Z( m.Z() ),
+                                               _A( m.A() ),
+                                               _rho( m.density() ),
+                                               _x0( m.radiationLength() ),
+                                               _lambda( m.interactionLength() ) {}
       
 
       /// assignment from Geometry::Material
       MaterialData& operator=(const Geometry::Material& m){
       
-	if( m.isValid() ) {
+        if( m.isValid() ) {
 
-	  _name = m.name() ;
-	  _Z = m.Z() ;
-	  _A = m.A() ;
-	  _rho = m.density() ;
-	  _x0 = m.radLength() ;
-	  _lambda = m.intLength() ;
+          _name = m.name() ;
+          _Z = m.Z() ;
+          _A = m.A() ;
+          _rho = m.density() ;
+          _x0 = m.radLength() ;
+          _lambda = m.intLength() ;
 
-	}  else {
+        }  else {
 
-	  _name= "unknown";
-	  _Z = -1.  ;
-	  _A =  0. ;
-	  _rho = 0. ;
-	  _x0 = 0. ;
-	  _lambda = 0. ;
-	}
+          _name= "unknown";
+          _Z = -1.  ;
+          _A =  0. ;
+          _rho = 0. ;
+          _x0 = 0. ;
+          _lambda = 0. ;
+        }
 
-	return *this ;
+        return *this ;
       }
 
       /// true if initialized

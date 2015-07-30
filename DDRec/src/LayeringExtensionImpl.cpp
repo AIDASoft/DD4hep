@@ -62,46 +62,46 @@ const vector<DetElement>& LayeringExtensionImpl::absorbers(int layerIndex) const
 /// Access the total thickness of the sub detector
 double LayeringExtensionImpl::totalThickness() const {
 	map<int, LayerAttributes>::iterator it = _layerMap.begin();
-	double thickness = 0.;
+	double thick_ness = 0.;
 	while (it != _layerMap.end()) {
 		LayerAttributes& attributes = it->second;
 		if (not attributes.isCalculated) {
 			attributes.calculate();
 		}
-		thickness += attributes.thickness;
+		thick_ness += attributes.thickness;
 		++it;
 	}
-	return thickness;
+	return thick_ness;
 }
 
 /// Access the total radiation length of the sub detector
 double LayeringExtensionImpl::totalRadiationLength() const {
 	map<int, LayerAttributes>::iterator it = _layerMap.begin();
-	double radiationLength = 0.;
+	double radiation_length = 0.;
 	while (it != _layerMap.end()) {
 		LayerAttributes& attributes = it->second;
 		if (not attributes.isCalculated) {
 			attributes.calculate();
 		}
-		radiationLength += attributes.radiationLength;
+		radiation_length += attributes.radiationLength;
 		++it;
 	}
-	return radiationLength;
+	return radiation_length;
 }
 
 /// Access the total nuclear interaction length of the sub detector
 double LayeringExtensionImpl::totalInteractionLength() const {
 	map<int, LayerAttributes>::iterator it = _layerMap.begin();
-	double interactionLength = 0.;
+	double interaction_length = 0.;
 	while (it != _layerMap.end()) {
 		LayerAttributes& attributes = it->second;
 		if (not attributes.isCalculated) {
 			attributes.calculate();
 		}
-		interactionLength += attributes.interactionLength;
+		interaction_length += attributes.interactionLength;
 		++it;
 	}
-	return interactionLength;
+	return interaction_length;
 }
 
 /// Access the total thickness of the layer with the given index
@@ -159,9 +159,9 @@ double LayeringExtensionImpl::sensorInteractionLength(int layerIndex) const {
 }
 
 /// Stores the layer information for the given layer index
-void LayeringExtensionImpl::setLayer(int layerIndex, Geometry::DetElement layer, const Geometry::Position& normal) {
+void LayeringExtensionImpl::setLayer(int layerIndex, Geometry::DetElement layer_elt, const Geometry::Position& normal) {
 	LayerAttributes& layerAttributes = _layerMap[layerIndex];
-	layerAttributes.layer = layer;
+	layerAttributes.layer = layer_elt;
 	layerAttributes.normal = normal.Unit();
 	layerAttributes.isCalculated = false;
 }

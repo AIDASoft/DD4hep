@@ -11,7 +11,7 @@ namespace DDSurfaces {
     {
         public: 
         Vector2D() : _u(0.), _v(0.) {}
-        Vector2D(double u, double v) : _u(u), _v(v) {}
+        Vector2D(double u_val, double v_val) : _u(u_val), _v(v_val) {}
         
         double operator[](unsigned i) const
         {

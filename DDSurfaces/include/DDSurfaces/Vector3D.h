@@ -41,10 +41,10 @@ namespace DDSurfaces {
     
     
     /** Default corrdinate system for initialization is cartesian */
-    Vector3D( double x,double y, double z ) :
-      _x(x),
-      _y(y),
-      _z(z) {
+    Vector3D( double x_val,double y_val, double z_val ) :
+      _x(x_val),
+      _y(y_val),
+      _z(z_val) {
     }
     
     // ---- this causes all sorts of template lookup errors ...    
@@ -81,8 +81,8 @@ namespace DDSurfaces {
     }  
 
     /// fill from double values
-    inline const Vector3D& fill( double x, double y, double z) {    
-      _x = x ; _y = y ; _z = z ; 
+    inline const Vector3D& fill( double x_val, double y_val, double z_val) {    
+      _x = x_val ; _y = y_val ; _z = z_val ; 
       return *this ;
     }  
 
@@ -311,20 +311,20 @@ namespace DDSurfaces {
    *  Vector3D  v( x, y, c , Vector3D::cartesian ) ;
    */
   template <>
-  inline Vector3D::Vector3D( double x,double y, double z, Vector3D::Cartesian (&)() ) : 
-    _x(x),
-    _y(y),
-    _z(z) {
+  inline Vector3D::Vector3D( double x_val,double y_val, double z_val, Vector3D::Cartesian (&)() ) : 
+    _x(x_val),
+    _y(y_val),
+    _z(z_val) {
   }
   
   /** Cylindrical c'tor  - example: <br> 
    *  Vector3D  v( rho, phi, z , Vector3D::cylindrical ) ;
    */
   template <>
-  inline Vector3D::Vector3D( double rho,double phi, double z, Vector3D::Cylindrical (&)() ) : _z(z)  {
+  inline Vector3D::Vector3D( double rho_val,double phi_val, double z_val, Vector3D::Cylindrical (&)() ) : _z(z_val)  {
     
-    _x = rho * cos( phi ) ;
-    _y = rho * sin( phi ) ;
+    _x = rho_val * cos( phi_val ) ;
+    _y = rho_val * sin( phi_val ) ;
   }
   
   
@@ -332,11 +332,11 @@ namespace DDSurfaces {
    *  Vector3D  v( r, phi, theta , Vector3D::spherical ) ;
    */
   template <>
-  inline Vector3D::Vector3D( double r,double phi, double theta, Vector3D::Spherical (&)() ) {
-    double rst =  r * sin( theta ) ;
-    _x = rst * cos( phi ) ;
-    _y = rst * sin( phi ) ;
-    _z = r * cos( theta ) ;
+  inline Vector3D::Vector3D( double r_val,double phi_val, double theta_val, Vector3D::Spherical (&)() ) {
+    double rst =  r_val * sin( theta_val ) ;
+    _x = rst * cos( phi_val ) ;
+    _y = rst * sin( phi_val ) ;
+    _z = r_val * cos( theta_val ) ;
   }
   
   
