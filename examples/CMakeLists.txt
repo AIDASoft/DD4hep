@@ -29,5 +29,6 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1 )
 #
 dd4hep_enable_tests (
-  AlignDet  CLICSiD  ClientTests SimpleDetector
+  AlignDet  CLICSiD  ClientTests 
 )
+#SimpleDetector

@@ -229,10 +229,10 @@ function ( dd4hep_find_packageEx PKG_NAME )
   # Propagate values to caller
   string ( TOUPPER "${pkg}" PKG )
   if ( "${pkg}" STREQUAL "${PKG}" )
-    set ( libs ${${PKG}_LIBRARIES} ${${pkg}_LIBRARY} ${${pkg}_LIBRARIES} )
+    set ( libs ${${PKG}_LIBRARIES} ${${pkg}_LIBRARY} ${${pkg}_LIBRARIES} ${${pkg}_COMPONENT_LIBRARIES} )
     set ( incs ${${PKG}_INCLUDE_DIRS} ${${pkg}_INCLUDE_DIR} ${${pkg}_INCLUDE_DIRS} )
   else()
-    set ( libs ${${PKG}_LIBRARIES} ${${pkg}_LIBRARY} ${${pkg}_LIBRARIES} ${${PKG}_LIBRARY} ${${PKG}_LIBRARIES} )
+    set ( libs ${${PKG}_LIBRARIES} ${${pkg}_LIBRARY} ${${pkg}_LIBRARIES} ${${PKG}_LIBRARY} ${${PKG}_LIBRARIES} ${${pkg}_COMPONENT_LIBRARIES} ${${PKG}_COMPONENT_LIBRARIES})
     set ( incs ${${PKG}_INCLUDE_DIRS} ${${pkg}_INCLUDE_DIR} ${${pkg}_INCLUDE_DIRS} ${${PKG}_INCLUDE_DIR} ${${PKG}_INCLUDE_DIRS} )
   endif()
   dd4hep_make_unique_list ( libs VALUES ${libs} )
@@ -956,6 +956,11 @@ function ( dd4hep_add_executable binary )
       dd4hep_debug ( "${tag} Executable optional: ${ARG_OPTIONAL}" )
       #
       get_property ( pkg_library GLOBAL PROPERTY ${pkg}_LIBRARIES )
+      message (STATUS "${tag}  ---> package ${pkg}_LIBRARIES libraries  ${pkg_library} " )
+  
+      string ( TOUPPER "${pkg}" PKG )
+      get_property ( pkg_library GLOBAL PROPERTY ${PKG}_LIBRARIES )
+      message (STATUS "${tag}  ---> package ${PKG}_LIBRARIES libraries  ${pkg_library} " )
       #
       #  Sources may also be supplied without argument tag:
       #

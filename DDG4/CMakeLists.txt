@@ -11,7 +11,7 @@
 #==========================================================================
 dd4hep_package(    DDG4
   USES            [GEANT4 REQUIRED COMPONENTS gdml ui_all vis_all]
-                   DDCore
+                   BOOST DDCore
   OPTIONAL         CLHEP [XercesC QUIET]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDG4)
