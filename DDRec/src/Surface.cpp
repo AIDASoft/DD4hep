@@ -777,6 +777,37 @@ namespace DD4hep {
 	  
           return lines ;
         }
+        //added code by Thorben Quast for simplified set of lines for trapezoids
+        else if(shape->IsA() == TGeoTrd2::Class()){
+          TGeoTrd2* trapezoid = ( TGeoTrd2* ) shape;
+          //all lengths are half length
+          double dx1 = trapezoid->GetDx1();
+          double dx2 = trapezoid->GetDx2();
+          double dy = trapezoid->GetDy1();  //dy1 == dy2 = thickness of the layer in CLIC
+          double dz = trapezoid->GetDz();
+
+          //the normal vector is parallel to e_y for all geometry cases in CLIC
+          //if that is at some point not the case anymore, then local plane vectors ubl, vbl
+          //must be initialized like it is done for the boxes (line 674 following)
+          DDSurfaces::Vector3D ubl(  1., 0., 0. ) ; 
+          DDSurfaces::Vector3D vbl(  0., 0., 1. ) ; 
+          
+          //the local span vectors are transformed into the main coordinate system (in LocalToMasterVect())
+          DDSurfaces::Vector3D ub ;
+          DDSurfaces::Vector3D vb ;
+          _wtM->LocalToMasterVect( ubl , ub.array() ) ;
+          _wtM->LocalToMasterVect( vbl , vb.array() ) ;
+
+          //the trapezoid is drawn as a set of four lines connecting its four corners
+          lines.reserve(4) ;
+          //_o is vector to the origin
+          lines.push_back( std::make_pair( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb ) ) ;
+          lines.push_back( std::make_pair( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb ) ) ;
+          lines.push_back( std::make_pair( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb) ) ;
+          lines.push_back( std::make_pair( _o - dx1 * ub  - dz * vb , _o + dx1 * ub  - dz * vb) ) ;
+
+          return lines;
+        }
         // ===== default for arbitrary planes in arbitrary shapes ================= 
 	
         // We create nMax vertices by rotating the local u vector around the normal
