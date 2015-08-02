@@ -19,15 +19,16 @@
 # cmake ..
 #
 # F.Gaede, DESY, 2013
-#
+# 
+# M.Frank, CERN, 2015:  Adapt to new cmake scripts
 #==========================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 option(BUILD_TESTING "Enable and build tests" ON)
+find_package ( DD4hep REQUIRED )
 #
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #
-dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1 )
+dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1 
+  USES [ROOT REQUIRED COMPONENTS Geom] )
 #
-dd4hep_enable_tests (
-  AlignDet CLICSiD ClientTests SimpleDetector
-)
+dd4hep_enable_tests ( AlignDet CLICSiD ClientTests SimpleDetector )

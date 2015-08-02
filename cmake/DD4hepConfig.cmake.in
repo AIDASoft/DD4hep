@@ -13,20 +13,27 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-SET( DD4hep_DIR "@CMAKE_INSTALL_PREFIX@" )
-SET( DD4hep_ROOT "@CMAKE_INSTALL_PREFIX@" )
-SET( DD4hep_VERSION "@DD4hep_VERSION@" )
+set ( DD4hep_DIR "@CMAKE_INSTALL_PREFIX@" )
+set ( DD4hep_ROOT "@CMAKE_INSTALL_PREFIX@" )
+set ( DD4hep_VERSION "@DD4hep_VERSION@" )
+set ( DD4HEP_USE_BOOST "@DD4HEP_USE_BOOST@" )
+set ( DD4HEP_USE_GEANT4 "@DD4HEP_USE_GEANT4@" )
+set ( DD4HEP_USE_XERCESC "@DD4HEP_USE_XERCESC@" )
 
-INCLUDE( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+set ( Geant4_DIR  "@Geant4_DIR@" )
+set ( GEANT4_USE_CLHEP "@GEANT4_USE_CLHEP@" )
 
-set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake/  )
+include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+
+set (CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH} ${DD4hep_DIR}/cmake  )
 
 # ---------- include dirs -----------------------------------------------------
 # do not store find results in cache
-SET( DD4hep_INCLUDE_DIRS DD4hep_INCLUDE_DIRS-NOTFOUND )
-MARK_AS_ADVANCED( DD4hep_INCLUDE_DIRS )
+set( DD4hep_INCLUDE_DIRS DD4hep_INCLUDE_DIRS-NOTFOUND )
 
-FIND_PATH( DD4hep_INCLUDE_DIRS
+mark_as_advanced( DD4hep_INCLUDE_DIRS )
+
+find_path( DD4hep_INCLUDE_DIRS
   NAMES DD4hep/Detector.h
   PATHS ${DD4hep_DIR}/include
   NO_DEFAULT_PATH
@@ -39,21 +46,21 @@ endif()
 
 # ---------- libraries --------------------------------------------------------
 # do not store find results in cache
-SET( DD4hep_LIBRARY_DIRS ${DD4hep_DIR}/lib )
-SET( DD4hep_LIBRARIES DD4hep_LIBRARIES-NOTFOUND )
-MARK_AS_ADVANCED( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
+set( DD4hep_LIBRARY_DIRS ${DD4hep_DIR}/lib )
+set( DD4hep_LIBRARIES    DD4hep_LIBRARIES-NOTFOUND )
+mark_as_advanced( DD4hep_LIBRARY_DIRS DD4hep_LIBRARIES )
 
-INCLUDE( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
+include( ${DD4hep_DIR}/cmake/DD4hepMacros.cmake )
 
 # only standard libraries should be passed as arguments to CHECK_PACKAGE_LIBS
 # additional components are set by cmake in variable PKG_FIND_COMPONENTS
 # first argument should be the package name
-if(@DD4HEP_USE_GEANT4@)
+if ( ${DD4HEP_USE_GEANT4} )
   #--- if geant 4 was built with CLHEP we need to export this to client packages
-  if( @GEANT4_USE_CLHEP@)
-    set(GEANT4_USE_CLHEP  1 ) 
+  if( ${GEANT4_USE_CLHEP} )
+    set( GEANT4_USE_CLHEP  1 ) 
   endif()
-  set(Geant4_DIR @Geant4_DIR@)
+  set(Geant4_DIR ${Geant4_DIR} )
 endif()
 
 CHECK_PACKAGE_LIBS(DD4hep DDCore)
