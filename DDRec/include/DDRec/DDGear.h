@@ -36,7 +36,7 @@ namespace DD4hep {
     
     /** User c'tor - specify a name (should be the canonical name used in gear, eg. TPCParameters, SITParameters, etc.) and
 	the GearParametersImpl object */
-    GearHandle( gear::GearParametersImpl* gearObj, const std::string& name  ) : _gObj( gearObj ) , _name( name ) {}
+    GearHandle( gear::GearParametersImpl* gearObj, const std::string& nam  ) : _gObj( gearObj ) , _name( nam ) {}
     
     /** D'tor deletes GearParametersImpl object if ownerhsip has not been taken away */
     virtual ~GearHandle() { 
@@ -59,9 +59,9 @@ namespace DD4hep {
     
 
     /// add a SimpleMaterial object 
-    void addMaterial(const std::string name, double A, double Z, double density, double radLen, double intLen){
+    void addMaterial(const std::string nam, double A, double Z, double density, double radLen, double intLen){
 
-      _materials.push_back( gear::SimpleMaterialImpl (name, A,  Z,  density, radLen,  intLen) ) ;
+      _materials.push_back( gear::SimpleMaterialImpl (nam, A,  Z,  density, radLen,  intLen) ) ;
     }
 
     /// get all materials assigned to this wrapper

@@ -66,7 +66,7 @@ endif()
 CHECK_PACKAGE_LIBS(DD4hep DDCore)
 
 IF(DD4hep_FIND_COMPONENTS)
-  MESSAGE( STATUS "Looking for these Components ${DD4hep_FIND_COMPONENTS}" )
+  MESSAGE( STATUS "DD4hep: Looking for Components: ${DD4hep_FIND_COMPONENTS}" )
 
   FOREACH(comp ${DD4hep_FIND_COMPONENTS})
     #CHECK_PACKAGE_LIBS is looking for components too, just need to check if they were found, if requested

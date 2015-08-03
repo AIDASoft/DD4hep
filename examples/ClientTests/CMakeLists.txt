@@ -15,7 +15,7 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output()
 dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
-  USES         [ROOT   REQUIRED COMPONENTS Geom] 
+  USES         [ROOT   REQUIRED COMPONENTS Geom MathCore] 
                [DD4hep REQUIRED COMPONENTS DDCore]
   OPTIONAL     XERCESC
   INCLUDE_DIRS include )
@@ -23,11 +23,9 @@ dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
 dd4hep_add_plugin( ClientTests SOURCES src/*.cpp  )
 dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTests )
 #-----------------------------------------------------------------------------------
-dd4hep_configure_scripts( ClientTests DEFAULT_SETUP )
+dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 
 #***  Testing  *********************************************************************
-dd4hep_enable_tests()
-#-----------------------------------------------------------------------------------
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedDetectors )
   foreach( type lcdd gdml vis )
     dd4hep_add_test_reg( ClientTests_converter_simple_${type}_${test}

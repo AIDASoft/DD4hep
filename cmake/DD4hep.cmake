@@ -37,8 +37,10 @@ else()
   set ( DD4HEP_USE_BOOST OFF )
 endif()
 # Main functional include file
-include ( DD4hepBuild )
-include ( DD4hep_XML_setup )
+if ( "${DD4hepBuild_included}" STREQUAL "" )
+  include ( DD4hepBuild )
+  include ( DD4hep_XML_setup )
+endif()
 
 ##---------------------------------------------------------------------------------------------------
 ##

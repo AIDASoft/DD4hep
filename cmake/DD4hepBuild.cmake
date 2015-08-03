@@ -12,8 +12,9 @@
 #=================================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 ###set(DD4HEP_DEBUG_CMAKE 1)
-message ( STATUS "INCLUDING DD4hep...." )
+message ( STATUS "INCLUDING DD4hepBuild...." )
 include ( CMakeParseArguments )
+set ( DD4hepBuild_included ON )
 
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_to_parent_scope val)
@@ -208,6 +209,26 @@ macro ( dd4hep_configure_output )
   endif()
   dd4hep_debug("|++> Installation goes to: ${CMAKE_INSTALL_PREFIX}  <${ARG_INSTALL}>" )
 endmacro ( dd4hep_configure_output )
+
+#---------------------------------------------------------------------------------------------------
+#  dd4hep_list_to_string
+#
+#  Create proper string from list
+#
+#  \author  M.Frank
+#  \version 1.0
+#---------------------------------------------------------------------------------------------------
+function ( dd4hep_list_to_string result )
+  cmake_parse_arguments(ARG "" "PREFIX" "ENTRIES" ${ARGV} )
+  set ( vals "" )
+  foreach( v ${ARG_ENTRIES} )
+    set ( vals "${vals} ${v}" )
+  endforeach()
+  if ( NOT "${vals}" STREQUAL "" )
+  set ( vals "${ARG_PREFIX}${vals}" )
+  endif()
+  set ( ${result} "${vals}" PARENT_SCOPE )
+endfunction ( dd4hep_list_to_string )
 
 #---------------------------------------------------------------------------------------------------
 #  dd4hep_make_unique_list
@@ -1129,10 +1150,10 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 macro( dd4hep_enable_tests )
   cmake_parse_arguments(MACRO_ARG "" "" "" ${ARGV} )
-  #dd4hep_print ( "***|++> Test environment: BUILD_TESTING:${BUILD_TESTING} DIRS:${MACRO_ARG_UNPARSED_ARGUMENTS}" )
   if (BUILD_TESTING)
     set ( BUILDNAME "${CMAKE_SYSTEM}-${CMAKE_CXX_COMPILER}-${CMAKE_BUILD_TYPE}" CACHE STRING "set build string for cdash")
-    dd4hep_print ( "***|++> Enable CTest environment....BUILD:${BUILD_TESTING} DIRS:${MACRO_ARG_UNPARSED_ARGUMENTS}" )
+    dd4hep_list_to_string( _dir_entries PREFIX "DIRS:" ENTRIES ${MACRO_ARG_UNPARSED_ARGUMENTS} )
+    dd4hep_print ( "|++> Enable CTest environment....BUILD:${BUILD_TESTING} ${_dir_entries}" )
     include(CTest)
     enable_testing ()
     if ( NOT "${MACRO_ARG_UNPARSED_ARGUMENTS}" STREQUAL "" )
@@ -1149,7 +1170,8 @@ macro ( dd4hep_configure_scripts _pkg )
   # PackageName is a variable required by existing LC build scripts. 
   # Set it here and unset it at the end of the scope...
   set( PackageName ${_pkg} )
-  dd4hep_print ( "|++> Setting up test environment for ${PackageName}: Testing:${BUILD_TESTING} Setup:${MACRO_ARG_DEFAULT_SETUP} With Tests(${WITH_TESTS}): ${MACRO_ARG_UPARSED_ARGUMENTS}" )
+  dd4hep_list_to_string( _dir_entries PREFIX "DIRS:" ENTRIES ${MACRO_ARG_UNPARSED_ARGUMENTS} )
+  dd4hep_print ( "|++> Setting up test environment for ${PackageName}: Testing:${BUILD_TESTING} Setup:${MACRO_ARG_DEFAULT_SETUP} With Tests(${MACRO_ARG_WITH_TESTS}): ${_dir_entries}" )
   if ( (NOT "${MACRO_ARG_DEFAULT_SETUP}" STREQUAL "") OR (NOT "${_pkg}" STREQUAL "") )
     configure_file( ${DD4hep_DIR}/cmake/run_test_package.sh ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh @ONLY)
     INSTALL(PROGRAMS ${EXECUTABLE_OUTPUT_PATH}/run_test_${_pkg}.sh DESTINATION bin )

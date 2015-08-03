@@ -783,7 +783,7 @@ namespace DD4hep {
           //all lengths are half length
           double dx1 = trapezoid->GetDx1();
           double dx2 = trapezoid->GetDx2();
-          double dy = trapezoid->GetDy1();  //dy1 == dy2 = thickness of the layer in CLIC
+          //Unused: double dy = trapezoid->GetDy1();  //dy1 == dy2 = thickness of the layer in CLIC
           double dz = trapezoid->GetDz();
 
           //the normal vector is parallel to e_y for all geometry cases in CLIC

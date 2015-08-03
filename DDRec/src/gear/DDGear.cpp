@@ -59,10 +59,10 @@ namespace DD4hep{
       
       DetElement::Children grCh = subDet.children() ;
       
-      for ( DetElement::Children::const_iterator it=grCh.begin() ; it != grCh.end() ; ++it ){
-	DetElement subDet = (*it).second ;
-	dets.push_back( subDet ) ;
-	//	std::cout << "    *** sub-subdetector : " << subDet.name() << std::endl ;
+      for ( DetElement::Children::const_iterator jt=grCh.begin() ; jt != grCh.end() ; ++jt ){
+        DetElement subDet = (*jt).second ;
+        dets.push_back( subDet ) ;
+        //	std::cout << "    *** sub-subdetector : " << subDet.name() << std::endl ;
       }
     }
     
