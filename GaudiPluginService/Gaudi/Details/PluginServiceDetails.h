@@ -206,10 +206,10 @@ namespace Gaudi { namespace PluginService {
     class GAUDIPS_API Logger {
     public:
       enum Level { Debug=0, Info=1, Warning=2, Error=3 };
-      Logger(Level level = Warning): m_level(level) {}
+      Logger(Level lvl = Warning): m_level(lvl) {}
       virtual ~Logger() {}
       inline Level level() const { return m_level; }
-      inline void setLevel(Level level) { m_level = level; }
+      inline void setLevel(Level lvl) { m_level = lvl; }
       inline void info(const std::string& msg) { report(Info, msg); }
       inline void debug(const std::string& msg) { report(Debug, msg); }
       inline void warning(const std::string& msg) { report(Warning, msg); }

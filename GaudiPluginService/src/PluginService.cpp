@@ -188,27 +188,27 @@ namespace Gaudi { namespace PluginService {
                 }
                 // read the file
                 logger().debug(std::string("  reading ") + name);
-                std::ifstream factories(fullPath.c_str());
+                std::ifstream facts(fullPath.c_str());
                 std::string line;
                 int factoriesCount = 0;
                 int lineCount = 0;
-                while (!factories.eof()) {
+                while (!facts.eof()) {
                   ++lineCount;
-                  std::getline(factories, line);
+                  std::getline(facts, line);
                   trim(line);
                   // skip empty lines and lines starting with '#'
                   if (line.empty() || line[0] == '#') continue;
                   // look for the separator
-                  std::string::size_type pos = line.find(':');
-                  if (pos == std::string::npos) {
+                  std::string::size_type other_pos = line.find(':');
+                  if (other_pos == std::string::npos) {
                     std::ostringstream o;
                     o << "failed to parse line " << fullPath
                       << ':' << lineCount;
                     logger().warning(o.str());
                     continue;
                   }
-                  const std::string lib(line, 0, pos);
-                  const std::string fact(line, pos+1);
+                  const std::string lib(line, 0, other_pos);
+                  const std::string fact(line, other_pos+1);
                   m_factories.insert(std::make_pair(fact, FactoryInfo(lib)));
 #ifdef GAUDI_REFLEX_COMPONENT_ALIASES
                   // add an alias for the factory using the Reflex convention
