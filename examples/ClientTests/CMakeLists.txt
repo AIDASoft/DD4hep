@@ -35,11 +35,13 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
   endforeach(type)
 endforeach()
 #
-foreach(script MiniTel LheD_tracker )
-  dd4hep_add_test_reg( ClientTests_sim_${script}
+if ( NOT "${DD4HEP_USE_GEANT4}" STREQUAL "" )
+  foreach(script MiniTel LheD_tracker )
+    dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch
       REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
-endforeach(script)
+  endforeach(script)
+endif()
