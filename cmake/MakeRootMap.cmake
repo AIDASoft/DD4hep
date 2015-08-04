@@ -1,5 +1,5 @@
-
-if(DD4HEP_NO_REFLEX)
+message(STATUS "ROOT_genmap_CMD Root version: ${ROOT_VERSION_MAJOR} ${ROOT_VERSION}" )
+if( ${ROOT_VERSION_MAJOR} GREATER 5 )
   #
   #  Running listcomponents from Gaudi
   #

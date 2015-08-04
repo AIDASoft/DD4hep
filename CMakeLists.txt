@@ -17,14 +17,6 @@ option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
 option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
 
-#---------------------------------------------------------------------------------------------------
-#fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
-if(DD4HEP_USE_CXX11)
-  SET( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
-  ADD_DEFINITIONs(-DDD4HEP_USE_CXX11)
-else()
-  SET( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
-endif()
 #
 #-----------------------------------------------------------------------------------------------------
 #
@@ -34,20 +26,30 @@ endif()
 #
 #  No Relex library present for ROOT 6
 #
-find_package(ROOT REQUIRED)
-message(STATUS "ROOT_VERSION_MAJOR: ${ROOT_VERSION_MAJOR}" )
+
+find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
+message ( STATUS "ROOT_VERSION_MAJOR: ${ROOT_VERSION_MAJOR}" )
 if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
-  set(DD4HEP_NO_REFLEX ON)
-  add_subdirectory(GaudiPluginService)
+  set ( DD4HEP_USE_CXX11 ON ) 
+  message ( STATUS "ROOT_VERSION_MAJOR: ${ROOT_VERSION_MAJOR} --> Using GaudiPluginService..." )
+  add_subdirectory ( GaudiPluginService)  
+endif()
+#---------------------------------------------------------------------------------------------------
+#fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
+if ( DD4HEP_USE_CXX11 )
+  set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+  add_definitions(-DDD4HEP_USE_CXX11)
+else()
+  set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
 endif()
 
 #---DD4hep functions and macros -------------------------------------------------------
 include(DD4hep)
 include(DD4hepMacros) 
 
-IF( DEFINED DD4HEP_WITH_GEANT4 OR DEFINED DD4HEP_WITH_GEAR )
+if( DEFINED DD4HEP_WITH_GEANT4 OR DEFINED DD4HEP_WITH_GEAR )
   dd4hep_print_cmake_options( OPTIONAL "Obsolete options: only the following are allowed:" ERROR 1 )
-ENDIF()
+endif()
 
 #-----------------------------
 ##checks for xercesc or not and sets up the include_directories
@@ -101,10 +103,14 @@ add_subdirectory(DDG4)
 add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
 add_subdirectory(DDEve)
+
+dd4hep_enable_tests( DDTest )
 add_subdirectory(UtilityApps)
 
+#set ( CMAKE_MODULE_PATH ${CMAKE_INSTALL_DIR}/cmake ${CMAKE_MODULE_PATH} ) 
+#add_subdirectory(DDExamples)
+
 #---Testing-------------------------------------------------------------------------
-dd4hep_enable_tests( DDTest )
 
 #---Documentation-------------------------------------------------------------------
 OPTION( INSTALL_DOC "Set to OFF to skip build/install Documentation" OFF )

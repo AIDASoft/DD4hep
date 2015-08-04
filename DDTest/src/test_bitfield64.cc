@@ -32,7 +32,7 @@ int main(int /* argc */, char** /* argv */ ){
     BitField64 bf3( bf.fieldDescription() ) ;
 
 
-    test(  bf.getValue() , 0UL , " initialized with 0 " ); 
+    test(  bf.getValue() , long64(0x0) , " initialized with 0 " ); 
 
     //    std::cout  << " bf value : " << bf << std::endl ;
     

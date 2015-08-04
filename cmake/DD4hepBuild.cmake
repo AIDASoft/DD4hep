@@ -33,7 +33,6 @@ endmacro(dd4hep_to_parent_scope)
 function ( dd4hep_debug msg )
   if( NOT "${DD4HEP_DEBUG_CMAKE}" STREQUAL "" ) 
     get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
-    #message( STATUS "DEBUG ****   ${msg}" )
     string ( LENGTH "${msg}" lmsg ) 
     if ( ${lmsg} GREATER 1024 )
       string ( SUBSTRING "${msg}" 0 132 pmsg ) 
@@ -418,7 +417,7 @@ endfunction( dd4hep_install_dir )
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function( dd4hep_install_includes package )
+function ( dd4hep_install_includes package )
   dd4hep_print ( "dd4hep_install_includes[${package}]: ${ARGN}" )
   dd4hep_install_dir( ${ARGN} DESTINATION include )
 endfunction()
@@ -433,7 +432,7 @@ endfunction()
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function(dd4hep_install_files)
+function ( dd4hep_install_files )
   cmake_parse_arguments ( ARG "" "DESTINATION" "FILES" ${ARGN} )
   foreach ( f ${ARG_UNPARSED_ARGUMENTS} ${ARG_FILES} )
     file ( GLOB sources ${f} )
@@ -450,7 +449,7 @@ endfunction( dd4hep_install_files )
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function( dd4hep_unpack_package_opts name opt )
+function ( dd4hep_unpack_package_opts name opt )
   set ( nam_pkg  )
   set ( req_pkg  )
   set ( typ_pkg  )
@@ -463,27 +462,27 @@ function( dd4hep_unpack_package_opts name opt )
     string ( REGEX REPLACE "\\["  "" opt "${opt}" )
     string ( REGEX REPLACE ";\\]" "" opt "${opt}" )
     string ( REGEX REPLACE "\\]"  "" opt "${opt}" )
-    string ( REPLACE ";" ";" all_opt "${opt}")
+    string ( REPLACE ";" ";" all_opt "${opt}" )
     dd4hep_debug ( "unpack ${name} : ${opt}" )
     foreach( e ${all_opt} )
-      if( "${nam_pkg}" STREQUAL "")
+      if( "${nam_pkg}" STREQUAL "" )
         set ( nam_pkg ${e} )
         unset ( act_pkg )
-      elseif ( "${e}" STREQUAL "REQUIRED")
+      elseif ( "${e}" STREQUAL "REQUIRED" )
         set ( req_pkg ${e} )
         unset ( act_pkg )
-      elseif ( "${e}" STREQUAL "INTERNAL")
+      elseif ( "${e}" STREQUAL "INTERNAL" )
         set ( typ_pkg ${e} )
         unset ( act_pkg )
-      elseif ( "${e}" STREQUAL "EXTERNAL")
+      elseif ( "${e}" STREQUAL "EXTERNAL" )
         set ( typ_pkg ${e} )
         unset ( act_pkg )
-      elseif ( "${com_pkg}" STREQUAL "" AND "${e}" STREQUAL "COMPONENTS")
+      elseif ( "${com_pkg}" STREQUAL "" AND "${e}" STREQUAL "COMPONENTS" )
         set ( com_pkg ${e} )
         set ( act_pkg ${e} )
-      elseif ( "${src_pkg}" STREQUAL "" AND "${e}" STREQUAL "SOURCES")
+      elseif ( "${src_pkg}" STREQUAL "" AND "${e}" STREQUAL "SOURCES" )
         set ( act_pkg ${e} )
-      elseif ( "${def_pkg}" STREQUAL "" AND "${e}" STREQUAL "DEFINITIONS")
+      elseif ( "${def_pkg}" STREQUAL "" AND "${e}" STREQUAL "DEFINITIONS" )
         set ( act_pkg ${e} )
       elseif ( "${act_pkg}" STREQUAL "COMPONENTS" )
         set ( comp_pkg ${comp_pkg} ${e} )
@@ -517,29 +516,29 @@ endfunction ( dd4hep_unpack_package_opts )
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function( dd4hep_get_dependency_opts local_incs local_libs local_uses pkg )
+function ( dd4hep_get_dependency_opts local_incs local_libs local_uses pkg )
   #
   #  If the variables <package>_INCLUDE_DIRS and <package>_LIBRARIES were not set
   #  at the parent level, check if a corresponding property exists....
   #
   string ( TOUPPER "${pkg}" pkg )
   if ( "${${pkg}_INCLUDE_DIRS}" STREQUAL "" )
-    get_property(${pkg}_INCLUDE_DIRS GLOBAL PROPERTY ${pkg}_INCLUDE_DIRS )
+    get_property ( ${pkg}_INCLUDE_DIRS GLOBAL PROPERTY ${pkg}_INCLUDE_DIRS )
   endif()
   if ( "${${pkg}_LIBRARIES}" STREQUAL "" )
     get_property(${pkg}_LIBRARIES    GLOBAL PROPERTY ${pkg}_LIBRARIES )
   endif()
-  set(libs "${${pkg}_LIBRARIES}" )
-  string(REGEX REPLACE "  " " " libs "${libs}" )
-  string(REGEX REPLACE " " ";"  libs "${libs}" )
+  set ( libs "${${pkg}_LIBRARIES}" )
+  string ( REGEX REPLACE "  " " " libs "${libs}" )
+  string ( REGEX REPLACE " " ";"  libs "${libs}" )
 
-  set(incs "${${pkg}_INCLUDE_DIRS}" )
-  string(REGEX REPLACE "  " " " incs "${incs}" )
-  string(REGEX REPLACE " " ";"  incs "${incs}" )
+  set ( incs "${${pkg}_INCLUDE_DIRS}" )
+  string ( REGEX REPLACE "  " " " incs "${incs}" )
+  string ( REGEX REPLACE " " ";"  incs "${incs}" )
   
-  set(uses "${${pkg}_USES}" )
-  string(REGEX REPLACE "  " " " uses "${uses}" )
-  string(REGEX REPLACE " " ";"  uses "${uses}" )
+  set ( uses "${${pkg}_USES}" )
+  string ( REGEX REPLACE "  " " " uses "${uses}" )
+  string ( REGEX REPLACE " " ";"  uses "${uses}" )
   
   set ( ${local_incs} ${incs} PARENT_SCOPE )
   set ( ${local_libs} ${libs} PARENT_SCOPE )
@@ -555,15 +554,15 @@ endfunction ( dd4hep_get_dependency_opts )
 #  \version 1.0
 #
 #---------------------------------------------------------------------------------------------------
-function (dd4hep_handle_optional_sources tag optionals missing uses sources )
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
+function ( dd4hep_handle_optional_sources tag optionals missing uses sources )
+  get_property ( pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
   set (miss)
   set (src)
   set (use)
-  foreach(opt ${optionals} )
+  foreach ( opt ${optionals} )
     dd4hep_unpack_package_opts ( USE ${opt} )
-    dd4hep_debug("unpack DD4HEP_USE_${USE_NAME}=${DD4HEP_USE_${USE_NAME}} <> ${use_pkg} -- ${opt}" )
-    dd4hep_debug("|++> ${tag} find_package( ${USE_NAME} ARGS: ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} ${USE_TYPE} )")
+    dd4hep_debug ( "unpack DD4HEP_USE_${USE_NAME}=${DD4HEP_USE_${USE_NAME}} <> ${use_pkg} -- ${opt}" )
+    dd4hep_debug ( "|++> ${tag} find_package( ${USE_NAME} ARGS: ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} ${USE_TYPE} )")
     dd4hep_find_package( ${USE_NAME} pkg_found 
       ARGS ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} 
       TYPE ${USE_TYPE} )
@@ -575,7 +574,7 @@ function (dd4hep_handle_optional_sources tag optionals missing uses sources )
       set ( src ${src} ${opt_sources} )
       set ( use ${use} ${opt} )
     elseif ( "${USE_REQUIRED}" STREQUAL "REQUIRED" )
-      set (miss ${miss} ${USE_NAME} )
+      set ( miss ${miss} ${USE_NAME} )
     else()
       dd4hep_print ( "|    ${tag}  ...optional: Skip sources ${USE_SOURCES} [requires ${USE_NAME}]" )
     endif()
@@ -596,11 +595,11 @@ endfunction(dd4hep_handle_optional_sources)
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_use_package print_prefix inName outName )
   cmake_parse_arguments( ARG "" "NAME" "USES;OPTIONAL" ${ARGN} )
-  get_property(pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME)
+  get_property ( pkg DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_NAME )
   #
-  get_property(pkg_incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY ${inName}_INCLUDE_DIRS   )
-  get_property(pkg_libs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY ${inName}_LINK_LIBRARIES )
-  get_property(pkg_uses DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY ${inName}_USES )
+  get_property ( pkg_incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY ${inName}_INCLUDE_DIRS   )
+  get_property ( pkg_libs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY ${inName}_LINK_LIBRARIES )
+  get_property ( pkg_uses DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY ${inName}_USES )
   #
   set ( missing )
   set ( used_uses ${pkg_uses} )
@@ -634,14 +633,14 @@ function( dd4hep_use_package print_prefix inName outName )
   #
   #
   #
-  foreach(use ${ARG_UNPARSED_ARGUMENTS} ${ARG_OPTIONAL} )
+  foreach ( use ${ARG_UNPARSED_ARGUMENTS} ${ARG_OPTIONAL} )
     if ( "${use}" MATCHES "\\[" )
       dd4hep_unpack_package_opts ( USE ${use} )
-      dd4hep_find_package( ${USE_NAME} pkg_found ARGS ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} )
+      dd4hep_find_package ( ${USE_NAME} pkg_found ARGS ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} )
       set ( use ${USE_NAME} )
       set ( src "sources ${USE_SOURCES}" )
     else()
-      dd4hep_find_package( ${use} pkg_found )
+      dd4hep_find_package ( ${use} pkg_found )
       set ( src ${use} )
     endif()
     if ( NOT "${pkg_found}" STREQUAL "ON" )
@@ -738,8 +737,8 @@ function( dd4hep_package packageName )
 
   set ( missing_uses )
   foreach ( use ${ARG_USES} )
-    dd4hep_unpack_package_opts( TEST ${use} )
-    dd4hep_find_package( ${TEST_NAME} pkg_found )
+    dd4hep_unpack_package_opts ( TEST ${use} )
+    dd4hep_find_package ( ${TEST_NAME} pkg_found )
     if ( "${pkg_found}" STREQUAL "OFF" )
       set ( missing_uses ${missing_uses} ${TEST_NAME} )
     endif()
@@ -871,14 +870,10 @@ function( dd4hep_add_library binary building )
       if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
         dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}" )
       endif()
-      set (pkg_incs ${LOCAL_INCLUDE_DIRS} )
-      set (pkg_libs ${LOCAL_LINK_LIBRARIES} )
       #
-      dd4hep_make_unique_list( pkg_incs VALUES ${pkg_incs} ${ARG_INCLUDE_DIRS} )
-      #
-      dd4hep_make_unique_list( pkg_libs VALUES ${pkg_libs} ${ARG_LINK_LIBRARIES} )
-      #
-      dd4hep_make_unique_list( pkg_defs VALUES ${COMPILE_DEFINITIONS} ${ARG_DEFINITIONS} )
+      dd4hep_make_unique_list( pkg_incs VALUES ${LOCAL_INCLUDE_DIRS}   ${ARG_INCLUDE_DIRS} )
+      dd4hep_make_unique_list( pkg_libs VALUES ${LOCAL_LINK_LIBRARIES} ${ARG_LINK_LIBRARIES} )
+      dd4hep_make_unique_list( pkg_defs VALUES ${LOCAL_DEFINITIONS}    ${ARG_DEFINITIONS} )
       #
       file ( GLOB   sources ${ARG_SOURCES} )
       list ( APPEND sources ${optional_sources} )
@@ -886,7 +881,7 @@ function( dd4hep_add_library binary building )
         #
         # root-cint produces warnings of type 'unused-function' disable them on generated files
         foreach ( f in  ${ARG_GENERATED} )
-          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function )
+          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function GENERATED TRUE )
         endforeach()
         list ( APPEND sources ${ARG_GENERATED} )
       endif()
@@ -1048,25 +1043,29 @@ function ( dd4hep_add_executable binary )
         get_property ( pkg_library GLOBAL PROPERTY ${PKG}_LIBRARIES )
         #
         #  Sources may also be supplied without argument tag:
-        #
         if( "${ARG_SOURCES}" STREQUAL "")
 	  set ( ARG_SOURCES ${ARG_UNPARSED_ARGUMENTS} )
         endif()
+        #  Prepare flags for cint generated sources:
+        foreach ( f in  ${ARG_GENERATED} )
+          set_source_files_properties( ${f} PROPERTIES COMPILE_FLAGS -Wno-unused-function GENERATED TRUE )
+        endforeach()
+        #
         set ( sources ${GENERATED} ${ARG_SOURCES} ${optional_sources} )
         #
-        if( NOT "${ARG_SOURCES}" STREQUAL "")
-	  set (incs ${LOCAL_INCLUDE_DIRS} )
+        if( NOT "${sources}" STREQUAL "")
+	  set (incs ${LOCAL_INCLUDE_DIRS} ${ARG_INCLUDE_DIRS} )
 	  set (libs ${pkg_library} ${LOCAL_LINK_LIBRARIES} ${ARG_LINK_LIBRARIES} )
+	  dd4hep_make_unique_list ( incs    VALUES ${incs} )
 	  dd4hep_make_unique_list ( libs    VALUES ${libs} )
 	  dd4hep_make_unique_list ( sources VALUES ${sources} )
 	  #
 	  dd4hep_debug ( "${tag} Libs:${libs}" )
-	  include_directories( ${ARG_INCLUDE_DIRS} ${incs} )
+	  include_directories( ${incs} )
 	  add_executable( ${binary} ${sources} )
 	  target_link_libraries( ${binary} ${libs} )
 	  #
 	  #  Install the binary to the destination directory
-	  #
 	  install(TARGETS ${binary} 
 	    LIBRARY DESTINATION lib 
 	    RUNTIME DESTINATION bin )
@@ -1136,9 +1135,10 @@ function( dd4hep_add_dictionary dictionary )
     dd4hep_debug ( "${tag}  Sources: '${CMAKE_CURRENT_SOURCE_DIR}'" ) 
     #
     add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
-      COMMAND ${ROOTCINT_EXECUTABLE} -f  ${dictionary}.cxx 
+      COMMAND ${ROOTCINT_EXECUTABLE} -cint -f ${dictionary}.cxx 
       -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
       DEPENDS ${headers} ${linkdefs} )
+    set_source_files_properties( ${dictionary}.h ${dictionary}.cxx PROPERTIES GENERATED TRUE )
   endif()
 endfunction()
 

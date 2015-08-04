@@ -51,8 +51,8 @@ set(ROOT_EVE_LIBRARIES ${ROOT_EVE_LIBRARIES} )
 
 # handle the QUIETLY and REQUIRED arguments and set ROOT_FOUND to TRUE if
 # all listed variables are TRUE
-INCLUDE ( FindPackageHandleStandardArgs )
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(ROOT DEFAULT_MSG ROOTSYS ROOT_INCLUDE_DIR)
+include ( FindPackageHandleStandardArgs )
+find_package_handle_standard_args(ROOT DEFAULT_MSG ROOTSYS ROOT_INCLUDE_DIR)
 mark_as_advanced(ROOT_FOUND ROOT_INCLUDE_DIR)
 
 include ( CMakeParseArguments)
@@ -67,19 +67,19 @@ if(NOT ROOT_VERSION_STRING)
   set(ROOT_VERSION_PATCH  ${CMAKE_MATCH_4} CACHE INTERNAL "Patch version of ROOT")
 endif()
 ##message(WARNING "ROOT ${ROOT_VERSION_MAJOR} ${ROOT_VERSION_MINOR} ${ROOT_VERSION_PATCH}")
-IF ( ${ROOT_VERSION_MAJOR} LESS 6 )
+if ( ${ROOT_VERSION_MAJOR} LESS 6 )
   set ( ROOT_LIBRARIES ${ROOT_LIBRARIES} -lReflex )
-ENDIF()
-IF(ROOT_FIND_COMPONENTS)
-  MESSAGE( STATUS "ROOT: Looking for Components: ${ROOT_FIND_COMPONENTS}" )
-  FOREACH(comp ${ROOT_FIND_COMPONENTS})
+endif()
+if(ROOT_FIND_COMPONENTS)
+  message( STATUS "ROOT[${ROOT_VERSION_STRING}]: Looking for Components: ${ROOT_FIND_COMPONENTS}" )
+  foreach(comp ${ROOT_FIND_COMPONENTS})
     if ( "${comp}" STREQUAL "TEve" )
-      set(ROOT_LIBRARIES ${ROOT_LIBRARIES} ${ROOT_EVE_LIBRARIES} )
+      set(ROOT_LIBRARIES ${ROOT_LIBRARIES} ${ROOT_EVE_LIBRARIES} FTGL )
     else()
       set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -l${comp} )
     endif()
-  ENDFOREACH()
-ENDIF()
+  endforeach()
+endif()
 
 
 #----------------------------------------------------------------------------

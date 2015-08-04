@@ -26,7 +26,7 @@ dd4hep_add_executable( dumpdetector
   OPTIONAL       [GEANT4 REQUIRED SOURCES src/dumpdetector.cpp])
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(test_surfaces
-  USES     DDRec
+  USES     DDRec DDTest
   OPTIONAL [LCIO REQUIRED SOURCES src/test_surfaces.cpp])
 #-----------------------------------------------------------------------------------
 dd4hep_add_dictionary( G__teve SOURCES src/EvNavHandler.h LINKDEF src/LinkDef.h )

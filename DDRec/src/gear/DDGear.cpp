@@ -60,8 +60,8 @@ namespace DD4hep{
       DetElement::Children grCh = subDet.children() ;
       
       for ( DetElement::Children::const_iterator jt=grCh.begin() ; jt != grCh.end() ; ++jt ){
-        DetElement subDet = (*jt).second ;
-        dets.push_back( subDet ) ;
+        DetElement jdet = (*jt).second ;
+        dets.push_back( jdet ) ;
         //	std::cout << "    *** sub-subdetector : " << subDet.name() << std::endl ;
       }
     }

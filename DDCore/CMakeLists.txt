@@ -30,6 +30,7 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/SurfaceInstaller.h
   LINKDEF include/ROOT/LinkDef.h )
 
+set_source_files_properties ( G__DD4hep.cxx PROPERTIES GENERATED TRUE )
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp

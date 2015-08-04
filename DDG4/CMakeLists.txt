@@ -14,7 +14,7 @@ dd4hep_package(    DDG4
                    BOOST DDCore
   OPTIONAL         CLHEP [XercesC QUIET]
   INCLUDE_DIRS     include
-  INSTALL_INCLUDES include/DDG4)
+  INSTALL_INCLUDES include/DDG4 )
 #---Add Library---------------------------------------------------------------------
 dd4hep_add_package_library(DDG4 SOURCES src/*.cpp )
 #---------------------------  Legacy libraries (for Frank) -------------------------

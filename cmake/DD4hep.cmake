@@ -105,7 +105,7 @@ function(dd4hep_generate_rootmap_notapple library)
     SET ( DD4hep_DIR ${CMAKE_SOURCE_DIR} )
   endif()
   find_package(ROOT QUIET)
-if(DD4HEP_NO_REFLEX)
+if( ${ROOT_VERSION_MAJOR} GREATER 5 )
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.components)
 else()
   set(rootmapfile ${CMAKE_SHARED_MODULE_PREFIX}${library}.rootmap)
@@ -116,6 +116,7 @@ endif()
   add_custom_command(OUTPUT ${rootmapfile}
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
+                             -DROOT_VERSION_MAJOR=${ROOT_VERSION_MAJOR}
                              -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake
                      DEPENDS ${library})
 
