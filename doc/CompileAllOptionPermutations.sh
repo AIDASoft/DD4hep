@@ -2,6 +2,8 @@ dir_name=`pwd`;
 INSTALL_G4=/home/frankm/SW/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 INSTALL_LCIO=/home/frankm/SW/lcio/v02-04-03;
 INSTALL_XERCESC=/home/frankm/SW/xercesc;
+CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
+
 export ROOTSYS=/home/frankm/SW/root_v5.34.25_dbg;
 . ${ROOTSYS}/bin/thisroot.sh;
 #
@@ -65,15 +67,15 @@ for DOGEANT4 in OFF ON; do
 		cd ${WORK_DIR};
                 make_output;
                 #-DDD4HEP_DEBUG_CMAKE=ON \
-                DD4hep_DIR=`pwd`/DD4hep;
+		unset DD4hep_DIR;
                 OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DCMAKE_INSTALL_PREFIX=${DD4hep_DIR}";
-		CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ../../../DD4hep.trunk/checkout;";
+                    -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
+		CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ${CHECKOUT};";
                 make_build;
-   		CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} \
-		    ../../../../DD4hep.trunk/checkout/examples;";
+                DD4hep_DIR=${WORK_DIR}/DD4hep;
+   		CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";
                 make_build;
                 #
 		cd ../..;

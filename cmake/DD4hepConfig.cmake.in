@@ -13,16 +13,18 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-set ( DD4hep_DIR "@CMAKE_INSTALL_PREFIX@" )
-set ( DD4hep_ROOT "@CMAKE_INSTALL_PREFIX@" )
-set ( DD4hep_VERSION "@DD4hep_VERSION@" )
-set ( DD4HEP_USE_BOOST "@DD4HEP_USE_BOOST@" )
-set ( DD4HEP_USE_GEANT4 "@DD4HEP_USE_GEANT4@" )
+set ( DD4hep_DIR         "@CMAKE_INSTALL_PREFIX@" )
+set ( DD4hep_ROOT        "@CMAKE_INSTALL_PREFIX@" )
+set ( DD4hep_VERSION     "@DD4hep_VERSION@" )
+set ( DD4HEP_USE_BOOST   "@DD4HEP_USE_BOOST@" )
+set ( DD4HEP_USE_GEANT4  "@DD4HEP_USE_GEANT4@" )
 set ( DD4HEP_USE_XERCESC "@DD4HEP_USE_XERCESC@" )
-set ( DD4HEP_USE_CXX11 "@DD4HEP_USE_CXX11@" )
+set ( DD4HEP_USE_CXX11   "@DD4HEP_USE_CXX11@" )
+set ( Geant4_DIR         "@Geant4_DIR@" )
+set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
+
+set ( ROOT_DIR           "@ROOTSYS@/cmake" )
 set ( ROOT_VERSION_MAJOR "@ROOT_VERSION_MAJOR@" )
-set ( Geant4_DIR  "@Geant4_DIR@" )
-set ( GEANT4_USE_CLHEP "@GEANT4_USE_CLHEP@" )
 
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
