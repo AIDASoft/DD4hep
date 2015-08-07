@@ -1,36 +1,26 @@
+#!/bin/bash
 #################################################################################
 #
-#  environment script for DD4hep examples - initializes DD4hep (and ROOT) as well
+#  Environment script for DD4hep examples - initializes DD4hep (and ROOT)
+#  for package: @PackageName@
 # 
 #  @author F.Gaede, DESY, 2013
+#  @author M.Frank, CERN, 2015
 #
 #################################################################################
-
-
-source @DD4hep_DIR@/bin/thisdd4hep.sh
-
-export PATH=$PATH:@CMAKE_INSTALL_PREFIX@/bin
-
-if [ @USE_DYLD@ ]
-then
-    export DYLD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$DYLD_LIBRARY_PATH
-else
-    export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
-fi
-
-
+# Default of DD4hep is the primary installation directory
+if test -z "${DD4hep_DIR}"; then
+    export DD4hep_DIR=@DD4hep_DIR@;
+fi;
+source ${DD4hep_DIR}/bin/thisdd4hep.sh;
+#
+dd4hep_parse_this ${BASH_ARGV[0]} @PackageName@;
+#
+dd4hep_add_path    PATH ${THIS}/bin;
+dd4hep_add_library_path ${THIS}/lib;
 # -- need to extend dynamic search path for all external libraries:
-if [ @External_LIBRARY_DIRS@ ]
-then
-    for lp in @External_LIBRARY_DIRS@
-    do
-	if [ @USE_DYLD@ ]
-	then
-	    # echo "  ### 	export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:${lp} "
-	    export DYLD_LIBRARY_PATH=${lp}:$DYLD_LIBRARY_PATH
-	else
-	    # echo "  ### 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${lp} "
-	    export LD_LIBRARY_PATH=${lp}:$LD_LIBRARY_PATH
-	fi
-    done
+if [ @External_LIBRARY_DIRS@ ]; then
+    for lp in @External_LIBRARY_DIRS@; do
+	dd4hep_add_library_path ${lp};
+    done;
 fi;

@@ -126,12 +126,12 @@ if( APPLE )
   set( USE_DYLD 1)
 endif()
 
-configure_file(cmake/thisdd4hep.csh thisdd4hep.csh @ONLY)
-configure_file(cmake/thisdd4hep.sh  thisdd4hep.sh @ONLY)
-configure_file(cmake/run_test.sh run_test.sh @ONLY)
+configure_file(cmake/thisdd4hep.csh bin/thisdd4hep.csh @ONLY)
+configure_file(cmake/thisdd4hep.sh  bin/thisdd4hep.sh @ONLY)
+configure_file(cmake/run_test.sh    bin/run_test.sh @ONLY)
 
-install(FILES ${CMAKE_BINARY_DIR}/thisdd4hep.csh ${CMAKE_BINARY_DIR}/thisdd4hep.sh DESTINATION bin )
-install(PROGRAMS ${CMAKE_BINARY_DIR}/run_test.sh DESTINATION bin )
+install(FILES ${CMAKE_BINARY_DIR}/bin/thisdd4hep.csh ${CMAKE_BINARY_DIR}/bin/thisdd4hep.sh DESTINATION bin )
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/run_test.sh DESTINATION bin )
 
 install(DIRECTORY cmake
   DESTINATION ${CMAKE_INSTALL_PREFIX}

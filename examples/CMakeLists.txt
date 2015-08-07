@@ -24,10 +24,11 @@
 #==========================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 option(BUILD_TESTING "Enable and build tests" ON)
-find_package ( ROOT   REQUIRED COMPONENTS Geom GenVector MathCore )
-find_package ( DD4hep REQUIRED )
 #
+find_package ( DD4hep REQUIRED )
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
+#
+find_package ( ROOT   REQUIRED COMPONENTS Geom GenVector MathCore )
 #
 dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1 
   USES           [ROOT REQUIRED COMPONENTS Geom GenVector MathCore] 
