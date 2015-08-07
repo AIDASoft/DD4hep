@@ -30,6 +30,7 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #
 find_package ( ROOT   REQUIRED COMPONENTS Geom GenVector MathCore )
 #
+dd4hep_configure_output()
 dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1 
   USES           [ROOT REQUIRED COMPONENTS Geom GenVector MathCore] 
                  [DD4hep REQUIRED COMPONENTS DDCore]
