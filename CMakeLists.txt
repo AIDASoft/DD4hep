@@ -3,11 +3,6 @@ set ( CMAKE_MODULE_PATH      ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake )
 #
 include ( DD4hepBuild )
 #
-#  project version (Major,minor,patch)
-#  Use the same version numbers in DDSegmentaion/CmakeLists.txt
-#
-dd4hep_set_version(DD4hep MAJOR 0 MINOR 14 PATCH 0)
-dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
 #---Options-------------------------------------------------------------------------
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_PYROOT  "Enable 'Detector Builders' based on PyROOT"    OFF)  # does not work (compile error)
@@ -16,19 +11,19 @@ option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
 option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
-
 #
 #-----------------------------------------------------------------------------------------------------
 #
-if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  set (CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "One of: None Debug Release RelWithDebInfo MinSizeRel." FORCE)
-endif()
+#  project version (Major,minor,patch)
+#  Use the same version numbers in DDSegmentaion/CmakeLists.txt
+#
+dd4hep_set_version(DD4hep MAJOR 0 MINOR 14 PATCH 0)
+dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
+#
 #
 #  No Relex library present for ROOT 6
 #
-
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
-message ( STATUS "ROOT_VERSION_MAJOR: ${ROOT_VERSION_MAJOR}" )
 if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
   set ( DD4HEP_USE_CXX11 ON ) 
   message ( STATUS "ROOT_VERSION_MAJOR: ${ROOT_VERSION_MAJOR} --> Using GaudiPluginService..." )
