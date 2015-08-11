@@ -14,6 +14,7 @@
 import sys, optparse
 
 parser = optparse.OptionParser()
+parser.formatter.width = 132
 parser.description = "Check TGeo geometries for overlaps."
 parser.add_option("-c", "--compact", dest="compact", default=None,
                   help="Define LCCDD style compact xml input",

@@ -15,7 +15,7 @@ import sys, optparse
 
 parser = optparse.OptionParser()
 parser.description = "TGeo Geometry checking."
-
+parser.formater.width = 132
 parser.add_option("-c", "--compact", dest="compact", default=None,
                   help="Define LCCDD style compact xml input",
 		  metavar="<FILE>")
