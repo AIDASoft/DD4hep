@@ -3,6 +3,15 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015-08-12 N.Nikiforou
+-----------------------
+ - DDCore/XML: Added new helper functions to Layering engine:
+   - double absorberThicknessInLayer(XML::Element e) : 
+     returns total absorber thickness in given layer
+   - void sensitivePositionsInLayer(XML::Element e, std::vector<double>& sens_pos) :
+     provides positions of sensitive slices within a layer with respect to the 
+     center of the layer
+
 
 2015-07-25 M.Frank
 ------------------

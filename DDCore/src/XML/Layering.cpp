@@ -121,3 +121,28 @@ double Layering::singleLayerThickness(XML::Element e) const {
   }
   return thickness;
 }
+
+double Layering::absorberThicknessInLayer(XML::Element e) const {
+  Component lay = e;
+  double thickness = 0e0;
+  for (Collection_t s(lay, _U(slice)); s; ++s) {
+    Component slice = s;
+    if (slice.isRadiator())
+        thickness += slice.thickness();
+  }
+  return thickness;
+}
+
+void Layering::sensitivePositionsInLayer(XML::Element e, std::vector<double>& sens_pos) const {
+  Component lay = e;
+  double pos=-singleLayerThickness(e)/2.0;
+  for (Collection_t s(lay, _U(slice)); s; ++s) {
+    Component slice = s;
+    pos += slice.thickness();
+
+    if (slice.isSensitive()){
+        //store the position at the center of the slice
+        sens_pos.push_back(pos - slice.thickness()/2.);
+    }
+  }
+}

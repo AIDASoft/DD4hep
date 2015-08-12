@@ -154,6 +154,9 @@ namespace DD4hep {
       return _stack.totalThickness();
     }
     double singleLayerThickness(XML::Element e) const;
+    double absorberThicknessInLayer(XML::Element e) const;
+    void sensitivePositionsInLayer(XML::Element e,std::vector<double>& sens_pos) const;
+
   };
 
   /// Namespace containing utilities to parse XML files using XercesC or TinyXML
