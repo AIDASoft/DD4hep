@@ -3,6 +3,17 @@ set ( CMAKE_MODULE_PATH      ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake )
 #
 include ( DD4hepBuild )
 #
+
+#------------- set the default installation directory to be the source directory
+
+IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  SET( CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR} CACHE PATH
+       "install prefix path  - overwrite with -D CMAKE_INSTALL_PREFIX = ..."
+       FORCE )
+ MESSAGE(STATUS "CMAKE_INSTALL_PREFIX is ${CMAKE_INSTALL_PREFIX} - overwrite with -D CMAKE_INSTALL_PREFIX" )
+ENDIF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+
+
 #---Options-------------------------------------------------------------------------
 option(DD4HEP_USE_XERCESC "Enable 'Detector Builders' based on XercesC"   OFF)
 option(DD4HEP_USE_PYROOT  "Enable 'Detector Builders' based on PyROOT"    OFF)  # does not work (compile error)
@@ -21,7 +32,7 @@ dd4hep_set_version(DD4hep MAJOR 0 MINOR 14 PATCH 0)
 dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
 #
 #
-#  No Relex library present for ROOT 6
+#  No Reflex library present for ROOT 6
 #
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
 if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
