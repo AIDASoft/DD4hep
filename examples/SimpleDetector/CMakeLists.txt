@@ -16,8 +16,10 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 dd4hep_configure_output ()
 dd4hep_package ( SimpleDetector MAJOR 0 MINOR 0 PATCH 1
   USES  [ROOT   REQUIRED COMPONENTS Geom] 
-        [DD4hep REQUIRED COMPONENTS DDCore]
+        [DD4hep REQUIRED COMPONENTS DDCore DDRec]
 )
+
+dd4hep_add_plugin( SimpleDetector SOURCES src/*.cpp  )
 dd4hep_install_dir( compact DESTINATION examples/SimpleDetector )
 #---Testing-------------------------------------------------------------------------
 dd4hep_configure_scripts ( SimpleDetector DEFAULT_SETUP WITH_TESTS )
