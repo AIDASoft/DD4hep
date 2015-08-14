@@ -24,10 +24,18 @@ dd4hep_install_dir( compact DESTINATION examples/SimpleDetector )
 #---Testing-------------------------------------------------------------------------
 dd4hep_configure_scripts ( SimpleDetector DEFAULT_SETUP WITH_TESTS )
 
-#----- Tests for CLICSid: here we simply require that at least 100 volumes have been converted
+#----- Tests for SimpleDetector: here we simply require that at least 100 volumes have been converted
 foreach ( typ lcdd gdml vis )
-  dd4hep_add_test_reg ( "test_converter_SimpleDetector_${typ}" 
+  dd4hep_add_test_reg ( "test_converter_Simple_CLIC_${typ}" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
-    EXEC_ARGS  geoConverter -compact2${typ} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml -output file:SimpleDetector.${typ}
-    REGEX_PASS " Handled [1-9][0-9][0-9]+ volumes" )
+    EXEC_ARGS  geoConverter -compact2${typ} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_CLIC.xml -output file:Simple_CLIC.${typ}
+    REGEX_PASS " Handled [1-9][0-9][0-9]* volumes" )
 endforeach()
+
+foreach ( typ lcdd gdml vis )
+  dd4hep_add_test_reg ( "test_converter_Simple_ILD_${typ}"
+    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
+    EXEC_ARGS  geoConverter -compact2${typ} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output file:Simple_ILD.${typ}
+    REGEX_PASS " Handled [1-9][0-9][0-9]* volumes" )
+endforeach()
+
