@@ -36,5 +36,4 @@ dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1
                  [DD4hep REQUIRED COMPONENTS DDCore]
 )
 #
-dd4hep_enable_tests ( AlignDet CLICSiD ClientTests )
-###SimpleDetector )
+dd4hep_enable_tests ( AlignDet CLICSiD ClientTests SimpleDetector )
