@@ -15,7 +15,7 @@ include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output()
 dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
-  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector MathCore] 
+  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector] 
                [DD4hep REQUIRED COMPONENTS DDCore]
   OPTIONAL     XERCESC
   INCLUDE_DIRS include )
@@ -28,7 +28,7 @@ dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #***  Testing  *********************************************************************
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedDetectors )
   foreach( type lcdd gdml vis )
-    dd4hep_add_test_reg( ClientTests_converter_simple_${type}_${test}
+    dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml -output file:${test}.${type}
       REGEX_PASS " Handled [1-9][0-9]* volumes" )

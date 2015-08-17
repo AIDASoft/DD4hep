@@ -13,29 +13,31 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
-dd4hep_configure_output ()
-dd4hep_package ( SimpleDetector MAJOR 0 MINOR 0 PATCH 1
-  USES  [ROOT   REQUIRED COMPONENTS Geom] 
-        [DD4hep REQUIRED COMPONENTS DDCore DDRec]
-)
+dd4hep_configure_output()
+dd4hep_package (SimpleDetector MAJOR 0 MINOR 0 PATCH 1
+  USES         [ROOT   REQUIRED COMPONENTS Geom GenVector] 
+               [DD4hep REQUIRED COMPONENTS DDCore DDRec]
+  OPTIONAL     XERCESC
+  INCLUDE_DIRS include )
 
-dd4hep_add_plugin( SimpleDetector SOURCES src/*.cpp  )
-dd4hep_install_dir( compact DESTINATION examples/SimpleDetector )
-#---Testing-------------------------------------------------------------------------
-dd4hep_configure_scripts ( SimpleDetector DEFAULT_SETUP WITH_TESTS )
+#-----------------------------------------------------------------------------------
+dd4hep_add_plugin(SimpleDetector SOURCES src/*.cpp)
+dd4hep_install_dir(compact DESTINATION ${DD4hep_DIR}/examples/ClientTests)
+#-----------------------------------------------------------------------------------
+dd4hep_configure_scripts(SimpleDetector DEFAULT_SETUP WITH_TESTS)
 
-#----- Tests for SimpleDetector: here we simply require that at least 100 volumes have been converted
-foreach ( typ lcdd gdml vis )
-  dd4hep_add_test_reg ( "test_converter_Simple_CLIC_${typ}" 
+#***  Testing  *********************************************************************
+foreach (test Simple_ILD)
+  foreach( type lcdd gdml vis )
+    dd4hep_add_test_reg( SimpleDetector_converter_${type}
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
+      EXEC_ARGS  geoConverter -compact2${type} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml -output file:${test}.${type}
+      REGEX_PASS " Handled [1-9][0-9]* volumes")
+  endforeach(type)
+endforeach(test)
+
+dd4hep_add_test_reg( SimpleDetector_sim_ILD
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
-    EXEC_ARGS  geoConverter -compact2${typ} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_CLIC.xml -output file:Simple_CLIC.${typ}
-    REGEX_PASS " Handled [1-9][0-9][0-9]* volumes" )
-endforeach()
-
-foreach ( typ lcdd gdml vis )
-  dd4hep_add_test_reg ( "test_converter_Simple_ILD_${typ}"
-    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
-    EXEC_ARGS  geoConverter -compact2${typ} -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml -output file:Simple_ILD.${typ}
-    REGEX_PASS " Handled [1-9][0-9][0-9]* volumes" )
-endforeach()
-
+    EXEC_ARGS  dd_sim file:${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml  file:${CMAKE_CURRENT_SOURCE_DIR}/examples/sequences.xml
+    REQUIRES   DDG4 Geant4
+    REGEX_PASS "Event 9 Begin event action")
