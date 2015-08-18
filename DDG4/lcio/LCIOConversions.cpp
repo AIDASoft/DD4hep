@@ -24,6 +24,7 @@
 #include "DDG4/Geant4Data.h"
 
 // LCIO includes
+#include "lcio.h"
 #include "IMPL/LCCollectionVec.h"
 //
 #include "IMPL/LCEventImpl.h"
@@ -38,7 +39,7 @@
 #include <G4SystemOfUnits.hh>
 
 using namespace std;
-
+using namespace lcio ;
 //==================================================================================
 //
 // SimCalorimeterHit:

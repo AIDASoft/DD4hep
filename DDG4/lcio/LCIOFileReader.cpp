@@ -16,6 +16,9 @@
 
 // Framework include files
 #include "LCIOEventReader.h"
+#include "lcio.h"
+
+using namespace lcio ;
 
 // Forward declarations
 namespace IO { class LCReader; }

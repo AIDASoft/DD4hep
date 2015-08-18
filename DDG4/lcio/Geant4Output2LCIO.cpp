@@ -25,6 +25,8 @@
 #include "IMPL/LCEventImpl.h"
 #include "IMPL/LCCollectionVec.h"
 
+using namespace lcio ;
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
