@@ -333,12 +333,36 @@ namespace DD4hep {
       
 
       struct Layer {
-	/// distance from Origin (or the z-axis)
+	/// distance from Origin (or the z-axis) to the inner-most face of the layer
 	double distance;
-	/// total thickness of the layer
+        
+	/// DEPRECATED: total thickness of the layer. Use inner/outer thicknesses instead
 	double thickness ;
-	/// thickness of the absorber part of the layer
+	
+        /// DEPRECATED: thickness of the absorber part of the layer. Use instead number of X0, lambdaI in and out
 	double absorberThickness ;
+        
+        ///Absorber material in front of sensitive element in the layer, units of radiation lengths
+        double inner_nRadiationLengths ;
+        ///Absorber material in front of sensitive element in the layer, units of radiation lengths
+        double inner_nInteractionLengths ;        
+        
+        ///Absorber material in behind of sensitive element in the layer, units of radiation lengths
+        double outer_nRadiationLengths ;
+        ///Absorber material in behind of sensitive element in the layer, units of radiation lengths
+        double outer_nInteractionLengths ; 
+        
+        ///Distance between the innermost face of the layer (closest to IP) and the center of the sensitive element
+        double inner_thickness;
+        
+        ///Distance between the center of the sensitive element and the outermost face of the layer
+        double outer_thickness;
+        
+        ///Thickness of the sensitive element (e.g. scintillator)
+        double sensitive_thickness;
+        
+        
+        
 	/// cell size along the first axis where first is either along the beam (BarrelLayout) or up (EndcapLayout) or the direction closest to that. 
 	double cellSize0 ;
 	/// second cell size, perpendicular to the first direction cellSize0 and the depth of the layers. 
