@@ -17,7 +17,7 @@ DD4hep  ----  Release Notes
    - The variables  "absorberThickness" and "thickness" are now DEPRECATED
    - The variable "distance" is understood to contain the distance from the IP or
      the Z axis to the innermost face of the layer. 
-
+  - DDRec/createGearForCLIC.cpp: Made compatible with new DDRec structure
 
 2015-08-12 N.Nikiforou
 -----------------------

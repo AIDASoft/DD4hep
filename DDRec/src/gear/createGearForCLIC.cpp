@@ -340,21 +340,25 @@ namespace DD4hep{
 	  
 	  gear::CalorimeterParametersImpl* gearCalo = 
 	    ( calo->layoutType == LayeredCalorimeterData::BarrelLayout  ?
-	      new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm, calo->extent[3]/dd4hep::mm, calo->inner_symmetry, calo->phi0 )  :
+	      new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm, calo->extent[3]/dd4hep::mm, calo->inner_symmetry, calo->inner_phi0 )  :
 	      //CalorimeterParametersImpl (double rMin, double zMax, int symOrder=8, double phi0=0.0) - C'tor for a cylindrical (octagonal) BARREL calorimeter.
-	      new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm,  calo->extent[1]/dd4hep::mm,  calo->extent[2]/dd4hep::mm, calo->outer_symmetry, calo->phi0 )   ) ;
+	      new gear::CalorimeterParametersImpl(  calo->extent[0]/dd4hep::mm,  calo->extent[1]/dd4hep::mm,  calo->extent[2]/dd4hep::mm, calo->outer_symmetry, calo->outer_phi0 )   ) ;
 	  //CalorimeterParametersImpl (double rMin, double rMax, double zMin, int symOrder=2, double phi0=0.0) - C'tor for a cylindrical (octagonal) ENDCAP calorimeter. 
 	  
 	  for( unsigned i=0, nL = calo->layers.size() ; i <nL ; ++i ){
 	    
 	    LayeredCalorimeterData::Layer& l = calo->layers[i] ;
 	    
+            
+            //Do some arithmetic to get thicknesses and (approximate) absorber thickneses from "new" DDRec structures
+            //The positioning should come out right, but the absorber thickness should be overestimated due to the presence of 
+            //other less dense material
 	    if( i == 0 ) {
-	      gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, l.thickness/dd4hep::mm , 
-						     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	      gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, (l.inner_thickness+l.sensitive_thickness/2.)/dd4hep::mm , 
+						     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, (l.inner_thickness-l.sensitive_thickness/2.)/dd4hep::mm ) ;
 	    }else{
-	      gearCalo->layerLayout().addLayer(                             l.thickness/dd4hep::mm , 
-									    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	      gearCalo->layerLayout().addLayer((l.inner_thickness+l.sensitive_thickness/2.+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm , 
+									    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, (l.inner_thickness-l.sensitive_thickness/2.+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm) ;
 	    }
 	    
 	  }
@@ -362,7 +366,7 @@ namespace DD4hep{
 	  if( it->first == "HCalBarrel" ){
 	    // additional parameters needed by MarlinPandora
 	    gearCalo->setIntVal("Hcal_outer_polygon_order"   , calo->outer_symmetry  ) ;
-	    gearCalo->setDoubleVal("Hcal_outer_polygon_phi0" ,  calo->phi0 ) ;
+	    gearCalo->setDoubleVal("Hcal_outer_polygon_phi0" ,  calo->outer_phi0 ) ;
 	  }
 		  
 
