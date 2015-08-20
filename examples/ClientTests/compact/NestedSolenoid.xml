@@ -1,0 +1,17 @@
+<lccdd>
+
+  <display>
+    <vis name="VIS1" alpha="1" r="0"    g="0.3"  b="0.3" showDaughters="true" visible="true"/>
+    <vis name="VIS2" alpha="1" r="0"    g="0.6"  b="0.6" showDaughters="true" visible="true"/>    
+  </display>
+
+  <detectors>
+    <detector name="NestedSolenoid" type="DD4hep_MultiLayerTracker" insideTrackingVolume="false" reflect="true">
+      <layer id="1" inner_r="1.8*m" outer_z="1.5*m" vis="VIS1">
+        <slice material="Iron" thickness="1*cm" />
+        <slice material="Iron"   thickness="1*cm" />
+      </layer>
+    </detector>
+  </detectors>   
+
+</lccdd>

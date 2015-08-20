@@ -26,7 +26,7 @@ dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTes
 dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 
 #***  Testing  *********************************************************************
-foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedDetectors )
+foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors )
   foreach( type lcdd gdml vis )
     dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"

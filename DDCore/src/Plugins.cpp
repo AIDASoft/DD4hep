@@ -68,21 +68,64 @@ void  PluginService::addFactory(const std::string&, void*, const std::type_info&
 
 #else   // ROOT 6
 #include "DD4hep/Printout.h"
-#define private public
-#include "Gaudi/PluginService.h"
+#include "TSystem.h"
 
-// Do not know yet what code to really put in there.....at least it presevers the interfaces and links
+namespace   {
+  struct PluginInterface  {
+    int (*getDebug)();
+    int (*setDebug)(int new_value);
+    void* (*create)(const char* identifier, const char* signature);
+    void  (*add)(const char* identifier, 
+                 void* creator_stub, 
+                 const char* signature, 
+                 const char* return_type);
+    PluginInterface();
+    static PluginInterface& instance()    {
+      static PluginInterface s_instance;
+      return s_instance;
+    }
+  };
+
+  template <typename T> 
+  static inline T get_func(const char* plugin, const char* entry)  {
+    PluginService::FuncPointer<Func_t> fun(gSystem->DynFindSymbol(plugin,entry));
+    PluginService::FuncPointer<T> fp(fun.fptr.ptr);
+    if ( 0 == fp.fptr.ptr )      {
+      string err = "DD4hep:PluginService: Failed to access symbol "
+        "\""+string(entry)+"\" in plugin library "+string(plugin);
+      throw runtime_error(err);
+    }
+    return fp.fptr.fcn;
+  }
+
+  PluginInterface::PluginInterface()   
+    : getDebug(0), setDebug(0), create(0), add(0)
+  {    
+    const char* plugin_name = ::getenv("DD4HEP_PLUGINMGR");
+    if ( 0 == plugin_name )   {
+      plugin_name = "libDD4hepGaudiPluginMgr";
+    }
+    gSystem->Load(plugin_name);
+    
+    getDebug = get_func< int(*)() >(plugin_name,"dd4hep_pluginmgr_getdebug");
+    setDebug = get_func< int (*)(int)>(plugin_name,"dd4hep_pluginmgr_getdebug");
+    create   = get_func< void* (*)(const char*,
+                                   const char*)>(plugin_name,"dd4hep_pluginmgr_create");
+    add      = get_func<void (*)(const char* identifier, 
+                                 void* creator_stub, 
+                                 const char* signature, 
+                                 const char* return_type)>(plugin_name,"dd4hep_pluginmgr_add_factory");
+  }
+}
 
 /// Default constructor
-PluginDebug::PluginDebug(int dbg)
-  : m_debug(0) {
-  m_debug = Gaudi::PluginService::Debug();
-  Gaudi::PluginService::SetDebug(dbg);
+PluginDebug::PluginDebug(int dbg) : m_debug(0) {
+  m_debug = PluginInterface::instance().setDebug(dbg);
 }
 
 /// Default destructor
 PluginDebug::~PluginDebug() {
-  Gaudi::PluginService::SetDebug(m_debug);
+  PluginInterface::instance().setDebug(m_debug);
 }
 
 /// Helper to check factory existence
@@ -93,19 +136,18 @@ string PluginDebug::missingFactory(const string& name) const {
 }
 
 void* PluginService::getCreator(const std::string& id, const std::type_info& info)  {
-  return Gaudi::PluginService::Details::getCreator(id, info.name());
+  return PluginInterface::instance().create(id.c_str(), info.name());
 }
 
 void PluginService::addFactory(const std::string& id, stub_t stub,
                                const std::type_info&  signature_type,
                                const std::type_info&  return_type)
 {
-  using namespace Gaudi::PluginService::Details;
   if ( PluginService::debug() )  {
     printout(INFO,"PluginService","+++ Declared factory[%s] with signature %s type:%s.",
              id.c_str(),signature_type.name(),return_type.name());
   }
-  Registry::instance().add(id,stub,signature_type.name(),return_type.name(),id);
+  PluginInterface::instance().add(id.c_str(),stub,signature_type.name(),return_type.name());
 }
 #endif
 
@@ -119,4 +161,3 @@ DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, (Geometry::LCDD*, const Geometry::GeoHandler*, const std::map<std::string,std::string>*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(long, ())
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(void*, (const char*))
-

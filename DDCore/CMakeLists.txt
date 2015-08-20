@@ -40,5 +40,15 @@ dd4hep_add_package_library ( DDCore
   OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
   )
 
+
+if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
+  dd4hep_add_regular_library(DD4hepGaudiPluginMgr
+    SOURCES        src/pluginmgr/Gaudi.cpp
+    INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
+    LINK_LIBRARIES ${GaudiPluginService_LIBRARIES}
+    NODEFAULTS
+    )
+endif()
+
 # Generate DDCore plugins---------------------------------------------------------
 dd4hep_add_plugin ( DDCorePlugins  SOURCES src/plugins/*.cpp )

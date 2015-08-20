@@ -852,7 +852,7 @@ endfunction()
 #
 #---------------------------------------------------------------------------------------------------
 function( dd4hep_add_library binary building )
-  cmake_parse_arguments ( ARG "" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;PRINT" ${ARGN} )
+  cmake_parse_arguments ( ARG "NODEFAULTS" "" "SOURCES;GENERATED;LINK_LIBRARIES;INCLUDE_DIRS;USES;OPTIONAL;DEFINITIONS;PRINT" ${ARGN} )
   dd4hep_package_properties( pkg PKG_NAME enabled )
   set ( tag "Library[${pkg}] -> ${binary}" )
   if ( NOT "${ARG_PRINT}" STREQUAL "" )
@@ -872,10 +872,15 @@ function( dd4hep_add_library binary building )
     if ( NOT "${optional_missing}" STREQUAL "" )
       dd4hep_print ( "|++> ${tag} (optional) skipped. Missing dependency: ${optional_missing}" )
     else()
-      dd4hep_use_package( "${tag}" PACKAGE LOCAL 
-        USES     ${ARG_USES} ${optional_uses}
-        OPTIONAL ${ARG_OPTIONAL} )
-
+      if ( ${ARG_NODEFAULTS} )
+        set ( LOCAL_LINK_LIBRARIES )
+        set ( LOCAL_LINK_LIBRARIES )
+        set ( LOCAL_DEFINITIONS )
+      else()
+        dd4hep_use_package( "${tag}" PACKAGE LOCAL 
+          USES     ${ARG_USES} ${optional_uses}
+          OPTIONAL ${ARG_OPTIONAL} )
+      endif()
       if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
         dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}" )
       endif()
@@ -922,6 +927,30 @@ function( dd4hep_add_library binary building )
   endif()
   set ( ${building} ${building_binary} PARENT_SCOPE )
 endfunction(dd4hep_add_library)
+
+#---------------------------------------------------------------------------------------------------
+#  dd4hep_add_regular_library
+#
+#  Arguments      -> See function dd4hep_add_library
+#
+#  \author  M.Frank
+#  \version 1.0
+#
+#---------------------------------------------------------------------------------------------------
+function( dd4hep_add_regular_library library )
+  dd4hep_package_properties( pkg PKG enabled )
+  set ( tag "Package library[${pkg}] -> ${library}" )
+  if ( "${enabled}" STREQUAL "OFF" )
+    dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
+  else()
+    dd4hep_add_library( ${library} building ${ARGN} PRINT ${tag} )
+    if ( "${building}" STREQUAL "ON" )
+      dd4hep_debug ( "add_package_library -> ${library} ${PKG}_LIBRARIES:${pkg_libs}" )
+    else()
+      dd4hep_fatal ( "Package library[${pkg}] -> ${binary} Cannot be built! This is an ERROR condition." )    
+    endif()
+  endif()
+endfunction(dd4hep_add_regular_library)
 
 #---------------------------------------------------------------------------------------------------
 #  dd4hep_add_package_library
@@ -1145,8 +1174,13 @@ function( dd4hep_add_dictionary dictionary )
     #
     add_custom_command(OUTPUT ${dictionary}.cxx ${dictionary}.h
       COMMAND ${ROOTCINT_EXECUTABLE} -cint -f ${dictionary}.cxx 
-      -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
+      -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
       DEPENDS ${headers} ${linkdefs} )
+    #  Install the binary to the destination directory
+    if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
+      set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm DESTINATION lib)
+    endif()
     set_source_files_properties( ${dictionary}.h ${dictionary}.cxx PROPERTIES GENERATED TRUE )
   endif()
 endfunction()

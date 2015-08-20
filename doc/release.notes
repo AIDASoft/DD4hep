@@ -3,21 +3,11 @@
 DD4hep  ----  Release Notes
 =================================
 
-2015-08-19 N.Nikiforou
------------------------
- - DDRec/DetectorData.h: added new variables to LayeredCalorimeterStruct/Layer:
-   - inner_nRadiationLengths, inner_nInteractionLengths and inner_thickness : 
-     Number of Radiation Lengths, number of Interaction Lengths and thickness summing
-     up from innermost layer face (closest to the IP) up to the center of the 
-     sensitive element
-   - outer_nRadiationLengths, outer_nInteractionLengths and outer_thickness : 
-     Similarly, summing up from center of sensitive volume up to the outermost 
-     face of the layer
-   - sensitive_thickness: Thickness of sensitive element in layer
-   - The variables  "absorberThickness" and "thickness" are now DEPRECATED
-   - The variable "distance" is understood to contain the distance from the IP or
-     the Z axis to the innermost face of the layer. 
-  - DDRec/createGearForCLIC.cpp: Made compatible with new DDRec structure
+2015-08-20 M.Frank
+  - DDCore: Modularize/abstract plugin manager 
+  - VolumeManager: Fix bug propagating sensitive detectors
+    Showed up in the examples of nested detectors
+
 
 2015-08-12 N.Nikiforou
 -----------------------

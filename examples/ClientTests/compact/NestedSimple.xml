@@ -58,7 +58,6 @@
       <comment>Silicon Tracker Assembly</comment>
       <composite name="SiTrackerBarrel"/>
       <composite name="SiVertexBarrel"/>
-      <composite name="NestedSolenoid"/>
     </detector>
   </detectors>
 
@@ -67,6 +66,4 @@
 
   <include ref="${SiD_dir}/SiD_VertexConfig.xml"/>
   <include ref="${SiD_dir}/SiD_VertexBarrel.xml"/>
-  <include ref="NestedSolenoid.xml"/>
-
 </lccdd>
