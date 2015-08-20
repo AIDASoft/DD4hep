@@ -40,10 +40,10 @@ int main(int /* argc */, char** /* argv */ ){
 
     //    std::cout  << " bf value : " << bf << std::endl ;
 
-    test(  bf.getValue() , long64( 0xbebafecacafebabeUL ) , 
+    test(  bf.getValue() , long64( 0xbebafecacafebabeULL ) , 
 	   " initialized with 0xbebafecacafebabeUL - compare as signed " ); 
 
-    test(  (unsigned long) bf.getValue()   , 0xbebafecacafebabeUL  , 
+    test(  (ulong64) bf.getValue()   , 0xbebafecacafebabeULL  , 
 	   " initialized with 0xbebafecacafebabeUL - compare as unsigned " ); 
 
 
@@ -64,7 +64,7 @@ int main(int /* argc */, char** /* argv */ ){
 
     bf3.setValue(  bf.lowWord() , bf.highWord() ) ; 
 
-    test(  bf3.getValue() , bf2.getValue()  , " same value 0xbebafecacafebabeUL from stting low and hiigh word " ); 
+    test(  bf3.getValue() , bf2.getValue()  , " same value 0xbebafecacafebabeUL from setting low and high word " ); 
 
 
     // --------------------------------------------------------------------

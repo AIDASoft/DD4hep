@@ -119,7 +119,8 @@ namespace {
             else {
               cnt = scanPhysicalVolume(parent, e, pv_dau, ids, sd, chain);
             }
-            if (count == 0 && cnt > 0 && !pv_ids.empty()) {
+            // There was a sensitive daughter volume, also add the parent entry.
+            if ( count == 0 && cnt > 0 && sd.isValid() && !pv_ids.empty()) {
               add_entry(sd, parent, e, node, ids, chain);
             }
             count += cnt;
@@ -167,34 +168,36 @@ namespace {
     void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, 
                    const TGeoNode* n, const VolIDs& ids, Chain& nodes) 
     {
-      Readout ro = sd.readout();
-      IDDescriptor iddesc = ro.idSpec();
-      pair<VolumeID, VolumeID> code = encoding(iddesc, ids);
+      if ( sd.isValid() )   {
+        Readout ro = sd.readout();
+        IDDescriptor iddesc = ro.idSpec();
+        pair<VolumeID, VolumeID> code = encoding(iddesc, ids);
 
-      if (m_entries.find(code.first) == m_entries.end()) {
-        string        sd_name      = sd.name();
-        DetElement    sub_detector = m_lcdd.detector(sd_name);
-        VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
-        // This is the block, we effectively have to save for each physical volume with a VolID
-        VolumeManager::Context* context = new VolumeManager::Context;
-        context->identifier = code.first;
-        context->mask       = code.second;
-        context->detector   = parent;
-        context->placement  = PlacedVolume(n);
-        context->element    = e;
-        context->volID      = ids;
-        context->path       = nodes;
-        for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
-          TGeoMatrix* m = nodes[i - 1]->GetMatrix();
-          context->toWorld.MultiplyLeft(m);
+        if (m_entries.find(code.first) == m_entries.end()) {
+          string        sd_name      = sd.name();
+          DetElement    sub_detector = m_lcdd.detector(sd_name);
+          VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
+          // This is the block, we effectively have to save for each physical volume with a VolID
+          VolumeManager::Context* context = new VolumeManager::Context;
+          context->identifier = code.first;
+          context->mask       = code.second;
+          context->detector   = parent;
+          context->placement  = PlacedVolume(n);
+          context->element    = e;
+          context->volID      = ids;
+          context->path       = nodes;
+          for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
+            TGeoMatrix* m = nodes[i - 1]->GetMatrix();
+            context->toWorld.MultiplyLeft(m);
+          }
+          context->toDetector = context->toWorld;
+          context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
+          context->toWorld.MultiplyLeft(&parent.worldTransformation());
+          if (!section.adoptPlacement(context)) {
+            print_node(sd, parent, e, n, ids, nodes);
+          }
+          m_entries.insert(code.first);
         }
-        context->toDetector = context->toWorld;
-        context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
-        context->toWorld.MultiplyLeft(&parent.worldTransformation());
-        if (!section.adoptPlacement(context)) {
-          print_node(sd, parent, e, n, ids, nodes);
-        }
-        m_entries.insert(code.first);
       }
     }
 

@@ -1,9 +1,11 @@
 dir_name=`pwd`;
-INSTALL_G4=/home/frankm/SW/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
-INSTALL_LCIO=/home/frankm/SW/lcio/v02-04-03;
-INSTALL_XERCESC=/home/frankm/SW/xercesc;
+SW=/home/frankm/SW;
+
+INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
+INSTALL_LCIO=${SW}/lcio/v02-04-03;
+INSTALL_XERCESC=${SW}/xercesc;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
-export ROOTSYS=/home/frankm/SW/root_v5.34.25_dbg;
+export ROOTSYS=${SW}/root_v5.34.25_dbg;
 . ${ROOTSYS}/bin/thisroot.sh;
 #cat ${ROOTSYS}/bin/thisroot.sh;
 #
