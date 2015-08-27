@@ -14,6 +14,15 @@
 #ifndef DD4HEP_LCDD_LCDD_H
 #define DD4HEP_LCDD_LCDD_H
 
+// define version macros for DD4hep
+#define DD4HEP_MAJOR_VERSION 0
+#define DD4HEP_MINOR_VERSION 15
+
+#define DD4HEP_VERSION_GE( MAJV , MINV )  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || ( (DD4HEP_MAJOR_VERSION==MAJV) && ( DD4HEP_MINOR_VERSION >= MINV ) ) )
+
+#define DD4HEP_VERSION_GT( MAJV , MINV )  ( (  DD4HEP_MAJOR_VERSION  > MAJV ) || ( (DD4HEP_MAJOR_VERSION==MAJV) && ( DD4HEP_MINOR_VERSION >  MINV ) ) )
+
+
 // Framework includes
 #include "DD4hep/Handle.h"
 #include "DD4hep/Fields.h"

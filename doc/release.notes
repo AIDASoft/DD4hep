@@ -3,6 +3,14 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2015-08-27 F.Gaede
+  - added macros DD4HEP_VERSION_GE(MAJV,MINV) and DD4HEP_VERSION_GT(MAJV,MINV)
+    to LCDD.h
+
+  - increased version number to v00-15
+
+
 2015-08-20 M.Frank
   - DDCore: Modularize/abstract plugin manager 
   - VolumeManager: Fix bug propagating sensitive detectors
