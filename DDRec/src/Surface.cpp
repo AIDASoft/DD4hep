@@ -779,6 +779,35 @@ namespace DD4hep {
 	  
           return lines ;
         }
+
+        else if(shape->IsA() == TGeoTrap::Class()) {
+          TGeoTrap* trapezoid = ( TGeoTrap* ) shape;
+          
+          double dx1 = trapezoid->GetBl1();
+          double dx2 = trapezoid->GetTl1();
+          double dz = trapezoid->GetH1();
+
+          //according to the TGeoTrap definition, the lengths are given such that the normal vector of the surface
+          //points in the e_z direction.
+          DDSurfaces::Vector3D ubl(  1., 0., 0. ) ; 
+          DDSurfaces::Vector3D vbl(  0., 1., 0. ) ; 
+
+          //the local span vectors are transformed into the main coordinate system (in LocalToMasterVect())
+          DDSurfaces::Vector3D ub ;
+          DDSurfaces::Vector3D vb ;
+          _wtM->LocalToMasterVect( ubl , ub.array() ) ;
+          _wtM->LocalToMasterVect( vbl , vb.array() ) ;
+
+          //the trapezoid is drawn as a set of four lines connecting its four corners
+          lines.reserve(4) ;
+          //_o is vector to the origin
+          lines.push_back( std::make_pair( _o + dx1 * ub  - dz * vb ,  _o + dx2 * ub  + dz * vb ) ) ;
+          lines.push_back( std::make_pair( _o + dx2 * ub  + dz * vb ,  _o - dx2 * ub  + dz * vb ) ) ;
+          lines.push_back( std::make_pair( _o - dx2 * ub  + dz * vb ,  _o - dx1 * ub  - dz * vb) ) ;
+          lines.push_back( std::make_pair( _o - dx1 * ub  - dz * vb , _o + dx1 * ub  - dz * vb) ) ;
+
+          return lines;
+        }
         //added code by Thorben Quast for simplified set of lines for trapezoids with unequal lengths in x
         else if(shape->IsA() == TGeoTrd1::Class()){
           TGeoTrd1* trapezoid = ( TGeoTrd1* ) shape;
