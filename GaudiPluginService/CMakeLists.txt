@@ -6,6 +6,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 #add_library(DD4hepGaudiPluginMgr SHARED src/PluginService.cpp src/capi_pluginservice.cpp interface/DD4hep.cpp)
 add_library(DD4hepGaudiPluginMgr SHARED src/PluginService.cpp interface/DD4hep.cpp)
 add_definitions(-DGaudi=DD4hep_Flavor)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 target_link_libraries(DD4hepGaudiPluginMgr ${CMAKE_DL_LIBS})
 SET_TARGET_PROPERTIES(DD4hepGaudiPluginMgr PROPERTIES VERSION ${DD4hep_VERSION} SOVERSION ${DD4hep_SOVERSION})
 
