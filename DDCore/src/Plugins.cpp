@@ -98,23 +98,20 @@ namespace   {
     return fp.fptr.fcn;
   }
 
-  PluginInterface::PluginInterface()   
-    : getDebug(0), setDebug(0), create(0), add(0)
-  {    
+  PluginInterface::PluginInterface() : getDebug(0), setDebug(0), create(0), add(0)  {    
     const char* plugin_name = ::getenv("DD4HEP_PLUGINMGR");
     if ( 0 == plugin_name )   {
       plugin_name = "libDD4hepGaudiPluginMgr";
     }
     gSystem->Load(plugin_name);
-    
-    getDebug = get_func< int(*)() >(plugin_name,"dd4hep_pluginmgr_getdebug");
-    setDebug = get_func< int (*)(int)>(plugin_name,"dd4hep_pluginmgr_getdebug");
-    create   = get_func< void* (*)(const char*,
-                                   const char*)>(plugin_name,"dd4hep_pluginmgr_create");
-    add      = get_func<void (*)(const char* identifier, 
-                                 void* creator_stub, 
-                                 const char* signature, 
-                                 const char* return_type)>(plugin_name,"dd4hep_pluginmgr_add_factory");
+    getDebug = get_func< int (*) ()>(plugin_name,"dd4hep_pluginmgr_getdebug");
+    setDebug = get_func< int (*) (int)>(plugin_name,"dd4hep_pluginmgr_getdebug");
+    create   = get_func< void* (*) (const char*,
+                                    const char*)>(plugin_name,"dd4hep_pluginmgr_create");
+    add      = get_func< void (*) (const char* identifier, 
+                                   void* creator_stub, 
+                                   const char* signature, 
+                                   const char* return_type)>(plugin_name,"dd4hep_pluginmgr_add_factory");
   }
 }
 

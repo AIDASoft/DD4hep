@@ -30,7 +30,6 @@ dd4hep_add_dictionary( G__DD4hep
   include/DD4hep/SurfaceInstaller.h
   LINKDEF include/ROOT/LinkDef.h )
 
-set_source_files_properties ( G__DD4hep.cxx PROPERTIES GENERATED TRUE )
 #---Generate DDCore Library-------------------------------------------------------
 dd4hep_add_package_library ( DDCore
   SOURCES        src/*.cpp src/Evaluator/*.cpp src/XML/*.cpp
@@ -39,16 +38,6 @@ dd4hep_add_package_library ( DDCore
   LINK_LIBRARIES ${GaudiPluginService_LIBRARIES}
   OPTIONAL       [BOOST SOURCES src/parsers/*.cpp]
   )
-
-
-if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
-  dd4hep_add_regular_library(DD4hepGaudiPluginMgr
-    SOURCES        src/pluginmgr/Gaudi.cpp
-    INCLUDE_DIRS   ${GaudiPluginService_INCLUDE_DIRS}
-    LINK_LIBRARIES ${GaudiPluginService_LIBRARIES}
-    NODEFAULTS
-    )
-endif()
 
 # Generate DDCore plugins---------------------------------------------------------
 dd4hep_add_plugin ( DDCorePlugins  SOURCES src/plugins/*.cpp )
