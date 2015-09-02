@@ -6,6 +6,7 @@ INSTALL_LCIO=${SW}/lcio/v02-04-03;
 INSTALL_XERCESC=${SW}/xercesc;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
 export ROOTSYS=${SW}/root_v5.34.25_dbg;
+export ROOTSYS=${SW}/root_v6.04.00_dbg;
 . ${ROOTSYS}/bin/thisroot.sh;
 #cat ${ROOTSYS}/bin/thisroot.sh;
 #
@@ -38,14 +39,14 @@ make_opt()
 
 make_build()
 {
-    echo ${CMD};
+    echo ${fCMD};
     eval ${CMD};
     if [ $? -ne  0 ]; then
         make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed CMAKE command:"
         echo ${CMD};
 	exit 1
     fi
-    make -j 5 install;
+    make install VERBOSE=1 -j 5;
     if [ $? -ne  0 ]; then
         make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD:"
         echo ${CMD};
@@ -75,8 +76,7 @@ build_all()
                     OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DROOTSYS=${ROOTSYS} \
-                    -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
+                    -DROOTSYS=${ROOTSYS} -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
 		    CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ${CHECKOUT};";
                     make_build;
 
@@ -86,7 +86,8 @@ build_all()
                     OPTS_ex="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO    -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DROOTSYS=${ROOTSYS} ";
+                    -DROOTSYS=${ROOTSYS}";
+		    source ${DD4hep_DIR}/bin/thisdd4hep.sh;
    		    CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";
                     make_build;
                     #
