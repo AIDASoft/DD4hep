@@ -122,11 +122,61 @@ namespace DD4hep {
       const DDSurfaces::Vector3D& u_val = this->u( o ) ;      
       DDSurfaces::Vector3D  um = -1. * u_val ;
       
-      double dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-                                                            const_cast<double*> ( u_val.const_array() ) ) ;
-      double dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-                                                            const_cast<double*> ( um.array()      ) ) ;
+      double dist_p = 0. ;
+      double dist_m = 0. ;
+      
+
+      // std::cout << " VolSurface::length_along_u() : o =  " << o << " u = " <<    this->u( o ) 
+      // 		<< " -u = " << um << std::endl ;
+
+
+      if( volume()->GetShape()->Contains( o.const_array() ) ){
+
+	dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+							      const_cast<double*> ( u_val.const_array() ) ) ;
+	dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+							      const_cast<double*> ( um.array()      ) ) ;
+	
+
+	// std::cout << " VolSurface::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+	// 	  << " dist_p " <<    dist_p
+	// 	  << " dist_m " <<    dist_m
+	// 	  << std::endl ;
+	
+
+      } else{
+
+	dist_p = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+							       const_cast<double*> ( u_val.const_array() ) ) ;
+	dist_m = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+							       const_cast<double*> ( um.array()      ) ) ;
+
+	dist_p *= 1.0001 ;
+	dist_m *= 1.0001 ;
+
+	// std::cout << " VolSurface::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+	// 	  << " dist_p " <<    dist_p
+	// 	  << " dist_m " <<    dist_m
+	// 	  << std::endl ;
+
+	DDSurfaces::Vector3D o_1 = this->origin() + dist_p * u_val ;
+	DDSurfaces::Vector3D o_2 = this->origin() + dist_m * um ;
+
+	dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
+							const_cast<double*> ( u_val.const_array() ) ) ;
+
+	dist_m += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_2.const_array() ) , 
+							const_cast<double*> ( um.array()      ) ) ;
+
+	// std::cout << " VolSurface::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+	// 	  << " dist_p " <<    dist_p
+	// 	  << " dist_m " <<    dist_m
+	// 	  << std::endl ;
+      }
+	
       return dist_p + dist_m ;
+
+
     }
     
     double VolSurface::length_along_v() const {
@@ -135,11 +185,60 @@ namespace DD4hep {
       const DDSurfaces::Vector3D& v_val = this->v( o ) ;      
       DDSurfaces::Vector3D  vm = -1. * v_val ;
       
-      double dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-                                                            const_cast<double*> ( v_val.const_array() ) ) ;
-      double dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
-                                                            const_cast<double*> ( vm.array()      ) ) ;
+      double dist_p = 0. ;
+      double dist_m = 0. ;
+      
+
+      // std::cout << " VolSurface::length_along_u() : o =  " << o << " u = " <<    this->u( o ) 
+      // 		<< " -u = " << vm << std::endl ;
+
+
+      if( volume()->GetShape()->Contains( o.const_array() ) ){
+
+	dist_p = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+							      const_cast<double*> ( v_val.const_array() ) ) ;
+	dist_m = volume()->GetShape()->DistFromInside( const_cast<double*> ( o.const_array() ) , 
+							      const_cast<double*> ( vm.array()      ) ) ;
+	
+
+	// std::cout << " VolSurface::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+	// 	  << " dist_p " <<    dist_p
+	// 	  << " dist_m " <<    dist_m
+	// 	  << std::endl ;
+	
+
+      } else{
+
+	dist_p = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+							       const_cast<double*> ( v_val.const_array() ) ) ;
+	dist_m = volume()->GetShape()->DistFromOutside( const_cast<double*> ( o.const_array() ) , 
+							       const_cast<double*> ( vm.array()      ) ) ;
+
+	dist_p *= 1.0001 ;
+	dist_m *= 1.0001 ;
+
+	// std::cout << " VolSurface::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+	// 	  << " dist_p " <<    dist_p
+	// 	  << " dist_m " <<    dist_m
+	// 	  << std::endl ;
+
+	DDSurfaces::Vector3D o_1 = this->origin() + dist_p * v_val ;
+	DDSurfaces::Vector3D o_2 = this->origin() + dist_m * vm ;
+
+	dist_p += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_1.const_array() ) , 
+							const_cast<double*> ( v_val.const_array() ) ) ;
+
+	dist_m += volume()->GetShape()->DistFromInside( const_cast<double*> ( o_2.const_array() ) , 
+							const_cast<double*> ( vm.array()      ) ) ;
+
+	// std::cout << " VolSurface::length_along_u() : shape contains(o)  =  " << volume()->GetShape()->Contains( o.const_array() )
+	// 	  << " dist_p " <<    dist_p
+	// 	  << " dist_m " <<    dist_m
+	// 	  << std::endl ;
+      }
+	
       return dist_p + dist_m ;
+
     }
     
 
