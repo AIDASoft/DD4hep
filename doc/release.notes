@@ -3,6 +3,13 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015-09-15 F.Gaede
+  - refactoring of Surface classes:
+    - made VolSurface a reference counting handle to 
+      a polymorphic pointer of type VolSurfaceBase
+      - this should facilitate the creation
+        of dedicated surface classes for special cases
+        such as inside the beampipe or the face of the calorimeter
 
 2015-08-27 F.Gaede
   - added macros DD4HEP_VERSION_GE(MAJV,MINV) and DD4HEP_VERSION_GT(MAJV,MINV)

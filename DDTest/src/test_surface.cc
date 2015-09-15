@@ -140,19 +140,19 @@ int main(int argc, char** argv ){
 
 
 
-    // --- test SurfaceMaterial
-    SurfaceMaterial sm( mat ) ;
+    // --- test MaterialData
+    MaterialData sm( mat ) ;
 
     // material properies of Si :
-    test( STR( sm.A() )  , STR( 28.0855 ) , "   SurfaceMaterial.A() == 28.0855 " ) ; 
+    test( STR( sm.A() )  , STR( 28.0855 ) , "   MaterialData.A() == 28.0855 " ) ; 
 
-    test( STR( sm.Z() )  , STR( 14 ) , "   SurfaceMaterial.Z() == 14 " ) ; 
+    test( STR( sm.Z() )  , STR( 14 ) , "   MaterialData.Z() == 14 " ) ; 
 
-    test( STR( sm.density() )  , STR( 2.33 ) , "   SurfaceMaterial.density() == 2.33 " ) ; 
+    test( STR( sm.density() )  , STR( 2.33 ) , "   MaterialData.density() == 2.33 " ) ; 
 
-    test( STR( sm.radiationLength() / dd4hep::mm )  , STR( 93.4961 ) , "   SurfaceMaterial.radiationLength() == 93.4961 * mm " ) ; 
+    test( STR( sm.radiationLength() / dd4hep::mm )  , STR( 93.4961 ) , "   MaterialData.radiationLength() == 93.4961 * mm " ) ; 
 
-    test( STR( sm.interactionLength() / dd4hep::mm )  , STR( 457.532 ) , "   SurfaceMaterial.interactionLength() == 457.532 * mm " ) ; 
+    test( STR( sm.interactionLength() / dd4hep::mm )  , STR( 457.532 ) , "   MaterialData.interactionLength() == 457.532 * mm " ) ; 
     
 
 
