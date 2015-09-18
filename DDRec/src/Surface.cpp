@@ -26,7 +26,7 @@ namespace DD4hep {
     void VolSurfaceBase::setV(const Vector3D& v_val) {  _v = v_val ; }
     void VolSurfaceBase::setNormal(const Vector3D& n) { _n = n ; }
     
-    long64 VolSurfaceBase::id() const  { return 0 ; } 
+    long64 VolSurfaceBase::id() const  { return _id ; } 
 
     const SurfaceType& VolSurfaceBase::type() const { return _type ; }
     Vector3D VolSurfaceBase::u( const Vector3D& point ) const {  point.x() ; return _u ; }
@@ -214,9 +214,8 @@ namespace DD4hep {
     }
 
 
-    std::vector< std::pair<Vector3D, Vector3D> > VolSurfaceBase::getLines(unsigned nMax) {
+    std::vector< std::pair<Vector3D, Vector3D> > VolSurfaceBase::getLines(unsigned ) {
       // dummy implementation returning empty set
-      nMax ;
       std::vector< std::pair<Vector3D, Vector3D> >  lines ;
       return lines ;
     }
@@ -637,7 +636,8 @@ namespace DD4hep {
       //======== set the unique surface ID from the DetElement ( and placements below ? )
 
       // just use the DetElement ID for now ...
-      _id = _det.volumeID() ;
+      // or the id set by the user to the VolSurface ...
+      _id = ( _volSurf.id()==0 ?  _det.volumeID() : _volSurf.id() ) ;
 
       // typedef PlacedVolume::VolIDs IDV ;
       // DetElement d = _det ;
