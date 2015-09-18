@@ -9,7 +9,7 @@ namespace DD4hep {
   namespace DDRec {
 
     /// typedef for surface maps, keyed by the cellID 
-    typedef std::map< unsigned long, DDSurfaces::ISurface*> SurfaceMap ;
+    typedef std::multimap< unsigned long, DDSurfaces::ISurface*> SurfaceMap ;
 
     /** Surface manager class that holds maps of surfaces for all known 
      *  sensitive detector types and  individual sub detectors. 

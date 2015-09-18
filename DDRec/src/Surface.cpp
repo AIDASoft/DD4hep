@@ -527,7 +527,7 @@ namespace DD4hep {
       _wtM->MasterToLocal( point , pa ) ;
       Vector3D localPoint( pa ) ;
       
-      return _volSurf.distance( point ) ;
+      return _volSurf.distance( localPoint ) ;
       //FG      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).distance( localPoint )  : VolCylinder(_volSurf).distance( localPoint ) ) ;
     }
       
@@ -1024,9 +1024,54 @@ namespace DD4hep {
 
     //================================================================================================================
 
+ 
+    Vector3D CylinderSurface::u( const Vector3D& point  ) const { 
+ 
+      Vector3D lp , u_val ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+      const DDSurfaces::Vector3D& lu = _volSurf.u( lp  ) ;
+      _wtM->LocalToMasterVect( lu , u_val.array() ) ;
+      return u_val ; 
+    }
+    
+    Vector3D CylinderSurface::v(const Vector3D& point ) const {  
+      Vector3D lp , v_val ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+      const DDSurfaces::Vector3D& lv =  _volSurf.v( lp  ) ;
+      _wtM->LocalToMasterVect( lv , v_val.array() ) ;
+      return v_val ; 
+    }
+    
+    Vector3D CylinderSurface::normal(const Vector3D& point ) const {  
+      Vector3D lp , n ;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+      const DDSurfaces::Vector3D& ln =  _volSurf.normal( lp  ) ;
+      _wtM->LocalToMasterVect( ln , n.array() ) ;
+      return n ; 
+    }
+ 
+    Vector2D CylinderSurface::globalToLocal( const Vector3D& point) const {
+      
+      Vector3D lp;
+      _wtM->MasterToLocal( point , lp.array() ) ;
+ 
+      return _volSurf.globalToLocal( lp )  ;
+    }
+    
+    
+    Vector3D CylinderSurface::localToGlobal( const Vector2D& point) const {
+ 
+      Vector3D lp = _volSurf.localToGlobal( point ) ;
+      Vector3D p ;
+      _wtM->LocalToMaster( lp , p.array() ) ;
+ 
+      return p ;
+    }
+
     double CylinderSurface::radius() const {	return _volSurf.origin().rho() ;  }
 
     Vector3D CylinderSurface::center() const {	return volumeOrigin() ;  }
+
 
     //================================================================================================================
 

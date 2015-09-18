@@ -44,7 +44,7 @@ namespace DD4hep {
       MaterialData _innerMat ;
       MaterialData _outerMat ;    
       Geometry::Volume _vol ;
-      int _id ;
+      long64 _id ;
       unsigned _refCount ;
 
       /// setter for daughter classes
@@ -422,6 +422,8 @@ namespace DD4hep {
 	
 	VolSurface(  new T( typ, thickness_inner, thickness_outer, u_val, v_val, n_val, o_val, vol , 0 )  ){
       }
+      
+      T* operator->() { return static_cast<T*>( _surf ) ; }
     } ;
 
     //---------------------------------------------------------------------------------------------
@@ -567,11 +569,34 @@ namespace DD4hep {
       ///Standard c'tor.
       CylinderSurface( Geometry::DetElement det, VolSurface volSurf ) : Surface( det, volSurf ) { }      
       
+    /** First direction of measurement U - rotated to point projected onto the cylinder.
+       *  No check is done whether the point actually is on the cylinder surface
+       */
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+    
+      /** Second direction of measurement V - rotated to point projected onto the cylinder.
+       *  No check is done whether the point actually is on the cylinder surface
+       */
+      virtual Vector3D v(const Vector3D& point = Vector3D() ) const ;
+    
+      /** The normal direction at the given point - rotated to point projected onto the cylinder.
+       *  No check is done whether the point actually is on the cylinder surface
+       */
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+ 
+      /** Convert the global position to the local position (u,v) on the surface - u runs along the axis of the cylinder, v is r*phi */
+      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      
+      /** Convert the local position (u,v) on the surface to the global position  - u runs along the axis of the cylinder, v is r*phi*/
+      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+
       /// the radius of the cylinder (rho of the origin vector)
       virtual double radius() const ;
 
       /// the center of the cylinder 
       virtual Vector3D center() const ;
+
+
 
     } ;
 
