@@ -39,12 +39,19 @@ using namespace dd4hep ;
 
 int main(int argc, char** argv ){
     
-  if( argc != 2 ) {
-    std::cout << " usage: dumpdetector compact.xml " << std::endl ;
+  if( argc < 2 ) {
+    std::cout << " usage: dumpdetector compact.xml [-s]" 
+	      << "  -s :  also print surfaces " 
+	      << std::endl ;
+
     exit(1) ;
   }
   
   std::string inFile =  argv[1] ;
+
+
+  bool printSurfaces = ( argc>2 && !strcmp( argv[2] , "-s" ) );
+
 
   LCDD& lcdd = LCDD::getInstance();
 
@@ -110,12 +117,14 @@ int main(int argc, char** argv ){
 
     std::cout << de.name() << "[ path: "<< de.placementPath ()  <<  "] (id: " << de.id() << ") - sens type : " << lcdd.sensitiveDetector( de.name() ).type() << "\t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
 
-    // for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
-    //   Surface* surf =  *it ;
-    //   std::cout << " ------------------------- " 
-    // 		<< " surface: "  << *surf         << std::endl
-    // 		<< " ------------------------- "  << std::endl ;
-    // }
+    if( printSurfaces ){
+      for( SurfaceList::const_iterator sit = sL.begin() ; sit != sL.end() ; ++sit ){
+	const ISurface* surf =  *sit ;
+	std::cout << " ------------------------- " 
+		  << " surface: "  << *surf         << std::endl
+		  << " ------------------------- "  << std::endl ;
+      }
+    }
   }
 
   std::cout << "############################################################################### "  << std::endl  << std::endl  ;
