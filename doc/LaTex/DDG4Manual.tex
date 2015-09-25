@@ -37,7 +37,7 @@ We will present the generic simulation toolkit \DDG using the \DDhep detector
 description toolkit. 
 The toolkit implements a modular and flexible approach to simulation activities
 using Geant4. User defined simulation applications using \DDG 
-can easily be configured, extended using specialzed action routines.
+can easily be configured, extended using specialized action routines.
 The design is strongly driven by easy of use;
 developers of detector descriptions and applications using
 them should provide minimal information and minimal specific
@@ -229,7 +229,7 @@ gives all clients access to the user hooks (see Figure~\ref{fig:ddg4-geant4-kern
 All Geant4 callback structures are exposed so that clients can easily 
 objects implementing the required interface or register callbacks with the 
 correct signature. Each of these action sequences is connected to an instance
-of a geant4 provided callback structure as it is shown in 
+of a Geant4 provided callback structure as it is shown in
 Figure~\ref{fig:ddg4-g4runmanager-anatomy}.
 \begin{figure}[h]
   \begin{center}
@@ -279,7 +279,7 @@ a sequence attached to one Geant4 user callback.
 \end{figure}
 
 \noindent
-\DDG knowns two types of actions: global actions and anonymous actions.
+\DDG knows two types of actions: global actions and anonymous actions.
 Global actions are accessible externally from the \tts{Geant4Kernel} instance.
 Global actions are also re-usable and hence may be contribute to several 
 action sequences (see the following chapters for details). Global actions 
@@ -541,7 +541,7 @@ energy deposit is below a given threshold.
 Objects of type \tts{Geant4Sensitive} receive the callbacks by overloading the 
 member function:
 \begin{unnumberedcode}
-  /// Method invoked at the begining of each event.
+  /// Method invoked at the beginning of each event.
   virtual void begin(G4HCofThisEvent* hce);
   /// Method invoked at the end of each event.
   virtual void end(G4HCofThisEvent* hce);
@@ -614,7 +614,7 @@ The \tw{Geant4VolumeManager} functionality is not for free! It requires that
 
 
 \noindent
--- match geant4 volume with TGeo volume
+-- match Geant4 volume with TGeo volume
 
 %=============================================================================
 \subsubsection{DDG4 Intrinsic Sensitive Detectors}
@@ -901,7 +901,7 @@ using
 \item by creating a setup script using \tts{python} and 
 	\tts{ROOT}'s reflection mechanism exposed by \tts{PyROOT}.
 \end{itemize}
-The follwing subsection describe these different mechanism. An attempt was made 
+The following subsection describe these different mechanism. An attempt was made
 to match the naming conventions of all approaches where possible.
 
 %=============================================================================
@@ -917,7 +917,7 @@ in \DDhep the only difference is the name of the root-element, which for
 The following code snippet shows the basic structure of a \DDG setup file:
 \begin{unnumberedcode}
 <geant4_setup>
-  <physicslist>          ,,,  </physicslist>  <!-- Defintiion of the physics list          -->
+  <physicslist>          ,,,  </physicslist>  <!-- Definition of the physics list          -->
   <actions>              ...  </actions>      <!-- The list of global actions              -->
   <phases>               ...  </phases>       <!-- The definition of the various phases    -->
   <filters>              ...  </filters>      <!-- The list of global filter actions       -->
@@ -1089,7 +1089,7 @@ the \tts{sequences} section:
   <sequences>
     <sequence name="Geant4EventActionSequence/EventAction"> <!-- Sequence "EventAction" of type
                                                                  "Geant4EventActionSequence" -->
-      <action name="Geant4TestEventAction/UserEvent_1">     <!-- Anonymouns action                   -->
+      <action name="Geant4TestEventAction/UserEvent_1">     <!-- Anonymous action                   -->
         <properties Property_int="01234"                    <!-- Properties go inline               -->
             Property_double="1e11"
             Property_string="'Hello_1'"/>
@@ -1100,7 +1100,7 @@ the \tts{sequences} section:
         <properties Output="simple.root"/>                  <!-- Output file property               -->
       </action>
       <action name="Geant4Output2LCIO/LCIOOutput">          <!-- LCIO output action                 -->
-        <properties Output="simple_lcio"/>                  <!-- Output file property               -->
+        <properties Output="simple.lcio"/>                  <!-- Output file property               -->
       </action>
     </sequence>
 
@@ -1120,7 +1120,7 @@ the \tts{sequences} section:
 </geant4_setup>
 \end{code}
 Here firstly the \bold{EventAction} sequence is defined with its members. 
-Secondly a sensitve detector sequence is defined for the subdetector
+Secondly a sensitive detector sequence is defined for the subdetector
 \tts{SiTrackerBarrel} of type \tts{Geant4SensDetActionSequence}.
 The sequence uses two filters: \tts{GeantinoRejector} to not generate hits
 from geantinos and \tts{EnergyDepositMinimumCut} to enforce a minimal energy deposit.
@@ -1138,7 +1138,7 @@ Analogous below the sensitive detector sequence for the subdetector
 hit collection.
 
 \noindent
-\bold{Plase note:} 
+\bold{Please note:}
 \begin{itemize}\itemcompact
 \item \bold{It was already mentioned, but once again}: Event-, run-, generator-, tracking-,
     stepping- and stacking actions sequences have predefined names! 
@@ -1248,7 +1248,7 @@ mechanism is very simple, but mainly meant for purists (like me ;-)),
 since it is nearly equivalent to the explicit setup within a \tts{C++} 
 main program.
 The following code section shows how to do it. For explanation the code
-secment is discussed below line by line.
+segment is discussed below line by line.
 \begin{code}
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4TestActions.h"
@@ -1401,8 +1401,8 @@ root [2] exampleAClick()
 
 \noindent
 The above scripts are present in the DDG4/example directory located in svn.
-The intialization script \tts{initAClick.C} may require customization
-to cope with the installation pathes.
+The initialization script \tts{initAClick.C} may require customization
+to cope with the installation paths.
 
 %=============================================================================
 \subsection{Setting up DDG4 using Python}
@@ -1489,7 +1489,7 @@ def run():
   gun.enableUI()
   kernel.generatorAction().add(gun)
 
-  # Setup global filters fur use in sensntive detectors
+  # Setup global filters for use in sensitive detectors
   f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
   f2 = DDG4.Filter(kernel,'ParticleRejectFilter/OpticalPhotonRejector')
   f2.particle = 'opticalphoton'
@@ -1760,8 +1760,8 @@ selected components using the setup mechanisms described in
 Section~\ref{sec:ddg4-implementation-setup}.
 
 \noindent
-Such a palette based approach obviously depends on the availibility of
-documentation for exisisting components describing the properties
+Such a palette based approach obviously depends on the availability of
+documentation for existing components describing the properties
 of each component and the interaction of each component within the \DDG
 framework.
 
@@ -1816,7 +1816,7 @@ components.
 %=============================================================================
 \noindent
 The {\tt{Geant4UIManager}} handles interactivity aspects between Geant4,
-its command handlers (ie. terminal) and the various components the actions
+its command handlers (i.e. terminal) and the various components the actions
 interact.
 
 \noindent
@@ -1848,7 +1848,7 @@ The callback signature is: void operator()(G4Event* event)
 
 
 %=============================================================================
-\subsection{Predfined Geant4 Physics List Objects}
+\subsection{Predefined Geant4 Physics List Objects}
 %=============================================================================
 \noindent
 The physics list may be defined entirely data driven using the factory mechanism
@@ -1874,7 +1874,7 @@ using a variety of predefined objects:
 \subsection{Geant4 Generation Action Modules}
 %=============================================================================
 \noindent
-Here we discuss modules, which are instrinsically part of DDG4 and may be
+Here we discuss modules, which are intrinsically part of DDG4 and may be
 attached to the {\tt{Geant4GeneratorActionSequence}}.
 
 %=============================================================================
@@ -1972,8 +1972,8 @@ These by default are extensions of type:
 \bold{Type}            & \tts{Geant4GeneratorAction}                     \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
-\bold{Angle} (double)  & Lorentz-Angle of boost                          \\
-\bold{Mask}  (double)  & Interaction identifier                          \\
+\bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                          \\
+\bold{Mask} (int.bitmask)    & \tts{Interaction identifier} \\
 \hline
 \end{tabular}
 
@@ -1993,7 +1993,7 @@ Boost the primary vertex and all particles outgoing the primary interaction in X
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
 \bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                    \\
-\bold{Mask}  (double)  & \tts{Interaction identifier}                    \\
+\bold{Mask} (int.bitmask)    & \tts{Interaction identifier} \\
 \hline
 \end{tabular}
 
@@ -2012,7 +2012,8 @@ Smear the primary vertex and all particles outgoing the primary interaction.
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
 \bold{Offset} (PxPyPzEVector) & \tts{Smearing offset}                    \\
-\bold{Mask}   (PxPyPzEVector) & \tts{Sigma on offset}                    \\
+\bold{Sigma}   (PxPyPzEVector) & \tts{Sigma on offset}                    \\
+\bold{Mask} (int.bitmask)    & \tts{Interaction identifier} \\
 \hline
 \end{tabular}
 
@@ -2078,7 +2079,7 @@ ensure each gun generates it's own, well identified primary vertex.
 \noindent
 There is one 'user lazyness' support though:
 If there is only one particle gun in use, the property 'Standalone', 
-which by default is set to true invokes the interaction merging and he 
+which by default is set to true invokes the interaction merging and the
 Geant4 primary generation directly.
 
 \vspace{0.5cm}
@@ -2094,7 +2095,7 @@ Component Properties:     & default                                         \\
 \bold{energy} (double)   & Particle energy in $MeV$ \\
 \bold{position} (XYZVector)  & Pole position of the generated particles in $mm$\\
 \bold{direction} (XYZVector) & Momentum direction of the generated particles\\
-\bold{isotrop} (bool)        & Isotrp particle directions in space. \\
+\bold{isotrop} (bool)        & Isotropic particle directions in space. \\
 \bold{Mask} (int.bitmask)    & Interaction identifier \\
 \bold{Standalone} (bool)     & Setup for standalone execution \\ 
                               & including interaction merging etc. \\
