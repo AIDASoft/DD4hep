@@ -1981,7 +1981,7 @@ These by default are extensions of type:
 \subsubsection{Geant4InteractionVertexBoost}
 %=============================================================================
 \noindent
-Boost the primary vertex and all particles outgoing the primary interaction.
+Boost the primary vertex and all particles outgoing the primary interaction in X-direction.
 
 \vspace{0.5cm}
 \noindent
@@ -1998,37 +1998,17 @@ Boost the primary vertex and all particles outgoing the primary interaction.
 \end{tabular}
 
 %=============================================================================
-\subsubsection{Geant4InteractionVertexBoost}
+\subsubsection{Geant4InteractionVertexSmear}
 %=============================================================================
 \noindent
-Boost the primary vertex and all particles outgoing the primary interaction.
+Smear the primary vertex and all particles outgoing the primary interaction.
 
 \vspace{0.5cm}
 \noindent
 \begin{tabular}{ l p{10cm} }
 \hline
-\bold{Class name}      & \tts{Geant4InteractionVertexBoost}              \\
-\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
-\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
-\hline
-\bold{Component Properties:}   & defaults apply                            \\
-\bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                    \\
-\bold{Mask}  (double)  & \tts{Interaction identifier}                    \\
-\hline
-\end{tabular}
-
-%=============================================================================
-\subsubsection{Geant4InteractionVertexBoost}
-%=============================================================================
-\noindent
-Boost the primary vertex and all particles outgoing the primary interaction.
-
-\vspace{0.5cm}
-\noindent
-\begin{tabular}{ l p{10cm} }
-\hline
-\bold{Class name}      & \tts{Geant4InteractionVertexBoost}              \\
-\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
+\bold{Class name}      & \tts{Geant4InteractionVertexSmear}              \\
+\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexSmear.cpp} \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
 \bold{Offset} (PxPyPzEVector) & \tts{Smearing offset}                    \\
