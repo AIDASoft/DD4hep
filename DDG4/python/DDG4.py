@@ -431,7 +431,7 @@ class Simple:
     evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
-    evt_root.Output = output+'.root'
+    evt_root.Output = output + '' if output.endswith('.root') else '.root'
     evt_root.enableUI()
     self.kernel.eventAction().add(evt_root)
     return evt_root
