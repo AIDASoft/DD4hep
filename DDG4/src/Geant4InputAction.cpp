@@ -100,7 +100,7 @@ int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& par
   int evid = evt_number + m_firstEvent;
   if ( 0 == m_reader )  {
     if ( m_input.empty() )  {
-      throw runtime_error("InputAction: No inoput file declared!");
+      throw runtime_error("InputAction: No input file declared!");
     }
     string err;
     TypeName tn = TypeName::split(m_input,"|");
