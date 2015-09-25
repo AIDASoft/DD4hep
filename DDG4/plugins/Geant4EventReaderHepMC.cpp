@@ -30,7 +30,7 @@ namespace DD4hep {
     /// Class to populate Geant4 primaries from StdHep files.
     /**
      * Class to populate Geant4 primary particles and vertices from a
-     * file in HEPEvt format (ASCII)
+     * file in HepMC format (ASCII)
      *
      *  \author  P.Kostka (main author)
      *  \author  M.Frank  (code reshuffeling into new DDG4 scheme)
@@ -163,7 +163,7 @@ Geant4EventReaderHepMC::Geant4EventReaderHepMC(const string& nam)
 {
   // Now open the input file:
   m_input.open(nam.c_str(),BOOST_IOS::in|BOOST_IOS::binary);
-  if ( m_input.is_open() )   {
+  if ( not m_input.is_open() )   {
     string err = "+++ Geant4EventReaderHepMC: Failed to open input stream:"+nam+
       " Error:"+string(strerror(errno));
     throw runtime_error(err);
