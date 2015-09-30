@@ -368,13 +368,25 @@ namespace DD4hep{
 	    
 	    LayeredCalorimeterData::Layer& l = calo->layers[i] ;
 	    
+            //Do some arithmetic to get thicknesses and (approximate) absorber thickneses from "new" DDRec structures
+            //The positioning should come out right, but the absorber thickness should be overestimated due to the presence of 
+            //other less dense material
 	    if( i == 0 ) {
-	      gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, l.thickness/dd4hep::mm , 
-						     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	      gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, 
+						     (l.inner_thickness+l.sensitive_thickness/2.)/dd4hep::mm , 
+						     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, 
+						     (l.inner_thickness-l.sensitive_thickness/2.)/dd4hep::mm ) ;
 	    }else{
-	      gearCalo->layerLayout().addLayer(                             l.thickness/dd4hep::mm , 
-									    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	      gearCalo->layerLayout().addLayer( (l.inner_thickness+l.sensitive_thickness/2.+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2. ) / dd4hep::mm , 
+						l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, (l.inner_thickness-l.sensitive_thickness/2.+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm) ;
 	    }
+	    // if( i == 0 ) {
+	    //   gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, l.thickness/dd4hep::mm , 
+	    // 					     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	    // }else{
+	    //   gearCalo->layerLayout().addLayer(                             l.thickness/dd4hep::mm , 
+	    // 								    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, l.absorberThickness/dd4hep::mm ) ;
+	    // }
 	    
 	  }
 	
