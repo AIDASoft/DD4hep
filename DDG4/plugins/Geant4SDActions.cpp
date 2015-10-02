@@ -219,7 +219,7 @@ namespace DD4hep {
             << " Post (" <<std::setw(24) << step->GetPostStepPoint()->GetMomentum() << ") "
             << std::endl;
 
-        std::cout << out;
+        std::cout << out.str();
 
         return true;
       }
