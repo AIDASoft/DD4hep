@@ -17,6 +17,7 @@ source ${DD4hep_DIR}/bin/thisdd4hep.sh;
 dd4hep_parse_this ${BASH_ARGV[0]} @PackageName@;
 #
 dd4hep_add_path    PATH ${THIS}/bin;
+dd4hep_add_path    PYTHONPATH ${THIS}/lib/python
 dd4hep_add_library_path ${THIS}/lib;
 # -- need to extend dynamic search path for all external libraries:
 if [ @External_LIBRARY_DIRS@ ]; then
