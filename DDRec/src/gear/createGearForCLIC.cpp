@@ -354,9 +354,16 @@ namespace DD4hep{
             //The positioning should come out right, but the absorber thickness should be overestimated due to the presence of 
             //other less dense material
 	    if( i == 0 ) {
+            //First layer is positioned with only its inner thickness taken into account
 	      gearCalo->layerLayout().positionLayer( l.distance/dd4hep::mm, (l.inner_thickness+l.sensitive_thickness/2.)/dd4hep::mm , 
 						     l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, (l.inner_thickness-l.sensitive_thickness/2.)/dd4hep::mm ) ;
-	    }else{
+	    }else if ( i == nL -1 ) {
+                    //Need to handle outermost layer differently; add its outer thickness
+                    //This gives the right extent, but the "wrong" distance for the last layer
+            	      gearCalo->layerLayout().addLayer((l.inner_thickness+l.outer_thickness+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm , 
+									    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, (l.inner_thickness+l.outer_thickness-l.sensitive_thickness+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm) ;
+        }else{
+            //All other layers need to be added taking into account the previous layer outer thicknesses
 	      gearCalo->layerLayout().addLayer((l.inner_thickness+l.sensitive_thickness/2.+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm , 
 									    l.cellSize0/dd4hep::mm, l.cellSize1/dd4hep::mm, (l.inner_thickness-l.sensitive_thickness/2.+calo->layers[i-1].outer_thickness-calo->layers[i-1].sensitive_thickness/2.)/dd4hep::mm) ;
 	    }
