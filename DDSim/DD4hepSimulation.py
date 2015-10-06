@@ -7,16 +7,38 @@ Based on M. Frank and F. Gaede runSim.py
 
 """
 __RCSID__ = "$Id$"
-import ROOT
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-
-import DDG4, DD4hep
-from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 import argparse
+try:
+  import argcomplete
+  ARGCOMPLETEENABLED=True
+except ImportError:
+  ARGCOMPLETEENABLED=False
 
+def outputLevel( level ):
+  """return INT for outputlevel"""
+  if isinstance(level, int):
+    if level < 1 or 7 < level:
+      raise KeyError
+    return level
+  outputlevels = { "VERBOSE": 1,
+                   "DEBUG":   2,
+                   "INFO":    3,
+                   "WARNING": 4,
+                   "ERROR":   5,
+                   "FATAL":   6,
+                   "ALWAYS":  7 }
+  return outputlevels[level.upper()]
+
+
+from DDSim.Helper.Gun import Gun
+from DDSim.Helper.ParticleHandler import ParticleHandler
+from DDSim.Helper.Output import Output
+from DDSim.Helper.MagneticField import MagneticField
+from DDSim.Helper.ConfigHelper import ConfigHelper
 import os
 import sys
+
 
 class DD4hepSimulation(object):
   """Class to hold all the parameters and functions to run simulation"""
@@ -26,14 +48,14 @@ class DD4hepSimulation(object):
     self.inputFiles = []
     self.outputFile = "dummyOutput.slcio"
     self.runType = "batch"
-    self.printLevel = Output.INFO
+    self.printLevel = 3
 
     self.numberOfEvents = 0
     self.skipNEvents = 0
     self.physicsList = "FTFP_BERT"
     self.crossingAngleBoost = 0.0
     self.macroFile = ''
-    self.gun = False
+    self.enableGun = False
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.magneticFieldDict = {}
@@ -41,37 +63,15 @@ class DD4hepSimulation(object):
 
     self.errorMessages = []
 
+    ## dummy objects for extended configuration option
+    self.output = Output()
+    self.gun = Gun()
+    self.part = ParticleHandler()
+    self.field = MagneticField()
+
     ### use TCSH geant UI instead of QT
     os.environ['G4UI_USE_TCSH'] = "1"
 
-  def getOutputLevel(self, level):
-    """return output.LEVEL"""
-    try:
-      level = int(level)
-      levels = { 1: Output.VERBOSE,
-                 2: Output.DEBUG,
-                 3: Output.INFO,
-                 4: Output.WARNING,
-                 5: Output.ERROR,
-                 6: Output.FATAL,
-                 7: Output.ALWAYS }
-      return levels[level]
-    except ValueError:
-      try:
-        levels = { "VERBOSE": Output.VERBOSE,
-                   "DEBUG": Output.DEBUG,
-                   "INFO": Output.INFO,
-                   "WARNING": Output.WARNING,
-                   "ERROR": Output.ERROR,
-                   "FATAL": Output.FATAL,
-                   "ALWAYS": Output.ALWAYS }
-        return levels[level.upper()]
-      except ValueError:
-        self.errorMessages.append( "ERROR: printLevel is neither integer nor string" )
-        return -1
-    except KeyError:
-      self.errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
-      return -1
 
   def readSteeringFile(self, steeringFile):
     """Reads a steering file and sets the parameters to that of the
@@ -116,6 +116,7 @@ class DD4hepSimulation(object):
                         help="Outputfile from the simulation,only lcio output is supported")
 
     parser.add_argument("-v", "--printLevel", action="store", default=self.printLevel, dest="printLevel",
+                        choices=(1,2,3,4,5,6,7,'VERBOSE','DEBUG', 'INFO', 'WARNING', 'ERROR', 'FATAL', 'ALWAYS'),
                         help="Verbosity use integers from 1(most) to 7(least) verbose"
                         "\nor strings: VERBOSE, DEBUG, INFO, WARNING, ERROR, FATAL, ALWAYS")
 
@@ -131,24 +132,30 @@ class DD4hepSimulation(object):
     parser.add_argument("--crossingAngleBoost", action="store", dest="crossingAngleBoost", default=self.crossingAngleBoost,
                         type=float, help="Lorentz boost for the crossing angle, in radian!")
 
-    parser.add_argument("--vertexSigma", nargs=4, action="store", dest="vertexSigma", default=self.vertexSigma,
+    parser.add_argument("--vertexSigma", nargs=4, action="store", dest="vertexSigma", default=self.vertexSigma, metavar = ('X','Y','Z','T'),
                         type=float, help="FourVector of the Sigma for the Smearing of the Vertex position: x y z t")
 
-    parser.add_argument("--vertexOffset", nargs=4, action="store", dest="vertexOffset", default=self.vertexOffset,
+    parser.add_argument("--vertexOffset", nargs=4, action="store", dest="vertexOffset", default=self.vertexOffset, metavar = ('X','Y','Z','T'),
                         type=float, help="FourVector of translation for the Smearing of the Vertex position: x y z t")
 
     parser.add_argument("--macroFile", "-M", action="store", dest="macroFile", default=self.macroFile,
                         help="Macro file to execute for runType 'run' or 'vis'")
 
-    parser.add_argument("--enableGun", "-G", action="store_true", dest="gun", default=self.gun,
+    parser.add_argument("--enableGun", "-G", action="store_true", dest="enableGun", default=self.enableGun,
                         help="enable the DDG4 particle gun")
 
     parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="detailedShowerMode", default=self.detailedShowerMode,
                         help="use detailed shower mode")
 
+    #FIXME: Add all the things here, then they will show up in the help usage
+    #output, or do something smarter with fullHelp only for example
+    self.__addAllHelper( parser )
     ## now parse everything. The default values are now taken from the
     ## steeringFile if they were set so that the steering file parameters can be
     ## overwritten from the command line
+    #parsed = parser.parse_args()
+    if ARGCOMPLETEENABLED:
+      argcomplete.autocomplete(parser)
     parsed = parser.parse_args()
 
     self.compactFile = parsed.compactFile
@@ -157,14 +164,14 @@ class DD4hepSimulation(object):
     self.outputFile = parsed.outputFile
     self.__checkFileFormat( self.outputFile, ('.root', '.slcio'))
     self.runType = parsed.runType
-    self.printLevel = self.getOutputLevel(parsed.printLevel)
+    self.printLevel = self.__checkOutputLevel(parsed.printLevel)
 
     self.numberOfEvents = parsed.numberOfEvents
     self.skipNEvents = parsed.skipNEvents
     self.physicsList = parsed.physicsList
     self.crossingAngleBoost = parsed.crossingAngleBoost
     self.macroFile = parsed.macroFile
-    self.gun = parsed.gun
+    self.enableGun = parsed.enableGun
     self.detailedShowerMode = parsed.detailedShowerMode
     self.vertexOffset = parsed.vertexOffset
     self.vertexSigma = parsed.vertexSigma
@@ -175,43 +182,21 @@ class DD4hepSimulation(object):
     if self.runType == "batch":
       if not self.numberOfEvents:
         self.errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
-      if not self.inputFiles and not self.gun:
+      if not self.inputFiles and not self.enableGun:
         self.errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
 
+    #self.__treatUnknownArgs( parsed, unknown )
+    self.__parseAllHelper( parsed )
+    #exit(1)
     if self.errorMessages:
       parser.epilog = "\n".join(self.errorMessages)
       parser.print_help()
       exit(1)
 
-  def setupMagneticField(self, simple):
-    self.magneticFieldSetup()
-    field = simple.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-    field.stepper            = self.magneticFieldDict['field.stepper']
-    field.equation           = self.magneticFieldDict['field.equation']
-    field.eps_min            = self.magneticFieldDict['field.eps_min']
-    field.eps_max            = self.magneticFieldDict['field.eps_max']
-    field.min_chord_step     = self.magneticFieldDict['field.min_chord_step']
-    field.delta_chord        = self.magneticFieldDict['field.delta_chord']
-    field.delta_intersection = self.magneticFieldDict['field.delta_intersection']
-    field.delta_one_step     = self.magneticFieldDict['field.delta_one_step']
-
-
-  def magneticFieldSetup(self):
-    """options for the magneticFieldStepper"""
-
-    #---- B field stepping -------
-    self.magneticFieldDict['field.stepper']            = "HelixSimpleRunge"
-    self.magneticFieldDict['field.equation']           = "Mag_UsualEqRhs"
-    self.magneticFieldDict['field.eps_min']            = 5e-05*mm
-    self.magneticFieldDict['field.eps_max']            = 0.001*mm
-    self.magneticFieldDict['field.min_chord_step']     = 0.01*mm
-    self.magneticFieldDict['field.delta_chord']        = 0.25*mm
-    self.magneticFieldDict['field.delta_intersection'] = 1e-05*mm
-    self.magneticFieldDict['field.delta_one_step']     = 1e-04*mm
-
   @staticmethod
   def getDetectorLists( lcdd ):
     ''' get lists of trackers and calorimeters that are defined in lcdd (the compact xml file)'''
+    import DDG4
   #  if len(detectorList):
   #    print " subset list of detectors given - will only instantiate these: " , detectorList
     trackers,calos = [],[]
@@ -235,6 +220,12 @@ class DD4hepSimulation(object):
 
   def run(self):
     """setup the geometry and dd4hep and geant4 and do what was asked to be done"""
+    import ROOT
+    ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+    import DDG4, DD4hep
+
+    self.printLevel = getOutputLevel(self.printLevel)
 
     kernel = DDG4.Kernel()
     DD4hep.setPrintLevel(self.printLevel)
@@ -270,7 +261,7 @@ class DD4hepSimulation(object):
 
     #-----------------------------------------------------------------------------------
     # setup the magnetic field:
-    self.setupMagneticField(simple)
+    self.__setMagneticFieldOptions(simple)
 
     #----------------------------------------------------------------------------------
 
@@ -288,9 +279,9 @@ class DD4hepSimulation(object):
 
     actionList = []
 
-    if self.gun:
+    if self.enableGun:
       gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/"+"Gun")
-      gun = self.setGunOptions( gun )
+      self.__setGunOptions( gun )
       gun.Standalone = False
       gun.Mask = 1
       actionList.append(gun)
@@ -318,7 +309,7 @@ class DD4hepSimulation(object):
       self.__applyBoostOrSmear(kernel, actionList, index)
 
     if actionList:
-      simple.buildInputStage( actionList , output_level=DDG4.OutputLevel.DEBUG )
+      simple.buildInputStage( actionList , output_level=self.output.inputStage )
 
     #================================================================================================
 
@@ -326,12 +317,12 @@ class DD4hepSimulation(object):
     part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
     kernel.generatorAction().adopt(part)
     #part.SaveProcesses = ['conv','Decay']
-    part.SaveProcesses = ['Decay']
-    part.MinimalKineticEnergy = 1*MeV
-    part.KeepAllParticles = False
-    part.PrintEndTracking = False
-    part.PrintStartTracking = False
-    #part.OutputLevel = Output.INFO #generator_output_level
+    part.SaveProcesses        = self.part.saveProcesses
+    part.MinimalKineticEnergy = self.part.minimalKineticEnergy
+    part.KeepAllParticles     = self.part.keepAllParticles
+    part.PrintEndTracking     = self.part.printEndTracking
+    part.PrintStartTracking   = self.part.printStartTracking
+    part.OutputLevel = self.output.part
     part.enableUI()
     user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
     try:
@@ -366,7 +357,7 @@ class DD4hepSimulation(object):
 
     for tracker in trk:
       print 'simple.setupTracker(  ' , tracker , ')'
- 
+
       if 'tpc' in tracker.lower():
         seq,act = simple.setupTracker( tracker, type='TPCSDAction')
       else:
@@ -408,15 +399,26 @@ class DD4hepSimulation(object):
     kernel.run()
     kernel.terminate()
 
-  def setGunOptions( self, gun ):
+  def __setGunOptions(self, gun):
     """set the starting properties of the DDG4 particle gun"""
-    gun.energy      = 10*GeV
-    gun.particle    = "mu-"
-    gun.multiplicity = 1
-    gun.position     = (0.0,0.0,0.0)
-    gun.isotrop      = False
-    gun.direction    = (0,0,1)
-    return gun
+    gun.energy       = self.gun.energy
+    gun.particle     = self.gun.particle
+    gun.multiplicity = self.gun.multiplicity
+    gun.position     = self.gun.position
+    gun.isotrop      = self.gun.isotrop
+    gun.direction    = self.gun.direction
+
+  def __setMagneticFieldOptions(self, simple):
+    """ create and configure the magnetic tracking setup """
+    field = simple.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
+    field.stepper            = self.field.stepper
+    field.equation           = self.field.equation
+    field.eps_min            = self.field.eps_min
+    field.eps_max            = self.field.eps_max
+    field.min_chord_step     = self.field.min_chord_step
+    field.delta_chord        = self.field.delta_chord
+    field.delta_intersection = self.field.delta_intersection
+    field.delta_one_step     = self.field.delta_one_step
 
   def __checkFileFormat(self, fileNames, extensions):
     """check if the fileName is allowed, note that the filenames are case
@@ -430,6 +432,7 @@ class DD4hepSimulation(object):
 
   def __applyBoostOrSmear( self, kernel, actionList, mask ):
     """apply boost or smearing for given mask index"""
+    import DDG4
     if self.crossingAngleBoost:
       lbo = DDG4.GeneratorAction(kernel, "Geant4InteractionVertexBoost")
       lbo.Angle = self.crossingAngleBoost
@@ -442,3 +445,61 @@ class DD4hepSimulation(object):
       vSmear.Sigma = self.vertexSigma
       vSmear.Mask = mask
       actionList.append(vSmear)
+
+  def __addAllHelper( self , parser ):
+    """all configHelper objects to commandline args"""
+    for name, obj in vars(self).iteritems():
+      if isinstance( obj, ConfigHelper ):
+        for var,valAndDoc in obj.getOptions().iteritems():
+          parser.add_argument("--%s.%s" % (name, var),
+                              action="store",
+                              dest="%s.%s" % (name, var),
+                              default = valAndDoc[0],
+                              help = valAndDoc[1]
+                              # type = type(val),
+                             )
+
+  def __parseAllHelper( self, parsed ):
+    """ parse all the options for the helper """
+    parsedDict = vars(parsed)
+    for name, obj in vars(self).iteritems():
+      if isinstance( obj, ConfigHelper ):
+        for var in obj.getOptions():
+          key = "%s.%s" %( name,var )
+          if key in parsedDict:
+            obj.setOption( var, parsedDict[key] )
+
+
+  def __checkOutputLevel(self, level):
+    """return outputlevel as int so we don't have to import anything for faster startup"""
+    try:
+      level = int(level)
+      if level < 1 or 7 < level:
+        raise KeyError
+      return level
+    except ValueError:
+      try:
+        return outputLevel[level.upper()]
+      except ValueError:
+        self.errorMessages.append( "ERROR: printLevel is neither integer nor string" )
+        return -1
+    except KeyError:
+      self.errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
+      return -1
+
+
+################################################################################
+### MODULE FUNCTIONS GO HERE
+################################################################################
+
+def getOutputLevel(level):
+  """return output.LEVEL"""
+  from DDG4 import OutputLevel
+  levels = { 1: OutputLevel.VERBOSE,
+             2: OutputLevel.DEBUG,
+             3: OutputLevel.INFO,
+             4: OutputLevel.WARNING,
+             5: OutputLevel.ERROR,
+             6: OutputLevel.FATAL,
+             7: OutputLevel.ALWAYS }
+  return levels[level]
