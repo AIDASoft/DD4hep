@@ -7,7 +7,7 @@ Based on M. Frank and F. Gaede runSim.py
    @version 0.1
 
 """
-from DD4hepSimulation import DD4hepSimulation
+from DDSim.DD4hepSimulation import DD4hepSimulation
 #------------------------------------------------
 if __name__ == "__main__":
   RUNNER = DD4hepSimulation()
