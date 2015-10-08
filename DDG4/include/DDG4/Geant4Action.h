@@ -119,7 +119,7 @@ namespace DD4hep {
         /// reference to the context;
         const Geant4Context* context;
         /// Constructor
-      ContextUpdate(const Geant4Context* c=0) : context(c)  {}
+        ContextUpdate(const Geant4Context* c=0) : context(c)  {}
         /// Callback
         void operator()(Geant4Action* action)  const;
       };

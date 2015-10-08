@@ -17,7 +17,6 @@ def run():
   kernel = DDG4.Kernel()
   lcdd = kernel.lcdd()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD.xml")
   DDG4.importConstants(lcdd)
 
@@ -42,6 +41,12 @@ def run():
   print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
   print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
 
+  # Setup random generator
+  rndm = DDG4.Action(kernel,'Geant4Random/Random')
+  rndm.Seed = 987654321
+  rndm.initialize()
+  rndm.showStatus()
+  rndm.Seed = 987654321
 
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')

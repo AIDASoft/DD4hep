@@ -32,7 +32,7 @@ Geant4InteractionVertexSmear::Geant4InteractionVertexSmear(Geant4Context* ctxt, 
   InstanceCount::increment(this);
   declareProperty("Offset", m_offset);
   declareProperty("Sigma",  m_sigma);
-  declareProperty("Mask",   m_mask = 0);
+  declareProperty("Mask",   m_mask = 1);
   m_needsControl = true;
 }
 
@@ -41,13 +41,10 @@ Geant4InteractionVertexSmear::~Geant4InteractionVertexSmear() {
   InstanceCount::decrement(this);
 }
 
-/// Callback to generate primary particles
-void Geant4InteractionVertexSmear::operator()(G4Event*) {
-  typedef Geant4PrimaryEvent::Interaction Interaction;
-  Geant4Random& rndm = context()->event().random();
-  Geant4PrimaryEvent* evt = context()->event().extension<Geant4PrimaryEvent>();
-  Interaction* inter = evt->get(m_mask);
 
+/// Action to smear one single interaction according to the properties
+void Geant4InteractionVertexSmear::smear(Interaction* inter)  const  {
+  Geant4Random& rndm = context()->event().random();
   if ( inter )  {
     double dx = rndm.gauss(m_offset.x(),m_sigma.x());
     double dy = rndm.gauss(m_offset.y(),m_sigma.y());
@@ -57,8 +54,22 @@ void Geant4InteractionVertexSmear::operator()(G4Event*) {
           "by (%+.2e mm, %+.2e mm, %+.2e mm, %+.2e ns)",
           m_mask,int(inter->vertices.size()),int(inter->particles.size()),dx,dy,dz,dt);
     smearInteraction(this,inter,dx,dy,dz,dt);
+    return;
   }
-  else  {
-    print("+++ No interaction of type %d present.",m_mask);
+  print("+++ No interaction of type %d present.",m_mask);
+}
+
+/// Callback to generate primary particles
+void Geant4InteractionVertexSmear::operator()(G4Event*) {
+  typedef std::vector<Geant4PrimaryInteraction*> _I;
+  Geant4PrimaryEvent* evt = context()->event().extension<Geant4PrimaryEvent>();
+
+  if ( m_mask >= 0 )  {
+    Interaction* inter = evt->get(m_mask);
+    smear(inter);
+    return;
   }
+  _I interactions = evt->interactions();
+  for(_I::iterator i=interactions.begin(); i != interactions.end(); ++i)
+    smear(*i);
 }

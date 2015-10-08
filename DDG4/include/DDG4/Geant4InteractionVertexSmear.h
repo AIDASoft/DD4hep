@@ -26,6 +26,9 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    /// Forward declarations
+    class Geant4PrimaryInteraction;
+
     /// Action class to smear the primary vertex (and all outgoing particles) of a single interaction
     /**
      * The vertex smearing is steered by a 3D gaussian given by a constant offset and
@@ -37,6 +40,10 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4InteractionVertexSmear: public Geant4GeneratorAction {
+    public:
+      /// Interaction definition
+      typedef Geant4PrimaryInteraction Interaction;
+
     protected:
       /// Property: The constant smearing offset
       ROOT::Math::PxPyPzEVector m_offset;
@@ -44,6 +51,10 @@ namespace DD4hep {
       ROOT::Math::PxPyPzEVector m_sigma;
       /// Property: Unique identifier of the interaction created
       int m_mask;
+
+      /// Action routine to smear one single interaction according to the properties
+      void smear(Interaction* interaction)  const;
+      
     public:
       /// Standard constructor
       Geant4InteractionVertexSmear(Geant4Context* context, const std::string& name);

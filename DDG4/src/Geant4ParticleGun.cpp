@@ -98,13 +98,14 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
   Geant4Vertex* vtx = new Geant4Vertex();
   inter->vertices.insert(make_pair(m_mask,vtx));
   prim->add(m_mask, inter);
-
+  vtx->mask = m_mask;
   vtx->x = m_position.X();
   vtx->y = m_position.Y();
   vtx->z = m_position.Z();
   for(int i=0; i<m_multiplicity; ++i)    {
     Geant4ParticleHandle p = new Geant4Particle(i);
     p->reason       = 0;
+    p->mask         = m_mask;
     p->pdgID        = m_particle->GetPDGEncoding();
     p->psx          = m_direction.X()*m_energy;
     p->psy          = m_direction.Y()*m_energy;

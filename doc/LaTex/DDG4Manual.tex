@@ -1822,11 +1822,11 @@ interact.
 \noindent
 The {\tt{Geant4UIManager}} is a component attached to the {\tt{Geant4Kernel}}
 object. All properties of all {\tt{Geant4Action}} instances may be exported to 
-Geant4 messengers and {\em{may}} hence be accessible directly from the Geant4 
-prompt. To export properties from any action, call the {\tt{enableUI()}}
-method of the action.
+\tw{Geant4} messengers and {\em{may}} hence be accessible directly from 
+the \tw{Geant4} prompt. To export properties from any action, call the 
+{\tt{enableUI()}} method of the action.
 \noindent
-The callback signature is: void operator()(G4Event* event)
+The callback signature is: \tw{void operator()(G4Event* event)}.
 
 \vspace{0.5cm}
 \noindent
@@ -1836,14 +1836,71 @@ The callback signature is: void operator()(G4Event* event)
 \bold{File name}       & \tts{DDG4/src/Geant4.cpp}                       \\
 \bold{Type}            & \tts{Geant4Action}                              \\
 \hline
-\bold{Component Properties:}   & defaults apply                            \\
+\bold{Component Properties:}   & defaults apply                          \\
 \hline
 \bold{SessionType} (string)  & Session type (csh, tcsh, etc.             \\
 \bold{SetupUI} (string)   & Name of the UI macro file                    \\
 \bold{SetupVIS} (string)  & Name of the visualization macro file         \\
 \bold{HaveVIS} (bool)     & Flag to instantiate Vis manager 
-                            (def:false, unless VisSetup set)              \\
+                            (def:false, unless VisSetup set)             \\
 \bold{HaveUI} (bool)      & Flag to instantiate UI (default=true)        \\
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4Random}
+%=============================================================================
+\noindent
+Mini interface to the random generator of the application.
+Necessary, that on every object creates its own instance, but accesses
+the main instance available through the \tw{Geant4Context}.
+
+\noindent
+This is mandatory to ensure reproducibility of the event generation
+process. Particular objects may use a dependent generator from
+an experiment framework like \tw{GAUDI}.
+
+\noindent
+internally the engine factory mechanism of \tw{CLHEP} is used. Please refer
+there within for valid engine names and the random seeding mechanism,
+which may vary between different engines.
+
+\noindent
+Any number of independent random objects may be created and used 
+in parallel. This however, is not advised to ensure reproducibility.
+
+\noindent
+The first instance of the random action is automatically set
+to be the \tw{Geant4} instance. If another instance should be used by 
+\tw{Geant4}, use \tw{setMainInstance(Geant4Random* ptr)} class method to 
+override this behavior.
+Provision, steered by options, is taken to ensure the \tw{gRandom}
+of \tw{ROOT} uses the same random number engine.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4}                                    \\
+\bold{File name}       & \tts{DDG4/src/Geant4Random.cpp}                 \\
+\bold{Type}            & \tts{Geant4Random}                              \\
+\hline
+\bold{Component Properties:}   & defaults apply                          \\
+\hline
+\bold{File}   (string)       & File name if initialized from file.              \\
+                             & If set, engine name and seeds are ignored        \\
+\bold{Engine} (string)       & Engine type name.                                \\
+                             & All engines defined in the
+                               \tw{CLHEP::EngineFactory} class are available.
+                               If no type is supplied the engine from the 
+                               HepRandom generator instance is taken.           \\
+\bold{Seed}   (long)         & Initial random seed.                             \\
+                                 & Default:    123456789.                       \\
+                                 & If not ZERO terminated, termination is added.\\
+\bold{Replace\_gRandom} (bool)& Flag to replace the \tw{ROOT} \tw{gRandom}
+                                instance with this random number engine.
+                                This ensures \tw{ROOT} and \tw{Geant4} use the same 
+                                random number engine, hence the same random sequence.
+                                                    \\
 \end{tabular}
 
 
@@ -1852,7 +1909,14 @@ The callback signature is: void operator()(G4Event* event)
 %=============================================================================
 \noindent
 The physics list may be defined entirely data driven using the factory mechanism
-using a variety of predefined objects:
+using a variety of predefined objects. Though users are free to define private 
+physics lists, typically the predefined physics lists from \tw{Geant4} are used. 
+
+\noindent
+The inventory changes over time, new lists appear and obsolete lists are purged,
+hence we will not list them explicitly here.
+For the inventory of available physics lists, please refer to the implementation files:
+
 \noindent
 \begin{itemize}\itemcompact
 \item Inventory of predefined physics lists, which may be inherited:\\
@@ -1972,8 +2036,8 @@ These by default are extensions of type:
 \bold{Type}            & \tts{Geant4GeneratorAction}                     \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
-\bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                          \\
-\bold{Mask} (int.bitmask)    & \tts{Interaction identifier} \\
+\bold{Angle} (double)          & \tts{Lorentz-Angle of boost}                          \\
+\bold{Mask} (int.bitmask)      & \tts{Interaction identifier} \\
 \hline
 \end{tabular}
 
@@ -1983,17 +2047,28 @@ These by default are extensions of type:
 \noindent
 Boost the primary vertex and all particles outgoing the primary interaction in X-direction.
 
+\noindent
+The interaction to be processed by the component is uniquely identified
+by the {\bf{Mask}} property. Two primary interaction may not have the same
+mask.
+
+\noindent
+{\bold{Note [special use case]:}}\\
+If all contributing interactions of the one event \bold{registered 
+in the primary event at the time the action is called} should be handled by 
+one single component instance, set the {\bf{Mask}} property to {\bold{-1}}.
+
 \vspace{0.5cm}
 \noindent
 \begin{tabular}{ l p{10cm} }
 \hline
-\bold{Class name}      & \tts{Geant4InteractionVertexBoost}              \\
-\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
-\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\bold{Class name}        & \tts{Geant4InteractionVertexBoost}              \\
+\bold{File name}         & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
+\bold{Type}              & \tts{Geant4GeneratorAction}                     \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
-\bold{Angle} (double)  & \tts{Lorentz-Angle of boost}                    \\
-\bold{Mask} (int.bitmask)    & \tts{Interaction identifier} \\
+\bold{Angle} (double)          & \tts{Lorentz-Angle of boost}              \\
+\bold{Mask} (int.bitmask)      & \tts{Interaction identifier}              \\
 \hline
 \end{tabular}
 
@@ -2003,17 +2078,28 @@ Boost the primary vertex and all particles outgoing the primary interaction in X
 \noindent
 Smear the primary vertex and all particles outgoing the primary interaction.
 
+\noindent
+The interaction to be processed by the component is uniquely identified
+by the {\bf{Mask}} property. Two primary interaction may not have the same
+mask.
+
+\noindent
+{\bold{Note [special use case]:}}\\
+If all contributing interactions of the one event \bold{registered 
+in the primary event at the time the action is called} should be handled by 
+one single component instance, set the {\bf{Mask}} property to {\bold{-1}}.
+
 \vspace{0.5cm}
 \noindent
 \begin{tabular}{ l p{10cm} }
 \hline
-\bold{Class name}      & \tts{Geant4InteractionVertexSmear}              \\
-\bold{File name}       & \tts{DDG4/src/Geant4InteractionVertexSmear.cpp} \\
+\bold{Class name}        & \tts{Geant4InteractionVertexSmear}              \\
+\bold{File name}         & \tts{DDG4/src/Geant4InteractionVertexSmear.cpp} \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
-\bold{Offset} (PxPyPzEVector) & \tts{Smearing offset}                    \\
-\bold{Sigma}   (PxPyPzEVector) & \tts{Sigma on offset}                    \\
-\bold{Mask} (int.bitmask)    & \tts{Interaction identifier} \\
+\bold{Offset}  (PxPyPzEVector) & \tts{Smearing offset}                     \\
+\bold{Sigma}   (PxPyPzEVector) & \tts{Sigma (Errors) on offset}            \\
+\bold{Mask}    (int.bitmask)   & \tts{Interaction identifier} \\
 \hline
 \end{tabular}
 
@@ -2030,9 +2116,9 @@ and are merged into the {\tt{Geant4PrimaryInteraction}} object attached to the
 \noindent
 \begin{tabular}{ l p{10cm} }
 \hline
-\bold{Class name}      & \tts{Geant4InteractionMerger}                   \\
-\bold{File name}       & \tts{DDG4/src/Geant4InteractionMerger.cpp}      \\
-\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\bold{Class name}        & \tts{Geant4InteractionMerger}                   \\
+\bold{File name}         & \tts{DDG4/src/Geant4InteractionMerger.cpp}      \\
+\bold{Type}              & \tts{Geant4GeneratorAction}                     \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
 \hline
@@ -2050,9 +2136,9 @@ to Geant4 for simulation.
 \noindent
 \begin{tabular}{ l p{10cm} }
 \hline
-\bold{Class name}      & \tts{Geant4PrimaryHandler}                      \\
-\bold{File name}       & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
-\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\bold{Class name}        & \tts{Geant4PrimaryHandler}                      \\
+\bold{File name}         & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
+\bold{Type}              & \tts{Geant4GeneratorAction}                     \\
 \hline
 \bold{Component Properties:}   & defaults apply                            \\
 \hline
@@ -2082,23 +2168,28 @@ If there is only one particle gun in use, the property 'Standalone',
 which by default is set to true invokes the interaction merging and the
 Geant4 primary generation directly.
 
+\noindent
+The interaction to be created by the component is uniquely identified
+by the {\bf{Mask}} property. Two primary interaction may not have the same
+mask.
+
 \vspace{0.5cm}
 \noindent
 \begin{tabular}{ l p{10cm} }
 \hline
-\bold{Class name}      & \tts{Geant4PrimaryHandler}                      \\
-\bold{File name}       & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
-\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\bold{Class name}         & \tts{Geant4PrimaryHandler}                      \\
+\bold{File name}          & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
+\bold{Type}               & \tts{Geant4GeneratorAction}                     \\
 \hline
 Component Properties:     & default                                         \\
-\bold{particle} (string) & Particle type to be shot \\
-\bold{energy} (double)   & Particle energy in $MeV$ \\
+\bold{particle} (string)  & Particle type to be shot                        \\
+\bold{energy} (double)    & Particle energy in $MeV$                        \\
 \bold{position} (XYZVector)  & Pole position of the generated particles in $mm$\\
 \bold{direction} (XYZVector) & Momentum direction of the generated particles\\
-\bold{isotrop} (bool)        & Isotropic particle directions in space. \\
-\bold{Mask} (int.bitmask)    & Interaction identifier \\
-\bold{Standalone} (bool)     & Setup for standalone execution \\ 
-                              & including interaction merging etc. \\
+\bold{isotrop} (bool)        & Isotropic particle directions in space.      \\
+\bold{Mask} (int.bitmask)    & Interaction identifier                       \\
+\bold{Standalone} (bool)     & Setup for standalone execution               \\ 
+                             & including interaction merging etc.           \\
 \hline
 \end{tabular}
 

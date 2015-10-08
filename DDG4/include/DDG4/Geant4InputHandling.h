@@ -20,6 +20,9 @@
 
 // Forward declarations
 class G4Event;
+class G4PrimaryVertex;
+class G4PrimaryParticle;
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -30,6 +33,17 @@ namespace DD4hep {
     // Forward declarations
     class Geant4Action;
     class Geant4Context;
+
+    /** Helpers to import and export G4 records  */
+
+    /// Create a vertex object from it's G4 counterpart
+    Geant4Vertex* createPrimary(const G4PrimaryVertex* g4);
+    
+    /// Create a particle object from it's G4 counterpart
+    Geant4Particle* createPrimary(int particle_id, const Geant4Vertex* v, const G4PrimaryParticle* g4p);
+
+    /// Create a DDG4 interaction record from a Geant4 interaction defined by a primary vertex
+    Geant4PrimaryInteraction* createPrimary(int mask, const G4PrimaryVertex* gv);
 
     /// Initialize the generation of one event
     int generationInitialization(const Geant4Action* caller,const Geant4Context* context);

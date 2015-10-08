@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,12 +11,15 @@
 // Author     : M.Frank
 //
 //==========================================================================
-
-#ifndef DD4HEP_DDG4_GEANT4INTERACTIONVERTEXBOOST_H
-#define DD4HEP_DDG4_GEANT4INTERACTIONVERTEXBOOST_H
+#ifndef DD4HEP_DDG4_GEANT4GENERATORWRAPPER_H
+#define DD4HEP_DDG4_GEANT4GENERATORWRAPPER_H
 
 // Framework include files
 #include "DDG4/Geant4GeneratorAction.h"
+
+// Forward declarations
+class G4VPrimaryGenerator;
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -24,37 +27,34 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    /// Action class to boost the primary vertex (and all outgoing particles) of a single interaction
-    /**
-     * The vertex smearing is steered by the Lorentz transformation angle.
-     * The interaction to be modified is identified by the interaction's unique mask.
+    /// Geant4Action to merge several independent interaction to one
+    /** Wrap native G4 particle ganerators like the generic particle source etc.
      *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4InteractionVertexBoost: public Geant4GeneratorAction {
-    public:
-      /// Interaction definition
-      typedef Geant4PrimaryInteraction Interaction;
-
+    class Geant4GeneratorWrapper : public Geant4GeneratorAction    {
     protected:
-      /// Property: The constant Lorentz transformation angle
-      double m_angle;
-      /// Property: Unique identifier of the interaction to be modified
+      /// Property: Type name of the implementation instance. name: "Uses"
+      std::string m_generatorType;
+      /// Property: interaction identifier mask. name: "Mask"
       int m_mask;
 
-      /// Action routine to boost one single interaction according to the properties
-      void boost(Interaction* interaction)  const;
-
+      /// Reference to the implementation instance
+      G4VPrimaryGenerator* m_generator;
+      
     public:
       /// Standard constructor
-      Geant4InteractionVertexBoost(Geant4Context* context, const std::string& name);
+      Geant4GeneratorWrapper(Geant4Context* context, const std::string& nam);
       /// Default destructor
-      virtual ~Geant4InteractionVertexBoost();
-      /// Callback to generate primary particles
+      virtual ~Geant4GeneratorWrapper();
+      /// Access the G4VPrimaryGenerator instance
+      G4VPrimaryGenerator* generator();
+      /// Event generation action callback
       virtual void operator()(G4Event* event);
     };
   }    // End namespace Simulation
 }      // End namespace DD4hep
-#endif /* DD4HEP_DDG4_GEANT4INTERACTIONVERTEXBOOST_H  */
+
+#endif // DD4HEP_DDG4_GEANT4GENERATORWRAPPER_H

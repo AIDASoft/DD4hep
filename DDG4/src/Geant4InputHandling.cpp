@@ -37,6 +37,90 @@ using namespace DD4hep::Simulation;
 
 typedef ReferenceBitMask<int> PropertyMask;
 
+
+/// Create a vertex object from the Geant4 primary vertex
+Geant4Vertex* DD4hep::Simulation::createPrimary(const G4PrimaryVertex* g4)      {        
+  Geant4Vertex* v = new Geant4Vertex();
+  v->x = g4->GetX0();
+  v->y = g4->GetY0();
+  v->z = g4->GetZ0();
+  v->time = g4->GetT0();
+  return v;
+}
+
+/// Create a particle object from the Geant4 primary particle
+Geant4Particle* 
+DD4hep::Simulation::createPrimary(int particle_id, 
+                                  const Geant4Vertex* v,
+                                  const G4PrimaryParticle* g4p)
+{
+  Geant4ParticleHandle p = new Geant4Particle();
+  p->id           = particle_id;
+  p->reason       = 0;
+  p->pdgID        = g4p->GetPDGcode();
+  p->psx          = g4p->GetPx();
+  p->psy          = g4p->GetPy();
+  p->psz          = g4p->GetPz();
+  p->time         = g4p->GetProperTime();
+  p->properTime   = g4p->GetProperTime();
+  p->vsx          = v->x;
+  p->vsy          = v->y;
+  p->vsz          = v->z;
+  p->vex          = v->x;
+  p->vey          = v->y;
+  p->vez          = v->z;
+  //p->definition   = g4p->GetG4code();
+  //p->process      = 0;
+  p->spin[0]      = 0;
+  p->spin[1]      = 0;
+  p->spin[2]      = 0;
+  p->colorFlow[0] = 0;
+  p->colorFlow[0] = 0;
+  p->mass         = g4p->GetMass();
+  p->charge       = g4p->GetCharge();
+  PropertyMask status(p->status);
+  status.set(G4PARTICLE_GEN_STABLE);
+  return p;
+}
+
+/// Helper to recursively collect interaction data
+void collectPrimaries(Geant4PrimaryInteraction* interaction, 
+                      Geant4Vertex*             particle_origine,
+                      const G4PrimaryParticle*  gp)
+{
+  int pid = int(interaction->particles.size());
+  Geant4Particle* p = createPrimary(pid,particle_origine,gp);
+  G4PrimaryParticle* dau = gp->GetDaughter();
+  int mask = interaction->mask;
+  
+  interaction->particles.insert(make_pair(p->id,p));
+  p->mask = mask;
+  particle_origine->out.insert(p->id);
+  if ( dau )   {
+    Geant4Vertex* dv = new Geant4Vertex(*particle_origine);
+    int vid = int(interaction->vertices.size());
+    dv->mask = mask;
+    dv->in.insert(p->id);
+    interaction->vertices.insert(make_pair(vid,dv));
+    for(; dau; dau = dau->GetNext())
+      collectPrimaries(interaction, dv, dau);
+  }
+}
+
+/// Import a Geant4 interaction defined by a primary vertex into a DDG4 interaction record
+Geant4PrimaryInteraction* DD4hep::Simulation::createPrimary(int mask, const G4PrimaryVertex* gv)  {
+  Geant4PrimaryInteraction* interaction = new Geant4PrimaryInteraction();
+  Geant4Vertex* v = createPrimary(gv);
+  int vid = int(interaction->vertices.size());
+  interaction->locked = true;
+  interaction->mask = mask;
+  v->mask = mask;
+  interaction->vertices.insert(make_pair(vid,v));
+  for (G4PrimaryParticle *gp = gv->GetPrimary(); gp; gp = gp->GetNext() )
+    collectPrimaries(interaction, v, gp);
+  return interaction;
+}
+
 /// Initialize the generation of one event
 int DD4hep::Simulation::generationInitialization(const Geant4Action* /* caller */,
                                                  const Geant4Context* context)
@@ -150,7 +234,7 @@ int DD4hep::Simulation::mergeInteractions(const Geant4Action* caller,
 }
 
 /// Boost particles of one interaction identified by its mask
-int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
+int DD4hep::Simulation::boostInteraction(const Geant4Action* caller,
                                          Geant4PrimaryEvent::Interaction* inter,
                                          double alpha)
 {
@@ -160,7 +244,11 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
   double gamma = std::sqrt(1 + SQR(tan(alpha)));
   double betagamma = std::tan(alpha);
 
-  if ( alpha != 0.0 )  {
+  if ( inter->locked )  {
+    caller->abortRun("Locked interactions may not be boosted!",
+                     "Cannot boost interactions with a native G4 primary record!");
+  }
+  else if ( alpha != 0.0 )  {
     // Now move begin and end-vertex of all primary vertices accordingly
     for(iv=inter->vertices.begin(); iv != inter->vertices.end(); ++iv)  {
       Geant4Vertex* v = (*iv).second;
@@ -202,13 +290,18 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* /* caller */,
 }
 
 /// Smear the primary vertex of an interaction
-int DD4hep::Simulation::smearInteraction(const Geant4Action* /* caller */,
+int DD4hep::Simulation::smearInteraction(const Geant4Action* caller,
                                          Geant4PrimaryEvent::Interaction* inter,
                                          double dx, double dy, double dz, double dt)
 {
   Geant4PrimaryEvent::Interaction::VertexMap::iterator iv;
   Geant4PrimaryEvent::Interaction::ParticleMap::iterator ip;
 
+  if ( inter->locked )  {
+    caller->abortRun("Locked interactions may not be smeared!",
+                     "Cannot smear interactions with a native G4 primary record!");
+  }
+  
   // Now move begin and end-vertex of all primary vertices accordingly
   for(iv=inter->vertices.begin(); iv != inter->vertices.end(); ++iv)  {
     Geant4Vertex* v = (*iv).second;
@@ -319,38 +412,45 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
   set<int> visited;
   char text[64];
 
-  Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
-  for(Interaction::VertexMap::const_iterator iend=vm.end(),i=vm.begin(); i!=iend; ++i)  {
-    int num_part = 0;
-    Geant4Vertex* v = (*i).second;
-    G4PrimaryVertex* v4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
-    event->AddPrimaryVertex(v4);
-    caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
-                  v->x/CLHEP::mm,v->y/CLHEP::mm,v->z/CLHEP::mm,v->time/CLHEP::ns);
-    for(Geant4Vertex::Particles::const_iterator ip=v->out.begin(); ip!=v->out.end(); ++ip)  {
-      Geant4ParticleHandle p = pm[*ip];
-      if ( p->daughters.size() > 0 )  {
-        PropertyMask mask(p->reason);
-        mask.set(G4PARTICLE_HAS_SECONDARIES);
-      }
-      if ( p->parents.size() == 0 )  {
-        Primaries relevant = getRelevant(visited,prim,pm,p);
-        for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {
-          Geant4ParticleHandle r = (*j).first;
-          G4PrimaryParticle* p4 = (*j).second;
-          PropertyMask reason(r->reason);
-          reason.set(G4PARTICLE_PRIMARY);
-          v4->SetPrimary(p4);
-          ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);
-          r.dumpWithMomentum(caller->outputLevel()-1,caller->name(),text);
-          ++num_part;
+  if ( !interaction->locked )  {
+    caller->abortRun("Locked interactions may not be used to generate primaries!",
+                     "Cannot handle a native G4 primary record!");
+    return 0;
+  }
+  else   {
+    Geant4PrimaryInteraction::VertexMap::iterator ivfnd, iv, ivend;
+    for(Interaction::VertexMap::const_iterator iend=vm.end(),i=vm.begin(); i!=iend; ++i)  {
+      int num_part = 0;
+      Geant4Vertex* v = (*i).second;
+      G4PrimaryVertex* v4 = new G4PrimaryVertex(v->x,v->y,v->z,v->time);
+      event->AddPrimaryVertex(v4);
+      caller->print("+++++ G4PrimaryVertex at (%+.2e,%+.2e,%+.2e) [mm] %+.2e [ns]",
+                    v->x/CLHEP::mm,v->y/CLHEP::mm,v->z/CLHEP::mm,v->time/CLHEP::ns);
+      for(Geant4Vertex::Particles::const_iterator ip=v->out.begin(); ip!=v->out.end(); ++ip)  {
+        Geant4ParticleHandle p = pm[*ip];
+        if ( p->daughters.size() > 0 )  {
+          PropertyMask mask(p->reason);
+          mask.set(G4PARTICLE_HAS_SECONDARIES);
+        }
+        if ( p->parents.size() == 0 )  {
+          Primaries relevant = getRelevant(visited,prim,pm,p);
+          for(Primaries::const_iterator j=relevant.begin(); j!= relevant.end(); ++j)  {
+            Geant4ParticleHandle r = (*j).first;
+            G4PrimaryParticle* p4 = (*j).second;
+            PropertyMask reason(r->reason);
+            reason.set(G4PARTICLE_PRIMARY);
+            v4->SetPrimary(p4);
+            ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);
+            r.dumpWithMomentum(caller->outputLevel()-1,caller->name(),text);
+            ++num_part;
+          }
         }
       }
     }
-  }
-  for(map<int,G4PrimaryParticle*>::iterator i=prim.begin(); i!=prim.end(); ++i)  {
-    Geant4ParticleHandle p = pm[(*i).first];
-    primaries->primaryMap[(*i).second] = p->addRef();
+    for(map<int,G4PrimaryParticle*>::iterator i=prim.begin(); i!=prim.end(); ++i)  {
+      Geant4ParticleHandle p = pm[(*i).first];
+      primaries->primaryMap[(*i).second] = p->addRef();
+    }
   }
   return 1;
 }

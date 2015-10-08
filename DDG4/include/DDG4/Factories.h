@@ -34,6 +34,7 @@ class G4MagneticField;
 class G4Mag_EqRhs;
 class G4VPhysicsConstructor;
 class G4VUserPhysicsList;
+class G4VPrimaryGenerator;
 class G4VProcess;
 
 /// Namespace for the AIDA detector description toolkit
@@ -125,6 +126,10 @@ namespace {
   DD4HEP_PLUGIN_FACTORY_ARGS_0(G4ParticleDefinition*)
   {    return P::Definition();  }
 
+  /// Factory to create Geant4 primary generator objects
+  DD4HEP_PLUGIN_FACTORY_ARGS_0(G4VPrimaryGenerator*)
+  {    return new P();  }
+
   /// Generic particle constructor
   DD4HEP_PLUGIN_FACTORY_ARGS_0(long)  {
     P::ConstructParticle();
@@ -172,6 +177,8 @@ namespace {
 #define DECLARE_GEANT4_PROCESS(name)       DD4HEP_PLUGINSVC_FACTORY(name,name,G4VProcess*(),__LINE__)
 /// Plugin definition to create Geant4 physics constructors (G4VPhysicsConstructor)
 #define DECLARE_GEANT4_PHYSICS(name)       DD4HEP_PLUGINSVC_FACTORY(name,name,G4VPhysicsConstructor*(),__LINE__)
+/// Plugin definition to create Geant4 physics processes (G4VProcess)
+#define DECLARE_GEANT4_GENERATOR(name)     DD4HEP_PLUGINSVC_FACTORY(name,name,G4VPrimaryGenerator*(),__LINE__)
 /// Plugin definition to force particle constructors for GEANT4 (G4ParticleDefinition)
 #define DECLARE_GEANT4_PARTICLE(name)      DD4HEP_PLUGINSVC_FACTORY(name,name,G4ParticleDefinition*(),__LINE__)
 /// Plugin definition to force particle constructors for GEANT4 (G4XXXXConstructor)

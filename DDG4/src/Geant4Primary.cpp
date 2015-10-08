@@ -35,13 +35,13 @@ Geant4PrimaryMap::~Geant4PrimaryMap()   {
 
 /// Default constructor
 Geant4PrimaryInteraction::Geant4PrimaryInteraction()
-  : mask(0), next_particle_identifier(-1)
+  : mask(0), locked(0), next_particle_identifier(-1)
 {
 }
 
 /// Copy constructor
 Geant4PrimaryInteraction::Geant4PrimaryInteraction(const Geant4PrimaryInteraction&)
-  : mask(0), next_particle_identifier(-1)
+  : mask(0), locked(0), next_particle_identifier(-1)
 {
 }
 

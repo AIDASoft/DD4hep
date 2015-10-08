@@ -16,6 +16,9 @@
 #include "DDG4/Factories.h"
 using namespace DD4hep::Simulation;
 
+#include "DDG4/Geant4Random.h"
+DECLARE_GEANT4ACTION(Geant4Random)
+
 #include "DDG4/Geant4ActionPhase.h"
 DECLARE_GEANT4ACTION(Geant4PhaseAction)
 
@@ -105,6 +108,10 @@ DECLARE_GEANT4ACTION(Geant4PrimaryHandler)
 //=============================
 #include "DDG4/Geant4InputAction.h"
 DECLARE_GEANT4ACTION(Geant4InputAction)
+
+//=============================
+#include "DDG4/Geant4GeneratorWrapper.h"
+DECLARE_GEANT4ACTION(Geant4GeneratorWrapper)
 
 //=============================
 #include "DDG4/Geant4TestActions.h"

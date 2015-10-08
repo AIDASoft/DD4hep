@@ -51,7 +51,6 @@ namespace DD4hep {
 
     namespace {
       Geant4Context* s_globalContext = 0;
-      Geant4Random*  s_globalRandom = 0;
     }
 
     Geant4Context* ddg4_globalContext()   {
@@ -77,24 +76,24 @@ namespace DD4hep {
       void _aquire(T* s) {
         InstanceCount::increment(this);
         m_sequence = s;
-        m_sequence->addRef();
+        if ( m_sequence ) m_sequence->addRef();
       }
       void _release() {
         releasePtr(m_sequence);
         InstanceCount::decrement(this);
       }
       Geant4Context* context() const  {  
-	return m_activeContext;
+        return m_activeContext;
       }
       Geant4Kernel& kernel()  const  {
-	return context()->kernel();
+        return context()->kernel();
       }
 
       void setContextToClients()   {
-        (Geant4Action::ContextUpdate(m_activeContext))(m_sequence);
+        if ( m_sequence ) (Geant4Action::ContextUpdate(m_activeContext))(m_sequence);
       }
       void releaseContextFromClients()  {
-        Geant4Action::ContextUpdate(0)(m_sequence);
+        if ( m_sequence ) Geant4Action::ContextUpdate(0)(m_sequence);
       }
       void createClientContext(const G4Run* run)   {
         Geant4Run* r = new Geant4Run(run);
@@ -110,7 +109,7 @@ namespace DD4hep {
         }
       }
       void createClientContext(const G4Event* evt)   {
-        Geant4Event* e = new Geant4Event(evt,s_globalRandom);
+        Geant4Event* e = new Geant4Event(evt,Geant4Random::instance());
         m_activeContext->setEvent(e);
         setContextToClients();
       }
@@ -327,8 +326,13 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   Geometry::LCDD& lcdd = kernel.lcdd();
   Geant4Context* ctx = s_globalContext = new Geant4Context(&kernel);
-  // For now do this:
-  /* Geant4Random* rnd = */ s_globalRandom = new Geant4Random();
+  Geant4Random* rndm = Geant4Random::instance(false);
+  
+  if ( !rndm )  {
+    rndm = new Geant4Random(ctx, "Geant4Random");
+    /// Initialize the engine etc.
+    rndm->initialize();
+  }
 
   kernel.executePhase("configure",0);
 
@@ -417,7 +421,7 @@ int Geant4Exec::run(Geant4Kernel& kernel) {
       Geant4Call* c = dynamic_cast<Geant4Call*>(ui);
       if ( c )  {
         (*c)(0);
-	kernel.executePhase("stop",0);
+        kernel.executePhase("stop",0);
         return 1;
       }
       ui->except("++ Geant4Exec: Failed to start UI interface.");
