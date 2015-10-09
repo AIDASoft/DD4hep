@@ -412,7 +412,7 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
   set<int> visited;
   char text[64];
 
-  if ( !interaction->locked )  {
+  if ( interaction->locked )  {
     caller->abortRun("Locked interactions may not be used to generate primaries!",
                      "Cannot handle a native G4 primary record!");
     return 0;
