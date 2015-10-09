@@ -19,7 +19,7 @@ class ParticleHandler( ConfigHelper ):
     return self._saveProcesses
   @saveProcesses.setter
   def saveProcesses(self, stringVal):
-    self._saveProcesses = ConfigHelper.listifyString( stringVal )
+    self._saveProcesses = ConfigHelper.makeList( stringVal )
 
   @property
   def minimalKineticEnergy(self):

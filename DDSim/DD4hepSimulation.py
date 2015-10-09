@@ -434,12 +434,16 @@ class DD4hepSimulation(object):
 
   def __setGunOptions(self, gun):
     """set the starting properties of the DDG4 particle gun"""
-    gun.energy       = self.gun.energy
-    gun.particle     = self.gun.particle
-    gun.multiplicity = self.gun.multiplicity
-    gun.position     = self.gun.position
-    gun.isotrop      = self.gun.isotrop
-    gun.direction    = self.gun.direction
+    try:
+      gun.energy       = self.gun.energy
+      gun.particle     = self.gun.particle
+      gun.multiplicity = self.gun.multiplicity
+      gun.position     = self.gun.position
+      gun.isotrop      = self.gun.isotrop
+      gun.direction    = self.gun.direction
+    except Exception as e: #pylint: disable=W0703
+      print "ERROR: parsing gun options:\n%s\nException: %s " % (self.gun, e )
+      exit(1)
 
   def __setupRandomGenerator(self, rndm):
     """set the properties for the random number generator"""
@@ -510,8 +514,10 @@ class DD4hepSimulation(object):
         for var in obj.getOptions():
           key = "%s.%s" %( name,var )
           if key in parsedDict:
-            obj.setOption( var, parsedDict[key] )
-
+            try:
+              obj.setOption( var, parsedDict[key] )
+            except RuntimeError as e:
+              self.errorMessages.append( "ERROR: %s " % e )
 
   def __checkOutputLevel(self, level):
     """return outputlevel as int so we don't have to import anything for faster startup"""

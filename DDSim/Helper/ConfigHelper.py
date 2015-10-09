@@ -43,9 +43,36 @@ class ConfigHelper( object ):
     setattr(self, name, val)
 
   @staticmethod
-  def listifyString( stringVal, sep=" "):
+  def makeList( stringVal, sep=" "):
     """returns a list from a string separated by sep"""
     if isinstance( stringVal, list ):
       return stringVal
     else:
       return stringVal.split(sep)
+
+  @staticmethod
+  def makeTuple( val ):
+    """ returns a tuple of the string, separators are space or comma """
+    myTuple = None
+    if isinstance( val, tuple ):
+      myTuple = val
+    if isinstance( val, list ):
+      myTuple = tuple(val)
+    if isinstance( val, basestring ):
+      sep = ',' if ',' in val else ' '
+      myTuple = tuple([ _.strip("(), ") for _ in val.split(sep) ])
+    if myTuple is None:
+      raise RuntimeError( "Cannot parse input value %s" % val )
+    return myTuple
+
+  @staticmethod
+  def makeBool( val ):
+    """check if val is a bool or a string of true/false, otherwise raise exception"""
+    if isinstance(val, bool):
+      return val
+    elif isinstance(val, basestring):
+      if val.lower() == 'true':
+        return True
+      elif val.lower() == 'false':
+        return False
+    raise RuntimeError( val )
