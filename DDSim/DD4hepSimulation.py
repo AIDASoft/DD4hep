@@ -505,7 +505,7 @@ class DD4hepSimulation(object):
       return level
     except ValueError:
       try:
-        return outputLevel[level.upper()]
+        return outputLevel(level.upper())
       except ValueError:
         self.errorMessages.append( "ERROR: printLevel is neither integer nor string" )
         return -1
