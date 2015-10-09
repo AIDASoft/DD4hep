@@ -137,7 +137,7 @@ Geant4Random* Geant4Random::instance(bool throw_exception)   {
 /// Initialize the instance. 
 void Geant4Random::initialize()   {
   if ( !m_file.empty() )  {
-    ifstream in(m_file);
+    ifstream in(m_file.c_str(), std::ios::in);
     m_engine = CLHEP::EngineFactory::newEngine(in);
     if ( !m_engine )    {
       except("Failed to create CLHEP random engine from file:%s.",m_file.c_str());

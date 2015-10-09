@@ -30,6 +30,7 @@
 #include "G4VPhysicsConstructor.hh"
 #include "G4ParticleDefinition.hh"
 #include "G4VUserPhysicsList.hh"
+#include "G4VPrimaryGenerator.hh"
 
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(G4VSensitiveDetector*, (std::string,DD4hep::Geometry::LCDD*))
 DD4HEP_IMPLEMENT_PLUGIN_REGISTRY(DD4hep::Simulation::Geant4Sensitive*, (DD4hep::Simulation::Geant4Context*,
