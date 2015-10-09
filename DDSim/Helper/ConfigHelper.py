@@ -28,9 +28,15 @@ class ConfigHelper( object ):
 
     return finalVars
 
+  def __repr__(self):
+    return self.printOptions()
+
   def printOptions( self ):
     """print all paramters"""
-    return pprint(self.getOptions())
+    options = []
+    for opt,val in self.getOptions().iteritems():
+      options.append("\n\t'%s': '%s'" % (opt, val[0]))
+    return "".join(options)
 
   def setOption( self, name, val ):
     """ set the attribute name to val """
