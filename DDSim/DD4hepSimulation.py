@@ -62,8 +62,9 @@ class DD4hepSimulation(object):
     self.detailedShowerMode = False
 
     self.errorMessages = []
+    self.dumpParameter = False
 
-    ## dummy objects for extended configuration option
+    ## objects for extended configuration option
     self.output = Output()
     self.gun = Gun()
     self.part = ParticleHandler()
@@ -144,6 +145,9 @@ class DD4hepSimulation(object):
     parser.add_argument("--enableGun", "-G", action="store_true", dest="enableGun", default=self.enableGun,
                         help="enable the DDG4 particle gun")
 
+    parser.add_argument("--dumpParameter", "--dump", action="store_true", dest="dumpParameter", default=self.dumpParameter,
+                        help="Print all configuration Parameters and exit")
+
     parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="detailedShowerMode", default=self.detailedShowerMode,
                         help="use detailed shower mode")
 
@@ -153,10 +157,11 @@ class DD4hepSimulation(object):
     ## now parse everything. The default values are now taken from the
     ## steeringFile if they were set so that the steering file parameters can be
     ## overwritten from the command line
-    #parsed = parser.parse_args()
     if ARGCOMPLETEENABLED:
       argcomplete.autocomplete(parser)
     parsed = parser.parse_args()
+
+    self.dumpParameter = parsed.dumpParameter
 
     self.compactFile = parsed.compactFile
     self.inputFiles = parsed.inputFiles
@@ -187,7 +192,6 @@ class DD4hepSimulation(object):
 
     #self.__treatUnknownArgs( parsed, unknown )
     self.__parseAllHelper( parsed )
-    #exit(1)
     if self.errorMessages:
       parser.epilog = "\n".join(self.errorMessages)
       parser.print_help()
@@ -392,10 +396,18 @@ class DD4hepSimulation(object):
 
     DD4hep.setPrintLevel(self.printLevel)
 
+    if self.dumpParameter:
+      from pprint import pprint
+      print "="*80
+      pprint(vars(self))
+      print "="*80
+      exit(1)
+
     kernel.configure()
     kernel.initialize()
 
     #DDG4.setPrintLevel(Output.DEBUG)
+
     kernel.run()
     kernel.terminate()
 
