@@ -36,6 +36,7 @@ from DDSim.Helper.ParticleHandler import ParticleHandler
 from DDSim.Helper.Output import Output
 from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ConfigHelper import ConfigHelper
+from DDSim.Helper.Action import Action
 import os
 import sys
 
@@ -69,6 +70,7 @@ class DD4hepSimulation(object):
     self.gun = Gun()
     self.part = ParticleHandler()
     self.field = MagneticField()
+    self.action = Action()
 
     ### use TCSH geant UI instead of QT
     os.environ['G4UI_USE_TCSH'] = "1"
@@ -244,7 +246,7 @@ class DD4hepSimulation(object):
 
     #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4CalorimeterAction')
     #simple = DDG4.Geant4( kernel, tracker='Geant4TrackerCombineAction',calo='Geant4ScintillatorCalorimeterAction')
-    simple = DDG4.Geant4( kernel, tracker='Geant4TrackerAction',calo='Geant4ScintillatorCalorimeterAction')
+    simple = DDG4.Geant4( kernel, tracker=self.action.tracker, calo=self.action.calo )
 
     simple.printDetectors()
 
@@ -357,25 +359,37 @@ class DD4hepSimulation(object):
     trk,cal = self.getDetectorLists( lcdd )
 
   # ---- add the trackers:
-  # fixme: this assumes the same filters for all trackers ...
+  # FIXME: this assumes the same filters for all trackers ...
 
     for tracker in trk:
-      print 'simple.setupTracker(  ' , tracker , ')'
-
-      if 'tpc' in tracker.lower():
-        seq,act = simple.setupTracker( tracker, type='TPCSDAction')
+      print 'simple.setupTracker( %s )' % tracker
+      action = None
+      for pattern in self.action.mapActions:
+        if pattern.lower() in tracker.lower():
+          action = self.action.mapActions[pattern]
+          break
+      if action:
+        seq,act = simple.setupTracker( tracker, type=action )
       else:
         seq,act = simple.setupTracker( tracker )
-
       seq.add(f1)
       if self.detailedShowerMode:
         act.HitCreationMode = 2
 
   # ---- add the calorimeters:
-
     for calo in cal:
-      print 'simple.setupCalorimeter(  ' , calo , ')'
-      seq,act = simple.setupCalorimeter( calo )
+      print 'simple.setupCalorimeter( %s )' % calo
+      action = None
+      for pattern in self.action.mapActions:
+        if pattern.lower() in calo.lower():
+          action = self.action.mapActions[pattern]
+          break
+      if action:
+        seq,act = simple.setupCalorimeter( calo, type=action )
+      else:
+        seq,act = simple.setupCalorimeter( calo )
+
+      ##set detailed hit creation mode for this
       if self.detailedShowerMode:
         act.HitCreationMode = 2
 
