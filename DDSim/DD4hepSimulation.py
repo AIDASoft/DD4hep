@@ -37,6 +37,7 @@ from DDSim.Helper.Output import Output
 from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.Action import Action
+from DDSim.Helper.Random import Random
 import os
 import sys
 
@@ -67,6 +68,7 @@ class DD4hepSimulation(object):
 
     ## objects for extended configuration option
     self.output = Output()
+    self.random = Random()
     self.gun = Gun()
     self.part = ParticleHandler()
     self.field = MagneticField()
@@ -285,6 +287,11 @@ class DD4hepSimulation(object):
 
     actionList = []
 
+    ##configure the random seed
+    rndm = DDG4.Action(kernel,'Geant4Random/R1')
+    self.__setupRandomGenerator(rndm)
+    rndm.initialize()
+
     if self.enableGun:
       gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/"+"Gun")
       self.__setGunOptions( gun )
@@ -433,6 +440,16 @@ class DD4hepSimulation(object):
     gun.position     = self.gun.position
     gun.isotrop      = self.gun.isotrop
     gun.direction    = self.gun.direction
+
+  def __setupRandomGenerator(self, rndm):
+    """set the properties for the random number generator"""
+    if self.random.seed is not None:
+      rndm.Seed = self.random.seed
+      rndm.Luxury = self.random.luxury
+    if self.random.type is not None:
+      rndm.Type = self.random.type
+    if self.output.random <= 3:
+      rndm.showStatus()
 
   def __setMagneticFieldOptions(self, simple):
     """ create and configure the magnetic tracking setup """

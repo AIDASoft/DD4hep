@@ -10,6 +10,7 @@ class Output( ConfigHelper ):
     self._kernel = outputLevel('INFO')
     self._part = outputLevel('INFO')
     self._inputStage = outputLevel('INFO')
+    self._random = outputLevel('FATAL')
 
   @property
   def inputStage( self ):
@@ -34,3 +35,11 @@ class Output( ConfigHelper ):
   @part.setter
   def part(self, level):
     self._part = outputLevel(level)
+
+  @property
+  def random( self ):
+    """Output level for Random Number Generator setup"""
+    return self._random
+  @random.setter
+  def random(self, level):
+    self._random = outputLevel(level)
