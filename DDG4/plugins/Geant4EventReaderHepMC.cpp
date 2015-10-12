@@ -102,7 +102,8 @@ namespace DD4hep {
         float alpha_qed;
         vector<float>      weights;
         vector<long>       random;
-        EventHeader() {}
+        EventHeader() : id(0), num_vertices(0), signal_process_id(0), signal_process_vertex(0),
+                        scale(0.0), alpha_qcd(0.0), alpha_qed(0.0), weights(), random() {}
       };
 
       /// The known_io enum is used to track which type of input is being read
@@ -126,7 +127,8 @@ namespace DD4hep {
         Particles m_particles;
 
 
-        EventStream(istream& in) : instream(in), io_type(0)
+        EventStream(istream& in) : instream(in), mom_unit(0.0), pos_unit(0.0),
+                                   io_type(0), xsection(0.0), xsection_err(0.0)
         { use_default_units();                       }
         /// Check if data stream is in proper state and has data
         bool ok()  const;

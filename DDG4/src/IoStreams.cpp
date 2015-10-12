@@ -94,7 +94,7 @@ namespace DD4hep {
       throw 1;
     }
   }
-#define _p(x) ((MyTFile*)x)
+#define _p(x) (reinterpret_cast<MyTFile*>(x))
 
   /// Specialization for the usage of TFile structures
   template<> dd4hep_file<TFile*>::dd4hep_file(handle_type fd, dd4hep_file_flags flags)
@@ -108,7 +108,7 @@ namespace DD4hep {
   template<> std::streamsize dd4hep_file<TFile*>::read(char_type* s, std::streamsize n)  {
     if ( m_handle )   {
       Long64_t nb1 = m_handle->GetBytesRead();
-      Bool_t res = _p(m_handle)->ReadBuffer(s,nb1,n);
+      Bool_t   res = _p(m_handle)->ReadBuffer(s,nb1,n);
       if ( res )  {
         Long64_t nb2 = m_handle->GetBytesRead();
         return nb2-nb1;

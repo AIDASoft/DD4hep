@@ -29,14 +29,12 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   DetElement sdet(det_name, x_det.id());
   Volume     vol;
 
-  bool useRot = false;
-  bool usePos = false; 
+  bool useRot = x_det.hasChild(_U(rotation));
+  bool usePos = x_det.hasChild(_U(position));
   Position    pos;
   RotationZYX rot;
 
   sdet.setType("compound");
-  usePos = x_det.hasChild(_U(position));
-  useRot = x_det.hasChild(_U(rotation));
   if( usePos ) {
     pos = Position(x_det.position().x(), x_det.position().y(), x_det.position().z());
   }

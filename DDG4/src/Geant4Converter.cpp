@@ -353,7 +353,9 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
           TGeoElement* e = mix->GetElement(i);
           G4Element* g4e = (G4Element*) handleElement(e->GetName(), Atom(e));
           if (!g4e) {
-            printout(ERROR, "Material", "Missing component %s for material %s.", e->GetName(), mix->GetName());
+            printout(ERROR, "Material", 
+                     "Missing component %s for material %s. A=%f W=%f", 
+                     e->GetName(), mix->GetName(), A_total, W_total);
           }
           //mat->AddElement(g4e, (mix->GetAmixt())[i] / A_total);
           mat->AddElement(g4e, (mix->GetWmixt())[i] / W_total);
@@ -759,9 +761,6 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       }
       else if ( node != gGeoManager->GetTopNode() && volIt == info.g4Volumes.end() )  {
         throw logic_error("Geant4Converter: Invalid mother volume found!");
-      }
-      else if ( node_is_assembly ) {  // g4mot is NULL !
-        throw logic_error("Geant4Converter: Invalid mother - daughter relationship in assembly! ["+name+"]");
       }
       G4LogicalVolume* g4vol = info.g4Volumes[vol];
       G4LogicalVolume* g4mot = info.g4Volumes[mot_vol];

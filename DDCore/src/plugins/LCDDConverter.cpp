@@ -186,7 +186,7 @@ xml_h LCDDConverter::handleMaterial(const string& name, Material medium) const {
       }
       for (int i = 0, n = mix->GetNelements(); i < n; i++) {
         TGeoElement *elt = mix->GetElement(i);
-        string formula = elt->GetTitle() + string("_elm");
+        //string formula = elt->GetTitle() + string("_elm");
         if (nmix) {
           mat.append(obj = xml_elt_t(geo.doc, _U(composite)));
           obj.setAttr(_U(n), nmix[i]);
@@ -688,10 +688,10 @@ xml_h LCDDConverter::handleVolume(const string& /* name */, Volume volume) const
     }
     geo.doc_structure.append(vol);
     geo.xmlVolumes[v] = vol;
-    const TObjArray* dau = ((TGeoVolume*) v)->GetNodes();
+    const TObjArray* dau = const_cast<TGeoVolume*>(v)->GetNodes();
     if (dau && dau->GetEntries() > 0) {
       for (Int_t i = 0, n_dau = dau->GetEntries(); i < n_dau; ++i) {
-        TGeoNode* node = (TGeoNode*) dau->At(i);
+        TGeoNode* node = reinterpret_cast<TGeoNode*>(dau->At(i));
         handlePlacement(node->GetName(), node);
       }
     }
@@ -1007,8 +1007,8 @@ xml_h LCDDConverter::handleField(const std::string& /* name */, OverlayedField f
     if (!fld.isValid()) {
       PluginDebug dbg;
       PluginService::Create<NamedObject*>(type + "_Convert2LCDD", &m_lcdd, &field, &fld);
-      throw runtime_error(
-                          "Failed to locate plugin to convert electromagnetic field:" + string(f->GetName()) + " of type " + type + ". "
+      throw runtime_error("Failed to locate plugin to convert electromagnetic field:"
+                          + string(f->GetName()) + " of type " + type + ". "
                           + dbg.missingFactory(type));
     }
     geo.doc_fields.append(field);
@@ -1176,7 +1176,8 @@ xml_doc_t LCDDConverter::createVis(DetElement top) {
   GeometryInfo& geo = *(m_dataPtr = new GeometryInfo);
   m_data->clear();
   collect(top, geo);
-  printout(ALWAYS,"LCDDConverter","++ ==> Dump visualisation attributes from in memory detector description...");
+  printout(ALWAYS,"LCDDConverter","++ ==> Dump visualisation attributes "
+           "from in memory detector description...");
   const char comment[] = "\n"
     "      +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
     "      ++++   Linear collider detector description LCDD in C++  ++++\n"
@@ -1229,7 +1230,8 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
   geo.doc_root = geo.doc.root();
   geo.doc_root.setAttr(Unicode("xmlns:lcdd"), "http://www.lcsim.org/schemas/lcdd/1.0");
   geo.doc_root.setAttr(Unicode("xmlns:xs"), "http://www.w3.org/2001/XMLSchema-instance");
-  geo.doc_root.setAttr(Unicode("xs:noNamespaceSchemaLocation"), "http://www.lcsim.org/schemas/lcdd/1.0/lcdd.xsd");
+  geo.doc_root.setAttr(Unicode("xs:noNamespaceSchemaLocation"), 
+                       "http://www.lcsim.org/schemas/lcdd/1.0/lcdd.xsd");
 
   geo.doc_root.append(geo.doc_header = xml_elt_t(geo.doc, _U(header)));
   geo.doc_root.append(geo.doc_idDict = xml_elt_t(geo.doc, _U(iddict)));
@@ -1295,8 +1297,10 @@ xml_doc_t LCDDConverter::createLCDD(DetElement top) {
 
 /// Helper constructor
 LCDDConverter::GeometryInfo::GeometryInfo()
-  : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), doc_limits(0), doc_regions(0), doc_display(0), doc_gdml(
-                                                                                                                                 0), doc_fields(0), doc_define(0), doc_materials(0), doc_solids(0), doc_structure(0), doc_setup(0) {
+  : doc(0), doc_root(0), doc_header(0), doc_idDict(0), doc_detectors(0), doc_limits(0), 
+    doc_regions(0), doc_display(0), doc_gdml(0), doc_fields(0), doc_define(0),
+    doc_materials(0), doc_solids(0), doc_structure(0), doc_setup(0)
+{
 }
 
 static long dump_output(xml_doc_t doc, int argc, char** argv) {
@@ -1334,10 +1338,13 @@ static long create_visASCII(LCDD& lcdd, int /* argc */, char** argv) {
     xml_comp_t ref = c.child(_U(visref));
     xml_comp_t vis = (*vis_map.find(ref.refStr())).second;
     xml_comp_t col = vis.child(_U(color));
-    os << "vol:" << vol.nameStr() << sep << "vis:" << vis.nameStr() << sep << "visible:" << vis.visible() << sep << "r:"
-       << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep << "alpha:" << col.alpha() << sep << "line_style:"
-       << vis.attr < string > (_U(line_style)) << sep << "drawing_style:" << vis.attr < string
-                                                                                        > (_U(drawing_style)) << sep << "show_daughters:" << vis.show_daughters() << sep << endl;
+    os << "vol:" << vol.nameStr() << sep << "vis:" << vis.nameStr() << sep 
+       << "visible:" << vis.visible() << sep << "r:"
+       << col.R() << sep << "g:" << col.G() << sep << "b:" << col.B() << sep 
+       << "alpha:" << col.alpha() << sep << "line_style:"
+       << vis.attr < string > (_U(line_style)) << sep 
+       << "drawing_style:" << vis.attr < string> (_U(drawing_style)) << sep 
+       << "show_daughters:" << vis.show_daughters() << sep << endl;
   }
   os.close();
   return 1;

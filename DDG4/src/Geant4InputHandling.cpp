@@ -410,7 +410,6 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
   Interaction::VertexMap&   vm  = interaction->vertices;
   map<int,G4PrimaryParticle*> prim;
   set<int> visited;
-  char text[64];
 
   if ( interaction->locked )  {
     caller->abortRun("Locked interactions may not be used to generate primaries!",
@@ -438,6 +437,8 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
             Geant4ParticleHandle r = (*j).first;
             G4PrimaryParticle* p4 = (*j).second;
             PropertyMask reason(r->reason);
+            char text[64];
+
             reason.set(G4PARTICLE_PRIMARY);
             v4->SetPrimary(p4);
             ::snprintf(text,sizeof(text),"-> G4Primary[%3d]",num_part);

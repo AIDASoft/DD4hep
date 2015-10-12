@@ -63,10 +63,7 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
   EVENT::LCCollection*        primaries = 0;
   map<EVENT::MCParticle*,int> mcparts;
   vector<EVENT::MCParticle*>  mcpcoll;
-  EventReaderStatus ret = EVENT_READER_OK;
-
-  ret = readParticleCollection(event_number,&primaries);
-  //ret = EVENT_READER_NO_DIRECT;
+  EventReaderStatus ret = readParticleCollection(event_number,&primaries);
 
   ++m_numEvent;
   if ( ret != EVENT_READER_OK ) return ret;

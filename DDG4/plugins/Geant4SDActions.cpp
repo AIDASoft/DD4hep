@@ -269,7 +269,9 @@ namespace DD4hep {
       int               combined;
       long long int     cell;
 
-      TrackerCombine() : pre(), post(), sensitive(0), e_cut(0.0), current(-1), combined(0), cell(0)  {
+      TrackerCombine() : pre(), post(), sensitive(0), mean_time(0.0), 
+                         e_cut(0.0), current(-1), combined(0), cell(0)
+      {
       }
 
       /// Start a new hit

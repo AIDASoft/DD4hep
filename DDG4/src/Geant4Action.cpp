@@ -248,7 +248,6 @@ bool Geant4Action::error(bool return_value, const char* fmt, ...) const {
 
 /// Support of fatal messages. Throws exception if required.
 void Geant4Action::fatal(const char* fmt, ...) const {
-  string err;
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::FATAL, m_name, fmt, args);
@@ -257,11 +256,10 @@ void Geant4Action::fatal(const char* fmt, ...) const {
 
 /// Support of exceptions: Print fatal message and throw runtime_error.
 void Geant4Action::except(const char* fmt, ...) const {
-  string err;
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::FATAL, m_name, fmt, args);
-  err = DD4hep::format(m_name, fmt, args);
+  string err = DD4hep::format(m_name, fmt, args);
   va_end(args);
   throw runtime_error(err);
 }

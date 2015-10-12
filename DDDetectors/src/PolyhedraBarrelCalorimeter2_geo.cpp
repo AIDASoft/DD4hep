@@ -52,11 +52,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
   xml_comp_t staves = x_det.staves();
   xml_dim_t dim = x_det.dimensions();
   string det_name = x_det.nameStr();
-  string det_type = x_det.typeStr();
   Material air = lcdd.air();
   double totalThickness = layering.totalThickness();
-  int totalRepeat = 0;
-  int totalSlices = 0;
   double gap = xml_dim_t(x_det).gap();
   int numSides = dim.numsides();
   double detZ = dim.z();
@@ -65,13 +62,16 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens) {
   DetElement stave("stave1", x_det.id());
   Volume motherVol = lcdd.pickMotherVolume(sdet);
 
+#if 0
+  int totalRepeat = 0;
+  int totalSlices = 0;
   for (xml_coll_t c(x_det, _U(layer)); c; ++c) {
     xml_comp_t x_layer = c;
     int repeat = x_layer.repeat();
     totalRepeat += repeat;
     totalSlices += x_layer.numChildren(_U(slice));
   }
-
+#endif
   PolyhedraRegular polyhedra(numSides, rmin, rmin + totalThickness, detZ);
   Volume envelopeVol(det_name, polyhedra, air);
 
