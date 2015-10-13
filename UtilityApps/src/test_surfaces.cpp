@@ -169,7 +169,7 @@ int main(int argc, char** argv ){
                       << " id : " << idDecoder.valueString() 
                       << " point : " << point 
                       << " is inside : " <<  isInside
-                      << " distance from surface : " << dist/dd4hep::mm << std::endl 
+                      << " distance from surface : " << dist  << "  (units: cm) " << std::endl 
                       << std::endl ;
           }
 
