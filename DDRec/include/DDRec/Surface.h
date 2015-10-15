@@ -53,6 +53,8 @@ namespace DD4hep {
       virtual void setV(const Vector3D& v) ;
       /// setter for daughter classes
       virtual void setNormal(const Vector3D& n) ;
+      /// setter for daughter classes
+      virtual void setOrigin(const Vector3D& o) ;
 
     public:
     
@@ -354,6 +356,7 @@ namespace DD4hep {
 	
         _type.setProperty( SurfaceType::Plane    , true ) ;
         _type.setProperty( SurfaceType::Cylinder , false ) ;
+        _type.setProperty( SurfaceType::Cone     , false ) ;
         _type.checkParallelToZ( *this ) ;
         _type.checkOrthogonalToZ( *this ) ;
       }      
@@ -382,7 +385,6 @@ namespace DD4hep {
        */
       VolCylinderImpl( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D origin ) ;
 
-
       /** First direction of measurement U - rotated to point projected onto the cylinder.
        *  No check is done whether the point actually is on the cylinder surface
        */
@@ -396,12 +398,61 @@ namespace DD4hep {
       /** Distance to surface */
       virtual double distance(const Vector3D& point ) const  ;
       
-      /** Convert the global position to the local position (u,v) on the surface - u runs along the axis of the cylinder, v is r*phi */
+      /** Convert the global position to the local position (u,v) on the surface - v runs along the axis of the cylinder, u is r*phi */
       virtual Vector2D globalToLocal( const Vector3D& point) const ;
       
-      /** Convert the local position (u,v) on the surface to the global position  - u runs along the axis of the cylinder, v is r*phi*/
+      /** Convert the local position (u,v) on the surface to the global position  - v runs along the axis of the cylinder, u is r*phi*/
       virtual Vector3D localToGlobal( const Vector2D& point) const ;
     } ;
+
+    //======================================================================================================
+    /** Implementation of conical surface attached to a volume 
+     * @author F.Gaede, DESY
+     * @date Nov, 6 2015
+     * @version $Id$
+     */
+    class VolConeImpl : public VolSurfaceBase {
+      
+    public:
+      
+      /// default c'tor
+      VolConeImpl() : VolSurfaceBase() { }
+      
+      
+      /** The standard constructor. The origin vector points to the origin of the coordinate system on the cone,
+       *  its rho defining the mean radius of the cone (z-component of the origin is ignored !).
+       *  The measurement direction v defines the opening angle of the cone,
+       *  the normal is chosen to be orthogonal to v. NB: the cone is always parallel to the local z axis.
+       */
+      VolConeImpl( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,
+		   Vector3D v, Vector3D origin ) ;
+      
+      /** First direction of measurement U - rotated to point projected onto the cone.
+       *  No check is done whether the point actually is on the cone surface
+       */
+      virtual Vector3D u( const Vector3D& point = Vector3D() ) const ;
+
+      /** Second direction of measurement V - rotated to point projected onto the cone.
+       *  No check is done whether the point actually is on the cone surface
+       */
+      virtual Vector3D v( const Vector3D& point = Vector3D() ) const ;
+      
+      /** The normal direction at the given point, projected  onto the cone.
+       *  No check is done whether the point actually is on the cone surface
+       */
+      virtual Vector3D normal(const Vector3D& point = Vector3D() ) const ;
+
+      /** Distance to surface */
+      virtual double distance(const Vector3D& point ) const  ;
+      
+      /** Convert the global position to the local position (u,v) on the surface - v runs along the axis of the cone, u is r*phi */
+      virtual Vector2D globalToLocal( const Vector3D& point) const ;
+      
+      /** Convert the local position (u,v) on the surface to the global position  - v runs along the axis of the cone, u is r*phi*/
+      virtual Vector3D localToGlobal( const Vector2D& point) const ;
+
+      virtual std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> > getLines(unsigned nMax=100) ;
+  } ;
 
 
 
@@ -434,6 +485,12 @@ namespace DD4hep {
     public:
       VolCylinder( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer,  Vector3D origin ) :
 	VolSurface( new VolCylinderImpl( vol,  type,  thickness_inner , thickness_outer, origin ) ) {}
+    } ;
+
+    class VolCone : public VolSurface{
+    public:
+      VolCone( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, Vector3D v, Vector3D origin ) :
+	VolSurface( new VolConeImpl( vol,  type,  thickness_inner , thickness_outer, v,  origin ) ) {}
     } ;
 
     //======================================================================================================
@@ -539,12 +596,6 @@ namespace DD4hep {
        */
       virtual double length_along_v() const ;
 
-      //---------------------------------------------------
-      /** Get vertices constraining the surface for drawing ( might not be exact boundaries) -
-       *  at most nMax points are returned.
-       */
-      //      std::vector< Vector3D > getVertices( unsigned nMax=360 ) ;
-
       /** Get lines constraining the surface for drawing ( might not be exact boundaries) -
        *  at most nMax lines are returned.
        */
@@ -596,10 +647,33 @@ namespace DD4hep {
       /// the center of the cylinder 
       virtual Vector3D center() const ;
 
-
-
     } ;
+    //======================================================================================================
 
+    /** Specialization of Surface for cones - specializes CyliderSurface (for lazyness ...)
+     *  @author F.Gaede, DESY
+     *  @date May, 10 2014
+     */
+    class ConeSurface : public CylinderSurface, public ICone {
+    public:      
+      ConeSurface( Geometry::DetElement det, VolSurface volSurf ) : CylinderSurface( det, volSurf ) { }      
+      
+      /// the start radius of the cone
+      virtual double radius0() const ;
+      
+      /// the end radius of the cone
+      virtual double radius1() const ;
+
+      /// the start z of the cone
+      virtual double z0() const ;
+      
+      /// the end z of the cone
+      virtual double z1() const ;
+      
+      /// the center of the cone 
+      virtual Vector3D center() const ;
+     
+    };
     //======================================================================================================
     /** std::list of Surfaces that optionally takes ownership.
      * @author F.Gaede, DESY

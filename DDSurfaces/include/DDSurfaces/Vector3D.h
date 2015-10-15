@@ -344,15 +344,14 @@ namespace DDSurfaces {
   /** Output operator */
   inline std::ostream & operator << (std::ostream & os, const Vector3D &v) {
 
-    os << "( " << v[0] << ", " << v[1] << ", " << v[2] << " )" ;
-
-    // os << "  ( " << v[0] 
-    //    << ", " << v[1]
-    //    << ", " << v[2]
-    //    << " ) -  [ phi: " << v.phi()
-    //    << " , rho: " << v.rho() << " ] "  
-    //    << "  [ theta: " << v.theta()
-    //    << " , r: " << v.r() << " ] " ;
+    //    os << "( " << v[0] << ", " << v[1] << ", " << v[2] << " )" ;
+    os << "  ( " << v[0] 
+       << ", " << v[1]
+       << ", " << v[2]
+       << " ) -  [ phi: " << v.phi()
+       << " , rho: " << v.rho() << " ] "  
+       << "  [ theta: " << v.theta()
+       << " , r: " << v.r() << " ] " ;
     
     return os ;
   }

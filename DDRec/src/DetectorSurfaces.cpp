@@ -43,8 +43,17 @@ namespace DD4hep {
 	  
 	  VolSurface volSurf =  *it ;
 	  
-	  Surface* surf = ( volSurf.type().isCylinder() ?  new CylinderSurface(  det,  volSurf )  :  new Surface(  det,  volSurf )  ) ;
+	  Surface* surf = 0 ;
 	  
+	  if( volSurf.type().isCylinder() )
+	    surf = new CylinderSurface(  det,  volSurf ) ;
+	  
+	  else if( volSurf.type().isCone() ) 
+	    surf = new ConeSurface( det, volSurf ) ;
+	  
+	  else
+	    surf = new Surface(  det,  volSurf ) ;
+	
 	  // std::cout << " ------------------------- " 
 	  //   	    << " surface: "   << *surf        << std::endl
 	  //   	    << " ------------------------- "  << std::endl ;

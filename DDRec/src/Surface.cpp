@@ -25,6 +25,7 @@ namespace DD4hep {
     void VolSurfaceBase::setU(const Vector3D& u_val) {  _u = u_val  ; }
     void VolSurfaceBase::setV(const Vector3D& v_val) {  _v = v_val ; }
     void VolSurfaceBase::setNormal(const Vector3D& n) { _n = n ; }
+    void VolSurfaceBase::setOrigin(const Vector3D& o) { _o = o ; }
     
     long64 VolSurfaceBase::id() const  { return _id ; } 
 
@@ -268,6 +269,7 @@ namespace DD4hep {
 
       _type.setProperty( SurfaceType::Plane    , false ) ;
       _type.setProperty( SurfaceType::Cylinder , true ) ;
+      _type.setProperty( SurfaceType::Cone     , false ) ;
       _type.checkParallelToZ( *this ) ;
       _type.checkOrthogonalToZ( *this ) ;
     }      
@@ -316,7 +318,140 @@ namespace DD4hep {
     }
     
     //================================================================================================================
+    VolConeImpl::VolConeImpl( Geometry::Volume vol, SurfaceType typ, 
+			      double thickness_inner ,double thickness_outer, Vector3D v,  Vector3D o ) :
+      
+      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , v ,  Vector3D() , Vector3D() , vol, 0) {
 
+      Vector3D o_rphi( o.x() , o.y() , 0. ) ;
+
+      // sanity check: v and o have to have a common phi
+      double dphi = v.phi() - o_rphi.phi() ;
+      while( dphi < -M_PI ) dphi += 2.*M_PI ;
+      while( dphi >  M_PI ) dphi -= 2.*M_PI ;
+
+      if( std::fabs( dphi ) > 1e-6 ){
+	std::stringstream sst ; sst << "VolConeImpl::VolConeImpl() - incompatibel vector v and o given " 
+				    << v << " - " << o ;
+	throw std::runtime_error( sst.str() ) ;
+      }
+      
+      Vector3D n( 1. , v.phi() , ( v.theta() + M_PI/2. ) , Vector3D::spherical ) ;
+      Vector3D u = v.cross( n ) ;
+
+      setU( u ) ;
+      setOrigin( o_rphi ) ;
+      setNormal( n ) ;
+
+      _type.setProperty( SurfaceType::Plane   , false ) ;
+      _type.setProperty( SurfaceType::Cylinder, false ) ;
+      _type.setProperty( SurfaceType::Cone    , true ) ;
+      _type.setProperty( SurfaceType::ParallelToZ, true ) ;
+      _type.setProperty( SurfaceType::OrthogonalToZ, false ) ;
+    }      
+
+    
+    Vector3D VolConeImpl::v(const Vector3D& point ) const {  
+      // just take phi from point
+      Vector3D av( 1. , point.phi() , _v.theta() , Vector3D::spherical ) ;
+      return av ; 
+    }
+    
+    Vector3D VolConeImpl::u(const Vector3D& point ) const {  
+      // compute from v X n 
+      const Vector3D& av = this->v( point ) ;
+      const Vector3D& n = normal( point ) ;
+      return av.cross( n ) ; 
+    }
+    
+    Vector3D VolConeImpl::normal(const Vector3D& point ) const {  
+      // just take phi from point
+      Vector3D n( 1. , point.phi() , _n.theta() , Vector3D::spherical ) ;
+      return n ;
+    }
+
+    Vector2D VolConeImpl::globalToLocal( const Vector3D& point) const {
+      
+      // cone is parallel to z here, so u is r *Phi and v is "along" z
+      double phi = point.phi() - origin().phi() ;
+      
+      while( phi < -M_PI ) phi += 2.*M_PI ;
+      while( phi >  M_PI ) phi -= 2.*M_PI ;
+      
+      return  Vector2D( origin().rho()*phi, ( point.z() - origin().z() ) / cos( _v.theta() ) ) ;
+    }
+    
+    
+    Vector3D VolConeImpl::localToGlobal( const Vector2D& point) const {
+      
+      double z = point.v() * cos( _v.theta() ) + origin().z() ;
+      
+      double phi = point.u() / origin().rho() + origin().phi() ;
+				  
+      while( phi < -M_PI ) phi += 2.*M_PI ;
+      while( phi >  M_PI ) phi -= 2.*M_PI ;
+      
+      return Vector3D( origin().rho() , phi, z  , Vector3D::cylindrical )    ;
+    }
+
+
+    /** Distance to surface */
+    double VolConeImpl::distance(const Vector3D& point ) const {
+
+      //fixme: there are probably faster ways to compute this
+      // e.g by using the intercept theorem - tbd. ...
+      const Vector2D& lp = globalToLocal( point ) ;
+      const Vector3D& gp = localToGlobal( lp ) ;
+
+      Vector3D dz = point - gp ;
+
+      return dz * normal( point )  ;
+    }
+    
+    /// create outer bounding lines for the given symmetry of the polyhedron
+    std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> >  VolConeImpl::getLines(unsigned nMax){
+      
+      std::vector< std::pair<DDSurfaces::Vector3D, DDSurfaces::Vector3D> >  lines ;
+      
+      lines.reserve( nMax ) ;
+      
+      double theta = v().theta() ;
+      double half_length = 0.5 * length_along_v() * cos( theta ) ;
+
+      Vector3D zv( 0. , 0. , half_length ) ;
+
+      double dr =  half_length * tan( theta ) ;
+
+      double r0 = origin().rho() - dr ;  
+      double r1 = origin().rho() + dr ;
+      
+
+      unsigned n = nMax / 4 ;
+      double dPhi = 2.* ROOT::Math::Pi() / double( n ) ; 
+      
+      for( unsigned i = 0 ; i < n ; ++i ) {
+	
+ 	Vector3D r0v0(  r0*sin(  i   *dPhi ) , r0*cos(  i   *dPhi )  , 0. ) ;
+	Vector3D r0v1(  r0*sin( (i+1)*dPhi ) , r0*cos( (i+1)*dPhi )  , 0. ) ;
+
+ 	Vector3D r1v0(  r1*sin(  i   *dPhi ) , r1*cos(  i   *dPhi )  , 0. ) ;
+	Vector3D r1v1(  r1*sin( (i+1)*dPhi ) , r1*cos( (i+1)*dPhi )  , 0. ) ;
+	
+	Vector3D pl0 =  zv + r1v0 ;
+	Vector3D pl1 =  zv + r1v1 ;
+	Vector3D pl2 = -zv + r0v1  ;
+	Vector3D pl3 = -zv + r0v0 ;
+	
+	lines.push_back( std::make_pair( pl0, pl1 ) ) ;
+	lines.push_back( std::make_pair( pl1, pl2 ) ) ;
+	lines.push_back( std::make_pair( pl2, pl3 ) ) ;
+	lines.push_back( std::make_pair( pl3, pl0 ) ) ;
+      } 
+      return lines; 
+    }
+    
+    //================================================================================================================
+    
 
     VolSurfaceList::~VolSurfaceList(){
       // // delete all surfaces attached to this volume
@@ -527,7 +662,6 @@ namespace DD4hep {
       Vector3D localPoint( pa ) ;
       
       return _volSurf.distance( localPoint ) ;
-      //FG      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).distance( localPoint )  : VolCylinder(_volSurf).distance( localPoint ) ) ;
     }
       
     bool Surface::insideBounds(const Vector3D& point, double epsilon) const {
@@ -537,8 +671,6 @@ namespace DD4hep {
       Vector3D localPoint( pa ) ;
       
       return _volSurf.insideBounds( localPoint , epsilon) ;
-
-      //FG      return ( _volSurf.type().isPlane() ?   VolPlane(_volSurf).insideBounds( localPoint, epsilon )  : VolCylinder(_volSurf).insideBounds( localPoint , epsilon) ) ;
     }
 
     void Surface::initialize() {
@@ -553,11 +685,6 @@ namespace DD4hep {
         std::stringstream sst ; sst << " ***** ERROR: Volume " << theVol.name() << " not found for DetElement " << _det.name()  << " with surface "  ;
         throw std::runtime_error( sst.str() ) ;
       } 
-
-      // std::cout << " **** Surface::initialize() # placements for surface = " << pVList.size() 
-      // 		<< " worldTransform : " 
-      // 		<< std::endl ; 
-      
 
       //=========== compute and cache world transform for surface ==========
       
@@ -674,8 +801,8 @@ namespace DD4hep {
 	for( unsigned i=0;i<n;++i){
 	  
 	  DDSurfaces::Vector3D av,bv;
-	  _wtM->LocalToMasterVect( local_lines[i].first ,  av.array() ) ;
-	  _wtM->LocalToMasterVect( local_lines[i].second , bv.array() ) ;
+	  _wtM->LocalToMaster( local_lines[i].first ,  av.array() ) ;
+	  _wtM->LocalToMaster( local_lines[i].second , bv.array() ) ;
 	  
 	  lines.push_back( std::make_pair( av, bv ) );
 	}
@@ -1071,6 +1198,44 @@ namespace DD4hep {
     double CylinderSurface::radius() const {	return _volSurf.origin().rho() ;  }
 
     Vector3D CylinderSurface::center() const {	return volumeOrigin() ;  }
+
+
+    //================================================================================================================
+
+
+    double ConeSurface::radius0() const {
+      
+      double theta = _volSurf.v().theta() ;
+      double l = length_along_v() * cos( theta ) ;
+      
+      return origin().rho() - 0.5 * l * tan( theta ) ;  
+    }
+
+    double ConeSurface::radius1() const {
+      
+      double theta = _volSurf.v().theta() ;
+      double l = length_along_v() * cos( theta ) ;
+      
+      return origin().rho() + 0.5 * l * tan( theta ) ;  
+    }
+
+    double ConeSurface::z0() const {
+      
+      double theta = _volSurf.v().theta() ;
+      double l = length_along_v() * cos( theta ) ;
+      
+      return origin().z() - 0.5 * l ;  
+    }
+
+    double ConeSurface::z1() const {
+      
+      double theta = _volSurf.v().theta() ;
+      double l = length_along_v() * cos( theta ) ;
+      
+      return origin().z() + 0.5 * l ;
+    }
+
+    Vector3D ConeSurface::center() const {  return volumeOrigin() ;  }
 
 
     //================================================================================================================
