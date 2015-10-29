@@ -46,7 +46,7 @@ void Geant4GeneratorActionInit::begin(const G4Run* run)   {
 
 /// End-run action callback
 void Geant4GeneratorActionInit::end(const G4Run* /* run */)   {
-  printP1("+++ Funished run %d after %d events (%d events in total)",m_run,m_evtRun,m_evtTotal);
+  printP1("+++ Finished run %d after %d events (%d events in total)",m_run,m_evtRun,m_evtTotal);
   m_evtRun = 0;
   m_run = 0;
 }

@@ -37,16 +37,17 @@ namespace {
 namespace{
   
   /// helper class for a planar surface placed into a polyhedral calorimeter barrel 
-  class CaloBarrelPlaneImpl : public  DD4hep::DDRec::VolPlaneImpl{
+  class CaloBarrelPlaneImpl : public  DD4hep::DDRec::VolPlaneImpl   {
     double _length, _width ;
+
   public:
     /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
     CaloBarrelPlaneImpl( DDSurfaces::SurfaceType typ,
-			 double thickness_inner ,double thickness_outer, 
-			 DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
-			 DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
-			 DD4hep::Geometry::Volume vol, int id ) :
-      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id),
+                         double thickness_inner ,double thickness_outer, 
+                         DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
+                         DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
+                         DD4hep::Geometry::Volume vol, int id_val ) :
+      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _length(0),_width(0) {}
     
     void setData( double length, double width){
@@ -54,15 +55,14 @@ namespace{
       _width = width ;
     }
 
-    void setID( DD4hep::long64 id ) { _id = id ; }
+    void setID( DD4hep::long64 id_val ) { _id = id_val ; }
     
     // overwrite to include points inside the inner radius of the barrel 
     bool insideBounds(const DDSurfaces::Vector3D& point, double epsilon) const {
-      
       DDSurfaces::Vector2D uvVec = globalToLocal( point ) ;
       
       return ( std::abs ( distance( point ) ) < epsilon )  &&  
-	std::abs( uvVec[0] ) < _width/2. &&  std::abs( uvVec[1] ) < _length/2. ; 
+        std::abs( uvVec[0] ) < _width/2. &&  std::abs( uvVec[1] ) < _length/2. ; 
     }
     
     /// create outer bounding lines for the given symmetry of the polyhedron
@@ -93,15 +93,15 @@ namespace{
         std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;
 
-	if(      name=="length"    ) data.length     = value ; 
-	else if( name=="radius"  ) data.radius   = value ; 
-	else if( name=="phi0"    ) data.phi0     = value ; 
-	else if( name=="symmetry") data.symmetry = value ; 
-	else if( name=="systemID") data.systemID   = value ; 
-	else if( name=="encoding") data.encoding = value ; 
-	else {
-	  std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
-	}
+        if(      name=="length"    ) data.length     = value ; 
+        else if( name=="radius"  ) data.radius   = value ; 
+        else if( name=="phi0"    ) data.phi0     = value ; 
+        else if( name=="symmetry") data.symmetry = value ; 
+        else if( name=="systemID") data.systemID   = value ; 
+        else if( name=="encoding") data.encoding = value ; 
+        else {
+          std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
+        }
       }
     }
   }  
@@ -126,7 +126,7 @@ namespace{
     double outer_thickness = 1e-6 ;
     
     std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: install tracking surfaces for : " 
-	      << component.name() << std::endl ;
+              << component.name() << std::endl ;
 
 
     DD4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;
@@ -144,10 +144,10 @@ namespace{
       double gam = phi0 + alpha/2. + i*alpha;
 
       Vector3D 
-	u( cos(gam+M_PI/2.), sin(gam+M_PI/2.), 0. ),
-	v(          0.     ,        0.       , 1. ), 
-	n(        cos(gam) ,        sin(gam) , 0. ),
-	o( radius*cos(gam) , radius*sin(gam) , 0. );
+        u( cos(gam+M_PI/2.), sin(gam+M_PI/2.), 0. ),
+        v(          0.     ,        0.       , 1. ), 
+        n(        cos(gam) ,        sin(gam) , 0. ),
+        o( radius*cos(gam) , radius*sin(gam) , 0. );
       
       CaloBarrelPlane surf(comp_vol,Type(Type::Helper,Type::Sensitive), inner_thickness, outer_thickness, u, v, n, o);
 

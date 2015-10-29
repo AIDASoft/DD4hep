@@ -320,6 +320,7 @@ using namespace DD4hep::Simulation;
 
 // Geant4 include files
 #include "G4RunManager.hh"
+#include "G4PhysListFactory.hh"
 
 /// Configure the simulation
 int Geant4Exec::configure(Geant4Kernel& kernel) {
@@ -348,18 +349,12 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   Geant4DetectorConstruction* detector = Geant4DetectorConstruction::instance(kernel);
 
   runManager.SetUserInitialization(detector);
-  G4VUserPhysicsList* physics = 0;
   Geant4PhysicsListActionSequence* seq = kernel.physicsList(false);
-  if (seq) {
-    string nam = kernel.physicsList().properties()["extends"].value<string>();
-    if (nam.empty())
-      nam = "EmptyPhysics";
-    physics = PluginService::Create<G4VUserPhysicsList*>(nam, seq, int(1));
+  if ( 0 == seq )   {
+    seq = kernel.physicsList(true);
+    seq->property("Extends").set<string>("QGSP_BERT");
   }
-  else {
-    printout(INFO, "Geant4Exec", "+++ Using Geant4 physics constructor QGSP_BERT");
-    physics = PluginService::Create<G4VUserPhysicsList*>(string("QGSP_BERT"), seq, int(1));
-  }
+  G4VUserPhysicsList* physics = seq->extensionList();
   if (0 == physics) {
     throw runtime_error("Panic! No valid user physics list present!");
   }

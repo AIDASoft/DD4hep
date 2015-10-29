@@ -43,11 +43,11 @@ namespace{
   public:
     /// standard c'tor with all necessary arguments - origin is (0,0,0) if not given.
     CaloEndcapPlaneImpl( DDSurfaces::SurfaceType typ,
-			 double thickness_inner ,double thickness_outer, 
-			 DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
-			 DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
-			 DD4hep::Geometry::Volume vol, int id ) :
-      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id),
+                         double thickness_inner ,double thickness_outer, 
+                         DDSurfaces::Vector3D u_val ,DDSurfaces::Vector3D v_val ,
+                         DDSurfaces::Vector3D n_val , DDSurfaces::Vector3D o_val, 
+                         DD4hep::Geometry::Volume vol, int id_val ) :
+      DD4hep::DDRec::VolPlaneImpl( typ, thickness_inner,thickness_outer, u_val, v_val, n_val, o_val, vol, id_val),
       _r(0),_phi0(0),_sym(0) {}
     
     void setData( double radius, double phi0, unsigned symmetry){
@@ -55,7 +55,7 @@ namespace{
       _phi0 = phi0 ;
       _sym = symmetry ;
     }
-    void setID( DD4hep::long64 id ) { _id = id ; }
+    void setID( DD4hep::long64 id_val ) { _id = id_val; }
     
     // overwrite to include points inside the inner radius of the endcap 
     bool insideBounds(const DDSurfaces::Vector3D& point, double epsilon) const {
@@ -63,8 +63,8 @@ namespace{
       double ri = _r * cos(  2.* M_PI / _sym ) ;
       
       return ( std::abs ( distance( point ) ) < epsilon )  && 
-	( (point.rho() < ri ) || 
-	  ( volume()->GetShape()->Contains( const_cast<double*> (point.const_array() ) ) ) ) ;
+        ( (point.rho() < ri ) || 
+          ( volume()->GetShape()->Contains( const_cast<double*> (point.const_array() ) ) ) ) ;
     }
 
     /// create outer bounding lines for the given symmetry of the polyhedron
@@ -75,10 +75,10 @@ namespace{
       double alpha = ( _sym ? 2.* M_PI / _sym : 0. ) ;
       
       for(unsigned i=0 ; i < _sym ; ++i){
-	double gam0 =    i  * alpha + _phi0 ;
-	double gam1 = (i+1) * alpha + _phi0 ;
-	lines.push_back( std::make_pair( DDSurfaces::Vector3D( _r*cos(gam0), _r*sin(gam0), origin().z()  ), 
-					 DDSurfaces::Vector3D( _r*cos(gam1), _r*sin(gam1), origin().z()  ) ) ) ;
+        double gam0 =    i  * alpha + _phi0 ;
+        double gam1 = (i+1) * alpha + _phi0 ;
+        lines.push_back( std::make_pair( DDSurfaces::Vector3D( _r*cos(gam0), _r*sin(gam0), origin().z()  ), 
+                                         DDSurfaces::Vector3D( _r*cos(gam1), _r*sin(gam1), origin().z()  ) ) ) ;
       }
       return lines; 
     }
@@ -98,15 +98,15 @@ namespace{
         std::cout << "DD4hep_CaloFaceEndcapSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;
 
-	if(      name=="zpos"    ) data.zpos     = value ; 
-	else if( name=="radius"  ) data.radius   = value ; 
-	else if( name=="phi0"    ) data.phi0     = value ; 
-	else if( name=="symmetry") data.symmetry = value ; 
-	else if( name=="systemID") data.systemID   = value ; 
-	else if( name=="encoding") data.encoding = value ; 
-	else {
-	  std::cout << "DD4hep_CaloFaceEndcapSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
-	}
+        if(      name=="zpos"    ) data.zpos     = value ; 
+        else if( name=="radius"  ) data.radius   = value ; 
+        else if( name=="phi0"    ) data.phi0     = value ; 
+        else if( name=="symmetry") data.symmetry = value ; 
+        else if( name=="systemID") data.systemID   = value ; 
+        else if( name=="encoding") data.encoding = value ; 
+        else {
+          std::cout << "DD4hep_CaloFaceEndcapSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
+        }
       }
     }
   }  
@@ -130,7 +130,7 @@ namespace{
     double outer_thickness = 1e-6 ;
     
     std::cout << "DD4hep_CaloFaceEndcapSurfacePlugin: install tracking surfaces for : " 
-	      << component.name() << std::endl ;
+              << component.name() << std::endl ;
 
 
     DD4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;

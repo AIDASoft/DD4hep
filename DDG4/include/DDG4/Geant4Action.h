@@ -1,4 +1,3 @@
-
 #ifndef DD4HEP_DDG4_GEANT4ACTION_H
 #define DD4HEP_DDG4_GEANT4ACTION_H
 
@@ -63,14 +62,14 @@ namespace DD4hep {
     class TypeName : public std::pair<std::string, std::string> {
     public:
       /// Default constructor
-    TypeName()
-      : std::pair<std::string, std::string>() {
+      TypeName()
+        : std::pair<std::string, std::string>() {
       }
-    TypeName(const std::pair<std::string, std::string>& c)
-      : std::pair<std::string, std::string>(c) {
+      TypeName(const std::pair<std::string, std::string>& c)
+        : std::pair<std::string, std::string>(c) {
       }
-    TypeName(const std::string& typ, const std::string& nam)
-      : std::pair<std::string, std::string>(typ, nam) {
+      TypeName(const std::string& typ, const std::string& nam)
+        : std::pair<std::string, std::string>(typ, nam) {
       }
       /// Split string pair according to default delimiter ('/')
       static TypeName split(const std::string& type_name);
@@ -313,7 +312,7 @@ namespace DD4hep {
       /// Support of error messages.
       void error(const char* fmt, ...) const;
       /// Action to support error messages.
-      bool error(bool return_value, const char* fmt, ...) const;
+      bool return_error(bool return_value, const char* fmt, ...) const;
       /// Support of fatal messages. Throws exception
       void fatal(const char* fmt, ...) const;
       /// Support of exceptions: Print fatal message and throw runtime_error.

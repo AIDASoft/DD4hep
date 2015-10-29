@@ -144,5 +144,6 @@ bool Geant4TrackingAction::storeChild(Geant4TrackInformation* track_info) const 
     }
     return true;
   }
-  return error(false, "storeChild: Geant4TrackInformation points to NULL!");
+  error("storeChild: Geant4TrackInformation points to NULL!");
+  return false;
 }

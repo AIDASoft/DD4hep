@@ -132,6 +132,9 @@ namespace DD4hep {
       int trkID() const  {
         return track->GetTrackID();
       }
+      int parentID() const  {
+        return track->GetParentID();
+      }
       double trkTime() const  {
         return track->GetGlobalTime();
       }
@@ -140,6 +143,15 @@ namespace DD4hep {
       }
       double trkKineEnergy() const  {
         return track->GetKineticEnergy();
+      }
+      int trkStatus()  const  {
+        return track->GetTrackStatus();
+      }
+      bool trkAlive() const  {
+        return track->GetTrackStatus() == fAlive;
+      }
+      const G4VProcess* trkProcess()  const  {
+        return track->GetCreatorProcess();
       }
       const G4VTouchable* preTouchable() const {
         return pre->GetTouchable();
@@ -153,6 +165,9 @@ namespace DD4hep {
       }
       G4VPhysicalVolume* volume(const G4StepPoint* p) const {
         return p->GetTouchableHandle()->GetVolume();
+      }
+      G4VSolid* solid(const G4StepPoint* p) const {
+        return p->GetTouchableHandle()->GetSolid();
       }
       G4VPhysicalVolume* physvol(const G4StepPoint* p) const {
         return p->GetPhysicalVolume();
@@ -206,6 +221,18 @@ namespace DD4hep {
       Position localToGlobal(const G4ThreeVector& local)  const;
       /// Coordinate transformation to global coordinates in MM
       Position localToGlobal(double x, double y, double z)  const;
+
+      /// Coordinate transformation to local coordinates
+      Position globalToLocal(double x, double y, double z)  const;
+      /// Coordinate transformation to local coordinates
+      Position globalToLocal(const Position& global)  const;
+      /// Coordinate transformation to local coordinates
+      Position globalToLocal(const G4ThreeVector& global)  const;
+      /// Coordinate transformation to local coordinates
+      G4ThreeVector globalToLocalG4(double x, double y, double z)  const;
+      /// Coordinate transformation to local coordinates with G4 objects
+      G4ThreeVector globalToLocalG4(const G4ThreeVector& loc)  const;
+
       /// Apply BirksLaw
       double BirkAttenuation(const G4Step* aStep) const
       {

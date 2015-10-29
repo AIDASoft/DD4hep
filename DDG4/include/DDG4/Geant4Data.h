@@ -107,8 +107,23 @@ namespace DD4hep {
      */
     class Geant4HitData {
     public:
+      enum HitFlags {
+        HIT_KILLED_TRACK    = 1<<0,
+        HIT_SECONDARY_TRACK = 1<<1,
+        HIT_NEW_TRACK       = 1<<2,
+        HIT_STARTED_INSIDE  = 1<<10,
+        HIT_STARTED_SURFACE = 1<<11,
+        HIT_STARTED_OUTSIDE = 1<<12,
+        HIT_ENDED_INSIDE    = 1<<13,
+        HIT_ENDED_SURFACE   = 1<<14,
+        HIT_ENDED_OUTSIDE   = 1<<15
+      };
       /// cellID
       long long int cellID;
+      /// User flag to classify hits
+      long flag;
+      /// Original Geant 4 track identifier of the creating track (debugging)
+      long g4ID;
       /// User data extension if required
       dd4hep_ptr<DataExtension> extension;
 

@@ -12,13 +12,11 @@
   </info>
 
   <includes>
-    <gdmlFile  ref="./elements.xml"/>
-    <gdmlFile  ref="./materials.xml"/>
+    <gdmlFile  ref="elements.xml"/>
+    <gdmlFile  ref="materials.xml"/>
   </includes>
   
   <define>
-    <constant name="materials_dir" value="." type="string"/>;
-    <constant name="SiD_dir" value="./SiD" type="string"/>;
     <constant name="world_side" value="30000*mm"/>
     <constant name="world_x" value="world_side"/>
     <constant name="world_y" value="world_side"/>
@@ -210,101 +208,11 @@
   </display>
 
   <comment>Additional design specific material definitions</comment>
-  <include ref="./SiD/SiD_Materials.xml"/>
-<!--
-  <display>
-    <vis name="SiTrackerLayerVis"   alpha="1.0" r="1.0" g="1.0" b="0.6" showDaughters="true" visible="true"/>
-    <vis name="SiTrackerModuleVis"  alpha="0.1" r="0.0" g="1.0" b="0.6" showDaughters="false" visible="true"/>
-    <vis name="SiTrackerForwardVis" alpha="1.0" r="0.8" g="0.1" b="0.1" showDaughters="false" visible="true"/>
-  </display>
+  <include ref="SiD/SiD_Materials.xml"/>
 
-  <readouts>
-    <readout name="SiTrackerBarrelHits">
-      <id>system:8,barrel:3,layer:4,module:14,sensor:2,side:32:-2,strip:20</id>
-    </readout>
-  </readouts>
--->  
-  <!--  Includes for sensitives and support                -->
-  <!-- include ref="SiD/SiD_TrackerBarrel.xml" -->
-<!--
--->
   <comment>Tracking detectors</comment>
-  <include ref="./SiD/SiD_Tracker.xml"/>
-  <include ref="./SiD/SiD_Ecal.xml"/>
-
-   <plugins>
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
-      <argument value="SiTrackerBarrel"/>
-      <argument value="dimension=1"/>
-    </plugin>
-    <plugin name="DD4hep_SurfaceExamplePlugin">
-      <argument value="SiTrackerBarrel"/>
-      <argument value="aa=1*mm"/>
-      <argument value="bb=2*cm"/>
-      <argument value="cc=3*m"/>
-    </plugin>
-  </plugins>
-<!--
-
-  <plugins>
-    <plugin name="TestSurfaces"><argument value="EcalEndcap"/></plugin>
-    <plugin name="DD4hep_PolyhedraEndcapCalorimeterSurfacePlugin"><argument value="EcalEndcap"/></plugin>
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="EcalBarrel"/></plugin>
-  </plugins>
-
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
-      <argument value="SiTrackerBarrel"/>
-    </plugin>
-    <plugin name="TestSurfaces"><argument value="SiTrackerBarrel"/></plugin>
-
-    <plugin name="TestSurfaces">                       <argument value="EcalEndcap"/></plugin>
-    <plugin name="DD4hep_SiTrackerEndcapSurfacePlugin"><argument value="EcalEndcap"/></plugin>
-
-    <plugin name="SubdetectorExtensionPlugin">         <argument value="EcalEndcap"/></plugin>
-    <plugin name="LayeringExtensionPlugin">            <argument value="EcalEndcap"/></plugin>
-
-  <include ref="SiD/SiD_Ecal.xml"/>
-    <plugin name="TestSurfaces">                       <argument value="EcalBarrel"/></plugin>
-    <plugin name="SubdetectorExtensionPlugin">         <argument value="EcalBarrel"/></plugin>
-    <plugin name="LayeringExtensionPlugin">            <argument value="EcalBarrel"/></plugin>
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="EcalBarrel"/></plugin>
-
-  <include ref="SiD/SiD_HcalBarrel.xml"/>
-    <plugin name="TestSurfaces">                       <argument value="HcalBarrel"/></plugin>
-    <plugin name="SubdetectorExtensionPlugin">         <argument value="HcalBarrel"/></plugin>
-    <plugin name="LayeringExtensionPlugin">            <argument value="HcalBarrel"/></plugin>
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="HcalBarrel"/></plugin>
-
-  <include ref="SiD/SiD_Muon.xml"/>
-  <plugins>
-    <plugin name="SubdetectorExtensionPlugin">         <argument value="MuonBarrel"/></plugin>
-    <plugin name="LayeringExtensionPlugin">            <argument value="MuonBarrel"/></plugin>
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin"><argument value="MuonBarrel"/></plugin>
-  </plugins>
--->
-<!--
-  <plugins>
-    <plugin name="TestSurfaces">
-      <argument value="SiTrackerEndcap"/>
-    </plugin>
-  </plugins>
-
-  <include ref="SiD/SiD_Tracker.xml"/>
-  <plugins>
-    <plugin name="DD4hep_SiTrackerEndcapSurfacePlugin">
-      <argument value="SiTrackerEndcap"/>
-    </plugin>
-  </plugins>
-  <plugins>
-    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
-      <argument value="SiTrackerBarrel"/>
-    </plugin>
-  </plugins>
-  <include ref="SiD/SiD_TrackerEndcap.xml"/>
-  <include ref="SiD/SiD_TrackerBarrel.xml"/>
--->
-<!--
   <include ref="SiD/SiD_Vertex.xml"/>
+<!--
   <include ref="SiD/SiD_Tracker.xml"/>
 
   <comment>Calorimeters</comment>
@@ -315,13 +223,14 @@
   <include ref="SiD/SiD_Lumical.xml"/>
   <include ref="SiD/SiD_Beamcal.xml"/>
 
-  <comment>Dead material and supports</comment>
-  <include ref="SiD/SiD_Solenoid.xml"/>
-  <include ref="SiD/SiD_Shields.xml"/>
-
   <comment>Beampipe</comment>
   <include ref="SiD/SiD_Beampipe.xml"/>
   
+  <comment>Dead material, supports and magnet</comment>
+  <include ref="SiD/SiD_Shields.xml"/>
+  <include ref="SiD/SiD_Solenoid.xml"/>
+-->
+
   <fields>
     <field name="GlobalSolenoid" type="solenoid" 
 	   inner_field="5.0*tesla"
@@ -330,6 +239,18 @@
 	   outer_radius="SolenoidalFieldRadius">
     </field>
   </fields>
--->
 
+  <plugins>
+    <plugin name="DD4hep_SiTrackerEndcapSurfacePlugin">
+      <argument value="SiVertexEndcap"/>
+      <argument value="dimension=1"/>
+    </plugin>
+  </plugins>
+  <plugins>
+    <plugin name="DD4hep_SiTrackerBarrelSurfacePlugin">
+      <argument value="SiVertexBarrel"/>
+      <argument value="dimension=1"/>
+    </plugin>
+    <plugin name="InstallSurfaceManager"/>
+  </plugins>
 </lccdd>

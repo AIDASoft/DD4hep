@@ -15,14 +15,16 @@
 // Framework include files
 #include "DDG4/Geant4PhysicsList.h"
 #include "DDG4/Geant4UIMessenger.h"
+#include "DDG4/Geant4UserPhysicsList.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
 
 // Geant4 include files
 #include "G4VPhysicsConstructor.hh"
-#include "G4ParticleTable.hh"
+#include "G4PhysListFactory.hh"
 #include "G4ProcessManager.hh"
+#include "G4ParticleTable.hh"
 #include "G4VProcess.hh"
 #include "G4Decay.hh"
 
@@ -35,6 +37,14 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
 namespace {
+
+  struct EmptyPhysics : public G4VModularPhysicsList {
+    EmptyPhysics() {}
+    virtual ~EmptyPhysics() {}
+    virtual void ConstructProcess()      {}
+    virtual void ConstructParticle()      {}
+  };
+
   void _findDef(const string& expression, vector<G4ParticleDefinition*>& results) {
     string exp = expression;   //'^'+expression+"$";
     G4ParticleTable* pt = G4ParticleTable::GetParticleTable();
@@ -259,6 +269,14 @@ Geant4PhysicsListActionSequence::~Geant4PhysicsListActionSequence() {
   m_actors.clear();
   m_process.clear();
   InstanceCount::decrement(this);
+}
+
+/// Extend physics list from factory:
+G4VUserPhysicsList* Geant4PhysicsListActionSequence::extensionList()  const  {
+  G4VModularPhysicsList* physics = ( m_extends.empty() )
+    ? new EmptyPhysics()
+    : G4PhysListFactory().GetReferencePhysList(m_extends);
+  return physics;
 }
 
 /// Install command control messenger if wanted

@@ -238,7 +238,7 @@ void Geant4Action::error(const char* fmt, ...) const {
 }
 
 /// Action to support error messages.
-bool Geant4Action::error(bool return_value, const char* fmt, ...) const {
+bool Geant4Action::return_error(bool return_value, const char* fmt, ...) const {
   va_list args;
   va_start(args, fmt);
   DD4hep::printout(DD4hep::ERROR, m_name, fmt, args);

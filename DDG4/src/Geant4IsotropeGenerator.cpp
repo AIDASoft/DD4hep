@@ -26,6 +26,10 @@ Geant4IsotropeGenerator::Geant4IsotropeGenerator(Geant4Context* ctxt, const stri
   : Geant4ParticleGenerator(ctxt, nam)
 {
   InstanceCount::increment(this);
+  declareProperty("PhiMin", m_phiMin = 0.0);
+  declareProperty("PhiMax", m_phiMax = 2.0*M_PI);
+  declareProperty("ThetaMin", m_thetaMin = 0.0);
+  declareProperty("ThetaMax", m_thetaMax = M_PI);
 }
 
 /// Default destructor
@@ -37,8 +41,8 @@ Geant4IsotropeGenerator::~Geant4IsotropeGenerator() {
 void Geant4IsotropeGenerator::getParticleDirection(int, ROOT::Math::XYZVector& direction, double& momentum) const   {
   Geant4Event& evt = context()->event();
   Geant4Random& rnd = evt.random();
-  double phi   = 2*M_PI*rnd.rndm();
-  double theta = M_PI*rnd.rndm();
+  double phi   = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
+  double theta = m_thetaMin+(m_thetaMax-m_thetaMin)*rnd.rndm();
   double x1 = std::sin(theta)*std::cos(phi);
   double x2 = std::sin(theta)*std::sin(phi);
   double x3 = std::cos(theta);

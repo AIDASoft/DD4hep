@@ -31,6 +31,15 @@ namespace DD4hep {
      */
     class Geant4IsotropeGenerator: public Geant4ParticleGenerator {
     protected:
+      /// Property: Minimal phi angular value
+      double      m_phiMin;
+      /// Property: Maximal phi angular value
+      double      m_phiMax;
+      /// Property: Minimal theta angular value
+      double      m_thetaMin;
+      /// Property: Maximal theta angular value
+      double      m_thetaMax;
+
       /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
       /** Use this function to implement isotrop guns, multiple guns etc. 
           User must return a UNIT vector, which gets scaled with momentum.

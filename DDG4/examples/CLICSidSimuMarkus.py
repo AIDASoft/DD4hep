@@ -46,7 +46,8 @@ def run():
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
   geant4.printDetectors()
   # Configure UI
-  geant4.setupCshUI(macro='run.mac',ui=None)
+  #geant4.setupCshUI(macro='run.mac',ui=None)
+  geant4.setupCshUI()
 
   field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
   field.stepper            = "HelixSimpleRunge"
@@ -82,8 +83,9 @@ def run():
   # Configure I/O
   evt_lcio = geant4.setupLCIOOutput('LcioOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
   ##evt_lcio.OutputLevel = generator_output_level
-  evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
+  #evt_root = geant4.setupROOTOutput('RootOutput','CLICSiD_'+time.strftime('%Y-%m-%d_%H-%M'))
 
+  prim = DDG4.GeneratorAction(kernel,"Geant4GeneratorActionInit/GenerationInit")
   #VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
   """
   Generation of primary particles from LCIO input files
@@ -108,11 +110,11 @@ def run():
   geant4.buildInputStage([gen],output_level=generator_output_level)
   """
   #^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  gen = geant4.setupGun("Gun",particle='geantino',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
-  gen.isotrop = False
+  gen = geant4.setupGun("Gun",particle='mu+',energy=20*GeV,position=(0*mm,0*mm,0*cm),multiplicity=3)
+  gen.isotrop = True
   gen.direction = (1,0,0)
   gen.OutputLevel = generator_output_level
-
+  gen.Standalone = False
   """
   # And handle the simulation particles.
   part = DDG4.GeneratorAction(kernel,"Geant4ParticleHandler/ParticleHandler")
@@ -128,6 +130,10 @@ def run():
   user.enableUI()
   part.adopt(user)
   """
+  geant4.buildInputStage([prim,gen],Output.ERROR)
+
+  """
+  """
 
   """
   rdr = DDG4.GeneratorAction(kernel,"LcioGeneratorAction/Reader")
@@ -139,16 +145,16 @@ def run():
   kernel.generatorAction().adopt(rdr)
   """
 
-  """
-  #seq,act = geant4.setupTracker('SiTrackerBarrel')
 
   # First the tracking detectors
-  seq,act = geant4.setupTracker('SiVertexBarrel')
-  seq,act = geant4.setupTracker('SiVertexEndcap')
   seq,act = geant4.setupTracker('SiTrackerBarrel')
   seq,act = geant4.setupTracker('SiTrackerEndcap')
   seq,act = geant4.setupTracker('SiTrackerForward')
+  """
   # Now the calorimeters
+  seq,act = geant4.setupTracker('SiVertexBarrel')
+  seq,act = geant4.setupTracker('SiVertexEndcap')
+
   seq,act = geant4.setupCalorimeter('EcalBarrel')
   seq,act = geant4.setupCalorimeter('EcalEndcap')
   seq,act = geant4.setupCalorimeter('HcalBarrel')

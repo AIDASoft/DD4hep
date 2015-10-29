@@ -3,6 +3,18 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015-10-13 M.Frank
+  DDG4
+  - Remove explicit constructors for modular physics lists.
+    Use the native Geant4 provided G4PhysListFactory instead.
+    The physics list is instantiated as before with the "Extends" property.
+  - Implement angular ranges in the Geant4IsotropeGenerator for phi [0,2pi] and theta[0,pi]
+  - New sensitive detector Geant4TrackerWeightedAction
+    Attempt to properly process combined deposits in tracking detectors.
+  - Debug component Geant4SurfaceTest similar to the standalone program
+    test_surfaces, but to be appended as a DDG4 event action for event by event
+    tests of hits.
+
 2015-10-09 M.Frank
   DDG4
   - Extend the functionality of the DDG4 plugins

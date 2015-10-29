@@ -24,6 +24,7 @@
 
 // Forward declarations
 class G4VPhysicsConstructor;
+class G4VUserPhysicsList;
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -246,6 +247,8 @@ namespace DD4hep {
       virtual void constructProcess(Geant4UserPhysics* physics);
       /// begin-of-event callback
       virtual void constructParticles(Geant4UserPhysics* physics);
+      /// Extend physics list from factory:
+      G4VUserPhysicsList* extensionList()  const;
     };
 
   }    // End namespace Simulation

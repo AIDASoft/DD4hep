@@ -28,12 +28,15 @@ dd4hep_add_plugin(DDG4Plugins
 #---------------------------  LCIO Plugins for new simulation framework  -----------
 dd4hep_add_plugin(DDG4LCIO 
   OPTIONAL [LCIO REQUIRED SOURCES lcio/*.cpp] )
+#---------------------------  DDRec dependent Plugins  -----------------------------
+dd4hep_add_plugin(DDG4Reco
+  OPTIONAL [DDRec REQUIRED SOURCES reco/*.cpp] )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(g4gdmlDisplay SOURCES g4gdmlDisplay.cpp)
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(g4FromXML     SOURCES g4FromXML.cpp)
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(dd_sim        SOURCES ddsim.cpp)
-#---Package installation procedure(s) -------------------------------------
+#---Package installation procedure(s) ----------------------------------------------
 dd4hep_install_dir(examples DESTINATION examples/DDG4)
 dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)

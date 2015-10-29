@@ -251,14 +251,14 @@ namespace DD4hep {
       /** Combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
        * from the current sensitive volume to the world volume
        */
-      long long int volumeID(G4Step* step);
+      long long int volumeID(const G4Step* step);
 
       /// Returns the cellID of the sensitive volume corresponding to the step
       /** The CellID is the VolumeID + the local coordinates of the sensitive area.
        *  Calculated by combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
        *  from the current sensitive volume to the world volume
        */
-      long long int cellID(G4Step* step);
+      long long int cellID(const G4Step* step);
 
     };
 
