@@ -57,6 +57,7 @@ LCIOEventReader::LCIOEventReader(const string& nam)
 LCIOEventReader::~LCIOEventReader()   {
 }
 
+
 /// Read an event and fill a vector of MCParticles.
 LCIOEventReader::EventReaderStatus
 LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)   {

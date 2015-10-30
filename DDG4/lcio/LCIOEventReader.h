@@ -42,6 +42,7 @@ namespace DD4hep  {
       LCIOEventReader(const std::string& nam);
       /// Default destructor
       virtual ~LCIOEventReader();
+
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number, std::vector<Particle*>& particles);
       /// Read an event and return a LCCollectionVec of MCParticles.

@@ -40,11 +40,13 @@ namespace DD4hep  {
     protected:
       /// Reference to reader object
       IO::LCReader* m_reader;
+      unsigned m_nEvt ;
     public:
       /// Initializing constructor
       LCIOFileReader(const std::string& nam);
       /// Default destructor
       virtual ~LCIOFileReader();
+
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticleCollection(int event_number, EVENT::LCCollection** particles);
     };
@@ -63,12 +65,12 @@ DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOFileReader)
 
 /// Initializing constructor
 DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam)
-: LCIOEventReader(nam)
+: LCIOEventReader(nam), m_nEvt(0) 
 {
   m_reader = ::lcio::LCFactory::getInstance()->createLCReader(LCReader::directAccess);
   printout(INFO,"LCIOFileReader","Created file reader. Try to open input %s",nam.c_str());
   m_reader->open(nam);
-  m_directAccess = true;
+  m_directAccess = false;
 }
 
 /// Default destructor
@@ -79,10 +81,23 @@ DD4hep::Simulation::LCIOFileReader::~LCIOFileReader()    {
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
 DD4hep::Simulation::LCIOFileReader::readParticleCollection(int event_number, EVENT::LCCollection** particles)  {
-  ::lcio::LCEvent* evt = m_reader->readEvent(/*runNumber*/ 0, event_number);
+
+  // ::lcio::LCEvent* evt = m_reader->readEvent(/*runNumber*/ 0, event_number);
+  // fg: direct access does not work if run number is different from 0 and/or event numbers are not stored consequutively
+  if( m_nEvt == 0 && event_number != 0 ) {
+    m_reader->skipNEvents( event_number ) ;
+    printout(INFO,"LCIOFileReader","Skipping the first %d events ", event_number );
+  }
+  
+  ::lcio::LCEvent* evt = m_reader->readNextEvent(); // simply read the events sequentially 
+  ++m_nEvt ;
+
   if ( evt ) {
     *particles = evt->getCollection(LCIO::MCPARTICLE);
-    if ( *particles ) return EVENT_READER_OK;
+    if ( *particles ) {
+      printout(INFO,"LCIOFileReader","read collection %s from event %d in run %d ", LCIO::MCPARTICLE, evt->getEventNumber() , evt->getRunNumber()  );
+      return EVENT_READER_OK;
+    }
   }
   return EVENT_READER_ERROR;
 }
