@@ -169,7 +169,7 @@ class DD4hepSimulation(object):
 
     self.compactFile = parsed.compactFile
     self.inputFiles = parsed.inputFiles
-    self.__checkFileFormat( self.inputFiles, (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc"))
+    self.inputFiles = self.__checkFileFormat( self.inputFiles, (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc"))
     self.outputFile = parsed.outputFile
     self.__checkFileFormat( self.outputFile, ('.root', '.slcio'))
     self.runType = parsed.runType
@@ -475,7 +475,7 @@ class DD4hepSimulation(object):
       fileNames = [fileNames]
     if not all( fileName.endswith( extensions ) for fileName in fileNames ):
       self.errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
-    return
+    return fileNames
 
   def __applyBoostOrSmear( self, kernel, actionList, mask ):
     """apply boost or smearing for given mask index"""
