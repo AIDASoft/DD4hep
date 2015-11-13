@@ -36,8 +36,10 @@ foreach (test Simple_ILD)
   endforeach(type)
 endforeach(test)
 
-dd4hep_add_test_reg( SimpleDetector_sim_ILD
-    COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
-    EXEC_ARGS  dd_sim ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml  ${CMAKE_CURRENT_SOURCE_DIR}/examples/sequences.xml
-    REQUIRES   DDG4 Geant4
-    REGEX_PASS "Event 9 Begin event action")
+if (DD4HEP_USE_GEANT4)
+  dd4hep_add_test_reg( SimpleDetector_sim_ILD
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_SimpleDetector.sh"
+      EXEC_ARGS  dd_sim ${CMAKE_CURRENT_SOURCE_DIR}/compact/Simple_ILD.xml  ${CMAKE_CURRENT_SOURCE_DIR}/examples/sequences.xml
+      REQUIRES   DDG4 Geant4
+      REGEX_PASS "Event 9 Begin event action")
+endif()

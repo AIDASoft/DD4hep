@@ -12,20 +12,20 @@
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
-#-----------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 dd4hep_configure_output()
 dd4hep_package (ClientTests MAJOR 0 MINOR 0 PATCH 1
   USES         [ROOT   REQUIRED COMPONENTS Geom GenVector] 
                [DD4hep REQUIRED COMPONENTS DDCore]
   OPTIONAL     XERCESC
   INCLUDE_DIRS include )
-#-----------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 dd4hep_add_plugin( ClientTests SOURCES src/*.cpp  )
 dd4hep_install_dir( compact scripts DESTINATION ${DD4hep_DIR}/examples/ClientTests )
-#-----------------------------------------------------------------------------------
+#--------------------------------------------------------------------------
 dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 
-#***  Testing  *********************************************************************
+#---  Testing  ------------------------------------------------------------
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors )
   foreach( type lcdd gdml vis )
     dd4hep_add_test_reg( ClientTests_converter_${type}_${test}
@@ -35,7 +35,7 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
   endforeach(type)
 endforeach()
 #
-if ( NOT "${DD4HEP_USE_GEANT4}" STREQUAL "" )
+if (DD4HEP_USE_GEANT4)
   foreach(script MiniTel LheD_tracker )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
