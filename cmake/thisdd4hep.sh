@@ -73,7 +73,7 @@ ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
 test -r ${ROOTENV_INIT} && { cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; }
 #
 #----Geant4 LIBRARY_PATH------------------------------------------------------
-if [ ${Geant4_DIR ]; then
+if [ ${Geant4_DIR} ]; then
     G4LIB_DIR=`dirname ${Geant4_DIR}`;
     export G4INSTALL=`dirname ${G4LIB_DIR}`;
     export G4ENV_INIT=${G4INSTALL}/bin/geant4.sh
@@ -82,14 +82,14 @@ if [ ${Geant4_DIR ]; then
     #---- if geant4 was built with external CLHEP we have to extend the dynamic search path
     if [ @GEANT4_USE_CLHEP@ ] ; then
 	dd4hep_add_library_path @CLHEP_LIBRARY_PATH@;
-    fi
+    fi;
     dd4hep_add_library_path ${G4LIB_DIR};
     unset G4ENV_INIT;
     unset G4LIB_DIR;
-fi
+fi;
 #
 #----XercesC LIBRARY_PATH-----------------------------------------------------
-if test [ $XERCESCINSTALL ]; then
+if [ ${XERCESCINSTALL} ]; then
     #dd4hep_add_path    PATH ${XERCESCINSTALL}/bin;
     dd4hep_add_library_path ${XERCESCINSTALL}/lib;
 fi;

@@ -15,6 +15,7 @@ cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 message ( STATUS "INCLUDING DD4hepBuild...." )
 include ( CMakeParseArguments )
 set ( DD4hepBuild_included ON )
+####set ( DD4HEP_DEBUG_CMAKE ON )
 
 #---------------------------------------------------------------------------------------------------
 macro(dd4hep_to_parent_scope val)
@@ -574,7 +575,7 @@ function ( dd4hep_handle_optional_sources tag optionals missing uses sources )
     dd4hep_find_package( ${USE_NAME} pkg_found 
       ARGS ${USE_REQUIRED} ${USE_COMPONENT} ${USE_COMPONENTS} 
       TYPE ${USE_TYPE} )
-    if ( "{pkg_found}" STREQUAL "OFF" )
+    if ( "${pkg_found}" STREQUAL "OFF" )
       dd4hep_print ( "|    ${tag}  ...optional: Skip sources ${USE_SOURCES} [requires ${USE_NAME}]" )
     elseif ( "${pkg_found}" STREQUAL "ON" )
       dd4hep_print ( "|    ${tag}  ...optional: ADD sources ${USE_SOURCES} [dependent on ${USE_NAME}]" )

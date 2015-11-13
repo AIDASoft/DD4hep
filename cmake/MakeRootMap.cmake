@@ -3,7 +3,8 @@ if( ${ROOT_VERSION_MAJOR} GREATER 5 )
   #
   #  Running listcomponents from Gaudi
   #
-  FIND_PROGRAM( ROOT_genmap_CMD listcomponents PATHS ${genmap_install_dir}/../bin )
+  FIND_PROGRAM( ROOT_genmap_CMD listcomponents PATHS ${genmap_install_dir}/../bin ${DD4hep_DIR}/bin )
+  ###MESSAGE( STATUS " *** MakeROOTMap ${genmap_install_dir}/../bin $ENV{DD4hep_DIR}/bin ${DD4hep_DIR}" )
   MESSAGE( STATUS " *** MakeROOTMap[components].cmake run command : ${ROOT_genmap_CMD} -o ${rootmapfile} ${libname} 
                  WORKING_DIRECTORY ${genmap_install_dir} "
     )  
@@ -23,7 +24,6 @@ else()
   #  Running genmap from ROOT 5
   #
   FIND_PROGRAM( ROOT_genmap_CMD genmap PATHS $ENV{ROOTSYS}/bin $ENV{PATH} )
-
   MESSAGE( STATUS " *** MakeROOTMap.cmake run command : ${ROOT_genmap_CMD} -debug -i ${libname} -o ${rootmapfile}
                  WORKING_DIRECTORY ${genmap_install_dir} "
     )
