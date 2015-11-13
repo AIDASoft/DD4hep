@@ -9,7 +9,7 @@
 #
 #################################################################################
 # Default of DD4hep is the primary installation directory
-if test -z "${DD4hep_DIR}"; then
+if [ ! ${DD4hep_DIR} ]; then
     export DD4hep_DIR=@DD4hep_DIR@;
 fi;
 source ${DD4hep_DIR}/bin/thisdd4hep.sh;

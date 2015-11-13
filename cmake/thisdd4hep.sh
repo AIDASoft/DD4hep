@@ -30,10 +30,10 @@ dd4hep_add_path()   {
     path_name=${1};
     path_prefix=${2};
     eval path_value=\$$path_name;
-    if test -z "${path_value}"; then
-	path_value=${path_prefix};
-    else
+    if [ ${path_value} ]; then
 	path_value=${path_prefix}:${path_value};
+    else
+	path_value=${path_prefix};
     fi; 
     eval export ${path_name}=${path_value};
     ## echo "dd4hep_add_path: ${path_name}=${path_value}";
@@ -43,9 +43,17 @@ dd4hep_add_library_path()    {
     path_prefix=${1};
     if [ @USE_DYLD@ ];
     then
-	export DYLD_LIBRARY_PATH=${path_prefix}:$DYLD_LIBRARY_PATH;
+        if [ ${DYLD_LIBRARY_PATH} ]; then
+	    export DYLD_LIBRARY_PATH=${path_prefix}:$DYLD_LIBRARY_PATH;
+        else
+            export DYLD_LIBRARY_PATH=${path_prefix};
+        fi;
     else
-	export LD_LIBRARY_PATH=${path_prefix}:$LD_LIBRARY_PATH;
+        if [ ${LD_LIBRARY_PATH} ]; then
+	    export LD_LIBRARY_PATH=${path_prefix}:$LD_LIBRARY_PATH;
+        else
+	    export LD_LIBRARY_PATH=${path_prefix};
+        fi;
     fi;
 }
 #
@@ -65,7 +73,7 @@ ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
 test -r ${ROOTENV_INIT} && { cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; }
 #
 #----Geant4 LIBRARY_PATH------------------------------------------------------
-if test -n "${Geant4_DIR}"; then
+if [ ${Geant4_DIR ]; then
     G4LIB_DIR=`dirname ${Geant4_DIR}`;
     export G4INSTALL=`dirname ${G4LIB_DIR}`;
     export G4ENV_INIT=${G4INSTALL}/bin/geant4.sh
