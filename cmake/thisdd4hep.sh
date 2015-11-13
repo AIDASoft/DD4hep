@@ -89,7 +89,7 @@ if [ ${Geant4_DIR ]; then
 fi
 #
 #----XercesC LIBRARY_PATH-----------------------------------------------------
-if test -n "${XERCESCINSTALL}"; then
+if test [ $XERCESCINSTALL ]; then
     #dd4hep_add_path    PATH ${XERCESCINSTALL}/bin;
     dd4hep_add_library_path ${XERCESCINSTALL}/lib;
 fi;
