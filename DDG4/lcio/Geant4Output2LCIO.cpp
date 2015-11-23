@@ -19,6 +19,9 @@
 #include "DD4hep/VolumeManager.h"
 #include "DDG4/Geant4OutputAction.h"
 
+#include "DD4hep/LCDD.h"
+#include <G4Version.hh>
+
 // lcio include files
 #include "lcio.h"
 #include "IO/LCWriter.h"
@@ -170,6 +173,8 @@ void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   for (std::map< std::string, std::string >::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {
     rh->parameters().setValue( it->first, it->second );
   }
+  rh->parameters().setValue("GEANT4Version", G4Version);
+  rh->parameters().setValue("DD4HEPVersion", versionString());
   rh->setRunNumber(m_runNo=run->GetRunID());
   rh->setDetectorName(context()->lcdd().header().name());
   m_file->writeRunHeader(rh);
