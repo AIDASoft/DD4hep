@@ -316,6 +316,9 @@ class DD4hepSimulation(object):
       elif inputFile.endswith(".hepmc"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc1")
         gen.Input="Geant4EventReaderHepMC|"+inputFile
+      else:
+        ##this should never happen because we already check at the top, but in case of some LogicError...
+        raise RuntimeError( "Unknown input file type: %s" % inputFile )
       gen.Sync = self.skipNEvents
       gen.Mask = index
       actionList.append(gen)
