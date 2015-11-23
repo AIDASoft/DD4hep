@@ -40,12 +40,13 @@ from DDSim.Helper.Action import Action
 from DDSim.Helper.Random import Random
 import os
 import sys
-
+import datetime
 
 class DD4hepSimulation(object):
   """Class to hold all the parameters and functions to run simulation"""
 
   def __init__(self):
+    self.steeringFile = None
     self.compactFile = ""
     self.inputFiles = []
     self.outputFile = "dummyOutput.slcio"
@@ -60,7 +61,6 @@ class DD4hepSimulation(object):
     self.enableGun = False
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
-    self.magneticFieldDict = {}
     self.detailedShowerMode = False
 
     self.errorMessages = []
@@ -78,31 +78,34 @@ class DD4hepSimulation(object):
     os.environ['G4UI_USE_TCSH'] = "1"
 
 
-  def readSteeringFile(self, steeringFile):
+  def readSteeringFile(self):
     """Reads a steering file and sets the parameters to that of the
     DD4hepSimulation object present in the steering file.
     """
     globs = {}
     locs  = {}
-    if not steeringFile:
+    if not self.steeringFile:
       return
-    execfile(steeringFile, globs, locs)
+    sFileTemp = self.steeringFile
+    execfile(self.steeringFile, globs, locs)
     for _name, obj in locs.items():
       if isinstance(obj, DD4hepSimulation):
         self.__dict__ = obj.__dict__
+    self.steeringFile = os.path.abspath(sFileTemp)
 
   def parseOptions(self):
     """parse the command line options"""
     parser = argparse.ArgumentParser("Running DD4hep Simulations:",
                                      formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument("--steeringFile", "-S", action="store", default=None,
+    parser.add_argument("--steeringFile", "-S", action="store", default=self.steeringFile,
                         help="Steering file to change default behaviour")
 
     #first we parse just the steering file, but only if we don't want to see the help message
     if not any( opt in sys.argv for opt in ('-h','--help')):
       parsed, _unknown = parser.parse_known_args()
-      self.readSteeringFile(parsed.steeringFile)
+      self.steeringFile = parsed.steeringFile
+      self.readSteeringFile()
 
     parser.add_argument("--compactFile", action="store", default=self.compactFile,
                         help="The compact XML file")
@@ -167,7 +170,7 @@ class DD4hepSimulation(object):
 
     self.dumpParameter = parsed.dumpParameter
 
-    self.compactFile = parsed.compactFile
+    self.compactFile = os.path.abspath(parsed.compactFile)
     self.inputFiles = parsed.inputFiles
     self.inputFiles = self.__checkFileFormat( self.inputFiles, (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc"))
     self.outputFile = parsed.outputFile
@@ -179,7 +182,7 @@ class DD4hepSimulation(object):
     self.skipNEvents = parsed.skipNEvents
     self.physicsList = parsed.physicsList
     self.crossingAngleBoost = parsed.crossingAngleBoost
-    self.macroFile = parsed.macroFile
+    self.macroFile = os.path.abspath(parsed.macroFile)
     self.enableGun = parsed.enableGun
     self.detailedShowerMode = parsed.detailedShowerMode
     self.vertexOffset = parsed.vertexOffset
@@ -281,7 +284,8 @@ class DD4hepSimulation(object):
     # Configure I/O
 
     if self.outputFile.endswith(".slcio"):
-      simple.setupLCIOOutput('LcioOutput', self.outputFile)
+      lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
+      lcOut.RunHeader = self.__addParametersToRunHeader()
     elif self.outputFile.endswith(".root"):
       simple.setupROOTOutput('RootOutput', self.outputFile)
 
@@ -538,6 +542,44 @@ class DD4hepSimulation(object):
     except KeyError:
       self.errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
       return -1
+
+  def __addParametersToRunHeader( self ):
+    """add the parameters to the (lcio) run Header"""
+    runHeader = {}
+    parameters = vars(self)
+    for parName, parameter in parameters.iteritems():
+      if isinstance( parameter, ConfigHelper ):
+        options = parameter.getOptions()
+        for opt,valAndDoc in options.iteritems():
+          runHeader["%s.%s"%(parName, opt)] = str(valAndDoc[0])
+      else:
+        runHeader[parName] = str(parameter)
+
+    ### steeringFile content
+    if self.steeringFile and os.path.exists(self.steeringFile) and os.path.isfile(self.steeringFile):
+      with open(self.steeringFile) as sFile:
+        runHeader["SteeringFileContent"] = sFile.read()
+
+    ### macroFile content
+    if self.macroFile and os.path.exists(self.macroFile) and os.path.isfile(self.macroFile):
+      with open(self.macroFile) as mFile:
+        runHeader["MacroFileContent"] = mFile.read()
+
+    ### add command line
+    if sys.argv:
+      runHeader["CommandLine"] = " ".join(sys.argv)
+
+    ### add current working directory (where we call from)
+    runHeader["WorkingDirectory"] = os.getcwd()
+
+    ### add date
+    runHeader["DateUTC"] = str(datetime.datetime.utcnow())+" UTC"
+
+    ### add User
+    import getpass
+    runHeader["User"] = getpass.getuser()
+
+    return runHeader
 
 
 ################################################################################
