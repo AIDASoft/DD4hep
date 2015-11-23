@@ -38,12 +38,22 @@
 // C/C++ include files
 #include <map>
 #include <vector>
+#include <string>
+#include <cstdio>
 
 // Forward declarations
 class TGeoManager;
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
+
+  /// return a string with the current DD4hep version in the form vXX-YY.
+  inline std::string versionString(){
+    std::string vs("vXX-YY") ;
+    std::sprintf( &vs[0] , "v%2.2d-%2.2d", DD4HEP_MAJOR_VERSION, DD4HEP_MINOR_VERSION  ) ;
+    return vs ;
+  }
+  
 
   // Foward declarations
   class NamedObject;
