@@ -60,6 +60,10 @@ DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(std::set<std::string>)
 typedef std::map<std::string, int> map_string_int;
 DD4HEP_DEFINE_PARSER_GRAMMAR(map_string_int,eval_obj)
 
+// e.g.,, runHeader map
+typedef std::map<std::string, std::string> map_string_string;
+DD4HEP_DEFINE_PARSER_GRAMMAR(map_string_string,eval_obj)
+
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZPoint,eval_obj)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::XYZVector,eval_obj)
 DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(ROOT::Math::PxPyPzEVector,eval_obj)

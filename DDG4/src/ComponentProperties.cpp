@@ -262,6 +262,9 @@ namespace DD4hep {
   typedef map<string, int> map_string_int;
   DD4HEP_DEFINE_PROPERTY_TYPE(map_string_int);
 
+  typedef map<string, string> map_string_string;
+  DD4HEP_DEFINE_PROPERTY_TYPE(map_string_string);
+
   // ROOT::Math Object instances
   DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZPoint);
   DD4HEP_DEFINE_PROPERTY_TYPE(ROOT::Math::XYZVector);
