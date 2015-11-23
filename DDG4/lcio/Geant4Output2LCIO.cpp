@@ -24,6 +24,7 @@
 #include "IO/LCWriter.h"
 #include "IMPL/LCEventImpl.h"
 #include "IMPL/LCCollectionVec.h"
+#include "EVENT/LCParameters.h"
 
 using namespace lcio ;
 
@@ -47,6 +48,7 @@ namespace DD4hep {
     protected:
       lcio::LCWriter*  m_file;
       int              m_runNo;
+      std::map< std::string, std::string > m_runHeader;
 
       /// Data conversion interface for MC particles to LCIO format
       lcio::LCCollectionVec* saveParticles(Geant4ParticleMap* particles);
@@ -99,6 +101,7 @@ namespace DD4hep {
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Particle.h"
 #include "DDG4/Geant4Data.h"
+#include "DDG4/Geant4Action.h"
 
 //#include "DDG4/Geant4Output2LCIO.h"
 #include "G4ParticleDefinition.hh"
@@ -127,6 +130,7 @@ DECLARE_GEANT4ACTION(Geant4Output2LCIO)
 Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
 : Geant4OutputAction(ctxt,nam), m_file(0), m_runNo(0)
 {
+  declareProperty("RunHeader", m_runHeader);
   InstanceCount::increment(this);
 }
 
@@ -148,7 +152,8 @@ void Geant4Output2LCIO::beginRun(const G4Run* )  {
 }
 
 /// Callback to store the Geant4 run information
-void Geant4Output2LCIO::endRun(const G4Run* )  {
+void Geant4Output2LCIO::endRun(const G4Run* run)  {
+  saveRun(run);
 }
 
 /// Commit data at end of filling procedure
@@ -162,6 +167,9 @@ void Geant4Output2LCIO::commit( OutputContext<G4Event>& /* ctxt */)   {
 void Geant4Output2LCIO::saveRun(const G4Run* run)  {
   // --- write an lcio::RunHeader ---------
   lcio::LCRunHeaderImpl* rh =  new lcio::LCRunHeaderImpl;
+  for (std::map< std::string, std::string >::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {
+    rh->parameters().setValue( it->first, it->second );
+  }
   rh->setRunNumber(m_runNo=run->GetRunID());
   rh->setDetectorName(context()->lcdd().header().name());
   m_file->writeRunHeader(rh);
