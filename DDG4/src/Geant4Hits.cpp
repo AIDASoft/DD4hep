@@ -28,6 +28,10 @@
 using namespace std;
 using namespace DD4hep::Simulation;
 
+G4ThreadLocal G4Allocator<Geant4TrackerHit>* TrackerHitAllocator = 0;
+G4ThreadLocal G4Allocator<Geant4CalorimeterHit>* CalorimeterHitAllocator = 0;
+
+
 /// Check if the Geant4 track is a Geantino
 bool Geant4Hit::isGeantino(G4Track* track) {
   if (track) {
@@ -49,8 +53,6 @@ Geant4Hit::Contribution Geant4Hit::extractContribution(G4Step* step) {
   Contribution contrib(trk->GetTrackID(), trk->GetDefinition()->GetPDGEncoding(), energy_deposit, trk->GetGlobalTime());
   return contrib;
 }
-
-static G4Allocator<Geant4TrackerHit> TrackerHitAllocator;
 
 /// Default constructor
 Geant4TrackerHit::Geant4TrackerHit()
@@ -103,15 +105,16 @@ Geant4TrackerHit& Geant4TrackerHit::storePoint(G4Step* step, G4StepPoint* pnt) {
 
 /// Geant4 required object allocator
 void* Geant4TrackerHit::operator new(size_t) {
-  return TrackerHitAllocator.MallocSingle();
+  if ( TrackerHitAllocator )
+    return TrackerHitAllocator->MallocSingle();
+  TrackerHitAllocator = new G4Allocator<Geant4TrackerHit>;
+  return TrackerHitAllocator->MallocSingle();
 }
 
 /// Geat4 required object destroyer
 void Geant4TrackerHit::operator delete(void *p) {
-  TrackerHitAllocator.FreeSingle((Geant4TrackerHit*) p);
+  TrackerHitAllocator->FreeSingle((Geant4TrackerHit*) p);
 }
-
-static G4Allocator<Geant4CalorimeterHit> CalorimeterHitAllocator;
 
 /// Standard constructor
 Geant4CalorimeterHit::Geant4CalorimeterHit(const Position& pos)
@@ -120,11 +123,14 @@ Geant4CalorimeterHit::Geant4CalorimeterHit(const Position& pos)
 
 /// Geant4 required object allocator
 void* Geant4CalorimeterHit::operator new(size_t) {
-  return CalorimeterHitAllocator.MallocSingle();
+  if ( CalorimeterHitAllocator )
+    return CalorimeterHitAllocator->MallocSingle();
+  CalorimeterHitAllocator = new G4Allocator<Geant4CalorimeterHit>;
+  return CalorimeterHitAllocator->MallocSingle();
 }
 
 /// Geat4 required object destroyer
 void Geant4CalorimeterHit::operator delete(void *p) {
-  CalorimeterHitAllocator.FreeSingle((Geant4CalorimeterHit*) p);
+  CalorimeterHitAllocator->FreeSingle((Geant4CalorimeterHit*) p);
 }
 

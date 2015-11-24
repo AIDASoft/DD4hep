@@ -3,6 +3,23 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015-11-24 M.Frank
+  DDG4
+  - Implementation of multi-threading mode.
+    To use and understand, please consult the DDG4 manual from the doc area.
+  - "Old" Single threaded mode and functionality is preserved.
+  - Numerous new classes supporting thread and master specific setup
+    functionality.
+  - Support for python configuration (see manual for details)
+  - Support for global Geant4Actions executing in thread reentrant shared mode.
+    (see manual for details)
+  - DDG4 examples: DDG4/examples/CLICSidSimu.py deleted and replaced with:
+    1) DDG4/examples/SiDSim.py  (single threaded, old example)
+    2) DDG4/examples/SiDSim_MT.py (multi threaded version of SiDSim.py)
+  DDCore:
+  - Support user formats for the default printout statements for nicer printouts.
+  - Removal of compiler warnings
+
 2015-10-13 M.Frank
   DDG4
   - Remove explicit constructors for modular physics lists.

@@ -27,6 +27,11 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    // Forward declarations
+    class Geant4SteppingAction;
+    class Geant4SharedSteppingAction;
+    class Geant4SteppingActionSequence;
+
     /// Concrete implementation of the Geant4 stepping action sequence
     /**
      *  \author  M.Frank
@@ -34,6 +39,8 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4SteppingAction: public Geant4Action {
+    public:
+      typedef Geant4SharedSteppingAction shared_type;
     public:
       /// Standard constructor
       Geant4SteppingAction(Geant4Context* context, const std::string& name);
@@ -43,11 +50,46 @@ namespace DD4hep {
       virtual void operator()(const G4Step* step, G4SteppingManager* mgr);
     };
 
+    /// Implementation of the Geant4 shared stepping action
+    /**
+     * Wrapper to share single instances of stepping actions for
+     * multi-threaded purposes. The wrapper ensures the locking
+     * of the basic actions to avoid race conditions.
+     *
+     * Shared action should be 'fast'. The global lock otherwise
+     * inhibits the efficient use of the multiple threads.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4SharedSteppingAction : public Geant4SteppingAction {
+    protected:
+      /// Reference to the shared action
+      Geant4SteppingAction* m_action;
+    public:
+      /// Standard constructor
+      Geant4SharedSteppingAction(Geant4Context* context, const std::string& nam);
+      /// Default destructor
+      virtual ~Geant4SharedSteppingAction();
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
+      /// Underlying object to be used during the execution of this thread
+      virtual void use(Geant4SteppingAction* action);
+      /// User stepping callback
+      virtual void operator()(const G4Step* step, G4SteppingManager* mgr);
+    };
+
     /// Concrete implementation of the Geant4 stepping action sequence
     /**
      * The sequence dispatches the callbacks for each stepping action
      * to all registered Geant4SteppingAction members and all
      * registered callbacks.
+     *
+     * Note Multi-Threading issue:
+     * Neither callbacks not the action list is protected against multiple 
+     * threads calling the Geant4 callbacks!
+     * These must be protected in the user actions themselves.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -65,6 +107,12 @@ namespace DD4hep {
       Geant4SteppingActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4SteppingActionSequence();
+      /// Set or update client context
+      virtual void updateContext(Geant4Context* ctxt);
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
+      /// Get an action by name
+      Geant4SteppingAction* get(const std::string& name) const;
       /// Register stepping action callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
       void call(Q* p, void (T::*f)(const G4Step*, G4SteppingManager*)) {

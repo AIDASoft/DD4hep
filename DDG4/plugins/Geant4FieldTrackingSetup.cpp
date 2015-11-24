@@ -18,7 +18,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DDG4/Geant4ActionPhase.h"
-
+#include "DDG4/Geant4DetectorConstruction.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -76,7 +76,10 @@ namespace DD4hep {
      * @author  M.Frank
      * @version 1.0
      */
-    class Geant4FieldTrackingSetupAction : public Geant4PhaseAction, public Geant4FieldTrackingSetup  {
+    class Geant4FieldTrackingSetupAction :
+      public Geant4PhaseAction,
+      public Geant4FieldTrackingSetup
+    {
     protected:
     public:
       /// Standard constructor
@@ -84,6 +87,32 @@ namespace DD4hep {
 
       /// Default destructor
       virtual ~Geant4FieldTrackingSetupAction() {}
+
+      /// Phase action callback
+      void operator()();
+
+    };
+
+    /// Detector construction action to perform the setup of the Geant4 tracking in magnetic fields
+    /** Geant4FieldTrackingSetupAction.
+     *
+     *  The phase action configures the Geant4FieldTrackingSetup base class using properties
+     *  and then configures the Geant4 tracking in magnetic fields.
+     *
+     * @author  M.Frank
+     * @version 1.0
+     */
+    class Geant4FieldTrackingConstruction : 
+      public Geant4DetectorConstruction,
+      public Geant4FieldTrackingSetup
+    {
+    protected:
+    public:
+      /// Standard constructor
+      Geant4FieldTrackingConstruction(Geant4Context* context, const std::string& nam);
+
+      /// Default destructor
+      virtual ~Geant4FieldTrackingConstruction() {}
 
       /// Phase action callback
       void operator()();
@@ -234,5 +263,30 @@ void Geant4FieldTrackingSetupAction::operator()()   {
         delta_chord,delta_one_step,delta_intersection);
 }
 
+
+/// Standard constructor
+Geant4FieldTrackingConstruction::Geant4FieldTrackingConstruction(Geant4Context* ctxt, const std::string& nam)
+  : Geant4DetectorConstruction(ctxt,nam), Geant4FieldTrackingSetup()
+{
+  declareProperty("equation",           eq_typ);
+  declareProperty("stepper",            stepper_typ);
+  declareProperty("min_chord_step",     min_chord_step = 1.0e-2);
+  declareProperty("delta_chord",        delta_chord = -1.0);
+  declareProperty("delta_one_step",     delta_one_step = -1.0);
+  declareProperty("delta_intersection", delta_intersection = -1.0);
+  declareProperty("eps_min",            eps_min = -1.0);
+  declareProperty("eps_max",            eps_max = -1.0);
+}
+
+/// Post-track action callback
+void Geant4FieldTrackingConstruction::operator()()   {
+  execute(context()->lcdd());
+  print("Geant4 magnetic field tracking configured. G4MagIntegratorStepper:%s G4Mag_EqRhs:%s "
+        "Epsilon:[min:%f mm max:%f mm] Delta:[chord:%f 1-step:%f intersect:%f]",
+        stepper_typ.c_str(),eq_typ.c_str(),eps_min, eps_max,
+        delta_chord,delta_one_step,delta_intersection);
+}
+
 DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields)
 DECLARE_GEANT4ACTION(Geant4FieldTrackingSetupAction)
+DECLARE_GEANT4ACTION(Geant4FieldTrackingConstruction)

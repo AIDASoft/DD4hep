@@ -23,32 +23,45 @@ DECLARE_GEANT4ACTION(Geant4Random)
 DECLARE_GEANT4ACTION(Geant4PhaseAction)
 
 #include "DDG4/Geant4RunAction.h"
+DECLARE_GEANT4ACTION(Geant4SharedRunAction)
 DECLARE_GEANT4ACTION(Geant4RunActionSequence)
 
 #include "DDG4/Geant4EventAction.h"
+DECLARE_GEANT4ACTION(Geant4SharedEventAction)
 DECLARE_GEANT4ACTION(Geant4EventActionSequence)
 
 #include "DDG4/Geant4SteppingAction.h"
+DECLARE_GEANT4ACTION(Geant4SharedSteppingAction)
 DECLARE_GEANT4ACTION(Geant4SteppingActionSequence)
 
 #include "DDG4/Geant4TrackingAction.h"
+DECLARE_GEANT4ACTION(Geant4SharedTrackingAction)
 DECLARE_GEANT4ACTION(Geant4TrackingActionSequence)
 
 #include "DDG4/Geant4StackingAction.h"
+DECLARE_GEANT4ACTION(Geant4SharedStackingAction)
 DECLARE_GEANT4ACTION(Geant4StackingActionSequence)
 
 #include "DDG4/Geant4GeneratorAction.h"
+DECLARE_GEANT4ACTION(Geant4SharedGeneratorAction)
 DECLARE_GEANT4ACTION(Geant4GeneratorActionSequence)
 
 #include "DDG4/Geant4PhysicsList.h"
 DECLARE_GEANT4ACTION(Geant4PhysicsList)
 DECLARE_GEANT4ACTION(Geant4PhysicsListActionSequence)
 
+#include "DDG4/Geant4DetectorConstruction.h"
+DECLARE_GEANT4ACTION(Geant4DetectorConstruction)
+DECLARE_GEANT4ACTION(Geant4DetectorConstructionSequence)
+
 #include "DDG4/Geant4SensDetAction.h"
 DECLARE_GEANT4ACTION(Geant4SensDetActionSequence)
 
 #include "DDG4/Geant4UIManager.h"
 DECLARE_GEANT4ACTION(Geant4UIManager)
+
+#include "DDG4/Geant4UserInitialization.h"
+DECLARE_GEANT4ACTION(Geant4UserInitializationSequence)
 
 #include "DDG4/Geant4MonteCarloTruth.h"
 DECLARE_GEANT4ACTION(Geant4DummyTruthHandler)

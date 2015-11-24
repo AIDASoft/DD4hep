@@ -76,14 +76,11 @@ namespace DD4hep {
       /// Convert the geometry type LimitSet into the corresponding Geant4 object(s).
       virtual void* handleLimitSet(LimitSet limitset, const std::set<const TGeoVolume*>& volumes) const;
 
-      /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-      virtual void* handleSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
-
       /// Handle the geant 4 specific properties
       void handleProperties(LCDD::Properties& prp) const;
 
       /// Print the geometry type SensitiveDetector
-      virtual void* printSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
+      virtual void printSensitive(SensitiveDetector sens_det, const std::set<const TGeoVolume*>& volumes) const;
 
       /// Print Geant4 placement
       virtual void* printPlacement(const std::string& name, const TGeoNode* node) const;

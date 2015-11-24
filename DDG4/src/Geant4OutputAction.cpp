@@ -34,13 +34,20 @@ Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
   InstanceCount::increment(this);
   declareProperty("Output", m_output);
   declareProperty("HandleErrorsAsFatal", m_errorFatal=true);
-  context()->runAction().callAtBegin(this, &Geant4OutputAction::beginRun);
-  context()->runAction().callAtEnd(this, &Geant4OutputAction::endRun);
+  //ctxt->runAction().callAtBegin(this, &Geant4OutputAction::beginRun);
+  //ctxt->runAction().callAtEnd(this, &Geant4OutputAction::endRun);
 }
 
 /// Default destructor
 Geant4OutputAction::~Geant4OutputAction() {
   InstanceCount::decrement(this);
+}
+
+/// Set or update client for the use in a new thread fiber with seperate action sequences
+void Geant4OutputAction::configureFiber(Geant4Context* thread_ctxt)  {
+  Geant4EventAction::configureFiber(thread_ctxt);
+  thread_ctxt->runAction().callAtBegin(this, &Geant4OutputAction::beginRun);
+  thread_ctxt->runAction().callAtEnd(this, &Geant4OutputAction::endRun);
 }
 
 /// begin-of-event callback

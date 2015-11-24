@@ -24,6 +24,8 @@
 
 using namespace std;
 
+static std::string print_fmt = "%-16s %5s %s";
+
 static size_t _the_printer(void*, DD4hep::PrintLevel lvl, const char* src, const char* text) {
   const char* p_lvl = "?????";
   if ( lvl> DD4hep::ALWAYS ) lvl = DD4hep::ALWAYS;
@@ -40,7 +42,7 @@ static size_t _the_printer(void*, DD4hep::PrintLevel lvl, const char* src, const
   default:                                 break;
   }
 
-  size_t len = ::fprintf(stdout, "%-16s %5s %s",src,p_lvl,text);
+  size_t len = ::fprintf(stdout, print_fmt.c_str(), src, p_lvl, text);
   // size_t len = ::fputs(src, stdout);
   // len += fputs(": ", stdout);
   // len += fputs(text, stdout);
@@ -278,6 +280,13 @@ DD4hep::PrintLevel DD4hep::setPrintLevel(PrintLevel new_level) {
 /// Access the current printer level
 DD4hep::PrintLevel DD4hep::printLevel()  {
   return print_lvl;
+}
+
+/// Set new printout format for the 3 fields: source-level-message. All 3 are strings
+string DD4hep::setPrintFormat(const string& new_format) {
+  string old = print_fmt;
+  print_fmt = new_format;
+  return old;
 }
 
 /// Customize printer function

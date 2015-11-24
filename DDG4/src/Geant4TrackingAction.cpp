@@ -20,6 +20,8 @@
 
 // Geant4 include files
 #include "G4Track.hh"
+#include "G4Threading.hh"
+#include "G4AutoLock.hh"
 #include "G4TrackingManager.hh"
 #include "G4VUserTrackInformation.hh"
 
@@ -31,9 +33,12 @@ using namespace DD4hep;
 using namespace DD4hep::Simulation;
 class G4Step;
 class G4TouchableHistory;
+namespace {
+  G4Mutex action_mutex=G4MUTEX_INITIALIZER;
+}
 
 /// Standard constructor
-Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* ctxt, const std::string& nam)
+Geant4TrackingActionSequence::Geant4TrackingActionSequence(Geant4Context* ctxt, const string& nam)
   : Geant4Action(ctxt, nam) {
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -50,19 +55,35 @@ Geant4TrackingActionSequence::~Geant4TrackingActionSequence() {
   InstanceCount::decrement(this);
 }
 
+/// Set or update client context
+void Geant4TrackingActionSequence::updateContext(Geant4Context* ctxt)    {
+  m_context = ctxt;
+  m_actors.updateContext(ctxt);
+}
+
+/// Set or update client for the use in a new thread fiber
+void Geant4TrackingActionSequence::configureFiber(Geant4Context* thread_context)   {
+  m_actors(&Geant4Action::configureFiber, thread_context);
+}
+
+/// Get an action by name
+Geant4TrackingAction* Geant4TrackingActionSequence::get(const string& nam) const   {
+  return m_actors.get(FindByName(TypeName::split(nam).second));
+}
+
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void Geant4TrackingActionSequence::adopt(Geant4TrackingAction* action) {
   if (action) {
+    G4AutoLock protection_lock(&action_mutex);
     action->addRef();
     m_actors.add(action);
     return;
   }
-  throw std::runtime_error("Geant4TrackingActionSequence: Attempt to add invalid actor!");
+  throw runtime_error("Geant4TrackingActionSequence: Attempt to add invalid actor!");
 }
 
 /// Pre-track action callback
 void Geant4TrackingActionSequence::begin(const G4Track* track) {
-  m_actors(ContextUpdate(context()));
   m_front(track);
   m_actors(&Geant4TrackingAction::begin, track);
   m_begin(track);
@@ -73,11 +94,10 @@ void Geant4TrackingActionSequence::end(const G4Track* track) {
   m_end(track);
   m_actors(&Geant4TrackingAction::end, track);
   m_final(track);
-  m_actors(ContextUpdate(0));
 }
 
 /// Standard constructor
-Geant4TrackingAction::Geant4TrackingAction(Geant4Context* ctxt, const std::string& nam)
+Geant4TrackingAction::Geant4TrackingAction(Geant4Context* ctxt, const string& nam)
   : Geant4Action(ctxt, nam) {
   InstanceCount::increment(this);
 }
@@ -101,49 +121,50 @@ void Geant4TrackingAction::mark(const G4Track* track) const    {
   if ( truth ) truth->mark(track,true);
 }
 
-/// Get the valid Geant4 tarck information
-Geant4TrackInformation* Geant4TrackingAction::trackInfo(G4Track* track) const {
-  if (track) {
-    Geant4TrackInformation* gau = 0;
-    G4VUserTrackInformation* g4 = track->GetUserInformation();
-    if (0 == g4)   {
-      gau = new Geant4TrackInformation();
-      track->SetUserInformation(gau);
-      return gau;                                                 // RETURN
-    }
-    gau = fast_cast<Geant4TrackInformation*>(g4);
-    if (!gau) {
-      error("trackInfo: invalid cast to Geant4TrajckInformation");
-    }
-    return gau;
-  }
-  error("trackInfo: [Invalid G4Track]");
-  return 0;
+/// Standard constructor
+Geant4SharedTrackingAction::Geant4SharedTrackingAction(Geant4Context* ctxt, const string& nam)
+  : Geant4TrackingAction(ctxt, nam)
+{
+  InstanceCount::increment(this);
 }
 
-/// Mark all children of the track to be stored
-bool Geant4TrackingAction::storeChildren() const {
-  G4TrackVector* v = trackMgr()->GimmeSecondaries();
-  if (v) {   // loop over all children
-    for (G4TrackVector::const_iterator i = v->begin(); i != v->end(); ++i) {
-      G4Track* t = *i;
-      if (t) {
-        storeChild(trackInfo(t));
-      }
-    }
-    return true;
-  }
-  return false;
+/// Default destructor
+Geant4SharedTrackingAction::~Geant4SharedTrackingAction()   {
+  releasePtr(m_action);
+  InstanceCount::decrement(this);
 }
 
-/// Mark a single child of the track to be stored
-bool Geant4TrackingAction::storeChild(Geant4TrackInformation* track_info) const {
-  if (0 != track_info) {
-    if (!track_info->storeTrack()) {
-      track_info->storeTrack(true);
-    }
-    return true;
+/// Set or update client for the use in a new thread fiber
+void Geant4SharedTrackingAction::configureFiber(Geant4Context* thread_context)   {
+  m_action->configureFiber(thread_context);
+}
+
+/// Underlying object to be used during the execution of this thread
+void Geant4SharedTrackingAction::use(Geant4TrackingAction* action)   {
+  if (action) {
+    action->addRef();
+    m_action = action;
+    return;
   }
-  error("storeChild: Geant4TrackInformation points to NULL!");
-  return false;
+  throw runtime_error("Geant4SharedTrackingAction: Attempt to use invalid actor!");
+}
+
+/// Begin-of-track callback
+void Geant4SharedTrackingAction::begin(const G4Track* track)   {
+  if ( m_action )  {
+    G4AutoLock protection_lock(&action_mutex);    {
+      ContextSwap swap(m_action,context());
+      m_action->begin(track);
+    }
+  }
+}
+
+/// End-of-track callback
+void Geant4SharedTrackingAction::end(const G4Track* track)   {
+  if ( m_action )  {
+    G4AutoLock protection_lock(&action_mutex);  {
+      ContextSwap swap(m_action,context());
+      m_action->end(track);
+    }
+  }
 }

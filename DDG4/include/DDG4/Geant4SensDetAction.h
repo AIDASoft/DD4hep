@@ -319,6 +319,9 @@ namespace DD4hep {
         return m_sensitiveType;
       }
 
+      /// Set or update client context
+      virtual void updateContext(Geant4Context* ctxt);
+
       /// Called at construction time of the sensitive detector to declare all hit collections
       size_t defineCollections(Geant4ActionSD* sens_det);
 
@@ -395,6 +398,11 @@ namespace DD4hep {
     /**
      * Concrete implementation of the sensitive detector action sequence
      *
+     * Note Multi-Threading issue:
+     * Neither callbacks not the action list is protected against multiple 
+     * threads calling the Geant4 callbacks!
+     * These must be protected in the user actions themselves.
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -442,7 +450,7 @@ namespace DD4hep {
      *
      * Users may override any of the templated callbacks or the of the virtual functions
      * of the base class using explicit template specialization.
-     * An example may be found in DDG4/plugins/eant4SDActions.
+     * An example may be found in DDG4/plugins/Geant4SDActions.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -453,9 +461,10 @@ namespace DD4hep {
       typedef T UserData;
     protected:
       /// Collection identifier
-      size_t   m_collectionID;
+      size_t    m_collectionID;
       /// User data block
-      UserData m_userData;
+      UserData  m_userData;
+
     public:
       /// Standard , initializing constructor
       Geant4SensitiveAction(Geant4Context* context,
@@ -465,9 +474,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4SensitiveAction();
       /// Initialization overload for specialization
-      void initialize();
+      virtual void initialize();
       /// Finalization overload for specialization
-      void finalize();
+      virtual void finalize();
       /// Define collections created by this sensitivie action object
       virtual void defineCollections() {}
       /// G4VSensitiveDetector interface: Method invoked at the begining of each event.

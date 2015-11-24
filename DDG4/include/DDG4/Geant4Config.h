@@ -40,6 +40,7 @@ namespace DD4hep {
     class Geant4ActionPhase;
     class Geant4GeneratorAction;
     class Geant4PhysicsList;
+    class Geant4UserInitialization;
     class Geant4UserParticleHandler;
     class Geant4GeneratorActionSequence;
     class Geant4RunActionSequence;
@@ -49,6 +50,9 @@ namespace DD4hep {
     class Geant4StackingActionSequence;
     class Geant4PhysicsListActionSequence;
     class Geant4SensDetActionSequence;
+    class Geant4UserInitializationSequence;
+    class Geant4DetectorConstruction;
+    class Geant4DetectorConstructionSequence;
 
     /// Convenience namespace to ease the setupup of DDG4 applications
     namespace Setup {
@@ -56,28 +60,32 @@ namespace DD4hep {
       typedef Geant4Kernel Kernel;
       //typedef Geant4Handle<Geant4Kernel> KernelH;
       // Actions
-      typedef Geant4Handle<Geant4Action> Action;
-      typedef Geant4Handle<Geant4Filter> Filter;
-      typedef Geant4Handle<Geant4PhaseAction> PhaseAction;
-      typedef Geant4Handle<Geant4GeneratorAction> GenAction;
-      typedef Geant4Handle<Geant4RunAction> RunAction;
-      typedef Geant4Handle<Geant4EventAction> EventAction;
-      typedef Geant4Handle<Geant4TrackingAction> TrackAction;
-      typedef Geant4Handle<Geant4StackingAction> StackAction;
-      typedef Geant4Handle<Geant4SteppingAction> StepAction;
-      typedef Geant4Handle<Geant4PhysicsList> PhysicsList;
-      typedef Geant4Handle<Geant4ActionPhase> Phase;
-      typedef Geant4Handle<Geant4Sensitive> Sensitive;
+      typedef Geant4Handle<Geant4Action>                       Action;
+      typedef Geant4Handle<Geant4Filter>                       Filter;
+      typedef Geant4Handle<Geant4PhaseAction>                  PhaseAction;
+      typedef Geant4Handle<Geant4GeneratorAction>              GenAction;
+      typedef Geant4Handle<Geant4RunAction>                    RunAction;
+      typedef Geant4Handle<Geant4EventAction>                  EventAction;
+      typedef Geant4Handle<Geant4TrackingAction>               TrackAction;
+      typedef Geant4Handle<Geant4StackingAction>               StackAction;
+      typedef Geant4Handle<Geant4SteppingAction>               StepAction;
+      typedef Geant4Handle<Geant4PhysicsList>                  PhysicsList;
+      typedef Geant4Handle<Geant4ActionPhase>                  Phase;
+      typedef Geant4Handle<Geant4Sensitive>                    Sensitive;
+      typedef Geant4Handle<Geant4UserInitialization>           Initialization;
+      typedef Geant4Handle<Geant4DetectorConstruction>         DetectorConstruction;
 
       // Sequences
-      typedef Geant4Handle<Geant4SensDetActionSequence>     SensitiveSeq;
-      typedef Geant4Handle<Geant4GeneratorActionSequence>   GeneratorSeq;
-      typedef Geant4Handle<Geant4RunActionSequence>         RunActionSeq;
-      typedef Geant4Handle<Geant4EventActionSequence>       EventActionSeq;
-      typedef Geant4Handle<Geant4TrackingActionSequence>    TrackActionSeq;
-      typedef Geant4Handle<Geant4SteppingActionSequence>    StepActionSeq;
-      typedef Geant4Handle<Geant4StackingActionSequence>    StackActionSeq;
-      typedef Geant4Handle<Geant4PhysicsListActionSequence> PhysicsActionSeq;
+      typedef Geant4Handle<Geant4SensDetActionSequence>        SensitiveSeq;
+      typedef Geant4Handle<Geant4GeneratorActionSequence>      GeneratorSeq;
+      typedef Geant4Handle<Geant4RunActionSequence>            RunActionSeq;
+      typedef Geant4Handle<Geant4EventActionSequence>          EventActionSeq;
+      typedef Geant4Handle<Geant4TrackingActionSequence>       TrackActionSeq;
+      typedef Geant4Handle<Geant4SteppingActionSequence>       StepActionSeq;
+      typedef Geant4Handle<Geant4StackingActionSequence>       StackActionSeq;
+      typedef Geant4Handle<Geant4PhysicsListActionSequence>    PhysicsActionSeq;
+      typedef Geant4Handle<Geant4UserInitializationSequence>   InitializationSeq;
+      typedef Geant4Handle<Geant4DetectorConstructionSequence> DetectorConstructionSeq;
     }
 
   }    // End namespace Simulation
@@ -93,9 +101,11 @@ namespace DD4hep {
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4SteppingAction.h"
 #include "DDG4/Geant4StackingAction.h"
+#include "DDG4/Geant4DetectorConstruction.h"
 #include "DDG4/Geant4ActionPhase.h"
 #include "DDG4/Geant4SensDetAction.h"
 #include "DDG4/Geant4ParticleHandler.h"
+#include "DDG4/Geant4UserInitialization.h"
 #include "DDG4/Geant4UserParticleHandler.h"
 #include "DDG4/ComponentUtils.h"
 #include "DD4hep/LCDD.h"

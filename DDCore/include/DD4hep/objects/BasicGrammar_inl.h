@@ -130,7 +130,7 @@ namespace DD4hep {
   }
 
   /// Helper function to parse data type
-  static std::string pre_parse_obj(const std::string& in)   {
+  static inline std::string pre_parse_obj(const std::string& in)   {
     std::string res = "";
     res.reserve(1024);
     for(const char* c = in.c_str(); *c; ++c)   {

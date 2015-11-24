@@ -97,9 +97,8 @@ namespace DD4hep {
 #include "G4Material.hh"
 
 using namespace std;
-using namespace CLHEP;
-
 using namespace DD4hep::Simulation;
+
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4MaterialScanner)
 
@@ -173,6 +172,7 @@ void Geant4MaterialScanner::begin(const G4Track* track) {
 
 /// End-of-tracking callback
 void Geant4MaterialScanner::end(const G4Track* track) {
+  using namespace CLHEP;
   if ( !m_steps.empty() )  {
     const char* line = " +--------------------------------------------------------------------------------------------------------------------------------------------------\n";
     const char* fmt1 = " | %5d %-20s %3.0f %8.3f %8.4f %11.4f  %11.4f %10.3f %8.2f %11.6f %11.6f  (%7.2f,%7.2f,%7.2f)\n";
@@ -189,28 +189,28 @@ void Geant4MaterialScanner::end(const G4Track* track) {
     int count = 1;
     for(Steps::const_iterator i=m_steps.begin(); i!=m_steps.end(); ++i, ++count)  {
       const G4LogicalVolume* logVol = (*i)->volume;
-      G4Material* m = logVol->GetMaterial();
+      G4Material* material = logVol->GetMaterial();
       const Position& prePos  = (*i)->pre;
       const Position& postPos = (*i)->post;
       Position direction = postPos - prePos;
       double length  = direction.R()/cm;
-      double intLen  = m->GetNuclearInterLength()/cm;
-      double radLen  = m->GetRadlen()/cm;
-      double density = m->GetDensity()/(gram/cm3);
+      double intLen  = material->GetNuclearInterLength()/cm;
+      double radLen  = material->GetRadlen()/cm;
+      double density = material->GetDensity()/(gram/cm3);
       double nLambda = length / intLen;
       double nx0     = length / radLen;
       double Aeff    = 0.0;
       double Zeff    = 0.0;
       const char* fmt = radLen >= 1e5 ? fmt2 : fmt1;
-      const double* fractions = m->GetFractionVector();
-      for(size_t j=0; j<m->GetNumberOfElements(); ++j)  {
-        Zeff += fractions[j]*(m->GetElement(j)->GetZ());
-        Aeff += fractions[j]*(m->GetElement(j)->GetA())/gram;
+      const double* fractions = material->GetFractionVector();
+      for(size_t j=0; j<material->GetNumberOfElements(); ++j)  {
+        Zeff += fractions[j]*(material->GetElement(j)->GetZ());
+        Aeff += fractions[j]*(material->GetElement(j)->GetA())/gram;
       }
       m_sumX0     += nx0;
       m_sumLambda += nLambda;
       m_sumPath   += length;
-      ::printf(fmt,count,m->GetName().c_str(),
+      ::printf(fmt,count,material->GetName().c_str(),
                Zeff, Aeff, density, radLen, intLen, length,
                m_sumPath,m_sumX0,m_sumLambda,
                postPos.X()/cm,postPos.Y()/cm,postPos.Z()/cm);

@@ -4,6 +4,7 @@ import os, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
+global geant4
 #
 """
 
@@ -13,40 +14,12 @@ from SystemOfUnits import *
    @version 1.0
 
 """
-def run():
-  kernel = DDG4.Kernel()
-  lcdd = kernel.lcdd()
-  install_dir = os.environ['DD4hepINSTALL']
-  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
-  DDG4.importConstants(lcdd)
-  DDG4.Core.setPrintLevel(Output.WARNING)
 
-  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerWeightedAction')
-  geant4.printDetectors()
-  # Configure UI
-  geant4.setupCshUI()
-
-  # Configure G4 magnetic field tracking
-  field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-  field.stepper            = "HelixGeant4Runge"
-  field.equation           = "Mag_UsualEqRhs"
-  field.eps_min            = 5e-05 * mm
-  field.eps_max            = 0.001 * mm
-  field.min_chord_step     = 0.01 * mm
-  field.delta_chord        = 0.25 * mm
-  field.delta_intersection = 1e-05 * mm
-  field.delta_one_step     = 0.001 * mm
-  print '+++++> ',field.name,'-> stepper  = ',field.stepper
-  print '+++++> ',field.name,'-> equation = ',field.equation
-  print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
-  print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
-  print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
-
-  # Setup random generator
-  rndm = DDG4.Action(kernel,'Geant4Random/Random')
-  rndm.Seed = 987654321
-  rndm.initialize()
-
+def setupWorker():
+  k = DDG4.Kernel()
+  kernel = k.worker()
+  print 'PYTHON: +++ Creating Geant4 worker thread ....'
+  
   # Configure Run actions
   run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
   run1.Property_int    = 12345
@@ -143,11 +116,15 @@ def run():
   user.TrackingVolume_Rmax = DDG4.EcalBarrel_rmin
   user.enableUI()
   part.adopt(user)
+  print 'PYTHON: +++ Geant4 worker thread configured successfully....'
+  return 1
+  
+def setupMaster():
+  print 'PYTHON: +++ Setting up master thread.....'
+  return 1
 
-  # Setup global filters fur use in sensntive detectors
-  f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
-  kernel.registerGlobalFilter(f1)
-
+def setupSensitives():
+  global geant4
   # First the tracking detectors
   seq,act = geant4.setupTracker('SiVertexBarrel')
   act.OutputLevel = Output.ERROR
@@ -155,6 +132,75 @@ def run():
   seq,act = geant4.setupTracker('SiVertexEndcap')
   act.OutputLevel = Output.ERROR
   act.CollectSingleDeposits = False
+  print 'PYTHON: +++ Setting up Geant4 sensitive detectors for worker thread.....'
+  return 1
+
+def dummy_sd():
+  print 'PYTHON: +++ Setting up DUMMY Geant4 sensitive detectors for worker thread.....'
+  return 1
+  
+def dummy_geom():
+  print 'PYTHON: +++ Setting up DUMMY Geant4 geometry for worker thread.....'
+  return 1
+  
+
+def run():
+  global geant4
+  kernel = DDG4.Kernel()
+  lcdd = kernel.lcdd()
+  install_dir = os.environ['DD4hepINSTALL']
+  kernel.loadGeometry("file:"+install_dir+"/DDDetectors/compact/SiD_Markus.xml")
+  DDG4.importConstants(lcdd)
+  DDG4.Core.setPrintLevel(Output.DEBUG)
+  DDG4.Core.setPrintFormat("%-32s %6s %s")
+
+  kernel.NumberOfThreads = 3
+  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerWeightedAction')
+  geant4.printDetectors()
+  # Configure UI
+  geant4.setupCshUI()
+
+  # Geant4 user initialization action
+  geant4.addUserInitialization(worker=setupWorker, master=setupMaster)
+
+  # Configure G4 geometry setup
+  seq,act = geant4.addDetectorConstruction("Geant4DetectorGeometryConstruction/ConstructGeo")
+
+  # Configure G4 magnetic field tracking
+  seq,fld = geant4.addDetectorConstruction("Geant4FieldTrackingConstruction/MagFieldTrackingSetup")
+  fld.stepper            = "HelixGeant4Runge"
+  fld.equation           = "Mag_UsualEqRhs"
+  fld.eps_min            = 5e-05 * mm
+  fld.eps_max            = 0.001 * mm
+  fld.min_chord_step     = 0.01 * mm
+  fld.delta_chord        = 0.25 * mm
+  fld.delta_intersection = 1e-05 * mm
+  fld.delta_one_step     = 0.001 * mm
+  print '+++++> ',fld.name,'-> stepper  = ',fld.stepper
+  print '+++++> ',fld.name,'-> equation = ',fld.equation
+  print '+++++> ',fld.name,'-> eps_min  = ',fld.eps_min
+  print '+++++> ',fld.name,'-> eps_max  = ',fld.eps_max
+  print '+++++> ',fld.name,'-> delta_one_step = ',fld.delta_one_step
+
+  seq,act = geant4.addDetectorConstruction("Geant4PythonDetectorConstruction/DummyDet",
+                                           geometry=dummy_geom,
+                                           sensitives=dummy_sd)
+  # Configure G4 sensitive detectors
+  seq,act = geant4.addDetectorConstruction("Geant4PythonDetectorConstruction/SetupSD",
+                                           sensitives=setupSensitives)
+
+  # Configure G4 sensitive detectors
+  seq,act = geant4.addDetectorConstruction("Geant4DetectorSensitivesConstruction/ConstructSD",
+                                           allow_threads=True)
+
+  # Setup random generator
+  rndm = DDG4.Action(kernel,'Geant4Random/Random')
+  rndm.Seed = 987654321
+  rndm.initialize()
+
+  # Setup global filters fur use in sensntive detectors
+  f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
+  kernel.registerGlobalFilter(f1)
 
   #seq,act = geant4.setupTracker('SiTrackerBarrel')
   #seq,act = geant4.setupTracker('SiTrackerEndcap')
@@ -174,12 +220,15 @@ def run():
   phys = geant4.setupPhysics('QGSP_BERT')
   phys.dump()
 
-  kernel.configure()
-  kernel.initialize()
+  #kernel.configure()
+  #kernel.initialize()
 
   #DDG4.setPrintLevel(Output.DEBUG)
-  kernel.run()
-  kernel.terminate()
+  #kernel.run()
+  #kernel.terminate()
+  return 1
 
 if __name__ == "__main__":
+  import sys
+  print sys.argv
   run()

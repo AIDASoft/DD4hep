@@ -43,26 +43,22 @@ TypeName TypeName::split(const string& type_name, const string& delim) {
 TypeName TypeName::split(const string& type_name) {
   return split(type_name,"/");
 }
-
-void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
-  if ( context )  {
-    action->m_context.setRun(context->runPtr());
-    action->m_context.setEvent(context->eventPtr());
-  }
 #if 0
-  else  {
-    action->m_context.setRun(0);
-    action->m_context.setEvent(0);
-  }
-#endif
-}
+void Geant4Action::ContextUpdate::operator()(Geant4Action* action) const  {
+  action->m_context = context;
+  if ( 0 == action->m_context )   {
 
+    cout << "EERIOR" << endl;
+
+  }
+}
+#endif
 /// Standard constructor
 Geant4Action::Geant4Action(Geant4Context* ctxt, const string& nam)
-  : m_context(0),
-    m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), m_refCount(1) {
+  : m_context(ctxt), m_control(0), m_outputLevel(INFO), m_needsControl(false), m_name(nam), 
+    m_refCount(1) 
+{
   InstanceCount::increment(this);
-  if ( ctxt ) m_context = *ctxt;
   m_outputLevel = ctxt ? ctxt->kernel().getOutputLevel(nam) : (printLevel()-1);
   declareProperty("Name", m_name);
   declareProperty("name", m_name);
@@ -148,6 +144,10 @@ Geant4UIMessenger* Geant4Action::control() const   {
 void Geant4Action::enableUI()   {
   m_needsControl = true;
   installMessengers();
+}
+
+/// Set or update client for the use in a new thread fiber
+void Geant4Action::configureFiber(Geant4Context* /* thread_context */)   {
 }
 
 /// Support for messages with variable output level using output level
@@ -278,30 +278,30 @@ void Geant4Action::abortRun(const string& exception, const char* fmt, ...) const
 
 /// Access to the main run action sequence from the kernel object
 Geant4RunActionSequence& Geant4Action::runAction() const {
-  return m_context.kernel().runAction();
+  return m_context->kernel().runAction();
 }
 
 /// Access to the main event action sequence from the kernel object
 Geant4EventActionSequence& Geant4Action::eventAction() const {
-  return m_context.kernel().eventAction();
+  return m_context->kernel().eventAction();
 }
 
 /// Access to the main stepping action sequence from the kernel object
 Geant4SteppingActionSequence& Geant4Action::steppingAction() const {
-  return m_context.kernel().steppingAction();
+  return m_context->kernel().steppingAction();
 }
 
 /// Access to the main tracking action sequence from the kernel object
 Geant4TrackingActionSequence& Geant4Action::trackingAction() const {
-  return m_context.kernel().trackingAction();
+  return m_context->kernel().trackingAction();
 }
 
 /// Access to the main stacking action sequence from the kernel object
 Geant4StackingActionSequence& Geant4Action::stackingAction() const {
-  return m_context.kernel().stackingAction();
+  return m_context->kernel().stackingAction();
 }
 
 /// Access to the main generator action sequence from the kernel object
 Geant4GeneratorActionSequence& Geant4Action::generatorAction() const {
-  return m_context.kernel().generatorAction();
+  return m_context->kernel().generatorAction();
 }

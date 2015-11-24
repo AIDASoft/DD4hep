@@ -5,8 +5,8 @@ INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 INSTALL_LCIO=${SW}/lcio/v02-04-03;
 INSTALL_XERCESC=${SW}/xercesc;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
-export ROOTSYS=${SW}/root_v6.04.00_dbg;
 export ROOTSYS=${SW}/root_v5.34.25_dbg;
+export ROOTSYS=${SW}/root_v6.04.00_dbg;
 . ${ROOTSYS}/bin/thisroot.sh;
 #cat ${ROOTSYS}/bin/thisroot.sh;
 #
@@ -46,7 +46,7 @@ make_build()
         echo ${CMD};
 	exit 1
     fi
-    make install VERBOSE=1 -j 5;
+    make install VERBOSE=1 -j 4;
     if [ $? -ne  0 ]; then
         make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD:"
         echo ${CMD};
@@ -62,10 +62,17 @@ make_build()
 
 build_all()
 {
-    for DOGEANT4 in OFF ON; do
-	for DOXERCESC in OFF ON; do
+    DEF_MODES="ON OFF";
+    G4_MODES="${DEF_MODES}";
+    XERCES_MODES="${DEF_MODES}";
+    LCIO_MODES="${DEF_MODES}";
+    #G4_MODES="ON";
+    #XERCES_MODES="ON";
+    #LCIO_MODES="ON";
+    for DOGEANT4 in ${G4_MODES}; do
+	for DOXERCESC in ${XERCES_MODES}; do
 	    for DOGEAR in OFF; do
-		for DOLCIO in OFF ON; do
+		for DOLCIO in ${LCIO_MODES}; do
 		    folder=build_Xer${DOXERCESC}_Geant${DOGEANT4}_Gear${DOGEAR}_Lcio${DOLCIO}
                     WORK_DIR=${dir_name}/${folder};
 		    mkdir -p ${WORK_DIR}/EX;
@@ -76,6 +83,7 @@ build_all()
                     OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
+                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=ON \
                     -DROOTSYS=${ROOTSYS} -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
 		    CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ${CHECKOUT};";
                     make_build;
@@ -86,6 +94,7 @@ build_all()
                     OPTS_ex="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO    -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
+                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=ON \
                     -DROOTSYS=${ROOTSYS}";
 		    source ${DD4hep_DIR}/bin/thisdd4hep.sh;
    		    CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";

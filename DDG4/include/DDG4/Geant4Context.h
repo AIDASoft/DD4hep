@@ -166,6 +166,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4Context  {
+      friend class Geant4Kernel;
     public:
 #ifdef R__DICTIONARY_FILENAME
       /// ROOT does not know how to process the nested ns otherwise
@@ -176,9 +177,9 @@ namespace DD4hep {
       Geant4Kernel* m_kernel;
       Geant4Run*    m_run;
       Geant4Event*  m_event;
-    public:
       /// Default constructor
       Geant4Context(Geant4Kernel* kernel);
+    public:
       /// Default destructor
       virtual ~Geant4Context();
       /// Set the geant4 run reference

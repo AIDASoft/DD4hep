@@ -89,23 +89,21 @@ namespace DD4hep {
     class Geant4Action {
     protected:
       /// Reference to the Geant4 context
-      Geant4Context m_context;
+      Geant4Context*     m_context;
       /// Control directory of this action
       Geant4UIMessenger* m_control;
 
       /// Default property: Output level
-      int m_outputLevel;
+      int                m_outputLevel;
       /// Default property: Flag to create control instance
-      bool m_needsControl;
+      bool               m_needsControl;
       /// Action name
-      std::string m_name;
+      std::string        m_name;
       /// Property pool
-      PropertyManager m_properties;
+      PropertyManager    m_properties;
       /// Reference count. Initial value: 1
-      long m_refCount;
+      long               m_refCount;
 
-      //fg: ContextUpdate needs to be public for the clang compiler
-      //    as it is used in SequenceHdl::setContextToClients()
     public:
       /// Functor to update the context of a Geant4Action object
       /**
@@ -113,18 +111,30 @@ namespace DD4hep {
        *  \version 1.0
        *  \ingroup DD4HEP_SIMULATION
        */
-      class ContextUpdate  {
-      public:
+      class ContextSwap   {
         /// reference to the context;
-        const Geant4Context* context;
+        Geant4Context* context;
+        Geant4Action*  action;
+      public:
         /// Constructor
-        ContextUpdate(const Geant4Context* c=0) : context(c)  {}
-        /// Callback
-        void operator()(Geant4Action* action)  const;
+        ContextSwap(Geant4Action* a,Geant4Context* c) : action(a)  {
+          context = action->context();
+          action->updateContext(c);
+        }
+        /// Destructor
+        ~ContextSwap()  { 
+          action->updateContext(context);
+        }
       };
-      friend class ContextUpdate;
+
     protected:
 
+      /// Functor to access elements by name
+      struct FindByName  {
+        std::string _n;
+        FindByName(const std::string& n) : _n(n) {}
+        bool operator()(const Geant4Action* a) { return a->name() == _n; }
+      };
       /// Actor class to manipulate action groups
       /**
        *  \author  M.Frank
@@ -161,12 +171,18 @@ namespace DD4hep {
         typename _V::iterator end()   { return m_v.end();   }
         typename _V::const_iterator begin() const  { return m_v.begin(); }
         typename _V::const_iterator end()   const  { return m_v.end();   }
+        
         /// Context updates
-        void operator()(const ContextUpdate& context) {
-          if (m_v.empty())
-            return;
-          for (typename _V::iterator i = m_v.begin(); i != m_v.end(); ++i)
-            context(*i);
+        void updateContext(Geant4Context* ctxt)  {
+          (*this)(&T::updateContext,ctxt);
+        }
+        /// Element access by name
+        template <typename F> typename _V::value_type get(const F& f)  const   {
+          if (!m_v.empty())  {
+            typename _V::const_iterator i=std::find_if(m_v.begin(),m_v.end(),f);
+            return i==m_v.end() ? 0 : (*i);
+          }
+          return 0;
         }
         /// NON-CONST actions
         template <typename R, typename Q> void operator()(R (Q::*pmf)()) {
@@ -245,9 +261,15 @@ namespace DD4hep {
       /// Decrease reference count. Implicit destruction
       long release();
       /// Access the context
-      const Geant4Context* context()  const {
-        return &m_context;
+      Geant4Context* context()  const {
+        return m_context;
       }
+      /// Set or update client context
+      virtual void updateContext(Geant4Context* ctxt)  {
+        m_context = ctxt; 
+      }
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
       /// Access name of the action
       const std::string& name() const {
         return m_name;
@@ -290,7 +312,7 @@ namespace DD4hep {
       /// Install command control messenger if wanted
       virtual void installCommandMessenger();
       /// Install property control messenger if wanted
-      void installPropertyMessenger();
+      virtual void installPropertyMessenger();
 
       /// Support for messages with variable output level using output level
       void print(const char* fmt, ...) const;

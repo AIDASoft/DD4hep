@@ -27,6 +27,11 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    // Forward declarations
+    class Geant4EventAction;
+    class Geant4SharedEventAction;
+    class Geant4EventActionSequence;
+
     /// Concrete basic implementation of the Geant4 event action
     /**
      * The EventAction is called for every event.
@@ -48,10 +53,44 @@ namespace DD4hep {
      */
     class Geant4EventAction : public Geant4Action {
     public:
+      typedef Geant4SharedEventAction shared_type;
+    public:
       /// Standard constructor
       Geant4EventAction(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4EventAction();
+      /// Begin-of-event callback
+      virtual void begin(const G4Event* event);
+      /// End-of-event callback
+      virtual void end(const G4Event* event);
+    };
+
+    /// Implementation of the Geant4 shared event action
+    /**
+     * Wrapper to share single instances of event actions for
+     * multi-threaded purposes. The wrapper ensures the locking
+     * of the basic actions to avoid race conditions.
+     *
+     * Shared action should be 'fast'. The global lock otherwise
+     * inhibits the efficient use of the multiple threads.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4SharedEventAction : public Geant4EventAction {
+    protected:
+      /// Reference to the shared action
+      Geant4EventAction* m_action;
+    public:
+      /// Standard constructor
+      Geant4SharedEventAction(Geant4Context* context, const std::string& nam);
+      /// Default destructor
+      virtual ~Geant4SharedEventAction();
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
+      /// Underlying object to be used during the execution of this thread
+      virtual void use(Geant4EventAction* action);
       /// Begin-of-event callback
       virtual void begin(const G4Event* event);
       /// End-of-event callback
@@ -63,6 +102,11 @@ namespace DD4hep {
      * The sequence dispatches the callbacks at the beginning and the and
      * of an event to all registered Geant4EventAction members and all
      * registered callbacks.
+     *
+     * Note Multi-Threading issue:
+     * Neither callbacks not the action list is protected against multiple 
+     * threads calling the Geant4 callbacks!
+     * These must be protected in the user actions themselves.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -83,6 +127,12 @@ namespace DD4hep {
       Geant4EventActionSequence(Geant4Context* context, const std::string& nam);
       /// Default destructor
       virtual ~Geant4EventActionSequence();
+      /// Set or update client context
+      virtual void updateContext(Geant4Context* ctxt);
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
+      /// Get an action by name
+      Geant4EventAction* get(const std::string& name) const;
       /// Register begin-of-event callback
       template <typename Q, typename T>
       void callAtBegin(Q* p, void (T::*f)(const G4Event*)) {

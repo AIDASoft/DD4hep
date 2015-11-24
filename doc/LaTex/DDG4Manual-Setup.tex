@@ -1,0 +1,725 @@
+
+%=============================================================================
+\section{Setting up DDG4}
+\label{sec:ddg4-implementation-setup}
+%=============================================================================
+
+\noindent
+\DDG offers several possibilities to configure a simulation application
+using
+\begin{itemize}\itemcompact
+\item XML files,
+\item by coding a setup script loaded from the \tts{ROOT} interpreter 
+	with the AClick	mechanism.
+\item by creating a setup script using \tts{python} and 
+	\tts{ROOT}'s reflection mechanism exposed by \tts{PyROOT}.
+\end{itemize}
+The following subsection describe these different mechanism. An attempt was made
+to match the naming conventions of all approaches where possible.
+
+%=============================================================================
+\subsection{Setting up DDG4 using XML}
+\label{sec:ddg4-implementation-setup-xml}
+%=============================================================================
+
+\noindent
+A special plugin was developed to enable the configuration of \DDG using
+XML structures. These files are parsed identically to the geometry setup
+in \DDhep the only difference is the name of the root-element, which for 
+\DDG is \tts{<geant4\_setup>}. 
+The following code snippet shows the basic structure of a \DDG setup file:
+\begin{unnumberedcode}
+<geant4_setup>
+  <physicslist>          ,,,  </physicslist>  <!-- Definition of the physics list          -->
+  <actions>              ...  </actions>      <!-- The list of global actions              -->
+  <phases>               ...  </phases>       <!-- The definition of the various phases    -->
+  <filters>              ...  </filters>      <!-- The list of global filter actions       -->
+  <sequences>            ...  </sequences>    <!-- The list of defined sequences           -->
+  <sensitive_detectors>  ...  </sensitive_detectors>  <!-- The list of sensitive detectors -->
+  <properties>           ...  </properties>   <!-- Free format option sequences            -->
+</geant4_setup>
+\end{unnumberedcode}
+To setup a \DDG4 application any number of xml setup files may be interpreted 
+iteratively. In the following subsections the content of these first level sub-trees will
+be discussed.
+
+%=============================================================================
+\subsubsection{Setup of the Physics List}
+\label{sec:ddg4-setup-xml-physicslist}
+%=============================================================================
+
+\noindent
+The main tag to setup a physics list is \tts{<physicslist>} with the 
+\tts{name} attribute defining the instance of the \tts{Geant4PhysicsList} object.
+An example code snippet is shown below in Figure~\ref{fig:ddg4-setup-xml-physicslist}.
+
+\begin{code}
+<geant4_setup>
+  <physicslist name="Geant4PhysicsList/MyPhysics.0">
+
+    <extends name="QGSP_BERT"/>                    <!-- Geant4 basic Physics list -->
+
+    <particles>                                    <!-- Particle constructors     -->
+      <construct name="G4Geantino"/>
+      <construct name="G4ChargedGeantino"/>
+      <construct name="G4Electron"/>
+      <construct name="G4Gamma"/>
+      <construct name="G4BosonConstructor"/>
+      <construct name="G4LeptonConstructor"/>
+      <construct name="G4MesonConstructor"/>
+      <construct name="G4BaryonConstructor"/>
+      ...
+    </particles>
+
+    <processes>                                    <!-- Process constructors      -->
+      <particle name="e[+-]" cut="1*mm">
+        <process name="G4eMultipleScattering"  ordAtRestDoIt="-1"       ordAlongSteptDoIt="1"
+                                               ordPostStepDoIt="1"/>
+        <process name="G4eIonisation"          ordAtRestDoIt="-1"       ordAlongSteptDoIt="2"
+                                               ordPostStepDoIt="2"/>
+      </particle>
+      <particle name="mu[+-]">
+        <process name="G4MuMultipleScattering" ordAtRestDoIt="-1"       ordAlongSteptDoIt="1"     
+                                               ordPostStepDoIt="1"/>
+        <process name="G4MuIonisation"         ordAtRestDoIt="-1"       ordAlongSteptDoIt="2"
+                                               ordPostStepDoIt="2"/>
+      </particle>
+      ...
+    </processes>
+
+    <physics>                                      <!-- Physics constructors      -->
+      <construct name="G4EmStandardPhysics"/>
+      <construct name="HadronPhysicsQGSP"/>
+      ...
+    </physics>
+    
+  </physicslist>
+</geant4_setup>
+\end{code}
+\begin{figure}[h]
+\caption{XML snippet showing the configuration of a physics list.}
+\label{fig:ddg4-setup-xml-physicslist}
+\end{figure}
+
+\begin{itemize}\itemcompact
+\item To base all these constructs on an already existing predefined Geant4 physics list
+    use the \tts{<extends>} tag with the attribute containing the name of the physics list
+    as shown in line 4.
+\item To trigger a call to a \bold{particle constructors} (line 7-14), use the \tts{<particles>} section 
+    and define the Geant4 particle constructor to be called by name. To trigger a call to
+\item \bold{physics process constructors}, as shown in line 19-30, 
+    Define for each particle matching the name pattern (regular expression!) and the 
+    default cut value for the corresponding processes. The attributes ordXXXX correspond
+    to the arguments of the Geant4 call \\
+    \tts{G4ProcessManager::AddProcess(process,ordAtRestDoIt, ordAlongSteptDoIt,ordPostStepDoIt);}
+    The processes themself are created using the ROOT plugin mechanism.
+    To trigger a call to
+\item \bold{physics constructors}, as shown in line 34-35, use the \tts{<physics>} section.
+\end{itemize}
+If only a predefined physics list is used, which probably already satisfies very many use cases,
+all these section collapse to:
+\begin{code}
+<geant4_setup>
+  <physicslist name="Geant4PhysicsList/MyPhysics.0">
+    <extends name="QGSP_BERT"/>                    <!-- Geant4 basic Physics list -->
+  </physicslist>
+</geant4_setup>
+\end{code}
+
+%=============================================================================
+\subsubsection{Setup of Global Geant4 Actions}
+\label{sec:ddg4-setup-xml-geant4-actions}
+%=============================================================================
+
+\noindent
+Global actions must be defined in the \tts{<actions>} section as shown in the following snippet:
+\begin{code}
+<geant4_setup>
+  <actions>
+    <action name="Geant4TestRunAction/RunInit">
+      <properties Property_int="12345"
+          Property_double="-5e15"
+          Property_string="Startrun: Hello_2"/>
+     </action>
+    <action name="Geant4TestEventAction/UserEvent_2"
+            Property_int="1234"
+            Property_double="5e15"
+            Property_string="Hello_2" />
+  </actions>
+</geant4_setup>
+\end{code}
+The default properties of \bold{every} \tts{Geant4Action} object are:
+\begin{unnumberedcode}
+Name        [string]                Action name
+OutputLevel [int]                   Flag to customize the level of printout
+Control     [boolean]               Flag if the UI messenger should be installed.
+\end{unnumberedcode}
+The \tts{name} attribute of an action child is a qualified name: The first part
+denotes the type of the plugin (i.e. its class), the second part the name of the instance.
+Within one collection the instance \tts{name} must be unique.
+Properties of Geant4Actions are set by placing them as attributes into the
+\tts{<properties>} section.
+
+%=============================================================================
+\subsubsection{Setup of Geant4 Filters}
+\label{sec:ddg4-setup-xml-geant4-filters}
+%=============================================================================
+\noindent
+Filters are special actions called by \tts{Geant4Sensitive}s. 
+Filters may be global or anonymous i.e. reusable by several sensitive detector
+sequences as illustrated in Section~\ref{sec:ddg4-setup-xml-geant4-sequences}. 
+The setup is analogous to the setup of global actions:
+\begin{code}
+  <filters>
+    <filter name="GeantinoRejectFilter/GeantinoRejector"/>
+    <filter name="ParticleRejectFilter/OpticalPhotonRejector">
+      <properties particle="opticalphoton"/>
+    </filter>
+    <filter name="ParticleSelectFilter/OpticalPhotonSelector">
+      <properties particle="opticalphoton"/>
+    </filter>
+    <filter name="EnergyDepositMinimumCut">
+      <properties Cut="10*MeV"/>
+    </filter>
+    <!--        ... next global filter ...       -->
+  </filters>
+\end{code}
+Global filters are accessible from the \tts{Geant4Kernel} object.
+
+%=============================================================================
+\subsubsection{Geant4 Action Sequences}
+\label{sec:ddg4-setup-xml-geant4-sequences}
+%=============================================================================
+
+\noindent
+\tts{Geant4 Action Sequences} by definition are \tts{Geant4Action} objects.
+Hence, they share the setup mechanism with properties etc. For the setup
+mechanism two different types of sequences are known to \DDG:
+{\it{Action sequences}} and {\it{Sensitive detector sequences}}. Bot are declared in
+the \tts{sequences} section:
+\begin{code}
+<geant4_setup>
+  <sequences>
+    <sequence name="Geant4EventActionSequence/EventAction"> <!-- Sequence "EventAction" of type
+                                                                 "Geant4EventActionSequence" -->
+      <action name="Geant4TestEventAction/UserEvent_1">     <!-- Anonymous action                   -->
+        <properties Property_int="01234"                    <!-- Properties go inline               -->
+            Property_double="1e11"
+            Property_string="'Hello_1'"/>
+      </action>
+      <action name="UserEvent_2"/>                          <!-- Global action defined in "actions" -->
+                                                            <!-- Only the name is referenced here   -->
+      <action name="Geant4Output2ROOT/RootOutput">          <!-- ROOT I/O action                    -->
+        <properties Output="simple.root"/>                  <!-- Output file property               -->
+      </action>
+      <action name="Geant4Output2LCIO/LCIOOutput">          <!-- LCIO output action                 -->
+        <properties Output="simple.lcio"/>                  <!-- Output file property               -->
+      </action>
+    </sequence>
+
+
+    <sequence sd="SiTrackerBarrel" type="Geant4SensDetActionSequence">
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut"/>
+      <action name="Geant4SimpleTrackerAction/SiTrackerBarrelHandler"/>
+    </sequence>
+    <sequence sd="SiTrackerEndcap" type="Geant4SensDetActionSequence">
+      <filter name="GeantinoRejector"/>
+      <filter name="EnergyDepositMinimumCut"/>
+      <action name="Geant4SimpleTrackerAction/SiTrackerEndcapHandler"/>
+    </sequence>
+    <!--    ... next sequence ...     -->
+  </sequences>
+</geant4_setup>
+\end{code}
+Here firstly the \bold{EventAction} sequence is defined with its members. 
+Secondly a sensitive detector sequence is defined for the subdetector
+\tts{SiTrackerBarrel} of type \tts{Geant4SensDetActionSequence}.
+The sequence uses two filters: \tts{GeantinoRejector} to not generate hits
+from geantinos and \tts{EnergyDepositMinimumCut} to enforce a minimal energy deposit.
+These filters are global i.e. they may be applied by many subdetectors.
+The setup of global filters is described in 
+Section~\ref{sec:ddg4-setup-xml-geant4-filters}.
+Finally the action \tts{SiTrackerEndcapHandler} of type \tts{Geant4SimpleTrackerAction}
+is chained, which collects the deposited energy and 
+creates a collection of hits. The \tts{Geant4SimpleTrackerAction} is a template
+callback to illustrate the usage of sensitive elements in \DDG.
+The resulting hit collection of these handlers by default have the same name as the
+object instance name.
+Analogous below the sensitive detector sequence for the subdetector 
+\tts{SiTrackerEndcap} is shown, which reuses the same filter actions, but will build its own
+hit collection.
+
+\noindent
+\bold{Please note:}
+\begin{itemize}\itemcompact
+\item \bold{It was already mentioned, but once again}: Event-, run-, generator-, tracking-,
+    stepping- and stacking actions sequences have predefined names! 
+    These names are fixed and part of the \bold{common knowledge}, they cannot be altered.
+    Please refer to 
+    Section~\ref{sec:ddg4-user-manual-implementation-geant4action-sequences} 
+    for the names of the global action sequences.
+\item the sensitive detector sequences are matched by the attribute \tts{sd} to the 
+    subdetectors created with the \DDhep detector description package. Values must match!
+\item In the event that several xml files are parsed it is absolutely vital that 
+    the \tts{<actions>} section is interpreted \bold{before} the \tts{sequences}.
+\item For each XML file several \tts{<sequences>} are allowed.
+\noindent
+\end{itemize}
+
+%=============================================================================
+\subsubsection{Setup of Geant4 Sensitive Detectors}
+\label{sec:ddg4-setup-xml-geant4-sensitive detectors}
+%=============================================================================
+\begin{code}
+  <geant4_setup>
+    <sensitive_detectors>
+      <sd name="SiTrackerBarrel" 
+          type="Geant4SensDet" 
+          ecut="10.0*MeV" 
+          verbose="true" 
+          hit_aggregation="position">
+      </sd>
+      <!-- ...  next sensitive detector ... -->
+    </sensitive_detectors>
+  </geant4_setup>
+\end{code}
+
+
+
+%=============================================================================
+\subsubsection{Miscellaneous Setup of Geant4 Objects}
+\label{sec:ddg4-setup-xml-geant4-objects}
+%=============================================================================
+
+\noindent
+This section is used for the flexible setup of auxiliary objects such as the 
+electromagnetic fields used in Geant4:
+\begin{code}
+  <geant4_setup>
+    <properties>
+      <attributes name="geant4_field"
+            id="0"
+            type="Geant4FieldSetup"
+            object="GlobalSolenoid"
+            global="true"
+            min_chord_step="0.01*mm"
+            delta_chord="0.25*mm"
+            delta_intersection="1e-05*mm"
+            delta_one_step="0.001*mm"
+            eps_min="5e-05*mm"
+            eps_max="0.001*mm"
+            stepper="HelixSimpleRunge"
+            equation="Mag_UsualEqRhs">
+      </attributes>
+      ...
+    </properties>
+  </geant4_setup>
+\end{code}
+Important are the tags \tts{type} and \tts{object}, which are used to firstly
+define the plugin to be called and secondly define the object from the \DDhep
+description to be configured for the use within Geant4.
+
+%=============================================================================
+\subsubsection{Setup of Geant4 Phases}
+\label{sec:ddg4-setup-xml-geant4-phases}
+%=============================================================================
+
+\noindent
+Phases are configured as shown below.
+However, the use is \bold{discouraged},
+since it is not yet clear if there are appropriate use cases!
+\begin{code}
+  <phases>
+    <phase type="RunAction/begin">
+      <action name="RunInit"/>
+      <action name="Geant4TestRunAction/UserRunInit">
+    <properties Property_int="1234"
+            Property_double="5e15"
+            Property_string="'Hello_2'"/>
+      </action>
+    </phase>
+    <phase type="EventAction/begin">
+      <action name="UserEvent_2"/>
+    </phase>
+    <phase type="EventAction/end">
+      <action name="UserEvent_2"/>
+    </phase>
+    ...
+  </phases>
+\end{code}
+
+\newpage
+%=============================================================================
+\subsection{Setting up DDG4 using ROOT-CINT}
+\label{sec:ddg4-implementation-setup-root-cint}
+%=============================================================================
+
+\noindent
+The setup of \DDG directly from the the ROOT interpreter using the AClick
+mechanism is very simple, but mainly meant for purists (like me ;-)),
+since it is nearly equivalent to the explicit setup within a \tts{C++} 
+main program.
+The following code section shows how to do it. For explanation the code
+segment is discussed below line by line.
+\begin{code}
+#include "DDG4/Geant4Config.h"
+#include "DDG4/Geant4TestActions.h"
+#include "DDG4/Geant4TrackHandler.h"
+#include <iostream>
+
+using namespace std;
+using namespace DD4hep;
+using namespace DD4hep::Simulation;
+using namespace DD4hep::Simulation::Test;
+using namespace DD4hep::Simulation::Setup;
+
+#if defined(__MAKECINT__)
+#pragma link C++ class Geant4RunActionSequence;
+#pragma link C++ class Geant4EventActionSequence;
+#pragma link C++ class Geant4SteppingActionSequence;
+#pragma link C++ class Geant4StackingActionSequence;
+#pragma link C++ class Geant4GeneratorActionSequence;
+#pragma link C++ class Geant4Action;
+#pragma link C++ class Geant4Kernel;
+#endif
+
+SensitiveSeq::handled_type* setupDetector(Kernel& kernel, const std::string& name)   {
+  SensitiveSeq sd = SensitiveSeq(kernel,name);
+  Sensitive  sens = Sensitive(kernel,"Geant4TestSensitive/"+name+"Handler",name);
+  sd->adopt(sens);
+  sens = Sensitive(kernel,"Geant4TestSensitive/"+name+"Monitor",name);
+  sd->adopt(sens);
+  return sd;
+}
+
+void exampleAClick()  {
+  Geant4Kernel& kernel = Geant4Kernel::instance(LCDD::getInstance());
+  kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml");
+  kernel.loadXML("DDG4_field.xml");
+
+  GenAction gun(kernel,"Geant4ParticleGun/Gun");
+  gun["energy"] = 0.5*GeV;                          // Set properties
+  gun["particle"] = "e-";
+  gun["multiplicity"] = 1;
+  kernel.generatorAction().adopt(gun);
+
+  Action run_init(kernel,"Geant4TestRunAction/RunInit");
+  run_init["Property_int"] = 12345;
+  kernel.runAction().callAtBegin  (run_init.get(),&Geant4TestRunAction::begin);
+  kernel.eventAction().callAtBegin(run_init.get(),&Geant4TestRunAction::beginEvent);
+  kernel.eventAction().callAtEnd  (run_init.get(),&Geant4TestRunAction::endEvent);
+
+  Action evt_1(kernel,"Geant4TestEventAction/UserEvent_1");
+  evt_1["Property_int"] = 12345;                    // Set properties
+  evt_1["Property_string"] = "Events";
+  kernel.eventAction().adopt(evt_1);
+
+  EventAction evt_2(kernel,"Geant4TestEventAction/UserEvent_2");
+  kernel.eventAction().adopt(evt_2);
+
+  kernel.runAction().callAtBegin(evt_2.get(),&Geant4TestEventAction::begin);
+  kernel.runAction().callAtEnd  (evt_2.get(),&Geant4TestEventAction::end);
+ 
+  setupDetector(kernel,"SiVertexBarrel");
+  setupDetector(kernel,"SiVertexEndcap");
+  // .... more subdetectors here .....
+  setupDetector(kernel,"LumiCal");
+  setupDetector(kernel,"BeamCal");
+
+  kernel.configure();
+  kernel.initialize();
+  kernel.run();
+  std::cout << "Successfully executed application .... " << std::endl;
+  kernel.terminate();
+}
+\end{code}
+
+\noindent
+\begin{tabular} {l||p{0cm}}
+\docline{Line}{}
+\docline{1}{The header file \tts{Geant4Config.h} contains a set of wrapper
+    classes to easy the creation of objects using the plugin mechanism and setting
+    properties to \tts{Geant4Action} objects. These helpers and the corresponding 
+    functionality are not included in the wrapped classes themselves to not 
+    clutter the code with stuff only used for the setup.
+    All contained objects are in the namespace \tts{DD4hep::Simulation::Setup}}.
+\docline{6-10}{Save yourself specifying all the namespaces objects are in....}
+\docline{13-19}{CINT processing pragmas. 
+    Classes defined here will be available at the ROOT prompt
+    after this AClick is loaded.}
+\docline{22-29}{Sampler to fill the sensitive detector sequences for each 
+    subdetector with two entries: a handler and a monitor action.
+    Please note, that this here is example code and in real life specialized actions
+    will have to be provided for each subdetector.}
+\docline{31}{Let's go for it. here the entry point starts....}
+\docline{32}{Create the \tts{Geant4Kernel} object.}
+\docline{33}{Load the geometry into \DDhep.}
+\docline{34}{Redefine the setup of the sensitive detectors.}
+\docline{36-40}{Create the generator action of type \tts{Geant4ParticleGun} with name
+    \tts{Gun}, set non-default properties and activate the configured object
+    by attaching it to the \tts{Geant4Kernel}.}
+\docline{42-46}{Create a user defined begin-of-run action callback, set the properties
+    and attach it to the begin of run calls. To collect statistics extra member functions
+    are registered to be called at the beginning and the end of each event.}
+\docline{48-51}{Create a user defined event action routine, set its properties
+    and attach it to the event action sequence.}
+\docline{53-54}{Create a second event action and register it to the event action sequence.
+    This action will be called after the previously created action.}
+\docline{56-57}{For this event action we want to receive callbacks at start- 
+    and end-of-run to produce additional summary output.}
+\docline{59-63}{Call the sampler routine to attach test actions to the subdetectors defined.}
+\docline{65-66}{Configure, initialize and run the Geant4 application.
+    Most of the Geant4 actions will only be created here and the action sequences
+    created before will be attached now.}
+\docline{69}{Terminate the Geant4 application and exit.}
+\end{tabular}
+
+\newpage
+\noindent
+CINT currently cannot handle pointers to member functions~\footnote{This may change
+in the future once ROOT uses \tts{clang} and \tts{cling} as the interpreting engine.}. 
+Hence the above AClick only works in compiled mode. To invoke the compilation the following 
+action is necessary from the ROOT prompt:
+
+
+\begin{code}
+$> root.exe
+  *******************************************
+  *                                         *
+  *        W E L C O M E  to  R O O T       *
+  *                                         *
+  *   Version   5.34/10    29 August 2013   *
+  *                                         *
+  *  You are welcome to visit our Web site  *
+  *          http://root.cern.ch            *
+  *                                         *
+  *******************************************
+
+ROOT 5.34/10 (heads/v5-34-00-patches@v5-34-10-5-g0e8bac8, Sep 04 2013, 11:52:19 on linux)
+
+CINT/ROOT C/C++ Interpreter version 5.18.00, July 2, 2010
+Type ? for help. Commands must be C++ statements.
+Enclose multiple statements between { }.
+root [0] .X initAClick.C
+.... Setting up the CINT include pathes and the link statements.
+
+root [1] .L ../DD4hep.trunk/DDG4/examples/exampleAClick.C+
+Info in <TUnixSystem::ACLiC>: creating shared library ....exampleAClick_C.so
+.... some Cint warnings concerning member function pointers .....
+
+root [2] exampleAClick()
+.... and it starts ...
+\end{code}
+
+\noindent
+The above scripts are present in the DDG4/example directory located in svn.
+The initialization script \tts{initAClick.C} may require customization
+to cope with the installation paths.
+
+%=============================================================================
+\subsection{Setting up DDG4 using Python}
+\label{sec:ddg4-implementation-setup-python}
+%=============================================================================
+
+\noindent
+Given the reflection interface of ROOT, the setup of the simulation interface
+using DD4hep is of course also possible using the python interpreted language.
+In the following code example the setup of Geant4 using the \tts{ClicSid} 
+example is shown using python~\footnote{For comparison, the same example was 
+used to illustrate the setup using XML files.}.
+
+\begin{code}
+import DDG4
+from SystemOfUnits import *
+
+"""
+
+   DD4hep example setup using the python configuration
+
+   @author  M.Frank
+   @version 1.0
+
+"""
+def run():
+  kernel = DDG4.Kernel()
+  kernel.loadGeometry("file:../DD4hep.trunk/DDExamples/CLICSiD/compact/compact.xml")
+  kernel.loadXML("DDG4_field.xml")
+
+  lcdd = kernel.lcdd()
+  print '+++   List of sensitive detectors:'
+  for i in lcdd.detectors(): 
+    o = DDG4.DetElement(i.second)
+    sd = lcdd.sensitiveDetector(o.name())
+    if sd.isValid():
+      print '+++  %-32s type:%s'%(o.name(), sd.type(), )
+
+  # Configure Run actions
+  run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
+  run1.Property_int    = 12345
+  run1.Property_double = -5e15*keV
+  run1.Property_string = 'Startrun: Hello_2'
+  print run1.Property_string, run1.Property_double, run1.Property_int
+  run1.enableUI()
+  kernel.registerGlobalAction(run1)
+  kernel.runAction().add(run1)
+
+  # Configure Event actions
+  evt2 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_2')
+  evt2.Property_int    = 123454321
+  evt2.Property_double = 5e15*GeV
+  evt2.Property_string = 'Hello_2 from the python setup'
+  evt2.enableUI()
+  kernel.registerGlobalAction(evt2)
+
+  evt1 = DDG4.EventAction(kernel,'Geant4TestEventAction/UserEvent_1')
+  evt1.Property_int=01234
+  evt1.Property_double=1e11
+  evt1.Property_string='Hello_1'
+  evt1.enableUI()
+
+  kernel.eventAction().add(evt1)
+  kernel.eventAction().add(evt2)
+
+  # Configure I/O
+  evt_root = DDG4.EventAction(kernel,'Geant4Output2ROOT/RootOutput')
+  evt_root.Control = True
+  evt_root.Output = "simple.root"
+  evt_root.enableUI()
+
+  evt_lcio = DDG4.EventAction(kernel,'Geant4Output2LCIO/LcioOutput')
+  evt_lcio.Output = "simple_lcio"
+  evt_lcio.enableUI()
+
+  kernel.eventAction().add(evt_root)
+  kernel.eventAction().add(evt_lcio)
+
+  # Setup particle gun
+  gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/Gun")
+  gun.energy   = 0.5*GeV
+  gun.particle = 'e-'
+  gun.multiplicity = 1
+  gun.enableUI()
+  kernel.generatorAction().add(gun)
+
+  # Setup global filters for use in sensitive detectors
+  f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
+  f2 = DDG4.Filter(kernel,'ParticleRejectFilter/OpticalPhotonRejector')
+  f2.particle = 'opticalphoton'
+  f3 = DDG4.Filter(kernel,'ParticleSelectFilter/OpticalPhotonSelector') 
+  f3.particle = 'opticalphoton'
+  f4 = DDG4.Filter(kernel,'EnergyDepositMinimumCut')
+  f4.Cut = 10*MeV
+  f4.enableUI()
+  kernel.registerGlobalFilter(f1)
+  kernel.registerGlobalFilter(f2)
+  kernel.registerGlobalFilter(f3)
+  kernel.registerGlobalFilter(f4)
+
+  # First the tracking detectors
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiVertexBarrel')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiVertexBarrelHandler','SiVertexBarrel')
+  seq.add(act)
+  seq.add(f1)
+  seq.add(f4)
+  act.add(f1)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiVertexEndcap')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiVertexEndcapHandler','SiVertexEndcap')
+  seq.add(act)
+  seq.add(f1)
+  seq.add(f4)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerBarrel')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerBarrelHandler','SiTrackerBarrel')
+  seq.add(act)
+  seq.add(f1)
+  seq.add(f4)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerEndcap')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerEndcapHandler','SiTrackerEndcap')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/SiTrackerForward')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleTrackerAction/SiTrackerForwardHandler','SiTrackerForward')
+  seq.add(act)
+
+  # Now the calorimeters
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/EcalBarrel')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/EcalBarrelHandler','EcalBarrel')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/EcalEndcap')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/EcalEndCapHandler','EcalEndcap')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/HcalBarrel')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/HcalBarrelHandler','HcalBarrel')
+  act.adoptFilter(kernel.globalFilter('OpticalPhotonRejector'))
+  seq.add(act)
+
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/HcalOpticalBarrelHandler','HcalBarrel')
+  act.adoptFilter(kernel.globalFilter('OpticalPhotonSelector'))
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/HcalEndcap')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/HcalEndcapHandler','HcalEndcap')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/HcalPlug')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/HcalPlugHandler','HcalPlug')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/MuonBarrel')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/MuonBarrelHandler','MuonBarrel')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/MuonEndcap')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/MuonEndcapHandler','MuonEndcap')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/LumiCal')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/LumiCalHandler','LumiCal')
+  seq.add(act)
+
+  seq = DDG4.SensitiveSequence(kernel,'Geant4SensDetActionSequence/BeamCal')
+  act = DDG4.SensitiveAction(kernel,'Geant4SimpleCalorimeterAction/BeamCalHandler','BeamCal')
+  seq.add(act)
+
+  # Now build the physics list:
+  phys = kernel.physicsList()
+  phys.extends = 'FTFP_BERT'
+  #phys.transportation = True
+  phys.decays  = True
+  phys.enableUI()
+
+  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
+  ph.addParticleConstructor('G4BosonConstructor')
+  ph.addParticleConstructor('G4LeptonConstructor')
+  ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
+  ph.addPhysicsConstructor('G4OpticalPhysics')
+  ph.enableUI()
+  phys.add(ph)
+
+  phys.dump()
+
+  kernel.configure()
+  kernel.initialize()
+  kernel.run()
+  kernel.terminate()
+
+if __name__ == "__main__":
+  run()
+
+\end{code}
+
+\newpage
+%=============================================================================
+\subsection{A Simple Example}
+\label{sec:ddg4-implementation-simple-example}
+%=============================================================================
+\noindent
+Bla-bal.
+
+\newpage
+

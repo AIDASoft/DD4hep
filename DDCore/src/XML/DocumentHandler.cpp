@@ -188,9 +188,9 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname) const {
 
 Document DocumentHandler::load(const std::string& fname) const {
   printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
-  XMLURL xerurl = (const XMLCh*) Strng_t(fname);
-  string path = _toString(xerurl.getPath());
-  string proto = _toString(xerurl.getProtocolName());
+  XMLURL xerurl = (const XMLCh*) Strng_t(fname.find(":")==std::string::npos ? "file:"+fname : fname);
+  string path   = _toString(xerurl.getPath());
+  string proto  = _toString(xerurl.getProtocolName());
   dd4hep_ptr < XercesDOMParser > parser(make_parser(m_errHdlr.get()));
   printout(DEBUG,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());
   try {

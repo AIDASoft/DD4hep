@@ -26,6 +26,7 @@ def compileAClick(dictionary,g4=True):
   gSystem.AddIncludePath(inc)
   gSystem.AddLinkedLibs(lib)
   #####print "Includes:   ",gSystem.GetIncludePath(),"\n","Linked libs:",gSystem.GetLinkedLibs()
+  print 'Loading AClick ',dictionary
   package = imp.find_module('DDG4')
   dic = os.path.dirname(package[1])+os.sep+dictionary
   ###print dic
@@ -95,6 +96,7 @@ import_namespace_item('Core','run_interpreter')
 
 def import_geometry():
   import_namespace_item('Core','setPrintLevel')
+  import_namespace_item('Core','setPrintFormat')
   import_namespace_item('Core','printLevel')
   import_namespace_item('Geo','LCDD')
   import_namespace_item('Core','evaluator')

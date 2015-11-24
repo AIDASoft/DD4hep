@@ -130,38 +130,59 @@ def _setKernelProperty(self, name, value):
 #---------------------------------------------------------------------------
 def _kernel_phase(self,name):        return self.addSimplePhase(name,False)
 #---------------------------------------------------------------------------
+def _kernel_worker(self):            return Kernel(self.get().createWorker())
+#---------------------------------------------------------------------------
 Kernel.phase = _kernel_phase
 Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
+Kernel.createWorker = _kernel_worker
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
 
 #---------------------------------------------------------------------------
-ActionHandle                = Sim.ActionHandle
+ActionHandle = Sim.ActionHandle
 #---------------------------------------------------------------------------
-def SensitiveAction(kernel,nam,det): return Interface.createSensitive(kernel,nam,det)
+def SensitiveAction(kernel,nam,det,shared=False):
+  return Interface.createSensitive(kernel,nam,det,shared)
 #---------------------------------------------------------------------------
-def Action(kernel,nam):              return Interface.createAction(kernel,nam)
+def Action(kernel,nam,shared=False):
+  return Interface.createAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def Filter(kernel,nam):              return Interface.createFilter(kernel,nam)
+def Filter(kernel,nam,shared=False):
+  return Interface.createFilter(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def PhaseAction(kernel,nam):         return Interface.createPhaseAction(kernel,nam)
+def PhaseAction(kernel,nam,shared=False):
+  return Interface.createPhaseAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def RunAction(kernel,nam):           return Interface.createRunAction(kernel,nam)
+def RunAction(kernel,nam,shared=False):
+  return Interface.createRunAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def EventAction(kernel,nam):         return Interface.createEventAction(kernel,nam)
+def EventAction(kernel,nam,shared=False):
+  return Interface.createEventAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def GeneratorAction(kernel,nam):     return Interface.createGeneratorAction(kernel,nam)
+def GeneratorAction(kernel,nam,shared=False):
+  return Interface.createGeneratorAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def TrackingAction(kernel,nam):      return Interface.createTrackingAction(kernel,nam)
+def TrackingAction(kernel,nam,shared=False):
+  return Interface.createTrackingAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def SteppingAction(kernel,nam):      return Interface.createSteppingAction(kernel,nam)
+def SteppingAction(kernel,nam,shared=False):
+  return Interface.createSteppingAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def StackingAction(kernel,nam):      return Interface.createStackingAction(kernel,nam)
+def StackingAction(kernel,nam,shared=False):
+  return Interface.createStackingAction(kernel,nam,shared)
 #---------------------------------------------------------------------------
-def PhysicsList(kernel,nam):         return Interface.createPhysicsList(kernel,nam)
+def DetectorConstruction(kernel,nam):
+  return Interface.createDetectorConstruction(kernel,nam)
 #---------------------------------------------------------------------------
-def SensitiveSequence(kernel, nam):  return Interface.createSensDetSequence(kernel,nam)
+def PhysicsList(kernel,nam):
+  return Interface.createPhysicsList(kernel,nam)
+#---------------------------------------------------------------------------
+def UserInitialization(kernel, nam):
+  return Interface.createUserInitialization(kernel,nam)
+#---------------------------------------------------------------------------
+def SensitiveSequence(kernel, nam):
+  return Interface.createSensDetSequence(kernel,nam)
 #---------------------------------------------------------------------------
 def _setup(obj):
   def _adopt(self,action):  self.__adopt(action.get())
@@ -188,12 +209,18 @@ _setup('Geant4SteppingActionSequence')
 _setup('Geant4StackingActionSequence')
 _setup('Geant4PhysicsListActionSequence')
 _setup('Geant4SensDetActionSequence')
+_setup('Geant4DetectorConstructionSequence')
+_setup('Geant4UserInitializationSequence')
 _setup('Geant4Sensitive')
 _setup('Geant4ParticleHandler')
 _import_class('Sim','Geant4Filter')
 _import_class('Sim','Geant4RunAction')
+_import_class('Sim','Geant4TrackingAction')
+_import_class('Sim','Geant4StackingAction')
 _import_class('Sim','Geant4PhaseAction')
 _import_class('Sim','Geant4UserParticleHandler')
+_import_class('Sim','Geant4UserInitialization')
+_import_class('Sim','Geant4DetectorConstruction')
 
 #---------------------------------------------------------------------------
 def _get(self, name):
@@ -238,7 +265,9 @@ _props('PhysicsListHandle')
 _props('TrackingActionHandle')
 _props('SteppingActionHandle')
 _props('StackingActionHandle')
+_props('DetectorConstructionHandle')
 _props('SensitiveHandle')
+_props('UserInitializationHandle')
 _props('Geant4ParticleHandler')
 _props('Geant4UserParticleHandler')
 
@@ -248,8 +277,10 @@ _props('EventActionSequenceHandle')
 _props('TrackingActionSequenceHandle')
 _props('SteppingActionSequenceHandle')
 _props('StackingActionSequenceHandle')
+_props('DetectorConstructionSequenceHandle')
 _props('PhysicsListActionSequenceHandle')
 _props('SensDetActionSequenceHandle')
+_props('UserInitializationSequenceHandle')
 
 _props('Geant4PhysicsListActionSequence')
 
@@ -266,17 +297,25 @@ _props('Geant4PhysicsListActionSequence')
    \version 1.0
 
 """
-class Simple:
-  def __init__(self, kernel=None,calo='Geant4CalorimeterAction',tracker='Geant4SimpleTrackerAction'):
+class Geant4:
+  def __init__(self, kernel=None,
+               calo='Geant4CalorimeterAction',
+               tracker='Geant4SimpleTrackerAction'):
     kernel.UI = "UI"
     kernel.printProperties()
-    self.kernel = kernel
+    self._kernel = kernel
     if kernel is None:
-      self.kernel = Kernel()
-    self.lcdd = self.kernel.lcdd()
+      self._kernel = Kernel()
+    self.lcdd = self._kernel.lcdd()
     self.sensitive_types = {}
     self.sensitive_types['tracker'] = tracker
     self.sensitive_types['calorimeter'] = calo
+
+
+  def kernel(self):
+    return self._kernel.worker()
+  def master(self):
+    return self._kernel
 
   """
      Configure the Geant4 command executive
@@ -285,7 +324,7 @@ class Simple:
   """
   def setupUI(self,typ='csh',vis=False,ui=True,macro=None):
     # Configure UI
-    ui_action = Action(self.kernel,"Geant4UIManager/UI")
+    ui_action = Action(self.master(),"Geant4UIManager/UI")
     if vis:      ui_action.HaveVIS = True
     else:        ui_action.HaveVIS = False
     if ui:       ui_action.HaveUI  = True
@@ -293,7 +332,7 @@ class Simple:
     ui_action.SessionType = typ
     if macro:
       ui_action.SetupUI = macro
-    self.kernel.registerGlobalAction(ui_action)
+    self.master().registerGlobalAction(ui_action)
     return ui_action
 
   """
@@ -305,13 +344,65 @@ class Simple:
     return self.setupUI(typ='csh',vis=vis,ui=ui,macro=macro)
 
   """
+     Configure Geant4 user initialization for optionasl multi-threading mode
+
+     \author  M.Frank
+  """
+  def addUserInitialization(self, worker, worker_args=None, master=None, master_args=None):
+    import sys
+    init_seq = self.master().userInitialization(True)
+    init_action = UserInitialization(self.master(),'Geant4PythonInitialization/PyG4Init')
+    #
+    if worker:
+      init_action.setWorkerSetup(worker, worker_args)
+    else:
+      raise exceptions.RuntimeError('Invalid argument for Geant4 worker initialization')
+    #
+    if master:
+      init_action.setMasterSetup(master,master_args)
+    #
+    init_seq.adopt(init_action)
+    return init_seq,init_action
+
+  """
+     Configure Geant4 user initialization for optionasl multi-threading mode
+
+     \author  M.Frank
+  """
+  def addDetectorConstruction(self, name_type,
+                              field=None, field_args=None,
+                              geometry=None, geometry_args=None,
+                              sensitives=None, sensitives_args=None,
+                              allow_threads=False):
+    init_seq = self.master().detectorConstruction(True)
+    init_action = DetectorConstruction(self.master(),name_type)
+    #
+    if geometry:
+      init_action.setConstructGeo(geometry,geometry_args)
+    #
+    if field:
+      init_action.setConstructField(field,field_args)
+    #
+    if sensitives:
+      init_action.setConstructSensitives(sensitives,sensitives_args)
+    #
+    init_seq.adopt(init_action)
+    if allow_threads:
+      last_action = DetectorConstruction(self.master(),"Geant4PythonDetectorConstructionLast/LastDetectorAction")
+      init_seq.adopt(last_action)
+
+    return init_seq,init_action
+
+  """
      Add a new phase action to an arbitrary step.
 
      \author  M.Frank
   """
-  def addPhaseAction(self,phase_name,factory_specification,ui=True):
-    action = PhaseAction(self.kernel,factory_specification)
-    self.kernel.phase('configure').add(action)
+  def addPhaseAction(self,phase_name,factory_specification,ui=True,instance=None):
+    if instance is None:
+      instance = self.kernel()
+    action = PhaseAction(instance,factory_specification)
+    instance.phase(phase_name).add(action)
     if ui: action.enableUI()
     return action
 
@@ -324,7 +415,7 @@ class Simple:
      \author  M.Frank
   """
   def addConfig(self, factory_specification):
-    return self.addPhaseAction('configure',factory_specification)
+    return self.addPhaseAction('configure',factory_specification,instance=self.master())
 
   """
      Add a new phase action to the 'initialize' step.
@@ -365,10 +456,10 @@ class Simple:
      \author  M.Frank
   """
   def execute(self):
-    self.kernel.configure()
-    self.kernel.initialize()
-    self.kernel.run()
-    self.kernel.terminate()
+    self.kernel().configure()
+    self.kernel().initialize()
+    self.kernel().run()
+    self.kernel().terminate()
     return self
 
   def printDetectors(self):
@@ -384,8 +475,8 @@ class Simple:
         print '+++  %-32s type:%-12s  --> Sensitive type: %s'%(o.name(), typ, sdtyp,)
 
   def setupDetector(self,name,sensitive_type):
-    seq = SensitiveSequence(self.kernel,'Geant4SensDetActionSequence/'+name)
-    act = SensitiveAction(self.kernel,sensitive_type+'/'+name+'Handler',name)
+    seq = SensitiveSequence(self.kernel(),'Geant4SensDetActionSequence/'+name)
+    act = SensitiveAction(self.kernel(),sensitive_type+'/'+name+'Handler',name)
     seq.enableUI()
     act.enableUI()
     seq.add(act)
@@ -404,7 +495,7 @@ class Simple:
     return self.setupDetector(name,type)
 
   def setupPhysics(self,name):
-    phys = self.kernel.physicsList()
+    phys = self.master().physicsList()
     phys.extends = name
     phys.decays  = True
     phys.enableUI()
@@ -412,14 +503,14 @@ class Simple:
     return phys
 
   def setupGun(self, name, particle, energy, isotrop=True, multiplicity=1, position=(0.0,0.0,0.0)):
-    gun = GeneratorAction(self.kernel,"Geant4ParticleGun/"+name)
+    gun = GeneratorAction(self.kernel(),"Geant4ParticleGun/"+name,True)
     gun.energy   = energy
     gun.particle = particle
     gun.multiplicity = multiplicity
     gun.position = position
     gun.isotrop = isotrop
     gun.enableUI()
-    self.kernel.generatorAction().add(gun)
+    self.kernel().generatorAction().add(gun)
     return gun
 
   """
@@ -428,12 +519,14 @@ class Simple:
      \author  M.Frank
   """
   def setupROOTOutput(self,name,output,mc_truth=True):
-    evt_root = EventAction(self.kernel,'Geant4Output2ROOT/'+name)
+    evt_root = EventAction(self.kernel(),'Geant4Output2ROOT/'+name,True)
     evt_root.HandleMCTruth = mc_truth
     evt_root.Control = True
-    evt_root.Output = output + '' if output.endswith('.root') else '.root'
+    if not output.endswith('.root'):
+      output = output + '.root'
+    evt_root.Output = output
     evt_root.enableUI()
-    self.kernel.eventAction().add(evt_root)
+    self.kernel().eventAction().add(evt_root)
     return evt_root
 
   """
@@ -442,11 +535,11 @@ class Simple:
      \author  M.Frank
   """
   def setupLCIOOutput(self,name,output):
-    evt_lcio = EventAction(self.kernel,'Geant4Output2LCIO/'+name)
+    evt_lcio = EventAction(self.kernel(),'Geant4Output2LCIO/'+name,True)
     evt_lcio.Control = True
     evt_lcio.Output = output
     evt_lcio.enableUI()
-    self.kernel.eventAction().add(evt_lcio)
+    self.kernel().eventAction().add(evt_lcio)
     return evt_lcio
 
   """
@@ -462,9 +555,9 @@ class Simple:
      \author  M.Frank
   """
   def buildInputStage(self, generator_input_modules, output_level=None, have_mctruth=True):
-    ga = self.kernel.generatorAction()
+    ga = self.kernel().generatorAction()
     # Register Generation initialization action
-    gen = GeneratorAction(self.kernel,"Geant4GeneratorActionInit/GenerationInit")
+    gen = GeneratorAction(self.kernel(),"Geant4GeneratorActionInit/GenerationInit")
     if output_level is not None:
       gen.OutputLevel = output_level
     ga.adopt(gen)
@@ -478,7 +571,7 @@ class Simple:
       ga.adopt(gen)
 
     # Merge all existing interaction records
-    gen = GeneratorAction(self.kernel,"Geant4InteractionMerger/InteractionMerger")
+    gen = GeneratorAction(self.kernel(),"Geant4InteractionMerger/InteractionMerger")
     gen.enableUI()
     if output_level is not None:
       gen.OutputLevel = output_level
@@ -486,7 +579,7 @@ class Simple:
 
     # Finally generate Geant4 primaries
     if have_mctruth:
-      gen = GeneratorAction(self.kernel,"Geant4PrimaryHandler/PrimaryHandler")
+      gen = GeneratorAction(self.kernel(),"Geant4PrimaryHandler/PrimaryHandler")
       gen.enableUI()
       if output_level is not None:
         gen.OutputLevel = output_level
@@ -494,4 +587,16 @@ class Simple:
     # Puuuhh! All done.
     return self
 
-Geant4 = Simple
+  """
+     Execute the main Geant4 action
+     \author  M.Frank
+  """
+  def run(self):
+    #self.master().configure()
+    #self.master().initialize()
+    #self.master().run()
+    #self.master().terminate()
+    from ROOT import PyDDG4
+    PyDDG4.run(self.master().get())
+
+Simple = Geant4

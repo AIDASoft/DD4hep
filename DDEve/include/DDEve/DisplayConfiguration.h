@@ -46,9 +46,10 @@ namespace DD4hep {
            COLLECTION=1<<5
     };
     struct Defaults {
-      char load_geo;
-      char show_evt;
-      short color;
+      char  load_geo;
+      char  show_evt;
+      short default_pad;
+      int   color;
       float alpha;
     };
     struct Calo3D : public Defaults  {

@@ -56,8 +56,10 @@ namespace DD4hep {
     ACTIONHANDLE(TrackingAction);
     ACTIONHANDLE(SteppingAction);
     ACTIONHANDLE(StackingAction);
+    ACTIONHANDLE(DetectorConstruction);
     ACTIONHANDLE(Sensitive);
     ACTIONHANDLE(ParticleHandler);
+    ACTIONHANDLE(UserInitialization);
 
     ACTIONHANDLE(GeneratorActionSequence);
     ACTIONHANDLE(RunActionSequence);
@@ -65,94 +67,113 @@ namespace DD4hep {
     ACTIONHANDLE(TrackingActionSequence);
     ACTIONHANDLE(SteppingActionSequence);
     ACTIONHANDLE(StackingActionSequence);
+    ACTIONHANDLE(DetectorConstructionSequence);
     ACTIONHANDLE(PhysicsListActionSequence);
     ACTIONHANDLE(SensDetActionSequence);
+    ACTIONHANDLE(UserInitializationSequence);
 
     struct PropertyResult  {
-    string data;
-    int status;
-    PropertyResult() : status(0) {}
-    PropertyResult(const string& d, int s) : data(d), status(s) {}
+      string data;
+      int status;
+      PropertyResult() : status(0) {}
+      PropertyResult(const string& d, int s) : data(d), status(s) {}
       PropertyResult(const PropertyResult& c) : data(c.data), status(c.status) {}
-        ~PropertyResult() {}
-          };
+      ~PropertyResult() {}
+    };
 
     struct Geant4ActionCreation  {
-    template <typename H,typename T> static H cr(KernelHandle& kernel, const string& name_type)  {
-    T action(*kernel.get(),name_type);
-    H handle(action.get());
-    return handle;
-  }
-    static ActionHandle createAction(KernelHandle& kernel, const string& name_type)   
-    { return cr<ActionHandle,Setup::Action>(kernel,name_type);                            }
-    static FilterHandle createFilter(KernelHandle& kernel, const string& name_type)
-    { return cr<FilterHandle,Setup::Filter>(kernel,name_type);                            }
-    static PhaseActionHandle createPhaseAction(KernelHandle& kernel, const string& name_type)   
-    { return cr<PhaseActionHandle,Setup::PhaseAction>(kernel,name_type);                  }
-    static PhysicsListHandle createPhysicsList(KernelHandle& kernel, const string& name_type)
-    { return cr<PhysicsListHandle,Setup::PhysicsList>(kernel,name_type);                  }
-    static RunActionHandle createRunAction(KernelHandle& kernel, const string& name_type)
-    { return cr<RunActionHandle,Setup::RunAction>(kernel,name_type);                      }
-    static EventActionHandle createEventAction(KernelHandle& kernel, const string& name_type)
-    { return cr<EventActionHandle,Setup::EventAction>(kernel,name_type);                  }
-    static TrackingActionHandle createTrackingAction(KernelHandle& kernel, const string& name_type)
-    { return cr<TrackingActionHandle,Setup::TrackAction>(kernel,name_type);               }
-    static SteppingActionHandle createSteppingAction(KernelHandle& kernel, const string& name_type)
-    { return cr<SteppingActionHandle,Setup::StepAction>(kernel,name_type);                }
-    static StackingActionHandle createStackingAction(KernelHandle& kernel, const string& name_type)
-    { return cr<StackingActionHandle,Setup::StackAction>(kernel,name_type);               }
-    static GeneratorActionHandle createGeneratorAction(KernelHandle& kernel, const string& name_type)
-    { return cr<GeneratorActionHandle,Setup::GenAction>(kernel,name_type);                }
-    static SensitiveHandle createSensitive(KernelHandle& kernel, const string& name_type, const string& detector)
-    {	return SensitiveHandle(Setup::Sensitive(*kernel.get(),name_type,detector).get());   }
-    static SensDetActionSequenceHandle createSensDetSequence(KernelHandle& kernel, const string& name_type)
-    {	return cr<SensDetActionSequenceHandle,Setup::SensitiveSeq>(kernel,name_type);       }
+      template <typename H,typename T> static H cr(KernelHandle& kernel, const string& name_type, bool shared)  {
+        T action(*kernel.get(),name_type,shared);
+        H handle(action.get());
+        return handle;
+      }
+      static ActionHandle createAction(KernelHandle& kernel, const string& name_type, bool shared)   
+      { return cr<ActionHandle,Setup::Action>(kernel,name_type,shared);                            }
+      static FilterHandle createFilter(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<FilterHandle,Setup::Filter>(kernel,name_type,shared);                            }
+      static PhaseActionHandle createPhaseAction(KernelHandle& kernel, const string& name_type, bool shared)   
+      { return cr<PhaseActionHandle,Setup::PhaseAction>(kernel,name_type,shared);                  }
+      static PhysicsListHandle createPhysicsList(KernelHandle& kernel, const string& name_type)
+      { return cr<PhysicsListHandle,Setup::PhysicsList>(kernel,name_type,false);                  }
+      static RunActionHandle createRunAction(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<RunActionHandle,Setup::RunAction>(kernel,name_type,shared);                      }
+      static EventActionHandle createEventAction(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<EventActionHandle,Setup::EventAction>(kernel,name_type,shared);         }
+      static TrackingActionHandle createTrackingAction(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<TrackingActionHandle,Setup::TrackAction>(kernel,name_type,shared);               }
+      static SteppingActionHandle createSteppingAction(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<SteppingActionHandle,Setup::StepAction>(kernel,name_type,shared);                }
+      static StackingActionHandle createStackingAction(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<StackingActionHandle,Setup::StackAction>(kernel,name_type,shared);               }
+      
+      static GeneratorActionHandle createGeneratorAction(KernelHandle& kernel, const string& name_type, bool shared)
+      { return cr<GeneratorActionHandle,Setup::GenAction>(kernel,name_type,shared);                }
+      
+      static DetectorConstructionHandle createDetectorConstruction(KernelHandle& kernel, const string& name_type)
+      { return cr<DetectorConstructionHandle,Setup::DetectorConstruction>(kernel,name_type,false); }
+      
+      static UserInitializationHandle createUserInitialization(KernelHandle& kernel, const string& name_type)
+      {	return UserInitializationHandle(Setup::Initialization(*kernel.get(),name_type,false).get());}
+      
+      static SensitiveHandle createSensitive(KernelHandle& kernel, const string& name_type, const string& detector, bool shared)
+      {	return SensitiveHandle(Setup::Sensitive(*kernel.get(),name_type,detector,shared).get());   }
+      
+      static SensDetActionSequenceHandle createSensDetSequence(KernelHandle& kernel, const string& name_type)
+      {	return cr<SensDetActionSequenceHandle,Setup::SensitiveSeq>(kernel,name_type,false);       }
+      
+      static Geant4Action* toAction(Geant4Filter* f)                   { return f;          }
+      static Geant4Action* toAction(Geant4Action* f)                   { return f;          }
+      static Geant4Action* toAction(Geant4PhaseAction* f)              { return f;          }
+      static Geant4Action* toAction(Geant4Sensitive* f)                { return f;          }
+      static Geant4Action* toAction(Geant4PhysicsList* f)              { return f;          }
+      static Geant4Action* toAction(Geant4RunAction* f)                { return f;          }
+      static Geant4Action* toAction(Geant4EventAction* f)              { return f;          }
+      static Geant4Action* toAction(Geant4TrackingAction* f)           { return f;          }
+      static Geant4Action* toAction(Geant4SteppingAction* f)           { return f;          }
+      static Geant4Action* toAction(Geant4StackingAction* f)           { return f;          }
+      static Geant4Action* toAction(Geant4GeneratorAction* f)          { return f;          }
+      static Geant4Action* toAction(Geant4GeneratorActionSequence* f)  { return f;          }
+      static Geant4Action* toAction(Geant4RunActionSequence* f)        { return f;          }
+      static Geant4Action* toAction(Geant4EventActionSequence* f)      { return f;          }
+      static Geant4Action* toAction(Geant4TrackingActionSequence* f)   { return f;          }
+      static Geant4Action* toAction(Geant4SteppingActionSequence* f)   { return f;          }
+      static Geant4Action* toAction(Geant4StackingActionSequence* f)   { return f;          }
+      static Geant4Action* toAction(Geant4PhysicsListActionSequence* f){ return f;          }
+      static Geant4Action* toAction(Geant4SensDetActionSequence* f)    { return f;          }
+      static Geant4Action* toAction(Geant4UserInitialization* f)       { return f;          }
+      static Geant4Action* toAction(Geant4UserInitializationSequence* f){ return f;         }
+      static Geant4Action* toAction(Geant4DetectorConstruction* f)     { return f;          }
+      static Geant4Action* toAction(Geant4DetectorConstructionSequence* f){ return f;       }
 
-    static Geant4Action* toAction(Geant4Filter* f)                   { return f;          }
-    static Geant4Action* toAction(Geant4Action* f)                   { return f;          }
-    static Geant4Action* toAction(Geant4PhaseAction* f)              { return f;          }
-    static Geant4Action* toAction(Geant4Sensitive* f)                { return f;          }
-    static Geant4Action* toAction(Geant4PhysicsList* f)              { return f;          }
-    static Geant4Action* toAction(Geant4RunAction* f)                { return f;          }
-    static Geant4Action* toAction(Geant4EventAction* f)              { return f;          }
-    static Geant4Action* toAction(Geant4TrackingAction* f)           { return f;          }
-    static Geant4Action* toAction(Geant4SteppingAction* f)           { return f;          }
-    static Geant4Action* toAction(Geant4StackingAction* f)           { return f;          }
-    static Geant4Action* toAction(Geant4GeneratorAction* f)          { return f;          }
-    static Geant4Action* toAction(Geant4GeneratorActionSequence* f)  { return f;          }
-    static Geant4Action* toAction(Geant4RunActionSequence* f)        { return f;          }
-    static Geant4Action* toAction(Geant4EventActionSequence* f)      { return f;          }
-    static Geant4Action* toAction(Geant4TrackingActionSequence* f)   { return f;          }
-    static Geant4Action* toAction(Geant4SteppingActionSequence* f)   { return f;          }
-    static Geant4Action* toAction(Geant4StackingActionSequence* f)   { return f;          }
-    static Geant4Action* toAction(Geant4PhysicsListActionSequence* f){ return f;          }
-    static Geant4Action* toAction(Geant4SensDetActionSequence* f)    { return f;          }
-
-    static Geant4Action* toAction(FilterHandle f)                    { return f.action;   }
-    static Geant4Action* toAction(ActionHandle f)                    { return f.action;   }
-    static Geant4Action* toAction(PhaseActionHandle f)               { return f.action;   }
-    static Geant4Action* toAction(SensitiveHandle f)                 { return f.action;   }
-    static Geant4Action* toAction(PhysicsListHandle f)               { return f.action;   }
-    static Geant4Action* toAction(RunActionHandle f)                 { return f.action;   }
-    static Geant4Action* toAction(EventActionHandle f)               { return f.action;   }
-    static Geant4Action* toAction(TrackingActionHandle f)            { return f.action;   }
-    static Geant4Action* toAction(SteppingActionHandle f)            { return f.action;   }
-    static Geant4Action* toAction(StackingActionHandle f)            { return f.action;   }
-    static Geant4Action* toAction(GeneratorActionHandle f)           { return f.action;   }
-    static Geant4Action* toAction(GeneratorActionSequenceHandle f)   { return f.action;   }
-    static Geant4Action* toAction(RunActionSequenceHandle f)         { return f.action;   }
-    static Geant4Action* toAction(EventActionSequenceHandle f)       { return f.action;   }
-    static Geant4Action* toAction(TrackingActionSequenceHandle f)    { return f.action;   }
-    static Geant4Action* toAction(SteppingActionSequenceHandle f)    { return f.action;   }
-    static Geant4Action* toAction(StackingActionSequenceHandle f)    { return f.action;   }
-    static Geant4Action* toAction(PhysicsListActionSequenceHandle f) { return f.action;   }
-    static Geant4Action* toAction(SensDetActionSequenceHandle f)     { return f.action;   }
-    static PropertyResult getProperty(Geant4Action* action, const string& name)  {
-    if ( action->hasProperty(name) )  {
-	  return PropertyResult(action->property(name).str(),1);
-    }
-    return PropertyResult("",0);
-    }
+      static Geant4Action* toAction(FilterHandle f)                    { return f.action;   }
+      static Geant4Action* toAction(ActionHandle f)                    { return f.action;   }
+      static Geant4Action* toAction(PhaseActionHandle f)               { return f.action;   }
+      static Geant4Action* toAction(SensitiveHandle f)                 { return f.action;   }
+      static Geant4Action* toAction(PhysicsListHandle f)               { return f.action;   }
+      static Geant4Action* toAction(RunActionHandle f)                 { return f.action;   }
+      static Geant4Action* toAction(EventActionHandle f)               { return f.action;   }
+      static Geant4Action* toAction(TrackingActionHandle f)            { return f.action;   }
+      static Geant4Action* toAction(SteppingActionHandle f)            { return f.action;   }
+      static Geant4Action* toAction(StackingActionHandle f)            { return f.action;   }
+      static Geant4Action* toAction(GeneratorActionHandle f)           { return f.action;   }
+      static Geant4Action* toAction(GeneratorActionSequenceHandle f)   { return f.action;   }
+      static Geant4Action* toAction(RunActionSequenceHandle f)         { return f.action;   }
+      static Geant4Action* toAction(EventActionSequenceHandle f)       { return f.action;   }
+      static Geant4Action* toAction(TrackingActionSequenceHandle f)    { return f.action;   }
+      static Geant4Action* toAction(SteppingActionSequenceHandle f)    { return f.action;   }
+      static Geant4Action* toAction(StackingActionSequenceHandle f)    { return f.action;   }
+      static Geant4Action* toAction(PhysicsListActionSequenceHandle f) { return f.action;   }
+      static Geant4Action* toAction(SensDetActionSequenceHandle f)     { return f.action;   }
+      static Geant4Action* toAction(UserInitializationHandle f)        { return f.action;   }
+      static Geant4Action* toAction(UserInitializationSequenceHandle f){ return f.action;   }
+      static Geant4Action* toAction(DetectorConstructionHandle f)      { return f.action;   }
+      static Geant4Action* toAction(DetectorConstructionSequenceHandle f){ return f.action;   }
+      static PropertyResult getProperty(Geant4Action* action, const string& name)  {
+        if ( action->hasProperty(name) )  {
+          return PropertyResult(action->property(name).str(),1);
+        }
+        return PropertyResult("",0);
+      }
       static int setProperty(Geant4Action* action, const string& name, const string& value)  {
         if ( action->hasProperty(name) )  {
           action->property(name).str(value);
@@ -225,6 +246,9 @@ namespace {
 #pragma link C++ class SteppingActionHandle;
 #pragma link C++ class StackingActionHandle;
 #pragma link C++ class SensitiveHandle;
+#pragma link C++ class UserInitializationHandle;
+#pragma link C++ class DetectorConstructionHandle;
+
 #pragma link C++ class GeneratorActionSequenceHandle;
 #pragma link C++ class RunActionSequenceHandle;
 #pragma link C++ class EventActionSequenceHandle;
@@ -233,6 +257,8 @@ namespace {
 #pragma link C++ class StackingActionSequenceHandle;
 #pragma link C++ class PhysicsListActionSequenceHandle;
 #pragma link C++ class SensDetActionSequenceHandle;
+#pragma link C++ class UserInitializationSequenceHandle;
+#pragma link C++ class DetectorConstructionSequenceHandle;
 
 #pragma link C++ class Geant4DataDump;
 
@@ -266,6 +292,12 @@ namespace {
 
 #pragma link C++ class Geant4PhysicsListActionSequence;
 #pragma link C++ class Geant4PhysicsList;
+
+#pragma link C++ class Geant4UserInitializationSequence;
+#pragma link C++ class Geant4UserInitialization;
+
+#pragma link C++ class Geant4DetectorConstructionSequence;
+#pragma link C++ class Geant4DetectorConstruction;
 
 #pragma link C++ class Geant4ParticleHandler;
 #pragma link C++ class Geant4UserParticleHandler;

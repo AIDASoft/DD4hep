@@ -1,0 +1,703 @@
+
+%=============================================================================
+\section{Existing DDG4 components}
+\label{sec:existing-ddg4-components}
+%=============================================================================
+\noindent
+In the introduction the longterm goal was expressed, that with DDG4 users
+should be able to pick components from a growing palette and connect the
+selected components using the setup mechanisms described in 
+Section~\ref{sec:ddg4-implementation-setup}.
+
+\noindent
+Such a palette based approach obviously depends on the availability of
+documentation for existing components describing the properties
+of each component and the interaction of each component within the \DDG
+framework.
+
+\noindent
+All components defer from the basic type \tts{Geant4Action}. This means 
+\bold{all} components have the \bold{default} properties described in the
+table below:
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l l p{9cm} }
+\hline
+Component Properties: &  & \tts{default} \\
+\hline
+\bold{OuputLevel}     & [int]  & Output level of the component to customize printouts             \\
+\bold{Name}           & [string]  & Component name [read-only] \\
+\bold{Control}        & [boolean] & Steering of the Geant4 Messenger creation \\
+\hline
+\end{tabular}
+
+
+\vspace{5cm}
+
+\begin{center}
+{\large{\bf{
+\begin{tabular} {| p{15cm} |}
+\hline\space  \\
+
+\noindent
+{\underline{Important notice for developers:}} \\
+
+\noindent
+Since the documentation of developed components is VERY important,
+please never forget to supply the corresponding documentation.\\
+\\
+\noindent
+At least supply the minimal documentation ash shown below
+in the appended examples for the "Simple" detector response and I/O
+components.
+\\ \space\hline 
+\end{tabular}
+}}}
+\end{center}
+\clearpage
+
+%=============================================================================
+\subsection{Generic Action Modules}
+%=============================================================================
+
+%=============================================================================
+\subsubsection{Geant4UIManager}
+%=============================================================================
+\noindent
+The {\tt{Geant4UIManager}} handles interactivity aspects between Geant4,
+its command handlers (i.e. terminal) and the various components the actions
+interact.
+
+\noindent
+The {\tt{Geant4UIManager}} is a component attached to the {\tt{Geant4Kernel}}
+object. All properties of all {\tt{Geant4Action}} instances may be exported to 
+\tts{Geant4} messengers and {\em{may}} hence be accessible directly from 
+the \tts{Geant4} prompt. To export properties from any action, call the 
+{\tt{enableUI()}} method of the action.
+\noindent
+The callback signature is: \tts{void operator()(G4Event* event)}.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4UIManager}                           \\
+\bold{File name}       & \tts{DDG4/src/Geant4UIManager.cpp}              \\
+\bold{Type}            & \tts{Geant4Action}                              \\
+\hline
+\bold{Component Properties:}   & defaults apply                          \\
+\hline
+\bold{SessionType} (string)  & Session type (csh, tcsh, etc.             \\
+\bold{SetupUI} (string)   & Name of the UI macro file                    \\
+\bold{SetupVIS} (string)  & Name of the visualization macro file         \\
+\bold{HaveVIS} (bool)     & Flag to instantiate Vis manager 
+                            (def:false, unless VisSetup set)             \\
+\bold{HaveUI} (bool)      & Flag to instantiate UI (default=true)        \\
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4Random}
+%=============================================================================
+\noindent
+Mini interface to the random generator of the application.
+Necessary, that on every object creates its own instance, but accesses
+the main instance available through the \tts{Geant4Context}.
+
+\noindent
+This is mandatory to ensure reproducibility of the event generation
+process. Particular objects may use a dependent generator from
+an experiment framework like \tts{GAUDI}.
+
+\noindent
+internally the engine factory mechanism of \tts{CLHEP} is used. Please refer
+there within for valid engine names and the random seeding mechanism,
+which may vary between different engines.
+
+\noindent
+Any number of independent random objects may be created and used 
+in parallel. This however, is not advised to ensure reproducibility.
+
+\noindent
+The first instance of the random action is automatically set
+to be the \tts{Geant4} instance. If another instance should be used by 
+\tts{Geant4}, use \tts{setMainInstance(Geant4Random* ptr)} class method to 
+override this behavior.
+Provision, steered by options, is taken to ensure the \tts{gRandom}
+of \tts{ROOT} uses the same random number engine.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}                & \tts{Geant4Random}                             \\
+\bold{File name}                 & \tts{DDG4/src/Geant4Random.cpp}                \\
+\bold{Type}                      & \tts{Geant4Random}                             \\
+\hline
+\bold{Component Properties:}     & defaults apply                                 \\
+\hline
+\bold{File}   (string)           & File name if initialized from file.            \\
+                                 & If set, engine name and seeds are ignored      \\
+\bold{Engine} (string)           & Engine type name.                              \\
+                                 & All engines defined in the
+                                   \tts{CLHEP::EngineFactory} class are available.
+                                   If no type is supplied the engine from the 
+                                   HepRandom generator instance is taken.         \\
+\bold{Seed}   (long)             & Initial random seed.                           \\
+                                 & Default:    123456789.                         \\
+                                 & If not ZERO terminated, termination is added.  \\
+\bold{Replace\_gRandom} (bool)   & Flag to replace the \tts{ROOT} \tts{gRandom}
+                                   instance with this random number engine.
+                                   This ensures \tts{ROOT} and \tts{Geant4} 
+                                   use the same random number engine, hence 
+                                   the same random sequence.
+                                                                                  \\
+\end{tabular}
+
+\noindent
+%=============================================================================
+\subsection{Geant4UserInitialization Implementations}
+%=============================================================================
+\noindent
+%=============================================================================
+\subsubsection{Geant4PythonInitialization}
+%=============================================================================
+\noindent
+Please see Section~\ref{sec:ddg4-multi-threading-python} 
+for an illustration of the usage.
+The configuration by construction must be performed using setter-functions
+rather than properties.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4PythonInitialization}                    \\
+\bold{File name}       & \tts{DDG4/src/python/Geant4PythonInitialization.cpp} \\
+\bold{Type}            & \tts{Geant4Action}                                  \\
+\hline 
+\bold{Component Properties:}   & defaults apply                              \\
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4PythonDetectorConstruction}
+%=============================================================================
+\noindent
+Please see Section~\ref{sec:ddg4-multi-threading-python} 
+for an illustration of the usage.
+The configuration by construction must be performed using setter-functions
+rather than properties.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4PythonDetectorConstruction}              \\
+\bold{File name}       & \tts{DDG4/src/python/Geant4PythonDetectorConstruction.cpp}  \\
+\bold{Type}            & \tts{Geant4Action}                                  \\
+\hline 
+\bold{Component Properties:}   & defaults apply                              \\
+\end{tabular}
+
+%=============================================================================
+\subsection{Predefined Geant4 Physics List Objects}
+%=============================================================================
+\noindent
+The physics list may be defined entirely data driven using the factory mechanism
+using a variety of predefined objects. Though users are free to define private 
+physics lists, typically the predefined physics lists from \tts{Geant4} are used. 
+
+\noindent
+The inventory changes over time, new lists appear and obsolete lists are purged,
+hence we will not list them explicitly here.
+For the inventory of available physics lists, please refer to the implementation files:
+
+\noindent
+\begin{itemize}\itemcompact
+\item Inventory of predefined physics lists, which may be inherited:\\
+\detdesc{html/_geant4_physics_lists_8cpp_source.html}
+{DDG4/plugins/Geant4PhysiscsLists.cpp}
+\item Inventory of predefined physics constructors, which may be instantiated:\\
+\detdesc{html/_geant4_physics_constructors_8cpp_source.html}
+{DDG4/plugins/Geant4PhysicsConstructors.cpp}
+\item Inventory of predefined process constructors, which may be instantiated:\\
+\detdesc{html/_geant4_processes_8cpp_source.html}
+{DDG4/plugins/Geant4Processes.cpp}
+\item Inventory of predefined particle constructors, which may be instantiated:\\
+\detdesc{html/_geant4_particles_8cpp_source.html}
+{DDG4/plugins/Geant4Particles.cpp}
+\end{itemize}
+\newpage
+
+%=============================================================================
+\subsection{Geant4 Generation Action Modules}
+%=============================================================================
+\noindent
+Here we discuss modules, which are intrinsically part of DDG4 and may be
+attached to the {\tt{Geant4GeneratorActionSequence}}.
+
+%=============================================================================
+\subsubsection{Base class: Geant4GeneratorAction}
+%=============================================================================
+\noindent
+The \tts{Geant4GeneratorAction} is called for every event.
+During the callback all particles are created which form the 
+microscopic kinematic action of the particle collision.
+This input may either origin directly from an event generator program
+or come from file.
+
+\noindent
+The callback signature is: void operator()(G4Event* event)
+\noindent
+See also:
+\detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_generator_action.html}
+{\tts{Geant4EventAction}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4GeneratorAction}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4GeneratorAction.cpp}        \\
+\bold{Type}            & \tts{Geant4Action, Geant4GeneratorAction}       \\
+\hline
+\bold{Component Properties:}   & defaults apply                          \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4GeneratorActionSequence}
+%=============================================================================
+\noindent
+The sequence dispatches the callbacks at the beginning 
+of an event to all registered \tts{Geant4GeneratorAction} members and all 
+registered callbacks.
+
+\noindent
+See also:
+\noindent
+The {\tt{Geant4GeneratorActionSequence}} is directly steered by the single
+instance of the {\tt{G4VUserPrimaryGeneratorAction}}, the Geant4 provided user hook,
+which is private.\\
+See also:
+\detdesc{html/struct_d_d4hep_1_1_simulation_1_1_geant4_user_generator_action.html}
+{\tts{Geant4UserGeneratorAction}} and
+\detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_generator_action_sequence.html}
+{\tts{Geant4GeneratorActionSequence}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4Geant4GeneratorActionSequence}       \\
+\bold{File name}       & \tts{DDG4/src/Geant4GeneratorAction.cpp}        \\
+\bold{Type}            & \tts{Geant4Action}                              \\
+\hline
+\bold{Component Properties:}   & defaults apply                          \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4GeneratorActionInit}
+%=============================================================================
+\noindent
+Initialize the Geant4Event objects to host generator and MC truth related information
+Geant4 actions to collect the MC particle information.
+This action should register all event extension required for the further 
+processing. We want to avoid that every client has to check if a given 
+object is present or not and than later install the required data structures.
+
+\noindent
+These by default are extensions of type:
+\begin{itemize}\itemcompact
+\item \tts{Geant4PrimaryEvent} with multiple interaction sections, one for each interaction
+    This is the MAIN and ONLY information to feed Geant4
+\item \tts{Geant4PrimaryInteraction} containing the track/vertex information to create 
+    the primary particles for Geant4. This record is build from the \tts{Geant4PrimaryEvent}
+    information.
+\item \tts{Geant4PrimaryMap} a map of the \tts{Geant4Particles} converted to 
+    \tts{G4PrimaryParticles} to ease particle handling later.
+\item \tts{Geant4ParticleMap} the map of particles created during the event simulation.
+    This map has directly the correct particle offsets, so that the merging of
+    \tts{Geant4PrimaryInteraction} particles and the simulation particles is easy....
+\end{itemize}
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4Geant4GeneratorActionInit}           \\
+\bold{File name}       & \tts{DDG4/src/Geant4GeneratorActionInit.cpp}    \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Angle} (double)          & \tts{Lorentz-Angle of boost}                          \\
+\bold{Mask} (int.bitmask)      & \tts{Interaction identifier} \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionVertexBoost}
+%=============================================================================
+\noindent
+Boost the primary vertex and all particles outgoing the primary interaction in X-direction.
+
+\noindent
+The interaction to be processed by the component is uniquely identified
+by the {\bf{Mask}} property. Two primary interaction may not have the same
+mask.
+
+\noindent
+{\bold{Note [special use case]:}}\\
+If all contributing interactions of the one event \bold{registered 
+in the primary event at the time the action is called} should be handled by 
+one single component instance, set the {\bf{Mask}} property to {\bold{-1}}.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}        & \tts{Geant4InteractionVertexBoost}              \\
+\bold{File name}         & \tts{DDG4/src/Geant4InteractionVertexBoost.cpp} \\
+\bold{Type}              & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Angle} (double)          & \tts{Lorentz-Angle of boost}              \\
+\bold{Mask} (int.bitmask)      & \tts{Interaction identifier}              \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionVertexSmear}
+%=============================================================================
+\noindent
+Smear the primary vertex and all particles outgoing the primary interaction.
+
+\noindent
+The interaction to be processed by the component is uniquely identified
+by the {\bf{Mask}} property. Two primary interaction may not have the same
+mask.
+
+\noindent
+{\bold{Note [special use case]:}}\\
+If all contributing interactions of the one event \bold{registered 
+in the primary event at the time the action is called} should be handled by 
+one single component instance, set the {\bf{Mask}} property to {\bold{-1}}.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}        & \tts{Geant4InteractionVertexSmear}              \\
+\bold{File name}         & \tts{DDG4/src/Geant4InteractionVertexSmear.cpp} \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{Offset}  (PxPyPzEVector) & \tts{Smearing offset}                     \\
+\bold{Sigma}   (PxPyPzEVector) & \tts{Sigma (Errors) on offset}            \\
+\bold{Mask}    (int.bitmask)   & \tts{Interaction identifier} \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4InteractionMerger}
+%=============================================================================
+\noindent
+Merge all interactions created by each {\tt{Geant4InputAction}} into one single
+record. The input records are taken from the item {\tt{Geant4PrimaryEvent}}
+and are merged into the {\tt{Geant4PrimaryInteraction}} object attached to the
+{\tt{Geant4Event}} event context.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}        & \tts{Geant4InteractionMerger}                   \\
+\bold{File name}         & \tts{DDG4/src/Geant4InteractionMerger.cpp}      \\
+\bold{Type}              & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4PrimaryHandler}
+%=============================================================================
+\noindent
+Convert the primary interaction (object {\tt{Geant4PrimaryInteraction}} object 
+attached to the {\tt{Geant4Event}} event context) and pass the result
+to Geant4 for simulation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}        & \tts{Geant4PrimaryHandler}                      \\
+\bold{File name}         & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
+\bold{Type}              & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4ParticleGun}
+%=============================================================================
+\noindent
+Implementation of a particle gun using Geant4Particles.
+
+\noindent
+The {\tt{Geant4ParticleGun}} is a tool to shoot a number of
+particles with identical properties into a given region of the
+detector to be simulated.
+
+\noindent
+The particle gun is a input source like any other and participates 
+in the general input stage merging process like any other input 
+e.g. from file. Hence, there may be several particle guns present
+each generating it's own primary vertex. Use the mask property to
+ensure each gun generates it's own, well identified primary vertex.
+
+\noindent
+There is one 'user lazyness' support though:
+If there is only one particle gun in use, the property 'Standalone', 
+which by default is set to true invokes the interaction merging and the
+Geant4 primary generation directly.
+
+\noindent
+The interaction to be created by the component is uniquely identified
+by the {\bf{Mask}} property. Two primary interaction may not have the same
+mask.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}         & \tts{Geant4PrimaryHandler}                      \\
+\bold{File name}          & \tts{DDG4/src/Geant4PrimaryHandler.cpp}         \\
+\bold{Type}               & \tts{Geant4GeneratorAction}                     \\
+\hline
+Component Properties:     & default                                         \\
+\bold{particle} (string)  & Particle type to be shot                        \\
+\bold{energy} (double)    & Particle energy in $MeV$                        \\
+\bold{position} (XYZVector)  & Pole position of the generated particles in $mm$\\
+\bold{direction} (XYZVector) & Momentum direction of the generated particles\\
+\bold{isotrop} (bool)        & Isotropic particle directions in space.      \\
+\bold{Mask} (int.bitmask)    & Interaction identifier                       \\
+\bold{Standalone} (bool)     & Setup for standalone execution               \\ 
+                             & including interaction merging etc.           \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4ParticleHandler}
+%=============================================================================
+\noindent
+Extract the relevant particle information during the simulation step.
+
+\noindent
+This procedure works as follows:
+\begin{itemize}\itemcompact
+\item At the beginning of the event generation the object registers itself as 
+    Monte-Carlo truth handler to the event context.
+\item At the begin of each track action a particle candidate is created and filled
+    with all properties known at this time.
+\item At each stepping action a flag is set if the step produced secondaries.
+\item Sensitive detectors call the MC truth handler if a hit was created.
+    This fact is remembered.
+\item At the end of the tracking action a first decision is taken if the candidate is to be 
+    kept for the final record.
+\item At the end of the event action finally all particles are reduced to the 
+    final record. This logic can be overridden by a user handler to be attached.
+\end{itemize}
+\noindent
+Any of these actions may be intercepted by a {\tt{Geant4UserParticleHandler}}
+attached to the particle handler.
+See class {\tt{Geant4UserParticleHandler}} for details.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{9cm} }
+\hline
+\bold{Class name}      & \tts{Geant4ParticleHandler}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4ParticleHandler.cpp}        \\
+\bold{Type}            & \tts{Geant4GeneratorAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                            \\
+\bold{KeepAllParticles} (bool)    & Flag to keep entire particle record without any reduction.
+                            This may result in a huge output record.      \\
+\bold{SaveProcesses} (vector(string)) & Array of Geant4 process names, 
+                            which products and parent should NOT be reduced.\\
+\bold{MinimalKineticEnergy} (double) & Minimal energy below which particles should be
+                            ignored unless other criteria 
+                            (Process, created hits, etc) apply.\\
+\hline
+\end{tabular}
+\newpage
+
+%=============================================================================
+\subsection{Geant4 Event Action Modules}
+%=============================================================================
+\noindent
+
+%=============================================================================
+\subsubsection{Base class: Geant4EventAction}
+%=============================================================================
+\noindent
+The EventAction is called for every event.
+
+\noindent
+This class is the base class for all user actions, which have
+to hook into the begin- and end-of-event actions.
+Typical use cases are the collection/computation of event
+related properties.
+
+\noindent
+Examples of this functionality may include for example:
+\begin{itemize}\itemcompact
+\item Reset variables summing event related information in the
+  begin-event callback.
+\item Monitoring activities such as filling histograms
+  from hits collected during the end-event action.
+\end{itemize}
+See also:
+\detdesc{html/class_d_d4hep_1_1_simulation_1_1_geant4_event_action.html}
+{\tts{Geant4EventAction}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4EventAction}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4EventAction.cpp}        \\
+\bold{Type}            & \tts{Geant4EventAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                        \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4EventActionSequence}
+%=============================================================================
+\noindent
+
+\noindent
+The {\tt{Geant4EventActionSequence}} is directly steered by the single
+instance of the {\tt{G4UserEventAction}}, the Geant4 provided user hook,
+which is private.\\
+See also:
+\detdesc{html/struct_d_d4hep_1_1_simulation_1_1_geant4_user_event_action.html}
+{\tts{Geant4UserEventAction}} in the doxygen documentation.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4EventAction}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4EventAction.cpp}        \\
+\bold{Type}            & \tts{Geant4EventAction}                     \\
+\hline
+\bold{Component Properties:}   & defaults apply                      \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4ParticlePrint}
+%=============================================================================
+\noindent
+Geant4Action to print MC particle information.
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+\bold{Class name}      & \tts{Geant4ParticlePrint}                     \\
+\bold{File name}       & \tts{DDG4/src/Geant4ParticlePrint.cpp}        \\
+\bold{Type}            & \tts{Geant4EventAction}                       \\
+\hline
+\bold{Component Properties:}   & defaults apply                        \\
+\bold{OutputType} (bool)       & Flag to steer output type.            \\
+                                & 1: Print table of particles.          \\
+                                & 2: Print table of particles.          \\
+                                & 3: Print table and tree of particles. \\
+\bold{PrintHits} & Print associated hits to every particle (big output!)\\
+\hline
+\end{tabular}
+\newpage
+
+
+%=============================================================================
+\subsection{Sensitive Detectors}
+%=============================================================================
+\noindent
+
+%=============================================================================
+\subsubsection{Geant4TrackerAction}
+%=============================================================================
+\noindent
+Simple sensitive detector for tracking detectors. These trackers create one
+single hit collection. The created hits may be written out with the output
+modules described in Section~\ref{sec:ddg4-components-IO-ROOT-simple} 
+and~\ref{sec:ddg4-components-IO-LCIO-simple}. \\
+The basic specifications are:
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+Basics: & \\
+\hline
+\bold{Class name}      & \tts{Geant4SensitiveAction<Geant4Tracker>}  \\
+\bold{File name}       & \tts{DDG4/plugins/Geant4SDActions.cpp}      \\
+\bold{Hit collection}  & \tts{Name of the readout object}            \\
+\bold{Hit class}       & \tts{Geant4Tracker::Hit}                    \\
+\bold{File name}       & \tts{DDG4/include/Geant4Data.h}             \\
+\hline
+\bold{Component Properties:}   & defaults apply                       \\
+\hline
+\end{tabular}
+
+%=============================================================================
+\subsubsection{Geant4CalorimeterAction}
+%=============================================================================
+\noindent
+Simple sensitive detector for calorimeters. The sensitive detector creates one
+single hit collection. The created hits may be written out with the output
+modules described in Section~\ref{sec:ddg4-components-IO-ROOT-simple} 
+and~\ref{sec:ddg4-components-IO-LCIO-simple}. \\
+The basic specifications are:
+
+\vspace{0.5cm}
+\noindent
+\begin{tabular}{ l p{10cm} }
+\hline
+Basics: & \\
+\hline
+\bold{Class name}      & \tts{Geant4SensitiveAction<Geant4Calorimeter>}  \\
+\bold{File name}       & \tts{DDG4/plugins/Geant4SDActions.cpp}      \\
+\bold{Hit collection}  & \tts{Name of the readout object}            \\
+\bold{Hit class}       & \tts{Geant4Calorimeter::Hit}                \\
+\bold{File name}       & \tts{DDG4/include/Geant4Data.h}             \\
+\hline
+\bold{Component Properties:}   & defaults apply                       \\
+\hline
+\end{tabular}
+
+\newpage
+
+%=============================================================================
+\subsection{I/O Components}
+%=============================================================================
+\noindent
+
+%=============================================================================
+\subsubsection{ROOT Output "Simple"}
+\label{sec:ddg4-components-IO-ROOT-simple}
+%=============================================================================
+\noindent
+
+%=============================================================================
+\subsubsection{LCIO Output "Simple"}
+\label{sec:ddg4-components-IO-LCIO-simple}
+%=============================================================================
+\noindent
+

@@ -26,6 +26,11 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    // Forward declarations
+    class Geant4GeneratorAction;
+    class Geant4SharedGeneratorAction;
+    class Geant4GeneratorActionSequence;
+
     /// Concrete implementation of the Geant4 generator action base class
     /**
      * The Geant4GeneratorAction is called for every event.
@@ -41,6 +46,8 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4GeneratorAction : public Geant4Action {
+    public:
+      typedef Geant4SharedGeneratorAction shared_type;
     protected:
       Callback m_calls;
     public:
@@ -53,6 +60,36 @@ namespace DD4hep {
       }
     };
 
+    /// Implementation of the Geant4 shared generator action
+    /**
+     * Wrapper to share single instances of generator actions for
+     * multi-threaded purposes. The wrapper ensures the locking
+     * of the basic actions to avoid race conditions.
+     *
+     * Shared action should be 'fast'. The global lock otherwise
+     * inhibits the efficient use of the multiple threads.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_SIMULATION
+     */
+    class Geant4SharedGeneratorAction : public Geant4GeneratorAction {
+    protected:
+      /// Reference to the shared action
+      Geant4GeneratorAction* m_action;
+    public:
+      /// Standard constructor
+      Geant4SharedGeneratorAction(Geant4Context* context, const std::string& nam);
+      /// Default destructor
+      virtual ~Geant4SharedGeneratorAction();
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
+      /// Underlying object to be used during the execution of this thread
+      virtual void use(Geant4GeneratorAction* action);
+      /// User generator callback
+      virtual void operator()(G4Event* event);
+    };
+
     /// Concrete implementation of the Geant4 generator action sequence
     /**
      * The sequence dispatches the callbacks at the beginning
@@ -60,6 +97,11 @@ namespace DD4hep {
      * registered callbacks.
      *
      * The callback signature is: void operator()(G4Event* event)
+     *
+     * Note Multi-Threading issue:
+     * Neither callbacks not the action list is protected against multiple 
+     * threads calling the Geant4 callbacks!
+     * These must be protected in the user actions themselves.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -76,6 +118,12 @@ namespace DD4hep {
       Geant4GeneratorActionSequence(Geant4Context* context, const std::string& name);
       /// Default destructor
       virtual ~Geant4GeneratorActionSequence();
+      /// Set or update client context
+      virtual void updateContext(Geant4Context* ctxt);
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* thread_context);
+      /// Get an action by name
+      Geant4GeneratorAction* get(const std::string& name) const;
       /// Register primary particle generation callback. Types Q and T must be polymorph!
       template <typename Q, typename T>
       void call(Q* p, void (T::*f)(G4Event*)) {

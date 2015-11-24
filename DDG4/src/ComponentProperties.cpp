@@ -138,6 +138,11 @@ PropertyManager::~PropertyManager() {
   m_properties.clear();
 }
 
+/// Export properties of another instance
+void PropertyManager::adopt(const PropertyManager& copy)   {
+  m_properties = copy.m_properties;
+}
+
 /// Check for existence
 bool PropertyManager::exists(const std::string& name) const   {
   Properties::const_iterator i = m_properties.find(name);

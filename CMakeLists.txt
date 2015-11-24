@@ -46,7 +46,7 @@ endif()
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
 if ( DD4HEP_USE_CXX11 )
-  set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+  set ( CMAKE_CXX_FLAGS "-std=c++11 -ftls-model=global-dynamic -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
   add_definitions(-DDD4HEP_USE_CXX11)
 else()
   set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")

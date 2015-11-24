@@ -337,7 +337,7 @@ namespace DD4hep {
       }
 
       /// Post-event action callback
-      void endEvent(const G4Event*)   {
+      void endEvent()   {
         // We need to add the possibly last added hit to the collection here.
         // otherwise the last hit would be assigned to the next event and the
         // MC truth would be screwed.
@@ -349,11 +349,8 @@ namespace DD4hep {
         }
       }
       /// Pre event action callback
-      void startEvent(const G4Event* event)   {
+      void startEvent()   {
         thisSD = dynamic_cast<G4VSensitiveDetector*>(&sensitive->detector());
-        if ( event ) {
-          sensitive->print("++++++++++++++++++++++++++ START EVENT %d",event->GetEventID());
-        }
       }
     };
 
@@ -361,10 +358,18 @@ namespace DD4hep {
     template <> void Geant4SensitiveAction<TrackerWeighted>::initialize() {
       declareProperty("HitPostionCombination", m_userData.hit_position_type);
       declareProperty("CollectSingleDeposits", m_userData.single_deposit_mode);
-      eventAction().callAtBegin(&m_userData,&TrackerWeighted::startEvent);
-      eventAction().callAtEnd(&m_userData,&TrackerWeighted::endEvent);
       m_userData.e_cut = m_sensitive.energyCutoff();
       m_userData.sensitive = this;
+    }
+
+    /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
+    template <> void Geant4SensitiveAction<TrackerWeighted>::begin(G4HCofThisEvent* hce)   {
+      m_userData.startEvent();
+    }
+
+    /// G4VSensitiveDetector interface: Method invoked at the end of each event.
+    template <> void Geant4SensitiveAction<TrackerWeighted>::end(G4HCofThisEvent* hce)   {
+      m_userData.endEvent();
     }
 
     /// Define collections created by this sensitivie action object

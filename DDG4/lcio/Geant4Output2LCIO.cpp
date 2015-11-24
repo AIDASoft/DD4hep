@@ -18,6 +18,9 @@
 // Framework include files
 #include "DD4hep/VolumeManager.h"
 #include "DDG4/Geant4OutputAction.h"
+// Geant4 headers
+#include "G4Threading.hh"
+#include "G4AutoLock.hh"
 
 #include "DD4hep/LCDD.h"
 #include <G4Version.hh>
@@ -125,6 +128,9 @@ namespace DD4hep {
 using namespace DD4hep::Simulation;
 using namespace DD4hep;
 using namespace std;
+namespace {
+  G4Mutex action_mutex=G4MUTEX_INITIALIZER;
+}
 
 #include "DDG4/Factories.h"
 DECLARE_GEANT4ACTION(Geant4Output2LCIO)
@@ -139,6 +145,7 @@ Geant4Output2LCIO::Geant4Output2LCIO(Geant4Context* ctxt, const string& nam)
 
 /// Default destructor
 Geant4Output2LCIO::~Geant4Output2LCIO()  {
+  G4AutoLock protection_lock(&action_mutex);
   if ( m_file )  {
     m_file->close();
     deletePtr(m_file);
@@ -149,6 +156,7 @@ Geant4Output2LCIO::~Geant4Output2LCIO()  {
 // Callback to store the Geant4 run information
 void Geant4Output2LCIO::beginRun(const G4Run* )  {
   if ( 0 == m_file && !m_output.empty() )   {
+    G4AutoLock protection_lock(&action_mutex);
     m_file = lcio::LCFactory::getInstance()->createLCWriter();
     m_file->open(m_output,lcio::LCIO::WRITE_NEW);
   }
@@ -162,12 +170,17 @@ void Geant4Output2LCIO::endRun(const G4Run* run)  {
 /// Commit data at end of filling procedure
 void Geant4Output2LCIO::commit( OutputContext<G4Event>& /* ctxt */)   {
   lcio::LCEventImpl* e = context()->event().extension<lcio::LCEventImpl>();
-  m_file->writeEvent(e);
-  //  std::cout << " ########### Geant4Output2LCIO::commit() : writing LCIO event to file .... "  << std::endl ;
+  if ( m_file )   {
+    G4AutoLock protection_lock(&action_mutex);
+    m_file->writeEvent(e);
+    return;
+  }
+  except("+++ Failed to write output file. [Stream is not open]");
 }
 
 /// Callback to store the Geant4 run information
 void Geant4Output2LCIO::saveRun(const G4Run* run)  {
+  G4AutoLock protection_lock(&action_mutex);
   // --- write an lcio::RunHeader ---------
   lcio::LCRunHeaderImpl* rh =  new lcio::LCRunHeaderImpl;
   for (std::map< std::string, std::string >::iterator it = m_runHeader.begin(); it != m_runHeader.end(); ++it) {

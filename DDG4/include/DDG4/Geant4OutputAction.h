@@ -64,6 +64,8 @@ namespace DD4hep {
       Geant4OutputAction(Geant4Context* c, const std::string& nam);
       /// Default destructor
       virtual ~Geant4OutputAction();
+      /// Set or update client for the use in a new thread fiber
+      virtual void configureFiber(Geant4Context* ctxt);
 
       /// begin-of-event callback
       virtual void begin(const G4Event* event);

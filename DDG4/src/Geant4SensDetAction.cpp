@@ -35,6 +35,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
+#if 0
 namespace {
   Geant4ActionSD* _getSensitiveDetector(const string& name) {
     G4SDManager* mgr = G4SDManager::GetSDMpointer();
@@ -55,6 +56,7 @@ namespace {
     return action_sd;
   }
 }
+#endif
 
 /// Standard action constructor
 Geant4ActionSD::Geant4ActionSD(const std::string& nam)
@@ -238,6 +240,13 @@ Geant4SensDetActionSequence::~Geant4SensDetActionSequence() {
   InstanceCount::decrement(this);
 }
 
+/// Set or update client context
+void Geant4SensDetActionSequence::updateContext(Geant4Context* ctxt)    {
+  m_context = ctxt;
+  m_actors.updateContext(ctxt);
+  m_filters.updateContext(ctxt);
+}
+
 /// Add an actor responding to all callbacks. Sequence takes ownership.
 void Geant4SensDetActionSequence::adoptFilter(Geant4Action* action)   {
   Geant4Filter* filter = dynamic_cast<Geant4Filter*>(action);
@@ -338,7 +347,6 @@ bool Geant4SensDetActionSequence::process(G4Step* step, G4TouchableHistory* hist
  */
 void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
   m_hce = hce;
-  m_actors(ContextUpdate(context()));
   for (size_t count = 0; count < m_collections.size(); ++count) {
     const HitCollection& cr = m_collections[count];
     Geant4HitCollection* c = (*cr.second.second)(name(), cr.first, cr.second.first);
@@ -353,7 +361,6 @@ void Geant4SensDetActionSequence::begin(G4HCofThisEvent* hce) {
 void Geant4SensDetActionSequence::end(G4HCofThisEvent* hce) {
   m_end(hce);
   m_actors(&Geant4Sensitive::end, hce);
-  m_actors(ContextUpdate());
   // G4HCofThisEvent must be availible until end-event. m_hce = 0;
 }
 

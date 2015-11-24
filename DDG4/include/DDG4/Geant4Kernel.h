@@ -19,10 +19,14 @@
 #include "DDG4/Geant4Primitives.h"
 #include "DDG4/Geant4Action.h"
 
+// Geant4 headers
+#include "G4Threading.hh"
+
 // C/C++ include files
 #include <map>
 #include <string>
 #include <typeinfo>
+#include <pthread.h>
 
 // Forward declarations
 class G4RunManager;
@@ -52,6 +56,8 @@ namespace DD4hep {
     class Geant4StackingActionSequence;
     class Geant4GeneratorActionSequence;
     class Geant4PhysicsListActionSequence;
+    class Geant4DetectorConstructionSequence;
+    class Geant4UserInitializationSequence;
     class Geant4SensDetActionSequence;
     class Geant4SensDetSequences;
 
@@ -64,6 +70,7 @@ namespace DD4hep {
     class Geant4Kernel {
     public:
       typedef DD4hep::Geometry::LCDD LCDD;
+      typedef std::map<unsigned long, Geant4Kernel*> Workers;
       typedef std::map<std::string, Geant4ActionPhase*> Phases;
       typedef std::map<std::string, Geant4Action*> GlobalActions;
 
@@ -71,30 +78,38 @@ namespace DD4hep {
       /// Reference to the run manager
       G4RunManager* m_runManager;
       /// Top level control directory
-      G4UIdirectory* m_control;
+      G4UIdirectory*                      m_control;
       /// Property pool
-      PropertyManager m_properties;
+      PropertyManager                     m_properties;
       /// Reference to the Geant4 primary generator action
-      Geant4GeneratorActionSequence* m_generatorAction;
+      Geant4GeneratorActionSequence*      m_generatorAction;
       /// Reference to the Geant4 run action
-      Geant4RunActionSequence* m_runAction;
+      Geant4RunActionSequence*            m_runAction;
       /// Reference to the Geant4 event action
-      Geant4EventActionSequence* m_eventAction;
+      Geant4EventActionSequence*          m_eventAction;
       /// Reference to the Geant4 track action
-      Geant4TrackingActionSequence* m_trackingAction;
+      Geant4TrackingActionSequence*       m_trackingAction;
       /// Reference to the Geant4 step action
-      Geant4SteppingActionSequence* m_steppingAction;
+      Geant4SteppingActionSequence*       m_steppingAction;
       /// Reference to the Geant4 stacking action
-      Geant4StackingActionSequence* m_stackingAction;
+      Geant4StackingActionSequence*       m_stackingAction;
+      /// Reference to the Geant4 detector construction sequence
+      Geant4DetectorConstructionSequence* m_constructionAction;
+
       /// Reference to the Geant4 sensitive action sequences
-      Geant4SensDetSequences* m_sensDetActions;
-      /// Reference to the geant4 physics list
-      Geant4PhysicsListActionSequence* m_physicsList;
+      Geant4SensDetSequences*             m_sensDetActions;
+      /// Reference to the Geant4 physics list
+      Geant4PhysicsListActionSequence*    m_physicsList;
+      /// Reference to the user initialization object
+      Geant4UserInitializationSequence*   m_userInit;
+
       /// Reference to Geant4 track manager
       G4TrackingManager* m_trackMgr;
 
       /// Action phases
-      Phases m_phases;
+      Phases        m_phases;
+      /// Worker threads
+      Workers       m_workers;
       /// Globally registered actions
       GlobalActions m_globalActions;
       /// Globally registered filters of sensitive detectors
@@ -112,12 +127,40 @@ namespace DD4hep {
       /// Property: Client output levels
       typedef std::map<std::string,int> ClientOutputLevels;
       ClientOutputLevels m_clientLevels;
+
+      /// Property: Running in multi threaded context
+      //bool        m_multiThreaded;
+      /// Master property: Number of execution threads in multi threaded mode.
+      int         m_numThreads;
+      /// Flag: Master instance (id<0) or worker (id >= 0)
+      unsigned long      m_id, m_ident;
+      /// Parent reference
+      Geant4Kernel*      m_master;
+      Geant4Context*     m_threadContext;
+
+      bool isMaster() const  { return this == m_master; }
+      bool isWorker() const  { return this != m_master; }
+
       /// Helper to register an action sequence
       template <typename C> bool registerSequence(C*& seq, const std::string& name);
 
+#ifndef __CINT__
+      /// Standard constructor for workers
+      Geant4Kernel(LCDD& lcdd, Geant4Kernel* m, unsigned long identifier);
+#endif
+
     public:
-      /// Standard constructor
+      /// Standard constructor for the master instance
       Geant4Kernel(LCDD& lcdd);
+
+      /// Thread's master context
+      Geant4Context* workerContext();
+
+      /// Thread's master context
+      Geant4Kernel& master()  const  { return *m_master; }
+
+      //bool isMultiThreaded() const { return m_multiThreaded; }
+      bool isMultiThreaded() const { return m_numThreads > 0; }
     public:
 
       /// Embedded helper class to facilitate map access to the phases.
@@ -145,6 +188,7 @@ namespace DD4hep {
       };
       /// Default destructor
       virtual ~Geant4Kernel();
+
 #ifndef __CINT__
       /// Instance accessor
       static Geant4Kernel& instance(LCDD& lcdd);
@@ -173,12 +217,16 @@ namespace DD4hep {
       void setTrackMgr(G4TrackingManager* mgr)  {
         m_trackMgr = mgr;
       }
-      /// Access to the Geant4 run manager
-      G4RunManager& runManager();
       /// Access the command directory
       const std::string& directoryName() const {
         return m_controlName;
       }
+      /// Access worker identifier
+      unsigned long id()  const  {
+        return m_ident;
+      }
+      /// Access to the Geant4 run manager
+      G4RunManager& runManager();
       /// Declare property
       template <typename T> Geant4Kernel& declareProperty(const std::string& nam, T& val);
       /// Declare property
@@ -288,6 +336,13 @@ namespace DD4hep {
         return *stackingAction(true);
       }
 
+      /// Access detector construcion action sequence (geometry+sensitives+field)
+      Geant4DetectorConstructionSequence* detectorConstruction(bool create);
+      /// Access detector construcion action sequence (geometry+sensitives+field)
+      Geant4DetectorConstructionSequence& detectorConstruction() {
+        return *detectorConstruction(true);
+      }
+
       /// Access to the sensitive detector sequences from the kernel object
       Geant4SensDetSequences& sensitiveActions() const;
       /// Access to the sensitive detector action from the kernel object
@@ -299,19 +354,33 @@ namespace DD4hep {
       Geant4PhysicsListActionSequence& physicsList() {
         return *physicsList(true);
       }
+      /// Access to the user initialization object
+      Geant4UserInitializationSequence* userInitialization(bool create);
+      /// Access to the user initialization object
+      Geant4UserInitializationSequence& userInitialization() {
+        return *userInitialization(true);
+      }
       /// Construct detector geometry using lcdd plugin
       void loadGeometry(const std::string& compact_file);
 
+      /** Geant4 Multi threading support */
+      /// Create identified worker instance
+      Geant4Kernel& createWorker();
+      /// Access worker instance by it's identifier
+      Geant4Kernel& worker(unsigned long thread_identifier);
+      /// Access number of workers
+      int numWorkers() const;
+
       /// Run the simulation: Configure Geant4
-      void configure();
+      int configure();
       /// Run the simulation: Initialize Geant4
-      void initialize();
+      int initialize();
       /// Run the simulation: Simulate the number of events given by the property "NumEvents"
-      void run();
+      int run();
       /// Run the simulation: Simulate the number of events "num_events" and modify the property "NumEvents"
-      void runEvents(int num_events);
+      int runEvents(int num_events);
       /// Run the simulation: Terminate Geant4
-      void terminate();
+      int terminate();
       /// Load XML file 
       void loadXML(const char* fname);
     };

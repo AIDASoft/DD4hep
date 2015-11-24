@@ -19,6 +19,7 @@
 #include "DD4hep/InstanceCount.h"
 
 #include "DDG4/Geant4Kernel.h"
+#include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4ActionPhase.h"
 
 #include "DDG4/Geant4RunAction.h"
@@ -28,10 +29,16 @@
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4StackingAction.h"
 #include "DDG4/Geant4GeneratorAction.h"
+#include "DDG4/Geant4DetectorConstruction.h"
+#include "DDG4/Geant4UserInitialization.h"
 #include "DDG4/Geant4SensDetAction.h"
 
 // Geant4 include files
+#ifdef G4MULTITHREADED
+#include "G4MTRunManager.hh"
+#else
 #include "G4RunManager.hh"
+#endif
 #include "G4UIdirectory.hh"
 
 // C/C++ include files
@@ -61,9 +68,9 @@ Geant4Kernel::PhaseSelector& Geant4Kernel::PhaseSelector::operator=(const PhaseS
 
 /// Phase access to the map
 Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& nam) const {
-  Geant4ActionPhase* phase = m_kernel->getPhase(nam);
-  if (phase) {
-    return *phase;
+  Geant4ActionPhase* action_phase = m_kernel->getPhase(nam);
+  if ( action_phase ) {
+    return *action_phase;
   }
   throw runtime_error(format("Geant4Kernel", "Attempt to access the nonexisting phase '%s'", nam.c_str()));
 }
@@ -71,44 +78,73 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
   : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
-    m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_sensDetActions(0),
-    m_physicsList(0), m_lcdd(lcdd_ref), phase(this) {
-#if 0
-  registerSequence(m_runAction, "RunAction");
-  registerSequence(m_eventAction, "EventAction");
-  registerSequence(m_steppingAction, "SteppingAction");
-  registerSequence(m_trackingAction, "TrackingAction");
-  registerSequence(m_stackingAction, "StackingAction");
-  registerSequence(m_generatorAction,"GeneratorAction");
-#endif
+    m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_constructionAction(0),
+    m_sensDetActions(0), m_physicsList(0), m_userInit(0), m_lcdd(lcdd_ref), 
+    m_numThreads(0), m_id(pthread_self()), m_master(this), phase(this)  
+{
   m_sensDetActions = new Geant4SensDetSequences();
   m_lcdd.addExtension < Geant4Kernel > (this);
+  m_ident = -1;
   declareProperty("UI",m_uiName);
-  declareProperty("OutputLevel",m_outputLevel = DEBUG);
-  declareProperty("NumEvents",m_numEvent = 10);
-  declareProperty("OutputLevels",m_clientLevels);
+  declareProperty("OutputLevel",    m_outputLevel = DEBUG);
+  declareProperty("NumEvents",      m_numEvent = 10);
+  declareProperty("OutputLevels",   m_clientLevels);
+  declareProperty("NumberOfThreads",m_numThreads);
+  //declareProperty("MultiThreaded",  m_multiThreaded=false);
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
-  m_control->SetGuidance("Control for all named Geant4 actions");
+  m_control->SetGuidance("Control for named Geant4 actions");
+  m_threadContext = new Geant4Context(this);
+  InstanceCount::increment(this);
+}
+
+/// Standard constructor
+Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref, Geant4Kernel* m, unsigned long ident)
+  : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
+    m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_constructionAction(0),
+    m_sensDetActions(0), m_physicsList(0), m_userInit(0), m_lcdd(lcdd_ref), m_id(ident), 
+    m_master(m), phase(this)
+{
+  char text[64];
+  m_numThreads     = 1;
+  //m_multiThreaded  = m_master->m_multiThreaded;
+  m_ident          = m_master->m_workers.size();
+  m_sensDetActions = new Geant4SensDetSequences();
+  declareProperty("UI",m_uiName = m_master->m_uiName);
+  declareProperty("OutputLevel", m_outputLevel = m_master->m_outputLevel);
+  declareProperty("OutputLevels",m_clientLevels = m_master->m_clientLevels);
+  ::snprintf(text,sizeof(text),"/ddg4.%d/",(int)(m_master->m_workers.size()));
+  m_controlName = text;
+  m_control = new G4UIdirectory(m_controlName.c_str());
+  m_control->SetGuidance("Control for thread specific Geant4 actions");
+  m_threadContext = new Geant4Context(this);
   InstanceCount::increment(this);
 }
 
 /// Default destructor
 Geant4Kernel::~Geant4Kernel() {
+  destroyObjects(m_workers)();
+  if ( isMaster() )  {
+    releaseObjects(m_globalFilters)();
+    releaseObjects(m_globalActions)();
+  }
   destroyPhases();
-  for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
-  for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
   releasePtr (m_physicsList);
+  releasePtr (m_constructionAction);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
   releasePtr (m_trackingAction);
   releasePtr (m_eventAction);
   releasePtr (m_generatorAction);
   releasePtr (m_runAction);
+  releasePtr (m_userInit);
   deletePtr  (m_sensDetActions);
-  m_lcdd.removeExtension < Geant4Kernel > (false);
-  m_lcdd.destroyInstance();
+  deletePtr  (m_threadContext);
+  if ( isMaster() )  {
+    m_lcdd.removeExtension < Geant4Kernel > (false);
+    m_lcdd.destroyInstance();
+  }
   InstanceCount::decrement(this);
 }
 
@@ -118,10 +154,58 @@ Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
   return obj;
 }
 
+/// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
+Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
+  Geant4Kernel* kernel = lcdd.extension<Geant4Kernel>();
+  if (!kernel) {
+    throw runtime_error(format("Geant4Kernel", "DDG4: The LCDD object has no registered "
+                               "extension of type Geant4Kernel [No-Extension]"));
+  }
+  return *kernel;
+}
+
+Geant4Context* Geant4Kernel::workerContext()   {
+  if ( m_threadContext ) return m_threadContext;
+  throw runtime_error(format("Geant4Kernel", "DDG4: Master kernel object has no thread context! [Invalid Handle]"));
+}
+
+/// Create identified worker instance
+Geant4Kernel& Geant4Kernel::createWorker()   {
+  if ( isMaster() )   {
+    unsigned long identifier = ::pthread_self();
+    Geant4Kernel* w = new Geant4Kernel(m_lcdd, this, identifier);
+    m_workers[identifier] = w;
+    printout(INFO,"Geant4Kernel","+++ Created worker instance id=%ul",identifier);
+    return *w;
+  }
+  throw runtime_error(format("Geant4Kernel", "DDG4: Only the master instance may create workers."));
+}
+
+/// Access worker instance by it's identifier
+Geant4Kernel& Geant4Kernel::worker(unsigned long identifier)    {
+  Workers::iterator i = m_workers.find(identifier);
+  if ( i != m_workers.end() )   {
+    return *((*i).second);
+  }
+  else if ( !isMultiThreaded() )  {
+    unsigned long self = ::pthread_self();
+    if ( identifier == self )  {
+      return *this;
+    }
+  }
+  throw runtime_error(format("Geant4Kernel", "DDG4: The Kernel object 0x%p does not exists!",(void*)identifier));
+}
+
+/// Access number of workers
+int Geant4Kernel::numWorkers() const   {
+  return m_workers.size();
+}
+
 void Geant4Kernel::printProperties()  const  {
-  printout(ALWAYS,"Geant4Kernel","OutputLevel:  %d",m_outputLevel);
-  printout(ALWAYS,"Geant4Kernel","UI:           %s",m_uiName.c_str());
+  printout(ALWAYS,"Geant4Kernel","OutputLevel:  %d", m_outputLevel);
+  printout(ALWAYS,"Geant4Kernel","UI:           %s", m_uiName.c_str());
   printout(ALWAYS,"Geant4Kernel","NumEvents:    %ld",m_numEvent);
+  printout(ALWAYS,"Geant4Kernel","NumThreads:   %d", m_numThreads);
   for(ClientOutputLevels::const_iterator i=m_clientLevels.begin(); i!=m_clientLevels.end();++i)  {
     printout(ALWAYS,"Geant4Kernel","OutputLevel[%s]:  %d",(*i).first.c_str(),(*i).second);
   }
@@ -135,16 +219,6 @@ bool Geant4Kernel::hasProperty(const std::string& name) const    {
 /// Access single property
 DD4hep::Property& Geant4Kernel::property(const std::string& name)   {
   return properties()[name];
-}
-
-/// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
-Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
-  Geant4Kernel* kernel = lcdd.extension<Geant4Kernel>();
-  if (!kernel) {
-    throw runtime_error(format("Geant4Kernel", "DDG4: The LCDD object has no registered "
-                               "extension of type Geant4Kernel [No-Extension]"));
-  }
-  return *kernel;
 }
 
 /// Fill cache with the global output level of a named object. Must be set before instantiation
@@ -168,9 +242,30 @@ DD4hep::PrintLevel Geant4Kernel::setOutputLevel(PrintLevel new_level)  {
 
 /// Access to the Geant4 run manager
 G4RunManager& Geant4Kernel::runManager() {
-  if (m_runManager)
+  if ( m_runManager )  {
     return *m_runManager;
-  return *(m_runManager = new G4RunManager);
+  }
+  else if ( isMaster() )   {
+#ifdef G4MULTITHREADED
+    if ( m_numThreads > 0 )   {
+      printout(WARNING,"Geant4Kernel","+++ Multi-threaded mode requested with %d worker threads.",m_numThreads);
+      G4MTRunManager* run_mgr = new G4MTRunManager;
+      run_mgr->SetNumberOfThreads(m_numThreads);
+      m_runManager = run_mgr;
+      return *m_runManager;
+    }
+#endif
+    if ( m_numThreads > 0 )   {
+      printout(WARNING,"Geant4Kernel","+++ Multi-threaded mode requested, "
+               "but not supported by this compilation of Geant4.");
+      printout(WARNING,"Geant4Kernel","+++ Falling back to single threaded mode.");
+      m_numThreads = 0;
+    }
+    return *(m_runManager = new G4RunManager);
+  }
+  throw runtime_error(format("Geant4Kernel", 
+                             "DDG4: Only the master thread may instantiate "
+                             "a G4RunManager object!"));
 }
 
 /// Construct detector geometry using lcdd plugin
@@ -186,17 +281,17 @@ void Geant4Kernel::loadXML(const char* fname) {
   m_lcdd.apply("DD4hepXMLLoader", 1, (char**) args);
 }
 
-void Geant4Kernel::configure() {
-  Geant4Exec::configure(*this);
+int Geant4Kernel::configure() {
+  return Geant4Exec::configure(*this);
 }
 
-void Geant4Kernel::initialize() {
-  Geant4Exec::initialize(*this);
+int Geant4Kernel::initialize() {
+  return Geant4Exec::initialize(*this);
 }
 
-void Geant4Kernel::run() {
+int Geant4Kernel::run() {
   try  {
-    Geant4Exec::run(*this);
+    return Geant4Exec::run(*this);
   }
   catch(const exception& e)   {
     printout(FATAL,"Geant4Kernel","+++ Exception while simulating:%s",e.what());
@@ -204,20 +299,22 @@ void Geant4Kernel::run() {
   catch(...)   {
     printout(FATAL,"Geant4Kernel","+++ UNKNOWN exception while simulating.");
   }
+  return 0;
 }
 
-void Geant4Kernel::runEvents(int num_events) {
+int Geant4Kernel::runEvents(int num_events) {
   m_numEvent = num_events;
-  Geant4Exec::run(*this);
+  return Geant4Exec::run(*this);
 }
 
-void Geant4Kernel::terminate() {
+int Geant4Kernel::terminate() {
   Geant4Exec::terminate(*this);
   destroyPhases();
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
   releasePtr (m_physicsList);
+  releasePtr (m_constructionAction);
   releasePtr (m_stackingAction);
   releasePtr (m_steppingAction);
   releasePtr (m_trackingAction);
@@ -226,12 +323,12 @@ void Geant4Kernel::terminate() {
   releasePtr (m_runAction);
   deletePtr  (m_sensDetActions);
   //return *this;
+  return 1;
 }
 
 template <class C> bool Geant4Kernel::registerSequence(C*& seq, const std::string& name) {
   if (!name.empty()) {
-    Geant4Context ctxt(this);
-    seq = new C(&ctxt, name);
+    seq = new C(workerContext(), name);
     seq->installMessengers();
     return true;
   }
@@ -338,8 +435,7 @@ Geant4ActionPhase* Geant4Kernel::addPhase(const std::string& nam, const type_inf
                                           const type_info& arg2, bool throw_on_exist) {
   Phases::const_iterator i = m_phases.find(nam);
   if (i == m_phases.end()) {
-    Geant4Context ctxt(this);
-    Geant4ActionPhase* p = new Geant4ActionPhase(&ctxt, nam, arg0, arg1, arg2);
+    Geant4ActionPhase* p = new Geant4ActionPhase(workerContext(), nam, arg0, arg1, arg2);
     m_phases.insert(make_pair(nam, p));
     return p;
   }
@@ -408,6 +504,13 @@ Geant4StackingActionSequence* Geant4Kernel::stackingAction(bool create) {
   return m_stackingAction;
 }
 
+/// Access detector construcion action sequence (geometry+sensitives+field)
+Geant4DetectorConstructionSequence* Geant4Kernel::detectorConstruction(bool create)  {
+  if (!m_constructionAction && create)
+    registerSequence(m_constructionAction, "StackingAction");
+  return m_constructionAction;
+}
+
 /// Access to the sensitive detector sequences from the kernel object
 Geant4SensDetSequences& Geant4Kernel::sensitiveActions() const {
   return *m_sensDetActions;
@@ -416,10 +519,10 @@ Geant4SensDetSequences& Geant4Kernel::sensitiveActions() const {
 /// Access to the sensitive detector action from the kernel object
 Geant4SensDetActionSequence* Geant4Kernel::sensitiveAction(const string& nam) {
   Geant4SensDetActionSequence* ptr = m_sensDetActions->find(nam);
-  if (ptr)
+  if (ptr)   {
     return ptr;
-  Geant4Context ctxt(this);
-  ptr = new Geant4SensDetActionSequence(&ctxt, nam);
+  }
+  ptr = new Geant4SensDetActionSequence(workerContext(), nam);
   m_sensDetActions->insert(nam, ptr);
   return ptr;
 }
@@ -429,4 +532,17 @@ Geant4PhysicsListActionSequence* Geant4Kernel::physicsList(bool create) {
   if (!m_physicsList && create)
     registerSequence(m_physicsList, "PhysicsList");
   return m_physicsList;
+}
+
+/// Access to the physics list
+Geant4UserInitializationSequence* Geant4Kernel::userInitialization(bool create) {
+  if ( !m_userInit && create )   {
+    if ( isMaster() )
+      registerSequence(m_userInit, "UserInitialization");
+    else 
+      throw runtime_error(format("Geant4Kernel", 
+                                 "DDG4: Only the master thread may initialize "
+                                 "a user initialization object!"));
+  }
+  return m_userInit;
 }

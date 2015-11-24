@@ -21,7 +21,7 @@
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
-static G4Allocator<Geant4HitWrapper> HitWrapperAllocator;
+G4ThreadLocal G4Allocator<Geant4HitWrapper>* HitWrapperAllocator = 0;
 
 Geant4HitWrapper::InvalidHit::~InvalidHit() {
 }
@@ -47,12 +47,15 @@ Geant4HitWrapper::~Geant4HitWrapper() {
 
 /// Geant4 required object allocator
 void* Geant4HitWrapper::operator new(size_t) {
-  return HitWrapperAllocator.MallocSingle();
+  if ( HitWrapperAllocator )
+    return HitWrapperAllocator->MallocSingle();
+  HitWrapperAllocator = new G4Allocator<Geant4HitWrapper>;
+  return HitWrapperAllocator->MallocSingle();
 }
 
 /// Geat4 required object destroyer
 void Geant4HitWrapper::operator delete(void *p) {
-  HitWrapperAllocator.FreeSingle((Geant4HitWrapper*) p);
+  HitWrapperAllocator->FreeSingle((Geant4HitWrapper*) p);
 }
 
 /// Pointer/Object release

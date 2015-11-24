@@ -52,13 +52,11 @@
 #include "TMath.h"
 
 // Geant4 include files
-#include "G4VSensitiveDetector.hh"
 #include "G4VisAttributes.hh"
 #include "G4ProductionCuts.hh"
 #include "G4VUserRegionInformation.hh"
 
 #include "G4Element.hh"
-#include "G4SDManager.hh"
 #include "G4Box.hh"
 #include "G4Trd.hh"
 #include "G4Tubs.hh"
@@ -95,10 +93,9 @@
 #include <sstream>
 
 using namespace DD4hep::Simulation;
-using namespace DD4hep::Simulation::Geant4GeometryMaps;
+//using namespace DD4hep::Simulation::Geant4GeometryMaps;
 using namespace DD4hep::Geometry;
 using namespace DD4hep;
-using namespace CLHEP;
 using namespace std;
 
 #include "DDG4/Geant4AssemblyVolume.h"
@@ -126,13 +123,13 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
   unsigned int  numberOfDaughters;
 
   if( copyNumBase == 0 )
-    {
-      numberOfDaughters = pMotherLV->GetNoDaughters();
-    }
+  {
+    numberOfDaughters = pMotherLV->GetNoDaughters();
+  }
   else
-    {
-      numberOfDaughters = copyNumBase;
-    }
+  {
+    numberOfDaughters = copyNumBase;
+  }
 
   // We start from the first available index
   //
@@ -156,58 +153,58 @@ void Geant4AssemblyVolume::imprint(Geant4GeometryInfo& info,
     G4Transform3D Tfinal = transformation * Ta;
 
     if ( triplets[i].GetVolume() )
-      {
-        // Generate the unique name for the next PV instance
-        // The name has format:
-        //
-        // av_WWW_impr_XXX_YYY_ZZZ
-        // where the fields mean:
-        // WWW - assembly volume instance number
-        // XXX - assembly volume imprint number
-        // YYY - the name of a log. volume we want to make a placement of
-        // ZZZ - the log. volume index inside the assembly volume
-        //
-        std::stringstream pvName;
-        pvName << "av_"
-               << GetAssemblyID()
-               << "_impr_"
-               << GetImprintsCount()
-               << "_"
-               << triplets[i].GetVolume()->GetName().c_str()
-               << "_pv_"
-               << i
-               << std::ends;
+    {
+      // Generate the unique name for the next PV instance
+      // The name has format:
+      //
+      // av_WWW_impr_XXX_YYY_ZZZ
+      // where the fields mean:
+      // WWW - assembly volume instance number
+      // XXX - assembly volume imprint number
+      // YYY - the name of a log. volume we want to make a placement of
+      // ZZZ - the log. volume index inside the assembly volume
+      //
+      std::stringstream pvName;
+      pvName << "av_"
+             << GetAssemblyID()
+             << "_impr_"
+             << GetImprintsCount()
+             << "_"
+             << triplets[i].GetVolume()->GetName().c_str()
+             << "_pv_"
+             << i
+             << std::ends;
 
-        // Generate a new physical volume instance inside a mother
-        // (as we allow 3D transformation use G4ReflectionFactory to
-        //  take into account eventual reflection)
-        //
-        G4PhysicalVolumesPair pvPlaced
-          = G4ReflectionFactory::Instance()->Place( Tfinal,
-                                                    pvName.str().c_str(),
-                                                    triplets[i].GetVolume(),
-                                                    pMotherLV,
-                                                    false,
-                                                    numberOfDaughters + i,
-                                                    surfCheck );
+      // Generate a new physical volume instance inside a mother
+      // (as we allow 3D transformation use G4ReflectionFactory to
+      //  take into account eventual reflection)
+      //
+      G4PhysicalVolumesPair pvPlaced
+        = G4ReflectionFactory::Instance()->Place( Tfinal,
+                                                  pvName.str().c_str(),
+                                                  triplets[i].GetVolume(),
+                                                  pMotherLV,
+                                                  false,
+                                                  numberOfDaughters + i,
+                                                  surfCheck );
 
-        // Register the physical volume created by us so we can delete it later
-        //
-        fPVStore.push_back( pvPlaced.first );
-        info.g4VolumeImprints[vol].push_back(make_pair(new_chain,pvPlaced.first));
+      // Register the physical volume created by us so we can delete it later
+      //
+      fPVStore.push_back( pvPlaced.first );
+      info.g4VolumeImprints[vol].push_back(make_pair(new_chain,pvPlaced.first));
 #if 0
-        cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
-             << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
-             << DetectorTools::placementPath(new_chain) << endl;
-        cout << endl;
+      cout << " Assembly:Parent:" << parent->GetName() << " " << node->GetName()
+           << " " <<  (void*)node << " G4:" << pvName.str() << " Daughter:"
+           << DetectorTools::placementPath(new_chain) << endl;
+      cout << endl;
 #endif
 
-        if ( pvPlaced.second )  {
-          G4Exception("G4AssemblyVolume::MakeImprint(..)", "GeomVol0003", FatalException,
-                      "Fancy construct popping new mother from the stack!");
-          //fPVStore.push_back( pvPlaced.second );
-        }
+      if ( pvPlaced.second )  {
+        G4Exception("G4AssemblyVolume::MakeImprint(..)", "GeomVol0003", FatalException,
+                    "Fancy construct popping new mother from the stack!");
+        //fPVStore.push_back( pvPlaced.second );
       }
+    }
     else if ( triplets[i].GetAssembly() )  {
       // Place volumes in this assembly with composed transformation
       imprint(info, parent, new_chain, (Geant4AssemblyVolume*)triplets[i].GetAssembly(), pMotherLV, Tfinal, i*100+copyNumBase, surfCheck );
@@ -266,7 +263,7 @@ namespace {
 
 /// Initializing Constructor
 Geant4Converter::Geant4Converter(LCDD& lcdd_ref)
-: Geant4Mapping(lcdd_ref), m_checkOverlaps(true) {
+  : Geant4Mapping(lcdd_ref), m_checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
   m_outputLevel = PrintLevel(printLevel() - 1);
@@ -274,7 +271,7 @@ Geant4Converter::Geant4Converter(LCDD& lcdd_ref)
 
 /// Initializing Constructor
 Geant4Converter::Geant4Converter(LCDD& lcdd_ref, PrintLevel level)
-: Geant4Mapping(lcdd_ref), m_checkOverlaps(true) {
+  : Geant4Mapping(lcdd_ref), m_checkOverlaps(true) {
   this->Geant4Mapping::init();
   m_propagateRegions = true;
   m_outputLevel = level;
@@ -319,12 +316,12 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
   if (!mat) {
     mat = G4Material::GetMaterial(name, false);
     if (!mat) {
-      TGeoMaterial* m = medium->GetMaterial();
+      TGeoMaterial* material = medium->GetMaterial();
       G4State state = kStateUndefined;
-      double density = m->GetDensity() * (CLHEP::gram / CLHEP::cm3);
+      double density = material->GetDensity() * (CLHEP::gram / CLHEP::cm3);
       if (density < 1e-25)
         density = 1e-25;
-      switch (m->GetState()) {
+      switch (material->GetState()) {
       case TGeoMaterial::kMatStateSolid:
         state = kStateSolid;
         break;
@@ -339,12 +336,13 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         state = kStateUndefined;
         break;
       }
-      if (m->IsMixture()) {
+      if (material->IsMixture()) {
         double A_total = 0.0;
         double W_total = 0.0;
-        TGeoMixture* mix = (TGeoMixture*) m;
+        TGeoMixture* mix = (TGeoMixture*) material;
         int nElements = mix->GetNelements();
-        mat = new G4Material(name, density, nElements, state, m->GetTemperature(), m->GetPressure());
+        mat = new G4Material(name, density, nElements, state, 
+                             material->GetTemperature(), material->GetPressure());
         for (int i = 0; i < nElements; ++i)  {
           A_total += (mix->GetAmixt())[i];
           W_total += (mix->GetWmixt())[i];
@@ -362,10 +360,11 @@ void* Geant4Converter::handleMaterial(const string& name, Material medium) const
         }
       }
       else {
-        double z = m->GetZ(), a = m->GetA();
+        double z = material->GetZ(), a = material->GetA();
         if ( z < 1.0000001 ) z = 1.0;
         if ( a < 0.5000001 ) a = 1.0;
-        mat = new G4Material(name, z, a, density, state, m->GetTemperature(), m->GetPressure());
+        mat = new G4Material(name, z, a, density, state, 
+                             material->GetTemperature(), material->GetPressure());
       }
       stringstream str;
       str << (*mat);
@@ -504,28 +503,28 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
       TGeoShape* ls = boolean->GetLeftShape();
       TGeoShape* rs = boolean->GetRightShape();
       if (strcmp(ls->ClassName(), "TGeoScaledShape") == 0 &&
-	  strcmp(rs->ClassName(), "TGeoBBox") == 0) {
-	if (strcmp(((TGeoScaledShape *)ls)->GetShape()->ClassName(), "TGeoSphere") == 0) {
-	  if (oper == TGeoBoolNode::kGeoIntersection) {
-	    TGeoScaledShape* lls = (TGeoScaledShape *)ls;
-	    TGeoBBox* rrs = (TGeoBBox*)rs;
-	    double sx = lls->GetScale()->GetScale()[0];
-	    double sy = lls->GetScale()->GetScale()[1];
-	    double radius = ((TGeoSphere *)lls->GetShape())->GetRmax();
-	    double dz = rrs->GetDZ();
-	    double zorig = rrs->GetOrigin()[2];
-	    double zcut2 = dz + zorig;
-	    double zcut1 = 2 * zorig - zcut2;
-	    solid = new G4Ellipsoid(name,
-				    sx * radius * CM_2_MM,
-				    sy * radius * CM_2_MM,
-				    radius * CM_2_MM,
-				    zcut1 * CM_2_MM,
-				    zcut2 * CM_2_MM);
-	    data().g4Solids[shape] = solid;
-	    return solid;
-	  }
-	}
+          strcmp(rs->ClassName(), "TGeoBBox") == 0) {
+        if (strcmp(((TGeoScaledShape *)ls)->GetShape()->ClassName(), "TGeoSphere") == 0) {
+          if (oper == TGeoBoolNode::kGeoIntersection) {
+            TGeoScaledShape* lls = (TGeoScaledShape *)ls;
+            TGeoBBox* rrs = (TGeoBBox*)rs;
+            double sx = lls->GetScale()->GetScale()[0];
+            double sy = lls->GetScale()->GetScale()[1];
+            double radius = ((TGeoSphere *)lls->GetShape())->GetRmax();
+            double dz = rrs->GetDZ();
+            double zorig = rrs->GetOrigin()[2];
+            double zcut2 = dz + zorig;
+            double zcut1 = 2 * zorig - zcut2;
+            solid = new G4Ellipsoid(name,
+                                    sx * radius * CM_2_MM,
+                                    sy * radius * CM_2_MM,
+                                    radius * CM_2_MM,
+                                    zcut1 * CM_2_MM,
+                                    zcut2 * CM_2_MM);
+            data().g4Solids[shape] = solid;
+            return solid;
+          }
+        }
       }
 
       if (m->IsRotation()) {
@@ -561,7 +560,7 @@ void* Geant4Converter::handleSolid(const string& name, const TGeoShape* shape) c
 /// Dump logical volume in GDML format to output stream
 void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume) const {
   Geant4GeometryInfo& info = data();
-  VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
+  Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(volume);
   if (volIt == info.g4Volumes.end() ) {
     const TGeoVolume* v = volume;
     Volume _v = Ref_t(v);
@@ -572,17 +571,6 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
     G4Material* medium = 0;
     bool assembly = s->IsA() == TGeoShapeAssembly::Class() || v->IsA() == TGeoVolumeAssembly::Class();
 
-    SensitiveDetector det = _v.sensitiveDetector();
-    G4VSensitiveDetector* sd = 0;
-
-    if (det.isValid()) {
-      sd = info.g4SensDets[det.ptr()];
-      if (!sd) {
-        throw runtime_error("G4Cnv::volume[" + name + "]:    + FATAL Failed to "
-                            "access Geant4 sensitive detector.");
-      }
-      sd->Activate(true);
-    }
     LimitSet lim = _v.limitSet();
     G4UserLimits* user_limits = 0;
     if (lim.isValid()) {
@@ -607,8 +595,8 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       }
     }
     PrintLevel lvl = m_outputLevel; //string(det.name())=="SiTrackerBarrel" ? WARNING : m_outputLevel;
-    printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s sensitive:%s", n.c_str(), v,
-             s->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly), yes_no(det.isValid()));
+    printout(lvl, "Geant4Converter", "++ Convert Volume %-32s: %p %s/%s assembly:%s",
+             n.c_str(), v, s->IsA()->GetName(), v->IsA()->GetName(), yes_no(assembly));
 
     if (assembly) {
       //info.g4AssemblyVolumes[v] = new Geant4AssemblyVolume();
@@ -622,20 +610,18 @@ void* Geant4Converter::handleVolume(const string& name, const TGeoVolume* volume
       throw runtime_error("G4Converter: No Geant4 material present for volume:" + n);
     }
     if (user_limits) {
-      printout(m_outputLevel, "Geant4Converter", "++ Volume     + Apply LIMITS settings:%-24s to volume %s.", lim.name(), _v.name());
+      printout(m_outputLevel, "Geant4Converter", "++ Volume     + Apply LIMITS settings:%-24s to volume %s.",
+               lim.name(), _v.name());
     }
-    G4LogicalVolume* vol = new G4LogicalVolume(solid, medium, n, 0, sd, user_limits);
+    G4LogicalVolume* vol = new G4LogicalVolume(solid, medium, n, 0, 0, user_limits);
     if (region) {
-      printout(m_outputLevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %s to volume %s.", reg.name(), _v.name());
+      printout(m_outputLevel, "Geant4Converter", "++ Volume     + Apply REGION settings: %s to volume %s.",
+               reg.name(), _v.name());
       vol->SetRegion(region);
       region->AddRootLogicalVolume(vol);
     }
     if (vis_attr) {
       vol->SetVisAttributes(vis_attr);
-    }
-    if (sd) {
-      printout(m_outputLevel, "Geant4Converter", "++ Volume:    + %s <> %s Solid:%s Mat:%s SD:%s", name.c_str(), vol->GetName().c_str(),
-               solid->GetName().c_str(), medium->GetName().c_str(), sd->GetName().c_str());
     }
     info.g4Volumes[v] = vol;
     printout(m_outputLevel, "Geant4Converter", "++ Volume     + %s converted: %p ---> G4: %p", n.c_str(), v, vol);
@@ -678,7 +664,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
       TGeoMatrix* tr = d->GetMatrix();
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
       if ( dau_vol->IsA() == TGeoVolumeAssembly::Class() )  {
-        AssemblyMap::iterator assIt = info.g4AssemblyVolumes.find(d);
+        Geant4GeometryMaps::AssemblyMap::iterator assIt = info.g4AssemblyVolumes.find(d);
         if ( assIt == info.g4AssemblyVolumes.end() )  {
           printout(FATAL, "Geant4Converter", "+++ Invalid child assembly at %s : %d  parent: %s child:%s",
                    __FILE__, __LINE__, name.c_str(), d->GetName());
@@ -690,7 +676,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
                  transform.dx(), transform.dy(), transform.dz());
       }
       else   {
-        VolumeMap::iterator volIt = info.g4Volumes.find(dau_vol);
+        Geant4GeometryMaps::VolumeMap::iterator volIt = info.g4Volumes.find(dau_vol);
         if ( volIt == info.g4Volumes.end() )  {
           printout(FATAL, "Geant4Converter", "+++ Invalid child volume at %s : %d  parent: %s child:%s",
                    __FILE__, __LINE__, name.c_str(), d->GetName());
@@ -710,7 +696,7 @@ void* Geant4Converter::handleAssembly(const std::string& name, const TGeoNode* n
 /// Dump volume placement in GDML format to output stream
 void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node) const {
   Geant4GeometryInfo& info = data();
-  PlacementMap::const_iterator g4it = info.g4Placements.find(node);
+  Geant4GeometryMaps::PlacementMap::const_iterator g4it = info.g4Placements.find(node);
   G4VPhysicalVolume* g4 = (g4it == info.g4Placements.end()) ? 0 : (*g4it).second;
   if (!g4) {
     TGeoVolume* mot_vol = node->GetMotherVolume();
@@ -729,7 +715,7 @@ void* Geant4Converter::handlePlacement(const string& name, const TGeoNode* node)
       bool node_is_assembly = vol->IsA() == TGeoVolumeAssembly::Class();
       bool mother_is_assembly = mot_vol ? mot_vol->IsA() == TGeoVolumeAssembly::Class() : false;
       MyTransform3D transform(tr->GetTranslation(),tr->IsRotation() ? tr->GetRotationMatrix() : s_identity_rot);
-      VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
+      Geant4GeometryMaps::VolumeMap::const_iterator volIt = info.g4Volumes.find(mot_vol);
 
       if ( mother_is_assembly )   {
         //
@@ -805,8 +791,8 @@ void* Geant4Converter::handleRegion(Region region, const set<const TGeoVolume*>&
       LimitSet ls = m_lcdd.limitSet(nam);
       if (ls.isValid()) {
         bool found = false;
-        const LimitMap& lm = data().g4Limits;
-        for (LimitMap::const_iterator j = lm.begin(); j != lm.end(); ++j) {
+        const Geant4GeometryMaps::LimitMap& lm = data().g4Limits;
+        for (Geant4GeometryMaps::LimitMap::const_iterator j = lm.begin(); j != lm.end(); ++j) {
           if (nam == (*j).first->GetName()) {
             g4->SetUserLimits((*j).second);
             found = true;
@@ -846,35 +832,6 @@ void* Geant4Converter::handleLimitSet(LimitSet limitset, const set<const TGeoVol
         throw runtime_error("Unknown Geant4 user limit: " + l.toString());
     }
     data().g4Limits[limitset] = g4;
-  }
-  return g4;
-}
-
-/// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-void* Geant4Converter::handleSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
-  Geant4GeometryInfo& info = data();
-  G4VSensitiveDetector* g4 = info.g4SensDets[sens_det];
-  if (!g4) {
-    SensitiveDetector sd = Ref_t(sens_det);
-    string type = sd.type(), name = sd.name();
-    g4 = PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
-    if (!g4) {
-      string tmp = type;
-      tmp[0] = ::toupper(tmp[0]);
-      type = "Geant4" + tmp;
-      g4 = PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
-      if (!g4) {
-        PluginDebug dbg;
-        g4 = PluginService::Create<G4VSensitiveDetector*>(type, name, &m_lcdd);
-        if ( !g4 )  {
-          throw runtime_error("Geant4Converter<SensitiveDetector>: FATAL Failed to "
-                              "create Geant4 sensitive detector factory " + name + " of type " + type + ".");
-        }
-      }
-    }
-    g4->Activate(true);
-    G4SDManager::GetSDMpointer()->AddNewDetector(g4);
-    info.g4SensDets[sens_det] = g4;
   }
   return g4;
 }
@@ -946,9 +903,8 @@ void Geant4Converter::handleProperties(LCDD::Properties& prp) const {
 }
 
 /// Convert the geometry type SensitiveDetector into the corresponding Geant4 object(s).
-void* Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
+void Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<const TGeoVolume*>& /* volumes */) const {
   Geant4GeometryInfo& info = data();
-  G4VSensitiveDetector* g4 = info.g4SensDets[sens_det];
   ConstVolumeSet& volset = info.sensitives[sens_det];
   SensitiveDetector sd = Ref_t(sens_det);
   stringstream str;
@@ -972,7 +928,6 @@ void* Geant4Converter::printSensitive(SensitiveDetector sens_det, const set<cons
         << vol->GetNoDaughters() << " daughters.";
     printout(INFO, "Geant4Converter", str.str().c_str());
   }
-  return g4;
 }
 
 string printSolid(G4VSolid* sol) {
@@ -1066,8 +1021,6 @@ Geant4Converter& Geant4Converter::create(DetElement top) {
   printout(m_outputLevel, "Geant4Converter", "++ Handled %ld solids.", geo.solids.size());
   handleRefs(this, geo.vis, &Geant4Converter::handleVis);
   printout(m_outputLevel, "Geant4Converter", "++ Handled %ld visualization attributes.", geo.vis.size());
-  handleMap(this, geo.sensitives, &Geant4Converter::handleSensitive);
-  printout(m_outputLevel, "Geant4Converter", "++ Handled %ld sensitive detectors.", geo.sensitives.size());
   handleMap(this, geo.limits, &Geant4Converter::handleLimitSet);
   printout(m_outputLevel, "Geant4Converter", "++ Handled %ld limit sets.", geo.limits.size());
   handleMap(this, geo.regions, &Geant4Converter::handleRegion);

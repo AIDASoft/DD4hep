@@ -226,6 +226,8 @@ namespace DD4hep {
     template <typename FUNCTOR> void for_each(FUNCTOR& func) {
       std::for_each(m_properties.begin(), m_properties.end(), func);
     }
+    /// Export properties of another instance
+    void adopt(const PropertyManager& copy);
     /// Dump string values
     void dump() const;
   };

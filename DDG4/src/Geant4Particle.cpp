@@ -27,7 +27,6 @@
 
 #include <iostream>
 
-using namespace CLHEP;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 typedef ReferenceBitMask<int> PropertyMask;
@@ -156,7 +155,7 @@ const G4ParticleDefinition* Geant4ParticleHandle::definition() const   {
   G4ParticleTable*      tab = G4ParticleTable::GetParticleTable();
   G4ParticleDefinition* def = tab->FindParticle(particle->pdgID);
   if ( 0 == def && 0 == particle->pdgID )   {
-    if ( fabs(particle->charge) < 0.001 )
+    if ( 0 == particle->charge )
       return G4Geantino::Definition();
     return G4ChargedGeantino::Definition();
   }

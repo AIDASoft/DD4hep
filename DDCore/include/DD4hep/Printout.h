@@ -185,6 +185,9 @@ namespace DD4hep {
 
 #endif // __CINT__
 
+  /// Set new printout format for the 3 fields: source-level-message. All 3 are strings
+  std::string setPrintFormat(const std::string& new_format);
+
   /// Set new print level. Returns the old print level
   PrintLevel setPrintLevel(PrintLevel new_level);
 

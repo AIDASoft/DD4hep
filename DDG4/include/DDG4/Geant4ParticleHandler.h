@@ -80,6 +80,7 @@ namespace DD4hep {
 
     protected:
 
+      /** Property variables used to configure the object */
       /// Property: Steer printout at tracking action begin
       bool m_printStartTracking;
       /// Property: Steer printout at tracking action end
@@ -90,21 +91,24 @@ namespace DD4hep {
       bool m_ownsParticles;
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut;
+      /// Property: All the processes of which the decay products will be explicitly stored
+      Processes                  m_processNames;
 
-      /// Global particle identifier. Obtained at the begin of the event.
-      int m_globalParticleID;
+      /** Object variables, which are constant after initialization */
       /// User action pointer
       Geant4UserParticleHandler* m_userHandler;
+
+      /** EVENT DEPENDENT: variables containing data depending on the current event. */
+      /// Global particle identifier. Obtained at the begin of the event.
+      int               m_globalParticleID;
       /// Primary map
       Geant4PrimaryMap* m_primaryMap;
       /// Local buffer about the 'current' G4Track
-      Particle m_currTrack;
+      Particle          m_currTrack;
       /// Map with stored MC Particles
-      ParticleMap m_particleMap;
+      ParticleMap       m_particleMap;
       /// Map associating the G4Track identifiers with identifiers of existing MCParticles
-      TrackEquivalents m_equivalentTracks;
-      /// All the processes of which the decay products will be explicitly stored
-      Processes m_processNames;
+      TrackEquivalents  m_equivalentTracks;
 
       /// Recombine particles and associate the to parents with cleanup
       int recombineParents();

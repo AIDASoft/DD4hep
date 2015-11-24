@@ -33,8 +33,6 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    Geant4Context* ddg4_globalContext();
-
     /// Private helper to support sequence reference counting
     /**
      *  \author  M.Frank
@@ -82,12 +80,14 @@ namespace DD4hep {
         : G4VSensitiveDetector(nam), G4VSDFilter(nam),
           Geant4Action(0,nam), Geant4ActionSD(nam), Base()
       {
-        Geant4Kernel& kernel = Geant4Kernel::access(lcdd);
-        m_sensitive = lcdd.sensitiveDetector(nam);
-        m_context = Geant4Context(&kernel);
+        Geant4Kernel& master = Geant4Kernel::access(lcdd);
+        Geant4Kernel& kernel = master.worker(::pthread_self());
+        m_sensitive   = lcdd.sensitiveDetector(nam);
+        m_context     = kernel.workerContext();
         m_outputLevel = kernel.getOutputLevel(nam);
         _aquire(kernel.sensitiveAction(nam));
         m_sequence->defineCollections(this);
+        m_sequence->updateContext(m_context);
         this->G4VSensitiveDetector::SetFilter(this);
       }
 
@@ -121,25 +121,11 @@ namespace DD4hep {
       virtual G4bool Accept(const G4Step* step) const
       {  return m_sequence->accept(step);                               }
       /// Method invoked at the begining of each event.
-      virtual void Initialize(G4HCofThisEvent* hce)      {
-        m_context.setRun(&ddg4_globalContext()->run());
-        m_context.setEvent(&ddg4_globalContext()->event());
-        (Geant4Action::ContextUpdate(&m_context))(m_sequence);
-        m_sequence->begin(hce);
-#if 0
-        const G4Event& evt = context()->event();
-        error(name(), "%s> calling Initialize(event_id=%d Context: run=%p (%d) evt=%p (%d))",
-              GetName().c_str(), evt.GetEventID(),
-              &context()->run(), context()->run().run().GetRunID(),
-              &context()->event(), context()->event().event().GetEventID());
-#endif
-      }
+      virtual void Initialize(G4HCofThisEvent* hce)
+      {  m_sequence->begin(hce);                                        }
       /// Method invoked at the end of each event.
-      virtual void EndOfEvent(G4HCofThisEvent* hce)      {
-        m_sequence->end(hce);
-        m_context.setEvent(0);
-        (Geant4Action::ContextUpdate(&m_context))(m_sequence);
-      }
+      virtual void EndOfEvent(G4HCofThisEvent* hce)
+      {  m_sequence->end(hce);                                          }
       /// Method for generating hit(s) using the information of G4Step object.
       virtual G4bool ProcessHits(G4Step* step,G4TouchableHistory* hist)
       {  return m_sequence->process(step,hist);                         }

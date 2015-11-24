@@ -25,6 +25,20 @@ dd4hep_add_dictionary( G__DDG4  SOURCES python/DDG4Dict.C )
 dd4hep_add_plugin(DDG4Plugins
   GENERATED   G__DDG4.cxx
   SOURCES     plugins/*.cpp)
+#---------------------------  Plugin library for the simulation framework  ---------
+dd4hep_add_dictionary(G__DDG4Python SOURCES src/python/DDG4Python.C )
+#---------------------------  Plugin library for the simulation framework  ---------
+dd4hep_add_dictionary(G__DDPython SOURCES tpython/DDPython.C )
+#---------------------------  Specialized python plugins  --------------------------
+dd4hep_add_regular_library(DDPython
+  GENERATED   G__DDPython.cxx
+  USES        [ROOT   REQUIRED COMPONENTS PyROOT]
+  OPTIONAL    [PYTHON REQUIRED SOURCES tpython/DDPython.cpp])
+#---------------------------  Specialized python plugins  --------------------------
+dd4hep_add_plugin(DDG4Python
+  GENERATED   G__DDG4Python.cxx
+  LINK_LIBRARIES DDPython
+  OPTIONAL    [PYTHON REQUIRED SOURCES src/python/*.cpp])
 #---------------------------  LCIO Plugins for new simulation framework  -----------
 dd4hep_add_plugin(DDG4LCIO 
   OPTIONAL [LCIO REQUIRED SOURCES lcio/*.cpp] )
@@ -37,6 +51,11 @@ dd4hep_add_executable(g4gdmlDisplay SOURCES g4gdmlDisplay.cpp)
 dd4hep_add_executable(g4FromXML     SOURCES g4FromXML.cpp)
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable(dd_sim        SOURCES ddsim.cpp)
+#---Helper to overcome deficiency of the python executable concerning multi-threading
+dd4hep_add_executable(pyddg4
+  LINK_LIBRARIES DDPython
+  USES        [ROOT   REQUIRED COMPONENTS PyROOT]
+  OPTIONAL    [PYTHON REQUIRED SOURCES pyddg4.cpp])
 #---Package installation procedure(s) ----------------------------------------------
 dd4hep_install_dir(examples DESTINATION examples/DDG4)
 dd4hep_install_files(FILES python/*.py python/*.C DESTINATION python)

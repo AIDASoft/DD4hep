@@ -37,9 +37,9 @@ namespace ROOT {
     }
   }
 }
-template class std::less<ROOT::Math::XYZPoint>;
-template class std::less<ROOT::Math::XYZVector>;
-template class std::less<ROOT::Math::PxPyPzEVector>;
+template struct std::less<ROOT::Math::XYZPoint>;
+template struct std::less<ROOT::Math::XYZVector>;
+template struct std::less<ROOT::Math::PxPyPzEVector>;
 
 DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(char)
 DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(short)

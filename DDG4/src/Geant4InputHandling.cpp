@@ -31,7 +31,6 @@
 #include <cmath>
 
 using namespace std;
-using namespace CLHEP;
 using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
