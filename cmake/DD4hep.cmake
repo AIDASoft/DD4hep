@@ -112,16 +112,23 @@ else()
 endif()
 
   set(libname ${CMAKE_SHARED_MODULE_PREFIX}${library}${CMAKE_SHARED_LIBRARY_SUFFIX})
-message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
-  add_custom_command(OUTPUT ${rootmapfile}
+  #message(STATUS "DD4hep_DIR = ${DD4hep_DIR}" )
+  add_custom_command(TARGET ${library}
+                     POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
                              -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
                              -DROOT_VERSION_MAJOR=${ROOT_VERSION_MAJOR}
                              -DDD4hep_DIR=${DD4hep_DIR}
-                             -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake
-                     DEPENDS ${library})
+                             -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake)
 
-  add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
+  #add_custom_command(OUTPUT ${rootmapfile}
+  #                   COMMAND ${CMAKE_COMMAND} -Dlibname=${libname} -Drootmapfile=${rootmapfile}
+  #                           -Dgenmap_install_dir=${LIBRARY_OUTPUT_PATH}
+  #                           -DROOT_VERSION_MAJOR=${ROOT_VERSION_MAJOR}
+  #                           -DDD4hep_DIR=${DD4hep_DIR}
+  #                           -P ${DD4hep_DIR}/cmake/MakeRootMap.cmake
+  #                   DEPENDS ${library})
+  ##add_custom_target(${library}Rootmap ALL DEPENDS ${rootmapfile})
 
   install(FILES ${LIBRARY_OUTPUT_PATH}/${rootmapfile}
     DESTINATION lib

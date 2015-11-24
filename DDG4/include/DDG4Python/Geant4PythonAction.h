@@ -28,7 +28,7 @@ namespace DD4hep {
     /**
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
+     *  \ingroup DD4HEP
      */
     class Geant4PythonAction : public Geant4Action   {
     public:

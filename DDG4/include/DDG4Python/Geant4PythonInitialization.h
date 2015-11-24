@@ -29,9 +29,9 @@ namespace DD4hep {
      *  Geant4PythonInitialization allows to configure python callbacks
      *  for the master and the worker thread setup using the calls:
      *
-     *     /// Set the Detector initialization command
+     *     // Set the Detector initialization command
      *     void setMasterSetup(PyObject* callable, PyObject* args);
-     *     /// Set the field initialization command
+     *     // Set the field initialization command
      *     void setWorkerSetup(PyObject* callable, PyObject* args);
      *
      *  or in python as a call sequence within the master thread:

@@ -23,7 +23,12 @@ namespace DD4hep  {
 
   struct DDPythonGlobalState;
 
-  /** @class DDPython DDPython.h DDG4/DDPython.h  */
+  /// Python interface class for callbacks and GIL.
+  /**
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP_SIMULATION
+   */
   class DDPython {
   private:
     void* context;
