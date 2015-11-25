@@ -409,7 +409,7 @@ namespace DD4hep {
      */
     class Geant4SensDetSequences {
     public:
-      friend class Geant4Kernel;
+      friend class Geant4ActionContainer;
       friend class Geant4SensDetActionSequence;
       typedef std::map<std::string, Geant4SensDetActionSequence*> Members;
     private:

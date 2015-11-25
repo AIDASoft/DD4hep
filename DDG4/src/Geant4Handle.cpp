@@ -102,7 +102,7 @@ namespace DD4hep {
 
     template <typename TYPE, typename CONT> 
     TYPE* _create_share(Geant4Kernel& kernel,
-                        CONT& (Geant4Kernel::*pmf)(), 
+                        CONT& (Geant4ActionContainer::*pmf)(), 
                         const string& type_name, 
                         const string& shared_typ, 
                         bool shared, TYPE*)
@@ -223,56 +223,56 @@ namespace DD4hep {
 
     template <> 
     Geant4Handle<Geant4RunAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::runAction,type_name,"Geant4SharedRunAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::runAction,type_name,"Geant4SharedRunAction",shared,(handled_type*)0);
     }
     template <> 
     Geant4Handle<Geant4RunAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::runAction,type_name,"Geant4SharedRunAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::runAction,type_name,"Geant4SharedRunAction",shared,(handled_type*)0);
     }
 
     template <> 
     Geant4Handle<Geant4EventAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::eventAction,type_name,"Geant4SharedEventAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::eventAction,type_name,"Geant4SharedEventAction",shared,(handled_type*)0);
     }
     template <> 
     Geant4Handle<Geant4EventAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::eventAction,type_name,"Geant4SharedEventAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::eventAction,type_name,"Geant4SharedEventAction",shared,(handled_type*)0);
     }
 
     template <> 
     Geant4Handle<Geant4GeneratorAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::generatorAction,type_name,"Geant4SharedGeneratorAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::generatorAction,type_name,"Geant4SharedGeneratorAction",shared,(handled_type*)0);
     }
     template <> 
     Geant4Handle<Geant4GeneratorAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::generatorAction,type_name,"Geant4SharedGeneratorAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::generatorAction,type_name,"Geant4SharedGeneratorAction",shared,(handled_type*)0);
     }
 
     template <> 
     Geant4Handle<Geant4TrackingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::trackingAction,type_name,"Geant4SharedTrackingAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::trackingAction,type_name,"Geant4SharedTrackingAction",shared,(handled_type*)0);
     }
     template <> 
     Geant4Handle<Geant4TrackingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::trackingAction,type_name,"Geant4SharedTrackingAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::trackingAction,type_name,"Geant4SharedTrackingAction",shared,(handled_type*)0);
     }
 
     template <> 
     Geant4Handle<Geant4SteppingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::steppingAction,type_name,"Geant4SharedSteppingAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::steppingAction,type_name,"Geant4SharedSteppingAction",shared,(handled_type*)0);
     }
     template <> 
     Geant4Handle<Geant4SteppingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::steppingAction,type_name,"Geant4SharedSteppingAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::steppingAction,type_name,"Geant4SharedSteppingAction",shared,(handled_type*)0);
     }
 
     template <> 
     Geant4Handle<Geant4StackingAction>::Geant4Handle(Geant4Kernel& kernel, const string& type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::stackingAction,type_name,"Geant4SharedStackingAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::stackingAction,type_name,"Geant4SharedStackingAction",shared,(handled_type*)0);
     }
     template <> 
     Geant4Handle<Geant4StackingAction>::Geant4Handle(Geant4Kernel& kernel, const char* type_name, bool shared)  {
-      value = _create_share(kernel,&Geant4Kernel::stackingAction,type_name,"Geant4SharedStackingAction",shared,(handled_type*)0);
+      value = _create_share(kernel,&Geant4ActionContainer::stackingAction,type_name,"Geant4SharedStackingAction",shared,(handled_type*)0);
     }
 
     template <> Geant4Handle<Geant4Sensitive>::Geant4Handle(Geant4Kernel& kernel, const string& type_name,

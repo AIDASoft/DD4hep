@@ -363,12 +363,12 @@ namespace DD4hep {
     }
 
     /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
-    template <> void Geant4SensitiveAction<TrackerWeighted>::begin(G4HCofThisEvent* hce)   {
+    template <> void Geant4SensitiveAction<TrackerWeighted>::begin(G4HCofThisEvent* /* hce */)   {
       m_userData.startEvent();
     }
 
     /// G4VSensitiveDetector interface: Method invoked at the end of each event.
-    template <> void Geant4SensitiveAction<TrackerWeighted>::end(G4HCofThisEvent* hce)   {
+    template <> void Geant4SensitiveAction<TrackerWeighted>::end(G4HCofThisEvent* /* hce */)   {
       m_userData.endEvent();
     }
 
@@ -378,7 +378,7 @@ namespace DD4hep {
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
-    template <> void Geant4SensitiveAction<TrackerWeighted>::clear(G4HCofThisEvent*) {
+    template <> void Geant4SensitiveAction<TrackerWeighted>::clear(G4HCofThisEvent* /* hce */) {
       m_userData.clear();
     }
 

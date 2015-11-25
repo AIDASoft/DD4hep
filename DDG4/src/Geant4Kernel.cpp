@@ -22,17 +22,6 @@
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4ActionPhase.h"
 
-#include "DDG4/Geant4RunAction.h"
-#include "DDG4/Geant4PhysicsList.h"
-#include "DDG4/Geant4EventAction.h"
-#include "DDG4/Geant4SteppingAction.h"
-#include "DDG4/Geant4TrackingAction.h"
-#include "DDG4/Geant4StackingAction.h"
-#include "DDG4/Geant4GeneratorAction.h"
-#include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4/Geant4UserInitialization.h"
-#include "DDG4/Geant4SensDetAction.h"
-
 // Geant4 include files
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -78,12 +67,9 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
-  : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
-    m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_constructionAction(0),
-    m_sensDetActions(0), m_physicsList(0), m_userInit(0), m_lcdd(lcdd_ref), 
-    m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), phase(this)  
+  : Geant4ActionContainer(), m_runManager(0), m_lcdd(lcdd_ref), 
+    m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0), phase(this)  
 {
-  m_sensDetActions = new Geant4SensDetSequences();
   m_lcdd.addExtension < Geant4Kernel > (this);
   m_ident = -1;
   declareProperty("UI",m_uiName);
@@ -91,26 +77,21 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
   declareProperty("NumEvents",      m_numEvent = 10);
   declareProperty("OutputLevels",   m_clientLevels);
   declareProperty("NumberOfThreads",m_numThreads);
-  //declareProperty("MultiThreaded",  m_multiThreaded=false);
   m_controlName = "/ddg4/";
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for named Geant4 actions");
-  m_threadContext = new Geant4Context(this);
+  setContext(new Geant4Context(this));
+  //m_shared = new Geant4Kernel(lcdd_ref, this, -2);
   InstanceCount::increment(this);
 }
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref, Geant4Kernel* m, unsigned long ident)
-  : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
-    m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_constructionAction(0),
-    m_sensDetActions(0), m_physicsList(0), m_userInit(0), m_lcdd(lcdd_ref), m_id(ident), 
-    m_master(m), phase(this)
+  : Geant4ActionContainer(), m_runManager(0), m_lcdd(lcdd_ref), 
+    m_numThreads(1), m_id(ident), m_master(m), m_shared(0), phase(this)
 {
   char text[64];
-  m_numThreads     = 1;
-  //m_multiThreaded  = m_master->m_multiThreaded;
   m_ident          = m_master->m_workers.size();
-  m_sensDetActions = new Geant4SensDetSequences();
   declareProperty("UI",m_uiName = m_master->m_uiName);
   declareProperty("OutputLevel", m_outputLevel = m_master->m_outputLevel);
   declareProperty("OutputLevels",m_clientLevels = m_master->m_clientLevels);
@@ -118,7 +99,7 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref, Geant4Kernel* m, unsigned long ident)
   m_controlName = text;
   m_control = new G4UIdirectory(m_controlName.c_str());
   m_control->SetGuidance("Control for thread specific Geant4 actions");
-  m_threadContext = new Geant4Context(this);
+  setContext(new Geant4Context(this));
   InstanceCount::increment(this);
 }
 
@@ -131,17 +112,7 @@ Geant4Kernel::~Geant4Kernel() {
   }
   destroyPhases();
   deletePtr  (m_runManager);
-  releasePtr (m_physicsList);
-  releasePtr (m_constructionAction);
-  releasePtr (m_stackingAction);
-  releasePtr (m_steppingAction);
-  releasePtr (m_trackingAction);
-  releasePtr (m_eventAction);
-  releasePtr (m_generatorAction);
-  releasePtr (m_runAction);
-  releasePtr (m_userInit);
-  deletePtr  (m_sensDetActions);
-  deletePtr  (m_threadContext);
+  Geant4ActionContainer::terminate();
   if ( isMaster() )  {
     m_lcdd.removeExtension < Geant4Kernel > (false);
     m_lcdd.destroyInstance();
@@ -155,6 +126,7 @@ Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
   return obj;
 }
 
+#if 0
 /// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
 Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
   Geant4Kernel* kernel = lcdd.extension<Geant4Kernel>();
@@ -164,16 +136,12 @@ Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
   }
   return *kernel;
 }
+#endif
 
 /// Access thread identifier
 unsigned long int Geant4Kernel::thread_self()    {
   unsigned long int thr_id = (unsigned long int)::pthread_self();
   return thr_id;
-}
-
-Geant4Context* Geant4Kernel::workerContext()   {
-  if ( m_threadContext ) return m_threadContext;
-  throw runtime_error(format("Geant4Kernel", "DDG4: Master kernel object has no thread context! [Invalid Handle]"));
 }
 
 /// Create identified worker instance
@@ -323,26 +291,8 @@ int Geant4Kernel::terminate() {
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
   deletePtr  (m_runManager);
-  releasePtr (m_physicsList);
-  releasePtr (m_constructionAction);
-  releasePtr (m_stackingAction);
-  releasePtr (m_steppingAction);
-  releasePtr (m_trackingAction);
-  releasePtr (m_eventAction);
-  releasePtr (m_generatorAction);
-  releasePtr (m_runAction);
-  deletePtr  (m_sensDetActions);
-  //return *this;
+  Geant4ActionContainer::terminate();
   return 1;
-}
-
-template <class C> bool Geant4Kernel::registerSequence(C*& seq, const std::string& name) {
-  if (!name.empty()) {
-    seq = new C(workerContext(), name);
-    seq->installMessengers();
-    return true;
-  }
-  throw runtime_error(format("Geant4Kernel", "DDG4: The action '%s' not found. [Action-NotFound]", name.c_str()));
 }
 
 /// Register action by name to be retrieved when setting up and connecting action objects
@@ -470,89 +420,4 @@ bool Geant4Kernel::removePhase(const std::string& nam) {
 /// Destroy all phases. To be called only at shutdown
 void Geant4Kernel::destroyPhases() {
   for_each(m_phases.begin(), m_phases.end(), destroyObjects(m_phases));
-}
-
-/// Access generator action sequence
-Geant4GeneratorActionSequence* Geant4Kernel::generatorAction(bool create) {
-  if (!m_generatorAction && create)
-    registerSequence(m_generatorAction, "GeneratorAction");
-  return m_generatorAction;
-}
-
-/// Access run action sequence
-Geant4RunActionSequence* Geant4Kernel::runAction(bool create) {
-  if (!m_runAction && create)
-    registerSequence(m_runAction, "RunAction");
-  return m_runAction;
-}
-
-/// Access event action sequence
-Geant4EventActionSequence* Geant4Kernel::eventAction(bool create) {
-  if (!m_eventAction && create)
-    registerSequence(m_eventAction, "EventAction");
-  return m_eventAction;
-}
-
-/// Access stepping action sequence
-Geant4SteppingActionSequence* Geant4Kernel::steppingAction(bool create) {
-  if (!m_steppingAction && create)
-    registerSequence(m_steppingAction, "SteppingAction");
-  return m_steppingAction;
-}
-
-/// Access tracking action sequence
-Geant4TrackingActionSequence* Geant4Kernel::trackingAction(bool create) {
-  if (!m_trackingAction && create)
-    registerSequence(m_trackingAction, "TrackingAction");
-  return m_trackingAction;
-}
-
-/// Access stacking action sequence
-Geant4StackingActionSequence* Geant4Kernel::stackingAction(bool create) {
-  if (!m_stackingAction && create)
-    registerSequence(m_stackingAction, "StackingAction");
-  return m_stackingAction;
-}
-
-/// Access detector construcion action sequence (geometry+sensitives+field)
-Geant4DetectorConstructionSequence* Geant4Kernel::detectorConstruction(bool create)  {
-  if (!m_constructionAction && create)
-    registerSequence(m_constructionAction, "StackingAction");
-  return m_constructionAction;
-}
-
-/// Access to the sensitive detector sequences from the kernel object
-Geant4SensDetSequences& Geant4Kernel::sensitiveActions() const {
-  return *m_sensDetActions;
-}
-
-/// Access to the sensitive detector action from the kernel object
-Geant4SensDetActionSequence* Geant4Kernel::sensitiveAction(const string& nam) {
-  Geant4SensDetActionSequence* ptr = m_sensDetActions->find(nam);
-  if (ptr)   {
-    return ptr;
-  }
-  ptr = new Geant4SensDetActionSequence(workerContext(), nam);
-  m_sensDetActions->insert(nam, ptr);
-  return ptr;
-}
-
-/// Access to the physics list
-Geant4PhysicsListActionSequence* Geant4Kernel::physicsList(bool create) {
-  if (!m_physicsList && create)
-    registerSequence(m_physicsList, "PhysicsList");
-  return m_physicsList;
-}
-
-/// Access to the physics list
-Geant4UserInitializationSequence* Geant4Kernel::userInitialization(bool create) {
-  if ( !m_userInit && create )   {
-    if ( isMaster() )
-      registerSequence(m_userInit, "UserInitialization");
-    else 
-      throw runtime_error(format("Geant4Kernel", 
-                                 "DDG4: Only the master thread may initialize "
-                                 "a user initialization object!"));
-  }
-  return m_userInit;
 }

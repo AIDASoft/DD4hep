@@ -387,7 +387,7 @@ namespace DD4hep {
     void Geant4UserDetectorConstruction::ConstructSDandField()  {
       G4AutoLock protection_lock(&action_mutex);
       Geant4Context* ctx = m_sequence->context();
-      Geant4Kernel&  krnl = kernel().worker(Geant4Kernel::thread_self());
+      Geant4Kernel&  krnl = kernel().worker(Geant4Kernel::thread_self(),true);
       updateContext(krnl.workerContext());
       m_sequence->constructField(&m_ctxt);
       m_sequence->constructSensitives(&m_ctxt);
@@ -411,7 +411,7 @@ namespace DD4hep {
     /// Build the actions for the worker thread
     void Geant4UserActionInitialization::Build()  const   {
       G4AutoLock protection_lock(&action_mutex);
-      Geant4Kernel&  krnl = kernel().worker(Geant4Kernel::thread_self());
+      Geant4Kernel&  krnl = kernel().worker(Geant4Kernel::thread_self(),true);
       Geant4Context* ctx  = krnl.workerContext();
 
       if ( m_sequence )  {

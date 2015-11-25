@@ -75,7 +75,7 @@ namespace DD4hep {
     /// Create/Configure Geant4 sensitive action object from XML
     static Action _convertSensitive(lcdd_t& lcdd, xml_h e, const string& detector)  {
       xml_comp_t action(e);
-      Kernel& kernel = Kernel::access(lcdd);
+      Kernel& kernel = Kernel::instance(lcdd);
       TypeName tn = TypeName::split(action.attr<string>(_U(name)));
       // Create the object using the factory method
       Sensitive handle(kernel,action.attr<string>(_U(name)),detector);
@@ -94,7 +94,7 @@ namespace DD4hep {
     /// Create/Configure Action object from XML
     static Action _convertAction(lcdd_t& lcdd, xml_h e)  {
       xml_comp_t action(e);
-      Kernel& kernel = Kernel::access(lcdd);
+      Kernel& kernel = Kernel::instance(lcdd);
       TypeName tn = TypeName::split(action.attr<string>(_U(name)));
       // Create the object using the factory method
       Action handle(kernel,action.attr<string>(_U(name)));
@@ -118,7 +118,7 @@ namespace DD4hep {
     Action _createAction(lcdd_t& lcdd, xml_h a, const string& seqType, int what)  {
       string   nam = a.attr<string>(_U(name));
       TypeName typ    = TypeName::split(nam);
-      Kernel&  kernel = Kernel::access(lcdd);
+      Kernel&  kernel = Kernel::instance(lcdd);
       Action action((what==FILTER) ? (Geant4Action*)kernel.globalFilter(typ.second,false)
                     : (what==ACTION) ? kernel.globalAction(typ.second,false)
                     ///  : (what==FILTER) ? kernel.globalAction(typ.second,false)
@@ -150,7 +150,7 @@ namespace DD4hep {
    */
   template <> void Converter<Action>::operator()(xml_h e)  const  {
     Action a = _convertAction(lcdd, e);
-    Kernel::access(lcdd).registerGlobalAction(a);
+    Kernel::instance(lcdd).registerGlobalAction(a);
   }
 
   /// Convert Sensitive detector filters
@@ -166,7 +166,7 @@ namespace DD4hep {
    */
   template <> void Converter<Filter>::operator()(xml_h e)  const  {
     Action a = _convertAction(lcdd, e);
-    Kernel::access(lcdd).registerGlobalFilter(a);
+    Kernel::instance(lcdd).registerGlobalFilter(a);
   }
 
   /// Convert Geant4Phase objects
@@ -181,7 +181,7 @@ namespace DD4hep {
    */
   template <> void Converter<Phase>::operator()(xml_h e)  const  {
     xml_comp_t x_phase(e);
-    Kernel& kernel = Kernel::access(lcdd);
+    Kernel& kernel = Kernel::instance(lcdd);
     string nam = x_phase.attr<string>(_U(type));
     typedef Geant4ActionPhase PH;
     Phase p;
@@ -288,7 +288,7 @@ namespace DD4hep {
     string       seqNam;
     TypeName     seqType;
     int          what = ACTION;
-    Kernel& kernel = Kernel::access(lcdd);
+    Kernel& kernel = Kernel::instance(lcdd);
 
     if ( seq.hasAttr(_U(sd)) )   {
       string sd_nam = seq.attr<string>(_U(sd));
@@ -440,7 +440,7 @@ namespace DD4hep {
    */
   struct PhysicsListExtension;
   template <> void Converter<PhysicsListExtension>::operator()(xml_h e) const {
-    Kernel& kernel = Kernel::access(lcdd);
+    Kernel& kernel = Kernel::instance(lcdd);
     string ext = xml_comp_t(e).nameStr();
     kernel.physicsList().properties()["extends"].str(ext);
     printout(INFO,"Geant4Setup","+++ PhysicsListExtension: Set predefined Geant4 physics list to '%s'",ext.c_str());
@@ -449,7 +449,7 @@ namespace DD4hep {
   /// Create/Configure PhysicsList objects: Predefined Geant4 Physics lists
   template <> void Converter<PhysicsList>::operator()(xml_h e)  const  {
     string name = e.attr<string>(_U(name));
-    Kernel& kernel = Kernel::access(lcdd);
+    Kernel& kernel = Kernel::instance(lcdd);
     PhysicsList handle(kernel,name);
     _setAttributes(handle,e);
     xml_coll_t(e,_Unicode(particles)).for_each(_Unicode(construct),Converter<Geant4PhysicsList::ParticleConstructor>(lcdd,handle.get()));
@@ -461,7 +461,7 @@ namespace DD4hep {
 
   /// Create/Configure Geant4Kernel objects
   template <> void Converter<Kernel>::operator()(xml_h e) const {
-    Kernel& kernel = Kernel::access(lcdd);
+    Kernel& kernel = Kernel::instance(lcdd);
     xml_comp_t k(e);
     if ( k.hasAttr(_Unicode(NumEvents)) )
       kernel.property("NumEvents").str(k.attr<string>(_Unicode(NumEvents)));

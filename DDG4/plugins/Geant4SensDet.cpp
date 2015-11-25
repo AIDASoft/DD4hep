@@ -80,7 +80,7 @@ namespace DD4hep {
         : G4VSensitiveDetector(nam), G4VSDFilter(nam),
           Geant4Action(0,nam), Geant4ActionSD(nam), Base()
       {
-        Geant4Kernel& master = Geant4Kernel::access(lcdd);
+        Geant4Kernel& master = Geant4Kernel::instance(lcdd);
         Geant4Kernel& kernel = master.worker(::pthread_self());
         m_sensitive   = lcdd.sensitiveDetector(nam);
         m_context     = kernel.workerContext();

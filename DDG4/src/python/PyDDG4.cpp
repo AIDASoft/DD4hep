@@ -30,7 +30,7 @@ int PyDDG4::run(Kernel& kernel)  {
 }
 
 int PyDDG4::execute()  {
-  Kernel& k = Kernel::access(DD4hep::Geometry::LCDD::getInstance());
+  Kernel& k = Kernel::instance(DD4hep::Geometry::LCDD::getInstance());
   return run(k);
 }
 
