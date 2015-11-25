@@ -212,7 +212,7 @@ namespace DD4hep {
     KernelHandle::KernelHandle(Geant4Kernel* k) : value(k)  {
     }
     KernelHandle KernelHandle::worker()  {
-      Geant4Kernel* k = value ? &value->worker(::pthread_self()) : 0;
+      Geant4Kernel* k = value ? &value->worker(Geant4Kernel::thread_self()) : 0;
       if ( k ) return KernelHandle(k);
       throw runtime_error(format("KernelHandle", "Cannot access worker context [Invalid Handle]"));
     }
