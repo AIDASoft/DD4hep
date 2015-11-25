@@ -44,6 +44,7 @@
 // C/C++ include files
 #include <stdexcept>
 #include <algorithm>
+#include <pthread.h>
 
 using namespace std;
 using namespace DD4hep::Simulation;
@@ -80,7 +81,7 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
   : m_runManager(0), m_generatorAction(0), m_runAction(0), m_eventAction(0),
     m_trackingAction(0), m_steppingAction(0), m_stackingAction(0), m_constructionAction(0),
     m_sensDetActions(0), m_physicsList(0), m_userInit(0), m_lcdd(lcdd_ref), 
-    m_numThreads(0), m_id(pthread_self()), m_master(this), phase(this)  
+    m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), phase(this)  
 {
   m_sensDetActions = new Geant4SensDetSequences();
   m_lcdd.addExtension < Geant4Kernel > (this);
@@ -164,6 +165,12 @@ Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
   return *kernel;
 }
 
+/// Access thread identifier
+unsigned long int Geant4Kernel::thread_self()    {
+  unsigned long int thr_id = (unsigned long int)::pthread_self();
+  return thr_id;
+}
+
 Geant4Context* Geant4Kernel::workerContext()   {
   if ( m_threadContext ) return m_threadContext;
   throw runtime_error(format("Geant4Kernel", "DDG4: Master kernel object has no thread context! [Invalid Handle]"));
@@ -172,7 +179,7 @@ Geant4Context* Geant4Kernel::workerContext()   {
 /// Create identified worker instance
 Geant4Kernel& Geant4Kernel::createWorker()   {
   if ( isMaster() )   {
-    unsigned long identifier = ::pthread_self();
+    unsigned long identifier = thread_self();
     Geant4Kernel* w = new Geant4Kernel(m_lcdd, this, identifier);
     m_workers[identifier] = w;
     printout(INFO,"Geant4Kernel","+++ Created worker instance id=%ul",identifier);
@@ -182,16 +189,19 @@ Geant4Kernel& Geant4Kernel::createWorker()   {
 }
 
 /// Access worker instance by it's identifier
-Geant4Kernel& Geant4Kernel::worker(unsigned long identifier)    {
+Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    {
   Workers::iterator i = m_workers.find(identifier);
   if ( i != m_workers.end() )   {
     return *((*i).second);
   }
   else if ( !isMultiThreaded() )  {
-    unsigned long self = ::pthread_self();
+    unsigned long self = thread_self();
     if ( identifier == self )  {
       return *this;
     }
+  }
+  else if ( create_if )  {
+    return createWorker();
   }
   throw runtime_error(format("Geant4Kernel", "DDG4: The Kernel object 0x%p does not exists!",(void*)identifier));
 }

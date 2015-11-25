@@ -26,7 +26,6 @@
 #include <map>
 #include <string>
 #include <typeinfo>
-#include <pthread.h>
 
 // Forward declarations
 class G4RunManager;
@@ -161,6 +160,10 @@ namespace DD4hep {
 
       //bool isMultiThreaded() const { return m_multiThreaded; }
       bool isMultiThreaded() const { return m_numThreads > 0; }
+
+      /// Access thread identifier
+      static unsigned long int thread_self();
+
     public:
 
       /// Embedded helper class to facilitate map access to the phases.
@@ -367,7 +370,7 @@ namespace DD4hep {
       /// Create identified worker instance
       Geant4Kernel& createWorker();
       /// Access worker instance by it's identifier
-      Geant4Kernel& worker(unsigned long thread_identifier);
+      Geant4Kernel& worker(unsigned long thread_identifier, bool create_if=false);
       /// Access number of workers
       int numWorkers() const;
 

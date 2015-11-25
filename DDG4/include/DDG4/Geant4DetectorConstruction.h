@@ -54,7 +54,8 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    struct Geant4DetectorConstructionContext  {
+    class Geant4DetectorConstructionContext  {
+    public:
       /// Reference to geometry object
       Geometry::LCDD&     lcdd;
       /// Reference to the world after construction

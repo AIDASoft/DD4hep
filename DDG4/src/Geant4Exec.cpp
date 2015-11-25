@@ -387,16 +387,8 @@ namespace DD4hep {
     void Geant4UserDetectorConstruction::ConstructSDandField()  {
       G4AutoLock protection_lock(&action_mutex);
       Geant4Context* ctx = m_sequence->context();
-      Geant4Kernel*  krnl = 0;
-      try  {
-        krnl = &kernel().worker(::pthread_self());
-      }
-      catch(...)  {
-      }
-      if ( 0 == krnl )   {
-        krnl = &kernel().createWorker();
-      }
-      updateContext(krnl->workerContext());
+      Geant4Kernel&  krnl = kernel().worker(Geant4Kernel::thread_self());
+      updateContext(krnl.workerContext());
       m_sequence->constructField(&m_ctxt);
       m_sequence->constructSensitives(&m_ctxt);
       updateContext(ctx);
@@ -419,54 +411,46 @@ namespace DD4hep {
     /// Build the actions for the worker thread
     void Geant4UserActionInitialization::Build()  const   {
       G4AutoLock protection_lock(&action_mutex);
-      Geant4Kernel*  krnl = 0;
-      try  {
-        krnl = &kernel().worker(::pthread_self());
-      }
-      catch(...)  {
-      }
-      if ( 0 == krnl )   {
-        krnl = &kernel().createWorker();
-      }
-      Geant4Context* ctx  = krnl->workerContext();
+      Geant4Kernel&  krnl = kernel().worker(Geant4Kernel::thread_self());
+      Geant4Context* ctx  = krnl.workerContext();
 
       if ( m_sequence )  {
         Geant4Context* old = m_sequence->context();
         m_sequence->info("+++ Executing Geant4UserActionInitialization::Build. "
-                         "Context:%p Kernel:%p [%ld]", (void*)ctx, (void*)krnl, krnl->id());
+                         "Context:%p Kernel:%p [%ld]", (void*)ctx, (void*)&krnl, krnl.id());
       
         m_sequence->updateContext(ctx);
         m_sequence->build();
         m_sequence->updateContext(old);
       }
       // Set user generator action sequence. Not optional, since event context is defined inside
-      Geant4UserGeneratorAction* gen_action = new Geant4UserGeneratorAction(ctx,krnl->generatorAction(false));
+      Geant4UserGeneratorAction* gen_action = new Geant4UserGeneratorAction(ctx,krnl.generatorAction(false));
       SetUserAction(gen_action);
 
       // Set the run action sequence. Not optional, since run context is defined/destroyed inside
-      Geant4UserRunAction* run_action = new Geant4UserRunAction(ctx,krnl->runAction(false));
+      Geant4UserRunAction* run_action = new Geant4UserRunAction(ctx,krnl.runAction(false));
       SetUserAction(run_action);
 
       // Set the event action sequence. Not optional, since event context is destroyed inside
-      Geant4UserEventAction* evt_action = new Geant4UserEventAction(ctx,krnl->eventAction(false));
+      Geant4UserEventAction* evt_action = new Geant4UserEventAction(ctx,krnl.eventAction(false));
       run_action->eventAction = evt_action;
       evt_action->runAction = run_action;
       SetUserAction(evt_action);
 
       // Set the tracking action sequence
-      Geant4TrackingActionSequence* trk_action = krnl->trackingAction(false);
+      Geant4TrackingActionSequence* trk_action = krnl.trackingAction(false);
       if ( trk_action ) {
         Geant4UserTrackingAction* action = new Geant4UserTrackingAction(ctx, trk_action);
         SetUserAction(action);
       }
       // Set the stepping action sequence
-      Geant4SteppingActionSequence* stp_action = krnl->steppingAction(false);
+      Geant4SteppingActionSequence* stp_action = krnl.steppingAction(false);
       if ( stp_action ) {
         Geant4UserSteppingAction* action = new Geant4UserSteppingAction(ctx, stp_action);
         SetUserAction(action);
       }
       // Set the stacking action sequence
-      Geant4StackingActionSequence* stk_action = krnl->stackingAction(false);
+      Geant4StackingActionSequence* stk_action = krnl.stackingAction(false);
       if ( stk_action ) {
         Geant4UserStackingAction* action = new Geant4UserStackingAction(ctx, stk_action);
         SetUserAction(action);
@@ -567,7 +551,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   if ( 0 == phys_seq )   {
     string phys_model = "QGSP_BERT";
     phys_seq = kernel.physicsList(true);
-    phys_seq->property("extends").set<string>(phys_model);
+    phys_seq->property("extends").set(phys_model);
   }
   G4VUserPhysicsList* physics = phys_seq->extensionList();
   if (0 == physics) {
