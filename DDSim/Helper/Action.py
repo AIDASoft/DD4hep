@@ -1,10 +1,26 @@
-"""Helper object for SD Actions"""
+"""Helper object for SD Actions
+
+The default tracker and calorimeter actions can be set with
+
+>>> SIM = DD4hepSimulation()
+>>> SIM.action.tracker = "Geant4TrackerAction"
+>>> SIM.action.tracker = "Geant4CalorimeterAction"
+
+for specific subdetectors specific sensitive detectors can be set based on pattern matching
+
+>>> SIM = DD4hepSimulation()
+>>> SIM.action.mapActions['tpc'] = "TPCSDAction"
+
+and additional parameters for the sensitive detectors can be set when the map is given a tuple
+
+>>> SIM = DD4hepSimulation()
+>>> SIM.action.mapActions['ecal'] =( "CaloPreShowerSDAction", {"FirstLayerNumber": 1} )
+"""
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
-
 class Action( ConfigHelper ):
-  """Action holding all gun properties"""
+  """Action holding sensitive detector actions"""
   def __init__( self ):
     super(Action, self).__init__()
     self._tracker = 'Geant4TrackerAction'
@@ -37,13 +53,13 @@ class Action( ConfigHelper ):
   @mapActions.setter
   def mapActions( self, val ):
     """check if the argument is a dict, then we just update mapActions
-    if it is a string or list, we use pairs as patters --> Action
+    if it is a string or list, we use pairs as patterns --> Action
     """
     if isinstance(val, dict):
       self._mapActions.update(val)
       return
 
-    if isinstance( val, basestring):
+    if isinstance(val, basestring):
       vals = val.split(" ")
     elif isinstance( val, list ):
       vals = val
@@ -53,5 +69,5 @@ class Action( ConfigHelper ):
       self._mapActions[vals[index]] = vals[index+1]
 
   def clearMapActions( self ):
-    """empty the mapActions"""
+    """empty the mapActions dictionary"""
     self._mapActions = dict()

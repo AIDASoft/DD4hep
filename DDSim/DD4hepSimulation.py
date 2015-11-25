@@ -372,41 +372,20 @@ class DD4hepSimulation(object):
 
     trk,cal = self.getDetectorLists( lcdd )
 
-  # ---- add the trackers:
-  # FIXME: this assumes the same filters for all trackers ...
-
-    for tracker in trk:
-      print 'simple.setupTracker( %s )' % tracker
-      action = None
-      for pattern in self.action.mapActions:
-        if pattern.lower() in tracker.lower():
-          action = self.action.mapActions[pattern]
-          break
-      if action:
-        seq,act = simple.setupTracker( tracker, type=action )
-      else:
-        seq,act = simple.setupTracker( tracker )
-      seq.add(f1)
-      if self.detailedShowerMode:
-        act.HitCreationMode = 2
+    # ---- add the trackers:
+    # FIXME: this assumes the same filters for all trackers ...
+    try:
+      self.__setupSensitiveDetectors( trk, simple.setupTracker, filt=f1)
+    except Exception as e:
+      print "ERROR setting up sensitive detector", str(e)
+      raise
 
   # ---- add the calorimeters:
-    for calo in cal:
-      print 'simple.setupCalorimeter( %s )' % calo
-      action = None
-      for pattern in self.action.mapActions:
-        if pattern.lower() in calo.lower():
-          action = self.action.mapActions[pattern]
-          break
-      if action:
-        seq,act = simple.setupCalorimeter( calo, type=action )
-      else:
-        seq,act = simple.setupCalorimeter( calo )
-
-      ##set detailed hit creation mode for this
-      if self.detailedShowerMode:
-        act.HitCreationMode = 2
-
+    try:
+      self.__setupSensitiveDetectors( cal, simple.setupCalorimeter )
+    except Exception as e:
+      print "ERROR setting up sensitive detector", str(e)
+      raise
 
   #=================================================================================
     # Now build the physics list:
@@ -581,6 +560,37 @@ class DD4hepSimulation(object):
 
     return runHeader
 
+  def __setupSensitiveDetectors(self, detectors, setupFuction, filt=None):
+    """ attach sensitive detector actions for all subdetectors
+    can be steered with the `Action` ConfigHelpers
+
+    :param detectors: list of detectors
+    :param setupFunction: function used to register the sensitive detector
+    :param filt: optional, give a filter to attach to all sensitive detectors
+    """
+    for det in detectors:
+      print 'Setting up SD for %s' % det
+      action = None
+      for pattern in self.action.mapActions:
+        if pattern.lower() in det.lower():
+          action = self.action.mapActions[pattern]
+          break
+      if action:
+        if isinstance( action, tuple ):
+          sdAction = action[0]
+          parameterDict = action[1]
+          seq,act = setupFuction( det, type=sdAction )
+          for parameter, value in parameterDict.iteritems():
+            setattr( act, parameter, value)
+        else:
+          seq,act = setupFuction( det, type=action )
+      else:
+        seq,act = setupFuction( det )
+      if filt:
+        seq.add(filt)
+      ##set detailed hit creation mode for this
+      if self.detailedShowerMode:
+        act.HitCreationMode = 2
 
 ################################################################################
 ### MODULE FUNCTIONS GO HERE
