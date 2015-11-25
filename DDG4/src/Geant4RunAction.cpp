@@ -26,6 +26,7 @@ using namespace DD4hep::Simulation;
 
 namespace {
   G4Mutex action_mutex=G4MUTEX_INITIALIZER;
+  G4Mutex sequence_mutex=G4MUTEX_INITIALIZER;
 }
 
 /// Standard constructor
@@ -69,6 +70,7 @@ void Geant4SharedRunAction::configureFiber(Geant4Context* thread_context)   {
 void Geant4SharedRunAction::use(Geant4RunAction* action)   {
   if (action) {
     action->addRef();
+    m_properties.adopt(action->properties());
     m_action = action;
     return;
   }
@@ -140,14 +142,14 @@ void Geant4RunActionSequence::adopt(Geant4RunAction* action) {
 
 /// Pre-track action callback
 void Geant4RunActionSequence::begin(const G4Run* run) {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(&sequence_mutex);
   m_actors(&Geant4RunAction::begin, run);
   m_begin(run);
 }
 
 /// Post-track action callback
 void Geant4RunActionSequence::end(const G4Run* run) {
-  G4AutoLock protection_lock(&action_mutex);
+  G4AutoLock protection_lock(&sequence_mutex);
   m_end(run);
   m_actors(&Geant4RunAction::end, run);
 }

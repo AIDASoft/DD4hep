@@ -162,6 +162,9 @@ Geant4Kernel& Geant4Kernel::worker(unsigned long identifier, bool create_if)    
   if ( i != m_workers.end() )   {
     return *((*i).second);
   }
+  else if ( identifier == m_id )  {
+    return *this;
+  }
   else if ( !isMultiThreaded() )  {
     unsigned long self = thread_self();
     if ( identifier == self )  {

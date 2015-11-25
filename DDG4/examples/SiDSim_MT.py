@@ -21,13 +21,12 @@ def setupWorker(geant4):
   kernel = geant4.kernel()
   print '#PYTHON: +++ Creating Geant4 worker thread ....'
   print "#PYTHON:  Configure Run actions"
-  run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit')
-  run1.Property_int    = 12345
+  run1 = DDG4.RunAction(kernel,'Geant4TestRunAction/RunInit',shared=True)
+  run1.Property_int    = int(12345)
   run1.Property_double = -5e15*keV
   run1.Property_string = 'Startrun: Hello_2'
   print run1.Property_string, run1.Property_double, run1.Property_int
   run1.enableUI()
-  kernel.registerGlobalAction(run1)
   kernel.runAction().adopt(run1)
 
   print "#PYTHON:  Configure Event actions"
@@ -52,7 +51,7 @@ def setupWorker(geant4):
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropPi+");
   gen.Mask     = 1
   gen.Particle = 'pi+'
-  gen.Energy   = 100 * GeV
+  gen.Energy   = 20 * GeV
   gen.Multiplicity = 2
   kernel.generatorAction().adopt(gen)
   print "#PYTHON:  Install vertex smearing for this interaction"
@@ -66,7 +65,7 @@ def setupWorker(geant4):
   gen = DDG4.GeneratorAction(kernel,"Geant4IsotropeGenerator/IsotropE-");
   gen.Mask     = 2
   gen.Particle = 'e-'
-  gen.Energy   = 25 * GeV
+  gen.Energy   = 15 * GeV
   gen.Multiplicity = 3
   kernel.generatorAction().adopt(gen)
   print "#PYTHON:  Install vertex smearing for this interaction"

@@ -61,6 +61,7 @@ void Geant4SharedStackingAction::configureFiber(Geant4Context* thread_context)  
 void Geant4SharedStackingAction::use(Geant4StackingAction* action)   {
   if (action) {
     action->addRef();
+    m_properties.adopt(action->properties());
     m_action = action;
     return;
   }

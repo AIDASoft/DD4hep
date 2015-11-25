@@ -143,6 +143,7 @@ void Geant4SharedTrackingAction::configureFiber(Geant4Context* thread_context)  
 void Geant4SharedTrackingAction::use(Geant4TrackingAction* action)   {
   if (action) {
     action->addRef();
+    m_properties.adopt(action->properties());
     m_action = action;
     return;
   }

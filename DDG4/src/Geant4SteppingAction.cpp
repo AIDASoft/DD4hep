@@ -59,6 +59,7 @@ Geant4SharedSteppingAction::~Geant4SharedSteppingAction()   {
 void Geant4SharedSteppingAction::use(Geant4SteppingAction* action)   {
   if (action) {
     action->addRef();
+    m_properties.adopt(action->properties());
     m_action = action;
     return;
   }
