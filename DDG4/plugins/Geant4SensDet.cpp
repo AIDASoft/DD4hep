@@ -81,7 +81,7 @@ namespace DD4hep {
           Geant4Action(0,nam), Geant4ActionSD(nam), Base()
       {
         Geant4Kernel& master = Geant4Kernel::instance(lcdd);
-        Geant4Kernel& kernel = master.worker(::pthread_self());
+        Geant4Kernel& kernel = master.worker(Geant4Kernel::thread_self());
         m_sensitive   = lcdd.sensitiveDetector(nam);
         m_context     = kernel.workerContext();
         m_outputLevel = kernel.getOutputLevel(nam);

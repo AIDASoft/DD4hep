@@ -607,7 +607,7 @@ namespace DD4hep {
 	
         MaterialManager matMgr ;
         
-	Vector3D p = _o - outerThickness() * _n  ;
+	Vector3D p = _o + outerThickness() * _n  ;
 
         const MaterialVec& materials = matMgr.materialsBetween( _o , p  ) ;
 
