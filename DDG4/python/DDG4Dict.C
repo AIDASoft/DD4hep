@@ -29,7 +29,6 @@ using namespace DD4hep::Simulation;
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4DataDump.h"
 #include "DDG4/Geant4InputAction.h"
-#include <iostream>
 
 namespace DD4hep {
   namespace Simulation  {
@@ -235,83 +234,91 @@ namespace {
 #pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>::base_t;
 #endif
 
-#pragma link C++ class ActionHandle;
-#pragma link C++ class FilterHandle;
-#pragma link C++ class RunActionHandle;
-#pragma link C++ class PhaseActionHandle;
-#pragma link C++ class GeneratorActionHandle;
-#pragma link C++ class EventActionHandle;
-#pragma link C++ class PhysicsListHandle;
-#pragma link C++ class TrackingActionHandle;
-#pragma link C++ class SteppingActionHandle;
-#pragma link C++ class StackingActionHandle;
-#pragma link C++ class SensitiveHandle;
-#pragma link C++ class UserInitializationHandle;
-#pragma link C++ class DetectorConstructionHandle;
-
-#pragma link C++ class GeneratorActionSequenceHandle;
-#pragma link C++ class RunActionSequenceHandle;
-#pragma link C++ class EventActionSequenceHandle;
-#pragma link C++ class TrackingActionSequenceHandle;
-#pragma link C++ class SteppingActionSequenceHandle;
-#pragma link C++ class StackingActionSequenceHandle;
-#pragma link C++ class PhysicsListActionSequenceHandle;
-#pragma link C++ class SensDetActionSequenceHandle;
-#pragma link C++ class UserInitializationSequenceHandle;
-#pragma link C++ class DetectorConstructionSequenceHandle;
-
-#pragma link C++ class Geant4DataDump;
-
+// Basic stuff
 #pragma link C++ class Geant4ActionCreation;
-#pragma link C++ class Geant4Action;
 #pragma link C++ class Geant4Kernel;
 #pragma link C++ class Geant4Kernel::PhaseSelector;
 #pragma link C++ class Geant4Context;
 #pragma link C++ class KernelHandle;
-#pragma link C++ class Geant4Random;
+#pragma link C++ class Geant4ActionContainer;
 
+#pragma link C++ class Geant4Action;
+#pragma link C++ class ActionHandle;
+
+#pragma link C++ class RunActionSequenceHandle;
 #pragma link C++ class Geant4RunActionSequence;
+#pragma link C++ class RunActionHandle;
+#pragma link C++ class Geant4SharedRunAction;
 #pragma link C++ class Geant4RunAction;
 
+#pragma link C++ class EventActionSequenceHandle;
 #pragma link C++ class Geant4EventActionSequence;
+#pragma link C++ class EventActionHandle;
+#pragma link C++ class Geant4SharedEventAction;
 #pragma link C++ class Geant4EventAction;
 
+#pragma link C++ class SteppingActionSequenceHandle;
 #pragma link C++ class Geant4SteppingActionSequence;
+#pragma link C++ class SteppingActionHandle;
+#pragma link C++ class Geant4SharedSteppingAction;
 #pragma link C++ class Geant4SteppingAction;
 
-#pragma link C++ class Geant4StackingActionSequence;
+#pragma link C++ class StackingActionHandle;
 #pragma link C++ class Geant4StackingAction;
+#pragma link C++ class StackingActionSequenceHandle;
+#pragma link C++ class Geant4StackingActionSequence;
 
-#pragma link C++ class Geant4TrackingActionSequence;
+#pragma link C++ class TrackingActionHandle;
 #pragma link C++ class Geant4TrackingAction;
+#pragma link C++ class TrackingActionSequenceHandle;
+#pragma link C++ class Geant4TrackingActionSequence;
 
+#pragma link C++ class GeneratorActionHandle;
+#pragma link C++ class GeneratorActionSequenceHandle;
 #pragma link C++ class Geant4GeneratorActionSequence;
 #pragma link C++ class Geant4GeneratorAction;
+
 #pragma link C++ class Geant4InputAction;
 #pragma link C++ class Geant4EventReader;
 
-#pragma link C++ class Geant4PhysicsListActionSequence;
+#pragma link C++ class PhysicsListHandle;
 #pragma link C++ class Geant4PhysicsList;
+#pragma link C++ class PhysicsListActionSequenceHandle;
+#pragma link C++ class Geant4PhysicsListActionSequence;
 
+#pragma link C++ class UserInitializationHandle;
+#pragma link C++ class UserInitializationSequenceHandle;
 #pragma link C++ class Geant4UserInitializationSequence;
 #pragma link C++ class Geant4UserInitialization;
 
+#pragma link C++ class DetectorConstructionHandle;
+#pragma link C++ class DetectorConstructionSequenceHandle;
 #pragma link C++ class Geant4DetectorConstructionSequence;
 #pragma link C++ class Geant4DetectorConstruction;
 
-#pragma link C++ class Geant4ParticleHandler;
-#pragma link C++ class Geant4UserParticleHandler;
-#pragma link C++ class Geant4Filter;
+#pragma link C++ class SensitiveHandle;
+#pragma link C++ class SensDetActionSequenceHandle;
 #pragma link C++ class Geant4ActionSD;
 #pragma link C++ class Geant4Sensitive;
 #pragma link C++ class Geant4SensDetActionSequence;
 
+#pragma link C++ class FilterHandle;
+#pragma link C++ class Geant4Filter;
+
+#pragma link C++ class PhaseActionHandle;
 #pragma link C++ class Geant4ActionPhase;
 #pragma link C++ class Geant4PhaseAction;
+
 #pragma link C++ class Callback;
 #pragma link C++ class Callback::mfunc_t;
 
-// Work around CINT bug: 
+// Other (specialized) components
+#pragma link C++ class Geant4DataDump;
+#pragma link C++ class Geant4Random;
+#pragma link C++ class Geant4ParticleHandler;
+#pragma link C++ class Geant4UserParticleHandler;
+
+
 // somehow the symbol Geometry moved into global namespace. Redeclare it here
 namespace Geometry {}
 #pragma link C++ namespace Geometry;

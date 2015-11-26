@@ -483,14 +483,14 @@ namespace DD4hep {
 
     class VolCylinder : public VolSurface{
     public:
-      VolCylinder( Geometry::Volume vol, SurfaceType type_val, double thickness_inner ,double thickness_outer,  Vector3D origin_pos ) :
-	VolSurface( new VolCylinderImpl( vol,  type_val,  thickness_inner , thickness_outer, origin_pos ) ) {}
+      VolCylinder( Geometry::Volume vol, SurfaceType typ_val, double thickness_inner ,double thickness_outer,  Vector3D origin_val ) :
+        VolSurface( new VolCylinderImpl( vol,  typ_val,  thickness_inner , thickness_outer, origin_val ) ) {}
     } ;
 
     class VolCone : public VolSurface{
     public:
-      VolCone( Geometry::Volume vol, SurfaceType type, double thickness_inner ,double thickness_outer, Vector3D v, Vector3D origin ) :
-	VolSurface( new VolConeImpl( vol,  type,  thickness_inner , thickness_outer, v,  origin ) ) {}
+      VolCone( Geometry::Volume vol, SurfaceType typ_val, double thickness_inner ,double thickness_outer, Vector3D v_val, Vector3D origin_val ) :
+        VolSurface( new VolConeImpl( vol,  typ_val,  thickness_inner , thickness_outer, v_val,  origin_val ) ) {}
     } ;
 
     //======================================================================================================

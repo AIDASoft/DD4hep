@@ -319,27 +319,27 @@ namespace DD4hep {
     
     //================================================================================================================
     VolConeImpl::VolConeImpl( Geometry::Volume vol, SurfaceType typ, 
-			      double thickness_inner ,double thickness_outer, Vector3D v,  Vector3D o ) :
+                              double thickness_inner ,double thickness_outer, Vector3D v_val,  Vector3D o_val ) :
       
-      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , v ,  Vector3D() , Vector3D() , vol, 0) {
+      VolSurfaceBase(typ, thickness_inner, thickness_outer, Vector3D() , v_val ,  Vector3D() , Vector3D() , vol, 0) {
 
-      Vector3D o_rphi( o.x() , o.y() , 0. ) ;
+      Vector3D o_rphi( o_val.x() , o_val.y() , 0. ) ;
 
       // sanity check: v and o have to have a common phi
-      double dphi = v.phi() - o_rphi.phi() ;
+      double dphi = v_val.phi() - o_rphi.phi() ;
       while( dphi < -M_PI ) dphi += 2.*M_PI ;
       while( dphi >  M_PI ) dphi -= 2.*M_PI ;
 
       if( std::fabs( dphi ) > 1e-6 ){
-	std::stringstream sst ; sst << "VolConeImpl::VolConeImpl() - incompatibel vector v and o given " 
-				    << v << " - " << o ;
-	throw std::runtime_error( sst.str() ) ;
+        std::stringstream sst ; sst << "VolConeImpl::VolConeImpl() - incompatibel vector v and o given " 
+                                    << v_val << " - " << o_val ;
+        throw std::runtime_error( sst.str() ) ;
       }
       
-      Vector3D n( 1. , v.phi() , ( v.theta() + M_PI/2. ) , Vector3D::spherical ) ;
-      Vector3D u = v.cross( n ) ;
+      Vector3D n( 1. , v_val.phi() , ( v_val.theta() + M_PI/2. ) , Vector3D::spherical ) ;
+      Vector3D u_val = v_val.cross( n ) ;
 
-      setU( u ) ;
+      setU( u_val ) ;
       setOrigin( o_rphi ) ;
       setNormal( n ) ;
 

@@ -17,11 +17,14 @@
 
 // Framework include files
 #include "DDG4/Geant4Action.h"
+#if !defined(__CINT__)
 #include "DDG4/Geant4GeometryInfo.h"
+#endif
 
 // Forward declarations
 class G4VUserDetectorConstruction;
 class G4VSensitiveDetector;
+class G4VPhysicalVolume;
 class G4LogicalVolume;
 
 
@@ -38,6 +41,7 @@ namespace DD4hep {
 
     // Forward declarations
     class Geant4Kernel;
+    class Geant4GeometryInfo;
     class Geant4DetectorConstruction;
     class Geant4DetectorConstructionContext;
     class Geant4DetectorConstructionSequence;
@@ -57,7 +61,11 @@ namespace DD4hep {
     class Geant4DetectorConstructionContext  {
     public:
       /// Reference to geometry object
+#ifdef __CINT__
+      Geometry::LCDD*     lcdd;
+#else
       Geometry::LCDD&     lcdd;
+#endif
       /// Reference to the world after construction
       G4VPhysicalVolume*  world;
       /// The cached geometry information
@@ -143,6 +151,7 @@ namespace DD4hep {
       /// Sensitive detector construction callback. Called at "ConstructSDandField()"
       virtual void constructSensitives(Geant4DetectorConstructionContext* ctxt);
 
+#if !defined(__CINT__)
       //@{ Accessor to the various geant4 maps after construction
 
       /// Access to the converted materials
@@ -162,8 +171,7 @@ namespace DD4hep {
       const Geant4GeometryMaps::LimitMap& limits() const;
       /// Access to the converted regions
       const Geant4GeometryMaps::RegionMap& regions() const;
-      /// Access to the converted sensitive detectors
-      //const Geant4GeometryMaps::SensDetMap& sensitives() const;
+#endif
 
       //@}
     };

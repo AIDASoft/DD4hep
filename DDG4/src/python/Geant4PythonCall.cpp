@@ -16,6 +16,7 @@
 // Framework include files
 #include "DDG4Python/Geant4PythonCall.h"
 #include "DDG4Python/DDPython.h"
+#include "TPyReturn.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -88,7 +89,9 @@ namespace DD4hep { namespace Simulation {
     INSTANTIATE(unsigned long);
     INSTANTIATE(float);
     INSTANTIATE(double);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
     INSTANTIATE(char*);
+#endif
     INSTANTIATE(const char*);
     INSTANTIATE(PyObject*);
     INSTANTIATE(void*);

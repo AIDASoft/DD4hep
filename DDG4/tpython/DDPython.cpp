@@ -21,6 +21,7 @@
 #include "Python.h"
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include <pthread.h>
 
 // Forward declartions
