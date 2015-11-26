@@ -95,15 +95,15 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4ActionContainer();
 
-      /// Terminate all associated action instances
-      virtual int terminate();
-
       /// Set the thread's context
       void setContext(Geant4Context* ctxt);
 
     public:
       /// Thread's Geant4 execution context
       Geant4Context* workerContext();
+
+      /// Terminate all associated action instances
+      virtual int terminate();
 
       /// Access generator action sequence
       Geant4GeneratorActionSequence* generatorAction(bool create);

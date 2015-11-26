@@ -39,28 +39,34 @@ namespace DD4hep  {
   public:
     typedef std::unique_ptr<T> base_t;
 #else
-    : public std::auto_ptr<T>  {
+      : public std::auto_ptr<T>  {
     public:
-      typedef std::auto_ptr<T> base_t;
-      void swap(base_t& c) {
-	this->base_t::operator=(base_t(c.release()));
-      }
+        typedef std::auto_ptr<T> base_t;
+        void swap(base_t& c) {
+          this->base_t::operator=(base_t(c.release()));
+        }
 #endif
     public:
-      /// Default Constructor.
-    dd4hep_ptr() : base_t() {}
-      /// Constructor from pointer
-    dd4hep_ptr(T* p) : base_t(p) {}
-      /// Constructor from copy
-    dd4hep_ptr(base_t& c) : base_t(c) {}
-      /// Assignment operator
-      dd4hep_ptr& operator=(base_t& c) {
-	if ( this != &c )  {
-	  this->swap(c);
-	}
-	return *this;
-      }
-    };
+        /// Default Constructor.
+        dd4hep_ptr() : base_t() {}
+        /// Constructor from pointer
+        dd4hep_ptr(T* p) : base_t(p) {}
+        /// Constructor from copy
+        dd4hep_ptr(base_t& c) : base_t(c) {}
+        /// Assignment operator
+        dd4hep_ptr& operator=(base_t& c) {
+          if ( this != &c )  {
+            this->swap(c);
+          }
+          return *this;
+        }
+        /// Assignment operator
+        dd4hep_ptr& adopt(T* ptr) {
+          base_t smart_ptr(ptr);
+          this->swap(smart_ptr);
+          return *this;
+        }
+      };
   }
 
 #endif  // DD4HEP_MEMORY_H

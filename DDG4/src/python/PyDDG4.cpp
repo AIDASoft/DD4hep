@@ -21,10 +21,14 @@
 int PyDDG4::run(Kernel& kernel)  {
   int ret;
   DD4hep::DDPython::AllowThreads allow(0);
-  if ( 1 != (ret=kernel.configure()) )  return ret;
-  if ( 1 != (ret=kernel.initialize()) ) return ret;
-  if ( 1 != (ret=kernel.run()) )        return ret;
-  if ( 1 != (ret=kernel.terminate()) )  return ret;
+  if ( 1 != (ret=kernel.configure()) )
+    return ret;
+  else if ( 1 != (ret=kernel.initialize()) )
+    return ret;
+  else if ( 1 != (ret=kernel.run()) )
+    return ret;
+  else if ( 1 != (ret=kernel.terminate()) )
+    return ret;
     //DD4hep::DDPython::shutdown();
   return ret;
 }

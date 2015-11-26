@@ -55,7 +55,6 @@ def run():
   phys = kernel.physicsList()
   phys.extends = 'QGSP_BERT'
   phys.enableUI()
-  phys.dump()
   # and run
   simple.execute()
 

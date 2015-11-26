@@ -235,29 +235,31 @@ namespace DD4hep {
 
       /// Execute phase action if it exists
       virtual bool executePhase(const std::string& name, const void** args)  const;
+
       /// Construct detector geometry using lcdd plugin
-      void loadGeometry(const std::string& compact_file);
+      virtual void loadGeometry(const std::string& compact_file);
+      /// Load XML file 
+      virtual void loadXML(const char* fname);
 
       /** Geant4 Multi threading support */
       /// Create identified worker instance
-      Geant4Kernel& createWorker();
+      virtual Geant4Kernel& createWorker();
       /// Access worker instance by it's identifier
       Geant4Kernel& worker(unsigned long thread_identifier, bool create_if=false);
       /// Access number of workers
       int numWorkers() const;
 
       /// Run the simulation: Configure Geant4
-      int configure();
+      virtual int configure();
       /// Run the simulation: Initialize Geant4
-      int initialize();
+      virtual int initialize();
       /// Run the simulation: Simulate the number of events given by the property "NumEvents"
-      int run();
+      virtual int run();
       /// Run the simulation: Simulate the number of events "num_events" and modify the property "NumEvents"
-      int runEvents(int num_events);
+      virtual int runEvents(int num_events);
       /// Run the simulation: Terminate Geant4
-      int terminate();
-      /// Load XML file 
-      void loadXML(const char* fname);
+      virtual int terminate();
+      virtual int terminateEx();
     };
     /// Declare property
     template <typename T> Geant4Kernel& Geant4Kernel::declareProperty(const std::string& nam, T& val) {

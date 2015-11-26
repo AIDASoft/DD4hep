@@ -14,6 +14,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Memory.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/InstanceCount.h"
@@ -29,14 +30,22 @@
 #include "G4RunManager.hh"
 #endif
 #include "G4UIdirectory.hh"
+#include "G4Threading.hh"
+#include "G4AutoLock.hh"
 
 // C/C++ include files
 #include <stdexcept>
 #include <algorithm>
 #include <pthread.h>
+#include <memory>
 
 using namespace std;
 using namespace DD4hep::Simulation;
+
+namespace {
+  G4Mutex kernel_mutex=G4MUTEX_INITIALIZER;
+  DD4hep::dd4hep_ptr<Geant4Kernel> s_main_instance(0);
+}
 
 /// Standard constructor
 Geant4Kernel::PhaseSelector::PhaseSelector(Geant4Kernel* kernel)
@@ -105,13 +114,16 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref, Geant4Kernel* m, unsigned long ident)
 
 /// Default destructor
 Geant4Kernel::~Geant4Kernel() {
+  if ( this == s_main_instance.get() )   {
+    s_main_instance.release();
+  }
   destroyObjects(m_workers)();
   if ( isMaster() )  {
     releaseObjects(m_globalFilters)();
     releaseObjects(m_globalActions)();
   }
   destroyPhases();
-  deletePtr  (m_runManager);
+  deletePtr(m_runManager);
   Geant4ActionContainer::terminate();
   if ( isMaster() )  {
     m_lcdd.removeExtension < Geant4Kernel > (false);
@@ -122,8 +134,14 @@ Geant4Kernel::~Geant4Kernel() {
 
 /// Instance accessor
 Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
-  static Geant4Kernel obj(lcdd);
-  return obj;
+  if ( 0 == s_main_instance.get() )   {
+    G4AutoLock protection_lock(&kernel_mutex);    {
+      if ( 0 == s_main_instance.get() )   { // Need to check again!
+        s_main_instance.adopt(new Geant4Kernel(lcdd));
+      }
+    }
+  }
+  return *(s_main_instance.get());
 }
 
 #if 0
@@ -288,7 +306,12 @@ int Geant4Kernel::runEvents(int num_events) {
   return Geant4Exec::run(*this);
 }
 
+int Geant4Kernel::terminateEx()  {
+  return this->terminate();
+}
+
 int Geant4Kernel::terminate() {
+  printout(INFO,"Geant4Kernel","++ Terminate Geant4 and delete associated actions.");
   Geant4Exec::terminate(*this);
   destroyPhases();
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));

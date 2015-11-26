@@ -1,13 +1,55 @@
 dir_name=`pwd`;
 SW=/home/frankm/SW;
 
-INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 INSTALL_LCIO=${SW}/lcio/v02-04-03;
 INSTALL_XERCESC=${SW}/xercesc;
+
+INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
-export ROOTSYS=${SW}/root_v6.04.00_dbg;
-export ROOTSYS=${SW}/root_v5.34.25_dbg;
-. ${ROOTSYS}/bin/thisroot.sh;
+GEANT_VERSION=10.01.p02;
+ROOT_VERSION=6.04.00;
+# ==============================================================================
+# Parse arguments
+# ==============================================================================
+parse_command_line_args()
+{
+    MULTITHREADED="";
+    ARG_ERROR="";
+    PLATFORMS="dbg opt";
+    while [[ "$1" == -* ]]; do
+        #echo "Arg:$1 $2";
+        a1=`echo $1 | tr A-Z a-z`;
+	case ${a1} in
+	    -root)
+		ROOT_VERSION=$2;
+		shift
+		;;
+
+	    -geant4)
+		GEANT_VERSION=$2;
+		shift
+		;;
+
+	    -build)
+		PLATFORMS="$2";
+		shift
+		;;
+
+            -mt)
+                MULTITHREADED="YES";
+                ;;
+
+            -st)
+                MULTITHREADED="";
+                ;;
+
+	    *)
+		ARG_ERROR=$1;
+		;;
+	esac
+	shift
+    done
+}
 #cat ${ROOTSYS}/bin/thisroot.sh;
 #
 LINE="==================================================================================================="
@@ -107,4 +149,21 @@ build_all()
     done;
 }
 
+
+parse_command_line_args $*;
+if [ "$ARG_ERROR" != "" ]; then
+    echo "Unknown option: ERROR CONDITION";
+    exit 0;
+elif [ "$ROOT_VERSION" == "" ] || [ "$PLATFORMS" == "" ]; then
+    echo "ERROR CONDITION ROOT_VERSION=${ROOT_VERSION}  PLATFORMS=${PLATFORMS}";
+    exit 0;
+fi;
+export INSTALL_G4=${SW}/g4_${GEANT_VERSION}_dbg/lib/Geant4-10.1.2;
+export ROOTSYS=${SW}/root_v${ROOT_VERSION}_dbg;
+. ${ROOTSYS}/bin/thisroot.sh;
+#
+#
 build_all;
+#
+#
+#

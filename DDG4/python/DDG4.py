@@ -132,13 +132,15 @@ def _kernel_phase(self,name):        return self.addSimplePhase(name,False)
 #---------------------------------------------------------------------------
 def _kernel_worker(self):            return Kernel(self.get().createWorker())
 #---------------------------------------------------------------------------
+def _kernel_terminate(self):         return self.get().terminate()
+#---------------------------------------------------------------------------
 Kernel.phase = _kernel_phase
 Kernel.registerGlobalAction = _registerGlobalAction
 Kernel.registerGlobalFilter = _registerGlobalFilter
 Kernel.createWorker = _kernel_worker
 Kernel.__getattr__ = _getKernelProperty
 Kernel.__setattr__ = _setKernelProperty
-
+Kernel.terminate = _kernel_terminate
 #---------------------------------------------------------------------------
 ActionHandle = Sim.ActionHandle
 #---------------------------------------------------------------------------
@@ -598,5 +600,6 @@ class Geant4:
     #self.master().terminate()
     from ROOT import PyDDG4
     PyDDG4.run(self.master().get())
+    return self
 
 Simple = Geant4
