@@ -259,8 +259,8 @@ void DDPython::releaseObject(PyObject*& obj)   {
 /// Release python object
 void DDPython::assignObject(PyObject*& obj, PyObject* new_obj)   {
   if ( ::Py_IsInitialized() )  {
-    if ( obj ) Py_DECREF(obj);
-    if ( new_obj ) Py_INCREF(new_obj);
+    if ( obj ) { Py_DECREF(obj); }
+    if ( new_obj ){ Py_INCREF(new_obj); }
   }
   obj = new_obj;
 }
