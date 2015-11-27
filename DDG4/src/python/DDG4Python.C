@@ -23,7 +23,6 @@
 #include "DDG4Python/Geant4PythonDetectorConstruction.h"
 #include "PyDDG4.h"
 
-
 // CINT configuration
 #if defined(__MAKECINT__)
 #pragma link C++ namespace DD4hep;

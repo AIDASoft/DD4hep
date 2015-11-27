@@ -65,7 +65,8 @@ namespace DD4hep {
       typedef Geant4ParticleMap::Particle         Particle;
       typedef Geant4ParticleMap::ParticleMap      ParticleMap;
       typedef Geant4ParticleMap::TrackEquivalents TrackEquivalents;
-#ifdef __MAKECINT__
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(G__DICTIONARY)
+      // Need to force to public for the ROOT dictionary
     public:
 #else
     private:
