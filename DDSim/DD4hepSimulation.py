@@ -38,6 +38,8 @@ from DDSim.Helper.MagneticField import MagneticField
 from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.Action import Action
 from DDSim.Helper.Random import Random
+from DDSim.Helper.Filter import Filter
+
 import os
 import sys
 import datetime
@@ -73,6 +75,8 @@ class DD4hepSimulation(object):
     self.part = ParticleHandler()
     self.field = MagneticField()
     self.action = Action()
+
+    self.filter = Filter()
 
     ### use TCSH geant UI instead of QT
     os.environ['G4UI_USE_TCSH'] = "1"
@@ -219,7 +223,7 @@ class DD4hepSimulation(object):
         detType = sd.type()
   #      if len(detectorList) and not(name in detectorList):
   #        continue
-        print 'getDetectorLists - found active detctor ' ,  name , ' type: ' , type
+        print 'getDetectorLists - found active detctor ' ,  name , ' type: ' , detType
         if detType == "tracker":
           trackers.append( det.name() )
         if detType == "calorimeter":
@@ -358,14 +362,7 @@ class DD4hepSimulation(object):
 
 
     # Setup global filters for use in sensitive detectors
-
-    f1 = DDG4.Filter(kernel,'GeantinoRejectFilter/GeantinoRejector')
-    kernel.registerGlobalFilter(f1)
-
-    f4 = DDG4.Filter(kernel,'EnergyDepositMinimumCut')
-    f4.Cut = 1.*keV
-    kernel.registerGlobalFilter(f4)
-
+    self.filter.setupFilters( kernel )
 
     #=================================================================================
     # get lists of trackers and calorimeters in lcdd
@@ -373,9 +370,8 @@ class DD4hepSimulation(object):
     trk,cal = self.getDetectorLists( lcdd )
 
     # ---- add the trackers:
-    # FIXME: this assumes the same filters for all trackers ...
     try:
-      self.__setupSensitiveDetectors( trk, simple.setupTracker, filt=f1)
+      self.__setupSensitiveDetectors( trk, simple.setupTracker)
     except Exception as e:
       print "ERROR setting up sensitive detector", str(e)
       raise
@@ -560,13 +556,12 @@ class DD4hepSimulation(object):
 
     return runHeader
 
-  def __setupSensitiveDetectors(self, detectors, setupFuction, filt=None):
+  def __setupSensitiveDetectors(self, detectors, setupFuction):
     """ attach sensitive detector actions for all subdetectors
     can be steered with the `Action` ConfigHelpers
 
     :param detectors: list of detectors
     :param setupFunction: function used to register the sensitive detector
-    :param filt: optional, give a filter to attach to all sensitive detectors
     """
     for det in detectors:
       print 'Setting up SD for %s' % det
@@ -586,8 +581,10 @@ class DD4hepSimulation(object):
           seq,act = setupFuction( det, type=action )
       else:
         seq,act = setupFuction( det )
-      if filt:
-        seq.add(filt)
+      for pattern, filt in self.filter.mapDetFilter.iteritems():
+        if pattern.lower() in det.lower():
+          print "Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det )
+          seq.add( self.filter.filters[filt]['filter'] )
       ##set detailed hit creation mode for this
       if self.detailedShowerMode:
         act.HitCreationMode = 2
