@@ -15,6 +15,8 @@ try:
 except ImportError:
   ARGCOMPLETEENABLED=False
 
+POSSIBLEINPUTFILES = (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc")
+
 def outputLevel( level ):
   """return INT for outputlevel"""
   if isinstance(level, int):
@@ -63,10 +65,11 @@ class DD4hepSimulation(object):
     self.enableGun = False
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
-    self.detailedShowerMode = False
+    self.enableDetailedShowerMode = False
 
-    self.errorMessages = []
-    self.dumpParameter = False
+    self._errorMessages = []
+    self._dumpParameter = False
+    self._dumpSteeringFile = False
 
     ## objects for extended configuration option
     self.output = Output()
@@ -122,7 +125,7 @@ class DD4hepSimulation(object):
                         "\nshell: enable interactive session")
 
     parser.add_argument("--inputFiles", "-I", nargs='+', action="store", default=self.inputFiles,
-                        help="InputFiles for simulation, lcio, stdhep, HEPEvt, and hepevt files are supported")
+                        help="InputFiles for simulation %s files are supported" % ", ".join(POSSIBLEINPUTFILES) )
 
     parser.add_argument("--outputFile","-O", action="store", default=self.outputFile,
                         help="Outputfile from the simulation,only lcio output is supported")
@@ -156,11 +159,14 @@ class DD4hepSimulation(object):
     parser.add_argument("--enableGun", "-G", action="store_true", dest="enableGun", default=self.enableGun,
                         help="enable the DDG4 particle gun")
 
-    parser.add_argument("--dumpParameter", "--dump", action="store_true", dest="dumpParameter", default=self.dumpParameter,
+    parser.add_argument("--dumpParameter", "--dump", action="store_true", dest="dumpParameter", default=self._dumpParameter,
                         help="Print all configuration Parameters and exit")
 
-    parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="detailedShowerMode", default=self.detailedShowerMode,
+    parser.add_argument("--enableDetailedShowerMode", action="store_true", dest="enableDetailedShowerMode", default=self.enableDetailedShowerMode,
                         help="use detailed shower mode")
+
+    parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile", default=self._dumpSteeringFile,
+                        help="print an example steering file to stdout")
 
     #FIXME: Add all the things here, then they will show up in the help usage
     #output, or do something smarter with fullHelp only for example
@@ -172,11 +178,12 @@ class DD4hepSimulation(object):
       argcomplete.autocomplete(parser)
     parsed = parser.parse_args()
 
-    self.dumpParameter = parsed.dumpParameter
+    self._dumpParameter = parsed.dumpParameter
+    self._dumpSteeringFile = parsed.dumpSteeringFile
 
-    self.compactFile = os.path.abspath(parsed.compactFile)
+    self.compactFile = parsed.compactFile
     self.inputFiles = parsed.inputFiles
-    self.inputFiles = self.__checkFileFormat( self.inputFiles, (".stdhep", ".slcio", ".HEPEvt", ".hepevt", ".hepmc"))
+    self.inputFiles = self.__checkFileFormat( self.inputFiles, POSSIBLEINPUTFILES)
     self.outputFile = parsed.outputFile
     self.__checkFileFormat( self.outputFile, ('.root', '.slcio'))
     self.runType = parsed.runType
@@ -186,25 +193,36 @@ class DD4hepSimulation(object):
     self.skipNEvents = parsed.skipNEvents
     self.physicsList = parsed.physicsList
     self.crossingAngleBoost = parsed.crossingAngleBoost
-    self.macroFile = os.path.abspath(parsed.macroFile)
+    self.macroFile = parsed.macroFile
     self.enableGun = parsed.enableGun
-    self.detailedShowerMode = parsed.detailedShowerMode
+    self.enableDetailedShowerMode = parsed.enableDetailedShowerMode
     self.vertexOffset = parsed.vertexOffset
     self.vertexSigma = parsed.vertexSigma
 
     if not self.compactFile:
-      self.errorMessages.append("ERROR: No geometry compact file provided")
+      self._errorMessages.append("ERROR: No geometry compact file provided")
 
     if self.runType == "batch":
       if not self.numberOfEvents:
-        self.errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
+        self._errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
       if not self.inputFiles and not self.enableGun:
-        self.errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
+        self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
+
+    if self._dumpParameter:
+      from pprint import pprint
+      print "="*80
+      pprint(vars(self))
+      print "="*80
+      exit(1)
+
+    if self._dumpSteeringFile:
+      self.__printSteeringFile( parser )
+      exit(1)
 
     #self.__treatUnknownArgs( parsed, unknown )
     self.__parseAllHelper( parsed )
-    if self.errorMessages:
-      parser.epilog = "\n".join(self.errorMessages)
+    if self._errorMessages:
+      parser.epilog = "\n".join(self._errorMessages)
       parser.print_help()
       exit(1)
 
@@ -399,13 +417,6 @@ class DD4hepSimulation(object):
 
     DD4hep.setPrintLevel(self.printLevel)
 
-    if self.dumpParameter:
-      from pprint import pprint
-      print "="*80
-      pprint(vars(self))
-      print "="*80
-      exit(1)
-
     kernel.configure()
     kernel.initialize()
 
@@ -456,7 +467,7 @@ class DD4hepSimulation(object):
     if isinstance( fileNames, basestring ):
       fileNames = [fileNames]
     if not all( fileName.endswith( extensions ) for fileName in fileNames ):
-      self.errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
+      self._errorMessages.append("ERROR: Unknown fileformat for file: %s" % fileNames)
     return fileNames
 
   def __applyBoostOrSmear( self, kernel, actionList, mask ):
@@ -499,7 +510,7 @@ class DD4hepSimulation(object):
             try:
               obj.setOption( var, parsedDict[key] )
             except RuntimeError as e:
-              self.errorMessages.append( "ERROR: %s " % e )
+              self._errorMessages.append( "ERROR: %s " % e )
 
   def __checkOutputLevel(self, level):
     """return outputlevel as int so we don't have to import anything for faster startup"""
@@ -512,10 +523,10 @@ class DD4hepSimulation(object):
       try:
         return outputLevel(level.upper())
       except ValueError:
-        self.errorMessages.append( "ERROR: printLevel is neither integer nor string" )
+        self._errorMessages.append( "ERROR: printLevel is neither integer nor string" )
         return -1
     except KeyError:
-      self.errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
+      self._errorMessages.append( "ERROR: printLevel '%s' unknown" % level )
       return -1
 
   def __addParametersToRunHeader( self ):
@@ -586,12 +597,62 @@ class DD4hepSimulation(object):
           print "Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det )
           seq.add( self.filter.filters[filt]['filter'] )
       ##set detailed hit creation mode for this
-      if self.detailedShowerMode:
+      if self.enableDetailedShowerMode:
         act.HitCreationMode = 2
+
+  def __printSteeringFile( self, parser):
+    """print the parameters formated as a steering file"""
+
+    steeringFileBase="""from DDSim.DD4hepSimulation import DD4hepSimulation
+from SystemOfUnits import mm, GeV, MeV
+SIM = DD4hepSimulation()
+
+"""
+    optionDict = parser._option_string_actions
+    parameters = vars(self)
+    for parName, parameter in sorted(parameters.items(), sortParameters ):
+      if parName.startswith("_"):
+        continue
+      if isinstance( parameter, ConfigHelper ):
+        steeringFileBase += "\n\n"
+        options = parameter.getOptions()
+        for opt,valAndDoc in options.iteritems():
+          parValue, parDoc = valAndDoc
+          if parDoc:
+            steeringFileBase += "## %s\n" % "\n## ".join(parDoc.splitlines())
+          if isinstance( parValue, basestring ):
+            steeringFileBase += "SIM.%s.%s = \"%s\"\n" %(parName, opt, parValue)
+          else:
+            steeringFileBase += "SIM.%s.%s = %s\n" %(parName, opt, parValue)
+      else:
+        optionObj = optionDict.get("--"+parName, None)
+        if isinstance(optionObj, argparse._StoreAction ):
+          steeringFileBase += "## %s\n" % "\n## ".join(optionObj.help.splitlines())
+        if isinstance( parameter, basestring):
+          steeringFileBase += "SIM.%s = \"%s\"" %( parName, str(parameter))
+        else:
+          steeringFileBase += "SIM.%s = %s" %( parName, str(parameter))
+        steeringFileBase += "\n"
+    print steeringFileBase
 
 ################################################################################
 ### MODULE FUNCTIONS GO HERE
 ################################################################################
+
+def sortParameters( parA, parB ):
+  """sort the parameters by name: first normal parameters, then set of
+  parameters based on ConfigHelper objects
+  """
+  parTypeA = parA[1]
+  parTypeB = parB[1]
+  if isinstance(parTypeA, ConfigHelper) and isinstance(parTypeB, ConfigHelper):
+    return 1 if str(parA[0]) > str(parB[0]) else -1
+  elif isinstance(parTypeA, ConfigHelper):
+    return 1
+  elif isinstance(parTypeB, ConfigHelper):
+    return -1
+  else:
+    return 1 if str(parA[0]) > str(parB[0]) else -1
 
 def getOutputLevel(level):
   """return output.LEVEL"""
