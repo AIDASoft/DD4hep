@@ -168,7 +168,6 @@ class DD4hepSimulation(object):
     parser.add_argument("--dumpSteeringFile", action="store_true", dest="dumpSteeringFile", default=self._dumpSteeringFile,
                         help="print an example steering file to stdout")
 
-    #FIXME: Add all the things here, then they will show up in the help usage
     #output, or do something smarter with fullHelp only for example
     self.__addAllHelper( parser )
     ## now parse everything. The default values are now taken from the
@@ -623,15 +622,18 @@ SIM = DD4hepSimulation()
           parValue, parDoc = valAndDoc
           if parDoc:
             steeringFileBase += "## %s\n" % "\n## ".join(parDoc.splitlines())
+          ## add quotes if it is a string
           if isinstance( parValue, basestring ):
             steeringFileBase += "SIM.%s.%s = \"%s\"\n" %(parName, opt, parValue)
           else:
             steeringFileBase += "SIM.%s.%s = %s\n" %(parName, opt, parValue)
       else:
+        ## get the docstring from the command line parameter
         optionObj = optionDict.get("--"+parName, None)
         if isinstance(optionObj, argparse._StoreAction ):
           steeringFileBase += "## %s\n" % "\n## ".join(optionObj.help.splitlines())
-        if isinstance( parameter, basestring):
+        ## add quotes if it is a string
+        if isinstance(parameter, basestring):
           steeringFileBase += "SIM.%s = \"%s\"" %( parName, str(parameter))
         else:
           steeringFileBase += "SIM.%s = %s" %( parName, str(parameter))
