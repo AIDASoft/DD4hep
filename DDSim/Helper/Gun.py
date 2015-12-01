@@ -4,7 +4,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from SystemOfUnits import GeV
 
 class Gun( ConfigHelper ):
-  """Gun holding all gun properties"""
+  """Configuration for the DDG4 ParticleGun"""
   def __init__( self ):
     super(Gun, self).__init__()
     self.energy = 10*GeV

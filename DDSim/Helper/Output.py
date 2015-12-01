@@ -4,7 +4,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.DD4hepSimulation import outputLevel
 
 class Output( ConfigHelper ):
-  """Output holding all gun properties so we can easily overwrite them via command line magic"""
+  """Configuration for the output levels of DDG4 components"""
   def __init__( self ):
     super(Output, self).__init__()
     self._kernel = outputLevel('INFO')

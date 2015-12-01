@@ -1,11 +1,6 @@
 """Helper object for Filters
 
->>> SIM = DD4hepSimulation()
->>> SIM.filter.mapDetFilter['FTD'] = "edep3keV"
->>> SIM.filter.filters['edep3keV'] = dict(name="EnergyDepositMinimumCut/3keV", parameter={"Cut": 3.0*keV} )
-
-
-Later the paramter dictionary is used to instantiate the filter object
+Later the parameter dictionary is used to instantiate the filter object
 The default filters are a GeantinoRejector and a 1keV minimum energy cut
 
 """
@@ -14,14 +9,46 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from SystemOfUnits import keV
 
 class Filter( ConfigHelper ):
-  """Filter for sensitive detector actions"""
+  """Configuration for sensitive detector filters
+
+  Set the default filter for tracker or caliromter
+  >>> SIM.filter.tracker = "edep1kev"
+  >>> SIM.filter.calo = ""
+
+  Assign a filter to a sensitive detector via pattern matching
+  >>> SIM.filter.mapDetFilter['FTD'] = "edep1kev"
+
+  Or more than one filter:
+  >>> SIM.filter.mapDetFilter['FTD'] = ["edep1kev", "geantino"]
+
+  Create a custom filter. The dictionary is used to instantiate the filter later on
+  >>> SIM.filter.filters['edep3kev'] = dict(name="EnergyDepositMinimumCut/3keV", parameter={"Cut": 3.0*keV} )
+
+  """
   def __init__( self ):
     super(Filter, self).__init__()
     self._mapDetFilter = {}
-    self._tracker = "edep"
+    self._tracker = "edep1kev"
     self._calo    = None
     self._filters = {}
     self._createDefaultFilters()
+
+  @property
+  def tracker( self ):
+    """ default filter for tracking sensitive detectors """
+    return self._tracker
+  @tracker.setter
+  def tracker( self, val ):
+    self._tracker = val
+
+  @property
+  def calo( self ):
+    """ default filter for calorimeter sensitive detectors """
+    return self._calo
+  @calo.setter
+  def calo( self, val ):
+    self._calo = val
+
 
   @property
   def filters( self ):
@@ -32,8 +59,8 @@ class Filter( ConfigHelper ):
     if isinstance(val, dict):
       self._filters.update(val)
       return
-    ## 
-    raise RuntimeError("Commandline setting of filters is not supported, use a steeringFile:%s " % val )
+    ##
+    raise RuntimeError("Commandline setting of filters is not supported, use a steeringFile: %s " % val )
 
 
   @property
