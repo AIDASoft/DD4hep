@@ -378,9 +378,12 @@ class DD4hepSimulation(object):
 
     #=================================================================================
 
-
     # Setup global filters for use in sensitive detectors
-    self.filter.setupFilters( kernel )
+    try:
+      self.filter.setupFilters( kernel )
+    except RuntimeError as e:
+      print "ERROR",str(e)
+      exit(1)
 
     #=================================================================================
     # get lists of trackers and calorimeters in lcdd
@@ -592,10 +595,7 @@ class DD4hepSimulation(object):
           seq,act = setupFuction( det, type=action )
       else:
         seq,act = setupFuction( det )
-      for pattern, filt in self.filter.mapDetFilter.iteritems():
-        if pattern.lower() in det.lower():
-          print "Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det )
-          seq.add( self.filter.filters[filt]['filter'] )
+      self.filter.applyFilters( seq, det )
       ##set detailed hit creation mode for this
       if self.enableDetailedShowerMode:
         act.HitCreationMode = 2
