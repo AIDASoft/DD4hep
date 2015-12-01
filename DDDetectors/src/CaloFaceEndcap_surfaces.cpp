@@ -140,7 +140,8 @@ namespace{
     bf["side"]   =  1 ; 
     
 
-    Vector3D u(1.,0.,0.), v(0.,1.,0.), n(0.,0.,1.), o(0.,0., zpos );
+    // shift position of origin of helper plane to pick up Air instead of vacuum 
+    Vector3D u(1.,0.,0.), v(0.,1.,0.), n(0.,0.,1.), o(0., 0.5*radius , zpos );
     
     CaloEndcapPlane surf_pz(comp_vol,Type(Type::Helper,Type::Sensitive), inner_thickness, outer_thickness, u, v, n, o);
 
