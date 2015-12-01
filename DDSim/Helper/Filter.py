@@ -82,8 +82,9 @@ class Filter( ConfigHelper ):
     for index in xrange(0,len(vals),2):
       self._mapDetFilter[vals[index]] = vals[index+1]
 
-    self._mapDetFilter = val
-
+  def resetFilter( self ):
+    """ remove all filters """
+    self._filters = {}
 
   def _createDefaultFilters( self ):
     """ create the map with the default filters """
@@ -94,13 +95,44 @@ class Filter( ConfigHelper ):
                                      parameter={"Cut": 1.0*keV} )
 
 
+  def __makeMapDetList( self ):
+    """ create the values of the mapDetFilters a list of filters """
+    for pattern, filters in self._mapDetFilter.iteritems():
+      self._mapDetFilter[pattern] = ConfigHelper.makeList(filters)
+
+
   def setupFilters( self, kernel):
     """ attach all filters to the kernel """
     import DDG4
+    setOfFilters = set()
 
-    for _pattern, filt in self.filters.iteritems():
+    for name, filt in self.filters.iteritems():
+      setOfFilters.add(name)
       ddFilt = DDG4.Filter(kernel,filt['name'])
       for para, value in filt['parameter'].iteritems():
         setattr( ddFilt, para, value )
       kernel.registerGlobalFilter(ddFilt)
       filt['filter'] = ddFilt
+
+    from itertools import chain
+    listOfFilters = []
+    for val in self.mapDetFilter.values():
+      listOfFilters += ConfigHelper.makeList(val)
+    requestedFilter = set(chain( ConfigHelper.makeList(self.tracker), ConfigHelper.makeList(self.calo), listOfFilters))
+    print "ReqFilt",requestedFilter
+    if requestedFilter - setOfFilters:
+      raise RuntimeError(" Filter(s) '%s' are not registered!" %  str(requestedFilter - setOfFilters) )
+
+  def applyFilters( self, seq, det ):
+    """apply the filters to to the sensitive detector
+
+    :param seq: sequence object returned when creating sensitive detector
+    :param det: sensitive detector name
+    :returns: None
+    """
+    self.__makeMapDetList()
+    for pattern, filts in self.mapDetFilter.iteritems():
+      if pattern.lower() in det.lower():
+        for filt in filts:
+          print "Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det )
+          seq.add( self.filters[filt]['filter'] )
