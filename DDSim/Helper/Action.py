@@ -1,26 +1,27 @@
 """Helper object for SD Actions
-
-The default tracker and calorimeter actions can be set with
-
->>> SIM = DD4hepSimulation()
->>> SIM.action.tracker = "Geant4TrackerAction"
->>> SIM.action.tracker = "Geant4CalorimeterAction"
-
-for specific subdetectors specific sensitive detectors can be set based on pattern matching
-
->>> SIM = DD4hepSimulation()
->>> SIM.action.mapActions['tpc'] = "TPCSDAction"
-
-and additional parameters for the sensitive detectors can be set when the map is given a tuple
-
->>> SIM = DD4hepSimulation()
->>> SIM.action.mapActions['ecal'] =( "CaloPreShowerSDAction", {"FirstLayerNumber": 1} )
 """
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class Action( ConfigHelper ):
-  """Action holding sensitive detector actions"""
+  """Action holding sensitive detector actions
+  The default tracker and calorimeter actions can be set with
+
+  >>> SIM = DD4hepSimulation()
+  >>> SIM.action.tracker = "Geant4TrackerAction"
+  >>> SIM.action.tracker = "Geant4CalorimeterAction"
+
+  for specific subdetectors specific sensitive detectors can be set based on pattern matching
+
+  >>> SIM = DD4hepSimulation()
+  >>> SIM.action.mapActions['tpc'] = "TPCSDAction"
+
+  and additional parameters for the sensitive detectors can be set when the map is given a tuple
+
+  >>> SIM = DD4hepSimulation()
+  >>> SIM.action.mapActions['ecal'] =( "CaloPreShowerSDAction", {"FirstLayerNumber": 1} )
+
+  """
   def __init__( self ):
     super(Action, self).__init__()
     self._tracker = 'Geant4TrackerAction'
@@ -47,7 +48,7 @@ class Action( ConfigHelper ):
   @property
   def mapActions( self ):
     """ create a map of patterns and actions to be applied to sensitive detectors
-    e.g. tpc --> TPCSDAction """
+        example: SIM.action.mapActions['tpc'] = "TPCSDAction" """
     return self._mapActions
 
   @mapActions.setter

@@ -3,7 +3,7 @@ from SystemOfUnits import mm
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class MagneticField( ConfigHelper ):
-  """MagneticField holding all field properties"""
+  """Configuration for the magnetic field (stepper)"""
   def __init__( self ):
     super(MagneticField, self).__init__()
     self.stepper = "HelixSimpleRunge"

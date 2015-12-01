@@ -615,6 +615,9 @@ SIM = DD4hepSimulation()
         continue
       if isinstance( parameter, ConfigHelper ):
         steeringFileBase += "\n\n"
+        steeringFileBase += "################################################################################\n"
+        steeringFileBase += "## %s \n" % "\n## ".join( parameter.__doc__.splitlines() )
+        steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
         for opt,valAndDoc in options.iteritems():
           parValue, parDoc = valAndDoc

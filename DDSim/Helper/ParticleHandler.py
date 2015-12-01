@@ -4,7 +4,7 @@ from SystemOfUnits import MeV
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class ParticleHandler( ConfigHelper ):
-  """Gun holding all gun properties so we can easily overwrite them via command line magic"""
+  """Configuration for the Particle Handler/ MCTruth treatment"""
   def __init__( self ):
     super(ParticleHandler, self).__init__()
     self._saveProcesses = ['Decay']
@@ -15,7 +15,7 @@ class ParticleHandler( ConfigHelper ):
 
   @property
   def saveProcesses(self):
-    """List of processes to save, give as whitespace separated string in quotation marks"""
+    """List of processes to save, on command line give as whitespace separated string in quotation marks"""
     return self._saveProcesses
   @saveProcesses.setter
   def saveProcesses(self, stringVal):
