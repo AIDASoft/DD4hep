@@ -34,6 +34,8 @@ namespace DD4hep {
 #pragma link off all classes;
 #pragma link off all functions;
 
+using namespace std;
+
 /// Define namespaces
 #pragma link C++ namespace DD4hep;
 #pragma link C++ namespace DD4hep::Geometry;
@@ -52,8 +54,8 @@ namespace DD4hep {
 #pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>+;
 #pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>::base_t+;
 #pragma link C++ class DD4hep::Simulation::Geant4Particle+;
-#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Particle*>+;
-#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Particle*>+;
+#pragma link C++ class vector<DD4hep::Simulation::Geant4Particle*>+;
+#pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>+;
 #pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::iterator;
 #pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>::const_iterator;
 
@@ -63,24 +65,24 @@ namespace DD4hep {
 #pragma link C++ function operator!=( const map<int,DD4hep::Simulation::Geant4Particle*>::iterator&, const map<int,DD4hep::Simulation::Geant4Particle*>::iterator& );
 #endif
 
-//#pragma link C++ class std::type_info;
+//#pragma link C++ class type_info;
 #pragma link C++ class pair<DD4hep::Callback,unsigned long>+;
 
 /// Dictionaires for basic Hit data structures
 #pragma link C++ class DD4hep::Simulation::Geant4HitData+;
-#pragma link C++ class std::vector<DD4hep::Simulation::Geant4HitData*>+;
+#pragma link C++ class vector<DD4hep::Simulation::Geant4HitData*>+;
 #pragma link C++ class DD4hep::Simulation::Geant4HitData::Contribution+;
 #pragma link C++ class DD4hep::Simulation::Geant4HitData::Contributions+;
 
 /// Dictionaires for Tracker Hit data structures
 #pragma link C++ class DD4hep::Simulation::Geant4Tracker+;
 #pragma link C++ class DD4hep::Simulation::Geant4Tracker::Hit+;
-#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Tracker::Hit*>+;
+#pragma link C++ class vector<DD4hep::Simulation::Geant4Tracker::Hit*>+;
 
 /// Dictionaires for Calorimeter Hit data structures
 #pragma link C++ class DD4hep::Simulation::Geant4Calorimeter+;
 #pragma link C++ class DD4hep::Simulation::Geant4Calorimeter::Hit+;
-#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Calorimeter::Hit*>+;
+#pragma link C++ class vector<DD4hep::Simulation::Geant4Calorimeter::Hit*>+;
 
 #endif
 

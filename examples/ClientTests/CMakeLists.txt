@@ -41,8 +41,11 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
 endforeach()
 #
 #
-#
-foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MiniTel SiliconBlock NestedSimple NestedDetectors )
+# Note:
+# IronCylinder has no segmentation!
+# MaterialTester no geometry
+# SectorBarrelCalorimeter is bad
+foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBlock NestedSimple NestedDetectors )
   #
   # Test material scans in [origine to 10 meters in y]
   dd4hep_add_test_reg( ClientTests_${test}_material_scan
