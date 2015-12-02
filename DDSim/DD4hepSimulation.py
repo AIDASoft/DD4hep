@@ -391,14 +391,14 @@ class DD4hepSimulation(object):
 
     # ---- add the trackers:
     try:
-      self.__setupSensitiveDetectors( trk, simple.setupTracker)
+      self.__setupSensitiveDetectors( trk, simple.setupTracker, self.filter.tracker)
     except Exception as e:
       print "ERROR setting up sensitive detector", str(e)
       raise
 
   # ---- add the calorimeters:
     try:
-      self.__setupSensitiveDetectors( cal, simple.setupCalorimeter )
+      self.__setupSensitiveDetectors( cal, simple.setupCalorimeter, self.filter.calo )
     except Exception as e:
       print "ERROR setting up sensitive detector", str(e)
       raise
@@ -569,7 +569,7 @@ class DD4hepSimulation(object):
 
     return runHeader
 
-  def __setupSensitiveDetectors(self, detectors, setupFuction):
+  def __setupSensitiveDetectors(self, detectors, setupFuction, defaultFilter=None):
     """ attach sensitive detector actions for all subdetectors
     can be steered with the `Action` ConfigHelpers
 
@@ -594,7 +594,7 @@ class DD4hepSimulation(object):
           seq,act = setupFuction( det, type=action )
       else:
         seq,act = setupFuction( det )
-      self.filter.applyFilters( seq, det )
+      self.filter.applyFilters( seq, det, defaultFilter )
       ##set detailed hit creation mode for this
       if self.enableDetailedShowerMode:
         act.HitCreationMode = 2

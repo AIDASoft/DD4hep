@@ -21,6 +21,9 @@ class Filter( ConfigHelper ):
   Or more than one filter:
   >>> SIM.filter.mapDetFilter['FTD'] = ["edep1kev", "geantino"]
 
+  Don't use the default filter or anything else:
+  >>> SIM.filter.mapDetFilter['TPC'] = None ## or "" or []
+
   Create a custom filter. The dictionary is used to instantiate the filter later on
   >>> SIM.filter.filters['edep3kev'] = dict(name="EnergyDepositMinimumCut/3keV", parameter={"Cut": 3.0*keV} )
 
@@ -35,7 +38,7 @@ class Filter( ConfigHelper ):
 
   @property
   def tracker( self ):
-    """ default filter for tracking sensitive detectors """
+    """ default filter for tracking sensitive detectors; this is applied if no other filter is used for a tracker"""
     return self._tracker
   @tracker.setter
   def tracker( self, val ):
@@ -43,7 +46,7 @@ class Filter( ConfigHelper ):
 
   @property
   def calo( self ):
-    """ default filter for calorimeter sensitive detectors """
+    """ default filter for calorimeter sensitive detectors; this is applied if no other filter is used for a calorimeter """
     return self._calo
   @calo.setter
   def calo( self, val ):
@@ -123,7 +126,7 @@ class Filter( ConfigHelper ):
     if requestedFilter - setOfFilters:
       raise RuntimeError(" Filter(s) '%s' are not registered!" %  str(requestedFilter - setOfFilters) )
 
-  def applyFilters( self, seq, det ):
+  def applyFilters( self, seq, det, defaultFilter=None):
     """apply the filters to to the sensitive detector
 
     :param seq: sequence object returned when creating sensitive detector
@@ -131,8 +134,13 @@ class Filter( ConfigHelper ):
     :returns: None
     """
     self.__makeMapDetList()
+    foundFilter=False
     for pattern, filts in self.mapDetFilter.iteritems():
       if pattern.lower() in det.lower():
+        foundFilter = True
         for filt in filts:
           print "Adding filter '%s' matched with '%s' to sensitive detector for '%s' " %( filt, pattern, det )
           seq.add( self.filters[filt]['filter'] )
+
+    if not foundFilter and defaultFilter:
+      seq.add( self.filters[defaultFilter]['filter'] )
