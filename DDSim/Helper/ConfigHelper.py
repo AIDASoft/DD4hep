@@ -45,7 +45,7 @@ class ConfigHelper( object ):
   @staticmethod
   def makeList( stringVal, sep=" "):
     """returns a list from a string separated by sep"""
-    if stringVal is None:
+    if not stringVal:
       return []
     if isinstance( stringVal, list ):
       return stringVal
