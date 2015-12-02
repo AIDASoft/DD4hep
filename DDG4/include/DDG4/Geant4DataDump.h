@@ -55,9 +55,10 @@ namespace DD4hep {
       Geant4DataDump(const std::string& tag);
       /// Standard destructor
       virtual ~Geant4DataDump();
-
+#if !(defined(G__DICTIONARY) || defined(__CLANG__) || defined(__CINT__) || defined(__MAKECINT__))
       /// Print a single particle to the output logging using the specified print level
       void print(PrintLevel level, Geant4ParticleHandle p)  const;
+#endif
       /// Print the particle container to the output logging using the specified print level
       void print(PrintLevel level, const std::string& container, const Particles* parts);
 

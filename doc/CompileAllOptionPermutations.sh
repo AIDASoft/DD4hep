@@ -52,21 +52,22 @@ parse_command_line_args()
 }
 #cat ${ROOTSYS}/bin/thisroot.sh;
 #
-LINE="==================================================================================================="
+LINE="===================================================================================================";
+BARS="=====  ";
 #
 make_output()
 {
     echo "${LINE}";
-    echo "${LINE}";
-    echo "=============================== `pwd` ";
-    echo "${LINE}";
-    echo "${LINE}";
+    echo "${BARS}";
+    echo "=====>>     `pwd` ";
     if test -n "${1}"; then 
         echo " +++++ ${1}";
     fi;
     if test -n "${2}"; then 
         echo " +++++ ${2}";
     fi;
+    echo "${BARS}";
+    echo "${LINE}";
 }
 
 make_opt()
@@ -90,16 +91,21 @@ make_build()
     fi
     make install VERBOSE=1 -j 4;
     if [ $? -ne  0 ]; then
-        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD:"
+        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD!"
         echo ${CMD};
 	exit 1
     fi;
     make test;
     if [ $? -ne  0 ]; then
-        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed TESTS:"
+        make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed TESTS!"
         echo ${CMD};
-	#exit 1
+	exit 1
     fi;
+    echo "${LINE}";
+    echo "${BARS}";
+    echo "=======>>  Successfully build configuration `pwd` ";
+    echo "${BARS}";
+    echo "${LINE}";
 }
 
 build_all()

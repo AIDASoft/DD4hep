@@ -180,7 +180,8 @@ const Geant4PhysicsList::ParticleProcesses& Geant4PhysicsList::processes(const s
   if (i != m_processes.end()) {
     return (*i).second;
   }
-  throw runtime_error(format("Geant4PhysicsList", "Failed to access the physics process '%s' [Unknown-Process]", nam.c_str()));
+  except("Failed to access the physics process '%s' [Unknown-Process]", nam.c_str());
+  throw runtime_error("Failed to access the physics process"); // never called anyway
 }
 
 /// Callback to construct the physics list
@@ -196,11 +197,11 @@ void Geant4PhysicsList::constructPhysics(Geant4UserPhysics* physics_pointer) {
     const PhysicsConstructors::value_type& ctor = *i;
     G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor);
     if (!p) {
-      throw runtime_error(format("Geant4PhysicsList", "Failed to create the physics entities "
-                                 "for the G4VPhysicsConstructor '%s'", ctor.c_str()));
+      except("Failed to create the physics entities "
+             "for the G4VPhysicsConstructor '%s'", ctor.c_str());
     }
     physics_pointer->RegisterPhysics(p);
-    printout(INFO, "Geant4PhysicsList", "%s> registered Geant4 physics %s", name().c_str(), ctor.c_str());
+    info("Registered Geant4 physics %s", ctor.c_str());
   }
 }
 
@@ -215,10 +216,10 @@ void Geant4PhysicsList::constructParticles(Geant4UserPhysics* physics_pointer) {
       /// Check if we have here a particle group constructor
       long* result = (long*) PluginService::Create<long>(ctor);
       if (!result || *result != 1L) {
-        throw runtime_error(format("Geant4PhysicsList", "Failed to create particle type '%s' result=%d", ctor.c_str(), result));
+        except("Failed to create particle type '%s' result=%d", ctor.c_str(), result);
       }
     }
-    printout(INFO, "Geant4PhysicsList", "%s> constructed Geant4 particle %s", name().c_str(), ctor.c_str());
+    info("Constructed Geant4 particle %s",ctor.c_str());
   }
 }
 
@@ -231,8 +232,7 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics_pointer) {
     vector<G4ParticleDefinition*> defs;
     _findDef(part_name, defs);
     if (defs.empty()) {
-      throw runtime_error(format("Geant4PhysicsList", "Particle:%s "
-                                 "Cannot find the corresponding entry in the particle table.", part_name.c_str()));
+      except("Particle:%s Cannot find the corresponding entry in the particle table.", part_name.c_str());
     }
     for (vector<G4ParticleDefinition*>::const_iterator id = defs.begin(); id != defs.end(); ++id) {
       G4ParticleDefinition* particle = *id;
@@ -241,13 +241,13 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics_pointer) {
         const Process& p = (*ip);
         G4VProcess* g4 = PluginService::Create<G4VProcess*>(p.name);
         if (!g4) {   // Error no factory for this process
-          throw runtime_error(format("Geant4PhysicsList", "Particle:%s -> [%s] "
-                                     "Cannot create physics process %s", part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str()));
+          except("Particle:%s -> [%s] Cannot create physics process %s", 
+                 part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str());
         }
         mgr->AddProcess(g4, p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
-        printout(INFO, "Geant4PhysicsList", "Particle:%s -> [%s] "
-                 "added process %s with flags (%d,%d,%d)", part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str(),
-                 p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
+        info("Particle:%s -> [%s] added process %s with flags (%d,%d,%d)", 
+             part_name.c_str(), particle->GetParticleName().c_str(), p.name.c_str(),
+             p.ordAtRestDoIt, p.ordAlongSteptDoIt, p.ordPostStepDoIt);
       }
     }
   }
@@ -300,7 +300,7 @@ void Geant4PhysicsListActionSequence::adopt(Geant4PhysicsList* action) {
     m_actors.add(action);
     return;
   }
-  throw runtime_error("Geant4EventActionSequence: Attempt to add invalid actor!");
+  except("Geant4EventActionSequence: Attempt to add invalid actor!");
 }
 
 /// begin-of-event callback
@@ -327,7 +327,7 @@ void Geant4PhysicsListActionSequence::constructDecays(Geant4UserPhysics* physics
   G4ParticleTable::G4PTblDicIterator* iter = pt->GetIterator();
   // Add Decay Process
   G4Decay* decay = new G4Decay();
-  printout(INFO, "Geant4PhysicsList", "%s> constructDecays %p", name().c_str(), physics_pointer);
+  info("ConstructDecays %p",physics_pointer);
   iter->reset();
   while ((*iter)()) {
     G4ParticleDefinition* p = iter->value();

@@ -11,6 +11,13 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#include <string>
+#include <sstream>
+#include <map>
+#include <set>
+#include <typeinfo>
+#include <utility>
+
 #define private public
 // This define will give us a version of the gaudi plugin manager,
 // which will NOT clash with Gaudi! It of course has a correspondance in the

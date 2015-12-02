@@ -26,9 +26,11 @@ dd4hep_add_plugin(DDG4Plugins
   GENERATED   G__DDG4.cxx
   SOURCES     plugins/*.cpp)
 #---------------------------  Plugin library for the simulation framework  ---------
-dd4hep_add_dictionary(G__DDG4Python SOURCES src/python/DDG4Python.C )
+dd4hep_add_dictionary(G__DDG4Python SOURCES src/python/DDG4Python.C
+  OPTIONAL    [PYTHON REQUIRED] )
 #---------------------------  Plugin library for the simulation framework  ---------
-dd4hep_add_dictionary(G__DDPython SOURCES tpython/DDPython.C )
+dd4hep_add_dictionary(G__DDPython SOURCES tpython/DDPython.C
+  OPTIONAL    [PYTHON REQUIRED] )
 #---------------------------  Specialized python plugins  --------------------------
 dd4hep_add_regular_library(DDPython
   GENERATED   G__DDPython.cxx

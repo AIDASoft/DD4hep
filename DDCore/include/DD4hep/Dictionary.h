@@ -50,7 +50,7 @@ namespace DD4hep {
 // -------------------------------------------------------------------------
 // Regular DD4hep dictionaries
 // -------------------------------------------------------------------------
-#ifdef __CINT__
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 #pragma link off all globals;
 #pragma link off all classes;
 #pragma link off all functions;
@@ -64,24 +64,26 @@ namespace DD4hep {
 #pragma link C++ namespace DD4hep::Geometry;
 #pragma link C++ namespace DD4hep::DDSegmentation;
 
-template pair<unsigned int, string>;
-#pragma link C++ class pair<unsigned int,string>+;
-
+#ifndef __ROOTCLING__
+template std::pair<unsigned int, std::string>;
 template class DD4hep::Geometry::Handle<DD4hep::NamedObject>;
-template class pair< string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
-template class map< string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
+template class std::pair< std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
+template class std::map< std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
+#endif
+
+#pragma link C++ class std::pair<unsigned int,std::string>+;
 #pragma link C++ class DD4hep::NamedObject+;
 #pragma link C++ class DD4hep::Geometry::Ref_t+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::NamedObject>+;
-#pragma link C++ class pair<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
-#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
-#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator;
-#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::const_iterator;
+#pragma link C++ class std::pair<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
+#pragma link C++ class std::map<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
+#pragma link C++ class std::map<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator;
+#pragma link C++ class std::map<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
-#pragma link C++ function operator!=( const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
+#pragma link C++ function operator==( const std::map<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const std::map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
+#pragma link C++ function operator!=( const std::map<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const std::map<std::string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
 #endif
 
 #pragma link C++ class DD4hep::ObjectExtensions+;
@@ -90,17 +92,17 @@ template class DD4hep::Geometry::Handle<TNamed>;
 
 #pragma link C++ class DD4hep::Geometry::LCDD+;
 #pragma link C++ class DD4hep::Geometry::LCDDData+;
-#pragma link C++ class DD4hep::Geometry::LCDDData::ObjectHandleMap+;
+#pragma link C++ class DD4hep::Geometry::LCDDData::ObjectHandleStd::Map+;
 #pragma link C++ class DD4hep::Geometry::LCDD::PropertyValues+;
 #pragma link C++ class DD4hep::Geometry::LCDD::Properties+;
 #pragma link C++ class DD4hepRootPersistency+;
 
 // These below are the Namedobject instances to be generated ....
-//#pragma link C++ class DD4hep::Geometry::LCDD::HandleMap+;
-//#pragma link C++ class DD4hep::Geometry::LCDD::HandleMap::iterator;
-//#pragma link C++ class DD4hep::Geometry::LCDD::HandleMap::const_iterator;
-//#pragma link C++ class DD4hep::Geometry::LCDD::HandleMap::key_type; // == std::string
-//#pragma link C++ class DD4hep::Geometry::LCDD::HandleMap::value_type+;
+//#pragma link C++ class DD4hep::Geometry::LCDD::HandleStd::Map+;
+//#pragma link C++ class DD4hep::Geometry::LCDD::HandleStd::Map::iterator;
+//#pragma link C++ class DD4hep::Geometry::LCDD::HandleStd::Map::const_iterator;
+//#pragma link C++ class DD4hep::Geometry::LCDD::HandleStd::Map::key_type; // == std::string
+//#pragma link C++ class DD4hep::Geometry::LCDD::HandleStd::Map::value_type+;
 
 #pragma link C++ class DD4hep::Geometry::VolumeManager+;
 #pragma link C++ class DD4hep::Geometry::VolumeManagerObject+;
@@ -128,7 +130,7 @@ template class DD4hep::Geometry::Handle<TNamed>;
 
 // Objects.h
 #pragma link C++ class DD4hep::Geometry::Author+;
-#pragma link C++ class vector<DD4hep::Geometry::Author>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Author>+;
 
 #pragma link C++ class DD4hep::Geometry::Header+;
 #pragma link C++ class DD4hep::Geometry::HeaderObject+;
@@ -137,50 +139,50 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::Constant+;
 #pragma link C++ class DD4hep::Geometry::ConstantObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConstantObject>+;
-#pragma link C++ class vector<DD4hep::Geometry::Constant>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Constant>+;
 
 #pragma link C++ class DD4hep::Geometry::Atom+;
-#pragma link C++ class vector<DD4hep::Geometry::Atom>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Atom>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoElement>+;
 
 #pragma link C++ class DD4hep::Geometry::Material+;
-#pragma link C++ class vector<DD4hep::Geometry::Material>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Material>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoMedium>+;
 
 #pragma link C++ class DD4hep::Geometry::VisAttr+;
-#pragma link C++ class vector<DD4hep::Geometry::VisAttr>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::VisAttr>+;
 #pragma link C++ class DD4hep::Geometry::VisAttrObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::VisAttrObject>+;
 
 #pragma link C++ class DD4hep::Geometry::AlignmentEntry+;
 #pragma link C++ class DD4hep::Geometry::Limit+;
-#pragma link C++ class set<DD4hep::Geometry::Limit>+;
-#pragma link C++ class vector<DD4hep::Geometry::Limit>+;
+#pragma link C++ class std::set<DD4hep::Geometry::Limit>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Limit>+;
 #pragma link C++ class DD4hep::Geometry::LimitSet+;
-#pragma link C++ class vector<DD4hep::Geometry::LimitSet>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::LimitSet>+;
 #pragma link C++ class DD4hep::Geometry::LimitSetObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::LimitSetObject>+;
 #pragma link C++ class DD4hep::Geometry::Region+;
 #pragma link C++ class DD4hep::Geometry::RegionObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::RegionObject>+;
-#pragma link C++ class vector<DD4hep::Geometry::Region>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Region>+;
 
 // Readout.h
-#pragma link C++ class vector<pair<size_t,string> >+;
+#pragma link C++ class std::vector<std::pair<size_t,std::string> >+;
 #pragma link C++ class DD4hep::Geometry::Segmentation+;
 #pragma link C++ class DD4hep::Geometry::SegmentationObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::SegmentationObject>+;
 #pragma link C++ class DD4hep::Geometry::Readout+;
 #pragma link C++ class DD4hep::Geometry::ReadoutObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ReadoutObject>+;
-#pragma link C++ class vector<DD4hep::Geometry::Readout>+;
-#pragma link C++ class vector<DD4hep::Geometry::IDDescriptor>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Readout>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::IDDescriptor>+;
 
 #pragma link C++ class DD4hep::Geometry::Alignment+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoPhysicalNode>+;
 
 #pragma link C++ class DD4hep::Geometry::Condition+;
-#pragma link C++ class vector<DD4hep::Geometry::Condition>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Condition>+;
 #pragma link C++ class DD4hep::Geometry::ConditionsInterna::ConditionObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConditionsInterna::ConditionObject>+;
 
@@ -192,40 +194,42 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::DetElement+;
 #pragma link C++ class DD4hep::Geometry::DetElementObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::DetElementObject>+;
-#pragma link C++ class vector<DD4hep::Geometry::DetElement>+;
-#pragma link C++ class pair<string,DD4hep::Geometry::DetElement>+;
-#pragma link C++ class map<string,DD4hep::Geometry::DetElement>+;
-#pragma link C++ class map<string,DD4hep::Geometry::DetElement>::iterator;
-#pragma link C++ class map<string,DD4hep::Geometry::DetElement>::const_iterator;
+#pragma link C++ class std::vector<DD4hep::Geometry::DetElement>+;
+#pragma link C++ class std::pair<std::string,DD4hep::Geometry::DetElement>+;
+#pragma link C++ class std::map<std::string,DD4hep::Geometry::DetElement>+;
+#pragma link C++ class std::map<std::string,DD4hep::Geometry::DetElement>::iterator;
+#pragma link C++ class std::map<std::string,DD4hep::Geometry::DetElement>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& ); 
-#pragma link C++ function operator!=( const map<string, DD4hep::Geometry::DetElement >::iterator&,const map<string, DD4hep::Geometry::DetElement >::iterator& ); 
+#pragma link C++ function operator==( const std::map<std::string, DD4hep::Geometry::DetElement >::iterator&,const std::map<std::string, DD4hep::Geometry::DetElement >::iterator& ); 
+#pragma link C++ function operator!=( const std::map<std::string, DD4hep::Geometry::DetElement >::iterator&,const std::map<std::string, DD4hep::Geometry::DetElement >::iterator& ); 
 #endif
 
 #pragma link C++ class DD4hep::Geometry::SensitiveDetector+;
 #pragma link C++ class DD4hep::Geometry::SensitiveDetectorObject+;
 #pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::SensitiveDetectorObject>+;
-#pragma link C++ class vector<DD4hep::Geometry::SensitiveDetector>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::SensitiveDetector>+;
 
 // Volume.h
 #pragma link C++ class DD4hep::Geometry::Volume+;
 #pragma link C++ class DD4hep::Geometry::VolumeExtension+;
-#pragma link C++ class vector<DD4hep::Geometry::Volume>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::Volume>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoVolume>+;
 
 #pragma link C++ class DD4hep::Geometry::PlacedVolume+;
-template vector<pair<string, int> >;
-template vector<pair<string, int> >::iterator;
-#pragma link C++ class vector<pair<string, int> >+;
-#pragma link C++ class vector<pair<string, int> >::iterator;
+#ifndef __ROOTCLING__
+template std::vector<std::pair<std::string, int> >;
+template std::vector<std::pair<std::string, int> >::iterator;
+#endif
+#pragma link C++ class std::vector<std::pair<std::string, int> >+;
+#pragma link C++ class std::vector<std::pair<std::string, int> >::iterator;
 #pragma link C++ class DD4hep::Geometry::PlacedVolumeExtension::VolIDs+;
 #pragma link C++ class DD4hep::Geometry::PlacedVolumeExtension+;
-#pragma link C++ class vector<DD4hep::Geometry::PlacedVolume>+;
+#pragma link C++ class std::vector<DD4hep::Geometry::PlacedVolume>+;
 #pragma link C++ class DD4hep::Geometry::Handle<TGeoNode>+;
-#pragma link C++ class vector<TGeoNode*>+;
-#pragma link C++ class vector<TGeoVolume*>+;
+#pragma link C++ class std::vector<TGeoNode*>+;
+#pragma link C++ class std::vector<TGeoVolume*>+;
 
 
 // Shapes.h
@@ -292,32 +296,32 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class DD4hep::Geometry::UnionSolid+;
 #pragma link C++ class DD4hep::Geometry::IntersectionSolid+;
 
-#pragma link C++ class pair<string, string>+;
-#pragma link C++ class map<string, string>+;
-#pragma link C++ class map<string, string>::iterator;
-#pragma link C++ class map<string, string>::const_iterator;
+#pragma link C++ class pair<std::string, std::string>+;
+#pragma link C++ class std::map<std::string, std::string>+;
+#pragma link C++ class std::map<std::string, std::string>::iterator;
+#pragma link C++ class std::map<std::string, std::string>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, string>::iterator&, const map<string, string>::iterator& );
-#pragma link C++ function operator!=( const map<string, string>::iterator&, const map<string, string>::iterator& );
+#pragma link C++ function operator==( const std::map<std::string, std::string>::iterator&, const std::map<std::string, std::string>::iterator& );
+#pragma link C++ function operator!=( const std::map<std::string, std::string>::iterator&, const std::map<std::string, std::string>::iterator& );
 #endif
 
-#pragma link C++ class pair<string, map<string, string> >+;
-#pragma link C++ class map<string, map<string, string> >+;
-#pragma link C++ class map<string, map<string,string>>::iterator;
-#pragma link C++ class map<string, map<string,string>>::const_iterator;
+#pragma link C++ class std::pair<std::string, std::map<std::string, std::string> >+;
+#pragma link C++ class std::map<std::string, std::map<std::string, std::string> >+;
+#pragma link C++ class std::map<std::string, std::map<std::string,std::string>>::iterator;
+#pragma link C++ class std::map<std::string, std::map<std::string,std::string>>::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, map<string,string>>::iterator&, const map<string, map<string,string>>::iterator& );
-#pragma link C++ function operator!=( const map<string, map<string,string>>::iterator&, const map<string, map<string,string>>::iterator& );
+#pragma link C++ function operator==( const std::map<std::string, std::map<std::string,std::string>>::iterator&, const std::map<std::string, std::map<std::string,std::string>>::iterator& );
+#pragma link C++ function operator!=( const std::map<std::string, std::map<std::string,std::string>>::iterator&, const std::map<std::string, std::map<std::string,std::string>>::iterator& );
 #endif
 
 #pragma link C++ class DD4hep::Geometry::LCDD+;
 
 #pragma link C++ function DD4hep::run_interpreter(const std::string& name);
-#pragma link C++ function DD4hep::Geometry::_toDictionary(const string&, const string&);
+#pragma link C++ function DD4hep::Geometry::_toDictionary(const std::string&, const std::string&);
 
 #endif  // __CINT__
 
@@ -339,13 +343,13 @@ template vector<pair<string, int> >::iterator;
 typedef DD4hep::DDSegmentation::VolumeID VolumeID;
 typedef DD4hep::DDSegmentation::CellID CellID;
 
-#ifdef __CINT__
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLANG__) || defined(__ROOTCLING__)
 #pragma link C++ class DD4hep::DDSegmentation::SegmentationParameter+;
 #pragma link C++ class DD4hep::DDSegmentation::TypedSegmentationParameter<int>+;
 
 #pragma link C++ class DD4hep::DDSegmentation::TypedSegmentationParameter<float>+;
 #pragma link C++ class DD4hep::DDSegmentation::TypedSegmentationParameter<double>+;
-#pragma link C++ class DD4hep::DDSegmentation::TypedSegmentationParameter<string>+;
+#pragma link C++ class DD4hep::DDSegmentation::TypedSegmentationParameter<std::string>+;
 #if 0
 /// Severe problem due to template specialization!
 #pragma link C++ class DD4hep::DDSegmentation::TypedSegmentationParameter<std::vector<int> >+;

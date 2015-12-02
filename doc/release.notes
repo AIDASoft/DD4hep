@@ -3,6 +3,16 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015-12-01 M.Frank
+  DDG4
+  - Remove some of the compilation warnings
+  - Remove energy cut in sensitive detectors
+    If you though need, use a Geant4Filter to mask the action processing
+  examples/CLICSiD
+  - Add a few tests for materialscan and simulation setups using XML or CINT.
+  examples/ClientTests
+  - Add a few tests for materialscan and simulation
+
 2015-11-24 M.Frank
   DDG4
   - Implementation of multi-threading mode.

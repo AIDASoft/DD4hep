@@ -21,7 +21,7 @@ class a_class:
     return 1
   def fcn_except(self,args,aa):
     print 'Hello world from member function fcn1 a1=',args,' a2=',aa
-    raise RuntimeError('Exception from python test object a_class')
+    raise RuntimeError('Except from python test object a_class')
     return 6
       
 
@@ -61,6 +61,7 @@ except:
   traceback.print_exc()
 print '\n'
 print '+++++ All Done....\n\n'
+print 'TEST_PASSED'
 
 #py.instance().prompt()
 

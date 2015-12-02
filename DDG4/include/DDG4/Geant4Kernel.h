@@ -50,14 +50,16 @@ namespace DD4hep {
 
     protected:
       /// Reference to the run manager
-      G4RunManager* m_runManager;
+      G4RunManager*      m_runManager;
       /// Top level control directory
-      G4UIdirectory*                      m_control;
-      /// Property pool
-      PropertyManager                     m_properties;
-
+      G4UIdirectory*     m_control;
       /// Reference to Geant4 track manager
       G4TrackingManager* m_trackMgr;
+      /// Detector description object
+      LCDD*              m_lcdd;
+      /// Property pool
+      PropertyManager    m_properties;
+
 
       /// Action phases
       Phases        m_phases;
@@ -67,8 +69,6 @@ namespace DD4hep {
       GlobalActions m_globalActions;
       /// Globally registered filters of sensitive detectors
       GlobalActions m_globalFilters;
-      /// Detector description object
-      LCDD& m_lcdd;
       /// Property: Name of the G4UI command tree
       std::string m_controlName;
       /// Property: Name of the UI action. Must be member of the global actions
@@ -96,7 +96,7 @@ namespace DD4hep {
 
 #ifndef __CINT__
       /// Standard constructor for workers
-      Geant4Kernel(LCDD& lcdd, Geant4Kernel* m, unsigned long identifier);
+      Geant4Kernel(Geant4Kernel* m, unsigned long identifier);
 #endif
 
     public:
@@ -146,13 +146,11 @@ namespace DD4hep {
 #ifndef __CINT__
       /// Instance accessor
       static Geant4Kernel& instance(LCDD& lcdd);
-      /// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
-      //static Geant4Kernel& access(LCDD& lcdd);
 #endif
       /// Access phase phases
       const Phases& phases() const              {        return m_phases;          }
       /// Access to detector description
-      LCDD& lcdd() const                        {        return m_lcdd;            }
+      LCDD& lcdd() const                        {        return *m_lcdd;           }
       /// Access the tracking manager
       G4TrackingManager* trackMgr() const       {        return m_trackMgr;        }
       /// Access the tracking manager
@@ -259,7 +257,6 @@ namespace DD4hep {
       virtual int runEvents(int num_events);
       /// Run the simulation: Terminate Geant4
       virtual int terminate();
-      virtual int terminateEx();
     };
     /// Declare property
     template <typename T> Geant4Kernel& Geant4Kernel::declareProperty(const std::string& nam, T& val) {

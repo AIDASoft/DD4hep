@@ -29,6 +29,7 @@ find_package ( DD4hep REQUIRED )
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 #
 find_package ( ROOT REQUIRED COMPONENTS Geom GenVector )
+dd4hep_set_compiler_flags()
 #
 dd4hep_configure_output()
 dd4hep_package ( DD4hepExample MAJOR 0 MINOR 0 PATCH 1 

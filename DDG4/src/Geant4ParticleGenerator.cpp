@@ -59,6 +59,33 @@ void Geant4ParticleGenerator::getParticleMultiplicity(int& ) const   {
 void Geant4ParticleGenerator::getVertexPosition(ROOT::Math::XYZVector& ) const   {
 }
 
+/// Print single particle interaction identified by sequence number in primary event
+void Geant4ParticleGenerator::printInteraction(size_t which)  const  {
+  typedef Geant4PrimaryInteraction::VertexMap _V;
+  int count = 0;
+  Geant4Event& evt = context()->event();
+  Geant4PrimaryEvent* prim = evt.extension<Geant4PrimaryEvent>();
+
+  if ( which == LAST_INTERACTION && prim->size() > 0 )
+    which = prim->size()-1;
+  if ( which >= prim->size() )
+    except("printInteraction: Bad interaction identifier %d must be [0,%d].",
+           which, prim->size());
+
+  Geant4PrimaryInteraction* inter = prim->get(which);
+  for(_V::const_iterator iv=inter->vertices.begin(); iv!=inter->vertices.end(); ++iv)  {
+    Geant4Vertex* v = (*iv).second;
+    printM1("+-> Interaction [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm]",
+             count, m_energy/CLHEP::GeV, m_particleName.c_str(),
+             v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
+    ++count;
+    for(set<int>::const_iterator i=v->out.begin(); i!=v->out.end(); ++i)  {
+      Geant4ParticleHandle p = inter->particles[*i];
+      p.dumpWithVertex(outputLevel()-1,name(),"  +->");
+    }
+  }
+}
+
 /// Callback to generate primary particles
 void Geant4ParticleGenerator::operator()(G4Event*) {
   typedef Geant4Particle Particle;
@@ -100,6 +127,12 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     p->psy        = unit_direction.Y()*momentum;
     p->psz        = unit_direction.Z()*momentum;
     p->mass       = m_particle->GetPDGMass();
+    p->charge       = m_particle->GetPDGCharge();
+    p->spin[0]      = 0;
+    p->spin[1]      = 0;
+    p->spin[2]      = 0;
+    p->colorFlow[0] = 0;
+    p->colorFlow[1] = 0;
     p->vsx        = vtx->x;
     p->vsy        = vtx->y;
     p->vsz        = vtx->z;

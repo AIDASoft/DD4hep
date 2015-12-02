@@ -13,21 +13,13 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/LCDD.h"
 #include "DD4hep/DD4hepUnits.h"
 #include "DDG4/Geant4SensDetAction.inl"
 #include "DDG4/Geant4SteppingAction.h"
 #include "DDG4/Geant4TrackingAction.h"
 #include "DDG4/Geant4EventAction.h"
-#include "G4OpticalPhoton.hh"
-#include "G4VProcess.hh"
 #include "G4Event.hh"
 #include "G4VSolid.hh"
-
-#include "DDRec/Surface.h"
-#include "DDRec/DetectorSurfaces.h"
-#include "DDRec/SurfaceManager.h"
-#include "DDRec/SurfaceHelper.h"
 
 #include <map>
 #include <limits>
@@ -41,7 +33,6 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation   {
 
-    using namespace DDRec;
     using namespace Geometry;
 
     /// Geant4 sensitive detector combining all deposits of one G4Track within one sensitive element.
@@ -168,16 +159,16 @@ namespace DD4hep {
 
       void extractHit(Geant4HitCollection* collection, EInside ended)   {
         double deposit  = pre.truth.deposit;
-        if ( current != -1 && deposit/CLHEP::keV > 0 )  {
+        if ( current != -1 )  {
           Position pos;
           Momentum mom  = 0.5 * (pre.momentum + post.momentum);
-          double   time = mean_time / deposit;
+          double   time = deposit != 0 ? mean_time / deposit : mean_time;
           double   path = (post.position - pre.position).R();
           char     dist_in[64], dist_out[64];
 
           switch(hit_position_type)  {
           case POSITION_WEIGHTED:
-            pos = mean_pos / deposit;
+            pos = deposit != 0 ? mean_pos / deposit : mean_pos;
             break;
           case POSITION_PREPOINT:
             pos = pre.position;

@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #
 # Simple script to run DD4hep tests
 # - sources this${PackageName}.sh first and then
@@ -24,4 +23,4 @@ done
 #echo " #### LD_LIBRARY_PATH = :  ${LD_LIBRARY_PATH}" 
 
 echo " ### running test :  '${command} ${theargs}'"
-${command} ${theargs}
+exec ${command} ${theargs}

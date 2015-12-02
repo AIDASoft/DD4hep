@@ -223,12 +223,12 @@ int Geant4FieldTrackingSetup::execute(Geometry::LCDD& lcdd)   {
 
 static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cnv */, const map<string,string>& vals) {
   struct XMLFieldTrackingSetup : public Geant4FieldTrackingSetup {
-    XMLFieldTrackingSetup(const map<string,string>& vals) : Geant4FieldTrackingSetup() {
-      Geant4SetupPropertyMap pm(vals);
-      lcdd_t::PropertyValues::const_iterator iV = vals.find("min_chord_step");
+    XMLFieldTrackingSetup(const map<string,string>& values) : Geant4FieldTrackingSetup() {
+      Geant4SetupPropertyMap pm(values);
+      lcdd_t::PropertyValues::const_iterator iV = values.find("min_chord_step");
       eq_typ      = pm.value("equation");
       stepper_typ = pm.value("stepper");
-      min_chord_step = Geometry::_toDouble((iV==vals.end()) ? string("1e-2 * mm") : (*iV).second);
+      min_chord_step = Geometry::_toDouble((iV==values.end()) ? string("1e-2 * mm") : (*iV).second);
       if ( pm["eps_min"] ) eps_min = pm.toDouble("eps_min");
       if ( pm["eps_max"] ) eps_max = pm.toDouble("eps_max");
       if ( pm["delta_chord"] ) delta_chord = pm.toDouble("delta_chord");

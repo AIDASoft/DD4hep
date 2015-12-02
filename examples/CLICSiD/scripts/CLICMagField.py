@@ -9,6 +9,5 @@ if __name__ == "__main__":
   import CLICSid
   sid = CLICSid.CLICSid().loadGeometry()
   # <<-- See this function to know how it's done....
-  sid.setupField(quiet=false)
+  sid.setupField(quiet=False)
   sid.test_run()
-

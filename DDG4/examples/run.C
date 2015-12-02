@@ -1,13 +1,19 @@
 #include "TInterpreter.h"
-void run()  {
-  gInterpreter->ProcessLine(".X initAClick.C");
-  //gInterpreter->ProcessLine(".L exampleAClick.C+");
-  gInterpreter->ProcessLine(".L xmlAClick.C+");
-  //gInterpreter->ProcessLine(".L TEve.C+");
-  //gSystem->Load("libDDCore");
-  //gSystem->Load("libDDG4");
-  //gInterpreter->ProcessLine(".L FCC_Hcal.C+");
-  //gInterpreter->ProcessLine(".X DDG4Dump.C+");
-  //gInterpreter->ProcessLine(".X a.C++");
+#include <string>
+void run(const char* macro)  {
+  char cmd[1024];
+  const char* dd4hep_install = getenv("DD4hepINSTALL");
+  if ( dd4hep_install )  {
+    ::sprintf(cmd,".L %s/examples/DDG4/examples/initAClick.C+",dd4hep_install);
+  }
+  else  {
+    ::sprintf(cmd,".L examples/DDG4/examples/initAClick.C+");
+  }
+  int status = gInterpreter->ProcessLine(cmd); 
+  ::printf("Status(%s) = %d\n",cmd,status);
+  status = gInterpreter->ProcessLine("initAClick()");
+  ::printf("Status(%s) = %d\n",cmd,status);
+  ::sprintf(cmd,"processMacro(\"%s\",true)",macro);
+  status = gInterpreter->ProcessLine(cmd);
+  ::printf("Status(%s) = %d\n",cmd,status);
 }
-

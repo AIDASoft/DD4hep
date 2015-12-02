@@ -75,4 +75,5 @@ class CLICSid:
       self.kernel.NumEvents = 0
       self.kernel.run()
     self.kernel.terminate()
+    print '+++++ All Done....\n\nTEST_PASSED'
     sys.exit(0)

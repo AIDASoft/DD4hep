@@ -16,11 +16,7 @@
 #define DD4HEP_DDG4_GEANT4PARTICLEGUN_H
 
 // Framework include files
-#include "DDG4/Geant4GeneratorAction.h"
-#include "Math/Vector3D.h"
-
-// Forward declarations
-class G4ParticleDefinition;
+#include "DDG4/Geant4IsotropeGenerator.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -49,27 +45,19 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
-    class Geant4ParticleGun: public Geant4GeneratorAction {
+    class Geant4ParticleGun: public Geant4IsotropeGenerator {
     protected:
-      /// Property: Position and shooting direction of the gun
-      ROOT::Math::XYZVector m_position, m_direction;
-      /// Property: Particle energy
-      double m_energy;
-      /// Property: Particle name
-      std::string m_particleName;
-      /// Property: Desired multiplicity of the particles to be shot
-      int m_multiplicity;
-      /// Property: Interaction mask indentifier
-      int m_mask;
       /// Property: Isotrope particles?
       bool m_isotrop;
       /// Property: Standalone mode: includes interaction merging and primary generation
       bool m_standalone;
-
-      /// Pointer to geant4 particle definition
-      G4ParticleDefinition* m_particle;
       /// Shot number in sequence
       int m_shotNo;
+      /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)
+      virtual void getParticleDirection(int, ROOT::Math::XYZVector& direction, double& momentum) const  {
+        direction = m_direction;
+        momentum = m_energy;
+      }
     public:
       /// Standard constructor
       Geant4ParticleGun(Geant4Context* context, const std::string& name);

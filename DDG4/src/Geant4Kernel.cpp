@@ -76,10 +76,10 @@ Geant4ActionPhase& Geant4Kernel::PhaseSelector::operator[](const std::string& na
 
 /// Standard constructor
 Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
-  : Geant4ActionContainer(), m_runManager(0), m_lcdd(lcdd_ref), 
+  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_lcdd(&lcdd_ref), 
     m_numThreads(0), m_id(Geant4Kernel::thread_self()), m_master(this), m_shared(0), phase(this)  
 {
-  m_lcdd.addExtension < Geant4Kernel > (this);
+  m_lcdd->addExtension < Geant4Kernel > (this);
   m_ident = -1;
   declareProperty("UI",m_uiName);
   declareProperty("OutputLevel",    m_outputLevel = DEBUG);
@@ -95,11 +95,12 @@ Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref)
 }
 
 /// Standard constructor
-Geant4Kernel::Geant4Kernel(LCDD& lcdd_ref, Geant4Kernel* m, unsigned long ident)
-  : Geant4ActionContainer(), m_runManager(0), m_lcdd(lcdd_ref), 
+Geant4Kernel::Geant4Kernel(Geant4Kernel* m, unsigned long ident)
+  : Geant4ActionContainer(), m_runManager(0), m_control(0), m_trackMgr(0), m_lcdd(0),
     m_numThreads(1), m_id(ident), m_master(m), m_shared(0), phase(this)
 {
   char text[64];
+  m_lcdd           = m_master->m_lcdd;
   m_ident          = m_master->m_workers.size();
   declareProperty("UI",m_uiName = m_master->m_uiName);
   declareProperty("OutputLevel", m_outputLevel = m_master->m_outputLevel);
@@ -125,9 +126,14 @@ Geant4Kernel::~Geant4Kernel() {
   destroyPhases();
   deletePtr(m_runManager);
   Geant4ActionContainer::terminate();
-  if ( isMaster() )  {
-    m_lcdd.removeExtension < Geant4Kernel > (false);
-    m_lcdd.destroyInstance();
+  if ( m_lcdd && isMaster() )  {
+    try  {
+      m_lcdd->removeExtension < Geant4Kernel > (false);
+      m_lcdd->destroyInstance();
+      m_lcdd = 0;
+    }
+    catch(...)  {
+    }
   }
   InstanceCount::decrement(this);
 }
@@ -144,18 +150,6 @@ Geant4Kernel& Geant4Kernel::instance(LCDD& lcdd) {
   return *(s_main_instance.get());
 }
 
-#if 0
-/// Accessof the Geant4Kernel object from the LCDD reference extension (if present and registered)
-Geant4Kernel& Geant4Kernel::access(LCDD& lcdd) {
-  Geant4Kernel* kernel = lcdd.extension<Geant4Kernel>();
-  if (!kernel) {
-    throw runtime_error(format("Geant4Kernel", "DDG4: The LCDD object has no registered "
-                               "extension of type Geant4Kernel [No-Extension]"));
-  }
-  return *kernel;
-}
-#endif
-
 /// Access thread identifier
 unsigned long int Geant4Kernel::thread_self()    {
   unsigned long int thr_id = (unsigned long int)::pthread_self();
@@ -166,7 +160,7 @@ unsigned long int Geant4Kernel::thread_self()    {
 Geant4Kernel& Geant4Kernel::createWorker()   {
   if ( isMaster() )   {
     unsigned long identifier = thread_self();
-    Geant4Kernel* w = new Geant4Kernel(m_lcdd, this, identifier);
+    Geant4Kernel* w = new Geant4Kernel(this, identifier);
     m_workers[identifier] = w;
     printout(INFO,"Geant4Kernel","+++ Created worker instance id=%ul",identifier);
     return *w;
@@ -270,14 +264,14 @@ G4RunManager& Geant4Kernel::runManager() {
 /// Construct detector geometry using lcdd plugin
 void Geant4Kernel::loadGeometry(const std::string& compact_file) {
   char* arg = (char*) compact_file.c_str();
-  m_lcdd.apply("DD4hepXMLLoader", 1, &arg);
+  m_lcdd->apply("DD4hepXMLLoader", 1, &arg);
   //return *this;
 }
 
 // Utility function to load XML files
 void Geant4Kernel::loadXML(const char* fname) {
   const char* args[] = { fname, 0 };
-  m_lcdd.apply("DD4hepXMLLoader", 1, (char**) args);
+  m_lcdd->apply("DD4hepXMLLoader", 1, (char**) args);
 }
 
 int Geant4Kernel::configure() {
@@ -306,18 +300,24 @@ int Geant4Kernel::runEvents(int num_events) {
   return Geant4Exec::run(*this);
 }
 
-int Geant4Kernel::terminateEx()  {
-  return this->terminate();
-}
-
 int Geant4Kernel::terminate() {
+  const Geant4Kernel* ptr = s_main_instance.get();
   printout(INFO,"Geant4Kernel","++ Terminate Geant4 and delete associated actions.");
-  Geant4Exec::terminate(*this);
+  if ( ptr == this )  {
+    Geant4Exec::terminate(*this);
+  }
   destroyPhases();
   for_each(m_globalFilters.begin(), m_globalFilters.end(), releaseObjects(m_globalFilters));
   for_each(m_globalActions.begin(), m_globalActions.end(), releaseObjects(m_globalActions));
-  deletePtr  (m_runManager);
+  if ( ptr == this )  {
+    deletePtr  (m_runManager);
+  }
   Geant4ActionContainer::terminate();
+  if ( ptr == this && m_lcdd )  {
+    m_lcdd->removeExtension < Geant4Kernel > (false);
+    m_lcdd->destroyInstance();
+    m_lcdd = 0;
+  }
   return 1;
 }
 

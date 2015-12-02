@@ -1,4 +1,4 @@
-// $Id: Geant4Data.h 513 2013-04-05 14:31:53Z gaede $
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation
 //--------------------------------------------------------------------
@@ -22,29 +22,34 @@
 #include "DDG4/Geant4Config.h"
 #include <iostream>
 
+using namespace std;
 using namespace DD4hep::Simulation::Setup;
 
-void setupG4_XML()  {
-  std::string prefix = "file:../DD4hep";
+int setupG4_XML(bool interactive)  {
+  string install_dir = getenv("DD4hepINSTALL");
+  string prefix = "file:"+install_dir+"/examples/";
   Kernel& kernel = Kernel::instance(Kernel::LCDD::getInstance());
-  kernel.loadGeometry((prefix+"/examples/CLICSiD/compact/compact.xml").c_str());
-  kernel.loadXML((prefix+"/examples/DDG4/examples/DDG4_field.xml").c_str());
-  kernel.loadXML((prefix+"/examples/DDG4/examples/sequences.xml").c_str());
-  kernel.loadXML((prefix+"/examples/DDG4/examples/physics.xml").c_str());
-  kernel.property("UI") = "UI";
+  kernel.loadGeometry((prefix+"CLICSiD/compact/compact.xml").c_str());
+  kernel.loadXML((prefix+"CLICSiD/sim/field.xml").c_str());
+  kernel.loadXML((prefix+"CLICSiD/sim/sequences.xml").c_str());
+  kernel.loadXML((prefix+"CLICSiD/sim/physics.xml").c_str());
+  if ( interactive )  {
+    kernel.property("UI") = "UI";
+  }
   kernel.configure();
   kernel.initialize();
   kernel.run();
-  std::cout << "Successfully executed application .... " << std::endl;
+  cout << "Successfully executed application .... " << endl;
   kernel.terminate();
+  cout << "TEST_PASSED" << endl;
+  return 0;
 }
 
-#if defined(G__DICTIONARY) || defined(__CINT__) || defined(__MAKECINT__) // Cint script
-int CLICSidXML()
+#if defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__) // CINT script
+int CLICSiDXML()
 #else
 int main(int, char**)                              // Main program if linked standalone
 #endif
 {
-  setupG4_XML();
-  return 1;
+  return setupG4_XML(false);
 }

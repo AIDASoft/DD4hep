@@ -20,18 +20,14 @@
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Random.h"
 #include "DDG4/DDG4Dict.h"
-
-
-using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Simulation;
-
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4DataDump.h"
 #include "DDG4/Geant4InputAction.h"
 
 namespace DD4hep {
   namespace Simulation  {
+
+    using std::string;
 
 #define ACTIONHANDLE(x)                                                 \
     struct x##Handle  {                                                 \
@@ -202,121 +198,121 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 #include "DD4hep/objects/DetectorInterna.h"
 
 // CINT configuration
-#if defined(__MAKECINT__)
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 #pragma link C++ namespace DDSegmentation;
 
 /// Geant4 Vertex dictionaries
-#pragma link C++ class Simulation::VertexExtension+;
-#pragma link C++ class Simulation::Geant4Vertex+;
-#pragma link C++ class std::vector<Simulation::Geant4Vertex*>+;
-#pragma link C++ class std::map<int,Simulation::Geant4Vertex*>+;
+#pragma link C++ class DD4hep::Simulation::VertexExtension+;
+#pragma link C++ class DD4hep::Simulation::Geant4Vertex+;
+#pragma link C++ class std::vector<DD4hep::Simulation::Geant4Vertex*>+;
+#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4Vertex*>+;
 
-#pragma link C++ class Simulation::Geant4ParticleMap+;
-#pragma link C++ class Simulation::PrimaryExtension+;
-#pragma link C++ class Simulation::Geant4PrimaryInteraction+;
-#pragma link C++ class std::map<int,Simulation::Geant4PrimaryInteraction*>+;
-#pragma link C++ class Simulation::Geant4PrimaryEvent+;
+#pragma link C++ class DD4hep::Simulation::Geant4ParticleMap+;
+#pragma link C++ class DD4hep::Simulation::PrimaryExtension+;
+#pragma link C++ class DD4hep::Simulation::Geant4PrimaryInteraction+;
+#pragma link C++ class std::map<int,DD4hep::Simulation::Geant4PrimaryInteraction*>+;
+#pragma link C++ class DD4hep::Simulation::Geant4PrimaryEvent+;
 
-#pragma link C++ class PropertyResult;
+#pragma link C++ class DD4hep::PropertyResult;
 #pragma link C++ class Geant4InputAction::Particles;
 
 #if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 namespace {
   struct bla {
-    dd4hep_ptr<Geant4InputAction::Particles>  __m1;
-    dd4hep_ptr<ParticleExtension>  __m2;
-    dd4hep_ptr<DataExtension>  __m3;
+    dd4hep_ptr<DD4hep::Simulation::Geant4InputAction::Particles>  __m1;
+    dd4hep_ptr<DD4hep::Simulation::ParticleExtension>  __m2;
+    dd4hep_ptr<DD4hep::Simulation::DataExtension>  __m3;
   };
 }
-#pragma link C++ class dd4hep_ptr<Simulation::VertexExtension>+;
-#pragma link C++ class dd4hep_ptr<Simulation::PrimaryExtension>+;
-#pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>;
-#pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>::base_t;
 #endif
+#pragma link C++ class dd4hep_ptr<DD4hep::Simulation::VertexExtension>+;
+#pragma link C++ class dd4hep_ptr<DD4hep::Simulation::PrimaryExtension>+;
+#pragma link C++ class dd4hep_ptr<DD4hep::Simulation::Geant4InputAction::Particles>;
+#pragma link C++ class dd4hep_ptr<DD4hep::Simulation::Geant4InputAction::Particles>::base_t;
 
 // Basic stuff
-#pragma link C++ class Geant4ActionCreation;
-#pragma link C++ class Geant4Kernel;
-#pragma link C++ class Geant4Kernel::PhaseSelector;
-#pragma link C++ class Geant4Context;
-#pragma link C++ class KernelHandle;
-#pragma link C++ class Geant4ActionContainer;
+#pragma link C++ class DD4hep::Simulation::Geant4ActionCreation;
+#pragma link C++ class DD4hep::Simulation::Geant4Kernel;
+#pragma link C++ class DD4hep::Simulation::Geant4Kernel::PhaseSelector;
+#pragma link C++ class DD4hep::Simulation::Geant4Context;
+#pragma link C++ class DD4hep::Simulation::KernelHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4ActionContainer;
 
-#pragma link C++ class Geant4Action;
-#pragma link C++ class ActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4Action;
+#pragma link C++ class DD4hep::Simulation::ActionHandle;
 
-#pragma link C++ class RunActionSequenceHandle;
-#pragma link C++ class Geant4RunActionSequence;
-#pragma link C++ class RunActionHandle;
-#pragma link C++ class Geant4SharedRunAction;
-#pragma link C++ class Geant4RunAction;
+#pragma link C++ class DD4hep::Simulation::RunActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4RunActionSequence;
+#pragma link C++ class DD4hep::Simulation::RunActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4SharedRunAction;
+#pragma link C++ class DD4hep::Simulation::Geant4RunAction;
 
-#pragma link C++ class EventActionSequenceHandle;
-#pragma link C++ class Geant4EventActionSequence;
-#pragma link C++ class EventActionHandle;
-#pragma link C++ class Geant4SharedEventAction;
-#pragma link C++ class Geant4EventAction;
+#pragma link C++ class DD4hep::Simulation::EventActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4EventActionSequence;
+#pragma link C++ class DD4hep::Simulation::EventActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4SharedEventAction;
+#pragma link C++ class DD4hep::Simulation::Geant4EventAction;
 
-#pragma link C++ class SteppingActionSequenceHandle;
-#pragma link C++ class Geant4SteppingActionSequence;
-#pragma link C++ class SteppingActionHandle;
-#pragma link C++ class Geant4SharedSteppingAction;
-#pragma link C++ class Geant4SteppingAction;
+#pragma link C++ class DD4hep::Simulation::SteppingActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4SteppingActionSequence;
+#pragma link C++ class DD4hep::Simulation::SteppingActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4SharedSteppingAction;
+#pragma link C++ class DD4hep::Simulation::Geant4SteppingAction;
 
-#pragma link C++ class StackingActionHandle;
-#pragma link C++ class Geant4StackingAction;
-#pragma link C++ class StackingActionSequenceHandle;
-#pragma link C++ class Geant4StackingActionSequence;
+#pragma link C++ class DD4hep::Simulation::StackingActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4StackingAction;
+#pragma link C++ class DD4hep::Simulation::StackingActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4StackingActionSequence;
 
-#pragma link C++ class TrackingActionHandle;
-#pragma link C++ class Geant4TrackingAction;
-#pragma link C++ class TrackingActionSequenceHandle;
-#pragma link C++ class Geant4TrackingActionSequence;
+#pragma link C++ class DD4hep::Simulation::TrackingActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4TrackingAction;
+#pragma link C++ class DD4hep::Simulation::TrackingActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4TrackingActionSequence;
 
-#pragma link C++ class GeneratorActionHandle;
-#pragma link C++ class GeneratorActionSequenceHandle;
-#pragma link C++ class Geant4GeneratorActionSequence;
-#pragma link C++ class Geant4GeneratorAction;
+#pragma link C++ class DD4hep::Simulation::GeneratorActionHandle;
+#pragma link C++ class DD4hep::Simulation::GeneratorActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4GeneratorActionSequence;
+#pragma link C++ class DD4hep::Simulation::Geant4GeneratorAction;
 
-#pragma link C++ class Geant4InputAction;
-#pragma link C++ class Geant4EventReader;
+#pragma link C++ class DD4hep::Simulation::Geant4InputAction;
+#pragma link C++ class DD4hep::Simulation::Geant4EventReader;
 
-#pragma link C++ class PhysicsListHandle;
-#pragma link C++ class Geant4PhysicsList;
-#pragma link C++ class PhysicsListActionSequenceHandle;
-#pragma link C++ class Geant4PhysicsListActionSequence;
+#pragma link C++ class DD4hep::Simulation::PhysicsListHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4PhysicsList;
+#pragma link C++ class DD4hep::Simulation::PhysicsListActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4PhysicsListActionSequence;
 
-#pragma link C++ class UserInitializationHandle;
-#pragma link C++ class UserInitializationSequenceHandle;
-#pragma link C++ class Geant4UserInitializationSequence;
-#pragma link C++ class Geant4UserInitialization;
+#pragma link C++ class DD4hep::Simulation::UserInitializationHandle;
+#pragma link C++ class DD4hep::Simulation::UserInitializationSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4UserInitializationSequence;
+#pragma link C++ class DD4hep::Simulation::Geant4UserInitialization;
 
-#pragma link C++ class DetectorConstructionHandle;
-#pragma link C++ class DetectorConstructionSequenceHandle;
-#pragma link C++ class Geant4DetectorConstructionSequence;
-#pragma link C++ class Geant4DetectorConstruction;
+#pragma link C++ class DD4hep::Simulation::DetectorConstructionHandle;
+#pragma link C++ class DD4hep::Simulation::DetectorConstructionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4DetectorConstructionSequence;
+#pragma link C++ class DD4hep::Simulation::Geant4DetectorConstruction;
 
-#pragma link C++ class SensitiveHandle;
-#pragma link C++ class SensDetActionSequenceHandle;
-#pragma link C++ class Geant4ActionSD;
-#pragma link C++ class Geant4Sensitive;
-#pragma link C++ class Geant4SensDetActionSequence;
+#pragma link C++ class DD4hep::Simulation::SensitiveHandle;
+#pragma link C++ class DD4hep::Simulation::SensDetActionSequenceHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4ActionSD;
+#pragma link C++ class DD4hep::Simulation::Geant4Sensitive;
+#pragma link C++ class DD4hep::Simulation::Geant4SensDetActionSequence;
 
-#pragma link C++ class FilterHandle;
-#pragma link C++ class Geant4Filter;
+#pragma link C++ class DD4hep::Simulation::FilterHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4Filter;
 
-#pragma link C++ class PhaseActionHandle;
-#pragma link C++ class Geant4ActionPhase;
-#pragma link C++ class Geant4PhaseAction;
+#pragma link C++ class DD4hep::Simulation::PhaseActionHandle;
+#pragma link C++ class DD4hep::Simulation::Geant4ActionPhase;
+#pragma link C++ class DD4hep::Simulation::Geant4PhaseAction;
 
-#pragma link C++ class Callback;
-#pragma link C++ class Callback::mfunc_t;
+#pragma link C++ class DD4hep::Simulation::Callback;
+#pragma link C++ class DD4hep::Simulation::Callback::mfunc_t;
 
 // Other (specialized) components
-#pragma link C++ class Geant4DataDump;
-#pragma link C++ class Geant4Random;
-#pragma link C++ class Geant4ParticleHandler;
-#pragma link C++ class Geant4UserParticleHandler;
+#pragma link C++ class DD4hep::Simulation::Geant4DataDump;
+#pragma link C++ class DD4hep::Simulation::Geant4Random;
+#pragma link C++ class DD4hep::Simulation::Geant4ParticleHandler;
+#pragma link C++ class DD4hep::Simulation::Geant4UserParticleHandler;
 
 
 // somehow the symbol Geometry moved into global namespace. Redeclare it here

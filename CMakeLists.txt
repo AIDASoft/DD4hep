@@ -22,6 +22,7 @@ option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
 option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
+option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 #
 #-----------------------------------------------------------------------------------------------------
 #
@@ -45,12 +46,7 @@ if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
 endif()
 #---------------------------------------------------------------------------------------------------
 #fg: moved to here from DD4hep.cmake to not force CMAKE_CXX_FLAGS upon dependent packages
-if ( DD4HEP_USE_CXX11 )
-  set ( CMAKE_CXX_FLAGS "-std=c++11 -ftls-model=global-dynamic -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
-  add_definitions(-DDD4HEP_USE_CXX11)
-else()
-  set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
-endif()
+dd4hep_set_compiler_flags()
 
 #---DD4hep functions and macros -------------------------------------------------------
 include(DD4hep)

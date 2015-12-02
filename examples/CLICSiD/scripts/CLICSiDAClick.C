@@ -1,4 +1,4 @@
-// $Id: Geant4Data.h 513 2013-04-05 14:31:53Z gaede $
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation
 //--------------------------------------------------------------------
@@ -21,7 +21,8 @@
 
 #include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4TestActions.h"
-
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "TSystem.h"
 #include <iostream>
 
 using namespace std;
@@ -33,37 +34,38 @@ using namespace DD4hep::Simulation::Setup;
 SensitiveSeq::handled_type* setupDetector(Geant4Kernel& kernel, const std::string& name)   {
   SensitiveSeq sd = SensitiveSeq(kernel,name);
   Sensitive  sens = Sensitive(kernel,"Geant4TestSensitive/"+name+"Handler",name);
-  sens["OutputLevel"] = 4;
+  sens["OutputLevel"] = 2;
   sd->adopt(sens);
   sens = Sensitive(kernel,"Geant4TestSensitive/"+name+"Monitor",name);
   sd->adopt(sens);
   return sd;
 }
 
-void setupG4_CINT()  {
-  //Geant4Kernel& kernel = Geant4Kernel::instance(Geometry::LCDD::getInstance());
-  Geant4Kernel kernel(Geometry::LCDD::getInstance());
+int setupG4_CINT(bool interactive)  {
+  Geant4Kernel& kernel = Geant4Kernel::instance(Geometry::LCDD::getInstance());
   string install_dir = getenv("DD4hepINSTALL");
   string ddg4_examples = install_dir+"/examples/DDG4/examples";
   Phase p;
 
   kernel.loadGeometry(("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml").c_str());
-  kernel.loadXML(("file:"+ddg4_examples+"/DDG4_field.xml").c_str());
+  kernel.loadXML(("file:"+install_dir+"/examples/CLICSiD/sim/field.xml").c_str());
 
-  kernel.property("UI") = "UI";
-  setPrintLevel(DEBUG);
+  if ( interactive )   {
+    kernel.property("UI") = "UI";
+    setPrintLevel(DEBUG);
 
-  Action ui(kernel,"Geant4UIManager/UI");
-  ui["HaveVIS"] = true;
-  ui["HaveUI"]  = true;
-  ui["SessionType"] = "csh";
-  kernel.registerGlobalAction(ui);
+    Action ui(kernel,"Geant4UIManager/UI");
+    ui["HaveVIS"]     = true;
+    ui["HaveUI"]      = true;
+    ui["SessionType"] = "csh";
+    kernel.registerGlobalAction(ui);
+  }
 
   GenAction gun(kernel,"Geant4ParticleGun/Gun");
-  gun["energy"] = 25*GeV;
-  gun["particle"] = "e-";
+  gun["energy"]       = 10*CLHEP::GeV;
+  gun["particle"]     = "e-";
   gun["multiplicity"] = 1;
-  gun["OutputLevel"] = 5;
+  gun["OutputLevel"]  = 3;
   kernel.generatorAction().adopt(gun);
 
   RunAction run_init(kernel,"Geant4TestRunAction/RunInit");
@@ -75,7 +77,7 @@ void setupG4_CINT()  {
   EventAction evt_1(kernel,"Geant4TestEventAction/UserEvent_1");
   evt_1["Property_int"] = 12345;
   evt_1["Property_string"] = "Events";
-  evt_1["OutputLevel"] = 5;
+  evt_1["OutputLevel"] = 3;
   kernel.eventAction().adopt(evt_1);
 
   p = kernel.addPhase<const G4Run*>("BeginRun");
@@ -109,8 +111,15 @@ void setupG4_CINT()  {
   kernel.run();
   std::cout << "Successfully executed application .... " << std::endl;
   kernel.terminate();
+  std::cout << "TEST_PASSED" << std::endl;
+  return 0;
 }
 
-void CLICSidAClick()  {
-  setupG4_CINT();
+#if defined(G__DICTIONARY) || defined(__CLING__) || defined(__CINT__) || defined(__MAKECINT__) // CINT script
+int CLICSiDAClick()
+#else
+int main(int, char**)                              // Main program if linked standalone
+#endif
+{
+  return setupG4_CINT(false);
 }

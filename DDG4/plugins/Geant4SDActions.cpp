@@ -45,9 +45,7 @@ namespace DD4hep {
       Position position  = mean_direction(prePos,postPos);
       double   hit_len   = direction.R();
 
-      if ( step->GetTotalEnergyDeposit() < std::numeric_limits<double>::epsilon() )
-        return true;
-      else if (hit_len > 0) {
+      if (hit_len > 0) {
         double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
         direction *= new_len/hit_len;
       }
@@ -109,10 +107,7 @@ namespace DD4hep {
       }
 
       Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
-      if ( h.totalEnergy() < std::numeric_limits<double>::epsilon() )  {
-        return true;
-      }
-      else if ( !hit ) {
+      if ( !hit ) {
         Geant4TouchableHandler handler(step);
         DDSegmentation::Vector3D pos = m_segmentation.position(cell);
         Position global = h.localToGlobal(pos);
@@ -225,10 +220,7 @@ namespace DD4hep {
       }
 
       Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
-      if ( h.totalEnergy() < std::numeric_limits<double>::epsilon() )  {
-        return true;
-      }
-      else if ( !hit ) {
+      if ( !hit ) {
         Geant4TouchableHandler handler(step);
         DDSegmentation::Vector3D pos = m_segmentation.position(cell);
         Position global = h.localToGlobal(pos);
@@ -355,10 +347,6 @@ namespace DD4hep {
         /// If we are handling a new track, then store the content of the previous one.
         if ( mustSaveTrack(h.track) )  {
           extractHit(coll);
-        }
-        /// There must be something in.
-        if ( h.deposit()/CLHEP::keV <= 0 )  {
-          return false;
         }
         /// Initialize the deposits of the next hit.
         if ( current < 0 )  {

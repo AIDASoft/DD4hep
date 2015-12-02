@@ -1,11 +1,45 @@
-// $Id: PolyconeSupport_geo.cpp 941 2013-12-12 18:47:03Z markus.frank@cern.ch $
+// $Id$
 //====================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------
 //
+//  Generic cylindric shell detector to be used to measure 
+//  e.g. escape energy from calorimeters.
+//
 //  Author     : M.Frank
 //
 //====================================================================
+
+/*
+  Example XML:
+
+  <detector id="2" name="ContainmentShell" type="ZylinderShell" vis="VisibleRed" readout="ContainmentHits" >
+      <comment>Containment shell to measure calorimeter escapes</comment>
+      <material name="Air"/>
+      <module name="Barrel" id="0" vis="VisibleRed">
+        <zplane rmin="HcalBarrel_rmax+20*cm" rmax="HcalBarrel_rmax+22*cm" z="-2*HcalBarrel_zmax"/>
+        <zplane rmin="HcalBarrel_rmax+20*cm" rmax="HcalBarrel_rmax+22*cm" z="2*HcalBarrel_zmax"/>
+      </module>
+      <module name="SideA" id="1" vis="VisibleRed">
+        <zplane rmin="0" rmax="HcalBarrel_rmax+22*cm" z="2*HcalBarrel_zmax+10*cm"/>
+        <zplane rmin="0" rmax="HcalBarrel_rmax+22*cm" z="2*HcalBarrel_zmax+20*cm"/>
+      </module>
+      <module name="SideB" id="2" vis="VisibleRed">
+        <zplane rmin="0" rmax="HcalBarrel_rmax+22*cm" z="-(2*HcalBarrel_zmax+10*cm)"/>
+        <zplane rmin="0" rmax="HcalBarrel_rmax+22*cm" z="-(2*HcalBarrel_zmax+20*cm)"/>
+      </module>
+    </detector>
+  </detectors>
+
+to be joined by a sensitive detector:
+  <readouts>
+    <readout name="ContainmentHits">
+      <id>system:8,barrel:3</id>
+    </readout>
+  </readouts>
+
+
+*/
 #include "DD4hep/DetFactoryHelper.h"
 
 using namespace std;
@@ -20,6 +54,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
   Material   mat    (lcdd.material(x_det.materialStr()));
   PlacedVolume pv;
 
+  sensitive.setType("escape_counter");
   for(xml_coll_t m(e,_U(module)); m; ++m)  {
     xml_comp_t mod = m;
     vector<double> rmin,rmax,z;
@@ -47,4 +82,4 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sensitive)  
   return sdet;
 }
 
-DECLARE_DETELEMENT(ZylinderShell,create_detector)
+DECLARE_DETELEMENT(DD4hep_CylinderShell,create_detector)

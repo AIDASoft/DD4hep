@@ -33,6 +33,10 @@ namespace DD4hep {
      *  \ingroup DD4HEP_SIMULATION
      */
     class Geant4ParticleGenerator: public Geant4GeneratorAction {
+    public:
+      enum { FIRST_INTERACTION =   0UL,
+             LAST_INTERACTION  =  ~0UL
+      };
     protected:
       /// Property: Shooting direction of the gun
       ROOT::Math::XYZVector m_direction;
@@ -60,6 +64,10 @@ namespace DD4hep {
           User must return a UNIT vector, which gets scaled with momentum.
       */
       virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
+
+      /// Print single particle interaction identified by sequence number in primary event. Default: last one 
+      virtual void printInteraction(size_t which=LAST_INTERACTION)  const;
+    
 
     public:
       /// Standard constructor

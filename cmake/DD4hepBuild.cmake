@@ -12,7 +12,8 @@
 #=================================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 ###set(DD4HEP_DEBUG_CMAKE 1)
-message ( STATUS "INCLUDING DD4hepBuild...." )
+message ( STATUS "INCLUDING DD4hepBuild.... c++11:${DD4HEP_USE_CXX11} c++14:${DD4HEP_USE_CXX14}" )
+
 include ( CMakeParseArguments )
 set ( DD4hepBuild_included ON )
 ####set ( DD4HEP_DEBUG_CMAKE ON )
@@ -22,6 +23,20 @@ macro(dd4hep_to_parent_scope val)
   set ( ${val} ${${val}} PARENT_SCOPE )
 endmacro(dd4hep_to_parent_scope)
 
+macro(dd4hep_set_compiler_flags)
+  if ( DD4HEP_USE_CXX14 )
+    set ( CMAKE_CXX_FLAGS "-std=c++14 -ftls-model=global-dynamic -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+    set ( DD4HEP_USE_CXX11 OFF ) 
+    set ( DD4HEP_USE_STDCXX 14 )
+    add_definitions(-DDD4HEP_USE_STDCXX=14)
+  elseif ( DD4HEP_USE_CXX11 )
+    set ( CMAKE_CXX_FLAGS "-std=c++11 -ftls-model=global-dynamic -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+    set ( DD4HEP_USE_STDCXX 11 )
+    add_definitions(-DDD4HEP_USE_STDCXX=11)
+  else()
+    set( CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+  endif()
+endmacro(dd4hep_set_compiler_flags)
 #---------------------------------------------------------------------------------------------------
 #  dd4hep_debug
 #
@@ -172,6 +187,7 @@ function( dd4hep_print_cmake_options )
   dd4hep_print ( "|                     or LCIO in CMAKE_MODULE_PATH                          |")
   dd4hep_print ( "|  DD4HEP_USE_GEAR    Build gear wrapper for backward compatibility OFF     |")
   dd4hep_print ( "|  DD4HEP_USE_CXX11   Build DD4hep using c++11                      OFF     |")
+  dd4hep_print ( "|  DD4HEP_USE_CXX14   Build DD4hep using c++14                      OFF     |")
   dd4hep_print ( "|  BUILD_TESTING      Enable and build tests                        ON      |")
   dd4hep_print ( "|  DD4HEP_USE_PYROOT  Enable 'Detector Builders' based on PyROOT    OFF     |")
   dd4hep_print ( "+---------------------------------------------------------------------------+")
@@ -1132,11 +1148,33 @@ function( dd4hep_add_dictionary dictionary )
   if ( "${enabled}" STREQUAL "OFF" )
     dd4hep_skipmsg ( "${tag} DISBALED -- package is not built!" )
   else()
-    cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS" ${ARGN} )
+    cmake_parse_arguments(ARG "" "" "SOURCES;EXCLUDE;LINKDEF;OPTIONS;OPTIONAL" ${ARGN} )
     dd4hep_print ( "|++> ${tag} Building dictionary ..." ) 
     if("${ARG_LINKDEF}" STREQUAL "")
       set(ARG_LINKDEF "${CMAKE_SOURCE_DIR}/DDCore/include/ROOT/LinkDef.h")
     endif()
+    #
+    if ( NOT "${ARG_OPTIONAL}" STREQUAL "" )
+      dd4hep_handle_optional_sources ( ${tag} "${ARG_OPTIONAL}" optional_missing optional_uses optional_sources )
+    endif()
+    #
+    if ( NOT "${optional_missing}" STREQUAL "" )
+      dd4hep_print ( "|++> ${tag} SKIPPED. Missing optional dependencies: ${optional_missing}" )
+    else()
+      set ( uses ${ARG_USES} ${optional_uses} )
+      dd4hep_use_package ( ${tag} PACKAGE LOCAL 
+        USES     "${uses}"
+        OPTIONAL "${ARG_OPTIONAL}" )
+    endif()
+    if ( NOT "${LOCAL_MISSING}" STREQUAL "" )
+      dd4hep_print ( "|++> ${tag} skipped. Missing dependency: ${missing}  --> FATAL ERROR. Build should fail!" )
+    endif()
+    #
+    get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
+    get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
+    get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
+    dd4hep_make_unique_list( incs VALUES ${LOCAL_INCLUDE_DIRS}   ${incs} )
+    dd4hep_make_unique_list( defs VALUES ${LOCAL_DEFINITIONS}    ${defs} )
     #
     file( GLOB headers ${ARG_SOURCES} )
     file( GLOB excl_headers ${ARG_EXCLUDE} )
@@ -1144,10 +1182,6 @@ function( dd4hep_add_dictionary dictionary )
       list( REMOVE_ITEM headers ${f} )
       dd4hep_print ( "|++        exclude: ${f}" )
     endforeach()
-    #
-    get_property(incs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY PACKAGE_INCLUDE_DIRS)
-    get_property(defs DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_DEFINITIONS)
-    get_property(opts DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY COMPILE_OPTIONS)
     #
     set ( inc_dirs -I${CMAKE_CURRENT_SOURCE_DIR}/include )
     foreach ( inc ${incs} )
@@ -1176,8 +1210,8 @@ function( dd4hep_add_dictionary dictionary )
     if ( ${ROOT_VERSION_MAJOR} GREATER 5 )
       ## ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm
       add_custom_command(OUTPUT ${dictionary}.cxx
-        COMMAND ${ROOTCINT_EXECUTABLE} -cint -f ${dictionary}.cxx 
-        -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -c -p ${ARG_OPTIONS} ${comp_defs} ${inc_dirs} ${headers} ${linkdefs} 
+        COMMAND ${ROOTCLING_EXECUTABLE} -cint -f ${dictionary}.cxx 
+        -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${DD4HEP_USE_STDCXX} ${inc_dirs} ${headers} ${linkdefs} 
         DEPENDS ${headers} ${linkdefs} )
       #  Install the binary to the destination directory
       #set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )

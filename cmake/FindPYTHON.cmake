@@ -25,8 +25,8 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 include ( FindPackageHandleStandardArgs )
 
-find_package(PythonInterp 2.7 REQUIRED)
-find_package(PythonLibs   2.7 REQUIRED)
+find_package(PythonInterp  REQUIRED)
+find_package(PythonLibs    REQUIRED)
 
 if (PYTHONLIBS_FOUND)
   message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARIES:    ${PYTHON_LIBRARIES}")

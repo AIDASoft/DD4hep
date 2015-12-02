@@ -12,7 +12,7 @@
     
        To run batch: set UI=""
   -->
-  <kernel UI="UI" NumEvents="5"/>  
+  <kernel UI="" NumEvents="10"/>  
 
   <!-- List of globally known actions. These actions will be registered with the Geant4Kernel 
        object and may be retrieved by there using the action name.
@@ -60,16 +60,16 @@
     <phase type="RunAction/begin">
       <action name="RunInit"/>
       <action name="Geant4TestRunAction/UserRunInit">
-	<properties Conrol="true"
+	<properties Control="true"
 		    Property_int="1234"
 		    Property_double="5e15"
 		    Property_string="'Hello_2'"/>
       </action>
     </phase>
-    <phase type="EventAction/begin">
+    <phase type="EventAction/end">
       <action name="UserEvent_2"/>
     </phase>
-    <phase type="EventAction/end">
+    <phase type="EventAction/begin">
       <action name="UserEvent_2"/>
     </phase>
   </phases>
@@ -107,7 +107,8 @@
       <properties Control="true"/>
       <action name="Geant4TestEventAction/UserEvent_1">
         <properties Control="true"
-		    Property_int="01234"
+		    OutputLevel="3"
+		    Property_int="901234"
   	  	    Property_double="1e11"
 		    Property_string="'Hello_1'"/>
       </action>
@@ -124,6 +125,7 @@
     <sequence name="Geant4GeneratorActionSequence/GeneratorAction">
       <action name="Geant4ParticleGun/Gun">
         <properties Control="true"
+                    OutputLevel="3"
 		    energy="500*MeV"
   	  	    particle="'e-'"
 		    multiplicity="1"
