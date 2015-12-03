@@ -17,21 +17,6 @@
 // C/C++ include files
 #include <string>
 
-#if !defined(__MAKECINT__) && !defined(__CINT__) && !defined(G__DICTIONARY)
-// -----------------------------------------------------------------------------
-// Python hacks to avoid warnings if outside dictionaries .....
-// -----------------------------------------------------------------------------
-// --> /usr/include/python2.7/pyconfig.h:1161:0: warning: "_POSIX_C_SOURCE" redefined [enabled by default]
-#ifdef _POSIX_C_SOURCE
-#undef _POSIX_C_SOURCE
-#endif /* _POSIX_C_SOURCE */
-// --> /usr/include/python2.7/pyconfig.h:1183:0: warning: "_XOPEN_SOURCE" redefined [enabled by default]
-#ifdef _XOPEN_SOURCE
-#undef _XOPEN_SOURCE
-#endif /* _XOPEN_SOURCE */
-#include "Python.h"
-#endif
-
 // ROOT include file(s)
 #include "TPyReturn.h"
 

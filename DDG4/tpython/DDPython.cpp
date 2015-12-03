@@ -12,19 +12,31 @@
 //==========================================================================
 // $Id$
 
-// Framework include files
-#include "DDG4Python/DDPython.h"
-#include "DD4hep/Printout.h"
-
 // C/C++ include files
-#include "TPyReturn.h"
-#include "Python.h"
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <stdexcept>
 #include <pthread.h>
 
-// Forward declartions
+// Framework include files
+#include "DD4hep/Printout.h"
+#include "DDG4Python/DDPython.h"
+
+#if !defined(__MAKECINT__) && !defined(__CINT__) && !defined(G__DICTIONARY)
+// -----------------------------------------------------------------------------
+// Python hacks to avoid warnings if outside dictionaries .....
+// -----------------------------------------------------------------------------
+// --> /usr/include/python2.7/pyconfig.h:1161:0: warning: "_POSIX_C_SOURCE" redefined [enabled by default]
+#ifdef _POSIX_C_SOURCE
+#undef _POSIX_C_SOURCE
+#endif /* _POSIX_C_SOURCE */
+// --> /usr/include/python2.7/pyconfig.h:1183:0: warning: "_XOPEN_SOURCE" redefined [enabled by default]
+#ifdef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE
+#endif /* _XOPEN_SOURCE */
+#include "Python.h"
+#endif
 
 using namespace std;
 using namespace DD4hep;
@@ -141,14 +153,14 @@ DDPython::DDPython()  {
     if ( !module || ::PyErr_Occurred() )   {
       ::PyErr_Print();
       ::PyErr_Clear();
-      ::printf("WARNING: main dictionary pointer is NULL. Try to continue like this!\n");
+      DD4hep::printout(WARNING,"DDPython","Main dictionary pointer is NULL. Try to continue like this!");
     }
     else  {
       _main_dict = ::PyModule_GetDict(module);
       if ( _main_dict )  {
         Py_INCREF( _main_dict );
       }
-      ::printf("Pointer to main dict:%p\n",(void*)_main_dict);
+      DD4hep::printout(DEBUG,"DDPython","Pointer to main dict:%p",(void*)_main_dict);
     }
     setMainThread();
   }
