@@ -258,4 +258,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return tracker;
 }
 
-DECLARE_DETELEMENT(ZPlanarTracker,create_element);
+DECLARE_DETELEMENT(ZPlanarTracker,create_element)

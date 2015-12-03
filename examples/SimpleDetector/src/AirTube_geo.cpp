@@ -19,7 +19,7 @@ using namespace DD4hep::Geometry;
 using namespace DD4hep::DDRec ;
 using namespace DDSurfaces ;
 
-static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
+static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector /* sens */)  {
   
   xml_det_t    x_det = e;
   std::string  name  = x_det.nameStr();
@@ -63,4 +63,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   return airTube;
 }
 
-DECLARE_DETELEMENT( AirTube,create_element);
+DECLARE_DETELEMENT( AirTube,create_element)
