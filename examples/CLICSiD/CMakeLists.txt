@@ -20,11 +20,14 @@ dd4hep_package ( CLICSiD MAJOR 0 MINOR 0 PATCH 1
 )
 dd4hep_install_dir( compact scripts sim DESTINATION ${DD4hep_DIR}/examples/CLICSiD )
 #--------------------------------------------------------------------------
-dd4hep_add_executable(CLICSiDXML SOURCES scripts/CLICSiDXML.C
-  USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
-#--------------------------------------------------------------------------
-dd4hep_add_executable(CLICSiDAClick SOURCES scripts/CLICSiDAClick.C
-  USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
+if (DD4HEP_USE_GEANT4)
+  dd4hep_add_executable(CLICSiDXML SOURCES scripts/CLICSiDXML.C
+    USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
+  #--------------------------------------------------------------------------
+  dd4hep_add_executable(CLICSiDAClick SOURCES scripts/CLICSiDAClick.C
+    USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
+endif()
+
 #---Testing-------------------------------------------------------------------------
 dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
 
@@ -41,7 +44,7 @@ endforeach()
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( test_CLICSiD_check_geometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/checkGeometry.py
+  EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
                     --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
@@ -49,7 +52,7 @@ dd4hep_add_test_reg( test_CLICSiD_check_geometry
 # ROOT Geometry overlap checks
 dd4hep_add_test_reg( test_CLICSiD_check_overlaps
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-  EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/checkOverlaps.py 
+  EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
                     --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
@@ -69,7 +72,7 @@ if (DD4HEP_USE_GEANT4)
   # Material scan
   dd4hep_add_test_reg( test_CLICSiD_DDG4_g4material_scan
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-    EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/python/g4MaterialScan.py
+    EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
                       --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml 
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )

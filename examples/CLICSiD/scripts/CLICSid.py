@@ -17,22 +17,7 @@ class CLICSid:
 
   # Example to show how to configure G4 magnetic field tracking
   def setupField(self, quiet=True):
-    field = self.geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-    field.stepper            = "HelixGeant4Runge"
-    field.equation           = "Mag_UsualEqRhs"
-    field.eps_min            = 5e-05 * mm
-    field.eps_max            = 0.001 * mm
-    field.min_chord_step     = 0.01 * mm
-    field.delta_chord        = 0.25 * mm
-    field.delta_intersection = 1e-05 * mm
-    field.delta_one_step     = 0.001 * mm
-    if not quiet:
-      print '+++++> ',field.name,'-> stepper  = ',field.stepper
-      print '+++++> ',field.name,'-> equation = ',field.equation
-      print '+++++> ',field.name,'-> eps_min  = ',field.eps_min
-      print '+++++> ',field.name,'-> eps_max  = ',field.eps_max
-      print '+++++> ',field.name,'-> delta_one_step = ',field.delta_one_step
-    return field
+    return self.geant4.setupTrackingField(prt=True)
 
   # Example to show how to setup random generator
   def setupRandom(self, name, type=None, seed=None, quiet=True):

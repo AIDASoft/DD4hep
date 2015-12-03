@@ -497,6 +497,28 @@ class Geant4:
     if type is None: type = self.sensitive_types['tracker']
     return self.setupDetector(name,type)
 
+  def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='HelixSimpleRunge', equation='Mag_UsualEqRhs',prt=False):
+    import SystemOfUnits
+    field = self.addConfig('Geant4FieldTrackingSetupAction/'+name)
+    field.stepper            = stepper
+    field.equation           = equation
+    field.eps_min            = 5e-05*SystemOfUnits.mm
+    field.eps_max            = 0.001*SystemOfUnits.mm
+    field.min_chord_step     = 0.01*SystemOfUnits.mm
+    field.delta_chord        = 0.25*SystemOfUnits.mm
+    field.delta_intersection = 1e-05*SystemOfUnits.mm
+    field.delta_one_step     = 0.001*SystemOfUnits.mm
+    if prt:
+      print '+++++> ',field.name,'-> stepper  = ',field.stepper
+      print '+++++> ',field.name,'-> equation = ',field.equation
+      print '+++++> ',field.name,'-> eps_min  = ',field.eps_min,'[mm]'
+      print '+++++> ',field.name,'-> eps_max  = ',field.eps_max,'[mm]'
+      print '+++++> ',field.name,'-> delta_chord        = ',field.delta_chord,'[mm]'
+      print '+++++> ',field.name,'-> min_chord_step     = ',field.min_chord_step,'[mm]'
+      print '+++++> ',field.name,'-> delta_one_step     = ',field.delta_one_step,'[mm]'
+      print '+++++> ',field.name,'-> delta_intersection = ',field.delta_intersection,'[mm]'
+    return field
+  
   def setupPhysics(self,name):
     phys = self.master().physicsList()
     phys.extends = name
@@ -509,11 +531,11 @@ class Geant4:
     gun = GeneratorAction(self.kernel(),"Geant4ParticleGun/"+name,True)
     for i in args.items():
       setattr(gun,i[0],i[1])
-    gun.energy   = energy
-    gun.particle = particle
+    gun.energy       = energy
+    gun.particle     = particle
     gun.multiplicity = multiplicity
-    gun.position = position
-    gun.isotrop = isotrop
+    gun.position     = position
+    gun.isotrop      = isotrop
     gun.enableUI()
     self.kernel().generatorAction().add(gun)
     return gun
@@ -542,7 +564,7 @@ class Geant4:
   def setupLCIOOutput(self,name,output):
     evt_lcio = EventAction(self.kernel(),'Geant4Output2LCIO/'+name,True)
     evt_lcio.Control = True
-    evt_lcio.Output = output
+    evt_lcio.Output  = output
     evt_lcio.enableUI()
     self.kernel().eventAction().add(evt_lcio)
     return evt_lcio

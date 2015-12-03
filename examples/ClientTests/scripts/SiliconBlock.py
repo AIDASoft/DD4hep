@@ -16,18 +16,19 @@ from SystemOfUnits import *
 def run():
   kernel = DDG4.Kernel()
   install_dir = os.environ['DD4hepINSTALL']
-  example_dir = install_dir+'/examples/DDG4/examples';
   kernel.loadGeometry("file:"+install_dir+"/examples/ClientTests/compact/SiliconBlock.xml")
-  kernel.loadXML("file:"+example_dir+"/DDG4_field.xml")
+
   DDG4.importConstants(kernel.lcdd(),debug=False)
-  simple = DDG4.Simple(kernel,tracker='Geant4TrackerCombineAction')
-  simple.printDetectors()
+  geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerCombineAction')
+  geant4.printDetectors()
   # Configure UI
   if len(sys.argv)>1:
-    simple.setupCshUI(macro=sys.argv[1])
+    geant4.setupCshUI(macro=sys.argv[1])
   else:
-    simple.setupCshUI()
+    geant4.setupCshUI()
 
+  # Configure field
+  field = geant4.setupTrackingField(prt=True)
   # Configure Event actions
   prt = DDG4.EventAction(kernel,'Geant4ParticlePrint/ParticlePrint')
   prt.OutputLevel = Output.DEBUG
@@ -37,10 +38,10 @@ def run():
   generator_output_level = Output.INFO
 
   # Configure I/O
-  evt_root = simple.setupROOTOutput('RootOutput','SiliconBlock_'+time.strftime('%Y-%m-%d_%H-%M'))
+  evt_root = geant4.setupROOTOutput('RootOutput','SiliconBlock_'+time.strftime('%Y-%m-%d_%H-%M'))
 
   # Setup particle gun
-  gun = simple.setupGun("Gun",particle='mu-',energy=20*GeV,multiplicity=1)
+  gun = geant4.setupGun("Gun",particle='mu-',energy=20*GeV,multiplicity=1)
   gun.output_level = generator_output_level
 
   # And handle the simulation particles.
@@ -56,11 +57,11 @@ def run():
   user.enableUI()
   part.adopt(user)
 
-  simple.setupTracker('SiliconBlockUpper')
-  simple.setupTracker('SiliconBlockDown')
+  geant4.setupTracker('SiliconBlockUpper')
+  geant4.setupTracker('SiliconBlockDown')
 
   # Now build the physics list:
-  phys = simple.setupPhysics('QGSP_BERT')
+  phys = geant4.setupPhysics('QGSP_BERT')
   ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
   ph.addParticleConstructor('G4Geantino')
   ph.addParticleConstructor('G4BosonConstructor')
@@ -68,7 +69,7 @@ def run():
   phys.adopt(ph)
   phys.dump()
 
-  simple.execute()
+  geant4.execute()
 
 if __name__ == "__main__":
   run()

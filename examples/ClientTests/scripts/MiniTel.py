@@ -1,4 +1,4 @@
-import os, time, DDG4, sys
+import os, sys, time, DDG4
 from DDG4 import OutputLevel as Output
 from SystemOfUnits import *
 #
@@ -25,15 +25,7 @@ def run():
     kernel.UI = ''
 
   # Configure field
-  field = geant4.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
-  field.stepper            = "HelixSimpleRunge"
-  field.equation           = "Mag_UsualEqRhs"
-  field.eps_min            = 5e-05*mm
-  field.eps_max            = 0.001*mm
-  field.min_chord_step     = 0.01*mm
-  field.delta_chord        = 0.25*mm
-  field.delta_intersection = 1e-05*mm
-  field.delta_one_step     = 0.001*mm
+  field = geant4.setupTrackingField(prt=True)
   # Configure I/O
   evt_root = geant4.setupROOTOutput('RootOutput','MiniTel_'+time.strftime('%Y-%m-%d_%H-%M'),mc_truth=True)
   # Setup particle gun
