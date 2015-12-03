@@ -51,6 +51,8 @@ namespace DD4hep {
       bool m_isotrop;
       /// Property: Standalone mode: includes interaction merging and primary generation
       bool m_standalone;
+      /// Property: Enable printout
+      bool m_print;
       /// Shot number in sequence
       int m_shotNo;
       /// Particle modification. Caller presets defaults to: ( direction = m_direction, momentum = m_energy)

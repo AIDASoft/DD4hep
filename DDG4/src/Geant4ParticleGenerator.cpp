@@ -59,29 +59,38 @@ void Geant4ParticleGenerator::getParticleMultiplicity(int& ) const   {
 void Geant4ParticleGenerator::getVertexPosition(ROOT::Math::XYZVector& ) const   {
 }
 
-/// Print single particle interaction identified by sequence number in primary event
-void Geant4ParticleGenerator::printInteraction(size_t which)  const  {
+/// Print single particle interaction identified by it's mask
+void Geant4ParticleGenerator::printInteraction(int mask)  const  {
+  Geant4PrimaryEvent* prim = context()->event().extension<Geant4PrimaryEvent>();
+  if ( !prim )   {
+    warning("printInteraction: Bad primary event [NULL-Pointer].");
+    return;
+  }
+  Geant4PrimaryInteraction* inter = prim->get(mask);
+  if ( !inter )   {
+    warning("printInteraction: Bad interaction identifier 0x%08X [Unknown Mask].",mask);
+    return;
+  }
+  printInteraction(inter);
+}
+
+/// Print single particle interaction identified by it's reference
+void Geant4ParticleGenerator::printInteraction(Geant4PrimaryInteraction* inter)  const  {
   typedef Geant4PrimaryInteraction::VertexMap _V;
   int count = 0;
-  Geant4Event& evt = context()->event();
-  Geant4PrimaryEvent* prim = evt.extension<Geant4PrimaryEvent>();
-
-  if ( which == LAST_INTERACTION && prim->size() > 0 )
-    which = prim->size()-1;
-  if ( which >= prim->size() )
-    except("printInteraction: Bad interaction identifier %d must be [0,%d].",
-           which, prim->size());
-
-  Geant4PrimaryInteraction* inter = prim->get(which);
+  if ( !inter )   {
+    warning("printInteraction: Invalid interaction pointer [NULL-Pointer].");
+    return;
+  }
   for(_V::const_iterator iv=inter->vertices.begin(); iv!=inter->vertices.end(); ++iv)  {
     Geant4Vertex* v = (*iv).second;
-    printM1("+-> Interaction [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm]",
+    print("+-> Interaction [%d] %.3f GeV %s pos:(%.3f %.3f %.3f)[mm]",
              count, m_energy/CLHEP::GeV, m_particleName.c_str(),
              v->x/CLHEP::mm, v->y/CLHEP::mm, v->z/CLHEP::mm);
     ++count;
     for(set<int>::const_iterator i=v->out.begin(); i!=v->out.end(); ++i)  {
       Geant4ParticleHandle p = inter->particles[*i];
-      p.dumpWithVertex(outputLevel()-1,name(),"  +->");
+      p.dumpWithVertex(outputLevel(),name(),"  +->");
     }
   }
 }

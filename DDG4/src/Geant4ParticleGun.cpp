@@ -41,6 +41,7 @@ Geant4ParticleGun::Geant4ParticleGun(Geant4Context* ctxt, const string& nam)
   declareProperty("energy",       m_energy);
   declareProperty("particle",     m_particleName);
   declareProperty("multiplicity", m_multiplicity);
+  declareProperty("print",        m_print = true);
 }
 
 /// Default destructor
@@ -69,8 +70,9 @@ void Geant4ParticleGun::operator()(G4Event* event)   {
         m_shotNo, m_energy/CLHEP::GeV, m_particleName.c_str(),
         m_position.X()/CLHEP::mm, m_position.Y()/CLHEP::mm, m_position.Z()/CLHEP::mm,
         m_direction.X(),m_direction.Y(), m_direction.Z());
-
-  this->Geant4ParticleGenerator::printInteraction();
+  if ( m_print )   {
+    this->Geant4ParticleGenerator::printInteraction(m_mask);
+  }
   ++m_shotNo;
   if ( m_standalone ) {
     mergeInteractions(this,context());

@@ -26,6 +26,10 @@ namespace DD4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
+
+    // Forward declarations
+    class Geant4PrimaryInteraction;
+
     /// Generate particles isotrop in space around origine (0,0,0)
     /**
      *  \author  M.Frank
@@ -34,9 +38,6 @@ namespace DD4hep {
      */
     class Geant4ParticleGenerator: public Geant4GeneratorAction {
     public:
-      enum { FIRST_INTERACTION =   0UL,
-             LAST_INTERACTION  =  ~0UL
-      };
     protected:
       /// Property: Shooting direction of the gun
       ROOT::Math::XYZVector m_direction;
@@ -65,8 +66,10 @@ namespace DD4hep {
       */
       virtual void getParticleDirection(int num, ROOT::Math::XYZVector& direction, double& momentum) const;
 
-      /// Print single particle interaction identified by sequence number in primary event. Default: last one 
-      virtual void printInteraction(size_t which=LAST_INTERACTION)  const;
+      /// Print single particle interaction identified by its mask
+      virtual void printInteraction(int mask)  const;
+      /// Print single particle interaction identified by it's reference
+      virtual void printInteraction(Geant4PrimaryInteraction* inter)  const;
     
 
     public:

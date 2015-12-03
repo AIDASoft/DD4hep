@@ -62,11 +62,11 @@ namespace DD4hep {
         hit->cellID        = volumeID( step ) ;
         except("+++ Invalid CELL ID for hit!");
       }
-      print("%s> Hit with deposit:%f  Pos:%f %f %f ID=%016X",
-            c_name(),step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
+      print("Hit with deposit:%f  Pos:%f %f %f ID=%016X",
+            step->GetTotalEnergyDeposit(),position.X(),position.Y(),position.Z(),
             (void*)hit->cellID);
       Geant4TouchableHandler handler(step);
-      print("%s>     Geant4 path:%s",c_name(),handler.path().c_str());
+      print("    Geant4 path:%s",handler.path().c_str());
       return true;
     }
     typedef Geant4SensitiveAction<Geant4Tracker> Geant4TrackerAction;
@@ -227,8 +227,8 @@ namespace DD4hep {
         hit = new Hit(global);
         hit->cellID = cell;
         coll->add(hit);
-        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
-                c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
+        printM2("CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
+                contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
         if ( 0 == hit->cellID )  { // for debugging only!
           hit->cellID = cellID(step);
           except("+++ Invalid CELL ID for hit!");
