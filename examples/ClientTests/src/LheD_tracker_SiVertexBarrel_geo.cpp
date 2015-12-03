@@ -35,7 +35,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   map<string, Volume>    volumes;
   PlacedVolume pv;
 
-  double  mod_width;
+  double  mod_width = 0.0;
     
   sens.setType("tracker");
   for(xml_coll_t mi(x_det,_U(module)); mi; ++mi)  {

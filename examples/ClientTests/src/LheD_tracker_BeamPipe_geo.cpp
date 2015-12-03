@@ -22,7 +22,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, Ref_t)    {
 
   // multiplication factor for ellipse major radius
   double c0 = 3.5;
-  double rmin, rmax, z;
+  double rmin = 0.0, rmax = 0.0, z = 0.0;
 
   for(xml_coll_t c(x_det,_U(zplane)); c; ++c)  {
     xml_comp_t dim(c);
