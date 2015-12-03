@@ -347,7 +347,7 @@ namespace DD4hep {
 
     /// Initialization overload for specialization
     template <> void Geant4SensitiveAction<TrackerWeighted>::initialize() {
-      declareProperty("HitPostionCombination", m_userData.hit_position_type);
+      declareProperty("HitPositionCombination", m_userData.hit_position_type);
       declareProperty("CollectSingleDeposits", m_userData.single_deposit_mode);
       m_userData.e_cut = m_sensitive.energyCutoff();
       m_userData.sensitive = this;
