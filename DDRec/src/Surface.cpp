@@ -816,7 +816,7 @@ namespace DD4hep {
       const DDSurfaces::Vector3D& lu = _volSurf.u() ;
       //      const DDSurfaces::Vector3D& lv = _volSurf.v() ;
       const DDSurfaces::Vector3D& ln = _volSurf.normal() ;
-      const DDSurfaces::Vector3D& lo = _volSurf.origin() ;
+      DDSurfaces::Vector3D lo = _volSurf.origin() ;
       
       Volume vol = volume() ; 
       const TGeoShape* shape = vol->GetShape() ;
@@ -880,8 +880,15 @@ namespace DD4hep {
           TGeoCone* cone = ( TGeoCone* ) shape  ;
 
           // can only deal with special case of z-disk and origin in center of cone
-          if( type().isZDisk() && lo.rho() < epsilon ) {
+          if( type().isZDisk() ) { // && lo.rho() < epsilon ) {
 	    
+	    if( lo.rho() > epsilon ) {
+	      // move origin to z-axis 
+	      lo.x() = 0. ; 
+	      lo.y() = 0. ;
+	    }
+
+
             double zhalf = cone->GetDZ() ;
             double rmax1 = cone->GetRmax1() ;
             double rmax2 = cone->GetRmax2() ;
