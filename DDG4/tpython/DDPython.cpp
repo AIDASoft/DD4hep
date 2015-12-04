@@ -298,3 +298,8 @@ void DDPython::setMainThread()  {
 bool DDPython::isMainThread()   {
   return _mainThread == pthread_self();
 }
+
+/// Start the interpreter in normal mode without hacks like 'pythopn.exe' does.
+int DDPython::run_interpreter(int argc, char** argv)   {
+  return ::Py_Main(argc, argv);
+}

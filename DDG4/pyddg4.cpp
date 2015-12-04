@@ -14,13 +14,9 @@
 #include "TSystem.h"
 #include "TInterpreter.h"
 #include "DDG4Python/DDPython.h"
-#include "Python.h"
-#include <string>
 #include <vector>
-using namespace std;
-using namespace DD4hep;
 
-static int load_libs(const vector<char*>& libs)  {
+static int load_libs(const std::vector<char*>& libs)  {
   for(size_t i=0; i<libs.size(); ++i)   {
     int ret = gSystem->Load(libs[i]);
     if ( 0 != ret )   {
@@ -37,8 +33,8 @@ static int load_libs(const vector<char*>& libs)  {
 int main(int argc, char** argv)   {
   bool have_prompt = false;
   bool do_execute = false;
-  vector<char*> args;
-  vector<char*> libs;
+  std::vector<char*> args;
+  std::vector<char*> libs;
   int first_arg = 1;
   int ret;
 
@@ -60,9 +56,9 @@ int main(int argc, char** argv)   {
   if ( !have_prompt && args.size()>0 )  {
     libs.push_back((char*)"libDDG4Python");
     if ( 0 == (ret=load_libs(libs)) )   {
-      DDPython::instance().setArgs(args.size(), &args[0]);
-      DDPython::instance().setMainThread();
-      DDPython::instance().runFile(args[0]);
+      DD4hep::DDPython::instance().setArgs(args.size(), &args[0]);
+      DD4hep::DDPython::instance().setMainThread();
+      DD4hep::DDPython::instance().runFile(args[0]);
       if ( do_execute )
         return gInterpreter->ProcessLine("PyDDG4::execute()");
       else 
@@ -72,7 +68,7 @@ int main(int argc, char** argv)   {
   }
   if ( 0 == (ret=load_libs(libs)) )   {
     ::printf("+++ Calling now Py_Main...\n");
-    ret = ::Py_Main(args.size(), &args[0]);
+    ret = DD4hep::DDPython::run_interpreter(args.size(), &args[0]);
     //::printf("+++ Return code Py_Main=%d\n",ret);
   }
   return ret;

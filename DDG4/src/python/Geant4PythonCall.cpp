@@ -20,7 +20,6 @@
 
 // C/C++ include files
 #include <stdexcept>
-#include "Python.h"
 
 using namespace std;
 using namespace DD4hep;
