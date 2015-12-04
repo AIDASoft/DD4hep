@@ -27,16 +27,17 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_executable(CLICSiDAClick SOURCES scripts/CLICSiDAClick.C
     USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
 endif()
-
-#---Testing-------------------------------------------------------------------------
+#
 dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )
-
+#
+#---Testing-------------------------------------------------------------------------
+#
 #----- Tests for CLICSid: here we simply require that at least 100 volumes have been converted
 foreach ( typ lcdd gdml vis )
   dd4hep_add_test_reg ( "test_CLICSiD_converter_${typ}" 
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  geoConverter -compact2${typ} 
-                            -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
+                            -input file:${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/compact/compact.xml
                             -output file:CLICSiD.${typ}
     REGEX_PASS " Handled [1-9][0-9][0-9]+ volumes" )
 endforeach()
@@ -45,7 +46,7 @@ endforeach()
 dd4hep_add_test_reg( test_CLICSiD_check_geometry
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
-                    --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
+                    --compact=file:${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/compact/compact.xml
   # This takes too long                  --full=true --ntracks=10 --option=o --vx=0 --vy=0 --vz=0
   REGEX_PASS " Execution finished..." )
 #
@@ -53,9 +54,11 @@ dd4hep_add_test_reg( test_CLICSiD_check_geometry
 dd4hep_add_test_reg( test_CLICSiD_check_overlaps
   COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
   EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
-                    --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml
+                    --compact=file:${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/compact/compact.xml
                     --tolerance=0.1
   REGEX_PASS " Execution finished..." )
+#
+#---Geant4 Testsing-----------------------------------------------------------------
 #
 if (DD4HEP_USE_GEANT4)
   #
@@ -63,7 +66,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script testDDPython CLICMagField CLICPhysics CLICRandom CLICSiDScan)
     dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py
+      EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/scripts/${script}.py
       REQUIRES   DDG4 Geant4
       REGEX_PASS "TEST_PASSED"
       REGEX_FAIL "Exception;EXCEPTION;ERROR" )
@@ -73,7 +76,7 @@ if (DD4HEP_USE_GEANT4)
   dd4hep_add_test_reg( test_CLICSiD_DDG4_g4material_scan
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
-                      --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/compact.xml 
+                      --compact=file:${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/compact/compact.xml 
                       "--position=0,0,0" "--direction=0,1,0"
     REGEX_PASS " Terminate Geant4 and delete associated actions." )
   #
@@ -81,14 +84,12 @@ if (DD4HEP_USE_GEANT4)
   foreach(script CLICSiDXML CLICSiDAClick)
     #
     # Build AClick from the source file
-    if ( ${ROOT_VERSION_MAJOR} LESS 6 )
-      dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_AClick
-        COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-        EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}\")"
-        REQUIRES   DDG4 Geant4
-        REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
-        REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
-    endif()
+    dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_AClick
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
+      EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${CMAKE_INSTALL_PREFIX}/examples/CLICSiD/scripts/${script}\")"
+      REQUIRES   DDG4 Geant4
+      REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
+      REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
     #
     # Execute identical source linked executable 
     dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_exe

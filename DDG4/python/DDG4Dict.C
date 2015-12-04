@@ -17,10 +17,10 @@
 //
 //====================================================================
 // FRamework include files
+#include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Random.h"
 #include "DDG4/DDG4Dict.h"
-#include "DDG4/Geant4Config.h"
 #include "DDG4/Geant4DataDump.h"
 #include "DDG4/Geant4InputAction.h"
 
@@ -197,6 +197,7 @@ typedef DD4hep::Simulation::Geant4ActionCreation Geant4ActionCreation;
 
 #include "DD4hep/objects/DetectorInterna.h"
 using namespace std;
+using namespace DD4hep;
 using namespace DD4hep::Simulation;
 
 // CINT configuration
@@ -223,16 +224,21 @@ using namespace DD4hep::Simulation;
 #if ROOT_VERSION_CODE < ROOT_VERSION(6,0,0)
 namespace {
   struct bla {
-    DD4hep::dd4hep_ptr<Geant4InputAction::Particles>  __m1;
-    DD4hep::dd4hep_ptr<ParticleExtension>  __m2;
-    DD4hep::dd4hep_ptr<DataExtension>  __m3;
+    dd4hep_ptr<Geant4InputAction::Particles>  __m1;
+    dd4hep_ptr<ParticleExtension>  __m2;
+    dd4hep_ptr<DataExtension>  __m3;
   };
 }
+#else
+#pragma link C++ class Geant4ParticleHandle;
+#pragma link C++ class Geant4ParticleMap;
+#pragma link C++ class map<int,Geant4Particle*>;
 #endif
-#pragma link C++ class DD4hep::dd4hep_ptr<VertexExtension>+;
-#pragma link C++ class DD4hep::dd4hep_ptr<PrimaryExtension>+;
-#pragma link C++ class DD4hep::dd4hep_ptr<Geant4InputAction::Particles>;
-#pragma link C++ class DD4hep::dd4hep_ptr<Geant4InputAction::Particles>::base_t;
+
+#pragma link C++ class dd4hep_ptr<VertexExtension>+;
+#pragma link C++ class dd4hep_ptr<PrimaryExtension>+;
+#pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>;
+#pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>::base_t;
 
 // Basic stuff
 #pragma link C++ class Geant4ActionCreation;
@@ -309,8 +315,8 @@ namespace {
 #pragma link C++ class Geant4ActionPhase;
 #pragma link C++ class Geant4PhaseAction;
 
-#pragma link C++ class DD4hep::Callback;
-#pragma link C++ class DD4hep::Callback::mfunc_t;
+#pragma link C++ class Callback;
+#pragma link C++ class Callback::mfunc_t;
 
 // Other (specialized) components
 #pragma link C++ class Geant4DataDump;
@@ -320,8 +326,8 @@ namespace {
 
 
 // somehow the symbol Geometry moved into global namespace. Redeclare it here
-namespace Geometry {}
-#pragma link C++ namespace Geometry;
+//namespace Geometry {}
+//#pragma link C++ namespace Geometry;
 
 #endif
 

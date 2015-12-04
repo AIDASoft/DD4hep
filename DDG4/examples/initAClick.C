@@ -14,15 +14,25 @@ string make_str(const char* data)  {
   return string(data);
 }
 
-void processMacro(const char* macro, bool end_process)   {
-  string cmd = ".X ";
-  cmd += macro;
-  cmd += ".C+()";
-  int status = gInterpreter->ProcessLine(cmd.c_str());
-  ::printf("Status(%s) = %d\n",cmd.c_str(),status);
+int processCommand(const char* command, bool end_process)   {
+  int status;
+  // Disabling auto-parse is a hack required by a bug in ROOT
+  gInterpreter->SetClassAutoparsing(false);
+  status = gInterpreter->ProcessLine(command);
+  gInterpreter->SetClassAutoparsing(true);
+  ::printf("+++ Status(%s) = %d\n",command,status);
   if ( end_process )  {
     gInterpreter->ProcessLine("gSystem->Exit(0)");
   }
+  return status;
+}
+
+int processMacro(const char* macro, bool end_process)   {
+  int status;
+  string cmd = ".X ";
+  cmd += macro;
+  cmd += ".C+()";
+  return processCommand(cmd.c_str(), end_process);
 }
 
 int initAClick(const char* command=0)  {
@@ -44,15 +54,13 @@ int initAClick(const char* command=0)  {
   libs += (" -L"+g4_base+"/lib -L"+g4_base+"/lib64 -lG4event -lG4tracking -lG4particles");
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
-  cout << "Includes:   " << gSystem->GetIncludePath() << endl;
-  cout << "Linked libs:" << gSystem->GetLinkedLibs()  << endl;
+  cout << "+++ Includes:   " << gSystem->GetIncludePath() << endl;
+  cout << "+++ Linked libs:" << gSystem->GetLinkedLibs()  << endl;
   int ret = gSystem->Load("libDDG4Plugins");
   if ( 0 == ret )   {
     if ( command )  {
-      gInterpreter->ProcessLine(command);
-      gInterpreter->ProcessLine("gSystem->Exit(0)");
+      processCommand(command, true);
     }
   }
   return ret;
 }
-

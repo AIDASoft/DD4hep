@@ -37,7 +37,7 @@ foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields Materi
     dd4hep_add_test_reg( ClientTests_${test}_converter_${type}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  geoConverter -compact2${type}
-                              -input file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                              -input file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/${test}.xml
                               -output file:${test}.${type}
       REGEX_PASS " Handled [1-9][0-9]* volumes" )
   endforeach(type)
@@ -53,7 +53,7 @@ foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBloc
   # Test material scans in [origine to 10 meters in y]
   dd4hep_add_test_reg( ClientTests_${test}_material_scan
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-    EXEC_ARGS  materialScan file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml 0 0 0 0 10000 0
+    EXEC_ARGS  materialScan file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/${test}.xml 0 0 0 0 10000 0
     REGEX_PASS " Average Material " )
   #
   # Geant4 material scan. From position=0,0,0 to end-of-world 
@@ -61,7 +61,7 @@ foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBloc
     dd4hep_add_test_reg( ClientTests_${test}_g4material_scan
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${DD4hep_DIR}/python/g4MaterialScan.py
-                        --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                        --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/${test}.xml
                         "--position=0,0,0" "--direction=0,1,0"
       REGEX_PASS " Terminate Geant4 and delete associated actions." )
   endif(DD4HEP_USE_GEANT4)
@@ -75,7 +75,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple )
   dd4hep_add_test_reg( ClientTests_${test}_check_geometry
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkGeometry.py
-                      --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                      --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/${test}.xml
                       --full=true --ntracks=10
     REGEX_PASS " Execution finished..." )
   #
@@ -83,7 +83,7 @@ foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple )
   dd4hep_add_test_reg( ClientTests_${test}_check_overlaps
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
     EXEC_ARGS  python ${DD4hep_DIR}/python/checkOverlaps.py 
-                      --compact=file:${CMAKE_CURRENT_SOURCE_DIR}/compact/${test}.xml
+                      --compact=file:${CMAKE_INSTALL_PREFIX}/examples/ClientTests/compact/${test}.xml
                       --tolerance=0.1
     REGEX_PASS " Execution finished..." )
 endforeach()
@@ -96,7 +96,7 @@ if (DD4HEP_USE_GEANT4)
   foreach(script Assemblies LheD_tracker MiniTel NestedDetectors )
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
-      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch
+      EXEC_ARGS  python ${CMAKE_INSTALL_PREFIX}/examples/ClientTests/scripts/${script}.py batch
       REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
