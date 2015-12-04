@@ -1,5 +1,24 @@
+// $Id: $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+
+// ROOT include files
 #include "TInterpreter.h"
+
+// C/C++ include files
 #include <string>
+
+// Run a ROOT macro
 void run(const char* macro)  {
   char cmd[1024];
   const char* dd4hep_install = getenv("DD4hepINSTALL");

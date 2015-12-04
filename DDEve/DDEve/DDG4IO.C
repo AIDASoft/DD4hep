@@ -25,7 +25,11 @@ namespace DD4hep { namespace Simulation {
     typedef Geant4HitData SimpleHit;
   }}
 #else
+
+// C/C++ include files
 #include <typeinfo>
+
+// ROOT include files
 #include "TROOT.h"
 #include "TClass.h"
 

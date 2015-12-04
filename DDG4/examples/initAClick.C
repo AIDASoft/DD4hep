@@ -1,6 +1,23 @@
+// $Id: $
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+
+// ROOT include files
 #include "TInterpreter.h"
 #include "TSystem.h"
 #include "RVersion.h"
+
+// C/C++ include files
 #include <iostream>
 #include <string>
 
@@ -14,6 +31,7 @@ string make_str(const char* data)  {
   return string(data);
 }
 
+/// Process a single command in the ROOT interpreter
 int processCommand(const char* command, bool end_process)   {
   int status;
   // Disabling auto-parse is a hack required by a bug in ROOT
@@ -27,6 +45,7 @@ int processCommand(const char* command, bool end_process)   {
   return status;
 }
 
+/// Process a ROOT AClick given a file
 int processMacro(const char* macro, bool end_process)   {
   int status;
   string cmd = ".X ";
@@ -35,6 +54,7 @@ int processMacro(const char* macro, bool end_process)   {
   return processCommand(cmd.c_str(), end_process);
 }
 
+/// Initialize the ROOT environment to compile and execute a ROOT AClick
 int initAClick(const char* command=0)  {
   string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
   string g4_base = make_str(gSystem->Getenv("G4INSTALL"));
