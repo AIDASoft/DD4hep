@@ -84,7 +84,7 @@ if (DD4HEP_USE_GEANT4)
     if ( ${ROOT_VERSION_MAJOR} LESS 6 )
       dd4hep_add_test_reg( test_CLICSiD_DDG4_${script}_as_AClick
         COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_CLICSiD.sh"
-        EXEC_ARGS  root.exe -b -x -n -q -l "${CMAKE_INSTALL_PREFIX}/examples/DDG4/examples/run.C(\"${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}\")"
+        EXEC_ARGS  root.exe -b -x -n -q -l "${DD4hep_DIR}/examples/DDG4/examples/run.C(\"${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}\")"
         REQUIRES   DDG4 Geant4
         REGEX_PASS "UserEvent_1      INFO  Geant4TestEventAction> calling end.event_id=9"
         REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
