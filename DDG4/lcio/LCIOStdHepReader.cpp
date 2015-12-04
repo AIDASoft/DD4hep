@@ -14,11 +14,11 @@
 #ifndef DD4HEP_DDG4_LCIOSTDHEPREADER_H
 #define DD4HEP_DDG4_LCIOSTDHEPREADER_H
 
-// Framework include files
-#include "LCIOEventReader.h"
-
 // LCIO include files
 #include "UTIL/LCStdHepRdr.h"
+
+// Framework include files
+#include "LCIOEventReader.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
