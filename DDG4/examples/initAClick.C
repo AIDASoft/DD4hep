@@ -35,9 +35,13 @@ string make_str(const char* data)  {
 int processCommand(const char* command, bool end_process)   {
   int status;
   // Disabling auto-parse is a hack required by a bug in ROOT
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
   gInterpreter->SetClassAutoparsing(false);
   status = gInterpreter->ProcessLine(command);
   gInterpreter->SetClassAutoparsing(true);
+#else
+  status = gInterpreter->ProcessLine(command);
+#endif
   ::printf("+++ Status(%s) = %d\n",command,status);
   if ( end_process )  {
     gInterpreter->ProcessLine("gSystem->Exit(0)");
