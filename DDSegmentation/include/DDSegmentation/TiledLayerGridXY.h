@@ -44,6 +44,14 @@ public:
 	double offsetY() const {
 		return _offsetY;
 	}
+	/// access the coordinate layerOffset in X
+	std::vector<double> layerOffsetX() const {
+		return  _layerOffsetX;
+	}
+	/// access the coordinate layerOffset in Y
+	std::vector<double> layerOffsetY() const {
+		return  _layerOffsetY;
+	}
 	/// access the field name used for X
 	const std::string& fieldNameX() const {
 		return _xId;
@@ -67,6 +75,14 @@ public:
 	/// set the coordinate offset in Y
 	void setOffsetY(double offset) {
 		_offsetY = offset;
+	}
+	/// set the coordinate layerOffset in X
+	void setLayerOffsetX(double offset) {
+	  _layerOffsetX.push_back(offset);
+	}
+	/// set the coordinate layerOffset in Y
+	void setLayerOffsetY(double offset) {
+	  _layerOffsetY.push_back(offset);
 	}
 	/// set the field name used for X
 	void setFieldNameX(const std::string& fieldName) {
