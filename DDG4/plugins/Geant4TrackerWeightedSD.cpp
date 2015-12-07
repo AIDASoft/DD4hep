@@ -209,13 +209,13 @@ namespace DD4hep {
                            pre.truth.trackID,int(collection->GetSize()),
                            combined,pre.truth.deposit/CLHEP::keV,
                            pos.X()/CLHEP::mm,pos.Y()/CLHEP::mm,pos.Z()/CLHEP::mm,
-                           hit_flag&Geant4Tracker::Hit::HIT_STARTED_SURFACE ? "SURFACE" : "",
-                           hit_flag&Geant4Tracker::Hit::HIT_STARTED_OUTSIDE ? "OUTSIDE" : "",
-                           hit_flag&Geant4Tracker::Hit::HIT_STARTED_INSIDE  ? "INSIDE " : "",
+                           (hit_flag&Geant4Tracker::Hit::HIT_STARTED_SURFACE ? "SURFACE" : ""),
+                           (hit_flag&Geant4Tracker::Hit::HIT_STARTED_OUTSIDE ? "OUTSIDE" : ""),
+                           (hit_flag&Geant4Tracker::Hit::HIT_STARTED_INSIDE  ? "INSIDE " : ""),
                            dist_in,
-                           hit_flag&Geant4Tracker::Hit::HIT_ENDED_SURFACE   ? "SURFACE" : "",
-                           hit_flag&Geant4Tracker::Hit::HIT_ENDED_OUTSIDE   ? "OUTSIDE" : "",
-                           hit_flag&Geant4Tracker::Hit::HIT_ENDED_INSIDE    ? "INSIDE " : "",
+                           (hit_flag&Geant4Tracker::Hit::HIT_ENDED_SURFACE   ? "SURFACE" : ""),
+                           (hit_flag&Geant4Tracker::Hit::HIT_ENDED_OUTSIDE   ? "OUTSIDE" : ""),
+                           (hit_flag&Geant4Tracker::Hit::HIT_ENDED_INSIDE    ? "INSIDE " : ""),
                            dist_out);
           collection->add(hit);
         }

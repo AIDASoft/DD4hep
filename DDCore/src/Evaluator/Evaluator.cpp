@@ -592,17 +592,17 @@ namespace XmlTools {
 
   //---------------------------------------------------------------------------
   Evaluator::~Evaluator() {
-    Struct * s = (Struct *)(p);
+    Struct * s = reinterpret_cast<Struct*>(p);
     if (s->theExpression != 0) {
       delete[] s->theExpression;
       s->theExpression = 0;
     }
-    delete (Struct *)(p);
+    delete reinterpret_cast<Struct*>(p);
   }
 
   //---------------------------------------------------------------------------
   double Evaluator::evaluate(const char * expression) {
-    Struct * s = (Struct *)(p);
+    Struct * s = reinterpret_cast<Struct*>(p);
     if (s->theExpression != 0) { delete[] s->theExpression; }
     s->theExpression = 0;
     s->thePosition   = 0;
@@ -622,18 +622,18 @@ namespace XmlTools {
 
   //---------------------------------------------------------------------------
   int Evaluator::status() const {
-    return ((Struct *)(p))->theStatus;
+    return (reinterpret_cast<Struct*>(p))->theStatus;
   }
 
   //---------------------------------------------------------------------------
   int Evaluator::error_position() const {
-    return ((Struct *)(p))->thePosition - ((Struct *)(p))->theExpression;
+    return (reinterpret_cast<Struct*>(p))->thePosition - (reinterpret_cast<Struct*>(p))->theExpression;
   }
 
   //---------------------------------------------------------------------------
   void Evaluator::print_error() const {
     char prefix[] = "Evaluator : ";
-    Struct * s = (Struct *) p;
+    Struct * s = reinterpret_cast<Struct*>(p);
     switch (s->theStatus) {
     case ERROR_NOT_A_NAME:
       std::cerr << prefix << "invalid name"         << std::endl;
@@ -667,7 +667,7 @@ namespace XmlTools {
 
   //---------------------------------------------------------------------------
   void Evaluator::setEnviron(const char* name, const char* value)  {
-    Struct* s = (Struct *)p;
+    Struct* s = reinterpret_cast<Struct*>(p);
     string prefix = "${";
     string item_name = prefix + string(name) + string("}");
     dic_type::iterator iter = (s->theDictionary).find(item_name);
@@ -691,7 +691,7 @@ namespace XmlTools {
   }
   //---------------------------------------------------------------------------
   const char* Evaluator::getEnviron(const char* name)  {
-    Struct* s = (Struct *)p;
+    Struct* s = reinterpret_cast<Struct*>(p);
     string item_name = name;
     //std::cout << " ++++++++++++++++++++++++++++ Try to resolve env:" << name << std::endl;
     dic_type::iterator iter = (s->theDictionary).find(item_name);
@@ -714,40 +714,40 @@ namespace XmlTools {
 
   //---------------------------------------------------------------------------
   void Evaluator::setVariable(const char * name, double value)
-  { setItem("", name, Item(value), (Struct *)p); }
+  { setItem("", name, Item(value), reinterpret_cast<Struct*>(p)); }
 
   void Evaluator::setVariable(const char * name, const char * expression)
-  { setItem("", name, Item(expression), (Struct *)p); }
+  { setItem("", name, Item(expression), reinterpret_cast<Struct*>(p)); }
 
   //---------------------------------------------------------------------------
   void Evaluator::setFunction(const char * name,double (*fun)())   {
     FCN fcn(fun);
-    setItem("0", name, Item(fcn.ptr), (Struct *)p);
+    setItem("0", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
   }
 
   void Evaluator::setFunction(const char * name,double (*fun)(double))   {
     FCN fcn(fun);
-    setItem("1", name, Item(fcn.ptr), (Struct *)p);
+    setItem("1", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
   }
 
   void Evaluator::setFunction(const char * name, double (*fun)(double,double))  {
     FCN fcn(fun);
-    setItem("2", name, Item(fcn.ptr), (Struct *)p);
+    setItem("2", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
   }
 
   void Evaluator::setFunction(const char * name, double (*fun)(double,double,double))  {
     FCN fcn(fun);
-    setItem("3", name, Item(fcn.ptr), (Struct *)p);
+    setItem("3", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
   }
 
   void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double)) {
     FCN fcn(fun);
-    setItem("4", name, Item(fcn.ptr), (Struct *)p);
+    setItem("4", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
   }
 
   void Evaluator::setFunction(const char * name, double (*fun)(double,double,double,double,double))  {
     FCN fcn(fun);
-    setItem("5", name, Item(fcn.ptr), (Struct *)p);
+    setItem("5", name, Item(fcn.ptr), reinterpret_cast<Struct*>(p));
   }
 
   //---------------------------------------------------------------------------
@@ -755,7 +755,7 @@ namespace XmlTools {
     if (name == 0 || *name == '\0') return false;
     const char * pointer; int n; REMOVE_BLANKS;
     if (n == 0) return false;
-    Struct * s = (Struct *)(p);
+    Struct * s = reinterpret_cast<Struct*>(p);
     return
       ((s->theDictionary).find(string(pointer,n)) == (s->theDictionary).end()) ?
       false : true;
@@ -767,7 +767,7 @@ namespace XmlTools {
     if (npar < 0  || npar > MAX_N_PAR) return false;
     const char * pointer; int n; REMOVE_BLANKS;
     if (n == 0) return false;
-    Struct * s = (Struct *)(p);
+    Struct * s = reinterpret_cast<Struct*>(p);
     return ((s->theDictionary).find(sss[npar]+string(pointer,n)) ==
             (s->theDictionary).end()) ? false : true;
   }
@@ -777,7 +777,7 @@ namespace XmlTools {
     if (name == 0 || *name == '\0') return;
     const char * pointer; int n; REMOVE_BLANKS;
     if (n == 0) return;
-    Struct * s = (Struct *)(p);
+    Struct * s = reinterpret_cast<Struct*>(p);
     (s->theDictionary).erase(string(pointer,n));
   }
 
@@ -787,13 +787,13 @@ namespace XmlTools {
     if (npar < 0  || npar > MAX_N_PAR) return;
     const char * pointer; int n; REMOVE_BLANKS;
     if (n == 0) return;
-    Struct * s = (Struct *)(p);
+    Struct * s = reinterpret_cast<Struct*>(p);
     (s->theDictionary).erase(sss[npar]+string(pointer,n));
   }
 
   //---------------------------------------------------------------------------
   void Evaluator::clear() {
-    Struct * s = (Struct *) p;
+    Struct * s = reinterpret_cast<Struct*>(p);
     s->theDictionary.clear();
     s->theExpression = 0;
     s->thePosition   = 0;

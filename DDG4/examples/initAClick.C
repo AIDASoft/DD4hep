@@ -21,14 +21,12 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
-
-string make_str(const char* data)  {
+std::string make_str(const char* data)  {
   if ( !data )   {
-    cout << "make_str:  '" << (data ? data : "Bad-Pointer") << "'" << endl;
-    return string("");
+    std::cout << "make_str:  '" << (data ? data : "Bad-Pointer") << "'" << std::endl;
+    return std::string("");
   }
-  return string(data);
+  return std::string(data);
 }
 
 /// Process a single command in the ROOT interpreter
@@ -51,8 +49,7 @@ int processCommand(const char* command, bool end_process)   {
 
 /// Process a ROOT AClick given a file
 int processMacro(const char* macro, bool end_process)   {
-  int status;
-  string cmd = ".X ";
+  std::string cmd = ".X ";
   cmd += macro;
   cmd += ".C+()";
   return processCommand(cmd.c_str(), end_process);
@@ -60,11 +57,11 @@ int processMacro(const char* macro, bool end_process)   {
 
 /// Initialize the ROOT environment to compile and execute a ROOT AClick
 int initAClick(const char* command=0)  {
-  string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
-  string g4_base = make_str(gSystem->Getenv("G4INSTALL"));
-  string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
-  string libs = (" -L"+rootsys+"/lib");
-  string inc  = " -I"+dd4hep+"/examples/DDG4/examples" +
+  std::string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
+  std::string g4_base = make_str(gSystem->Getenv("G4INSTALL"));
+  std::string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
+  std::string libs = (" -L"+rootsys+"/lib");
+  std::string inc  = " -I"+dd4hep+"/examples/DDG4/examples" +
     " -I"+dd4hep +
     " -I"+dd4hep+"/include" +
     " -I"+g4_base+"/include/Geant4" +
@@ -78,8 +75,8 @@ int initAClick(const char* command=0)  {
   libs += (" -L"+g4_base+"/lib -L"+g4_base+"/lib64 -lG4event -lG4tracking -lG4particles");
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
-  cout << "+++ Includes:   " << gSystem->GetIncludePath() << endl;
-  cout << "+++ Linked libs:" << gSystem->GetLinkedLibs()  << endl;
+  std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;
+  std::cout << "+++ Linked libs:" << gSystem->GetLinkedLibs()  << std::endl;
   int ret = gSystem->Load("libDDG4Plugins");
   if ( 0 == ret )   {
     if ( command )  {

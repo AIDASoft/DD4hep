@@ -521,8 +521,6 @@ int Geant4ParticleHandler::recombineParents()  {
   for(ParticleMap::reverse_iterator i=m_particleMap.rbegin(); i!=m_particleMap.rend(); ++i)  {
     Particle* p = (*i).second;
     PropertyMask mask(p->reason);
-    bool remove_me = false;
-
     // Allow the user to force the particle handling either by
     // or the reason mask with G4PARTICLE_KEEP_USER or
     // to set the reason mask to NULL in order to drop it.
@@ -531,7 +529,7 @@ int Geant4ParticleHandler::recombineParents()  {
     // or is set to NULL, the particle is ALWAYS removed
     //
     // Note: This may override all other decisions!
-    remove_me = m_userHandler ? m_userHandler->keepParticle(*p) : defaultKeepParticle(*p);
+    bool remove_me = m_userHandler ? m_userHandler->keepParticle(*p) : defaultKeepParticle(*p);
 
     // Now look at the property mask of the particle
     if ( mask.isNull() || mask.isSet(G4PARTICLE_FORCE_KILL) )  {

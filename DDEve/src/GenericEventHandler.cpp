@@ -69,12 +69,12 @@ long GenericEventHandler::numEvents() const   {
 }
 
 /// Access the data source name
-std::string GenericEventHandler::datasourceName() const {
+string GenericEventHandler::datasourceName() const {
   return current()->datasourceName();
 }
 
 /// Access to the collection type by name
-EventHandler::CollectionType GenericEventHandler::collectionType(const std::string& collection) const   {
+EventHandler::CollectionType GenericEventHandler::collectionType(const string& collection) const   {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionType(collection);
   }
@@ -82,7 +82,7 @@ EventHandler::CollectionType GenericEventHandler::collectionType(const std::stri
 }
 
 /// Loop over collection and extract data
-size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveHitActor& actor) {
+size_t GenericEventHandler::collectionLoop(const string& collection, DDEveHitActor& actor) {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionLoop(collection,actor);
   }
@@ -90,7 +90,7 @@ size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveH
 }
 
 /// Loop over collection and extract particle data
-size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveParticleActor& actor)    {
+size_t GenericEventHandler::collectionLoop(const string& collection, DDEveParticleActor& actor)    {
   if ( m_current && m_current->hasEvent() )  {
     return m_current->collectionLoop(collection,actor);
   }
@@ -100,6 +100,7 @@ size_t GenericEventHandler::collectionLoop(const std::string& collection, DDEveP
 /// Open a new event data file
 bool GenericEventHandler::Open(const string& file_type, const string& file_name)   {
   size_t idx = file_name.find("lcio");
+  size_t idr = file_name.find("root");
   string err;
   m_hasFile = false;
   m_hasEvent = false;
@@ -108,8 +109,11 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
     if ( idx != string::npos )   {
       m_current = (EventHandler*)PluginService::Create<void*>("DDEve_LCIOEventHandler",(const char*)0);
     }
-    else if ( (idx=file_name.find("root")) != string::npos )   {
+    else if ( idr != string::npos )   {
       m_current = (EventHandler*)PluginService::Create<void*>("DDEve_DDG4EventHandler",(const char*)0);
+    }
+    else   {
+      throw runtime_error("Attempt to open file:"+file_name+" of unknown type:"+file_type);
     }
     if ( m_current )   {
       if ( m_current->Open(file_type, file_name) )   {
@@ -124,7 +128,7 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
       err = "+++ Failed to create fikle reader for file '"+file_name+"' of type '"+file_type+"'";
     }
   }
-  catch(const std::exception& e)  {
+  catch(const exception& e)  {
     err = "\nAn exception occurred \n"
       "while opening event data:\n" + string(e.what()) + "\n\n";
   }
@@ -148,7 +152,7 @@ bool GenericEventHandler::NextEvent()   {
     }
     throw runtime_error("+++ EventHandler::readEvent: No file open!");
   }
-  catch(const std::exception& e)  {
+  catch(const exception& e)  {
     string path = TString::Format("%s/icons/stop_t.xpm", gSystem->Getenv("ROOTSYS")).Data();
     string err = "\nAn exception occurred \n"
       "while reading a new event:\n" + string(e.what()) + "\n\n";

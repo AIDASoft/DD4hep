@@ -51,12 +51,8 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   //xml_comp_t  staves      = x_det.staves();
   xml_dim_t   dim         = x_det.dimensions();
   string      det_name    = x_det.nameStr();
-  string      det_type    = x_det.typeStr();
   Material    air         = lcdd.air();
   double      totalThickness = layering.totalThickness();
-  int         totalRepeat = 0;
-  int         totalSlices = 0;
-  //double      gap         = xml_dim_t(x_det).gap();
   int         numSides    = dim.numsides();
   double      detZ        = dim.z();
   double      rmin        = dim.rmin();
@@ -64,23 +60,9 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   DetElement  sdet(det_name,x_det.id());
   DetElement  stave("stave1",x_det.id());
   Volume      motherVol = lcdd.pickMotherVolume(sdet);
-
-  for(xml_coll_t c(x_det,_U(layer)); c; ++c)  {
-    xml_comp_t x_layer = c;
-    int repeat   = x_layer.repeat();
-    totalRepeat += repeat;
-    totalSlices += x_layer.numChildren(_U(slice));
-  }
-
-//   PolyhedraRegular polyhedra(numSides,rmin,rmin+totalThickness,detZ);
-//   Volume           envelopeVol(det_name+"_envelope",polyhedra,air);
-//   Assembly           envelopeVol(det_name+"_envelope");
-
   PolyhedraRegular polyhedron(numSides,0.,rmin,detZ+10);
   Tube tube(0.,rmin+totalThickness,detZ/2,0,2*M_PI);
-  
-  SubtractionSolid sub(tube,polyhedron);
-  
+  SubtractionSolid sub(tube,polyhedron);  
   Volume           envelopeVol(det_name+"_envelope",sub,air);
 
   // Add the subdetector envelope to the structure.

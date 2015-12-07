@@ -18,10 +18,9 @@ using namespace DD4hep::Geometry;
  function to calculate path in a given theta
 **************************************************************/
 static double computeDpt( double ra, double rb, double theta ) {
-    double dp = 0.0;
     double dpt_sin = std::pow(ra * std::sin(theta), 2.0);
     double dpt_cos = std::pow(rb * std::cos(theta), 2.0);
-    dp = std::sqrt(dpt_sin + dpt_cos);
+    double dp = std::sqrt(dpt_sin + dpt_cos);
     return dp;
 }
 
@@ -153,14 +152,12 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
     double deltaTheta   = 0.0001;
     double numIntegrals = (thetaMax-thetaMin) / deltaTheta; 
     double cell         = 0.;
-    double dpt          = 0.;
 
     // integrate over the elipse to get the circumference
     for( int i=0; i < numIntegrals; i++ ) {
         if (i==0) theta = thetaMin;
         else theta += deltaTheta;
-        dpt = computeDpt( a, b, theta);
-        cell += dpt;
+        cell += computeDpt( a, b, theta);
     }
 
     // number of modules along semi-ellipse path

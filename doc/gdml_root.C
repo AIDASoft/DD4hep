@@ -51,7 +51,7 @@ TGeoVolume* gdml_root(const char* sys_name) {
 
   if ( !in.good() )
     cout << "++ Failed to open visualization file:" << vis_file 
-	 << " :: " << strerror(errno) << endl;
+         << " :: " << strerror(errno) << endl;
   else
     cout << "++ Processing visualization file:" << vis_file << endl;
 
@@ -70,85 +70,85 @@ TGeoVolume* gdml_root(const char* sys_name) {
       debug << line << " ";
       switch(count) {
       case 0:
-	vol_name = line+::strlen("vol:");
-	break;
+        vol_name = line+::strlen("vol:");
+        break;
       case 1:
-	break;
+        break;
       case 2:
-	line += ::strlen("visible:");
-	visible = *line=='1';
-	break;
+        line += ::strlen("visible:");
+        visible = *line=='1';
+        break;
       case 3:
-	line += ::strlen("r:");
-	red = atof(line);
-	break;
+        line += ::strlen("r:");
+        red = atof(line);
+        break;
       case 4:
-	line += ::strlen("g:");
-	green = atof(line);
-	break;
+        line += ::strlen("g:");
+        green = atof(line);
+        break;
       case 5:
-	line += ::strlen("b:");
-	blue = atof(line);
-	break;
+        line += ::strlen("b:");
+        blue = atof(line);
+        break;
       case 6:
-	line += ::strlen("alpha:");
-	//alpha = atof(line);
-	break;
+        line += ::strlen("alpha:");
+        //alpha = atof(line);
+        break;
       case 7:
-	line_style = line+::strlen("line_style:");
-	break;
+        line_style = line+::strlen("line_style:");
+        break;
       case 8:
-	drawing_style = line+::strlen("drawing_style:");
-	break;
+        drawing_style = line+::strlen("drawing_style:");
+        break;
       case 9:
-	line += ::strlen("show_daughters:");
-	show_daughters = *line=='1';
-	break;
+        line += ::strlen("show_daughters:");
+        show_daughters = *line=='1';
+        break;
       default:
-	break;
+        break;
       }
     }
     if ( debug_processing ) cout << debug.str() << endl;
     debug.str("");
-    TGeoVolume* volume = 0;
 
     if ( vol_name && ::strlen(vol_name) )   {
+      TGeoVolume* volume = 0;
       for(int i=0;i<num_volumes;++i) {
-	TGeoVolume* v=(TGeoVolume*)vols->At(i);
-	if ( 0 == ::strcmp(vol_name,v->GetName()) ) {
-	  volume = v;
-	  break;
-	}
+        TGeoVolume* v=(TGeoVolume*)vols->At(i);
+        if ( 0 == ::strcmp(vol_name,v->GetName()) ) {
+          volume = v;
+          break;
+        }
       }
       if ( volume ) {
-	int     color  = TColor::GetColor(red,green,blue);
-	Color_t bright = TColor::GetColorBright(color);
-	Color_t dark   = TColor::GetColorDark(color);
-	debug << "+ \tr:" << red << " g:" << green << " b:" << blue << " col:" << color 
-	      << " line_style:" << line_style << " drawing_style:" << drawing_style 
-	      << " visible:" << visible << " show_daughters:" << show_daughters;
-	volume->SetLineColor(dark);
-	if ( drawing_style == "solid" )  {
-	  volume->SetFillColor(bright);
-	  volume->SetFillStyle(1001); // Root: solid
-	}
-	else {
-	  //volume->SetFillColor(bright);
-	  volume->SetFillColor(0);
-	  volume->SetFillStyle(0);    // Root: hollow
-	}
-	if ( line_style == "unbroken" )
-	  volume->SetFillStyle(1);
-	else
-	  volume->SetFillStyle(2);
+        int     color  = TColor::GetColor(red,green,blue);
+        Color_t bright = TColor::GetColorBright(color);
+        Color_t dark   = TColor::GetColorDark(color);
+        debug << "+ \tr:" << red << " g:" << green << " b:" << blue << " col:" << color 
+              << " line_style:" << line_style << " drawing_style:" << drawing_style 
+              << " visible:" << visible << " show_daughters:" << show_daughters;
+        volume->SetLineColor(dark);
+        if ( drawing_style == "solid" )  {
+          volume->SetFillColor(bright);
+          volume->SetFillStyle(1001); // Root: solid
+        }
+        else {
+          //volume->SetFillColor(bright);
+          volume->SetFillColor(0);
+          volume->SetFillStyle(0);    // Root: hollow
+        }
+        if ( line_style == "unbroken" )
+          volume->SetFillStyle(1);
+        else
+          volume->SetFillStyle(2);
       
-	volume->SetLineWidth(10);
-	volume->SetVisibility(visible ? kTRUE : kFALSE);
-	volume->SetAttBit(TGeoAtt::kVisContainers,kTRUE);
-	volume->SetVisDaughters(show_daughters ? kTRUE : kFALSE);
+        volume->SetLineWidth(10);
+        volume->SetVisibility(visible ? kTRUE : kFALSE);
+        volume->SetAttBit(TGeoAtt::kVisContainers,kTRUE);
+        volume->SetVisDaughters(show_daughters ? kTRUE : kFALSE);
       }
       else {
-	cout << endl << "++ Failed to find volume with name:" << vol_name;
+        cout << endl << "++ Failed to find volume with name:" << vol_name;
       }
     }
     if ( debug_processing ) cout << debug.str() << endl;

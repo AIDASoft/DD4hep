@@ -44,7 +44,6 @@ SensitiveSeq::handled_type* setupDetector(Geant4Kernel& kernel, const std::strin
 int setupG4_CINT(bool interactive)  {
   Geant4Kernel& kernel = Geant4Kernel::instance(Geometry::LCDD::getInstance());
   string install_dir = getenv("DD4hepINSTALL");
-  string ddg4_examples = install_dir+"/examples/DDG4/examples";
   Phase p;
 
   kernel.loadGeometry(("file:"+install_dir+"/examples/CLICSiD/compact/compact.xml").c_str());
