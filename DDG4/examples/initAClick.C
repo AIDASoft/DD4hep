@@ -58,13 +58,13 @@ int processMacro(const char* macro, bool end_process)   {
 /// Initialize the ROOT environment to compile and execute a ROOT AClick
 int initAClick(const char* command=0)  {
   std::string rootsys = make_str(gSystem->Getenv("ROOTSYS"));
-  std::string g4_base = make_str(gSystem->Getenv("G4INSTALL"));
+  std::string geant4  = make_str(gSystem->Getenv("G4INSTALL"));
   std::string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
-  std::string libs = (" -L"+rootsys+"/lib");
-  std::string inc  = " -I"+dd4hep+"/examples/DDG4/examples" +
+  std::string clhep   = make_str(gSystem->Getenv("CLHEP_DIR"));
+  std::string libs    = " -L"+rootsys+"/lib";
+  std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples" +
     " -I"+dd4hep +
     " -I"+dd4hep+"/include" +
-    " -I"+g4_base+"/include/Geant4" +
     " -Wno-shadow -g -O0";
   if ( ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0) )
     libs += " -lCore -lMathCore";
@@ -72,7 +72,15 @@ int initAClick(const char* command=0)  {
     libs += " -lCore -lCint -lMathCore";
   libs += " -pthread -lm -ldl -rdynamic";
   libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
-  libs += (" -L"+g4_base+"/lib -L"+g4_base+"/lib64 -lG4event -lG4tracking -lG4particles");
+  if ( !geant4.empty() )  {
+    inc  += " -I"+geant4+"/include/Geant4";
+    libs += (" -L"+geant4+"/lib -L"+geant4+"/lib64 -lG4event -lG4tracking -lG4particles");
+  }
+  if ( !clhep.empty() )  {
+    // A bit unclear how to deal with CLHEP libraries here, 
+    // if CLHEP is not included in Geant4...
+    inc += " -I"+clhep+"/include";
+  }
   gSystem->AddIncludePath(inc.c_str());
   gSystem->AddLinkedLibs(libs.c_str());
   std::cout << "+++ Includes:   " << gSystem->GetIncludePath() << std::endl;

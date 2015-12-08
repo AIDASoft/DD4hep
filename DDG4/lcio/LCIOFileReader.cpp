@@ -95,7 +95,8 @@ DD4hep::Simulation::LCIOFileReader::readParticleCollection(int event_number, EVE
   if ( evt ) {
     *particles = evt->getCollection(LCIO::MCPARTICLE);
     if ( *particles ) {
-      printout(INFO,"LCIOFileReader","read collection %s from event %d in run %d ", LCIO::MCPARTICLE, evt->getEventNumber() , evt->getRunNumber()  );
+      printout(INFO,"LCIOFileReader","read collection %s from event %d in run %d ", 
+               LCIO::MCPARTICLE, evt->getEventNumber(), evt->getRunNumber());
       return EVENT_READER_OK;
     }
   }

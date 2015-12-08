@@ -102,7 +102,8 @@ namespace DD4hep {
         float alpha_qed;
         vector<float>      weights;
         vector<long>       random;
-        EventHeader() : id(0), num_vertices(0), signal_process_id(0), signal_process_vertex(0),
+        EventHeader() : id(0), num_vertices(0), bp1(0), bp2(0), 
+                        signal_process_id(0), signal_process_vertex(0),
                         scale(0.0), alpha_qcd(0.0), alpha_qed(0.0), weights(), random() {}
       };
 
@@ -378,8 +379,10 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
   Geant4Vertex* v = new Geant4Vertex();
   Geant4Particle* p;
 
-  input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
-        >> num_orphans_in >> num_particles_out >> weights_size;
+  if ( v )  {
+    input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
+          >> num_orphans_in >> num_particles_out >> weights_size;
+  }
   if(!input) {
     delete v;
     return 0;
@@ -437,9 +440,10 @@ int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)   
 
 int HepMC::read_event_header(EventStream &info, istringstream & input, EventHeader& header)   {
   // read values into temp variables, then fill GenEvent
-  int random_states_size = 0, nmpi = -1;
+  int random_states_size = 0;
   input >> header.id;
   if( info.io_type == gen || info.io_type == extascii ) {
+    int nmpi = -1;
     input >> nmpi;
     if( input.fail() ) return 0;
     //MSF set_mpi( nmpi );
@@ -539,22 +543,25 @@ int HepMC::read_pdf(EventStream &, istringstream & input)  {
   input >> id2 >> x1 >> x2 >> scale >> pdf1 >> pdf2;
   if ( input.fail()  )
     return 0;
-  // check to see if we are at the end of the line
-  if( !input.eof() )  {
-    input >> pdf_id1 >> pdf_id2;
-  }
   /*
     cerr << "Reading pdf, but igoring data!" << endl;
     pdf->set_id1( id1 );
     pdf->set_id2( id2 );
-    pdf->set_pdf_id1( pdf_id1 );
-    pdf->set_pdf_id2( pdf_id2 );
     pdf->set_x1( x1 );
     pdf->set_x2( x2 );
     pdf->set_scalePDF( scale );
     pdf->set_pdf1( pdf1 );
     pdf->set_pdf2( pdf2 );
   */
+  // check to see if we are at the end of the line
+  if( !input.eof() )  {
+    double pdf_id1=0.0, pdf_id2=0.0;
+    input >> pdf_id1 >> pdf_id2;
+    /*
+    pdf->set_pdf_id1( pdf_id1 );
+    pdf->set_pdf_id2( pdf_id2 );
+    */
+  }
   return input.fail() ? 0 : 1;
 }
 

@@ -30,11 +30,10 @@ namespace {
 namespace{
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {
     for(int i=0; i<argc; ++i)  {
-      double value = -1;
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        value = DD4hep::Geometry::_toDouble(++ptr);
+        double value = DD4hep::Geometry::_toDouble(++ptr);
         if( name=="dimension" ) data.dimension = value ; 
         std::cout << "DD4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;

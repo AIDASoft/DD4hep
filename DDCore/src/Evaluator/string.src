@@ -40,7 +40,10 @@ struct string {
   }
 
   // Copy constructor from string.
-  string(const string& x) { x.p->n++; p = x.p; }
+  string(const string& x) { 
+    x.p->n++;
+    p = x.p;
+  }
 
   // Destructor.
   ~string() { if (--p->n == 0) { delete [] p->s; delete p; } }

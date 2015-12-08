@@ -49,8 +49,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
   sdet.setPlacement(env_phv);
 
   DetElement    stave_det("stave0",det_id);
-  double dx = mod_z / std::sin(dphi); // dx per layer
-  dx = 0;
+  double dx = 0.0; //mod_z / std::sin(dphi); // dx per layer
     
   // Compute the top and bottom face measurements.
   double trd_x2 = (2 * std::tan(hphi) * outer_r - dx)/2 - tolerance;

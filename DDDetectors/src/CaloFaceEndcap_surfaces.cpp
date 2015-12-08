@@ -89,11 +89,10 @@ namespace{
   
   template <> void Installer<UserData>::handle_arguments(int argc, char** argv)   {
     for(int i=0; i<argc; ++i)  {
-      double value(0) ;
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        value = DD4hep::Geometry::_toDouble(++ptr);
+        double value = DD4hep::Geometry::_toDouble(++ptr);
         
         std::cout << "DD4hep_CaloFaceEndcapSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;

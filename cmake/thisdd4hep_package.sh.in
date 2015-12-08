@@ -12,6 +12,9 @@
 if [ ! ${DD4hep_DIR} ]; then
     export DD4hep_DIR=@DD4hep_DIR@;
 fi;
+if [ @CLHEP_DIR@ ]; then
+    export CLHEP_DIR=@CLHEP_DIR@;
+fi;
 source ${DD4hep_DIR}/bin/thisdd4hep.sh;
 #
 dd4hep_parse_this ${BASH_ARGV[0]} @PackageName@;

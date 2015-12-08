@@ -146,7 +146,6 @@ size_t LCIOEventHandler::collectionLoop(const std::string& collection, DDEvePart
 
 /// Open new data file
 bool LCIOEventHandler::Open(const std::string&, const std::string& name)   {
-  string err;
   if ( m_hasFile ) m_lcReader->close();
   m_hasFile = false;
   m_hasEvent = false;
@@ -166,8 +165,9 @@ bool LCIOEventHandler::NextEvent()   {
   if ( hasFile() )  {
     m_event = m_lcReader->readNextEvent();
     if ( m_event )   {
-      const std::vector<std::string>* collnames = m_event->getCollectionNames();
-      for( std::vector< std::string >::const_iterator i = collnames->begin(); i != collnames->end(); i++){
+      typedef std::vector<std::string> _S;
+      const _S* collnames = m_event->getCollectionNames();
+      for( _S::const_iterator i = collnames->begin(); i != collnames->end(); ++i) {
         LCCollection* c = m_event->getCollection(*i);
         m_data[c->getTypeName()].push_back(make_pair((*i).c_str(),c->getNumberOfElements()));
         m_branches[*i] = c;
