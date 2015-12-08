@@ -531,7 +531,7 @@ int HepMC::read_heavy_ion(EventStream &, istringstream & input)  {
 
 int HepMC::read_pdf(EventStream &, istringstream & input)  {
   // read values into temp variables, then create a new PdfInfo object
-  int id1 =0, id2 =0, pdf_id1=0, pdf_id2=0;
+  int id1 =0, id2 =0;
   double  x1 = 0., x2 = 0., scale = 0., pdf1 = 0., pdf2 = 0.;
   input >> id1 ;
   if ( input.fail()  )
@@ -555,7 +555,7 @@ int HepMC::read_pdf(EventStream &, istringstream & input)  {
   */
   // check to see if we are at the end of the line
   if( !input.eof() )  {
-    double pdf_id1=0.0, pdf_id2=0.0;
+    int pdf_id1=0, pdf_id2=0;
     input >> pdf_id1 >> pdf_id2;
     /*
     pdf->set_pdf_id1( pdf_id1 );

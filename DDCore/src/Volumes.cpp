@@ -589,9 +589,13 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
     m_element->SetLineColor(dark);
     if (draw_style == VisAttr::SOLID) {
       m_element->SetLineColor(bright);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,34,25)
+      m_element->SetFillColorAlpha(bright,vis->alpha);
+#else
       m_element->SetFillColor(bright);
-      // ROOT 6: m_element->SetFillColorAlpha(bright,vis->alpha);
+#endif
       m_element->SetFillStyle(1001);   // Root: solid
+      m_element->GetMedium()->GetMaterial()->SetTransparency((1-vis->alpha)*100);
     }
     else {
       printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
