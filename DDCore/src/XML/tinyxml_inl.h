@@ -137,11 +137,9 @@ TiXmlNode::TiXmlNode( NodeType _type ) : TiXmlBase()
 TiXmlNode::~TiXmlNode()
 {
   TiXmlNode* node = firstChild;
-  TiXmlNode* temp = 0;
-
   while ( node )
   {
-    temp = node;
+    TiXmlNode* temp = node;
     node = node->next;
     delete temp;
   }
@@ -158,11 +156,9 @@ void TiXmlNode::CopyTo( TiXmlNode* target ) const
 void TiXmlNode::Clear()
 {
   TiXmlNode* node = firstChild;
-  TiXmlNode* temp = 0;
-
   while ( node )
   {
-    temp = node;
+    TiXmlNode* temp = node;
     node = node->next;
     delete temp;
   }

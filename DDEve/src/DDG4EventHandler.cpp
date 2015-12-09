@@ -36,11 +36,11 @@ namespace {
     DDG4EventHandler::ParticleAccessor_t particles;
     void* ptr;
   };
-}
-
-static void* _create(const char*)  {
-  EventHandler* h = new DDG4EventHandler();
-  return h;
+  /// Factory entry point
+  void* _create(const char*)  {
+    EventHandler* h = new DDG4EventHandler();
+    return h;
+  }
 }
 using namespace DD4hep::Geometry;
 DECLARE_CONSTRUCTOR(DDEve_DDG4EventHandler,_create)
@@ -189,7 +189,6 @@ Int_t DDG4EventHandler::ReadEvent(Long64_t event_number)   {
 
 /// Open new data file
 bool DDG4EventHandler::Open(const std::string&, const std::string& name)   {
-  string err;
   if ( m_file.first ) m_file.first->Close();
   m_hasFile = false;
   m_hasEvent = false;

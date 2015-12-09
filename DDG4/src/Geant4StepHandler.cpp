@@ -110,3 +110,25 @@ G4ThreeVector Geant4StepHandler::globalToLocalG4(const G4ThreeVector& global)  c
   G4TouchableHandle t = step->GetPreStepPoint()->GetTouchableHandle();
   return t->GetHistory()->GetTopTransform().TransformPoint(global);
 }
+
+/// Apply BirksLaw
+double Geant4StepHandler::birkAttenuation() const    {
+#if G4VERSION_NUMBER >= 1001
+  static G4EmSaturation s_emSaturation(0);
+#else
+  static G4EmSaturation s_emSaturation();
+#endif
+
+  double energyDeposition = step->GetTotalEnergyDeposit();
+  double length = step->GetStepLength();
+  double niel   = step->GetNonIonizingEnergyDeposit();
+  const G4Track* trk = step->GetTrack();
+  const G4ParticleDefinition* particle = trk->GetDefinition();
+  const G4MaterialCutsCouple* couple = trk->GetMaterialCutsCouple();
+  double engyVis = s_emSaturation.VisibleEnergyDeposition(particle,
+                                                          couple,
+                                                          length,
+                                                          energyDeposition,
+                                                          niel);
+  return engyVis;
+}

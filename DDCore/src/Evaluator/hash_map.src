@@ -29,7 +29,8 @@ template<class K, class T>
 class hash_map {
 private:
   hash_map(const hash_map& c)
-    : table(0), cur_size(0), max_size(0), max_load(0), default_value(c.default_value)
+    : table(0), cur_size(0), max_size(0), max_load(0), 
+      grow(0.0), default_value(c.default_value)
   {
   }
   hash_map& operator=(const hash_map& c) {
@@ -37,6 +38,7 @@ private:
     cur_size = 0;
     max_size = 0;
     max_load = 0;
+    grow = 0.0;
     default_value = c.default_value;
     return *this; 
   }

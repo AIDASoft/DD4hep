@@ -64,7 +64,6 @@ int main(int argc, char** argv)   {
   string setup = argv[2];
   const char* args[] = {"cmd"};
   for(int i=1; i<argc;++i)   {
-    string nam = get_arg(argc,argv,i);
     if ( argv[i][0]=='-' )     {
       string n = argv[i]+1;
       if ( ::strncmp(n.c_str(),"gdml",4) == 0 )

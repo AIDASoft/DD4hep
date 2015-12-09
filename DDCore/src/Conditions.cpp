@@ -139,7 +139,12 @@ const type_info& Condition::typeInfo() const   {
 /// Access to the grammar type
 const DD4hep::BasicGrammar& Condition::descriptor() const   {
   const BasicGrammar* g = access()->data.grammar;
-  if ( !g ) invalidHandleError<Condition>();
+  if ( !g ) {
+    invalidHandleError<Condition>();
+    // This code is never reached, since function above throws exception!
+    // Needed to satisfay CppCheck
+    throw runtime_error("Null pointer in Grammar object");
+  }
   return *g;
 }
 

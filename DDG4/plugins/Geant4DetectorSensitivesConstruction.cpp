@@ -84,13 +84,13 @@ void Geant4DetectorSensitivesConstruction::constructSensitives(Geant4DetectorCon
   typedef Geometry::GeoHandlerTypes::SensitiveVolumes _SV;
   typedef Geometry::GeoHandlerTypes::ConstVolumeSet VolSet;
   Geant4GeometryInfo* p = Geant4Mapping::instance().ptr();
-  G4VSensitiveDetector* g4sd = 0;
   _SV& vols = p->sensitives;
 
   for(_SV::const_iterator iv=vols.begin(); iv != vols.end(); ++iv)  {
     Geometry::SensitiveDetector sd = (*iv).first;
     string typ = sd.type(), nam = sd.name();
-    g4sd = PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->lcdd);
+    G4VSensitiveDetector* g4sd = 
+      PluginService::Create<G4VSensitiveDetector*>(typ, nam, &ctxt->lcdd);
     if (!g4sd) {
       string tmp = typ;
       tmp[0] = ::toupper(tmp[0]);

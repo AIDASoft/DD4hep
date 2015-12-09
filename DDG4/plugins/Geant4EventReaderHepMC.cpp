@@ -374,19 +374,18 @@ int HepMC::read_particle(EventStream &info, istringstream& input, Geant4Particle
 }
 
 int HepMC::read_vertex(EventStream &info, istream& is, istringstream & input)    {
-  int id=0, dummy=0, num_orphans_in=0, num_particles_out=0, weights_size=0;
+  int id=0, dummy = 0, num_orphans_in=0, num_particles_out=0, weights_size=0;
   vector<float> weights;
   Geant4Vertex* v = new Geant4Vertex();
   Geant4Particle* p;
 
-  if ( v )  {
-    input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
-          >> num_orphans_in >> num_particles_out >> weights_size;
-  }
-  if(!input) {
+  if( !input ) {
     delete v;
     return 0;
   }
+  input >> id >> dummy >> v->x >> v->y >> v->z >> v->time
+        >> num_orphans_in >> num_particles_out >> weights_size;
+
   v->x *= info.pos_unit;
   v->y *= info.pos_unit;
   v->z *= info.pos_unit;

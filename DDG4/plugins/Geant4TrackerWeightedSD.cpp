@@ -62,6 +62,7 @@ namespace DD4hep {
       double                distance_to_inside;
       double                distance_to_outside;
       double                mean_time;
+      double                step_length;
       double                e_cut;
       int                   current, parent;
       int                   combined;
@@ -73,7 +74,7 @@ namespace DD4hep {
       bool                  single_deposit_mode;
       TrackerWeighted() : pre(), post(), sensitive(0), thisSD(0), 
                           distance_to_inside(0.0), distance_to_outside(0.0), mean_time(0.0), 
-                          e_cut(0.0), current(-1), parent(0), combined(0),
+                          step_length(0.0), e_cut(0.0), current(-1), parent(0), combined(0),
                           hit_position_type(POSITION_MIDDLE), hit_flag(0), g4ID(0), cell(0),
                           single_deposit_mode(false)
       {
@@ -85,6 +86,7 @@ namespace DD4hep {
         distance_to_inside = 0;
         distance_to_outside = 0;
         mean_time = 0;
+        step_length  = 0;
         post.clear();
         pre.clear();
         current  = -1;
@@ -114,11 +116,14 @@ namespace DD4hep {
       /// Update energy and track information during hit info accumulation
       TrackerWeighted& update(const G4Step* step)   {
         post.storePoint(step,step->GetPostStepPoint());
+        Position mean    = (post.position+pre.position)*0.5;
+        double   mean_tm = (post.truth.time+pre.truth.time)*0.5;
         pre.truth.deposit += post.truth.deposit;
-        mean_pos.SetX(mean_pos.x()+post.position.x()*post.truth.deposit);
-        mean_pos.SetY(mean_pos.y()+post.position.y()*post.truth.deposit);
-        mean_pos.SetZ(mean_pos.z()+post.position.z()*post.truth.deposit);
-        mean_time += post.truth.time*post.truth.deposit;
+        mean_pos.SetX(mean_pos.x()+mean.x()*post.truth.deposit);
+        mean_pos.SetY(mean_pos.y()+mean.y()*post.truth.deposit);
+        mean_pos.SetZ(mean_pos.z()+mean.z()*post.truth.deposit);
+        mean_time += mean_tm*post.truth.deposit;
+        step_length  += step->GetStepLength();
         if ( 0 == cell )   {
           cell = sensitive->cellID(step);
           if ( 0 == cell )  {
@@ -163,7 +168,6 @@ namespace DD4hep {
           Position pos;
           Momentum mom  = 0.5 * (pre.momentum + post.momentum);
           double   time = deposit != 0 ? mean_time / deposit : mean_time;
-          double   path = (post.position - pre.position).R();
           char     dist_in[64], dist_out[64];
 
           switch(hit_position_type)  {
@@ -195,7 +199,7 @@ namespace DD4hep {
           hit->flag     = hit_flag;
           hit->position = pos;
           hit->momentum = mom;
-          hit->length   = path;
+          hit->length   = step_length;
           hit->cellID   = cell;
           hit->g4ID     = g4ID;
 

@@ -73,7 +73,7 @@ namespace DD4hep {
       /// Returns total energy deposit
       double totalEnergy() const  {
         if(applyBirksLaw == true)
-          return BirkAttenuation(step);
+          return this->birkAttenuation();
         else
           return step->GetTotalEnergyDeposit();
       }
@@ -128,6 +128,9 @@ namespace DD4hep {
       }
       double deposit() const  {
         return step->GetTotalEnergyDeposit();
+      }
+      double stepLength() const  {
+        return step->GetStepLength();
       }
       int trkID() const  {
         return track->GetTrackID();
@@ -234,27 +237,7 @@ namespace DD4hep {
       G4ThreeVector globalToLocalG4(const G4ThreeVector& loc)  const;
 
       /// Apply BirksLaw
-      double BirkAttenuation(const G4Step* aStep) const
-      {
-        double energyDeposition = aStep->GetTotalEnergyDeposit();
-        double length = aStep->GetStepLength();
-        double niel   = aStep->GetNonIonizingEnergyDeposit();
-        const G4Track* trk = aStep->GetTrack();
-        const G4ParticleDefinition* particle = trk->GetDefinition();
-        const G4MaterialCutsCouple* couple = trk->GetMaterialCutsCouple();
-#if G4VERSION_NUMBER >= 1001
-        G4EmSaturation* emSaturation = new G4EmSaturation(0);
-#else
-        G4EmSaturation* emSaturation = new G4EmSaturation();
-#endif
-        double engyVis = emSaturation->VisibleEnergyDeposition(particle,
-                                                               couple,
-                                                               length,
-                                                               energyDeposition,
-                                                               niel);
-        delete emSaturation; 
-        return engyVis;
-      }
+      double birkAttenuation() const;
       /// Set applyBirksLaw to ture
       void doApplyBirksLaw(void) {
         applyBirksLaw = true;
