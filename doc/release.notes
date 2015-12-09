@@ -3,6 +3,17 @@
 DD4hep  ----  Release Notes
 =================================
 
+2015-12-09 N.Nikiforou
+  UtilityApps/teveDisplay
+  - Modified teveDisplay to have three separate collections of surface vectors (u,v,n) 
+    instead of one collection. Now the vectors are colored differently.
+  - Changed signature of getSurfaceVectors() to allow selection of o,u,v,n vectors to 
+    add to the collection, added option for name and color of collection.
+  - Renamed surface list collections to "HelperSurfaces" and "SensitiveSurfaces".
+  - Changed signature of getSurfaces() to allow setting of name and coloer of collection.
+  
+
+
 2015-12-01 M.Frank
   DDG4
   - Remove some of the compilation warnings

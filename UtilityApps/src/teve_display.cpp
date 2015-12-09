@@ -69,8 +69,8 @@ using namespace DDSurfaces ;
 void next_event();
 void make_gui();
 
-TEveStraightLineSet* getSurfaces(int col=kRed, const SurfaceType& type=SurfaceType() ) ;
-TEveStraightLineSet* getSurfaceVectors( ) ;
+TEveStraightLineSet* getSurfaces(int col=kRed, const SurfaceType& type=SurfaceType(), TString name="Surfaces" ) ;
+TEveStraightLineSet* getSurfaceVectors(bool addO=true, bool addU= true, bool addV=true, bool addN=true,TString name="SurfaceVectors",int color=kGreen) ;
 
 //=====================================================================================
 
@@ -108,13 +108,22 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
 
   gEve->AddGlobalElement( tn );
 
-  TEveElement* surfaces = getSurfaces(  kRed, SurfaceType( SurfaceType::Sensitive ) ) ;
-  TEveElement* helperSurfaces = getSurfaces(  kGray, SurfaceType( SurfaceType::Helper ) ) ;
-  TEveElement* surfaceVectors = getSurfaceVectors() ;
+  TEveElement* surfaces = getSurfaces(  kRed, SurfaceType( SurfaceType::Sensitive ), "SensitiveSurfaces" ) ;
+  TEveElement* helperSurfaces = getSurfaces(  kGray, SurfaceType( SurfaceType::Helper ),"HelperSurfaces" ) ;
+  TEveElement* surfaceVectors = getSurfaceVectors(1,0,0,1,"SurfaceVectorsN",kGreen) ;
 
   gEve->AddGlobalElement( surfaces ) ;
   gEve->AddGlobalElement( helperSurfaces ) ;
   gEve->AddGlobalElement( surfaceVectors ) ;
+  
+  
+  TEveElement* surfaceVectors_u = getSurfaceVectors(0,1,0,0,"SurfaceVectorsU",kMagenta) ;
+  
+  gEve->AddGlobalElement( surfaceVectors_u ) ;
+
+  TEveElement* surfaceVectors_v = getSurfaceVectors(0,0,1,0,"SurfaceVectorsV",kBlack) ;
+  
+  gEve->AddGlobalElement( surfaceVectors_v ) ;
 
   TGLViewer *v = gEve->GetDefaultGLViewer();
   // v->GetClipSet()->SetClipType(TGLClip::kClipPlane);
@@ -153,9 +162,9 @@ int main(int argc,char** argv)  {
 //=====================================================================================================================
 
 
-TEveStraightLineSet* getSurfaceVectors() {
+TEveStraightLineSet* getSurfaceVectors(bool addO, bool addU, bool addV, bool addN, TString name,int color) {
 
-  TEveStraightLineSet* ls = new TEveStraightLineSet("SurfaceVectors");
+  TEveStraightLineSet* ls = new TEveStraightLineSet(name);
 
   LCDD& lcdd = LCDD::getInstance();
 
@@ -178,13 +187,15 @@ TEveStraightLineSet* getSurfaceVectors() {
     DDSurfaces::Vector3D ov = o + v ;
     DDSurfaces::Vector3D on = o + n ;
  
-    ls->AddLine( o.x(), o.y(), o.z(), ou.x() , ou.y() , ou.z()  ) ;
-    ls->AddLine( o.x(), o.y(), o.z(), ov.x() , ov.y() , ov.z()  ) ;
-    ls->AddLine( o.x(), o.y(), o.z(), on.x() , on.y() , on.z()  ) ;
-
-    ls->AddMarker(  o.x(), o.y(), o.z() );
+    if (addU) ls->AddLine( o.x(), o.y(), o.z(), ou.x() , ou.y() , ou.z()  )->fId ;
+    
+//     TEveStraightLineSet::Marker_t *m = ls->AddMarker(id,1.);
+    
+    if (addV) ls->AddLine( o.x(), o.y(), o.z(), ov.x() , ov.y() , ov.z()  )->fId ;
+    if (addN) ls->AddLine( o.x(), o.y(), o.z(), on.x() , on.y() , on.z()  )->fId ;
+    if (addO) ls->AddMarker(  o.x(), o.y(), o.z() );
   }
-  ls->SetLineColor( kGreen ) ;
+  ls->SetLineColor( color ) ;
   ls->SetMarkerColor( kBlue ) ;
   ls->SetMarkerSize(1);
   ls->SetMarkerStyle(4);
@@ -194,9 +205,9 @@ TEveStraightLineSet* getSurfaceVectors() {
   return ls;
 }
 //=====================================================================================
-TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
+TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type, TString name) {
 
-  TEveStraightLineSet* ls = new TEveStraightLineSet("Surfaces");
+  TEveStraightLineSet* ls = new TEveStraightLineSet(name);
 
   LCDD& lcdd = LCDD::getInstance();
 
@@ -207,7 +218,7 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
 
   const SurfaceList& sL = surfMan.surfaceList() ;
 
-  //  std::cout << " getSurfaces() - #surfaces : " << sL.size() << std::endl ;
+//    std::cout << " getSurfaces() for "<<name<<" - #surfaces : " << sL.size() << std::endl ;
 
   for( SurfaceList::const_iterator it = sL.begin() ; it != sL.end() ; ++it ){
 
@@ -215,9 +226,11 @@ TEveStraightLineSet* getSurfaces(int col, const SurfaceType& type) {
 
     if( ! surf ) 
       continue ;
-
+    
     if( ! ( surf->type().isVisible() && ( surf->type().isSimilar( type ) ) ) ) 
       continue ;
+
+//     std::cout << " **** drawSurfaces() : empty lines vector for surface " << *surf << std::endl ;
 
     const std::vector< std::pair<Vector3D,Vector3D> > lines = surf->getLines() ;
 
