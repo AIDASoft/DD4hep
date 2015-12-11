@@ -185,20 +185,18 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       double radius = supp_distance ;
       double offset = supp_offset ;
       
-      pv = layer_assembly.placeVolume( supp_vol,Transform3D( rot, Position( ( radius + lthick/2. ) * cos(phi)  - offset * sin( phi ) ,
-									    ( radius + lthick/2. ) * sin(phi)  + offset * cos( phi ) ,
-									    0. ) ));
+      /* pv = */layer_assembly.placeVolume(supp_vol,Transform3D(rot, Position((radius+lthick/2.)*cos(phi) - offset*sin(phi),
+                                                                              (radius+lthick/2.)*sin(phi) + offset*cos(phi),
+                                                                              0. ) ));
 
       // --- place sensitive -----
       lthick = sens_thickness ;
       radius = sens_distance ;
       offset = sens_offset ;
       
-      pv = layer_assembly.placeVolume( sens_vol,Transform3D( rot, Position( ( radius + lthick/2. ) * cos(phi)  - offset * sin( phi ) ,
-									    ( radius + lthick/2. ) * sin(phi)  + offset * cos( phi ) ,
-									    0. ) ));
-
-
+      pv = layer_assembly.placeVolume( sens_vol,Transform3D(rot, Position((radius + lthick/2.0)*cos(phi) - offset*sin(phi),
+                                                                          (radius + lthick/2.0)*sin(phi) + offset*cos(phi),
+                                                                          0. ) ));
 
       //      pv.addPhysVolID("layer", layer_id ).addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 )   ;
       pv.addPhysVolID( "module" , j ).addPhysVolID("sensor", 0 )   ;

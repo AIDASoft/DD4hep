@@ -66,7 +66,7 @@ namespace {
   /// Helper function used to set values in FactoryInfo data members only
   /// if the original value is empty and reporting warnings in case of
   /// inconsistencies.
-  inline void factoryInfoSetHelper(std::string& dest, const std::string value,
+  inline void factoryInfoSetHelper(std::string& dest, const std::string& value,
                                    const std::string& desc,
                                    const std::string& id) {
     if (dest.empty()) {
@@ -340,11 +340,11 @@ namespace Gaudi { namespace PluginService {
     }
 
     void Logger::report(Level lvl, const std::string& msg) {
-      static const char* levels[] = {"DEBUG  : ",
-                                     "INFO   : ",
-                                     "WARNING: ",
-                                     "ERROR  : "};
       if (lvl >= level()) {
+        static const char* levels[] = {"DEBUG  : ",
+                                       "INFO   : ",
+                                       "WARNING: ",
+                                       "ERROR  : "};
         std::cerr << levels[lvl] << msg << std::endl;
       }
     }

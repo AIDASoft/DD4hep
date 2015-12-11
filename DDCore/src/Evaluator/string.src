@@ -40,13 +40,18 @@ struct string {
   }
 
   // Copy constructor from string.
-  string(const string& x) { 
+  string(const string& x)  {
     x.p->n++;
     p = x.p;
   }
 
   // Destructor.
-  ~string() { if (--p->n == 0) { delete [] p->s; delete p; } }
+  ~string() {
+    if (--p->n == 0) {
+      delete [] p->s;
+      delete p;
+    }
+  }
     
   // Assignment from character string.
   string& operator=(const char* s) {

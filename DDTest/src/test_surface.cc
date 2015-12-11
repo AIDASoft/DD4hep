@@ -31,7 +31,7 @@ class STR {
   float _val ;
   std::string _str ;
 public:
-  STR ( float val ) : _val( val ){
+  STR ( float val ) : _val( val ), _str() {
     std::stringstream s1 ; 
     s1 << _val ;
     _str = s1.str() ;

@@ -23,12 +23,10 @@ namespace DD4hep {
       const VolSurfaceList* vsL = volSurfaceList(det) ;
 
       try {
+        _sL = det.extension< SurfaceList >() ;
 
-	_sL = det.extension< SurfaceList >() ;
-
-      } catch( std::runtime_error e){ 
-	
-	_sL = det.addExtension<SurfaceList >(  new SurfaceList( true )  ) ; 
+      } catch(const std::exception& e) { 
+        _sL = det.addExtension<SurfaceList >(  new SurfaceList( true )  ) ; 
       }
 
       if( ! vsL->empty() && _sL->empty() ) {  // only fill surfaces for this DetElement once

@@ -32,7 +32,7 @@ cgaudi_pluginsvc_get_factory_at(cgaudi_pluginsvc_t self, int n)
          itr = reg->factories().begin(),
          iend= reg->factories().end();
        itr != iend;
-       itr++) {
+       ++itr) {
     keys.push_back(itr->first);
   }
   const char *key = keys[n].c_str();
@@ -103,7 +103,7 @@ cgaudi_factory_get_property_at(cgaudi_factory_t self, int n)
          itr = fi.properties.begin(),
          iend = fi.properties.end();
        itr != iend;
-       itr++, i++) {
+       ++itr, ++i) {
     if (i == n) {
       cprop.key = itr->first.c_str();
       return cprop;
