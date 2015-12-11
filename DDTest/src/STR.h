@@ -44,11 +44,12 @@ namespace  {
       return this->str() == s2.str() ;
     }
   };
-}
 
-inline std::ostream& operator<<(std::ostream& os , const STR& s) {
-  os << s.str() ;
-  return os ;
-} 
+
+  inline std::ostream& operator<<(std::ostream& os , const STR& s) {
+    os << s.str() ;
+    return os ;
+  } 
+}
 
 #endif // STR_H
