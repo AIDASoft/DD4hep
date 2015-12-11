@@ -235,6 +235,9 @@ namespace DDSurfaces {
     /** True if surface is parallel to Z with accuracy epsilon - result is cached in bit SurfaceType::ParallelToZ */
     bool checkParallelToZ( const ISurface& surf , double epsilon=1.e-6 ) const { 
       
+      if ( _bits[ SurfaceType::ParallelToZ ] ) // set in specific implementation
+	return true ;
+
       double proj = std::fabs( surf.normal() * Vector3D(0.,0.,1.) )  ;
       
       _bits.set(  SurfaceType::ParallelToZ , ( proj < epsilon )  ) ;
@@ -249,6 +252,9 @@ namespace DDSurfaces {
     /** True if surface is orthogonal to Z with accuracy epsilon - result is cached in bit SurfaceType::OrthogonalToZ */
     bool checkOrthogonalToZ( const ISurface& surf , double epsilon=1.e-6 ) const { 
       
+     if ( _bits[ SurfaceType::OrthogonalToZ ] ) // set in specific implementation
+	return true ;
+
       double proj = std::fabs( surf.normal() * Vector3D(0.,0.,1.) )  ;
       
       _bits.set(  SurfaceType::OrthogonalToZ , ( std::fabs( proj - 1. ) < epsilon )  ) ;

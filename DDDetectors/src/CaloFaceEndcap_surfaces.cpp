@@ -102,7 +102,7 @@ namespace{
         else if( name=="phi0"    ) data.phi0     = value ; 
         else if( name=="symmetry") data.symmetry = value ; 
         else if( name=="systemID") data.systemID   = value ; 
-        else if( name=="encoding") data.encoding = value ; 
+        else if( name=="encoding") data.encoding = ptr ; 
         else {
           std::cout << "DD4hep_CaloFaceEndcapSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
         }
@@ -133,7 +133,7 @@ namespace{
 
 
     DD4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;
-    // DD4hep::DDSegmentation::BitField64 bf( data.encoding ) ;
+    //DD4hep::DDSegmentation::BitField64 bf( data.encoding ) ;
 
     bf["system"] = data.systemID ;
     bf["side"]   =  1 ; 

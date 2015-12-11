@@ -27,6 +27,7 @@ using std::vector;
 /// Default constructor used by derived classes passing the encoding string
 Segmentation::Segmentation(const std::string& cellEncoding) :
 		_name("Segmentation"), _type("Segmentation"), _decoder(new BitField64(cellEncoding)), _ownsDecoder(true) {
+
 }
 
 /// Default constructor used by derived classes passing an existing decoder

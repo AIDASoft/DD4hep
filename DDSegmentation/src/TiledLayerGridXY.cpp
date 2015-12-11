@@ -21,7 +21,9 @@ TiledLayerGridXY::TiledLayerGridXY(const std::string& cellEncoding) :
 	// define type and description
 	_type = "TiledLayerGridXY";
 	_description = "Cartesian segmentation in the local XY-plane using optimal tiling depending on the layer dimensions";
-
+    
+	std::cout << " ######### DD4hep::DDSegmentation::TiledLayerGridXY() " << std::endl ; 
+      
 	// register all necessary parameters
 	registerParameter("grid_size_x", "Cell size in X", _gridSizeX, 1., SegmentationParameter::LengthUnit);
 	registerParameter("grid_size_y", "Cell size in Y", _gridSizeY, 1., SegmentationParameter::LengthUnit);

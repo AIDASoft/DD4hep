@@ -97,7 +97,7 @@ namespace{
         else if( name=="phi0"    ) data.phi0     = value ; 
         else if( name=="symmetry") data.symmetry = value ; 
         else if( name=="systemID") data.systemID   = value ; 
-        else if( name=="encoding") data.encoding = value ; 
+        else if( name=="encoding") data.encoding = ptr ; 
         else {
           std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
         }
@@ -138,7 +138,7 @@ namespace{
       
     for(unsigned i=0 ; i < symmetry ; ++i){
 
-      bf["module"] =  1 ; 
+      bf["module"] =  i ; 
 
       double gam = phi0 + alpha/2. + i*alpha;
 

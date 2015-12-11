@@ -336,12 +336,30 @@ namespace DD4hep {
         throw std::runtime_error( sst.str() ) ;
       }
       
-      Vector3D n( 1. , v_val.phi() , ( v_val.theta() + M_PI/2. ) , Vector3D::spherical ) ;
+      double theta = v_val.theta() ;
+
+      Vector3D n( 1. , v_val.phi() , ( theta + M_PI/2. ) , Vector3D::spherical ) ;
       Vector3D u_val = v_val.cross( n ) ;
 
       setU( u_val ) ;
       setOrigin( o_rphi ) ;
       setNormal( n ) ;
+
+      // set helper variable for faster computations (describe cone with tip at origin)
+      _tanTheta = std::tan( theta ) ; 
+      double tipoffset = o_val.rho() / _tanTheta ; // distance from tip to origin.z()
+      _ztip     = o_val.z()  - tipoffset ;
+
+      double dist_p = vol->GetShape()->DistFromInside( const_cast<double*> ( o_val.const_array() ) , 
+						       const_cast<double*> ( v_val.const_array() ) ) ;
+      Vector3D vm = -1. * v_val ;
+      double dist_m = vol->GetShape()->DistFromInside( const_cast<double*> ( o_val.const_array() ) , 
+							    const_cast<double*> ( vm.array()      ) ) ;
+
+      double costh = std::cos( theta) ;
+      _zt0 = tipoffset - dist_m *  costh ;           
+      _zt1 = tipoffset + dist_p *  costh ;     
+
 
       _type.setProperty( SurfaceType::Plane   , false ) ;
       _type.setProperty( SurfaceType::Cylinder, false ) ;
@@ -378,7 +396,10 @@ namespace DD4hep {
       while( phi < -M_PI ) phi += 2.*M_PI ;
       while( phi >  M_PI ) phi -= 2.*M_PI ;
       
-      return  Vector2D( origin().rho()*phi, ( point.z() - origin().z() ) / cos( _v.theta() ) ) ;
+
+      double r = ( point.z() - _ztip ) * _tanTheta ;
+
+      return  Vector2D(  r*phi, ( point.z() - origin().z() ) / cos( _v.theta() ) ) ;
     }
     
     
@@ -386,26 +407,40 @@ namespace DD4hep {
       
       double z = point.v() * cos( _v.theta() ) + origin().z() ;
       
-      double phi = point.u() / origin().rho() + origin().phi() ;
-				  
+      double r =  ( z - _ztip ) * _tanTheta ;
+
+      double phi = point.u() / r + origin().phi() ;
+      
       while( phi < -M_PI ) phi += 2.*M_PI ;
       while( phi >  M_PI ) phi -= 2.*M_PI ;
       
-      return Vector3D( origin().rho() , phi, z  , Vector3D::cylindrical )    ;
+      return Vector3D( r , phi, z  , Vector3D::cylindrical )    ;
     }
 
 
     /** Distance to surface */
     double VolConeImpl::distance(const Vector3D& point ) const {
 
+      // // if the point is in the other hemispere we return the distance to origin 
+      // // -> this assumes that the cones do not cross the xy-plane ...
+      // // otherwise we get the distance to the mirrored part of the cone
+      // // needs more thought ..
+      // if( origin().z() * point.z() < 0. ) 
+      // 	return point.r() ;
+
       //fixme: there are probably faster ways to compute this
       // e.g by using the intercept theorem - tbd. ...
-      const Vector2D& lp = globalToLocal( point ) ;
-      const Vector3D& gp = localToGlobal( lp ) ;
+      // const Vector2D& lp = globalToLocal( point ) ;
+      // const Vector3D& gp = localToGlobal( lp ) ;
 
-      Vector3D dz = point - gp ;
+      // Vector3D dz = point - gp ;
 
-      return dz * normal( point )  ;
+      //return dz * normal( point )   ;
+
+       double zp = point.z() - _ztip ;
+       double r = point.rho() - zp * _tanTheta ;
+       return r * std::cos( _v.theta() ) ;
+
     }
     
     /// create outer bounding lines for the given symmetry of the polyhedron
