@@ -2,10 +2,10 @@
 
 #include "DD4hep/LCDD.h"
 #include "DD4hep/DD4hepUnits.h"
+#include "STR.h"
 
 #include <exception>
 #include <iostream>
-#include <sstream>
 #include <assert.h>
 #include <cmath>
 
@@ -18,28 +18,6 @@ using namespace dd4hep ;
 DDTest test = DDTest( "units" ) ; 
 
 //=============================================================================
-/** Helper class for floating point comparisons using string representations */
-class STR {
-  STR() {} 
-  float _val ;
-  std::string _str ;
-public:
-  STR ( float val ) : _val(val), _str() {
-    std::stringstream s1 ; 
-    s1 << _val ;
-    _str = s1.str() ;
-  }
-  std::string str() const { return _str ; }
-  
-  bool operator==( const STR& s2) const {
-    return this->str() == s2.str() ;
-  }
-};
-
-std::ostream& operator<<(std::ostream& os , const STR& s) {
-  os << s.str() ;
-  return os ;
-} 
 //=============================================================================
 
 int main(int argc, char** argv ){

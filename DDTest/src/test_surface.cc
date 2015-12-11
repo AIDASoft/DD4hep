@@ -6,11 +6,10 @@
 #include "DD4hep/Detector.h"
 
 #include "DDRec/Surface.h"
-//#include "DDSurfaces/ISurface.h"
+#include "STR.h"
 
 #include <exception>
 #include <iostream>
-#include <sstream>
 #include <assert.h>
 #include <cmath>
 
@@ -23,30 +22,6 @@ using namespace DDSurfaces ;
 
 // this should be the first line in your test
 DDTest test = DDTest( "surface" ) ; 
-
-//=============================================================================
-/** Helper class for floating point comparisons using string representations */
-class STR {
-  STR() {} 
-  float _val ;
-  std::string _str ;
-public:
-  STR ( float val ) : _val( val ), _str() {
-    std::stringstream s1 ; 
-    s1 << _val ;
-    _str = s1.str() ;
-  }
-  std::string str() const { return _str ; }
-  
-  bool operator==( const STR& s2) const {
-    return this->str() == s2.str() ;
-  }
-};
-
-std::ostream& operator<<(std::ostream& os , const STR& s) {
-  os << s.str() ;
-  return os ;
-} 
 //=============================================================================
 
 int main(int argc, char** argv ){
