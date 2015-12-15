@@ -32,7 +32,7 @@ class Filter( ConfigHelper ):
     super(Filter, self).__init__()
     self._mapDetFilter = {}
     self._tracker = "edep1kev"
-    self._calo    = None
+    self._calo    = "edep0"
     self._filters = {}
     self._createDefaultFilters()
 
@@ -96,6 +96,9 @@ class Filter( ConfigHelper ):
 
     self.filters["edep1kev"] = dict( name="EnergyDepositMinimumCut",
                                      parameter={"Cut": 1.0*keV} )
+
+    self.filters["edep0"] = dict( name="EnergyDepositMinimumCut",
+                                  parameter={"Cut": 0.0} )
 
 
   def __makeMapDetList( self ):
