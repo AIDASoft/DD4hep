@@ -97,7 +97,7 @@ class Filter( ConfigHelper ):
     self.filters["edep1kev"] = dict( name="EnergyDepositMinimumCut",
                                      parameter={"Cut": 1.0*keV} )
 
-    self.filters["edep0"] = dict( name="EnergyDepositMinimumCut",
+    self.filters["edep0"] = dict( name="EnergyDepositMinimumCut/Cut0",
                                   parameter={"Cut": 0.0} )
 
 
