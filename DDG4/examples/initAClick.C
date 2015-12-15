@@ -62,8 +62,7 @@ int initAClick(const char* command=0)  {
   std::string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
   std::string clhep   = make_str(gSystem->Getenv("CLHEP_DIR"));
   std::string libs    = " -L"+rootsys+"/lib";
-  std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples" +
-    " -I"+dd4hep + " -I"+dd4hep+"/include"
+  std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples -I"+dd4hep + " -I"+dd4hep+"/include";
   libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
   if ( !geant4.empty() )  {
     inc  += " -I"+geant4+"/include/Geant4";
