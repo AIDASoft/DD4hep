@@ -46,7 +46,7 @@ namespace DD4hep {
       EventStream* m_events;
     public:
       /// Initializing constructor
-      Geant4EventReaderHepMC(const std::string& nam);
+      explicit Geant4EventReaderHepMC(const std::string& nam);
       /// Default destructor
       virtual ~Geant4EventReaderHepMC();
       /// Read an event and fill a vector of MCParticles.

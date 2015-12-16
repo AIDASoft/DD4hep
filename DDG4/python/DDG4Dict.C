@@ -29,16 +29,16 @@ namespace DD4hep {
 
     using std::string;
 
-#define ACTIONHANDLE(x)                                                 \
-    struct x##Handle  {                                                 \
-      Geant4##x* action;                                                \
-      x##Handle(Geant4##x* a)       : action(a)        { if ( action ) action->addRef();} \
+#define ACTIONHANDLE(x)                                                                   \
+    struct x##Handle  {                                                                   \
+      Geant4##x* action;                                                                  \
+      explicit x##Handle(Geant4##x* a) : action(a)     { if ( action ) action->addRef();} \
       x##Handle(const x##Handle& h) : action(h.action) { if ( action ) action->addRef();} \
       ~x##Handle()                  { if ( action) action->release();                   } \
       Geant4##x* release()          { Geant4##x* tmp = action; action=0; return tmp;    } \
-      operator DD4hep::Simulation::Geant4##x* () const  { return action;     } \
-      Geant4##x* operator->() const { return action;     }              \
-      Geant4##x* get() const        { return action;     }              \
+      operator DD4hep::Simulation::Geant4##x* () const  { return action;     }            \
+      Geant4##x* operator->() const                     { return action;     }            \
+      Geant4##x* get() const                            { return action;     }            \
     }
 
     ACTIONHANDLE(Filter);

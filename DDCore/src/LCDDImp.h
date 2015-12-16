@@ -41,14 +41,19 @@ namespace DD4hep {
     protected:
       /// Cached map with detector types:
       typedef std::map<std::string, std::vector<DetElement> > DetectorTypeMap;
+
+      /// Inventory of detector types
       DetectorTypeMap m_detectorTypes;
+
+      /// VolumeManager m_volManager;
+      LCDDBuildType m_buildType;
 
     private:
       /// Disable copy constructor
-      LCDDImp(const LCDDImp&);
+      LCDDImp(const LCDDImp& copy);
 
       /// Disable assignment operator
-      LCDDImp& operator=(const LCDDImp&);
+      LCDDImp& operator=(const LCDDImp& copy);
 
       /// Internal helper to map detector types once the geometry is closed
       void mapDetectorTypes();
@@ -56,9 +61,6 @@ namespace DD4hep {
 
       /// Local method (no interface): Load volume manager.
       void imp_loadVolumeManager();
-
-      /// VolumeManager m_volManager;
-      LCDDBuildType m_buildType;
 
       /// Default constructor
       LCDDImp();

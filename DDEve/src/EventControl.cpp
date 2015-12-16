@@ -90,7 +90,8 @@ bool EventControl::Open()   {
 /// EventConsumer overload: New event data file
 void EventControl::OnFileOpen(EventHandler* handler)  {
   char text[1024], fname[1024];
-  ::strncpy(fname, handler->datasourceName().c_str(), sizeof(fname));
+  ::strncpy(fname, handler->datasourceName().c_str(), sizeof(fname)-1);
+  fname[sizeof(fname)-1] = 0;
   // -----------------------------------------------------------------------------------------
   if ( handler && handler->hasFile() )   {
     ::snprintf(text,sizeof(text),"Number of events: %ld",handler->numEvents());

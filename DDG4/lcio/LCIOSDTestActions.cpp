@@ -140,7 +140,7 @@ namespace  Tests {
     // hit->momentum      = direction;
     // hit->length        = hit_len;
     collection(m_collectionID)->add(hit);
-    return hit != 0;
+    return true;
   }
 
   typedef Geant4SensitiveAction<LcioTestTracker> LcioTestTrackerAction;

@@ -153,7 +153,7 @@ namespace {
     }
 
     /// Compute the encoding for a set of VolIDs within a readout descriptor
-    pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const VolIDs& ids) const {
+    static pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const VolIDs& ids) const {
       VolumeID volume_id = 0, mask = 0;
       for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
         const PlacedVolume::VolID& id = (*i);
@@ -202,7 +202,7 @@ namespace {
     }
 
     void print_node(SensitiveDetector sd, DetElement parent, DetElement e,
-                    const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */)
+                    const TGeoNode* n, const VolIDs& ids, const Chain& /* nodes */) const
     {
       static int s_count = 0;
       Readout ro = sd.readout();

@@ -21,10 +21,10 @@ struct Item {
   string expression;
   void   *function;
 
-  Item()         : what(UNKNOWN),   variable(0),expression(), function(0) {}
-  Item(double x) : what(VARIABLE),  variable(x),expression(), function(0) {}
-  Item(string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
-  Item(void  *x) : what(FUNCTION),  variable(0),expression(), function(x) {}
+  explicit Item()         : what(UNKNOWN),   variable(0),expression(), function(0) {}
+  explicit Item(double x) : what(VARIABLE),  variable(x),expression(), function(0) {}
+  explicit Item(string x) : what(EXPRESSION),variable(0),expression(x),function(0) {}
+  explicit Item(void  *x) : what(FUNCTION),  variable(0),expression(), function(x) {}
 };
 
 typedef char * pchar;

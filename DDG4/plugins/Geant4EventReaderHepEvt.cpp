@@ -42,7 +42,7 @@ namespace DD4hep {
 
     public:
       /// Initializing constructor
-      Geant4EventReaderHepEvt(const std::string& nam, int format);
+      explicit Geant4EventReaderHepEvt(const std::string& nam, int format);
       /// Default destructor
       virtual ~Geant4EventReaderHepEvt();
       /// Read an event and fill a vector of MCParticles.
@@ -81,14 +81,14 @@ namespace {
   class Geant4EventReaderHepEvtShort : public Geant4EventReaderHepEvt  {
   public:
     /// Initializing constructor
-    Geant4EventReaderHepEvtShort(const string& nam) : Geant4EventReaderHepEvt(nam,HEPEvtShort) {}
+    explicit Geant4EventReaderHepEvtShort(const string& nam) : Geant4EventReaderHepEvt(nam,HEPEvtShort) {}
     /// Default destructor
     virtual ~Geant4EventReaderHepEvtShort() {}
   };
   class Geant4EventReaderHepEvtLong : public Geant4EventReaderHepEvt  {
   public:
     /// Initializing constructor
-    Geant4EventReaderHepEvtLong(const string& nam) : Geant4EventReaderHepEvt(nam,HEPEvtLong) {}
+    explicit Geant4EventReaderHepEvtLong(const string& nam) : Geant4EventReaderHepEvt(nam,HEPEvtLong) {}
     /// Default destructor
     virtual ~Geant4EventReaderHepEvtLong() {}
   };
