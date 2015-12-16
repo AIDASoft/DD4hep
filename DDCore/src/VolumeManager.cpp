@@ -153,7 +153,7 @@ namespace {
     }
 
     /// Compute the encoding for a set of VolIDs within a readout descriptor
-    static pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const VolIDs& ids) const {
+    static pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const VolIDs& ids)  {
       VolumeID volume_id = 0, mask = 0;
       for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
         const PlacedVolume::VolID& id = (*i);
