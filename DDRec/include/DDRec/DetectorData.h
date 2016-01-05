@@ -2,6 +2,7 @@
 #define DDRec_DetectorData_H_
 
 #include <bitset>
+#include <ostream>
 
 #include "DD4hep/Detector.h"
 
@@ -64,7 +65,8 @@ namespace DD4hep {
     };
     typedef StructExtension<FixedPadSizeTPCStruct> FixedPadSizeTPCData ;
 
-
+    std::ostream& operator<<( std::ostream& io , const FixedPadSizeTPCData& d ) ;
+    
 
     /** Simple data structure with key parameters for
      *  reconstruction of a planar silicon tracking detector
@@ -137,6 +139,8 @@ namespace DD4hep {
 
     } ;
     typedef StructExtension<ZPlanarStruct> ZPlanarData ;
+
+    std::ostream& operator<<( std::ostream& io , const ZPlanarData& d ) ;
 
 
 
@@ -233,6 +237,7 @@ namespace DD4hep {
     } ;
     typedef StructExtension<ZDiskPetalsStruct> ZDiskPetalsData ;
 
+    std::ostream& operator<<( std::ostream& io , const ZDiskPetalsData& d ) ;
 
     /** Simple data structure defining a support
      *  structure built from consecutive conical
@@ -268,6 +273,7 @@ namespace DD4hep {
 
     typedef StructExtension<ConicalSupportStruct> ConicalSupportData ;
 
+    std::ostream& operator<<( std::ostream& io , const ConicalSupportData& d ) ;
 
 
     /** Simple data structure defining a layered calorimeter layout for
@@ -374,6 +380,7 @@ namespace DD4hep {
 
     typedef StructExtension<LayeredCalorimeterStruct> LayeredCalorimeterData ;
 
+    std::ostream& operator<<( std::ostream& io , const LayeredCalorimeterData& d ) ;
 
 
   } /* namespace DDRec */

@@ -21,8 +21,14 @@ if(DD4HEP_USE_GEAR)
   add_definitions("-D DD4HEP_USE_GEAR")
 endif()
 
+#dd4hep_add_dictionary( G__DDRec
+#  SOURCES include/DDRec/*.h
+#  OPTIONAL [GEAR REQUIRED]
+#)  
+
 dd4hep_add_package_library(DDRec 
-  SOURCES        src/*.cpp 
+  SOURCES        src/*.cpp
+#  GENERATED      G__DDRec.cxx
   OPTIONAL       [GEAR COMPONENTS geartgeo SOURCES src/gear/DDGear.cpp DEFINITIONS DD4HEP_USE_GEAR ]
 )
 dd4hep_add_plugin(DDRecPlugins 

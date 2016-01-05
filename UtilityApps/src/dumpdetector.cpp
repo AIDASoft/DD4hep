@@ -22,6 +22,7 @@
 
 #include "DDRec/Surface.h"
 #include "DDRec/DetectorSurfaces.h"
+#include "DDRec/DetectorData.h"
 #include "DDRec/SurfaceHelper.h"
 
 // C/C++ include files
@@ -36,11 +37,38 @@ using namespace DDSurfaces ;
 using namespace dd4hep ;
 
 //=============================================================================
+void printDetectorData( DetElement det ){
+
+  try{ 
+    FixedPadSizeTPCData* d = det.extension<FixedPadSizeTPCData>() ; 
+    std::cout << *d ;
+  } catch(...){}
+  try{ 
+    ZPlanarData* d = det.extension<ZPlanarData>() ; 
+    std::cout << *d ;
+  } catch(...){}
+  try{ 
+    ZDiskPetalsData* d = det.extension<ZDiskPetalsData>() ; 
+    std::cout << *d ;
+  } catch(...){}
+  try{ 
+    ConicalSupportData* d = det.extension<ConicalSupportData>() ; 
+    std::cout << *d ;
+  } catch(...){}
+  try{ 
+    LayeredCalorimeterData* d = det.extension<LayeredCalorimeterData>() ; 
+    std::cout << *d ;
+  } catch(...){}
+
+}
+
+//=============================================================================
 
 int main(int argc, char** argv ){
     
   if( argc < 2 ) {
     std::cout << " usage: dumpdetector compact.xml [-s]" 
+	      << "  -d :  only print DetectorData objects " 
 	      << "  -s :  also print surfaces " 
 	      << std::endl ;
 
@@ -50,6 +78,8 @@ int main(int argc, char** argv ){
   std::string inFile =  argv[1] ;
 
 
+  bool printDetData = ( argc>2 && !strcmp( argv[2] , "-d" ) );
+
   bool printSurfaces = ( argc>2 && !strcmp( argv[2] , "-s" ) );
 
 
@@ -58,6 +88,37 @@ int main(int argc, char** argv ){
   lcdd.fromCompact( inFile );
 
   DetElement world = lcdd.world() ;
+
+
+  std::cout << "############################################################################### "  << std::endl  ;
+  
+  Header h = lcdd.header() ;
+
+  std::cout << " detector model : " <<  h.name()  << std::endl 
+	    << "    title : "  << h.title() << std::endl 
+	    << "    author : " << h.author() << std::endl 
+	    << "    status : " << h.status() << std::endl ;
+
+  if( printDetData ){
+
+    DD4hep::Geometry::LCDD::HandleMap dets = lcdd.detectors() ;
+
+    for( DD4hep::Geometry::LCDD::HandleMap::const_iterator it = dets.begin() ; it != dets.end() ; ++it ){
+      
+      DetElement det = it->second ;
+
+      std::cout << " ---------------------------- " << det.name() << " ----------------------------- " << std::endl ;
+
+      printDetectorData( det ) ;
+
+    }
+    
+    std::cout << "############################################################################### "  << std::endl  ;
+
+    return 0;
+  }
+
+
 
 
   DD4hep::Geometry::LCDD::HandleMap sensDet = lcdd.sensitiveDetectors() ;
@@ -117,6 +178,9 @@ int main(int argc, char** argv ){
 
     std::cout << de.name() << "[ path: "<< de.placementPath ()  <<  "] (id: " << de.id() << ") - sens type : " << lcdd.sensitiveDetector( de.name() ).type() << "\t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
 
+
+    printDetectorData( de ) ;
+
     if( printSurfaces ){
       for( SurfaceList::const_iterator sit = sL.begin() ; sit != sL.end() ; ++sit ){
 	const ISurface* surf =  *sit ;
@@ -129,8 +193,13 @@ int main(int argc, char** argv ){
 
   std::cout << "############################################################################### "  << std::endl  << std::endl  ;
 
+  //	FixedPadSizeTPCData* tpc = tpcDE.extension<FixedPadSizeTPCData>() ;
 
   return 0;
 }
+
+
+
+
 
 //=============================================================================
