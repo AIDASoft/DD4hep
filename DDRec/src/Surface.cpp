@@ -790,10 +790,14 @@ namespace DD4hep {
 
       //  =========== check parallel and orthogonal to Z ===================
       
-      _type.checkParallelToZ( *this ) ;
+      if( ! _type.isCone() ) { 
+	//fixme: workaround for conical surfaces that should always be parallel to z
+	//       however the check with the normal does not work here ...
 
-      _type.checkOrthogonalToZ( *this ) ;
-    
+	_type.checkParallelToZ( *this ) ;
+	
+	_type.checkOrthogonalToZ( *this ) ;
+      }
       
       //======== set the unique surface ID from the DetElement ( and placements below ? )
 
