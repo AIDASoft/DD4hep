@@ -87,8 +87,10 @@ DD4hep::Simulation::LCIOFileReader::moveToEvent(int event_number) {
   // fg: direct access does not work if run number is different from 0 and/or event numbers are not stored consecutively
   if( m_currEvent == 0 && event_number != 0 ) {
     m_reader->skipNEvents( event_number ) ;
-    printout(INFO,"LCIOFileReader","Skipping the first %d events ", event_number );
+    printout(INFO,"LCIOFileReader::moveToEvent","Skipping the first %d events ", event_number );
+    printout(INFO,"LCIOFileReader::moveToEvent","Event number before skipping: %d", m_currEvent );
     m_currEvent = event_number;
+    printout(INFO,"LCIOFileReader::moveToEvent","Event number after skipping: %d", m_currEvent );
   }
   return EVENT_READER_OK;
 }

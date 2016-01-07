@@ -189,12 +189,13 @@ Geant4EventReader::EventReaderStatus
 Geant4EventReaderHepMC::moveToEvent(int event_number) {
   if( m_currEvent == 0 && event_number != 0 ) {
     printout(INFO,"EventReaderHepMC::moveToEvent","Skipping the first %d events ", event_number );
-    printout(INFO,"EventReaderHepMC::moveToEvent","Current Event Number: %d", m_currEvent );
+    printout(INFO,"EventReaderHepMC::moveToEvent","Event number before skipping: %d", m_currEvent );
     while ( m_currEvent < event_number ) {
       if ( not m_events->read() ) return EVENT_READER_ERROR;
       ++m_currEvent;
     }
   }
+  printout(INFO,"EventReaderHepMC::moveToEvent","Event number after skipping: %d", m_currEvent );
   return EVENT_READER_OK;
 }
 
@@ -211,7 +212,7 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */, Particles& output) {
     m_events->clear();
     for(Particles::const_iterator k=output.begin(); k != output.end(); ++k) {
       Geant4ParticleHandle p(*k);
-      printout(INFO,m_name,
+      printout(VERBOSE,m_name,
                "+++ %s ID:%3d status:%08X typ:%9d Mom:(%+.2e,%+.2e,%+.2e)[MeV] "
                "time: %+.2e [ns] #Dau:%3d #Par:%1d",
                "",p->id,p->status,p->pdgID,

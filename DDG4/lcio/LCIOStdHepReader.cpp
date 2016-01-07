@@ -91,13 +91,14 @@ Geant4EventReader::EventReaderStatus
 LCIOStdHepReader::moveToEvent(int event_number) {
   if( m_currEvent == 0 && event_number != 0 ) {
     printout(INFO,"LCIOStdHepReader::moveToEvent","Skipping the first %d events ", event_number );
-    printout(INFO,"LCIOStdHepReader::moveToEvent","Current Event Number: %d", m_currEvent );
+    printout(INFO,"LCIOStdHepReader::moveToEvent","Event number before skipping: %d", m_currEvent );
     while ( m_currEvent < event_number ) {
       EVENT::LCCollection* particles = m_reader->readEvent();
       if ( 0 == particles ) return EVENT_READER_ERROR;
       ++m_currEvent;
     }
   }
+  printout(INFO,"LCIOStdHepReader::moveToEvent","Event number after skipping: %d", m_currEvent );
   return EVENT_READER_OK;
 }
 

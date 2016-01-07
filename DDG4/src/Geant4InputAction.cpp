@@ -54,6 +54,7 @@ Geant4EventReader::moveToEvent(int event_number)   {
   if ( event_number >= INT_MIN )   {
     return EVENT_READER_OK;  // Logic below does not work as expected.
   }                          // This shortcuts it!
+                             // APS: would have been nice to know what exactly doesn't work...
   if ( m_currEvent == event_number )  {
     return EVENT_READER_OK;
   }
