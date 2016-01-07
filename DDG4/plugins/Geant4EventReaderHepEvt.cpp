@@ -47,6 +47,8 @@ namespace DD4hep {
       virtual ~Geant4EventReaderHepEvt();
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticles(int event_number, std::vector<Particle*>& particles);
+      virtual EventReaderStatus moveToEvent(int event_number);
+      virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
     };
   }     /* End namespace Simulation   */
 }       /* End namespace DD4hep       */
@@ -116,6 +118,25 @@ Geant4EventReaderHepEvt::Geant4EventReaderHepEvt(const string& nam, int format)
 /// Default destructor
 Geant4EventReaderHepEvt::~Geant4EventReaderHepEvt()    {
   m_input.close();
+}
+
+/// skipEvents if required
+Geant4EventReader::EventReaderStatus
+Geant4EventReaderHepEvt::moveToEvent(int event_number) {
+  if( m_currEvent == 0 && event_number != 0 ) {
+    printout(INFO,"EventReaderHepEvt::moveToEvent","Skipping the first %d events ", event_number );
+    printout(INFO,"EventReaderHepEvt::moveToEvent","Event number before skipping: %d", m_currEvent );
+    while ( m_currEvent < event_number ) {
+      std::vector<Particle*> particles;
+      EventReaderStatus sc = readParticles(m_currEvent,particles);
+      for_each(particles.begin(),particles.end(),deleteObject<Particle>);
+      if ( sc != EVENT_READER_OK ) return sc;
+      //Current event is increased in readParticles already!
+      // ++m_currEvent;
+    }
+  }
+  printout(INFO,"EventReaderHepEvt::moveToEvent","Event number after skipping: %d", m_currEvent );
+  return EVENT_READER_OK;
 }
 
 /// Read an event and fill a vector of MCParticles.
@@ -283,6 +304,7 @@ Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>
       if ( !part.findParent(mcp) ) part.addParent(mcp);
     }
   }  // End second loop over particles
+  ++m_currEvent;
   return EVENT_READER_OK;
 }
 
