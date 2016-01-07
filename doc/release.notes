@@ -3,6 +3,11 @@
 DD4hep  ----  Release Notes
 =================================
 
+2016-01-07 A.Sailer
+  DDG4
+  - Fix the logic for skipping of events at the start of input files: LCIO, HepMC, stdhep and HepEvt
+  - Event number in lcio outputfile takes skipped events into account now
+
 2015-12-09 N.Nikiforou
   UtilityApps/teveDisplay
   - Modified teveDisplay to have three separate collections of surface vectors (u,v,n) 
