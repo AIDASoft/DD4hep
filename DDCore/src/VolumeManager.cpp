@@ -240,6 +240,7 @@ namespace {
 
 /// Initializing constructor to create a new object
 VolumeManager::VolumeManager(LCDD& lcdd, const string& nam, DetElement elt, Readout ro, int flags) {
+  printout(INFO, "VolumeManager", " - populating volume ids - be patient ..."  );
   Object* obj_ptr = new Object();
   assign(obj_ptr, nam, "VolumeManager");
   if (elt.isValid()) {
@@ -250,6 +251,7 @@ VolumeManager::VolumeManager(LCDD& lcdd, const string& nam, DetElement elt, Read
     obj_ptr->flags = flags;
     p.populate(elt);
   }
+  printout(INFO, "VolumeManager", " - populating volume ids - done"  );
 }
 
 /// Initializing constructor to create a new object

@@ -29,6 +29,7 @@ namespace {
 // Framework include files
 #define SURFACEINSTALLER_DATA UserData
 #define DD4HEP_USE_SURFACEINSTALL_HELPER DD4hep_CaloFaceBarrelSurfacePlugin
+#include "DD4hep/Printout.h"
 #include "DD4hep/SurfaceInstaller.h"
 #include "DDRec/DetectorData.h"
 #include "DDRec/Surface.h"
@@ -89,8 +90,7 @@ namespace{
         std::string name( argv[i] , ptr ) ;
         double value = DD4hep::Geometry::_toDouble(++ptr);
         
-        std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: argument[" << i << "] = " << name 
-                  << " = " << value << std::endl;
+	printout(DD4hep::DEBUG,"DD4hep_CaloFaceBarrelSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
 
         if(      name=="length"    ) data.length     = value ; 
         else if( name=="radius"  ) data.radius   = value ; 
@@ -99,7 +99,7 @@ namespace{
         else if( name=="systemID") data.systemID   = value ; 
         else if( name=="encoding") data.encoding = ptr ; 
         else {
-          std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: WARNING unknown parameter: " << name << std::endl ;
+	  printout(DD4hep::WARNING,"DD4hep_CaloFaceBarrelSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
         }
       }
     }
@@ -124,8 +124,7 @@ namespace{
     double inner_thickness = 1e-6 ;
     double outer_thickness = 1e-6 ;
     
-    std::cout << "DD4hep_CaloFaceBarrelSurfacePlugin: install tracking surfaces for : " 
-              << component.name() << std::endl ;
+    printout(DD4hep::INFO,"DD4hep_CaloFaceBarrelSurfacePlugin", "install tracking surfaces for :  %s ", component.name() ) ;
 
 
     DD4hep::DDSegmentation::BitField64 bf( "system:5,side:-2,layer:9,module:8,sensor:8" ) ;
