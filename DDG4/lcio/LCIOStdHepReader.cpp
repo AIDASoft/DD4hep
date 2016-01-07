@@ -44,6 +44,9 @@ namespace DD4hep  {
       virtual ~LCIOStdHepReader();
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticleCollection(int event_number, EVENT::LCCollection** particles);
+      virtual EventReaderStatus moveToEvent(int event_number);
+      virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
+
     };
   }     /* End namespace lcio   */
 }       /* End namespace DD4hep */
@@ -73,9 +76,8 @@ using namespace DD4hep::Simulation;
 
 /// Initializing constructor
 LCIOStdHepReader::LCIOStdHepReader(const std::string& nam)
-  : LCIOEventReader(nam)
+  : LCIOEventReader(nam), m_reader(new UTIL::LCStdHepRdr(m_name.c_str()))
 {
-  m_reader = new UTIL::LCStdHepRdr(m_name.c_str());
 }
 
 /// Default destructor
@@ -83,10 +85,29 @@ LCIOStdHepReader::~LCIOStdHepReader()    {
   DD4hep::deletePtr(m_reader);
 }
 
+
+/// skipEvents if required
+Geant4EventReader::EventReaderStatus
+LCIOStdHepReader::moveToEvent(int event_number) {
+  if( m_currEvent == 0 && event_number != 0 ) {
+    printout(INFO,"LCIOStdHepReader::moveToEvent","Skipping the first %d events ", event_number );
+    printout(INFO,"LCIOStdHepReader::moveToEvent","Current Event Number: %d", m_currEvent );
+    while ( m_currEvent < event_number ) {
+      EVENT::LCCollection* particles = m_reader->readEvent();
+      if ( 0 == particles ) return EVENT_READER_ERROR;
+      ++m_currEvent;
+    }
+  }
+  return EVENT_READER_OK;
+}
+
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-LCIOStdHepReader::readParticleCollection(int /*event_number */, EVENT::LCCollection** particles)  {
+LCIOStdHepReader::readParticleCollection(int event_number, EVENT::LCCollection** particles)  {
+
   *particles = m_reader->readEvent();
+  ++m_currEvent;
+
   if ( 0 == *particles ) return EVENT_READER_ERROR;
   return EVENT_READER_OK;
 }

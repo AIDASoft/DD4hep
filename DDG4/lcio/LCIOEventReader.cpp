@@ -49,7 +49,7 @@ namespace {
 
 /// Initializing constructor
 LCIOEventReader::LCIOEventReader(const string& nam)
-  : Geant4EventReader(nam), m_numEvent(0)
+  : Geant4EventReader(nam)
 {
 }
 
@@ -66,7 +66,6 @@ LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)  
   vector<EVENT::MCParticle*>  mcpcoll;
   EventReaderStatus ret = readParticleCollection(event_number,&primaries);
 
-  ++m_numEvent;
   if ( ret != EVENT_READER_OK ) return ret;
 
   int NHEP = primaries->getNumberOfElements();
