@@ -34,9 +34,6 @@ namespace DD4hep  {
      *  \ingroup DD4HEP_SIMULATION
      */
     class LCIOEventReader : public Geant4EventReader  {
-    protected:
-      /// Event counter
-      int m_numEvent;
     public:
       /// Initializing constructor
       LCIOEventReader(const std::string& nam);

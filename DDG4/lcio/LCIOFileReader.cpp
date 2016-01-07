@@ -40,7 +40,6 @@ namespace DD4hep  {
     protected:
       /// Reference to reader object
       IO::LCReader* m_reader;
-      unsigned m_nEvt ;
     public:
       /// Initializing constructor
       LCIOFileReader(const std::string& nam);
@@ -49,6 +48,8 @@ namespace DD4hep  {
 
       /// Read an event and fill a vector of MCParticles.
       virtual EventReaderStatus readParticleCollection(int event_number, EVENT::LCCollection** particles);
+      virtual EventReaderStatus moveToEvent(int event_number);
+      virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
     };
   }
 }
@@ -65,7 +66,7 @@ DECLARE_GEANT4_EVENT_READER_NS(DD4hep::Simulation,LCIOFileReader)
 
 /// Initializing constructor
 DD4hep::Simulation::LCIOFileReader::LCIOFileReader(const std::string& nam)
-: LCIOEventReader(nam), m_nEvt(0) 
+: LCIOEventReader(nam)
 {
   m_reader = ::lcio::LCFactory::getInstance()->createLCReader(LCReader::directAccess);
   printout(INFO,"LCIOFileReader","Created file reader. Try to open input %s",nam.c_str());
@@ -78,19 +79,26 @@ DD4hep::Simulation::LCIOFileReader::~LCIOFileReader()    {
   DD4hep::deletePtr(m_reader);
 }
 
+
+/// moveToSpecifiedEvent, a.k.a. skipNEvents
+Geant4EventReader::EventReaderStatus
+DD4hep::Simulation::LCIOFileReader::moveToEvent(int event_number) {
+  // ::lcio::LCEvent* evt = m_reader->readEvent(/*runNumber*/ 0, event_number);
+  // fg: direct access does not work if run number is different from 0 and/or event numbers are not stored consecutively
+  if( m_currEvent == 0 && event_number != 0 ) {
+    m_reader->skipNEvents( event_number ) ;
+    printout(INFO,"LCIOFileReader","Skipping the first %d events ", event_number );
+    m_currEvent = event_number;
+  }
+  return EVENT_READER_OK;
+}
+
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
 DD4hep::Simulation::LCIOFileReader::readParticleCollection(int event_number, EVENT::LCCollection** particles)  {
 
-  // ::lcio::LCEvent* evt = m_reader->readEvent(/*runNumber*/ 0, event_number);
-  // fg: direct access does not work if run number is different from 0 and/or event numbers are not stored consequutively
-  if( m_nEvt == 0 && event_number != 0 ) {
-    m_reader->skipNEvents( event_number ) ;
-    printout(INFO,"LCIOFileReader","Skipping the first %d events ", event_number );
-  }
-  
   ::lcio::LCEvent* evt = m_reader->readNextEvent(); // simply read the events sequentially 
-  ++m_nEvt ;
+  ++m_currEvent ;
 
   if ( evt ) {
     *particles = evt->getCollection(LCIO::MCPARTICLE);
