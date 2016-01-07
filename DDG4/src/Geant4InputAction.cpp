@@ -143,6 +143,9 @@ void Geant4InputAction::operator()(G4Event* event)   {
   Geant4PrimaryEvent*       prim = evt.extension<Geant4PrimaryEvent>();
 
   int result = readParticles(event->GetEventID(),primaries);
+
+  event->SetEventID( m_firstEvent + event->GetEventID() );
+
   if ( result != Geant4EventReader::EVENT_READER_OK )   {    // handle I/O error, but how?
     return;
   }
