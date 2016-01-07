@@ -97,7 +97,7 @@ DD4hep::Simulation::LCIOFileReader::moveToEvent(int event_number) {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-DD4hep::Simulation::LCIOFileReader::readParticleCollection(int event_number, EVENT::LCCollection** particles)  {
+DD4hep::Simulation::LCIOFileReader::readParticleCollection(int /*event_number*/, EVENT::LCCollection** particles)  {
 
   ::lcio::LCEvent* evt = m_reader->readNextEvent(); // simply read the events sequentially 
   ++m_currEvent ;

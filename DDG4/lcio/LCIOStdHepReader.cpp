@@ -104,7 +104,7 @@ LCIOStdHepReader::moveToEvent(int event_number) {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-LCIOStdHepReader::readParticleCollection(int event_number, EVENT::LCCollection** particles)  {
+LCIOStdHepReader::readParticleCollection(int /*event_number*/, EVENT::LCCollection** particles)  {
 
   *particles = m_reader->readEvent();
   ++m_currEvent;
