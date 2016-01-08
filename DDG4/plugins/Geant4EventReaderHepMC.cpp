@@ -221,9 +221,9 @@ Geant4EventReaderHepMC::readParticles(int /* ev_id */, Particles& output) {
                p->parents.size());
       //output.push_back(p);
     }
+    ++m_currEvent;
     return EVENT_READER_OK;
   }
-  ++m_currEvent;
   return EVENT_READER_IO_ERROR;
 }
 
@@ -722,6 +722,8 @@ bool HepMC::EventStream::read()   {
     event_read = false;
     if ( instream.eof() ) return false;
   }
+
+  if( not instream.good() ) return false;
  Done:
   fix_particles(info);
   releaseObjects(vertices())();
