@@ -49,6 +49,11 @@ int main(int argc, char** argv ){
       //InputFiles are in DDTest/inputFiles, argument is cmake_source directory
       std::string inputFile = argv[1]+ std::string("/inputFiles/") + fileName;
       DD4hep::Simulation::Geant4EventReader* thisReader = DD4hep::PluginService::Create<DD4hep::Simulation::Geant4EventReader*>(readerType, inputFile);
+      if ( not thisReader ) {
+	test.log( "Plugin not found" );
+	test.log( readerType );
+	continue;
+      }
       test( thisReader->currentEventNumber() == 0 , readerType + std::string("Initial Event Number") );
       thisReader->moveToEvent(1);
       test( thisReader->currentEventNumber() == 1 , readerType + std::string("Event Number after Skip") );
