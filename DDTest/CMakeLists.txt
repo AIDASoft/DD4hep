@@ -27,3 +27,8 @@ dd4hep_add_test_reg ( test_bitfield64          BUILD_EXEC REGEX_FAIL "TEST_FAILE
 dd4hep_add_test_reg ( test_PolarGridRPhi2      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_cellDimensions      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_cellDimensionsRPhi2 BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
+
+if (DD4HEP_USE_GEANT4)
+  dd4hep_add_test_reg ( test_EventReaders BUILD_EXEC REGEX_FAIL "TEST_FAILED"
+    EXEC_ARGS ${CMAKE_CURRENT_SOURCE_DIR} )
+endif()
