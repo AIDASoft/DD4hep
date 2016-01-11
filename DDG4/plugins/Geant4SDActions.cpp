@@ -45,16 +45,17 @@ namespace DD4hep {
       Position position  = mean_direction(prePos,postPos);
       double   hit_len   = direction.R();
 
-      if (hit_len > 0) {
-        double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
-        direction *= new_len/hit_len;
-      }
+      // if (hit_len > 0) {
+      //   double new_len = mean_length(h.preMom(),h.postMom())/hit_len;
+      //   direction *= new_len/hit_len;
+      // }
+
       Hit* hit = new Hit(h.trkID(), h.trkPdgID(), h.deposit(), h.track->GetGlobalTime());
       HitContribution contrib = Hit::extractContribution(step);
       hit->cellID        = cellID(step);
       hit->energyDeposit = contrib.deposit;
       hit->position      = position;
-      hit->momentum      = direction;
+      hit->momentum      = 0.5*( h. preMom() + h.postMom() ) ;
       hit->length        = hit_len;
       collection(m_collectionID)->add(hit);
       mark(h.track);
