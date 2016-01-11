@@ -327,19 +327,19 @@ class DD4hepSimulation(object):
 
     for index,inputFile in enumerate(self.inputFiles, start=2):
       if inputFile.endswith(".slcio"):
-        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO1")
+        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO%d" % index)
         gen.Input="LCIOFileReader|"+inputFile
       elif inputFile.endswith(".stdhep"):
-        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/STDHEP1")
+        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/STDHEP%d" % index)
         gen.Input="LCIOStdHepReader|"+inputFile
       elif inputFile.endswith(".HEPEvt"):
-        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/HEPEvt1")
+        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/HEPEvt%d" % index)
         gen.Input="Geant4EventReaderHepEvtShort|"+inputFile
       elif inputFile.endswith(".hepevt"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepevt1")
+        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepevt%d" % index)
         gen.Input="Geant4EventReaderHepEvtLong|"+inputFile
       elif inputFile.endswith(".hepmc"):
-        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc1")
+        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepmc%d" % index)
         gen.Input="Geant4EventReaderHepMC|"+inputFile
       else:
         ##this should never happen because we already check at the top, but in case of some LogicError...
