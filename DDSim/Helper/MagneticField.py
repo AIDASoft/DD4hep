@@ -1,5 +1,5 @@
 """Helper object for Magnetic Field properties"""
-from SystemOfUnits import mm
+from SystemOfUnits import mm, m
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class MagneticField( ConfigHelper ):
@@ -14,3 +14,4 @@ class MagneticField( ConfigHelper ):
     self.delta_chord = 0.25*mm
     self.delta_intersection = 1e-05*mm
     self.delta_one_step = 1e-04*mm
+    self.largest_step = 10*m
