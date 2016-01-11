@@ -57,6 +57,8 @@ namespace DD4hep {
       double      eps_min;
       /// G4PropagatorInField parameter: eps_min
       double      eps_max;
+      /// G4PropagatorInField parameter: LargestAcceptableStep
+      double      largest_step;
 
     public:
       /// Default constructor
@@ -187,6 +189,7 @@ Geant4FieldTrackingSetup::Geant4FieldTrackingSetup() : eq_typ(), stepper_typ() {
   delta_chord        = -1.0;
   delta_one_step     = -1.0;
   delta_intersection = -1.0;
+  largest_step       = -1.0;
 }
 
 /// Default destructor
@@ -218,6 +221,11 @@ int Geant4FieldTrackingSetup::execute(Geometry::LCDD& lcdd)   {
     propagator->SetMinimumEpsilonStep(eps_min);
   if ( eps_max >= 0e0 )
     propagator->SetMaximumEpsilonStep(eps_max);
+  if ( largest_step >= 0e0 ) {
+    propagator->SetLargestAcceptableStep(largest_step);
+  } else {
+    largest_step = propagator->GetLargestAcceptableStep();
+  }
   return 1;
 }
 
@@ -234,6 +242,7 @@ static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cn
       if ( pm["delta_chord"] ) delta_chord = pm.toDouble("delta_chord");
       if ( pm["delta_one_step"] ) delta_one_step = pm.toDouble("delta_one_step");
       if ( pm["delta_intersection"] ) delta_intersection = pm.toDouble("delta_intersection");
+      if ( pm["largest_step"] ) largest_step = pm.toDouble("largest_step");
     }
     virtual ~XMLFieldTrackingSetup() {}
   } setup(vals);
@@ -252,15 +261,18 @@ Geant4FieldTrackingSetupAction::Geant4FieldTrackingSetupAction(Geant4Context* ct
   declareProperty("delta_intersection", delta_intersection = -1.0);
   declareProperty("eps_min",            eps_min = -1.0);
   declareProperty("eps_max",            eps_max = -1.0);
+  declareProperty("largest_step",       largest_step = -1.0);
 }
 
 /// Post-track action callback
 void Geant4FieldTrackingSetupAction::operator()()   {
   execute(context()->lcdd());
-  print("Geant4 magnetic field tracking configured. G4MagIntegratorStepper:%s G4Mag_EqRhs:%s "
-        "Epsilon:[min:%f mm max:%f mm] Delta:[chord:%f 1-step:%f intersect:%f]",
-        stepper_typ.c_str(),eq_typ.c_str(),eps_min, eps_max,
-        delta_chord,delta_one_step,delta_intersection);
+  printout( INFO, "FieldSetup", "Geant4 magnetic field tracking configured.");
+  printout( INFO, "FieldSetup", "G4MagIntegratorStepper:%s G4Mag_EqRhs:%s",
+	    stepper_typ.c_str(), eq_typ.c_str());
+  printout( INFO, "FieldSetup", "Epsilon:[min:%f mm max:%f mm]", eps_min, eps_max);
+  printout( INFO, "FieldSetup", "Delta:[chord:%f 1-step:%f intersect:%f] LargestStep %f mm",
+	    delta_chord, delta_one_step, delta_intersection, largest_step);
 }
 
 
@@ -276,15 +288,18 @@ Geant4FieldTrackingConstruction::Geant4FieldTrackingConstruction(Geant4Context* 
   declareProperty("delta_intersection", delta_intersection = -1.0);
   declareProperty("eps_min",            eps_min = -1.0);
   declareProperty("eps_max",            eps_max = -1.0);
+  declareProperty("largest_step",       largest_step = -1.0);
 }
 
 /// Post-track action callback
 void Geant4FieldTrackingConstruction::operator()()   {
   execute(context()->lcdd());
-  print("Geant4 magnetic field tracking configured. G4MagIntegratorStepper:%s G4Mag_EqRhs:%s "
-        "Epsilon:[min:%f mm max:%f mm] Delta:[chord:%f 1-step:%f intersect:%f]",
-        stepper_typ.c_str(),eq_typ.c_str(),eps_min, eps_max,
-        delta_chord,delta_one_step,delta_intersection);
+  printout( INFO, "FieldSetup", "Geant4 magnetic field tracking configured.");
+  printout( INFO, "FieldSetup", "G4MagIntegratorStepper:%s G4Mag_EqRhs:%s",
+	    stepper_typ.c_str(), eq_typ.c_str());
+  printout( INFO, "FieldSetup", "Epsilon:[min:%f mm max:%f mm]", eps_min, eps_max);
+  printout( INFO, "FieldSetup", "Delta:[chord:%f 1-step:%f intersect:%f] LargestStep %f mm",
+	    delta_chord, delta_one_step, delta_intersection, largest_step);
 }
 
 DECLARE_GEANT4_SETUP(Geant4FieldSetup,setup_fields)

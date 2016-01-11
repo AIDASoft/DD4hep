@@ -508,6 +508,7 @@ class Geant4:
     field.delta_chord        = 0.25*SystemOfUnits.mm
     field.delta_intersection = 1e-05*SystemOfUnits.mm
     field.delta_one_step     = 0.001*SystemOfUnits.mm
+    field.largest_step       = 10*SystemOfUnits.m
     if prt:
       print '+++++> ',field.name,'-> stepper  = ',field.stepper
       print '+++++> ',field.name,'-> equation = ',field.equation
@@ -517,6 +518,7 @@ class Geant4:
       print '+++++> ',field.name,'-> min_chord_step     = ',field.min_chord_step,'[mm]'
       print '+++++> ',field.name,'-> delta_one_step     = ',field.delta_one_step,'[mm]'
       print '+++++> ',field.name,'-> delta_intersection = ',field.delta_intersection,'[mm]'
+      print '+++++> ',field.name,'-> largest_step       = ',field.largest_step,'[mm]'
     return field
   
   def setupPhysics(self,name):
