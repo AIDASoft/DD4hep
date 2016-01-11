@@ -145,9 +145,10 @@ void Geant4ParticleGenerator::operator()(G4Event*) {
     p->vsx        = vtx->x;
     p->vsy        = vtx->y;
     p->vsz        = vtx->z;
-    p->vex        = vtx->x;
-    p->vey        = vtx->y;
-    p->vez        = vtx->z;
+    //fg: do not set the endpoint to the start point of the particle
+    // p->vex        = vtx->x;
+    // p->vey        = vtx->y;
+    // p->vez        = vtx->z;
     inter->particles.insert(make_pair(p->id,p));
     vtx->out.insert(p->id);
     printout(INFO,name(),"Particle [%d] %s %.3f GeV direction:(%6.3f %6.3f %6.3f)",
