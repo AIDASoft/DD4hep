@@ -461,6 +461,7 @@ class DD4hepSimulation(object):
     field.delta_chord        = self.field.delta_chord
     field.delta_intersection = self.field.delta_intersection
     field.delta_one_step     = self.field.delta_one_step
+    field.largest_step       = self.field.largest_step
 
   def __checkFileFormat(self, fileNames, extensions):
     """check if the fileName is allowed, note that the filenames are case
