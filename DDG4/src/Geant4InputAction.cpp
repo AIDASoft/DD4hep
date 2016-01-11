@@ -76,7 +76,7 @@ Geant4EventReader::moveToEvent(int event_number)   {
 
 /// Standard constructor
 Geant4InputAction::Geant4InputAction(Geant4Context* ctxt, const string& nam)
-  : Geant4GeneratorAction(ctxt,nam), m_reader(0)
+  : Geant4GeneratorAction(ctxt,nam), m_reader(0), m_currentEventNumber(0)
 {
   declareProperty("Input",          m_input);
   declareProperty("Sync",           m_firstEvent=0);
@@ -143,9 +143,10 @@ void Geant4InputAction::operator()(G4Event* event)   {
   Geant4Event&              evt = context()->event();
   Geant4PrimaryEvent*       prim = evt.extension<Geant4PrimaryEvent>();
 
-  int result = readParticles(event->GetEventID(),primaries);
+  int result = readParticles(m_currentEventNumber, primaries);
 
-  event->SetEventID( m_firstEvent + event->GetEventID() );
+  event->SetEventID(m_firstEvent + m_currentEventNumber);
+  ++m_currentEventNumber;
 
   if ( result != Geant4EventReader::EVENT_READER_OK )   {    // handle I/O error, but how?
     return;

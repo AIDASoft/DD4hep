@@ -116,6 +116,8 @@ namespace DD4hep  {
       double              m_momScale;
       /// Event reader object
       Geant4EventReader*  m_reader;
+      /// current event number without initially skipped events
+      int m_currentEventNumber;
 
     public:
       /// Read an event and return a LCCollectionVec of MCParticles.
