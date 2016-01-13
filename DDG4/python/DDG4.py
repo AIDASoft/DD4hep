@@ -477,12 +477,23 @@ class Geant4:
           sdtyp = self.sensitive_types[typ]
         print '+++  %-32s type:%-12s  --> Sensitive type: %s'%(o.name(), typ, sdtyp,)
 
-  def setupDetector(self,name,sensitive_type):
+  def setupDetector(self,name,action):
+    #fg: allow the action to be a tuple with parameter dictionary
+    sensitive_type = ""
+    parameterDict = {}
+    if isinstance( action, tuple ):
+      sensitive_type = action[0]
+      parameterDict = action[1]
+    else:
+      sensitive_type = action
+    
     seq = SensitiveSequence(self.kernel(),'Geant4SensDetActionSequence/'+name)
     act = SensitiveAction(self.kernel(),sensitive_type+'/'+name+'Handler',name)
     seq.enableUI()
     act.enableUI()
     seq.add(act)
+    for parameter, value in parameterDict.iteritems():
+      setattr( act, parameter, value)
     return (seq,act)
 
   def setupCalorimeter(self,name,type=None):
