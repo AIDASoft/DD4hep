@@ -9,7 +9,7 @@ class Action( ConfigHelper ):
 
   >>> SIM = DD4hepSimulation()
   >>> SIM.action.tracker = "Geant4TrackerAction"
-  >>> SIM.action.tracker = "Geant4CalorimeterAction"
+  >>> SIM.action.calo    = "Geant4CalorimeterAction"
 
   for specific subdetectors specific sensitive detectors can be set based on pattern matching
 
