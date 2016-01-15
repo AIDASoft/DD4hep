@@ -255,10 +255,11 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics_pointer) {
 
 /// Standard constructor
 Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* ctxt, const string& nam)
-  : Geant4Action(ctxt, nam), m_transportation(false), m_decays(false) {
+  : Geant4Action(ctxt, nam), m_transportation(false), m_decays(false), m_rangecut(0.7*CLHEP::mm) {
   declareProperty("transportation", m_transportation);
   declareProperty("extends", m_extends);
   declareProperty("decays", m_decays);
+  declareProperty("rangecut", m_rangecut);
   m_needsControl = true;
   InstanceCount::increment(this);
 }
@@ -290,6 +291,7 @@ void Geant4PhysicsListActionSequence::dump()    {
   printout(ALWAYS,name(),"+++ Extension name       %s",m_extends.c_str());
   printout(ALWAYS,name(),"+++ Transportation flag: %d",m_transportation);
   printout(ALWAYS,name(),"+++ Program decays:      %d",m_decays);
+  printout(ALWAYS,name(),"+++ RangeCut:            %f",m_rangecut);
   m_actors(&Geant4PhysicsList::dump);
 }
 

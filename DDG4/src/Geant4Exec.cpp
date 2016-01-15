@@ -557,6 +557,12 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
   if (0 == physics) {
     throw runtime_error("Panic! No valid user physics list present!");
   }
+
+  printout(INFO, "Geant4Exec", "+++ PhysicsList RangeCut: %f", phys_seq->m_rangecut );
+  physics->SetDefaultCutValue(phys_seq->m_rangecut);
+  physics->SetCuts();
+  if( DEBUG == printLevel() ) physics->DumpCutValuesTable();
+
   runManager.SetUserInitialization(physics);
 
   // Construct the remaining user initialization in multi-threaded mode
