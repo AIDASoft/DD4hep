@@ -41,6 +41,7 @@ from DDSim.Helper.ConfigHelper import ConfigHelper
 from DDSim.Helper.Action import Action
 from DDSim.Helper.Random import Random
 from DDSim.Helper.Filter import Filter
+from DDSim.Helper.Physics import Physics
 
 import os
 import sys
@@ -59,7 +60,7 @@ class DD4hepSimulation(object):
 
     self.numberOfEvents = 0
     self.skipNEvents = 0
-    self.physicsList = "FTFP_BERT"
+    self.physicsList = None ## deprecated use physics.list
     self.crossingAngleBoost = 0.0
     self.macroFile = ''
     self.enableGun = False
@@ -80,6 +81,7 @@ class DD4hepSimulation(object):
     self.action = Action()
 
     self.filter = Filter()
+    self.physics = Physics()
 
     ### use TCSH geant UI instead of QT
     os.environ['G4UI_USE_TCSH'] = "1"
@@ -405,7 +407,7 @@ class DD4hepSimulation(object):
 
   #=================================================================================
     # Now build the physics list:
-    _phys = simple.setupPhysics( self.physicsList )
+    _phys = self.physics.setupPhysics( kernel, name=self.physicsList )
 
     #fg: do we need these really ?
     #fg:  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
