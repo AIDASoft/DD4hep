@@ -471,7 +471,6 @@ namespace DD4hep {
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Plugins.h"
 #include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4/Geant4UserPhysicsList.h"
 #include "DDG4/Geant4Kernel.h"
 
 using namespace std;

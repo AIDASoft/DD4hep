@@ -24,6 +24,7 @@
 
 // Forward declarations
 class G4VPhysicsConstructor;
+class G4VModularPhysicsList;
 class G4VUserPhysicsList;
 
 /// Namespace for the AIDA detector description toolkit
@@ -31,25 +32,6 @@ namespace DD4hep {
 
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
-
-    /// Interface class exposing some of the G4VUserPhysicsList class.
-    /**
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_SIMULATION
-     */
-    class Geant4UserPhysics {
-    protected:
-      /// Standard constructor with initailization parameters
-      Geant4UserPhysics();
-      /// Default destructor
-      virtual ~Geant4UserPhysics();
-    public:
-      /// Enable transportation
-      virtual void AddTransportation() = 0;
-      /// Register physics constructor
-      virtual void RegisterPhysics(G4VPhysicsConstructor* physics) = 0;
-    };
 
     /// Concrete basic implementation of a Geant4 physics list action
     /**
@@ -108,13 +90,20 @@ namespace DD4hep {
        */
       class PhysicsConstructor: public std::string {
       public:
+        /// Pointer to physics constructor object
+        G4VPhysicsConstructor* pointer;
+      public:
         /// Default constructor
         PhysicsConstructor()
-          : std::string() {
+          : std::string(), pointer(0) {
+        }
+        /// Copy constructor
+        PhysicsConstructor(const PhysicsConstructor& c)
+          : std::string(c), pointer(c.pointer)  {
         }
         /// Initalizing constructor
         PhysicsConstructor(const std::string& s)
-          : std::string(s) {
+          : std::string(s), pointer(0)  {
         }
         /// Default destructor
         ~PhysicsConstructor() {
@@ -170,17 +159,27 @@ namespace DD4hep {
       void addParticleProcess(const std::string& part_name, const std::string& proc_name,
                               int ordAtRestDoIt,int ordAlongSteptDoIt,int ordPostStepDoIt);
       /// Add PhysicsConstructor by name
+      /** This constructor is used for intrinsic Geant4 defined physics constructors.
+       *  Such physics constructors are only created by the factory and attached
+       *  to the physics list object.
+       */
       void addPhysicsConstructor(const std::string& physics_name);
-
-      /// Callback to construct the physics constructors
-      virtual void constructProcess(Geant4UserPhysics* interface);
+      /// Add PhysicsConstructor as Geant4Action object
+      /** The action object must bve a sub-class of type G4VPhysicsConstructor.
+       *  -- The Geant4Action object to supports properties.
+       *  -- Specific user actions may be implemented in the 
+       *     base class calls to 'ConstructParticle' or 'ConstructProcess'.
+       *     Both calls are invoked by the framework when the physics list
+       *     is configured for the use in the run-manager.
+       */
+      void adoptPhysicsConstructor(Geant4Action* action);
 
       /// constructParticle callback
-      virtual void constructParticles(Geant4UserPhysics* particle);
+      virtual void constructParticles(G4VUserPhysicsList* particle);
       /// constructPhysics callback
-      virtual void constructPhysics(Geant4UserPhysics* physics);
+      virtual void constructPhysics(G4VModularPhysicsList* physics);
       /// Callback to construct processes (uses the G4 particle table)
-      virtual void constructProcesses(Geant4UserPhysics* physics);
+      virtual void constructProcesses(G4VUserPhysicsList* physics);
     };
 
     /// The implementation of the single Geant4 physics list action sequence
@@ -196,15 +195,17 @@ namespace DD4hep {
     public:
 
     protected:
-      /// Callback sequence for event finalization action
+      /// Callback sequence for G4 physics constructors
+      CallbackSequence m_physics;
+      /// Callback sequence for G4 process constructors
       CallbackSequence m_process;
-      /// Callback sequence for event finalization action
+      /// Callback sequence for G4 particle constructors
       CallbackSequence m_particle;
       /// The list of action objects to be called
       Actors<Geant4PhysicsList> m_actors;
 
       /// Callback to construct particle decays
-      virtual void constructDecays(Geant4UserPhysics* physics);
+      virtual void constructDecays(G4VUserPhysicsList* physics);
     public:
       /// Flag if particle transportation is to be added
       bool m_transportation;
@@ -232,25 +233,32 @@ namespace DD4hep {
       bool transportation() const {
         return m_transportation;
       }
+      /// Register physics construction callback
+      template <typename Q, typename T>
+      void constructPhysics(Q* p, void (T::*f)(G4VModularPhysicsList*)) {
+        m_physics.add(p, f);
+      }
       /// Register process construction callback
       template <typename Q, typename T>
-      void constructProcess(Q* p, void (T::*f)(Geant4UserPhysics*)) {
+      void constructProcess(Q* p, void (T::*f)(G4VUserPhysicsList*)) {
         m_process.add(p, f);
       }
       /// Register particle construction callback
       template <typename Q, typename T>
-      void constructParticle(Q* p, void (T::*f)(Geant4UserPhysics*)) {
+      void constructParticle(Q* p, void (T::*f)(G4VUserPhysicsList*)) {
         m_particle.add(p, f);
       }
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4PhysicsList* action);
 
-      /// begin-of-event callback
-      virtual void constructProcess(Geant4UserPhysics* physics);
-      /// begin-of-event callback
-      virtual void constructParticles(Geant4UserPhysics* physics);
+      /// Execute sequence of G4 physics constructors
+      virtual void constructProcesses(G4VUserPhysicsList* physics);
+      /// Execute sequence of G4 particle constructors
+      virtual void constructParticles(G4VUserPhysicsList* physics);
+      /// Execute sequence of G4  physics constructors
+      virtual void constructPhysics(G4VModularPhysicsList* physics);
       /// Extend physics list from factory:
-      G4VUserPhysicsList* extensionList()  const;
+      G4VUserPhysicsList* extensionList();
     };
 
   }    // End namespace Simulation

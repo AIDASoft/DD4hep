@@ -15,7 +15,6 @@
 // Framework include files
 #include "DDG4/Geant4PhysicsList.h"
 #include "DDG4/Geant4UIMessenger.h"
-#include "DDG4/Geant4UserPhysicsList.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
@@ -38,11 +37,30 @@ using namespace DD4hep::Simulation;
 
 namespace {
 
+  struct MyPhysics : G4VUserPhysicsList  {
+    void AddTransportation()   {  this->G4VUserPhysicsList::AddTransportation(); }
+  };
+
   struct EmptyPhysics : public G4VModularPhysicsList {
     EmptyPhysics() {}
     virtual ~EmptyPhysics() {}
     virtual void ConstructProcess()      {}
     virtual void ConstructParticle()      {}
+  };
+  struct ParticlePhysics : public G4VPhysicsConstructor {
+    Geant4PhysicsListActionSequence* seq;
+    G4VUserPhysicsList*              phys;
+    ParticlePhysics(Geant4PhysicsListActionSequence* s, G4VUserPhysicsList* p)
+      : seq(s), phys(p) {}
+    virtual ~ParticlePhysics() {}
+    virtual void ConstructProcess()  {
+      seq->constructProcesses(phys);
+      if ( seq->transportation() )   {
+        MyPhysics* ph = (MyPhysics*)phys;
+        ph->AddTransportation();
+      }
+    }
+    virtual void ConstructParticle()     {  seq->constructParticles(phys);     }
   };
 
   void _findDef(const string& expression, vector<G4ParticleDefinition*>& results) {
@@ -74,16 +92,6 @@ namespace {
   }
 }
 
-/// Standard constructor with initailization parameters
-Geant4UserPhysics::Geant4UserPhysics() {
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Geant4UserPhysics::~Geant4UserPhysics() {
-  InstanceCount::decrement(this);
-}
-
 /// Default constructor
 Geant4PhysicsList::Process::Process()
   : ordAtRestDoIt(-1), ordAlongSteptDoIt(-1), ordPostStepDoIt(-1) {
@@ -97,9 +105,9 @@ Geant4PhysicsList::Process::Process(const Process& p)
 Geant4PhysicsList::Process& Geant4PhysicsList::Process::operator=(const Process& p) {
   if ( this != &p )  {
     name = p.name;
-    ordAtRestDoIt = p.ordAtRestDoIt;
+    ordAtRestDoIt     = p.ordAtRestDoIt;
     ordAlongSteptDoIt = p.ordAlongSteptDoIt;
-    ordPostStepDoIt = p.ordPostStepDoIt;
+    ordPostStepDoIt   = p.ordPostStepDoIt;
   }
   return *this;
 }
@@ -184,30 +192,43 @@ const Geant4PhysicsList::ParticleProcesses& Geant4PhysicsList::processes(const s
   throw runtime_error("Failed to access the physics process"); // never called anyway
 }
 
-/// Callback to construct the physics list
-void Geant4PhysicsList::constructProcess(Geant4UserPhysics* physics_pointer) {
-  printout(INFO, "Geant4PhysicsList", "%s> constructProcess %p", name().c_str(), physics_pointer);
-  constructPhysics(physics_pointer);
-  constructProcesses(physics_pointer);
+/// Add PhysicsConstructor by name
+void Geant4PhysicsList::adoptPhysicsConstructor(Geant4Action* action)  {
+  if ( 0 != action )   {
+    G4VPhysicsConstructor* p = dynamic_cast<G4VPhysicsConstructor*>(action);
+    if ( p )   {
+      PhysicsConstructor ctor(action->name());
+      ctor.pointer = p;
+      action->addRef();
+      m_physics.push_back(ctor);
+      return;
+    }
+    except("Failed to adopt action object %s as physics constructor. [Invalid-Base]",action->c_name());
+  }
+  except("Failed to adopt invalid Geant4Action as PhysicsConstructor. [Invalid-object]");
 }
 
 /// Callback to construct particle decays
-void Geant4PhysicsList::constructPhysics(Geant4UserPhysics* physics_pointer) {
-  for (PhysicsConstructors::const_iterator i = m_physics.begin(); i != m_physics.end(); ++i) {
-    const PhysicsConstructors::value_type& ctor = *i;
-    G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor);
-    if (!p) {
-      except("Failed to create the physics entities "
-             "for the G4VPhysicsConstructor '%s'", ctor.c_str());
+void Geant4PhysicsList::constructPhysics(G4VModularPhysicsList* physics_pointer) {
+  info("constructPhysics %p", physics_pointer);
+  for (PhysicsConstructors::iterator i=m_physics.begin(); i != m_physics.end(); ++i) {
+    PhysicsConstructors::value_type& ctor = *i;
+    if ( 0 == ctor.pointer )   {
+      G4VPhysicsConstructor* p = PluginService::Create<G4VPhysicsConstructor*>(ctor);
+      if (!p) {
+        except("Failed to create the physics entities "
+               "for the G4VPhysicsConstructor '%s'", ctor.c_str());
+      }
+      ctor.pointer = p;
     }
-    physics_pointer->RegisterPhysics(p);
-    info("Registered Geant4 physics %s", ctor.c_str());
+    physics_pointer->RegisterPhysics(ctor.pointer);
+    info("Registered Geant4 physics constructor %s to physics list", ctor.c_str());
   }
 }
 
 /// constructParticle callback
-void Geant4PhysicsList::constructParticles(Geant4UserPhysics* physics_pointer) {
-  printout(INFO, "Geant4PhysicsList", "%s> constructParticles %p", name().c_str(), physics_pointer);
+void Geant4PhysicsList::constructParticles(G4VUserPhysicsList* physics_pointer) {
+  info("constructParticles %p", physics_pointer);
   /// Now define all particles
   for (ParticleConstructors::const_iterator i = m_particles.begin(); i != m_particles.end(); ++i) {
     const ParticleConstructors::value_type& ctor = *i;
@@ -224,8 +245,8 @@ void Geant4PhysicsList::constructParticles(Geant4UserPhysics* physics_pointer) {
 }
 
 /// Callback to construct processes (uses the G4 particle table)
-void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics_pointer) {
-  printout(INFO, "Geant4PhysicsList", "%s> constructProcesses %p", name().c_str(), physics_pointer);
+void Geant4PhysicsList::constructProcesses(G4VUserPhysicsList* physics_pointer) {
+  info("constructProcesses %p", physics_pointer);
   for (PhysicsProcesses::const_iterator i = m_processes.begin(); i != m_processes.end(); ++i) {
     const string& part_name = (*i).first;
     const ParticleProcesses& procs = (*i).second;
@@ -257,8 +278,8 @@ void Geant4PhysicsList::constructProcesses(Geant4UserPhysics* physics_pointer) {
 Geant4PhysicsListActionSequence::Geant4PhysicsListActionSequence(Geant4Context* ctxt, const string& nam)
   : Geant4Action(ctxt, nam), m_transportation(false), m_decays(false), m_rangecut(0.7*CLHEP::mm) {
   declareProperty("transportation", m_transportation);
-  declareProperty("extends", m_extends);
-  declareProperty("decays", m_decays);
+  declareProperty("extends",  m_extends);
+  declareProperty("decays",   m_decays);
   declareProperty("rangecut", m_rangecut);
   m_needsControl = true;
   InstanceCount::increment(this);
@@ -273,10 +294,16 @@ Geant4PhysicsListActionSequence::~Geant4PhysicsListActionSequence() {
 }
 
 /// Extend physics list from factory:
-G4VUserPhysicsList* Geant4PhysicsListActionSequence::extensionList()  const  {
+G4VUserPhysicsList* Geant4PhysicsListActionSequence::extensionList()    {
   G4VModularPhysicsList* physics = ( m_extends.empty() )
     ? new EmptyPhysics()
     : G4PhysListFactory().GetReferencePhysList(m_extends);
+  constructPhysics(physics);
+  // Ensure the particles and processes declared are also invoked.
+  // Hence: Create a special physics constructor doing so.
+  // Ownership is transferred to the physics list.
+  // Do not delete this pointer afterwards....
+  physics->RegisterPhysics(new ParticlePhysics(this,physics));
   return physics;
 }
 
@@ -305,26 +332,29 @@ void Geant4PhysicsListActionSequence::adopt(Geant4PhysicsList* action) {
   except("Geant4EventActionSequence: Attempt to add invalid actor!");
 }
 
-/// begin-of-event callback
-void Geant4PhysicsListActionSequence::constructParticles(Geant4UserPhysics* physics_pointer) {
+/// Callback to construct particles
+void Geant4PhysicsListActionSequence::constructParticles(G4VUserPhysicsList* physics_pointer) {
   m_particle(physics_pointer);
   m_actors(&Geant4PhysicsList::constructParticles, physics_pointer);
 }
 
+/// Callback to execute physics constructors
+void Geant4PhysicsListActionSequence::constructPhysics(G4VModularPhysicsList* physics_pointer) {
+  m_physics(physics_pointer);
+  m_actors(&Geant4PhysicsList::constructPhysics, physics_pointer);
+}
+
 /// constructProcess callback
-void Geant4PhysicsListActionSequence::constructProcess(Geant4UserPhysics* physics_pointer) {
-  m_actors(&Geant4PhysicsList::constructProcess, physics_pointer);
+void Geant4PhysicsListActionSequence::constructProcesses(G4VUserPhysicsList* physics_pointer) {
+  m_actors(&Geant4PhysicsList::constructProcesses, physics_pointer);
   m_process(physics_pointer);
   if (m_decays) {
     constructDecays(physics_pointer);
   }
-  if (m_transportation) {
-    physics_pointer->AddTransportation();
-  }
 }
 
 /// Callback to construct particle decays
-void Geant4PhysicsListActionSequence::constructDecays(Geant4UserPhysics* physics_pointer) {
+void Geant4PhysicsListActionSequence::constructDecays(G4VUserPhysicsList* physics_pointer) {
   G4ParticleTable* pt = G4ParticleTable::GetParticleTable();
   G4ParticleTable::G4PTblDicIterator* iter = pt->GetIterator();
   // Add Decay Process
