@@ -101,6 +101,25 @@ namespace DD4hep {
        */      
       struct LayerLayout{
 
+	// default c'tor with zero initialization
+	LayerLayout() :
+	  ladderNumber(0),
+	  phi0(0), 
+	  sensorsPerLadder(0),
+	  lengthSensor(0),
+	  distanceSupport(0),
+	  thicknessSupport(0),
+	  offsetSupport(0), 
+	  widthSupport(0),
+	  zHalfSupport(0),
+	  distanceSensitive(0),
+	  thicknessSensitive(0),
+	  offsetSensitive(0), 
+	  widthSensitive(0),
+	  zHalfSensitive(0) {
+	}
+
+
 	/// The number of ladders in the layer.
 	int ladderNumber ;
 
@@ -176,7 +195,28 @@ namespace DD4hep {
        *  with a sensitive part and a support part.
        */      
       struct LayerLayout{
-	
+
+	LayerLayout() :
+	  petalHalfAngle(0),
+	  alphaPetal(0),
+	  zPosition(0),
+	  petalNumber(0),
+	  sensorsPerPetal(0),
+	  typeFlags(0),
+	  phi0(0), 
+	  zOffsetSupport(0),
+	  distanceSupport(0),
+	  thicknessSupport(0),
+	  widthInnerSupport(0),
+	  widthOuterSupport(0),
+	  lengthSupport(0),
+	  zOffsetSensitive(0),
+	  distanceSensitive(0),
+	  thicknessSensitive(0),
+	  widthInnerSensitive(0),
+	  widthOuterSensitive(0),
+	  lengthSensitive(0) {
+	}
 	
 	/// half angle covered by petal 
 	double  petalHalfAngle ;
@@ -255,6 +295,13 @@ namespace DD4hep {
       bool isSymmetricInZ ;
 
       struct Section{
+
+	Section() :
+	  rInner(0),
+	  rOuter(0),
+	  zPos(0){
+	}
+
 	/// inner r at start of section
 	double rInner ;
 	/// outer r at start of section
@@ -339,6 +386,22 @@ namespace DD4hep {
       
 
       struct Layer {
+	
+	Layer() :
+	  distance(0),
+	  thickness(0),
+	  absorberThickness(0),
+	  inner_nRadiationLengths(0),
+	  inner_nInteractionLengths(0),        
+	  outer_nRadiationLengths(0),
+	  outer_nInteractionLengths(0), 
+	  inner_thickness(0),
+	  outer_thickness(0),
+	  sensitive_thickness(0),
+	  cellSize0(0),
+	  cellSize1(0) {
+	}
+	
 	/// distance from Origin (or the z-axis) to the inner-most face of the layer
 	double distance;
         
