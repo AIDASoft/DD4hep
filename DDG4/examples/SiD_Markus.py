@@ -154,7 +154,7 @@ def run():
   DDG4.Core.setPrintLevel(Output.DEBUG)
   DDG4.Core.setPrintFormat("%-32s %6s %s")
 
-  kernel.NumberOfThreads = 3
+  kernel.NumberOfThreads = 1
   geant4 = DDG4.Geant4(kernel,tracker='Geant4TrackerWeightedAction')
   geant4.printDetectors()
   # Configure UI
@@ -217,8 +217,14 @@ def run():
   #seq,act = geant4.setupCalorimeter('BeamCal')
 
   # Now build the physics list:
-  phys = geant4.setupPhysics('QGSP_BERT')
-  phys.dump()
+  seq = geant4.setupPhysics('QGSP_BERT')
+  phys = DDG4.PhysicsList(geant4.master(),'Geant4PhysicsList/MyPhysics')
+  part = DDG4.Action(geant4.master(),'Geant4ExtraParticles/extraparts')
+  part.pdgfile = 'checkout/DDG4/examples/particle.tbl'
+  phys.adoptPhysicsConstructor(part.get())
+  seq.add(phys)
+
+  geant4.run()
 
   #kernel.configure()
   #kernel.initialize()
