@@ -584,17 +584,7 @@ class DD4hepSimulation(object):
         if pattern.lower() in det.lower():
           action = self.action.mapActions[pattern]
           break
-      if action:
-        if isinstance( action, tuple ):
-          sdAction = action[0]
-          parameterDict = action[1]
-          seq,act = setupFuction( det, type=sdAction )
-          for parameter, value in parameterDict.iteritems():
-            setattr( act, parameter, value)
-        else:
-          seq,act = setupFuction( det, type=action )
-      else:
-        seq,act = setupFuction( det )
+      seq,act = setupFuction( det, type=action )
       self.filter.applyFilters( seq, det, defaultFilter )
       ##set detailed hit creation mode for this
       if self.enableDetailedShowerMode:
