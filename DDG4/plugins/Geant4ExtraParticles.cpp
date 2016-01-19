@@ -7,6 +7,8 @@
 // $Name: $
 
 #include "Geant4ExtraParticles.h"
+#include "DDG4/Geant4PhysicsConstructor.h"
+#include "DDG4/Geant4Kernel.h"
 #include "DDG4/Factories.h"
 
 #include "G4ParticleTable.hh"
@@ -20,15 +22,21 @@
 #include <sstream>
 #include <string>
 
+
+#include "G4RunManager.hh"
+
 using namespace DD4hep::Simulation;
 
 Geant4ExtraParticles::Geant4ExtraParticles(Geant4Context* ctxt, const std::string& nam)
-  : G4VPhysicsConstructor(nam), Geant4Action(ctxt, nam)
+  : Geant4PhysicsConstructor(ctxt, nam), m_decay(0), m_ionise(0), m_scatter(0)
 {
   declareProperty("pdgfile", m_pdgfile);
 }
 
-Geant4ExtraParticles::~Geant4ExtraParticles() {
+Geant4ExtraParticles::~Geant4ExtraParticles()   {
+  deletePtr(m_decay);
+  deletePtr(m_ionise);
+  deletePtr(m_scatter);
 }
 
 // bool Geant4ExtraParticles::FileExists() {
@@ -36,20 +44,20 @@ Geant4ExtraParticles::~Geant4ExtraParticles() {
 //   return pdgFile.is_open();
 // }
 
-void Geant4ExtraParticles::ConstructParticle() {
+void Geant4ExtraParticles::constructParticle(Constructor& ) {
   if (m_pdgfile.empty()) return;
 
-  std::cout << "m_pdgfile: " << m_pdgfile  << std::endl;
+  info("pdgfile: %s",m_pdgfile.c_str());
 
   G4ParticleTable *theParticleTable = G4ParticleTable::GetParticleTable();
   std::ifstream pdgFile( m_pdgfile.c_str(), std::ifstream::in );
 
   if (!pdgFile.is_open()) {
-    std::cout << "Could not open m_pdgfile: " << m_pdgfile << std::endl;
+    except("Could not open pdgfile: %s",m_pdgfile.c_str());
     return;
   }
 
-  std::cout << "opened m_pdgfile: " << m_pdgfile << std::endl;
+  info("opened pdgfile: %s",m_pdgfile.c_str());
 
   while ( !pdgFile.eof() ) {
     // read line
@@ -135,23 +143,22 @@ void Geant4ExtraParticles::ConstructParticle() {
   G4cout << "Loaded extra particles using file: " << m_pdgfile << G4endl;
 }
 
-void Geant4ExtraParticles::ConstructProcess() {
-#if G4VERSION_NUMBER >= 1000
-  ParticleIterator=aParticleIterator;
-#else  
-  ParticleIterator=theParticleIterator;
+void Geant4ExtraParticles::constructProcess(Constructor& ctor) {
+  G4ParticleTable::G4PTblDicIterator* ParticleIterator = ctor.particleIterator();
+#if G4VERSION_NUMBER < 940
+  if ( 0 == _scatter ) _scatter=new G4hMultipleScattering();
+  if ( 0 == _ionise ) _ionise=new G4hIonisation()
+  if ( 0 == _decay ) _decay=new G4Decay()
 #endif
-
-  ParticleIterator->reset();
   while((*ParticleIterator)()) {
     G4ParticleDefinition* pdef = ParticleIterator->value();
     G4ProcessManager* pmgr = pdef->GetProcessManager();
     if (pdef->GetParticleType() == "extra") {
       if (pdef->GetPDGCharge() != 0) {
 #if G4VERSION_NUMBER < 940
-        pmgr->AddProcess(&_scatter, -1,  1, 1); // multiple scattering
-        pmgr->AddProcess(&_ionise,  -1,  2, 2); // ionisation
-        pmgr->AddProcess(&_decay,   -1, -1, 2); // decay
+        pmgr->AddProcess(_scatter, -1,  1, 1); // multiple scattering
+        pmgr->AddProcess(_ionise,  -1,  2, 2); // ionisation
+        pmgr->AddProcess(_decay,   -1, -1, 2); // decay
 #else
         pmgr->AddProcess(new G4hMultipleScattering(), -1,  1, 1); //multiple scattering
         pmgr->AddProcess(new G4hIonisation(),  -1,  2, 2); // ionisation
@@ -161,8 +168,8 @@ void Geant4ExtraParticles::ConstructProcess() {
       } else {
 
 #if G4VERSION_NUMBER < 940
-        pmgr->AddProcess(&_scatter, -1,  1, 1); // multiple scattering
-        pmgr->AddProcess(&_decay,   -1, -1, 2); // decay
+        pmgr->AddProcess(_scatter=new G4hMultipleScattering(), -1,  1, 1); // multiple scattering
+        pmgr->AddProcess(_decay=new G4Decay(),   -1, -1, 2); // decay
 #else
         //	pmgr->AddProcess(new G4hMultipleScattering(), -1,  1, 1); // multiple scattering
         pmgr->AddProcess(new G4Decay(),   -1, -1, 2); // decay 

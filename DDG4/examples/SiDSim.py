@@ -176,13 +176,19 @@ def run():
 
   print "#  Now build the physics list:"
   phys = geant4.setupPhysics('QGSP_BERT')
-  ph = DDG4.PhysicsList(kernel,'Geant4PhysicsList/Myphysics')
-  ph.addParticleConstructor('G4BosonConstructor')
-  ph.addParticleConstructor('G4LeptonConstructor')
-  ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
-  ph.addPhysicsConstructor('G4OpticalPhysics')
-  ph.enableUI()
-  phys.adopt(ph)
+  ph = geant4.addPhysics('Geant4PhysicsList/Myphysics')
+  #ph.addParticleConstructor('G4BosonConstructor')
+  #ph.addParticleConstructor('G4LeptonConstructor')
+  #ph.addParticleProcess('e[+-]','G4eMultipleScattering',-1,1,1)
+  #ph.addPhysicsConstructor('G4OpticalPhysics')
+
+  # Add special particle types from specialized physics constructor
+  part = geant4.addPhysics('Geant4ExtraParticles/ExtraParticles')
+  part.pdgfile = 'checkout/DDG4/examples/particle.tbl'
+
+  # Add global range cut
+  rg = geant4.addPhysics('Geant4DefaultRangeCut/GlobalRangeCut')
+  rg.RangeCut = 0.7*mm
 
   phys.dump()
 

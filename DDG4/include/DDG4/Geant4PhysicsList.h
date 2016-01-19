@@ -174,10 +174,10 @@ namespace DD4hep {
        */
       void adoptPhysicsConstructor(Geant4Action* action);
 
-      /// constructParticle callback
-      virtual void constructParticles(G4VUserPhysicsList* particle);
       /// constructPhysics callback
       virtual void constructPhysics(G4VModularPhysicsList* physics);
+      /// Callback to construct particles
+      virtual void constructParticles(G4VUserPhysicsList* physics);
       /// Callback to construct processes (uses the G4 particle table)
       virtual void constructProcesses(G4VUserPhysicsList* physics);
     };

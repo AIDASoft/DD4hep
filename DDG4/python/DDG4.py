@@ -533,7 +533,7 @@ class Geant4:
       print '+++++> ',field.name,'-> largest_step       = ',field.largest_step,'[mm]'
     return field
   
-  def setupPhysics(self,name):
+  def setupPhysics(self, name):
     phys = self.master().physicsList()
     phys.extends = name
     phys.decays  = True
@@ -541,6 +541,13 @@ class Geant4:
     phys.dump()
     return phys
 
+  def addPhysics(self, name):
+    phys = self.master().physicsList()
+    opt  = PhysicsList(self.master(), name)
+    opt.enableUI()
+    phys.adopt(opt)
+    return opt
+  
   def setupGun(self, name, particle, energy, isotrop=True, multiplicity=1, position=(0.0,0.0,0.0),**args):
     gun = GeneratorAction(self.kernel(),"Geant4ParticleGun/"+name,True)
     for i in args.items():
