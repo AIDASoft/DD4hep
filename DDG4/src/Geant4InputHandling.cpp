@@ -269,7 +269,7 @@ int DD4hep::Simulation::boostInteraction(const Geant4Action* caller,
       double y = p->vsx;
       double z = p->vsz;
 
-      double m  = p.definition()->GetPDGMass();
+      double m  = p->mass;
       double e2 = SQR(p->psx)+SQR(p->psy)+SQR(p->psz)+SQR(m);
       double px = betagamma * std::sqrt(e2) + gamma * p->psx;
       double py = p->psy;
