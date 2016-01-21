@@ -563,6 +563,10 @@ class DD4hepSimulation(object):
     ### add current working directory (where we call from)
     runHeader["WorkingDirectory"] = os.getcwd()
 
+    ### ILCSoft, LCGEo location from environment variables, names from init_ilcsoft.sh
+    runHeader["ILCSoft_location"] = os.environ.get("ILCSOFT", "Unknown")
+    runHeader["lcgeo_location"] = os.environ.get("lcgeo_DIR", "Unknown")
+
     ### add date
     runHeader["DateUTC"] = str(datetime.datetime.utcnow())+" UTC"
 
