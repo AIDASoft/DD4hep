@@ -11,6 +11,20 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4PhysicsConstructor
+ *
+ * @{
+ * \package Geant4RangeCut
+ *
+ * \brief PhysicsConstructor to change the global range cut
+
+ This plugin allows one to change the global geant4 range cut for producing secondaries.
+
+ *
+ * @}
+ */
+
 #ifndef DDG4_Geant4DefaultRangeCut_h
 #define DDG4_Geant4DefaultRangeCut_h 1
 

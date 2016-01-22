@@ -6,6 +6,19 @@
 // $Id$
 // $Name: $
 
+/** \addtogroup Geant4PhysicsConstructor
+ *
+ * @{
+ * \package Geant4ExtraParticles
+ *
+ * \brief PhysicsConstructor to add additional particles to geant
+
+ When enabled this constructor will read a particle.tbl file and add all particles in it to the geant4 particle table.
+ This can be used to let geant know about some B-baryons with non-zero lifetime for example.
+ *
+ * @}
+ */
+
 #include "Geant4ExtraParticles.h"
 #include "DDG4/Geant4PhysicsConstructor.h"
 #include "DDG4/Geant4Kernel.h"

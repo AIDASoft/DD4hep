@@ -9,13 +9,22 @@ namespace DD4hep{
     
     using namespace Geometry ;
 
-    /** Plugin that creates a SurfaceManager object and attaches
-     *  it to lcdd as a user extension object.
-     * 
-     *  @author  F.Gaede, CERN/DESY
-     *  @date May, 11 2015
-     *  @version $Id: $
-     */
+
+    /**
+    \addtogroup SurfacePlugin
+    @{
+    \package SurfaceManager
+
+    *  \brief Plugin that creates a SurfaceManager object and attaches it to lcdd as a user extension object.
+    *
+    @}
+    *
+    *  @author  F.Gaede, CERN/DESY
+    *  @date May, 11 2015
+    *  @version $Id: $
+    */
+
+
     static long createSurfaceManager(LCDD& lcdd, int /*argc*/, char** /*argv*/) {
 
       printout(INFO,"InstallSurfaceManager","**** running plugin InstallSurfaceManager ! " );

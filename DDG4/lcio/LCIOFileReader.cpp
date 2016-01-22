@@ -11,6 +11,18 @@
 // Author     : M.Frank
 //
 //==========================================================================
+
+/** \addtogroup Geant4EventReader
+ *
+ @{
+  \package LCIOFileReader
+ * \brief Plugin to read lcio files
+ *
+ And here we can put a longer description, parameters, examples...
+ *
+@}
+ */
+
 #ifndef DD4HEP_DDG4_LCIOFILEREADER_H
 #define DD4HEP_DDG4_LCIOFILEREADER_H
 
