@@ -152,7 +152,7 @@ void Geant4Action::configureFiber(Geant4Context* /* thread_context */)   {
 
 /// Support for messages with variable output level using output level
 void Geant4Action::print(const char* fmt, ...) const   {
-  int level = outputLevel();
+  int level = max(int(outputLevel()),(int)VERBOSE);
   if ( level >= printLevel() )  {
     va_list args;
     va_start(args, fmt);

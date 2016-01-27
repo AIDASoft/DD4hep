@@ -343,6 +343,10 @@ namespace DD4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       G4bool process(G4Step* step, G4TouchableHistory* ) {
         Geant4StepHandler h(step);
+
+	// std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
+	// 	  << " edep: " << h.deposit() << std::endl ;
+
         void *prePV = h.volume(h.pre), *postPV = h.volume(h.post);
 
         Geant4HitCollection* coll = sensitive->collection(0);

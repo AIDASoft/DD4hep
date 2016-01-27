@@ -21,7 +21,7 @@ void next_event(){
 
   static int count = 1 ;
 
-  std::cout <<  " next_event called - just draw some random lines ... " << std::endl ;
+  std::cout <<  " next_event called - nothing to do ... " << std::endl ;
 
   TEveElementList* tevent = (TEveElementList* ) gEve->GetCurrentEvent() ;
   
@@ -29,7 +29,7 @@ void next_event(){
     tevent->DestroyElements() ;
   
   
-  lineset( count, count ) ;
+  //  lineset( count, count ) ;
   
   gEve->Redraw3D();
   

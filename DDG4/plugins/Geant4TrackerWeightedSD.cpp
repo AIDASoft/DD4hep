@@ -229,6 +229,10 @@ namespace DD4hep {
       /// Method for generating hit(s) using the information of G4Step object.
       G4bool process(const G4Step* step, G4TouchableHistory* )   {
         Geant4StepHandler h(step);
+
+	// std::cout << " process called - pre pos: " << h.prePos() << " post pos " << h.postPos() 
+	// 	  << " edep: " << h.deposit() << std::endl ;
+
         G4VSolid*     preSolid    = h.solid(h.pre);
         G4VSolid*     postSolid   = h.solid(h.post);
         G4ThreeVector local_pre   = h.globalToLocalG4(h.prePosG4());

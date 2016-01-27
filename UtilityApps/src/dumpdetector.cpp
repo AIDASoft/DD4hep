@@ -179,7 +179,7 @@ int main(int argc, char** argv ){
     std::cout << de.name() << "[ path: "<< de.placementPath ()  <<  "] (id: " << de.id() << ") - sens type : " << lcdd.sensitiveDetector( de.name() ).type() << "\t surfaces : " <<  ( sL.empty() ? 0 : sL.size()  ) << std::endl ;
 
 
-    printDetectorData( de ) ;
+    //    printDetectorData( de ) ;
 
     if( printSurfaces ){
       for( SurfaceList::const_iterator sit = sL.begin() ; sit != sL.end() ; ++sit ){
