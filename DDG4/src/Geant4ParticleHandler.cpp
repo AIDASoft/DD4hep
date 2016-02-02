@@ -307,6 +307,26 @@ void Geant4ParticleHandler::end(const G4Track* track)   {
   ph->vey = p.y();
   ph->vez = p.z();
 
+
+  // Set the simulator status bits
+  PropertyMask simStatus(m_currTrack.status);
+
+  // check if the last step ended on the worldVolume boundary
+  const G4Step* theLastStep = track->GetStep();
+  G4StepPoint* theLastPostStepPoint = NULL;
+  if(theLastStep) theLastPostStepPoint = theLastStep->GetPostStepPoint();
+  if( theLastPostStepPoint &&
+      ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary //particle left world volume
+	//|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
+      )
+    ) {
+    simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
+  }
+
+  if(track->GetKineticEnergy() <= 0.) {
+    simStatus.set(G4PARTICLE_SIM_STOPPED);
+  }
+
   /// Final update of the particle using the user handler
   if ( m_userHandler )  {
     m_userHandler->end(track, m_currTrack);

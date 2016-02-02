@@ -87,7 +87,7 @@ Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* ctxt, co
 }
 
 /// Post-track action callback
-void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
+void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  {
 
   double r_prod = std::sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
   double z_prod = std::fabs(p.vsz);
@@ -121,17 +121,6 @@ void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
     simStatus.set(G4PARTICLE_SIM_DECAY_TRACKER);
   }
 
-  const G4Step* theLastStep = track->GetStep();
-  G4StepPoint* theLastPostStepPoint = NULL;
-  if(theLastStep) theLastPostStepPoint = theLastStep->GetPostStepPoint();
-  if( theLastPostStepPoint &&
-      ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary //particle left world volume
-	//|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
-      )
-    ) {
-    simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
-  }
-
   // if the particle doesn't end in the tracker volume it must have ended in the calorimeter
   if( not ends_in_trk_vol && not simStatus.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ) {
     simStatus.set(G4PARTICLE_SIM_DECAY_CALO);
@@ -141,9 +130,6 @@ void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
     simStatus.set(G4PARTICLE_SIM_BACKSCATTER);
   }
 
-  if(track->GetKineticEnergy() <= 0.) {
-    simStatus.set(G4PARTICLE_SIM_STOPPED);
-  }
   return ;
 
 }
