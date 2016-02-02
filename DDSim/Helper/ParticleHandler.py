@@ -1,5 +1,5 @@
 """Configuration Helper for ParticleHandler"""
-from SystemOfUnits import MeV
+from SystemOfUnits import MeV, mm
 
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
@@ -12,6 +12,17 @@ class ParticleHandler( ConfigHelper ):
     self._keepAllParticles = False
     self._printEndTracking = False
     self._printStartTracking = False
+    self._minDistToParentVertex = 2.2e-14*mm
+
+  @property
+  def minDistToParentVertex( self ):
+    """Minimal distance between particle vertex and endpoint of parent after
+    which the vertexIsNotEndpointOfParent flag is set
+    """
+    return self._minDistToParentVertex
+  @minDistToParentVertex.setter
+  def minDistToParentVertex( self, val ):
+    self._minDistToParentVertex = val
 
   @property
   def saveProcesses(self):
