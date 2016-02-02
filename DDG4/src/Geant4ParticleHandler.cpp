@@ -413,6 +413,8 @@ void Geant4ParticleHandler::endEvent(const G4Event* event)  {
   if ( m_userHandler )  {
     m_userHandler->end(event);
   }
+  setVertexEndpointBit();
+
   // Now export the data to the final record.
   Geant4ParticleMap* part_map = context()->event().extension<Geant4ParticleMap>();
   part_map->adopt(m_particleMap, m_equivalentTracks);
@@ -657,4 +659,26 @@ void Geant4ParticleHandler::checkConsistency()  const   {
   if ( num_errors > 0 )  {
     except("+++ Consistency check failed. Found %d problems.",num_errors);
   }
+}
+
+void Geant4ParticleHandler::setVertexEndpointBit() {
+
+  ParticleMap& pm = m_particleMap;
+  ParticleMap::const_iterator iend, i;
+  for(iend=pm.end(), i=pm.begin(); i!=iend; ++i)  {
+    Particle* p = (*i).second;
+
+    if( p->parents.empty() ) {
+      continue;
+    }
+
+    Geant4Particle *parent(pm[ *p->parents.begin() ]);
+    const double X( parent->vex - p->vex );
+    const double Y( parent->vey - p->vey );
+    const double Z( parent->vez - p->vez );
+    if( sqrt(X*X + Y*Y + Z*Z) > 2.2e-14 ){ //default tolerance for g4ThreeVector isNear
+      PropertyMask(p->status).set(G4PARTICLE_SIM_PARENT_RADIATED);
+    }
+  }
+
 }

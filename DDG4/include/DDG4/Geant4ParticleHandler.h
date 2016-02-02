@@ -123,6 +123,9 @@ namespace DD4hep {
       /// Debugging: Dump Geant4 particle map
       void dumpMap(const char* tag) const;
 
+      /// set the endpointIsNotVertexOfParentFlag at the end of the event
+      void setVertexEndpointBit();
+
     public:
       /// Standard constructor
       Geant4ParticleHandler(Geant4Context* context, const std::string& nam);
