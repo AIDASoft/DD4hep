@@ -226,6 +226,10 @@ lcio::LCCollectionVec* Geant4Output2LCIO::saveParticles(Geant4ParticleMap* parti
       float ps_fa[3] = {float(p->psx/CLHEP::GeV),float(p->psy/CLHEP::GeV),float(p->psz/CLHEP::GeV)};
       q->setMomentum( ps_fa );
 
+#if LCIO_VERSION_GE(2,7)
+      float pe_fa[3] = {float(p->pex/CLHEP::GeV),float(p->pey/CLHEP::GeV),float(p->pez/CLHEP::GeV)};
+      q->setMomentumAtEndpoint( pe_fa );
+#endif
       double vs_fa[3] = { p->vsx/CLHEP::mm, p->vsy/CLHEP::mm, p->vsz/CLHEP::mm } ;
       q->setVertex( vs_fa );
 
