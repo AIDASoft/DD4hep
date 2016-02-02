@@ -125,16 +125,15 @@ void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
   G4StepPoint* theLastPostStepPoint = NULL;
   if(theLastStep) theLastPostStepPoint = theLastStep->GetPostStepPoint();
   if( theLastPostStepPoint &&
-      ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary
+      ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary //particle left world volume
 	//|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
       )
-    ){ //particle left world volume
+    ) {
     simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
   }
 
   // if the particle doesn't end in the tracker volume it must have ended in the calorimeter
   if( not ends_in_trk_vol && not simStatus.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ) {
-    // need to check for decay process
     simStatus.set(G4PARTICLE_SIM_DECAY_CALO);
   }
 
