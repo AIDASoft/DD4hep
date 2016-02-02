@@ -365,6 +365,7 @@ class DD4hepSimulation(object):
     part.KeepAllParticles     = self.part.keepAllParticles
     part.PrintEndTracking     = self.part.printEndTracking
     part.PrintStartTracking   = self.part.printStartTracking
+    part.MinDistToParentVertex= self.part.minDistToParentVertex
     part.OutputLevel = self.output.part
     part.enableUI()
     user = DDG4.Action(kernel,"Geant4TCUserParticleHandler/UserParticleHandler")
