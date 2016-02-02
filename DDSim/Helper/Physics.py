@@ -41,6 +41,8 @@ class Physics( ConfigHelper ):
   @property
   def pdgfile( self ):
     """ location of particle.tbl file containing extra particles and their lifetime information
+
+    For example in $DD4HEP/examples/DDG4/examples/particle.tbl
     """
     return self._pdgfile
   @pdgfile.setter
