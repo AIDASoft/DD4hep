@@ -195,7 +195,7 @@ void Geant4ParticleHandler::step(const G4Step* step_value, G4SteppingManager* mg
     // this criterium will anyhow take precedence.
     //
     const _Sec* sec=step_value->GetSecondaryInCurrentStep();
-    if ( sec->size() > 0 )  {
+    if ( not sec->empty() )  {
       PropertyMask(m_currTrack.reason).set(G4PARTICLE_HAS_SECONDARIES);
     }
   }

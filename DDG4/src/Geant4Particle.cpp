@@ -358,7 +358,7 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
     ::snprintf(equiv,sizeof(equiv),"/%d",p->g4Parent);
   }
   printout((DD4hep::PrintLevel)level,src,
-           "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c",
+           "+++ %s ID:%7d %12s %6d%-7s %7s %3s %5d %3s %+.3e  %-4s %-7s %-3s %-3s %2d  [%s%s%s] %c%c%c%c -- %c%c%c%c%c%c%c",
            tag,
            p->id,
            p.particleName().c_str(),
@@ -379,7 +379,15 @@ void Geant4ParticleHandle::dump4(int level, const std::string& src, const char* 
            status.isSet(G4PARTICLE_GEN_EMPTY) ? 'E' : '.',
            status.isSet(G4PARTICLE_GEN_STABLE) ? 'S' : '.',
            status.isSet(G4PARTICLE_GEN_DECAYED) ? 'D' : '.',
-           status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.'
+           status.isSet(G4PARTICLE_GEN_DOCUMENTATION) ? 'd' : '.',
+
+           status.isSet(G4PARTICLE_SIM_CREATED) ? 's' : '.',
+           status.isSet(G4PARTICLE_SIM_BACKSCATTER) ? 'b' : '.',
+           status.isSet(G4PARTICLE_SIM_PARENT_RADIATED) ? 'v' : '.',
+           status.isSet(G4PARTICLE_SIM_DECAY_TRACKER) ? 't' : '.',
+           status.isSet(G4PARTICLE_SIM_DECAY_CALO) ? 'c' : '.',
+           status.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ? 'l' : '.',
+           status.isSet(G4PARTICLE_SIM_STOPPED) ? 's' : '.'
            );
 }
 

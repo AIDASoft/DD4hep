@@ -37,7 +37,7 @@ namespace DD4hep {
 
     /// Geant4ParticleHandler user extension action called by the particle handler.
     /**
-     *  Collect optional MC particle information and attacjh it to the particle object
+     *  Collect optional MC particle information and attach it to the particle object
      *  Clients may inherit from this class and override the approriate methods
      *  to add additional information in form of a DataExtension object to the Particle.
      *

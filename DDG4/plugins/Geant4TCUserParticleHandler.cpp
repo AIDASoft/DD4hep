@@ -15,6 +15,7 @@
 #define DD4HEP_DDG4_GEANT4TCUSERPARTICLEHANDLER_H
 
 // Framework include files
+#include "DD4hep/Primitives.h"
 #include "DDG4/Geant4UserParticleHandler.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -86,7 +87,8 @@ Geant4TCUserParticleHandler::Geant4TCUserParticleHandler(Geant4Context* ctxt, co
 }
 
 /// Post-track action callback
-void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  {
+void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
+
   double r_prod = std::sqrt(p.vsx*p.vsx + p.vsy*p.vsy);
   double z_prod = std::fabs(p.vsz);
   bool starts_in_trk_vol = ( r_prod <= m_rTracker && z_prod <= m_zTracker )  ;
@@ -111,7 +113,49 @@ void Geant4TCUserParticleHandler::end(const G4Track* /* track */, Particle& p)  
     else if( !( p.reason & G4PARTICLE_CREATED_TRACKER_HIT  ) )
       p.reason = 0;
   }
-  
+
+  // Set the simulator status bits
+  DD4hep::ReferenceBitMask<int> simStatus(p.status);
+
+  if( ends_in_trk_vol ) {
+    simStatus.set(G4PARTICLE_SIM_DECAY_TRACKER);
+  } else {
+    // daughters inherit the status of the parent??? let's clear this
+    simStatus.clear(G4PARTICLE_SIM_DECAY_TRACKER);
+  }
+
+  const G4Step* theLastStep = track->GetStep();
+  G4StepPoint* theLastPostStepPoint = NULL;
+  if(theLastStep) theLastPostStepPoint = theLastStep->GetPostStepPoint();
+  if( theLastPostStepPoint &&
+      ( theLastPostStepPoint->GetStepStatus() == fWorldBoundary
+	//|| theLastPostStepPoint->GetStepStatus() == fGeomBoundary
+      )
+    ){ //particle left world volume
+    simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
+  } else {
+    simStatus.clear(G4PARTICLE_SIM_LEFT_DETECTOR);
+  }
+
+  // if the particle doesn't end in the tracker volume it must have ended in the calorimeter
+  if( not ends_in_trk_vol && not simStatus.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ) {
+    // need to check for decay process
+    simStatus.set(G4PARTICLE_SIM_DECAY_CALO);
+  } else {
+    simStatus.clear(G4PARTICLE_SIM_DECAY_CALO);
+  }
+
+  if( not starts_in_trk_vol && ends_in_trk_vol ) {
+    simStatus.set(G4PARTICLE_SIM_BACKSCATTER);
+  } else {
+    simStatus.clear(G4PARTICLE_SIM_BACKSCATTER);
+  }
+
+  if(track->GetKineticEnergy() <= 0.) {
+    simStatus.set(G4PARTICLE_SIM_STOPPED);
+  } else {
+    simStatus.clear(G4PARTICLE_SIM_STOPPED);
+  }
   return ;
 
 }
