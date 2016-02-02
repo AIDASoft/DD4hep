@@ -119,9 +119,6 @@ void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
 
   if( ends_in_trk_vol ) {
     simStatus.set(G4PARTICLE_SIM_DECAY_TRACKER);
-  } else {
-    // daughters inherit the status of the parent??? let's clear this
-    simStatus.clear(G4PARTICLE_SIM_DECAY_TRACKER);
   }
 
   const G4Step* theLastStep = track->GetStep();
@@ -133,28 +130,20 @@ void Geant4TCUserParticleHandler::end(const G4Track* track, Particle& p)  {
       )
     ){ //particle left world volume
     simStatus.set(G4PARTICLE_SIM_LEFT_DETECTOR);
-  } else {
-    simStatus.clear(G4PARTICLE_SIM_LEFT_DETECTOR);
   }
 
   // if the particle doesn't end in the tracker volume it must have ended in the calorimeter
   if( not ends_in_trk_vol && not simStatus.isSet(G4PARTICLE_SIM_LEFT_DETECTOR) ) {
     // need to check for decay process
     simStatus.set(G4PARTICLE_SIM_DECAY_CALO);
-  } else {
-    simStatus.clear(G4PARTICLE_SIM_DECAY_CALO);
   }
 
   if( not starts_in_trk_vol && ends_in_trk_vol ) {
     simStatus.set(G4PARTICLE_SIM_BACKSCATTER);
-  } else {
-    simStatus.clear(G4PARTICLE_SIM_BACKSCATTER);
   }
 
   if(track->GetKineticEnergy() <= 0.) {
     simStatus.set(G4PARTICLE_SIM_STOPPED);
-  } else {
-    simStatus.clear(G4PARTICLE_SIM_STOPPED);
   }
   return ;
 

@@ -244,7 +244,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
     m_currTrack.id           = m_globalParticleID;
     m_currTrack.reason       = reason;
     m_currTrack.mask         = 0;
-    m_currTrack.status      |= G4PARTICLE_SIM_CREATED;
+    m_currTrack.status       = G4PARTICLE_SIM_CREATED;
     m_currTrack.spin[0]      = 0;
     m_currTrack.spin[1]      = 0;
     m_currTrack.spin[2]      = 0;
