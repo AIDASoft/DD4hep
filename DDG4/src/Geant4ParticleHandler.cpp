@@ -79,6 +79,7 @@ Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& 
   declareProperty("KeepAllParticles",    m_keepAll = false);
   declareProperty("SaveProcesses",       m_processNames);
   declareProperty("MinimalKineticEnergy",m_kinEnergyCut = 100e0*CLHEP::MeV);
+  declareProperty("MinDistToParentVertex",m_minDistToParentVertex = 2.2e-14*CLHEP::mm);//default tolerance for g4ThreeVector isNear
   m_needsControl = true;
 }
 
@@ -676,7 +677,7 @@ void Geant4ParticleHandler::setVertexEndpointBit() {
     const double X( parent->vex - p->vex );
     const double Y( parent->vey - p->vey );
     const double Z( parent->vez - p->vez );
-    if( sqrt(X*X + Y*Y + Z*Z) > 2.2e-14 ){ //default tolerance for g4ThreeVector isNear
+    if( sqrt(X*X + Y*Y + Z*Z) > m_minDistToParentVertex ){
       PropertyMask(p->status).set(G4PARTICLE_SIM_PARENT_RADIATED);
     }
   }

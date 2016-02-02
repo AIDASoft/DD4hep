@@ -92,6 +92,8 @@ namespace DD4hep {
       bool m_ownsParticles;
       /// Property: Energy cut below which particles are not collected, but assigned to the parent
       double m_kinEnergyCut;
+      /// Property: Minimal distance after which the vertexIsNotEndpointOfParent flag is set
+      double m_minDistToParentVertex;
       /// Property: All the processes of which the decay products will be explicitly stored
       Processes                  m_processNames;
 
