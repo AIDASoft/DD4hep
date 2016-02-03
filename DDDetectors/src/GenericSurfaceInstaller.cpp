@@ -17,21 +17,32 @@
  * \brief Plugin to install measurement surfaces on a generic sliced detector
  * 
  * Takes up to 13 arguments:
- * - dimension: A property of the surface that determines whether the resulting
- *   measurement is 1-D, e.g. strips (dimension=1) or 2-D, e.g. pixels (dimension=2)
- * - u_x, u_y, and u_z The x,y, and z components of the u vector, usually associated
- *   with the "good" (i.e. best resolution) measurement direction
- * - v_x, v_y, and v_z The x,y, and z components of the v vector, usually associated
- *   with the "bad" (i.e. worst resolution) measurement direction
- * - n_x, n_y, and n_z The x,y, and z components of the vector perpendicular to the surface
+ * - \c dimension: A property of the surface that determines whether the resulting
+ *   measurement is 1-D, e.g. strips (\c dimension=1) or 2-D, e.g. pixels (\c dimension=2).
+ * - \c u_x, \c u_y, and \c u_z: The x, y, and z components of the u vector, usually associated
+ *   with the "good" (i.e. best resolution) measurement direction.
+ * - \c v_x, \c v_y, and \c v_z: The x, y, and z components of the v vector, usually associated
+ *   with the "bad" (i.e. worst resolution) measurement direction.
+ * - \c n_x, \c n_y, and \c n_z: The x, y, and z components of the vector perpendicular to the surface
  *   plane and usually pointing outwards of the detector. 
- * - o_x, o_y, and o_z The x,y, and z components of the origin vector, used to shift the origin
+ * - \c o_x, \c o_y, and \c o_z: The x, y, and z components of the origin vector, used to shift the origin
  *   of the surface from where it is placed within the volume (usually in the center
  *   of a sensitive volume.
  * 
  * All the arguments are conveniently initialized to zero by default, 
- * therefore only the non-zero components need to be provided.
- *
+ * therefore only the non-zero components need to be provided. For example, to use this
+ * plugin for the VertexEndcap detector, put this snipped in the relevant compact file:
+ * \verbatim 
+<plugins>
+      <plugin name="DD4hep_GenericSurfaceInstallerPlugin">
+          <argument value="VertexEndcap"/>
+          <argument value="dimension=2"/>
+          <argument value="u_x=-1."/>
+          <argument value="v_z=1."/>
+          <argument value="n_y=1."/>
+      </plugin>
+</plugins>
+\endverbatim
  * The plugin assumes boxes are stacked along one of the primary axes, x,y or z 
  * The normal vector (n) must be along one of the axes (i.e. only one non-zero 
  * component). The inner/outer thicknesses are calculated according to n.
@@ -39,7 +50,7 @@
  * Note: Assumes module and component volumes are boxes. For Trapezoids,
  * a fitting box is built around the trapezoid which means dx1=dx2=dx1 and
  * dy1=dy2=dy. This is in principle fine, since we only access the thicknesses
- * (DY in the TrackerEncapSurfacePlugin example) which is supposed to be the same
+ * (DY in the TrackerEncapSurfacePlugin example) which is supposed to be the same.
  * @}
  */
 

@@ -2,7 +2,8 @@
 =================================
 DD4hep  ----  Release Notes
 =================================
-2015-02-03 N.Nikiforou
+
+2016-02-03 N.Nikiforou
   DDDetectors
   - Added plugin DD4hep_GenericSurfaceInstallerPlugin, copied from lcgeo
     to allow installation of surfaces to any sliced detector
