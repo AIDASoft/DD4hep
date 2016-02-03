@@ -2,6 +2,13 @@
 =================================
 DD4hep  ----  Release Notes
 =================================
+2015-02-03 N.Nikiforou
+  DDDetectors
+  - Added plugin DD4hep_GenericSurfaceInstallerPlugin, copied from lcgeo
+    to allow installation of surfaces to any sliced detector
+  cmake/Doxyfile.in
+  - Added DDDetectors to the sources directory so Doxygen picks up the
+    plugin documentation
 
 2016-01-07 A.Sailer
   DDG4
@@ -15,7 +22,7 @@ DD4hep  ----  Release Notes
   - Changed signature of getSurfaceVectors() to allow selection of o,u,v,n vectors to 
     add to the collection, added option for name and color of collection.
   - Renamed surface list collections to "HelperSurfaces" and "SensitiveSurfaces".
-  - Changed signature of getSurfaces() to allow setting of name and coloer of collection.
+  - Changed signature of getSurfaces() to allow setting of name and color of collection.
   
 
 
