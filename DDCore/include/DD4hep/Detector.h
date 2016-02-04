@@ -321,7 +321,7 @@ namespace DD4hep {
       /// Remove callback from object
       void removeAtUpdate(unsigned int type, void* pointer) const;
 
-      /// Set the detector identifier
+      /// Get the detector identifier
       int id() const;
       /// Setter: Combine hits attribute
       DetElement& setCombineHits(bool value, SensitiveDetector& sens);
