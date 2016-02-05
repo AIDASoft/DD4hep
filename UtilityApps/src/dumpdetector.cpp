@@ -63,10 +63,10 @@ void printDetectorData( DetElement det ){
 
 }
 
-void printDetectorSets( std::string name, unsigned int typeFlag ){
+void printDetectorSets( std::string name, unsigned int includeFlag,  unsigned int excludeFlag=DetType::IGNORE ){
 
   LCDD& lcdd = LCDD::getInstance();
-  const std::vector<DetElement>& dets = lcdd.detectors( typeFlag ) ;
+  const std::vector<DetElement>& dets = lcdd.detectors( includeFlag, excludeFlag ) ;
   std::cout << " " << name  ;
   for(int i=0,N=dets.size();i<N;++i)  
     std::cout << dets[i].name() << ", " ;
@@ -112,11 +112,19 @@ int main(int argc, char** argv ){
 	    << "    status : " << h.status() << std::endl ;
 
 
-  printDetectorSets( " barrel trackers : " , ( DetType::TRACKER | DetType::BARREL ) ) ; 
-  printDetectorSets( " endcap trackers : " , ( DetType::TRACKER | DetType::ENDCAP ) ) ; 
+  // print a few sets of detectors (mainly to demonstrate the usage of the detector types )
+
+  printDetectorSets( " barrel trackers : " , ( DetType::TRACKER | DetType::BARREL ) , ( DetType::VERTEX) ) ; 
+  printDetectorSets( " endcap trackers : " , ( DetType::TRACKER | DetType::ENDCAP ) , ( DetType::VERTEX) ) ; 
+
+  printDetectorSets( " vertex barrel trackers : " , ( DetType::TRACKER | DetType::BARREL | DetType::VERTEX) ) ; 
+  printDetectorSets( " vertex endcap trackers : " , ( DetType::TRACKER | DetType::ENDCAP | DetType::VERTEX) ) ; 
 
   printDetectorSets( " barrel calorimeters : " , ( DetType::CALORIMETER | DetType::BARREL ) ) ; 
   printDetectorSets( " endcap calorimeters : " , ( DetType::CALORIMETER | DetType::ENDCAP ) ) ; 
+
+  // everything that is not TRACKER or CALORIMETER
+  printDetectorSets( " other detecors : " , ( DetType::IGNORE ) , ( DetType::CALORIMETER | DetType::TRACKER ) ) ; 
 
 
   if( printDetData ){

@@ -343,14 +343,12 @@ const vector<DetElement>& LCDDImp::detectors(const string& type)  {
   throw runtime_error("detectors("+type+"): Detectors can only selected by type once the geometry is closed!");
 }
 
-vector<DetElement> LCDDImp::detectors(unsigned int typeFlag, bool bitsSet) const  {
+vector<DetElement> LCDDImp::detectors(unsigned int includeFlag, unsigned int excludeFlag ) const  {
   if( ! m_manager->IsClosed() ) {
     throw runtime_error("detectors(typeFlag): Detectors can only selected by typeFlag once the geometry is closed!");
   }
   vector<DetElement> dets ;
   dets.reserve( m_detectors.size() ) ;
-  
-  unsigned int compFlag = ( bitsSet ? typeFlag : 0 ) ;
   
   for(HandleMap::const_iterator i=m_detectors.begin(); i!=m_detectors.end(); ++i)   {
     DetElement det((*i).second);
@@ -359,7 +357,8 @@ vector<DetElement> LCDDImp::detectors(unsigned int typeFlag, bool bitsSet) const
       //fixme: what to do with compounds - add their daughters  ?
       // ...
 
-      if( ( det.typeFlag() &  typeFlag ) == compFlag )
+      if( ( det.typeFlag() &  includeFlag ) == includeFlag &&
+	  ( det.typeFlag() &  excludeFlag ) ==  0 )
 	dets.push_back( det ) ;
     }
   }

@@ -271,8 +271,11 @@ namespace DD4hep {
       /// Access the availible detector types
       virtual std::vector<std::string> detectorTypes() const;
 
-      /// return a vector with all detectors that have all the given type properties set/ not set.
-      virtual std::vector<DetElement> detectors(unsigned int typeFlag, bool bitsSet=true ) const ;
+      /** return a vector with all detectors that have all the type properties in
+       *  includeFlag set but none of the properties given in excludeFlag
+       */
+      virtual std::vector<DetElement> detectors(unsigned int includeFlag, 
+						unsigned int excludeFlag=0 ) const ;
 
 
 #define __R  return *this

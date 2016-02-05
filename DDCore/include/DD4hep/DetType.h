@@ -36,6 +36,7 @@ namespace DD4hep {
   public:
 
     enum {
+      IGNORE       = 0 ,
       TRACKER      = 1 <<  0, 
       CALORIMETER  = 1 <<  1, 
       CHERENKOV    = 1 <<  2, 

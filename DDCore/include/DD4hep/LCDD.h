@@ -179,10 +179,11 @@ namespace DD4hep {
       virtual std::vector<std::string> detectorTypes() const = 0;
 
 
-      /** return a vector with all detectors that have all the given type properties set
-       *  or not set depending on bitsSet.
+      /** return a vector with all detectors that have all the type properties in
+       *  includeFlag set but none of the properties given in excludeFlag
        */
-      virtual std::vector<DetElement> detectors(unsigned int typeFlag, bool bitsSet=true ) const = 0 ;
+      virtual std::vector<DetElement> detectors(unsigned int includeFlag, 
+						unsigned int excludeFlag=0 ) const = 0 ;
 #endif
 
       /** Miscaneleous accessors to the detexctor description  */
