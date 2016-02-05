@@ -31,7 +31,7 @@
  * 
  * All the arguments are conveniently initialized to zero by default, 
  * therefore only the non-zero components need to be provided. For example, to use this
- * plugin for the VertexEndcap detector, put this snipped in the relevant compact file:
+ * plugin for the VertexEndcap detector, put this snippet in the relevant compact file:
  * \verbatim 
 <plugins>
       <plugin name="DD4hep_GenericSurfaceInstallerPlugin">
@@ -51,6 +51,8 @@
  * a fitting box is built around the trapezoid which means dx1=dx2=dx1 and
  * dy1=dy2=dy. This is in principle fine, since we only access the thicknesses
  * (DY in the TrackerEncapSurfacePlugin example) which is supposed to be the same.
+ *
+ * For more information, please consult with GenericSurfaceInstaller.cpp
  * @}
  */
 
