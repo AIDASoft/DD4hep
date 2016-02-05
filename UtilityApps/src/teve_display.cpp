@@ -133,7 +133,7 @@ static long teve_display(LCDD& lcdd, int /* argc */, char** /* argv */) {
   v->RefreshPadEditor(v);
   //  v->CurrentCamera().RotateRad(-1.2, 0.5);
 
-  gEve->GetGlobalScene()->GetGLScene()->SetSelectable(kFALSE);
+  gEve->GetGlobalScene()->GetGLScene()->SetSelectable(kFALSE) ; //change for debugging (kTRUE);
 
 
   MultiView::instance()->ImportGeomRPhi( surfaces );

@@ -21,9 +21,9 @@ dd4hep_add_test_reg ( test_units               BUILD_EXEC REGEX_FAIL "TEST_FAILE
   EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
 dd4hep_add_test_reg ( test_surface             BUILD_EXEC REGEX_FAIL "TEST_FAILED" 
   EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
-dd4hep_add_test_reg ( test_bitfield64          BUILD_EXEC REGEX_FAIL "TEST_FAILED"
-  EXEC_ARGS file:${CMAKE_CURRENT_SOURCE_DIR}/units.xml )
 
+dd4hep_add_test_reg ( test_bitfield64          BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
+dd4hep_add_test_reg ( test_DetType            BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_PolarGridRPhi2      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_cellDimensions      BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
 dd4hep_add_test_reg ( test_cellDimensionsRPhi2 BUILD_EXEC REGEX_FAIL "TEST_FAILED" )
