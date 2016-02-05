@@ -271,6 +271,10 @@ namespace DD4hep {
       /// Access the availible detector types
       virtual std::vector<std::string> detectorTypes() const;
 
+      /// return a vector with all detectors that have all the given type properties set/ not set.
+      virtual std::vector<DetElement> detectors(unsigned int typeFlag, bool bitsSet=true ) const ;
+
+
 #define __R  return *this
       /// Add a new constant to the detector description
       virtual LCDD& add(Constant x) {

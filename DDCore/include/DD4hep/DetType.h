@@ -82,6 +82,11 @@ namespace DD4hep {
       return ( _type & prop ) == 0 ;
     }
 
+    /// return the flag word
+    inline unsigned long to_ulong() const {
+      return _type ;
+    }
+
   private:
     unsigned long _type ;
   } ;

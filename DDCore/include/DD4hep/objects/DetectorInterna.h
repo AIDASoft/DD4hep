@@ -97,6 +97,8 @@ namespace DD4hep {
       int id;
       /// Flag to process hits
       int combineHits;
+     /// Flag to encode detector types
+      unsigned int typeFlag;
       /// Full path to this detector element. May be invalid
       std::string path;
       /// The path to the placement of the detector element (if placed)

@@ -177,6 +177,12 @@ namespace DD4hep {
 
       /// Access the availible detector types
       virtual std::vector<std::string> detectorTypes() const = 0;
+
+
+      /** return a vector with all detectors that have all the given type properties set
+       *  or not set depending on bitsSet.
+       */
+      virtual std::vector<DetElement> detectors(unsigned int typeFlag, bool bitsSet=true ) const = 0 ;
 #endif
 
       /** Miscaneleous accessors to the detexctor description  */

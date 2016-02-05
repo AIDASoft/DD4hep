@@ -89,6 +89,18 @@ DetElement& DetElement::setType(const string& typ) {
   return *this;
 }
 
+
+unsigned int DetElement::typeFlag() const {
+  return m_element ? m_element->typeFlag :  0 ;
+}
+
+/// Set the type of the sensitive detector
+DetElement& DetElement::setTypeFlag(unsigned int types) {
+  Object* o = access();
+  o->typeFlag = types ;
+  return *this;
+}
+
 string DetElement::path() const {
   Object* o = ptr();
   if ( o ) {

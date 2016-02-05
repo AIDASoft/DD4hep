@@ -61,7 +61,7 @@ SensitiveDetectorObject::~SensitiveDetectorObject() {
 /// Default constructor
 DetElementObject::DetElementObject()
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
-    flag(0), id(0), combineHits(0), path(), placementPath(),
+    flag(0), id(0), combineHits(0), typeFlag(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
     alignment(), volume_alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
@@ -72,7 +72,7 @@ DetElementObject::DetElementObject()
 /// Initializing constructor
 DetElementObject::DetElementObject(const std::string& nam, int ident)
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
-    flag(0), id(ident), combineHits(0), path(), placementPath(),
+    flag(0), id(ident), combineHits(0), typeFlag(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
     alignment(), volume_alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
@@ -98,6 +98,7 @@ DetElementObject::~DetElementObject() {
 DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   DetElementObject* obj = new DetElementObject();
   obj->id = new_id;
+  obj->typeFlag = typeFlag;
   obj->flag = 0;
   obj->combineHits = combineHits;
   obj->alignment = Alignment();

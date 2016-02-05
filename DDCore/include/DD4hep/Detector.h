@@ -328,12 +328,18 @@ namespace DD4hep {
       /// Getter: Combine hits attribute
       bool combineHits() const;
 
-      /// Access detector type (structure, tracker, calorimeter, etc.).
-      /** Required for determination of G4 sensitive detector.
+      /** Access detector type (structure, tracker, calorimeter, etc.).
+       *  Required for determination of G4 sensitive detector.
        */
       std::string type() const;
       ///  Set detector type (structure, tracker, calorimeter, etc.).
       DetElement& setType(const std::string& typ);
+
+      // Return flag word encoding detector types ( ideally use DD4hep::DetType for decoding )
+      unsigned int typeFlag() const;
+
+      ///  Set the flag word encoding detector types ( ideally use DD4hep::DetType for encoding )
+      DetElement& setTypeFlag(unsigned int types);
 
       /// Path of the detector element (not necessarily identical to placement path!)
       std::string path() const;

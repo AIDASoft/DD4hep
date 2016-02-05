@@ -18,6 +18,7 @@
 
 // Framework include files
 #include "DD4hep/LCDD.h"
+#include "DD4hep/DetType.h"
 #include "DD4hep/DD4hepUnits.h"
 
 #include "DDRec/Surface.h"
@@ -62,6 +63,17 @@ void printDetectorData( DetElement det ){
 
 }
 
+void printDetectorSets( std::string name, unsigned int typeFlag ){
+
+  LCDD& lcdd = LCDD::getInstance();
+  const std::vector<DetElement>& dets = lcdd.detectors( typeFlag ) ;
+  std::cout << " " << name  ;
+  for(int i=0,N=dets.size();i<N;++i)  
+    std::cout << dets[i].name() << ", " ;
+  std::cout << endl ;
+} 
+
+
 //=============================================================================
 
 int main(int argc, char** argv ){
@@ -99,6 +111,14 @@ int main(int argc, char** argv ){
 	    << "    author : " << h.author() << std::endl 
 	    << "    status : " << h.status() << std::endl ;
 
+
+  printDetectorSets( " barrel trackers : " , ( DetType::TRACKER | DetType::BARREL ) ) ; 
+  printDetectorSets( " endcap trackers : " , ( DetType::TRACKER | DetType::ENDCAP ) ) ; 
+
+  printDetectorSets( " barrel calorimeters : " , ( DetType::CALORIMETER | DetType::BARREL ) ) ; 
+  printDetectorSets( " endcap calorimeters : " , ( DetType::CALORIMETER | DetType::ENDCAP ) ) ; 
+
+
   if( printDetData ){
 
     DD4hep::Geometry::LCDD::HandleMap dets = lcdd.detectors() ;
@@ -108,6 +128,10 @@ int main(int argc, char** argv ){
       DetElement det = it->second ;
 
       std::cout << " ---------------------------- " << det.name() << " ----------------------------- " << std::endl ;
+
+      DetType type( det.typeFlag() ) ;
+      
+      std::cout << " ------     " << type << std:: endl ;
 
       printDetectorData( det ) ;
 
