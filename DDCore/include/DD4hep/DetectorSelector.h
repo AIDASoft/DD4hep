@@ -36,8 +36,9 @@ namespace DD4hep {
      *  or multiple types:
      *  r = selector.detectors("tracker", "calorimeter");
      *
-     *  or selections using DetElement flags (DetElement::typeFlag)
-     *  r = selector.detectors(0x15, 0xFF0);
+     *  or selections using DetType flags, e.g:
+     *  select all barrel trackers but not the Vertex detector
+     *  r = selector.detectors(  DetType::TRACKER | DetType::BARREL  , DetType::VERTEX ) ;
      *
      *  \author  M.Frank
      *  \version 1.0

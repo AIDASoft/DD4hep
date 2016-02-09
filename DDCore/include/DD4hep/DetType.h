@@ -21,7 +21,7 @@ namespace DD4hep {
   /** Helper class for encoding sub detector types in a flag word.
    *  Example:<br>
    *  DetType type( DetType::TRACKER | DetType::STRIP | DetType::BARREL ) ; <br>
-   *  type.is( DetType::EMCALO  ) ; // false <br>
+   *  type.is( DetType::ELECTROMAGNETIC  ) ; // false <br>
    *  type.isNot( DetType::CALORIMETER  ) ; // true <br>
    *  type.is( DetType::STRIP | DetType::BARREL ) ; // true <br>
    *
@@ -48,8 +48,8 @@ namespace DD4hep {
       PIXEL	   = 1 <<  8, 
       GASEOUS	   = 1 <<  9, 
       WIRE	   = 1 << 10, 
-      EMCALO	   = 1 << 11, 
-      HADCALO	   = 1 << 12, 
+      ELECTROMAGNETIC = 1 << 11, 
+      HADRONIC	   = 1 << 12, 
       MUON	   = 1 << 13, 
       SUPPORT      = 1 << 14
     } ;
@@ -106,8 +106,8 @@ namespace DD4hep {
     if( t.is( DetType::PIXEL	    ) ) os << "PIXEL, " ;
     if( t.is( DetType::GASEOUS	    ) ) os << "GASEOUS, " ;
     if( t.is( DetType::WIRE	    ) ) os << "WIRE, " ;
-    if( t.is( DetType::EMCALO	    ) ) os << "EMCALO, " ;
-    if( t.is( DetType::HADCALO	    ) ) os << "HADCALO, " ;
+    if( t.is( DetType::ELECTROMAGNETIC	    ) ) os << "ELECTROMAGNETIC, " ;
+    if( t.is( DetType::HADRONIC	    ) ) os << "HADRONIC, " ;
     if( t.is( DetType::MUON	    ) ) os << "MUON, " ;
     if( t.is( DetType::SUPPORT      ) ) os << "SUPPORT, " ;
     return os ;

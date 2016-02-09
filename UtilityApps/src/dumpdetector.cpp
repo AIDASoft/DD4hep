@@ -19,6 +19,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/DetType.h"
+#include "DD4hep/DetectorSelector.h"
 #include "DD4hep/DD4hepUnits.h"
 
 #include "DDRec/Surface.h"
@@ -66,7 +67,7 @@ void printDetectorData( DetElement det ){
 void printDetectorSets( std::string name, unsigned int includeFlag,  unsigned int excludeFlag=DetType::IGNORE ){
 
   LCDD& lcdd = LCDD::getInstance();
-  const std::vector<DetElement>& dets = lcdd.detectors( includeFlag, excludeFlag ) ;
+  const std::vector<DetElement>& dets = DetectorSelector(lcdd).detectors( includeFlag, excludeFlag ) ;
   std::cout << " " << name  ;
   for(int i=0,N=dets.size();i<N;++i)  
     std::cout << dets[i].name() << ", " ;
