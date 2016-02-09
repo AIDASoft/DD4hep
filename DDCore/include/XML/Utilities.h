@@ -47,6 +47,17 @@ namespace DD4hep {
     Geometry::Volume createPlacedEnvelope( DD4hep::Geometry::LCDD& lcdd, DD4hep::XML::Handle_t e , 
                                            DD4hep::Geometry::DetElement sdet ) ;
     
+
+
+
+    /** Sets the type flag specified in the \<type_flags\> element for the given DetElement, example: <br>
+	@verbatim
+	<type_flags type=" DetType_TRACKER + DetType_PIXEL + DetType_VERTEX "/>
+	@endverbatim
+     *  @author F.Gaede, DESY
+     */
+    void setDetectorTypeFlag( DD4hep::XML::Handle_t e, DD4hep::Geometry::DetElement sdet ) ; 
+
   }  /* End namespace XML              */
 }    /* End namespace DD4hep           */
 #endif    /* DD4hep_XML_XMLUTILITIES_H */
