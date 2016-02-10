@@ -29,7 +29,7 @@ namespace DD4hep { namespace Errors  {
     IMPLEMENT(invalidArg,EINVAL)        // 22
     IMPLEMENT(noSys,ENOSYS)             // 38
     IMPLEMENT(cancelled,ECANCELED)      // 125
-#ifdef __apple__
+#ifdef __APPLE__
     IMPLEMENT(linkRange,EINVAL)         // 48  does not exist on apple
     IMPLEMENT(noKey,EINVAL)             // 126 does not exist on apple
 #else
