@@ -370,7 +370,7 @@ namespace DD4hep {
   
   template <typename C, typename R, typename T, typename A1, typename A2>
   void call_member_func(C& object, R (T::*pmf)(A1 a1,A2 a2), A1 a1, A2 a2)
-  {   std::for_each(object.begin(),object.end(),ApplyMemFunc2<R,T,A1,A2>(pmf,a1,a1));    }
+  {   std::for_each(object.begin(),object.end(),ApplyMemFunc2<R,T,A1,A2>(pmf,a1,a2));    }
   
   template <typename C, typename R, typename T, typename A1, typename A2>
   void call_member_func(C& object, R (T::*pmf)(A1 a1,A2 a2) const, A1 a1, A2 a2)
