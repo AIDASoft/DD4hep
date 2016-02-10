@@ -31,4 +31,4 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
 }
 
 // first argument is the type from the xml file
-DECLARE_DETELEMENT(BoxSegment,create_element)
+DECLARE_DETELEMENT(AlignmentBoxSegment,create_element)

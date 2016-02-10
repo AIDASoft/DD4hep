@@ -45,14 +45,14 @@
 
   <detectors>
     <comment>Boxes</comment>
-    <detector id="1" name="B1" type="BoxSegment" vis="B1_vis">
+    <detector id="1" name="B1" type="AlignmentBoxSegment" vis="B1_vis">
       <comment>Horizontal box</comment>
       <material name="Steel235"/>
       <box      x="20"   y="0.1" z="5"/>
       <position x="20"   y="10"  z="10"/>
       <rotation x="1"    y="0"   z="0"/>
     </detector>
-    <detector id="2" name="B2" type="BoxSegment" vis="B2_vis">
+    <detector id="2" name="B2" type="AlignmentBoxSegment" vis="B2_vis">
       <comment>Vertical box</comment>
       <material name="Steel235"/>
       <box      x="0.1" y="20"   z="5"/>
