@@ -42,21 +42,24 @@ namespace DD4hep {
     hash ^= (hash >> 11); hash += (hash << 15);
     return hash;
   }
+  inline unsigned int hash32(const std::string& key) {
+    return hash32(key.c_str());
+  }
   /// ABI information about type names
   std::string typeName(const std::type_info& type);
-  void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "");
+  void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "") throw(std::exception);
   /// Throw exception when handles are check for validity
-  void invalidHandleError(const std::type_info& type);
+  void invalidHandleError(const std::type_info& type) throw(std::exception);
   /// Throw exception when handles are badly assigned
-  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to);
+  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to) throw(std::exception);
 
   /// Throw exception when handles are check for validity
-  template <typename T> void invalidHandleError()  {
+  template <typename T> void invalidHandleError()  throw(std::exception) {
     invalidHandleError(typeid(T));
   }
 
   /// Throw exception when handles are check for validity
-  void notImplemented(const std::string& msg);
+  void notImplemented(const std::string& msg)  throw(std::exception);
 
   /// Class to perform dynamic casts using unknown pointers.
   /** @class ComponentCast Primitives.h DD4hep/Primitives.h
@@ -103,11 +106,11 @@ namespace DD4hep {
     }
 
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_dynCast(const ComponentCast& to, const void* ptr) const;
+    void* apply_dynCast(const ComponentCast& to, const void* ptr) const   throw(std::exception);
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_upCast(const ComponentCast& to, const void* ptr) const;
+    void* apply_upCast(const ComponentCast& to, const void* ptr) const    throw(std::exception);
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_downCast(const ComponentCast& to, const void* ptr) const;
+    void* apply_downCast(const ComponentCast& to, const void* ptr) const  throw(std::exception);
   };
 
 
@@ -294,6 +297,112 @@ namespace DD4hep {
     return ReferenceObjects<typename M::value_type>();
   }
 
+  /// Member function call-functor with no arguments
+  template <typename R, typename T> struct ApplyMemFunc {
+    typedef R (T::*memfunc_t)();
+    memfunc_t func;
+    ApplyMemFunc(memfunc_t f) : func(f)  {}
+    void operator()(T* p)  const {  if (p) { (p->*func)(); } }
+  };
+
+  /// Member function call-functor with 1 argument
+  template <typename R, typename T, typename A1> struct ApplyMemFunc1 {
+    typedef R (T::*memfunc_t)(A1 a1);
+    memfunc_t func;
+    A1& arg1;
+    ApplyMemFunc1(memfunc_t f, A1& a1) : func(f), arg1(a1)  {}
+    void operator()(T* p)  const {  if ( p ) { (p->*func)(arg1); } }
+  };
+
+  /// Member function call-functor with 2 arguments
+  template <typename R, typename T, typename A1, typename A2> struct ApplyMemFunc2 {
+    typedef R (T::*memfunc_t)(A1 a1, A2 a2);
+    memfunc_t func;
+    A1& arg1;
+    A2& arg2;
+    ApplyMemFunc2(memfunc_t f, A1& a1, A2& a2) : func(f), arg1(a1), arg2(a2)  {}
+    void operator()( T* p)  const {  if ( p ) { (p->*func)(arg1, arg2); } }
+  };
+
+  /// Member function call-functor with no arguments (const version)
+  template <typename R, typename T> struct ApplyMemFuncConst {
+    typedef R (T::*memfunc_t)() const;
+    memfunc_t func;
+    ApplyMemFuncConst(memfunc_t f) : func(f)  {}
+    void operator()(const T* p)  const {  if ( p ) { (p->*func)(); } }
+  };
+
+  /// Member function call-functor with 1 argument (const version)
+  template <typename R, typename T, typename A1> struct ApplyMemFuncConst1 {
+    typedef R (T::*memfunc_t)(A1 a1) const;
+    memfunc_t func;
+    A1& arg1;
+    ApplyMemFuncConst1(memfunc_t f, A1& a1) : func(f), arg1(a1)  {}
+    void operator()(const T* p)  const {  if ( p ) { (p->*func)(arg1); } }
+  };
+
+  /// Member function call-functor with 2 arguments (const version)
+  template <typename R, typename T, typename A1, typename A2> struct ApplyMemFuncConst2 {
+    typedef R (T::*memfunc_t)(A1 a1, A2 a2) const;
+    memfunc_t func;
+    A1& arg1;
+    A2& arg2;
+    ApplyMemFuncConst2(memfunc_t f, A1& a1, A2& a2) : func(f), arg1(a1), arg2(a2)  {}
+    void operator()(const T* p)  const {  if ( p ) { (p->*func)(arg1, arg2); } }
+  };
+
+  template <typename C, typename R, typename T>
+  void call_member_func(C& object, R (T::*pmf)())
+  {   std::for_each(object.begin(),object.end(),ApplyMemFunc<R,T>(pmf));    }
+
+  template <typename C, typename R, typename T>
+  void call_member_func(C& object, R (T::*pmf)() const)
+  {   std::for_each(object.begin(),object.end(),ApplyMemFuncConst<R,T>(pmf));    }
+
+  template <typename C, typename R, typename T, typename A1>
+  void call_member_func(C& object, R (T::*pmf)(A1 a1), A1 a1)
+  {   std::for_each(object.begin(),object.end(),ApplyMemFunc1<R,T,A1>(pmf,a1));    }
+  
+  template <typename C, typename R, typename T, typename A1>
+  void call_member_func(C& object, R (T::*pmf)(A1 a1) const, A1 a1)
+  {   std::for_each(object.begin(),object.end(),ApplyMemFuncConst1<R,T,A1>(pmf,a1));    }
+  
+  
+  template <typename C, typename R, typename T, typename A1, typename A2>
+  void call_member_func(C& object, R (T::*pmf)(A1 a1,A2 a2), A1 a1, A2 a2)
+  {   std::for_each(object.begin(),object.end(),ApplyMemFunc2<R,T,A1,A2>(pmf,a1,a1));    }
+  
+  template <typename C, typename R, typename T, typename A1, typename A2>
+  void call_member_func(C& object, R (T::*pmf)(A1 a1,A2 a2) const, A1 a1, A2 a2)
+  {   std::for_each(object.begin(),object.end(),ApplyMemFuncConst2<R,T,A1,A2>(pmf,a1,a2));    }
+  
+  /// Generic map Functor to act on second element
+  template <typename M, typename FCN> class Apply2nd {
+  public:
+    const FCN& func;
+    Apply2nd(const FCN& f) : func(f) {    }
+    void operator()(std::pair<typename M::key_type const, typename M::mapped_type>& p) const
+    {   (func)(p.second);    }
+  };
+
+  template <typename C, typename FCN> Apply2nd<C,FCN> apply__2nd_value(C&,const FCN& func)
+  {  return Apply2nd<C,FCN>(func);  }
+
+  template <typename C, typename R, typename T>
+  void apply2nd(C& object, R (T::*pmf)())  
+  {  std::for_each(object.begin(),object.end(),apply__2nd_value(object,ApplyMemFunc<R,T>(pmf)));  }
+
+  template <typename C, typename R, typename T, typename A1>
+  void apply2nd(C object, R (T::*pmf)(A1 a1), A1 a1)
+  {  std::for_each(object.begin(),object.end(),apply__2nd_value(object,ApplyMemFunc1<R,T,A1>(pmf,a1)));  }
+
+  template <typename C, typename R, typename T>
+  void apply2nd(C& object, R (T::*pmf)() const)  
+  {  std::for_each(object.begin(),object.end(),apply__2nd_value(object,ApplyMemFuncConst<R,T>(pmf)));  }
+
+  template <typename C, typename R, typename T, typename A1>
+  void apply2nd(C object, R (T::*pmf)(A1 a1) const, A1 a1)
+  {  std::for_each(object.begin(),object.end(),apply__2nd_value(object,ApplyMemFuncConst1<R,T,A1>(pmf,a1)));  }
 
   /// Data structure to manipulate a bitmask held by reference and represented by an integer
   /**

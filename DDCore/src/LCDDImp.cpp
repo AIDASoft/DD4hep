@@ -19,6 +19,7 @@
 #include "DD4hep/LCDDHelper.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/objects/VolumeManagerInterna.h"
+#include "DD4hep/objects/DetectorInterna.h"
 #include "LCDDImp.h"
 
 // C/C++ include files
@@ -50,10 +51,6 @@ using namespace DD4hep::Geometry;
 using namespace DD4hep;
 using namespace std;
 namespace {
-  struct TopDetElement: public DetElement {
-    TopDetElement(const string& nam) : DetElement(nam,/* "structure", */0) {
-    }
-  };
   struct TypePreserve {
     LCDDBuildType& m_t;
     TypePreserve(LCDDBuildType& t)
@@ -331,12 +328,13 @@ vector<string> LCDDImp::detectorTypes() const  {
 }
 
 /// Access a set of subdetectors according to the sensitive type.
-const vector<DetElement>& LCDDImp::detectors(const string& type)  {
+const vector<DetElement>& LCDDImp::detectors(const string& type, bool throw_exc)  {
   if ( m_manager->IsClosed() ) {
-    // DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
-    // if ( i != m_detectorTypes.end() ) return (*i).second;
-    // throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
-
+    if ( throw_exc )  {
+      DetectorTypeMap::const_iterator i=m_detectorTypes.find(type);
+      if ( i != m_detectorTypes.end() ) return (*i).second;
+      throw runtime_error("detectors("+type+"): Detectors of this type do not exist in the current setup!");
+    }
     // return empty vector instead of exception
     return m_detectorTypes[ type ] ;
   }
@@ -503,7 +501,7 @@ void LCDDImp::init() {
     m_materialVacuum = material("Vacuum");
 
     Volume world_vol("world_volume", worldSolid, m_materialAir);
-    m_world = TopDetElement("world");
+    m_world = DetElement(new WorldObject(*this,"world"));
     m_worldVol = world_vol;
     // Set the world volume to invisible.
     VisAttr worldVis("WorldVis");

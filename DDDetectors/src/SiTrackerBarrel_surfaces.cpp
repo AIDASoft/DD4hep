@@ -33,7 +33,7 @@ namespace{
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        double value = DD4hep::Geometry::_toDouble(++ptr);
+        double value = DD4hep::_toDouble(++ptr);
         if( name=="dimension" ) data.dimension = value ; 
         std::cout << "DD4hep_SiTrackerBarrelSurfacePlugin: argument[" << i << "] = " << name 
                   << " = " << value << std::endl;

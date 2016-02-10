@@ -18,9 +18,6 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-
     /// Helper routine called when unrelated types are assigned.
     template <typename T> void Handle<T>::bad_assignment(const std::type_info& from, const std::type_info& to) {
       invalidHandleAssignmentError(from,to);
@@ -47,42 +44,41 @@ namespace DD4hep {
       return 0; // We have thrown an exception before - does not harm!
     }
 
-  } /* End namespace Geometry    */
 }   /* End namespace DD4hep      */
 
 #define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
-  namespace DD4hep { namespace Geometry {                               \
-      template <> void Handle<X>::verifyObject() const {		\
-        increment_object_validations();					\
-        if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
-	  bad_assignment(typeid(*m_element), typeid(X));		\
-        }								\
-      }}}								\
-  template class DD4hep::Geometry::Handle<X>
+  namespace DD4hep {                                                    \
+    template <> void Handle<X>::verifyObject() const {		        \
+      increment_object_validations();					\
+      if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
+        bad_assignment(typeid(*m_element), typeid(X));		        \
+      }                                                                 \
+  }}                                                                    \
+  template class DD4hep::Handle<X>
 
 #define DD4HEP_INSTANTIATE_HANDLE_NAMED(X)                              \
-  namespace DD4hep { namespace Geometry {                               \
-      template <> const char* Handle<X>::name() const			\
-      { return this->m_element ? this->m_element->name.c_str() : ""; }	\
-      template <> void							\
-      Handle<X>::assign(X* p, const std::string& n, const std::string& t) { \
-        this->m_element = p;						\
-        p->name = n;							\
-        p->type = t;							\
-      }									\
-      template <> void Handle<X>::verifyObject() const {		\
-        increment_object_validations();                                 \
-        if (m_element && dynamic_cast<X*>((NamedObject*)m_element) == 0) { \
-	  bad_assignment(typeid(*m_element), typeid(X));		\
-        }								\
-      }}}								\
-  template class DD4hep::Geometry::Handle<X>
+  namespace DD4hep {                                                    \
+    template <> const char* Handle<X>::name() const			\
+    { return this->m_element ? this->m_element->name.c_str() : ""; }	\
+    template <> void							\
+    Handle<X>::assign(X* p, const std::string& n, const std::string& t){\
+      this->m_element = p;						\
+      p->name = n;							\
+      p->type = t;							\
+    }									\
+    template <> void Handle<X>::verifyObject() const {		        \
+      increment_object_validations();                                   \
+      if (m_element && dynamic_cast<X*>((NamedObject*)m_element) == 0) {\
+        bad_assignment(typeid(*m_element), typeid(X));		        \
+      }                                                                 \
+    }}                                                                  \
+  template class DD4hep::Handle<X>
 
 #define DD4HEP_INSTANTIATE_HANDLE_UNNAMED(X)                            \
-  namespace DD4hep { namespace Geometry {                               \
-					 template <> void		\
-					 Handle<X>::assign(X* n, const std::string&, const std::string&) \
-					 { this->m_element = n;}	\
-					 template <> const char* Handle<X>::name() const { return ""; }	\
-					 }}				\
+  namespace DD4hep {                                                    \
+    template <> void		                                        \
+    Handle<X>::assign(X* n, const std::string&, const std::string&)     \
+    { this->m_element = n;}	                                        \
+    template <> const char* Handle<X>::name() const { return ""; }	\
+  }                                                                     \
   DD4HEP_INSTANTIATE_HANDLE(X)

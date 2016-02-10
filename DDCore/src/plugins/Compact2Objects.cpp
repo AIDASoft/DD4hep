@@ -576,7 +576,7 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
             std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(parameterString);
             for (std::vector<std::string>::const_iterator j = elements.begin(); j != elements.end(); ++j) {
               if ((*j).empty()) continue;
-              valueVector.push_back(DD4hep::Geometry::_toDouble((*j)));
+              valueVector.push_back(DD4hep::_toDouble((*j)));
             }
 
             typedef DD4hep::DDSegmentation::TypedSegmentationParameter< std::vector<double> > ParDouVec;

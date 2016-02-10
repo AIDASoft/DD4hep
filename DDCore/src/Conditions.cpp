@@ -20,25 +20,58 @@
 #include "DD4hep/objects/ConditionsInterna.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace DD4hep::Conditions;
 
-namespace {
-  void set_condition_values(Condition::Object* c, const Condition::Entry* e)   {
-    c->type = e->type;
-    c->value = e->value;
-    c->comment = "----";
-    c->address = "----";
-    c->validity = e->validity;
-    c->detector = e->detector;
-  }
-  Condition make_condition(const Condition::Entry* e)   {
-    Condition c(e->name);
-    set_condition_values(c.ptr(),e);
-    return c;
-  }
+std::string IOVType::str()  const   {
+  char text[256];
+  ::snprintf(text,sizeof(text),"%s(%d)",name.c_str(),int(type));
+  return text;
 }
 
+/// Initializing constructor: Does not set reference to IOVType !
+IOV::IOV() : iovType(0), keyData(0,0), optData(0)  {
+  type = int(IOVType::UNKNOWN_IOV);
+}
+
+/// Initializing constructor
+IOV::IOV(const IOVType* typ) : iovType(typ), keyData(0,0), optData(0)  {
+  type = typ ? typ->type : int(IOVType::UNKNOWN_IOV);
+}
+
+/// Standard Destructor
+IOV::~IOV()  {
+}
+
+/// Move the data content: 'from' will be reset to NULL
+void IOV::move(IOV& from)   {
+  ::memcpy(this,&from,sizeof(IOV));
+  from.keyData.first = from.keyData.second = from.optData = 0;
+  from.type = int(IOVType::UNKNOWN_IOV);
+  from.iovType = 0;
+}
+
+/// Create string representation of the IOV
+string IOV::str()  const  {
+  char text[256];
+  if ( iovType )  {
+    ::snprintf(text,sizeof(text),"%s(%d):[%d-%d]",
+               iovType->name.c_str(),int(iovType->type),keyData.first, keyData.second);
+  }
+  else  {
+    ::snprintf(text,sizeof(text),"%d:[%d-%d]",type,keyData.first, keyData.second);
+  }
+  return text;
+}
+
+/// Check for validity containment
+bool IOV::contains(const IOV& iov)  const   {
+  if ( key_is_contained(iov.keyData,keyData) )  {
+    unsigned int typ1 = iov.iovType ? iov.iovType->type : iov.type;
+    unsigned int typ2 = iovType ? iovType->type : type;
+    return typ1 == typ2;
+  }
+  return false;
+}
 
 /// Standard initializing constructor
 Block::Block() : grammar(0), pointer(0)   {
@@ -49,7 +82,7 @@ Block::~Block()   {
 }
 
 /// Create data block from string representation
-void Block::fromString(const std::string& rep)   {
+void Block::fromString(const string& rep)   {
   if ( pointer && grammar )  {
     grammar->fromString(pointer,rep);
     return;
@@ -58,7 +91,7 @@ void Block::fromString(const std::string& rep)   {
 }
 
 /// Create string representation of the data block
-std::string Block::str()   {
+string Block::str()   {
   if ( pointer && grammar )  {
     return grammar->str(pointer);
   }
@@ -66,8 +99,10 @@ std::string Block::str()   {
 }
 
 /// Initializing constructor
-Condition::Condition(const string& nam) : Handle<Object>()  {
-  assign(new ConditionsInterna::ConditionObject(),nam,"condition");
+Condition::Condition(const string& nam,const string& typ) : Handle<Object>()  {
+  Object* o = new Object();
+  assign(o,nam,typ);
+  o->hash = hash32(nam);
 }
 
 /// Assignment operator
@@ -87,13 +122,13 @@ Block& Condition::block() const   {
 }
 
 /// Access the IOV type
-int Condition::iovType() const   {
-  return access()->iov.type;
+const IOVType& Condition::iovType() const   {
+  return *(access()->iov_type());
 }
 
 /// Access the IOV block
-Condition::IOV& Condition::iov() const   {
-  return access()->iov;
+const IOV& Condition::iov() const   {
+  return *(access()->iov_data());
 }
 
 /// Access the name of the condition
@@ -148,81 +183,54 @@ const DD4hep::BasicGrammar& Condition::descriptor() const   {
   return *g;
 }
 
-/// Replace the data block of the condition with a new value. Free old data
-Condition& Condition::replace(Entry* new_condition)    {
-  set_condition_values(access(),new_condition);
-  return rebind();
-}
-
 /// Re-evaluate the conditions data according to the previous bound type definition
 Condition& Condition::rebind()    {
   Object* o = access();
   o->data.fromString(o->value);
-  o->iov.fromString(o->validity);
+  //o->iov->fromString(o->validity);
   printout(INFO,"Condition","+++ condition:%s : %s rebinding value:%s",
            detector().path().c_str(), name().c_str(), o->value.c_str());
   return *this;
 }
 
 /// Clear all conditions. Auto-delete of all existing entries
-void Conditions::removeElements() const   {
+void Container::removeElements() const   {
   if ( !isValid() )   {
-    invalidHandleError<Conditions>();
+    invalidHandleError<Container>();
   }
   data<Object>()->removeElements();
 }
 
 /// Access the number of conditons available for this detector element
-size_t Conditions::count() const   {
+size_t Container::count() const   {
   if ( !isValid() )   {
-    invalidHandleError<Conditions>();
+    invalidHandleError<Container>();
   }
-  return data<Object>()->entries.size();
+  return data<Object>()->size();
 }
 
 /// Access the full map of conditons
-Conditions::Entries& Conditions::entries() const  {
+Container::Entries& Container::entries() const  {
   if ( !isValid() )   {
-    invalidHandleError<Conditions>();
+    invalidHandleError<Container>();
   }
-  return data<Object>()->entries;
+  return data<Object>()->elements();
 }
 
-/** Set a single conditions value (eventually existing entries are overwritten)
- * Note: Passing a valid handle also passes ownership!!!
- *
- * Failure return 0 in case an invalid handle is present
- * Successful insertion returns 1
- * Successful overwriting an existing value returns 3
- */
-int Conditions::set(Entry* cond)   {
-  int status = 0;
-  if ( cond )  {
-    Condition c;
-    Object* o = 0;
-    status = 1;
-    if ( isValid() )   {
-      o = data<Object>();
-      Entries::iterator i = o->entries.find(cond->name);
-      if ( i != o->entries.end() )  {
-        (*i).second.replace(cond);
-        c = (*i).second;
-        status = 2;
-      }
-    }
-    else  {
-      DetElement det(cond->detector);
-      assign(o=new ConditionsInterna::ConditionContainer(),cond->name,cond->detector.name());
-      det._data().conditions = *this;  // Ugly. Need to fix this....
-    }
-    if ( status == 1 )   {
-      c = make_condition(cond);
-      o->entries.insert(make_pair(cond->name,c));
-    }
-    printout(INFO,"Conditions","+++ %s condition:%s : %s value:%s",
-             (status==1) ? "Added NEW" : "Replaced existing",
-             c.detector().path().c_str(), c.name().c_str(), c->value.c_str());
-    delete cond;
+/// Access to condition objects
+Condition Container::operator[](const std::string& key)  {
+  return this->operator[](hash32(key));
+}
+
+/// Access to condition objects
+Condition Container::operator[](int condition_hash)  {
+  Object* c = ptr();
+  if ( !c )   {
+    invalidHandleError<Container>();
   }
-  return status;
+  Entries::iterator i=c->elements().find(condition_hash);
+  if ( i != c->elements().end() ) return (*i).second;
+  except("ConditionContainer",
+         "No condition with key 0x%08X present!",condition_hash);
+  return Condition();
 }

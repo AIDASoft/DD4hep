@@ -25,10 +25,10 @@
 namespace DD4hep {
 
   class NamedObject;
+  template <typename T> class Handle;
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry  {
-    template <typename T> class Handle;
     class LCDD;
   }
   /// Namespace for the AIDA detector description toolkit supporting XML utilities
@@ -42,7 +42,7 @@ namespace DD4hep {
   /// Factory base class implementing some utilities
   struct PluginFactoryBase  {
     typedef Geometry::LCDD lcdd_t;
-    typedef Geometry::Handle<NamedObject> ref_t;
+    typedef Handle<NamedObject> ref_t;
     typedef XML::Handle_t xml_h;
     typedef XML::Element  xml_e;
     typedef std::string   str_t;

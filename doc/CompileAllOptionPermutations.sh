@@ -7,7 +7,8 @@ INSTALL_XERCESC=${SW}/xercesc;
 INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
 GEANT_VERSION=10.01.p02;
-ROOT_VERSION=6.04.00;
+ROOT_VERSION=5.34.25
+##ROOT_VERSION=6.04.00;
 # ==============================================================================
 # Parse arguments
 # ==============================================================================
@@ -131,7 +132,7 @@ build_all()
                     OPTS="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=ON \
+                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=OFF \
                     -DROOTSYS=${ROOTSYS} -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
 		    CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ${CHECKOUT};";
                     make_build;
@@ -142,7 +143,7 @@ build_all()
                     OPTS_ex="`make_opt ${DOGEANT4} -DDD4HEP_USE_GEANT4 -DGeant4_DIR=${INSTALL_G4}`\
 		    `make_opt ${DOLCIO}     -DDD4HEP_USE_LCIO    -DLCIO_DIR=${INSTALL_LCIO}` \
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
-                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=ON \
+                    -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=OFF \
                     -DROOTSYS=${ROOTSYS}";
 		    source ${DD4hep_DIR}/bin/thisdd4hep.sh;
    		    CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";

@@ -74,7 +74,7 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
   xml_coll_t(e,"arg").for_each(Converter<arg>(lcdd,&args));
   for(vector<string>::const_iterator i=args.begin(); i!=args.end();++i)
     cargs.push_back((*i).c_str());
-  printout(INFO,"Converter<plugin>","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
+  printout(INFO,"ConverterPlugin","+++ Now executing plugin:%s [%d args]",nam.c_str(),int(cargs.size()));
   lcdd.apply(nam.c_str(),int(cargs.size()),(char**)&cargs[0]);
 }
 
@@ -84,7 +84,7 @@ template <> void Converter<plugin>::operator()(xml_h e)  const  {
  *  @version 1.0
  *  @date    01/04/2014
  */
-template <> void Converter<include_file>::operator()(xml_h element) const {
+template <> void Converter<include_file>::operator()(xml_h element) const   {
   XML::DocumentHolder doc(XML::DocumentHandler().load(element, element.attr_value(_U(ref))));
   xml_h node = doc.root();
   string tag = node.tag();

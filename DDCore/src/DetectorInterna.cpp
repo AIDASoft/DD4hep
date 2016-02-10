@@ -22,6 +22,14 @@
 #include "TGeoMatrix.h"
 #include "TGeoManager.h"
 #include "DD4hep/objects/DetectorInterna.h"
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+  /// Namespace for the conditions part of the AIDA detector description toolkit
+  namespace Conditions   {
+    // Forward declarations
+    class ConditionsManager;
+  }
+}
 
 using namespace std;
 using namespace DD4hep;
@@ -29,6 +37,7 @@ using namespace DD4hep::Geometry;
 typedef DetectorTools::PlacementPath PlacementPath;
 typedef DetectorTools::ElementPath   ElementPath;
 
+DD4HEP_INSTANTIATE_HANDLE_NAMED(WorldObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(DetElementObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(SensitiveDetectorObject);
 
@@ -85,7 +94,8 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 DetElementObject::~DetElementObject() {
   for_each(children.begin(), children.end(), destroyHandles(children));
   deletePtr (referenceTrafo);
-  destroyHandle(conditions);
+  if ( conditions.isValid() ) delete conditions.ptr();
+  conditions = ConditionsContainer();
   alignment.clear();
   placement.clear();
   idealPlace.clear();
@@ -102,7 +112,7 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->flag = 0;
   obj->combineHits = combineHits;
   obj->alignment = Alignment();
-  obj->conditions = Conditions();
+  obj->conditions = ConditionsContainer();
   obj->parent = DetElement();
   if ( (flg & DetElement::COPY_PLACEMENT) == DetElement::COPY_PLACEMENT )  {
     obj->placement  = placement;
@@ -259,8 +269,29 @@ void DetElementObject::update(unsigned int tags, void* param)   {
     revalidate(parent_world_trafo);
   }
   for(UpdateCallbacks::const_iterator i=updateCalls.begin(); i != updateCalls.end(); ++i)  {
-    if ( (tags&((*i).second)) == tags )  {
+    if ( (tags&((*i).second)) )  {
       (*i).first.execute(args);
     }
   }
+}
+
+/// Initializing constructor
+WorldObject::WorldObject(LCDD& _lcdd, const string& nam) 
+  : DetElementObject(nam,0), lcdd(&_lcdd), conditionsLoader(0)
+{
+}
+
+/// Internal object destructor: release extension object(s)
+WorldObject::~WorldObject()  {
+}
+
+/// Access the conditions loading
+DetElement::Condition 
+WorldObject::getCondition(DetElement child,const string& key, const IOV& iov)  {
+  if ( conditionsLoader )   {
+    return conditionsLoader->get(child,key,iov);
+  }
+  
+  except("Conditions","+++ No ConditionsLoader registered to this LCDD instance!");
+  return DetElement::Condition();
 }

@@ -17,6 +17,9 @@
 // Framework include files
 #include "DD4hep/Handle.h"
 
+// C/C++ include files
+#include <vector>
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
@@ -25,17 +28,98 @@ namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
-
     // Forward declarations
     class DetElement;
+    class LCDD;
+  }
+
+  /// Namespace for the conditions part of the AIDA detector description toolkit
+  namespace Conditions   {
+
+    // The DetElement is a central object. We alias it here.
+    using Geometry::DetElement;
+    using Geometry::LCDD;
+
+    // Forward declarations
+    class ConditionsManager;
+    class ConditionsLoader;
+    class IOVType;
+    class IOV;
 
     /// Conditions intrnal namespace
-    namespace ConditionsInterna  {
+    namespace Interna  {
       class ConditionContainer;
       class ConditionObject;
-      class Entry;
-      class IOV;
     }
+
+    class IOVType   {
+    public:
+      enum { UNKNOWN_IOV = ~0x0 } _IOVTypes;
+
+      unsigned int type;
+      std::string  name;
+      IOVType() : type(UNKNOWN_IOV), name() {}
+      ~IOVType() {}
+      std::string str() const;
+    };
+
+    /// Class describing the interval of validty
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class IOV   {
+      friend class Condition;
+    private:
+      /// No IOC copies!
+      explicit IOV(const IOV&) {}
+      /// Initializing constructor: Does not set reference to IOVType !
+      explicit IOV();
+    public:
+      /// Key definition
+      typedef std::pair<int,int> Key;
+
+      const IOVType* iovType;
+      Key            keyData;
+      int            optData;
+      /// IOV buffer type: Must be a bitmap!
+      unsigned int   type;
+
+      /// Initializing constructor
+      explicit IOV(const IOVType* typ);
+      /// Standard Destructor
+      ~IOV();
+      /// Move the data content: 'from' will be reset to NULL
+      void move(IOV& from);
+      /// Create string representation of the IOV
+      std::string str() const;
+      /// Check if the IOV corresponds to a range
+      bool has_range() const    {  return keyData.first != keyData.second;  }
+      /// Check if the IOV corresponds to a range
+      bool is_discrete() const  {  return keyData.first == keyData.second;  }
+      /// Get the local key of the IOV
+      Key  key() const {  return keyData; }
+      /// Check for validity containment
+      /** Check if the caller 'iov' is of the same type and the range 
+       *  is fully conained by the caller.
+       */
+      bool contains(const IOV& iov)  const;
+      static bool same_type(const IOV& iov, const IOV& test)  {
+        unsigned int typ1 = iov.iovType ? iov.iovType->type : iov.type;
+        unsigned int typ2 = test.iovType ? test.iovType->type : test.type;
+        return typ1 == typ2;
+      }
+      static bool key_is_contained(const IOV::Key& key, const IOV::Key& test)
+      {   return key.first >= test.first && key.second <= test.second;      }
+      static bool key_overlaps_lower_end(const IOV::Key& key, const IOV::Key& test)
+      {   return key.first <= test.second && key.first >= test.first;       }
+      static bool key_overlaps_higher_end(const IOV::Key& key, const IOV::Key& test)
+      {   return key.second >= test.first && key.second <= test.second;     }
+
+    };
+    
 
     /// Class describing an opaque conditions data block
     /**
@@ -44,23 +128,25 @@ namespace DD4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_CONDITIONS
      */
     class Block   {
       /// Access only through the conditions class!
       friend class Condition;
+
     private:
     protected:
       /// Standard initializing constructor
       Block();
       /// Standard Destructor
       virtual ~Block();
+
     protected:
       /// Data type
       const BasicGrammar* grammar;
       /// Pointer to object data
       void* pointer;
+
     public:
       /// Create data block from string representation
       void fromString(const std::string& rep);
@@ -79,15 +165,13 @@ namespace DD4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class Condition: public Handle<ConditionsInterna::ConditionObject> {
+    class Condition: public Handle<Interna::ConditionObject> {
     public:
-      typedef ConditionsInterna::ConditionObject Object;
-      typedef ConditionsInterna::Entry Entry;
-      typedef ConditionsInterna::IOV IOV;
+      typedef Interna::ConditionObject Object;
 
+    public:
       /// Default constructor
       Condition();
       /// Copy constructor
@@ -99,7 +183,7 @@ namespace DD4hep {
         : Handle<Object>(e) {
       }
       /// Initializing constructor
-      Condition(const std::string& name);
+      Condition(const std::string& name, const std::string& type);
       /// Assignment operator
       Condition& operator=(const Condition& c);
 
@@ -111,9 +195,9 @@ namespace DD4hep {
 
       /** Interval of validity            */
       /// Access the IOV type
-      int iovType()  const;
+      const IOVType& iovType()  const;
       /// Access the IOV block
-      IOV& iov()  const;
+      const IOV& iov()  const;
 
       /** Direct data items in string form */
       /// Access the name of the condition
@@ -129,8 +213,7 @@ namespace DD4hep {
       /// Access the address string [e.g. database identifier]
       const std::string& address()  const;
       /// Access the hosting detector element
-      DetElement detector()  const;
-
+      Geometry::DetElement detector()  const;
 
       /** Conditions meta-data   */
       /// Access to the type information
@@ -139,8 +222,6 @@ namespace DD4hep {
       const BasicGrammar& descriptor() const;
 
       /** Conditions handling */
-      /// Replace the data block of the condition with a new value. Free old data
-      Condition& replace(Entry* new_condition);
       /// Re-evaluate the conditions data according to the previous bound type definition
       Condition& rebind();
 
@@ -176,49 +257,44 @@ namespace DD4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class Conditions : public Handle<ConditionsInterna::ConditionContainer> {
+    class Container : public Handle<Interna::ConditionContainer> {
     public:
       /// Standard object type
-      typedef ConditionsInterna::ConditionContainer Object;
-      /// Local helper definition
-      typedef ConditionsInterna::Entry     Entry;
-
+      typedef Interna::ConditionContainer Object;
       /// Definition of the conditions container of this detector element
-      typedef std::map<std::string, Condition> Entries;
+      //typedef std::map<std::string, Condition> Entries;
+      typedef std::map<int, Condition> Entries;
 
+    public:
       /// Default constructor
-      Conditions();
+      Container();
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Conditions(const Conditions& c)
-        : Handle<Object>(c) {
-      }
+      template <typename Q> Container(const Container& c) : Handle<Object>(c) {}
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Conditions(const Handle<Q>& e)
-        : Handle<Object>(e) {
-      }
+      template <typename Q> Container(const Handle<Q>& e) : Handle<Object>(e) {}
       /// Access the number of conditons available for this detector element
       size_t count() const;
       /// Access the full map of conditons
       Entries& entries() const;
-      /// Clear all conditions. Auto-delete of all existing entries
+      /// Clear all attached DetElement conditions.
       void removeElements() const;
-      /** Set a single conditions value (eventually existing entries are overwritten)
-       * Note: Passing a valid handle also passes ownership!!!
-       *
-       * Failure return 0 in case an invalid handle is present
-       * Successful insertion returns 1
-       * Successful overwriting an existing value returns 3
-       */
-      int set(Entry* data);
+      /// Access to condition objects. No loading undertaken. The condition must be present
+      Condition operator[](const std::string& key);
+      /// Access to condition objects directly by their hash key. 
+      /// No loading undertaken. The condition must be present
+      Condition operator[](int hash_key);
     };
 
     /// Default constructor
-    inline Conditions::Conditions() : Handle<Object>() {
+    inline Container::Container() : Handle<Object>() {
     }
 
-  } /* End namespace Geometry               */
+    // Utility type definitions
+    typedef std::vector<Condition> RangeConditions;
+    typedef std::pair<RangeConditions,bool> RangeStatus;
+
+  } /* End namespace Conditions             */
 } /* End namespace DD4hep                   */
 #endif    /* DD4HEP_GEOMETRY_CONDITION_H    */

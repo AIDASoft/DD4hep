@@ -93,7 +93,7 @@ namespace{
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        double value = DD4hep::Geometry::_toDouble(++ptr);
+        double value = DD4hep::_toDouble(++ptr);
         
 	printout(DD4hep::DEBUG,"DD4hep_CaloFaceEndcapSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
 

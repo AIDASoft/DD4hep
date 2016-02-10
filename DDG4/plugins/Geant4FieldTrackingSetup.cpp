@@ -176,7 +176,7 @@ namespace {
   }
 
   double Geant4SetupPropertyMap::toDouble(const string& key) const {
-    return Geometry::_toDouble(this->value(key));
+    return _toDouble(this->value(key));
   }
 
 }
@@ -236,7 +236,7 @@ static long setup_fields(lcdd_t& lcdd, const DD4hep::Geometry::GeoHandler& /* cn
       lcdd_t::PropertyValues::const_iterator iV = values.find("min_chord_step");
       eq_typ      = pm.value("equation");
       stepper_typ = pm.value("stepper");
-      min_chord_step = Geometry::_toDouble((iV==values.end()) ? string("1e-2 * mm") : (*iV).second);
+      min_chord_step = _toDouble((iV==values.end()) ? string("1e-2 * mm") : (*iV).second);
       if ( pm["eps_min"] ) eps_min = pm.toDouble("eps_min");
       if ( pm["eps_max"] ) eps_max = pm.toDouble("eps_max");
       if ( pm["delta_chord"] ) delta_chord = pm.toDouble("delta_chord");

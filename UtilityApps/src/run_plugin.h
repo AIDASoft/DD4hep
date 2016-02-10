@@ -76,7 +76,8 @@ namespace {
       "        -build_type <number/string> Specify the build type                         \n"
       "                     [OPTIONAL]     MUST come immediately after the -compact input.\n"
       "                                    Default for each file is: BUILD_DEFAULT [=1]   \n"
-      "                                    Allowed values: BUILD_SIMU [=1], BUILD_RECO [=2], BUILD_DISPLAY [=3] or BUILD_ENVELOPE [=4]\n"
+      "                                    Allowed: BUILD_SIMU [=1], BUILD_RECO [=2],     \n"
+      "                                    BUILD_DISPLAY [=3] or BUILD_ENVELOPE [=4]      \n"
       "        -destroy     [OPTIONAL]     Force destruction of the LCDD instance         \n"
       "                                    before exiting the application                 \n"
       "        -volmgr      [OPTIONAL]     Load and populate phys.volume manager to       \n"
@@ -84,7 +85,11 @@ namespace {
       "        -print      <number/string> Specify output level. Default: INFO(=3)        \n"
       "                     [OPTIONAL]     Allowed values: VERBOSE(=1), DEBUG(=2),        \n"
       "                                    INFO(=3), WARNING(=4), ERROR(=5), FATAL(=6)    \n"
-      "                                    The lower the level, the more printout...      \n";
+      "                                    The lower the level, the more printout...      \n"
+      "        -plugin <name> <args>       Execute plugin <name> after loading geometry.  \n"
+      "                                    All arguments following until the next '-'     \n"
+      "                                    are considered as arguments to the plugin.     \n"
+      " ";
     return cout;
   }
 
@@ -100,14 +105,15 @@ namespace {
   }
 
   struct Args  {
-    bool        volmgr, dry_run, destroy;
+    bool        volmgr, dry_run, destroy, interpreter;
     int         print;
     std::vector<const char*> geo_files, build_types;
-    
+    std::vector<std::vector<const char*> > plugins;
     Args() {
       volmgr  = false;
       dry_run = false;
       destroy = false;
+      interpreter = true;
       print   = DD4hep::INFO;
     }
     int handle(int& i, int argc, char** argv)    {
@@ -127,12 +133,56 @@ namespace {
         DD4hep::setPrintLevel(DD4hep::PrintLevel(print = decodePrintLevel(argv[++i])));
       else if ( strncmp(argv[i],"-destroy",5)==0 )
         destroy = true;
+      else if ( strncmp(argv[i],"-no-destroy",8)==0 )
+        destroy = false;
       else if ( strncmp(argv[i],"-volmgr",4)==0 )
         volmgr = true;
+      else if ( strncmp(argv[i],"-no-volmgr",7)==0 )
+        volmgr = false;
+      else if ( strncmp(argv[i],"-interpreter",6)==0 )
+        interpreter = true;
+      else if ( strncmp(argv[i],"-no-interpreter",7)==0 )
+        interpreter = false;
+      else if ( strncmp(argv[i],"-plugin",5)==0 )   {
+        // Need to interprete plugin args here locally.....
+        plugins.push_back(std::vector<const char*>());
+        plugins.back().push_back(argv[++i]);
+        for(; i<argc; ++i)   {
+          if ( argv[i][0]=='-' ) { --i; break; }
+          plugins.back().push_back(argv[i]);
+        }
+      }
       else 
         return 0;
       return 1;
     }
+
+    long run(LCDD& lcdd, const char* name)  {
+      pair<int, char**> a(0,0);
+      long result;
+      for(size_t i=0; i<plugins.size(); ++i)   {
+        std::vector<const char*>& plug=plugins[i];
+        result = run_plugin(lcdd,plug[0],plug.size()-1,(char**)(plug.size()>1 ? &plug[1] : 0));
+        if ( result == EINVAL )   {
+          cout << "FAILED to execute DD4hep plugin: '" << plug[0] 
+               << "' with args (" << (plug.size()-1) << ") :[ ";
+          for(size_t j=1; j<plug.size(); ++j)   {
+            cout << plug[j] << " ";
+          }
+          cout << "]" << endl;
+          usage_default(name);
+        }
+        cout << "Executed DD4hep plugin: '" << plug[0]
+             << "' with args (" << (plug.size()-1) << ") :[ ";
+        for(size_t j=1; j<plug.size(); ++j)   {
+          cout << plug[j] << " ";
+        }
+        cout << "]" << endl;
+      }
+      result = run_plugin(lcdd,name,a.first,a.second);
+      return result;
+    }
+
     int decodePrintLevel(const std::string& val)   {
       switch(::toupper(val[0]))  {
       case '1':
@@ -196,11 +246,16 @@ namespace {
 
     // Create an interactive ROOT application
     if ( !args.dry_run ) {
+      long result = 0;
       pair<int, char**> a(0,0);
-      TRint app(name, &a.first, a.second);
-      long result = run_plugin(lcdd,name,a.first,a.second);
+      if ( args.interpreter )   {
+        TRint app(name, &a.first, a.second);
+        result = args.run(lcdd,name);
+        if ( result != EINVAL ) app.Run();
+      }
+      else
+        result = args.run(lcdd,name);
       if ( result == EINVAL ) usage_default(name);
-      app.Run();
     }
     else {
       cout << "The geometry was loaded. Application now exiting." << endl;

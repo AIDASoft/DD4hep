@@ -47,12 +47,16 @@ namespace DD4hep {
     public: 
       /// Result set definition
       typedef std::vector<DetElement> Result;
+#ifndef __CINT__
       /// Reference to main detector description object
       LCDD& lcdd;
+#endif
 
     public:
+#ifndef __CINT__
       /// Default constructor
       DetectorSelector(LCDD& _lcdd) : lcdd(_lcdd)  {}
+#endif
       /// Default destructor
       ~DetectorSelector()  {}
 

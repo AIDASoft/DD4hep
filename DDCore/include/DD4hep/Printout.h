@@ -32,6 +32,8 @@ namespace DD4hep {
 
   // Forward declarations
   class NamedObject;
+  template <typename T> class Handle;
+  typedef Handle<NamedObject> Ref_t;
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
@@ -41,8 +43,6 @@ namespace DD4hep {
     class VisAttr;
     class DetElement;
     class PlacedVolume;
-    template <typename T> class Handle;
-    typedef Handle<NamedObject> Ref_t;
   }
 
   enum PrintLevel {
@@ -233,7 +233,7 @@ namespace DD4hep {
    */
   template <typename T> struct PrintMap {
     typedef T item_type;
-    typedef const std::map<std::string, Geometry::Ref_t> cont_type;
+    typedef const std::map<std::string, Ref_t> cont_type;
 
     /// Reference to the detector description object
     const Geometry::LCDD* lcdd;

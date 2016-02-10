@@ -10,7 +10,7 @@
 #
 #==========================================================================
 dd4hep_package(    DDCond
-  USES             DDCore
+  USES             BOOST DDCore
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDCond)
 

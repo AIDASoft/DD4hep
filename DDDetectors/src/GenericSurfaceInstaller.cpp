@@ -96,7 +96,7 @@ namespace{
             char* ptr = ::strchr(argv[i],'=');
             if ( ptr )  {
                 std::string name( argv[i] , ptr ) ;
-                value = DD4hep::Geometry::_toDouble(++ptr);
+                value = DD4hep::_toDouble(++ptr);
                 std::cout << "DD4hep_GenericSurfaceInstallerPlugin: argument[" << i << "] = " << name 
                 << " = " << value << std::endl;
                 if( name=="dimension" ) data.dimension = value ; 

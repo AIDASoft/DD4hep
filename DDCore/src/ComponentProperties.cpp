@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -15,7 +15,7 @@
 // Framework include files
 #include "DD4hep/Printout.h"
 #include "DD4hep/BasicGrammar.h"
-#include "DDG4/ComponentProperties.h"
+#include "DD4hep/ComponentProperties.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -215,6 +215,24 @@ void PropertyManager::dump() const {
   }
 }
 
+/// Standard PropertyConfigurable constructor
+PropertyConfigurable::PropertyConfigurable()  {
+}
+
+/// Default PropertyConfigurable destructor
+PropertyConfigurable::~PropertyConfigurable()   {
+}
+
+/// Check property for existence
+bool PropertyConfigurable::hasProperty(const string& nam) const    {
+  return m_properties.exists(nam);
+}
+
+/// Access single property
+Property& PropertyConfigurable::property(const string& nam)   {
+  return properties()[nam];
+}
+
 namespace DD4hep { 
   namespace Parsers {
     int parse(Property& result, const std::string& input) {
@@ -239,7 +257,7 @@ namespace DD4hep {
 #include "Math/Vector4D.h"
 
 #include "DD4hep/objects/BasicGrammar_inl.h"
-#include "DDG4/ComponentProperties_inl.h"
+#include "DD4hep/ComponentProperties_inl.h"
 DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(Property)
 
 namespace DD4hep {

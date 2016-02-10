@@ -14,7 +14,9 @@
 
 // Framework include files
 #include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "DD4hep/DetectorTools.h"
+#include "DD4hep/World.h"
 #include "DD4hep/LCDD.h"
 
 using namespace std;
@@ -139,8 +141,29 @@ Alignment DetElement::surveyAlignment() const  {
 }
 
 /// Access to the conditions information
-Conditions DetElement::conditions() const  {
-  return access()->conditions;
+DetElement::ConditionsContainer DetElement::conditions() const  {
+  Object* o = access();
+  if ( o->conditions.isValid() ) return o->conditions;
+  o->conditions.assign(new ConditionsContainer::Object(),"conditions","");
+  o->conditions->detector = *this;
+  return o->conditions;
+}
+
+/// Access to the conditions information
+DetElement::Condition
+DetElement::condition(const std::string& key) const   {
+  return access()->conditions[key];
+}
+
+/// Access to condition objects. If not present, load condition.
+DetElement::Condition
+DetElement::condition(const std::string& key, const IOV& iov)   {
+  typedef DetElement::ConditionsContainer::Object::Entries _E;
+  _E& ents = conditions()->entries;
+  _E::iterator i = ents.find(hash32(key));
+  if ( i != ents.end() ) return (*i).second;
+  World world(Geometry::DetectorTools::topElement(*this));
+  return world.getCondition(*this,key,iov);
 }
 
 const DetElement::Children& DetElement::children() const {
@@ -163,8 +186,8 @@ DetElement DetElement::parent() const {
   return (o) ? o->parent : 0;
 }
 
-void DetElement::check(bool condition, const string& msg) const {
-  if (condition) {
+void DetElement::check(bool cond, const string& msg) const {
+  if (cond) {
     throw runtime_error("DD4hep: " + msg);
   }
 }

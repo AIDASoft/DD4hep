@@ -86,7 +86,7 @@ void LCDDLoad::processXMLElement(const std::string& xmlfile, const XML::Handle_t
   long result = PluginService::Create<long>(type, m_lcdd, &handle);
   if (0 == result) {
     PluginDebug dbg;
-    result = PluginService::Create<long>(type, m_lcdd, &xml_root);
+    result = PluginService::Create<long>(type, m_lcdd, &handle);
     if ( 0 == result )  {
       throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
                           " \"" + tag + "\" - no factory:" + type + ". " + dbg.missingFactory(type));

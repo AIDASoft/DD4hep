@@ -36,7 +36,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
-int DD4hep::Geometry::_toInt(const string& value) {
+int DD4hep::_toInt(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
   if (idx != string::npos)
@@ -52,7 +52,7 @@ int DD4hep::Geometry::_toInt(const string& value) {
   return (int) result;
 }
 
-long DD4hep::Geometry::_toLong(const string& value) {
+long DD4hep::_toLong(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
   if (idx != string::npos)
@@ -68,11 +68,11 @@ long DD4hep::Geometry::_toLong(const string& value) {
   return (long) result;
 }
 
-bool DD4hep::Geometry::_toBool(const string& value) {
+bool DD4hep::_toBool(const string& value) {
   return value == "true" || value == "yes";
 }
 
-float DD4hep::Geometry::_toFloat(const string& value) {
+float DD4hep::_toFloat(const string& value) {
   double result = eval.evaluate(value.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
@@ -82,7 +82,7 @@ float DD4hep::Geometry::_toFloat(const string& value) {
   return (float) result;
 }
 
-double DD4hep::Geometry::_toDouble(const string& value) {
+double DD4hep::_toDouble(const string& value) {
   double result = eval.evaluate(value.c_str());
   if (eval.status() != XmlTools::Evaluator::OK) {
     cerr << value << ": ";
@@ -92,28 +92,28 @@ double DD4hep::Geometry::_toDouble(const string& value) {
   return result;
 }
 
-template <> int DD4hep::Geometry::_multiply<int>(const string& left, const string& right) {
+template <> int DD4hep::_multiply<int>(const string& left, const string& right) {
   return (int) _toDouble(left + "*" + right);
 }
 
-template <> long DD4hep::Geometry::_multiply<long>(const string& left, const string& right) {
+template <> long DD4hep::_multiply<long>(const string& left, const string& right) {
   return (long) _toDouble(left + "*" + right);
 }
 
-template <> float DD4hep::Geometry::_multiply<float>(const string& left, const string& right) {
+template <> float DD4hep::_multiply<float>(const string& left, const string& right) {
   return _toFloat(left + "*" + right);
 }
 
-template <> double DD4hep::Geometry::_multiply<double>(const string& left, const string& right) {
+template <> double DD4hep::_multiply<double>(const string& left, const string& right) {
   return _toDouble(left + "*" + right);
 }
 
-void DD4hep::Geometry::_toDictionary(const string& name, const string& value) {
+void DD4hep::_toDictionary(const string& name, const string& value) {
   _toDictionary(name, value, "number");
 }
 
 /// Enter name value pair to the dictionary.  \ingroup DD4HEP_GEOMETRY
-void DD4hep::Geometry::_toDictionary(const std::string& name, const std::string& value, const std::string& typ)   {
+void DD4hep::_toDictionary(const std::string& name, const std::string& value, const std::string& typ)   {
   if ( typ == "string" )  {
     eval.setEnviron(name.c_str(),value.c_str());
     return;
@@ -144,45 +144,43 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
   return text;
 }
 
-string DD4hep::Geometry::_toString(bool value) {
+string DD4hep::_toString(bool value) {
   return value ? "true" : "false";
 }
 
-string DD4hep::Geometry::_toString(int value, const char* fmt) {
+string DD4hep::_toString(int value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-string DD4hep::Geometry::_toString(float value, const char* fmt) {
+string DD4hep::_toString(float value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-string DD4hep::Geometry::_toString(double value, const char* fmt) {
+string DD4hep::_toString(double value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
-string DD4hep::Geometry::_ptrToString(const void* value, const char* fmt) {
+string DD4hep::_ptrToString(const void* value, const char* fmt) {
   return __to_string(value, fmt);
 }
 
 namespace DD4hep {
-  namespace Geometry {
-    static long s_numVerifies = 0;
+  static long s_numVerifies = 0;
 
-    long num_object_validations() {
-      return s_numVerifies;
-    }
-    void increment_object_validations() {
-      ++s_numVerifies;
-    }
-    void warning_deprecated_xml_factory(const char* name)   {
-      const char* edge = "++++++++++++++++++++++++++++++++++++++++++";
-      size_t len = ::strlen(name);
-      cerr << edge << edge << edge << endl;
-      cerr << "++  The usage of the factory: \"" << name << "\" is DEPRECATED due to naming conventions."
-           << setw(53-len) << right << "++" << endl;
-      cerr << "++  Please use \"DD4hep_" << name << "\" instead." << setw(93-len) << right << "++" << endl;
-      cerr << edge << edge << edge << endl;
-    }
+  long num_object_validations() {
+    return s_numVerifies;
+  }
+  void increment_object_validations() {
+    ++s_numVerifies;
+  }
+  void warning_deprecated_xml_factory(const char* name)   {
+    const char* edge = "++++++++++++++++++++++++++++++++++++++++++";
+    size_t len = ::strlen(name);
+    cerr << edge << edge << edge << endl;
+    cerr << "++  The usage of the factory: \"" << name << "\" is DEPRECATED due to naming conventions."
+         << setw(53-len) << right << "++" << endl;
+    cerr << "++  Please use \"DD4hep_" << name << "\" instead." << setw(93-len) << right << "++" << endl;
+    cerr << edge << edge << edge << endl;
   }
 }
 
@@ -190,16 +188,14 @@ namespace DD4hep {
 typedef DDSegmentation::Segmentation _Segmentation;
 //INSTANTIATE_UNNAMED(_Segmentation);
 namespace DD4hep {
-  namespace Geometry {
-    template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string&) {
-      this->m_element = s;
-      s->setName(n);
-    }
-    template <> const char* Handle<_Segmentation>::name() const {
-      return this->m_element ? this->m_element->name().c_str() : "";
-    }
-    template class DD4hep::Geometry::Handle<_Segmentation>;
+  template <> void Handle<_Segmentation>::assign(_Segmentation* s, const std::string& n, const std::string&) {
+    this->m_element = s;
+    s->setName(n);
   }
+  template <> const char* Handle<_Segmentation>::name() const {
+    return this->m_element ? this->m_element->name().c_str() : "";
+  }
+  template class DD4hep::Handle<_Segmentation>;
 }
 
 #include "DD4hep/LCDD.h"

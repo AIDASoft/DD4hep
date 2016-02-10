@@ -16,8 +16,8 @@
 #define DD4HEP_DDG4_GEANT4UIMESSENGER_H
 
 // Framework include files
-#include "DDG4/ComponentProperties.h"
-#include "DDG4/Geant4Callback.h"
+#include "DD4hep/ComponentProperties.h"
+#include "DD4hep/Callback.h"
 #include "G4UImessenger.hh"
 #include "G4UIdirectory.hh"
 

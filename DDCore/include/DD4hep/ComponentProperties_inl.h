@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,7 +16,7 @@
 
 // Framework include files
 #include "DD4hep/BasicGrammar.h"
-#include "DDG4/ComponentProperties.h"
+#include "DD4hep/ComponentProperties.h"
 
 // C/C++ include files
 #include <sstream>

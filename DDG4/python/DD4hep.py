@@ -87,6 +87,7 @@ OutputLevel = _Levels()
 Core       = DD4hep
 Geo        = DD4hep.Geometry
 Geometry   = DD4hep.Geometry
+Conditions = DD4hep.Conditions
 
 import_root('XmlTools')
 import_namespace_item('XmlTools','Evaluator')
@@ -121,9 +122,11 @@ def import_geometry():
   #// Readout.h
   import_namespace_item('Geo','Readout')
   import_namespace_item('Geo','Alignment')
-  import_namespace_item('Geo','Conditions')
+  import_namespace_item('Conditions','Condition')
+  import_namespace_item('Conditions','Container')
 
   #// DetElement.h
+  import_namespace_item('Geo','World')
   import_namespace_item('Geo','DetElement')
   import_namespace_item('Geo','SensitiveDetector')
 

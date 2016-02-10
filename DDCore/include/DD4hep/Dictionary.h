@@ -20,6 +20,7 @@
 #define DD4HEP_GEOMETRY_DICTIONARY_H
 
 #include "XML/Evaluator.h"
+#include "DD4hep/World.h"
 #include "DD4hep/LCDDData.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/FieldTypes.h"
@@ -63,33 +64,34 @@ using namespace std;
 
 #pragma link C++ namespace DD4hep;
 #pragma link C++ namespace DD4hep::Geometry;
+#pragma link C++ namespace DD4hep::Conditions;
 #pragma link C++ namespace DD4hep::DDSegmentation;
 
 #ifndef __ROOTCLING__
 template pair<unsigned int, string>;
-template class DD4hep::Geometry::Handle<DD4hep::NamedObject>;
-template class pair< string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
-template class map< string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >;
+template class DD4hep::Handle<DD4hep::NamedObject>;
+template class pair< string, DD4hep::Handle<DD4hep::NamedObject> >;
+template class map< string, DD4hep::Handle<DD4hep::NamedObject> >;
 #endif
 
 #pragma link C++ class pair<unsigned int,string>+;
 #pragma link C++ class DD4hep::NamedObject+;
 #pragma link C++ class DD4hep::Geometry::Ref_t+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::NamedObject>+;
-#pragma link C++ class pair<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
-#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >+;
-#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator;
-#pragma link C++ class map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::const_iterator;
+#pragma link C++ class DD4hep::Handle<DD4hep::NamedObject>+;
+#pragma link C++ class pair<string, DD4hep::Handle<DD4hep::NamedObject> >+;
+#pragma link C++ class map<string, DD4hep::Handle<DD4hep::NamedObject> >+;
+#pragma link C++ class map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator;
+#pragma link C++ class map<string, DD4hep::Handle<DD4hep::NamedObject> >::const_iterator;
 
 #ifdef R__MACOSX
 // We only need these declarations for the clang compiler
-#pragma link C++ function operator==( const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
-#pragma link C++ function operator!=( const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Geometry::Handle<DD4hep::NamedObject> >::iterator& ); 
+#pragma link C++ function operator==( const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator& ); 
+#pragma link C++ function operator!=( const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator&,const map<string, DD4hep::Handle<DD4hep::NamedObject> >::iterator& ); 
 #endif
 
 #pragma link C++ class DD4hep::ObjectExtensions+;
-template class DD4hep::Geometry::Handle<TNamed>;
-#pragma link C++ class DD4hep::Geometry::Handle<TNamed>+;
+template class DD4hep::Handle<TNamed>;
+#pragma link C++ class DD4hep::Handle<TNamed>+;
 
 #pragma link C++ class DD4hep::Geometry::LCDD+;
 #pragma link C++ class DD4hep::Geometry::LCDDData+;
@@ -108,26 +110,26 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::VolumeManager+;
 #pragma link C++ class DD4hep::Geometry::VolumeManagerObject+;
 #pragma link C++ class DD4hep::Geometry::VolumeManagerContext+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::VolumeManagerObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::VolumeManagerObject>+;
 
 #pragma link C++ class DD4hep::Geometry::CartesianField+;
 #pragma link C++ class DD4hep::Geometry::CartesianField::Object+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::CartesianField::Object>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::CartesianField::Object>+;
 #pragma link C++ class DD4hep::Geometry::OverlayedField+;
 #pragma link C++ class DD4hep::Geometry::OverlayedField::Object+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::OverlayedField::Object>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::OverlayedField::Object>+;
 
 // FieldTypes.h
 #pragma link C++ class DD4hep::Geometry::ConstantField+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConstantField>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::ConstantField>+;
 #pragma link C++ class DD4hep::Geometry::SolenoidField+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::SolenoidField>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::SolenoidField>+;
 #pragma link C++ class DD4hep::Geometry::DipoleField+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::DipoleField>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::DipoleField>+;
 
 #pragma link C++ class DD4hep::Geometry::IDDescriptor+;
 #pragma link C++ class DD4hep::Geometry::IDDescriptorObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::IDDescriptorObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::IDDescriptorObject>+;
 
 // Objects.h
 #pragma link C++ class DD4hep::Geometry::Author+;
@@ -135,25 +137,25 @@ template class DD4hep::Geometry::Handle<TNamed>;
 
 #pragma link C++ class DD4hep::Geometry::Header+;
 #pragma link C++ class DD4hep::Geometry::HeaderObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::HeaderObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::HeaderObject>+;
 
 #pragma link C++ class DD4hep::Geometry::Constant+;
 #pragma link C++ class DD4hep::Geometry::ConstantObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConstantObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::ConstantObject>+;
 #pragma link C++ class vector<DD4hep::Geometry::Constant>+;
 
 #pragma link C++ class DD4hep::Geometry::Atom+;
 #pragma link C++ class vector<DD4hep::Geometry::Atom>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoElement>+;
+#pragma link C++ class DD4hep::Handle<TGeoElement>+;
 
 #pragma link C++ class DD4hep::Geometry::Material+;
 #pragma link C++ class vector<DD4hep::Geometry::Material>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoMedium>+;
+#pragma link C++ class DD4hep::Handle<TGeoMedium>+;
 
 #pragma link C++ class DD4hep::Geometry::VisAttr+;
 #pragma link C++ class vector<DD4hep::Geometry::VisAttr>+;
 #pragma link C++ class DD4hep::Geometry::VisAttrObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::VisAttrObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::VisAttrObject>+;
 
 #pragma link C++ class DD4hep::Geometry::AlignmentEntry+;
 #pragma link C++ class DD4hep::Geometry::Limit+;
@@ -162,39 +164,41 @@ template class DD4hep::Geometry::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::LimitSet+;
 #pragma link C++ class vector<DD4hep::Geometry::LimitSet>+;
 #pragma link C++ class DD4hep::Geometry::LimitSetObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::LimitSetObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::LimitSetObject>+;
 #pragma link C++ class DD4hep::Geometry::Region+;
 #pragma link C++ class DD4hep::Geometry::RegionObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::RegionObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::RegionObject>+;
 #pragma link C++ class vector<DD4hep::Geometry::Region>+;
 
 // Readout.h
 #pragma link C++ class vector<pair<size_t,string> >+;
 #pragma link C++ class DD4hep::Geometry::Segmentation+;
 #pragma link C++ class DD4hep::Geometry::SegmentationObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::SegmentationObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::SegmentationObject>+;
 #pragma link C++ class DD4hep::Geometry::Readout+;
 #pragma link C++ class DD4hep::Geometry::ReadoutObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ReadoutObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::ReadoutObject>+;
 #pragma link C++ class vector<DD4hep::Geometry::Readout>+;
 #pragma link C++ class vector<DD4hep::Geometry::IDDescriptor>+;
 
 #pragma link C++ class DD4hep::Geometry::Alignment+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoPhysicalNode>+;
+#pragma link C++ class DD4hep::Handle<TGeoPhysicalNode>+;
 
-#pragma link C++ class DD4hep::Geometry::Condition+;
-#pragma link C++ class vector<DD4hep::Geometry::Condition>+;
-#pragma link C++ class DD4hep::Geometry::ConditionsInterna::ConditionObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConditionsInterna::ConditionObject>+;
+#pragma link C++ class DD4hep::Conditions::Condition+;
+#pragma link C++ class vector<DD4hep::Conditions::Condition>+;
+#pragma link C++ class DD4hep::Conditions::Interna::ConditionObject+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Conditions::Interna::ConditionObject>+;
 
-#pragma link C++ class DD4hep::Geometry::Conditions+;
-#pragma link C++ class DD4hep::Geometry::ConditionsInterna::ConditionContainer+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::ConditionsInterna::ConditionContainer>+;
+#pragma link C++ class DD4hep::Conditions::Container+;
+#pragma link C++ class DD4hep::Conditions::Interna::ConditionContainer+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Conditions::Interna::ConditionContainer>+;
 
 // DetElement.h
+#pragma link C++ class DD4hep::Geometry::World+;
+#pragma link C++ class DD4hep::Geometry::WorldObject+;
 #pragma link C++ class DD4hep::Geometry::DetElement+;
 #pragma link C++ class DD4hep::Geometry::DetElementObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::DetElementObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::DetElementObject>+;
 #pragma link C++ class vector<DD4hep::Geometry::DetElement>+;
 #pragma link C++ class pair<string,DD4hep::Geometry::DetElement>+;
 #pragma link C++ class map<string,DD4hep::Geometry::DetElement>+;
@@ -209,14 +213,14 @@ template class DD4hep::Geometry::Handle<TNamed>;
 
 #pragma link C++ class DD4hep::Geometry::SensitiveDetector+;
 #pragma link C++ class DD4hep::Geometry::SensitiveDetectorObject+;
-#pragma link C++ class DD4hep::Geometry::Handle<DD4hep::Geometry::SensitiveDetectorObject>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Geometry::SensitiveDetectorObject>+;
 #pragma link C++ class vector<DD4hep::Geometry::SensitiveDetector>+;
 
 // Volume.h
 #pragma link C++ class DD4hep::Geometry::Volume+;
 #pragma link C++ class DD4hep::Geometry::VolumeExtension+;
 #pragma link C++ class vector<DD4hep::Geometry::Volume>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoVolume>+;
+#pragma link C++ class DD4hep::Handle<TGeoVolume>+;
 
 #pragma link C++ class DD4hep::Geometry::PlacedVolume+;
 #ifndef __ROOTCLING__
@@ -228,70 +232,70 @@ template vector<pair<string, int> >::iterator;
 #pragma link C++ class DD4hep::Geometry::PlacedVolumeExtension::VolIDs+;
 #pragma link C++ class DD4hep::Geometry::PlacedVolumeExtension+;
 #pragma link C++ class vector<DD4hep::Geometry::PlacedVolume>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoNode>+;
+#pragma link C++ class DD4hep::Handle<TGeoNode>+;
 #pragma link C++ class vector<TGeoNode*>+;
 #pragma link C++ class vector<TGeoVolume*>+;
 
 
 // Shapes.h
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoShape>+;
+#pragma link C++ class DD4hep::Handle<TGeoShape>+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoShape>+;
 
 #pragma link C++ class DD4hep::Geometry::Polycone+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoPcon>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoPcon>+;
+#pragma link C++ class DD4hep::Handle<TGeoPcon>+;
 
 #pragma link C++ class DD4hep::Geometry::ConeSegment+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoConeSeg>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoConeSeg>+;
+#pragma link C++ class DD4hep::Handle<TGeoConeSeg>+;
 
 #pragma link C++ class DD4hep::Geometry::Box+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoBBox>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoBBox>+;
+#pragma link C++ class DD4hep::Handle<TGeoBBox>+;
 
 #pragma link C++ class DD4hep::Geometry::Torus+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTorus>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTorus>+;
+#pragma link C++ class DD4hep::Handle<TGeoTorus>+;
 
 #pragma link C++ class DD4hep::Geometry::Cone+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoCone>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoCone>+;
+#pragma link C++ class DD4hep::Handle<TGeoCone>+;
 
 #pragma link C++ class DD4hep::Geometry::Tube+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTubeSeg>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTubeSeg>+;
+#pragma link C++ class DD4hep::Handle<TGeoTubeSeg>+;
 
 #pragma link C++ class DD4hep::Geometry::EllipticalTube+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoEltu>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoEltu>+;
+#pragma link C++ class DD4hep::Handle<TGeoEltu>+;
 
 #pragma link C++ class DD4hep::Geometry::Trap+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTrap>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTrap>+;
+#pragma link C++ class DD4hep::Handle<TGeoTrap>+;
 
 #pragma link C++ class DD4hep::Geometry::Trapezoid+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoTrd2>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoTrd2>+;
+#pragma link C++ class DD4hep::Handle<TGeoTrd2>+;
 
 #pragma link C++ class DD4hep::Geometry::Sphere+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoSphere>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoSphere>+;
+#pragma link C++ class DD4hep::Handle<TGeoSphere>+;
 
 #pragma link C++ class DD4hep::Geometry::Paraboloid+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoParaboloid>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoParaboloid>+;
+#pragma link C++ class DD4hep::Handle<TGeoParaboloid>+;
 
 #pragma link C++ class DD4hep::Geometry::Hyperboloid+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoHype>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoHype>+;
+#pragma link C++ class DD4hep::Handle<TGeoHype>+;
 
 #pragma link C++ class DD4hep::Geometry::PolyhedraRegular+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoPgon>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoPgon>+;
+#pragma link C++ class DD4hep::Handle<TGeoPgon>+;
 
 #pragma link C++ class DD4hep::Geometry::BooleanSolid+;
 #pragma link C++ class DD4hep::Geometry::Solid_type<TGeoCompositeShape>+;
-#pragma link C++ class DD4hep::Geometry::Handle<TGeoCompositeShape>+;
+#pragma link C++ class DD4hep::Handle<TGeoCompositeShape>+;
 
 #pragma link C++ class DD4hep::Geometry::SubtractionSolid+;
 #pragma link C++ class DD4hep::Geometry::UnionSolid+;

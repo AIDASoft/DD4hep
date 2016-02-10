@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -12,22 +12,20 @@
 //
 //==========================================================================
 
-#if 0
 // Framework include files
-#include "DDCond/ConditionValidator.h"
+#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/World.h"
 
-using namespace std;
-using namespace DD4hep;
+using std::string;
 using namespace DD4hep::Geometry;
 
-
-/// Standard constructor
-ConditionValidator::ConditionValidator()  {
+/// Access the conditions loading
+World::Condition World::getCondition(DetElement child,const string&  key, const IOV& iov)  const  {
+  return access()->getCondition(child,key,iov);
 }
 
-/// Validate detector subtree and return conditions out of date
-bool ConditionValidator::validate(DetElement subtree, std::vector<Condition>& tobe_updated)
-{
-  return true;
+/// Access the detector descrion tree
+LCDD& World::lcdd() const   {
+  return *(access()->lcdd);
 }
-#endif
+

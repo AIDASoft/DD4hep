@@ -27,7 +27,7 @@ namespace {
       double value = -1;
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
-        value = DD4hep::Geometry::_toDouble(++ptr);
+        value = DD4hep::_toDouble(++ptr);
       }
       std::cout << "SurfaceExamplePlugin: argument[" << i << "] = " << argv[i] 
                 << " value = " << value << std::endl;

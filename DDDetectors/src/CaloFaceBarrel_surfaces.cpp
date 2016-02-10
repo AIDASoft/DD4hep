@@ -88,9 +88,9 @@ namespace{
       char* ptr = ::strchr(argv[i],'=');
       if ( ptr )  {
         std::string name( argv[i] , ptr ) ;
-        double value = DD4hep::Geometry::_toDouble(++ptr);
+        double value = DD4hep::_toDouble(++ptr);
         
-	printout(DD4hep::DEBUG,"DD4hep_CaloFaceBarrelSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
+        printout(DD4hep::DEBUG,"DD4hep_CaloFaceBarrelSurfacePlugin", "argument[%d] = %s = %f" , i, name.c_str() , value  ) ;
 
         if(      name=="length"    ) data.length     = value ; 
         else if( name=="radius"  ) data.radius   = value ; 
@@ -99,7 +99,7 @@ namespace{
         else if( name=="systemID") data.systemID   = value ; 
         else if( name=="encoding") data.encoding = ptr ; 
         else {
-	  printout(DD4hep::WARNING,"DD4hep_CaloFaceBarrelSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
+          printout(DD4hep::WARNING,"DD4hep_CaloFaceBarrelSurfacePlugin", "unknown parameter:  %s ", name.c_str() ) ;
         }
       }
     }

@@ -16,9 +16,9 @@
 //
 //==========================================================================
 #include "DD4hep/Printout.h"
+#include "DD4hep/ComponentProperties.h"
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Callback.h"
-#include "DDG4/ComponentProperties.h"
 
 // Geant4 forward declarations
 class G4Run;

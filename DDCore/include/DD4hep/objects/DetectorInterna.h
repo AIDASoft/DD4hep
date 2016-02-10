@@ -80,7 +80,10 @@ namespace DD4hep {
       typedef /* DD4hep::Geometry:: */  DetElement::Children Children;
       typedef /* DD4hep::Geometry:: */  DetElement::Extensions Extensions;
       typedef std::pair<Callback,unsigned long> UpdateCall;
-      typedef std::vector<UpdateCall> UpdateCallbacks;
+      typedef std::vector<UpdateCall>           UpdateCallbacks;
+      typedef DetElement::ConditionsContainer   ConditionsContainer;
+      typedef DetElement::Condition             Condition;
+      typedef Conditions::IOV                   IOV;
 
       enum DetFlags {
         HAVE_WORLD_TRAFO = 1<<0,
@@ -133,7 +136,7 @@ namespace DD4hep {
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
       std::vector<Alignment> volume_surveys;
       /// The detector elements condition entry
-      Conditions conditions;
+      ConditionsContainer conditions;
       //@}
       //@{ Cached information of the detector element
       /// Intermediate buffer to store the transformation to the world coordination system
@@ -166,6 +169,38 @@ namespace DD4hep {
       /// Revalidate the caches
       void revalidate(TGeoHMatrix* parent_world_trafo);
     };
+
+    /// Data class with properties of a detector element
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *
+     *  \ingroup DD4HEP DD4HEP_GEOMETRY
+     */
+    class WorldObject: public DetElementObject {
+    public:
+      typedef Conditions::ConditionsLoader ConditionsLoader;
+
+      /// Reference to the LCDD instance object
+      LCDD* lcdd;
+
+      /// Conditions loader for this LCDD instance
+      ConditionsLoader* conditionsLoader;
+
+    public:
+      //@{ Public methods to ease the usage of the data. */
+      /// Default constructor
+      WorldObject() : DetElementObject(), lcdd(0), conditionsLoader(0)  {}
+#ifndef __CINT__
+      /// Initializing constructor
+      WorldObject(LCDD& lcdd, const std::string& nam);
+#endif
+      /// Internal object destructor: release extension object(s)
+      virtual ~WorldObject();
+      /// Access the conditions loading
+      Condition getCondition(DetElement child, const std::string&  key, const IOV& iov);
+   };
 
   } /* End namespace Geometry      */
 } /* End namespace DD4hep        */

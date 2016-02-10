@@ -50,6 +50,10 @@ namespace DD4hep {
   public:
     static void* create(const char* arg);
   };
+  template <typename T> class LCDDConstructionFactory : public PluginFactoryBase {
+  public:
+    static void* create(lcdd_t& lcdd, int argc, char** argv);
+  };
 
   /// Template class with a generic signature to apply LCDD plugins
   /**
@@ -147,14 +151,22 @@ namespace {
 
   DD4HEP_PLUGIN_FACTORY_ARGS_1(void*,const char*)  
   {    return DD4hep::ConstructionFactory<P>::create(a0);                               }
+
   DD4HEP_PLUGIN_FACTORY_ARGS_1(ns::Named*,ns::LCDD*)
   {    return DD4hep::TranslationFactory<P>::create(*a0).ptr();                         }
+
+  DD4HEP_PLUGIN_FACTORY_ARGS_3(void*,ns::LCDD*,int,char**)
+  {    return DD4hep::LCDDConstructionFactory<P>::create(*a0,a1,a2);                    }
+
   DD4HEP_PLUGIN_FACTORY_ARGS_3(long,ns::LCDD*,int,char**)
   {    return make_return<long>(DD4hep::ApplyFactory<P>::create(*a0,a1,a2));            }
+
   DD4HEP_PLUGIN_FACTORY_ARGS_2(ns::Named*,ns::LCDD*,ns::xml_h*)
   {    return DD4hep::XMLElementFactory<P>::create(*a0,*a1).ptr();                      }
+
   DD4HEP_PLUGIN_FACTORY_ARGS_2(long,ns::LCDD*,ns::xml_h*)
   {    return make_return<long>(DD4hep::XMLDocumentReaderFactory<P>::create(*a0,*a1));  }
+
   DD4HEP_PLUGIN_FACTORY_ARGS_3(ns::Named*,ns::LCDD*,ns::xml_h*,ns::ref_t*)
   {    return DD4hep::DetElementFactory<P>::create(*a0,*a1,*a2).ptr();                  }
 }
@@ -172,29 +184,40 @@ namespace {
 #define DECLARE_NAMED_DETELEMENT_FACTORY(n,x)       namespace DD4hep    \
   { DD4HEP_PLUGINSVC_FACTORY(n::x,x,DD4hep::NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__) }
 
+// Call function of the type [long (*func)(const char* arg)]
 #define DECLARE_APPLY(name,func)        DD4HEP_OPEN_PLUGIN(DD4hep,name)   { \
     template <> long ApplyFactory<name>::create(lcdd_t& l,int n,char** a) {return func(l,n,a);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,long(Geometry::LCDD*,int,char**),__LINE__)}
 
+// Call function of the type [void* (*func)(const char* arg)]
 #define DECLARE_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name) { \
     template <> void* ConstructionFactory<name>::create(const char* n) { return func(n);} \
     DD4HEP_PLUGINSVC_FACTORY(name,name,void*(const char*),__LINE__) }
 
+// Call function of the type [void* (*func)(lcdd_t& lcdd, int argc,char** argv)]
+#define DECLARE_LCDD_CONSTRUCTOR(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name) { \
+    template <> void* LCDDConstructionFactory<name>::create(lcdd_t& l, int n,char** a) { return func(l,n,a);} \
+    DD4HEP_PLUGINSVC_FACTORY(name,name,void*(Geometry::LCDD*,int,char**),__LINE__) }
+
+// Call function of the type [void* (*func)(lcdd_t& lcdd)]
 #define DECLARE_TRANSLATION(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,name)  { \
     template <> Geometry::Ref_t TranslationFactory<name>::create(lcdd_t& l) {return func(l);} \
     DECLARE_NAMED_TRANSLATION_FACTORY(Geometry,name)  }
 
+// Call function of the type [void* (*func)(lcdd_t& lcdd, xml_h handle)]
 #define DECLARE_XMLELEMENT(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,xml_element_##name)  {\
     template <> Geometry::Ref_t XMLElementFactory<xml_element_##name>::create(lcdd_t& l,xml_h e) {return func(l,e);} \
     DD4HEP_PLUGINSVC_FACTORY(xml_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*),__LINE__)  }
 
+// Call function of the type [long (*func)(lcdd_t& lcdd, xml_h handle)]
 #define DECLARE_XML_DOC_READER(name,func)  DD4HEP_OPEN_PLUGIN(DD4hep,xml_document_##name)  { \
     template <> long XMLDocumentReaderFactory<xml_document_##name>::create(lcdd_t& l,xml_h e) {return func(l,e);} \
     DD4HEP_PLUGINSVC_FACTORY(xml_document_##name,name##_XML_reader,long(Geometry::LCDD*,XML::Handle_t*),__LINE__)  }
 
+// Call function of the type [NamedObject* (*func)(lcdd_t& lcdd, xml_h handle, ref_t reference)]
 #define DECLARE_XML_PROCESSOR_BASIC(name,func,deprecated)  DD4HEP_OPEN_PLUGIN(DD4hep,det_element_##name) {\
     template <> Geometry::Ref_t DetElementFactory< det_element_##name >::create(lcdd_t& l,xml_h e,ref_t h) \
-    { if (deprecated) Geometry::warning_deprecated_xml_factory(#name); return func(l,e,h);} \
+    { if (deprecated) warning_deprecated_xml_factory(#name); return func(l,e,h);} \
     DD4HEP_PLUGINSVC_FACTORY(det_element_##name,name,NamedObject*(Geometry::LCDD*,XML::Handle_t*,Geometry::Ref_t*),__LINE__)  }
 
 #define DECLARE_XML_PROCESSOR(name,func)          DECLARE_XML_PROCESSOR_BASIC(name,func,0)

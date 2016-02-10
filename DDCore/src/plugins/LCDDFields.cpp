@@ -43,13 +43,13 @@ static Ref_t convert_solenoid(LCDD&, xml_h field, Ref_t object) {
   field.setAttr(_U(lunit), "mm");
   field.setAttr(_U(funit), "tesla");
   ::snprintf(text, sizeof(text), "%g/mm", s->outerRadius);
-  field.setAttr(_U(outer_radius), _toDouble(text));
+  field.setAttr(_U(outer_radius), DD4hep::_toDouble(text));
   ::snprintf(text, sizeof(text), "%g/mm", s->innerRadius);
-  field.setAttr(_U(inner_radius), _toDouble(text));
+  field.setAttr(_U(inner_radius), DD4hep::_toDouble(text));
   ::snprintf(text, sizeof(text), "%g/tesla", s->innerField);
-  field.setAttr(_U(inner_field), _toDouble(text));
+  field.setAttr(_U(inner_field), DD4hep::_toDouble(text));
   ::snprintf(text, sizeof(text), "%g/tesla", s->outerField);
-  field.setAttr(_U(outer_field), _toDouble(text));
+  field.setAttr(_U(outer_field), DD4hep::_toDouble(text));
   field.setAttr(_U(zmin), s->minZ);
   field.setAttr(_U(zmax), s->maxZ);
   return object;
@@ -63,15 +63,15 @@ static Ref_t convert_dipole(LCDD&, xml_h field, Ref_t object) {
   field.setAttr(_U(lunit), "mm");
   field.setAttr(_U(funit), "tesla");
   ::snprintf(text, sizeof(text), "%g/mm", s->rmax);
-  field.setAttr(_U(rmax), _toDouble(text));
+  field.setAttr(_U(rmax), DD4hep::_toDouble(text));
   ::snprintf(text, sizeof(text), "%g/mm", s->zmax);
-  field.setAttr(_U(zmax), _toDouble(text));
+  field.setAttr(_U(zmax), DD4hep::_toDouble(text));
   ::snprintf(text, sizeof(text), "%g/mm", s->zmin);
-  field.setAttr(_U(zmin), _toDouble(text));
+  field.setAttr(_U(zmin), DD4hep::_toDouble(text));
   DipoleField::Coefficents::const_iterator i = s->coefficents.begin();
   for (; i != s->coefficents.end(); ++i) {
     xml_elt_t coeff = xml_elt_t(doc, _U(dipole_coeff));
-    coeff.setValue(_toString(*i));
+    coeff.setValue(DD4hep::_toString(*i));
     field.append(coeff);
   }
   return object;

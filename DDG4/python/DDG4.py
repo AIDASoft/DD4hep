@@ -469,6 +469,7 @@ class Geant4:
   def printDetectors(self):
     print '+++  List of sensitive detectors:'
     for i in self.lcdd.detectors():
+      print i.second.ptr().GetName()
       o = DetElement(i.second.ptr())
       sd = self.lcdd.sensitiveDetector(o.name())
       if sd.isValid():

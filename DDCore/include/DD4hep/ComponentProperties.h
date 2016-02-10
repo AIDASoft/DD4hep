@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -16,7 +16,8 @@
 #define DD4HEP_DDG4_COMPONENTPROPERTIES_H
 
 // Framework include files
-#include "DDG4/ComponentUtils.h"
+#include "DD4hep/Primitives.h"
+#include "DD4hep/Exceptions.h"
 
 // C/C++ include files
 #include <algorithm>
@@ -232,6 +233,46 @@ namespace DD4hep {
     void dump() const;
   };
 
-}      // End namespace DD4hep
+  /// Property object as base class for all objects supporting properties
+  /** 
+   *  \author  M.Frank
+   *  \version 1.0
+   */
+  class PropertyConfigurable  {
+  protected:
+    /// Property pool
+    PropertyManager m_properties;
 
+  public:
+    /// Standard constructor
+    PropertyConfigurable();
+    /// Default destructor
+    virtual ~PropertyConfigurable();
+    /// Access to the properties of the object
+    PropertyManager& properties() {
+      return m_properties;
+    }
+    /// Check property for existence
+    bool hasProperty(const std::string& name) const;
+    /// Access single property
+    Property& property(const std::string& name);
+    /// Declare property
+    template <typename T> void declareProperty(const std::string& nam, T& val);
+    /// Declare property
+    template <typename T> void declareProperty(const char* nam, T& val);
+  };
+
+  /// Declare property
+  template <typename T> 
+  void PropertyConfigurable::declareProperty(const std::string& nam, T& val) {
+    m_properties.add(nam, val);
+  }
+
+  /// Declare property
+  template <typename T> 
+  void PropertyConfigurable::declareProperty(const char* nam, T& val) {
+    m_properties.add(nam, val);
+  }
+
+}      // End namespace DD4hep
 #endif // DD4HEP_DDG4_COMPONENTPROPERTIES_H

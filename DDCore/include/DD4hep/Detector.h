@@ -196,6 +196,9 @@ namespace DD4hep {
       /// Extensions destructor type
       typedef void (*destruct_t)(void*);
 
+      typedef Conditions::IOV IOV;
+      typedef Conditions::Condition Condition;
+      typedef Conditions::Container ConditionsContainer;
       typedef std::map<std::string, DetElement> Children;
       typedef std::map<const std::type_info*, void*> Extensions;
 
@@ -237,27 +240,19 @@ namespace DD4hep {
     public:
 
       /// Default constructor
-      DetElement()
-        : RefObject() {
-      }
+      DetElement() : RefObject() {  }
 
       /// Constructor to hold handled object
-      DetElement(Object* object_ptr)
-        : RefObject(object_ptr) {
-      }
+      DetElement(Object* object_ptr) : RefObject(object_ptr) { }
 
       /// Clone constructor
       DetElement(Object* data, const std::string& name, const std::string& type);
 
       /// Templated constructor for handle conversions
-      template <typename Q> DetElement(const Handle<Q>& e)
-        : RefObject(e) {
-      }
+      template <typename Q> DetElement(const Handle<Q>& e) : RefObject(e) {}
 
       /// Constructor to copy handle
-      DetElement(const DetElement& e)
-        : RefObject(e) {
-      }
+      DetElement(const DetElement& e) : RefObject(e) { }
 
 #ifdef __MAKECINT__
       /// Constructor to copy handle
@@ -381,7 +376,11 @@ namespace DD4hep {
       /// Access to the survey alignment information
       Alignment surveyAlignment() const;
       /// Access to the conditions information
-      Conditions conditions() const;
+      ConditionsContainer conditions() const;
+      /// Access to the conditions information. No loading undertaken. The condition must be present
+      Condition  condition(const std::string& key) const;
+      /// Access to condition objects. If not present, load condition.
+      Condition  condition(const std::string& key, const IOV& iov);
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
       DetElement& setReference(DetElement reference);

@@ -16,7 +16,7 @@
 #define DD4HEP_DDG4_GEANT4SETUP_H
 
 // Framework include files
-#include "DDG4/ComponentProperties.h"
+#include "DD4hep/ComponentProperties.h"
 #include "DD4hep/LCDD.h"
 
 // C/C++ include files

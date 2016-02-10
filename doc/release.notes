@@ -3,6 +3,12 @@
 DD4hep  ----  Release Notes
 =================================
 
+2016-02-10 M.Frank
+  DDCond
+    First implementation of conditions access. Required some movements of files
+    from DDG4 (Properties) and some changes in the core conditions implementation.
+    The basic infrastructure is now present. Don't know yet however how buggy it is...
+
 2016-02-03 N.Nikiforou
   DDDetectors
   - Added plugin DD4hep_GenericSurfaceInstallerPlugin, copied from lcgeo

@@ -258,8 +258,10 @@ namespace DD4hep {
          - The sensitive type of a detector is set in the 'detector constructor'.
          - Not sensitive detector structures have the name 'passive'
          - Compounds (ie. nested detectors) are of type 'compound'
+         - If throw_exc is set to true, an exception is thrown if the type
+           is not present. Otherwise an empty detector container is returned.
       */
-      virtual const std::vector<DetElement>& detectors(const std::string& type);
+      virtual const std::vector<DetElement>& detectors(const std::string& type, bool throw_exc);
 
       /// Access a set of subdetectors according to several sensitive types.
       virtual std::vector<DetElement> detectors(const std::string& type1,
@@ -275,7 +277,7 @@ namespace DD4hep {
        *  includeFlag set but none of the properties given in excludeFlag
        */
       virtual std::vector<DetElement> detectors(unsigned int includeFlag, 
-						unsigned int excludeFlag=0 ) const ;
+                                                unsigned int excludeFlag=0 ) const ;
 
 
 #define __R  return *this

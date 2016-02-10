@@ -13,46 +13,23 @@
 //==========================================================================
 
 // Framework includes
+#include "DD4hep/Mutex.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
 using namespace std;
-using namespace DD4hep;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::Geometry::ConditionsInterna;
+using namespace DD4hep::Conditions;
 
-DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsInterna::ConditionObject);
-DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsInterna::ConditionContainer);
-
-/// Initializing constructor
-IOV::IOV(int t) : type(t)  {
-  data[0]=data[1]=data[2]=data[3]=0;
+namespace {
+  DD4hep::dd4hep_mutex_t s_conditionsMutex;
 }
 
-/// Standard Destructor
-IOV::~IOV()  {
-}
-
-/// Move the data content: 'from' will be reset to NULL
-void IOV::move(IOV& from)   {
-  ::memcpy(this,&from,sizeof(IOV));
-  from.data[0]=from.data[1]=from.data[2]=from.data[3]=0;
-  from.type = UNKNOWN_IOV;
-}
-
-/// Create IOV data from string representation
-void IOV::fromString(const std::string& rep)   {
-  notImplemented("void IOV::fromString(const std::string& rep): "+rep);
-}
-
-/// Create string representation of the IOV
-std::string IOV::str()  {
-  notImplemented("void IOV::fromString(const std::string& rep)");
-  return "";
-}
+DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionObject);
+DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionContainer);
 
 /// Standard initializing constructor
 BlockData::BlockData() : Block(), destruct(0), copy(0), type(0)   {
@@ -67,7 +44,7 @@ BlockData::~BlockData()   {
   pointer = 0;
   grammar = 0;
 }
-
+#if 0
 /// Move the data content: 'from' will be reset to NULL
 void BlockData::move(BlockData& from)   {
   pointer = from.pointer;
@@ -83,7 +60,7 @@ void BlockData::move(BlockData& from)   {
   from.pointer = 0;
   from.grammar = 0;
 }
-
+#endif
 /// Set data value
 void BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), void (*dtor)(void*))   {
   if ( !grammar )  {
@@ -114,76 +91,89 @@ void BlockData::assign(const void* ptr, const type_info& typ)  {
 }
 
 /// Standard constructor
-ConditionObject::ConditionObject() : NamedObject(), detector(), data(), iov()   {
+Interna::ConditionObject::ConditionObject()
+  : NamedObject(), detector(), data(), iov(0), hash(0), flags(0), refCount(0)
+{
   InstanceCount::increment(this);
 }
 
 /// Standard Destructor
-ConditionObject::~ConditionObject()  {
+Interna::ConditionObject::~ConditionObject()  {
   InstanceCount::decrement(this);
 }
 
-/// Assignment operator
-ConditionObject& ConditionObject::move(ConditionObject& c)   {
-  if ( this != &c )  {
-    name = c.name;
-    type = c.type;
-    address = c.address;
-    comment = c.comment;
-    detector = c.detector;
-    data.move(c.data);
-    iov.move(c.iov);
-  }
+/// Move data content: 'from' will be reset to NULL
+Interna::ConditionObject& Interna::ConditionObject::move(ConditionObject& /* from */)   {
   return *this;
 }
 
-/// Initializing constructor
-Entry::Entry(const DetElement& det, const string& nam,
-             const string& typ, const string& valid)
-  : NamedObject(nam), detector(det), type(typ), value(), validity(valid)
-{
-  InstanceCount::increment(this);
+/// Access safely the IOV
+const IOV* Interna::ConditionObject::iov_data() const    {
+  if ( iov ) return iov;
+  invalidHandleError<IOV>();
+  return 0;
 }
 
-/// Copy constructor
-Entry::Entry(const Entry& c)
-  : NamedObject(c), detector(c.detector), type(c.type), value(c.value), validity(c.validity)
-{
-  InstanceCount::increment(this);
-}
-
-/// Default destructor
-Entry::~Entry()   {
-  InstanceCount::decrement(this);
-}
-
-/// Assignment operator
-Entry& Entry::operator=(const Entry& c)   {
-  if ( this != &c )  {
-    this->NamedObject::operator=(c);
-    detector = c.detector;
-    type = c.type;
-    value = c.value;
-    validity = c.validity;
-  }
-  return *this;
+/// Access safely the IOV-type
+const IOVType* Interna::ConditionObject::iov_type() const    {
+  if ( iov && iov->iovType ) return iov->iovType;
+  invalidHandleError<IOVType>();
+  return 0;
 }
 
 /// Standard constructor
-ConditionContainer::ConditionContainer() : NamedObject() {
+Interna::ConditionContainer::ConditionContainer() : NamedObject(), entries() {
   InstanceCount::increment(this);
 }
 
 /// Default destructor
-ConditionContainer::~ConditionContainer() {
+Interna::ConditionContainer::~ConditionContainer() {
   removeElements();
   InstanceCount::decrement(this);
 }
 
-/// Clear all conditions. Auto-delete of all existing entries
-void ConditionContainer::removeElements()    {
-  for(Entries::iterator i=entries.begin(); i != entries.end(); ++i)
-    delete (*i).second.ptr();
+/// Clear all attached conditions.
+void Interna::ConditionContainer::removeElements()    {
+  dd4hep_lock_t locked_call(s_conditionsMutex);
+  for(Entries::iterator i=entries.begin(); i!=entries.end();++i)
+    (*i).second->flags &= ~(ConditionObject::ACTIVE);
   entries.clear();
 }
 
+void Interna::ConditionContainer::add(Condition condition)   {
+  ConditionObject* o = condition.ptr();
+  if ( o )  {
+    if ( !o->hash ) o->hash = hash32(condition.name());
+    dd4hep_lock_t locked_call(s_conditionsMutex);
+    Entries::iterator i=entries.find(o->hash);
+    o->flags |= ConditionObject::ACTIVE;
+    if ( i != entries.end() )  {
+      (*i).second->flags &= ~(ConditionObject::ACTIVE);
+      (*i).second = o;
+      return;
+    }
+    entries[o->hash] = o;
+    return;
+  }
+  invalidHandleError<Condition>();
+}
+
+void Interna::ConditionContainer::remove(int condition_hash)   {
+  dd4hep_lock_t locked_call(s_conditionsMutex);
+  Entries::iterator i=entries.find(condition_hash);
+  if ( i != entries.end() )  {
+    (*i).second->flags &= ~(ConditionObject::ACTIVE);
+  }
+}
+
+void Interna::ConditionContainer::lock()   {
+  s_conditionsMutex.lock();
+}
+
+void Interna::ConditionContainer::unlock()   {
+  s_conditionsMutex.unlock();
+}
+
+/// Protected destructor
+ConditionsLoader::~ConditionsLoader()   {
+}
