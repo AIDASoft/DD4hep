@@ -129,12 +129,17 @@ void  DD4hep::XML::setDetectorTypeFlag( DD4hep::XML::Handle_t e, DD4hep::Geometr
   xml_det_t     x_det     = e;
   string        det_name  = x_det.nameStr();
   
-  xml_comp_t    x_dettype     =  x_det.child( DD4hep::XML::Strng_t("type_flags") ) ;
+  try{
+    xml_comp_t    x_dettype     =  x_det.child( DD4hep::XML::Strng_t("type_flags") ) ;
+    
+    unsigned int typeFlag = x_dettype.type() ;
+    
+    printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector :%s set to 0x%x", det_name.c_str(), typeFlag ) ; 
+    
+    sdet.setTypeFlag( typeFlag ) ;
 
-  unsigned int typeFlag = x_dettype.type() ;
- 
-  printout(DEBUG,"Utilities","+++ setDetectorTypeFlags for detector :%s set to 0x%x", det_name.c_str(), typeFlag ) ; 
+  } catch(std::runtime_error){
 
-  sdet.setTypeFlag( typeFlag ) ;
-
+    printout(INFO,"Utilities","+++ setDetectorTypeFlags for detector :%s no xml element <type_flags/> found - nothing to set ", det_name.c_str() ) ; 
+  }
 }
