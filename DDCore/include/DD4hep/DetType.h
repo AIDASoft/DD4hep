@@ -53,7 +53,9 @@ namespace DD4hep {
       MUON	   = 1 << 13, 
       SUPPORT      = 1 << 14,
       BEAMPIPE     = 1 << 15, 
-      COIL         = 1 << 16 
+      COIL         = 1 << 16,
+      AUXILIARY    = 1 << 16 
+
    } ;
     
 
@@ -114,6 +116,8 @@ namespace DD4hep {
     if( t.is( DetType::SUPPORT      ) ) os << "SUPPORT, " ;
     if( t.is( DetType::BEAMPIPE     ) ) os << "BEAMPIPE, " ;
     if( t.is( DetType::COIL         ) ) os << "COIL, " ;
+    if( t.is( DetType::AUXILIARY    ) ) os << "AUXILIARY, " ;
+
     return os ;
   }
 

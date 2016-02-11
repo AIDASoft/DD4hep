@@ -1,5 +1,4 @@
-<
-!--
+<!--
     define global constants with enums defined in 
     $DD4hepINSTALL/DDCore/include/DD4hep/DetType.h
     NB: if that file is changed this file needs to
@@ -25,7 +24,7 @@
   <constant name="DetType_SUPPORT"         value =  " 0x4000 "/>
   <constant name="DetType_BEAMPIPE"        value =  " 0x8000 "/>
   <constant name="DetType_COIL"            value =  " 0x10000 "/>
-  <!-- <constant name="DetType_bit_ 17 " value =  " 0x20000 "/> -->
+  <constant name="DetType_AUXILIARY"       value =  " 0x20000 "/>
   <!-- <constant name="DetType_bit_ 18 " value =  " 0x40000 "/> -->
   <!-- <constant name="DetType_bit_ 19 " value =  " 0x80000 "/> -->
   <!-- <constant name="DetType_bit_ 20 " value =  " 0x100000 "/> -->
