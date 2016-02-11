@@ -33,7 +33,7 @@
  */
 namespace DD4hep  {
 
-  namespace   {
+  namespace {
     /// Some utility class to specialize the converters:
     class include;
     class arbitrary;
@@ -50,7 +50,7 @@ using namespace DD4hep::Conditions;
 using Geometry::DetElement;
 using std::string;
 
-namespace {
+namespace DD4hep {
   struct ConversionArg {
     DetElement detector;
     ConditionsStack* stack;
