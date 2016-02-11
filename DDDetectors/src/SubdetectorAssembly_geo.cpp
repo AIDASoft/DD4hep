@@ -35,6 +35,8 @@ static Ref_t create_element(LCDD& lcdd, xml_h e, Ref_t)  {
   RotationZYX rot;
 
   sdet.setType("compound");
+  XML::setDetectorTypeFlag( e, sdet ) ;
+
   if( usePos ) {
     pos = Position(x_det.position().x(), x_det.position().y(), x_det.position().z());
   }
