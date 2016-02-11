@@ -46,6 +46,15 @@ namespace DD4hep {
         printout(INFO,test,text_format, c.name().c_str(), value, typeName(c.typeInfo()).c_str());
       }
 
+      template void __print_bound_val<short>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<int>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<long>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<unsigned short>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<unsigned int>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<unsigned long>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<float>(Condition c, const char* norm, const char* fmt);
+      template void __print_bound_val<double>(Condition c, const char* norm, const char* fmt);
+
       template <> void print_bound_value<string>(Condition c, const char*)   {
         const char* test = c.detector().name();
         c.bind<string>();
@@ -76,6 +85,7 @@ namespace DD4hep {
 
       template <> void print_bound_value<double>(Condition c, const char* norm)
       {       __print_bound_val<double>(c, norm, "%g");     }
+
 
       template <> void print_bound_value<vector<double> >(Condition c, const char*)   {
         const char* test = c.detector().name();

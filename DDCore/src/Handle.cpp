@@ -36,6 +36,22 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
 
+short DD4hep::_toShort(const string& value) {
+  string s(value);
+  size_t idx = s.find("(int)");
+  if (idx != string::npos)
+    s.erase(idx, 5);
+  while (s[0] == ' ')
+    s.erase(0, 1);
+  double result = eval.evaluate(s.c_str());
+  if (eval.status() != XmlTools::Evaluator::OK) {
+    cerr << value << ": ";
+    eval.print_error();
+    throw runtime_error("DD4hep: Severe error during expression evaluation of " + value);
+  }
+  return (short) result;
+}
+
 int DD4hep::_toInt(const string& value) {
   string s(value);
   size_t idx = s.find("(int)");
@@ -92,12 +108,28 @@ double DD4hep::_toDouble(const string& value) {
   return result;
 }
 
+template <> short DD4hep::_multiply<short>(const string& left, const string& right) {
+  return (short) _toDouble(left + "*" + right);
+}
+
+template <> unsigned short DD4hep::_multiply<unsigned short>(const string& left, const string& right) {
+  return (unsigned short) _toDouble(left + "*" + right);
+}
+
 template <> int DD4hep::_multiply<int>(const string& left, const string& right) {
   return (int) _toDouble(left + "*" + right);
 }
 
+template <> unsigned int DD4hep::_multiply<unsigned int>(const string& left, const string& right) {
+  return (unsigned int) _toDouble(left + "*" + right);
+}
+
 template <> long DD4hep::_multiply<long>(const string& left, const string& right) {
   return (long) _toDouble(left + "*" + right);
+}
+
+template <> unsigned long DD4hep::_multiply<unsigned long>(const string& left, const string& right) {
+  return (unsigned long) _toDouble(left + "*" + right);
 }
 
 template <> float DD4hep::_multiply<float>(const string& left, const string& right) {
@@ -146,6 +178,10 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
 
 string DD4hep::_toString(bool value) {
   return value ? "true" : "false";
+}
+
+string DD4hep::_toString(short value, const char* fmt) {
+  return __to_string((int)value, fmt);
 }
 
 string DD4hep::_toString(int value, const char* fmt) {
