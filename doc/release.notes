@@ -3,11 +3,33 @@
 DD4hep  ----  Release Notes
 =================================
 
+ --------
+| v00-15 |  
+ --------   
+
+ 2016-02-10 F.Gaede
+  - added utility  DD4hep::XML::setDetectorTypeFlag()
+    to set the TypeFlag from xml element <type_flag type="0x42"/>
+  - select detectors with 
+    DD4hep::Geometry::DetectorSelector(lcdd).detectors(  ( DD4hep::DetType::TRACKER | DD4hep::DetType::ENDCAP )) ;
+  - used in UtilityApps/dumpdetector.cc
+  - added detector_types.xml with int constants defined in DetType.h, include with :
+    <include ref="${DD4hepINSTALL}/DDDetectors/compact/detector_types.xml"/>
+    - add elements to xml, e.g.
+     <type_flags type="DetType_TRACKER +  DetType_ENDCAP  + DetType_PIXEL + DetType_STRIP "/>
+
 2016-02-10 M.Frank
   DDCond
     First implementation of conditions access. Required some movements of files
     from DDG4 (Properties) and some changes in the core conditions implementation.
     The basic infrastructure is now present. Don't know yet however how buggy it is...
+
+2016-02-02 A.Sailer 
+   - add simulator status bit to MCParticles
+
+2016-02-05 F.Gaede
+  - added DetElement::typeFlag() and DetElement::setTypeFlag(unsigned int types)
+  - added utility class DetType for setting detector type properties in type flag
 
 2016-02-03 N.Nikiforou
   DDDetectors
@@ -17,10 +39,37 @@ DD4hep  ----  Release Notes
   - Added DDDetectors to the sources directory so Doxygen picks up the
     plugin documentation
 
+2016-02-02 F.Gaede
+  - set momentum at endpoint (if lcio version > 2.6 ) for MCParticles in Geant4Output2LCIO.cpp 
+  - fixed printlevel in Geant4Action::print()
+  - removed random lines drawn in teveDisplay
+  - dont't print DetectorData by default in dumpdetector
+
+2016-01-18 F.Gaede
+  - fixed default c'tors in DDRec/DetectorData.h  to zero initialize sub-structures (LayerLayout etc)
+
+2016-01-13 F.Gaede
+   - allow the default sensitive action to be a tuple with parameter dictionary in DDG4.py/ddsim.steer e.g.:
+     SIM.action.tracker = ("Geant4TrackerWeightedAction", {"HitPositionCombination" : 1 , "CollectSingleDeposits" :  False } )
+   - fixed endpoint in MC-truth particles
+ 
+2016-01-11 F.Gaede
+  - fix hit momentum in Geant4TrackerAction (Geant4SDActions.cpp)
+
 2016-01-07 A.Sailer
   DDG4
   - Fix the logic for skipping of events at the start of input files: LCIO, HepMC, stdhep and HepEvt
   - Event number in lcio outputfile takes skipped events into account now
+
+2016-01-06 F.Gaede
+   - bug fix in DDSurfaces::ISurface for surface properties (orthogonal/parallel to z)
+   (affected ILD VXD)
+
+2016-01-05 F.Gaede
+ - added print functions for DDRec::DetectorData objects
+ - used in dumpdetector:
+   dumpdetector compact.xml -d 
+
 
 2015-12-09 N.Nikiforou
   UtilityApps/teveDisplay
@@ -31,7 +80,6 @@ DD4hep  ----  Release Notes
   - Renamed surface list collections to "HelperSurfaces" and "SensitiveSurfaces".
   - Changed signature of getSurfaces() to allow setting of name and color of collection.
   
-
 
 2015-12-01 M.Frank
   DDG4
@@ -59,6 +107,20 @@ DD4hep  ----  Release Notes
   DDCore:
   - Support user formats for the default printout statements for nicer printouts.
   - Removal of compiler warnings
+
+2015-11-23 F.Gaede
+ - added glbal method DD4hep::versionString() 
+
+
+2015-10-30 F.Gaede
+ - fixed LCIOFileReader to use sequential reading mode
+   as using direct access always required runNum==0 and sequential evt nums ...
+   
+
+2015-10-15 F.Gaede
+   DDSurfaces::ISurface/Surface
+  - added implemation of conical surfaces 
+    - ICone, VolConeImpl, VolCone, ConeSurface
 
 2015-10-13 M.Frank
   DDG4
@@ -89,6 +151,11 @@ DD4hep  ----  Release Notes
     All calls to HepRandom (CLHEP) or gRandom (ROOT) will re-use 
     this instance. See DDG4/examples/CLICRandom.py for illustration.
   - Updated DDG4 manual.
+
+2015-09-30 F.Gaede
+ - updated createGearForILD.cpp to use new parameters in LayeredCalorimeterData
+  ( innerThickness, innerRadLength, etc)
+
 
 2015-09-15 F.Gaede
   - refactoring of Surface classes:
