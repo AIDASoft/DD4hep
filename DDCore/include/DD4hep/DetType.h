@@ -54,7 +54,7 @@ namespace DD4hep {
       SUPPORT      = 1 << 14,
       BEAMPIPE     = 1 << 15, 
       COIL         = 1 << 16,
-      AUXILIARY    = 1 << 16 
+      AUXILIARY    = 1 << 17 
 
    } ;
     
