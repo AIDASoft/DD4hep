@@ -45,6 +45,19 @@ DD4hep  ----  Release Notes
   - removed random lines drawn in teveDisplay
   - dont't print DetectorData by default in dumpdetector
 
+2016-02-02 A.Sailer
+  DDG4
+  - Implemented SimulatorFlags (DDFORHEP-17)
+    * In ParticleHandler: vertexIsNotEndpointOfParent, Stopped, leftDetector
+    * Steerable distance for vertexIsNotEndpointOfParent
+    * TCUserParticleHanlder Simulator flags: DecayedInTracker, DecayedInCalorimeter
+
+2016-01-21 A.Sailer/M.Frank
+  DDG4
+  - Improved user defined physics constructors
+    * Allows user defined global rangecut
+    * Allows extending particle table (e.g. B-Hadrons unknown to geant4)
+
 2016-01-18 F.Gaede
   - fixed default c'tors in DDRec/DetectorData.h  to zero initialize sub-structures (LayerLayout etc)
 
@@ -55,6 +68,10 @@ DD4hep  ----  Release Notes
  
 2016-01-11 F.Gaede
   - fix hit momentum in Geant4TrackerAction (Geant4SDActions.cpp)
+
+2016-01-11 A.Sailer
+  DDG4
+  - Add LargestAcceptableStep to field setup
 
 2016-01-07 A.Sailer
   DDG4
