@@ -7,6 +7,10 @@ DD4hep  ----  Release Notes
 | v00-15 |  
  --------   
 
+ 2016-02-15 A.Sailer
+  -  LCIOStdHepReader.cpp
+    - fixed memory leak, compiled and valgrinded
+
  2016-02-10 F.Gaede
   - added utility  DD4hep::XML::setDetectorTypeFlag()
     to set the TypeFlag from xml element <type_flag type="0x42"/>
@@ -24,8 +28,6 @@ DD4hep  ----  Release Notes
     from DDG4 (Properties) and some changes in the core conditions implementation.
     The basic infrastructure is now present. Don't know yet however how buggy it is...
 
-2016-02-02 A.Sailer 
-   - add simulator status bit to MCParticles
 
 2016-02-05 F.Gaede
   - added DetElement::typeFlag() and DetElement::setTypeFlag(unsigned int types)
