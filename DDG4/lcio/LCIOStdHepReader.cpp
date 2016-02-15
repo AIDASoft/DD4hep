@@ -95,7 +95,6 @@ LCIOStdHepReader::moveToEvent(int event_number) {
     while ( m_currEvent < event_number ) {
       EVENT::LCCollection* particles = m_reader->readEvent();
       if ( 0 == particles ) return EVENT_READER_ERROR;
-      for_each(particles.begin(),particles.end(),deleteObject<Particle>);
       ++m_currEvent;
     }
   }
