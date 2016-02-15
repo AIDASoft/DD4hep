@@ -335,7 +335,7 @@ class DD4hepSimulation(object):
         gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/STDHEP%d" % index)
         gen.Input="LCIOStdHepReader|"+inputFile
       elif inputFile.endswith(".HEPEvt"):
-        gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/HEPEvt%d" % index)
+        gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/HEPEvt%d" % index)
         gen.Input="Geant4EventReaderHepEvtShort|"+inputFile
       elif inputFile.endswith(".hepevt"):
         gen = DDG4.GeneratorAction(kernel,"Geant4InputAction/hepevt%d" % index)
