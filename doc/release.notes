@@ -130,6 +130,9 @@ DD4hep  ----  Release Notes
 2015-11-23 F.Gaede
  - added glbal method DD4hep::versionString() 
 
+2015-11-13 S.Lu
+ -  Added a new AHcal Barrel segementation: TiledLayerGridXY, to be used e.g.  
+    for the ILD AHcal Barrel Sensitive layer segmentation design.
 
 2015-10-30 F.Gaede
  - fixed LCIOFileReader to use sequential reading mode
