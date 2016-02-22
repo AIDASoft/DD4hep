@@ -35,7 +35,7 @@ namespace DD4hep {
      *  \ingroup DD4HEP_GEOMETRY
      */
     class World : public Handle<WorldObject>  {
-    protected:
+    public:
       /// Internal object type
       typedef WorldObject Object;
       /// Definition of the base handle type
