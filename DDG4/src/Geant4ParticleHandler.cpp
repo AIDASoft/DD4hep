@@ -674,9 +674,9 @@ void Geant4ParticleHandler::setVertexEndpointBit() {
     }
 
     Geant4Particle *parent(pm[ *p->parents.begin() ]);
-    const double X( parent->vex - p->vex );
-    const double Y( parent->vey - p->vey );
-    const double Z( parent->vez - p->vez );
+    const double X( parent->vex - p->vsx );
+    const double Y( parent->vey - p->vsy );
+    const double Z( parent->vez - p->vsz );
     if( sqrt(X*X + Y*Y + Z*Z) > m_minDistToParentVertex ){
       PropertyMask(p->status).set(G4PARTICLE_SIM_PARENT_RADIATED);
     }
