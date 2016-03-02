@@ -439,6 +439,18 @@ class DD4hepSimulation(object):
       gun.position     = self.gun.position
       gun.isotrop      = self.gun.isotrop
       gun.direction    = self.gun.direction
+      if self.gun.thetaMin is not None:
+        gun.ThetaMin = self.gun.thetaMin
+        gun.isotrop = True
+      if self.gun.thetaMax is not None:
+        gun.ThetaMax = self.gun.thetaMax
+        gun.isotrop = True
+      if self.gun.phiMin is not None:
+        gun.PhiMin = self.gun.phiMin
+        gun.isotrop = True
+      if self.gun.phiMax is not None:
+        gun.PhiMax = self.gun.phiMax
+        gun.isotrop = True
     except Exception as e: #pylint: disable=W0703
       print "ERROR: parsing gun options:\n%s\nException: %s " % (self.gun, e )
       exit(1)
