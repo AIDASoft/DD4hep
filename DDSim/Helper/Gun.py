@@ -13,6 +13,10 @@ class Gun( ConfigHelper ):
     self._position = (0.0,0.0,0.0)
     self._isotrop = False
     self._direction = (0,0,1)
+    self.phiMin = None
+    self.phiMax = None
+    self.thetaMin = None
+    self.thetaMax = None
 
   @property
   def isotrop( self ):
