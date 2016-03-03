@@ -20,7 +20,11 @@ class Gun( ConfigHelper ):
 
   @property
   def isotrop( self ):
-    """ isotropic distribution for the particle gun """
+    """ isotropic distribution for the particle gun
+
+    use the options phiMin, phiMax, thetaMin, and thetaMax to limit the range of randomly distributed directions
+    if one of these options is not None the random distribution will be set to True and cannot be turned off!
+    """
     return self._isotrop
   @isotrop.setter
   def isotrop( self, val ):
