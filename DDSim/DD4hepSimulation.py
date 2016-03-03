@@ -235,7 +235,7 @@ class DD4hepSimulation(object):
   #    print " subset list of detectors given - will only instantiate these: " , detectorList
     trackers,calos = [],[]
     for i in lcdd.detectors():
-      det = DDG4.DetElement(i.second)
+      det = DDG4.DetElement(i.second.ptr())
       name = det.name()
       sd =  lcdd.sensitiveDetector( name )
       if sd.isValid():
