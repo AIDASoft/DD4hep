@@ -87,6 +87,7 @@ def run():
   gen.Particle = 'pi+'
   gen.Energy   = 100 * GeV
   gen.Multiplicity = 2
+  gen.Distribution = 'cos(theta)'
   kernel.generatorAction().adopt(gen)
   print "#  Install vertex smearing for this interaction"
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearPi+");
@@ -101,6 +102,7 @@ def run():
   gen.Particle = 'e-'
   gen.Energy   = 25 * GeV
   gen.Multiplicity = 3
+  gen.Distribution = 'uniform'
   kernel.generatorAction().adopt(gen)
   print "  Install vertex smearing for this interaction"
   gen = DDG4.GeneratorAction(kernel,"Geant4InteractionVertexSmear/SmearE-");

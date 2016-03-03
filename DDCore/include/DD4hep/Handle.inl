@@ -19,7 +19,9 @@
 namespace DD4hep {
 
     /// Helper routine called when unrelated types are assigned.
-    template <typename T> void Handle<T>::bad_assignment(const std::type_info& from, const std::type_info& to) {
+    template <typename T> void Handle<T>::bad_assignment(const std::type_info& from, const std::type_info& to) 
+    throw(std::exception) 
+    {  
       invalidHandleAssignmentError(from,to);
     }
 
@@ -38,7 +40,7 @@ namespace DD4hep {
     }
 
     /// Checked object access. Throws invalid handle runtime exception
-    template <typename T> T* Handle<T>::access() const   {
+    template <typename T> T* Handle<T>::access() const   throw(std::exception)   {
       if ( this->m_element ) return this->m_element;
       invalidHandleError(typeid(T));
       return 0; // We have thrown an exception before - does not harm!
@@ -48,7 +50,9 @@ namespace DD4hep {
 
 #define DD4HEP_INSTANTIATE_HANDLE(X)                                    \
   namespace DD4hep {                                                    \
-    template <> void Handle<X>::verifyObject() const {		        \
+    template <> void Handle<X>::verifyObject() const                    \
+      throw(std::exception)                                             \
+      {	                                                      	        \
       increment_object_validations();					\
       if (m_element && dynamic_cast<X*>((TObject*)m_element) == 0) {	\
         bad_assignment(typeid(*m_element), typeid(X));		        \
@@ -66,7 +70,9 @@ namespace DD4hep {
       p->name = n;							\
       p->type = t;							\
     }									\
-    template <> void Handle<X>::verifyObject() const {		        \
+    template <> void Handle<X>::verifyObject() const  		        \
+      throw(std::exception)                                             \
+      {	                                                      	        \
       increment_object_validations();                                   \
       if (m_element && dynamic_cast<X*>((NamedObject*)m_element) == 0) {\
         bad_assignment(typeid(*m_element), typeid(X));		        \

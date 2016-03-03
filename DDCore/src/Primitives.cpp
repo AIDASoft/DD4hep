@@ -152,10 +152,14 @@ std::string DD4hep::typeName(const std::type_info& typ) {
   return __typeinfoName(typ);
 }
 
+/// Default destructor of specialized exception
+DD4hep::invalid_handle_exception::~invalid_handle_exception()  {
+}
+
 void DD4hep::invalidHandleError(const std::type_info& type)
   throw(std::exception)
 {
-  throw std::runtime_error("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
+  throw invalid_handle_exception("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
 }
 
 void DD4hep::invalidHandleAssignmentError(const std::type_info& from, 
@@ -167,7 +171,7 @@ void DD4hep::invalidHandleAssignmentError(const std::type_info& from,
   msg += " to ";
   msg += typeName(to);
   msg += " not possible!!";
-  throw std::runtime_error(msg);
+  throw invalid_handle_exception(msg);
 }
 
 /// Throw exception when handles are check for validity
@@ -184,6 +188,61 @@ void DD4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ
   if (typ1 != typ2) {
     throw unrelated_type_error(typ1, typ2, text);
   }
+}
+
+namespace DD4hep   {
+  template<> const char* Primitive<bool>::default_format()           { return "%d"; }
+  template<> const char* Primitive<char>::default_format()           { return "%c"; }
+  template<> const char* Primitive<unsigned char>::default_format()  { return "%02X"; }
+  template<> const char* Primitive<short>::default_format()          { return "%d"; }
+  template<> const char* Primitive<unsigned short>::default_format() { return "%04X"; }
+  template<> const char* Primitive<int>::default_format()            { return "%d"; }
+  template<> const char* Primitive<unsigned int>::default_format()   { return "%08X"; }
+  template<> const char* Primitive<long>::default_format()           { return "%ld"; }
+  template<> const char* Primitive<unsigned long>::default_format()  { return "%016X"; }
+  template<> const char* Primitive<float>::default_format()          { return "%f"; }
+  template<> const char* Primitive<double>::default_format()         { return "%g"; }
+  template<> const char* Primitive<char*>::default_format()          { return "%s"; }
+  template<> const char* Primitive<const char*>::default_format()    { return "%s"; }
+  template<> const char* Primitive<std::string>::default_format()    { return "%s"; }
+
+  /// Generic function to convert to string
+  template <typename T> std::string Primitive<T>::toString(T value) {
+    char text[1024];
+    ::snprintf(text,sizeof(text),default_format(),value);
+    return text;
+  }
+
+  /// Convert string to string
+  template <> std::string Primitive<const char*>::toString(const char* value) {
+    if ( value )  {
+      return value;
+    }
+    throw std::runtime_error("Failed to convert (char*)NULL to std::string!");
+  }
+  /// Convert string to string
+  template <> std::string Primitive<char*>::toString(char* value) {
+    if ( value )  {
+      return value;
+    }
+    throw std::runtime_error("Failed to convert (char*)NULL to std::string!");
+  }
+  /// Convert string to string
+  template <> std::string Primitive<std::string>::toString(std::string value) {
+    return value;
+  }
+
+  template std::string Primitive<bool>::toString(bool value);
+  template std::string Primitive<char>::toString(char value);
+  template std::string Primitive<unsigned char>::toString(unsigned char value);
+  template std::string Primitive<short>::toString(short value);
+  template std::string Primitive<unsigned short>::toString(unsigned short value);
+  template std::string Primitive<int>::toString(int value);
+  template std::string Primitive<unsigned int>::toString(unsigned int value);
+  template std::string Primitive<long>::toString(long value);
+  template std::string Primitive<unsigned long>::toString(unsigned long value);
+  template std::string Primitive<float>::toString(float value);
+  template std::string Primitive<double>::toString(double value);
 }
 
 /// Initializing Constructor

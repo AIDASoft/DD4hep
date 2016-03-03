@@ -74,7 +74,9 @@ void BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), voi
     return;
   }
   else if ( grammar == g )  {
-    return;
+    // We cannot ingore secondary requests for data bindings.
+    // This leads to memory leaks in the caller!
+    except("Conditions","You may not bind conditions multiple times!");
   }
   typeinfoCheck(grammar->type(),g->type(),"Conditions data blocks may not be assigned.");
 }

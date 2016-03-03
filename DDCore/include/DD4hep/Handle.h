@@ -176,15 +176,15 @@ namespace DD4hep {
       return *(Q*) m_element;
     }
     /// Checked object access. Throws invalid handle runtime exception
-    T* access() const;
+    T* access() const throw(std::exception);
     /// Verify the object type after a (re-)assignment
-    void verifyObject() const;
+    void verifyObject() const throw(std::exception);
     /// Access the object name (or "" if not supported by the object)
     const char* name() const;
-    /// Helper routine called when unrelated types are assigned.
-    static void bad_assignment(const std::type_info& from, const std::type_info& to);
     /// Assign a new named object. Note: object references must be managed by the user
     void assign(Implementation* n, const std::string& nam, const std::string& title);
+    /// Helper routine called when unrelated types are assigned.
+    static void bad_assignment(const std::type_info& from, const std::type_info& to) throw(std::exception);
   };
   /// Default Ref_t definition describing named objects  \ingroup DD4HEP_GEOMETRY
   typedef Handle<NamedObject> Ref_t;

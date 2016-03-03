@@ -21,6 +21,7 @@
 #include "DD4hep/DetFactoryHelper.h"
 
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsInterna.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -52,13 +53,19 @@ namespace DD4hep {
         void dump_conditions_pools();
         static void dump_detector_element(DetElement elt);
         static void dump_conditions_tree(DetElement elt);
-        
       };
 
       template <typename T> void print_condition(Condition condition);
       template <typename T> void print_bound_value(Condition condition, const char* norm=0);
       template <typename T> void print_conditions(const RangeConditions& rc);
       void check_discrete_condition(Condition c, const IOV& iov);
+
+      template<typename T> const T& access_val(Condition c)   {
+        if ( !c->is_bound() )   {
+          c.bind<T>();
+        }
+        return c.get<T>();
+      }
     }
   }
 }

@@ -25,6 +25,44 @@ using Geometry::DetElement;
 namespace  {
 
 
+  void print_tpc_epoch_conditions(Test::TestEnv& env, const IOV& iov_epoch, bool check = true)   {
+    Condition cond = env.manager.get(env.detector,"AmbientTemperature",iov_epoch);
+    Test::print_condition<void>(cond);
+    cond = env.detector.condition("AmbientTemperature",iov_epoch);
+    if ( check ) Test::check_discrete_condition(cond, iov_epoch);
+    Test::print_condition<void>(cond);
+    cond = env.detector.condition("ExternalPressure",iov_epoch);
+    if ( check ) Test::check_discrete_condition(cond, iov_epoch);
+    Test::print_condition<void>(cond);
+    cond = env.detector.condition("SomeMultiParams",iov_epoch);
+    if ( check ) Test::check_discrete_condition(cond, iov_epoch);
+    Test::print_condition<void>(cond);
+    cond->value = "[5,6,7,8,9,10,11,12,13,14]";
+    cond.rebind();
+    Test::print_condition<void>(cond);
+  }
+  void print_tpc_run_conditions(Test::TestEnv& env, const IOV& iov_run, bool check = true)   {
+    Condition cond = env.detector.condition("alignment",iov_run);
+    if ( check ) Test::check_discrete_condition(cond, iov_run);
+    Test::print_condition<void>(cond);
+    cond = env.detector.condition("TPC_A_align",iov_run);
+    if ( check ) Test::check_discrete_condition(cond, iov_run);
+    Test::print_condition<void>(cond);
+    cond = env.daughter("TPC_SideA").condition("alignment",iov_run);
+    if ( check ) Test::check_discrete_condition(cond, iov_run);
+    Test::print_condition<void>(cond);
+  }
+  void print_tpc_discrete_conditions(Test::TestEnv& env, const IOV& iov_epoch, const IOV& iov_run)   {
+    print_tpc_epoch_conditions(env, iov_epoch);
+    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    printout(INFO,"Example","SUCCESS: +++ Conditions access OK for iov:%s!",iov_epoch.str().c_str());
+    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    print_tpc_run_conditions(env, iov_run);
+    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    printout(INFO,"Example","SUCCESS: +++ DISCRETE Conditions access OK for iov:%s!",iov_run.str().c_str());
+    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+  }
+
   void print_tpc_discrete_conditions(Test::TestEnv& env, int epoch_min, int epoch_max, int run_min, int run_max)   {
     IOV iov_epoch(env.epoch), iov_run(env.run);
     iov_epoch.keyData.first  = epoch_min;
@@ -36,34 +74,7 @@ namespace  {
     env.manager.enable(iov_run);
     env.manager.prepare(iov_epoch);
     env.manager.enable(iov_epoch);
-
-    Condition cond = env.manager.get(env.detector,"AmbientTemperature",iov_epoch);
-    Test::print_condition<void>(cond);
-    cond = env.detector.condition("AmbientTemperature",iov_epoch);
-    Test::check_discrete_condition(cond, iov_epoch);
-    Test::print_condition<void>(cond);
-    cond = env.detector.condition("ExternalPressure",iov_epoch);
-    Test::check_discrete_condition(cond, iov_epoch);
-    Test::print_condition<void>(cond);
-    cond = env.detector.condition("SomeMultiParams",iov_epoch);
-    Test::check_discrete_condition(cond, iov_epoch);
-    Test::print_condition<void>(cond);
-    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example","SUCCESS: +++ Conditions access OK for iov:%s!",iov_epoch.str().c_str());
-    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-
-    cond = env.detector.condition("alignment",iov_run);
-    Test::check_discrete_condition(cond, iov_run);
-    Test::print_condition<void>(cond);
-    cond = env.detector.condition("TPC_A_align",iov_run);
-    Test::check_discrete_condition(cond, iov_run);
-    Test::print_condition<void>(cond);
-    cond = env.daughter("TPC_SideA").condition("alignment",iov_run);
-    Test::check_discrete_condition(cond, iov_run);
-    Test::print_condition<void>(cond);
-    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example","SUCCESS: +++ DISCRETE Conditions access OK for iov:%s!",iov_run.str().c_str());
-    printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    print_tpc_discrete_conditions(env, iov_epoch, iov_run);
   }
 
   void print_tpc_discrete_conditions(Test::TestEnv& env)   {
@@ -93,7 +104,7 @@ namespace  {
 
   int example1(LCDD& lcdd, int, char** )  {
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example1","+++ Executing Conditions example No. 1: Test conditions access");
+    printout(INFO,"Example1","+++ Executing Conditions example No. 1: Test conditions access.    ");
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Test::TestEnv env(lcdd, "TPC");
 
@@ -114,7 +125,7 @@ namespace  {
 
   int example2(LCDD& lcdd, int argc, char** argv)  {
     printout(INFO,"Example2","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example2","+++ Executing Conditions example No. 2: Dump conditions tree");
+    printout(INFO,"Example2","+++ Executing Conditions example No. 2: Dump conditions tree.      ");
     printout(INFO,"Example2","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     DetElement det = lcdd.world();
     string args = "";
@@ -124,7 +135,48 @@ namespace  {
     return 1;
   }
 
-  struct Callee  {
+  int example3(LCDD& lcdd, int, char** )  {
+    printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    printout(INFO,"Example1","+++ Executing Conditions example No. 3: Conditions register/enable");
+    printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+    Test::TestEnv env(lcdd, "TPC");
+    
+    env.add_xml_data_source("/examples/Conditions/xml/TPC.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_filler.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_123456.xml");
+
+    
+    IOV iov_epoch(env.epoch), iov_run(env.run);
+    iov_epoch.keyData.first  = 1396887257;
+    iov_epoch.keyData.second = 1396887257;
+    iov_run.keyData.first    = 563543;
+    iov_run.keyData.second   = 563543;
+
+    env.manager.prepare(iov_run);
+    env.manager.enable(iov_run);
+    env.manager.prepare(iov_epoch);
+    env.manager.enable(iov_epoch);
+    print_tpc_epoch_conditions(env, iov_epoch);
+    print_tpc_run_conditions(env, iov_run, true);
+    printout(INFO,"Example1","===================================================================");
+
+    printout(INFO,"Example1","===================================================================");
+    iov_run.keyData.first = iov_run.keyData.second = 123456;
+    env.manager.prepare(iov_run);
+    iov_run.keyData.first = iov_run.keyData.second = 563543;
+    print_tpc_run_conditions(env, iov_run, false);
+    printout(INFO,"Example1","===================================================================");
+
+    printout(INFO,"Example1","===================================================================");
+    iov_run.keyData.first = iov_run.keyData.second = 123456;
+    env.manager.enable(iov_run);
+    print_tpc_run_conditions(env, iov_run, true);
+    return 1;
+  }
+
+ struct Callee  {
     int m_param;
     Callee() : m_param(0) {}
     void call(unsigned long tags, DetElement& det, void* param)    {
@@ -147,7 +199,7 @@ namespace  {
 
   int DD4hep_CallbackInstallTest(LCDD& lcdd, int argc, char** argv)  {
     printout(INFO,"Example3","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example3","+++ Executing DD4hepCallbackInstallTest: Install user callbacks");
+    printout(INFO,"Example3","+++ Executing DD4hepCallbackInstallTest: Install user callbacks.   ");
     printout(INFO,"Example3","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     string args = "";
     for(int i=0; i<argc; ++i) { args += argv[i], args += " "; };
@@ -160,5 +212,6 @@ namespace  {
 
 
 DECLARE_APPLY(DD4hepConditionsAccessTest,example1)
+DECLARE_APPLY(DD4hepExample3,example3)
 DECLARE_APPLY(DD4hepConditionsTreeDump,example2)
 DECLARE_APPLY(DD4hepCallbackInstallTest,DD4hep_CallbackInstallTest)

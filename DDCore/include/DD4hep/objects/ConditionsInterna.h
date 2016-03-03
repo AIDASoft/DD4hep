@@ -162,6 +162,8 @@ namespace DD4hep {
         const IOV* iov_data() const;
         /// Access safely the IOV-type
         const IOVType* iov_type() const;
+        /// Check if object is already bound....
+        bool is_bound()  const  {  return data.is_bound(); }
       };
 
       /// The data class behind a conditions container handle.
@@ -258,11 +260,14 @@ namespace DD4hep {
   DD4HEP_DEFINE_CONDITIONS_TYPE(x)              \
   DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>) \
   DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)   \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)    \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::deque<x>)  \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)  \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::ulong_map_t) \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::string_map_t)
 
 #define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)      \
   DD4HEP_DEFINE_CONDITIONS_CONT(x)              \
   DD4HEP_DEFINE_CONDITIONS_CONT(unsigned x)
-
 
 #endif    /* DD4HEP_GEOMETRY_CONDITIONINTERNA_H    */

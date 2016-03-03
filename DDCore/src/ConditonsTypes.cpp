@@ -13,6 +13,7 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/Primitives.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
 #include "Math/Point3D.h"
@@ -25,6 +26,7 @@
 #include <list>
 #include <set>
 #include <map>
+#include <deque>
 
 DD4HEP_DEFINE_CONDITIONS_U_CONT(char)
 DD4HEP_DEFINE_CONDITIONS_U_CONT(short)
@@ -35,15 +37,9 @@ DD4HEP_DEFINE_CONDITIONS_U_CONT(long long)
 DD4HEP_DEFINE_CONDITIONS_CONT(bool)
 DD4HEP_DEFINE_CONDITIONS_CONT(float)
 DD4HEP_DEFINE_CONDITIONS_CONT(double)
-
-DD4HEP_DEFINE_CONDITIONS_TYPE(std::string)
-DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<std::string>)
-DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<std::string>)
-DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<std::string>)
+DD4HEP_DEFINE_CONDITIONS_CONT(std::string)
 
 // ROOT::Math Object instances
-typedef std::map<std::string, int> map_string_int;
-DD4HEP_DEFINE_CONDITIONS_TYPE(map_string_int)
-DD4HEP_DEFINE_CONDITIONS_TYPE(ROOT::Math::XYZPoint)
-DD4HEP_DEFINE_CONDITIONS_TYPE(ROOT::Math::XYZVector)
-DD4HEP_DEFINE_CONDITIONS_TYPE(ROOT::Math::PxPyPzEVector)
+DD4HEP_DEFINE_CONDITIONS_CONT(ROOT::Math::XYZPoint)
+DD4HEP_DEFINE_CONDITIONS_CONT(ROOT::Math::XYZVector)
+DD4HEP_DEFINE_CONDITIONS_CONT(ROOT::Math::PxPyPzEVector)

@@ -3,6 +3,14 @@
 DD4hep  ----  Release Notes
 =================================
 
+2016-03-03 M.Frank
+  - Improve/complete job options type palette. 
+  - Allow modify the Geant4IsotropGenerator to shoot particle distributions according
+    to several distributions:
+    flat in : uniform, cos(theta), eta/pseudorapidity, ffbar (1+cos^2 theta)
+    Option: generator.Distribution = 'cos(theta)'
+    Default is uniform.
+
  --------
 | v00-15 |  
  --------   

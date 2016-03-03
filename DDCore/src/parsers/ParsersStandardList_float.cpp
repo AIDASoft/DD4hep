@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -9,8 +9,5 @@
 // For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 //
 //==========================================================================
-#include "ParsersStandardMiscCommon.h"
-
-int DD4hep::Parsers::parse(std::map<std::string, std::vector<std::string> >& result, const std::string& input) {
-  return DD4hep::Parsers::parse_(result, input);
-}
+#include "ParsersStandardListCommon.h"
+PARSERS_DEF_FOR_LIST(float)

@@ -23,6 +23,7 @@
 //==============================================================================
 #include <string>
 #include <vector>
+#include <deque>
 #include <list>
 #include <set>
 #include <map>
@@ -208,7 +209,7 @@ namespace DD4hep {  namespace Parsers {
     template <typename Iterator,typename InnerT,typename AllocatorT,typename Skipper>
     struct Grammar_<Iterator, std::vector<InnerT, AllocatorT>, Skipper >    {
       typedef
-      VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>,Skipper>
+      VectorGrammar<Iterator, std::vector<InnerT, AllocatorT>, Skipper>
       Grammar;
     };
     // ----------------------------------------------------------------------------
@@ -217,16 +218,26 @@ namespace DD4hep {  namespace Parsers {
     template <typename Iterator, typename InnerT, typename AllocatorT,typename Skipper>
     struct Grammar_<Iterator, std::list<InnerT, AllocatorT>, Skipper >      {
       typedef
-      VectorGrammar<Iterator, std::list<InnerT, AllocatorT>,Skipper>
+      VectorGrammar<Iterator, std::list<InnerT, AllocatorT>, Skipper>
       Grammar;
     };
     // ----------------------------------------------------------------------------
     // Register VectorGrammar for std::set:
     // ----------------------------------------------------------------------------
-    template <typename Iterator, typename InnerT, typename CompareT,typename AllocatorT, typename Skipper>
+    template <typename Iterator, typename InnerT, typename CompareT, typename AllocatorT, typename Skipper>
     struct Grammar_<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper >      {
       typedef
-      VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>,Skipper>
+      VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper>
+      Grammar;
+    };
+
+    // ----------------------------------------------------------------------------
+    // Register VectorGrammar for std::set:
+    // ----------------------------------------------------------------------------
+    template <typename Iterator, typename InnerT, typename AllocatorT, typename Skipper>
+    struct Grammar_<Iterator, std::deque<InnerT, AllocatorT>, Skipper >      {
+      typedef
+      VectorGrammar<Iterator, std::deque<InnerT, AllocatorT>, Skipper>
       Grammar;
     };
 
@@ -270,6 +281,7 @@ namespace DD4hep {  namespace Parsers {
       //ph::function<Operations> op;
       // ----------------------------------------------------------------------------
     }; // END PairGrammar
+
     // ----------------------------------------------------------------------------
     // Register PairGrammar:
     // ----------------------------------------------------------------------------
@@ -279,6 +291,7 @@ namespace DD4hep {  namespace Parsers {
     {
       typedef PairGrammar<Iterator, std::pair<KeyT, ValueT>, Skipper> Grammar;
     };
+
     // ============================================================================
     template< typename Iterator, typename MapT, typename Skipper>
     struct MapGrammar : qi::grammar<Iterator,MapT(), Skipper>      {

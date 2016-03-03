@@ -18,6 +18,7 @@
 #include "DDSegmentation/Segmentation.h"
 
 // C/C++ include files
+#include <limits>
 #include <algorithm>
 
 /// Namespace for the AIDA detector description toolkit
@@ -45,6 +46,20 @@ namespace DD4hep {
   inline unsigned int hash32(const std::string& key) {
     return hash32(key.c_str());
   }
+  
+  /// Specialized exception to be thrown if invalid handles are accessed
+  class invalid_handle_exception : public std::runtime_error  {
+  public:
+    /// Initializing constructor
+    invalid_handle_exception(const char* msg) : std::runtime_error(msg) {}
+    /// Initializing constructor
+    invalid_handle_exception(const std::string& msg) : std::runtime_error(msg) {}
+    /// Generic copy constructor
+    invalid_handle_exception(const std::exception& e) : std::runtime_error(e.what()) {}
+    /// Default destructor of specialized exception
+    virtual ~invalid_handle_exception();
+  };
+
   /// ABI information about type names
   std::string typeName(const std::type_info& type);
   void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "") throw(std::exception);
@@ -60,6 +75,70 @@ namespace DD4hep {
 
   /// Throw exception when handles are check for validity
   void notImplemented(const std::string& msg)  throw(std::exception);
+
+
+  /// A bit of support for printing primitives
+  /**
+   *
+   * \author  M.Frank
+   * \version 1.0
+   * \ingroup DD4HEP
+   */
+  template<typename T> struct Primitive {
+  public:
+    /// Type decribed by th class
+    typedef T value_t;
+    /// Definition of the vector type
+    typedef std::vector<value_t>             vector_t;
+
+    /// Definition of the short integer mapped type
+    typedef std::pair<short,value_t>          short_pair_t;
+    /// Definition of the unsigned short integer mapped type
+    typedef std::pair<unsigned short,value_t> ushort_pair_t;
+    /// Definition of the integer mapped type
+    typedef std::pair<int,value_t>            int_pair_t;
+    /// Definition of the unsigned integer mapped type
+    typedef std::pair<unsigned int,value_t>   uint_pair_t;
+    /// Definition of the long integer mapped type
+    typedef std::pair<long,value_t>           long_pair_t;
+    /// Definition of the unsigned long integer mapped type
+    typedef std::pair<unsigned long,value_t>  ulong_pair_t;
+    /// Definition of the size_t mapped type
+    typedef std::pair<size_t,value_t>         size_pair_t;
+    /// Definition of the string mapped type
+    typedef std::pair<std::string,value_t>    string_pair_t;
+
+    /// Definition of the short integer mapped type
+    typedef std::map<short,value_t>          short_map_t;
+    /// Definition of the unsigned short integer mapped type
+    typedef std::map<unsigned short,value_t> ushort_map_t;
+    /// Definition of the integer mapped type
+    typedef std::map<int,value_t>            int_map_t;
+    /// Definition of the unsigned integer mapped type
+    typedef std::map<unsigned int,value_t>   uint_map_t;
+    /// Definition of the long integer mapped type
+    typedef std::map<long,value_t>           long_map_t;
+    /// Definition of the unsigned long integer mapped type
+    typedef std::map<unsigned long,value_t>  ulong_map_t;
+    /// Definition of the size_t mapped type
+    typedef std::map<size_t,value_t>         size_map_t;
+    /// Definition of the string mapped type
+    typedef std::map<std::string,value_t>    string_map_t;
+    /// Definition of the limits
+    typedef std::numeric_limits<value_t>     limits;
+
+    /// Access to default printf format
+    static const char* default_format(); 
+    /// Access to the specific printf format. May be overloaded by users
+    static const char* format()          { return default_format();     }
+    /// Access to the RTTI data type
+    static const std::type_info& type()  { return typeid(value_t);      }
+    /// Access to the RTTI data type
+    static std::string type_name()       { return typeName(type());     }
+    /// Auto conversion to string using the default format
+    static std::string toString(T value);
+  };
+
 
   /// Class to perform dynamic casts using unknown pointers.
   /** @class ComponentCast Primitives.h DD4hep/Primitives.h

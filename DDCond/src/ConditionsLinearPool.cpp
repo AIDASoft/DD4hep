@@ -59,7 +59,7 @@ namespace DD4hep {
       }
 
       /// Register a new condition to this pool
-      virtual Condition insert(ConditionsPool* pool, Entry* cond)   {
+      virtual Condition insertEntry(ConditionsPool* pool, Entry* cond)   {
         MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_conditions;
         Condition c = this->create(pool, cond);
         m.insert(m.end(),c.ptr());

@@ -107,7 +107,7 @@ Condition::Condition(const string& nam,const string& typ) : Handle<Object>()  {
 
 /// Assignment operator
 Condition& Condition::operator=(const Condition& c)   {
-  if ( this != &c )  this->m_element = c.m_element;
+  if ( this != &c ) this->m_element = c.m_element;
   return *this;
 }
 
@@ -186,8 +186,16 @@ const DD4hep::BasicGrammar& Condition::descriptor() const   {
 /// Re-evaluate the conditions data according to the previous bound type definition
 Condition& Condition::rebind()    {
   Object* o = access();
+#if 0
+  const IOV* i = o->iov;
+  const IOVType* t = i->iovType;
+  i->fromString(o->validity);
+  if ( t != i->iovType )  {
+    except("Condition","Rebinding condition with different IOV types [%d <> %d] is not allowed!",
+           t ? t->type : -1, i->iovType ? i->iovType->type : -1);
+  }
+#endif
   o->data.fromString(o->value);
-  //o->iov->fromString(o->validity);
   printout(INFO,"Condition","+++ condition:%s : %s rebinding value:%s",
            detector().path().c_str(), name().c_str(), o->value.c_str());
   return *this;

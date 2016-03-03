@@ -24,6 +24,7 @@
 #include <map>
 #include <set>
 #include <list>
+#include <deque>
 #include <string>
 #include <sstream>
 #include "Math/Point3D.h"
@@ -157,6 +158,17 @@ namespace DD4hep {
      */
     template <class TYPE, class ALLOCATOR>
     inline std::ostream& toStream(const std::list<TYPE, ALLOCATOR>& obj, std::ostream& s) {
+      return toStream(obj.begin(), obj.end(), s, "[ ", " ]", " , ");
+    }
+    // ========================================================================
+    /** the partial template specialization of <c>std::deque<TYPE,ALLOCATOR></c>
+     *  printout. The vector is printed a'la Python list: "[ a, b, c ]"
+     *  @author Alexander MAZUROV Alexander.Mazurov@gmail.com
+     *  @author Vanya BELYAEV ibelyaev@physics.syr.edu
+     *  @date 2006-05-12
+     */
+    template <class TYPE, class ALLOCATOR>
+    inline std::ostream& toStream(const std::deque<TYPE, ALLOCATOR>& obj, std::ostream& s) {
       return toStream(obj.begin(), obj.end(), s, "[ ", " ]", " , ");
     }
     // ========================================================================

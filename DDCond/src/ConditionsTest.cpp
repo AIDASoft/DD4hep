@@ -15,7 +15,13 @@
 // Framework include files
 #include "DD4hep/DetectorTools.h"
 #include "ConditionsTest.h"
+
+// C/C++ include files
 #include <vector>
+#include <list>
+#include <set>
+#include <map>
+#include <deque>
 
 using namespace std;
 using namespace DD4hep::Conditions;
@@ -29,72 +35,72 @@ namespace DD4hep {
     /// Namespace for test environments in DDCond
     namespace Test  {
 
-      template <typename T> void print_bound_condition(Condition c, const char* norm)   {}
 
-      template<typename T> void __print_bound_val(Condition c, const char* norm, const char* fmt)  {
+      template <typename T> void print_bound_condition(Condition c, const char* norm)   {}
+      
+
+      template<typename T> void __print_bound_val(Condition c, const char* norm)  {
         const char* test = c.detector().name();
         char text_format[1024];
-        c.bind<T>();
-        T value = c.get<T>();
+        const T& value = access_val<T>(c);
         if ( norm )  {
           T val = _multiply(c.get<T>(),norm);
-          ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s [%s] Type: %%s",fmt,fmt);
+          ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s [%s] Type: %%s",
+                     Primitive<T>::default_format(),Primitive<T>::default_format());
           printout(INFO,test,text_format, c.name().c_str(), value, val, typeName(c.typeInfo()).c_str());
           return;
         }
-        ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s Type: %%s",fmt);
+        ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s Type: %%s",
+                   Primitive<T>::default_format());
         printout(INFO,test,text_format, c.name().c_str(), value, typeName(c.typeInfo()).c_str());
       }
-
-      template void __print_bound_val<short>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<int>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<long>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<unsigned short>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<unsigned int>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<unsigned long>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<float>(Condition c, const char* norm, const char* fmt);
-      template void __print_bound_val<double>(Condition c, const char* norm, const char* fmt);
-
-      template <> void print_bound_value<string>(Condition c, const char*)   {
+      template <> void __print_bound_val<string>(Condition c, const char*)   {
         const char* test = c.detector().name();
-        c.bind<string>();
-        printout(INFO,test,"  Bound value  %s : string value:%s  Type: %s",
-                 c.name().c_str(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str());
+        const string& v = access_val<string>(c);
+        printout(INFO,test,"  Bound value  %s : string value:%s  Type: %s Ptr:%016X",
+                 c.name().c_str(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str(),
+                 (void*)&v);
       }
-
-      template <> void print_bound_value<short>(Condition c, const char* norm)
-      {       __print_bound_val<short>(c, norm, "%d");      }
-
-      template <> void print_bound_value<int>(Condition c, const char* norm)
-      {       __print_bound_val<int>(c, norm, "%d");        }
-
-      template <> void print_bound_value<long>(Condition c, const char* norm)
-      {       __print_bound_val<long>(c, norm, "%d");       }
-
-      template <> void print_bound_value<unsigned short>(Condition c, const char* norm)
-      {       __print_bound_val<unsigned short>(c, norm, "%d");      }
-
-      template <> void print_bound_value<unsigned int>(Condition c, const char* norm)
-      {       __print_bound_val<unsigned int>(c, norm, "%d");        }
-
-      template <> void print_bound_value<unsigned long>(Condition c, const char* norm)
-      {       __print_bound_val<unsigned long>(c, norm, "%d");       }
-
-      template <> void print_bound_value<float>(Condition c, const char* norm)
-      {       __print_bound_val<float>(c, norm, "%g");      }
-
-      template <> void print_bound_value<double>(Condition c, const char* norm)
-      {       __print_bound_val<double>(c, norm, "%g");     }
-
-
-      template <> void print_bound_value<vector<double> >(Condition c, const char*)   {
+      template <typename T> void __print_bound_container(Condition c, const char*)   {
         const char* test = c.detector().name();
-        c.bind<vector<double> >();
-        const vector<double>& v = c.get<vector<double> >();
-        printout(INFO,test,"  Bound value  %s : size:%d = %s Type: %s",
+        const T& v = access_val<T>(c);
+        printout(INFO,test,"  Bound value  %s : size:%d = %s Type: %s Ptr:%016X",
                  c.name().c_str(), int(v.size()), c.block().str().c_str(),
-                 typeName(c.typeInfo()).c_str());
+                 typeName(c.typeInfo()).c_str(), (void*)&v);
       }
+
+
+#define TEMPLATE_SIMPLE_TYPE(x) \
+        template <> void print_bound_value<x>(Condition c, const char* norm)  \
+        {       __print_bound_val<x>(c, norm); }
+
+#define TEMPLATE_CONTAINER_TYPE(container,x)                            \
+        template void __print_bound_container<container >(Condition c, const char* norm); \
+        template <> void print_bound_value<container >(Condition c, const char* norm) \
+        { __print_bound_container<container >(c, norm); } 
+       
+#define TEMPLATE_TYPE(x,f)                                    \
+        TEMPLATE_SIMPLE_TYPE(x)                               \
+        TEMPLATE_CONTAINER_TYPE(vector<x>,x)                  \
+        TEMPLATE_CONTAINER_TYPE(list<x>,x)                    \
+        TEMPLATE_CONTAINER_TYPE(set<x>,x)                     \
+        TEMPLATE_CONTAINER_TYPE(deque<x>,x)                   \
+        TEMPLATE_CONTAINER_TYPE(Primitive<x>::int_map_t,x)    \
+        TEMPLATE_CONTAINER_TYPE(Primitive<x>::size_map_t,x)   \
+        TEMPLATE_CONTAINER_TYPE(Primitive<x>::string_map_t,x)
+
+
+        TEMPLATE_TYPE(char,"%c")
+        TEMPLATE_TYPE(unsigned char,"%02X")
+        TEMPLATE_TYPE(short,"%d")
+        TEMPLATE_TYPE(unsigned short,"%04X")
+        TEMPLATE_TYPE(int,"%d")
+        TEMPLATE_TYPE(unsigned int,"%08X")
+        TEMPLATE_TYPE(long,"%ld")
+        TEMPLATE_TYPE(unsigned long,"%016X")
+        TEMPLATE_TYPE(float,"%f")
+        TEMPLATE_TYPE(double,"%g")
+        TEMPLATE_TYPE(std::string,"%c")
 
       template <> void print_condition<void>(Condition c)   {
         const char* test = c.detector().name();
@@ -122,8 +128,8 @@ namespace DD4hep {
           print_bound_value<unsigned int>(c);
         else if ( type == "unsigned long" )
           print_bound_value<unsigned long>(c);
-        else if ( type == "double" )
-          print_bound_value<double>(c);
+        else if ( type == "float" )
+          print_bound_value<float>(c);
         else if ( type == "double" )
           print_bound_value<double>(c);
         else if ( type == "vector<double>" )
@@ -192,16 +198,16 @@ void Test::TestEnv::add_xml_data_source(const string& file)   {
 void Test::TestEnv::dump_conditions_pools()
 {
   typedef RangeConditions _R;
-  typedef IOVPool::Entries _E;
+  typedef ConditionsIOVPool::Entries _E;
   typedef Interna::ConditionsManagerObject::TypedConditionPool _P;
   int cnt = 0;
   _P& p = this->manager->m_pool;
   for(_P::const_iterator i=p.begin(); i != p.end(); ++i, ++cnt)  {
-    IOVPool* pool = (*i);
+    ConditionsIOVPool* pool = (*i);
     if ( pool )  {
       const _E& e = pool->entries;
       const IOVType* typ = this->manager->iovType(cnt);
-      printout(INFO,"Example","+++ IOVPool for type %s", typ->str().c_str());
+      printout(INFO,"Example","+++ ConditionsIOVPool for type %s", typ->str().c_str());
       for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
         _R rc;
         ConditionsPool* cp = (*j).second;

@@ -55,9 +55,6 @@ Condition ConditionsPool::create(ConditionsPool* pool, const Entry* entry)   {
   return c;
 }
 
-/// Insert a set of conditions
-RangeConditions& conditions();
-
 /// Default constructor
 UpdatePool::UpdatePool() : ConditionsPool()
 {
