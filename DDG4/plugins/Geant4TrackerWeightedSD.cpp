@@ -44,6 +44,29 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
+
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4TrackerWeightedAction
+     *
+     * \brief Sensitive detector meant for tracking detectors with multiple ways to combine steps
+
+     
+      \param integer HitPositionCombination
+        -# Use energy weights to define the position of the energy deposit
+        -# Set the hit position between the step pre and post point
+        -# Set the hit position to the position of the step pre point
+        -# Set the hit position to the position of the step post point
+
+      \param bool CollectSingleDeposits
+        - If true each step is written out
+
+
+     *
+     * @}
+     */
+
     struct TrackerWeighted {
       typedef Geant4HitCollection HitCollection;
 

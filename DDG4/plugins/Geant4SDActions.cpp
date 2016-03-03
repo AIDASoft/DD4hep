@@ -29,6 +29,16 @@ namespace DD4hep {
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //               Geant4SensitiveAction<Geant4Tracker>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4TrackerAction
+     *
+     * \brief Sensitive detector meant for tracking detectors, will produce one hit per step
+
+     *
+     * @}
+     */
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4Tracker>::defineCollections() {
@@ -75,6 +85,16 @@ namespace DD4hep {
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     //               Geant4SensitiveAction<Calorimeter>
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4CalorimeterAction
+     *
+     * \brief Sensitive detector meant for calorimeters
+
+     *
+     * @}
+     */
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4Calorimeter>::defineCollections() {
@@ -138,6 +158,16 @@ namespace DD4hep {
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
+     
+     * \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4OpticalCalorimeterAction
+     *
+     * \brief Sensitive detector meant for optical calorimeters
+
+     *
+     * @}
      */
     struct Geant4OpticalCalorimeter {};
 
@@ -186,6 +216,20 @@ namespace DD4hep {
     //               Geant4SensitiveAction<ScintillatorCalorimeter>
     //               For scintillator with Geant4 BirksLaw effect
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4ScintillatorCalorimeterAction
+     *
+     * \brief Sensitive detector meant for scintillator calorimeters
+
+     This sensitive action will apply Birks' law to the energy deposits
+
+     *
+     * @}
+     */
 
     struct Geant4ScintillatorCalorimeter {};
 
@@ -251,6 +295,21 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
      */
+
+    /** \addtogroup Geant4SDActionPlugin
+     *
+     * @{
+     * \package Geant4TrackerCombineAction
+     *
+     * \brief Sensitive detector meant for tracking detectors will combine
+     * multiple steps of the same track in the same sensitive volume into a
+     * single hit
+
+     *
+     * @}
+     */
+
+
     struct TrackerCombine {
       typedef Geant4HitCollection HitCollection;
       Geant4Tracker::Hit  pre, post;
