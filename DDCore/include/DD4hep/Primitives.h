@@ -20,6 +20,7 @@
 // C/C++ include files
 #include <limits>
 #include <algorithm>
+#include <stdexcept>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -57,7 +58,7 @@ namespace DD4hep {
     /// Generic copy constructor
     invalid_handle_exception(const std::exception& e) : std::runtime_error(e.what()) {}
     /// Default destructor of specialized exception
-    virtual ~invalid_handle_exception();
+    virtual ~invalid_handle_exception() throw();
   };
 
   /// ABI information about type names

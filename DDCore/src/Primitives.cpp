@@ -153,7 +153,7 @@ std::string DD4hep::typeName(const std::type_info& typ) {
 }
 
 /// Default destructor of specialized exception
-DD4hep::invalid_handle_exception::~invalid_handle_exception()  {
+DD4hep::invalid_handle_exception::~invalid_handle_exception() throw() {
 }
 
 void DD4hep::invalidHandleError(const std::type_info& type)
