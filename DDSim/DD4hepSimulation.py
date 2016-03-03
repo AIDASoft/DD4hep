@@ -628,10 +628,10 @@ SIM = DD4hepSimulation()
         steeringFileBase += "## %s \n" % "\n## ".join( parameter.__doc__.splitlines() )
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
-        for opt,valAndDoc in options.iteritems():
+        for opt,valAndDoc in sorted( options.iteritems(), sortParameters ):
           parValue, parDoc = valAndDoc
           if parDoc:
-            steeringFileBase += "## %s\n" % "\n## ".join(parDoc.splitlines())
+            steeringFileBase += "\n## %s\n" % "\n## ".join(parDoc.splitlines())
           ## add quotes if it is a string
           if isinstance( parValue, basestring ):
             steeringFileBase += "SIM.%s.%s = \"%s\"\n" %(parName, opt, parValue)
