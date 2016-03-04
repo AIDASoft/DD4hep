@@ -19,12 +19,18 @@ class ConfigHelper( object ):
     allVars = vars(self)
     for var,val in allVars.iteritems():
       if not var.startswith('_'):
-        finalVars[var] = (val,'')
+        helpName = "_%s_HELP" % var
+        optName = "_%s_OPTIONS" % var
+        doc = getattr(self, helpName) if hasattr(self, helpName) else ''
+        choices = getattr(self, optName) if hasattr(self, optName) else None
+        finalVars[var] = (val, doc, choices)
 
     # now get things defined with @property
     props = [(p, getattr(type(self),p)) for p in dir(type(self)) if isinstance(getattr(type(self),p),property)]
     for propName, prop in props:
-      finalVars[propName] = (getattr(self, propName), prop.__doc__)
+      optName =  "_%s_OPTIONS" % propName
+      choices = getattr(self, optName) if hasattr(self, optName) else None
+      finalVars[propName] = (getattr(self, propName), prop.__doc__, choices)
 
     return finalVars
 
