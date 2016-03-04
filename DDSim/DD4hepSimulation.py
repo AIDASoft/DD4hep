@@ -122,8 +122,8 @@ class DD4hepSimulation(object):
     parser.add_argument("--runType", action="store", choices=("batch","vis","run","shell"), default=self.runType,
                         help="The type of action to do in this invocation"##Note: implicit string concatenation
                         "\nbatch: just simulate some events, needs numberOfEvents, and input file or gun"
-                        "\nvis: enable visualisation"
-                        "\nrun: enable run the macro"
+                        "\nvis: enable visualisation, run the macroFile if it is set"
+                        "\nrun: run the macroFile and exit"
                         "\nshell: enable interactive session")
 
     parser.add_argument("--inputFiles", "-I", nargs='+', action="store", default=self.inputFiles,
