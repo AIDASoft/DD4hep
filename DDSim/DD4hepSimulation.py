@@ -490,7 +490,8 @@ class DD4hepSimulation(object):
                               action="store",
                               dest="%s.%s" % (name, var),
                               default = valAndDoc[0],
-                              help = valAndDoc[1]
+                              help = valAndDoc[1],
+                              choices = valAndDoc[2],
                               # type = type(val),
                              )
 
