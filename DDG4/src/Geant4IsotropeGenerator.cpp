@@ -69,17 +69,21 @@ void Geant4IsotropeGenerator::getParticleDirectionCosTheta(int, ROOT::Math::XYZV
 
 /// Particle distribution flat in eta (pseudo rapidity)
 void Geant4IsotropeGenerator::getParticleDirectionEta(int, ROOT::Math::XYZVector& direction, double& momentum) const   {
+  struct Distribution {
+    static double eta(double x)  { return -1.0*std::log(std::tan(x/2.0)); }
+  };
   Geant4Event& evt = context()->event();
   Geant4Random& rnd = evt.random();
   // See https://en.wikipedia.org/wiki/Pseudorapidity
-  double phi       = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
-  double eta_min   = -1.0*std::log(std::tan(m_thetaMin/2.0));
-  double eta_max   = -1.0*std::log(std::tan(m_thetaMax/2.0));
-  double eta       = eta_min + (eta_max-eta_min)*rnd.rndm();
-  double x1        = std::cos(phi);
-  double x2        = std::sin(phi);
-  double x3        = std::sinh(eta);
-  double r         = std::sqrt(1.0+x3*x3);
+  const double dmin = std::numeric_limits<double>::epsilon();
+  double phi        = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
+  double eta_min    = Distribution::eta(m_thetaMin>dmin ? m_thetaMin : dmin);
+  double eta_max    = Distribution::eta(m_thetaMax>(M_PI-dmin) ? m_thetaMax : M_PI-dmin);
+  double eta        = eta_min + (eta_max-eta_min)*rnd.rndm();
+  double x1         = std::cos(phi);
+  double x2         = std::sin(phi);
+  double x3         = std::sinh(eta);
+  double r          = std::sqrt(1.0+x3*x3);
   direction.SetXYZ(x1/r,x2/r,x3/r);
   momentum = rnd.rndm()*momentum;
 }
