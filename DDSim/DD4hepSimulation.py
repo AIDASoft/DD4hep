@@ -209,6 +209,14 @@ class DD4hepSimulation(object):
       if not self.inputFiles and not self.enableGun:
         self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
 
+    #self.__treatUnknownArgs( parsed, unknown )
+    self.__parseAllHelper( parsed )
+    if self._errorMessages:
+      parser.epilog = "\n".join(self._errorMessages)
+      parser.print_help()
+      exit(1)
+
+
     if self._dumpParameter:
       from pprint import pprint
       print "="*80
@@ -218,13 +226,6 @@ class DD4hepSimulation(object):
 
     if self._dumpSteeringFile:
       self.__printSteeringFile( parser )
-      exit(1)
-
-    #self.__treatUnknownArgs( parsed, unknown )
-    self.__parseAllHelper( parsed )
-    if self._errorMessages:
-      parser.epilog = "\n".join(self._errorMessages)
-      parser.print_help()
       exit(1)
 
   @staticmethod
