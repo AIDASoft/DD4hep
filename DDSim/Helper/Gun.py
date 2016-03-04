@@ -28,10 +28,12 @@ class Gun( ConfigHelper ):
   def distribution( self ):
     """choose the distribution of the random direction for theta
 
-    Options for isotropic distributions in: 'uniform', 'cos(theta)', 'eta' (or
-    'pseudorapidity'), 'ffbar' (distributed flat in 1+cos^2 theta)
+    Options for random distributions:
 
-    'uniform' is the default distribution
+    'uniform' is the default distribution, flat in theta
+    'cos(theta)' is flat in cos(theta)
+    'eta', or 'pseudorapidity' is flat in pseudorapity
+    'ffbar' is distributed according to 1+cos^2(theta)
 
     Setting a distribution will set isotrop = True
     """
