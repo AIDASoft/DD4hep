@@ -545,6 +545,7 @@ namespace DD4hep {
   } /* End namespace Geometry           */
 } /* End namespace DD4hep             */
 
+
 namespace ROOT {
   namespace Math {
     typedef DD4hep::Geometry::Position Position;
@@ -560,7 +561,6 @@ namespace ROOT {
     inline Position mean_direction(const Position& p1, const Position& p2) {
       return 0.5 * (p1 + p2);
     }
-
   }
 }
 

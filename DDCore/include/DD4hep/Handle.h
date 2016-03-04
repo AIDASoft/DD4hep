@@ -303,7 +303,30 @@ namespace DD4hep {
   /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
   template <class T> T _multiply(const std::string& left, const std::string& right);
 
-  /** Block for concrete overloads of type:  short */
+  /** Block for concrete overloads of type:  char */
+  /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
+  template <> char _multiply<char>(const std::string& left, const std::string& right);
+  /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
+  template <> inline char _multiply<char>(char left, const std::string& right) {
+    return left * _toInt(right);
+  }
+  /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
+  template <> inline char _multiply<char>(const std::string& left, char right) {
+    return _toInt(left) * right;
+  }
+
+  /** Block for concrete overloads of type:  unsigned char */
+  /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
+  template <> unsigned char _multiply<unsigned char>(const std::string& left, const std::string& right);
+  /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
+  template <> inline unsigned char _multiply<unsigned char>(unsigned char left, const std::string& right) {
+    return left * _toInt(right);
+  }
+  /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
+  template <> inline unsigned char _multiply<unsigned char>(const std::string& left, unsigned char right) {
+    return _toInt(left) * right;
+  }
+
   /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY
   template <> short _multiply<short>(const std::string& left, const std::string& right);
   /// Generic multiplication using the evaluator: result = left * right  \ingroup DD4HEP_GEOMETRY

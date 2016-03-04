@@ -13,10 +13,12 @@
 //==========================================================================
 
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/Handle.inl"
 #include "XML/Evaluator.h"
 #include <iostream>
 #include <iomanip>
+#include <climits>
 #include <cstring>
 #include <cstdio>
 
@@ -108,12 +110,44 @@ double DD4hep::_toDouble(const string& value) {
   return result;
 }
 
+template <> char DD4hep::_multiply<char>(const string& left, const string& right) {
+  double val = _toDouble(left + "*" + right);
+  if ( val >= double(SCHAR_MIN) && val <= double(SCHAR_MAX) )
+    return (char) (int)val;
+  except("_multiply<char>",
+         "Multiplication %e = %s * %s out of bounds for conversion to char.",
+         val, left.c_str(), right.c_str());
+  return 0;
+}
+
+template <> unsigned char DD4hep::_multiply<unsigned char>(const string& left, const string& right) {
+  double val = _toDouble(left + "*" + right);
+  if ( val >= 0 && val <= double(UCHAR_MAX) )
+    return (unsigned char) (int)val;
+  except("_multiply<char>",
+         "Multiplication %e = %s * %s out of bounds for conversion to unsigned char.",
+         val, left.c_str(), right.c_str());
+  return 0;
+}
+
 template <> short DD4hep::_multiply<short>(const string& left, const string& right) {
-  return (short) _toDouble(left + "*" + right);
+  double val = _toDouble(left + "*" + right);
+  if ( val >= double(SHRT_MIN) && val <= double(SHRT_MAX) )
+    return (short) val;
+  except("_multiply<char>",
+         "Multiplication %e = %s * %s out of bounds for conversion to short.",
+         val, left.c_str(), right.c_str());
+  return 0;
 }
 
 template <> unsigned short DD4hep::_multiply<unsigned short>(const string& left, const string& right) {
-  return (unsigned short) _toDouble(left + "*" + right);
+  double val = _toDouble(left + "*" + right);
+  if ( val >= 0 && val <= double(USHRT_MAX) )
+    return (unsigned short)val;
+  except("_multiply<char>",
+         "Multiplication %e = %s * %s out of bounds for conversion to unsigned short.",
+         val, left.c_str(), right.c_str());
+  return 0;
 }
 
 template <> int DD4hep::_multiply<int>(const string& left, const string& right) {
