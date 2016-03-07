@@ -224,6 +224,7 @@ _import_class('Sim','Geant4PhaseAction')
 _import_class('Sim','Geant4UserParticleHandler')
 _import_class('Sim','Geant4UserInitialization')
 _import_class('Sim','Geant4DetectorConstruction')
+_import_class('Sim','Geant4GeneratorWrapper')
 
 #---------------------------------------------------------------------------
 def _get(self, name):

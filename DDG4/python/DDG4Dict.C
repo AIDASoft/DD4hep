@@ -23,6 +23,7 @@
 #include "DDG4/DDG4Dict.h"
 #include "DDG4/Geant4DataDump.h"
 #include "DDG4/Geant4InputAction.h"
+#include "DDG4/Geant4GeneratorWrapper.h"
 
 namespace DD4hep {
   namespace Simulation  {
@@ -310,6 +311,7 @@ namespace {
 
 #pragma link C++ class FilterHandle;
 #pragma link C++ class Geant4Filter;
+#pragma link C++ class Geant4GeneratorWrapper;
 
 #pragma link C++ class PhaseActionHandle;
 #pragma link C++ class Geant4ActionPhase;
