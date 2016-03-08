@@ -2,10 +2,10 @@ import sys, DDG4
 from SystemOfUnits import *
 
 class CLICSid:
-  def __init__(self):
+  def __init__(self,tracker='Geant4TrackerCombineAction'):
     self.kernel = DDG4.Kernel()
     self.lcdd   = self.kernel.lcdd()
-    self.geant4 = DDG4.Geant4(self.kernel)
+    self.geant4 = DDG4.Geant4(self.kernel,tracker=tracker)
     self.kernel.UI = ""
     self.noPhysics()
  
@@ -51,12 +51,34 @@ class CLICSid:
     self.geant4.setupPhysics('')
     return self
 
-
-  # Test runner
-  def test_run(self, have_geo=True, have_physics=False):
+  def setupDetectors(self):
+    print "#  First the tracking detectors"
+    seq,act = self.geant4.setupTracker('SiVertexBarrel')
+    seq,act = self.geant4.setupTracker('SiVertexEndcap')
+    seq,act = self.geant4.setupTracker('SiTrackerBarrel')
+    seq,act = self.geant4.setupTracker('SiTrackerEndcap')
+    seq,act = self.geant4.setupTracker('SiTrackerForward')
+    print "#  Now setup the calorimeters"
+    seq,act = self.geant4.setupCalorimeter('EcalBarrel')
+    seq,act = self.geant4.setupCalorimeter('EcalEndcap')
+    seq,act = self.geant4.setupCalorimeter('HcalBarrel')
+    seq,act = self.geant4.setupCalorimeter('HcalEndcap')
+    seq,act = self.geant4.setupCalorimeter('HcalPlug')
+    seq,act = self.geant4.setupCalorimeter('MuonBarrel')
+    seq,act = self.geant4.setupCalorimeter('MuonEndcap')
+    seq,act = self.geant4.setupCalorimeter('LumiCal')
+    seq,act = self.geant4.setupCalorimeter('BeamCal')
+    return self
+  
+  def test_config(self, have_geo=True):
     self.kernel.configure()
     if have_geo:
       self.kernel.initialize()
+
+  # Test runner
+  def test_run(self, have_geo=True, have_physics=False):
+    self.test_config(have_geo)
+    if have_geo:
       self.kernel.NumEvents = 0
       self.kernel.run()
     self.kernel.terminate()

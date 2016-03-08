@@ -512,7 +512,6 @@ Geant4DetectorConstructionSequence* Geant4Compatibility::buildDefaultDetectorCon
 
 /// Configure the simulation
 int Geant4Exec::configure(Geant4Kernel& kernel) {
-  CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine);
   Geometry::LCDD& lcdd = kernel.lcdd();
   Geant4Context* ctx = kernel.workerContext();
   Geant4Random* rndm = Geant4Random::instance(false);
