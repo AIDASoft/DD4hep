@@ -19,13 +19,13 @@
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Printout.h"
 #include "DDG4/Geant4Context.h"
-//#include "DDG4/Geant4Primary.h"
+#include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4InputHandling.h"
 
 // Geant4 include files
 #include "G4Event.hh"
 #include "G4PrimaryVertex.hh"
-//#include "G4PrimaryParticle.hh"
+#include "G4PrimaryParticle.hh"
 #include "G4VPrimaryGenerator.hh"
 
 // C/C++ include files
@@ -68,6 +68,7 @@ G4VPrimaryGenerator* Geant4GeneratorWrapper::generator()   {
 /// Event generation action callback
 void Geant4GeneratorWrapper::operator()(G4Event* event)  {
   Geant4PrimaryEvent* prim = context()->event().extension<Geant4PrimaryEvent>();
+  Geant4PrimaryMap*   primaryMap = context()->event().extension<Geant4PrimaryMap>();
   set<G4PrimaryVertex*> primaries;
   
   /// Collect all existing interactions (primary vertices)
@@ -78,9 +79,9 @@ void Geant4GeneratorWrapper::operator()(G4Event* event)  {
   generator()->GeneratePrimaryVertex(event);
 
   /// Add all the missing interactions (primary vertices) to the primary event record.
-  for(G4PrimaryVertex* v=event->GetPrimaryVertex(); v; v=v->GetNext())  {
-    if ( primaries.find(v) == primaries.end() )   {
-      Geant4PrimaryInteraction* inter = createPrimary(m_mask, v);
+  for(G4PrimaryVertex* gv=event->GetPrimaryVertex(); gv; gv=gv->GetNext())  {
+    if ( primaries.find(gv) == primaries.end() )   {
+      Geant4PrimaryInteraction* inter = createPrimary(m_mask, primaryMap, gv);
       prim->add(m_mask, inter);
     }
   }

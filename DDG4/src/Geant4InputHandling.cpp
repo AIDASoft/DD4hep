@@ -82,32 +82,45 @@ DD4hep::Simulation::createPrimary(int particle_id,
   return p;
 }
 
-/// Helper to recursively collect interaction data
-void collectPrimaries(Geant4PrimaryInteraction* interaction, 
-                      Geant4Vertex*             particle_origine,
-                      const G4PrimaryParticle*  gp)
+/// Helper to recursively build a DDG4 interaction from an existing G4 interaction (primary vertex)
+static void collectPrimaries(Geant4PrimaryMap*         pm,
+                             Geant4PrimaryInteraction* interaction, 
+                             Geant4Vertex*             particle_origine,
+                             const G4PrimaryParticle*  gp)
 {
   int pid = int(interaction->particles.size());
   Geant4Particle* p = createPrimary(pid,particle_origine,gp);
   G4PrimaryParticle* dau = gp->GetDaughter();
+  PropertyMask status(p->status);
   int mask = interaction->mask;
   
   interaction->particles.insert(make_pair(p->id,p));
+  status.set(G4PARTICLE_PRIMARY);
   p->mask = mask;
   particle_origine->out.insert(p->id);
+  // Insert pair in map. Do not forget to increase reference count!
+  pm->primaryMap.insert(make_pair(gp,p->addRef()));
+
   if ( dau )   {
     Geant4Vertex* dv = new Geant4Vertex(*particle_origine);
     int vid = int(interaction->vertices.size());
+    PropertyMask reason(p->reason);
+    reason.set(G4PARTICLE_HAS_SECONDARIES);
+
     dv->mask = mask;
     dv->in.insert(p->id);
     interaction->vertices.insert(make_pair(vid,dv));
     for(; dau; dau = dau->GetNext())
-      collectPrimaries(interaction, dv, dau);
+      collectPrimaries(pm, interaction, dv, dau);
   }
 }
 
 /// Import a Geant4 interaction defined by a primary vertex into a DDG4 interaction record
-Geant4PrimaryInteraction* DD4hep::Simulation::createPrimary(int mask, const G4PrimaryVertex* gv)  {
+Geant4PrimaryInteraction* 
+DD4hep::Simulation::createPrimary(int mask,
+                                  Geant4PrimaryMap* pm,
+                                  const G4PrimaryVertex* gv)
+{
   Geant4PrimaryInteraction* interaction = new Geant4PrimaryInteraction();
   Geant4Vertex* v = createPrimary(gv);
   int vid = int(interaction->vertices.size());
@@ -116,7 +129,7 @@ Geant4PrimaryInteraction* DD4hep::Simulation::createPrimary(int mask, const G4Pr
   v->mask = mask;
   interaction->vertices.insert(make_pair(vid,v));
   for (G4PrimaryParticle *gp = gv->GetPrimary(); gp; gp = gp->GetNext() )
-    collectPrimaries(interaction, v, gp);
+    collectPrimaries(pm, interaction, v, gp);
   return interaction;
 }
 
