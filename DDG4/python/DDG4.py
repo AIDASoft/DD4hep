@@ -37,10 +37,10 @@ except Exception,X:
   print '|  %-100s  |'%('Try to compile AClick on the fly.',)
   print '+--%-100s--+'%(100*'-',)
   DD4hep   = compileAClick(dictionary='DDG4Dict.C',g4=True)  
+from ROOT import CLHEP as CLHEP
 Core       = DD4hep
 Sim        = DD4hep.Simulation
 Simulation = DD4hep.Simulation
-
 Kernel     = Sim.KernelHandle
 Interface  = Sim.Geant4ActionCreation
 LCDD       = Geo.LCDD
@@ -225,6 +225,9 @@ _import_class('Sim','Geant4UserParticleHandler')
 _import_class('Sim','Geant4UserInitialization')
 _import_class('Sim','Geant4DetectorConstruction')
 _import_class('Sim','Geant4GeneratorWrapper')
+_import_class('Sim','Geant4Random')
+_import_class('CLHEP','HepRandom')
+_import_class('CLHEP','HepRandomEngine')
 
 #---------------------------------------------------------------------------
 def _get(self, name):

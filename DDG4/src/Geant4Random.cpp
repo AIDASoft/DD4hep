@@ -87,9 +87,16 @@ Geant4Random::Geant4Random(Geant4Context* ctxt, const std::string& nam)
 
 /// Default destructor
 Geant4Random::~Geant4Random()  {
-  if (  s_instance == this ) s_instance = 0;
-  if ( !m_engineType.empty() ) deletePtr(m_engine);
+  // Only delete the engine if it is NOT the CLEP default one
+  // BUT: Just cannot delete the engine. Causes havoc with static destructors!
+  //CLHEP::HepRandomEngine* curr = CLHEP::HepRandom::getTheEngine();
+  //if ( !m_engineType.empty() && m_engine != curr ) deletePtr(m_engine);
+
+  // Set gRandom to the old value
   if (  m_rootRandom == gRandom ) gRandom = m_rootOLD;
+  // Reset instance pointer
+  if (  s_instance == this ) s_instance = 0;
+  // Finally delete the TRandom instance wrapper
   deletePtr(m_rootRandom);
   InstanceCount::decrement(this);
 }
@@ -103,26 +110,31 @@ Geant4Random* Geant4Random::instance(bool throw_exception)   {
 }
 
 /// Make this random generator instance the one used by Geant4
- Geant4Random* Geant4Random::setMainInstance(Geant4Random* ptr)   {
-   if ( s_instance != ptr )   {
-     if ( !ptr )  {
-       throw runtime_error("Attempt to declare invalid Geant4Random instance.");
-     }
-     if ( !ptr->m_inited )  {
-       throw runtime_error("Attempt to declare uninitialized Geant4Random instance.");
-     }
-     Geant4Random* old = s_instance;
-     if ( ptr->m_engine != CLHEP::HepRandom::getTheEngine() )     {       
-       CLHEP::HepRandom::setTheEngine(ptr->m_engine);
-     }
-     if ( ptr->m_replace )   {
-       ptr->m_rootOLD = gRandom;
-       gRandom = ptr->m_rootRandom;
-     }
-     s_instance = ptr;
-     return old;
-   }
-   return 0;
+Geant4Random* Geant4Random::setMainInstance(Geant4Random* ptr)   {
+  if ( ptr && !ptr->m_inited )  {
+    ptr->initialize();
+  }
+  if ( s_instance != ptr )   {
+    if ( !ptr )  {
+      throw runtime_error("Attempt to declare invalid Geant4Random instance.");
+    }
+    if ( !ptr->m_inited )  {  
+      throw runtime_error("Attempt to declare uninitialized Geant4Random instance.");
+    }
+    Geant4Random* old = s_instance;
+    CLHEP::HepRandomEngine* curr = CLHEP::HepRandom::getTheEngine();
+    if ( ptr->m_engine != curr )     {       
+      ptr->printP2("Moving CLHEP random instance from %p to %p",curr,ptr->m_engine); 
+      CLHEP::HepRandom::setTheEngine(ptr->m_engine);
+    }
+    if ( ptr->m_replace )   {
+      ptr->m_rootOLD = gRandom;
+      gRandom = ptr->m_rootRandom;
+    }
+    s_instance = ptr;
+    return old;
+  }
+  return 0;
 }
 
 #include "CLHEP/Random/DualRand.h"
@@ -216,11 +228,13 @@ void Geant4Random::showStatus() const    {
   if ( !m_file.empty() )
     printP2("   Created from file: %s",m_file.c_str());
   else if ( !m_engineType.empty() )
-    printP2("   Special instance created of type:%s",m_engineType.c_str());
+    printP2("   Special instance created of type:%s @ 0x%p",
+            m_engineType.c_str(),m_engine);
   else
-    printP2("   Reused HepRandom instance @ 0x%p",m_engine);
+    printP2("   Reused HepRandom engine instance %s @ 0x%p",
+            m_engine ? m_engine->name().c_str() : "???", m_engine);
   
-  if ( m_engine != CLHEP::HepRandom::getTheEngine() )
+  if ( m_engine == CLHEP::HepRandom::getTheEngine() )
     printP2("   Instance is identical to Geant4's HepRandom instance.");
 
   printP2("   Instance is %sidentical to ROOT's gRandom instance.",
@@ -230,6 +244,12 @@ void Geant4Random::showStatus() const    {
     printP2("      Local TRandom: 0x%p  gRandom: 0x%p",m_rootRandom,gRandom);
   }  
   m_engine->showStatus();
+}
+
+/// Create flat distributed random numbers in the interval ]0,1]
+double Geant4Random::rndm_clhep()  {
+  if ( !m_inited ) initialize();
+  return m_engine->flat();
 }
 
 /// Create flat distributed random numbers in the interval ]0,1]

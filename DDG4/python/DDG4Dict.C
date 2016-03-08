@@ -333,6 +333,16 @@ namespace {
 
 #endif
 
+// CLHEP stuff
+#include "CLHEP/Random/Random.h"
+#if defined(__CINT__) || defined(__MAKECINT__) || defined(__CLING__) || defined(__ROOTCLING__)
+
+#pragma link C++ namespace CLHEP;
+#pragma link C++ class CLHEP::HepRandom;
+#pragma link C++ class CLHEP::HepRandomEngine;
+#endif
+
+
 int Geant4Dict()  {
   return 0;
 }

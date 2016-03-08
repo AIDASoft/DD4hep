@@ -40,7 +40,7 @@ Geant4IsotropeGenerator::~Geant4IsotropeGenerator() {
 
 /// Uniform particle distribution
 void Geant4IsotropeGenerator::getParticleDirectionUniform(int, ROOT::Math::XYZVector& direction, double& momentum) const   {
-  Geant4Event& evt = context()->event();
+  Geant4Event&  evt = context()->event();
   Geant4Random& rnd = evt.random();
   double phi   = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
   double theta = m_thetaMin+(m_thetaMax-m_thetaMin)*rnd.rndm();
@@ -54,7 +54,7 @@ void Geant4IsotropeGenerator::getParticleDirectionUniform(int, ROOT::Math::XYZVe
 
 /// Particle distribution ~ cos(theta)
 void Geant4IsotropeGenerator::getParticleDirectionCosTheta(int, ROOT::Math::XYZVector& direction, double& momentum) const   {
-  Geant4Event& evt = context()->event();
+  Geant4Event&  evt = context()->event();
   Geant4Random& rnd = evt.random();
   double phi       = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
   double cos_theta = std::cos(m_thetaMin)+(std::cos(m_thetaMax)-std::cos(m_thetaMin))*rnd.rndm();
@@ -72,7 +72,7 @@ void Geant4IsotropeGenerator::getParticleDirectionEta(int, ROOT::Math::XYZVector
   struct Distribution {
     static double eta(double x)  { return -1.0*std::log(std::tan(x/2.0)); }
   };
-  Geant4Event& evt = context()->event();
+  Geant4Event&  evt = context()->event();
   Geant4Random& rnd = evt.random();
   // See https://en.wikipedia.org/wiki/Pseudorapidity
   const double dmin = std::numeric_limits<double>::epsilon();
@@ -94,7 +94,7 @@ void Geant4IsotropeGenerator::getParticleDirectionFFbar(int, ROOT::Math::XYZVect
     static double ffbar(double x)  { double c = std::cos(x); return 1 + c*c; }
     //static double integral(double x)  { return 1.5*x + sin(2.*x)/4.0; }
   };
-  Geant4Event& evt = context()->event();
+  Geant4Event&  evt = context()->event();
   Geant4Random& rnd = evt.random();
   double phi = m_phiMin+(m_phiMax-m_phiMin)*rnd.rndm();
 

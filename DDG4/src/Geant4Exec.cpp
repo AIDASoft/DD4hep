@@ -522,6 +522,7 @@ int Geant4Exec::configure(Geant4Kernel& kernel) {
     /// Initialize the engine etc.
     rndm->initialize();
   }
+  Geant4Random::setMainInstance(rndm);
   kernel.executePhase("configure",0);
 
   // Construct the default run manager

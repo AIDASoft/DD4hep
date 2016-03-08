@@ -133,6 +133,12 @@ namespace DD4hep {
 
       /** Basic random generator functions  */
 
+      /// Create flat distributed random numbers in the interval ]0,1] calling CLHEP
+      /** This is more or less a test function, since the result should be 
+       *  identical to calling rndm.
+       */
+      double rndm_clhep();
+
       /// Create flat distributed random numbers in the interval ]0,1]
       double rndm(int i=0);
       /// Create a float array of flat distributed random numbers in the interval ]0,1]
