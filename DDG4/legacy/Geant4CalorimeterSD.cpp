@@ -39,15 +39,11 @@ namespace DD4hep {  namespace Simulation {
       HitContribution contrib = Geant4Hit::extractContribution(step);
       Geant4CalorimeterHit* hit=find(collection(0),HitPositionCompare<Geant4CalorimeterHit>(pos));
 
-      //    G4cout << "----------- Geant4GenericSD<Calorimeter>::buildHits : position : " << pos << G4endl ;
-
+      //    G4cout << "----------- Geant4GenericSD<Calorimeter>::buildHits : position : " << pos << G4endl;
       if ( !hit ) {
-
-        hit = new Geant4CalorimeterHit(pos) ;
-
-        hit->cellID  = getVolumeID( step ) ;
-
-        collection(0)->insert(hit) ;
+        hit = new Geant4CalorimeterHit(pos);
+        hit->cellID  = getCellID( step );
+        collection(0)->insert(hit);
       }
       hit->truth.push_back(contrib);
       hit->energyDeposit += contrib.deposit;

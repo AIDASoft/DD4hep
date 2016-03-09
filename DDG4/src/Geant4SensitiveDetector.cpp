@@ -16,6 +16,7 @@
 #include "DDG4/Geant4SensitiveDetector.h"
 #include "DDG4/Geant4Converter.h"
 #include "DDG4/Geant4Hits.h"
+#include "DD4hep/Segmentations.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
 
@@ -184,13 +185,8 @@ void Geant4SensitiveDetector::dumpStep(G4Step* st, G4TouchableHistory* /* histor
 }
 
 long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep) {
-
-  //Geant4Mapping&  mapping = Geant4Mapping::instance();
-
   Geant4StepHandler step(aStep);
-
   Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
-
   VolumeID id = volMgr.volumeID(step.preTouchable());
 
 #if 0 //  additional checks ...
@@ -220,3 +216,19 @@ long long Geant4SensitiveDetector::getVolumeID(G4Step* aStep) {
   return id;
 }
 
+
+long long Geant4SensitiveDetector::getCellID(G4Step* s) {
+  StepHandler h(s);
+  Geant4VolumeManager volMgr = Geant4Mapping::instance().volumeManager();
+  VolumeID volID = volMgr.volumeID(h.preTouchable());
+  Geometry::Segmentation seg = m_readout.segmentation();
+  if ( seg.isValid() )  {
+    G4ThreeVector global = 0.5 * ( h.prePosG4()+h.postPosG4());
+    G4ThreeVector local  = h.preTouchable()->GetHistory()->GetTopTransform().TransformPoint(global);
+    Position loc(local.x()*MM_2_CM, local.y()*MM_2_CM, local.z()*MM_2_CM);
+    Position glob(global.x()*MM_2_CM, global.y()*MM_2_CM, global.z()*MM_2_CM);
+    VolumeID cID = seg.cellID(loc,glob,volID);
+    return cID;
+  }
+  return volID;
+}

@@ -104,7 +104,12 @@ namespace DD4hep {
       /// Returns the volumeID of the sensitive volume corresponding to the step -
       /// combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
       //  from the current sensitive volume to the world volume
-      long long getVolumeID(G4Step* step ) ;
+      long long getVolumeID(G4Step* step);
+
+      /// Returns the volumeID of the sensitive volume corresponding to the step -
+      /// combining the VolIDS of the complete geometry path (Geant4TouchableHistory)
+      //  from the current sensitive volume to the world volume
+      long long getCellID(G4Step* step);
 
       /** G4VSensitiveDetector interface: Method invoked at the begining of each event.
        *  The hits collection(s) created by this sensitive detector must
