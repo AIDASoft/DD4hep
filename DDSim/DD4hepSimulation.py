@@ -211,11 +211,10 @@ class DD4hepSimulation(object):
 
     #self.__treatUnknownArgs( parsed, unknown )
     self.__parseAllHelper( parsed )
-    if self._errorMessages:
+    if self._errorMessages and not (self._dumpParameter or self._dumpSteeringFile):
       parser.epilog = "\n".join(self._errorMessages)
       parser.print_help()
       exit(1)
-
 
     if self._dumpParameter:
       from pprint import pprint
@@ -607,7 +606,7 @@ SIM = DD4hepSimulation()
         steeringFileBase += "################################################################################\n"
         options = parameter.getOptions()
         for opt,valAndDoc in sorted( options.iteritems(), sortParameters ):
-          parValue, parDoc = valAndDoc
+          parValue, parDoc, _parOptions = valAndDoc
           if parDoc:
             steeringFileBase += "\n## %s\n" % "\n## ".join(parDoc.splitlines())
           ## add quotes if it is a string
