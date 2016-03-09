@@ -64,6 +64,10 @@ class DD4hepSimulation(object):
     self.crossingAngleBoost = 0.0
     self.macroFile = ''
     self.enableGun = False
+    self.enableG4GPS = False
+    self.enableG4Gun = False
+    self._g4gun = None
+    self._g4gps = None
     self.vertexSigma = [0.0, 0.0, 0.0, 0.0]
     self.vertexOffset = [0.0, 0.0, 0.0, 0.0]
     self.enableDetailedShowerMode = False
@@ -161,6 +165,12 @@ class DD4hepSimulation(object):
     parser.add_argument("--enableGun", "-G", action="store_true", dest="enableGun", default=self.enableGun,
                         help="enable the DDG4 particle gun")
 
+    parser.add_argument("--enableG4GPS", action="store_true", dest="enableG4GPS", default=self.enableG4GPS,
+                        help="enable the Geant4 GeneralParticleSource. Needs a macroFile (runType run) or use it with the shell (runType shell)")
+
+    parser.add_argument("--enableG4Gun", action="store_true", dest="enableG4Gun", default=self.enableG4Gun,
+                        help="enable the Geant4 particle gun. Needs a macroFile (runType run) or use it with the shell (runType shell)")
+
     parser.add_argument("--dumpParameter", "--dump", action="store_true", dest="dumpParameter", default=self._dumpParameter,
                         help="Print all configuration Parameters and exit")
 
@@ -196,6 +206,8 @@ class DD4hepSimulation(object):
     self.crossingAngleBoost = parsed.crossingAngleBoost
     self.macroFile = parsed.macroFile
     self.enableGun = parsed.enableGun
+    self.enableG4Gun = parsed.enableG4Gun
+    self.enableG4GPS = parsed.enableG4GPS
     self.enableDetailedShowerMode = parsed.enableDetailedShowerMode
     self.vertexOffset = parsed.vertexOffset
     self.vertexSigma = parsed.vertexSigma
@@ -326,8 +338,25 @@ class DD4hepSimulation(object):
       gun.Mask = 1
       actionList.append(gun)
       self.__applyBoostOrSmear(kernel, actionList, 1)
+      print "++++ Adding DD4hep Particle Gun ++++"
 
-    for index,inputFile in enumerate(self.inputFiles, start=2):
+    if self.enableG4Gun:
+      ## GPS Create something
+      self._g4gun = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/Gun")
+      self._g4gun.Uses = 'G4ParticleGun'
+      self._g4gun.Mask = 2
+      print "++++ Adding Geant4 Particle Gun ++++"
+      actionList.append(self._g4gun)
+
+    if self.enableG4GPS:
+      ## GPS Create something
+      self._g4gps = DDG4.GeneratorAction(kernel,"Geant4GeneratorWrapper/GPS")
+      self._g4gps.Uses = 'G4GeneralParticleSource'
+      self._g4gps.Mask = 3
+      print "++++ Adding Geant4 General Particle Source ++++"
+      actionList.append(self._g4gps)
+
+    for index,inputFile in enumerate(self.inputFiles, start=4):
       if inputFile.endswith(".slcio"):
         gen = DDG4.GeneratorAction(kernel,"LCIOInputAction/LCIO%d" % index)
         gen.Input="LCIOFileReader|"+inputFile
@@ -424,6 +453,12 @@ class DD4hepSimulation(object):
 
     kernel.configure()
     kernel.initialize()
+
+    ## GPS
+    if self._g4gun is not None:
+      self._g4gun.generator()
+    if self._g4gps is not None:
+      self._g4gps.generator()
 
     #DDG4.setPrintLevel(Output.DEBUG)
 
