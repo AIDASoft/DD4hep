@@ -30,13 +30,15 @@ namespace DD4hep {  namespace Simulation {
       G4Track*          track;
       double            e_cut;
       int               current;
-      TrackerCombine() : pre(), post(), track(0), e_cut(0.0), current(-1)  {
+      long long int     cellID;
+      TrackerCombine() : pre(), post(), track(0), e_cut(0.0), current(-1), cellID(0)  {
       }
-      void start(G4Step* step, G4StepPoint* point)   {
+      void start(long long int cell, G4Step* step, G4StepPoint* point)   {
         pre.storePoint(step,point);
         current = pre.truth.trackID;
-        track = step->GetTrack();
-        post = pre;
+        track   = step->GetTrack();
+        cellID  = cell;
+        post    = pre;
       }
       void update(G4Step* step) {
         post.storePoint(step,step->GetPostStepPoint());
@@ -62,9 +64,10 @@ namespace DD4hep {  namespace Simulation {
                                                      pre.truth.pdgID,
                                                      pre.truth.deposit,
                                                      pre.truth.time);
+        hit->cellID   = cellID;
         hit->position = pos;
         hit->momentum = mom;
-        hit->length = path_len;
+        hit->length   = path_len;
         clear();
         c->insert(hit);
         return hit;
@@ -90,7 +93,7 @@ namespace DD4hep {  namespace Simulation {
 
       if ( !userData.track || userData.current != h.track->GetTrackID() ) {
         return_code = userData.extractHit(collection(0)) != 0;
-        userData.start(step, h.pre);
+        userData.start(getCellID(step), step, h.pre);
       }
 
       // ....update .....
@@ -103,7 +106,7 @@ namespace DD4hep {  namespace Simulation {
         if ( 0 != postSD )   {
           void* preSD = h.sd(h.pre);
           if ( preSD == postSD ) {
-            userData.start(step,h.post);
+            userData.start(getCellID(step), step,h.post);
           }
         }
       }

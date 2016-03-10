@@ -54,7 +54,7 @@ namespace DD4hep {  namespace Simulation {
 
       if ( hit )  {
         HitContribution contrib = Geant4Hit::extractContribution(step);
-        hit->cellID  = getVolumeID( step ) ;
+        hit->cellID  = getCellID( step ) ;
         hit->energyDeposit =  contrib.deposit ;
         hit->position = position;
         hit->momentum = direction;

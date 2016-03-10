@@ -97,6 +97,7 @@ namespace DD4hep {  namespace Simulation {
           Geant4CalorimeterHit* hit=find(collection(Cerenkov_type),HitPositionCompare<Geant4CalorimeterHit>(pos));
           if ( !hit ) {
             collection(Cerenkov_type)->insert(hit=new Geant4CalorimeterHit(pos));
+            hit->cellID  = getCellID( step ) ;
           }
           hit->energyDeposit += contrib.deposit;
           hit->truth.push_back(contrib);
