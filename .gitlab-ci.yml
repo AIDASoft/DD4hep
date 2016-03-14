@@ -1,0 +1,6 @@
+before_script:
+    #pre-installation script
+    - ls /afs
+    - ls /cvmfs/sft.cern.ch
+    - ls /cvmfs/ilc.desy.de
+
