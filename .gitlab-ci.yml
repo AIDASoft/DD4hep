@@ -4,3 +4,12 @@ before_script:
     - ls /cvmfs/sft.cern.ch
     - ls /cvmfs/ilc.desy.de
 
+
+something:
+  tags:
+    - docker
+  image: cern/slc6-base
+  script:
+    - ls /afs
+    - ls /cvmfs/sft.cern.ch
+    - ls /cvmfs/ilc.desy.de
