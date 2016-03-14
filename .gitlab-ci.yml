@@ -1,6 +1,6 @@
 before_script:
-    -yum install make
-    -yum install which
+    #pre-installation script
+    - yum install make which -y
 
 centos7-gcc48:
   tags:
