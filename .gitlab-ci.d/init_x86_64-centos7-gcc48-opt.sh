@@ -13,7 +13,7 @@ source $LCGRELEASES/gcc/4.8.4/x86_64-cc7/setup.sh
 #     CMake 3.4.1
 #--------------------------------------------------------------------------------
 
-export CMAKE_HOME=$LCGRELEASES/CMake/3.4.1-811c2/x86_64-centos7-gcc48-opt
+export CMAKE_HOME=$LCGRELEASES/CMake/3.4.1-811c2/x86_64-centos7-gcc49-opt
 export PATH=${CMAKE_HOME}/bin:$PATH
 
 #--------------------------------------------------------------------------------
