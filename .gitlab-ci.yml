@@ -12,7 +12,7 @@ centos7-gcc48:
     - source .gitlab-ci.d/init_x86_64-centos7-gcc48-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
+    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=OFF -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
     - make -j4
     - make install
 
@@ -25,7 +25,7 @@ centos7-gcc49:
     - source .gitlab-ci.d/init_x86_64-centos7-gcc49-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
+    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=OFF -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
     - make -j4
     - make install
 
@@ -38,7 +38,7 @@ slc6-gcc48:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
+    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=OFF -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
     - make -j4
     - make install
 
@@ -51,6 +51,6 @@ slc6-gcc49:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
+    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=OFF -D CLHEP_DIR=$CLHEP -D DD4HEP_USE_GEAR=0 -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` ..
     - make -j4
     - make install
