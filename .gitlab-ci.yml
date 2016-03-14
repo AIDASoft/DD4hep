@@ -1,7 +1,7 @@
 before_script:
     #pre-installation script
-    - yum install make which -y
-
+    - yum install make -y
+    - yum install which -y
 centos7-gcc48:
   tags:
     - docker
