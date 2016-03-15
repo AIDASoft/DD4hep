@@ -54,6 +54,7 @@ export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
 #--------------------------------------------------------------------------------
 #     LCIO
 #--------------------------------------------------------------------------------
+
 export LCIO="/afs/cern.ch/eng/clic/software/lcio/v02-08/x86_64-slc6-gcc49-opt"
 export PYTHONPATH="$LCIO/src/python:$LCIO/examples/python:$PYTHONPATH"
 export PATH="$LCIO/tools:$LCIO/bin:$PATH"
@@ -66,6 +67,15 @@ export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
 export G4INSTALL=$LCGRELEASES/Geant4/10.01.p02/x86_64-slc6-gcc49-opt/
 export G4ENV_INIT="$G4INSTALL/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
+
+#--------------------------------------------------------------------------------
+#     QT
+#--------------------------------------------------------------------------------
+
+export QTDIR=$LCGRELEASES/qt/4.8.4/x86_64-slc6-gcc49-opt
+export QMAKESPEC="$QTDIR/mkspecs/linux-g++"
+export PATH="$QTDIR/bin:$PATH"
+export LD_LIBRARY_PATH="$QTDIR/lib:$LD_LIBRARY_PATH"
 
 #--------------------------------------------------------------------------------
 #     Boost
