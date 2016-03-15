@@ -121,6 +121,7 @@ int main(int argc, char* argv[]) {
 
     } else {
       std::cerr << "ERROR: failed to load " << lib << std::endl;
+      std::cerr << dlerror() <<std::endl;
       return EXIT_FAILURE;
     }
   }
