@@ -1,8 +1,6 @@
 before_script:
     #pre-installation script
-    - yum install make -y
-    - yum install which -y
-    - yum install glibc-devel -y
+    - yum install make glibc-devel -y
 
 slc6-gcc48:
   tags:
@@ -12,8 +10,8 @@ slc6-gcc48:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D CLHEP_DIR=$CLHEP -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.2 ..
-    - make -j4
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.2 ..
+    - make
     - make install
 
 
@@ -25,6 +23,6 @@ slc6-gcc49:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=1 -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -D CLHEP_DIR=$CLHEP -DCMAKE_CXX_COMPILER=`which g++` -DCMAKE_C_COMPILER=`which gcc` -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.2 ..
-    - make -j4
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.2 ..
+    - make
     - make install
