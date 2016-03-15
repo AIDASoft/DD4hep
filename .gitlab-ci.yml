@@ -1,6 +1,6 @@
 before_script:
     #pre-installation script
-    - yum install make glibc-devel openmotif-devel mesa-libGLU-devel -y
+    - yum install make glibc-devel openmotif-devel mesa-libGLU-devel expat-devel -y
 
 slc6-gcc48:
   tags:

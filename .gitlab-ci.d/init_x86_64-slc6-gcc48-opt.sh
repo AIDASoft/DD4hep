@@ -68,6 +68,15 @@ export G4ENV_INIT="$G4INSTALL/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
 
 #--------------------------------------------------------------------------------
+#     QT
+#--------------------------------------------------------------------------------
+
+export QTDIR=$LCGRELEASES/qt/4.8.4/x86_64-slc6-gcc48-opt
+export QMAKESPEC="$QTDIR/mkspecs/linux-g++"
+export PATH="$QTDIR/bin:$PATH"
+export LD_LIBRARY_PATH="$QTDIR/lib:$LD_LIBRARY_PATH"
+
+#--------------------------------------------------------------------------------
 #     Boost
 #--------------------------------------------------------------------------------
 
