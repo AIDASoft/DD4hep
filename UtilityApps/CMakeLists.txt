@@ -29,22 +29,27 @@ dd4hep_add_executable(test_surfaces
   USES     DDRec DDTest
   OPTIONAL [LCIO REQUIRED SOURCES src/test_surfaces.cpp])
 #-----------------------------------------------------------------------------------
-dd4hep_add_dictionary( G__teve 
+dd4hep_add_dictionary( G__teve
   SOURCES src/EvNavHandler.h
   LINKDEF src/LinkDef.h )
 
 #-----------------------------------------------------------------------------------
 if ( ${DD4HEP_USE_LCIO} )
+  dd4hep_add_dictionary( G__teve1
+    SOURCES src/EvNavHandler.h
+    LINKDEF src/LinkDef.h )
   dd4hep_add_executable( teveLCIO
     USES           [ROOT REQUIRED COMPONENTS TEve]
                    [LCIO REQUIRED]
                    DDRec
-    SOURCES        G__teve.cxx src/teve_display.cpp src/next_event_lcio.cpp
+    GENERATED      G__teve1.cxx
+    SOURCES        src/teve_display.cpp src/next_event_lcio.cpp
  )
 endif()
 
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( teveDisplay 
   USES           [ROOT REQUIRED COMPONENTS TEve] DDRec
-  SOURCES        src/teve_display.cpp src/next_event_dummy.cpp G__teve.cxx
+  GENERATED      G__teve.cxx
+  SOURCES        src/teve_display.cpp src/next_event_dummy.cpp
 )
