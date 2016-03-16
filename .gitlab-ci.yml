@@ -2,16 +2,7 @@ before_script:
     #pre-installation script
     - yum install which make glibc-devel openmotif-devel mesa-libGLU-devel expat-devel -y
 
-stages:
-    - configure
-    - build
-    - test
-    - example_configure
-    - example_build
-    - example_test
-
-configure:slc6-gcc48:
-  stage: configure
+slc6-gcc48:
   tags:
     - docker
   image: cern/slc6-base
@@ -19,17 +10,55 @@ configure:slc6-gcc48:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX11=ON ..
-  artifacts:
-    paths:
-    - build
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX11=ON ..        
+    - make -j2
+    - make test
+    - make install
+    - cd ../examples
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make -j4
+    - make test
+    - make install
     
-build:slc6-gcc48:
-  stage: build
+slc6-gcc49:
   tags:
     - docker
   image: cern/slc6-base
   script:
+    - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
+    - mkdir build 
+    - cd build
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
     - make -j2
-  dependencies:
-  - configure:slc6-gcc48    
+    - make test
+    - make install
+    - cd ../examples
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make -j4
+    - make test
+    - make install
+
+
+centos7-gcc49:
+  tags:
+    - docker
+  image: cern/cc7-base
+  script:
+    - source .gitlab-ci.d/init_x86_64-centos7-gcc49-opt.sh
+    - mkdir build 
+    - cd build
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
+    - make -j2
+    - make test
+    - make install
+    - cd ../examples
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make -j4
+    - make test
+    - make install    
