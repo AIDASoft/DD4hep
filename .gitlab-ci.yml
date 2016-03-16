@@ -1,28 +1,39 @@
 before_script:
     #pre-installation script
-    - yum install make glibc-devel openmotif-devel mesa-libGLU-devel expat-devel -y
+    - yum install which make glibc-devel openmotif-devel mesa-libGLU-devel expat-devel -y
 
-slc6-gcc48:
+stages:
+    - configure
+    - build
+    - test
+    - example_configure
+    - example_build
+    - example_test
+
+slc6-gcc48_configure:
   tags:
     - docker
   image: cern/slc6-base
+  stage: configure
   script:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
     - mkdir build 
     - cd build
     - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX11=ON ..
-    - make -j2
-    - make install
-
-
-slc6-gcc49:
+    
+slc6-gcc48_build:
   tags:
     - docker
   image: cern/slc6-base
+  stage: build
   script:
-    - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
-    - mkdir build 
-    - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..
     - make -j2
     - make install
+    
+slc6-gcc48_test:
+  tags:
+    - docker
+  image: cern/slc6-base
+  stage: test
+  script:
+    - make test
