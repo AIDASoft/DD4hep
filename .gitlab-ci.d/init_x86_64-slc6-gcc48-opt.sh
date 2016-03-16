@@ -63,7 +63,8 @@ export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
 #     Geant4	
 #--------------------------------------------------------------------------------
 
-export G4INSTALL=$LCGRELEASES/Geant4/10.01.p02/x86_64-slc6-gcc48-opt/
+#export G4INSTALL=$LCGRELEASES/Geant4/10.01.p02/x86_64-slc6-gcc48-opt/
+export G4INSTALL="/cvmfs/sft.cern.ch/lcg/releases/Geant4/10.02-7c0e3/x86_64-slc6-gcc48-opt/"
 export G4ENV_INIT="$G4INSTALL/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
 
