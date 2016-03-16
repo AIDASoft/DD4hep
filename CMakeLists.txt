@@ -150,4 +150,4 @@ display_std_variables()
 
 ##############################################################################
 # generate and install following configuration files
-generate_package_configuration_files( DD4hepConfig.cmake DD4hepConfigVersion.cmake DD4hepLibDeps.cmake )
+generate_package_configuration_files( DD4hepConfig.cmake DD4hepConfigVersion.cmake )
