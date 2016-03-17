@@ -10,18 +10,6 @@ slc6-gcc48:
     - make -j2
     - make install
     - make test    
-    - cd ..
-    - ls -l bin
-    - yum install more -y
-    - more bin/thisdd4hep.sh
-    - . bin/thisdd4hep.sh
-    - cd examples
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make -j4
-    - make test
-    - make install
     
 slc6-gcc49:
   tags:
@@ -34,16 +22,7 @@ slc6-gcc49:
     - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
     - make -j2
     - make install
-    - source ../bin/thisdd4hep.sh    
-    - make test    
-    - cd ../examples
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make -j4
     - make test
-    - make install
-
 
 centos7-gcc49:
   tags:
@@ -56,12 +35,4 @@ centos7-gcc49:
     - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
     - make -j2
     - make install
-    - source ../bin/thisdd4hep.sh    
-    - make test    
-    - cd ../examples
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make -j4
     - make test
-    - make install    
