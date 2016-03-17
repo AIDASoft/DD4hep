@@ -11,7 +11,10 @@ slc6-gcc48:
     - make install
     - make test    
     - cd ..
-    - . bin/thisdd4hep.sh    
+    - ls -l bin
+    - yum install more -y
+    - more bin/thisdd4hep.sh
+    - . bin/thisdd4hep.sh
     - cd examples
     - mkdir build
     - cd build
