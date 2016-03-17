@@ -212,14 +212,7 @@ class DD4hepSimulation(object):
     self.vertexOffset = parsed.vertexOffset
     self.vertexSigma = parsed.vertexSigma
 
-    if not self.compactFile:
-      self._errorMessages.append("ERROR: No geometry compact file provided")
-
-    if self.runType == "batch":
-      if not self.numberOfEvents:
-        self._errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
-      if not self.inputFiles and not self.enableGun:
-        self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
+    self._consistencyChecks()
 
     #self.__treatUnknownArgs( parsed, unknown )
     self.__parseAllHelper( parsed )
@@ -381,7 +374,8 @@ class DD4hepSimulation(object):
       self.__applyBoostOrSmear(kernel, actionList, index)
 
     if actionList:
-      simple.buildInputStage( actionList , output_level=self.output.inputStage )
+      simple.buildInputStage( actionList , output_level=self.output.inputStage,
+                              have_mctruth = self._enablePrimaryHandler() )
 
     #================================================================================================
 
@@ -661,6 +655,43 @@ SIM = DD4hepSimulation()
           steeringFileBase += "SIM.%s = %s" %( parName, str(parameter))
         steeringFileBase += "\n"
     print steeringFileBase
+
+
+  def _consistencyChecks( self ):
+    """Check if the requested setup makes sense, or if there is something preventing it from working correctly
+
+    Appends error messages to self._errorMessages
+
+    :returns: None
+    """
+
+    if not self.compactFile:
+      self._errorMessages.append("ERROR: No geometry compact file provided")
+
+    if self.runType == "batch":
+      if not self.numberOfEvents:
+        self._errorMessages.append("ERROR: Batch mode requested, but did not set number of events")
+      if not self.inputFiles and not self.enableGun:
+        self._errorMessages.append("ERROR: Batch mode requested, but did not set inputFile(s) or gun")
+
+    if self.inputFiles and ( self.enableG4Gun or self.enableG4GPS ):
+      self._errorMessages.append("ERROR: Cannot use both inputFiles and Geant4Gun or GeneralParticleSource")
+
+    if self.enableGun and ( self.enableG4Gun or self.enableG4GPS ):
+      self._errorMessages.append("ERROR: Cannot use both DD4hepGun and Geant4 Gun or GeneralParticleSource")
+
+
+  def _enablePrimaryHandler( self ):
+    """ the geant4 Gun or GeneralParticleSource cannot be used together with the PrimaryHandler.
+        Particles would be simulated multiple times
+
+    :returns: True or False
+    """
+    enablePrimaryHandler = not (self.enableG4Gun or self.enableG4GPS)
+    if enablePrimaryHandler:
+      print "Enabling the PrimaryHandler"
+    else:
+      print "Disabling the PrimaryHandler"
 
 ################################################################################
 ### MODULE FUNCTIONS GO HERE
