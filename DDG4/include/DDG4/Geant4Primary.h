@@ -159,7 +159,7 @@ namespace DD4hep {
       Geant4PrimaryInteraction* get(int id) const;
       /// Number of interaction contained in the primary event
       size_t size()  const      {        return m_interactions.size();      }
-      /// Retrieve all intractions
+      /// Retrieve all interactions
       std::vector<Geant4PrimaryInteraction*> interactions() const;
     };
 

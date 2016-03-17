@@ -140,7 +140,7 @@ int DD4hep::Simulation::generationInitialization(const Geant4Action* /* caller *
   /**
    *  This action should register all event extension required for the further
    *  processing. We want to avoid that every client has to check if a given
-   *  object is present or not and than later install the required data structures.
+   *  object is present or not and then later install the required data structures.
    */
   context->event().addExtension(new Geant4PrimaryMap());
 
