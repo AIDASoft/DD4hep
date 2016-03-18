@@ -67,7 +67,6 @@ add_subdirectory(DDSurfaces)
 add_subdirectory(DDRec)
 add_subdirectory(DDDetectors)
 
-fg: comment out this section as it seems to conflict with Geant4 10.02.p01 and CLHEP 2.3.1.1
 if(DD4HEP_USE_GEANT4)
   set ( DD4HEP_USE_CLHEP "OFF" )
   #--- create a geant4 variables for the thisdd4hep.sh script
