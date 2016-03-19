@@ -692,6 +692,7 @@ SIM = DD4hepSimulation()
       print "Enabling the PrimaryHandler"
     else:
       print "Disabling the PrimaryHandler"
+    return enablePrimaryHandler
 
 ################################################################################
 ### MODULE FUNCTIONS GO HERE
