@@ -46,6 +46,15 @@ int main(int argc, char* argv[]) {
       Gaudi::PluginService::Details::Registry::instance();
   typedef Gaudi::PluginService::Details::Registry::KeyType key_type;
 
+#if APPLE
+#define DEBUG_FOR_MAC 1
+#endif
+
+#if DEBUG_FOR_MAC
+  Gaudi::PluginService::SetDebug( 2 ) ;
+#endif
+
+
   // cache to keep track of the loaded factories
   std::map<key_type, std::string> loaded;
   {
@@ -56,6 +65,11 @@ int main(int argc, char* argv[]) {
       loaded.insert(std::make_pair(*f, std::string("<preloaded>")));
     }
   }
+
+#if DEBUG_FOR_MAC
+  std::cout << " --- using registry : " << &reg  << "  --- with " << loaded.size() << " pre-loeaded libraries " << std::endl ;
+#endif
+
 
   // Parse command line
   std::list<char*> libs;
@@ -103,10 +117,15 @@ int main(int argc, char* argv[]) {
   // loop over the list of libraries passed on the command line
   for (char* lib: libs) {
 
-    if (dlopen(lib, RTLD_LAZY | RTLD_LOCAL)) {
+    if (dlopen(lib, RTLD_LAZY | RTLD_GLOBAL)) {
 
       std::set<key_type> factories = reg.loadedFactories();
       std::set<key_type>::const_iterator f;
+
+#if DEBUG_FOR_MAC
+      std::cout << " --- registry : " << &reg  << "  --- has " << factories.size() << " factories " << std::endl ;
+#endif
+
       for (f = factories.begin(); f != factories.end(); ++f) {
         if (loaded.find(*f) == loaded.end())
         {

@@ -149,8 +149,13 @@ namespace Gaudi { namespace PluginService {
       const char* envVar = "PATH";
       const char sep = ';';
 #else
+#ifdef APPLE
+      const char* envVar = "DYLD_LIBRARY_PATH";
+      const char sep = ':';
+#else
       const char* envVar = "LD_LIBRARY_PATH";
       const char sep = ':';
+#endif
 #endif
       char *search_path = ::getenv(envVar);
       if (search_path) {
@@ -248,6 +253,14 @@ namespace Gaudi { namespace PluginService {
         entry = facts.insert(std::make_pair(id,
                                             FactoryInfo("unknown", factory,
                                                         type, rtype, className, props))).first;
+#if APPLE
+#define DEBUG_FOR_MAC 1
+#endif
+
+#if DEBUG_FOR_MAC
+	std::cout << " --  registering factory id: " << id << " class : " << className << " with registry " << this << std::endl ;
+#endif
+
       } else {
         // do not replace an existing factory with a new one
         if (!entry->second.ptr) {
