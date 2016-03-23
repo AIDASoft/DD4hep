@@ -46,15 +46,6 @@ int main(int argc, char* argv[]) {
       Gaudi::PluginService::Details::Registry::instance();
   typedef Gaudi::PluginService::Details::Registry::KeyType key_type;
 
-#if APPLE
-#define DEBUG_FOR_MAC 1
-#endif
-
-#if DEBUG_FOR_MAC
-  Gaudi::PluginService::SetDebug( 2 ) ;
-#endif
-
-
   // cache to keep track of the loaded factories
   std::map<key_type, std::string> loaded;
   {

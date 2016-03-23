@@ -24,12 +24,16 @@
 #include <cxxabi.h>
 #include <sys/stat.h>
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L
+#if  defined(__GXX_EXPERIMENTAL_CXX0X__) || __cplusplus >= 201103L 
 #define REG_SCOPE_LOCK \
   std::lock_guard<std::recursive_mutex> _guard(m_mutex);
 
+
+//namespace Gaudi { namespace PluginService { namespace Details { class Registry ; } } }
+
 namespace {
   std::mutex registrySingletonMutex;
+  //  Gaudi::PluginService::Details::Registry* _theRegistry ;
 }
 #define SINGLETON_LOCK \
   std::lock_guard<std::mutex> _guard(::registrySingletonMutex);
@@ -133,9 +137,17 @@ namespace Gaudi { namespace PluginService {
       return demangle(id.name());
     }
 
+    // Registry& Registry::instance() {
+    //   SINGLETON_LOCK
+    // 	if( ::_theRegistry == 0 ){
+    // 	  ::_theRegistry = new Registry ;
+    // 	}
+    //   return * ::_theRegistry ;
+    // }
+
     Registry& Registry::instance() {
       SINGLETON_LOCK
-      static Registry r;
+	static Registry r;
       return r;
     }
 
@@ -253,10 +265,6 @@ namespace Gaudi { namespace PluginService {
         entry = facts.insert(std::make_pair(id,
                                             FactoryInfo("unknown", factory,
                                                         type, rtype, className, props))).first;
-#if APPLE
-#define DEBUG_FOR_MAC 1
-#endif
-
 #if DEBUG_FOR_MAC
 	std::cout << " --  registering factory id: " << id << " class : " << className << " with registry " << this << std::endl ;
 #endif

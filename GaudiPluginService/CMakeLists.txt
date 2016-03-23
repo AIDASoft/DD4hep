@@ -19,8 +19,8 @@ if( NOT CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR )
   SET ( GaudiPluginService_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE )
 endif()
 
-add_executable(listcomponents src/listcomponents.cpp src/PluginService.cpp)
-target_link_libraries(listcomponents ${CMAKE_DL_LIBS})
+add_executable(listcomponents src/listcomponents.cpp ) #src/PluginService.cpp)
+target_link_libraries(listcomponents DD4hepGaudiPluginMgr  ${CMAKE_DL_LIBS} )
 
 install(TARGETS listcomponents DD4hepGaudiPluginMgr
   RUNTIME DESTINATION bin
