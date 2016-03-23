@@ -19,7 +19,7 @@ slc6-gcc48-desy:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt-desy.sh
     - mkdir build
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD$
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX11=ON ..
     - make -j4
     - make install
     - make test
