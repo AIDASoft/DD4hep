@@ -66,7 +66,6 @@ using namespace std;
 #endif
 
 //#pragma link C++ class type_info;
-#pragma link C++ class pair<DD4hep::Callback,unsigned long>+;
 
 /// Dictionaires for basic Hit data structures
 #pragma link C++ class DD4hep::Simulation::Geant4HitData+;

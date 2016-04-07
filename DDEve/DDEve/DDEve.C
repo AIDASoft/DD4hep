@@ -19,8 +19,10 @@
 // ROOT include files
 #include "TError.h"
 #include "TSystem.h"
+#include "TInterpreter.h"
 
 void DDEve(const char* xmlConfig=0)  {
+  Long_t result;
   char text[1024];
   const char* dd4hep = gSystem->Getenv("DD4hepINSTALL");
   if ( 0 == dd4hep )   {
@@ -31,13 +33,34 @@ void DDEve(const char* xmlConfig=0)  {
   }
   ::snprintf(text,sizeof(text)," -I%s/include -D__DD4HEP_DDEVE_EXCLUSIVE__ -Wno-shadow -g -O0",dd4hep);
   gSystem->AddIncludePath(text);
-  Long_t result =  = gSystem->Load("libDDEve");
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+  TString fname = "libDDG4IO";
+  const char* io_lib = gSystem->FindDynamicLibrary(fname,kTRUE);
+#else
+  const char* io_lib = "libDDG4IO";
+#endif
+  if ( io_lib )  {
+    result = gSystem->Load("libDDG4IO");
+    if ( 0 != result )  {
+      Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      Error("DDEve","+++ FAILED to load the DDG4 IO library 'libDDG4IO'!                                            +++");
+      Error("DDEve","+++ %s",io_lib);
+      Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+      gSystem->Exit(EINVAL);
+    }
+    Info("DDEve","+++ Loaded DDG4IO library .....");
+  }
+  else  {
+    Error("DDEve","+++ No DDG4 IO library 'libDDG4IO'  present!");
+  }
+  result = gSystem->Load("libDDEve");
   if ( 0 != result )  {
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Error("DDEve","+++ Your DD4hep installation seems incomplete. FAILED to load the library 'libDD4hepEve'!      +++");
     Error("DDEve","++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     gSystem->Exit(EINVAL);
   }
+  Info("DDEve","+++ Loaded DDEve library .....");
 #if 0
   Info("DDEve","Has to be run in compiled mode to support DDG4 input ... doing this for you now....");
   ::snprintf(text,sizeof(text),".L %s/examples/DDEve/DDG4IO.C+",dd4hep);
@@ -52,5 +75,9 @@ void DDEve(const char* xmlConfig=0)  {
     gSystem->Exit(gSystem->GetErrno());
   }
 #endif
-  DD4hep::EveDisplay(xmlConfig);
+  if ( xmlConfig )
+    ::snprintf(text,sizeof(text),"DD4hep::DDEve::run(\"%s\")",xmlConfig);
+  else 
+    ::snprintf(text,sizeof(text),"DD4hep::DDEve::run(0)");
+  gInterpreter->ProcessLine(text);
 }

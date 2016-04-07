@@ -60,7 +60,10 @@ LCIOEventReader::~LCIOEventReader()   {
 
 /// Read an event and fill a vector of MCParticles.
 LCIOEventReader::EventReaderStatus
-LCIOEventReader::readParticles(int event_number, vector<Particle*>& particles)   {
+LCIOEventReader::readParticles(int event_number, 
+                               Vertex& /* primary_vertex */,
+                               vector<Particle*>& particles)
+{
   EVENT::LCCollection*        primaries = 0;
   map<EVENT::MCParticle*,int> mcparts;
   vector<EVENT::MCParticle*>  mcpcoll;

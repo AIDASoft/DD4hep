@@ -3,6 +3,10 @@
 DD4hep  ----  Release Notes
 =================================
 
+2016-03-21 M.Frank
+  - Add additional vertex argument to EventReader::readParticles, which supposedly should
+
+
 2016-03-03 M.Frank
   - Improve/complete job options type palette. 
   - Allow modify the Geant4IsotropGenerator to shoot particle distributions according

@@ -18,7 +18,7 @@
 #include "DDEve/DDEveEventData.h"
 
 // CINT configuration
-#if defined(__MAKECINT__) || defined(__CINT__)
+#if defined(__MAKECINT__) || defined(__CINT__) || defined(__CLING__) || defined(__ROOTCLING__)
 namespace DD4hep { namespace Simulation {
     typedef Geant4Tracker SimpleTracker;
     typedef Geant4Calorimeter SimpleCalorimeter;

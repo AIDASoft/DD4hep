@@ -46,7 +46,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4EventReaderHepEvt();
       /// Read an event and fill a vector of MCParticles.
-      virtual EventReaderStatus readParticles(int event_number, std::vector<Particle*>& particles);
+      virtual EventReaderStatus readParticles(int event_number,
+                                              Vertex& primary_vertex,
+                                              std::vector<Particle*>& particles);
       virtual EventReaderStatus moveToEvent(int event_number);
       virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
     };
@@ -127,8 +129,9 @@ Geant4EventReaderHepEvt::moveToEvent(int event_number) {
     printout(INFO,"EventReaderHepEvt::moveToEvent","Skipping the first %d events ", event_number );
     printout(INFO,"EventReaderHepEvt::moveToEvent","Event number before skipping: %d", m_currEvent );
     while ( m_currEvent < event_number ) {
+      Geant4Vertex vertex;
       std::vector<Particle*> particles;
-      EventReaderStatus sc = readParticles(m_currEvent,particles);
+      EventReaderStatus sc = readParticles(m_currEvent,vertex,particles);
       for_each(particles.begin(),particles.end(),deleteObject<Particle>);
       if ( sc != EVENT_READER_OK ) return sc;
       //Current event is increased in readParticles already!
@@ -141,7 +144,9 @@ Geant4EventReaderHepEvt::moveToEvent(int event_number) {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReader::EventReaderStatus
-Geant4EventReaderHepEvt::readParticles(int /* event_number */, vector<Particle*>& particles)   {
+Geant4EventReaderHepEvt::readParticles(int /* event_number */, 
+                                       Vertex& /* primary_vertex */,
+                                       vector<Particle*>& particles)   {
 
   // First check the input file status
   if ( !m_input.good() || m_input.eof() )   {

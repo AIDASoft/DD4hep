@@ -27,7 +27,7 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(ConditionsDataLoader);
 ConditionsDataLoader::ConditionsDataLoader(LCDD& lcdd, ConditionsManager mgr, const string nam) 
   : NamedObject(nam,"ConditionsDataLoader"), m_lcdd(lcdd), m_mgr(mgr)  {
   if ( m_mgr.isValid() ) return;
-  except("ConditionsDataLoader","+++ Cannot create without a valid conditions manager handle!");
+  except("ConditionsDataLoader","+++ Cannot create loader without a valid conditions manager handle!");
 }
 
 /// Default destructor

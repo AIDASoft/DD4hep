@@ -50,7 +50,9 @@ namespace DD4hep {
       /// Default destructor
       virtual ~Geant4EventReaderHepMC();
       /// Read an event and fill a vector of MCParticles.
-      virtual EventReaderStatus readParticles(int event_number, std::vector<Particle*>& particles);
+      virtual EventReaderStatus readParticles(int event_number,
+                                              Vertex& primary_vertex,
+                                              std::vector<Particle*>& particles);
       virtual EventReaderStatus moveToEvent(int event_number);
       virtual EventReaderStatus skipEvent() { return EVENT_READER_OK; }
 
@@ -201,7 +203,9 @@ Geant4EventReaderHepMC::moveToEvent(int event_number) {
 
 /// Read an event and fill a vector of MCParticles.
 Geant4EventReaderHepMC::EventReaderStatus
-Geant4EventReaderHepMC::readParticles(int /* ev_id */, Particles& output) {
+Geant4EventReaderHepMC::readParticles(int /* ev_id */,
+                                      Vertex& /* primary_vertex */,
+                                      Particles& output) {
   if ( !m_events->ok() )  {
     return EVENT_READER_IO_ERROR;
   }

@@ -41,6 +41,11 @@
 
 namespace DD4hep {
   void EveDisplay(const char* xmlFile);
+  struct DDEve {
+    static void run(const char* xmlFile)  {
+      EveDisplay(xmlFile);
+    }
+  };
 }
 
 #ifdef __CINT__
@@ -53,6 +58,7 @@ namespace DD4hep {
 #pragma link C++ function DD4hep::EveDisplay(const char* xmlFile);
 
 
+#pragma link C++ class DD4hep::DDEve;
 #pragma link C++ class DD4hep::Display;
 #pragma link C++ class DD4hep::Annotation;
 #pragma link C++ class DD4hep::ElementList;

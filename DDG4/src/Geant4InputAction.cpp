@@ -14,6 +14,7 @@
 //====================================================================
 
 // Framework include files
+#include "DD4hep/Memory.h"
 #include "DD4hep/Plugins.h"
 #include "DDG4/Geant4Primary.h"
 #include "DDG4/Geant4Context.h"
@@ -42,8 +43,9 @@ Geant4EventReader::EventReaderStatus Geant4EventReader::skipEvent()  {
     return EVENT_READER_OK;
   }
   std::vector<Particle*> particles;
+  Geant4Vertex vertex;
   ++m_currEvent;
-  EventReaderStatus sc = readParticles(m_currEvent,particles);
+  EventReaderStatus sc = readParticles(m_currEvent,vertex,particles);
   for_each(particles.begin(),particles.end(),deleteObject<Particle>);
   return sc;
 }
@@ -97,7 +99,10 @@ string Geant4InputAction::issue(int i)  const  {
 }
 
 /// Read an event and return a LCCollection of MCParticles.
-int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& particles)  {
+int Geant4InputAction::readParticles(int evt_number,
+                                     Vertex& prim_vertex,
+                                     std::vector<Particle*>& particles)
+{
   int evid = evt_number + m_firstEvent;
   if ( 0 == m_reader )  {
     if ( m_input.empty() )  {
@@ -129,7 +134,7 @@ int Geant4InputAction::readParticles(int evt_number, std::vector<Particle*>& par
     abortRun(issue(evid)+"Error when moving to event - may be end of file.",
              "Error when reading file %s",m_input.c_str());
   }
-  status = m_reader->readParticles(evid,particles);
+  status = m_reader->readParticles(evid, prim_vertex, particles);
   if ( Geant4EventReader::EVENT_READER_OK != status )  {
     abortRun(issue(evid)+"Error when reading file - may be end of file.",
              "Error when reading file %s",m_input.c_str());
@@ -142,8 +147,14 @@ void Geant4InputAction::operator()(G4Event* event)   {
   vector<Particle*>         primaries;
   Geant4Event&              evt = context()->event();
   Geant4PrimaryEvent*       prim = evt.extension<Geant4PrimaryEvent>();
+  dd4hep_ptr<Geant4Vertex>  vertex(new Geant4Vertex());
+  int result;
 
-  int result = readParticles(m_currentEventNumber, primaries);
+  vertex->x = 0;
+  vertex->y = 0;
+  vertex->z = 0;
+  vertex->time = 0;
+  result = readParticles(m_currentEventNumber, *(vertex.get()), primaries);
 
   event->SetEventID(m_firstEvent + m_currentEventNumber);
   ++m_currentEventNumber;
@@ -159,12 +170,8 @@ void Geant4InputAction::operator()(G4Event* event)   {
 
   print("+++ Particle interaction with %d generator particles ++++++++++++++++++++++++",
         int(primaries.size()));
-  Geant4Vertex* vtx = new Geant4Vertex();
-  vtx->x = 0;
-  vtx->y = 0;
-  vtx->z = 0;
-  vtx->time = 0;
-  inter->vertices.insert(make_pair(m_mask,vtx));
+  Geant4Vertex* vtx = vertex.get();
+  inter->vertices.insert(make_pair(m_mask,vertex.release())); // Move vertex ownership
   // build collection of MCParticles
   for(size_t i=0; i<primaries.size(); ++i )   {
     Geant4ParticleHandle p(primaries[i]);

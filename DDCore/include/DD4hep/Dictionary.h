@@ -21,6 +21,7 @@
 
 #include "XML/Evaluator.h"
 #include "DD4hep/World.h"
+#include "DD4hep/Callback.h"
 #include "DD4hep/LCDDData.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/FieldTypes.h"
@@ -72,9 +73,12 @@ template pair<unsigned int, string>;
 template class DD4hep::Handle<DD4hep::NamedObject>;
 template class pair< string, DD4hep::Handle<DD4hep::NamedObject> >;
 template class map< string, DD4hep::Handle<DD4hep::NamedObject> >;
+template class pair<DD4hep::Callback,unsigned long>;
 #endif
 
 #pragma link C++ class pair<unsigned int,string>+;
+//#pragma link C++ class DD4hep::Callback+;
+#pragma link C++ class pair<DD4hep::Callback,unsigned long>+;
 #pragma link C++ class DD4hep::NamedObject+;
 #pragma link C++ class DD4hep::Geometry::Ref_t+;
 #pragma link C++ class DD4hep::Handle<DD4hep::NamedObject>+;

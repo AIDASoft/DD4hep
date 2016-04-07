@@ -19,8 +19,19 @@ dd4hep_add_dictionary ( G__DDEve SOURCES include/DDEve/*.h )
 #
 dd4hep_add_plugin ( DDEve SOURCES src/*.cpp 
   GENERATED   G__DDEve.cxx
-  OPTIONAL    [DDG4 INTERNAL SOURCES G__DDG4IO.cxx]
-              [LCIO EXTERNAL SOURCES lcio/LCIOEventHandler.cpp] )
+  OPTIONAL    [LCIO EXTERNAL SOURCES lcio/LCIOEventHandler.cpp] )
+
+if(DD4HEP_USE_GEANT4)
+  dd4hep_add_dictionary ( G__DDG4IO
+    SOURCES DDEve/DDG4IO.C
+    OPTIONAL DDG4
+    )
+  dd4hep_add_regular_library ( DDG4IO 
+    SOURCES   DDEve/IO.cpp
+    GENERATED G__DDG4IO.cxx
+    OPTIONAL DDG4
+    )
+endif()
 
 #---Package installation procedure(s) -------------------------------------
 dd4hep_install_dir ( DDEve DESTINATION examples )

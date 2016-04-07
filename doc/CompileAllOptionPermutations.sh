@@ -8,7 +8,7 @@ INSTALL_G4=${SW}/g4_10.01.p02_dbg/lib/Geant4-10.1.2;
 CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
 GEANT_VERSION=10.01.p02;
 ROOT_VERSION=5.34.25
-##ROOT_VERSION=6.04.00;
+ROOT_VERSION=6.04.10;
 # ==============================================================================
 # Parse arguments
 # ==============================================================================
