@@ -90,3 +90,7 @@ export BOOST_ROOT=$LCGRELEASES/Boost/1.59.0_python2.7/x86_64-centos7-gcc49-opt
 export XercesC_HOME=$LCGRELEASES/XercesC/3.1.1p1/x86_64-centos7-gcc49-opt
 export PATH="$XercesC_HOME/bin:$PATH"
 export LD_LIBRARY_PATH="$XercesC_HOME/lib:$LD_LIBRARY_PATH"
+
+
+# --- source GEANT4 INIT script ---
+test -r ${G4ENV_INIT} && { cd $(dirname ${G4ENV_INIT}) ; . ./$(basename ${G4ENV_INIT}) ; cd $OLDPWD ; }
