@@ -1,7 +1,7 @@
 slc6-gcc48:
   tags:
     - docker
-  image: clicdp/slc6-base
+  image: cern/slc6-base
   script:
     - ls /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
     - cd /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
