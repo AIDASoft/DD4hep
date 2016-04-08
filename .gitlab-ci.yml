@@ -8,4 +8,5 @@ slc6-gcc48:
     - ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
     - test -r ${ROOTENV_INIT}
     - test -r ` cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; `
+    - test -r ${ROOTENV_INIT} && ` cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; `
     - test -r ${ROOTENV_INIT} && { cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; }
