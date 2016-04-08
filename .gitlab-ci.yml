@@ -4,39 +4,7 @@ slc6-gcc48:
   image: clicdp/slc6-base
   script:
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
-    - mkdir build 
-    - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX11=ON ..        
-    - make -j4
-    - make install
-    - . ../cmake/thisdd4hep_test.sh
-    - make test
-
-slc6-gcc49:
-  tags:
-    - docker
-  image: clicdp/slc6-base
-  script:
-    - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
-    - mkdir build 
-    - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
-    - make -j3
-    - make install
-    - . ../bin/thisdd4hep.sh
-    - make test
-
-centos7-gcc49:
-  tags:
-    - docker
-  image: clicdp/cc7-base
-  script:
-    - source .gitlab-ci.d/init_x86_64-centos7-gcc49-opt.sh
-    - mkdir build 
-    - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
-    - make -j3
-    - make install
-    - . ../bin/thisdd4hep.sh
-    - make test
+    - export ROOTSYS=/cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt;
+    - ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
+    - test -r ${ROOTENV_INIT} && { cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; }
 
