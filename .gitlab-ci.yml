@@ -4,7 +4,7 @@ slc6-gcc48:
   image: clicdp/slc6-base
   script:
 #    - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
-    - export ROOTSYS=/cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt;
+    - export ROOTSYS=/cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt
     - ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
     - test -r ${ROOTENV_INIT}
-    - test -r { cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; }
+    - test -r ` cd $(dirname ${ROOTENV_INIT}); . ./$(basename ${ROOTENV_INIT}) ; cd $OLDPWD ; `
