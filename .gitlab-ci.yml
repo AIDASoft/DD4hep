@@ -3,4 +3,4 @@ slc6-gcc48:
     - docker
   image: clicdp/slc6-base
   script:
-    - source .git
+    - source .gitlab-ci.d/test.sh
