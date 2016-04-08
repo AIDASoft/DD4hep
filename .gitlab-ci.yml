@@ -3,7 +3,5 @@ slc6-gcc48:
     - docker
   image: clicdp/slc6-base
   script:
-    - ps -p $$
-    - ls /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt
-    - ls -l /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
-    - . ./cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin/thisroot.sh
+    - cd /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
+    - . ./thisroot.sh
