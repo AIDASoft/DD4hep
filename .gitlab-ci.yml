@@ -7,6 +7,9 @@ slc6-gcc48:
     - export ROOTSYS=/cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt
     - ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
     - test -r ${ROOTENV_INIT}
+    - ls /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt
+    - ls -l /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
+    - . ./cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin/thisroot.sh
     - cd $(dirname ${ROOTENV_INIT});
     - . ./$(basename ${ROOTENV_INIT}) ; 
     - cd $OLDPWD ; 
