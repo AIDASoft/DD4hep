@@ -3,6 +3,7 @@ slc6-gcc48:
     - docker
   image: cern/slc6-base
   script:
-    - ls /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
-    - cd /cvmfs/sft.cern.ch/lcg/releases/LCG_84/ROOT/6.06.02/x86_64-slc6-gcc48-opt/bin
-    - . ./thisroot.sh
+    - export G4INSTALL="/cvmfs/sft.cern.ch/lcg/releases/LCG_84/../Geant4/10.02-7c0e3/x86_64-slc6-gcc48-opt"
+    - export G4ENV_INIT="$G4INSTALL/bin/geant4.sh"
+    - export G4SYSTEM="Linux-g++"
+    - test -r ${G4ENV_INIT} && { cd $(dirname ${G4ENV_INIT}) ; . ./$(basename ${G4ENV_INIT}) ; cd $OLDPWD ; }
