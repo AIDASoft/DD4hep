@@ -28,8 +28,8 @@ namespace DD4hep {
 
     // ==========================================================================
     /*  parse the vector of vectors
-     *  @param resut (OUTPUT) the parser vector
-     *  @param input (INPIUT) the string to be parsed
+     *  @param result (OUTPUT) the parser vector
+     *  @param input (INPUT) the string to be parsed
      *  @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *  @date 2009-09-05
      */

@@ -657,7 +657,7 @@ namespace DD4hep {
      *
      *  @endcode
      *
-     *  Note that "eenrgy" element can be separated with semicolumn.
+     *  Note that "energy" element can be separated with semicolon.
      *
      *  Valid keys for names fields:
      *
@@ -683,7 +683,7 @@ namespace DD4hep {
     // ========================================================================
     /// parse the vector of points
     /**  @param result (OUTPUT) the parser vector
-     *   @param input (INPIUT) the string to be parsed
+     *   @param input (INPUT) the string to be parsed
      *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *   @date 2009-09-05
      */
@@ -701,7 +701,7 @@ namespace DD4hep {
     // ========================================================================
     /// parse the vector of vectors
     /**  @param result (OUTPUT) the parser vector
-     *   @param input (INPIUT) the string to be parsed
+     *   @param input (INPUT) the string to be parsed
      *   @author Vanya BELYAEV Ivan.Belyaev@nikhef.nl
      *   @date 2009-09-05
      */
