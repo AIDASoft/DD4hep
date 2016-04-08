@@ -48,14 +48,12 @@ using namespace DD4hep::Simulation;
 typedef ReferenceBitMask<int> PropertyMask;
 
 namespace {
-  G4PrimaryParticle* primary(int id, const G4Event& evt)   {
-    for(int i=0, ni=evt.GetNumberOfPrimaryVertex(); i<ni; ++i)  {
-      G4PrimaryVertex* v = evt.GetPrimaryVertex(i);
-      for(int j=0, nj=v->GetNumberOfParticle(); j<nj; ++j)  {
-        G4PrimaryParticle* p = v->GetPrimary(j);
-        if ( id == p->GetTrackID() )   {
-          return p;
-        }
+  const G4PrimaryParticle* primary(int id, Geant4PrimaryMap::Primaries const& primaryMap)   {
+    Geant4PrimaryMap::Primaries::const_iterator iprim =   primaryMap.begin();
+    Geant4PrimaryMap::Primaries::const_iterator primEnd = primaryMap.end();
+    for (; iprim != primEnd; ++iprim) {
+      if( iprim->first->GetTrackID() == id ){
+	return iprim->first;
       }
     }
     return 0;
@@ -213,7 +211,7 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   G4ThreeVector m = h.momentum();
   const G4ThreeVector& v = h.vertex();
   int reason = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
-  G4PrimaryParticle* prim = primary(h.id(),context()->event().event());
+  const G4PrimaryParticle* prim = primary(h.id(),m_primaryMap->primaryMap);
   Particle* prim_part = 0;
 
   if ( prim )   {
