@@ -3,5 +3,6 @@ slc6-gcc48:
     - docker
   image: cern/slc6-base
   script:
+    - yum install which -y
     - cd /afs/cern.ch/user/m/mpetric/public/root
     - . ./bin/thisroot.sh 
