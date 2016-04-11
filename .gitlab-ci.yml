@@ -3,7 +3,6 @@ slc6-gcc48:
     - docker
   image: clicdp/slc6-base
   script:
-    - yum install which man -y
     - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
     - mkdir build 
     - cd build
@@ -12,13 +11,19 @@ slc6-gcc48:
     - make install
     - . ../cmake/thisdd4hep_test.sh
     - make test
+    - cd ../examples/
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make -j4
+    - make install
+    - make test
 
 slc6-gcc49:
   tags:
     - docker
   image: clicdp/slc6-base
   script:
-    - yum install which	man -y
     - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
     - mkdir build 
     - cd build
@@ -27,13 +32,19 @@ slc6-gcc49:
     - make install
     - . ../bin/thisdd4hep.sh
     - make test
+    - cd ../examples/
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make -j4
+    - make install
+    - make test
 
 centos7-gcc49:
   tags:
     - docker
   image: clicdp/cc7-base
   script:
-    - yum install which	man -y
     - source .gitlab-ci.d/init_x86_64-centos7-gcc49-opt.sh
     - mkdir build 
     - cd build
@@ -41,5 +52,12 @@ centos7-gcc49:
     - make -j3
     - make install
     - . ../bin/thisdd4hep.sh
+    - make test
+    - cd ../examples/
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make -j4
+    - make install
     - make test
 
