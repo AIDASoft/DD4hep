@@ -55,6 +55,16 @@ Vector3D TiledLayerGridXY::position(const CellID& cID) const {
 
 	if ( _layerOffsetX.size() != 0 && _layerIndex <=_layerOffsetX.size() ) {
 	  cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _layerOffsetX[_layerIndex - 1]*_gridSizeX/2.);
+	  // check the integer cell boundary in x,
+	  if ( ( _layerDimX.size() != 0 && _layerIndex <= _layerDimX.size() )
+	       &&( _fractCellSizeXPerLayer.size() != 0 && _layerIndex <=  _fractCellSizeXPerLayer.size() )
+	       &&(fabs( cellPosition.X ) > ( _layerDimX.at(_layerIndex - 1) - _fractCellSizeXPerLayer.at(_layerIndex - 1) ))
+	       )
+	    { 
+	      // and correct the fraction cell center position in x.
+	      cellPosition.X = cellPosition.X/fabs(cellPosition.X)
+		*(_layerDimX.at(_layerIndex - 1) - _fractCellSizeXPerLayer.at(_layerIndex - 1)/2.0) ;
+	    }
 	} else {
 	  cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
 	}
