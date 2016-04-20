@@ -13,8 +13,8 @@
 # @author Jan Engels, Desy
 ##############################################################################
 
-set ( DD4hep_DIR         "@CMAKE_INSTALL_PREFIX@" )
-set ( DD4hep_ROOT        "@CMAKE_INSTALL_PREFIX@" )
+set ( DD4hep_DIR         "$ENV{DD4hep_DIR}" )
+set ( DD4hep_ROOT        "$ENV{DD4hep_ROOT}" )
 set ( DD4hep_VERSION     "@DD4hep_VERSION@" )
 set ( DD4HEP_USE_BOOST   "@DD4HEP_USE_BOOST@" )
 set ( DD4HEP_USE_GEANT4  "@DD4HEP_USE_GEANT4@" )

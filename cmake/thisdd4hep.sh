@@ -67,6 +67,8 @@ export XERECESCINSTALL=@XERCESC_ROOT_DIR@;
 #
 #----DD4hep installation directory--------------------------------------------
 export DD4hepINSTALL=${THIS};
+export DD4hep_DIR=${THIS};
+export DD4hep_ROOT=${THIS};
 #
 #----------- source the ROOT environment first ------------------------------
 ROOTENV_INIT=${ROOTSYS}/bin/thisroot.sh;
