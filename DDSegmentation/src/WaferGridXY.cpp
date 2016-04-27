@@ -24,7 +24,7 @@ WaferGridXY::WaferGridXY(const std::string& cellEncoding) :
 	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
-        registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, std::string("layer"),
+        registerParameter("identifier_groupMGWafer", "Cell encoding identifier for Magic Wafer group", _identifierMGWaferGroup, std::string("layer"),
                         SegmentationParameter::NoUnit, true);
         registerParameter("identifier_wafer", "Cell encoding identifier for wafer", _identifierWafer, std::string("wafer"),
                         SegmentationParameter::NoUnit, true);
@@ -38,25 +38,25 @@ WaferGridXY::~WaferGridXY() {
 /// determine the position based on the cell ID
 Vector3D WaferGridXY::position(const CellID& cID) const {
 	_decoder->setValue(cID);
-        unsigned int _layerIndex;
+        unsigned int _groupMGWaferIndex;
         unsigned int _waferIndex;
 	Vector3D cellPosition;
 
-        _layerIndex = (*_decoder)[_identifierLayer];
+        _groupMGWaferIndex = (*_decoder)[_identifierMGWaferGroup];
         _waferIndex = (*_decoder)[_identifierWafer];
 
-	if ( _waferOffsetX[_layerIndex][_waferIndex] > 0 || _waferOffsetX[_layerIndex][_waferIndex] < 0 )
+	if ( _waferOffsetX[_groupMGWaferIndex][_waferIndex] > 0 || _waferOffsetX[_groupMGWaferIndex][_waferIndex] < 0 )
 	  {
-	    cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX+_waferOffsetX[_layerIndex][_waferIndex]);
+	    cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX+_waferOffsetX[_groupMGWaferIndex][_waferIndex]);
 	  }
 	else
 	  {
 	    cellPosition.X = binToPosition((*_decoder)[_xId].value(), _gridSizeX, _offsetX);
 	  }
 
-	if ( _waferOffsetY[_layerIndex][_waferIndex] > 0 || _waferOffsetY[_layerIndex][_waferIndex] < 0 )
+	if ( _waferOffsetY[_groupMGWaferIndex][_waferIndex] > 0 || _waferOffsetY[_groupMGWaferIndex][_waferIndex] < 0 )
 	  {
-	    cellPosition.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY+_waferOffsetY[_layerIndex][_waferIndex]);
+	    cellPosition.Y = binToPosition((*_decoder)[_yId].value(), _gridSizeY, _offsetY+_waferOffsetY[_groupMGWaferIndex][_waferIndex]);
 	  }
 	else
 	  {
@@ -69,24 +69,24 @@ Vector3D WaferGridXY::position(const CellID& cID) const {
 /// determine the cell ID based on the position
   CellID WaferGridXY::cellID(const Vector3D& localPosition, const Vector3D& /* globalPosition */, const VolumeID& vID) const {
 	_decoder->setValue(vID);
-        unsigned int _layerIndex;
+        unsigned int _groupMGWaferIndex;
         unsigned int _waferIndex;
 
-        _layerIndex = (*_decoder)[_identifierLayer];
+        _groupMGWaferIndex = (*_decoder)[_identifierMGWaferGroup];
         _waferIndex = (*_decoder)[_identifierWafer];
 
-	if ( _waferOffsetX[_layerIndex][_waferIndex] > 0 || _waferOffsetX[_layerIndex][_waferIndex] < 0 )
+	if ( _waferOffsetX[_groupMGWaferIndex][_waferIndex] > 0 || _waferOffsetX[_groupMGWaferIndex][_waferIndex] < 0 )
 	  {
-	    (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX+_waferOffsetX[_layerIndex][_waferIndex]);
+	    (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX+_waferOffsetX[_groupMGWaferIndex][_waferIndex]);
 	  }
 	else
 	  {
 	    (*_decoder)[_xId] = positionToBin(localPosition.X, _gridSizeX, _offsetX);
 	  }
 
-	if ( _waferOffsetY[_layerIndex][_waferIndex] > 0 ||  _waferOffsetY[_layerIndex][_waferIndex] < 0)
+	if ( _waferOffsetY[_groupMGWaferIndex][_waferIndex] > 0 ||  _waferOffsetY[_groupMGWaferIndex][_waferIndex] < 0)
 	  {
-	    (*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY+_waferOffsetY[_layerIndex][_waferIndex]);
+	    (*_decoder)[_yId] = positionToBin(localPosition.Y, _gridSizeY, _offsetY+_waferOffsetY[_groupMGWaferIndex][_waferIndex]);
 	  }
 	else
 	  {

@@ -10,7 +10,7 @@
 
 #include "DDSegmentation/CartesianGrid.h"
 
-#define MAX_LAYERS 100
+#define MAX_GROUPS 100
 #define MAX_WAFERS 100
 
 namespace DD4hep {
@@ -43,13 +43,13 @@ public:
 	double offsetY() const {
 		return _offsetY;
 	}
-        /// access the coordinate waferOffset for inLayer in X
-	double waferOffsetX(int inLayer, int inWafer) const {
-	  return  _waferOffsetX[inLayer][inWafer];
+        /// access the coordinate waferOffset for inGroup in X
+	double waferOffsetX(int inGroup, int inWafer) const {
+	  return  _waferOffsetX[inGroup][inWafer];
 	}
-        /// access the coordinate waferOffset for inLayer in Y
-	double waferOffsetY(int inLayer, int inWafer) const {
-	  return  _waferOffsetY[inLayer][inWafer];
+        /// access the coordinate waferOffset for inGroup in Y
+	double waferOffsetY(int inGroup, int inWafer) const {
+	  return  _waferOffsetY[inGroup][inWafer];
 	}
 
 	/// access the field name used for X
@@ -77,12 +77,12 @@ public:
 		_offsetY = offset;
 	}
         /// set the coordinate waferOffset for inlayer in X
-        void setWaferOffsetX(int inLayer,int inWafer, double offset) {
-          _waferOffsetX[inLayer][inWafer] = offset;
+        void setWaferOffsetX(int inGroup,int inWafer, double offset) {
+          _waferOffsetX[inGroup][inWafer] = offset;
         }
-        /// set the coordinate waferOffset for inLayer in Y
-        void setWaferOffsetY(int inLayer,int inWafer, double offset) {
-          _waferOffsetY[inLayer][inWafer] = offset;
+        /// set the coordinate waferOffset for inGroup in Y
+        void setWaferOffsetY(int inGroup,int inWafer, double offset) {
+          _waferOffsetY[inGroup][inWafer] = offset;
         }
 
 	/// set the field name used for X
@@ -113,16 +113,16 @@ protected:
 	double _gridSizeY;
 	/// the coordinate offset in Y
 	double _offsetY;
-        /// list of wafer x offset for each layer
-	double _waferOffsetX[MAX_LAYERS][MAX_WAFERS];
-        /// list of wafer y offset for each layer
-	double _waferOffsetY[MAX_LAYERS][MAX_WAFERS];
+        /// list of wafer x offset for each group
+	double _waferOffsetX[MAX_GROUPS][MAX_WAFERS];
+        /// list of wafer y offset for each group
+	double _waferOffsetY[MAX_GROUPS][MAX_WAFERS];
 	/// the field name used for X
 	std::string _xId;
 	/// the field name used for Y
 	std::string _yId;
-        /// encoding field used for the layer
-        std::string _identifierLayer; 
+        /// encoding field used for the Magic Wafer group
+        std::string _identifierMGWaferGroup; 
         /// encoding field used for the wafer
         std::string _identifierWafer; 
 };
