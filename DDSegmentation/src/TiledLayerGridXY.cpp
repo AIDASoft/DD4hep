@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <sstream>
 #include <stdexcept>
+#include <cmath>
 
 namespace DD4hep {
 namespace DDSegmentation {
@@ -58,11 +59,11 @@ Vector3D TiledLayerGridXY::position(const CellID& cID) const {
 	  // check the integer cell boundary in x,
 	  if ( ( _layerDimX.size() != 0 && _layerIndex <= _layerDimX.size() )
 	       &&( _fractCellSizeXPerLayer.size() != 0 && _layerIndex <=  _fractCellSizeXPerLayer.size() )
-	       &&(fabs( cellPosition.X ) > ( _layerDimX.at(_layerIndex - 1) - _fractCellSizeXPerLayer.at(_layerIndex - 1) ))
+	       &&(std::fabs( cellPosition.X ) > ( _layerDimX.at(_layerIndex - 1) - _fractCellSizeXPerLayer.at(_layerIndex - 1) ))
 	       )
 	    { 
 	      // and correct the fraction cell center position in x.
-	      cellPosition.X = cellPosition.X/fabs(cellPosition.X)
+	      cellPosition.X = cellPosition.X/std::fabs(cellPosition.X)
 		*(_layerDimX.at(_layerIndex - 1) - _fractCellSizeXPerLayer.at(_layerIndex - 1)/2.0) ;
 	    }
 	} else {
