@@ -1,67 +1,5 @@
 %
-%
-\usepackage{graphicx}
-\usepackage{hyperref}
-\usepackage{verbatim}
-\usepackage{fix-cm}
-\usepackage{lineno}
-\usepackage{fancyhdr}
-%
-\usepackage{amsmath}
-%
-\oddsidemargin  0.1 in
-\evensidemargin 0.1 in
-%
-%
-\newlength{\backindent}\setlength{\backindent}{2cm}
-\textwidth 5.375 in % Width of text line.
-\advance\textheight by1.4cm
-\advance\voffset by-1.4cm
-\advance\textwidth by\backindent
-%
-%
-% === Fancy headers setup  ===============================
-%
-\setlength{\headheight}{15.2pt}
-\pagestyle{fancyplain} {
-\fancyhead[L]{\includegraphics[height=10mm]{DD4hep-AIDA-logo.png}\vspace{-0.3cm}}
-\fancyhead[C]{}
-\fancyhead[R]{\sffamily{\underline{\hspace{6cm}Advanced European Infrastructures for Detectors at Accelerators}}}
-\fancyfoot[L]{}
-\fancyfoot[C]{\sffamily{User Manual}}
-\fancyfoot[R]{\sffamily{\thepage}}
-}
-%
-%
-\newcommand{\tw}[1]{${\tt{#1}}$}
-\newcommand{\tts}[1]{{\tt\small{#1}}}
-\newcommand{\bold}[1]{{\bf{#1}}}
-%
-%
-\newcommand{\DDE}{{$\tt{DDEve}$\space}}
-\newcommand{\DDhep}{{$\tt{DD4hep}$\space}}
-\newcommand{\DDH}{{$\tt{DD4hep}$\space}}
-\newcommand{\DDG}{{\tt{DDG4}\space}}
-\newcommand{\DDA}{{\tt{DDAlign}\space}}
-\newcommand{\DDR}{{\tt{DDRec}\space}}
-%
-%
-\newcommand{\docline}[2]{\vspace{0.1cm}{\bf{#1}} & \parbox{14.5cm}{#2}\\}
-%
-% === Specialization of the lineno package
-%
-\renewcommand{\linenumberfont} {\normalfont\small\sffamily}
-\renewcommand{\makeLineNumber} {\makeLineNumberLeft}
-\renewcommand{\linenumbersep} {2pt}
-%
-% === Set font to code section with line numbers
-%
-\newenvironment{code}{\par\vspace{0.01cm}\small\linenumbers\verbatim\setcounter{linenumber}{1}}{\endverbatim\nolinenumbers\vspace{-0.02cm}}%
-%
-% === Set font to code section with line numbers
-%
-\newenvironment{unnumberedcode}{\par\vspace{-0.1cm}\small\verbatim\setcounter{linenumber}{1}}%
-{\endverbatim\vspace{-0.2cm}}
+\input{setup/AIDA2020-setup.tex}
 %
 % === Command to insert http links to the DD4hep geomtery package
 %
@@ -80,51 +18,20 @@
 {
     \href{http://root.cern.ch/root/html/#1:#2}{#3}
 }
+\newcommand{\DDE}{{$\tt{DDEve}$\space}}
+\newcommand{\DDhep}{{$\tt{DD4hep}$\space}}
+\newcommand{\DDH}{{$\tt{DD4hep}$\space}}
+\newcommand{\DDG}{{\tt{DDG4}\space}}
+\newcommand{\DDA}{{\tt{DDAlign}\space}}
+\newcommand{\DDR}{{\tt{DDRec}\space}}
 %
-% ===  Compactify the item list  =========================
+% ===  Custom title page  ================================
 %
-\newcommand{\itemcompact}{\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}}
-%
-%
-% ===  Title page command  ===============================
-%
-%
-\newcommand{\basictitle}[2]{
-%
-\pagestyle{empty}
-%
-\includegraphics[height=25mm] {DD4hep-AIDA-logo.png}
-
-\vspace{0.02cm}
-
-{\sffamily{\underline{\hspace{6cm}Advanced European Infrastructures for Detectors at Accelerators}}}
-
-\vspace{2cm}
-
-\begin{center}
-{\fontsize{72}{32}\selectfont{\bfseries{#1}}}
-
-\vspace{3cm}
-{\Huge\bf{#2}}
-\vspace{3cm}
-
-\end{center}
-}
-
-
 \newcommand{\mytitle}[3]{
 \begin{titlepage}
 \basictitle{#1}{#2}
 \begin{center}
 {#3}
-
-%%M.Frank %%\textsuperscript{1}
-%%%F.Gaede\textsuperscript{2},
-%%%C.Grefe\textsuperscript{1}
-%%\vspace{1cm}
-%%\textsuperscript{1}
-%%{CERN, 1211 Geneva 23, Switzerland}
-%%%{\textsuperscript{2} {Desy, 22607 Hamburg, Germany}
 \end{center}
 \end{titlepage}
 }
