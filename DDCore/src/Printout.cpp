@@ -50,6 +50,13 @@ static size_t _the_printer(void*, DD4hep::PrintLevel lvl, const char* src, const
   return len;
 }
 
+static string __format(const char* fmt, va_list& args) {
+  char str[4096];
+  ::vsnprintf(str, sizeof(str), fmt, args);
+  va_end(args);
+  return string(str);
+}
+
 static DD4hep::PrintLevel print_lvl = DD4hep::INFO;
 static void* print_arg = 0;
 static DD4hep::output_function_t print_func = _the_printer;
@@ -173,10 +180,7 @@ int DD4hep::printout(PrintLevel severity, const string& src, const string& fmt, 
 void DD4hep::except(const string& src, const string& fmt, ...) {
   va_list args;
   va_start(args, &fmt);
-  string msg = format(src.c_str(), fmt.c_str(), args);
-  printout(ERROR, src.c_str(), fmt.c_str(), args);
-  va_end(args);
-  throw runtime_error(msg.c_str());
+  except(src.c_str(),fmt.c_str(), args);
 }
 
 /** Calls the display action with ERROR and throws an std::runtime_error exception
@@ -187,10 +191,7 @@ void DD4hep::except(const string& src, const string& fmt, ...) {
 void DD4hep::except(const char* src, const char* fmt, ...) {
   va_list args;
   va_start(args, fmt);
-  string msg = format(src, fmt, args);
-  printout(ERROR, src, fmt, args);
-  va_end(args);
-  throw runtime_error(msg.c_str());
+  except(src, fmt, args);
 }
 
 /** Calls the display action with ERROR and throws an std::runtime_error exception
@@ -200,11 +201,11 @@ void DD4hep::except(const char* src, const char* fmt, ...) {
  *  @return Status code indicating success or failure
  */
 void DD4hep::except(const string& src, const string& fmt, va_list& args) {
-  string msg = format(src.c_str(), fmt.c_str(), args);
-  printout(ERROR, src.c_str(), fmt.c_str(), args);
-  // No return. Must call va_end here!
+  string msg = __format(fmt.c_str(), args);
   va_end(args);
-  throw runtime_error(msg.c_str());
+  printout(ERROR, src.c_str(), "%s", msg.c_str());
+  // No return. Must call va_end here!
+  throw runtime_error((src+": "+msg).c_str());
 }
 
 /** Calls the display action with ERROR and throws an std::runtime_error exception
@@ -215,10 +216,10 @@ void DD4hep::except(const string& src, const string& fmt, va_list& args) {
  */
 void DD4hep::except(const char* src, const char* fmt, va_list& args) {
   string msg = format(src, fmt, args);
-  printout(ERROR, src, fmt, args);
-  // No return. Must call va_end here!
   va_end(args);
-  throw runtime_error(msg.c_str());
+  printout(ERROR, src, "%s", msg.c_str());
+  // No return. Must call va_end here!
+  throw runtime_error((string(src)+": "+msg).c_str());
 }
 
 /** Build exception string

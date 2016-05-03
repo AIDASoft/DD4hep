@@ -21,7 +21,7 @@
 
 // Framework include files
 #include "DD4hep/Printout.h"
-#include "DDG4Python/DDPython.h"
+#include "DDG4/Python/DDPython.h"
 
 #if !defined(__MAKECINT__) && !defined(__CINT__) && !defined(G__DICTIONARY)
 // -----------------------------------------------------------------------------

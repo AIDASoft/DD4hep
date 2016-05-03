@@ -14,8 +14,8 @@
 // $Id$
 
 // Framework include files
-#include "DDG4Python/Geant4PythonCall.h"
-#include "DDG4Python/DDPython.h"
+#include "DDG4/Python/Geant4PythonCall.h"
+#include "DDG4/Python/DDPython.h"
 #include "TPyReturn.h"
 
 // C/C++ include files

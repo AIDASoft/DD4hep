@@ -13,27 +13,7 @@
 //==========================================================================
 
 // Framework include files
-#include "XML/XMLDimension.h"
-
-using namespace std;
-using namespace DD4hep::XML;
-
-#define XML_ATTR_ACCESSOR(type,name)  type Dimension::name() const { return m_element.attr<type>(Unicode_##name); }
-#define XML_ATTR_ACCESSOR_DEFAULT(name,type,dressing)                   \
-  type Dimension::name(type default_val) const {                        \
-    const XmlChar* val = m_element.attr_value_nothrow(Unicode_##name);  \
-    return val ? dressing(val) : default_val; }
-
-#define XML_ATTR_ACCESSOR_DOUBLE(name)              \
-  XML_ATTR_ACCESSOR(double,name)                    \
-  XML_ATTR_ACCESSOR_DEFAULT(name,double,_toDouble)
-
-#define XML_ATTR_ACCESSOR_INT(name)      XML_ATTR_ACCESSOR_DEFAULT(name,int,_toInt)
-#define XML_ATTR_ACCESSOR_BOOL(name)     XML_ATTR_ACCESSOR_DEFAULT(name,bool,_toBool)
-
-#define XML_CHILD_ACCESSOR_XML_DIM(name)                            \
-  Dimension Dimension::name(bool throw_if_not_present) const {      \
-    return m_element.child(Unicode_##name,throw_if_not_present); }
+#include "XML/XMLDimension.inl"
 
 XML_ATTR_ACCESSOR(int, id)
 XML_ATTR_ACCESSOR_INT(id)
@@ -44,7 +24,7 @@ XML_ATTR_ACCESSOR_DOUBLE(X)
 XML_ATTR_ACCESSOR_DOUBLE(dx)
 
 XML_ATTR_ACCESSOR_DOUBLE(x0)
-  XML_ATTR_ACCESSOR_DOUBLE(x1)
+XML_ATTR_ACCESSOR_DOUBLE(x1)
 XML_ATTR_ACCESSOR_DOUBLE(x2)
 XML_ATTR_ACCESSOR_DOUBLE(x3)
 XML_ATTR_ACCESSOR_DOUBLE(x4)
@@ -80,10 +60,12 @@ XML_ATTR_ACCESSOR(double, inner_z)
 XML_ATTR_ACCESSOR_DOUBLE(a)
 XML_ATTR_ACCESSOR_DOUBLE(b)
 XML_ATTR_ACCESSOR_DOUBLE(c)
-XML_ATTR_ACCESSOR(double, distance)
-XML_ATTR_ACCESSOR(double, g)
-XML_ATTR_ACCESSOR(double, B)
-XML_ATTR_ACCESSOR(double, G)
+XML_ATTR_ACCESSOR_DOUBLE(distance)
+XML_ATTR_ACCESSOR_DOUBLE(g)
+XML_ATTR_ACCESSOR_DOUBLE(A)
+XML_ATTR_ACCESSOR_DOUBLE(B)
+XML_ATTR_ACCESSOR_DOUBLE(G)
+XML_ATTR_ACCESSOR_DOUBLE(I)
 
 XML_ATTR_ACCESSOR_DOUBLE(r)
 XML_ATTR_ACCESSOR_DOUBLE(R)
@@ -181,12 +163,10 @@ XML_ATTR_ACCESSOR_DOUBLE(threshold)
 XML_ATTR_ACCESSOR_DOUBLE(lunit)
 XML_ATTR_ACCESSOR_DOUBLE(eunit)
 
-#if 0
-XML_ATTR_ACCESSOR(double,)
-XML_ATTR_ACCESSOR(double,)
-XML_ATTR_ACCESSOR(double,)
-XML_ATTR_ACCESSOR(double,)
-#endif
+XML_ATTR_ACCESSOR_DOUBLE(density)
+XML_ATTR_ACCESSOR_DOUBLE(pressure)
+XML_ATTR_ACCESSOR_DOUBLE(temperature)
+
 
 XML_CHILD_ACCESSOR_XML_DIM(dimensions)
 XML_CHILD_ACCESSOR_XML_DIM(position)
@@ -196,43 +176,43 @@ XML_CHILD_ACCESSOR_XML_DIM(tubs)
 XML_CHILD_ACCESSOR_XML_DIM(staves)
 XML_CHILD_ACCESSOR_XML_DIM(beampipe)
 
-string Dimension::padType() const {
-  return m_element.attr < string > (_U(pads));
+std::string DD4hep::XML::Dimension::padType() const {
+  return m_element.attr < std::string > (_U(pads));
 }
 
-string Dimension::nameStr() const {
-  return m_element.attr < string > (_U(name));
+std::string DD4hep::XML::Dimension::nameStr() const {
+  return m_element.attr < std::string > (_U(name));
 }
 
-string Dimension::refStr() const {
-  return m_element.attr < string > (_U(ref));
+std::string DD4hep::XML::Dimension::refStr() const {
+  return m_element.attr < std::string > (_U(ref));
 }
 
-string Dimension::typeStr() const {
-  return m_element.attr < string > (_U(type));
+std::string DD4hep::XML::Dimension::typeStr() const {
+  return m_element.attr < std::string > (_U(type));
 }
 
-/// Access "value" attribute as STL string
-std::string Dimension::valueStr() const   {
-  return m_element.attr < string > (_U(value));
+/// Access "value" attribute as STL std::string
+std::string DD4hep::XML::Dimension::valueStr() const   {
+  return m_element.attr < std::string > (_U(value));
 }
 
-string Dimension::regionStr() const {
-  return m_element.hasAttr(_U(region)) ? m_element.attr < string > (_U(region)) : string();
+std::string DD4hep::XML::Dimension::regionStr() const {
+  return m_element.hasAttr(_U(region)) ? m_element.attr < std::string > (_U(region)) : std::string();
 }
 
-string Dimension::limitsStr() const {
-  return m_element.hasAttr(_U(limits)) ? m_element.attr < string > (_U(limits)) : string();
+std::string DD4hep::XML::Dimension::limitsStr() const {
+  return m_element.hasAttr(_U(limits)) ? m_element.attr < std::string > (_U(limits)) : std::string();
 }
 
-string Dimension::visStr() const {
-  return m_element.hasAttr(_U(vis)) ? m_element.attr < string > (_U(vis)) : string();
+std::string DD4hep::XML::Dimension::visStr() const {
+  return m_element.hasAttr(_U(vis)) ? m_element.attr < std::string > (_U(vis)) : std::string();
 }
 
-string Dimension::readoutStr() const {
-  return m_element.hasAttr(_U(readout)) ? m_element.attr < string > (_U(readout)) : string();
+std::string DD4hep::XML::Dimension::readoutStr() const {
+  return m_element.hasAttr(_U(readout)) ? m_element.attr < std::string > (_U(readout)) : std::string();
 }
 
-string Dimension::moduleStr() const {
-  return m_element.hasAttr(_U(module)) ? m_element.attr < string > (_U(module)) : string();
+std::string DD4hep::XML::Dimension::moduleStr() const {
+  return m_element.hasAttr(_U(module)) ? m_element.attr < std::string > (_U(module)) : std::string();
 }

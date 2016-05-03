@@ -16,7 +16,7 @@
 
 // Framework include files
 #include "DDG4/Geant4DetectorConstruction.h"
-#include "DDG4Python/DDPython.h"
+#include "DDG4/Python/DDPython.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {

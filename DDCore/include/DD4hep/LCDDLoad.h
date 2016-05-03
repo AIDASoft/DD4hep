@@ -15,6 +15,7 @@
 #define DD4HEP_DDCORE_LCDDLOAD_H
 
 // Framework includes
+#include "DD4hep/LCDD.h"
 
 // C/C++ include files
 #include <stdexcept>
@@ -50,7 +51,10 @@ namespace DD4hep {
     virtual void processXML(const XML::Handle_t& base, const std::string& fname);
     /// Process a given DOM (sub-) tree
     virtual void processXMLElement(const std::string& msg_source, const XML::Handle_t& root);
+    /// Process a given DOM (sub-) tree
+    virtual void processXMLElement(const XML::Handle_t& root, LCDDBuildType type);
+
   };
 
-} /* End namespace DD4hep   */
+}         /* End namespace DD4hep     */
 #endif    /* DD4HEP_DDCORE_LCDDLOAD_H */

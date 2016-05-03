@@ -103,9 +103,18 @@ namespace ROOT {
   DD4HEP_DEFINE_PROPERTY_TYPE(std::list<x>);    \
   DD4HEP_DEFINE_PROPERTY_TYPE(std::set<x>)
 
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+////
+//// Parser dictionaries get too large. Do not support unsigned stuff!
+////
 // Instantiate single property with support for STL containers + same for unsigned
 #define DD4HEP_DEFINE_PROPERTY_U_CONT(x)        \
   DD4HEP_DEFINE_PROPERTY_CONT(x);               \
   DD4HEP_DEFINE_PROPERTY_CONT(unsigned x)
 
+#else
+
+#define DD4HEP_DEFINE_PROPERTY_U_CONT(x) DD4HEP_DEFINE_PROPERTY_CONT(x)
+
+#endif // DD4HEP_HAVE_ALL_PARSERS
 #endif // DD4HEP_DDG4_COMPONENTPROPERTIES_INL_H

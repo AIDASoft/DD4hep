@@ -15,8 +15,8 @@
 // Framework include files
 #include "DDG4/Factories.h"
 #include "DDG4/Geant4Kernel.h"
-#include "DDG4Python/DDPython.h"
-#include "DDG4Python/Geant4PythonInitialization.h"
+#include "DDG4/Python/DDPython.h"
+#include "DDG4/Python/Geant4PythonInitialization.h"
 
 using namespace std;
 using namespace DD4hep::Simulation;

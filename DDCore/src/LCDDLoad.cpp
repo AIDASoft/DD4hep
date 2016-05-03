@@ -97,3 +97,24 @@ void LCDDLoad::processXMLElement(const std::string& xmlfile, const XML::Handle_t
     throw runtime_error("DD4hep: Failed to parse the XML file " + xmlfile + " with the plugin " + type);
   }
 }
+
+void LCDDLoad::processXMLElement(const XML::Handle_t& xml_root, LCDDBuildType /* type */) {
+  string tag = xml_root.tag();
+  string type = tag + "_XML_reader";
+  XML::Handle_t handle = xml_root;
+  long result = PluginService::Create<long>(type, m_lcdd, &handle);
+  if (0 == result) {
+    PluginDebug dbg;
+    result = PluginService::Create<long>(type, m_lcdd, &handle);
+    if ( 0 == result )  {
+      throw runtime_error("DD4hep: Failed to locate plugin to interprete files of type"
+                          " \"" + tag + "\" - no factory:" 
+			  + type + ". " + dbg.missingFactory(type));
+    }
+  }
+  result = *(long*) result;
+  if (result != 1) {
+    throw runtime_error("DD4hep: Failed to parse the XML element with tag " 
+			+ tag + " with the plugin " + type);
+  }
+}

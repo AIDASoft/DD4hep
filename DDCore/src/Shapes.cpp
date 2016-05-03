@@ -252,14 +252,18 @@ void Polycone::addZPlanes(const vector<double>& rmin, const vector<double>& rmax
 }
 
 /// Constructor to be used when creating a new cone segment object
-ConeSegment::ConeSegment(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1, double phi2) {
-  _assign(
-          new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/dd4hep::deg, phi2/dd4hep::deg), "", "cone_segment", true);
+ConeSegment::ConeSegment(double dz, 
+			 double rmin1, double rmax1,
+			 double rmin2, double rmax2,
+			 double phi1, double phi2) {
+  _assign(new TGeoConeSeg(dz, rmin1, rmax1, rmin2, rmax2, phi1/dd4hep::deg, phi2/dd4hep::deg), "", "cone_segment", true);
 }
 
 /// Set the cone segment dimensions
-ConeSegment& ConeSegment::setDimensions(double dz, double rmin1, double rmax1, double rmin2, double rmax2, double phi1,
-                                        double phi2) {
+ConeSegment& ConeSegment::setDimensions(double dz, 
+					double rmin1, double rmax1,
+					double rmin2, double rmax2,
+					double phi1,  double phi2) {
   double params[] = { dz, rmin1, rmax1, rmin2, rmax2, phi1/dd4hep::deg, phi2/dd4hep::deg };
   _setDimensions(params);
   return *this;

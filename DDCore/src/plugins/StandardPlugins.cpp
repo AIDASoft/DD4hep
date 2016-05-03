@@ -23,7 +23,10 @@
 // ROOT includes
 #include "TGeoManager.h"
 #include "TGeoVolume.h"
+#include "TClass.h"
+#include "TRint.h"
 
+// C/C++ include files
 #include <fstream>
 
 using namespace std;
@@ -93,6 +96,19 @@ static long load_compact(LCDD& lcdd, int argc, char** argv) {
 }
 DECLARE_APPLY(DD4hepCompactLoader,load_compact)
 
+static long run_interpreter(LCDD& /* lcdd */, int argc, char** argv) {
+  if ( argc > 0 )   {
+    pair<int, char**> a(argc,argv);
+  }
+  else   {
+    pair<int, char**> a(0,0);
+    TRint app("DD4hep", &a.first, a.second);
+    app.Run();
+  }
+  return 1;
+}
+DECLARE_APPLY(DD4hepRint,run_interpreter)
+
 static long load_xml(LCDD& lcdd, int argc, char** argv) {
   if ( argc > 0 )   {
     LCDDBuildType type = BUILD_DEFAULT;
@@ -104,13 +120,35 @@ static long load_xml(LCDD& lcdd, int argc, char** argv) {
       lcdd.fromXML(input,type);
       return 1;
     }
-    printout(INFO,"XMLLoader","+++ Processing compact file: %s",input.c_str());
+    printout(INFO,"XMLLoader","+++ Processing XML file: %s",input.c_str());
     lcdd.fromXML(input);
     return 1;
   }
   return 0;
 }
 DECLARE_APPLY(DD4hepXMLLoader,load_xml)
+
+static long process_xml_doc(LCDD& lcdd, int argc, char** argv) {
+  if ( argc > 0 )   {
+    LCDDBuildType type = BUILD_DEFAULT;
+    LCDDImp* imp = dynamic_cast<LCDDImp*>(&lcdd);
+    if ( imp )  {
+      XML::XmlElement* h = (XML::XmlElement*)argv[0];
+      XML::Handle_t input(h);
+      if ( input.ptr() )   {
+        if ( argc > 1 )  {
+          type = build_type(argv[1]);
+          printout(INFO,"XMLLoader","+++ Processing XML element: %s with flag %s",
+                   input.tag().c_str(), argv[1]);
+        }
+        imp->processXMLElement(input, type);
+        return 1;
+      }
+    }
+  }
+  return 0;
+}
+DECLARE_APPLY(DD4hepXMLProcessor,process_xml_doc)
 
 static long load_volmgr(LCDD& lcdd, int, char**) {
   try {
@@ -169,15 +207,20 @@ static long dump_volume_tree(LCDD& lcdd, int , char** ) {
   struct Actor {
     static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
       char fmt[256];
+      const double* trans = ideal->GetMatrix()->GetTranslation();
       if ( ideal == aligned )  {
-        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s \t\tNode:%p",level+1,2*level+1,(void*)ideal);
+        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] Pos: (%f,%f,%f)",
+                   level+1,2*level+1,(void*)ideal,
+                   trans[0], trans[1], trans[2]);
       }
       else  {
-        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s Ideal node:%p Aligned node:%p",
-                   level+1,2*level+1,(void*)ideal,(void*)aligned);
+        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p Pos: (%f,%f,%f)",
+                   level+1,2*level+1,(void*)ideal,(void*)aligned,
+                   trans[0], trans[1], trans[2]);
       }
-      printout(INFO,"+++",fmt,"",aligned->GetName());
       TGeoVolume* volume = ideal->GetVolume();
+      printout(INFO,"+++",fmt,"",aligned->GetName(),volume->GetTitle(),
+               volume->GetShape()->IsA()->GetName());
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
         const char* daughter_name    = ideal_daughter->GetName();
@@ -211,8 +254,10 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
         char fmt[64];
         switch(value)  {
         case 0:
-          ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-          printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
+          ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%X Place:%%p",level+1,2*level+1);
+          printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),
+                   (unsigned long)de.volumeID(),
+                   (void*)de.placement().ptr());
           break;
         case 1:
           ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);

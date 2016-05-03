@@ -13,7 +13,7 @@
 //==========================================================================
 #include "TSystem.h"
 #include "TInterpreter.h"
-#include "DDG4Python/DDPython.h"
+#include "DDG4/Python/DDPython.h"
 #include <vector>
 
 static int load_libs(const std::vector<char*>& libs)  {

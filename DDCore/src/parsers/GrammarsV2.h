@@ -106,8 +106,7 @@ namespace DD4hep {  namespace Parsers {
         str = qi::lexeme[begin_quote[qi::_a = qi::_1]
                          > *( (enc::char_('\\') >> quote(qi::_a))[qi::_val += qi::_a]
                               | (enc::char_[qi::_val += qi::_1] - quote(qi::_a))) >
-                         quote(qi::_a)]
-          ;
+                         quote(qi::_a)];
       }
       //------------------------------------------------------------------------------
       qi::rule<Iterator, std::string(), qi::locals<char>, Skipper> str;
@@ -230,9 +229,9 @@ namespace DD4hep {  namespace Parsers {
       VectorGrammar<Iterator, std::set<InnerT, CompareT, AllocatorT>, Skipper>
       Grammar;
     };
-
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
     // ----------------------------------------------------------------------------
-    // Register VectorGrammar for std::set:
+    // Register VectorGrammar for std::deque:
     // ----------------------------------------------------------------------------
     template <typename Iterator, typename InnerT, typename AllocatorT, typename Skipper>
     struct Grammar_<Iterator, std::deque<InnerT, AllocatorT>, Skipper >      {
@@ -240,6 +239,7 @@ namespace DD4hep {  namespace Parsers {
       VectorGrammar<Iterator, std::deque<InnerT, AllocatorT>, Skipper>
       Grammar;
     };
+#endif   //  DD4HEP_HAVE_ALL_PARSERS
 
     //==============================================================================
     template< typename Iterator, typename PairT, typename Skipper>

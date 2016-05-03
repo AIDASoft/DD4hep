@@ -15,9 +15,9 @@
 
 // Framework include files
 #include "DDG4/Factories.h"
-#include "DDG4Python/Geant4PythonAction.h"
-#include "DDG4Python/Geant4PythonCall.h"
-#include "DDG4Python/DDPython.h"
+#include "DDG4/Python/Geant4PythonAction.h"
+#include "DDG4/Python/Geant4PythonCall.h"
+#include "DDG4/Python/DDPython.h"
 
 // C/C++ include files
 #include <stdexcept>

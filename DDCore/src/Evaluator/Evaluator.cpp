@@ -634,9 +634,10 @@ namespace XmlTools {
   void Evaluator::print_error() const {
     char prefix[] = "Evaluator : ";
     Struct * s = reinterpret_cast<Struct*>(p);
+    const char* opt = (s->thePosition ? s->thePosition : "");
     switch (s->theStatus) {
     case ERROR_NOT_A_NAME:
-      std::cerr << prefix << "invalid name"         << std::endl;
+      std::cerr << prefix << "invalid name : " << opt << std::endl;
       return;
     case ERROR_SYNTAX_ERROR:
       std::cerr << prefix << "systax error"         << std::endl;
@@ -645,17 +646,16 @@ namespace XmlTools {
       std::cerr << prefix << "unpaired parenthesis" << std::endl;
       return;
     case ERROR_UNEXPECTED_SYMBOL:
-      std::cerr << prefix << "unexpected symbol"    << std::endl;
+      std::cerr << prefix << "unexpected symbol : " << opt << std::endl;
       return;
     case ERROR_UNKNOWN_VARIABLE:
-      std::cerr << prefix << "unknown variable"     << std::endl;
+      std::cerr << prefix << "unknown variable : " << opt << std::endl;
       return;
     case ERROR_UNKNOWN_FUNCTION:
-      std::cerr << prefix << "unknown function"     << std::endl;
+      std::cerr << prefix << "unknown function : " << opt << std::endl;
       return;
     case ERROR_EMPTY_PARAMETER:
-      std::cerr << prefix << "empty parameter in function call"
-                << std::endl;
+      std::cerr << prefix << "empty parameter in function call: " << opt << std::endl;
       return;
     case ERROR_CALCULATION_ERROR:
       std::cerr << prefix << "calculation error"    << std::endl;

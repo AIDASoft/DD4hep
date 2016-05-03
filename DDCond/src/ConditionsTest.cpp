@@ -84,20 +84,21 @@ namespace DD4hep {
         TEMPLATE_CONTAINER_TYPE(vector<x>,x)                  \
         TEMPLATE_CONTAINER_TYPE(list<x>,x)                    \
         TEMPLATE_CONTAINER_TYPE(set<x>,x)                     \
-        TEMPLATE_CONTAINER_TYPE(deque<x>,x)                   \
         TEMPLATE_CONTAINER_TYPE(Primitive<x>::int_map_t,x)    \
         TEMPLATE_CONTAINER_TYPE(Primitive<x>::size_map_t,x)   \
         TEMPLATE_CONTAINER_TYPE(Primitive<x>::string_map_t,x)
 
 
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
         TEMPLATE_TYPE(char,"%c")
         TEMPLATE_TYPE(unsigned char,"%02X")
         TEMPLATE_TYPE(short,"%d")
         TEMPLATE_TYPE(unsigned short,"%04X")
-        TEMPLATE_TYPE(int,"%d")
         TEMPLATE_TYPE(unsigned int,"%08X")
-        TEMPLATE_TYPE(long,"%ld")
         TEMPLATE_TYPE(unsigned long,"%016X")
+#endif // DD4HEP_HAVE_ALL_PARSERS
+        TEMPLATE_TYPE(int,"%d")
+        TEMPLATE_TYPE(long,"%ld")
         TEMPLATE_TYPE(float,"%f")
         TEMPLATE_TYPE(double,"%g")
         TEMPLATE_TYPE(std::string,"%c")

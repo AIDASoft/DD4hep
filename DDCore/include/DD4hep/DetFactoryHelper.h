@@ -32,6 +32,8 @@ typedef DD4hep::XML::Component xml_comp_t;
 typedef DD4hep::XML::Dimension xml_dim_t;
 typedef DD4hep::XML::ChildValue xml_val_t;
 typedef DD4hep::XML::Document xml_doc_t;
+typedef DD4hep::XML::DocumentHolder xml_doc_holder_t;
+typedef DD4hep::XML::DocumentHandler xml_handler_t;
 typedef DD4hep::XML::Strng_t Unicode;
 typedef DD4hep::Geometry::LCDD lcdd_t;
 

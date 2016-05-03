@@ -3,9 +3,27 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2016-05-03 M.Frank
+  ++++++++++++++++++++  NOTE: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  - Mega commit. Do not use until green signal arrives with seperate release notice.
+  +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  - Package DDDB: Prove of concept, that we can populate the geometry also from other
+    sources than xml files obeying the lccdd notation.
+  - DDCore/XML: Implement the possibility to use external entity resolution for Xerces.
+    There is not equivalent in TinyXML (AFAIK).
+  - Remove some of the Spirit parsers, since the libraries are getting way too big.
+    This implicitly assumes, that object properties of 'exotic' types such as
+    deque<long double> etc. are not really used. If you need properties stay to the obvious:
+    string, int float, double and vectors, maps and sets thereof!
+  - DDG4 needed to public the DDG4Python include directory (Now in DDG4/Python).
+    Reason: try to create ROOT 6 dictionaries, which can be relocated for release purposes.
+  - ROOT 6 dictionary generation: Create dictionaries with the additional flag:
+    "-inlineInputHeader" which physically includes the header files used to generate the 
+    dictionaries --> relocatability.
+
 2016-03-21 M.Frank
   - Add additional vertex argument to EventReader::readParticles, which supposedly should
-
 
 2016-03-03 M.Frank
   - Improve/complete job options type palette. 

@@ -152,6 +152,10 @@ namespace DD4hep {
       double a() const;
       /// Access parameters: a
       double a(double default_value) const;
+      /// Access parameters: A
+      double A() const;
+      /// Access parameters: A
+      double A(double default_value) const;
       /// Access parameters: b
       double b() const;
       /// Access parameters: b
@@ -162,12 +166,24 @@ namespace DD4hep {
       double c(double default_value) const;
       ///Access parameters: distance
       double distance() const;
+      ///Access parameters: distance
+      double distance(double default_value) const;
       /// Access parameters: B
       double B() const;
+      /// Access parameters: B
+      double B(double default_value) const;
       /// Access parameters: g
       double g() const;
+      /// Access parameters: g
+      double g(double default_value) const;
       /// Access parameters: G
       double G() const;
+      /// Access parameters: G
+      double G(double default_value) const;
+      /// Access parameters: I
+      double I() const;
+      /// Access parameters: I
+      double I(double default_value) const;
 
       /// Access parameters: r
       double r() const;
@@ -495,6 +511,18 @@ namespace DD4hep {
       /// Access min/max parameters: lunit
       double lunit(double default_value) const;
 
+      /// Access rotation constants: temperature
+      double temperature() const;
+      /// Access rotation constants: temperature
+      double temperature(double default_value) const;
+      /// Access rotation constants: pressure
+      double pressure() const;
+      /// Access rotation constants: pressure
+      double pressure(double default_value) const;
+      /// Access rotation constants: density
+      double density() const;
+      /// Access rotation constants: density
+      double density(double default_value) const;
 
       /// Access child element with tag "dimensions" as Dimension object
       Dimension dimensions(bool throw_if_not_present = true) const;

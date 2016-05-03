@@ -18,13 +18,6 @@
 #include "DD4hep/ToStream.h"
 #include "ParsersFactory.h"
 
-#define IMPLEMENT_MAPPED_PARSERS(type,X)                                  \
-  int parse(std::type <int,X>& result,const std::string& input)           \
-  { return parse_(result, input); }                                       \
-  int parse(std::type <unsigned long,X>& result,const std::string& input) \
-  { return parse_(result, input); }                                       \
-  int parse(std::type <std::string,X>& result,const std::string& input)   \
-  { return parse_(result, input); }
 
 #define IMPLEMENT_STL_PARSER(x,y)                          \
   int parse(x < y > & result, const std::string&  input)   \
@@ -34,6 +27,16 @@
   int parse(x < k, v > & result, const std::string& input) \
   { result.clear();  return parse_(result, input);         }
 
+#define IMPLEMENT_MAPPED_PARSERS(type,X)                                  \
+  int parse(std::type <int,X>& result,const std::string& input)           \
+  { return parse_(result, input); }                                       \
+  int parse(std::type <unsigned long,X>& result,const std::string& input) \
+  { return parse_(result, input); }                                       \
+  int parse(std::type <std::string,X>& result,const std::string& input)   \
+  { return parse_(result, input); }
+
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+
 #define IMPLEMENT_STL_PARSERS(x)                           \
   IMPLEMENT_STL_PARSER(std::vector,x)                      \
   IMPLEMENT_STL_PARSER(std::list,x)                        \
@@ -42,6 +45,17 @@
   IMPLEMENT_STL_MAP_PARSER(std::map,int,x)                 \
   IMPLEMENT_STL_MAP_PARSER(std::map,unsigned long,x)       \
   IMPLEMENT_STL_MAP_PARSER(std::map,std::string,x)
+
+#else   //  DD4HEP_HAVE_ALL_PARSERS
+
+#define IMPLEMENT_STL_PARSERS(x)                           \
+  IMPLEMENT_STL_PARSER(std::vector,x)                      \
+  IMPLEMENT_STL_PARSER(std::list,x)                        \
+  IMPLEMENT_STL_PARSER(std::set,x)                         \
+  IMPLEMENT_STL_MAP_PARSER(std::map,int,x)                 \
+  IMPLEMENT_STL_MAP_PARSER(std::map,std::string,x)
+
+#endif  //  DD4HEP_HAVE_ALL_PARSERS
 
 // ============================================================================
 #define PARSERS_DEF_FOR_LIST(InnerType)                    \

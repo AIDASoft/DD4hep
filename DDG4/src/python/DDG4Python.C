@@ -17,11 +17,11 @@
 //
 //====================================================================
 // FRamework include files
-#include "DDG4Python/Geant4PythonCall.h"
-#include "DDG4Python/Geant4PythonAction.h"
-#include "DDG4Python/Geant4PythonInitialization.h"
-#include "DDG4Python/Geant4PythonDetectorConstruction.h"
-#include "PyDDG4.h"
+#include "DDG4/Python/Geant4PythonCall.h"
+#include "DDG4/Python/Geant4PythonAction.h"
+#include "DDG4/Python/Geant4PythonInitialization.h"
+#include "DDG4/Python/Geant4PythonDetectorConstruction.h"
+#include "DDG4/Python/PyDDG4.h"
 
 // CINT configuration
 #if defined(__MAKECINT__)

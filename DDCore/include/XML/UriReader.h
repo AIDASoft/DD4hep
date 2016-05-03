@@ -1,0 +1,47 @@
+// $Id$
+//==========================================================================
+//  AIDA Detector description implementation for LCD
+//--------------------------------------------------------------------------
+// Copyright (C) Organisation europeenne pour la Recherche nucleaire (CERN)
+// All rights reserved.
+//
+// For the licensing terms see $DD4hepINSTALL/LICENSE.
+// For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
+//
+// Author     : M.Frank
+//
+//==========================================================================
+#ifndef DD4HEP_XML_URIREADER_H
+#define DD4HEP_XML_URIREADER_H
+
+// C/C++ include files
+#include <string>
+
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+
+  /// Namespace containing utilities to parse XML files using XercesC or TinyXML
+  namespace XML {
+
+    /// Class supporting to read data given a URI
+    /**
+     *  Interface to use entity resolvers for parsing layered XML documents
+     *  Currently only supported by the XercesC interface. 
+     *  No support for TinyXML possible.
+     *
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup DD4HEP_XML
+     */
+    class UriReader {
+    public:
+      /// Default constructor
+      UriReader()  {}
+      /// Default destructor
+      virtual ~UriReader();
+      /// Resolve a given URI to a string containing the data
+      virtual bool load(const std::string& system_id, std::string& data) = 0;
+    };
+  }       /* End namespace XML               */
+}         /* End namespace DD4hep            */
+#endif    /* DD4HEP_XML_URIREADER_H          */

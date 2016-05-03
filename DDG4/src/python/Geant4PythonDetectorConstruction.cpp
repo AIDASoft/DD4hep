@@ -16,9 +16,9 @@
 #include "DDG4/Geant4Context.h"
 #include "DDG4/Geant4Kernel.h"
 
-#include "DDG4Python/DDPython.h"
-#include "DDG4Python/Geant4PythonAction.h"
-#include "DDG4Python/Geant4PythonDetectorConstruction.h"
+#include "DDG4/Python/DDPython.h"
+#include "DDG4/Python/Geant4PythonAction.h"
+#include "DDG4/Python/Geant4PythonDetectorConstruction.h"
 
 using namespace std;
 using namespace DD4hep::Simulation;

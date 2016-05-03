@@ -84,7 +84,7 @@ namespace DD4hep {
       virtual void dump() const;
 
       /// Manipulate geometry using facroy converter
-      virtual void apply(const char* factory, int argc, char** argv);
+      virtual long apply(const char* factory, int argc, char** argv);
 
       virtual void init();
       virtual void endDocument();

@@ -32,6 +32,7 @@ namespace DD4hep {
   namespace Geometry {
 
     class LCDD;
+    class WorldObject;
     class DetElementObject;
     class SensitiveDetectorObject;
 

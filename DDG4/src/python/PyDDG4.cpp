@@ -14,9 +14,9 @@
 // $Id$
 
 // Framework include files
-#include "PyDDG4.h"
 #include "DD4hep/LCDD.h"
-#include "DDG4Python/DDPython.h"
+#include "DDG4/Python/PyDDG4.h"
+#include "DDG4/Python/DDPython.h"
 
 int PyDDG4::run(Kernel& kernel)  {
   int ret;

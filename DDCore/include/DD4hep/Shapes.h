@@ -459,8 +459,9 @@ namespace DD4hep {
       { make(_toDouble(pz),_toDouble(py),_toDouble(px),_toDouble(pLTX)); }
 
       /// Set the trap dimensions
-      Trap& setDimensions(double z, double theta, double phi, double y1, double x1, double x2, double alpha1, double y2,
-                          double x3, double x4, double alpha2);
+      Trap& setDimensions(double z, double theta, double phi, 
+                          double y1, double x1, double x2, double alpha1, 
+                          double y2, double x3, double x4, double alpha2);
     };
 
     /// Class describing a Trapezoid shape

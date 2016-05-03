@@ -116,7 +116,7 @@ build_all()
     XERCES_MODES="${DEF_MODES}";
     LCIO_MODES="${DEF_MODES}";
     #G4_MODES="ON";
-    #XERCES_MODES="ON";
+    #XERCES_MODES="OFF";
     #LCIO_MODES="ON";
     for DOGEANT4 in ${G4_MODES}; do
 	for DOXERCESC in ${XERCES_MODES}; do

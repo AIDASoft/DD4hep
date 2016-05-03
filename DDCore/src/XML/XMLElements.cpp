@@ -90,9 +90,17 @@ namespace {
     return cnt;
   }
 }
-XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c) {return c ? ::strdup(c) : 0;}
-XmlChar* DD4hep::XML::XmlString::transcode(const char* c)    {return c ? ::strdup(c) : 0;}
-void DD4hep::XML::XmlString::release(char** p) {if(p && *p)  {::free(*p); *p=0;}}
+XmlChar* DD4hep::XML::XmlString::replicate(const XmlChar* c) {
+  return c ? ::strdup(c) : 0;
+}
+XmlChar* DD4hep::XML::XmlString::transcode(const char* c)    {return c ? ::strdup(c) : 0;
+}
+void DD4hep::XML::XmlString::release(char** p) {
+  if(p && *p)  {::free(*p); *p=0;}
+}
+size_t DD4hep::XML::XmlString::length(const char* p)  {
+  return p ? ::strlen(p) : 0;
+}
 
 #else
 #include "xercesc/util/XMLString.hpp"
@@ -130,6 +138,12 @@ void DD4hep::XML::XmlString::release(XmlChar** p) {
 }
 void DD4hep::XML::XmlString::release(char** p) {
   return xercesc::XMLString::release(p);
+}
+size_t DD4hep::XML::XmlString::length(const char* p)  {
+  return p ? xercesc::XMLString::stringLen(p) : 0;
+}
+size_t DD4hep::XML::XmlString::length(const XmlChar* p)  {
+  return p ? xercesc::XMLString::stringLen(p) : 0;
 }
 
 namespace {
@@ -989,8 +1003,8 @@ Handle_t Document::root() const {
   throw runtime_error("Document::root: Invalid handle!");
 }
 
-/// Standard destructor - releases the document
-DocumentHolder::~DocumentHolder() {
+/// Assign new document. Old document is dropped.
+DocumentHolder& DocumentHolder::assign(DOC d)   {
   if (m_doc)   {
     printout(DEBUG,"DocumentHolder","+++ Release DOM document....");
 #ifdef DD4HEP_USE_TINYXML
@@ -999,12 +1013,27 @@ DocumentHolder::~DocumentHolder() {
     _D(m_doc)->release();
 #endif
   }
-  m_doc = 0;
+  m_doc = d;
+  return *this;
+}
+
+/// Standard destructor - releases the document
+DocumentHolder::~DocumentHolder() {
+  assign(0);
 }
 
 /// Constructor from DOM document entity
 Element::Element(const Document& doc, const XmlChar* type)
   : m_element(Xml(doc.createElt(type)).xe) {
+}
+
+/// Access the XmlElements parent
+Element::Elt_t Element::parentElement()  const   {
+  Handle_t p = m_element.parent();
+  if ( p && _N(p.ptr())->getNodeType() == ELEMENT_NODE_TYPE )  {
+    return Elt_t(p);
+  }
+  return Elt_t(0);
 }
 
 /// Access the hosting document handle of this DOM element

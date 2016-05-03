@@ -17,7 +17,7 @@
 // Framework include files
 #include "XML/XMLElements.h"
 #ifndef UNICODE 
-#define UNICODE(x)  extern const Tag_t Unicode_##x 
+#define UNICODE(x)  extern const ::DD4hep::XML::Tag_t Unicode_##x 
 #endif
 
 /// Namespace for the AIDA detector description toolkit
@@ -37,7 +37,7 @@ namespace DD4hep {
       UNICODE(close_transaction);
     }
     // User must ensure there are no clashes. If yes, then the clashing entry is unnecessary.
-    using namespace DD4hep::XML::Conditions;
+    using namespace ::DD4hep::XML::Conditions;
   }
 }
 

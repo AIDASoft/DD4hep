@@ -285,7 +285,7 @@ namespace DD4hep {
       ///
       virtual void dump() const = 0;
       /// Manipulate geometry using facroy converter
-      virtual void apply(const char* factory, int argc, char** argv) = 0;
+      virtual long apply(const char* factory, int argc, char** argv) = 0;
 
       /// Extend the sensitive detector element with an arbitrary structure accessible by the type
       template <typename IFACE, typename CONCRETE> IFACE* addExtension(CONCRETE* c) {

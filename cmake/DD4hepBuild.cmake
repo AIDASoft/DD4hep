@@ -26,11 +26,13 @@ endmacro(dd4hep_to_parent_scope)
 macro(dd4hep_set_compiler_flags)
   if ( DD4HEP_USE_CXX14 )
     set ( CMAKE_CXX_FLAGS "-std=c++14 -ftls-model=global-dynamic -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+    ##set ( CMAKE_CXX_FLAGS "-std=c++14 -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
     set ( DD4HEP_USE_CXX11 OFF ) 
     set ( DD4HEP_USE_STDCXX 14 )
     add_definitions(-DDD4HEP_USE_STDCXX=14)
   elseif ( DD4HEP_USE_CXX11 )
     set ( CMAKE_CXX_FLAGS "-std=c++11 -ftls-model=global-dynamic -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
+    ##set ( CMAKE_CXX_FLAGS "-std=c++11 -Wall -Wextra -pedantic -Wshadow -Wformat-security -Wno-long-long -Wdeprecated")
     set ( DD4HEP_USE_STDCXX 11 )
     add_definitions(-DDD4HEP_USE_STDCXX=11)
   else()
@@ -1214,7 +1216,7 @@ function( dd4hep_add_dictionary dictionary )
       ## ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm
       add_custom_command(OUTPUT ${dictionary}.cxx
         COMMAND ${ROOTCLING_EXECUTABLE} -cint -f ${dictionary}.cxx 
-        -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${DD4HEP_USE_STDCXX} ${inc_dirs} ${headers} ${linkdefs} 
+        -s ${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary} -inlineInputHeader -c -p ${ARG_OPTIONS} ${comp_defs} -std=c++${DD4HEP_USE_STDCXX} ${inc_dirs} ${headers} ${linkdefs} 
         DEPENDS ${headers} ${linkdefs} )
       #  Install the binary to the destination directory
       #set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../lib/${dictionary}_rdict.pcm PROPERTIES GENERATED TRUE )

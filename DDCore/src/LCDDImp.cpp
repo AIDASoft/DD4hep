@@ -293,7 +293,7 @@ Material LCDDImp::material(const string& name) const {
   if (mat) {
     return Material(Ref_t(mat));
   }
-  throw runtime_error("Cannot find a material the reference name:" + name);
+  throw runtime_error("Cannot find a material referenced by name:" + name);
 }
 
 /// Internal helper to map detector types once the geometry is closed
@@ -552,7 +552,7 @@ void LCDDImp::dump() const {
 }
 
 /// Manipulate geometry using facroy converter
-void LCDDImp::apply(const char* factory_type, int argc, char** argv) {
+long LCDDImp::apply(const char* factory_type, int argc, char** argv) {
   string fac = factory_type;
   try {
     long result = PluginService::Create<long>(fac, (LCDD*) this, argc, argv);
@@ -568,6 +568,7 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv) {
     if (result != 1) {
       throw runtime_error("DD4hep: apply-plugin: Failed to execute plugin " + fac);
     }
+    return result;
   }
   catch (const XML::XmlException& e) {
     throw runtime_error(XML::_toString(e.msg) + "\nDD4hep: XML-DOM Exception with plugin:" + fac);
@@ -578,4 +579,5 @@ void LCDDImp::apply(const char* factory_type, int argc, char** argv) {
   catch (...) {
     throw runtime_error("UNKNOWN exception from plugin:" + fac);
   }
+  return EINVAL;
 }
