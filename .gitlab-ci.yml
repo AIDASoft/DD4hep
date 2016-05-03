@@ -19,6 +19,7 @@ slc6-gcc48:
     - make install
     - make test
     - cd ../..
+    - rm -rf .git
     - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc48-opt
 
 slc6-gcc49:
@@ -42,6 +43,7 @@ slc6-gcc49:
     - make install
     - make test
     - cd ../..
+    - rm -rf .git
     - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc49-opt
 
 centos7-gcc49:
@@ -65,4 +67,5 @@ centos7-gcc49:
     - make install
     - make test
     - cd ../..
+    - rm -rf .git
     - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-centos7-gcc49-opt
