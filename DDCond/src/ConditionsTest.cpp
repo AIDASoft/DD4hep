@@ -79,16 +79,6 @@ namespace DD4hep {
         template <> void print_bound_value<container >(Condition c, const char* norm) \
         { __print_bound_container<container >(c, norm); } 
        
-#define TEMPLATE_TYPE(x,f)                                    \
-        TEMPLATE_SIMPLE_TYPE(x)                               \
-        TEMPLATE_CONTAINER_TYPE(vector<x>,x)                  \
-        TEMPLATE_CONTAINER_TYPE(list<x>,x)                    \
-        TEMPLATE_CONTAINER_TYPE(set<x>,x)                     \
-        TEMPLATE_CONTAINER_TYPE(Primitive<x>::int_map_t,x)    \
-        TEMPLATE_CONTAINER_TYPE(Primitive<x>::size_map_t,x)   \
-        TEMPLATE_CONTAINER_TYPE(Primitive<x>::string_map_t,x)
-
-
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
 #define TEMPLATE_TYPE(x,f)                                    \
         TEMPLATE_SIMPLE_TYPE(x)                               \
