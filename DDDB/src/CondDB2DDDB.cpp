@@ -70,9 +70,10 @@ namespace DD4hep {
                   print_detelem(false),
                   print_detelem_ref(false), 
                   print_detelem_xml(false),
-                  print_conditions(false), 
+                  print_condition(false), 
+                  print_condition_ref(false), 
                   print_catalog(false),
-                  print_catalog_ref(false)  {
+        print_catalog_ref(false)  {
         gram_per_cm3  = 1.0;//XML::_toDouble(_Unicode(gram/cm3));
         gram_per_mole = 1.0;//XML::_toDouble(_Unicode(gram/mole));
       }
@@ -87,22 +88,20 @@ namespace DD4hep {
         dddb_print(this,object);
       }
       template <typename T,typename Q> 
-      void _collectP(const string& path, T* object, Q& container)  {
-        container[path] = object;
-      }
-      void collect(const string& id, Catalog* obj)    {  _collect(id, obj, geo->catalogs);    }
-      void collect(const string& id, Shape* obj)      {  _collect(id, obj, geo->shapes);      }
-      void collect(const string& id, PhysVol* obj)    {  _collect(id, obj, geo->placements);  }
-      void collect(const string& id, LogVol* obj)     {  _collect(id, obj, geo->volumes);     }
-      void collect(const string& id, Isotope* obj)    {  _collect(id, obj, geo->isotopes);    }
-      void collect(const string& id, Element* obj)    {  _collect(id, obj, geo->elements);    }
-      void collect(const string& id, Material* obj)   {  _collect(id, obj, geo->materials);   }
+      void _collectP(const string& path, T* object, Q& container) { container[path] = object;          }
+      void collect(const string& id, Catalog* obj)        { _collect(id, obj, geo->catalogs);          }
+      void collect(const string& id, Shape* obj)          { _collect(id, obj, geo->shapes);            }
+      void collect(const string& id, PhysVol* obj)        { _collect(id, obj, geo->placements);        }
+      void collect(const string& id, LogVol* obj)         { _collect(id, obj, geo->volumes);           }
+      void collect(const string& id, Isotope* obj)        { _collect(id, obj, geo->isotopes);          }
+      void collect(const string& id, Element* obj)        { _collect(id, obj, geo->elements);          }
+      void collect(const string& id, Material* obj)       { _collect(id, obj, geo->materials);         }
 
-      void collectPath(const string& path, Element* obj)    {  _collectP(path, obj, geo->elementPaths);    }
-      void collectPath(const string& path, Material* obj)   {  _collectP(path, obj, geo->materialPaths);   }
-      void collectPath(const string& path, PhysVol* obj)    {  _collectP(path, obj, geo->placementPaths);  }
-      void collectPath(const string& path, LogVol* obj)     {  _collectP(path, obj, geo->volumePaths);     }
-      void collectPath(const string& path, Catalog*  obj)   {  _collectP(path, obj, geo->catalogPaths);    }
+      void collectPath(const string& path, Element* obj)  { _collectP(path, obj, geo->elementPaths);   }
+      void collectPath(const string& path, Material* obj) { _collectP(path, obj, geo->materialPaths);  }
+      void collectPath(const string& path, PhysVol* obj)  { _collectP(path, obj, geo->placementPaths); }
+      void collectPath(const string& path, LogVol* obj)   { _collectP(path, obj, geo->volumePaths);    }
+      void collectPath(const string& path, Catalog*  obj) { _collectP(path, obj, geo->catalogPaths);   }
 
       StringSet files;
       Locals locals;
@@ -117,7 +116,8 @@ namespace DD4hep {
       bool print_detelem;
       bool print_detelem_ref;
       bool print_detelem_xml;
-      bool print_conditions;
+      bool print_condition;
+      bool print_condition_ref;
       bool print_catalog;
       bool print_catalog_ref;
       double gram_per_mole, gram_per_cm3;
@@ -212,6 +212,7 @@ namespace DD4hep {
     template <> void DDDBConverter<ParamPhysVol>::convert(xml_h element) const;
     template <> void DDDBConverter<ParamPhysVol2D>::convert(xml_h element) const;
     template <> void DDDBConverter<ParamPhysVol3D>::convert(xml_h element) const;
+    template <> void DDDBConverter<ConditionParam>::convert(xml_h element) const;
 
     void   build_transformation(LCDD& lcdd, void* context, xml_h element, Transform3D& tr, int which=-1);
     void   extract_transformation(LCDD& lcdd, void* context, xml_coll_t& collection, Transform3D& tr, int which=-1);
@@ -345,31 +346,65 @@ namespace DD4hep {
       if ( element.hasAttr(_U(version)) ) *context = element.attr<string>(_U(version));
     }
 
-    /// Specialized conversion of <condition/> entities
+    /// Specialized conversion of <param/> entities
     template <> void DDDBConverter<Param>::convert(xml_h element) const {
-      Catalog* det = _option<Catalog>();
-      string   nam = element.attr<string>(_U(name));
-      string   typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
-      det->params[nam] = typ;
+      Catalog* det  = _option<Catalog>();
+      string   name = element.attr<string>(_U(name));
+      string   type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
+      det->params[name] = type;
     }
 
     /// Specialized conversion of <ConditionInfo/> entities
     template <> void DDDBConverter<ConditionInfo>::convert(xml_h element) const {
       Catalog* det  = _option<Catalog>();
-      string   nam  = element.attr<string>(_U(name));
+      string   name = element.attr<string>(_U(name));
       string   cond = element.attr<string>(_LBU(condition));
-      det->conditioninfo[nam] = cond;
+      det->conditioninfo[name] = cond;
+    }
+
+    /// Specialized conversion of <param/> and <paramVector> entities
+    template <> void DDDBConverter<ConditionParam>::convert(xml_h element) const {
+      Condition::Params*  c = _option<Condition::Params>();
+      string   name = element.attr<string>(_U(name));
+      ConditionParam* p = new ConditionParam();
+      p->type = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
+      p->data = element.text();
+      c->insert(make_pair(name,p));
     }
 
     /// Specialized conversion of <condition/> entities
-    template <> void DDDBConverter<Condition>::convert(xml_h ) const {
+    template <> void DDDBConverter<Condition>::convert(xml_h element) const {
+      Context*   context = _param<Context>();
+      string     name    = element.attr<string>(_U(name));
+      string     id      = object_href(element,name);
+      string     path    = object_path(context,name);
+      Condition* cond    = new Condition();
+      static int num_param = 0, num_paramVector = 0;
+
+      cond->id   = id;
+      cond->name = name;
+      cond->classID = element.attr<string>(_LBU(classID));
+      xml_coll_t(element,_U(param)).for_each(DDDBConverter<ConditionParam>(this->lcdd,context,&cond->params));
+      xml_coll_t(element,_LBU(paramVector)).for_each(DDDBConverter<ConditionParam>(this->lcdd,context,&cond->paramVectors));
+      context->geo->conditions.insert(make_pair(path,cond));
+
+      num_param += int(cond->params.size());
+      num_paramVector += int(cond->paramVectors.size());
+      if ( (context->geo->conditions.size()%500) == 0 )  {
+        printout(INFO,"Condition","++ Processed %d conditions....last:%s  #Para: %d %d", 
+                 int(context->geo->conditions.size()), path.c_str(),
+                 num_param, num_paramVector);
+      }
+      if ( context->print_condition )  {
+        printout(INFO,"Condition","++ path:%s  id:%s", path.c_str(), id.c_str());
+      }
     }
 
     /// Specialized conversion of <conditionref/> entities
     template <> void DDDBConverter<ConditionRef>::convert(xml_h element) const {
       Context* context = _param<Context>();
       string href = element.attr<string>(_LBU(href));
-      if ( context->print_conditions )  {
+      if ( context->print_condition_ref )  {
         printout(INFO,"ConditionRef", "href=%s", href.c_str());
       }
       load_dddb_entity(lcdd, context, element, href);
@@ -405,6 +440,7 @@ namespace DD4hep {
       string path = object_path(context,e->name);
       context->collectPath(path,e->addRef());
     }
+
     /// Specialized conversion of <element/> entities
     template <> void DDDBConverter<Element>::convert(xml_h element) const {
       Context* context = _param<Context>();
@@ -449,6 +485,7 @@ namespace DD4hep {
       c.natoms = x_mat.natoms(1);
       c.fractionmass = x_mat.fractionmass(1.0);
     }
+
     /// Specialized conversion of <materialref/> entities
     template <> void DDDBConverter<MaterialRef>::convert(xml_h element) const {
       Context*  context = _param<Context>();
@@ -463,6 +500,7 @@ namespace DD4hep {
       string path = object_path(context,m->name);
       context->collectPath(path,m->addRef());
     }
+
     /// Specialized conversion of <material/> entities
     template <> void DDDBConverter<Material>::convert(xml_h element) const {
       Context* context = _param<Context>();
@@ -495,6 +533,7 @@ namespace DD4hep {
       context->logvol   = element.attr<string>(_LBU(lvname));
       if ( element.hasAttr(_LBU(npath)) ) context->npath = element.attr<string>(_LBU(npath));
       if ( element.hasAttr(_LBU(support)) ) context->support = element.attr<string>(_LBU(support));
+      if ( element.hasAttr(_LBU(condition)) ) context->condition = element.attr<string>(_LBU(condition));
     }
 
     /// Specialized conversion of <posXYZ/> entities
@@ -552,9 +591,9 @@ namespace DD4hep {
       ShapeConverter<Shape>(lcdd,param)(element,s);
       dddb_dim_t dim = element;
       s->type = to_type::type();
-      s->s.box.x = dim.sizeX(0.0);
-      s->s.box.y = dim.sizeY(0.0);
-      s->s.box.z = dim.sizeZ(0.0);
+      s->s.box.x = dim.sizeX(0.0)/2e0;
+      s->s.box.y = dim.sizeY(0.0)/2e0;
+      s->s.box.z = dim.sizeZ(0.0)/2e0;
     }
 
     /// Specialized conversion of Cons shapes
@@ -566,7 +605,7 @@ namespace DD4hep {
       s->s.cons.innerRadiusPZ = dim.innerRadiusPZ(0.0);
       s->s.cons.outerRadiusMZ = dim.outerRadiusMZ(0.0);
       s->s.cons.outerRadiusPZ = dim.outerRadiusPZ(0.0);
-      s->s.cons.sizeZ = dim.sizeZ(0.0);
+      s->s.cons.sizeZ         = dim.sizeZ(0.0)/2e0;
     }
 
     /// Specialized conversion of ConeSegment shapes
@@ -580,7 +619,7 @@ namespace DD4hep {
       s->s.coneSegment.innerRadiusPZ = dim.innerRadiusPZ(0.0);
       s->s.coneSegment.outerRadiusMZ = dim.outerRadiusMZ(0.0);
       s->s.coneSegment.outerRadiusPZ = dim.outerRadiusPZ(0.0);
-      s->s.coneSegment.sizeZ = dim.sizeZ(0.0);
+      s->s.coneSegment.sizeZ = dim.sizeZ(0.0)/2e0;
     }
 
     /// Specialized conversion of Tubs shapes
@@ -592,25 +631,28 @@ namespace DD4hep {
       s->s.tubs.delta       = dim.deltaPhiAngle(2.0*M_PI);
       s->s.tubs.innerRadius = dim.innerRadius(0.0);
       s->s.tubs.outerRadius = dim.outerRadius(0.0);
-      s->s.tubs.sizeZ       = dim.sizeZ(0.0);
+      s->s.tubs.sizeZ       = dim.sizeZ(0.0)/2e0;
     }
 
     /// Specialized conversion of Trap shapes
     template <> void ShapeConverter<Trap>::convert(xml_h element, Shape*& s) const {
       dddb_dim_t dim = element;
       ShapeConverter<Shape>(lcdd,param)(element,s);
+      if ( s->name == "Cut_out_right" )  {
+        s->type = to_type::type();
+      }
       s->type = to_type::type();
-      s->s.trap.h1     = dim.sizeY1(0);
-      s->s.trap.bl1    = dim.sizeX1(0);
-      s->s.trap.bl2    = dim.sizeX2(0);
-      s->s.trap.alpha1 = dim.alp1(0);
-      s->s.trap.h2     = dim.sizeY2(0);
-      s->s.trap.tl1    = dim.sizeX3(0);
-      s->s.trap.tl2    = dim.sizeX4(0);
-      s->s.trap.alpha2 = dim.alp2(0);
-      s->s.trap.dz     = dim.sizeZ();
+      s->s.trap.dz     = dim.sizeZ()/2e0;
       s->s.trap.phi    = dim.phiAngle(0);
       s->s.trap.theta  = dim.thetaAngle(0);
+      s->s.trap.h1     = dim.sizeY1(0)/2e0;
+      s->s.trap.bl1    = dim.sizeX1(0)/2e0;
+      s->s.trap.tl1    = dim.sizeX2(0)/2e0;
+      s->s.trap.alpha1 = dim.alp1(0);
+      s->s.trap.h2     = dim.sizeY2(0)/2e0;
+      s->s.trap.bl2    = dim.sizeX3(0)/2e0;
+      s->s.trap.tl2    = dim.sizeX4(0)/2e0;
+      s->s.trap.alpha2 = dim.alp2(0);
     }
 
     /// Specialized conversion of Polycone shapes
@@ -651,11 +693,11 @@ namespace DD4hep {
       dddb_dim_t dim = element;
       ShapeConverter<Shape>(lcdd,param)(element,s);
       s->type = to_type::type();
-      s->s.trd.x1 = dim.sizeX1();
-      s->s.trd.x2 = dim.sizeX2();
-      s->s.trd.y1 = dim.sizeY1();
-      s->s.trd.y2 = dim.sizeY2();
-      s->s.trd.z  = dim.sizeZ();
+      s->s.trd.x1 = dim.sizeX1()/2e0;
+      s->s.trd.x2 = dim.sizeX2()/2e0;
+      s->s.trd.y1 = dim.sizeY1()/2e0;
+      s->s.trd.y2 = dim.sizeY2()/2e0;
+      s->s.trd.z  = dim.sizeZ()/2e0;
     }
 
     /// Specialized conversion of EllipticalTube shapes
@@ -679,9 +721,6 @@ namespace DD4hep {
       PreservedLocals locals(context);
       context->locals.obj_path = id;
       s->s.boolean.first = 0;
-      if ( s->name == "VMACAUpStrRfContSingleUnion" || s->name=="VMABKUpStrPipeSub" )  {
-        s->s.boolean.first = 0;
-      }
       for(xml_coll_t p(element,_U(star)); p; ++p)  {
         if ( p.parent() == element ) { // Only next level is processed here
           if ( 0 == s->s.boolean.first )  {
@@ -858,9 +897,6 @@ namespace DD4hep {
       Context*   context = _param<Context>();
 
       pv->name   = name;
-      if ( pv->name == "pvTTaULayerR1Module1T" || pv->name == "pvTTaULayerR2Module1T")  {
-        pv->name   = name;
-      }
       pv->logvol = x_vol.logvol();
       pv->path   = object_path(context,name);
       build_transformation(lcdd, param, element, pv->trafo, -1);
@@ -945,6 +981,7 @@ namespace DD4hep {
       load_dddb_entity(lcdd, context, element, href);
       cat->catalogrefs[refid] = 0;
     }
+
     /// Specialized conversion of <detelem/> entities
     template <> void DDDBConverter<DetElem>::convert(xml_h element) const {
       Context*   context = _param<Context>();
@@ -1053,13 +1090,13 @@ namespace DD4hep {
         xml_coll_t(e, _U(logvol)).for_each(DDDBConverter<LogVol>(lcdd,context,c));
 
         xml_coll_t(e, _LBU(detelem)).for_each(DDDBConverter<DetElem>(lcdd,context,c));
-        //xml_coll_t(e, _LBU(condition)).for_each(DDDBConverter<Condition>(lcdd,context,c));
+        xml_coll_t(e, _LBU(condition)).for_each(DDDBConverter<Condition>(lcdd,context,c));
 
         xml_coll_t(e, _LBU(elementref)).for_each(DDDBConverter<ElementRef>(lcdd,context,c));
         xml_coll_t(e, _LBU(materialref)).for_each(DDDBConverter<MaterialRef>(lcdd,context,c));
         xml_coll_t(e, _LBU(logvolref)).for_each(DDDBConverter<LogVolRef>(lcdd,context,c));
         xml_coll_t(e, _LBU(detelemref)).for_each(DDDBConverter<DetElemRef>(lcdd,context,c));
-        //xml_coll_t(e, _LBU(conditionref)).for_each(DDDBConverter<ConditionRef>(lcdd,context,c));
+        xml_coll_t(e, _LBU(conditionref)).for_each(DDDBConverter<ConditionRef>(lcdd,context,c));
         xml_coll_t(e, _LBU(catalogref)).for_each(DDDBConverter<CatalogRef>(lcdd,context,c));
         xml_coll_t(e, _LBU(catalog)).for_each(DDDBConverter<Catalog>(lcdd,context,c));
       }
@@ -1084,33 +1121,37 @@ namespace DD4hep {
       xml_coll_t(element, _LBU(catalogref)).for_each(DDDBConverter<CatalogRef>(lcdd,context));
 
       //xml_coll_t(element, _LBU(detelemref)).for_each(DDDBConverter<DetElemRef>(lcdd,context));
-      //xml_coll_t(element, _LBU(condition)).for_each(DDDBConverter<Condition>(lcdd,context));
-      //xml_coll_t(element, _LBU(conditionref)).for_each(DDDBConverter<ConditionRef>(lcdd,context));
-      //fixDets(context);
+      xml_coll_t(element, _LBU(condition)).for_each(DDDBConverter<Condition>(lcdd,context));
+      xml_coll_t(element, _LBU(conditionref)).for_each(DDDBConverter<ConditionRef>(lcdd,context));
     }
 
     void apply_trafo(int apply, Position& pos, RotationZYX& rot, Transform3D& trafo, Transform3D& tr)  {
       switch(apply)   {
-      case 99:
+      case 99:   {
         tr *= trafo;
         trafo = Transform3D();
         pos = Position();
         rot = RotationZYX();
         break;
-      case 2:
-        trafo = Transform3D(rot,pos);
-        tr *= trafo;
+      }
+      case 2:  {
+        Transform3D r(rot);
+        trafo = Transform3D(pos);
+        trafo = trafo * r;
+        tr = trafo * tr;
         trafo = Transform3D();
         pos = Position();
         rot = RotationZYX();
         break;
-      case 1:
+      }
+      case 1:  {
         trafo = Transform3D(pos);
         tr *= trafo;
         trafo = Transform3D();
         pos = Position();
         rot = RotationZYX();
         break;
+      }
       case 0:
       default:
         break;
@@ -1125,19 +1166,21 @@ namespace DD4hep {
       Transform3D trafo;
       for(xml_h element = p.parent(); p; ++p )  {
         if ( p.parent() == element ) { // Only next level is processed here
+          dddb_dim_t dim = p;
           string tag = p.tag();
           if ( tag == "transformation" && (which<0 || count == which) )  {
+            apply_trafo(apply, pos, rot, trafo, tr);
             DDDBConverter<Transform3D>(lcdd,context,&trafo)(p);
             apply = 99;
           }
           else if ( tag == "posXYZ" && (which<0 || count == which) )   {
             apply_trafo(apply, pos, rot, trafo, tr);
-            DDDBConverter<Position>(lcdd,context,&pos)(p);
+            pos.SetXYZ(dim.x(0.0), dim.y(0.0), dim.z(0.0));
             apply = 1;
             ++count;
           }
           else if ( tag == "rotXYZ" && (which<0 || count == (which+1)) )  {
-            DDDBConverter<RotationZYX>(lcdd,context,&rot)(p);
+            rot.SetComponents(dim.rotZ(0.0), dim.rotY(0.0), dim.rotX(0.0));
             apply = 2;
           }
           else  {
@@ -1217,11 +1260,11 @@ namespace DD4hep {
           string doc_path = reference_href(element,ref);
           hash = doc_path.find('#');
           if ( hash != string::npos ) doc_path = doc_path.substr(0,hash);
+#if 0
           if ( doc_path.find("/Conditions/") != string::npos )  {
             printout(INFO, "load_dddb", "SKIPPING DOC %s", doc_path.c_str());
             return;
           }
-#if 0
           if ( doc_path.find("conddb:/TrackfitGeometry") != string::npos )  {
             printout(INFO, "load_dddb", "SKIPPING DOC %s", doc_path.c_str());
             return;
@@ -1291,7 +1334,8 @@ namespace DD4hep {
       context.print_detelem       = false;
       context.print_detelem_ref   = false;
       context.print_detelem_xml   = false;
-      context.print_conditions    = false;
+      context.print_condition     = false;
+      context.print_condition_ref = false;
       context.print_catalog       = false;
       context.print_catalog_ref   = false;
     }

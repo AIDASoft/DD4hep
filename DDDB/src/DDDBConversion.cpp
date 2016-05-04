@@ -47,12 +47,43 @@ namespace DD4hep  {
   /// Default destructor
   DDDB::dddb::~dddb()   {
     // need to release heare all allocated resources.
+    destroyObjects(isotopes)();
+    destroyObjects(elements)();
+    elementPaths.clear();
+
+    destroyObjects(materials)();
+    materialPaths.clear();
+
+    destroyObjects(shapes)();
+
+    destroyObjects(volumes)();
+    volumePaths.clear();
+
+    destroyObjects(placements)();
+    placementPaths.clear();
+
+    destroyObjects(conditions)();
     destroyObjects(catalogs)();
+    catalogPaths.clear();
+    printout(INFO,"dddb","++ All intermediate objects deleted!");
   }
 
   /// Default constructor
   DDDB::Shape::Shape() : type(0), zplanes(), boolean_ops() {
     ::memset(&s.box,0,sizeof(s));
+  }
+  
+  /// Default destructor
+  DDDB::Shape::~Shape()   {
+    if ( type == BooleanUnion::type() ||
+         type == BooleanSubtraction::type() ||
+         type == BooleanIntersection::type() )   {
+      Shape* shape = s.boolean.first;
+      if ( shape ) delete shape;
+      for(Operations::iterator i=boolean_ops.begin(); i!=boolean_ops.end(); ++i)
+        delete (*i).shape;
+      boolean_ops.clear();
+    }
   }
 
   pair<const DDDB::Catalog*,string> DDDB::Catalog::parent(const string& nam)  const  {

@@ -43,12 +43,11 @@ namespace DD4hep {
     struct ElementRef  {};
     struct MaterialRef  {};
     struct CatalogRef  {};
-    struct Condition  {};
     struct ConditionRef  {};
     struct ConditionInfo  {};
     struct DetElem  {};
     struct DetElemRef  {};
-    struct Param  {};
+    struct Param {};
     struct Parameter  {};
     struct ParamVector  {};
     struct GeometryInfo  {};
@@ -78,6 +77,26 @@ namespace DD4hep {
       }
       const char* c_name() const { return name.c_str(); }
       const char* c_id() const   { return id.c_str(); }      
+    };
+
+    struct ConditionParam {
+      std::string type, data;
+      ConditionParam() : type(), data() {}
+      ConditionParam(const ConditionParam& c) : type(c.type), data(c.data) {}
+      ConditionParam& operator=(const ConditionParam& c)   {
+        if ( &c != this )  {
+          type = c.type;
+          data = c.data;
+        }
+        return *this;
+      }
+    };
+    struct Condition : public Named {
+      typedef std::map<std::string, ConditionParam*> Params;
+      std::string classID;
+      Params params;
+      Params paramVectors;
+      Condition() : Named() {}
     };
 
     /// Intermediate structure representing author's data
@@ -407,11 +426,11 @@ namespace DD4hep {
     struct Catalog : public Named {
       typedef std::map<std::string, Catalog*> CatRefs;
       typedef std::map<std::string, LogVol*>  LvRefs;
-      LvRefs     logvolrefs;
-      LvRefs     logvols;
-      CatRefs    catalogrefs;
-      CatRefs    catalogs;
-      StringMap  params, conditioninfo;
+      LvRefs      logvolrefs;
+      LvRefs      logvols;
+      CatRefs     catalogrefs;
+      CatRefs     catalogs;
+      StringMap   params, conditioninfo;
       std::string type, path, author, version, logvol, condition, support, npath;
       int         level;
       Catalog() : Named(), level(0) { }
@@ -454,6 +473,8 @@ namespace DD4hep {
       std::string path;
       /// Default constructor
       Shape();
+      /// Default destructor
+      ~Shape();
     };
 
     /// LHCb geometry description interface to the conditions database
@@ -472,6 +493,8 @@ namespace DD4hep {
       typedef std::map<std::string,Element*>    Elements;
       typedef std::map<std::string,Material*>   Materials;
       typedef std::map<std::string,Shape*>      Shapes;
+      typedef std::map<std::string,Condition*>  Conditions;
+
       /// Default constructor
       dddb();
       /// Default destructor
@@ -479,8 +502,6 @@ namespace DD4hep {
 
       /// World dimensions
       Box        world;
-      /// Inventory of catalogs
-      Catalogs   catalogs, catalogPaths;
       /// Inventory of isotopes
       Isotopes   isotopes;
       /// Inventory of elements
@@ -493,6 +514,11 @@ namespace DD4hep {
       Volumes    volumes, volumePaths;
       /// Inventory of volume placements
       Placements placements, placementPaths;
+      /// Inventory of conditions
+      Conditions conditions;
+      /// Inventory of catalogs
+      Catalogs   catalogs, catalogPaths;
+      /// Detector element hierarchy
       Catalog    *top, *structure, *geometry;
     };
 

@@ -117,18 +117,20 @@ namespace DD4hep {
           print_bound_value<double>(c,"1.0/hPa");
         else if ( type == "whatever" )
           print_bound_value<vector<double> >(c);
-        else if ( type == "short" )
-          print_bound_value<short>(c);
         else if ( type == "integer" )
           print_bound_value<int>(c);
         else if ( type == "long" )
           print_bound_value<long>(c);
+#if defined(DD4HEP_HAVE_ALL_PARSERS)
+        else if ( type == "short" )
+          print_bound_value<short>(c);
         else if ( type == "unsigned short" )
           print_bound_value<unsigned short>(c);
         else if ( type == "unsigned integer" )
           print_bound_value<unsigned int>(c);
         else if ( type == "unsigned long" )
           print_bound_value<unsigned long>(c);
+#endif
         else if ( type == "float" )
           print_bound_value<float>(c);
         else if ( type == "double" )

@@ -199,7 +199,8 @@ DetElement& DetElement::add(DetElement sdet) {
       sdet.access()->parent = *this;
       return *this;
     }
-    throw runtime_error("DD4hep: DetElement::add: Element " + string(sdet.name()) + " is already present [Double-Insert]");
+    throw runtime_error("DD4hep: DetElement::add: Element " + string(sdet.name()) + 
+                        " is already present in path " + path() + " [Double-Insert]");
   }
   throw runtime_error("DD4hep: DetElement::add: Self is not defined [Invalid Handle]");
 }

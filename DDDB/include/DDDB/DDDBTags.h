@@ -107,7 +107,7 @@ namespace DD4hep {
     UNICODE(thetaAngle);
     UNICODE(startThetaAngle);
     UNICODE(deltaThetaAngle);
-    //UNICODE();
+    UNICODE(classID);
     //UNICODE();
 
   }   /* End namespace DDDB       */
