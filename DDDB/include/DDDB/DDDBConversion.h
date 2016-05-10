@@ -63,11 +63,12 @@ namespace DD4hep {
      */
     struct Named  {
       typedef std::map<std::string, std::string> StringMap;
+      typedef std::map<std::string, std::pair<std::string,std::string > > StringPairMap;
       std::string name, id;
       int refCount;
-      Named() : refCount(1) {}
-      Named(const std::string& c) : name(c), id(), refCount(1)  {}
-      Named(const Named& c) : name(c.name), id(c.id), refCount(1)  {}
+      Named() : refCount(0) {}
+      Named(const std::string& c) : name(c), id(), refCount(0)  {}
+      Named(const Named& c) : name(c.name), id(c.id), refCount(0)  {}
       Named& operator=(const Named& c) {
         if ( this != &c )  {
           name=c.name;
@@ -75,8 +76,10 @@ namespace DD4hep {
         }
         return *this;
       }
+      virtual ~Named() {}
       const char* c_name() const { return name.c_str(); }
-      const char* c_id() const   { return id.c_str(); }      
+      const char* c_id() const   { return id.c_str();   }
+      void release()             { if ( --refCount <= 0 ) delete this;      }
     };
 
     struct ConditionParam {
@@ -96,7 +99,11 @@ namespace DD4hep {
       std::string classID;
       Params params;
       Params paramVectors;
-      Condition() : Named() {}
+      /// Default constructor
+      Condition();
+      /// Default destructor
+      virtual ~Condition();
+      Condition* addRef()  {  ++refCount; return this;  }
     };
 
     /// Intermediate structure representing author's data
@@ -126,7 +133,12 @@ namespace DD4hep {
      */
     struct Isotope : public Named  {
       double A,Z,density;
-      Isotope() : Named() {}
+      /// Default constructor
+      Isotope();
+      /// Default destructor
+      virtual ~Isotope();
+      /// Reference count mechanism
+      Isotope* addRef()  {  ++refCount; return this;  }
     };
 
     /// Intermediate structure representing data of a Element
@@ -140,12 +152,13 @@ namespace DD4hep {
       double density, ionization;
       int state;
 
-      Element() : density(0), ionization(0), state(UNKNOWN) {}
-      Element(const Element& e) 
-        : Named(e), isotopes(e.isotopes), path(e.path), symbol(e.symbol), 
-          atom(e.atom), density(e.density), 
-          ionization(e.ionization), state(e.state)
-      {}
+      /// Default constructor
+      Element();
+      /// Copy constructor
+      Element(const Element& e);
+      /// Default destructor
+      virtual ~Element();
+      /// Reference count mechanism
       Element* addRef()  {  ++refCount; return this;  }
     };
 
@@ -177,7 +190,11 @@ namespace DD4hep {
       Components components;
       Properties properties;
       double density, pressure, temperature, radlen, lambda;
-      Material() : density(0), pressure(-1), temperature(-1), radlen(0), lambda(0) {}
+      /// Default constructor
+      Material();
+      /// Default destructor
+      virtual ~Material();
+      /// Reference count mechanism
       Material* addRef()  {  ++refCount; return this;  }
     };
 
@@ -360,8 +377,12 @@ namespace DD4hep {
       int type;
       std::string    logvol, path;
       Transform3D trafo;
-      PhysVol() : type(PHYSVOL_REGULAR), logvol(), path(), trafo() {}
-      PhysVol(const PhysVol& c) : Named(c), type(c.type), logvol(c.logvol), path(c.path), trafo(c.trafo) {}
+      /// Default constructor
+      PhysVol();
+      /// Copy constructor
+      PhysVol(const PhysVol& c);
+      /// Default destructor
+      virtual ~PhysVol();
       PhysVol& operator=(const PhysVol& c) {
         if ( this != &c )  {
           this->Named::operator=(c);
@@ -372,6 +393,8 @@ namespace DD4hep {
         }
         return *this;
       }
+      /// Reference count mechanism
+      PhysVol* addRef()  {  ++refCount; return this;  }
     };
 
     /// Structure supporting conversion of parametrized physical volumes
@@ -380,7 +403,9 @@ namespace DD4hep {
     struct ParamPhysVol : public PhysVol {
       int number1;
       Transform3D trafo1;
+      /// Default constructor
       ParamPhysVol() : PhysVol(), number1(0) { type = PHYSVOL_PARAM1D; }
+      /// Copy constructor
       ParamPhysVol(const ParamPhysVol& c) : PhysVol(c), number1(c.number1), trafo1(c.trafo1) {}
       ParamPhysVol& operator=(const ParamPhysVol& c) {
         if ( this != &c )  {
@@ -398,6 +423,7 @@ namespace DD4hep {
     struct ParamPhysVol2D : public ParamPhysVol  {
       int number2;
       Transform3D trafo2;
+      /// Default constructor
       ParamPhysVol2D() : ParamPhysVol(), number2(0), trafo2()  { type = PHYSVOL_PARAM2D; }
     };
 
@@ -407,6 +433,7 @@ namespace DD4hep {
     struct ParamPhysVol3D : public ParamPhysVol2D  {
       int number3;
       Transform3D trafo3;
+      /// Default constructor
       ParamPhysVol3D() : ParamPhysVol2D(), number3(0), trafo3()  { type = PHYSVOL_PARAM3D; }
     };
 
@@ -416,7 +443,11 @@ namespace DD4hep {
     struct LogVol : public Named  {
       std::string   material, shape, path;
       std::vector<PhysVol*> physvols;
-      LogVol() : Named(), material(), shape(), physvols() { }
+      /// Default constructor
+      LogVol();
+      /// Default destructor
+      virtual ~LogVol();
+      /// Reference count mechanism
       LogVol* addRef()  {  ++refCount; return this;  }
     };
 
@@ -426,16 +457,21 @@ namespace DD4hep {
     struct Catalog : public Named {
       typedef std::map<std::string, Catalog*> CatRefs;
       typedef std::map<std::string, LogVol*>  LvRefs;
-      LvRefs      logvolrefs;
-      LvRefs      logvols;
-      CatRefs     catalogrefs;
-      CatRefs     catalogs;
-      StringMap   params, conditioninfo;
-      std::string type, path, author, version, logvol, condition, support, npath;
-      int         level;
-      Catalog() : Named(), level(0) { }
-      std::pair<const Catalog*,std::string> parent(const std::string& nam)  const;
+      LvRefs        logvolrefs;
+      LvRefs        logvols;
+      CatRefs       catalogrefs;
+      CatRefs       catalogs;
+      StringPairMap params;
+      StringMap     conditioninfo;
+      std::string   type, path, author, version, logvol, condition, support, npath;
+      int           level, typeID;
+      /// Default constructor
+      Catalog();
+      /// Default destructor
+      virtual ~Catalog();
+      /// Reference count mechanism
       Catalog* addRef()  {  ++refCount; return this;  }
+      std::pair<const Catalog*,std::string> parent(const std::string& nam)  const;
     };
 
     /// Structure supporting conversion of any arbitrary shape
@@ -475,6 +511,8 @@ namespace DD4hep {
       Shape();
       /// Default destructor
       ~Shape();
+      /// Reference count mechanism
+      Shape* addRef()  {  ++refCount; return this;  }
     };
 
     /// LHCb geometry description interface to the conditions database
@@ -515,7 +553,7 @@ namespace DD4hep {
       /// Inventory of volume placements
       Placements placements, placementPaths;
       /// Inventory of conditions
-      Conditions conditions;
+      Conditions conditions, conditionPaths;
       /// Inventory of catalogs
       Catalogs   catalogs, catalogPaths;
       /// Detector element hierarchy

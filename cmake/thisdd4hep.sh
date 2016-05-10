@@ -8,6 +8,7 @@
 #
 #echo " ### thisdd4hep.sh:   initialize the environment for DD4hep ! " 
 #
+#-----------------------------------------------------------------------------
 dd4hep_parse_this()   {
     package=${2};
     if [ "x${1}" = "x" ]; then
@@ -25,7 +26,7 @@ dd4hep_parse_this()   {
     fi;
     THIS=$(cd ${THIS} > /dev/null; pwd);
 }
-
+#-----------------------------------------------------------------------------
 dd4hep_add_path()   {
     path_name=${1};
     path_prefix=${2};
@@ -38,7 +39,7 @@ dd4hep_add_path()   {
     eval export ${path_name}=${path_value};
     ## echo "dd4hep_add_path: ${path_name}=${path_value}";
 }
-
+#-----------------------------------------------------------------------------
 dd4hep_add_library_path()    {
     path_prefix=${1};
     if [ @USE_DYLD@ ];
@@ -56,6 +57,7 @@ dd4hep_add_library_path()    {
         fi;
     fi;
 }
+#-----------------------------------------------------------------------------
 #
 dd4hep_parse_this ${BASH_ARGV[0]} DD4hep;
 #
@@ -103,6 +105,9 @@ dd4hep_add_path PATH       ${THIS}/bin;
 dd4hep_add_library_path    ${THIS}/lib;
 #----PYTHONPATH---------------------------------------------------------------
 dd4hep_add_path PYTHONPATH ${THIS}/python;
+#----ROOT_INCLUDE_PATH--------------------------------------------------------
+dd4hep_add_path ROOT_INCLUDE_PATH ${THIS}/include;
+#-----------------------------------------------------------------------------
 #
 unset ROOTENV_INIT;
 unset THIS;

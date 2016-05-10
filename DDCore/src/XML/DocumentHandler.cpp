@@ -239,6 +239,10 @@ string DocumentHandler::system_path(Handle_t base, const string& fn)   {
 string DocumentHandler::system_path(Handle_t base)   {
   DOMElement* elt = (DOMElement*)base.ptr();
   string path = _toString(elt->getBaseURI());
+  if ( path[0] == '/' )  {
+    string tmp = "file:"+path;
+    return tmp;
+  }
   return path;
 }
 
@@ -287,11 +291,14 @@ Document DocumentHandler::load(Handle_t base, const XMLCh* fname, UriReader* rea
 }
 
 /// Load XML file and parse it using URI resolver to read data.
-Document DocumentHandler::load(const std::string& fname, UriReader* reader) const   {
+Document DocumentHandler::load(const string& fname, UriReader* reader) const   {
   string path;
   printout(DEBUG,"DocumentHandler","+++ Loading document URI: %s",fname.c_str());
   try  {
-    XMLURL xerurl = (const XMLCh*) Strng_t(fname.find(":")==std::string::npos ? "file:"+fname : fname);
+    size_t idx = fname.find(':');
+    size_t idq = fname.find('/');
+    if ( idq == string::npos ) idq = 0;
+    XMLURL xerurl = (const XMLCh*) Strng_t(idx==string::npos || idx>idq ? "file:"+fname : fname);
     string proto  = _toString(xerurl.getProtocolName());
     path = _toString(xerurl.getPath());
     printout(DEBUG,"DocumentHandler","+++             protocol:%s path:%s",proto.c_str(), path.c_str());

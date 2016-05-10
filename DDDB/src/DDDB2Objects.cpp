@@ -91,7 +91,8 @@ namespace DD4hep {
           print_physvol(false), 
           print_params(false), 
           print_detelem(false),
-          print_conditions(false)
+          print_conditions(false),
+          print_vis(false)
       {
       }
       ~Context()  {
@@ -139,7 +140,7 @@ namespace DD4hep {
       bool             print_params;
       bool             print_detelem;
       bool             print_conditions;
-
+      bool             print_vis;
       static GeoPlacement placement(DetElement de)   {
         if ( de.isValid() )  {
           GeoPlacement p = de.placement();
@@ -243,7 +244,10 @@ namespace DD4hep {
       Context* context = _param<Context>();
       GeoCondition* cond = Context::find(context->conditions, object);
       if ( !cond )   {
-        
+        cond = new GeoCondition();
+        cond->value = "";//object->data;
+        cond->address = object->id;
+        context->conditions.insert(make_pair(object, cond));
       }
       return cond;
     }
@@ -593,7 +597,9 @@ namespace DD4hep {
         mother->SetTitle(object->path.c_str());
         VisAttr vis = context->helper->visAttr(object->path);
         if ( vis.isValid() )  {
-          printout(INFO,"Cnv<LogVol>","++ Vol:%s  Vis:%s",mother->GetTitle(), vis.name());
+          if ( context->print_vis )  {
+            printout(INFO,"Cnv<LogVol>","++ Vol:%s  Vis:%s",mother->GetTitle(), vis.name());
+          }
           mother.setVisAttributes(vis);
         }
         else   {
@@ -973,8 +979,8 @@ namespace DD4hep {
       printout(INFO,"DDDB2Object","++ Converted %d isotopes.",int(obj->isotopes.size()));
       for_each(obj->elements.begin(),  obj->elements.end(),   cnv<Element>());
       printout(INFO,"DDDB2Object","++ Converted %d elements.",int(obj->elements.size()));
-      for_each(obj->materials.begin(), obj->materials.end(),  cnv<Material>());
-      printout(INFO,"DDDB2Object","++ Converted %d materials.",int(obj->materials.size()));
+      //for_each(obj->materials.begin(), obj->materials.end(),  cnv<Material>());
+      //printout(INFO,"DDDB2Object","++ Converted %d materials.",int(obj->materials.size()));
       if ( !context->lvDummy.isValid() )   {
         lcdd.manager().SetVisLevel(context->max_volume_depth);
         context->lvDummy = GeoVolume("Dummy",Geometry::Box(0.0001,0.0001, 0.0001),lcdd.vacuum());
@@ -1015,7 +1021,8 @@ static long dddb_2_dd4hep(LCDD& lcdd, int , char** ) {
     context.print_params        = false;
     context.print_detelem       = false;
     context.print_conditions    = false;
-    context.max_volume_depth    = 15;
+    context.print_vis           = false;
+    context.max_volume_depth    = 9;
 
     CNV<dddb> cnv(lcdd,&context);
     string top = "/dd/Geometry/LHCb/lvLHCb";
@@ -1029,6 +1036,14 @@ static long dddb_2_dd4hep(LCDD& lcdd, int , char** ) {
     }
     context.geo->world = s->s.box;
     cnv(make_pair(string("World"),context.geo));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d isotopes.",         int(context.isotopes.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d elements.",         int(context.elements.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d materials.",        int(context.materials.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d shapes.",           int(context.shapes.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d logical  volumes.", int(context.volumes.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d placements.",       int(context.placements.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d detector elements.",int(context.detelements.size()));
+    printout(INFO,"DDDB2DD4hep","++ Converted %8d conditions.",       int(context.conditions.size()));
     helper->setGeometry(0);
     return 1;
   }

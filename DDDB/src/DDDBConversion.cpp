@@ -20,6 +20,7 @@
 
 // Framework includes
 #include "DDDB/DDDBConversion.h"
+#include "DD4hep/InstanceCount.h"
 #include "DD4hep/Primitives.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
@@ -42,35 +43,113 @@ namespace DD4hep  {
 
   /// Default constructor
   DDDB::dddb::dddb() : top(0), structure(0), geometry(0)  {
+    InstanceCount::increment(this);
   }
 
   /// Default destructor
   DDDB::dddb::~dddb()   {
     // need to release heare all allocated resources.
-    destroyObjects(isotopes)();
-    destroyObjects(elements)();
-    elementPaths.clear();
+    releaseObjects(isotopes)();
+    releaseObjects(elements)();
+    releaseObjects(elementPaths)();
 
-    destroyObjects(materials)();
-    materialPaths.clear();
+    releaseObjects(materials)();
+    releaseObjects(materialPaths)();
 
-    destroyObjects(shapes)();
+    releaseObjects(shapes)();
 
-    destroyObjects(volumes)();
-    volumePaths.clear();
+    releaseObjects(volumes)();
+    releaseObjects(volumePaths)();
 
-    destroyObjects(placements)();
-    placementPaths.clear();
+    releaseObjects(placements)();
+    releaseObjects(placementPaths)();
 
-    destroyObjects(conditions)();
-    destroyObjects(catalogs)();
-    catalogPaths.clear();
+    releaseObjects(conditions)();
+    releaseObjects(catalogs)();
+    releaseObjects(catalogPaths)();
     printout(INFO,"dddb","++ All intermediate objects deleted!");
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::Isotope::Isotope() : Named() {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::Isotope::~Isotope()   {
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::Element::Element() : Named(), density(0), ionization(0), state(UNKNOWN) {
+    InstanceCount::increment(this);
+  }
+
+  /// Copy constructor
+  DDDB::Element::Element(const Element& e) 
+    : Named(e), isotopes(e.isotopes), path(e.path), symbol(e.symbol), 
+      atom(e.atom), density(e.density), 
+      ionization(e.ionization), state(e.state)
+  {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::Element::~Element()  {
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::Material::Material() : density(0), pressure(-1), temperature(-1), radlen(0), lambda(0) {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::Material::~Material()  {
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::LogVol::LogVol() : Named(), material(), shape(), physvols() {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::LogVol::~LogVol()  {
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::PhysVol::PhysVol() : type(PHYSVOL_REGULAR), logvol(), path(), trafo() {
+    InstanceCount::increment(this);
+  }
+
+  /// Copy constructor
+  DDDB::PhysVol::PhysVol(const PhysVol& c) 
+    : Named(c), type(c.type), logvol(c.logvol), path(c.path), trafo(c.trafo) {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::PhysVol::~PhysVol()  {
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::Condition::Condition() : Named() {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::Condition::~Condition()  {
+    InstanceCount::decrement(this);
   }
 
   /// Default constructor
   DDDB::Shape::Shape() : type(0), zplanes(), boolean_ops() {
     ::memset(&s.box,0,sizeof(s));
+    InstanceCount::increment(this);
   }
   
   /// Default destructor
@@ -84,6 +163,17 @@ namespace DD4hep  {
         delete (*i).shape;
       boolean_ops.clear();
     }
+    InstanceCount::decrement(this);
+  }
+ 
+  /// Default constructor
+  DDDB::Catalog::Catalog() : Named(), level(0), typeID(0) {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::Catalog::~Catalog()   {
+    InstanceCount::decrement(this);
   }
 
   pair<const DDDB::Catalog*,string> DDDB::Catalog::parent(const string& nam)  const  {
@@ -153,7 +243,7 @@ namespace DD4hep  {
   template <> void dddb_print(const DDDB::Material* m)   {
     CHECK_OBJECT(m);
     printout(INFO,"Material","++ %-20s Density=%8g P=%f T=%f %d components id:%s",
-             ("'"+m->name+"'").c_str(), m->density, m->pressure, m->temperature, 
+             ("'"+m->path+"'").c_str(), m->density, m->pressure, m->temperature, 
              int(m->components.size()),m->c_id());
   }
 
@@ -203,7 +293,7 @@ namespace DD4hep  {
                s->type,s->path.c_str(),int(s->boolean_ops.size()));
     }
     printout(INFO,"Shape","++ %-15s  name:%s id:%s",
-             "",s->c_name(),s->c_id());
+             "", s->path.c_str(), s->c_id());
   }
 
   template <> void dddb_print(const DDDB::PhysVol* obj)   {
@@ -230,5 +320,18 @@ namespace DD4hep  {
              obj->support.c_str(), obj->logvol.c_str());
     printout(INFO,"Detector", "++ %-12s  name:%s id:%s",
              "",obj->c_name(),obj->c_id());
+  }
+  template <> void dddb_print(const DDDB::Condition* obj)   {
+    stringstream p;
+    p << "Par [" << obj->params.size() << "]: ";
+    for(auto i=obj->params.begin(); i != obj->params.end(); ++i)
+      p << (*i).first << "[" << (*i).second->type << "] ";
+    p << "Vec [" << obj->paramVectors.size() << "]: ";
+    for(auto i=obj->paramVectors.begin(); i != obj->paramVectors.end(); ++i)
+      p << (*i).first << "[" << (*i).second->type << "] ";
+
+    CHECK_OBJECT(obj);
+    printout(INFO,"Condition", "++ %-12s: [%s] id:%s %s",
+             obj->name.c_str(), obj->classID.c_str(), obj->c_id(), p.str().c_str());
   }
 }
