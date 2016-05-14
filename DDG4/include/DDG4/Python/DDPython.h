@@ -20,7 +20,6 @@
 // ROOT include file(s)
 #include "TPyReturn.h"
 
-
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
 
@@ -57,21 +56,27 @@ namespace DD4hep  {
     /// Save thread state
     static void allowThreads();
     static void restoreThread();
+
     /// Object instantiator
     static DDPython instance();
     static void shutdown();
     static void setMainThread();
+
     /// Release python object
     static void releaseObject(PyObject*& obj);
+
     /// Release python object
     static void assignObject(PyObject*& obj, PyObject* new_obj);
+
     /// Start the interpreter in normal mode without hacks like 'pythopn.exe' does.
     static int run_interpreter(int argc, char** argv);
 
     /// Copy constructor 
     DDPython(const DDPython& ) {}
+
     /// Destructor
     ~DDPython( );
+
     int  setArgs(int argc, char** argv)  const;
     int  runFile(const std::string& fname)  const;
     int  execute(const std::string& cmd)  const;
@@ -86,6 +91,7 @@ namespace DD4hep  {
      *  - No GIL state handling by the caller necessary
      */
     PyObject* call(PyObject* method, PyObject* args);
+
     /// Call a python object with argument (typically a dictionary). 
     /** Note:
      *  - Typical call from C -> python -> C
@@ -96,9 +102,13 @@ namespace DD4hep  {
      *  - The caller MUST ensure the GIL state in case of multi-threading!
      */
     TPyReturn callC(PyObject* method, PyObject* args);
+
     /// Invoke command prompt
     void prompt()  const;
+
+    /// Callback after forking.
     void afterFork()  const;
+
   private:
 
   };

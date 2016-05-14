@@ -25,7 +25,9 @@
 // C/C++ include files
 #include <iostream>
 #include <stdexcept>
+#include <cerrno>
 
+// ROOT inlcude files
 #include "TGeoCompositeShape.h"
 #include "TGeoBoolNode.h"
 #include "TGeoManager.h"

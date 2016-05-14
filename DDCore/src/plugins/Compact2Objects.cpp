@@ -72,7 +72,7 @@ namespace DD4hep {
 
 namespace {
   static UInt_t unique_mat_id = 0xAFFEFEED;
-  void throw_print(const std::string& msg) {
+  void throw_print(const string& msg) {
     printout(ERROR, "Compact", msg.c_str());
     throw runtime_error(msg);
   }
@@ -233,7 +233,7 @@ template <> void Converter<Plugin>::operator()(xml_h e) const {
     string val = coll.attr<string>(_U(value));
     arguments.push_back(val);
   }
-  for(std::vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
+  for(vector<string>::iterator i=arguments.begin(); i!=arguments.end(); ++i)
     argv.push_back(&((*i)[0]));
   lcdd.apply(name.c_str(),int(argv.size()), &argv[0]);
 }
@@ -334,7 +334,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     vector<double> composite_fractions;
     double composite_fractions_total = 0.0;
     for (composites.reset(); composites; ++composites)   {
-      std::string nam = composites.attr<string>(_U(ref));
+      string nam = composites.attr<string>(_U(ref));
       double fraction = composites.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         fraction *= comp_mat->GetA();
@@ -346,7 +346,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
       composite_fractions.push_back(fraction);
     }
     for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
-      std::string nam = composites.attr<string>(_U(ref));
+      string nam = composites.attr<string>(_U(ref));
       double fraction = composite_fractions[ifrac]/composite_fractions_total;
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
@@ -354,7 +354,7 @@ template <> void Converter<Material>::operator()(xml_h e) const {
         mix->AddElement(comp_elt, fraction);
     }
     for (fractions.reset(); fractions; ++fractions) {
-      std::string nam = fractions.attr<string>(_U(ref));
+      string nam = fractions.attr<string>(_U(ref));
       double fraction = fractions.attr<double>(_U(n));
       if (0 != (comp_mat = mgr.GetMaterial(nam.c_str())))
         mix->AddElement(comp_mat, fraction);
@@ -370,12 +370,12 @@ template <> void Converter<Material>::operator()(xml_h e) const {
     else if (!has_density && mix && 0 == mix->GetDensity()) {
       double dens = 0.0;
       for (composites.reset(), ifrac=0; composites; ++composites, ++ifrac) {
-        std::string nam = composites.attr<string>(_U(ref));
+        string nam = composites.attr<string>(_U(ref));
         comp_mat = mgr.GetMaterial(nam.c_str());
         dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
       for (fractions.reset(); fractions; ++fractions) {
-        std::string nam = fractions.attr<string>(_U(ref));
+        string nam = fractions.attr<string>(_U(ref));
         comp_mat = mgr.GetMaterial(nam.c_str());
         dens += composites.attr<double>(_U(n)) * comp_mat->GetDensity();
       }
@@ -550,45 +550,37 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     string type = seg.attr<string>(_U(type));
     Segmentation segment(type, name);
     if (segment.isValid()) {
+      typedef Segmentation::Parameters _PARS;
       segment->parameters();
-      Segmentation::Parameters parameters = segment.parameters();
-      Segmentation::Parameters::iterator it;
+      const _PARS& parameters = segment.parameters();
+      _PARS::const_iterator it;
       for (it = parameters.begin(); it != parameters.end(); ++it) {
         Segmentation::Parameter p = *it;
-        if (seg.hasAttr(Unicode(p->name()))) {
+	XML::Strng_t pNam(p->name());
+        if ( seg.hasAttr(pNam) ) {
           string pType = p->type();
-          if (pType.compare("int") == 0) {
-
-            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< int>ParInt;
-            static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(Unicode(p->name())));
-
-          } else if (pType.compare("float") == 0) {
-
-            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< float>ParFloat;
-            static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(Unicode(p->name())));
-
-          } else if (pType.compare("doublevec") == 0) {
-
-            std::vector<double> valueVector;
-            std::string parameterString = seg.attr<string>(Unicode(p->name()));
-            printout(DEBUG, "Compact", "++ Converting this string structure: %s.", parameterString.c_str());
-
-            std::vector<std::string> elements = DD4hep::DDSegmentation::splitString(parameterString);
-            for (std::vector<std::string>::const_iterator j = elements.begin(); j != elements.end(); ++j) {
+          if ( pType.compare("int") == 0 ) {
+            typedef DDSegmentation::TypedSegmentationParameter<int> ParInt;
+            static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(pNam));
+          } else if ( pType.compare("float") == 0 ) {
+            typedef DDSegmentation::TypedSegmentationParameter<float> ParFloat;
+            static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(pNam));
+          } else if ( pType.compare("doublevec") == 0 ) {
+            vector<double> valueVector;
+            string param = seg.attr<string>(pNam);
+            printout(DEBUG, "Compact", "++ Converting this string structure: %s.",param.c_str());
+            vector<string> elts = DDSegmentation::splitString(param);
+            for (vector<string>::const_iterator j = elts.begin(); j != elts.end(); ++j) {
               if ((*j).empty()) continue;
-              valueVector.push_back(DD4hep::_toDouble((*j)));
+              valueVector.push_back(_toDouble((*j)));
             }
-
-            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< std::vector<double>>ParDouVec;
+            typedef DDSegmentation::TypedSegmentationParameter< vector<double> > ParDouVec;
             static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
-
-          } else if (pType.compare("double") == 0) {
-
-            typedef DD4hep::DDSegmentation::TypedSegmentationParameter< double>ParDouble;
-            static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(Unicode(p->name())));
-
+          } else if ( pType.compare("double" ) == 0) {
+            typedef DDSegmentation::TypedSegmentationParameter<double>ParDouble;
+            static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(pNam));
           } else {
-            p->setValue(seg.attr<string>(Unicode(p->name())));
+            p->setValue(seg.attr<string>(pNam));
           }
         } else if (not p->isOptional()) {
           throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");

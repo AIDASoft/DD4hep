@@ -12,12 +12,26 @@
 //
 //==========================================================================
 // $Id$
+
 #ifndef DD4HEP_DDG4_PYDDG4_H
 #define DD4HEP_DDG4_PYDDG4_H
 
-// Framework include files
-#include "DDG4/Geant4Kernel.h"
+/// Namespace for the AIDA detector description toolkit
+namespace DD4hep {
+  /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
+  namespace Simulation {
+    // Forward declarations
+    class Geant4Kernel;
+  }    // End namespace Simulation
+}      // End namespace DD4hep
 
+
+/// Python interface class for Geant4 python involation
+/**
+ *  \author  M.Frank
+ *  \version 1.0
+ *  \ingroup DD4HEP_SIMULATION
+ */
 struct PyDDG4  {
   typedef DD4hep::Simulation::Geant4Kernel Kernel;
 
@@ -26,5 +40,4 @@ struct PyDDG4  {
   static int run(Kernel& kernel);
   static int run(const char* fname);
 };
-
 #endif // DD4HEP_DDG4_PYDDG4_H

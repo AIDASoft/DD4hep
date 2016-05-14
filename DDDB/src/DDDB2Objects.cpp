@@ -23,33 +23,12 @@
 #include "DDDB/Dimension.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBConversion.h"
+#include "DD4hep/LCDD.h"
 #include "DD4hep/DetectorTools.h"
-#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
 // ROOT include files
-#include "TROOT.h"
-#include "TGeoNode.h"
 #include "TGeoManager.h"
-#include "TGeoElement.h"
-#include "TGeoMaterial.h"
-#include "TGeoMedium.h"
-#include "TGeoPcon.h"
-#include "TGeoPgon.h"
-#include "TGeoCone.h"
-#include "TGeoEltu.h"
-#include "TGeoTorus.h"
-#include "TGeoTrd1.h"
-#include "TGeoTrd2.h"
-#include "TGeoTube.h"
-#include "TGeoArb8.h"
-#include "TGeoMatrix.h"
-#include "TGeoBoolNode.h"
-#include "TGeoParaboloid.h"
-#include "TGeoCompositeShape.h"
-#include "TGeoShapeAssembly.h"
-#include "TGeoScaledShape.h"
-
 
 // C/C++ include files
 #include <climits>
@@ -61,7 +40,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::DDDB;
-using DD4hep::Geometry::LCDD;
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -81,7 +59,7 @@ namespace DD4hep {
     /// Helper class to facilitate conversion. Purely local.
     struct Context  {
       typedef set<string> StringSet;
-      Context(LCDD& l, dddb* g)
+      Context(Geometry::LCDD& l, dddb* g)
         : lcdd(l), geo(g), helper(0),
           max_volume_depth(9999),
           print_materials(false), 
@@ -105,8 +83,8 @@ namespace DD4hep {
       }
       template <typename T> void collect(const string& id, T* s);
       template <typename T,typename Q> void collect(const string& id, T* s, Q* c);
-      LCDD&      lcdd;
-      DDDB::dddb* geo;
+      Geometry::LCDD&   lcdd;
+      DDDB::dddb*       geo;
       DDDB::DDDBHelper* helper;
       typedef std::map<Isotope*,     TGeoIsotope*>   Isotopes;
       typedef std::map<Element*,     TGeoElement*>   Elements;
@@ -201,7 +179,7 @@ namespace DD4hep {
       template<typename Q> Q get(const string& obj) const  {
         throw runtime_error("NOT implemented virtual call !");
       }
-      void operator()(T* obj) const   {	convert(obj);      }
+      void operator()(T* obj) const   {	convert(obj);  }
       void operator()(const pair<string,T*>& arg) const  {
         Increment<T> incr;
         try  {
@@ -221,23 +199,19 @@ namespace DD4hep {
     };
 
     template <> void* CNV<Condition>::convert(Condition *object) const;
-
     template <> void* CNV<Isotope>::convert(Isotope *object) const;
     template <> void* CNV<Element>::convert(Element *object) const;
     template <> void* CNV<Material>::convert(Material *object) const;
-    template <> template <> GeoMaterial  CNV<Material>::get<GeoMaterial>(const string& material_name) const;
-
     template <> void* CNV<BooleanOperation>::convert(BooleanOperation *object) const;
     template <> void* CNV<Shape>::convert(Shape *object) const;
     template <> void* CNV<DetElem>::convert(DetElem *object) const;
-
     template <> void* CNV<LogVol>::convert(LogVol *object) const;
-    template <> template <> LogVol*    CNV<LogVol>::get<LogVol*>(const string& obj) const;
-    template <> template <> GeoVolume  CNV<LogVol>::get<GeoVolume>(const string& obj) const;
-
     template <> void* CNV<Catalog>::convert(Catalog *object) const;
     template <> void* CNV<dddb>::convert(dddb *obj) const;
 
+    template <> template <> GeoMaterial CNV<Material>::get<GeoMaterial>(const string& material_name) const;
+    template <> template <> LogVol*     CNV<LogVol>::get<LogVol*>(const string& obj) const;
+    template <> template <> GeoVolume   CNV<LogVol>::get<GeoVolume>(const string& obj) const;
 
     /// Convert single condition objects
     template <> void* CNV<Condition>::convert(Condition *object) const   {
@@ -253,35 +227,26 @@ namespace DD4hep {
     }
 
     /// Convert single isotope objects
-    template <> void* CNV<Isotope>::convert(Isotope *object) const    {
+    template <> void* CNV<Isotope>::convert(Isotope *o) const    {
       Context* context = _param<Context>();
-      TGeoIsotope* iso = Context::find(context->isotopes, object);
+      TGeoIsotope* iso = Context::find(context->isotopes, o);
       if ( !iso )  {
-        iso = TGeoIsotope::FindIsotope(object->c_name());
-        if ( !iso )  {
-          iso = new TGeoIsotope(object->c_name(),
-                                object->Z,
-                                object->A,
-                                object->density);
-        }
-        context->isotopes.insert(make_pair(object,iso));
+        iso = TGeoIsotope::FindIsotope(o->c_name());
+        if ( !iso ) iso = new TGeoIsotope(o->c_name(),o->Z,o->A,o->density);
+        context->isotopes.insert(make_pair(o,iso));
         if ( context->print_materials ) dddb_print(iso);
       }
       return iso;
     }
 
     /// Convert single element objects
-    TGeoElement* createElement(const char* nam, Context* context, Element *object)   {
+    TGeoElement* createElement(const char* nam, Context* context, Element *o)   {
       TGeoElementTable* t = TGeoElement::GetElementTable();
       TGeoElement* e = t->FindElement(nam);
       if ( !e )  {
-        e = new TGeoElement(nam,
-                            object->symbol.c_str(),
-                            object->atom.Zeff,
-                            object->atom.A,
-                            object->density);
+        e = new TGeoElement(nam,o->symbol.c_str(),o->atom.Zeff,o->atom.A,o->density);
         /// Add the isotopes to the element
-        for(auto i = object->isotopes.begin(); i != object->isotopes.end(); ++i)  {
+        for(auto i = o->isotopes.begin(); i != o->isotopes.end(); ++i)  {
           auto iso = context->geo->isotopes.find((*i).first);
           if ( iso == context->geo->isotopes.end() )  {
             /// Error!
@@ -309,7 +274,7 @@ namespace DD4hep {
           MaterialComponent comp;
           material          = new Material;
           material->name    = nam;
-          material->density = object->density;
+          material->density = o->density;
           comp.name         = nam;
           comp.fractionmass = 1.0;
           material->components.push_back(comp);
@@ -548,20 +513,20 @@ namespace DD4hep {
       return shape;
     }
 
-    int num_slash(const string& s)  {
+    inline int num_slash(const string& s)  {
       size_t count=1, idx=s.find('/');
       for(; idx != string::npos; idx=s.find('/',idx+1)) ++count;
       return count;
     }
 
-    GeoPlacement place_daughter(const char* pv, GeoVolume mother, GeoVolume daughter, const Transform3D& tr)  {
+    inline GeoPlacement place_daughter(const char* pv, GeoVolume mother, GeoVolume daughter, const Transform3D& tr)  {
       GeoPlacement place = mother.placeVolume(daughter, tr);
       // Use title for user defined physical volume name, since TGeo sets already the name!
       place->SetTitle(pv);
       return place;
     }
 
-    void __check_physvol_instances__(int n)   {
+    inline void __check_physvol_instances__(int n)   {
       if ( n <= 0 )  {
         printout(WARNING,"Cnv<PhysVol>","++ Invalid replication constant in ParamPhysVolXD:%d",n);
       }
@@ -1008,7 +973,7 @@ namespace DD4hep {
 } /* End namespace DD4hep    */
 
 
-static long dddb_2_dd4hep(LCDD& lcdd, int , char** ) {
+static long dddb_2_dd4hep(Geometry::LCDD& lcdd, int , char** ) {
   DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
   if ( helper )   {
     Context context(lcdd, helper->geometry());

@@ -28,6 +28,7 @@
 
 // C/C++ include files
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 using namespace DD4hep;
@@ -203,29 +204,71 @@ DECLARE_APPLY(DD4hepRootLoader,load_geometryFromroot)
  *  @version 1.0
  *  @date    01/04/2014
  */
-static long dump_volume_tree(LCDD& lcdd, int , char** ) {
+static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
   struct Actor {
-    static long dump(TGeoNode* ideal, TGeoNode* aligned,int level) {
-      char fmt[256];
-      const double* trans = ideal->GetMatrix()->GetTranslation();
-      if ( ideal == aligned )  {
-        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] Pos: (%f,%f,%f)",
-                   level+1,2*level+1,(void*)ideal,
-                   trans[0], trans[1], trans[2]);
+    typedef PlacedVolume::VolID  VID;
+    typedef PlacedVolume::VolIDs VIDs;
+    bool m_printVolIDs;
+    bool m_printPositions;
+    bool m_printSensitivesOnly;
+    Actor(int argc, char** argv) 
+      : m_printVolIDs(false), m_printPositions(false), m_printSensitivesOnly(false)
+    {
+      for(int i=0; i<argc; ++i)  {
+	char c = ::tolower(argv[i][0]);
+	if ( c == 'v' ) m_printVolIDs = true;
+	else if ( c == 'p' ) m_printPositions = true;
+	else if ( c == 's' ) m_printSensitivesOnly = true;
       }
-      else  {
-        ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p Pos: (%f,%f,%f)",
-                   level+1,2*level+1,(void*)ideal,(void*)aligned,
-                   trans[0], trans[1], trans[2]);
+    }
+    long dump(TGeoNode* ideal, TGeoNode* aligned,int level, VIDs volids) const {
+      char fmt[128];
+      string opt_info;
+      PlacedVolume pv(ideal);
+      bool sensitive = false;
+      if ( m_printPositions || m_printVolIDs )  {
+	stringstream log;
+	if ( m_printPositions )  {
+	  const double* trans = ideal->GetMatrix()->GetTranslation();
+	  ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+	  log << fmt;
+	}
+	// Top level volume! have no volume ids
+	if ( m_printVolIDs && ideal && ideal->GetMotherVolume() )  {
+	  VIDs vid = pv.volIDs();
+	  if ( !vid.empty() )  {
+	    sensitive = true;
+	    log << " VolID: ";
+	    volids.std::vector<VID>::insert(volids.end(),vid.begin(),vid.end());
+	    for(VIDs::const_iterator i=volids.begin(); i!=volids.end(); ++i)  {
+	      ::snprintf(fmt, sizeof(fmt), "%s:%2d ",(*i).first.c_str(), (*i).second);
+	      log << fmt;
+	    }
+	  }
+	}
+	opt_info = log.str();
       }
       TGeoVolume* volume = ideal->GetVolume();
-      printout(INFO,"+++",fmt,"",aligned->GetName(),volume->GetTitle(),
-               volume->GetShape()->IsA()->GetName());
+      if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
+	if ( ideal == aligned )  {
+	  ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] %%s",
+		     level+1,2*level+1,(void*)ideal);
+	}
+	else  {
+	  ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %%s",
+		     level+1,2*level+1,(void*)ideal,(void*)aligned);
+	}
+	printout(INFO,"+++",fmt,"",
+		 aligned->GetName(),
+		 volume->GetTitle(),
+		 volume->GetShape()->IsA()->GetName(),
+		 opt_info.c_str());
+      }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);
         const char* daughter_name    = ideal_daughter->GetName();
         TGeoNode*   aligned_daughter = volume->GetNode(daughter_name);
-        dump(ideal_daughter,aligned_daughter,level+1);
+        dump(ideal_daughter, aligned_daughter, level+1, volids);
       }
       return 1;
     }
@@ -234,8 +277,8 @@ static long dump_volume_tree(LCDD& lcdd, int , char** ) {
   DetectorTools::PlacementPath path;
   DetectorTools::placementPath(lcdd.world(), path);
   PlacedVolume  pv = DetectorTools::findNode(lcdd.world().placement(),place);
-  return Actor::dump(lcdd.world().placement().ptr(),pv.ptr(),0);
-  //return Actor::dump(lcdd.manager().GetTopNode(),pv.ptr(),0);
+  Actor actor(argc,argv);
+  return actor.dump(lcdd.world().placement().ptr(),pv.ptr(),0,PlacedVolume::VolIDs());
 }
 DECLARE_APPLY(DD4hepVolumeDump,dump_volume_tree)
 

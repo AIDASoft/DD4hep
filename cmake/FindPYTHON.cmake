@@ -26,6 +26,10 @@
 include ( FindPackageHandleStandardArgs )
 
 find_package(PythonInterp  REQUIRED)
+message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARIES:    ${PYTHON_LIBRARIES} ${PYTHON_LIBRARY_DIR}")
+message(STATUS "DEBUG: ******** PYTHON: PYTHON_INCLUDE_DIRS: ${PYTHON_INCLUDE_DIRS}")
+message(STATUS "DEBUG: ******** PYTHON: PYTHON_LIBRARY_DIR:  ${PYTHON_LIBRARY_DIR}")
+
 find_package(PythonLibs    REQUIRED)
 
 if (PYTHONLIBS_FOUND)

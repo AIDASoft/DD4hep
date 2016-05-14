@@ -323,15 +323,16 @@ namespace DD4hep  {
   }
   template <> void dddb_print(const DDDB::Condition* obj)   {
     stringstream p;
+    CHECK_OBJECT(obj);
+
     p << "Par [" << obj->params.size() << "]: ";
     for(auto i=obj->params.begin(); i != obj->params.end(); ++i)
       p << (*i).first << "[" << (*i).second->type << "] ";
     p << "Vec [" << obj->paramVectors.size() << "]: ";
     for(auto i=obj->paramVectors.begin(); i != obj->paramVectors.end(); ++i)
       p << (*i).first << "[" << (*i).second->type << "] ";
-
-    CHECK_OBJECT(obj);
-    printout(INFO,"Condition", "++ %-12s: [%s] id:%s %s",
-             obj->name.c_str(), obj->classID.c_str(), obj->c_id(), p.str().c_str());
+    printout(INFO,"Condition", "++ %-12s: [%s] id:%s path:%s",
+             obj->name.c_str(), obj->classID.c_str(), obj->c_id(), obj->path.c_str());
+    printout(INFO,"Condition", "   --> %s",p.str().c_str());
   }
 }

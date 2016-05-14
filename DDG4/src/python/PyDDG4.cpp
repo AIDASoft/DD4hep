@@ -17,6 +17,7 @@
 #include "DD4hep/LCDD.h"
 #include "DDG4/Python/PyDDG4.h"
 #include "DDG4/Python/DDPython.h"
+#include "DDG4/Geant4Kernel.h"
 
 int PyDDG4::run(Kernel& kernel)  {
   int ret;
