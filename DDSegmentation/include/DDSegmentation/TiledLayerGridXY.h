@@ -68,6 +68,10 @@ public:
 	const std::string& fieldNameY() const {
 		return _yId;
 	}
+	/// access the field name used for Layer
+	const std::string& fieldNameLayer() const {
+		return _identifierLayer;
+	}
 	/// set the grid size in X
 	void setGridSizeX(double cellSize) {
 		_gridSizeX = cellSize;
@@ -99,6 +103,10 @@ public:
 	/// set the field name used for Y
 	void setFieldNameY(const std::string& fieldName) {
 		_yId = fieldName;
+	}
+	/// set the field name used for Y
+	void setFieldNameLayer(const std::string& fieldName) {
+	        _identifierLayer= fieldName;
 	}
 	/// set the layer boundary dimension for X
 	void setBoundaryLayerX(double halfX)

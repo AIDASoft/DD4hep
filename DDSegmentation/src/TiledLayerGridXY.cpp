@@ -32,8 +32,7 @@ TiledLayerGridXY::TiledLayerGridXY(const std::string& cellEncoding) :
 	registerParameter("offset_y", "Cell offset in Y", _offsetY, 0., SegmentationParameter::LengthUnit, true);
 	registerIdentifier("identifier_x", "Cell ID identifier for X", _xId, "x");
 	registerIdentifier("identifier_y", "Cell ID identifier for Y", _yId, "y");
-	registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, std::string("layer"),
-			SegmentationParameter::NoUnit, true);
+	registerIdentifier("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, "layer");
 	registerParameter("layer_offsetX", "List of layer x offset", _layerOffsetX, std::vector<double>(),
 			SegmentationParameter::NoUnit, true);
 	registerParameter("layer_offsetY", "List of layer y offset", _layerOffsetY, std::vector<double>(),
