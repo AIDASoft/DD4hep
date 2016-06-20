@@ -3,10 +3,12 @@ slc6-gcc48:
     - docker
   image: clicdp/slc6-base
   script:
-    - source .gitlab-ci.d/init_x86_64-slc6-gcc48-opt.sh
+    - export GCC_VERSION="4.8.5"
+    - export BUILD_TYPE="opt"
+    - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX11=ON ..        
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
     - make -j4
     - make install
     - . ../bin/thisdd4hep.sh
@@ -27,10 +29,12 @@ slc6-gcc49:
     - docker
   image: clicdp/slc6-base
   script:
-    - source .gitlab-ci.d/init_x86_64-slc6-gcc49-opt.sh
+    - export GCC_VERSION="4.9.3"
+    - export BUILD_TYPE="opt"
+    - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
     - make -j3
     - make install
     - . ../bin/thisdd4hep.sh
@@ -51,10 +55,12 @@ centos7-gcc49:
     - docker
   image: clicdp/cc7-base
   script:
-    - source .gitlab-ci.d/init_x86_64-centos7-gcc49-opt.sh
+    - export GCC_VERSION="4.9.3"
+    - export BUILD_TYPE="opt"
+    - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.2.0 -D DD4HEP_USE_CXX14=ON ..        
+    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
     - make -j3
     - make install
     - . ../bin/thisdd4hep.sh
