@@ -14,6 +14,7 @@ from DD4hep import *
 
 def loadDDG4():
   from ROOT import gSystem
+  result = gSystem.Load("libglapi")
   result = gSystem.Load("libDDG4Plugins")
   if 0 != result:
     raise Exception('DDG4.py: Failed to load the Geant4 library libDDG4: '+gSystem.GetErrorStr())
