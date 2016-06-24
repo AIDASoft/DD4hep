@@ -4,12 +4,12 @@ slc6-gcc48:
   image: clicdp/slc6-base
   script:
     - export GCC_VERSION="4.8.5"
-    - export BUILD_TYPE="opt"
+    - export BUILD_TYPE="dbg"
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
-    - ninja -j6
+    - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure
@@ -17,7 +17,7 @@ slc6-gcc48:
     - mkdir build
     - cd build
     - cmake -GNinja ..
-    - ninja -j6
+    - ninja
     - ninja install
     - ctest --output-on-failure
     - cd ../..
@@ -30,12 +30,12 @@ slc6-gcc49:
   image: clicdp/slc6-base
   script:
     - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="opt"
+    - export BUILD_TYPE="dbg"
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
-    - ninja -j6
+    - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure
@@ -43,7 +43,7 @@ slc6-gcc49:
     - mkdir build
     - cd build
     - cmake -GNinja ..
-    - ninja -j6
+    - ninja
     - ninja install
     - ctest --output-on-failure
     - cd ../..
@@ -56,12 +56,12 @@ centos7-gcc49:
   image: clicdp/cc7-base
   script:
     - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="opt"
+    - export BUILD_TYPE="dbg"
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
     - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
-    - ninja -j6
+    - ninja
     - ninja install
     - . ../bin/thisdd4hep.sh
     - ctest --output-on-failure
@@ -69,7 +69,7 @@ centos7-gcc49:
     - mkdir build
     - cd build
     - cmake -GNinja ..
-    - ninja -j6
+    - ninja
     - ninja install
     - ctest --output-on-failure
     - cd ../..
