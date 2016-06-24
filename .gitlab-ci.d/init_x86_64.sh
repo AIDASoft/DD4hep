@@ -100,5 +100,9 @@ export LD_LIBRARY_PATH="$LCIO/lib:$LD_LIBRARY_PATH"
 export BOOST_ROOT=${CLICREPO}/software/Boost/1.61.0/${BUILD_FLAVOUR}
 export LD_LIBRARY_PATH="${BOOST_ROOT}/lib:$LD_LIBRARY_PATH"
 
+#--------------------------------------------------------------------------------
+#     Ninja
+#--------------------------------------------------------------------------------
 
-
+export Ninja_HOME=${CLICREPO}/software/Ninja/1.7.1/${BUILD_FLAVOUR}
+export PATH="$Ninja_HOME:$PATH"

@@ -8,18 +8,18 @@ slc6-gcc48:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
-    - make -j4
-    - make install
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
+    - ninja
+    - ninja install
     - . ../bin/thisdd4hep.sh
-    - make test
+    - ctest --output-on-failure
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake ..
-    - make -j4
-    - make install
-    - make test
+    - cmake -GNinja ..
+    - ninja
+    - ninja install
+    - ctest --output-on-failure
     - cd ../..
     - rm -rf .git
     - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc48-opt
@@ -34,18 +34,18 @@ slc6-gcc49:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
-    - make -j3
-    - make install
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
+    - ninja
+    - ninja install
     - . ../bin/thisdd4hep.sh
-    - make test
+    - ctest --output-on-failure
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake ..
-    - make -j4
-    - make install
-    - make test
+    - cmake -GNinja ..
+    - ninja
+    - ninja install
+    - ctest --output-on-failure
     - cd ../..
     - rm -rf .git
     - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-slc6-gcc49-opt
@@ -60,18 +60,18 @@ centos7-gcc49:
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
-    - cmake -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
-    - make -j3
-    - make install
+    - cmake -GNinja -D DD4HEP_USE_GEANT4=ON -D DD4HEP_USE_BOOST=ON -DBoost_NO_BOOST_CMAKE=ON -D DD4HEP_USE_LCIO=ON -D BUILD_TESTING=ON -DCLHEP_DIR=$CLHEP -D Geant4_DIR=$G4INSTALL/lib64/Geant4-10.1.3 -D DD4HEP_USE_CXX11=ON ..        
+    - ninja
+    - ninja install
     - . ../bin/thisdd4hep.sh
-    - make test
+    - ctest --output-on-failure
     - cd ../examples/
     - mkdir build
     - cd build
-    - cmake ..
-    - make -j4
-    - make install
-    - make test
+    - cmake -GNinja ..
+    - ninja
+    - ninja install
+    - ctest --output-on-failure
     - cd ../..
     - rm -rf .git
     - sshpass -p $CLICTEL_PASS rsync -arv -e ssh --delete . clictel@lxplus:/afs/cern.ch/eng/clic/software/DD4hep/x86_64-centos7-gcc49-opt
