@@ -396,7 +396,7 @@ namespace DD4hep {
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<TrackerWeighted>::defineCollections() {
-      m_collectionID = defineCollection<Geant4Tracker::Hit>(m_sensitive.readout().name());
+      m_collectionID = declareReadoutFilteredCollection<Geant4Tracker::Hit>();
     }
 
     /// Method for generating hit(s) using the information of G4Step object.

@@ -135,6 +135,30 @@ namespace DD4hep {
       virtual ~LimitSetObject();
     };
 
+    /// Definition of the HitCollection parameters used by the Readout
+    /**
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \ingroup DD4HEP_GEOMETRY
+     */
+    class HitCollection   {
+    public:
+      /// Hit collection name
+      std::string name;
+      /// Discriminator key name from the <id/> string
+      std::string key;
+      /// Range values of the key is not empty.
+      long key_min, key_max;
+      /// Default constructor
+      HitCollection() {}
+      /// Copy constructor
+      HitCollection(const HitCollection& c);
+      /// Initializing constructor
+      HitCollection(const std::string& name, const std::string& key="",long k_min=~0x0, long kmax=~0x0);
+      /// Assignment operator
+      HitCollection& operator=(const HitCollection& c);
+    };
+
     /// Concrete object implementation of the Readout Handle
     /**
      *
@@ -144,12 +168,16 @@ namespace DD4hep {
      */
     class ReadoutObject: public NamedObject {
     public:
+      typedef HitCollection Collection;
+      typedef std::vector<HitCollection> Collections;
       /// Handle to the readout segmentation
       Segmentation segmentation;
       /// Handle to the volume
       Volume readoutWorld;
       /// Handle to the field descriptor
       IDDescriptor id;
+      /// Hit collection container (if defined)
+      Collections hits;
       /// Standard constructor
       ReadoutObject();
       /// Default destructor

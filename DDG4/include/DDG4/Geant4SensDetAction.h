@@ -207,8 +207,14 @@ namespace DD4hep {
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adopt(Geant4Filter* filter);
 
+      /// Add an actor responding to all callbacks to the sequence front. Sequence takes ownership.
+      void adopt_front(Geant4Filter* filter);
+
       /// Add an actor responding to all callbacks. Sequence takes ownership.
       void adoptFilter(Geant4Action* filter);
+
+      /// Add an actor responding to all callbacks to the sequence front. Sequence takes ownership.
+      void adoptFilter_front(Geant4Action* filter);
 
       /// Callback before hit processing starts. Invoke all filters.
       /** Return fals if any filter returns false
@@ -226,6 +232,9 @@ namespace DD4hep {
 
       /// Retrieve the hits collection associated with this detector by its collection identifier
       HitCollection* collectionByID(size_t id);
+
+      /// Define collections created by this sensitivie action object
+      virtual void defineCollections();
 
       /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
       /** The hits collection(s) created by this sensitive detector must
@@ -460,10 +469,12 @@ namespace DD4hep {
     public:
       typedef T UserData;
     protected:
+      /// Property: collection name. If not set default is readout name!
+      std::string m_collectionName;
       /// Collection identifier
-      size_t    m_collectionID;
+      size_t      m_collectionID;
       /// User data block
-      UserData  m_userData;
+      UserData    m_userData;
 
     public:
       /// Standard , initializing constructor
@@ -473,12 +484,31 @@ namespace DD4hep {
                             Geometry::LCDD& lcdd);
       /// Default destructor
       virtual ~Geant4SensitiveAction();
+
+      /// Define collections created by this sensitivie action object
+      virtual void defineCollections();
+
+      /// Define readout specific hit collection with volume ID filtering
+      /** 
+       *  Convenience function. To be called by specialized sensitive actions inheriting this class.
+       *
+       *  - If the property CollectionName ist NOT set, one default collection is declared,
+       *    with the readout name as the collection name.
+       *  - If the property CollectionName is set, the readout structure is searched for
+       *    the corresponding entry and a collection with the corrsponding name is declared.
+       *    At the same time a VolumeID filter is injected at the front of the sensitive's 
+       *    filter queue to ONLY act on volume IDs matching this criterium.
+       */
+      template <typename HIT> size_t declareReadoutFilteredCollection();
+
+      /// Define readout specific hit collection. matching name must be present in readout structure
+      template <typename HIT> 
+      size_t defineReadoutCollection(const std::string collection_name);
+
       /// Initialization overload for specialization
       virtual void initialize();
       /// Finalization overload for specialization
       virtual void finalize();
-      /// Define collections created by this sensitivie action object
-      virtual void defineCollections() {}
       /// G4VSensitiveDetector interface: Method invoked at the begining of each event.
       virtual void begin(G4HCofThisEvent* hce);
       /// G4VSensitiveDetector interface: Method invoked at the end of each event.

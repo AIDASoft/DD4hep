@@ -70,6 +70,8 @@ public:
 	/// Destructor
 	virtual ~Segmentation();
 
+  /// Add subsegmentation. Call only valid for Multi-segmentations. Default implementation throws an exception
+  virtual void addSubsegmentation(long key_min, long key_max, Segmentation* entry);
 	/// Determine the local position based on the cell ID
 	virtual Vector3D position(const CellID& cellID) const = 0;
 	/// Determine the cell ID based on the position
@@ -141,7 +143,7 @@ protected:
 	static int positionToBin(double position, double cellSize, double offset = 0.);
 
 	/// Helper method to convert a bin number to a 1D position given a vector of binBoundaries
-        static double binToPosition(CellID bin, std::vector<double> const& cellBoundaries, double offset = 0.);
+  static double binToPosition(CellID bin, std::vector<double> const& cellBoundaries, double offset = 0.);
 	/// Helper method to convert a 1D position to a cell ID given a vector of binBoundaries
 	static int positionToBin(double position, std::vector<double> const& cellBoundaries, double offset = 0.);
 

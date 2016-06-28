@@ -155,6 +155,9 @@ namespace DD4hep {
         void add(T* obj) {
           m_v.push_back(obj);
         }
+        void add_front(T* obj) {
+          m_v.insert(m_v.begin(), obj);
+        }
         operator const _V&() const {
           return m_v;
         }

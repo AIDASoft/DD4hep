@@ -121,7 +121,23 @@ void Geant4Sensitive::adopt(Geant4Filter* filter) {
     m_filters.add(filter);
     return;
   }
-  throw runtime_error("Geant4SensDetActionSequence: Attempt to add invalid sensitive filter!");
+  throw runtime_error("Geant4Sensitive: Attempt to add invalid sensitive filter!");
+}
+
+/// Add an actor responding to all callbacks. Sequence takes ownership.
+void Geant4Sensitive::adoptFilter_front(Geant4Action* action)   {
+  Geant4Filter* filter = dynamic_cast<Geant4Filter*>(action);
+  adopt_front(filter);
+}
+
+/// Add an actor responding to all callbacks. Sequence takes ownership.
+void Geant4Sensitive::adopt_front(Geant4Filter* filter) {
+  if (filter) {
+    filter->addRef();
+    m_filters.add_front(filter);
+    return;
+  }
+  throw runtime_error("Geant4Sensitive: Attempt to add invalid sensitive filter!");
 }
 
 /// Callback before hit processing starts. Invoke all filters.
@@ -163,6 +179,10 @@ Geant4HitCollection* Geant4Sensitive::collection(size_t which) {
 /// Retrieve the hits collection associated with this detector by its collection identifier
 Geant4HitCollection* Geant4Sensitive::collectionByID(size_t id) {
   return sequence().collectionByID(id);
+}
+
+/// Define collections created by this sensitivie action object
+void Geant4Sensitive::defineCollections() {
 }
 
 /// Method invoked at the begining of each event.
@@ -284,6 +304,7 @@ size_t Geant4SensDetActionSequence::Geant4SensDetActionSequence::defineCollectio
   size_t count = 0;
   m_detector = sens_det;
   m_actors(&Geant4Sensitive::setDetector, sens_det);
+  m_actors(&Geant4Sensitive::defineCollections);
   for (HitCollections::const_iterator i = m_collections.begin(); i != m_collections.end(); ++i) {
     sens_det->defineCollection((*i).first);
     ++count;

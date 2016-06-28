@@ -467,14 +467,24 @@ namespace DD4hep {
       /// Access attribute values: phi_tilt
       double phi_tilt() const;
       /// Access attribute values: nphi
-      int nphi() const;
+      int    nphi() const;
       /// Access attribute values: rc
       double rc() const;
 
       /// Access attribute values: zstart
       double zstart() const;
       /// Access attribute values: nz
-      int nz() const;
+      int    nz() const;
+      /// Access attribute values: key
+      int    key() const;
+      /// Access attribute values: key_min
+      int    key_min() const;
+      /// Access attribute values: key_max
+      int    key_max() const;
+      /// Access attribute values: key_val
+      int    key_val() const;
+      /// Access attribute values: key_value
+      int    key_value() const;
 
       /// Access attribute values: start
       double start() const;
@@ -490,9 +500,9 @@ namespace DD4hep {
       double outer_field() const;
 
       /// Access attribute values: visible
-      bool visible() const;
+      bool   visible() const;
       /// Access attribute values: show_daughters
-      bool show_daughters() const;
+      bool   show_daughters() const;
 
       /// Access min/max parameters: cut
       double cut() const;

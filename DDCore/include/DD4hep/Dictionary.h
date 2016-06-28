@@ -179,9 +179,11 @@ template class DD4hep::Handle<TNamed>;
 #pragma link C++ class DD4hep::Geometry::Segmentation+;
 #pragma link C++ class DD4hep::Geometry::SegmentationObject+;
 #pragma link C++ class DD4hep::Handle<DD4hep::Geometry::SegmentationObject>+;
+#pragma link C++ class DD4hep::Geometry::HitCollection+;
 #pragma link C++ class DD4hep::Geometry::Readout+;
 #pragma link C++ class DD4hep::Geometry::ReadoutObject+;
 #pragma link C++ class DD4hep::Handle<DD4hep::Geometry::ReadoutObject>+;
+#pragma link C++ class vector<DD4hep::Geometry::HitCollection>+;
 #pragma link C++ class vector<DD4hep::Geometry::Readout>+;
 #pragma link C++ class vector<DD4hep::Geometry::IDDescriptor>+;
 

@@ -33,9 +33,14 @@ namespace DD4hep {
     // Forward declarations
     class DetElement;
     class ReadoutObject;
+    class HitCollection;
 
     /// Handle to the implementation of the readout structure of a subdetector
     /**
+     *   If there is no explicit hit collection defined, by default one single
+     *   hit collection is defined by the name of the readout itself.
+     *   If hit collections are defined, ALL must be defined.
+     *
      *   \author  M.Frank
      *   \version 1.0
      *   \ingroup DD4HEP_GEOMETRY
@@ -44,6 +49,7 @@ namespace DD4hep {
     public:
       /// Implementation type
       typedef ReadoutObject Object;
+      typedef HitCollection Collection;
     public:
       /// Default constructor
       Readout()
@@ -71,6 +77,10 @@ namespace DD4hep {
         m_element = ro.m_element;
         return *this;
       }
+      /// Access explicit names of hit collections if present
+      std::vector<std::string> collectionNames()  const;
+      /// Access hit collections if present
+      std::vector<const HitCollection*> collections()  const;
       /// Assign IDDescription to readout structure
       void setIDDescriptor(const Ref_t& spec) const;
       /// Access IDDescription structure

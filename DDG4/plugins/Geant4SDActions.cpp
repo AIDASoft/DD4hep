@@ -41,8 +41,8 @@ namespace DD4hep {
      */
 
     /// Define collections created by this sensitivie action object
-    template <> void Geant4SensitiveAction<Geant4Tracker>::defineCollections() {
-      m_collectionID = defineCollection<Geant4Tracker::Hit>(m_sensitive.readout().name());
+    template <> void Geant4SensitiveAction<Geant4Tracker>::defineCollections()    {
+      m_collectionID = declareReadoutFilteredCollection<Geant4Tracker::Hit>();
     }
 
     /// Method for generating hit(s) using the information of G4Step object.
@@ -98,8 +98,9 @@ namespace DD4hep {
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4Calorimeter>::defineCollections() {
-      m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
+      m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
+
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<Geant4Calorimeter>::process(G4Step* step,G4TouchableHistory*) {
       typedef Geant4Calorimeter::Hit Hit;
@@ -135,8 +136,9 @@ namespace DD4hep {
         hit = new Hit(global);
         hit->cellID = cell;
         coll->add(hit);
-        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
-                c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
+        printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s  [%s]",
+                c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str(),
+                coll->GetName().c_str());
         if ( 0 == hit->cellID )  { // for debugging only!
           hit->cellID = cellID(step);
           except("+++ Invalid CELL ID for hit!");
@@ -173,7 +175,7 @@ namespace DD4hep {
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4OpticalCalorimeter>::defineCollections() {
-      m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
+      m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<Geant4OpticalCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
@@ -235,7 +237,7 @@ namespace DD4hep {
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::defineCollections() {
-      m_collectionID = defineCollection<Geant4Calorimeter::Hit>(m_sensitive.readout().name());
+      m_collectionID = declareReadoutFilteredCollection<Geant4Calorimeter::Hit>();
     }
     /// Method for generating hit(s) using the information of G4Step object.
     template <> bool Geant4SensitiveAction<Geant4ScintillatorCalorimeter>::process(G4Step* step,G4TouchableHistory*) {
@@ -460,7 +462,7 @@ namespace DD4hep {
 
     /// Define collections created by this sensitivie action object
     template <> void Geant4SensitiveAction<TrackerCombine>::defineCollections() {
-      m_collectionID = defineCollection<Geant4Tracker::Hit>(m_sensitive.readout().name());
+      m_collectionID = declareReadoutFilteredCollection<Geant4Tracker::Hit>();
     }
 
     /// Method for generating hit(s) using the information of G4Step object.

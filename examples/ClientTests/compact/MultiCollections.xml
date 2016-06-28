@@ -1,0 +1,64 @@
+<lccdd xmlns:compact="http://www.lcsim.org/schemas/compact/1.0" 
+       xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+       xs:noNamespaceSchemaLocation="http://www.lcsim.org/schemas/compact/1.0/compact.xsd">
+
+  <info name="Nested_Detectors_test"
+        title="Test for nested detector descriptions"
+        author="Markus Frank"
+        url="None"
+        status="development"
+        version="$Id: compact.xml 1374 2014-11-05 10:49:55Z markus.frank@cern.ch $">
+    <comment>Test for nested detector descriptions</comment>        
+  </info>
+
+  <includes>
+    <gdmlFile ref="${DDDetectors_dir}/elements.xml"/>
+    <gdmlFile ref="${DDDetectors_dir}/materials.xml"/>
+  </includes>
+  
+  <define>
+    <constant name="world_side" value="30000*mm"/>
+    <constant name="world_x" value="world_side"/>
+    <constant name="world_y" value="world_side"/>
+    <constant name="world_z" value="world_side"/>
+    <constant name="DDDetectors_dir" value="${DD4hepINSTALL}/DDDetectors/compact" type="string"/>;
+    <constant name="SiD_dir" value="${DDDetectors_dir}/SiD" type="string"/>;
+  </define>
+
+  <display>
+    <vis name="InvisibleNoDaughters"      showDaughters="false" visible="false"/>
+    <vis name="InvisibleWithDaughters"    showDaughters="true" visible="false"/>
+    <vis name="BlueVis"        alpha="1"   r="0.0" g="0.0" b="1.0" showDaughters="true" visible="true"/>
+  </display>
+
+  <!-- ================================================================== -->
+  <!--     Simple calorimeter with a couple of layers                     -->
+  <!-- ================================================================== -->
+  <detectors>
+    <detector id="13" name="TestCal" reflect="true" type="DD4hep_CylindricalEndcapCalorimeter" readout="TestCalHits" vis="BlueVis">
+      <comment>Test Calorimeter</comment>
+      <dimensions inner_r = "0.1*m" outer_r="2*m" inner_z = "2*m"/>
+      <layer repeat="15" >
+	<slice material = "Silicon" thickness = "0.032*cm" sensitive = "yes" />
+	<slice material = "Copper"  thickness = "0.005*cm" />
+	<slice material = "Air"     thickness = "0.033*cm" />
+      </layer>
+    </detector>
+  </detectors>
+
+  <!-- ================================================================== -->
+  <!--     Associated readout structures for the calorimeter              -->
+  <!-- ================================================================== -->
+  <readouts>
+    <readout name="TestCalHits">
+      <segmentation type="CartesianGridXY" grid_size_x="0.1*cm" grid_size_y="0.1*cm" />
+      <hits_collections>
+        <hits_collection name="TestCallInnerLayerHits"  key="layer" key_value="0x1"/>
+        <hits_collection name="TestCallMiddleLayerHits" key="layer" key_min="2"   key_max="5"/>
+        <hits_collection name="TestCallOuterLayerHits"  key="layer" key_min="0x6" key_max="0xFF"/>
+      </hits_collections>
+      <id>system:8,barrel:3,layer:8,slice:8,x:32:-16,y:-16</id>
+    </readout>
+  </readouts>
+
+</lccdd>

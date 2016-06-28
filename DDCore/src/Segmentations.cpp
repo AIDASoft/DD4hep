@@ -108,6 +108,7 @@ Segmentation::Segmentation(const string& typ, const string& nam) :
   BaseSegmentation* s = DDSegmentation::SegmentationFactory::instance()->create(typ);
   if (s != 0) {
     assign(new Object(s), nam, "");
+    if ( !nam.empty() ) s->setName(nam);
   } else {
     throw runtime_error("FAILED to create segmentation: " + typ + ". Missing factory method for: " + typ + "!");
   }

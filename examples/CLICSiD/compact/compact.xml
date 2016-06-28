@@ -234,10 +234,10 @@
     <vis name="HcalBarrelVis"          alpha="0.1" r="1"    g="1"    b="0.1" showDaughters="true" visible="true"/>
     <vis name="HcalBarrelStavesVis"    alpha="0.1" r="1"    g="0"    b="0.3" showDaughters="true" visible="true"/>
     <vis name="HcalBarrelLayerVis"     alpha="0.5" r="1"    g="0"    b="0.5" showDaughters="true" visible="true"/>
-    <vis name="HcalBarrelSensorVis"    alpha="1" r="1"    g="1"    b="0.7" showDaughters="true" visible="true"/>
+    <vis name="HcalBarrelSensorVis"    alpha="1"   r="1"    g="1"    b="0.7" showDaughters="true" visible="true"/>
 
     <vis name="HcalEndcapVis"          alpha="0.1" r="1"    g="1"    b="0.1" showDaughters="false" visible="true"/>
-    <vis name="HcalEndcapLayerVis"     alpha="1" r="1"    g="0"    b="0.5" showDaughters="false" visible="true"/>
+    <vis name="HcalEndcapLayerVis"     alpha="1"   r="1"    g="0"    b="0.5" showDaughters="false" visible="true"/>
     
     <vis name="SolenoidBarrelLayerVis" alpha="1" r="0"    g="0.3"  b="0.3" showDaughters="false" visible="true"/>
     <vis name="SolenoidCoilEndsVis"    alpha="1" r="0"    g="0.9"  b="0.9" showDaughters="false" visible="true"/>

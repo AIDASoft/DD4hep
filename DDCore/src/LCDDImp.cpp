@@ -217,6 +217,7 @@ LCDD& LCDDImp::addDetector(const Ref_t& ref_det) {
     }
   }
   m_detectors.append(ref_det);
+  det_element->flag |= DetElement::Object::IS_TOP_LEVEL_DETECTOR;
   Volume volume = det_element.placement()->GetMotherVolume();
   if ( volume == m_worldVol )  {
     printout(DEBUG,"LCDD","Added detector %s to the world instance.",det_element.name());

@@ -90,6 +90,8 @@ namespace DD4hep {
         HAVE_WORLD_TRAFO = 1<<0,
         HAVE_PARENT_TRAFO = 1<<1,
         HAVE_REFERENCE_TRAFO = 1<<2,
+        HAVE_SENSITIVE_DETECTOR = 1<<29,
+        IS_TOP_LEVEL_DETECTOR = 1<<30,
         HAVE_OTHER = 1<<31
       };
 
@@ -101,7 +103,7 @@ namespace DD4hep {
       int id;
       /// Flag to process hits
       int combineHits;
-     /// Flag to encode detector types
+      /// Flag to encode detector types
       unsigned int typeFlag;
       /// Full path to this detector element. May be invalid
       std::string path;

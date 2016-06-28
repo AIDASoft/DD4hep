@@ -33,6 +33,7 @@ namespace {
   struct Populator {
     typedef PlacedVolume::VolIDs VolIDs;
     typedef vector<TGeoNode*> Chain;
+    typedef pair<VolumeID, VolumeID> Encoding;
     /// Reference to the LCDD instance
     LCDD& m_lcdd;
     /// Reference to the volume manager to be populated
@@ -47,14 +48,22 @@ namespace {
     /// Populate the Volume manager
     void populate(DetElement e) {
       const DetElement::Children& c = e.children();
+      SensitiveDetector parent_sd;
+      if ( e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR )  {
+        parent_sd = m_lcdd.sensitiveDetector(e.name());
+      }
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
         DetElement de = (*i).second;
         PlacedVolume pv = de.placement();
         if (pv.isValid()) {
           VolIDs ids;
           Chain chain;
-          SensitiveDetector sd;
+          SensitiveDetector sd = parent_sd;
           m_entries.clear();
+#if 0
+          Encoding coding;
+          scanPhysicalVolume(de, de, pv, coding, ids, sd, chain);
+#endif
           scanPhysicalVolume(de, de, pv, ids, sd, chain);
           continue;
         }
@@ -78,6 +87,96 @@ namespace {
           return de;
       }
       return DetElement();
+    }
+    /// Scan a single physical volume and look for sensitive elements below
+    size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
+                              Encoding parent_encoding, VolIDs ids, SensitiveDetector& sd, Chain& chain)
+    {
+      TGeoNode* node = pv.ptr();
+      size_t count = 0;
+      if (node) {
+        bool got_readout = false;
+        Volume vol = pv.volume();
+        const VolIDs& pv_ids = pv.volIDs();
+        Encoding volume_encoding = parent_encoding;
+        if ( (parent->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )  {
+          sd = m_lcdd.sensitiveDetector(parent.name());
+        }
+        else if ( (e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )  {
+          sd = m_lcdd.sensitiveDetector(e.name());
+        }
+        else if ( vol.isSensitive() )  {
+          sd = vol.sensitiveDetector();
+        }
+        chain.push_back(node);
+        if ( sd.isValid() )   {
+          Readout ro = sd.readout();
+          if ( ro.isValid() )   {
+            got_readout = true;
+            if ( ids.empty() )
+              volume_encoding = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
+            else  {
+              ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
+              volume_encoding = update_encoding(ro.idSpec(), ids, parent_encoding);              
+              ids.clear();
+            }
+            add_entry(sd, parent, e, node, volume_encoding, chain);
+            ++count;
+          }
+          else {
+            printout(WARNING, "VolumeManager",
+                     "%s: Strange constellation volume %s is sensitive, but has no readout! sd:%p",
+                     parent.name(), pv.volume().name(), sd.ptr());
+          }
+        }
+        if ( !got_readout && !pv_ids.empty() )   {
+          ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
+        }
+        for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
+          TGeoNode* daughter = node->GetDaughter(idau);
+          PlacedVolume placement(daughter);
+          if ( placement.data() ) {
+            size_t cnt;
+            PlacedVolume pv_dau = Ref_t(daughter);
+            DetElement de_dau = findElt(e, daughter);
+            if ( de_dau.isValid() ) {
+              Chain dau_chain;
+              cnt = scanPhysicalVolume(parent, de_dau, pv_dau, volume_encoding, ids, sd, dau_chain);
+            }
+            else {
+              cnt = scanPhysicalVolume(parent, e, pv_dau, volume_encoding, ids, sd, chain);
+            }
+            // There was a sensitive daughter volume, also add the parent entry.
+            if ( !got_readout && count == 0 && cnt > 0 && sd.isValid() && !pv_ids.empty()) {
+              add_entry(sd, parent, e, node, volume_encoding, chain);
+            }
+            count += cnt;
+          }
+          else  {
+            throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+
+                                " [Internal error -- bad detector constructor]");
+          }
+        }
+        if ( count == 0 )   { 
+          sd = SensitiveDetector(0);
+        }
+        else if ( count > 0 && sd.isValid() )   {
+          // We recuperate volumes from lower levels by reusing the subdetector
+          // This only works if there is exactly one sensitive detector per subdetector!
+          // I hate this, but I could not talk Frank out of this!  M.F.
+          Readout ro = sd.readout();
+          if ( ro.isValid() ) {
+            IDDescriptor iddesc = ro.idSpec();
+            Encoding det_encoding = encoding(iddesc,ids);
+            printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
+                     got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
+                     (void*)det_encoding.first, (void*)det_encoding.second);
+            e.object<DetElement::Object>().volumeID = det_encoding.first;
+          }
+        }
+        chain.pop_back();
+      }
+      return count;
     }
     /// Scan a single physical volume and look for sensitive elements below
     size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
@@ -140,7 +239,7 @@ namespace {
           Readout ro = sd.readout();
           if ( ro.isValid() ) {
             IDDescriptor iddesc = ro.idSpec();
-            pair<VolumeID, VolumeID> det_encoding = encoding(iddesc,ids);
+            Encoding det_encoding = encoding(iddesc,ids);
             printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
                      got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
                      (void*)det_encoding.first, (void*)det_encoding.second);
@@ -153,7 +252,20 @@ namespace {
     }
 
     /// Compute the encoding for a set of VolIDs within a readout descriptor
-    static pair<VolumeID, VolumeID> encoding(const IDDescriptor iddesc, const VolIDs& ids)  {
+    static Encoding update_encoding(const IDDescriptor iddesc, const VolIDs& ids, const Encoding& initial)  {
+      VolumeID volume_id = initial.first, mask = initial.second;
+      for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
+        const PlacedVolume::VolID& id = (*i);
+        IDDescriptor::Field f = iddesc.field(id.first);
+        VolumeID msk = f->mask();
+        int offset   = f->offset();
+        volume_id   |= f->value(id.second << offset) << offset;
+        mask        |= msk;
+      }
+      return make_pair(volume_id, mask);
+    }
+    /// Compute the encoding for a set of VolIDs within a readout descriptor
+    static Encoding encoding(const IDDescriptor iddesc, const VolIDs& ids)  {
       VolumeID volume_id = 0, mask = 0;
       for (VolIDs::const_iterator i = ids.begin(); i != ids.end(); ++i) {
         const PlacedVolume::VolID& id = (*i);
@@ -165,13 +277,47 @@ namespace {
       }
       return make_pair(volume_id, mask);
     }
+
+    void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, 
+                   const TGeoNode* n, const Encoding& code, Chain& nodes) 
+    {
+      if ( sd.isValid() )   {
+        if (m_entries.find(code.first) == m_entries.end()) {
+          Readout       ro           = sd.readout();
+          string        sd_name      = sd.name();
+          DetElement    sub_detector = m_lcdd.detector(sd_name);
+          VolumeManager section      = m_volManager.addSubdetector(sub_detector, ro);
+          // This is the block, we effectively have to save for each physical volume with a VolID
+          VolumeManager::Context* context = new VolumeManager::Context;
+          context->identifier = code.first;
+          context->mask       = code.second;
+          context->detector   = parent;
+          context->placement  = PlacedVolume(n);
+          context->element    = e;
+          //context->volID      = ids;
+          context->path       = nodes;
+          for (size_t i = nodes.size(); i > 1; --i) {   // Omit the placement of the parent DetElement
+            TGeoMatrix* m = nodes[i - 1]->GetMatrix();
+            context->toWorld.MultiplyLeft(m);
+          }
+          context->toDetector = context->toWorld;
+          context->toDetector.MultiplyLeft(nodes[0]->GetMatrix());
+          context->toWorld.MultiplyLeft(&parent.worldTransformation());
+          if (!section.adoptPlacement(context)) {
+            print_node(sd, parent, e, n, code, nodes);
+          }
+          m_entries.insert(code.first);
+        }
+      }
+    }
+
     void add_entry(SensitiveDetector sd, DetElement parent, DetElement e, 
                    const TGeoNode* n, const VolIDs& ids, Chain& nodes) 
     {
       if ( sd.isValid() )   {
         Readout ro = sd.readout();
         IDDescriptor iddesc = ro.idSpec();
-        pair<VolumeID, VolumeID> code = encoding(iddesc, ids);
+        Encoding code = encoding(iddesc, ids);
 
         if (m_entries.find(code.first) == m_entries.end()) {
           string        sd_name      = sd.name();
@@ -209,7 +355,7 @@ namespace {
       const IDDescriptor& en = ro.idSpec();
       PlacedVolume pv = Ref_t(n);
       bool sensitive = pv.volume().isSensitive();
-      pair<VolumeID, VolumeID> code = encoding(en, ids);
+      Encoding code = encoding(en, ids);
       VolumeID volume_id = code.first;
 
       //if ( !sensitive ) return;
@@ -226,6 +372,30 @@ namespace {
             << " [" << f->offset() << "," << f->width() << "] ";
       }
       log << " Sensitive:" << yes_no(sensitive);
+      printout(DEBUG, "VolumeManager", log.str().c_str());
+#if 0
+      log.str("");
+      log << s_count << ": " << e.name() << " Detector GeoNodes:";
+      for(vector<const TGeoNode*>::const_iterator j=nodes.begin(); j!=nodes.end();++j)
+        log << (void*)(*j) << " ";
+      printout(DEBUG,"VolumeManager",log.str().c_str());
+#endif
+    }
+    void print_node(SensitiveDetector sd, DetElement parent, DetElement e,
+                    const TGeoNode* n, const Encoding& code, const Chain& /* nodes */) const
+    {
+      static int s_count = 0;
+      Readout ro = sd.readout();
+      PlacedVolume pv = Ref_t(n);
+      bool sensitive = pv.volume().isSensitive();
+      VolumeID volume_id = code.first;
+
+      //if ( !sensitive ) return;
+      ++s_count;
+      stringstream log;
+      log << s_count << ": " << parent.name() << ": " << e.name() 
+          << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
+          << (void*) volume_id << " Sensitive:" << yes_no(sensitive);
       printout(DEBUG, "VolumeManager", log.str().c_str());
 #if 0
       log.str("");

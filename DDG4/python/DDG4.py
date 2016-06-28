@@ -484,36 +484,79 @@ class Geant4:
           sdtyp = self.sensitive_types[typ]
         print '+++  %-32s type:%-12s  --> Sensitive type: %s'%(o.name(), typ, sdtyp,)
 
-  def setupDetector(self,name,action):
+  def setupSensitiveSequencer(self, name, action):
+    if isinstance( action, tuple ):
+      sensitive_type = action[0]
+    else:
+      sensitive_type = action
+    seq = SensitiveSequence(self.kernel(),'Geant4SensDetActionSequence/'+name)
+    seq.enableUI()
+    return seq
+   
+  def setupDetector(self,name,action,collections=None):
     #fg: allow the action to be a tuple with parameter dictionary
     sensitive_type = ""
     parameterDict = {}
-    if isinstance( action, tuple ):
+    if isinstance(action,tuple) or isinstance(action,list):
       sensitive_type = action[0]
       parameterDict = action[1]
     else:
       sensitive_type = action
-    
-    seq = SensitiveSequence(self.kernel(),'Geant4SensDetActionSequence/'+name)
-    act = SensitiveAction(self.kernel(),sensitive_type+'/'+name+'Handler',name)
-    seq.enableUI()
-    act.enableUI()
-    seq.add(act)
-    for parameter, value in parameterDict.iteritems():
-      setattr( act, parameter, value)
-    return (seq,act)
 
-  def setupCalorimeter(self,name,type=None):
+    seq = SensitiveSequence(self.kernel(),'Geant4SensDetActionSequence/'+name)
+    seq.enableUI()
+    acts = []
+    if collections is None:
+      sd = self.lcdd.sensitiveDetector(name)
+      ro = sd.readout()
+      #print dir(ro)
+      collections = ro.collectionNames()
+      if len(collections)==0:
+        act = SensitiveAction(self.kernel(),sensitive_type+'/'+name+'Handler',name)
+        for parameter, value in parameterDict.iteritems():
+          setattr( act, parameter, value)
+        acts.append(act)
+
+    # Work down the collections if present
+    if collections is not None:
+      for coll in collections:
+        params = {}
+        if isinstance(coll,tuple) or isinstance(coll,list):
+          if len(coll)>2:
+            coll_nam = coll[0]
+            sensitive_type = coll[1]
+            params = coll[2]
+          elif len(coll)>1:
+            coll_nam = coll[0]
+            sensitive_type = coll[1]
+          else:
+            coll_nam = coll[0]
+        else:
+          coll_nam = coll
+        act = SensitiveAction(self.kernel(),sensitive_type+'/'+coll_nam+'Handler',name)
+        act.CollectionName = coll_nam
+        for parameter, value in params.iteritems():
+          setattr( act, parameter, value)
+        acts.append(act)
+
+    for act in acts:
+      act.enableUI()
+      seq.add(act)
+    if len(acts)>1:
+      return (seq,acts)
+    return (seq,acts[0])
+
+  def setupCalorimeter(self,name,type=None,collections=None):
     sd = self.lcdd.sensitiveDetector(name)
     sd.setType('calorimeter')
     if type is None: type = self.sensitive_types['calorimeter']
-    return self.setupDetector(name,type)
+    return self.setupDetector(name,type,collections)
 
-  def setupTracker(self,name,type=None):
+  def setupTracker(self,name,type=None,collections=None):
     sd = self.lcdd.sensitiveDetector(name)
     sd.setType('tracker')
     if type is None: type = self.sensitive_types['tracker']
-    return self.setupDetector(name,type)
+    return self.setupDetector(name,type,collections)
 
   def setupTrackingField(self, name='MagFieldTrackingSetup', stepper='HelixSimpleRunge', equation='Mag_UsualEqRhs',prt=False):
     import SystemOfUnits

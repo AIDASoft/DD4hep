@@ -4,6 +4,22 @@ DD4hep  ----  Release Notes
 =================================
 
 
+2016-06-24 M.Frank
+  Implement multiple segmentations.
+  Though one readout objects (associated to one DetElement) may only have on segmentation,
+  The MultiSegmentation type allows to have several sub-segmentations, which can be chosen
+  from.
+  Please see examples/ClientTests/*/MultiSegmentations
+
+  At the same time allow the readout object to defined multiple collections through
+  the IDDescriptor.
+  Please see examples/ClientTests/*/MultiCollections
+
+  The combined example can be found in
+  Please see examples/ClientTests/*/NestedSegmentations
+
+
+
 2016-05-03 M.Frank
   Green light is ON. You may use revision 2237 and above.
 

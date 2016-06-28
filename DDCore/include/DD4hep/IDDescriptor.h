@@ -44,12 +44,12 @@ namespace DD4hep {
      */
     class IDDescriptor: public Handle<IDDescriptorObject> {
     public:
-      typedef IDDescriptorObject Object;
-      typedef BitFieldValue* Field;
-      typedef std::vector<std::pair<std::string, Field> > FieldMap;
+      typedef IDDescriptorObject                           Object;
+      typedef BitFieldValue*                               Field;
+      typedef std::vector<std::pair<std::string, Field> >  FieldMap;
       typedef std::vector<std::pair<size_t, std::string> > FieldIDs;
-      typedef std::pair<Field, VolumeID> VolIDField;
-      typedef std::vector<VolIDField> VolIDFields;
+      typedef std::pair<Field, VolumeID>                   VolIDField;
+      typedef std::vector<VolIDField>                      VolIDFields;
 
     public:
       /// Default constructor

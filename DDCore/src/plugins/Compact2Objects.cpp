@@ -20,6 +20,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/ObjectsInterna.h"
 
 #include "XML/DocumentHandler.h"
 #include "XML/Utilities.h"
@@ -57,6 +58,7 @@ namespace DD4hep {
   template <> void Converter<AlignmentEntry>::operator()(xml_h e) const;
   template <> void Converter<Region>::operator()(xml_h e) const;
   template <> void Converter<Readout>::operator()(xml_h e) const;
+  template <> void Converter<Segmentation>::operator()(xml_h e) const;
   template <> void Converter<LimitSet>::operator()(xml_h e) const;
   template <> void Converter<Property>::operator()(xml_h e) const;
   template <> void Converter<CartesianField>::operator()(xml_h e) const;
@@ -533,6 +535,87 @@ template <> void Converter<Region>::operator()(xml_h elt) const {
   lcdd.addRegion(region);
 }
 
+
+/** Specialized converter for compact readout objects.
+ *
+ * <readout name="HcalBarrelHits">
+ *   <segmentation type="RegularNgonCartesianGridXY" gridSizeX="3.0*cm" gridSizeY="3.0*cm" />
+ *   <id>system:6,barrel:3,module:4,layer:8,slice:5,x:32:-16,y:-16</id>
+ * </readout>
+ */
+template <> void Converter<Segmentation>::operator()(xml_h seg) const {
+  string type = seg.attr<string>(_U(type));
+  string name = seg.hasAttr(_U(name)) ? seg.attr<string>(_U(name)) : string();
+  SegmentationObject** object = _option<SegmentationObject*>();
+  Segmentation segment(type, name);
+  if (segment.isValid()) {
+    typedef Segmentation::Parameters _PARS;
+    const _PARS& pars = segment.parameters();
+    for(_PARS::const_iterator it = pars.begin(); it != pars.end(); ++it) {
+      Segmentation::Parameter p = *it;
+      XML::Strng_t pNam(p->name());
+      if ( seg.hasAttr(pNam) ) {
+        string pType = p->type();
+        if ( pType.compare("int") == 0 ) {
+          typedef DDSegmentation::TypedSegmentationParameter<int> ParInt;
+          static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(pNam));
+        } else if ( pType.compare("float") == 0 ) {
+          typedef DDSegmentation::TypedSegmentationParameter<float> ParFloat;
+          static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(pNam));
+        } else if ( pType.compare("doublevec") == 0 ) {
+          vector<double> valueVector;
+          string par = seg.attr<string>(pNam);
+          printout(DEBUG, "Compact", "++ Converting this string structure: %s.",par.c_str());
+          vector<string> elts = DDSegmentation::splitString(par);
+          for (vector<string>::const_iterator j = elts.begin(); j != elts.end(); ++j) {
+            if ((*j).empty()) continue;
+            valueVector.push_back(_toDouble((*j)));
+          }
+          typedef DDSegmentation::TypedSegmentationParameter< vector<double> > ParDouVec;
+          static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
+        } else if ( pType.compare("double" ) == 0) {
+          typedef DDSegmentation::TypedSegmentationParameter<double>ParDouble;
+          static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(pNam));
+        } else {
+          p->setValue(seg.attr<string>(pNam));
+        }
+      } else if (not p->isOptional()) {
+        throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
+      }
+    }
+    long key_min = 0, key_max = 0;
+    DDSegmentation::Segmentation* base = segment->segmentation;
+    for(xml_coll_t sub(seg,_U(segmentation)); sub; ++sub)   {
+      SegmentationObject* sub_object = 0;
+      Converter<Segmentation> sub_conv(lcdd,param,&sub_object);
+      sub_conv(sub);
+      if ( sub_object )  {
+        xml_dim_t s(sub);
+        if ( sub.hasAttr(_U(key_value)) ) {
+          key_min = key_max = s.key_value();
+        }
+        else if ( sub.hasAttr(_U(key_min)) && sub.hasAttr(_U(key_max)) )  {
+          key_min = s.key_min();
+          key_max = s.key_max();
+        }
+        else  {
+          stringstream tree;
+          XML::dump_tree(sub,tree);
+          throw_print("Nested segmentations: Invalid key specification:"+tree.str());
+        }
+        printout(DEBUG,"Compact","++ Segmentation [%s/%s]: Add sub-segmentation %s [%s]",
+                 name.c_str(), type.c_str(), 
+                 sub_object->segmentation->name().c_str(),
+                 sub_object->segmentation->type().c_str());
+        base->addSubsegmentation(key_min, key_max, sub_object->segmentation);
+        sub_object->segmentation = 0;
+        delete sub_object;
+      }
+    }
+  }
+  if ( object ) *object = segment.ptr();
+}
+
 /** Specialized converter for compact readout objects.
  *
  * <readout name="HcalBarrelHits">
@@ -547,47 +630,14 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
 
   printout(DEBUG, "Compact", "++ Converting readout  structure: %s.",ro.name());
   if (seg) {   // Segmentation is not mandatory!
-    string type = seg.attr<string>(_U(type));
-    Segmentation segment(type, name);
-    if (segment.isValid()) {
-      typedef Segmentation::Parameters _PARS;
-      segment->parameters();
-      const _PARS& parameters = segment.parameters();
-      _PARS::const_iterator it;
-      for (it = parameters.begin(); it != parameters.end(); ++it) {
-        Segmentation::Parameter p = *it;
-	XML::Strng_t pNam(p->name());
-        if ( seg.hasAttr(pNam) ) {
-          string pType = p->type();
-          if ( pType.compare("int") == 0 ) {
-            typedef DDSegmentation::TypedSegmentationParameter<int> ParInt;
-            static_cast<ParInt*>(p)->setTypedValue(seg.attr<int>(pNam));
-          } else if ( pType.compare("float") == 0 ) {
-            typedef DDSegmentation::TypedSegmentationParameter<float> ParFloat;
-            static_cast<ParFloat*>(p)->setTypedValue(seg.attr<float>(pNam));
-          } else if ( pType.compare("doublevec") == 0 ) {
-            vector<double> valueVector;
-            string param = seg.attr<string>(pNam);
-            printout(DEBUG, "Compact", "++ Converting this string structure: %s.",param.c_str());
-            vector<string> elts = DDSegmentation::splitString(param);
-            for (vector<string>::const_iterator j = elts.begin(); j != elts.end(); ++j) {
-              if ((*j).empty()) continue;
-              valueVector.push_back(_toDouble((*j)));
-            }
-            typedef DDSegmentation::TypedSegmentationParameter< vector<double> > ParDouVec;
-            static_cast<ParDouVec*>(p)->setTypedValue(valueVector);
-          } else if ( pType.compare("double" ) == 0) {
-            typedef DDSegmentation::TypedSegmentationParameter<double>ParDouble;
-            static_cast<ParDouble*>(p)->setTypedValue(seg.attr<double>(pNam));
-          } else {
-            p->setValue(seg.attr<string>(pNam));
-          }
-        } else if (not p->isOptional()) {
-          throw_print("FAILED to create segmentation: " + type + ". Missing mandatory parameter: " + p->name() + "!");
-        }
-      }
+    SegmentationObject* object = 0;
+    Converter<Segmentation> converter(lcdd,param,&object);
+    converter(seg);
+    if ( object )   {
+      object->setName(name);
+      Segmentation segment(object);
+      ro.setSegmentation(segment);
     }
-    ro.setSegmentation(segment);
   }
   xml_h id = e.child(_U(id));
   if (id) {
@@ -596,6 +646,36 @@ template <> void Converter<Readout>::operator()(xml_h e) const {
     idSpec->SetName(ro.name());
     ro.setIDDescriptor(idSpec);
     lcdd.addIDSpecification(idSpec);
+  }
+  for(xml_coll_t colls(e,_U(hits_collections)); colls; ++colls)   {
+    string hits_key;
+    if ( colls.hasAttr(_U(key)) ) hits_key = colls.attr<string>(_U(key));
+    for(xml_coll_t coll(colls,_U(hits_collection)); coll; ++coll)   {
+      xml_dim_t c(coll);
+      string coll_name = c.nameStr();
+      string coll_key  = hits_key;
+      long   key_min = 0, key_max = 0;
+
+      if ( c.hasAttr(_U(key)) )   {
+        coll_key = c.attr<string>(_U(key));
+      }
+      if ( c.hasAttr(_U(key_value)) )   {
+        key_max = key_min = c.key_value();
+      }
+      else if ( c.hasAttr(_U(key_min)) && c.hasAttr(_U(key_max)) )  {
+        key_min = c.key_min();
+        key_max = c.key_max();
+      }
+      else   {
+        stringstream tree;
+        XML::dump_tree(e,tree);
+        throw_print("Reaout: Invalid specificatrion for multiple hit collections."+tree.str());
+      }
+      printout(DEBUG,"Compact","++ Readout[%s]: Add hit collection %s [%s]  %d-%d",
+               ro.name(), coll_name.c_str(), coll_key.c_str(), key_min, key_max);
+      HitCollection hits(coll_name, coll_key, key_min, key_max);
+      ro->hits.push_back(hits);
+    }
   }
   lcdd.addReadout(ro);
 }
@@ -823,6 +903,9 @@ template <> void Converter<DetElement>::operator()(xml_h element) const {
     DetElement det(Ref_t(PluginService::Create<NamedObject*>(type, &lcdd, &element, &sens)));
     if (det.isValid()) {
       setChildTitles(make_pair(name, det));
+      if ( sd.isValid() )  {
+        det->flag |= DetElement::Object::HAVE_SENSITIVE_DETECTOR;
+      }
     }
     printout(det.isValid() ? INFO : ERROR, "Compact", "%s subdetector:%s of type %s %s",
              (det.isValid() ? "++ Converted" : "FAILED    "), name.c_str(), type.c_str(),

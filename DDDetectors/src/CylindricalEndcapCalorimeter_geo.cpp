@@ -16,6 +16,7 @@
 // 
 //==========================================================================
 #include "DD4hep/DetFactoryHelper.h"
+#include "DD4hep/Printout.h"
 #include "XML/Layering.h"
 
 using namespace std;
@@ -70,6 +71,7 @@ static Ref_t create_detector(LCDD& lcdd, xml_h e, SensitiveDetector sens)  {
       Position layer_pos(0,0,zlayer-zmin-totWidth/2+layerWidth/2);
       pv = envelopeVol.placeVolume(layer_vol,layer_pos);
       pv.addPhysVolID("layer",layer_num);
+      printout(DEBUG,"Calo","CylindricalEndcapCalorimeter: built layer %d -> %s",layer_num,layer_name.c_str());
       ++layer_num;
     }
   }

@@ -25,14 +25,65 @@ using namespace DD4hep;
 using namespace DD4hep::Geometry;
 using dd4hep::mm;
 
+/// Copy constructor
+HitCollection::HitCollection(const HitCollection& c)
+  : name(c.name), key(c.key), key_min(c.key_min), key_max(c.key_max)
+{
+}
+
+/// Initializing constructor
+HitCollection::HitCollection(const std::string& n, const std::string& k, long k_min, long k_max)  
+  : name(n), key(k), key_min(k_min), key_max(k_max)
+{
+}
+
+/// Assignment operator
+HitCollection& HitCollection::operator=(const HitCollection& c)   {
+  if ( this != &c )   {
+    name = c.name;
+    key = c.key;
+    key_min = c.key_min;
+    key_max = c.key_max;
+  }
+  return *this;
+}
+
 /// Initializing constructor to create a new object
 Readout::Readout(const string& nam) {
   assign(new ReadoutObject(), nam, "readout");
 }
 
+/// Access names of hit collections
+std::vector<std::string> Readout::collectionNames()  const   {
+  std::vector<std::string> colls;
+  if ( isValid() ) {
+    Object& ro = object<Object>();
+    if ( !ro.hits.empty() )  {
+      for(Object::Collections::const_iterator i=ro.hits.begin(); i!=ro.hits.end(); ++i)
+        colls.push_back((*i).name);
+    }
+    return colls;
+  }
+  throw runtime_error("DD4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
+}
+
+/// Access hit collections
+std::vector<const HitCollection*> Readout::collections()  const   {
+  std::vector<const HitCollection*> colls;
+  if ( isValid() ) {
+    Object& ro = object<Object>();
+    if ( !ro.hits.empty() )  {
+      for(Object::Collections::const_iterator i=ro.hits.begin(); i!=ro.hits.end(); ++i)
+        colls.push_back(&(*i));
+    }
+    return colls;
+  }
+  throw runtime_error("DD4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
+}
+
 /// Assign IDDescription to readout structure
 void Readout::setIDDescriptor(const Ref_t& new_descriptor) const {
-  if (isValid()) {                    // Remember: segmentation is NOT owned by readout structure!
+  if ( isValid() ) {                    // Remember: segmentation is NOT owned by readout structure!
     if (new_descriptor.isValid()) {   // Do NOT delete!
       data<Object>()->id = new_descriptor;
       Segmentation seg = data<Object>()->segmentation;
@@ -53,10 +104,10 @@ IDDescriptor Readout::idSpec() const {
 
 /// Assign segmentation structure to readout
 void Readout::setSegmentation(const Segmentation& seg) const {
-  if (isValid()) {
+  if ( isValid() ) {
     Object& ro = object<Object>();
     Segmentation::Implementation* e = ro.segmentation.ptr();
-    if (e) {   // Remember: segmentation is owned by readout structure!
+    if (e) {      // Remember: segmentation is owned by readout structure!
       delete e;   // Need to delete the segmentation object
     }
     if (seg.isValid()) {
@@ -71,3 +122,4 @@ void Readout::setSegmentation(const Segmentation& seg) const {
 Segmentation Readout::segmentation() const {
   return object<Object>().segmentation;
 }
+

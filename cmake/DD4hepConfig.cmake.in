@@ -25,8 +25,8 @@ set ( DD4HEP_USE_CXX14   "@DD4HEP_USE_CXX14@" )
 set ( Geant4_DIR         "@Geant4_DIR@" )
 set ( GEANT4_USE_CLHEP   "@GEANT4_USE_CLHEP@" )
 
-set ( ROOT_DIR           "@ROOTSYS@/cmake" )
-set ( ROOTSYS            "@ROOTSYS@" )
+set ( ROOTSYS            "$ENV{ROOTSYS}" )
+set ( ROOT_DIR           "$ENV{ROOTSYS}/cmake" )
 set ( ROOT_VERSION_MAJOR "@ROOT_VERSION_MAJOR@" )
 
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )

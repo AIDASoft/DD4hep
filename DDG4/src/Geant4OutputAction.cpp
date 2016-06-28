@@ -34,8 +34,8 @@ Geant4OutputAction::Geant4OutputAction(Geant4Context* ctxt, const string& nam)
   InstanceCount::increment(this);
   declareProperty("Output", m_output);
   declareProperty("HandleErrorsAsFatal", m_errorFatal=true);
-  //ctxt->runAction().callAtBegin(this, &Geant4OutputAction::beginRun);
-  //ctxt->runAction().callAtEnd(this, &Geant4OutputAction::endRun);
+  // Need to instantiate run action to configure fibers
+  if ( 0 == &ctxt->runAction() )  {}
 }
 
 /// Default destructor

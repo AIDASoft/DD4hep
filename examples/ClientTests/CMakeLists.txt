@@ -31,7 +31,8 @@ dd4hep_configure_scripts( ClientTests DEFAULT_SETUP WITH_TESTS)
 #
 #
 foreach (test Assemblies BoxTrafos IronCylinder LheD_tracker MagnetFields MaterialTester 
-              MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors )
+              MiniTel SectorBarrelCalorimeter SiliconBlock NestedSimple NestedDetectors 
+              MultiCollections MultiSegmentations )
   # Test format conversions
   foreach( type lcdd gdml vis )
     dd4hep_add_test_reg( ClientTests_${test}_converter_${type}
@@ -48,7 +49,8 @@ endforeach()
 # IronCylinder has no segmentation!
 # MaterialTester no geometry
 # SectorBarrelCalorimeter is bad
-foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBlock NestedSimple NestedDetectors )
+foreach (test Assemblies BoxTrafos LheD_tracker MagnetFields MiniTel SiliconBlock 
+         NestedSimple NestedDetectors MultiCollections )
   #
   # Test material scans in [origine to 10 meters in y]
   dd4hep_add_test_reg( ClientTests_${test}_material_scan
@@ -69,7 +71,7 @@ endforeach()
 #
 #
 #
-foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple )
+foreach (test BoxTrafos IronCylinder MiniTel SiliconBlock NestedSimple MultiCollections )
   #
   # ROOT Geometry checks
   dd4hep_add_test_reg( ClientTests_${test}_check_geometry
@@ -97,6 +99,16 @@ if (DD4HEP_USE_GEANT4)
     dd4hep_add_test_reg( ClientTests_sim_${script}
       COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
       EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/${script}.py batch
+      REQUIRES   DDG4 Geant4
+      REGEX_PASS NONE
+      REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
+  endforeach(script)
+  # Geant4 full simulation checks of multi-collection/segmentation detectors
+  foreach(script MultiCollections MultiSegmentations MultiSegmentCollections )
+    dd4hep_add_test_reg( ClientTests_sim_${script}
+      COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_ClientTests.sh"
+      EXEC_ARGS  python ${CMAKE_CURRENT_SOURCE_DIR}/scripts/MultiCollections.py 
+                        -compact ${CMAKE_CURRENT_SOURCE_DIR}/compact/${script}.xml -batch
       REQUIRES   DDG4 Geant4
       REGEX_PASS NONE
       REGEX_FAIL "Exception;EXCEPTION;ERROR;Error" )
