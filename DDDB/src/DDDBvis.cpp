@@ -20,7 +20,7 @@
 
 // Framework includes
 #include "DDDB/DDDBTags.h"
-#include "DDDB/Dimension.h"
+#include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
 
 // C/C++ include files

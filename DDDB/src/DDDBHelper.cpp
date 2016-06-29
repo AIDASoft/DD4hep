@@ -37,20 +37,20 @@ namespace {
 
 /// Standard constructor
 DDDBHelper::DDDBHelper(Geometry::LCDD& l) 
- : m_lcdd(l), m_xmlReader(0), m_geometry(0)
+ : m_lcdd(l), m_xmlReader(0), m_detDesc(0)
 {
 }
 
 /// Default destructor
 DDDBHelper::~DDDBHelper()    {
-  deletePtr(m_geometry);
+  deletePtr(m_detDesc);
   m_visAttrs.clear();
 }
 
-/// Attach geometry information
-void DDDBHelper::setGeometry(dddb* geo)   {
-  deletePtr(m_geometry);
-  m_geometry = geo;
+/// Attach detectorDescription information
+void DDDBHelper::setDetectorDescription(dddb* geo)   {
+  deletePtr(m_detDesc);
+  m_detDesc = geo;
 }
 
 /// Access visualization attribute for a given volume by path

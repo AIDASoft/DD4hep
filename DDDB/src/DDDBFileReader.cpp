@@ -41,44 +41,52 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::DDDB;
 
+int DDDBFileReader::getObject(const string& system_id,
+			      UserContext* /* ctxt */,
+			      string& buffer)
+{
+  string path = m_directory+system_id;
+  struct stat buff;
+  if ( 0 == ::stat(path.c_str(), &buff) )  {
+    int fid  = ::open(path.c_str(), O_RDONLY);
+    int done = 0, len = buff.st_size;
+    char* b  = new char[len+1];
+    b[0] = 0;
+    while ( done<len )  {
+      int sc = ::read(fid, b+done, buff.st_size-done);
+      if ( sc >= 0 ) { done += sc; continue; }
+      break;
+    }
+    ::close(fid);
+    b[done] = 0;
+    buffer = b;
+    delete [] b;
+    if ( done>=len ) return 1;
+  }
+  return 0;
+}
+
 /// Resolve a given URI to a string containing the data
-bool DDDBFileReader::load(const string& system_id, string& buffer)   {
+bool DDDBFileReader::load(const string& system_id,
+			  UserContext*  ctxt,
+			  string& buffer)
+{
   if ( system_id.substr(0,m_match.length()) == m_match )  {
     string mm = m_match + "//";
     const string& sys = system_id;
     string id = sys.c_str() + (sys.substr(0,mm.length()) == mm ? 9 : 7);
     // Extract the COOL field name from the condition path
     // "conddb:/path/to/field@folder"
-    string data_field_name = "data"; // default value
     string::size_type at_pos = id.find('@');
     if ( at_pos != id.npos ) {
       string::size_type slash_pos = id.rfind('/',at_pos);
-      if ( slash_pos+1 < at_pos ) { // item name is not null
-        data_field_name = id.substr(slash_pos+1,at_pos - (slash_pos +1));
-      } // if I have "/@", I should use the default ("data")
       // always remove '@' from the path
       id = id.substr(0,slash_pos+1) +  id.substr(at_pos+1);
     }
-
-    string path = m_directory+id;
-    struct stat buff;
-    if ( 0 == ::stat(path.c_str(), &buff) )  {
-      int fid  = ::open(path.c_str(), O_RDONLY);
-      int done = 0, len = buff.st_size;
-      char* b  = new char[len+1];
-      b[0] = 0;
-      while ( done<len )  {
-        int sc = ::read(fid, b+done, buff.st_size-done);
-        if ( sc >= 0 ) { done += sc; continue; }
-        break;
-      }
-      ::close(fid);
-      b[done] = 0;
-      buffer = b;
-      delete [] b;
-      if ( done>=len ) return true;
-    }
-    printout(ERROR,"DDDBFileReader","++ Fialed to resolve system id: %s [%s]",
+    // GET: 1458055061070516000 /lhcb.xml 0 0 SUCCESS
+    int ret = getObject(id, ctxt, buffer);
+    if ( ret == 1 ) return true;
+    printout(ERROR,"DDDBFileReader","++ Failed to resolve system id: %s [%s]",
              id.c_str(), ::strerror(errno));
   }
   return false;

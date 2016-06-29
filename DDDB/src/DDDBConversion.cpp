@@ -64,10 +64,66 @@ namespace DD4hep  {
     releaseObjects(placements)();
     releaseObjects(placementPaths)();
 
-    releaseObjects(conditions)();
+    conditions.clear();
+    conditionPaths.clear();
+    //releaseObjects(conditions)();
+    //releaseObjects(conditionPaths)();
     releaseObjects(catalogs)();
     releaseObjects(catalogPaths)();
-    printout(INFO,"dddb","++ All intermediate objects deleted!");
+    releaseObjects(documents)();
+    printout(DEBUG,"dddb","++ All intermediate objects deleted!");
+    InstanceCount::decrement(this);
+  }
+
+  /// Default constructor
+  DDDB::Named::Named()
+    : name(), id(), document(0), refCount(0)
+  {
+  }
+
+  /// Initializing constructor
+  DDDB::Named::Named(const std::string& c)
+    : name(c), id(), document(0), refCount(0)
+  {
+  }
+
+  /// Copy constructor
+  DDDB::Named::Named(const Named& c)
+    : name(c.name), id(c.id), document(c.document), refCount(0)
+  {
+    if ( document ) document->addRef();
+  }
+
+  /// Default destructor
+  DDDB::Named::~Named() {
+    if ( document ) document->release();
+  }
+
+  /// Assignment operator
+  DDDB::Named& DDDB::Named::operator=(const Named& c) {
+    if ( this != &c )  {
+      setDocument(c.document);
+      name = c.name;
+      id = c.id;
+    }
+    return *this;
+  }
+
+  /// Assign document
+  void DDDB::Named::setDocument(Document* doc)   {
+    if ( doc ) doc->addRef();
+    if ( document ) document->release();
+    document = doc;
+  }
+
+  /// Default constructor
+  DDDB::Document::Document() : Named(), context()  {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::Document::~Document()   {
+    //printout(INFO,"Document","Delete doc %s",c_id());
     InstanceCount::decrement(this);
   }
 
@@ -133,16 +189,6 @@ namespace DD4hep  {
 
   /// Default destructor
   DDDB::PhysVol::~PhysVol()  {
-    InstanceCount::decrement(this);
-  }
-
-  /// Default constructor
-  DDDB::Condition::Condition() : Named() {
-    InstanceCount::increment(this);
-  }
-
-  /// Default destructor
-  DDDB::Condition::~Condition()  {
     InstanceCount::decrement(this);
   }
 
@@ -321,18 +367,27 @@ namespace DD4hep  {
     printout(INFO,"Detector", "++ %-12s  name:%s id:%s",
              "",obj->c_name(),obj->c_id());
   }
-  template <> void dddb_print(const DDDB::Condition* obj)   {
-    stringstream p;
+  template <> void dddb_print(const DDDB::Document* obj)   {
     CHECK_OBJECT(obj);
+    char c_since[64], c_until[64], c_evt[64];
+    struct tm since, until, evt;
+    time_t t_evt   = obj->context.event_time;
+    time_t t_since = obj->context.valid_since;
+    time_t t_until = obj->context.valid_until;
 
-    p << "Par [" << obj->params.size() << "]: ";
-    for(auto i=obj->params.begin(); i != obj->params.end(); ++i)
-      p << (*i).first << "[" << (*i).second->type << "] ";
-    p << "Vec [" << obj->paramVectors.size() << "]: ";
-    for(auto i=obj->paramVectors.begin(); i != obj->paramVectors.end(); ++i)
-      p << (*i).first << "[" << (*i).second->type << "] ";
-    printout(INFO,"Condition", "++ %-12s: [%s] id:%s path:%s",
-             obj->name.c_str(), obj->classID.c_str(), obj->c_id(), obj->path.c_str());
-    printout(INFO,"Condition", "   --> %s",p.str().c_str());
+    ::gmtime_r(&t_evt,&evt);
+    ::gmtime_r(&t_since,&since);
+    ::gmtime_r(&t_until,&until);
+    ::strftime(c_evt,sizeof(c_evt),"%T %F",&evt);
+    ::strftime(c_since,sizeof(c_since),"%T %F",&since);
+    ::strftime(c_until,sizeof(c_until),"%T %F",&until);
+#if 0
+    printout(INFO,"Document", "++ %8ld [%8ld - %8ld] %s",
+	     long(double(obj->context.event_time)/1e9),
+	     long(double(obj->context.valid_since)/1e9),
+	     long(double(obj->context.valid_until)/1e9),
+	     obj->c_id());
+#endif
+    printout(INFO,"Document", "++ %s [%s - %s] %s",c_evt,c_since,c_until,obj->c_id());
   }
 }

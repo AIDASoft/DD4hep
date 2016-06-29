@@ -20,7 +20,7 @@
 
 // Framework includes
 #include "XML/XMLDimension.inl"
-#include "DDDB/Dimension.h"
+#include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBTags.h"
 
 using namespace DD4hep::XML;

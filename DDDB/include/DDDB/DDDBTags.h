@@ -33,56 +33,87 @@ namespace DD4hep {
   namespace DDDB  {
     UNICODE(DDDB);
     UNICODE(DDDB_VIS);
-    UNICODE(elementref);
-    UNICODE(materialref);
+
+    UNICODE(address);
+    UNICODE(alp1);
+    UNICODE(alp2);
+
     UNICODE(catalog);
     UNICODE(catalogref);
-    UNICODE(href);
-    UNICODE(npath);
-    UNICODE(detelem);
-    UNICODE(detelemref);
+    UNICODE(classID);
     UNICODE(condition);
     UNICODE(conditionref);
     UNICODE(conditioninfo);
+    UNICODE(component);
+    UNICODE(cons);
+
+    UNICODE(deltaPhiAngle);
+    UNICODE(deltaThetaAngle);
+    UNICODE(detelem);
+    UNICODE(detelemref);
+
+    UNICODE(elementref);
+
+    UNICODE(fractionmass);
+
     UNICODE(geometryinfo);
+
+    UNICODE(href);
+
+    UNICODE(lambda);
+
+    UNICODE(innerRadius);
+    UNICODE(innerRadiusMZ);
+    UNICODE(innerRadiusPZ);
+    UNICODE(ionization);
+    UNICODE(isotoperef);
+    UNICODE(item);
+
+    UNICODE(key);
+    UNICODE(keytype);
+
     UNICODE(lvname);
     UNICODE(logvolref);
-    UNICODE(paramVector);
-    UNICODE(userParameter);
-    UNICODE(fractionmass);
-    UNICODE(natoms);
-    UNICODE(radlen);
-    UNICODE(ionization);
-    UNICODE(lambda);
-    UNICODE(component);
-    UNICODE(address);
-    UNICODE(isotoperef);
-    UNICODE(symbol);
-    UNICODE(state);
-    UNICODE(support);
-    UNICODE(volumes);
-    UNICODE(vismapping);
 
+    UNICODE(map);
+    UNICODE(materialref);
+
+    UNICODE(natoms);
+    UNICODE(npath);
+    UNICODE(number);
+    UNICODE(number1);
+    UNICODE(number2);
+    UNICODE(number3);
+
+
+    UNICODE(paramVector);
     UNICODE(posXYZ);
+
+    UNICODE(radlen);
     UNICODE(rotXYZ);
     UNICODE(rotX);
     UNICODE(rotY);
     UNICODE(rotZ);
-    UNICODE(cons);
+
+    UNICODE(symbol);
+    UNICODE(state);
+    UNICODE(support);
+
+
     UNICODE(tubs);
     UNICODE(transformation);
     UNICODE(version);
     UNICODE(author);
 
-    UNICODE(number);
-    UNICODE(number1);
-    UNICODE(number2);
-    UNICODE(number3);
-    UNICODE(alp1);
-    UNICODE(alp2);
-    UNICODE(x);
-    UNICODE(y);
-    UNICODE(z);
+
+    UNICODE(outerRadius);
+    UNICODE(outerRadiusMZ);
+    UNICODE(outerRadiusPZ);
+
+    UNICODE(paramphysvol);
+    UNICODE(paramphysvol2D);
+    UNICODE(phiAngle);
+
     UNICODE(sizeX);
     UNICODE(sizeX1);
     UNICODE(sizeX2);
@@ -92,24 +123,26 @@ namespace DD4hep {
     UNICODE(sizeY1);
     UNICODE(sizeY2);
     UNICODE(sizeZ);
-    UNICODE(outerRadius);
-    UNICODE(outerRadiusMZ);
-    UNICODE(outerRadiusPZ);
-    UNICODE(innerRadius);
-    UNICODE(innerRadiusMZ);
-    UNICODE(innerRadiusPZ);
-    UNICODE(tabprops);
-    UNICODE(paramphysvol);
-    UNICODE(paramphysvol2D);
-    UNICODE(phiAngle);
+    UNICODE(specific);
     UNICODE(startPhiAngle);
-    UNICODE(deltaPhiAngle);
-    UNICODE(thetaAngle);
     UNICODE(startThetaAngle);
-    UNICODE(deltaThetaAngle);
-    UNICODE(classID);
-    //UNICODE();
 
+    UNICODE(tabprops);
+    UNICODE(thetaAngle);
+
+    UNICODE(userParameter);
+
+    UNICODE(val);
+    UNICODE(value);
+    UNICODE(valuetype);
+    UNICODE(volumes);
+    UNICODE(vismapping);
+
+    UNICODE(x);
+    UNICODE(y);
+    UNICODE(z);
+
+    //UNICODE();
   }   /* End namespace DDDB       */
 }     /* End namespace DD4hep     */
 

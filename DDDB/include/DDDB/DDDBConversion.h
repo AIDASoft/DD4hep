@@ -22,6 +22,8 @@
 
 /// Framework include files
 #include "DD4hep/Objects.h"
+#include "DD4hep/objects/ConditionsInterna.h"
+#include "DDDB/DDDBReaderContext.h"
 
 /// C/C++ include files
 #include <string>
@@ -38,19 +40,7 @@ namespace DD4hep {
     struct Shape;
     struct LogVol;
     struct Catalog;
-
-    struct LogVolRef {};
-    struct ElementRef  {};
-    struct MaterialRef  {};
-    struct CatalogRef  {};
-    struct ConditionRef  {};
-    struct ConditionInfo  {};
-    struct DetElem  {};
-    struct DetElemRef  {};
-    struct Param {};
-    struct Parameter  {};
-    struct ParamVector  {};
-    struct GeometryInfo  {};
+    struct Document;
 
     using Geometry::VisAttr;
     using Geometry::Position;
@@ -64,46 +54,39 @@ namespace DD4hep {
     struct Named  {
       typedef std::map<std::string, std::string> StringMap;
       typedef std::map<std::string, std::pair<std::string,std::string > > StringPairMap;
-      std::string name, id;
-      int refCount;
-      Named() : refCount(0) {}
-      Named(const std::string& c) : name(c), id(), refCount(0)  {}
-      Named(const Named& c) : name(c.name), id(c.id), refCount(0)  {}
-      Named& operator=(const Named& c) {
-        if ( this != &c )  {
-          name=c.name;
-          id=c.id;
-        }
-        return *this;
-      }
-      virtual ~Named() {}
+      std::string  name, id;
+      Document*    document;
+      int          refCount;
+
+      /// Default constructor
+      Named();
+      /// Initializing constructor
+      Named(const std::string& c);
+      /// Copy constructor
+      Named(const Named& c);
+      /// Default destructor
+      virtual ~Named();
+      /// Assignment operator
+      Named& operator=(const Named& c);
+      /// Assign document
+      void setDocument(Document* doc);
+
       const char* c_name() const { return name.c_str(); }
       const char* c_id() const   { return id.c_str();   }
       void release()             { if ( --refCount <= 0 ) delete this;      }
     };
 
-    struct ConditionParam {
-      std::string type, data;
-      ConditionParam() : type(), data() {}
-      ConditionParam(const ConditionParam& c) : type(c.type), data(c.data) {}
-      ConditionParam& operator=(const ConditionParam& c)   {
-        if ( &c != this )  {
-          type = c.type;
-          data = c.data;
-        }
-        return *this;
-      }
-    };
-    struct Condition : public Named {
-      typedef std::map<std::string, ConditionParam*> Params;
-      std::string classID, path;
-      Params params;
-      Params paramVectors;
+    /// Structure supporting basic XML document information
+    /**   \ingroup DD4HEP_DDDB
+     */
+    struct Document : public Named  {
+      DDDBReaderContext context;
       /// Default constructor
-      Condition();
+      Document();
       /// Default destructor
-      virtual ~Condition();
-      Condition* addRef()  {  ++refCount; return this;  }
+      virtual ~Document();
+      /// Reference count mechanism
+      Document* addRef()  {  ++refCount; return this;  }
     };
 
     /// Intermediate structure representing author's data
@@ -523,7 +506,9 @@ namespace DD4hep {
      *   \ingroup DD4HEP_DDDB
      */
     struct dddb   {
+      typedef std::pair<long long int, long long int> iov_t;
       typedef std::map<std::string,std::string> Refs;
+      typedef std::map<std::string,Document*>   Documents;
       typedef std::map<std::string,LogVol*>     Volumes;
       typedef std::map<std::string,PhysVol*>    Placements;
       typedef std::map<std::string,Catalog*>    Catalogs;
@@ -531,7 +516,7 @@ namespace DD4hep {
       typedef std::map<std::string,Element*>    Elements;
       typedef std::map<std::string,Material*>   Materials;
       typedef std::map<std::string,Shape*>      Shapes;
-      typedef std::map<std::string,Condition*>  Conditions;
+      typedef std::map<std::string,Conditions::Condition::Object*>  Conditions;
 
       /// Default constructor
       dddb();
@@ -540,6 +525,8 @@ namespace DD4hep {
 
       /// World dimensions
       Box        world;
+      /// Inventory of input documents
+      Documents  documents;
       /// Inventory of isotopes
       Isotopes   isotopes;
       /// Inventory of elements
@@ -559,12 +546,14 @@ namespace DD4hep {
       /// Detector element hierarchy
       Catalog    *top, *structure, *geometry;
     };
+    struct dddb_conditions {};
 
     template <typename T> struct Increment {
       static int& counter() { static int cnt=0; return cnt; }
       Increment()   { ++counter(); }
       ~Increment()  { --counter(); }
     };
+
   } /* End namespace DDDB    */
 
   /// Specialized printout method. Not all above object types are supported.

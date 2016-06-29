@@ -51,7 +51,9 @@ namespace DD4hep {
       /// Access data match
       const std::string& match() const           { return m_match;  }
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, std::string& buffer);
+      virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer);
+      /// Read raw XML object from the database / file
+      virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data);
 
    protected:
       std::string m_directory;
