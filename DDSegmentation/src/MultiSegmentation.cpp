@@ -7,6 +7,7 @@
 
 #include "DDSegmentation/MultiSegmentation.h"
 #include <iomanip>
+#include <stdexcept>
 
 using namespace std;
 
