@@ -350,13 +350,13 @@ static G4PrimaryParticle* createG4Primary(const Geant4ParticleHandle p)  {
   return g4;
 }
 
-static map<Geant4Particle*,G4PrimaryParticle*>
+static vector< pair<Geant4Particle*,G4PrimaryParticle*> >
 getRelevant(set<int>& visited,
             map<int,G4PrimaryParticle*>& prim,
             Geant4PrimaryInteraction::ParticleMap& pm,
             const Geant4ParticleHandle p)
 {
-  typedef map<Geant4Particle*,G4PrimaryParticle*> Primaries;
+  typedef vector< pair<Geant4Particle*,G4PrimaryParticle*> > Primaries;
   Primaries res;
   visited.insert(p->id);
   PropertyMask status(p->status);
@@ -364,7 +364,7 @@ getRelevant(set<int>& visited,
     if ( prim.find(p->id) == prim.end() )  {
       G4PrimaryParticle* p4 = createG4Primary(p);
       prim[p->id] = p4;
-      res.insert(make_pair(p,p4));
+      res.push_back(make_pair(p,p4));
     }
   }
   else if ( p->daughters.size() > 0 )  {
@@ -389,19 +389,19 @@ getRelevant(set<int>& visited,
         for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
           if ( visited.find(*i) == visited.end() )  {
             Primaries tmp = getRelevant(visited,prim,pm,pm[*i]);
-            daughters.insert(tmp.begin(),tmp.end());
+            daughters.insert(daughters.end(), tmp.begin(),tmp.end());
           }
         }
         for(Primaries::iterator i=daughters.begin(); i!=daughters.end(); ++i)
           p4->SetDaughter((*i).second);
       }
-      res.insert(make_pair(p,p4));
+      res.push_back(make_pair(p,p4));
     }
     else  {
       for(Geant4Particle::Particles::const_iterator i=dau.begin(); i!=dau.end(); ++i)  {
         if ( visited.find(*i) == visited.end() )  {
           Primaries tmp = getRelevant(visited,prim,pm,pm[*i]);
-          res.insert(tmp.begin(),tmp.end());
+          res.insert(res.end(), tmp.begin(),tmp.end());
         }
       }
     }
@@ -414,7 +414,7 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
                                           const Geant4Context* context,
                                           G4Event* event)
 {
-  typedef map<Geant4Particle*,G4PrimaryParticle*> Primaries;
+  typedef vector< pair<Geant4Particle*,G4PrimaryParticle*> > Primaries;
   typedef Geant4PrimaryInteraction Interaction;
   Geant4PrimaryMap* primaries   = context->event().extension<Geant4PrimaryMap>();
   Interaction*      interaction = context->event().extension<Interaction>();
