@@ -61,7 +61,8 @@ namespace DD4hep {
         BOUND_DATA = 1<<2
       } _DataTypes;
       /// Data buffer: plain data are allocated directly on this buffer
-      unsigned int data[16];
+      /** Internal data buffer is sufficient to store any vector  */
+      unsigned char data[sizeof(std::vector<void*>)];
       /// Destructor function -- only set if the object is valid
       void (*destruct)(void*);
       /// Constructor function -- only set if the object is valid
@@ -70,19 +71,26 @@ namespace DD4hep {
     public:
       /// Data buffer type: Must be a bitmap!
       int type;
-
       /// Standard initializing constructor
       BlockData();
+      /// Copy constructor
+      BlockData(const BlockData& data);
       /// Standard Destructor
       ~BlockData();
+      /// Assignment operator
+      BlockData& operator=(const BlockData& clone);
       /// Move the data content: 'from' will be reset to NULL
-      void move(BlockData& from);
-      /// Set data value
-      void bind(const BasicGrammar* grammar,
+      bool move(BlockData& from);
+      /// Bind data value
+      bool bind(const BasicGrammar* grammar,
                 void (*ctor)(void*,const void*),
                 void (*dtor)(void*));
+      /// Bind data value
+      template <typename T> T& bind();
       /// Set data value
       void assign(const void* ptr,const std::type_info& typ);
+      /// Bind grammar and assign value
+      template<typename T> T& set(const std::string& value);
     };
 
     /// The data class behind a conditions container handle.
@@ -164,6 +172,7 @@ namespace DD4hep {
         const IOVType* iov_type() const;
         /// Check if object is already bound....
         bool is_bound()  const  {  return data.is_bound(); }
+	bool is_traced()  const {  return true;            }
       };
 
       /// The data class behind a conditions container handle.
@@ -212,7 +221,7 @@ namespace DD4hep {
     } /* End namespace Interna    */
 
     template <typename T> static void copyObject(void* t, const void* s)  {
-      *((T*)t) = *((const T*)s);
+      new(t) T(*(const T*)s);
     }
     template <typename T> static void destructObject(void* p)  {
       T* t = (T*)p;
@@ -228,14 +237,24 @@ namespace DD4hep {
       if (!grammar || (grammar->type() != typeid(T))) { throw std::bad_cast(); }
       return *(T*)pointer;
     }
+    /// Bind data value
+    template <typename T> T& BlockData::bind()  {
+      this->bind(&BasicGrammar::instance<T>(),copyObject<T>,destructObject<T>);
+      return *(new(this->pointer) T());
+    }
+    /// Bind grammar and assign value
+    template <typename T> T& BlockData::set(const std::string& value)   {
+      T& ret = this->bind<T>();
+      if ( !value.empty() && !this->fromString(value) )  {
+	throw std::runtime_error("BlockData::set> Failed to bind type "+
+				 typeName(typeid(T))+" to condition data block.");
+      }
+      return ret;
+    }
     /// Bind the data of the conditions object to a given format.
-    template <typename T> Condition& Condition::bind()   {
+    template <typename T> T& Condition::bind()   {
       Object* o = access();
-      BlockData& b = o->data;
-      b.bind(&BasicGrammar::instance<T>(),copyObject<T>,destructObject<T>);
-      new(b.pointer) T();
-      if ( !o->value.empty() ) b.fromString(o->value);
-      return *this;
+      return o->data.set<T>(o->value);
     }
     /// Generic getter. Specify the exact type, not a polymorph type
     template <typename T> T& Condition::get() {
@@ -251,9 +270,16 @@ namespace DD4hep {
 
 #define DD4HEP_DEFINE_CONDITIONS_TYPE(x)            \
   namespace DD4hep { namespace Conditions  {        \
-      template Condition& Condition::bind<x>();     \
+      template x& Condition::bind<x>();           \
       template x& Condition::get<x>();              \
       template const x& Condition::get<x>() const;  \
+    }}
+
+#define DD4HEP_DEFINE_EXTERNAL_CONDITIONS_TYPE(x)      \
+  namespace DD4hep { namespace Conditions  {           \
+      template <> x& Condition::bind<x>();           \
+      template <> x& Condition::get<x>();              \
+      template <> const x& Condition::get<x>() const;  \
     }}
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)

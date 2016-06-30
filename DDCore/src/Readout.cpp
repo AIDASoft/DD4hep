@@ -23,7 +23,6 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Geometry;
-using dd4hep::mm;
 
 /// Copy constructor
 HitCollection::HitCollection(const HitCollection& c)
@@ -32,7 +31,7 @@ HitCollection::HitCollection(const HitCollection& c)
 }
 
 /// Initializing constructor
-HitCollection::HitCollection(const std::string& n, const std::string& k, long k_min, long k_max)  
+HitCollection::HitCollection(const string& n, const string& k, long k_min, long k_max)  
   : name(n), key(k), key_min(k_min), key_max(k_max)
 {
 }
@@ -53,9 +52,18 @@ Readout::Readout(const string& nam) {
   assign(new ReadoutObject(), nam, "readout");
 }
 
+/// Access number of hit collections
+size_t Readout::numCollections() const   {
+  if ( isValid() ) {
+    Object& ro = object<Object>();
+    return ro.hits.size();
+  }
+  throw runtime_error("DD4hep: Readout::numCollections: Cannot access object data [Invalid Handle]");
+}
+
 /// Access names of hit collections
-std::vector<std::string> Readout::collectionNames()  const   {
-  std::vector<std::string> colls;
+vector<string> Readout::collectionNames()  const   {
+  vector<string> colls;
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
@@ -68,8 +76,8 @@ std::vector<std::string> Readout::collectionNames()  const   {
 }
 
 /// Access hit collections
-std::vector<const HitCollection*> Readout::collections()  const   {
-  std::vector<const HitCollection*> colls;
+vector<const HitCollection*> Readout::collections()  const   {
+  vector<const HitCollection*> colls;
   if ( isValid() ) {
     Object& ro = object<Object>();
     if ( !ro.hits.empty() )  {
@@ -78,7 +86,7 @@ std::vector<const HitCollection*> Readout::collections()  const   {
     }
     return colls;
   }
-  throw runtime_error("DD4hep: Readout::collectionsNames: Cannot access object data [Invalid Handle]");
+  throw runtime_error("DD4hep: Readout::collections: Cannot access object data [Invalid Handle]");
 }
 
 /// Assign IDDescription to readout structure

@@ -18,3 +18,28 @@
 /// Default destructor
 DD4hep::XML::UriReader::~UriReader()   {
 }
+
+/// Resolve a given URI to a string containing the data
+bool DD4hep::XML::UriReader::load(const std::string& system_id, std::string& data)   {
+  return this->load(system_id, context(), data);
+}
+
+/// Default constructor
+DD4hep::XML::UriContextReader::UriContextReader(UriReader* reader, UriReader::UserContext* ctxt)
+  : m_reader(reader), m_context(ctxt)
+{
+}
+
+/// Default destructor
+DD4hep::XML::UriContextReader::~UriContextReader()   {
+}
+
+/// Resolve a given URI to a string containing the data
+bool DD4hep::XML::UriContextReader::load(const std::string& system_id, std::string& data)   {
+  return m_reader->load(system_id, context(), data);
+}
+
+/// Resolve a given URI to a string containing the data
+bool DD4hep::XML::UriContextReader::load(const std::string& system_id, UserContext* ctxt, std::string& data)   {
+  return m_reader->load(system_id, ctxt, data);
+}

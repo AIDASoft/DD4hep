@@ -35,6 +35,7 @@ namespace DD4hep {
     class Entry;
     class ConditionsPool;
     class ConditionsIOVPool;
+    class ConditionsListener;
     class ConditionsDataLoader;
 
     /// Conditions internal namespace declaration
@@ -57,25 +58,28 @@ namespace DD4hep {
        *  \ingroup DD4HEP_CONDITIONS
        */
       class ConditionsManagerObject : public NamedObject, public PropertyConfigurable {
-      public:
-        friend class ConditionsDataLoader;
+        friend class DD4hep::Conditions::ConditionsPool;
+        friend class DD4hep::Conditions::ConditionsDataLoader;
 
-        typedef dd4hep_ptr<ConditionsDataLoader> Loader;
-        typedef std::vector<IOVType>  IOVTypes;
-        typedef std::vector<ConditionsIOVPool*> TypedConditionPool;
+      public:
+        typedef dd4hep_ptr<ConditionsDataLoader>     Loader;
+        typedef std::vector<IOVType>                 IOVTypes;
+        typedef std::vector<ConditionsIOVPool*>      TypedConditionPool;
 
         typedef std::map<IOV::Key, ReplacementPool*> ReplacementCache;
-        typedef std::vector<ReplacementPool*> FreePools;
+        typedef std::vector<ReplacementPool*>        FreePools;
+	typedef std::pair<ConditionsListener*,void*> Listener;
+	typedef std::set<Listener>                   Listeners;
 
       public:
         /// Property: maximal number of IOV types to be handled
-        int                m_maxIOVTypes;
+        int                    m_maxIOVTypes;
         /// Property: ConditionsPool constructor type (default: empty. MUST BE SET!)
-        std::string        m_poolType;
+        std::string            m_poolType;
         /// Property: UpdatePool constructor type (default: DD4hep_ConditionsLinearUpdatePool)
-        std::string        m_updateType;
-        /// Property: ReplacementPool constructor type (default: DD4hep_ConditionsLinearReplacementPool)
-        std::string        m_replType;
+        std::string            m_updateType;
+        /// Property: UserPool constructor type (default: DD4hep_ConditionsLinearUserPool)
+        std::string            m_userType;
         /// Property: Conditions loader type (default: "multi" -> DD4hep_Conditions_multi_Loader)
         std::string            m_loaderType;
 
@@ -85,6 +89,10 @@ namespace DD4hep {
         IOVTypes               m_iovTypes;
         /// Managed pool of typed conditions idexed by IOV-type and IOV key
         TypedConditionPool     m_pool;
+	/// Conditions listeners on registration of new conditions
+	Listeners              m_onRegister;
+	/// Conditions listeners on de-registration of new conditions
+	Listeners              m_onRemove;
         /// Lock to protect the update/delayed conditions pool
         dd4hep_mutex_t         m_updateLock;
         /// Lock to protect the pool of all known conditions
@@ -125,6 +133,14 @@ namespace DD4hep {
         /// Push registered set of conditions to the corresponding detector elements
         void __push_immediate(RangeConditions& rc);
 
+	void registerCallee(Listeners& listeners, const Listener& callee, bool add);
+
+	/// Listener invocation when a condition is registered to the cache
+	void onRegister(Condition condition);
+
+	/// Listener invocation when a condition is deregistered from the cache
+	void onRemove(Condition condition);
+
       public:
         /// Set a single conditions value to be managed.
         /// Requires EXTERNALLY held lock on update pool!
@@ -139,6 +155,11 @@ namespace DD4hep {
 
         void initialize();
 
+	/// (Un)Registration of conditions listeners with callback when a new condition is registered
+	void callOnRegister(const Listener& callee, bool add);
+	/// (Un)Registration of conditions listeners with callback when a condition is unregistered
+	void callOnRemove(const Listener& callee, bool add);
+
         /// Register new IOV type if it does not (yet) exist.
         /** Returns (false,pointer) if IOV existed and
          *  (true,pointer) if new IOV was registered to the manager.
@@ -146,34 +167,39 @@ namespace DD4hep {
         std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
       
         /// Access IOV by its type
+        const IOVTypes& iovTypes () const   {   return  m_iovTypes;  }
+
+        /// Access IOV by its type
         const IOVType* iovType (size_t iov_type) const;
 
         /// Access IOV by its name
         const IOVType* iovType (const std::string& iov_name) const;
 
+	/// Create IOV from string
+	void fromString(const std::string& iov_str, IOV& iov);
+
         /// Register IOV using new string data
         ConditionsPool* registerIOV(const std::string& data);
+
         /// Register IOV with type and key
         ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
 
+	/// Register new condition with the conditions store. Unlocked version, not multi-threaded
+	bool registerUnlocked(ConditionsPool* pool, Condition cond);
 
         /// Prepare all updates to the clients with the defined IOV
-        void prepare(const IOV& required_validity);
+        long prepare(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool);
 
         /// Enable all updates to the clients with the defined IOV
-        void enable(const IOV& required_validity);
-
-        /// Validate the conditions set and age all unused conditions
-        void validate(const IOV& iov);
-
-        /// Age conditions, which are no longer used and to be removed eventually
-        void age();
+        long enable(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool);
 
         /// Clean conditions, which are above the age limit.
-        void clean();
+	/** @return Number of conditions cleaned up and removed  */
+        int clean(const IOVType* typ, int max_age);
 
         /// Full cleanup of all managed conditions.
-        void clear();
+	/** @return pair<Number of pools cleared, Number of conditions cleaned up and removed> */
+	std::pair<int,int> clear();
 
         /// Push all pending updates to the conditions store. 
         /** Note:

@@ -15,4 +15,7 @@ dd4hep_package(    DDCond
   INSTALL_INCLUDES include/DDCond)
 
 #---DDCond library --------------------------------------------------------------
-dd4hep_add_plugin ( DDCond SOURCES src/*.cpp )
+dd4hep_add_package_library(DDCond SOURCES src/*.cpp )
+
+#---DDCond components -----------------------------------------------------------
+dd4hep_add_plugin ( DDCondPlugins  SOURCES  src/plugins/*.cpp )

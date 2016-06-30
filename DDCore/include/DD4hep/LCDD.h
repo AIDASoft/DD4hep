@@ -54,7 +54,6 @@ namespace DD4hep {
     return vs ;
   }
   
-
   // Foward declarations
   class NamedObject;
 
@@ -67,6 +66,11 @@ namespace DD4hep {
   enum LCDDBuildType {
     BUILD_NONE = 0, BUILD_DEFAULT = 1, BUILD_SIMU = BUILD_DEFAULT, BUILD_RECO, BUILD_DISPLAY, BUILD_ENVELOPE
   };
+
+  /// Namespace for the AIDA detector description toolkit supporting XML utilities
+  namespace XML {
+    class UriReader;
+  }
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
@@ -88,6 +92,7 @@ namespace DD4hep {
     class LCDD {
     public:
       /// Type definition of a map of named handles
+      typedef XML::UriReader UriReader;
       typedef Handle<NamedObject> NamedHandle;
       typedef std::map<std::string, NamedHandle > HandleMap;
       typedef std::map<std::string, std::string> PropertyValues;
@@ -278,11 +283,16 @@ namespace DD4hep {
       /// Add a field component by named reference to the detector description
       virtual LCDD& addField(const Ref_t& field) = 0;
 
-      /// Read compact geometry description or alignment file
+      /// Deprecated call (use fromXML): Read compact geometry description or alignment file
       virtual void fromCompact(const std::string& fname, LCDDBuildType type = BUILD_DEFAULT) = 0;
       /// Read any geometry description or alignment file
       virtual void fromXML(const std::string& fname, LCDDBuildType type = BUILD_DEFAULT) = 0;
-      ///
+      /// Read any geometry description or alignment file with external XML entity resolution
+      virtual void fromXML(const std::string& fname,
+			   UriReader* entity_resolver,
+			   LCDDBuildType type = BUILD_DEFAULT) = 0;
+
+      /// Stupid legacy method
       virtual void dump() const = 0;
       /// Manipulate geometry using facroy converter
       virtual long apply(const char* factory, int argc, char** argv) = 0;

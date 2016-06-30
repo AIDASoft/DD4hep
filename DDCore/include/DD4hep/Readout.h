@@ -81,6 +81,8 @@ namespace DD4hep {
       std::vector<std::string> collectionNames()  const;
       /// Access hit collections if present
       std::vector<const HitCollection*> collections()  const;
+      /// Access number of hit collections
+      size_t numCollections() const;
       /// Assign IDDescription to readout structure
       void setIDDescriptor(const Ref_t& spec) const;
       /// Access IDDescription structure

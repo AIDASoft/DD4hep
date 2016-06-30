@@ -33,6 +33,17 @@ DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionContainer);
 
 /// Standard initializing constructor
 BlockData::BlockData() : Block(), destruct(0), copy(0), type(0)   {
+  InstanceCount::increment(this);
+}
+
+/// Copy constructor
+BlockData::BlockData(const BlockData& c) 
+  : Block(c), destruct(c.destruct), copy(c.copy), type(c.type)   {
+  grammar = 0;
+  pointer = 0;
+  this->bind(c.grammar,c.copy,c.destruct);
+  this->copy(pointer,c.pointer);
+  InstanceCount::increment(this);
 }
 
 /// Standard Destructor
@@ -43,10 +54,11 @@ BlockData::~BlockData()   {
   }
   pointer = 0;
   grammar = 0;
+  InstanceCount::decrement(this);
 }
-#if 0
+
 /// Move the data content: 'from' will be reset to NULL
-void BlockData::move(BlockData& from)   {
+bool BlockData::move(BlockData& from)   {
   pointer = from.pointer;
   grammar = from.grammar;
   ::memcpy(data,from.data,sizeof(data));
@@ -59,10 +71,37 @@ void BlockData::move(BlockData& from)   {
   from.copy = 0;
   from.pointer = 0;
   from.grammar = 0;
+  return true;
 }
-#endif
+
+/// Copy constructor
+BlockData& BlockData::operator=(const BlockData& c)   {
+  if ( this != &c )  {
+    if ( this->grammar == c.grammar )   {
+      if ( destruct )  {
+	(*destruct)(pointer);
+	if ( (type&ALLOC_DATA) == ALLOC_DATA ) ::operator delete(pointer);
+      }
+      pointer = 0;
+      grammar = 0;
+    }
+    if ( this->grammar == 0 )  {
+      this->Block::operator=(c);
+      this->destruct = c.destruct;
+      this->copy = c.copy;
+      this->type = c.type;
+      this->grammar = 0;
+      this->bind(c.grammar,c.copy,c.destruct);
+      this->copy(pointer,c.pointer);
+      return *this;
+    }
+    except("Conditions","You may not bind condition data multiple times!");
+  }
+  return *this;
+}
+
 /// Set data value
-void BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), void (*dtor)(void*))   {
+bool BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), void (*dtor)(void*))   {
   if ( !grammar )  {
     size_t len = g->sizeOf();
     grammar  = g;
@@ -71,7 +110,7 @@ void BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), voi
     (len > sizeof(data))
       ? (pointer=::operator new(len),type=ALLOC_DATA)
       : (pointer=data,type=PLAIN_DATA);
-    return;
+    return true;
   }
   else if ( grammar == g )  {
     // We cannot ingore secondary requests for data bindings.
@@ -79,6 +118,7 @@ void BlockData::bind(const BasicGrammar* g, void (*ctor)(void*,const void*), voi
     except("Conditions","You may not bind conditions multiple times!");
   }
   typeinfoCheck(grammar->type(),g->type(),"Conditions data blocks may not be assigned.");
+  return false;
 }
 
 /// Set data value

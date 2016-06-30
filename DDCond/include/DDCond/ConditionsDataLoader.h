@@ -44,7 +44,8 @@ namespace DD4hep {
      */
     class ConditionsDataLoader : public NamedObject, public PropertyConfigurable   {
     public:
-      typedef std::vector<std::string> Sources;
+      typedef std::pair<std::string, IOV> Source;
+      typedef std::vector<Source> Sources;
       typedef ConditionsDataLoader base_t;
 
     protected:
@@ -67,7 +68,7 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionsDataLoader();
       /// Add data source definition to loader
-      void addSource(const std::string& source);
+      void addSource(const std::string& source, const IOV& iov);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
       virtual size_t load(DetElement det,
                           const std::string& cond,
@@ -78,6 +79,9 @@ namespace DD4hep {
                                 const std::string& cond,
                                 const IOV& req_validity,
                                 RangeConditions& conditions) = 0;
+      virtual size_t update(const IOV& req_validity,
+			    RangeConditions& conditions,
+			    IOV& conditions_validity) = 0;
     };
 
   } /* End namespace Conditions             */

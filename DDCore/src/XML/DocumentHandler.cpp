@@ -479,7 +479,7 @@ Document DocumentHandler::load(const std::string& fname, UriReader* reader) cons
 /// Load XML file and parse it using URI resolver to read data.
 Document DocumentHandler::load(Handle_t base, const XmlChar* fname, UriReader* reader) const  {
   string path = system_path(base, fname);
-  return load(path,0);
+  return load(path,reader);
 }
 
 /// Parse a standalong XML string into a document.

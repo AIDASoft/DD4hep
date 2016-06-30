@@ -16,6 +16,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
 #include "DDCond/ConditionsIOVPool.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsDataLoader.h"
 
 using namespace DD4hep;
@@ -31,13 +32,21 @@ ConditionsIOVPool::~ConditionsIOVPool()  {
   InstanceCount::decrement(this);
 }
 
+bool ConditionsIOVPool::addKey(Condition c)   {
+  // TODO: Should be: det.path()+'#'+c->name; instead of c->comment
+  int hash = c->hash;
+  c->flags |= Interna::ConditionObject::ACTIVE;
+  keys.insert(hash);
+  return true;
+}
+
 void ConditionsIOVPool::__find(DetElement detector,
                                const std::string& condition_name,
                                const IOV& req_validity,
                                RangeConditions& result)
 {
   if ( !entries.empty() )  {
-    const IOV::Key req_key = req_validity.key(); // 8 bytes => better copy!
+    const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
     for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
       if ( IOV::key_contains_range((*i).first, req_key) )  {
         (*i).second->select(detector, condition_name, result);
@@ -66,46 +75,45 @@ void ConditionsIOVPool::__find_range(DetElement detector,
   }
 }
 
+/// Remove all key based pools with an age beyon the minimum age
+int ConditionsIOVPool::clean(int max_age)   {
+  Entries rest;
+  int count = 0;
+  for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
+    ConditionsPool* pool = (*i).second;
+    if ( pool->age_value >= max_age )   {
+      count += pool->count();
+      pool->print("Remove");
+      delete pool;
+    }
+    else
+      rest.insert(make_pair(pool->iov->keyData,pool));
+  }
+  entries = rest;
+  return count;
+}
+
 /// Select all ACTIVE conditions, which do no longer match the IOV requirement
-void ConditionsIOVPool::__select_expired(const IOV& required_validity, RangeConditions& result)  {
+void ConditionsIOVPool::select(const IOV& required_validity, 
+			       RangeConditions& valid,
+			       RangeConditions& expired,
+			       IOV& conditions_validity)
+{
   if ( !entries.empty() )  {
-    const IOV::Key req_key = required_validity.key(); // 8 bytes => better copy!
+    const IOV::Key req_key = required_validity.key(); // 16 bytes => better copy!
     for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
       ConditionsPool* pool = (*i).second;
       if ( !IOV::key_contains_range((*i).first, req_key) )  {
         if ( pool->age_value == ConditionsPool::AGE_NONE ) {
           // Now check the content:
-          pool->select_used(result);
+          pool->select_used(expired);
         }
         ++pool->age_value;
         continue;
       }
+      conditions_validity.iov_intersection((*i).first);
+      pool->select_used(valid);
       pool->age_value = 0;
     }
   }
-}
-
-/// Select all ACTIVE conditions, which do no longer match the IOV requirement
-void ConditionsIOVPool::__update_expired(ConditionsDataLoader& loader,
-                                         ConditionsPool& new_pool,
-                                         RangeConditions& updates,
-                                         const IOV& required_validity)  {
-
-  RangeConditions upda;
-  for(RangeConditions::const_iterator i=updates.begin(); i!=updates.end(); ++i)  {
-    Condition::Object* condition = (*i).ptr();
-    Condition c = new_pool.exists(condition);
-    if ( c.isValid() )  {
-      upda.push_back(c);
-      continue;
-    }
-    size_t items = loader.load(condition->detector,condition->name,required_validity,upda);
-    if ( items < 1 )  {
-      // Error: no such condition
-      except("ConditionsManager","+++ update_expired: Cannot update condition %s.%s [%s] to iov:%s.",
-             condition->detector.path().c_str(), condition->name.c_str(),
-             condition->iov->str().c_str(), required_validity.str().c_str());
-    }
-  }
-  updates = upda;
 }

@@ -1,4 +1,4 @@
-// $Id: $
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -67,7 +67,7 @@ namespace DD4hep {
   }
 
   ConversionArg* _getArgs(void* param)   {
-    ConversionArg* arg = (ConversionArg*)param;
+    ConversionArg* arg = static_cast<ConversionArg*>(param);
     return arg;
   }
   /// Helper: Extract the required detector element from the parsing information

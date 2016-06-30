@@ -15,7 +15,10 @@
 #define DDCOND_CONDITIONSLINEARPOOL_H
 
 // Framework include files
+#include "DD4hep/objects/DetectorInterna.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsPool.h"
+#include "DDCond/ConditionsInterna.h"
 
 // C/C++ include files
 #include <list>
@@ -31,44 +34,57 @@ namespace DD4hep {
      *
      *  \author  M.Frank
      *  \version 1.0
-     *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_CONDITIONS
      */
     template<typename MAPPING, typename BASE> 
     class ConditionsLinearPool : public BASE   {
     protected:
+      typedef BASE    Base;
       typedef MAPPING Mapping;
-      Mapping      m_conditions;
-
+      Mapping           m_conditions;
     public:
       /// Default constructor
-      ConditionsLinearPool();
+      ConditionsLinearPool(ConditionsManager mgr);
 
       /// Default destructor
       virtual ~ConditionsLinearPool();
 
+      /// Total entry count
+      virtual int count()  const   {
+	return (int)m_conditions.size();
+      }
+      /// Check if detector and name match
+      bool __match(const DetElement::Object* det, int hash, const Condition::Object* c)  const {
+        return det == c->detector.ptr() && hash == c->hash;
+      }
+
       /// Register a new condition to this pool
       virtual void insert(Condition condition)    {
-        m_conditions.insert(m_conditions.end(),condition.ptr());
+	Condition::Object* c = condition.access();
+        m_conditions.insert(m_conditions.end(),c);
       }
 
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& new_entries)   {
-        for(RangeConditions::iterator i=new_entries.begin(); i!=new_entries.end(); ++i)
-          m_conditions.insert(m_conditions.end(),(*i).ptr());
+        for(RangeConditions::iterator i=new_entries.begin(); i!=new_entries.end(); ++i)  {
+	  Condition::Object* c = (*i).access();
+          m_conditions.insert(m_conditions.end(),c);
+	}
       }
 
       /// Register a new condition to this pool
       virtual Condition insertEntry(ConditionsPool* pool, Entry* cond)   {
-        MAPPING& m = this->ConditionsLinearPool<MAPPING,BASE>::m_conditions;
         Condition c = this->create(pool, cond);
-        m.insert(m.end(),c.ptr());
+	this->insert(c);
         return c;
       }
 
       /// Full cleanup of all managed conditions.
       virtual void clear()   {
-        for_each(m_conditions.begin(), m_conditions.end(), DD4hep::deleteObject<Condition::Object>);
+	for(typename Mapping::iterator i=m_conditions.begin(); i != m_conditions.end(); ++i)
+	  this->ConditionsPool::onRemove(*i);
+	for(typename Mapping::iterator i=m_conditions.begin(); i != m_conditions.end(); ++i)
+	  DD4hep::deleteObject<Condition::Object>(*i);
         m_conditions.clear();
       }
 
@@ -78,7 +94,7 @@ namespace DD4hep {
           int hash = DD4hep::hash32(cond_name);
           DetElement::Object* ptr = det.ptr();
           for(typename Mapping::const_iterator i=m_conditions.begin(); i!=m_conditions.end(); ++i)
-            if ( this->ConditionsPool::match(ptr,hash,(*i)) ) return *i;
+            if ( __match(ptr,hash,(*i)) ) return *i;
         }
         return Condition();
       }
@@ -88,7 +104,7 @@ namespace DD4hep {
         int hash = DD4hep::hash32(test->name);
         DetElement::Object* ptr = test->detector.ptr();
         for(typename Mapping::const_iterator i=m_conditions.begin(); i!=m_conditions.end(); ++i)  {
-          if ( this->ConditionsPool::match(ptr,hash,(*i)) ) return *i;
+          if ( __match(ptr,hash,(*i)) ) return *i;
         }
         return Condition();
       }
@@ -99,7 +115,7 @@ namespace DD4hep {
           int hash = DD4hep::hash32(cond_name);
           DetElement::Object* ptr = det.ptr();
           for(typename Mapping::const_iterator i=m_conditions.begin(); i!=m_conditions.end(); ++i)
-            if ( this->ConditionsPool::match(ptr,hash,(*i)) ) result.push_back(*i); 
+            if ( __match(ptr,hash,(*i)) ) result.push_back(*i); 
         }
       }
 
@@ -127,6 +143,13 @@ namespace DD4hep {
           result.push_back(*i); 
       }
 
+      /// Select the conditons, used also by the DetElement of the condition
+      virtual void select_all(ConditionsPool& selection_pool) {
+        for(typename Mapping::const_iterator i=m_conditions.begin(); i!=m_conditions.end(); ++i)  {
+	  selection_pool.insert(*i);
+	}
+      }
+
       /// Select the conditions matching the DetElement and the conditions name
       virtual void select_range(DetElement det,
                                 const std::string& cond_name,
@@ -139,7 +162,7 @@ namespace DD4hep {
           int hash = DD4hep::hash32(cond_name);
           DetElement::Object* ptr = det.ptr();
           for(typename Mapping::const_iterator i=m_conditions.begin(); i!=m_conditions.end(); ++i)  {
-            if ( this->ConditionsPool::match(ptr,hash,(*i)) )   {
+            if ( __match(ptr,hash,(*i)) )   {
               const IOV* _iov = (*i)->iov;
               unsigned int typ = _iov->iovType ? _iov->iovType->type : _iov->type;
               if ( req_typ == typ )   {
@@ -157,42 +180,65 @@ namespace DD4hep {
           }
         }
       }
-
     };
 
-
-    template<typename MAPPING> class ConditionsLinearReplacementPool 
-      : public ConditionsLinearPool<MAPPING,ReplacementPool>
+    /// Class implementing the conditions user pool for a given IOV type
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    template<typename MAPPING> class ConditionsLinearUserPool 
+      : public ConditionsLinearPool<MAPPING,UserPool>
     {
+      IOV m_iov;
     public:
       /// Default constructor
-      ConditionsLinearReplacementPool() : ConditionsLinearPool<MAPPING,ReplacementPool>() {}
-
-      /// Default destructor
-      virtual ~ConditionsLinearReplacementPool()  {}
-      /// Full cleanup of all managed conditions.
-      virtual void clear()   {
-        this->ConditionsLinearPool<MAPPING,ReplacementPool>::m_conditions.clear();
+      ConditionsLinearUserPool(ConditionsManager mgr) 
+	: ConditionsLinearPool<MAPPING,UserPool>(mgr), m_iov(0)
+      {
+	this->ConditionsPool::iov = &m_iov;
+	this->ConditionsPool::iovType = 0;
       }
 
-      /// Pop conditions. May overloade for performance reasons!
-      virtual void popEntries(RangeConditions& entries)   {
-        MAPPING& m = this->ConditionsLinearPool<MAPPING,ReplacementPool>::m_conditions;
-        if ( !m.empty() )  {
-          for(typename MAPPING::iterator i=m.begin(); i!=m.end(); ++i)
-            entries.push_back((*i));        
-          m.clear();
-        }
+      /// Default destructor
+      virtual ~ConditionsLinearUserPool()  {}
+
+      /// Access the interval of validity for this user pool
+      virtual const IOV& validity() const  {
+	return this->m_iov;
+      }
+      /// Update interval of validity for this user pool (should only be called by ConditionsManager)
+      virtual void setValidity(const IOV& value)   {
+	this->m_iov = value;
+	this->ConditionsPool::iovType = m_iov.iovType;
+      }
+
+      /// Full cleanup of all managed conditions.
+      virtual void clear()   {
+	m_iov = IOV(0);
+        this->ConditionsLinearPool<MAPPING,UserPool>::m_conditions.clear();
       }
     };
 
 
+    /// Class implementing the conditions update pool for a given IOV type
+    /**
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
     template<typename MAPPING> class ConditionsLinearUpdatePool 
       : public ConditionsLinearPool<MAPPING,UpdatePool>
     {
     public:
       /// Default constructor
-      ConditionsLinearUpdatePool() : ConditionsLinearPool<MAPPING,UpdatePool>() {}
+      ConditionsLinearUpdatePool(ConditionsManager mgr)
+	: ConditionsLinearPool<MAPPING,UpdatePool>(mgr) 
+      {
+      }
 
       /// Default destructor
       virtual ~ConditionsLinearUpdatePool()  {}
@@ -231,15 +277,14 @@ namespace DD4hep {
 
 // Framework include files
 //#include "DDCond/ConditionsLinearPool.h"
+#include "DD4hep/Printout.h"
 #include "DD4hep/InstanceCount.h"
-#include "DD4hep/objects/DetectorInterna.h"
-#include "DD4hep/objects/ConditionsInterna.h"
 
 using namespace DD4hep::Conditions;
 
 /// Default constructor
 template<typename MAPPING, typename BASE>
-ConditionsLinearPool<MAPPING,BASE>::ConditionsLinearPool() : BASE() {
+ConditionsLinearPool<MAPPING,BASE>::ConditionsLinearPool(ConditionsManager mgr) : BASE(mgr)  {
   InstanceCount::increment(this);
 }
 
@@ -252,21 +297,29 @@ ConditionsLinearPool<MAPPING,BASE>::~ConditionsLinearPool()  {
 
 #include "DD4hep/Factories.h"
 namespace {
-  void* create_vector_pool(DD4hep::Geometry::LCDD&, int, char**)
-  {  return new ConditionsLinearPool<std::vector<Condition::Object*> , ConditionsPool>();  }
-  void* create_list_pool(DD4hep::Geometry::LCDD&, int, char**)
-  {  return new ConditionsLinearPool<std::list<Condition::Object*> , ConditionsPool>();    }
-  void* create_replacement_pool(DD4hep::Geometry::LCDD&, int, char**)  {
-    ReplacementPool* pool = new ConditionsLinearReplacementPool<std::vector<Condition::Object*> >();
+  ConditionsManager _mgr(int argc, char** argv)  {
+    if ( argc > 0 )  {
+      ConditionsManager::Object* m = (ConditionsManager::Object*)argv[0];
+      return m;
+    }
+    DD4hep::except("ConditionsLinearPool","++ Insufficient arguments: arg[0] = ConditionManager!");
+    return ConditionsManager(0);
+  }
+  void* create_vector_pool(DD4hep::Geometry::LCDD&, int argc, char** argv)
+  {  return new ConditionsLinearPool<std::vector<Condition::Object*> , ConditionsPool>(_mgr(argc,argv));  }
+  void* create_list_pool(DD4hep::Geometry::LCDD&, int argc, char** argv)
+  {  return new ConditionsLinearPool<std::list<Condition::Object*> , ConditionsPool>(_mgr(argc,argv));    }
+  void* create_user_pool(DD4hep::Geometry::LCDD&, int argc, char** argv)  {
+    UserPool* pool = new ConditionsLinearUserPool<std::vector<Condition::Object*> >(_mgr(argc,argv));
     return pool;
   }
-  void* create_update_pool(DD4hep::Geometry::LCDD&, int, char**)  {
-    UpdatePool* pool = new ConditionsLinearUpdatePool<std::vector<Condition::Object*> >();
+  void* create_update_pool(DD4hep::Geometry::LCDD&, int argc, char** argv)  {
+    UpdatePool* pool = new ConditionsLinearUpdatePool<std::vector<Condition::Object*> >(_mgr(argc,argv));
     return pool;
   }
 }
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearPool,      create_vector_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearListPool,  create_list_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearVectorPool,create_vector_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearReplacementPool, create_replacement_pool)
-DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearUpdatePool, create_update_pool)
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearPool,            create_vector_pool)
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearListPool,        create_list_pool)
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearVectorPool,      create_vector_pool)
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearUserPool,        create_user_pool)
+DECLARE_LCDD_CONSTRUCTOR(DD4hep_ConditionsLinearUpdatePool,      create_update_pool)

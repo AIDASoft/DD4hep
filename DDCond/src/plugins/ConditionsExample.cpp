@@ -13,7 +13,7 @@
 //==========================================================================
 
 // Framework include files
-#include "ConditionsTest.h"
+#include "DDCond/ConditionsTest.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -64,16 +64,15 @@ namespace  {
   }
 
   void print_tpc_discrete_conditions(Test::TestEnv& env, int epoch_min, int epoch_max, int run_min, int run_max)   {
+    dd4hep_ptr<ConditionsPool> pool_run, pool_epoch;
     IOV iov_epoch(env.epoch), iov_run(env.run);
-    iov_epoch.keyData.first  = epoch_min;
-    iov_epoch.keyData.second = epoch_max;
-    iov_run.keyData.first    = run_min;
-    iov_run.keyData.second   = run_max;
+    iov_epoch.set(epoch_min, epoch_max);
+    iov_run.set(run_min, run_max);
 
-    env.manager.prepare(iov_run);
-    env.manager.enable(iov_run);
-    env.manager.prepare(iov_epoch);
-    env.manager.enable(iov_epoch);
+    env.manager.prepare(iov_run, pool_run);
+    env.manager.enable(iov_run, pool_run);
+    env.manager.prepare(iov_epoch, pool_epoch);
+    env.manager.enable(iov_epoch, pool_epoch);
     print_tpc_discrete_conditions(env, iov_epoch, iov_run);
   }
 
@@ -86,8 +85,7 @@ namespace  {
   void print_tpc_range_conditions(Test::TestEnv& env, int run_min, int run_max)   {
     RangeConditions cond;
     IOV iov_run(env.run);
-    iov_run.keyData.first    = run_min;
-    iov_run.keyData.second   = run_max;
+    iov_run.set(run_min, run_max);
     try {
       cond = env.manager.getRange(env.detector,"TPC_A_align",iov_run);
       Test::print_conditions<void>(cond);
@@ -108,17 +106,17 @@ namespace  {
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Test::TestEnv env(lcdd, "TPC");
 
-    env.add_xml_data_source("/examples/Conditions/xml/TPC.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC.xml","1396887257,1396887257#epoch");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml","563543#run");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml","234567#run");
     print_tpc_discrete_conditions(env);
     env.dump_conditions_pools();
 
     print_tpc_range_conditions(env,234567,563543);  // Should fail !
     print_tpc_range_conditions(env,123456,563543);  // Should fail !
 
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_filler.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_123456.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_filler.xml","0,999999#run");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_123456.xml","123456#run");
     print_tpc_range_conditions(env,123456,900000);  // Now it should succeed
     return 1;
   }
@@ -141,37 +139,36 @@ namespace  {
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Test::TestEnv env(lcdd, "TPC");
     
-    env.add_xml_data_source("/examples/Conditions/xml/TPC.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_filler.xml");
-    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_123456.xml");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC.xml","1396887257,1396887257#epoch");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_563543.xml","563543#run");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_234567.xml","234567#run");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_filler.xml","0,999999#run");
+    env.add_xml_data_source("/examples/Conditions/xml/TPC_run_123456.xml","123456#run");
 
     
     IOV iov_epoch(env.epoch), iov_run(env.run);
-    iov_epoch.keyData.first  = 1396887257;
-    iov_epoch.keyData.second = 1396887257;
-    iov_run.keyData.first    = 563543;
-    iov_run.keyData.second   = 563543;
+    dd4hep_ptr<ConditionsPool> pool_run, pool_epoch;
+    iov_epoch.set(1396887257);
+    iov_run.set(563543);
 
-    env.manager.prepare(iov_run);
-    env.manager.enable(iov_run);
-    env.manager.prepare(iov_epoch);
-    env.manager.enable(iov_epoch);
+    env.manager.prepare(iov_run, pool_run);
+    env.manager.enable(iov_run, pool_run);
+    env.manager.prepare(iov_epoch, pool_epoch);
+    env.manager.enable(iov_epoch, pool_epoch);
     print_tpc_epoch_conditions(env, iov_epoch);
     print_tpc_run_conditions(env, iov_run, true);
     printout(INFO,"Example1","===================================================================");
 
     printout(INFO,"Example1","===================================================================");
-    iov_run.keyData.first = iov_run.keyData.second = 123456;
-    env.manager.prepare(iov_run);
-    iov_run.keyData.first = iov_run.keyData.second = 563543;
+    iov_run.set(123456);
+    env.manager.prepare(iov_run, pool_run);
+    iov_run.set(563543);
     print_tpc_run_conditions(env, iov_run, false);
     printout(INFO,"Example1","===================================================================");
 
     printout(INFO,"Example1","===================================================================");
-    iov_run.keyData.first = iov_run.keyData.second = 123456;
-    env.manager.enable(iov_run);
+    iov_run.set(123456);
+    env.manager.enable(iov_run, pool_run);
     print_tpc_run_conditions(env, iov_run, true);
     return 1;
   }

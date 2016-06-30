@@ -43,9 +43,10 @@ LCDDLoad::LCDDLoad(Geometry::LCDD* lcdd) : m_lcdd(lcdd)  {
 LCDDLoad::~LCDDLoad() {
 }
 
-void LCDDLoad::processXML(const string& xmlfile) {
+/// Process XML unit and adopt all data from source structure.
+void LCDDLoad::processXML(const string& xmlfile, XML::UriReader* entity_resolver) {
   try {
-    XML::DocumentHolder doc(XML::DocumentHandler().load(xmlfile));
+    XML::DocumentHolder doc(XML::DocumentHandler().load(xmlfile,entity_resolver));
     XML::Handle_t handle = doc.root();
     processXMLElement(xmlfile,handle);
   }
@@ -61,10 +62,11 @@ void LCDDLoad::processXML(const string& xmlfile) {
 }
 
 
-void LCDDLoad::processXML(const XML::Handle_t& base, const string& xmlfile) {
+/// Process XML unit and adopt all data from source structure.
+void LCDDLoad::processXML(const XML::Handle_t& base, const string& xmlfile, XML::UriReader* entity_resolver) {
   try {
     XML::Strng_t xml(xmlfile);
-    XML::DocumentHolder doc(XML::DocumentHandler().load(base,xml));
+    XML::DocumentHolder doc(XML::DocumentHandler().load(base,xml,entity_resolver));
     XML::Handle_t handle = doc.root();
     processXMLElement(xmlfile,handle);
   }
@@ -79,6 +81,7 @@ void LCDDLoad::processXML(const XML::Handle_t& base, const string& xmlfile) {
   }
 }
 
+/// Process a given DOM (sub-) tree
 void LCDDLoad::processXMLElement(const std::string& xmlfile, const XML::Handle_t& xml_root) {
   string tag = xml_root.tag();
   string type = tag + "_XML_reader";
@@ -98,6 +101,7 @@ void LCDDLoad::processXMLElement(const std::string& xmlfile, const XML::Handle_t
   }
 }
 
+/// Process a given DOM (sub-) tree
 void LCDDLoad::processXMLElement(const XML::Handle_t& xml_root, LCDDBuildType /* type */) {
   string tag = xml_root.tag();
   string type = tag + "_XML_reader";
@@ -113,7 +117,7 @@ void LCDDLoad::processXMLElement(const XML::Handle_t& xml_root, LCDDBuildType /*
     }
   }
   result = *(long*) result;
-  if (result != 1) {
+  if (result != 1)   {
     throw runtime_error("DD4hep: Failed to parse the XML element with tag " 
 			+ tag + " with the plugin " + type);
   }

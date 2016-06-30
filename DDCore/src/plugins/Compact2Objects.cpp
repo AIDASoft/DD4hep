@@ -50,18 +50,18 @@ namespace DD4hep {
     struct AlignmentFile;
     struct DetElementInclude {};
   }
-  template <> void Converter<Plugin>::operator()(xml_h e) const;
-  template <> void Converter<Constant>::operator()(xml_h e) const;
-  template <> void Converter<Material>::operator()(xml_h e) const;
-  template <> void Converter<Atom>::operator()(xml_h e) const;
-  template <> void Converter<VisAttr>::operator()(xml_h e) const;
-  template <> void Converter<AlignmentEntry>::operator()(xml_h e) const;
-  template <> void Converter<Region>::operator()(xml_h e) const;
-  template <> void Converter<Readout>::operator()(xml_h e) const;
-  template <> void Converter<Segmentation>::operator()(xml_h e) const;
-  template <> void Converter<LimitSet>::operator()(xml_h e) const;
-  template <> void Converter<Property>::operator()(xml_h e) const;
-  template <> void Converter<CartesianField>::operator()(xml_h e) const;
+  template <> void Converter<Plugin>::operator()(xml_h element) const;
+  template <> void Converter<Constant>::operator()(xml_h element) const;
+  template <> void Converter<Material>::operator()(xml_h element) const;
+  template <> void Converter<Atom>::operator()(xml_h element) const;
+  template <> void Converter<VisAttr>::operator()(xml_h element) const;
+  template <> void Converter<AlignmentEntry>::operator()(xml_h element) const;
+  template <> void Converter<Region>::operator()(xml_h element) const;
+  template <> void Converter<Readout>::operator()(xml_h element) const;
+  template <> void Converter<Segmentation>::operator()(xml_h element) const;
+  template <> void Converter<LimitSet>::operator()(xml_h element) const;
+  template <> void Converter<Property>::operator()(xml_h element) const;
+  template <> void Converter<CartesianField>::operator()(xml_h element) const;
   template <> void Converter<SensitiveDetector>::operator()(xml_h element) const;
   template <> void Converter<DetElement>::operator()(xml_h element) const;
   template <> void Converter<GdmlFile>::operator()(xml_h element) const;
@@ -1018,15 +1018,25 @@ template <> void Converter<Compact>::operator()(xml_h element) const {
 }
 
 #ifdef _WIN32
-template Converter<Atom>;
-template Converter<Compact>;
-template Converter<Readout>;
-template Converter<VisAttr>;
-template Converter<Constant>;
-template Converter<LimitSet>;
-template Converter<Material>;
-template Converter<DetElement>;
-template Converter<AlignmentEntry>;
-template Converter<SensitiveDetector>;
-template Converter<CartesianField>;
+  template Converter<Plugin>;
+  template Converter<Constant>;
+  template Converter<Material>;
+  template Converter<Atom>;
+  template Converter<VisAttr>;
+  template Converter<AlignmentEntry>;
+  template Converter<Region>;
+  template Converter<Readout>;
+  template Converter<Segmentation>;
+  template Converter<LimitSet>;
+  template Converter<Property>;
+  template Converter<CartesianField>;
+  template Converter<SensitiveDetector>;
+  template Converter<DetElement>;
+  template Converter<GdmlFile>;
+  template Converter<XMLFile>;
+  template Converter<AlignmentFile>;
+  template Converter<Header>;
+  template Converter<DetElementInclude>;
+  template Converter<Compact>;
+
 #endif

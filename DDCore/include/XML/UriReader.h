@@ -35,13 +35,53 @@ namespace DD4hep {
      */
     class UriReader {
     public:
+      struct UserContext {
+	UserContext() {}
+	virtual ~UserContext() {}
+      };
+    public:
       /// Default constructor
       UriReader()  {}
       /// Default destructor
       virtual ~UriReader();
+      /// Access to local context
+      virtual UserContext* context()  {  return 0;  }
       /// Resolve a given URI to a string containing the data
-      virtual bool load(const std::string& system_id, std::string& data) = 0;
+      virtual bool load(const std::string& system_id, std::string& data);
+      /// Resolve a given URI to a string containing the data with context
+      virtual bool load(const std::string& system_id, UserContext* context, std::string& data) = 0;
     };
+
+    /// Class supporting to read data given a URI
+    /**
+     *  Wrapper to read XML URI using a virtual reader instance.
+     *  This implementation allows to externally chain an argument 
+     *  structure to the resolution function, which allows to set/retrieve
+     *  further arguments such as e.g. conditions IOVs.
+     *
+     *  \author   M.Frank
+     *  \version  1.0
+     *  \ingroup DD4HEP_XML
+     */
+    class UriContextReader : public UriReader  {
+    protected:
+      /// Pointer to true reader object
+      UriReader* m_reader;
+      /// Pointer to user context
+      UriReader::UserContext* m_context;
+    public:
+      /// Default constructor
+      UriContextReader(UriReader* reader, UriReader::UserContext* ctxt);
+      /// Default destructor
+      virtual ~UriContextReader();
+      /// Access to local context
+      virtual UserContext* context()  {  return m_context;  }
+      /// Resolve a given URI to a string containing the data
+      virtual bool load(const std::string& system_id, std::string& data);
+      /// Resolve a given URI to a string containing the data with context
+      virtual bool load(const std::string& system_id, UserContext* context, std::string& data);
+    };
+
   }       /* End namespace XML               */
 }         /* End namespace DD4hep            */
 #endif    /* DD4HEP_XML_URIREADER_H          */

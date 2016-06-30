@@ -135,5 +135,19 @@ namespace DD4hep {
     static void doTracing(bool value);
   };
 
+  /// Helper class to count call stack depths of certain functions
+  /**
+   * Small class to count re-entrancy calls
+   *
+   *  \author  M.Frank
+   *  \version 1.0
+   *  \ingroup DD4HEP
+   */
+  template <typename T> struct Increment {
+    static int& counter() { static int cnt=0; return cnt; }
+    Increment() { ++counter(); }
+    ~Increment() { --counter(); }
+  };
+
 } /* End namespace DD4hep             */
 #endif    /* DD4HEP_GEOMETRY_INSTANCECOUNT_H     */

@@ -211,58 +211,59 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
     bool m_printVolIDs;
     bool m_printPositions;
     bool m_printSensitivesOnly;
-    Actor(int argc, char** argv) 
+    Actor(int ac, char** av) 
       : m_printVolIDs(false), m_printPositions(false), m_printSensitivesOnly(false)
     {
-      for(int i=0; i<argc; ++i)  {
-	char c = ::tolower(argv[i][0]);
-	if ( c == 'v' ) m_printVolIDs = true;
-	else if ( c == 'p' ) m_printPositions = true;
-	else if ( c == 's' ) m_printSensitivesOnly = true;
+      for(int i=0; i<ac; ++i)  {
+        char c = ::tolower(av[i][0]);
+        if ( c == 'v' ) m_printVolIDs = true;
+        else if ( c == 'p' ) m_printPositions = true;
+        else if ( c == 's' ) m_printSensitivesOnly = true;
       }
     }
+
     long dump(TGeoNode* ideal, TGeoNode* aligned,int level, VIDs volids) const {
       char fmt[128];
       string opt_info;
       PlacedVolume pv(ideal);
       bool sensitive = false;
       if ( m_printPositions || m_printVolIDs )  {
-	stringstream log;
-	if ( m_printPositions )  {
-	  const double* trans = ideal->GetMatrix()->GetTranslation();
-	  ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
-	  log << fmt;
-	}
-	// Top level volume! have no volume ids
-	if ( m_printVolIDs && ideal && ideal->GetMotherVolume() )  {
-	  VIDs vid = pv.volIDs();
-	  if ( !vid.empty() )  {
-	    sensitive = true;
-	    log << " VolID: ";
-	    volids.std::vector<VID>::insert(volids.end(),vid.begin(),vid.end());
-	    for(VIDs::const_iterator i=volids.begin(); i!=volids.end(); ++i)  {
-	      ::snprintf(fmt, sizeof(fmt), "%s:%2d ",(*i).first.c_str(), (*i).second);
-	      log << fmt;
-	    }
-	  }
-	}
-	opt_info = log.str();
+        stringstream log;
+        if ( m_printPositions )  {
+          const double* trans = ideal->GetMatrix()->GetTranslation();
+          ::snprintf(fmt, sizeof(fmt), "Pos: (%f,%f,%f) ",trans[0],trans[1],trans[2]);
+          log << fmt;
+        }
+        // Top level volume! have no volume ids
+        if ( m_printVolIDs && ideal && ideal->GetMotherVolume() )  {
+          VIDs vid = pv.volIDs();
+          if ( !vid.empty() )  {
+            sensitive = true;
+            log << " VolID: ";
+            volids.std::vector<VID>::insert(volids.end(),vid.begin(),vid.end());
+            for(VIDs::const_iterator i=volids.begin(); i!=volids.end(); ++i)  {
+              ::snprintf(fmt, sizeof(fmt), "%s:%2d ",(*i).first.c_str(), (*i).second);
+              log << fmt;
+            }
+          }
+        }
+        opt_info = log.str();
       }
       TGeoVolume* volume = ideal->GetVolume();
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
-	if ( ideal == aligned )  {
-	  ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] %%s",
-		     level+1,2*level+1,(void*)ideal);
-	}
-	else  {
-	  ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %%s",
-		     level+1,2*level+1,(void*)ideal,(void*)aligned);
-	}
-	printout(INFO,"+++",fmt,"",
-		 aligned->GetName(),
-		 volume->GetTitle(),
-		 volume->GetShape()->IsA()->GetName(),
-		 opt_info.c_str());
+        if ( ideal == aligned )  {
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] %%s",
+                     level+1,2*level+1,(void*)ideal);
+        }
+        else  {
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %%s",
+                     level+1,2*level+1,(void*)ideal,(void*)aligned);
+        }
+        printout(INFO,"+++",fmt,"",
+                 aligned->GetName(),
+                 volume->GetTitle(),
+                 volume->GetShape()->IsA()->GetName(),
+                 opt_info.c_str());
       }
       for (Int_t idau = 0, ndau = aligned->GetNdaughters(); idau < ndau; ++idau)  {
         TGeoNode*   ideal_daughter   = ideal->GetDaughter(idau);

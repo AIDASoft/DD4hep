@@ -278,21 +278,27 @@ namespace DD4hep {
   template<typename T> inline int eval_obj(T* p, const std::string& str)  {
     return BasicGrammar::instance<T>().fromString(p,pre_parse_obj(str));
   }
+
+  /// User object evaluator
+  /// Do NOTHING version! Function present to formally satisfy code. User implementation required
+  template<typename T> inline int eval_none(T*, const std::string&)  {
+    return 1;
+  }
   
   // Containers of objects are not handled!
   
 }      // End namespace DD4hep
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)  \
-namespace DD4hep {                            \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                           \
+namespace DD4hep {                                                     \
   template<> const BasicGrammar& BasicGrammar::instance<x>()  { static Grammar<x> s; return s;}}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)  \
-  namespace DD4hep {                                                    \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)                      \
+  namespace DD4hep {                                                   \
     template<> int Grammar<x >::evaluate(void* p, const std::string& v) const { return func ((x*)p,v); }}
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)    \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)          \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR(x,func)                           \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_TYPE(x)                                 \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)

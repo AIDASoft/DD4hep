@@ -14,7 +14,8 @@
 
 // Framework include files
 #include "DD4hep/DetectorTools.h"
-#include "ConditionsTest.h"
+#include "DDCond/ConditionsTest.h"
+#include "DD4hep/objects/ConditionsInterna.h"
 
 // C/C++ include files
 #include <vector>
@@ -178,7 +179,7 @@ Test::TestEnv::TestEnv(LCDD& _lcdd, const string& detector_name)
   manager["LoaderType"]     = "multi";
   manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
   manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-  manager["ReplacementPoolType"] = "DD4hep_ConditionsLinearReplacementPool";
+  manager["UserPoolType"]   = "DD4hep_ConditionsLinearUserPool";
   manager->initialize();
   detector = lcdd.detector(detector_name);
   if ( detector.isValid() )  {
@@ -200,11 +201,12 @@ DetElement Test::TestEnv::daughter(const string& sub_path)  const  {
   return DD4hep::Geometry::DetectorTools::findDaughterElement(detector,sub_path);
 }
 
-void Test::TestEnv::add_xml_data_source(const string& file)   {
+void Test::TestEnv::add_xml_data_source(const string& file, const string& iov_str)   {
   string source = "xml:"+string(::getenv("DD4hepINSTALL"))+file;
-  this->loader->addSource(source);
+  IOV iov(0);
+  this->manager->fromString(iov_str, iov);
+  this->loader->addSource(source, iov);
 }
-
 
 void Test::TestEnv::dump_conditions_pools()
 {

@@ -16,9 +16,9 @@
 
 // Framework include files
 #include "DD4hep/Mutex.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
-#include "DD4hep/NamedObject.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DDCond/ConditionsManager.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -46,18 +46,27 @@ namespace DD4hep {
      *  \ingroup DD4HEP_CONDITIONS
      */
     class ConditionsPool : public NamedObject {
-      
+    protected:
+      /// Handle to conditions manager object
+      ConditionsManager m_manager;
+
     public:
-      enum { AGE_NONE = 0, 
-             AGE_ANY  = 9999999,
+      enum { AGE_NONE    = 0, 
+             AGE_ANY     = 9999999,
              AGE_EXPIRED = 12345678
       };
-
+      enum { NO_POOL_TYPE     = 0,
+	     UPDATE_POOL_TYPE = 1,
+	     USER_POOL_TYPE   = 2
+      };
+      /// IOV type of the conditions hosted by this pool
       const IOVType*   iovType;
+      /// The IOV of the conditions hosted
       IOV*             iov;
-      /// Temporary buffer
-      ReplacementPool* updates;
+      /// Aging value
       int              age_value;
+      /// Pool type (regular, user, ipdate,...)
+      int              pool_type;
 
     protected:
 
@@ -69,16 +78,17 @@ namespace DD4hep {
        */
       virtual Condition create(ConditionsPool* pool, const Entry* cond);
 
-      /// Check if detector and name match
-      bool match(const DetElement::Object* det, int hash, const Condition::Object* c)  const {
-        return det == c->detector.ptr() && hash == c->hash;
-      }
-
     public:
       /// Default constructor
-      ConditionsPool();
+      ConditionsPool(ConditionsManager mgr);
       /// Default destructor. Note: pool must be cleared by the subclass!
       virtual ~ConditionsPool();
+      /// Print pool basics
+      void print(const std::string& opt)   const;
+      /// Listener invocation when a condition is registered to the cache
+      void onRegister(Condition condition);
+      /// Listener invocation when a condition is deregistered from the cache
+      void onRemove(Condition condition);
       /// Register a new condition to this pool
       virtual void insert(Condition cond) = 0;
       /// Register a new condition to this pool. May overload for performance reasons.
@@ -93,8 +103,12 @@ namespace DD4hep {
       virtual void select(DetElement det, const std::string& cond_name, RangeConditions& result) = 0;
       /// Select all conditions contained
       virtual void select_all(RangeConditions& result) = 0;
+      /// Select all conditions contained
+      virtual void select_all(ConditionsPool& selection_pool) = 0;
       /// Select the conditons, used also by the DetElement of the condition
       virtual void select_used(RangeConditions& result) = 0;
+      /// Total entry count
+      virtual int count()  const = 0;
     };
 
     /// Interface for conditions pool optimized to host conditions updates.
@@ -111,9 +125,11 @@ namespace DD4hep {
 
     public:
       /// Default constructor
-      UpdatePool();
+      UpdatePool(ConditionsManager mgr);
       /// Default destructor.
       virtual ~UpdatePool();
+      /// Pool type identifier
+      static int poolType()  {  return UPDATE_POOL_TYPE; }
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
       virtual void popEntries(UpdateEntries& entries) = 0;
       /// Register a new condition to this pool
@@ -130,14 +146,18 @@ namespace DD4hep {
      *  \author  M.Frank
      *  \version 1.0
      */
-    class ReplacementPool : public ConditionsPool  {
+    class UserPool : public ConditionsPool  {
     public:
       /// Default constructor
-      ReplacementPool();
+      UserPool(ConditionsManager mgr);
       /// Default destructor.
-      virtual ~ReplacementPool();
-      /// Pop conditions. May overloade for performance reasons!
-      virtual void popEntries(RangeConditions& entries) = 0;
+      virtual ~UserPool();
+      /// Pool type identifier
+      static int poolType()  {  return USER_POOL_TYPE; }
+      /// Access the interval of validity for this user pool
+      virtual const IOV& validity() const = 0;
+      /// Update interval of validity for this user pool (should only be called by ConditionsManager)
+      virtual void setValidity(const IOV& value) = 0;
     };
 
   } /* End namespace Conditions             */

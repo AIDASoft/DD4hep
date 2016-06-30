@@ -73,13 +73,11 @@ namespace DD4hep {
     class IOV   {
       friend class Condition;
     private:
-      /// No IOC copies!
-      explicit IOV(const IOV&) {}
       /// Initializing constructor: Does not set reference to IOVType !
       explicit IOV();
     public:
       /// Key definition
-      typedef std::pair<int,int> Key;
+      typedef std::pair<long,long> Key;
 
       const IOVType* iovType;
       Key            keyData;
@@ -89,6 +87,11 @@ namespace DD4hep {
 
       /// Initializing constructor
       explicit IOV(const IOVType* typ);
+      /// Copy constructor
+      explicit IOV(const IOV& copy);
+      /// Copy constructor
+      explicit IOV(const IOVType* typ, const Key& key);
+
       /// Standard Destructor
       ~IOV();
       /// Move the data content: 'from' will be reset to NULL
@@ -101,6 +104,26 @@ namespace DD4hep {
       bool is_discrete() const           {  return keyData.first == keyData.second;  }
       /// Get the local key of the IOV
       Key  key() const                   {  return keyData;                          }
+
+      /// Set discrete IOV value
+      void set(const Key& value);
+      /// Set discrete IOV value
+      void set(Key::first_type value);
+      /// Set range IOV value
+      void set(Key::first_type val_1, Key::second_type val_2);
+      /// Set keys to unphysical values (LONG_MAX, LONG_MIN)
+      void reset();
+      /// Invert the key values (first=second and second=first)
+      void invert();
+      /// Set the intersection of this IOV with the argument IOV
+      void iov_intersection(const IOV& comparator);
+       /// Set the intersection of this IOV with the argument IOV
+      void iov_intersection(const IOV::Key& comparator);
+      /// Set the union of this IOV with the argument IOV
+      void iov_union(const IOV& comparator);
+      /// Set the union of this IOV with the argument IOV
+      void iov_union(const IOV::Key& comparator);
+
       /// Check for validity containment
       /** Check if the caller 'iov' is of the same type and the range 
        *  is fully conained by the caller.
@@ -124,6 +147,20 @@ namespace DD4hep {
       /// Check if IOV 'test' has an overlap on the upper interval edge with IOV 'key'
       static bool key_overlaps_higher_end(const Key& key, const Key& test)         
       {   return key.second >= test.first && key.second <= test.second;     }
+      /// Check if IOV 'test' has an overlap on the upper interval edge with IOV 'key'
+      static bool key_partially_contained(const Key& key, const Key& test)         
+      {   
+	return 
+	  (test.first <= key.first  && key.second   >= test.second) || // test fully contained in key
+	  (test.first <= key.first  && key.first    <= test.second) || // test overlaps left edge of key
+	  (test.first <= key.second && key.second   <= test.second);   // test overlaps right edge of key
+      }
+      /// Check if IOV 'test' is of same type and is fully contained in iov
+      static bool full_match(const IOV& iov, const IOV& test)
+      {   return same_type(iov,test) && key_is_contained(iov.keyData,test.keyData);      }
+      /// Check if IOV 'test' is of same type and is at least partially contained in iov
+      static bool partial_match(const IOV& iov, const IOV& test)
+      {   return same_type(iov,test) && key_partially_contained(iov.keyData,test.keyData);      }
     };
     
 
@@ -155,9 +192,11 @@ namespace DD4hep {
 
     public:
       /// Create data block from string representation
-      void fromString(const std::string& rep);
+      bool fromString(const std::string& rep);
       /// Create string representation of the data block
-      std::string str();
+      std::string str()  const;
+      /// Access type id of the condition
+      const std::type_info& typeInfo() const;
       /// Check if object is already bound....
       bool is_bound()  const  {  return 0 != pointer; }
       /// Generic getter. Specify the exact type, not a polymorph type
@@ -238,7 +277,7 @@ namespace DD4hep {
        *  Note: The type definition is possible exactly once.
        *  Any further rebindings MUST match the identical type.
        */
-      template <typename T> Condition& bind();
+      template <typename T> T& bind();
       /// Generic getter. Specify the exact type, not a polymorph type
       template <typename T> T& get();
       /// Generic getter (const version). Specify the exact type, not a polymorph type

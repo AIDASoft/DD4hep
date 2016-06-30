@@ -53,10 +53,10 @@ namespace DD4hep {
     return (plugin_t*)createPlugin(factory, lcdd, arg, __cast::cast);
   }
   /// Handler for factories of type: ConstructionFactory with casted return type
-  template <typename T> T* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, int argc, char** argv)   {
+  template <typename T> T* createPlugin(const std::string& factory, Geometry::LCDD& lcdd, int argc, const void** argv)   {
     typedef T plugin_t;
     struct __cast{ static void* cast(void* p) { return &dynamic_cast<plugin_t&>(*(plugin_t*)p); } };
-    return (plugin_t*)createPlugin(factory, lcdd, argc, argv, __cast::cast);
+    return (plugin_t*)createPlugin(factory, lcdd, argc, (char**)argv, __cast::cast);
   }
 
 } /* End namespace DD4hep      */

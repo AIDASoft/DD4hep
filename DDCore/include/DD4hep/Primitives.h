@@ -278,7 +278,7 @@ namespace DD4hep {
       DestroyObject<typename M::mapped_type>()(p.second);
     }
     void operator()() const {
-      for_each(object.begin(),object.end(),(*this));
+      if ( !object.empty() ) for_each(object.begin(),object.end(),(*this));
     }
   };
   template <typename M> DestroyObjects<M> destroyObjects(M& m) {
@@ -302,7 +302,7 @@ namespace DD4hep {
       DestroyObject<typename M::key_type>()(p.first);
     }
     void operator()() const {
-      for_each(object.begin(),object.end(),(*this));
+      if ( !object.empty() ) for_each(object.begin(),object.end(),(*this));
     }
   };
   template <typename M> DestroyFirst<M> destroyFirst(M& m) {
@@ -340,7 +340,7 @@ namespace DD4hep {
       ReleaseObject<typename M::mapped_type>()(p.second);
     }
     void operator()() const {
-      for_each(object.begin(),object.end(),(*this));
+      if ( !object.empty() ) for_each(object.begin(),object.end(),(*this));
     }
   };
   template <typename M> ReleaseObject<typename M::value_type> releaseObject(M&) {

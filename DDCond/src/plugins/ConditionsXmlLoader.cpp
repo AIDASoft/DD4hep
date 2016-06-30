@@ -54,6 +54,10 @@ namespace DD4hep {
                           const std::string& cond,
                           const IOV& req_validity,
                           RangeConditions& conditions);
+      /// Update a range of conditions according to the required IOV
+      virtual size_t update(const IOV& req_validity,
+			    RangeConditions& conditions,
+			    Conditions::IOV& iov_intersection);
     };
 
   } /* End namespace Geometry               */
@@ -65,6 +69,8 @@ namespace DD4hep {
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/PluginCreators.h"
+#include "DD4hep/objects/ConditionsInterna.h"
+
 #include "XML/XMLElements.h"
 #include "XML/DocumentHandler.h"
 #include "DDCond/ConditionsInterna.h"
@@ -138,20 +144,20 @@ size_t ConditionsXmlLoader::load(DetElement det,
 {
   size_t len = conditions.size();
   if ( m_buffer.empty() && !m_sources.empty() )  {
-    return load_source(*(m_sources.begin()), det, cond, req_validity, conditions);
+    return load_source(m_sources.begin()->first, det, cond, req_validity, conditions);
   }
   for (Buffer::iterator j=m_buffer.begin(); j!=m_buffer.end(); ++j)  {
     Condition condition = *j;
-    if ( det == condition->detector && cond == condition->name )  {
-      if ( req_validity.contains(*condition->iov) )   {
-        conditions.push_back(condition);
-        m_buffer.erase(j);
-        return conditions.size()-len;
+    if ( det == condition->detector )  {
+      const IOV* iov = condition->iov;
+      if ( IOV::partial_match(req_validity,*iov) )  {
+	if ( cond == condition->name )  {
+	  conditions.push_back(condition);
+	  m_buffer.erase(j);
+	  return conditions.size()-len;
+	}
       }
     }
-  }
-  if ( !m_sources.empty() )  {
-    return load_source(*(m_sources.begin()), det, cond, req_validity, conditions);
   }
   return conditions.size()-len;
 }
@@ -163,24 +169,27 @@ size_t ConditionsXmlLoader::load_range(DetElement det,
 {
   size_t len = conditions.size();
   while ( !m_sources.empty() )  {
-    load_source(*(m_sources.begin()), det, cond, req_validity, conditions);
+    load_source(m_sources.begin()->first, det, cond, req_validity, conditions);
   }
   std::vector<Condition> keep;
-  for (size_t j=0; j<m_buffer.size(); ++j)  {
-    Condition condition = m_buffer[j];
-    if ( det == condition->detector && cond == condition->name )  {
+  for (Buffer::iterator j=m_buffer.begin(); j!=m_buffer.end(); ++j)  {
+    Condition condition = *j;
+    if ( det == condition->detector )  {
       const IOV* iov = condition->iov;
-      if ( IOV::same_type(req_validity,*iov) )  {
-        if ( IOV::key_is_contained(req_validity.key(),iov->key()) ||
-             IOV::key_overlaps_lower_end(req_validity.key(),iov->key()) || 
-             IOV::key_overlaps_higher_end(req_validity.key(),iov->key()) )  {
-          conditions.push_back(condition);
-          continue;
-        }
+      if ( IOV::partial_match(req_validity,*iov) )  {
+	if ( cond == condition->name )  {
+	  conditions.push_back(condition);
+	}
       }
     }
     keep.push_back(condition);
   }
   m_buffer = keep;
   return conditions.size()-len;
+}
+
+/// Update a range of conditions according to the required IOV
+size_t ConditionsXmlLoader::update(const IOV&,RangeConditions&, IOV&)  {
+  except("ConditionsXmlLoader","+++ update: Invalid call!");
+  return 0;
 }

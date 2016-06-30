@@ -41,13 +41,18 @@ namespace DD4hep {
     class ConditionsIOVPool  {
     public:
       typedef ConditionsPool* Entry;
-      typedef std::map<std::pair<int,int>, Entry > Entries;
+      typedef std::map<IOV::Key, Entry > Entries;
+      typedef std::set<int>              Keys;
+      
       Entries        entries;
+      Keys           keys;
+      Keys           traced_keys;
     public:
       /// Default constructor
       ConditionsIOVPool();
       /// Default destructor
       virtual ~ConditionsIOVPool();
+      bool addKey(Condition c);
       /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
       void __find(DetElement detector,
                   const std::string& condition_name,
@@ -59,12 +64,13 @@ namespace DD4hep {
                         const IOV& req_validity,
                         RangeConditions& result);
       /// Select all ACTIVE conditions, which do no longer match the IOV requirement
-      void __select_expired(const IOV& required_validity, 
-                            RangeConditions& result);
-      void __update_expired(ConditionsDataLoader& loader,
-                            ConditionsPool& pool,
-                            RangeConditions& expired,
-                            const IOV& required_validity);
+      void select(const IOV& required_validity, 
+		  RangeConditions& valid,
+		  RangeConditions& expired,
+		  IOV& conditions_validity);
+      /// Remove all key based pools with an age beyon the minimum age. 
+      /** @return Number of conditions cleaned up and removed.                       */
+      int clean(int max_age);
    };
 
   } /* End namespace Conditions             */

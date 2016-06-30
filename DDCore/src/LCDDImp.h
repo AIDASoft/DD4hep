@@ -81,6 +81,11 @@ namespace DD4hep {
       /// Read any XML file
       virtual void fromXML(const std::string& fname, LCDDBuildType type = BUILD_DEFAULT);
 
+      /// Read any geometry description or alignment file with external XML entity resolution
+      virtual void fromXML(const std::string& fname,
+			   UriReader* entity_resolver,
+			   LCDDBuildType type = BUILD_DEFAULT);
+
       virtual void dump() const;
 
       /// Manipulate geometry using facroy converter

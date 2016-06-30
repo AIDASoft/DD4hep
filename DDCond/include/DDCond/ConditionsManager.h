@@ -15,6 +15,7 @@
 #define DDCOND_CONDITIONSMANAGER_H
 
 // Framework include files
+#include "DD4hep/Memory.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ComponentProperties.h"
 
@@ -26,6 +27,8 @@ namespace DD4hep {
 
     // Forward declarations
     class Entry;
+    class ConditionsPool;
+    class ConditionsIOVPool;
     class ConditionsDataLoader;
 
     /// Conditions internal namespace
@@ -45,9 +48,9 @@ namespace DD4hep {
       /// Standard object type
       typedef Interna::ConditionsManagerObject Object;
       typedef ConditionsDataLoader             Loader;
-      typedef std::vector<IOVType*>            IOVTypes;
-      typedef std::map<DetElement,Container>   DetectorConditions;
+      typedef std::vector<IOVType>             IOVTypes;
       typedef std::map<IOVType*,Container>     TypeConditions;
+      typedef std::map<DetElement,Container>   DetectorConditions;
 
     public:
 
@@ -95,11 +98,29 @@ namespace DD4hep {
       /// Access the availible/known IOV types
       const IOVTypes& iovTypes()  const;
 
+      /// Access the used/registered IOV types
+      const std::vector<const IOVType*> iovTypesUsed() const;
+
+      /// Access conditions pool by iov type
+      ConditionsIOVPool* iovPool(const IOVType& type)  const;
+
+      /// Create IOV from string
+      void fromString(const std::string& iov_str, IOV& iov);
+
       /// Register new IOV type if it does not (yet) exist.
       /** Returns (false,pointer) if IOV existed and
        *  (true,pointer) if new IOV was registered to the manager.
        */
       std::pair<bool, const IOVType*> registerIOVType(size_t iov_type, const std::string& iov_name);
+
+      /// Register IOV with type and key
+      ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
+
+      /// Register new condition with the conditions store. Unlocked version, not multi-threaded
+      bool registerUnlocked(const IOVType* type, IOV::Key key, Condition cond);
+
+      /// Register new condition with the conditions store. Unlocked version, not multi-threaded
+      bool registerUnlocked(ConditionsPool* pool, Condition cond);
       
       /// Access IOV by its type
       const IOVType* iovType (size_t iov_type) const;
@@ -113,11 +134,8 @@ namespace DD4hep {
       /// Unlock the internal data structures. This enables calls to "register", etc.
       void unlock();
 
-      /// Age conditions, which are no longer used and to be removed eventually
-      void age();
-
       /// Clean conditions, which are above the age limit.
-      void clean();
+      void clean(const IOVType* typ, int max_age);
 
       /// Full cleanup of all managed conditions.
       void clear();
@@ -129,10 +147,10 @@ namespace DD4hep {
       void pushUpdates();
 
       /// Prepare all updates to the clients with the defined IOV
-      void prepare(const IOV& required_validity);
+      long prepare(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool);
       
       /// Enable all updates to the clients with the defined IOV
-      void enable(const IOV& required_validity);
+      long enable(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool);
       
       /// Retrieve a condition given a Detector Element and the conditions name
       Condition get(DetElement detector,

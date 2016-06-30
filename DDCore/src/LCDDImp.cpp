@@ -535,6 +535,7 @@ void LCDDImp::init() {
   }
 }
 
+/// Read any geometry description or alignment file
 void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   TypePreserve build_type_preserve(m_buildType = build_type);
 #if DD4HEP_USE_PYROOT
@@ -543,8 +544,14 @@ void LCDDImp::fromXML(const string& xmlfile, LCDDBuildType build_type) {
   cmd = "lcdd.fromXML('" + xmlfile + "')";
   TPython::Exec(cmd.c_str());
 #else
-  processXML(xmlfile);
+  processXML(xmlfile,0);
 #endif
+}
+
+/// Read any geometry description or alignment file with external XML entity resolution
+void LCDDImp::fromXML(const std::string& fname, UriReader* entity_resolver, LCDDBuildType build_type)  {
+  TypePreserve build_type_preserve(m_buildType = build_type);
+  processXML(fname,entity_resolver);
 }
 
 void LCDDImp::dump() const {

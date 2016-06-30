@@ -20,6 +20,7 @@
 
 #include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsManager.h"
+#include "DDCond/ConditionsPool.h"
 
 using namespace std;
 using namespace DD4hep;
@@ -48,7 +49,6 @@ ConditionsManager::ConditionsManager(LCDD& lcdd)  {
  
 /// Default destructor
 ConditionsManager::~ConditionsManager()   {
-  access()->clear();
 }
 
 /// Access to the property manager
@@ -71,7 +71,22 @@ pair<bool, const IOVType*>
 ConditionsManager::registerIOVType(size_t iov_type, const string& iov_name)   {
   return access()->registerIOVType(iov_type, iov_name);
 }
-      
+
+/// Access the availible/known IOV types
+const ConditionsManager::IOVTypes& ConditionsManager::iovTypes()  const   {
+  return access()->iovTypes();
+}
+
+/// Access the used/registered IOV types
+const vector<const IOVType*> ConditionsManager::iovTypesUsed() const  {
+  Object* obj = access();
+  vector<const IOVType*> result;
+  const IOVTypes& types = obj->iovTypes();
+  for(IOVTypes::const_iterator i=types.begin(); i!=types.end(); ++i)
+    if ( int((*i).type) != IOVType::UNKNOWN_IOV ) result.push_back(&(*i));
+  return result;
+}
+  
 /// Access IOV by its type
 const IOVType* ConditionsManager::iovType (size_t iov_type) const  {
   return access()->iovType(iov_type);
@@ -82,14 +97,40 @@ const IOVType* ConditionsManager::iovType (const string& iov_name) const   {
   return access()->iovType(iov_name);
 }
 
-/// Age conditions, which are no longer used and to be removed eventually
-void ConditionsManager::age()   {
-  access()->age();
+/// Access conditions pool by iov type
+ConditionsIOVPool* ConditionsManager::iovPool(const IOVType& type)  const   {
+  Object* obj = access();
+  if ( int(type.type) != IOVType::UNKNOWN_IOV && type.type < obj->m_pool.size() )  {
+    ConditionsIOVPool* pool = obj->m_pool[type.type];
+    if ( pool )   {
+      return pool;
+    }
+  }
+  except("ConditionsManager","+++ Attempt to access invalid iov pool of type:%d. [%s]",
+	 type.type, Errors::linkRange().c_str());
+  return 0;
+}
+
+/// Create IOV from string
+void ConditionsManager::fromString(const string& iov_str, IOV& iov)  {
+  access()->fromString(iov_str, iov);
+}
+
+/// Register new condition with the conditions store. Unlocked version, not multi-threaded
+bool ConditionsManager::registerUnlocked(const IOVType* type, IOV::Key key, Condition cond)   {
+  Object* obj = access();
+  ConditionsPool* pool = obj->registerIOV(*type, key);
+  return obj->registerUnlocked(pool, cond);
+}
+
+/// Register new condition with the conditions store. Unlocked version, not multi-threaded
+bool ConditionsManager::registerUnlocked(ConditionsPool* pool, Condition cond)   {
+  return access()->registerUnlocked(pool, cond);
 }
 
 /// Clean conditions, which are above the age limit.
-void ConditionsManager::clean()   {
-  access()->clean();
+void ConditionsManager::clean(const IOVType* typ, int max_age)   {
+  access()->clean(typ, max_age);
 }
 
 /// Full cleanup of all managed conditions.
@@ -133,13 +174,13 @@ void ConditionsManager::unlock()   {
 }
 
 /// Enable all updates to the clients with the defined IOV
-void ConditionsManager::enable(const IOV& required_validity)   {
-  access()->enable(required_validity);
+long ConditionsManager::enable(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool)   {
+  return access()->enable(required_validity, user_pool);
 }
  
 /// Prepare all updates to the clients with the defined new IOV. Changes are not yet applied
-void ConditionsManager::prepare(const IOV& required_validity)   {
-  access()->prepare(required_validity);
+long ConditionsManager::prepare(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool)   {
+  return access()->prepare(required_validity, user_pool);
 }
  
 /// Retrieve a condition given the conditions path = <Detector Element path>.<conditions name>
