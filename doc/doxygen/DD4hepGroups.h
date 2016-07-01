@@ -93,6 +93,9 @@ namespace UTIL {}
  *  \defgroup Geant4ActionPlugin
  \brief Plugins that are a Geant4Actions
 
+ *  \defgroup Geant4RunActions
+ \brief Plugins that are a Geant4RunActions
+
  *  \defgroup SurfacePlugin
  \brief Plugins to manipulate surfaces automatically
 
