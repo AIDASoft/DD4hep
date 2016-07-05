@@ -29,7 +29,8 @@ static double eval_cosh (double a)           { return std::cosh(a);            }
 static double eval_tanh (double a)           { return std::tanh(a);            }
 static double eval_exp  (double a)           { return std::exp(a);             }
 static double eval_exp2 (double a)           { return std::exp2(a);            }
-static double eval_exp10(double a)           { return ::exp10(a);              }
+//static double eval_exp10(double a)           { return ::exp10(a);              }
+static double eval_exp10(double a)           { return ::pow(10.,a) ;           }
 static double eval_expm1(double a)           { return std::expm1(a);           }
 static double eval_log  (double a)           { return std::log(a);             }
 static double eval_logb (double a)           { return std::logb(a);            }
