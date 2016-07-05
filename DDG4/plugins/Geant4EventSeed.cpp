@@ -58,9 +58,7 @@ void Geant4EventSeed::begin(const G4Run* run) {
 
   m_runID = run->GetRunID();
 
-  DD4hep::printout( PrintLevel::INFO, m_type,
-                    "Get RunID: runID=%u\n",
-  		    m_runID );
+  DD4hep::printout( DD4hep::INFO, m_type, "Get RunID: runID=%u", m_runID );
 
 }
 
@@ -72,15 +70,13 @@ void Geant4EventSeed::beginEvent(const G4Event* evt) {
   unsigned int eventID = evt->GetEventID();
   unsigned int newSeed = hash( m_initialSeed, eventID, m_runID );
 
-  DD4hep::printout( PrintLevel::INFO, m_type,
-		    "At beginEvent: eventID=%u, runID=%u" \
-		    " initialSeed=%u, newSeed=%u" ,
-		    evt->GetEventID(),  m_runID,
-		    m_initialSeed, newSeed );
+  DD4hep::printout( DD4hep::INFO, m_type,
+		    "At beginEvent: eventID=%u, runID=%u initialSeed=%u, newSeed=%u" ,
+		    evt->GetEventID(),  m_runID, m_initialSeed, newSeed );
 
   rndm->setSeed( newSeed );
 
-  if ( DD4hep::printLevel() <= PrintLevel::DEBUG ) {
+  if ( DD4hep::printLevel() <= DD4hep::DEBUG ) {
     rndm->showStatus();
   }
 
