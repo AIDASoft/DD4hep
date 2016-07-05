@@ -1,5 +1,7 @@
 """Helper object for random number generator objects"""
 
+import random
+
 from DDSim.Helper.ConfigHelper import ConfigHelper
 
 class Random (ConfigHelper):
@@ -29,9 +31,14 @@ class Random (ConfigHelper):
       return self._random
     self._random = DDG4.Action(kernel,'Geant4Random/R1')
 
-    if self.seed is not None:
-      self._random.Seed = self.seed
-      self._random.Luxury = self.luxury
+    if self.seed is None:
+      ## System provided random source, truely random according to documentation
+      self.seed = random.SystemRandom().randint(0, 2**31-1)
+      print "Choosing random seed for you:", self.seed
+
+    self._random.Seed = self.seed
+    self._random.Luxury = self.luxury
+
     if self.type is not None:
       self._random.Type = self.type
 
