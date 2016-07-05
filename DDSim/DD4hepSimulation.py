@@ -309,8 +309,10 @@ class DD4hepSimulation(object):
     kernel.registerGlobalAction(run1)
     kernel.runAction().add(run1)
 
-    # Configure I/O
+    # Configure the random seed, do it before the I/O because we might change the seed!
+    _rndm = self.random.initialize( DDG4, kernel, self.output.random )
 
+    # Configure I/O
     if self.outputFile.endswith(".slcio"):
       lcOut = simple.setupLCIOOutput('LcioOutput', self.outputFile)
       lcOut.RunHeader = self.__addParametersToRunHeader()
@@ -318,9 +320,6 @@ class DD4hepSimulation(object):
       simple.setupROOTOutput('RootOutput', self.outputFile)
 
     actionList = []
-
-    ##configure the random seed
-    rndm = self.random.initialize( DDG4, kernel, self.output.random )
 
     if self.enableGun:
       gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/"+"Gun")
