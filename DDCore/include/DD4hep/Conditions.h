@@ -77,7 +77,9 @@ namespace DD4hep {
       explicit IOV();
     public:
       /// Key definition
-      typedef std::pair<long,long> Key;
+      typedef long Key_first_type;
+      typedef long Key_second_type;
+      typedef std::pair<Key_first_type,Key_second_type> Key;
 
       const IOVType* iovType;
       Key            keyData;
@@ -108,9 +110,9 @@ namespace DD4hep {
       /// Set discrete IOV value
       void set(const Key& value);
       /// Set discrete IOV value
-      void set(Key::first_type value);
+      void set(Key_first_type value);
       /// Set range IOV value
-      void set(Key::first_type val_1, Key::second_type val_2);
+      void set(Key_first_type val_1, Key_second_type val_2);
       /// Set keys to unphysical values (LONG_MAX, LONG_MIN)
       void reset();
       /// Invert the key values (first=second and second=first)
@@ -150,10 +152,10 @@ namespace DD4hep {
       /// Check if IOV 'test' has an overlap on the upper interval edge with IOV 'key'
       static bool key_partially_contained(const Key& key, const Key& test)         
       {   
-	return 
-	  (test.first <= key.first  && key.second   >= test.second) || // test fully contained in key
-	  (test.first <= key.first  && key.first    <= test.second) || // test overlaps left edge of key
-	  (test.first <= key.second && key.second   <= test.second);   // test overlaps right edge of key
+        return 
+          (test.first <= key.first  && key.second   >= test.second) || // test fully contained in key
+          (test.first <= key.first  && key.first    <= test.second) || // test overlaps left edge of key
+          (test.first <= key.second && key.second   <= test.second);   // test overlaps right edge of key
       }
       /// Check if IOV 'test' is of same type and is fully contained in iov
       static bool full_match(const IOV& iov, const IOV& test)
