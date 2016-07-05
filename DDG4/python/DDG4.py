@@ -31,13 +31,12 @@ def _import_class(ns,nam):
 #
 try:
   DD4hep     = loadDDG4() 
-except Exception,X:
+except Exception as X:
   print '+--%-100s--+'%(100*'-',)
   print '|  %-100s  |'%('Failed to load DDG4 library:',)
   print '|  %-100s  |'%(str(X),)
-  print '|  %-100s  |'%('Try to compile AClick on the fly.',)
   print '+--%-100s--+'%(100*'-',)
-  DD4hep   = compileAClick(dictionary='DDG4Dict.C',g4=True)  
+  exit(1)
 from ROOT import CLHEP as CLHEP
 Core       = DD4hep
 Sim        = DD4hep.Simulation
