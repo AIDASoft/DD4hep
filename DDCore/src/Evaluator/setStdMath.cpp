@@ -6,6 +6,7 @@
 #include "DD4hep/DD4hepUnits.h"
 
 #include <cmath>        // for sqrt and pow
+#include <math.h>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ static double eval_fmod (double a, double b) { return std::fmod(a,b);          }
 static double eval_min  (double a, double b) { return (a < b) ?  a : b;        }
 static double eval_max  (double a, double b) { return (a > b) ?  a : b;        }
 static double eval_sqrt (double a)           { return std::sqrt(a);            }
-static double eval_cbrt (double a)           { return std::cbrt(a);            }
+static double eval_cbrt (double a)           { return ::cbrt(a);            }
 static double eval_pow  (double a, double b) { return std::pow(a,b);           }
 static double eval_sin  (double a)           { return std::sin(a);             }
 static double eval_cos  (double a)           { return std::cos(a);             }
@@ -28,27 +29,27 @@ static double eval_sinh (double a)           { return std::sinh(a);            }
 static double eval_cosh (double a)           { return std::cosh(a);            }
 static double eval_tanh (double a)           { return std::tanh(a);            }
 static double eval_exp  (double a)           { return std::exp(a);             }
-static double eval_exp2 (double a)           { return std::exp2(a);            }
+static double eval_exp2 (double a)           { return ::exp2(a);            }
 //static double eval_exp10(double a)           { return ::exp10(a);              }
 static double eval_exp10(double a)           { return ::pow(10.,a) ;           }
-static double eval_expm1(double a)           { return std::expm1(a);           }
+static double eval_expm1(double a)           { return ::expm1(a);           }
 static double eval_log  (double a)           { return std::log(a);             }
-static double eval_logb (double a)           { return std::logb(a);            }
+static double eval_logb (double a)           { return ::logb(a);            }
 static double eval_log10(double a)           { return std::log10(a);           }
-static double eval_log1p(double a)           { return std::log1p(a);           }
-static double eval_hypot(double a, double b) { return std::hypot(a,b);         }
-static double eval_erf  (double a)           { return std::erf(a);             }
-static double eval_erfc (double a)           { return std::erfc(a);            }
+static double eval_log1p(double a)           { return ::log1p(a);           }
+static double eval_hypot(double a, double b) { return ::hypot(a,b);         }
+static double eval_erf  (double a)           { return ::erf(a);             }
+static double eval_erfc (double a)           { return ::erfc(a);            }
 static double eval_gamma(double a)           { return ::gamma(a);              }
 static double eval_double(double a)          { return a;                       }
 static double eval_int  (double a)           { return (double)int(a);          }
 static double eval_nint (double a)           { return std::floor(a);           }
 static double eval_floor(double a)           { return std::floor(a);           }
-static double eval_round(double a)           { return std::round(a);           }
+static double eval_round(double a)           { return ::round(a);           }
 static double eval_ceil (double a)           { return std::ceil(a);            }
 static double eval_isnan(double a)           { return std::isnan(a);           }
 static double eval_isinf(double a)           { return std::isinf(a);           }
-static double eval_nearbyint(double a)       { return std::nearbyint(a);       }
+static double eval_nearbyint(double a)       { return ::nearbyint(a);       }
 
 namespace XmlTools {
 
