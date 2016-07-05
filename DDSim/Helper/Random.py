@@ -11,3 +11,36 @@ class Random (ConfigHelper):
     self.luxury = 1
     self.replace_gRandom = True
     self.file = None
+    self._random = None
+
+    self._enableEventSeed_HELP = "If True, calculate random seed for each event based on eventID and runID\n" \
+                              "allows reproducibility even when SkippingEvents"
+    self.enableEventSeed = False
+
+  def initialize(self, DDG4, kernel, output):
+    """ initialize the random generator
+
+    :param DDG4: DDG4 module
+    :param kernel: Geant4 kernel
+    :param int output: output level
+    :returns: Geant4Random instance
+    """
+    if self._random:
+      return self._random
+    self._random = DDG4.Action(kernel,'Geant4Random/R1')
+
+    if self.seed is not None:
+      self._random.Seed = self.seed
+      self._random.Luxury = self.luxury
+    if self.type is not None:
+      self._random.Type = self.type
+
+    self._random.initialize()
+
+    if self.seed is not None and self.enableEventSeed:
+      self._eventseed = DDG4.RunAction(kernel,'Geant4EventSeed/EventSeeder1')
+
+    ## Needs to be called after initilisation
+    if output <= 3:
+      self._random.showStatus()
+    return self._random
