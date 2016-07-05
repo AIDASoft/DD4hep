@@ -320,9 +320,7 @@ class DD4hepSimulation(object):
     actionList = []
 
     ##configure the random seed
-    rndm = DDG4.Action(kernel,'Geant4Random/R1')
-    self.__setupRandomGenerator(rndm)
-    rndm.initialize()
+    rndm = self.random.initialize( DDG4, kernel, self.output.random )
 
     if self.enableGun:
       gun = DDG4.GeneratorAction(kernel,"Geant4ParticleGun/"+"Gun")
@@ -459,17 +457,6 @@ class DD4hepSimulation(object):
     kernel.run()
     kernel.terminate()
 
-
-  def __setupRandomGenerator(self, rndm):
-    """set the properties for the random number generator"""
-    if self.random.seed is not None:
-      rndm.Seed = self.random.seed
-      rndm.Luxury = self.random.luxury
-    if self.random.type is not None:
-      rndm.Type = self.random.type
-    if self.output.random <= 3:
-      rndm.showStatus()
-
   def __setMagneticFieldOptions(self, simple):
     """ create and configure the magnetic tracking setup """
     field = simple.addConfig('Geant4FieldTrackingSetupAction/MagFieldTrackingSetup')
@@ -514,14 +501,25 @@ class DD4hepSimulation(object):
     for name, obj in vars(self).iteritems():
       if isinstance( obj, ConfigHelper ):
         for var,valAndDoc in obj.getOptions().iteritems():
-          parser.add_argument("--%s.%s" % (name, var),
-                              action="store",
-                              dest="%s.%s" % (name, var),
-                              default = valAndDoc[0],
-                              help = valAndDoc[1],
-                              choices = valAndDoc[2],
-                              # type = type(val),
-                             )
+          if var.startswith("enable"):
+            parser.add_argument("--%s.%s" % (name, var),
+                                action="store_true",
+                                dest="%s.%s" % (name, var),
+                                default = valAndDoc[0],
+                                help = valAndDoc[1],
+                                #choices = valAndDoc[2], ##not allowed for store_true
+                                # type = type(val),
+                               )
+          else:
+            parser.add_argument("--%s.%s" % (name, var),
+                                action="store",
+                                dest="%s.%s" % (name, var),
+                                default = valAndDoc[0],
+                                help = valAndDoc[1],
+                                choices = valAndDoc[2],
+                                # type = type(val),
+                               )
+
 
   def __parseAllHelper( self, parsed ):
     """ parse all the options for the helper """
