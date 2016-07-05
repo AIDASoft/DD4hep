@@ -68,38 +68,42 @@ add_subdirectory(DDRec)
 add_subdirectory(DDDetectors)
 
 if(DD4HEP_USE_GEANT4)
-  set ( DD4HEP_USE_CLHEP "OFF" )
+
   #--- create a geant4 variables for the thisdd4hep.sh script
   find_package( Geant4 9.6 REQUIRED  gdml ui_all vis_all)
   
-  include(${Geant4_USE_FILE})   # this also takes care of geant 4 definitions and include dirs
+  include(${Geant4_USE_FILE} )   # this also takes care of geant 4 definitions and include dirs
   
-  #----- if geant4 is build with external CLHEP we also need to export this fact
-  
-  string(FIND "${Geant4_THIRD_PARTY_INCLUDE_DIRS}"  "CLHEP" CLHEP_POS )
-  
-  if( (NOT "${CLHEP_POS}" STREQUAL "-1") OR (NOT Geant4_builtin_clhep_FOUND)  )
-    set( GEANT4_USE_CLHEP 1 )
-    get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
-    #---- use FindCLHEP shipped with geant4 -----------
-    set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${Geant4_ROOT}/cmake/Modules ) 
+  #----- Treatment for Geant4 10.2.1 or before this is obsolete only for backwards compatibility
+  if(${Geant4_VERSION} VERSION_LESS 10.2.2)
+    message( STATUS "!!! TREATING CLEHP IN LEGACY MODE !!!")
+    set ( DD4HEP_USE_CLHEP "OFF" )  
+    string(FIND "${Geant4_THIRD_PARTY_INCLUDE_DIRS}"  "CLHEP" CLHEP_POS )
     
-    if( CLHEP_DIR ) #---- use 'canonical' name -----
-      set( CLHEP_ROOT_DIR ${CLHEP_DIR} )
+    if( (NOT "${CLHEP_POS}" STREQUAL "-1") OR (NOT Geant4_builtin_clhep_FOUND)  )
+      set( GEANT4_USE_CLHEP 1 )
+      get_filename_component(Geant4_ROOT "${Geant4_INCLUDE_DIR}/../../" ABSOLUTE)
+      #---- use FindCLHEP shipped with geant4 -----------
+      set(CMAKE_MODULE_PATH  ${CMAKE_MODULE_PATH}  ${Geant4_ROOT}/cmake/Modules ) 
+      
+      if( CLHEP_DIR ) #---- use 'canonical' name -----
+	set( CLHEP_ROOT_DIR ${CLHEP_DIR} )
+      endif()
+      
+      find_package( CLHEP REQUIRED )
+      include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
+      set ( DD4HEP_USE_CLHEP ON )
+      
+      get_filename_component(CLHEP_LIBRARY_PATH "${CLHEP_LIBRARIES}" PATH)
+      message( STATUS " *** geant4 was build with external CLHEP *** CLHEP_LIBRARY_PATH = ${CLHEP_LIBRARY_PATH}"  )
+    else()
+      set( GEANT4_USE_CLHEP 0 )
     endif()
     
-    find_package( CLHEP REQUIRED )
-    include_directories( SYSTEM ${CLHEP_INCLUDE_DIRS} )
-    set ( DD4HEP_USE_CLHEP ON )
-    
-    get_filename_component(CLHEP_LIBRARY_PATH "${CLHEP_LIBRARIES}" PATH)
-    message( STATUS " *** geant4 was build with external CLHEP *** CLHEP_LIBRARY_PATH = ${CLHEP_LIBRARY_PATH}"  )
-  else()
-    set( GEANT4_USE_CLHEP 0 )
+    set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
+    set(Geant4_LIBRARIES    ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
   endif()
-  
-  set(Geant4_INCLUDE_DIRS ${Geant4_INCLUDE_DIRS} ${CLHEP_INCLUDE_DIRS})
-  set(Geant4_LIBRARIES    ${Geant4_LIBRARIES} ${CLHEP_LIBRARIES})
+  #----- End of treatment for Geant4 10.2.1 or before
 endif()
 
 #------- now configure DDG4 -------

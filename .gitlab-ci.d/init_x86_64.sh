@@ -54,18 +54,6 @@ export PYTHONPATH="$ROOTSYS/lib:$PYTHONPATH"
 export PATH="$ROOTSYS/bin:$PATH"
 export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
 
-
-#--------------------------------------------------------------------------------
-#     CLHEP
-#--------------------------------------------------------------------------------
-
-export CLHEP=${CLICREPO}/software/CLHEP/2.3.1.1/${BUILD_FLAVOUR}
-export CLHEP_BASE_DIR="$CLHEP"
-export CLHEP_INCLUDE_DIR="$CLHEP/include"
-export PATH="$CLHEP_BASE_DIR/bin:$PATH"
-export LD_LIBRARY_PATH="$CLHEP_BASE_DIR/lib:$LD_LIBRARY_PATH"
-
-
 #--------------------------------------------------------------------------------
 #     XercesC
 #--------------------------------------------------------------------------------
