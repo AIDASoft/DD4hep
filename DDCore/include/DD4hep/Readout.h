@@ -79,8 +79,10 @@ namespace DD4hep {
       }
       /// Access explicit names of hit collections if present
       std::vector<std::string> collectionNames()  const;
+#ifndef __CINT__
       /// Access hit collections if present
       std::vector<const HitCollection*> collections()  const;
+#endif
       /// Access number of hit collections
       size_t numCollections() const;
       /// Assign IDDescription to readout structure

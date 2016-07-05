@@ -89,10 +89,10 @@ namespace DD4hep {
 
       /// Initializing constructor
       explicit IOV(const IOVType* typ);
-      /// Copy constructor
-      explicit IOV(const IOV& copy);
-      /// Copy constructor
+      /// Specialized copy constructor
       explicit IOV(const IOVType* typ, const Key& key);
+      /// Copy constructor
+      IOV(const IOV& copy);
 
       /// Standard Destructor
       ~IOV();
