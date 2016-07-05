@@ -59,7 +59,7 @@ export LD_LIBRARY_PATH="$ROOTSYS/lib:$LD_LIBRARY_PATH"
 #     CLHEP
 #--------------------------------------------------------------------------------
 
-export CLHEP=${CLICREPO}/software/CLHEP/2.2.0.4/${BUILD_FLAVOUR}
+export CLHEP=${CLICREPO}/software/CLHEP/2.3.1.1/${BUILD_FLAVOUR}
 export CLHEP_BASE_DIR="$CLHEP"
 export CLHEP_INCLUDE_DIR="$CLHEP/include"
 export PATH="$CLHEP_BASE_DIR/bin:$PATH"
@@ -79,7 +79,7 @@ export LD_LIBRARY_PATH="$XercesC_HOME/lib:$LD_LIBRARY_PATH"
 #     Geant4	
 #--------------------------------------------------------------------------------
 
-export G4INSTALL=${CLICREPO}/software/Geant4/10.01.p03/${BUILD_FLAVOUR}
+export G4INSTALL=${CLICREPO}/software/Geant4/10.02.p02/${BUILD_FLAVOUR}
 export G4ENV_INIT="$G4INSTALL/bin/geant4.sh"
 export G4SYSTEM="Linux-g++"
 
