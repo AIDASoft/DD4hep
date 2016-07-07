@@ -597,6 +597,16 @@ const Volume& Volume::setVisAttributes(const VisAttr& attr) const {
       m_element->SetFillStyle(1001);   // Root: solid
       // Suggested by Nikiforos. Not optimal.
       //m_element->GetMedium()->GetMaterial()->SetTransparency((1-vis->alpha)*100);
+
+#if ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+      // As suggested by Valentin Volkl https://sft.its.cern.ch/jira/browse/DDFORHEP-20
+      //
+      // According to https://root.cern.ch/phpBB3/viewtopic.php?t=2309#p66013
+      // a transparency>50 will make a volume invisible in the normal pad.
+      // Hence: possibly restrict transparency to a maximum of 50.
+      //        but let's see first how this behaves.
+      m_element->SetTransparency((1-vis->alpha)*100);
+#endif
     }
     else {
       printout(DEBUG,"setVisAttributes","Set to wireframe vis:%s",name());
