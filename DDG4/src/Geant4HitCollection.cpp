@@ -101,15 +101,23 @@ void Geant4HitCollection::newInstance() {
 
 /// Clear the collection (Deletes all valid references to real hits)
 void Geant4HitCollection::clear()   {
+  m_lastHit = ULONG_MAX;
   m_hits.clear();
 }
 
 /// Find hit in a collection by comparison of attributes
-void* Geant4HitCollection::findHit(const Compare& cmp) const {
+void* Geant4HitCollection::findHit(const Compare& cmp)  {
   void* p = 0;
-  for (WrappedHits::const_iterator i = m_hits.begin(); i != m_hits.end(); ++i)
-    if ((p = cmp(*i)) != 0)
+  WrappedHits::const_iterator i = m_hits.begin();
+  if ( m_flags.bits.repeatedLookup && m_lastHit < m_hits.size() )  {
+    if ( (p = cmp(*(i+m_lastHit))) != 0 ) return p;
+  }
+  for (size_t cnt=0; i != m_hits.end(); ++i, ++cnt)   {
+    if ((p = cmp(*i)) != 0)  {
+      m_lastHit = cnt;
       return p;
+    }
+  }
   return p;
 }
 
@@ -123,6 +131,7 @@ void Geant4HitCollection::releaseData(const ComponentCast& cast, std::vector<voi
     else
       result->push_back(m->cast.apply_downCast(cast, w.release()));
   }
+  m_lastHit = ULONG_MAX;
 }
 
 /// Release all hits from the Geant4 container. Ownership stays with the container
@@ -143,6 +152,7 @@ void Geant4HitCollection::releaseHitsUnchecked(std::vector<void*>& result) {
     Geant4HitWrapper& w = m_hits.at(j);
     result.push_back(w.release());
   }
+  m_lastHit = ULONG_MAX;
 }
 
 /// Release all hits from the Geant4 container. Ownership stays with the container
@@ -151,4 +161,5 @@ void Geant4HitCollection::getHitsUnchecked(std::vector<void*>& result) {
     Geant4HitWrapper& w = m_hits.at(j);
     result.push_back(w.data());
   }
+  m_lastHit = ULONG_MAX;
 }

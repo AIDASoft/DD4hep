@@ -23,6 +23,7 @@
 // C/C++ include files
 #include <vector>
 #include <string>
+#include <climits>
 #include <typeinfo>
 #include <stdexcept>
 
@@ -174,6 +175,25 @@ namespace DD4hep {
      * Polymorphism without an explicit type would only
      * confuse most users.
      *
+     * Note:
+     * This hit collection is optimized to search repeatedly the same cell using 
+     *
+     *  template <typename TYPE> TYPE* find(const Compare& cmp) const;
+     *
+     * by remembering the last search index.
+     * The collection uses this optimization if the corresponding flag
+     * OPTIMIZE_REPEATEDLOOKUP is set:
+     *
+     *   setOptimize(OPTIMIZE_REPEATEDLOOKUP);
+     *
+     * The last search index is automatically set to last object insertion,
+     * if one happened between 2 search calls. For the typical use case,
+     * there always contributions to the same hit are added, this should
+     * reduce the lookup speed from O(n) to O(1).
+     * This obviously only helps, if contributions to the same cell come in
+     * sequence ie. from the same G4Track.
+     *
+     *
      *  \author  M.Frank
      *  \version 1.0
      *  \ingroup DD4HEP_SIMULATION
@@ -205,38 +225,61 @@ namespace DD4hep {
 
     protected:
       /// The collection of hit pointers in the wrapped format
-      WrappedHits m_hits;
+      WrappedHits                      m_hits;
       /// Handle to the sensitive detector
-      Geant4Sensitive* m_detector;
+      Geant4Sensitive*                 m_detector;
       /// The type of the objects in this collection. Set by the constructor
-      Manip* m_manipulator;
-
+      Manip*                           m_manipulator;
+      /// Memorize for speedup the last searched hit
+      size_t                           m_lastHit;
+      /// Optimization flags
+      union CollectionFlags  {
+        unsigned long        value;
+        struct BitItems  {
+          unsigned           repeatedLookup:1;
+          unsigned           mappedLookup:1;
+        }                    bits;
+      }                                m_flags;
+      
     protected:
       /// Notification to increase the instance counter
       void newInstance();
       /// Find hit in a collection by comparison of attributes
-      void* findHit(const Compare& cmp) const;
+      void* findHit(const Compare& cmp);
       /// Release all hits from the Geant4 container and pass ownership to the caller
       void releaseData(const ComponentCast& cast, std::vector<void*>* result);
       /// Release all hits from the Geant4 container. Ownership stays with the container
       void getData(const ComponentCast& cast, std::vector<void*>* result);
 
     public:
+      enum {
+        OPTIMIZE_NONE = 0,
+        OPTIMIZE_REPEATEDLOOKUP = 1<<0,
+        OPTIMIZE_MAPPEDLOOKUP   = 1<<1,
+        OPTIMIZE_LAST
+      } OptimizationFlags;
+
       /// Initializing constructor (C++ version)
       template <typename TYPE>
       Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd)
         : G4VHitsCollection(det, coll), m_detector(sd),
-          m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
+          m_manipulator(Geant4HitWrapper::manipulator<TYPE>()),
+          m_lastHit(ULONG_MAX)
+      {
         newInstance();
         m_hits.reserve(200);
+        m_flags.value = OPTIMIZE_REPEATEDLOOKUP;
       }
       /// Initializing constructor
       template <typename TYPE>
       Geant4HitCollection(const std::string& det, const std::string& coll, Geant4Sensitive* sd, const TYPE*)
         : G4VHitsCollection(det, coll), m_detector(sd),
-          m_manipulator(Geant4HitWrapper::manipulator<TYPE>())   {
+          m_manipulator(Geant4HitWrapper::manipulator<TYPE>()),
+          m_lastHit(ULONG_MAX)
+      {
         newInstance();
         m_hits.reserve(200);
+        m_flags.value = OPTIMIZE_REPEATEDLOOKUP;
       }
       /// Default destructor
       virtual ~Geant4HitCollection();
@@ -246,6 +289,10 @@ namespace DD4hep {
       const ComponentCast& vector_type() const;
       /// Clear the collection (Deletes all valid references to real hits)
       virtual void clear();
+      /// Set optimization flags
+      void setOptimize(int flag)  {
+        m_flags.value |= flag;
+      }
       /// Set the sensitive detector
       void setSensitive(Geant4Sensitive* detector)   {
         m_detector = detector;
@@ -273,10 +320,11 @@ namespace DD4hep {
       /// Add a new hit with a check, that the hit is of the same type
       template <typename TYPE> void add(TYPE* hit_pointer) {
         Geant4HitWrapper w(m_manipulator->castHit(hit_pointer));
+        m_lastHit = m_hits.size();
         m_hits.push_back(w);
       }
       /// Find hits in a collection by comparison of attributes
-      template <typename TYPE> TYPE* find(const Compare& cmp) const {
+      template <typename TYPE> TYPE* find(const Compare& cmp) {
         return (TYPE*) findHit(cmp);
       }
       /// Release all hits from the Geant4 container and pass ownership to the caller
@@ -285,6 +333,7 @@ namespace DD4hep {
         if (m_hits.size() != 0) {
           releaseData(ComponentCast::instance<TYPE>(), (std::vector<void*>*) &vec);
         }
+        m_lastHit = ULONG_MAX;
         return vec;
       }
       /// Release all hits from the Geant4 container and pass ownership to the caller
