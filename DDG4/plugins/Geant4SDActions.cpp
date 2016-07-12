@@ -107,7 +107,8 @@ namespace DD4hep {
       StepHandler h(step);
       HitContribution contrib = Hit::extractContribution(step);
       HitCollection*  coll    = collection(m_collectionID);
-      long long int cell;
+      VolumeID cell = 0;
+
       try {
         cell = cellID(step);
       } catch(std::runtime_error &e) {
@@ -128,14 +129,15 @@ namespace DD4hep {
         return true;
       }
 
-      Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
+      //Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
+      Hit* hit = coll->findByKey<Hit>(cell);
       if ( !hit ) {
         Geant4TouchableHandler handler(step);
         DDSegmentation::Vector3D pos = m_segmentation.position(cell);
         Position global = h.localToGlobal(pos);
         hit = new Hit(global);
         hit->cellID = cell;
-        coll->add(hit);
+        coll->add(cell, hit);
         printM2("%s> CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s  [%s]",
                 c_name(),contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str(),
                 coll->GetName().c_str());
@@ -245,7 +247,7 @@ namespace DD4hep {
       StepHandler h(step);
       HitContribution contrib = Hit::extractContribution(step,true);
       HitCollection*  coll    = collection(m_collectionID);
-      long long int cell;
+      VolumeID cell = 0;
       try {
         cell = cellID(step);
       } catch(std::runtime_error &e) {
@@ -266,14 +268,15 @@ namespace DD4hep {
         return true;
       }
 
-      Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
+      //Hit* hit = coll->find<Hit>(CellIDCompare<Hit>(cell));
+      Hit* hit = coll->findByKey<Hit>(cell);
       if ( !hit ) {
         Geant4TouchableHandler handler(step);
         DDSegmentation::Vector3D pos = m_segmentation.position(cell);
         Position global = h.localToGlobal(pos);
         hit = new Hit(global);
         hit->cellID = cell;
-        coll->add(hit);
+        coll->add(cell, hit);
         printM2("CREATE hit with deposit:%e MeV  Pos:%8.2f %8.2f %8.2f  %s",
                 contrib.deposit,pos.X,pos.Y,pos.Z,handler.path().c_str());
         if ( 0 == hit->cellID )  { // for debugging only!

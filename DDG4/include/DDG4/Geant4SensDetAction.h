@@ -312,7 +312,8 @@ namespace DD4hep {
       /// The true sensitive type of the detector
       std::string m_sensitiveType;
       /// Create a new typed hit collection
-      template <typename TYPE> static Geant4HitCollection* _create(const std::string& det, const std::string& coll, Geant4Sensitive* sd) {
+      template <typename TYPE> static 
+      Geant4HitCollection* _create(const std::string& det, const std::string& coll, Geant4Sensitive* sd) {
         return new Geant4HitCollection(det, coll, sd, (TYPE*) 0);
       }
 

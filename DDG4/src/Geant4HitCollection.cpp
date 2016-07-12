@@ -81,6 +81,7 @@ Geant4HitCollection::Compare::~Compare()  {
 /// Default destructor
 Geant4HitCollection::~Geant4HitCollection() {
   m_hits.clear();
+  m_keys.clear();
   InstanceCount::decrement(this);
 }
 
@@ -103,6 +104,7 @@ void Geant4HitCollection::newInstance() {
 void Geant4HitCollection::clear()   {
   m_lastHit = ULONG_MAX;
   m_hits.clear();
+  m_keys.clear();
 }
 
 /// Find hit in a collection by comparison of attributes
@@ -121,6 +123,14 @@ void* Geant4HitCollection::findHit(const Compare& cmp)  {
   return p;
 }
 
+/// Find hit in a collection by comparison of the key
+Geant4HitWrapper* Geant4HitCollection::findHitByKey(VolumeID key)   {
+  Keys::const_iterator i=m_keys.find(key);
+  if ( i == m_keys.end() ) return 0;
+  m_lastHit = (*i).second;
+  return &m_hits.at(m_lastHit);
+}
+
 /// Release all hits from the Geant4 container and pass ownership to the caller
 void Geant4HitCollection::releaseData(const ComponentCast& cast, std::vector<void*>* result) {
   for (size_t j = 0, n = m_hits.size(); j < n; ++j) {
@@ -132,6 +142,7 @@ void Geant4HitCollection::releaseData(const ComponentCast& cast, std::vector<voi
       result->push_back(m->cast.apply_downCast(cast, w.release()));
   }
   m_lastHit = ULONG_MAX;
+  m_keys.clear();
 }
 
 /// Release all hits from the Geant4 container. Ownership stays with the container
@@ -153,6 +164,7 @@ void Geant4HitCollection::releaseHitsUnchecked(std::vector<void*>& result) {
     result.push_back(w.release());
   }
   m_lastHit = ULONG_MAX;
+  m_keys.clear();
 }
 
 /// Release all hits from the Geant4 container. Ownership stays with the container
@@ -161,5 +173,4 @@ void Geant4HitCollection::getHitsUnchecked(std::vector<void*>& result) {
     Geant4HitWrapper& w = m_hits.at(j);
     result.push_back(w.data());
   }
-  m_lastHit = ULONG_MAX;
 }
