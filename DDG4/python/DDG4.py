@@ -13,8 +13,16 @@
 from DD4hep import *
 
 def loadDDG4():
+  ## import ROOT ## done in import * above
   from ROOT import gSystem
-  result = gSystem.Load("libglapi")
+
+  ## Try to load libglapi to avoid issues with TLS Static
+  ## Turn off all errors from ROOT about the library missing
+  orgLevel = ROOT.gErrorIgnoreLevel
+  ROOT.gErrorIgnoreLevel=6000
+  gSystem.Load("libglapi")
+  ROOT.gErrorIgnoreLevel=orgLevel
+
   result = gSystem.Load("libDDG4Plugins")
   if 0 != result:
     raise Exception('DDG4.py: Failed to load the Geant4 library libDDG4: '+gSystem.GetErrorStr())
