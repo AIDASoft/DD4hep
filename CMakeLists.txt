@@ -21,7 +21,7 @@ option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
-option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
+option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" ON)
 option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 #
 #-----------------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@ option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 #  !! and make also sure to change in ./DDCore/include/DD4hep/LCDD.h   !!
 #  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 #
-dd4hep_set_version(DD4hep MAJOR 0 MINOR 15 PATCH 0)
+dd4hep_set_version(DD4hep MAJOR 0 MINOR 16 PATCH 0)
 dd4hep_configure_output( OUTPUT "${PROJECT_BINARY_DIR}" INSTALL "${CMAKE_INSTALL_PREFIX}" )
 #
 #

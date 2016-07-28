@@ -3,6 +3,16 @@
 DD4hep  ----  Release Notes
 =================================
 
+  --------
+ | v00-16 |
+  --------
+
+Shaojun Lu | 2016-07-26  
+	Added new MegatileLayerGridXY segmentation for Scintillator strip Ecal, which is implemented by K.Kotera, 
+        and used by SEcal04Hybrid geometry driver.
+
+ - many ( minor fixes ) by F. Gaede, M. Petric, A Sailer, ...
+
 
 2016-06-24 M.Frank
   Implement multiple segmentations.
