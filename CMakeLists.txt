@@ -21,7 +21,7 @@ option(DD4HEP_USE_GEANT4  "Enable the simulation part based on Geant4"    OFF)
 option(DD4HEP_USE_GEAR    "Build gear wrapper for backward compatibility" OFF)
 option(DD4HEP_USE_LCIO    "Build lcio extensions"    OFF)
 option(BUILD_TESTING      "Enable and build tests"   ON)
-option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" ON)
+option(DD4HEP_USE_CXX11   "Build DD4hep using c++11" OFF)
 option(DD4HEP_USE_CXX14   "Build DD4hep using c++14" OFF)
 #
 #-----------------------------------------------------------------------------------------------------
