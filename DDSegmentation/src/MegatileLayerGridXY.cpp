@@ -6,7 +6,7 @@
  *              D Jeans UTokyo
  */
 
-#define VERBOSEcoterra 1
+//#define VERBOSEcoterra 1
 
 
 #include "DDSegmentation/MegatileLayerGridXY.h"
@@ -24,12 +24,11 @@ namespace DD4hep {
       // _description = "Cartesian segmentation in the local XY-plane for both Normal wafer and Magic wafer(depending on the layer dimensions)";
       _description = "Cartesian segmentation in the local XY-plane: megatiles with dead areas; integer number of megatiles and cells";
 
-
-
 //////// setup in the compact-steering file (i.e., ILD_o3_v05.xml)//// 
 // for example,
 // <segmentation type="MegatileLayerGridXY" yer_nCells="36" layer_nStripsX="2" layer_nStripsY="36" deadWidth="0" layer_configuration="TL"/>
-
+////
+//
       registerParameter("nMegaY", "number of megatiles along Z", _nMegaY , 1 , SegmentationParameter::NoUnit, true);
 //      _nMegaY is given by Ecal_n_wafers_per_tower from "model_parameters_ILD_o3_v05.xml"
 
@@ -45,16 +44,12 @@ namespace DD4hep {
       registerParameter("identifier_wafer", "Cell encoding identifier for wafer", _identifierWafer, std::string("wafer"),
                         SegmentationParameter::NoUnit, true);
 
-//      registerParameter("identifier_wafer_y", "Cell encoding identifier for wafer in y", _identifierWaferY, std::string("waferY"),
-//                        SegmentationParameter::NoUnit, true);
-
       registerParameter("identifier_layer", "Cell encoding identifier for layer", _identifierLayer, std::string("layer"),
                         SegmentationParameter::NoUnit, true);
 
-      //      registerParameter("identifier_deadArea", "Cell encoding identifier for dead area", _identifierGR, std::string("deadArea"),
-      //			SegmentationParameter::NoUnit, true);
+      registerParameter("identifier_module", "Cell encoding identifier for module", _identifierModule, std::string("module"),
+                        SegmentationParameter::NoUnit, true);
 
-      //registerParameter("layer_configuration", "layer configuration (S, T, L)", _layerConfig, std::string("TLS"), SegmentationParameter::NoUnit, true);
       registerParameter("layer_configuration", "layer configuration (S, T, L)", _layerConfig, std::string("TLS"), SegmentationParameter::NoUnit, true);
 
       _calculated=false;
@@ -71,17 +66,17 @@ namespace DD4hep {
 
 			if (_calculated) return; // already up to date
 
-///// g514 coterra      _megaSize  =   _totalSizeX / _nMegaX ; // size of square megatile in this layer
-///// Here we determine standard strip dimension. Therefore, we use the standard EBU dimension.
-//		Therefore we use global values _megaSize determined with _totalSizeY and _nMegaY.
       _megaSize  =   _totalSizeY / _nMegaY ; // size of square megatile in this layer
       _gridSizeL =  (_megaSize - 2.*_deadWidth) / _nStripsX ; // size of cell within megatile (x)
       _gridSizeT =  (_megaSize - 2.*_deadWidth) / _nStripsY ;
       _gridSizeS = (_megaSize - 2.*_deadWidth) / _nCells;
 
-      std::cout << "calculateDerivedQuantities: total X width: " << _totalSizeX << " / nMega: " << _nMegaY << " = " << _megaSize << " ; dead width = " << _deadWidth << 
-	" ; nstripsX,Y, nCells : " << _nStripsX << " " << _nStripsY << " " << _nCells << 
-	" ; stripX,Y/cell size: " << _gridSizeL << " " << _gridSizeT << " " << _gridSizeS << std::endl;
+      std::cout << "calculateDerivedQuantities: total X width: " << _totalSizeX 
+				<< " / nMega: " << _nMegaY << " = " << _megaSize 
+				<< " ; dead width = " << _deadWidth << " ; nstripsX,Y, nCells : " << _nStripsX 
+				<< " " << _nStripsY << " " << _nCells 
+				<< " ; stripX,Y/cell size: " << _gridSizeL 
+				<< " " << _gridSizeT << " " << _gridSizeS << std::endl;
 
       _calculated=true;
 
@@ -98,37 +93,16 @@ namespace DD4hep {
       unsigned int WaferIndex;
       unsigned int CellIndexX;
       unsigned int CellIndexY;
+			unsigned int ModuleIndex; 
+
       Vector3D cellPosition;
 
       LayerIndex = (*_decoder)[_identifierLayer];
       WaferIndex = (*_decoder)[_identifierWafer];
-//      WaferIndexY = (*_decoder)[_identifierWaferY];
-
       CellIndexX = (*_decoder)[_xId];
       CellIndexY = (*_decoder)[_yId];
-
-#if 0
-      // offset of area
-      cellPosition.X = - _totalSizeX[ LayerIndex ] / 2.;
-      cellPosition.Y = - _totalSizeY / 2.;
-#if VERBOSEcoterra 
-			std::cout << "with offset: cellPosition.X = " << cellPosition.X << ", cellPosition.Y = " << cellPosition.Y << std::endl;
-#endif
-      // WaferIndex is stard with 1.
-      int WaferIndexX = ( WaferIndex - 1 ) / _nMegaY + 1;
-      int WaferIndexY = WaferIndex%_nMegaY + 1;
-#if VERBOSEcoterra
-			std::cout << "WaferIndexY = WaferIndex%_nMegaY + 1;  " << WaferIndexY << " = " <<  WaferIndex << " % " << _nMegaY << " + " << 1 << std::endl;
-#endif
-
-      cellPosition.X += (WaferIndexX - 1) * _megaSize;
-      cellPosition.Y += (WaferIndexY - 1) * _megaSize;
-#if VERBOSEcoterra 
-			std::cout << "WaferIndexX = " << WaferIndexX << ", WaferIndexY = " <<  WaferIndexY << std::endl;
-			std::cout << "+ WaferIndexX*_megaSize: cellPosition.X = " << cellPosition.X << ", cellPosition.Y = " << cellPosition.Y << std::endl;
-#endif
-#endif
-
+			ModuleIndex = (*_decoder)[_identifierModule];
+			
 			double regulatingEBUSizeX = _waferOffsetX[LayerIndex][WaferIndex] * 2;
 			double regulatingEBUSizeY = _waferOffsetY[LayerIndex][WaferIndex] * 2;
 
@@ -137,10 +111,9 @@ namespace DD4hep {
 			cellPosition.Y = -regulatingEBUSizeY / 2.;   // _megaSize includes two _deadWidth.
       cellPosition.Y += (CellIndexY + 0.5) * celldims[1];
 			double XfromEdge = 0;
-			//double d_regulation = _megaSize - regulatingEBUSizeX;
-			//if  ( d_regulation >  0.1 && celldims[0] > celldims[1]*1.5 ) {
 
 #if VERBOSEcoterra
+	if ( cellPosition.X > 100000. ) std::cout << "HERE too large cellPosition.X place 1" << std::endl;
 	if ( _isRegulatingEBU[LayerIndex][WaferIndex] ) {
 		std::cout << "regulatingEBUSizeX, regulatingEBUSizeY(layer) = " << regulatingEBUSizeX << ", " << regulatingEBUSizeY 
 		<< "(" << LayerIndex << ")" << std::endl;
@@ -164,15 +137,43 @@ namespace DD4hep {
 	
       ////////////////cellPosition.X += _deadWidth + XfromEdge;
       cellPosition.X += XfromEdge;
-		
+
+#if VERBOSEcoterra
+	std::cout << "XfromEdge = " << XfromEdge << ", CellIndexX = " << CellIndexX << std::endl;
+  if ( cellPosition.X > 100000. ) std::cout << "HERE too large cellPosition.X place 2" << std::endl;
+#endif
+	
 #if VERBOSEcoterra 
-			std::cout << "+ _deadWidth + ( CellIndexX + 0.5 )*celldims[0]: cellPosition.X = " << cellPosition.X << ", cellPosition.Y = " << cellPosition.Y << std::endl;
+		if ( cellPosition.X  > 50000 || cellPosition.Y  > 50000 || cellPosition.Z  > 50000 
+				|| cellPosition.X  < -50000 || cellPosition.Y < -50000 || cellPosition.Z < -50000 ) {
+			std::cout << "+ _deadWidth + ( CellIndexX + 0.5 )*celldims[0]: cellPosition.X = " << cellPosition.X 
+							<< ", cellPosition.Y = " << cellPosition.Y << std::endl;
 			std::cout << "CellIndexX * celldims[0] = " << CellIndexX << " x " << celldims[0] 
 							<< ", CellIndexY * celldims[1] = " << CellIndexY << " x " << celldims[1] 
 							<< ", _isRegulatingEBU[" << LayerIndex << "][" << WaferIndex << "] = " << _isRegulatingEBU[LayerIndex][WaferIndex]
 							<< std::endl;
 			std::cout << "in MegatileLayerGridXY: regulatingEBUSizeX = " << regulatingEBUSizeX << std::endl;
+			std::cout << "x,y,z = " << cellPosition.X << ", " << cellPosition.Y  << ", " << cellPosition.Z << std::endl;
+	 		std::cout << "LayerIndex = " << LayerIndex << ", WaferIndex = " << WaferIndex << std::endl;
+		}
 #endif
+
+/// for Endcaps coterra g728
+			if ( ModuleIndex > 4 ) {
+				double endcapx = cellPosition.Y;
+				cellPosition.Y = cellPosition.X;
+				cellPosition.X = endcapx;
+#if VERBOSEcoterra
+				if ( 192 < WaferIndex && WaferIndex < 197 ) {
+					std::cout << "including BAD POSITION"<< std::endl;
+					std::cout << "x,y,z = " << cellPosition.Y << ", " << cellPosition.X << ", " << cellPosition.Z << std::endl;
+					std::cout << "LayerIndex = " << LayerIndex << ", WaferIndex = " << WaferIndex << ", CellIndexX = " << CellIndexX
+										<< ", CellIndexY = " << CellIndexY << ", ModuleIndex = " << ModuleIndex 
+										<< ", _isRegulatingEBU[LayerIndex][WaferIndex] = " << _isRegulatingEBU[LayerIndex][WaferIndex]  
+										<< std::endl;
+				}
+#endif
+			}
 
       return cellPosition;
     }
@@ -183,9 +184,17 @@ namespace DD4hep {
       _decoder->setValue(vID);
       unsigned int layerIndex = (*_decoder)[_identifierLayer];
 			unsigned int waferIndex = (*_decoder)[_identifierWafer];
+			unsigned int moduleIndex = (*_decoder)[_identifierModule];
 
       double _x = localPosition.X; 
       double _y = localPosition.Y;
+
+//// coterra g728.1857 for Endcaps
+			if ( moduleIndex > 4 ) {
+				_x = localPosition.Y;
+				_y = localPosition.X;
+			}
+////
 
       int _cellIndexX(-1);
       int _cellIndexY(-1);
@@ -199,8 +208,6 @@ namespace DD4hep {
 								<< layerIndex << "][" << waferIndex << "] = " << _waferOffsetX[layerIndex][waferIndex] << std::endl;
 			std::cout << "_y = localPosition.Y: " << _y << " = " << localPosition.Y << ", _waferOffsetY["
 								<< layerIndex << "][" << waferIndex << "] = " << _waferOffsetY[layerIndex][waferIndex] << std::endl;
-//			std::cout << "_waferIndexX = " << _waferIndexX[][] << std::endl;
-//			std::cout << "_waferIndexY = " << _waferIndexY << std::endl;
 			std::cout << "_megaSize = " << _megaSize << std::endl;
 #endif
 			double WaferOffsetX = _waferOffsetX[layerIndex][waferIndex];
@@ -215,26 +222,33 @@ namespace DD4hep {
 	  	  	 _y < -WaferOffsetY || _y > WaferOffsetY ) {
 #if VERBOSEcoterra
 			std::cout << "This hit falls down in to dead width." << std::endl;
+			std::cout << "localPosition.X/Y = " << localPosition.X << ", " << localPosition.Y << std::endl;
+			std::cout << "layerIndex = " << layerIndex << ", waferIndex = " << waferIndex 
+								<< ", _isRegulatingEBU[" << layerIndex << "][" << waferIndex << "] = " << _isRegulatingEBU[layerIndex][waferIndex] 
+								<< std::endl; 
 #endif
-	  		// dead area at edge of wafer
+
+//      	 _x += WaferOffsetX;
+//      	 _y += WaferOffsetY;
+
 				} else {
 
-			// localPosition.X is in a coordination which center is at the center of wafer.
+			// localPosition.X is a point in a coordination which center is on the center of wafer.
       // _waferOffsetX is 1/2 of wafer_dim_x, 
       // and wafer_dim_x is already subtracted with the guard ring (deadWidth);
-      // _x should be interpret in a coodination who's origin is on the edge of wafre... negative--> positive sign.
+      // _x should be interpreted in a coodination who's origin is on the edge of wafre.
 
       	 _x += WaferOffsetX;
       	 _y += WaferOffsetY;
 
 #if VERBOSEcoterra
   if ( _isRegulatingEBU[layerIndex][waferIndex] ) {
+		if ( localPosition.X < -10000 || localPosition.X > 10000 || localPosition.Y < -10000 || localPosition.Y > 10000 ) {
 			std::cout << "in cellID on hit " << std::endl;
 			std::cout << "_x = localPosition.X + _waferOffsetX; => " << _x << " = " << localPosition.X << " + " << WaferOffsetX << std::endl;
 			std::cout << "_y = localPosition.Y + _waferOffsetY; => " << _y << " = " << localPosition.Y << " + " << WaferOffsetY << std::endl;
-//			std::cout << "_waferIndexX = " << _waferIndexX << std::endl;
-//			std::cout << "_waferIndexY = " << _waferIndexY << std::endl;
 			std::cout << "_megaSize = " << _megaSize << std::endl;
+		}
 	}
 #endif
 
@@ -256,6 +270,11 @@ namespace DD4hep {
 						<< std::endl;
 			//		}
 				}
+				//if ( _x > 10000 || _x < -10000 ) {
+					std::cout << "HERE checking _x and celldims " << std::endl;
+					std::cout << " _cellIndexX, Y = " << _cellIndexX << ", " << _cellIndexY << std::endl;
+					std::cout << " celldims[0], [1] = " << celldims[0] << ", " << celldims[1] << std::endl;
+				//}
 #endif 
 					if ( _isRegulatingEBU[layerIndex][waferIndex] && celldims[0] > celldims[1]*1.5 ) {
 						int n_cellX = WaferOffsetX * 2 / celldims[0]; // How many strip-row can stay on this EBU.
@@ -267,19 +286,19 @@ namespace DD4hep {
 						}
 					}
 				}
-			//      std::cout << " wafer, cell indx " << _waferIndexX << " " << _waferIndexY << " , " << _cellIndexX << " " << _cellIndexY << std::endl;
-/////xxxxxxxxxxxxxxxxxxx
 	if ( _isRegulatingEBU[layerIndex][waferIndex] ) {
-//      	 _cellIndexX = 0;
+      	 //_cellIndexX = 0;
+      	 //_cellIndexY = 0;
 	}
 
 
       	(*_decoder)[_xId] = _cellIndexX;
       	(*_decoder)[_yId] = _cellIndexY;
-		//_waferIndexX(Y) were calculated in SEcal04Hybrid_Barrel using setWaferIndexX(Y)
-  //    	(*_decoder)[_identifierWaferX] = _waferIndexX;
-    //  	(*_decoder)[_identifierWaferY] = _waferIndexY;
-      
+     
+#if VERBOSEcoterra
+				int CellIndexX = (*_decoder)[_xId]; 
+				if ( CellIndexX > 10 ) std::cout << "HERE check just before return _decoder: _cellIndexX = " << _cellIndexX << std::endl;
+#endif
       	return _decoder->getValue();
     }
 

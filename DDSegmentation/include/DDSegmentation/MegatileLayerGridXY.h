@@ -198,6 +198,8 @@ protected:
 
 	std::string _layerConfig;
 
+	std::string _identifierModule;
+
 };
 
 } /* namespace DDSegmentation */
