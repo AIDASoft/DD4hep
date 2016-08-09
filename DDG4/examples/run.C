@@ -20,6 +20,7 @@
 
 // Run a ROOT macro
 void run(const char* macro)  {
+  int status;
   char cmd[1024];
   const char* dd4hep_install = getenv("DD4hepINSTALL");
   if ( dd4hep_install )  {
@@ -28,7 +29,7 @@ void run(const char* macro)  {
   else  {
     ::sprintf(cmd,".L examples/DDG4/examples/initAClick.C+");
   }
-  int status = gInterpreter->ProcessLine(cmd); 
+  status = gInterpreter->ProcessLine(cmd); 
   ::printf("Status(%s) = %d\n",cmd,status);
   status = gInterpreter->ProcessLine("initAClick()");
   ::printf("Status(%s) = %d\n",cmd,status);

@@ -47,19 +47,6 @@ using namespace DD4hep::Simulation;
 
 typedef ReferenceBitMask<int> PropertyMask;
 
-namespace {
-  const G4PrimaryParticle* primary(int id, Geant4PrimaryMap::Primaries const& primaryMap)   {
-    Geant4PrimaryMap::Primaries::const_iterator iprim =   primaryMap.begin();
-    Geant4PrimaryMap::Primaries::const_iterator primEnd = primaryMap.end();
-    for (; iprim != primEnd; ++iprim) {
-      if( iprim->first->GetTrackID() == id ){
-	return iprim->first;
-      }
-    }
-    return 0;
-  }
-}
-
 /// Standard constructor
 Geant4ParticleHandler::Geant4ParticleHandler(Geant4Context* ctxt, const string& nam)
 : Geant4GeneratorAction(ctxt,nam), Geant4MonteCarloTruth(), m_userHandler(0), m_primaryMap(0)
@@ -211,15 +198,14 @@ void Geant4ParticleHandler::begin(const G4Track* track)   {
   G4ThreeVector m = h.momentum();
   const G4ThreeVector& v = h.vertex();
   int reason = (kine > m_kinEnergyCut) ? G4PARTICLE_ABOVE_ENERGY_THRESHOLD : 0;
-  const G4PrimaryParticle* prim = primary(h.id(),m_primaryMap->primaryMap);
+  const G4PrimaryParticle* prim = h.primary();
   Particle* prim_part = 0;
 
   if ( prim )   {
-    Geant4PrimaryMap::Primaries::const_iterator iprim = m_primaryMap->primaryMap.find(prim);
-    if ( iprim == m_primaryMap->primaryMap.end() )  {
+    prim_part = m_primaryMap->get(prim);
+    if ( !prim_part )  {
       except("+++ Tracking preaction: Primary particle without generator particle!");
     }
-    prim_part = (*iprim).second;
     reason |= (G4PARTICLE_PRIMARY|G4PARTICLE_ABOVE_ENERGY_THRESHOLD);
     m_particleMap[h.id()] = prim_part->addRef();
   }

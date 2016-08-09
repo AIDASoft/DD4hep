@@ -86,7 +86,7 @@ DD4hep::Simulation::createPrimary(int particle_id,
 static void collectPrimaries(Geant4PrimaryMap*         pm,
                              Geant4PrimaryInteraction* interaction, 
                              Geant4Vertex*             particle_origine,
-                             const G4PrimaryParticle*  gp)
+                             G4PrimaryParticle*        gp)
 {
   int pid = int(interaction->particles.size());
   Geant4Particle* p = createPrimary(pid,particle_origine,gp);
@@ -99,7 +99,7 @@ static void collectPrimaries(Geant4PrimaryMap*         pm,
   p->mask = mask;
   particle_origine->out.insert(p->id);
   // Insert pair in map. Do not forget to increase reference count!
-  pm->primaryMap.insert(make_pair(gp,p->addRef()));
+  pm->insert(gp,p);
 
   if ( dau )   {
     Geant4Vertex* dv = new Geant4Vertex(*particle_origine);
@@ -462,7 +462,7 @@ int DD4hep::Simulation::generatePrimaries(const Geant4Action* caller,
     }
     for(map<int,G4PrimaryParticle*>::iterator i=prim.begin(); i!=prim.end(); ++i)  {
       Geant4ParticleHandle p = pm[(*i).first];
-      primaries->primaryMap[(*i).second] = p->addRef();
+      primaries->insert((*i).second,p);
     }
   }
   return 1;

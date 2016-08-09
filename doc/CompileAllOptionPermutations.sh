@@ -9,6 +9,14 @@ CHECKOUT=${dir_name}/../../DD4hep.trunk/checkout;
 GEANT_VERSION=10.01.p02;
 ROOT_VERSION=5.34.25
 ROOT_VERSION=6.04.10;
+
+#INSTALL_G4=${SW}/g4_10.02.p02_dbg/lib/Geant4-10.2.2;
+#GEANT_VERSION=10.02.p02;
+ROOT_VERSION=6.06.06;
+#source ${INSTALL_G4}/../../bin/geant4.sh;
+export CXX="`which g++-5` -D_GLIBCXX_USE_CXX11_ABI=0";
+export CC="`which gcc-5` -D_GLIBCXX_USE_CXX11_ABI=0";
+
 # ==============================================================================
 # Parse arguments
 # ==============================================================================
@@ -83,14 +91,14 @@ make_opt()
 
 make_build()
 {
-    echo ${fCMD};
+    echo ${CMD};
     eval ${CMD};
     if [ $? -ne  0 ]; then
         make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed CMAKE command:"
         echo ${CMD};
 	exit 1
     fi
-    make install VERBOSE=1 -j 4;
+    make install VERBOSE=1 -j 1;
     if [ $? -ne  0 ]; then
         make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD!"
         echo ${CMD};
@@ -118,6 +126,8 @@ build_all()
     #G4_MODES="ON";
     #XERCES_MODES="OFF";
     #LCIO_MODES="ON";
+    BUILD_TYPE=;
+    BUILD_TYPE="-DCMAKE_BUILD_TYPE=Debug";
     for DOGEANT4 in ${G4_MODES}; do
 	for DOXERCESC in ${XERCES_MODES}; do
 	    for DOGEAR in OFF; do
@@ -134,7 +144,7 @@ build_all()
 		    `make_opt ${DOXERCESC}  -DDD4HEP_USE_XERCESC -DXERCESC_ROOT_DIR=${INSTALL_XERCESC}` \
                     -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=OFF \
                     -DROOTSYS=${ROOTSYS} -DCMAKE_INSTALL_PREFIX=${WORK_DIR}/DD4hep";
-		    CMD="cd ${dir_name}/$folder ; cmake ${OPTS} ${CHECKOUT};";
+		    CMD="cd ${dir_name}/$folder ; cmake ${BUILD_TYPE} ${OPTS} ${CHECKOUT};";
                     make_build;
 
 		    unset ROOTSYS;
@@ -146,7 +156,7 @@ build_all()
                     -DDD4HEP_NO_REFLEX=ON -DDD4HEP_USE_CXX11=OFF \
                     -DROOTSYS=${ROOTSYS}";
 		    source ${DD4hep_DIR}/bin/thisdd4hep.sh;
-   		    CMD="cd ${WORK_DIR}/EX; cmake ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";
+   		    CMD="cd ${WORK_DIR}/EX; cmake ${BUILD_TYPE} ${OPTS} -DDD4hep_DIR=${DD4hep_DIR} ${CHECKOUT}/examples;";
                     make_build;
                     #
 		    cd ../..;

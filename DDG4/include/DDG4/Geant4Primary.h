@@ -65,12 +65,25 @@ namespace DD4hep {
     class Geant4PrimaryMap  {
     public:
       typedef std::map<const G4PrimaryParticle*,Geant4Particle*> Primaries;
+    private:
       /// Mapping of primary particles of this event
-      Primaries primaryMap; //! not persistent
+      Primaries       m_primaryMap; //! not persistent
+
+    public:
       /// Default constructor
       Geant4PrimaryMap() {}
       /// Default destructor
       virtual ~Geant4PrimaryMap();
+      /// Add a new object pair (G4 primary particle, DDG4 particle) into the maps
+      void insert(G4PrimaryParticle* g4_particle,Geant4Particle* particle);
+      /// Access DDG4 particle by G4 primary particle
+      Geant4Particle* get(const G4PrimaryParticle* particle);
+      /// Access DDG4 particle by G4 primary particle (const)
+      const Geant4Particle* get(const G4PrimaryParticle* particle) const;
+      /// Access primary map directly
+      Primaries& primaries()  {  return m_primaryMap;  }
+      /// Access primary map directly (const)
+      const Primaries& primaries() const  {  return m_primaryMap;  }
     };
 
 

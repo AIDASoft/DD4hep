@@ -23,6 +23,7 @@
 #include "G4VTouchable.hh"
 #include "G4VSensitiveDetector.hh"
 #include "G4ParticleDefinition.hh"
+#include "G4DynamicParticle.hh"
 #include "G4VProcess.hh"
 
 #include <stdexcept>
@@ -188,6 +189,16 @@ namespace DD4hep {
       int pdgID() const {
         G4ParticleDefinition* def = trackDef();
         return def ? def->GetPDGEncoding() : 0;
+      }
+      /// Access the dynamic particle of the track object
+      const G4DynamicParticle* dynamic() const  {
+        return track->GetDynamicParticle();
+      }
+      /// Access the primary particle of the track object (if present)
+      const G4PrimaryParticle* primary() const  {
+        const G4DynamicParticle* d = track->GetDynamicParticle();
+        if ( d ) return d->GetPrimaryParticle();
+        return 0;
       }
     };
 

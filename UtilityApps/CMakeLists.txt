@@ -9,7 +9,10 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
-dd4hep_package(UtilityApps USES DDCore)
+dd4hep_package(UtilityApps
+  USES DDCore
+      [ROOT REQUIRED COMPONENTS Geom]
+  )
 #-----------------------------------------------------------------------------------
 dd4hep_add_executable( geoDisplay      src/display.cpp )
 #-----------------------------------------------------------------------------------

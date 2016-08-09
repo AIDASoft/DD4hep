@@ -22,10 +22,10 @@ dd4hep_install_dir( compact scripts sim DESTINATION ${DD4hep_DIR}/examples/CLICS
 #--------------------------------------------------------------------------
 if (DD4HEP_USE_GEANT4)
   dd4hep_add_executable(CLICSiDXML SOURCES scripts/CLICSiDXML.C
-    USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
+    USES  [DD4hep REQUIRED COMPONENTS DDCore DDG4] GEANT4 )
   #--------------------------------------------------------------------------
   dd4hep_add_executable(CLICSiDAClick SOURCES scripts/CLICSiDAClick.C
-    USES  [DD4hep REQUIRED COMPONENTS DDG4] GEANT4 )
+    USES  [DD4hep REQUIRED COMPONENTS DDCore DDG4] GEANT4 )
 endif()
 #
 dd4hep_configure_scripts ( CLICSiD DEFAULT_SETUP WITH_TESTS )

@@ -61,6 +61,7 @@ int initAClick(const char* command=0)  {
   std::string geant4  = make_str(gSystem->Getenv("G4INSTALL"));
   std::string dd4hep  = make_str(gSystem->Getenv("DD4hepINSTALL"));
   std::string clhep   = make_str(gSystem->Getenv("CLHEP_DIR"));
+  std::string defs    = "";
   std::string libs    = " -L"+rootsys+"/lib";
   std::string inc     = " -I"+dd4hep+"/examples/DDG4/examples -I"+dd4hep + " -I"+dd4hep+"/include";
   libs += " -L"+dd4hep+"/lib -lDDCore -lDDG4 -lDDSegmentation";
@@ -73,7 +74,7 @@ int initAClick(const char* command=0)  {
     // if CLHEP is not included in Geant4...
     inc += " -I"+clhep+"/include";
   }
-  inc += " -Wno-shadow -g -O0";
+  inc += " -Wno-shadow -g -O0" + defs;
   if ( ROOT_VERSION_CODE < ROOT_VERSION(6,0,0) )
     libs += " -lCint";
   libs += " -lCore -lMathCore -pthread -lm -ldl -rdynamic";

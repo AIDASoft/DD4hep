@@ -17,6 +17,9 @@
 #include "DD4hep/InstanceCount.h"
 #include "DDG4/Geant4Primary.h"
 
+// Geant4 include files
+#include "G4PrimaryParticle.hh"
+
 // C/C++ include files
 #include <stdexcept>
 #include <cstdio>
@@ -30,7 +33,24 @@ PrimaryExtension::~PrimaryExtension() {
 
 /// Default destructor
 Geant4PrimaryMap::~Geant4PrimaryMap()   {
-  releaseObjects(primaryMap)();
+  releaseObjects(m_primaryMap)();
+}
+
+/// Add a new object pair (G4 primary particle, DDG4 particle) into the maps
+void Geant4PrimaryMap::insert(G4PrimaryParticle* g4,Geant4Particle* p)   {
+  m_primaryMap.insert(std::make_pair(g4,p->addRef()));
+}
+
+/// Access DDG4 particle by G4 primary particle
+Geant4Particle* Geant4PrimaryMap::get(const G4PrimaryParticle* particle)   {
+  Primaries::iterator i=m_primaryMap.find(particle);
+  return i != m_primaryMap.end() ? (*i).second : 0;
+}
+
+/// Access DDG4 particle by G4 primary particle (const)
+const Geant4Particle* Geant4PrimaryMap::get(const G4PrimaryParticle* particle) const   {
+  Primaries::const_iterator i=m_primaryMap.find(particle);
+  return i != m_primaryMap.end() ? (*i).second : 0;
 }
 
 /// Default constructor

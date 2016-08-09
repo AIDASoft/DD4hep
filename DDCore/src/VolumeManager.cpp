@@ -60,11 +60,11 @@ namespace {
           Chain chain;
           SensitiveDetector sd = parent_sd;
           m_entries.clear();
-#if 0
           Encoding coding;
           scanPhysicalVolume(de, de, pv, coding, ids, sd, chain);
-#endif
+#if 0
           scanPhysicalVolume(de, de, pv, ids, sd, chain);
+#endif
           continue;
         }
         printout(WARNING, "VolumeManager", "++ Detector element %s of type %s has no placement.", 
@@ -90,7 +90,8 @@ namespace {
     }
     /// Scan a single physical volume and look for sensitive elements below
     size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
-                              Encoding parent_encoding, VolIDs ids, SensitiveDetector& sd, Chain& chain)
+                              Encoding parent_encoding,
+                              VolIDs ids, SensitiveDetector& sd, Chain& chain)
     {
       TGeoNode* node = pv.ptr();
       size_t count = 0;
@@ -132,13 +133,18 @@ namespace {
         if ( !got_readout && !pv_ids.empty() )   {
           ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
         }
+        bool compound = e.type() == "compound";
+        if ( compound )  {
+          sd = SensitiveDetector(0);
+          volume_encoding = Encoding();
+        }
         for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
           TGeoNode* daughter = node->GetDaughter(idau);
           PlacedVolume placement(daughter);
           if ( placement.data() ) {
             size_t cnt;
             PlacedVolume pv_dau = Ref_t(daughter);
-            DetElement de_dau = findElt(e, daughter);
+            DetElement   de_dau = findElt(e, daughter);
             if ( de_dau.isValid() ) {
               Chain dau_chain;
               cnt = scanPhysicalVolume(parent, de_dau, pv_dau, volume_encoding, ids, sd, dau_chain);
@@ -155,6 +161,10 @@ namespace {
           else  {
             throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+
                                 " [Internal error -- bad detector constructor]");
+          }
+          if ( compound )  {
+            sd = SensitiveDetector(0);
+            volume_encoding = Encoding();
           }
         }
         if ( count == 0 )   { 
