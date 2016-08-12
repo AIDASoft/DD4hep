@@ -47,24 +47,27 @@ namespace {
 
     /// Populate the Volume manager
     void populate(DetElement e) {
+      const char* typ = ::getenv("VOLMGR_NEW");
       const DetElement::Children& c = e.children();
       SensitiveDetector parent_sd;
       if ( e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR )  {
         parent_sd = m_lcdd.sensitiveDetector(e.name());
       }
+      printout(INFO, "VolumeManager", "++ Executing %s plugin manager version",typ ? "***NEW***" : "***OLD***");
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
         DetElement de = (*i).second;
         PlacedVolume pv = de.placement();
         if (pv.isValid()) {
-          VolIDs ids;
           Chain chain;
           SensitiveDetector sd = parent_sd;
           m_entries.clear();
-          Encoding coding;
-          scanPhysicalVolume(de, de, pv, coding, ids, sd, chain);
-#if 0
+          if ( typ )  {
+            Encoding coding(0, 0);
+            scanPhysicalVolume(de, de, pv, coding, sd, chain);
+            continue;
+          }
+          VolIDs ids;
           scanPhysicalVolume(de, de, pv, ids, sd, chain);
-#endif
           continue;
         }
         printout(WARNING, "VolumeManager", "++ Detector element %s of type %s has no placement.", 
@@ -91,38 +94,36 @@ namespace {
     /// Scan a single physical volume and look for sensitive elements below
     size_t scanPhysicalVolume(DetElement& parent, DetElement e, PlacedVolume pv, 
                               Encoding parent_encoding,
-                              VolIDs ids, SensitiveDetector& sd, Chain& chain)
+                              SensitiveDetector& sd, Chain& chain)
     {
       TGeoNode* node = pv.ptr();
       size_t count = 0;
       if (node) {
-        bool got_readout = false;
         Volume vol = pv.volume();
-        const VolIDs& pv_ids = pv.volIDs();
-        Encoding volume_encoding = parent_encoding;
-        if ( (parent->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )  {
-          sd = m_lcdd.sensitiveDetector(parent.name());
+        const VolIDs& pv_ids   = pv.volIDs();
+        Encoding encoding      = parent_encoding;
+        bool     is_sensitive  = vol.isSensitive();
+        bool     have_encoding = pv_ids.empty();
+        bool     compound      = e.type() == "compound";
+
+        if ( compound )  {
+          sd = SensitiveDetector(0);
+          encoding = Encoding();
         }
-        else if ( (e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )  {
-          sd = m_lcdd.sensitiveDetector(e.name());
-        }
-        else if ( vol.isSensitive() )  {
-          sd = vol.sensitiveDetector();
+        else if ( !sd.isValid() )  {
+          if ( is_sensitive )
+            sd = vol.sensitiveDetector();
+          else if ( (parent->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )
+            sd = m_lcdd.sensitiveDetector(parent.name());
+          else if ( (e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR) )
+            sd = m_lcdd.sensitiveDetector(e.name());
         }
         chain.push_back(node);
-        if ( sd.isValid() )   {
+        if ( sd.isValid() && !pv_ids.empty() )   {
           Readout ro = sd.readout();
           if ( ro.isValid() )   {
-            got_readout = true;
-            if ( ids.empty() )
-              volume_encoding = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
-            else  {
-              ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
-              volume_encoding = update_encoding(ro.idSpec(), ids, parent_encoding);              
-              ids.clear();
-            }
-            add_entry(sd, parent, e, node, volume_encoding, chain);
-            ++count;
+            encoding = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
+            have_encoding = true;
           }
           else {
             printout(WARNING, "VolumeManager",
@@ -130,58 +131,54 @@ namespace {
                      parent.name(), pv.volume().name(), sd.ptr());
           }
         }
-        if ( !got_readout && !pv_ids.empty() )   {
-          ids.VolIDs::Base::insert(ids.end(), pv_ids.begin(), pv_ids.end());
-        }
-        bool compound = e.type() == "compound";
-        if ( compound )  {
-          sd = SensitiveDetector(0);
-          volume_encoding = Encoding();
-        }
         for (Int_t idau = 0, ndau = node->GetNdaughters(); idau < ndau; ++idau) {
           TGeoNode* daughter = node->GetDaughter(idau);
           PlacedVolume placement(daughter);
           if ( placement.data() ) {
-            size_t cnt;
-            PlacedVolume pv_dau = Ref_t(daughter);
+            PlacedVolume pv_dau(daughter);
             DetElement   de_dau = findElt(e, daughter);
             if ( de_dau.isValid() ) {
               Chain dau_chain;
-              cnt = scanPhysicalVolume(parent, de_dau, pv_dau, volume_encoding, ids, sd, dau_chain);
+              count += scanPhysicalVolume(parent, de_dau, pv_dau, encoding, sd, dau_chain);
             }
             else {
-              cnt = scanPhysicalVolume(parent, e, pv_dau, volume_encoding, ids, sd, chain);
+              count += scanPhysicalVolume(parent, e, pv_dau, encoding, sd, chain);
             }
-            // There was a sensitive daughter volume, also add the parent entry.
-            if ( !got_readout && count == 0 && cnt > 0 && sd.isValid() && !pv_ids.empty()) {
-              add_entry(sd, parent, e, node, volume_encoding, chain);
-            }
-            count += cnt;
           }
           else  {
-            throw runtime_error("Invalid not instrumented placement:"+string(daughter->GetName())+
-                                " [Internal error -- bad detector constructor]");
+            except("VolumeManager",
+                   "Invalid not instrumented placement:"+string(daughter->GetName())+
+                   " [Internal error -- bad detector constructor]");
           }
           if ( compound )  {
             sd = SensitiveDetector(0);
-            volume_encoding = Encoding();
           }
         }
-        if ( count == 0 )   { 
-          sd = SensitiveDetector(0);
+        if ( e.path().find("/world/EcalBarrel") == 0 )  {
+          printout(DEBUG, "VolumeManager","");
         }
-        else if ( count > 0 && sd.isValid() )   {
-          // We recuperate volumes from lower levels by reusing the subdetector
-          // This only works if there is exactly one sensitive detector per subdetector!
-          // I hate this, but I could not talk Frank out of this!  M.F.
-          Readout ro = sd.readout();
-          if ( ro.isValid() ) {
-            IDDescriptor iddesc = ro.idSpec();
-            Encoding det_encoding = encoding(iddesc,ids);
+        if ( sd.isValid() )   {
+          if ( !have_encoding )   {
+            printout(ERROR, "VolumeManager","%s: Missing SD encoding. Volume manager won't work!",
+                     e.path().c_str());
+          }
+          bool add_det_vol_id = (is_sensitive || count > 0) && node == e.placement().ptr();
+          if ( add_det_vol_id )   {
+            // 1) We recuperate volumes from lower levels by reusing the subdetector
+            //    This only works if there is exactly one sensitive detector per subdetector!
+            // 2) DetElements in the upper hierarchy of the sensitive also get al volume id,
+            //    and the volume is registered. (to be discussed)
+            //
+            // I hate this, but I could not talk Frank out of this!  M.F.
+            //
             printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
-                     got_readout ? "RECUPERATED" : "REGULAR", sd.name(),
-                     (void*)det_encoding.first, (void*)det_encoding.second);
-            e.object<DetElement::Object>().volumeID = det_encoding.first;
+                     have_encoding ? "RECUPERATED" : "REGULAR", sd.name(),
+                     (void*)encoding.first, (void*)encoding.second);
+            e.object<DetElement::Object>().volumeID = encoding.first;
+          }
+          if ( is_sensitive || add_det_vol_id )  {
+            add_entry(sd, parent, e, node, encoding, chain);
+            ++count;
           }
         }
         chain.pop_back();
@@ -406,7 +403,7 @@ namespace {
       log << s_count << ": " << parent.name() << ": " << e.name() 
           << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
           << (void*) volume_id << " Sensitive:" << yes_no(sensitive);
-      printout(DEBUG, "VolumeManager", log.str().c_str());
+      printout(INFO, "VolumeManager", log.str().c_str());
 #if 0
       log.str("");
       log << s_count << ": " << e.name() << " Detector GeoNodes:";

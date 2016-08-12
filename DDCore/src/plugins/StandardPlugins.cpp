@@ -251,13 +251,14 @@ static long dump_volume_tree(LCDD& lcdd, int argc, char** argv) {
       }
       TGeoVolume* volume = ideal->GetVolume();
       if ( !m_printSensitivesOnly || (m_printSensitivesOnly && sensitive) )  {
+        char sens = pv.volume().isSensitive() ? 'S' : ' ';
         if ( ideal == aligned )  {
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] %%s",
-                     level+1,2*level+1,(void*)ideal);
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) \t[%p] %c %%s",
+                     level+1,2*level+1,(void*)ideal, sens);
         }
         else  {
-          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %%s",
-                     level+1,2*level+1,(void*)ideal,(void*)aligned);
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s (%%s: %%s) Ideal:%p Aligned:%p %c %%s",
+                     level+1,2*level+1,(void*)ideal,(void*)aligned, sens);
         }
         printout(INFO,"+++",fmt,"",
                  aligned->GetName(),
@@ -294,20 +295,23 @@ template <int flag> long dump_detelement_tree(LCDD& lcdd, int argc, char** argv)
     static long dump(DetElement de,int level, bool sensitive_only) {
       const DetElement::Children& c = de.children();
       if ( !sensitive_only || 0 != de.volumeID() )  {
+        PlacedVolume place = de.placement();
+        const TGeoNode* node = place.ptr();
+        char sens = place.volume().isSensitive() ? 'S' : ' ';
         int value = flag;
-        char fmt[64];
+        char fmt[128];
         switch(value)  {
         case 0:
-          ::sprintf(fmt,"%03d %%-%ds %%s #Dau:%%d VolID:%%X Place:%%p",level+1,2*level+1);
-          printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),
-                   (unsigned long)de.volumeID(),
-                   (void*)de.placement().ptr());
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds %%s #Dau:%%d VolID:%%08X Place:%%p  %%c",level+1,2*level+1);
+          printout(INFO,"DetectorDump",fmt,"",de.path().c_str(),int(c.size()),
+                   (unsigned long)de.volumeID(), (void*)node, sens);
           break;
         case 1:
-          ::sprintf(fmt,"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
-          printout(INFO,"+++",fmt,"",de.path().c_str(),int(c.size()),(void*)de.volumeID());
-          ::sprintf(fmt,"%03d %%-%ds Placement: %%s",level+1,2*level+3);
-          printout(INFO,"+++",fmt,"",de.placementPath().c_str());
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Detector: %%s #Dau:%%d VolID:%%p",level+1,2*level+1);
+          printout(INFO,"DetectorDump", fmt, "", de.path().c_str(),
+                   int(c.size()), (void*)de.volumeID());
+          ::snprintf(fmt,sizeof(fmt),"%03d %%-%ds Placement: %%s   %%c",level+1,2*level+3);
+          printout(INFO,"DetectorDump",fmt,"", de.placementPath().c_str(), sens);
           break;
         default:
           break;
