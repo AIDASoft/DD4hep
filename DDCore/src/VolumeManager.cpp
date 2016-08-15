@@ -47,13 +47,13 @@ namespace {
 
     /// Populate the Volume manager
     void populate(DetElement e) {
-      const char* typ = ::getenv("VOLMGR_NEW");
+      const char* typ = 0;//::getenv("VOLMGR_NEW");
       const DetElement::Children& c = e.children();
       SensitiveDetector parent_sd;
       if ( e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR )  {
         parent_sd = m_lcdd.sensitiveDetector(e.name());
       }
-      printout(INFO, "VolumeManager", "++ Executing %s plugin manager version",typ ? "***NEW***" : "***OLD***");
+      //printout(INFO, "VolumeManager", "++ Executing %s plugin manager version",typ ? "***NEW***" : "***OLD***");
       for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i) {
         DetElement de = (*i).second;
         PlacedVolume pv = de.placement();
@@ -61,6 +61,7 @@ namespace {
           Chain chain;
           SensitiveDetector sd = parent_sd;
           m_entries.clear();
+#if 0
           if ( typ )  {
             Encoding coding(0, 0);
             scanPhysicalVolume(de, de, pv, coding, sd, chain);
@@ -68,6 +69,10 @@ namespace {
           }
           VolIDs ids;
           scanPhysicalVolume(de, de, pv, ids, sd, chain);
+#else
+          Encoding coding(0, 0);
+          scanPhysicalVolume(de, de, pv, coding, sd, chain);
+#endif
           continue;
         }
         printout(WARNING, "VolumeManager", "++ Detector element %s of type %s has no placement.", 
@@ -403,7 +408,7 @@ namespace {
       log << s_count << ": " << parent.name() << ": " << e.name() 
           << " ro:" << ro.ptr() << " pv:" << n->GetName() << " id:"
           << (void*) volume_id << " Sensitive:" << yes_no(sensitive);
-      printout(INFO, "VolumeManager", log.str().c_str());
+      printout(DEBUG, "VolumeManager", log.str().c_str());
 #if 0
       log.str("");
       log << s_count << ": " << e.name() << " Detector GeoNodes:";
