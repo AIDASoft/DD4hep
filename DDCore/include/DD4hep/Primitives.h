@@ -456,17 +456,56 @@ namespace DD4hep {
   void call_member_func(C& object, R (T::*pmf)(A1 a1,A2 a2) const, A1 a1, A2 a2)
   {   std::for_each(object.begin(),object.end(),ApplyMemFuncConst2<R,T,A1,A2>(pmf,a1,a2));    }
   
-  /// Generic map Functor to act on second element
+
+  /// Generic map Functor to act on first element (key)
+  template <typename M, typename FCN> class Apply1rst {
+  public:
+    const FCN& func;
+    Apply1rst(const FCN& f) : func(f) {    }
+    void operator()(std::pair<typename M::key_type const, typename M::mapped_type>& p) const
+    {   (func)(p.first);    }
+    void operator()(const std::pair<typename M::key_type const, typename M::mapped_type>& p) const
+    {   (func)(p.first);    }
+  };
+
+  template <typename C, typename FCN> Apply1rst<C,FCN> apply__1rst_value(C&,const FCN& func)
+  {  return Apply1rst<C,FCN>(func);  }
+
+  template <typename C, typename FCN> void apply1rst(C& object,const FCN& func)
+  {  std::for_each(object.begin(),object.end(),apply__1rst_value(object,func));  }
+
+  template <typename C, typename R, typename T>
+  void apply1rst(C& object, R (T::*pmf)())  
+  {  std::for_each(object.begin(),object.end(),apply__1rst_value(object,ApplyMemFunc<R,T>(pmf)));  }
+
+  template <typename C, typename R, typename T, typename A1>
+  void apply1rst(C object, R (T::*pmf)(A1 a1), A1 a1)
+  {  std::for_each(object.begin(),object.end(),apply__1rst_value(object,ApplyMemFunc1<R,T,A1>(pmf,a1)));  }
+
+  template <typename C, typename R, typename T>
+  void apply1rst(C& object, R (T::*pmf)() const)  
+  {  std::for_each(object.begin(),object.end(),apply__1rst_value(object,ApplyMemFuncConst<R,T>(pmf)));  }
+
+  template <typename C, typename R, typename T, typename A1>
+  void apply1rst(C object, R (T::*pmf)(A1 a1) const, A1 a1)
+  {  std::for_each(object.begin(),object.end(),apply__1rst_value(object,ApplyMemFuncConst1<R,T,A1>(pmf,a1)));  }
+
+  /// Generic map Functor to act on second element (mapped type)
   template <typename M, typename FCN> class Apply2nd {
   public:
     const FCN& func;
     Apply2nd(const FCN& f) : func(f) {    }
     void operator()(std::pair<typename M::key_type const, typename M::mapped_type>& p) const
     {   (func)(p.second);    }
+    void operator()(const std::pair<typename M::key_type const, typename M::mapped_type>& p) const
+    {   (func)(p.second);    }
   };
 
   template <typename C, typename FCN> Apply2nd<C,FCN> apply__2nd_value(C&,const FCN& func)
   {  return Apply2nd<C,FCN>(func);  }
+
+  template <typename C, typename FCN> void apply2nd(C& object,const FCN& func)
+  {  std::for_each(object.begin(),object.end(),apply__2nd_value(object,func));  }
 
   template <typename C, typename R, typename T>
   void apply2nd(C& object, R (T::*pmf)())  

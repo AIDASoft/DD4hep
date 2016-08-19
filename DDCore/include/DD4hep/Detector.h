@@ -22,7 +22,6 @@
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Readout.h"
 #include "DD4hep/Alignment.h"
-#include "DD4hep/Conditions.h"
 #include "DD4hep/Segmentations.h"
 
 // C/C++ include files
@@ -176,6 +175,8 @@ namespace DD4hep {
      *    -  information about the \em Readout structure if the object is
      *       instrumented and read-out. Otherwise this link is empty.
      *    -  information about the environmental conditions etc. \em conditons.
+     *       The access to conditions is exposed via the DetConditions interface.
+     *       See DD4hep/DetConditions.h for further details.
      *    -  alignment information.
      *    .
      *
@@ -196,9 +197,6 @@ namespace DD4hep {
       /// Extensions destructor type
       typedef void (*destruct_t)(void*);
 
-      typedef Conditions::IOV IOV;
-      typedef Conditions::Condition Condition;
-      typedef Conditions::Container ConditionsContainer;
       typedef std::map<std::string, DetElement> Children;
       typedef std::map<const std::type_info*, void*> Extensions;
 
@@ -370,17 +368,15 @@ namespace DD4hep {
       DetElement child(const std::string& name) const;
       /// Access to the detector elements's parent
       DetElement parent() const;
+      /// Access to the world object. Only possible once the geometry is closed.
+      DetElement world()  const;
+      /// Check if this DetElement has Conditions attached
+      bool hasConditions() const;
 
       /// Access to the actual alignment information
       Alignment alignment() const;
       /// Access to the survey alignment information
       Alignment surveyAlignment() const;
-      /// Access to the conditions information
-      ConditionsContainer conditions() const;
-      /// Access to the conditions information. No loading undertaken. The condition must be present
-      Condition  condition(const std::string& key) const;
-      /// Access to condition objects. If not present, load condition.
-      Condition  condition(const std::string& key, const IOV& iov);
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
       DetElement& setReference(DetElement reference);

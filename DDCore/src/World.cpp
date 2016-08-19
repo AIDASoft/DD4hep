@@ -20,8 +20,13 @@ using std::string;
 using namespace DD4hep::Geometry;
 
 /// Access the conditions loading
-World::Condition World::getCondition(DetElement child,const string&  key, const IOV& iov)  const  {
-  return access()->getCondition(child,key,iov);
+World::Condition World::getCondition(Condition::key_type key, const Condition::iov_type& iov)  const  {
+  return access()->getCondition(key, iov);
+}
+
+/// Access the conditions loading
+World::Condition World::getCondition(Condition::key_type key, const UserPool& pool)  const  {
+  return access()->getCondition(key, pool);
 }
 
 /// Access the detector descrion tree

@@ -18,9 +18,11 @@
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Conditions.h"
+#include "DD4hep/DetConditions.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
+#include "DDCond/ConditionsAccess.h"
 #include "DDCond/ConditionsManager.h"
 #include "DDCond/ConditionsIOVPool.h"
 #include "DDCond/ConditionsInterna.h"

@@ -270,8 +270,7 @@ namespace DD4hep {
       return _make(_Wrapper::call, pmf);
     }
     /// Callback setup function for Callbacks with const member functions with explicit return type taking 3 arguments
-    template <typename R, typename T, typename A0, typename A1, typename A2> const Callback& make(
-                                                                                                  R (T::*pmf)(A0, A1, A2) const) {
+    template <typename R, typename T, typename A0, typename A1, typename A2> const Callback& make(R (T::*pmf)(A0, A1, A2) const) {
       typedef R (T::*pfunc_t)(A0, A1, A2);
       typedef Wrapper<pfunc_t> _W;
       struct _Wrapper : public _W {

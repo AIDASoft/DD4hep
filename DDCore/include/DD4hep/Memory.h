@@ -45,6 +45,8 @@ namespace DD4hep  {
         void swap(base_t& c) {
           this->base_t::operator=(base_t(c.release()));
         }
+        /// Constructor from copy
+        dd4hep_ptr(dd4hep_ptr<T>& c) : base_t(c) {}
 #endif
     public:
         /// Default Constructor.

@@ -32,54 +32,40 @@ ConditionsIOVPool::~ConditionsIOVPool()  {
   InstanceCount::decrement(this);
 }
 
-bool ConditionsIOVPool::addKey(Condition c)   {
-  // TODO: Should be: det.path()+'#'+c->name; instead of c->comment
-  int hash = c->hash;
-  c->flags |= Interna::ConditionObject::ACTIVE;
-  keys.insert(hash);
-  return true;
-}
-
-void ConditionsIOVPool::__find(DetElement detector,
-                               const std::string& condition_name,
-                               const IOV& req_validity,
-                               RangeConditions& result)
+void ConditionsIOVPool::select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
 {
-  if ( !entries.empty() )  {
+  if ( !elements.empty() )  {
     const IOV::Key req_key = req_validity.key(); // 16 bytes => better copy!
-    for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
+    for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
       if ( IOV::key_contains_range((*i).first, req_key) )  {
-        (*i).second->select(detector, condition_name, result);
+        (*i).second->select(key, result);
       }
     }
   }
 }
 
-void ConditionsIOVPool::__find_range(DetElement detector,
-                                     const std::string& condition_name,
-                                     const IOV& req_validity,
-                                     RangeConditions& result)
+void ConditionsIOVPool::selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result)
 {
   const IOV::Key range = req_validity.key();
-  for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
-    const IOV::Key& key = (*i).first;
-    if ( IOV::key_is_contained(key,range) )
+  for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
+    const IOV::Key& k = (*i).first;
+    if ( IOV::key_is_contained(k,range) )
       // IOV test contained in key. Take it!
-      (*i).second->select(detector, condition_name, result);
-    else if ( IOV::key_overlaps_lower_end(key,range) )
+      (*i).second->select(key, result);
+    else if ( IOV::key_overlaps_lower_end(k,range) )
       // IOV overlap on test on the lower end of key
-      (*i).second->select(detector, condition_name, result);
-    else if ( IOV::key_overlaps_higher_end(key,range) )
+      (*i).second->select(key, result);
+    else if ( IOV::key_overlaps_higher_end(k,range) )
       // IOV overlap of test on the higher end of key
-      (*i).second->select(detector, condition_name, result);
+      (*i).second->select(key, result);
   }
 }
 
 /// Remove all key based pools with an age beyon the minimum age
 int ConditionsIOVPool::clean(int max_age)   {
-  Entries rest;
+  Elements rest;
   int count = 0;
-  for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
+  for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
     ConditionsPool* pool = (*i).second;
     if ( pool->age_value >= max_age )   {
       count += pool->count();
@@ -89,19 +75,19 @@ int ConditionsIOVPool::clean(int max_age)   {
     else
       rest.insert(make_pair(pool->iov->keyData,pool));
   }
-  entries = rest;
+  elements = rest;
   return count;
 }
 
 /// Select all ACTIVE conditions, which do no longer match the IOV requirement
-void ConditionsIOVPool::select(const IOV& required_validity, 
+void ConditionsIOVPool::select(const Condition::iov_type& required_validity, 
 			       RangeConditions& valid,
 			       RangeConditions& expired,
-			       IOV& conditions_validity)
+			       Condition::iov_type& conditions_validity)
 {
-  if ( !entries.empty() )  {
+  if ( !elements.empty() )  {
     const IOV::Key req_key = required_validity.key(); // 16 bytes => better copy!
-    for(Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
+    for(Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
       ConditionsPool* pool = (*i).second;
       if ( !IOV::key_contains_range((*i).first, req_key) )  {
         if ( pool->age_value == ConditionsPool::AGE_NONE ) {

@@ -15,11 +15,11 @@
 // Framework includes
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
+// C/C++ include files
 #include <climits>
+#include <iomanip>
 
 using namespace std;
 using namespace DD4hep::Conditions;
@@ -74,16 +74,18 @@ void IOV::set(Key::first_type val_1, Key::second_type val_2)  {
 }
 
 /// Set keys to unphysical values (LONG_MAX, LONG_MIN)
-void IOV::reset()  {
+IOV& IOV::reset()  {
   keyData.first  = LONG_MAX;
   keyData.second = LONG_MIN;
+  return *this;
 }
 
 /// Set keys to unphysical values (LONG_MAX, LONG_MIN)
-void IOV::invert()  {
+IOV& IOV::invert()  {
   Key::first_type tmp = keyData.first;
   keyData.first  = keyData.second;
   keyData.second = tmp;
+  return *this;
 }
 
 void IOV::iov_intersection(const IOV& validity)   {
@@ -198,17 +200,66 @@ const std::type_info& Block::typeInfo() const  {
   throw runtime_error("Conditions data block is unbound. Cannot determine type information!");
 }
 
+/// Access type name of the condition data block
+const std::string& Block::dataType() const   {
+  if ( pointer && grammar ) {
+    return grammar->type_name();
+  }
+  throw runtime_error("Conditions data block is unbound. Cannot determine type information!"); 
+}
+
+/// Constructor from string
+ConditionKey::ConditionKey(const std::string& value) 
+  : name(value), hash(hashCode(value))
+{
+}
+
+/// Assignment operator from the string representation
+ConditionKey& ConditionKey::operator=(const std::string& value)  {
+  ConditionKey key(value);
+  hash = hashCode(value);
+  name = value;
+  return *this;
+}
+
+/// Operator less (for map insertions) using the string representation
+bool ConditionKey::operator<(const std::string& compare)  const  {  
+  return hash < hashCode(compare);
+}
+
 /// Initializing constructor
 Condition::Condition(const string& nam,const string& typ) : Handle<Object>()  {
   Object* o = new Object();
   assign(o,nam,typ);
-  o->hash = hash32(nam);
+  o->hash = ConditionKey::hashCode(nam);
 }
 
 /// Assignment operator
 Condition& Condition::operator=(const Condition& c)   {
   if ( this != &c ) this->m_element = c.m_element;
   return *this;
+}
+
+/// Output method
+std::string Condition::str(int flags)  const   {
+  stringstream output;
+  Object* o = access();
+  const IOV* ptr_iov = o->iovData();
+  if ( 0 == (flags&NO_NAME) )
+    output << setw(16) << left << o->name;
+  if ( flags&WITH_IOV )
+    output << " " << (ptr_iov ? ptr_iov->str().c_str() : "IOV:[UNKNOWN]");
+  if ( flags&WITH_TYPE )
+    output << " (" << o->type << ")";
+  if ( flags&WITH_ADDRESS )
+    output << " " << o->address;
+  if ( flags&WITH_DATATYPE )
+    output << " -> " << o->data.dataType();
+  if ( flags&WITH_DATA )
+    output << " Data:" << o->data.str();
+  if ( flags&WITH_COMMENT )
+    output << " \"" << o->comment << "\"";
+  return output.str();
 }
 
 /// Access the data type
@@ -223,12 +274,12 @@ Block& Condition::block() const   {
 
 /// Access the IOV type
 const IOVType& Condition::iovType() const   {
-  return *(access()->iov_type());
+  return *(access()->iovType());
 }
 
 /// Access the IOV block
 const IOV& Condition::iov() const   {
-  return *(access()->iov_data());
+  return *(access()->iovData());
 }
 
 /// Access the name of the condition
@@ -239,11 +290,6 @@ const string& Condition::name()  const   {
 /// Access the type field of the condition
 const string& Condition::type()  const   {
   return access()->type;
-}
-
-/// Access the validity field of the condition as a string
-const string& Condition::validity()  const   {
-  return access()->validity;
 }
 
 /// Access the value field of the condition as a string
@@ -261,9 +307,10 @@ const string& Condition::address()  const   {
   return access()->address;
 }
 
-/// Access the hosting detector element
-DetElement Condition::detector() const   {
-  return access()->detector;
+/// Access the key of the condition
+ConditionKey Condition::key() const   {
+  Object* o = access();
+  return ConditionKey(o->name,o->hash);
 }
 
 /// Access to the type information
@@ -296,49 +343,72 @@ Condition& Condition::rebind()    {
   }
 #endif
   o->data.fromString(o->value);
-  printout(INFO,"Condition","+++ condition:%s : %s rebinding value:%s",
-           detector().path().c_str(), name().c_str(), o->value.c_str());
+  printout(INFO,"Condition","+++ condition:%s rebinding value:%s",
+           name().c_str(), o->value.c_str());
   return *this;
 }
 
-/// Clear all conditions. Auto-delete of all existing entries
-void Container::removeElements() const   {
-  if ( !isValid() )   {
+/// Access the number of conditons keys available for this detector element
+size_t Container::numKeys() const   {
+  Object* o = ptr();
+  if ( !o )   {
     invalidHandleError<Container>();
   }
-  data<Object>()->removeElements();
-}
-
-/// Access the number of conditons available for this detector element
-size_t Container::count() const   {
-  if ( !isValid() )   {
-    invalidHandleError<Container>();
-  }
-  return data<Object>()->size();
-}
-
-/// Access the full map of conditons
-Container::Entries& Container::entries() const  {
-  if ( !isValid() )   {
-    invalidHandleError<Container>();
-  }
-  return data<Object>()->elements();
+  return o->keys.size();
 }
 
 /// Access to condition objects
-Condition Container::operator[](const std::string& key)  {
-  return this->operator[](hash32(key));
+Condition Container::get(const std::string& condition_key, const iov_type& iov)  {
+  Object* o = ptr();
+  if ( o )  {
+    Condition c = o->get(condition_key, iov);
+    if ( c.isValid() )  {
+      return c;
+    }
+    invalidHandleError<Condition>();
+  }
+  invalidHandleError<Container>();
+  return Condition();
 }
 
 /// Access to condition objects
-Condition Container::operator[](int condition_hash)  {
-  Object* c = ptr();
-  if ( !c )   {
-    invalidHandleError<Container>();
+Condition Container::get(key_type condition_key, const iov_type& iov)  {
+  Object* o = ptr();
+  if ( o )  {
+    Condition c = o->get(condition_key, iov);
+    if ( c.isValid() )  {
+      return c;
+    }
+    invalidHandleError<Condition>();
   }
-  Entries::iterator i=c->elements().find(condition_hash);
-  if ( i != c->elements().end() ) return (*i).second;
-  except("ConditionContainer",
-         "No condition with key 0x%08X present!",condition_hash);
+  invalidHandleError<Container>();
+  return Condition();
+}
+
+/// Access to condition objects
+Condition Container::get(const std::string& condition_key, const UserPool& pool)  {
+  Object* o = ptr();
+  if ( o )  {
+    Condition c = o->get(condition_key, pool);
+    if ( c.isValid() )  {
+      return c;
+    }
+    invalidHandleError<Condition>();
+  }
+  invalidHandleError<Container>();
+  return Condition();
+}
+
+/// Access to condition objects
+Condition Container::get(key_type condition_key, const UserPool& pool)  {
+  Object* o = ptr();
+  if ( o )  {
+    Condition c = o->get(condition_key, pool);
+    if ( c.isValid() )  {
+      return c;
+    }
+    invalidHandleError<Condition>();
+  }
+  invalidHandleError<Container>();
   return Condition();
 }

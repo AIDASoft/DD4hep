@@ -135,6 +135,7 @@ int DD4hep::printout(PrintLevel severity, const char* src, const char* fmt, va_l
   if (severity >= print_lvl) {
     char str[4096];
     size_t len = vsnprintf(str, sizeof(str) - 2, fmt, args);
+    if ( len>sizeof(str)-2 ) len = sizeof(str) - 2;
     str[len] = '\n';
     str[len + 1] = '\0';
     print_func(print_arg, severity, src, str);
@@ -266,8 +267,12 @@ string DD4hep::format(const string& src, const string& fmt, va_list& args) {
  */
 string DD4hep::format(const char* src, const char* fmt, va_list& args) {
   char str[4096];
-  size_t len = ::snprintf(str, sizeof(str), "%s: ", src);
-  ::vsnprintf(str + len, sizeof(str) - len, fmt, args);
+  size_t len1 = ::snprintf(str, sizeof(str), "%s: ", src);
+  size_t len2 = ::vsnprintf(str + len1, sizeof(str) - len1, fmt, args);
+  if ( len2 > sizeof(str) - len1 )  {
+    len2 = sizeof(str) - len1 - 1;
+    str[sizeof(str)-1] = 0;
+  }
   return string(str);
 }
 
@@ -295,6 +300,7 @@ void DD4hep::setPrinter(void* arg, output_function_t fcn) {
   print_arg = arg;
   print_func = fcn;
 }
+#include "DD4hep/Conditions.h"
 
 #include "TMap.h"
 #include "TROOT.h"
@@ -302,6 +308,7 @@ void DD4hep::setPrinter(void* arg, output_function_t fcn) {
 using namespace std;
 namespace DD4hep {
   using namespace Geometry;
+  using Conditions::Condition;
 
   template <typename T> void PrintMap<T>::operator()() const {
     Printer < T > p(lcdd, os);
@@ -311,44 +318,48 @@ namespace DD4hep {
   }
 
   template <> void Printer<Handle<NamedObject> >::operator()(const Handle<NamedObject>& val) const {
-    printout(INFO, "Printer", "%s ++ Handle:%s %s", prefix.c_str(), val->GetName(), val->GetTitle());
+    printout(INFO, "Printer", "++ %s Handle:%s %s", prefix.c_str(), val->GetName(), val->GetTitle());
   }
   template <> void Printer<Handle<TNamed> >::operator()(const Handle<TNamed>& val) const {
-    printout(INFO, "Printer", "%s ++ Handle:%s %s", prefix.c_str(), val->GetName(), val->GetTitle());
+    printout(INFO, "Printer", "++ %s Handle:%s %s", prefix.c_str(), val->GetName(), val->GetTitle());
   }
 
   template <> void Printer<Constant>::operator()(const Constant& val) const {
-    printout(INFO, "Printer", "%s ++ Constant:%s %s", prefix.c_str(), val->GetName(), val.toString().c_str());
+    printout(INFO, "Printer", "++ %s Constant:%s %s", prefix.c_str(), val->GetName(), val.toString().c_str());
   }
 
   template <> void Printer<Material>::operator()(const Material& val) const {
-    printout(INFO, "Printer", "%s ++ Material:%s %s", prefix.c_str(), val->GetName(), val.toString().c_str());
+    printout(INFO, "Printer", "++ %s Material:%s %s", prefix.c_str(), val->GetName(), val.toString().c_str());
   }
 
   template <> void Printer<VisAttr>::operator()(const VisAttr& val) const {
-    printout(INFO, "Printer", "%s ++ VisAttr: %s", prefix.c_str(), val.toString().c_str());
+    printout(INFO, "Printer", "++ %s VisAttr: %s", prefix.c_str(), val.toString().c_str());
   }
 
   template <> void Printer<Readout>::operator()(const Readout& val) const {
-    printout(INFO, "Printer", "%s ++ Readout: %s of type %s", prefix.c_str(), val->GetName(), val->GetTitle());
+    printout(INFO, "Printer", "++ %s Readout: %s of type %s", prefix.c_str(), val->GetName(), val->GetTitle());
   }
 
   template <> void Printer<Region>::operator()(const Region& val) const {
-    printout(INFO, "Printer", "%s ++ Region:  %s of type %s", prefix.c_str(), val->GetName(), val->GetTitle());
+    printout(INFO, "Printer", "++ %s Region:  %s of type %s", prefix.c_str(), val->GetName(), val->GetTitle());
   }
 
   template <> void Printer<RotationZYX>::operator()(const RotationZYX& val) const {
-    printout(INFO, "Printer", "%s ++ ZYXRotation: phi: %7.3 rad theta: %7.3 rad psi: %7.3 rad", prefix.c_str(), val.Phi(),
+    printout(INFO, "Printer", "++ %s ZYXRotation: phi: %7.3 rad theta: %7.3 rad psi: %7.3 rad", prefix.c_str(), val.Phi(),
              val.Theta(), val.Psi());
   }
 
   template <> void Printer<Position>::operator()(const Position& val) const {
-    printout(INFO, "Printer", "%s ++ Position:    x: %9.3 mm y: %9.3 mm z: %9.3 mm", prefix.c_str(), val.X(), val.Y(), val.Z());
+    printout(INFO, "Printer", "++ %s Position:    x: %9.3 mm y: %9.3 mm z: %9.3 mm", prefix.c_str(), val.X(), val.Y(), val.Z());
+  }
+  template <> void Printer<Condition>::operator()(const Condition& val) const {
+    int flg = Condition::WITH_IOV|Condition::WITH_ADDRESS;
+    printout(INFO, "Printer", "++ %s %s", prefix.c_str(), val.str(flg).c_str());
   }
 #if 0
   template <> void Printer<LimitSet>::operator()(const LimitSet& val) const {
     const set<Limit>& o = val.limits();
-    printout(INFO, "Printer", "%s ++ LimitSet: %s", prefix.c_str(), val.name());
+    printout(INFO, "Printer", "++ %s LimitSet: %s", prefix.c_str(), val.name());
     val->TNamed::Print();
     for (set<Limit>::const_iterator i = o.begin(); i != o.end(); ++i) {
       os << "++    Limit:" << (*i).name << " " << (*i).particles << " [" << (*i).unit << "] " << (*i).content << " "

@@ -140,32 +140,6 @@ Alignment DetElement::surveyAlignment() const  {
   return access()->survey;
 }
 
-/// Access to the conditions information
-DetElement::ConditionsContainer DetElement::conditions() const  {
-  Object* o = access();
-  if ( o->conditions.isValid() ) return o->conditions;
-  o->conditions.assign(new ConditionsContainer::Object(),"conditions","");
-  o->conditions->detector = *this;
-  return o->conditions;
-}
-
-/// Access to the conditions information
-DetElement::Condition
-DetElement::condition(const std::string& key) const   {
-  return access()->conditions[key];
-}
-
-/// Access to condition objects. If not present, load condition.
-DetElement::Condition
-DetElement::condition(const std::string& key, const IOV& iov)   {
-  typedef DetElement::ConditionsContainer::Object::Entries _E;
-  _E& ents = conditions()->entries;
-  _E::iterator i = ents.find(hash32(key));
-  if ( i != ents.end() ) return (*i).second;
-  World world(Geometry::DetectorTools::topElement(*this));
-  return world.getCondition(*this,key,iov);
-}
-
 const DetElement::Children& DetElement::children() const {
   return access()->children;
 }
@@ -184,6 +158,20 @@ DetElement DetElement::child(const string& child_name) const {
 DetElement DetElement::parent() const {
   Object* o = ptr();
   return (o) ? o->parent : 0;
+}
+
+/// Access to the world object. Only possible once the geometry is closed.
+DetElement DetElement::world()  const   {
+  Object* o = ptr();
+  return (o) ? o->world() : 0;
+}
+
+/// Check if conditions are at all present
+bool DetElement::hasConditions()  const   {
+  Object* o = access();
+  if ( o->conditions.isValid() && !o->conditions->keys.empty() ) 
+    return true;
+  return false;
 }
 
 void DetElement::check(bool cond, const string& msg) const {

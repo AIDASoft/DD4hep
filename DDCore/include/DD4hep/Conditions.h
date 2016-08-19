@@ -41,8 +41,10 @@ namespace DD4hep {
     using Geometry::LCDD;
 
     // Forward declarations
+    class ConditionsManagerObject;
     class ConditionsManager;
     class ConditionsLoader;
+    class UserPool;
     class IOVType;
     class IOV;
 
@@ -114,9 +116,9 @@ namespace DD4hep {
       /// Set range IOV value
       void set(Key_first_type val_1, Key_second_type val_2);
       /// Set keys to unphysical values (LONG_MAX, LONG_MIN)
-      void reset();
+      IOV& reset();
       /// Invert the key values (first=second and second=first)
-      void invert();
+      IOV& invert();
       /// Set the intersection of this IOV with the argument IOV
       void iov_intersection(const IOV& comparator);
        /// Set the intersection of this IOV with the argument IOV
@@ -186,9 +188,10 @@ namespace DD4hep {
       /// Standard Destructor
       virtual ~Block();
 
-    protected:
+    public:
       /// Data type
       const BasicGrammar* grammar;
+    protected:
       /// Pointer to object data
       void* pointer;
 
@@ -199,6 +202,8 @@ namespace DD4hep {
       std::string str()  const;
       /// Access type id of the condition
       const std::type_info& typeInfo() const;
+      /// Access type name of the condition data block
+      const std::string& dataType() const;
       /// Check if object is already bound....
       bool is_bound()  const  {  return 0 != pointer; }
       /// Generic getter. Specify the exact type, not a polymorph type
@@ -207,10 +212,102 @@ namespace DD4hep {
       template <typename T> inline const T& get() const;
     };
 
+    /// Kaykey definition to optimize the access to conditions entities
+    /**
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+     */
+    class ConditionKey  {
+    public:
+      typedef unsigned int key_type;
+      /// String representation of the key object
+      std::string  name;
+      /// Hashed key representation
+      key_type hash;
+
+    public:
+      /// Default constructor
+      ConditionKey() : hash(0)  {}
+      /// Constructor from string
+      ConditionKey(const std::string& compare);
+      /// Constructor from string
+      ConditionKey(const std::string& s, key_type h) : name(s), hash(h) {}
+      /// Copy constructor
+      ConditionKey(const ConditionKey& c) : name(c.name), hash(c.hash) {}
+
+      /// Hash code generation from input string
+      static key_type hashCode(const char* value);
+      /// Hash code generation from input string
+      static key_type hashCode(const std::string& value);
+
+      /// Assignment operator from the string representation
+      ConditionKey& operator=(const std::string& value);
+      /// Assignment operator from object copy
+      ConditionKey& operator=(const ConditionKey& key);
+      /// Equality operator using key object
+      bool operator==(const ConditionKey& compare)  const;
+      /// Equality operator using hash value
+      bool operator==(const key_type compare)  const;
+      /// Equality operator using the string representation
+      bool operator==(const std::string& compare)  const;
+
+      /// Operator less (for map insertions) using key object
+      bool operator<(const ConditionKey& compare)  const;
+      /// Operator less (for map insertions) using hash value
+      bool operator<(const key_type compare)  const;
+      /// Operator less (for map insertions) using the string representation
+      bool operator<(const std::string& compare)  const;
+
+      /// Automatic conversion to the string representation of the key object
+      operator const std::string& ()  const  {  return name;     }
+      /// Automatic conversion to the hashed representation of the key object
+      operator key_type () const         {  return hash;     }
+    };
+
+    /// Hash code generation from input string
+    inline ConditionKey::key_type ConditionKey::hashCode(const char* value)
+    {   return hash32(value);    }
+
+    /// Hash code generation from input string
+    inline ConditionKey::key_type ConditionKey::hashCode(const std::string& value)
+    {   return hash32(value);    }
+
+    /// Assignment operator from object copy
+    inline ConditionKey& ConditionKey::operator=(const ConditionKey& key)  {
+      if ( this != &key )  {
+	hash  = key.hash;
+	name  = key.name;
+      }
+      return *this;
+    }
+
+    /// Equality operator using key object
+    inline bool ConditionKey::operator==(const ConditionKey& compare)  const
+      {  return hash == compare.hash;                            }
+
+    /// Equality operator using hash value
+    inline bool ConditionKey::operator==(const key_type compare)  const
+      {  return hash == compare;                                 }
+
+    /// Operator less (for map insertions) using key object
+    inline bool ConditionKey::operator<(const ConditionKey& compare)  const
+      {  return hash < compare.hash;                             }
+
+    /// Operator less (for map insertions) using hash value
+    inline bool ConditionKey::operator<(const key_type compare)  const
+      {  return hash < compare;                                  }
+
+
     /// Main condition object handle.
     /**
      *  This objects allows access to the data block and
      *  the interval of validity for a single condition.
+     *
+     *  Note:
+     *  Conditions may be shared between several DetElement objects.
+     *  Hence, the back-link to the DetElemetn structure cannot be
+     *  set - it would be ambiguous.
      *
      *  \author  M.Frank
      *  \version 1.0
@@ -219,8 +316,37 @@ namespace DD4hep {
     class Condition: public Handle<Interna::ConditionObject> {
     public:
       typedef Interna::ConditionObject Object;
-
+      typedef ConditionKey::key_type   key_type;
+      typedef IOV                      iov_type;
     public:
+      enum StringFlags  {
+	WITH_IOV      = 1<<0,
+	WITH_ADDRESS  = 1<<1,
+	WITH_TYPE     = 1<<2,
+	WITH_COMMENT  = 1<<4,
+	WITH_DATATYPE = 1<<5,
+	WITH_DATA     = 1<<6,
+	NO_NAME       = 1<<20,
+	NONE
+      };
+      enum ConditionState {
+	INACTIVE = 0,
+	ACTIVE   = 1<<0,
+	CHECKED  = 1<<2,
+	DERIVED  = 1<<3
+      };
+
+      /// Abstract base for processing callbacks
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
+      class Processor {
+      public:
+	virtual int operator()(Condition c) = 0;
+      };
+
       /// Default constructor
       Condition();
       /// Copy constructor
@@ -236,6 +362,9 @@ namespace DD4hep {
       /// Assignment operator
       Condition& operator=(const Condition& c);
 
+      /// Output method
+      std::string str(int with_data=WITH_IOV|WITH_ADDRESS|WITH_DATATYPE)  const;
+
       /** Data block (bound type)         */
       /// Access the data type
       int dataType()  const;
@@ -246,7 +375,7 @@ namespace DD4hep {
       /// Access the IOV type
       const IOVType& iovType()  const;
       /// Access the IOV block
-      const IOV& iov()  const;
+      const iov_type& iov()  const;
 
       /** Direct data items in string form */
       /// Access the name of the condition
@@ -255,14 +384,12 @@ namespace DD4hep {
       const std::string& type()  const;
       /// Access the comment field of the condition
       const std::string& comment()  const;
-      /// Access the validity field of the condition as a string
-      const std::string& validity()  const;
       /// Access the value field of the condition as a string
       const std::string& value()  const;
       /// Access the address string [e.g. database identifier]
       const std::string& address()  const;
-      /// Access the hosting detector element
-      Geometry::DetElement detector()  const;
+      /// Access the key of the condition
+      ConditionKey key() const;
 
       /** Conditions meta-data   */
       /// Access to the type information
@@ -298,6 +425,7 @@ namespace DD4hep {
     inline Condition::Condition() : Handle<Condition::Object>()   {
     }
 
+
     /// Container class for condition handles aggregated by a detector element
     /**
      *  Note: The conditions container is owner by the detector element
@@ -312,28 +440,33 @@ namespace DD4hep {
     public:
       /// Standard object type
       typedef Interna::ConditionContainer Object;
-      /// Definition of the conditions container of this detector element
-      //typedef std::map<std::string, Condition> Entries;
-      typedef std::map<int, Condition> Entries;
+      typedef Condition::key_type key_type;
+      typedef Condition::iov_type iov_type;
 
     public:
       /// Default constructor
       Container();
+
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Container(const Container& c) : Handle<Object>(c) {}
+
       /// Constructor to be used when reading the already parsed object
       template <typename Q> Container(const Handle<Q>& e) : Handle<Object>(e) {}
-      /// Access the number of conditons available for this detector element
-      size_t count() const;
-      /// Access the full map of conditons
-      Entries& entries() const;
-      /// Clear all attached DetElement conditions.
-      void removeElements() const;
-      /// Access to condition objects. No loading undertaken. The condition must be present
-      Condition operator[](const std::string& key);
+
+      /// Access the number of conditons keys available for this detector element
+      size_t numKeys() const;
+
+      /// Access to condition objects by key and IOV. 
+      Condition get(const std::string& condition_key, const iov_type& iov);
+
       /// Access to condition objects directly by their hash key. 
-      /// No loading undertaken. The condition must be present
-      Condition operator[](int hash_key);
+      Condition get(key_type condition_key, const iov_type& iov);
+
+      /// Access to condition objects. Only conditions in the pool are accessed.
+      Condition get(const std::string& condition_key, const UserPool& iov);
+
+      /// Access to condition objects. Only conditions in the pool are accessed.
+      Condition get(key_type condition_key, const UserPool& iov);
     };
 
     /// Default constructor

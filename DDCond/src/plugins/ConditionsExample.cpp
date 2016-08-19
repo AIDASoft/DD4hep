@@ -24,17 +24,22 @@ using Geometry::DetElement;
 
 namespace  {
 
+  struct _Key : public std::string  {
+    _Key(DetElement d, const std::string& nam) : std::string(d.path()+"."+nam) {}
+  };
 
   void print_tpc_epoch_conditions(Test::TestEnv& env, const IOV& iov_epoch, bool check = true)   {
-    Condition cond = env.manager.get(env.detector,"AmbientTemperature",iov_epoch);
+    DetConditions dc(env.detector);
+    ConditionsAccess access(env.manager);
+    Condition cond = access.get(_Key(env.detector,"AmbientTemperature"),iov_epoch);
     Test::print_condition<void>(cond);
-    cond = env.detector.condition("AmbientTemperature",iov_epoch);
+    cond = dc.get("AmbientTemperature",iov_epoch);
     if ( check ) Test::check_discrete_condition(cond, iov_epoch);
     Test::print_condition<void>(cond);
-    cond = env.detector.condition("ExternalPressure",iov_epoch);
+    cond = dc.get("ExternalPressure",iov_epoch);
     if ( check ) Test::check_discrete_condition(cond, iov_epoch);
     Test::print_condition<void>(cond);
-    cond = env.detector.condition("SomeMultiParams",iov_epoch);
+    cond = dc.get("SomeMultiParams",iov_epoch);
     if ( check ) Test::check_discrete_condition(cond, iov_epoch);
     Test::print_condition<void>(cond);
     cond->value = "[5,6,7,8,9,10,11,12,13,14]";
@@ -42,13 +47,14 @@ namespace  {
     Test::print_condition<void>(cond);
   }
   void print_tpc_run_conditions(Test::TestEnv& env, const IOV& iov_run, bool check = true)   {
-    Condition cond = env.detector.condition("alignment",iov_run);
+    DetConditions dc(env.detector);
+    Condition cond = dc.get("alignment",iov_run);
     if ( check ) Test::check_discrete_condition(cond, iov_run);
     Test::print_condition<void>(cond);
-    cond = env.detector.condition("TPC_A_align",iov_run);
+    cond = dc.get("TPC_A_align",iov_run);
     if ( check ) Test::check_discrete_condition(cond, iov_run);
     Test::print_condition<void>(cond);
-    cond = env.daughter("TPC_SideA").condition("alignment",iov_run);
+    cond = DetConditions(env.daughter("TPC_SideA")).get("alignment",iov_run);
     if ( check ) Test::check_discrete_condition(cond, iov_run);
     Test::print_condition<void>(cond);
   }
@@ -64,15 +70,13 @@ namespace  {
   }
 
   void print_tpc_discrete_conditions(Test::TestEnv& env, int epoch_min, int epoch_max, int run_min, int run_max)   {
-    dd4hep_ptr<ConditionsPool> pool_run, pool_epoch;
+    dd4hep_ptr<UserPool> pool_run, pool_epoch;
     IOV iov_epoch(env.epoch), iov_run(env.run);
     iov_epoch.set(epoch_min, epoch_max);
     iov_run.set(run_min, run_max);
 
     env.manager.prepare(iov_run, pool_run);
-    env.manager.enable(iov_run, pool_run);
     env.manager.prepare(iov_epoch, pool_epoch);
-    env.manager.enable(iov_epoch, pool_epoch);
     print_tpc_discrete_conditions(env, iov_epoch, iov_run);
   }
 
@@ -87,7 +91,8 @@ namespace  {
     IOV iov_run(env.run);
     iov_run.set(run_min, run_max);
     try {
-      cond = env.manager.getRange(env.detector,"TPC_A_align",iov_run);
+      ConditionsAccess access(env.manager);
+      cond = access.getRange(_Key(env.detector,"TPC_A_align"),iov_run);
       Test::print_conditions<void>(cond);
       printout(INFO,"Example","SUCCESS: +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
       printout(INFO,"Example","SUCCESS: +++ RANGE Conditions access OK for iov:%s!",iov_run.str().c_str());
@@ -135,7 +140,7 @@ namespace  {
 
   int example3(LCDD& lcdd, int, char** )  {
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-    printout(INFO,"Example1","+++ Executing Conditions example No. 3: Conditions register/enable");
+    printout(INFO,"Example1","+++ Executing Conditions example No. 3: Conditions registration    ");
     printout(INFO,"Example1","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
     Test::TestEnv env(lcdd, "TPC");
     
@@ -147,14 +152,12 @@ namespace  {
 
     
     IOV iov_epoch(env.epoch), iov_run(env.run);
-    dd4hep_ptr<ConditionsPool> pool_run, pool_epoch;
+    dd4hep_ptr<UserPool> pool_run, pool_epoch;
     iov_epoch.set(1396887257);
     iov_run.set(563543);
 
     env.manager.prepare(iov_run, pool_run);
-    env.manager.enable(iov_run, pool_run);
     env.manager.prepare(iov_epoch, pool_epoch);
-    env.manager.enable(iov_epoch, pool_epoch);
     print_tpc_epoch_conditions(env, iov_epoch);
     print_tpc_run_conditions(env, iov_run, true);
     printout(INFO,"Example1","===================================================================");
@@ -168,7 +171,6 @@ namespace  {
 
     printout(INFO,"Example1","===================================================================");
     iov_run.set(123456);
-    env.manager.enable(iov_run, pool_run);
     print_tpc_run_conditions(env, iov_run, true);
     return 1;
   }
@@ -208,7 +210,7 @@ namespace  {
 }
 
 
-DECLARE_APPLY(DD4hepConditionsAccessTest,example1)
-DECLARE_APPLY(DD4hepExample3,example3)
-DECLARE_APPLY(DD4hepConditionsTreeDump,example2)
-DECLARE_APPLY(DD4hepCallbackInstallTest,DD4hep_CallbackInstallTest)
+DECLARE_APPLY(DD4hep_Test_ConditionsAccess,example1)
+DECLARE_APPLY(DD4hep_Test_ConditionsExample3,example3)
+DECLARE_APPLY(DD4hep_Test_ConditionsTreeDump,example2)
+DECLARE_APPLY(DD4hep_Test_CallbackInstall,DD4hep_CallbackInstallTest)

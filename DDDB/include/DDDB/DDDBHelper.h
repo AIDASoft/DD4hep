@@ -27,6 +27,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/Plugins.h"
 #include "DD4hep/Objects.h"
+#include "DD4hep/Conditions.h"
 
 #include "XML/DocumentHandler.h"
 #include "XML/Utilities.h"

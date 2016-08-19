@@ -40,34 +40,24 @@ namespace DD4hep {
      */
     class ConditionsIOVPool  {
     public:
-      typedef ConditionsPool* Entry;
-      typedef std::map<IOV::Key, Entry > Entries;
-      typedef std::set<int>              Keys;
-      
-      Entries        entries;
-      Keys           keys;
-      Keys           traced_keys;
+      typedef ConditionsPool* Element;
+      typedef std::map<IOV::Key, Element > Elements;      
+      Elements       elements;
+
     public:
       /// Default constructor
       ConditionsIOVPool();
       /// Default destructor
       virtual ~ConditionsIOVPool();
-      bool addKey(Condition c);
-      /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
-      void __find(DetElement detector,
-                  const std::string& condition_name,
-                  const IOV& req_validity,
-                  RangeConditions& result);
-      /// Retrieve  a condition set given a Detector Element and the conditions name according to their validity
-      void __find_range(DetElement detector,
-                        const std::string& condition_name,
-                        const IOV& req_validity,
-                        RangeConditions& result);
+      /// Retrieve  a condition set given the key according to their validity
+      void select(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result);
+      /// Retrieve  a condition set given the key according to their validity
+      void selectRange(Condition::key_type key, const Condition::iov_type& req_validity, RangeConditions& result);
       /// Select all ACTIVE conditions, which do no longer match the IOV requirement
-      void select(const IOV& required_validity, 
+      void select(const Condition::iov_type& required_validity, 
 		  RangeConditions& valid,
 		  RangeConditions& expired,
-		  IOV& conditions_validity);
+		  Condition::iov_type& conditions_validity);
       /// Remove all key based pools with an age beyon the minimum age. 
       /** @return Number of conditions cleaned up and removed.                       */
       int clean(int max_age);

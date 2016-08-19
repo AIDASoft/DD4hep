@@ -15,7 +15,6 @@
 #define DDCOND_CONDITIONSPOOL_H
 
 // Framework include files
-#include "DD4hep/Mutex.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
 #include "DDCond/ConditionsManager.h"
@@ -27,9 +26,8 @@ namespace DD4hep {
   namespace Conditions {
 
     // Forward declarations
-    class Entry;
-    class ConditionsPool;
-    class ReplacementPool;
+    class ConditionsPoolInsert;
+    class ConditionsManagerObject;
 
     /// Class implementing the conditions collection for a given IOV type
     /**
@@ -49,15 +47,14 @@ namespace DD4hep {
     protected:
       /// Handle to conditions manager object
       ConditionsManager m_manager;
-
+      
     public:
+      /// Forward definition of the key type
+      typedef Condition::key_type key_type;
+
       enum { AGE_NONE    = 0, 
              AGE_ANY     = 9999999,
              AGE_EXPIRED = 12345678
-      };
-      enum { NO_POOL_TYPE     = 0,
-	     UPDATE_POOL_TYPE = 1,
-	     USER_POOL_TYPE   = 2
       };
       /// IOV type of the conditions hosted by this pool
       const IOVType*   iovType;
@@ -65,26 +62,12 @@ namespace DD4hep {
       IOV*             iov;
       /// Aging value
       int              age_value;
-      /// Pool type (regular, user, ipdate,...)
-      int              pool_type;
 
     protected:
+      friend class ConditionsPoolInsert;
+      friend class ConditionsPoolRemove;
+      friend class ConditionsManagerObject;
 
-      /// Unconditionally create a new condition from the input data
-      /** 
-       *  Common function for all pools.....
-       *  \author  M.Frank
-       *  \version 1.0
-       */
-      virtual Condition create(ConditionsPool* pool, const Entry* cond);
-
-    public:
-      /// Default constructor
-      ConditionsPool(ConditionsManager mgr);
-      /// Default destructor. Note: pool must be cleared by the subclass!
-      virtual ~ConditionsPool();
-      /// Print pool basics
-      void print(const std::string& opt)   const;
       /// Listener invocation when a condition is registered to the cache
       void onRegister(Condition condition);
       /// Listener invocation when a condition is deregistered from the cache
@@ -93,14 +76,20 @@ namespace DD4hep {
       virtual void insert(Condition cond) = 0;
       /// Register a new condition to this pool. May overload for performance reasons.
       virtual void insert(RangeConditions& cond) = 0;
+
+    public:
+      /// Default constructor
+      ConditionsPool(ConditionsManager mgr);
+      /// Default destructor. Note: pool must be cleared by the subclass!
+      virtual ~ConditionsPool();
+      /// Print pool basics
+      void print(const std::string& opt)   const;
       /// Full cleanup of all managed conditions.
       virtual void clear() = 0;
       /// Check if a condition exists in the pool
-      virtual Condition exists(DetElement, const std::string&)  const = 0;
-      /// Check if a condition exists in the pool
-      virtual Condition exists(Condition)  const = 0;
+      virtual Condition exists(Condition::key_type key)  const = 0;
       /// Select the conditions matching the DetElement and the conditions name
-      virtual void select(DetElement det, const std::string& cond_name, RangeConditions& result) = 0;
+      virtual void select(Condition::key_type key, RangeConditions& result) = 0;
       /// Select all conditions contained
       virtual void select_all(RangeConditions& result) = 0;
       /// Select all conditions contained
@@ -108,7 +97,7 @@ namespace DD4hep {
       /// Select the conditons, used also by the DetElement of the condition
       virtual void select_used(RangeConditions& result) = 0;
       /// Total entry count
-      virtual int count()  const = 0;
+      virtual size_t count()  const = 0;
     };
 
     /// Interface for conditions pool optimized to host conditions updates.
@@ -128,16 +117,11 @@ namespace DD4hep {
       UpdatePool(ConditionsManager mgr);
       /// Default destructor.
       virtual ~UpdatePool();
-      /// Pool type identifier
-      static int poolType()  {  return UPDATE_POOL_TYPE; }
       /// Adopt all entries sorted by IOV. Entries will be removed from the pool
       virtual void popEntries(UpdateEntries& entries) = 0;
-      /// Register a new condition to this pool
-      virtual Condition insertEntry(ConditionsPool* pool, Entry* cond) = 0;
-      /// Select the conditions matching the DetElement and the conditions name
-      virtual void select_range(DetElement det,
-                                const std::string& cond_name, 
-                                const IOV& req_validity,
+      /// Select the conditions matching the key
+      virtual void select_range(Condition::key_type key, 
+				const Condition::iov_type& req_validity,
                                 RangeConditions& result) = 0;
     };
 
@@ -146,21 +130,57 @@ namespace DD4hep {
      *  \author  M.Frank
      *  \version 1.0
      */
-    class UserPool : public ConditionsPool  {
+    class UserPool  {
+    public:
+      /// Forward definition of the key type
+      typedef Condition::key_type             key_type;
+      /// Forward definition of the dependency container
+      typedef ConditionsManager::Dependencies Dependencies;
+
+    protected:
+      /// The pool's interval of validity
+      IOV                    m_iov;
+      /// Handle to conditions manager object
+      ConditionsManager      m_manager;
+      /// IOV Pool as data source
+      ConditionsIOVPool*     m_iovPool;
+
     public:
       /// Default constructor
-      UserPool(ConditionsManager mgr);
+      UserPool(ConditionsManager mgr, ConditionsIOVPool* pool);
       /// Default destructor.
       virtual ~UserPool();
-      /// Pool type identifier
-      static int poolType()  {  return USER_POOL_TYPE; }
       /// Access the interval of validity for this user pool
-      virtual const IOV& validity() const = 0;
-      /// Update interval of validity for this user pool (should only be called by ConditionsManager)
-      virtual void setValidity(const IOV& value) = 0;
+      const IOV& validity() const    {  return m_iov;  }
+      /// Access the interval of validity for this user pool
+      const IOV* validityPtr() const {  return &m_iov; }
+      /// Print pool content
+      virtual void print(const std::string& opt) const = 0;
+      /// Total entry count
+      virtual size_t count()  const = 0;
+      /// Full cleanup of all managed conditions.
+      virtual void clear() = 0;
+      /// Check a condition for existence
+      virtual bool exists(key_type key)  const = 0;
+      /// Check a condition for existence
+      virtual bool exists(const ConditionKey& key)  const = 0;
+      /// Check if a condition exists in the pool and return it to the caller
+      virtual Condition get(key_type key)  const = 0;
+      /// Check if a condition exists in the pool and return it to the caller
+      virtual Condition get(const ConditionKey& key)  const = 0;
+      /// Remove condition by key from pool.
+      virtual bool remove(key_type hash_key) = 0;
+      /// Remove condition by key from pool.
+      virtual bool remove(const ConditionKey& key) = 0;
+      /// Register a new condition to this pool
+      virtual bool insert(Condition cond) = 0;
+      /// Prepare user pool for usage (load, fill etc.) according to required IOV
+      virtual long prepare(const IOV& required) = 0;
+      /// Evaluate and register all derived conditions from the dependency list
+      virtual long compute(const Dependencies& dependencies) = 0;
     };
 
   } /* End namespace Conditions             */
 } /* End namespace DD4hep                   */
 
-#endif     /* DDCOND_CONDITIONSPOOL_H    */
+#endif     /* DDCOND_CONDITIONSPOOL_H       */

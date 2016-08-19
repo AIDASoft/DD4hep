@@ -23,15 +23,16 @@
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBConversion.h"
-#include "DDDB/DDDBConditionData.h"
 
 #include "DD4hep/LCDD.h"
+#include "DD4hep/DetConditions.h"
+#include "DD4hep/ConditionsData.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
 
 #include "DDCond/ConditionsManager.h"
-#include "DDCond/ConditionsIOVPool.h"
-#include "DDCond/ConditionsInterna.h"
+//#include "DDCond/ConditionsInterna.h"
+#include "DDCond/ConditionsPool.h"
 
 // ROOT include files
 #include "TGeoManager.h"
@@ -57,7 +58,9 @@ namespace DD4hep {
 
     typedef Conditions::Interna::ConditionObject GeoCondition;
     typedef Conditions::ConditionsManager        ConditionsManager;
+    typedef Conditions::ConditionsPool           ConditionsPool;
     typedef Conditions::IOVType                  IOVType;
+    typedef Conditions::AbstractMap              AbstractMap;
     typedef Geometry::PlacedVolume               GeoPlacement;
     typedef Geometry::Volume                     GeoVolume;
     typedef Geometry::Material                   GeoMaterial;
@@ -109,7 +112,6 @@ namespace DD4hep {
       typedef std::map<std::string,  DetElement>     DetectorMap;
       typedef std::map<std::string,  TGeoVolume*>    VolumeMap;
       typedef std::map<DetElement,   Catalog*>       DetectorElements;
-      typedef std::map<std::string,  DetElement>     DetConditions;
 
       Isotopes          isotopes;
       Elements          elements;
@@ -121,7 +123,6 @@ namespace DD4hep {
       DetElement        detectors;
       DetectorMap       catalogPaths;
       DetectorElements  detelements;
-      DetConditions     detconditions;
       GeoVolume         lvDummy;
       ConditionsManager manager;
       const IOVType*    epoch;
@@ -230,18 +231,19 @@ namespace DD4hep {
     /// Convert single condition objects
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
       Context* context = _param<Context>();
-      Conditions::Condition cond = obj;
-      if ( cond.isValid() )   {
+      if ( obj )   {
 	typedef Conditions::IOV::Key _K;
-	DDDBConditionData&  d = cond.get<DDDBConditionData>();
-	Document*         doc = d.document;
-	string      cond_path = doc->name+"/"+obj->name;
+	Conditions::Condition cond = obj;
+	AbstractMap&        d = cond.get<AbstractMap>();
+	Document*         doc = d.option<Document>();
 	_K::first_type  since = doc->context.valid_since;
 	_K::second_type until = doc->context.valid_until;
 	_K iov_key(since,until);
-	context->manager.registerUnlocked(context->epoch, iov_key, cond);
+	ConditionsPool* pool = context->manager.registerIOV(*(context->epoch), iov_key);
+	context->manager.registerUnlocked(pool, cond);
+	//context->manager.registerKey(cond->hash, cond->name);
       }
-      return cond.ptr();
+      return obj;
     }
 
     /// Convert single isotope objects
@@ -778,8 +780,9 @@ namespace DD4hep {
       DetElement det(0), parent_element(0);
       if ( context->print_detelem )  {
         support = context->detelements[parent_element];
-        printout(INFO,"CNV<Catalog>","++ Starting catalog %p [cref:%d/%d lref:%d/%d lv:%s sup:%s np:%s] %s ",
+        printout(INFO,"CNV<Catalog>","++ Starting catalog %p %s [cref:%d/%d lref:%d/%d lv:%s sup:%s np:%s] Cond:%s ",
                  (void*)object,
+                 object->path.c_str(),
                  int(object->catalogrefs.size()),
                  int(object->catalogs.size()),
                  int(object->logvolrefs.size()),
@@ -787,7 +790,7 @@ namespace DD4hep {
                  object->logvol.empty()  ? "--" : object->logvol.c_str(),
                  object->support.empty() ? "--" : object->support.c_str(),
                  object->npath.empty()   ? "--" : object->npath.c_str(),
-                 object->path.c_str());
+		 object->condition.c_str());
       }
       if ( object->path == "/dd/Structure" )  {
         const Box& o = geo->world;
@@ -808,6 +811,7 @@ namespace DD4hep {
       }
       else if ( object->path.find("/dd/Structure") == 0 )  {
         det = DetElement(object->name,object->type,0);
+	det.addExtension<Catalog>(object->addRef());
         if ( !object->support.empty() )  {
           try  {
             j = context->catalogPaths.find(object->support);
@@ -894,14 +898,21 @@ namespace DD4hep {
         context->volumePaths[lp] = gv.ptr();
       }
 #endif
+      /// Attach conditions keys to the detector element if present
       if ( !object->condition.empty() )   {
-	Context::DetConditions::iterator i = context->detconditions.find(object->condition);
-	if ( i != context->detconditions.end() )  {
-          printout(ERROR,"CNV<DetElem>","++  DetElement %s has multiple conditions assigned: %s + %s",
-		   det.name(), (*i).first.c_str(), object->condition.c_str());
-	}
-	context->detconditions.insert(make_pair(object->condition,det));
+	Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
+	conditions->addKey(object->condition);
+	conditions->addKey("Alignment", object->condition);
       }
+      if ( !object->conditioninfo.empty() )  {
+	Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
+	for(Catalog::StringMap::const_iterator i=object->conditioninfo.begin(); i!=object->conditioninfo.end(); ++i)  {
+	  const string& cond_name = (*i).second;
+	  conditions->addKey(cond_name);
+	  conditions->addKey((*i).first, cond_name);
+	}
+      }
+
       if ( context->print_detelem )  {
         printout(INFO,"CNV<Catalog>","++ Converting catalog %p -> %p [cref:%d/%d lref:%d/%d lv:%s [%p] sup:%s np:%s] %s ",
                  (void*)object, det.ptr(),
@@ -997,17 +1008,19 @@ namespace DD4hep {
 	    }
 	    obj->world = s->s.box;
 	  }
+	  /// Main detector conversion invokation
 	  cnv<Catalog>().convert(obj->top);
 	  if ( !world.isValid() && lcdd.worldVolume().isValid() )  {
 	    lcdd.endDocument();
 	  }
+	  /// Now configure the conditions manager
 	  if ( !context->manager.isValid() )  {
 	    Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
 	    manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
 	    manager["LoaderType"]     = "dddb";
-	    manager["UserPoolType"]   = "DD4hep_ConditionsLinearUserPool";
+	    manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
 	    manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-	    manager->initialize();
+	    manager.initialize();
 	    pair<bool,const Conditions::IOVType*> e = manager.registerIOVType(0, "epoch");
 	    context->manager = manager;
 	    context->epoch   = e.second;
@@ -1078,5 +1091,5 @@ namespace DD4hep {
 
   } /* End namespace DDDB      */
 } /* End namespace DD4hep    */
-DECLARE_APPLY(DDDB2DD4hep,dddb_2_dd4hep)
-DECLARE_APPLY(DDDBConditions2DD4hep,dddb_conditions_2_dd4hep)
+DECLARE_APPLY(DDDB_2DD4hep,dddb_2_dd4hep)
+DECLARE_APPLY(DDDB_Conditions2DD4hep,dddb_conditions_2_dd4hep)

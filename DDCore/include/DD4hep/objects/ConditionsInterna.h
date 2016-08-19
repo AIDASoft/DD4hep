@@ -26,13 +26,6 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-    // Forward declarations
-    class DetElement;
-    class DetElementObject;
-  }
-
   /// Namespace for the conditions part of the AIDA detector description toolkit
   namespace Conditions   {
 
@@ -93,23 +86,6 @@ namespace DD4hep {
       template<typename T> T& set(const std::string& value);
     };
 
-    /// The data class behind a conditions container handle.
-    /**
-     *  See ConditionsInterna.cpp for the implementation.
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-       */
-    class ConditionsLoader  {
-    protected:
-      /// Protected destructor
-      virtual ~ConditionsLoader();
-    public:
-      /// Access the conditions loading
-      virtual Condition get(Geometry::DetElement element, const std::string& key, const IOV& iov) = 0;
-    };
-
     /// Conditions internal namespace declaration
     /** Internally defined datastructures are not presented to the
      *  user directly, but are used by dedicated views.
@@ -134,10 +110,9 @@ namespace DD4hep {
        */
       class ConditionObject : public NamedObject {
       public:
-        enum ConditionState {
-          INACTIVE = 0,
-          ACTIVE = 1
-        };
+	/// Forward definition of the key type
+	typedef Condition::key_type key_type;
+	typedef Condition::iov_type iov_type;
         /// Condition value (in string form)
         std::string value;
         /// Condition validity (in string form)
@@ -146,16 +121,14 @@ namespace DD4hep {
         std::string address;
         /// Comment string
         std::string comment;
-        /// The detector element
-        Geometry::DetElement detector;
         /// Data block
         BlockData data;
         /// Reference to conditions pool
         ConditionsPool* pool;
         /// Interval of validity
-        const IOV* iov;
+        const iov_type* iov;
         /// Hash value of the name
-        int hash;
+        key_type hash;
         /// Flags
         int flags;
         /// Reference count
@@ -167,12 +140,14 @@ namespace DD4hep {
         /// Move data content: 'from' will be reset to NULL
         ConditionObject& move(ConditionObject& from);
         /// Access safely the IOV
-        const IOV* iov_data() const;
+        const iov_type* iovData() const;
         /// Access safely the IOV-type
-        const IOVType* iov_type() const;
+        const IOVType* iovType() const;
         /// Check if object is already bound....
-        bool is_bound()  const  {  return data.is_bound(); }
-	bool is_traced()  const {  return true;            }
+        bool is_bound()  const    {  return data.is_bound();  }
+	bool is_traced()  const   {  return true;             }
+	void setFlag(int option)  {  flags |= option;         }
+	void unFlag(int option)   {  flags &= ~option;        }
       };
 
       /// The data class behind a conditions container handle.
@@ -184,41 +159,75 @@ namespace DD4hep {
        *  \ingroup DD4HEP_CONDITIONS
        */
       class ConditionContainer : public NamedObject {
-      private:
-        // We only allow creation and deletion by the central detector element
-        friend class Geometry::DetElement;
-        friend class Geometry::DetElementObject;
+      public:
+	/// Forward defintion of the key type
+	typedef Condition::key_type              key_type;
+	typedef Condition::iov_type              iov_type;
+	typedef std::pair<key_type, std::string> key_value;
+	/// Definition of the keys
+	typedef std::map<key_type, key_value>    Keys;
 
+      public:
         /// Standard constructor
-        ConditionContainer();
+        ConditionContainer(Geometry::DetElementObject* parent);
         /// Default destructor
         virtual ~ConditionContainer();
 
-      public:
-        /// Clear all conditions. Auto-delete of all existing entries
-        void lock();
-        void unlock();
-        void removeElements();
-        void add(Condition condition);
-        void remove(int condition_hash);
-        size_t size() const { return entries.size(); }
 #ifdef __CINT__
         Handle<NamedObject> detector;
 #else
-        typedef Container::Entries Entries;
-        Entries& elements() { return entries; }
-        const Entries& elements() const { return entries; }
-      public:
         /// The hosting detector element
-        DetElement detector;
+        DetElement detector;	
+
+	/// Access to condition objects by key and IOV. 
+	Condition get(const std::string& condition_key, const iov_type& iov);
+
+	/// Access to condition objects directly by their hash key. 
+	Condition get(key_type hash_key, const iov_type& iov);
+
+	/// Access to condition objects. Only conditions in the pool are accessed.
+	Condition get(const std::string& condition_key, const UserPool& iov);
+
+	/// Access to condition objects. Only conditions in the pool are accessed.
+	Condition get(key_type condition_key, const UserPool& iov);
 #endif
-      private:
-        /// Conditions container declaration
-        Container::Entries entries;
-        // std::map<std::string,Condition> entries;
+      public:
+	/// Known keys of conditions in this container
+	Keys       keys;
+
+	/// Add a new key to the conditions access map
+	void addKey(const std::string& key_value);
+	/// Add a new key to the conditions access map: Allow for alias if key_val != data_val
+	void addKey(const std::string& key_value, const std::string& data_value);
       };
 
     } /* End namespace Interna    */
+
+    /// The data class behind a conditions container handle.
+    /**
+     *  See ConditionsInterna.cpp for the implementation.
+     *
+     *  \author  M.Frank
+     *  \version 1.0
+     *  \ingroup DD4HEP_CONDITIONS
+       */
+    class ConditionsLoader  {
+    protected:
+      typedef Condition::key_type              key_type;
+      typedef Condition::iov_type              iov_type;
+      /// Protected destructor
+      virtual ~ConditionsLoader();
+    public:
+      /// Addreference count. Use object
+      virtual void addRef() = 0;
+      /// Release object. The client may not use any reference any further.
+      virtual void release() = 0;
+      /// Access the conditions loading mechanism
+      virtual Condition get(key_type key, const iov_type& iov) = 0;
+      /// Access the conditions loading mechanism. Only conditions in the user pool will be accessed.
+      virtual Condition get(key_type key, const UserPool& pool) = 0;
+    };
+
 
     template <typename T> static void copyObject(void* t, const void* s)  {
       new(t) T(*(const T*)s);
@@ -247,7 +256,7 @@ namespace DD4hep {
       T& ret = this->bind<T>();
       if ( !value.empty() && !this->fromString(value) )  {
 	throw std::runtime_error("BlockData::set> Failed to bind type "+
-				 typeName(typeid(T))+" to condition data block.");
+				 ::DD4hep::typeName(typeid(T))+" to condition data block.");
       }
       return ret;
     }
@@ -268,43 +277,47 @@ namespace DD4hep {
   } /* End namespace Conditions             */
 } /* End namespace DD4hep                   */
 
-#define DD4HEP_DEFINE_CONDITIONS_TYPE(x)            \
-  namespace DD4hep { namespace Conditions  {        \
-      template x& Condition::bind<x>();           \
-      template x& Condition::get<x>();              \
-      template const x& Condition::get<x>() const;  \
+#define DD4HEP_DEFINE_CONDITIONS_TYPE(x)                             \
+  namespace DD4hep { namespace Conditions  {                         \
+      template x& Condition::bind<x>();                              \
+      template x& Condition::get<x>();                               \
+      template const x& Condition::get<x>() const;                   \
     }}
 
-#define DD4HEP_DEFINE_EXTERNAL_CONDITIONS_TYPE(x)      \
-  namespace DD4hep { namespace Conditions  {           \
-      template <> x& Condition::bind<x>();           \
-      template <> x& Condition::get<x>();              \
-      template <> const x& Condition::get<x>() const;  \
+#define DD4HEP_DEFINE_CONDITIONS_TYPE_DUMMY(x)                        \
+  namespace DD4hep{namespace Parsers{int parse(x&, const std::string&){return 1;}}} \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(x)
+
+#define DD4HEP_DEFINE_EXTERNAL_CONDITIONS_TYPE(x)                    \
+  namespace DD4hep { namespace Conditions  {                         \
+      template <> x& Condition::bind<x>();                           \
+      template <> x& Condition::get<x>();                            \
+      template <> const x& Condition::get<x>() const;                \
     }}
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-#define DD4HEP_DEFINE_CONDITIONS_CONT(x)        \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(x)              \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>) \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)   \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)    \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::deque<x>)  \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)  \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::ulong_map_t) \
+#define DD4HEP_DEFINE_CONDITIONS_CONT(x)                             \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(x)                                   \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>)                      \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)                        \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)                         \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::deque<x>)                       \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)     \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::ulong_map_t)   \
   DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::string_map_t)
 
-#define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)      \
-  DD4HEP_DEFINE_CONDITIONS_CONT(x)              \
+#define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)                           \
+  DD4HEP_DEFINE_CONDITIONS_CONT(x)                                   \
   DD4HEP_DEFINE_CONDITIONS_CONT(unsigned x)
 
 #else
 
-#define DD4HEP_DEFINE_CONDITIONS_CONT(x)        \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(x)              \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>) \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)   \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)    \
-  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)  \
+#define DD4HEP_DEFINE_CONDITIONS_CONT(x)                             \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(x)                                   \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::vector<x>)                      \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::list<x>)                        \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(std::set<x>)                         \
+  DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::int_map_t)     \
   DD4HEP_DEFINE_CONDITIONS_TYPE(DD4hep::Primitive<x>::string_map_t)
 
 #define DD4HEP_DEFINE_CONDITIONS_U_CONT(x)   DD4HEP_DEFINE_CONDITIONS_CONT(x)

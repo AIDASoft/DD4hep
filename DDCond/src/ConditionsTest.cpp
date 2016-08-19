@@ -13,8 +13,10 @@
 //==========================================================================
 
 // Framework include files
+#include "DD4hep/DetConditions.h"
 #include "DD4hep/DetectorTools.h"
 #include "DDCond/ConditionsTest.h"
+#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
 // C/C++ include files
@@ -41,31 +43,28 @@ namespace DD4hep {
       
 
       template<typename T> void __print_bound_val(Condition c, const char* norm)  {
-        const char* test = c.detector().name();
         char text_format[1024];
         const T& value = access_val<T>(c);
         if ( norm )  {
           T val = _multiply(c.get<T>(),norm);
           ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s [%s] Type: %%s",
                      Primitive<T>::default_format(),Primitive<T>::default_format());
-          printout(INFO,test,text_format, c.name().c_str(), value, val, typeName(c.typeInfo()).c_str());
+          printout(INFO,"Cond_Value",text_format, c.name().c_str(), value, val, typeName(c.typeInfo()).c_str());
           return;
         }
         ::snprintf(text_format,sizeof(text_format),"  Bound value  %%s : value:%s Type: %%s",
                    Primitive<T>::default_format());
-        printout(INFO,test,text_format, c.name().c_str(), value, typeName(c.typeInfo()).c_str());
+        printout(INFO,"Cond_Value",text_format, c.name().c_str(), value, typeName(c.typeInfo()).c_str());
       }
       template <> void __print_bound_val<string>(Condition c, const char*)   {
-        const char* test = c.detector().name();
         const string& v = access_val<string>(c);
-        printout(INFO,test,"  Bound value  %s : string value:%s  Type: %s Ptr:%016X",
+        printout(INFO,"Cond_Value","  Bound value  %s : string value:%s  Type: %s Ptr:%016X",
                  c.name().c_str(), c.get<string>().c_str(),typeName(c.typeInfo()).c_str(),
                  (void*)&v);
       }
       template <typename T> void __print_bound_container(Condition c, const char*)   {
-        const char* test = c.detector().name();
         const T& v = access_val<T>(c);
-        printout(INFO,test,"  Bound value  %s : size:%d = %s Type: %s Ptr:%016X",
+        printout(INFO,"Cond_Value","  Bound value  %s : size:%d = %s Type: %s Ptr:%016X",
                  c.name().c_str(), int(v.size()), c.block().str().c_str(),
                  typeName(c.typeInfo()).c_str(), (void*)&v);
       }
@@ -113,11 +112,10 @@ namespace DD4hep {
         TEMPLATE_TYPE(std::string,"%c")
 
       template <> void print_condition<void>(Condition c)   {
-        const char* test = c.detector().name();
         string type = c.type();
-        printout(INFO,test,"%-32s  [%16s] :  %s [%s] ", 
-                 (c.detector().path()+"."+c.name()).c_str(),c.type().c_str(),
-                 c.value().c_str(),c.validity().c_str());
+        printout(INFO,"Cond_Value","%-32s  [%16s] :  %s [%s] ", 
+                 c.name().c_str(),c.type().c_str(),
+                 c.value().c_str(),c->validity.c_str());
         if ( type == "alignment" )
           print_bound_value<string>(c);
         else if ( type == "temperature" )
@@ -162,11 +160,11 @@ namespace DD4hep {
           if ( iov.contains(*i) )  {
             return;
           }
-          except("Example", "+++ The condition %s.%s [%s] is not fully contained in iov:%s",
-                 c->detector.path().c_str(), c->name.c_str(), i->str().c_str(), iov.str().c_str());
+          except("Example", "+++ The condition %s [%s] is not fully contained in iov:%s",
+                 c->name.c_str(), i->str().c_str(), iov.str().c_str());
         }
-        except("Example", "+++ The condition %s.%s [%s] has no discrete type matching iov:%s",
-               c->detector.path().c_str(), c->name.c_str(), i->str().c_str(), iov.str().c_str());
+        except("Example", "+++ The condition %s [%s] has no discrete type matching iov:%s",
+               c->name.c_str(), i->str().c_str(), iov.str().c_str());
       }
     }
   }
@@ -180,7 +178,7 @@ Test::TestEnv::TestEnv(LCDD& _lcdd, const string& detector_name)
   manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
   manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
   manager["UserPoolType"]   = "DD4hep_ConditionsLinearUserPool";
-  manager->initialize();
+  manager.initialize();
   detector = lcdd.detector(detector_name);
   if ( detector.isValid() )  {
     pair<bool, const IOVType*> e = manager.registerIOVType(0, "epoch");
@@ -211,14 +209,14 @@ void Test::TestEnv::add_xml_data_source(const string& file, const string& iov_st
 void Test::TestEnv::dump_conditions_pools()
 {
   typedef RangeConditions _R;
-  typedef ConditionsIOVPool::Entries _E;
-  typedef Interna::ConditionsManagerObject::TypedConditionPool _P;
+  typedef ConditionsIOVPool::Elements _E;
+  typedef ConditionsManagerObject::TypedConditionPool _P;
   int cnt = 0;
-  _P& p = this->manager->m_pool;
+  const _P& p = manager->conditionsPool();
   for(_P::const_iterator i=p.begin(); i != p.end(); ++i, ++cnt)  {
-    ConditionsIOVPool* pool = (*i);
+    const ConditionsIOVPool* pool = (*i);
     if ( pool )  {
-      const _E& e = pool->entries;
+      const _E& e = pool->elements;
       const IOVType* typ = this->manager->iovType(cnt);
       printout(INFO,"Example","+++ ConditionsIOVPool for type %s", typ->str().c_str());
       for (_E::const_iterator j=e.begin(); j != e.end(); ++j)  {
@@ -239,21 +237,23 @@ void Test::TestEnv::dump_conditions_pools()
 /// Dump the conditions of one detectpr element
 void Test::TestEnv::dump_detector_element(DetElement elt)
 {
-  Container conds = elt.conditions();
-  printout(INFO,"conditions","DetElement:%s # of conditons:%d",elt.path().c_str(),int(conds.count()));
-  const Container::Entries& entries = conds.entries();
-  for(Container::Entries::const_iterator i=entries.begin(); i!=entries.end(); ++i)  {
+  DetConditions c(elt);
+  Container conds = c.conditions();
+  printout(INFO,"conditions","DetElement:%s # of conditons keys:%d",elt.path().c_str(),int(conds.numKeys()));
+#if 0
+  const Container::Elements& elements = conds.elements();
+  for(Container::Elements::const_iterator i=elements.begin(); i!=elements.end(); ++i)  {
     Condition cond((*i).second);
     print_condition<void>(cond);
   }
+#endif
 }
 
 /// Dump conditions tree of a detector element
 void Test::TestEnv::dump_conditions_tree(DetElement elt)
 {
-  Container conds = elt.conditions();
   const DetElement::Children& children = elt.children();
-  if ( !conds.isValid() )
+  if ( !elt->conditions.isValid() )
     printout(INFO,"conditions_tree","DetElement:%s  NO CONDITIONS present",elt.path().c_str());
   else
     dump_detector_element(elt);

@@ -22,7 +22,7 @@
 
 /// Framework include files
 #include "DD4hep/Objects.h"
-#include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/ConditionsData.h"
 #include "DDDB/DDDBReaderContext.h"
 
 /// C/C++ include files
@@ -37,11 +37,13 @@ namespace DD4hep {
   namespace DDDB {
 
     /// Forward declarations
-    struct Shape;
-    struct LogVol;
-    struct Catalog;
-    struct Document;
+    class  Shape;
+    class  LogVol;
+    class  Catalog;
+    class  TabProperty;
+    class  Document;
 
+    using Geometry::DetElement;
     using Geometry::VisAttr;
     using Geometry::Position;
     using Geometry::RotationZYX;
@@ -51,7 +53,8 @@ namespace DD4hep {
     /// Basic named object
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Named  {
+    class Named : public Conditions::ClientData  {
+    public:
       typedef std::map<std::string, std::string> StringMap;
       typedef std::map<std::string, std::pair<std::string,std::string > > StringPairMap;
       std::string  name, id;
@@ -79,7 +82,8 @@ namespace DD4hep {
     /// Structure supporting basic XML document information
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Document : public Named  {
+    class Document : public Named  {
+    public:
       DDDBReaderContext context;
       /// Default constructor
       Document();
@@ -92,21 +96,24 @@ namespace DD4hep {
     /// Intermediate structure representing author's data
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Author : public Named {
+    class Author : public Named {
+    public:
       Author() : Named() {}
     };
 
     /// Intermediate structure representing versioning data
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Version : Named {
+    class Version : Named {
+    public:
       Version() : Named() {}
     };
 
     /// Intermediate structure representing data of one atom
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Atom  {
+    class Atom  {
+    public:
       double A, Zeff;
       Atom() : A(0), Zeff(0) {}
     };
@@ -114,7 +121,8 @@ namespace DD4hep {
     /// Intermediate structure representing data of a Isotope
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Isotope : public Named  {
+    class Isotope : public Named  {
+    public:
       double A,Z,density;
       /// Default constructor
       Isotope();
@@ -127,11 +135,12 @@ namespace DD4hep {
     /// Intermediate structure representing data of a Element
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Element : public Named {
+    class Element : public Named {
+    public:
       enum {SOLID,LIQUID,GAS,UNKNOWN};
       std::vector<std::pair<std::string,double> > isotopes;
       std::string path, symbol;
-      struct Atom atom;
+      class Atom atom;
       double density, ionization;
       int state;
 
@@ -148,7 +157,8 @@ namespace DD4hep {
     /// Intermediate structure representing data of a material component
     /**   \ingroup DD4HEP_DDDB
      */
-    struct MaterialComponent  {
+    class MaterialComponent  {
+    public:
       std::string name;
       double fractionmass;
       int natoms;
@@ -166,7 +176,8 @@ namespace DD4hep {
     /// Intermediate structure representing data of a material definition
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Material : public Named {
+    class Material : public Named {
+    public:
       typedef std::vector<MaterialComponent> Components;
       typedef std::vector<std::string>       Properties;
       std::string path;
@@ -184,7 +195,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Box shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Box    {
+    class Box    {
+    public:
       static int type() { return 100; }
       double x,y,z; 
       double dot2() const  { return x*x + y*y + z*z; }
@@ -193,7 +205,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Cons shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Cons                     {
+    class Cons                     {
+    public:
       static int type() { return 102; } 
       double innerRadiusMZ, innerRadiusPZ, outerRadiusMZ, outerRadiusPZ, sizeZ;
     };
@@ -201,7 +214,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the ConsSegment shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct ConeSegment                     {
+    class ConeSegment                     {
+    public:
       static int type() { return 103; } 
       double start, delta;      
       double innerRadiusMZ, innerRadiusPZ, outerRadiusMZ, outerRadiusPZ, sizeZ;
@@ -210,7 +224,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Tubs shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Tubs                     {
+    class Tubs                     {
+    public:
       static int type() { return 104; }
       double innerRadius, outerRadius, sizeZ, start, delta;
     };
@@ -218,7 +233,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the elliptical tube shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct EllipticalTube   {
+    class EllipticalTube   {
+    public:
       static int type() { return 105; }
       double a, b, dz;
     };
@@ -226,7 +242,8 @@ namespace DD4hep {
     /// Structure supporting conversion of a z-plane
     /**   \ingroup DD4HEP_DDDB
      */
-    struct ZPlane                   {
+    class ZPlane                   {
+    public:
       static int type() { return 106; }
       double innerRadius, outerRadius, z;
     };
@@ -234,7 +251,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Polycone shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Polycone                 {
+    class Polycone                 {
+    public:
       static int type() { return 107; }
       double start, delta;
     };
@@ -242,7 +260,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Polycone shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Polygon                 {
+    class Polygon                 {
+    public:
       static int type() { return 108; }
       double nsides, start, innerRadius, outerRadius, z;      
     };
@@ -250,7 +269,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the torus
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Torus   {
+    class Torus   {
+    public:
       static int type() { return 109; }
       double rmin, rmax, r, phi, dphi;
     };
@@ -258,7 +278,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Sphere
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Sphere   {
+    class Sphere   {
+    public:
       static int type() { return 110; }
       double rmin, rmax, theta, delta_theta, phi, delta_phi;
     };
@@ -266,7 +287,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Ellipsoid
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Ellipsoid   {
+    class Ellipsoid   {
+    public:
       static int type() { return 111; }
       double rlow, rhigh, dz;
     };
@@ -274,7 +296,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Trap
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Trap   {
+    class Trap   {
+    public:
       static int type() { return 112; }
       double dz, phi, theta, h1, bl1, tl1, alpha1, h2, bl2, tl2, alpha2;
     };
@@ -282,7 +305,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Paraboloid
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Paraboloid   {
+    class Paraboloid   {
+    public:
       static int type() { return 113; }
       double rlow, rhigh, dz;
     };
@@ -290,7 +314,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the Paraboloid
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Hyperboloid   {
+    class Hyperboloid   {
+    public:
       static int type() { return 114; }
       double rmin, rmax, stIn, stOut, dz;
     };
@@ -298,7 +323,8 @@ namespace DD4hep {
     /// Structure supporting conversion of the TRD
     /**   \ingroup DD4HEP_DDDB
      */
-    struct TRD   {
+    class TRD   {
+    public:
       static int type() { return 115; }
       double x1, x2, y1, y2, z;
     };
@@ -306,43 +332,49 @@ namespace DD4hep {
     /// Structure supporting conversion of the Assembly
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Assembly  {
+    class Assembly  {
+    public:
       static int type() { return 199; }
     };
 
     /// Structure supporting boolean shapes
     /**   \ingroup DD4HEP_DDDB
      */
-    struct BooleanShape            {
-      struct Shape* first;
+    class BooleanShape            {
+    public:
+      class Shape* first;
     };
 
     /// Structure supporting conversion of boolean unions
     /**   \ingroup DD4HEP_DDDB
      */
-    struct BooleanUnion        : public BooleanShape  {
+    class BooleanUnion        : public BooleanShape  {
+    public:
       static int type() { return 206; } 
     };
 
     /// Structure supporting conversion of boolean subtractions
     /**   \ingroup DD4HEP_DDDB
      */
-    struct BooleanSubtraction  : public BooleanShape  {
+    class BooleanSubtraction  : public BooleanShape  {
+    public:
       static int type() { return 207; } 
     };
 
     /// Structure supporting conversion of boolean intersections
     /**   \ingroup DD4HEP_DDDB
      */
-    struct BooleanIntersection : public BooleanShape  {
+    class BooleanIntersection : public BooleanShape  {
+    public:
       static int type() { return 208; } 
     };
 
     /// Structure supporting conversion of boolean operations
     /**   \ingroup DD4HEP_DDDB
      */
-    struct BooleanOperation {
-      struct Shape* shape;
+    class BooleanOperation {
+    public:
+      class Shape* shape;
       Transform3D trafo;
       BooleanOperation() : shape(0) {}
     };
@@ -351,7 +383,8 @@ namespace DD4hep {
     /// Structure supporting conversion of a physical volume
     /**   \ingroup DD4HEP_DDDB
      */
-    struct PhysVol : public Named  {
+    class PhysVol : public Named  {
+    public:
       enum { PHYSVOL_REGULAR=1,
              PHYSVOL_PARAM1D=2,
              PHYSVOL_PARAM2D=3,
@@ -383,7 +416,8 @@ namespace DD4hep {
     /// Structure supporting conversion of parametrized physical volumes
     /**   \ingroup DD4HEP_DDDB
      */
-    struct ParamPhysVol : public PhysVol {
+    class ParamPhysVol : public PhysVol {
+    public:
       int number1;
       Transform3D trafo1;
       /// Default constructor
@@ -403,7 +437,8 @@ namespace DD4hep {
     /// Structure supporting conversion of 2D parametrized physical volumes
     /**   \ingroup DD4HEP_DDDB
      */
-    struct ParamPhysVol2D : public ParamPhysVol  {
+    class ParamPhysVol2D : public ParamPhysVol  {
+    public:
       int number2;
       Transform3D trafo2;
       /// Default constructor
@@ -413,7 +448,8 @@ namespace DD4hep {
     /// Structure supporting conversion of 3D parametrized physical volumes
     /**   \ingroup DD4HEP_DDDB
      */
-    struct ParamPhysVol3D : public ParamPhysVol2D  {
+    class ParamPhysVol3D : public ParamPhysVol2D  {
+    public:
       int number3;
       Transform3D trafo3;
       /// Default constructor
@@ -423,7 +459,8 @@ namespace DD4hep {
     /// Structure supporting conversion of a logical volume
     /**   \ingroup DD4HEP_DDDB
      */
-    struct LogVol : public Named  {
+    class LogVol : public Named  {
+    public:
       std::string   material, shape, path;
       std::vector<PhysVol*> physvols;
       /// Default constructor
@@ -437,19 +474,23 @@ namespace DD4hep {
     /// Structure supporting conversion of a detector element or a catalog
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Catalog : public Named {
-      typedef std::map<std::string, Catalog*> CatRefs;
-      typedef std::map<std::string, LogVol*>  LvRefs;
+    class Catalog : public Named {
+    public:
+      typedef std::map<std::string, Catalog*>      CatRefs;
+      typedef std::map<std::string, LogVol*>       LvRefs;
+      typedef std::map<std::string, TabProperty*>  PropRefs;
       LvRefs        logvolrefs;
       LvRefs        logvols;
       CatRefs       catalogrefs;
       CatRefs       catalogs;
+      PropRefs      tabpropertyrefs;
       StringPairMap params;
       StringMap     conditioninfo;
       std::string   type, path, author, version, logvol, condition, support, npath;
       int           level, typeID;
       /// Default constructor
       Catalog();
+      Catalog(const Catalog&, const DetElement&) {}
       /// Default destructor
       virtual ~Catalog();
       /// Reference count mechanism
@@ -460,31 +501,32 @@ namespace DD4hep {
     /// Structure supporting conversion of any arbitrary shape
     /**   \ingroup DD4HEP_DDDB
      */
-    struct Shape : public Named {
+    class Shape : public Named {
+    public:
       typedef std::vector<ZPlane>           ZPlanes;
       typedef std::vector<BooleanOperation> Operations;
       typedef std::vector<ParamPhysVol>     ParamVolumes;
       int type;
       union  {
-        struct Assembly             assembly;
-        struct Box                  box;
-        struct Cons                 cons;
-        struct Tubs                 tubs;
-        struct Polycone             polycone;
-        struct ConeSegment          coneSegment;
-        struct EllipticalTube       ellipticalTube;
-        struct Polygon              polygon;
-        struct Torus                torus;
-        struct Sphere               sphere;
-        struct Ellipsoid            ellipsoid;
-        struct Paraboloid           paraboloid;
-        struct Hyperboloid          hyperboloid;
-        struct TRD                  trd;
-        struct Trap                 trap;
-        struct BooleanShape         boolean;
-        struct BooleanUnion         boolean_union;
-        struct BooleanSubtraction   BooleanSubtraction;
-        struct BooleanIntersection  boolean_intersection;
+        class Assembly             assembly;
+        class Box                  box;
+        class Cons                 cons;
+        class Tubs                 tubs;
+        class Polycone             polycone;
+        class ConeSegment          coneSegment;
+        class EllipticalTube       ellipticalTube;
+        class Polygon              polygon;
+        class Torus                torus;
+        class Sphere               sphere;
+        class Ellipsoid            ellipsoid;
+        class Paraboloid           paraboloid;
+        class Hyperboloid          hyperboloid;
+        class TRD                  trd;
+        class Trap                 trap;
+        class BooleanShape         boolean;
+        class BooleanUnion         boolean_union;
+        class BooleanSubtraction   BooleanSubtraction;
+        class BooleanIntersection  boolean_intersection;
       } s;
       ZPlanes zplanes;
       Operations boolean_ops;
@@ -498,6 +540,26 @@ namespace DD4hep {
       Shape* addRef()  {  ++refCount; return this;  }
     };
 
+    /// Tabulated property
+    /**
+     *   \author  M.Frank
+     *   \version 1.0
+     *   \date    31/03/2016
+     *   \ingroup DD4HEP_DDDB
+     */
+    class TabProperty : public Named  {
+    public:
+      typedef std::pair<double, double> Entry;
+      std::string path, type, xunit, yunit, xaxis, yaxis;
+      std::vector<Entry> data;
+      /// Default constructor
+      TabProperty();
+      /// Default destructor
+      ~TabProperty();
+      /// Reference count mechanism
+      TabProperty* addRef()  {  ++refCount; return this;  }
+    };
+
     /// LHCb geometry description interface to the conditions database
     /**
      *   \author  M.Frank
@@ -505,17 +567,19 @@ namespace DD4hep {
      *   \date    31/03/2016
      *   \ingroup DD4HEP_DDDB
      */
-    struct dddb   {
+    class dddb   {
+    public:
       typedef std::pair<long long int, long long int> iov_t;
-      typedef std::map<std::string,std::string> Refs;
-      typedef std::map<std::string,Document*>   Documents;
-      typedef std::map<std::string,LogVol*>     Volumes;
-      typedef std::map<std::string,PhysVol*>    Placements;
-      typedef std::map<std::string,Catalog*>    Catalogs;
-      typedef std::map<std::string,Isotope*>    Isotopes;
-      typedef std::map<std::string,Element*>    Elements;
-      typedef std::map<std::string,Material*>   Materials;
-      typedef std::map<std::string,Shape*>      Shapes;
+      typedef std::map<std::string,std::string>   Refs;
+      typedef std::map<std::string,Document*>     Documents;
+      typedef std::map<std::string,LogVol*>       Volumes;
+      typedef std::map<std::string,PhysVol*>      Placements;
+      typedef std::map<std::string,Catalog*>      Catalogs;
+      typedef std::map<std::string,Isotope*>      Isotopes;
+      typedef std::map<std::string,Element*>      Elements;
+      typedef std::map<std::string,Material*>     Materials;
+      typedef std::map<std::string,Shape*>        Shapes;
+      typedef std::map<std::string,TabProperty*>  TabProperties;
       typedef std::map<std::string,Conditions::Condition::Object*>  Conditions;
 
       /// Default constructor
@@ -539,6 +603,8 @@ namespace DD4hep {
       Volumes    volumes, volumePaths;
       /// Inventory of volume placements
       Placements placements, placementPaths;
+      /// Inventory of tabulated properties
+      TabProperties tabproperties, tabpropertyPaths;
       /// Inventory of conditions
       Conditions conditions, conditionPaths;
       /// Inventory of catalogs
@@ -546,9 +612,10 @@ namespace DD4hep {
       /// Detector element hierarchy
       Catalog    *top, *structure, *geometry;
     };
-    struct dddb_conditions {};
+    class dddb_conditions {};
 
-    template <typename T> struct Increment {
+    template <typename T> class Increment {
+    public:
       static int& counter() { static int cnt=0; return cnt; }
       Increment()   { ++counter(); }
       ~Increment()  { --counter(); }

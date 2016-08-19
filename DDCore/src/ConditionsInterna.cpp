@@ -13,20 +13,14 @@
 //==========================================================================
 
 // Framework includes
-#include "DD4hep/Mutex.h"
 #include "DD4hep/Handle.inl"
 #include "DD4hep/Printout.h"
-#include "DD4hep/Detector.h"
-#include "DD4hep/DetectorTools.h"
 #include "DD4hep/InstanceCount.h"
+#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 
 using namespace std;
 using namespace DD4hep::Conditions;
-
-namespace {
-  DD4hep::dd4hep_mutex_t s_conditionsMutex;
-}
 
 DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionObject);
 DD4HEP_INSTANTIATE_HANDLE_NAMED(Interna::ConditionContainer);
@@ -134,7 +128,9 @@ void BlockData::assign(const void* ptr, const type_info& typ)  {
 
 /// Standard constructor
 Interna::ConditionObject::ConditionObject()
-  : NamedObject(), detector(), data(), iov(0), hash(0), flags(0), refCount(0)
+  : NamedObject(), value(), validity(), address(), comment(),
+    data(), pool(0), iov(0), 
+    hash(0), flags(0), refCount(0)
 {
   InstanceCount::increment(this);
 }
@@ -150,70 +146,92 @@ Interna::ConditionObject& Interna::ConditionObject::move(ConditionObject& /* fro
 }
 
 /// Access safely the IOV
-const IOV* Interna::ConditionObject::iov_data() const    {
+const Condition::iov_type* Interna::ConditionObject::iovData() const    {
   if ( iov ) return iov;
   invalidHandleError<IOV>();
   return 0;
 }
 
 /// Access safely the IOV-type
-const IOVType* Interna::ConditionObject::iov_type() const    {
+const IOVType* Interna::ConditionObject::iovType() const    {
   if ( iov && iov->iovType ) return iov->iovType;
   invalidHandleError<IOVType>();
   return 0;
 }
 
 /// Standard constructor
-Interna::ConditionContainer::ConditionContainer() : NamedObject(), entries() {
+Interna::ConditionContainer::ConditionContainer(Geometry::DetElementObject* par)
+  : NamedObject(), detector(par), keys()
+{
   InstanceCount::increment(this);
 }
 
 /// Default destructor
 Interna::ConditionContainer::~ConditionContainer() {
-  removeElements();
   InstanceCount::decrement(this);
 }
 
-/// Clear all attached conditions.
-void Interna::ConditionContainer::removeElements()    {
-  dd4hep_lock_t locked_call(s_conditionsMutex);
-  for(Entries::iterator i=entries.begin(); i!=entries.end();++i)
-    (*i).second->flags &= ~(ConditionObject::ACTIVE);
-  entries.clear();
-}
-
-void Interna::ConditionContainer::add(Condition condition)   {
-  ConditionObject* o = condition.ptr();
-  if ( o )  {
-    if ( !o->hash ) o->hash = hash32(condition.name());
-    dd4hep_lock_t locked_call(s_conditionsMutex);
-    Entries::iterator i=entries.find(o->hash);
-    o->flags |= ConditionObject::ACTIVE;
-    if ( i != entries.end() )  {
-      (*i).second->flags &= ~(ConditionObject::ACTIVE);
-      (*i).second = o;
-      return;
-    }
-    entries[o->hash] = o;
-    return;
-  }
-  invalidHandleError<Condition>();
-}
-
-void Interna::ConditionContainer::remove(int condition_hash)   {
-  dd4hep_lock_t locked_call(s_conditionsMutex);
-  Entries::iterator i=entries.find(condition_hash);
-  if ( i != entries.end() )  {
-    (*i).second->flags &= ~(ConditionObject::ACTIVE);
+/// Add a new key to the conditions access map
+void Interna::ConditionContainer::addKey(const string& key_val)  {
+  key_type hash = ConditionKey::hashCode(key_val);
+  if ( !keys.insert(make_pair(hash,make_pair(hash,key_val))).second )   {
+    except("ConditionContainer","++ Key[%08X]: %s already present. Duplicate insertions inhibited!",hash, key_val.c_str());
   }
 }
 
-void Interna::ConditionContainer::lock()   {
-  s_conditionsMutex.lock();
+/// Add a new key to the conditions access map: Allow for alias if key_val != data_val
+void Interna::ConditionContainer::addKey(const string& key_val, const string& data_val)  {
+  key_type key_hash = ConditionKey::hashCode(key_val);
+  key_type val_hash = ConditionKey::hashCode(data_val);
+  if ( !keys.insert(make_pair(key_hash,make_pair(val_hash,data_val))).second )   {
+    except("ConditionContainer","++ Key[%08X]: %s already present. Duplicate insertions inhibited!",key_hash, key_val.c_str());
+  }
 }
 
-void Interna::ConditionContainer::unlock()   {
-  s_conditionsMutex.unlock();
+/// Access to condition objects directly by their hash key. 
+Condition Interna::ConditionContainer::get(const string& key_val, const iov_type& iov)   {
+  key_type hash = ConditionKey::hashCode(key_val);
+  Keys::const_iterator i=keys.find(hash);
+  if ( i != keys.end() )  {
+    const key_value& k = (*i).second;
+    return detector->world()->getCondition(k.first, iov);
+  }
+  /// Last resort: Assume the key value is globally known:
+  return detector->world()->getCondition(hash, iov);
+}
+
+/// Access to condition objects directly by their hash key. 
+Condition Interna::ConditionContainer::get(key_type hash_key, const iov_type& iov)   {
+  Keys::const_iterator i=keys.find(hash_key);
+  if ( i != keys.end() )  {
+    const key_value& k = (*i).second;
+    return detector->world()->getCondition(k.first, iov);
+  }
+  /// Last resort: Assume the key value is globally known:
+  return detector->world()->getCondition(hash_key, iov);
+}
+
+/// Access to condition objects directly by their hash key. 
+Condition Interna::ConditionContainer::get(const string& key_val, const UserPool& pool)   {
+  key_type hash = ConditionKey::hashCode(key_val);
+  Keys::const_iterator i=keys.find(hash);
+  if ( i != keys.end() )  {
+    const key_value& k = (*i).second;
+    return detector->world()->getCondition(k.first, pool);
+  }
+  /// Last resort: Assume the key value is globally known:
+  return detector->world()->getCondition(hash, pool);
+}
+
+/// Access to condition objects directly by their hash key. 
+Condition Interna::ConditionContainer::get(key_type hash_key, const UserPool& pool)   {
+  Keys::const_iterator i=keys.find(hash_key);
+  if ( i != keys.end() )  {
+    const key_value& k = (*i).second;
+    return detector->world()->getCondition(k.first, pool);
+  }
+  /// Last resort: Assume the key value is globally known:
+  return detector->world()->getCondition(hash_key, pool);
 }
 
 /// Protected destructor

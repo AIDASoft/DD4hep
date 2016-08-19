@@ -16,6 +16,7 @@
 
 // Framework include files
 #include "DD4hep/Memory.h"
+#include "DD4hep/Detector.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/ComponentProperties.h"
 
@@ -27,14 +28,12 @@ namespace DD4hep {
 
     // Forward declarations
     class Entry;
+    class UserPool;
     class ConditionsPool;
     class ConditionsIOVPool;
+    class ConditionDependency;
     class ConditionsDataLoader;
-
-    /// Conditions internal namespace
-    namespace Interna  {
-      class ConditionsManagerObject;
-    }
+    class ConditionsManagerObject;
 
     /// Manager class for condition handles
     /**
@@ -42,15 +41,16 @@ namespace DD4hep {
      *  \version 1.0
      *  \ingroup DD4HEP_CONDITIONS
      */
-    class ConditionsManager : public Handle<Interna::ConditionsManagerObject> {
+    class ConditionsManager : public Handle<ConditionsManagerObject> {
     public:
 
       /// Standard object type
-      typedef Interna::ConditionsManagerObject Object;
-      typedef ConditionsDataLoader             Loader;
-      typedef std::vector<IOVType>             IOVTypes;
-      typedef std::map<IOVType*,Container>     TypeConditions;
-      typedef std::map<DetElement,Container>   DetectorConditions;
+      typedef ConditionsManagerObject            Object;
+      typedef ConditionsDataLoader               Loader;
+      typedef std::vector<IOVType>               IOVTypes;
+      typedef std::map<IOVType*,Container>       TypeConditions;
+      typedef std::map<DetElement,Container>     DetectorConditions;
+      typedef std::map<unsigned int,ConditionDependency*> Dependencies;
 
     public:
 
@@ -86,6 +86,9 @@ namespace DD4hep {
       /// Default destructor
       ~ConditionsManager();
 
+      /// Initialize the object after having set the properties
+      ConditionsManager& initialize();
+
       /// Access to properties
       Property& operator[](const std::string& property_name) const;
 
@@ -95,13 +98,13 @@ namespace DD4hep {
       /// Access the conditions loader
       Handle<Loader> loader()  const;
 
-      /// Access the availible/known IOV types
-      const IOVTypes& iovTypes()  const;
-
       /// Access the used/registered IOV types
       const std::vector<const IOVType*> iovTypesUsed() const;
 
-      /// Access conditions pool by iov type
+      /// Access IOV by its name
+      const IOVType* iovType (const std::string& iov_name) const;
+
+      /// Access conditions multi IOV pool by iov type
       ConditionsIOVPool* iovPool(const IOVType& type)  const;
 
       /// Create IOV from string
@@ -117,22 +120,7 @@ namespace DD4hep {
       ConditionsPool* registerIOV(const IOVType& typ, IOV::Key key);
 
       /// Register new condition with the conditions store. Unlocked version, not multi-threaded
-      bool registerUnlocked(const IOVType* type, IOV::Key key, Condition cond);
-
-      /// Register new condition with the conditions store. Unlocked version, not multi-threaded
       bool registerUnlocked(ConditionsPool* pool, Condition cond);
-      
-      /// Access IOV by its type
-      const IOVType* iovType (size_t iov_type) const;
-
-      /// Access IOV by its name
-      const IOVType* iovType (const std::string& iov_name) const;
-
-      /// Lock the internal data structures. This disables calls to "register", etc.
-      void lock();
-      
-      /// Unlock the internal data structures. This enables calls to "register", etc.
-      void unlock();
 
       /// Clean conditions, which are above the age limit.
       void clean(const IOVType* typ, int max_age);
@@ -140,45 +128,14 @@ namespace DD4hep {
       /// Full cleanup of all managed conditions.
       void clear();
 
-      /// Push all pending updates to the conditions store. 
-      /** Note:
-       *  This does not yet make the new conditions availible to the clients
-       */
-      void pushUpdates();
+      /// Prepare all updates to the clients with the defined IOV
+      long prepare(const IOV& required_validity, dd4hep_ptr<UserPool>& user_pool);
 
       /// Prepare all updates to the clients with the defined IOV
-      long prepare(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool);
-      
-      /// Enable all updates to the clients with the defined IOV
-      long enable(const IOV& required_validity, dd4hep_ptr<ConditionsPool>& user_pool);
-      
-      /// Retrieve a condition given a Detector Element and the conditions name
-      Condition get(DetElement detector,
-                    const std::string& condition_name,
-                    const IOV& req_validity);
-
-      /// Retrieve a condition given a Detector Element path and the conditions name
-      Condition get(const std::string& detector_path,
-                    const std::string& condition_name,
-                    const IOV& req_validity);
-
-      /// Retrieve a condition given the conditions path = <Detector Element path>.<conditions name>
-      Condition get(const std::string& conditions_path,
-                    const IOV& req_validity);
-
-      /// Retrieve a condition given a Detector Element and the conditions name
-      RangeConditions getRange(DetElement detector,
-                               const std::string& condition_name,
-                               const IOV& req_range_validity);
-
-      /// Retrieve a condition given a Detector Element path and the conditions name
-      RangeConditions getRange(const std::string& detector_path, 
-                               const std::string& condition_name,
-                               const IOV& req_range_validity);
-
-      /// Retrieve a condition given the conditions path = <Detector Element path>.<conditions name>
-      RangeConditions getRange(const std::string& conditions_path,
-                               const IOV& req_range_validity);
+      long prepare(const IOV&            required_validity,
+		   dd4hep_ptr<UserPool>& user_pool,
+		   const Dependencies&   dependencies,
+		   bool                  verify_dependencies=true);
     };
 
   }       /* End namespace Geometry                 */

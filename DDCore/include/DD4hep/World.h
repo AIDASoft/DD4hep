@@ -42,6 +42,7 @@ namespace DD4hep {
       typedef Handle<Object>        RefObject;
       /// Conditions stuff
       typedef Conditions::IOV       IOV;
+      typedef Conditions::UserPool  UserPool;
       typedef Conditions::Condition Condition;
 
     public:
@@ -49,10 +50,13 @@ namespace DD4hep {
       World() : RefObject() {      }
 
       /// Copy from named handle
-      World(const RefObject& sd) : RefObject(sd) {}
+      World(const RefObject& o) : RefObject(o) {}
 
       /// Copy from handle
-      World(const World& sd) : RefObject(sd) {}
+      World(const World& w) : RefObject(w) {}
+
+      /// Copy from pointer
+      World(Object* p) : RefObject(p) {}
 
       /// Templated constructor for handle conversions
       template <typename Q> World(const Handle<Q>& e) : RefObject(e) {}
@@ -66,10 +70,12 @@ namespace DD4hep {
       LCDD& lcdd() const;
 #endif
       /// Access the conditions loading
-      Condition getCondition(DetElement child,const std::string&  key, const IOV& iov) const;
+      Condition getCondition(Condition::key_type key, const IOV& iov) const;
+      /// Access the conditions loading. Only conditions in the pool are accessed.
+      Condition getCondition(Condition::key_type key, const UserPool& pool) const;
     };
 
-  } /* End namespace Geometry      */
-} /* End namespace DD4hep        */
+  } /* End namespace Conditions      */
+} /* End namespace DD4hep            */
 
-#endif    /* DD4HEP_DETECTOR_H      */
+#endif    /* DD4HEP_WORLD_H          */

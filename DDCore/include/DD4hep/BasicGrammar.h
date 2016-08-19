@@ -50,6 +50,8 @@ namespace DD4hep {
     static void invalidConversion(const std::string& value, const std::type_info& to);
     /// Access to the type information
     virtual const std::type_info& type() const = 0;
+    /// Access to the type information name
+    virtual const std::string& type_name() const = 0;    
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const = 0;
     /// Serialize an opaque value to a string

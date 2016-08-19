@@ -11,8 +11,8 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_DDG4_GRAMMAR_INL_H
-#define DD4HEP_DDG4_GRAMMAR_INL_H
+#ifndef DD4HEP_DDCORE_BASICGRAMMAR_INL_H
+#define DD4HEP_DDCORE_BASICGRAMMAR_INL_H
 
 // Framework include files
 #include "DD4hep/Primitives.h"
@@ -48,6 +48,8 @@ namespace DD4hep {
    *   \ingroup DD4HEP
    */
   template <typename TYPE> class Grammar : public BasicGrammar {
+    /// Cached type information name
+    std::string m_typeName;
   public:
     /// Standarsd constructor
     Grammar();
@@ -55,6 +57,8 @@ namespace DD4hep {
     virtual ~Grammar();
     /// PropertyGrammar overload: Access to the type information
     virtual const std::type_info& type() const;
+    /// Access to the type information name
+    virtual const std::string& type_name() const;    
     /// Access the object size (sizeof operator)
     virtual size_t sizeOf() const;
     /// PropertyGrammar overload: Serialize a property to a string
@@ -67,6 +71,7 @@ namespace DD4hep {
 
   /// Standarsd constructor
   template <typename TYPE> Grammar<TYPE>::Grammar() {
+    m_typeName = typeName(typeid(TYPE));
   }
 
   /// Default destructor
@@ -76,6 +81,11 @@ namespace DD4hep {
   /// PropertyGrammar overload: Access to the type information
   template <typename TYPE> const std::type_info& Grammar<TYPE>::type() const {
     return typeid(TYPE);
+  }
+
+  /// PropertyGrammar overload: Access to the type information
+  template <typename TYPE> const std::string& Grammar<TYPE>::type_name() const {
+    return m_typeName;
   }
 
   /// Access the object size (sizeof operator)
@@ -284,7 +294,10 @@ namespace DD4hep {
   template<typename T> inline int eval_none(T*, const std::string&)  {
     return 1;
   }
-  
+  template <typename T> inline int parse_none(T&, const std::string&) {
+    return 1;
+  }
+
   // Containers of objects are not handled!
   
 }      // End namespace DD4hep
@@ -302,12 +315,12 @@ namespace DD4hep {                                                     \
   DD4HEP_DEFINE_PARSER_GRAMMAR_EVAL(x,func)
 
 #if defined(DD4HEP_HAVE_ALL_PARSERS)
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)                \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                           \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>, eval_container)        \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,   eval_container)        \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::set<x>,    eval_container)        \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::deque<x>,  eval_container)        \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)                 \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                            \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>, eval_container)         \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,   eval_container)         \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::set<x>,    eval_container)         \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::deque<x>,  eval_container)         \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::int_map_t,     eval_container)  \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::ulong_map_t,   eval_container)  \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::string_map_t,  eval_container)  \
@@ -315,35 +328,35 @@ namespace DD4hep {                                                     \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::ulong_pair_t,  eval_pair)       \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::string_pair_t, eval_pair) 
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func)     \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                   \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container) \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func)              \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                            \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container)          \
   DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,eval_container)   
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)                \
-  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_item)              \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)                         \
+  DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_item)                       \
   DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(unsigned x,eval_item)
 
 #else
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)                \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                           \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>, eval_container)        \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,   eval_container)        \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::set<x>,    eval_container)        \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_func)                 \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                            \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>, eval_container)         \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,   eval_container)         \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::set<x>,    eval_container)         \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::int_map_t,     eval_container)  \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::string_map_t,  eval_container)  \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::int_pair_t,    eval_pair)       \
   DD4HEP_DEFINE_PARSER_GRAMMAR(DD4hep::Primitive<x>::string_pair_t, eval_pair) 
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func)     \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                   \
-  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container) \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_CONT_VL(x,eval_func)              \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(x,eval_func)                            \
+  DD4HEP_DEFINE_PARSER_GRAMMAR(std::vector<x>,eval_container)          \
   DD4HEP_DEFINE_PARSER_GRAMMAR(std::list<x>,eval_container)   
 
-#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)                \
+#define DD4HEP_DEFINE_PARSER_GRAMMAR_U_CONT(x)                         \
   DD4HEP_DEFINE_PARSER_GRAMMAR_CONT(x,eval_item)
 
 #endif
 
-#endif  /* DD4HEP_DDG4_GRAMMAR_INL_H */
+#endif  /* DD4HEP_DDCORE_BASICGRAMMAR_INL_H */

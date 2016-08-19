@@ -37,7 +37,7 @@ namespace DD4hep {
     class Entry : public NamedObject  {
     public:
       /// Reference to the detector element
-      DetElement detector;
+      Geometry::DetElement detector;
       /// The actual conditions data
       std::string value;
       /// The validity string to be interpreted by the updating engine
@@ -47,7 +47,7 @@ namespace DD4hep {
       /// Default constructor
       Entry() {}
       /// Initializing constructor
-      Entry(const DetElement& det, const std::string& nam, const std::string& typ, const std::string& valid, int hash);
+      Entry(const Geometry::DetElement& det, const std::string& nam, const std::string& typ, const std::string& valid, int hash);
       /// Copy constructor
       Entry(const Entry& c);
       /// Default destructor

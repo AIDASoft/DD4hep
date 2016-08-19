@@ -141,6 +141,19 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   return obj;
 }
 
+/// Access to the world object. Only possible once the geometry is closed.
+WorldObject* DetElementObject::i_access_world()   {
+  if ( !privateWorld.isValid() )  {
+    DetElementObject* p = parent.ptr();
+    if ( 0 == p )  {
+      privateWorld = (WorldObject*)this;
+      return privateWorld.ptr();
+    }
+    return p->world();
+  }
+  return privateWorld.ptr();
+}
+
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& DetElementObject::worldTransformation() {
   if ( (flag&HAVE_WORLD_TRAFO) == 0 ) {
@@ -194,13 +207,13 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
   PlacementPath par_path;
   DetElement    det(this);
   DetElement    par(det.parent());
-  DetElement    world = DetectorTools::topElement(det);
-  bool   print = (DEBUG > printLevel());
-  string place = det.placementPath();
-  bool have_world_tr = (flag&HAVE_WORLD_TRAFO);
+  DetElement    wrld  = world();
+  bool          print = (DEBUG > printLevel());
+  string        place = det.placementPath();
+  bool     have_trafo = (flag&HAVE_WORLD_TRAFO);
 
   DetectorTools::placementPath(par, this, par_path);
-  PlacedVolume node = DetectorTools::findNode(world.placement(),place);
+  PlacedVolume node = DetectorTools::findNode(wrld.placement(),place);
   if ( !node.isValid() )  {
     throw runtime_error("DD4hep: DetElement: The placement " + place + " is not part of the hierarchy.");
   }
@@ -212,7 +225,7 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
 
   placement = node;
 
-  if ( have_world_tr && print )  worldTrafo.Print();
+  if ( have_trafo && print )  worldTrafo.Print();
 
   if ( (flag&HAVE_PARENT_TRAFO) )  {
     DetectorTools::placementTrafo(par_path,false,parentTrafo);
@@ -225,7 +238,7 @@ void DetElementObject::revalidate(TGeoHMatrix* parent_world_trafo)  {
     worldTrafo.Multiply(&parentTransformation());
     flag |= HAVE_WORLD_TRAFO;
   }
-  else if ( have_world_tr )  {
+  else if ( have_trafo )  {
     // Else re-compute the transformation to the world.
     PlacementPath world_nodes;
     DetectorTools::placementPath(this, world_nodes);
@@ -275,9 +288,16 @@ void DetElementObject::update(unsigned int tags, void* param)   {
   }
 }
 
+Conditions::Container DetElementObject::assign_conditions()  {
+  if ( !conditions.isValid() )  {
+    conditions.assign(new Conditions::Container::Object(this),"conditions","");
+  }
+  return conditions;
+}
+
 /// Initializing constructor
 WorldObject::WorldObject(LCDD& _lcdd, const string& nam) 
-  : DetElementObject(nam,0), lcdd(&_lcdd), conditionsLoader(0)
+  : DetElementObject(nam,0), lcdd(&_lcdd), conditionsLoader(0), conditionsManager(0)
 {
 }
 
@@ -286,12 +306,23 @@ WorldObject::~WorldObject()  {
 }
 
 /// Access the conditions loading
-DetElement::Condition 
-WorldObject::getCondition(DetElement child,const string& key, const IOV& iov)  {
+WorldObject::Condition 
+WorldObject::getCondition(Condition::key_type key, const Condition::iov_type& iov)  const {
   if ( conditionsLoader )   {
-    return conditionsLoader->get(child,key,iov);
+    return conditionsLoader->get(key, iov);
   }
   
   except("Conditions","+++ No ConditionsLoader registered to this LCDD instance!");
-  return DetElement::Condition();
+  return WorldObject::Condition();
+}
+
+/// Access the conditions loading
+WorldObject::Condition 
+WorldObject::getCondition(Condition::key_type key, const UserPool& pool)  const {
+  if ( conditionsLoader )   {
+    return conditionsLoader->get(key, pool);
+  }
+  
+  except("Conditions","+++ No ConditionsLoader registered to this LCDD instance!");
+  return WorldObject::Condition();
 }

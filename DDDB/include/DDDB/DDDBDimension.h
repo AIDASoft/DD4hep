@@ -142,6 +142,12 @@ namespace DD4hep {
       std::string symbol() const;
       std::string symbol(std::string default_value) const;
       std::string logvol() const;
+      std::string xunit() const;
+      std::string xaxis() const;
+      std::string yunit() const;
+      std::string yaxis() const;
+      std::string zunit() const;
+      std::string zaxis() const;
     };
   } /* End namespace DDDB    */
 } /* End namespace DD4hep    */

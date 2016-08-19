@@ -39,6 +39,7 @@ namespace DD4hep {
 
       Loaders m_loaders;
       OpenSources m_openSources;
+      ConditionsDataLoader* load_source(const std::string& nam,const iov_type& req_validity);
 
     public:
       /// Default constructor
@@ -46,20 +47,17 @@ namespace DD4hep {
       /// Default destructor
       virtual ~ConditionsMultiLoader();
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load(DetElement det,
-                          const std::string& cond,
-                          const IOV& req_validity,
+      virtual size_t load(key_type key,
+			  const iov_type& req_validity,
                           RangeConditions& conditions);
       /// Load  a condition set given a Detector Element and the conditions name according to their validity
-      virtual size_t load_range(DetElement det,
-                                const std::string& cond,
-                                const IOV& req_validity,
+      virtual size_t load_range(key_type key,
+                                const iov_type& req_validity,
                                 RangeConditions& conditions);
       /// Update a range of conditions according to the required IOV
-      virtual size_t update(const IOV& req_validity,
+      virtual size_t update(const iov_type& req_validity,
 			    RangeConditions& conditions,
-			    IOV& conditions_validity);
-      ConditionsDataLoader* load_source(const std::string& nam,const IOV& req_validity);
+			    iov_type& conditions_validity);
     };
   } /* End namespace Geometry               */
 } /* End namespace DD4hep                   */
@@ -79,7 +77,7 @@ using namespace DD4hep::Conditions;
 namespace {
   void* create_loader(DD4hep::Geometry::LCDD& lcdd, int argc, char** argv)   {
     const char* name = argc>0 ? argv[0] : "MULTILoader";
-    Interna::ConditionsManagerObject* mgr = (Interna::ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
+    ConditionsManagerObject* mgr = (ConditionsManagerObject*)(argc>0 ? argv[1] : 0);
     return new ConditionsMultiLoader(lcdd,ConditionsManager(mgr),name);
   }
 }
@@ -95,7 +93,9 @@ ConditionsMultiLoader::ConditionsMultiLoader(LCDD& lcdd, ConditionsManager mgr, 
 ConditionsMultiLoader::~ConditionsMultiLoader() {
 } 
 
-ConditionsDataLoader* ConditionsMultiLoader::load_source(const std::string& nam,const IOV& req_validity)
+ConditionsDataLoader* 
+ConditionsMultiLoader::load_source(const std::string& nam,
+				   const iov_type& req_validity)
 {
   OpenSources::iterator iop = m_openSources.find(nam);
   if ( iop == m_openSources.end() )  {
@@ -128,10 +128,10 @@ ConditionsDataLoader* ConditionsMultiLoader::load_source(const std::string& nam,
 }
 
 /// Load  a condition set given a Detector Element and the conditions name according to their validity
-size_t ConditionsMultiLoader::load_range(DetElement det,
-                                         const std::string& cond,
-                                         const IOV& req_validity,
-                                         RangeConditions& conditions)   {
+size_t ConditionsMultiLoader::load_range(key_type key,
+					 const iov_type& req_validity,
+					 RangeConditions& conditions)
+{
   size_t len = conditions.size();
   // No better idea: Must chack all sources to find the required condition
   for(Sources::const_iterator i=m_sources.begin(); i != m_sources.end(); ++i)  {
@@ -140,7 +140,7 @@ size_t ConditionsMultiLoader::load_range(DetElement det,
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  { 
 	const string& nam = (*i).first;
 	ConditionsDataLoader* loader = load_source(nam, req_validity);
-	loader->load(det, cond, req_validity, conditions);
+	loader->load(key, req_validity, conditions);
       }
     }
   }
@@ -148,10 +148,10 @@ size_t ConditionsMultiLoader::load_range(DetElement det,
 }
 
 
-size_t ConditionsMultiLoader::load(DetElement det, 
-                                   const std::string& cond, 
-                                   const IOV& req_validity, 
-                                   RangeConditions& conditions)  {
+size_t ConditionsMultiLoader::load(key_type key,
+				   const iov_type& req_validity,
+				   RangeConditions& conditions)
+{
   size_t len = conditions.size();
   // No better idea: Must chack all sources to find the required condition
   for(Sources::const_iterator i=m_sources.begin(); i != m_sources.end(); ++i)  {
@@ -160,7 +160,7 @@ size_t ConditionsMultiLoader::load(DetElement det,
       if ( IOV::key_partially_contained(iov.keyData,req_validity.keyData) )  {
 	const string& nam = (*i).first;
 	ConditionsDataLoader* loader = load_source(nam, req_validity);
-	loader->load(det, cond, req_validity, conditions);
+	loader->load(key, req_validity, conditions);
       }
     }
   }
@@ -168,23 +168,23 @@ size_t ConditionsMultiLoader::load(DetElement det,
 }
 
 /// Update a range of conditions according to the required IOV
-size_t ConditionsMultiLoader::update(const IOV& req_iov,
-				     RangeConditions& updates,
-				     IOV& conditions_validity)  {
+size_t ConditionsMultiLoader::update(const iov_type& req_validity,
+				     RangeConditions& conditions,
+				     iov_type& conditions_validity)
+{
   RangeConditions upda;
-  for(RangeConditions::const_iterator i=updates.begin(); i!=updates.end(); ++i)  {
+  for(RangeConditions::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)  {
     Condition::Object* cond = (*i).ptr();
-    size_t items = load(cond->detector,cond->name,req_iov,upda);
+    size_t items = load(cond->hash,req_validity,upda);
     if ( items < 1 )  {
       // Error: no such condition
       except("ConditionsManager",
-	     "+++ update_expired: Cannot update condition %s.%s [%s] to iov:%s.",
-             cond->detector.path().c_str(), cond->name.c_str(),
-             cond->iov->str().c_str(), req_iov.str().c_str());
+	     "+++ update_expired: Cannot update condition %s [%s] to iov:%s.",
+             cond->name.c_str(), cond->iov->str().c_str(), req_validity.str().c_str());
     }
   }
-  updates = upda;
-  for(RangeConditions::const_iterator i=updates.begin(); i!=updates.end(); ++i)
+  conditions = upda;
+  for(RangeConditions::const_iterator i=conditions.begin(); i!=conditions.end(); ++i)
     conditions_validity.iov_intersection((*i).iov());
-  return updates.size();
+  return conditions.size();
 }

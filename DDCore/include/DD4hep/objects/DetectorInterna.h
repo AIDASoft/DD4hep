@@ -17,12 +17,15 @@
 // Framework include files
 #include "DD4hep/Callback.h"
 #include "DD4hep/NamedObject.h"
+#include "DD4hep/World.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Detector.h"
 #include "DD4hep/Alignment.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/ObjectExtensions.h"
+
+// ROOT include files
 #include "TGeoMatrix.h"
 
 /// Namespace for the AIDA detector description toolkit
@@ -76,15 +79,15 @@ namespace DD4hep {
       // Type definitions.
       // The full namespace declaration is required by cint....
       typedef /* DD4hep::Geometry:: */  DetElement::destruct_t destruct_t;
-      typedef /* DD4hep::Geometry:: */  DetElement::copy_t copy_t;
+      typedef /* DD4hep::Geometry:: */  DetElement::copy_t     copy_t;
 
-      typedef /* DD4hep::Geometry:: */  DetElement::Children Children;
+      typedef /* DD4hep::Geometry:: */  DetElement::Children   Children;
       typedef /* DD4hep::Geometry:: */  DetElement::Extensions Extensions;
-      typedef std::pair<Callback,unsigned long> UpdateCall;
-      typedef std::vector<UpdateCall>           UpdateCallbacks;
-      typedef DetElement::ConditionsContainer   ConditionsContainer;
-      typedef DetElement::Condition             Condition;
-      typedef Conditions::IOV                   IOV;
+      typedef std::pair<Callback,unsigned long>    UpdateCall;
+      typedef std::vector<UpdateCall>              UpdateCallbacks;
+      typedef Conditions::Container                ConditionsContainer;
+      typedef Conditions::Condition                Condition;
+      typedef Conditions::IOV                      IOV;
 
       enum DetFlags {
         HAVE_WORLD_TRAFO = 1<<0,
@@ -121,6 +124,8 @@ namespace DD4hep {
        */
       VolumeID volumeID;
       /// Reference to the parent element
+      World privateWorld;
+      /// Reference to the parent element
       DetElement parent;
       /// Reference element for stored transformations
       DetElement reference;
@@ -149,6 +154,12 @@ namespace DD4hep {
       /// Intermediate buffer for the transformation to an arbitrary DetElement
       TGeoHMatrix* referenceTrafo;
       //@}
+    private:
+      //@{ Private methods used internally by the object itself. */
+      /// Resolve the world object. Internal use ONLY.
+      WorldObject* i_access_world();
+
+    public:
       //@{ Public methods to ease the usage of the data. */
       /// Initializing constructor
       DetElementObject(const std::string& nam, int ident);
@@ -158,6 +169,10 @@ namespace DD4hep {
       virtual ~DetElementObject();
       /// Deep object copy to replicate DetElement trees e.g. for reflection
       virtual DetElementObject* clone(int new_id, int flag) const;
+      /// Access to the world object. Only possible once the geometry is closed.
+      WorldObject* world()
+      {  return privateWorld.isValid() ? privateWorld.ptr() : i_access_world(); }
+      ConditionsContainer assign_conditions();
       //@}
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation();
@@ -183,7 +198,10 @@ namespace DD4hep {
      */
     class WorldObject: public DetElementObject {
     public:
-      typedef Conditions::ConditionsLoader ConditionsLoader;
+      typedef Conditions::UserPool                UserPool;
+      typedef Conditions::Condition               Condition;
+      typedef Conditions::ConditionsLoader        ConditionsLoader;
+      typedef Conditions::ConditionsManagerObject ConditionsManagerObject;
 
       /// Reference to the LCDD instance object
       LCDD* lcdd;
@@ -191,10 +209,13 @@ namespace DD4hep {
       /// Conditions loader for this LCDD instance
       ConditionsLoader* conditionsLoader;
 
+      /// Reference to the conditions manager object
+      ConditionsManagerObject* conditionsManager;
+
     public:
       //@{ Public methods to ease the usage of the data. */
       /// Default constructor
-      WorldObject() : DetElementObject(), lcdd(0), conditionsLoader(0)  {}
+      WorldObject() : DetElementObject(), lcdd(0), conditionsLoader(0), conditionsManager(0)  {}
 #ifndef __CINT__
       /// Initializing constructor
       WorldObject(LCDD& lcdd, const std::string& nam);
@@ -202,7 +223,9 @@ namespace DD4hep {
       /// Internal object destructor: release extension object(s)
       virtual ~WorldObject();
       /// Access the conditions loading
-      Condition getCondition(DetElement child, const std::string&  key, const IOV& iov);
+      Condition getCondition(Condition::key_type key, const Condition::iov_type& iov)  const;
+      /// Access the conditions loading. Only conditions in the pool are accessed.
+      Condition getCondition(Condition::key_type key, const UserPool& pool) const;
    };
 
   } /* End namespace Geometry      */

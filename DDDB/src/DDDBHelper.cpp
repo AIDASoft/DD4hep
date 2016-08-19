@@ -85,4 +85,3 @@ void DDDBHelper::addVisAttr(const std::string& path, DD4hep::Geometry::VisAttr a
     }
   }
 }
-

@@ -154,7 +154,7 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
     resolver.setDirectory(path.parent_path().c_str());
     { /// Install helper
       char* arguments[] = {(char*)&resolver, 0};
-      lcdd.apply("DDDBInstallHelper", 1, arguments);
+      lcdd.apply("DDDB_InstallHelper", 1, arguments);
     }
     if ( !params.empty() )    { /// Pre-Process Parameters
       XML::DocumentHolder doc(XML::DocumentHandler().load(params, &resolver));

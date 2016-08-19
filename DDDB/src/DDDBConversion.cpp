@@ -64,6 +64,9 @@ namespace DD4hep  {
     releaseObjects(placements)();
     releaseObjects(placementPaths)();
 
+    releaseObjects(tabproperties)();
+    releaseObjects(tabpropertyPaths)();
+
     conditions.clear();
     conditionPaths.clear();
     //releaseObjects(conditions)();
@@ -222,6 +225,17 @@ namespace DD4hep  {
     InstanceCount::decrement(this);
   }
 
+
+  /// Default constructor
+  DDDB::TabProperty::TabProperty()    {
+    InstanceCount::increment(this);
+  }
+
+  /// Default destructor
+  DDDB::TabProperty::~TabProperty()    {
+    InstanceCount::decrement(this);
+  }
+
   pair<const DDDB::Catalog*,string> DDDB::Catalog::parent(const string& nam)  const  {
     const Catalog* cat = this;
     string rest = nam.substr(cat->path.length()+1);
@@ -357,6 +371,15 @@ namespace DD4hep  {
              obj->shape.empty() ? "<INVALID>" : obj->shape.c_str());
     printout(INFO,"LogVol", "++ %-12s  name:%s id:%s",
              "",obj->c_name(),obj->c_id());
+  }
+
+  template <> void dddb_print(const DDDB::TabProperty* obj)   {
+    CHECK_OBJECT(obj);
+    printout(INFO,"Detector", "++ %-12s: [%s] xunit:%s xaxis:%s yunit:%s yaxis:%s siz:%d",
+             obj->path.c_str(), obj->type.c_str(), 
+	     obj->xunit.c_str(), obj->xaxis.c_str(),
+	     obj->yunit.c_str(), obj->yaxis.c_str(),
+	     int(obj->data.size()));
   }
 
   template <> void dddb_print(const DDDB::Catalog* obj)   {
