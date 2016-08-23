@@ -62,6 +62,11 @@ Property& ConditionsManager::operator[](const std::string& property_name) const 
   return access()->properties().property(property_name);
 }
 
+/// Access the conditions loader
+Handle<ConditionsManager::Loader> ConditionsManager::loader()  const    {
+  return access()->loader();
+}
+
 /// Register new IOV type if it does not (yet) exist.
 pair<bool, const IOVType*> 
 ConditionsManager::registerIOVType(size_t iov_type, const string& iov_name)   {
