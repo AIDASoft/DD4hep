@@ -264,6 +264,7 @@ template <> void Converter<include>::operator()(xml_h e)  const  {
 template <> void Converter<display>::operator()(xml_h e)  const  {
   Display* d = (Display*)param;
   if ( e.hasAttr(_Unicode(visLevel)) ) d->setVisLevel(e.attr<int>(_Unicode(visLevel)));
+  if ( e.hasAttr(_Unicode(eventHandler)) ) d->setEventHandlerName(e.attr<std::string>(_Unicode(eventHandler)));
   if ( e.hasAttr(_Unicode(loadLevel)) ) d->setLoadLevel(e.attr<int>(_Unicode(loadLevel)));
 }
 

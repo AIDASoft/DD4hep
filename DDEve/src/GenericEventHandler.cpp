@@ -106,7 +106,12 @@ bool GenericEventHandler::Open(const string& file_type, const string& file_name)
   m_hasEvent = false;
   try  {
     deletePtr(m_current);
-    if ( idx != string::npos )   {
+    //  prefer event handler configured in xml
+    if ( file_type.find("FCC") != string::npos ) {
+      m_current = (EventHandler*)PluginService::Create<void*>("DDEve_FCCEventHandler",(const char*)0);
+    }
+    // fall back to defaults according to file ending
+    else if ( idx != string::npos )   {
       m_current = (EventHandler*)PluginService::Create<void*>("DDEve_LCIOEventHandler",(const char*)0);
     }
     else if ( idr != string::npos )   {

@@ -101,6 +101,8 @@ namespace DD4hep {
     int m_visLevel;
     /// Load level for the eve geometry
     int m_loadLevel;
+    /// Name of the event handler plugin
+    std::string m_eventHandlerName;
   public:
     /// Standard constructor
     Display(TEveManager* eve);
@@ -117,6 +119,10 @@ namespace DD4hep {
     void setVisLevel(int new_level)                      { m_visLevel = new_level;    }
     /// Set Eve Geometry load level in manager (either from XML or BEFORE XML file was loaded)
     void setLoadLevel(int new_level)                     { m_loadLevel = new_level;   }
+    /// Set Event Handler Plugin name
+    void setEventHandlerName(std::string eventHandlerName) {m_eventHandlerName = eventHandlerName;}
+    /// Get Event Handler Plugin name
+    std::string getEventHandlerName() {return m_eventHandlerName;}
 
     /// Access to X-client
     TGClient& client() const;

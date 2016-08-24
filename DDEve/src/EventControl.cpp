@@ -82,7 +82,7 @@ bool EventControl::Open()   {
 
   std::string fname = m_display->OpenEventFileDialog(".");
   if ( !fname.empty() )  {
-    return m_display->eventHandler().Open("",fname);
+    return m_display->eventHandler().Open(m_display->getEventHandlerName(),fname);
   }
   return false;
 }

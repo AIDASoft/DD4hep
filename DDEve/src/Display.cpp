@@ -62,7 +62,7 @@ using namespace DD4hep::Geometry;
 ClassImp(Display)
 
 namespace DD4hep {
-  void EveDisplay(const char* xmlConfig = 0)  {
+  void EveDisplay(const char* xmlConfig = 0, const char* eventFileName = 0)  {
     Display* display = new Display(TEveManager::Create(true,"VI"));
     if ( xmlConfig != 0 )   {
       char text[PATH_MAX];
@@ -78,6 +78,9 @@ namespace DD4hep {
                           "Need to choos setup file");
       display->ChooseGeometry();
       //display->LoadXML("file:../DD4hep/examples/CLICSiD/compact/DDEve.xml");
+    }
+    if (eventFileName != 0) {
+      display->eventHandler().Open(display->getEventHandlerName(),eventFileName);
     }
   }
 }
@@ -157,7 +160,9 @@ void Display::LoadXML(const char* xmlFile)     {
   if ( m_dd4Menu && !m_geoTopics.empty() )   {
     m_dd4Menu->OnGeometryLoaded();
   }
+
   m_eve->FullRedraw3D(kTRUE); // Reset camera 
+  BuildMenus(m_eve->GetBrowser()->GetMenuBar());
 }
 
 /// Load geometry from compact xml file
@@ -168,7 +173,6 @@ void Display::LoadGeometryRoot(const char* /* rootFile */)     {
 /// Load geometry with panel
 void Display::ChooseGeometry()   {
   m_dd4Menu->OnLoadXML(0,0);
-  BuildMenus(m_eve->GetBrowser()->GetMenuBar());
 }
 
 /// Access to geometry hub
