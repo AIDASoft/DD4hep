@@ -4,7 +4,7 @@ slc6-gcc48:
   image: clicdp/slc6-base
   script:
     - export GCC_VERSION="4.8.5"
-    - export BUILD_TYPE="dbg"
+    - export BUILD_TYPE="opt"
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
@@ -30,7 +30,7 @@ slc6-gcc49:
   image: clicdp/slc6-base
   script:
     - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="dbg"
+    - export BUILD_TYPE="opt"
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
@@ -56,7 +56,7 @@ centos7-gcc49:
   image: clicdp/cc7-base
   script:
     - export GCC_VERSION="4.9.3"
-    - export BUILD_TYPE="dbg"
+    - export BUILD_TYPE="opt"
     - source .gitlab-ci.d/init_x86_64.sh
     - mkdir build 
     - cd build
