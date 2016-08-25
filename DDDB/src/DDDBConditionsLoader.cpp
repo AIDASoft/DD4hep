@@ -16,10 +16,12 @@
 // Framework include files
 #include "DDDB/DDDBConditionsLoader.h"
 #include "DDDB/DDDBReaderContext.h"
+#include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBHelper.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/Factories.h"
 #include "DD4hep/Operators.h"
+#include "DD4hep/ConditionsData.h"
 #include "DD4hep/objects/ConditionsInterna.h"
 #include "DDCond/ConditionsInterna.h"
 
@@ -31,6 +33,7 @@ using namespace std;
 using namespace DD4hep::DDDB;
 using DD4hep::Geometry::LCDD;
 using DD4hep::Conditions::Condition;
+using DD4hep::Conditions::AbstractMap;
 using DD4hep::Conditions::RangeConditions;
 typedef DD4hep::Conditions::RangeConditions RC;
 
@@ -113,8 +116,8 @@ void DDDBConditionsLoader::loadDocument(XML::UriContextReader& rdr, const Key& k
 
 /// Load single conditions document
 void DDDBConditionsLoader::loadDocument(XML::UriContextReader& rdr, 
-					const string& sys_id,
-					const string& obj_id)
+                                        const string& sys_id,
+                                        const string& obj_id)
 {
   const void* argv_conddb[] = {&rdr, sys_id.c_str(), obj_id.c_str(), 0};
   long result = load_dddb_conditions_from_uri(m_lcdd, 3, (char**)argv_conddb);
@@ -130,8 +133,8 @@ void DDDBConditionsLoader::loadDocument(XML::UriContextReader& rdr,
 
 /// Load  a condition set given a Detector Element and the conditions name according to their validity
 size_t DDDBConditionsLoader::load_range(key_type key,
-					const iov_type& req_validity,
-					RangeConditions& conditions)   {
+                                        const iov_type& req_validity,
+                                        RangeConditions& conditions)   {
   KeyMap::const_iterator k = m_keys.keys.find(key);
   if ( k != m_keys.keys.end() )   {
     size_t len = conditions.size();
@@ -159,8 +162,8 @@ size_t DDDBConditionsLoader::load_range(key_type key,
 }
 
 size_t DDDBConditionsLoader::load(key_type key,
-				  const iov_type& req_validity,
-				  RangeConditions& conditions)  {
+                                  const iov_type& req_validity,
+                                  RangeConditions& conditions)  {
   KeyMap::const_iterator k = m_keys.keys.find(key);
   if ( k != m_keys.keys.end() )   {
     size_t len = conditions.size();
@@ -184,8 +187,8 @@ size_t DDDBConditionsLoader::load(key_type key,
 
 /// Update a range of conditions according to the required IOV
 size_t DDDBConditionsLoader::update(const iov_type& req_validity,
-				    RangeConditions& conditions,
-				    iov_type& conditions_validity)
+                                    RangeConditions& conditions,
+                                    iov_type& conditions_validity)
 {
   CallArgs arg(REPLACE, 0, conditions_validity, conditions);
   pair<ConditionsListener*,void*> call(this,&arg);
@@ -204,14 +207,15 @@ size_t DDDBConditionsLoader::update(const iov_type& req_validity,
     size_t idx = c->address.find('#');
     string url = (idx == string::npos) ? c->address : c->address.substr(0,idx);
     printout(INFO,"DDDB","++ Need to update: %-40s [%08X] --> %s",
-	     c->name.c_str(), c->hash, url.c_str());
+             c->name.c_str(), c->hash, url.c_str());
     urls.insert(make_pair(url,c));
   }
   /// Now load them. In the callbacks we can check if we got all required conditions
   for(map<string,Condition::Object*>::const_iterator j=urls.begin(); j!=urls.end(); ++j)  {
-    const string& sys_id   = (*j).first;
-    const string& obj_path = (*j).second->name;
-    loadDocument(local_reader, sys_id, obj_path);
+    Condition            cond = (*j).second;
+    const AbstractMap&   data = cond.get<AbstractMap>();
+    const Document*       doc = data.option<Document>();
+    loadDocument(local_reader, doc->id, doc->name);
   }
   m_mgr->callOnRegister(call,false);  
   return 0;
@@ -227,14 +231,14 @@ void DDDBConditionsLoader::onRegisterCondition(Condition cond, void* param)  {
     if ( arg->cmd == REPLACE )  {
       RC::iterator i=std::find_if(r.begin(),r.end(),byName(cond));
       if ( i != r.end() ) {
-	(*i) = cond;
-	printout(DEBUG,"DDDB","++ Got  MATCH: %-40s [%08X] --> %s.",
-		 c->name.c_str(), c->hash, c->address.c_str());
-	arg->iov.iov_intersection(cond.iov());
-	return;
+        (*i) = cond;
+        printout(DEBUG,"DDDB","++ Got  MATCH: %-40s [%08X] --> %s.",
+                 c->name.c_str(), c->hash, c->address.c_str());
+        arg->iov.iov_intersection(cond.iov());
+        return;
       }
       printout(INFO,"DDDB","++ Got update: %-40s [%08X] --> %s.",
-	       c->name.c_str(), c->hash, c->address.c_str());
+               c->name.c_str(), c->hash, c->address.c_str());
     }
     else if ( arg->cmd == INSERT && arg->key == c->hash )   {
       arg->iov.iov_intersection(cond.iov());

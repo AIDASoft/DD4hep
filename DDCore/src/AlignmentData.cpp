@@ -74,9 +74,33 @@ AlignmentData::AlignmentData()
   InstanceCount::increment(this);
 }
 
+/// Copy constructor
+AlignmentData::AlignmentData(const AlignmentData& copy)
+  : delta(copy.delta), worldTrafo(copy.worldTrafo), detectorTrafo(copy.detectorTrafo),
+    nodes(copy.nodes), trToWorld(copy.trToWorld), detector(copy.detector),
+    placement(copy.placement), flag(copy.flag), magic(magic_word())
+{
+  InstanceCount::increment(this);
+}
+
 /// Default destructor
 AlignmentData::~AlignmentData()  {
   InstanceCount::decrement(this);
+}
+
+/// Assignment operator necessary due to copy constructor
+AlignmentData& AlignmentData::operator=(const AlignmentData& copy)  {
+  if ( this != &copy )  {
+    delta         = copy.delta;
+    worldTrafo    = copy.worldTrafo;
+    detectorTrafo = copy.detectorTrafo;
+    nodes         = copy.nodes;
+    trToWorld     = copy.trToWorld;
+    detector      = copy.detector;
+    placement     = copy.placement;
+    flag          = copy.flag;
+  }
+  return *this;
 }
 
 /// print Conditions object

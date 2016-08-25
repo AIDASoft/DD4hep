@@ -141,6 +141,7 @@ namespace DD4hep {
       XML::UriReader* resolver;
       dddb*       geo;
       Locals      locals;
+      bool        check;
       bool        print_xml;
       bool        print_docs;
       bool        print_materials;
@@ -159,7 +160,7 @@ namespace DD4hep {
 
       /// Default constructor
       Context(lcdd_t& l) 
-        : lcdd(l), resolver(0), geo(0),
+        : lcdd(l), resolver(0), geo(0), check(true),
           print_xml(false),
           print_docs(false),
           print_materials(false), 
@@ -414,9 +415,11 @@ namespace DD4hep {
 
     void checkParents(Context* context)  {
       dddb* geo = context->geo;
-      for(dddb::Catalogs::iterator i=geo->catalogs.begin(); i!=geo->catalogs.end(); ++i)  {
-        Catalog* det = (*i).second;
-        checkParents(context,det);
+      if ( context->check )  {
+        for(dddb::Catalogs::iterator i=geo->catalogs.begin(); i!=geo->catalogs.end(); ++i)  {
+          Catalog* det = (*i).second;
+          checkParents(context,det);
+        }
       }
     }
 
@@ -1667,6 +1670,7 @@ namespace DD4hep {
     template <> void Conv<dddb_conditions>::convert(xml_h e) const {
       Catalog* catalog = 0;
       Context* context = _param<Context>();
+      context->check = false;
       xml_coll_t(e, _LBU(conditionref)).for_each(Conv<ConditionRef>(lcdd,context,catalog));
       xml_coll_t(e, _LBU(catalogref)).for_each(Conv<CatalogRef>(lcdd,context,catalog));
       {

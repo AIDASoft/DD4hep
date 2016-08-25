@@ -34,6 +34,7 @@
 #include "DDCond/ConditionsInterna.h"
 #include "DDCond/ConditionsOperators.h"
 
+#include "DDDB/DDDBReader.h"
 #include "DDDB/DDDBConversion.h"
 #include "DDDB/DDDBConditionPrinter.h"
 
@@ -176,7 +177,7 @@ namespace  {
    *   \date    31/03/2016
    *   \ingroup DD4HEP_DDDB
    */
-  class AlignmentSelector  {
+  class ConditionsSelector  {
   public:
     typedef ConditionsManager::Dependencies Dependencies;
     string            m_name;
@@ -190,11 +191,11 @@ namespace  {
     } m_counters;
 
     /// Initializing constructor
-    AlignmentSelector(ConditionsAccess mgr) : m_manager(mgr) {
+    ConditionsSelector(ConditionsAccess mgr) : m_manager(mgr) {
       Operators::collectAllConditions(mgr, m_allConditions);
     }
 
-    virtual ~AlignmentSelector()   {
+    virtual ~ConditionsSelector()   {
       destroyObjects(m_allDependencies);
     }
 
@@ -298,10 +299,10 @@ namespace  {
   };
 
   /// Plugin function
-  long dddb_derived_alignments(LCDD& lcdd, int , char** argv) {
-    long init_time = *(long*)argv[0];
+  long dddb_derived_alignments(LCDD& lcdd, int argc, char** argv) {
+    long int long init_time = argc>0 ? *(long*)argv[0] : DDDB::DDDBReader::makeTime(2016,4,1,12);
     ConditionsManager manager = ConditionsManager::from(lcdd);
-    AlignmentSelector selector(manager);
+    ConditionsSelector selector(manager);
     int ret = selector.collectDependencies(lcdd.world(), 0);
     if ( ret == 1 )  {
       ret = selector.computeDependencies(init_time);

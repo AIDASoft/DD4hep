@@ -3,11 +3,24 @@
 DD4hep  ----  Release Notes
 =================================
 
+
+2016-08-24 M.Frank
+  Adding first somehow useful implementation to use conditions and the consequent loading thereof.
+	Used by the DDDB implementation/example. DDDB is an alternative way to populate the DD4hep
+	detector description using LHCb's detector description database.
+	The reason is, that only a running experiment has a reasonable base to conditions data
+	to excercise the DD4hep conditions.
+	If interested, please have a look in the DDDB examples.
+
+  Still TODO:
+  - A formal way to bootstrap the conditions loading still has to be found.
+  - Conditions loading from XML files and a small comprehensive example.
+
   --------
  | v00-16 |
   --------
 
-Shaojun Lu | 2016-07-26  
+2016-07-26 Shaojun Lu  
 	Added new MegatileLayerGridXY segmentation for Scintillator strip Ecal, which is implemented by K.Kotera, 
         and used by SEcal04Hybrid geometry driver.
 

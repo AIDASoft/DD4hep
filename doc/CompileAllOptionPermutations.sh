@@ -14,6 +14,7 @@ ROOT_VERSION=6.04.10;
 #GEANT_VERSION=10.02.p02;
 ROOT_VERSION=6.06.06;
 #source ${INSTALL_G4}/../../bin/geant4.sh;
+num_threads=2
 export CXX="`which g++-5` -D_GLIBCXX_USE_CXX11_ABI=0";
 export CC="`which gcc-5` -D_GLIBCXX_USE_CXX11_ABI=0";
 
@@ -29,6 +30,7 @@ parse_command_line_args()
         #echo "Arg:$1 $2";
         a1=`echo $1 | tr A-Z a-z`;
 	case ${a1} in
+
 	    -root)
 		ROOT_VERSION=$2;
 		shift
@@ -51,6 +53,16 @@ parse_command_line_args()
             -st)
                 MULTITHREADED="";
                 ;;
+
+	    -threads)
+		num_threads=$2;
+		shift
+		;;
+
+	    -j)
+		num_threads=$2;
+		shift
+		;;
 
 	    *)
 		ARG_ERROR=$1;
@@ -98,7 +110,7 @@ make_build()
         echo ${CMD};
 	exit 1
     fi
-    make install VERBOSE=1 -j 1;
+    make install VERBOSE=1 -j ${num_threads};
     if [ $? -ne  0 ]; then
         make_output "DANGER WILL ROBINSON DANGER!" "++++ Failed BUILD!"
         echo ${CMD};

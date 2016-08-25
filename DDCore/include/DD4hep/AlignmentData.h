@@ -115,8 +115,12 @@ namespace DD4hep {
     public:
       /// Standard constructor
       AlignmentData();
+      /// Copy constructor
+      AlignmentData(const AlignmentData& copy);
       /// Default destructor
       virtual ~AlignmentData();
+      /// Assignment operator necessary due to copy constructor
+      AlignmentData& operator=(const AlignmentData& copy);
       /// Data accessor for decorator
       inline AlignmentData& alignmentData()     { return *this; }
 

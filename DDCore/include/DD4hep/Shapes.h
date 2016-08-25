@@ -22,7 +22,12 @@
 // C/C++ include files
 #include <vector>
 
-// Forward declarations
+
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated" // Code that causes warning goes here
+#endif
+// ROOT include files
 #include "TGeoCone.h"
 #include "TGeoParaboloid.h"
 #include "TGeoPgon.h"
@@ -36,6 +41,9 @@
 #include "TGeoTorus.h"
 #include "TGeoHalfSpace.h"
 #include "TGeoCompositeShape.h"
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {

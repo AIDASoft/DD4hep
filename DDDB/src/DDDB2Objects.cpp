@@ -84,7 +84,7 @@ namespace DD4hep {
           print_detelem(false),
           print_conditions(false),
           print_vis(false),
-	  conditions_only(false)
+          conditions_only(false)
       {
       }
       ~Context()  {
@@ -229,16 +229,16 @@ namespace DD4hep {
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
       Context* context = _param<Context>();
       if ( obj )   {
-	typedef IOV::Key _K;
-	Conditions::Condition cond = obj;
-	AbstractMap&        d = cond.get<AbstractMap>();
-	Document*         doc = d.option<Document>();
-	_K::first_type  since = doc->context.valid_since;
-	_K::second_type until = doc->context.valid_until;
-	_K iov_key(since,until);
-	ConditionsPool* pool = context->manager.registerIOV(*(context->epoch), iov_key);
-	context->manager.registerUnlocked(pool, cond);
-	//context->manager.registerKey(cond->hash, cond->name);
+        typedef IOV::Key _K;
+        Conditions::Condition cond = obj;
+        AbstractMap&        d = cond.get<AbstractMap>();
+        Document*         doc = d.option<Document>();
+        _K::first_type  since = doc->context.valid_since;
+        _K::second_type until = doc->context.valid_until;
+        _K iov_key(since,until);
+        ConditionsPool* pool = context->manager.registerIOV(*(context->epoch), iov_key);
+        context->manager.registerUnlocked(pool, cond);
+        //context->manager.registerKey(cond->hash, cond->name);
       }
       return obj;
     }
@@ -577,7 +577,7 @@ namespace DD4hep {
           }
         }
         mother->SetTitle(object->path.c_str());
-	Geometry::VisAttr vis = context->helper->visAttr(object->path);
+        Geometry::VisAttr vis = context->helper->visAttr(object->path);
         if ( vis.isValid() )  {
           if ( context->print_vis )  {
             printout(INFO,"Cnv<LogVol>","++ Vol:%s  Vis:%s",mother->GetTitle(), vis.name());
@@ -603,7 +603,7 @@ namespace DD4hep {
                        " Unknown daughter vol:%s.",pv->c_id(), pv->logvol.c_str());
               continue;
             }
-	    int num_places = 0;
+            int num_places = 0;
             const char* pv_name = pv->name.c_str();
             switch(pv->type)   {
             case PhysVol::PHYSVOL_REGULAR:   {
@@ -787,7 +787,7 @@ namespace DD4hep {
                  object->logvol.empty()  ? "--" : object->logvol.c_str(),
                  object->support.empty() ? "--" : object->support.c_str(),
                  object->npath.empty()   ? "--" : object->npath.c_str(),
-		 object->condition.c_str());
+                 object->condition.c_str());
       }
       if ( object->path == "/dd/Structure" )  {
         const Box& o = geo->world;
@@ -808,7 +808,7 @@ namespace DD4hep {
       }
       else if ( object->path.find("/dd/Structure") == 0 )  {
         det = DetElement(object->name,object->type,0);
-	det.addExtension<Catalog>(object->addRef());
+        det.addExtension<Catalog>(object->addRef());
         if ( !object->support.empty() )  {
           try  {
             j = context->catalogPaths.find(object->support);
@@ -897,17 +897,17 @@ namespace DD4hep {
 #endif
       /// Attach conditions keys to the detector element if present
       if ( !object->condition.empty() )   {
-	Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
-	conditions->addKey(object->condition);
-	conditions->addKey("Alignment", object->condition);
+        Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
+        conditions->addKey(object->condition);
+        conditions->addKey("Alignment", object->condition);
       }
       if ( !object->conditioninfo.empty() )  {
-	Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
-	for(Catalog::StringMap::const_iterator i=object->conditioninfo.begin(); i!=object->conditioninfo.end(); ++i)  {
-	  const string& cond_name = (*i).second;
-	  conditions->addKey(cond_name);
-	  conditions->addKey((*i).first, cond_name);
-	}
+        Conditions::Container::Object* conditions = Conditions::DetConditions(det).conditions().ptr();
+        for(Catalog::StringMap::const_iterator i=object->conditioninfo.begin(); i!=object->conditioninfo.end(); ++i)  {
+          const string& cond_name = (*i).second;
+          conditions->addKey(cond_name);
+          conditions->addKey((*i).first, cond_name);
+        }
       }
 
       if ( context->print_detelem )  {
@@ -972,63 +972,63 @@ namespace DD4hep {
     template <> void* CNV<dddb>::convert(dddb *obj) const   {
       Context*  context = _param<Context>();
       if ( !context->conditions_only )  {
-	GeoVolume world   = lcdd.worldVolume();
+        GeoVolume world   = lcdd.worldVolume();
 
-	for_each(obj->isotopes.begin(),  obj->isotopes.end(),   cnv<Isotope>());
-	printout(INFO,"DDDB2Object","++ Converted %d isotopes.",int(obj->isotopes.size()));
-	for_each(obj->elements.begin(),  obj->elements.end(),   cnv<Element>());
-	printout(INFO,"DDDB2Object","++ Converted %d elements.",int(obj->elements.size()));
-	//for_each(obj->materials.begin(), obj->materials.end(),  cnv<Material>());
-	//printout(INFO,"DDDB2Object","++ Converted %d materials.",int(obj->materials.size()));
-	//for_each(obj->shapes.begin(),    obj->shapes.end(),     cnv<Shape>());
-	//printout(INFO,"DDDB2Object","++ Converted %d shapes.",int(obj->shapes.size()));
-	//for_each(obj->volumes.begin(),   obj->volumes.end(),    cnv<LogVol>());
-	//printout(INFO,"DDDB2Object","++ Converted %d volumes.",int(obj->volumes.size()));
-	//for_each(obj->placements.begin(),obj->placements.end(), cnv<PhysVol>());
-	//printout(INFO,"DDDB2Object","++ Converted %d placements.",int(obj->placements.size()));
+        for_each(obj->isotopes.begin(),  obj->isotopes.end(),   cnv<Isotope>());
+        printout(INFO,"DDDB2Object","++ Converted %d isotopes.",int(obj->isotopes.size()));
+        for_each(obj->elements.begin(),  obj->elements.end(),   cnv<Element>());
+        printout(INFO,"DDDB2Object","++ Converted %d elements.",int(obj->elements.size()));
+        //for_each(obj->materials.begin(), obj->materials.end(),  cnv<Material>());
+        //printout(INFO,"DDDB2Object","++ Converted %d materials.",int(obj->materials.size()));
+        //for_each(obj->shapes.begin(),    obj->shapes.end(),     cnv<Shape>());
+        //printout(INFO,"DDDB2Object","++ Converted %d shapes.",int(obj->shapes.size()));
+        //for_each(obj->volumes.begin(),   obj->volumes.end(),    cnv<LogVol>());
+        //printout(INFO,"DDDB2Object","++ Converted %d volumes.",int(obj->volumes.size()));
+        //for_each(obj->placements.begin(),obj->placements.end(), cnv<PhysVol>());
+        //printout(INFO,"DDDB2Object","++ Converted %d placements.",int(obj->placements.size()));
 
-	if ( obj->top )   {
-	  if ( !context->lvDummy.isValid() )   {
-	    lcdd.manager().SetVisLevel(context->max_volume_depth);
-	    context->lvDummy = GeoVolume("Dummy",Geometry::Box(0.0001,0.0001, 0.0001),lcdd.vacuum());
-	    context->lvDummy.setVisAttributes(lcdd.invisible());
-	  }
-	  if ( !world.isValid() )  {
-	    string top = "/dd/Geometry/LHCb/lvLHCb";
-	    const LogVol* lv = Context::find(obj->volumePaths,top);
-	    if ( !lv )   {
-	      except("DDDB2DD4hep","++ No World volume defined.");
-	    }
-	    const Shape* s = Context::find(obj->shapes,lv->id);
-	    if ( !s )  {
-	      except("DDDB2DD4hep","++ No Shape for the world volume defined.");
-	    }
-	    obj->world = s->s.box;
-	  }
-	  /// Main detector conversion invokation
-	  cnv<Catalog>().convert(obj->top);
-	  if ( !world.isValid() && lcdd.worldVolume().isValid() )  {
-	    lcdd.endDocument();
-	  }
-	  /// Now configure the conditions manager
-	  if ( !context->manager.isValid() )  {
-	    Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
-	    manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
-	    manager["LoaderType"]     = "dddb";
-	    manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
-	    manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
-	    manager.initialize();
-	    pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
-	    context->manager = manager;
-	    context->epoch   = e.second;
-	  }
-	}
+        if ( obj->top )   {
+          if ( !context->lvDummy.isValid() )   {
+            lcdd.manager().SetVisLevel(context->max_volume_depth);
+            context->lvDummy = GeoVolume("Dummy",Geometry::Box(0.0001,0.0001, 0.0001),lcdd.vacuum());
+            context->lvDummy.setVisAttributes(lcdd.invisible());
+          }
+          if ( !world.isValid() )  {
+            string top = "/dd/Geometry/LHCb/lvLHCb";
+            const LogVol* lv = Context::find(obj->volumePaths,top);
+            if ( !lv )   {
+              except("DDDB2DD4hep","++ No World volume defined.");
+            }
+            const Shape* s = Context::find(obj->shapes,lv->id);
+            if ( !s )  {
+              except("DDDB2DD4hep","++ No Shape for the world volume defined.");
+            }
+            obj->world = s->s.box;
+          }
+          /// Main detector conversion invokation
+          cnv<Catalog>().convert(obj->top);
+          if ( !world.isValid() && lcdd.worldVolume().isValid() )  {
+            lcdd.endDocument();
+          }
+          /// Now configure the conditions manager
+          if ( !context->manager.isValid() )  {
+            Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
+            manager["PoolType"]       = "DD4hep_ConditionsLinearPool";
+            manager["LoaderType"]     = "dddb";
+            manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
+            manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
+            manager.initialize();
+            pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
+            context->manager = manager;
+            context->epoch   = e.second;
+          }
+        }
       }
       if ( !context->manager.isValid() )  {
-	Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
-	pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
-	context->manager = manager;
-	context->epoch   = e.second;
+        Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
+        pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
+        context->manager = manager;
+        context->epoch   = e.second;
       }
       for_each(obj->conditions.begin(),obj->conditions.end(), cnv<GeoCondition>());
       //printout(INFO,"DDDB2Object","++ Converted %d conditions.",int(obj->conditions.size()));
@@ -1041,31 +1041,31 @@ namespace DD4hep {
     long dddb_2_dd4hep(LCDD& lcdd, int , char** ) {
       DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
       if ( helper )   {
-	Context context(lcdd, helper->detectorDescription());
-	context.helper              = helper;
-	context.print_materials     = false;
-	context.print_logvol        = false;
-	context.print_shapes        = false;
-	context.print_physvol       = false;
-	context.print_volumes       = false;
-	context.print_params        = false;
-	context.print_detelem       = false;
-	context.print_conditions    = false;
-	context.print_vis           = false;
-	context.max_volume_depth    = 9;
+        Context context(lcdd, helper->detectorDescription());
+        context.helper              = helper;
+        context.print_materials     = false;
+        context.print_logvol        = false;
+        context.print_shapes        = false;
+        context.print_physvol       = false;
+        context.print_volumes       = false;
+        context.print_params        = false;
+        context.print_detelem       = false;
+        context.print_conditions    = false;
+        context.print_vis           = false;
+        context.max_volume_depth    = 9;
 
-	CNV<dddb> cnv(lcdd,&context);
-	cnv(make_pair(string("World"),context.geo));
-	printout(INFO,"DDDB","++ Converted %8d isotopes.",         int(context.isotopes.size()));
-	printout(INFO,"DDDB","++ Converted %8d elements.",         int(context.elements.size()));
-	printout(INFO,"DDDB","++ Converted %8d materials.",        int(context.materials.size()));
-	printout(INFO,"DDDB","++ Converted %8d shapes.",           int(context.shapes.size()));
-	printout(INFO,"DDDB","++ Converted %8d logical  volumes.", int(context.volumes.size()));
-	printout(INFO,"DDDB","++ Converted %8d placements.",       int(context.placements.size()));
-	printout(INFO,"DDDB","++ Converted %8d detector elements.",int(context.detelements.size()));
-	printout(INFO,"DDDB","++ Converted %8d conditions.",       int(context.geo->conditions.size()));
-	helper->setDetectorDescription(0);
-	return 1;
+        CNV<dddb> cnv(lcdd,&context);
+        cnv(make_pair(string("World"),context.geo));
+        printout(INFO,"DDDB","++ Converted %8d isotopes.",         int(context.isotopes.size()));
+        printout(INFO,"DDDB","++ Converted %8d elements.",         int(context.elements.size()));
+        printout(INFO,"DDDB","++ Converted %8d materials.",        int(context.materials.size()));
+        printout(INFO,"DDDB","++ Converted %8d shapes.",           int(context.shapes.size()));
+        printout(INFO,"DDDB","++ Converted %8d logical  volumes.", int(context.volumes.size()));
+        printout(INFO,"DDDB","++ Converted %8d placements.",       int(context.placements.size()));
+        printout(INFO,"DDDB","++ Converted %8d detector elements.",int(context.detelements.size()));
+        printout(INFO,"DDDB","++ Converted %8d conditions.",       int(context.geo->conditions.size()));
+        helper->setDetectorDescription(0);
+        return 1;
       }
       except("DDDB","++ No DDDBHelper instance installed. Geometry conversion failed!");
       return 1;
@@ -1073,14 +1073,14 @@ namespace DD4hep {
     long dddb_conditions_2_dd4hep(LCDD& lcdd, int , char** ) {
       DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
       if ( helper )   {
-	Context context(lcdd, helper->detectorDescription());
-	context.helper              = helper;
-	context.print_conditions    = false;
-	context.conditions_only     = true;
-	CNV<dddb> cnv(lcdd,&context);
-	cnv(make_pair(string(),context.geo));
-	helper->setDetectorDescription(0);
-	return 1;
+        Context context(lcdd, helper->detectorDescription());
+        context.helper              = helper;
+        context.print_conditions    = false;
+        context.conditions_only     = true;
+        CNV<dddb> cnv(lcdd,&context);
+        cnv(make_pair(string(),context.geo));
+        helper->setDetectorDescription(0);
+        return 1;
       }
       except("DDDB","++ No DDDBHelper instance installed. Geometry conversion failed!");
       return 1;

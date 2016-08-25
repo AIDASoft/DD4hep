@@ -17,5 +17,3 @@ dd4hep_package(    DDDB
 
 #---DDDB plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDDB SOURCES src/*.cpp )
-#---Package installation procedure(s) -----------------------------------------
-install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)

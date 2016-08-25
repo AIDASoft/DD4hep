@@ -112,6 +112,7 @@ add_subdirectory(DDG4)
 add_subdirectory(DDCond)
 add_subdirectory(DDAlign)
 add_subdirectory(DDEve)
+add_subdirectory(DDDB)
 
 dd4hep_enable_tests( DDTest )
 add_subdirectory(UtilityApps)
