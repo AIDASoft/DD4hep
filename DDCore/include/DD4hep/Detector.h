@@ -21,7 +21,7 @@
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
 #include "DD4hep/Readout.h"
-#include "DD4hep/Alignment.h"
+#include "DD4hep/Alignments.h"
 #include "DD4hep/Segmentations.h"
 
 // C/C++ include files
@@ -187,10 +187,11 @@ namespace DD4hep {
     class DetElement: public Handle<DetElementObject>  {
     public:
       /// Internal object type
-      typedef DetElementObject Object;
+      typedef DetElementObject         Object;
       /// Definition of the base handle type
       typedef Handle<DetElementObject> RefObject;
-      typedef DetElement Parent;
+      typedef DetElement               Parent;
+      typedef Alignments::Alignment    Alignment;
 
       /// Extensions copy constructor type
       typedef void* (*copy_t)(const void*, DetElement);
@@ -370,40 +371,47 @@ namespace DD4hep {
       DetElement parent() const;
       /// Access to the world object. Only possible once the geometry is closed.
       DetElement world()  const;
-      /// Check if this DetElement has Conditions attached
-      bool hasConditions() const;
 
-      /// Access to the actual alignment information
-      Alignment alignment() const;
-      /// Access to the survey alignment information
-      Alignment surveyAlignment() const;
+      /// Check if this DetElement has time dependent Conditions attached
+      bool hasConditions() const;
+      /// Check if this DetElement has time dependent Alignments attached
+      bool hasAlignments() const;
+
+      /// Access to the constant ideal (nominal) alignment information
+      Alignment nominal() const;
+      /// Access to the constant survey alignment information
+      Alignment survey() const;
+
+      // Deprecated functions to be removed soon:
 
       /// Set detector element for reference transformations. Will delete existing reference trafo.
-      DetElement& setReference(DetElement reference);
+      //DetElement& setReference(DetElement reference);
 
       /// Create cached matrix to transform to world coordinates
       const TGeoHMatrix& worldTransformation() const;
       /// Create cached matrix to transform to parent coordinates
       const TGeoHMatrix& parentTransformation() const;
       /// Create cached matrix to transform to reference coordinates
-      const TGeoHMatrix& referenceTransformation() const;
+      //const TGeoHMatrix& referenceTransformation() const;
 
       /// Transformation from local coordinates of the placed volume to the world system
       bool localToWorld(const Position& local, Position& global) const;
       /// Transformation from local coordinates of the placed volume to the parent system
       bool localToParent(const Position& local, Position& parent) const;
       /// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
-      bool localToReference(const Position& local, Position& reference) const;
+      //bool localToReference(const Position& local, Position& reference) const;
 
       /// Transformation from world coordinates of the local placed volume coordinates
       bool worldToLocal(const Position& global, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
       bool parentToLocal(const Position& parent, Position& local) const;
       /// Transformation from world coordinates of the local placed volume coordinates
-      bool referenceToLocal(const Position& reference, Position& local) const;
+      //bool referenceToLocal(const Position& reference, Position& local) const;
     };
 
   } /* End namespace Geometry      */
 } /* End namespace DD4hep        */
+
+#include "DD4hep/AlignmentData.h"
 
 #endif    /* DD4HEP_DETECTOR_H      */

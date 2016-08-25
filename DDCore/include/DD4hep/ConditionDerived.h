@@ -63,51 +63,56 @@ namespace DD4hep {
      */
     class ConditionUpdateCall  {
     public:
+      /**
+       *  \author  M.Frank
+       *  \version 1.0
+       *  \ingroup DD4HEP_CONDITIONS
+       */
       struct Context  {
-	const ConditionResolver&   resolver;
-	const ConditionDependency& dependency;
-	Condition::iov_type*       iov;
+        const ConditionResolver&   resolver;
+        const ConditionDependency& dependency;
+        Condition::iov_type*       iov;
 
-	/// Initializing constructor
+        /// Initializing constructor
         Context(const ConditionResolver& r, const ConditionDependency& d, Condition::iov_type& iov);
-	/// Access to dependency keys
-	const ConditionKey& key(size_t which)  const;
-	/// Access to condition object by dependency index
-	Condition condition(size_t which)  const;
-	/// Access to condition object by dependency key
-	Condition condition(const ConditionKey& key_value)  const;
-	/// Access of other conditions data from the resolver
-	template<typename T> T& get(const ConditionKey& key_value)  {
-	  Condition cond = resolver.get(key_value);
-	  if ( cond.isValid() )  {
-	    T& data = cond.get<T>();	    /// Bind data to wanted type
-	    /// Update result IOV according by and'ing the new iov structure
-	    iov->iov_intersection(cond.iov());
-	    return data;
-	  }
-	  throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing item:"+key_value.name);
-	}
-	/// Access of other conditions data from the resolver
-	template<typename T> const T& get(const ConditionKey& key_value)  const {
-	  Condition cond = resolver.get(key_value);
-	  if ( cond.isValid() )  {
-	    const T& data = cond.get<T>();  /// Bind data to wanted type
-	    /// Update result IOV according by and'ing the new iov structure
-	    iov->iov_intersection(cond.iov());
-	    return data;
-	  }
-	  throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing item:"+key_value.name);
-	}
-	/// Access of other conditions data from the resolver
-	template<typename T> T& get(size_t key_id)  {
-	  const ConditionKey& key_value = this->key(key_id);
-	  return this->get<T>(key_value);
-	}
-	/// Access of other conditions data from the resolver
-	template<typename T> const T& get(size_t key_id)  const {
-	  const ConditionKey& key_value = this->key(key_id);
-	  return this->get<T>(key_value);
-	}
+        /// Access to dependency keys
+        const ConditionKey& key(size_t which)  const;
+        /// Access to condition object by dependency index
+        Condition condition(size_t which)  const;
+        /// Access to condition object by dependency key
+        Condition condition(const ConditionKey& key_value)  const;
+        /// Access of other conditions data from the resolver
+        template<typename T> T& get(const ConditionKey& key_value)  {
+          Condition cond = resolver.get(key_value);
+          if ( cond.isValid() )  {
+            T& data = cond.get<T>();	    /// Bind data to wanted type
+            /// Update result IOV according by and'ing the new iov structure
+            iov->iov_intersection(cond.iov());
+            return data;
+          }
+          throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing item:"+key_value.name);
+        }
+        /// Access of other conditions data from the resolver
+        template<typename T> const T& get(const ConditionKey& key_value)  const {
+          Condition cond = resolver.get(key_value);
+          if ( cond.isValid() )  {
+            const T& data = cond.get<T>();  /// Bind data to wanted type
+            /// Update result IOV according by and'ing the new iov structure
+            iov->iov_intersection(cond.iov());
+            return data;
+          }
+          throw std::runtime_error("ConditionUpdateCall: Failed to access non-existing item:"+key_value.name);
+        }
+        /// Access of other conditions data from the resolver
+        template<typename T> T& get(size_t key_id)  {
+          const ConditionKey& key_value = this->key(key_id);
+          return this->get<T>(key_value);
+        }
+        /// Access of other conditions data from the resolver
+        template<typename T> const T& get(size_t key_id)  const {
+          const ConditionKey& key_value = this->key(key_id);
+          return this->get<T>(key_value);
+        }
       };
       /// Standard destructor
       virtual ~ConditionUpdateCall();
@@ -177,8 +182,8 @@ namespace DD4hep {
 
     /// Initializing constructor
     inline ConditionUpdateCall::Context::Context(const ConditionResolver& resolv,
-						 const ConditionDependency& dep,
-						 Condition::iov_type& iov_ref)
+                                                 const ConditionDependency& dep,
+                                                 Condition::iov_type& iov_ref)
       : resolver(resolv), dependency(dep), iov(&iov_ref)
     {
     }
@@ -201,6 +206,6 @@ namespace DD4hep {
       return this->condition(key_value);
     }
 
-  } /* End namespace Conditions             */
-} /* End namespace DD4hep                   */
-#endif    /* DD4HEP_GEOMETRY_CONDITIONDERIVED_H */
+  }       /* End namespace Conditions               */
+}         /* End namespace DD4hep                   */
+#endif    /* DD4HEP_GEOMETRY_CONDITIONDERIVED_H     */

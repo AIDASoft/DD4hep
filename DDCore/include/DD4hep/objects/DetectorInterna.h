@@ -11,6 +11,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
+//
+// NOTE:
+//
+// This is an internal include file. It should only be included to 
+// instantiate code. Otherwise the Detector include file should be
+// sufficient for all practical purposes.
+//
+//==========================================================================
 #ifndef DD4HEP_GEOMETRY_DETECTORINTERNA_H
 #define DD4HEP_GEOMETRY_DETECTORINTERNA_H
 
@@ -20,7 +28,7 @@
 #include "DD4hep/World.h"
 #include "DD4hep/Objects.h"
 #include "DD4hep/Detector.h"
-#include "DD4hep/Alignment.h"
+#include "DD4hep/Alignments.h"
 #include "DD4hep/Conditions.h"
 #include "DD4hep/Segmentations.h"
 #include "DD4hep/ObjectExtensions.h"
@@ -87,7 +95,8 @@ namespace DD4hep {
       typedef std::vector<UpdateCall>              UpdateCallbacks;
       typedef Conditions::Container                ConditionsContainer;
       typedef Conditions::Condition                Condition;
-      typedef Conditions::IOV                      IOV;
+      typedef Alignments::Alignment                Alignment;
+      typedef Alignments::Container                AlignmentsContainer;
 
       enum DetFlags {
         HAVE_WORLD_TRAFO = 1<<0,
@@ -135,16 +144,23 @@ namespace DD4hep {
       UpdateCallbacks updateCalls;
 
       //@{ Additional information set externally to facilitate the processing of event data */
-      /// Basic detector element alignment entry
-      Alignment alignment;
+      /// Basic ideal/nominal detector element alignment entry
+      Alignment nominal;
       /// Basic detector element alignment entry containing the survey data
       Alignment survey;
+      /// The detector elements alignments access
+      AlignmentsContainer alignments;
+      /// The detector elements conditions access
+      ConditionsContainer conditions;
+
+      /// Global alignment data
+      Ref_t  global_alignment;
+
+      // To be removed!
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
       std::vector<Alignment> volume_alignments;
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
       std::vector<Alignment> volume_surveys;
-      /// The detector elements condition entry
-      ConditionsContainer conditions;
       //@}
       //@{ Cached information of the detector element
       /// Intermediate buffer to store the transformation to the world coordination system
@@ -154,10 +170,11 @@ namespace DD4hep {
       /// Intermediate buffer for the transformation to an arbitrary DetElement
       TGeoHMatrix* referenceTrafo;
       //@}
+
     private:
       //@{ Private methods used internally by the object itself. */
       /// Resolve the world object. Internal use ONLY.
-      WorldObject* i_access_world();
+      World i_access_world();
 
     public:
       //@{ Public methods to ease the usage of the data. */
@@ -170,8 +187,8 @@ namespace DD4hep {
       /// Deep object copy to replicate DetElement trees e.g. for reflection
       virtual DetElementObject* clone(int new_id, int flag) const;
       /// Access to the world object. Only possible once the geometry is closed.
-      WorldObject* world()
-      {  return privateWorld.isValid() ? privateWorld.ptr() : i_access_world(); }
+      World world()
+      {  return privateWorld.isValid() ? privateWorld : i_access_world(); }
       ConditionsContainer assign_conditions();
       //@}
       /// Create cached matrix to transform to world coordinates
@@ -198,35 +215,48 @@ namespace DD4hep {
      */
     class WorldObject: public DetElementObject {
     public:
-      typedef Conditions::UserPool                UserPool;
-      typedef Conditions::Condition               Condition;
+      /// Forward type definition of the ConditionsLoader type
       typedef Conditions::ConditionsLoader        ConditionsLoader;
+      /// Forward type definition of the ConditionsManagerObject type
       typedef Conditions::ConditionsManagerObject ConditionsManagerObject;
+      /// Forward type definition of the AlignmentsLoader type
+      typedef Alignments::AlignmentsLoader        AlignmentsLoader;
+      /// Forward type definition of the AlignmentsManagerObject type
+      typedef Alignments::AlignmentsManagerObject AlignmentsManagerObject;
 
       /// Reference to the LCDD instance object
       LCDD* lcdd;
 
       /// Conditions loader for this LCDD instance
-      ConditionsLoader* conditionsLoader;
+      ConditionsLoader*        conditionsLoader;
 
       /// Reference to the conditions manager object
       ConditionsManagerObject* conditionsManager;
 
+      /// Alignments loader for this LCDD instance
+      AlignmentsLoader*        alignmentsLoader;
+
+      /// Reference to the alignments manager object
+      AlignmentsManagerObject* alignmentsManager;
+
     public:
       //@{ Public methods to ease the usage of the data. */
       /// Default constructor
-      WorldObject() : DetElementObject(), lcdd(0), conditionsLoader(0), conditionsManager(0)  {}
+      WorldObject();
 #ifndef __CINT__
       /// Initializing constructor
       WorldObject(LCDD& lcdd, const std::string& nam);
 #endif
       /// Internal object destructor: release extension object(s)
       virtual ~WorldObject();
-      /// Access the conditions loading
-      Condition getCondition(Condition::key_type key, const Condition::iov_type& iov)  const;
-      /// Access the conditions loading. Only conditions in the pool are accessed.
-      Condition getCondition(Condition::key_type key, const UserPool& pool) const;
    };
+
+    /// Default constructor
+    inline WorldObject::WorldObject()
+      : DetElementObject(), lcdd(0), 
+      conditionsLoader(0), conditionsManager(0), alignmentsLoader(0), alignmentsManager(0)
+      {
+      }
 
   } /* End namespace Geometry      */
 } /* End namespace DD4hep        */

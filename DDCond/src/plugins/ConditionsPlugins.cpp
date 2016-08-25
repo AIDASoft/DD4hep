@@ -27,13 +27,8 @@
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
-using Geometry::LCDD;
-using Geometry::Position;
-using Geometry::DetElement;
 
 namespace {
-  using namespace DD4hep;
-  using namespace DD4hep::Conditions;
 
   int ddcond_install_cond_mgr (LCDD& lcdd, int /* argc */, char** /* argv */)  {
     Handle<ConditionsManagerObject> mgr(lcdd.extension<ConditionsManagerObject>(false));

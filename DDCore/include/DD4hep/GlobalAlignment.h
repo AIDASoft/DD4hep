@@ -1,4 +1,4 @@
-// $Id:$
+// $Id$
 //==========================================================================
 //  AIDA Detector description implementation for LCD
 //--------------------------------------------------------------------------
@@ -11,22 +11,20 @@
 // Author     : M.Frank
 //
 //==========================================================================
-#ifndef DD4HEP_GEOMETRY_ALIGNMENT_H
-#define DD4HEP_GEOMETRY_ALIGNMENT_H
+#ifndef DD4HEP_ALIGNMENT_GLOBALALIGNMENT_H
+#define DD4HEP_ALIGNMENT_GLOBALALIGNMENT_H
 
 // Framework include files
 #include "DD4hep/Objects.h"
 #include "DD4hep/Volumes.h"
+#include "DD4hep/Alignments.h"
 #include "TGeoPhysicalNode.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-
-    // Forward declarations
-    class DetElement;
+  namespace Alignments {
 
     /// Main handle class to hold a TGeo alignment object of type TGeoPhysicalNode
     /**
@@ -38,24 +36,24 @@ namespace DD4hep {
      *  \ingroup DD4HEP_GEOMETRY
      *  \ingroup DD4HEP_ALIGN
      */
-    class Alignment: public Handle<TGeoPhysicalNode> {
+    class GlobalAlignment: public Handle<TGeoPhysicalNode> {
     public:
       /// Default constructor
-      Alignment();
+      GlobalAlignment();
       /// Default constructor
-      Alignment(TGeoPhysicalNode* p)
+      GlobalAlignment(TGeoPhysicalNode* p)
         : Handle<TGeoPhysicalNode>(p)  {
       }
       /// Copy constructor
-      Alignment(const Alignment& c);
+      GlobalAlignment(const GlobalAlignment& c);
       /// Constructor to be used when reading the already parsed object
-      template <typename Q> Alignment(const Handle<Q>& e)
+      template <typename Q> GlobalAlignment(const Handle<Q>& e)
         : Handle<TGeoPhysicalNode>(e) {
       }
       /// Initializing constructor
-      Alignment(const std::string& path);
+      GlobalAlignment(const std::string& path);
       /// Assignment operator
-      Alignment& operator=(const Alignment& c);
+      GlobalAlignment& operator=(const GlobalAlignment& c);
       /// Number of nodes in this branch (=depth of the placement hierarchy from the top level volume)
       int numNodes() const;
       /// Access the placement of this node
@@ -88,6 +86,6 @@ namespace DD4hep {
 
     };
 
-  } /* End namespace Geometry               */
-} /* End namespace DD4hep                   */
-#endif    /* DD4HEP_GEOMETRY_ALIGNMENT_H    */
+  } /* End namespace Alignments               */
+} /* End namespace DD4hep                     */
+#endif    /* DD4HEP_ALIGNMENT_GLOBALALIGNMENT_H      */

@@ -24,7 +24,7 @@
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  namespace Alignments {
 
     /// Alignment Stack object definition
     /**

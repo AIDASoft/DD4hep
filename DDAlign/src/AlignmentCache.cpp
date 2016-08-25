@@ -26,8 +26,8 @@
 
 using namespace std;
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
-using namespace DD4hep::Geometry::DDAlign_standard_operations;
+using namespace DD4hep::Alignments;
+using namespace DD4hep::Alignments::DDAlign_standard_operations;
 typedef AlignmentStack::StackEntry Entry;
 
 DetElement _detector(DetElement child)   {
@@ -74,7 +74,7 @@ int AlignmentCache::release()   {
 }
 
 /// Add a new entry to the cache. The key is the placement path
-bool AlignmentCache::insert(Alignment alignment)  {
+bool AlignmentCache::insert(GlobalAlignment alignment)  {
   TGeoPhysicalNode* pn = alignment.ptr();
   unsigned int index = hash32(pn->GetName()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
@@ -106,33 +106,33 @@ AlignmentCache* AlignmentCache::section(const string& path_name) const   {
 }
 
 /// Retrieve an alignment entry by its placement path
-Alignment AlignmentCache::get(const string& path_name) const   {
+GlobalAlignment AlignmentCache::get(const string& path_name) const   {
   size_t idx, idq;
   unsigned int index = hash32(path_name.c_str()+m_sdPathLen);
   Cache::const_iterator i = m_cache.find(index);
   if ( i != m_cache.end() )  {
-    return Alignment((*i).second);
+    return GlobalAlignment((*i).second);
   }
   else if ( m_detectors.empty() )  {
-    return Alignment(0);
+    return GlobalAlignment(0);
   }
   else if ( path_name[0] != '/' )   {
     return get(m_lcdd.world().placementPath()+'/'+path_name);
   }
   else if ( (idx=path_name.find('/',1)) == string::npos )  {
     // Escape: World volume and not found in cache --> not present
-    return Alignment(0);
+    return GlobalAlignment(0);
   }
   if ( (idq=path_name.find('/',idx+1)) != string::npos ) --idq;
   string path = path_name.substr(idx+1,idq-idx);
   SubdetectorAlignments::const_iterator j = m_detectors.find(path);
   if ( j != m_detectors.end() ) return (*j).second->get(path_name);
-  return Alignment(0);
+  return GlobalAlignment(0);
 }
 
 /// Return all entries matching a given path.
-vector<Alignment> AlignmentCache::matches(const string& match, bool exclude_exact) const   {
-  vector<Alignment> result;
+vector<GlobalAlignment> AlignmentCache::matches(const string& match, bool exclude_exact) const   {
+  vector<GlobalAlignment> result;
   AlignmentCache* c = section(match);
   if ( c )  {
     size_t len = match.length();
@@ -142,7 +142,7 @@ vector<Alignment> AlignmentCache::matches(const string& match, bool exclude_exac
       const char* n = v.second->GetName();
       if ( 0 == ::strncmp(n,match.c_str(),len) )   {
         if ( exclude_exact && len == ::strlen(n) ) continue;
-        result.push_back(Alignment(v.second));
+        result.push_back(GlobalAlignment(v.second));
       }
     }
   }

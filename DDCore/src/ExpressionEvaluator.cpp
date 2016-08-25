@@ -69,5 +69,17 @@ namespace DD4hep {
     }
     return *e;
   }
+
+  /// Access to G4 evaluator. Note: Uses cgs units!
+  XmlTools::Evaluator& cgsEvaluator()   {
+    static XmlTools::Evaluator* e = 0;
+    if ( !e )   {
+      static XmlTools::Evaluator ev;
+      _init(ev);
+      _cgsUnits(ev);
+      e = &ev;
+    }
+    return *e;
+  }
 }
 

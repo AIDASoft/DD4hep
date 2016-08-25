@@ -13,20 +13,28 @@
 //==========================================================================
 
 // Framework include files
-#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/World.h"
+#include "DD4hep/Printout.h"
+#include "DD4hep/objects/DetectorInterna.h"
 
-using std::string;
 using namespace DD4hep::Geometry;
 
 /// Access the conditions loading
-World::Condition World::getCondition(Condition::key_type key, const Condition::iov_type& iov)  const  {
-  return access()->getCondition(key, iov);
+World::ConditionsLoader& World::conditionsLoader() const   {
+  ConditionsLoader* loader = access()->conditionsLoader;
+  if ( !loader )   {
+    except("Conditions","+++ No ConditionsLoader registered to this World instance!");
+  }
+  return *loader;
 }
 
-/// Access the conditions loading
-World::Condition World::getCondition(Condition::key_type key, const UserPool& pool)  const  {
-  return access()->getCondition(key, pool);
+/// Access to the alignment loading
+World::AlignmentsLoader& World::alignmentsLoader() const   {
+  AlignmentsLoader* loader = access()->alignmentsLoader;
+  if ( !loader )  {
+    except("Alignments","+++ No AlignmentsLoader registered to this World instance!");
+  }
+  return *loader;
 }
 
 /// Access the detector descrion tree

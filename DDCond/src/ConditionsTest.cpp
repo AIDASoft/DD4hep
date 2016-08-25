@@ -65,7 +65,7 @@ namespace DD4hep {
       template <typename T> void __print_bound_container(Condition c, const char*)   {
         const T& v = access_val<T>(c);
         printout(INFO,"Cond_Value","  Bound value  %s : size:%d = %s Type: %s Ptr:%016X",
-                 c.name().c_str(), int(v.size()), c.block().str().c_str(),
+                 c.name().c_str(), int(v.size()), c.data().str().c_str(),
                  typeName(c.typeInfo()).c_str(), (void*)&v);
       }
 

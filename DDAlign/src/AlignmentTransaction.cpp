@@ -19,15 +19,15 @@
 #include "DDAlign/AlignmentTransaction.h"
 
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace DD4hep::Alignments;
 
 /// Default constructor
 AlignmentTransaction::AlignmentTransaction(LCDD& l, const XML::Handle_t& e) : lcdd(l) {
-  flag = e.hasChild(_U(close_transaction));
+  flag = e.hasChild(_ALU(close_transaction));
   /// First check if a transaction is to be opened
-  m_cache = lcdd.extension<Geometry::AlignmentCache>();
+  m_cache = lcdd.extension<Alignments::AlignmentCache>();
   m_cache->addRef();
-  if ( e.hasChild(_U(open_transaction)) )  {
+  if ( e.hasChild(_ALU(open_transaction)) )  {
     m_cache->openTransaction();
   }
 }
@@ -35,7 +35,7 @@ AlignmentTransaction::AlignmentTransaction(LCDD& l, const XML::Handle_t& e) : lc
 AlignmentTransaction::~AlignmentTransaction()   {
   /// Last check if a transaction is to be closed
   if ( flag ) {
-    lcdd.extension<Geometry::AlignmentCache>()->closeTransaction();
+    lcdd.extension<Alignments::AlignmentCache>()->closeTransaction();
   }
   m_cache->release();
 }

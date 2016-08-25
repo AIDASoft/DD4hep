@@ -15,5 +15,7 @@ dd4hep_package(    DDDB
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDDB)
 
-#---DDDB library --------------------------------------------------------------
+#---DDDB plugin library -------------------------------------------------------
 dd4hep_add_plugin ( DDDB SOURCES src/*.cpp )
+#---Package installation procedure(s) -----------------------------------------
+install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)

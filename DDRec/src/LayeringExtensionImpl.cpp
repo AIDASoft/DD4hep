@@ -159,7 +159,7 @@ double LayeringExtensionImpl::sensorInteractionLength(int layerIndex) const {
 }
 
 /// Stores the layer information for the given layer index
-void LayeringExtensionImpl::setLayer(int layerIndex, Geometry::DetElement layer_elt, const Geometry::Position& normal) {
+void LayeringExtensionImpl::setLayer(int layerIndex, Geometry::DetElement layer_elt, const Position& normal) {
 	LayerAttributes& layerAttributes = _layerMap[layerIndex];
 	layerAttributes.layer = layer_elt;
 	layerAttributes.normal = normal.Unit();

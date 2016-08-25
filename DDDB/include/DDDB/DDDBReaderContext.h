@@ -46,10 +46,10 @@ namespace DD4hep {
       /// Copy constructor
       DDDBReaderContext(const DDDBReaderContext& c) 
         : XML::UriReader::UserContext(c), 
-	event_time(c.event_time),
-	valid_since(c.valid_since),
-	valid_until(c.valid_until),
-	channel(c.channel) {}
+          event_time(c.event_time),
+          valid_since(c.valid_since),
+          valid_until(c.valid_until),
+          channel(c.channel) {}
     };
   }    /* End namespace DDDB              */
 }      /* End namespace DD4hep            */

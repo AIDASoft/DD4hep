@@ -58,7 +58,7 @@ namespace DD4hep  {
 
 using namespace std;
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace DD4hep::Alignments;
 
 /** Convert rotation objects
  *
@@ -183,13 +183,13 @@ typedef AlignmentStack::StackEntry StackEntry;
 template <> void Converter<volume>::operator()(xml_h e) const {
   pair<bool,Transform3D> trafo;
   pair<DetElement,string>* elt = (pair<DetElement,string>*)param;
-  string subpath   = e.attr<string>(_U(path));
-  bool   reset     = e.hasAttr(_U(reset)) ? e.attr<bool>(_U(reset)) : true;
-  bool   reset_dau = e.hasAttr(_U(reset_children)) ? e.attr<bool>(_U(reset_children)) : true;
-  bool   check     = e.hasAttr(_U(check_overlaps));
-  bool   check_val = check ? e.attr<bool>(_U(check_overlaps)) : false;
-  bool   overlap   = e.hasAttr(_U(overlap));
-  double ovl       = overlap ? e.attr<double>(_U(overlap)) : 0.001;
+  string subpath   = e.attr<string>(_ALU(path));
+  bool   reset     = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : true;
+  bool   reset_dau = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : true;
+  bool   check     = e.hasAttr(_ALU(check_overlaps));
+  bool   check_val = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
+  bool   overlap   = e.hasAttr(_ALU(overlap));
+  double ovl       = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
   string eltPlacement  = elt->first.placementPath();
   string placementPath = subpath[0]=='/' ? subpath : eltPlacement + "/" + subpath;
 
@@ -229,13 +229,13 @@ template <> void Converter<volume>::operator()(xml_h e) const {
  */
 template <> void Converter<detelement>::operator()(xml_h e) const {
   DetElement det   = param ? *(DetElement*)param : DetElement();
-  string path      = e.attr<string>(_U(path));
-  bool   check     = e.hasAttr(_U(check_overlaps));
-  bool   check_val = check ? e.attr<bool>(_U(check_overlaps)) : false;
-  bool   reset     = e.hasAttr(_U(reset)) ? e.attr<bool>(_U(reset)) : false;
-  bool   reset_dau = e.hasAttr(_U(reset_children)) ? e.attr<bool>(_U(reset_children)) : false;
-  bool   overlap   = e.hasAttr(_U(overlap));
-  double ovl       = overlap ? e.attr<double>(_U(overlap)) : 0.001;
+  string path      = e.attr<string>(_ALU(path));
+  bool   check     = e.hasAttr(_ALU(check_overlaps));
+  bool   check_val = check ? e.attr<bool>(_ALU(check_overlaps)) : false;
+  bool   reset     = e.hasAttr(_ALU(reset)) ? e.attr<bool>(_ALU(reset)) : false;
+  bool   reset_dau = e.hasAttr(_ALU(reset_children)) ? e.attr<bool>(_ALU(reset_children)) : false;
+  bool   overlap   = e.hasAttr(_ALU(overlap));
+  double ovl       = overlap ? e.attr<double>(_ALU(overlap)) : 0.001;
   DetElement elt   = Geometry::DetectorTools::findDaughterElement(det,path);
   string placementPath = elt.isValid() ? elt.placementPath() : string("-----");
 
@@ -268,7 +268,7 @@ template <> void Converter<detelement>::operator()(xml_h e) const {
 
   pair<DetElement,string> vol_param(elt,"");
   xml_coll_t(e,_U(volume)).for_each(Converter<volume>(lcdd,&vol_param));
-  xml_coll_t(e,_U(detelement)).for_each(Converter<detelement>(lcdd,&elt));
+  xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,&elt));
   xml_coll_t(e,_U(include)).for_each(Converter<include_file>(lcdd,&elt));
 }
 
@@ -292,7 +292,7 @@ template <> void Converter<include_file>::operator()(xml_h element) const {
   else if ( tag == "detelement" )
     Converter<detelement>(lcdd,param)(node);
   else if ( tag == "subdetectors" || tag == "detelements" )
-    xml_coll_t(node,_U(detelements)).for_each(Converter<detelement>(lcdd,param));
+    xml_coll_t(node,_ALU(detelements)).for_each(Converter<detelement>(lcdd,param));
   else
     throw runtime_error("Undefined tag name in XML structure:"+tag+" XML parsing abandoned.");
 }
@@ -314,9 +314,9 @@ template <> void Converter<alignment>::operator()(xml_h e)  const  {
 
   /// Now we process all allowed elements within the alignment tag:
   /// <detelement/>, <detelements/>, <subdetectors/> and <include/>
-  xml_coll_t(e,_U(detelement)).for_each(Converter<detelement>(lcdd,&top));
-  xml_coll_t(e,_U(detelements)).for_each(_U(detelement),Converter<detelement>(lcdd,&top));
-  xml_coll_t(e,_U(subdetectors)).for_each(_U(detelement),Converter<detelement>(lcdd,&top));
+  xml_coll_t(e,_ALU(detelement)).for_each(Converter<detelement>(lcdd,&top));
+  xml_coll_t(e,_ALU(detelements)).for_each(_ALU(detelement),Converter<detelement>(lcdd,&top));
+  xml_coll_t(e,_ALU(subdetectors)).for_each(_ALU(detelement),Converter<detelement>(lcdd,&top));
   xml_coll_t(e,_U(include)).for_each(Converter<include_file>(lcdd,&top));
 }
 

@@ -22,6 +22,8 @@
 
 // Framework includes
 #include "XML/UriReader.h"
+#include "DDDB/DDDBReaderContext.h"
+
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -36,12 +38,12 @@ namespace DD4hep {
      *  \version  1.0
      *  \ingroup DD4HEP_XML
      */
-    class DDDBFileReader : public DD4hep::XML::UriReader   {
+    class DDDBReader : public DD4hep::XML::UriReader   {
     public:
       /// Standard constructor
-      DDDBFileReader(const std::string& dir="") : m_directory(dir) {}
+      DDDBReader(const std::string& dir="");
       /// Default destructor
-      virtual ~DDDBFileReader()  {}
+      virtual ~DDDBReader()  {}
       /// Set data directory
       void setDirectory(const std::string& dir)  { m_directory = dir;   }
       /// Access data directory
@@ -50,14 +52,22 @@ namespace DD4hep {
       void setMatch(const std::string& dir)      { m_match = dir;   }
       /// Access data match
       const std::string& match() const           { return m_match;  }
+      /// Create time from ingredients
+      static long long int makeTime(int year, int month, int day, int hour=0, int minutes=0, int seconds=0); 
+      
+      /// Access to local context
+      virtual UserContext* context()    {  return &m_context;  }
+      /// Resolve a given URI to a string containing the data
+      virtual bool load(const std::string& system_id, std::string& buffer);
       /// Resolve a given URI to a string containing the data
       virtual bool load(const std::string& system_id, UserContext* ctxt, std::string& buffer);
       /// Read raw XML object from the database / file
       virtual int getObject(const std::string& system_id, UserContext* ctxt, std::string& data);
 
    protected:
-      std::string m_directory;
-      std::string m_match;
+      std::string       m_directory;
+      std::string       m_match;
+      DDDBReaderContext m_context;
     };
   }    /* End namespace DDDB            */
 }      /* End namespace DD4hep          */

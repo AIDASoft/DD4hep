@@ -15,18 +15,15 @@
 #define DD4HEP_ALIGNMENT_ALIGNMENTOPERATORS_H
 
 // Framework include files
-#include "DD4hep/Alignment.h"
+#include "DD4hep/Alignments.h"
+#include "DD4hep/GlobalAlignment.h"
 #include "DDAlign/AlignmentCache.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
-
-    /// Forward declarations
-    class LCDD;
-
+  namespace Alignments {
 
     /// Base class for alignment functors
     /**

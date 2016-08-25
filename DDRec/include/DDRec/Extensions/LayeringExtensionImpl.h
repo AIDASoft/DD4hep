@@ -88,14 +88,14 @@ public:
 	virtual double sensorInteractionLength(int layerIndex) const;
 
 	/// Stores the layer information for the given layer index
-	void setLayer(int layerIndex, Geometry::DetElement layer, const Geometry::Position& normal);
+	void setLayer(int layerIndex, Geometry::DetElement layer, const Position& normal);
 
 protected:
 	/// Helper class to store layer attributes
 	struct LayerAttributes {
 		LayerAttributes();
 		Geometry::DetElement layer;
-		Geometry::Position normal;
+		Position normal;
 		std::vector<Geometry::DetElement> sensors;
 		std::vector<Geometry::DetElement> absorbers;
 		double thickness;

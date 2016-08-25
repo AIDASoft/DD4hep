@@ -23,6 +23,7 @@
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBConversion.h"
+#include "DD4hep/Alignments.h"
 
 // C/C++ include files
 #include "boost/filesystem/path.hpp"
@@ -38,12 +39,12 @@ namespace DD4hep {
   namespace {
 
     static int preserv_level = 0;
-    using Conditions::BlockData;
     using Conditions::Condition;
     using Conditions::AbstractMap;
-    using Conditions::AlignmentDelta;
 
+    typedef Alignments::Delta   AlignmentDelta;
     typedef AbstractMap::Params ConditionParams;
+
     struct LogVolRef {};
     struct ElementRef  {};
     struct MaterialRef  {};
@@ -98,39 +99,39 @@ namespace DD4hep {
        */
       class Locals  {
       public:
-	string obj_path;
-	Document* xml_doc;
-	Locals() : obj_path(), xml_doc(0) {}
-	Locals(const Locals& c) : obj_path(c.obj_path), xml_doc(c.xml_doc) {}
-	Locals& operator=(const Locals& c)  {
-	  obj_path = c.obj_path;
-	  xml_doc  = c.xml_doc;
-	  return *this;
-	}
+        string obj_path;
+        Document* xml_doc;
+        Locals() : obj_path(), xml_doc(0) {}
+        Locals(const Locals& c) : obj_path(c.obj_path), xml_doc(c.xml_doc) {}
+        Locals& operator=(const Locals& c)  {
+          obj_path = c.obj_path;
+          xml_doc  = c.xml_doc;
+          return *this;
+        }
       };
       /// Helper class to preserve local processing environment
       /**   \ingroup DD4HEP_DDDB
        */
       class PreservedLocals : public Locals {
       public:
-	Context* context;
-	PreservedLocals(Context* c) : Locals(c->locals), context(c) {
+        Context* context;
+        PreservedLocals(Context* c) : Locals(c->locals), context(c) {
 #ifdef __DEBUG_LOCALS
-	  if ( xml_doc )
-	    printout(INFO,"Locals","PUSH[%d]: %s [%s]", preserv_level++, obj_path.c_str(), xml_doc->id.c_str());
-	  else
-	    printout(INFO,"Locals","PUSH[%d]: %s ", preserv_level++, obj_path.c_str());
+          if ( xml_doc )
+            printout(INFO,"Locals","PUSH[%d]: %s [%s]", preserv_level++, obj_path.c_str(), xml_doc->id.c_str());
+          else
+            printout(INFO,"Locals","PUSH[%d]: %s ", preserv_level++, obj_path.c_str());
 #endif
-	}
-	~PreservedLocals()           {
+        }
+        ~PreservedLocals()           {
 #ifdef __DEBUG_LOCALS
-	  if ( xml_doc )
-	    printout(INFO,"Locals","POP [%d]: %s [%s]", --preserv_level, obj_path.c_str(), xml_doc->id.c_str());
-	  else
-	    printout(INFO,"Locals","POP [%d]: %s", --preserv_level, obj_path.c_str());
+          if ( xml_doc )
+            printout(INFO,"Locals","POP [%d]: %s [%s]", --preserv_level, obj_path.c_str(), xml_doc->id.c_str());
+          else
+            printout(INFO,"Locals","POP [%d]: %s", --preserv_level, obj_path.c_str());
 #endif
-	  context->locals = *this; 
-	}
+          context->locals = *this; 
+        }
       };
 
     public:
@@ -156,22 +157,22 @@ namespace DD4hep {
 
       /// Default constructor
       Context(lcdd_t& l) 
-	: lcdd(l), resolver(0), geo(0),
-	  print_xml(false),
-	  print_docs(false),
-	  print_materials(false), 
-	  print_logvol(false), 
-	  print_shapes(false), 
-	  print_physvol(false), 
-	  print_params(false), 
-	  print_detelem(false),
-	  print_detelem_ref(false), 
-	  print_detelem_xml(false),
-	  print_condition(false), 
-	  print_condition_ref(false), 
-	  print_catalog(false),
-	  print_catalog_ref(false),
-	  print_tabprop(false)
+        : lcdd(l), resolver(0), geo(0),
+          print_xml(false),
+          print_docs(false),
+          print_materials(false), 
+          print_logvol(false), 
+          print_shapes(false), 
+          print_physvol(false), 
+          print_params(false), 
+          print_detelem(false),
+          print_detelem_ref(false), 
+          print_detelem_xml(false),
+          print_condition(false), 
+          print_condition_ref(false), 
+          print_catalog(false),
+          print_catalog_ref(false),
+          print_tabprop(false)
       {     }
       /// Default destructor
       ~Context()  {
@@ -315,14 +316,14 @@ namespace DD4hep {
     xml_h find_local_element(xml_elt_t element, const string& ref, const xml_tag_t& tag)  {
       size_t hash = ref.find("#");
       if ( hash == 0 )  {
-	string name = ref.substr(1);
-	xml_h  root = element.document().root();
-	for(xml_coll_t coll(root,tag); coll; ++coll )  {
-	  string entry = coll.attr<string>(_U(name));
-	  if ( entry == name )  {
-	    return coll;
-	  }
-	}
+        string name = ref.substr(1);
+        xml_h  root = element.document().root();
+        for(xml_coll_t coll(root,tag); coll; ++coll )  {
+          string entry = coll.attr<string>(_U(name));
+          if ( entry == name )  {
+            return coll;
+          }
+        }
       }
       return xml_h(0);
     }
@@ -368,10 +369,10 @@ namespace DD4hep {
 
     template <typename ACTION=dddb>
     void load_dddb_entity(Context*        context,
-			  Catalog*        catalog,
-			  xml_h           element,
-			  const string&   ref,
-			  bool            print=false);
+                          Catalog*        catalog,
+                          xml_h           element,
+                          const string&   ref,
+                          bool            print=false);
 
     /// Helper to locate objects in a map using string identifiers
     template <typename Q> bool _find(const string& id, const Q& container)  {
@@ -453,110 +454,110 @@ namespace DD4hep {
     }
 
     template<typename KEY, typename VAL>
-    static void insert_map_item(const KEY& k, const string& val, BlockData& block)  {
+    static void insert_map_item(const KEY& k, const string& val, OpaqueDataBlock& block)  {
       typedef std::map<KEY,VAL> map_t;
       map_t& m = block.get<map_t>();
       VAL v;
       if ( !BasicGrammar::instance<VAL>().fromString(&v, val) )  {
-	except("Condition::map","++ Failed to convert conditions map entry.");
+        except("Condition::map","++ Failed to convert conditions map entry.");
       }
       m.insert(make_pair(k,v));
     }
 
     template<typename KEY> 
     static void insert_map_key(const string& key_val, const string& val_type,
-			       const string& val, BlockData& block)
+                               const string& val, OpaqueDataBlock& block)
     {
       KEY key;
       BasicGrammar::instance<KEY>().fromString(&key, key_val);
       if ( val_type.substr(0,5) == "short" )
-	insert_map_item<KEY,short>(key,val,block);
+        insert_map_item<KEY,short>(key,val,block);
       else if ( val_type.substr(0,3) == "int" )
-	insert_map_item<KEY,int>(key,val,block);
+        insert_map_item<KEY,int>(key,val,block);
       else if ( val_type.substr(0,4) == "long" )
-	insert_map_item<KEY,long>(key,val,block);
+        insert_map_item<KEY,long>(key,val,block);
       else if ( val_type.substr(0,5) == "float" )
-	insert_map_item<KEY,float>(key,val,block);
+        insert_map_item<KEY,float>(key,val,block);
       else if ( val_type.substr(0,6) == "double" )
-	insert_map_item<KEY,double>(key,val,block);
+        insert_map_item<KEY,double>(key,val,block);
       else if ( val_type.substr(0,6) == "string" )
-	insert_map_item<KEY,string>(key,val,block);
+        insert_map_item<KEY,string>(key,val,block);
       else if ( val_type == "std::string" )
-	insert_map_item<KEY,string>(key,val,block);
+        insert_map_item<KEY,string>(key,val,block);
       else {
-	printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",
-		 val_type.c_str(),val.c_str());
-	insert_map_item<KEY,string>(key,val,block);
+        printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",
+                 val_type.c_str(),val.c_str());
+        insert_map_item<KEY,string>(key,val,block);
       }
     }
 
     template<typename KEY> 
-    static void bind_map(const string& val_type, BlockData& block)   {
+    static void bind_map(const string& val_type, OpaqueDataBlock& block)   {
       if ( val_type.substr(0,5) == "short" )
-	block.bind< map<KEY,short> >();
+        block.bind< map<KEY,short> >();
       else if ( val_type.substr(0,3) == "int" )
-	block.bind< map<KEY,int> >();
+        block.bind< map<KEY,int> >();
       else if ( val_type.substr(0,4) == "long" )
-	block.bind< map<KEY,long> >();
+        block.bind< map<KEY,long> >();
       else if ( val_type.substr(0,5) == "float" )
-	block.bind< map<KEY,float> >();
+        block.bind< map<KEY,float> >();
       else if ( val_type.substr(0,6) == "double" )
-	block.bind< map<KEY,double> >();
+        block.bind< map<KEY,double> >();
       else if ( val_type.substr(0,6) == "string" )
-	block.bind< map<KEY,string> >();
+        block.bind< map<KEY,string> >();
       else if ( val_type == "std::string" )
-	block.bind< map<KEY,string> >();
+        block.bind< map<KEY,string> >();
       else {
-	block.bind< map<KEY,string> >();
+        block.bind< map<KEY,string> >();
       }
     }
 
-    static void extractMap(xml_h element, BlockData& block)  {
+    static void extractMap(xml_h element, OpaqueDataBlock& block)  {
       dddb_dim_t e = element;
       string n = e.nameStr();
       string key_type = e.attr<string>(_LBU(keytype));
       string val_type = e.attr<string>(_LBU(valuetype));
 
       if ( key_type.substr(0,5) == "short" )
-	bind_map<short>(val_type,block);
+        bind_map<short>(val_type,block);
       else if ( key_type.substr(0,3) == "int" )
-	bind_map<int>(val_type,block);
+        bind_map<int>(val_type,block);
       else if ( key_type.substr(0,4) == "long" )
-	bind_map<long>(val_type,block);
+        bind_map<long>(val_type,block);
       else if ( key_type.substr(0,5) == "float" )
-	bind_map<float>(val_type,block);
+        bind_map<float>(val_type,block);
       else if ( key_type.substr(0,6) == "double" )
-	bind_map<double>(val_type,block);
+        bind_map<double>(val_type,block);
       else if ( key_type.substr(0,6) == "string" )
-	bind_map<string>(val_type,block);
+        bind_map<string>(val_type,block);
       else if ( key_type == "std::string" )
-	bind_map<string>(val_type,block);
+        bind_map<string>(val_type,block);
       else {
-	printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-	bind_map<string>(val_type,block);
+        printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
+        bind_map<string>(val_type,block);
       }      
 
       for(xml_coll_t i(e,_LBU(item)); i; ++i)  {
-	string key = i.attr<string>(_LBU(key));
-	string val = i.attr<string>(_LBU(value));
-	if ( key_type.substr(0,5) == "short" )
-	  insert_map_key<short>(key,val_type,val,block);
-	else if ( key_type.substr(0,3) == "int" )
-	  insert_map_key<int>(key,val_type,val,block);
-	else if ( key_type.substr(0,4) == "long" )
-	  insert_map_key<long>(key,val_type,val,block);
-	else if ( key_type.substr(0,5) == "float" )
-	  insert_map_key<float>(key,val_type,val,block);
-	else if ( key_type.substr(0,6) == "double" )
-	  insert_map_key<double>(key,val_type,val,block);
-	else if ( key_type.substr(0,6) == "string" )
-	  insert_map_key<string>(key,val_type,val,block);
-	else if ( key_type == "std::string" )
-	  insert_map_key<string>(key,val_type,val,block);
-	else {
-	  printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
-	  insert_map_key<string>(key,val_type,val,block);
-	}      
+        string key = i.attr<string>(_LBU(key));
+        string val = i.attr<string>(_LBU(value));
+        if ( key_type.substr(0,5) == "short" )
+          insert_map_key<short>(key,val_type,val,block);
+        else if ( key_type.substr(0,3) == "int" )
+          insert_map_key<int>(key,val_type,val,block);
+        else if ( key_type.substr(0,4) == "long" )
+          insert_map_key<long>(key,val_type,val,block);
+        else if ( key_type.substr(0,5) == "float" )
+          insert_map_key<float>(key,val_type,val,block);
+        else if ( key_type.substr(0,6) == "double" )
+          insert_map_key<double>(key,val_type,val,block);
+        else if ( key_type.substr(0,6) == "string" )
+          insert_map_key<string>(key,val_type,val,block);
+        else if ( key_type == "std::string" )
+          insert_map_key<string>(key,val_type,val,block);
+        else {
+          printout(INFO,"Param","++ Unknown MAP-conditions key-type:%s",key_type.c_str());
+          insert_map_key<string>(key,val_type,val,block);
+        }      
       }
     }
 
@@ -565,35 +566,35 @@ namespace DD4hep {
       string          nam = element.attr<string>(_U(name));
       string          typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
       string         data = element.text();
-      pair<string,BlockData> block;
+      pair<string,OpaqueDataBlock> block;
       block.first = nam;
 
       if ( typ.substr(0,5) == "short" )
-	block.second.set<short>(data);
+        block.second.set<short>(data);
       else if ( typ.substr(0,3) == "int" )
-	block.second.set<int>(data);
+        block.second.set<int>(data);
       else if ( typ.substr(0,4) == "long" )
-	block.second.set<long>(data);
+        block.second.set<long>(data);
       else if ( typ.substr(0,5) == "float" )
-	block.second.set<float>(data);
+        block.second.set<float>(data);
       else if ( typ.substr(0,6) == "double" )
-	block.second.set<double>(data);
+        block.second.set<double>(data);
       else if ( typ.substr(0,6) == "string" )
-	block.second.set<string>(data);
+        block.second.set<string>(data);
       else if ( typ == "std::string" )
-	block.second.set<string>(data);
+        block.second.set<string>(data);
       else if ( typ == "Histo1D" )
-	block.second.set<string>(data);
+        block.second.set<string>(data);
       else if ( typ == "Histo2D" )
-	block.second.set<string>(data);
+        block.second.set<string>(data);
       else {
-	printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",typ.c_str(),data.c_str());
-	block.second.set<string>(data);
+        printout(INFO,"Param","++ Unknown conditions parameter type:%s data:%s",typ.c_str(),data.c_str());
+        block.second.set<string>(data);
       }
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )  {
-	printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
+        printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
       }
     }
 
@@ -602,70 +603,70 @@ namespace DD4hep {
       string          nam = element.attr<string>(_U(name));
       string          typ = element.hasAttr(_U(type)) ? element.attr<string>(_U(type)) : string("int");
       string         data = element.text();
-      pair<string,BlockData> block;
+      pair<string,OpaqueDataBlock> block;
       string d = "["+data+" ";
       size_t idx, idq;
 
       block.first = nam;
       for(idx = d.find_first_not_of(' ',1); idx != string::npos;)  {
-	if ( ::isspace(d[idx]) ) d[idx] = ' ';
-	idx = d.find_first_not_of(' ',++idx);
+        if ( ::isspace(d[idx]) ) d[idx] = ' ';
+        idx = d.find_first_not_of(' ',++idx);
       }
       for(idx = d.find_first_not_of(' ',1); idx != string::npos; ++idx)  {
-	if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
-	idq = d.find_first_of(' ',idx);
-	if ( idq != string::npos )  {
-	  idx = d.find_first_not_of(' ',idq);
-	  if ( idx == string::npos ) break;
-	  if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
-	  d[idq] = ',';
-	  continue;
-	}
-	break;
+        if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
+        idq = d.find_first_of(' ',idx);
+        if ( idq != string::npos )  {
+          idx = d.find_first_not_of(' ',idq);
+          if ( idx == string::npos ) break;
+          if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
+          d[idq] = ',';
+          continue;
+        }
+        break;
       }
       d[d.length()-1] = ']';
       if ( typ.substr(0,5) == "short" )
-	block.second.set<vector<short> >(d);
+        block.second.set<vector<short> >(d);
       else if ( typ.substr(0,3) == "int" )
-	block.second.set<vector<int> >(d);
+        block.second.set<vector<int> >(d);
       else if ( typ.substr(0,4) == "long" )
-	block.second.set<vector<long> >(d);
+        block.second.set<vector<long> >(d);
       else if ( typ.substr(0,5) == "float" )
-	block.second.set<vector<float> >(d);
+        block.second.set<vector<float> >(d);
       else if ( typ.substr(0,6) == "double" )
-	block.second.set<vector<double> >(d);
+        block.second.set<vector<double> >(d);
       else if ( typ.substr(0,6) == "string" )
-	block.second.set<vector<string> >(d);
+        block.second.set<vector<string> >(d);
       else if ( typ == "std::string" )
-	block.second.set<vector<string> >(d);
+        block.second.set<vector<string> >(d);
       else {
-	printout(INFO,"ParamVector","++ Unknown conditions parameter type:%s",typ.c_str());
-	block.second.set<vector<string> >(d);
+        printout(INFO,"ParamVector","++ Unknown conditions parameter type:%s",typ.c_str());
+        block.second.set<vector<string> >(d);
       }
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )  {
-	printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
+        printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",nam.c_str());
       }
     }
 
     /// Specialized conversion of <map/> conditions entities
     template <> void Conv<ConditionParamMap>::convert(xml_h element) const {
       string nam = element.attr<string>(_U(name));
-      pair<string,BlockData> block;
+      pair<string,OpaqueDataBlock> block;
       block.first = nam;
       extractMap(element,block.second);
 
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )
-	printout(INFO,"ParamMap","++ Failed to insert map-condition:%s",nam.c_str());
+        printout(INFO,"ParamMap","++ Failed to insert map-condition:%s",nam.c_str());
     }
 
     /// Specialized conversion of <specific/> conditions entities
     template <> void Conv<ConditionParamSpecific>::convert(xml_h element) const {
       string nam = element.parent().attr<string>(_U(name));
-      pair<string,BlockData> block;
+      pair<string,OpaqueDataBlock> block;
       stringstream str;
 
       XML::dump_tree(element, str);
@@ -675,7 +676,7 @@ namespace DD4hep {
       ConditionParams* par = _option<ConditionParams>();
       pair<ConditionParams::iterator,bool> res = par->insert(block);
       if ( !res.second )  {
-	printout(INFO,"ParamVector","++ Failed to insert condition entry:%s of type <specific/>",nam.c_str());
+        printout(INFO,"ParamVector","++ Failed to insert condition entry:%s of type <specific/>",nam.c_str());
       }
     }
 
@@ -688,33 +689,33 @@ namespace DD4hep {
       size_t idx, idq;
 
       for(idx = d.find_first_not_of(' ',1); idx != string::npos;)  {
-	if ( ::isspace(d[idx]) ) d[idx] = ' ';
-	idx = d.find_first_not_of(' ',++idx);
+        if ( ::isspace(d[idx]) ) d[idx] = ' ';
+        idx = d.find_first_not_of(' ',++idx);
       }
       for(idx = d.find_first_not_of(' ',1); idx != string::npos; ++idx)  {
-	if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
-	idq = d.find_first_of(' ',idx);
-	if ( idq != string::npos )  {
-	  idx = d.find_first_not_of(' ',idq);
-	  if ( idx == string::npos ) break;
-	  if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
-	  d[idq] = ',';
-	  continue;
-	}
-	break;
+        if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
+        idq = d.find_first_of(' ',idx);
+        if ( idq != string::npos )  {
+          idx = d.find_first_not_of(' ',idq);
+          if ( idx == string::npos ) break;
+          if ( d[idx] != ' ' && ::isspace(d[idx]) ) d[idx] = ' ';
+          d[idq] = ',';
+          continue;
+        }
+        break;
       }
       d[d.length()-1] = ')';
-      Geometry::Position pos;
-      const BasicGrammar& g = BasicGrammar::instance<Geometry::Position>();
+      Position pos;
+      const BasicGrammar& g = BasicGrammar::instance<Position>();
       if ( !g.fromString(&pos,d) ) g.invalidConversion(d, g.type());
       if ( nam == "dPosXYZ" )
-	a->position = pos;
+        a->translation = pos;
       else if ( nam == "dRotXYZ" )
-	a->rotation = AlignmentDelta::Rotation(pos.z(),pos.y(),pos.x());
+        a->rotation = RotationZYX(pos.z(),pos.y(),pos.x());
       else if ( nam == "pivotXYZ" )
-	a->pivot = pos;
+        a->pivot = pos;
       else
-	printout(ERROR,"AlignmentDelta","++ Unknown alignment conditions tag: %s",nam.c_str());	
+        printout(ERROR,"AlignmentDelta","++ Unknown alignment conditions tag: %s",nam.c_str());	
     }
 
     /// Specialized conversion of <condition/> entities
@@ -723,76 +724,76 @@ namespace DD4hep {
       string     name    = element.attr<string>(_U(name));
       string     id      = object_href(element,name);
       if ( !_find(id, context->geo->conditions) )  {
-	Catalog*   catalog = _option<Catalog>();
-	Document*  doc     = context->locals.xml_doc;
+        Catalog*   catalog = _option<Catalog>();
+        Document*  doc     = context->locals.xml_doc;
 
-	string     path    = object_path(context,name);
-	static int num_param=0, num_vector=0, num_map=0, num_spec=0, num_align=0;
+        string     path    = object_path(context,name);
+        static int num_param=0, num_vector=0, num_map=0, num_spec=0, num_align=0;
 
-	Condition cond(path,"DDDB");
-	cond->address  = id;
-	cond->value    = path; // doc->name;
-	cond->validity = "";
-	cond->hash     = Conditions::ConditionKey::hashCode(cond->value);
-	cond->setFlag(Condition::ACTIVE);
-	if ( element.hasAttr(_U(comment)) )  {
-	  cond->comment = element.attr<string>(_U(comment));
-	}
+        Condition cond(path,"DDDB");
+        cond->address  = id;
+        cond->value    = path; // doc->name;
+        cond->validity = "";
+        cond->hash     = Conditions::ConditionKey::hashCode(cond->value);
+        cond->setFlag(Condition::ACTIVE);
+        if ( element.hasAttr(_U(comment)) )  {
+          cond->comment = element.attr<string>(_U(comment));
+        }
 
-	AbstractMap& d = cond.bind<AbstractMap>();
-	d.clientData = doc->addRef();
-	d.classID = -1;
-	if ( element.hasAttr(_LBU(classID)) )  {
-	  d.classID = element.attr<int>(_LBU(classID));
-	}
-	if ( d.classID == AbstractMap::ALIGNMENT )   {
-	  pair<string,BlockData>  block;
-	  AlignmentDelta&      align = block.second.bind<AlignmentDelta>();
-	  Conv<AlignmentDelta> conv(lcdd,context,&align);
-	  block.first = name;
-	  xml_coll_t(element,_LBU(paramVector)).for_each(conv);
-	  pair<ConditionParams::iterator,bool> res = d.params.insert(block);
-	  if ( !res.second )  {
-	    printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",name.c_str());
-	  }
-	  ++num_align;
-	}
-	else   {
-	  Conv<ConditionParam>         object_cnv(lcdd,context,&d.params);
-	  xml_coll_t(element,_U(param)).for_each(object_cnv);
+        AbstractMap& d = cond.bind<AbstractMap>();
+        d.clientData = doc->addRef();
+        d.classID = -1;
+        if ( element.hasAttr(_LBU(classID)) )  {
+          d.classID = element.attr<int>(_LBU(classID));
+        }
+        if ( d.classID == AbstractMap::ALIGNMENT )   {
+          pair<string,OpaqueDataBlock>  block;
+          AlignmentDelta&      align = block.second.bind<AlignmentDelta>();
+          Conv<AlignmentDelta> conv(lcdd,context,&align);
+          block.first = name;
+          xml_coll_t(element,_LBU(paramVector)).for_each(conv);
+          pair<ConditionParams::iterator,bool> res = d.params.insert(block);
+          if ( !res.second )  {
+            printout(INFO,"ParamVector","++ Failed to insert condition parameter:%s",name.c_str());
+          }
+          ++num_align;
+        }
+        else   {
+          Conv<ConditionParam>         object_cnv(lcdd,context,&d.params);
+          xml_coll_t(element,_U(param)).for_each(object_cnv);
 
-	  Conv<ConditionParamVector>   vector_cnv(lcdd,context,&d.params);
-	  xml_coll_t(element,_LBU(paramVector)).for_each(vector_cnv);
+          Conv<ConditionParamVector>   vector_cnv(lcdd,context,&d.params);
+          xml_coll_t(element,_LBU(paramVector)).for_each(vector_cnv);
 
-	  Conv<ConditionParamMap>      map_cnv(lcdd,context,&d.params);
-	  xml_coll_t(element,_LBU(map)).for_each(map_cnv);
+          Conv<ConditionParamMap>      map_cnv(lcdd,context,&d.params);
+          xml_coll_t(element,_LBU(map)).for_each(map_cnv);
 
-	  Conv<ConditionParamSpecific> specific_cnv(lcdd,context,&d.params);
-	  xml_coll_t(element,_LBU(specific)).for_each(specific_cnv);
-	}
-	for(xml_coll_t iter(element,_U(star)); iter; ++iter)  {
-	  string tag = iter.tag();
-	  string nam = iter.hasAttr(_U(name)) ? iter.attr<string>(_U(name)) : string();
-	  if ( context->print_condition )  {
-	    printout(INFO,"ParamMap","++ Condition:%s -> %s",path.c_str(),nam.c_str());
-	  }
-	  if ( d.classID == AbstractMap::ALIGNMENT ) { continue; }
-	  if ( tag == "param"       ) { ++num_param;  continue; }
-	  if ( tag == "paramVector" ) { ++num_vector; continue; }
-	  if ( tag == "map"         ) { ++num_map;    continue; }
-	  if ( tag == "specific"    ) { ++num_spec;   continue; }
-	  printout(INFO,"Condition","++ Unknown conditions tag:%s obj:%s id:%s",
-		   tag.c_str(), path.c_str(), id.c_str());
-	}
-	context->collect(id, cond);
-	if ( catalog )  {
-	  context->collectPath(path, cond);
-	}
-	num_param += int(d.params.size());
-	if ( (context->geo->conditions.size()%500) == 0 )  {
-	  printout(INFO,"Condition","++ Processed %d conditions....last:%s Number of Params: %d Vec:%d Map:%d Spec:%d Align:%d", 
-		   int(context->geo->conditions.size()), path.c_str(), num_param, num_vector, num_map, num_spec, num_align);
-	}
+          Conv<ConditionParamSpecific> specific_cnv(lcdd,context,&d.params);
+          xml_coll_t(element,_LBU(specific)).for_each(specific_cnv);
+        }
+        for(xml_coll_t iter(element,_U(star)); iter; ++iter)  {
+          string tag = iter.tag();
+          string nam = iter.hasAttr(_U(name)) ? iter.attr<string>(_U(name)) : string();
+          if ( context->print_condition )  {
+            printout(INFO,"ParamMap","++ Condition:%s -> %s",path.c_str(),nam.c_str());
+          }
+          if ( d.classID == AbstractMap::ALIGNMENT ) { continue; }
+          if ( tag == "param"       ) { ++num_param;  continue; }
+          if ( tag == "paramVector" ) { ++num_vector; continue; }
+          if ( tag == "map"         ) { ++num_map;    continue; }
+          if ( tag == "specific"    ) { ++num_spec;   continue; }
+          printout(INFO,"Condition","++ Unknown conditions tag:%s obj:%s id:%s",
+                   tag.c_str(), path.c_str(), id.c_str());
+        }
+        context->collect(id, cond);
+        if ( catalog )  {
+          context->collectPath(path, cond);
+        }
+        num_param += int(d.params.size());
+        if ( (context->geo->conditions.size()%500) == 0 )  {
+          printout(INFO,"Condition","++ Processed %d conditions....last:%s Number of Params: %d Vec:%d Map:%d Spec:%d Align:%d", 
+                   int(context->geo->conditions.size()), path.c_str(), num_param, num_vector, num_map, num_spec, num_align);
+        }
       }
     }
 
@@ -806,23 +807,23 @@ namespace DD4hep {
 
       xml_h target = find_local_element(element, href, _LBU(condition));
       if ( target )
-	Conv<Condition>(lcdd,context,catalog)(target);
+        Conv<Condition>(lcdd,context,catalog)(target);
       else
-	load_dddb_entity(context, catalog, element, href);
+        load_dddb_entity(context, catalog, element, href);
       dddb::Conditions::const_iterator i=context->geo->conditions.find(refid);
       if ( i == context->geo->conditions.end() )  {
-	printout(ERROR,"ConditionRef","++  MISSING ID: %s Failed to convert ref:%s cat:%s",
-		 refid.c_str(),path.c_str(), catalog ? catalog->path.c_str() : "???");
-	if ( context->print_condition_ref )  {
-	  print_ref("ConditionRef", context, element, href, "Path:----");
-	}
-	return;
+        printout(ERROR,"ConditionRef","++  MISSING ID: %s Failed to convert ref:%s cat:%s",
+                 refid.c_str(),path.c_str(), catalog ? catalog->path.c_str() : "???");
+        if ( context->print_condition_ref )  {
+          print_ref("ConditionRef", context, element, href, "Path:----");
+        }
+        return;
       }
       Condition cond((*i).second);
       path = object_path(context,cond->name);
       context->collectPath(path, cond);
       if ( context->print_condition_ref )  {
-	print_ref("ConditionRef", context, element, href, "Path:"+path);
+        print_ref("ConditionRef", context, element, href, "Path:"+path);
       }
     }
 
@@ -862,13 +863,13 @@ namespace DD4hep {
       string name = x_i.nameStr();
       string id = object_path(context,name);
       if ( !_find(id, context->geo->isotopes) )  {
-	Isotope* i = new Isotope();
-	i->name       = name;
-	i->A          = x_i.A(-1.0);
-	i->Z          = x_i.Z(-1.0);
-	i->density    = x_i.density(-1.0);
-	context->collect(id, i);
-	i->setDocument(context->locals.xml_doc);
+        Isotope* i = new Isotope();
+        i->name       = name;
+        i->A          = x_i.A(-1.0);
+        i->Z          = x_i.Z(-1.0);
+        i->density    = x_i.density(-1.0);
+        context->collect(id, i);
+        i->setDocument(context->locals.xml_doc);
       }
     }
 
@@ -881,7 +882,7 @@ namespace DD4hep {
       load_dddb_entity(context, catalog, element, href);
       dddb::Elements::const_iterator i=context->geo->elements.find(refid);
       if ( i == context->geo->elements.end() )  {
-	printout(ERROR,"ElementRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
+        printout(ERROR,"ElementRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
       }
       Element* e = (*i).second;
       string path = object_path(context,e->name);
@@ -895,31 +896,31 @@ namespace DD4hep {
       string       name = x_elem.nameStr();
       string         id = object_href(element, name);
       if ( !_find(id, context->geo->elements) )  {
-	Element* e = new Element();
-	dddb_dim_t atom = x_elem.child(_U(atom),false);
-	e->id         = id;
-	e->name       = name;
-	e->path       = object_path(context,name);
-	e->density    = x_elem.density(-1.0);
-	e->ionization = x_elem.I(-1.0);
-	e->symbol     = x_elem.symbol(e->name);
-	e->atom.A     = atom ? atom.attr<double>(_U(A)) : -1.0;
-	e->atom.Zeff  = atom ? atom.attr<double>(_U(Zeff)) : -1.0;
-	string st = x_elem.state();
-	if      ( st == "solid"  ) e->state = Element::SOLID;
-	else if ( st == "liquid" ) e->state = Element::LIQUID;
-	else if ( st == "gas"    ) e->state = Element::GAS;
-	else                       e->state = Element::UNKNOWN;
+        Element* e = new Element();
+        dddb_dim_t atom = x_elem.child(_U(atom),false);
+        e->id         = id;
+        e->name       = name;
+        e->path       = object_path(context,name);
+        e->density    = x_elem.density(-1.0);
+        e->ionization = x_elem.I(-1.0);
+        e->symbol     = x_elem.symbol(e->name);
+        e->atom.A     = atom ? atom.attr<double>(_U(A)) : -1.0;
+        e->atom.Zeff  = atom ? atom.attr<double>(_U(Zeff)) : -1.0;
+        string st = x_elem.state();
+        if      ( st == "solid"  ) e->state = Element::SOLID;
+        else if ( st == "liquid" ) e->state = Element::LIQUID;
+        else if ( st == "gas"    ) e->state = Element::GAS;
+        else                       e->state = Element::UNKNOWN;
 
-	for(xml_coll_t p(x_elem,_LBU(isotoperef)); p; ++p)   {
-	  dddb_dim_t isotope = p;
-	  double frac   = isotope.fractionmass(1.0);
-	  string iso_id = object_path(context,isotope.href());
-	  e->isotopes.push_back(make_pair(iso_id,frac));
-	}
-	context->collect(e->id, e);
-	context->collectPath(e->path, e);
-	e->setDocument(context->locals.xml_doc);
+        for(xml_coll_t p(x_elem,_LBU(isotoperef)); p; ++p)   {
+          dddb_dim_t isotope = p;
+          double frac   = isotope.fractionmass(1.0);
+          string iso_id = object_path(context,isotope.href());
+          e->isotopes.push_back(make_pair(iso_id,frac));
+        }
+        context->collect(e->id, e);
+        context->collectPath(e->path, e);
+        e->setDocument(context->locals.xml_doc);
       }
     }
 
@@ -943,12 +944,12 @@ namespace DD4hep {
       load_dddb_entity(context, catalog, element, href);
       dddb::Materials::const_iterator i=context->geo->materials.find(refid);
       if ( i == context->geo->materials.end() )  {
-	printout(ERROR,"MaterialRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
+        printout(ERROR,"MaterialRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
       }
       if ( catalog )  {
-	Material* m = (*i).second;
-	string path = object_path(context,m->name);
-	context->collectPath(path, m);
+        Material* m = (*i).second;
+        string path = object_path(context,m->name);
+        context->collectPath(path, m);
       }
     }
 
@@ -960,23 +961,23 @@ namespace DD4hep {
       string      name = x_mat.nameStr();
       string        id = object_href(element, name);
       if ( !_find(id, context->geo->materials) )  {
-	Material* m    = new Material();
-	m->name        = name;
-	m->id          = id;
-	m->path        = object_path(context,name);
-	m->density     = x_mat.density(-1.0);
-	m->pressure    = x_mat.pressure(-1.0);
-	m->temperature = x_mat.temperature(-1.0);
-	m->radlen      = x_mat.radlen(-1.0);
-	m->lambda      = x_mat.lambda(-1.0);
-	for(xml_coll_t p(element,_LBU(tabprops)); p; ++p)
-	  m->properties.push_back(p.attr<string>(_LBU(address)));
+        Material* m    = new Material();
+        m->name        = name;
+        m->id          = id;
+        m->path        = object_path(context,name);
+        m->density     = x_mat.density(-1.0);
+        m->pressure    = x_mat.pressure(-1.0);
+        m->temperature = x_mat.temperature(-1.0);
+        m->radlen      = x_mat.radlen(-1.0);
+        m->lambda      = x_mat.lambda(-1.0);
+        for(xml_coll_t p(element,_LBU(tabprops)); p; ++p)
+          m->properties.push_back(p.attr<string>(_LBU(address)));
 
-	xml_coll_t(element, _U(component)).for_each(Conv<MaterialComponent>(lcdd,context,m));
-	context->collect(m->id, m); // We collect materials by NAME!!!
-	context->collect(m->name, m);
-	m->setDocument(context->locals.xml_doc);
-	if ( catalog ) context->collectPath(m->path, m);
+        xml_coll_t(element, _U(component)).for_each(Conv<MaterialComponent>(lcdd,context,m));
+        context->collect(m->id, m); // We collect materials by NAME!!!
+        context->collect(m->name, m);
+        m->setDocument(context->locals.xml_doc);
+        if ( catalog ) context->collectPath(m->path, m);
       }
     }
 
@@ -1092,7 +1093,7 @@ namespace DD4hep {
       dddb_dim_t dim = element;
       ShapeConv<Shape>(lcdd,param)(element,s);
       if ( s->name == "Cut_out_right" )  {
-	s->type = to_type::type();
+        s->type = to_type::type();
       }
       s->type = to_type::type();
       s->s.trap.dz     = dim.sizeZ()/2e0;
@@ -1175,24 +1176,24 @@ namespace DD4hep {
       context->locals.obj_path = id;
       s->s.boolean.first = 0;
       for(xml_coll_t p(element,_U(star)); p; ++p)  {
-	if ( p.parent() == element ) { // Only next level is processed here
-	  if ( 0 == s->s.boolean.first )  {
-	    ShapeConv<BooleanOperation>(lcdd,context)(p,s->s.boolean.first);
-	    s->s.boolean.first->id = id + "/" + s->s.boolean.first->name;
-	    ++p;
-	  }
-	  BooleanOperation op;
-	  ShapeConv<BooleanOperation>(lcdd,context)(p,op.shape);
-	  if ( 0 == op.shape )  {
-	    // Error. What to do? 
-	    // Anyhow: ShapeConv<BooleanOperation> throws exception if the
-	    //         shape is unknown. We never get here.
-	  }
-	  op.shape->id = id + "/" + op.shape->name;
-	  ++p;
-	  extract_transformation(lcdd, param, p, op.trafo);
-	  s->boolean_ops.push_back(op);
-	}
+        if ( p.parent() == element ) { // Only next level is processed here
+          if ( 0 == s->s.boolean.first )  {
+            ShapeConv<BooleanOperation>(lcdd,context)(p,s->s.boolean.first);
+            s->s.boolean.first->id = id + "/" + s->s.boolean.first->name;
+            ++p;
+          }
+          BooleanOperation op;
+          ShapeConv<BooleanOperation>(lcdd,context)(p,op.shape);
+          if ( 0 == op.shape )  {
+            // Error. What to do? 
+            // Anyhow: ShapeConv<BooleanOperation> throws exception if the
+            //         shape is unknown. We never get here.
+          }
+          op.shape->id = id + "/" + op.shape->name;
+          ++p;
+          extract_transformation(lcdd, param, p, op.trafo);
+          s->boolean_ops.push_back(op);
+        }
       }
     }
 
@@ -1222,32 +1223,32 @@ namespace DD4hep {
 
       // Now convert all possible / supported shapes
       if ( tag == "box" )
-	ShapeConv<Box>(lcdd,context)(elt,s);
+        ShapeConv<Box>(lcdd,context)(elt,s);
       else if ( tag == "cons" )
-	ShapeConv<Cons>(lcdd,context)(elt,s);
+        ShapeConv<Cons>(lcdd,context)(elt,s);
       else if ( tag == "tubs" )
-	ShapeConv<Tubs>(lcdd,context)(elt,s);
+        ShapeConv<Tubs>(lcdd,context)(elt,s);
       else if ( tag == "trap" )
-	ShapeConv<Trap>(lcdd,context)(elt,s);
+        ShapeConv<Trap>(lcdd,context)(elt,s);
       else if ( tag == "polycone" )
-	ShapeConv<Polycone>(lcdd,context)(elt,s);
+        ShapeConv<Polycone>(lcdd,context)(elt,s);
       else if ( tag == "polygon" )
-	ShapeConv<Polygon>(lcdd,context)(elt,s);
+        ShapeConv<Polygon>(lcdd,context)(elt,s);
       else if ( tag == "trd" )
-	ShapeConv<TRD>(lcdd,context)(elt,s);
+        ShapeConv<TRD>(lcdd,context)(elt,s);
       else if ( tag == "eltu" )
-	ShapeConv<EllipticalTube>(lcdd,context)(elt,s);
+        ShapeConv<EllipticalTube>(lcdd,context)(elt,s);
       else if ( tag == "sphere" )
-	ShapeConv<Sphere>(lcdd,context)(elt,s);
+        ShapeConv<Sphere>(lcdd,context)(elt,s);
       else if ( tag == "union" )
-	ShapeConv<BooleanUnion>(lcdd,context)(elt,s);
+        ShapeConv<BooleanUnion>(lcdd,context)(elt,s);
       else if ( tag == "subtraction" )
-	ShapeConv<BooleanSubtraction>(lcdd,context)(elt,s);
+        ShapeConv<BooleanSubtraction>(lcdd,context)(elt,s);
       else if ( tag == "intersection" )
-	ShapeConv<BooleanIntersection>(lcdd,context)(elt,s);
+        ShapeConv<BooleanIntersection>(lcdd,context)(elt,s);
       else   {
-	XML::dump_tree(element.parent());
-	except("BooleanOperation","Unknown shape conversion requested:"+tag);
+        XML::dump_tree(element.parent());
+        except("BooleanOperation","Unknown shape conversion requested:"+tag);
       }
     }
 
@@ -1261,15 +1262,15 @@ namespace DD4hep {
       load_dddb_entity(context, catalog, element, href);
       dddb::Volumes::const_iterator i=context->geo->volumes.find(refid);
       if ( i == context->geo->volumes.end() )  {
-	string r = reference_href(element,href);
-	printout(ERROR,"LogVolRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
+        string r = reference_href(element,href);
+        printout(ERROR,"LogVolRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
       }
       LogVol* vol = (*i).second;
       catalog->logvolrefs[vol->id] = vol;
       string path = object_path(context,vol->name);
       context->collectPath(path, vol);
       if ( context->print_logvol )  {
-	print_ref("LogVolRef", context, element, href, "Path:"+path);
+        print_ref("LogVolRef", context, element, href, "Path:"+path);
       }
     }
 
@@ -1279,67 +1280,67 @@ namespace DD4hep {
       string   name    = element.attr<string>(_U(name));
       string   id      = object_href(element, name);
       if ( !_find(id, context->geo->volumes) )  {
-	Catalog* catalog = _option<Catalog>();
-	string   material;
-	LogVol* vol = new LogVol;
-	xml_h elt;
-	vol->name = name;
-	vol->path = object_path(context,name);
-	if ( element.hasAttr(_U(material)) )  {
-	  vol->material = element.attr<string>(_U(material));
-	}
-	Shape* s = 0;
-	// Now convert all possible / supported shapes
-	if ( (elt=element.child(_U(box),false)) )
-	  ShapeConv<Box>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(cons),false)) )
-	  ShapeConv<Cons>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(tubs),false)) )
-	  ShapeConv<Tubs>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(trap),false)) )
-	  ShapeConv<Trap>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(trd),false)) )
-	  ShapeConv<TRD>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(polycone),false)) )
-	  ShapeConv<Polycone>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(sphere),false)) )
-	  ShapeConv<Sphere>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(union),false)) )
-	  ShapeConv<BooleanUnion>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(subtraction),false)) )
-	  ShapeConv<BooleanSubtraction>(lcdd,context)(elt,s);
-	else if ( (elt=element.child(_U(intersection),false)) )
-	  ShapeConv<BooleanIntersection>(lcdd,context)(elt,s);
-	else  {
-	  ShapeConv<Assembly>(lcdd,context)(elt,s);
-	  // Dump element if not known and processed....
-	  for(xml_coll_t p(element,_U(star)); p; ++p)  {
-	    if ( p.parent() == element )  {
-	      string tag = p.tag();
-	      if ( tag == "physvol" ) continue;
-	      if ( tag == "paramphysvol" ) continue;
-	      if ( tag == "paramphysvol2D" ) continue;
-	      if ( tag == "paramphysvol3D" ) continue;
-	      printout(WARNING,"LogVol","++ Unknown and not processed tag found: %s",tag.c_str());
-	      XML::dump_tree(element);
-	      break;
-	    }
-	  }
-	}
-	// Now collect the information
-	vol->shape = id;
-	s->setDocument(context->locals.xml_doc);
-	vol->setDocument(context->locals.xml_doc);
-	context->collect(id, s);
-	context->collect(id, vol);
-	if ( catalog ) context->collectPath(vol->path, vol);
-	{
-	  Context::PreservedLocals locals(context);
-	  context->locals.obj_path = id;
-	  xml_coll_t(element, _U(physvol)).for_each(Conv<PhysVol>(lcdd,context,vol));
-	  xml_coll_t(element, _LBU(paramphysvol)).for_each(Conv<ParamPhysVol>(lcdd,context,vol));
-	  xml_coll_t(element, _LBU(paramphysvol2D)).for_each(Conv<ParamPhysVol2D>(lcdd,context,vol));
-	}
+        Catalog* catalog = _option<Catalog>();
+        string   material;
+        LogVol* vol = new LogVol;
+        xml_h elt;
+        vol->name = name;
+        vol->path = object_path(context,name);
+        if ( element.hasAttr(_U(material)) )  {
+          vol->material = element.attr<string>(_U(material));
+        }
+        Shape* s = 0;
+        // Now convert all possible / supported shapes
+        if ( (elt=element.child(_U(box),false)) )
+          ShapeConv<Box>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(cons),false)) )
+          ShapeConv<Cons>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(tubs),false)) )
+          ShapeConv<Tubs>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(trap),false)) )
+          ShapeConv<Trap>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(trd),false)) )
+          ShapeConv<TRD>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(polycone),false)) )
+          ShapeConv<Polycone>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(sphere),false)) )
+          ShapeConv<Sphere>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(union),false)) )
+          ShapeConv<BooleanUnion>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(subtraction),false)) )
+          ShapeConv<BooleanSubtraction>(lcdd,context)(elt,s);
+        else if ( (elt=element.child(_U(intersection),false)) )
+          ShapeConv<BooleanIntersection>(lcdd,context)(elt,s);
+        else  {
+          ShapeConv<Assembly>(lcdd,context)(elt,s);
+          // Dump element if not known and processed....
+          for(xml_coll_t p(element,_U(star)); p; ++p)  {
+            if ( p.parent() == element )  {
+              string tag = p.tag();
+              if ( tag == "physvol" ) continue;
+              if ( tag == "paramphysvol" ) continue;
+              if ( tag == "paramphysvol2D" ) continue;
+              if ( tag == "paramphysvol3D" ) continue;
+              printout(WARNING,"LogVol","++ Unknown and not processed tag found: %s",tag.c_str());
+              XML::dump_tree(element);
+              break;
+            }
+          }
+        }
+        // Now collect the information
+        vol->shape = id;
+        s->setDocument(context->locals.xml_doc);
+        vol->setDocument(context->locals.xml_doc);
+        context->collect(id, s);
+        context->collect(id, vol);
+        if ( catalog ) context->collectPath(vol->path, vol);
+        {
+          Context::PreservedLocals locals(context);
+          context->locals.obj_path = id;
+          xml_coll_t(element, _U(physvol)).for_each(Conv<PhysVol>(lcdd,context,vol));
+          xml_coll_t(element, _LBU(paramphysvol)).for_each(Conv<ParamPhysVol>(lcdd,context,vol));
+          xml_coll_t(element, _LBU(paramphysvol2D)).for_each(Conv<ParamPhysVol2D>(lcdd,context,vol));
+        }
       }
     }
 
@@ -1361,14 +1362,14 @@ namespace DD4hep {
       string   name    = x_vol.nameStr();
       string   id      = object_href(element, name);
       if ( !_find(id, context->geo->placements) )  {
-	PhysVol* vol = new PhysVol();
-	this->fill(element, vol);
-	context->collect(id, vol);
-	context->collectPath(vol->path,vol);
-	vol->setDocument(context->locals.xml_doc);
-	if ( optional )  {
-	  _option<LogVol>()->physvols.push_back(vol);
-	}
+        PhysVol* vol = new PhysVol();
+        this->fill(element, vol);
+        context->collect(id, vol);
+        context->collectPath(vol->path,vol);
+        vol->setDocument(context->locals.xml_doc);
+        if ( optional )  {
+          _option<LogVol>()->physvols.push_back(vol);
+        }
       }
     }
 
@@ -1420,17 +1421,17 @@ namespace DD4hep {
       string     name    = x_dim.nameStr();
       string     id      = object_href(element, name);
       if ( !_find(id, context->geo->tabproperties) )  {
-	TabProperty* p = new TabProperty();
-	p->name        = name;
-	p->path        = object_path(context,name);
-	if ( element.hasAttr(_U(type))    ) p->type = element.attr<string>(_U(type));
-	if ( element.hasAttr(_LBU(xunit)) ) p->xunit = element.attr<string>(_LBU(xunit));
-	if ( element.hasAttr(_LBU(yunit)) ) p->yunit = element.attr<string>(_LBU(yunit));
-	if ( element.hasAttr(_LBU(xaxis)) ) p->xaxis = element.attr<string>(_LBU(xaxis));
-	if ( element.hasAttr(_LBU(yaxis)) ) p->yaxis = element.attr<string>(_LBU(yaxis));
-	context->collect(id, p);
-	context->collectPath(p->path, p);
-	p->setDocument(context->locals.xml_doc);
+        TabProperty* p = new TabProperty();
+        p->name        = name;
+        p->path        = object_path(context,name);
+        if ( element.hasAttr(_U(type))    ) p->type = element.attr<string>(_U(type));
+        if ( element.hasAttr(_LBU(xunit)) ) p->xunit = element.attr<string>(_LBU(xunit));
+        if ( element.hasAttr(_LBU(yunit)) ) p->yunit = element.attr<string>(_LBU(yunit));
+        if ( element.hasAttr(_LBU(xaxis)) ) p->xaxis = element.attr<string>(_LBU(xaxis));
+        if ( element.hasAttr(_LBU(yaxis)) ) p->yaxis = element.attr<string>(_LBU(yaxis));
+        context->collect(id, p);
+        context->collectPath(p->path, p);
+        p->setDocument(context->locals.xml_doc);
       }
     }
 
@@ -1444,16 +1445,16 @@ namespace DD4hep {
       load_dddb_entity(context, catalog, element, href);
       dddb::TabProperties::const_iterator i=context->geo->tabproperties.find(refid);
       if ( i == context->geo->tabproperties.end() )  {
-	string r = reference_href(element,href);
-	printout(ERROR,"TabPropertyRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
-	return;
+        string r = reference_href(element,href);
+        printout(ERROR,"TabPropertyRef","++  MISSING ID: %s Failed to convert ref:%s",refid.c_str(),href.c_str());
+        return;
       }
       TabProperty* p = (*i).second;
       catalog->tabpropertyrefs[p->id] = p;
       string path = object_path(context,p->name);
       context->collectPath(path, p);
       if ( context->print_tabprop )  {
-	print_ref("TabPropertyRef", context, element, href, "Path:"+path);
+        print_ref("TabPropertyRef", context, element, href, "Path:"+path);
       }
     }
 
@@ -1464,7 +1465,7 @@ namespace DD4hep {
       string value = element.attr<string>(_U(value));
       _toDictionary(name,value);
       if ( context->print_params )  {
-	printout(INFO,"Parameter","++  %s = %s",name.c_str(),value.c_str());
+        printout(INFO,"Parameter","++  %s = %s",name.c_str(),value.c_str());
       }
     }
 
@@ -1477,13 +1478,13 @@ namespace DD4hep {
 
       xml_h target = find_local_element(element, href, _LBU(detelem));
       if ( target )
-	Conv<DetElem>(lcdd,context,catalog)(target);
+        Conv<DetElem>(lcdd,context,catalog)(target);
       else
-	load_dddb_entity(context, catalog, element, href);
+        load_dddb_entity(context, catalog, element, href);
       dddb::Catalogs::const_iterator i=context->geo->catalogs.find(refid);
       catalog->catalogrefs[refid] = (i==context->geo->catalogs.end()) ? 0 : (*i).second;
       if ( context->print_detelem_ref )   {
-	print_ref("DetElemRef", context, element, href);
+        print_ref("DetElemRef", context, element, href);
       }
     }
 
@@ -1497,48 +1498,48 @@ namespace DD4hep {
 
       dddb::Catalogs::iterator idet = geo->catalogs.find(id);
       if ( idet == geo->catalogs.end() ) {
-	xml_h      elt;
-	string     path      = object_path(context, name);
-	boost::filesystem::path p(path);
-	string     parent    = p.parent_path().native();
-	Catalog*   det       = new Catalog();
-	det->typeID   = 1;
-	det->name     = name;
-	det->type     = x_det.typeStr();
-	det->path     = path;
-	det->id       = id;
-	det->support  = parent;
-	det->setDocument(context->locals.xml_doc);
-	if ( context->print_detelem )   {
-	  printout(INFO,"DetElem","  xml:%s id=%s  [%s/%s] doc:%s obj:%s / %s",
-		   element.parent().tag().c_str(), 
-		   det->id.c_str(),
-		   det->name.c_str(),
-		   det->type.c_str(),
-		   context->locals.xml_doc->id.c_str(),
-		   context->locals.obj_path.c_str(),
-		   det->name.c_str()
-		   );
-	}
-	// Now extract all availible information from the xml
-	if ( (elt=x_det.child(_U(author),false)) )
-	  Conv<Author>(lcdd,context,&det->author)(elt);
-	if ( (elt=x_det.child(_U(version),false)) )
-	  Conv<Version>(lcdd,context,&det->version)(elt);
-	xml_coll_t(element, _U(param)).for_each(Conv<Param>(lcdd,context,det));
-	xml_coll_t(element, _LBU(userParameter)).for_each(Conv<Param>(lcdd,context,det));
-	xml_coll_t(element, _LBU(conditioninfo)).for_each(Conv<ConditionInfo>(lcdd,context,det));
-	{
-	  Context::PreservedLocals locals(context);
-	  context->locals.obj_path = det->path;
-	  xml_coll_t(element, _LBU(geometryinfo)).for_each(Conv<GeometryInfo>(lcdd,context,det));
-	  xml_coll_t(element, _LBU(detelemref)).for_each(Conv<DetElemRef>(lcdd,context,det));
-	}
-	det->path = det->support + "/" + det->name;
-	context->collect(det->id, det);
-	context->collectPath(det->path, det);
-	context->print(det);
-	return;
+        xml_h      elt;
+        string     path      = object_path(context, name);
+        boost::filesystem::path p(path);
+        string     parent    = p.parent_path().native();
+        Catalog*   det       = new Catalog();
+        det->typeID   = 1;
+        det->name     = name;
+        det->type     = x_det.typeStr();
+        det->path     = path;
+        det->id       = id;
+        det->support  = parent;
+        det->setDocument(context->locals.xml_doc);
+        if ( context->print_detelem )   {
+          printout(INFO,"DetElem","  xml:%s id=%s  [%s/%s] doc:%s obj:%s / %s",
+                   element.parent().tag().c_str(), 
+                   det->id.c_str(),
+                   det->name.c_str(),
+                   det->type.c_str(),
+                   context->locals.xml_doc->id.c_str(),
+                   context->locals.obj_path.c_str(),
+                   det->name.c_str()
+                   );
+        }
+        // Now extract all availible information from the xml
+        if ( (elt=x_det.child(_U(author),false)) )
+          Conv<Author>(lcdd,context,&det->author)(elt);
+        if ( (elt=x_det.child(_U(version),false)) )
+          Conv<Version>(lcdd,context,&det->version)(elt);
+        xml_coll_t(element, _U(param)).for_each(Conv<Param>(lcdd,context,det));
+        xml_coll_t(element, _LBU(userParameter)).for_each(Conv<Param>(lcdd,context,det));
+        xml_coll_t(element, _LBU(conditioninfo)).for_each(Conv<ConditionInfo>(lcdd,context,det));
+        {
+          Context::PreservedLocals locals(context);
+          context->locals.obj_path = det->path;
+          xml_coll_t(element, _LBU(geometryinfo)).for_each(Conv<GeometryInfo>(lcdd,context,det));
+          xml_coll_t(element, _LBU(detelemref)).for_each(Conv<DetElemRef>(lcdd,context,det));
+        }
+        det->path = det->support + "/" + det->name;
+        context->collect(det->id, det);
+        context->collectPath(det->path, det);
+        context->print(det);
+        return;
       }
       printout(DEBUG,"DetElem","ALREADY PROCESSED: xid:%s -> %s",id.c_str(),(*idet).second->path.c_str());
     }
@@ -1551,20 +1552,20 @@ namespace DD4hep {
       string   refid   = reference_href(element,href);
 #if 0
       if ( href.find("@ChamAlign.xml#") != string::npos )  {
-	print_ref("CatalogRef", context, element, href);
+        print_ref("CatalogRef", context, element, href);
       }
 #endif
       xml_h target = find_local_element(element, href,_LBU(catalog));
       if ( target )  {
-	Conv<Catalog>(lcdd,context,catalog)(target);
+        Conv<Catalog>(lcdd,context,catalog)(target);
       }
       else  {
-	load_dddb_entity(context, catalog, element, href);
+        load_dddb_entity(context, catalog, element, href);
       }
       dddb::Catalogs::const_iterator i=context->geo->catalogs.find(refid);
       catalog->catalogrefs[refid] = (i == context->geo->catalogs.end()) ? 0 : (*i).second;
       if ( context->print_catalog_ref )  {
-	print_ref("CatalogRef", context, element, href);
+        print_ref("CatalogRef", context, element, href);
       }
     }
 
@@ -1576,57 +1577,57 @@ namespace DD4hep {
       dddb::Catalogs::const_iterator icat = context->geo->catalogs.find(id);
 
       if ( icat == context->geo->catalogs.end() )  {
-	Catalog* catalog = new Catalog();
-	catalog->name          = name;
-	catalog->path          = object_path(context,name);
-	//printout(INFO,"Catalog","PROCESSING:        xid:%s -> %s",id.c_str(),catalog->path.c_str());
-	catalog->level         = Increment<Catalog>::counter();
-	catalog->type          = "Logical";
-	catalog->support       = "";
-	catalog->setDocument(context->locals.xml_doc);
-	context->collect(id, catalog);
-	context->collectPath(catalog->path, catalog);
-	if ( catalog->path == "/dd" )  {
-	  catalog->type    = "World";
-	  context->geo->top = catalog;
-	}
-	else if ( catalog->path == "/dd/Structure" )  {
-	  catalog->type    = "Structure";
-	  context->geo->structure = catalog;
-	}
-	else if ( catalog->path == "/dd/Geometry" )  {
-	  catalog->type    = "Geometry";
-	  context->geo->geometry  = catalog;
-	}
-	{
-	  Context::PreservedLocals locals(context);
-	  context->locals.obj_path = catalog->path;
-	  xml_coll_t(e, _U(parameter)).for_each(Conv<Parameter>(lcdd,context,catalog));
-	  xml_coll_t(e, _U(isotope)).for_each(Conv<Isotope>(lcdd,context,catalog));
-	  xml_coll_t(e, _U(element)).for_each(Conv<Element>(lcdd,context,catalog));
-	  xml_coll_t(e, _U(material)).for_each(Conv<Material>(lcdd,context,catalog));
-	  xml_coll_t(e, _U(logvol)).for_each(Conv<LogVol>(lcdd,context,catalog));
+        Catalog* catalog = new Catalog();
+        catalog->name          = name;
+        catalog->path          = object_path(context,name);
+        //printout(INFO,"Catalog","PROCESSING:        xid:%s -> %s",id.c_str(),catalog->path.c_str());
+        catalog->level         = Increment<Catalog>::counter();
+        catalog->type          = "Logical";
+        catalog->support       = "";
+        catalog->setDocument(context->locals.xml_doc);
+        context->collect(id, catalog);
+        context->collectPath(catalog->path, catalog);
+        if ( catalog->path == "/dd" )  {
+          catalog->type    = "World";
+          context->geo->top = catalog;
+        }
+        else if ( catalog->path == "/dd/Structure" )  {
+          catalog->type    = "Structure";
+          context->geo->structure = catalog;
+        }
+        else if ( catalog->path == "/dd/Geometry" )  {
+          catalog->type    = "Geometry";
+          context->geo->geometry  = catalog;
+        }
+        {
+          Context::PreservedLocals locals(context);
+          context->locals.obj_path = catalog->path;
+          xml_coll_t(e, _U(parameter)).for_each(Conv<Parameter>(lcdd,context,catalog));
+          xml_coll_t(e, _U(isotope)).for_each(Conv<Isotope>(lcdd,context,catalog));
+          xml_coll_t(e, _U(element)).for_each(Conv<Element>(lcdd,context,catalog));
+          xml_coll_t(e, _U(material)).for_each(Conv<Material>(lcdd,context,catalog));
+          xml_coll_t(e, _U(logvol)).for_each(Conv<LogVol>(lcdd,context,catalog));
 
-	  xml_coll_t(e, _LBU(tabproperty)).for_each(Conv<TabProperty>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(tabproperty)).for_each(Conv<TabProperty>(lcdd,context,catalog));
 
-	  //xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
-	  //xml_coll_t(e, _LBU(detelem)).for_each(Conv<DetElem>(lcdd,context,catalog));
-	  //xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
+          //xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
+          //xml_coll_t(e, _LBU(detelem)).for_each(Conv<DetElem>(lcdd,context,catalog));
+          //xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
 
-	  xml_coll_t(e, _LBU(elementref)).for_each(Conv<ElementRef>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(materialref)).for_each(Conv<MaterialRef>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(logvolref)).for_each(Conv<LogVolRef>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(tabpropertyref)).for_each(Conv<TabPropertyRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(elementref)).for_each(Conv<ElementRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(materialref)).for_each(Conv<MaterialRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(logvolref)).for_each(Conv<LogVolRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(tabpropertyref)).for_each(Conv<TabPropertyRef>(lcdd,context,catalog));
 
-	  xml_coll_t(e, _LBU(conditionref)).for_each(Conv<ConditionRef>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(catalogref)).for_each(Conv<CatalogRef>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(detelemref)).for_each(Conv<DetElemRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(conditionref)).for_each(Conv<ConditionRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(catalogref)).for_each(Conv<CatalogRef>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(detelemref)).for_each(Conv<DetElemRef>(lcdd,context,catalog));
 
-	  xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(detelem)).for_each(Conv<DetElem>(lcdd,context,catalog));
-	  xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
-	}
-	return;
+          xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(detelem)).for_each(Conv<DetElem>(lcdd,context,catalog));
+          xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
+        }
+        return;
       }
       printout(DEBUG,"Catalog","ALREADY PROCESSED: xid:%s -> %s",id.c_str(),(*icat).second->path.c_str());
     }
@@ -1667,42 +1668,42 @@ namespace DD4hep {
       xml_coll_t(e, _LBU(conditionref)).for_each(Conv<ConditionRef>(lcdd,context,catalog));
       xml_coll_t(e, _LBU(catalogref)).for_each(Conv<CatalogRef>(lcdd,context,catalog));
       {
-	Context::PreservedLocals locals(context);
-	xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
-	xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
+        Context::PreservedLocals locals(context);
+        xml_coll_t(e, _LBU(condition)).for_each(Conv<Condition>(lcdd,context,catalog));
+        xml_coll_t(e, _LBU(catalog)).for_each(Conv<Catalog>(lcdd,context,catalog));
       }
     }
 
     void apply_trafo(int apply, Position& pos, RotationZYX& rot, Transform3D& trafo, Transform3D& tr)  {
       switch(apply)   {
       case 99:   {
-	tr *= trafo;
-	trafo = Transform3D();
-	pos = Position();
-	rot = RotationZYX();
-	break;
+        tr *= trafo;
+        trafo = Transform3D();
+        pos = Position();
+        rot = RotationZYX();
+        break;
       }
       case 2:  {
-	Transform3D r(rot);
-	trafo = Transform3D(pos);
-	trafo = trafo * r;
-	tr = trafo * tr;
-	trafo = Transform3D();
-	pos = Position();
-	rot = RotationZYX();
-	break;
+        Transform3D r(rot);
+        trafo = Transform3D(pos);
+        trafo = trafo * r;
+        tr = trafo * tr;
+        trafo = Transform3D();
+        pos = Position();
+        rot = RotationZYX();
+        break;
       }
       case 1:  {
-	trafo = Transform3D(pos);
-	tr *= trafo;
-	trafo = Transform3D();
-	pos = Position();
-	rot = RotationZYX();
-	break;
+        trafo = Transform3D(pos);
+        tr *= trafo;
+        trafo = Transform3D();
+        pos = Position();
+        rot = RotationZYX();
+        break;
       }
       case 0:
       default:
-	break;
+        break;
       }
     }
 
@@ -1713,37 +1714,37 @@ namespace DD4hep {
       RotationZYX rot;
       Transform3D trafo;
       for(xml_h element = p.parent(); p; ++p )  {
-	if ( p.parent() == element ) { // Only next level is processed here
-	  dddb_dim_t dim = p;
-	  string tag = p.tag();
-	  if ( tag == "transformation" && (which<0 || count == which) )  {
-	    apply_trafo(apply, pos, rot, trafo, tr);
-	    Conv<Transform3D>(lcdd,context,&trafo)(p);
-	    apply = 99;
-	  }
-	  else if ( tag == "posXYZ" && (which<0 || count == which) )   {
-	    apply_trafo(apply, pos, rot, trafo, tr);
-	    pos.SetXYZ(dim.x(0.0), dim.y(0.0), dim.z(0.0));
-	    apply = 1;
-	    ++count;
-	  }
-	  else if ( tag == "rotXYZ" && (which<0 || count == (which+1)) )  {
-	    rot.SetComponents(dim.rotZ(0.0), dim.rotY(0.0), dim.rotX(0.0));
-	    apply = 2;
-	  }
-	  else  {
-	    --p;
-	    apply_trafo(apply, pos, rot, trafo, tr);
-	    return;
-	  }
-	  if ( apply > 1 )  {
-	    apply_trafo(apply, pos, rot, trafo, tr);
-	    apply = 0;
-	  }
-	}
+        if ( p.parent() == element ) { // Only next level is processed here
+          dddb_dim_t dim = p;
+          string tag = p.tag();
+          if ( tag == "transformation" && (which<0 || count == which) )  {
+            apply_trafo(apply, pos, rot, trafo, tr);
+            Conv<Transform3D>(lcdd,context,&trafo)(p);
+            apply = 99;
+          }
+          else if ( tag == "posXYZ" && (which<0 || count == which) )   {
+            apply_trafo(apply, pos, rot, trafo, tr);
+            pos.SetXYZ(dim.x(0.0), dim.y(0.0), dim.z(0.0));
+            apply = 1;
+            ++count;
+          }
+          else if ( tag == "rotXYZ" && (which<0 || count == (which+1)) )  {
+            rot.SetComponents(dim.rotZ(0.0), dim.rotY(0.0), dim.rotX(0.0));
+            apply = 2;
+          }
+          else  {
+            --p;
+            apply_trafo(apply, pos, rot, trafo, tr);
+            return;
+          }
+          if ( apply > 1 )  {
+            apply_trafo(apply, pos, rot, trafo, tr);
+            apply = 0;
+          }
+        }
       }
       if ( apply > 0 ) {
-	apply_trafo(apply, pos, rot, trafo, tr);
+        apply_trafo(apply, pos, rot, trafo, tr);
       }
     }
     string reference_href(xml_h element, const string& ref)  {
@@ -1752,19 +1753,19 @@ namespace DD4hep {
       size_t idq = ref.find("/");
 
       if ( idx != string::npos && idx < idq )  {
-	if ( hash == string::npos && idq != string::npos )   {
-	  if ( (idq=ref.rfind("/")) != string::npos )
-	    return ref + '#' + ref.substr(idq+1);
-	}
-	return ref;
+        if ( hash == string::npos && idq != string::npos )   {
+          if ( (idq=ref.rfind("/")) != string::npos )
+            return ref + '#' + ref.substr(idq+1);
+        }
+        return ref;
       }
       // Resolve relative path
       string p = XML::DocumentHandler::system_path(element);
       if ( hash == 0 )  { // This is a local object. Take the element's path
-	p += ref;
-	boost::filesystem::path path = p;  // Remote object. Parent + local path
-	p = path.normalize().native();      
-	return p;
+        p += ref;
+        boost::filesystem::path path = p;  // Remote object. Parent + local path
+        p = path.normalize().native();      
+        return p;
       }
       boost::filesystem::path path = p;  // Remote object. Parent + local path
       path  = path.parent_path();
@@ -1776,96 +1777,96 @@ namespace DD4hep {
       /// conddb:/Conditions/Online/L0MUON/Q1/FOI instead of:
       /// conddb:/Conditions/Online/L0MUON/Q1/FOI#FOI ...
       if ( hash == string::npos )   {
-	if ( (idq=p.rfind("/")) != string::npos )
-	  p += '#' + p.substr(idq+1);
-	else if ( (idx=p.find(":")) != string::npos )
-	  p += '#' + p.substr(idx+1);
-	else
-	  p += '#' + ref;
+        if ( (idq=p.rfind("/")) != string::npos )
+          p += '#' + p.substr(idq+1);
+        else if ( (idx=p.find(":")) != string::npos )
+          p += '#' + p.substr(idx+1);
+        else
+          p += '#' + ref;
       }
       return p;
     }
 
     template <typename ACTION=dddb>
     void load_dddb_entity(Context*      context,
-			  Catalog*      catalog, 
-			  xml_h         element,
-			  const string& ref,
-			  bool prt)
+                          Catalog*      catalog, 
+                          xml_h         element,
+                          const string& ref,
+                          bool prt)
     {
       size_t hash = ref.find("#");
       if ( hash != 0 )  {
-	try {
-	  string doc_path = element.ptr() ? reference_href(element,ref) : ref;
-	  if ( ref == "conddb:/Conditions/Online" )
-	    doc_path = reference_href(element,ref);
-	  hash = doc_path.find('#');
-	  if ( hash != string::npos ) doc_path = doc_path.substr(0,hash);
+        try {
+          string doc_path = element.ptr() ? reference_href(element,ref) : ref;
+          if ( ref == "conddb:/Conditions/Online" )
+            doc_path = reference_href(element,ref);
+          hash = doc_path.find('#');
+          if ( hash != string::npos ) doc_path = doc_path.substr(0,hash);
 #if 0
-	  if ( doc_path.find("conddb:/Rich") != string::npos )  {
-	    printout(INFO, "load_dddb", "SKIPPING DOC %s", doc_path.c_str());
-	    return;
-	  }
+          if ( doc_path.find("conddb:/Rich") != string::npos )  {
+            printout(INFO, "load_dddb", "SKIPPING DOC %s", doc_path.c_str());
+            return;
+          }
 #endif
-	  dddb::Documents& docs = context->geo->documents;
-	  if ( _find(doc_path,docs) )
-	    return;
+          dddb::Documents& docs = context->geo->documents;
+          if ( _find(doc_path,docs) )
+            return;
 
-	  size_t idx = doc_path.find('[');
-	  size_t idq = doc_path.find(']');
-	  string key, fp = doc_path;
-	  if ( idq != string::npos && idx != string::npos )  {
-	    key = doc_path.substr(idx+1,idq-idx-1);
-	    fp = doc_path.substr(0,idx);
-	  }
-	  XML::UriReader*    rdr       = context->resolver;
-	  DDDBReaderContext* ctx       = (DDDBReaderContext*)rdr->context();
-	  Document*          xml_doc   = new Document();
-	  xml_doc->id                  = doc_path;
-	  xml_doc->name                = context->locals.obj_path;
-	  xml_doc->context.doc         = xml_doc->id;
-	  xml_doc->context.event_time  = ctx->event_time;
-	  xml_doc->context.valid_since = 0;
-	  xml_doc->context.valid_until = 0;
-	  docs.insert(make_pair(doc_path,xml_doc->addRef()));
-	  XML::UriContextReader reader(rdr, &xml_doc->context);
-	  xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
-	  xml_h e = doc.root();
-	  context->print(xml_doc);
-	  if ( e )   {
-	    if ( !key.empty() )  {
-	      stringstream str;
-	      XML::dump_tree(e, str);
-	      string buffer = str.str();
-	      while( (idx=buffer.find("-KEY-")) != string::npos )
-		buffer.replace(idx,5,key);
-	      doc.assign(xml_handler_t().parse(buffer.c_str(),
-					       buffer.length(),
-					       doc_path.c_str(),
-					       &reader));
-	      e = doc.root();
-	    }
-	    Context::PreservedLocals locals(context);
-	    context->locals.xml_doc  = xml_doc;
-	    Conv<ACTION> converter(context->lcdd, context, catalog);
-	    context->print_condition = prt;
-	    if ( prt || context->print_xml )  XML::dump_tree(e);
-	    converter(e);
-	  }
-	}
-	catch(const exception& e)  {
-	  printout(INFO,"load_dddb","Failed to load %s [%s]",ref.c_str(),e.what());
-	}
-	catch(...)   {
-	  printout(INFO,"load_dddb","Failed to load %s",ref.c_str());
-	}
+          size_t idx = doc_path.find('[');
+          size_t idq = doc_path.find(']');
+          string key, fp = doc_path;
+          if ( idq != string::npos && idx != string::npos )  {
+            key = doc_path.substr(idx+1,idq-idx-1);
+            fp = doc_path.substr(0,idx);
+          }
+          XML::UriReader*    rdr       = context->resolver;
+          DDDBReaderContext* ctx       = (DDDBReaderContext*)rdr->context();
+          Document*          xml_doc   = new Document();
+          xml_doc->id                  = doc_path;
+          xml_doc->name                = context->locals.obj_path;
+          xml_doc->context.doc         = xml_doc->id;
+          xml_doc->context.event_time  = ctx->event_time;
+          xml_doc->context.valid_since = 0;
+          xml_doc->context.valid_until = 0;
+          docs.insert(make_pair(doc_path,xml_doc->addRef()));
+          XML::UriContextReader reader(rdr, &xml_doc->context);
+          xml_doc_holder_t doc(xml_handler_t().load(fp, &reader));
+          xml_h e = doc.root();
+          context->print(xml_doc);
+          if ( e )   {
+            if ( !key.empty() )  {
+              stringstream str;
+              XML::dump_tree(e, str);
+              string buffer = str.str();
+              while( (idx=buffer.find("-KEY-")) != string::npos )
+                buffer.replace(idx,5,key);
+              doc.assign(xml_handler_t().parse(buffer.c_str(),
+                                               buffer.length(),
+                                               doc_path.c_str(),
+                                               &reader));
+              e = doc.root();
+            }
+            Context::PreservedLocals locals(context);
+            context->locals.xml_doc  = xml_doc;
+            Conv<ACTION> converter(context->lcdd, context, catalog);
+            context->print_condition = prt;
+            if ( prt || context->print_xml )  XML::dump_tree(e);
+            converter(e);
+          }
+        }
+        catch(const exception& e)  {
+          printout(INFO,"load_dddb","Failed to load %s [%s]",ref.c_str(),e.what());
+        }
+        catch(...)   {
+          printout(INFO,"load_dddb","Failed to load %s",ref.c_str());
+        }
       }
     }
 
     void config_context(Context& context, 
-			XML::UriReader* rdr, 
-			const std::string& doc_path,
-			const std::string& obj_path)  {
+                        XML::UriReader* rdr, 
+                        const std::string& doc_path,
+                        const std::string& obj_path)  {
       DDDBReaderContext*  ctx     = (DDDBReaderContext*)rdr->context();
       Document*           doc     = new Document();
       doc->name                   = obj_path;
@@ -1900,35 +1901,35 @@ namespace DD4hep {
     long load_dddb_objects(lcdd_t& lcdd, int argc, char** argv) {
       DDDBHelper* hlp = lcdd.extension<DDDBHelper>(false);
       if ( hlp )   {
-	Context ctxt(lcdd);
-	string sys_id = "conddb://lhcb.xml";
-	string obj_path = "/";
-	XML::UriReader* rdr = hlp->xmlReader();
-	if ( argc == 0 )   {
-	  return 0;
-	}
-	if ( argc >= 1 && argv[0] != 0 )  {
-	  rdr = (XML::UriReader*)argv[0];
-	}
-	if ( argc >= 2 && argv[1] != 0 )  {
-	  sys_id = argv[1];
-	}
-	if ( argc >= 3 && argv[2] != 0 )  {
-	  obj_path = argv[2];
-	}
-	if ( argc >= 4 && argv[3] != 0 )  {
-	  long evt_time = *(long*)argv[3];
-	  DDDBReaderContext*  ctx = (DDDBReaderContext*)rdr->context();
-	  ctx->event_time = evt_time;
-	}
-	config_context(ctxt, rdr, sys_id, obj_path);
-	load_dddb_entity<ACTION>(&ctxt,0,0,ctxt.locals.xml_doc->id);
-	checkParents( &ctxt );
-	fixCatalogs( &ctxt );
-	/// Transfer ownership from local context to the helper
-	hlp->setDetectorDescription( ctxt.geo );
-	ctxt.geo = 0;
-	return 1;
+        Context ctxt(lcdd);
+        string sys_id = "conddb://lhcb.xml";
+        string obj_path = "/";
+        XML::UriReader* rdr = hlp->xmlReader();
+        if ( argc == 0 )   {
+          return 0;
+        }
+        if ( argc >= 1 && argv[0] != 0 )  {
+          rdr = (XML::UriReader*)argv[0];
+        }
+        if ( argc >= 2 && argv[1] != 0 )  {
+          sys_id = argv[1];
+        }
+        if ( argc >= 3 && argv[2] != 0 )  {
+          obj_path = argv[2];
+        }
+        if ( argc >= 4 && argv[3] != 0 )  {
+          long evt_time = *(long*)argv[3];
+          DDDBReaderContext*  ctx = (DDDBReaderContext*)rdr->context();
+          ctx->event_time = evt_time;
+        }
+        config_context(ctxt, rdr, sys_id, obj_path);
+        load_dddb_entity<ACTION>(&ctxt,0,0,ctxt.locals.xml_doc->id);
+        checkParents( &ctxt );
+        fixCatalogs( &ctxt );
+        /// Transfer ownership from local context to the helper
+        hlp->setDetectorDescription( ctxt.geo );
+        ctxt.geo = 0;
+        return 1;
       }
       except("DDDB","+++ Failed to access cool. No DDDBHelper object defined. Run plugin DDDBInstallHelper.");
       return 0;
@@ -1946,17 +1947,17 @@ namespace DD4hep {
     long load_dddb_from_handle(lcdd_t& lcdd, xml_h element) {
       DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
       if ( helper )   {
-	Context context(lcdd);
-	config_context(context, helper->xmlReader(), "conddb://lhcb.xml", "/");
-	/// Convert the XML information
-	Conv<dddb> converter(lcdd, &context);
-	converter( element );
-	checkParents( &context );
-	fixCatalogs( &context );
-	/// Transfer ownership from local context to the helper
-	helper->setDetectorDescription( context.geo );
-	context.geo = 0;
-	return 1;
+        Context context(lcdd);
+        config_context(context, helper->xmlReader(), "conddb://lhcb.xml", "/");
+        /// Convert the XML information
+        Conv<dddb> converter(lcdd, &context);
+        converter( element );
+        checkParents( &context );
+        fixCatalogs( &context );
+        /// Transfer ownership from local context to the helper
+        helper->setDetectorDescription( context.geo );
+        context.geo = 0;
+        return 1;
       }
       except("DDDB","+++ Failed to access cool. No DDDBHelper object defined. Run plugin DDDBInstallHelper.");
       return 0;

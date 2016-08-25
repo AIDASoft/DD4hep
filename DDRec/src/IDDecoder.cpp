@@ -17,7 +17,6 @@ namespace DDRec {
 using Geometry::DetElement;
 using Geometry::LCDD;
 using Geometry::PlacedVolume;
-using Geometry::Position;
 using Geometry::Readout;
 using Geometry::Solid;
 using Geometry::VolumeManager;
@@ -167,7 +166,7 @@ Geometry::Readout IDDecoder::readout(const CellID& cell) const {
 }
 
 /// Access to the Readout object for a given global position
-Geometry::Readout IDDecoder::readout(const Geometry::Position& global) const {
+Geometry::Readout IDDecoder::readout(const Position& global) const {
 	DetElement det = this->detectorElement(global);
 	return this->findReadout(det);
 }

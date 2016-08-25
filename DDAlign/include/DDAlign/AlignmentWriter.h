@@ -17,15 +17,15 @@
 // Framework include files
 #include "XML/XMLElements.h"
 #include "DD4hep/Detector.h"
+#include "DD4hep/GlobalAlignment.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  namespace Alignments {
 
     // Forward declarations
-    class LCDD;
     class AlignmentCache;
 
     /// Write aligment data to XML data file
@@ -42,7 +42,7 @@ namespace DD4hep {
       AlignmentCache* m_cache;
 
       /// Add single alignment node to the XML document
-      void addNode(XML::Element elt, Alignment a)  const;
+      void addNode(XML::Element elt, GlobalAlignment a)  const;
 
     public:
       /// Initializing Constructor

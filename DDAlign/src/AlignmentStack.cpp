@@ -21,7 +21,7 @@
 
 using namespace std;
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace DD4hep::Alignments;
 
 static dd4hep_ptr<AlignmentStack>& _stack()  {
   static dd4hep_ptr<AlignmentStack> s;
@@ -29,8 +29,7 @@ static dd4hep_ptr<AlignmentStack>& _stack()  {
 }
 static dd4hep_ptr<AlignmentStack>& _stack(AlignmentStack* obj)  {
   dd4hep_ptr<AlignmentStack>& s = _stack();
-  dd4hep_ptr<AlignmentStack>  n(obj);
-  s = n;
+  s.adopt(obj);
   return s;
 }
 

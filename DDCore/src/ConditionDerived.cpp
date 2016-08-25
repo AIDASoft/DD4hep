@@ -31,15 +31,15 @@ ConditionResolver::~ConditionResolver()  {
 
 /// Default constructor
 ConditionDependency::ConditionDependency(const ConditionKey& tar, 
-					 const Dependencies deps, 
-					 ConditionUpdateCall* call)
+                                         const Dependencies deps, 
+                                         ConditionUpdateCall* call)
   : target(tar), dependencies(deps), callback(call)
 {
 }
 
 /// Default constructor
 ConditionDependency::ConditionDependency(const ConditionKey& tar, 
-					 ConditionUpdateCall* call)
+                                         ConditionUpdateCall* call)
   : target(tar), callback(call)
 {
 }
@@ -53,8 +53,8 @@ ConditionDependency::ConditionDependency(const ConditionDependency& c)
   : target(c.target), dependencies(c.dependencies)
 {
   except("Dependency",
-	 "++ Condition: %s. Dependencies may not be assigned or copied!",
-	 target.name.c_str());
+         "++ Condition: %s. Dependencies may not be assigned or copied!",
+         target.name.c_str());
 }
 
 /// Default destructor
@@ -64,8 +64,8 @@ ConditionDependency::~ConditionDependency()  {
 /// Assignment operator
 ConditionDependency& ConditionDependency::operator=(const ConditionDependency& )  {
   except("Dependency",
-	 "++ Condition: %s. Dependencies may not be assigned or copied!",
-	 target.name.c_str());
+         "++ Condition: %s. Dependencies may not be assigned or copied!",
+         target.name.c_str());
   return *this;
 }
 

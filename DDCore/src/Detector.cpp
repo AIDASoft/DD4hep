@@ -15,12 +15,14 @@
 // Framework include files
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/AlignmentTools.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/World.h"
 #include "DD4hep/LCDD.h"
 
 using namespace std;
 using namespace DD4hep::Geometry;
+using DD4hep::Alignments::Alignment;
 
 /// Clone constructor
 DetElement::DetElement(Object* det_data, const string& det_name, const string& det_type)
@@ -131,13 +133,21 @@ DetElement& DetElement::setCombineHits(bool value, SensitiveDetector& sens) {
 }
 
 /// Access to the alignment information
-Alignment DetElement::alignment() const   {
-  return access()->alignment;
+Alignment DetElement::nominal() const   {
+  Object* o = access();
+  if ( !o->nominal.isValid() )   {
+    o->nominal = Alignment("nominal");
+    o->nominal->detector = *this;
+    DD4hep::Alignments::AlignmentTools::computeIdeal(o->nominal);
+  }
+  return o->nominal;
 }
 
 /// Access to the survey alignment information
-Alignment DetElement::surveyAlignment() const  {
-  return access()->survey;
+Alignment DetElement::survey() const  {
+  Object* o = access();
+  if ( !o->survey.isValid() ) return nominal();
+  return o->survey;
 }
 
 const DetElement::Children& DetElement::children() const {
@@ -263,7 +273,7 @@ DetElement& DetElement::setAttributes(const LCDD& lcdd, const Volume& vol, const
                                       const string& vis) {
   return setRegion(lcdd, region, vol).setLimitSet(lcdd, limits, vol).setVisAttributes(lcdd, vis, vol);
 }
-
+#if 0
 /// Set detector element for reference transformations. Will delete existing reference trafo.
 DetElement& DetElement::setReference(DetElement reference) {
   Object& o = object<Object>();
@@ -275,6 +285,30 @@ DetElement& DetElement::setReference(DetElement reference) {
   return *this;
 }
 
+/// Create cached matrix to transform to reference coordinates
+const TGeoHMatrix& DetElement::referenceTransformation() const   {
+  return access()->referenceTransformation();
+}
+
+/// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
+bool DetElement::localToReference(const Position& local, Position& global) const {
+  // If the path is unknown an exception will be thrown inside referenceTransformation() !
+  Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
+  referenceTransformation().LocalToMaster(local_point, master_point);
+  global.SetCoordinates(master_point);
+  return true;
+}
+
+/// Transformation from arbitrary parent system coordinates of the local placed volume coordinates
+bool DetElement::referenceToLocal(const Position& global, Position& local) const {
+  // If the path is unknown an exception will be thrown inside referenceTransformation() !
+  Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
+  referenceTransformation().MasterToLocal(master_point, local_point);
+  local.SetCoordinates(local_point);
+  return true;
+}
+#endif
+
 /// Create cached matrix to transform to world coordinates
 const TGeoHMatrix& DetElement::worldTransformation() const   {
   return access()->worldTransformation();
@@ -283,11 +317,6 @@ const TGeoHMatrix& DetElement::worldTransformation() const   {
 /// Create cached matrix to transform to parent coordinates
 const TGeoHMatrix& DetElement::parentTransformation() const   {
   return access()->parentTransformation();
-}
-
-/// Create cached matrix to transform to reference coordinates
-const TGeoHMatrix& DetElement::referenceTransformation() const   {
-  return access()->referenceTransformation();
 }
 
 /// Transformation from local coordinates of the placed volume to the world system
@@ -308,15 +337,6 @@ bool DetElement::localToParent(const Position& local, Position& global) const {
   return true;
 }
 
-/// Transformation from local coordinates of the placed volume to arbitrary parent system set as reference
-bool DetElement::localToReference(const Position& local, Position& global) const {
-  // If the path is unknown an exception will be thrown inside referenceTransformation() !
-  Double_t master_point[3] = { 0, 0, 0 }, local_point[3] = { local.X(), local.Y(), local.Z() };
-  referenceTransformation().LocalToMaster(local_point, master_point);
-  global.SetCoordinates(master_point);
-  return true;
-}
-
 /// Transformation from world coordinates of the local placed volume coordinates
 bool DetElement::worldToLocal(const Position& global, Position& local) const {
   // If the path is unknown an exception will be thrown inside worldTransformation() !
@@ -331,15 +351,6 @@ bool DetElement::parentToLocal(const Position& global, Position& local) const {
   // If the path is unknown an exception will be thrown inside parentTransformation() !
   Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
   parentTransformation().MasterToLocal(master_point, local_point);
-  local.SetCoordinates(local_point);
-  return true;
-}
-
-/// Transformation from arbitrary parent system coordinates of the local placed volume coordinates
-bool DetElement::referenceToLocal(const Position& global, Position& local) const {
-  // If the path is unknown an exception will be thrown inside referenceTransformation() !
-  Double_t master_point[3] = { global.X(), global.Y(), global.Z() }, local_point[3] = { 0, 0, 0 };
-  referenceTransformation().MasterToLocal(master_point, local_point);
   local.SetCoordinates(local_point);
   return true;
 }

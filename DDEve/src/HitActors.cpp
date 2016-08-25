@@ -29,7 +29,7 @@ using namespace DD4hep;
 
 /// Action callback of this functor: 
 void EtaPhiHistogramActor::operator()(const DDEveHit& hit)   {
-  const Geometry::Position pos(hit.x/MM_2_CM,hit.y/MM_2_CM,hit.z/MM_2_CM);
+  const Position pos(hit.x/MM_2_CM,hit.y/MM_2_CM,hit.z/MM_2_CM);
   histogram->Fill(pos.Eta(),pos.Phi(),hit.deposit);
 }
 

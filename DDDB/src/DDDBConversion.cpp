@@ -40,14 +40,15 @@
 namespace DD4hep  {
 
   using namespace std;
+  using namespace DDDB;
 
   /// Default constructor
-  DDDB::dddb::dddb() : top(0), structure(0), geometry(0)  {
+  dddb::dddb() : top(0), structure(0), geometry(0)  {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::dddb::~dddb()   {
+  dddb::~dddb()   {
     // need to release heare all allocated resources.
     releaseObjects(isotopes)();
     releaseObjects(elements)();
@@ -79,31 +80,31 @@ namespace DD4hep  {
   }
 
   /// Default constructor
-  DDDB::Named::Named()
+  Named::Named()
     : name(), id(), document(0), refCount(0)
   {
   }
 
   /// Initializing constructor
-  DDDB::Named::Named(const std::string& c)
+  Named::Named(const std::string& c)
     : name(c), id(), document(0), refCount(0)
   {
   }
 
   /// Copy constructor
-  DDDB::Named::Named(const Named& c)
+  Named::Named(const Named& c)
     : name(c.name), id(c.id), document(c.document), refCount(0)
   {
     if ( document ) document->addRef();
   }
 
   /// Default destructor
-  DDDB::Named::~Named() {
+  Named::~Named() {
     if ( document ) document->release();
   }
 
   /// Assignment operator
-  DDDB::Named& DDDB::Named::operator=(const Named& c) {
+  Named& Named::operator=(const Named& c) {
     if ( this != &c )  {
       setDocument(c.document);
       name = c.name;
@@ -113,40 +114,40 @@ namespace DD4hep  {
   }
 
   /// Assign document
-  void DDDB::Named::setDocument(Document* doc)   {
+  void Named::setDocument(Document* doc)   {
     if ( doc ) doc->addRef();
     if ( document ) document->release();
     document = doc;
   }
 
   /// Default constructor
-  DDDB::Document::Document() : Named(), context()  {
+  Document::Document() : Named(), context()  {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::Document::~Document()   {
+  Document::~Document()   {
     //printout(INFO,"Document","Delete doc %s",c_id());
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  DDDB::Isotope::Isotope() : Named() {
+  Isotope::Isotope() : Named() {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::Isotope::~Isotope()   {
+  Isotope::~Isotope()   {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  DDDB::Element::Element() : Named(), density(0), ionization(0), state(UNKNOWN) {
+  Element::Element() : Named(), density(0), ionization(0), state(UNKNOWN) {
     InstanceCount::increment(this);
   }
 
   /// Copy constructor
-  DDDB::Element::Element(const Element& e) 
+  Element::Element(const Element& e) 
     : Named(e), isotopes(e.isotopes), path(e.path), symbol(e.symbol), 
       atom(e.atom), density(e.density), 
       ionization(e.ionization), state(e.state)
@@ -155,54 +156,54 @@ namespace DD4hep  {
   }
 
   /// Default destructor
-  DDDB::Element::~Element()  {
+  Element::~Element()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  DDDB::Material::Material() : density(0), pressure(-1), temperature(-1), radlen(0), lambda(0) {
+  Material::Material() : density(0), pressure(-1), temperature(-1), radlen(0), lambda(0) {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::Material::~Material()  {
+  Material::~Material()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  DDDB::LogVol::LogVol() : Named(), material(), shape(), physvols() {
+  LogVol::LogVol() : Named(), material(), shape(), physvols() {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::LogVol::~LogVol()  {
+  LogVol::~LogVol()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  DDDB::PhysVol::PhysVol() : type(PHYSVOL_REGULAR), logvol(), path(), trafo() {
+  PhysVol::PhysVol() : type(PHYSVOL_REGULAR), logvol(), path(), trafo() {
     InstanceCount::increment(this);
   }
 
   /// Copy constructor
-  DDDB::PhysVol::PhysVol(const PhysVol& c) 
+  PhysVol::PhysVol(const PhysVol& c) 
     : Named(c), type(c.type), logvol(c.logvol), path(c.path), trafo(c.trafo) {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::PhysVol::~PhysVol()  {
+  PhysVol::~PhysVol()  {
     InstanceCount::decrement(this);
   }
 
   /// Default constructor
-  DDDB::Shape::Shape() : type(0), zplanes(), boolean_ops() {
+  Shape::Shape() : type(0), zplanes(), boolean_ops() {
     ::memset(&s.box,0,sizeof(s));
     InstanceCount::increment(this);
   }
   
   /// Default destructor
-  DDDB::Shape::~Shape()   {
+  Shape::~Shape()   {
     if ( type == BooleanUnion::type() ||
          type == BooleanSubtraction::type() ||
          type == BooleanIntersection::type() )   {
@@ -216,27 +217,27 @@ namespace DD4hep  {
   }
  
   /// Default constructor
-  DDDB::Catalog::Catalog() : Named(), level(0), typeID(0) {
+  Catalog::Catalog() : Named(), level(0), typeID(0) {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::Catalog::~Catalog()   {
+  Catalog::~Catalog()   {
     InstanceCount::decrement(this);
   }
 
 
   /// Default constructor
-  DDDB::TabProperty::TabProperty()    {
+  TabProperty::TabProperty()    {
     InstanceCount::increment(this);
   }
 
   /// Default destructor
-  DDDB::TabProperty::~TabProperty()    {
+  TabProperty::~TabProperty()    {
     InstanceCount::decrement(this);
   }
 
-  pair<const DDDB::Catalog*,string> DDDB::Catalog::parent(const string& nam)  const  {
+  pair<const Catalog*,string> Catalog::parent(const string& nam)  const  {
     const Catalog* cat = this;
     string rest = nam.substr(cat->path.length()+1);
     size_t idx = rest.find('/');
@@ -255,27 +256,27 @@ namespace DD4hep  {
     return make_pair(cat,sub);
   }
 
-  template <> void dddb_print(const DDDB::Position* p)   {
+  template <> void dddb_print(const Position* p)   {
     CHECK_OBJECT(p);
     printout(INFO,"PosXYZ","    PosXYZ: x=%f y=%f z=%f",p->X(),p->Y(),p->Z());
   }
 
-  template <> void dddb_print(const DDDB::RotationZYX* p)   {
+  template <> void dddb_print(const RotationZYX* p)   {
     CHECK_OBJECT(p);
     printout(INFO,"RotXYZ","    RotXYZ: z/phi=%f y/theta=%f x/psi=%f",p->Phi(),p->Theta(),p->Psi());
   }
 
-  template <> void dddb_print(const DDDB::Transform3D* tr)   {
+  template <> void dddb_print(const Transform3D* tr)   {
     CHECK_OBJECT(tr);
-    DDDB::Rotation3D rot;
-    DDDB::Position   pos;
+    Rotation3D rot;
+    Position   pos;
     tr->GetDecomposition(rot,pos);
     double dot_pos = pos.mag2();
     printout(INFO,"Transformation"," Position:%s",dot_pos>1e-10 ? "YES" : "NO");
     if ( dot_pos>1e-10 ) dddb_print(&pos);
   }
 
-  template <> void dddb_print(const DDDB::Isotope* i)   {
+  template <> void dddb_print(const Isotope* i)   {
     CHECK_OBJECT(i);
     printout(INFO,"Isotope","++ %-20s A=%6.0f Z=%3.0f Density=%8.2g  id=%s",
              i->c_name(), i->A, i->Z, i->density,i->c_id());
@@ -287,7 +288,7 @@ namespace DD4hep  {
              i->GetName(), i->GetN(), i->GetZ(), i->GetA());
   }
 
-  template <> void dddb_print(const DDDB::Element* e)   {
+  template <> void dddb_print(const Element* e)   {
     CHECK_OBJECT(e);
     printout(INFO,"Element","++ %-20s A=%6.0f Z=%3.0f Density=%8g ioni:%8.2g (%d isotopes) id=%s",
              (e->name+"/"+e->symbol).c_str(), e->atom.A, e->atom.Zeff, 
@@ -300,7 +301,7 @@ namespace DD4hep  {
              e->GetName(), e->N(), e->Z(), e->A());
   }
 
-  template <> void dddb_print(const DDDB::Material* m)   {
+  template <> void dddb_print(const Material* m)   {
     CHECK_OBJECT(m);
     printout(INFO,"Material","++ %-20s Density=%8g P=%f T=%f %d components id:%s",
              ("'"+m->path+"'").c_str(), m->density, m->pressure, m->temperature, 
@@ -318,37 +319,37 @@ namespace DD4hep  {
              mat->GetNelements());
   }
 
-  template <> void dddb_print(const DDDB::Shape* s)   {
+  template <> void dddb_print(const Shape* s)   {
     CHECK_OBJECT(s);
-    if (s-> type == DDDB::Box::type() )  {
+    if (s-> type == Box::type() )  {
       printout(INFO,"Box","++ %3d/%-12s: x=%f y=%f z=%f",
                s->type,s->c_name(),
                s->s.box.x,s->s.box.y,s->s.box.z);
     }
-    else if (s-> type == DDDB::Cons::type() )  {
+    else if (s-> type == Cons::type() )  {
       printout(INFO,"Cons","++ %3d/%-12s: z=%f innerMZ=%f innerPZ=%f outerMZ=%f outerPZ=%f",
                s->type,s->c_name(),s->s.cons.sizeZ,
                s->s.cons.innerRadiusMZ,s->s.cons.innerRadiusPZ,
                s->s.cons.outerRadiusMZ,s->s.cons.outerRadiusPZ);
     }
-    else if (s-> type == DDDB::Tubs::type() )  {
+    else if (s-> type == Tubs::type() )  {
       printout(INFO,"Tubs","++ %3d/%-12s: z=%f innerR=%f outerR=%f",
                s->type,s->c_name(),s->s.tubs.sizeZ,
                s->s.tubs.innerRadius,s->s.tubs.outerRadius);
     }
-    else if (s-> type == DDDB::Polycone::type() )  {
+    else if (s-> type == Polycone::type() )  {
       printout(INFO,"Polycone","++ %3d/%-12s: %d zplanes",
                s->type,s->c_name(),int(s->zplanes.size()));
     }
-    else if (s-> type == DDDB::BooleanUnion::type() )  {
+    else if (s-> type == BooleanUnion::type() )  {
       printout(INFO,"union","++ %3d/%-12s: %d modifications",
                s->type,s->c_name(),int(s->boolean_ops.size()));
     }
-    else if (s-> type == DDDB::BooleanSubtraction::type() )  {
+    else if (s-> type == BooleanSubtraction::type() )  {
       printout(INFO,"subtraction","++ %3d/%-12s: %d modifications",
                s->type,s->c_name(),int(s->boolean_ops.size()));
     }
-    else if (s-> type == DDDB::BooleanIntersection::type() )  {
+    else if (s-> type == BooleanIntersection::type() )  {
       printout(INFO,"intersection","++ %3d%-12s: %d modifications",
                s->type,s->path.c_str(),int(s->boolean_ops.size()));
     }
@@ -356,7 +357,7 @@ namespace DD4hep  {
              "", s->path.c_str(), s->c_id());
   }
 
-  template <> void dddb_print(const DDDB::PhysVol* obj)   {
+  template <> void dddb_print(const PhysVol* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"PhysVol","++ %-12s: logvol:%s",
              obj->path.c_str(),obj->logvol.c_str());
@@ -364,7 +365,7 @@ namespace DD4hep  {
              "",obj->c_name(),obj->c_id());
   }
 
-  template <> void dddb_print(const DDDB::LogVol* obj)   {
+  template <> void dddb_print(const LogVol* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"LogVol", "++ %-12s: Material:%s Shape:%s",
              obj->path.c_str(),obj->material.c_str(),
@@ -373,7 +374,7 @@ namespace DD4hep  {
              "",obj->c_name(),obj->c_id());
   }
 
-  template <> void dddb_print(const DDDB::TabProperty* obj)   {
+  template <> void dddb_print(const TabProperty* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"Detector", "++ %-12s: [%s] xunit:%s xaxis:%s yunit:%s yaxis:%s siz:%d",
              obj->path.c_str(), obj->type.c_str(), 
@@ -382,7 +383,7 @@ namespace DD4hep  {
 	     int(obj->data.size()));
   }
 
-  template <> void dddb_print(const DDDB::Catalog* obj)   {
+  template <> void dddb_print(const Catalog* obj)   {
     CHECK_OBJECT(obj);
     printout(INFO,"Detector", "++ %-12s: [%s] %d children support:%s geo:%s",
              obj->path.c_str(), obj->type.c_str(), int(obj->catalogrefs.size()),
@@ -390,7 +391,7 @@ namespace DD4hep  {
     printout(INFO,"Detector", "++ %-12s  name:%s id:%s",
              "",obj->c_name(),obj->c_id());
   }
-  template <> void dddb_print(const DDDB::Document* obj)   {
+  template <> void dddb_print(const Document* obj)   {
     CHECK_OBJECT(obj);
     char c_since[64], c_until[64], c_evt[64];
     struct tm since, until, evt;

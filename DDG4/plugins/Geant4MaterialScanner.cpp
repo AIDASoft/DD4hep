@@ -34,7 +34,6 @@ namespace DD4hep {
      */
     class Geant4MaterialScanner : public Geant4SteppingAction  {
     protected:
-      typedef Geometry::Position Position;
       /// Structure to hold the information of one simulation step.
       class StepInfo {
       public:

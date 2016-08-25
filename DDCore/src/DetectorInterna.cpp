@@ -14,6 +14,7 @@
 
 // Framework include files
 #include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/objects/AlignmentsInterna.h"
 #include "DD4hep/InstanceCount.h"
 #include "DD4hep/DetectorTools.h"
 #include "DD4hep/Handle.inl"
@@ -22,14 +23,6 @@
 #include "TGeoMatrix.h"
 #include "TGeoManager.h"
 #include "DD4hep/objects/DetectorInterna.h"
-/// Namespace for the AIDA detector description toolkit
-namespace DD4hep {
-  /// Namespace for the conditions part of the AIDA detector description toolkit
-  namespace Conditions   {
-    // Forward declarations
-    class ConditionsManager;
-  }
-}
 
 using namespace std;
 using namespace DD4hep;
@@ -72,7 +65,7 @@ DetElementObject::DetElementObject()
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(0), combineHits(0), typeFlag(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
-    alignment(), volume_alignments(), conditions(),
+    nominal(), survey(), alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
   printout(VERBOSE,"DetElementObject","+++ Created new anonymous DetElementObject()");
   InstanceCount::increment(this);
@@ -83,7 +76,7 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
   : NamedObject(), ObjectExtensions(typeid(DetElementObject)), magic(magic_word()),
     flag(0), id(ident), combineHits(0), typeFlag(0), path(), placementPath(),
     idealPlace(), placement(), volumeID(0), parent(), reference(), children(),
-    alignment(), volume_alignments(), conditions(),
+    nominal(), survey(), alignments(), conditions(),
     worldTrafo(), parentTrafo(), referenceTrafo(0) {
   SetName(nam.c_str());
   printout(VERBOSE,"DetElementObject","+++ Created new DetElementObject('%s', %d)",nam.c_str(),id);
@@ -96,7 +89,8 @@ DetElementObject::~DetElementObject() {
   deletePtr (referenceTrafo);
   if ( conditions.isValid() ) delete conditions.ptr();
   conditions = ConditionsContainer();
-  alignment.clear();
+  if ( alignments.isValid() ) delete alignments.ptr();
+  alignments = AlignmentsContainer();
   placement.clear();
   idealPlace.clear();
   parent.clear();
@@ -111,8 +105,10 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
   obj->typeFlag = typeFlag;
   obj->flag = 0;
   obj->combineHits = combineHits;
-  obj->alignment = Alignment();
-  obj->conditions = ConditionsContainer();
+  obj->nominal     = Alignment();
+  obj->survey      = Alignment();
+  obj->conditions  = ConditionsContainer();
+  obj->alignments  = AlignmentsContainer();
   obj->parent = DetElement();
   if ( (flg & DetElement::COPY_PLACEMENT) == DetElement::COPY_PLACEMENT )  {
     obj->placement  = placement;
@@ -142,16 +138,16 @@ DetElementObject* DetElementObject::clone(int new_id, int flg) const {
 }
 
 /// Access to the world object. Only possible once the geometry is closed.
-WorldObject* DetElementObject::i_access_world()   {
+World DetElementObject::i_access_world()   {
   if ( !privateWorld.isValid() )  {
     DetElementObject* p = parent.ptr();
     if ( 0 == p )  {
       privateWorld = (WorldObject*)this;
-      return privateWorld.ptr();
+      return privateWorld;
     }
     return p->world();
   }
-  return privateWorld.ptr();
+  return privateWorld;
 }
 
 /// Create cached matrix to transform to world coordinates
@@ -297,32 +293,11 @@ Conditions::Container DetElementObject::assign_conditions()  {
 
 /// Initializing constructor
 WorldObject::WorldObject(LCDD& _lcdd, const string& nam) 
-  : DetElementObject(nam,0), lcdd(&_lcdd), conditionsLoader(0), conditionsManager(0)
+  : DetElementObject(nam,0), lcdd(&_lcdd),
+    conditionsLoader(0), conditionsManager(0), alignmentsLoader(0), alignmentsManager(0)
 {
 }
 
 /// Internal object destructor: release extension object(s)
 WorldObject::~WorldObject()  {
-}
-
-/// Access the conditions loading
-WorldObject::Condition 
-WorldObject::getCondition(Condition::key_type key, const Condition::iov_type& iov)  const {
-  if ( conditionsLoader )   {
-    return conditionsLoader->get(key, iov);
-  }
-  
-  except("Conditions","+++ No ConditionsLoader registered to this LCDD instance!");
-  return WorldObject::Condition();
-}
-
-/// Access the conditions loading
-WorldObject::Condition 
-WorldObject::getCondition(Condition::key_type key, const UserPool& pool)  const {
-  if ( conditionsLoader )   {
-    return conditionsLoader->get(key, pool);
-  }
-  
-  except("Conditions","+++ No ConditionsLoader registered to this LCDD instance!");
-  return WorldObject::Condition();
 }

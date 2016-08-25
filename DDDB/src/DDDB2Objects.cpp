@@ -59,14 +59,11 @@ namespace DD4hep {
     typedef Conditions::Interna::ConditionObject GeoCondition;
     typedef Conditions::ConditionsManager        ConditionsManager;
     typedef Conditions::ConditionsPool           ConditionsPool;
-    typedef Conditions::IOVType                  IOVType;
     typedef Conditions::AbstractMap              AbstractMap;
     typedef Geometry::PlacedVolume               GeoPlacement;
     typedef Geometry::Volume                     GeoVolume;
     typedef Geometry::Material                   GeoMaterial;
     typedef Geometry::Solid                      GeoSolid;
-    typedef Geometry::DetElement                 DetElement;
-
 
     const double SMALL = 1e-10;
 
@@ -75,7 +72,7 @@ namespace DD4hep {
 
       typedef set<string> StringSet;
 
-      Context(Geometry::LCDD& l, dddb* g)
+      Context(LCDD& l, dddb* g)
         : lcdd(l), geo(g), helper(0), epoch(0),
           max_volume_depth(9999),
           print_materials(false), 
@@ -100,7 +97,7 @@ namespace DD4hep {
       }
       template <typename T> void collect(const string& id, T* s);
       template <typename T,typename Q> void collect(const string& id, T* s, Q* c);
-      Geometry::LCDD&   lcdd;
+      LCDD&   lcdd;
       DDDB::dddb*       geo;
       DDDB::DDDBHelper* helper;
       typedef std::map<Isotope*,     TGeoIsotope*>   Isotopes;
@@ -186,7 +183,7 @@ namespace DD4hep {
     template <typename T> struct CNV : Converter<T,T*>  {
     public:
       /// Initializing constructor of the functor with initialization of the user parameter
-      CNV(Geometry::LCDD& l, void* p, void* o=0) : Converter<T,T*>(l,p,o) {}
+      CNV(LCDD& l, void* p, void* o=0) : Converter<T,T*>(l,p,o) {}
       template<typename Q> CNV<Q> cnv() const {  return CNV<Q>(this->lcdd,this->param,this->optional);   }
       void* convert(T* obj) const;
       template<typename Q> Q get(const string& obj) const  {
@@ -232,7 +229,7 @@ namespace DD4hep {
     template <> void* CNV<GeoCondition>::convert(GeoCondition *obj) const   {
       Context* context = _param<Context>();
       if ( obj )   {
-	typedef Conditions::IOV::Key _K;
+	typedef IOV::Key _K;
 	Conditions::Condition cond = obj;
 	AbstractMap&        d = cond.get<AbstractMap>();
 	Document*         doc = d.option<Document>();
@@ -501,7 +498,7 @@ namespace DD4hep {
           for(i=object->boolean_ops.begin(); i != object->boolean_ops.end(); ++i)  {
             Shape* right_shape = (*i).shape;
             GeoSolid right_solid = (TGeoShape*)convert(right_shape);
-            const Geometry::Transform3D& trafo = (*i).trafo;
+            const Transform3D& trafo = (*i).trafo;
             if ( !right_solid.isValid() )  { // Error ....
               except("Cnv<Shape>","++ %s: Unknown right boolean shape creation:%s -> %d",
                      object->c_name(), right_shape->c_name(), right_shape->type);
@@ -580,7 +577,7 @@ namespace DD4hep {
           }
         }
         mother->SetTitle(object->path.c_str());
-        VisAttr vis = context->helper->visAttr(object->path);
+	Geometry::VisAttr vis = context->helper->visAttr(object->path);
         if ( vis.isValid() )  {
           if ( context->print_vis )  {
             printout(INFO,"Cnv<LogVol>","++ Vol:%s  Vis:%s",mother->GetTitle(), vis.name());
@@ -1021,7 +1018,7 @@ namespace DD4hep {
 	    manager["UserPoolType"]   = "DD4hep_ConditionsMapUserPool";
 	    manager["UpdatePoolType"] = "DD4hep_ConditionsLinearUpdatePool";
 	    manager.initialize();
-	    pair<bool,const Conditions::IOVType*> e = manager.registerIOVType(0, "epoch");
+	    pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
 	    context->manager = manager;
 	    context->epoch   = e.second;
 	  }
@@ -1029,7 +1026,7 @@ namespace DD4hep {
       }
       if ( !context->manager.isValid() )  {
 	Conditions::ConditionsManager manager = Conditions::ConditionsManager::from(lcdd);
-	pair<bool,const Conditions::IOVType*> e = manager.registerIOVType(0, "epoch");
+	pair<bool,const IOVType*> e = manager.registerIOVType(0, "epoch");
 	context->manager = manager;
 	context->epoch   = e.second;
       }
@@ -1041,7 +1038,7 @@ namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace DDDB  {
-    long dddb_2_dd4hep(Geometry::LCDD& lcdd, int , char** ) {
+    long dddb_2_dd4hep(LCDD& lcdd, int , char** ) {
       DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
       if ( helper )   {
 	Context context(lcdd, helper->detectorDescription());
@@ -1073,7 +1070,7 @@ namespace DD4hep {
       except("DDDB","++ No DDDBHelper instance installed. Geometry conversion failed!");
       return 1;
     }
-    long dddb_conditions_2_dd4hep(Geometry::LCDD& lcdd, int , char** ) {
+    long dddb_conditions_2_dd4hep(LCDD& lcdd, int , char** ) {
       DDDBHelper* helper = lcdd.extension<DDDBHelper>(false);
       if ( helper )   {
 	Context context(lcdd, helper->detectorDescription());

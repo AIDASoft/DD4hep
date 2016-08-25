@@ -15,7 +15,7 @@
 #define DD4HEP_ALIGNMENT_ALIGNMENTTRANSACTION_H
 
 // Framework include files
-#include "DD4hep/Primitives.h"
+#include "DD4hep/Alignments.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -23,10 +23,9 @@ namespace DD4hep {
   namespace XML { class Handle_t; }
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  namespace Alignments {
 
     // Forward declarations
-    class LCDD;
     class AlignmentCache;
 
     /// Manage alignment transaction to the cache for a given LCDD instance

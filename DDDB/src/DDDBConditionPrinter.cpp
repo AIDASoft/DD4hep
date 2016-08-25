@@ -45,18 +45,18 @@ void ConditionPrinter::ParamPrinter::operator()(const AbstractMap::Params::value
       value += "...";
     }
     printout(INFO,"Condition","++ %s\t-> Param: %-16s %-8s -> %s",
-	     m_prefix.c_str(),
-	     obj.first.c_str(), 
-	     obj.second.dataType().c_str(), 
-	     value.c_str());	
+             m_prefix.c_str(),
+             obj.first.c_str(), 
+             obj.second.dataType().c_str(), 
+             value.c_str());	
   }
   else if ( type == typeid(AbstractMap) )  {
     const AbstractMap& d= obj.second.get<AbstractMap>();
     printout(INFO,"Condition","++ %s\t-> [%s] CL:%d %-8s -> %s",
-	     m_prefix.c_str(),
-	     obj.first.c_str(), d.classID,
-	     obj.second.dataType().c_str(), 
-	     obj.second.str().c_str());	
+             m_prefix.c_str(),
+             obj.first.c_str(), d.classID,
+             obj.second.dataType().c_str(), 
+             obj.second.str().c_str());	
   }
   else {
     string value = obj.second.str();
@@ -66,10 +66,10 @@ void ConditionPrinter::ParamPrinter::operator()(const AbstractMap::Params::value
       value += "...";
     }
     printout(INFO,"Condition","++ %s\t-> [%s] %-8s -> %s",
-	     m_prefix.c_str(),
-	     obj.first.c_str(),
-	     obj.second.dataType().c_str(), 
-	     value.c_str());	
+             m_prefix.c_str(),
+             obj.first.c_str(),
+             obj.second.dataType().c_str(), 
+             value.c_str());	
   }
 }
 
@@ -87,17 +87,17 @@ int ConditionPrinter::operator()(Condition cond)    {
     string new_prefix = m_prefix;
     new_prefix.assign(m_prefix.length(),' ');
     printout(INFO,"Condition","++ %s Path:%s Class:%d [%s]",
-	     m_prefix.c_str(),
-	     cond.name().c_str(),
-	     data.classID, 
-	     cond.block().dataType().c_str());
+             m_prefix.c_str(),
+             cond.name().c_str(),
+             data.classID, 
+             cond.data().dataType().c_str());
     if ( !data.params.empty() )  {
       if ( m_print )  {
-	const string& tmp = m_print->prefix();
-	m_print->setPrefix(new_prefix);
-	for_each(data.params.begin(), data.params.end(),*m_print);
-	m_print->setPrefix(tmp);
-	return 1;
+        const string& tmp = m_print->prefix();
+        m_print->setPrefix(new_prefix);
+        for_each(data.params.begin(), data.params.end(),*m_print);
+        m_print->setPrefix(tmp);
+        return 1;
       }
       for_each(data.params.begin(), data.params.end(),ParamPrinter(new_prefix));
     }

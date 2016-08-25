@@ -15,6 +15,7 @@
 // Framework include files
 #include "DD4hep/LCDD.h"
 #include "DD4hep/Printout.h"
+#include "DD4hep/objects/DetectorInterna.h"
 #include "DDAlign/AlignmentOperators.h"
 #include "DDAlign/DetectorAlignment.h"
 
@@ -23,7 +24,7 @@
 
 using namespace std;
 using namespace DD4hep;
-using namespace DD4hep::Geometry;
+using namespace DD4hep::Alignments;
 
 void AlignmentOperator::insert(Alignment alignment)  const   {
   if ( !cache.insert(alignment) )     {
@@ -81,7 +82,7 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
       TGeoMatrix* mm = node->GetMatrix();  // Node's relative matrix
       np += string("/")+node->GetName();
       if ( !mm->IsIdentity() && i > 0 )  {    // Ignore the 'world', is identity anyhow
-        Alignment a = cache.get(np);
+        GlobalAlignment a = cache.get(np);
         if ( a.isValid() )  {
           printout(ALWAYS,"AlignmentActor<reset>","Correct path:%s leaf:%s",p->GetName(),np.c_str());
           TGeoHMatrix* glob = p->GetMatrix(i-1);
@@ -103,12 +104,12 @@ template <> void AlignmentActor<DDAlign_standard_operations::node_reset>::operat
 
 template <> void AlignmentActor<DDAlign_standard_operations::node_align>::operator()(Nodes::value_type& n) const  {
   Entry& e = *n.second.second;
-  bool check = e.checkOverlap();
-  bool overlap = e.overlapDefined();
-  bool has_matrix  = e.hasMatrix();
+  bool       check = e.checkOverlap();
+  bool       overlap = e.overlapDefined();
+  bool       has_matrix  = e.hasMatrix();
   DetElement det = e.detector;
-  bool valid = det.alignment().isValid();
-  string det_placement = det.placementPath();
+  bool       valid     = det->global_alignment.isValid();
+  string     det_placement = det.placementPath();
 
   if ( !valid && !has_matrix )  {
     cout << "++++ SKIP ALIGNMENT: ++++ " << e.path

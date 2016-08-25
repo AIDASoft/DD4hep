@@ -129,8 +129,8 @@ double SubdetectorExtensionImpl::getZMin() const {
 		Geometry::Solid solid = det.volume().solid();
 		Geometry::Box box(solid);
 		if (box.isValid()) {
-			Geometry::Position local(0.,0.,-box->GetDZ()/2.);
-			Geometry::Position global;
+			Position local(0.,0.,-box->GetDZ()/2.);
+			Position global;
 			det.localToWorld(local, global);
 			return global.z();
 		}
@@ -147,8 +147,8 @@ double SubdetectorExtensionImpl::getZMax() const {
 		Geometry::Solid solid = det.volume().solid();
 		Geometry::Box box(solid);
 		if (box.isValid()) {
-			Geometry::Position local(0.,0.,box->GetDZ()/2.);
-			Geometry::Position global;
+			Position local(0.,0.,box->GetDZ()/2.);
+			Position global;
 			det.localToWorld(local, global);
 			return global.z();
 		}

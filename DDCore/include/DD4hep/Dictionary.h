@@ -20,10 +20,12 @@
 #define DD4HEP_GEOMETRY_DICTIONARY_H
 
 #include "XML/Evaluator.h"
+#include "DD4hep/DetAlign.h"
 #include "DD4hep/DD4hepRootPersistency.h"
 #include "DD4hep/objects/ObjectsInterna.h"
 #include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/objects/ConditionsInterna.h"
+#include "DD4hep/objects/AlignmentsInterna.h"
 #include "DD4hep/objects/VolumeManagerInterna.h"
 
 #include "DD4hep/World.h"
@@ -97,6 +99,11 @@ template class pair<DD4hep::Callback,unsigned long>;
 #pragma link C++ class DD4hep::ObjectExtensions+;
 template class DD4hep::Handle<TNamed>;
 #pragma link C++ class DD4hep::Handle<TNamed>+;
+
+#pragma link C++ class DD4hep::IOV+;
+#pragma link C++ class DD4hep::IOVType+;
+#pragma link C++ class DD4hep::OpaqueData+;
+#pragma link C++ class DD4hep::OpaqueDataBlock+;
 
 #pragma link C++ class DD4hep::Geometry::LCDD+;
 #pragma link C++ class DD4hep::Geometry::LCDDData+;
@@ -191,8 +198,22 @@ template class DD4hep::Handle<TNamed>;
 #pragma link C++ class vector<const DD4hep::Geometry::HitCollection*>+;
 #pragma link C++ class vector<DD4hep::Geometry::IDDescriptor>+;
 
-#pragma link C++ class DD4hep::Geometry::Alignment+;
+// Alignment stuff
+#pragma link C++ class DD4hep::Alignments::Delta+;
+#pragma link C++ class DD4hep::Alignments::Alignment+;
+#pragma link C++ class DD4hep::Alignments::Container+;
+#pragma link C++ class DD4hep::Alignments::AlignmentData+;
+
+#pragma link C++ class DD4hep::Alignments::DetAlign+;
+#pragma link C++ class DD4hep::Alignments::AlignmentsLoader+;
+#pragma link C++ class DD4hep::Alignments::Interna::AlignmentConditionObject+;
+#pragma link C++ class DD4hep::Alignments::Interna::AlignmentContainer+;
+#pragma link C++ class DD4hep::Alignments::GlobalAlignment+;
+#pragma link C++ class DD4hep::Alignments::AlignmentDecorator<AlignmentData>+;
+#pragma link C++ class DD4hep::Handle<DD4hep::Alignments::AlignmentData>+;
 #pragma link C++ class DD4hep::Handle<TGeoPhysicalNode>+;
+
+
 
 #pragma link C++ class DD4hep::Conditions::Condition+;
 #pragma link C++ class vector<DD4hep::Conditions::Condition>+;
@@ -202,6 +223,9 @@ template class DD4hep::Handle<TNamed>;
 #pragma link C++ class DD4hep::Conditions::Container+;
 #pragma link C++ class DD4hep::Conditions::Interna::ConditionContainer+;
 #pragma link C++ class DD4hep::Handle<DD4hep::Conditions::Interna::ConditionContainer>+;
+#pragma link C++ class DD4hep::Conditions::ConditionsPool+;
+
+#pragma link C++ class DD4hep::Alignments::DetConditions+;
 
 // DetElement.h
 #pragma link C++ class DD4hep::Geometry::World+;

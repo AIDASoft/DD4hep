@@ -22,12 +22,14 @@
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
+  /// Forward declarations
+  class IOV;
+  class IOVType;
+
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Conditions {
 
     /// Forward declarations
-    class IOV;
-    class IOVType;
     class ConditionsPool;
 
     /// Base class to be implemented by objects to listen on condition callbacks

@@ -16,6 +16,7 @@
 
 // Framework include files
 #include "DD4hep/Detector.h"
+#include "DD4hep/GlobalAlignment.h"
 
 // Forward declarations
 class TGeoHMatrix;
@@ -24,7 +25,7 @@ class TGeoHMatrix;
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  namespace Alignments {
 
     // Forward declarations
     class DetElement;
@@ -43,37 +44,37 @@ namespace DD4hep {
       /// Collect all placements from the detector element up to the world volume
       void collectNodes(std::vector<PlacedVolume>& nodes);
       /// Access to the alignment block
-      Alignment alignment() const;
+      GlobalAlignment alignment() const;
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-      std::vector<Alignment>& volumeAlignments();
+      std::vector<GlobalAlignment>& volumeAlignments();
       /// Alignment entries for lower level volumes, which are NOT attached to daughter DetElements
-      const std::vector<Alignment>& volumeAlignments() const;
+      const std::vector<GlobalAlignment>& volumeAlignments() const;
 
       /** @DetElement alignment: Calls to align the detector element itself  */
       /// Align the PhysicalNode of the placement of the detector element (translation only)
-      Alignment align(const Position& pos, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const Position& pos, bool check = false, double overlap = 0.001);
       /// Align the PhysicalNode of the placement of the detector element (rotation only)
-      Alignment align(const RotationZYX& rot, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const RotationZYX& rot, bool check = false, double overlap = 0.001);
       /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
-      Alignment align(const Position& pos, const RotationZYX& rot, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const Position& pos, const RotationZYX& rot, bool check = false, double overlap = 0.001);
       /// Align the physical node according to a generic Transform3D
-      Alignment align(const Transform3D& tr, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const Transform3D& tr, bool check = false, double overlap = 0.001);
       /// Align the physical node according to a generic TGeo matrix
-      Alignment align(TGeoHMatrix* matrix, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(TGeoHMatrix* matrix, bool check = false, double overlap = 0.001);
 
       /** @Volume alignment: Calls to align the volumes within on detector element  */
       /// Align the PhysicalNode of the placement of the detector element (translation only)
-      Alignment align(const std::string& volume_path, const Position& pos, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const std::string& volume_path, const Position& pos, bool check = false, double overlap = 0.001);
       /// Align the PhysicalNode of the placement of the detector element (rotation only)
-      Alignment align(const std::string& volume_path, const RotationZYX& rot, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const std::string& volume_path, const RotationZYX& rot, bool check = false, double overlap = 0.001);
       /// Align the PhysicalNode of the placement of the detector element (translation + rotation)
-      Alignment align(const std::string& volume_path, const Position& pos, const RotationZYX& rot, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const std::string& volume_path, const Position& pos, const RotationZYX& rot, bool check = false, double overlap = 0.001);
       /// Align the physical node according to a generic Transform3D
-      Alignment align(const std::string& volume_path, const Transform3D& tr, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const std::string& volume_path, const Transform3D& tr, bool check = false, double overlap = 0.001);
       /// Align the physical node according to a generic TGeo matrix
-      Alignment align(const std::string& volume_path, TGeoHMatrix* matrix, bool check = false, double overlap = 0.001);
+      GlobalAlignment align(const std::string& volume_path, TGeoHMatrix* matrix, bool check = false, double overlap = 0.001);
     };
 
-  } /* End namespace Geometry                       */
+  } /* End namespace Alignments                     */
 } /* End namespace DD4hep                           */
 #endif    /* DD4HEP_GEOMETRY_DETECTORALIGNMENT_H    */

@@ -24,13 +24,14 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
+    using DD4hep::Position;
+    using Geometry::LCDD;
+    using Geometry::Readout;
+    using Geometry::DetElement;
+    
     // Forward declarations;
-    typedef Geometry::Position Position;
-    typedef Geometry::Position Direction;
-    typedef Geometry::Position Momentum;
-    typedef Geometry::LCDD LCDD;
-    typedef Geometry::Readout Readout;
-    typedef Geometry::DetElement DetElement;
+    typedef Position Direction;
+    typedef Position Momentum;
 
     class Geant4StepHandler;
     class Geant4Hit;

@@ -11,6 +11,14 @@
 // Author     : M.Frank
 //
 //==========================================================================
+//
+// NOTE:
+//
+// This is an internal include file. It should only be included to 
+// instantiate code. Otherwise the VolumeManager include file should be
+// sufficient for all practical purposes.
+//
+//==========================================================================
 
 #ifndef DD4HEP_GEOMETRY_VOLUMEMANAGERINTERNA_H
 #define DD4HEP_GEOMETRY_VOLUMEMANAGERINTERNA_H

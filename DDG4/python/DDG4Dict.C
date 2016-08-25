@@ -239,7 +239,9 @@ namespace {
 #pragma link C++ class dd4hep_ptr<VertexExtension>+;
 #pragma link C++ class dd4hep_ptr<PrimaryExtension>+;
 #pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>;
+#ifdef DD4HEP_DD4HEP_PTR_AUTO
 #pragma link C++ class dd4hep_ptr<Geant4InputAction::Particles>::base_t;
+#endif
 
 // Basic stuff
 #pragma link C++ class Geant4ActionCreation;

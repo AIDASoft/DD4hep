@@ -18,6 +18,7 @@
 #include "DD4hep/Printout.h"
 #include "DD4hep/MatrixHelpers.h"
 #include "DD4hep/DetectorTools.h"
+#include "DD4hep/objects/DetectorInterna.h"
 #include "DD4hep/DetFactoryHelper.h"
 #include "XML/DocumentHandler.h"
 #include "DDAlign/AlignmentTags.h"
@@ -29,7 +30,8 @@
 // C/C++ include files
 #include <stdexcept>
 
-using namespace DD4hep::Geometry;
+namespace DetectorTools = DD4hep::Geometry::DetectorTools;
+using namespace DD4hep::Alignments;
 using namespace DD4hep;
 using namespace std;
 
@@ -37,7 +39,7 @@ using namespace std;
 AlignmentWriter::AlignmentWriter(LCDD& lcdd)
   : m_lcdd(lcdd)
 {
-  m_cache = lcdd.extension<Geometry::AlignmentCache>();
+  m_cache = lcdd.extension<Alignments::AlignmentCache>();
 }
 
 /// Standard destructor
@@ -47,19 +49,19 @@ AlignmentWriter::~AlignmentWriter()  {
 
 /// Create the element corresponding to one single detector element without children
 XML::Element AlignmentWriter::createElement(XML::Document doc, DetElement element)  const  {
-  XML::Element e(0), placement(0), elt = XML::Element(doc,_U(detelement));
+  XML::Element e(0), placement(0), elt = XML::Element(doc,_ALU(detelement));
   string path = element.placementPath();
-  Alignment a = element.alignment();
+  GlobalAlignment a = element->global_alignment;
   DetectorAlignment det(element);
-  const vector<Alignment>& va = det.volumeAlignments();
+  const vector<GlobalAlignment>& va = det.volumeAlignments();
 
-  elt.setAttr(_U(path),element.path());
+  elt.setAttr(_ALU(path),element.path());
   if ( a.isValid() )  {
     addNode(elt,a);
   }
-  for(vector<Alignment>::const_iterator i=va.begin(); i!=va.end();++i)  {
+  for(vector<GlobalAlignment>::const_iterator i=va.begin(); i!=va.end();++i)  {
     e = XML::Element(doc,_U(volume));
-    e.setAttr(_U(path),(*i)->GetName());
+    e.setAttr(_ALU(path),(*i)->GetName());
     addNode(e,*i);
     elt.append(e);
   }
@@ -67,13 +69,13 @@ XML::Element AlignmentWriter::createElement(XML::Document doc, DetElement elemen
 }
 
 /// Add single alignment node to the XML document
-void AlignmentWriter::addNode(XML::Element elt, Alignment a)  const   {
+void AlignmentWriter::addNode(XML::Element elt, GlobalAlignment a)  const   {
   TGeoNode* n = a->GetNode();
   TGeoHMatrix mat(a->GetOriginalMatrix()->Inverse());
   mat.Multiply(n->GetMatrix());
   const Double_t* t = mat.GetTranslation();
   XML::Element placement = XML::Element(elt.document(),_U(comment));
-  placement.setAttr(_U(placement),a->GetName());
+  placement.setAttr(_ALU(placement),a->GetName());
   elt.append(placement);
 
   printout(INFO,"AlignmentWriter","Write Delta constants for %s",a->GetName());
@@ -109,7 +111,7 @@ XML::Element AlignmentWriter::scan(XML::Document doc, DetElement element)  const
   XML::Element elt(0);
   if ( element.isValid() )   {
     const DetElement::Children& c = element.children();
-    Alignment alignment = element.alignment();
+    GlobalAlignment alignment = element->global_alignment;
     if ( alignment.isValid() ) elt = createElement(doc,element);
     for (DetElement::Children::const_iterator i = c.begin(); i != c.end(); ++i)   {
       XML::Element daughter = scan(doc, (*i).second);
@@ -137,10 +139,10 @@ XML::Document AlignmentWriter::dump(DetElement top, bool enable_transactions)  c
   XML::DocumentHandler docH;
   XML::Document doc = docH.create("alignment", comment);
   XML::Element elt(0), elements(0), root = doc.root();
-  root.append(elements = XML::Element(doc, _U(detelements)));
-  if ( enable_transactions ) root.append(XML::Element(doc,_U(open_transaction)));
+  root.append(elements = XML::Element(doc, _ALU(detelements)));
+  if ( enable_transactions ) root.append(XML::Element(doc,_ALU(open_transaction)));
   if ( (elt=scan(doc,top)) ) elements.append(elt);
-  if ( enable_transactions ) root.append(XML::Element(doc,_U(close_transaction)));
+  if ( enable_transactions ) root.append(XML::Element(doc,_ALU(close_transaction)));
   return doc;
 }
 

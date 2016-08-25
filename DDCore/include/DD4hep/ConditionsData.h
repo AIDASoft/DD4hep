@@ -41,31 +41,6 @@ namespace DD4hep {
       virtual void release() = 0;
     };
 
-    /// Class describing an condition to re-adjust an alignment
-    /**
-     *
-     *  \author  M.Frank
-     *  \version 1.0
-     *  \ingroup DD4HEP_CONDITIONS
-     */
-    class AlignmentDelta   {
-    public:
-      typedef Geometry::Position    Position;
-      typedef Geometry::Position    Pivot;
-      typedef Geometry::RotationZYX Rotation;
-      Pivot     pivot;
-      Position  position;
-      Rotation  rotation;
-      /// Default constructor
-      AlignmentDelta();
-      /// Copy constructor
-      AlignmentDelta(const AlignmentDelta& c);
-      /// Default destructor
-      ~AlignmentDelta();
-      /// Assignment operator
-      AlignmentDelta& operator=(const AlignmentDelta& c);
-    };
-
     /// Conditions data block. Internally maps other objects to abstract data blocks
     /**
      *   \author  M.Frank
@@ -77,10 +52,10 @@ namespace DD4hep {
     private:
     public:
       enum {
-	REGULAR = 0,
-	ALIGNMENT = 6
+        REGULAR = 0,
+        ALIGNMENT = 6
       };
-      typedef std::map<std::string, BlockData> Params;
+      typedef std::map<std::string, OpaqueDataBlock> Params;
       ClientData*   clientData;
       Params        params;
       int           classID;
@@ -94,43 +69,43 @@ namespace DD4hep {
       AbstractMap& operator=(const AbstractMap& c);
       /// Simplify access to client data
       template <typename T> T* option()  const   {
-	return static_cast<T*>(clientData);
+        return static_cast<T*>(clientData);
       }
       /// Simplify access to first item of the parameter list (const access)
       const Params::value_type& firstParam()  const   {
-	Params::const_iterator i=params.begin();
-	if ( i != params.end() ) return (*i);
-	throw std::runtime_error("AbstractMap: Failed to access non-existing first parameter");
+        Params::const_iterator i=params.begin();
+        if ( i != params.end() ) return (*i);
+        throw std::runtime_error("AbstractMap: Failed to access non-existing first parameter");
       }
       /// Simplify access to first item of the parameter list
       Params::value_type& firstParam()   {
-	Params::iterator i=params.begin();
-	if ( i != params.end() ) return (*i);
-	throw std::runtime_error("AbstractMap: Failed to access non-existing first parameter");
+        Params::iterator i=params.begin();
+        if ( i != params.end() ) return (*i);
+        throw std::runtime_error("AbstractMap: Failed to access non-existing first parameter");
       }
       /// Simplify access to first item of the parameter list (const access)
       template <typename T> const T& first()  const   {
-	Params::const_iterator i=params.begin();
-	if ( i != params.end() ) return (*i).second.get<T>();
-	throw std::runtime_error("AbstractMap: Failed to access non-existing first item");
+        Params::const_iterator i=params.begin();
+        if ( i != params.end() ) return (*i).second.get<T>();
+        throw std::runtime_error("AbstractMap: Failed to access non-existing first item");
       }
       /// Simplify access to first item of the parameter list
       template <typename T> T& first()   {
-	Params::iterator i=params.begin();
-	if ( i != params.end() ) return (*i).second.get<T>();
-	throw std::runtime_error("AbstractMap: Failed to access non-existing first item");
+        Params::iterator i=params.begin();
+        if ( i != params.end() ) return (*i).second.get<T>();
+        throw std::runtime_error("AbstractMap: Failed to access non-existing first item");
       }
       /// Simplify access to mapped item of the parameter list (const access)
       template <typename T> const T& operator[](const std::string& item)  const   {
-	Params::const_iterator i=params.find(item);
-	if ( i != params.end() ) return (*i).second.get<T>();
-	throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
+        Params::const_iterator i=params.find(item);
+        if ( i != params.end() ) return (*i).second.get<T>();
+        throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
       }
       /// Simplify access to mapped item of the parameter list
       template <typename T> T& operator[](const std::string& item)   {
-	Params::iterator i=params.find(item);
-	if ( i != params.end() ) return (*i).second.get<T>();
-	throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
+        Params::iterator i=params.find(item);
+        if ( i != params.end() ) return (*i).second.get<T>();
+        throw std::runtime_error("AbstractMap: Failed to access non-existing item:"+item);
       }
     };
 

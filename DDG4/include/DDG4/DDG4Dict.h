@@ -46,13 +46,18 @@ using namespace std;
 #pragma link C++ class DD4hep::Simulation::SimpleEvent+;
 #pragma link C++ class DD4hep::Simulation::DataExtension+;
 
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>+;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>::base_t+;
-
 /// Dictionaires for Geant4 particles
 #pragma link C++ class DD4hep::Simulation::ParticleExtension+;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>+;
-#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>::base_t+;
+
+/// Auto-pointers related. ROOT cannot handle I/O!
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>;
+
+#ifdef DD4HEP_DD4HEP_PTR_AUTO
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::DataExtension>::base_t;
+#pragma link C++ class DD4hep::dd4hep_ptr<DD4hep::Simulation::ParticleExtension>::base_t;
+#endif
+
 #pragma link C++ class DD4hep::Simulation::Geant4Particle+;
 #pragma link C++ class vector<DD4hep::Simulation::Geant4Particle*>+;
 #pragma link C++ class map<int,DD4hep::Simulation::Geant4Particle*>+;

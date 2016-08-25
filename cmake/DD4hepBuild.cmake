@@ -465,7 +465,11 @@ endfunction()
 #
 #---------------------------------------------------------------------------------------------------
 function ( dd4hep_install_files )
-  cmake_parse_arguments ( ARG "" "DESTINATION" "FILES" ${ARGN} )
+  cmake_parse_arguments ( ARG "" "DESTINATION" "FILES" "PROGRAMS" ${ARGN} )
+  foreach ( f ${ARG_PROGRAMS} )
+    file ( GLOB sources ${f} )
+    install (PROGRAMS ${sources} DESTINATION ${ARG_DESTINATION} )
+  endforeach()
   foreach ( f ${ARG_UNPARSED_ARGUMENTS} ${ARG_FILES} )
     file ( GLOB sources ${f} )
     install (FILES ${sources} DESTINATION ${ARG_DESTINATION} )

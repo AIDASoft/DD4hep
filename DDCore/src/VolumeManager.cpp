@@ -47,7 +47,7 @@ namespace {
 
     /// Populate the Volume manager
     void populate(DetElement e) {
-      const char* typ = 0;//::getenv("VOLMGR_NEW");
+      //const char* typ = 0;//::getenv("VOLMGR_NEW");
       const DetElement::Children& c = e.children();
       SensitiveDetector parent_sd;
       if ( e->flag&DetElement::Object::HAVE_SENSITIVE_DETECTOR )  {
@@ -106,14 +106,14 @@ namespace {
       if (node) {
         Volume vol = pv.volume();
         const VolIDs& pv_ids   = pv.volIDs();
-        Encoding encoding      = parent_encoding;
+        Encoding vol_encoding  = parent_encoding;
         bool     is_sensitive  = vol.isSensitive();
         bool     have_encoding = pv_ids.empty();
         bool     compound      = e.type() == "compound";
 
         if ( compound )  {
           sd = SensitiveDetector(0);
-          encoding = Encoding();
+          vol_encoding = Encoding();
         }
         else if ( !sd.isValid() )  {
           if ( is_sensitive )
@@ -127,7 +127,7 @@ namespace {
         if ( sd.isValid() && !pv_ids.empty() )   {
           Readout ro = sd.readout();
           if ( ro.isValid() )   {
-            encoding = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
+            vol_encoding = update_encoding(ro.idSpec(), pv_ids, parent_encoding);
             have_encoding = true;
           }
           else {
@@ -144,10 +144,10 @@ namespace {
             DetElement   de_dau = findElt(e, daughter);
             if ( de_dau.isValid() ) {
               Chain dau_chain;
-              count += scanPhysicalVolume(parent, de_dau, pv_dau, encoding, sd, dau_chain);
+              count += scanPhysicalVolume(parent, de_dau, pv_dau, vol_encoding, sd, dau_chain);
             }
             else {
-              count += scanPhysicalVolume(parent, e, pv_dau, encoding, sd, chain);
+              count += scanPhysicalVolume(parent, e, pv_dau, vol_encoding, sd, chain);
             }
           }
           else  {
@@ -178,11 +178,11 @@ namespace {
             //
             printout(VERBOSE,"VolumeManager","++++ %-11s  SD:%s VolID=%p Mask=%p",e.path().c_str(),
                      have_encoding ? "RECUPERATED" : "REGULAR", sd.name(),
-                     (void*)encoding.first, (void*)encoding.second);
-            e.object<DetElement::Object>().volumeID = encoding.first;
+                     (void*)vol_encoding.first, (void*)vol_encoding.second);
+            e.object<DetElement::Object>().volumeID = vol_encoding.first;
           }
           if ( is_sensitive || add_det_vol_id )  {
-            add_entry(sd, parent, e, node, encoding, chain);
+            add_entry(sd, parent, e, node, vol_encoding, chain);
             ++count;
           }
         }

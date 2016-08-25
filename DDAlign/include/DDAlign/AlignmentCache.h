@@ -15,20 +15,19 @@
 #define DD4HEP_ALIGNMENT_ALIGNMENTCACHE_H
 
 // Framework include files
-#include "DD4hep/Alignment.h"
+#include "DD4hep/GlobalAlignment.h"
 #include "DDAlign/AlignmentStack.h"
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
   /// Namespace for the geometry part of the AIDA detector description toolkit
-  namespace Geometry {
+  namespace Alignments {
 
     /// Forward declarations
     class AlignmentOperator;
     class AlignmentCache;
     class AlignmentStack;
-    class LCDD;
 
     /// Class caching all known alignment operations for one LCDD instance.
     /**
@@ -76,7 +75,7 @@ namespace DD4hep {
       /// Apply a vector of SD entries of ordered alignments to the geometry structure
       void apply(const std::vector<Entry*> &changes);
       /// Add a new entry to the cache. The key is the placement path
-      bool insert(Alignment alignment);
+      bool insert(GlobalAlignment alignment);
 
     public:
       /// Create and install a new instance tree
@@ -97,11 +96,11 @@ namespace DD4hep {
       /// Retrieve the cache section corresponding to the path of an entry.
       AlignmentCache* section(const std::string& path_name) const;
       /// Retrieve an alignment entry by its lacement path
-      Alignment get(const std::string& path) const;
+      GlobalAlignment get(const std::string& path) const;
       /// Return all entries matching a given path. Careful: Expensive operaton!
-      std::vector<Alignment> matches(const std::string& path_match, bool exclude_exact=false) const;
+      std::vector<GlobalAlignment> matches(const std::string& path_match, bool exclude_exact=false) const;
     };
 
-  } /* End namespace Geometry        */
-} /* End namespace DD4hep            */
+  } /* End namespace Alignments        */
+} /* End namespace DD4hep              */
 #endif    /* DD4HEP_ALIGNMENT_ALIGNMENTCACHE_H       */

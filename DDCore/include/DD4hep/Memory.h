@@ -21,6 +21,9 @@
 // C/C++ include files
 #include <memory>
 
+// Use std::auto_ptr<T> instead of std::unique_ptr<T>
+#define DD4HEP_DD4HEP_PTR_AUTO
+
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep  {
 
@@ -34,7 +37,8 @@ namespace DD4hep  {
    *   \ingroup DD4HEP_GEOMETRY
    */
   template <typename T> class dd4hep_ptr
-#if defined(DD4HEP_NEVER) && __cplusplus >= 201103L && ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+  //#if defined(DD4HEP_NEVER) && __cplusplus >= 201103L && ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
+#if !defined(DD4HEP_DD4HEP_PTR_AUTO) && __cplusplus >= 201103L && ROOT_VERSION_CODE >= ROOT_VERSION(6,0,0)
     : public std::unique_ptr<T>  {
   public:
     typedef std::unique_ptr<T> base_t;

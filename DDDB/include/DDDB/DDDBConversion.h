@@ -44,11 +44,7 @@ namespace DD4hep {
     class  Document;
 
     using Geometry::DetElement;
-    using Geometry::VisAttr;
-    using Geometry::Position;
-    using Geometry::RotationZYX;
-    using Geometry::Transform3D;
-    using ROOT::Math::Rotation3D;
+    using Geometry::LCDD;
 
     /// Basic named object
     /**   \ingroup DD4HEP_DDDB
