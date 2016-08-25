@@ -38,7 +38,6 @@ namespace DD4hep {
   /// Keep all in here anonymous. Does not have to be visible outside.
   namespace {
 
-    static int preserv_level = 0;
     using Conditions::Condition;
     using Conditions::AbstractMap;
 
@@ -109,27 +108,30 @@ namespace DD4hep {
           return *this;
         }
       };
+
       /// Helper class to preserve local processing environment
       /**   \ingroup DD4HEP_DDDB
        */
       class PreservedLocals : public Locals {
       public:
         Context* context;
-        PreservedLocals(Context* c) : Locals(c->locals), context(c) {
 #ifdef __DEBUG_LOCALS
+        void print(const char* opt, bool inc)  const  {
+          static int preserv_level = 0;
+          int level = inc ? preserv_level++ : --preserv_level;
           if ( xml_doc )
-            printout(INFO,"Locals","PUSH[%d]: %s [%s]", preserv_level++, obj_path.c_str(), xml_doc->id.c_str());
+            printout(INFO,"Locals","%s[%d]: %s [%s]", opt, level, obj_path.c_str(), xml_doc->id.c_str());
           else
-            printout(INFO,"Locals","PUSH[%d]: %s ", preserv_level++, obj_path.c_str());
+            printout(INFO,"Locals","%s[%d]: %s ", opt, level, obj_path.c_str());
+        }
+#else
+        inline void print(const char*, bool) const {}
 #endif
+        PreservedLocals(Context* c) : Locals(c->locals), context(c) {
+          print("PUSH", true);
         }
         ~PreservedLocals()           {
-#ifdef __DEBUG_LOCALS
-          if ( xml_doc )
-            printout(INFO,"Locals","POP [%d]: %s [%s]", --preserv_level, obj_path.c_str(), xml_doc->id.c_str());
-          else
-            printout(INFO,"Locals","POP [%d]: %s", --preserv_level, obj_path.c_str());
-#endif
+          print("POP ", false);
           context->locals = *this; 
         }
       };
