@@ -18,6 +18,11 @@
 // Framework include files
 #include "RVersion.h"
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations" // Code that causes warning goes here
+#endif
+
 // C/C++ include files
 #include <memory>
 
@@ -74,5 +79,9 @@ namespace DD4hep  {
         }
       };
   }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #endif  // DD4HEP_MEMORY_H

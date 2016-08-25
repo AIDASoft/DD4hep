@@ -58,24 +58,24 @@ namespace DD4hep {
     /// Generic copy constructor
     invalid_handle_exception(const std::exception& e) : std::runtime_error(e.what()) {}
     /// Default destructor of specialized exception
-    virtual ~invalid_handle_exception() throw();
+    virtual ~invalid_handle_exception();
   };
 
   /// ABI information about type names
   std::string typeName(const std::type_info& type);
-  void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "") throw(std::exception);
+  void typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text = "");
   /// Throw exception when handles are check for validity
-  void invalidHandleError(const std::type_info& type) throw(std::exception);
+  void invalidHandleError(const std::type_info& type);
   /// Throw exception when handles are badly assigned
-  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to) throw(std::exception);
+  void invalidHandleAssignmentError(const std::type_info& from, const std::type_info& to);
 
   /// Throw exception when handles are check for validity
-  template <typename T> void invalidHandleError()  throw(std::exception) {
+  template <typename T> void invalidHandleError()  {
     invalidHandleError(typeid(T));
   }
 
   /// Throw exception when handles are check for validity
-  void notImplemented(const std::string& msg)  throw(std::exception);
+  void notImplemented(const std::string& msg);
 
 
   /// A bit of support for printing primitives
@@ -186,11 +186,11 @@ namespace DD4hep {
     }
 
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_dynCast(const ComponentCast& to, const void* ptr) const   throw(std::exception);
+    void* apply_dynCast(const ComponentCast& to, const void* ptr) const;
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_upCast(const ComponentCast& to, const void* ptr) const    throw(std::exception);
+    void* apply_upCast(const ComponentCast& to, const void* ptr) const;
     /// Apply cast using typeinfo instead of dynamic_cast
-    void* apply_downCast(const ComponentCast& to, const void* ptr) const  throw(std::exception);
+    void* apply_downCast(const ComponentCast& to, const void* ptr) const;
   };
 
 

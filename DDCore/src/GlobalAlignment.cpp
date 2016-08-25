@@ -28,36 +28,6 @@ using namespace DD4hep;
 using namespace DD4hep::Alignments;
 
 namespace  {
-  int _align(const GlobalAlignment& a, TGeoHMatrix* transform, bool check, double overlap) {
-    TGeoPhysicalNode* n = a.ptr();
-    if ( n )  {
-      TGeoMatrix* mm = n->GetNode()->GetMatrix();
-      transform->MultiplyLeft(mm); // orig * delta
-      n->Align(transform, 0, check, overlap);
-      /*
-        printout(INFO,"GlobalAlignment","OLD matrix....");
-        mm->Print();
-        printout(INFO,"GlobalAlignment","Apply new relative matrix  mother to daughter:");
-        transform->Print();
-        transform->MultiplyLeft(mm); // orig * delta
-        printout(INFO,"GlobalAlignment","With deltas....");
-        transform->Print();
-        n->Align(transform, 0, check, overlap);
-        printout(INFO,"GlobalAlignment","NEW matrix....");
-        n->GetNode()->GetMatrix()->Print();
-      */
-      /*
-       */
-      printout(INFO,"GlobalAlignment","NEW matrix....");
-      n->GetNode()->GetMatrix()->Print();
-      Position local, global = a.toGlobal(local);
-      cout << "Local:" << local << " Global: " << global
-           << " and back:" << a.globalToLocal(global) << endl;
-
-      return 1;
-    }
-    throw runtime_error("DD4hep: Cannot align non existing physical node. [Invalid Handle]");
-  }
   struct CheckHandle  {
     CheckHandle(const GlobalAlignment& a)  {
       if ( a.isValid() ) return;

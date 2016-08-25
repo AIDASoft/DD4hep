@@ -121,13 +121,6 @@ namespace {
     return false;
   }
 
-  void __print(const char* prefix, Condition c)   {
-    if ( s_debug > INFO )  {
-      printout(INFO,"ConditionsManager","+++ %s %s [%s] = %s",
-               prefix, c.name().c_str(), c->iov->str().c_str(), c->value.c_str());
-    }
-  }
-
   template <typename PMF>
   void __callListeners(const ConditionsManagerObject::Listeners& listeners, PMF pmf, Condition& cond)  {
     for(ConditionsManagerObject::Listeners::const_iterator i=listeners.begin(); i!=listeners.end(); ++i)  {

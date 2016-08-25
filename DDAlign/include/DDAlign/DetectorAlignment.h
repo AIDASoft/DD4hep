@@ -27,9 +27,6 @@ namespace DD4hep {
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Alignments {
 
-    // Forward declarations
-    class DetElement;
-
     /// DetectorAlignment. DetElement Handle supporting alignment operations.
     /**
      *  \author   M.Frank

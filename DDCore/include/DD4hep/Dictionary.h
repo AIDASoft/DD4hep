@@ -19,6 +19,13 @@
 #ifndef DD4HEP_GEOMETRY_DICTIONARY_H
 #define DD4HEP_GEOMETRY_DICTIONARY_H
 
+// Disable some diagnostics for ROOT dictionaries
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated"
+#pragma GCC diagnostic ignored "-Wunused"
+#endif
+
 #include "XML/Evaluator.h"
 #include "DD4hep/DetAlign.h"
 #include "DD4hep/DD4hepRootPersistency.h"

@@ -33,7 +33,6 @@ namespace DD4hep {
     namespace Interna  {
       /// Forward declarations
       class AlignmentContainer;
-      class AlignmentObject;
     }
     class AlignmentsManagerObject;
     class AlignmentsLoader;

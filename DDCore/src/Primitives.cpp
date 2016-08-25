@@ -153,18 +153,16 @@ std::string DD4hep::typeName(const std::type_info& typ) {
 }
 
 /// Default destructor of specialized exception
-DD4hep::invalid_handle_exception::~invalid_handle_exception() throw() {
+DD4hep::invalid_handle_exception::~invalid_handle_exception() {
 }
 
 void DD4hep::invalidHandleError(const std::type_info& type)
-  throw(std::exception)
 {
   throw invalid_handle_exception("Attempt to access invalid object of type "+typeName(type)+" [Invalid Handle]");
 }
 
 void DD4hep::invalidHandleAssignmentError(const std::type_info& from, 
                                           const std::type_info& to)
-  throw(std::exception)
 {
   std::string msg = "Wrong assingment from ";
   msg += typeName(from);
@@ -176,14 +174,12 @@ void DD4hep::invalidHandleAssignmentError(const std::type_info& from,
 
 /// Throw exception when handles are check for validity
 void DD4hep::notImplemented(const std::string& msg)
-  throw(std::exception)
 {
   std::string m = "The requested feature " + msg + " is not implemented!";
   throw std::runtime_error(m);
 }
 
 void DD4hep::typeinfoCheck(const std::type_info& typ1, const std::type_info& typ2, const std::string& text)
-  throw(std::exception)
 {
   if (typ1 != typ2) {
     throw unrelated_type_error(typ1, typ2, text);
@@ -289,7 +285,6 @@ static inline void* cast_wrap(const void* p,
 
 /// Apply cast using typeinfo instead of dynamic_cast
 void* DD4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* ptr) const
-  throw(std::exception)
 {
   if (&to == this) {
     return (void*) ptr;
@@ -330,7 +325,6 @@ void* DD4hep::ComponentCast::apply_dynCast(const ComponentCast& to, const void* 
 
 /// Apply cast using typeinfo instead of dynamic_cast
 void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* ptr) const
-  throw(std::exception)
 {
   if (&to == this) {
     return (void*) ptr;
@@ -340,7 +334,6 @@ void* DD4hep::ComponentCast::apply_upCast(const ComponentCast& to, const void* p
   
 /// Apply cast using typeinfo instead of dynamic_cast
 void* DD4hep::ComponentCast::apply_downCast(const ComponentCast& to, const void* ptr) const
-  throw(std::exception)
 {
   if (&to == this) {
     return (void*) ptr;

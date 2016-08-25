@@ -11,6 +11,9 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
 
 // Framework include files
 #include "run_plugin.h"
@@ -19,8 +22,11 @@
 namespace {
   void usage() {
     cout << "geoPluginRun -opt [-opt]                                                \n"
-      "        -plugin <name>  [REQUIRED]  Plugin to be executed and applied.        \n"
-      "        -input  <file>  [OPTIONAL]  Specify geometry input file.              \n";
+      "        -input  <file>  [OPTIONAL]  Specify geometry input file.              \n"
+      "        -plugin <name>  <args> [args]                                         \n"
+      "                        [REQUIRED]  Plugin to be executed and applied.        \n"
+      "        -plugin <name>  <args> [args]                                         \n"
+      "                        [OPTIONAL]  Next plugin with arguments.               \n";
     print_default_args() << endl;
     exit(EINVAL);
   }

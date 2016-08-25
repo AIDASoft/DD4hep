@@ -19,6 +19,13 @@
 #ifndef DD4HEP_DDG4_DDG4DICT_H
 #define DD4HEP_DDG4_DDG4DICT_H
 
+// Disable some diagnostics for ROOT dictionaries
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated"
+#pragma GCC diagnostic ignored "-Wunused"
+#endif
+
 // FRamework include files
 #include "DDG4/Geant4Data.h"
 #include "DDG4/Geant4Particle.h"

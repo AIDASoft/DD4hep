@@ -11,6 +11,9 @@
 // Author     : M.Frank
 //
 //==========================================================================
+#ifdef __GNUC__
+#pragma GCC diagnostic ignored "-Wunused-function"
+#endif
 
 // Framework include files
 #include "run_plugin.h"
@@ -103,3 +106,4 @@ int main(int argc,char** argv)  {
   if ( destroy ) delete &lcdd;
   return 0;
 }
+
