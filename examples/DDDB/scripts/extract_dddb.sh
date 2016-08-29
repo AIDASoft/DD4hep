@@ -70,6 +70,10 @@ if test -d ${target}/DDDB; then
     echo "DDDB database is already extracted to ${target}. Nothing to do.";
 elif test ! -f ${source}; then
     echo "DDDB database tar file $source is not present. [Installation FAILED]";
+    echo "ls -laF /builds/CLICdp/DD4hep/examples/DDDB";
+    ls -laF /builds/CLICdp/DD4hep/examples/DDDB;
+    echo "ls -laF /builds/CLICdp/DD4hep/examples/DDDB/data";
+    ls -laF /builds/CLICdp/DD4hep/examples/DDDB/data;
     exit 2;  # ENOENT
 else
     mkdir -p ${target}/DDDB;
