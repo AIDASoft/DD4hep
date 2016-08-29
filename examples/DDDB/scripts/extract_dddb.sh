@@ -18,7 +18,7 @@ echo "+ ------------------------------------------------------------------+";
 echo "|   Starting DDDB extraction from tar file                          |";
 echo "+ ------------------------------------------------------------------+";
 #
-if test -z "$USER"; then
+if test -n "$USER"; then
     target=/tmp/$USER;
 else
     target=/tmp;

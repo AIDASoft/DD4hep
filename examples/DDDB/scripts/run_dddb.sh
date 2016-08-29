@@ -20,7 +20,7 @@ echo "|   Starting DDDB plugin executor....                               |";
 #echo "|                                                                   |";
 echo "+ ------------------------------------------------------------------+";
 #
-if test -z "$USER"; then
+if test -n "$USER"; then
     target=/tmp/$USER;
 else
     target=/tmp;
