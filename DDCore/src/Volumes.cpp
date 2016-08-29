@@ -495,7 +495,7 @@ static PlacedVolume _addNode(TGeoVolume* par, TGeoVolume* daughter, TGeoMatrix* 
   TGeoVolume* parent = par;
   TObjArray* a = parent->GetNodes();
   Int_t id = a ? a->GetEntries() : 0;
-  if (transform && transform != DD4hep::identityTransform()) {
+  if (transform && transform != identityTransform()) {
     string nam = string(daughter->GetName()) + "_placement";
     transform->SetName(nam.c_str());
   }
@@ -523,7 +523,7 @@ PlacedVolume Volume::placeVolume(const Volume& volume, const Transform3D& trans)
 
 /// Place daughter volume. The position and rotation are the identity
 PlacedVolume Volume::placeVolume(const Volume& volume) const {
-  return _addNode(m_element, volume, DD4hep::identityTransform());
+  return _addNode(m_element, volume, identityTransform());
 }
 
 /// Place un-rotated daughter volume at the given position.

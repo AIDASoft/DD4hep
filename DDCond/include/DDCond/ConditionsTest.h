@@ -37,6 +37,7 @@ namespace DD4hep {
     namespace Test  {
 
       using Geometry::LCDD;
+      using Geometry::Position;
       using Geometry::DetElement;
 
       struct TestEnv {

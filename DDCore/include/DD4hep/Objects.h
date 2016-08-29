@@ -64,46 +64,6 @@ class TGeoIdentity;
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
 
-  typedef ROOT::Math::XYZVector Position;
-  template <class V> V RotateX(const V& v, double a) {
-    return ROOT::Math::VectorUtil::RotateX(v, a);
-  }
-  template <class V> V RotateY(const V& v, double a) {
-    return ROOT::Math::VectorUtil::RotateY(v, a);
-  }
-  template <class V> V RotateZ(const V& v, double a) {
-    return ROOT::Math::VectorUtil::RotateZ(v, a);
-  }
-
-  /** Rotation class with the (3D) rotation represented by
-   *  angles describing first a rotation of
-   *  an angle phi (yaw) about the  Z axis,
-   *  followed by a rotation of an angle theta (pitch) about the new Y' axis,
-   *  followed by a third rotation of an angle psi (roll) about the final X'' axis.
-   *  This is  sometimes referred to as the Euler 321 sequence.
-   *  It has not to be confused with the typical Goldstein definition of the Euler Angles
-   *  (Z-X-Z or 313 sequence) which is used by the ROOT::Math::EulerAngles class.
-   *  \see http://root.cern.ch/root/html/ROOT__Math__RotationZYX.html
-   */
-  typedef ROOT::Math::RotationZYX   RotationZYX;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationZ.html */
-  typedef ROOT::Math::RotationZ     RotationZ;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationY.html */
-  typedef ROOT::Math::RotationY     RotationY;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationX.html */
-  typedef ROOT::Math::RotationX     RotationX;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__Rotation3D.html */
-  typedef ROOT::Math::Rotation3D    Rotation3D;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__EulerAngels.html */
-  typedef ROOT::Math::EulerAngles   EulerAngles;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__Transform3D.html */
-  typedef ROOT::Math::Transform3D   Transform3D;
-  /**  \see http://root.cern.ch/root/html/ROOT__Math__Translations3D.html */
-  typedef ROOT::Math::Translation3D Translation3D;
-
-  /** Access to identity transformation  */
-  TGeoIdentity* identityTransform();
-
   /// Namespace for the geometry part of the AIDA detector description toolkit
   namespace Geometry {
 
@@ -116,6 +76,47 @@ namespace DD4hep {
     class RegionObject;
     class LimitSetObject;
 
+    typedef ROOT::Math::XYZVector Position;
+    template <class V> V RotateX(const V& v, double a) {
+      return ROOT::Math::VectorUtil::RotateX(v, a);
+    }
+    template <class V> V RotateY(const V& v, double a) {
+      return ROOT::Math::VectorUtil::RotateY(v, a);
+    }
+    template <class V> V RotateZ(const V& v, double a) {
+      return ROOT::Math::VectorUtil::RotateZ(v, a);
+    }
+
+    /** Rotation class with the (3D) rotation represented by
+     *  angles describing first a rotation of
+     *  an angle phi (yaw) about the  Z axis,
+     *  followed by a rotation of an angle theta (pitch) about the new Y' axis,
+     *  followed by a third rotation of an angle psi (roll) about the final X'' axis.
+     *  This is  sometimes referred to as the Euler 321 sequence.
+     *  It has not to be confused with the typical Goldstein definition of the Euler Angles
+     *  (Z-X-Z or 313 sequence) which is used by the ROOT::Math::EulerAngles class.
+     *  \see http://root.cern.ch/root/html/ROOT__Math__RotationZYX.html
+     */
+    typedef ROOT::Math::RotationZYX   RotationZYX;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationZ.html */
+    typedef ROOT::Math::RotationZ     RotationZ;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationY.html */
+    typedef ROOT::Math::RotationY     RotationY;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__RotationX.html */
+    typedef ROOT::Math::RotationX     RotationX;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__Rotation3D.html */
+    typedef ROOT::Math::Rotation3D    Rotation3D;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__EulerAngels.html */
+    typedef ROOT::Math::EulerAngles   EulerAngles;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__Transform3D.html */
+    typedef ROOT::Math::Transform3D   Transform3D;
+    /**  \see http://root.cern.ch/root/html/ROOT__Math__Translations3D.html */
+    typedef ROOT::Math::Translation3D Translation3D;
+
+    /** Access to identity transformation  */
+    TGeoIdentity* identityTransform();
+
+    
     /// Handle class describing an author entity
     /**
      *  \author  M.Frank
@@ -565,7 +566,7 @@ namespace DD4hep {
 
 namespace ROOT {
   namespace Math {
-    typedef DD4hep::Position Position;
+    typedef DD4hep::Geometry::Position Position;
     /// Dot product of 3-vectors.
     inline double operator *(const Position& l, const Position& r) {
       return std::sqrt(l.X() * r.X() + l.Y() * r.Y() + l.Z() * r.Z());

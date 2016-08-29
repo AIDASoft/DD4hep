@@ -30,6 +30,9 @@ namespace DD4hep {
 
     // The DetElement is a central object. We alias it here.
     using Geometry::DetElement;
+    using Geometry::RotationZYX;
+    using Geometry::Transform3D;
+    using Geometry::Position;
     using Geometry::LCDD;
 
     // Forward declarations

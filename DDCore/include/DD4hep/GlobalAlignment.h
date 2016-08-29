@@ -37,6 +37,11 @@ namespace DD4hep {
      *  \ingroup DD4HEP_ALIGN
      */
     class GlobalAlignment: public Handle<TGeoPhysicalNode> {
+
+      typedef Geometry::RotationZYX RotationZYX;
+      typedef Geometry::Transform3D Transform3D;
+      typedef Geometry::Position    Position;
+      
     public:
       /// Default constructor
       GlobalAlignment();

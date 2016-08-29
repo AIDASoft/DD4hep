@@ -27,11 +27,14 @@ namespace DDRec {
 
 class LayeringExtensionImpl: public LayeringExtension {
 public:
+  /// Shortcut to use geometrical positions
+  typedef Geometry::Position Position;
+  
 	/// Default constructor
 	LayeringExtensionImpl();
 
 	/// Copy constructor
-          LayeringExtensionImpl(const LayeringExtensionImpl& /*e*/, const Geometry::DetElement& /*d*/) {};
+  LayeringExtensionImpl(const LayeringExtensionImpl& /*e*/, const Geometry::DetElement& /*d*/) {};
 
 	 /// Destructor
 	 virtual ~LayeringExtensionImpl();

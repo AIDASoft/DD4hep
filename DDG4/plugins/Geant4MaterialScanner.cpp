@@ -14,6 +14,7 @@
 
 // Framework include files
 #include "DD4hep/Objects.h"
+#include "DDG4/Defs.h"
 #include "DDG4/Geant4SteppingAction.h"
 
 // Forward declarations

@@ -39,11 +39,11 @@ private:
 
 class invalid_position: public std::invalid_argument {
 public:
-	invalid_position(const std::string& msg, const Position& position) :
+	invalid_position(const std::string& msg, const Geometry::Position& position) :
 			std::invalid_argument(createMsg(msg, position)) {
 	}
 private:
-	static std::string createMsg(const std::string& msg, const Position& position) {
+	static std::string createMsg(const std::string& msg, const Geometry::Position& position) {
 		std::stringstream s;
 		s << "Invalid position: " << msg << " " << position;
 		return s.str();

@@ -21,6 +21,7 @@ using Geometry::Readout;
 using Geometry::Solid;
 using Geometry::VolumeManager;
 using Geometry::Volume;
+using Geometry::Position;
 using std::set;
 
 IDDecoder& IDDecoder::getInstance() {

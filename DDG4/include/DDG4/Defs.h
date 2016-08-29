@@ -24,7 +24,9 @@ namespace DD4hep {
   /// Namespace for the Geant4 based simulation part of the AIDA detector description toolkit
   namespace Simulation {
 
-    using DD4hep::Position;
+    using Geometry::Transform3D;
+    using Geometry::RotationZYX;
+    using Geometry::Position;
     using Geometry::LCDD;
     using Geometry::Readout;
     using Geometry::DetElement;

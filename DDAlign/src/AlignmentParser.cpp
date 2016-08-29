@@ -59,6 +59,8 @@ namespace DD4hep  {
 using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Alignments;
+using DD4hep::Geometry::Position;
+using DD4hep::Geometry::Translation3D;
 
 /** Convert rotation objects
  *

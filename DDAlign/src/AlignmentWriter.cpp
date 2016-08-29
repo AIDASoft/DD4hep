@@ -31,6 +31,8 @@
 #include <stdexcept>
 
 namespace DetectorTools = DD4hep::Geometry::DetectorTools;
+using DD4hep::Geometry::Position;
+using DD4hep::Geometry::Translation3D;
 using namespace DD4hep::Alignments;
 using namespace DD4hep;
 using namespace std;
@@ -90,7 +92,7 @@ void AlignmentWriter::addNode(XML::Element elt, GlobalAlignment a)  const   {
     elt.append(e);
   }
   if ( mat.IsRotation() )  {
-    XYZAngles rot = _XYZangles(&mat);
+    Geometry::XYZAngles rot = Geometry::_XYZangles(&mat);
     if ( fabs(rot.X()) > numeric_limits<double>::epsilon() ||
          fabs(rot.Y()) > numeric_limits<double>::epsilon() ||
          fabs(rot.Z()) > numeric_limits<double>::epsilon() )    {

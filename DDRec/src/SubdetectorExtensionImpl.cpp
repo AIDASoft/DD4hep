@@ -14,6 +14,7 @@ namespace DD4hep {
 namespace DDRec {
 
 using Geometry::DetElement;
+using Geometry::Position;
 
 /// Constructor using a top level DetElement
 SubdetectorExtensionImpl::SubdetectorExtensionImpl(const Geometry::DetElement& det_elt) {

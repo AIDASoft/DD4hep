@@ -32,7 +32,7 @@ namespace  {
       det.addExtension<LayeringExtension>(e);
       for(std::map<int,DetElement>::const_iterator i=layers.begin(); i!=layers.end();++i)   {
         DetElement de = (*i).second;
-        e->setLayer(de.id(), de, DD4hep::Position(0,0,1));
+        e->setLayer(de.id(), de, Position(0,0,1));
         std::cout << " Add layer:" << de.name() 
                   << " ID: " << de.id() 
                   << " Parent:" << de.parent().name() << std::endl;

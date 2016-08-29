@@ -19,6 +19,7 @@ using namespace std;
 using namespace DD4hep;
 using namespace DD4hep::Conditions;
 using Geometry::LCDD;
+using Geometry::Position;
 using Geometry::DetElement;
 
 namespace  {

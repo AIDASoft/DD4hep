@@ -44,6 +44,10 @@ namespace DD4hep {
     class  Document;
 
     using Geometry::DetElement;
+    using Geometry::Rotation3D;
+    using Geometry::RotationZYX;
+    using Geometry::Transform3D;
+    using Geometry::Position;
     using Geometry::LCDD;
 
     /// Basic named object

@@ -18,8 +18,12 @@ echo "+ ------------------------------------------------------------------+";
 echo "|   Starting DDDB extraction from tar file                          |";
 echo "+ ------------------------------------------------------------------+";
 #
+if test -z "$USER"; then
+    target=/tmp/$USER;
+else
+    target=/tmp;
+fi;
 source=${DD4hepINSTALL}/examples/DDDB/DDDB.tar.gz;
-target=/tmp/$USER;
 clean="NO";
 #
 # Check for arguments:

@@ -15,14 +15,19 @@
 #
 #==========================================================================
 echo "+ ------------------------------------------------------------------+";
-echo "|                                                                   |";
+#echo "|                                                                   |";
 echo "|   Starting DDDB plugin executor....                               |";
-echo "|                                                                   |";
+#echo "|                                                                   |";
 echo "+ ------------------------------------------------------------------+";
 #
+if test -z "$USER"; then
+    target=/tmp/$USER;
+else
+    target=/tmp;
+fi;
 #
 # Check for arguments:
-DDDB_DIR=/tmp/${USER}/DDDB;
+DDDB_DIR=${target}/DDDB;
 loader="-loader DDDB_FileReader";
 params="-params file:${DDDB_DIR}/Parameters.xml";
 input="-input file:${DDDB_DIR}/DDDB/lhcb.xml";
