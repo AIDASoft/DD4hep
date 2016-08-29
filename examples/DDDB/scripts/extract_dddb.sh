@@ -79,7 +79,9 @@ else
     fi;
     cd ${target};
     echo "${target} : tar -xf $source";
-    tar -xf $source;
+    /bin/tar -xf $source;
+    /bin/ls -laF `dirname $source`;
+    /bin/ls -laF $target;
 fi;
 if test -f ${target}/DDDB/DDDB/lhcb.xml; then
     echo "DDDB Database successfully installed.";
