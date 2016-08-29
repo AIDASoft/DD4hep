@@ -9,14 +9,24 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+#
+# DDDB is a detector description convention developed by the LHCb experiment.
+# For further information concerning the DTD, please see:
+# http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
+#
+# The usage of Xerces-C is mandatory due to the entity resolution mechanism
+#
+
+#==========================================================================
 cmake_minimum_required(VERSION 2.8.3 FATAL_ERROR)
 include ( ${DD4hep_DIR}/cmake/DD4hep.cmake )
 
 #-----------------------------------------------------------------------------------
 dd4hep_configure_output ()
 dd4hep_package (DDDB MAJOR 0 MINOR 0 PATCH 1
-  USES  [ROOT   REQUIRED COMPONENTS Geom] 
-        [DD4hep REQUIRED COMPONENTS DDCore DDDB]
+  USES  [XERCESC REQUIRED]
+        [ROOT    REQUIRED COMPONENTS Geom] 
+        [DD4hep  REQUIRED COMPONENTS DDCore DDDB]
 )
 #---Package installation procedure(s) -----------------------------------------
 install ( PROGRAMS scripts/run_dddb.sh DESTINATION bin)

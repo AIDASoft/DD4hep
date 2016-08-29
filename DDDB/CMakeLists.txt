@@ -9,8 +9,17 @@
 # For the list of contributors see $DD4hepINSTALL/doc/CREDITS.
 #
 #==========================================================================
+#
+# DDDB is a detector description convention developed by the LHCb experiment.
+# For further information concerning the DTD, please see:
+# http://lhcb-comp.web.cern.ch/lhcb-comp/Frameworks/DetDesc/Documents/lhcbDtd.pdf
+# The usage of Xerces-C is mandatory due to the entity resolution mechanism
+#
+#=================================================================================
+
 dd4hep_package(    DDDB
   USES             DDCore DDCond
+                   [XERCESC REQUIRED]
                    [BOOST REQUIRED COMPONENTS filesystem]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDDB)
