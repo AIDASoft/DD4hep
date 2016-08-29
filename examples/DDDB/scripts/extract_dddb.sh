@@ -60,6 +60,14 @@ while [[ "$1" == -* ]]; do
     shift;
 done;
 #
+# Seems like cmake install is not really deterministic and installs files either with or without
+# data source directory name....if input is not present try to add /data/.
+#
+if test ! -f ${source}; then
+    base=`basename ${source}`;
+    dir=`dirname ${source}`;
+    source=${dir}/data/${base};
+fi;
 # Now do the installation
 if test -d ${target}/DDDB; then
     if test "${clean}" = "YES";then
