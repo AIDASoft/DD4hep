@@ -19,7 +19,6 @@
 
 dd4hep_package(    DDDB
   USES             DDCore DDCond
-                   [XERCESC REQUIRED]
                    [BOOST REQUIRED COMPONENTS filesystem]
   INCLUDE_DIRS     include
   INSTALL_INCLUDES include/DDDB)
