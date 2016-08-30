@@ -1793,7 +1793,7 @@ namespace DD4hep {
       return p;
     }
 
-    template <typename ACTION=dddb>
+    template <typename ACTION>
     void load_dddb_entity(Context*      context,
                           Catalog*      catalog, 
                           xml_h         element,
