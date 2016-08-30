@@ -268,12 +268,8 @@ namespace DD4hep {
   template <typename M> class DestroyObjects {
   public:
     M& object;
-    DestroyObjects(M& m)
-      : object(m) {
-    }
-    ~DestroyObjects() {
-      object.clear();
-    }
+    DestroyObjects(M& m) : object(m) {                    }
+    ~DestroyObjects()                { object.clear();    }
     void operator()(std::pair<typename M::key_type, typename M::mapped_type> p) const {
       DestroyObject<typename M::mapped_type>()(p.second);
     }

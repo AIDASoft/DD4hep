@@ -218,14 +218,14 @@ template <typename T> static inline string __to_string(T value, const char* fmt)
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
-std::string DD4hep::XML::_toString(const char* s) {
+string DD4hep::XML::_toString(const char* s) {
   if ( !s || *s == 0 ) return "";
   else if ( !(*s == '$' && *(s+1) == '{') ) return s;
   return _checkEnviron(s);
 }
 
 /// Do-nothing version. Present for completeness and argument interchangeability
-std::string DD4hep::XML::_toString(const std::string& s) {
+string DD4hep::XML::_toString(const string& s) {
   if ( s.length() < 3 || s[0] != '$' ) return s;
   else if ( !(s[0] == '$' && s[1] == '{') ) return s;
   return _checkEnviron(s);
@@ -348,7 +348,7 @@ void DD4hep::XML::_toDictionary(const XmlChar* name, T value)   {
 #ifndef DD4HEP_USE_TINYXML
 template void DD4hep::XML::_toDictionary(const XmlChar* name, const char* value);
 #endif
-template void DD4hep::XML::_toDictionary(const XmlChar* name, const std::string& value);
+template void DD4hep::XML::_toDictionary(const XmlChar* name, const string& value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned long value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned int value);
 template void DD4hep::XML::_toDictionary(const XmlChar* name, unsigned short value);
@@ -408,40 +408,49 @@ Strng_t DD4hep::XML::operator+(const Strng_t& a, const Strng_t& b) {
 }
 
 Tag_t DD4hep::XML::operator+(const Tag_t& a, const char* b) {
-  return a.str() + b;
+  string res = a.str() + b;
+  return Tag_t(res);
 }
 
 Tag_t DD4hep::XML::operator+(const char* a, const Tag_t& b) {
-  return a + b.str();
+  string res = a + b.str();
+  return Tag_t(res);
 }
 
 Tag_t DD4hep::XML::operator+(const Tag_t& a, const Strng_t& b) {
-  return a.str() + _toString(b);
+  string res = a.str() + _toString(b);
+  return Tag_t(res);
 }
 
 Tag_t DD4hep::XML::operator+(const Tag_t& a, const string& b) {
-  return a.str() + b;
+  string res = a.str() + b;
+  return Tag_t(res);
 }
 
 #ifndef DD4HEP_USE_TINYXML
 Strng_t DD4hep::XML::operator+(const Strng_t& a, const XmlChar* b) {
-  return _toString(a.ptr()) + _toString(b);
+  string res = _toString(a.ptr()) + _toString(b);
+  return Tag_t(res);
 }
 
 Strng_t DD4hep::XML::operator+(const XmlChar* a, const Strng_t& b) {
-  return _toString(a) + _toString(b.ptr());
+  string res = _toString(a) + _toString(b.ptr());
+  return Tag_t(res);
 }
 
 Strng_t DD4hep::XML::operator+(const XmlChar* a, const string& b) {
-  return _toString(a) + b;
+  string res = _toString(a) + b;
+  return Tag_t(res);
 }
 
 Strng_t DD4hep::XML::operator+(const string& a, const XmlChar* b) {
-  return a + _toString(b);
+  string res = a + _toString(b);
+  return Tag_t(res);
 }
 
 Tag_t DD4hep::XML::operator+(const Tag_t& a, const XmlChar* b) {
-  return a.str() + _toString(b);
+  string res = a.str() + _toString(b);
+  return Tag_t(res);
 }
 
 Strng_t& Strng_t::operator=(const XmlChar* s) {
@@ -949,7 +958,7 @@ static unsigned int adler32(unsigned int adler, const XmlChar* xml_buff, size_t 
 typedef unsigned int (fcn_t)(unsigned int, const XmlChar*, size_t);
 unsigned int Handle_t::checksum(unsigned int param, fcn_t fcn) const {
 #ifdef DD4HEP_USE_TINYXML
-  typedef std::map<std::string, std::string> StringMap;
+  typedef map<string, string> StringMap;
   TiXmlNode* n = Xml(m_node).n;
   if ( n ) {
     if ( 0 == fcn ) fcn = adler32;
@@ -1159,11 +1168,11 @@ size_t Collection_t::size() const {
 }
 
 /// Helper function to throw an exception
-void Collection_t::throw_loop_exception(const std::exception& e) const {
+void Collection_t::throw_loop_exception(const exception& e) const {
   if (m_node) {
-    throw runtime_error(std::string(e.what()) + "\n" + "DD4hep: Error interpreting XML nodes of type <" + tag() + "/>");
+    throw runtime_error(string(e.what()) + "\n" + "DD4hep: Error interpreting XML nodes of type <" + tag() + "/>");
   }
-  throw runtime_error(std::string(e.what()) + "\n" + "DD4hep: Error interpreting collections XML nodes.");
+  throw runtime_error(string(e.what()) + "\n" + "DD4hep: Error interpreting collections XML nodes.");
 }
 
 void Collection_t::operator++() const {

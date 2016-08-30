@@ -85,7 +85,7 @@ DetElementObject::DetElementObject(const std::string& nam, int ident)
 
 /// Internal object destructor: release extension object(s)
 DetElementObject::~DetElementObject() {
-  for_each(children.begin(), children.end(), destroyHandles(children));
+  destroyHandles(children);
   deletePtr (referenceTrafo);
   if ( conditions.isValid() ) delete conditions.ptr();
   conditions = ConditionsContainer();

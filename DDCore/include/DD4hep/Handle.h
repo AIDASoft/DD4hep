@@ -200,34 +200,32 @@ namespace DD4hep {
   /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
   template <typename T> class DestroyHandle {
   public:
-    void operator()(T p) const {
-      destroyHandle(p);
-    }
+    void operator()(T p) const {  destroyHandle(p);    }
   };
   /// Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
   template <typename T> class ReleaseHandle {
   public:
-    void operator()(T p) const {
-      releaseHandle(p);
-    }
+    void operator()(T p) const {  releaseHandle(p);    }
   };
   /// map Functor to destroy handles and delete the cached object  \ingroup DD4HEP_GEOMETRY
   template <typename M> class DestroyHandles {
   public:
+    /// Container reference
     M& object;
-    DestroyHandles(M& m)
-      : object(m) {
-    }
-    ~DestroyHandles() {
-      object.clear();
-    }
-    void operator()(std::pair<typename M::key_type, typename M::mapped_type> p) const {
-      DestroyHandle<typename M::mapped_type>()(p.second);
-    }
+    /// Copy constructor allowed!
+    DestroyHandles(const DestroyHandles& c) : object(c.object) {}
+    /// Initializing constructor
+    DestroyHandles(M& m) : object(m) {                 }
+    /// Defautl destructor
+    ~DestroyHandles()                {                 }
+    /// Action operator
+    void operator()(const std::pair<typename M::key_type, typename M::mapped_type>& p) const
+    {   DestroyHandle<typename M::mapped_type>()(p.second);    }
   };
   /// Functional created of map destruction functors
-  template <typename M> DestroyHandles<M> destroyHandles(M& m) {
-    return DestroyHandles<M>(m);
+  template <typename M> void destroyHandles(M& m)  {
+    for_each(m.begin(), m.end(), DestroyHandles<M>(m));
+    m.clear();
   }
 
   /// String conversions: boolean value to string  \ingroup DD4HEP_GEOMETRY

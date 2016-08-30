@@ -51,15 +51,15 @@ void LCDDData::destroyData(bool destroy_mgr)   {
   destroyHandle(m_world);
   destroyHandle(m_field);
   destroyHandle(m_header);
-  for_each(m_readouts.begin(), m_readouts.end(), destroyHandles(m_readouts));
-  for_each(m_idDict.begin(), m_idDict.end(), destroyHandles(m_idDict));
-  for_each(m_limits.begin(), m_limits.end(), destroyHandles(m_limits));
-  for_each(m_regions.begin(), m_regions.end(), destroyHandles(m_regions));
-  for_each(m_alignments.begin(), m_alignments.end(), destroyHandles(m_alignments));
-  for_each(m_sensitive.begin(), m_sensitive.end(), destroyHandles(m_sensitive));
-  for_each(m_display.begin(), m_display.end(), destroyHandles(m_display));
-  for_each(m_fields.begin(), m_fields.end(), destroyHandles(m_fields));
-  for_each(m_define.begin(), m_define.end(), destroyHandles(m_define));
+  destroyHandles(m_readouts);
+  destroyHandles(m_idDict);
+  destroyHandles(m_limits);
+  destroyHandles(m_regions);
+  destroyHandles(m_alignments);
+  destroyHandles(m_sensitive);
+  destroyHandles(m_display);
+  destroyHandles(m_fields);
+  destroyHandles(m_define);
 
   destroyHandle(m_volManager);
   m_properties.clear();

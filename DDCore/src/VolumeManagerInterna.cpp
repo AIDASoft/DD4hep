@@ -42,7 +42,7 @@ VolumeManagerObject::~VolumeManagerObject() {
   for_each(volumes.begin(), volumes.end(), destroyObjects(volumes));
   volumes.clear();
   /// Cleanup dependent managers
-  for_each(managers.begin(), managers.end(), destroyHandles(managers));
+  destroyHandles(managers);
   managers.clear();
   subdetectors.clear();
 }
