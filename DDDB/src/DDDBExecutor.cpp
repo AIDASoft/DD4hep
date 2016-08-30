@@ -24,6 +24,7 @@
 #include "DD4hep/Factories.h"
 #include "DD4hep/Printout.h"
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Path.h"
 
 // C/C++ include files
 #include <sys/types.h>
@@ -32,7 +33,6 @@
 #include <fcntl.h>
 #include <iostream>
 #include <cerrno>
-#include "boost/filesystem/path.hpp"
 #include "TGeoManager.h"
 #include "TRint.h"
 
@@ -121,7 +121,7 @@ static long load_xml_dddb(Geometry::LCDD& lcdd, int argc, char** argv) {
       }
     }
 
-    boost::filesystem::path path = sys_id;
+    Path path = sys_id;
     sys_id = path.normalize().c_str();
 
     /// Install helper

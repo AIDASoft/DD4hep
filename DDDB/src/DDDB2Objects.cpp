@@ -25,6 +25,7 @@
 #include "DDDB/DDDBConversion.h"
 
 #include "DD4hep/LCDD.h"
+#include "DD4hep/Path.h"
 #include "DD4hep/DetConditions.h"
 #include "DD4hep/ConditionsData.h"
 #include "DD4hep/DetectorTools.h"
@@ -42,7 +43,6 @@
 #include <iostream>
 #include <iomanip>
 #include <set>
-#include "boost/filesystem/path.hpp"
 
 using namespace std;
 using namespace DD4hep;
@@ -756,7 +756,7 @@ namespace DD4hep {
         return par;
       }
       else if ( path.length() > 1 )   {
-        boost::filesystem::path p = path;
+        Path p = path;
         par = __parent(context,p.parent_path().native());
         DetElement det = DetElement(p.filename().native(),"Logical",0);
         par.add(det);

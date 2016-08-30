@@ -19,14 +19,14 @@
 //==========================================================================
 
 // Framework includes
+#include "DD4hep/Path.h"
+#include "DD4hep/Alignments.h"
 #include "DDDB/DDDBTags.h"
 #include "DDDB/DDDBDimension.h"
 #include "DDDB/DDDBHelper.h"
 #include "DDDB/DDDBConversion.h"
-#include "DD4hep/Alignments.h"
 
 // C/C++ include files
-#include "boost/filesystem/path.hpp"
 
 using namespace std;
 using namespace DD4hep;
@@ -333,7 +333,7 @@ namespace DD4hep {
 
     string object_path(Context* context, const string& ref)  {
       size_t hash = ref.rfind("#");
-      boost::filesystem::path path = hash==0 ? ref.substr(1) : ref;
+      Path path = hash==0 ? ref.substr(1) : ref;
       if ( ref[0] != '/' )  {
         path = context->locals.obj_path;
         path /= (hash==0 ? ref.substr(1) : ref.substr(hash+1));
@@ -342,7 +342,7 @@ namespace DD4hep {
     }
     string object_href(xml_h element, const string& ref)   {
       string p = XML::DocumentHandler::system_path(element);
-      boost::filesystem::path path = p;
+      Path path = p;
       p = path.normalize().native();
       p += '#';
       p += ref;
@@ -352,7 +352,7 @@ namespace DD4hep {
       size_t hash = ref.rfind("#");
       size_t idx  = ref.find(":");
       size_t idq  = ref.find("/");
-      boost::filesystem::path path = hash==0 ? ref.substr(1) : ref;
+      Path path = hash==0 ? ref.substr(1) : ref;
       if ( (idx == string::npos || idq < idx) && ref[0] != '/' )  {
         path = context->locals.xml_doc->id;
         if ( hash != 0 ) path = path.parent_path();
@@ -396,7 +396,7 @@ namespace DD4hep {
           par->catalogrefs[det->id] = det;
           return checkParents(context, par);
         }
-        boost::filesystem::path p(det->path);
+        Path p(det->path);
         parent_id  = p.parent_path().native();
         if ( parent_id == "/" )  {
           return true;
@@ -1527,7 +1527,7 @@ namespace DD4hep {
       if ( idet == geo->catalogs.end() ) {
         xml_h      elt;
         string     path      = object_path(context, name);
-        boost::filesystem::path p(path);
+        Path p(path);
         string     parent    = p.parent_path().native();
         Catalog*   det       = new Catalog();
         det->typeID   = 1;
@@ -1791,11 +1791,11 @@ namespace DD4hep {
       string p = XML::DocumentHandler::system_path(element);
       if ( hash == 0 )  { // This is a local object. Take the element's path
         p += ref;
-        boost::filesystem::path path = p;  // Remote object. Parent + local path
+        Path path = p;  // Remote object. Parent + local path
         p = path.normalize().native();      
         return p;
       }
-      boost::filesystem::path path = p;  // Remote object. Parent + local path
+      Path path = p;  // Remote object. Parent + local path
       path  = path.parent_path();
       path /= ref;
       p  = path.normalize().native();      

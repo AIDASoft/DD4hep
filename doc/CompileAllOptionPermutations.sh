@@ -134,8 +134,8 @@ build_all()
     DEF_MODES="ON OFF";
     G4_MODES="${DEF_MODES}";
     XERCES_MODES="${DEF_MODES}";
-    #XERCES_MODES="OFF";
     LCIO_MODES="${DEF_MODES}";
+    #XERCES_MODES="OFF";
     #G4_MODES="ON";
     #XERCES_MODES="OFF";
     #LCIO_MODES="ON";
