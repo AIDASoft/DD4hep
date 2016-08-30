@@ -475,8 +475,11 @@ namespace DD4hep {
     {
       KEY key;
       BasicGrammar::instance<KEY>().fromString(&key, key_val);
-      if ( val_type.substr(0,5) == "short" )
-        insert_map_item<KEY,short>(key,val,block);
+      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
+      if ( val_type.substr(0,4) == "char" )
+        insert_map_item<KEY,int>(key,val,block);
+      else if ( val_type.substr(0,5) == "short" )
+        insert_map_item<KEY,int>(key,val,block);
       else if ( val_type.substr(0,3) == "int" )
         insert_map_item<KEY,int>(key,val,block);
       else if ( val_type.substr(0,4) == "long" )
@@ -498,8 +501,11 @@ namespace DD4hep {
 
     template<typename KEY> 
     static void bind_map(const string& val_type, OpaqueDataBlock& block)   {
-      if ( val_type.substr(0,5) == "short" )
-        block.bind< map<KEY,short> >();
+      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
+      if ( val_type.substr(0,4) == "char" )
+        block.bind< map<KEY,int> >();
+      else if ( val_type.substr(0,5) == "short" )
+        block.bind< map<KEY,int> >();
       else if ( val_type.substr(0,3) == "int" )
         block.bind< map<KEY,int> >();
       else if ( val_type.substr(0,4) == "long" )
@@ -523,9 +529,13 @@ namespace DD4hep {
       string key_type = e.attr<string>(_LBU(keytype));
       string val_type = e.attr<string>(_LBU(valuetype));
 
-      if ( key_type.substr(0,5) == "short" )
-        bind_map<short>(val_type,block);
-      else if ( key_type.substr(0,3) == "int" )
+      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
+      if ( key_type.substr(0,3) == "int" )
+        bind_map<int>(val_type,block);
+      /*
+      else if ( key_type.substr(0,4) == "char" )
+        bind_map<int>(val_type,block);
+      else if ( key_type.substr(0,5) == "short" )
         bind_map<int>(val_type,block);
       else if ( key_type.substr(0,4) == "long" )
         bind_map<long>(val_type,block);
@@ -533,6 +543,7 @@ namespace DD4hep {
         bind_map<float>(val_type,block);
       else if ( key_type.substr(0,6) == "double" )
         bind_map<double>(val_type,block);
+      */
       else if ( key_type.substr(0,6) == "string" )
         bind_map<string>(val_type,block);
       else if ( key_type == "std::string" )
@@ -545,9 +556,13 @@ namespace DD4hep {
       for(xml_coll_t i(e,_LBU(item)); i; ++i)  {
         string key = i.attr<string>(_LBU(key));
         string val = i.attr<string>(_LBU(value));
-        if ( key_type.substr(0,5) == "short" )
-          insert_map_key<short>(key,val_type,val,block);
-        else if ( key_type.substr(0,3) == "int" )
+        // Short and char is not part of the standard dictionaries. Fall back to 'int'.
+        if ( key_type.substr(0,3) == "int" )
+          insert_map_key<int>(key,val_type,val,block);
+        /*
+        else if ( key_type.substr(0,4) == "char" )
+          insert_map_key<int>(key,val_type,val,block);
+        else if ( key_type.substr(0,5) == "short" )
           insert_map_key<int>(key,val_type,val,block);
         else if ( key_type.substr(0,4) == "long" )
           insert_map_key<long>(key,val_type,val,block);
@@ -555,6 +570,7 @@ namespace DD4hep {
           insert_map_key<float>(key,val_type,val,block);
         else if ( key_type.substr(0,6) == "double" )
           insert_map_key<double>(key,val_type,val,block);
+        */
         else if ( key_type.substr(0,6) == "string" )
           insert_map_key<string>(key,val_type,val,block);
         else if ( key_type == "std::string" )
@@ -574,8 +590,11 @@ namespace DD4hep {
       pair<string,OpaqueDataBlock> block;
       block.first = nam;
 
-      if ( typ.substr(0,5) == "short" )
-        block.second.set<short>(data);
+      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
+      if ( typ.substr(0,4) == "char" )
+        block.second.set<int>(data);
+      else if ( typ.substr(0,5) == "short" )
+        block.second.set<int>(data);
       else if ( typ.substr(0,3) == "int" )
         block.second.set<int>(data);
       else if ( typ.substr(0,4) == "long" )
@@ -630,8 +649,11 @@ namespace DD4hep {
         break;
       }
       d[d.length()-1] = ']';
-      if ( typ.substr(0,5) == "short" )
-        block.second.set<vector<short> >(d);
+      // Short and char is not part of the standard dictionaries. Fall back to 'int'.
+      if ( typ.substr(0,4) == "char" )
+        block.second.set<vector<int> >(d);
+      else if ( typ.substr(0,5) == "short" )
+        block.second.set<vector<int> >(d);
       else if ( typ.substr(0,3) == "int" )
         block.second.set<vector<int> >(d);
       else if ( typ.substr(0,4) == "long" )
