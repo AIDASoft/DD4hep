@@ -103,7 +103,7 @@ namespace DD4hep {
     string tag = node.tag();
 
     if ( tag == "display" )
-      xml_coll_t(node,_U(vis)).for_each(Converter<VisAttr>(this->lcdd,param));
+      xml_coll_t(node,_U(vis)).for_each(Converter<vis>(this->lcdd,param));
     else if ( tag == "vismapping" )
       xml_coll_t(node,_U(volume)).for_each(Converter<volume>(this->lcdd,param));
     else if ( tag == "DDDB_VIS" )
