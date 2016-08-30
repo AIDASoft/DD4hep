@@ -65,8 +65,6 @@ namespace DD4hep {
     typedef Geometry::Material                   GeoMaterial;
     typedef Geometry::Solid                      GeoSolid;
 
-    const double SMALL = 1e-10;
-
     /// Helper class to facilitate conversion. Purely local.
     struct Context  {
 
@@ -530,12 +528,6 @@ namespace DD4hep {
       return shape;
     }
 
-    inline int num_slash(const string& s)  {
-      size_t count=1, idx=s.find('/');
-      for(; idx != string::npos; idx=s.find('/',idx+1)) ++count;
-      return count;
-    }
-
     inline GeoPlacement place_daughter(const char* pv, GeoVolume mother, GeoVolume daughter, const Transform3D& tr)  {
       GeoPlacement place = mother.placeVolume(daughter, tr);
       // Use title for user defined physical volume name, since TGeo sets already the name!
@@ -747,22 +739,6 @@ namespace DD4hep {
         return (TGeoVolume*)this->convert(lv);
       }
       return GeoVolume(0);
-    }
-
-    DetElement __parent(Context* context,const string& path)   {
-      using Geometry::DetectorTools::findDaughterElement;
-      DetElement par = findDaughterElement(context->detectors,path);
-      if ( par.isValid() )   {
-        return par;
-      }
-      else if ( path.length() > 1 )   {
-        Path p = path;
-        par = __parent(context,p.parent_path().native());
-        DetElement det = DetElement(p.filename().native(),"Logical",0);
-        par.add(det);
-        return det;
-      }
-      return context->lcdd.world();
     }
 
     template <> void* CNV<Catalog>::convert(Catalog *object) const    {

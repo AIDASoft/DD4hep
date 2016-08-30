@@ -30,6 +30,12 @@ DD4hep::XML::UriContextReader::UriContextReader(UriReader* reader, UriReader::Us
 {
 }
 
+/// Copy constructor
+DD4hep::XML::UriContextReader::UriContextReader(const UriContextReader& copy)
+  : m_reader(copy.m_reader), m_context(copy.m_context)
+{
+}
+
 /// Default destructor
 DD4hep::XML::UriContextReader::~UriContextReader()   {
 }

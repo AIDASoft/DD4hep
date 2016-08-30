@@ -74,7 +74,7 @@ namespace DD4hep {
       ConditionsManager(Object* p) : Handle<Object>(p) {}
 
       /// Constructor to assing handle of the same type
-      template <typename Q> ConditionsManager(const ConditionsManager& c)
+      ConditionsManager(const ConditionsManager& c)
         : Handle<Object>(c) {
       }
 
