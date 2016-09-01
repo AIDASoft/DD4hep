@@ -68,7 +68,9 @@ namespace  {
     int det_key, par_key, top;
   };
   struct UserData {
-    typedef std::map<std::string,size_t>       DetectorMap;
+    static bool det_lexical_ordering(DetElement a, DetElement b)
+    {    return std::less(a.path(), b.path());                }
+    typedef std::map<DetElement,size_t,det_lexical_ordering>       DetectorMap;
     typedef std::map<unsigned int,size_t>      DetectorKeys;
     typedef std::vector<Entry>                 Entries;
     DetectorMap  detectors;
@@ -89,7 +91,7 @@ namespace  {
         entry.par  = det.parent().ptr();
         entry.det_key = key;
         entry.par_key = det.parent().key();
-        data.detectors.insert(make_pair(det.path(),data.entries.size()));
+        data.detectors.insert(make_pair(det,data.entries.size()));
         data.keys.insert(make_pair(key,data.entries.size()));
         data.entries.insert(data.entries.end(),entry);
       }
@@ -271,7 +273,7 @@ namespace  {
         Entry& e = data.entries[(*i).second];
         DetElement    det = e.det;
         unsigned int  key = det.key();
-        const string& p   = (*i).first;
+        const string& p   = det.path();
         size_t idx = p.find(prev);
         if ( idx == 0 )  {
           //printout(INFO,"Conditions","***** %d %p %08X: %s ",

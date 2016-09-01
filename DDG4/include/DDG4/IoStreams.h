@@ -22,20 +22,21 @@
 #pragma GCC diagnostic ignored "-Wshadow" // Code that causes warning goes here
 #endif
 
-#ifdef __GNUC__
-#undef __GNUC__
-// Boost spits out an error if __GNUC__ is defined!
-#include <boost/iostreams/stream.hpp>
-#define __GNUC__
-#else
-#include <boost/iostreams/stream.hpp>
-#endif
-
 // booost iostreams include files
 #include <boost/iostreams/categories.hpp>
 #include <boost/iostreams/detail/ios.hpp>
 #include <boost/iostreams/detail/path.hpp>
 #include <boost/iostreams/positioning.hpp>
+
+#ifdef __GNUC__
+// Boost spits out an error if __GNUC__ is defined!
+#define __DD4HEP_LOCAL_GNUC__ __GNUC__
+#undef __GNUC__
+#include <boost/iostreams/stream.hpp>
+#define __GNUC__ __DD4HEP_LOCAL_GNUC__
+#else
+#include <boost/iostreams/stream.hpp>
+#endif
 
 // Forward declarations
 class TFile;

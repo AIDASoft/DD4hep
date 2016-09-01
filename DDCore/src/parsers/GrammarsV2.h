@@ -31,10 +31,11 @@
 // Boost:
 //==============================================================================
 #ifdef __GNUC__
+#define __DD4HEP_LOCAL_GNUC__ __GNUC__
 #undef __GNUC__
 // Boost spits out an error if __GNUC__ is defined!
 #include <boost/spirit/include/qi.hpp>
-#define __GNUC__
+#define __GNUC__ __DD4HEP_LOCAL_GNUC__
 #else
 #include <boost/spirit/include/qi.hpp>
 #endif
