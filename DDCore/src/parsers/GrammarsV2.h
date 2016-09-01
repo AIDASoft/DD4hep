@@ -30,7 +30,13 @@
 //==============================================================================
 // Boost:
 //==============================================================================
+#ifdef __GNUC__
+#undef __GNUC__
 #include <boost/spirit/include/qi.hpp>
+#define __GNUC__
+#else
+#include <boost/spirit/include/qi.hpp>
+#endif
 #include <boost/fusion/include/unused.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 
