@@ -77,10 +77,10 @@ if test -d ${target}/DDDB; then
     fi;
     echo "DDDB database is already extracted to ${target}. Nothing to do.";
 elif test ! -f ${source}; then
-    echo "DDDB database tar file $source is not present. [Installation FAILED]";
-    echo "ls -laF /builds/CLICdp/DD4hep/examples/DDDB";
+    echo "DDDB database tar file ${source} is not present. [Installation FAILED]";
+    echo "Directory: /builds/CLICdp/DD4hep/examples/DDDB";
     ls -laF /builds/CLICdp/DD4hep/examples/DDDB;
-    echo "ls -laF /builds/CLICdp/DD4hep/examples/DDDB/data";
+    echo "Directory /builds/CLICdp/DD4hep/examples/DDDB/data";
     ls -laF /builds/CLICdp/DD4hep/examples/DDDB/data;
     exit 2;  # ENOENT
 else
@@ -90,10 +90,10 @@ else
         exit 2;  # ENOENT
     fi;
     cd ${target};
-    echo "${target} : tar -xf $source";
-    /bin/tar -xf $source;
-    /bin/ls -laF `dirname $source`;
-    /bin/ls -laF $target;
+    echo "${target} : tar -xf ${source}";
+    `which tar` -xf ${source};
+    #/bin/ls -laF `dirname $source`;
+    #/bin/ls -laF $target;
 fi;
 if test -f ${target}/DDDB/DDDB/lhcb.xml; then
     echo "DDDB Database successfully installed.";
