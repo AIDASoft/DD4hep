@@ -17,8 +17,6 @@
 #include "DDG4/Geant4InputAction.h"
 
 // C/C++ include files
-#include <fstream>
-#include <boost/iostreams/stream.hpp>
 
 /// Namespace for the AIDA detector description toolkit
 namespace DD4hep {
@@ -42,7 +40,7 @@ namespace DD4hep {
       //typedef boost::iostreams::stream<dd4hep_file_source<TFile*> > in_stream;
       typedef HepMC::EventStream EventStream;
     protected:
-      in_stream m_input;
+      in_stream    m_input;
       EventStream* m_events;
     public:
       /// Initializing constructor

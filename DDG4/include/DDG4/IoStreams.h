@@ -27,6 +27,7 @@
 #include <boost/iostreams/detail/ios.hpp>
 #include <boost/iostreams/detail/path.hpp>
 #include <boost/iostreams/positioning.hpp>
+#include <boost/iostreams/stream.hpp>
 
 // Forward declarations
 class TFile;
