@@ -32,6 +32,7 @@
 //==============================================================================
 #ifdef __GNUC__
 #undef __GNUC__
+// Boost spits out an error if __GNUC__ is defined!
 #include <boost/spirit/include/qi.hpp>
 #define __GNUC__
 #else
