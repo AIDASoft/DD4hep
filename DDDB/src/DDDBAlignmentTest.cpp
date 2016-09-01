@@ -68,8 +68,9 @@ namespace  {
     int det_key, par_key, top;
   };
   struct UserData {
-    static bool det_lexical_ordering(DetElement a, DetElement b)
-    {    return std::less(a.path(), b.path());                }
+    struct det_lexical_ordering {
+      bool operator()(const DetElement& a, const DetElement& b) const { return a.path() == b.path(); }
+    };
     typedef std::map<DetElement,size_t,det_lexical_ordering>       DetectorMap;
     typedef std::map<unsigned int,size_t>      DetectorKeys;
     typedef std::vector<Entry>                 Entries;
@@ -287,7 +288,7 @@ namespace  {
       }
 
       printout(INFO,"Conditions","Working down the tree....");
-      for(auto i=data.detectors.begin(); i!=data.detectors.end(); ++i)  {
+      for(auto i=data.detectors.begin(); i != data.detectors.end(); ++i)  {
         Entry& e = data.entries[(*i).second];
         if ( e.top )  {
           DetElement det = e.det;
