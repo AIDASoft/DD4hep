@@ -47,7 +47,7 @@ if (DD4HEP_USE_XERCESC)
   dd4hep_add_test_reg( test_DDDB_load
     COMMAND    "${CMAKE_INSTALL_PREFIX}/bin/run_test_DDDB.sh"
     EXEC_ARGS  ${CMAKE_INSTALL_PREFIX}/bin/run_dddb.sh
-    REGEX_PASS "Converted    12768 placements" )
+    REGEX_PASS "Converted    12851 placements" )
   #
   #---Testing: Load the geometry + conditions from archive ----------------------
   dd4hep_add_test_reg( test_DDDB_conditions
